@@ -641,7 +641,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
   (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
-  isClosed_le (continuous_id.edist continuous_const) continuous_const
+  isClosed_le (by fun_prop) continuous_const
 
 @[simp]
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
@@ -910,3 +910,20 @@ theorem limsup_add_of_left_tendsto_zero {u : Filter ι} {f : ι → ℝ≥0∞} 
 end LimsupLiminf
 
 end ENNReal -- namespace
+
+lemma Dense.lipschitzWith_extend {α β : Type*}
+    [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace β]
+    {s : Set α} (hs : Dense s) {f : s → β} {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LipschitzWith K (hs.extend f) := by
+  have : IsClosed {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
+    have : Continuous (hs.extend f) := (hs.uniformContinuous_extend hf.uniformContinuous).continuous
+    apply isClosed_le (by fun_prop)
+    exact (ENNReal.continuous_const_mul (by simp)).comp (by fun_prop)
+  have : Dense {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
+    apply (hs.prod hs).mono
+    rintro ⟨x, y⟩ ⟨hx, hy⟩
+    have Ax : hs.extend f x = f ⟨x, hx⟩ := hs.extend_eq hf.continuous ⟨x, hx⟩
+    have Ay : hs.extend f y = f ⟨y, hy⟩ := hs.extend_eq hf.continuous ⟨y, hy⟩
+    simp only [Set.mem_setOf_eq, Ax, Ay]
+    exact hf ⟨x, hx⟩ ⟨y, hy⟩
+  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using this

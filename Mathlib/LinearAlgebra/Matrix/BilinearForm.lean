@@ -395,36 +395,83 @@ theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matr
     (b : Basis ι R₁ M₁) : M.toBilin'.Nondegenerate ↔ (Matrix.toBilin b M).Nondegenerate :=
   (nondegenerate_congr_iff b.equivFun.symm).symm
 
--- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
+/-!
+Lemmas transferring nondegeneracy between a matrix and its associated bilinear form.
+
+These are just aliases of lemmas about `Matrix.toLinearMap₂` specialized to the cases where the
+left and right spaces are the same.
+-/
+
 theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nondegenerate) :
-    M.toBilin'.Nondegenerate := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toBilin'_apply'] using hx y
+    M.toBilin'.Nondegenerate :=
+  h.toLinearMap₂'
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
-    M.toBilin'.Nondegenerate ↔ M.Nondegenerate := by
-  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
-  exact fun v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w
+    M.toBilin'.Nondegenerate ↔ M.Nondegenerate :=
+  Matrix.nondegenerate_toLinearMap₂'_iff
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
     (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).Nondegenerate :=
-  (Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin b).mp h.toBilin'
+  h.toLinearMap₂ b b
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin_iff {M : Matrix ι ι R₂} (b : Basis ι R₂ M₂) :
-    (Matrix.toBilin b M).Nondegenerate ↔ M.Nondegenerate := by
-  rw [← Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin, Matrix.nondegenerate_toBilin'_iff]
+    (Matrix.toBilin b M).Nondegenerate ↔ M.Nondegenerate :=
+  Matrix.nondegenerate_toLinearMap₂_iff b b
 
-/-! Lemmas transferring nondegeneracy between a bilinear form and its associated matrix -/
+
+theorem _root_.Matrix.SeparatingLeft.toBilin' {M : Matrix ι ι R₂} (h : M.SeparatingLeft) :
+    M.toBilin'.SeparatingLeft :=
+  h.toLinearMap₂'
+
+@[simp]
+theorem _root_.Matrix.separatingLeft_toBilin'_iff {M : Matrix ι ι R₂} :
+    M.toBilin'.SeparatingLeft ↔ M.SeparatingLeft :=
+  Matrix.separatingLeft_toLinearMap₂'_iff
+
+theorem _root_.Matrix.SeparatingLeft.toBilin {M : Matrix ι ι R₂} (h : M.SeparatingLeft)
+    (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).SeparatingLeft :=
+  h.toLinearMap₂ b b
+
+@[simp]
+theorem _root_.Matrix.separatingLeft_toBilin_iff {M : Matrix ι ι R₂} (b : Basis ι R₂ M₂) :
+    (Matrix.toBilin b M).SeparatingLeft ↔ M.SeparatingLeft :=
+  Matrix.separatingLeft_toLinearMap₂_iff b b
+
+
+theorem _root_.Matrix.SeparatingRight.toBilin' {M : Matrix ι ι R₂} (h : M.SeparatingRight) :
+    M.toBilin'.SeparatingRight :=
+  h.toLinearMap₂'
+
+@[simp]
+theorem _root_.Matrix.separatingRight_toBilin'_iff {M : Matrix ι ι R₂} :
+    M.toBilin'.SeparatingRight ↔ M.SeparatingRight :=
+  Matrix.separatingRight_toLinearMap₂'_iff
+
+theorem _root_.Matrix.SeparatingRight.toBilin {M : Matrix ι ι R₂} (h : M.SeparatingRight)
+    (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).SeparatingRight :=
+  h.toLinearMap₂ b b
+
+@[simp]
+theorem _root_.Matrix.separatingRight_toBilin_iff {M : Matrix ι ι R₂} (b : Basis ι R₂ M₂) :
+    (Matrix.toBilin b M).SeparatingRight ↔ M.SeparatingRight :=
+  Matrix.separatingRight_toLinearMap₂_iff b b
+
+/-! Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
+
+These are just aliases of lemmas about `LinearMap.toMatrix₂` specialized to the cases where the
+left and right spaces are the same.
+-/
 
 @[simp]
 theorem nondegenerate_toMatrix'_iff {B : BilinForm R₂ (ι → R₂)} :
     B.toMatrix'.Nondegenerate (m := ι) ↔ B.Nondegenerate :=
-  Matrix.nondegenerate_toBilin'_iff.symm.trans <| (Matrix.toBilin'_toMatrix' B).symm ▸ Iff.rfl
+  LinearMap.nondegenerate_toMatrix₂'_iff
 
 theorem Nondegenerate.toMatrix' {B : BilinForm R₂ (ι → R₂)} (h : B.Nondegenerate) :
     B.toMatrix'.Nondegenerate :=
-  nondegenerate_toMatrix'_iff.mpr h
+  h.toMatrix₂'
 
 @[simp]
 theorem nondegenerate_toMatrix_iff {B : BilinForm R₂ M₂} (b : Basis ι R₂ M₂) :
@@ -434,6 +481,43 @@ theorem nondegenerate_toMatrix_iff {B : BilinForm R₂ M₂} (b : Basis ι R₂ 
 theorem Nondegenerate.toMatrix {B : BilinForm R₂ M₂} (h : B.Nondegenerate) (b : Basis ι R₂ M₂) :
     (BilinForm.toMatrix b B).Nondegenerate :=
   (nondegenerate_toMatrix_iff b).mpr h
+
+@[simp]
+theorem separatingLeft_toMatrix'_iff {B : BilinForm R₂ (ι → R₂)} :
+    B.toMatrix'.SeparatingLeft (m := ι) ↔ B.SeparatingLeft :=
+  Matrix.separatingLeft_toBilin'_iff.symm.trans <| (Matrix.toBilin'_toMatrix' B).symm ▸ Iff.rfl
+
+theorem SeparatingLeft.toMatrix' {B : BilinForm R₂ (ι → R₂)} (h : B.SeparatingLeft) :
+    B.toMatrix'.SeparatingLeft :=
+  separatingLeft_toMatrix'_iff.mpr h
+
+@[simp]
+theorem separatingLeft_toMatrix_iff {B : BilinForm R₂ M₂} (b : Basis ι R₂ M₂) :
+    (BilinForm.toMatrix b B).SeparatingLeft ↔ B.SeparatingLeft :=
+  (Matrix.separatingLeft_toBilin_iff b).symm.trans <| (Matrix.toBilin_toMatrix b B).symm ▸ Iff.rfl
+
+theorem SeparatingLeft.toMatrix {B : BilinForm R₂ M₂} (h : B.SeparatingLeft) (b : Basis ι R₂ M₂) :
+    (BilinForm.toMatrix b B).SeparatingLeft :=
+  (separatingLeft_toMatrix_iff b).mpr h
+
+@[simp]
+theorem separatingRight_toMatrix'_iff {B : BilinForm R₂ (ι → R₂)} :
+    B.toMatrix'.SeparatingRight (m := ι) ↔ B.SeparatingRight :=
+  Matrix.separatingRight_toBilin'_iff.symm.trans <| (Matrix.toBilin'_toMatrix' B).symm ▸ Iff.rfl
+
+theorem SeparatingRight.toMatrix' {B : BilinForm R₂ (ι → R₂)} (h : B.SeparatingRight) :
+    B.toMatrix'.SeparatingRight :=
+  separatingRight_toMatrix'_iff.mpr h
+
+@[simp]
+theorem separatingRight_toMatrix_iff {B : BilinForm R₂ M₂} (b : Basis ι R₂ M₂) :
+    (BilinForm.toMatrix b B).SeparatingRight ↔ B.SeparatingRight :=
+  (Matrix.separatingRight_toBilin_iff b).symm.trans <| (Matrix.toBilin_toMatrix b B).symm ▸ Iff.rfl
+
+theorem SeparatingRight.toMatrix {B : BilinForm R₂ M₂} (h : B.SeparatingRight) (b : Basis ι R₂ M₂) :
+    (BilinForm.toMatrix b B).SeparatingRight :=
+  (separatingRight_toMatrix_iff b).mpr h
+
 
 /-! Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero` -/
 
@@ -454,6 +538,27 @@ theorem nondegenerate_of_det_ne_zero (b : Basis ι A M₂) (h : (BilinForm.toMat
   (nondegenerate_iff_det_ne_zero b).mpr h
 
 end Det
+
+section LeftRight
+
+variable [IsDomain R₂] [Module.Free R₂ M₂] [Module.Finite R₂ M₂] {B : BilinForm R₂ M₂}
+
+lemma Nondegenerate.ofSeparatingLeft (hB : SeparatingLeft B) : B.Nondegenerate := by
+  obtain ⟨ι, b⟩ := Module.Free.exists_basis R₂ M₂
+  have : Finite ι := Module.Finite.finite_basis b
+  have : Fintype ι := Fintype.ofFinite ι
+  have : DecidableEq ι := Classical.decEq ι
+  rwa [← BilinForm.nondegenerate_toMatrix_iff b, Matrix.nondegenerate_iff_det_ne_zero,
+    ← Matrix.separatingLeft_iff_det_ne_zero, separatingLeft_toMatrix_iff]
+
+lemma Nondegenerate.ofSeparatingRight (hB : B.SeparatingRight) : B.Nondegenerate :=
+  nondegenerate_flip_iff.mp <| .ofSeparatingLeft hB
+
+lemma nondegenerate_iff_ker_eq_bot : B.Nondegenerate ↔ B.ker = ⊥ := by
+  refine ⟨Nondegenerate.ker_eq_bot, fun h ↦ .ofSeparatingLeft ?_⟩
+  rwa [separatingLeft_iff_ker_eq_bot]
+
+end LeftRight
 
 end BilinForm
 

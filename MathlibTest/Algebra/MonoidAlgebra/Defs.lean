@@ -4,14 +4,15 @@ variable {R M A} [Semiring R] [Monoid M] [AddMonoid A]
 section Notation
 open scoped MonoidAlgebra AddMonoidAlgebra
 
+set_option pp.mvars false
 -- TODO: could resolve ambiguity based on Monoid / AddMonoid
 /--
 error: Ambiguous term
   R[M]
 Possible interpretations:
-  R[M] : Type (max ?u.29 ?u.32)
+  R[M] : Type (max _ _)
   ⏎
-  R[M] : Type (max ?u.29 ?u.32)
+  R[M] : Type (max _ _)
 -/
 #guard_msgs in
 theorem test_1 : R[M] = MonoidAlgebra R M := rfl
@@ -20,9 +21,9 @@ theorem test_1 : R[M] = MonoidAlgebra R M := rfl
 error: Ambiguous term
   R[A]
 Possible interpretations:
-  R[A] : Type (max ?u.86 ?u.92)
+  R[A] : Type (max _ _)
   ⏎
-  R[A] : Type (max ?u.86 ?u.92)
+  R[A] : Type (max _ _)
 -/
 #guard_msgs in
 theorem test_2 : R[A] = AddMonoidAlgebra R A := rfl
@@ -36,9 +37,9 @@ theorem test_2 : R[A] = AddMonoidAlgebra R A := rfl
 error: Ambiguous term
   R[R]
 Possible interpretations:
-  R[R] : Type ?u.164
+  R[R] : Type _
   ⏎
-  R[R] : Type ?u.164
+  R[R] : Type _
 -/
 #guard_msgs in
 #check R[R]
