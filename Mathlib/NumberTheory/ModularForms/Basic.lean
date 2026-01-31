@@ -612,10 +612,6 @@ def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
   prod (s := s) (s.card * k) (by simp) F
 
-open BigOperators
-
-
-
 end GradedRing
 
 end ModularForm

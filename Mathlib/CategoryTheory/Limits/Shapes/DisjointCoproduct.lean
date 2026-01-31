@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 
 /-!
 # Disjoint coproducts
@@ -120,6 +121,15 @@ noncomputable def ofCoproductDisjointOfIsLimit
     [HasCoproduct X] {s : PullbackCone (Sigma.ι X i) (Sigma.ι X j)} (hs : IsLimit s) :
     IsInitial s.pt :=
   ofCoproductDisjointOfIsColimitOfIsLimit hij (colimit.isColimit _) hs
+
+/-- If `C` has strict initial objects and there is a commutative square `Xᵢ ← Z → Xⱼ`
+over `∐ X`, then `Z` is initial. -/
+noncomputable def ofCoproductDisjointOfCommSq [HasStrictInitialObjects C]
+    {c : Cofan X} (hc : IsColimit c) {Z : C} (fst : Z ⟶ X i) (snd : Z ⟶ X j)
+    (h : fst ≫ c.inj i = snd ≫ c.inj j) [HasPullback (c.inj i) (c.inj j)] :
+    Limits.IsInitial Z :=
+  .ofStrict (pullback.lift fst snd h) <|
+    .ofCoproductDisjointOfIsColimitOfIsLimit hij hc (limit.isLimit _)
 
 end IsInitial
 
