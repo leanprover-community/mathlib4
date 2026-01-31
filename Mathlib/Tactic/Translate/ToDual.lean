@@ -118,17 +118,17 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-@[inherit_doc UnfoldBoundaryExt.unfolds]
-initialize unfolds : NameMapExtension SimpTheorem ← registerNameMapExtension _
+-- @[inherit_doc UnfoldBoundaryExt.unfolds]
+-- initialize unfolds : NameMapExtension SimpTheorem ← registerNameMapExtension _
 
-@[inherit_doc UnfoldBoundaryExt.casts]
-initialize casts : NameMapExtension (Name × Name) ← registerNameMapExtension _
+-- @[inherit_doc UnfoldBoundaryExt.casts]
+-- initialize casts : NameMapExtension (Name × Name) ← registerNameMapExtension _
 
-@[inherit_doc UnfoldBoundaryExt.insertionFuns]
-initialize insertionFuns : NameMapExtension Unit ← registerNameMapExtension _
+-- @[inherit_doc UnfoldBoundaryExt.insertionFuns]
+-- initialize insertionFuns : NameMapExtension Unit ← registerNameMapExtension _
 
-@[inherit_doc TranslateData.unfoldBoundaries?]
-def unfoldBoundaries? : Option UnfoldBoundaryExt := some { unfolds, casts, insertionFuns }
+-- @[inherit_doc TranslateData.unfoldBoundaries?]
+-- def unfoldBoundaries? : Option UnfoldBoundaryExt := some { unfolds, casts, insertionFuns }
 
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
@@ -232,7 +232,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; doTranslateAttr; unfoldBoundaries?; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
   attrName := `to_dual
   changeNumeral := false
   isDual := true
