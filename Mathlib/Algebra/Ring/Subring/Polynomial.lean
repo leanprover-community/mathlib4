@@ -56,8 +56,7 @@ theorem toSubring_natDegree : (P.toSubring R hP).natDegree = P.natDegree := rfl
 variable [Field L] [Algebra K L]
 
 @[simp]
-theorem toSubring_eval₂ (x : L) :
-    eval₂ (algebraMap R L) x (P.toSubring R hP) = aeval x P := by
+theorem toSubring_eval₂ (x : L) : eval₂ (algebraMap R L) x (P.toSubring R hP) = aeval x P := by
   rw [aeval_eq_sum_range, eval₂_eq_sum_range]
   exact Finset.sum_congr rfl (fun n _ => by rw [Algebra.smul_def]; rfl)
 
