@@ -37,8 +37,20 @@ def IsVertexCover (G : SimpleGraph V) (c : Set V) : Prop :=
   ∀ ⦃v w : V⦄, G.Adj v w → v ∈ c ∨ w ∈ c
 
 @[simp]
+<<<<<<< HEAD
 theorem isVertexCover_empty : IsVertexCover G ∅ ↔ G = ⊥ := by
   simp [IsVertexCover, eq_bot_iff_forall_not_adj]
+=======
+theorem isVertexCover_empty_iff_bot : IsVertexCover G ∅ ↔ G = ⊥ := by
+  constructor
+  · intro h
+    contrapose! h
+    simp [IsVertexCover, ne_bot_iff_exists_adj.mp h]
+  · simp_all [IsVertexCover]
+
+theorem not_isVertexCover_of_ne_bot (h : G ≠ ⊥) : ¬IsVertexCover G ∅ :=
+  iff_false_right h |>.mp isVertexCover_empty_iff_bot
+>>>>>>> e178c467c9 (fixups)
 
 @[simp]
 theorem isVertexCover_univ : IsVertexCover G .univ := by
@@ -119,8 +131,13 @@ theorem vertexCoverNum_bot : vertexCoverNum (emptyGraph V) = 0 :=
   nonpos_iff_eq_zero.mp <| Set.encard_empty ▸ @IsVertexCover.vertexCoverNum_le V ⊥ ∅ (by simp)
 
 @[simp]
+<<<<<<< HEAD
 theorem vertexCoverNum_of_subsingleton [Subsingleton V] : vertexCoverNum G = 0 := by
   simp [SimpleGraph.subsingleton_iff.mpr _ |>.allEq G ⊥]
+=======
+theorem minVertexCover_of_subsingleton [S : Subsingleton V] : minVertexCover G = 0 := by
+  simp [SimpleGraph.subsingleton_iff.mpr S |>.allEq G ⊥]
+>>>>>>> e178c467c9 (fixups)
 
 @[simp]
 theorem vertexCoverNum_eq_zero : vertexCoverNum G = 0 ↔ G = ⊥ := by
@@ -148,6 +165,7 @@ theorem vertexCoverNum_lt_card [Nonempty V] [Finite V] : vertexCoverNum G < ENat
 theorem vertexCoverNum_le_encard_edgeSet : vertexCoverNum G ≤ G.edgeSet.encard := by
   by_cases h' : G.edgeSet = ∅
   · simp [h', SimpleGraph.edgeSet_eq_empty.mp]
+<<<<<<< HEAD
   refine ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_
   simp only [vertexCoverNum, le_iInf_iff] at hn
   have := hn ((·.out.1) '' G.edgeSet)
@@ -184,12 +202,56 @@ theorem IsContained.vertexCoverNum_le_vertexCoverNum (h : G ⊑ H) :
   have ⟨f, hf⟩ := h
   obtain ⟨s, hs₁, hs₂⟩ := vertexCoverNum_exists H
   have := H.isIndepSet_iff_isAntichain_adj.mp <| isIndepSet_compl_iff_isVertexCover.mpr hs₂
+=======
+  · simp at h'
+    have := ne_bot_iff_exists_adj.mp h'
+    refine ENat.forall_natCast_le_iff_le.mp fun n hn ↦ ?_
+    simp only [minVertexCover, le_iInf_iff, Subtype.forall] at hn
+    have := hn ((·.out.1) '' G.edgeSet) (fun v w hadj ↦ by
+      have := Sym2.mem_iff.mp <| Sym2.out_fst_mem s(v, w)
+      grind [mem_edgeSet])
+    grw [this]
+    exact Set.encard_image_le (fun x ↦ (Quot.out x).1) G.edgeSet
+
+@[simp]
+theorem minVertexCover_ne_top_of_edgeSet_finite (h : G.edgeSet.Finite) : minVertexCover G ≠ ⊤ :=
+  ne_top_of_le_ne_top (Set.encard_ne_top_iff.mpr h) (@minVertexCover_le_edgeSet_encard V G)
+
+theorem minVertexCover_top_eq : @minVertexCover V ⊤ = ENat.card V - 1 := by
+  by_cases h' : Subsingleton V
+  · simp [tsub_eq_zero_of_le]
+  · rw [not_subsingleton_iff_nontrivial] at h'
+    obtain ⟨x⟩ := h'.to_nonempty
+    refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ⟨fun hn ↦ ?_, fun hn ↦ ?_⟩
+    · grw [hn, minVertexCover_le_card]
+    · by_contra! hh
+      have : n - 1 ≤ ENat.card V := by
+        grw [tsub_le_iff_right, hn]
+        simp [add_assoc, one_add_one_eq_two]
+      obtain ⟨t, ht₁, ht₂⟩ := exists_of_le_minVertexCover (n - 1) (ENat.le_sub_one_of_lt hh) this
+      have : 1 < (Set.univ \ t).encard := by
+        refine ENat.add_one_le_iff (by simp) |>.mp ?_
+        rw [Set.encard_diff (by simp) (Set.finite_of_encard_eq_coe ht₁), Set.encard_univ]
+        refine ENat.le_sub_of_add_le_left (by simp [ht₁]) ?_
+        refine add_le_of_le_tsub_right_of_le (Order.add_one_le_of_lt ENat.one_lt_card) ?_
+        grw [ht₁, ENat.coe_sub, hn]
+        simp [add_assoc, one_add_one_eq_two, le_tsub_add]
+      obtain ⟨a, b, _, _, hne⟩ := Set.one_lt_encard_iff.mp <| this
+      have := ht₂ a b (by simp [hne])
+      grind
+
+theorem minVertexCover_le_of_relHom (f : G →g H) (hf : Function.Injective f) :
+    minVertexCover G ≤ minVertexCover H := by
+  obtain ⟨s, hs₁, hs₂⟩ := minVertexCover_exists H
+  have := H.isIndepSet_iff_isAntichain.mp <| isVertexCover_iff_isIndepSet_compl.mp hs₂
+>>>>>>> e178c467c9 (fixups)
   have : IsAntichain G.Adj (f ⁻¹' sᶜ) := this.preimage hf (fun _ _ hadj ↦ f.map_rel' hadj)
   have : G.IsVertexCover (f ⁻¹' s) :=
     isIndepSet_compl_iff_isVertexCover.mp <| G.isIndepSet_iff_isAntichain_adj.mpr this
   grw [this.vertexCoverNum_le, ← hs₁]
   exact Function.Embedding.encard_le <| Function.Embedding.mk f hf |>.subtypeMap (by simp)
 
+<<<<<<< HEAD
 @[deprecated IsContained.vertexCoverNum_le_vertexCoverNum (since := "2026-01-07")]
 theorem vertexCoverNum_le_vertexCoverNum_of_injective (f : G →g H) (hf : Function.Injective f) :
     vertexCoverNum G ≤ vertexCoverNum H :=
@@ -202,6 +264,11 @@ theorem vertexCoverNum_mono (h : G ≤ G') : vertexCoverNum G ≤ vertexCoverNum
 theorem vertexCoverNum_congr (f : G ≃g H) : vertexCoverNum G = vertexCoverNum H :=
   le_antisymm f.isContained.vertexCoverNum_le_vertexCoverNum
     f.symm.isContained.vertexCoverNum_le_vertexCoverNum
+=======
+theorem minVertexCover_eq_of_relIso (f : G ≃g H) : minVertexCover G = minVertexCover H :=
+  le_antisymm (minVertexCover_le_of_relHom f.toHom f.injective)
+    (minVertexCover_le_of_relHom f.symm.toHom f.symm.injective)
+>>>>>>> e178c467c9 (fixups)
 
 end vertexCoverNum
 end SimpleGraph
