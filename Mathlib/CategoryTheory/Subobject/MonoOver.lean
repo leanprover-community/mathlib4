@@ -10,9 +10,9 @@ public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Adjunction.Restrict
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.WithTerminal.Cone
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Monomorphisms over a fixed object
@@ -112,7 +112,7 @@ instance mono (f : MonoOver X) : Mono f.arrow :=
 
 instance {X : C} {f : MonoOver X} : Mono ((MonoOver.forget X).obj f).hom := f.mono
 
-/-- The category of monomorphisms over X is a thin category,s
+/-- The category of monomorphisms over X is a thin category,
 which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by

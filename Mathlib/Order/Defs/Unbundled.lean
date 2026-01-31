@@ -6,11 +6,8 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.SplitIfs
-public import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.ToDual
+public import Batteries.Tactic.Alias
 
 /-!
 # Orders
@@ -32,8 +29,8 @@ holds). -/
 abbrev IsIrrefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Irrefl r
 
 /-- `IsRefl X r` means the binary relation `r` on `X` is reflexive. -/
-class IsRefl (α : Sort*) (r : α → α → Prop) : Prop where
-  refl : ∀ a, r a a
+@[deprecated Std.Refl (since := "2026-01-08")]
+abbrev IsRefl (α : Sort*) (r : α → α → Prop) : Prop := Std.Refl r
 
 /-- `IsSymm X r` means the binary relation `r` on `X` is symmetric. -/
 @[deprecated Std.Symm (since := "2025-12-26")]
@@ -60,20 +57,20 @@ instance (priority := 100) {α : Sort*} {r : α → α → Prop} [Trans r r r] :
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`. -/
-class IsTotal (α : Sort*) (r : α → α → Prop) : Prop where
-  total : ∀ a b, r a b ∨ r b a
+@[deprecated Std.Total (since := "2026-01-09")]
+abbrev IsTotal (α : Sort*) (r : α → α → Prop) : Prop := Std.Total r
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
-class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends IsRefl α r, IsTrans α r
+class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends Std.Refl r, IsTrans α r
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
 `IsPreorder X r` and `Std.Antisymm r`. -/
 class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Antisymm r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
-`IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, IsTotal α r
+`IsPartialOrder X r` and `Std.Total r`. -/
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, Std.Total r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `Std.Symm r`. -/
@@ -118,7 +115,7 @@ variable {α : Sort*} {r : α → α → Prop} {a b c : α}
 local infixl:50 " ≺ " => r
 
 lemma irrefl [Std.Irrefl r] (a : α) : ¬a ≺ a := Std.Irrefl.irrefl a
-lemma refl [IsRefl α r] (a : α) : a ≺ a := IsRefl.refl a
+lemma refl [Std.Refl r] (a : α) : a ≺ a := Std.Refl.refl a
 lemma trans [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := IsTrans.trans _ _ _
 lemma symm [Std.Symm r] : a ≺ b → b ≺ a := Std.Symm.symm _ _
 lemma antisymm [Std.Antisymm r] : a ≺ b → b ≺ a → a = b := Std.Antisymm.antisymm _ _
@@ -134,8 +131,8 @@ instance Std.Irrefl.decide [DecidableRel r] [Std.Irrefl r] :
     Std.Irrefl (fun a b => decide (r a b) = true) where
   irrefl := fun a => by simpa using irrefl a
 
-instance IsRefl.decide [DecidableRel r] [IsRefl α r] :
-    IsRefl α (fun a b => decide (r a b) = true) where
+instance Std.Refl.decide [DecidableRel r] [Std.Refl r] :
+    Std.Refl (fun a b => decide (r a b) = true) where
   refl := fun a => by simpa using refl a
 
 instance IsTrans.decide [DecidableRel r] [IsTrans α r] :
@@ -154,8 +151,8 @@ instance Std.Asymm.decide [DecidableRel r] [Std.Asymm r] :
     Std.Asymm (fun a b => decide (r a b) = true) where
   asymm := fun a b => by simpa using asymm a b
 
-instance IsTotal.decide [DecidableRel r] [IsTotal α r] :
-    IsTotal α (fun a b => decide (r a b) = true) where
+instance Std.Total.decide [DecidableRel r] [Std.Total r] :
+    Std.Total (fun a b => decide (r a b) = true) where
   total := fun a b => by simpa using total a b
 
 instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
@@ -165,20 +162,20 @@ instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
 variable (r)
 
 @[elab_without_expected_type] lemma irrefl_of [Std.Irrefl r] (a : α) : ¬a ≺ a := irrefl a
-@[elab_without_expected_type] lemma refl_of [IsRefl α r] (a : α) : a ≺ a := refl a
+@[elab_without_expected_type] lemma refl_of [Std.Refl r] (a : α) : a ≺ a := refl a
 @[elab_without_expected_type] lemma trans_of [IsTrans α r] : a ≺ b → b ≺ c → a ≺ c := _root_.trans
 @[elab_without_expected_type] lemma symm_of [Std.Symm r] : a ≺ b → b ≺ a := symm
 @[elab_without_expected_type] lemma asymm_of [Std.Asymm r] : a ≺ b → ¬b ≺ a := asymm
 
 @[elab_without_expected_type]
-lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total _ _
+lemma total_of [Std.Total r] (a b : α) : a ≺ b ∨ b ≺ a := Std.Total.total _ _
 
 @[elab_without_expected_type]
 lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
 
 section
 
-/-- `IsRefl` as a definition, suitable for use in proofs. -/
+/-- `Std.Refl` as a definition, suitable for use in proofs. -/
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
@@ -193,7 +190,7 @@ def Irreflexive := ∀ x, ¬x ≺ x
 /-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
-/-- `IsTotal` as a definition, suitable for use in proofs. -/
+/-- `Std.Total` as a definition, suitable for use in proofs. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
 theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
@@ -310,7 +307,7 @@ extend_docs RelLowerSet before "The type of lower sets of an order relative to `
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
-theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b
+theorem of_eq [Std.Refl r] : ∀ {a b}, a = b → r a b
   | _, _, .refl _ => refl _
 
 theorem comm [Std.Symm r] {a b : α} : r a b ↔ r b a :=
@@ -318,7 +315,7 @@ theorem comm [Std.Symm r] {a b : α} : r a b ↔ r b a :=
 
 theorem antisymm' [Std.Antisymm r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
 
-theorem antisymm_iff [IsRefl α r] [Std.Antisymm r] {a b : α} : r a b ∧ r b a ↔ a = b :=
+theorem antisymm_iff [Std.Refl r] [Std.Antisymm r] {a b : α} : r a b ∧ r b a ↔ a = b :=
   ⟨fun h => antisymm h.1 h.2, by
     rintro rfl
     exact ⟨refl _, refl _⟩⟩
@@ -346,19 +343,21 @@ theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b
 protected theorem Std.Asymm.antisymm (r : α → α → Prop) [Std.Asymm r] : Std.Antisymm r :=
   inferInstance
 
+@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isAntisymm := Std.Asymm.antisymm
 @[deprecated (since := "2026-01-06")] protected alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
 
 protected theorem Std.Asymm.irrefl [Std.Asymm r] : Std.Irrefl r :=
   inferInstance
 
+@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isIrrefl := Std.Asymm.irrefl
 @[deprecated (since := "2026-01-07")] protected alias Std.Asymm.isIrrefl := Std.Asymm.irrefl
 
-protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
+protected theorem Std.Total.isTrichotomous (r) [Std.Total r] : IsTrichotomous α r :=
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
-  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
+instance (priority := 100) Std.Total.to_refl (r : α → α → Prop) [Std.Total r] : Std.Refl r :=
+  inferInstance
 
 theorem ne_of_irrefl {r} [Std.Irrefl r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
@@ -369,7 +368,7 @@ theorem ne_of_irrefl' {r} [Std.Irrefl r] : ∀ {x y : α}, r x y → y ≠ x
 theorem not_rel_of_subsingleton (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] (x y) : ¬r x y :=
   Subsingleton.elim x y ▸ irrefl x
 
-theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
+theorem rel_of_subsingleton (r : α → α → Prop) [Std.Refl r] [Subsingleton α] (x y) : r x y :=
   Subsingleton.elim x y ▸ refl x
 
 @[simp]

@@ -229,7 +229,7 @@ lemma closure_eq_one_union (s : Set M) :
     | mem x hx => exact Or.inr <| Subsemigroup.subset_closure hx
     | one => exact Or.inl <| by simp
     | mul x hx y hy hx hy =>
-      simp only [singleton_union, mem_insert_iff, SetLike.mem_coe] at hx hy
+      push _ ∈ _ at hx hy
       obtain ⟨(rfl | hx), (rfl | hy)⟩ := And.intro hx hy
       all_goals simp_all
       exact Or.inr <| mul_mem hx hy

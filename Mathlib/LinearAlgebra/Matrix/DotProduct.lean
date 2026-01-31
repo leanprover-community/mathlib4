@@ -170,7 +170,7 @@ theorem dotProduct_star_self_pos_iff {v : n → R} :
   constructor
   · rintro h hv
     simp [hv] at h
-  · exact (star_mul_self_pos <| isRegular_of_ne_zero ·)
+  · exact (star_mul_self_pos <| .of_ne_zero ·)
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]

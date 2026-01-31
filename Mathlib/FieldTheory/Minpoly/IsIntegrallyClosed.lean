@@ -30,7 +30,7 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 @[expose] public section
 
-open Polynomial Set Function minpoly
+open Polynomial Set Function minpoly Module
 
 namespace minpoly
 
@@ -63,8 +63,7 @@ theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsSca
 
 end
 
-variable [IsDomain S] [NoZeroSMulDivisors R S]
-variable [IsIntegrallyClosed R]
+variable [IsIntegrallyClosed R] [IsDomain S] [IsTorsionFree R S]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the
   integral element as root. See also `minpoly.dvd` which relaxes the assumptions on `S`

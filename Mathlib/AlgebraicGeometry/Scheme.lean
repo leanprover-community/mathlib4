@@ -216,7 +216,6 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
 protected lemma ext' {f g : X ⟶ Y} (h : f.toLRSHom = g.toLRSHom) : f = g := by
   cases f; cases g; congr 1
 
-@[simp]
 lemma mem_preimage {x : X} {U : Opens Y} : x ∈ f ⁻¹ᵁ U ↔ f x ∈ U := .rfl
 
 lemma coe_preimage {U : Opens Y} : f ⁻¹ᵁ U = f ⁻¹' U := rfl

@@ -301,8 +301,10 @@ protected theorem irrefl (f : r ↪r s) [Std.Irrefl s] : Std.Irrefl r :=
 
 @[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelEmbedding.irrefl
 
-protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
+protected theorem stdRefl (f : r ↪r s) [Std.Refl s] : Std.Refl r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
+
+@[deprecated (since := "2026-01-08")] protected alias isRefl := RelEmbedding.stdRefl
 
 protected theorem symm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
@@ -322,17 +324,19 @@ protected theorem antisymm : ∀ (_ : r ↪r s) [Std.Antisymm s], Std.Antisymm r
 protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
 
-protected theorem isTotal : ∀ (_ : r ↪r s) [IsTotal β s], IsTotal α r
+protected theorem total : ∀ (_ : r ↪r s) [Std.Total s], Std.Total r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
 
+@[deprecated (since := "2026-01-09")] protected alias isTotal := RelEmbedding.total
+
 protected theorem isPreorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder α r
-  | f, _ => { f.isRefl, f.isTrans with }
+  | f, _ => { f.stdRefl, f.isTrans with }
 
 protected theorem isPartialOrder : ∀ (_ : r ↪r s) [IsPartialOrder β s], IsPartialOrder α r
   | f, _ => { f.isPreorder, f.antisymm with }
 
 protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLinearOrder α r
-  | f, _ => { f.isPartialOrder, f.isTotal with }
+  | f, _ => { f.isPartialOrder, f.total with }
 
 protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
   | f, _ => { f.irrefl, f.isTrans with }
@@ -432,14 +436,14 @@ namespace RelEmbedding
 /-- To define a relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
 -/
-def ofMapRelIff (f : α → β) [Std.Antisymm r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
+def ofMapRelIff (f : α → β) [Std.Antisymm r] [Std.Refl s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     r ↪r s where
   toFun := f
   inj' _ _ h := antisymm ((hf _ _).1 (h ▸ refl _)) ((hf _ _).1 (h ▸ refl _))
   map_rel_iff' := hf _ _
 
 @[simp]
-theorem ofMapRelIff_coe (f : α → β) [Std.Antisymm r] [IsRefl β s]
+theorem ofMapRelIff_coe (f : α → β) [Std.Antisymm r] [Std.Refl s]
     (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     (ofMapRelIff f hf : r ↪r s) = f :=
   rfl
@@ -806,7 +810,7 @@ def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [Std.Irre
       (not_rel_of_subsingleton r _ _) ⟩
 
 /-- Two reflexive relations on a unique type are isomorphic. -/
-def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
+def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r] [Std.Refl s]
     [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 

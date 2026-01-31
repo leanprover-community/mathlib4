@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 import Mathlib.Algebra.Central.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Continuous (star-)algebra equivalences between continuous endomorphisms are (isometrically) inner
@@ -60,8 +59,10 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := SeparatingDual.exists_ne_zero (R := 𝕜) hu
   obtain ⟨z, hz⟩ : ∃ z : W, ¬ f (smulRight v u) z = (0 : W →L[𝕜] W) z := by
-    rw [← not_forall, ← ContinuousLinearMap.ext_iff, map_eq_zero_iff, ContinuousLinearMap.ext_iff]
-    exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
+    simp_rw [← not_forall, ← ContinuousLinearMap.ext_iff, map_eq_zero_iff,
+      ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, zero_apply,
+      smul_eq_zero_iff_left hu]
+    exact ⟨u, huv⟩
   set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by

@@ -46,7 +46,7 @@ theorem mem_list_prod {l : List (Set α)} {a : α} :
   · rintro ⟨fi, rfl, rfl⟩
     exact ⟨fun i ↦ _, rfl⟩
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i ↦ (f i : α)).prod = a := by
   rw [← mem_prod_list_ofFn, List.ofFn_const, List.prod_replicate]

@@ -180,7 +180,7 @@ end LE
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] {Q : ι → Prop} {f : ι → α} {i j : ι}
 
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
   simp [Minimal, lt_iff_le_not_ge, imp.swap]
@@ -188,17 +188,35 @@ theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → �
 theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
 
+theorem minimalFor_iff_forall_lt : MinimalFor Q f i ↔ Q i ∧ ∀ ⦃j⦄, f j < f i → ¬ Q j := by
+  simp [MinimalFor, lt_iff_le_not_ge, imp.swap]
+
+theorem maximalFor_iff_forall_gt : MaximalFor Q f i ↔ Q i ∧ ∀ ⦃j⦄, f i < f j → ¬ Q j :=
+  minimalFor_iff_forall_lt (α := αᵒᵈ)
+
 theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
   (minimal_iff_forall_lt.1 h).2 hlt
 
 theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
   (maximal_iff_forall_gt.1 h).2 hlt
 
+theorem MinimalFor.not_prop_of_lt (h : MinimalFor Q f i) (hlt : f j < f i) : ¬ Q j :=
+  (minimalFor_iff_forall_lt.1 h).2 hlt
+
+theorem MaximalFor.not_prop_of_gt (h : MaximalFor Q f i) (hgt : f i < f j) : ¬ Q j :=
+  (maximalFor_iff_forall_gt.1 h).2 hgt
+
 theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬(y < x) :=
   fun hlt ↦ h.not_prop_of_lt hlt hy
 
 theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬(x < y) :=
   fun hlt ↦ h.not_prop_of_gt hlt hy
+
+theorem MinimalFor.not_lt (h : MinimalFor Q f i) (hj : Q j) : ¬(f j < f i) :=
+  fun hlt ↦ h.not_prop_of_lt hlt hj
+
+theorem MaximalFor.not_gt (h : MaximalFor Q f i) (hj : Q j) : ¬(f i < f j) :=
+  fun hgt ↦ h.not_prop_of_gt hgt hj
 
 @[simp] theorem minimal_le_iff : Minimal (· ≤ y) x ↔ x ≤ y ∧ IsMin x :=
   minimal_iff_isMin (fun _ _ h h' ↦ h'.trans h)
@@ -313,6 +331,24 @@ theorem maximal_iff_maximal_of_imp_of_forall (hPQ : ∀ ⦃x⦄, Q x → P x)
   minimal_iff_minimal_of_imp_of_forall (α := αᵒᵈ) hPQ h
 
 end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] {i j : ι} {Q : ι → Prop} {f : ι → α}
+
+theorem Minimal.le (h : Minimal P x) (hy : P y) : x ≤ y :=
+  le_of_not_gt (h.not_lt hy)
+
+theorem Maximal.le (h : Maximal P x) (hy : P y) : y ≤ x :=
+  le_of_not_gt (h.not_gt hy)
+
+theorem MinimalFor.le (h : MinimalFor Q f i) (hj : Q j) : f i ≤ f j :=
+  le_of_not_gt (h.not_lt hj)
+
+theorem MaximalFor.le (h : MaximalFor Q f i) (hj : Q j) : f j ≤ f i :=
+  le_of_not_gt (h.not_gt hj)
+
+end LinearOrder
 
 section Subset
 

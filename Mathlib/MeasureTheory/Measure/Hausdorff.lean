@@ -17,7 +17,7 @@ public import Mathlib.Topology.MetricSpace.MetricSeparated
 In this file we define the `d`-dimensional Hausdorff measure on an (extended) metric space `X` and
 the Hausdorff dimension of a set in an (extended) metric space. Let `μ d δ` be the maximal outer
 measure such that `μ d δ s ≤ (ediam s) ^ d` for every set of diameter less than `δ`. Then
-the Hausdorff measure `μH[d] s` of `s` is defined as `⨆ δ > 0, μ d δ s`. By Carathéodory theorem
+the Hausdorff measure `μH[d] s` of `s` is defined as `⨆ δ > 0, μ d δ s`. By Carathéodory's theorem
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, this is a Borel measure on `X`.
 
 The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
@@ -40,7 +40,7 @@ applied to `MeasureTheory.extend m`.
 
 We also define a predicate `MeasureTheory.OuterMeasure.IsMetric` which says that an outer measure
 is additive on metric separated pairs of sets: `μ (s ∪ t) = μ s + μ t` provided that
-`⨅ (x ∈ s) (y ∈ t), edist x y ≠ 0`. This is the property required for the Carathéodory theorem
+`⨅ (x ∈ s) (y ∈ t), edist x y ≠ 0`. This is the property required for Carathéodory's theorem
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, so we prove this theorem for any
 metric outer measure, then prove that outer measures constructed using `mkMetric'` are metric outer
 measures.
@@ -126,7 +126,7 @@ namespace OuterMeasure
 /-!
 ### Metric outer measures
 
-In this section we define metric outer measures and prove Carathéodory theorem: a metric outer
+In this section we define metric outer measures and prove Carathéodory's theorem: a metric outer
 measure has the Carathéodory property.
 -/
 
@@ -154,16 +154,16 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
       Metric.AreSeparated.finset_iUnion_right fun j hj =>
         hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
 
-/-- Carathéodory theorem. If `m` is a metric outer measure, then every Borel measurable set `t` is
-Carathéodory measurable: for any (not necessarily measurable) set `s` we have
+/-- **Carathéodory's theorem**. If `m` is a metric outer measure, then every Borel measurable set
+`t` is Carathéodory measurable: for any (not necessarily measurable) set `s` we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
 theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory := by
   rw [borel_eq_generateFrom_isClosed]
   refine MeasurableSpace.generateFrom_le fun t ht => μ.isCaratheodory_iff_le.2 fun s => ?_
-  set S : ℕ → Set X := fun n => {x ∈ s | (↑n)⁻¹ ≤ infEdist x t}
+  set S : ℕ → Set X := fun n => {x ∈ s | (↑n)⁻¹ ≤ infEDist x t}
   have Ssep (n) : Metric.AreSeparated (S n) t :=
     ⟨n⁻¹, ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top _),
-      fun x hx y hy ↦ hx.2.trans <| infEdist_le_edist_of_mem hy⟩
+      fun x hx y hy ↦ hx.2.trans <| infEDist_le_edist_of_mem hy⟩
   have Ssep' : ∀ n, Metric.AreSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl inter_subset_right
   have S_sub : ∀ n, S n ⊆ s \ t := fun n =>
@@ -176,7 +176,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   have iUnion_S : ⋃ n, S n = s \ t := by
     refine Subset.antisymm (iUnion_subset S_sub) ?_
     rintro x ⟨hxs, hxt⟩
-    rw [mem_iff_infEdist_zero_of_closed ht] at hxt
+    rw [mem_iff_infEDist_zero_of_closed ht] at hxt
     rcases ENNReal.exists_inv_nat_lt hxt with ⟨n, hn⟩
     exact mem_iUnion.2 ⟨n, hxs, hn.le⟩
   /- Now we have `∀ n, μ (s ∩ t) + μ (S n) ≤ μ s` and we need to prove
@@ -217,9 +217,9 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     rw [ENNReal.inv_lt_inv, Nat.cast_lt]; lia
   refine ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
     fun x hx y hy => ?_⟩
-  have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
-  rcases infEdist_lt_iff.mp this with ⟨z, hzt, hyz⟩
-  have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEdist.1 hx.2 _ hzt
+  have : infEDist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
+  rcases infEDist_lt_iff.mp this with ⟨z, hzt, hyz⟩
+  have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEDist.1 hx.2 _ hzt
   apply ENNReal.le_of_add_le_add_right hyz.ne_top
   refine le_trans ?_ (edist_triangle _ _ _)
   refine (add_le_add le_rfl hyz.le).trans (Eq.trans_le ?_ hxz)
@@ -365,7 +365,7 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
 theorem mkMetric_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) (hc' : c ≠ 0) :
     (mkMetric (c • m) : OuterMeasure X) = c • mkMetric m := by
   simp only [mkMetric, mkMetric', mkMetric'.pre]
-  simp_rw [smul_iSup, smul_boundedBy hc, smul_extend _ hc', Pi.smul_apply]
+  simp_rw [smul_iSup, smul_boundedBy hc, ennreal_smul_extend _ hc', Pi.smul_apply]
 
 theorem mkMetric_nnreal_smul (m : ℝ≥0∞ → ℝ≥0∞) {c : ℝ≥0} (hc : c ≠ 0) :
     (mkMetric (c • m) : OuterMeasure X) = c • mkMetric m := by
