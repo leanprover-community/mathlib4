@@ -476,7 +476,7 @@ theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra! H
   exact not_summable_residueClass_prime_div ha <|
-    summable_of_finite_support <| support_residueClass_prime_div a ▸ H
+    summable_of_finite_support <| show Set.Finite _ from support_residueClass_prime_div a ▸ H
 
 @[deprecated (since := "2025-11-01")]
 alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod
