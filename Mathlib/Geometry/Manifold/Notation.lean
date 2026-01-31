@@ -283,10 +283,8 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
           throw ex
       trace[Elab.DiffGeo.MDiff] "Found model: `{e.model}`"
       if let some { normedSpace, baseField } := e.normedSpaceInfo? then
-        trace[Elab.DiffGeo.MDiff] "Model is the trivial model with corners for the normed space\
-          {indentD normedSpace}\n\
-          with base field\
-          {indentD baseField}"
+        trace[Elab.DiffGeo.MDiff] "This is the trivial model with corners for the normed space \
+          `{normedSpace}` over the base field `{baseField}`."
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
