@@ -226,19 +226,19 @@ section OddCycleTheorem
 
 variable {V : Type*} (G : SimpleGraph V)
 
-/-- A graph is bipartite if and only if it does not contain an odd cycle -/
+/-- A walk has even length if and only if its endpoints have the same color
+    in a 2-coloring -/
 lemma Coloring.even_length_iff_same_color (c : G.Coloring (Fin 2)) {u v : V} (p : G.Walk u v) :
     Even p.length ↔ c u = c v := by
   let c' : G.Coloring Bool := G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
-  rw [Coloring.even_length_iff_congr c']
-  simp [c']
+  simp [Coloring.even_length_iff_congr c', c']
 
-/-- The bypass of a walk is a path -/
+/-- The bypass of a loop in a graph with all cycles of even length is the nil walk -/
 @[simp]
 lemma Walk.bypass_eq_nil
-{V : Type*} [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
+[DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
     w.bypass = Walk.nil :=
-  (isPath_iff_eq_nil _).1 (Walk.bypass_isPath _)
+  (isPath_iff_eq_nil _).mp (Walk.bypass_isPath _)
 
 /-- If all cycles in a graph have even length, then extending a path by an adjacent edge
     results in a walk of even length -/
