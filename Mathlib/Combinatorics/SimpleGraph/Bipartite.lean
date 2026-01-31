@@ -201,11 +201,15 @@ theorem isBipartiteWith_neighborFinset_disjoint (h : G.IsBipartiteWith s t) (hv 
   rw [neighborFinset_def, ← disjoint_coe, Set.coe_toFinset]
   exact isBipartiteWith_neighborSet_disjoint h hv
 
+omit [Fintype <| G.neighborSet v] in
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the degree of `v` in `G` is at most the size of
 `t`. -/
 theorem isBipartiteWith_degree_le (h : G.IsBipartiteWith s t) (hv : v ∈ s) : G.degree v ≤ #t := by
-  rw [← card_neighborFinset_eq_degree]
-  exact card_le_card (isBipartiteWith_neighborFinset_subset h hv)
+  cases finite_or_infinite <| G.neighborSet v
+  · have := Fintype.ofFinite <| G.neighborSet v
+    rw [← card_neighborFinset_eq_degree]
+    exact card_le_card (isBipartiteWith_neighborFinset_subset h hv)
+  simp [degree, Set.Infinite.ncard <| Infinite.not_finite]
 
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is a subset of `s`. -/
 theorem isBipartiteWith_neighborFinset_subset' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
@@ -220,11 +224,11 @@ theorem isBipartiteWith_neighborFinset_disjoint' (h : G.IsBipartiteWith s t) (hw
   rw [neighborFinset_def, ← disjoint_coe, Set.coe_toFinset]
   exact isBipartiteWith_neighborSet_disjoint' h hw
 
+omit [Fintype <| G.neighborSet w] in
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the degree of `w` in `G` is at most the size of
 `s`. -/
-theorem isBipartiteWith_degree_le' (h : G.IsBipartiteWith s t) (hw : w ∈ t) : G.degree w ≤ #s := by
-  rw [← card_neighborFinset_eq_degree]
-  exact card_le_card (isBipartiteWith_neighborFinset_subset' h hw)
+theorem isBipartiteWith_degree_le' (h : G.IsBipartiteWith s t) (hw : w ∈ t) : G.degree w ≤ #s :=
+  isBipartiteWith_degree_le h.symm hw
 
 end
 
@@ -417,12 +421,13 @@ lemma neighborFinset_subset_between_union (hv : v ∈ s) :
     G.neighborFinset v ⊆ (G.between s sᶜ).neighborFinset v ∪ s := by
   simpa [neighborFinset_def] using neighborSet_subset_between_union hv
 
-omit [DecidableEq V] [DecidableRel G.Adj] in
+omit [Fintype V] [DecidableEq V] [DecidableRel G.Adj] in
 /-- The degree of `v ∈ s` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
 vertices from `s`. -/
-theorem degree_le_between_add (hv : v ∈ s) :
+theorem degree_le_between_add [Finite V] (hv : v ∈ s) :
     G.degree v ≤ (G.between s sᶜ).degree v + s.card := by
   classical
+  have := Fintype.ofFinite V
   have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
     simpa using between_isBipartiteWith disjoint_compl_right
   simp_rw [← card_neighborFinset_eq_degree,

@@ -514,7 +514,7 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Finite V] [Nontrivial V] (h :
 
 /-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
 lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
-    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
+    (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
   obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
   refine (connected_iff _).mpr ⟨?_, u, by aesop⟩
   /- There exists a walk between any two vertices w and x in G.induce {v}ᶜ

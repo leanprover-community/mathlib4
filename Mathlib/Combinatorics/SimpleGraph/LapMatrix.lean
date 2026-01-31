@@ -98,9 +98,11 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   congr 2 with j
   ring_nf
 
+omit [Fintype V] in
 /-- The Laplacian matrix is positive semidefinite -/
 theorem posSemidef_lapMatrix [Field R] [LinearOrder R] [IsStrictOrderedRing R] [StarRing R]
-    [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
+    [TrivialStar R] [Finite V] : PosSemidef (G.lapMatrix R) := by
+  have := Fintype.ofFinite V
   refine .of_dotProduct_mulVec_nonneg ?_ (fun x ↦ ?_)
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
   · rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']

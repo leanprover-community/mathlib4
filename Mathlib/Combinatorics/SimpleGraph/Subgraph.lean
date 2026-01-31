@@ -787,7 +787,8 @@ theorem degree_of_notMem_verts {G' : Subgraph G} {v : V} [Fintype (G'.neighborSe
   exact h hw.fst_mem
 
 theorem degree_le (G' : Subgraph G) (v : V) [Fintype (G'.neighborSet v)]
-    [Fintype (G.neighborSet v)] : G'.degree v ≤ G.degree v := by
+    [Finite (G.neighborSet v)] : G'.degree v ≤ G.degree v := by
+  have := Fintype.ofFinite <| G.neighborSet v
   rw [← card_neighborSet_eq_degree]
   exact Set.card_le_card (G'.neighborSet_subset v)
 
@@ -796,14 +797,15 @@ theorem degree_le' (G' G'' : Subgraph G) (h : G' ≤ G'') (v : V) [Fintype (G'.n
   Set.card_le_card (neighborSet_subset_of_subgraph h v)
 
 @[simp]
-theorem coe_degree (G' : Subgraph G) (v : G'.verts) [Fintype (G'.coe.neighborSet v)]
-    [Fintype (G'.neighborSet v)] : G'.coe.degree v = G'.degree v := by
+theorem coe_degree (G' : Subgraph G) (v : G'.verts) [Fintype (G'.neighborSet v)] :
+    G'.coe.degree v = G'.degree v := by
   rw [← card_neighborSet_eq_degree]
   exact Fintype.card_congr (coeNeighborSetEquiv v)
 
 @[simp]
 theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)]
-    [Fintype (G'.spanningCoe.neighborSet v)] : G'.spanningCoe.degree v = G'.degree v := by
+    [Finite (G'.spanningCoe.neighborSet v)] : G'.spanningCoe.degree v = G'.degree v := by
+  have := Fintype.ofFinite <| G'.spanningCoe.neighborSet v
   rw [← card_neighborSet_eq_degree, Subgraph.degree]
   congr!
 
@@ -850,8 +852,9 @@ end Subgraph
 
 @[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
-    (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Finite (H.neighborSet v)] :
     Fintype.card ↑((toSubgraph H h).neighborSet v) = H.degree v := by
+  have := Fintype.ofFinite <| H.neighborSet v
   rw [← H.card_neighborFinset_eq_degree]
   refine (Finset.card_eq_of_equiv_fintype ?_).symm
   simp only [mem_neighborFinset]
@@ -859,7 +862,7 @@ theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
 
 @[simp]
 lemma degree_toSubgraph (G H : SimpleGraph V) (h : H ≤ G) {v : V}
-    [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
+    [Fintype ↑((toSubgraph H h).neighborSet v)] [Finite (H.neighborSet v)] :
     (toSubgraph H h).degree v = H.degree v := by
   simp [Subgraph.degree]
 

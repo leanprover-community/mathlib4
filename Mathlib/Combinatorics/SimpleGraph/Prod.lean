@@ -247,8 +247,11 @@ theorem neighborFinset_boxProd (x : α × β)
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
 theorem degree_boxProd (x : α × β)
-    [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
+    [Finite (G.neighborSet x.1)] [Finite (H.neighborSet x.2)] [Finite ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
+  have := Fintype.ofFinite <| G.neighborSet x.fst
+  have := Fintype.ofFinite <| H.neighborSet x.snd
+  have := Fintype.ofFinite <| (G □ H).neighborSet x
   rw [← card_neighborFinset_eq_degree, ← card_neighborFinset_eq_degree,
     ← card_neighborFinset_eq_degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]

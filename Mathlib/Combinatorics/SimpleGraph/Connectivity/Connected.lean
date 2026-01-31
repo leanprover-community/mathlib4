@@ -240,7 +240,7 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   | @cons _ w => exact ⟨w, ‹_›⟩
 
 lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
-    (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
+    (v : V) [Finite (G.neighborSet v)] : 0 < G.degree v := by
   simp [degree_pos_iff_mem_support, h.support_eq_univ]
 
 lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Finite V] {G : SimpleGraph V}

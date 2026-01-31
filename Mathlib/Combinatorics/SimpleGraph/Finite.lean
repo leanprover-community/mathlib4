@@ -618,9 +618,10 @@ theorem map_neighborFinset_induce [DecidableEq V] (v : s) [Fintype <| G.neighbor
   ext; simp
 
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} [Fintype <| G.neighborSet v]
-    [Fintype <| (induce s G).neighborSet v] [Fintype s] (h : G.neighborSet v ⊆ s) :
+    [Fintype <| (induce s G).neighborSet v] [Finite s] (h : G.neighborSet v ⊆ s) :
     ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
   classical
+  have := Fintype.ofFinite s
   rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
     ← map_neighborFinset_induce v] at h
 
