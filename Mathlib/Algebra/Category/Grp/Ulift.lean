@@ -104,7 +104,7 @@ instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ GrpCat.{u}) : PreservesLimit K uliftFunctor.{v, u} where
   preserves lc := ⟨isLimitOfReflects (forget GrpCat) <|
-    (isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget GrpCat) lc))⟩
+    isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget GrpCat) lc)⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :
