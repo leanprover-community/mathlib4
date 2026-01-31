@@ -61,7 +61,7 @@ Two vertices are related iff there exists a triangle index containing them both.
 open Rel
 
 lemma rel_irrefl : ∀ x, ¬ Rel t x x := fun _x hx ↦ nomatch hx
-lemma rel_symm : Symmetric (Rel t) := fun x y h ↦  by cases h <;> constructor <;> assumption
+lemma rel_symm : Symmetric (Rel t) := fun x y h ↦ by cases h <;> constructor <;> assumption
 
 /-- The tripartite-from-triangles graph. Two vertices are related iff there exists a triangle index
 containing them both. -/

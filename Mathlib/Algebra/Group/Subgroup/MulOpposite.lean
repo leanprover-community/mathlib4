@@ -38,6 +38,10 @@ theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S :
     H.op.toSubmonoid = H.toSubmonoid.op :=
   rfl
 
+@[to_additive] lemma op_toSubsemigroup (H : Subgroup G) :
+    H.op.toSubsemigroup = H.toSubsemigroup.op := by
+  dsimp
+
 /-- Pull an opposite subgroup back to a subgroup along `MulOpposite.op` -/
 @[to_additive (attr := simps)
 /-- Pull an opposite additive subgroup back to an additive subgroup along `AddOpposite.op` -/]
@@ -53,6 +57,10 @@ theorem mem_unop {x : G} {S : Subgroup Gᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposit
 @[to_additive (attr := simp)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
     H.unop.toSubmonoid = H.toSubmonoid.unop :=
   rfl
+
+@[to_additive] lemma unop_toSubsemigroup (H : Subgroup Gᵐᵒᵖ) :
+    H.unop.toSubsemigroup = H.toSubsemigroup.unop := by
+  dsimp
 
 @[to_additive (attr := simp)]
 theorem unop_op (S : Subgroup G) : S.op.unop = S := rfl

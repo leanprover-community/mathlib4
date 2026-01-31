@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Zify
 
 /-!
 # Sums/products over integer intervals
@@ -17,7 +16,7 @@ This file contains some lemmas about sums and products over integer intervals `I
 
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
@@ -27,7 +26,7 @@ lemma prod_Icc_of_even_eq_range {α : Type*} [CommGroup α] {f : ℤ → α} (hf
   induction N with
   | zero => simp [sq]
   | succ N ih =>
-    rw [Nat.cast_add, Nat.cast_one, Icc_succ_succ, prod_union (by simp), prod_pair (by omega), ih,
+    rw [Nat.cast_add, Nat.cast_one, Icc_succ_succ, prod_union (by simp), prod_pair (by lia), ih,
       prod_range_succ _ (N + 1), hf, ← pow_two, div_mul_eq_mul_div, ← mul_pow, Nat.cast_succ]
 
 @[to_additive]
@@ -41,11 +40,18 @@ lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [CommGroup R] (f : ℤ → R) {
     f (N + 1) * f (-(N + 1) : ℤ) * ∏ m ∈ Icc (-N : ℤ) N, f m := by
   induction N
   · rw [Icc_succ_succ]
-    simp only [CharP.cast_eq_zero, neg_zero, Icc_self, zero_add, Int.reduceNeg, union_insert,
-      union_singleton, mem_insert, reduceCtorEq, mem_singleton, neg_eq_zero, one_ne_zero, or_self,
-      not_false_eq_true, prod_insert, prod_singleton]
     grind
   · rw [Icc_succ_succ, prod_union (by simp)]
     grind
+
+@[to_additive]
+lemma prod_Ico_int_div (b : ℕ) {α : Type*} [CommGroup α] (f : ℤ → α) :
+    ∏ n ∈ Ico (-b : ℤ) b, f n / f (n + 1) = f (-b) / f b := by
+  induction b with
+  | zero => simp
+  | succ b ihb =>
+    simp only [Nat.cast_add_one, Ico_succ_succ]
+    rw [prod_union (by aesop), prod_insert (by grind), prod_singleton, ihb, ← mul_assoc, mul_div]
+    simp [mul_comm, mul_div, ← mul_assoc]
 
 end Finset

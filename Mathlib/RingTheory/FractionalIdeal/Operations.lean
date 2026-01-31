@@ -179,6 +179,21 @@ theorem mem_span_mul_finite_of_mem_mul {I J : FractionalIdeal S P} {x : P} (hx :
     ∃ T T' : Finset P, (T : Set P) ⊆ I ∧ (T' : Set P) ⊆ J ∧ x ∈ span R (T * T' : Set P) :=
   Submodule.mem_span_mul_finite_of_mem_mul (by simpa using mem_coe.mpr hx)
 
+lemma _root_.Units.submodule_isFractional [IsLocalization S P] (I : (Submodule R P)ˣ) :
+    IsFractional S I.1 :=
+  FractionalIdeal.isFractional_of_fg (fg_unit _)
+
+/-- If P is a localization of R, invertible R-submodules of P are all fractional
+(expressed as an isomorphism of groups). -/
+def unitsMulEquivSubmodule [IsLocalization S P] :
+    (FractionalIdeal S P)ˣ ≃* (Submodule R P)ˣ where
+  __ := Units.map (coeSubmoduleHom S P)
+  invFun I := ⟨⟨I, I.submodule_isFractional⟩, ⟨↑I⁻¹, I⁻¹.submodule_isFractional⟩,
+    coeToSubmodule_inj.mp <| by rw [coe_mul, coe_one]; exact I.mul_inv,
+    coeToSubmodule_inj.mp <| by rw [coe_mul, coe_one]; exact I.inv_mul⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 variable (S) in
 theorem coeIdeal_fg (inj : Function.Injective (algebraMap R P)) (I : Ideal R) :
     FG ((I : FractionalIdeal S P) : Submodule R P) ↔ I.FG :=
@@ -311,7 +326,7 @@ theorem coeIdeal_eq_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) = 1 ↔ I =
 theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I ≠ 1 :=
   not_iff_not.mpr coeIdeal_eq_one
 
-theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 where
+theorem num_eq_zero_iff [IsDomain R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 where
   mp h := zero_of_num_eq_bot zero_notMem_nonZeroDivisors h
   mpr h := h ▸ num_zero_eq (IsFractionRing.injective R K)
 
@@ -591,7 +606,7 @@ theorem spanSingleton_le_iff_mem {x : P} {I : FractionalIdeal S P} :
     spanSingleton S x ≤ I ↔ x ∈ I := by
   rw [← coe_le_coe, coe_spanSingleton, Submodule.span_singleton_le_iff_mem, mem_coe]
 
-theorem spanSingleton_eq_spanSingleton [NoZeroSMulDivisors R P] {x y : P} :
+theorem spanSingleton_eq_spanSingleton [IsDomain R] [Module.IsTorsionFree R P] {x y : P} :
     spanSingleton S x = spanSingleton S y ↔ ∃ z : Rˣ, z • x = y := by
   rw [← Submodule.span_singleton_eq_span_singleton, spanSingleton, spanSingleton]
   exact Subtype.mk_eq_mk

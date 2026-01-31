@@ -91,15 +91,15 @@ macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
                  maxRuleApplications := 300 })
   (rule_sets := [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
-attribute[aesop 10% (rule_sets := [Restrict])] le_trans
-attribute[aesop safe destruct (rule_sets := [Restrict])] Eq.trans_le
-attribute[aesop safe -50 (rule_sets := [Restrict])] Aesop.BuiltinRules.assumption
+attribute [aesop 10% (rule_sets := [Restrict])] le_trans
+attribute [aesop safe destruct (rule_sets := [Restrict])] Eq.trans_le
+attribute [aesop safe -50 (rule_sets := [Restrict])] Aesop.BuiltinRules.assumption
 
 example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_ : v 1 = v 2)
     (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y := by
   restrict_tac
 
-variable {X : TopCat} {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable {X : TopCat} {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 /-- The restriction of a section along an inclusion of open sets.

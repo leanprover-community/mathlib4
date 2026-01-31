@@ -38,7 +38,7 @@ stalks, such as the Weierstrass preparation theorem.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Manifold Topology Filter
 open Function Set Filter Complex

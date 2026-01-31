@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {J : Type*} [Category J]
+variable {J : Type*} [Category* J]
 
 /--
 We say that a functor `F` to `Type*` is locally directed if for every `x ∈ F.obj k`, the

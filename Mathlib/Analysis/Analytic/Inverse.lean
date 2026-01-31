@@ -515,7 +515,7 @@ theorem radius_rightInv_pos_of_radius_pos
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
       exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
     · intro n one_le_n hn
-      have In : 2 ≤ n + 1 := by omega
+      have In : 2 ≤ n + 1 := by lia
       have rSn : r * S n ≤ 1 / 2 :=
         calc
           r * S n ≤ r * ((I + 1) * a) := by gcongr
@@ -621,7 +621,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
   have : ∀ᶠ y in 𝓝 (0 : E), f (x + y) - f x ∈ EMetric.ball 0 q.radius := by
     have A : ContinuousAt (fun y ↦ f (x + y) - f x) 0 := by
       apply ContinuousAt.sub _ continuousAt_const
-      exact hf.continuousAt.comp_of_eq (continuous_add_left x).continuousAt (by simp)
+      exact hf.continuousAt.comp_of_eq (by fun_prop) (by simp)
     have B : EMetric.ball 0 q.radius ∈ 𝓝 (f (x + 0) - f x) := by
       simpa using EMetric.ball_mem_nhds _ hq
     exact A.preimage_mem_nhds B

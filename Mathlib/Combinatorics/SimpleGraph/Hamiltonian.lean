@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
+Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer, Yue Sun
 -/
 module
 
@@ -54,6 +54,10 @@ lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support)
 
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
+
+theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
+  intro v
+  rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
 
 /-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
@@ -119,7 +123,7 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     intro x
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
-    simp only [map_cons, getVert_cons_succ, tail_cons, support_copy,support_map]
+    simp only [map_cons, getVert_cons_succ, tail_cons, support_copy, support_map]
     rw [List.count_map_of_injective _ _ hf.injective]
     simpa using hp.isHamiltonian_tail x
 
@@ -178,5 +182,62 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     have b_mem := hp.mem_support b
     exact ((p.takeUntil a a_mem).reverse.append <| p.takeUntil b b_mem).reachable
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG <| by simp [@Fintype.card_eq_zero]
+
+lemma IsHamiltonian.of_card_eq_one (h : Fintype.card α = 1) : G.IsHamiltonian :=
+  (· h |>.elim)
+
+lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
+  of_card_eq_one <| Fintype.card_unique
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+
+/--
+A finite simple graph with at least three vertices and a bridge is not Hamiltonian.
+
+More precisely, let `G : SimpleGraph V` be a simple graph on a finite vertex type `V`.
+If `Fintype.card V ≥ 3` and there exists an edge of `G` which is a bridge,
+then `G` does not admit a Hamiltonian cycle, i.e. `¬ G.IsHamiltonian`.
+-/
+theorem not_isHamiltonian_of_isBridge (G : SimpleGraph V)
+    (h_order : 3 ≤ Fintype.card V) (e : Sym2 V) (he : G.IsBridge e) :
+    ¬G.IsHamiltonian := by
+  classical
+  refine Sym2.ind (fun x y hbr => ?_) e he
+  intro hHam
+  have hxne : x ≠ y :=
+    ((SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).1).ne
+  haveI : Nontrivial V := ⟨⟨x, y, hxne⟩⟩
+  have hne : Fintype.card V ≠ 1 := by
+    have : 1 < Fintype.card V := by omega
+    exact ne_of_gt this
+  obtain ⟨u, c, hcHam⟩ := hHam hne
+  have he_not_in_cycle : s(x, y) ∉ c.edges :=
+    (SimpleGraph.isBridge_iff_adj_and_forall_cycle_notMem.mp hbr).2 c hcHam.isCycle
+  have hWalkAllMem :
+      ∀ p : G.Walk x y, s(x, y) ∈ p.edges :=
+    (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).2
+  let cX := c.rotate (hcHam.mem_support x)
+  have hcycleX : cX.IsCycle := hcHam.isCycle.rotate (hcHam.mem_support x)
+  have he_not_in_cX : s(x, y) ∉ cX.edges :=
+    fun h => he_not_in_cycle ((Walk.rotate_edges c (hcHam.mem_support x)).mem_iff.mp h)
+  have hyX : y ∈ cX.support := by
+    by_cases hxy : x = y
+    · subst hxy
+      exact Walk.start_mem_support _
+    · have hy_tail : y ∈ c.tail.support :=
+        (hcHam.isHamiltonian_tail).mem_support y
+      have hc_not_nil : ¬ c.Nil :=
+        hcHam.isCycle.not_nil
+      have : c.tail.support = c.support.tail :=
+        Walk.support_tail_of_not_nil c hc_not_nil
+      rw [this] at hy_tail
+      have hperm : cX.support.tail.Perm c.support.tail :=
+        (Walk.support_rotate c (hcHam.mem_support x)).perm
+      have : y ∈ cX.support.tail := hperm.symm.mem_iff.mp hy_tail
+      exact List.mem_of_mem_tail this
+  let p := cX.takeUntil y hyX
+  have he_not_in_p : s(x, y) ∉ p.edges :=
+    fun h => he_not_in_cX (Walk.edges_takeUntil_subset cX hyX h)
+  exact he_not_in_p (hWalkAllMem p)
 
 end SimpleGraph

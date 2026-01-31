@@ -158,7 +158,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
     exact not_le_of_gt h (le_trans this (le_of_dvd n0 d))
-  have k2 : 2 ≤ k := by omega
+  have k2 : 2 ≤ k := by lia
   have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
   have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
     intro n' nd' nk

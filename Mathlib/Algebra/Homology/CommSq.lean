@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
@@ -37,7 +37,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   {X₁ X₂ X₃ X₄ : C} [HasBinaryBiproduct X₂ X₃]
 
 section Pushout

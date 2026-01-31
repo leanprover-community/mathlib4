@@ -221,7 +221,7 @@ lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k] [Γ.HasDetPlu
     div_eq_inv_mul]
 
 /--
-If `h` is a positivie strict period of `f`, then the `q`-expansion coefficient can be expressed
+If `h` is a positive strict period of `f`, then the `q`-expansion coefficient can be expressed
 as an integral along a horizontal line in the upper half-plane from `t * I` to `h + t * I`, for
 any `0 < t`.
 -/

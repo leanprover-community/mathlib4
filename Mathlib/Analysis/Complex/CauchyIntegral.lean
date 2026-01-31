@@ -90,7 +90,7 @@ differentiability at all but countably many points of the set mentioned below.
 ## Implementation details
 
 The proof of the Cauchy integral formula in this file is based on a very general version of the
-divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`
+divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`
 (a version for functions defined on `Fin (n + 1) → ℝ`),
 `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le`, and
 `MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable` (versions for
@@ -158,7 +158,7 @@ function is analytic on the open ball.
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
@@ -453,6 +453,15 @@ theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 
         (differentiableAt_id.sub_const _).smul (hd z hz))
     _ = 0 := by rw [sub_self, zero_smul, smul_zero]
 
+omit [CompleteSpace E] in
+/-- **Cauchy-Goursat theorem** for a disk: if `f : ℂ → E` is continuous on a closed disk
+`{z | ‖z - c‖ ≤ R}` and is complex differentiable on the open disk,
+then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
+theorem _root_.DiffContOnCl.circleIntegral_eq_zero {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
+    {c : ℂ} (hc : DiffContOnCl ℂ f (ball c R)) : ∮ z in C(c, R), f z = 0 :=
+  circleIntegral_eq_zero_of_differentiable_on_off_countable h0 countable_empty
+    hc.continuousOn_ball fun _z hz ↦ hc.differentiableAt isOpen_ball hz.1
+
 /-- An auxiliary lemma for
 `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`. This lemma assumes
 `w ∉ s` while the main lemma drops this assumption. -/
@@ -506,8 +515,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
   refine mem_closure_iff_nhds.2 fun t ht => ?_
   -- TODO: generalize to any vector space over `ℝ`
   set g : ℝ → ℂ := fun x => w + ofReal x
-  have : Tendsto g (𝓝 0) (𝓝 w) :=
-    (continuous_const.add continuous_ofReal).tendsto' 0 w (add_zero _)
+  have : Tendsto g (𝓝 0) (𝓝 w) := Continuous.tendsto' (by fun_prop) 0 w (add_zero _)
   rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
     ⟨l, u, hlu₀, hlu_sub⟩
   obtain ⟨x, hx⟩ : (Ioo l u \ g ⁻¹' s).Nonempty := by

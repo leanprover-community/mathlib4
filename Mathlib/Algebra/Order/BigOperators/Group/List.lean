@@ -16,7 +16,7 @@ This file contains the results concerning the interaction of list big operators 
 groups/monoids.
 -/
 
-@[expose] public section
+public section
 
 variable {ι α M N : Type*}
 
