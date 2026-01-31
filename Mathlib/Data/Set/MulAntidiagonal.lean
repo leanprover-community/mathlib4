@@ -20,13 +20,17 @@ section Mul
 
 variable [Mul α] {s s₁ s₂ t t₁ t₂ : Set α} {a : α} {x : α × α}
 
-/-- `Set.mulAntidiagonal s t a` is the set of all pairs of an element in `s` and an element in `t`
-that multiply to `a`. -/
+/-- `Set.setMulAntidiagonal s t a` is the set of all pairs of an element in `s` and an element
+in `t` that multiply to `a`. -/
 @[to_additive
-      /-- `Set.addAntidiagonal s t a` is the set of all pairs of an element in `s` and an
+      /-- `Set.setAddAntidiagonal s t a` is the set of all pairs of an element in `s` and an
       element in `t` that add to `a`. -/]
-def mulAntidiagonal (s t : Set α) (a : α) : Set (α × α) :=
+def setMulAntidiagonal (s t : Set α) (a : α) : Set (α × α) :=
   { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a }
+
+@[to_additive (attr := deprecated setAddAntidiagonal (since := "2026-01-31")),
+  deprecated setMulAntidiagonal (since := "2026-01-31")]
+alias mulAntidiagonal := setMulAntidiagonal
 
 @[to_additive (attr := simp)]
 theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a :=
