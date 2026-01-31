@@ -320,6 +320,7 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   suffices y * z * z⁻¹ ∈ A by simpa
   exact mul_mem hyz (inv_mem (h hz))
 
+@[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left {H K : Subgroup G}
     (hHnK : H.normalizer ≤ K.normalizer) :
     H.normalizer ≤ (H ⊔ K).normalizer := by
@@ -344,12 +345,14 @@ lemma normalizer_le_normalizer_sup_of_normalizer_le_left {H K : Subgroup G}
     · apply (hH _).mpr
       simpa [mul_assoc]
 
+@[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}
     (hHnK : H.normalizer ≤ K.normalizer) :
     H.normalizer ≤ (K ⊔ H).normalizer := by
   rw [sup_comm]
   exact normalizer_le_normalizer_sup_of_normalizer_le_left hHnK
 
+@[to_additive]
 lemma normalizer_le_normalizer_sup_normal {H K : Subgroup G} [hK : K.Normal] :
     H.normalizer ≤ (H ⊔ K).normalizer :=
   normalizer_le_normalizer_sup_of_normalizer_le_left le_normalizer_of_normal

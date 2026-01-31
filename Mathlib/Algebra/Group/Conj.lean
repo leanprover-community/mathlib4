@@ -83,7 +83,7 @@ theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
   (map_inv (MulAut.conj b) a).symm
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ :=
   (map_mul (MulAut.conj b) a c).symm
 
