@@ -72,7 +72,9 @@ noncomputable def setSMulAntidiagonal [PartialOrder G] [PartialOrder P] [IsOrder
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
   (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
-@[to_additive (attr := deprecated setVAddAntidiagonal (since := "2026-01-31")),
+/-- Deprecated alias of `Finset.setSMulAntidiagonal`. -/
+@[to_additive (attr := deprecated setVAddAntidiagonal (since := "2026-01-31"))
+    /-- Deprecated alias of `Finset.setVAddAntidiagonal`. -/,
   deprecated setSMulAntidiagonal (since := "2026-01-31")]
 alias smulAntidiagonal := setSMulAntidiagonal
 

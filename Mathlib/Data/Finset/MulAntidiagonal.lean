@@ -63,7 +63,9 @@ well-ordered. -/]
 noncomputable def setMulAntidiagonal : Finset (α × α) :=
   (Set.MulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
-@[to_additive (attr := deprecated setAddAntidiagonal (since := "2026-01-31")),
+/-- Deprecated alias of `Finset.setMulAntidiagonal`. -/
+@[to_additive (attr := deprecated setAddAntidiagonal (since := "2026-01-31"))
+    /-- Deprecated alias of `Finset.setAddAntidiagonal`. -/,
   deprecated setMulAntidiagonal (since := "2026-01-31")]
 alias mulAntidiagonal := setMulAntidiagonal
 
