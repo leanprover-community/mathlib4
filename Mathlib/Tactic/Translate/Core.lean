@@ -589,9 +589,9 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   -- if let some b := t.unfoldBoundaries? then
   --   value ← b.unfoldInsertions value
   decl := decl.updateValue value
-  -- let mut type := decl.type
+  let mut type := decl.type
   -- if let some b := t.unfoldBoundaries? then
-    type ← b.insertBoundaries decl.type t.attrName
+    -- type ← b.insertBoundaries decl.type t.attrName
   type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
   -- if let some b := t.unfoldBoundaries? then
   --   type ← b.unfoldInsertions type
