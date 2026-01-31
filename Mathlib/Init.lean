@@ -95,7 +95,8 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.missingEnd
   linter.style.setOption
   linter.style.show
-  linter.style.whitespace
+  -- linter.style.whitespace -- disabled due to performance regression, see
+  -- https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/.60linear_combination.60.20performance.20regression.20in.20v4.2E28.2E0-rc1
   linter.unusedDecidableInType
   linter.unusedFintypeInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
