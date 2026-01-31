@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Multiset.Powerset
 public import Mathlib.Data.Set.Pairwise.Lattice
 
@@ -307,4 +308,114 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
 
 end powersetCard
 
+/- The types `Fin n → Bool` and `Finset (Fin n)` are eqivalent. Use `s : Finset (Fin n)`
+as the set where the `f : Fin n → Bool` is `true`. -/
+def Equiv_fnFinBool_finsetFin (n : ℕ) : (Fin n → Bool) ≃ (Finset (Fin n)) where
+  toFun := fun f ↦ {i | f i}
+  invFun := fun s i ↦ i ∈ s
+  left_inv := fun l ↦ by simp
+  right_inv := fun l ↦ by simp
+
+lemma Equiv_fnFinBool_finsetFin_mem_powersetCard_iff (n k : ℕ) (f : Fin n → Bool) :
+    #{i | f i = true} = k ↔ (Equiv_fnFinBool_finsetFin n) f ∈ powersetCard k univ := by
+  simp [Equiv_fnFinBool_finsetFin]
+
+lemma card_fnFinBool {k n : ℕ} : #{ f : Fin n → Bool | #{i | f i} = k } = n.choose k := by
+  conv => right; rw [← card_fin n]
+  rw [← card_powersetCard k (univ : Finset (Fin n))]
+  apply card_equiv (Equiv_fnFinBool_finsetFin n) (fun f ↦ ?_)
+  simp only [mem_filter, mem_univ, true_and]
+  exact Equiv_fnFinBool_finsetFin_mem_powersetCard_iff n k f
+
+#check Vector Bool
+#check Vector.get
+
+--maybe works?
+def Equiv_fnFinBool_vector (n : ℕ) : (Fin n → Bool) ≃ (Vector Bool n) where
+  toFun := fun f ↦ ⟨(List.ofFn f).toArray, by simp ⟩
+  invFun := fun v i ↦ v.get i
+  left_inv := fun f ↦ by
+    simp
+    sorry
+  right_inv := fun l ↦ by
+    simp
+    sorry
+
+--works!
+/- The type `Fin n → Bool` and the Subtype `{l : List Bool | l.length = n}` are equivalent by
+using `List.ofFn`. -/
+def Equiv_fnFinBool_list (n : ℕ) : (Fin n → Bool) ≃ {l : List Bool | l.length = n} where
+  toFun := fun f ↦ ⟨List.ofFn f, by simp⟩
+  invFun := fun l i ↦ l.val.get (l.prop.symm ▸ i)
+  left_inv := fun f ↦ by
+    simp only [Set.mem_setOf_eq, List.get_eq_getElem, List.getElem_ofFn]
+    ext i
+    congr <;> simp
+  right_inv := fun l ↦ by
+    simp only [Set.coe_setOf, Set.mem_setOf_eq, List.get_eq_getElem]
+    refine Subtype.ext ?_
+    obtain ⟨val, property⟩ := l
+    subst property
+    simp_all only [List.ofFn_getElem]
+
+instance listfin (n : ℕ) : Fintype ↑{l : List Bool| l.length = n} := by
+  exact Fintype.ofEquiv _ (Equiv_fnFinBool_list n)
+
+instance vectorfin (n : ℕ) : Fintype (Vector Bool n) := by
+  sorry
+
+-- works
+lemma vector_card {k n : ℕ} : #{f : Fin n → Bool | #{i | f i} = k } =
+    #{v : Vector Bool n| v.count true = k} := by
+  apply card_equiv (Equiv_fnFinBool_vector n) (fun f ↦ ?_)
+  simp only [mem_filter, mem_univ, true_and, Equiv_fnFinBool_vector, List.toArray_ofFn,
+    Equiv.coe_fn_mk, Vector.count_mk]
+  refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← Array.count_toList, Array.toList_ofFn,
+    List.count_ofFn_eq_card n f true]
+
+
+lemma list_card {k n : ℕ} : #{f : Fin n → Bool | #{i | f i} = k } =
+    #{l : {l : List Bool | l.length = n} | l.val.count true = k} := by
+  apply card_equiv (Equiv_fnFinBool_list n) (fun f ↦ ?_)
+  simp only [mem_filter, mem_univ, true_and, Set.coe_setOf, Set.mem_setOf_eq, Equiv_fnFinBool_list,
+    List.get_eq_getElem, Equiv.coe_fn_mk]
+  refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, List.count_ofFn_eq_card n f true]
+
+lemma Vector.toList_length {n : ℕ} (v : Vector α n) : v.toList.length = v.size := by
+  exact Vector.length_toList
+
+-- works?
+def equiv_vector_list (k n : ℕ) :
+    {v : Vector Bool n | v.count true = k} ≃
+    {l : List Bool | l.length = n ∧ l.count true = k} where
+  toFun := fun v ↦ ⟨v.val.toList, ⟨v.val.length_toList, v.val.count_toList ▸ v.prop⟩⟩
+  invFun := fun l ↦ ⟨⟨l.val.toArray,
+  by simp [l.prop.1]⟩, by simp  [l.prop.2]⟩
+  left_inv := fun f ↦ by sorry
+  right_inv := fun l ↦ by sorry
+
+-- works!
+/-- `{l : {l : List Bool | l.length = n} | l.val.count true = k}` and
+`{l : List Bool | l.length = n ∧ l.count true = k}` are equivalent. -/
+def equiv_list_list (k n : ℕ) :
+    {l : {l : List Bool | l.length = n} | l.val.count true = k} ≃
+    {l : List Bool | l.length = n ∧ l.count true = k} where
+  toFun := fun l ↦ ⟨l.val.val, ⟨l.val.prop, l.prop⟩⟩
+  invFun := fun l ↦ ⟨⟨l.val, l.prop.1⟩, l.prop.2⟩
+  left_inv := fun f ↦ by simp
+  right_inv := fun l ↦ by simp
+
+instance listkn (k n : ℕ) : Fintype {l : List Bool // l.length = n ∧ l.count true = k} := by
+  exact Fintype.ofEquiv _ (Finset.equiv_vector_list k n)
+
+theorem listcard_eq {n k : ℕ} :
+    Fintype.card {l : List Bool // l.length = n ∧ l.count true = k} = n.choose k := by
+  rw [← card_fnFinBool, vector_card]
+  apply Eq.symm
+  rw [← Fintype.card_coe]
+  apply Fintype.card_congr
+  simp only [mem_filter, mem_univ, true_and]
+  apply equiv_vector_list k n
+
 end Finset
+#lint

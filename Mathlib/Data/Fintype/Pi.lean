@@ -214,3 +214,21 @@ theorem forall_finite_image_eval_iff {δ : Type*} [Finite δ] {κ : δ → Type*
   ⟨fun h => (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
 
 end Set
+
+section List
+
+lemma List.count_ofFn_eq_card [DecidableEq α] (n : ℕ) (f : Fin n → α) (a : α)
+    [DecidablePred fun i ↦ f i = a] :
+    List.count a (List.ofFn f) = Finset.card {i | f i = a} := by
+  rw [← Finset.card_idxsOf_toFinset_eq_count]
+  let s := {i | f i = a}.toFinset
+  refine card_bij (fun b hb ↦ ⟨b, ?_⟩) (fun c hc ↦ ?_) (fun d hd1 hd2 hd3 ↦ ?_) (fun e he ↦ ?_)
+  · aesop
+  · simp only [List.mem_toFinset, List.mem_idxsOf_iff_getElem_sub_pos, Nat.zero_le, Nat.sub_zero,
+    List.getElem_ofFn, beq_iff_eq, List.length_ofFn, true_and] at hc
+    simp only [Finset.mem_filter, mem_univ, true_and]
+    exact Exists.elim hc fun a_1 a ↦ a
+  · simp
+  · aesop
+
+end List

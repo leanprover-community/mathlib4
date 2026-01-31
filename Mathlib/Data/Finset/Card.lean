@@ -213,6 +213,10 @@ variable {s t u : Finset α} {f : α → β} {n : ℕ}
 theorem length_toList (s : Finset α) : s.toList.length = #s := by
   rw [toList, ← Multiset.coe_card, Multiset.coe_toList, card_def]
 
+lemma card_idxsOf_toFinset_eq_count {α : Type*} [BEq α] (l : List α) (a : α) :
+    (l.idxsOf a).toFinset.card = l.count a := by
+  rw [List.card_toFinset, List.Nodup.dedup List.nodup_idxsOf, List.length_idxsOf]
+
 theorem card_image_le [DecidableEq β] : #(s.image f) ≤ #s := by
   simpa only [card_map] using (s.1.map f).toFinset_card_le
 
@@ -909,3 +913,17 @@ theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
   S.strongInduction fun S ih => H S fun _ hs => ih _ (erase_ssubset hs)
 
 end Finset
+
+section List
+
+lemma List_idx_ofFn (n : ℕ) (s : Finset (Fin n)) :
+  List.toFinset ((List.ofFn fun (i : Fin n) => decide (i ∈ s)).idxsOf true) =
+    Finset.image (fun i ↦ i.val) s := by
+  ext x
+  simp only [List.mem_toFinset, List.mem_idxsOf_iff_getElem_sub_pos, Nat.zero_le, Nat.sub_zero,
+    List.getElem_ofFn, beq_true, decide_eq_true_eq, List.length_ofFn, true_and, Finset.mem_image]
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun ⟨i, h⟩ ↦ ?_⟩
+  · use ⟨x, h1⟩
+  · grind
+
+end List
