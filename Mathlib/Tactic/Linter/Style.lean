@@ -506,7 +506,7 @@ this violates the naming convention. -/
   test declName := do
     unless (((← getEnv).find? declName).get!).isDefinition && !(← isAutoDecl declName) do return none
     /- We also exclude
-    * names ending in an underscore,
+    * names ending in an underscore, or in a namespace ending with an underscore,
     * names containing guillemets «» (these tend to be term<something> declarations,
       i.e. internal names for notation, not user-facing commands),
     * names with a component starting with `term` (e.g. `Nat.term_!`)
@@ -522,10 +522,17 @@ this violates the naming convention. -/
         (`Mathlib.Tactic).isPrefixOf declName || (`Mathlib.Parser).isPrefixOf declName ||
         last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" then
       return none
+    if declName.components.any (fun c ↦ c.toString.endsWith '_') then return none
+    -- We also exclude simprocs: these should be named like normal lemmas.
+    -- check if their type is `Lean.Meta.Simp.Simproc`.
+    if (((← getEnv).find? declName).get!).type.isConstOf `Lean.Meta.Simp.Simproc then
+      return none
     if declName.toString.contains "_" then
       return m!"The definition `{declName}` contains an underscore. \
         This almost surely violates mathlib's naming convention; use UpperCamelCase instead."
     else return none
+
+-- test: `Mathlib.Mat_.Foo` is fine, as are `Mathlib.foo_`, `bar_` and `Mat_.bar`.
 
 end Style.nameCheck
 
