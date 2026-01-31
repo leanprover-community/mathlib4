@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Measure spaces
@@ -650,17 +651,21 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
 /-- The measure of the intersection of a decreasing sequence of measurable
 sets indexed by a linear order with first countable topology is the limit of the measures. -/
 theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpace ι]
-    [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] {s : ι → Set α}
+    [OrderTopology ι] [FirstCountableTopology ι] {s : ι → Set α}
     {a : ι} (hs : ∀ r > a, NullMeasurableSet (s r) μ) (hm : ∀ i j, a < i → i ≤ j → s i ⊆ s j)
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
-  have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
-    rw [← comap_coe_Ioi_nhdsGT]
-    infer_instance
-  simp_rw [← map_coe_Ioi_atBot, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
-  apply tendsto_measure_iInter_atBot
-  · rwa [Subtype.forall]
-  · exact fun i j h ↦ hm i j i.2 h
-  · simpa only [Subtype.exists, exists_prop]
+  by_cases ha : Order.IsPredPrelimit a
+  · have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
+      rw [← comap_coe_Ioi_nhdsGT a ha]
+      infer_instance
+    simp_rw [← map_coe_Ioi_atBot a ha, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
+    apply tendsto_measure_iInter_atBot
+    · rwa [Subtype.forall]
+    · exact fun i j h ↦ hm i j i.2 h
+    · simpa only [Subtype.exists, exists_prop]
+  · rw [Order.not_isPredPrelimit_iff_exists_covBy] at ha
+    rcases ha with ⟨b, hab⟩
+    simp [hab.nhdsGT]
 
 theorem measure_if {x : β} {t : Set β} {s : Set α} [Decidable (x ∈ t)] :
     μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
