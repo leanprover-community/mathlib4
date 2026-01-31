@@ -104,7 +104,6 @@ theorem mk_re (z : ℂ) (h : 0 < z.im) : (mk z h).re = z.re :=
 theorem mk_im (z : ℂ) (h : 0 < z.im) : (mk z h).im = z.im :=
   rfl
 
-@[simp]
 theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
 
