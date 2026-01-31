@@ -42,17 +42,17 @@ def setSMulAntidiagonal (s : Set G) (t : Set P) (a : P) : Set (G × P) :=
 alias smulAntidiagonal := setSMulAntidiagonal
 
 @[to_additive (attr := simp)]
-theorem mem_smulAntidiagonal : x ∈ smulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a :=
+theorem mem_smulAntidiagonal : x ∈ setSMulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a :=
   Iff.rfl
 
 @[to_additive]
 theorem smulAntidiagonal_mono_left (h : s₁ ⊆ s₂) :
-    smulAntidiagonal s₁ t a ⊆ smulAntidiagonal s₂ t a :=
+    setSMulAntidiagonal s₁ t a ⊆ setSMulAntidiagonal s₂ t a :=
   fun _ hx => ⟨h hx.1, hx.2.1, hx.2.2⟩
 
 @[to_additive]
 theorem smulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
-    smulAntidiagonal s t₁ a ⊆ smulAntidiagonal s t₂ a := fun _ hx => ⟨hx.1, h hx.2.1, hx.2.2⟩
+    setSMulAntidiagonal s t₁ a ⊆ setSMulAntidiagonal s t₂ a := fun _ hx => ⟨hx.1, h hx.2.1, hx.2.2⟩
 
 end SMul
 
@@ -64,7 +64,7 @@ variable {s : Set G} {t : Set P} {a : P}
 
 section CancelSMul
 
-variable [SMul G P] [IsCancelSMul G P] {x y : smulAntidiagonal s t a}
+variable [SMul G P] [IsCancelSMul G P] {x y : setSMulAntidiagonal s t a}
 
 @[to_additive VAddAntidiagonal.fst_eq_fst_iff_snd_eq_snd]
 theorem fst_eq_fst_iff_snd_eq_snd :
@@ -91,7 +91,7 @@ theorem eq_of_snd_eq_snd (h : (x : G × P).snd = (y : G × P).snd) : x = y :=
 end CancelSMul
 
 variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P]
-  {x y : smulAntidiagonal s t a}
+  {x y : setSMulAntidiagonal s t a}
 
 @[to_additive VAddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
 theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1)
@@ -102,11 +102,11 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1
         (mem_smulAntidiagonal.1 x.2).2.2.trans (mem_smulAntidiagonal.1 y.2).2.2.symm
 
 @[to_additive VAddAntidiagonal.finite_of_isPWO]
-theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s t a).Finite := by
+theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (setSMulAntidiagonal s t a).Finite := by
   by_contra! h
-  have h1 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
+  have h1 : (setSMulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
     fun f ↦ hs fun n ↦ ⟨_, (mem_smulAntidiagonal.1 (f n).2).1⟩
-  have h2 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
+  have h2 : (setSMulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
     fun f ↦ ht fun n ↦ ⟨_, (mem_smulAntidiagonal.1 (f n).2).2.1⟩
   obtain ⟨g, hg⟩ := h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).2
   obtain ⟨m, n, mn, h2'⟩ := h2 fun n ↦ h.natEmbedding _ _

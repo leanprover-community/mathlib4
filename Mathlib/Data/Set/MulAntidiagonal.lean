@@ -33,29 +33,30 @@ def setMulAntidiagonal (s t : Set α) (a : α) : Set (α × α) :=
 alias mulAntidiagonal := setMulAntidiagonal
 
 @[to_additive (attr := simp)]
-theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a :=
+theorem mem_mulAntidiagonal : x ∈ setMulAntidiagonal s t a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a :=
   Iff.rfl
 
 @[to_additive]
-theorem mulAntidiagonal_mono_left (h : s₁ ⊆ s₂) : mulAntidiagonal s₁ t a ⊆ mulAntidiagonal s₂ t a :=
+theorem mulAntidiagonal_mono_left (h : s₁ ⊆ s₂) :
+    setMulAntidiagonal s₁ t a ⊆ setMulAntidiagonal s₂ t a :=
   fun _ hx => ⟨h hx.1, hx.2.1, hx.2.2⟩
 
 @[to_additive]
 theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
-    mulAntidiagonal s t₁ a ⊆ mulAntidiagonal s t₂ a := fun _ hx => ⟨hx.1, h hx.2.1, hx.2.2⟩
+    setMulAntidiagonal s t₁ a ⊆ setMulAntidiagonal s t₂ a := fun _ hx => ⟨hx.1, h hx.2.1, hx.2.2⟩
 
 end Mul
 
 -- The left-hand side is not in simp normal form, see variant below.
 @[to_additive]
 theorem swap_mem_mulAntidiagonal [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
-    x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by
+    x.swap ∈ Set.setMulAntidiagonal s t a ↔ x ∈ Set.setMulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 
 @[to_additive (attr := simp)]
 theorem swap_mem_mulAntidiagonal_aux [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
-      ↔ x ∈ Set.mulAntidiagonal t s a := by
+      ↔ x ∈ Set.setMulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 
 
@@ -63,7 +64,7 @@ namespace MulAntidiagonal
 
 section CancelCommMonoid
 
-variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
+variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : setMulAntidiagonal s t a}
 
 -- We have to translate the names manually because the namespace name `MulAntidiagonal`
 -- does not match the declaration `mulAntidiagonal` that has the `to_additive` attribute.
@@ -93,7 +94,7 @@ end CancelCommMonoid
 section OrderedCancelCommMonoid
 
 variable [CommMonoid α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [MulRightStrictMono α]
-  (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
+  (s t : Set α) (a : α) {x y : setMulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
 theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × α).1)
@@ -106,11 +107,11 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × �
 variable {s t}
 
 @[to_additive Set.AddAntidiagonal.finite_of_isPWO]
-theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
+theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (setMulAntidiagonal s t a).Finite := by
   by_contra! h
-  have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
+  have h1 : (setMulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
     fun f ↦ hs fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).1⟩
-  have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
+  have h2 : (setMulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
     fun f ↦ ht fun n ↦ ⟨_, (mem_mulAntidiagonal.1 (f n).2).2.1⟩
   obtain ⟨g, hg⟩ :=
     h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).2
@@ -124,7 +125,7 @@ variable [CancelCommMonoid α] [LinearOrder α] [MulLeftMono α] [MulRightStrict
 
 @[to_additive Set.AddAntidiagonal.finite_of_isWF]
 theorem finite_of_isWF {s t : Set α} (hs : s.IsWF) (ht : t.IsWF)
-    (a) : (mulAntidiagonal s t a).Finite :=
+    (a) : (setMulAntidiagonal s t a).Finite :=
   finite_of_isPWO hs.isPWO ht.isPWO a
 
 end MulAntidiagonal
