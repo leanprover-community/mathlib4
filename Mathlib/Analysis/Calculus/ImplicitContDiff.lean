@@ -126,6 +126,11 @@ lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
     h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, f a)).2 :=
   rfl
 
+/-- At the base point `a.1`, the implicit function evaluates to `a.2`. -/
+theorem implicitFunction_apply_self (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunction a.1 = a.2 :=
+  congr_arg Prod.snd <| h.implicitFunctionData.implicitFunction_apply_image.self_of_nhds
+
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by

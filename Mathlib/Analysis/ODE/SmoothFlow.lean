@@ -730,6 +730,50 @@ lemma eq_of_T_eq_zero {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
   simp only [add_zero, Function.const_apply, sub_eq_zero] at heq
   exact heq.symm
 
+/-- If `T f u t₀ (x₀, α) = 0`, then `α` satisfies the integral equation for the ODE `α' = f ∘ α`
+with initial condition `α t₀ = x₀`. This is equivalent to saying `α` is an integral curve of `f`. -/
+lemma integralEq_of_T_eq_zero {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0) (t : Icc tmin tmax) :
+    α t = x₀ + ∫ τ in (t₀ : ℝ)..t, f (compProj t₀ α τ) := by
+  have heq := congrFun (congrArg DFunLike.coe hT) t
+  simp only [T, ContinuousMap.coe_sub, ContinuousMap.coe_add, ContinuousMap.coe_const,
+    Pi.sub_apply, Pi.add_apply, ContinuousMap.zero_apply] at heq
+  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
+  rw [ContinuousMultilinearMap.curry0_apply, integralCMLM, dif_pos hg,
+    integralCMLMAux_apply, integralCM_if_pos hα] at heq
+  simp only [integralCMAux, ContinuousMap.coe_mk, integralFun, Matrix.zero_empty,
+    uncurry0_apply, Function.const_apply] at heq
+  -- heq : x₀ - α t + ∫ ... = 0, goal : α t = x₀ + ∫ ...
+  rw [sub_add_eq_add_sub, sub_eq_zero] at heq
+  exact heq.symm
+
+/-- If `T f u t₀ (x₀, α) = 0`, then `compProj t₀ α` (the extension of `α` to `ℝ`) has derivative
+`f (α t)` within `Icc tmin tmax` at each point `t`. This shows that `α` is an integral curve of
+the vector field `f`. -/
+lemma hasDerivWithinAt_of_T_eq_zero {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0)
+    {t : ℝ} (ht : t ∈ Icc tmin tmax) :
+    HasDerivWithinAt (compProj t₀ α) (f (α ⟨t, ht⟩)) (Icc tmin tmax) t := by
+  have hcont : Continuous (fun τ ↦ f (compProj t₀ α τ)) :=
+    hfu.continuous_comp_compProj t₀ hα
+  have hintegralEq := integralEq_of_T_eq_zero hfu hα hT
+  -- The derivative of `compProj t₀ α` equals the derivative of the integral
+  have hderiv : HasDerivWithinAt (fun s ↦ x₀ + ∫ τ in (t₀ : ℝ)..s, f (compProj t₀ α τ))
+      (f (compProj t₀ α t)) (Icc tmin tmax) t := by
+    apply HasDerivWithinAt.const_add
+    have : Fact (t ∈ Icc tmin tmax) := ⟨ht⟩
+    exact intervalIntegral.integral_hasDerivWithinAt_right
+      (hcont.intervalIntegrable _ _)
+      (hcont.aestronglyMeasurable.stronglyMeasurableAtFilter)
+      (hcont.continuousAt.continuousWithinAt)
+  have heq : EqOn (compProj t₀ α) (fun s ↦ x₀ + ∫ τ in (t₀ : ℝ)..s, f (compProj t₀ α τ))
+      (Icc tmin tmax) := fun s hs ↦ by rw [compProj_of_mem hs, hintegralEq]
+  rw [compProj_of_mem ht] at hderiv
+  exact hderiv.congr heq (heq ht)
+
 /-- The derivative of `fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0` at `α`,
 which appears as a component of the derivative of `T`. This is the composition of `curry0` with
 the derivative of `integralCMLM`. -/
@@ -1173,22 +1217,53 @@ lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDi
     exact (one_pos.trans_le hn).ne'
 
 /-- When f is C^1 at x₀, the implicit function theorem provides a local flow: there exist
-ε > 0, a > 0, and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that
-`T f (ball x₀ a) t₀ (x, lf x) = 0` in a neighborhood of x₀, and `lf` is C^1 at x₀.
+ε > 0, a > 0, and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that for x near x₀:
+- `lf x` is an integral curve of `f` on `Icc (t₀ - ε) (t₀ + ε)`
+- `lf x` passes through `x` at time `t₀`
+Furthermore, `lf` is C^1 at x₀.
 
 This is the key result connecting the ODE theory to the implicit function theorem. -/
 lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (a : ℝ) (_ : 0 < a)
-      (lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)),
-        (∀ᶠ x in 𝓝 x₀, T f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ (x, lf x) = 0) ∧
+    ∃ (ε : ℝ) (hε : 0 < ε) (lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)),
+        (∀ᶠ x in 𝓝 x₀,
+          (∀ t (ht : t ∈ Icc (t₀ - ε) (t₀ + ε)),
+            HasDerivWithinAt (compProj ⟨t₀, by simp [le_of_lt hε]⟩ (lf x))
+              (f ((lf x) ⟨t, ht⟩)) (Icc (t₀ - ε) (t₀ + ε)) t) ∧
+          (lf x) ⟨t₀, by simp [le_of_lt hε]⟩ = x) ∧
         ContDiffAt ℝ 1 lf x₀ := by
-  obtain ⟨ε, hεpos, a, hapos, α₀, hf_diff, hα₀_range, hT_zero, hnorm⟩ :=
+  obtain ⟨ε, hεpos, a, _, α₀, hf_diff, hα₀_range, hT_zero, hnorm⟩ :=
     exists_contMap_T_eq_zero_opNorm_lt_one hf t₀
-  set h := isContDiffImplicitAt_T hf_diff isOpen_ball ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀
-    hα₀_range hnorm le_rfl
-  refine ⟨ε, hεpos, a, hapos, h.implicitFunction, ?_, h.contDiffAt_implicitFunction⟩
-  filter_upwards [h.apply_implicitFunction] with x hx
-  rw [hx, hT_zero]
+  set t₀' : Icc (t₀ - ε) (t₀ + ε) := ⟨t₀, by simp [le_of_lt hεpos]⟩
+  set h := isContDiffImplicitAt_T hf_diff isOpen_ball t₀' x₀ hα₀_range hnorm le_rfl
+  refine ⟨ε, hεpos, h.implicitFunction, ?_, h.contDiffAt_implicitFunction⟩
+  -- α₀ = h.implicitFunction x₀ by the implicit function theorem
+  have hα₀_eq : h.implicitFunction x₀ = α₀ := h.implicitFunction_apply_self
+  -- Since lf is continuous and range α₀ ⊆ ball x₀ a (open), range (lf x) ⊆ ball x₀ a for x near x₀
+  have hcont_lf : ContinuousAt h.implicitFunction x₀ :=
+    h.contDiffAt_implicitFunction.continuousAt
+  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ ball x₀ a := by
+    -- Use continuity: for x near x₀, ‖lf x - lf x₀‖ is small, so range (lf x) ⊆ ball x₀ a
+    -- Since range α₀ ⊆ ball x₀ a and ball is open, there's room for perturbation
+    have hcompact : IsCompact (range α₀) := isCompact_range α₀.continuous
+    -- Find δ > 0 such that thickening δ (range α₀) ⊆ ball x₀ a
+    obtain ⟨δ, hδpos, hthickening⟩ := hcompact.exists_thickening_subset_open isOpen_ball hα₀_range
+    -- For x near x₀, ‖lf x - α₀‖ < δ (in sup norm)
+    have hcont_near : ∀ᶠ x in 𝓝 x₀, dist (h.implicitFunction x) α₀ < δ := by
+      have := hcont_lf.eventually (Metric.ball_mem_nhds (h.implicitFunction x₀) hδpos)
+      simp only [hα₀_eq] at this
+      exact this
+    filter_upwards [hcont_near] with x hx
+    intro y hy
+    obtain ⟨t, rfl⟩ := hy
+    apply hthickening
+    rw [Metric.mem_thickening_iff]
+    exact ⟨α₀ t, mem_range_self t, (ContinuousMap.dist_apply_le_dist t).trans_lt hx⟩
+  filter_upwards [h.apply_implicitFunction, hrange_near] with x hT_eq hrange
+  have hfu : ContinuousOn f (ball x₀ a) := hf_diff.continuousOn
+  constructor
+  · intro t ht
+    exact hasDerivWithinAt_of_T_eq_zero hfu hrange (by rw [hT_eq, hT_zero]) ht
+  · exact eq_of_T_eq_zero hfu hrange (by rw [hT_eq, hT_zero])
 
 end
 
