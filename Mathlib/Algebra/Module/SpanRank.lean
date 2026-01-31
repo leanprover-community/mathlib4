@@ -292,12 +292,12 @@ lemma spanRank_range_le {σ : R →+* S} [RingHomSurjective σ] (f : M →ₛₗ
 @[simp]
 lemma spanRank_top (p : Submodule R M) :
     (⊤ : Submodule R p).spanRank = p.spanRank := by
-  simpa using (spanRank_map_eq _ p.subtype_injective ⊤).symm
+  simpa using (spanRank_map_eq_of_injective _ p.subtype_injective ⊤).symm
 
 lemma spanRank_eq_of_equiv
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     (e : M ≃ₛₗ[σ] N) : (⊤ : Submodule R M).spanRank = (⊤ : Submodule S N).spanRank := by
-  rw [← spanRank_map_eq e.toLinearMap e.injective ⊤, map_top, LinearEquiv.range]
+  rw [← spanRank_map_eq_of_injective e.toLinearMap e.injective ⊤, map_top, LinearEquiv.range]
 
 end Semilinear
 
