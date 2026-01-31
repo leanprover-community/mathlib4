@@ -558,7 +558,7 @@ lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
 
-lemma drop_length_nil_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     (p.drop n).Nil := by
   rw [nil_iff_length_eq, drop_length, Nat.sub_eq_zero_of_le h]
 
@@ -646,15 +646,15 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
   subst_vars
   rfl
 
-lemma eq_nil_copy_of_nil {p : G.Walk u v} (h : p.Nil) :
-    p = nil.copy rfl h.eq := by
+lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) :
+    p = Walk.nil.copy rfl h.eq := by
   have := h.eq
   subst this
   simp [nil_iff_eq_nil.mp h]
 
-lemma drop_length_of_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
-  eq_nil_copy_of_nil <| drop_length_nil_of_le h
+  (nil_drop_of_length_le h).eq_copy_nil
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
