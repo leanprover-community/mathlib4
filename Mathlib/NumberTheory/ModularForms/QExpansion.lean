@@ -243,7 +243,7 @@ lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k] [Γ.HasDetP
   congr 1 with u
   let τ : ℍ := .mk (u + t * I) <| by simpa using ht
   have : circleMap 0 R (u * (2 * π / h)) = 𝕢 h τ := by
-    simp only [circleMap, ofReal_exp, ← exp_add, zero_add, τ, UpperHalfPlane.coe_mk, R]
+    simp only [circleMap, ofReal_exp, ← exp_add, zero_add, τ, R]
     congr 1
     push_cast
     have := I_sq
