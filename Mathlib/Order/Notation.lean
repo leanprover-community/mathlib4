@@ -196,6 +196,12 @@ recommended_spelling "hnot" for "￢" in [HNot.hnot, «term￢_»]
 recommended_spelling "top" for "⊤" in [Top.top, «term⊤»]
 recommended_spelling "bot" for "⊥" in [Bot.bot, «term⊥»]
 
--- Don't recommend in `Max.max` and `Min.min`!
 recommended_spelling "sup" for "⊔" in [«term_⊔_»]
 recommended_spelling "inf" for "⊓" in [«term_⊓_»]
+
+recommended_spelling "max" for "max" in [Max.max]
+recommended_spelling "min" for "min" in [Min.min]
+/-- `⊔` is the preferred notation for `max` when the type is not linearly ordered. -/
+recommended_spelling "sup" for "⊔" in [Max.max]
+/-- `⊓` is the preferred notation for `min` when the type is not linearly ordered. -/
+recommended_spelling "inf" for "⊓" in [Min.min]
