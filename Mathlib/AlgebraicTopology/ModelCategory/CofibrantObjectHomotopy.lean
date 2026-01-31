@@ -210,7 +210,7 @@ noncomputable def HoCat.localizerMorphismResolution :
       weakEquivalence_homMk_iff] using h
 
 /-- The map `HoCat.pResolutionObj`, when applied to already cofibrant objects, gives
-a natural transformation `ι ⋙ HoCat.resolution ⟶ toπ`. -/
+a natural transformation `ι ⋙ HoCat.resolution ⟶ toHoCat`. -/
 @[simps]
 noncomputable def HoCat.ιCompResolutionNatTrans :
     ι ⋙ HoCat.resolution (C := C) ⟶ toHoCat where
@@ -249,7 +249,7 @@ def HoCat.toLocalization : HoCat C ⥤ D :=
 if `L : C ⥤ D` is a localization functor, then its restriction on the
 full subcategory of cofibrant objects factors through the homotopy category
 of cofibrant objects. -/
-def HoCat.toπCompToLocalizationIso : toHoCat ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
+def HoCat.toHoCatCompToLocalizationIso : toHoCat ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
 
 /-- The natural isomorphism `HoCat.resolution ⋙ HoCat.toLocalization L ⟶ L` when
 `L : C ⥤ D` is a localization functor. -/
@@ -287,7 +287,7 @@ instance : (localizerMorphism C).IsLocalizedEquivalence := by
   let eF : ι ⋙ L ≅ Lcof ⋙ F := CatCommSq.iso (localizerMorphism C).functor Lcof L F
   let eF' : HoCat.toLocalization L ≅ Lcofπ ⋙ F :=
     CategoryTheory.Quotient.natIsoLift _
-      (HoCat.toπCompToLocalizationIso L ≪≫ eF ≪≫ associator _ _ _)
+      (HoCat.toHoCatCompToLocalizationIso L ≪≫ eF ≪≫ associator _ _ _)
   let G : H ⥤ Hcof := (HoCat.localizerMorphismResolution C).localizedFunctor L Lcofπ
   let eG : HoCat.resolution ⋙ Lcofπ ≅ L ⋙ G :=
     CatCommSq.iso (HoCat.localizerMorphismResolution C).functor L Lcofπ G
