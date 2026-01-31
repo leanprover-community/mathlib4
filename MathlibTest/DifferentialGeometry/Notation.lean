@@ -1196,8 +1196,10 @@ error: Could not find a model with corners for `↥s`.
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
 #guard_msgs in
+set_option trace.Elab.DiffGeo.MDiff true in
 #check MDiff f
 
+#exit
 variable {f : s → u} in
 /--
 error: Could not find a model with corners for `↥s`.
