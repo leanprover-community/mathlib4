@@ -757,6 +757,22 @@ lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
   rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
   exact hg.comp hf
 
+/-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` is injective. -/
+theorem mfderiv_injective {x : M} (h : IsImmersionAt I J n f x) :
+    Injective (mfderiv I J f x) :=
+  h.msplitsAt.mfderiv_injective
+
+-- TODO: this only holds for real or complex manifolds!
+/-
+/- If `M` is finite-dimensional, and `mfderiv I J f x` is injective, then `f` is immersed at `x`.
+Some sources call this condition `f is infinitesimally injective at x`. -/
+lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
+    (hf' : Injective (mfderiv I J f x)) : IsImmersionAt I J n f x := by
+  rw [isImmersionAtOfComplement_iff_msplitsAt]
+  convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace hf'
+  show FiniteDimensional 𝕜 E; assumption
+-/
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -792,7 +808,7 @@ namespace IsImmersionOfComplement
 variable {f g : M → N}
 
 /-- If `f` is an immersion, it is an immersion at each point. -/
-lemma isImmersionAt (h : IsImmersionOfComplement F I J n f) (x : M) :
+lemma isImmersionAtOfComplement (h : IsImmersionOfComplement F I J n f) (x : M) :
     IsImmersionAtOfComplement F I J n f x := h x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
@@ -879,6 +895,23 @@ lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
   --rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
   sorry -- exact hg.comp hf -/
 
+/-- If `f` is a `C^n` immersion, each differential `mfderiv I J f x` is injective. -/
+theorem mfderiv_injective [IsManifold I n M] [IsManifold J n N]
+    (h : IsImmersionOfComplement F I J n f) (x : M) : Injective (mfderiv I J f x) :=
+  h.isImmersionAtOfComplement x |>.mfderiv_injective
+
+-- TODO: this only holds for real or complex manifolds!
+/-
+/- If `M` is finite-dimensional, and each `mfderiv I J f x` is injective, then `f` is an immersion.
+Some sources call this condition `f is infinitesimally injective`. -/
+lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E]
+    (hf' : ∀ x, Injective (mfderiv I J f x)) : IsImmersionOfComplement F I J n f := by
+  -- TODO: does this hold uniformly w.r.t. a single complement? think!
+  rw [isImmersionAtOfComplement_iff_msplitsAt]
+  convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace hf'
+  show FiniteDimensional 𝕜 E; assumption
+-/
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -964,6 +997,19 @@ lemma comp [IsManifold I' 1 M'] [IsManifold I n M] [IsManifold J n N] [IsManifol
     IsImmersion I I' n (g ∘ f) := by
   rw [isImmersion_iff_msplits] at hf hg ⊢
   exact hg.comp hf
+
+/-- If `f` is a `C^n` immersion, each differential `mfderiv I J f x` is injective. -/
+theorem mfderiv_injective [IsManifold I n M] [IsManifold J n N]
+    (h : IsImmersion I J n f) (x : M) : Injective (mfderiv I J f x) :=
+  h.isImmersionOfComplement_complement.mfderiv_injective x
+
+-- TODO: this only holds for real or complex manifolds!
+/-
+/- If `M` is finite-dimensional, and each `mfderiv I J f x` is injective, then `f` is an immersion.
+Some sources call this condition `f is infinitesimally injective`. -/
+lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E]
+    (hf' : ∀ x, Injective (mfderiv I J f x)) : IsImmersion I J n f := by sorry
+-/
 
 end IsImmersion
 

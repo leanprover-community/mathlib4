@@ -24,6 +24,8 @@ This will be useful to define embedded submanifolds.
   is a smooth embedding
 * `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`
   in the sense of `ContMDiff`.
+* `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
+  is a smooth embedding
 
 ## Implementation notes
 
@@ -35,8 +37,6 @@ This will be useful to define embedded submanifolds.
   https://math.stackexchange.com/a/3769328 for counterexamples.
 
 ## TODO
-* `IsSmoothEmbedding.comp`: the composition of smooth embeddings (between Banach manifolds)
-  is a smooth embedding
 * `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
   a local diffeomorphism (and in particular, a diffeomorphism) is a smooth embedding
 
@@ -97,11 +97,19 @@ lemma contMDiff [IsManifold I n M] [IsManifold J n N] (hf : IsSmoothEmbedding I 
     ContMDiff I J n f :=
   hf.isImmersion.contMDiff
 
--- use IsImmersion.comp and IsEmbedding.comp
 /-- The composition of two smooth embeddings between Banach manifolds is a smooth embedding. -/
-proof_wanted comp -- [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
-    {g : N → N'} (hg : IsSmoothEmbedding J J' n g) (hf : IsSmoothEmbedding I J n f) :
-    IsSmoothEmbedding I J' n (g ∘ f)
+lemma comp [CompleteSpace E₁] [CompleteSpace E₃] [CompleteSpace E₄]
+    [IsManifold I n M] [IsManifold I 1 M] [IsManifold J n N] [IsManifold J 1 N]
+    [IsManifold J' n N'] [IsManifold J' 1 N'] {g : N → N'}
+    (hg : IsSmoothEmbedding J J' n g) (hf : IsSmoothEmbedding I J n f) :
+    IsSmoothEmbedding I J' n (g ∘ f) :=
+  ⟨hg.isImmersion.comp hf.isImmersion, hg.isEmbedding.comp hf.isEmbedding⟩
+
+/-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` is injective. -/
+theorem mfderiv_injective [CompleteSpace E₁] [CompleteSpace E₃]
+    [IsManifold I n M] [IsManifold I 1 M] [IsManifold J n N] [IsManifold J 1 N]
+    (h : IsSmoothEmbedding I J n f) (x : M) : Function.Injective (mfderiv I J f x) :=
+  h.isImmersion.mfderiv_injective x
 
 end IsSmoothEmbedding
 
