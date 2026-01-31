@@ -622,11 +622,10 @@ corresponds to a function `f : E → E` via `uncurry0`/`curry0`. -/
 lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ∞) (hf : ContDiffOn ℝ k f u) :
     ContDiffOn ℝ k (fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0)
-      {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
-  apply continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E)) (C(Icc tmin tmax, E))
-    |>.contDiff.comp_contDiffOn
-  apply contDiffOn_integralCMLM hu
-  exact (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
+      {α : C(Icc tmin tmax, E) | range α ⊆ u} :=
+  continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E) C(Icc tmin tmax, E)
+    |>.contDiff.comp_contDiffOn <| contDiffOn_integralCMLM hu _ _
+      <| (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
 
 /-- The implicit equation that defines the flow as its implicit function (when `T = 0`) -/
 def T (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (p : E × C(Icc tmin tmax, E)) :
@@ -653,37 +652,18 @@ lemma contDiffAt_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (
 implicit function theorem formulation. -/
 lemma T_eq_zero_of_isFixedPt {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a L K : ℝ≥0}
-    (hPL : IsPicardLindelof (fun _ ↦ f) t₀ x₀ a 0 L K)
-    (α : ODE.FunSpace t₀ x₀ 0 L)
-    (hα : IsFixedPt (ODE.FunSpace.next hPL (mem_closedBall_self le_rfl)) α)
-    (hrange : range α.toContinuousMap ⊆ u) :
+    (hPL : IsPicardLindelof (fun _ ↦ f) t₀ x₀ a 0 L K) {α : ODE.FunSpace t₀ x₀ 0 L}
+    (hα : range α ⊆ u) (h : IsFixedPt (ODE.FunSpace.next hPL (mem_closedBall_self le_rfl)) α) :
     T f u t₀ (x₀, α.toContinuousMap) = 0 := by
   ext t
-  simp only [T, ContinuousMap.coe_sub, ContinuousMap.coe_add, ContinuousMap.coe_const, Pi.sub_apply,
-    Pi.add_apply, ContinuousMap.zero_apply]
-  -- α t₀ = x₀ since r = 0
-  have hα₀ : α t₀ = x₀ := dist_le_zero.mp α.mem_closedBall₀
-  -- The fixed point equation gives α t = x₀ + ∫_{t₀}^t f(α(s)) ds
-  have hfixed : (α.toContinuousMap t : E) = x₀ + ∫ τ in (t₀ : ℝ)..t, f (α.compProj τ) := by
-    have heq := congrArg (· t) hα
-    simp only [ODE.FunSpace.next_apply, ODE.picard_apply] at heq
-    rw [ODE.FunSpace.toContinuousMap_apply_eq_apply]
-    exact heq.symm
-  -- compProj t₀ α.toContinuousMap agrees with α.compProj
-  have hcompProj : ∀ τ, compProj t₀ α.toContinuousMap τ = α.compProj τ := fun τ ↦ by
-    simp only [compProj, ODE.FunSpace.compProj_apply, ODE.FunSpace.toContinuousMap_apply_eq_apply]
-  -- The integral term in T
   have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
-  -- Unfold the integral term to match hfixed
-  have hintegral : (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α.toContinuousMap).curry0 t =
-      ∫ τ in (t₀ : ℝ)..t, f (α.compProj τ) := by
-    rw [ContinuousMultilinearMap.curry0_apply, integralCMLM, dif_pos hg,
-      integralCMLMAux_apply, integralCM_if_pos hrange]
-    simp only [integralCMAux, ContinuousMap.coe_mk, integralFun, Matrix.zero_empty,
-      uncurry0_apply, hcompProj]
-  simp only [hfixed, hintegral, Function.const_apply]
-  abel
+  rw [T, curry0_apply, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
+    ODE.FunSpace.toContinuousMap_apply_eq_apply, ContinuousMap.zero_apply,
+    α.eq_picard_of_isFixedPt hPL (mem_closedBall_self le_rfl) h, ODE.picard_apply,
+    integralCMLM_apply_if_pos hg, integralCM_apply_if_pos hα, integralFun, sub_add_cancel_left,
+    neg_add_eq_zero]
+  congr
 
 /-- If `T f u t₀ (x₀, α) = 0`, then `α t₀ = x₀`. This follows from the fact that the integral
 from `t₀` to `t₀` vanishes. -/
@@ -752,8 +732,8 @@ which appears as a component of the derivative of `T`. This is the composition o
 the derivative of `integralCMLM`. -/
 def fderivIntegralCurry0 (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (α : C(Icc tmin tmax, E)) : C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) :=
-  (continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
-      (C(Icc tmin tmax, E))).toContinuousLinearEquiv.toContinuousLinearMap.comp
+  (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
+      C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap.comp
     ((integralCMLM (fun y ↦ (fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) y).uncurryLeft)
       u t₀ α).curryLeft)
 
@@ -786,12 +766,12 @@ lemma hasFDerivAt_T {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u) (hu : 
       (x, α) := by
     have hI := hasFDerivAt_integralCMLM hg hu t₀ hα
     have hcurry : HasFDerivAt (fun m : C(Icc tmin tmax, E) [×0]→L[ℝ] C(Icc tmin tmax, E) ↦ m.curry0)
-        (continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
-          (C(Icc tmin tmax, E))).toContinuousLinearEquiv.toContinuousLinearMap
+        (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
+          C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap
         (integralCMLM (fun y ↦ uncurry0 ℝ E (f y)) u t₀ α) := by
       have := ContinuousLinearMap.hasFDerivAt
-        (continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
-          (C(Icc tmin tmax, E))).toContinuousLinearEquiv.toContinuousLinearMap
+        (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
+          C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap
         (x := integralCMLM (fun y ↦ uncurry0 ℝ E (f y)) u t₀ α)
       convert this using 2
     have hsnd : HasFDerivAt (fun p : E × C(Icc tmin tmax, E) ↦ p.2)
@@ -845,17 +825,17 @@ lemma opNorm_fderivIntegralCurry0_le {f : E → E} {u : Set E} (hf : ContDiffOn 
   have hg : ContinuousOn fderivUncurry u := hg'.continuousOn_fderiv_uncurryLeft hu
   -- Show the goal equals what we want to prove
   have hgoal : fderivIntegralCurry0 f u t₀ α =
-      (continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
-        (C(Icc tmin tmax, E))).toContinuousLinearEquiv.toContinuousLinearMap.comp
+      (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
+        C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap.comp
         ((integralCMLM fderivUncurry u t₀ α).curryLeft) := rfl
   rw [hgoal]
   -- The composition with an isometry preserves the norm
-  calc ‖(continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
-        (C(Icc tmin tmax, E))).toContinuousLinearEquiv.toContinuousLinearMap.comp
+  calc ‖(continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
+        C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap.comp
         ((integralCMLM fderivUncurry u t₀ α).curryLeft)‖
     _ = ‖(integralCMLM fderivUncurry u t₀ α).curryLeft‖ :=
-        (continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
-          (C(Icc tmin tmax, E))).toLinearIsometry.norm_toContinuousLinearMap_comp
+        (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
+          C(Icc tmin tmax, E)).toLinearIsometry.norm_toContinuousLinearMap_comp
     _ ≤ |tmax - tmin| * C := ?_
   -- Bound the norm of curryLeft of integralCMLM
   refine ContinuousLinearMap.opNorm_le_bound (M := |tmax - tmin| * C) (hMp := by positivity)
@@ -1155,7 +1135,7 @@ lemma bijective_fderiv_T_comp_inr {f : E → E} {u : Set E}
           (ContinuousLinearMap.inr ℝ E _)) := by
   rw [fderiv_T_comp_inr t₀]
   -- Show -id + A = -(id - A), and bijectivity of negation preserves bijectivity
-  have heq : -ContinuousLinearMap.id ℝ (C(Icc tmin tmax, E)) + fderivIntegralCurry0 f u t₀ α =
+  have heq : -ContinuousLinearMap.id ℝ C(Icc tmin tmax, E) + fderivIntegralCurry0 f u t₀ α =
       -(ContinuousLinearMap.id ℝ _ - fderivIntegralCurry0 f u t₀ α) := by
     ext; simp [sub_eq_add_neg, add_comm]
   rw [heq]
@@ -1167,7 +1147,7 @@ lemma bijective_fderiv_T_comp_inr {f : E → E} {u : Set E}
   -- Negation is a bijection, so (-f) is bijective iff f is bijective
   -- ⇑(-g) = Neg.neg ∘ ⇑g
   change Function.Bijective
-    (Neg.neg ∘ ⇑(ContinuousLinearMap.id ℝ (C(Icc tmin tmax, E)) - fderivIntegralCurry0 f u t₀ α))
+    (Neg.neg ∘ ⇑(ContinuousLinearMap.id ℝ C(Icc tmin tmax, E) - fderivIntegralCurry0 f u t₀ α))
   exact (ContinuousLinearEquiv.neg ℝ (M := C(Icc tmin tmax, E))).bijective.comp hbij
 
 /-- The implicit function theorem applies to `T f u t₀` at a point `a = (x₀, α₀)` satisfying:
