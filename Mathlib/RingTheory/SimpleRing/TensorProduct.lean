@@ -39,7 +39,6 @@ variable (K A B : Type*) [Field K] [Ring A] [Algebra K A] [Ring B] [Algebra K B]
 open TensorProduct Module
 
 open TwoSidedIdeal in
-@[stacks 074B]
 lemma TwoSidedIdeal.eq_bot_of_map_comap_eq_bot [hA : IsSimpleRing A]
     [isCentral_A : Algebra.IsCentral K A] (I : TwoSidedIdeal (A ⊗[K] B))
     (hAB : letI f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
@@ -132,6 +131,10 @@ lemma TwoSidedIdeal.eq_bot_of_map_comap_eq_bot [hA : IsSimpleRing A]
   simp [main]
 
 open TwoSidedIdeal in
+/-- this is a slightly different version of `stack074B` where `K` on stack (which is a central
+  division algebra) is generalized to `A`, a central simple algebra, and `W` (a two-sided
+  sub-vector space) is specialized to `I`, a two-sided ideal of `A ⊗ B`. -/
+@[stacks 074B]
 lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A]
     (I : TwoSidedIdeal (A ⊗[K] B)) :
     letI f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
