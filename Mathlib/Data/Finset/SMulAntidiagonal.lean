@@ -80,7 +80,7 @@ alias smulAntidiagonal := setSMulAntidiagonal
 theorem mem_smulAntidiagonal :
     x ∈ setSMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
   simp only [setSMulAntidiagonal, Set.Finite.mem_toFinset]
-  exact Set.mem_sep_iff
+  rfl
 
 @[to_additive]
 theorem smulAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :
