@@ -29,7 +29,7 @@ lemma ofAdd_image_setAdd (s t : Set M) :
 
 @[simp]
 lemma ofAdd_image_nsmul (n : ℕ) (s : Set M) :
-    Multiplicative.ofAdd '' (n • s) = (Multiplicative.ofAdd '' s) ^ n := by
+    ofAdd '' (n • s) = (ofAdd '' s) ^ n := by
   induction n with
   | zero => simp; rfl
   | succ n IH => simp [succ_nsmul, pow_succ, IH]
