@@ -168,13 +168,9 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
       exact ht'
     -- `s'` and `t'` have no reason to be disjoint, but their intersection has small measure
-    have I : s' ∩ t' ⊆ s ∩ t ∪ (s' ∆ s) ∪ (t' ∆ t) := by
-      intro x ⟨hxs', hxt'⟩
-      by_cases hxs : x ∈ s <;> by_cases hxt : x ∈ t <;>
-        simp [hxs, hxt, hxs', hxt', symmDiff]
     have hμ' : μ (s' ∩ t') < 2 * δ := calc
       μ (s' ∩ t')
-      _ ≤ μ (s ∩ t ∪ (s' ∆ s) ∪ (t' ∆ t)) := measure_mono I
+      _ ≤ μ (s ∩ t ∪ (s' ∆ s) ∪ (t' ∆ t)) := measure_mono (by grind)
       _ = μ ((s' ∆ s) ∪ (t' ∆ t)) := by simp [Set.disjoint_iff_inter_eq_empty.mp h]
       _ ≤ μ (s' ∆ s) + μ (t' ∆ t) := measure_union_le _ _
       _ < δ + δ := by gcongr
