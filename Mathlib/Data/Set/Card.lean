@@ -743,8 +743,10 @@ variable {f : α → β}
 theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s.ncard := by
   to_encard_tac; rw [hs.cast_ncard_eq, (hs.image _).cast_ncard_eq]; apply encard_image_le
 
-theorem ncard_image_of_injOn (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
+theorem InjOn.ncard_image (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
   congr_arg ENat.toNat <| H.encard_image
+
+@[deprecated (since := "2026-01-30")] alias ncard_image_of_injOn := InjOn.ncard_image
 
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
     Set.InjOn f s := by
@@ -753,10 +755,10 @@ theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite :=
 
 theorem ncard_image_iff (hs : s.Finite := by toFinite_tac) :
     (f '' s).ncard = s.ncard ↔ Set.InjOn f s :=
-  ⟨fun h ↦ injOn_of_ncard_image_eq h hs, ncard_image_of_injOn⟩
+  ⟨fun h ↦ injOn_of_ncard_image_eq h hs, InjOn.ncard_image⟩
 
 theorem ncard_image_of_injective (s : Set α) (H : f.Injective) : (f '' s).ncard = s.ncard :=
-  ncard_image_of_injOn fun _ _ _ _ h ↦ H h
+  InjOn.ncard_image fun _ _ _ _ h ↦ H h
 
 theorem ncard_preimage_of_injective_subset_range {s : Set β} (H : f.Injective)
     (hs : s ⊆ Set.range f) :
@@ -821,7 +823,7 @@ theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
   let f' : Fin n → α := fun i ↦ f i.val i.is_lt
   suffices himage : s = f' '' Set.univ by
     rw [← Fintype.card_fin n, ← Nat.card_eq_fintype_card, ← Set.ncard_univ, himage]
-    exact ncard_image_of_injOn <| fun i _hi j _hj h ↦ Fin.ext <| f_inj i.val j.val i.is_lt j.is_lt h
+    exact InjOn.ncard_image <| fun i _hi j _hj h ↦ Fin.ext <| f_inj i.val j.val i.is_lt j.is_lt h
   ext x
   simp only [image_univ, mem_range]
   refine ⟨fun hx ↦ ?_, fun ⟨⟨i, hi⟩, hx⟩ ↦ hx ▸ hf' i hi⟩
@@ -919,7 +921,7 @@ theorem ncard_coe {α : Type*} (s : Set α) :
     Set.ncard (Set.univ : Set (Set.Elem s)) = s.ncard := by simp
 
 @[simp] lemma ncard_graphOn (s : Set α) (f : α → β) : (s.graphOn f).ncard = s.ncard := by
-  rw [← ncard_image_of_injOn fst_injOn_graph, image_fst_graphOn]
+  rw [← InjOn.ncard_image fst_injOn_graph, image_fst_graphOn]
 
 section Lattice
 
