@@ -277,8 +277,6 @@ set_option trace.Elab.DiffGeo.MDiff true in
 variable {f : M → E'' →SL[id'] E'''} in
 /--
 error: Could not find a model with corners for `E'' →SL[id'] E'''`.
-
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: M
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -369,22 +367,21 @@ Hint: failures to find a model with corners can be debugged with the command `se
 -- TODO: the error message could be more helpful.
 variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E''''] (σ : ℝ →+* ℝ) [RingHomIsometric σ]
 
--- FIXME: the error message is non-deterministic because of different universe levels,
--- normalise this somehow and re-enable this test!
 variable {f : M → E'' →SL[σ] E''''} in
-/-
+/--
 error: Application type mismatch: The argument
   𝓘(ℝ, E'' →SL[σ] E'''')
 has type
   ModelWithCorners.{0, max u_11 u_13, max u_11 u_13} ℝ (E'' →SL[σ] E'''') (E'' →SL[σ] E'''')
 but is expected to have type
-  ModelWithCorners.{u_1, ?u.235761, ?u.235762} 𝕜 ?E' ?H'
+  ModelWithCorners.{u_1, _, _} 𝕜 ?E' ?H'
 in the application
   @ContMDiff 𝕜 inst✝³⁰ E inst✝²⁹ inst✝²⁸ H inst✝²⁷ I ?M ?inst✝ ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴
     𝓘(ℝ, E'' →SL[σ] E'''')
 -/
---#guard_msgs in
---#check CMDiff 2 f
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+#check CMDiff 2 f
 
 end
 
@@ -527,8 +524,6 @@ noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
 set_option trace.Elab.DiffGeo.MDiff true in
 /--
 error: Could not find a model with corners for `↑(Set.Icc x y)`.
-
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
