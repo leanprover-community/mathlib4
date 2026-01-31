@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Yaël Dillies, Fengyang Wang
+Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
@@ -57,8 +57,8 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 /-- `Finset.setMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/
-@[to_additive /-- `Finset.setAddAntidiagonal hs ht a` is the set of all pairs of an element in `s`
-and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are
+@[to_additive /-- `Finset.setAddAntidiagonal hs ht a` is the set of all pairs of an element in
+`s` and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/]
 noncomputable def setMulAntidiagonal : Finset (α × α) :=
   (Set.MulAntidiagonal.finite_of_isPWO hs ht a).toFinset
@@ -66,43 +66,44 @@ noncomputable def setMulAntidiagonal : Finset (α × α) :=
 variable {hs ht a} {u : Set α} {hu : u.IsPWO} {x : α × α}
 
 @[to_additive (attr := simp)]
-theorem mem_setMulAntidiagonal :
+theorem mem_mulAntidiagonal :
     x ∈ setMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
   simp only [setMulAntidiagonal, Set.Finite.mem_toFinset, Set.mem_mulAntidiagonal]
 
 @[to_additive]
-theorem setMulAntidiagonal_mono_left (h : u ⊆ s) :
+theorem mulAntidiagonal_mono_left (h : u ⊆ s) :
     setMulAntidiagonal hu ht a ⊆ setMulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_left h
 
 @[to_additive]
-theorem setMulAntidiagonal_mono_right (h : u ⊆ t) :
+theorem mulAntidiagonal_mono_right (h : u ⊆ t) :
     setMulAntidiagonal hs hu a ⊆ setMulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_right h
 
 @[to_additive]
-theorem swap_mem_setMulAntidiagonal :
+theorem swap_mem_mulAntidiagonal :
     x.swap ∈ Finset.setMulAntidiagonal hs ht a ↔ x ∈ Finset.setMulAntidiagonal ht hs a := by
   simp
 
 @[to_additive]
-theorem support_setMulAntidiagonal_subset_mul :
-    { a | (setMulAntidiagonal hs ht a).Nonempty } ⊆ s * t := fun a ⟨b, hb⟩ => by
-  rw [mem_setMulAntidiagonal] at hb
+theorem support_mulAntidiagonal_subset_mul :
+    { a | (setMulAntidiagonal hs ht a).Nonempty } ⊆ s * t :=
+  fun a ⟨b, hb⟩ => by
+  rw [mem_mulAntidiagonal] at hb
   exact ⟨b.1, hb.1, b.2, hb.2⟩
 
 @[to_additive]
-theorem isPWO_support_setMulAntidiagonal :
+theorem isPWO_support_mulAntidiagonal :
     { a | (setMulAntidiagonal hs ht a).Nonempty }.IsPWO :=
-  (hs.mul ht).mono support_setMulAntidiagonal_subset_mul
+  (hs.mul ht).mono support_mulAntidiagonal_subset_mul
 
 @[to_additive]
-theorem setMulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α]
+theorem mulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α]
     {s t : Set α} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
     setMulAntidiagonal hs.isPWO ht.isPWO (hs.min hns * ht.min hnt) =
-    {(hs.min hns, ht.min hnt)} := by
+      {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
-  simp only [mem_setMulAntidiagonal, mem_singleton, Prod.ext_iff]
+  simp only [mem_mulAntidiagonal, mem_singleton, Prod.ext_iff]
   constructor
   · rintro ⟨has, hat, hst⟩
     obtain rfl :=
