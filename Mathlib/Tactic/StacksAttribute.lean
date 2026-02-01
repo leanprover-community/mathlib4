@@ -46,10 +46,10 @@ structure Tag where
 
 /-- Defines the `tagExt` extension for adding a `HashSet` of `Tag`s
 to the environment. -/
-initialize tagExt : SimplePersistentEnvExtension Tag (Std.HashSet Tag) ←
+initialize tagExt : SimplePersistentEnvExtension Tag (Array Tag) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
-    addEntryFn := .insert
+    addImportedFn := fun as => as.foldl (· ++ ·) {}
+    addEntryFn := .push
   }
 
 /--
@@ -171,7 +171,7 @@ end Mathlib.StacksTag
 `getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
 private def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
-  tagExt.getState env |>.toArray.qsort (·.tag < ·.tag)
+  tagExt.getState env |>.qsort (·.tag < ·.tag)
 
 /--
 `getSortedStackProjectDeclNames env tag` returns the array of declaration names of results
