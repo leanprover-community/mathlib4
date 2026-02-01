@@ -50,9 +50,7 @@ lemma tendsto_zero_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (
     Tendsto p atTop (𝓝 0) := by
   have : (fun n => (n * p n) * (1 / n)) =ᶠ[atTop] p := by
     filter_upwards [eventually_ge_atTop 1] with n hn
-    calc
-      _ = p n * (n * (1 / n)) := by ac_rfl
-      _ = p n := by simp [field]
+    field
   simpa using (hr.mul tendsto_one_div_atTop_nhds_zero_nat).congr' this
 
 open Asymptotics in
