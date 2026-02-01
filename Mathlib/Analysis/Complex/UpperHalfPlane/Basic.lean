@@ -38,7 +38,7 @@ attribute [coe] UpperHalfPlane.coe
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
 /-- Define I := √-1 as an element on the upper half plane. -/
-def I : ℍ := ⟨Complex.I, by simp⟩
+def I : ℍ := ⟨Complex.I, zero_lt_one⟩
 
 instance : Inhabited ℍ := ⟨.I⟩
 
