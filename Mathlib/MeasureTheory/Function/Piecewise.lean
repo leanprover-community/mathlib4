@@ -24,13 +24,13 @@ namespace IndexedPartition
 
 variable {ι α β : Type*} [MeasurableSpace α] {s : ι → Set α} {f : ι → α → β}
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_piecewise [MeasurableSpace β] [Countable ι]
     (hs : IndexedPartition s) (hm : ∀ i, MeasurableSet (s i)) (hf : ∀ i, Measurable (f i)) :
     Measurable (hs.piecewise f) :=
   fun t ht => by simpa [piecewise_preimage] using .iUnion (fun i => (hm i).inter ((hf i) ht))
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem aemeasurable_piecewise {μ : Measure α} [MeasurableSpace β] [Countable ι]
     (hs : IndexedPartition s) (hm : ∀ i, MeasurableSet (s i)) (hf : ∀ i, AEMeasurable (f i) μ) :
     AEMeasurable (hs.piecewise f) μ := by
@@ -45,10 +45,10 @@ def simpleFunc_piecewise [Finite ι] (hs : IndexedPartition s)
   measurableSet_fiber' := fun _ =>
     letI : MeasurableSpace β := ⊤
     hs.measurable_piecewise hm (fun i => (f i).measurable) trivial
-  finite_range' := (Set.finite_iUnion (fun i => (f i).finite_range)).subset
+  finite_range' := (finite_iUnion (fun i => (f i).finite_range)).subset
     (hs.range_piecewise_subset _)
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem stronglyMeasurable_piecewise [Countable ι] (hs : IndexedPartition s)
     (hm : ∀ i, MeasurableSet (s i)) [TopologicalSpace β] (hf : ∀ i, StronglyMeasurable (f i)) :
     StronglyMeasurable (hs.piecewise f) := by
@@ -86,7 +86,7 @@ theorem stronglyMeasurable_piecewise [Countable ι] (hs : IndexedPartition s)
     filter_upwards [this] with n hn using by rw [hn]
   exact (Filter.tendsto_congr' this).mp (by simp [StronglyMeasurable.tendsto_approx])
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem aestronglyMeasurable_piecewise {μ : Measure α} [Countable ι] (hs : IndexedPartition s)
     (hm : ∀ i, MeasurableSet (s i)) [TopologicalSpace β] (hf : ∀ i, AEStronglyMeasurable (f i) μ) :
     AEStronglyMeasurable (hs.piecewise f) μ := by
