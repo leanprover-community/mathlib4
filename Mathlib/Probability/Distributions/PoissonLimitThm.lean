@@ -110,8 +110,7 @@ lemma PMFbinomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥
   refine Tendsto.congr' ?_ t1
   simp only [PMF.binomial_apply, EventuallyEq, Fin.ofNat_eq_cast, Fin.val_natCast, Fin.val_last,
     eventually_atTop, ge_iff_le]
-  use k
-  intro b hb
+  refine ⟨k, fun b hb ↦ ?_⟩
   set x : ℝ := NNReal.toReal (p b) with hx
   have eq0 : k % (b + 1) = k := by simpa using Order.lt_add_one_iff.mpr hb
   have eq1 : 1 - (p b : ℝ≥0∞) = ENNReal.ofReal (1 - x : ℝ) := by norm_cast
