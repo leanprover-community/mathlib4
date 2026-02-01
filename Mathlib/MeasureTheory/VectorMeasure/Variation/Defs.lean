@@ -192,14 +192,14 @@ lemma sum_le_preVariation_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet 
       simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
     _ ≤ preVariation f (⋃ i, s i) + ε' := by gcongr; exact sum_le_preVariation_iUnion' f hs hs' P n
 
-/-- A set function is subadditive if the value assigned to the union of disjoint sets is bounded
-above by the sum of the values assigned to the individual sets. -/
-def IsSubadditive (f : Set X → ℝ≥0∞) : Prop := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
+/-- A set function is σ-subadditive on measurable sets if the value assigned to the union of a
+countable disjoint family of measurable sets is bounded above by the sum of values on the family. -/
+def IsSigmaSubadditive (f : Set X → ℝ≥0∞) : Prop := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
   Pairwise (Disjoint on s) → f (⋃ (i : ℕ), s i) ≤ ∑' (i : ℕ), f (s i)
 
 open Classical in
 /-- Additivity of `preVariation` for disjoint measurable sets. -/
-lemma iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
+lemma iUnion (hf : IsSigmaSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ preVariation f (s i)) (preVariation f (⋃ i, s i)) := by
   refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_ge ?_ ?_)
@@ -243,7 +243,7 @@ open MeasureTheory.VectorMeasure preVariation
 variable {X : Type*} [MeasurableSpace X]
 variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
-lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) : IsSubadditive (‖μ ·‖ₑ) := by
+lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) : IsSigmaSubadditive (‖μ ·‖ₑ) := by
   intro _ hs hs'
   simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
 
