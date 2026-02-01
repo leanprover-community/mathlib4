@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies
 -/
 module
+
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Basic
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Tactic to reassociate comultiplication in a coalgebra
