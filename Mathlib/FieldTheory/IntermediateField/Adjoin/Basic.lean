@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
-public import Mathlib.FieldTheory.Separable
+public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
 
@@ -65,12 +64,9 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
 
 theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] (m : M) :
-    (∀ x ∈ adjoin F S, m • x = x) ↔ (∀ x ∈ S, m • x = x) := by
-  refine ⟨fun h x hx ↦ h _ <| mem_adjoin_of_mem F hx, fun h x hx ↦ ?_⟩
-  obtain ⟨r, s, rfl⟩ := (mem_adjoin_iff _ _).mp hx
-  rw [← MulSemiringAction.toAlgHom_apply F, map_div₀, MvPolynomial.comp_aeval_apply,
-    MvPolynomial.comp_aeval_apply]
-  simp_rw [MulSemiringAction.toAlgHom_apply, h _ (Subtype.prop _)]
+    (∀ x ∈ adjoin F S, m • x = x) ↔ ∀ x ∈ S, m • x = x := by
+  change adjoin F S ≤ FixedBy.intermediateField F E m ↔ _
+  simp [IntermediateField.adjoin_le_iff, Set.subset_def]
 
 variable {F}
 
