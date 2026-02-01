@@ -275,7 +275,7 @@ lemma exists_extension_of_isSetSemiring_of_le_measure_of_dense [IsFiniteMeasure 
 
 /-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
 measure `μ`. Assume that `C` generates the sigma-algebra and covers the space up to measure zero.
-Then `m` extends to a countably additive vector measure, which is dominated by `μ`. -/
+Then `m` extends to a countably additive vector measure which is dominated by `μ`. -/
 private lemma exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom_of_cover
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
@@ -290,7 +290,7 @@ private lemma exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom_of
 
 /-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
 measure `μ`. Assume that `C` generates the sigma-algebra.
-Then `m` extends to a countably additive vector measure, which is dominated by `μ`. -/
+Then `m` extends to a countably additive vector measure which is dominated by `μ`. -/
 /- TODO: weaken the assumption that `C` generates the sigma-algebra to measurability of all
 elements of `C`, once integrals wrt vector measures is available (by composing the integral wrt `m'`
 on the generated sigma-algebra, with conditional expectation of the indicator function to project
@@ -302,7 +302,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
   have M (s) (hs : s ∈ C) : MeasurableSet s := by
     rw [h'C]; exact measurableSet_generateFrom hs
-  rcases exists_ae_subset_biUnion_countable μ M with ⟨D, DC, D_count, hD⟩
+  rcases Measure.exists_ae_subset_biUnion_countable μ M with ⟨D, DC, D_count, hD⟩
   have MD : MeasurableSet (⋃₀ D) := MeasurableSet.sUnion D_count (fun t ht ↦ M _ (DC ht))
   let μ' := μ.restrict (⋃₀ D)
   obtain ⟨m', h, h'⟩ : ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
@@ -312,8 +312,8 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     · apply (hm s hs).trans
       simp only [Measure.restrict_apply' MD, μ']
       apply measure_mono_ae
-      nth_rewrite 1 [← inter_self s]
-      exact ae_le_set_inter EventuallyLE.rfl (hD s hs)
+      nth_rewrite 1 [← Set.inter_self s]
+      exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
 
 end MeasureTheory.VectorMeasure
