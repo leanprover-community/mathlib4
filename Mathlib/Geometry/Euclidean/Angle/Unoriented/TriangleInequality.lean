@@ -38,6 +38,8 @@ lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 0 ≤
     inner_self_eq_one_of_norm_eq_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
   grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
 
+@[deprecated (since := "2025-12-20")] alias inner_ortho_nonneg_of_norm_eq_one := inner_ortho_nonneg
+
 lemma inner_normalize_ortho (x y : V) : ⟪y, normalize (ortho y x)⟫ = 0 := by
   simp only [NormedSpace.normalize, real_inner_smul_right, mul_eq_zero, inv_eq_zero, norm_eq_zero]
   right; rw [ortho, real_inner_comm, Submodule.starProjection_inner_eq_zero]

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.RingTheory.PowerSeries.Inverse
-public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.RingTheory.PowerSeries.Exp
 
 /-!
 # Bernoulli numbers

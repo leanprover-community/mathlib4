@@ -69,11 +69,11 @@ theorem chabam (f : α → β) (hf : Con f) : Con f := hf
 -- theorems about function in the environment --
 ------------------------------------------------
 @[fun_prop]
-theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
-  : Con fun x => (fst x, snd x) := silentSorry
+theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd) :
+    Con fun x => (fst x, snd x) := silentSorry
 @[fun_prop]
-theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd)
-  : Lin fun x => (fst x, snd x) := silentSorry
+theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd) :
+    Lin fun x => (fst x, snd x) := silentSorry
 
 
 
@@ -316,13 +316,12 @@ example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 example [Zero α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
-noncomputable
-def foo : α ->> α ->> α := silentSorry
-noncomputable
-def bar : α ->> α ->> α := silentSorry
+noncomputable def foo : α ->> α ->> α := silentSorry
+noncomputable def bar : α ->> α ->> α := silentSorry
 
 @[fun_prop]
 theorem foo_lin : Lin fun x : α => foo x := silentSorry
+
 @[fun_prop]
 theorem bar_lin (y) : Lin fun x : α => bar x y := silentSorry
 
@@ -371,7 +370,7 @@ theorem foo2_lin : Lin (foo2 : α → α) := silentSorry
 
 example : Con (fun x : α => foo1 (foo2 x)) := by fun_prop
 
-
+-- Test for unfolding names using the `fun_prop [foo]` syntax.
 def foo3 [Add α] (x : α) := x + x
 example [Add α] : Con (fun x : α => foo3 x) := by fun_prop [foo3]
 
@@ -379,7 +378,8 @@ def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
 def diag (f : α → α → α) (x : α) := f x x
 
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
-  fun_prop [diag,myUncurry]
+  fun_prop [diag, myUncurry]
+
 namespace MultipleLambdaTheorems
 
 opaque A : Prop

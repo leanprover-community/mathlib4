@@ -27,7 +27,8 @@ namespace Fin
 
 variable {α β : Type*} {n : ℕ}
 
-theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
+@[simp] theorem map_valEmbedding_univ :
+    (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
   ext
   simp [orderIsoSubtype.symm.surjective.exists, OrderIso.symm]
 
@@ -42,6 +43,9 @@ theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb :=
 theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by simp
 
 theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by simp
+
+theorem card_filter_val_lt {m : ℕ} : #{i : Fin n | i < m} = min n m := by
+  simp [← card_map valEmbedding, ← filter_filter, exists_iff, map_filter']
 
 theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = if p 0 then #{x | p (.succ x)} + 1 else #{x | p (.succ x)} := by
@@ -58,5 +62,23 @@ theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : L
   | @cons n x xs hxs =>
     simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
       hxs, List.count_cons, add_comm (ite (x = a) 1 0), beq_iff_eq]
+
+/--
+Given a "downward-closed" predicate `p` on `Fin n` (which could be spelt `Antitone p`),
+then `p` holds for more than `j` elements iff it holds for `p` itself.
+-/
+theorem lt_card_filter_univ_iff_apply_of_imp {j : Fin n} (p : Fin n → Prop) [DecidablePred p]
+    (hp : ∀ i j, j ≤ i → p i → p j) :
+    j < #{i | p i} ↔ p j := by
+  have h1 (k : Fin n) (hk : ¬ p k) : #{i | p i} ≤ k := by
+    rw [← Fin.card_Iio]
+    exact card_le_card (by grind)
+  refine ⟨by grind, fun h ↦ ?_⟩
+  by_contra! hc
+  let q : Fin n → Prop := (· < #{i | p i})
+  have : univ.filter q = univ.filter p :=
+    eq_of_subset_of_card_le (by grind) (by rw [card_filter_val_lt]; grind)
+  have : j ∈ univ.filter p := by grind
+  grind
 
 end Fin
