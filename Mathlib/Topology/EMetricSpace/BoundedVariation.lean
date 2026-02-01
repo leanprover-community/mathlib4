@@ -504,7 +504,7 @@ lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
       sum_le_of_monotoneOn_Iic (by grind [MonotoneOn, StrictMonoOn]) (by grind [StrictMonoOn])
 
 /-- If a function is continuous on the right at a point `a`, then its variations on `Ioi a` and
-on `Ioc a` coincide. We give a version relative to a set `s`. -/
+on `Ici a` coincide. We give a version relative to a set `s`. -/
 lemma eVariationOn_inter_Ioi_eq_inter_Ici_of_continuousWithinAt
     [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} {a : α}
     (h : (𝓝[s ∩ Ioi a] a).NeBot) (h' : ContinuousWithinAt f (s ∩ Ici a) a) :
