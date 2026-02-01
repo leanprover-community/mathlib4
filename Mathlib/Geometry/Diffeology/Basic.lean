@@ -179,6 +179,8 @@ class DiffeologicalSpace (X : Type*) where
   isOpen_iff_preimages_plots {u : Set X} :
     dTopology.IsOpen u ↔ ∀ {n : ℕ}, ∀ p ∈ plots n, IsOpen (p ⁻¹' u) := by rfl
 
+namespace Diffeology
+
 variable {X Y Z : Type*} [DiffeologicalSpace X] [DiffeologicalSpace Y] [DiffeologicalSpace Z]
 
 section Defs
@@ -211,7 +213,7 @@ notation (name := DSmooth_of) "DSmooth[" d₁ ", " d₂ "]" => @DSmooth _ _ d₁
 end Defs
 
 @[ext]
-protected theorem DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : DiffeologicalSpace X}
+protected theorem _root_.DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : DiffeologicalSpace X}
     (h : IsPlot[d₁] = IsPlot[d₂]) : d₁ = d₂ := by
   obtain ⟨p₁, _, _, _, t₁, h₁⟩ := d₁
   obtain ⟨p₂, _, _, _, t₂, h₂⟩ := d₂
@@ -269,19 +271,19 @@ theorem dsmooth_const {y : Y} : DSmooth fun _ : X ↦ y :=
 
 /-- Replaces the D-topology of a diffeology with another topology equal to it. Useful
 to construct diffeologies with better definitional equalities. -/
-def DiffeologicalSpace.replaceDTopology {X : Type*} (d : DiffeologicalSpace X)
+def _root_.DiffeologicalSpace.replaceDTopology {X : Type*} (d : DiffeologicalSpace X)
     (t : TopologicalSpace X) (h : DTop[d] = t) : DiffeologicalSpace X where
   dTopology := t
   isOpen_iff_preimages_plots := by intro _; rw [← d.isOpen_iff_preimages_plots, ← h]
   __ := d
 
-lemma DiffeologicalSpace.replaceDTopology_eq {X : Type*} {d : DiffeologicalSpace X}
+lemma _root_.DiffeologicalSpace.replaceDTopology_eq {X : Type*} {d : DiffeologicalSpace X}
     {t : TopologicalSpace X} {h : DTop[d] = t} : d.replaceDTopology t h = d := by
   ext; rfl
 
 /-- A structure with plots specified on open subsets of ℝⁿ rather than ℝⁿ itself. Useful
 for constructing diffeologies, as it often makes the locality condition easier to prove. -/
-structure DiffeologicalSpace.CorePlotsOn (X : Type*) where
+structure _root_.DiffeologicalSpace.CorePlotsOn (X : Type*) where
   /-- The predicate determining which maps `u → X` with `u : Set (EuclideanSpace ℝ (Fin n))` open
   are plots. -/
   isPlotOn {n : ℕ} {u : Set 𝔼ⁿ} (hu : IsOpen u) : (𝔼ⁿ → X) → Prop
@@ -315,7 +317,8 @@ structure DiffeologicalSpace.CorePlotsOn (X : Type*) where
 organised in the form of the auxiliary `CorePlotsOn` structure.
 This is more involved in most regards, but also often makes it quite a lot easier to prove
 the locality condition. -/
-def DiffeologicalSpace.ofCorePlotsOn {X : Type*} (d : CorePlotsOn X) : DiffeologicalSpace X where
+def _root_.DiffeologicalSpace.ofCorePlotsOn {X : Type*} (d : DiffeologicalSpace.CorePlotsOn X) :
+    DiffeologicalSpace X where
   plots _ := {p | d.isPlot p}
   constant_plots _ := d.isPlot_const _
   plot_reparam hp hf := d.isPlotOn_univ.mp <|
@@ -435,7 +438,7 @@ theorem isPlot_iff_contDiff {n : ℕ} {p : 𝔼ⁿ → X} : IsPlot p ↔ ContDif
   IsContDiffCompatible.isPlot_iff
 
 @[fun_prop]
-protected theorem ContDiff.isPlot {n : ℕ} {p : 𝔼ⁿ → X} (hp : ContDiff ℝ ∞ p) : IsPlot p :=
+protected theorem _root_.ContDiff.isPlot {n : ℕ} {p : 𝔼ⁿ → X} (hp : ContDiff ℝ ∞ p) : IsPlot p :=
   isPlot_iff_contDiff.2 hp
 
 @[fun_prop]
@@ -443,7 +446,7 @@ protected theorem IsPlot.contDiff {n : ℕ} {p : 𝔼ⁿ → X} (hp : IsPlot p) 
   isPlot_iff_contDiff.1 hp
 
 @[fun_prop]
-protected theorem ContDiff.dsmooth {f : X → Y} (hf : ContDiff ℝ ∞ f) : DSmooth f :=
+protected theorem _root_.ContDiff.dsmooth {f : X → Y} (hf : ContDiff ℝ ∞ f) : DSmooth f :=
   fun _ _ hp ↦ (hf.comp hp.contDiff).isPlot
 
 @[fun_prop]
@@ -463,3 +466,5 @@ example {X Y : Type*} [DiffeologicalSpace X] [DiffeologicalSpace Y] {n m : ℕ}
   fun_prop
 
 end FiniteDimensionalNormedSpace
+
+end Diffeology
