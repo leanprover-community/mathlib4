@@ -15,12 +15,9 @@ public meta import Mathlib.Lean.ContextInfo
 We want to avoid this because this lead to instance diamonds
 -/
 
-open Lean Meta Elab
+open Lean Meta Elab Command
 
 public meta section
-
-open Lean Elab Command
-
 
 namespace Mathlib.Tactic.OverlappingInstances
 
@@ -209,3 +206,5 @@ def overlappingInstances : Linter where
               logWarning <|← overlaps.toMsg <|← ctx.toDeclDescr
 
 initialize addLinter overlappingInstances
+
+end Mathlib.Tactic.OverlappingInstances
