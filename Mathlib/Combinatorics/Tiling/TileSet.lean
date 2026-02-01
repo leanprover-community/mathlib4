@@ -79,34 +79,22 @@ lemma coe_mk (t) : (⟨t⟩ : TileSet ps ιₜ) = t := rfl
 lemma coe_injective : Injective (TileSet.tiles : TileSet ps ιₜ → ιₜ → PlacedTile ps) :=
   fun _ _ ↦ coe_inj.1
 
-/-- Coercion from a `TileSet` to a set of tiles (losing information about the presence of
-duplicate tiles in the `TileSet`). Use the coercion rather than using `coeSet` directly. -/
-@[coe] def coeSet (t : TileSet ps ιₜ) : Set (PlacedTile ps) := Set.range t
-
-instance : CoeOut (TileSet ps ιₜ) (Set (PlacedTile ps)) where
-  coe := coeSet
-
 instance : Membership (PlacedTile ps) (TileSet ps ιₜ) where
-  mem t pt := pt ∈ (t : Set (PlacedTile ps))
+  mem t pt := pt ∈ Set.range t
 
-@[simp] lemma mem_coeSet {pt : PlacedTile ps} {t : TileSet ps ιₜ} :
-    pt ∈ (t : Set (PlacedTile ps)) ↔ pt ∈ t :=
-  Iff.rfl
-
-lemma coeSet_apply (t : TileSet ps ιₜ) : t = Set.range t := rfl
-
-protected lemma mem_def {pt : PlacedTile ps} {t : TileSet ps ιₜ} : pt ∈ t ↔ ∃ i, t i = pt :=
+@[simp] lemma exists_iff_mem {pt : PlacedTile ps} {t : TileSet ps ιₜ} :
+    (∃ i, t i = pt) ↔ pt ∈ t :=
   Iff.rfl
 
 lemma apply_mem (t : TileSet ps ιₜ) (i : ιₜ) : t i ∈ t := Set.mem_range_self i
 
 @[simp] lemma exists_mem_iff {t : TileSet ps ιₜ} {f : PlacedTile ps → Prop} :
-    (∃ pt ∈ t, f pt) ↔ ∃ i, f (t i) := by
-  simp_rw [← mem_coeSet, coeSet_apply, Set.exists_range_iff]
+    (∃ pt ∈ t, f pt) ↔ ∃ i, f (t i) :=
+  Set.exists_range_iff
 
 @[simp] lemma forall_mem_iff {t : TileSet ps ιₜ} {f : PlacedTile ps → Prop} :
-    (∀ pt ∈ t, f pt) ↔ ∀ i, f (t i) := by
-  simp_rw [← mem_coeSet, coeSet_apply, Set.forall_mem_range]
+    (∀ pt ∈ t, f pt) ↔ ∀ i, f (t i) :=
+  Set.forall_mem_range
 
 lemma union_of_mem_eq_iUnion (t : TileSet ps ιₜ) : ⋃ pt ∈ t, (pt : Set X) = ⋃ i, (t i : Set X) := by
   ext x
@@ -193,32 +181,28 @@ lemma injective_reindex_of_embeddingLike {t : TileSet ps ιₜ} (f : F) (ht : In
     (f : E) : t₁.reindex f = t₂.reindex (f₁ ∘ f) ↔ t₁ = t₂.reindex f₁ :=
   reindex_eq_reindex_comp_iff_of_surjective (EquivLike.surjective f)
 
-lemma coeSet_reindex_eq_range_comp (t : TileSet ps ιₜ) (f : ιₜ' → ιₜ) :
-    (t.reindex f : Set (PlacedTile ps)) = Set.range (t ∘ f) :=
-  rfl
-
-lemma coeSet_reindex_subset (t : TileSet ps ιₜ) (f : ιₜ' → ιₜ) :
-    (t.reindex f : Set (PlacedTile ps)) ⊆ t := Set.range_comp_subset_range f t
+lemma range_reindex_subset (t : TileSet ps ιₜ) (f : ιₜ' → ιₜ) :
+    Set.range (t.reindex f) ⊆ Set.range t := Set.range_comp_subset_range f t
 
 lemma mem_of_mem_reindex {t : TileSet ps ιₜ} {f : ιₜ' → ιₜ} {pt : PlacedTile ps}
     (h : pt ∈ t.reindex f) : pt ∈ t :=
-  Set.mem_of_mem_of_subset h <| t.coeSet_reindex_subset f
+  Set.mem_of_mem_of_subset h <| t.range_reindex_subset f
 
 lemma mem_reindex_iff {t : TileSet ps ιₜ} {f : ιₜ' → ιₜ} {pt : PlacedTile ps} :
     pt ∈ (t.reindex f) ↔ ∃ i, t (f i) = pt :=
   Set.mem_range
 
-@[simp] lemma coeSet_reindex_of_surjective (t : TileSet ps ιₜ) {f : ιₜ' → ιₜ} (h : Surjective f) :
-    (t.reindex f : Set (PlacedTile ps)) = t :=
+lemma range_reindex_of_surjective (t : TileSet ps ιₜ) {f : ιₜ' → ιₜ} (h : Surjective f) :
+    Set.range (t.reindex f) = Set.range t :=
   h.range_comp _
 
-@[simp] lemma coeSet_reindex_of_equivLike (t : TileSet ps ιₜ) (f : E) :
-    (t.reindex f : Set (PlacedTile ps)) = t :=
-  t.coeSet_reindex_of_surjective <| EquivLike.surjective f
+lemma range_reindex_of_equivLike (t : TileSet ps ιₜ) (f : E) :
+    Set.range (t.reindex f) = Set.range t :=
+  t.range_reindex_of_surjective <| EquivLike.surjective f
 
 @[simp] lemma mem_reindex_iff_of_surjective {t : TileSet ps ιₜ} {f : ιₜ' → ιₜ} {pt : PlacedTile ps}
     (h : Surjective f) : pt ∈ t.reindex f ↔ pt ∈ t :=
-  iff_of_eq <| congrArg (pt ∈ ·) <| t.coeSet_reindex_of_surjective h
+  iff_of_eq <| congrArg (pt ∈ ·) <| t.range_reindex_of_surjective h
 
 @[simp] lemma mem_reindex_iff_of_equivLike {t : TileSet ps ιₜ} (f : E) {pt : PlacedTile ps} :
     pt ∈ t.reindex f ↔ pt ∈ t :=
@@ -226,20 +210,19 @@ lemma mem_reindex_iff {t : TileSet ps ιₜ} {f : ιₜ' → ιₜ} {pt : Placed
 
 /-- If two `TileSet`s have the same set of tiles and no duplicate tiles, this equivalence maps
 one index type to the other. -/
-noncomputable def equivOfCoeSetEqOfInjective {t₁ : TileSet ps ιₜ} {t₂ : TileSet ps ιₜ'}
-    (h : (t₁ : Set (PlacedTile ps)) = t₂) (h₁ : Injective t₁) (h₂ : Injective t₂) : ιₜ' ≃ ιₜ :=
+noncomputable def equivOfRangeEqOfInjective {t₁ : TileSet ps ιₜ} {t₂ : TileSet ps ιₜ'}
+    (h : Set.range t₁ = Set.range t₂) (h₁ : Injective t₁) (h₂ : Injective t₂) : ιₜ' ≃ ιₜ :=
   ((Equiv.ofInjective t₂ h₂).trans (Equiv.cast (congrArg _ h.symm))).trans
     (Equiv.ofInjective t₁ h₁).symm
 
-@[simp] lemma reindex_equivOfCoeSetEqOfInjective {t₁ : TileSet ps ιₜ} {t₂ : TileSet ps ιₜ'}
-    (h : (t₁ : Set (PlacedTile ps)) = t₂) (h₁ : Injective t₁) (h₂ : Injective t₂) :
-    t₁.reindex (equivOfCoeSetEqOfInjective h h₁ h₂) = t₂ := by
+@[simp] lemma reindex_equivOfRangeEqOfInjective {t₁ : TileSet ps ιₜ} {t₂ : TileSet ps ιₜ'}
+    (h : Set.range t₁ = Set.range t₂) (h₁ : Injective t₁) (h₂ : Injective t₂) :
+    t₁.reindex (equivOfRangeEqOfInjective h h₁ h₂) = t₂ := by
   ext i : 2
-  simp only [equivOfCoeSetEqOfInjective, Equiv.coe_trans, reindex_apply, comp_apply,
+  simp only [equivOfRangeEqOfInjective, Equiv.coe_trans, reindex_apply, comp_apply,
     Equiv.ofInjective_apply, Equiv.cast_apply]
   erw [Equiv.apply_ofInjective_symm h₁]
   rw [Subtype.coe_eq_iff]
-  simp_rw [coeSet_apply] at h
   refine ⟨h ▸ Set.mem_range_self _, ?_⟩
   rw [cast_eq_iff_heq, Subtype.heq_iff_coe_eq]
   simp [h]
@@ -272,21 +255,21 @@ lemma mem_inv_smul_apply_iff_smul_mem {g : G} {x : X} {t : TileSet ps ιₜ} {i 
 @[simp] lemma injective_smul_iff (g : G) {t : TileSet ps ιₜ} : Injective (g • t) ↔ Injective t :=
   Injective.of_comp_iff (MulAction.injective g) t
 
-@[simp] lemma coeSet_smul (g : G) (t : TileSet ps ιₜ) :
-    (g • t : TileSet ps ιₜ) = g • (t : Set (PlacedTile ps)) := by
-  simp [coeSet_apply, smul_coe, Set.range_comp]
+@[simp] lemma range_smul (g : G) (t : TileSet ps ιₜ) :
+    Set.range (g • t : TileSet ps ιₜ) = g • Set.range t := by
+  simp [smul_coe, Set.range_comp]
 
 @[simp] lemma smul_mem_smul_iff {pt : PlacedTile ps} (g : G) {t : TileSet ps ιₜ} :
     g • pt ∈ g • t ↔ pt ∈ t := by
-  rw [← mem_coeSet, ← mem_coeSet, coeSet_smul, Set.smul_mem_smul_set_iff]
+  simp_rw [← exists_iff_mem, ← Set.mem_range, range_smul, Set.smul_mem_smul_set_iff]
 
 lemma mem_smul_iff_smul_inv_mem {pt : PlacedTile ps} {g : G} {t : TileSet ps ιₜ} :
     pt ∈ g • t ↔ g⁻¹ • pt ∈ t := by
-  simp_rw [← mem_coeSet, coeSet_smul, Set.mem_smul_set_iff_inv_smul_mem]
+  simp_rw [← exists_iff_mem, ← Set.mem_range, range_smul, Set.mem_smul_set_iff_inv_smul_mem]
 
 lemma mem_inv_smul_iff_smul_mem {pt : PlacedTile ps} {g : G} {t : TileSet ps ιₜ} :
     pt ∈ g⁻¹ • t ↔ g • pt ∈ t := by
-  simp_rw [← mem_coeSet, coeSet_smul, Set.mem_inv_smul_set_iff]
+  simp_rw [← exists_iff_mem, ← Set.mem_range, range_smul, Set.mem_inv_smul_set_iff]
 
 @[simp] lemma smul_inter_smul (g : G) (t : TileSet ps ιₜ) (s : Set X) (i : ιₜ) :
     g • s ∩ (g • t) i = g • (s ∩ t i) := by
@@ -353,7 +336,7 @@ lemma exists_smul_eq_of_mem_symmetryGroup' {t : TileSet ps ιₜ} {g : G} (i : �
 lemma smul_mem_of_mem_of_mem_symmetryGroup {t : TileSet ps ιₜ} {g : G} {pt : PlacedTile ps}
     (hg : g ∈ t.symmetryGroup) (hpt : pt ∈ t) : g • pt ∈ t := by
   rcases hpt with ⟨i, rfl⟩
-  simp_rw [TileSet.mem_def, eq_comm]
+  simp_rw [← exists_iff_mem, eq_comm]
   exact exists_smul_eq_of_mem_symmetryGroup i hg
 
 /-- If `g` is in the symmetry group, every tile in `t` is the image under `g` of some tile in
@@ -408,20 +391,20 @@ lemma mem_symmetryGroup_smul_iff' {t : TileSet ps ιₜ} {g g' : G} :
   convert mem_symmetryGroup_smul_iff g
   simp [mul_assoc]
 
-lemma symmetryGroup_le_stabilizer_coeSet (t : TileSet ps ιₜ) :
-    t.symmetryGroup ≤ MulAction.stabilizer G (t : Set (PlacedTile ps)) := by
+lemma symmetryGroup_le_stabilizer_range (t : TileSet ps ιₜ) :
+    t.symmetryGroup ≤ MulAction.stabilizer G (Set.range t) := by
   simp_rw [SetLike.le_def, mem_symmetryGroup_iff_exists, MulAction.mem_stabilizer_iff]
   rintro g ⟨f, hf⟩
   nth_rewrite 2 [← hf]
   simp
 
-lemma symmetryGroup_eq_stabilizer_coeSet_of_injective (t : TileSet ps ιₜ) (h : Injective t) :
-    t.symmetryGroup = MulAction.stabilizer G (t : Set (PlacedTile ps)) := by
-  refine le_antisymm t.symmetryGroup_le_stabilizer_coeSet ?_
+lemma symmetryGroup_eq_stabilizer_range_of_injective (t : TileSet ps ιₜ) (h : Injective t) :
+    t.symmetryGroup = MulAction.stabilizer G (Set.range t) := by
+  refine le_antisymm t.symmetryGroup_le_stabilizer_range ?_
   simp_rw [SetLike.le_def, mem_symmetryGroup_iff_exists, MulAction.mem_stabilizer_iff]
   intro g hg
-  rw [← coeSet_smul] at hg
-  exact ⟨equivOfCoeSetEqOfInjective hg ((injective_smul_iff g).2 h) h, by simp⟩
+  rw [← range_smul] at hg
+  exact ⟨equivOfRangeEqOfInjective hg ((injective_smul_iff g).2 h) h, by simp⟩
 
 /-- The disjoint union of two `TileSet`s, indexed by the sum of their index types. -/
 protected def sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') : TileSet ps (ιₜ ⊕ ιₜ') where
@@ -430,13 +413,13 @@ protected def sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') : TileSet ps (
 @[simp] lemma coe_sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') : t.sum t' = Sum.elim (↑t) (↑t') :=
   rfl
 
-@[simp] lemma coeSet_sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') :
-    (t.sum t' : Set (PlacedTile ps)) = (↑t) ∪ (↑t') :=
+lemma range_sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') :
+    Set.range (t.sum t') = Set.range t ∪ Set.range t' :=
   Set.Sum.elim_range _ _
 
 @[simp] lemma mem_sum {pt : PlacedTile ps} {t : TileSet ps ιₜ} {t' : TileSet ps ιₜ'} :
     pt ∈ t.sum t' ↔ pt ∈ t ∨ pt ∈ t' := by
-  simp [← mem_coeSet]
+  simp [← exists_iff_mem]
 
 lemma reindex_sum (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ'') (f : ιₜ' → ιₜ) (f' : ιₜ''' → ιₜ'') :
     (t.sum t').reindex (Sum.map f f') = (t.reindex f).sum (t'.reindex f') :=
@@ -450,17 +433,18 @@ lemma smul_sum (g : G) (t : TileSet ps ιₜ) (t' : TileSet ps ιₜ') :
 protected def sigma (t : (i : ι) → TileSet ps (ιₜι i)) : TileSet ps (Σ i, ιₜι i) where
   tiles := Sigma.uncurry (fun i ↦ ↑(t i))
 
-@[simp] lemma coe_sigma (t : (i : ι) → TileSet ps (ιₜι i)) :
+lemma coe_sigma (t : (i : ι) → TileSet ps (ιₜι i)) :
     TileSet.sigma t = Sigma.uncurry (fun i ↦ ↑(t i)) :=
   rfl
 
-@[simp] lemma coeSet_sigma (t : (i : ι) → TileSet ps (ιₜι i)) :
-    (TileSet.sigma t : Set (PlacedTile ps)) = ⋃ i, (t i : Set (PlacedTile ps)) :=
+@[simp] lemma range_sigma (t : (i : ι) → TileSet ps (ιₜι i)) :
+    Set.range (TileSet.sigma t) = ⋃ i, Set.range (t i) :=
   Set.range_sigma_eq_iUnion_range _
 
 lemma mem_sigma {pt : PlacedTile ps} {t : (i : ι) → TileSet ps (ιₜι i)} :
     pt ∈ TileSet.sigma t ↔ ∃ i, pt ∈ t i := by
-  simp [← mem_coeSet]
+  simp_rw [← exists_iff_mem, ← Set.mem_range, range_sigma]
+  simp
 
 lemma reindex_sigma (t : (i : ι) → TileSet ps (ιₜι i)) (f : (i : ι) → (ιₜ'ι i) → (ιₜι i)) :
     (TileSet.sigma t).reindex (Sigma.map id f) = TileSet.sigma fun i ↦ (t i).reindex (f i) :=
