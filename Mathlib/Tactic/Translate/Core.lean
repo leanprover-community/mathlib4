@@ -237,13 +237,18 @@ def findPrefixTranslation? (env : Environment) (n : Name) (t : TranslateData) :
     guard (env.contains info.translation || isReservedName env info.translation)
     return info
 where
+  /-- Loop through the prefixes of `n` to try to find a translation.
+  In such a case, we inherit the `relevantArg` option from the translation. -/
   go (n : Name) (postFixes : List String) : Option TranslationInfo := Id.run do
   if let some info := findTranslation? env t n then
-    return some { info with translation := postFixes.foldl .str info.translation }
+    return some {
+      translation := postFixes.foldl .str info.translation
+      relevantArg := info.relevantArg }
   if isPrivateName n then
     if let some info := findTranslation? env t (privateToUserName n) then
-      return some { info with
-        translation := postFixes.foldl .str (mkPrivateName env info.translation) }
+      return some {
+        translation := postFixes.foldl .str (mkPrivateName env info.translation)
+        relevantArg := info.relevantArg }
   let .str n postFix := n | return none
   return go n (postFix :: postFixes)
 
