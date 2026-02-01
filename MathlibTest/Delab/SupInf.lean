@@ -85,7 +85,7 @@ end
 
 section Apply
 
-variable {ι α : Type*} (f g : ι → α) (i : ι) variable [Lattice α]
+variable {ι α : Type*} [Lattice α] (f g : ι → α) (i : ι)
 
 /-- info: (f ⊔ g) i : α -/
 #guard_msgs in
