@@ -214,7 +214,7 @@ private lemma aux_tsum_identity_2 (d : ℕ+) :
 private lemma aux_tendsto_tsum_cexp_pnat :
     Tendsto (fun N : ℕ+ ↦ ∑' (n : ℕ+), cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) atTop (𝓝 0) := by
   have := tendsto_zero_geometric_tsum_pnat (norm_exp_two_pi_I_lt_one (.mk _ <| im_pnat_div_pos 1 z))
-  simp only [coe_mk, ← exp_nsmul, nsmul_eq_mul, Nat.cast_mul] at *
+  simp only [← exp_nsmul, nsmul_eq_mul, Nat.cast_mul] at *
   exact this.congr <| by grind
 
 /- Now this sum of terms with `-1 / z` tendsto `-2 * π * I / z` which is exactly `D2_S`. The key is
