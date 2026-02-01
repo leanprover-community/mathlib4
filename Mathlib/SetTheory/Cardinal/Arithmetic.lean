@@ -752,6 +752,22 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
   rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 
+variable {α : Type*}
+
+theorem mk_lt_mk_of_ssubset {s t : Set α} (hs : s.Finite) (h : s ⊂ t) : #s < #t := by
+  classical
+  refine lt_of_le_not_ge (mk_le_mk_of_subset h.subset) fun hle ↦ not_subset_of_ssubset h ?_
+  rw [← diff_eq_empty, ← Set.isEmpty_coe_sort, ← Cardinal.mk_eq_zero_iff, ← nonpos_iff_eq_zero]
+  apply add_le_add_iff_of_lt_aleph0 hs.lt_aleph0 |>.mp
+  rw [add_def, ← mk_congr <| Equiv.Set.union disjoint_sdiff_left, diff_union_of_subset h.subset]
+  exact le_add_of_le_right hle
+
+theorem mk_strictMono [Finite α] : StrictMono (α := Set α) (mk ∘ (↑)) :=
+  fun _ _ ↦ mk_lt_mk_of_ssubset <| toFinite _
+
+theorem mk_strictMonoOn : StrictMonoOn (α := Set α) (mk ∘ (↑)) (setOf Set.Finite) :=
+  fun _ hs _ _ ↦ mk_lt_mk_of_ssubset hs
+
 end computing
 
 /-! ### Properties of `compl` -/

@@ -638,6 +638,9 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
 theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
   ⟨Set.embeddingOfSubset s t h⟩
 
+theorem mk_monotone : Monotone (α := Set α) (mk ∘ (↑)) :=
+  fun _ _ ↦ mk_le_mk_of_subset
+
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
