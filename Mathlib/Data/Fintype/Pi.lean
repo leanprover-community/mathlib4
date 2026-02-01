@@ -217,10 +217,14 @@ end Set
 
 section List
 
+lemma List.card_idxsOf_toFinset_eq_count {α : Type*} [BEq α] (l : List α) (a : α) :
+    (l.idxsOf a).toFinset.card = l.count a := by
+  rw [List.card_toFinset, List.Nodup.dedup List.nodup_idxsOf, List.length_idxsOf]
+
 lemma List.count_ofFn_eq_card [DecidableEq α] (n : ℕ) (f : Fin n → α) (a : α)
     [DecidablePred fun i ↦ f i = a] :
     List.count a (List.ofFn f) = Finset.card {i | f i = a} := by
-  rw [← Finset.card_idxsOf_toFinset_eq_count]
+  rw [← List.card_idxsOf_toFinset_eq_count]
   let s := {i | f i = a}.toFinset
   refine card_bij (fun b hb ↦ ⟨b, ?_⟩) (fun c hc ↦ ?_) (fun d hd1 hd2 hd3 ↦ ?_) (fun e he ↦ ?_)
   · aesop
