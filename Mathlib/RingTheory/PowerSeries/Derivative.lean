@@ -118,12 +118,8 @@ theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
 theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := derivativeFun_coe f
 
 @[simp] theorem derivative_X : d⁄dX R (X : R⟦X⟧) = 1 := by
-  ext
-  rw [coeff_derivative, coeff_one, coeff_X, boole_mul]
-  simp_rw [add_eq_right]
-  split_ifs with h
-  · rw [h, cast_zero, zero_add]
-  · rfl
+  ext n; simp only [coeff_derivative, coeff_one, coeff_X, boole_mul, add_eq_right]
+  split_ifs <;> simp_all
 
 theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
     trunc n (d⁄dX R f) = Polynomial.derivative (trunc (n + 1) f) :=
@@ -131,11 +127,7 @@ theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     trunc (n - 1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
-  cases n with
-  | zero =>
-    simp
-  | succ n =>
-    rw [succ_sub_one, trunc_derivative]
+  cases n <;> simp [trunc_derivative]
 
 end CommutativeSemiring
 
@@ -192,8 +184,8 @@ theorem derivative_pow (g : A⟦X⟧) (n : ℕ) :
 /-- Chain rule for polynomials viewed as power series. -/
 private theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
     d⁄dX A ((p : A⟦X⟧).subst g) = (d⁄dX A (p : A⟦X⟧)).subst g * d⁄dX A g := by
-  rw [subst_coe hg, derivative_coe, subst_coe hg]
-  rw [Derivation.comp_aeval_eq (a := g) (derivative A) p, smul_eq_mul]
+  simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) (derivative A) p,
+    smul_eq_mul]
 
 variable {A} in
 lemma HasSubst.eventually_coeff_pow_eq_zero {f : A⟦X⟧} (hf : HasSubst f) (n : ℕ) :
