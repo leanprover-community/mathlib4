@@ -718,6 +718,19 @@ def fderivIntegralCurry0 (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc
     ((integralCMLM (fun y ↦ (fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) y).uncurryLeft)
       u t₀ α).curryLeft)
 
+/-- `fderivIntegralCurry0 f u t₀ α` is the Fréchet derivative of
+`fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0` at `α`. -/
+lemma hasFDerivAt_integralCMLM_curry0 {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) :
+    HasFDerivAt (fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0)
+      (fderivIntegralCurry0 f u t₀ α) α :=
+  -- TODO: repetitive
+  have hg : ContDiffOn ℝ 1 (fun y ↦ uncurry0 ℝ E (f y)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
+  continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E) C(Icc tmin tmax, E)
+    |>.toContinuousLinearEquiv.hasFDerivAt.comp α <| hasFDerivAt_integralCMLM hg hu t₀ hα
+
 /-- The Fréchet derivative of `T f u t₀` at `(x, α)`. This is the continuous linear map
 `(dx, dα) ↦ const dx - dα + D(integral term)(dα)`. -/
 def fderivT (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
@@ -732,54 +745,10 @@ is given by `hasFDerivAt_integralCMLM`. -/
 lemma hasFDerivAt_T {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u) (hu : IsOpen u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {x : E} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
     HasFDerivAt (T f u t₀) (fderivT f u t₀ α) (x, α) := by
-  unfold fderivT
-  unfold T
-  -- Derivative of `const x` with respect to `(x, α)` is `(dx, dα) ↦ const dx`
-  have h1 : HasFDerivAt (fun p : E × C(Icc tmin tmax, E) ↦ ContinuousMap.const _ p.1)
-      ((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _))
-      (x, α) :=
-    (ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).hasFDerivAt.comp (x, α) hasFDerivAt_fst
-  -- Derivative of `-α` with respect to `(x, α)` is `(dx, dα) ↦ -dα`
-  have h2 : HasFDerivAt (fun p : E × C(Icc tmin tmax, E) ↦ -p.2)
-      (-(ContinuousLinearMap.snd ℝ E _)) (x, α) :=
-    hasFDerivAt_snd.neg
-  -- Derivative of the integral term with respect to `(x, α)` is `(dx, dα) ↦ D(integral)(α)(dα)`
-  have hg : ContDiffOn ℝ 1 (fun y ↦ uncurry0 ℝ E (f y)) u :=
-    (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
-  have h3 : HasFDerivAt (fun p : E × C(Icc tmin tmax, E) ↦
-        (integralCMLM (fun y ↦ uncurry0 ℝ E (f y)) u t₀ p.2).curry0)
-      ((fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _))
-      (x, α) := by
-    have hI := hasFDerivAt_integralCMLM hg hu t₀ hα
-    have hcurry : HasFDerivAt (fun m : C(Icc tmin tmax, E) [×0]→L[ℝ] C(Icc tmin tmax, E) ↦ m.curry0)
-        (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
-          C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap
-        (integralCMLM (fun y ↦ uncurry0 ℝ E (f y)) u t₀ α) := by
-      have := ContinuousLinearMap.hasFDerivAt
-        (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
-          C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap
-        (x := integralCMLM (fun y ↦ uncurry0 ℝ E (f y)) u t₀ α)
-      convert this using 2
-    have hsnd : HasFDerivAt (fun p : E × C(Icc tmin tmax, E) ↦ p.2)
-        (ContinuousLinearMap.snd ℝ E _) (x, α) := hasFDerivAt_snd
-    exact (hcurry.comp α hI).comp (x, α) hsnd
-  -- Combine: T = const x - α + integral = const x + (-α) + integral
-  -- h1 + h2 + h3 gives HasFDerivAt for (const x + (-α) + integral)
-  -- We need to show this equals (const x - α + integral) and the derivatives match
-  have hfun : (fun p : E × C(Icc tmin tmax, E) ↦ ContinuousMap.const _ p.1 - p.2 +
-        (integralCMLM (fun y ↦ uncurry0 ℝ E (f y)) u t₀ p.2).curry0) =
-      (fun p ↦ ContinuousMap.const _ p.1) + (fun p ↦ -p.2) +
-        (fun p ↦ (integralCMLM (fun y ↦ uncurry0 ℝ E (f y)) u t₀ p.2).curry0) := by
-    ext p; simp [sub_eq_add_neg]
-  have hderiv : (ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp
-      (ContinuousLinearMap.fst ℝ E _) - ContinuousLinearMap.snd ℝ E _ +
-      (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _) =
-      (ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _) +
-      (-ContinuousLinearMap.snd ℝ E _) +
-      (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _) := by
-    simp [sub_eq_add_neg]
-  rw [hfun, hderiv]
-  exact (h1.add h2).add h3
+  apply (HasFDerivAt.sub _ hasFDerivAt_snd).add _
+  · exact ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)
+      |>.hasFDerivAt.comp (x, α) hasFDerivAt_fst
+  · exact (hasFDerivAt_integralCMLM_curry0 hf hu t₀ hα).comp (𝕜 := ℝ) (x, α) hasFDerivAt_snd
 
 /-- The derivative of `T` restricted to the second component is
 `-id + fderivIntegralCurry0 f u t₀ α`. -/
@@ -788,11 +757,12 @@ lemma fderivT_comp_inr {f : E → E} {u : Set E}
     (fderivT f u t₀ α).comp (ContinuousLinearMap.inr ℝ E _) =
       -ContinuousLinearMap.id ℝ _ + fderivIntegralCurry0 f u t₀ α := by
   ext y
-  simp only [fderivT, ContinuousLinearMap.comp_apply, ContinuousLinearMap.inr_apply,
-    ContinuousLinearMap.add_apply, ContinuousLinearMap.sub_apply,
-    ContinuousLinearMap.neg_apply, ContinuousLinearMap.id_apply,
-    ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd',
-    _root_.map_zero, zero_sub]
+  simp [fderivT]
+
+
+
+
+
 
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is bounded by
 `|tmax - tmin| * C` where `C` bounds `‖fderiv ℝ f x‖` on `range α`. -/
