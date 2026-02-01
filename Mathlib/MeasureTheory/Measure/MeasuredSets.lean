@@ -61,7 +61,7 @@ lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ edist 
 lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) ↦ μ s) := by
   refine continuous_of_le_add_edist 1 ENNReal.one_ne_top fun s t ↦ ?_
   rw [one_mul, ← tsub_le_iff_left]
-  apply sub_le_edist
+  exact sub_le_edist s t
 
 instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
