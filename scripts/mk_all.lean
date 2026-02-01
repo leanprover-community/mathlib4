@@ -21,7 +21,7 @@ open Lean System.FilePath
 open Lake in
 /-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
 on which the current project depends.
-If the current project is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and
+If the current project is `mathlib`, then it excludes the libraries `Cache` and `MathlibTest` and
 it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
@@ -31,7 +31,7 @@ def getLeanLibs : IO (Array String) := do
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
   return if package.baseName == `mathlib then
-    libs.erase "Cache" |>.erase "LongestPole" |>.erase "MathlibTest"
+    libs.erase "Cache" |>.erase "MathlibTest"
       |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else
     libs
@@ -47,7 +47,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let useModule := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
-  -- If the package is `mathlib`, then it removes the libraries `Cache` and `LongestPole` and it
+  -- If the package is `mathlib`, then it removes the libraries `Cache` and `MathlibTest` and it
   -- adds `Mathlib/Tactic`.
   let libs := ← match args.flag? "lib" with
               | some lib => return #[lib.as! String]
@@ -74,7 +74,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     else if (← IO.FS.readFile fileName) != fileContent then
       if check then
         IO.println s!"The file '{fileName}' is out of date: \
-          run `lake exe mk_all{if git then " --git" else ""}` to update it"
+          run `lake exe mk_all{if git then " --git" else ""}{if useModule then " --module" else ""}` \
+          to update it"
       else
         IO.println s!"Updating '{fileName}'"
         IO.FS.writeFile fileName fileContent
@@ -91,7 +92,7 @@ def mkAll : Cmd := `[Cli|
   mk_all VIA mkAllCLI; ["0.0.1"]
   "Generate a file importing all the files of a Lean folder. \
    By default, it generates the files for the Lean libraries of the package.\
-   In the case of `Mathlib`, it removes the libraries `Cache` and `LongestPole`\
+   In the case of `Mathlib`, it removes the libraries `Cache` and `MathlibTest`\
    and it adds `Mathlib/Tactic`. \
    If you are working in a project downstream of mathlib, use `lake exe mk_all --lib MyProject`."
 

@@ -90,7 +90,7 @@ theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_
 
 theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
 
-theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
+theorem absNorm_eq_zero_iff [IsDomain K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
@@ -106,7 +106,7 @@ section IsLocalization
 
 variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ K]
 
-theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
+theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
     |(b.localizationLocalization ℚ ℤ⁰ K).det ((↑) ∘ bI)| = absNorm I := by
   have := IsFractionRing.nontrivial R K

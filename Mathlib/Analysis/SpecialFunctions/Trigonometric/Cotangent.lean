@@ -208,7 +208,7 @@ lemma cotTerm_identity (hz : x ∈ ℂ_ℤ) (n : ℕ) :
   · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hz (-(n + 1) : ℤ)
   · simpa using (integerComplement_add_ne_zero hz ((n : ℤ) + 1))
 
-lemma Summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := by
+lemma summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := by
   rw [funext fun n ↦ cotTerm_identity hz n]
   apply Summable.mul_left
   suffices Summable fun i : ℕ ↦ (x - (↑i : ℂ))⁻¹ * (x + (↑i : ℂ))⁻¹ by
@@ -219,10 +219,12 @@ lemma Summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := 
   apply (EisensteinSeries.summable_linear_sub_mul_linear_add x 1 1).congr
   simp [mul_comm]
 
+@[deprecated (since := "2026-01-28")] alias Summable_cotTerm := summable_cotTerm
+
 lemma cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
     ∑' n : ℕ, (1 / (x - (n + 1)) + 1 / (x + (n + 1))) := by
   rw [HasSum.tsum_eq]
-  apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm hz)).mpr
+  apply (Summable.hasSum_iff_tendsto_nat (summable_cotTerm hz)).mpr
     (tendsto_logDeriv_euler_cot_sub hz)
 
 /-- The cotangent infinite sum representation. -/
@@ -355,7 +357,7 @@ private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z �
       iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =
     (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ) := by
   rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet hz
-    (fun t ht ↦ Summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
+    (fun t ht ↦ summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
     (fun l hl hl2 ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm hl)
     (fun n l z hl hz ↦ (differentiableOn_iteratedDerivWithin_cotTerm n l).differentiableAt
     (isOpen_upperHalfPlaneSet.mem_nhds hz))]

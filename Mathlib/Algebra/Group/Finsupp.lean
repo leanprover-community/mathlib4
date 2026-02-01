@@ -154,7 +154,7 @@ lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M
     (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
   rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
   · simp [pair_comm f₂ f₁]
-  · simp [support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂, H.symm]
+  · simp [support_single_ne_zero, *]
 
 lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by

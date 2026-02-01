@@ -17,6 +17,8 @@ public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
 
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
 /-!
 # Simple Modules
 

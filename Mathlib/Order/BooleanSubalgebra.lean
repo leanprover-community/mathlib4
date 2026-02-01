@@ -91,7 +91,7 @@ instance instSupCoe : Max L where max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
 instance instInfCoe : Min L where min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
 
 /-- A Boolean subalgebra of a lattice inherits a complement. -/
-instance instHasComplCoe : HasCompl L where compl a := ⟨aᶜ, compl_mem a.2⟩
+instance instComplCoe : Compl L where compl a := ⟨aᶜ, compl_mem a.2⟩
 
 /-- A Boolean subalgebra of a lattice inherits a difference. -/
 instance instSDiffCoe : SDiff L where sdiff a b := ⟨a \ b, sdiff_mem a.2 b.2⟩
