@@ -164,9 +164,8 @@ class DiffeologicalSpace (X : Type*) where
   plot_reparam {n m : ℕ} {p : 𝔼ᵐ → X} {f : 𝔼ⁿ → 𝔼ᵐ} (hp : p ∈ plots m) (hf : ContDiff ℝ ∞ f) :
     p ∘ f ∈ plots n
   /-- Every locally smooth map `EuclideanSpace ℝ (Fin n) → X` is a plot. -/
-  locality {n : ℕ} {p : 𝔼ⁿ → X} :
-    (∀ x : 𝔼ⁿ, ∃ u : Set 𝔼ⁿ, IsOpen u ∧ x ∈ u ∧ ∀ {m : ℕ} {f : 𝔼ᵐ → 𝔼ⁿ},
-      (∀ x, f x ∈ u) → ContDiff ℝ ∞ f → p ∘ f ∈ plots m) → p ∈ plots n
+  locality {n : ℕ} {p : 𝔼ⁿ → X} (hp : ∀ x : 𝔼ⁿ, ∃ u : Set 𝔼ⁿ, IsOpen u ∧ x ∈ u ∧
+    ∀ {m : ℕ} {f : 𝔼ᵐ → 𝔼ⁿ}, (∀ x, f x ∈ u) → ContDiff ℝ ∞ f → p ∘ f ∈ plots m) : p ∈ plots n
   /-- The D-topology of the diffeology. This is included as part of the data in order to give
   control over what the D-topology is defeq to. See also note [forgetful inheritance]. -/
   dTopology : TopologicalSpace X := {
@@ -177,8 +176,8 @@ class DiffeologicalSpace (X : Type*) where
     isOpen_sUnion := fun _ hs _ p hp ↦
       Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp }
   /-- The D-topology consists of exactly those sets whose preimages under plots are all open. -/
-  isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
-      ∀ {n : ℕ}, ∀ p ∈ plots n, IsOpen (p ⁻¹' u) := by rfl
+  isOpen_iff_preimages_plots {u : Set X} :
+    dTopology.IsOpen u ↔ ∀ {n : ℕ}, ∀ p ∈ plots n, IsOpen (p ⁻¹' u) := by rfl
 
 variable {X Y Z : Type*} [DiffeologicalSpace X] [DiffeologicalSpace Y] [DiffeologicalSpace Z]
 
@@ -198,8 +197,7 @@ def IsPlot {n : ℕ} (p : 𝔼ⁿ → X) : Prop := p ∈ DiffeologicalSpace.plot
 /-- A function between diffeological spaces is smooth iff composition with it preserves
 smoothness of plots. -/
 @[fun_prop]
-def DSmooth (f : X → Y) : Prop := ∀ (n : ℕ) (p : 𝔼ⁿ → X),
-  IsPlot p → IsPlot (f ∘ p)
+def DSmooth (f : X → Y) : Prop := ∀ (n : ℕ) (p : 𝔼ⁿ → X), IsPlot p → IsPlot (f ∘ p)
 
 /-- Notation for the D-topology of non-standard diffeologies. -/
 notation (name := DTop_of) "DTop[" d "]" => @DTop _ d
@@ -296,8 +294,8 @@ structure DiffeologicalSpace.CorePlotsOn (X : Type*) where
     isPlotOn isOpen_univ p ↔ isPlot p := by simp
   isPlot_const {n : ℕ} (x : X) : isPlot fun (_ : 𝔼ⁿ) ↦ x
   isPlotOn_reparam {n m : ℕ} {u : Set 𝔼ⁿ} {v : Set 𝔼ᵐ} {hu : IsOpen u} (hv : IsOpen v)
-    {p : 𝔼ⁿ → X} {f : 𝔼ᵐ → 𝔼ⁿ} (h : Set.MapsTo f v u) :
-    isPlotOn hu p → ContDiffOn ℝ ∞ f v → isPlotOn hv (p ∘ f)
+    {p : 𝔼ⁿ → X} {f : 𝔼ᵐ → 𝔼ⁿ} (h : Set.MapsTo f v u) (hp : isPlotOn hu p)
+    (hf : ContDiffOn ℝ ∞ f v) : isPlotOn hv (p ∘ f)
   /-- The locality axiom of diffeologies, phrased in terms of `isPlotOn`. -/
   locality {n : ℕ} {u : Set 𝔼ⁿ} (hu : IsOpen u) {p : 𝔼ⁿ → X} :
     (∀ x ∈ u, ∃ (v : Set _) (hv : IsOpen v), x ∈ v ∧ isPlotOn hv p) → isPlotOn hu p
@@ -309,8 +307,7 @@ structure DiffeologicalSpace.CorePlotsOn (X : Type*) where
     isOpen_inter := fun _ _ hs ht _ p hp ↦
       Set.preimage_inter.symm ▸ (IsOpen.inter (hs p hp) (ht p hp))
     isOpen_sUnion := fun _ hs _ p hp ↦
-      Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp
-  }
+      Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp }
   isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
     ∀ {n : ℕ}, ∀ p : 𝔼ⁿ → X, isPlot p → IsOpen (p ⁻¹' u) := by rfl
 
