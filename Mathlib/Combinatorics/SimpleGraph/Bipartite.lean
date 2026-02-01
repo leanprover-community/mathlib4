@@ -363,9 +363,8 @@ theorem completeBipartiteGraph_isContained_iff :
 end Copy
 
 lemma IsBipartiteWith.subgraph (h : G.IsBipartiteWith s t) (H : Subgraph G) :
-  H.coe.IsBipartiteWith {x : H.verts | ↑x ∈ s} {x : H.verts | ↑x ∈ t} :=
-  have := h.disjoint
-  ⟨by grind, fun _ _ hadj' ↦ h.mem_of_adj <| H.adj_sub hadj'⟩
+    H.coe.IsBipartiteWith {x : H.verts | ↑x ∈ s} {x : H.verts | ↑x ∈ t} :=
+  ⟨by grind [h.disjoint], fun _ _ hadj' ↦ h.mem_of_adj <| H.adj_sub hadj'⟩
 
 lemma IsBipartite.subgraph (h : G.IsBipartite) (H : Subgraph G) : H.coe.IsBipartite :=
   let ⟨_, _, hst⟩ := isBipartite_iff_exists_isBipartiteWith.mp h
