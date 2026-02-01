@@ -94,8 +94,8 @@ def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜
     norm_map' x := by
       apply le_antisymm (double_dual_bound 𝕜 E x)
       obtain ⟨g, hg⟩ := exists_dual_vector'' 𝕜 x
-      grw [← (inclusionInDoubleDual 𝕜 E x).unit_le_opNorm g hg.1]
-      simp [hg.2] }
+      grw [← (inclusionInDoubleDual 𝕜 E x).unit_le_opNorm g hg.left]
+      simp [hg.right] }
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `x`.
 Compare `ContinuousLinearMap.opNorm_le_bound`. -/

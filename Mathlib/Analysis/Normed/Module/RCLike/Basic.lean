@@ -55,8 +55,7 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
 
 theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :
     ‖(‖x‖ : 𝕜) • ContinuousLinearEquiv.coord 𝕜 x h‖ = 1 := by
-  simp only [norm_smul, norm_algebraMap', norm_norm, coord_norm,
-    mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+  simp only [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
 
 @[deprecated (since := "2026-02-01")] alias coord_norm' := ContinuousLinearEquiv.coord_norm'
 

@@ -151,7 +151,7 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
     let coord : span 𝕜 {x} →L[𝕜] 𝕜 := (ofHomothety _ _ hx h_homothety).symm.toContinuousLinearMap
     obtain ⟨g, hg⟩ := exists_extension_norm_eq (span 𝕜 {x}) ((‖x‖ : 𝕜) • coord)
     refine ⟨g, ?_, ?_⟩
-    · simp only [hg.2, norm_smul, norm_algebraMap', norm_norm]
+    · simp only [hg.right, norm_smul, norm_algebraMap', norm_norm]
       grw [coord.opNorm_le_bound (by positivity)
         (fun y ↦ (homothety_inverse _ hx _ h_homothety y).le), mul_inv_cancel₀ hx.ne']
     · have hgx : g x = g (⟨x, by simp⟩ : span 𝕜 {x}) := by rw [Submodule.coe_mk]
