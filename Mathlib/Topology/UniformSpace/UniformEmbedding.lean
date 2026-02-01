@@ -596,7 +596,7 @@ lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
   rw [← coe_comp_rangeFactorization (SeparationQuotient.mk ∘ hid.extend f),
     ← val_comp_inclusion hrr, Function.comp_assoc, Subtype.val_injective.comp_left.eq_iff]
   refine hid.extend_unique ?_ ?_
-  · simp [ff, hid.inseparable_extend h.uniformContinuous.continuous.continuousAt, sf]
+  · simp [ff, Subtype.map, hid.inseparable_extend h.uniformContinuous.continuous.continuousAt, sf]
   · exact (continuous_inclusion hrr).comp
       (SeparationQuotient.continuous_mk.comp (uniformContinuous_uniformly_extend hi hid.dense
         h.uniformContinuous).continuous).rangeFactorization
