@@ -44,7 +44,7 @@ theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
 theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 
-instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
+instance Prop.le_total : @Std.Total Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by

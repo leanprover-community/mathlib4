@@ -176,7 +176,7 @@ theorem hasTerminal_of_hasInitial_op [HasInitial Cᵒᵖ] : HasTerminal C :=
 theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 
-instance {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
+instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
     { cone :=
@@ -186,7 +186,7 @@ instance {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
 
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
-def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
+def limitConstTerminal {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
     limit ((CategoryTheory.Functor.const J).obj (⊤_ C)) ≅ ⊤_ C where
   hom := terminal.from _
   inv :=
@@ -195,12 +195,12 @@ def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTer
         π := { app := fun _ => terminal.from _ } }
 
 @[reassoc (attr := simp)]
-theorem limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C]
+theorem limitConstTerminal_inv_π {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
       terminal.from _ := by cat_disch
 
-instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
+instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
     HasColimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) :=
   HasColimit.mk
     { cocone :=
@@ -210,7 +210,7 @@ instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
 
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
-def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
+def colimitConstInitial {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
     colimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) ≅ ⊥_ C where
   hom :=
     colimit.desc ((CategoryTheory.Functor.const J).obj (⊥_ C))
@@ -219,7 +219,7 @@ def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasIn
   inv := initial.to _
 
 @[reassoc (attr := simp)]
-theorem ι_colimitConstInitial_hom {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C]
+theorem ι_colimitConstInitial_hom {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C]
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
       initial.to _ := by cat_disch
@@ -336,10 +336,9 @@ theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimi
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (colimit.ι F j) :=
   ⟨⟨colimit.desc _ (coconeOfDiagramInitial I F), by
     refine ⟨?_, by ext; simp⟩
-    dsimp; simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
-      Functor.const_obj_obj, IsInitial.to_self, Functor.map_id]
-    dsimp [inv]; simp only [Category.id_comp, Category.comp_id, and_self]
-    apply @Classical.choose_spec _ (fun x => x = 𝟙 F.obj j) _
+    simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
+      Functor.const_obj_obj, IsInitial.to_self]
+    grind
   ⟩⟩
 
 instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :

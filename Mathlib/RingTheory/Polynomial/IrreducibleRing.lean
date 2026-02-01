@@ -27,7 +27,7 @@ polynomial, irreducible ring, nilradical, prime ideal
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

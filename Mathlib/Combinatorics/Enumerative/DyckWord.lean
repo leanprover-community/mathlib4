@@ -8,8 +8,7 @@ module
 public import Mathlib.Combinatorics.Enumerative.Catalan
 
 import Batteries.Data.List.Count
-import Mathlib.Tactic.Positivity
-import Mathlib.Data.Tree.Basic
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Dyck words
@@ -154,7 +153,7 @@ def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) 
   count_U_eq_count_D := by
     have := p.count_U_eq_count_D
     rw [← take_append_drop i p.toList, count_append, count_append] at this
-    omega
+    lia
   count_D_le_count_U k := by
     rw [show i = min i (i + k) by omega, ← take_take] at hi
     rw [take_drop, ← add_le_add_iff_left (((p.toList.take (i + k)).take i).count U),
@@ -216,9 +215,9 @@ def denest (hn : p.IsNested) : DyckWord where
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
-      min_eq_left (by omega), l1, head_eq_U] at eq
+      min_eq_left (by lia), l1, head_eq_U] at eq
     simp only [count_singleton', ite_true] at eq
-    omega
+    lia
 
 variable (p) in
 lemma nest_denest (hn) : (p.denest hn).nest = p := by
@@ -480,13 +479,14 @@ section Tree
 
 open Tree
 
+set_option backward.privateInPublic true in
 /-- Convert a Dyck word to a binary rooted tree.
 
 `f(0) = nil`. For a nonzero word find the `D` that matches the initial `U`,
 which has index `p.firstReturn`, then let `x` be everything strictly between said `U` and `D`,
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
-Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree.lean`) joins two subtrees
-to a new root node. -/
+Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
+subtrees to a new root node. -/
 private def equivTreeToFun (p : DyckWord) : Tree Unit :=
   if h : p = 0 then nil else
     have := semilength_insidePart_lt h
@@ -494,6 +494,7 @@ private def equivTreeToFun (p : DyckWord) : Tree Unit :=
     equivTreeToFun p.insidePart △ equivTreeToFun p.outsidePart
 termination_by p.semilength
 
+set_option backward.privateInPublic true in
 /-- Convert a binary rooted tree to a Dyck word.
 
 `g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
@@ -502,6 +503,7 @@ private def equivTreeInvFun : Tree Unit → DyckWord
   | Tree.nil => 0
   | Tree.node _ l r => (equivTreeInvFun l).nest + equivTreeInvFun r
 
+set_option backward.privateInPublic true in
 @[nolint unusedHavesSuffices]
 private lemma equivTree_left_inv (p) : equivTreeInvFun (equivTreeToFun p) = p := by
   by_cases h : p = 0
@@ -514,11 +516,14 @@ private lemma equivTree_left_inv (p) : equivTreeInvFun (equivTreeToFun p) = p :=
     exact nest_insidePart_add_outsidePart h
 termination_by p.semilength
 
+set_option backward.privateInPublic true in
 @[nolint unusedHavesSuffices]
 private lemma equivTree_right_inv : ∀ t, equivTreeToFun (equivTreeInvFun t) = t
   | Tree.nil => by simp [equivTreeInvFun, equivTreeToFun]
   | Tree.node _ _ _ => by simp [equivTreeInvFun, equivTreeToFun, equivTree_right_inv]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Equivalence between Dyck words and rooted binary trees. -/
 def equivTree : DyckWord ≃ Tree Unit where
   toFun := equivTreeToFun
@@ -526,6 +531,8 @@ def equivTree : DyckWord ≃ Tree Unit where
   left_inv := equivTree_left_inv
   right_inv := equivTree_right_inv
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[nolint unusedHavesSuffices]
 lemma semilength_eq_numNodes_equivTree (p) : p.semilength = (equivTree p).numNodes := by
   by_cases h : p = 0

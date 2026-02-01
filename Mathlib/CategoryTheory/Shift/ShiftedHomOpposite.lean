@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Category Pretriangulated.Opposite Pretriangulated
 
-variable {C : Type*} [Category C] [HasShift C ℤ] {X Y Z : C}
+variable {C : Type*} [Category* C] [HasShift C ℤ] {X Y Z : C}
 
 namespace ShiftedHom
 
@@ -61,7 +61,7 @@ lemma opEquiv_symm_comp {a b : ℤ}
     (opEquiv _).symm (f.comp g h) =
       ((opEquiv _).symm g).comp ((opEquiv _).symm f) (by lia) := by
   rw [opEquiv_symm_apply, opEquiv_symm_apply,
-    opShiftFunctorEquivalence_unitIso_inv_app_eq _ _ _ _ (show a + b = c by lia), comp, comp]
+    opShiftFunctorEquivalence_add_unitIso_inv_app_eq _ _ _ _ (show a + b = c by lia), comp, comp]
   dsimp
   rw [assoc, assoc, assoc, assoc, ← Functor.map_comp, ← unop_comp_assoc,
     Iso.inv_hom_id_app]
@@ -123,7 +123,7 @@ lemma opEquiv'_add_symm (n m a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' =
       (opEquiv' m a' a'' ha'').symm ((opEquiv' n a a' ha').symm
         (x ≫ (shiftFunctorAdd Cᵒᵖ m n).hom.app _)).op := by
   simp only [opEquiv'_symm_apply, opEquiv_symm_apply,
-    opShiftFunctorEquivalence_unitIso_inv_app_eq _ _ _ _ (add_comm n m)]
+    opShiftFunctorEquivalence_add_unitIso_inv_app_eq _ _ _ _ (add_comm n m)]
   dsimp
   simp only [assoc, Functor.map_comp, ← shiftFunctorAdd'_eq_shiftFunctorAdd,
     ← NatTrans.naturality_assoc,
@@ -139,7 +139,6 @@ lemma opEquiv_symm_add {n : ℤ} (x y : ShiftedHom (Opposite.op Y) (Opposite.op 
     (opEquiv n).symm (x + y) = (opEquiv n).symm x + (opEquiv n).symm y := by
   dsimp [opEquiv_symm_apply]
   rw [← Preadditive.comp_add, ← Functor.map_add]
-  rfl
 
 @[simp]
 lemma opEquiv'_symm_add {n a : ℤ} (x y : (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧))
@@ -147,9 +146,7 @@ lemma opEquiv'_symm_add {n a : ℤ} (x y : (Opposite.op (Y⟦a⟧) ⟶ (Opposite
     (opEquiv' n a a' h).symm (x + y) =
       (opEquiv' n a a' h).symm x + (opEquiv' n a a' h).symm y := by
   dsimp [opEquiv']
-  erw [opEquiv_symm_add, Iso.homToEquiv_apply, Iso.homToEquiv_apply, Iso.homToEquiv_apply]
-  rw [Preadditive.add_comp]
-  rfl
+  rw [opEquiv_symm_add, Preadditive.add_comp]
 
 end Preadditive
 

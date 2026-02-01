@@ -459,7 +459,7 @@ theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s
 lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
   ext
   simp [mem_add, spanPoints]
-  aesop
+  grind
 
 variable {k}
 
@@ -696,8 +696,6 @@ variable {P}
 /-- No points are in `⊥`. -/
 theorem notMem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
   Set.notMem_empty p
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
   Subtype.isEmpty_of_false fun _ ↦ notMem_bot _ _ _
@@ -1071,7 +1069,7 @@ lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
 
 lemma affineSpan_subset_span {s : Set V} :
-    (affineSpan k s : Set V) ⊆  Submodule.span k s :=
+    (affineSpan k s : Set V) ⊆ Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
 
 -- TODO: We want this to be simp, but `affineSpan` gets simp-ed away to `spanPoints`!

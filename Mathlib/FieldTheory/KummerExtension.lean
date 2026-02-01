@@ -405,7 +405,7 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : Gal(L/K)) :
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 
-/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is a `n`-th primitive root of unity
+/-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is an `n`-th primitive root of unity
 in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
 def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :

@@ -80,7 +80,7 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     refine ⟨i, f, ⟨hf₁, hf₂⟩, fun j ↦ ?_⟩
     rw [← union_singleton, preimage_union, preimage_diff]
     obtain (rfl | hne) := eq_or_ne i j
-    · simpa only [ show ∀ x, {⟨i,x⟩} = Sigma.mk i '' {x} by simp,
+    · simpa only [show ∀ x, {⟨i,x⟩} = Sigma.mk i '' {x} by simp,
         preimage_image_eq _ sigma_mk_injective, union_singleton]
     rw [preimage_singleton_eq_empty.2 (by simpa), preimage_singleton_eq_empty.2 (by simpa),
       diff_empty, union_empty]

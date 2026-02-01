@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 -/
 
-@[expose] public section
+public section
 
 
 /-- In a local ring the characteristic is either zero or a prime power. -/
