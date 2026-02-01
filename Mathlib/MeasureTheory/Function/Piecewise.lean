@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 # Measurability of piecewise functions
 
 In this file, we prove some results about measurability of functions defined by using
-`IndexedPartition`.
+`IndexedPartition.piecewise`.
 
 -/
 
