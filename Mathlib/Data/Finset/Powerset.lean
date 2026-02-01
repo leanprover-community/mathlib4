@@ -352,4 +352,3 @@ lemma card_listVector_card {k n : ℕ} :
 end powersetCard
 
 end Finset
-#min_imports
