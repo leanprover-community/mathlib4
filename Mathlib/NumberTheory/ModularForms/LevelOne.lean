@@ -66,8 +66,8 @@ private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
   · simp only [Metric.mem_closedBall, dist_zero_right]
     rcases eq_or_ne q 0 with rfl | hq'
     · refine ⟨0, by simpa only [norm_zero] using exp_nonneg _, le_rfl⟩
-    · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f <|
-        .mk _ <| im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'
+    · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f
+        ⟨_, im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
       exact ⟨_, norm_qParam_le_of_one_half_le_im hξ,
         by simpa [← eq_cuspFunction f _ one_mem_strictPeriods_SL2Z one_ne_zero,
           qParam_right_inv one_ne_zero hq'] using hξ₂⟩

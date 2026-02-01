@@ -269,7 +269,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   simp only [ofReal_div, ofReal_one, ofReal_natCast]
   refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
   let F (x : ℝ) : ℝ := ‖1 / ↑h * (1 / 𝕢 h ((x : ℂ) + 1 / n * I) ^ n
-      * f (.mk ((x : ℂ) + 1 / n * Complex.I) (by simp [hn])))‖
+      * f ⟨(x : ℂ) + 1 / n * Complex.I, by simp [hn]⟩)‖
   have hne : ‖(n : ℝ) ^ e‖ = n ^ e := Real.norm_of_nonneg (by positivity)
   have (x : ℝ) : F x ≤ 1 / h * (1 / Real.exp (-2 * Real.pi / ↑h)) * (C * n ^ e) := by
     simp only [F, norm_mul, norm_div, norm_real, norm_one, norm_pow, mul_assoc]

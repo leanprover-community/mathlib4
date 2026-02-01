@@ -75,7 +75,7 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ
   by_cases! hw : 0 < im w
   · have : 0 < im (w + h) := by simp [hw]
     simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
-    convert SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f (.mk w hw) hΓ using 2
+    convert SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f ⟨w, hw⟩ hΓ using 2
     ext
     simp [add_comm]
   · have : im (w + h) ≤ 0 := by simpa using hw
@@ -241,7 +241,7 @@ lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k] [Γ.HasDetP
     ← intervalIntegral.integral_const_mul]
   -- Compare the integrands
   congr 1 with u
-  let τ : ℍ := .mk (u + t * I) <| by simpa using ht
+  let τ : ℍ := ⟨u + t * I, by simpa using ht⟩
   have : circleMap 0 R (u * (2 * π / h)) = 𝕢 h τ := by
     simp only [circleMap, ofReal_exp, ← exp_add, zero_add, τ, R]
     congr 1

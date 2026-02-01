@@ -149,7 +149,6 @@ scoped notation "↑ₕ" f => f ∘ ofComplex
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
   IsOpenEmbedding.toOpenPartialHomeomorph_left_inv ..
 
-set_option pp.proofs.withType true in
 lemma ofComplex_apply_eq_ite (w : ℂ) :
     ofComplex w = if hw : 0 < w.im then ⟨w, hw⟩ else Classical.choice inferInstance := by
   split_ifs with hw
@@ -160,8 +159,8 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
     exact (a.im_pos.not_ge (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
-    ofComplex z = mk z hz := by
-  simpa only [coe_mk] using ofComplex_apply (mk z hz)
+    ofComplex z = ⟨z, hz⟩ :=
+  ofComplex_apply ⟨z, hz⟩
 
 lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
     ofComplex w = Classical.choice inferInstance := by
@@ -184,7 +183,7 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
-  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq, coe_mk]
+  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
 
 end ofComplex
 
