@@ -66,7 +66,7 @@ lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 
   simpa [div_eq_mul_inv] using (hr.pow k).mul_const ((k.factorial : ℝ)⁻¹)
 
 /--
-**Poisson limit Theorem** : If `n * p n → r` as `n → ∞`. Then
+**Poisson limit Theorem**: If `n * p n → r` as `n → ∞`. Then
 `(n.choose k) * (p n)^k * (1 - p n)^(n - k) → exp (-r) * r^k / k!`.
 -/
 theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
