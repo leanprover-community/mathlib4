@@ -5,11 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Data.Vector.Lemmas
-public import Mathlib.Data.Fintype.Vector
-public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Lattice.Union
-public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Powerset
 public import Mathlib.Data.Set.Pairwise.Lattice
 
@@ -355,3 +352,4 @@ lemma card_listVector_card {k n : ℕ} :
 end powersetCard
 
 end Finset
+#min_imports
