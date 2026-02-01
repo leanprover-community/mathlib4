@@ -97,7 +97,7 @@ lemma tendsto_poissonPMFReal_pow_of_tendsto_mul_atTop (r : ℝ≥0)
   tendsto_choose_mul_pow_of_tendsto_mul_atTop k hr
 
 /--
-Another version of Possion Limit Theorem : convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
+Another version of Possion Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
 under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 -/
 lemma PMFbinomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
