@@ -55,18 +55,15 @@ lemma tendsto_zero_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (
 
 open Asymptotics in
 lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
-    Tendsto (fun n => n.choose k * (p n) ^ k) atTop (𝓝 (r ^ k / k.factorial)) :=
-  let f : ℕ → ℝ := fun n => n.choose k * (p n) ^ k
-  let g : ℕ → ℝ := fun n => ((n * p n) ^ k) / k.factorial
-  have hfg : f ~[atTop] g := by
-    have h1 : f ~[atTop] (fun n => (n ^ k / k.factorial) * (p n) ^ k) :=
+    Tendsto (fun n => n.choose k * (p n) ^ k) atTop (𝓝 (r ^ k / k.factorial)) := by
+  have : (fun n => n.choose k * (p n) ^ k) ~[atTop] (fun n ↦ ((n * p n) ^ k) / k.factorial) :=
+    calc
+    _ ~[atTop] (fun n => (n ^ k / k.factorial) * (p n) ^ k) :=
       (isEquivalent_choose k).mul IsEquivalent.refl
-    refine h1.congr_right (EventuallyEq.of_eq ?_)
-    ext n
-    simp [field, mul_pow]
-  have hg : Tendsto g atTop (𝓝 (r ^ k / k.factorial)) := by
-    simpa [g, div_eq_mul_inv] using (hr.pow k).mul_const ((k.factorial : ℝ)⁻¹)
-  (IsEquivalent.tendsto_nhds_iff hfg).mpr hg
+    _ ~[atTop] (fun n ↦ ((n * p n) ^ k) / k.factorial) :=
+      EventuallyEq.isEquivalent (.of_eq (by ext; field))
+  refine (IsEquivalent.tendsto_nhds_iff this).mpr ?_
+  simpa [div_eq_mul_inv] using (hr.pow k).mul_const ((k.factorial : ℝ)⁻¹)
 
 /--
 **Poisson limit Theorem** : If `n * p n → r` as `n → ∞`. Then
