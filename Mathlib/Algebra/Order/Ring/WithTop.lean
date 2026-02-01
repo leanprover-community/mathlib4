@@ -90,12 +90,12 @@ instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
 
-protected theorem mul_right_inj [IsLeftCancelMulZero α] (h₀ : a ≠ 0) (hinf : a ≠ ⊤) :
+protected lemma mul_right_inj [IsLeftCancelMulZero α] (h₀ : a ≠ 0) (hinf : a ≠ ⊤) :
     a * b = a * c ↔ b = c := by
   lift a to α using hinf
   cases b <;> cases c <;> simp [← coe_eq_zero, h₀, ← coe_mul]
 
-protected theorem mul_left_inj [IsRightCancelMulZero α] (h₀ : a ≠ 0) (hinf : a ≠ ⊤) :
+protected lemma mul_left_inj [IsRightCancelMulZero α] (h₀ : a ≠ 0) (hinf : a ≠ ⊤) :
     b * a = c * a ↔ b = c := by
   lift a to α using hinf
   cases b <;> cases c <;> simp [← coe_eq_zero, h₀, ← coe_mul]
@@ -128,25 +128,25 @@ protected theorem mul_le_mul_iff_right [PosMulMono α] [PosMulReflectLE α]
     (h₀ : 0 < a) (hinf : a ≠ ⊤) : a * b ≤ a * c ↔ b ≤ c := by
   lift a to α using hinf
   have : 0 < a := coe_pos.mp h₀
-  cases b <;> cases c <;> simp [this.ne.symm, ← coe_mul, mul_le_mul_iff_right₀ this]
+  cases b <;> cases c <;> simp [this.ne', ← coe_mul, mul_le_mul_iff_right₀ this]
 
 protected theorem mul_le_mul_iff_left [MulPosMono α] [MulPosReflectLE α]
     (h₀ : 0 < a) (hinf : a ≠ ⊤) : b * a ≤ c * a ↔ b ≤ c := by
   lift a to α using hinf
   have : 0 < a := coe_pos.mp h₀
-  cases b <;> cases c <;> simp [this.ne.symm, ← coe_mul, mul_le_mul_iff_left₀ this]
+  cases b <;> cases c <;> simp [this.ne', ← coe_mul, mul_le_mul_iff_left₀ this]
 
 protected theorem mul_lt_mul_iff_right [PosMulStrictMono α] [PosMulReflectLT α]
      (h₀ : 0 < a) (hinf : a ≠ ⊤) : a * b < a * c ↔ b < c := by
   lift a to α using hinf
   have : 0 < a := coe_pos.mp h₀
-  cases b <;> cases c <;> simp [this.ne.symm, ← coe_mul, mul_lt_mul_iff_right₀ this]
+  cases b <;> cases c <;> simp [this.ne', ← coe_mul, mul_lt_mul_iff_right₀ this]
 
 protected theorem mul_lt_mul_iff_left [MulPosStrictMono α] [MulPosReflectLT α]
      (h₀ : 0 < a) (hinf : a ≠ ⊤) : b * a < c * a ↔ b < c := by
   lift a to α using hinf
   have : 0 < a := coe_pos.mp h₀
-  cases b <;> cases c <;> simp [this.ne.symm, ← coe_mul, mul_lt_mul_iff_left₀ this]
+  cases b <;> cases c <;> simp [this.ne', ← coe_mul, mul_lt_mul_iff_left₀ this]
 
 end MulZeroClass
 
