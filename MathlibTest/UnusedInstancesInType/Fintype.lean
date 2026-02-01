@@ -65,7 +65,7 @@ Note: This linter can be disabled with `set_option linter.unusedFintypeInType fa
 theorem foo₄ {β} : let _ := 2; ∀ [Fintype β], True := trivial
 
 -- Linter should not fire when `sorry` appears in the type, even though the instances are unused
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem fooSorry {β} [∀ α : Type, Fintype α] [Fintype β] (b : sorry) : True :=
   trivial

@@ -44,7 +44,8 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
   letI : IsScalarTower R S A := IsScalarTower.of_algebraMap_eq fun _ => rfl
   let f₁ := Algebra.linearMap R S
   let g₁ := (IsScalarTower.toAlgHom R S A).toLinearMap
-  exact Submodule.fg_ker_comp f₁ g₁ hf (Submodule.fg_restrictScalars (RingHom.ker g) hg hsur) hsur
+  exact Submodule.fg_ker_comp f₁ g₁ hf
+    (Submodule.FG.restrictScalars_of_surjective hg hsur) hsur
 
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by

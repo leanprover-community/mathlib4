@@ -362,19 +362,20 @@ space is non-trivial.) It means that one cannot do better than an inequality in 
 theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
+/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
+theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
   le_antisymm (norm_id_le V) <| by
-    let ⟨x, hx⟩ := h
+    let ⟨x, hx⟩ := exists_norm_ne_zero V
     have := (id V).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
 
-/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
-theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
-  refine norm_id_of_nontrivial_seminorm V ?_
-  obtain ⟨x, hx⟩ := exists_ne (0 : V)
-  exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
+/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
+(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
+@[deprecated norm_id (since := "2025-09-03")]
+theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
+  have : NontrivialTopology V := .of_exists_norm_ne_zero h
+  norm_id V
 
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl

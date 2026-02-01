@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Antichain
 public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Left and right continuity
@@ -134,6 +135,12 @@ theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
 lemma nhdsGT_sup_nhdsWithin_singleton (a : α) :
     𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
   simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]
+
+lemma nhdsWithin_uIoo_left_le_nhdsNE {a b : α} : 𝓝[uIoo a b] a ≤ 𝓝[≠] a :=
+  nhdsWithin_mono _ (by simp)
+
+lemma nhdsWithin_uIoo_right_le_nhdsNE {a b : α} : 𝓝[uIoo a b] b ≤ 𝓝[≠] b :=
+  nhdsWithin_mono _ (by simp)
 
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iic a) a ∧ ContinuousWithinAt f (Ici a) a := by
