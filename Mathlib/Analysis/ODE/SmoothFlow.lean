@@ -650,12 +650,13 @@ lemma contDiffAt_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (
 /-- If `α : FunSpace t₀ x₀ 0 L` is a fixed point of `next hPL hx₀`, then
 `T f u t₀ (x₀, α.toContinuousMap) = 0`. This connects the Picard-Lindelöf fixed point to the
 implicit function theorem formulation. -/
-lemma T_eq_zero_of_isFixedPt {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+lemma T_eq_zero_of_isFixedPt_next {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a L K : ℝ≥0}
     (hPL : IsPicardLindelof (fun _ ↦ f) t₀ x₀ a 0 L K) {α : ODE.FunSpace t₀ x₀ 0 L}
     (hα : range α ⊆ u) (h : IsFixedPt (ODE.FunSpace.next hPL (mem_closedBall_self le_rfl)) α) :
     T f u t₀ (x₀, α.toContinuousMap) = 0 := by
   ext t
+  -- TODO: repetitive
   have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
   rw [T, curry0_apply, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
@@ -665,67 +666,47 @@ lemma T_eq_zero_of_isFixedPt {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
     neg_add_eq_zero]
   congr
 
+/-- If `T f u t₀ (x₀, α) = 0`, then `α` satisfies the integral equation for the ODE `α' = f ∘ α`
+with initial condition `α t₀ = x₀`. This is equivalent to saying `α` is an integral curve of `f`. -/
+lemma eq_picard_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0) (t : Icc tmin tmax) :
+    α t = ODE.picard (fun _ ↦ f) t₀ x₀ (fun t ↦ compProj t₀ α t) t := by
+  -- TODO: repetitive
+  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
+  replace hT := ContinuousMap.ext_iff.mp hT t
+  rw [T, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
+    ContinuousMap.zero_apply, ContinuousMultilinearMap.curry0_apply, integralCMLM_apply_if_pos hg,
+    integralCM_apply_if_pos hα, integralFun, sub_add_eq_add_sub, sub_eq_zero] at hT
+  simp [← hT]
+
 /-- If `T f u t₀ (x₀, α) = 0`, then `α t₀ = x₀`. This follows from the fact that the integral
 from `t₀` to `t₀` vanishes. -/
-lemma eq_of_T_eq_zero {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+lemma eq_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
     (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0) :
     α t₀ = x₀ := by
-  have heq := congrFun (congrArg DFunLike.coe hT) t₀
-  simp only [T, ContinuousMap.coe_sub, ContinuousMap.coe_add, ContinuousMap.coe_const,
-    Pi.sub_apply, Pi.add_apply, ContinuousMap.zero_apply] at heq
-  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
-    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
-  rw [ContinuousMultilinearMap.curry0_apply, integralCMLM, dif_pos hg,
-    integralCMLMAux_apply, integralCM_if_pos hα] at heq
-  simp only [integralCMAux, ContinuousMap.coe_mk, integralFun, Matrix.zero_empty,
-    uncurry0_apply, intervalIntegral.integral_same] at heq
-  simp only [add_zero, Function.const_apply, sub_eq_zero] at heq
-  exact heq.symm
-
-/-- If `T f u t₀ (x₀, α) = 0`, then `α` satisfies the integral equation for the ODE `α' = f ∘ α`
-with initial condition `α t₀ = x₀`. This is equivalent to saying `α` is an integral curve of `f`. -/
-lemma integralEq_of_T_eq_zero {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
-    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
-    (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0) (t : Icc tmin tmax) :
-    α t = x₀ + ∫ τ in (t₀ : ℝ)..t, f (compProj t₀ α τ) := by
-  have heq := congrFun (congrArg DFunLike.coe hT) t
-  simp only [T, ContinuousMap.coe_sub, ContinuousMap.coe_add, ContinuousMap.coe_const,
-    Pi.sub_apply, Pi.add_apply, ContinuousMap.zero_apply] at heq
-  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
-    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
-  rw [ContinuousMultilinearMap.curry0_apply, integralCMLM, dif_pos hg,
-    integralCMLMAux_apply, integralCM_if_pos hα] at heq
-  simp only [integralCMAux, ContinuousMap.coe_mk, integralFun, Matrix.zero_empty,
-    uncurry0_apply, Function.const_apply] at heq
-  -- heq : x₀ - α t + ∫ ... = 0, goal : α t = x₀ + ∫ ...
-  rw [sub_add_eq_add_sub, sub_eq_zero] at heq
-  exact heq.symm
+  rw [eq_picard_of_T_eq_zero hf hα hT, ODE.picard_apply₀]
 
 /-- If `T f u t₀ (x₀, α) = 0`, then `compProj t₀ α` (the extension of `α` to `ℝ`) has derivative
 `f (α t)` within `Icc tmin tmax` at each point `t`. This shows that `α` is an integral curve of
 the vector field `f`. -/
-lemma hasDerivWithinAt_of_T_eq_zero {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+lemma hasDerivWithinAt_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
     (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0)
     {t : ℝ} (ht : t ∈ Icc tmin tmax) :
     HasDerivWithinAt (compProj t₀ α) (f (α ⟨t, ht⟩)) (Icc tmin tmax) t := by
-  have hcont : Continuous (fun τ ↦ f (compProj t₀ α τ)) :=
-    hfu.continuous_comp_compProj t₀ hα
-  have hintegralEq := integralEq_of_T_eq_zero hfu hα hT
-  -- The derivative of `compProj t₀ α` equals the derivative of the integral
-  have hderiv : HasDerivWithinAt (fun s ↦ x₀ + ∫ τ in (t₀ : ℝ)..s, f (compProj t₀ α τ))
-      (f (compProj t₀ α t)) (Icc tmin tmax) t := by
-    apply HasDerivWithinAt.const_add
-    have : Fact (t ∈ Icc tmin tmax) := ⟨ht⟩
-    exact intervalIntegral.integral_hasDerivWithinAt_right
-      (hcont.intervalIntegrable _ _)
-      (hcont.aestronglyMeasurable.stronglyMeasurableAtFilter)
-      (hcont.continuousAt.continuousWithinAt)
-  have heq : EqOn (compProj t₀ α) (fun s ↦ x₀ + ∫ τ in (t₀ : ℝ)..s, f (compProj t₀ α τ))
-      (Icc tmin tmax) := fun s hs ↦ by rw [compProj_of_mem hs, hintegralEq]
+  have hf' : ContinuousOn (uncurry fun _ ↦ f) (Icc tmin tmax ×ˢ u) :=
+    hf.comp continuousOn_snd fun _ h ↦ h.2
+  have hmem : ∀ t' ∈ Icc tmin tmax, compProj t₀ α t' ∈ u := fun t' ht' ↦
+    hα ⟨⟨t', ht'⟩, (compProj_of_mem ht').symm⟩
+  have hderiv := ODE.hasDerivWithinAt_picard_Icc t₀.2 hf' (continuous_compProj t₀ α).continuousOn
+    hmem x₀ ht
   rw [compProj_of_mem ht] at hderiv
-  exact hderiv.congr heq (heq ht)
+  have heq := eq_picard_of_T_eq_zero hf hα hT
+  exact hderiv.congr (fun s hs ↦ by rw [compProj_of_mem hs, heq, ODE.picard_apply])
+    (by rw [compProj_of_mem ht, heq, ODE.picard_apply])
 
 /-- The derivative of `fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0` at `α`,
 which appears as a component of the derivative of `T`. This is the composition of `curry0` with
@@ -1118,7 +1099,7 @@ lemma exists_contMap_T_eq_zero_opNorm_lt_one {f : E → E} {x₀ : E}
       obtain ⟨t, ht⟩ := hy
       rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
       exact ball_subset_ball (NNReal.coe_le_coe.mpr haa') (hα_ball t)
-    exact T_eq_zero_of_isFixedPt hfu hPL α hα_fixed hrange
+    exact T_eq_zero_of_isFixedPt_next hfu hPL hrange hα_fixed
   · -- ‖fderivIntegralCurry0 f (ball x₀ a') t₀ α.toContinuousMap‖ < 1
     exact hα_norm
 
