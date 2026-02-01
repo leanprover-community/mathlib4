@@ -14,7 +14,8 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 # Minimal primes over a colon ideal
 
-We prove that a minimal prime over a colon ideal in a Noetherian ring is itself a colon ideal.
+We prove that a minimal prime over an ideal of the form `colon N {x}` in a Noetherian ring is
+itself an ideal of the form `colon N {x'}`.
 
 -/
 
@@ -25,7 +26,8 @@ namespace Submodule
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
   {I : Ideal R} {x : M}
 
-/-- A minimal prime over a colon ideal in a Noetherian ring is itself a colon ideal. -/
+/-- A minimal prime over an ideal of the form `colon N {x}` in a Noetherian ring is
+itself an ideal of the form `colon N {x'}`. -/
 theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     (hI : I ∈ (colon N {x}).minimalPrimes) : ∃ x' : M, I = colon N {x'} := by
   by_cases hx : x ∈ N
