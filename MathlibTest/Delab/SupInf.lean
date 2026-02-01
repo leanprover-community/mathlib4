@@ -1,5 +1,5 @@
-import Mathlib
-
+module
+import Mathlib.Data.Real.Archimedean
 
 /-- info: max 1 2 : ℕ -/
 #guard_msgs in
@@ -82,3 +82,17 @@ set_option pp.explicit true in
 #check min (max a b) c
 
 end
+
+section Apply
+
+variable {ι α : Type*} (f g : ι → α) (i : ι) variable [Lattice α]
+
+/-- info: (f ⊔ g) i : α -/
+#guard_msgs in
+#check (f ⊔ g) i
+
+/-- info: (f ⊔ g) i : α -/
+#guard_msgs in
+#check max f g i
+
+end Apply
