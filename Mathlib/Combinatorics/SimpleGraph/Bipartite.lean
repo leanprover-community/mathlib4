@@ -311,8 +311,8 @@ More precisely, let `G` be a simplegraph on a finite vertex type `V`.
 Then `G` is bipartite if and only if for every cycle `C` in `G`,
 the length of `C` is even.
 -/
-theorem even_length_iff_congr {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+theorem even_length_iff_congr
+    (c : G.Coloring Bool) {u v : V} (p : G.Walk u v) :
     Even p.length ↔ (c u ↔ c v) := by
   induction p with
   | nil => simp
