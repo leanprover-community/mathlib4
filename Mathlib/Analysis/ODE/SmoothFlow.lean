@@ -17,6 +17,16 @@ public import Mathlib.Analysis.Calculus.ImplicitContDiff
 open Function intervalIntegral MeasureTheory Metric Set ContinuousMultilinearMap
 open scoped Nat NNReal Topology
 
+-- TODO: move to Mathlib/Analysis/Normed/Operator/LinearIsometry.lean
+/-- The coercion of a `LinearIsometryEquiv` to `ContinuousLinearMap` via `toContinuousLinearEquiv`
+equals the coercion via `toLinearIsometry`. -/
+@[simp]
+theorem LinearIsometryEquiv.toContinuousLinearEquiv_toContinuousLinearMap {𝕜 : Type*}
+    [NontriviallyNormedField 𝕜] {E E₂ : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] (e : E ≃ₗᵢ[𝕜] E₂) :
+    e.toContinuousLinearEquiv.toContinuousLinearMap = e.toLinearIsometry.toContinuousLinearMap :=
+  rfl
+
 /-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
 `dist x y`. -/
 -- TODO: this is the "left" version. make a "right" version too
@@ -715,8 +725,7 @@ def fderivIntegralCurry0 (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc
     (α : C(Icc tmin tmax, E)) : C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) :=
   (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
       C(Icc tmin tmax, E)).toContinuousLinearEquiv.toContinuousLinearMap.comp
-    ((integralCMLM (fun y ↦ (fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) y).uncurryLeft)
-      u t₀ α).curryLeft)
+    ((integralCMLM (iteratedFDerivUncurry (fun z ↦ uncurry0 ℝ E (f z)) 1) u t₀ α).curryLeft)
 
 /-- `fderivIntegralCurry0 f u t₀ α` is the Fréchet derivative of
 `fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0` at `α`. -/
@@ -760,6 +769,26 @@ lemma fderivT_comp_inr {f : E → E} {u : Set E}
   ext y
   simp [fderivT]
 
+omit [CompleteSpace E] in
+/-- Specialization of `contDiffOn_iteratedFDerivUncurry` to `g = uncurry0 ∘ f` where `f : E → E`.
+If `f` is `C^m'` on an open set `u` and `m + k ≤ m'`, then
+`iteratedFDerivUncurry (uncurry0 ∘ f) k` is `C^m` on `u`. -/
+lemma contDiffOn_iteratedFDerivUncurry_uncurry0 {f : E → E} {u : Set E} {k : ℕ}
+    {m m' : WithTop ℕ∞} (hf : ContDiffOn ℝ m' f u) (hu : IsOpen u) (hm' : m + k ≤ m') :
+    ContDiffOn ℝ m (iteratedFDerivUncurry (fun z ↦ uncurry0 ℝ E (f z)) k) u :=
+  contDiffOn_iteratedFDerivUncurry
+    ((continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf) hu hm'
+
+omit [CompleteSpace E] in
+/-- The Fréchet derivative of `uncurry0 ∘ f` at `x` is `uncurry0 ∘ fderiv f x`. This is the chain
+rule applied to the composition of `f` with the linear isometry `uncurry0`. -/
+lemma fderiv_uncurry0_comp {f : E → E} {x : E} (hf : DifferentiableAt ℝ f x) :
+    fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) x =
+      (continuousMultilinearCurryFin0 ℝ E E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp
+        (fderiv ℝ f x) := by
+  convert fderiv_comp x (continuousMultilinearCurryFin0 ℝ E E).symm.differentiableAt hf using 1
+  rw [(continuousMultilinearCurryFin0 ℝ E E).symm.fderiv]
+
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
 lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
@@ -767,58 +796,32 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
     (hα : range α ⊆ u) {C : ℝ} (hC : 0 ≤ C) (hbound : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C)
     (hsmall : |tmax - tmin| * C < 1) :
     ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
-  let fderivUncurry : E → E [×1]→L[ℝ] E :=
-    fun y ↦ (fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) y).uncurryLeft
-  have hg' : ContDiffOn ℝ 1 (fun y ↦ uncurry0 ℝ E (f y)) u :=
-    (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
-  have hg : ContinuousOn fderivUncurry u := hg'.continuousOn_fderiv_uncurryLeft hu
-  -- Use isometry to reduce to bounding ‖(integralCMLM fderivUncurry u t₀ α).curryLeft‖
-  calc ‖fderivIntegralCurry0 f u t₀ α‖
-    _ = ‖(integralCMLM fderivUncurry u t₀ α).curryLeft‖ :=
-        (continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E)
-          C(Icc tmin tmax, E)).toLinearIsometry.norm_toContinuousLinearMap_comp
-    _ ≤ |tmax - tmin| * C := ?_
-    _ < 1 := hsmall
+  rw [fderivIntegralCurry0, LinearIsometryEquiv.toContinuousLinearEquiv_toContinuousLinearMap,
+    continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E) C(Icc tmin tmax, E)
+      |>.toLinearIsometry.norm_toContinuousLinearMap_comp]
+  apply lt_of_le_of_lt _ hsmall
   refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun dα ↦ ?_
-  refine ContinuousMultilinearMap.opNorm_le_bound (by positivity) fun v ↦ ?_
+  refine opNorm_le_bound (by positivity) fun v ↦ ?_
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
-  rw [ContinuousMultilinearMap.curryLeft_apply, integralCMLM_apply_if_pos hg,
-    integralCM_apply_if_pos hα, integralFun]
-  simp only [Fin.prod_univ_zero, mul_one]
-  -- Bound integrand: ‖fderivUncurry x (cons dα v)‖ ≤ C * ‖dα‖
-  have : ∀ τ ∈ uIoc (t₀ : ℝ) t,
-      ‖fderivUncurry (compProj t₀ α τ)
-        (fun i ↦ compProj t₀ ((Fin.cons dα v : Fin 1 → _) i) τ)‖ ≤ C * ‖dα‖ := by
-    intro τ hτ
+  have hg := (contDiffOn_iteratedFDerivUncurry_uncurry0 (m := 0) (k := 1) hf hu le_rfl).continuousOn
+  rw [curryLeft_apply, integralCMLM_apply_if_pos hg,
+    integralCM_apply_if_pos hα, integralFun, Fin.prod_univ_zero, mul_one, mul_comm]
+  refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C * ‖dα‖) ?_).trans ?_
+  · intro τ hτ
+    apply (le_opNorm _ _).trans
+    rw [iteratedFDerivUncurry_succ, iteratedFDerivUncurry_zero,
+      ContinuousLinearMap.uncurryLeft_norm, Fin.prod_univ_one, Fin.cons_zero]
     have hτ' : τ ∈ Icc tmin tmax := uIcc_subset_Icc t₀.2 t.2 (uIoc_subset_uIcc hτ)
     have hmem : compProj t₀ α τ ∈ range α := ⟨⟨τ, hτ'⟩, (compProj_of_mem hτ').symm⟩
-    have hdiff : DifferentiableAt ℝ f (compProj t₀ α τ) :=
-      (hf.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds (hα hmem))
-    let curry0Inv := (continuousMultilinearCurryFin0 ℝ E E).symm
-    have heq : fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) (compProj t₀ α τ) =
-        curry0Inv.toContinuousLinearEquiv.toContinuousLinearMap.comp
-          (fderiv ℝ f (compProj t₀ α τ)) := by
-      convert fderiv_comp (compProj t₀ α τ) curry0Inv.differentiableAt hdiff using 1
-      rw [curry0Inv.fderiv]
-    calc ‖fderivUncurry (compProj t₀ α τ)
-            (fun i ↦ compProj t₀ ((Fin.cons dα v : Fin 1 → _) i) τ)‖
-      _ ≤ ‖fderivUncurry (compProj t₀ α τ)‖ *
-            ∏ i : Fin 1, ‖compProj t₀ ((Fin.cons dα v : Fin 1 → _) i) τ‖ :=
-          ContinuousMultilinearMap.le_opNorm _ _
-      _ = ‖fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) (compProj t₀ α τ)‖ * ‖compProj t₀ dα τ‖ := by
-          congr 1
-          · exact ContinuousLinearMap.uncurryLeft_norm _
-          · simp only [Fin.prod_univ_one, Fin.cons_zero]
-      _ = ‖fderiv ℝ f (compProj t₀ α τ)‖ * ‖compProj t₀ dα τ‖ := by
-          rw [heq]; congr 1
-          exact curry0Inv.toLinearIsometry.norm_toContinuousLinearMap_comp
-      _ ≤ C * ‖dα‖ := by gcongr; exacts [hbound _ hmem, dα.norm_coe_le_norm _]
-  calc
-    _ ≤ C * ‖dα‖ * |↑t - ↑t₀| := intervalIntegral.norm_integral_le_of_norm_le_const this
-    _ ≤ C * ‖dα‖ * |tmax - tmin| :=
-        mul_le_mul_of_nonneg_left (Icc.abs_sub_le t t₀) (mul_nonneg hC (norm_nonneg _))
-    _ = |tmax - tmin| * C * ‖dα‖ := by ring
+    have hdiff := (hf.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds (hα hmem))
+    rw [fderiv_uncurry0_comp hdiff,
+      LinearIsometryEquiv.toContinuousLinearEquiv_toContinuousLinearMap,
+      (continuousMultilinearCurryFin0 ℝ E E).symm.toLinearIsometry.norm_toContinuousLinearMap_comp]
+    exact mul_le_mul (hbound _ hmem) (dα.norm_coe_le_norm _) (norm_nonneg _) hC
+  · rw [mul_comm _ C, ← mul_assoc, mul_comm _ C]
+    gcongr 1
+    exact Icc.abs_sub_le t t₀
 
 /-- For `f` that is `C^1` at `x₀`, there exist `a > 0` and `ε > 0` such that for any
 time interval `[tmin, tmax]` of size less than `ε` and any continuous curve `α` with
