@@ -121,19 +121,18 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
 /-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
 In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `√(q_i : M)` are exactly the
 associated primes of `I`. -/
-lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff
-    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
-    {I : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition I t)
+lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff [DecidableEq (Submodule R M)]
+    {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t)
     {p : Ideal R} :
     p ∈ (fun J : Submodule R M ↦ radical (colon J .univ)) '' t ↔
-      IsPrime p ∧ ∃ x : M, p = radical (colon I {x}) := by
+      IsPrime p ∧ ∃ x : M, p = radical (colon N {x}) := by
   classical
   have h {x} q (hq : q ∈ t) :
       radical (colon q {x}) = if x ∈ q then ⊤ else radical (q.colon .univ) := by
     split_ifs with hx
     · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
     · exact (ht.primary hq).radical_colon_singleton_of_notMem hx
-  replace h x : radical (colon I {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (colon q .univ) := by
+  replace h x : radical (colon N {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (colon q .univ) := by
     rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply]
     simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
   constructor
