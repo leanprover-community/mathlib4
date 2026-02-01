@@ -582,19 +582,19 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   let mut value := decl.value! (allowOpaque := true)
-  -- if let some b := t.unfoldBoundaries? then
-  --   value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+  if let some b := t.unfoldBoundaries? then
+    value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
   trace[translate] "Value before translation:{indentExpr value}"
   value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
-  -- if let some b := t.unfoldBoundaries? then
-  --   value ← b.unfoldInsertions value
+  if let some b := t.unfoldBoundaries? then
+    value ← b.unfoldInsertions value
   decl := decl.updateValue value
   let mut type := decl.type
-  -- if let some b := t.unfoldBoundaries? then
-    -- type ← b.insertBoundaries decl.type t.attrName
+  if let some b := t.unfoldBoundaries? then
+    type ← b.insertBoundaries decl.type t.attrName
   type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
-  -- if let some b := t.unfoldBoundaries? then
-  --   type ← b.unfoldInsertions type
+  if let some b := t.unfoldBoundaries? then
+    type ← b.unfoldInsertions type
   return decl.updateType type
 
 /--
@@ -929,8 +929,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
   let mut srcType := srcDecl.type
-  -- if let some b := t.unfoldBoundaries? then
-  --   srcType ← b.insertBoundaries srcType t.attrName
+  if let some b := t.unfoldBoundaries? then
+    srcType ← b.insertBoundaries srcType t.attrName
   srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
@@ -954,8 +954,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
       use `{t.attrName}_do_translate` instead"
   srcType ← reorderForall reorder srcType
-  -- if let some b := t.unfoldBoundaries? then
-  --   srcType ← b.unfoldInsertions srcType
+  if let some b := t.unfoldBoundaries? then
+    srcType ← b.unfoldInsertions srcType
   if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   -- instantiate both types with the same universes. `instantiateLevelParams` does some
