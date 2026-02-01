@@ -44,12 +44,12 @@ structure Tag where
   comment : String
   deriving BEq, Hashable
 
-/-- Defines the `tagExt` extension for adding a `HashSet` of `Tag`s
-to the environment. -/
-initialize tagExt : SimplePersistentEnvExtension Tag (Array Tag) ←
+/-- Defines the `tagExt` extension for storing all `Tag`s in the environment.
+We set `addImportedFn` to `id` to avoid a performance overhead during initialization. -/
+initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl (· ++ ·) {}
-    addEntryFn := .push
+    addImportedFn := id
+    addEntryFn := (·.push #[·])
   }
 
 /--
@@ -171,7 +171,7 @@ end Mathlib.StacksTag
 `getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
 private def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
-  tagExt.getState env |>.qsort (·.tag < ·.tag)
+  tagExt.getState env |>.flatten.qsort (·.tag < ·.tag)
 
 /--
 `getSortedStackProjectDeclNames env tag` returns the array of declaration names of results
