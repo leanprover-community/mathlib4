@@ -118,7 +118,6 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
   exact ⟨t, h1, h2, h3, h4⟩
 
 -- TODO: rephrase in terms of `associatedPrimes` once the definition is changed to match.
-open Ideal LinearMap in
 /-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
 In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `√(q_i : M)` are exactly the
 associated primes of `I`. -/
