@@ -101,6 +101,6 @@ lemma PMFbinomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥
   rw [poissonPMFReal_ofReal_eq_poissonPMF r k] at t1
   refine Tendsto.congr' ?_ t1
   simpa only [EventuallyEq, eventually_atTop, ge_iff_le] using
-    ⟨k, fun b hb ↦ by rw [PMF.binomial_apply_of_le hb (h b)]⟩
+    ⟨k, fun b hb ↦ PMF.binomial_apply_of_le hb (h b)⟩
 
 end ProbabilityTheory
