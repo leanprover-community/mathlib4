@@ -48,8 +48,6 @@ where
 
 namespace InfoTree
 
-
-
 /--
 Finds the first result of `← f ctx info children` which is `some a`, descending the
 tree from the top. Merges and updates contexts as it descends the tree.
