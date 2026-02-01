@@ -95,4 +95,12 @@ variable {ι α : Type*} [Lattice α] (f g : ι → α) (i : ι)
 #guard_msgs in
 #check max f g i
 
+/-- info: (f ⊓ g) i : α -/
+#guard_msgs in
+#check (f ⊓ g) i
+
+/-- info: (f ⊓ g) i : α -/
+#guard_msgs in
+#check min f g i
+
 end Apply
