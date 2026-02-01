@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
+Authors: Thomas Browning, Yakov Pechersky
 -/
 module
 
@@ -20,12 +20,10 @@ public import Mathlib.RingTheory.Noetherian.Defs
 - `IsLasker.exists_isMinimalPrimaryDecomposition`: Any `N : Submodule R N` in an `R`-module `M`
   satisfying `IsLasker R M` can be decomposed into finitely many primary submodules `Nᵢ`, such
   that the decomposition is minimal: each `Nᵢ` is necessary, and the `√Ann(M/Nᵢ)` are distinct.
+- `IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff`: The first uniqueness theorem for
+  primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
+  `I = ⨅ i, q_i`, the ideals `√(q_i : M)` are exactly the associated primes of `I`.
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
-
-## TODO
-
-One needs to prove that the radicals of minimal decompositions are independent of the
-  precise decomposition.
 
 -/
 
@@ -118,6 +116,40 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
   obtain ⟨t, h1, h2, h3, h4⟩ :=
     exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
   exact ⟨t, h1, h2, h3, h4⟩
+
+-- TODO: rephrase in terms of `associatedPrimes` once the definition is changed to match.
+open Ideal LinearMap in
+/-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
+In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `√(q_i : M)` are exactly the
+associated primes of `I`. -/
+lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff
+    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
+    {I : Submodule R M} {t : Finset (Submodule R M)} (ht : I.IsMinimalPrimaryDecomposition t)
+    {p : Ideal R} :
+    p ∈ (fun J : Submodule R M ↦ (J.colon Set.univ).radical) '' t ↔
+      p.IsPrime ∧ ∃ x : M, p = (colon I {x}).radical := by
+  classical
+  have h {x} q (hq : q ∈ t) :
+      (q.colon {x}).radical = if x ∈ q then ⊤ else (q.colon Set.univ).radical := by
+    split_ifs with hx
+    · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
+    · exact (ht.primary hq).radical_colon_singleton_of_notMem hx
+  replace h x :
+      radical (I.colon {x}) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon Set.univ).radical) := by
+    rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply]
+    simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
+  constructor
+  · rintro ⟨q, hqt, rfl⟩
+    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    refine ⟨(ht.primary hqt).isPrime_radical_colon, x, ?_⟩
+    rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
+      eq_comm, inf_eq_left, Finset.le_inf_iff]
+    simp only [mem_finsetInf, Finset.mem_erase] at hxt
+    grind
+  · rintro ⟨hp, x, rfl⟩
+    rw [h] at hp ⊢
+    obtain ⟨q, hq1, hq2⟩ := eq_inf_of_isPrime_inf hp
+    exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
 
 end Submodule
 
