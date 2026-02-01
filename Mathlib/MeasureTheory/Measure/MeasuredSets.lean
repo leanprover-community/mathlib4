@@ -57,13 +57,13 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
   rcases eq_top_or_lt_top (μ x) with hx | hx
   · simp only [hx]
     apply tendsto_const_nhds.congr'
-    filter_upwards [EMetric.ball_mem_nhds _ zero_lt_one] with y hy
-    simp only [EMetric.mem_ball, edist_def] at hy
+    filter_upwards [Metric.eball_mem_nhds _ zero_lt_one] with y hy
+    simp only [Metric.mem_eball, edist_def] at hy
     contrapose! hy
     simp [measure_symmDiff_eq_top hy.symm hx]
   · apply (ENNReal.hasBasis_nhds_of_ne_top hx.ne).tendsto_right_iff.2 (fun ε εpos ↦ ?_)
-    filter_upwards [EMetric.ball_mem_nhds _ εpos] with a ha
-    simp only [EMetric.mem_ball, edist_def] at ha
+    filter_upwards [Metric.eball_mem_nhds _ εpos] with a ha
+    simp only [Metric.mem_eball, edist_def] at ha
     refine ⟨?_, ?_⟩
     · apply tsub_le_iff_right.mpr
       calc μ x
