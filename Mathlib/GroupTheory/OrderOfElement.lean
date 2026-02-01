@@ -124,6 +124,12 @@ lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
   rintro ⟨n, hn, han⟩
   exact ha <| pow_left_injective hn.ne' <| by simpa using han
 
+@[to_additive]
+lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
+    a = 1 := by
+  contrapose! ha
+  apply not_isOfFinOrder_of_isMulTorsionFree ha
+
 /-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive /-- Elements of finite order are of finite order in submonoids. -/]
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :

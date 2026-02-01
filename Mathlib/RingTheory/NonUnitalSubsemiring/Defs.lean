@@ -138,6 +138,8 @@ lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
 
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
+
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]
 def ofClass {S R : Type*} [NonUnitalNonAssocSemiring R] [SetLike S R]
@@ -270,16 +272,6 @@ lemma toAddSubmonoid_eq_top {S : NonUnitalSubsemiring R} : S.toAddSubmonoid = �
   simp [← SetLike.coe_set_eq]
 
 end NonUnitalSubsemiring
-
-namespace NonUnitalRingHom
-
-open NonUnitalSubsemiring
-
-variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable (f : F)
-
-end NonUnitalRingHom
 
 namespace NonUnitalSubsemiring
 

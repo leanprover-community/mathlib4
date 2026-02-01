@@ -178,7 +178,7 @@ instance : (opOpEquivalence C).CommShift ℤ :=
         simp [Functor.commShiftIso_comp_hom_app,
           commShiftIso_opOp_hom_app _ n (-n),
           commShiftIso_unopUnop_hom_app _ n (-n),
-          ← unop_comp_assoc]}
+          ← unop_comp_assoc] }
 
 variable [Preadditive C] [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
