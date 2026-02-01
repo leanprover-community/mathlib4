@@ -1262,6 +1262,7 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.AffineSpace
 public import Mathlib.AlgebraicGeometry.AffineTransitionLimit
 public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.ColimitsOver
 public import Mathlib.AlgebraicGeometry.Cover.Directed
 public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Cover.Open
@@ -2737,6 +2738,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
@@ -6313,6 +6315,7 @@ public import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Polynomial.IntegralNormalization
 public import Mathlib.RingTheory.Polynomial.IrreducibleRing
 public import Mathlib.RingTheory.Polynomial.IsIntegral
+public import Mathlib.RingTheory.Polynomial.Morse
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 public import Mathlib.RingTheory.Polynomial.Opposites
 public import Mathlib.RingTheory.Polynomial.Pochhammer
@@ -7380,6 +7383,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 public import Mathlib.Topology.Order
+public import Mathlib.Topology.Order.AtTopBotIxx
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Category.AlexDisc
