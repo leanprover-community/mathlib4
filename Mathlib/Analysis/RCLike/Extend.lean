@@ -123,8 +123,9 @@ lemma re_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
 
 @[simp]
 lemma im_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
-    re ((extendRCLike g) x : 𝕜) = g x := by
-  simp [extendRCLike_apply]
+    im ((extendRCLike g) x : 𝕜) = - g ((I : 𝕜) • x) := by
+  obtain (h | h) := RCLike.I_eq_zero_or_im_I_eq_one (K := 𝕜)
+  all_goals simp [h, extendRCLike_apply]
 
 /-- The extension `StrongDual.extendRCLike` as a linear equivalence between the algebraic duals.
 
