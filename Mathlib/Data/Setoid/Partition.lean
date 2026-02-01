@@ -498,7 +498,7 @@ theorem range_piecewise (f : ι → α → β) : range (hs.piecewise f) = ⋃ i,
 theorem range_piecewise_subset (f : ι → α → β) : range (hs.piecewise f) ⊆ ⋃ i, range (f i) :=
   fun x ⟨y, hy⟩ => by simpa [IndexedPartition.piecewise_apply] using ⟨hs.index y, y, hy⟩
 
-/-- Given a collections of sets `s : ι → Set α` that forms an indexed partition. We can group
+/-- Given a collections of sets `s : ι → Set α` that forms an indexed partition, we can group
 some of the sets to obtain a coarser partition. -/
 noncomputable def coarserPartition (hs : IndexedPartition s) {κ : Type*} (g : ι → κ)
     (hg : g.Surjective) :
