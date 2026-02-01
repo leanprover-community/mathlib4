@@ -83,18 +83,18 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
     NatIso.ofComponents fun Y =>
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 
-/-- Deprecated: prefer `Adjunction.leftAdjointUniq`. -/
-@[deprecated "Use `Adjunction.leftAdjointUniq` \
-  (requires `import Mathlib.CategoryTheory.Adjunction.Unique`)." (since := "2026-01-31")]
+/-- Deprecated: prefer `(Adjunction.conjugateIsoEquiv adj1 adj2).symm`. -/
+@[deprecated "Use `(Adjunction.conjugateIsoEquiv adj1 adj2).symm` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
 def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
   NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
     (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
 
 set_option linter.deprecated false in
-/-- Deprecated: prefer `Adjunction.rightAdjointUniq`. -/
-@[deprecated "Use `Adjunction.rightAdjointUniq` \
-  (requires `import Mathlib.CategoryTheory.Adjunction.Unique`)." (since := "2026-01-31")]
+/-- Deprecated: prefer `Adjunction.conjugateIsoEquiv adj1 adj2`. -/
+@[deprecated "Use `Adjunction.conjugateIsoEquiv adj1 adj2` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
