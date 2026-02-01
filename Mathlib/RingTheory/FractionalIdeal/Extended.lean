@@ -103,7 +103,7 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
     ?_ (zero_mem _) (fun y z _ _ hy hz ↦ add_mem hy hz) (fun b y _ hy ↦ smul_mem _ b hy) hx, ?_⟩
   · rintro ⟨b, _, rfl⟩
     rw [Algebra.linearMap_apply, Algebra.algebraMap_eq_smul_one]
-    exact smul_mem _ _ <| subset_span ⟨1, by simp [one_mem_one]⟩
+    exact smul_mem _ _ <| subset_span ⟨1, by simpa using one_mem_one⟩
   · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact ⟨f a, ha, by rw [Algebra.linearMap_apply, Algebra.linearMap_apply, map_eq]⟩
 

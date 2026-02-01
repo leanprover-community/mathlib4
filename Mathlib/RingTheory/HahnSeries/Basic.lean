@@ -534,51 +534,85 @@ end Domain
 
 end Zero
 
-section LocallyFiniteLinearOrder
+section LinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
+@[deprecated "directly use n as a lower bound." (since := "2026-01-02")]
 theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
-  simp only [BddBelow, Set.Nonempty, lowerBounds]
-  use n
-  intro m hm
-  rw [Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
+  refine ⟨n, fun _ ↦ ?_⟩
+  contrapose
+  simp_all
 
+@[deprecated bddBelow_empty (since := "2026-01-02")]
 theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp only [Function.support_zero, bddBelow_empty]
+  simp
+
+theorem le_orderTop_iff_forall {x : R⟦Γ⟧} {i : WithTop Γ} :
+    i ≤ x.orderTop ↔ ∀ j : Γ, j < i → x.coeff j = 0 where
+  mp hi j hj := coeff_eq_zero_of_lt_orderTop (hj.trans_le hi)
+  mpr H := by
+    obtain rfl | h := eq_or_ne x 0
+    · simp
+    · by_contra! hi
+      exact x.isWF_support.min_mem (support_nonempty_iff.2 h) (H _ (orderTop_of_ne_zero h ▸ hi))
+
+theorem orderTop_lt_iff_exists {x : R⟦Γ⟧} {i : WithTop Γ} :
+    x.orderTop < i ↔ ∃ j : Γ, j < i ∧ x.coeff j ≠ 0 := by
+  rw [← not_le, le_orderTop_iff_forall]
+  simp
+
+theorem le_order_iff_forall [Zero Γ] {x : R⟦Γ⟧} {i : Γ} (h : x ≠ 0) :
+    i ≤ x.order ↔ ∀ j < i, x.coeff j = 0 where
+  mp hi j hj := coeff_eq_zero_of_lt_order (hj.trans_le hi)
+  mpr H := by
+    contrapose! h
+    have := H _ h
+    rwa [coeff_order_eq_zero] at this
+
+theorem order_lt_iff_exists [Zero Γ] {x : R⟦Γ⟧} {i : Γ} (h : x ≠ 0) :
+    x.order < i ↔ ∃ j < i, x.coeff j ≠ 0 := by
+  rw [← not_le, le_order_iff_forall h]
+  simp
 
 variable [LocallyFiniteOrder Γ]
 
+@[deprecated BddBelow.isWF (since := "2026-01-02")]
 theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO :=
   hf.isWF.isPWO
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
-def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ where
-  coeff := f
-  isPWO_support' := suppBddBelow_supp_PWO f hf
+def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ :=
+  ⟨f, hf.isWF.isPWO⟩
 
 @[simp]
-theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : R⟦Γ⟧) :=
+theorem ofSuppBddBelow_zero [Nonempty Γ] : ofSuppBddBelow 0 (by simp) = (0 : R⟦Γ⟧) :=
   rfl
 
+@[deprecated (since := "2026-01-02")]
+alias zero_ofSuppBddBelow := ofSuppBddBelow_zero
+
+@[simp]
+theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔ f = 0 :=
+  HahnSeries.ext_iff
+
+@[simp]
+theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff = f :=
+  rfl
+
+set_option linter.deprecated false in
+@[deprecated le_order_iff_forall (since := "2026-01-02")]
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
     (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
-  dsimp only [order]
-  by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
-  cases h
-  · exact (hf rfl).elim
-  simp_all only [dite_false]
-  rw [Set.IsWF.le_min_iff]
-  intro m hm
-  rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
+  rw [le_order_iff_forall]
+  · exact hn
+  · simpa
 
-end LocallyFiniteLinearOrder
+end LinearOrder
 
 section Truncate
 variable [Zero R]

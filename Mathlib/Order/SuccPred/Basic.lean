@@ -1131,6 +1131,7 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
 
 -- See note [reducible non-instances]
 /-- `PredOrder` transfers across equivalences between orders. -/
+@[to_dual existing]
 protected abbrev PredOrder.ofOrderIso [PredOrder X] (f : X ≃o Y) :
     PredOrder Y where
   pred y := f (pred (f.symm y))
