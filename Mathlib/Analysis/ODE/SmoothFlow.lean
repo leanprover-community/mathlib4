@@ -718,16 +718,21 @@ def fderivIntegralCurry0 (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc
     ((integralCMLM (fun y ↦ (fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) y).uncurryLeft)
       u t₀ α).curryLeft)
 
-/-- The derivative of `T f u t₀` at `(x, α)` is the continuous linear map
-`(dx, dα) ↦ const dx - dα + D(integral term)(dα)`, where the derivative of the integral term
+/-- The Fréchet derivative of `T f u t₀` at `(x, α)`. This is the continuous linear map
+`(dx, dα) ↦ const dx - dα + D(integral term)(dα)`. -/
+def fderivT (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α : C(Icc tmin tmax, E)) : E × C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) :=
+  (ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _) -
+    ContinuousLinearMap.snd ℝ E _ +
+    (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _)
+
+/-- The derivative of `T f u t₀` at `(x, α)` is `fderivT f u t₀ α`, which is the continuous linear
+map `(dx, dα) ↦ const dx - dα + D(integral term)(dα)`, where the derivative of the integral term
 is given by `hasFDerivAt_integralCMLM`. -/
 lemma hasFDerivAt_T {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u) (hu : IsOpen u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {x : E} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
-    HasFDerivAt (T f u t₀)
-      ((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _) -
-        ContinuousLinearMap.snd ℝ E _ +
-        (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _))
-      (x, α) := by
+    HasFDerivAt (T f u t₀) (fderivT f u t₀ α) (x, α) := by
+  unfold fderivT
   unfold T
   -- Derivative of `const x` with respect to `(x, α)` is `(dx, dα) ↦ const dx`
   have h1 : HasFDerivAt (fun p : E × C(Icc tmin tmax, E) ↦ ContinuousMap.const _ p.1)
@@ -778,15 +783,12 @@ lemma hasFDerivAt_T {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u) (hu : 
 
 /-- The derivative of `T` restricted to the second component is
 `-id + fderivIntegralCurry0 f u t₀ α`. -/
-lemma fderiv_T_comp_inr {f : E → E} {u : Set E}
+lemma fderivT_comp_inr {f : E → E} {u : Set E}
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)} :
-    ((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _) -
-      ContinuousLinearMap.snd ℝ E _ +
-      (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _)).comp
-        (ContinuousLinearMap.inr ℝ E _) =
+    (fderivT f u t₀ α).comp (ContinuousLinearMap.inr ℝ E _) =
       -ContinuousLinearMap.id ℝ _ + fderivIntegralCurry0 f u t₀ α := by
   ext y
-  simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inr_apply,
+  simp only [fderivT, ContinuousLinearMap.comp_apply, ContinuousLinearMap.inr_apply,
     ContinuousLinearMap.add_apply, ContinuousLinearMap.sub_apply,
     ContinuousLinearMap.neg_apply, ContinuousLinearMap.id_apply,
     ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd',
@@ -1106,15 +1108,11 @@ lemma exists_contMap_T_eq_zero_opNorm_lt_one {f : E → E} {x₀ : E}
 /-- The derivative of `T` restricted to the second component is bijective when the norm of
 `fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
 theorem to apply. -/
-lemma bijective_fderiv_T_comp_inr {f : E → E} {u : Set E}
+lemma bijective_fderivT_comp_inr {f : E → E} {u : Set E}
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hnorm : ‖fderivIntegralCurry0 f u t₀ α‖ < 1) :
-    Function.Bijective
-      (((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp
-          (ContinuousLinearMap.fst ℝ E _) - ContinuousLinearMap.snd ℝ E _ +
-        (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _)).comp
-          (ContinuousLinearMap.inr ℝ E _)) := by
-  rw [fderiv_T_comp_inr t₀]
+    Function.Bijective ((fderivT f u t₀ α).comp (ContinuousLinearMap.inr ℝ E _)) := by
+  rw [fderivT_comp_inr t₀]
   -- Show -id + A = -(id - A), and bijectivity of negation preserves bijectivity
   have heq : -ContinuousLinearMap.id ℝ C(Icc tmin tmax, E) + fderivIntegralCurry0 f u t₀ α =
       -(ContinuousLinearMap.id ℝ _ - fderivIntegralCurry0 f u t₀ α) := by
@@ -1138,14 +1136,10 @@ lemma bijective_fderiv_T_comp_inr {f : E → E} {u : Set E}
 lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
     (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
-    IsContDiffImplicitAt n (T f u t₀)
-      ((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _) -
-        ContinuousLinearMap.snd ℝ E _ +
-        (fderivIntegralCurry0 f u t₀ α₀).comp (ContinuousLinearMap.snd ℝ E _))
-      (x₀, α₀) where
+    IsContDiffImplicitAt n (T f u t₀) (fderivT f u t₀ α₀) (x₀, α₀) where
   hasFDerivAt := hasFDerivAt_T (hf.of_le (mod_cast hn)) hu t₀ hα₀
   contDiffAt := contDiffAt_T hu t₀ n hf hα₀
-  bijective := bijective_fderiv_T_comp_inr t₀ hnorm
+  bijective := bijective_fderivT_comp_inr t₀ hnorm
   ne_zero := by
     simp only [ne_eq, WithTop.coe_eq_zero]
     exact (one_pos.trans_le hn).ne'
