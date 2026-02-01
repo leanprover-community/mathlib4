@@ -367,16 +367,9 @@ finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a where
   parts := P.parts.attach.biUnion fun i ↦ (Q i.1 i.2).parts
   supIndep := by
-    intro s hs x hx hxs
-    obtain ⟨t, ht, hxt⟩ := mem_biUnion.mp hx
-    grw [show s ⊆ (Q t t.prop).parts.erase x ∪ s \ (Q t t.prop).parts by grind, sup_union]
-    refine .disjoint_sup_right_of_disjoint_sup_left
-      ((Q t t.prop).supIndep (erase_subset _ _) hxt <| by grind) ?_
-    rw [← sup_insert, insert_erase hxt, sup_parts]
-    grw [show s \ (Q ↑t t.prop).parts ⊆ (P.parts.attach.erase t).biUnion
-      (fun i ↦ (Q i i.prop).parts) by grind]
-    simp_rw +singlePass [sup_biUnion, sup_parts, ← id_comp Subtype.val, ← sup_image]
-    apply P.supIndep <;> grind
+    refine .biUnion ?_ (fun i _ ↦ (Q i i.prop).supIndep)
+    simp_rw [sup_parts, supIndep_attach (f := fun x ↦ x)]
+    exact P.supIndep
   sup_parts := by
     simp_rw [sup_biUnion]
     trans (sup P.parts id)
@@ -416,14 +409,8 @@ def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a �
     Finpartition c where
   parts := insert b P.parts
   supIndep := by
-    intro s hs x hx hxs
-    rcases mem_insert.mp hx with rfl | hx
-    · grw [(subset_insert_iff_of_notMem hxs).mp hs, P.sup_parts]
-      exact hab.symm
-    · grw [show s ⊆ insert b (P.parts.erase x) by grind, sup_insert, sup_comm]
-      refine .disjoint_sup_right_of_disjoint_sup_left
-        (P.supIndep (erase_subset _ _) hx (notMem_erase _ _)) ?_
-      rwa [← sup_insert, insert_erase hx, P.sup_parts]
+    refine P.supIndep.insert ?_
+    rwa [sup_parts, disjoint_comm]
   sup_parts := by rwa [sup_insert, P.sup_parts, id, _root_.sup_comm]
   bot_notMem h := (mem_insert.1 h).elim hb.symm P.bot_notMem
 
