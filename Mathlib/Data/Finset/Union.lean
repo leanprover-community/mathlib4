@@ -200,7 +200,7 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 @[simp, grind =] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
   simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
 
-@[simp, norm_cast]
+@[norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
   simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion]
 

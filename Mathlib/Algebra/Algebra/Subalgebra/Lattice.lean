@@ -503,12 +503,14 @@ theorem adjoin_eq_of_le (S : Subalgebra R A) (h₁ : s ⊆ S) (h₂ : S ≤ adjo
 theorem adjoin_eq (S : Subalgebra R A) : adjoin R ↑S = S :=
   adjoin_eq_of_le _ (Set.Subset.refl _) subset_adjoin
 
-theorem adjoin_iUnion {α : Type*} (s : α → Set A) :
+theorem adjoin_iUnion {α : Sort*} (s : α → Set A) :
     adjoin R (Set.iUnion s) = ⨆ i : α, adjoin R (s i) :=
   (@Algebra.gc R A _ _ _).l_iSup
 
 theorem adjoin_attach_biUnion [DecidableEq A] {α : Type*} {s : Finset α} (f : s → Finset A) :
-    adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_iUnion]
+    adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by
+  show_term push_cast
+  simp [adjoin_iUnion]
 
 @[elab_as_elim]
 theorem adjoin_induction {p : (x : A) → x ∈ adjoin R s → Prop}

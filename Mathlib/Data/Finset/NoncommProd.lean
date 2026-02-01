@@ -358,7 +358,7 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
-    (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise (Commute on f)) :
+    (f : α → β) (comm : Set.Pairwise (s ∪ t : Finset α) (Commute on f)) :
     noncommProd (s ∪ t) f comm =
       noncommProd s f (comm.mono <| coe_subset.2 subset_union_left) *
         noncommProd t f (comm.mono <| coe_subset.2 subset_union_right) := by
@@ -367,7 +367,7 @@ theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Di
   rw [List.disjoint_toFinset_iff_disjoint] at h
   calc noncommProd (List.toFinset sl ∪ List.toFinset tl) f comm
     _ = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
-          (by convert comm; simp [Set.ext_iff]) :=
+          (by convert comm using 1; simp [Set.ext_iff]) :=
       noncommProd_congr (by ext; simp) (by simp) _
     _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
          noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) := by

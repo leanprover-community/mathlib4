@@ -88,11 +88,11 @@ theorem image_subset_image₂_right (ha : a ∈ s) : t.image (fun b => f a b) �
 
 lemma forall_mem_image₂ {p : γ → Prop} :
     (∀ z ∈ image₂ f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by
-  simp_rw [← mem_coe, coe_image₂, forall_mem_image2]
+  simp_rw [coe_image₂, forall_mem_image2]
 
 lemma exists_mem_image₂ {p : γ → Prop} :
     (∃ z ∈ image₂ f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by
-  simp_rw [← mem_coe, coe_image₂, exists_mem_image2]
+  simp_rw [coe_image₂, exists_mem_image2]
 
 @[simp]
 theorem image₂_subset_iff : image₂ f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=

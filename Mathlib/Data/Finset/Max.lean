@@ -455,7 +455,7 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
   implies `p (insert a s)`. -/
 @[elab_as_elim]
 theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
-    (step : ∀ a s, (∀ x ∈ s, x < a) → p s → p (insert a s)) : p s := by
+    (step : ∀ a s, (∀ x ∈ ↑s, x < a) → p s → p (insert a s)) : p s := by
   induction s using Finset.eraseInduction with | _ s ih
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · exact h0
@@ -471,7 +471,7 @@ theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset �
   implies `p (insert a s)`. -/
 @[elab_as_elim]
 theorem induction_on_min [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
-    (step : ∀ a s, (∀ x ∈ s, a < x) → p s → p (insert a s)) : p s :=
+    (step : ∀ a s, (∀ x ∈ ↑s, a < x) → p s → p (insert a s)) : p s :=
   @induction_on_max αᵒᵈ _ _ _ s h0 step
 
 end MaxMin
@@ -488,7 +488,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
   `f x ≤ f a`, `p s` implies `p (insert a s)`. -/
 @[elab_as_elim]
 theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
-    (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
+    (h0 : p ∅) (step : ∀ a s, a ∉ ↑s → (∀ x ∈ ↑s, f x ≤ f a) → p s → p (insert a s)) : p s := by
   induction s using Finset.eraseInduction with | _ s ihs
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
@@ -509,7 +509,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
   `f a ≤ f x`, `p s` implies `p (insert a s)`. -/
 @[elab_as_elim]
 theorem induction_on_min_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
-    (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f a ≤ f x) → p s → p (insert a s)) : p s :=
+    (h0 : p ∅) (step : ∀ a s, a ∉ ↑s → (∀ x ∈ ↑s, f a ≤ f x) → p s → p (insert a s)) : p s :=
   @induction_on_max_value αᵒᵈ ι _ _ _ _ s h0 step
 
 end MaxMinInductionValue

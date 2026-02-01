@@ -839,7 +839,7 @@ noncomputable def Infinite.natEmbedding (s : Set α) (h : s.Infinite) : ℕ ↪ 
 
 theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) :
     ∃ t : Finset α, ↑t ⊆ s ∧ t.card = n :=
-  ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
+  ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by push_cast; simp⟩
 
 theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) : s.Infinite := fun h =>
   Set.infinite_univ (α := α) (by simpa using hs.union h)

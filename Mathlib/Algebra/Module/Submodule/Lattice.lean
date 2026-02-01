@@ -257,7 +257,7 @@ theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ 
 
 @[simp]
 theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
-  rw [← SetLike.mem_coe, coe_iInf, Set.mem_iInter]; rfl
+  rw [coe_iInf, Set.mem_iInter]
 
 @[simp]
 theorem mem_finsetInf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :

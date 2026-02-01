@@ -514,7 +514,7 @@ obtained by inserting an element in `t`. -/
 @[elab_as_elim]
 theorem Nonempty.cons_induction {α : Type*} {motive : ∀ s : Finset α, s.Nonempty → Prop}
     (singleton : ∀ a, motive {a} (singleton_nonempty _))
-    (cons : ∀ a s (h : a ∉ s) (hs), motive s hs → motive (Finset.cons a s h) (cons_nonempty h))
+    (cons : ∀ a s (h : a ∉ ↑s) (hs), motive s hs → motive (Finset.cons a s h) (cons_nonempty h))
     {s : Finset α} (hs : s.Nonempty) : motive s hs := by
   induction s using Finset.cons_induction with
   | empty => exact (not_nonempty_empty hs).elim

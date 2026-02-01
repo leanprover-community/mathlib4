@@ -486,7 +486,7 @@ scoped[FinsetInterval] notation "[[" a ", " b "]]" => Finset.uIcc a b
 theorem mem_uIcc : x ∈ uIcc a b ↔ a ⊓ b ≤ x ∧ x ≤ a ⊔ b :=
   mem_Icc
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_uIcc (a b : α) : (Finset.uIcc a b : Set α) = Set.uIcc a b :=
   coe_Icc _ _
 

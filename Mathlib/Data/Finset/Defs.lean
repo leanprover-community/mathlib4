@@ -99,8 +99,10 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 /-! ### membership -/
 
 
-instance : Membership α (Finset α) :=
-  ⟨fun s a => a ∈ s.1⟩
+/-- Convert a finset to a set in the natural way. -/
+instance : SetLike (Finset α) α where
+  coe s := {a | a ∈ s.1}
+  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
@@ -123,19 +125,14 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 /-! ### set coercion -/
 
 /-- Convert a finset to a set in the natural way. -/
-instance : SetLike (Finset α) α where
-  coe s := {a | a ∈ s}
-  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
-
-/-- Convert a finset to a set in the natural way. -/
 @[deprecated SetLike.coe (since := "2025-10-22")]
 abbrev toSet (s : Finset α) : Set α := s
 
-@[norm_cast, grind =]
+@[deprecated "this now a syntactic equality" (since := "2026-01-26")]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 
-@[simp]
+@[deprecated Set.setOf_mem_eq (since := "2026-01-26")]
 theorem setOf_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
 
@@ -246,7 +243,6 @@ theorem Subset.trans {s₁ s₂ s₃ : Finset α} : s₁ ⊆ s₂ → s₂ ⊆ s
 theorem Superset.trans {s₁ s₂ s₃ : Finset α} : s₁ ⊇ s₂ → s₂ ⊇ s₃ → s₁ ⊇ s₃ := fun h' h =>
   Subset.trans h h'
 
-@[gcongr]
 theorem mem_of_subset {s₁ s₂ : Finset α} {a : α} : s₁ ⊆ s₂ → a ∈ s₁ → a ∈ s₂ :=
   Multiset.mem_of_subset
 
@@ -275,7 +271,7 @@ theorem val_le_iff {s₁ s₂ : Finset α} : s₁.1 ≤ s₂.1 ↔ s₁ ⊆ s₂
 theorem Subset.antisymm_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ s₁ ⊆ s₂ ∧ s₂ ⊆ s₁ :=
   le_antisymm_iff
 
-theorem not_subset : ¬s ⊆ t ↔ ∃ x ∈ s, x ∉ t := by simp only [← coe_subset, Set.not_subset, mem_coe]
+theorem not_subset : ¬s ⊆ t ↔ ∃ x ∈ s, x ∉ t := by simp only [← coe_subset, Set.not_subset]
 
 @[simp]
 theorem le_eq_subset : ((· ≤ ·) : Finset α → Finset α → Prop) = (· ⊆ ·) :=

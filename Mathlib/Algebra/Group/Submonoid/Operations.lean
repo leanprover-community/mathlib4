@@ -180,7 +180,7 @@ def comap (f : F) (S : Submonoid N) :
   one_mem' := show f 1 ∈ S by rw [map_one]; exact S.one_mem
   mul_mem' ha hb := show f (_ * _) ∈ S by rw [map_mul]; exact S.mul_mem ha hb
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := norm_cast)]
 theorem coe_comap (S : Submonoid N) (f : F) : (S.comap f : Set M) = f ⁻¹' S :=
   rfl
 
