@@ -55,6 +55,8 @@ instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
+
 instance : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
   zero_mem N := N.zero_mem'
@@ -409,8 +411,7 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 /-- The Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
   { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
-      sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with
-    toPartialOrder := SetLike.instPartialOrder }
+      sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with }
 
 theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h : b ∈ N i) :
     b ∈ ⨆ i, N i :=

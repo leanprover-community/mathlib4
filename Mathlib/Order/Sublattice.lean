@@ -44,6 +44,8 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
+instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (L : Sublattice α) : Set α := L
 

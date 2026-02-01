@@ -74,6 +74,8 @@ instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
+@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G) G
+
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
@@ -402,6 +404,8 @@ theorem toSubgroup_injective : Function.Injective
 instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+
+@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G) G
 
 @[to_additive]
 instance : SubgroupClass (OpenNormalSubgroup G) G where

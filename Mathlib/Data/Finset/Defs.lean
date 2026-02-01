@@ -127,6 +127,8 @@ instance : SetLike (Finset α) α where
   coe s := {a | a ∈ s}
   coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
+instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
+
 /-- Convert a finset to a set in the natural way. -/
 @[deprecated SetLike.coe (since := "2025-10-22")]
 abbrev toSet (s : Finset α) : Set α := s

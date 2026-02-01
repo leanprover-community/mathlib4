@@ -52,6 +52,8 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
+instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
+
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]

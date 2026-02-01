@@ -174,6 +174,8 @@ instance : SetLike (AffineSubspace k P) P where
   coe := carrier
   coe_injective' p q _ := by cases p; cases q; congr
 
+instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
+
 /-- A point is in an affine subspace coerced to a set if and only if it is in that affine
 subspace. -/
 theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s := by simp
@@ -1060,7 +1062,7 @@ span. -/
 lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
   intro x hx
-  simp only [SetLike.mem_coe, Submodule.mem_toAffineSubspace]
+  simp only [Submodule.mem_toAffineSubspace]
   induction hx using affineSpan_induction' with
   | mem x hx => exact Submodule.subset_span hx
   | smul_vsub_vadd c u _ v _ w _ hu hv hw =>
