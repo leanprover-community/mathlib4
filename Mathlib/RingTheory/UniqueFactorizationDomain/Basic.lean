@@ -110,6 +110,15 @@ theorem factors_unique {f g : Multiset α} (hf : ∀ x ∈ f, Irreducible x)
   prime_factors_unique (fun x hx => UniqueFactorizationMonoid.irreducible_iff_prime.mp (hf x hx))
     (fun x hx => UniqueFactorizationMonoid.irreducible_iff_prime.mp (hg x hx)) h
 
+theorem _root_.Associated.card_factors_eq {a b : α} (h : Associated a b) :
+    (factors a).card = (factors b).card := by
+  by_cases hb : b = 0
+  · simp_all
+  have ha : a ≠ 0 := h.ne_zero_iff.mpr hb
+  apply Multiset.card_eq_card_of_rel
+  apply factors_unique irreducible_of_factor irreducible_of_factor
+  exact (factors_prod ha).trans <| h.trans (factors_prod hb).symm
+
 end UniqueFactorizationMonoid
 
 /-- If an irreducible has a prime factorization,
@@ -208,6 +217,12 @@ theorem exists_mem_factors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) : ∃ p, p �
   obtain ⟨p', hp', hp'x⟩ := WfDvdMonoid.exists_irreducible_factor h hx
   obtain ⟨p, hp, _⟩ := exists_mem_factors_of_dvd hx hp' hp'x
   exact ⟨p, hp⟩
+
+theorem factors_eq_singleton_of_irreducible {a : α} (ha : Irreducible a) :
+    ∃ b, Associated a b ∧ factors a = {b} := by
+  obtain ⟨b, hbmem, hab⟩ := exists_mem_factors_of_dvd ha.ne_zero ha dvd_rfl
+  exact ⟨b, hab, .symm <| Multiset.eq_of_le_of_card_le (Multiset.singleton_le.mpr hbmem)
+    (by rw [card_factors_of_irreducible ha, Multiset.card_singleton])⟩
 
 open Classical in
 theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :

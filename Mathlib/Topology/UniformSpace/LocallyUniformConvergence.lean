@@ -147,6 +147,12 @@ theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsComp
     tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace, ←
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe] at h
 
+/-!
+### Composition
+-/
+
+section Comp
+
 theorem TendstoLocallyUniformlyOn.comp [TopologicalSpace γ] {t : Set γ}
     (h : TendstoLocallyUniformlyOn F f p s) (g : γ → α) (hg : MapsTo g t s)
     (cg : ContinuousOn g t) : TendstoLocallyUniformlyOn (fun n => F n ∘ g) (f ∘ g) p t := by
@@ -161,6 +167,60 @@ theorem TendstoLocallyUniformly.comp [TopologicalSpace γ] (h : TendstoLocallyUn
   rw [← tendstoLocallyUniformlyOn_univ] at h ⊢
   rw [← continuousOn_univ] at cg
   exact h.comp _ (mapsTo_univ _ _) cg
+
+variable [UniformSpace γ] {g : β → γ}
+
+theorem UniformContinuousOn.comp_tendstoLocallyUniformlyOn {t : Set β}
+    (hg : UniformContinuousOn g t) (hf : TendstoLocallyUniformlyOn F f p s)
+    (hfs : MapsTo f s t) (hFs : ∀ᶠ n in p, MapsTo (F n) s t) :
+    TendstoLocallyUniformlyOn (g ∘ F ·) (g ∘ f) p s := by
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
+  refine fun x hx ↦ Tendsto.comp hg (tendsto_inf.mpr ⟨hf x hx, tendsto_principal.mpr ?_⟩)
+  filter_upwards [hFs.prod_mk eventually_mem_nhdsWithin] with y hy using ⟨hfs hy.2, hy.1 hy.2⟩
+
+theorem UniformContinuousOn.comp_tendstoLocallyUniformly {t : Set β}
+    (hg : UniformContinuousOn g t) (hf : TendstoLocallyUniformly F f p)
+    (hfs : ∀ x, f x ∈ t) (hFs : ∀ᶠ n in p, ∀ x, F n x ∈ t) :
+    TendstoLocallyUniformly (g ∘ F ·) (g ∘ f) p := by
+  rw [← tendstoLocallyUniformlyOn_univ] at *
+  apply hg.comp_tendstoLocallyUniformlyOn hf <;> simpa [MapsTo]
+
+theorem UniformContinuous.comp_tendstoLocallyUniformlyOn (hg : UniformContinuous g)
+    (hf : TendstoLocallyUniformlyOn F f p s) :
+    TendstoLocallyUniformlyOn (g ∘ F ·) (g ∘ f) p s :=
+  hg.uniformContinuousOn.comp_tendstoLocallyUniformlyOn hf (mapsTo_univ _ _) <| .of_forall fun _ ↦
+    mapsTo_univ _ _
+
+theorem UniformContinuous.comp_tendstoLocallyUniformly (hg : UniformContinuous g)
+    (hf : TendstoLocallyUniformly F f p) :
+    TendstoLocallyUniformly (g ∘ F ·) (g ∘ f) p :=
+  (hg.uniformContinuousOn (s := univ)).comp_tendstoLocallyUniformly hf (by simp) (by simp)
+
+end Comp
+
+theorem TendstoLocallyUniformlyOn.prodMk [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformlyOn F f p s) (hG : TendstoLocallyUniformlyOn G g p s) :
+    TendstoLocallyUniformlyOn (fun n x ↦ (F n x, G n x)) (fun x ↦ (f x, g x)) p s := by
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
+  intro x hx
+  rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff]
+  exact (hF x hx).prodMk (hG x hx)
+
+theorem TendstoLocallyUniformlyOn.piProd [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformlyOn F f p s) (hG : TendstoLocallyUniformlyOn G g p s) :
+    TendstoLocallyUniformlyOn (fun n ↦ Pi.prod (F n) (G n)) (Pi.prod f g) p s :=
+  hF.prodMk hG
+
+theorem TendstoLocallyUniformly.prodMk [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformly F f p) (hG : TendstoLocallyUniformly G g p) :
+    TendstoLocallyUniformly (fun n x ↦ (F n x, G n x)) (fun x ↦ (f x, g x)) p := by
+  rw [← tendstoLocallyUniformlyOn_univ] at *
+  exact hF.prodMk hG
+
+theorem TendstoLocallyUniformly.piProd [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformly F f p) (hG : TendstoLocallyUniformly G g p) :
+    TendstoLocallyUniformly (fun n ↦ Pi.prod (F n) (G n)) (Pi.prod f g) p :=
+  hF.prodMk hG
 
 /-- If every `x ∈ s` has a neighbourhood within `s` on which `F i` tends uniformly to `f`, then
 `F i` tends locally uniformly on `s` to `f`.
