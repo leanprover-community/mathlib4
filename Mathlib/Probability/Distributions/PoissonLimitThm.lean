@@ -72,26 +72,21 @@ lemma tendsto_choose_mul_pow_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 
 theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n => n.choose k * (p n) ^ k * (1 - p n) ^ (n - k))
     atTop (𝓝 (Real.exp (-r) * (r ^ k) / k.factorial)) := by
-  have h_one_sub_pow : Tendsto (fun n => (1 - p n) ^ (n - k)) atTop (𝓝 (Real.exp (-r))) := by
-    have hneg : Tendsto (fun n => n * (-p n)) atTop (𝓝 (-r)) := by
-      simpa [mul_neg] using hr.neg
-    have hpow_n : Tendsto (fun n => (1 - p n) ^ n) atTop (𝓝 (Real.exp (-r))) := by
-      simpa [sub_eq_add_neg] using Real.tendsto_one_add_pow_exp_of_tendsto hneg
-    have h1 : Tendsto (fun n => 1 - p n) atTop (𝓝 1) := by
-      simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
-    have hinv_k : Tendsto (fun n => ((1 - p n) ^ k)⁻¹) atTop (𝓝 1) := by
-      simpa only [one_pow, inv_one] using (h1.pow k).inv₀ (by norm_num)
-    have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
-      (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by norm_num))
-    have hEq : (fun n => (1 - p n) ^ (n - k))
-          =ᶠ[atTop] (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
-      filter_upwards [eventually_ge_atTop k, hp_lt_half] with n hn hne
-      rw [pow_sub₀ _ (by linarith) hn]
-    have : Tendsto (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) atTop (𝓝 (Real.exp (-r))) := by
-      simpa [mul_assoc] using (hpow_n.mul hinv_k)
-    exact Tendsto.congr' (EventuallyEq.symm hEq) this
-  simpa [mul_assoc, mul_left_comm, mul_comm, div_eq_mul_inv] using
-    (tendsto_choose_mul_pow_atTop k hr).mul h_one_sub_pow
+  rw [mul_div_assoc, mul_comm]
+  refine (tendsto_choose_mul_pow_atTop k hr).mul ?_
+  have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
+    (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by norm_num))
+  have hEq : (fun n => (1 - p n) ^ (n - k))
+        =ᶠ[atTop] (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
+    filter_upwards [eventually_ge_atTop k, hp_lt_half] with n hn hne
+    rw [pow_sub₀ _ (by grind) hn]
+  refine Tendsto.congr' hEq.symm ?_
+  have : Real.exp (-r) = Real.exp (-r) * (1 ^ k)⁻¹ := by field
+  rw [this]
+  refine Tendsto.mul (Real.tendsto_one_add_pow_exp_of_tendsto ?_) ?_
+  · simpa using hr.neg
+  refine Tendsto.inv₀ (.pow ?_ k) (by simp)
+  · simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
 
 /--
 Another version of Possion Limit Theorem : using `poissonPMFReal` (with `r : ℝ≥0`).
