@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Equiv.Opposite
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Endomorphisms of a module
@@ -226,19 +226,18 @@ instance apply_isScalarTower [Monoid S] [DistribMulAction S M] [SMulCommClass R 
 
 end Module.End
 
+section
+
 /-! ## Actions as module endomorphisms -/
 
-
-namespace DistribMulAction
-
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
-variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
+variable [Monoid S]
 
 /-- Each element of the monoid defines a linear map.
 
-This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+This is a stronger version of `DistribSMul.toAddMonoidHom`. -/
 @[simps]
-def toLinearMap (s : S) : M →ₗ[R] M where
+def DistribSMul.toLinearMap [DistribSMul S M] [SMulCommClass S R M] (s : S) : M →ₗ[R] M where
   toFun := HSMul.hSMul s
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
@@ -247,12 +246,15 @@ def toLinearMap (s : S) : M →ₗ[R] M where
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd`. -/
 @[simps]
-def toModuleEnd : S →* Module.End R M where
-  toFun := toLinearMap R M
+def DistribMulAction.toModuleEnd [DistribMulAction S M] [SMulCommClass S R M] :
+    S →* Module.End R M where
+  toFun := DistribSMul.toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
 
-end DistribMulAction
+@[deprecated (since := "2026-01-07")] alias DistribMulAction.toLinearMap := DistribSMul.toLinearMap
+
+end
 
 section Module
 
@@ -265,7 +267,7 @@ This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
 def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
-    toFun := DistribMulAction.toLinearMap R M
+    toFun := DistribSMul.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 
@@ -274,7 +276,7 @@ multiplication. -/
 @[simps]
 def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
-    toFun := DistribMulAction.toLinearMap R R
+    toFun := DistribSMul.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
@@ -284,7 +286,7 @@ multiplication. -/
 @[simps]
 def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
-    toFun := DistribMulAction.toLinearMap _ _
+    toFun := DistribSMul.toLinearMap _ _
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
@@ -329,15 +331,8 @@ lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext;
 lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
 
 @[simp]
-lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
-    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
-  rcases eq_or_ne x 0 with rfl | hx
-  · simp
-  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
-  ext v
-  replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
-  rw [smul_eq_zero] at h
-  tauto
+lemma smulRight_apply_eq_zero_iff [IsDomain S] {f : M₁ →ₗ[R] S} {x : M} [Module.IsTorsionFree S M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by simp [DFunLike.ext_iff, forall_or_right]
 
 end SMulRight
 

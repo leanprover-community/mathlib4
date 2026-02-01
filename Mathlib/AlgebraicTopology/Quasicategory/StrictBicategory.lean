@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Bicategory.CatEnriched
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
-public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 
 /-!
 # The strict bicategory of quasicategories
@@ -52,22 +52,22 @@ abbrev QCat := ObjectProperty.FullSubcategory Quasicategory
 
 /-- `QCat` obtains a `Cat`-enriched ordinary category structure by applying `hoFunctor` to the
 hom objects in its `SSet`-enriched ordinary structure. -/
-noncomputable instance QCat.catEnrichedOrdinaryCategory : EnrichedOrdinaryCategory Cat QCat :=
+instance QCat.catEnrichedOrdinaryCategory : EnrichedOrdinaryCategory Cat QCat :=
   TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor
     (hoFunctor.unitHomEquiv · |>.trans <| Functor.equivCatHom _ _)
       (congrArg (Functor.toCatHom) <| hoFunctor.unitHomEquiv_eq · ·)
 
 /-- The underlying category of the `Cat`-enriched ordinary category of quasicategories is
 equivalent to `QCat`. -/
-noncomputable def QCat.forgetEnrichment.equiv :
+def QCat.forgetEnrichment.equiv :
     ForgetEnrichment Cat QCat ≌ QCat := ForgetEnrichment.equiv Cat
 
 /-- The bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
-noncomputable instance QCat.bicategory : Bicategory QCat :=
+instance QCat.bicategory : Bicategory QCat :=
   CatEnrichedOrdinary.instBicategory
 
 /-- The strict bicategory of quasicategories extracted from `QCat.CatEnrichedOrdinaryCat`. -/
-noncomputable instance QCat.strictBicategory : Bicategory.Strict QCat :=
+instance QCat.strictBicategory : Bicategory.Strict QCat :=
   CatEnrichedOrdinary.instStrict
 
 end SSet

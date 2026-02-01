@@ -232,9 +232,8 @@ instance hasLimits : HasLimits AffineScheme.{u} := by
 noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
 
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
-  apply (config := { allowSynthFailures := true })
-    @preservesLimits_of_natIso _ _ _ _ _ _
-      (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
+  apply +allowSynthFailures @preservesLimits_of_natIso _ _ _ _ _ _
+    (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
@@ -1215,8 +1214,6 @@ lemma specTargetImageFactorization_app_injective :
 lemma specTargetImageFactorization_comp :
     specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f) = f :=
   f.liftQuotient_comp _ _
-
-open RingHom
 
 end Factorization
 

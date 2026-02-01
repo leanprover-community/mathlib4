@@ -127,7 +127,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
   let dg (t : ℝ) := (1 / 2) * (f a + f t) + ((t - a) / 2) * (derivWithin f (Icc a b) t) - f t
   let ddg (t : ℝ) := ((t - a) / 2) * (iteratedDerivWithin 2 f (Icc a b) t)
   -- Compute g' by applying standard derivative identities.
-  have h_dg (y : ℝ) (hy: y ∈ Icc a b) : HasDerivWithinAt g (dg y) (Icc a b) y := by
+  have h_dg (y : ℝ) (hy : y ∈ Icc a b) : HasDerivWithinAt g (dg y) (Icc a b) y := by
     unfold g trapezoidal_error trapezoidal_integral
     simp only [Nat.cast_one, div_one, tsub_self, Finset.range_zero, sum_empty, add_zero]
     simp_rw [← mul_comm_div]
@@ -139,11 +139,11 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     · exact h_df.continuousOn.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc y
     · exact h_df.continuousOn.continuousWithinAt hy
   -- Compute g'', once again applying standard derivative identities.
-  have h_ddg (y : ℝ) (hx: y ∈ Icc a b) : HasDerivWithinAt dg (ddg y) (Icc a b) y := by
+  have h_ddg (y : ℝ) (hx : y ∈ Icc a b) : HasDerivWithinAt dg (ddg y) (Icc a b) y := by
     -- The eventual expression for g'' has several terms that cancel, which we have to undo here
     -- so that the various HasDerivWithinAt theorems will have everything they need.
     let dfaky := derivWithin f (Icc a b) y
-    rw [(by ring: ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
+    rw [(by ring : ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
     refine fun_sub (fun_add (const_mul _ (const_add _ (h_df y hx).hasDerivWithinAt))
       (fun_mul (div_const (sub_const _ (hasDerivWithinAt_id _ _)) _) ?_))
       (h_df y hx).hasDerivWithinAt
@@ -176,6 +176,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     (ContinuousOn.intervalIntegrable_of_Icc a_lt_b.le fun x hx ↦ (h_ddg x hx).continuousWithinAt)
   exact (bound_g b ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. This lemma is used in the proof of the general error bound later
 on. -/

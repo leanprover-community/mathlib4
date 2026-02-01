@@ -79,7 +79,7 @@ theorem tendsto_integral_mulExpNegMulSq_comp (g : E →ᵇ ℝ) :
 /-- The integral of `mulExpNegMulSq ε ∘ g` with respect to a finite measure `P` can be
 approximated by the integral of the sequence approximating the exponential function. -/
 theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0 < ε) :
-    Tendsto (fun (n : ℕ) => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂ P)
+    Tendsto (fun (n : ℕ) => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂P)
     atTop (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P)) := by
   apply tendsto_integral_filter_of_norm_le_const ?h_meas ?h_bound ?h_lim
   · apply Eventually.of_forall

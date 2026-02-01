@@ -401,6 +401,9 @@ noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
+@[deprecated (since := "2025-12-15")]
+alias derivativeFinsupp_apply_toFun := derivativeFinsupp_apply_apply
+
 @[simp]
 theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
     (derivativeFinsupp p).support ⊆ range n := by
@@ -515,6 +518,47 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
         derivative_X_add_C_pow, map_natCast, Nat.descFactorial_succ, nsmul_eq_mul, nsmul_eq_mul,
         Nat.cast_mul]
       ring
+
+theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
+    derivative^[n] (p * X ^ m) =
+      ∑ k ∈ range (min m n).succ,
+        (n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k)) := by
+  have hsum : derivative^[n] (p * X ^ m) =
+      ∑ k ∈ range n.succ,
+        (n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k)) := by
+    simp_rw [iterate_derivative_mul, iterate_derivative_X_pow_eq_smul, mul_smul]
+    congr! 2 with k hk
+    norm_cast
+    ring
+  rw [hsum]
+  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by aesop) (by simp)
+  rcases le_or_gt k m with hkm | hkm
+  · replace hk' : n < k := by simpa [hkm] using hk'
+    simp [Nat.choose_eq_zero_of_lt hk']
+  · simp [Nat.descFactorial_eq_zero_iff_lt.mpr hkm]
+
+theorem iterate_derivative_mul_X {n : ℕ} (p : R[X]) :
+    derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
+  convert p.iterate_derivative_mul_X_pow n 1; · simp
+  rcases n with rfl | n <;> simp [sum_range_succ]
+
+theorem iterate_derivative_derivative_mul_X {n : ℕ} (p : R[X]) :
+    derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
+  convert (derivative p).iterate_derivative_mul_X_pow n 1; · simp
+  rcases n with rfl | n <;> simp [sum_range_succ]
+
+theorem iterate_derivative_derivative_mul_X_sq {n : ℕ} (p : R[X]) :
+    derivative^[n] (derivative^[2] p * X ^ 2) =
+      (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
+        (n * (n - 1)) • derivative^[n] p := by
+  convert (derivative^[2] p).iterate_derivative_mul_X_pow n 2
+  rcases n with rfl | n; · simp
+  rcases n with rfl | n; · simp [sum_range_succ, ← mul_assoc]
+  suffices ((n + 1 + 1) * (n + 1) / 2) * 2 = (n + 1 + 1) * (n + 1) by
+    simp -implicitDefEqProofs [this, -nsmul_eq_mul, sum_range_succ, Nat.choose_two_right]
+    ring
+  rw [mul_comm (n + 1 + 1)]
+  exact Nat.div_mul_cancel (Nat.two_dvd_mul_add_one _)
 
 theorem derivative_comp (p q : R[X]) :
     derivative (p.comp q) = derivative q * p.derivative.comp q := by

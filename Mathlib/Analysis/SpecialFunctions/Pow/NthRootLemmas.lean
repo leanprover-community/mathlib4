@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.NthRoot.Defs
-public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.Zify
@@ -88,7 +87,7 @@ then `(a / b ^ n + n * b) / (n + 1) + 1` is a strict upper estimate on `√[n + 
 theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
      a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
   have ⟨c, hc1, hc2⟩ := nthRoot.always_exists n a
-  calc a < (c + 1)^(n + 1) := hc2
+  calc a < (c + 1) ^ (n + 1) := hc2
     _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
       gcongr
       exact nthRoot.lt_pow_go_succ_aux0 hb

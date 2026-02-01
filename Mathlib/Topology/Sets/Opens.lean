@@ -171,6 +171,10 @@ lemma mem_inf {s t : Opens α} {x : α} : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t 
 theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
 
+@[simp]
+theorem mem_sup {s t : Opens α} {x : α} : x ∈ (s ⊔ t) ↔ x ∈ s ∨ x ∈ t :=
+  .rfl
+
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
@@ -266,13 +270,13 @@ theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
-theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α) : U = ⊥ ∨ U = ⊤ := by
-  subst h; letI : TopologicalSpace α := ⊤
-  rw [← coe_eq_empty, ← coe_eq_univ, ← isOpen_top_iff]
+theorem eq_bot_or_top [IndiscreteTopology α] (U : Opens α) :
+    U = ⊥ ∨ U = ⊤ := by
+  rw [← coe_eq_empty, ← coe_eq_univ, ← IndiscreteTopology.isOpen_iff]
   exact U.2
 
-instance [Nonempty α] [Subsingleton α] : IsSimpleOrder (Opens α) where
-  eq_bot_or_eq_top := eq_bot_or_top <| Subsingleton.elim _ _
+instance [Nonempty α] [IndiscreteTopology α] : IsSimpleOrder (Opens α) where
+  eq_bot_or_eq_top := eq_bot_or_top
 
 /-- A set of `opens α` is a basis if the set of corresponding sets is a topological basis. -/
 def IsBasis (B : Set (Opens α)) : Prop :=
@@ -316,7 +320,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
-  · convert (config := {transparency := .default}) hb
+  · convert (config := { transparency := .default }) hb
     ext
     simp
   · exact hb'
@@ -350,8 +354,8 @@ lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β}
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
-    CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
-  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
+    IsCompactElement s ↔ IsCompact (s : Set α) := by
+  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup]
   refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)

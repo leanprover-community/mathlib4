@@ -45,7 +45,7 @@ theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c 
     {f : ℂ → F} (n : ℕ) (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R))
     (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
-  have hp (z) (hz : ‖z - c‖ = R) : ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n  * R) := by
+  have hp (z) (hz : ‖z - c‖ = R) : ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n * R) := by
     simpa [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul] using
       (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
   have hq : iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ •
@@ -129,6 +129,7 @@ theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : IsBounded (range f)) : ∃ c, f = const E c :=
   (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
 (i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
 theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}

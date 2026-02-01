@@ -1,5 +1,6 @@
 module
 
+import Batteries.Tactic.Lint
 import Mathlib.Init
 
 /-! Checks that a basic `#lint` works. -/
