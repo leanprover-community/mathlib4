@@ -22,7 +22,7 @@ Further results on the structure of ideals in a Dedekind domain are found in
 
 - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
   every nonzero fractional ideal is invertible.
-- `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
+- `isDedekindDomainInv_iff` shows that this does not depend on the choice of field of
   fractions.
 
 ## Main results:
