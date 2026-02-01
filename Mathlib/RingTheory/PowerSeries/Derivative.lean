@@ -5,11 +5,10 @@ Authors: Richard M. Hill
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Substitution
-public import Mathlib.RingTheory.Derivation.Basic
-public import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
 # Definitions
@@ -190,52 +189,37 @@ theorem derivative_pow (g : A⟦X⟧) (n : ℕ) :
     · simp
     · simp only [add_tsub_cancel_right, pow_succ]; push_cast; ring
 
-/-- d/dX(X^n.subst g) = (d/dX X^n).subst g * d/dX g. -/
-theorem derivative_subst_X_pow {g : A⟦X⟧} (hg : HasSubst g) (n : ℕ) :
-    d⁄dX A ((X : A⟦X⟧) ^ n |>.subst g) = (d⁄dX A ((X : A⟦X⟧) ^ n)).subst g * d⁄dX A g := by
-  simp only [subst_pow hg, subst_X hg, derivative_pow, derivative_X, mul_one,
-    subst_mul hg, ← coe_substAlgHom hg, _root_.map_natCast]
-
 /-- Chain rule for polynomials viewed as power series. -/
-theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
+private theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
     d⁄dX A ((p : A⟦X⟧).subst g) = (d⁄dX A (p : A⟦X⟧)).subst g * d⁄dX A g := by
   rw [subst_coe hg, derivative_coe, subst_coe hg]
   rw [Derivation.comp_aeval_eq (a := g) (derivative A) p, smul_eq_mul]
 
-/-- d/dX (f.subst g) = (f'.subst g) * g'. -/
-theorem derivative_subst {f g : A⟦X⟧} (hg0 : g.constantCoeff = 0) :
+variable {A} in
+lemma HasSubst.eventually_coeff_pow_eq_zero {f : A⟦X⟧} (hf : HasSubst f) (n : ℕ) :
+    ∀ᶠ m in .atTop, ∀ n' ≤ n, coeff n' (f ^ m) = 0 := by
+  obtain ⟨k, hk⟩ := id hf
+  refine Filter.eventually_of_mem (Filter.Ici_mem_atTop (k * (n + 1))) fun m hm n' hn' ↦
+    coeff_of_lt_order _ ?_
+  obtain ⟨m, rfl⟩ := le_iff_exists_add.mp (Set.mem_Ici.mp hm)
+  grw [pow_add, ← order_mul_ge, pow_mul, ← le_order_pow_of_constantCoeff_eq_zero _
+    (by rwa [map_pow]), ← _root_.le_add_right le_rfl, cast_lt]
+  lia
+
+theorem derivative_subst {f g : A⟦X⟧} (hg : HasSubst g) :
     d⁄dX A (f.subst g) = (d⁄dX A f).subst g * d⁄dX A g := by
-  have hg : HasSubst g := HasSubst.of_constantCoeff_zero' hg0
   ext n
-  have key : ∀ m, coeff m (f.subst g) = coeff m ((↑(trunc (m + 1) f) : A⟦X⟧).subst g) := fun m => by
+  obtain ⟨m, hm⟩ := (hg.eventually_coeff_pow_eq_zero (n + 1)).exists_forall_of_atTop
+  have : coeff (n + 1) (f.subst g) = coeff (n + 1) ((↑(trunc (m + 1) f) : A⟦X⟧).subst g) := by
     rw [coeff_subst' hg, coeff_subst' hg]
-    apply finsum_congr
-    intro d
-    by_cases hd : d ≤ m
-    · rw [coeff_coe_trunc_of_lt (Nat.lt_succ_of_le hd)]
-    · push_neg at hd
-      have hord : m < (g ^ d).order :=
-        (le_order_pow_of_constantCoeff_eq_zero d hg0).trans_lt' (by exact_mod_cast hd)
-      rw [coeff_of_lt_order _ hord]
-      simp
-  rw [coeff_derivative, key (n + 1), ← coeff_derivative]
-  conv_lhs => rw [derivative_subst_coe (A := A) (trunc (n + 2) f) hg]
-  rw [coeff_mul, coeff_mul]
-  apply Finset.sum_congr rfl
-  intro ⟨i, j⟩ hij
-  have hi : i ≤ n := by simp only [Finset.mem_antidiagonal] at hij; omega
+    refine finsum_congr fun d ↦ ?_
+    obtain hd | hd := lt_or_ge d m
+    · rw [coeff_coe_trunc_of_lt (by lia)]
+    · simp [coeff_trunc, hd, hm]
+  rw [coeff_derivative, this, ← coeff_derivative, derivative_subst_coe A _ hg, coeff_mul, coeff_mul]
+  refine Finset.sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
   congr 1
-  rw [coeff_subst' hg, coeff_subst' hg]
-  apply finsum_congr
-  intro d
-  by_cases hd : d ≤ i
-  · congr 1
-    rw [coeff_derivative, coeff_derivative, coeff_coe_trunc_of_lt]
-    omega
-  · push_neg at hd
-    have hord : i < (g ^ d).order :=
-      (le_order_pow_of_constantCoeff_eq_zero d hg0).trans_lt' (by exact_mod_cast hd)
-    rw [coeff_of_lt_order _ hord]
-    simp
+  simp only [coeff_subst' hg, coeff_derivative, coeff_coe, coeff_trunc]
+  exact finsum_congr fun d ↦ by split_ifs <;> simp (disch := grind [Finset.mem_antidiagonal]) [hm]
 
 end PowerSeries
