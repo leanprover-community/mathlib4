@@ -186,6 +186,13 @@ instance instNontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) 
   rcases exists_ne (0 : M) with ⟨x, hx⟩
   exact nontrivial_of_ne (single default x) 0 (mt single_eq_zero.1 hx)
 
+lemma nontrivial_iff : Nontrivial (α →₀ M) ↔ Nonempty α ∧ Nontrivial M where
+  mp := by
+    rintro ⟨f, g, hfg⟩
+    obtain ⟨a, ha⟩ : ∃ a, f a ≠ g a := by simpa [Finsupp.ext_iff] using hfg
+    exact ⟨⟨a⟩, _, _, ha⟩
+  mpr | ⟨_, _⟩ => inferInstance
+
 theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x default) :=
   ext <| Unique.forall_iff.2 single_eq_same.symm
 
