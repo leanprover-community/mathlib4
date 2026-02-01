@@ -57,7 +57,6 @@ theorem stronglyMeasurable_piecewise [Countable ι] (hs : IndexedPartition s)
     simp [simpleFunc_piecewise, piecewise_apply, StronglyMeasurable.tendsto_approx]
   simp only [not_finite_iff_infinite] at Fi
   obtain ⟨e, -⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
-  have he := e.bijective
   classical
   let g (n : ℕ) (i : ι) : Fin (n + 1) :=
     if hi : ∃ m < n, i = e m then ⟨hi.choose, by grind⟩ else Fin.last n
@@ -76,7 +75,7 @@ theorem stronglyMeasurable_piecewise [Countable ι] (hs : IndexedPartition s)
   · exact .biUnion (to_countable _) fun _ _ ↦ hm _
   simp only [simpleFunc_piecewise, SimpleFunc.coe_mk, piecewise_apply]
   have : ∀ᶠ n in atTop, e ((G n).index x) = hs.index x := by
-    obtain ⟨y, hy⟩ := he.2 (hs.index x)
+    obtain ⟨y, hy⟩ := e.bijective.2 (hs.index x)
     refine eventually_atTop.mpr ⟨y + 1, fun b hb => ?_⟩
     have : y = (⟨y, by lia⟩ : Fin (b + 1)).1 := rfl
     rw [← hy, EmbeddingLike.apply_eq_iff_eq, this, ← Fin.ext_iff, ← (G b).mem_iff_index_eq]
