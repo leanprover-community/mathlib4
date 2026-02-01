@@ -166,7 +166,7 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
     · simp only [hg.2, norm_smul, norm_algebraMap', norm_norm]
       grw [coord.opNorm_le_bound (by positivity)
         (fun y ↦ (homothety_inverse _ hx _ h_homothety y).le), mul_inv_cancel₀ hx.ne']
-    · have hgx : g x = g (⟨x, by simp⟩ : 𝕜 ∙ x) := by rw [Submodule.coe_mk]
+    · have hgx : g x = g (⟨x, by simp⟩ : span 𝕜 {x}) := by rw [Submodule.coe_mk]
       have hcx : coord ⟨x, _⟩ = 1 := LinearEquiv.coord_self 𝕜 E x hnz
       simp [-algebraMap_smul, hgx, ↓hg.left, hcx]
   · exact ⟨0, by simp, by simp [le_antisymm (not_lt.mp hx) (norm_nonneg x)]⟩
@@ -174,9 +174,6 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
 end Seminormed
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  simp [-algebraMap_smul, norm_smul, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
 element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
