@@ -633,7 +633,7 @@ variable [Applicative F] [Applicative G]
 
 open Applicative Functor
 
--- open List (cons)
+open List (cons)
 
 open Nat
 
