@@ -496,7 +496,7 @@ lemma orderEmbeddingNat_bot [OrderBot ι] : orderEmbeddingNat (ι := ι) ⊥ = 0
 
 lemma orderEmbeddingNat_succ_of_not_isMax [OrderBot ι] (n : ι) (hn : ¬ IsMax n) :
     orderEmbeddingNat (succ n) = orderEmbeddingNat n + 1 := by
-  simp [orderEmbeddingNat]
+  simp only [orderEmbeddingNat, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk]
   rw [toZ_succ_of_not_isMax n bot_le hn, Int.toNat_add (toZ_nonneg bot_le) (by simp)]
   simp
 

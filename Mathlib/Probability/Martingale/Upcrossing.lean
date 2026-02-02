@@ -384,8 +384,8 @@ theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
 theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)) ℱ μ :=
-  hf.sum_mul_sub hf.stronglyAdapted.upcrossingStrat (fun _ _ => upcrossingStrat_le_one) fun _ _ =>
-    upcrossingStrat_nonneg
+  hf.sum_mul_sub_nat hf.stronglyAdapted.upcrossingStrat (fun _ _ => upcrossingStrat_le_one)
+    fun _ _ ↦ upcrossingStrat_nonneg
 
 theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
