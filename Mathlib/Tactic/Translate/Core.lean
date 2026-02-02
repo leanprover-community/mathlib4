@@ -12,7 +12,6 @@ public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Mathlib.Data.Array.Defs
 public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Lean.Name
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Lean.Meta.CoeAttr
 public import Batteries.Lean.NameMapAttribute
@@ -109,21 +108,6 @@ syntax attrArgs :=
 -- We omit a doc-string on these syntaxes to instead show the `to_additive` or `to_dual` doc-string
 attribute [nolint docBlame] attrArgs bracketedOption
 
-/-- An attribute that stores all the declarations that deal with numeric literals on variable types.
-
-Numeral literals occur in expressions without type information, so in order to decide whether `1`
-needs to be changed to `0`, the context around the numeral is relevant.
-Most numerals will be in an `OfNat.ofNat` application, though tactics can add numeral literals
-inside arbitrary functions. By default we assume that we do not change numerals, unless it is
-in a function application with the `translate_change_numeral` attribute.
-
-`@[translate_change_numeral n₁ ...]` should be added to all functions that take one or more
-numerals as argument that should be changed if `shouldTranslate` succeeds on the first argument,
-i.e. when the numeral is only translated if the first argument is a variable
-(or consists of variables).
-The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1). -/
-syntax (name := translate_change_numeral) "translate_change_numeral" (ppSpace num)* : attr
-
 initialize registerTraceClass `translate
 initialize registerTraceClass `translate_detail
 
@@ -164,17 +148,6 @@ register_option linter.translateOverwrite : Bool := {
 register_option linter.translateRedundant : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute is redundant" }
-
-@[inherit_doc translate_change_numeral]
-initialize changeNumeralAttr : NameMapExtension (List Nat) ←
-  registerNameMapAttribute {
-    name := `translate_change_numeral
-    descr :=
-      "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
-    add := fun
-    | _, `(attr| translate_change_numeral $[$arg]*) =>
-      pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
-    | _, _ => throwUnsupportedSyntax }
 
 /-- `ArgInfo` stores information about how a constant should be translated. -/
 structure ArgInfo where
@@ -323,13 +296,13 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
 private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData) (e : Expr)
-    (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
-  let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
+    (dontTranslate : Array FVarId) : Option Expr :=
+  let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) Expr := do
     if e.isConst then
       let doTranslate :=
         (t.doTranslateAttr.find? env e.constName!).getD <|
           inApp || (findTranslation? env t e.constName).isSome
-      if doTranslate then failure else return .inl e.constName
+      if doTranslate then failure else return e
     if (← get).contains e then
       failure
     modify fun s => s.insert e
@@ -348,7 +321,11 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     | .letE _ _ e body _ => visit e <|> visit body
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
-    | .fvar fvarId       => if dontTranslate.contains fvarId then return .inr fvarId else failure
+    | .fvar fvarId       => if dontTranslate.contains fvarId then return e else failure
+    /- We do not translate the order on `Prop`.
+    TODO: We also don't want to translate the category on `Type u`. Unfortunately, replacing
+    `.sort 0` with `.sort _` here breaks some uses of `to_additive` on `MonCat`. -/
+    | .sort 0            => return e
     | _                  => failure
   Id.run <| (visit e).run' mkPtrSet
 
@@ -360,7 +337,7 @@ This means we will replace expression applied to e.g. `α` or `α × β`, but no
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
 def shouldTranslate (env : Environment) (t : TranslateData) (e : Expr)
-    (dontTranslate : Array FVarId := #[]) : Option (Name ⊕ FVarId) :=
+    (dontTranslate : Array FVarId := #[]) : Option Expr :=
   unsafe shouldTranslateUnsafe env t e dontTranslate
 
 /-- Swap the first two elements of a list -/
@@ -425,18 +402,17 @@ where
         mkAppN (.app (mkAppN (.const projName bf.constLevels!) bargs) b) args
     | .const n₀ ls₀ =>
       withTraceNode `translate_detail (fun res => return m!"{exceptEmoji res} replacing at {e}") do
-      -- Replace numeral `1` with `0` when required
-      if t.changeNumeral then
-        if let some numeralArgs := changeNumeralAttr.find? env n₀ then
-          if let some firstArg := args[0]? then
-            if shouldTranslate env t firstArg dontTranslate |>.isNone then
-              -- In this case, we still update all arguments of `g` that are not numerals,
-              -- since all other arguments can contain subexpressions like
-              -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-              trace[translate_detail] "applyReplacementFun: We change the numerals in this \
-                  expression. However, we will still recurse into all the non-numeral arguments."
-              let args := numeralArgs.foldl (·.modify · changeNumeral) args
-              return mkAppN f (← args.mapM visit)
+      -- Replace numeral `1` with `0` in applications of `OfNat` and `OfNat.ofNat`.
+      if t.changeNumeral && n₀ matches ``OfNat | ``OfNat.ofNat then
+        if let some firstArg := args[0]? then
+          if shouldTranslate env t firstArg dontTranslate |>.isNone then
+            -- In this case, we still update all arguments of `g` that are not numerals,
+            -- since all other arguments can contain subexpressions like
+            -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+            trace[translate_detail] "applyReplacementFun: We change the numerals in this \
+                expression. However, we will still recurse into all the non-numeral arguments."
+            let args := args.modify 1 changeNumeral
+            return mkAppN f (← args.mapM visit)
       let some n₁ := findTranslation? env t n₀ <|> do
         let n₁ := findPrefixTranslation env n₀ t
         guard (n₀ != n₁ && (isReservedName env n₁ || env.contains n₁)); some n₁
@@ -444,10 +420,9 @@ where
       let { reorder, relevantArg } := t.argInfoAttr.find? env n₀ |>.getD {}
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
-        if let some fx := shouldTranslate env t args[relevantArg] dontTranslate then
-          let fx := match fx with | .inl fx => m!"type {fx}" | .inr fx => m!"variable {mkFVar fx}"
+        if let some fixed := shouldTranslate env t args[relevantArg] dontTranslate then
           trace[translate_detail]
-            "The application of {n₀} contains the fixed {fx} so it is not changed."
+            "The application of {n₀} contains the fixed type {fixed} so it is not changed."
           return mkAppN f (← args.mapM visit)
       -- If the number of arguments is too small for `reorder`, we need to eta expand first
       unless reorder.isEmpty do
@@ -1194,7 +1169,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     (kind := AttributeKind.global) : AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`{t.attrName}` can only be used as a global attribute"
-  withOptions (·.updateBool `trace.translate (cfg.trace || ·)) do
+  withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then

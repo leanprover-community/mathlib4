@@ -88,7 +88,7 @@ jobs:
 
       # Checkout the master branch into a subdirectory
       - name: Checkout master branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
@@ -98,7 +98,7 @@ jobs:
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: "${{ github.sha }}"
           path: pr-branch
@@ -505,20 +505,6 @@ jobs:
       #   run: |
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
-
-      - name: kill stray runLinter processes
-        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          echo "Checking for runLinter processes..."
-          if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
-            echo "Killing runLinter processes..."
-            pkill -f runLinter || true
-          else
-            echo "No stray runLinter processes found."
-          fi
-
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
@@ -529,7 +515,7 @@ jobs:
           # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 15m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}
@@ -551,19 +537,26 @@ jobs:
             if [ "$status" -eq 124 ]; then
               echo "runLinter timed out (attempt $attempt)."
               if [ "$attempt" -lt 2 ]; then
-                echo "Checking for runLinter processes..."
-                if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
-                  echo "Killing runLinter processes..."
-                  pkill -f runLinter || true
-                else
-                  echo "No stray runLinter processes found."
-                fi
                 echo "Retrying runLinter after timeout..."
                 continue
               fi
             fi
             exit $status
           done
+
+      # We need to separate this step from the previous script because it needs to run outside of landrun
+      - name: kill stray runLinter processes
+        if: ${{ steps.lint.outcome == 'failure' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "Checking for runLinter processes..."
+          if pgrep -af runLinter; then
+            echo "Killing runLinter processes..."
+            pkill -f runLinter || true
+          else
+            echo "No stray runLinter processes found."
+          fi
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
@@ -587,15 +580,6 @@ jobs:
           then
             printf $'%s\n' "${buildMsgs}"
             exit 1
-          fi
-
-      - name: list stray runLinter processes
-        shell: bash
-        if: always()
-        run: |
-          echo "Checking for runLinter processes..."
-          if ! ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
-            echo "No stray runLinter processes found."
           fi
 
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
@@ -623,12 +607,12 @@ jobs:
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: "${{ github.sha }}"
 
       - name: Configure Lean
-        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
@@ -686,7 +670,7 @@ jobs:
         # make sure everything is available for test/import_all.lean
         # and that miscellaneous executables still work
         run: |
-          lake build Batteries Qq Aesop ProofWidgets Plausible pole unused
+          lake build Batteries Qq Aesop ProofWidgets Plausible
 
       - name: build AesopTest (nightly-testing only)
         # Only run on the mathlib4-nightly-testing repository

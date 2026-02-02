@@ -216,7 +216,6 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
 protected lemma ext' {f g : X ⟶ Y} (h : f.toLRSHom = g.toLRSHom) : f = g := by
   cases f; cases g; congr 1
 
-@[simp]
 lemma mem_preimage {x : X} {U : Opens Y} : x ∈ f ⁻¹ᵁ U ↔ f x ∈ U := .rfl
 
 lemma coe_preimage {U : Opens Y} : f ⁻¹ᵁ U = f ⁻¹' U := rfl
@@ -704,8 +703,8 @@ lemma basicOpen_add_le :
     X.basicOpen (f + g) ≤ X.basicOpen f ⊔ X.basicOpen g := by
   intro x hx
   have hxU : x ∈ U := X.basicOpen_le _ hx
-  simp only [SetLike.mem_coe, Scheme.mem_basicOpen _ _ _ hxU, map_add, Opens.coe_sup,
-    Set.mem_union] at hx ⊢
+  simp_rw [← SetLike.mem_coe, Opens.coe_sup, Set.mem_union, SetLike.mem_coe] -- TODO : Opens.mem_sup
+  simp only [Scheme.mem_basicOpen _ _ _ hxU, map_add] at hx ⊢
   exact IsLocalRing.isUnit_or_isUnit_of_isUnit_add hx
 
 theorem basicOpen_of_isUnit {f : Γ(X, U)} (hf : IsUnit f) : X.basicOpen f = U :=

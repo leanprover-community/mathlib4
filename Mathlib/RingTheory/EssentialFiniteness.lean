@@ -231,7 +231,7 @@ lemma EssFiniteType.of_surjective (f : S →ₐ[R] T) (hf : Function.Surjective 
 variable {R S T} in
 lemma EssFiniteType.iff_of_algEquiv (f : S ≃ₐ[R] T) :
     EssFiniteType R S ↔ EssFiniteType R T where
-  mp  _ := .of_surjective f.toAlgHom f.surjective
+  mp _ := .of_surjective f.toAlgHom f.surjective
   mpr _ := .of_surjective f.symm.toAlgHom f.symm.surjective
 
 variable {R S} in
@@ -257,6 +257,10 @@ and a ring hom of finite type. See `Algebra.EssFiniteType`. -/
 def EssFiniteType (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.EssFiniteType R S
+
+lemma essFiniteType_algebraMap {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] : (algebraMap R S).EssFiniteType ↔ Algebra.EssFiniteType R S := by
+  rw [RingHom.EssFiniteType, toAlgebra_algebraMap]
 
 /-- A choice of "essential generators" for a ring hom essentially of finite type.
 See `Algebra.EssFiniteType.ext`. -/
