@@ -194,7 +194,8 @@ lemma exists_maxilongmal_path {G : SimpleGraph V} [Finite V] (hG : G.Connected)
 /--
 The length of a path `p` truncated to a certain vertex equals the length of the vertex list.
 -/
-lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (u : V) (h : u ∈ p.support) (g : List.idxOf u p.support ≤ p.length) (hp_path : p.IsPath) :
+lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (u : V)
+ (h : u ∈ p.support) (g : List.idxOf u p.support ≤ p.length) (hp_path : p.IsPath) :
   (p.takeUntil _ h).length = p.support.idxOf u := by
   have l : (p.takeUntil u h).length < p.support.length := by
     calc
@@ -1300,7 +1301,7 @@ lemma exsist_neighbor_first_point {G : SimpleGraph V} {a b v : V} (p : G.Walk a 
 
 
 
-lemma exsist_neighbor_end_point {G : SimpleGraph V} [G.LocallyFinite] {a b v : V} (p : G.Walk a b)
+lemma exsist_neighbor_end_point {G : SimpleGraph V} {a b v : V} (p : G.Walk a b)
   (hp : Walk.IsMaxlongPath p) (h_neighbor_b : v ∈ G.neighborSet b) :
   ∃ (i : Fin (p.support.length - 1)), p.support.get ⟨i.val, by omega⟩ = v := by
   obtain ⟨hp_path, hp_max⟩ := hp
