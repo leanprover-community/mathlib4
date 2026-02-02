@@ -36,14 +36,14 @@ public def Char.printCodepointHex (c : Char) : String :=
 /-- Prints all characters in a string in hexadecimal with prefix 'U+'.
 E.g., "ab" is "U+0061;U+0062". -/
 public def String.printCodepointHex (s : String) : String :=
-  -- note: must not contain spaces because of the error message parsing below!
+  -- note: Output must not contain spaces because of the error message parsing!
   ";".intercalate <| s.toList.map Char.printCodepointHex
 
 /-- If `false`, the character is not allowed in Mathlib. -/
 public def isAllowedCharacter (c : Char) : Bool :=
   !#['\u00A0'].contains c -- non-breaking space
 
-/-- Provide default replacement (`String`) for a blocklisted character, or `none` if not defined -/
+/-- Provide default replacement (`String`) for a blocklisted character, or `none` if not defined -/
 public def replaceDisallowed : Char → Option String
 | '\u00a0' => " " -- replace non-breaking space with normal whitespace
 | _ => none
