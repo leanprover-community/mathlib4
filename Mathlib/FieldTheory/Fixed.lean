@@ -42,9 +42,9 @@ universe u v w
 
 variable {M : Type u} [Monoid M]
 variable (G : Type u) [Group G]
-variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] (m : M)
+variable (K : Type*) (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] (m : M)
 
-/-- The subfield of F fixed by the field endomorphism `m`. -/
+/-- The subfield of `F` fixed by the field endomorphism `m`. -/
 def FixedBy.subfield : Subfield F where
   carrier := fixedBy F m
   zero_mem' := smul_zero m
@@ -53,6 +53,21 @@ def FixedBy.subfield : Subfield F where
   one_mem' := smul_one m
   mul_mem' hx hy := (smul_mul' m _ _).trans <| congr_arg₂ _ hx hy
   inv_mem' x hx := (smul_inv'' m x).trans <| congr_arg _ hx
+
+@[simp]
+theorem FixedBy.subfield_mem_iff (x : F) :
+    x ∈ FixedBy.subfield F m ↔ m • x = x := Iff.rfl
+
+variable [Field K] [Algebra K F] [SMulCommClass M K F]
+
+/-- The intermediate field between `K` and `F` fixed by the field endomorphism `m`. -/
+def FixedBy.intermediateField : IntermediateField K F where
+  __ := FixedBy.subfield F m
+  algebraMap_mem' x := smul_algebraMap m x
+
+@[simp]
+theorem FixedBy.intermediateField_mem_iff (x : F) :
+    x ∈ FixedBy.intermediateField K F m ↔ m • x = x := Iff.rfl
 
 section InvariantSubfields
 
