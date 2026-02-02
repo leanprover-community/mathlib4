@@ -114,6 +114,9 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
+  -- Q: Should this be replaced by :
+  --is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
+    --∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { x : R | v.restrict x < γ.1 } ⊆ s
 
 namespace Valued
 
@@ -135,16 +138,29 @@ theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True) fun γ : Γ₀ˣ => { x | v x < (γ : Γ₀) } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 
+/- theorem hasBasis_nhds_zero :
+    (𝓝 (0 : R)).HasBasis (fun _ => True)
+      fun γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ => { x | v.restrict x < γ.1 } := by
+  simp [Filter.hasBasis_iff, is_topological_valuation] -/
+
 open Uniformity in
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
     fun γ : Γ₀ˣ => { p : R × R | v (p.2 - p.1) < (γ : Γ₀) } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
+/- open Uniformity in
+theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
+    fun γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ =>
+      { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
+  rw [uniformity_eq_comap_nhds_zero]
+  exact (hasBasis_nhds_zero R Γ₀).comap _
+ -/
 theorem toUniformSpace_eq :
     toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ :=
   UniformSpace.ext
-    ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
+    ((hasBasis_uniformity R Γ₀).eq_of_same_basis <|
+      v.subgroups_basis.hasBasis_nhds_zero.comap _)
 
 variable {R Γ₀}
 
