@@ -263,12 +263,23 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
-/-- Stores all of the normalization
+
+/-- Defines how comparisons and binary equality are computed in the base type. These are seperated
+from ringCompute because they can often be defined without using instance caches. -/
+structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) where
+  /-- Returns whether two coefficients are equal -/
+  eq (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Bool
+  /-- Returns whether `x` is less than, equal to or greater than `y`. -/
+  compare (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
+
+whatsnew in
+/-- Stores all of the normalization procedures on the coefficient type.
 
 `ring` implements these using `norm_num`
 `algebra` implements these using `ring` -/
 structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
-  (sα : Q(CommSemiring $α)) where
+  (sα : Q(CommSemiring $α)) extends RingCompare BaseType sα where
   /-- Evaluate the sum of two coefficents.
   If the result is zero returns a proof of this fact, which is used to remove zero terms. -/
   add (sα) : ∀ x y : Q($α), BaseType x → BaseType y →
@@ -295,10 +306,6 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
     AtomM (Option <| Result BaseType q($x⁻¹))
   /-- Evaluate an expression as a potential coefficient. -/
   derive (sα) : ∀ x : Q($α), MetaM (Result (ExSum BaseType sα) q($x))
-  /-- Returns whether two coefficients are equal -/
-  eq (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Bool
-  /-- Returns whether `x` is less than, equal to or greater than `y`. -/
-  compare (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
   /-- Decides whether a coefficient is 1 and returns a proof if so. -/
   isOne (sα) : ∀ {x : Q($α)}, BaseType x → Option Q(NormNum.IsNat $x 1)
   /-- The number 1 represented as a BaseType. -/
@@ -306,7 +313,9 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   /-- Print the coefficient as a string. Only used for debugging. -/
   toString : ∀ {x : Q($α)}, BaseType x → String
 
-
+instance {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) : Coe (RingCompute BaseType sα) (RingCompare BaseType sα) where
+  coe x := x.toRingCompare
 
 instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
 instance : Inhabited (Σ e, (ExSumNat) e) := ⟨_, .zero⟩
@@ -404,11 +413,11 @@ def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
 -- Partial because the termination checker failed
 mutual
 
-variable (rcℕ : RingCompute btℕ sℕ)
+variable (rcℕ : RingCompare btℕ sℕ)
 
 /-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
 partial def ExBase.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt sα)
     {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Bool
   | .atom i, .atom j => i == j
@@ -417,7 +426,7 @@ partial def ExBase.eq
 
 @[inherit_doc ExBase.eq]
 partial def ExProd.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt sα)
     {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Bool
   | .const i, .const j => rc.eq i j
@@ -426,7 +435,7 @@ partial def ExProd.eq
 
 @[inherit_doc ExBase.eq]
 partial def ExSum.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt sα)
     {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Bool
   | .zero, .zero => true
@@ -443,7 +452,7 @@ A total order on normalized expressions.
 This is not an `Ord` instance because it is heterogeneous.
 -/
 partial def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
-    (rc : RingCompute bt sα) {a b : Q($α)} :
+    (rc : RingCompare bt sα) {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Ordering
   | .atom i, .atom j => compare i j
   | .sum a, .sum b => a.cmp rc b
@@ -452,7 +461,7 @@ partial def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemir
 
 @[inherit_doc ExBase.cmp]
 partial def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
-    (rc : RingCompute bt sα) {a b : Q($α)} :
+    (rc : RingCompare bt sα) {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Ordering
   | .const i, .const j => rc.compare i j
   | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ =>
@@ -462,7 +471,7 @@ partial def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemir
 
 @[inherit_doc ExBase.cmp]
 partial def ExSum.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
-    (rc : RingCompute bt sα) {a b : Q($α)} :
+    (rc : RingCompare bt sα) {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Ordering
   | .zero, .zero => .eq
   | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp rc b₁).then (a₂.cmp rc b₂)
@@ -1248,8 +1257,8 @@ def isAtomOrDerivable
 
 end
 
-variable (rcRing : ∀ {u : Lean.Level} {α : Q(Type u)},
-  ∀ (sα : Q(CommSemiring $α)), RingCompute (Ring.BaseType sα) sα) (rcℕ : RingCompute btℕ sℕ) in
+variable (rcRing : ∀ {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)},
+  Cache sα → RingCompute (Ring.BaseType sα) sα) (rcℕ : RingCompute btℕ sℕ) in
 
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
@@ -1295,7 +1304,7 @@ partial def eval  {u : Lean.Level}
         let vs : AtomM <| Result (ExSum (Ring.BaseType sR) sR) q($r) := do
           -- TODO: special case Nat and Int for the cache?
           let cR ← mkCache sR
-          eval (rcRing sR) cR r
+          eval (rcRing cR) cR r
         let ⟨_, vb, pb⟩ ← eval rc c a
         let ⟨_, vt, pt⟩ ← rc.cast _ _ q($sR) q(inferInstance) _ vs
         let ⟨_, vc, pc⟩ ← evalMul rc rcℕ vt vb

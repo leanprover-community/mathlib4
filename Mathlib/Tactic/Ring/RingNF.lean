@@ -93,8 +93,8 @@ def evalExpr (e : Expr) : AtomM Simp.Result := do
   let sα ← synthInstanceQ q(CommSemiring $α)
   let c ← Common.mkCache sα
   let ⟨a, _, pa⟩ ← match
-    (← Common.isAtomOrDerivable (ringCompute sα) c q($e)) with
-  | none => Common.eval ringCompute rcℕ (ringCompute sα) c e
+    (← Common.isAtomOrDerivable (ringCompute c) c q($e)) with
+  | none => Common.eval ringCompute rcℕ (ringCompute c) c e
     -- `none` indicates that `eval` will find something algebraic.
   | some none => failure -- No point rewriting atoms
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.

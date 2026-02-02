@@ -436,7 +436,7 @@ def mul (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
   return ← BaseType.ofResult sα res
 
 /-- Cast ℕ and ℤ normalized expressions ExSums into `α`, used to evaluate scalar multiplications. -/
-def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
+def cast (cα : Common.Cache sα) (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     (_smul : Q(HSMul $β $α $α)) (_x : Q($β))
     (rx : AtomM (Result (Common.ExSum (BaseType sβ) q($sβ)) q($_x))) :
     AtomM ((y : Q($α)) × Common.ExSum (BaseType sα) sα q($y) ×
@@ -450,14 +450,12 @@ def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     have : $b =Q $x' := ⟨⟩
     assumeInstancesCommute
     return ⟨_, vb, q(smul_eq_mul $px)⟩
-  match v, β, sβ with
-  | 0, ~q(ℕ), ~q(inferInstance) =>
+  match v, β, sβ, cα.rα with
+  | 0, ~q(ℕ), ~q(inferInstance), _ =>
     let ⟨y, vy, py⟩ ← ExSum.evalNatCast sα sβ vx
     assumeInstancesCommute
     return ⟨y, vy, q(Nat.smul_eq_mul $py $px)⟩
-  | 0, ~q(ℤ), ~q(inferInstance) =>
-    -- TODO: use the cache instead.
-    let rα : Q(CommRing $α) ← synthInstanceQ q(CommRing $α)
+  | 0, ~q(ℤ), ~q(inferInstance), some rα =>
     let ⟨y, vy, py⟩ ← ExSum.evalIntCast sα sβ rα vx
     assumeInstancesCommute
     return ⟨y, vy, q(Int.smul_eq_mul $py $px)⟩
@@ -518,25 +516,32 @@ def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
 
 end RingCompute
 
+def ringCompare : Common.RingCompare (BaseType sα) sα where
+  eq zx zy := zx.value == zy.value
+  compare zx zy := compare zx.value zy.value
+
+variable {sα} in
 open RingCompute in
 /-- The data used by the `ring` tactic to normalize the constant coefficients. -/
-def ringCompute : Common.RingCompute (BaseType sα) sα where
+def ringCompute (cα : Common.Cache sα) : Common.RingCompute (BaseType sα) sα where
   add := add sα
   mul := mul sα
-  cast := cast sα
+  cast := cast sα cα
   neg := neg sα
   pow := pow sα
   inv := inv sα
   derive := derive sα
-  eq zx zy := zx.value == zy.value
-  compare zx zy := compare zx.value zy.value
   isOne := isOne sα
   one := ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
   toString {_} (zx) := s!"{zx.value}"
+  toRingCompare := ringCompare sα
 
 /-- The data used by `ring`-like tactics to normalize constant coefficients of natural number
 expressions. -/
-def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute Common.sℕ
+def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute .nat
+
+
+
 
 universe u
 
@@ -607,9 +612,9 @@ where
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
     let c ← Common.mkCache sα
     profileitM Exception "ring" (← getOptions) do
-      let ⟨a, va, pa⟩ ← Common.eval ringCompute rcℕ (ringCompute sα) c e₁
-      let ⟨b, vb, pb⟩ ← Common.eval ringCompute rcℕ (ringCompute sα) c e₂
-      unless va.eq rcℕ (ringCompute sα) vb do
+      let ⟨a, va, pa⟩ ← Common.eval ringCompute rcℕ (ringCompute c) c e₁
+      let ⟨b, vb, pb⟩ ← Common.eval ringCompute rcℕ (ringCompute c) c e₂
+      unless va.eq rcℕ (ringCompute c) vb do
         let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
         throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
       have : $a =Q $b := ⟨⟩

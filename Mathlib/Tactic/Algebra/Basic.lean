@@ -150,9 +150,7 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
     assumeInstancesCommute
     return ⟨q($r'), q(fun _ => rfl)⟩
   let _sR' ← synthInstanceQ q(CommSemiring $R')
-  -- Synthesize the algebra instance showing R is an R'-algebra
   let _algR'R ← synthInstanceQ q(Algebra $R' $R)
-  -- TODO: Determine if I should be synthing this instance.
   let _mod ← synthInstanceQ q(Module $R' $A)
   let _ist ← synthInstanceQ q(IsScalarTower $R' $R $A)
   assumeInstancesCommute
@@ -165,11 +163,11 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
 namespace RingCompute
 
 /-- Evaluate the sum of two normalized expressions in `R` using `ring`. -/
-def add (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
+def add (cR : Common.Cache sR) (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let ⟨r, vr⟩ := za
   let ⟨s, vs⟩ := zb
-  let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute sR) rcℕ vr vs
+  let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute cR) rcℕ vr vs
   match vt with
   | .zero =>
     have : $t =Q 0 := ⟨⟩
@@ -178,11 +176,11 @@ def add (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     return ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, none⟩
 
 /-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
-def mul (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
+def mul (cR : Common.Cache sR) (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a * $b)) := do
   let ⟨r, vr⟩ := za
   let ⟨s, vs⟩ := zb
-  let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute sR) rcℕ vr vs
+  let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute cR) rcℕ vr vs
   return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
 
 /-- Take an expression `r'` in a ring `R'` such that `R` is an `R'`-algebra and cast `r'` to `R`
@@ -199,7 +197,7 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSem
   /- Here's a terrifying error: Replacing the sR with q($sR) makes Qq believe that u = v,
     introducing kernel errors during runtime. -/
   let ⟨_r'', vr, pr⟩ ←
-    Common.eval Ring.ringCompute rcℕ (Ring.ringCompute sR) cR.toCache q($r)
+    Common.eval Ring.ringCompute rcℕ (Ring.ringCompute cR.toCache) cR.toCache q($r)
   assumeInstancesCommute
   return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero,
     q(cast_smul_eq_mul $pr $pf_smul)⟩
@@ -210,18 +208,18 @@ def neg (cR : Algebra.Cache sR) (a : Q($A)) (_rA : Q(CommRing $A)) (za : BaseTyp
   let ⟨r, vr⟩ := za
   match cR.rα with
   | some rR =>
-    let ⟨_, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute sR) q($rR) vr
+    let ⟨_, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute cR.toCache) q($rR) vr
     assumeInstancesCommute
     return ⟨_, .mk _ vt, q(neg_algebraMap $pt)⟩
   | none => failure
 
 /-- Raise a normalized expression in `R` to the power of a normalized natural number expression
 using `ring`. -/
-def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
+def pow (cR : Common.Cache sR) (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
     (vb : Common.ExProdNat q($b)) :
     OptionT MetaM (Common.Result (BaseType sAlg) q($a ^ $b)) := do
   let ⟨r, vr⟩ := za
-  let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr vb
+  let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute cR) rcℕ vr vb
   return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
 
 /-- Evaluate the inverse of two normalized expressions in `R` using `ring`. -/
@@ -232,7 +230,7 @@ def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(
   match cR.dsα with
   | some fR =>
     let ⟨r, vr⟩ := za
-    let ⟨_, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute sR) rcℕ q($fR) cR.czα vr
+    let ⟨_, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute cR.toCache) rcℕ q($fR) cR.czα vr
     assumeInstancesCommute
     return some ⟨_, ⟨_, vs⟩, q(inv_algebraMap $ps)⟩
   | none =>
@@ -245,11 +243,11 @@ def derive (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
   return ← evalCast sAlg cR cA res
 
 /-- Decide if a coefficient is 1. -/
-def isOne {x : Q($A)} (zx : BaseType sAlg x) : Option Q(IsNat $x 1) :=
+def isOne (cR : Common.Cache sR) {x : Q($A)} (zx : BaseType sAlg x) : Option Q(IsNat $x 1) :=
   let ⟨_, vx⟩ := zx
   match vx with
   | .add (.const c) .zero =>
-    match (Ring.ringCompute sR).isOne c with
+    match (Ring.ringCompute cR).isOne c with
     | some pf => some q(isOne_algebraMap $pf)
     | none => none
   | .zero => none
@@ -262,18 +260,18 @@ open RingCompute in
 expressions in `R` normalized by `ring`. -/
 def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
     Common.RingCompute (BaseType sAlg) sA where
-  add := add sAlg
-  mul := mul sAlg
+  add := add sAlg cR.toCache
+  mul := mul sAlg cR.toCache
   cast := cast sAlg cR
   neg := neg sAlg cR
-  pow := pow sAlg
+  pow := pow sAlg cR.toCache
   inv := inv sAlg cR
   derive := derive sAlg cR cA
-  eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompute sR) vy
-  compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompute sR) vy
-  isOne := isOne sAlg
+  eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompare sR) vy
+  compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompare sR) vy
+  isOne := isOne sAlg cR.toCache
   one := ⟨_, ⟨_, (Ring.ExProd.mkNat sR 1).2.toSum⟩, q(by simp)⟩
-  toString := fun ⟨_, vx⟩ ↦ s!"{vx.toString rcℕ (Ring.ringCompute sR)}"
+  toString := fun ⟨_, vx⟩ ↦ s!"{vx.toString rcℕ (Ring.ringCompute cR.toCache)}"
 
 end BaseType
 
