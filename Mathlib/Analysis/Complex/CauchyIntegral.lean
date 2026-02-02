@@ -706,21 +706,10 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 open AnalyticAt
 
-lemma foo {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {n : ℕ} (x : E) (hn : (n : 𝕜) ≠ 0) (hx : x ≠ 0) : n • x ≠ 0 := by
-  intro h
-  apply hx
-  have : x = (1 / (n : 𝕜)) • ((n : 𝕜) • x) := by
-    rw [← smul_assoc]
-    aesop
-  norm_cast at this
-  rw [this, h]
-  simp
-
 lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
   (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n) (hn : n ≠ 0)
-   (hchar : ¬ ringChar 𝕜 ∣ n) :
+   [CharZero 𝕜] :
     analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
   have ⟨g, hg, hgneq0, hexp⟩ := analyticOrderAt_eq_natCast hf |>.mp horder
   refine analyticOrderAt_eq_natCast hf.deriv |>.mpr ⟨fun z ↦ n • g z + (z - z₀) • deriv g z, ?_⟩
@@ -739,7 +728,8 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
       apply Hnx
       · intros H
         have := ringChar.dvd H
-        contradiction
+        simp only [ringChar.eq_zero, zero_dvd_iff] at this
+        grind
       · exact hgneq0
     , ?_⟩
   apply eventually_iff_exists_mem.mpr
@@ -765,7 +755,9 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
   rw [← mul_smul]
   rw [mul_comm]
 
-lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (k n : ℕ) :
+lemma analyticOrderAt_iterated_deriv{𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+  (hf : AnalyticAt 𝕜 f z₀) (k n : ℕ) [CharZero 𝕜] :
   n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with
   | zero => exact fun Hn Hpos Hk ↦ Hn.symm
@@ -773,10 +765,7 @@ lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt �
     intro Hn Hpos Hk
     rw [Function.iterate_succ']
     apply analyticOrderAt_deriv_of_pos (iterated_deriv hf _) (hk _ Hn Hpos <| by lia) (by lia)
-    have hchar : ringChar ℂ = 0 := by aesop
-    rw [hchar]
-    simp only [zero_dvd_iff, ne_eq]
-    grind
+
 
 end analyticity
 
