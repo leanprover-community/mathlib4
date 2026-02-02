@@ -20,6 +20,9 @@ elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (
 
 public section
 
+-- TODO: `assert_not_exists Field` is added because of `Mathlib.GroupTheory.OrderOfElement`.
+-- If you want to import fields here, please refactor the import hierarchy for
+-- `Mathlib.GroupTheory.OrderOfElement`.
 assert_not_exists Algebra LinearMap Field
 
 variable {R ι : Type*}
