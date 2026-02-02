@@ -42,7 +42,7 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 its `m`-simplices are uniquely determined by their spine for all `m ≤ n + 1`. -/
 structure StrictSegal where
   /-- The inverse to `spine X m`. -/
-  spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by omega) : Path X m → X _⦋m⦌ₙ₊₁
+  spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by lia) : Path X m → X _⦋m⦌ₙ₊₁
   /-- `spineToSimplex` is a right inverse to `spine X m`. -/
   spine_spineToSimplex (m : ℕ) (h : m ≤ n + 1) :
     spine X m ∘ spineToSimplex m = id
@@ -120,8 +120,9 @@ lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _⦋m⦌ₙ
 
 section autoParam
 
-variable (m : ℕ) (h : m ≤ n + 1 := by omega)
+variable (m : ℕ) (h : m ≤ n + 1 := by lia)
 
+set_option backward.privateInPublic true in
 /-- The fields of `StrictSegal` define an equivalence between `X _⦋m⦌ₙ₊₁`
 and `Path X m`. -/
 def spineEquiv : X _⦋m⦌ₙ₊₁ ≃ Path X m where
@@ -130,9 +131,11 @@ def spineEquiv : X _⦋m⦌ₙ₊₁ ≃ Path X m where
   left_inv := sx.spineToSimplex_spine_apply m h
   right_inv := sx.spine_spineToSimplex_apply m h
 
+set_option backward.privateInPublic true in
 theorem spineInjective : Function.Injective (sx.spineEquiv m h) :=
   Equiv.injective _
 
+set_option backward.privateInPublic true in
 /-- In the presence of the strict Segal condition, a path of length `m` can be
 "composed" by taking the diagonal edge of the resulting `m`-simplex. -/
 def spineToDiagonal : Path X m → X _⦋1⦌ₙ₊₁ :=
@@ -170,7 +173,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (tr (intervalEdge j l hjl)).op (sx.spineToSimplex m h f) =
-      sx.spineToDiagonal l (by cutsat) (f.interval j l hjl) := by
+      sx.spineToDiagonal l (by lia) (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, Function.comp_apply]
   rw [← spineToSimplex_interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
     ← tr_comp, diag_subinterval_eq]
@@ -202,8 +205,8 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.castSucc := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -214,8 +217,8 @@ lemma spine_δ_vertex_ge (hij : j ≤ i.castSucc) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.succ := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_le_castSucc j i hij]
 
 variable {i : Fin m} {j : Fin (m + 2)}
@@ -246,7 +249,7 @@ variable {X : SSet.Truncated.{u} (n + 2)} (sx : StrictSegal X) (m : ℕ)
 lemma spine_δ_arrow_eq (hij : j = i.succ.castSucc) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).arrow i =
-      sx.spineToDiagonal 2 (by cutsat) (f.interval i 2 (by cutsat)) := by
+      sx.spineToDiagonal 2 (by lia) (f.interval i 2 (by lia)) := by
   rw [spine_arrow, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     mkOfSucc_δ_eq hij, spineToSimplex_edge]
 
@@ -425,7 +428,7 @@ arrows not contained in the original path can be recovered as the diagonal edge
 of the `spineToSimplex` that "composes" arrows `i` and `i + 1`. -/
 lemma spine_δ_arrow_eq (h : j = i.succ.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).arrow i =
-      sx.spineToDiagonal (f.interval i 2 (by cutsat)) := by
+      sx.spineToDiagonal (f.interval i 2 (by lia)) := by
   simp only [SimplicialObject.δ, spine_arrow]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
@@ -434,7 +437,7 @@ end StrictSegal
 
 /-- Helper structure in order to show that a simplicial set is strict Segal. -/
 structure StrictSegalCore (n : ℕ) where
-  /-- Map which produces a `n + 1`-simplex from a `1`-simplex and a `n`-simplex when
+  /-- Map which produces an `n + 1`-simplex from a `1`-simplex and an `n`-simplex when
   the target vertex of the `1`-simplex equals the zeroth simplex of the `n`-simplex. -/
   concat (x : X _⦋1⦌) (s : X _⦋n⦌) (h : X.δ 0 x = X.map (SimplexCategory.const _ _ 0).op s) :
     X _⦋n + 1⦌
@@ -461,7 +464,7 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
         rw [map_mkOfSucc_zero_concat]
       · simpa [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
           op_comp, FunctorToTypes.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
-          ← p.arrow_interval 1 n i i.succ (by grind) (by grind [Fin.val_succ])] using
+          ← p.arrow_interval 1 n i i.succ (by grind) (by grind)] using
             Path.congr_arrow (hn (p.interval 1 n)).prop i
 
 /-- Auxiliary definition for `StrictSegal.ofCore`. -/

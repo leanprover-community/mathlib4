@@ -159,6 +159,12 @@ theorem quasiSeparatedSpace_of_quasiSeparated (f : X ⟶ Y)
   rw [← terminalIsTerminal.hom_ext (f ≫ terminal.from Y) (terminal.from X)]
   infer_instance
 
+lemma Scheme.Hom.isQuasiSeparated_preimage [QuasiSeparated f] {U : Opens Y}
+    (hU : IsQuasiSeparated (U : Set Y)) : IsQuasiSeparated (f ⁻¹ᵁ U : Set X) := by
+  have : QuasiSeparatedSpace U := (isQuasiSeparated_iff_quasiSeparatedSpace _ U.2).mp hU
+  exact (isQuasiSeparated_iff_quasiSeparatedSpace _ (f ⁻¹ᵁ U).2).mpr
+    (quasiSeparatedSpace_of_quasiSeparated (f ∣_ U))
+
 instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X :=
   (quasiSeparatedSpace_congr X.isoSpec.hom.homeomorph).2 PrimeSpectrum.instQuasiSeparatedSpace
 
@@ -257,7 +263,7 @@ alias quasiCompact_over_affine_iff := quasiCompact_iff_compactSpace
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
-  have := (hU.isLocalization_basicOpen f).2
+  have := (hU.isLocalization_basicOpen f).1.2
   obtain ⟨⟨y, _, n, rfl⟩, d⟩ := this x
   use n, y
   simpa [mul_comm x] using d.symm
@@ -393,7 +399,7 @@ This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. 
 theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCompact U.1)
     (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) :
     IsLocalization.Away f (Γ(X, X.basicOpen f)) := by
-  constructor
+  constructor; constructor
   · rintro ⟨_, n, rfl⟩
     simp only [map_pow, RingHom.algebraMap_toAlgebra]
     exact IsUnit.pow _ (RingedSpace.isUnit_res_basicOpen _ f)
@@ -444,7 +450,7 @@ instance isIso_ΓSpec_adjunction_unit_app_basicOpen
   refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ (X.presheaf.map
     (eqToHom (Scheme.toSpecΓ_preimage_basicOpen _ _).symm).op) _ ?_
   rw [ConcreteCategory.isIso_iff_bijective]
-  apply (config := { allowSynthFailures := true }) IsLocalization.bijective
+  apply +allowSynthFailures IsLocalization.bijective
   · exact StructureSheaf.IsLocalization.to_basicOpen _ _
   · refine isLocalization_basicOpen_of_qcqs ?_ ?_ _
     · exact isCompact_univ

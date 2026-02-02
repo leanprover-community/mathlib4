@@ -37,7 +37,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -70,13 +70,13 @@ theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
 /-- Given `pb : PowerBasis R S`, then the norm of `pb.gen` is
 `((minpoly R pb.gen).aroots F).prod`. -/
 theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
-    (hf : (minpoly R pb.gen).Splits (algebraMap R F)) :
+    (hf : ((minpoly R pb.gen).map (algebraMap R F)).Splits) :
     algebraMap R F (norm R pb.gen) = ((minpoly R pb.gen).aroots F).prod := by
   haveI := Module.nontrivial R F
   have := minpoly.monic pb.isIntegral_gen
-  rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, RingHom.map_mul,
+  rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, map_mul,
     ← coeff_map,
-    coeff_zero_eq_prod_roots_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
+    hf.coeff_zero_eq_prod_roots_of_monic (this.map _),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
   simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 
@@ -104,10 +104,10 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
       leftMulMatrix_mulVec_repr] at hv
     refine (mul_eq_zero.mp (b.ext_elem fun i => ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
-    · simpa only [LinearEquiv.map_zero, Pi.zero_apply] using congr_fun hv i
+    · simpa only [map_zero, Pi.zero_apply] using congr_fun hv i
     · contrapose! v_ne with sum_eq
       apply b.equivFun.symm.injective
-      rw [b.equivFun_symm_apply, sum_eq, LinearEquiv.map_zero]
+      rw [b.equivFun_symm_apply, sum_eq, map_zero]
 
 theorem norm_ne_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     norm R x ≠ 0 ↔ x ≠ 0 := not_iff_not.mpr norm_eq_zero_iff
@@ -127,6 +127,11 @@ theorem norm_ne_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {
     Algebra.norm R x ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr (norm_eq_zero_iff_of_basis b)
 
+theorem norm_inv [Module.Finite K L] (x : L) : Algebra.norm K x⁻¹ = (Algebra.norm K x)⁻¹ := by
+  by_cases hx : x = 0
+  · simp [hx]
+  exact mul_left_injective₀ (norm_ne_zero_iff.mpr hx) (by simp [hx, ← map_mul])
+
 end EqZeroIff
 
 open IntermediateField
@@ -143,7 +148,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
-    (hf : (minpoly K x).Splits (algebraMap K F)) :
+    (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
       ((minpoly K x).aroots F).prod := by
   have injKxL := (algebraMap K⟮x⟯ L).injective
@@ -162,7 +167,7 @@ open IntermediateField IntermediateField.AdjoinSimple Polynomial
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
-    (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : IsSeparable R pb.gen) :
+    (hE : ((minpoly R pb.gen).map (algebraMap R F)).Splits) (hfx : IsSeparable R pb.gen) :
     algebraMap R F (norm R pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ => σ pb.gen := by
   letI := Classical.decEq F

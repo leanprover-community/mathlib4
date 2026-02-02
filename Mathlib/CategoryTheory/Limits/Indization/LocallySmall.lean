@@ -77,6 +77,6 @@ instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C
     let e₂ := IsColimit.coconePointUniqueUpToIso (Q.isColimit) (colimit.isColimit _)
     let e₃ := Iso.homCongr e₁ e₂
     dsimp only [colimit.cocone_x] at e₃
-    exact small_map e₃
+    exact small_map (InducedCategory.homEquiv.trans e₃)
 
 end CategoryTheory

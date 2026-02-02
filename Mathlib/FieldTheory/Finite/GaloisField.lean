@@ -47,7 +47,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
   splits' := by
     have h : (X ^ Fintype.card K - X : K[X]).natDegree = Fintype.card K :=
       FiniteField.X_pow_card_sub_X_natDegree_eq K Fintype.one_lt_card
-    rw [← splits_id_iff_splits, splits_iff_card_roots, Polynomial.map_sub, Polynomial.map_pow,
+    rw [splits_iff_card_roots, Polynomial.map_sub, Polynomial.map_pow,
       map_X, h, FiniteField.roots_X_pow_card_sub_X K, ← Finset.card_def, Finset.card_univ]
   adjoin_rootSet' := by
     classical
@@ -133,7 +133,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
-theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
+theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
@@ -154,7 +154,7 @@ section Fintype
 variable {K : Type*} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_card_sub_X :
-    Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
+    Splits (map (algebraMap (ZMod p) K) (X ^ Fintype.card K - X)) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
 theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
@@ -173,7 +173,7 @@ section Finite
 variable {K : Type*} [Field K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
-    Splits (algebraMap (ZMod p) K) (X ^ Nat.card K - X) := by
+    Splits (map (algebraMap (ZMod p) K) (X ^ Nat.card K - X)) := by
   haveI : Fintype K := Fintype.ofFinite K
   rw [Nat.card_eq_fintype_card]
   exact (FiniteField.isSplittingField_sub K (ZMod p)).splits
@@ -270,9 +270,7 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   choose n' hp' hK' using FiniteField.card K' p'
   have hpp' : p = p' := by
     by_contra hne
-    have h2 := Nat.coprime_pow_primes n n' hp hp' hne
-    rw [(Eq.congr hK hK').mp hKK', Nat.coprime_self, pow_eq_one_iff (PNat.ne_zero n')] at h2
-    exact Nat.Prime.ne_one hp' h2
+    simpa [← hK, hK', hKK', hp'.ne_one] using Nat.coprime_pow_primes n n' hp hp' hne
   rw [← hpp'] at _char_p'_K'
   haveI := fact_iff.2 hp
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
@@ -301,11 +299,10 @@ theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finran
   have := Fintype.ofFinite K
   have := Fintype.ofFinite L
   refine ⟨Polynomial.IsSplittingField.lift _ (X ^ Fintype.card K - X) ?_⟩
-  refine Polynomial.splits_of_splits_of_dvd _ ?_
-    (FiniteField.isSplittingField_sub L F).splits ?_
-  · exact FiniteField.X_pow_card_sub_X_ne_zero _ Fintype.one_lt_card
+  refine (FiniteField.isSplittingField_sub L F).splits.of_dvd ?_ ?_
+  · exact map_ne_zero (FiniteField.X_pow_card_sub_X_ne_zero _ Fintype.one_lt_card)
   · rw [Module.card_eq_pow_finrank (K := F), Module.card_eq_pow_finrank (K := F) (V := L)]
-    exact dvd_pow_pow_sub_self_of_dvd h
+    exact (map_dvd_map' _).mpr (dvd_pow_pow_sub_self_of_dvd h)
 
 theorem natCard_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
     Nat.card (K →ₐ[F] L) = Module.finrank F K := by

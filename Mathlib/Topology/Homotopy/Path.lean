@@ -137,6 +137,13 @@ def cast {p₀ p₁ q₀ q₁ : Path x₀ x₁} (F : Homotopy p₀ p₁) (h₀ :
     Homotopy q₀ q₁ :=
   ContinuousMap.HomotopyRel.cast F (congr_arg _ h₀) (congr_arg _ h₁)
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+@[simp]
+def pathCast {x x' y y' : X} {p q : Path x y} (F : p.Homotopy q) (hx : x' = x) (hy : y' = y) :
+    (p.cast hx hy).Homotopy (q.cast hx hy) :=
+  F
+
 end
 
 section
@@ -268,6 +275,12 @@ theorem hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p�
     (hq : q₀.Homotopic q₁) : (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
   hp.map2 Homotopy.hcomp hq
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+theorem pathCast {p q : Path x₀ x₁} (hpq : p.Homotopic q) (hsource : x₂ = x₀) (htarget : x₃ = x₁) :
+    (p.cast hsource htarget).Homotopic (q.cast hsource htarget) :=
+  hpq
+
 /--
 The setoid on `Path`s defined by the equivalence relation `Path.Homotopic`. That is, two paths are
 equivalent if there is a `Homotopy` between them.
@@ -287,14 +300,12 @@ instance : Inhabited (Homotopic.Quotient () ()) :=
 
 namespace Quotient
 
-/--
-The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`.
-
-We prefer this as the normal form, rather than generic `_root_.Quotient.mk'`,
-to have better control of simp lemmas.
--/
+/-- The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`. -/
 def mk (p : Path x₀ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
-  _root_.Quotient.mk' p
+  Quotient.mk' p
+
+theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
+  Quotient.mk'_surjective
 
 /-- `Path.Homotopic.Quotient.mk` is the simp normal form. -/
 @[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
@@ -348,8 +359,7 @@ theorem mk_symm (P : Path x₀ x₁) : mk P.symm = symm (mk P) :=
 /-- Cast a path homotopy class using equalities of endpoints. -/
 def cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y) :
     Homotopic.Quotient x' y' :=
-  _root_.Quotient.map (fun p => p.cast hx hy)
-    (fun _ _ h => Nonempty.map (fun F => F.cast (by simp) (by simp)) h) γ
+  _root_.Quotient.map (fun p => p.cast hx hy) (fun _ _ h => h) γ
 
 @[simp, grind =]
 theorem mk_cast {x y : X} (P : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :
@@ -374,7 +384,7 @@ def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quot
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
 @[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.comp := Quotient.trans
+noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
 
 @[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
@@ -392,7 +402,7 @@ def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
 @[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.mapFn := Quotient.map
+noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
 
 theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl

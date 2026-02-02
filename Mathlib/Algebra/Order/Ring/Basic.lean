@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Tactic.Bound.Attribute
@@ -34,20 +33,6 @@ lemma not_isSquare_of_neg [Semiring R] [LinearOrder R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     {x : R} (h : x < 0) : ¬ IsSquare x :=
   (h.not_ge ·.nonneg)
-
-namespace MonoidHom
-
-variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
-
-theorem map_neg_one : f (-1) = 1 :=
-  (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
-
-@[simp]
-theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
-
-theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
-
-end MonoidHom
 
 section OrderedSemiring
 
@@ -124,7 +109,7 @@ lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
   calc
     (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
         simp_rw [pow_succ', pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
-    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_right ?_ _
     _ = _ := by simp_rw [pow_succ', pow_zero, mul_one, two_mul]
   cases le_total a b
   · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›

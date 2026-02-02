@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Int.Basic
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Submonoids: membership criteria
@@ -40,12 +41,6 @@ submonoid, submonoids
 assert_not_exists MonoidWithZero
 
 variable {M A B : Type*}
-
-section Assoc
-
-variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
-
-end Assoc
 
 section NonAssoc
 
@@ -465,6 +460,19 @@ theorem mem_sup {s t : Submonoid N} {x : N} : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃
   simp only [sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
     Subtype.exists, exists_prop]
 
+variable {P : N → Prop}
+
+@[to_additive, simp high]
+lemma forall_mem_sup {s t : Submonoid N} :
+    (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+  aesop
+
+@[to_additive, simp high]
+lemma exists_mem_sup {s t : Submonoid N} :
+    (∃ x ∈ s ⊔ t, P x) ↔ (∃ x₁ ∈ s, ∃ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+
 end Submonoid
 
 namespace AddSubmonoid
@@ -543,3 +551,10 @@ theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
   exact ofMul_image_powers_eq_multiples_ofMul
 
 end mul_add
+
+@[simp] theorem Nat.addSubmonoidClosure_one : AddSubmonoid.closure ({1} : Set ℕ) = ⊤ := by
+  ext
+  simp [AddSubmonoid.mem_closure_singleton]
+
+@[deprecated (since := "2025-08-14")]
+alias Nat.addSubmonoid_closure_one := Nat.addSubmonoidClosure_one

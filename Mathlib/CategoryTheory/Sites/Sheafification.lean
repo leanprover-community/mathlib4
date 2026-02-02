@@ -80,12 +80,12 @@ instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
-instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
   inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end
 
-variable {D : Type*} [Category D] [HasWeakSheafify J D]
+variable {D : Type*} [Category* D] [HasWeakSheafify J D]
 
 /-- The sheafification of a presheaf `P`. -/
 noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
@@ -228,8 +228,18 @@ instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=
   isIso_of_fully_faithful (sheafToPresheaf J D) _
 
+instance (P : Sheaf J D) :
+    IsIso ((sheafificationAdjunction J D).counit.app P).val :=
+  inferInstanceAs (IsIso ((sheafToPresheaf J D).map _))
+
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
+
+@[reassoc]
+lemma sheafifyLift_id_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
+    sheafifyLift J (𝟙 P) hP ≫ toSheafify J P = 𝟙 (sheafify J P) := by
+  rw [← cancel_mono ((sheafificationAdjunction J D).counit.app ⟨P, hP⟩).val]
+  cat_disch
 
 variable (J D)
 

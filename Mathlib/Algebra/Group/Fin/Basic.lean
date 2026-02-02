@@ -115,7 +115,7 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
   rcases n with - | n
   · exact a.elim0
   constructor
-  · contrapose!
+  · contrapose
     intro h
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le (Fin.not_lt.mp h)
     simpa only [Fin.not_lt, le_iff_val_le_val, sub_def, hl, ← Nat.add_assoc, Nat.add_mod_left,
@@ -129,7 +129,7 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
       simp_rw [hk, Nat.add_assoc, Nat.add_sub_cancel_left]
       -- simp_rw because, otherwise, rw tries to rewrite inside `b : Fin (n + 1)`
     rw [this, Nat.mod_eq_of_lt (hk.ge.trans_lt' ?_), Nat.lt_add_left_iff_pos] <;>
-    omega
+    lia
 
 @[simp]
 lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
@@ -169,7 +169,7 @@ lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
 
 lemma lt_add_one_of_succ_lt {n : ℕ} [NeZero n] {a : Fin n} (ha : a + 1 < n) : a < a + 1 := by
   rw [lt_def, val_add, coe_ofNat_eq_mod, Nat.add_mod_mod, Nat.mod_eq_of_lt ha]
-  cutsat
+  lia
 
 lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
   rw [← rev_lt_rev, Iff.comm, ← rev_lt_rev, rev_add, lt_sub_iff, rev_rev]

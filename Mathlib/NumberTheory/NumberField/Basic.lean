@@ -112,8 +112,8 @@ instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
-instance : NoZeroSMulDivisors (𝓞 K) K :=
-  inferInstanceAs (NoZeroSMulDivisors (integralClosure _ _) _)
+instance : IsTorsionFree (𝓞 K) K :=
+  inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
 instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
@@ -173,7 +173,7 @@ def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+
   toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
   map_zero' := by ext; simp only [map_mk, map_zero]
   map_one' := by ext; simp only [map_mk, map_one]
-  map_add' x y:= by ext; simp only [map_mk, map_add]
+  map_add' x y := by ext; simp only [map_mk, map_add]
   map_mul' x y := by ext; simp only [map_mk, map_mul]
 
 @[simp]
@@ -252,6 +252,10 @@ This is a convenient abbreviation for `map_ne_zero_iff` applied to
 lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _ coe_injective
 
+theorem minpoly_coe (x : 𝓞 K) :
+    minpoly ℤ (x : K) = minpoly ℤ x :=
+  minpoly.algebraMap_eq RingOfIntegers.coe_injective x
+
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
   x.2
 
@@ -279,8 +283,7 @@ protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra R K]
 
 variable (K)
 
-instance [CharZero K] : CharZero (𝓞 K) :=
-  CharZero.of_module _ K
+instance [CharZero K] : CharZero (𝓞 K) := .of_module K
 
 variable [NumberField K]
 
@@ -363,11 +366,10 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
-  NoZeroSMulDivisors.iff_algebraMap_injective.mpr <| algebraMap.injective K L
+instance : IsTorsionFree (𝓞 K) (𝓞 L) :=
+  isTorsionFree_iff_algebraMap_injective.mpr <| algebraMap.injective K L
 
-instance : NoZeroSMulDivisors (𝓞 K) L :=
-  NoZeroSMulDivisors.trans_faithfulSMul (𝓞 K) (𝓞 L) L
+instance : IsTorsionFree (𝓞 K) L := .trans_faithfulSMul (𝓞 K) (𝓞 L) L
 
 end extension
 
@@ -392,8 +394,7 @@ theorem integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (
 
 theorem mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ (algebraMap (𝓞 K) K).range := by
-  rw [integralBasis, Basis.localizationLocalization_span, LinearMap.mem_range,
-      IsScalarTower.coe_toAlgHom', RingHom.mem_range]
+  simp [integralBasis, Basis.localizationLocalization_span]
 
 theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)

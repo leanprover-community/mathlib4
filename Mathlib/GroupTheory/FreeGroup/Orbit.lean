@@ -9,7 +9,7 @@ public import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
-For any `w : α × Bool`, `FreeGroup.startsWith w` is the set of all elemenents of `FreeGroup α` that
+For any `w : α × Bool`, `FreeGroup.startsWith w` is the set of all elements of `FreeGroup α` that
 start with `w`.
 
 The main theorem `Orbit.duplicate` proves that applying `w⁻¹` to the orbit of `x` under the action
@@ -36,12 +36,12 @@ theorem startsWith.ne_one {w : α × Bool} (g : FreeGroup α) (h : g ∈ FreeGro
 
 @[simp]
 lemma startsWith.disjoint_iff_ne {w w' : α × Bool} :
-    Disjoint (startsWith w) (startsWith w') ↔ w ≠ w'  := by
+    Disjoint (startsWith w) (startsWith w') ↔ w ≠ w' := by
   simp_all only [ne_eq, startsWith, Set.disjoint_iff_inter_eq_empty, Set.ext_iff, Set.mem_inter_iff,
     Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and, Option.some.injEq]
   exact Iff.intro (fun h ↦ h (mk [w]) (by simp)) (by grind)
 
-lemma startsWith.Injective : @startsWith α _|>.Injective := fun a b h ↦ by
+lemma startsWith.Injective : @startsWith α _ |>.Injective := fun a b h ↦ by
   simp only [startsWith, Set.ext_iff, Set.mem_setOf_eq] at h
   simpa using h (mk [a])
 

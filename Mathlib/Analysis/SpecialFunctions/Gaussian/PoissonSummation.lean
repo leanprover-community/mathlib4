@@ -20,7 +20,7 @@ for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
 
-@[expose] public section
+public section
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 

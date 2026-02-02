@@ -157,6 +157,14 @@ lemma isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
   have := Functor.isContinuous_comp F₁ F₂ J K L
   apply Functor.isContinuous_of_iso e
 
+instance [Functor.IsContinuous.{t} F J K] :
+    Functor.IsContinuous.{t} (F ⋙ 𝟭 D) J K := by
+  assumption
+
+instance [Functor.IsContinuous.{t} F J K] :
+    Functor.IsContinuous.{t} (𝟭 C ⋙ F) J K := by
+  assumption
+
 section
 
 lemma op_comp_isSheaf_of_preservesOneHypercovers

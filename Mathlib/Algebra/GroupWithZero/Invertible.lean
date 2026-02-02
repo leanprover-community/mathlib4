@@ -63,7 +63,7 @@ theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
   mul_inv_cancel₀ (Invertible.ne_zero a)
 
 /-- `a` is the inverse of `a⁻¹` -/
-def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
+instance invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
   ⟨a, by simp, by simp⟩
 
 @[simp]

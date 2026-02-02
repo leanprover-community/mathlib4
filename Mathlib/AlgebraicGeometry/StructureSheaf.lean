@@ -176,7 +176,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     rcases wb (Opens.infLERight _ _ ⟨y, hy⟩) with ⟨nmb, wb⟩
     fconstructor
     · intro H; cases y.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.apply_mk, Pi.add_apply, RingHom.map_mul, add_mul, RingHom.map_add] at wa wb ⊢
+    · simp only [Opens.apply_mk, Pi.add_apply, map_mul, add_mul, map_add] at wa wb ⊢
       grind
   neg_mem' := by
     intro a ha x
@@ -186,7 +186,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     rcases w y with ⟨nm, w⟩
     fconstructor
     · exact nm
-    · simp only [RingHom.map_neg, Pi.neg_apply]
+    · simp only [map_neg, Pi.neg_apply]
       rw [← w]
       simp only [neg_mul]
   mul_mem' := by
@@ -199,7 +199,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     rcases wb (Opens.infLERight _ _ ⟨y, hy⟩) with ⟨nmb, wb⟩
     fconstructor
     · intro H; cases y.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.apply_mk, Pi.mul_apply, RingHom.map_mul] at wa wb ⊢
+    · simp only [Opens.apply_mk, Pi.mul_apply, map_mul] at wa wb ⊢
       rw [← wa, ← wb]
       simp only [mul_left_comm, mul_assoc, mul_comm]
 
@@ -327,7 +327,7 @@ theorem res_const' (f g : R) (V hv) :
 
 theorem const_zero (f : R) (U hu) : const R 0 f U hu = 0 :=
   Subtype.ext <| funext fun x => IsLocalization.mk'_eq_iff_eq_mul.2 <| by
-    rw [RingHom.map_zero]
+    rw [map_zero]
     exact (mul_eq_zero_of_left rfl ((algebraMap R (Localizations R x)) _)).symm
 
 theorem const_self (f : R) (U hu) : const R f f U hu = 1 :=
@@ -377,11 +377,11 @@ def toOpen (U : Opens (PrimeSpectrum.Top R)) :
   { toFun f :=
       ⟨fun _ => algebraMap R _ f, fun x =>
         ⟨U, x.2, 𝟙 _, f, 1, fun y =>
-          ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp [RingHom.map_one, mul_one]⟩⟩⟩
-    map_one' := Subtype.ext <| funext fun _ => RingHom.map_one _
-    map_mul' _ _ := Subtype.ext <| funext fun _ => RingHom.map_mul _ _ _
-    map_zero' := Subtype.ext <| funext fun _ => RingHom.map_zero _
-    map_add' _ _ := Subtype.ext <| funext fun _ => RingHom.map_add _ _ _ }
+          ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp [map_one, mul_one]⟩⟩⟩
+    map_one' := Subtype.ext <| funext fun _ => map_one _
+    map_mul' _ _ := Subtype.ext <| funext fun _ => map_mul _ _ _
+    map_zero' := Subtype.ext <| funext fun _ => map_zero _
+    map_add' _ _ := Subtype.ext <| funext fun _ => map_add _ _ _ }
 
 @[simp]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
@@ -445,7 +445,7 @@ theorem localizationToStalk_mk' (x : PrimeSpectrum.Top R) (f : R) (s : x.asIdeal
         (const R f s (PrimeSpectrum.basicOpen s) fun _ => id) :=
   (IsLocalization.lift_mk'_spec (S := Localization.AtPrime x.asIdeal) _ _ _ _).2 <| by
     rw [← germ_toOpen R (PrimeSpectrum.basicOpen s) x s.2,
-      ← germ_toOpen R (PrimeSpectrum.basicOpen s) x s.2, ← RingHom.map_mul, toOpen_eq_const,
+      ← germ_toOpen R (PrimeSpectrum.basicOpen s) x s.2, ← map_mul, toOpen_eq_const,
       toOpen_eq_const, const_mul_cancel']
 
 /-- The ring homomorphism that takes a section of the structure sheaf of `R` on the open set `U`,
@@ -635,7 +635,7 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   replace hn := Ideal.mul_mem_right h (Ideal.span {g}) hn
   rw [← pow_succ, Ideal.mem_span_singleton'] at hn
   obtain ⟨c, hc⟩ := hn
-  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by cutsat)
+  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by lia)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n + 1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le :) hxDh
@@ -710,7 +710,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   -- Since there are only finitely many indices involved, we can pick the supremum.
   let N := (t ×ˢ t).sup n
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
-    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by cutsat)
+    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by lia)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
   refine
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
@@ -797,7 +797,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     -- Unfortunately, `ht_cover` uses a bounded union over the set `t`, while here we have the
     -- Union indexed by the type `tt`, so we need some boilerplate to translate one to the other
     intro x hx
-    rw [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup]
+    rw [TopologicalSpace.Opens.mem_iSup]
     have := ht_cover hx
     rw [← Finset.set_biUnion_coe, Set.mem_iUnion₂] at this
     rcases this with ⟨i, i_mem, x_mem⟩
@@ -810,7 +810,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   swap
   · intro y hy
     change y ∈ PrimeSpectrum.basicOpen (f ^ (n + 1))
-    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by cutsat)]
+    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by lia)]
     exact (leOfHom (iDh i) :) hy
   -- The rest of the proof is just computation
   apply const_ext
@@ -965,13 +965,14 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   rcases hs ⟨PrimeSpectrum.comap f p, hUV hpV⟩ with ⟨W, m, iWU, a, b, h_frac⟩
   -- We claim that we can write our new section as the fraction `f a / f b` on the neighborhood
   -- `(comap f) ⁻¹ W ⊓ V` of `p`.
-  refine ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
+  refine ⟨⟨_, (PrimeSpectrum.continuous_comap f).isOpen_preimage _ W.2⟩ ⊓ V,
+    ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
   refine ⟨h_frac.1, ?_⟩
   dsimp only [comapFun]
   erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal _ _ rfl,
-    ← RingHom.map_mul, h_frac.2, Localization.localRingHom_to_map]
+    ← map_mul, h_frac.2, Localization.localRingHom_to_map]
   rfl
 
 /-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and
@@ -989,25 +990,25 @@ def comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpe
     Subtype.ext <|
       funext fun p => by
         dsimp
-        rw [comapFun, (sectionsSubring R (op U)).coe_one, Pi.one_apply, RingHom.map_one]
+        rw [comapFun, (sectionsSubring R (op U)).coe_one, Pi.one_apply, map_one]
         rfl
   map_zero' :=
     Subtype.ext <|
       funext fun p => by
         dsimp
-        rw [comapFun, (sectionsSubring R (op U)).coe_zero, Pi.zero_apply, RingHom.map_zero]
+        rw [comapFun, (sectionsSubring R (op U)).coe_zero, Pi.zero_apply, map_zero]
         rfl
   map_add' s t :=
     Subtype.ext <|
       funext fun p => by
         dsimp
-        rw [comapFun, (sectionsSubring R (op U)).coe_add, Pi.add_apply, RingHom.map_add]
+        rw [comapFun, (sectionsSubring R (op U)).coe_add, Pi.add_apply, map_add]
         rfl
   map_mul' s t :=
     Subtype.ext <|
       funext fun p => by
         dsimp
-        rw [comapFun, (sectionsSubring R (op U)).coe_mul, Pi.mul_apply, RingHom.map_mul]
+        rw [comapFun, (sectionsSubring R (op U)).coe_mul, Pi.mul_apply, map_mul]
         rfl
 
 @[simp]
@@ -1080,7 +1081,7 @@ theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top
 
 @[elementwise, reassoc]
 theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :
-    (toOpen R U ≫ CommRingCat.ofHom (comap f U (Opens.comap (PrimeSpectrum.comap f) U)
+    (toOpen R U ≫ CommRingCat.ofHom (comap f U (Opens.comap ⟨_, PrimeSpectrum.continuous_comap f⟩ U)
         fun _ => id)) =
       CommRingCat.ofHom f ≫ toOpen S _ :=
   CommRingCat.hom_ext <| RingHom.ext fun _ => Subtype.ext <| funext fun _ =>

@@ -15,7 +15,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 This file characterises the stabilizer of a set/finset under the pointwise action of a group.
 -/
 
-@[expose] public section
+public section
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -242,8 +242,8 @@ variable {G : Type*} [CommGroup G] (s : Set G)
 @[to_additive (attr := simp)]
 lemma mul_stabilizer_self : s * stabilizer G s = s := by rw [mul_comm, stabilizer_mul_self]
 
-local notation " Q " => G ⧸ stabilizer G s
-local notation " q " => ((↑) : G → Q)
+local notation "Q" => G ⧸ stabilizer G s
+local notation "q" => ((↑) : G → Q)
 
 @[to_additive]
 lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by

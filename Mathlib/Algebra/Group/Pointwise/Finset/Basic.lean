@@ -39,7 +39,7 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the scope to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -567,8 +567,6 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
 theorem card_div_le : #(s / t) ≤ #s * #t :=
   card_image₂_le _ _ _
 
-@[deprecated (since := "2025-07-02")] alias div_card_le := card_div_le
-
 @[to_additive (attr := simp)]
 theorem empty_div (s : Finset α) : ∅ / s = ∅ :=
   image₂_empty_left
@@ -854,17 +852,12 @@ lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
   | 0 => by simp
   | n + 1 => by rw [pow_succ]; exact hs.pow.mul hs
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma pow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
-    -- TODO: The `nonempty_iff_ne_empty` would be unnecessary if `push_neg` knew how to simplify
-    -- `s ≠ ∅` to `s.Nonempty` when `s : Finset α`.
-    -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/push_neg.20extensibility
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).pow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.pow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_pow hn
 
@@ -1007,14 +1000,12 @@ lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
   | (n : ℕ) => hs.pow
   | .negSucc n => by simpa using hs.pow
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma zpow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).zpow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.zpow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_zpow hn
 
@@ -1052,18 +1043,8 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
 theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_div_iff := one_notMem_div_iff
-
 @[to_additive]
 lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
-
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=

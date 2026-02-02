@@ -138,9 +138,6 @@ theorem differentiableOn_dslope_of_notMem (h : a ∉ s) :
   forall_congr' fun _ =>
     forall_congr' fun hx => differentiableWithinAt_dslope_of_ne <| ne_of_mem_of_not_mem hx h
 
-@[deprecated (since := "2025-05-24")]
-alias differentiableOn_dslope_of_nmem := differentiableOn_dslope_of_notMem
-
 theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by
   simp only [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]

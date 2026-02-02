@@ -101,7 +101,7 @@ noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
     AddChar (ZMod n) (rootsOfUnity n Circle) where
   toFun x := ⟨toUnits (ZMod.toCircle x), by ext; simp [← AddChar.map_nsmul_eq_pow]⟩
   map_zero_eq_one' := by simp
-  map_add_eq_mul' _ _:= by ext; simp [AddChar.map_add_eq_mul]
+  map_add_eq_mul' _ _ := by ext; simp [AddChar.map_add_eq_mul]
 
 @[simp] lemma rootsOfUnityAddChar_val (n : ℕ) [NeZero n] (x : ZMod n) :
     (rootsOfUnityAddChar n x).val = toCircle x := by
@@ -123,8 +123,7 @@ numbers -/
 noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
   __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
   invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
-    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
-      ← (rootsOfUnitytoCircle n).map_one]
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← map_pow, ← (rootsOfUnitytoCircle n).map_one]
     congr
     aesop⟩
   left_inv _ := by aesop

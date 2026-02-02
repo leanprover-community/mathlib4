@@ -168,17 +168,18 @@ theorem snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
 alias _root_.Ordinal.CNF_snd_lt := snd_lt
 
 /-- The exponents of the Cantor normal form are decreasing. -/
-protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
+protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT := by
+  simp_rw [sortedGT_iff_pairwise]
   refine CNF.rec b ?_ (fun o ho IH ↦ ?_) o
   · rw [zero_right]
-    exact sorted_nil
+    exact .nil
   · rcases le_or_gt b 1 with hb | hb
     · rw [CNF.of_le_one hb ho]
-      exact sorted_singleton _
+      exact pairwise_singleton _ _
     · obtain hob | hbo := lt_or_ge o b
       · rw [CNF.of_lt ho hob]
-        exact sorted_singleton _
-      · rw [CNF.ne_zero ho, map_cons, sorted_cons]
+        exact pairwise_singleton _ _
+      · rw [CNF.ne_zero ho, map_cons, pairwise_cons]
         refine ⟨fun a H ↦ ?_, IH⟩
         rw [mem_map] at H
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
@@ -187,6 +188,7 @@ protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· >
 @[deprecated (since := "2025-08-18")]
 alias _root_.Ordinal.CNF_sorted := CNF.sorted
 
+set_option backward.privateInPublic true in
 private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKeys := by
   rw [NodupKeys, List.keys, map_map, Prod.fst_comp_toSigma]
   exact (CNF.sorted ..).nodup
@@ -195,6 +197,8 @@ private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKe
 
 open AList Finsupp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `CNF.coeff b o` is the finitely supported function returning the coefficient of `b ^ e` in the
 Cantor Normal Form (`CNF`) of `o`, for each `e`. -/
 @[pp_nodot]

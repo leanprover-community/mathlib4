@@ -25,8 +25,12 @@ is injective.
 
 In general, a type `A` is `SetLike` with elements of type `B` if it
 has an injective map to `Set B`.  This module provides standard
-boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
-`PartialOrder`, and various extensionality and simp lemmas.
+boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set,
+and various extensionality and simp lemmas. The order induced by set inclusion is
+called `PartialOrder.ofSetlike`: this is not an instance for flexibility in choosing orders.
+The class `IsConcreteLE` abstractly states the order is equal to that induced by set inclusion;
+an instance is automatically available when defining a `PartialOrder` as
+`.ofSetLike (MySubobject X) X`.
 
 A typical subobject should be declared as:
 ```
@@ -40,6 +44,8 @@ variable {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
+
+instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X) X
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 
@@ -104,6 +110,7 @@ class SetLike (A : Type*) (B : outParam Type*) where
   protected coe_injective' : Function.Injective coe
 
 attribute [coe] SetLike.coe
+
 namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
@@ -169,7 +176,7 @@ theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 theorem ext_iff : p = q ↔ ∀ x, x ∈ p ↔ x ∈ q :=
   coe_injective.eq_iff.symm.trans Set.ext_iff
 
-@[simp]
+@[simp, push]
 theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
   Iff.rfl
 
@@ -189,32 +196,100 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
-instance (priority := 100) instPartialOrder : PartialOrder A :=
-  { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
-    le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
+@[nontriviality]
+lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b ∈ S := by
+  obtain ⟨s, hs⟩ := nonempty_subtype.mp h
+  simpa [Subsingleton.elim b s]
 
-theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
-  Iff.rfl
+/-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
+coerces to the universal set, then there exists an element not in `s`. -/
+lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
+    (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
+    ∃ b : B, b ∉ s := by
+  simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
 
-@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T := .rfl
-@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := .rfl
+end SetLike
+
+/-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving.
+
+An instance of this class is automatically availableon any partial order defined as
+`PartialOrder.ofSetLike`.
+-/
+class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
+  /-- The coercion from a `SetLike` type preserves the ordering. -/
+  protected coe_subset_coe' {S T : A} : SetLike.coe S ⊆ SetLike.coe T ↔ S ≤ T
+
+section default
+
+variable (A B : Type*) [SetLike A B]
+
+/-- The order induced from a `SetLike` instance by inclusion. -/
+@[reducible] def LE.ofSetLike : LE A where
+  le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+
+/-- The partial order induced from a `SetLike` instance by inclusion.
+
+A partial order defined as `.ofSetLike` will automatically make available an instance
+of `IsConcreteLE`.
+-/
+@[reducible] def PartialOrder.ofSetLike : PartialOrder A where
+  __ := LE.ofSetLike A B
+  __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
+
+instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
+  letI := PartialOrder.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
+
+end default
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B]
+
+section LE
+
+variable [LE A] [IsConcreteLE A B] {p q : A}
+
+@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
+  IsConcreteLE.coe_subset_coe'
+
+theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := by
+  simp [← coe_subset_coe, Set.subset_def]
 
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-protected alias ⟨GCongr.mem_of_le_of_mem, _⟩ := le_def
+alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
+
+@[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
+
 @[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
-@[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
+
+theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
+  simpa [← coe_subset_coe] using Set.not_subset
+
+end LE
+
+section Preorder
+
+variable [Preorder A] [IsConcreteLE A B] {p q : A}
 
 @[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
+
+@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
+  rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
+
+@[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
+
 @[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
-theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q :=
-  Set.not_subset
-
-theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
-  Set.exists_of_ssubset
+theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
+  simpa [← coe_ssubset_coe] using Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
@@ -241,17 +316,6 @@ attribute [local instance] instSubtypeSet instSubtype
 
 end
 
-@[nontriviality]
-lemma mem_of_subsingleton {A F} [Subsingleton A] [SetLike F A] (S : F) [h : Nonempty S] {a : A} :
-    a ∈ S := by
-  obtain ⟨s, hs⟩ := nonempty_subtype.mp h
-  simpa [Subsingleton.elim a s]
-
-/-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
-coerces to the universal set, then there exists an element not in `s`. -/
-lemma exists_not_mem_of_ne_top [PartialOrder A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
-    (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
-    ∃ b : B, b ∉ s := by
-  simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
+end PartialOrder
 
 end SetLike

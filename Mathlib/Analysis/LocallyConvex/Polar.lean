@@ -151,7 +151,7 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by
-      rw [B.map_smul, LinearMap.smul_apply, Algebra.id.smul_eq_mul, norm_mul, norm_inv,
+      rw [B.map_smul, LinearMap.smul_apply, smul_eq_mul, norm_mul, norm_inv,
         mul_inv_cancel_left₀ hc.ne']
     _ ≤ ε * 1 := by gcongr; exact hy _ trivial
     _ = ε := mul_one _

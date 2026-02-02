@@ -44,9 +44,21 @@ theorem finsuppLEquivDirectSum_single (i : ι) (m : M) :
   Finsupp.toDFinsupp_single i m
 
 @[simp]
+theorem finsuppLEquivDirectSum_apply (m : ι →₀ M) (i : ι) :
+    finsuppLEquivDirectSum R M ι m i = m i := by
+  rfl
+
+@[simp]
 theorem finsuppLEquivDirectSum_symm_lof (i : ι) (m : M) :
     (finsuppLEquivDirectSum R M ι).symm (DirectSum.lof R ι _ i m) = Finsupp.single i m :=
   letI : ∀ m : M, Decidable (m ≠ 0) := Classical.decPred _
   DFinsupp.toFinsupp_single i m
+
+theorem lmap_finsuppLEquivDirectSum_eq {N : Type*} [AddCommMonoid N] [Module R N]
+    (ε : M →ₗ[R] N) (m : ι →₀ M) :
+    (lmap fun _ ↦ ε) ((finsuppLEquivDirectSum R M ι) m) =
+      (finsuppLEquivDirectSum R N ι) (m.mapRange ⇑ε ε.map_zero) := by
+  ext i
+  rfl
 
 end finsuppLequivDirectSum

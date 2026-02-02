@@ -5,12 +5,9 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Limits and colimits in the over and under categories
@@ -51,6 +48,9 @@ instance [HasFiniteColimits C] : HasFiniteColimits (Over X) where
 instance [HasColimits C] : HasColimits (Over X) :=
   ⟨inferInstance⟩
 
+instance [HasFiniteCoproducts C] : HasFiniteCoproducts (Over X) where
+  out := inferInstance
+
 instance createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) :=
   CostructuredArrow.createsColimitsOfSize
 
@@ -84,6 +84,18 @@ def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit 
 def _root_.CategoryTheory.Limits.colimit.isColimitToOver (F : J ⥤ C) [HasColimit F] :
     IsColimit (colimit.toOver F) :=
   Over.isColimitToOver (colimit.isColimit F)
+
+/-- Given an arrow `c.pt ⟶ X`, the diagram `J ⥤ C` can be lifted to `Over X ⥤ C`, and
+the cocone `c` also lifts to the diagram on `Over`. -/
+@[simps] def liftCocone {F : J ⥤ C} (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
+    Cocone (Over.lift F (c.ι ≫ (Functor.const J).map f)) where
+  pt := Over.mk f
+  ι.app j := Over.homMk (c.ι.app j)
+
+/-- `Over.liftCocone` is limiting if the original cocone is. -/
+noncomputable def isColimitLiftCocone {F : J ⥤ C} (c : Cocone F) {X : C} (f : c.pt ⟶ X)
+    (hc : IsColimit c) : IsColimit (liftCocone c f) :=
+  isColimitOfReflects (Over.forget _) hc
 
 end CategoryTheory.Over
 
@@ -131,5 +143,17 @@ def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnd
 def _root_.CategoryTheory.Limits.limit.isLimitToOver (F : J ⥤ C) [HasLimit F] :
     IsLimit (limit.toUnder F) :=
   Under.isLimitToUnder (limit.isLimit F)
+
+/-- Given an arrow `X ⟶ c.pt`, the diagram `J ⥤ C` can be lifted to `Under X ⥤ C`, and
+the cone `c` also lifts to the diagram on `Under`. -/
+@[simps] def liftCone {F : J ⥤ C} (c : Cone F) {X : C} (f : X ⟶ c.pt) :
+    Cone (Under.lift F ((Functor.const J).map f ≫ c.π)) where
+  pt := Under.mk f
+  π.app j := Under.homMk (c.π.app j)
+
+/-- `Under.liftCone` is limiting if the original cone is. -/
+noncomputable def isLimitLiftCone {F : J ⥤ C} (c : Cone F) {X : C}
+    (f : X ⟶ c.pt) (hc : IsLimit c) : IsLimit (liftCone c f) :=
+  isLimitOfReflects (Under.forget _) hc
 
 end CategoryTheory.Under

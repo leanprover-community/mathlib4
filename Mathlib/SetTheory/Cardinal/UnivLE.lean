@@ -12,7 +12,7 @@ public import Mathlib.SetTheory.Ordinal.Basic
 # UnivLE and cardinals
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -21,7 +21,8 @@ universe u v
 open Cardinal
 
 theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v + 1} ≤ univ.{v, u + 1} := by
-  rw [← not_iff_not, univLE_iff]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
+  simp_rw [univLE_iff, small_iff_lift_mk_lt_univ]
+  contrapose!
   -- strange: simp_rw [univ_umax.{v,u}] doesn't work
   refine ⟨fun ⟨α, le⟩ ↦ ?_, fun h ↦ ?_⟩
   · rw [univ_umax.{v, u}, ← lift_le.{u + 1}, lift_univ, lift_lift] at le

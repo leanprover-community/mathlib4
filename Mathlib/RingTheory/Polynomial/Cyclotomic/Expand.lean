@@ -27,7 +27,7 @@ We gather results relating cyclotomic polynomials and `expand`.
   `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial
@@ -57,14 +57,14 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne'
       rw [cyclotomic_eq_minpoly_rat hprim hpos]
       refine minpoly.dvd ℚ _ ?_
-      rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
+      rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
         @isRoot_cyclotomic_iff]
       convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ (Nat.Prime.pos hp)]
     · have hprim := Complex.isPrimitiveRoot_exp _ hnpos.ne.symm
       rw [cyclotomic_eq_minpoly_rat hprim hnpos]
       refine minpoly.dvd ℚ _ ?_
-      rw [aeval_def, ← eval_map, map_expand, expand_eval, ← IsRoot.def, ←
+      rw [← eval_map_algebraMap, map_expand, expand_eval, ← IsRoot.def, ←
         cyclotomic_eq_minpoly_rat hprim hnpos, map_cyclotomic, @isRoot_cyclotomic_iff]
       exact IsPrimitiveRoot.pow_of_prime hprim hp hdiv
   · rw [natDegree_expand, natDegree_cyclotomic,
@@ -98,7 +98,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
     rw [cyclotomic_eq_minpoly hprim hpos]
     refine minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) ?_
-    rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
+    rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
     convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
     rw [Nat.mul_div_cancel _ hp.pos]
@@ -117,7 +117,7 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   | succ k hk =>
     have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
     rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
-    exact hk (by cutsat) (of_irreducible_expand hp.ne_zero h)
+    exact hk (by lia) (of_irreducible_expand hp.ne_zero h)
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
 theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]

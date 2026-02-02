@@ -83,7 +83,7 @@ theorem integral [IsGalois F E] (x : E) : IsIntegral F x :=
 theorem separable [IsGalois F E] (x : E) : IsSeparable F x :=
   Algebra.IsSeparable.isSeparable F x
 
-theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
+theorem splits [IsGalois F E] (x : E) : ((minpoly F x).map (algebraMap F E)).Splits :=
   Normal.splits' x
 
 variable (E)
@@ -97,7 +97,7 @@ instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E]
 
 theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
     (hα : IsIntegral F α) (h_sep : IsSeparable F α)
-    (h_splits : (minpoly F α).Splits (algebraMap F F⟮α⟯)) :
+    (h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits) :
     Nat.card Gal(F⟮α⟯/F) = finrank F F⟮α⟯ := by
   rw [IntermediateField.adjoin.finrank hα]
   rw [← IntermediateField.card_algHom_adjoin_integral F hα h_sep h_splits]
@@ -117,10 +117,9 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
       commutes' := fun _ => rfl }
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : IsSeparable F α := IsGalois.separable F α
-  have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
-  replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α) := by
-    simpa using
-      Polynomial.splits_comp_of_splits (algebraMap F E) iso.symm.toAlgHom.toRingHom h_splits
+  have h_splits : ((minpoly F α).map (algebraMap F E)).Splits := IsGalois.splits F α
+  replace h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits := by
+    simpa [Polynomial.map_map] using h_splits.map iso.symm.toRingHom
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
   apply Nat.card_congr
@@ -238,16 +237,12 @@ theorem fixingSubgroup_le {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
     K2.fixingSubgroup ≤ K1.fixingSubgroup :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
-@[deprecated (since := "2025-05-02")] alias fixingSubgroup.antimono := fixingSubgroup_le
-
 theorem fixedField_le {H1 H2 : Subgroup Gal(E/F)} (h12 : H1 ≤ H2) :
     fixedField H2 ≤ fixedField H1 :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
 lemma fixingSubgroup_antitone : Antitone (@fixingSubgroup F _ E _ _) :=
   fun _ _ ↦ fixingSubgroup_le
-
-@[deprecated (since := "2025-05-02")] alias fixingSubgroup_anti := fixingSubgroup_antitone
 
 lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
   fun _ _ ↦ fixedField_le
@@ -315,6 +310,8 @@ end IntermediateField
 
 namespace IsGalois
 
+/-- See `InfiniteGalois.fixedField_fixingSubgroup` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     IntermediateField.fixedField (IntermediateField.fixingSubgroup K) = K := by
   have K_le : K ≤ IntermediateField.fixedField (IntermediateField.fixingSubgroup K) :=
@@ -327,15 +324,21 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     Nat.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
 
+/-- See `InfiniteGalois.fixedField_bot` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 @[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
     fixedField (⊤ : Subgroup Gal(E/F)) = ⊥ := by
   rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
 
+/-- See `InfiniteGalois.mem_bot_iff_fixed` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : Gal(E/F), f x = x := by
   rw [← fixedField_top, mem_fixedField_iff]
   simp only [Subgroup.mem_top, forall_const]
 
+/-- See `InfiniteGalois.mem_range_algebraMap_iff_fixed` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ Set.range (algebraMap F E) ↔ ∀ f : Gal(E/F), f x = x :=
   mem_bot_iff_fixed x
@@ -470,7 +473,7 @@ theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
   obtain ⟨α, h1⟩ := Field.exists_primitive_element F E
   use minpoly F α, separable F α, IsGalois.splits F α
   rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← h1]
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (integral F α)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (integral F α).isAlgebraic]
   apply Algebra.adjoin_mono
   rw [Set.singleton_subset_iff, Polynomial.mem_rootSet]
   exact ⟨minpoly.ne_zero (integral F α), minpoly.aeval _ _⟩
@@ -523,9 +526,8 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   intro f _
   rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
   · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
-  · refine Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) ?_ h2
-    rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
-    exact sp.splits
+  · apply sp.splits.of_dvd (Polynomial.map_ne_zero h1)
+    rwa [← f.comp_algebraMap, ← p.map_map, RingHom.algebraMap_toAlgebra, Polynomial.map_dvd_map']
 
 theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
     IsGalois F E := by
@@ -547,7 +549,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   · have key := IntermediateField.card_algHom_adjoin_integral F (K := E)
       (show IsIntegral F (0 : E) from isIntegral_zero)
     rw [IsSeparable, minpoly.zero, Polynomial.natDegree_X] at key
-    specialize key Polynomial.separable_X (Polynomial.splits_X (algebraMap F E))
+    specialize key Polynomial.separable_X (Polynomial.Splits.X.map (algebraMap F E))
     rw [← @Subalgebra.finrank_bot F E _ _ _, ← IntermediateField.bot_toSubalgebra] at key
     refine Eq.trans ?_ key
     apply Nat.card_congr
@@ -584,10 +586,10 @@ theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensiona
   suffices T'.IsSplittingField L E from IsGalois.of_separable_splitting_field (p := T') hT₁.map
   rw [isSplittingField_iff_intermediateField] at hT₂ ⊢
   constructor
-  · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
-    exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
+  · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
+    exact Polynomial.Splits.of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
   · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
-    rw [← lift_inj, lift_adjoin, ← coe_val, T.image_rootSet hT₂.1] at hT₂
+    rw [← lift_inj, lift_adjoin, ← coe_val, hT₂.1.image_rootSet] at hT₂
     rw [← restrictScalars_eq_top_iff (K := F), restrictScalars_adjoin, adjoin_union, adjoin_self,
       h', hT₂.2, lift_top, sup_comm, h]
 

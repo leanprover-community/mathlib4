@@ -139,14 +139,14 @@ instance commSemigroup : CommSemigroup (UpperSet α) :=
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
   SetLike.coe_injective <|
-    (subset_mul_right _ left_mem_Ici).antisymm' <| by
+    (subset_mul_right _ self_mem_Ici).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
 @[to_additive]
 instance : CommMonoid (UpperSet α) :=
   { UpperSet.commSemigroup with
-    one_mul := one_mul
+    one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }
@@ -195,14 +195,14 @@ instance commSemigroup : CommSemigroup (LowerSet α) :=
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=
   SetLike.coe_injective <|
-    (subset_mul_right _ right_mem_Iic).antisymm' <| by
+    (subset_mul_right _ self_mem_Iic).antisymm' <| by
       rw [← smul_eq_mul, ← Set.iUnion_smul_set]
       exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 
 @[to_additive]
 instance : CommMonoid (LowerSet α) :=
   { LowerSet.commSemigroup with
-    one_mul := one_mul
+    one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }

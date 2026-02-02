@@ -168,8 +168,8 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
-instance : IsOrderedAddMonoid (Submodule R M) :=
-  { add_le_add_left := fun _a _b => sup_le_sup_left }
+instance : IsOrderedAddMonoid (Submodule R M) where
+  add_le_add_left _ _ := sup_le_sup_right
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
@@ -184,7 +184,7 @@ variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
-  smul a S := S.map (DistribMulAction.toLinearMap R M a : M →ₗ[R] M)
+  smul a S := S.map (DistribSMul.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
     (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
@@ -230,6 +230,11 @@ theorem smul_bot' (a : α) : a • (⊥ : Submodule R M) = ⊥ :=
 /-- See also `Submodule.smul_sup`. -/
 theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
+
+/-- See also `Submodule.smul_iSup`. -/
+theorem smul_iSup' (a : α) {ι : Sort*} (f : ι → Submodule R M) :
+    a • ⨆ i, f i = ⨆ i, a • f i :=
+  map_iSup _ _
 
 theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
   map_span _ _
@@ -414,7 +419,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
 lemma set_smul_eq_map [SMulCommClass R R N] :
     sR • N =
     Submodule.map
-      (N.subtype.comp (Finsupp.lsum R <| DistribMulAction.toLinearMap _ _))
+      (N.subtype.comp (Finsupp.lsum R <| DistribSMul.toLinearMap _ _))
       (Finsupp.supported N R sR) := by
   classical
   apply set_smul_eq_of_le
@@ -495,7 +500,7 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
     p x (by rwa [← Submodule.singleton_set_smul])
   refine Submodule.set_smul_inductionOn (motive := p') _ (N.singleton_set_smul a ▸ hx)
       (fun r n hr hn ↦ ?_) smul₁ add zero
-  · simp only [Set.mem_singleton_iff] at hr
+  · push _ ∈ _ at hr
     subst hr
     exact smul₀ n hn
 
@@ -541,7 +546,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulAction
 lemma sup_set_smul (s t : Set S) :
     (s ⊔ t) • N = s • N ⊔ t • N :=
   set_smul_eq_of_le _ _ _
-    (by rintro _ _ (hr|hr) hn
+    (by rintro _ _ (hr | hr) hn
         · exact Submodule.mem_sup_left (mem_set_smul_of_mem_mem hr hn)
         · exact Submodule.mem_sup_right (mem_set_smul_of_mem_mem hr hn))
     (sup_le (set_smul_mono_left _ le_sup_left) (set_smul_mono_left _ le_sup_right))

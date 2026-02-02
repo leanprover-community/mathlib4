@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Group.Nat
@@ -115,7 +115,7 @@ instance (priority := 100) toIsOrderedAddMonoid : IsOrderedAddMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
-    rw [hs.2, add_assoc]
+    rw [hs.2, add_right_comm]
     exact ⟨hs.1, rfl⟩
 
 -- see note [lower instance priority]
@@ -409,7 +409,7 @@ instance : IsOrderedModule R A where
     obtain ⟨r, hr, rfl⟩ := hrs
     exact ⟨r • a, smul_mem_closure_star_mul hr ha, add_smul ..⟩
 
-variable [IsCancelAdd A] [NoZeroSMulDivisors R A]
+variable [IsDomain R] [IsCancelAdd A] [Module.IsTorsionFree R A]
 
 instance : PosSMulStrictMono R A where
   smul_lt_smul_of_pos_left r hr a b hab := by

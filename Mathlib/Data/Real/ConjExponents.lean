@@ -342,7 +342,7 @@ theorem mul_eq_add : p * q = p + q := by
 
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
-  linear_combination - h.sub_one_mul_conj
+  linear_combination -h.sub_one_mul_conj
 
 lemma inv_add_inv_ennreal : (p⁻¹ + q⁻¹ : ℝ≥0∞) = 1 := by norm_cast; exact h.inv_add_inv_eq_one
 
@@ -409,7 +409,7 @@ lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
     HolderTriple (p : ℝ≥0∞) (q : ℝ≥0∞) (r : ℝ≥0∞) ↔ NNReal.HolderTriple p q r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [NNReal.holderTriple_iff]
-    obtain ⟨hp, hq⟩ : p ≠ 0 ∧ q ≠ 0:= by
+    obtain ⟨hp, hq⟩ : p ≠ 0 ∧ q ≠ 0 := by
       constructor
       all_goals
         rintro rfl

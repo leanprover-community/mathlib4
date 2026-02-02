@@ -79,9 +79,6 @@ end IsPrimitiveRoot
 
 namespace IsCyclotomicExtension
 
-@[deprecated (since := "2025-06-26")]
-alias Aut.commGroup := isMulCommutative
-
 variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
   [IsCyclotomicExtension {n} K L]
 

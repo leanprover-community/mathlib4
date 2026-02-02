@@ -37,7 +37,7 @@ of the corresponding vertex and that (2) the map from darts to edges is 2-to-1.
 simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field TwoSidedIdeal
 
@@ -155,7 +155,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   simp only [hc]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
   · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
-    cutsat
+    lia
   · rwa [mem_filter_univ]
 
 theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Adj] (v : V)

@@ -26,7 +26,7 @@ In order to achieve this, we dualize the constructions from the file
 open CategoryTheory Limits ZeroObject Category
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace HomologicalComplex
 
@@ -213,7 +213,7 @@ end HomologicalComplex
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsTruncLE]
-    (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
+    (C : Type*) [Category* C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncLE`,
 this is the (canonical) truncation functor

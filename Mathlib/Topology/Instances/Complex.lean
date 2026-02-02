@@ -16,7 +16,7 @@ public import Mathlib.Topology.Algebra.UniformRing
 # Some results about the topology of ℂ
 -/
 
-@[expose] public section
+public section
 
 
 section ComplexSubfield

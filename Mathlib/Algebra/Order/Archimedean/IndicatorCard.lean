@@ -21,7 +21,7 @@ limsups of sums of indicators.
 finite, indicator, limsup, tendsto
 -/
 
-@[expose] public section
+public section
 
 namespace Set
 
@@ -53,16 +53,15 @@ lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*}
     obtain ⟨n', hn'⟩ := exists_lt_nsmul h n
     obtain ⟨t, t_s, t_card⟩ := hs.exists_subset_card_eq n'
     obtain ⟨m, hm⟩ := t.bddAbove
-    refine ⟨m + 1, hn'.le.trans ?_⟩
-    apply (sum_le_sum fun i _ ↦ (indicator_le_indicator_of_subset t_s (fun _ ↦ h.le)) i).trans_eq'
+    use m + 1
+    grw [hn', ← t_s]
     have h : t ⊆ Finset.range (m + 1) := by
       intro i i_t
       rw [Finset.mem_range]
       exact (hm i_t).trans_lt (lt_add_one m)
     rw [sum_indicator_subset (fun _ ↦ r) h, sum_eq_card_nsmul (fun _ _ ↦ rfl), t_card]
-  · contrapose
+  · contrapose!
     intro hs
-    rw [not_infinite] at hs
     rw [tendsto_congr' (sum_indicator_eventually_eq_card r hs), tendsto_atTop_atTop]
     push_neg
     obtain ⟨m, hm⟩ := exists_lt_nsmul h (Nat.card s • r)

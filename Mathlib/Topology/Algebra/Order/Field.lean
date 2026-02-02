@@ -193,15 +193,9 @@ lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
 theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero
-
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
 theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
-
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
 
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
   tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
@@ -303,7 +297,7 @@ instance (priority := 100) IsStrictOrderedRing.toIsTopologicalDivisionRing :
 
 -- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
-  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
+  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi₀ _ hx, zero_div]
   congr 1
   refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
   simp
