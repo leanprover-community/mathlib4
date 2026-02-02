@@ -169,6 +169,65 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
+section RCLike
+
+open RCLike
+open scoped NNReal Topology
+
+/-- A map into `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)` over `𝕜` (with `RCLike 𝕜`) is
+continuous if the real parts of all the evaluation maps `a ↦ B (g a) y` are
+continuous for each `y : F`. -/
+theorem _root_.WeakBilin.continuous_of_continuous_eval_re
+    {α 𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+    (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [TopologicalSpace α] {g : α → WeakBilin B}
+    (h : ∀ y, Continuous fun a ↦ re (B (g a) y)) :
+    Continuous g := by
+  refine WeakBilin.continuous_of_continuous_eval _ fun x ↦ ?_
+  suffices Continuous fun a ↦ (re (B (g a) x) : 𝕜) - re (B (g a) ((I : 𝕜) • x)) * I by simpa
+  fun_prop
+
+/-- A map into `WeakDual 𝕜 F` over `𝕜` (with `RCLike 𝕜`) is continuous if the real parts of all
+the evaluation maps `a ↦ g a y` are continuous for each `y : F`. -/
+theorem continuous_of_continuous_eval_re {α 𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F]
+    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace α] {g : α → WeakDual 𝕜 F}
+    (h : ∀ x, Continuous fun a ↦ re (g a x)) :
+    Continuous g :=
+  WeakBilin.continuous_of_continuous_eval_re _ h
+
+variable {𝕜 F : Type*} [RCLike 𝕜] [TopologicalSpace F] [AddCommGroup F]
+  [Module 𝕜 F] [ContinuousConstSMul 𝕜 F] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+
+open StrongDual in
+/-- The extension `StrongDual.extendRCLike` as a continuous linear equivalence between
+the weak duals. -/
+@[simps toLinearEquiv]
+noncomputable def extendRCLikeL : WeakDual ℝ F ≃L[ℝ] WeakDual 𝕜 F where
+  toLinearEquiv := toStrongDual ≪≫ₗ extendRCLikeₗ ≪≫ₗ toWeakDual.restrictScalars ℝ
+  continuous_toFun := WeakBilin.continuous_of_continuous_eval_re _ fun x ↦ by
+    simpa [extendRCLikeₗ_apply] using eval_continuous x
+  continuous_invFun :=
+    continuous_of_continuous_eval fun x ↦ RCLike.continuous_re.comp (eval_continuous x)
+
+lemma extendRCLikeL_apply_apply (f : WeakDual ℝ F) (x : F) :
+    extendRCLikeL (𝕜 := 𝕜) f x = f x - (I : 𝕜) • f ((I : 𝕜) • x) :=
+  (toStrongDual f).extendRCLike_apply x
+
+lemma extendRCLikeL_symm_apply_apply (f : WeakDual 𝕜 F) (x : F) :
+    extendRCLikeL.symm f x = re (f x) := by
+  rfl
+
+@[simp high]
+lemma toStrongDual_extendRCLikeL_apply (f : WeakDual ℝ F) :
+    (extendRCLikeL (𝕜 := 𝕜) f).toStrongDual = StrongDual.extendRCLikeₗ f.toStrongDual :=
+  rfl
+
+@[simp high]
+lemma _root_.StrongDual.toWeakDual_extendRCLikeₗ_apply (f : StrongDual ℝ F) :
+    (StrongDual.extendRCLikeₗ f).toWeakDual = extendRCLikeL (𝕜 := 𝕜) f.toWeakDual :=
+  rfl
+
+end RCLike
+
 end WeakDual
 
 /-!
