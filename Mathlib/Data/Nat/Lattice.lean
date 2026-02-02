@@ -92,14 +92,8 @@ protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m 
   rw [Nat.sInf_def ⟨m, hm⟩]
   exact Nat.find_min' ⟨m, hm⟩ hm
 
-theorem nonempty_of_pos_sInf {s : Set ℕ} (h : 0 < sInf s) : s.Nonempty := by
-  by_contra contra
-  rw [Set.not_nonempty_iff_eq_empty] at contra
-  have h' : sInf s ≠ 0 := ne_of_gt h
-  apply h'
-  rw [Nat.sInf_eq_zero]
-  right
-  assumption
+theorem nonempty_of_pos_sInf {s : Set ℕ} (h : 0 < sInf s) : s.Nonempty :=
+  Set.nonempty_iff_ne_empty.mpr (by grind [sInf_eq_zero])
 
 theorem nonempty_of_sInf_eq_succ {s : Set ℕ} {k : ℕ} (h : sInf s = k + 1) : s.Nonempty :=
   nonempty_of_pos_sInf (h.symm ▸ succ_pos k : sInf s > 0)

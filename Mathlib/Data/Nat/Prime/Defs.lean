@@ -392,10 +392,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     exact (le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')).symm
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
-  div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
-      apply Nat.ne_of_gt
-      apply Nat.succ_lt_succ
-      apply Nat.zero_lt_succ)).one_lt
+  div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by lia)).one_lt
 
 end MinFac
 

@@ -139,17 +139,8 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
     exact lt_trans hp1.right hq1.right
   obtain ⟨b, hb⟩ := exists_between_finsets _ _ this
   use b
-  rintro ⟨p1, p2⟩ hp
-  have : p1 ≠ a := fun he ↦ h ⟨p2, he ▸ hp⟩
-  rcases lt_or_gt_of_ne this with hl | hr
-  · have : p1 < a ∧ p2 < b :=
-      ⟨hl, hb.1 _ (Finset.mem_image.mpr ⟨(p1, p2), Finset.mem_filter.mpr ⟨hp, hl⟩, rfl⟩)⟩
-    rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff] at this
-    exact this.1.trans this.2.symm
-  · have : a < p1 ∧ b < p2 :=
-      ⟨hr, hb.2 _ (Finset.mem_image.mpr ⟨(p1, p2), Finset.mem_filter.mpr ⟨hp, hr⟩, rfl⟩)⟩
-    rw [← cmp_eq_gt_iff, ← cmp_eq_gt_iff] at this
-    exact this.1.trans this.2.symm
+  simp only [Finset.mem_image, forall_exists_index, Prod.forall] at this
+  grind [cmp_eq_gt_iff, cmp_eq_lt_iff]
 
 /-- A partial isomorphism between `α` and `β` is also a partial isomorphism between `β` and `α`. -/
 protected def comm : PartialIso α β → PartialIso β α :=
