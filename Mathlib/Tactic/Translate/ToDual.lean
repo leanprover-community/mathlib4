@@ -26,7 +26,7 @@ Known limitations:
 public meta section
 
 namespace Mathlib.Tactic.ToDual
-open Lean Meta Elab Term Command Std Translate UnfoldBoundary
+open Lean Meta Elab Command Std Translate UnfoldBoundary
 
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
@@ -118,17 +118,8 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-@[inherit_doc UnfoldBoundaryExt.unfolds]
-initialize unfolds : NameMapExtension SimpTheorem ← registerNameMapExtension _
-
-@[inherit_doc UnfoldBoundaryExt.casts]
-initialize casts : NameMapExtension (Name × Name) ← registerNameMapExtension _
-
-@[inherit_doc UnfoldBoundaryExt.insertionFuns]
-initialize insertionFuns : NameMapExtension Unit ← registerNameMapExtension _
-
 @[inherit_doc TranslateData.unfoldBoundaries?]
-def unfoldBoundaries? : Option UnfoldBoundaryExt := some { unfolds, casts, insertionFuns }
+initialize unfoldBoundaries : UnfoldBoundaryExt ← registerUnfoldBoundaryExt
 
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
@@ -232,17 +223,22 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; doTranslateAttr; unfoldBoundaries?; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
+  unfoldBoundaries? := some unfoldBoundaries
   attrName := `to_dual
   changeNumeral := false
   isDual := true
   guessNameData := { nameDict, abbreviationDict }
 
-@[inherit_doc Translate.elabInsertCast]
+/-- The `to_dual_insert_cast` attribute is used to tag declarations `foo` that should not be
+unfolded in a proof that is translated. Instead, a rewrite with an equality theorem is inserted.
+This equality theorem can then be translated by the translation attribute. -/
 elab "to_dual_insert_cast" declName:ident " := " valStx:term : command =>
   elabInsertCast declName valStx data
 
-@[inherit_doc elabInsertCastFun]
+/-- The `to_dual_insert_cast_fun` attribute is used to tag types that should not be unfolded in a
+proof that is translated. Instead, a casting function is inserted. This casting function then may be
+translated by the translation attribute. -/
 elab "to_dual_insert_cast_fun" declName:ident " := " valStx₁:term ", " valStx₂:term : command =>
   elabInsertCastFun declName valStx₁ valStx₂ data
 

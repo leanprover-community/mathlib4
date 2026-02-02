@@ -98,9 +98,8 @@ public def elabInsertCast (declName : Ident) (valStx : Term) (t : TranslateData)
     CommandElabM Unit := do
   let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName
   let (name, _) ← elabInsertCastAux declName .eq valStx t
-  let some { unfolds, .. } := t.unfoldBoundaries?
-    | throwError "{t.attrName} doesn't support unfold boundaries"
-  unfolds.add declName { origin := .decl name, proof := mkConst name, rfl := true }
+  let some ext := t.unfoldBoundaries? | throwError "{t.attrName} doesn't support unfold boundaries"
+  modifyEnv (ext.addEntry · (.unfold declName name))
 
 /-- The `insert_cast_fun foo := ..., ...` command should be used when the translation of some
 type `foo` is not definitionally equal to the translation of its value.
@@ -121,10 +120,7 @@ public def elabInsertCastFun (declName : Ident) (valStx₁ valStx₂ : Term) (t 
   let declName ← Command.liftCoreM <| realizeGlobalConstNoOverloadWithInfo declName
   let (name₁, translatedName₁) ← elabInsertCastAux declName .unfoldFun valStx₁ t
   let (name₂, translatedName₂) ← elabInsertCastAux declName .refoldFun valStx₂ t
-  let some { casts, insertionFuns, .. } := t.unfoldBoundaries?
-    | throwError "{t.attrName} doesn't support unfold boundaries"
-  casts.add declName (name₁, name₂)
-  insertionFuns.add name₁ (); insertionFuns.add translatedName₁ ()
-  insertionFuns.add name₂ (); insertionFuns.add translatedName₂ ()
+  let some ext := t.unfoldBoundaries? | throwError "{t.attrName} doesn't support unfold boundaries"
+  modifyEnv (ext.addEntry · (.cast declName name₁ name₂ translatedName₁ translatedName₂))
 
 end Mathlib.Tactic.Translate

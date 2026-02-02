@@ -203,8 +203,8 @@ structure TranslateData : Type where
     translated thanks to this, you generally have to specify the translated name manually.
   -/
   doTranslateAttr : NameMapExtension Bool
-  /-- The `dont_unfold` attribute is used to create an abstraction boundary for the tagged constant
-  when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
+  /-- The `insert_cast`/`insert_cast_fun` attributes create an abstraction boundary for the tagged
+  constant when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
   morally self-dual, but their definition is not self-dual. So, in order to allow these constants
   to be self-dual, we need to not unfold their definition in the proof term that we translate. -/
   unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaryExt := none
