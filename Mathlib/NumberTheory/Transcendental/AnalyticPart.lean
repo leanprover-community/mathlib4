@@ -147,7 +147,7 @@ lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ
   by_contra! h
   exact ((analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (n := m) f hf).mpr (Hm.symm)).2 (hkn m h)
 
---will move later, there is some conflict with existing lemmas
-lemma mul_mem_emetric_ball_iff {E : Type _} [SeminormedAddCommGroup E] {a b c : E} (r : ENNReal) :
-    a + c ∈ EMetric.ball (b + c) r  ↔ a ∈ EMetric.ball b r:= by
-  simp
+-- --will move later, there is some conflict with existing lemmas
+-- lemma mul_mem_emetric_ball_iff {E : Type _} [SeminormedAddCommGroup E] {a b c : E} (r : ENNReal) :
+--     a + c ∈ EMetric.ball (b + c) r  ↔ a ∈ EMetric.ball b r:= by
+--   simp
