@@ -254,7 +254,7 @@ The homeomorphism between the `realMixedSpace` and the `polarSpace`.
 def homeoRealMixedSpacePolarSpace : realMixedSpace K ≃ₜ polarSpace K :=
 { measurableEquivRealMixedSpacePolarSpace K with
   continuous_toFun := by
-    change Continuous fun x : realMixedSpace K ↦  (fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
+    change Continuous fun x : realMixedSpace K ↦ (fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
       (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2)
     refine .prodMk (continuous_pi fun w ↦ ?_) (by fun_prop)
     split_ifs <;> fun_prop

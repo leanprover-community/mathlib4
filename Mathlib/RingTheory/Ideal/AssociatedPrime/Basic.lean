@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Exact
 public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Defs
@@ -36,33 +37,22 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 
 @[expose] public section
 
+open LinearMap Submodule
 
-variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+section Semiring
 
-open LinearMap
+variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid M] [Module R M]
 
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the annihilator of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
-  I.IsPrime ∧ ∃ x : M, I = ker (toSpanSingleton R M x)
+  I.IsPrime ∧ ∃ x : M, I = (⊥ : Submodule R M).colon {x}
 
-theorem isAssociatedPrime_iff_exists_injective_linearMap :
-    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ (f : R ⧸ I →ₗ[R] M), Function.Injective f := by
-  rw [IsAssociatedPrime]
-  congr! 1
-  refine ⟨fun ⟨_, h⟩ ↦ ⟨Submodule.liftQ _ _ h.le, ker_eq_bot.1 (Submodule.ker_liftQ_eq_bot' _ _ h)⟩,
-    fun ⟨f, h⟩ ↦ ⟨(f ∘ₗ Submodule.mkQ I) 1, ?_⟩⟩
-  have := I.ker_mkQ ▸ ker_comp_of_ker_eq_bot (Submodule.mkQ I) (ker_eq_bot_of_injective h)
-  convert this.symm using 2
-  ext; simp
-
-variable (R)
-
+variable (R) in
 /-- The set of associated primes of a module. -/
 def associatedPrimes : Set (Ideal R) :=
   { I | IsAssociatedPrime I M }
 
-variable {I J M R}
-variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
+variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
@@ -72,7 +62,7 @@ theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Fun
   obtain ⟨x, rfl⟩ := h.2
   refine ⟨h.1, ⟨f x, ?_⟩⟩
   ext r
-  simp_rw [mem_ker, toSpanSingleton_apply, ← map_smul, ← f.map_zero, hf.eq_iff]
+  simp_rw [mem_colon_singleton, mem_bot, ← map_smul, map_eq_zero_iff f hf]
 
 theorem LinearEquiv.isAssociatedPrime_iff (l : M ≃ₗ[R] M') :
     IsAssociatedPrime I M ↔ IsAssociatedPrime I M' :=
@@ -82,34 +72,30 @@ theorem LinearEquiv.isAssociatedPrime_iff (l : M ≃ₗ[R] M') :
 theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedPrime I M := by
   rintro ⟨hI, x, hx⟩
   apply hI.ne_top
-  simpa [Subsingleton.elim x 0] using hx
+  simp [hx, Subsingleton.elim x 0]
 
 variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
-    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ ker (toSpanSingleton R M x) ≤ P := by
-  have : ker (toSpanSingleton R M x) ≠ ⊤ := by
-    rwa [Ne, Ideal.eq_top_iff_one, mem_ker, toSpanSingleton_apply, one_smul]
+    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (⊥ : Submodule R M).colon {x} ≤ P := by
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
-      { P | ker (toSpanSingleton R M x) ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = ker (toSpanSingleton R M y) }
-      ⟨_, rfl.le, this, x, rfl⟩
+      { P | (⊥ : Submodule R M).colon {x} ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (⊥ : Submodule R M).colon {y} }
+      ⟨_, rfl.le, by simpa, x, rfl⟩
   refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
   intro a b hab
   rw [or_iff_not_imp_left]
   intro ha
-  rw [mem_ker, toSpanSingleton_apply] at ha hab
-  have H₁ : ker (toSpanSingleton R M y) ≤ ker (toSpanSingleton R M (a • y)) := by
+  rw [mem_colon_singleton] at ha hab
+  have H₁ : (⊥ : Submodule R M).colon {y} ≤ (⊥ : Submodule R M).colon {a • y} := by
     intro c hc
-    rw [mem_ker, toSpanSingleton_apply] at hc ⊢
+    rw [mem_colon_singleton, mem_bot] at hc ⊢
     rw [smul_comm, hc, smul_zero]
-  have H₂ : ker (toSpanSingleton R M (a • y)) ≠ ⊤ := by
-    rwa [Ne, ker_eq_top, toSpanSingleton_eq_zero_iff]
-  rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩),
-    mem_ker, toSpanSingleton_apply, smul_comm, smul_smul]
+  rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩),
+    mem_colon_singleton, smul_comm, smul_smul]
 
 namespace associatedPrimes
 
-variable {f} {M'' : Type*} [AddCommGroup M''] [Module R M''] {g : M' →ₗ[R] M''}
+variable {f} {M'' : Type*} [AddCommMonoid M''] [Module R M''] {g : M' →ₗ[R] M''}
 
 /-- If `M → M'` is injective, then the set of associated primes of `M` is
 contained in that of `M'`. -/
@@ -128,21 +114,20 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
     left
     refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
-      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
+      rw [mem_colon_singleton, mem_bot] at hb ⊢
       apply_fun _ using hf
       rw [map_smul, map_zero, h, smul_comm, hb, smul_zero]
-    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb
+    · rw [mem_colon_singleton, mem_bot] at hb
       apply_fun f at hb
-      rw [map_smul, map_zero, h, ← mul_smul, ← LinearMap.toSpanSingleton_apply,
-        ← LinearMap.mem_ker, ← hx] at hb
+      rw [map_smul, map_zero, h, ← mul_smul, ← mem_bot R, ← mem_colon_singleton, ← hx] at hb
       contrapose hb
       exact p.primeCompl.mul_mem hb ha
   · right
     refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
-      rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
+      rw [mem_colon_singleton, mem_bot] at hb ⊢
       rw [← map_smul, hb, map_zero]
-    · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul, ← LinearMap.mem_ker,
+    · rw [mem_colon_singleton, mem_bot, ← map_smul, ← LinearMap.mem_ker,
         hfg.linearMap_ker_eq] at hb
       obtain ⟨y, hy⟩ := hb
       by_contra H
@@ -179,11 +164,10 @@ theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | ∃ x : M, x ≠ 0 ∧ r • x = 0 } := by
   refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
   · rintro _ ⟨h, x, ⟨⟩⟩ r h'
-    refine ⟨x, ne_of_eq_of_ne (one_smul R x).symm ?_, h'⟩
-    exact (Ideal.ne_top_iff_one _).mp h.ne_top
+    exact ⟨x, by simpa using h.ne_top, by simpa using h'⟩
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
-    exact Set.mem_biUnion hP (hx h')
+    exact Set.mem_biUnion hP (hx (by rwa [mem_colon_singleton]))
 
 theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
@@ -195,8 +179,23 @@ variable {R M}
 theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
     (⊤ : Submodule R M).annihilator ≤ I := by
   obtain ⟨hI, x, rfl⟩ := h
-  rw [← Submodule.annihilator_span_singleton]
-  exact Submodule.annihilator_mono le_top
+  rw [bot_colon']
+  exact annihilator_mono le_top
+
+end Semiring
+
+variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+
+theorem isAssociatedPrime_iff_exists_injective_linearMap :
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ (f : R ⧸ I →ₗ[R] M), Function.Injective f := by
+  rw [IsAssociatedPrime, and_congr_right_iff]
+  refine fun _ ↦ ⟨fun ⟨x, h⟩ ↦ ?_, fun ⟨f, h⟩ ↦ ⟨(f ∘ₗ mkQ I) 1, ?_⟩⟩
+  · replace h : I = ker (toSpanSingleton R M x) := by simp [h, SetLike.ext_iff]
+    exact ⟨liftQ _ _ h.le, ker_eq_bot.mp (ker_liftQ_eq_bot' _ _ h)⟩
+  · conv_lhs => rw [← I.ker_mkQ, ← ker_comp_of_ker_eq_bot (mkQ I) (ker_eq_bot_of_injective h)]
+    simp [SetLike.ext_iff, ← Ideal.Quotient.algebraMap_eq, Algebra.algebraMap_eq_smul_one]
+
+variable {I J M}
 
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
@@ -204,11 +203,11 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
   have : x ≠ 0 := by
     rintro rfl
     apply hJ.1
-    rwa [toSpanSingleton_zero, ker_zero] at e
+    rwa [colon_singleton_zero] at e
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
   replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I := by
     intro y
-    rw [e, mem_ker, toSpanSingleton_apply, ← map_smul, smul_eq_mul, mul_comm,
+    rw [e, mem_colon_singleton, mem_bot, ← map_smul, smul_eq_mul, mul_comm,
       Ideal.Quotient.mkₐ_eq_mk, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero]
   apply le_antisymm
   · intro y hy

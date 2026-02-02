@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # The Ruzsa-Szemerédi problem

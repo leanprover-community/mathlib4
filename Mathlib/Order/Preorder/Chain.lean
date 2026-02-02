@@ -193,7 +193,7 @@ end Rel
 
 section Total
 
-variable [IsRefl α r]
+variable [Std.Refl r]
 
 theorem IsChain.total (h : IsChain r s) (hx : x ∈ s) (hy : y ∈ s) : x ≺ y ∨ y ≺ x :=
   (eq_or_ne x y).elim (fun e => Or.inl <| e ▸ refl _) (h hx hy)
@@ -325,6 +325,8 @@ instance : SetLike (Flag α) α where
     cases s
     cases t
     congr
+
+instance : PartialOrder (Flag α) := .ofSetLike (Flag α) α
 
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=

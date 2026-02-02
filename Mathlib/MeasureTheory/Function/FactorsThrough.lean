@@ -20,7 +20,7 @@ This is the content of the [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doo
 see `exists_eq_measurable_comp`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

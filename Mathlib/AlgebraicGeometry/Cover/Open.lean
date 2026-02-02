@@ -212,8 +212,8 @@ def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R
 /-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
 def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
     𝓤.affineRefinement.openCover ⟶ 𝓤 where
-  idx j := j.fst
-  app j := (𝓤.X j.fst).affineCover.f _
+  s₀ j := j.fst
+  h₀ j := (𝓤.X j.fst).affineCover.f _
 
 /-- If two global sections agree after restriction to each member of an open cover, then
 they agree globally. -/
@@ -222,7 +222,7 @@ lemma OpenCover.ext_elem {X : Scheme.{u}} {U : X.Opens} (f g : Γ(X, U)) (𝒰 :
   fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
     (fun i ↦ (𝒰.f (𝒰.idx i)).opensRange ⊓ U) _ (fun _ ↦ homOfLE inf_le_right)
   · intro x hx
-    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Hom.coe_opensRange, Opens.coe_mk,
+    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Hom.coe_opensRange, Opens.mem_mk,
       Set.mem_iUnion, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe, exists_and_right]
     refine ⟨?_, hx⟩
     simpa using ⟨_, 𝒰.covers x⟩

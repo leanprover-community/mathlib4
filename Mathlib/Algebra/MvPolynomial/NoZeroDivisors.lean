@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+public import Mathlib.Algebra.MvPolynomial.Division
 
 /-!
 # Multivariate polynomials over integral domains
@@ -17,7 +18,7 @@ that hold when the coefficient (semi)ring has no zero divisors.
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Equiv
 

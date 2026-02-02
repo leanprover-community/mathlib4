@@ -160,6 +160,15 @@ theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
 
+@[simp] lemma toSubsemiring_top : (⊤ : Subring R).toSubsemiring = ⊤ := rfl
+@[simp] lemma toAddSubgroup_top : (⊤ : Subring R).toAddSubgroup = ⊤ := rfl
+
+@[simp] lemma toSubsemiring_eq_top {S : Subring R} : S.toSubsemiring = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
+@[simp] lemma toAddSubgroup_eq_top {S : Subring R} : S.toAddSubgroup = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
+
 /-- The ring equiv between the top element of `Subring R` and `R`. -/
 @[simps!]
 def topEquiv : (⊤ : Subring R) ≃+* R :=
@@ -1074,6 +1083,16 @@ instance center.smulCommClass_left : SMulCommClass (center R) R R :=
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_right : SMulCommClass R (center R) R :=
   Subsemiring.center.smulCommClass_right
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass R (Subring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+/-- The center of a semiring acts commutatively on any `R`-module -/
+instance {M : Type*} [MulAction R M] :
+    SMulCommClass (Subring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
 end Subring
 

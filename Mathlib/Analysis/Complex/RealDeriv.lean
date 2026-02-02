@@ -16,7 +16,7 @@ then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the 
 complex derivative.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
 

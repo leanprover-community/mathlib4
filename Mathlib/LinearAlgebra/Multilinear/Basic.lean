@@ -6,13 +6,13 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
+
 
 /-!
 # Multilinear maps
@@ -397,6 +397,31 @@ theorem comp_linearEquiv_eq_zero_iff (g : MultilinearMap R M₁' M₂) (f : ∀ 
     (g.compLinearMap fun i => (f i : M₁ i →ₗ[R] M₁' i)) = 0 ↔ g = 0 := by
   set f' := fun i => (f i : M₁ i →ₗ[R] M₁' i)
   rw [← zero_compLinearMap f', compLinearMap_inj f' fun i => (f i).surjective]
+
+
+section compMultilinear
+
+variable {β : ι → Type*}
+variable {N : (i : ι) → (b : β i) → Type*}
+variable [∀ i, ∀ b, AddCommMonoid (N i b)] [∀ i, ∀ b, Module R (N i b)]
+
+/-- Composition of multilinear maps. If `g` is multilinear, and if for every `i : ι`, we have a
+multilinear map `f i` with index type `β i`, then `m ↦ g (f₁ m_11 m_12 ...) (f₂ m_21 m_22 ...) ...`
+is multilinear with index type `(Σ i, β i)`. -/
+@[simps]
+def compMultilinearMap (g : MultilinearMap R M₁ M₂) (f : (i : ι) → MultilinearMap R (N i) (M₁ i)) :
+    MultilinearMap R (fun j : Σ i, β i ↦ N j.fst j.snd) M₂ where
+  toFun m := g fun i ↦ f i (Sigma.curry m i)
+  map_update_add' {hDecEqSigma} := by
+    classical
+    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+      Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
+  map_update_smul' {hDecEqSigma} := by
+    classical
+    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+      Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
+
+end compMultilinear
 
 end
 
@@ -867,8 +892,8 @@ addition and scalar multiplication. -/
 instance : Module S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
 
-instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) :=
-  coe_injective.noZeroSMulDivisors _ rfl coe_smul
+instance [Module.IsTorsionFree S M₂] : Module.IsTorsionFree S (MultilinearMap R M₁ M₂) :=
+  coe_injective.moduleIsTorsionFree _ coe_smul
 
 variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
 
@@ -1076,7 +1101,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     intro _ f i f₁ f₂
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
-        (g fun j ↦ update f i f₁ j <|x j) + g fun j ↦ update f i f₂ j (x j)
+        (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
     convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
     · exact Function.apply_update c f i (f₁ + f₂) j

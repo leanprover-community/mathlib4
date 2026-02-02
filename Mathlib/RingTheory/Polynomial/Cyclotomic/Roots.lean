@@ -32,7 +32,7 @@ To prove `Polynomial.cyclotomic.irreducible`, the irreducibility of `cyclotomic 
 primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial
