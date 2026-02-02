@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 
@@ -26,7 +27,7 @@ namespace CategoryTheory.Over
 
 open Functor Limits CartesianMonoidalCategory
 
-variable {C : Type*} [Category C] [HasPullbacks C]
+variable {C : Type*} [Category* C] [HasPullbacks C]
 
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
 abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
@@ -35,9 +36,6 @@ abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
     fun Y Z ↦ ⟨pullbackConeEquivBinaryFan.functor.obj (pullback.cone Y.hom Z.hom),
     (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor⟩
-
-@[deprecated (since := "2025-05-15")]
-noncomputable alias chosenFiniteProducts := cartesianMonoidalCategory
 
 attribute [local instance] cartesianMonoidalCategory
 

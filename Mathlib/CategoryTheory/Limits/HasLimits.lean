@@ -444,7 +444,7 @@ theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] 
   apply hasLimit_of_iso (e.invFunIdAssoc F)
 
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
--- are proved in `CategoryTheory/Adjunction/Limits.lean`.
+-- are proved in `Mathlib/CategoryTheory/Adjunction/Limits.lean`.
 section LimFunctor
 
 variable [HasLimitsOfShape J C]
@@ -706,7 +706,7 @@ However, since `Category.assoc` is a `@[simp]` lemma, often expressions are
 right associated, and it's hard to apply these lemmas about `colimit.ι`.
 
 We thus use `reassoc` to define additional `@[simp]` lemmas, with an arbitrary extra morphism.
-(see `Tactic/reassoc_axiom.lean`)
+(see `Mathlib/Tactic/CategoryTheory/Reassoc.lean`)
 -/
 @[reassoc (attr := simp)]
 theorem colimit.ι_desc {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
@@ -891,8 +891,7 @@ def colimit.pre : colimit (E ⋙ F) ⟶ colimit F :=
 
 @[reassoc (attr := simp)]
 theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = colimit.ι F (E.obj k) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.pre]
 
 @[reassoc (attr := simp)]
 theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :

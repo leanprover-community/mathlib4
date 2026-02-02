@@ -247,7 +247,6 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
         ((pullback C f).obj F).map (homOfLE hV).op ≫ φ =
       ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
         ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ) : φ = ψ := by
-  obtain ⟨U⟩ := U
   apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pushforwardPullbackAdjunction, Functor.lanAdjunction_unit]
@@ -258,7 +257,7 @@ lemma pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) (V : Opens Y)
     (hV : U ≤ (Opens.map f).obj V) :
     ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
-      ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx  =
+      ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx =
         F.germ _ (f x) (hV hx) := by
   simpa [pushforwardPullbackAdjunction] using
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
@@ -345,13 +344,13 @@ theorem germ_stalkSpecializes (F : X.Presheaf C)
   colimit.ι_desc _ _
 
 @[simp]
-theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
+theorem stalkSpecializes_refl {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
   simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
+theorem stalkSpecializes_comp {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
@@ -373,7 +372,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
-def stalkCongr {X : TopCat} {C : Type*} [Category C] [HasColimits C] (F : X.Presheaf C) {x y : X}
+def stalkCongr {X : TopCat} {C : Type*} [Category* C] [HasColimits C] (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
 
@@ -481,7 +480,7 @@ theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : ToType (F.1.obj (op U))
   -- neighborhoods form a cover of `U`.
   apply F.eq_of_locally_eq' V U i₁
   · intro x hxU
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
   · intro x
     rw [heq, Subsingleton.elim (i₁ x) (i₂ x)]
@@ -555,7 +554,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   -- These neighborhoods clearly cover all of `U`.
   have V_cover : U ≤ iSup V := by
     intro x hxU
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, mV ⟨x, hxU⟩⟩
   suffices IsCompatible F.val V sf by
     -- Since `F` is a sheaf, we can glue all the local preimages together to get a global preimage.

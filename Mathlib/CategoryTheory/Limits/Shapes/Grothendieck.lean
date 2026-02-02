@@ -40,27 +40,27 @@ variable (G : Grothendieck F ⥤ H)
 
 noncomputable section
 
-variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F Y ⋙ G)]
+variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit ((F.map f).toFunctor ⋙ Grothendieck.ι F Y ⋙ G)]
 
 @[local instance]
 lemma hasColimit_ι_comp : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
-  fun X => hasColimit_of_iso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
+  fun X => hasColimit_of_iso (F := (F.map (𝟙 _)).toFunctor ⋙ Grothendieck.ι F X ⋙ G) <|
     (leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
-    (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
+    (isoWhiskerRight (eqToIso congr($((F.map_id X).symm).toFunctor)) (Grothendieck.ι F X ⋙ G))
 
 /-- A functor taking a colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
 @[simps]
 def fiberwiseColimit : C ⥤ H where
   obj X := colimit (Grothendieck.ι F X ⋙ G)
   map {X Y} f := colimMap (whiskerRight (Grothendieck.ιNatTrans f) G ≫
-    (associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f)
+    (associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f).toFunctor
   map_id X := by
     ext d
     simp only [Functor.comp_obj, Grothendieck.ιNatTrans, Grothendieck.ι_obj, ι_colimMap_assoc,
       NatTrans.comp_app, whiskerRight_app, Functor.associator_hom_app, Category.comp_id,
       colimit.ι_pre]
     conv_rhs => rw [← colimit.eqToHom_comp_ι (Grothendieck.ι F X ⋙ G)
-      (j := (F.map (𝟙 X)).obj d) (by simp)]
+      (j := (F.map (𝟙 X)).toFunctor.obj d) (by simp)]
     rw [← eqToHom_map G (by simp), Grothendieck.eqToHom_eq]
     rfl
   map_comp {X Y Z} f g := by
@@ -70,7 +70,7 @@ def fiberwiseColimit : C ⥤ H where
       colimit.ι_pre_assoc]
     rw [← Category.assoc, ← G.map_comp]
     conv_rhs => rw [← colimit.eqToHom_comp_ι (Grothendieck.ι F Z ⋙ G)
-      (j := (F.map (f ≫ g)).obj d) (by simp)]
+      (j := (F.map (f ≫ g)).toFunctor.obj d) (by simp)]
     rw [← Category.assoc, ← eqToHom_map G (by simp), ← G.map_comp, Grothendieck.eqToHom_eq]
     congr 2
     fapply Grothendieck.ext
@@ -78,7 +78,7 @@ def fiberwiseColimit : C ⥤ H where
         Category.comp_id]
     · simp only [Grothendieck.ι_obj, eqToHom_refl,
         Grothendieck.comp_base, Category.comp_id, Grothendieck.comp_fiber, Functor.map_id]
-      conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z))]
+      conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z)).toFunctor]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
 -- TODO: find a good way to fix the linter; simp cannot be combined with the subsequent apply
@@ -157,7 +157,7 @@ def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G 
           rw [← colimit.w _ g, ← Category.assoc, Functor.comp_map, ← G.map_comp]
           congr <;> simp }
 
-/-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, than the induced cocone
+/-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, then the induced cocone
 `coconeOfFiberwiseCocone G c` -/
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where

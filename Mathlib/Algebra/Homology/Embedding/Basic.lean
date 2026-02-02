@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.ByContra
+public import Mathlib.Tactic.Push
 
 /-! # Embeddings of complex shapes
 
@@ -223,7 +223,7 @@ def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
 
 instance : embeddingDownNat.IsTruncLE where
-  mem_prev {i j} h := ⟨j + 1, by dsimp at h ⊢; omega⟩
+  mem_prev {i j} h := ⟨j + 1, by dsimp at h ⊢; lia⟩
 
 variable (p : ℤ)
 
@@ -237,7 +237,7 @@ def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
 instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
 
 instance : (embeddingUpIntGE p).IsTruncGE where
-  mem_next {j _} h := ⟨j + 1, by dsimp at h ⊢; omega⟩
+  mem_next {j _} h := ⟨j + 1, by dsimp at h ⊢; lia⟩
 
 /-- The embedding from `down ℕ` to `up ℤ` which sends `n : ℕ` to `p - n`. -/
 @[simps!]
@@ -249,32 +249,26 @@ def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
 instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
 
 instance : (embeddingUpIntLE p).IsTruncLE where
-  mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
+  mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; lia⟩
 
 lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
   constructor
   · intro h
-    by_contra!
+    by_contra
     exact h (p - n).natAbs (by simp; lia)
   · intros
     dsimp
     lia
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
-
 lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
   constructor
   · intro h
-    by_contra!
+    by_contra
     exact h (n - p).natAbs (by simp; lia)
   · intros
     dsimp
     lia
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff
 
 end ComplexShape

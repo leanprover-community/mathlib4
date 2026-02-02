@@ -160,7 +160,7 @@ theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
 theorem plusMap_zero [Preadditive D] (P Q : Cᵒᵖ ⥤ D) : J.plusMap (0 : P ⟶ Q) = 0 := by
   ext : 2
   refine colimit.hom_ext (fun S => ?_)
-  erw [comp_zero, colimit.ι_map, J.diagramNatTrans_zero, zero_comp]
+  simp [plusMap]
 
 @[simp, reassoc]
 theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :

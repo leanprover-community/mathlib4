@@ -101,7 +101,7 @@ jobs:
       - if: ${{ steps.merge_or_delegate.outputs.secrets == '' &&
           (! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '') }}
         name: Upload artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: workflow-data
           path: artifact-data.json
@@ -166,7 +166,7 @@ jobs:
           (! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' )) }}
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.x'
 
@@ -183,7 +183,7 @@ jobs:
           (! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' )) }}
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: master
           sparse-checkout: |

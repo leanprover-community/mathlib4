@@ -47,16 +47,16 @@ theorem Sorted.tail (h : Sorted r l) : Sorted r l.tail := Pairwise.tail h
 
 @[deprecated rel_of_pairwise_cons (since := "2025-10-11")]
 theorem rel_of_sorted_cons (p : Sorted r (a :: l))
-  {a' : α} : a' ∈ l → r a a':= rel_of_pairwise_cons p
+  {a' : α} : a' ∈ l → r a a' := rel_of_pairwise_cons p
 
 @[deprecated pairwise_cons (since := "2025-10-11")]
 theorem sorted_cons : Sorted r (a :: l) ↔ (∀ a' ∈ l, r a a') ∧ Sorted r l := pairwise_cons
 
 @[deprecated Pairwise.filter (since := "2025-10-11")]
-theorem Sorted.filter (p : α → Bool) : Sorted r l →  Sorted r (filter p l) := Pairwise.filter p
+theorem Sorted.filter (p : α → Bool) : Sorted r l → Sorted r (filter p l) := Pairwise.filter p
 
 @[deprecated pairwise_singleton (since := "2025-10-11")]
-theorem sorted_singleton (r) (a : α) :  Sorted r [a] := pairwise_singleton r a
+theorem sorted_singleton (r) (a : α) : Sorted r [a] := pairwise_singleton r a
 
 @[deprecated Pairwise.rel_of_mem_take_of_mem_drop (since := "2025-10-11")]
 theorem Sorted.rel_of_mem_take_of_mem_drop {x y i} (h : Sorted r l)

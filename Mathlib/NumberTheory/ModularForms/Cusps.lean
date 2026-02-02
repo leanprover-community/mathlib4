@@ -96,6 +96,27 @@ lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
 @[deprecated (since := "2025-09-17")]
 alias Commensurable.isCusp_iff := Subgroup.Commensurable.isCusp_iff
 
+lemma IsCusp.mono {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ} (hGH : 𝒢 ≤ ℋ)
+    (hc : IsCusp c 𝒢) : IsCusp c ℋ :=
+  match hc with | ⟨h, hh, hp, hc⟩ => ⟨h, hGH hh, hp, hc⟩
+
+lemma IsCusp.of_isFiniteRelIndex {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ}
+    [𝒢.IsFiniteRelIndex ℋ] (hc : IsCusp c ℋ) : IsCusp c 𝒢 := by
+  have hGH : 𝒢.relIndex ℋ ≠ 0 := 𝒢.relIndex_ne_zero
+  rw [← Subgroup.inf_relIndex_right] at hGH
+  rw [← isCusp_iff_of_relIndex_ne_zero inf_le_right hGH] at hc
+  exact hc.mono inf_le_left
+
+open Pointwise in
+/-- Variant version of `IsCusp.of_isFiniteRelIndex`. -/
+lemma IsCusp.of_isFiniteRelIndex_conj {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ}
+    [𝒢.IsFiniteRelIndex ℋ] (hc : IsCusp c ℋ) {h} (hh : h ∈ ℋ) :
+    IsCusp c (ConjAct.toConjAct h • 𝒢) := by
+  suffices (ConjAct.toConjAct h • 𝒢).IsFiniteRelIndex ℋ from hc.of_isFiniteRelIndex
+  constructor
+  rw [← ℋ.conjAct_pointwise_smul_eq_self (ℋ.le_normalizer hh), 𝒢.relIndex_pointwise_smul]
+  exact 𝒢.relIndex_ne_zero
+
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
 lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
   constructor
@@ -224,7 +245,7 @@ lemma strictPeriods_le_periods : 𝒢.strictPeriods ≤ 𝒢.periods := by
 
 /-- A subgroup is *regular at ∞* if its periods and strict periods coincide. -/
 def IsRegularAtInfty : Prop :=
-    𝒢.strictPeriods = 𝒢.periods
+  𝒢.strictPeriods = 𝒢.periods
 
 lemma IsRegularAtInfty.eq (h : 𝒢.IsRegularAtInfty) : 𝒢.strictPeriods = 𝒢.periods := h
 

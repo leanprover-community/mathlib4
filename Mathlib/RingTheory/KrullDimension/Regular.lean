@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
   `dim M/(r₁, …, rₙ)M + n = dim M`.
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 
@@ -110,15 +110,27 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson {x : R} (reg : Is
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson
     (fun _ ↦ reg.notMem_of_mem_minimalPrimes) hx
 
+lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
+    ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
+  rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
+  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
+    ((annihilator R R).ringJacobson_le_jacobson hx)
+
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
     ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
-  have h := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
-  simp only [smul_eq_mul, mul_top] at h
+  have h : span {x} = x • (⊤ : Ideal R) := by simp [← Submodule.ideal_span_singleton_smul]
   rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R h).toRingEquiv,
-    ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
-  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
-    ((annihilator R R).ringJacobson_le_jacobson hx)
+    ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg hx]
+
+/-- If `r` is a nonzerodivisor contained in an ideal of maximal height,
+`dim (R / (r)) + 1 = dim R`. -/
+lemma ringKrullDim_quotient_add_one_of_mem_nonZeroDivisors {r : R} (hr : r ∈ nonZeroDivisors R)
+    {p : Ideal R} [p.IsPrime] (h : p.height = ringKrullDim R) (hp : r ∈ p) :
+    ringKrullDim (R ⧸ span {r}) + 1 = ringKrullDim R := by
+  refine le_antisymm (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hr) (h ▸ ?_)
+  exact Ideal.height_le_ringKrullDim_quotient_add_one hp
 
 variable [IsLocalRing R]
 
@@ -128,6 +140,25 @@ variable [IsLocalRing R]
 theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
     supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 :=
   supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson ((maximalIdeal_le_jacobson _) hx)
+
+lemma _root_.ringKrullDim_le_ringKrullDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
+  rw [← Module.supportDim_self_eq_ringKrullDim, ← Module.supportDim_quotient_eq_ringKrullDim]
+  exact supportDim_le_supportDim_quotSMulTop_succ hx
+
+@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_card (since := "2026-01-12")]
+lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
+    (hS : (S : Set R) ⊆ maximalIdeal R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (SetLike.coe S)) + S.card := by
+  apply ringKrullDim_le_ringKrullDim_quotient_add_card
+  rwa [IsLocalRing.ringJacobson_eq_maximalIdeal]
+
+@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (since := "2026-01-12")]
+lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
+  apply ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank
+  rw [IsLocalRing.ringJacobson_eq_maximalIdeal]
+  exact le_maximalIdeal h
 
 @[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
@@ -139,6 +170,11 @@ theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIde
 theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
     (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg ((maximalIdeal_le_jacobson _) hx)
+
+lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
+    (hx : x ∈ maximalIdeal R) : ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R :=
+  ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
+    simpa [ringJacobson_eq_maximalIdeal R]
 
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ maximalIdeal R) :

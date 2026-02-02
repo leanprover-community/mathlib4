@@ -43,7 +43,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X X' : SimplicialObject C}
 
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
@@ -72,7 +72,7 @@ theorem decomposition_Q (n q : ℕ) :
       let q' : Fin (n + 1) := ⟨q, Nat.lt_succ_of_le hqn⟩
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
-      · have hnaq' : n = a + q := by omega
+      · have hnaq' : n = a + q := by lia
         simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq', q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩

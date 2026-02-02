@@ -6,7 +6,6 @@ Authors: Jakob von Raumer, Kevin Klinge
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 
@@ -30,21 +29,23 @@ namespace OreLocalization
 
 /-- Cancellability in monoids with zeros can act as a replacement for the `ore_right_cancel`
 condition of an ore set. -/
-def oreSetOfCancelMonoidWithZero {R : Type*} [CancelMonoidWithZero R] {S : Submonoid R}
-    (oreNum : R → S → R) (oreDenom : R → S → S)
+def oreSetOfIsCancelMulZero {R : Type*} [MonoidWithZero R] [IsCancelMulZero R]
+    {S : Submonoid R} (oreNum : R → S → R) (oreDenom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), oreDenom r s * r = oreNum r s * s) : OreSet S :=
   { ore_right_cancel := fun _ _ s h => ⟨s, mul_eq_mul_left_iff.mpr (mul_eq_mul_right_iff.mp h)⟩
     oreNum
     oreDenom
     ore_eq }
 
+@[deprecated (since := "2026-01-12")] alias oreSetOfCancelMonoidWithZero := oreSetOfIsCancelMulZero
+
 /-- In rings without zero divisors, the first (cancellability) condition is always fulfilled,
 it suffices to give a proof for the Ore condition itself. -/
 def oreSetOfNoZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R] {S : Submonoid R}
     (oreNum : R → S → R) (oreDenom : R → S → S)
     (ore_eq : ∀ (r : R) (s : S), oreDenom r s * r = oreNum r s * s) : OreSet S :=
-  letI : CancelMonoidWithZero R := NoZeroDivisors.toCancelMonoidWithZero
-  oreSetOfCancelMonoidWithZero oreNum oreDenom ore_eq
+  letI : IsCancelMulZero R := NoZeroDivisors.toIsCancelMulZero
+  oreSetOfIsCancelMulZero oreNum oreDenom ore_eq
 
 lemma nonempty_oreSet_iff {R : Type*} [Monoid R] {S : Submonoid R} :
     Nonempty (OreSet S) ↔ (∀ (r₁ r₂ : R) (s : S), r₁ * s = r₂ * s → ∃ s' : S, s' * r₁ = s' * r₂) ∧

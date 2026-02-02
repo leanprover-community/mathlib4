@@ -75,7 +75,7 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Type*}
 
 /-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
 def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i)
-  |     [],  _ => [List.Pi.nil α]
+  | [], _ => [List.Pi.nil α]
   | i :: l, fs => (fs i).flatMap (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
 
 @[simp] lemma pi_nil (t : ∀ i, List (α i)) :

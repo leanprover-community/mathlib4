@@ -13,7 +13,7 @@ public import Mathlib.Probability.Independence.Basic
 
 Two random variables are independent if and only if their joint characteristic function is equal
 to the product of the characteristic functions. More specifically, prove this in Hilbert spaces for
-two variables and a finite family of variables. We prove the analoguous statemens in Banach spaces,
+two variables and a finite family of variables. We prove the analogous statements in Banach spaces,
 with an arbitrary Lp norm, for the dual characteristic function.
 -/
 
@@ -108,7 +108,7 @@ variable [∀ i, InnerProductSpace ℝ (E i)]
 
 /-- A finite number of random variables are independent if and only if their joint characteristic
 function is equal to the product of the characteristic functions. This is the version for Hilbert
-spaces, see `iIndepFun_iff_charFunDual_pi` for the Hilbert space version. -/
+spaces, see `iIndepFun_iff_charFunDual_pi` for the Banach space version. -/
 lemma iIndepFun_iff_charFun_pi (hX : ∀ i, AEMeasurable (X i) P) :
     iIndepFun X P ↔ ∀ t, charFun (P.map (fun ω ↦ toLp 2 (X · ω))) t =
       ∏ i, charFun (P.map (X i)) (t i) := by

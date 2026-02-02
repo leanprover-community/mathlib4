@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
 # Non-linear maps close to affine maps
@@ -233,7 +233,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
                   · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          replace Jcf' : (1:ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
+          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
           simp [field, pow_succ, -mul_eq_mul_left_iff]
           ring
     refine ⟨?_, Ign⟩
