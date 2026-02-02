@@ -536,6 +536,12 @@ instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebr
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
   show Subsingleton ((⊥ : LieSubalgebra R L) : Set L) by simp
 
+variable {K K'} in
+@[simp] lemma disjoint_toSubmodule :
+    Disjoint (K : Submodule R L) (K' : Submodule R L) ↔ Disjoint K K' := by
+  rw [disjoint_iff, disjoint_iff, ← toSubmodule_inj, inf_toSubmodule, bot_toSubmodule,
+    ← disjoint_iff]
+
 variable (R L)
 
 instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
@@ -712,6 +718,19 @@ theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
       smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
       lie_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ _ hpx hpy⟩ }
   exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[simp] lemma lieSpan_neg : lieSpan R L (-s) = lieSpan R L s := by
+  suffices ∀ s : Set L, lieSpan R L (-s) ≤ lieSpan R L s by
+    apply le_antisymm (this s)
+    convert this (-s)
+    simp
+  intro s x hx
+  induction hx using lieSpan_induction with
+  | mem y h => exact neg_mem_iff.mp <| subset_lieSpan <| Set.mem_neg.mp h
+  | zero => exact zero_mem _
+  | add _ _ _ _ hu hv => exact add_mem hu hv
+  | smul t _ _ hu => exact SMulMemClass.smul_mem t hu
+  | lie _ _ _ _ hu hv => exact lie_mem _ hu hv
 
 end LieSpan
 

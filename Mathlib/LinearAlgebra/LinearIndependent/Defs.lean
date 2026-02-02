@@ -702,6 +702,18 @@ variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
 variable {v : ι → M} {i : ι}
 
+theorem LinearIndependent.neg (hv : LinearIndependent R v) : LinearIndependent R (-v) := by
+  intro f g h
+  simp only [Finsupp.linearCombination_apply, Pi.neg_apply, smul_neg, Finsupp.sum_neg, neg_inj] at h
+  ext m
+  exact DFunLike.congr_fun (hv h) m
+
+@[simp] theorem linearIndependent_neg_iff :
+    LinearIndependent R (-v) ↔ LinearIndependent R v := by
+  refine ⟨fun h ↦ ?_, LinearIndependent.neg⟩
+  convert h.neg
+  simp
+
 theorem linearIndependent_iff_ker :
     LinearIndependent R v ↔ LinearMap.ker (Finsupp.linearCombination R v) = ⊥ :=
   LinearMap.ker_eq_bot.symm

@@ -748,6 +748,7 @@ instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
 theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
   rfl
 
+@[simp]
 theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
   rfl
 
@@ -781,6 +782,11 @@ instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
   ⟨{  toFun := 0
       map_add' := by simp
       map_smul' := by simp }⟩
+
+@[simp] lemma coe_zero_iff (f : M →ₛₗ[σ₁₂] M₂) : ⇑f = 0 ↔ f = 0 := by
+  change _ ↔ f = ⟨⟨0, _⟩, _⟩
+  obtain ⟨⟨f, -⟩, -⟩ := f
+  simp
 
 @[simp]
 theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
@@ -846,6 +852,8 @@ instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
     { toFun := -f
       map_add' := by simp [add_comm]
       map_smul' := by simp }⟩
+
+@[simp] protected theorem coe_neg (f : M →ₛₗ[σ₁₂] N₂) : ⇑(-f) = -⇑f := rfl
 
 @[simp]
 theorem neg_apply (f : M →ₛₗ[σ₁₂] N₂) (x : M) : (-f) x = -f x :=
