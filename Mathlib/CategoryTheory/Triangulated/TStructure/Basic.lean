@@ -179,11 +179,14 @@ lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n wh
 lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
   ge := (t.ge n).prop_of_iso e (t.ge_of_isGE X n)
 
-lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsLE X p] : t.IsLE X q where
+lemma isLE_of_le (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsLE X p] : t.IsLE X q where
   le := le_monotone t hpq _ (t.le_of_isLE X p)
 
-lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsGE X q] : t.IsGE X p where
+lemma isGE_of_ge (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsGE X q] : t.IsGE X p where
   ge := ge_antitone t hpq _ (t.ge_of_isGE X q)
+
+@[deprecated (since := "2026-01-30")] alias isLE_of_LE := isLE_of_le
+@[deprecated (since := "2026-01-30")] alias isGE_of_GE := isGE_of_ge
 
 lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) [t.IsLE X n] :
     t.IsLE (X⟦a⟧) n' :=
@@ -223,7 +226,7 @@ lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁ := by lia)
     [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 := by
   have := t.isLE_shift X n₀ n₀ 0 (add_zero n₀)
   have := t.isGE_shift Y n₁ n₀ (n₁ - n₀)
-  have := t.isGE_of_GE (Y⟦n₀⟧) 1 (n₁ - n₀)
+  have := t.isGE_of_ge (Y⟦n₀⟧) 1 (n₁ - n₀)
   apply (shiftFunctor C n₀).map_injective
   simp only [Functor.map_zero]
   apply t.zero'
