@@ -43,17 +43,17 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
-variable {Ω β : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {ι Ω β : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 /-!
 ### One-sided martingale bound
 -/
 
 /-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
-noncomputable def leastGE {ι : Type*} [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
+noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
   hittingAfter f (Set.Ici r) ⊥
 
-theorem StronglyAdapted.isStoppingTime_leastGE {ι : Type*} [ConditionallyCompleteLinearOrderBot ι]
+theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
     {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
     [Preorder β] [ClosedIciTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
     [MeasurableSpace β] [BorelSpace β]
@@ -63,7 +63,8 @@ theorem StronglyAdapted.isStoppingTime_leastGE {ι : Type*} [ConditionallyComple
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
-noncomputable def stoppedAbove (f : ℕ → Ω → ℝ) (r : ℝ) : ℕ → Ω → ℝ :=
+noncomputable def stoppedAbove [LinearOrder ι] [OrderBot ι] [InfSet ι] [Preorder β]
+    (f : ι → Ω → β) (r : β) : ι → Ω → β :=
   stoppedProcess f (leastGE f r)
 
 variable {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
