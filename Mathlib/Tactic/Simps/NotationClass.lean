@@ -103,8 +103,8 @@ deriving Inhabited
 
 /-- `@[notation_class]` attribute. Note: this is *not* a `NameMapAttribute` because we key on the
 argument of the attribute, not the declaration name. -/
-initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
-  let ext ← registerNameMapExtension AutomaticProjectionData
+initialize notationClassAttr : MapDeclarationExtension AutomaticProjectionData ← do
+  let ext ← mkMapDeclarationExtension
   registerBuiltinAttribute {
     name := `notation_class
     descr := "An attribute specifying that this is a notation class. Used by @[simps]."
@@ -122,7 +122,7 @@ initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
         | some declInfo =>
           unless ← MetaM.run' <| isDefEq declInfo.type (mkConst ``findArgType) do
             throwError "declaration {findArgs} has wrong type"
-        ext.add projName ⟨src, coercion.isNone, findArgs⟩
+        modifyEnv (ext.insert · projName ⟨src, coercion.isNone, findArgs⟩)
       | _ => throwUnsupportedSyntax }
   return ext
 

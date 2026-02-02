@@ -417,8 +417,8 @@ structure, used by the `@[simps]` attribute.
 - The first argument is the list of names of the universe variables used in the structure
 - The second argument is an array that consists of the projection data for each projection.
 -/
-initialize structureExt : NameMapExtension (List Name × Array ProjectionData) ←
-  registerNameMapExtension (List Name × Array ProjectionData)
+initialize structureExt : MapDeclarationExtension (List Name × Array ProjectionData) ←
+  mkMapDeclarationExtension
 
 /-- Projection data used internally in `getRawProjections`. -/
 structure ParsedProjectionData where
@@ -809,7 +809,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
     CoreM (List Name × Array ProjectionData) := do
   withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   let env ← getEnv
-  if let some data := (structureExt.getState env).find? str then
+  if let some data := structureExt.find? env str then
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
     withOptions (fun o => if traceIfExists then o.set `trace.simps.verbose true else o) do
@@ -835,7 +835,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
     | true => pure { proj with isDefault := false }
     | false => pure proj
   trace[simps.verbose] projectionsInfo projs.toList "generated projections for" str
-  structureExt.add str (rawLevels, projs)
+  modifyEnv (structureExt.insert · str (rawLevels, projs))
   trace[simps.debug] "Generated raw projection data:{indentD <| toMessageData (rawLevels, projs)}"
   pure (rawLevels, projs)
 
