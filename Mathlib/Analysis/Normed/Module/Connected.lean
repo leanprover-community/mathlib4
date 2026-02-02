@@ -171,8 +171,14 @@ theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
 theorem isPreconnected_ball {x : E} {r : ℝ} : IsPreconnected (ball x r) :=
   (convex_ball _ _).isPreconnected
 
+theorem isPreconnected_eball {x : E} {r : ENNReal} : IsPreconnected (eball x r) :=
+  (convex_eball _ _).isPreconnected
+
 theorem isPreconnected_closedBall {x : E} {r : ℝ} : IsPreconnected (closedBall x r) :=
   (convex_closedBall _ _).isPreconnected
+
+theorem isConnected_closedEBall {x : E} {r : ENNReal} : IsConnected (closedEBall x r) :=
+  (convex_closedEBall _ _).isConnected ⟨x, mem_closedEBall_self⟩
 
 end Metric
 
