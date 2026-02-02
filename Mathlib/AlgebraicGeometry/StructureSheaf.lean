@@ -292,7 +292,9 @@ def const (f g : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, g ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
     (structureSheaf R).1.obj (op U) :=
   ⟨fun x => IsLocalization.mk' _ f ⟨g, hu x x.2⟩, fun x =>
-    ⟨U, x.2, 𝟙 _, f, g, fun y => ⟨hu y y.2, IsLocalization.mk'_spec _ _ _⟩⟩⟩
+    ⟨U, x.2, 𝟙 _, f, g, fun y => ⟨hu y y.2, by
+      dsimp only [Opens.coe_id, id_eq]
+      apply IsLocalization.mk'_spec⟩⟩⟩
 
 @[simp]
 theorem const_apply (f g : R) (U : Opens (PrimeSpectrum.Top R))
