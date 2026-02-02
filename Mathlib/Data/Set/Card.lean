@@ -809,21 +809,19 @@ theorem sep_of_ncard_eq {a : α} {P : α → Prop} (h : { x ∈ s | P x }.ncard 
     (hs : s.Finite := by toFinite_tac) : P a :=
   sep_eq_self_iff_mem_true.mp (eq_of_subset_of_ncard_le (by simp) h.symm.le hs) _ ha
 
-theorem Finite.ncard_lt_ncard (h : s ⊂ t) (ht : t.Finite := by toFinite_tac) :
+theorem ncard_lt_ncard (h : s ⊂ t) (ht : t.Finite := by toFinite_tac) :
     s.ncard < t.ncard := by
   rw [← Nat.cast_lt (α := ℕ∞), ht.cast_ncard_eq, (ht.subset h.subset).cast_ncard_eq]
   exact (ht.subset h.subset).encard_lt_encard h
 
-@[deprecated (since := "2026-02-01")] alias ncard_lt_ncard := Finite.ncard_lt_ncard
-
 theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
-  ncard_univ α ▸ Finite.ncard_lt_ncard (ssubset_univ_iff.mpr h)
+  ncard_univ α ▸ ncard_lt_ncard (ssubset_univ_iff.mpr h)
 
 theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
-  fun _ _ h ↦ Finite.ncard_lt_ncard h
+  fun _ _ h ↦ ncard_lt_ncard h
 
 theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (setOf Set.Finite) :=
-  fun _ _ _ ht hlt ↦ ht.ncard_lt_ncard hlt.ssubset
+  fun _ _ _ ht hlt ↦ ncard_lt_ncard hlt.ssubset ht
 
 theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
     (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a) (hf' : ∀ (i) (h : i < n), f i h ∈ s)
