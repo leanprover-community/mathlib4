@@ -60,7 +60,12 @@ inductive StyleError where
   | semicolon
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
-deriving BEq, Inhabited
+  /-- Unicode variant selectors are used in a bad way.
+  * `s` is the string containing the unicode character and any unicode variant selector following it
+  * `selector` is the desired selector, or `none` if `c` should not be followed by any selector.
+  -/
+  | unicodeVariant (s : String) (selector: Option Char)
+deriving BEq, Inhabited, Repr
 
 /-- How to format style errors -/
 public inductive ErrorFormat
@@ -74,6 +79,7 @@ public inductive ErrorFormat
   | github : ErrorFormat
   deriving BEq
 
+open UnicodeLinter in
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.adaptationNote =>
@@ -83,7 +89,30 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
   | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
-    '{c}' ({UnicodeLinter.printCodepointHex c})."
+    '{c}' ({c.printCodepointHex})."
+  | StyleError.unicodeVariant s selector =>
+    let variantText := if selector == UnicodeVariant.emoji then
+      "emoji"
+    else if selector == UnicodeVariant.text then
+      "text"
+    else
+      "default"
+    let oldHex := s.printCodepointHex
+    match s.toList, selector with
+    | c₀ :: [], some sel =>
+      let newC : String := String.ofList [c₀, sel]
+      let newHex := newC.printCodepointHex
+      s!"Missing unicode variant selector: \"{s}\" ({oldHex}). \
+        Please use the {variantText} variant: \"{newC}\" ({newHex})!"
+    | c₀ :: _ :: [], some sel =>
+      -- by assumption, the second character is a variant selector
+      let newC : String := String.ofList [c₀, sel]
+      let newHex := newC.printCodepointHex
+      s!"Wrong unicode variant selector: \"{s}\" ({oldHex}). \
+        Please use the {variantText} variant: \"{newC}\" ({newHex})!"
+    | _, _ =>
+      s!"Unexpected unicode variant selector: \"{s}\" ({oldHex}). \
+        Consider deleting it."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -94,7 +123,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
-
+  | StyleError.unicodeVariant _ _ => "ERR_UNICODE_VARIANT"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -158,6 +187,11 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
+
+/-- Removes quotation marks '"' at front and back of string. -/
+def removeQuotations (s : String) : String :=
+  ((s.dropPrefix "\"").toString.dropSuffix "\"").toString
+
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
 Used for, e.g., parsing the "exceptions" file.
 
@@ -188,6 +222,19 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
           let str ← errorMessage[7]?
           let c ← String.Pos.Raw.get? str ⟨1⟩ -- take middle character of expected three
           StyleError.unwantedUnicode c
+        | "ERR_UNICODE_VARIANT" => do
+          match (← errorMessage[0]?).toLower with
+          | "wrong" | "missing" =>
+            let offending := removeQuotations (← errorMessage[4]?)
+            let selector := match ← errorMessage[9]? with
+            | "emoji" => UnicodeLinter.UnicodeVariant.emoji
+            | "text" => UnicodeLinter.UnicodeVariant.text
+            | _ => none
+            StyleError.unicodeVariant offending selector
+          | "unexpected" =>
+            let offending := removeQuotations (← errorMessage[4]?)
+            StyleError.unicodeVariant offending none
+          | _ => none
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -304,6 +351,33 @@ termination_by pos.remainingBytes
 def findBadUnicode (s : String) : Array StyleError :=
   findBadUnicodeAux s s.startPos
 
+/-- Looks at two consecutive characters in a string.
+Decides if variant selector rules are violated -/
+def findBadUnicodeVariantSelectorsAux (c₁ c₂ : Char) : Option StyleError :=
+  if c₂ == UnicodeVariant.emoji && !(emojis.contains c₁) then
+      -- bad: emoji variant selector following a non-emoji.
+      some (.unicodeVariant (String.ofList [c₁, c₂]) none)
+  else if c₂ == UnicodeVariant.text && !(nonEmojis.contains c₁) then
+      -- bad: text variant selector following non-text.
+      some (.unicodeVariant (String.ofList [c₁, c₂]) none)
+  else if c₂ != UnicodeVariant.emoji && emojis.contains c₁ then
+      -- bad: missing emoji variant selector.
+      some (.unicodeVariant c₁.toString UnicodeVariant.emoji)
+  else if c₂ != UnicodeVariant.text && nonEmojis.contains c₁ then
+      -- bad: missing text variant selector.
+      some (.unicodeVariant c₁.toString UnicodeVariant.text)
+  else none
+
+/-- Iterate over all consecutive pairs of characters of a `String` -/
+def pairwiseMap {α : Type} (s : String) (f : Char → Char → α) : Array α :=
+  let arr := s.toList.toArray
+  arr.zipWith f (arr.drop 1)
+
+/-- Creates `StyleError`s for bad usage of unicode characters. -/
+@[inline]
+def findBadUnicodeVariantSelectors (s : String) : Array StyleError :=
+  (pairwiseMap s findBadUnicodeVariantSelectorsAux).reduceOption
+
 end UnicodeLinter
 
 /-- Lint a collection of input strings for disallowed unicode characters. -/
@@ -335,12 +409,43 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     lineNumber := lineNumber + 1
   return (errors, if (changed == lines) then none else some changed)
 
+/-- Lint a collection of input strings for incorrect use of unicode variant selectors. -/
+public register_option linter.variantSelectorLinter : Bool := { defValue := true }
+
+@[inherit_doc linter.unicodeLinter]
+def variantSelectorLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.variantSelectorLinter opts do return (#[], none)
+
+  let mut changed : Array String := #[]
+  let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
+  let mut lineNumber := 1 -- one-based line numbers!
+  for line in lines do
+    let err := UnicodeLinter.findBadUnicodeVariantSelectors line
+
+    -- try to auto-fix the style error
+    let mut newLine := line
+    for e in err.reverse do -- reversing is a cheap fix to prevent shifting indices
+      match e with
+      | .unicodeVariant s sel =>
+        let replacement : String := match sel, s.startPos.get? with
+        | none, some c => c.toString
+        | some v, some c => String.ofList [c, v]
+        | _, none => unreachable!
+        newLine := newLine.replace s replacement
+      | _ => unreachable!
+
+    changed := changed.push newLine
+    errors := errors.append (err.map (fun e => (e, lineNumber)))
+    lineNumber := lineNumber + 1
+  return (errors, if (changed == lines) then none else some changed)
+
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
     adaptationNoteLinter,
     semicolonLinter,
     trailingWhitespaceLinter,
     unicodeLinter,
+    variantSelectorLinter
   ]
 
 /-- Read a file and apply all text-based linters.

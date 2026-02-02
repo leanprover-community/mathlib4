@@ -1,5 +1,5 @@
 module
-
+import Batteries.Data.List.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
@@ -655,6 +655,100 @@ private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallo
   simp [isAllowedCharacter, Array.contains] at creplaced
   repeat obtain ⟨_, creplaced⟩ := creplaced
   simp [replaceDisallowed]
+
+
+/- Ensure each character can only be listed in either selector-list.
+Linter logic would need to change in order to allow this. -/
+#guard UnicodeLinter.emojis.toList ∩ UnicodeLinter.nonEmojis.toList = ∅
+
+/-!
+Ensure parsing back error messages in `parse?_errorContext` works.
+-/
+
+-- These test guard against changes in the error message.
+-- Changes to the error message mean the indices in `parse?_errorContext`
+-- need to be adjusted
+
+/-- info: some "'X'" -/
+#guard_msgs in
+#eval (StyleError.errorMessage (.unwantedUnicode 'X') |>.splitToList (· == ' '))[7]?
+
+/-- info: some "Missing" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval ((StyleError.errorMessage (.unicodeVariant "A" (some emoji))).splitToList (· == ' '))[0]?
+
+/-- info: some "Wrong" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval
+  ((StyleError.errorMessage (.unicodeVariant "A\uFE0F" (some emoji))).splitToList (· == ' '))[0]?
+
+/-- info: some "Unexpected" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval ((StyleError.errorMessage (.unicodeVariant "A\uFE0F" none)).splitToList (· == ' '))[0]?
+
+/-- info: some "\"AB\"" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval ((StyleError.errorMessage (.unicodeVariant "AB" (some emoji))).splitToList (· == ' '))[4]?
+
+/-- info: some "\"AB\"" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval
+  ((StyleError.errorMessage (.unicodeVariant "AB" (some emoji))).splitToList (· == ' '))[4]?
+
+/-- info: some "\"AB\"" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval ((StyleError.errorMessage (.unicodeVariant "AB" none)).splitToList (· == ' '))[4]?
+
+/-- info: some "emoji" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval ((StyleError.errorMessage (.unicodeVariant "AB" (some emoji))).splitToList (· == ' '))[9]?
+
+/-- info: some "emoji" -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval
+  ((StyleError.errorMessage (.unicodeVariant "AB" (some emoji))).splitToList (· == ' '))[9]?
+
+/-- info: none -/
+#guard_msgs in
+open UnicodeLinter.UnicodeVariant in
+#eval ((StyleError.errorMessage (.unicodeVariant "AB" none)).splitToList (· == ' '))[9]?
+
+
+-- "missing" variant selector
+#guard ErrorContext.isValid_parse?_error_context {
+  error := .unicodeVariant "\u271d" UnicodeVariant.emoji,
+  lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
+
+#guard ErrorContext.isValid_parse?_error_context {
+  error := .unicodeVariant "\u271d" UnicodeVariant.text,
+  lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
+
+
+-- "wrong" variant selector
+#guard ErrorContext.isValid_parse?_error_context {
+  error := .unicodeVariant "\u271d\uFE0E" UnicodeVariant.emoji,
+  lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
+
+#guard ErrorContext.isValid_parse?_error_context {
+  error := .unicodeVariant "\u271d\uFE0F" UnicodeVariant.text,
+  lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
+
+-- "unexpected" variant selector
+#guard ErrorContext.isValid_parse?_error_context {
+  error := .unicodeVariant "\u271d\uFE0E" none,
+  lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
+
+#guard ErrorContext.isValid_parse?_error_context {
+  error := .unicodeVariant "\u271d\uFE0F" none,
+  lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
 
 end unicodeLinter
 
