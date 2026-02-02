@@ -6,9 +6,9 @@ Authors: Sina Hazratpour
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Chosen pullbacks along a morphism
@@ -79,20 +79,20 @@ def pullbackId (X : C) [ChosenPullbacksAlong (𝟙 X)] :
 
 @[reassoc (attr := simp)]
 theorem unit_pullbackId_hom_app (X : C) [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
-  (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
-    (id X).mapPullbackAdj.unit.app Y := by
+    (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
+      (id X).mapPullbackAdj.unit.app Y := by
   rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom_app]
 
 @[reassoc (attr := simp)]
 theorem unit_pullbackId_hom (X : C) [ChosenPullbacksAlong (𝟙 X)] :
-  (mapPullbackAdj (𝟙 X)).unit ≫ (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
-    (id X).mapPullbackAdj.unit := by
+    (mapPullbackAdj (𝟙 X)).unit ≫ (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
+      (id X).mapPullbackAdj.unit := by
   rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom]
 
 @[reassoc (attr := simp)]
 theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
-  Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
-    (mapPullbackAdj (𝟙 X)).counit := by
+    Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
+      (mapPullbackAdj (𝟙 X)).counit := by
   have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
   rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
 

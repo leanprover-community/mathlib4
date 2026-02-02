@@ -1055,6 +1055,7 @@ section Cover
 
 open Finset Relation
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x ≤ y) :
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.

@@ -9,10 +9,11 @@ public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
-import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Linters for Unused Instances in Types
@@ -182,6 +183,25 @@ def isDecidableVariant (type : Expr) : Bool :=
     n == ``DecidableLE   ||
     n == ``DecidableLT
 
+/-- `withSetOptionIn` currently breaks infotree searches, so we simply set `Bool` options
+until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313). -/
+partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
+  | `(command| set_option $opt:ident $val in $cmd:command) => do
+    match val.raw with
+    | Syntax.atom _ "true"  =>
+      withBoolOption opt.getId true <| withSetBoolOptionIn x cmd
+    | Syntax.atom _ "false" =>
+      withBoolOption opt.getId false <| withSetBoolOptionIn x cmd
+    | _ => withSetBoolOptionIn x cmd
+  | `(command| $_:command in $cmd:command) => withSetBoolOptionIn x cmd
+  | stx => x stx
+where
+  /-- Set a `Bool` option in `CommandElabM`. Ideally, `CommandElabM` would have a
+  `MonadWithOptions` instance to this effect. -/
+  withBoolOption (n : Name) (val : Bool) (k : CommandElabM Unit) : CommandElabM Unit := do
+    let opts := (← getOptions).setBool n val
+    Command.withScope (fun scope => { scope with opts }) k
+
 /--
 The `unusedDecidableInType` linter checks if a theorem's hypotheses include `Decidable*` instances
 which are not used in the remainder of the type. If so, it suggests removing the instances and using
@@ -203,17 +223,8 @@ public register_option linter.unusedDecidableInType : Bool := {
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
 def unusedDecidableInType : Linter where
-  run := /- withSetOptionIn -/ fun cmd => do
-    /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
-    until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313) -/
-    let mut override := false
-    if let `(command| set_option $opt:ident $val in $_:command) := cmd then
-      if opt.getId == `linter.unusedDecidableInType then
-        match val.raw with
-        | Syntax.atom _ "true" => override := true
-        | Syntax.atom _ "false" => return -- exit early
-        | _ => pure () -- invalid option value, should be caught during elaboration
-    unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
+  run := withSetBoolOptionIn fun cmd => do
+    unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
       /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
@@ -232,5 +243,52 @@ def unusedDecidableInType : Linter where
 initialize addLinter unusedDecidableInType
 
 end Decidable
+
+section Fintype
+
+/--
+The `unusedFintypeInType` linter checks if a theorem's hypotheses include `Fintype` instances
+which are not used in the remainder of the type. If so, it suggests modifying the instances to
+`Finite _` and using `Fintype.ofFinite` in the proof, or removing them entirely.
+
+This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
+-/
+public register_option linter.unusedFintypeInType : Bool := {
+  defValue := false
+  descr := "enable the unused `Fintype` instance linter, which lints against `Fintype` \
+    instances in the hypotheses of theorems which are not used in the type, and can therefore be \
+    replaced by a hypothesis of `Finite` or removed entirely."
+}
+
+/-- Detects `Fintype` instance hypotheses in the types of theorems which are not used in the
+remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
+and the use of `Fintype.ofFinite` in the proof. -/
+def unusedFintypeInType : Linter where
+  run := withSetBoolOptionIn fun cmd => do
+    unless getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
+      return
+    -- Cheap early exit if `Fintype` is not imported.
+    unless (← getEnv).isImportedConst `Fintype do
+      return
+    cmd.logUnusedInstancesInTheoremsWhere
+      (·.isAppOrForallOfConst `Fintype)
+      fun _ thm unusedParams => do
+        let importFintypeOfFiniteNote? :=
+          if (← getEnv).isImportedConst `Fintype.ofFinite then none else
+            some <| .note "Add `import Mathlib.Data.Fintype.EquivFin` \
+              to make `Fintype.ofFinite` available."
+        logLint linter.unusedFintypeInType (← getRef) m!"\
+          {thm.name.unusedInstancesMsg unusedParams}\n\n\
+          Consider replacing \
+          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} with the \
+          corresponding {if unusedParams.size = 1 then "instance" else "instances"} of \
+          `{.ofConstName `Finite}` and using \
+          `{.ofConstName `Fintype.ofFinite}` in the proof, or removing \
+          {if unusedParams.size = 1 then "it" else "them"} entirely.\
+          {importFintypeOfFiniteNote?.getD m!""}"
+
+initialize addLinter unusedFintypeInType
+
+end Fintype
 
 end Mathlib.Linter.UnusedInstancesInType

@@ -65,7 +65,7 @@ only that there are finitely many objects.
 
 variable [Finite J]
 
-/-- This follows this proof from
+/-- This follows the proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/
 theorem colimitLimitToLimitColimit_injective :
@@ -152,7 +152,7 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
-/-- This follows this proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
+/-- This follows the proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
 although with different names.
 -/
 theorem colimitLimitToLimitColimit_surjective :

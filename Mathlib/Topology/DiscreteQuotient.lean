@@ -392,8 +392,6 @@ TODO: show that this is precisely those finsets of clopens which form a partitio
 noncomputable
 def equivFinsetClopens [CompactSpace X] := Equiv.ofInjective _ (finsetClopens_inj X)
 
-variable {X}
-
 end DiscreteQuotient
 
 namespace LocallyConstant

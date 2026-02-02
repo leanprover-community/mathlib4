@@ -86,7 +86,7 @@ section Finite
 variable [Finite V]
 
 instance instTop : Top G.Finsubgraph where top := ⟨⊤, finite_univ⟩
-instance instHasCompl : HasCompl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
+instance instCompl : Compl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
 instance instHNot : HNot G.Finsubgraph where hnot G' := ⟨￢G', Set.toFinite _⟩
 instance instHImp : HImp G.Finsubgraph where himp G₁ G₂ := ⟨G₁ ⇨ G₂, Set.toFinite _⟩
 instance instSupSet : SupSet G.Finsubgraph where sSup s := ⟨⨆ G ∈ s, ↑G, Set.toFinite _⟩
