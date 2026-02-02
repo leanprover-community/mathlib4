@@ -499,7 +499,7 @@ lemma max_abv_sum_one_le [CharZero S] (v : AbsoluteValue R S) {ι : Type*} {s : 
 /-- The "local" version of the height bound for arbitrary sums for nonarchimedean
 absolute values. -/
 lemma max_abv_sum_one_le_of_isNonarchimedean {v : AbsoluteValue R S} (hv : IsNonarchimedean v)
-   {ι : Type*} (s : Finset ι) (x : ι → R) :
+    {ι : Type*} (s : Finset ι) (x : ι → R) :
     max (v (∑ i ∈ s, x i)) 1 ≤ ∏ i ∈ s, max (v (x i)) 1 := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
