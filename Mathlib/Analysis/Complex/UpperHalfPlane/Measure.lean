@@ -30,9 +30,9 @@ public noncomputable section
 
 namespace UpperHalfPlane
 
-instance : MeasurableSpace ℍ := Subtype.instMeasurableSpace
+instance : MeasurableSpace ℍ := .comap UpperHalfPlane.coe inferInstance
 
-instance : BorelSpace ℍ := Subtype.borelSpace _
+instance : BorelSpace ℍ := ⟨borel_comap.symm⟩
 
 lemma measurableEmbedding_coe : MeasurableEmbedding UpperHalfPlane.coe :=
   isOpenEmbedding_coe.measurableEmbedding
