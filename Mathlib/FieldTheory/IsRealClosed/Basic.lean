@@ -23,7 +23,7 @@ A real closed field is an algebraic generalisation of the real numbers.
 In this file we define real closed fields and prove some of their properties.
 
 TODO (Artie Khovanov) : equivalent conditions for a real field to be real closed
-TODO (Artie Khovanov) : reals, hyperreals, surreals all form real closed fields
+TODO (Artie Khovanov) : reals form a real closed field
 
 ## Main Definitions
 
