@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Julian Kuelshammer
+Authors: Julian Kuelshammer, Pavel Grigorenko
 -/
 module
 
@@ -11,6 +11,7 @@ public import Mathlib.Data.Nat.Choose.Central
 
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.Field
 
 /-!
@@ -102,7 +103,7 @@ private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatala
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
     have h := Nat.succ_dvd_centralBinom n
-    exact mod_cast this
+    norm_cast at this
   induction n using Nat.caseStrongRecOn with
   | zero => simp
   | ind d hd =>
@@ -131,3 +132,17 @@ theorem catalan_two : catalan 2 = 2 := by
 
 theorem catalan_three : catalan 3 = 5 := by
   norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
+
+@[simp]
+lemma catalan_pos (n : ℕ) : 0 < catalan n := by
+  induction n using Nat.case_strong_induction_on with
+  | hz => simp
+  | hi k hk =>
+    rw [catalan_succ]
+    apply (sum_pos_iff_of_nonneg _).mpr
+    · exists 0
+      simp [hk k]
+    · simp
+
+@[simp]
+lemma catalan_neq_zero (n : ℕ) : catalan n ≠ 0 := Ne.symm (catalan_pos n).ne
