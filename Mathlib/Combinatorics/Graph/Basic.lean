@@ -385,7 +385,7 @@ def copy (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α 
     simp_rw [← h_isLink, ← hV]
     exact G.left_mem_of_isLink
 
-lemma copy_eq_self (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
+lemma copy_eq (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
     (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
     G.copy hV hE h_isLink = G := by
   ext <;> simp_all
