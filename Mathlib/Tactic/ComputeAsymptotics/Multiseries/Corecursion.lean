@@ -359,11 +359,6 @@ theorem FriendOperation.head_eq_head {op : Seq α → Seq α} (h : FriendOperati
   simp [h_head]
   rfl
 
-theorem FriendOperation.head_eq_head_of_cons {op : Seq α → Seq α} (h : FriendOperation op) {a : α}
-    {s t : Seq α} : (op (.cons a s)).head = (op (.cons a t)).head := by
-  apply FriendOperation.head_eq_head h
-  simp
-
 attribute [-simp] inv_pow in
 theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
     {op : Seq α → Seq α}

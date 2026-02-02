@@ -892,25 +892,25 @@ section Approximates
 
 section Majorated
 
-/-- `majorated f g exp` for real functions `f` and `g` means that for any `exp' < exp`,
+/-- `Majorated f g exp` for real functions `f` and `g` means that for any `exp' < exp`,
 `f =o[atTop] g^exp'`. -/
-def majorated (f basis_hd : ℝ → ℝ) (exp : ℝ) : Prop :=
+def Majorated (f basis_hd : ℝ → ℝ) (exp : ℝ) : Prop :=
   ∀ exp', exp < exp' → f =o[atTop] (fun t ↦ (basis_hd t) ^ exp')
 
-/-- One can change the argument of `majorated` with the function that eventually equals to it. -/
-theorem majorated_of_EventuallyEq {f g basis_hd : ℝ → ℝ} {exp : ℝ} (h_eq : g =ᶠ[atTop] f)
-    (h : majorated f basis_hd exp) : majorated g basis_hd exp := by
-  simp only [majorated] at *
+/-- One can change the argument of `Majorated` with the function that eventually equals to it. -/
+theorem Majorated_of_EventuallyEq {f g basis_hd : ℝ → ℝ} {exp : ℝ} (h_eq : g =ᶠ[atTop] f)
+    (h : Majorated f basis_hd exp) : Majorated g basis_hd exp := by
+  simp only [Majorated] at *
   intro exp' h_exp
   specialize h exp' h_exp
   exact EventuallyEq.trans_isLittleO h_eq h
 
 -- TODO: upstream?
-/-- For any function `f`, `f^exp` is majorated with `f` with exponent `exp`. -/
-theorem majorated_self {f : ℝ → ℝ} {exp : ℝ}
+/-- For any function `f`, `f^exp` is Majorated with `f` with exponent `exp`. -/
+theorem Majorated_self {f : ℝ → ℝ} {exp : ℝ}
     (h : Tendsto f atTop atTop) :
-    majorated (fun t ↦ (f t)^exp) f exp := by
-  simp only [majorated]
+    Majorated (fun t ↦ (f t)^exp) f exp := by
+  simp only [Majorated]
   intro exp' h_exp
   apply (isLittleO_iff_tendsto' _).mpr
   · have : (fun t ↦ f t ^ exp / f t ^ exp') =ᶠ[atTop] fun t ↦ (f t)^(exp - exp') := by
@@ -929,25 +929,25 @@ theorem majorated_self {f : ℝ → ℝ} {exp : ℝ}
     absurd h2
     exact (Real.rpow_pos_of_pos h1 _).ne.symm
 
-/-- If one can majorate `f` with `exp1`, then it can be majorated with any `exp2 > exp1`. -/
-theorem majorated_of_le {f basis_hd : ℝ → ℝ} {exp1 exp2 : ℝ}
-    (h_lt : exp1 ≤ exp2) (h : majorated f basis_hd exp1) :
-    majorated f basis_hd exp2 := by
-  simp only [majorated] at *
+/-- If one can Majorate `f` with `exp1`, then it can be Majorated with any `exp2 > exp1`. -/
+theorem Majorated_of_le {f basis_hd : ℝ → ℝ} {exp1 exp2 : ℝ}
+    (h_lt : exp1 ≤ exp2) (h : Majorated f basis_hd exp1) :
+    Majorated f basis_hd exp2 := by
+  simp only [Majorated] at *
   intro exp' h_exp
   apply h _ (by linarith)
 
-/-- If `f` is majorated with negative exponent, then it tends to zero. -/
-theorem majorated_tendsto_zero_of_neg {f basis_hd : ℝ → ℝ} {exp : ℝ}
-    (h_lt : exp < 0) (h : majorated f basis_hd exp) :
+/-- If `f` is Majorated with negative exponent, then it tends to zero. -/
+theorem Majorated_tendsto_zero_of_neg {f basis_hd : ℝ → ℝ} {exp : ℝ}
+    (h_lt : exp < 0) (h : Majorated f basis_hd exp) :
     Tendsto f atTop (𝓝 0) := by
-  simp only [majorated] at h
+  simp only [Majorated] at h
   specialize h 0 (by linarith)
   simpa using h
 
-/-- Constants can be majorated with `exp = 0`. -/
-theorem const_majorated {basis_hd : ℝ → ℝ} (h_tendsto : Tendsto basis_hd atTop atTop)
-    {c : ℝ} : majorated (fun _ ↦ c) basis_hd 0 := by
+/-- Constants can be Majorated with `exp = 0`. -/
+theorem const_Majorated {basis_hd : ℝ → ℝ} (h_tendsto : Tendsto basis_hd atTop atTop)
+    {c : ℝ} : Majorated (fun _ ↦ c) basis_hd 0 := by
   intro exp h_exp
   apply Asymptotics.isLittleO_const_left.mpr
   right
@@ -955,41 +955,41 @@ theorem const_majorated {basis_hd : ℝ → ℝ} (h_tendsto : Tendsto basis_hd a
   apply Tendsto.comp (tendsto_rpow_atTop h_exp)
   exact h_tendsto
 
-/-- Zero can be majorated with any exponent. -/
-theorem zero_majorated {basis_hd : ℝ → ℝ} {exp : ℝ} : majorated (fun _ ↦ 0) basis_hd exp := by
+/-- Zero can be Majorated with any exponent. -/
+theorem zero_Majorated {basis_hd : ℝ → ℝ} {exp : ℝ} : Majorated (fun _ ↦ 0) basis_hd exp := by
   intro exp h_exp
   apply Asymptotics.isLittleO_zero
 
-/-- `f * c` can be majorated with the same exponent as `f` for any constant `c`. -/
-theorem smul_majorated {f basis_hd : ℝ → ℝ} {exp : ℝ} (h : majorated f basis_hd exp)
-    {c : ℝ} : majorated (c • f) basis_hd exp := by
+/-- `f * c` can be Majorated with the same exponent as `f` for any constant `c`. -/
+theorem smul_Majorated {f basis_hd : ℝ → ℝ} {exp : ℝ} (h : Majorated f basis_hd exp)
+    {c : ℝ} : Majorated (c • f) basis_hd exp := by
   intro exp h_exp
   apply IsLittleO.const_mul_left (h exp h_exp)
 
-/-- Sum of two function, that can be majorated with exponents `f_exp` and `g_exp`, can be
-majorated with exponent `f_exp ⊔ g_exp`. -/
-theorem add_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : majorated f basis_hd f_exp)
-    (hg : majorated g basis_hd g_exp) : majorated (f + g) basis_hd (f_exp ⊔ g_exp) := by
-  simp only [majorated] at *
+/-- Sum of two function, that can be Majorated with exponents `f_exp` and `g_exp`, can be
+Majorated with exponent `f_exp ⊔ g_exp`. -/
+theorem add_Majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : Majorated f basis_hd f_exp)
+    (hg : Majorated g basis_hd g_exp) : Majorated (f + g) basis_hd (f_exp ⊔ g_exp) := by
+  simp only [Majorated] at *
   intro exp h_exp
   simp only [sup_lt_iff] at h_exp
   apply IsLittleO.add
   · exact hf _ h_exp.left
   · exact hg _ h_exp.right
 
-theorem add_majorated' {f g basis_hd : ℝ → ℝ} {exp f_exp g_exp : ℝ}
-    (hf : majorated f basis_hd f_exp)
-    (hg : majorated g basis_hd g_exp) (hf_exp : f_exp ≤ exp) (hg_exp : g_exp ≤ exp) :
-    majorated (f + g) basis_hd exp := by
-  apply majorated_of_le _ (add_majorated hf hg)
+theorem add_Majorated' {f g basis_hd : ℝ → ℝ} {exp f_exp g_exp : ℝ}
+    (hf : Majorated f basis_hd f_exp)
+    (hg : Majorated g basis_hd g_exp) (hf_exp : f_exp ≤ exp) (hg_exp : g_exp ≤ exp) :
+    Majorated (f + g) basis_hd exp := by
+  apply Majorated_of_le _ (add_Majorated hf hg)
   simp [hf_exp, hg_exp]
 
-/-- Product of two function, that can be majorated with exponents `f_exp` and `g_exp`, can be
-majorated with exponent `f_exp + g_exp`. -/
-theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : majorated f basis_hd f_exp)
-    (hg : majorated g basis_hd g_exp) (h_pos : ∀ᶠ t in atTop, 0 < basis_hd t) :
-    majorated (f * g) basis_hd (f_exp + g_exp) := by
-  simp only [majorated] at *
+/-- Product of two function, that can be Majorated with exponents `f_exp` and `g_exp`, can be
+Majorated with exponent `f_exp + g_exp`. -/
+theorem mul_Majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : Majorated f basis_hd f_exp)
+    (hg : Majorated g basis_hd g_exp) (h_pos : ∀ᶠ t in atTop, 0 < basis_hd t) :
+    Majorated (f * g) basis_hd (f_exp + g_exp) := by
+  simp only [Majorated] at *
   intro exp h_exp
   let ε := (exp - f_exp - g_exp) / 2
   specialize hf (f_exp + ε) (by dsimp [ε]; linarith)
@@ -1021,7 +1021,7 @@ mutual
         (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
         (∃ (exp : ℝ) (coef : PreMS basis_tl) (tl : SeqMS basis_hd basis_tl),
           ms.seq = .cons exp coef tl ∧ coef.Approximates ∧
-          majorated ms.toFun basis_hd exp ∧
+          Majorated ms.toFun basis_hd exp ∧
           P (mk tl (ms.toFun - basis_hd ^ exp * coef.toFun)))
       monotone' P Q hPQ ms hP := by
         change ∀ ms, P ms → Q ms at hPQ
@@ -1033,7 +1033,7 @@ mutual
   * If `basis = []`, i.e. ms is just a real number, then `f =ᶠ[atTop] ms`.
   * If `basis ≠ []`, and `ms = nil`, then `f =ᶠ[atTop] 0`.
   * If `basis = basis_hd :: basis_tl`, and `ms = cons (exp, coef) tl`, then
-    `f` is majorated with exponent `exp` by `basis_hd`,
+    `f` is Majorated with exponent `exp` by `basis_hd`,
     `coef` approximates some function `fC`, and
     `tl` approximates `f - fC * basis_hd ^ exp`
   -/
@@ -1059,12 +1059,12 @@ theorem Approximates.nil (h : f =ᶠ[atTop] 0) :
   rw [Approximates.step]
   simpa [T]
 
-/-- `cons (exp, coef) tl` approximates `f` when `f` can be majorated with exponent `exp`, and
+/-- `cons (exp, coef) tl` approximates `f` when `f` can be Majorated with exponent `exp`, and
 there exists some function `fC` such that `coef` approximates `fC` and `tl` approximates
 `f - fC * basis_hd ^ exp`. -/
 theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     (h_coef : coef.Approximates)
-    (h_maj : majorated f basis_hd exp)
+    (h_maj : Majorated f basis_hd exp)
     (h_tl : (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates) :
     @Approximates (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
   rw [Approximates.step]
@@ -1078,7 +1078,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
       (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
       (∃ exp coef tl, ms.seq = .cons exp coef tl ∧
         coef.Approximates ∧
-        majorated ms.toFun basis_hd exp ∧
+        Majorated ms.toFun basis_hd exp ∧
         motive (mk (basis_hd := basis_hd) tl (ms.toFun - basis_hd ^ exp * coef.toFun)))) :
     ms.Approximates := by
   have : motive ≤ T _ motive := by
@@ -1101,14 +1101,14 @@ theorem Approximates_nil_iff {f : ℝ → ℝ} :
   mp h := Approximates_nil h
   mpr h := Approximates.nil h
 
-/-- If `cons (exp, coef) tl` approximates `f`, then `f` can be majorated with exponent `exp`, and
+/-- If `cons (exp, coef) tl` approximates `f`, then `f` can be Majorated with exponent `exp`, and
 there exists function `fC` such that `coef` approximates `fC` and `tl` approximates
 `f - fC * basis_hd ^ exp`. -/
 theorem Approximates_cons {exp : ℝ}
     {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     (h : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
     coef.Approximates ∧
-    majorated f basis_hd exp ∧
+    Majorated f basis_hd exp ∧
     (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates := by
   rw [Approximates.step] at h
   simpa [Approximates.T] using h
@@ -1141,7 +1141,7 @@ theorem replaceFun_Approximates {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ →
     simp only [mk_replaceFun, mk_seq, h_coef, mk_toFun, true_and]
     simp only [mk_toFun] at h_eq
     constructor
-    · exact majorated_of_EventuallyEq h_eq.symm h_maj
+    · exact Majorated_of_EventuallyEq h_eq.symm h_maj
     refine ⟨mk tl (g - basis_hd ^ exp * coef.toFun), _, rfl, h_tl, ?_⟩
     simp only [mk_toFun]
     grw [h_eq]

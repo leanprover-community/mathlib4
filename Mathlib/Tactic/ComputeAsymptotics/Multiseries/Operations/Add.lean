@@ -515,7 +515,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
       simp only [add_seq, mk_seq, SeqMS.nil_add, SeqMS.cons_eq_cons, add_toFun, mk_toFun,
         ↓existsAndEq, and_true, hY_coef, true_and, exists_eq_left']
       constructor
-      · apply majorated_of_EventuallyEq _ hY_maj
+      · apply Majorated_of_EventuallyEq _ hY_maj
         grw [hX_approx]
         simp
       simp only [mk_eq_mk_iff_iff, add_seq, add_toFun, motive]
@@ -534,7 +534,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
       simp only [add_seq, mk_seq, SeqMS.add_nil, SeqMS.cons_eq_cons, add_toFun, mk_toFun,
         ↓existsAndEq, and_true, hX_coef, true_and, exists_eq_left']
       constructor
-      · apply majorated_of_EventuallyEq _ hX_maj
+      · apply Majorated_of_EventuallyEq _ hX_maj
         grw [hY_approx]
         simp
       simp only [mk_eq_mk_iff_iff, add_seq, add_toFun, motive]
@@ -550,14 +550,14 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
       rw [SeqMS.add_cons_cons]
       split_ifs with h1 h2
       · simp only [SeqMS.cons_eq_cons, ↓existsAndEq, and_true, hX_coef, true_and, exists_eq_left',
-        add_majorated' hX_maj hY_maj (by linarith) (by linarith)]
+        add_Majorated' hX_maj hY_maj (by linarith) (by linarith)]
         refine ⟨_, _, ?_, hX_tl, hY_approx⟩
         simp only [mk_eq_mk_iff_iff, add_seq, mk_seq, add_toFun, mk_toFun, true_and]
         ext t
         simp
         ring
       · simp only [SeqMS.cons_eq_cons, ↓existsAndEq, and_true, hY_coef, true_and, exists_eq_left',
-        add_majorated' hX_maj hY_maj (by linarith) (by linarith)]
+        add_Majorated' hX_maj hY_maj (by linarith) (by linarith)]
         refine ⟨_, _, ?_, hX_approx, hY_tl⟩
         simp only [mk_eq_mk_iff_iff, add_seq, mk_seq, add_toFun, mk_toFun, true_and]
         ext t
@@ -568,7 +568,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
         simp only [SeqMS.cons_eq_cons, ↓existsAndEq, and_true, add_toFun, exists_eq_left']
         constructorm* _ ∧ _
         · apply add_Approximates hX_coef hY_coef
-        · apply add_majorated' hX_maj hY_maj (by linarith) (by linarith)
+        · apply add_Majorated' hX_maj hY_maj (by linarith) (by linarith)
         refine ⟨_, _, ?_, hX_tl, hY_tl⟩
         simp only [mk_eq_mk_iff_iff, add_seq, mk_seq, add_toFun, mk_toFun, true_and]
         ext t
@@ -740,7 +740,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         motive ms →
         ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0 ∨
         ∃ exp coef tl,
-          ms.seq = .cons exp coef tl ∧ coef.Approximates ∧ majorated ms.toFun basis_hd exp ∧
+          ms.seq = .cons exp coef tl ∧ coef.Approximates ∧ Majorated ms.toFun basis_hd exp ∧
           ∃ (A : PreMS (basis_hd :: basis_tl)) (B : SeqMS basis_hd basis_tl),
           tl = A.seq + B ∧ A.Approximates ∧
           motive (mk (basis_hd := basis_hd) B (ms.toFun - basis_hd ^ exp * coef.toFun - A.toFun))) :
@@ -767,7 +767,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     simp only [h_seq_eq, add_seq, mk_seq, hB_seq, h_tl, SeqMS.nil_add, h_coef, mk_toFun,
       add_sub_cancel, hX, hY, and_self, and_true, true_and]
     constructor
-    · apply majorated_of_EventuallyEq _ h_maj
+    · apply Majorated_of_EventuallyEq _ h_maj
       grw [hf_eq, hA]
       simp
     grw [hf_eq, hA]
@@ -783,7 +783,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp only [h_seq_eq, add_seq, mk_seq, hB_seq, SeqMS.add_nil, hA_coef, mk_toFun, hA_tl,
         true_and]
       constructorm* _ ∧ _
-      · apply majorated_of_EventuallyEq _ hA_maj
+      · apply Majorated_of_EventuallyEq _ hA_maj
         grw [hf_eq, hB_fun]
         simp
       · grw [hf_eq, hB_fun]
@@ -796,8 +796,8 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       use mk A_tl (fA - basis_hd ^ A_exp * A_coef.toFun), B
       simp only [mk_seq, hB_seq, hA_coef, mk_toFun, hA_tl, hB, and_self, and_true, true_and]
       constructor
-      · apply majorated_of_EventuallyEq hf_eq
-        apply add_majorated' hA_maj hB_maj (by rfl) (by linarith)
+      · apply Majorated_of_EventuallyEq hf_eq
+        apply add_Majorated' hA_maj hB_maj (by rfl) (by linarith)
       grw [hf_eq]
       apply EventuallyEq.of_eq
       ext t
@@ -809,8 +809,8 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp only [h_tl, add_seq, mk_seq, add_assoc, hB_coef, add_toFun, mk_toFun, add_sub_cancel,
         add_Approximates hA hX, hY, and_self, and_true, true_and]
       constructor
-      · apply majorated_of_EventuallyEq hf_eq
-        apply add_majorated' hA_maj hB_maj (by linarith) (by rfl)
+      · apply Majorated_of_EventuallyEq hf_eq
+        apply add_Majorated' hA_maj hB_maj (by linarith) (by rfl)
       · grw [hf_eq]
         apply EventuallyEq.of_eq
         ext t
@@ -825,8 +825,8 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         and_true, true_and]
       constructorm* _ ∧ _
       · apply add_Approximates hA_coef hB_coef
-      · apply majorated_of_EventuallyEq hf_eq
-        apply add_majorated' hA_maj hB_maj (by rfl) (by rfl)
+      · apply Majorated_of_EventuallyEq hf_eq
+        apply add_Majorated' hA_maj hB_maj (by rfl) (by rfl)
       · grw [hf_eq]
         convert EventuallyEq.refl _ _ using 1
         ext t

@@ -18,7 +18,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 @[expose] public section
 
--- TODO: refactor using Pow.lean
+-- TODO: refactor using Pow.lean?
 
 open Filter Asymptotics
 open scoped Topology
@@ -61,8 +61,8 @@ theorem invSeries_eq_geom :
     ContinuousMultilinearMap.mkPiAlgebraFin_apply]
   exact Eq.symm List.prod_ofFn
 
-theorem invSeries_analytic : Analytic invSeries := by
-  simp [Analytic, invSeries_eq_geom, formalMultilinearSeries_geometric_radius]
+theorem invSeries_convergent : Convergent invSeries := by
+  simp [Convergent, invSeries_eq_geom, formalMultilinearSeries_geometric_radius]
 
 -- TODO: rewrite
 theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 - t)⁻¹ := by
@@ -234,7 +234,7 @@ theorem inv_Approximates {basis : Basis} {ms : PreMS basis}
         apply mulMonomial_Approximates h_basis
         swap
         · apply inv_Approximates h_basis.tail h_coef_wo h_coef h_coef_trimmed
-        apply powser_Approximates invSeries_analytic h_basis
+        apply powser_Approximates invSeries_convergent h_basis
         · simp only [leadingExp_def, mulMonomial_seq, neg_seq, mk_seq,
           SeqMS.mulMonomial_leadingExp, SeqMS.neg_leadingExp]
           generalize tl.leadingExp = w at h_comp

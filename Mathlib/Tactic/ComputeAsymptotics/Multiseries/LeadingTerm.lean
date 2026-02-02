@@ -794,7 +794,7 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : PreMS basis}
       Term.mk.injEq] at h_eq
     simp only [← h_eq.right, Term.FirstIsNeg] at h_exps
     obtain h_neg | h_zero := h_exps
-    · exact majorated_tendsto_zero_of_neg h_neg h_maj
+    · exact Majorated_tendsto_zero_of_neg h_neg h_maj
     have hC : Tendsto coef.toFun atTop (𝓝 0) := by
       apply tendsto_zero_of_FirstIsNeg_aux (t_coef := t_coef) h_coef_wo h_coef_approx _ h_zero.right
       rw [← h_eq.left]

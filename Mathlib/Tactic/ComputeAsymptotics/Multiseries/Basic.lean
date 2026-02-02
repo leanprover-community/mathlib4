@@ -184,7 +184,7 @@ theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis 
     have ih : (const basis_tl c).Approximates := by
       apply const_Approximates h_basis.tail
     apply Approximates.cons ih
-    · apply const_majorated
+    · apply const_Majorated
       apply basis_tendsto_top h_basis
       simp
     · simp
@@ -252,7 +252,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
       simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, SeqMS.monomialRpow, List.getElem_cons_zero]
       apply Approximates.cons
       · exact one_Approximates h_basis.tail
-      · apply PreMS.majorated_self
+      · apply PreMS.Majorated_self
         apply basis_tendsto_top h_basis
         simp
       · simp
@@ -260,7 +260,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
       simp only [Fin.val_succ, SeqMS.monomialRpow, List.getElem_cons_succ]
       apply Approximates.cons
       · exact monomialRpow_Approximates h_basis.tail
-      · apply basis_tail_pow_majorated_head h_basis
+      · apply basis_tail_pow_Majorated_head h_basis
         simp
       · simp
 
@@ -316,7 +316,6 @@ def updateBasis {basis : Basis} (ex : BasisExtension basis) (ms : PreMS basis) :
 
 end
 
--- TODO: remove. Unused
 /-- Extends basis with `f` in the middle. -/
 def extendBasisMiddle {left right : Basis} (f : ℝ → ℝ) (ms : PreMS (left ++ right)) :
     PreMS (left ++ f :: right) :=
@@ -463,7 +462,7 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis} {ms
     · apply updateBasis_Approximates _ h_approx
       exact BasisExtension.insert_WellFormedBasis_tail h_basis
     · simp only [BasisExtension.getBasis] at h_basis
-      apply PreMS.Approximates_coef_majorated_head h_approx
+      apply PreMS.Approximates_coef_Majorated_head h_approx
       apply WellFormedBasis.of_sublist _ h_basis
       simp only [List.cons_sublist_cons]
       apply BasisExtension.getBasis_Sublist
@@ -498,7 +497,7 @@ theorem extendBasisMiddle_Approximates {left right : Basis} {b : ℝ → ℝ}
   | nil =>
     simp only [List.nil_append, extendBasisMiddle]
     apply Approximates.cons h_approx
-    · exact PreMS.Approximates_coef_majorated_head h_approx h_basis
+    · exact PreMS.Approximates_coef_Majorated_head h_approx h_basis
     · apply Approximates.nil
       simp
   | cons left_hd left_tl =>

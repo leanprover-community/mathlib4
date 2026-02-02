@@ -116,10 +116,10 @@ theorem WellFormedBasis.push {basis : Basis} {f : ℝ → ℝ}
   WellFormedBasis.insert (right := []) (by simp [h]) hf_tendsto hf_comp (by simp)
 
 /-- All functions from well-formed basis tends to `atTop`. -/
-theorem basis_tendsto_top {basis : Basis} (h : WellFormedBasis basis) :
-    ∀ f ∈ basis, Tendsto f atTop atTop := by
+theorem basis_tendsto_top {basis : Basis} (h : WellFormedBasis basis) {f : ℝ → ℝ} (hf : f ∈ basis) :
+    Tendsto f atTop atTop := by
   simp only [WellFormedBasis] at h
-  exact h.right
+  exact h.right _ hf
 
 /-- Eventually all functions from well-formed basis are positive. -/
 theorem basis_eventually_pos {basis : Basis} (h : WellFormedBasis basis) :
@@ -190,12 +190,12 @@ theorem basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0
       apply Tendsto.sub_const h1
     · exact Tendsto.comp Real.tendsto_log_atTop hg
 
-/-- Any power of function from well-formed basis' tail is majorated by
+/-- Any power of function from well-formed basis' tail is Majorated by
 basis' head with zero exponent. -/
-theorem basis_tail_pow_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
+theorem basis_tail_pow_Majorated_head {hd f : ℝ → ℝ} {tl : Basis}
     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
-    PreMS.majorated (fun x ↦ (f x)^r) hd 0 := by
-  simp only [PreMS.majorated]
+    PreMS.Majorated (fun x ↦ (f x)^r) hd 0 := by
+  simp only [PreMS.Majorated]
   intro exp h_exp
   apply basis_compare
   · apply (basis_eventually_pos h_basis.tail).mono
@@ -208,32 +208,32 @@ theorem basis_tail_pow_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
     tauto
   · exact h_exp
 
-/-- Any function from well-formed basis' tail is majorated by basis' head with zero exponent. -/
-theorem basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
-    (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) :
-    PreMS.majorated f hd 0 := by
-  convert basis_tail_pow_majorated_head h_basis hf 1 using 1
-  ext t
-  simp
+-- /-- Any function from well-formed basis' tail is Majorated by basis' head with zero exponent. -/
+-- theorem basis_tail_Majorated_head {hd f : ℝ → ℝ} {tl : Basis}
+--     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) :
+--     PreMS.Majorated f hd 0 := by
+--   convert basis_tail_pow_Majorated_head h_basis hf 1 using 1
+--   ext t
+--   simp
 
 /-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
-`ms : PreMS basis_tl`, then `fC` can be majorated by `basis_hd` with zero exponent. -/
-theorem PreMS.Approximates_coef_majorated_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+`ms : PreMS basis_tl`, then `fC` can be Majorated by `basis_hd` with zero exponent. -/
+theorem PreMS.Approximates_coef_Majorated_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS basis_tl} (h_approx : ms.Approximates)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
-    majorated ms.toFun basis_hd 0 := by
+    Majorated ms.toFun basis_hd 0 := by
   cases basis_tl with
   | nil =>
     simp only [const_toFun]
-    apply const_majorated
+    apply const_Majorated
     apply basis_tendsto_top h_basis
     simp
   | cons basis_tl_hd basis_tl_tl =>
     cases ms with
     | nil f =>
       simp only [Approximates_nil_iff, mk_toFun] at h_approx ⊢
-      apply majorated_of_EventuallyEq h_approx
-      apply zero_majorated
+      apply Majorated_of_EventuallyEq h_approx
+      apply zero_Majorated
     | cons exp coef tl f =>
       obtain ⟨_, h_maj, _⟩ := Approximates_cons h_approx
       simp only [mk_toFun]
@@ -247,8 +247,8 @@ theorem PreMS.Approximates_coef_majorated_head {basis_hd : ℝ → ℝ} {basis_t
         exact h_basis.left.left.left
       · exact h_exp
 
-/-- Basis extension. It is a data-version of `List.Sublist`.
-Using `getBasis` one can construct any `basis'` from `basis` if `basis <+ basis'`. -/
+/-- Basis extension. Using `getBasis` one can construct any `basis'` from `basis`
+if `basis <+ basis'`. -/
 inductive BasisExtension : Basis → Type
 | nil : BasisExtension []
 | keep (basis_hd : ℝ → ℝ) {basis_tl : Basis} (ex : BasisExtension basis_tl) :
@@ -263,23 +263,6 @@ def getBasis {basis : Basis} (ex : BasisExtension basis) : Basis :=
   | nil => []
   | keep basis_hd ex => basis_hd :: ex.getBasis
   | insert f ex => f :: ex.getBasis
-
--- TODO: remove examples
-example :
-  let basis := [fun x ↦ x];
-  let ex : BasisExtension basis := .keep _ .nil;
-  ex.getBasis = [fun x ↦ x] := rfl
-
-example :
-  let basis := [fun x ↦ x];
-  let ex : BasisExtension basis := .keep _ (.insert Real.log .nil);
-  ex.getBasis = [fun x ↦ x, Real.log] := rfl
-
-example :
-  let basis := [fun x ↦ x, fun x ↦ 3 * x];
-  let ex : BasisExtension basis := .keep _ (.insert Real.log (.keep _ .nil));
-  ex.getBasis = [fun x ↦ x, Real.log, fun x ↦ 3 * x] := by
-    rfl
 
 theorem getBasis_Sublist {basis : Basis} {ex : BasisExtension basis} :
     List.Sublist basis ex.getBasis := by

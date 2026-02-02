@@ -87,8 +87,8 @@ theorem logSeries_toFormalMultilinearSeries_eq :
   ext n
   simp [LazySeries.coeff, logSeries]
 
-theorem logSeries_analytic : logSeries.Analytic := by
-  apply analytic_of_HasFPowerSeriesAt
+theorem logSeries_convergent : logSeries.Convergent := by
+  apply convergent_of_HasFPowerSeriesAt
   convert Real.log_hasFPowerSeriesAt
   rw [logSeries_toFormalMultilinearSeries_eq]
 
@@ -113,8 +113,7 @@ noncomputable def SeqMS.log {basis_hd basis_tl}
     | List.cons _ _ =>
       match logBasis with
       | .cons _ _ _ logBasis_tl log_hd =>
-        let logC := log logBasis_tl coef
-        (.cons 0 (logC + log_hd.mulConst exp) .nil) +
+        (.cons 0 (log logBasis_tl coef + log_hd.mulConst exp) .nil) +
           (tl.mulMonomial coef.inv (-exp)).powser logSeries
 
 /-- If `ms` approximates `f` and the last exponent of the leading term of `ms` is 0,
@@ -258,7 +257,7 @@ theorem log_Approximates {basis : Basis}
       simp only [pow_zero, const_toFun, one_mul, ms]
       apply add_Approximates
       · apply const_Approximates h_basis
-      · apply powser_Approximates logSeries_analytic h_basis
+      · apply powser_Approximates logSeries_convergent h_basis
         · simp [h_comp]
         · apply mulConst_Sorted
           simpa
@@ -314,14 +313,14 @@ theorem log_Approximates {basis : Basis}
             · exact h_coef_last
           · apply mulConst_Approximates
             exact h_log_hd_approx
-        · apply add_majorated' _ _ (by rfl) (by rfl)
+        · apply add_Majorated' _ _ (by rfl) (by rfl)
           · have := log_Approximates (ms := coef) h_basis.tail
               h_logBasis_tl h_coef_wo h_coef h_coef_trimmed h_pos h_coef_last
             rw [← log_toFun (logBasis := logBasis_tl)]
-            apply PreMS.Approximates_coef_majorated_head this h_basis
-          · apply smul_majorated
+            apply PreMS.Approximates_coef_Majorated_head this h_basis
+          · apply smul_Majorated
             rw [h_log_hd_fun]
-            simp only [majorated]
+            simp only [Majorated]
             intro exp' h_exp'
             change (Real.log ∘ basis_hd) =o[atTop] ((fun t ↦ t ^ exp') ∘ basis_hd)
             apply Asymptotics.IsLittleO.comp_tendsto (l := atTop)
@@ -330,7 +329,7 @@ theorem log_Approximates {basis : Basis}
               simp
             exact isLittleO_log_rpow_atTop h_exp'
         · simp [h_log_hd_fun]
-      · apply powser_Approximates logSeries_analytic h_basis
+      · apply powser_Approximates logSeries_convergent h_basis
         · simp only [leadingExp_def, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_leadingExp]
           generalize tl.leadingExp = x at h_comp
           cases x

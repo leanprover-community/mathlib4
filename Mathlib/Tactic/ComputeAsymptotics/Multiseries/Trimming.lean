@@ -249,7 +249,7 @@ theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       apply tendsto_const_nhds
     · obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
       simp only [leadingExp_def, mk_seq, SeqMS.leadingExp_cons, WithBot.coe_lt_zero] at h_neg
-      apply majorated_tendsto_zero_of_neg h_neg h_maj
+      apply Majorated_tendsto_zero_of_neg h_neg h_maj
 
 end PreMS
 

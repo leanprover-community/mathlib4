@@ -221,7 +221,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ}
       right
       simp only [mulConst_seq, mk_seq, SeqMS.mulConst_cons, SeqMS.cons_eq_cons, mulConst_toFun,
         mk_toFun, ↓existsAndEq, and_true, mulConst_Approximates hX_coef, Algebra.mul_smul_comm,
-        true_and, exists_eq_left', smul_majorated hX_maj]
+        true_and, exists_eq_left', smul_Majorated hX_maj]
       refine ⟨_, ?_, hX_tl⟩
       simp only [mk_eq_mk_iff_iff, mulConst_seq, mk_seq, mulConst_toFun, mk_toFun, true_and]
       ext t

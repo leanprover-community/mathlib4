@@ -364,14 +364,14 @@ end lemmas
 -- TODO: replace all nontrivial rfl-s with theorems
 set_option linter.unusedVariables false in
 /-- Normalizes a `SeqMS` and returns a `Result`. -/
-partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+partial def normalizeSeqMS {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     (ms : Q(SeqMS $basis_hd $basis_tl)) : TacticM (Result ms) := do
   match ms.getAppFnArgs with
   | (``SeqMS.extendBasisEnd, #[(basis_hd' : Q(ℝ → ℝ)), (basis_tl' : Q(Basis)), (f : Q(ℝ → ℝ)),
     (ms' : Q(SeqMS $basis_hd' $basis_tl'))]) =>
     have : $basis_hd =Q $basis_hd' := ⟨⟩
     have : $basis_tl =Q $basis_tl' ++ [$f] := ⟨⟩
-    let res ← normalizeSeqMSImp q($ms')
+    let res ← normalizeSeqMS q($ms')
     match res with
     | .nil h =>
       return .nil (q(extendBasisEnd_nil $f $h) : Expr)
@@ -382,7 +382,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       (ex : Q(BasisExtension $oldBasis_tl)), (ms' : Q(SeqMS $oldBasis_hd $oldBasis_tl))]) =>
     have : $oldBasis_hd =Q $basis_hd := ⟨⟩
     have : $basis_tl =Q ($ex).getBasis := ⟨⟩
-    let res ← normalizeSeqMSImp q($ms')
+    let res ← normalizeSeqMS q($ms')
     match res with
     | .nil h =>
       return .nil (q(updateBasis_keep_nil $ex $h) : Expr)
@@ -415,15 +415,15 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return .cons q(0) q(PreMS.monomialRpow _ $m $r) q(SeqMS.nil)
         q(monomialRpow_succ $m $r)
   | ~q(SeqMS.neg $arg) =>
-    let res ← normalizeSeqMSImp arg
+    let res ← normalizeSeqMS arg
     match res with
     | .nil h =>
       return .nil q(neg_nil $h)
     | .cons exp coef tl h =>
       return ← consNormalizeExp q($exp) q(PreMS.neg $coef) q(SeqMS.neg $tl) q(neg_cons $h)
   | ~q(SeqMS.add $arg1 $arg2) =>
-    let res1 ← normalizeSeqMSImp arg1
-    let res2 ← normalizeSeqMSImp arg2
+    let res1 ← normalizeSeqMS arg1
+    let res2 ← normalizeSeqMS arg2
     match res1 with
     | .nil h1 =>
       return res2.cast q(nil_add $h1)
@@ -443,11 +443,11 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
           return ← consNormalizeExp exp1 q(PreMS.add $coef1 $coef2) q(SeqMS.add $tl1 $tl2)
             q(cons_add_cons_both $h1 $h2 $h_exp)
   | ~q(SeqMS.mul $arg1 $arg2) =>
-    let res1 ← normalizeSeqMSImp arg1
+    let res1 ← normalizeSeqMS arg1
     match res1 with
     | .nil h1 => return .nil q(nil_mul $h1)
     | .cons exp1 coef1 tl1 h1 =>
-      let res2 ← normalizeSeqMSImp arg2
+      let res2 ← normalizeSeqMS arg2
       match res2 with
       | .nil h2 => return .nil q(mul_nil $h2)
       | .cons exp2 coef2 tl2 h2 =>
@@ -455,7 +455,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
           q((SeqMS.mulMonomial $tl1 $coef2 $exp2).add
             ((SeqMS.cons $exp1 $coef1 $tl1).mul $tl2)) q(cons_mul_cons $h1 $h2)
   | ~q(SeqMS.mulMonomial $b $m_coef $m_exp) =>
-    let res_b ← normalizeSeqMSImp b
+    let res_b ← normalizeSeqMS b
     match res_b with
     | .nil hb =>
       return .nil q(mulMonomial_nil $hb)
@@ -463,7 +463,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return ← consNormalizeExp q($b_exp + $m_exp) q(PreMS.mul $b_coef $m_coef)
         q(SeqMS.mulMonomial (basis_hd := $basis_hd) $b_tl $m_coef $m_exp) q(mulMonomial_cons $hb)
   | ~q(SeqMS.mulConst $c $arg) =>
-    let res ← normalizeSeqMSImp arg
+    let res ← normalizeSeqMS arg
     match res with
     | .nil h => return .nil q(mulConst_nil $h)
     | .cons exp coef tl h =>
@@ -478,17 +478,17 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return .cons q(0) q(PreMS.const _ $s_hd)
         q(($arg).mul (SeqMS.powser $s_tl $arg)) q(powser_cons $hs)
   | ~q(SeqMS.inv $arg) =>
-    let res ← normalizeSeqMSImp arg
+    let res ← normalizeSeqMS arg
     match res with
     | .nil h =>
       return .nil q(inv_nil $h)
     | .cons exp coef tl h =>
       let ms' : Q(SeqMS $basis_hd $basis_tl) := q(SeqMS.mulMonomial
         (((SeqMS.neg $tl).mulMonomial ($coef).inv (-$exp)).powser invSeries) ($coef).inv (-$exp))
-      let res' ← normalizeSeqMSImp ms'
+      let res' ← normalizeSeqMS ms'
       return res'.cast q(inv_cons $h)
   | ~q(SeqMS.pow $arg $a) =>
-    let res ← normalizeSeqMSImp arg
+    let res ← normalizeSeqMS arg
     match res with
     | .nil h =>
       match ← CompareReal.checkZero a with
@@ -498,10 +498,10 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       let ms' : Q(SeqMS $basis_hd $basis_tl) := q(SeqMS.mulMonomial
         ((SeqMS.mulMonomial $tl ($coef).inv (-$exp)).powser (powSeries $a)) (($coef).pow $a)
         ($exp * $a))
-      let res' ← normalizeSeqMSImp ms'
+      let res' ← normalizeSeqMS ms'
       return res'.cast q(pow_cons $h $a)
   | ~q(SeqMS.log $logBasis $arg) =>
-    let res ← normalizeSeqMSImp arg
+    let res ← normalizeSeqMS arg
     match res with
     | .nil h =>
       return .nil q(log_nil $logBasis $h)
@@ -511,7 +511,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
           q(SeqMS.add (SeqMS.const _ _ (Real.log ($coef).toReal)) <|
             (SeqMS.mulConst ($coef).toReal⁻¹ $tl).powser logSeries)
-        let res' ← normalizeSeqMSImp ms'
+        let res' ← normalizeSeqMS ms'
         return res'.cast q(log_cons_basis_tl_nil $h $logBasis)
       | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
         let logBasis' ← reduceLogBasis logBasis
@@ -522,10 +522,10 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
           q(SeqMS.add (.cons 0 (($logC).add <| ($log_hd).mulConst $exp) .nil) <|
             (SeqMS.mulMonomial $tl ($coef).inv (-$exp)).powser logSeries)
-        let res' ← normalizeSeqMSImp ms'
+        let res' ← normalizeSeqMS ms'
         return res'.cast q(log_cons_basis_tl_cons $h $logBasis_tl $log_hd)
   | ~q(SeqMS.exp $arg) =>
-    let res ← normalizeSeqMSImp arg
+    let res ← normalizeSeqMS arg
     match res with
     | .nil h =>
       return .cons q(0) q(PreMS.one) q(SeqMS.nil) q(exp_nil $h)
@@ -534,12 +534,12 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       | .lt h_exp =>
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
           q((SeqMS.cons $exp $coef $tl).powser expSeries)
-        let res' ← normalizeSeqMSImp ms'
+        let res' ← normalizeSeqMS ms'
         return res'.cast q(exp_cons_of_lt $h $h_exp)
       | .not_lt h_exp =>
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
           q((SeqMS.powser expSeries $tl).mulMonomial ($coef).exp 0)
-        let res' ← normalizeSeqMSImp ms'
+        let res' ← normalizeSeqMS ms'
         return res'.cast q(exp_cons_of_not_lt $h $h_exp)
   | _ => panic! s!"normalizeSeqMS: unexpected ms: {← ppExpr ms}"
 
@@ -726,7 +726,7 @@ def normalizePreMS {basis : Q(Basis)}
   | ~q(List.cons $basis_hd $basis_tl) =>
     let ⟨f, hf⟩ ← getFun q($ms)
     let ⟨s, hs⟩ ← getSeq q($ms)
-    let res ← normalizeSeqMSImp q($s)
+    let res ← normalizeSeqMS q($s)
     match res with
     | .nil h =>
       return ⟨q(PreMS.mk .nil $f), q((ms_eq_mk_iff _ _ _).mpr ⟨$h ▸ $hs, $hf⟩)⟩

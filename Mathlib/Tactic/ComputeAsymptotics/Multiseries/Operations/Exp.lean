@@ -48,8 +48,8 @@ theorem expSeries_toFormalMultilinearSeries_eq :
   unfold NormedSpace.expSeries FormalMultilinearSeries.ofScalars
   simp [coeff, expSeries_get]
 
-theorem expSeries_analytic : expSeries.Analytic := by
-  apply analytic_of_HasFPowerSeriesAt (f := Real.exp)
+theorem expSeries_convergent : expSeries.Convergent := by
+  apply convergent_of_HasFPowerSeriesAt (f := Real.exp)
   rw [expSeries_toFormalMultilinearSeries_eq]
   convert NormedSpace.exp_hasFPowerSeriesAt_zero
   · exact Real.exp_eq_exp_ℝ
@@ -162,7 +162,7 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
   simp only [PreMS.exp, mk_seq, SeqMS.exp, SeqMS.destruct_cons, mk_toFun]
   split_ifs with h_if
   · rw [← expSeries_toFun]
-    exact powser_Approximates expSeries_analytic h_basis (by simpa) h_wo h_approx
+    exact powser_Approximates expSeries_convergent h_basis (by simpa) h_wo h_approx
   have h_exp : exp = 0 := by
     contrapose! h_nonpos
     simp
@@ -176,7 +176,7 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
   have h : ms.Approximates := by
     simp only [pow_zero, one_mul, ms]
     apply mulMonomial_Approximates h_basis
-    · apply powser_Approximates expSeries_analytic h_basis (by simpa) (by simpa)
+    · apply powser_Approximates expSeries_convergent h_basis (by simpa) (by simpa)
       convert h_tl
       simp
     · apply exp_Approximates h_basis.tail h_coef_wo h_coef

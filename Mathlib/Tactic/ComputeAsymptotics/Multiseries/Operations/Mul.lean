@@ -786,16 +786,16 @@ mutual
     simp only [mulMonomial_toFun, mk_toFun] at hf_eq
     constructorm* _ ∧ _
     · apply mul_Approximates (h_basis.tail) h_coef_approx hM_approx
-    · apply majorated_of_EventuallyEq hf_eq
+    · apply Majorated_of_EventuallyEq hf_eq
       rw [show B_exp + M_exp = B_exp + M_exp + 0 by simp]
-      apply mul_majorated
-      · apply mul_majorated
+      apply mul_Majorated
+      · apply mul_Majorated
         · exact h_maj
-        · apply majorated_self
+        · apply Majorated_self
           apply basis_tendsto_top h_basis
           simp
         · exact basis_head_eventually_pos h_basis
-      · exact Approximates_coef_majorated_head hM_approx h_basis
+      · exact Approximates_coef_Majorated_head hM_approx h_basis
       · exact basis_head_eventually_pos h_basis
     use mk B_tl (fB - basis_hd ^ B_exp * B_coef.toFun)
     simp only [mk_seq, mk_toFun, true_and, h_tl_approx, hM_approx, and_self, and_true]
@@ -846,8 +846,8 @@ mutual
       constructorm* _ ∧ _
       · simp
       · exact mul_Approximates (h_basis.tail) hX_coef_approx hY_coef_approx
-      · apply majorated_of_EventuallyEq hf_eq
-        apply mul_majorated hX_maj hY_maj
+      · apply Majorated_of_EventuallyEq hf_eq
+        apply mul_Majorated hX_maj hY_maj
         apply basis_head_eventually_pos h_basis
       · apply mulMonomial_Approximates h_basis hX_tl_approx hY_coef_approx
       simp only [equiv_def, mul_seq, mk_seq, mul_toFun, mk_toFun, mulMonomial_toFun, motive]
@@ -915,7 +915,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         motive ms →
         ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0 ∨
         ∃ exp coef tl,
-          ms.seq = .cons exp coef tl ∧ coef.Approximates ∧ majorated ms.toFun basis_hd exp ∧
+          ms.seq = .cons exp coef tl ∧ coef.Approximates ∧ Majorated ms.toFun basis_hd exp ∧
           ∃ (A B : PreMS (basis_hd :: basis_tl)),
           tl = (A.mul B).seq ∧
           ms.toFun =ᶠ[atTop] (basis_hd ^ exp * coef.toFun + A.toFun * B.toFun) ∧
@@ -955,8 +955,8 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   simp only [mulMonomial_seq, mk_seq, mulMonomial_toFun, mk_toFun, true_and]
   constructorm* _ ∧ _
   · apply mul_Approximates (h_basis.tail) hA_coef hB_coef
-  · apply majorated_of_EventuallyEq hf_eq
-    apply mul_majorated hA_maj hB_maj
+  · apply Majorated_of_EventuallyEq hf_eq
+    apply mul_Majorated hA_maj hB_maj
     apply basis_head_eventually_pos h_basis
   · apply mulMonomial_Approximates h_basis hA_tl hB_coef
   simp only [equiv_def, mul_seq, mul_toFun, Sorted_iff_Seq_Sorted, mk_seq, mk_toFun,

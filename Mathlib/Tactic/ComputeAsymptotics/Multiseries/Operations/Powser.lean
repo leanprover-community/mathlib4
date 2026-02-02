@@ -13,7 +13,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 /-!
-# Substituting multiseries into analytic series
+# Substituting multiseries into convergent series
 
 -/
 
@@ -26,7 +26,7 @@ namespace ComputeAsymptotics
 namespace PreMS
 
 /-- Lazy series is a sequence of real numbers constructed as a formal series
-`c₀ + c₁ * x + c₂ * x^2 + ...`. -/
+`c₀ + c₁ * x + c₂ * x² + ...`. -/
 abbrev LazySeries := Seq ℝ
 
 namespace LazySeries
@@ -95,8 +95,8 @@ theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} :
   simp_rw [Pi.one_apply, FormalMultilinearSeries.ofScalars_apply_eq, coeff]
   simp
 
-/-- Predicate stating that a lazy series converges on some non-trivial ball. -/
-def Analytic (s : LazySeries) : Prop := 0 < s.toFormalMultilinearSeries.radius
+/-- Predicate stating that a lazy series is convergent (has positive radius of convergence). -/
+def Convergent (s : LazySeries) : Prop := 0 < s.toFormalMultilinearSeries.radius
 
 open ENNReal in
 theorem tail_radius_eq {s_hd : ℝ} {s_tl : LazySeries} :
@@ -136,16 +136,16 @@ theorem tail_radius_eq {s_hd : ℝ} {s_tl : LazySeries} :
         Real.norm_eq_abs, pow_succ, ← mul_assoc] at h_bound ⊢
       rw [← div_le_iff₀, mul_div_assoc, ← NNReal.coe_div, div_self hr_pos.ne.symm] <;> simpa
 
-theorem cons_analytic {s_hd : ℝ} {s_tl : LazySeries} (h_analytic : Analytic s_tl) :
-    Analytic (.cons s_hd s_tl) := by
-  simp only [Analytic]
+theorem cons_convergent {s_hd : ℝ} {s_tl : LazySeries} (h_convergent : Convergent s_tl) :
+    Convergent (.cons s_hd s_tl) := by
+  simp only [Convergent]
   rw [tail_radius_eq]
-  exact h_analytic
+  exact h_convergent
 
-theorem tail_analytic {s_hd : ℝ} {s_tl : LazySeries}
-    (h_analytic : Analytic (.cons s_hd s_tl)) :
-    Analytic s_tl := by
-  simp only [Analytic] at *
+theorem tail_convergent {s_hd : ℝ} {s_tl : LazySeries}
+    (h_convergent : Convergent (.cons s_hd s_tl)) :
+    Convergent s_tl := by
+  simp only [Convergent] at *
   rwa [← tail_radius_eq]
 
 /-- The function represented by a lazy series. -/
@@ -162,10 +162,10 @@ theorem toFun_nil : toFun Seq.nil = 0 := by
   rfl
 
 theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
-    (h : Analytic (Seq.cons s_hd s_tl))
+    (h : Convergent (Seq.cons s_hd s_tl))
     (ht : t ∈ EMetric.ball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius) :
     toFun (.cons s_hd s_tl) t = s_hd + t * ((toFun s_tl) t) := by
-  have h_tl := tail_analytic h
+  have h_tl := tail_convergent h
   have h_hsum := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h
   replace h_hsum := HasFPowerSeriesOnBall.hasSum h_hsum ht
   have h_hsum_tl := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h_tl
@@ -190,7 +190,7 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
   simp
 
 theorem toFun_cons_eventually_eq {s_hd : ℝ} {s_tl : LazySeries}
-    (h : Analytic (Seq.cons s_hd s_tl)) :
+    (h : Convergent (Seq.cons s_hd s_tl)) :
     toFun (.cons s_hd s_tl) =ᶠ[𝓝 0] (fun t ↦ s_hd + t * ((toFun s_tl) t)) := by
   rw [Filter.eventuallyEq_iff_exists_mem]
   use EMetric.ball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius
@@ -211,12 +211,12 @@ theorem toFun_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
   rw [← HasFPowerSeriesOnBall.sum h hx]
   simp
 
-theorem analytic_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
+theorem convergent_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
     (h : HasFPowerSeriesAt f s.toFormalMultilinearSeries 0) :
-    s.Analytic := HasFPowerSeriesAt.radius_pos h
+    s.Convergent := HasFPowerSeriesAt.radius_pos h
 
 theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
-    (h_analytic : Analytic (.cons s_hd s_tl)) :
+    (h_convergent : Convergent (.cons s_hd s_tl)) :
     Tendsto (toFun (.cons s_hd s_tl)) (𝓝 0) (𝓝 s_hd) := by
   have : (toFun (.cons s_hd s_tl)) 0 = s_hd := by
     simp only [toFun, FormalMultilinearSeries.sum, FormalMultilinearSeries.apply_eq_prod_smul_coeff,
@@ -231,11 +231,11 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
     arg 3
     rw [← this]
   apply ContinuousAt.tendsto
-  have h_hsum := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h_analytic
+  have h_hsum := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h_convergent
   replace h_hsum := HasFPowerSeriesOnBall.hasFPowerSeriesAt h_hsum
   exact HasFPowerSeriesAt.continuousAt h_hsum
 
-theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.Analytic) {f : ℝ → ℝ}
+theorem toFun_IsBigO_one {s : LazySeries} (h_convergent : s.Convergent) {f : ℝ → ℝ}
     (hF : Tendsto f atTop (𝓝 0)) : ((toFun s) ∘ f) =O[atTop] (1 : ℝ → ℝ) := by
   cases s with
   | nil =>
@@ -244,20 +244,20 @@ theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.Analytic) {f : ℝ →
   | cons s_hd s_tl =>
     apply isBigO_const_of_tendsto (y := s_hd) _ (by exact ne_zero_of_eq_one rfl)
     apply Tendsto.comp _ hF
-    apply toFun_tendsto_head h_analytic
+    apply toFun_tendsto_head h_convergent
 
-theorem toFun_majorated_zero {s : LazySeries} (h_analytic : s.Analytic) {f basis_hd : ℝ → ℝ}
+theorem toFun_Majorated_zero {s : LazySeries} (h_convergent : s.Convergent) {f basis_hd : ℝ → ℝ}
     (hf : Tendsto f atTop (𝓝 0)) (h_basis : Tendsto basis_hd atTop atTop) :
-    majorated ((toFun s) ∘ f) basis_hd 0 := by
+    Majorated ((toFun s) ∘ f) basis_hd 0 := by
   intro exp h_pos
-  apply IsBigO.trans_isLittleO (toFun_IsBigO_one h_analytic hf)
+  apply IsBigO.trans_isLittleO (toFun_IsBigO_one h_convergent hf)
   eta_expand
   simp only [Pi.one_apply, isLittleO_one_left_iff, Real.norm_eq_abs]
   apply Tendsto.comp Filter.tendsto_abs_atTop_atTop
   exact Tendsto.comp (tendsto_rpow_atTop h_pos) h_basis
 
-theorem analytic_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s.Analytic := by
-  simp only [Analytic]
+theorem convergent_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s.Convergent := by
+  simp only [Convergent]
   apply lt_of_lt_of_le (b := 1)
   · simp
   apply FormalMultilinearSeries.le_radius_of_bound (C := 1)
@@ -273,10 +273,10 @@ theorem analytic_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s
 end LazySeries
 
 -- TODO: move
-theorem mul_bounded_majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : majorated f basis_hd exp)
+theorem mul_bounded_Majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorated f basis_hd exp)
     (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
-    majorated (f * g) basis_hd exp := by
-  simp only [majorated] at *
+    Majorated (f * g) basis_hd exp := by
+  simp only [Majorated] at *
   intro exp h_exp
   conv =>
     rhs; ext t; rw [← mul_one (basis_hd t ^ exp)]
@@ -358,7 +358,7 @@ theorem powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basi
   simp only [Sorted_iff_Seq_Sorted, leadingExp_def, powser_seq] at *
   exact SeqMS.powser_Sorted h_wo h_neg
 
-theorem powser_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd : ℝ → ℝ}
+theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basis_hd : ℝ → ℝ}
     {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (h_neg : ms.leadingExp < 0) (h_wo : ms.Sorted)
@@ -366,10 +366,10 @@ theorem powser_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd
   have hf_tendsto_zero : Tendsto ms.toFun atTop (𝓝 0) := by
     apply neg_leadingExp_tendsto_zero h_neg h_approx
   let motive (X : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ (s : LazySeries), s.Analytic ∧ X ≈ powser s ms
+    ∃ (s : LazySeries), s.Convergent ∧ X ≈ powser s ms
   apply Approximates.mul_coind h_basis motive (powser_Sorted h_wo h_neg)
   · use s
-  rintro X ⟨s, h_analytic, h_seq_eq, hf_eq⟩
+  rintro X ⟨s, h_convergent, h_seq_eq, hf_eq⟩
   cases s with
   | nil =>
     simp at hf_eq
@@ -382,13 +382,13 @@ theorem powser_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd
   have : LazySeries.toFun (Seq.cons s_hd s_tl) ∘ ms.toFun =ᶠ[atTop]
       (fun t ↦ s_hd + t * ((LazySeries.toFun s_tl) t)) ∘ ms.toFun := by
     apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
-    exact LazySeries.toFun_cons_eventually_eq h_analytic
+    exact LazySeries.toFun_cons_eventually_eq h_convergent
   use ms, powser s_tl ms
   simp only [powser_seq, const_Approximates h_basis.tail, powser_toFun, h_approx,
     SeqMS.powser_Sorted (by simpa using h_wo) h_neg, true_and]
   constructorm* _ ∧ _
-  · apply majorated_of_EventuallyEq hf_eq
-    apply LazySeries.toFun_majorated_zero h_analytic hf_tendsto_zero
+  · apply Majorated_of_EventuallyEq hf_eq
+    apply LazySeries.toFun_Majorated_zero h_convergent hf_tendsto_zero
     apply basis_tendsto_top h_basis
     simp
   · grw [hf_eq, this]
@@ -396,7 +396,7 @@ theorem powser_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd
     ext t
     simp
   simp only [equiv_def, powser_seq, powser_toFun, motive]
-  refine ⟨s_tl, LazySeries.tail_analytic h_analytic, rfl, by rfl⟩
+  refine ⟨s_tl, LazySeries.tail_convergent h_convergent, rfl, by rfl⟩
 
 section Zeros
 
@@ -434,8 +434,8 @@ theorem zeros_radius : zeros.toFormalMultilinearSeries.radius = ⊤ := by
     zeros_get, Option.getD_some, norm_zero, zero_mul, forall_const]
   exact summable_zero
 
-theorem zeros_analytic : Analytic zeros := by
-  apply analytic_of_all_le_one
+theorem zeros_convergent : Convergent zeros := by
+  apply convergent_of_all_le_one
   intro x hx
   apply Seq.all_coind (fun s ↦ s = zeros) _ _ _ hx
   · rfl
@@ -449,7 +449,7 @@ theorem zeros_powser_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd ::
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) (h_neg : ms.leadingExp < 0) :
     (ms.powser zeros).Approximates :=
-  powser_Approximates zeros_analytic h_basis h_neg h_wo h_approx
+  powser_Approximates zeros_convergent h_basis h_neg h_wo h_approx
 
 end Zeros
 

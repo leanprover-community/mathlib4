@@ -145,7 +145,7 @@ theorem Approximates_log_basis_ne_zero {basis basis' : Basis} {ms : PreMS basis'
   rw [h_fun] at h
   have h_top : Tendsto (Real.log ∘ f) atTop atTop := by
     apply Tendsto.comp Real.tendsto_log_atTop
-    exact basis_tendsto_top h_basis _ hf
+    exact basis_tendsto_top h_basis hf
   have h_nhds : Tendsto (Real.log ∘ f) atTop (𝓝 0) := by
     apply tendsto_const_nhds.congr' h.symm
   have := h_nhds.disjoint (disjoint_nhds_atTop _) h_top

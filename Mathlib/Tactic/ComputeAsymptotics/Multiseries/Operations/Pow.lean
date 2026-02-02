@@ -97,8 +97,8 @@ theorem powSeries_eq_binomialSeries {a : ℝ} :
   ext n
   simp [binomialSeries, toFormalMultilinearSeries_coeff, powSeries_get]
 
-theorem powSeries_analytic {a : ℝ} : Analytic (powSeries a) := by
-  simp only [Analytic, powSeries_eq_binomialSeries]
+theorem powSeries_convergent {a : ℝ} : Convergent (powSeries a) := by
+  simp only [Convergent, powSeries_eq_binomialSeries]
   have : 1 ≤ (binomialSeries ℝ a).radius := by apply binomialSeries_radius_ge_one
   apply lt_of_lt_of_le _ this
   simp
@@ -201,7 +201,7 @@ theorem powSeries_zero_toFun_eq : (powSeries 0).toFun = 1 := by
   ext t
   rw [LazySeries.toFun_cons]
   · simp [zeros_toFun]
-  · apply cons_analytic zeros_analytic
+  · apply cons_convergent zeros_convergent
   · simp [tail_radius_eq]
 
 mutual
@@ -299,7 +299,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : PreMS basis}
       have h : ms.Approximates := by
         simp only [ms]
         apply mulMonomial_Approximates h_basis
-        · apply powser_Approximates powSeries_analytic h_basis
+        · apply powser_Approximates powSeries_convergent h_basis
           · simp only [leadingExp_def, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_leadingExp]
             generalize tl.leadingExp = w at h_comp
             cases w with
@@ -346,7 +346,7 @@ theorem pow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℝ}
       have h : ms.Approximates := by
         simp only [ms]
         apply mulMonomial_Approximates h_basis
-        · apply powser_Approximates powSeries_analytic h_basis
+        · apply powser_Approximates powSeries_convergent h_basis
           · simp only [leadingExp_def, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_leadingExp]
             generalize tl.leadingExp = w at h_comp
             cases w with
