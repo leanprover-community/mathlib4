@@ -186,7 +186,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   have had : a ≤ d := by linarith
   rcases hd.right.eq_or_lt with rfl | hdb
   · simp [hr.le]
-  replace hf₀ : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x := by
+  replace hf₀ : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f 0 x := by
     filter_upwards [hf₀] with x _ _ using by grind
   have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
   have ⟨u, hu₁, hu₂, hu₃⟩ :=
