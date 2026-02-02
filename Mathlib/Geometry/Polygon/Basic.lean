@@ -40,11 +40,11 @@ instance : CoeFun (Polygon P n) (fun _ => Fin n → P) where
   coe := Polygon.vertices
 
 /-- A polygon has nondegenerate edges if adjacent vertices are distinct. -/
-def NondegenerateEdges [NeZero n] (poly : Polygon P n) : Prop :=
+def HasNondegenerateEdges [NeZero n] (poly : Polygon P n) : Prop :=
   ∀ i : Fin n, poly i ≠ poly (i + 1)
 
-theorem NondegenerateEdges.two_le [NeZero n] {poly : Polygon P n}
-    (h : poly.NondegenerateEdges) : 2 ≤ n := by
+theorem HasNondegenerateEdges.two_le [NeZero n] {poly : Polygon P n}
+    (h : poly.HasNondegenerateEdges) : 2 ≤ n := by
   by_contra hlt
   push_neg at hlt
   have hn : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr (NeZero.ne n)
@@ -76,18 +76,18 @@ def boundary [PartialOrder R] (poly : Polygon P n) : Set P :=
 variable (R) in
 /-- A polygon has nondegenerate vertices if any three consecutive vertices
 are affinely independent. -/
-def NondegenerateVertices (poly : Polygon P n) : Prop :=
+def HasNondegenerateVertices (poly : Polygon P n) : Prop :=
   ∀ i : Fin n, AffineIndependent R ![poly i, poly (i + 1), poly (i + 2)]
 
 /-- Polygons with nondegenerate vertices also have nondegenerate edges. -/
-theorem NondegenerateVertices.nondegenerateEdges [Nontrivial R] {poly : Polygon P n}
-    (h : poly.NondegenerateVertices R) : poly.NondegenerateEdges := by
+theorem HasNondegenerateVertices.hasNondegenerateEdges [Nontrivial R] {poly : Polygon P n}
+    (h : poly.HasNondegenerateVertices R) : poly.HasNondegenerateEdges := by
   intro i
   simpa using (h i).injective.ne (by decide : (0 : Fin 3) ≠ 1)
 
-theorem NondegenerateVertices.three_le [Nontrivial R] {poly : Polygon P n}
-    (h : poly.NondegenerateVertices R) : 3 ≤ n := by
-  unfold NondegenerateVertices at h
+theorem HasNondegenerateVertices.three_le [Nontrivial R] {poly : Polygon P n}
+    (h : poly.HasNondegenerateVertices R) : 3 ≤ n := by
+  unfold HasNondegenerateVertices at h
   specialize h 0
   simp only [Nat.succ_eq_add_one, Nat.reduceAdd, zero_add] at h
   by_contra hlt
@@ -125,11 +125,11 @@ variable [DivisionRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 variable (R) in
 /-- Convert a polygon with 3 nondegenerate vertices to an `Affine.Triangle`. -/
-def toTriangle (poly : Polygon P 3) (h : poly.NondegenerateVertices R) :
+def toTriangle (poly : Polygon P 3) (h : poly.HasNondegenerateVertices R) :
     Affine.Triangle R P :=
   ⟨poly.vertices,
     by
-      unfold NondegenerateVertices at h
+      unfold HasNondegenerateVertices at h
       specialize h 0
       simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, zero_add] at h
       convert h using 1
@@ -138,7 +138,7 @@ def toTriangle (poly : Polygon P 3) (h : poly.NondegenerateVertices R) :
 
 /-- Converting a 3-polygon to a triangle and back yields the original polygon. -/
 @[simp]
-lemma toTriangle_toPolygon (poly : Polygon P 3) (h : poly.NondegenerateVertices R) :
+lemma toTriangle_toPolygon (poly : Polygon P 3) (h : poly.HasNondegenerateVertices R) :
     (poly.toTriangle R h).toPolygon = poly := by
   rfl
 
@@ -150,9 +150,9 @@ variable {R V P : Type*}
 variable [DivisionRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 /-- The polygon obtained from a triangle has nondegenerate vertices. -/
-theorem toPolygon_nondegenerateVertices (t : Affine.Triangle R P) :
-    t.toPolygon.NondegenerateVertices R := by
-  simp only [toPolygon, Polygon.NondegenerateVertices, Nat.succ_eq_add_one,
+theorem toPolygon_hasNondegenerateVertices (t : Affine.Triangle R P) :
+    t.toPolygon.HasNondegenerateVertices R := by
+  simp only [toPolygon, Polygon.HasNondegenerateVertices, Nat.succ_eq_add_one,
     Nat.reduceAdd, Function.Embedding.coeFn_mk, Fin.isValue]
   intro i
   have h : AffineIndependent R ![t.points 0, t.points 1, t.points 2] := by
@@ -165,7 +165,7 @@ theorem toPolygon_nondegenerateVertices (t : Affine.Triangle R P) :
 /-- Converting a triangle to a polygon and back yields the original triangle. -/
 @[simp]
 lemma toPolygon_toTriangle (t : Affine.Triangle R P) :
-    t.toPolygon.toTriangle R (toPolygon_nondegenerateVertices t) = t := by
+    t.toPolygon.toTriangle R (toPolygon_hasNondegenerateVertices t) = t := by
   rfl
 
 end Affine.Triangle
