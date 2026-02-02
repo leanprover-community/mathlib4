@@ -341,7 +341,7 @@ private lemma exists_ae_subset_biUnion_countable_of_isFiniteMeasure [IsFiniteMea
   · rw [hD, show s ∪ ⋃₀ D = ⋃₀ (D ∪ {s}) by simp]
     apply le_biSup (f := fun D ↦ μ (⋃₀ D))
     simp [D_mem.2, insert_subset_iff, hs, D_mem.1]
-  · exact MeasurableSet.nullMeasurableSet (MeasurableSet.sUnion D_mem.2 (by grind))
+  · exact (MeasurableSet.sUnion D_mem.2 (by grind)).nullMeasurableSet
   · simp
 
 variable (μ) in
@@ -358,7 +358,7 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   choose D DC D_count hD using A
   refine ⟨⋃ n, D n, by simp [DC], by simp [D_count], fun s hs ↦ ?_⟩
   rw [← sum_sfiniteSeq μ]
-  apply Measure.ae_sum_iff.2 (fun n ↦ EventuallyLE.trans (hD n s hs) ?_)
+  apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
   exact HasSubset.Subset.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
 
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
