@@ -277,6 +277,20 @@ lemma writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
   rw [IsImmersionAtOfComplement_def] at h
   exact Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
 
+-- TODO: is this true? or do we only get a neighbourhood e.g. within `range I`?
+lemma eventuallyEq_writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
+    letI floc := (h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm
+    floc =ᶠ[𝓝 ((h.domChart.extend I) x)] (h.equiv ∘ (·, 0)) := by
+  have := h.writtenInCharts
+  apply Filter.eventually_of_mem (U := (h.domChart.extend I).target) ?_ h.writtenInCharts
+  · -- is this true??
+    -- (h.domChart.extend I).target ∈ 𝓝 (↑(h.domChart.extend I) x)
+    simp only [OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
+      I.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe, comp_apply,
+    PartialEquiv.trans_target, I.target_eq, I.toPartialEquiv_coe_symm]
+    simp
+    sorry
+
 lemma property (h : IsImmersionAtOfComplement F I J n f x) :
     LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp F I J M N) := by
   rwa [IsImmersionAtOfComplement_def] at h
@@ -461,6 +475,37 @@ variable [IsManifold I 1 M] [IsManifold J 1 N]
 
 /-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` splits. -/
 theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsAt I J f x := by
+  rw [mSplitsAt_iff' h.domChart_mem_maximalAtlas h.codChart_mem_maximalAtlas
+    h.mem_domChart_source h.mem_codChart_source]
+  let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
+  have : rhs.Splits := by
+    have : CompleteSpace (E × F) := sorry -- use h : E × F ≃L[𝕜] E'' and completeness of E''
+    apply h.equiv.splits.comp
+    refine ⟨?_, ?_, ?_⟩
+    · intro x y hxy
+      simpa using hxy
+    · have hrange : range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
+          Set.prod (Set.univ) {0} := by
+        sorry -- missing lemmas; `simp` cannot do this yet
+      rw [hrange]
+      exact isClosed_univ.prod isClosed_singleton
+    · have hrange : ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)).range =
+          Submodule.prod ⊤ ⊥ := by
+        erw [LinearMap.range_prod_eq (by simp)] -- TODO investigate!
+        simp
+      simp_rw [hrange]
+      exact Submodule.closedComplemented_top.prod Submodule.closedComplemented_bot
+  have aux : fderiv 𝕜 ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I) x)
+      = fderiv 𝕜 rhs ((h.domChart.extend I) x) := by
+    apply Filter.EventuallyEq.fderiv_eq
+    -- is hopefully true! if not, should reconsider definitions...
+    apply h.eventuallyEq_writtenInCharts
+  rw [aux, rhs.fderiv]
+  exact this
+
+/- old proof, kept for reference
+/-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` splits. -/
+theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsAt I J f x := by
   -- The local representative of f in the nice charts at x, as a continuous linear map.
   let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
   have : rhs.Splits := by
@@ -484,11 +529,14 @@ theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsA
         simp
       simp_rw [hrange]
       exact Submodule.closedComplemented_top.prod Submodule.closedComplemented_bot -/
-  -- Since rhs is linear, it is smooth - and it equals its own fderiv.
+  -- Since rhs is linear, it is smooth --- and it equals its own fderiv.
+  -- TODO: this is a missing lemma!
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E'')) rhs (I (h.domChart x)) := by
     dsimp only [MSplitsAt]
     sorry -- was: rw [mfderiv_eq_fderiv, rhs.fderiv]
     -- exact this
+  /- The following should belong to the proof that
+  MSplitsAt is independent of the choice of chosen charts
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E''))
       ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I x)) := by
     apply this.congr
@@ -504,12 +552,13 @@ theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsA
   have : MSplitsAt I (𝓘(𝕜, E'')) ((h.codChart.extend J) ∘ f) x := by
     apply this.congr
     -- on some nbhd, an extended chart and its inverse cancel
-    sorry
+    sorry -/
   have : MSplitsAt I J ((h.codChart.extend J).symm ∘ (h.codChart.extend J) ∘ f) x := by
     refine MSplitsAt.comp ?_ this
     exact MSplitsAt.extend_symm h.codChart_mem_maximalAtlas (mem_chart_source _ (f x))
   apply this.congr
   sorry -- extended chart and its inverse cancel
+-/
 
 /-- `f` is an immersion at `x` iff `mfderiv I J f x` splits. -/
 theorem _root_.isImmersionAtOfComplement_iff_msplitsAt {x : M} :
