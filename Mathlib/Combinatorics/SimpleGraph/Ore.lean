@@ -10,8 +10,11 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Data.List.GetD
+<<<<<<< HEAD
 public import Mathlib.Topology.LocallyFinite
 public import Mathlib.Topology.Compactness.LocallyFinite
+=======
+>>>>>>> merge-with-new-branch
 
 /-!
 
@@ -29,7 +32,6 @@ We proved Ore's theorem in graph theory:
 
 -/
 
-
 set_option linter.style.longLine false
 set_option linter.style.longFile 0
 
@@ -39,9 +41,7 @@ open SimpleGraph Finset Walk Function List
 
 
 
-
 variable {V : Type*} {e : Sym2 V}
-
 
 /--
 Define a simple path of fixed maximum length between two points.
@@ -2375,8 +2375,13 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                             exact hp_path
                           · simp only [nil_takeUntil]
                             by_contra h
+<<<<<<< HEAD
                             rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by linarith)] at h
                             simp only [mem_univ, get_eq_getElem, true_and] at hiJ
+=======
+                            rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by omega)] at h
+                            simp at hiJ
+>>>>>>> merge-with-new-branch
                             rw [← h] at hiJ
                             obtain h' := ore_endpoints_adjacent hG ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                             contradiction
@@ -2481,8 +2486,13 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                             exact hp_path
                           · simp only [nil_takeUntil]
                             by_contra h
+<<<<<<< HEAD
                             rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by linarith)] at h
                             simp only [mem_univ, get_eq_getElem, true_and] at hiJ
+=======
+                            rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by omega)] at h
+                            simp at hiJ
+>>>>>>> merge-with-new-branch
                             rw [← h] at hiJ
                             obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                             contradiction
@@ -2635,11 +2645,15 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                   have : ¬ p.getVert (j + 1) ∈ (p.takeUntil _ h1).support := by
                     apply next_not_exsit_takeUntil
                     · exact hp_path
+<<<<<<< HEAD
                     · simp_all only [ge_iff_le, ne_eq, length_support, add_tsub_cancel_right,
                       get_eq_getElem, true_and, mem_univ, support_reverse, mem_reverse,
                       add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero, not_false_eq_true,
                       gt_iff_lt, lt_add_iff_pos_right, _root_.zero_lt_one, getVert_mem_support,
                       not_true_eq_false]
+=======
+                    · trivial
+>>>>>>> merge-with-new-branch
                   contradiction
                 · have len : ((p.takeUntil _ h1).reverse.takeUntil _ h_in_i_succ).length = j - (i + 1) := by
                     rw [len_takeUntil_reverse_takeUntil (hp := hp_path)]
