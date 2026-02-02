@@ -87,7 +87,8 @@ def toOpensFunctor : X.AffineZariskiSite ⥤ X.Opens := toOpens_mono.functor
 instance : (toOpensFunctor X).Faithful where
 
 variable (X) in
-@[simps!]
+/-- The forgetful functor from `X.AffineZariskiSite` to `Scheme` is isomorphic to `Spec Γ(X, -)`. -/
+@[simps! hom_app inv_app]
 def restrictIsoSpec : toOpensFunctor X ⋙ X.restrictFunctor ⋙ Over.forget _ ≅
     toOpensFunctor X ⋙ X.presheaf.rightOp ⋙ Scheme.Spec :=
   NatIso.ofComponents (fun U ↦ U.2.isoSpec)
