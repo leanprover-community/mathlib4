@@ -510,8 +510,7 @@ noncomputable def coarserPartition (hs : IndexedPartition s) {κ : Type*} (g : �
     simp only [← hd, mem_iUnion] at hb
     have : c = d := hs.eq_of_mem ha.2 hb.2
     by_contra!
-    have : c ≠ d := disjoint_iff_forall_ne.mp ((disjoint_singleton.mpr this).preimage g) ha.1 hb.1
-    grind
+    grind [disjoint_iff_forall_ne.mp ((disjoint_singleton.mpr this).preimage g) ha.1 hb.1]
   some k := hs.some ((singleton_nonempty k).preimage hg).some
   some_mem k := by
     refine mem_iUnion_of_mem ((singleton_nonempty k).preimage hg).some ?_

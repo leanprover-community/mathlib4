@@ -255,8 +255,7 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
       rw [hJs i hi]
       exact subset_sUnion_of_mem ha
     let K : Finset (Set α) := Finset.biUnion I J
-    have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by
-      simp [K, sUnion_eq_biUnion] at hJs ⊢; grind
+    have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by grind
     rw [this, m.supClosureFun_apply hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
     · simp only [K, coe_biUnion]
       refine (h'I.mono_on ?_).biUnion hJdisj
