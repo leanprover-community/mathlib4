@@ -404,39 +404,42 @@ theorem OpenPartialHomeomorph.hasFDerivAt_symm (f : OpenPartialHomeomorph E F) {
     HasFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 
+theorem HasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasFDerivWithinAt f f' s x)
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : Tendsto f (𝓝[s \ {x}] x) (𝓝[≠] f x) := by
+  have A : (fun z ↦ z - x) =O[𝓝[s] x] fun z ↦ f' (z - x) :=
+    isBigO_iff.mpr <| hf'.imp fun C hC ↦ Eventually.of_forall fun z ↦ hC (z - x)
+  have : (fun z ↦ f z - f x) ~[𝓝[s] x] fun z ↦ f' (z - x) := h.isLittleO.trans_isBigO A
+  have : ∀ᶠ (x_1 : E) in 𝓝[s] x, x_1 ∈ ({x}ᶜ : Set E) → f x_1 ∈ ({f x}ᶜ : Set F) := by
+    simpa [sub_eq_zero, not_imp_not] using (A.trans this.isBigO_symm).eq_zero_imp
+  apply le_inf ((map_mono (nhdsWithin_mono x diff_subset)).trans h.continuousWithinAt)
+  rwa [le_principal_iff, ← eventually_mem_set, eventually_map, diff_eq, nhdsWithin_inter',
+    eventually_inf_principal]
+
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
+  rw [← eventually_map (m := f) (P := fun z ↦ z ≠ c)]
+  apply Eventually.filter_mono (h.tendsto_nhdsWithin_nhdsNE hf')
   rcases eq_or_ne (f x) c with rfl | hc
-  · rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
-    have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
-      isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
-    have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
-    simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
-  · exact (h.continuousWithinAt.eventually_ne hc).filter_mono <| by gcongr; apply diff_subset
+  · exact eventually_mem_nhdsWithin
+  · exact eventually_ne_nhdsWithin hc
 
-theorem HasFDerivWithinAt.eventually_notMem_discrete {t : Set F}
-    (ht : IsDiscrete t) (ht' : IsClosed t) (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t := by
-  apply (h.eventually_ne (c := f x) hf').mp
-  apply Eventually.filter_mono
-    (nhdsWithin_le_of_mem (mem_of_superset self_mem_nhdsWithin diff_subset))
-  simp_rw [not_imp_not, ← mem_preimage, ← eventually_inf_principal,
-    ← eventually_map (m := f) (P := fun y ↦ y = f x), map_inf_principal_preimage]
-  apply Eventually.filter_mono (inf_le_inf_right _ h.continuousWithinAt)
-  by_cases hf : f x ∈ t
-  · rw [← nhdsWithin, ht.nhdsWithin (f x) hf, eventually_pure]
-  · rw [← nhdsWithin, not_neBot.mp (mt ht'.mem_of_nhdsWithin_neBot hf)]
-    exact eventually_bot
+theorem HasFDerivWithinAt.eventually_notMem (h : HasFDerivWithinAt f f' s x)
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) :
+    ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t := by
+  rw [accPt_iff_frequently_nhdsNE, not_frequently] at ht
+  exact eventually_map.mp (ht.filter_mono (h.tendsto_nhdsWithin_nhdsNE hf'))
+
+theorem HasFDerivAt.tendsto_nhdsNE (h : HasFDerivAt f f' x)
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by
+  simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
 
 theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
 
-theorem HasFDerivAt.eventually_notMem_discrete {t : Set F}
-    (ht : IsDiscrete t) (ht' : IsClosed t) (h : HasFDerivAt f f' x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
-  simpa only [compl_eq_univ_diff] using
-    (hasFDerivWithinAt_univ.2 h).eventually_notMem_discrete ht ht' hf'
+theorem HasFDerivAt.eventually_notMem (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖)
+    (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
+  simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
 
 end
 
