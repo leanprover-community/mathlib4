@@ -72,13 +72,13 @@ lemma HasStandardEtaleSurjectionAt.isStandardEtale
 
 namespace Algebra.IsUnramifiedAt
 
-theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₁
+private theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₁
     (P : Ideal R) [P.IsPrime] (x : S) (hx : adjoin R {x} = ⊤) :
     (RingHom.ker (aeval (R := R) x).toRingHom).map (mapRingHom (algebraMap R P.ResidueField)) =
       RingHom.ker (aeval (1 ⊗ₜ x : P.ResidueField ⊗[R] S)).toRingHom := by
   have hx' : Function.Surjective (aeval (R := R) x) :=
     (AlgHom.range_eq_top _).mp ((adjoin_singleton_eq_range_aeval R x).symm.trans hx)
-  set I := RingHom.ker (RingHomClass.toRingHom <| aeval (R := R) x)
+  let I := RingHom.ker (RingHomClass.toRingHom <| aeval (R := R) x)
   let e : P.ResidueField ⊗[R] S ≃ₐ[P.ResidueField]
       P.ResidueField[X] ⧸ (I.map (mapRingHom (algebraMap _ P.ResidueField))) :=
     Polynomial.fiberEquivQuotient (aeval (R := R) x) hx' _
@@ -93,7 +93,7 @@ theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux
   · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₂
+private theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₂
     (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime]
     [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q] (x : S) (p : R[X])
     (hp₁ : Ideal.span {p.map (algebraMap R P.ResidueField)} =

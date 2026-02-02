@@ -531,7 +531,7 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
   | add x y _ _ => exact add_mem ‹_› ‹_›
 
 /-- If `s` generates `T` as an `R`-algebra,
-then `{ 1 ⊗ x | x ∈ s }` generates `S ⊗[R] T` as an `S`-algebra. -/
+then `{ 1 ⊗ x | x ∈ s }` generates `A ⊗[R] T` as an `A`-algebra. -/
 lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
     [Semiring B] [Algebra R A] [Algebra R B]
     (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
