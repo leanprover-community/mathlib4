@@ -61,10 +61,6 @@ theorem dist_div_eq_dist_mul_left (a b c : E) : dist (a / b) c = dist a (c * b) 
 theorem dist_div_eq_dist_mul_right (a b c : E) : dist a (b / c) = dist (a * c) b := by
   rw [← dist_mul_right _ _ c, div_mul_cancel]
 
-lemma mul_mem_emetric_ball_iff {E : Type _} [SeminormedAddCommGroup E] {a b c : E} (r : ENNReal) :
-    a + c ∈ EMetric.ball (b + c) r  ↔ a ∈ EMetric.ball b r:= by
-  simp
-
 open Finset
 
 variable [FunLike 𝓕 E F]
