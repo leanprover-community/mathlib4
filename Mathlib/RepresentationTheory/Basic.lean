@@ -171,6 +171,9 @@ theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
   rw [LinearEquiv.symm_apply_eq]
   simp
 
+instance (ρ : Representation k G V) [Module.Finite k V] : Module.Finite k ρ.asModule :=
+  inferInstanceAs (Module.Finite k V)
+
 /-- Build a `Representation k G M` from a `[Module k[G] M]`.
 
 This version is not always what we want, as it relies on an existing `[Module k M]` instance,
@@ -234,8 +237,6 @@ theorem ofModule_asModule_act (g : G) (x : RestrictScalars k k[G] ρ.asModule) :
     ofModule ρ.asModule g x =
       (RestrictScalars.addEquiv _ _ _).symm
         (ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv (RestrictScalars.addEquiv _ _ _ x)))) := by
-  apply_fun RestrictScalars.addEquiv _ _ ρ.asModule using
-    (RestrictScalars.addEquiv _ _ ρ.asModule).injective
   dsimp [ofModule, RestrictScalars.lsmul_apply_apply]
   simp
 

@@ -33,7 +33,7 @@ There are, of course, also the dual notions of coseparating and codetecting sets
 We
 * define predicates `IsSeparating`, `IsCoseparating`, `IsDetecting` and `IsCodetecting` on
   `ObjectProperty C`;
-* show that equivalences of categories preserves these notions;
+* show that equivalences of categories preserve these notions;
 * show that separating and coseparating are dual notions;
 * show that detecting and codetecting are dual notions;
 * show that if `C` has equalizers, then detecting implies separating;

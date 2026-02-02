@@ -257,6 +257,7 @@ lemma lTensor.inverse_comp_lTensor :
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
   rw [lTensor.inverse, lTensor.inverse_of_rightInverse_comp_lTensor]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P`
   (computably, given a right inverse) -/
@@ -264,8 +265,8 @@ noncomputable
 def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
   toLinearMap := lTensor.toFun Q hfg
-  invFun    := lTensor.inverse_of_rightInverse Q hfg hgh
-  left_inv  := fun y ↦ by
+  invFun   := lTensor.inverse_of_rightInverse Q hfg hgh
+  left_inv := fun y ↦ by
     simp only [lTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
     simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
@@ -362,6 +363,7 @@ lemma rTensor.inverse_comp_rTensor :
       Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
   rw [rTensor.inverse, rTensor.inverse_of_rightInverse_comp_rTensor]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q`
   (computably, given a right inverse) -/

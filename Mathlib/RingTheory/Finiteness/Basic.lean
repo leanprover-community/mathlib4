@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.LinearAlgebra.Pi
@@ -23,7 +24,6 @@ further imports.
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -88,6 +88,11 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   let ⟨t, ht⟩ := fg_def.1 hs
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
 
+/-- Maps from a finite module have a finite range. -/
+@[simp] lemma fg_range [Module.Finite R M] (f : M →ₛₗ[σ] P) : f.range.FG := by
+  rw [LinearMap.range_eq_map]
+  exact Module.Finite.fg_top.map f
+
 theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
@@ -97,6 +102,10 @@ theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
         Set.inter_eq_self_of_subset_left, ht]
       rw [← LinearMap.coe_range, ← span_le, ht, ← map_top]
       exact map_mono le_top⟩
+
+theorem fg_map_iff (hf : Function.Injective f) {N : Submodule R M} :
+    (N.map f).FG ↔ N.FG :=
+  ⟨(fg_of_fg_map_injective _ hf ·), (.map _)⟩
 
 end
 
@@ -109,10 +118,13 @@ theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [Add
     (hfn : (N.map f).FG) : N.FG :=
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 
-theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG :=
-  ⟨fun h => N.range_subtype ▸ map_top N.subtype ▸ h.map _, fun h =>
-    fg_of_fg_map_injective N.subtype Subtype.val_injective <| by rwa [map_top, range_subtype]⟩
+/-- The top submodule of another submodule `N` is FG iff `N` is `FG`.
 
+See also `Module.Finite.fg_top`. -/
+protected theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG := by
+  rw [← fg_map_iff N.subtype Subtype.val_injective, map_top, range_subtype]
+
+/-- See also `Module.Finite.equiv_iff`. -/
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 
@@ -129,24 +141,31 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
       rw [Finset.coe_insert, Submodule.span_insert]
       exact h₂ _ _ (h₁ _) ih
 
-theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module S M] [Module R M] [IsScalarTower R S M] (N : Submodule S M)
-    (hfin : N.FG) (h : Function.Surjective (algebraMap R S)) :
-    (Submodule.restrictScalars R N).FG := by
-  obtain ⟨X, rfl⟩ := hfin
-  use X
-  exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
+section RestrictScalars
 
-lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M]
-    [SMul R A] [Module R M] [Module A M] [IsScalarTower R A M] (S : Submodule A M)
+variable {R A M : Type*} [Semiring A] [AddCommMonoid M] [Module A M]
+variable {S : Submodule A M}
+
+theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A] [Module R M]
+    [IsScalarTower R A M] (hS : S.FG) (h : Function.Surjective (algebraMap R A)) :
+    (restrictScalars R S).FG := by
+  obtain ⟨s, rfl⟩ := hS
+  exact ⟨s, .symm <| restrictScalars_span R A h _⟩
+
+@[deprecated (since := "2026-01-24")]
+alias fg_restrictScalars := FG.restrictScalars_of_surjective
+
+theorem FG.of_restrictScalars (R) [Semiring R] [Module R M] [SMul R A] [IsScalarTower R A M]
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
-  refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
-  · change Submodule.span A s ≤ S
-    have := Submodule.span_le.mp e.le
-    rwa [Submodule.span_le]
+  refine ⟨s, restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
+  · change span A s ≤ S
+    have := span_le.mp e.le
+    rwa [span_le]
   · rw [← e]
-    exact Submodule.span_le_restrictScalars _ _ _
+    exact span_le_restrictScalars _ _ _
+
+end RestrictScalars
 
 theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
@@ -167,7 +186,7 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
     exact le_iSup _ _
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
-theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
+theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
   classical
     -- Introduce shorthand for span of an element
     let sp : M → Submodule R M := fun a => span R {a}
@@ -179,6 +198,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       apply CompleteLattice.isCompactElement_finsetSup
       exact fun n _ => singleton_span_isCompactElement n
     · intro h
+      rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
       -- s is the Sup of the spans of its elements.
       have sSup' : s = sSup (sp '' ↑s) := by
         rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
@@ -223,6 +243,7 @@ variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
   {σ : R →+* S} [RingHomSurjective σ]
 
 -- TODO: remove RingHomSurjective
+@[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
     Module.Finite S P :=
   ⟨by
@@ -295,20 +316,32 @@ instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
+universe u in
+instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+  Module.Finite.equiv (Shrink.linearEquiv R M).symm
+
+/-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans N.fg_top
+
+/-- A finitely-generated submodule is finite as a module. -/
+alias ⟨_, of_fg⟩ := iff_fg
+
+/-- A submodule that is finite as a module is finitely generated. -/
+theorem _root_.Submodule.FG.of_finite {N : Submodule R M} [Module.Finite R N] : N.FG :=
+  iff_fg.1 ‹_›
 
 variable (R M)
 
-instance bot : Module.Finite R (⊥ : Submodule R M) := iff_fg.mpr fg_bot
+instance bot : Module.Finite R (⊥ : Submodule R M) := .of_fg fg_bot
 
-instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr fg_top
+instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_fg fg_top
 
 variable {M}
 
 /-- The submodule generated by a finite set is `R`-finite. -/
 theorem span_of_finite {A : Set M} (hA : Set.Finite A) :
     Module.Finite R (Submodule.span R A) :=
-  ⟨(Submodule.fg_top _).mpr ⟨hA.toFinset, hA.coe_toFinset.symm ▸ rfl⟩⟩
+  .of_fg ⟨hA.toFinset, hA.coe_toFinset.symm ▸ rfl⟩
 
 /-- The submodule generated by a single element is `R`-finite. -/
 instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
@@ -316,7 +349,7 @@ instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
 
 /-- The submodule generated by a finset is `R`-finite. -/
 instance span_finset (s : Finset M) : Module.Finite R (span R (s : Set M)) :=
-  ⟨(Submodule.fg_top _).mpr ⟨s, rfl⟩⟩
+  .of_fg ⟨s, rfl⟩
 
 variable {R}
 
@@ -365,8 +398,8 @@ variable {R V} [Ring R] [AddCommGroup V] [Module R V]
 /-- The sup of two fg submodules is finite. Also see `Submodule.FG.sup`. -/
 instance finite_sup (S₁ S₂ : Submodule R V) [h₁ : Module.Finite R S₁]
     [h₂ : Module.Finite R S₂] : Module.Finite R (S₁ ⊔ S₂ : Submodule R V) := by
-  rw [finite_def] at *
-  exact (fg_top _).2 (((fg_top S₁).1 h₁).sup ((fg_top S₂).1 h₂))
+  rw [Finite.iff_fg] at *
+  exact .sup h₁ h₂
 
 /-- The submodule generated by a finite supremum of finite-dimensional submodules is
 finite-dimensional.
@@ -380,6 +413,29 @@ instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R 
       ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finite_sup S₁ S₂
+
+section RestrictScalars
+
+variable {R : Type*} [Semiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
+variable {S : Submodule A M}
+
+theorem FG.restrictScalars [Module.Finite R A] (hS : S.FG) : (S.restrictScalars R).FG := by
+  rw [← Module.Finite.iff_fg] at *
+  exact Module.Finite.trans A S
+
+@[simp]
+theorem FG.restrictScalars_iff [Module.Finite R A] : (S.restrictScalars R).FG ↔ S.FG :=
+  ⟨of_restrictScalars R, restrictScalars⟩
+
+/-- If a ring `R` is finite over a subring `S` then the `R`-span of an FG `S`-submodule is FG. -/
+protected theorem FG.span (hS : S.FG) : (span A (S : Set M)).FG := by
+  obtain ⟨t, ht⟩ := hS
+  use t
+  rw [← ht, Submodule.span_span_of_tower]
+
+end RestrictScalars
 
 end Submodule
 

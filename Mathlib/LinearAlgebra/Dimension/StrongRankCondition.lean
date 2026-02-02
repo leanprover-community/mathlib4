@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.
@@ -488,8 +489,8 @@ variable (M)
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹_›
-  refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
-  exact linearIndependent_le_span_finset _ i.prop S hS
+  exact (ciSup_le' fun i => linearIndependent_le_span_finset _ i.prop S hS).trans_lt
+    natCast_lt_aleph0
 
 noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
     {s t : Set M} [Module.Finite R (span R t)]
@@ -540,7 +541,7 @@ theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Alge
     Module.finrank R L ≤ Module.finrank R L' := by
   refine finrank_le_finrank_of_rank_le_rank (lift_le.mpr <| rank_le_of_isSMulRegular L L' hr h) ?_
   rw [← Module.finrank_eq_rank R L']
-  exact nat_lt_aleph0 (finrank R ↥L')
+  exact natCast_lt_aleph0
 
 variable (R S M) in
 /-- Also see `Module.finrank_top_le_finrank_of_isScalarTower_of_free`
@@ -570,7 +571,7 @@ theorem strongRankCondition_iff_forall_rank_lt_aleph0 [Nontrivial R] :
   (strongRankCondition_iff_succ R).trans <| not_iff_not.mp <| by
     push_neg
     refine ⟨fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩, fun ⟨n, le⟩ ↦
-      ⟨n, le_rank_iff_exists_linearMap.mp ((nat_lt_aleph0 _).le.trans le)⟩⟩
+      ⟨n, le_rank_iff_exists_linearMap.mp (natCast_le_aleph0.trans le)⟩⟩
     have ⟨g, hg⟩ := f.exists_finsupp_nat_of_fin_fun_injective inj
     convert (Finsupp.basisSingleOne.linearIndependent.map_injOn _ hg.injOn).cardinal_lift_le_rank
     simp

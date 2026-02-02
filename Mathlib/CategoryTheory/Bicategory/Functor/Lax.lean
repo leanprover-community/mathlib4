@@ -53,7 +53,7 @@ Unlike functors between categories, `F.map` do not need to strictly commute with
 and do not need to strictly preserve the identity. Instead, there are specified 2-morphisms
 `𝟙 (F.obj a) ⟶ F.map (𝟙 a)` and `F.map f ≫ F.map g ⟶ F.map (f ≫ g)`.
 
-`F.map₂` strictly commute with compositions and preserve the identity. They also preserve the
+`F.map₂` strictly commutes with composition and preserves the identity. They also preserve the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/

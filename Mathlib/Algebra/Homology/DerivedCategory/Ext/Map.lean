@@ -76,12 +76,12 @@ attribute [local instance] HasDerivedCategory.standard
 variable [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
 
 @[simp]
-lemma Abelian.Ext.mapExactFunctor_zero : (0 : Ext X Y n).mapExactFunctor F  = 0 := by
+lemma Abelian.Ext.mapExactFunctor_zero : (0 : Ext X Y n).mapExactFunctor F = 0 := by
   aesop
 
 @[simp]
 lemma Abelian.Ext.mapExactFunctor_add (f g : Ext.{w} X Y n) :
-    (f + g).mapExactFunctor F  = f.mapExactFunctor F + g.mapExactFunctor F := by
+    (f + g).mapExactFunctor F = f.mapExactFunctor F + g.mapExactFunctor F := by
   aesop
 
 /-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
@@ -101,7 +101,7 @@ variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear
 
 @[simp]
 lemma Functor.mapExactFunctor_smul (r : R) (f : Ext.{w} X Y n) :
-    (r • f).mapExactFunctor F  = r • (f.mapExactFunctor F) := by
+    (r • f).mapExactFunctor F = r • (f.mapExactFunctor F) := by
   aesop
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/

@@ -41,6 +41,8 @@ open Finset AffineSubspace EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable [NormedAddTorsor V₂ P₂]
 
 /-- An altitude of a simplex is the line that passes through a vertex
 and is orthogonal to the opposite face. -/
@@ -80,6 +82,32 @@ theorem vectorSpan_isOrtho_altitude_direction {n : ℕ} (s : Simplex ℝ P n) (i
     vectorSpan ℝ (s.points '' {i}ᶜ) ⟂ (s.altitude i).direction := by
   rw [direction_altitude]
   exact (Submodule.isOrtho_orthogonal_right _).mono_right inf_le_left
+
+lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (i : Fin (n + 1)) :
+    (s.map f.toAffineMap f.injective).altitude i = (s.altitude i).map f.toAffineMap := by
+  refine (eq_iff_direction_eq_of_mem (p := f (s.points i)) ?_ ?_).mpr ?_
+  · exact (s.map f.toAffineMap f.injective).mem_altitude i
+  · exact mem_map_of_mem f.toAffineMap (s.mem_altitude i)
+  have hf : Function.Injective f.linear := f.linearIsometry.injective
+  rw [map_direction, direction_altitude, direction_altitude, Submodule.map_inf _ hf,
+    AffineIsometry.linear_eq_linearIsometry, Submodule.map_orthogonal,
+    ← AffineIsometry.linear_eq_linearIsometry, map_points, Set.range_comp,
+    Set.image_comp, ← AffineMap.map_vectorSpan, inf_assoc, ← Submodule.map_top,
+    ← Submodule.map_inf _ hf, top_inf_eq, ← AffineMap.map_vectorSpan]
+
+@[simp] lemma map_altitude_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    ((s.restrict S hS).altitude i).map S.subtype = s.altitude i := by
+  rw [eq_comm]
+  convert (s.restrict S hS).altitude_map S.subtypeₐᵢ i
+
+lemma altitude_restrict_eq_comap_subtype {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).altitude i = (s.altitude i).comap S.subtype := by
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  rw [← s.map_altitude_restrict S hS, comap_map_eq_of_injective S.subtype_injective]
 
 open Module
 
@@ -152,6 +180,18 @@ def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
   simp only [altitudeFoot, reindex_points, Function.comp_apply]
   exact orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex e i) rfl
 
+@[simp] lemma altitudeFoot_map {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂)
+    (i : Fin (n + 1)) :
+    (s.map f.toAffineMap f.injective).altitudeFoot i = f (s.altitudeFoot i) := by
+  simp [altitudeFoot, ← orthogonalProjectionSpan_map]
+
+@[simp] lemma altitudeFoot_restrict {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).altitudeFoot i = s.altitudeFoot i := by
+  rw [eq_comm]
+  convert (s.restrict S hS).altitudeFoot_map S.subtypeₐᵢ i
+
 @[simp] lemma ne_altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     s.points i ≠ s.altitudeFoot i := by
   intro h
@@ -195,6 +235,18 @@ def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
     (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).height = s.height ∘ e.symm := by
   ext i
   simp [height]
+
+@[simp] lemma height_map {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂)
+    (i : Fin (n + 1)) :
+    (s.map f.toAffineMap f.injective).height i = s.height i := by
+  simp [height]
+
+@[simp] lemma height_restrict {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).height i = s.height i := by
+  rw [eq_comm]
+  convert (s.restrict S hS).height_map S.subtypeₐᵢ i
 
 @[simp]
 lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by

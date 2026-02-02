@@ -190,6 +190,11 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     rw [h]
     exact h₁ h
 
+@[to_additive]
+lemma prod_unique [Unique α] {f : α →₀ M} {g : α → M → N} (h₁ : f default = 0 → g default 0 = 1) :
+    f.prod g = g default (f default) :=
+  prod_eq_single _ (fun a ↦ by simp [Subsingleton.elim a default]) h₁
+
 end SumProd
 
 section CommMonoidWithZero
@@ -627,14 +632,9 @@ end Nat
 namespace MulOpposite
 variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
 
--- We additivise the following lemmas to themselves to avoid `to_additive` getting confused.
--- TODO(Jovan): Remove the annotations once unnecessary again.
-
-@[to_additive self (dont_translate := M), simp]
 lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
     op (f.sum g) = f.sum fun i n ↦ op (g i n) := op_sum ..
 
-@[to_additive self (dont_translate := M), simp]
 lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
     unop (f.sum g) = f.sum fun i n ↦ unop (g i n) := unop_sum ..
 

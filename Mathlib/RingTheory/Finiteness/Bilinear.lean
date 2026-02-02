@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Module.Submodule.Bilinear
 public section
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
