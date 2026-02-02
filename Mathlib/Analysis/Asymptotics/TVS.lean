@@ -227,7 +227,7 @@ theorem IsThetaTVS.isBigOTVS (h : f =Θ[𝕜; l] g) : f =O[𝕜; l] g := h.left
 @[symm]
 theorem IsThetaTVS.symm (h : f =Θ[𝕜; l] g) : g =Θ[𝕜; l] f := And.symm h
 
-theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g=Θ[𝕜; l] f := and_comm
+theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g =Θ[𝕜; l] f := and_comm
 
 /-!
 ### Transitivity lemmas

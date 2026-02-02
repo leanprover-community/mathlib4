@@ -13,6 +13,7 @@ public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.Group
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cyclic groups

@@ -722,10 +722,14 @@ def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
     SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
   else 0
 
+theorem smulLeftCLM_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F g f = fun x ↦ g x • f x := by
+  simp [smulLeftCLM, hg]
+
 @[simp]
 theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) (x : E) :
     smulLeftCLM F g f x = g x • f x := by
-  simp [smulLeftCLM, hg]
+  simp [smulLeftCLM_apply hg]
 
 @[simp]
 theorem smulLeftCLM_const (c : 𝕜) :
@@ -792,6 +796,13 @@ theorem smulLeftCLM_real_smul {g : E → 𝕜'} (hg : g.HasTemperateGrowth) (c :
     smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
   rw [RCLike.real_smul_eq_coe_smul (K := 𝕜') c, smulLeftCLM_smul hg,
     ← RCLike.real_smul_eq_coe_smul c]
+
+theorem tsupport_smulLeftCLM_subset (g : E → 𝕜) (f : 𝓢(E, F)) :
+    tsupport (smulLeftCLM F g f) ⊆ tsupport f ∩ tsupport g := by
+  by_cases hg : g.HasTemperateGrowth
+  · simpa [smulLeftCLM_apply hg] using
+      ⟨tsupport_smul_subset_right g f, tsupport_smul_subset_left g f⟩
+  · simp [smulLeftCLM, hg]
 
 end smul
 
@@ -1188,7 +1199,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
     refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
     refine Continuous.aestronglyMeasurable ?_
-    exact .rpow_const (.add continuous_const continuous_norm) fun x ↦ .inl (h_one_add x).ne'
+    exact .rpow_const (by fun_prop) fun x ↦ .inl (h_one_add x).ne'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
