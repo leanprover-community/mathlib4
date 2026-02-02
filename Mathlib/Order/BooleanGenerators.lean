@@ -3,7 +3,9 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.CompactlyGenerated.Basic
+module
+
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
 # Generators for Boolean algebras
@@ -29,6 +31,8 @@ A set of *Boolean generators* in a compactly generated complete lattice is a sub
   if `S` generates the entire lattice, then it is a Boolean algebra.
 
 -/
+
+@[expose] public section
 
 namespace IsCompactlyGenerated
 
@@ -73,7 +77,7 @@ lemma atomistic (hS : BooleanGenerators S) (a : α) (ha : a ≤ sSup S) : ∃ T 
   obtain ⟨C, hC, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq a
   have aux : ∀ b : α, IsCompactElement b → b ≤ sSup S → ∃ T ⊆ S, b = sSup T := by
     intro b hb hbS
-    obtain ⟨s, hs₁, hs₂⟩ := hb S hbS
+    obtain ⟨s, hs₁, hs₂⟩ := (isCompactElement_iff_exists_le_sSup_of_le_sSup α b).1 hb S hbS
     obtain ⟨t, ht, rfl⟩ := hS.finitelyAtomistic s b hs₁ hb hs₂
     refine ⟨t, ?_, Finset.sup_id_eq_sSup t⟩
     refine Set.Subset.trans ?_ hs₁

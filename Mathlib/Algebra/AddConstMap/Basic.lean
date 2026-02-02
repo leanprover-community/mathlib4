@@ -3,10 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -26,12 +29,14 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
   including orientation-reversing maps.
 -/
 
+@[expose] public section
+
 assert_not_exists Finset
 
 open Function Set
 
 /-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
-denoted as `f: G →+c[a, b] H`.
+denoted as `f : G →+c[a, b] H`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
@@ -42,7 +47,7 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
+scoped[AddConstMap] notation:25 G " →+c[" a ", " b "] " H => AddConstMap G H a b
 
 /-- Typeclass for maps satisfying `f (x + a) = f x + b`.
 
@@ -63,7 +68,7 @@ namespace AddConstMapClass
 In this section we prove properties like `f (x + n • a) = f x + n • b`.
 -/
 
-scoped [AddConstMapClass] attribute [simp] map_add_const
+scoped[AddConstMapClass] attribute [simp] map_add_const
 
 variable {F G H : Type*} [FunLike F G H] {a : G} {b : H}
 
@@ -257,7 +262,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
-        _ ≤ l + (0 : ℤ) • a := by gcongr; cutsat
+        _ ≤ l + (0 : ℤ) • a := by gcongr; lia
         _ ≤ x := by simpa using hx.1
     · -- If `n = 0`, then `l < y ≤ l + a`, hence we can apply the assumption
       exact hf x (Ico_subset_Icc_self hx) y (by simpa using Ioc_subset_Icc_self hny) hxy

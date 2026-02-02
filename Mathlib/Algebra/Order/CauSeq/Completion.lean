@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Algebra.Ring.Action.Rat
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.CauSeq.Basic
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Cauchy completion
@@ -13,6 +15,8 @@ import Mathlib.Tactic.FastInstance
 This file generalizes the Cauchy completion of `(ℚ, abs)` to the completion of a ring
 with absolute value.
 -/
+
+@[expose] public section
 
 
 namespace CauSeq.Completion
@@ -137,14 +141,8 @@ theorem ofRat_mul (x y : β) :
 theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
 
-private theorem zero_def : 0 = mk (abv := abv) 0 :=
-  rfl
-
-private theorem one_def : 1 = mk (abv := abv) 1 :=
-  rfl
-
 instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
-  Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.ring mk Quotient.mk'_surjective (by rfl) (by rfl)
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -172,7 +170,7 @@ variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
-  Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.commRing mk Quotient.mk'_surjective (by rfl) (by rfl)
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl

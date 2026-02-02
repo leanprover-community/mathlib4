@@ -3,10 +3,11 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 /-!
 # Uniform convergence of Eisenstein series
@@ -24,6 +25,8 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 `(c, d) ∈ ℤ × ℤ` is convergent for `2 < k`. This is proved by decomposing `ℤ × ℤ` using the
 `Finset.box` lemmas.
 -/
+
+public section
 
 noncomputable section
 

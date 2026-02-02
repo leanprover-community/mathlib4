@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Ring.Opposite
 For every semiring `R`, we construct an equivalence between subsemirings of `R` and that of `Rᵐᵒᵖ`.
 
 -/
+
+@[expose] public section
 
 namespace Subsemiring
 

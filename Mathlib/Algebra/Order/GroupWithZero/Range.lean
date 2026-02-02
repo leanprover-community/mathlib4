@@ -3,72 +3,79 @@ Copyright (c) 2025 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
+
+module
+
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Algebra.Order.GroupWithZero.WithZero
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Algebra.Order.Monoid.Basic
 
 /-! # The range of a MonoidWithZeroHom
 
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `LinearOrderedCommGroupWithZero`,
-we provide some order properties of the `MonoidWithZeroHom.valueGroup₀` as defined in
+we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as defined in
 `Mathlib.Algebra.GroupWithZero.Range`.
 
 -/
 
+@[expose] public section
+
 namespace MonoidWithZeroHom
 
-variable {A B F : Type*} [FunLike F A B]
+variable {A B : Type*}
 variable [MonoidWithZero A] [LinearOrderedCommGroupWithZero B]
-variable [MonoidWithZeroHomClass F A B] {f : F}
+variable {f : A →*₀ B}
 
 open WithZero
 
-/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an homomorphism of monoids with zero. -/
+/-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an homomorphism of monoids with zero. -/
 @[simps!]
-def valueGroup₀_MonoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
-  WithZero.map' (valueGroup f).subtype
+def ValueGroup₀.orderMonoidWithZeroHom : ValueGroup₀ f →*₀o WithZero Bˣ where
+  __ := WithZero.map' (valueGroup f).subtype
+  monotone' := map'_strictMono (Subtype.strictMono_coe _)|>.monotone
 
-lemma valueGroup₀_MonoidWithZeroHom_strictMono :
-    StrictMono (valueGroup₀_MonoidWithZeroHom (f := f)) :=
+lemma ValueGroup₀.monoidWithZeroHom_strictMono :
+    StrictMono (ValueGroup₀.orderMonoidWithZeroHom (f := f)) :=
   map'_strictMono (Subtype.strictMono_coe _)
 
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
-the use of `valueGroup₀_MonoidWithZeroHom` and apply the above lemma
-`valueGroup₀_MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
-def valueGroup₀_OrderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
-  toFun := valueGroup₀_MonoidWithZeroHom
-  inj' := valueGroup₀_MonoidWithZeroHom_strictMono.injective
-  map_rel_iff' := valueGroup₀_MonoidWithZeroHom_strictMono.le_iff_le
+the use of `ValueGroup₀.MonoidWithZeroHom` and apply the above lemma
+`ValueGroup₀.MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
+def ValueGroup₀.orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
+  __ := ValueGroup₀.orderMonoidWithZeroHom
+  inj' := ValueGroup₀.monoidWithZeroHom_strictMono.injective
+  map_rel_iff' := ValueGroup₀.monoidWithZeroHom_strictMono.le_iff_le
 
 @[simp]
-lemma valueGroup₀_OrderEmbedding_apply (x : ValueGroup₀ f) :
-    valueGroup₀_OrderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
+lemma ValueGroup₀.orderEmbedding_apply (x : ValueGroup₀ f) :
+    ValueGroup₀.orderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
 
-lemma valueGroup₀_OrderEmbedding_mul (x y : ValueGroup₀ f) :
-    valueGroup₀_OrderEmbedding (x * y) =
-      valueGroup₀_OrderEmbedding x * valueGroup₀_OrderEmbedding y := by simp
+lemma ValueGroup₀.orderEmbedding_mul (x y : ValueGroup₀ f) :
+    ValueGroup₀.orderEmbedding (x * y) =
+      ValueGroup₀.orderEmbedding x * ValueGroup₀.orderEmbedding y := by simp
 
-/-- The inclusion of `valueGroup₀ f` into `B` as an order embedding. -/
-def valueGroup₀_OrderEmbedding' : ValueGroup₀ f ↪o B :=
-  valueGroup₀_OrderEmbedding.trans OrderIso.withZeroUnits.toOrderEmbedding
+/-- The inclusion of `ValueGroup₀ f` into `B` as an order embedding. -/
+def ValueGroup₀.orderEmbedding' : ValueGroup₀ f ↪o B :=
+  ValueGroup₀.orderEmbedding.trans OrderIso.withZeroUnits.toOrderEmbedding
 
-lemma valueGroup₀_OrderEmbedding'_apply (x : ValueGroup₀ f) :
-    valueGroup₀_OrderEmbedding' x =
+lemma ValueGroup₀.orderEmbedding'_apply (x : ValueGroup₀ f) :
+    ValueGroup₀.orderEmbedding' x =
       OrderIso.withZeroUnits.toOrderEmbedding (WithZero.map' (valueGroup f).subtype x) := rfl
-lemma valueGroup₀_OrderEmbedding'_mul (x y : ValueGroup₀ f) :
-    valueGroup₀_OrderEmbedding' (x * y) =
-      valueGroup₀_OrderEmbedding' x * valueGroup₀_OrderEmbedding' y := by
-  simp [valueGroup₀_OrderEmbedding'_apply, map_mul, OrderIso.withZeroUnits]
 
-instance : IsOrderedMonoid B := inferInstance
-
-instance : IsOrderedMonoid (WithZero Bˣ) := inferInstance
-
+lemma ValueGroup₀.orderEmbedding'_mul (x y : ValueGroup₀ f) :
+    ValueGroup₀.orderEmbedding' (x * y) =
+      ValueGroup₀.orderEmbedding' x * ValueGroup₀.orderEmbedding' y := by
+  simp [ValueGroup₀.orderEmbedding'_apply, map_mul, OrderIso.withZeroUnits]
 instance : IsOrderedMonoid (ValueGroup₀ f) :=
-  Function.Injective.isOrderedMonoid valueGroup₀_OrderEmbedding' valueGroup₀_OrderEmbedding'_mul
-    <| OrderEmbedding.le_iff_le valueGroup₀_OrderEmbedding'
+  Function.Injective.isOrderedMonoid ValueGroup₀.orderEmbedding' ValueGroup₀.orderEmbedding'_mul
+    <| OrderEmbedding.le_iff_le ValueGroup₀.orderEmbedding'
 
 instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
-  zero_le_one := by simp
+  zero_le := by simp
+  mul_lt_mul_of_pos_left a ha b c hbc := by
+    simp only [← OrderEmbedding.lt_iff_lt ValueGroup₀.orderEmbedding',
+      ValueGroup₀.orderEmbedding'_mul] at *
+    exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
 
 end MonoidWithZeroHom

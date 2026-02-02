@@ -3,11 +3,13 @@ Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.AlgebraicTopology.ExtraDegeneracy
-import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.RepresentationTheory.Rep
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
@@ -45,7 +47,8 @@ squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism betwee
 complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
 is a projective resolution too, in `Rep.barResolution`.
 
-In `RepresentationTheory/Homological/Group(Co)homology/Basic.lean`, we then use
+In `Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean` and
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/Basic.lean`, we then use
 `Rep.barResolution` to define the inhomogeneous (co)chains of a representation, useful for
 computing group (co)homology.
 
@@ -58,98 +61,21 @@ computing group (co)homology.
 
 -/
 
+@[expose] public noncomputable section
+
 suppress_compilation
 
-noncomputable section
+open CategoryTheory Finsupp
+open scoped MonoidAlgebra
 
 universe u v w
 
 variable {k G : Type u} [CommRing k] {n : ℕ}
 
-open CategoryTheory Finsupp
-
 local notation "Gⁿ" => Fin n → G
 
 set_option quotPrecheck false
 local notation "Gⁿ⁺¹" => Fin (n + 1) → G
-
-namespace groupCohomology.resolution
-
-open Finsupp hiding lift
-open MonoidalCategory
-open Fin (partialProd)
-
-section Basis
-
-variable (k G n) [Group G]
-
-open scoped TensorProduct
-
-open Representation
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.actionDiagonalSucc := Action.diagonalSuccIsoTensorTrivial
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.actionDiagonalSucc_hom_apply :=
-  Action.diagonalSuccIsoTensorTrivial_hom_hom_apply
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.actionDiagonalSucc_inv_apply :=
-  Action.diagonalSuccIsoTensorTrivial_inv_hom_apply
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc := Rep.diagonalSuccIsoTensorTrivial
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_hom_single :=
-  Rep.diagonalSuccIsoTensorTrivial_hom_hom_single
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_inv_single_single :=
-  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_single
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_inv_single_left :=
-  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_left
-
-@[deprecated (since := "2025-06-02")]
-alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
-  Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
-
-/-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
-the left-hand side is `TensorProduct.leftModule`, whilst that of the right-hand side comes from
-`Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
-of the right-hand side. -/
-@[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
-def ofMulActionBasisAux :
-    MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
-      (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
-    (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
-  { e with
-    map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
-      congr 1
-      refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
-      · simp only [smul_zero]
-      · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
-        exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
-      · rw [smul_add, hz, hy, smul_add] }
-
-/-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
-`k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
-@[deprecated "We now favour `Representation.freeAsModuleBasis`; the old definition can be derived
-from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMulActionBasis := Representation.freeAsModuleBasis
-
-@[deprecated "We now favour `Representation.free_asModule_free`; the old theorem can be derived
-from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
-alias ofMulAction_free := Representation.free_asModule_free
-
-end Basis
-
-end groupCohomology.resolution
 
 variable (G)
 
@@ -238,9 +164,6 @@ face map complex of a simplicial `k`-linear `G`-representation. -/
 def Rep.standardComplex [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
     (classifyingSpaceUniversalCover G ⋙ linearization k G)
-
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.resolution := Rep.standardComplex
 
 namespace Rep.standardComplex
 
@@ -377,9 +300,6 @@ def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := standardComplex k G
   π := εToSingle₀ k G
 
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.projectiveResolution := Rep.standardResolution
-
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `standardComplex k G`. -/
@@ -388,14 +308,10 @@ def standardResolution.extIso (V : Rep k G) (n : ℕ) :
       ((standardComplex k G).linearYonedaObj k V).homology n :=
   (standardResolution k G).isoExt n V
 
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.extIso := Rep.standardResolution.extIso
-
 namespace barComplex
 
 open Rep Finsupp
 
-variable [DecidableEq G]
 variable (n)
 
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
@@ -426,8 +342,6 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
 end barComplex
 
 open barComplex
-
-variable [DecidableEq G]
 
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to

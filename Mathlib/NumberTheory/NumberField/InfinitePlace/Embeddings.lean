@@ -3,9 +3,11 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
-import Mathlib.Algebra.Algebra.Hom.Rat
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.NumberTheory.NumberField.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom.Rat
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 # Embeddings of number fields
@@ -18,6 +20,8 @@ the field of complex numbers.
 * `NumberField.Embeddings.range_eval_eq_rootSet_minpoly`: let `x ∈ K` with `K` a number field and
   let `A` be an algebraically closed field of char. 0. Then the images of `x` under the
   embeddings of `K` in `A` are exactly the roots in `A` of the minimal polynomial of `x` over `ℚ`.
+* `NumberField.Embeddings.pow_eq_one_of_norm_le_one`: A non-zero algebraic integer whose conjugates
+  are all inside the closed unit disk is a root of unity, this is also known as Kronecker's theorem.
 * `NumberField.Embeddings.pow_eq_one_of_norm_eq_one`: an algebraic integer whose conjugates are
   all of norm one is a root of unity.
 
@@ -25,6 +29,8 @@ the field of complex numbers.
 
 number field, embeddings
 -/
+
+@[expose] public section
 
 open scoped Finset
 
@@ -34,8 +40,16 @@ section Fintype
 
 open Module
 
-variable (K : Type*) [Field K] [NumberField K]
+variable (K : Type*) [Field K]
 variable (A : Type*) [Field A] [CharZero A]
+
+instance [CharZero K] [Algebra.IsAlgebraic ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
+  obtain ⟨f⟩ : Nonempty (K →ₐ[ℚ] A) := by
+    apply IntermediateField.nonempty_algHom_of_splits
+    exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits _⟩
+  exact ⟨f.toRingHom⟩
+
+variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
@@ -82,7 +96,7 @@ theorem coeff_bdd_of_norm_le {B : ℝ} {x : K} (h : ∀ φ : K →+* A, ‖φ x�
   have hx := Algebra.IsSeparable.isIntegral ℚ x
   rw [← norm_algebraMap' A, ← coeff_map (algebraMap ℚ A)]
   refine coeff_bdd_of_roots_le _ (minpoly.monic hx)
-      (IsAlgClosed.splits_codomain _) (minpoly.natDegree_le x) (fun z hz => ?_) i
+      (IsAlgClosed.splits _) (minpoly.natDegree_le x) (fun z hz => ?_) i
   classical
   rw [← Multiset.mem_toFinset] at hz
   obtain ⟨φ, rfl⟩ := (range_eval_eq_rootSet_minpoly K A x).symm.subset hz
@@ -105,19 +119,28 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
   refine (Eq.trans_le ?_ <| coeff_bdd_of_norm_le hx.2 i).trans (Nat.le_ceil _)
   rw [h_map_ℚ_minpoly, coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
 
+/-- **Kronecker's Theorem:** A non-zero algebraic integer whose conjugates are all inside the closed
+unit disk is a root of unity. -/
+theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral ℤ x)
+    (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
+  obtain ⟨a, -, b, -, habne, h⟩ :=
+    Set.Infinite.exists_ne_map_eq_of_mapsTo (f := (x ^ · : ℕ → K)) Set.infinite_univ
+      (fun a _ => mem_setOf.mpr <|
+        ⟨hxi.pow a, fun φ => by simp [pow_le_one₀ (norm_nonneg (φ x)) <| hx φ]⟩)
+      (finite_of_norm_le K A (1 : ℝ))
+  wlog hlt : b < a
+  · exact this K A hx₀ hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
+  refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
+  rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
+  refine h.resolve_right fun hp ↦ hx₀ (eq_zero_of_pow_eq_zero hp)
+
 /-- An algebraic integer whose conjugates are all of norm one is a root of unity. -/
 theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
     ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
-  obtain ⟨a, -, b, -, habne, h⟩ :=
-    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
-      (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
-  wlog hlt : b < a
-  · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
-  refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
-  rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
-  refine h.resolve_right fun hp => ?_
-  specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
-  rw [eq_zero_of_pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
+  apply pow_eq_one_of_norm_le_one K A _ hxi fun φ ↦ le_of_eq <| hx φ
+  intro rfl
+  simp_rw [map_zero, norm_zero, zero_ne_one] at hx
+  exact hx (IsAlgClosed.lift (R := ℚ)).toRingHom
 
 end Bounded
 
@@ -172,6 +195,11 @@ abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
     (conjugate φ).comp σ = conjugate (φ.comp σ) :=
   rfl
+
+variable (K) in
+theorem involutive_conjugate :
+    Function.Involutive (conjugate : (K →+* ℂ) → (K →+* ℂ)) := by
+  intro; simp
 
 @[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl

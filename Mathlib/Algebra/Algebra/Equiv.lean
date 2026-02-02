@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Ring.Action.Group
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Ring.Action.Group
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -19,6 +21,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
@@ -93,8 +97,8 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨f,_⟩,_⟩ := f
-    obtain ⟨⟨g,_⟩,_⟩ := g
+    obtain ⟨⟨f, _⟩, _⟩ := f
+    obtain ⟨⟨g, _⟩, _⟩ := g
     congr
 
 /-- Helper instance since the coercion is not always found. -/
@@ -176,6 +180,9 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
 
 @[simp]
 theorem toAlgHom_eq_coe : e.toAlgHom = e :=
+  rfl
+
+theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
 @[simp, norm_cast]
@@ -542,6 +549,18 @@ theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
     (f.trans g).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
   rfl
 
+@[simp] theorem linearEquivConj_mulLeft (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulLeft R x) = .mulLeft R (f x) := by
+  ext; simp
+
+@[simp] theorem linearEquivConj_mulRight (f : A₁ ≃ₐ[R] A₂) (x : A₁) :
+    f.toLinearEquiv.conj (.mulRight R x) = .mulRight R (f x) := by
+  ext; simp
+
+@[simp] theorem linearEquivConj_mulLeftRight (f : A₁ ≃ₐ[R] A₂) (x : A₁ × A₁) :
+    f.toLinearEquiv.conj (.mulLeftRight R x) = .mulLeftRight R (Prod.map f f x) := by
+  cases x; ext; simp
+
 /-- Promotes a bijective algebra homomorphism to an algebra equivalence. -/
 noncomputable def ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) : A₁ ≃ₐ[R] A₂ :=
   { RingEquiv.ofBijective (f : A₁ →+* A₂) hf, f with }
@@ -640,6 +659,8 @@ theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x
   rfl
 
 lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
+
+@[simp] lemma coe_inv (ϕ : A₁ ≃ₐ[R] A₁) : ⇑ϕ⁻¹ = ⇑ϕ.symm := rfl
 
 @[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
@@ -839,3 +860,25 @@ of algebras provided here unless `e 1 = 1`. -/
     _ = x := by rw [map_smul, Algebra.smul_def, mul_left_comm, ← Algebra.smul_def _ (e 1),
           ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, ← mul_assoc, ← Algebra.smul_def,
           ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, one_mul]
+
+namespace LinearEquiv
+variable {R S M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [Module R M₁]
+  [AddCommMonoid M₂] [Module R M₂] [Semiring S] [Module S M₁] [Module S M₂]
+  [SMulCommClass S R M₁] [SMulCommClass S R M₂] [SMul R S] [IsScalarTower R S M₁]
+  [IsScalarTower R S M₂]
+
+variable (R) in
+/-- A linear equivalence of two modules induces an equivalence of algebras of their
+endomorphisms. -/
+@[simps!] def conjAlgEquiv (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
+  __ := e.conjRingEquiv
+  commutes' _ := by ext; change e.restrictScalars R _ = _; simp
+
+@[deprecated (since := "2025-12-06")] alias algConj := conjAlgEquiv
+
+theorem conjAlgEquiv_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
+    e.conjAlgEquiv R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl
+
+theorem symm_conjAlgEquiv (e : M₁ ≃ₗ[S] M₂) : (e.conjAlgEquiv R).symm = e.symm.conjAlgEquiv R := rfl
+
+end LinearEquiv

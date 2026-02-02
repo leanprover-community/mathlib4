@@ -3,8 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # The quadratic form on a tensor product
@@ -15,6 +18,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
   `Q₁` on `M₁` and `Q₂` on `M₂`. This construction is not available in characteristic two.
 
 -/
+
+@[expose] public section
 
 universe uR uA uM₁ uM₂ uN₁ uN₂
 
@@ -132,7 +137,7 @@ theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
 theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = BilinForm.baseChange A (polarBilin Q) := by
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
-    ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
+    ← map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
     smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
 
 end QuadraticForm

@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Topology.LocallyClosed
+public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Baire category and Baire measurable sets
@@ -25,12 +27,15 @@ A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said t
 
 -/
 
+@[expose] public section
+
 variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 open Topology
 
 /-- Notation for `=ᶠ[residual _]`. That is, eventual equality with respect to
-the filter of residual sets. -/
+the filter of residual sets.
+In lemma names, this is called `residualEq`. -/
 scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
 
 /-- Notation to say that a property of points in a topological space holds

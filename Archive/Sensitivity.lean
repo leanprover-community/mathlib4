@@ -248,7 +248,7 @@ theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
 
 open Classical in
 instance : FiniteDimensional ℝ (V n) :=
-  FiniteDimensional.of_fintype_basis (dualBases_e_ε _).basis
+  (dualBases_e_ε _).basis.finiteDimensional_of_finite
 
 theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
   have := @dim_V n
@@ -286,7 +286,7 @@ using only the addition of `V`. -/
 
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
-  | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
+  | zero => simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
   | succ n IH =>
     cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
@@ -311,7 +311,7 @@ theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 e
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
 noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
-  LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
+  LinearMap.prod (f m + √(m + 1) • LinearMap.id) LinearMap.id
 
 /-! In the following lemmas, `m` will denote a natural number. -/
 
@@ -321,7 +321,7 @@ variable {m : ℕ}
 /-! Again we unpack what are the values of `g`. -/
 
 
-theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
+theorem g_apply : ∀ v, g m v = (f m v + √(m + 1) • v, v) := by
   delta g; intro v; simp
 
 theorem g_injective : Injective (g m) := by
@@ -330,9 +330,9 @@ theorem g_injective : Injective (g m) := by
   simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
-theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
+theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
+  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
@@ -407,7 +407,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
 open Classical in
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
+    ∃ q, q ∈ H ∧ √(m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by
     intro p p_in
@@ -420,7 +420,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
-  let s := √ (m + 1)
+  let s := √(m + 1)
   suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_iff_left₀ H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc

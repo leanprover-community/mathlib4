@@ -3,12 +3,14 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.DirichletCharacter.Bounds
-import Mathlib.NumberTheory.LSeries.Convolution
-import Mathlib.NumberTheory.LSeries.Deriv
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.SumPrimeReciprocals
-import Mathlib.NumberTheory.VonMangoldt
+module
+
+public import Mathlib.NumberTheory.DirichletCharacter.Bounds
+public import Mathlib.NumberTheory.LSeries.Convolution
+public import Mathlib.NumberTheory.LSeries.Deriv
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.SumPrimeReciprocals
+public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 /-!
 # L-series of Dirichlet characters and arithmetic functions
@@ -20,7 +22,7 @@ on `re s > 1`; see `LSeries_vonMangoldt_eq_deriv_riemannZeta_div`.
 
 We also prove some general results on L-series associated to Dirichlet characters
 (i.e., Dirichlet L-series). For example, we show that the abscissa of absolute convergence
-equals `1` (see `DirichletCharacter.absicssaOfAbsConv`) and that the L-series does not
+equals `1` (see `DirichletCharacter.absicssaOfAbsConv_eq_one`) and that the L-series does not
 vanish on the open half-plane `re s > 1` (see `DirichletCharacter.LSeries_ne_zero_of_one_lt_re`).
 
 We deduce results on the Riemann zeta function (which is `L 1` or `L ↗ζ` on `re s > 1`)
@@ -30,6 +32,8 @@ as special cases.
 
 Dirichlet L-series, Möbius function, von Mangoldt function, Riemann zeta function
 -/
+
+public section
 
 open scoped LSeries.notation
 

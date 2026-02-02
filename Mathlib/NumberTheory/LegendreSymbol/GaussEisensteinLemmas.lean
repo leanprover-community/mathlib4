@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.Prime.Factorial
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -12,6 +14,8 @@ import Mathlib.NumberTheory.LegendreSymbol.Basic
 This file contains the Lemmas of Gauss and Eisenstein on the Legendre symbol.
 The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
 -/
+
+public section
 
 
 open Finset Nat
@@ -28,8 +32,7 @@ namespace ZMod
 theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a : ZMod p)
     (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).1.map fun (x : ℕ) => (a * x).valMinAbs.natAbs) =
     (Ico 1 (p / 2).succ).1.map fun a => a := by
-  have he : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x ≠ 0 ∧ x ≤ p / 2 := by
-    simp +contextual [Nat.lt_succ_iff, Nat.succ_le_iff, pos_iff_ne_zero]
+  have he : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x ≠ 0 ∧ x ≤ p / 2 := by grind
   have hep : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x < p := fun hx =>
     lt_of_le_of_lt (he hx).2 (Nat.div_lt_self hp.1.pos (by decide))
   have hpe : ∀ {x}, x ∈ Ico 1 (p / 2).succ → ¬p ∣ x := fun hx hpx =>
@@ -37,8 +40,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
   have hmem : ∀ (x : ℕ) (_ : x ∈ Ico 1 (p / 2).succ),
       (a * x : ZMod p).valMinAbs.natAbs ∈ Ico 1 (p / 2).succ := by
     intro x hx
-    simp [hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hx, Nat.lt_succ_iff, succ_le_iff,
-      pos_iff_ne_zero, natAbs_valMinAbs_le _]
+    simp [hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hx, one_le_iff_ne_zero, natAbs_valMinAbs_le _]
   have hsurj : ∀ (b : ℕ) (hb : b ∈ Ico 1 (p / 2).succ),
       ∃ x, ∃ _ : x ∈ Ico 1 (p / 2).succ, (a * x : ZMod p).valMinAbs.natAbs = b := by
     intro b hb
@@ -151,7 +153,7 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
     _ = #{x ∈ Ico 1 c.succ | x * b ≤ a} :=
       congr_arg _ <| Finset.ext fun x => by
         have : x * b ≤ a → x ≤ c := fun h => le_trans (by rwa [le_div_iff_mul_le hb0]) hc
-        simp [Nat.lt_succ_iff, le_div_iff_mul_le hb0]; tauto
+        simp [le_div_iff_mul_le hb0]; tauto
 
 /-- The given sum is the number of integer points in the triangle formed by the diagonal of the
   rectangle `(0, p/2) × (0, q/2)`. -/
@@ -186,9 +188,8 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
     Disjoint {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.2 * p ≤ x.1 * q}
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} := by
     apply disjoint_filter.2 fun x hx hpq hqp => ?_
-    have hxp : x.1 < p := lt_of_le_of_lt
-      (show x.1 ≤ p / 2 by simp_all only [Nat.lt_succ_iff, mem_Ico, mem_product])
-      (Nat.div_lt_self hp.1.pos (by decide))
+    have hxp : x.1 < p := lt_of_le_of_lt (b := p / 2)
+      (by grind) (Nat.div_lt_self hp.1.pos (by decide))
     have : (x.1 : ZMod p) = 0 := by
       simpa [hq0] using congr_arg ((↑) : ℕ → ZMod p) (le_antisymm hpq hqp)
     apply_fun ZMod.val at this

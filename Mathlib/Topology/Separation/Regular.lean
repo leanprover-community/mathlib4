@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Topology.Compactness.Lindelof
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -57,6 +59,8 @@ If the space is also Lindelöf:
 * [Willard's *General Topology*][zbMATH02107988]
 
 -/
+
+@[expose] public section
 
 assert_not_exists UniformSpace
 
@@ -127,6 +131,25 @@ theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, _, h⟩ ↦ h
+
+/-- Given a subbasis `s`, it is enough to check the condition of regularity for complements of sets
+in `s`. -/
+theorem regularSpace_generateFrom {s : Set (Set X)} (h : ‹_› = generateFrom s) :
+    RegularSpace X ↔ ∀ t ∈ s, ∀ a ∈ t, Disjoint (𝓝ˢ tᶜ) (𝓝 a) := by
+  refine ⟨fun _ t ht a ha => RegularSpace.regular
+    (h ▸ isOpen_generateFrom_of_mem ht).isClosed_compl
+    (Set.notMem_compl_iff.mpr ha), fun h' => ⟨fun {t a} ht ha => ?_⟩⟩
+  obtain ⟨t, rfl⟩ := compl_involutive.surjective t
+  rw [isClosed_compl_iff, h] at ht
+  rw [Set.notMem_compl_iff] at ha
+  induction ht with
+  | basic t ht => exact h' t ht a ha
+  | univ => simp
+  | inter t₁ t₂ _ _ ih₁ ih₂ => grind [compl_inter, nhdsSet_union, disjoint_sup_left]
+  | sUnion S _ ih =>
+    obtain ⟨t, ht, ha⟩ := ha
+    grw [compl_sUnion, sInter_image, iInter₂_subset t ht]
+    exact ih t ht ha
 
 section
 variable [RegularSpace X] {x : X} {s : Set X}
@@ -293,6 +316,16 @@ theorem exists_compact_closed_between [LocallyCompactSpace X] [RegularSpace X]
   let ⟨L, L_comp, KL, LU⟩ := exists_compact_between hK hU h_KU
   ⟨closure L, L_comp.closure, isClosed_closure, KL.trans <| interior_mono subset_closure,
     L_comp.closure_subset_of_isOpen hU LU⟩
+
+/-- In a (possibly non-Hausdorff) locally compact regular space, for every compact set `K`,
+`𝓝ˢ K` has a basis consisting of closed compact sets. -/
+theorem IsCompact.nhdsSet_basis_isCompact_isClosed
+    [LocallyCompactSpace X] [RegularSpace X] {K : Set X} (hK : IsCompact K) :
+    (𝓝ˢ K).HasBasis (fun L ↦ L ∈ 𝓝ˢ K ∧ IsCompact L ∧ IsClosed L) id := by
+  rw [hasBasis_self, (hasBasis_nhdsSet _).forall_iff (by grind)]
+  intro U ⟨hU, h_KU⟩
+  obtain ⟨L, hL, hL', hKL, hLU⟩ := exists_compact_closed_between hK hU h_KU
+  exact ⟨L, by rwa [← subset_interior_iff_mem_nhdsSet], ⟨hL, hL'⟩, hLU⟩
 
 /-- In a locally compact regular space, given a compact set `K` inside an open set `U`, we can find
 an open set `V` between these sets with compact closure: `K ⊆ V` and the closure of `V` is
@@ -516,8 +549,6 @@ instance [NormalSpace X] : NormalSpace (SeparationQuotient X) where
 
 end SeparationQuotient
 
-variable (X)
-
 end Normality
 
 section CompletelyNormal
@@ -558,6 +589,53 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
     CompletelyNormalSpace (ULift X) :=
   IsEmbedding.uliftDown.completelyNormalSpace
 
+/--
+A space is completely normal iff all open subspaces are normal.
+-/
+theorem completelyNormalSpace_iff_forall_isOpen_normalSpace :
+    CompletelyNormalSpace X ↔ ∀ s : Set X, IsOpen s → NormalSpace s := by
+  refine ⟨fun _ _ _ => inferInstance, fun h => ⟨fun s t hSt hsT => ?_⟩⟩
+  let e := (closure s ∩ closure t)ᶜ
+  have he : IsOpen e := (isClosed_closure.inter isClosed_closure).isOpen_compl
+  specialize h e he
+  have hst : Disjoint (((↑) : e → X) ⁻¹' closure s) (((↑) : e → X) ⁻¹' closure t) := by
+    rw [disjoint_left]
+    intro x hxs hxt
+    exact x.2 ⟨hxs, hxt⟩
+  obtain ⟨U, V, hU, hV, hsU, htV, hUV⟩ := normal_separation
+    (isClosed_closure.preimage continuous_subtype_val)
+    (isClosed_closure.preimage continuous_subtype_val) hst
+  rw [Topology.IsInducing.subtypeVal.isOpen_iff] at hU hV
+  obtain ⟨U, hU, rfl⟩ := hU
+  obtain ⟨V, hV, rfl⟩ := hV
+  rw [← separatedNhds_iff_disjoint]
+  rw [Subtype.preimage_val_subset_preimage_val_iff, inter_comm e, inter_comm e] at hsU htV
+  refine ⟨U ∩ e, V ∩ e, hU.inter he, hV.inter he, ?_, ?_, ?_⟩
+  · intro x hx
+    exact hsU ⟨subset_closure hx, fun h => hsT.notMem_of_mem_left hx h.2⟩
+  · intro x hx
+    exact htV ⟨subset_closure hx, fun h => hSt.notMem_of_mem_left h.1 hx⟩
+  · rw [disjoint_left] at hUV ⊢
+    intro x hxU hxV
+    exact @hUV ⟨x, hxU.2⟩ hxU.1 hxV.1
+
+/--
+A space is completely normal iff it is hereditarily normal.
+-/
+theorem completelyNormalSpace_iff_forall_normalSpace :
+    CompletelyNormalSpace X ↔ ∀ s : Set X, NormalSpace s :=
+  ⟨fun _ _ => inferInstance, fun h =>
+    completelyNormalSpace_iff_forall_isOpen_normalSpace.2 fun s _ => h s⟩
+
+alias ⟨_, CompletelyNormalSpace.of_forall_isOpen_normalSpace⟩ :=
+  completelyNormalSpace_iff_forall_isOpen_normalSpace
+alias ⟨_, CompletelyNormalSpace.of_forall_normalSpace⟩ :=
+  completelyNormalSpace_iff_forall_normalSpace
+
+instance (priority := 100) CompletelyNormalSpace.of_regularSpace_secondCountableTopology
+    [RegularSpace X] [SecondCountableTopology X] : CompletelyNormalSpace X :=
+  .of_forall_normalSpace fun _ => .of_regularSpace_secondCountableTopology
+
 /-- A T₅ space is a completely normal T₁ space. -/
 class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyNormalSpace X
 
@@ -582,6 +660,30 @@ instance [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
 
 instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
   IsEmbedding.uliftDown.t5Space
+
+/--
+A space is a `T5Space` iff all its open subspaces are `T4Space`.
+-/
+theorem t5Space_iff_forall_isOpen_t4Space :
+    T5Space X ↔ ∀ s : Set X, IsOpen s → T4Space s where
+  mp _ _ _ := inferInstance
+  mpr h :=
+    { toCompletelyNormalSpace :=
+        completelyNormalSpace_iff_forall_isOpen_normalSpace.2 fun s hs => (h s hs).toNormalSpace
+      toT1Space :=
+        have := h univ isOpen_univ
+        t1Space_of_injective_of_continuous
+          (fun _ _ => congrArg Subtype.val) (continuous_id.subtype_mk mem_univ) }
+
+/--
+A space is `T5Space` iff it is hereditarily `T4Space`.
+-/
+theorem t5Space_iff_forall_t4Space :
+    T5Space X ↔ ∀ s : Set X, T4Space s :=
+  ⟨fun _ _ => inferInstance, fun h => t5Space_iff_forall_isOpen_t4Space.2 fun s _ => h s⟩
+
+alias ⟨_, T5Space.of_forall_isOpen_t4Space⟩ := t5Space_iff_forall_isOpen_t4Space
+alias ⟨_, T5Space.of_forall_t4Space⟩ := t5Space_iff_forall_t4Space
 
 open SeparationQuotient
 

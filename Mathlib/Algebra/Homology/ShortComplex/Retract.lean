@@ -3,14 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.MorphismProperty.Retract
+public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
 # Quasi-isomorphisms of short complexes are stable under retracts
 
 -/
+
+public section
 
 namespace CategoryTheory
 
@@ -18,7 +21,7 @@ open Limits
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   {S₁ T₁ S₂ T₂ : ShortComplex C}
   [S₁.HasHomology] [T₁.HasHomology] [S₂.HasHomology] [T₂.HasHomology]
   {f₁ : S₁ ⟶ T₁} {f₂ : S₂ ⟶ T₂}

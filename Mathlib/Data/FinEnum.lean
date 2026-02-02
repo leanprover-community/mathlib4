@@ -3,16 +3,20 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Data.List.Pi
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Data.List.Pi
 
 /-!
 Type class for finitely enumerable types. The property is stronger
 than `Fintype` in that it assigns each element a rank in a finite
 enumeration.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -47,7 +51,7 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
   card := xs.length
   equiv :=
     ⟨fun x => ⟨xs.idxOf x, by rw [List.idxOf_lt_length_iff]; apply h⟩, xs.get, fun x => by simp,
-      fun i => by ext; simp [List.idxOf_getElem h']⟩
+      fun i => by ext; simp [h'.idxOf_getElem]⟩
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
 def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum α :=

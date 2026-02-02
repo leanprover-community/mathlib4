@@ -3,11 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Data.Set.BooleanAlgebra
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -22,6 +25,8 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 * `MulAction.stabilizer`
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DistribMulAction
 
@@ -275,9 +280,7 @@ variable (G α)
 @[to_additive /-- The relation 'in the same orbit'. -/]
 def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
-  iseqv :=
-    ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
-      simp +contextual [orbit_eq_iff.symm]⟩
+  iseqv := ⟨mem_orbit_self, mem_orbit_symm.mp, by grind [orbit_eq_iff]⟩
 
 variable {G α}
 

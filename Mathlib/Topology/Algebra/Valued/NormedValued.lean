@@ -3,10 +3,12 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.RingTheory.Valuation.RankOne
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.RingTheory.Valuation.RankOne
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
 # Correspondence between nontrivial nonarchimedean norms and rank one valuations
@@ -24,6 +26,8 @@ THE ABOVE DOCS MUST BE UPDATED!
 norm, nonarchimedean, nontrivial, valuation, rank one
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -37,6 +41,7 @@ variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
 
 namespace NormedField
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on a nonarchimedean normed field `K` defined as `nnnorm`. -/
 def valuation : Valuation K ℝ≥0 where
   toFun           := nnnorm

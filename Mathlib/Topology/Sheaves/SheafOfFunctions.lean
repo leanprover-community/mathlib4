@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.PresheafOfFunctions
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+module
+
+public import Mathlib.Topology.Sheaves.PresheafOfFunctions
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Sheaf conditions for presheaves of (continuous) functions.
@@ -15,7 +17,7 @@ We show that
 
 For
 * `Top.sheafToTop`: continuous functions into a topological space form a sheaf
-please see `Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
+please see `Mathlib/Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
 for constructing sub(pre)sheaves of the sheaf of dependent functions.
 
 ## Future work
@@ -24,6 +26,8 @@ Obviously there's more to do:
 * various classes of smooth and structure-preserving functions
 * functions into spaces with algebraic structure, which the sections inherit
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits TopologicalSpace Opens

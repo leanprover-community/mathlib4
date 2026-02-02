@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Ordered ring homomorphisms
@@ -32,6 +34,8 @@ making some typeclasses and instances irrelevant.
 
 ordered ring homomorphism, order homomorphism
 -/
+
+@[expose] public section
 
 assert_not_exists FloorRing Archimedean
 
@@ -84,7 +88,7 @@ This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
-{ (f : α →+* β) with monotone' := OrderHomClass.monotone f}
+  { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
   `OrderRingHomClass.toOrderRingHom`. -/
@@ -104,7 +108,7 @@ This is declared as the default coercion from `F` to `α ≃+*o β`. -/
 @[coe]
 def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
-{ (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f}
+  { (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
   `OrderRingIsoClass.toOrderRingIso`. -/
@@ -384,6 +388,14 @@ theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e := rfl
 theorem symm_bijective : Bijective (OrderRingIso.symm : (α ≃+*o β) → β ≃+*o α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+@[simp]
+theorem symm_apply_apply (e : α ≃+*o β) (a : α) : e.symm (e a) = a :=
+  e.toRingEquiv.symm_apply_apply a
+
+@[simp]
+theorem apply_symm_apply (e : α ≃+*o β) (b : β) : e (e.symm b) = b :=
+  e.toRingEquiv.apply_symm_apply b
+
 /-- Composition of `OrderRingIso`s as an `OrderRingIso`. -/
 @[trans]
 protected def trans (f : α ≃+*o β) (g : β ≃+*o γ) : α ≃+*o γ :=
@@ -415,6 +427,18 @@ theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl 
   ext e.right_inv
 
 end LE
+
+section Preorder
+
+variable {R S : Type*} [Mul R] [Add R] [Mul S] [Add S] [Preorder R] [Preorder S]
+
+theorem lt_symm_apply (e : R ≃+*o S) {x : R} {y : S} : x < e.symm y ↔ e x < y := by
+  simpa using e.toOrderIso.lt_symm_apply
+
+theorem symm_apply_lt (e : R ≃+*o S) {x : R} {y : S} : e.symm y < x ↔ y < e x := by
+  simpa using e.toOrderIso.symm_apply_lt
+
+end Preorder
 
 section NonAssocSemiring
 

@@ -3,33 +3,40 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
 /-!
-# The (pre)triangulated structure on the opposite category
+# The pretriangulated structure on the opposite category
 
-In this file, we shall construct the (pre)triangulated structure
-on the opposite category `Cᵒᵖ` of a (pre)triangulated category `C`.
+In this file, we construct the pretriangulated structure
+on the opposite category `Cᵒᵖ` of a pretriangulated category `C`.
 
-The shift on `Cᵒᵖ` was constructed in ``CategoryTheory.Triangulated.Opposite.Basic`,
+The shift on `Cᵒᵖ` was constructed in `Mathlib.CategoryTheory.Triangulated.Opposite.Basic`,
 and is such that shifting by `n : ℤ` on `Cᵒᵖ` corresponds to the shift by
-`-n` on `C`. In `CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
+`-n` on `C`. In `Mathlib.CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
 an equivalence `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`, called
-`CategoryTheory.Pretriangulated.triangleOpEquivalence`.
+`Mathlib.CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 
 Here, we defined the notion of distinguished triangles in `Cᵒᵖ`, such that
 `triangleOpEquivalence` sends distinguished triangles in `C` to distinguished triangles
 in `Cᵒᵖ`. In other words, if `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` is a distinguished triangle in `C`,
 then the triangle `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` that is deduced *without introducing signs*
 shall be a distinguished triangle in `Cᵒᵖ`. This is equivalent to the definition
-in [Verdiers's thesis, p. 96][verdier1996] which would require that the triangle
+in [Verdier's thesis, p. 96][verdier1996] which would require that the triangle
 `(op X)⟦-1⟧ ⟶ op Z ⟶ op Y ⟶ op X` (without signs) is *antidistinguished*.
+
+In the file `Mathlib.Triangulated.Opposite.Triangulated`, we show that `Cᵒᵖ` is
+triangulated if `C` is triangulated.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -37,7 +44,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
 
-variable (C : Type*) [Category C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
+variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace Pretriangulated
@@ -187,7 +194,7 @@ open Pretriangulated.Opposite Pretriangulated
 
 variable {C}
 
-lemma map_distinguished_op_exact {A : Type*} [Category A] [Abelian A] (F : Cᵒᵖ ⥤ A)
+lemma map_distinguished_op_exact {A : Type*} [Category* A] [Abelian A] (F : Cᵒᵖ ⥤ A)
     [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
   F.map_distinguished_exact _ (op_distinguished T hT)

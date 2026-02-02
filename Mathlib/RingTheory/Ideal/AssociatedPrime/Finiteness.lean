@@ -3,12 +3,14 @@ Copyright (c) 2025 Jinzhao Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzhao Pan
 -/
-import Mathlib.Order.RelSeries
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Defs
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
+module
+
+public import Mathlib.Order.RelSeries
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 
@@ -38,6 +40,8 @@ associated primes.
 
 -/
 
+@[expose] public section
+
 universe u v
 
 variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
@@ -50,7 +54,7 @@ def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
 open LinearMap in
 theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
     N₁.IsQuotientEquivQuotientPrime N₂ ↔
-      ∃ x, Ideal.IsPrime (ker (toSpanSingleton A _ (N₁.mkQ x))) ∧ N₂ = N₁ ⊔ span A {x} := by
+      ∃ x, Ideal.IsPrime ((⊥ : Submodule A (M ⧸ N₁)).colon {N₁.mkQ x}) ∧ N₂ = N₁ ⊔ span A {x} := by
   let f := mapQ (N₁.submoduleOf N₂) N₁ N₂.subtype le_rfl
   have hf₁ : ker f = ⊥ := ker_liftQ_eq_bot _ _ _ (by simp [ker_comp, submoduleOf])
   have hf₂ : range f = N₂.map N₁.mkQ := by simp [f, mapQ, range_liftQ, range_comp]
@@ -63,8 +67,8 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
       simp [hx'', ← map_smul, Algebra.smul_def, show f _ = 0 ↔ _ from congr(_ ∈ $hf₁),
         Ideal.Quotient.eq_zero_iff_mem]
     · refine le_antisymm ?_ (sup_le h ((span_singleton_le_iff_mem _ _).mpr hx))
-      have : (span A {x}).map N₁.mkQ = ((span A {1}).map e.symm).map f := by
-        simp only [map_span, Set.image_singleton, hx'']
+      have : (span A {x}).map N₁.mkQ = ((span A {1}).map e.symm.toLinearMap).map f := by
+        simp only [map_span, Set.image_singleton, hx'', LinearEquiv.coe_coe]
       rw [← N₁.ker_mkQ, sup_comm, ← comap_map_eq, ← map_le_iff_le_comap, this]
       simp [hf₂, Ideal.Quotient.span_singleton_one]
   · have hxN₂ : x ∈ N₂ := (le_sup_right.trans_eq hx'.symm) (mem_span_singleton_self x)
@@ -89,7 +93,7 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
       s.head = ⊥ ∧ s.last = ⊤ := by
   refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
   rintro N hN ⟨s, hs₁, hs₂⟩
-  have := Submodule.Quotient.nontrivial_of_lt_top _ hN.lt_top
+  have := Submodule.Quotient.nontrivial_iff.mpr hN
   obtain ⟨p, hp, x, rfl⟩ := associatedPrimes.nonempty A (M ⧸ N)
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
   have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
@@ -173,3 +177,28 @@ theorem Ideal.IsMaximal.mem_associatedPrimes_of_isFractionRing [IsFractionRing A
 instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
   (MaximalSpectrum.equivSubtype A).finite_iff.mpr <| Set.finite_coe_iff.mpr <|
     (associatedPrimes.finite A A).subset fun _ ↦ (·.mem_associatedPrimes_of_isFractionRing)
+
+variable {A}
+
+/-- An ideal consisting of zero divisors in a commutative Noetherian ring is annihilated by
+some nonzero element. This is not true in general for finitely generated modules in commutative
+rings, see https://math.stackexchange.com/q/1189814 and http://dx.doi.org/10.2140/pjm.1979.83.375
+(keywords: Property (A), Quentel's Condition (C)).
+
+It is also not true that every finitely generated module over every commutative Noetherian ring
+is annihilated by some nonzero element if each element is annihilated by some nonzero element,
+see https://math.stackexchange.com/a/3187153. -/
+theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
+    (h : Disjoint (I : Set A) (nonZeroDivisors A)) : ⊥ < Module.annihilator A I := by
+  obtain ⟨P, ⟨prime, x, rfl⟩, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=
+    (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0 fun _ h _ _ ↦ h.1).1 <|
+    biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
+  exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
+    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
+      fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
+
+theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :
+    ((I : Set A) ∩ nonZeroDivisors A).Nonempty := by
+  by_contra!
+  exact (bot_lt_annihilator_of_disjoint_nonZeroDivisors
+    (Set.disjoint_iff_inter_eq_empty.mpr this)).ne' <| by rwa [Module.annihilator_eq_bot]

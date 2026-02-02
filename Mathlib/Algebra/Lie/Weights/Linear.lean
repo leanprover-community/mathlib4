@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights
@@ -38,6 +40,8 @@ or `R` has characteristic zero.
   with linear weights.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -91,7 +95,7 @@ abbrev ker := LinearMap.ker (χ : L →ₗ[R] R)
 end Weight
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
-instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
+instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [IsDomain R] [Module.IsTorsionFree R M] :
     LinearWeights R L M :=
   have aux : ∀ (χ : L → R), genWeightSpace M χ ≠ ⊥ → ∀ (x y : L), χ (x + y) = χ x + χ y := by
     have h : ∀ x y, Commute (toEnd R L M x) (toEnd R L M y) := fun x y ↦ by

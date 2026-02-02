@@ -3,10 +3,12 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # The continuous functional calculus for non-unital algebras
@@ -44,6 +46,8 @@ encoded in the `ContinuousMapZero.UniqueHom` class.
 + `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
 
 -/
+
+@[expose] public section
 local notation "σₙ" => quasispectrum
 
 open Topology ContinuousMapZero
@@ -123,7 +127,7 @@ section cfcₙHom
 
 variable {a : A} (ha : p a)
 
-/-- The non-unital star algebra homomorphism underlying a instance of the continuous functional
+/-- The non-unital star algebra homomorphism underlying an instance of the continuous functional
 calculus for non-unital algebras; a version for continuous functions on the quasispectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`.
@@ -219,6 +223,7 @@ variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := 
 variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)
 variable (ha : p a := by cfc_tac)
 
+set_option backward.privateInPublic true in
 lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.restrict⟩, hf0⟩ := by
   rw [cfcₙ_def, dif_pos ⟨ha, hf, hf0⟩]
 
@@ -255,6 +260,7 @@ lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R
   have hg0 : (Function.extend Subtype.val f g) 0 = 0 := by
     rw [← quasispectrum.coe_zero (R := R) a, Subtype.val_injective.extend_apply]
     exact map_zero f
+  generalize Function.extend Subtype.val f g = f' at *
   rw [cfcₙ_apply ..]
   congr!
 
@@ -262,6 +268,7 @@ lemma cfcₙ_eq_cfcₙL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (�
     cfcₙ f a = cfcₙL ha ⟨⟨_, hf.restrict⟩, hf0⟩ := by
   rw [cfcₙ_def, dif_pos ⟨ha, hf, hf0⟩, cfcₙL_apply]
 
+set_option backward.privateInPublic true in
 /-- A version of `cfcₙ_apply` in terms of `ContinuousMapZero.mkD` -/
 lemma cfcₙ_apply_mkD :
     cfcₙ f a = cfcₙHom (a := a) ha (mkD ((quasispectrum R a).restrict f) 0) := by
@@ -272,6 +279,7 @@ lemma cfcₙ_apply_mkD :
       exact f_zero
   · rw [cfcₙ_apply_of_not_continuousOn a f_cont, mkD_of_not_continuousOn f_cont, map_zero]
 
+set_option backward.privateInPublic true in
 /-- A version of `cfcₙ_eq_cfcₙL` in terms of `ContinuousMapZero.mkD` -/
 lemma cfcₙ_eq_cfcₙL_mkD :
     cfcₙ f a = cfcₙL (a := a) ha (mkD ((quasispectrum R a).restrict f) 0) :=
@@ -294,15 +302,18 @@ lemma cfcₙ_commute_cfcₙ (f g : R → R) (a : A) : Commute (cfcₙ f a) (cfc�
   refine cfcₙ_cases (fun x ↦ Commute _ x) a g (by simp) fun hg hg0 _ ↦ ?_
   exact Commute.all _ _ |>.map _
 
+set_option backward.privateInPublic true in
 variable (R) in
 include ha in
 lemma cfcₙ_id : cfcₙ (id : R → R) a = a :=
   cfcₙ_apply (id : R → R) a ▸ cfcₙHom_id (p := p) ha
 
+set_option backward.privateInPublic true in
 variable (R) in
 include ha in
 lemma cfcₙ_id' : cfcₙ (fun x : R ↦ x) a = a := cfcₙ_id R a
 
+set_option backward.privateInPublic true in
 include ha hf hf0 in
 /-- The **spectral mapping theorem** for the non-unital continuous functional calculus. -/
 lemma cfcₙ_map_quasispectrum : σₙ R (cfcₙ f a) = f '' σₙ R a := by
@@ -359,6 +370,7 @@ lemma cfcₙ_const_zero : cfcₙ (fun _ : R ↦ 0) a = 0 := cfcₙ_zero R a
 
 variable {R}
 
+set_option backward.privateInPublic true in
 include hf hf0 hg hg0 in
 lemma cfcₙ_mul : cfcₙ (fun x ↦ f x * g x) a = cfcₙ f a * cfcₙ g a := by
   by_cases ha : p a
@@ -366,6 +378,7 @@ lemma cfcₙ_mul : cfcₙ (fun x ↦ f x * g x) a = cfcₙ f a * cfcₙ g a := b
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
+set_option backward.privateInPublic true in
 include hf hf0 hg hg0 in
 lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := by
   by_cases ha : p a
@@ -436,6 +449,7 @@ lemma cfcₙ_smul_id {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
 lemma cfcₙ_const_mul_id (r : R) (a : A) (ha : p a := by cfc_tac) : cfcₙ (r * ·) a = r • a :=
   cfcₙ_smul_id r a
 
+set_option backward.privateInPublic true in
 include ha in
 lemma cfcₙ_star_id : cfcₙ (star · : R → R) a = star a := by
   rw [cfcₙ_star _ a, cfcₙ_id' R a]
@@ -553,6 +567,7 @@ variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
 variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)
 
+set_option backward.privateInPublic true in
 include hf hf0 hg hg0 in
 lemma cfcₙ_sub : cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := by
   by_cases ha : p a
@@ -560,7 +575,7 @@ lemma cfcₙ_sub : cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := b
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
-lemma cfcₙ_neg : cfcₙ (fun x ↦ - (f x)) a = - (cfcₙ f a) := by
+lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
   by_cases h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
   · obtain ⟨ha, hf, h0⟩ := h
     rw [cfcₙ_apply f a, ← map_neg, cfcₙ_apply ..]
@@ -763,7 +778,7 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum {a : A} (ha : p a) :
     obtain (hx | hx) := hx
     · exact Or.inl ⟨⟨x.1, hx⟩, rfl⟩
     · apply Or.inr
-      simp only [Set.mem_singleton_iff] at hx ⊢
+      push _ ∈ _ at hx ⊢
       rw [show x = 0 from Subtype.val_injective hx, map_zero]
 
 variable [CompleteSpace R]

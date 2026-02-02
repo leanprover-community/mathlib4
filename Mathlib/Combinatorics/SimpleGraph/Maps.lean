@@ -3,9 +3,11 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Dart
-import Mathlib.Data.FunLike.Fintype
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Dart
+public import Mathlib.Data.FunLike.Fintype
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs
@@ -35,6 +37,8 @@ Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
 To make use of pre-existing simp lemmas, definitions involving morphisms are
 abbreviations as well.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -125,9 +129,8 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
     G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [← comap_symm, e.symm_symm]
 
-theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
-  intro G G' h _ _ ha
-  exact h ha
+theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
+  fun _ _ h _ _ ha ↦ h ha
 
 @[simp] lemma comap_bot (f : V → W) : (emptyGraph W).comap f = emptyGraph V := rfl
 
@@ -220,6 +223,13 @@ theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induc
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 
+open Set.Notation in
+theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u : Set V) :
+    (G.induce u).IsCompleteBetween (u ↓∩ s) (u ↓∩ t) := by
+  intro _ hs _ ht
+  rw [comap_adj, Embedding.coe_subtype]
+  exact h hs ht
+
 /-! ## Homomorphisms, embeddings and isomorphisms -/
 
 
@@ -246,6 +256,10 @@ abbrev Iso :=
 @[inherit_doc] infixl:50 " →g " => Hom
 @[inherit_doc] infixl:50 " ↪g " => Embedding
 @[inherit_doc] infixl:50 " ≃g " => Iso
+
+/-- `HomClass F G H` asserts that `F` is a type of adjacency-preserving morphism. -/
+abbrev HomClass (F : Type*) (G : SimpleGraph V) (H : SimpleGraph W) [FunLike F V W] :=
+  RelHomClass F G.Adj H.Adj
 
 namespace Hom
 
@@ -299,21 +313,6 @@ def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
 
 lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
-
-/-- The induced map for spanning subgraphs, which is the identity on vertices. -/
-@[deprecated ofLE (since := "2025-03-17")]
-def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
-  toFun x := x
-  map_rel' ha := h ha
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
-    ofLE h v = ofLE h w ↔ v = w := by simp
-
-@[deprecated "This is true by simp" (since := "2025-03-17")]
-lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
-    Injective (ofLE h) :=
-  fun v w hvw ↦ by simpa using hvw
 
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩

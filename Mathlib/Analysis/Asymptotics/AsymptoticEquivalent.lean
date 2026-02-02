@@ -3,7 +3,9 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.Theta
+module
+
+public import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Asymptotic equivalence
@@ -52,6 +54,8 @@ Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.
 
 -/
+
+@[expose] public section
 
 
 namespace Asymptotics
@@ -197,14 +201,17 @@ theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
     ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v :=
   isEquivalent_iff_exists_eq_mul.mp huv
 
-theorem isEquivalent_of_tendsto_one (hz : ∀ᶠ x in l, v x = 0 → u x = 0)
-    (huv : Tendsto (u / v) l (𝓝 1)) : u ~[l] v := by
-  rw [isEquivalent_iff_exists_eq_mul]
-  exact ⟨u / v, huv, hz.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
+theorem isEquivalent_of_tendsto_one (huv : Tendsto (u / v) l (𝓝 1)) :
+    u ~[l] v := by
+  suffices ∀ᶠ x in l, v x = 0 → u x = 0 by
+    rw [isEquivalent_iff_exists_eq_mul]
+    exact ⟨u / v, huv, this.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
+  by_contra! h
+  replace h : ∃ᶠ t in l, (u / v) t = 0 := h.mono fun x ⟨hv, hu⟩ ↦ by simp [hv]
+  simpa using tendsto_nhds_unique_of_frequently_eq (b := 0) huv tendsto_const_nhds h
 
-theorem isEquivalent_of_tendsto_one' (hz : ∀ x, v x = 0 → u x = 0) (huv : Tendsto (u / v) l (𝓝 1)) :
-    u ~[l] v :=
-  isEquivalent_of_tendsto_one (Eventually.of_forall hz) huv
+@[deprecated (since := "2026-01-26")] alias isEquivalent_of_tendsto_one' :=
+  isEquivalent_of_tendsto_one
 
 theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by
@@ -217,7 +224,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     convert this.add key
     · simp
     · simp
-  · exact isEquivalent_of_tendsto_one (hz.mono fun x hnvz hz ↦ (hnvz hz).elim)
+  · exact isEquivalent_of_tendsto_one
 
 end NormedField
 
@@ -246,8 +253,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     calc
       ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ := by gcongr
       _ ≤ c / 2 / C * (C * ‖v x‖) := by gcongr
-      _ = c / 2 * ‖v x‖ := by
-        field_simp
+      _ = c / 2 * ‖v x‖ := by field
   calc
     ‖((fun x : α ↦ φ x • u x) - v) x‖ = ‖(φ x - 1) • u x + (u x - v x)‖ := by
       simp [sub_smul, sub_add]

@@ -3,9 +3,10 @@ Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+module
 
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.LinearAlgebra.Matrix.Permutation
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
 # Doubly stochastic matrices
@@ -30,6 +31,8 @@ Show that the submonoid of doubly stochastic matrices is the meet of them, or re
 
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
+
+@[expose] public section
 
 open Finset Function Matrix
 

@@ -3,9 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
+module
 
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Ring.WithTop
 
 /-!
 # Conversion from WithTop to Base Type
@@ -16,6 +17,8 @@ maps elements `a : WithTop α` to `α`, by mapping `⊤` to zero.
 For settings where `α` has additional structure, we provide a large number of simplifier lemmas,
 akin to those that already exists for `ENat.toNat`.
 -/
+
+@[expose] public section
 
 namespace WithTop
 variable {α : Type*}
@@ -66,6 +69,13 @@ lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b
     (a + b).untop₀ = a.untop₀ + b.untop₀ := untopD_add ha hb
 
 @[simp]
+lemma untop₀_natCast [AddMonoidWithOne α] (n : ℕ) : untop₀ (n : WithTop α) = n := rfl
+
+@[simp]
+lemma untop₀_ofNat [AddMonoidWithOne α] (n : ℕ) [n.AtLeastTwo] :
+    untop₀ (ofNat(n) : WithTop α) = ofNat(n) := rfl
+
+@[simp]
 lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.untop₀
   | ⊤ => by simp
   | (a : α) => rfl
@@ -79,7 +89,7 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).untop₀ = a.untop₀ * b.untop₀ := untopD_zero_mul a b
 
 /-!
-## Simplifying Lemmas in cases where α is a OrderedAddCommGroup
+## Simplifying Lemmas in cases where α is an OrderedAddCommGroup
 -/
 
 section OrderedAddCommGroup

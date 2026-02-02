@@ -3,16 +3,20 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Creating (co)limits
 
 We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
-(i.e. below) we can lift it to a cone "above", and further that `F` reflects
+(i.e. below), we can lift it to a cone "above", and further that `F` reflects
 limits for `K`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor

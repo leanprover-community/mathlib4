@@ -4,13 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Additional lemmas about monoid and group homomorphisms
 
 -/
+
+@[expose] public section
 
 -- `NeZero` cannot be additivised, hence its theory should be developed outside of the
 -- `Algebra.Group` folder.
@@ -59,11 +63,15 @@ def invMonoidHom : α →* α where
   map_one' := inv_one
   map_mul' := mul_inv
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem invMonoidHom_comp_invMonoidHom : (invMonoidHom (α := α)).comp invMonoidHom = .id _ := by
+  ext; simp
 
 end DivisionCommMonoid
 
@@ -76,7 +84,7 @@ namespace OneHom
 instance [One M] [MulOneClass N] : Mul (OneHom M N) where
   mul f g :=
     { toFun m := f m * g m
-      map_one' := by simp}
+      map_one' := by simp }
 
 @[to_additive (attr := norm_cast)]
 theorem coe_mul {M N} [One M] [MulOneClass N] (f g : OneHom M N) : ⇑(f * g) = ⇑f * ⇑g := rfl
@@ -96,7 +104,7 @@ theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : O
 instance [One M] [InvOneClass N] : Inv (OneHom M N) where
   inv f :=
     { toFun m := (f m)⁻¹
-      map_one' := by simp}
+      map_one' := by simp }
 
 @[to_additive (attr := norm_cast)]
 theorem coe_inv {M N} [One M] [InvOneClass N] (f : OneHom M N) : ⇑(f⁻¹) = (⇑f)⁻¹ := rfl

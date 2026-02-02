@@ -3,12 +3,14 @@ Copyright (c) 2022 Antoine Labelle, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.Quiver.Cast
-import Mathlib.Combinatorics.Quiver.Symmetric
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Equiv.Sum
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Combinatorics.Quiver.Cast
+public import Mathlib.Combinatorics.Quiver.Symmetric
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Equiv.Sum
+public import Mathlib.Tactic.Common
 
 /-!
 # Covering
@@ -41,13 +43,15 @@ Clean up the namespaces by renaming `Prefunctor` to `Quiver.Prefunctor`.
 Cover, covering, quiver, path, lift
 -/
 
+@[expose] public section
+
 
 open Function Quiver
 
 universe u v w
 
-variable {U : Type _} [Quiver.{u + 1} U] {V : Type _} [Quiver.{v + 1} V] (φ : U ⥤q V) {W : Type _}
-  [Quiver.{w + 1} W] (ψ : V ⥤q W)
+variable {U : Type _} [Quiver.{u} U] {V : Type _} [Quiver.{v} V] (φ : U ⥤q V) {W : Type _}
+  [Quiver.{w} W] (ψ : V ⥤q W)
 
 /-- The `Quiver.Star` at a vertex is the collection of arrows whose source is the vertex.
 The type `Quiver.Star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/

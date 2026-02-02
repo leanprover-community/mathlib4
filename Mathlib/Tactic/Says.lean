@@ -3,12 +3,14 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
-import Qq.Match
-import Mathlib.Lean.Elab.InfoTree
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Qq.Match
+public meta import Mathlib.Lean.Elab.InfoTree
+public import Batteries.Linter.UnreachableTactic
+public import Mathlib.Tactic.Basic
 
 /-!
 # The `says` tactic combinator.
@@ -27,6 +29,8 @@ If you use `set_option says.verify true` (set automatically during CI) then `X s
 runs `X` and verifies that it still prints "Try this: Y".
 -/
 
+public meta section
+
 open Lean Elab Tactic
 open Lean.Meta.Tactic.TryThis
 
@@ -35,13 +39,11 @@ namespace Mathlib.Tactic.Says
 /-- If this option is `true`, verify for `X says Y` that `X says` outputs `Y`. -/
 register_option says.verify : Bool :=
   { defValue := false
-    group := "says"
     descr := "Verify the output" }
 
 /-- This option is only used in CI to negate `says.verify`. -/
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
-    group := "says"
     descr := "Disable reverification, even if the `CI` environment variable is set." }
 
 open Parser Tactic

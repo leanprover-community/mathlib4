@@ -3,10 +3,12 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Filtered.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Connected limits in the over category
@@ -18,6 +20,8 @@ In particular, `CostructuredArrow K B` has any connected limit which `C` has.
 From this we deduce the corresponding results for the over category.
 -/
 
+@[expose] public section
+
 universe v' u' v u
 
 -- morphism levels before object levels. See note [category theory universes].
@@ -26,7 +30,7 @@ noncomputable section
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type u'} [Category.{v'} J]
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D] {K : C ⥤ D}
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D] {K : C ⥤ D}
 variable {X : C}
 
 namespace CategoryTheory.CostructuredArrow

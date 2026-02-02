@@ -3,11 +3,14 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Order.Ring.Ordering.Defs
-import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Order.Ring.Ordering.Defs
+public import Mathlib.Algebra.Ring.SumsOfSquares
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Ring
 
 /-!
 # Ring orderings
@@ -19,6 +22,8 @@ We prove basic properties of (pre)orderings on rings and their supports.
 - [*An introduction to real algebra*, T.Y. Lam][lam_1984]
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] {P : RingPreordering R}
 
@@ -133,7 +138,7 @@ theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport :
   set y := (1 + x) * half
   set z := (1 - x) * half
   rw [show x = y ^ 2 - z ^ 2 by
-    linear_combination (- x - x * half * 2) * h2]
+    linear_combination (-x - x * half * 2) * h2]
   ring_nf
   aesop (add simp sub_eq_add_neg)
 
@@ -160,7 +165,7 @@ instance : P.HasIdealSupport where
 @[simp] theorem support_eq_bot : P.support = ⊥ := by
   simpa [← Submodule.toAddSubgroup_inj] using supportAddSubgroup_eq_bot P
 
-instance : P.support.IsPrime := by simpa using Ideal.bot_prime
+instance : P.support.IsPrime := by simpa using Ideal.isPrime_bot
 
 end Field
 

@@ -3,12 +3,17 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Tactic.CC.MkProof
+module
+
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.CC.Lemmas
+public import Mathlib.Tactic.CC.MkProof
 
 /-!
-# Process when an new equation is added to a congruence closure
+# Process when a new equation is added to a congruence closure
 -/
+
+public meta section
 
 universe u
 
@@ -501,7 +506,7 @@ def setACVar (e : Expr) : CCM Unit := do
     let newRootEntry := { rootEntry with acVar := some e }
     modify fun ccs => { ccs with entries := ccs.entries.insert eRoot newRootEntry }
 
-/-- If `e` isn't an AC variable, set `e` as an new AC variable. -/
+/-- If `e` isn't an AC variable, set `e` as a new AC variable. -/
 def internalizeACVar (e : Expr) : CCM Bool := do
   let ccs ← get
   if ccs.acEntries.contains e then return false
@@ -603,7 +608,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     let state ← get
     if state.ignoreInstances then
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
-    if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
+    if state.hoFns.isSome && fn.isConst && !((state.hoFns.getD default).contains fn.constName) then
       for h : i in [:apps.size] do
         let arg := apps[i].appArg!
         addOccurrence e arg false
@@ -959,7 +964,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
       { ccs with
         subsingletonReprs := ccs.subsingletonReprs.insert typeRoot e }
 
-/-- Add an new entry for `e` to the congruence closure. -/
+/-- Add a new entry for `e` to the congruence closure. -/
 partial def mkEntry (e : Expr) (interpreted : Bool) : CCM Unit := do
   if (← getEntry e).isSome then return
   let constructor ← isConstructorApp e

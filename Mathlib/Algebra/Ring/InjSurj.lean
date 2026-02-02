@@ -3,10 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
@@ -21,6 +23,8 @@ as we want the multiplicative versions to be `∀ x n, f (x ^ n) = f x ^ n`.
 As a result, we must use `Function.swap` when using additivised transfer definitions in
 non-additivised ones.
 -/
+
+@[expose] public section
 
 variable {R S : Type*}
 
@@ -95,7 +99,7 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg 
     hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
-    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc] ) }
+    intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc]) }
 
 /-- A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative group with one.

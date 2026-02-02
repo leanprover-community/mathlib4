@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.GroupTheory.OrderOfElement
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Lemmas about rings of characteristic two
@@ -14,6 +16,8 @@ This file contains results about `CharP R 2`, in the `CharTwo` namespace.
 The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_char` lemmas
 elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
+
+public section
 
 assert_not_exists Algebra LinearMap
 

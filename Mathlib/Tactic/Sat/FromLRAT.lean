@@ -3,8 +3,11 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # `lrat_proof` command
@@ -39,6 +42,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
+
+@[expose] public meta section
 
 open Lean hiding Literal
 open Std (HashMap)
@@ -111,6 +116,7 @@ all literals in the clause are falsified. -/
 def Valuation.satisfies (v : Valuation) : Clause → Prop
   | [] => False
   | l::c => v.neg l → v.satisfies c
+termination_by structural ps => ps
 
 /-- `v.satisfies_fmla f` asserts that formula `f` is satisfied by the valuation.
 A formula is satisfied if all clauses in it are satisfied. -/
@@ -146,6 +152,7 @@ This is used to introduce assumptions about the first `n` values of `v` during r
 def Valuation.implies (v : Valuation) (p : Prop) : List Prop → Nat → Prop
   | [], _ => p
   | a::as, n => (v n ↔ a) → v.implies p as (n + 1)
+termination_by structural ps => ps
 
 /-- `Valuation.mk [a, b, c]` is a valuation which is `a` at 0, `b` at 1 and `c` at 2, and false
 everywhere else. -/
@@ -153,6 +160,7 @@ def Valuation.mk : List Prop → Valuation
   | [], _ => False
   | a::_, 0 => a
   | _::as, n + 1 => mk as n
+termination_by structural ps => ps
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
@@ -549,7 +557,7 @@ but not the reification theorem. Returns:
   * `proof`: A proof of `ctx.proof []`
 -/
 def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
-  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs cnf.mkIterator
+  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startPos⟩
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
@@ -563,7 +571,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     safety      := DefinitionSafety.safe
   }
   let ctx := mkConst ctxName
-  let Parsec.ParseResult.success _ steps := Parser.parseLRAT lrat.mkIterator
+  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startPos⟩
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
   let declName ← mkAuxDeclName (name ++ `proof)
@@ -619,8 +627,7 @@ elab "lrat_proof " n:(ident <|> "example")
     let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
-      withSaveInfoContext do
-        Term.addTermInfo' n (mkConst name) (isBinder := true)
+      addTermInfo' n (← mkConstWithLevelParams name) (isBinder := true) |>.run'
     if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example

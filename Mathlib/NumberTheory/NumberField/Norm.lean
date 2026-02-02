@@ -3,9 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Eric Rodriguez
 -/
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.RingTheory.Norm.Transitivity
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Localization.NormTrace
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields
@@ -19,6 +21,8 @@ rings of integers.
   `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
 
 -/
+
+@[expose] public section
 
 
 open scoped NumberField
@@ -69,7 +73,7 @@ theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞
   classical
   refine ⟨fun hx => ?_, IsUnit.map _⟩
   replace hx : IsUnit (algebraMap (𝓞 K) (𝓞 L) <| norm K x) := hx.map (algebraMap (𝓞 K) <| 𝓞 L)
-  refine @isUnit_of_mul_isUnit_right (𝓞 L) _
+  refine @isUnit_of_mul_isUnit_right (𝓞 L) _ _
     ⟨(univ \ {AlgEquiv.refl}).prod fun σ : Gal(L/K) => σ x,
       prod_mem fun σ _ => x.2.map (σ : L →+* L).toIntAlgHom⟩ _ ?_
   convert hx using 1
@@ -106,8 +110,6 @@ theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :
   letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)
   haveI : FiniteDimensional F L := FiniteDimensional.right K F L
-  haveI : IsAlgClosure K (AlgebraicClosure F) :=
-    IsAlgClosure.ofAlgebraic K F (AlgebraicClosure F)
   haveI : IsGalois F L := IsGalois.tower_top_of_isGalois K F L
   calc
     IsUnit (norm K x) ↔ IsUnit ((norm K) x ^ finrank F L) :=

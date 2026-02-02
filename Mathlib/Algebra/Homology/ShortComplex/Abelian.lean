@@ -3,9 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.Homology
-import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Abelian categories have homology
@@ -24,6 +25,8 @@ provide a `HomologyData`) is obtained by using the
 coimage-image isomorphism in abelian categories.
 
 -/
+
+@[expose] public section
 
 universe v u
 

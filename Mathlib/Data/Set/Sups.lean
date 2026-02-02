@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.NAry
-import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Order.SupClosed
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Set family operations
@@ -27,6 +29,8 @@ We define the following notation in scope `SetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
+
+@[expose] public section
 
 
 open Function

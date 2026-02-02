@@ -3,8 +3,10 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -48,6 +50,8 @@ Proof from the Book" by John McCuan:
 boolean ring, generalized boolean algebra, boolean algebra, symmetric difference, bi-implication,
 Heyting
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -238,8 +242,6 @@ theorem inf_le_bihimp {a b : α} : a ⊓ b ≤ a ⇔ b :=
   inf_le_inf le_himp le_himp
 
 theorem bihimp_eq_sup_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
-
-@[deprecated (since := "2025-06-05")] alias bihimp_eq_inf_himp_inf := bihimp_eq_sup_himp_inf
 
 theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
   rw [bihimp, h.himp_eq_left, h.himp_eq_right]

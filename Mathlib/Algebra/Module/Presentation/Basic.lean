@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Presentations of modules
@@ -35,6 +37,8 @@ generators and relations.
 * Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -444,7 +448,7 @@ def down (h : IsPresentationCore.{max w' w''} solution) :
     IsPresentationCore.{w''} solution where
   desc s := ULift.moduleEquiv.toLinearMap.comp
     (h.desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
-  postcomp_desc s:= by
+  postcomp_desc s := by
     simpa using congr_postcomp
       (h.postcomp_desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
         ULift.moduleEquiv.toLinearMap

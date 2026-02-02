@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Faithful group actions
@@ -24,6 +26,8 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 
 group action
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -66,6 +70,7 @@ alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faith
 
 instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
+@[to_additive]
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
     [MulOneClass A] [SMul R A] [IsScalarTower R A A] :
     FaithfulSMul R A ↔ Injective (fun r : R ↦ r • (1 : A)) := by
@@ -73,6 +78,32 @@ lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
   · simp only at hr
     rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
   · simpa using hr 1
+
+@[to_additive]
+theorem faithfulSMul_iff [Group G] [MulAction G α] :
+    FaithfulSMul G α ↔ (∀ g : G, (∀ a : α, g • a = a) → g = 1) := by
+  refine ⟨fun h a ha ↦ h.eq_of_smul_eq_smul ?_, fun h ↦ ⟨fun {a₁ a₂} h' ↦ ?_⟩⟩
+  · simpa only [one_smul]
+  · rw [← inv_inv a₂, eq_inv_of_mul_eq_one_left (h (a₂⁻¹ * a₁) ?_), inv_inv]
+    simpa only [mul_smul, inv_smul_eq_iff] using h'
+
+@[to_additive]
+lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S] [MulOneClass T]
+    [SMul R S] [SMul R T] [MulAction S T]
+    [IsScalarTower R S S] [IsScalarTower R T T]
+    [IsScalarTower R S T] [FaithfulSMul R T] : FaithfulSMul R S := by
+  rw [faithfulSMul_iff_injective_smul_one]
+  refine .of_comp (f := (· • (1 : T))) ?_
+  simpa [Function.comp_def, one_smul, ← faithfulSMul_iff_injective_smul_one]
+
+@[to_additive]
+lemma FaithfulSMul.trans (R S T : Type*) [Monoid S] [MulOneClass T]
+    [SMul R S] [IsScalarTower R S S] [MulAction S T] [IsScalarTower S T T]
+    [SMul R T] [IsScalarTower R T T] [IsScalarTower R S T] [FaithfulSMul R S]
+    [FaithfulSMul S T] : FaithfulSMul R T := by
+  simpa [faithfulSMul_iff_injective_smul_one, Function.comp_def] using
+    ((faithfulSMul_iff_injective_smul_one S T).mp ‹_›).comp
+      ((faithfulSMul_iff_injective_smul_one R S).mp ‹_›)
 
 /--
 Let `Q / P / N / M` be a tower. If `Q / N / M`, `Q / P / M` and `Q / P / N` are
@@ -82,3 +113,7 @@ scalar towers, then `P / N / M` is also a scalar tower.
     [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [SMul P Q] [FaithfulSMul P Q]
     [IsScalarTower M N Q] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N P where
   smul_assoc m n p := by simp_rw [← (smul_left_injective' (α := Q)).eq_iff, smul_assoc]
+
+open MulOpposite in
+instance [SMul α M] [FaithfulSMul α M] : FaithfulSMul α Mᵐᵒᵖ where
+  eq_of_smul_eq_smul h := FaithfulSMul.eq_of_smul_eq_smul fun m ↦ op_inj.mp <| h (op m)

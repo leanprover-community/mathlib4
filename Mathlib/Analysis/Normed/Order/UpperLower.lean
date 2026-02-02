@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Pi
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Topology.Algebra.Order.UpperLower
-import Mathlib.Topology.MetricSpace.Sequences
+module
+
+public import Mathlib.Algebra.Order.Field.Pi
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Topology.Algebra.Order.UpperLower
+public import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -27,6 +29,8 @@ apply to `ℝ`, `ℝ × ℝ`, `EuclideanSpace ι ℝ`? `_pi` has been appended t
 from the other possible lemmas, but we will want there to be a single set of lemmas for all
 situations.
 -/
+
+public section
 
 open Bornology Function Metric Set
 open scoped Pointwise
@@ -129,7 +133,7 @@ lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   grw [hy i] -- TODO(gcongr): we would like `grw [hy]` to work here
 
 lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
+  simpa only [dist_comm] using dist_mono_left_pi (y := x)
 
 lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)

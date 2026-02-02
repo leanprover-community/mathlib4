@@ -3,15 +3,17 @@ Copyright (c) 2023 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.Order.GroupWithZero.Finset
-import Mathlib.Algebra.Order.Ring.Finset
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.Fin.Tuple.Finset
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.Order.GroupWithZero.Finset
+public import Mathlib.Algebra.Order.Ring.Finset
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Fin.Tuple.Finset
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.GCongr
 
 /-!
 # The Schwartz-Zippel lemma
@@ -49,6 +51,8 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 * [schwartz_1980]
 * [zippel_1979]
 -/
+
+public section
 
 open Fin Finset Fintype
 
@@ -154,7 +158,7 @@ lemma schwartz_zippel_sup_sum :
           _ ≤ p.degreeOf 0 := by
             have :
               (ofLex (AddMonoidAlgebra.supDegree toLex p'.leadingCoeff)).cons k ∈ p.support := by
-              rwa [← support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
+              rwa [← mem_support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
                 ← Polynomial.leadingCoeff, ← hpₖ, ← leadingCoeff_toLex,
                 AddMonoidAlgebra.leadingCoeff_ne_zero toLex.injective]
             simpa using monomial_le_degreeOf 0 this

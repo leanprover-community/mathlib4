@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -14,6 +16,8 @@ providing the same statements for higher smoothness. In this file, we do the sam
 differentiability.
 
 -/
+
+public section
 
 open Set ChartedSpace IsManifold
 open scoped Topology Manifold
@@ -263,12 +267,12 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
-  ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp_mdifferentiableWithinAt x
+  ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
     (hf.prodMk hg)
 
 theorem MDifferentiableAt.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
     (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
-  ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp x (hf.prodMk hg)
+  ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)
 
 theorem MDifferentiableOn.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableOn I 𝓘(𝕜) f s)
     (hg : MDifferentiableOn I 𝓘(𝕜, V) g s) : MDifferentiableOn I 𝓘(𝕜, V) (fun p => f p • g p) s :=

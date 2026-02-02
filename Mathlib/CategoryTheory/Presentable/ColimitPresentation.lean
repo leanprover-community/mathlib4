@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Presentation
-import Mathlib.CategoryTheory.Presentable.Finite
+module
+
+public import Mathlib.CategoryTheory.Limits.Presentation
+public import Mathlib.CategoryTheory.Presentable.Finite
 
 /-!
 # Presentation of a colimit of objects equipped with a presentation
@@ -15,13 +17,15 @@ import Mathlib.CategoryTheory.Presentable.Finite
 
 -/
 
+@[expose] public section
+
 universe s t w v u
 
 namespace CategoryTheory.Limits.ColimitPresentation
 
 variable {C : Type u} [Category.{v} C]
 
-variable {J : Type*} {I : J → Type*} [Category J] [∀ j, Category (I j)]
+variable {J : Type*} {I : J → Type*} [Category* J] [∀ j, Category (I j)]
   {D : J ⥤ C} {P : ∀ j, ColimitPresentation (I j) (D.obj j)}
 
 set_option linter.unusedVariables false in
