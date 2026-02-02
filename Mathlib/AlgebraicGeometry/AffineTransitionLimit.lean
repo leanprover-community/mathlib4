@@ -1131,9 +1131,12 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
   classical
+  -- The open cover of `c := lim Dᵢ` indexed by triplets of affine opens `(U, V, W)` with
+  -- `U ⊆ c`, `V ⊆ X`, `W ⊆ S` such that `U` maps to `V` maps to `W`.
   have 𝒰 := (c.pt.isBasis_affineOpens).isOpenCover_mem_and_le
     (((X.isBasis_affineOpens).isOpenCover_mem_and_le
     ((S.isBasis_affineOpens).isOpenCover.comap f.base.hom)).comap a.base.hom)
+  -- By qcqs, this cover descends to some finite affine open cover `𝒱` of `Dᵢ`.
   obtain ⟨i, s, 𝒱, h𝒱, h𝒱𝒰⟩ := Scheme.exists_isOpenCover_and_isAffine D c hc _ 𝒰 fun U ↦ U.2.1
   obtain ⟨i', fi'i, hi'⟩ : ∃ (i' : I) (fi'i : i' ⟶ i),
       ∀ j, D.map fi'i ⁻¹ᵁ 𝒱 j ≤ t.app i' ⁻¹ᵁ j.1.1.2.1.2.1 := by
@@ -1147,6 +1150,9 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     refine (Hom.preimage_mono _ (hk _)).trans ?_
     simp only [← Hom.comp_preimage, t.naturality, Functor.const_obj_obj,
       Functor.const_obj_map, Category.comp_id, le_refl]
+  -- Using the affine version `exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine`,
+  -- one can now factor `Dⱼ ⁻¹ 𝒱ⱼ ⟶ lim Dᵢ ⟶ X` through some `Dⱼₖ ⁻¹ 𝒱ⱼ` for each `𝒱ⱼ`,
+  -- and by finite-ness we may chose a fixed `k` that works for every `j`.
   have : ∃ k, ∃ (fk : k ⟶ i), ∀ j, ∃ (ak : ↑(D.map fk ⁻¹ᵁ 𝒱 j) ⟶ X),
       ak ≫ f = Opens.ι _ ≫ t.app k ∧ c.π.app _ ∣_ _ ≫ ak = Opens.ι _ ≫ a := by
     let 𝒱' := (D.map fi'i ⁻¹ᵁ 𝒱 ·)
@@ -1178,6 +1184,9 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
       simpa [← AlgebraicGeometry.Scheme.Hom.resLE_eq_morphismRestrict,
         Scheme.Hom.resLE_comp_resLE_assoc] using congr(Scheme.homOfLE _ e ≫ $(hk j) ≫ Opens.ι _)
   choose k fki ak hak hak' using this
+  -- We may then find an `l` for each `j₁` and `j₂` such that the map `Dⱼ₁ₗ ⁻¹ 𝒱ⱼ₁ ⟶ X` and
+  -- `Dⱼ₂ₗ ⁻¹ 𝒱ⱼ₂ ⟶ X` agrees on the intersection in `Dₗ`.
+  -- And again by finiteness we may choose a global `l`.
   obtain ⟨l, flk, hl⟩ : ∃ (l : I) (flk : l ⟶ k), ∀ j₁ j₂, Scheme.homOfLE _ inf_le_left ≫
       D.map flk ∣_ _ ≫ ak j₁ = Scheme.homOfLE _ inf_le_right ≫ D.map flk ∣_ _ ≫ ak j₂ := by
     let 𝒱' := (D.map fki ⁻¹ᵁ 𝒱 ·)
@@ -1203,6 +1212,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
       simp only [← Functor.map_comp, reassoc_of% hl']; rfl
     simpa [← Scheme.Hom.resLE_eq_morphismRestrict, Scheme.Hom.resLE_comp_resLE_assoc,
       ← Functor.map_comp, hl'] using congr((D.map (fl'l (j₁, j₂))).resLE _ _ H ≫ $(hflk j₁ j₂))
+  -- We may glue the morphisms into `Dₗ ⟶ X` and verify that it indeed satisfies the hypothesis.
   let h𝒲 := (h𝒱.comap (D.map fki).base.hom).comap (D.map flk).base.hom
   let 𝒲 := Scheme.openCoverOfIsOpenCover _ (D.map flk ⁻¹ᵁ D.map fki ⁻¹ᵁ 𝒱 ·) h𝒲
   let F := 𝒲.glueMorphisms (fun j ↦ D.map flk ∣_ D.map fki ⁻¹ᵁ 𝒱 j ≫ ak j) (fun j₁ j₂ ↦ by
