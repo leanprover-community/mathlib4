@@ -13,15 +13,25 @@ public import Mathlib.Tactic.LinearCombination
 /-!
 # Real Closed Field
 
+A field `R` is real closed if all of the following hold:
+1. `R` is real (that is, `-1` is not a sum of squares in `R`).
+2. for every `x` in `R`, one of `x` or `-x` is a square.
+3. every odd-degree polynomial over `R` has a root in `R`.
+
+A real closed field is an algebraic generalisation of the real numbers.
+
 In this file we define real closed fields and prove some of their properties.
+
+TODO (Artie Khovanov) : equivalent conditions for a real field to be real closed
+TODO (Artie Khovanov) : reals, hyperreals, surreals all form real closed fields
 
 ## Main Definitions
 
-- `IsRealClosed R` is the typeclass saying `F` is a real closed field.
+- `IsRealClosed R` is the typeclass saying `R` is a real closed field.
 
 ## Tags
 
-real closed
+real closed, rcf
 
 -/
 
@@ -29,10 +39,11 @@ real closed
 
 open Polynomial
 
-/-- A field `R` is real closed if all the following hold:
-    1. `R` is real
-    2. for all `x ∈ R`, either `x` or `-x` is a square
-    3. every odd-degree polynomial has a root.
+/--
+A field `R` is real closed if all of the following hold:
+1. `R` is real (that is, `-1` is not a sum of squares in `R`).
+2. for every `x` in `R`, one of `x` or `-x` is a square.
+3. every odd-degree polynomial over `R` has a root in `R`.
 -/
 class IsRealClosed (R : Type*) [Field R] : Prop extends IsSemireal R where
   isSquare_or_isSquare_neg (x : R) : IsSquare x ∨ IsSquare (-x)
