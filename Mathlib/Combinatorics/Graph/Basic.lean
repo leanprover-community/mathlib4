@@ -38,6 +38,8 @@ For `G : Graph α β`, ...
 * `G.IsNonloopAt e x` means that `e` is a non-loop edge with one end equal to `x`.
 * `G.incidenceSet x` is the set of edges incident to `x`.
 * `G.loopSet x` is the set of loops with both ends equal to `x`.
+* `G.copy` creates a definitional copy of a graph with propositionally equal data.
+* `G.Compatible H` means that `G` and `H` agree on the incidence relation for their shared edges.
 
 ## Implementation notes
 
@@ -171,15 +173,6 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
 @[simp]
 lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
   mt IsLink.edge_mem he
-
--- A graph G and H has the same IsLink iff there is a pair of vertices they agree on.
-lemma isLink_eq_isLink_iff_exists_isLink_of_mem_edgeSet (heG : e ∈ E(G)) :
-    G.IsLink e = H.IsLink e ↔ ∃ x y, G.IsLink e x y ∧ H.IsLink e x y := by
-  refine ⟨fun h ↦ ?_, fun ⟨x, y, hG, hH⟩ ↦ ?_⟩
-  · simp only [← h, and_self]
-    exact (G.edge_mem_iff_exists_isLink e).mp heG
-  · ext u v
-    rw [hG.isLink_iff_sym2_eq, hH.isLink_iff_sym2_eq]
 
 /-! ### Edge-vertex incidence -/
 
@@ -411,5 +404,53 @@ theorem mem_loopSet (x : α) (e : β) : e ∈ G.loopSet x ↔ G.IsLoopAt e x :=
 
 /-- The loopSet is included in the incidenceSet. -/
 theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := fun _ he ↦ ⟨x, he⟩
+
+/-!
+### Compatibility of Graphs
+
+We define two graphs to be `Compatible` if for each edge belonging to their shared edge set,
+the incidence relation (i.e., which pairs of vertices it links) is the same in both graphs.
+-/
+
+/-- Two graphs are `Compatible` if the edges in their intersection agree on their ends -/
+def Compatible (G H : Graph α β) : Prop := EqOn G.IsLink H.IsLink (E(G) ∩ E(H))
+
+lemma Compatible.isLink_eq (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compatible H) :
+    G.IsLink e = H.IsLink e :=
+  h ⟨heG, heH⟩
+
+@[simp]
+lemma Compatible.refl (G : Graph α β) : G.Compatible G :=
+  eqOn_refl ..
+
+instance : Std.Refl (Compatible : Graph α β → Graph α β → Prop) where
+  refl G := Compatible.refl G
+
+@[symm]
+lemma Compatible.symm (h : G.Compatible H) : H.Compatible G := by
+  rwa [Compatible, inter_comm, eqOn_comm]
+
+instance : Std.Symm (Compatible : Graph α β → Graph α β → Prop) where
+  symm _ _ := Compatible.symm
+
+lemma IsLink.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G.IsLink e x y) :
+    H.IsLink e x y := by
+  rwa [← hGH ⟨h.edge_mem, heH⟩]
+
+lemma Compatible.of_disjoint_edgeSet (h : Disjoint E(G) E(H)) : Compatible G H := by
+  simp [Compatible, h.inter_eq]
+
+lemma Inc.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G.Inc e x) : H.Inc e x := by
+  obtain ⟨y, hy⟩ := h
+  exact ⟨y, hy.of_compatible hGH heH⟩
+
+lemma IsLoopAt.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G.IsLoopAt e x) :
+    H.IsLoopAt e x :=
+  IsLink.of_compatible hGH heH h
+
+lemma IsNonloopAt.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G.IsNonloopAt e x) :
+    H.IsNonloopAt e x := by
+  obtain ⟨y, hne, hy⟩ := h
+  exact ⟨y, hne, hy.of_compatible hGH heH⟩
 
 end Graph
