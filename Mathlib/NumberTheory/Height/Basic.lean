@@ -477,14 +477,14 @@ We prove the general case (finite sums of arbitrary length) first and deduce the
 for sums of two elements from it.
 -/
 
-namespace Height
+namespace Finset
 
-variable {K : Type*} [Field K]
+variable {R S : Type*} [Semiring R] [CommSemiring S] [LinearOrder S] [IsOrderedRing S]
 
-open Finset in
--- The "local" version of the height bound for arbitrary sums for archimedean `v`.
-private lemma max_abv_sum_one_le (v : AbsoluteValue K ℝ) {ι : Type*} {s : Finset ι}
-    (hs : s.Nonempty) (x : ι → K) :
+/-- The "local" version of the height bound for arbitrary sums for general (possibly archimedean)
+absolute values. -/
+lemma max_abv_sum_one_le [CharZero S] (v : AbsoluteValue R S) {ι : Type*} {s : Finset ι}
+    (hs : s.Nonempty) (x : ι → R) :
     max (v (∑ i ∈ s, x i)) 1 ≤ #s * ∏ i ∈ s, max (v (x i)) 1 := by
   refine sup_le ?_ ?_
   · rw [← nsmul_eq_mul, ← sum_const]
@@ -496,15 +496,22 @@ private lemma max_abv_sum_one_le (v : AbsoluteValue K ℝ) {ι : Type*} {s : Fin
     · simp [hs]
     · exact s.one_le_prod fun _ ↦ le_max_right ..
 
--- The "local" version of the height bound for arbitrary sums for nonarchimedean `v`.
-private lemma max_abv_sum_one_le_of_nonarch {v : AbsoluteValue K ℝ} (hv : IsNonarchimedean v)
-    {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (x : ι → K) :
+/-- The "local" version of the height bound for arbitrary sums for nonarchimedean
+absolute values. -/
+lemma max_abv_sum_one_le_of_isNonarchimedean {v : AbsoluteValue R S} (hv : IsNonarchimedean v)
+   {ι : Type*} (s : Finset ι) (x : ι → R) :
     max (v (∑ i ∈ s, x i)) 1 ≤ ∏ i ∈ s, max (v (x i)) 1 := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp
   refine sup_le ?_ <| s.one_le_prod fun _ ↦ le_max_right ..
   grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
-  exact Finset.sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ Finset.le_prod_max_one hi fun i ↦ v (x i)
+  exact sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
 
-variable [AdmissibleAbsValues K]
+end Finset
+
+namespace Height
+
+variable {K : Type*} [Field K] [AdmissibleAbsValues K]
 
 open AdmissibleAbsValues Real
 
@@ -526,7 +533,7 @@ lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α
       refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
       · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
           s.mulSupport_prod fun i (v : nonarchAbsVal) ↦ max (v.val (x i)) 1
-      · exact fun v ↦ max_abv_sum_one_le_of_nonarch (isNonarchimedean _ v.prop) hs x
+      · exact fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
     _ = _ := by
       rw [finprod_prod_comm _ _ fun i _ ↦ mulSupport_max_nonarchAbsVal_finite (x i),
         prod_map_mul, prod_map_prod, map_const', prod_replicate, prod_mul_distrib]
