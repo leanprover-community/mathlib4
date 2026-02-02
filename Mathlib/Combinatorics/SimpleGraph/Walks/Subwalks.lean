@@ -138,6 +138,7 @@ theorem isSubwalk_iff_darts_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : 
     have := h i
     grind [fst_darts_getElem]
 
+@[simp]
 theorem isSubwalk_nil_iff_mem_support {u v v'} (p : G.Walk u v) :
     (nil : G.Walk v' v').IsSubwalk p ↔ v' ∈ p.support :=
   isSubwalk_iff_support_isInfix.trans <| p.support.singleton_infix_iff _
