@@ -1262,6 +1262,7 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.AffineSpace
 public import Mathlib.AlgebraicGeometry.AffineTransitionLimit
 public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.ColimitsOver
 public import Mathlib.AlgebraicGeometry.Cover.Directed
 public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Cover.Open
@@ -2737,6 +2738,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
@@ -4975,6 +4977,7 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
@@ -5006,6 +5009,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+public import Mathlib.MeasureTheory.Function.Piecewise
 public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
@@ -6313,6 +6317,7 @@ public import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Polynomial.IntegralNormalization
 public import Mathlib.RingTheory.Polynomial.IrreducibleRing
 public import Mathlib.RingTheory.Polynomial.IsIntegral
+public import Mathlib.RingTheory.Polynomial.Morse
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 public import Mathlib.RingTheory.Polynomial.Opposites
 public import Mathlib.RingTheory.Polynomial.Pochhammer
@@ -6607,11 +6612,6 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.ByContra
-public import Mathlib.Tactic.CC
-public import Mathlib.Tactic.CC.Addition
-public import Mathlib.Tactic.CC.Datatypes
-public import Mathlib.Tactic.CC.Lemmas
-public import Mathlib.Tactic.CC.MkProof
 public import Mathlib.Tactic.CancelDenoms
 public import Mathlib.Tactic.CancelDenoms.Core
 public import Mathlib.Tactic.Cases
@@ -7380,6 +7380,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 public import Mathlib.Topology.Order
+public import Mathlib.Topology.Order.AtTopBotIxx
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Category.AlexDisc
