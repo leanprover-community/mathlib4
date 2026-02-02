@@ -53,7 +53,7 @@ noncomputable def fiberHomeomorph {x : X} (h : IsEvenlyCovered f x I) : I ≃ₜ
     invFun e := (H ⟨e, by rwa [Set.mem_preimage, (e.2 : f e = x)]⟩).2
     left_inv _ := by simp
     right_inv e := Set.inclusion_injective (Set.preimage_mono (Set.singleton_subset_iff.mpr hxU)) <|
-      H.injective <| Prod.ext (Subtype.ext <| by simpa [hH] using e.2.symm) (by simp)
+      H.injective <| Prod.ext (Subtype.ext <| by simpa [hH] using e.2.symm) (by simp [Subtype.map])
     continuous_toFun := by fun_prop
     continuous_invFun := by fun_prop }
 
