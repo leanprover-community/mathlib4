@@ -264,7 +264,6 @@ structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   /-- Returns whether `x` is less than, equal to or greater than `y`. -/
   compare (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
 
-whatsnew in
 /-- Stores all of the normalization procedures on the coefficient type.
 
 `ring` implements these using `norm_num`
