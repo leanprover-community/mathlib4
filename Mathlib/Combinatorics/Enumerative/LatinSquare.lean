@@ -16,6 +16,7 @@ import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.LinearAlgebra.Matrix.Defs
+import Mathlib.Logic.Equiv.Embedding
 
 /-!
 # LatinSquare
@@ -50,7 +51,6 @@ variable {n n' : Type u'} [Fintype n] [Fintype n']--[DecidableEq α]
 variable {α β : Type v} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
 
 section LatinSquare
-
 
 -- abbrev symbols (M : Fin m → Fin n → α) : Finset α :=
 --   (Finset.image fun (x,y) ↦ M x y) Finset.univ
@@ -589,11 +589,12 @@ theorem latin_rectangle_extends
     obtain ⟨f, hf⟩ := h
     have f_inj : Function.Injective f := by
       sorry
+    set f' : k ↪ n := ⟨f, f_inj⟩ with hf'
     have h_Cs_card : Finset.card Cs = Fintype.card k := by
       unfold Cs
       obtain ⟨f, hf⟩ := row_entry_to_column_entry A x
       simp [hf]
-    let g : Cs -> As := fun x => ⟨f x, by
+    let g : Cs -> As := fun x => ⟨f' x, by
       simp only [As]
       rw [Finset.mem_def] 
       simp only [Matrix.col_apply, 
@@ -603,8 +604,36 @@ theorem latin_rectangle_extends
         Finset.mem_univ, 
         true_and]
       use x
-      rw [hf]⟩
-    have gbij : Function.Bijective g := by sorry
+      rw [hf,<- Function.Embedding.toFun_eq_coe]⟩
+
+    have ginj : Function.Injective g := by 
+      simp [Function.Injective,g]
+
+    have gsurj : Function.Surjective g := by 
+      have As_is_f_image : As = Finset.image f Finset.univ := by 
+        sorry
+      unfold Function.Surjective
+      unfold g
+      simp
+      rw [As_is_f_image]
+      simp only [f'] 
+      intro x' 
+      rw [Finset.mem_image]
+      intro ha
+      have h := A.once_per_row
+      unfold once_per_row at h
+      obtain ⟨a, ha⟩ := ha
+      use a
+      refine ⟨ ?_, ha.2 ⟩
+      simp [Cs]
+      have h' := (h a).2
+      unfold Matrix.row at h'
+      simp [Function.Surjective] at h'
+      specialize h' x
+      exact h'
+
+    have gbij : Function.Bijective g := ⟨ginj,gsurj⟩
+      
     let As_to_Cs : Cs ≃ As := Equiv.ofBijective g gbij
     have h_As_card : Finset.card As = Fintype.card k := by 
       rw [<- h_Cs_card]
