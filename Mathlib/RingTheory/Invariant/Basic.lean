@@ -393,8 +393,8 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
 
 /--
-The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the finite
-extension `B ⧸ Q` of `A ⧸ P`.
+The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the residue fields
+extension `B ⧸ Q` over `A ⧸ P`.
 -/
 noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
     haveI := Q.normal_inertia_subgroupOf_stabilizer P G
