@@ -478,7 +478,7 @@ lemma add_lt_add_iff_of_left_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
     c + a < c + b ↔ a < b := by
   simpa [add_comm] using add_lt_add_iff_of_right_lt_aleph0 (a:=a) (b:=b) hc
 
-lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
+protected lemma add_lt_add {κ₁ κ₂ μ₁ μ₂ : Cardinal}
     (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
   rcases le_or_gt ℵ₀ (κ₂ + μ₂) with hinf | hfin
   · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> solve | assumption | simp
@@ -493,43 +493,43 @@ section mul_strictMono
 
 variable {n : ℕ} {a b : Cardinal}
 
-lemma natCast_mul_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun a : Cardinal ↦ n * a := by
-  match n, hneq0 with
+lemma natCast_mul_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ n * a := by
+  match n, hn with
   | 1, _ => simpa using strictMono_id
   | (n + 1) + 1, hneq1 =>
     intro a μ hlt
     push_cast
     conv_lhs => rw [add_mul, one_mul]
     conv_rhs => rw [add_mul, one_mul]
-    refine Cardinal.add_lt_add_of_lt_of_lt ?_ hlt
+    refine Cardinal.add_lt_add ?_ hlt
     simpa using (natCast_mul_strictMono (Nat.succ_ne_zero n) hlt)
 
-lemma mul_natCast_strictMono (hneq0 : n ≠ 0) : StrictMono fun a : Cardinal ↦ a * n :=
-  fun _ _ hlt => by simpa [mul_comm] using natCast_mul_strictMono hneq0 hlt
+lemma mul_natCast_strictMono (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ a * n :=
+  fun _ _ hlt => by simpa [mul_comm] using natCast_mul_strictMono hn hlt
 
 @[simp]
-lemma natCast_mul_cancel_iff (hneq0 : n ≠ 0) : n * a = n * b ↔ a = b :=
-  (natCast_mul_strictMono hneq0).injective.eq_iff
+lemma natCast_mul_inj (hn : n ≠ 0) : n * a = n * b ↔ a = b :=
+  (natCast_mul_strictMono hn).injective.eq_iff
 
 @[simp]
-lemma mul_natCast_cancel_iff (hneq0 : n ≠ 0) : a * n = b * n ↔ a = b :=
-  (mul_natCast_strictMono hneq0).injective.eq_iff
+lemma mul_natCast_inj (hn : n ≠ 0) : a * n = b * n ↔ a = b :=
+  (mul_natCast_strictMono hn).injective.eq_iff
 
 @[simp]
-lemma natCast_mul_le_natCast_mul (hneq0 : n ≠ 0) : n * a ≤ n * b ↔ a ≤ b :=
-  (natCast_mul_strictMono hneq0).le_iff_le
+lemma natCast_mul_le_natCast_mul (hn : n ≠ 0) : n * a ≤ n * b ↔ a ≤ b :=
+  (natCast_mul_strictMono hn).le_iff_le
 
 @[simp]
-lemma mul_natCast_le_mul_natCast (hneq0 : n ≠ 0) : a * n ≤ b * n ↔ a ≤ b :=
-  (mul_natCast_strictMono hneq0).le_iff_le
+lemma mul_natCast_le_mul_natCast (hn : n ≠ 0) : a * n ≤ b * n ↔ a ≤ b :=
+  (mul_natCast_strictMono hn).le_iff_le
 
 @[simp]
-lemma natCast_mul_lt_natCast_mul (hneq0 : n ≠ 0) : n * a < n * b ↔ a < b :=
-  (natCast_mul_strictMono hneq0).lt_iff_lt
+lemma natCast_mul_lt_natCast_mul (hn : n ≠ 0) : n * a < n * b ↔ a < b :=
+  (natCast_mul_strictMono hn).lt_iff_lt
 
 @[simp]
-lemma mul_natCast_lt_mul_natCast (hneq0 : n ≠ 0) : a * n < b * n ↔ a < b :=
-  (mul_natCast_strictMono hneq0).lt_iff_lt
+lemma mul_natCast_lt_mul_natCast (hn : n ≠ 0) : a * n < b * n ↔ a < b :=
+  (mul_natCast_strictMono hn).lt_iff_lt
 
 end mul_strictMono
 
