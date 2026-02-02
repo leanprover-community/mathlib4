@@ -6,7 +6,7 @@ Authors: Kim Morrison, Kyle Miller
 module
 
 public meta import Mathlib.Util.AddRelatedDecl
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public meta import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -48,27 +48,29 @@ universe u
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
+-- attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise {C : Type*} [Category* C] [HasForget C]
-    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
+theorem hom_elementwise {C : Type*} [Category* C]
+    {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type*}
+    {_ : outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC]
+    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : CC X) : f x = g x := by rw [h]
 
 end theorems
 
 /-- List of simp lemmas to apply to the elementwise theorem. -/
 def elementwiseThms : List Name :=
   [ -- HasForget lemmas
-    ``CategoryTheory.coe_id, ``CategoryTheory.coe_comp, ``CategoryTheory.comp_apply,
-    ``CategoryTheory.id_apply,
+    ``ConcreteCategory.coe_id, ``ConcreteCategory.coe_comp,
+    ``CategoryTheory.comp_apply, ``CategoryTheory.id_apply,
     -- ConcreteCategory lemmas
     ``CategoryTheory.hom_id, ``CategoryTheory.hom_comp, ``id_eq, ``Function.comp_apply,
     -- further simplifications if the category is `Type`
     ``forget_hom_Type, ``forall_congr_forget_Type, ``types_comp_apply, ``types_id_apply,
     -- further simplifications to turn `HasForget` definitions into `ConcreteCategory` ones
     -- (if available)
-    ``forget_obj, ``ConcreteCategory.forget_map_eq_coe, ``coe_toHasForget_instFunLike,
+    ``forget_obj, -- ``ConcreteCategory.forget_map_eq_coe, ``coe_toHasForget_instFunLike,
     -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
     -- easier to detect when this has occurred.
     ``implies_true]

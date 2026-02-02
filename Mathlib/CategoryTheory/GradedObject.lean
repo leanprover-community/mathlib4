@@ -5,7 +5,7 @@ Authors: Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Algebra.Group.Int.Defs
@@ -280,12 +280,24 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasCoproducts.{0} C]
-  [HasZeroMorphisms C]
+variable (C : Type (u + 1)) [LargeCategory C]
+variable {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [ConcreteCategory C FC]
+variable [HasCoproducts.{0} C] [HasZeroMorphisms C]
 
-instance : HasForget (GradedObject β C) where forget := total β C ⋙ forget C
+-- TODO: find a less hacky solution
 
-instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
+instance :
+    letI := FunLike.ofFaithful (total β C ⋙ forget C)
+    ConcreteCategory (GradedObject β C) (fun X Y ↦ X ⟶ Y) :=
+  letI := FunLike.ofFaithful (total β C ⋙ forget C)
+  ConcreteCategory.ofForget (total β C ⋙ forget C)
+
+instance :
+    letI := FunLike.ofFaithful (total β C ⋙ forget C)
+    HasForget₂ (GradedObject β C) C :=
+  letI := FunLike.ofFaithful (total β C ⋙ forget C)
+  { forget₂ := total β C }
 
 end
 

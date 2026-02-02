@@ -5,7 +5,7 @@ Authors: Kim Morrison, Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Images
@@ -40,25 +40,25 @@ Since instance synthesis only looks through reducible definitions, we need to he
 over the instances that wouldn't be found otherwise.
 -/
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
+-- attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
-instance : (@forget (Type u) _ ConcreteCategory.toHasForget).Full :=
+instance : (forget (Type u)).Full :=
   Functor.Full.id
 
-instance : PreservesLimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : PreservesLimitsOfSize (forget (Type u)) :=
   id_preservesLimitsOfSize
-instance : PreservesColimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : PreservesColimitsOfSize (forget (Type u)) :=
   id_preservesColimitsOfSize
 
-instance : ReflectsLimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : ReflectsLimitsOfSize (forget (Type u)) :=
   id_reflectsLimits
-instance : ReflectsColimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : ReflectsColimitsOfSize (forget (Type u)) :=
   id_reflectsColimits
 
-instance : (@forget (Type u) _ ConcreteCategory.toHasForget).IsEquivalence :=
+instance : (forget (Type u)).IsEquivalence :=
   Functor.isEquivalence_refl
 
-instance : (@forget (Type u) _ ConcreteCategory.toHasForget).IsCorepresentable :=
+instance : (forget (Type u)).IsCorepresentable :=
   instIsCorepresentableIdType
 
 end CategoryTheory.Types
@@ -70,7 +70,8 @@ section Limits
 /-- If a functor `G : J ⥤ C` to a concrete category has a limit and that `forget C`
 is corepresentable, then `(G ⋙ forget C).sections` is small. -/
 lemma small_sections_of_hasLimit
-    {C : Type u} [Category.{v} C] [HasForget.{v} C]
+    {C : Type u} [Category.{v} C] {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type v}
+    [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC]
     [(forget C).IsCorepresentable] {J : Type w} [Category.{t} J] (G : J ⥤ C) [HasLimit G] :
     Small.{v} (G ⋙ forget C).sections := by
   rw [← Types.hasLimit_iff_small_sections]
