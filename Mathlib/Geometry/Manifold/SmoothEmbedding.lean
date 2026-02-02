@@ -105,6 +105,23 @@ lemma comp [CompleteSpace E₁] [CompleteSpace E₃] [CompleteSpace E₄]
     IsSmoothEmbedding I J' n (g ∘ f) :=
   ⟨hg.isImmersion.comp hf.isImmersion, hg.isEmbedding.comp hf.isEmbedding⟩
 
+/-- If `g` and `g ∘ f` are smooth embeddings, so is `f`. -/
+lemma of_comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    [CompleteSpace E₁] [CompleteSpace E₂] [CompleteSpace E₃]
+    [IsManifold I 1 M] [IsManifold I n M] [IsManifold J 1 N] [IsManifold J n N]
+    (hg : IsSmoothEmbedding J I' n g)
+    (hfg : IsSmoothEmbedding I I' n (g ∘ f)) :
+    IsSmoothEmbedding I J n f := by
+  have := hg.isImmersion.of_comp hfg.isImmersion
+  exact ⟨this, .of_comp this.contMDiff.continuous hg.isEmbedding.continuous hfg.isEmbedding⟩
+
+/-- If `g` is a smooth embedding, `g ∘ f` is a smooth embedding iff `f` is. -/
+lemma of_comp_iff [CompleteSpace E₁] [CompleteSpace E₂] [CompleteSpace E₃]
+    [IsManifold I 1 M] [IsManifold I n M] [IsManifold J 1 N] [IsManifold J n N]
+    [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'} (hg : IsSmoothEmbedding J I' n g) :
+    IsSmoothEmbedding I I' n (g ∘ f) ↔ IsSmoothEmbedding I J n f :=
+  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
+
 /-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` is injective. -/
 theorem mfderiv_injective [CompleteSpace E₁] [CompleteSpace E₃]
     [IsManifold I n M] [IsManifold I 1 M] [IsManifold J n N] [IsManifold J 1 N]

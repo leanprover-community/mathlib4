@@ -216,6 +216,14 @@ lemma comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).Spl
         · rw [Submodule.add_eq_sup, ← codisjoint_iff, ← LinearMap.range_eq_map]
           exact hg.isCompl_complement.2
 
+lemma of_comp {g : F →L[𝕜] G} (hg : g.Splits) (hfg : (g.comp f).Splits) : f.Splits := by
+  refine ⟨.of_comp (by simpa using hfg.injective), ?_, ?_⟩
+  · sorry -- reasonably easy, e.g. using sequences: extract as separate lemma!
+  · sorry -- see paper for a proof
+
+lemma of_comp_iff {g : F →L[𝕜] G} (hg : g.Splits) : (g.comp f).Splits ↔ f.Splits :=
+  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
+
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
   hf.comp f₀.splits

@@ -518,7 +518,7 @@ theorem _root_.isImmersionAtOfComplement_iff_msplitsAt {x : M} :
   -- This direction uses the inverse function theorem: this is the hard part!
   sorry
 
-/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+/-- If `f` is an immersion at `x` and `g` is an immersion at `f x`,
 then `g ∘ f` is an immersion at `x`. -/
 lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
     (hg : IsImmersionAtOfComplement F' J I' n g (f x))
@@ -526,6 +526,22 @@ lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
     IsImmersionAtOfComplement (F × F') I I' n (g ∘ f) x := by
   rw [isImmersionAtOfComplement_iff_msplitsAt] at hf hg ⊢
   exact hg.comp hf
+
+/-- If `f` is an immersion at `x` and `g ∘ f` is an immersion at `f x`,
+then `f` is an immersion at `x`. -/
+lemma of_comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    (hg : IsImmersionAtOfComplement F' J I' n g (f x))
+    (hfg : IsImmersionAtOfComplement (F × F') I I' n (g ∘ f) x) :
+    IsImmersionAtOfComplement F I J n f x := by
+  rw [isImmersionAtOfComplement_iff_msplitsAt] at hg hfg ⊢
+  exact hg.of_comp hfg
+
+/-- If `f` is an immersion at `x`, then `g ∘ f` is an immersion at `f x`
+if and only if `f` is an immersion at `x`. -/
+lemma of_comp_iff [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    (hg : IsImmersionAtOfComplement F' J I' n g (f x)) :
+    IsImmersionAtOfComplement (F × F') I I' n (g ∘ f) x ↔ IsImmersionAtOfComplement F I J n f x :=
+  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
 
 /-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` is injective. -/
 theorem mfderiv_injective {x : M} (h : IsImmersionAtOfComplement F I J n f x) :
@@ -749,13 +765,28 @@ theorem _root_.isImmersionAt_iff_msplitsAt {x : M} [IsManifold J n N] :
   -- rw [← isImmersionAtOfComplement_iff_msplitsAt (n := n)] at h
   sorry
 
-/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+/-- If `f` is an immersion at `x` and `g` is an immersion at `f x`,
 then `g ∘ f` is an immersion at `x`. -/
 lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
     (hg : IsImmersionAt J I' n g (f x)) (hf : IsImmersionAt I J n f x) :
     IsImmersionAt I I' n (g ∘ f) x := by
   rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
   exact hg.comp hf
+
+/-- If `f` is an immersion at `x` and `g ∘ f` is an immersion at `f x`,
+then `f` is an immersion at `x`. -/
+lemma of_comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    (hg : IsImmersionAt J I' n g (f x)) (hfg : IsImmersionAt I I' n (g ∘ f) x) :
+    IsImmersionAt I J n f x := by
+  rw [isImmersionAt_iff_msplitsAt] at hg hfg ⊢
+  exact hg.of_comp hfg
+
+/-- If `f` is an immersion at `x`, then `g ∘ f` is an immersion at `f x`
+if and only if `f` is an immersion at `x`. -/
+lemma of_comp_iff [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    (hg : IsImmersionAt J I' n g (f x)) :
+    IsImmersionAt I I' n (g ∘ f) x ↔ IsImmersionAt I J n f x :=
+  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
 
 /-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` is injective. -/
 theorem mfderiv_injective {x : M} (h : IsImmersionAt I J n f x) :
@@ -877,23 +908,26 @@ variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
 
 /-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` splits. -/
 theorem msplits [IsManifold I n M] [IsManifold J n N]
-    (h : IsImmersionOfComplement F I J n f) : MSplits I J f :=
-  fun x ↦ (h x).msplitsAt
+    (h : IsImmersionOfComplement F I J n f) : MSplits I J f := by
+  rw [msplits_iff]
+  exact fun x ↦ (h x).msplitsAt
 
 /-- `f` is an immersion at `x` iff `mfderiv I J f x` splits. -/
 theorem _root_.isImmersionOfComplement_iff_msplits [IsManifold I n M] [IsManifold J n N] :
     IsImmersionOfComplement F I J n f ↔ MSplits I J f := by
-  simp_rw [IsImmersionOfComplement, MSplits, isImmersionAtOfComplement_iff_msplitsAt]
+  simp_rw [IsImmersionOfComplement, msplits_iff, isImmersionAtOfComplement_iff_msplitsAt]
 
 /- TODO: this statement needs some thought --- what is the right complement?
 In particular, is there *one* complement we can synthesize? Might be slightly tricky...
-/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+/-- If `f` is an immersion at `x` and `g` is an immersion at `f x`,
 then `g ∘ f` is an immersion at `x`. -/
 lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
-    (hg : IsImmersionOfComplement F J I' n g) (hf : IsImmersionOfComplement F I J n f) :
+    (hg : IsImmersionOfComplement F' J I' n g) (hf : IsImmersionOfComplement F I J n f) :
     IsImmersionOfComplement _ I I' n (g ∘ f) := by
   --rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
   sorry -- exact hg.comp hf -/
+
+-- add IsImmersion.of_comp and .of_comp_iff
 
 /-- If `f` is a `C^n` immersion, each differential `mfderiv I J f x` is injective. -/
 theorem mfderiv_injective [IsManifold I n M] [IsManifold J n N]
@@ -990,13 +1024,28 @@ theorem _root_.isImmersion_iff_msplits [IsManifold I n M] [IsManifold I 1 M] [Is
   -- TODO: obtain a complement from MSplits... somehow!
   sorry
 
-/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+/-- If `f` is an immersion at `x` and `g` is an immersion at `f x`,
 then `g ∘ f` is an immersion at `x`. -/
 lemma comp [IsManifold I' 1 M'] [IsManifold I n M] [IsManifold J n N] [IsManifold I' n M']
     {g : N → M'} (hg : IsImmersion J I' n g) (hf : IsImmersion I J n f) :
     IsImmersion I I' n (g ∘ f) := by
   rw [isImmersion_iff_msplits] at hf hg ⊢
   exact hg.comp hf
+
+/-- If `g` is an immersion at `f x` and `g ∘ f` is an immersion at `x`,
+then `f` is an immersion at `x`. -/
+lemma of_comp [IsManifold I' 1 M'] [IsManifold I n M] [IsManifold J n N] [IsManifold I' n M']
+    {g : N → M'} (hg : IsImmersion J I' n g) (hfg : IsImmersion I I' n (g ∘ f)) :
+    IsImmersion I J n f := by
+  rw [isImmersion_iff_msplits] at hfg hg ⊢
+  exact hg.of_comp hfg
+
+/-- If `g` is an immersion at `f x` and `g ∘ f` is an immersion at `x`,
+then `f` is an immersion at `x`. -/
+lemma of_comp_iff [IsManifold I' 1 M'] [IsManifold I n M] [IsManifold J n N] [IsManifold I' n M']
+    {g : N → M'} (hg : IsImmersion J I' n g) :
+    IsImmersion I I' n (g ∘ f) ↔ IsImmersion I J n f :=
+  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
 
 /-- If `f` is a `C^n` immersion, each differential `mfderiv I J f x` is injective. -/
 theorem mfderiv_injective [IsManifold I n M] [IsManifold J n N]

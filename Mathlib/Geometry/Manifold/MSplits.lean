@@ -261,6 +261,15 @@ lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
   rw [MSplitsAt] at hf hg
   apply hg.comp hf -/
 
+lemma of_comp {g : M' → N} (hg : MSplitsAt I' J g (f x)) (hfg : MSplitsAt I J (g ∘ f) x) :
+    MSplitsAt I I' f x := by
+  sorry -- reduce to Splits.of_comp and some local computation
+
+lemma of_comp_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {g : M' → N} (hg : MSplitsAt I' J g (f x)) :
+    MSplitsAt I J (g ∘ f) x ↔ MSplitsAt I I' f x :=
+  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
+
 lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     (hf : MSplitsAt I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
     (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
@@ -341,6 +350,15 @@ lemma _root_.Diffeomorph.splits (f : Diffeomorph I I' M M' n) (hn : n ≠ 0) : M
 lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {g : M' → N} (hg : MSplits I' J g) (hf : MSplits I I' f) : MSplits I J (g ∘ f) :=
   fun x ↦ (hg (f x)).comp (hf x)
+
+lemma of_comp {g : M' → N} (hg : MSplits I' J g) (hfg : MSplits I J (g ∘ f)) :
+    MSplits I I' f := by
+  rw [msplits_iff] at hg hfg ⊢
+  exact fun x ↦ (hg (f x)).of_comp (hfg x)
+
+lemma of_comp_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {g : M' → N} (hg : MSplits I' J g) : MSplits I J (g ∘ f) ↔ MSplits I I' f :=
+  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
 
 lemma comp_isLocalDiffeomorph_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     (hf : MSplits I I' f) {f₀ : N → M} (hf₀ : IsLocalDiffeomorph J I n f₀) (hn : n ≠ 0) :
