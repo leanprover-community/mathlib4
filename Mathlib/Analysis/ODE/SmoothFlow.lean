@@ -61,6 +61,8 @@ namespace SmoothFlow
 
 noncomputable section
 
+/-! ## Technical definitions and lemmas for converting `C(Icc tmin tmax, E)` to `ℝ → E` -/
+
 variable
   {E : Type*} [NormedAddCommGroup E]
 
@@ -123,13 +125,16 @@ lemma _root_.Continuous.continuous_compProj_pi_apply₂ {X : Type*} [Topological
     Continuous (fun p : X × ℝ ↦ fun i ↦ compProj t₀ (f p.1 i) p.2) :=
   continuous_pi fun i ↦ ((continuous_apply i).comp hf).continuous_compProj_pi₂ t₀
 
+/-! ## Construction of the integral term as a continuous multilinear map on the space of curves -/
+
 variable [NormedSpace ℝ E]
 
 /-- The integral
 $$\int_{t₀}^t g(\alpha(\tau))(d\alpha_1(\tau),\cdots,d\alpha_n(\tau)) \,d\tau,$$
 where `g : x → E [×n]→L[ℝ] E` has the same type as the `n`-th iterated derivative of `f : E → E`.
-This is defined so that its derivative with respect to `α` will yield the same integral expression,
-but with `n` replaced by `n + 1` and `g` replaced by its derivative. -/
+
+This is defined so that its derivative with respect to the curve `α` will yield the same integral
+expression, but with `n` replaced by `n + 1` and `g` replaced by its derivative. -/
 def integralFun {n : ℕ} (g : E → E [×n]→L[ℝ] E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (α : C(Icc tmin tmax, E)) (dα : Fin n → C(Icc tmin tmax, E)) (t : Icc tmin tmax) : E :=
   ∫ τ in t₀..t, g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)
@@ -300,6 +305,164 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     integralCMLM g u t₀ α dα = 0 := by
   rw [integralCMLM, dif_neg hg, zero_apply]
 
+/-! ## Derivative of `integralCMLM` -/
+
+/-- If `f` is continuous on an open set `u` containing a compact set `s`, then for any `ε > 0`,
+there exists `δ > 0` such that for any `x ∈ s` and any `y` with `dist x y < δ`, we have `y ∈ u`
+and `dist (f x) (f y) < ε`.
+
+This combines uniform continuity on compact sets with the fact that
+a compact set has positive distance from the complement of an open set containing it. -/
+-- TODO: add to Mathlib?
+lemma _root_.IsCompact.exists_mem_open_dist_lt_of_continuousOn
+    {X : Type*} [PseudoMetricSpace X] {Y : Type*} [PseudoMetricSpace Y]
+    {u : Set X} {s : Set X} {f : X → Y} (hs : IsCompact s) (hf : ContinuousOn f u) (hu : IsOpen u)
+    (hsu : s ⊆ u) {ε : ℝ} (hε : 0 < ε) :
+    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → y ∈ u ∧ dist (f x) (f y) < ε := by
+  obtain ⟨δ₁, hδ₁, hthick⟩ := hs.exists_thickening_subset_open hu hsu
+  -- Each `x ∈ s` is associated with a ball in which the value of `f` is close to `f x`
+  have h := fun x (hx : x ∈ s) ↦ Metric.continuousOn_iff.mp hf x (hsu hx) (ε / 2) (half_pos hε)
+  choose δₓ hδₓ h using h
+  let c : s → Set X := fun ⟨x, hx⟩ ↦ ball x (δₓ x hx)
+  have hcover : s ⊆ ⋃ i, c i := fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, mem_ball_self (hδₓ x hx)⟩
+  -- Lebesgue number lemma extracts a uniform radius for all `x ∈ s`
+  obtain ⟨δ₂, hδ₂, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
+  refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun x hx y hxy ↦ ?_⟩
+  have hy : y ∈ u := by
+    apply hthick
+    rw [mem_thickening_iff]
+    refine ⟨x, hx, ?_⟩
+    rw [dist_comm]
+    exact hxy.trans_le (min_le_left _ _)
+  refine ⟨hy, ?_⟩
+  obtain ⟨⟨z, hz⟩, hball⟩ := hleb x hx
+  have hx' : dist x z < (δₓ z hz) := by
+    rw [← mem_ball]
+    exact hball (mem_ball_self hδ₂)
+  have hy' : dist y z < (δₓ z hz) := by
+    rw [← mem_ball]
+    apply hball
+    rw [mem_ball, dist_comm]
+    exact hxy.trans_le (min_le_right _ _)
+  calc
+    _ ≤ dist (f x) (f z) + dist (f z) (f y) := dist_triangle _ _ _
+    _ = dist (f x) (f z) + dist (f y) (f z) := by rw [dist_comm (f z) (f y)]
+    _ < ε / 2 + ε / 2 := add_lt_add
+        (h z hz x (hsu hx) (Metric.mem_ball.mp hx'))
+        (h z hz y hy (Metric.mem_ball.mp hy'))
+    _ = ε := by ring
+
+omit [CompleteSpace E] in
+/-- If `g` is `C^1` on an open set `u` and `h` provides uniform control on the derivative's
+variation near a point `x ∈ u`, then `g` is well-approximated by its derivative with error
+proportional to the displacement. -/
+-- TODO: look at this and maybe add to Mathlib
+lemma norm_image_sub_fderiv_le {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {g : E → F} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u)
+    {x y : E} {C δ : ℝ} (hxy : ‖y - x‖ < δ)
+    (h : ∀ z, dist x z < δ → z ∈ u ∧ dist (fderiv ℝ g x) (fderiv ℝ g z) < C) :
+    ‖g y - g x - (fderiv ℝ g x) (y - x)‖ ≤ C * ‖y - x‖ := by
+  apply Convex.norm_image_sub_le_of_norm_fderiv_le' _ _ (convex_segment x y)
+    (left_mem_segment ℝ x y) (right_mem_segment ℝ x y)
+  · intro z hz
+    apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
+    apply (h z _).1
+    apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
+    rwa [dist_comm, dist_eq_norm]
+  · intro z hz
+    rw [← dist_eq_norm, dist_comm]
+    apply (h z _).2.le
+    apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
+    rwa [dist_comm, dist_eq_norm]
+
+omit [CompleteSpace E] in
+-- TODO: add to Mathlib?
+lemma _root_.ContDiffOn.continuousOn_fderiv_uncurryLeft
+    {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
+    ContinuousOn (fun x ↦ (fderiv ℝ g x).uncurryLeft (Ei := fun _ ↦ E)) u :=
+  (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm.continuous.comp_continuousOn
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl)
+
+/-- Helper lemma which reduces a bound on `integralCMLM`s as `ContinuousLinearMap`s to a bound on
+integrands as elements of `E` -/
+lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
+    (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    {α α' : C(Icc tmin tmax, E)} (hα : range α ⊆ u) (hα' : range α' ⊆ u) {ε : ℝ} (hε : 0 < ε)
+    (h : ∀ t, ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
+        (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ (α' - α) t)‖ ≤
+      ε / (1 + |tmax - tmin|) * ‖α' - α‖) :
+    ‖integralCMLM g u t₀ α' - integralCMLM g u t₀ α -
+      (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α).curryLeft (α' - α)‖ ≤
+      ε * ‖α' - α‖ := by
+  refine opNorm_le_bound (by positivity) fun dα ↦ ?_
+  rw [ContinuousMap.norm_le _ (by positivity)]
+  intro t
+  have hg' := hg.continuousOn_fderiv_uncurryLeft hu
+  have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα' dα t₀ t
+  have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
+  have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons (α' - α) dα) t₀ t
+  simp only [sub_apply, curryLeft_apply, integralCMLM_apply_if_pos hg.continuousOn,
+    integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, integralCM_apply_if_pos hα',
+    integralCM_apply_if_pos hα, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
+    ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
+  set C := ε / (1 + |tmax - tmin|) * ‖α' - α‖ * ∏ i, ‖dα i‖ with hC
+  refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) ?_).trans ?_
+  · intro τ _
+    simp only [ContinuousLinearMap.uncurryLeft_apply, Fin.cons_zero, Fin.tail_def, Fin.cons_succ,
+      ← ContinuousMultilinearMap.sub_apply, hC]
+    refine (le_opNorm _ _).trans ?_
+    apply mul_le_mul (h τ)
+      (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ (dα _).norm_coe_le_norm _)
+      (by positivity) (by positivity)
+  · rw [hC, mul_comm, ← mul_assoc, ← mul_assoc, mul_div_left_comm]
+    gcongr
+    apply mul_le_of_le_one_right hε.le
+    rw [div_le_one (by positivity)]
+    linarith [abs_nonneg (tmax - tmin), Icc.abs_sub_le t t₀]
+
+/-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
+`integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. -/
+lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) :
+    HasFDerivAt (integralCMLM g u t₀)
+      ((integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α).curryLeft) α := by
+  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
+  intro ε hε
+  obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα (by positivity : 0 < ε / (1 + |tmax - tmin|))
+  rw [Metric.eventually_nhds_iff]
+  refine ⟨δ, hδ, fun α' hdist ↦ ?_⟩
+  have hα' : range α' ⊆ u := fun _ ⟨t, ht⟩ ↦ ht ▸ (h (α t) (mem_range_self t) _ (by
+    rw [dist_comm, dist_eq_norm]
+    exact (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt (dist_eq_norm α' α ▸ hdist))).1
+  -- Reduce bound on `ContinuousLinearMap`s to a bound on elements of `E`
+  refine norm_integralCMLM_sub_fderiv_le hg hu t₀ hα hα' hε fun t ↦ ?_
+  calc
+    _ = ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
+        (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ α' t - compProj t₀ α t)‖ := by
+      simp only [compProj, ContinuousMap.sub_apply]
+    _ ≤ ε / (1 + |tmax - tmin|) * ‖compProj t₀ α' t - compProj t₀ α t‖ := by
+      refine norm_image_sub_fderiv_le hg hu ?_ fun z hz ↦ h _ (mem_range_self _) z hz
+      exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist)
+    _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
+      gcongr; exact ContinuousMap.norm_coe_le_norm (α' - α) _
+
+/-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
+`integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Uncurrying of multilinear maps
+is needed to ensure the types on both sides of the equation match. -/
+-- TODO: this lemma's existence is due to missing lemmas about `= (_).curryLeft`
+lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) :
+    (fderiv ℝ (integralCMLM g u t₀) α).uncurryLeft =
+      (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α) := by
+  rw [← uncurry_curryLeft (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α)]
+  congr 1
+  exact (hasFDerivAt_integralCMLM hg hu t₀ hα).fderiv
+
+/-! ## Smoothness of `integralCMLM` -/
+
 /-- Composition of a function `g : E → F` continuous on `u` with a continuous curve `α : C(I, E)`
 whose range is contained in `u`, yielding a continuous curve `C(I, F)`. -/
 def gComp (I : Type*) {F : Type*} [TopologicalSpace I] [TopologicalSpace F] {g : E → F} {u : Set E}
@@ -381,158 +544,6 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       apply mul_lt_of_lt_one_right hε
       rw [div_lt_one (by positivity)]
       exact mul_lt_mul' (lt_one_add _).le (lt_one_add _) (by positivity) (by positivity)
-
-omit [CompleteSpace E] in
-lemma _root_.ContDiffOn.continuousOn_fderiv_uncurryLeft
-    {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
-    ContinuousOn (fun x ↦ (fderiv ℝ g x).uncurryLeft (Ei := fun _ ↦ E)) u :=
-  (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm.continuous.comp_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl)
-
-/-- If `f` is continuous on an open set `u` containing a compact set `s`, then for any `ε > 0`,
-there exists `δ > 0` such that for any `x ∈ s` and any `y` with `dist x y < δ`, we have `y ∈ u`
-and `dist (f x) (f y) < ε`.
-
-This combines uniform continuity on compact sets with the fact that
-a compact set has positive distance from the complement of an open set containing it. -/
-lemma _root_.IsCompact.exists_mem_open_dist_lt_of_continuousOn
-    {X : Type*} [PseudoMetricSpace X] {Y : Type*} [PseudoMetricSpace Y]
-    {u : Set X} {s : Set X} {f : X → Y} (hs : IsCompact s) (hf : ContinuousOn f u) (hu : IsOpen u)
-    (hsu : s ⊆ u) {ε : ℝ} (hε : 0 < ε) :
-    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → y ∈ u ∧ dist (f x) (f y) < ε := by
-  obtain ⟨δ₁, hδ₁, hthick⟩ := hs.exists_thickening_subset_open hu hsu
-  -- Each `x ∈ s` is associated with a ball in which the value of `f` is close to `f x`
-  have h := fun x (hx : x ∈ s) ↦ Metric.continuousOn_iff.mp hf x (hsu hx) (ε / 2) (half_pos hε)
-  choose δₓ hδₓ h using h
-  let c : s → Set X := fun ⟨x, hx⟩ ↦ ball x (δₓ x hx)
-  have hcover : s ⊆ ⋃ i, c i := fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, mem_ball_self (hδₓ x hx)⟩
-  -- Lebesgue number lemma extracts a uniform radius for all `x ∈ s`
-  obtain ⟨δ₂, hδ₂, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
-  refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun x hx y hxy ↦ ?_⟩
-  have hy : y ∈ u := by
-    apply hthick
-    rw [mem_thickening_iff]
-    refine ⟨x, hx, ?_⟩
-    rw [dist_comm]
-    exact hxy.trans_le (min_le_left _ _)
-  refine ⟨hy, ?_⟩
-  obtain ⟨⟨z, hz⟩, hball⟩ := hleb x hx
-  have hx' : dist x z < (δₓ z hz) := by
-    rw [← mem_ball]
-    exact hball (mem_ball_self hδ₂)
-  have hy' : dist y z < (δₓ z hz) := by
-    rw [← mem_ball]
-    apply hball
-    rw [mem_ball, dist_comm]
-    exact hxy.trans_le (min_le_right _ _)
-  calc
-    _ ≤ dist (f x) (f z) + dist (f z) (f y) := dist_triangle _ _ _
-    _ = dist (f x) (f z) + dist (f y) (f z) := by rw [dist_comm (f z) (f y)]
-    _ < ε / 2 + ε / 2 := add_lt_add
-        (h z hz x (hsu hx) (Metric.mem_ball.mp hx'))
-        (h z hz y hy (Metric.mem_ball.mp hy'))
-    _ = ε := by ring
-
-omit [CompleteSpace E] in
-/-- If `g` is `C^1` on an open set `u` and `h` provides uniform control on the derivative's
-variation near a point `x ∈ u`, then `g` is well-approximated by its derivative with error
-proportional to the displacement. -/
--- TODO: look at this and maybe add to Mathlib
-lemma norm_image_sub_fderiv_le {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    {g : E → F} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u)
-    {x y : E} {C δ : ℝ} (hxy : ‖y - x‖ < δ)
-    (h : ∀ z, dist x z < δ → z ∈ u ∧ dist (fderiv ℝ g x) (fderiv ℝ g z) < C) :
-    ‖g y - g x - (fderiv ℝ g x) (y - x)‖ ≤ C * ‖y - x‖ := by
-  apply Convex.norm_image_sub_le_of_norm_fderiv_le' _ _ (convex_segment x y)
-    (left_mem_segment ℝ x y) (right_mem_segment ℝ x y)
-  · intro z hz
-    apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
-    apply (h z _).1
-    apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
-    rwa [dist_comm, dist_eq_norm]
-  · intro z hz
-    rw [← dist_eq_norm, dist_comm]
-    apply (h z _).2.le
-    apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
-    rwa [dist_comm, dist_eq_norm]
-
-/-- Helper lemma which reduces a bound on `integralCMLM`s as `ContinuousLinearMap`s to a bound on
-integrands as elements of `E` -/
-lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
-    (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    {α α' : C(Icc tmin tmax, E)} (hα : range α ⊆ u) (hα' : range α' ⊆ u) {ε : ℝ} (hε : 0 < ε)
-    (h : ∀ t, ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
-        (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ (α' - α) t)‖ ≤
-      ε / (1 + |tmax - tmin|) * ‖α' - α‖) :
-    ‖integralCMLM g u t₀ α' - integralCMLM g u t₀ α -
-      (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α).curryLeft (α' - α)‖ ≤
-      ε * ‖α' - α‖ := by
-  refine opNorm_le_bound (by positivity) fun dα ↦ ?_
-  rw [ContinuousMap.norm_le _ (by positivity)]
-  intro t
-  have hg' := hg.continuousOn_fderiv_uncurryLeft hu
-  have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα' dα t₀ t
-  have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
-  have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons (α' - α) dα) t₀ t
-  simp only [sub_apply, curryLeft_apply, integralCMLM_apply_if_pos hg.continuousOn,
-    integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, integralCM_apply_if_pos hα',
-    integralCM_apply_if_pos hα, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
-    ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
-  set C := ε / (1 + |tmax - tmin|) * ‖α' - α‖ * ∏ i, ‖dα i‖ with hC
-  refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) ?_).trans ?_
-  · intro τ _
-    simp only [ContinuousLinearMap.uncurryLeft_apply, Fin.cons_zero, Fin.tail_def, Fin.cons_succ,
-      ← ContinuousMultilinearMap.sub_apply, hC]
-    refine (le_opNorm _ _).trans ?_
-    apply mul_le_mul (h τ)
-      (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ (dα _).norm_coe_le_norm _)
-      (by positivity) (by positivity)
-  · rw [hC, mul_comm, ← mul_assoc, ← mul_assoc, mul_div_left_comm]
-    gcongr
-    apply mul_le_of_le_one_right hε.le
-    rw [div_le_one (by positivity)]
-    linarith [abs_nonneg (tmax - tmin), Icc.abs_sub_le t t₀]
-
-/-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
-`integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. -/
-lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : range α ⊆ u) :
-    HasFDerivAt (integralCMLM g u t₀)
-      ((integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α).curryLeft) α := by
-  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
-  intro ε hε
-  obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα (by positivity : 0 < ε / (1 + |tmax - tmin|))
-  rw [Metric.eventually_nhds_iff]
-  refine ⟨δ, hδ, fun α' hdist ↦ ?_⟩
-  have hα' : range α' ⊆ u := fun _ ⟨t, ht⟩ ↦ ht ▸ (h (α t) (mem_range_self t) _ (by
-    rw [dist_comm, dist_eq_norm]
-    exact (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt (dist_eq_norm α' α ▸ hdist))).1
-  -- Reduce bound on `ContinuousLinearMap`s to a bound on elements of `E`
-  refine norm_integralCMLM_sub_fderiv_le hg hu t₀ hα hα' hε fun t ↦ ?_
-  calc
-    _ = ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
-        (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ α' t - compProj t₀ α t)‖ := by
-      simp only [compProj, ContinuousMap.sub_apply]
-    _ ≤ ε / (1 + |tmax - tmin|) * ‖compProj t₀ α' t - compProj t₀ α t‖ := by
-      refine norm_image_sub_fderiv_le hg hu ?_ fun z hz ↦ h _ (mem_range_self _) z hz
-      exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist)
-    _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
-      gcongr; exact ContinuousMap.norm_coe_le_norm (α' - α) _
-
-/-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
-`integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Uncurrying of multilinear maps
-is needed to ensure the types on both sides of the equation match. -/
--- TODO: this lemma's existence is due to missing lemmas about `= (_).curryLeft`
-lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : range α ⊆ u) :
-    (fderiv ℝ (integralCMLM g u t₀) α).uncurryLeft =
-      (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α) := by
-  rw [← uncurry_curryLeft (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α)]
-  congr 1
-  exact (hasFDerivAt_integralCMLM hg hu t₀ hα).fderiv
 
 /-- The `k`-th iterated derivative of `g : E → E [×n]→L[ℝ] E`, with uncurrying applied at each step
 to preserve the continuous multilinear map structure.
@@ -637,6 +648,8 @@ lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
     |>.contDiff.comp_contDiffOn <| contDiffOn_integralCMLM hu _ _
       <| (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
 
+/-! ## Implicit equation `T` -/
+
 /-- The implicit equation that defines the flow as its implicit function (when `T = 0`) -/
 def T (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (p : E × C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) :=
@@ -718,6 +731,8 @@ lemma hasDerivWithinAt_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn
   exact hderiv.congr (fun s hs ↦ by rw [compProj_of_mem hs, heq, ODE.picard_apply])
     (by rw [compProj_of_mem ht, heq, ODE.picard_apply])
 
+/-! ## Derivative of `T` -/
+
 /-- The derivative of `fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0` at `α`,
 which appears as a component of the derivative of `T`. This is the composition of `curry0` with
 the derivative of `integralCMLM`. -/
@@ -769,26 +784,6 @@ lemma fderivT_comp_inr {f : E → E} {u : Set E}
   ext y
   simp [fderivT]
 
-omit [CompleteSpace E] in
-/-- Specialization of `contDiffOn_iteratedFDerivUncurry` to `g = uncurry0 ∘ f` where `f : E → E`.
-If `f` is `C^m'` on an open set `u` and `m + k ≤ m'`, then
-`iteratedFDerivUncurry (uncurry0 ∘ f) k` is `C^m` on `u`. -/
-lemma contDiffOn_iteratedFDerivUncurry_uncurry0 {f : E → E} {u : Set E} {k : ℕ}
-    {m m' : WithTop ℕ∞} (hf : ContDiffOn ℝ m' f u) (hu : IsOpen u) (hm' : m + k ≤ m') :
-    ContDiffOn ℝ m (iteratedFDerivUncurry (fun z ↦ uncurry0 ℝ E (f z)) k) u :=
-  contDiffOn_iteratedFDerivUncurry
-    ((continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf) hu hm'
-
-omit [CompleteSpace E] in
-/-- The Fréchet derivative of `uncurry0 ∘ f` at `x` is `uncurry0 ∘ fderiv f x`. This is the chain
-rule applied to the composition of `f` with the linear isometry `uncurry0`. -/
-lemma fderiv_uncurry0_comp {f : E → E} {x : E} (hf : DifferentiableAt ℝ f x) :
-    fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) x =
-      (continuousMultilinearCurryFin0 ℝ E E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp
-        (fderiv ℝ f x) := by
-  convert fderiv_comp x (continuousMultilinearCurryFin0 ℝ E E).symm.differentiableAt hf using 1
-  rw [(continuousMultilinearCurryFin0 ℝ E E).symm.fderiv]
-
 /-- The derivative of `T` restricted to the second component is bijective when the norm of
 `fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
 theorem to apply. -/
@@ -800,6 +795,8 @@ lemma bijective_fderivT_comp_inr {f : E → E} {u : Set E}
   apply ContinuousLinearEquiv.neg ℝ |>.bijective.comp
   rw [ContinuousLinearMap.coe_coe, ← ContinuousLinearMap.isUnit_iff_bijective]
   exact isUnit_one_sub_of_norm_lt_one hnorm
+
+/-! ## Conditions for applying the implicit function theorem -/
 
 /-- The implicit function theorem applies to `T f u t₀` at a point `(x₀, α₀)` with suitable
 assumptions. -/
@@ -813,6 +810,27 @@ lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDi
   ne_zero := by
     simp only [ne_eq, WithTop.coe_eq_zero]
     exact (one_pos.trans_le hn).ne'
+
+omit [CompleteSpace E] in
+/-- Specialization of `contDiffOn_iteratedFDerivUncurry` to `g = uncurry0 ∘ f` where `f : E → E`.
+If `f` is `C^m'` on an open set `u` and `m + k ≤ m'`, then
+`iteratedFDerivUncurry (uncurry0 ∘ f) k` is `C^m` on `u`. -/
+lemma contDiffOn_iteratedFDerivUncurry_uncurry0 {f : E → E} {u : Set E} {k : ℕ}
+    {m m' : WithTop ℕ∞} (hf : ContDiffOn ℝ m' f u) (hu : IsOpen u) (hm' : m + k ≤ m') :
+    ContDiffOn ℝ m (iteratedFDerivUncurry (fun z ↦ uncurry0 ℝ E (f z)) k) u :=
+  contDiffOn_iteratedFDerivUncurry
+    ((continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf) hu hm'
+
+omit [CompleteSpace E] in
+/-- The Fréchet derivative of `uncurry0 ∘ f` at `x` is `uncurry0 ∘ fderiv f x`. This is the chain
+rule applied to the composition of `f` with the linear isometry `uncurry0`. -/
+-- TODO: add to Mathlib?
+lemma fderiv_uncurry0_comp {f : E → E} {x : E} (hf : DifferentiableAt ℝ f x) :
+    fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) x =
+      (continuousMultilinearCurryFin0 ℝ E E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp
+        (fderiv ℝ f x) := by
+  convert fderiv_comp x (continuousMultilinearCurryFin0 ℝ E E).symm.differentiableAt hf using 1
+  rw [(continuousMultilinearCurryFin0 ℝ E E).symm.fderiv]
 
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
@@ -847,7 +865,6 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
   · rw [mul_comm _ C, ← mul_assoc, mul_comm _ C]
     gcongr 1
     exact Icc.abs_sub_le t t₀
-
 
 /-- For `f` that is `C^1` at `x₀`, there exist `a > 0` and `ε > 0` such that for any
 time interval `[tmin, tmax]` of size less than `ε` and any continuous curve `α` with
@@ -901,8 +918,11 @@ lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
     _ = C / (C + 1) := by rw [hε_def]; ring
     _ < 1 := (div_lt_one (by positivity : 0 < C + 1)).mpr (lt_add_one C)
 
+/-! ## Connect to the existence of integral curves -/
+
 omit [NormedSpace ℝ E] [CompleteSpace E] in
 /-- `IsPicardLindelof` is preserved when shrinking the time interval for time-independent ODEs. -/
+-- TODO: move to PicardLindelof.lean
 lemma IsPicardLindelof.shrink_time_indep {f : E → E} {t₀ : ℝ} {x₀ : E} {a r L K : ℝ≥0}
     {ε ε' : ℝ} (hε : 0 < ε) (hε' : 0 < ε') (hε'ε : ε' ≤ ε)
     (hf : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
