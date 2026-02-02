@@ -142,3 +142,7 @@ example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [
 example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
 (r : R) • x + (1 : R) • x + (r' : R') • x = (r + 1 : R) • x + (r' : R') • x := by
   algebra with R
+
+example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
+(r : R) • x + (1 : ℕ) • x + (r' : R') • x = (r' : R') • x + (1 : ℕ) • x + (r : R) • x:= by
+  algebra

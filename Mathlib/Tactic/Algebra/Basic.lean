@@ -196,9 +196,6 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSem
     AtomM ((y : Q($A)) × Common.ExSum (BaseType sAlg) sA q($y) ×
       Q(∀ (a : $A), $r' • a = $y * a)) := do
   let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q($_smul) r'
-  have : u' =QL u := ⟨⟩
-  /- Here's a terrifying error: Replacing the sR with q($sR) makes Qq believe that u = v,
-    introducing kernel errors during runtime. -/
   let ⟨_r'', vr, pr⟩ ←
     Common.eval Ring.ringCompute rcℕ (Ring.ringCompute cR.toCache) cR.toCache q($r)
   assumeInstancesCommute
@@ -243,7 +240,8 @@ def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(
 def derive (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
     MetaM (Common.Result (Common.ExSum (BaseType sAlg) sA) q($x)) := do
   let res ← NormNum.derive x
-  return ← evalCast sAlg cR cA res
+  let ⟨_, vr, pr⟩ ← evalCast sAlg cR cA res
+  return ⟨_, vr, q($pr)⟩
 
 /-- Decide if a coefficient is 1. -/
 def isOne (cR : Common.Cache sR) {x : Q($A)} (zx : BaseType sAlg x) : Option Q(IsNat $x 1) :=
