@@ -789,6 +789,31 @@ lemma fderiv_uncurry0_comp {f : E → E} {x : E} (hf : DifferentiableAt ℝ f x)
   convert fderiv_comp x (continuousMultilinearCurryFin0 ℝ E E).symm.differentiableAt hf using 1
   rw [(continuousMultilinearCurryFin0 ℝ E E).symm.fderiv]
 
+/-- The derivative of `T` restricted to the second component is bijective when the norm of
+`fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
+theorem to apply. -/
+lemma bijective_fderivT_comp_inr {f : E → E} {u : Set E}
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hnorm : ‖fderivIntegralCurry0 f u t₀ α‖ < 1) :
+    Function.Bijective ((fderivT f u t₀ α) ∘L (ContinuousLinearMap.inr ℝ E _)) := by
+  rw [fderivT_comp_inr t₀, neg_add_eq_sub, ← neg_sub]
+  apply ContinuousLinearEquiv.neg ℝ |>.bijective.comp
+  rw [ContinuousLinearMap.coe_coe, ← ContinuousLinearMap.isUnit_iff_bijective]
+  exact isUnit_one_sub_of_norm_lt_one hnorm
+
+/-- The implicit function theorem applies to `T f u t₀` at a point `(x₀, α₀)` with suitable
+assumptions. -/
+lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
+    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
+    IsContDiffImplicitAt n (T f u t₀) (fderivT f u t₀ α₀) (x₀, α₀) where
+  hasFDerivAt := hasFDerivAt_T (hf.of_le (mod_cast hn)) hu t₀ hα₀
+  contDiffAt := contDiffAt_T hu t₀ n hf hα₀
+  bijective := bijective_fderivT_comp_inr t₀ hnorm
+  ne_zero := by
+    simp only [ne_eq, WithTop.coe_eq_zero]
+    exact (one_pos.trans_le hn).ne'
+
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
 lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
@@ -823,9 +848,12 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
     gcongr 1
     exact Icc.abs_sub_le t t₀
 
+
 /-- For `f` that is `C^1` at `x₀`, there exist `a > 0` and `ε > 0` such that for any
 time interval `[tmin, tmax]` of size less than `ε` and any continuous curve `α` with
-`range α ⊆ ball x₀ a`, the operator norm `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`. -/
+`range α ⊆ ball x₀ a`, the operator norm `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`.
+
+We could state this with `∃ u ∈ 𝓝 x₀` instead of `a`, but we will need this `a` in a later proof. -/
 lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) :
     ∃ a > 0, ∃ ε > 0, ContDiffOn ℝ 1 f (ball x₀ a) ∧
@@ -1041,45 +1069,6 @@ lemma exists_contMap_T_eq_zero_opNorm_lt_one {f : E → E} {x₀ : E}
     exact T_eq_zero_of_isFixedPt_next hfu hPL hrange hα_fixed
   · -- ‖fderivIntegralCurry0 f (ball x₀ a') t₀ α.toContinuousMap‖ < 1
     exact hα_norm
-
-/-- The derivative of `T` restricted to the second component is bijective when the norm of
-`fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
-theorem to apply. -/
-lemma bijective_fderivT_comp_inr {f : E → E} {u : Set E}
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hnorm : ‖fderivIntegralCurry0 f u t₀ α‖ < 1) :
-    Function.Bijective ((fderivT f u t₀ α).comp (ContinuousLinearMap.inr ℝ E _)) := by
-  rw [fderivT_comp_inr t₀]
-  -- Show -id + A = -(id - A), and bijectivity of negation preserves bijectivity
-  have heq : -ContinuousLinearMap.id ℝ C(Icc tmin tmax, E) + fderivIntegralCurry0 f u t₀ α =
-      -(ContinuousLinearMap.id ℝ _ - fderivIntegralCurry0 f u t₀ α) := by
-    ext; simp [sub_eq_add_neg, add_comm]
-  rw [heq]
-  -- Use isUnit_one_sub_of_norm_lt_one to show id - A is invertible
-  have hunit : IsUnit (ContinuousLinearMap.id ℝ _ - fderivIntegralCurry0 f u t₀ α) :=
-    isUnit_one_sub_of_norm_lt_one hnorm
-  -- IsUnit implies bijective
-  have hbij := ContinuousLinearMap.isUnit_iff_bijective.mp hunit
-  -- Negation is a bijection, so (-f) is bijective iff f is bijective
-  -- ⇑(-g) = Neg.neg ∘ ⇑g
-  change Function.Bijective
-    (Neg.neg ∘ ⇑(ContinuousLinearMap.id ℝ C(Icc tmin tmax, E) - fderivIntegralCurry0 f u t₀ α))
-  exact (ContinuousLinearEquiv.neg ℝ (M := C(Icc tmin tmax, E))).bijective.comp hbij
-
-/-- The implicit function theorem applies to `T f u t₀` at a point `a = (x₀, α₀)` satisfying:
-- `range α₀ ⊆ u` (the curve stays in the domain)
-- `‖fderivIntegralCurry0 f u t₀ α₀‖ < 1` (the integral operator has small norm)
-- `n ≥ 1` (we need at least `C^1` for the implicit function theorem) -/
-lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
-    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
-    IsContDiffImplicitAt n (T f u t₀) (fderivT f u t₀ α₀) (x₀, α₀) where
-  hasFDerivAt := hasFDerivAt_T (hf.of_le (mod_cast hn)) hu t₀ hα₀
-  contDiffAt := contDiffAt_T hu t₀ n hf hα₀
-  bijective := bijective_fderivT_comp_inr t₀ hnorm
-  ne_zero := by
-    simp only [ne_eq, WithTop.coe_eq_zero]
-    exact (one_pos.trans_le hn).ne'
 
 /-- When f is C^1 at x₀, the implicit function theorem provides a local flow: there exist
 ε > 0, a > 0, and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that for x near x₀:
