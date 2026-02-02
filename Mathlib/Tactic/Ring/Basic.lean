@@ -458,7 +458,6 @@ def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
     OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
   match vb with
   | .const _ =>
-    -- TODO: Decide if this is the best way to extract the exponent as a Nat.
     have lit : Q(ℕ) := b.appArg!
     let res ← (NormNum.evalPow.core q($a ^ $lit) q(HPow.hPow) q($a) lit lit
       q(IsNat.raw_refl $lit) q(inferInstance) za.toResult).run
@@ -514,15 +513,11 @@ def ringCompute (cα : Common.Cache sα) : Common.RingCompute (BaseType sα) sα
   derive := derive sα
   isOne := isOne sα
   one := ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
-  toString {_} (zx) := s!"{zx.value}"
   toRingCompare := ringCompare sα
 
 /-- The data used by `ring`-like tactics to normalize constant coefficients of natural number
 expressions. -/
 def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute .nat
-
-
-
 
 universe u
 
