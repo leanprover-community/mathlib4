@@ -818,17 +818,6 @@ end BridgeEdges
 ### 2-reachability
 
 In this section, we prove results about 2-connected components of a graph, but without naming them.
-
-#### TODO
-
-Should we explicitly have
-```
-def IsEdgeReachable (k : ℕ) (u v : V) : Prop :=
-  ∀ ⦃s : Set (Sym2 V)⦄, s.encard < k → (G.deleteEdges s).Reachable u v
-```
-? `G.IsEdgeReachable 2 u v` would then be equivalent to the less idiomatic condition
-`∃ x, ¬ (G.deleteEdges {s(x, y)}).Reachable u y` we use below.
-See https://github.com/leanprover-community/mathlib4/issues/31691.
 -/
 
 namespace Walk

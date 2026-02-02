@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Linter.Basic
-public import Lean.Message
+public meta import Lean.Elab.AssertExists
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -57,24 +57,6 @@ def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
 /-- Find a name in `ns` that starts with prefix `p`. -/
 def Lean.Name.prefixToName (p : Name) (ns : Array Name) : Option Name :=
   ns.find? p.isPrefixOf
-
-/-- Find the dependency chain, starting at a module that imports `imported`, and ends with the
-current module.
-
-The path only contains the intermediate steps: it excludes `imported` and the current module.
--/
-public
-def Lean.Environment.importPath (env : Environment) (imported : Name) : Array Name := Id.run do
-  let mut result := #[]
-  let modData := env.header.moduleData
-  let modNames := env.header.moduleNames
-  if let some idx := env.getModuleIdx? imported then
-    let mut target := imported
-    for i in [idx.toNat + 1 : modData.size] do
-      if modData[i]!.imports.any (·.module == target) then
-        target := modNames[i]!
-        result := result.push modNames[i]!
-  return result
 
 namespace Mathlib.Linter
 

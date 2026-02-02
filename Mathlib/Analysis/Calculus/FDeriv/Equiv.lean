@@ -460,10 +460,14 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 the image. -/
 theorem HasFDerivWithinAt.mapsTo_tangent_cone (h : HasFDerivWithinAt f f' s x) :
     MapsTo f' (tangentConeAt 𝕜 s x) (tangentConeAt 𝕜 (f '' s) (f x)) := by
-  rintro v ⟨c, d, dtop, clim, cdlim⟩
-  refine
-    ⟨c, fun n => f (x + d n) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
-  simp +contextual [-mem_image, mem_image_of_mem]
+  intro y hy
+  rcases exists_fun_of_mem_tangentConeAt hy with ⟨ι, l, hl, c, d, hd₀, hds, hcd⟩
+  apply mem_tangentConeAt_of_seq l c (fun n ↦ f (x + d n) - f x)
+  · rw [tendsto_sub_nhds_zero_iff]
+    refine h.continuousWithinAt.tendsto.comp <| tendsto_nhdsWithin_iff.mpr ⟨?_, hds⟩
+    simpa using tendsto_const_nhds.add hd₀
+  · exact hds.mono fun n hn ↦ ⟨x + d n, hn, by simp⟩
+  · exact h.lim hd₀ hds hcd
 
 /-- If a set has the unique differentiability property at a point x, then the image of this set
 under a map with onto derivative has also the unique differentiability property at the image point.
