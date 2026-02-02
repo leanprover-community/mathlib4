@@ -140,15 +140,8 @@ theorem ball_contractible {x : E} {r : ℝ} (hr : 0 < r) :
   Convex.contractibleSpace (convex_ball _ _) (by simpa)
 
 theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
-    ContractibleSpace (Metric.eball x r) := by
-  cases r with
-  | top =>
-    rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
-    exact RealTopologicalVectorSpace.contractibleSpace
-  | coe r =>
-    rw [Metric.eball_coe]
-    apply ball_contractible
-    simpa using hr
+    ContractibleSpace (Metric.eball x r) :=
+  (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
 
 theorem isPathConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
     IsPathConnected (ball x r) := by
@@ -176,6 +169,9 @@ theorem isPreconnected_eball {x : E} {r : ENNReal} : IsPreconnected (eball x r) 
 
 theorem isPreconnected_closedBall {x : E} {r : ℝ} : IsPreconnected (closedBall x r) :=
   (convex_closedBall _ _).isPreconnected
+
+theorem isConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) : IsConnected (closedBall x r) :=
+  ⟨⟨x, by simpa⟩, isPreconnected_closedBall⟩
 
 theorem isConnected_closedEBall {x : E} {r : ENNReal} : IsConnected (closedEBall x r) :=
   (convex_closedEBall _ _).isConnected ⟨x, mem_closedEBall_self⟩
