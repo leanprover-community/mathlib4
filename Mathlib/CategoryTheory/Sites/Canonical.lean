@@ -195,9 +195,14 @@ theorem isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yon
   fun _ _ hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
 
 /-- A representable functor is a sheaf for the canonical topology. -/
-theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] :
-    Presieve.IsSheaf (canonicalTopology C) P :=
-  Presieve.isSheaf_iso (canonicalTopology C) P.reprW (isSheaf_yoneda_obj _)
+theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type w) [P.IsRepresentable] :
+    Presieve.IsSheaf (canonicalTopology C) P := by
+  rw [← Presieve.isSheaf_comp_uliftFunctor_iff]
+  refine Presieve.isSheaf_iso (canonicalTopology C) (P ⋙ uliftFunctor.{v}).uliftYonedaReprXIso ?_
+  rw [← isSheaf_iff_isSheaf_of_type]
+  refine GrothendieckTopology.HasSheafCompose.isSheaf _ ?_
+  rw [isSheaf_iff_isSheaf_of_type]
+  exact isSheaf_yoneda_obj _
 
 end Sheaf
 
@@ -226,7 +231,7 @@ theorem of_isSheaf_yoneda_obj (J : GrothendieckTopology C)
 
 /-- If `J` is subcanonical, then any representable is a `J`-sheaf. -/
 theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
-    (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] : Presieve.IsSheaf J P :=
+    (P : Cᵒᵖ ⥤ Type w) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
 
 end Subcanonical
