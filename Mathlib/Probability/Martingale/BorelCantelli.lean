@@ -50,7 +50,7 @@ variable {Ω β : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
 noncomputable def leastGE {ι : Type*} [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
-  (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
+    (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
   hittingAfter f (Set.Ici r) ⊥
 
 theorem StronglyAdapted.isStoppingTime_leastGE {ι : Type*} [ConditionallyCompleteLinearOrderBot ι]
