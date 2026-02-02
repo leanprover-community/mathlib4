@@ -30,29 +30,6 @@ namespace Mathlib.Tactic
 open Lean
 open Qq Meta
 
-namespace Ring
-
-variable {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} {a : Q($arg)}
-
--- /-- True if this represents an atomic expression. -/
--- def ExBase.isAtom : ExBase sα a → Bool
---   | .atom _ => true
---   | _ => false
-
--- /-- True if this represents an atomic expression. -/
--- def ExProd.isAtom : ExProd sα a → Bool
---   | .mul va₁ (.const 1 _) (.const 1 _) => va₁.isAtom
---   | _ => false
-
--- /-- True if this represents an atomic expression. -/
--- def ExSum.isAtom : ExSum sα a → Bool
---   | .add va₁ va₂ => match va₂ with -- FIXME: this takes a while to compile as one match
---     | .zero => va₁.isAtom
---     | _ => false
---   | _ => false
-
-end Ring
-
 namespace RingNF
 open Ring
 

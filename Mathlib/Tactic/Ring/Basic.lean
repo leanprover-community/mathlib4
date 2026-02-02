@@ -25,7 +25,7 @@ More precisely, expressions of the following form are supported:
 - coefficients (any rational number, embedded into the (semi)ring)
 - addition of expressions
 - multiplication of expressions (`a * b`)
-- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ`)
+- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ` or `ℤ`)
 - exponentiation of expressions (the exponent must have type `ℕ`)
 - subtraction and negation of expressions (if the base is a full ring)
 
@@ -35,28 +35,12 @@ even though it is not strictly speaking an equation in the language of commutati
 ## Implementation notes
 
 The basic approach to prove equalities is to normalise both sides and check for equality.
-The normalisation is guided by building a value in the type `ExSum` at the meta level,
-together with a proof (at the base level) that the original value is equal to
-the normalised version.
+We use `Mathlib.Tactic.Ring.Common` to implement the normal forms and normalization procedure.
 
-The outline of the file:
-- Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
-  which can represent expressions with `+`, `*`, `^` and rational numerals.
-  The mutual induction ensures that associativity and distributivity are applied,
-  by restricting which kinds of subexpressions appear as arguments to the various operators.
-- Represent addition, multiplication and exponentiation in the `ExSum` type,
-  thus allowing us to map expressions to `ExSum` (the `eval` function drives this).
-  We apply associativity and distributivity of the operators here (helped by `Ex*` types)
-  and commutativity as well (by sorting the subterms; unfortunately not helped by anything).
-  Any expression not of the above formats is treated as an atom (the same as a variable).
+This file defines the evaluation of basic operations such as addition and multipication of the
+rational coefficients as embedded inside the (semi)ring. This is done using `norm_num`.
 
-There are some details we glossed over which make the plan more complicated:
-- The order on atoms is not initially obvious.
-  We construct a list containing them in order of initial appearance in the expression,
-  then use the index into the list as a key to order on.
-- For `pow`, the exponent must be a natural number, while the base can be any semiring `α`.
-  We swap out operations for the base ring `α` with those for the exponent ring `ℕ`
-  as soon as we deal with exponents.
+It further implements the core `ring1` tactic.
 
 ## Caveats and future work
 
@@ -84,7 +68,6 @@ ring, semiring, exponent, power
 assert_not_exists IsOrderedMonoid
 
 namespace Mathlib.Tactic
-
 namespace Ring
 
 open Mathlib.Meta Qq Lean.Meta AtomM
@@ -94,25 +77,6 @@ open Common (Result)
 attribute [local instance] monadLiftOptionMetaM
 
 open Lean (MetaM Expr mkRawNatLit)
-
-/-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
-def instCommSemiringNat : CommSemiring ℕ := inferInstance
-
-/-- A shortcut instance for `CommSemiring ℤ` used by ring. -/
-def instCommSemiringInt : CommSemiring ℤ := inferInstance
-
-/--
-A typed expression of type `CommSemiring ℕ` used when we are working on
-ring subexpressions of type `ℕ`.
--/
-def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
-
-/--
-A typed expression of type `CommSemiring ℤ` used when we are working on
-ring subexpressions of type `ℤ`.
--/
-def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
-
 
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
@@ -477,7 +441,6 @@ def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
     OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
   match vb with
   | .const _ =>
-    -- TODO: Decide if this is the best way to extract the exponent as a Nat.
     have lit : Q(ℕ) := b.appArg!
     let res ← (NormNum.evalPow.core q($a ^ $lit) q(HPow.hPow) q($a) lit lit
       q(IsNat.raw_refl $lit) q(inferInstance) za.toResult).run
@@ -533,15 +496,11 @@ def ringCompute (cα : Common.Cache sα) : Common.RingCompute (BaseType sα) sα
   derive := derive sα
   isOne := isOne sα
   one := ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
-  toString {_} (zx) := s!"{zx.value}"
   toRingCompare := ringCompare sα
 
 /-- The data used by `ring`-like tactics to normalize constant coefficients of natural number
 expressions. -/
 def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute .nat
-
-
-
 
 universe u
 
