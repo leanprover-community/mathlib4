@@ -78,4 +78,14 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
       ValueGroup₀.orderEmbedding'_mul] at *
     exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
 
+lemma ValueGroup₀.orderEmbedding'_eq_embedding (x : ValueGroup₀ f) :
+    ValueGroup₀.orderEmbedding' x = ValueGroup₀.embedding x := by
+  simp [orderEmbedding'_apply]
+
+lemma ValueGroup₀.embedding_strictMono :
+    StrictMono (ValueGroup₀.embedding (f := f)) := by
+  intro x y hxy
+  simp only [← ValueGroup₀.orderEmbedding'_eq_embedding]
+  exact (OrderEmbedding.lt_iff_lt orderEmbedding').mpr hxy
+
 end MonoidWithZeroHom

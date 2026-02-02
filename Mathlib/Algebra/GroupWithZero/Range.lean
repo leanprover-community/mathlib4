@@ -120,6 +120,14 @@ lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
 lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
 
+def ValueGroup₀.mk' (x : Aˣ) : ValueGroup₀ f :=  WithZero.coe
+    ⟨⟨f x, f x.inv, by rw [← map_mul]; simp, by rw [← map_mul]; simp⟩, by simp [mem_valueGroup]⟩
+
+noncomputable def ValueGroup₀.mk (x : A) : ValueGroup₀ f := by
+  classical
+  exact if hx : IsUnit (f x) then
+    WithZero.coe ⟨⟨f x, hx.unit.inv, by simp, by simp⟩, by simp [mem_valueGroup]⟩ else 0
+
 end MonoidWithZeroHom
 
 noncomputable section Restrict
@@ -148,24 +156,31 @@ def ValueGroup₀.restrict₀ : A →*₀ ValueGroup₀ f where
     all_goals rw [mul_eq_zero] at h; tauto
   map_zero' := by simp
 
-open ValueGroup₀
+namespace ValueGroup₀
 
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by simp [h]
 
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
 
+lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
+  simp only [restrict₀_apply]
+  split_ifs with h
+  · simp [h]
+  · simp [← WithZero.coe_one, ← Units.mk0_one]
+
 lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) = f a := by
   simp only [restrict₀_apply, embedding_apply]
   split_ifs <;>
   simp_all
+
+end ValueGroup₀
 
 end Restrict
 
 noncomputable section GroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
-
 
 /- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
 lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
@@ -195,7 +210,7 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
 
 variable [DecidablePred fun b : B ↦ b = 0]
 
-lemma restrict₀_range_eq_top : range (restrict₀ f) = ⊤ := by
+lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ f) = ⊤ := by
   rw [top_eq_univ, range_eq_univ]
   intro x
   match x with

@@ -1106,40 +1106,60 @@ namespace ValuativeRel
 variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]
   (v : Valuation R Γ)
 
+open MonoidWithZeroHom
+
 /-- Any valuation compatible with the valuative relation can be factored through
 the value group. -/
 noncomputable
-def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ Γ where
-  toFun := ValuativeRel.ValueGroupWithZero.lift (fun r s ↦ v r / v (s : R)) <| by
-    intro x y r s
-    simp only [h.vle_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
-    rw [div_eq_div_iff] <;> simp
-  map_zero' := by simp [ValueGroupWithZero.lift_zero]
-  map_one' := by simp
+def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
+  toFun := by
+    exact ValuativeRel.ValueGroupWithZero.lift
+      (fun r s ↦ (ValueGroup₀.mk v r / (ValueGroup₀.mk v (s : R)))) <| by
+      intro x y r s
+      simp only [h.vle_iff_le, map_mul, ← and_imp, ← le_antisymm_iff]
+      rw [div_eq_div_iff]
+      · simp only [ValueGroup₀.mk, isUnit_iff_ne_zero, ne_eq, Units.inv_eq_val_inv,
+          Units.val_inv_eq_inv_val, IsUnit.unit_spec, dite_not,
+          Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true, ↓reduceDIte, dite_mul, zero_mul]
+        split_ifs
+        all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
+      · simp [ValueGroup₀.mk]
+      · simp [ValueGroup₀.mk]
+  map_zero' := by simp [ValueGroupWithZero.lift_zero, ValueGroup₀.mk]
+  map_one' := by simp [ValueGroup₀.mk]
   map_mul' _ _ := by
     apply ValuativeRel.ValueGroupWithZero.lift_mul
-    simp [field]
+    simp only [ValueGroup₀.mk, map_mul, isUnit_iff_ne_zero, ne_eq, mul_eq_zero, not_or,
+      Units.inv_eq_val_inv, Units.val_inv_eq_inv_val, IsUnit.unit_spec, mul_inv_rev,
+      Submonoid.coe_mul, Valuation.apply_posSubmonoid_ne_zero, or_self, not_false_eq_true,
+      ↓reduceDIte, dite_not, Subtype.forall, posSubmonoid_def]
+    intro x y z hz w hw
+    split_ifs
+    all_goals try simp_all
+    simp [field, ← WithZero.coe_mul, ← Units.val_inj]
 
 @[simp]
 lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
-    embed v (.mk x s) = v x / v (s : R) :=
+    embed v (.mk x s) = (ValueGroup₀.mk v x / (ValueGroup₀.mk v (s : R))) :=
   rfl
 
-@[simp]
+/- @[simp]
 lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
-    embed (valuation R) γ = γ := by
+    embed (valuation R) γ = ValueGroup₀.embedding γ := by
   induction γ using ValueGroupWithZero.ind
-  simp [embed_mk, ← mk_eq_div]
+  simp [embed_mk, ← mk_eq_div] -/
 
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   intro a b h
   obtain ⟨a, r, rfl⟩ := exists_valuation_div_valuation_eq a
   obtain ⟨b, s, rfl⟩ := exists_valuation_div_valuation_eq b
   simp only [map_div₀]
-  rw [div_lt_div_iff₀] at h ⊢
-  any_goals simp [zero_lt_iff]
-  rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
-  simpa [embed] using h
+
+  sorry
+  --rw [div_lt_div_iff₀] at h ⊢
+  --any_goals simp [zero_lt_iff]
+  --rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
+  --simpa [embed] using h
 
 /-- For any `x ∈ posSubmonoid R`, the trivial valuation `1 : Valuation R Γ` sends `x` to `1`.
 In fact, this is true for any `x ≠ 0`. This lemma is a special case useful for shorthand of
