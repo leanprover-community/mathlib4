@@ -32,7 +32,7 @@ jobs:
     # This is a quick check to avoid unnecessary runs
     steps:
       - name: Checkout PR head
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Checkout the actual PR head, not the merge commit GitHub creates
           ref: ${{ github.event.pull_request.head.sha }}
