@@ -51,27 +51,11 @@ theorem coe_injective : Function.Injective UpperHalfPlane.coe := fun _ _ ↦ Upp
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im where
   prf z hz := ⟨⟨z, hz⟩, rfl⟩
 
-/-- The upper half plane as a subset of `ℂ`.
-This is convenient for taking derivatives of functions on the upper half plane. -/
-def upperHalfPlaneSet := {z : ℂ | 0 < z.im}
-
-local notation "ℍₒ" => upperHalfPlaneSet
-
-@[simp]
-theorem mem_upperHalfPlaneSet {z : ℂ} : z ∈ ℍₒ ↔ 0 < z.im := .rfl
-
-@[simp]
-lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
-
 protected theorem «forall» {P : ℍ → Prop} : (∀ z, P z) ↔ ∀ z hz, P ⟨z, hz⟩ :=
   ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.1 z.2⟩
 
 protected theorem «exists» {P : ℍ → Prop} : (∃ z, P z) ↔ ∃ z hz, P ⟨z, hz⟩ :=
   ⟨fun ⟨⟨z, hz⟩, hP⟩ ↦ ⟨z, hz, hP⟩, fun ⟨z, hz, hP⟩ ↦ ⟨⟨z, hz⟩, hP⟩⟩
-
-@[simp]
-theorem range_coe : Set.range UpperHalfPlane.coe = ℍₒ := by
-  ext; simp [UpperHalfPlane.exists]
 
 /-- Imaginary part -/
 def im (z : ℍ) :=
@@ -250,5 +234,21 @@ instance : Infinite ℍ :=
 instance : Nontrivial ℍ := inferInstance
 
 end RealAddAction
+
+/-- The upper half plane as a subset of `ℂ`.
+This is convenient for taking derivatives of functions on the upper half plane. -/
+def upperHalfPlaneSet := {z : ℂ | 0 < z.im}
+
+local notation "ℍₒ" => upperHalfPlaneSet
+
+@[simp]
+theorem mem_upperHalfPlaneSet {z : ℂ} : z ∈ ℍₒ ↔ 0 < z.im := .rfl
+
+@[simp]
+lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
+
+@[simp]
+theorem range_coe : Set.range UpperHalfPlane.coe = ℍₒ := by
+  ext; simp [UpperHalfPlane.exists]
 
 end UpperHalfPlane
