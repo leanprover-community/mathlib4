@@ -114,3 +114,31 @@ example {A : Type*} [CommRing A] [Algebra ℚ A] (x y : A) :
 example {A : Type*} [CommRing A] [Algebra ℚ A] (x : A) :
     (3/4 : ℚ) • x + (1/4 : ℚ) • x = x := by
   algebra with ℚ
+
+
+/- This test exists to record the fact that `algebra` might infer the wrong ring
+if there are multiple incomparable rings. -/
+/--
+error: algebra failed, algebra expressions not equal
+A : Type u_1
+R : Type u_2
+R' : Type u_3
+inst✝⁴ : CommRing A
+inst✝³ : CommRing R
+inst✝² : CommRing R'
+inst✝¹ : Algebra R A
+inst✝ : Algebra R' A
+r : R
+r' : R'
+x : A
+⊢ x * (algebraMap R' A) r' + r • x * (algebraMap R' A) 1 + 1 • x * (algebraMap R' A) 1 =
+    x * (algebraMap R' A) r' + (r + 1) • x * (algebraMap R' A) 1
+-/
+#guard_msgs in
+example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
+(r : R) • x + (1 : R) • x + (r' : R') • x = (r + 1 : R) • x + (r' : R') • x := by
+  algebra
+
+example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
+(r : R) • x + (1 : R) • x + (r' : R') • x = (r + 1 : R) • x + (r' : R') • x := by
+  algebra with R
