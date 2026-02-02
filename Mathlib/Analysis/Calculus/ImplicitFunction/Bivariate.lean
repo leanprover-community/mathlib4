@@ -5,7 +5,7 @@ Authors: A Tucker
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ImplicitFunction.OfProdDomain
+public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 public import Mathlib.Analysis.Calculus.FDeriv.Partial
 
 /-!

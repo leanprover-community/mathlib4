@@ -5,7 +5,7 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ImplicitFunction.OfProdDomain
+public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 
 /-!
@@ -19,9 +19,6 @@ is $C^n$ at a point `(u₁, u₂) : E₁ × E₂`, where `n ≥ 1`. Let `f'` be 
 `(u₁, u₂)`. If the map `y ↦ f' (0, y)` is a Banach space isomorphism, then there exists a function
 `ψ : E₁ → E₂` such that `ψ u₁ = u₂`, and `f (x, ψ x) = f (u₁, u₂)` holds for all `x` in a
 neighbourhood of `u₁`. Furthermore, `ψ` is $C^n$ at `u₁`.
-
-## TODO
-* Faà di Bruno.
 
 ## Tags
 
