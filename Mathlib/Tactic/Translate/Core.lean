@@ -179,9 +179,9 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
 It is specified with the `(reorder := ...)` notation using a disjoint cycle representation. -/
 abbrev Reorder := List (List Nat)
 
-/-- `TranslationInfo` stores the information of how a constant should be translated. -/
+/-- `TranslationInfo` stores the information of how to translate a constant. -/
 structure TranslationInfo where
-  /-- The name of the translation. -/
+  /-- The name that we are translating to. -/
   translation : Name
   /-- The arguments that should be reordered when translating, using disjoint cycle notation. -/
   reorder : Reorder := []
@@ -265,8 +265,7 @@ def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
       translation := src, reorder := reorder.map (·.reverse), relevantArg }
 where
   /-- Insert only one direction of a translation. -/
-  insertTranslationAux (src : Name) (t : TranslateData)
-      (info : TranslationInfo) : CoreM Unit := do
+  insertTranslationAux (src : Name) (t : TranslateData) (info : TranslationInfo) : CoreM Unit := do
     if let some info' := (t.translations.getState (← getEnv)).find? src then
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
@@ -456,7 +455,7 @@ where
                   expression. However, we will still recurse into all the non-numeral arguments."
               let args := numeralArgs.foldl (·.modify · changeNumeral) args
               return mkAppN f (← args.mapM visit)
-      let some { translation := n₁, reorder, relevantArg} := findPrefixTranslation? env n₀ t |
+      let some { translation := n₁, reorder, relevantArg } := findPrefixTranslation? env n₀ t |
         return mkAppN f (← args.mapM visit)
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
