@@ -92,20 +92,11 @@ open Lean (MetaM Expr mkRawNatLit)
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
 def instCommSemiringNat : CommSemiring ℕ := inferInstance
 
-/-- A shortcut instance for `CommSemiring ℤ` used by ring. -/
-def instCommSemiringInt : CommSemiring ℤ := inferInstance
-
 /--
 A typed expression of type `CommSemiring ℕ` used when we are working on
 ring subexpressions of type `ℕ`.
 -/
 def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
-
-/--
-A typed expression of type `CommSemiring ℤ` used when we are working on
-ring subexpressions of type `ℤ`.
--/
-def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
 /--
 The data used by `ring` to represent coefficients. `e` is a raw rat cast.
@@ -1221,10 +1212,6 @@ theorem hsmul_congr {R α : Type*} [CommSemiring α] [HSMul R α α]
 
 /-- A precomputed `Cache` for `ℕ`. -/
 def Cache.nat : Cache sℕ := { rα := none, dsα := none, czα := some q(inferInstance) }
-
-/-- A precomputed `Cache` for `ℤ`. -/
-def Cache.int : Cache sℤ :=
-  { rα := some q(inferInstance), dsα := none, czα := some q(inferInstance) }
 
 /-- Checks whether `e` would be processed by `eval` as a ring expression,
 or otherwise if it is an atom or something simplifiable via `norm_num`.
