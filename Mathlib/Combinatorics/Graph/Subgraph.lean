@@ -17,7 +17,6 @@ and components.
 
 ## Main definitions
 
-- `Graph.copy`: produce a graph equal to a given one but with definitional conveniences.
 - `≤`: the subgraph relation as a partial order on graphs.
 - `Graph.IsSpanningSubgraph` (notation `≤s`): same vertex set as the ambient graph.
 - `Graph.IsInducedSubgraph` (notation `≤i`): contains every ambient link between its vertices.
