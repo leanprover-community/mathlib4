@@ -6564,8 +6564,6 @@ public import Mathlib.Std.Data.HashMap
 public import Mathlib.Tactic
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Algebra.Basic
-public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Algebraize
 public import Mathlib.Tactic.ApplyAt
 public import Mathlib.Tactic.ApplyCongr
