@@ -120,14 +120,6 @@ lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
 lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
 
-def ValueGroup₀.mk' (x : Aˣ) : ValueGroup₀ f :=  WithZero.coe
-    ⟨⟨f x, f x.inv, by rw [← map_mul]; simp, by rw [← map_mul]; simp⟩, by simp [mem_valueGroup]⟩
-
-noncomputable def ValueGroup₀.mk (x : A) : ValueGroup₀ f := by
-  classical
-  exact if hx : IsUnit (f x) then
-    WithZero.coe ⟨⟨f x, hx.unit.inv, by simp, by simp⟩, by simp [mem_valueGroup]⟩ else 0
-
 end MonoidWithZeroHom
 
 noncomputable section Restrict

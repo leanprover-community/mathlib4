@@ -172,25 +172,14 @@ instance [IsNontrivial R] [IsRankLeOne R] :
     Valuation.RankOne (valuation R) :=
   Valuation.RankOne.ofRankLeOneStruct IsRankLeOne.nonempty.some
 
-def foo : ValueGroupWithZero R ≃* ValueGroup₀ (valuation R) where
-  toFun := by
-    apply ValuativeRel.ValueGroupWithZero.embed
-    sorry
-  invFun := embedding
-  left_inv := sorry
-  right_inv := sorry
-  map_mul' := sorry
-
 /-- Convert between the rank one statement on valuative relation's induced valuation. -/
 def Valuation.RankOne.rankLeOneStruct (e : Valuation.RankOne (valuation R)) :
     RankLeOneStruct R where
-  emb := by
-    apply e.hom.comp
-
-    sorry
+  emb := e.hom.comp
+      (ValuativeRel.ValueGroupWithZero.embed (v := valuation R))
   strictMono := by
     apply e.strictMono.comp
-    sorry
+    exact ValueGroupWithZero.embed_strictMono (valuation R)
 
 lemma ValuativeRel.isRankLeOne_of_rankOne [h : (valuation R).RankOne] :
     IsRankLeOne R :=
@@ -210,9 +199,11 @@ lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
   · intro h
     by_cases H : IsNontrivial R
     · rw [isNontrivial_iff_isNontrivial (valuation R)] at H
-      sorry/- rw [← (valuation R).nonempty_rankOne_iff_mulArchimedean] at h
-      obtain ⟨f⟩ := h
-      exact isRankLeOne_of_rankOne -/
+      have h' : MulArchimedean (ValueGroup₀ (valuation R)) :=
+        MulArchimedean.comap embedding.toMonoidHom embedding_strictMono
+      rw [← (valuation R).nonempty_rankOne_iff_mulArchimedean] at h'
+      obtain ⟨f⟩ := h'
+      exact isRankLeOne_of_rankOne
     · refine ⟨⟨{ emb := 1, strictMono := ?_ }⟩⟩
       intro a b
       contrapose! H
@@ -227,6 +218,7 @@ lemma ValuativeRel.IsRankLeOne.of_compatible_mulArchimedean [MulArchimedean Γ�
     (v : Valuation R Γ₀) [v.Compatible] :
     ValuativeRel.IsRankLeOne R := by
   rw [isRankLeOne_iff_mulArchimedean]
-  exact .comap (ValueGroupWithZero.embed v).toMonoidHom (ValueGroupWithZero.embed_strictMono v)
+  exact MulArchimedean.comap (embedding.toMonoidHom.comp (ValueGroupWithZero.embed v).toMonoidHom)
+    (embedding_strictMono.comp (ValueGroupWithZero.embed_strictMono v))
 
 end ValuativeRel
