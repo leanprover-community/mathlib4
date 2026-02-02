@@ -10,6 +10,9 @@ public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Lattice operations on multisets
+
+This file defines `Multiset.sup` and derives the dual `Multiset.inf` and their basic lemmas
+via `to_dual`.
 -/
 
 @[expose] public section
@@ -47,12 +50,12 @@ theorem sup_singleton {a : α} : ({a} : Multiset α).sup = a := sup_bot_eq _
 theorem sup_add (s₁ s₂ : Multiset α) : (s₁ + s₂).sup = s₁.sup ⊔ s₂.sup :=
   Eq.trans (by simp [sup]) (fold_add _ _ _ _ _)
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) le_inf]
 theorem sup_le {s : Multiset α} {a : α} : s.sup ≤ a ↔ ∀ b ∈ s, b ≤ a :=
   Multiset.induction_on s (by simp)
     (by simp +contextual [or_imp, forall_and])
 
-@[to_dual]
+@[to_dual inf_le]
 theorem le_sup {s : Multiset α} {a : α} (h : a ∈ s) : a ≤ s.sup :=
   sup_le.1 le_rfl _ h
 
