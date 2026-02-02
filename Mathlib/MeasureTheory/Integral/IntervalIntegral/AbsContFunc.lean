@@ -46,9 +46,8 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   -- Proof idea: Use `Vitali.exists_disjoint_covering_ae'` to get a Vitali cover of `[a, b]`
   -- consisting of closed subintervals `[x, y]` on which the slope of `f` differs from `f' x` by
   -- at most `η`.
-  rcases eq_or_lt_of_le hdb with hdb | hdb
-  · use ∅
-    simp [hdb]
+  rcases hdb.eq_or_lt with rfl | hdb
+  · exact ⟨∅, by simp⟩ 
   replace hf : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f (f' x) x := by
     filter_upwards [hf] with x hx₁ hx₂ using hx₁ (Ioo_subset_Icc_self hx₂)
   let t := {z : ℝ × ℝ | (d < z.1 ∧ z.1 < z.2 ∧ z.2 < b) ∧ dist (slope f z.1 z.2) (f' z.1) < η}
@@ -78,13 +77,8 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
       filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
                       @evn_bound ((b - x) / 2) (by simp [hx.left.right])]
         with ε hε₁ hε₂ hε₃ hε₄
-      use (x, x + ε)
-      repeat' constructor
-      · exact hx.left.left
-      · linarith
-      · linarith
-      · exact hδ₂ (by grind) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
-      · simp
+      refine ⟨(x, x + ε), ⟨⟨hx.1.1, by linarith, by linarith⟩, ?_⟩, by simp, rfl⟩ 
+      exact hδ₂ (by grind) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
   obtain ⟨u, ⟨hu₁, hu₂, hu₃, hu₄⟩⟩ := this
   simp only [t, subset_def, mem_setOf_eq] at hu₁
   refine ⟨u, ⟨hu₁, hu₃, ?_⟩⟩
@@ -193,11 +187,10 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   intro r hr
   rw [mem_Icc] at hd
   have had : a ≤ d := by linarith
-  rcases eq_or_lt_of_le hd.right with hdb | hdb
-  · simp [hdb, hr.le]
+  rcases hd.right.eq_or_lt with rfl | hdb
+  · simp [hr.le]
   replace hf₀ : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x := by
-    filter_upwards [hf₀] with x _ _
-    grind
+    filter_upwards [hf₀] with x _ _ using by grind
   have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
   have ⟨u, hu₁, hu₂, hu₃⟩ :=
     exists_dist_slope_lt_pairwiseDisjoint_hasSum hd.right hf₀ hfdb'
