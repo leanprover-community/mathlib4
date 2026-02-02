@@ -3,15 +3,19 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Oliver Nash, Yaël Dillies
 -/
-import Mathlib.Order.Circular
-import Mathlib.Order.Fin.Basic
-import Mathlib.Data.ZMod.Defs
+module
+
+public import Mathlib.Order.Circular
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # The circular order on `ZMod n`
 
 This file defines the circular order on `ZMod n`.
 -/
+
+@[expose] public section
 
 instance : CircularOrder ℤ := LinearOrder.toCircularOrder _
 

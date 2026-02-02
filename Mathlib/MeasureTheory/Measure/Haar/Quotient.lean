@@ -3,11 +3,13 @@ Copyright (c) 2022 Alex Kontorovich and Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.Haar.Basic
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Group.FundamentalDomain
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Haar quotient measure
@@ -44,6 +46,8 @@ Note that a group `G` with Haar measure that is both left and right invariant is
 **unimodular**.
 -/
 
+@[expose] public section
+
 open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
 open scoped Pointwise NNReal ENNReal
@@ -56,8 +60,6 @@ section
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
-  measurable_const_smul g := (continuous_const_smul g).measurable
-  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 end
 
@@ -235,14 +237,12 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
   erw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
-    haveI i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
+    have i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
     apply IsOpenPosMeasure.open_pos (interior K) (μ := ν) (self := i')
     · exact isOpen_interior
     · exact K.interior_nonempty
-    rw [← le_zero_iff,
-      ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
-    apply measure_mono
-    refine interior_subset.trans ?_
+    refine measure_mono_null (interior_subset.trans ?_) <|
+      fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h
     rw [QuotientGroup.coe_mk']
     change (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K

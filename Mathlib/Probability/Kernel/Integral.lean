@@ -3,13 +3,17 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Probability.Kernel.Basic
 
 /-!
 # Bochner integrals of kernels
 
 -/
+
+public section
 
 open MeasureTheory
 
@@ -23,11 +27,11 @@ namespace Kernel
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ (κ x).real s) μ := by
-  refine Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
+  refine Integrable.mono' (integrable_const κ.bound.toReal)
     ((κ.measurable_coe hs).ennreal_toReal.aestronglyMeasurable)
     (ae_of_all μ fun x ↦ ?_)
   rw [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
-  exact ENNReal.toReal_mono (IsFiniteKernel.bound_ne_top _) (Kernel.measure_le_bound _ _ _)
+  exact ENNReal.toReal_mono (Kernel.bound_ne_top _) (Kernel.measure_le_bound _ _ _)
 
 lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :

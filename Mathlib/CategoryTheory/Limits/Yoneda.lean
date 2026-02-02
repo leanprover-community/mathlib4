@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types.Yoneda
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Yoneda
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -16,11 +18,13 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
 
+@[expose] public section
+
 assert_not_exists AddCommMonoid
 
 open Opposite CategoryTheory Limits
 
-universe t w v u
+universe t w w' v u
 
 namespace CategoryTheory
 
@@ -43,8 +47,8 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
   fac s Y := by
     funext f
     convert congr_fun (s.w f).symm (𝟙 (unop X))
-    simp only [coyoneda_obj_obj, Functor.const_obj_obj, types_comp_apply,
-      coyoneda_obj_map, Category.id_comp]
+    simp only [Functor.flip_obj_obj, yoneda_obj_obj, Functor.const_obj_obj, Functor.flip_obj_map,
+      types_comp_apply, yoneda_map_app, Category.id_comp]
   uniq s m w := by
     apply funext; rintro ⟨⟩
     rw [← w]
@@ -188,11 +192,18 @@ noncomputable instance yonedaFunctor_reflectsLimits :
 noncomputable instance coyonedaFunctor_reflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@coyoneda C _) := inferInstance
 
+instance uliftYonedaFunctor_preservesLimits :
+    PreservesLimitsOfSize.{t, w} (uliftYoneda.{w'} : C ⥤ _) := by
+  apply preservesLimits_of_evaluation
+  intro K
+  change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
+  infer_instance
+
 namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category J]
+variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category* J]
 
 instance representable_preservesLimit (G : J ⥤ Cᵒᵖ) :
     PreservesLimit G F :=
@@ -209,7 +220,7 @@ end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category J]
+variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category* J]
 
 instance corepresentable_preservesLimit (G : J ⥤ C) :
     PreservesLimit G F :=

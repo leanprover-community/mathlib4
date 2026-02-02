@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Pullbacks and monomorphisms
@@ -24,6 +25,8 @@ the dual statements between pushouts and epimorphisms.
 
 The dual notions for pushouts are also available.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -128,7 +131,7 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
 
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
-instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+instance mono_pullback_to_prod {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
     Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -140,7 +143,7 @@ instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
     [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst f g) (pullback.snd f g)
       -- Porting note: following used to be _
-      (show (pullback.fst f g) ≫ f ≫ i = (pullback.snd f g) ≫ g ≫ i from by
+      (show (pullback.fst f g) ≫ f ≫ i = (pullback.snd f g) ≫ g ≫ i by
         simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition)) :=
   PullbackCone.isLimitOfCompMono f g i _ (limit.isLimit (cospan f g))
 
@@ -305,7 +308,7 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
-instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
     Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
   ⟨fun {W} i₁ i₂ h => by

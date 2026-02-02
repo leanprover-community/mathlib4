@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.LiftingProperties.Adjunction
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 
 /-!
 # Preservation and reflection of monomorphisms and epimorphisms
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 We provide typeclasses that state that a functor preserves or reflects monomorphisms or
 epimorphisms.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -100,21 +104,33 @@ theorem reflectsMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ 
     [PreservesMonomorphisms G] [ReflectsMonomorphisms (F ⋙ G)] : ReflectsMonomorphisms F :=
   ⟨fun f _ => (F ⋙ G).mono_of_mono_map <| show Mono (G.map (F.map f)) from inferInstance⟩
 
+lemma preservesMonomorphisms.of_natTrans {F G : C ⥤ D} [PreservesMonomorphisms F]
+    (f : G ⟶ F) [∀ X, Mono (f.app X)] :
+    PreservesMonomorphisms G where
+  preserves {X Y} π hπ := by
+    suffices Mono (G.map π ≫ f.app Y) from mono_of_mono (G.map π) (f.app Y)
+    rw [f.naturality π]
+    infer_instance
+
 theorem preservesMonomorphisms.of_iso {F G : C ⥤ D} [PreservesMonomorphisms F] (α : F ≅ G) :
     PreservesMonomorphisms G :=
-  { preserves := fun {X} {Y} f h => by
-      suffices G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom from this ▸ mono_comp _ _
-      rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+  of_natTrans α.inv
 
 theorem preservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     PreservesMonomorphisms F ↔ PreservesMonomorphisms G :=
   ⟨fun _ => preservesMonomorphisms.of_iso α, fun _ => preservesMonomorphisms.of_iso α.symm⟩
 
+lemma preservesEpimorphisms.of_natTrans {F G : C ⥤ D} [PreservesEpimorphisms F]
+    (f : F ⟶ G) [∀ X, Epi (f.app X)] :
+    PreservesEpimorphisms G where
+  preserves {X Y} π hπ := by
+    suffices Epi (f.app X ≫ G.map π) from epi_of_epi (f.app X) (G.map π)
+    rw [← f.naturality π]
+    infer_instance
+
 theorem preservesEpimorphisms.of_iso {F G : C ⥤ D} [PreservesEpimorphisms F] (α : F ≅ G) :
     PreservesEpimorphisms G :=
-  { preserves := fun {X} {Y} f h => by
-      suffices G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom from this ▸ epi_comp _ _
-      rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+  of_natTrans α.hom
 
 theorem preservesEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     PreservesEpimorphisms F ↔ PreservesEpimorphisms G :=
@@ -183,6 +199,20 @@ instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faith
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 
+instance {F G : C ⥤ D} (f : F ⟶ G) [IsSplitEpi f] (X : C) : IsSplitEpi (f.app X) :=
+  inferInstanceAs (IsSplitEpi (((evaluation C D).obj X).map f))
+
+instance {F G : C ⥤ D} (f : F ⟶ G) [IsSplitMono f] (X : C) : IsSplitMono (f.app X) :=
+  inferInstanceAs (IsSplitMono (((evaluation C D).obj X).map f))
+
+lemma preservesEpimorphisms.ofRetract {F G : C ⥤ D} (r : Retract G F) [F.PreservesEpimorphisms] :
+    G.PreservesEpimorphisms where
+  preserves := (preservesEpimorphisms.of_natTrans r.r).preserves
+
+lemma preservesMonomorphisms.ofRetract {F G : C ⥤ D} (r : Retract G F) [F.PreservesMonomorphisms] :
+    G.PreservesMonomorphisms where
+  preserves := (preservesMonomorphisms.of_natTrans r.i).preserves
+
 section
 
 variable (F : C ⥤ D) {X Y : C} (f : X ⟶ Y)
@@ -239,7 +269,7 @@ theorem mono_map_iff_mono [hF₁ : PreservesMonomorphisms F] [hF₂ : ReflectsMo
   · intro h
     exact F.map_mono f
 
-/-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `split_epi_category`,
+/-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `SplitEpiCategory`,
 then `D` also is. -/
 theorem splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C] :
     SplitEpiCategory D :=
@@ -254,7 +284,7 @@ end CategoryTheory.Functor
 
 namespace CategoryTheory.Adjunction
 
-variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
+variable {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
 
 theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [F'.PreservesMonomorphisms]
     [F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
@@ -277,7 +307,7 @@ end CategoryTheory.Adjunction
 
 namespace CategoryTheory.Functor
 
-variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
+variable {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
 
 @[simp]
 theorem strongEpi_map_iff_strongEpi_of_isEquivalence [IsEquivalence F] :

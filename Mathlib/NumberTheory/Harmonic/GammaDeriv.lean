@@ -3,11 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Convex.Deriv
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+public import Mathlib.Analysis.Convex.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!
 # Derivative of Γ at positive integers
@@ -17,6 +18,8 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 `deriv Real.Gamma (n + 1) = Nat.factorial n * (-Real.eulerMascheroniConstant + harmonic n)`
 
 -/
+
+public section
 
 open Nat Set Filter Topology
 
@@ -108,21 +111,20 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
       add_assoc, ← mul_add, deriv_comp_add_const,
       (by norm_num : 1 / 2 + 1 / 2 = (1 : ℝ)), Gamma_one, mul_one,
       eulerMascheroniConstant_eq_neg_deriv, add_neg_cancel, mul_zero, add_zero]
-    · apply h_diff; norm_num -- s = 1
+    · apply h_diff; simp -- s = 1
     · exact ((h_diff (by simp)).hasDerivAt.comp_add_const).differentiableAt -- s = 1
   _ = (deriv (fun s ↦ Gamma (2 * s) * 2 ^ (1 - 2 * s) * √π) (1 / 2)) + √π * γ := by
     rw [funext Gamma_mul_Gamma_add_half]
   _ = √π * (deriv (fun s ↦ Gamma (2 * s) * 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     rw [mul_comm √π, mul_comm √π, deriv_mul_const, add_mul]
     apply DifferentiableAt.mul
-    · exact .comp (g := Gamma) _ (by apply h_diff; norm_num) -- s = 1
+    · exact .comp (g := Gamma) _ (by apply h_diff; simp) -- s = 1
         (differentiableAt_id.const_mul _)
     · exact (differentiableAt_const _).rpow (by fun_prop) two_ne_zero
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
               deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
-    congr 2
     rw [deriv_fun_mul]
-    · congr 1 <;> norm_num
+    · simp
     · exact h_diff' one_half_pos
     · exact DifferentiableAt.rpow (by fun_prop) (by fun_prop) two_ne_zero
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
@@ -132,7 +134,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     dsimp only
     · rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
     · fun_prop
-    · apply h_diff; norm_num -- s = 1
+    · apply h_diff; simp -- s = 1
     · fun_prop
   _ = √π * (-2 * γ + -(2 * log 2) + γ) := by
     congr 3
@@ -164,9 +166,6 @@ lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
-
-@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
-  differentiableAt_Gamma_nat_add_one
 
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
@@ -213,7 +212,7 @@ lemma hasDerivAt_Gammaℝ_one : HasDerivAt Gammaℝ (-(γ + log (4 * π)) / 2) 1
     rw [Real.sqrt_eq_rpow, ofReal_cpow Real.pi_pos.le, ofReal_div, ofReal_one, ofReal_ofNat]
   have aux2 : (√π : ℂ) ≠ 0 := by rw [ofReal_ne_zero]; positivity
   have hf : HasDerivAt f (-log π / 2 / √π) 1 := by
-    have := ((hasDerivAt_neg (1 : ℂ)).div_const 2).const_cpow (c := π) (Or.inr (by norm_num))
+    have := ((hasDerivAt_neg (1 : ℂ)).div_const 2).const_cpow (c := π) (Or.inr (by simp))
     refine this.congr_deriv ?_
     rw [mul_assoc, ← mul_div_assoc, mul_neg_one, neg_div, cpow_neg, ← div_eq_inv_mul, aux]
   have hg : HasDerivAt g (-√π * (γ + 2 * log 2) / 2) 1 := by

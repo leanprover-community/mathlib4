@@ -3,13 +3,16 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Lean
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Linter.OldObtain
-import Mathlib.Tactic.Simproc.ExistsAndEq
+module  -- shake: keep-all, shake: keep-downstream
+
+public meta import Lean
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Batteries.Util.LibraryNote -- For `library_note` command.
 
 /-!
 # Basic tactics and utilities for tactic writing
@@ -22,6 +25,8 @@ and explicitly name the non-dependent hypotheses,
 - the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
 context).
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -83,7 +88,7 @@ h₂ : b = c
 ⊢ a = c
 ```
 -/
-syntax (name := introv) "introv " (ppSpace colGt binderIdent)* : tactic
+syntax (name := introv) "introv" (ppSpace colGt binderIdent)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
   match stx with
   | `(tactic| introv)                     => introsDep
@@ -109,7 +114,11 @@ where
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
+/-- Deprecated: use `guard_target =~ t` instead. -/
+@[deprecated "Use `guard_target =~` instead." (since := "2025-12-11")]
 elab "match_target " t:term : tactic => do
+  logWarningAt t <|
+    m!"deprecation warning: replace `match_target {t}` with `guard_target =~ {t}`."
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then
@@ -124,5 +133,32 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
   replaceMainGoal [g]
 
 attribute [pp_with_univ] ULift PUnit PEmpty
+
+/-- Result of `withResetServerInfo`. -/
+structure withResetServerInfo.Result (α : Type) where
+  /-- Return value of the executed tactic. -/
+  result? : Option α
+  /-- Messages produced by the executed tactic. -/
+  msgs    : MessageLog
+  /-- Info trees produced by the executed tactic, wrapped in `CommandContextInfo.save`. -/
+  trees   : PersistentArray InfoTree
+
+/--
+Runs a tactic, returning any new messages and info trees rather than adding them to the state.
+-/
+def withResetServerInfo {α : Type} (t : TacticM α) :
+    TacticM (withResetServerInfo.Result α) := do
+  let (savedMsgs, savedTrees) ← modifyGetThe Core.State fun st =>
+    ((st.messages, st.infoState.trees), { st with messages := {}, infoState.trees := {} })
+  Prod.snd <$> MonadFinally.tryFinally' t fun result? => do
+    let msgs  ← Core.getMessageLog
+    let ist   ← getInfoState
+    let trees ← ist.trees.mapM fun tree => do
+      let tree := tree.substitute ist.assignment
+      let ctx := .commandCtx <| ← CommandContextInfo.save
+      return InfoTree.context ctx tree
+    modifyThe Core.State fun st =>
+      { st with messages := savedMsgs, infoState.trees := savedTrees }
+    return { result?, msgs, trees }
 
 end Mathlib.Tactic

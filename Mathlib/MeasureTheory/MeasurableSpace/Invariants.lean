@@ -3,15 +3,19 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 /-!
 # σ-algebra of sets invariant under a self-map
 
 In this file we define `MeasurableSpace.invariants (f : α → α)`
 to be the σ-algebra of sets `s : Set α` such that
 - `s` is measurable w.r.t. the canonical σ-algebra on `α`;
-- and `f ⁻ˢ' s = s`.
+- and `f ⁻¹' s = s`.
 -/
+
+@[expose] public section
 
 open Set Function
 open scoped MeasureTheory
@@ -24,7 +28,7 @@ variable {α : Type*}
 `invariants f` is the σ-algebra of measurable sets that are invariant under `f`.
 
 A set `s` is `(invariants f)`-measurable
-iff it is meaurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
+iff it is measurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
 def invariants [m : MeasurableSpace α] (f : α → α) : MeasurableSpace α :=
   { m ⊓ ⟨fun s ↦ f ⁻¹' s = s, by simp, by simp, fun f hf ↦ by simp [hf]⟩ with
     MeasurableSet' := fun s ↦ MeasurableSet[m] s ∧ f ⁻¹' s = s }
@@ -32,7 +36,7 @@ def invariants [m : MeasurableSpace α] (f : α → α) : MeasurableSpace α :=
 variable [MeasurableSpace α]
 
 /-- A set `s` is `(invariants f)`-measurable
-iff it is meaurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
+iff it is measurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
 theorem measurableSet_invariants {f : α → α} {s : Set α} :
     MeasurableSet[invariants f] s ↔ MeasurableSet s ∧ f ⁻¹' s = s :=
   .rfl
@@ -66,7 +70,7 @@ theorem measurable_invariants_of_semiconj {fa : α → α} {fb : β → β} {g :
 theorem comp_eq_of_measurable_invariants {f : α → α} {g : α → β} [MeasurableSingletonClass β]
     (h : Measurable[invariants f] g) : g ∘ f = g := by
   funext x
-  suffices x ∈ f⁻¹' (g⁻¹' {g x}) by simpa
+  suffices x ∈ f ⁻¹' (g ⁻¹' {g x}) by simpa
   rw [(h <| measurableSet_singleton (g x)).2, Set.mem_preimage, Set.mem_singleton_iff]
 
 end MeasurableSpace

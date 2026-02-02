@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 
@@ -19,6 +21,8 @@ of the Lie algebra for a Lie group. This theory coincides with the usual tangent
 case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
 
+@[expose] public section
+
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (M : Type*)
@@ -26,7 +30,7 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 open scoped Manifold ContDiff
 
--- the following two instances prevent poorly understood type class inference timeout problems
+-- the following two instances prevent poorly understood typeclass inference timeout problems
 instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
 
 instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
@@ -109,8 +113,8 @@ namespace Derivation
 variable {I}
 
 /-- The evaluation at a point as a linear map. -/
-def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[𝕜] PointDerivation I x :=
-  (ContMDiffFunction.evalAt I x).compDer
+def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩]
+  PointDerivation I x := (ContMDiffFunction.evalAt I x).compDer
 
 theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
   rfl
@@ -122,9 +126,9 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [ChartedSpace H' M']
 
 /-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
-Instead of taking a function as an argument this
-differential takes `h : f x = y`. It is particularly handy to deal with situations where the points
-on where it has to be evaluated are equal but not definitionally equal. -/
+Instead of taking a function as an argument, this
+differential takes `h : f x = y`. It is particularly handy for situations where the points
+at which it has to be evaluated are equal but not definitionally equal. -/
 def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) :
     PointDerivation I x →ₗ[𝕜] PointDerivation I' y where
   toFun v :=

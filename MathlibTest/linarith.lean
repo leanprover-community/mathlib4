@@ -618,7 +618,7 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   nlinarith [p _ garbage]
 
 /--
-error: don't know how to synthesize placeholder for argument 'x'
+error: don't know how to synthesize placeholder for argument `x`
 context:
 q : Prop
 p : ∀ (x : ℤ), 1 = 2
@@ -736,3 +736,99 @@ end findSquares
 -- `Expr.mdata` should be ignored by linarith
 example (x : Int) (h : x = -2) : x = no_index(-2) := by
   linarith [h]
+
+/-! ### `linarith?` suggestions -/
+
+/--
+info: Try this:
+  [apply] linarith only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith?
+
+/--
+info: Try this:
+  [apply] linarith only [h₂, h₁]
+-/
+#guard_msgs in
+example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b < a) : False := by
+  linarith? only [h₁, h₂]
+
+/--
+info: Try this:
+  [apply] linarith only [h₁]
+-/
+#guard_msgs in
+example (a b c : ℚ) (h₁ : a < 0) (h₂ : b ≤ c) : a ≤ 0 := by
+  linarith? only [h₁, h₂]
+
+/--
+info: Try this:
+  [apply] linarith only [h₁]
+-/
+#guard_msgs in
+example (a b c d : ℚ) (h₁ : a < 0) (h₂ : b ≤ c) (h₃ : c ≤ d) : a ≤ 0 := by
+  linarith? only [h₁, h₂, h₃]
+
+/--
+info: Try this:
+  [apply] linarith only [h₂, h₁]
+-/
+#guard_msgs in
+example (a b c d : ℚ) (h₁ : a ≤ b) (h₂ : b < a)
+    (h₃ : c ≤ d) (h₄ : d ≤ c) : False := by
+  linarith? only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? -minimize only [h₁, h₂, h₃, h₄]
+
+/-!
+From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20an.20extra.20hypothesis.20breaks.20linarith/near/533973472
+-/
+namespace metavariables
+
+theorem foo {i m : ℕ} : i ∣ 2 ^ m → m = m := fun _ => rfl
+
+variable (k a i : ℕ)
+
+theorem base (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+-- It's not clear which of the following should succeed and which should fail.
+-- For now this primarily serves to record behavior changes.
+
+theorem before_i (useless : i ≤ i) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem before_k (useless : k ≤ k) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem after_i_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : i ≤ i) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+theorem after_k_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : k ≤ k) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+end metavariables

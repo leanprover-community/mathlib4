@@ -3,16 +3,18 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Morphism properties defined in concrete categories
 
 In this file, we define the class of morphisms `MorphismProperty.injective`,
 `MorphismProperty.surjective`, `MorphismProperty.bijective` in concrete
-categories, and show that it is stable under composition and respect isomorphisms.
+categories, and show that it is stable under composition and respects isomorphisms.
 
 We introduce type-classes `HasSurjectiveInjectiveFactorization` and
 `HasFunctorialSurjectiveInjectiveFactorization` expressing that in a concrete category `C`,
@@ -20,6 +22,8 @@ all morphisms can be factored (resp. factored functorially) as a surjective map
 followed by an injective map.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -35,10 +39,10 @@ open Function
 /-- Injectivity (in a concrete category) as a `MorphismProperty` -/
 protected def injective : MorphismProperty C := fun _ _ f => Injective f
 
-/-- Surjectiveness (in a concrete category) as a `MorphismProperty` -/
+/-- Surjectivity (in a concrete category) as a `MorphismProperty` -/
 protected def surjective : MorphismProperty C := fun _ _ f => Surjective f
 
-/-- Bijectiveness (in a concrete category) as a `MorphismProperty` -/
+/-- Bijectivity (in a concrete category) as a `MorphismProperty` -/
 protected def bijective : MorphismProperty C := fun _ _ f => Bijective f
 
 theorem bijective_eq_sup :

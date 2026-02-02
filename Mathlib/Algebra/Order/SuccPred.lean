@@ -3,12 +3,14 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.SuccPred.WithBot
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Interaction between successors and arithmetic
@@ -23,6 +25,8 @@ In the future, we will make `x + 1` and `x - 1` the `simp`-normal forms for `suc
 respectively. This will require a refactor of `Ordinal` first, as the `simp`-normal form is
 currently set the other way around.
 -/
+
+@[expose] public section
 
 /-- A typeclass for `succ x = x + 1`. -/
 class SuccAddOrder (α : Type*) [Preorder α] [Add α] [One α] extends SuccOrder α where
@@ -54,6 +58,7 @@ theorem add_one_le_of_lt (h : x < y) : x + 1 ≤ y := by
 theorem add_one_le_iff_of_not_isMax (hx : ¬ IsMax x) : x + 1 ≤ y ↔ x < y := by
   rw [← succ_eq_add_one, succ_le_iff_of_not_isMax hx]
 
+@[simp]
 theorem add_one_le_iff [NoMaxOrder α] : x + 1 ≤ y ↔ x < y :=
   add_one_le_iff_of_not_isMax (not_isMax x)
 
@@ -83,6 +88,7 @@ theorem le_sub_one_of_lt (h : x < y) : x ≤ y - 1 := by
 theorem le_sub_one_iff_of_not_isMin (hy : ¬ IsMin y) : x ≤ y - 1 ↔ x < y := by
   rw [← pred_eq_sub_one, le_pred_iff_of_not_isMin hy]
 
+@[simp]
 theorem le_sub_one_iff [NoMinOrder α] : x ≤ y - 1 ↔ x < y :=
   le_sub_one_iff_of_not_isMin (not_isMin y)
 
@@ -217,6 +223,7 @@ theorem le_of_lt_add_one (h : x < y + 1) : x ≤ y := by
 theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) : x < y + 1 ↔ x ≤ y := by
   rw [← succ_eq_add_one, lt_succ_iff_of_not_isMax hy]
 
+@[simp]
 theorem lt_add_one_iff [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
   lt_add_one_iff_of_not_isMax (not_isMax y)
 
@@ -233,6 +240,7 @@ theorem le_of_sub_one_lt (h : x - 1 < y) : x ≤ y := by
 theorem sub_one_lt_iff_of_not_isMin (hx : ¬ IsMin x) : x - 1 < y ↔ x ≤ y := by
   rw [← pred_eq_sub_one, pred_lt_iff_of_not_isMin hx]
 
+@[simp]
 theorem sub_one_lt_iff [NoMinOrder α] : x - 1 < y ↔ x ≤ y :=
   sub_one_lt_iff_of_not_isMin (not_isMin x)
 

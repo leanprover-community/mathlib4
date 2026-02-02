@@ -3,15 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Topology.LocallyConstant.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.AffineMap
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # The mean value inequality and equalities
@@ -47,6 +49,8 @@ In this file we prove the following facts:
 * `hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt` : a C^1 function over the reals is
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
+
+@[expose] public section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
@@ -147,8 +151,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
       exact (lt_add_iff_pos_right _).2 hr
     exact hx
   intro x hx
-  have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 :=
-    continuousWithinAt_const.add (continuousWithinAt_id.mul continuousWithinAt_const)
+  have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 := by fun_prop
   convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
 /-- General fencing theorem for continuous functions with an estimate on the derivative.
@@ -744,29 +747,31 @@ theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiab
 then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
-  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← deriv_fderiv, hf']) _ _
+  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← toSpanSingleton_deriv, hf']) _ _
 
 theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
   hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
-    (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' hx]) t
+    (fun x hx ↦ by ext; simp [← toSpanSingleton_deriv, hf' hx]) t
 
 theorem _root_.IsOpen.exists_is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) : ∃ a, ∀ x ∈ s, f x = a :=
-  hs.exists_is_const_of_fderiv_eq_zero hs' hf (fun {x} hx ↦ by ext; simp [← deriv_fderiv, hf' hx])
+  hs.exists_is_const_of_fderiv_eq_zero hs' hf (fun {x} hx ↦ by
+    ext; simp [← toSpanSingleton_deriv, hf' hx])
 
 theorem _root_.IsOpen.is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) {x y : 𝕜} (hx : x ∈ s) (hy : y ∈ s) : f x = f y :=
-  hs.is_const_of_fderiv_eq_zero hs' hf (fun a ha ↦ by ext; simp [← deriv_fderiv, hf' ha]) hx hy
+  hs.is_const_of_fderiv_eq_zero hs' hf (fun a ha ↦ by
+    ext; simp [← toSpanSingleton_deriv, hf' ha]) hx hy
 
 theorem _root_.IsOpen.exists_eq_add_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s)
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
     (hf' : s.EqOn (deriv f) (deriv g)) : ∃ a, s.EqOn f (g · + a) :=
-  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by ext; simp [← deriv_fderiv, hf' hx])
+  hs.exists_eq_add_of_fderiv_eq hs' hf hg (fun x hx ↦ by simp [← toSpanSingleton_deriv, hf' hx])
 
 theorem _root_.IsOpen.eqOn_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)

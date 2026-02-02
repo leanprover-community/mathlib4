@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.Basic
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Comma.Basic
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # The category of "structured arrows"
@@ -19,10 +21,12 @@ These form a category with morphisms `g : Y ⟶ Y'` making the obvious diagram c
 We prove that `𝟙 (T.obj Y)` is the initial object in `T`-structured objects with source `T.obj Y`.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -36,8 +40,9 @@ and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 def StructuredArrow (S : D) (T : C ⥤ D) :=
   Comma (Functor.fromPUnit.{0} S) T
 
--- Porting note: not found by inferInstance
-instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory
+/-- See through the type synonym `StructuredArrow S T = Comma _ _`. -/
+instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 namespace StructuredArrow
 
@@ -118,7 +123,6 @@ def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ 
   right := g
 
 lemma homMk'_id (f : StructuredArrow S T) : homMk' f (𝟙 f.right) = eqToHom (by cat_disch) := by
-  ext
   simp [eqToHom_right]
 
 lemma homMk'_mk_id (f : S ⟶ T.obj Y) : homMk' (mk f) (𝟙 Y) = eqToHom (by simp) :=
@@ -126,7 +130,6 @@ lemma homMk'_mk_id (f : S ⟶ T.obj Y) : homMk' (mk f) (𝟙 Y) = eqToHom (by si
 
 lemma homMk'_comp (f : StructuredArrow S T) (g : f.right ⟶ Y') (g' : Y' ⟶ Y'') :
     homMk' f (g ≫ g') = homMk' f g ≫ homMk' (mk (f.hom ≫ T.map g)) g' ≫ eqToHom (by simp) := by
-  ext
   simp [eqToHom_right]
 
 lemma homMk'_mk_comp (f : S ⟶ T.obj Y) (g : Y ⟶ Y') (g' : Y' ⟶ Y'') :
@@ -472,7 +475,6 @@ def homMk' (f : CostructuredArrow S T) (g : Y' ⟶ f.left) : mk (S.map g ≫ f.h
   right := 𝟙 _
 
 lemma homMk'_id (f : CostructuredArrow S T) : homMk' f (𝟙 f.left) = eqToHom (by cat_disch) := by
-  ext
   simp [eqToHom_left]
 
 lemma homMk'_mk_id (f : S.obj Y ⟶ T) : homMk' (mk f) (𝟙 Y) = eqToHom (by simp) :=
@@ -480,7 +482,6 @@ lemma homMk'_mk_id (f : S.obj Y ⟶ T) : homMk' (mk f) (𝟙 Y) = eqToHom (by si
 
 lemma homMk'_comp (f : CostructuredArrow S T) (g : Y' ⟶ f.left) (g' : Y'' ⟶ Y') :
     homMk' f (g' ≫ g) = eqToHom (by simp) ≫ homMk' (mk (S.map g ≫ f.hom)) g' ≫ homMk' f g := by
-  ext
   simp [eqToHom_left]
 
 lemma homMk'_mk_comp (f : S.obj Y ⟶ T) (g : Y' ⟶ Y) (g' : Y'' ⟶ Y') :
@@ -850,7 +851,7 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp
+          dsimp [StructuredArrow.isoMk, Comma.isoMk, StructuredArrow.homMk]; simp
   counitIso := NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
@@ -1002,7 +1003,7 @@ def StructuredArrow.prodEquivalence :
   functor := StructuredArrow.prodFunctor S S' T T'
   inverse := StructuredArrow.prodInverse S S' T T'
   unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by intros; ext; all_goals simp)
 
 end
 
@@ -1044,7 +1045,7 @@ def CostructuredArrow.prodEquivalence :
   functor := CostructuredArrow.prodFunctor S S' T T'
   inverse := CostructuredArrow.prodInverse S S' T T'
   unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by intros; ext; all_goals simp)
 
 end
 

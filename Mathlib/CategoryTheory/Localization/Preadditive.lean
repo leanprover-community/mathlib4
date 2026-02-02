@@ -3,19 +3,23 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Localization of natural transformations to preadditive categories
 
 -/
 
+public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
 namespace Localization
 

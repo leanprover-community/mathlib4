@@ -3,10 +3,10 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Combinatorics.SimpleGraph.Operations
-import Mathlib.Combinatorics.SimpleGraph.Copy
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 
 /-!
 # Extremal graph theory
@@ -15,8 +15,8 @@ This file introduces basic definitions for extremal graph theory, including extr
 
 ## Main definitions
 
-* `SimpleGraph.IsExtremal` is the predicate that `G` satisfies `p` and any `H` satisfying `p` has
-  at most as many edges as `G`.
+* `SimpleGraph.IsExtremal` is the predicate that `G` has the maximum number of edges of any simple
+  graph, with fixed vertices, satisfying `p`.
 
 * `SimpleGraph.extremalNumber` is the maximum number of edges in a `H`-free simple graph on `n`
   vertices.
@@ -24,6 +24,9 @@ This file introduces basic definitions for extremal graph theory, including extr
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
 
+@[expose] public section
+
+assert_not_exists Field
 
 open Finset Fintype
 
@@ -34,7 +37,7 @@ section IsExtremal
 variable {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
 
 /-- `G` is an extremal graph satisfying `p` if `G` has the maximum number of edges of any simple
-graph satisfying `p`. -/
+graph, with fixed vertices, satisfying `p`. -/
 def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → Prop) :=
   p G ∧ ∀ ⦃G' : SimpleGraph V⦄ [DecidableRel G'.Adj], p G' → #G'.edgeFinset ≤ #G.edgeFinset
 
@@ -56,12 +59,19 @@ theorem exists_isExtremal_free {W : Type*} {H : SimpleGraph W} (h : H ≠ ⊥) :
     ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
   (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
 
+open Classical in
+theorem IsExtremal.le_iff_eq
+    {p : SimpleGraph V → Prop} (hG : G.IsExtremal p) {H : SimpleGraph V} (hH : p H) :
+    G ≤ H ↔ G = H :=
+  ⟨fun hGH ↦ edgeFinset_inj.1 <|
+    eq_of_subset_of_card_le (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 hH), le_of_eq⟩
+
 end IsExtremal
 
 section ExtremalNumber
 
 open Classical in
-/-- The extremal number of a natural number `n` and a simple graph `H` is the the maximum number of
+/-- The extremal number of a natural number `n` and a simple graph `H` is the maximum number of
 edges in a `H`-free simple graph on `n` vertices.
 
 If `H` is contained in all simple graphs on `n` vertices, then this is `0`. -/
@@ -99,7 +109,7 @@ theorem card_edgeFinset_le_extremalNumber (h : H.Free G) :
 /-- If `G` has more than `extremalNumber (card V) H` edges, then `G` contains a copy of `H`. -/
 theorem IsContained.of_extremalNumber_lt_card_edgeFinset
     (h : extremalNumber (card V) H < #G.edgeFinset) : H ⊑ G := by
-  contrapose! h
+  contrapose h; push_neg
   exact card_edgeFinset_le_extremalNumber h
 
 /-- `extremalNumber (card V) H` is at most `x` if and only if every `H`-free simple graph `G` has
@@ -140,7 +150,6 @@ theorem IsContained.extremalNumber_le {W' : Type*} {H' : SimpleGraph W'} (h : H'
   rw [← Fintype.card_fin n, extremalNumber_le_iff]
   intro _ _ h'
   contrapose! h'
-  rw [not_not]
   exact h.trans (IsContained.of_extremalNumber_lt_card_edgeFinset h')
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
@@ -157,7 +166,6 @@ theorem extremalNumber_congr {n₁ n₂ : ℕ} {W₁ W₂ : Type*} {H₁ : Simpl
     intro G _ h
     apply card_edgeFinset_le_extremalNumber
     contrapose! h
-    rw [not_free] at h ⊢
     exact h.trans' ⟨e.toCopy⟩
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
@@ -182,7 +190,6 @@ theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
   rw [← card_edgeFinset_induce_compl_singleton, ← @card_unique ({v} : Set V), ← card_compl_set]
   apply card_edgeFinset_le_extremalNumber
   contrapose! h
-  rw [not_free] at h ⊢
   exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
 end ExtremalNumber

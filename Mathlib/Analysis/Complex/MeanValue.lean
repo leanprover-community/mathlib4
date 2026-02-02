@@ -3,12 +3,16 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.MeasureTheory.Integral.CircleAverage
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # The Mean Value Property of Complex Differentiable Functions
 -/
+
+public section
 
 open Complex Metric Real
 
@@ -27,7 +31,8 @@ private theorem circleAverage_of_differentiable_on_off_countable_posRadius (hR :
   _ = f c := by
     rw [circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable hR hs h₁f h₂f,
       ← smul_assoc]
-    field_simp
+    match_scalars
+    simp [field]
 
 /--
 The **Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is continuous on a

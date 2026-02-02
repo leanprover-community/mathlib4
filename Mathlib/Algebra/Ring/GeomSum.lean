@@ -3,9 +3,12 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Partial sums of geometric series in a ring
@@ -17,6 +20,8 @@ Several variants are recorded, generalising in particular to the case of a nonco
 which `x` and `y` commute. Even versions not using division or subtraction, valid in each semiring,
 are recorded.
 -/
+
+public section
 
 assert_not_exists Field IsOrderedRing
 
@@ -70,7 +75,7 @@ lemma geom_sum₂_with_one (x : R) (n : ℕ) :
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
 protected lemma Commute.geom_sum₂_mul_add {x y : R} (h : Commute x y) (n : ℕ) :
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
-  let f :  ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
+  let f : ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction n with
   | zero => rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
@@ -151,7 +156,7 @@ lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
-  omega
+  lia
 
 lemma geom_sum_mul_of_one_le (hx : 1 ≤ x) (n : ℕ) :
     (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by simpa using geom_sum₂_mul_of_ge hx n
@@ -204,6 +209,26 @@ lemma sub_one_dvd_pow_sub_one (x : R) (n : ℕ) : x - 1 ∣ x ^ n - 1 := by
 lemma pow_one_sub_dvd_pow_mul_sub_one (x : R) (m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
   rw [pow_mul]; exact sub_one_dvd_pow_sub_one (x ^ m) n
 
+theorem dvd_pow_sub_one_of_dvd {r : R} {a b : ℕ} (h : a ∣ b) :
+    r ^ a - 1 ∣ r ^ b - 1 := by
+  obtain ⟨n, rfl⟩ := h
+  exact pow_one_sub_dvd_pow_mul_sub_one r a n
+
+theorem dvd_pow_pow_sub_self_of_dvd {r : R} {p a b : ℕ} (h : a ∣ b) :
+    r ^ p ^ a - r ∣ r ^ p ^ b - r := by
+  by_cases hp₀ : p = 0
+  · by_cases hb₀ : b = 0
+    · rw [hp₀, hb₀, pow_zero, pow_one, sub_self]
+      exact dvd_zero _
+    have ha₀ : a ≠ 0 := by rintro rfl; rw [zero_dvd_iff] at h; tauto
+    rw [hp₀, zero_pow ha₀, zero_pow hb₀]
+  have hp (c) : 1 ≤ p ^ c := Nat.pow_pos <| pos_of_ne_zero hp₀
+  rw [← Nat.sub_add_cancel (hp a), ← Nat.sub_add_cancel (hp b), pow_succ', pow_succ',
+    ← mul_sub_one, ← mul_sub_one]
+  refine mul_dvd_mul_left _ <| dvd_pow_sub_one_of_dvd <| Int.natCast_dvd_natCast.mp ?_
+  rw [Nat.cast_sub (hp a), Nat.cast_sub (hp b), Nat.cast_pow, Nat.cast_pow]
+  exact dvd_pow_sub_one_of_dvd h
+
 lemma geom_sum_mul (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by
   have := (Commute.one_right x).geom_sum₂_mul n
   rw [one_pow, geom_sum₂_with_one] at this
@@ -231,7 +256,7 @@ protected lemma Commute.mul_geom_sum₂_Ico (h : Commute x y) {m n : ℕ}
     rw [← pow_add]
     congr
     rw [mem_range] at j_in
-    omega
+    lia
   rw [this]
   simp_rw [pow_mul_comm y (n - m) _]
   simp_rw [← mul_assoc]
@@ -246,7 +271,7 @@ protected lemma Commute.geom_sum₂_succ_eq (h : Commute x y) {n : ℕ} :
   refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
   rw [Finset.mem_range] at hi
-  omega
+  lia
 
 protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     (hmn : m ≤ n) :
@@ -274,6 +299,14 @@ end Ring
 section CommRing
 variable [CommRing R]
 
+theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ} :
+    (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by
+  grind [geom_sum_mul]
+
+@[deprecated (since := "2025-10-31")]
+protected alias IsPrimitiveRoot.pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :=
+  pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum
+
 lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=
   (Commute.all x y).geom_sum₂_mul n
@@ -296,24 +329,37 @@ lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
 
 end CommRing
 
-lemma nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
+namespace Nat
+variable {m k : ℕ} (x y n : ℕ)
+
+protected lemma sub_dvd_pow_sub_pow : x - y ∣ x ^ n - y ^ n := by
   rcases le_or_gt y x with h | h
   · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
     exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
-lemma nat_pow_one_sub_dvd_pow_mul_sub_one (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
-  nth_rw 2 [← Nat.one_pow n]
-  rw [Nat.pow_mul x m n]
-  apply nat_sub_dvd_pow_sub_pow (x ^ m) 1
+@[deprecated (since := "2025-08-23")] alias nat_sub_dvd_pow_sub_pow := Nat.sub_dvd_pow_sub_pow
 
-lemma Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
+lemma sub_one_dvd_pow_sub_one : x - 1 ∣ x ^ n - 1 := by
+  simpa using x.sub_dvd_pow_sub_pow 1 n
+
+@[deprecated (since := "2025-08-23")]
+alias nat_pow_one_sub_dvd_pow_mul_sub_one := Nat.sub_one_dvd_pow_sub_one
+
+lemma pow_sub_pow_dvd_pow_sub_pow (hmk : m ∣ k) : x ^ m - y ^ m ∣ x ^ k - y ^ k := by
+  obtain ⟨n, rfl⟩ := hmk; simpa [pow_mul] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n
+
+lemma pow_sub_one_dvd_pow_sub_one (hmk : m ∣ k) : x ^ m - 1 ∣ x ^ k - 1 := by
+  simpa using pow_sub_pow_dvd_pow_sub_pow x 1 hmk
+
+lemma _root_.Odd.nat_add_dvd_pow_add_pow {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
   mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 
 /-- Value of a geometric sum over the naturals. Note: see `geom_sum_mul_add` for a formulation
 that avoids division and subtraction. -/
-lemma Nat.geomSum_eq {m : ℕ} (hm : 2 ≤ m) (n : ℕ) :
-    ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
+lemma geomSum_eq (hm : 2 ≤ m) (n : ℕ) : ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
-  simpa only [tsub_add_cancel_of_le (by omega : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
+  simpa only [tsub_add_cancel_of_le (by lia : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
+
+end Nat

@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -30,9 +32,11 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 end monoid, aut group
 -/
 
+@[expose] public section
+
 assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
-variable {A M G α β : Type*}
+variable {A M G α β γ : Type*}
 
 /-! ### Type endomorphisms -/
 
@@ -98,11 +102,11 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[simp]
+@[deprecated symm_apply_apply (since := "2025-08-16")]
 theorem inv_apply_self (f : Perm α) (x) : f⁻¹ (f x) = x :=
   f.symm_apply_apply x
 
-@[simp]
+@[deprecated apply_symm_apply (since := "2025-08-16")]
 theorem apply_inv_self (f : Perm α) (x) : f (f⁻¹ x) = x :=
   f.apply_symm_apply x
 
@@ -114,6 +118,8 @@ theorem mul_def (f g : Perm α) : f * g = g.trans f :=
 
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
+
+@[simp] lemma coe_inv (f : Perm α) : ⇑f⁻¹ = ⇑f.symm := rfl
 
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 
@@ -178,14 +184,6 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 @[simp]
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
-
-/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
-def permCongrHom (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
-  toFun x := e.symm.trans (x.trans e)
-  invFun y := e.trans (y.trans e.symm)
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-  map_mul' _ _ := by ext; simp
 
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
@@ -282,7 +280,42 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/
 @[simp]
-theorem permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+theorem _root_.Equiv.permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+  rfl
+
+@[deprecated (since := "2025-08-29")] alias permCongr_eq_mul := Equiv.permCongr_eq_mul
+
+@[simp]
+lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
+    e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
+  permCongr_trans e q p |>.symm
+
+def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
+  toEquiv := e.permCongr
+  map_mul' p q := e.permCongr_mul p q
+
+attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
+extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
+
+@[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :
+    e.permCongrHom.symm = e.symm.permCongrHom :=
+  rfl
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_trans (e : α ≃ β) (e' : β ≃ γ) :
+    e.permCongrHom.trans e'.permCongrHom = (e.trans e').permCongrHom :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe_equiv (e : α ≃ β) :
+    (↑e.permCongrHom : Perm α ≃ Perm β) = e.permCongr :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe (e : α ≃ β) : ⇑e.permCongrHom = ⇑e.permCongr :=
   rfl
 
 section ExtendDomain
@@ -340,8 +373,8 @@ variable {p : α → Prop} {f : Perm α}
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
   toFun := fun x => ⟨f x, (h _).2 x.2⟩
   invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
-  left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta]
-  right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta]
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 @[simp]
 theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p (f x) ↔ p x) (x : { x // p x }) :
@@ -358,24 +391,32 @@ theorem subtypePerm_mul (f g : Perm α) (hf hg) :
       (f * g).subtypePerm fun _ => (hf _).trans <| hg _ :=
   rfl
 
+set_option backward.privateInPublic true in
 private theorem inv_aux : (∀ x, p (f x) ↔ p x) ↔ ∀ x, p (f⁻¹ x) ↔ p x :=
-  f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
+  f⁻¹.surjective.forall.trans <| by simp [Iff.comm]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
     f⁻¹.subtypePerm hf = (f.subtypePerm <| inv_aux.2 hf : Perm { x // p x })⁻¹ :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- See `Equiv.Perm.subtypePerm_inv`. -/
 @[simp]
 theorem inv_subtypePerm (f : Perm α) (hf) :
     (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (inv_aux.1 hf) :=
   rfl
 
+set_option backward.privateInPublic true in
 private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f ^ n) x) ↔ p x
   | 0, _ => Iff.rfl
   | _ + 1, _ => (pow_aux hf (f _)).trans (hf _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
     (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (pow_aux hf) := by
@@ -383,12 +424,15 @@ theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
   | zero => simp
   | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
 
+set_option backward.privateInPublic true in
 private theorem zpow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℤ} (x), p ((f ^ n) x) ↔ p x
   | Int.ofNat _ => pow_aux hf
   | Int.negSucc n => by
     rw [zpow_negSucc]
     exact pow_aux (inv_aux.1 hf)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
@@ -492,12 +536,10 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
   Equiv.ext fun z => by
-    simp only [Perm.mul_apply, swap_apply_def]
-    split_ifs <;>
-      simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, not_true]
+    simp only [Perm.mul_apply, swap_apply_def]; split_ifs <;> simp_all [eq_symm_apply]
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
-  rw [swap_mul_eq_mul_swap, Perm.inv_apply_self, Perm.inv_apply_self]
+  simp [swap_mul_eq_mul_swap]
 
 theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap x y * f⁻¹ := by
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]
@@ -692,6 +734,7 @@ def toPerm : MulAut M →* Equiv.Perm M where
   map_one' := rfl
   map_mul' _ _ := rfl
 
+set_option backward.proofsInPublic true in
 /-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance

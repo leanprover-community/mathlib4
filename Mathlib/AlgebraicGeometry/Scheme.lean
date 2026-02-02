@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.Spec
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.AlgebraicGeometry.Spec
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of schemes
@@ -16,15 +18,9 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
-## Notation
-
-`Spec R` typechecks only for `R : CommRingCat`. It happens quite often that we want to take Spec of
-an unbundled ring, and this can be spelled `Spec (CommRingCat.of R)`, or `Spec (.of R)` using
-anonymous dot notation. This is such a common situation that we have dedicated notation: `Spec(R)`
-
-Note that one can write `Spec(R)` for `R : CommRingCat`, but one shouldn't: This is `Spec (.of ↑R)`
-under the hood, which simplifies to `Spec R`.
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -33,13 +29,7 @@ universe u
 
 noncomputable section
 
-open TopologicalSpace
-
-open CategoryTheory
-
-open TopCat
-
-open Opposite
+open TopologicalSpace CategoryTheory TopCat Opposite
 
 namespace AlgebraicGeometry
 
@@ -64,7 +54,7 @@ instance : CoeSort Scheme Type* where
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for coercing schemes to types. -/
 @[app_delab TopCat.carrier]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
   withNaryArg 0 do
   guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3
@@ -103,8 +93,8 @@ instance : Category Scheme where
   id X := Hom.mk (𝟙 X.toLocallyRingedSpace)
   comp f g := Hom.mk (f.toLRSHom ≫ g.toLRSHom)
 
-/-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`,
-  the preimage of an open set `U` under `f`. -/
+/-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`, the preimage of an open set `U` under `f`.
+The preferred name in lemmas is `preimage` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
   @Functor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
     (Opens.map (f : Scheme.Hom _ _).base) U
@@ -115,11 +105,14 @@ scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
     (LocallyRingedSpace.toSheafedSpace (Scheme.toLocallyRingedSpace X)))).obj
     (op (α := Scheme.Opens _) U)
 
+instance {X Y : Scheme.{u}} : CoeFun (X ⟶ Y) (fun _ ↦ X → Y) where
+  coe f := f.base
+
 instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.hom.2
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := f.base.hom.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -132,17 +125,28 @@ instance {X : Scheme.{u}} : Preorder X := specializationPreorder X
 
 lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := by rfl
 
+open Order in
+lemma height_of_isClosed {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by
+  simp only [height_eq_zero]
+  intro b _
+  obtain rfl | h := eq_or_ne b x
+  · assumption
+  · have := IsClosed.not_specializes hx rfl h
+    contradiction
+
 namespace Hom
 
-variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Y.Opens} {V V' : X.Opens}
+variable {X Y : Scheme.{u}} (f : X ⟶ Y) {U U' : Y.Opens} {V V' : X.Opens}
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open `U ⊆ Y`,
-this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
+this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`.
+
+This is treated as a suffix in lemma names. -/
 abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.c.app (op U)
 
-/-- Given a morphism of schemes `f : X ⟶ Y`,
-this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`. -/
+/-- Given a morphism of schemes `f : X ⟶ Y`, this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`.
+This is treated as a suffix in lemma names. -/
 abbrev appTop : Γ(Y, ⊤) ⟶ Γ(X, ⊤) :=
   f.app ⊤
 
@@ -152,7 +156,9 @@ lemma naturality (i : op U' ⟶ op U) :
   f.c.naturality i
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
-this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
+this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`.
+
+This is treated as a suffix in lemma names. -/
 def appLE (U : Y.Opens) (V : X.Opens) (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
   f.app U ≫ X.presheaf.map (homOfLE e).op
 
@@ -194,35 +200,54 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 
 /-- A morphism of schemes `f : X ⟶ Y` induces a local ring homomorphism from
 `Y.presheaf.stalk (f x)` to `X.presheaf.stalk x` for any `x : X`. -/
-def stalkMap (x : X) : Y.presheaf.stalk (f.base x) ⟶ X.presheaf.stalk x :=
+def stalkMap (x : X) : Y.presheaf.stalk (f x) ⟶ X.presheaf.stalk x :=
   f.toLRSHom.stalkMap x
 
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
   cases f; cases g; congr 1
-  exact LocallyRingedSpace.Hom.ext' <| SheafedSpace.ext _ _ h_base
-    (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
+  apply LocallyRingedSpace.Hom.ext'
+  ext : 1
+  · exact h_base
+  · exact TopCat.Presheaf.ext (fun U ↦ by simpa using h_app U)
 
 /-- An alternative ext lemma for scheme morphisms. -/
 protected lemma ext' {f g : X ⟶ Y} (h : f.toLRSHom = g.toLRSHom) : f = g := by
   cases f; cases g; congr 1
 
+lemma mem_preimage {x : X} {U : Opens Y} : x ∈ f ⁻¹ᵁ U ↔ f x ∈ U := .rfl
+
+lemma coe_preimage {U : Opens Y} : f ⁻¹ᵁ U = f ⁻¹' U := rfl
+
+lemma preimage_sup {U V : Opens Y} : f ⁻¹ᵁ (U ⊔ V) = f ⁻¹ᵁ U ⊔ f ⁻¹ᵁ V := rfl
+lemma preimage_inf {U V : Opens Y} : f ⁻¹ᵁ (U ⊓ V) = f ⁻¹ᵁ U ⊓ f ⁻¹ᵁ V := rfl
+@[simp] lemma preimage_top : f ⁻¹ᵁ ⊤ = ⊤ := rfl
+@[simp] lemma preimage_bot : f ⁻¹ᵁ ⊥ = ⊥ := rfl
+
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
   Opens.ext (by simp)
 
-lemma preimage_iSup_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
+lemma iSup_preimage_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
     ⨆ i, f ⁻¹ᵁ U i = ⊤ := f.preimage_iSup U ▸ hU ▸ rfl
 
-lemma preimage_le_preimage_of_le {U U' : Y.Opens} (hUU' : U ≤ U') :
+@[deprecated (since := "2025-10-07")] alias preimage_iSup_eq_top := iSup_preimage_eq_top
+
+lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
     f ⁻¹ᵁ U ≤ f ⁻¹ᵁ U' :=
   fun _ ha ↦ hUU' ha
 
-end Hom
+@[deprecated (since := "2025-10-07")] alias preimage_le_preimage_of_le := preimage_mono
+
+lemma id_preimage (U : X.Opens) : (𝟙 X) ⁻¹ᵁ U = U := rfl
 
 @[simp]
-lemma preimage_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
+lemma comp_preimage {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g) ⁻¹ᵁ U = f ⁻¹ᵁ g ⁻¹ᵁ U := rfl
+
+end Hom
+
+@[deprecated (since := "2025-10-07")] alias preimage_comp := Hom.comp_preimage
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
@@ -253,38 +278,35 @@ noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
 
 @[simp]
 lemma coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
-    ⇑(homeoOfIso e) = e.hom.base := rfl
+    ⇑(homeoOfIso e) = e.hom := rfl
 
 @[simp]
 lemma coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
-    ⇑(homeoOfIso e.symm) = e.inv.base := rfl
+    ⇑(homeoOfIso e.symm) = e.inv := rfl
 
 @[simp]
 lemma homeoOfIso_symm {X Y : Scheme} (e : X ≅ Y) :
     (homeoOfIso e).symm = homeoOfIso e.symm := rfl
 
 lemma homeoOfIso_apply {X Y : Scheme} (e : X ≅ Y) (x : X) :
-    homeoOfIso e x = e.hom.base x := rfl
+    homeoOfIso e x = e.hom x := rfl
 
 alias _root_.CategoryTheory.Iso.schemeIsoToHomeo := homeoOfIso
 
 /-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
-noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f] :
+noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := Scheme) f] :
     X ≃ₜ Y :=
   (asIso f).schemeIsoToHomeo
 
 @[simp]
-lemma Hom.homeomorph_apply {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f] (x) :
-    f.homeomorph x = f.base x := rfl
+lemma Hom.homeomorph_apply {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso (C := Scheme) f] (x) :
+    f.homeomorph x = f x := rfl
 
--- Porting note: Lean seems not able to find this coercion any more
 instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
--- Porting note: added this unification hint just in case
 /-- forgetful functor to `TopCat` is the same as coercion -/
-unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
-  forgetToTop.obj X ≟ (X : TopCat)
+unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
 
 /-- The forgetful functor from `Scheme` to `Type`. -/
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
@@ -293,14 +315,15 @@ nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCa
 -- Schemes are often coerced as types, and it would be useful to have definitionally equal types
 -- to be reducibly equal. The alternative is to make `forget` reducible but that option has
 -- poor performance consequences.
-unif_hint forget_obj_eq_coe (X : Scheme) where ⊢
-  forget.obj X ≟ (X : Type*)
+unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
-@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = (f.base : X → Y) := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = f := rfl
+
+namespace Hom
 
 @[simp]
-theorem id.base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
+theorem id_base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
   rfl
 
 @[simp]
@@ -317,18 +340,13 @@ theorem comp_toLRSHom {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toLRSHom = f.toLRSHom ≫ g.toLRSHom :=
   rfl
 
-@[simp, reassoc] -- reassoc lemma does not need `simp`
-theorem comp_coeBase {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).base = f.base ≫ g.base :=
-  rfl
-
-@[reassoc]
+@[simp, reassoc]
 theorem comp_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).base = f.base ≫ g.base :=
   rfl
 
-theorem comp_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g).base x = g.base (f.base x) := by
+theorem comp_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g) x = g (f x) := by
   simp
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
@@ -341,6 +359,7 @@ theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
 
+@[reassoc]
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
       (f ≫ g).appLE U W (e₂.trans ((Opens.map f.base).map (homOfLE e₁)).le) := by
@@ -359,32 +378,21 @@ theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
 
 theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Y.Opens} (e : U = V) :
     f.app U =
-      Y.presheaf.map (eqToHom e.symm).op ≫
-        f.app V ≫
-          X.presheaf.map (eqToHom (congr_arg (Opens.map f.base).obj e)).op := by
-  rw [← IsIso.inv_comp_eq, ← Functor.map_inv, f.naturality]
-  cases e
-  rfl
+      Y.presheaf.map (eqToHom e.symm).op ≫ f.app V ≫ X.presheaf.map (eqToHom (e ▸ rfl)).op := by
+  aesop
 
-theorem eqToHom_c_app {X Y : Scheme} (e : X = Y) (U) :
+theorem eqToHom_app {X Y : Scheme} (e : X = Y) (U) :
     (eqToHom e).app U = eqToHom (by subst e; rfl) := by subst e; rfl
-
--- Porting note: in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
--- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
-lemma presheaf_map_eqToHom_op (X : Scheme) (U V : X.Opens) (i : U = V) :
-    X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
-  rw [eqToHom_op, eqToHom_map]
 
 instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHom :=
   forgetToLocallyRingedSpace.map_isIso f
 
+instance isIso_toPshHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toPshHom :=
+  inferInstanceAs (IsIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙
+    SheafedSpace.forgetToPresheafedSpace).map f.toLRSHom))
+
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
-
--- Porting note: need an extra instance here.
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.c.app U) :=
-  haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
-  NatIso.isIso_app_of_isIso f.c _
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
@@ -395,14 +403,13 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
     (inv f).app U =
       X.presheaf.map (eqToHom (show (f ≫ inv f) ⁻¹ᵁ U = U by rw [IsIso.hom_inv_id]; rfl)).op ≫
         inv (f.app ((inv f) ⁻¹ᵁ U)) := by
-  rw [IsIso.eq_comp_inv, ← Scheme.comp_app, Scheme.congr_app (IsIso.hom_inv_id f),
-    Scheme.id_app, Category.id_comp]
+  rw [IsIso.eq_comp_inv, ← comp_app, congr_app (IsIso.hom_inv_id f), id_app, Category.id_comp]
 
 theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    (inv f).appTop = inv (f.appTop) := by simp
+    (inv f).appTop = inv f.appTop := by simp
 
 /-- Copies a morphism with a different underlying map -/
-def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
+def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
   base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
@@ -410,34 +417,74 @@ def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X
     convert f.prop x using 4
     cat_disch
 
-lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
+lemma copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
   subst h
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
-  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
+  simp only [Hom.copyBase]
   congr
   cat_disch
+
+end Hom
+
+@[deprecated (since := "2025-10-07")] alias id.base := Hom.id_base
+@[deprecated (since := "2025-10-07")] alias id_app := Hom.id_app
+@[deprecated (since := "2025-10-07")] alias id_appTop := Hom.id_appTop
+@[deprecated (since := "2025-10-07")] alias comp_toLRSHom := Hom.comp_toLRSHom
+@[deprecated (since := "2025-10-07")] alias comp_toLRSHom_assoc := Hom.comp_toLRSHom_assoc
+@[deprecated (since := "2025-10-07")] alias comp_coeBase := Hom.comp_base
+@[deprecated (since := "2025-10-07")] alias comp_coeBase_assoc := Hom.comp_base_assoc
+@[deprecated (since := "2025-10-07")] alias comp_base := Hom.comp_base
+@[deprecated (since := "2025-10-07")] alias comp_base_assoc := Hom.comp_base_assoc
+@[deprecated (since := "2025-10-07")] alias comp_base_apply := Hom.comp_apply
+@[deprecated (since := "2025-10-07")] alias comp_app := Hom.comp_app
+@[deprecated (since := "2025-10-07")] alias comp_app_assoc := Hom.comp_app_assoc
+@[deprecated (since := "2025-10-07")] alias comp_appTop := Hom.comp_appTop
+@[deprecated (since := "2025-10-07")] alias comp_appTop_assoc := Hom.comp_appTop_assoc
+@[deprecated (since := "2025-10-07")] alias appLE_comp_appLE := Hom.appLE_comp_appLE
+@[deprecated (since := "2025-10-07")] alias comp_appLE := Hom.comp_appLE
+@[deprecated (since := "2025-10-07")] alias comp_appLE_assoc := Hom.comp_appLE_assoc
+@[deprecated (since := "2025-10-07")] alias congr_app := Hom.congr_app
+@[deprecated (since := "2025-10-07")] alias app_eq := Hom.app_eq
+@[deprecated (since := "2025-10-07")] alias eqToHom_c_app := Hom.eqToHom_app
+@[deprecated (since := "2025-10-07")] alias inv_app := Hom.inv_app
+@[deprecated (since := "2025-10-07")] alias inv_appTop := Hom.inv_appTop
+@[deprecated (since := "2025-10-07")] alias presheaf_map_eqToHom_op := eqToHom_map
 
 end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.
+
+The notation `Spec(R)` for `(R : Type*) [CommRing R]` to mean `Spec (CommRingCat.of R)` is
+enabled in the scope `SpecOfNotation`. Please do not use it within Mathlib, but it can be
+used in downstream projects if desired. To use this, do:
+```lean
+import Mathlib.AlgebraicGeometry.Scheme
+
+variable (R : Type*) [CommRing R]
+
+open scoped SpecOfNotation
+
+#check Spec(R)
+```
 -/
 def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
   toLocallyRingedSpace := Spec.locallyRingedSpaceObj R
 
 /-- The spectrum of an unbundled ring as a scheme.
+WARNING: This is potentially confusing as `Spec (R)` and `Spec(R)` have different meanings.
+Hence we avoid using it in mathlib but leave it as a scoped instance for downstream projects.
 
 WARNING: If `R` is already an element of `CommRingCat`, you should use `Spec R` instead of
 `Spec(R)`, which is secretly `Spec(↑R)`. -/
-scoped notation3 "Spec("R")" => Spec <| .of R
+scoped[SpecOfNotation] notation3 "Spec("R")" => AlgebraicGeometry.Spec <| .of R
 
 theorem Spec_toLocallyRingedSpace (R : CommRingCat) :
     (Spec R).toLocallyRingedSpace = Spec.locallyRingedSpaceObj R :=
   rfl
 
-/-- The induced map of a ring homomorphism on the ring spectra, as a morphism of schemes.
--/
+/-- The induced map of a ring homomorphism on the ring spectra, as a morphism of schemes. -/
 def Spec.map {R S : CommRingCat} (f : R ⟶ S) : Spec S ⟶ Spec R :=
   ⟨Spec.locallyRingedSpaceMap f⟩
 
@@ -479,8 +526,10 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma Spec.map_base : (Spec.map f).base = ofHom (PrimeSpectrum.comap f.hom) := rfl
-lemma Spec.map_base_apply (x : Spec S) : (Spec.map f).base x = PrimeSpectrum.comap f.hom x := rfl
+lemma Spec.map_base : (Spec.map f).base = ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩ := rfl
+lemma Spec.map_apply (x : Spec S) : Spec.map f x = PrimeSpectrum.comap f.hom x := rfl
+
+@[deprecated (since := "2025-10-07")] alias Spec.map_base_apply := Spec.map_apply
 
 lemma Spec.map_app (U) :
     (Spec.map f).app U =
@@ -498,9 +547,9 @@ namespace Scheme
 
 theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
     {i : W ⟶ X} {j : W ⟶ Y} (h : CommSq i j f g)
-    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty W :=
+    (H : Disjoint (Set.range f) (Set.range g)) : IsEmpty W :=
   ⟨fun x ↦ (Set.disjoint_iff_inter_eq_empty.mp H).le
-    ⟨⟨i.base x, congr($(h.w).base x)⟩, ⟨j.base x, rfl⟩⟩⟩
+    ⟨⟨i x, congr($(h.w) x)⟩, ⟨j x, rfl⟩⟩⟩
 
 /-- The empty scheme. -/
 @[simps]
@@ -514,11 +563,7 @@ def empty : Scheme where
 instance : EmptyCollection Scheme :=
   ⟨empty⟩
 
-instance : Inhabited Scheme :=
-  ⟨∅⟩
-
-/-- The global sections, notated Gamma.
--/
+/-- The global sections as a functor. For the global section themselves, use `Γ(X, ⊤)` instead. -/
 def Γ : Schemeᵒᵖ ⥤ CommRingCat :=
   Scheme.forgetToLocallyRingedSpace.op ⋙ LocallyRingedSpace.Γ
 
@@ -540,11 +585,11 @@ theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
   rfl
 
 /--
-The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as an isomorphism.
+The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as a natural isomorphism.
 This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
 -/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
+  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1}
     (fun R => asIso (StructureSheaf.toOpen R ⊤))
     (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
 
@@ -571,14 +616,14 @@ lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
 
 lemma toOpen_eq (U) :
-    (by exact StructureSheaf.toOpen R U) =
+    StructureSheaf.toOpen R U =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
-instance {K} [Field K] : Unique Spec(K) :=
+instance {K} [Field K] : Unique <| Spec <| .of K :=
   inferInstanceAs <| Unique (PrimeSpectrum K)
 
 @[simp]
-lemma default_asIdeal {K} [Field K] : (default : Spec(K)).asIdeal = ⊥ := rfl
+lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
 
 section BasicOpen
 
@@ -602,7 +647,6 @@ theorem mem_basicOpen'' {U : X.Opens} (f : Γ(X, U)) (x : X) :
     x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ U x m f) :=
   Iff.rfl
 
-@[simp]
 theorem mem_basicOpen_top (f : Γ(X, ⊤)) (x : X) :
     x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ ⊤ x trivial f) :=
   RingedSpace.mem_top_basicOpen _ f x
@@ -628,12 +672,16 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
 
 @[simp]
 theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (r : Γ(Y, U)) :
-    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.app U r) :=
+    f ⁻¹ᵁ Y.basicOpen r = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f.toLRSHom r
 
+alias Hom.preimage_basicOpen := preimage_basicOpen
+
 theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
-    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.appTop r) :=
+    f ⁻¹ᵁ Y.basicOpen r = X.basicOpen (f.appTop r) :=
   preimage_basicOpen ..
+
+alias Hom.preimage_basicOpen_top := preimage_basicOpen_top
 
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
@@ -655,8 +703,8 @@ lemma basicOpen_add_le :
     X.basicOpen (f + g) ≤ X.basicOpen f ⊔ X.basicOpen g := by
   intro x hx
   have hxU : x ∈ U := X.basicOpen_le _ hx
-  simp only [SetLike.mem_coe, Scheme.mem_basicOpen _ _ _ hxU, map_add, Opens.coe_sup,
-    Set.mem_union] at hx ⊢
+  simp_rw [← SetLike.mem_coe, Opens.coe_sup, Set.mem_union, SetLike.mem_coe] -- TODO : Opens.mem_sup
+  simp only [Scheme.mem_basicOpen _ _ _ hxU, map_add] at hx ⊢
   exact IsLocalRing.isUnit_or_isUnit_of_isUnit_add hx
 
 theorem basicOpen_of_isUnit {f : Γ(X, U)} (hf : IsUnit f) : X.basicOpen f = U :=
@@ -669,6 +717,10 @@ theorem basicOpen_one : X.basicOpen (1 : Γ(X, U)) = U :=
 instance algebra_section_section_basicOpen {X : Scheme} {U : X.Opens} (f : Γ(X, U)) :
     Algebra Γ(X, U) Γ(X, X.basicOpen f) :=
   (X.presheaf.map (homOfLE <| X.basicOpen_le f : _ ⟶ U).op).hom.toAlgebra
+
+@[simp]
+lemma _root_.AlgebraicGeometry.SpecMap_preimage_basicOpen {R S : CommRingCat} (f : R ⟶ S) (r : R) :
+    Spec.map f ⁻¹ᵁ PrimeSpectrum.basicOpen r = PrimeSpectrum.basicOpen (f r) := rfl
 
 end BasicOpen
 
@@ -735,10 +787,9 @@ lemma zeroLocus_mono {U : X.Opens} {s t : Set Γ(X, U)} (h : s ⊆ t) :
   exact fun x H f hf hxf ↦ H f (h hf) hxf
 
 lemma preimage_zeroLocus {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (s : Set Γ(Y, U)) :
-    f.base ⁻¹' Y.zeroLocus s = X.zeroLocus ((f.app U).hom '' s) := by
+    f ⁻¹' Y.zeroLocus s = X.zeroLocus ((f.app U).hom '' s) := by
   ext
   simp [← Scheme.preimage_basicOpen]
-  rfl
 
 @[simp]
 lemma zeroLocus_univ {U : X.Opens} :
@@ -772,10 +823,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
   rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x).hom,
     StructureSheaf.stalkToFiberRingHom_toStalk]
-  exact
-    (IsLocalization.AtPrime.isUnit_to_map_iff (Localization.AtPrime (PrimeSpectrum.asIdeal x))
-        (PrimeSpectrum.asIdeal x) f :
-      _)
+  exact IsLocalization.AtPrime.isUnit_to_map_iff _ (PrimeSpectrum.asIdeal x) f
 
 @[simp]
 theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
@@ -783,43 +831,58 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
   convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
-theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U = V) (W) :
+theorem Scheme.SpecMap_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U = V) (W) :
     (Spec.map (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h
-  refine (Scheme.congr_app this _).trans ?_
+  refine (Scheme.Hom.congr_app this _).trans ?_
   simp [eqToHom_map]
+
+@[deprecated (since := "2025-10-07")]
+alias Scheme.Spec_map_presheaf_map_eqToHom := Scheme.SpecMap_presheaf_map_eqToHom
 
 lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
     (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
-  rw [Scheme.mem_basicOpen] at hx
+  rw [Scheme.mem_basicOpen X s x x.2] at hx
   have hu : IsUnit (X.presheaf.germ _ x x.2 (s ^ n)) := by
     rw [map_pow]
     exact IsUnit.pow n hx
   rw [← hu.mul_right_eq_zero, ← map_mul, hf, map_zero]
 
 @[reassoc (attr := simp)]
-lemma Scheme.iso_hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+lemma Scheme.hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.hom.base ≫ e.inv.base = 𝟙 _ :=
   LocallyRingedSpace.iso_hom_base_inv_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
 
+@[deprecated (since := "2025-10-07")]
+alias Scheme.iso_hom_base_inv_base := Scheme.hom_base_inv_base
+
 @[simp]
-lemma Scheme.iso_hom_base_inv_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
-    (e.inv.base (e.hom.base x)) = x := by
-  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+lemma Scheme.hom_inv_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
+    e.inv (e.hom x) = x := by
+  change (e.hom ≫ e.inv) x = 𝟙 X.toPresheafedSpace x
   simp
 
+@[deprecated (since := "2025-10-07")]
+alias Scheme.iso_hom_base_inv_base_apply := Scheme.hom_inv_apply
+
 @[reassoc (attr := simp)]
-lemma Scheme.iso_inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
+lemma Scheme.inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.inv.base ≫ e.hom.base = 𝟙 _ :=
   LocallyRingedSpace.iso_inv_base_hom_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
 
+@[deprecated (since := "2025-10-07")]
+alias Scheme.iso_inv_base_hom_base := Scheme.inv_base_hom_base
+
 @[simp]
-lemma Scheme.iso_inv_base_hom_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
-    (e.hom.base (e.inv.base y)) = y := by
-  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+lemma Scheme.inv_hom_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
+    e.hom (e.inv y) = y := by
+  change (e.inv ≫ e.hom) y = 𝟙 Y.toPresheafedSpace y
   simp
+
+@[deprecated (since := "2025-10-07")]
+alias Scheme.iso_inv_base_hom_base_apply := Scheme.inv_hom_apply
 
 theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
     (Spec R).zeroLocus ((Scheme.ΓSpecIso R).inv '' s) = PrimeSpectrum.zeroLocus s := by
@@ -828,7 +891,6 @@ theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
   simp [Spec_carrier, PrimeSpectrum.mem_zeroLocus, Set.subset_def,
     PrimeSpectrum.mem_basicOpen _ x]
 
-@[simp]
 theorem Spec_zeroLocus {R : CommRingCat} (s : Set Γ(Spec R, ⊤)) :
     (Spec R).zeroLocus s = PrimeSpectrum.zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s) := by
   convert Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
@@ -836,7 +898,7 @@ theorem Spec_zeroLocus {R : CommRingCat} (s : Set Γ(Spec R, ⊤)) :
   exact (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
 section Stalks
 
-namespace Scheme
+namespace Scheme.Hom
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
@@ -849,7 +911,7 @@ lemma stalkMap_id (X : Scheme.{u}) (x : X) :
   PresheafedSpace.stalkMap.id _ x
 
 lemma stalkMap_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f.base x) ≫ f.stalkMap x :=
+    (f ≫ g : X ⟶ Z).stalkMap x = g.stalkMap (f x) ≫ f.stalkMap x :=
   PresheafedSpace.stalkMap.comp f.toPshHom g.toPshHom x
 
 @[reassoc]
@@ -882,37 +944,37 @@ lemma stalkMap_congr_point (x x' : X) (hxx' : x = x') :
 
 @[reassoc (attr := simp)]
 lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
-    e.hom.stalkMap (e.inv.base y) ≫ e.inv.stalkMap y =
+    e.hom.stalkMap (e.inv y) ≫ e.inv.stalkMap y =
       (Y.presheaf.stalkCongr (.of_eq (by simp))).hom :=
   LocallyRingedSpace.stalkMap_hom_inv (forgetToLocallyRingedSpace.mapIso e) y
 
 @[simp]
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
-    e.inv.stalkMap y (e.hom.stalkMap (e.inv.base y) z) =
+    e.inv.stalkMap y (e.hom.stalkMap (e.inv y) z) =
       (Y.presheaf.stalkCongr (.of_eq (by simp))).hom z :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
-    e.inv.stalkMap (e.hom.base x) ≫ e.hom.stalkMap x =
+    e.inv.stalkMap (e.hom x) ≫ e.hom.stalkMap x =
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom :=
   LocallyRingedSpace.stalkMap_inv_hom (forgetToLocallyRingedSpace.mapIso e) x
 
 @[simp]
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
-    e.hom.stalkMap x (e.inv.stalkMap (e.hom.base x) y) =
+    e.hom.stalkMap x (e.inv.stalkMap (e.hom x) y) =
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom y :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y
 
 @[reassoc (attr := simp)]
-lemma stalkMap_germ (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
-    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
+lemma germ_stalkMap (U : Y.Opens) (x : X) (hx : f x ∈ U) :
+    Y.presheaf.germ U (f x) hx ≫ f.stalkMap x =
       f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx :=
   PresheafedSpace.stalkMap_germ f.toPshHom U x hx
 
 @[simp]
-lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
-    f.stalkMap x (Y.presheaf.germ _ (f.base x) hx y) =
+lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
+    f.stalkMap x (Y.presheaf.germ _ (f x) hx y) =
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
@@ -923,7 +985,35 @@ noncomputable def arrowStalkMapIsoOfEq {x y : X}
       (X.presheaf.stalkCongr <| Inseparable.of_eq h) <| by
     simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, TopCat.Presheaf.stalkCongr_hom,
       Arrow.mk_hom]
-    rw [Scheme.stalkSpecializes_stalkMap]
+    rw [stalkSpecializes_stalkMap]
+
+end Hom
+
+@[deprecated (since := "2025-10-07")] alias stalkMap_id := Hom.stalkMap_id
+@[deprecated (since := "2025-10-07")] alias stalkMap_comp := Hom.stalkMap_comp
+@[deprecated (since := "2025-10-07")]
+alias stalkSpecializes_stalkMap := Hom.stalkSpecializes_stalkMap
+@[deprecated (since := "2025-10-07")]
+alias stalkSpecializes_stalkMap_assoc := Hom.stalkSpecializes_stalkMap_assoc
+@[deprecated (since := "2025-10-07")]
+alias stalkSpecializes_stalkMap_apply := Hom.stalkSpecializes_stalkMap_apply
+@[deprecated (since := "2025-10-07")] alias stalkMap_congr := Hom.stalkMap_congr
+@[deprecated (since := "2025-10-07")] alias stalkMap_congr_assoc := Hom.stalkMap_congr_assoc
+@[deprecated (since := "2025-10-07")] alias stalkMap_congr_hom := Hom.stalkMap_congr_hom
+@[deprecated (since := "2025-10-07")] alias stalkMap_congr_hom_assoc := Hom.stalkMap_congr_hom_assoc
+@[deprecated (since := "2025-10-07")] alias stalkMap_congr_point := Hom.stalkMap_congr_point
+@[deprecated (since := "2025-10-07")]
+alias stalkMap_congr_point_assoc := Hom.stalkMap_congr_point_assoc
+@[deprecated (since := "2025-10-07")] alias stalkMap_hom_inv := Hom.stalkMap_hom_inv
+@[deprecated (since := "2025-10-07")] alias stalkMap_hom_inv_assoc := Hom.stalkMap_hom_inv_assoc
+@[deprecated (since := "2025-10-07")] alias stalkMap_hom_inv_apply := Hom.stalkMap_hom_inv_apply
+@[deprecated (since := "2025-10-07")] alias stalkMap_inv_hom := Hom.stalkMap_inv_hom
+@[deprecated (since := "2025-10-07")] alias stalkMap_inv_hom_assoc := Hom.stalkMap_inv_hom_assoc
+@[deprecated (since := "2025-10-07")] alias stalkMap_inv_hom_apply := Hom.stalkMap_inv_hom_apply
+@[deprecated (since := "2025-10-07")] alias stalkMap_germ := Hom.germ_stalkMap
+@[deprecated (since := "2025-10-07")] alias stalkMap_germ_assoc := Hom.germ_stalkMap_assoc
+@[deprecated (since := "2025-10-07")] alias stalkMap_germ_apply := Hom.germ_stalkMap_apply
+@[deprecated (since := "2025-10-07")] alias arrowStalkMapIsoOfEq := Hom.arrowStalkMapIsoOfEq
 
 end Scheme
 
@@ -935,7 +1025,7 @@ open IsLocalRing
 
 @[simp]
 lemma Spec_closedPoint {R S : CommRingCat} [IsLocalRing R] [IsLocalRing S]
-    {f : R ⟶ S} [IsLocalHom f.hom] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+    {f : R ⟶ S} [IsLocalHom f.hom] : Spec.map f (closedPoint S) = closedPoint R :=
   IsLocalRing.comap_closedPoint f.hom
 
 end IsLocalRing

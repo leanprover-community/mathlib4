@@ -3,10 +3,13 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.Irrational
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Qify
+public import Mathlib.Tactic.Rify
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -25,6 +28,8 @@ Disprove `Irrational x` for rational `x`.
 
 -/
 
+public meta section
+
 namespace Tactic
 
 namespace NormNum
@@ -32,6 +37,9 @@ namespace NormNum
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
+
+-- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
+set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ∀ p : ℚ, q ^ a ≠ p ^ b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
@@ -41,7 +49,7 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   absurd h x
   rify
   rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀] <;> simp
-  · omega
+  · lia
   · assumption
 
 private theorem not_power_nat_pow {n p q : ℕ}
@@ -61,7 +69,7 @@ private theorem not_power_nat_pow {n p q : ℕ}
       rw [Nat.prod_pow_factorization_eq_self]
       intro z hz
       apply_fun Finsupp.support at hf
-      rw [Finsupp.support_smul_eq (by omega)] at hf
+      rw [Finsupp.support_smul_eq (by lia)] at hf
       rw [← hf] at hz
       exact Nat.prime_of_mem_primeFactors hz
     have hf0 : f 0 = 0 := by
@@ -69,7 +77,7 @@ private theorem not_power_nat_pow {n p q : ℕ}
       simp only [Nat.factorization_zero_right, Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul,
         zero_eq_mul] at hf
       cases hf
-      · omega
+      · lia
       · assumption
     rw [this, ← Nat.factorization_pow] at hf
     apply Nat.factorization_inj at hf
@@ -93,7 +101,7 @@ private theorem not_power_nat_of_bounds {n k d : ℕ}
   rw [h] at h_left h_right
   have : k < m := lt_of_pow_lt_pow_left' d h_left
   have : m < k + 1 := lt_of_pow_lt_pow_left' d h_right
-  omega
+  lia
 
 private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
     (hq : 0 < q) (h_coprime : p.Coprime q) (h_left : k ^ q < n) (h_right : n < (k + 1) ^ q)
@@ -134,8 +142,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   rw [div_eq_div_iff] at h
   rotate_left
   · simpa
-  · apply pow_ne_zero
-    simp [y]
+  · simp [y]
   replace h : a * y ^ d = x ^ d * b := by
     qify
     assumption
@@ -171,7 +178,7 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     by_contra! h
     simp only [nonpos_iff_eq_zero] at h
     simp only [h, pow_zero, Nat.lt_one_iff] at hn1 hn2
-    omega
+    lia
   rcases hx_isNNRat with ⟨hx_inv, hx_eq⟩
   rcases hy_isNNRat with ⟨hy_inv, hy_eq⟩
   rw [hy_eq, hx_eq]
@@ -199,7 +206,7 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
     Irrational (x ^ y) := by
   rcases hx_isNNRat with ⟨hx_inv, hx_eq⟩
   apply Irrational.of_inv
-  rw [← Real.inv_rpow (by simp [hx_eq]; positivity)]
+  rw [← Real.inv_rpow (by simp only [hx_eq, invOf_eq_inv]; positivity)]
   apply irrational_rpow_rat_rat_of_num (x_num := x_den) (x_den := x_num) _ hy_isNNRat
     (Nat.coprime_comm.mp hx_coprime) hy_coprime hd1 hd2
   refine ⟨invertibleOfNonzero (fun _ ↦ ?_), by simp [hx_eq]⟩
@@ -266,8 +273,8 @@ def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
     else
       right := middle
   if left ^ n < m then
-    return .some left
-  return .none
+    return some left
+  return none
 
 /-- Finds `NotPowerCertificate` showing that `m` is not `n`-power. -/
 def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := do
@@ -275,7 +282,7 @@ def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := 
   let .isNat (_ : Q(AddMonoidWithOne ℕ)) n _ := ← derive n | failure
   let mVal := m.natLit!
   let nVal := n.natLit!
-  let .some k := findNotPowerCertificateCore mVal nVal | failure
+  let some k := findNotPowerCertificateCore mVal nVal | failure
   let .isBool true pf_left ← derive q($k ^ $n < $m) | failure
   let .isBool true pf_right ← derive q($m < ($k + 1) ^ $n) | failure
   return ⟨q($k), pf_left, pf_right⟩

@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.Data.Fintype.Sigma
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.Data.Fintype.Sigma
 
 /-!
 
@@ -32,6 +34,8 @@ Simplicial objects equipped with a splitting form a category
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -41,7 +45,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace SimplicialObject
 
@@ -85,9 +89,7 @@ instance : Fintype (IndexSet Δ) :=
         A.e.toOrderHom⟩ :
       IndexSet Δ → Sigma fun k : Fin (Δ.unop.len + 1) => Fin (Δ.unop.len + 1) → Fin (k + 1))
     (by
-      rintro ⟨Δ₁, α₁⟩ ⟨Δ₂, α₂⟩ h₁
-      induction' Δ₁ using Opposite.rec with Δ₁
-      induction' Δ₂ using Opposite.rec with Δ₂
+      rintro ⟨⟨Δ₁⟩, α₁⟩ ⟨⟨Δ₂⟩, α₂⟩ h₁
       simp only [unop_op, Sigma.mk.inj_iff, Fin.mk.injEq] at h₁
       have h₂ : Δ₁ = Δ₂ := by
         ext1
@@ -223,7 +225,7 @@ def isColimit (Δ : SimplexCategoryᵒᵖ) : IsColimit (s.cofan Δ) := s.isColim
 
 @[reassoc]
 theorem cofan_inj_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
-    (s.cofan Δ).inj  A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
+    (s.cofan Δ).inj A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
 
 theorem cofan_inj_id (n : ℕ) : (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) = s.ι n := by
   simp [IndexSet.id, IndexSet.e, cofan_inj_eq]
@@ -246,11 +248,10 @@ theorem hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
   Cofan.IsColimit.hom_ext (s.isColimit Δ) _ _ h
 
 theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
-  ext Δ
+  ext ⟨Δ⟩
   apply s.hom_ext'
   intro A
-  induction' Δ using Opposite.rec with Δ
-  induction' Δ using SimplexCategory.rec with n
+  induction Δ using SimplexCategory.rec with | _ n
   dsimp
   simp only [s.cofan_inj_comp_app, h]
 
@@ -270,7 +271,7 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
 def ofIso (e : X ≅ Y) : Splitting Y where
   N := s.N
   ι n := s.ι n ≫ e.hom.app (op ⦋n⦌)
-  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ ) (Cofan.ext (e.app Δ)
+  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ) (Cofan.ext (e.app Δ)
     (fun A => by simp [cofan, cofan']))
 
 @[reassoc]

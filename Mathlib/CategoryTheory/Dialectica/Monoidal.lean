@@ -3,15 +3,19 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Dialectica.Basic
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Dialectica.Basic
 
 /-!
 # The Dialectica category is symmetric monoidal
 
 We show that the category `Dial` has a symmetric monoidal category structure.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -85,11 +89,11 @@ instance : MonoidalCategoryStruct (Dial C) where
 theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by
   cat_disch
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
+theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+    (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
   ext <;> simp; ext <;> simp <;> (rw [← Category.assoc]; congr 1; simp)
 
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
@@ -97,10 +101,14 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
     (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by cat_disch
 
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (𝟙 (𝟙_ (Dial C)) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (f ⊗ₘ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
@@ -118,7 +126,7 @@ theorem triangle (X Y : Dial C) :
 instance : MonoidalCategory (Dial C) :=
   .ofTensorHom
     (id_tensorHom_id := id_tensorHom_id)
-    (tensor_comp := tensor_comp)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom)
     (associator_naturality := associator_naturality)
     (leftUnitor_naturality := leftUnitor_naturality)
     (rightUnitor_naturality := rightUnitor_naturality)

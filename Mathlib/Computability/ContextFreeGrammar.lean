@@ -3,7 +3,9 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Computability.Language
+module
+
+public import Mathlib.Computability.Language
 
 /-!
 # Context-Free Grammars
@@ -23,6 +25,8 @@ nonterminal symbols that are referred to by its finitely many rules.
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
 -/
 
+@[expose] public section
+
 open Function
 
 /-- Rule that rewrites a single nonterminal to any string (a list of symbols). -/
@@ -33,6 +37,9 @@ structure ContextFreeRule (T N : Type*) where
   /-- Output string a.k.a. right-hand side. -/
   output : List (Symbol T N)
 deriving DecidableEq, Repr
+
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instReprContextFreeRule.repr
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type*) where
@@ -76,7 +83,7 @@ lemma Rewrites.input_output : r.Rewrites [.nonterminal r.input] r.output := by
 lemma rewrites_of_exists_parts (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
     r.Rewrites (p ++ [Symbol.nonterminal r.input] ++ q) (p ++ r.output ++ q) := by
   induction p with
-  | nil         => exact Rewrites.head q
+  | nil => exact Rewrites.head q
   | cons d l ih => exact Rewrites.cons d ih
 
 /-- Rule `r` rewrites string `u` is to string `v` iff they share both a prefix `p` and postfix `q`

@@ -3,7 +3,9 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
+module
+
+public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 /-!
 # Uniform time lemma for the global existence of integral curves
@@ -22,6 +24,8 @@ import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 integral curve, vector field, global existence
 -/
+
+public section
 
 open scoped Topology
 
@@ -57,12 +61,12 @@ lemma eqOn_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsMIntegralCurveOn (γ a) v (Ioo (-a) a))
     {a : ℝ} : EqOn (fun t ↦ γ (|t| + 1) t) (γ a) (Ioo (-a) a) := by
-  intros t ht
-  by_cases hlt : |t| + 1 < a
+  intro t ht
+  by_cases! hlt : |t| + 1 < a
   · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
       (by positivity) hlt.le (abs_lt.mp <| lt_add_one _)
   · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
-      (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) (not_lt.mp hlt) ht |>.symm
+      (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) hlt ht |>.symm
 
 @[deprecated (since := "2025-08-12")] alias eqOn_abs_add_one_of_isIntegralCurveOn_Ioo :=
   eqOn_abs_add_one_of_isMIntegralCurveOn_Ioo
@@ -117,7 +121,7 @@ lemma eqOn_piecewise_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hγ' : IsMIntegralCurveOn γ' v (Ioo a' b'))
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     EqOn (piecewise (Ioo a b) γ γ') γ' (Ioo a' b') := by
-  intros t ht
+  intro t ht
   suffices H : EqOn γ γ' (Ioo (max a a') (min b b')) by
     by_cases hmem : t ∈ Ioo a b
     · rw [piecewise, if_pos hmem]
@@ -146,7 +150,7 @@ lemma isMIntegralCurveOn_piecewise [BoundarylessManifold I M]
     (hγ' : IsMIntegralCurveOn γ' v (Ioo a' b')) {t₀ : ℝ}
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     IsMIntegralCurveOn (piecewise (Ioo a b) γ γ') v (Ioo a b ∪ Ioo a' b') := by
-  intros t ht
+  intro t ht
   by_cases hmem : t ∈ Ioo a b
   · rw [piecewise, if_pos hmem]
     apply hγ t hmem |>.hasMFDerivAt (Ioo_mem_nhds hmem.1 hmem.2) |>.hasMFDerivWithinAt

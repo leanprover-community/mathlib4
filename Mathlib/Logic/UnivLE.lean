@@ -3,7 +3,9 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # UnivLE
@@ -16,6 +18,8 @@ directly due to https://github.com/leanprover/lean4/issues/2297.
 
 See the doc-string for the comparison with an alternative stronger definition.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -31,7 +35,7 @@ There used to be a stronger definition `∀ α : Type max u v, Small.{v} α` tha
 its simplicity and transitivity.
 
 The strong definition easily implies the weaker definition (see below),
-but we can not prove the reverse implication.
+but we cannot prove the reverse implication.
 This is because in Lean's type theory, while `max u v` is at least at big as `u` and `v`,
 it could be bigger than both!
 See also `Mathlib/CategoryTheory/UnivLE.lean` for the statement that the stronger definition is

@@ -3,8 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Nat.Prime.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Basic
+public meta import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -24,6 +28,8 @@ Note: `evalMinFac.aux` does not raise a stack overflow, which can be checked by 
 `prf'` in the recursive call by something like `(.sort .zero)`
 -/
 
+public meta section
+
 open Nat Qq Lean Meta
 
 namespace Mathlib.Meta.NormNum
@@ -34,7 +40,7 @@ theorem not_prime_mul_of_ble (a b n : ℕ) (h : a * b = n) (h₁ : a.ble 1 = fal
 
 /-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
   that is the natural number literal `n`. -/
-def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| do
+def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run do
   let d' : ℕ := n / d
   let prf : Q($d * $d' = $en) := (q(Eq.refl $en) : Expr)
   let r : Q(Nat.ble $d 1 = false) := (q(Eq.refl false) : Expr)
@@ -119,7 +125,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac : NormNumExt where eval {_ _} e := do
   let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
   let n' := nn.natLit!
   let rec aux (ek : Q(ℕ)) (prf : Q(MinFacHelper $nn $ek)) :

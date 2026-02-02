@@ -3,11 +3,13 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Data.Fintype.Basic
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!
 # Newton's Identities
@@ -21,7 +23,7 @@ from an identity implemented in mathlib as `Finset.sum_involution`. Namely, we u
 `Finset.sum_involution` to show that `∑ t ∈ pairs σ k, weight σ R k t = 0`. We then identify
 `(-1) ^ k * k * esymm σ R k` with the terms of the weight sum for which `t.fst` has
 cardinality `k`, and `(-1) ^ i * esymm σ R i * psum σ R (k - i)` with the terms of the weight sum
-for which `t.fst` has cardinality `i` for `i < k` , and we thereby derive the main result
+for which `t.fst` has cardinality `i` for `i < k`, and we thereby derive the main result
 `(-1) ^ k * k * esymm σ R k + ∑ i ∈ range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0` (or
 rather, two equivalent forms which provide direct definitions for `esymm` and `psum` in lower-degree
 terms).
@@ -38,6 +40,8 @@ terms).
 
 See [zeilberger1984] for the combinatorial proof of Newton's identities.
 -/
+
+public section
 
 open Equiv (Perm)
 
@@ -73,8 +77,6 @@ private lemma pairMap_of_snd_notMem_fst {t : Finset σ × σ} (h : t.snd ∉ t.f
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
-@[deprecated (since := "2025-05-24")] alias pairMap_of_snd_nmem_fst := pairMap_of_snd_notMem_fst
-
 @[simp]
 private theorem pairMap_involutive : (pairMap σ).Involutive := by
   intro t
@@ -105,7 +107,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
   · rw [pairMap_of_snd_mem_fst σ h1]
     simp only [h1, implies_true, and_true] at h
     simp only [card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
-    refine ⟨le_step h, ?_⟩
+    refine ⟨le_succ_of_le h, ?_⟩
     by_contra h2
     simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
@@ -156,7 +158,7 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   apply sum_finset_product
   simp only [mem_filter, mem_powersetCard_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
-  have : #p.fst ≤ k := by apply le_of_lt; aesop
+  have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
 private lemma filter_pairs_lt (k : ℕ) :
@@ -180,8 +182,7 @@ private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
 private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
     disjUnion {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k}
       (disjoint_filter_pairs_lt_filter_pairs_eq σ k) = pairs σ k := by
-  simp only [Finset.ext_iff]
-  grind [Finset.disjUnion_eq_union, MvPolynomial.NewtonIdentities.pairs]
+  grind [MvPolynomial.NewtonIdentities.pairs]
 
 end DecidableEq
 
@@ -261,7 +262,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
   have : {a ∈ antidiagonal k | a.fst < k ∧ ¬0 < a.fst} = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine ⟨?_, by rintro rfl; omega⟩
+    refine ⟨?_, by rintro rfl; lia⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

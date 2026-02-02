@@ -3,10 +3,12 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.RelIso.Set
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.RelIso.Set
 
 /-!
 # Lexicographic order and order isomorphisms
@@ -18,6 +20,8 @@ import Mathlib.Order.RelIso.Set
 * `Prod.Lex.prodUnique` and `Prod.Lex.uniqueProd`: `α ×ₗ β` is order isomorphic to one side if the
   other side is `Unique`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -174,5 +178,34 @@ variable {α β} in
 @[simp]
 theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
     uniqueProd α β x = (ofLex x).2 := rfl
+
+/-- `Equiv.prodAssoc` promoted to an order isomorphism of lexicographic products. -/
+@[simps!]
+def prodLexAssoc (α β γ : Type*)
+    [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
+  toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) <| toLex
+  map_rel_iff' := by
+    simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
+      Equiv.prodAssoc_apply]
+    grind [EmbeddingLike.apply_eq_iff_eq, ofLex_toLex]
+
+/-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products.
+
+Right distributivity doesn't hold. A counterexample is `ℕ ×ₗ (Unit ⊕ₗ Unit) ≃o ℕ`
+which is not isomorphic to `ℕ ×ₗ Unit ⊕ₗ ℕ ×ₗ Unit ≃o ℕ ⊕ₗ ℕ`. -/
+@[simps!]
+def sumLexProdLexDistrib (α β γ : Type*)
+    [Preorder α] [Preorder β] [Preorder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ where
+  toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
+    .trans (.sumProdDistrib α β γ) <| .trans (.sumCongr toLex toLex) toLex
+  map_rel_iff' := by simp [Prod.Lex.le_iff]
+
+/-- `Equiv.prodCongr` promoted to an order isomorphism between lexicographic products. -/
+@[simps! apply]
+def prodLexCongr {α β γ δ : Type*} [Preorder α] [Preorder β]
+    [Preorder γ] [Preorder δ] (ea : α ≃o β) (eb : γ ≃o δ) : α ×ₗ γ ≃o β ×ₗ δ where
+  toEquiv := ofLex.trans ((Equiv.prodCongr ea eb).trans toLex)
+  map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 end Prod.Lex

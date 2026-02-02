@@ -3,10 +3,12 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Computability.Encoding
-import Mathlib.Logic.Small.List
-import Mathlib.ModelTheory.Syntax
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Computability.Encoding
+public import Mathlib.Logic.Small.List
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Encodings and Cardinality of First-Order Syntax
@@ -31,6 +33,8 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
   incompleteness
 
 -/
+
+@[expose] public section
 
 
 universe u v w u'
@@ -109,21 +113,20 @@ theorem card_le : #(L.Term α) ≤ max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) :=
 theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) := by
   refine le_antisymm ?_ ?_
   · rw [mk_sigma]
-    refine (sum_le_iSup_lift _).trans ?_
+    refine (sum_le_lift_mk_mul_iSup _).trans ?_
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,
       ciSup_le_iff' (bddAbove_range _)]
     · refine ⟨le_max_left _ _, fun i => card_le.trans ?_⟩
       refine max_le (le_max_left _ _) ?_
-      rw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
-        add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast]
-      exact add_le_add_right (nat_lt_aleph0 _).le _
+      grw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
+        add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast, natCast_lt_aleph0]
     · rw [← one_le_iff_ne_zero]
       refine _root_.trans ?_ (le_ciSup (bddAbove_range _) 1)
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
     refine ⟨Infinite.of_injective
-        (fun i => ⟨i + 1, var (Sum.inr (Fin.ofNat _ i))⟩) fun i j ij => ?_, ?_⟩
+        (fun i => ⟨i + 1, var (Sum.inr (last i))⟩) fun i j ij => ?_, ?_⟩
     · cases ij
       rfl
     · rw [Cardinal.le_def]
@@ -218,7 +221,6 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
     induction l with
     | nil =>
-      rw [List.flatMap_nil]
       simp [listDecode]
     | cons φ l ih => rw [flatMap_cons, h φ _, ih]
   rintro ⟨n, φ⟩
@@ -298,6 +300,33 @@ theorem card_le : #(Σ n, L.BoundedFormula α n) ≤
   simp only [lift_add, lift_lift, lift_aleph0]
   rw [← add_assoc, add_comm, ← add_assoc, ← add_assoc, aleph0_add_aleph0, add_assoc,
     add_eq_max le_rfl, add_assoc, card, Symbols, mk_sum, lift_add, lift_lift, lift_lift]
+
+section Countable
+
+variable [Countable α] [Countable L.Symbols]
+
+instance : Countable (constantsOn α).Symbols := by
+  refine mk_le_aleph0_iff.mp ?_
+  change (constantsOn α).card ≤ ℵ₀
+  simpa only [card_constantsOn, mk_le_aleph0_iff]
+
+instance : Countable L[[α]].Symbols := by
+  simp only [← mk_le_aleph0_iff]
+  change L[[α]].card ≤ ℵ₀
+  simp only [withConstants, card_sum, add_le_aleph0, lift_le_aleph0]
+  simp only [card, mk_le_aleph0_iff]
+  constructor <;> infer_instance
+
+instance : Countable (Σ n, L.BoundedFormula α n) := by
+  refine Cardinal.mk_le_aleph0_iff.mp (BoundedFormula.card_le.trans (max_le (le_refl _) ?_))
+  simp only [card, add_le_aleph0, lift_le_aleph0, mk_le_aleph0_iff]
+  constructor <;> infer_instance
+
+instance : Countable (L.Formula α) :=
+  (Function.Injective.countable
+    (f := fun φ => (⟨0, φ⟩ : Σ n, L.BoundedFormula α n))) <| sigma_mk_injective
+
+end Countable
 
 end BoundedFormula
 

@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Local
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Properties of morphisms between Schemes
@@ -19,43 +20,43 @@ which we call an `AffineTargetMorphismProperty`. In this file, we provide API le
 local at the target, and special support for those properties whose `AffineTargetMorphismProperty`
 takes on a more simple form. We also provide API lemmas for properties local at the target.
 The main interfaces of the API are the typeclasses `IsLocalAtTarget`, `IsLocalAtSource` and
-`HasAffineProperty`, which we describle in detail below.
+`HasAffineProperty`, which we describe in detail below.
 
-## `IsLocalAtTarget`
+## `IsZariskiLocalAtTarget`
 
-- `AlgebraicGeometry.IsLocalAtTarget`: We say that `IsLocalAtTarget P` for
+- `AlgebraicGeometry.IsZariskiLocalAtTarget`: We say that `IsZariskiLocalAtTarget P` for
 `P : MorphismProperty Scheme` if
 1. `P` respects isomorphisms.
 2. `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.
 
 For a morphism property `P` local at the target and `f : X ⟶ Y`, we provide these API lemmas:
 
-- `AlgebraicGeometry.IsLocalAtTarget.of_isPullback`:
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.of_isPullback`:
     `P` is preserved under pullback along open immersions.
-- `AlgebraicGeometry.IsLocalAtTarget.restrict`:
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.restrict`:
     `P f → P (f ∣_ U)` for an open `U` of `Y`.
-- `AlgebraicGeometry.IsLocalAtTarget.iff_of_iSup_eq_top`:
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.iff_of_iSup_eq_top`:
     `P f ↔ ∀ i, P (f ∣_ U i)` for a family `U i` of open sets covering `Y`.
-- `AlgebraicGeometry.IsLocalAtTarget.iff_of_openCover`:
+- `AlgebraicGeometry.IsZariskiLocalAtTarget.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for `𝒰 : Y.openCover`.
 
-## `IsLocalAtSource`
+## `IsZariskiLocalAtSource`
 
-- `AlgebraicGeometry.IsLocalAtSource`: We say that `IsLocalAtSource P` for
+- `AlgebraicGeometry.IsZariskiLocalAtSource`: We say that `IsZariskiLocalAtSource P` for
 `P : MorphismProperty Scheme` if
 1. `P` respects isomorphisms.
 2. `P` holds for `𝒰.map i ≫ f` for an open cover `𝒰` of `X` iff `P` holds for `f : X ⟶ Y`.
 
 For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide these API lemmas:
 
-- `AlgebraicGeometry.IsLocalAtSource.comp`:
+- `AlgebraicGeometry.IsZariskiLocalAtSource.comp`:
     `P` is preserved under composition with open immersions at the source.
-- `AlgebraicGeometry.IsLocalAtSource.iff_of_iSup_eq_top`:
+- `AlgebraicGeometry.IsZariskiLocalAtSource.iff_of_iSup_eq_top`:
     `P f ↔ ∀ i, P (U.ι ≫ f)` for a family `U i` of open sets covering `X`.
-- `AlgebraicGeometry.IsLocalAtSource.iff_of_openCover`:
+- `AlgebraicGeometry.IsZariskiLocalAtSource.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
-- `AlgebraicGeometry.IsLocalAtSource.of_isOpenImmersion`: If `P` contains identities then `P` holds
-    for open immersions.
+- `AlgebraicGeometry.IsZariskiLocalAtSource.of_isOpenImmersion`: If `P` contains identities then `P`
+    holds for open immersions.
 
 ## `AffineTargetMorphismProperty`
 
@@ -88,7 +89,15 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
 - `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange`:
     If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
+
+## Implementation details
+
+The properties `IsZariskiLocalAtTarget` and `IsZariskiLocalAtSource` are defined as abbreviations
+for the respective local property of morphism properties defined generally for categories equipped
+with a `Precoverage`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -99,23 +108,11 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-/--
-We say that `P : MorphismProperty Scheme` is local at the target if
-1. `P` respects isomorphisms.
-2. `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.
-Also see `IsLocalAtTarget.mk'` for a convenient constructor.
--/
-class IsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
-  /-- `P` respects isomorphisms. -/
-  respectsIso : P.RespectsIso := by infer_instance
-  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`. -/
-  iff_of_openCover' :
-    ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
-      P f ↔ ∀ i, P (𝒰.pullbackHom f i)
+/-- A property is Zariski-local at target if it is local at target in the Zariski topology. -/
+abbrev IsZariskiLocalAtTarget (P : MorphismProperty Scheme.{u}) :=
+  P.IsLocalAtTarget Scheme.zariskiPrecoverage
 
-namespace IsLocalAtTarget
-
-attribute [instance] respectsIso
+namespace IsZariskiLocalAtTarget
 
 /--
 `P` is local at the target if
@@ -128,34 +125,26 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     (of_sSup_eq_top :
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens), iSup U = ⊤ →
         (∀ i, P (f ∣_ U i)) → P f) :
-    IsLocalAtTarget P := by
-  refine ⟨inferInstance, fun {X Y} f 𝒰 ↦ ⟨?_, fun H ↦ of_sSup_eq_top f _ 𝒰.iSup_opensRange ?_⟩⟩
-  · exact fun H i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp (restrict _ _ H)
-  · exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (H i)
+    IsZariskiLocalAtTarget P where
+  pullbackSnd 𝒰 i hf := (P.arrow_mk_iso_iff (morphismRestrictOpensRange _ _)).mp (restrict _ _ hf)
+  of_zeroHypercover {X Y f} 𝒰 h := by
+    refine of_sSup_eq_top f _ (Scheme.OpenCover.iSup_opensRange 𝒰) ?_
+    exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (h i)
 
-/-- The intersection of two morphism properties that are local at the target is again local at
-the target. -/
-instance inf (P Q : MorphismProperty Scheme) [IsLocalAtTarget P] [IsLocalAtTarget Q] :
-    IsLocalAtTarget (P ⊓ Q) where
-  iff_of_openCover' {_ _} f 𝒰 :=
-    ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
-     fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
-      (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
-
-variable {P} [hP : IsLocalAtTarget P] {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover)
+variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtTarget P]
+  {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover)
 
 lemma of_isPullback {UX UY : Scheme.{u}} {iY : UY ⟶ Y} [IsOpenImmersion iY]
-    {iX : UX ⟶ X} {f' : UX ⟶ UY} (h : IsPullback iX f' f iY) (H : P f) : P f' := by
-  rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_snd]
-  exact (iff_of_openCover' f (Y.affineCover.add iY)).mp H .none
+    {iX : UX ⟶ X} {f' : UX ⟶ UY} (h : IsPullback iX f' f iY) (H : P f) : P f' :=
+  MorphismProperty.IsLocalAtTarget.of_isPullback (Y.affineCover.add iY) .none h H
 
 theorem restrict (hf : P f) (U : Y.Opens) : P (f ∣_ U) :=
   of_isPullback (isPullback_morphismRestrict f U).flip hf
 
 lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P (f ∣_ U i)) : P f := by
-  refine (IsLocalAtTarget.iff_of_openCover' f
-    (Y.openCoverOfISupEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
+  refine (P.iff_of_zeroHypercover_target
+    (Y.openCoverOfIsOpenCover (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   refine (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp ?_
   change P (f ∣_ (U i).ι.opensRange)
@@ -167,7 +156,7 @@ theorem iff_of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤) :
   ⟨fun H _ ↦ restrict H _, of_iSup_eq_top U hU⟩
 
 lemma of_openCover (H : ∀ i, P (𝒰.pullbackHom f i)) : P f := by
-  apply of_iSup_eq_top (fun i ↦ (𝒰.map i).opensRange) 𝒰.iSup_opensRange
+  apply of_iSup_eq_top (fun i ↦ (𝒰.f i).opensRange) 𝒰.iSup_opensRange
   exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (H i)
 
 theorem iff_of_openCover (𝒰 : Y.OpenCover) :
@@ -175,11 +164,11 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
-    (H : Set.range f.base ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
+    (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
   rw [← IsOpenImmersion.lift_fac (⨆ i, U i).ι f (by simpa using H)]
   apply MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance
-  rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) (U := fun i : ι ↦ (⨆ i, U i).ι ⁻¹ᵁ U i)]
+  rw [iff_of_iSup_eq_top (P := P) (U := fun i : ι ↦ (⨆ i, U i).ι ⁻¹ᵁ U i)]
   · intro i
     have heq : g ⁻¹ᵁ (⨆ i, U i).ι ⁻¹ᵁ U i = f ⁻¹ᵁ U i := by
       change (g ≫ (⨆ i, U i).ι) ⁻¹ᵁ U i = _
@@ -192,30 +181,40 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   apply (⨆ i, U i).ι.image_injective
   dsimp
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
-  simp [Scheme.Hom.image_preimage_eq_opensRange_inter, le_iSup U]
+  simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
 
-instance top : IsLocalAtTarget (⊤ : MorphismProperty Scheme.{u}) where
-  iff_of_openCover' := by simp
+lemma of_forall_source_exists_preimage
+    [P.RespectsRight IsOpenImmersion] [P.HasOfPostcompProperty IsOpenImmersion]
+    (f : X ⟶ Y) (hX : ∀ x, ∃ (U : Y.Opens), f x ∈ U ∧ P ((f ⁻¹ᵁ U).ι ≫ f)) :
+    P f := by
+  choose U h₁ h₂ using hX
+  apply IsZariskiLocalAtTarget.of_range_subset_iSup U
+  · rintro y ⟨x, rfl⟩
+    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    exact ⟨x, h₁ x⟩
+  · intro x
+    exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
 
-end IsLocalAtTarget
+lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f) (hg : P g) :
+    P (coprod.map f g) := by
+  refine IsZariskiLocalAtTarget.of_openCover (coprodOpenCover.{_, 0} _ _) ?_
+  rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
+    convert hf
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
+    convert hg
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
-/--
-We say that `P : MorphismProperty Scheme` is local at the source if
-1. `P` respects isomorphisms.
-2. `P` holds for `𝒰.map i ≫ f` for an open cover `𝒰` of `X` iff `P` holds for `f : X ⟶ Y`.
-Also see `IsLocalAtSource.mk'` for a convenient constructor.
--/
-class IsLocalAtSource (P : MorphismProperty Scheme) : Prop where
-  /-- `P` respects isomorphisms. -/
-  respectsIso : P.RespectsIso := by infer_instance
-  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`. -/
-  iff_of_openCover' :
-    ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X),
-      P f ↔ ∀ i, P (𝒰.map i ≫ f)
+end IsZariskiLocalAtTarget
 
-namespace IsLocalAtSource
+/-- A property is Zariski-local at source if it is local at source in the Zariski topology. -/
+abbrev IsZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) :=
+  P.IsLocalAtSource Scheme.zariskiPrecoverage
 
-attribute [instance] respectsIso
+namespace IsZariskiLocalAtSource
 
 /--
 `P` is local at the source if
@@ -228,43 +227,35 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     (of_sSup_eq_top :
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → X.Opens), iSup U = ⊤ →
         (∀ i, P ((U i).ι ≫ f)) → P f) :
-    IsLocalAtSource P := by
-  refine ⟨inferInstance, fun {X Y} f 𝒰 ↦
-    ⟨fun H i ↦ ?_, fun H ↦ of_sSup_eq_top f _ 𝒰.iSup_opensRange fun i ↦ ?_⟩⟩
-  · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.map i) (Scheme.Opens.ι _)
-      (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
+    IsZariskiLocalAtSource P where
+  comp 𝒰 i H := by
+    rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.f i) (Scheme.Opens.ι _)
+      (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
     exact restrict _ _ H
-  · rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.Opens.ι _)
-      (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
+  of_zeroHypercover {X Y} f 𝒰 h := by
+    refine of_sSup_eq_top f _ (Scheme.OpenCover.iSup_opensRange 𝒰) fun i ↦ ?_
+    rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f i) (Scheme.Opens.ι _)
+      (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
-    exact H _
+    exact h _
 
-/-- The intersection of two morphism properties that are local at the target is again local at
-the target. -/
-instance inf (P Q : MorphismProperty Scheme) [IsLocalAtSource P] [IsLocalAtSource Q] :
-    IsLocalAtSource (P ⊓ Q) where
-  iff_of_openCover' {_ _} f 𝒰 :=
-    ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
-     fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
-      (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
-
-variable {P} [IsLocalAtSource P]
+variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
 variable {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : X.OpenCover)
 
 lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
-  (iff_of_openCover' f (X.affineCover.add i)).mp H .none
+  (P.iff_of_zeroHypercover_source (X.affineCover.add i)).mp H .none
 
 /-- If `P` is local at the source, then it respects composition on the left with open immersions. -/
 instance respectsLeft_isOpenImmersion {P : MorphismProperty Scheme}
-    [IsLocalAtSource P] : P.RespectsLeft @IsOpenImmersion where
-  precomp i _ _ hf := IsLocalAtSource.comp hf i
+    [IsZariskiLocalAtSource P] : P.RespectsLeft @IsOpenImmersion where
+  precomp i _ _ hf := IsZariskiLocalAtSource.comp hf i
 
 lemma of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P ((U i).ι ≫ f)) : P f := by
-  refine (iff_of_openCover' f
-    (X.openCoverOfISupEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
+  refine (P.iff_of_zeroHypercover_source
+    (X.openCoverOfIsOpenCover (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   exact H i
 
@@ -272,66 +263,68 @@ theorem iff_of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤) :
     P f ↔ ∀ i, P ((U i).ι ≫ f) :=
   ⟨fun H _ ↦ comp H _, of_iSup_eq_top U hU⟩
 
-lemma of_openCover (H : ∀ i, P (𝒰.map i ≫ f)) : P f := by
-  refine of_iSup_eq_top (fun i ↦ (𝒰.map i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
-  rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.Opens.ι _)
-    (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
+lemma of_openCover (H : ∀ i, P (𝒰.f i ≫ f)) : P f := by
+  refine of_iSup_eq_top (fun i ↦ (𝒰.f i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
+  rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f i) (Scheme.Opens.ι _)
+    (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
     P.cancel_left_of_respectsIso]
   exact H i
 
 theorem iff_of_openCover :
-    P f ↔ ∀ i, P (𝒰.map i ≫ f) :=
+    P f ↔ ∀ i, P (𝒰.f i ≫ f) :=
   ⟨fun H _ ↦ comp H _, of_openCover _⟩
 
 variable (f) in
 lemma of_isOpenImmersion [P.ContainsIdentities] [IsOpenImmersion f] : P f :=
   Category.comp_id f ▸ comp (P.id_mem Y) f
 
-lemma isLocalAtTarget [P.IsMultiplicative]
+lemma isZariskiLocalAtTarget [P.IsMultiplicative]
     (hP : ∀ {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g], P (f ≫ g) → P f) :
-    IsLocalAtTarget P where
-  iff_of_openCover' {X Y} f 𝒰 := by
-    refine (iff_of_openCover (𝒰.pullbackCover f)).trans (forall_congr' fun i ↦ ?_)
+    IsZariskiLocalAtTarget P where
+  pullbackSnd {X Y} f 𝒰 i hf := by
+    apply hP _ (𝒰.f i)
+    rw [← pullback.condition]
+    exact IsZariskiLocalAtSource.comp hf _
+  of_zeroHypercover {X Y} f 𝒰 h := by
+    rw [P.iff_of_zeroHypercover_source (𝒰.pullback₁ f)]
+    intro i
     rw [← Scheme.Cover.pullbackHom_map]
-    constructor
-    · exact hP _ _
-    · exact fun H ↦ P.comp_mem _ _ H (of_isOpenImmersion _)
+    exact P.comp_mem _ _ (h i) (of_isOpenImmersion _)
 
 lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
     {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
-  rw [IsLocalAtSource.iff_of_openCover (P := P) (Scheme.IsLocallyDirected.openCover _)]
+  rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (Scheme.IsLocallyDirected.openCover _)]
   exact fun i ↦ by simp [hf]
 
-instance top : IsLocalAtSource (⊤ : MorphismProperty Scheme.{u}) where
-  iff_of_openCover' := by simp
-
-section IsLocalAtSourceAndTarget
+section IsZariskiLocalAtSourceAndTarget
 
 /-- If `P` is local at the source and the target, then restriction on both source and target
 preserves `P`. -/
-lemma resLE [IsLocalAtTarget P] {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
+lemma resLE [IsZariskiLocalAtTarget P] {U : Y.Opens} {V : X.Opens}
+    (e : V ≤ f ⁻¹ᵁ U)
     (hf : P f) : P (f.resLE U V e) :=
-  IsLocalAtSource.comp (IsLocalAtTarget.restrict hf U) _
+  IsZariskiLocalAtSource.comp (IsZariskiLocalAtTarget.restrict hf U) _
 
 /-- If `P` is local at the source, local at the target and is stable under post-composition with
 open immersions, then `P` can be checked locally around points. -/
-lemma iff_exists_resLE [IsLocalAtTarget P] [P.RespectsRight @IsOpenImmersion] :
+lemma iff_exists_resLE [IsZariskiLocalAtTarget P]
+    [P.RespectsRight @IsOpenImmersion] :
     P f ↔ ∀ x : X, ∃ (U : Y.Opens) (V : X.Opens) (_ : x ∈ V.1) (e : V ≤ f ⁻¹ᵁ U),
       P (f.resLE U V e) := by
   refine ⟨fun hf x ↦ ⟨⊤, ⊤, trivial, by simp, resLE _ hf⟩, fun hf ↦ ?_⟩
   choose U V hxU e hf using hf
-  rw [IsLocalAtSource.iff_of_iSup_eq_top (fun x : X ↦ V x) (P := P)]
+  rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (fun x : X ↦ V x) (P := P)]
   · intro x
     rw [← Scheme.Hom.resLE_comp_ι _ (e x)]
     exact MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance _ (hf x)
   · rw [eq_top_iff]
     rintro x -
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     use x, hxU x
 
-end IsLocalAtSourceAndTarget
+end IsZariskiLocalAtSourceAndTarget
 
-end IsLocalAtSource
+end IsZariskiLocalAtSource
 
 /-- An `AffineTargetMorphismProperty` is a class of morphisms from an arbitrary scheme into an
 affine scheme. -/
@@ -415,11 +408,12 @@ class IsLocal (P : AffineTargetMorphismProperty) : Prop where
 attribute [instance] AffineTargetMorphismProperty.IsLocal.respectsIso
 
 open AffineTargetMorphismProperty in
-instance (P : MorphismProperty Scheme) [IsLocalAtTarget P] : (of P).IsLocal where
+instance (P : MorphismProperty Scheme) [IsZariskiLocalAtTarget P] :
+    (of P).IsLocal where
   respectsIso := inferInstance
-  to_basicOpen _ _ H := IsLocalAtTarget.restrict H _
-  of_basicOpenCover {_ Y} _ _ _ hs := IsLocalAtTarget.of_iSup_eq_top _
-    (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
+  to_basicOpen _ _ H := IsZariskiLocalAtTarget.restrict H _
+  of_basicOpenCover {_ Y} _ _ _ hs := IsZariskiLocalAtTarget.of_iSup_eq_top _
+    ((isAffineOpen_top Y).iSup_basicOpen_eq_self_iff.mpr hs)
 
 /-- A `P : AffineTargetMorphismProperty` is stable under base change if `P` holds for `Y ⟶ S`
 implies that `P` holds for `X ×ₛ Y ⟶ X` with `X` and `S` affine schemes. -/
@@ -430,7 +424,7 @@ def IsStableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
 lemma IsStableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     (H : ∀ ⦃X Y S : Scheme⦄ [IsAffine S] [IsAffine X] (f : X ⟶ S) (g : Y ⟶ S),
       P g → P (pullback.fst f g)) : P.IsStableUnderBaseChange := by
-  intros Z X Y S _ _ f g f' g' h hg
+  intro Z X Y S _ _ f g f' g' h hg
   rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_fst]
   exact H f g hg
 
@@ -490,17 +484,20 @@ lemma eq_targetAffineLocally : P = targetAffineLocally Q := eq_targetAffineLocal
 
 /-- Every property local at the target can be associated with an affine target property.
 This is not an instance as the associated property can often take on simpler forms. -/
-lemma of_isLocalAtTarget (P) [IsLocalAtTarget P] :
+lemma of_isZariskiLocalAtTarget (P : MorphismProperty Scheme.{u})
+    [IsZariskiLocalAtTarget P] :
     HasAffineProperty P (AffineTargetMorphismProperty.of P) where
   isLocal_affineProperty := inferInstance
   eq_targetAffineLocally' := by
     ext X Y f
     constructor
     · intro hf ⟨U, hU⟩
-      exact IsLocalAtTarget.restrict hf _
+      exact IsZariskiLocalAtTarget.restrict hf _
     · intro hf
-      exact IsLocalAtTarget.of_openCover (P := P) Y.affineCover
+      exact P.of_zeroHypercover_target Y.affineCover
         fun i ↦ of_targetAffineLocally_of_isPullback (.of_hasPullback _ _) hf
+
+@[deprecated (since := "2025-10-07")] alias of_isLocalAtTarget := of_isZariskiLocalAtTarget
 
 lemma copy {P P'} {Q Q'} [HasAffineProperty P Q]
     (e : P = P') (e' : Q = Q') : HasAffineProperty P' Q' where
@@ -532,7 +529,7 @@ theorem of_iSup_eq_top
   rw [eq_targetAffineLocally P]
   classical
   intro V
-  induction V using of_affine_open_cover U hU  with
+  induction V using of_affine_open_cover U hU with
   | basicOpen U r h =>
     haveI : IsAffine _ := U.2
     have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h
@@ -553,14 +550,14 @@ theorem iff_of_iSup_eq_top
   ⟨fun H _ ↦ restrict H _, fun H ↦ HasAffineProperty.of_iSup_eq_top U hU H⟩
 
 theorem of_openCover
-    (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (h𝒰 : ∀ i, Q (𝒰.pullbackHom f i)) :
+    (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.X i)] (h𝒰 : ∀ i, Q (𝒰.pullbackHom f i)) :
     P f :=
   letI := isLocal_affineProperty P
   of_iSup_eq_top
-    (fun i ↦ ⟨_, isAffineOpen_opensRange (𝒰.map i)⟩) 𝒰.iSup_opensRange
+    (fun i ↦ ⟨_, isAffineOpen_opensRange (𝒰.f i)⟩) 𝒰.iSup_opensRange
     (fun i ↦ (Q.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (h𝒰 i))
 
-theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
+theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.X i)] :
     P f ↔ ∀ i, Q (𝒰.pullbackHom f i) := by
   letI := isLocal_affineProperty P
   rw [iff_of_iSup_eq_top (P := P)
@@ -570,8 +567,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
 
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   letI := isLocal_affineProperty P
-  haveI : ∀ i, IsAffine (Scheme.Cover.obj
-      (Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)) i) := fun i => by
+  haveI : ∀ i, IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)).X i) := fun i => by
     dsimp; infer_instance
   rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
   trans Q (pullback.snd f (𝟙 _))
@@ -579,20 +575,20 @@ theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   rw [← Category.comp_id (pullback.snd _ _), ← pullback.condition,
     Q.cancel_left_of_respectsIso]
 
-instance (priority := 900) : IsLocalAtTarget P := by
+instance (priority := 900) : IsZariskiLocalAtTarget P := by
   letI := isLocal_affineProperty P
-  apply IsLocalAtTarget.mk'
+  apply IsZariskiLocalAtTarget.mk'
   · rw [eq_targetAffineLocally P]
     intro X Y f U H V
     rw [Q.arrow_mk_iso_iff (morphismRestrictRestrict f _ _)]
     exact H ⟨_, V.2.image_of_isOpenImmersion (Y.ofRestrict _)⟩
   · rintro X Y f ι U hU H
-    let 𝒰 := Y.openCoverOfISupEqTop U hU
+    let 𝒰 := Y.openCoverOfIsOpenCover U hU
     apply of_openCover 𝒰.affineRefinement.openCover
     rintro ⟨i, j⟩
     have : P (𝒰.pullbackHom f i) := by
       refine (P.arrow_mk_iso_iff
-        (morphismRestrictEq _ ?_ ≪≫ morphismRestrictOpensRange f (𝒰.map i))).mp (H i)
+        (morphismRestrictEq _ ?_ ≪≫ morphismRestrictOpensRange f (𝒰.f i))).mp (H i)
       exact (Scheme.Opens.opensRange_ι _).symm
     rw [← Q.cancel_left_of_respectsIso (𝒰.pullbackCoverAffineRefinementObjIso f _).inv,
       𝒰.pullbackCoverAffineRefinementObjIso_inv_pullbackHom]
@@ -600,9 +596,9 @@ instance (priority := 900) : IsLocalAtTarget P := by
 
 open AffineTargetMorphismProperty in
 protected theorem iff {P : MorphismProperty Scheme} {Q : AffineTargetMorphismProperty} :
-    HasAffineProperty P Q ↔ IsLocalAtTarget P ∧ Q = of P :=
+    HasAffineProperty P Q ↔ IsZariskiLocalAtTarget P ∧ Q = of P :=
   ⟨fun _ ↦ ⟨inferInstance, ext fun _ _ _ ↦ iff_of_isAffine.symm⟩,
-    fun ⟨_, e⟩ ↦ e ▸ of_isLocalAtTarget P⟩
+    fun ⟨_, e⟩ ↦ e ▸ of_isZariskiLocalAtTarget P⟩
 
 private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
     {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffine S] (H : Q g) :
@@ -610,7 +606,7 @@ private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
   letI := isLocal_affineProperty P
   rw [iff_of_openCover (P := P) X.affineCover]
   intro i
-  let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.map i)
+  let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.f i)
   have : e.hom ≫ pullback.fst _ _ = X.affineCover.pullbackHom (pullback.fst _ _) i := by
     simp [e, Scheme.Cover.pullbackHom]
   rw [← this, Q.cancel_left_of_respectsIso]
@@ -621,33 +617,34 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
     P.IsStableUnderBaseChange :=
   MorphismProperty.IsStableUnderBaseChange.mk'
     (fun X Y S f g _ H => by
-      rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
+      rw [P.iff_of_zeroHypercover_target (S.affineCover.pullback₁ f)]
       intro i
-      let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).map i) ≅
+      let e : pullback (pullback.fst f g) ((S.affineCover.pullback₁ f).f i) ≅
           _ := by
         refine pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g _ ≪≫ ?_ ≪≫
-          (pullbackRightPullbackFstIso (S.affineCover.map i) g
-            (pullback.snd f (S.affineCover.map i))).symm
+          (pullbackRightPullbackFstIso (S.affineCover.f i) g
+            (pullback.snd f (S.affineCover.f i))).symm
         exact asIso
           (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
-          (S.affineCover.pullbackCover f).pullbackHom (pullback.fst _ _) i := by
-        simp [e, Scheme.Cover.pullbackHom]
+          pullback.snd (pullback.fst f g) ((S.affineCover.pullback₁ f).f i) := by
+        simp [e]
       rw [← this, P.cancel_left_of_respectsIso]
       apply HasAffineProperty.pullback_fst_of_right hP'
       letI := isLocal_affineProperty P
       rw [← pullbackSymmetry_hom_comp_snd, Q.cancel_left_of_respectsIso]
       apply of_isPullback (.of_hasPullback _ _) H)
 
-lemma isLocalAtSource
+lemma isZariskiLocalAtSource
     (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
-        Q f ↔ ∀ i, Q (𝒰.map i ≫ f)) : IsLocalAtSource P where
-  iff_of_openCover' {X Y} f 𝒰 := by
-    simp_rw [IsLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y)]
-    rw [forall_comm]
-    refine forall_congr' fun U ↦ ?_
-    simp_rw [HasAffineProperty.iff_of_isAffine, morphismRestrict_comp]
-    exact @H _ _ (f ∣_ U.1) U.2 (𝒰.restrict (f ⁻¹ᵁ U.1))
+        Q f ↔ ∀ i, Q (𝒰.f i ≫ f)) : IsZariskiLocalAtSource P := by
+  refine .mk_of_iff ?_
+  intro X Y f 𝒰
+  simp_rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y)]
+  rw [forall_comm]
+  refine forall_congr' fun U ↦ ?_
+  simp_rw [HasAffineProperty.iff_of_isAffine, morphismRestrict_comp]
+  exact @H _ _ (f ∣_ U.1) U.2 (Scheme.OpenCover.restrict 𝒰 (f ⁻¹ᵁ U.1))
 
 end HasAffineProperty
 
@@ -669,5 +666,81 @@ lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismPro
 instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty @IsOpenImmersion :=
   HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
+
+section Deprecations
+
+@[deprecated (since := "2025-10-07")] alias IsLocalAtTarget := IsZariskiLocalAtTarget
+
+namespace IsLocalAtTarget
+
+@[deprecated (since := "2025-10-07")]
+alias mk' := IsZariskiLocalAtTarget.mk'
+
+@[deprecated (since := "2025-10-07")]
+alias of_iSup_eq_top := IsZariskiLocalAtTarget.of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_iSup_eq_top := IsZariskiLocalAtTarget.iff_of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias of_openCover := IsZariskiLocalAtTarget.of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_openCover := IsZariskiLocalAtTarget.iff_of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias of_isPullback := IsZariskiLocalAtTarget.of_isPullback
+
+@[deprecated (since := "2025-10-07")]
+alias restrict := IsZariskiLocalAtTarget.restrict
+
+@[deprecated (since := "2025-10-07")]
+alias of_range_subset_iSup := IsZariskiLocalAtTarget.of_range_subset_iSup
+
+end IsLocalAtTarget
+
+@[deprecated (since := "2025-10-07")] alias IsLocalAtSource := IsZariskiLocalAtSource
+
+namespace IsLocalAtSource
+
+@[deprecated (since := "2025-10-07")]
+alias mk' := IsZariskiLocalAtSource.mk'
+
+@[deprecated (since := "2025-10-07")]
+alias comp := IsZariskiLocalAtSource.comp
+
+@[deprecated (since := "2025-10-07")]
+alias respectsLeft_isOpenImmersion := IsZariskiLocalAtSource.respectsLeft_isOpenImmersion
+
+@[deprecated (since := "2025-10-07")]
+alias of_iSup_eq_top := IsZariskiLocalAtSource.of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_iSup_eq_top := IsZariskiLocalAtSource.iff_of_iSup_eq_top
+
+@[deprecated (since := "2025-10-07")]
+alias of_openCover := IsZariskiLocalAtSource.of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias iff_of_openCover := IsZariskiLocalAtSource.iff_of_openCover
+
+@[deprecated (since := "2025-10-07")]
+alias of_isOpenImmersion := IsZariskiLocalAtSource.of_isOpenImmersion
+
+@[deprecated (since := "2025-10-07")]
+alias isLocalAtTarget := IsZariskiLocalAtSource.isZariskiLocalAtTarget
+
+@[deprecated (since := "2025-10-07")]
+alias sigmaDesc := IsZariskiLocalAtSource.sigmaDesc
+
+@[deprecated (since := "2025-10-07")]
+alias resLE := IsZariskiLocalAtSource.resLE
+
+@[deprecated (since := "2025-10-07")]
+alias iff_exists_resLE := IsZariskiLocalAtSource.iff_exists_resLE
+
+end IsLocalAtSource
+
+end Deprecations
 
 end AlgebraicGeometry

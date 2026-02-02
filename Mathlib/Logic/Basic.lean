@@ -3,14 +3,14 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+module
+
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Basic
+public import Batteries.Logic
+public import Batteries.Util.LibraryNote
+
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Basic
-import Batteries.Logic
-import Batteries.Tactic.Trans
-import Batteries.Util.LibraryNote
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Notation
 
 /-!
 # Basic logic properties
@@ -23,13 +23,13 @@ Theorems that require decidability hypotheses are in the namespace `Decidable`.
 Classical versions are in the namespace `Classical`.
 -/
 
+@[expose] public section
+
 open Function
 
 section Miscellany
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
-attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
-attribute [simp] cast_heq
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
@@ -51,6 +51,20 @@ theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {
 theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → f a₁ ≍ f a₂
   | _, _, rfl => HEq.rfl
+
+theorem dcongr_heq.{u, v}
+    {α₁ α₂ : Sort u}
+    {β₁ : α₁ → Sort v} {β₂ : α₂ → Sort v}
+    {f₁ : ∀ a, β₁ a} {f₂ : ∀ a, β₂ a}
+    {a₁ : α₁} {a₂ : α₂}
+    (hargs : a₁ ≍ a₂)
+    (ht : ∀ t₁ t₂, t₁ ≍ t₂ → β₁ t₁ = β₂ t₂)
+    (hf : α₁ = α₂ → β₁ ≍ β₂ → f₁ ≍ f₂) :
+    f₁ a₁ ≍ f₂ a₂ := by
+  cases hargs
+  cases funext fun v => ht v v .rfl
+  cases hf rfl .rfl
+  rfl
 
 @[simp] theorem eq_iff_eq_cancel_left {b c : α} : (∀ {a}, a = b ↔ a = c) ↔ b = c :=
   ⟨fun h ↦ by rw [← h], fun h a ↦ by rw [h]⟩
@@ -77,16 +91,16 @@ and it is questionable whether making `Nat.prime` a class is desirable at all.
 The compromise is to add the assumption `[Fact p.prime]` to `ZMod.field`.
 
 In particular, this class is not intended for turning the type class system
-into an automated theorem prover for first order logic. -/
+into an automated theorem prover for first-order logic. -/
 class Fact (p : Prop) : Prop where
   /-- `Fact.out` contains the unwrapped witness for the fact represented by the instance of
   `Fact p`. -/
   out : p
 
-library_note "fact non-instances"/--
-In most cases, we should not have global instances of `Fact`; typeclass search only reads the head
-symbol and then tries any instances, which means that adding any such instance will cause slowdowns
-everywhere. We instead make them as lemmata and make them local instances as required.
+library_note «fact non-instances» /--
+In most cases, we should not have global instances of `Fact`; typeclass search is not an
+advanced proof search engine, and adding any such instance has the potential to cause
+slowdowns everywhere. We instead declare them as lemmata and make them local instances as required.
 -/
 
 theorem Fact.elim {p : Prop} (h : Fact p) : p := h.1
@@ -127,6 +141,7 @@ protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
 
 alias dec_em := Decidable.em
 
+set_option linter.unusedDecidableInType false in
 theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias em := Classical.em
@@ -153,7 +168,7 @@ theorem by_cases {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 
 alias by_contra := by_contradiction
 
-library_note "decidable namespace"/--
+library_note «decidable namespace» /--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -162,7 +177,7 @@ You can check if a lemma uses the axiom of choice by using `#print axioms foo` a
 `Classical.choice` appears in the list.
 -/
 
-library_note "decidable arguments"/--
+library_note «decidable arguments» /--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
 it is preferable not to introduce any `Decidable` instances that are needed in the proof
@@ -215,7 +230,8 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 #adaptation_note
 /--
 2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
-Anytime after v4.23.0-rc1 lands it should be okay to remove the deprecation, and then rename this.
+2025-09-16. The deprecation for `Xor` has been removed.
+Anytime after v4.25.0-rc1 lands we rename this back to `Xor`.
 -/
 /-- `Xor' a b` is the exclusive-or of propositions. -/
 def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
@@ -353,37 +369,6 @@ theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a �
 
 end Propositional
 
-/-! ### Membership -/
-
-alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
-alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
-
-section Membership
-
-variable {α β : Type*} [Membership α β] {p : Prop} [Decidable p]
-
-theorem mem_dite {a : α} {s : p → β} {t : ¬p → β} :
-    (a ∈ if h : p then s h else t h) ↔ (∀ h, a ∈ s h) ∧ (∀ h, a ∈ t h) := by
-  by_cases h : p <;> simp [h]
-
-theorem dite_mem {a : p → α} {b : ¬p → α} {s : β} :
-    (if h : p then a h else b h) ∈ s ↔ (∀ h, a h ∈ s) ∧ (∀ h, b h ∈ s) := by
-  by_cases h : p <;> simp [h]
-
-theorem mem_ite {a : α} {s t : β} : (a ∈ if p then s else t) ↔ (p → a ∈ s) ∧ (¬p → a ∈ t) :=
-  mem_dite
-
-theorem ite_mem {a b : α} {s : β} : (if p then a else b) ∈ s ↔ (p → a ∈ s) ∧ (¬p → b ∈ s) :=
-  dite_mem
-
-end Membership
-
 /-! ### Declarations about equality -/
 
 section Equality
@@ -431,22 +416,17 @@ theorem congr_fun_rfl {α β : Sort*} (f : α → β) (a : α) : congr_fun (Eq.r
 theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α} (p : a = a') (b : β) :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 
-theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
-    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
+@[deprecated (since := "2025-09-16")] alias Eq.rec_eq_cast := eqRec_eq_cast
 
-theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
-    (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    @Eq.rec α a' motive p a t ≍ p := by
-  subst t; rfl
+@[deprecated (since := "2025-09-16")] alias eqRec_heq' := eqRec_heq_self
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
-    (e : a = b) (h : x ≍ y) : e ▸ x ≍ y := by subst e; exact h
+    (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
+  eqRec_heq_iff_heq.mpr h
 
-theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
-    e ▸ x ≍ y ↔ x ≍ y := by subst e; rfl
+@[deprecated (since := "2025-09-16")] alias rec_heq_iff_heq := eqRec_heq_iff_heq
 
-theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
-    x ≍ e ▸ y ↔ x ≍ y := by subst e; rfl
+@[deprecated (since := "2025-09-16")] alias heq_rec_iff_heq := heq_eqRec_iff_heq
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
@@ -462,6 +442,15 @@ variable {α β : Sort u} {e : β = α} {a : α} {b : β}
 lemma heq_of_eq_cast (e : β = α) : a = cast e b → a ≍ b := by rintro rfl; simp
 
 lemma eq_cast_iff_heq : a = cast e b ↔ a ≍ b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
+
+lemma heq_iff_exists_eq_cast :
+    a ≍ b ↔ ∃ (h : β = α), a = cast h b :=
+  ⟨fun h ↦ ⟨type_eq_of_heq h.symm, eq_cast_iff_heq.mpr h⟩,
+    by rintro ⟨rfl, h⟩; rw [h, cast_eq]⟩
+
+lemma heq_iff_exists_cast_eq :
+    a ≍ b ↔ ∃ (h : α = β), cast h a = b := by
+  simp only [heq_comm (a := a), heq_iff_exists_eq_cast, eq_comm]
 
 end Equality
 
@@ -641,6 +630,15 @@ protected theorem Decidable.forall_or_right {q} {p : α → Prop} [Decidable q] 
 theorem forall_or_right {q} {p : α → Prop} : (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q :=
   open scoped Classical in Decidable.forall_or_right
 
+@[simp]
+theorem forall_and_index {p q : Prop} {r : p ∧ q → Prop} :
+    (∀ h : p ∧ q, r h) ↔ ∀ (hp : p) (hq : q), r ⟨hp, hq⟩ :=
+  ⟨fun h hp hq ↦ h ⟨hp, hq⟩, fun h h1 ↦ h h1.1 h1.2⟩
+
+theorem forall_and_index' {p q : Prop} {r : p → q → Prop} :
+    (∀ (hp : p) (hq : q), r hp hq) ↔ ∀ h : p ∧ q, r h.1 h.2 :=
+  (forall_and_index (r := fun h => r h.1 h.2)).symm
+
 theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
   | ⟨h, _⟩ => h
 
@@ -727,6 +725,10 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 /-- `Classical.byContradiction'` is equivalent to lean's axiom `Classical.choice`. -/
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
+
+-- This can be removed after https://github.com/leanprover/lean4/pull/11316
+-- arrives in a release candidate.
+grind_pattern Exists.choose_spec => P.choose
 
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
@@ -843,8 +845,7 @@ theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
-  rw [Ne, dite_eq_left_iff, not_forall]
-  exact exists_congr fun h ↦ by rw [ne_comm]
+  grind
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
   simp only [Ne, dite_eq_right_iff, not_forall]
@@ -910,6 +911,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+theorem apply_ite_left {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P]
+    (x y : α) (z : β) : f (if P then x else y) z = if P then f x z else f y z := by grind
+
 section
 variable [Decidable Q]
 
@@ -921,10 +925,8 @@ theorem ite_or : ite (P ∨ Q) a b = ite P a (ite Q a b) := by
 
 theorem dite_dite_comm {B : Q → α} {C : ¬P → ¬Q → α} (h : P → ¬Q) :
     (if p : P then A p else if q : Q then B q else C p q) =
-     if q : Q then B q else if p : P then A p else C p q :=
-  dite_eq_iff'.2 ⟨
-    fun p ↦ by rw [dif_neg (h p), dif_pos p],
-    fun np ↦ by congr; funext _; rw [dif_neg np]⟩
+     if q : Q then B q else if p : P then A p else C p q := by
+  grind
 
 theorem ite_ite_comm (h : P → ¬Q) :
     (if P then a else if Q then b else c) =
@@ -964,6 +966,31 @@ end congr
 
 end ite
 
+/-! ### Membership -/
+
+alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
+alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
+
+section Membership
+
+variable {α β : Type*} [Membership α β] {p : Prop} [Decidable p]
+
+theorem mem_dite {a : α} {s : p → β} {t : ¬p → β} :
+    (a ∈ if h : p then s h else t h) ↔ (∀ h, a ∈ s h) ∧ (∀ h, a ∈ t h) := by
+  by_cases h : p <;> simp [h]
+
+theorem dite_mem {a : p → α} {b : ¬p → α} {s : β} :
+    (if h : p then a h else b h) ∈ s ↔ (∀ h, a h ∈ s) ∧ (∀ h, b h ∈ s) := by
+  by_cases h : p <;> simp [h]
+
+theorem mem_ite {a : α} {s t : β} : (a ∈ if p then s else t) ↔ (p → a ∈ s) ∧ (¬p → a ∈ t) :=
+  mem_dite
+
+theorem ite_mem {a b : α} {s : β} : (if p then a else b) ∈ s ↔ (p → a ∈ s) ∧ (¬p → b ∈ s) :=
+  dite_mem
+
+end Membership
+
 theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
   fun h => ne (eq_of_beq h)
 
@@ -977,7 +1004,6 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
     inst1 = inst2 := by
   have ⟨beq1⟩ := inst1
-  have ⟨beq2⟩ := inst2
   congr
   funext x y
   exact h x y
@@ -985,7 +1011,5 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by
-  apply beq_ext
-  intro x y
-  classical
-  simp only [beq_eq_decide]
+  ext
+  simp
