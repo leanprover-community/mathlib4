@@ -771,26 +771,25 @@ theorem map.of {x} : map f (of x) = of (f x) :=
 then the induced map on their free groups is also surjective. -/
 @[to_additive /-- If `α` and `β` are arbitrary types and there is a surjection between them,
 then the induced map on their additive free groups is also surjective. -/]
-theorem map_surjective (hf : Function.Surjective f) :
-  Function.Surjective (FreeGroup.map f) := by
+theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
   intro x
   induction x using FreeGroup.induction_on with
   | C1 =>
-      use 1
-      rfl
+    use 1
+    rfl
   | of b =>
-      rcases hf b with ⟨a, ha⟩
-      refine ⟨FreeGroup.of a, ?_⟩
-      simp [ha]
+    rcases hf b with ⟨a, ha⟩
+    refine ⟨FreeGroup.of a, ?_⟩
+    simp [ha]
   | inv_of b hb =>
-      rcases hb with ⟨a, ha⟩
-      refine ⟨a⁻¹, ?_⟩
-      simp [ha]
+    rcases hb with ⟨a, ha⟩
+    refine ⟨a⁻¹, ?_⟩
+    simp [ha]
   | mul b c hb hc =>
-      rcases hb with ⟨a, ha⟩
-      rcases hc with ⟨d, hd⟩
-      refine ⟨a * d, ?_⟩
-      simp [ha, hd]
+    rcases hb with ⟨a, ha⟩
+    rcases hc with ⟨d, hd⟩
+    refine ⟨a * d, ?_⟩
+    simp [ha, hd]
 
 @[to_additive]
 theorem map.unique (g : FreeGroup α →* FreeGroup β)
