@@ -20,6 +20,15 @@ public meta section
 namespace Mathlib.Tactic
 open Lean Parser Meta Elab Tactic Term
 
+/-- At least one configuration option for tactics.
+
+Use `declare_config_elab` to get a function turning this syntax into a concrete object.
+
+`optConfig` allows zero or more, `manyConfig` requires at least one.
+-/
+syntax manyConfig := (colGt configItem)+
+
+
 /-- Elaborator for the configuration in `apply (config := cfg)` syntax. -/
 declare_config_elab elabApplyConfig ApplyConfig
 
@@ -34,7 +43,8 @@ declare_config_elab elabApplyConfig ApplyConfig
 tactic_extension Lean.Parser.Tactic.apply
 
 @[tactic_alt Lean.Parser.Tactic.apply]
-elab (name := applyWith) "apply" cfg:optConfig ppSpace e:term : tactic => do
+-- We have to use `manyConfig` instead of `optConfig` to avoid ambiguous parses.
+elab (name := applyWith) "apply" cfg:manyConfig ppSpace e:term : tactic => do
   let cfg ← elabApplyConfig cfg
   evalApplyLikeTactic (·.apply · cfg) e
 
