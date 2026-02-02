@@ -300,6 +300,13 @@ lemma next_apply (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedB
 lemma next_apply₀ (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (α : FunSpace t₀ x₀ r L) : next hf hx α t₀ = x := by simp
 
+/-- If `α` is a fixed point of `next`, then `α` satisfies the integral equation
+`α t = x + ∫_{t₀}^t f τ (α τ) dτ`. -/
+lemma eq_picard_of_isFixedPt (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    {α : FunSpace t₀ x₀ r L} (hα : IsFixedPt (next hf hx) α) {t : Icc tmin tmax} :
+    α t = picard f t₀ x α.compProj t :=
+  congrArg (· t) hα |>.symm
+
 /-- A key step in the inductive case of `dist_iterate_next_apply_le` -/
 lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
     (hx : x ∈ closedBall x₀ r) (n : ℕ) (t : Icc tmin tmax)
