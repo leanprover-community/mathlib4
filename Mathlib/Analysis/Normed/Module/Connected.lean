@@ -179,6 +179,9 @@ theorem isPreconnected_eball {x : E} {r : ℝ≥0∞} : IsPreconnected (eball x 
 theorem isPreconnected_closedBall {x : E} {r : ℝ} : IsPreconnected (closedBall x r) :=
   (convex_closedBall _ _).isPreconnected
 
+theorem isPreconnected_closedEBall {x : E} {r : ℝ≥0∞} : IsPreconnected (closedEBall x r) :=
+  (convex_closedEBall _ _).isPreconnected
+
 theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
     IsConnected (ball x r) :=
   (isPathConnected_ball hr).isConnected
@@ -191,7 +194,7 @@ theorem isConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) : IsConnected (c
   ⟨⟨x, by simpa⟩, isPreconnected_closedBall⟩
 
 theorem isConnected_closedEBall {x : E} {r : ℝ≥0∞} : IsConnected (closedEBall x r) :=
-  (convex_closedEBall _ _).isConnected ⟨x, mem_closedEBall_self⟩
+  ⟨⟨x, mem_closedEBall_self⟩, isPreconnected_closedEBall⟩
 
 end Metric
 
