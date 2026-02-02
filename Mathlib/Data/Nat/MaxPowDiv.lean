@@ -6,6 +6,7 @@ Authors: Matthew Robert Ballard, Yury Kudryashov
 module
 
 public import Mathlib.Logic.Basic
+import Mathlib.Data.Nat.Notation
 
 /-!
 # The maximal power of one natural number dividing another
