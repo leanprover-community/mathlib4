@@ -103,8 +103,8 @@ instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ GrpCat.{u}) : PreservesLimit K uliftFunctor.{v, u} where
-  preserves lc := ⟨isLimitOfReflects (forget GrpCat.{max u v})
-    (isLimitOfPreserves CategoryTheory.uliftFunctor (isLimitOfPreserves (forget GrpCat) lc))⟩
+  preserves lc := ⟨isLimitOfReflects (forget GrpCat) <|
+    isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget GrpCat) lc)⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :
@@ -153,8 +153,8 @@ instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ CommGrpCat.{u}) : PreservesLimit K uliftFunctor.{v, u} where
-  preserves lc := ⟨isLimitOfReflects (forget CommGrpCat.{max u v})
-    (isLimitOfPreserves CategoryTheory.uliftFunctor (isLimitOfPreserves (forget CommGrpCat) lc))⟩
+  preserves lc := ⟨isLimitOfReflects (forget CommGrpCat) <|
+    isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget CommGrpCat) lc)⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :

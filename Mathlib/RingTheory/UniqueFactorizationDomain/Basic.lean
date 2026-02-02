@@ -110,6 +110,15 @@ theorem factors_unique {f g : Multiset α} (hf : ∀ x ∈ f, Irreducible x)
   prime_factors_unique (fun x hx => UniqueFactorizationMonoid.irreducible_iff_prime.mp (hf x hx))
     (fun x hx => UniqueFactorizationMonoid.irreducible_iff_prime.mp (hg x hx)) h
 
+theorem _root_.Associated.card_factors_eq {a b : α} (h : Associated a b) :
+    (factors a).card = (factors b).card := by
+  by_cases hb : b = 0
+  · simp_all
+  have ha : a ≠ 0 := h.ne_zero_iff.mpr hb
+  apply Multiset.card_eq_card_of_rel
+  apply factors_unique irreducible_of_factor irreducible_of_factor
+  exact (factors_prod ha).trans <| h.trans (factors_prod hb).symm
+
 end UniqueFactorizationMonoid
 
 /-- If an irreducible has a prime factorization,

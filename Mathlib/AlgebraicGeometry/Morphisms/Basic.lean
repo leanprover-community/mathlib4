@@ -319,7 +319,7 @@ lemma iff_exists_resLE [IsZariskiLocalAtTarget P]
     exact MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance _ (hf x)
   · rw [eq_top_iff]
     rintro x -
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     use x, hxU x
 
 end IsZariskiLocalAtSourceAndTarget
