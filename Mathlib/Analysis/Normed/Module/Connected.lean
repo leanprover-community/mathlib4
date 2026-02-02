@@ -144,7 +144,7 @@ theorem contractibleSpace_ball {x : E} {r : ℝ} (hr : 0 < r) :
 alias ball_contractible := contractibleSpace_ball
 
 theorem contractibleSpace_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
-    ContractibleSpace (Metric.eball x r) :=
+    ContractibleSpace (eball x r) :=
   (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
 
 @[deprecated (since := "2026-02-02")]
@@ -166,7 +166,11 @@ theorem isPathConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
     IsPathConnected (eball x r) :=
   convex_eball _ _ |>.isPathConnected ⟨x, by simpa⟩
 
-theorem isPathConnected_closedBall {x : E} {r : ℝ≥0∞} :
+theorem isPathConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
+    IsPathConnected (closedBall x r) :=
+  convex_closedBall _ _ |>.isPathConnected ⟨x, by simpa⟩
+
+theorem isPathConnected_closedEBall {x : E} {r : ℝ≥0∞} :
     IsPathConnected (closedEBall x r) :=
   isPathConnected_iff_pathConnectedSpace.mpr inferInstance
 
@@ -187,7 +191,7 @@ theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
   (isPathConnected_ball hr).isConnected
 
 theorem isConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
-    IsConnected (Metric.eball x r) :=
+    IsConnected (eball x r) :=
   (isPathConnected_eball hr).isConnected
 
 theorem isConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) : IsConnected (closedBall x r) :=
