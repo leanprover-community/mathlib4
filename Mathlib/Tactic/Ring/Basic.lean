@@ -19,7 +19,6 @@ A tactic for solving equations in commutative (semi)rings,
 where the exponents can also contain variables.
 Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
-
 More precisely, expressions of the following form are supported:
 - constants (non-negative integers)
 - variables
@@ -69,7 +68,6 @@ ring, semiring, exponent, power
 assert_not_exists IsOrderedMonoid
 
 namespace Mathlib.Tactic
-
 namespace Ring
 
 open Mathlib.Meta Qq Lean.Meta AtomM
