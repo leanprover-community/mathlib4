@@ -47,7 +47,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   -- consisting of closed subintervals `[x, y]` on which the slope of `f` differs from `f' x` by
   -- at most `η`.
   rcases hdb.eq_or_lt with rfl | hdb
-  · exact ⟨∅, by simp⟩ 
+  · exact ⟨∅, by simp⟩
   replace hf : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f (f' x) x := by
     filter_upwards [hf] with x hx₁ hx₂ using hx₁ (Ioo_subset_Icc_self hx₂)
   let t := {z : ℝ × ℝ | (d < z.1 ∧ z.1 < z.2 ∧ z.2 < b) ∧ dist (slope f z.1 z.2) (f' z.1) < η}
@@ -77,7 +77,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
       filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
                       @evn_bound ((b - x) / 2) (by simp [hx.left.right])]
         with ε hε₁ hε₂ hε₃ hε₄
-      refine ⟨(x, x + ε), ⟨⟨hx.1.1, by linarith, by linarith⟩, ?_⟩, by simp, rfl⟩ 
+      refine ⟨(x, x + ε), ⟨⟨hx.1.1, by linarith, by linarith⟩, ?_⟩, by simp, rfl⟩
       exact hδ₂ (by grind) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
   obtain ⟨u, ⟨hu₁, hu₂, hu₃, hu₄⟩⟩ := this
   simp only [t, subset_def, mem_setOf_eq] at hu₁
