@@ -171,12 +171,17 @@ Let `Uₛ` be an open of `S`, `Uₓ` and `Uₜ` be opens of `X` and `T` mapping 
 There is a canonical map `Γ(X, Uₓ) ⊗[Γ(S, Uₛ)] Γ(T, Uₜ) ⟶ Γ(X ×ₛ T, pr₁ ⁻¹ Uₓ ∩ pr₂ ⁻¹ Uₜ)`.
 
 We show that this map is
-1. bijective when `Uₛ`, `Uₜ`, and `Uₓ` are all affine.
-2. injective when `Uₛ`, `Uₜ` are affine, `Uₓ` is compact, and `f` is flat.
-3. bijective when `Uₛ`, `Uₜ` are affine, `Uₓ` is qcqs, and `f` is flat.
-4. injective when `Uₛ` is affine, `Uₜ` is compact, `Uₓ` is qcqs, `f` is flat,
+1. `isIso_pushoutSection_of_isAffineOpen`:
+  bijective when `Uₛ`, `Uₜ`, and `Uₓ` are all affine.
+2. `mono_pushoutSection_of_isCompact_of_flat_right`:
+  injective when `Uₛ`, `Uₜ` are affine, `Uₓ` is compact, and `f` is flat.
+3. `isIso_pushoutSection_of_isQuasiSeparated_of_flat_right`:
+  bijective when `Uₛ`, `Uₜ` are affine, `Uₓ` is qcqs, and `f` is flat.
+4. `mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
+  injective when `Uₛ` is affine, `Uₜ` is compact, `Uₓ` is qcqs, `f` is flat,
   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
-5. bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
+5. `isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
+  bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
 
 -/
@@ -453,7 +458,7 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
   exact mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX hUT hiX
 
 include H in
-lemma isIso_pushoutSection_of_isCompact_of_right_left_of_ringHomFlat [Flat f]
+lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT)
     (hUX : IsCompact (X := X) UX) (hUX' : IsQuasiSeparated (α := X) UX)
     (hiX : (iX.appLE US UX hUSX).hom.Flat) :
