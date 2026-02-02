@@ -21,8 +21,11 @@ We define the notation `ℍ` for the upper half plane available in the locale
 noncomputable section
 
 /-- The open upper half plane, denoted as `ℍ` within the `UpperHalfPlane` namespace -/
-def UpperHalfPlane :=
-  { point : ℂ // 0 < point.im }
+@[ext]
+structure UpperHalfPlane where
+  /-- Canonical embedding of the upper half-plane into `ℂ`. -/
+  protected coe : ℂ
+  coe_im_pos : 0 < coe.im
 
 @[inherit_doc] scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
 
@@ -30,22 +33,29 @@ open UpperHalfPlane
 
 namespace UpperHalfPlane
 
-/-- Canonical embedding of the upper half-plane into `ℂ`. -/
-@[coe] protected def coe (z : ℍ) : ℂ := z.1
+attribute [coe] UpperHalfPlane.coe
 
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
-instance : Inhabited ℍ :=
-  ⟨⟨Complex.I, by simp⟩⟩
+/-- Define I := √-1 as an element on the upper half plane. -/
+def I : ℍ := ⟨Complex.I, zero_lt_one⟩
 
-@[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
+instance : Inhabited ℍ := ⟨.I⟩
 
-@[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
+@[simp, norm_cast] theorem coe_inj {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
-theorem coe_injective : Function.Injective UpperHalfPlane.coe := Subtype.coe_injective
+@[deprecated (since := "2026-01-31")] alias ext_iff' := coe_inj
 
-instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
-  Subtype.canLift fun (z : ℂ) => 0 < z.im
+theorem coe_injective : Function.Injective UpperHalfPlane.coe := fun _ _ ↦ UpperHalfPlane.ext
+
+instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im where
+  prf z hz := ⟨⟨z, hz⟩, rfl⟩
+
+protected theorem «forall» {P : ℍ → Prop} : (∀ z, P z) ↔ ∀ z hz, P ⟨z, hz⟩ :=
+  ⟨fun h z hz ↦ h ⟨z, hz⟩, fun h z ↦ h z.1 z.2⟩
+
+protected theorem «exists» {P : ℍ → Prop} : (∃ z, P z) ↔ ∃ z hz, P ⟨z, hz⟩ :=
+  ⟨fun ⟨⟨z, hz⟩, hP⟩ ↦ ⟨z, hz, hP⟩, fun ⟨z, hz, hP⟩ ↦ ⟨⟨z, hz⟩, hP⟩⟩
 
 /-- Imaginary part -/
 def im (z : ℍ) :=
@@ -57,15 +67,10 @@ def re (z : ℍ) :=
 
 /-- Extensionality lemma in terms of `UpperHalfPlane.re` and `UpperHalfPlane.im`. -/
 theorem ext_re_im {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
-  ext <| Complex.ext hre him
+  UpperHalfPlane.ext <| Complex.ext hre him
 
 @[deprecated (since := "2026-01-29")]
 alias ext' := ext_re_im
-
-/-- Constructor for `UpperHalfPlane`. It is useful if `⟨z, h⟩` makes Lean use a wrong
-typeclass instance. -/
-def mk (z : ℂ) (h : 0 < z.im) : ℍ :=
-  ⟨z, h⟩
 
 @[simp]
 theorem coe_im (z : ℍ) : (z : ℂ).im = z.im :=
@@ -83,38 +88,12 @@ theorem mk_re (z : ℂ) (h : 0 < z.im) : (mk z h).re = z.re :=
 theorem mk_im (z : ℂ) (h : 0 < z.im) : (mk z h).im = z.im :=
   rfl
 
-@[simp]
 theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
-
-@[deprecated coe_mk (since := "2026-01-29")]
-lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
-    UpperHalfPlane.coe ⟨z, hz⟩ = z := by
-  rfl
-
-instance : Nontrivial ℍ := by
-  constructor
-  use mk Complex.I (by simp), mk (2 * Complex.I) (by simp)
-  simp [ne_eq, UpperHalfPlane.ext_iff]
 
 @[simp]
 theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
-
-theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
-  Complex.re_add_im z
-
-theorem im_pos (z : ℍ) : 0 < z.im :=
-  z.2
-
-theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
-  z.im_pos.ne'
-
-theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
-  mt (congr_arg Complex.im) z.im_ne_zero
-
-/-- Define I := √-1 as an element on the upper half plane. -/
-def I : ℍ := ⟨Complex.I, by simp⟩
 
 @[simp]
 lemma I_im : I.im = 1 := rfl
@@ -124,6 +103,22 @@ lemma I_re : I.re = 0 := rfl
 
 @[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl
+
+@[deprecated coe_mk (since := "2026-01-29")]
+lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
+    UpperHalfPlane.coe ⟨z, hz⟩ = z :=
+  rfl
+
+theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
+  Complex.re_add_im z
+
+theorem im_pos (z : ℍ) : 0 < z.im := z.coe_im_pos
+
+theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
+  z.im_pos.ne'
+
+theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
+  mt (congr_arg Complex.im) z.im_ne_zero
 
 end UpperHalfPlane
 
@@ -160,7 +155,7 @@ theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
   (normSq_pos z).ne'
 
 theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
-  simpa [neg_div] using div_pos z.property (normSq_pos z)
+  simpa [neg_div] using div_pos z.im_pos (normSq_pos z)
 
 lemma im_pnat_div_pos (n : ℕ) [NeZero n] (z : ℍ) : 0 < (-(n : ℂ) / z).im := by
   suffices 0 < n * z.im / Complex.normSq z by simpa [Complex.div_im, neg_div]
@@ -181,8 +176,8 @@ section PosRealAction
 
 instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
-  one_smul _ := ext <| one_smul _ _
-  mul_smul x y z := ext <| mul_smul (x : ℝ) y (z : ℂ)
+  one_smul _ := UpperHalfPlane.ext <| one_smul _ _
+  mul_smul x y z := UpperHalfPlane.ext <| mul_smul (x : ℝ) y (z : ℂ)
 
 variable (x : {x : ℝ // 0 < x}) (z : ℍ)
 
@@ -198,14 +193,19 @@ theorem pos_real_im : (x • z).im = x * z.im :=
 theorem pos_real_re : (x • z).re = x * z.re :=
   Complex.smul_re _ _
 
+theorem pos_real_smul_injective (z : ℍ) :
+    Function.Injective fun x : {x : ℝ // 0 < x} ↦ x • z := by
+  rintro ⟨x, hx⟩ ⟨y, hy⟩ h
+  simp_all [UpperHalfPlane.ext_iff, ne_zero]
+
 end PosRealAction
 
 section RealAddAction
 
 instance : AddAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
-  zero_vadd _ := ext <| by simp [HVAdd.hVAdd]
-  add_vadd x y z := ext <| by simp [HVAdd.hVAdd, add_assoc]
+  zero_vadd _ := by simp [HVAdd.hVAdd]
+  add_vadd x y z := by simp [HVAdd.hVAdd, add_assoc]
 
 variable (x : ℝ) (z : ℍ)
 
@@ -221,18 +221,38 @@ theorem vadd_re : (x +ᵥ z).re = x + z.re :=
 theorem vadd_im : (x +ᵥ z).im = z.im :=
   zero_add _
 
+@[simp]
+protected theorem vadd_right_cancel_iff {x y : ℝ} (z : ℍ) : x +ᵥ z = y +ᵥ z ↔ x = y := by
+  simp [UpperHalfPlane.ext_iff]
+
+protected theorem vadd_left_injective (z : ℍ) : Function.Injective fun x : ℝ ↦ x +ᵥ z := by
+  simp [Function.Injective]
+
+instance : Infinite ℍ :=
+  .of_injective _ <| UpperHalfPlane.vadd_left_injective I
+
+instance : Nontrivial ℍ := inferInstance
+
 end RealAddAction
 
-section upperHalfPlaneSet
+section UpperHalfPlaneSet
 
-/-- The upper half plane as a subset of `ℂ`. This is convenient for taking derivatives of functions
-on the upper half plane. -/
-abbrev upperHalfPlaneSet := {z : ℂ | 0 < z.im}
+/-- The upper half plane as a subset of `ℂ`.
+This is convenient for taking derivatives of functions on the upper half plane. -/
+def upperHalfPlaneSet := {z : ℂ | 0 < z.im}
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
+@[simp]
+theorem mem_upperHalfPlaneSet {z : ℂ} : z ∈ ℍₒ ↔ 0 < z.im := .rfl
+
+@[simp]
 lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
 
-end upperHalfPlaneSet
+@[simp]
+theorem range_coe : Set.range UpperHalfPlane.coe = ℍₒ := by
+  ext; simp [UpperHalfPlane.exists]
+
+end UpperHalfPlaneSet
 
 end UpperHalfPlane

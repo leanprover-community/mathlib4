@@ -219,6 +219,8 @@ lemma summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := 
   apply (EisensteinSeries.summable_linear_sub_mul_linear_add x 1 1).congr
   simp [mul_comm]
 
+@[deprecated (since := "2026-01-28")] alias Summable_cotTerm := summable_cotTerm
+
 lemma cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
     ∑' n : ℕ, (1 / (x - (n + 1)) + 1 / (x + (n + 1))) := by
   rw [HasSum.tsum_eq]
@@ -285,7 +287,7 @@ lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :
 
 open EisensteinSeries in
 private noncomputable abbrev cotTermUpperBound (A B : ℝ) (hB : 0 < B) (a : ℕ) :=
-  k ! * (2 * (r (.mk ⟨A, B⟩ hB) ^ (-1 - k : ℤ)) * ‖((a + 1) ^ (-1 - k : ℤ) : ℝ)‖)
+  k ! * (2 * (r (⟨⟨A, B⟩, hB⟩) ^ (-1 - k : ℤ)) * ‖((a + 1) ^ (-1 - k : ℤ) : ℝ)‖)
 
 private lemma summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk : 1 ≤ k) :
     Summable fun a : ℕ ↦ cotTermUpperBound k A B hB a := by
@@ -298,17 +300,17 @@ private lemma summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk 
 
 open EisensteinSeries in
 private lemma iteratedDerivWithin_cotTerm_bounded_uniformly
-    {k : ℕ} {K : Set ℂ} (hK : K ⊆ ℍₒ) (A B : ℝ) (hB : 0 < B)
-    (HABK : inclusion hK '' univ ⊆ verticalStrip A B) (n : ℕ) {a : ℂ} (ha : a ∈ K) :
+    {k : ℕ} {K : Set ℂ} (A B : ℝ) (hB : 0 < B)
+    (hKAB : K ⊆ (↑) '' verticalStrip A B) (n : ℕ) {a : ℂ} (ha : a ∈ K) :
     ‖iteratedDerivWithin k (fun z ↦ cotTerm z n) ℍₒ a‖ ≤ cotTermUpperBound k A B hB n := by
-  simp only [eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet k n (hK ha), Complex.norm_mul,
+  rcases hKAB ha with ⟨a, haAB, rfl⟩
+  simp only [eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet k n a.im_pos, Complex.norm_mul,
     norm_pow, norm_neg, norm_one, one_pow, Complex.norm_natCast, one_mul, cotTermUpperBound,
     Int.reduceNeg, norm_zpow, Real.norm_eq_abs, two_mul, add_mul]
   gcongr
-  have h1 := summand_bound_of_mem_verticalStrip (k := k + 1) (by norm_cast; lia) ![1, n + 1] hB
-      (z := .mk a (hK ha)) (A := A) (by aesop)
-  have h2 := abs_norm_eq_max_natAbs_neg n ▸ (summand_bound_of_mem_verticalStrip (k := k + 1)
-    (by norm_cast; lia) ![1, -(n + 1)] hB (z := .mk a (hK ha)) (A := A) (by aesop))
+  have h1 := summand_bound_of_mem_verticalStrip (k := k + 1) (by positivity) ![1, n + 1] hB haAB
+  have h2 := abs_norm_eq_max_natAbs_neg n ▸ summand_bound_of_mem_verticalStrip (k := k + 1)
+    (by positivity) ![1, -(n + 1)] hB haAB
   apply norm_add_le_of_le
   · simpa (disch := positivity) [sub_eq_add_neg, ← Real.rpow_intCast, abs_norm_eq_max_natAbs,
       abs_of_nonneg] using h1
@@ -319,11 +321,11 @@ lemma summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm {k : ℕ} (hk : 1 �
     SummableLocallyUniformlyOn (fun n ↦ iteratedDerivWithin k (fun z ↦ cotTerm z n) ℍₒ) ℍₒ := by
   apply SummableLocallyUniformlyOn_of_locally_bounded isOpen_upperHalfPlaneSet
   intro K hK hKc
+  lift K to Set ℍ using hK
   obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact
-    ((isCompact_iff_isCompact_univ.mp hKc).image_of_continuousOn
-    (continuous_inclusion hK |>.continuousOn))
+    (isEmbedding_coe.isCompact_iff.mpr hKc)
   exact ⟨cotTermUpperBound k A B hB, summable_cotTermUpperBound A B hB hk,
-    iteratedDerivWithin_cotTerm_bounded_uniformly hK A B hB HABK⟩
+    iteratedDerivWithin_cotTerm_bounded_uniformly A B hB <| by gcongr⟩
 
 lemma differentiableOn_iteratedDerivWithin_cotTerm (n l : ℕ) :
     DifferentiableOn ℂ (iteratedDerivWithin l (fun z ↦ cotTerm z n) ℍₒ) ℍₒ := by

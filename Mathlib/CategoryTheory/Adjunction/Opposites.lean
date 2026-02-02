@@ -83,23 +83,18 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
     NatIso.ofComponents fun Y =>
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 
-/-- Given two adjunctions, if the right adjoints are naturally isomorphic, then so are the left
-adjoints.
-
-Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adjunction.Unique`.
-The reason this definition still exists is that apparently `CategoryTheory.extendAlongYonedaYoneda`
-uses its definitional properties (TODO: figure out a way to avoid this).
--/
+/-- Deprecated: prefer `(Adjunction.conjugateIsoEquiv adj1 adj2).symm`. -/
+@[deprecated "Use `(Adjunction.conjugateIsoEquiv adj1 adj2).symm` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
 def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
   NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
     (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
 
-/-- Given two adjunctions, if the left adjoints are naturally isomorphic, then so are the right
-adjoints.
-
-Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adjunction.Unique`.
--/
+set_option linter.deprecated false in
+/-- Deprecated: prefer `Adjunction.conjugateIsoEquiv adj1 adj2`. -/
+@[deprecated "Use `Adjunction.conjugateIsoEquiv adj1 adj2` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))

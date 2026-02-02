@@ -123,8 +123,7 @@ theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
   exact le_max_right _ _
 
 theorem smul {𝕜' : Type*} (c : 𝕜') [SeminormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
-  [SMulCommClass 𝕜 𝕜' F]
-  (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
+    [SMulCommClass 𝕜 𝕜' F] (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
   let ⟨hlf, M, _, hM⟩ := hf
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
     calc
@@ -267,11 +266,11 @@ theorem continuous (h : IsBoundedBilinearMap 𝕜 f) : Continuous f := by
 
 theorem continuous_left (h : IsBoundedBilinearMap 𝕜 f) {e₂ : F} :
     Continuous fun e₁ => f (e₁, e₂) :=
-  h.continuous.comp (continuous_id.prodMk continuous_const)
+  h.continuous.comp (by fun_prop)
 
 theorem continuous_right (h : IsBoundedBilinearMap 𝕜 f) {e₁ : E} :
     Continuous fun e₂ => f (e₁, e₂) :=
-  h.continuous.comp (continuous_const.prodMk continuous_id)
+  h.continuous.comp (by fun_prop)
 
 end IsBoundedBilinearMap
 
@@ -313,10 +312,9 @@ variable {f g : E → F}
 
 /-- A map between normed spaces is linear and continuous if and only if it is bounded. -/
 theorem isLinearMap_and_continuous_iff_isBoundedLinearMap (f : E → F) :
-    IsLinearMap 𝕜 f ∧ Continuous f ↔ IsBoundedLinearMap 𝕜 f :=
-  ⟨fun ⟨hlin, hcont⟩ ↦ ContinuousLinearMap.isBoundedLinearMap
-      ⟨⟨⟨f, IsLinearMap.map_add hlin⟩, IsLinearMap.map_smul hlin⟩, hcont⟩,
-        fun h_bdd ↦ ⟨h_bdd.toIsLinearMap, h_bdd.continuous⟩⟩
+    IsLinearMap 𝕜 f ∧ Continuous f ↔ IsBoundedLinearMap 𝕜 f where
+  mp | ⟨hlin, hcont⟩ => ContinuousLinearMap.isBoundedLinearMap ⟨hlin.mk' _, hcont⟩
+  mpr h_bdd := ⟨h_bdd.toIsLinearMap, h_bdd.continuous⟩
 
 end IsBoundedLinearMap
 

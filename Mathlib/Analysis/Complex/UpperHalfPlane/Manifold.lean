@@ -131,9 +131,8 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) �
   rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.property
-  · rw [Function.comp_apply, ofComplex_apply_of_im_pos w.property]
-    rfl
+  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ
     rw [eventually_nhdsWithin_iff, ← isOpenEmbedding_coe.map_nhds_eq, eventually_map] at hτ
@@ -189,7 +188,7 @@ lemma deriv_smul_ne_zero {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
 
 lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     AnalyticAt ℂ (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ := by
-  refine DifferentiableOn.analyticAt (fun z hz ↦ ?_) (isOpen_upperHalfPlaneSet.mem_nhds τ.property)
+  refine DifferentiableOn.analyticAt (fun z hz ↦ ?_) (isOpen_upperHalfPlaneSet.mem_nhds τ.im_pos)
   apply DifferentiableAt.differentiableWithinAt
   simpa [mdifferentiableAt_iff] using
     (mdifferentiable_coe.comp <| (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)

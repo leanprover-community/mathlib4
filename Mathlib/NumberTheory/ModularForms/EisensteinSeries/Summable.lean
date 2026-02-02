@@ -92,7 +92,7 @@ lemma r_pos : 0 < r z := by
   simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
 
 lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ verticalStrip A B) :
-    r (.mk ⟨A, B⟩ h) ≤ r z := by
+    r ⟨⟨A, B⟩, h⟩ ≤ r z := by
   apply min_le_min hz.2
   gcongr
   simp only [r1_eq, div_pow, one_div]
@@ -154,7 +154,7 @@ lemma summand_bound {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ) :
 variable {z} in
 lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ)
     {A B : ℝ} (hB : 0 < B) (hz : z ∈ verticalStrip A B) :
-    ‖x 0 * (z : ℂ) + x 1‖ ^ (-k) ≤ r (.mk ⟨A, B⟩ hB) ^ (-k) * ‖x‖ ^ (-k) := by
+    ‖x 0 * (z : ℂ) + x 1‖ ^ (-k) ≤ r ⟨⟨A, B⟩, hB⟩ ^ (-k) * ‖x‖ ^ (-k) := by
   refine (summand_bound z hk x).trans (mul_le_mul_of_nonneg_right ?_ (by positivity))
   exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
@@ -275,7 +275,6 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
   apply le_trans (by simpa [Real.rpow_neg_one, add_assoc] using
     summand_bound_of_mem_verticalStrip zero_le_one ![m 0 + a, m 1 + b] z.2 h0)
   simp [abs_of_pos (r_pos _)]
-  aesop
 
 lemma isLittleO_const_left_of_properSpace_of_discreteTopology
     {α : Type*} (a : α) [NormedAddCommGroup α] [DiscreteTopology α]
