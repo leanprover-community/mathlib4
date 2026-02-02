@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Data.Ineq
 public meta import Mathlib.Util.AtLocation
 public import Mathlib.Data.Ineq
-public import Mathlib.Tactic.FieldSimp.Attr
 public import Mathlib.Tactic.FieldSimp.Discharger
 public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Util.AtomM.Recurse
@@ -614,9 +613,8 @@ def reduceExpr (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (x :
 /-- Given an (in)equality `a = b` (respectively, `a ≤ b`, `a < b`), cancel nonzero (resp. positive)
 factors to construct a new (in)equality which is logically equivalent to `a = b` (respectively,
 `a ≤ b`, `a < b`). -/
-def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : Expr) :
-    AtomM Simp.Result := do
-  let ⟨i, _, a, b⟩ ← t.ineq?
+def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
+    (i : Ineq) (a b : Expr) : AtomM Simp.Result := do
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
   let ⟨u, K, a⟩ ← inferTypeQ' a
   -- find a `CommGroupWithZero` instance on `K`
@@ -706,7 +704,8 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
   let disch ← parseDischarger d args
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
-  let m := AtomM.recurse s {} (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
+  let m := AtomM.recurse s {} (fun e ↦
+    (do let (i, _, a, b) ← e.ineq?; reduceProp disch i a b) <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
 
@@ -743,6 +742,10 @@ elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   -- convert `x` to the output of the normalization
   Conv.applySimpResult r
 
+end Mathlib.Tactic.FieldSimp
+
+open Mathlib.Tactic
+
 /--
 The goal of the simprocs grouped under the `field` attribute is to clear denominators in
 (semi-)field (in)equalities, by bringing LHS and RHS each over a common denominator and then
@@ -768,26 +771,17 @@ in the simp call (e.g. `simp [field, hx]`). If your (in)equality is not complete
 `field` simproc-set, check the denominators of the resulting (in)equality and provide proofs that
 they are nonzero/positive to enable further progress.
 -/
-def proc : Simp.Simproc := fun (t : Expr) ↦ do
-  let ctx ← Simp.getContext
-  let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
+simproc_decl field (_) := fun t ↦ do
   try
-    let r ← AtomM.run .reducible <| FieldSimp.reduceProp disch t
+    let (i, _, a, b) ← t.ineq?
+    let ctx ← Simp.getContext
+    let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
+    let r ← AtomM.run .reducible <| FieldSimp.reduceProp disch i a b
     -- the `field_simp`-normal form is in opposition to the `simp`-lemmas `one_div` and `mul_inv`,
     -- so we need to undo any such lemma applications, otherwise we can get infinite loops
     return .visit <| ← r.mkEqTrans (← simpOnlyNames [``one_div, ``mul_inv] r.expr)
   catch _ =>
     return .continue
-
-end Mathlib.Tactic.FieldSimp
-
-open Mathlib.Tactic
-
-simproc_decl fieldEq (Eq _ _) := FieldSimp.proc
-simproc_decl fieldLe (LE.le _ _) := FieldSimp.proc
-simproc_decl fieldLt (LT.lt _ _) := FieldSimp.proc
-
-attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 
 /-!
  We register `field_simp` with the `hint` tactic.

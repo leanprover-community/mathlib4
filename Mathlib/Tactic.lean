@@ -89,7 +89,6 @@ public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.FieldSimp.Attr
 public import Mathlib.Tactic.FieldSimp.Discharger
 public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Tactic.FinCases
