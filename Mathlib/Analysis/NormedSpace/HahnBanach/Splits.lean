@@ -94,6 +94,11 @@ lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) : f.toContinuousL
   · erw [f.range_eq_top_of_surjective (EquivLike.surjective f)]
     exact Submodule.closedComplemented_top
 
+/-- An invertible continuous linear map splits. -/
+lemma of_isInvertible (hf : IsInvertible f) : f.Splits := by
+  obtain ⟨e, rfl⟩ := hf
+  exact e.splits
+
 /-- If `f` and `g` split, then so does `f × g`. -/
 lemma prodMap (hf : f.Splits) (hg : g.Splits) : (f.prodMap g).Splits := by
   refine ⟨hf.injective.prodMap hg.injective, ?_, ?_⟩

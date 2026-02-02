@@ -401,6 +401,10 @@ lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     hf.mfderivToContinuousLinearEquiv hn = mfderiv I J f x := rfl
 
+lemma IsLocalDiffeomorphAt.isInvertible_mfderiv (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
+    (mfderiv I J f x).IsInvertible :=
+  ⟨hf.mfderivToContinuousLinearEquiv hn, by simp⟩
+
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≠ 0`)
 is a linear equivalence. -/
 noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
@@ -410,6 +414,10 @@ noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
 
 lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
     Φ.mfderivToContinuousLinearEquiv hn x = mfderiv I J Φ x := by rfl
+
+lemma Diffeomorph.isInvertible_mfderiv (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
+    (mfderiv I J Φ x).IsInvertible :=
+  (Φ.isLocalDiffeomorph x).isInvertible_mfderiv hn
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≠ 0`),
 each differential is a linear equivalence. -/
@@ -422,5 +430,9 @@ lemma IsLocalDiffeomorph.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x : M) :
     hf.mfderivToContinuousLinearEquiv hn x = mfderiv I J f x :=
   (hf x).mfderivToContinuousLinearEquiv_coe hn
+
+lemma IsLocalDiffeomorph.isInvertible_mfderiv (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x) :
+    (mfderiv I J f x).IsInvertible :=
+  (hf x).isInvertible_mfderiv hn
 
 end Differential
