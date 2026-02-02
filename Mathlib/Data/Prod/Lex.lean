@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Minchao Wu
 -/
-import Mathlib.Data.Prod.Basic
-import Mathlib.Order.Lattice
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Lexicographic order
@@ -30,6 +32,8 @@ Related files are:
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}

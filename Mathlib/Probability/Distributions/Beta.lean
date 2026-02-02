@@ -3,7 +3,9 @@ Copyright (c) 2025 Tommy Löfgren. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tommy Löfgren
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-! # Beta distributions over ℝ
 
@@ -16,6 +18,8 @@ Define the beta distribution over the reals.
 * `betaPDF`: `ℝ≥0∞`-valued pdf,
   `betaPDF α β = ENNReal.ofReal (betaPDFReal α β)`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -90,12 +94,12 @@ lemma betaPDFReal_pos {α β x : ℝ} (hx1 : 0 < x) (hx2 : x < 1) (hα : 0 < α)
     (Real.rpow_pos_of_pos (by linarith) (β - 1))
 
 /-- The beta pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_betaPDFReal (α β : ℝ) : Measurable (betaPDFReal α β) :=
   Measurable.ite measurableSet_Ioo (by fun_prop) (by fun_prop)
 
 /-- The beta pdf is strongly measurable. -/
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_betaPDFReal (α β : ℝ) :
     StronglyMeasurable (betaPDFReal α β) := (measurable_betaPDFReal α β).stronglyMeasurable
 

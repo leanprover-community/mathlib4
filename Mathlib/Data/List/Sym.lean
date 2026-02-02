@@ -3,8 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Sym.Sym2
 
 /-! # Unordered tuples of elements of a list
 
@@ -24,6 +26,8 @@ from a given list. These are list versions of `Nat.multichoose`.
   and lift the result to `Multiset` and `Finset`.
 
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -77,12 +81,7 @@ theorem mk_mem_sym2 {xs : List α} {a b : α} (ha : a ∈ xs) (hb : b ∈ xs) :
   | nil => simp at ha
   | cons x xs ih =>
     rw [mem_sym2_cons_iff]
-    rw [mem_cons] at ha hb
-    obtain (rfl | ha) := ha <;> obtain (rfl | hb) := hb
-    · left; rfl
-    · right; left; use b
-    · right; left; rw [Sym2.eq_swap]; use a
-    · right; right; exact ih ha hb
+    grind
 
 theorem mk_mem_sym2_iff {xs : List α} {a b : α} :
     s(a, b) ∈ xs.sym2 ↔ a ∈ xs ∧ b ∈ xs := by

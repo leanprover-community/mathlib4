@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Ordmap.Ordnode
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Dist
+public import Mathlib.Data.Ordmap.Ordnode
+public import Mathlib.Tactic.Abel
 
 /-!
 # Invariants for the verification of `Ordnode`
@@ -43,6 +45,8 @@ Contributors are encouraged to pick this up and finish the job, if it appeals to
 
 ordered map, ordered set, data structure, verified programming
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -539,7 +543,7 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 /-! ### `insert` -/
 
 
-theorem dual_insert [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) :
+theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) :
     ∀ t : Ordnode α, dual (Ordnode.insert x t) = @Ordnode.insert αᵒᵈ _ _ x (dual t)
   | nil => rfl
   | node _ l y r => by
@@ -566,7 +570,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sr.2.2.2.1.size_eq_zero.1 this.1
         cases sr.2.2.2.2.size_eq_zero.1 this.2
         obtain rfl : rrs = 1 := sr.2.2.1
-        rw [if_neg, if_pos, rotateL_node, if_pos]; · rfl
+        rw [if_neg, rotateL_node, if_pos]; · rfl
         all_goals dsimp only [size]; decide
       · have : size rll = 0 ∧ size rlr = 0 := by
           have := balancedSz_zero.1 hr.1
@@ -574,13 +578,12 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sr.2.1.2.1.size_eq_zero.1 this.1
         cases sr.2.1.2.2.size_eq_zero.1 this.2
         obtain rfl : rls = 1 := sr.2.1.1
-        rw [if_neg, if_pos, rotateL_node, if_neg]; · rfl
+        rw [if_neg, rotateL_node, if_neg]; · rfl
         all_goals dsimp only [size]; decide
-      · symm; rw [zero_add, if_neg, if_pos, rotateL]
+      · symm; rw [zero_add, if_neg, rotateL]
         · dsimp only [size_node]; split_ifs
           · simp [node3L, node']; abel
           · simp [node4L, node', sr.2.1.1]; abel
-        · apply Nat.zero_lt_succ
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sr.2.1.pos sr.2.2.pos))
   · obtain - | ⟨rs, rl, rx, rr⟩ := r
     · rw [sl.eq_node'] at hl ⊢
@@ -593,7 +596,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sl.2.2.2.1.size_eq_zero.1 this.1
         cases sl.2.2.2.2.size_eq_zero.1 this.2
         obtain rfl : lrs = 1 := sl.2.2.1
-        rw [if_neg, if_pos, rotateR_node, if_neg]; · rfl
+        rw [if_neg, rotateR_node, if_neg]; · rfl
         all_goals dsimp only [size]; decide
       · have : size lll = 0 ∧ size llr = 0 := by
           have := balancedSz_zero.1 hl.1
@@ -601,13 +604,12 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         cases sl.2.1.2.1.size_eq_zero.1 this.1
         cases sl.2.1.2.2.size_eq_zero.1 this.2
         obtain rfl : lls = 1 := sl.2.1.1
-        rw [if_neg, if_pos, rotateR_node, if_pos]; · rfl
+        rw [if_neg, rotateR_node, if_pos]; · rfl
         all_goals dsimp only [size]; decide
-      · symm; rw [if_neg, if_pos, rotateR]
+      · symm; rw [if_neg, rotateR]
         · dsimp only [size_node]; split_ifs
           · simp [node3R, node']; abel
           · simp [node4R, node', sl.2.2.1]; abel
-        · apply Nat.zero_lt_succ
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sl.2.1.pos sl.2.2.pos))
     · simp only [balance, id_eq, balance', size_node, gt_iff_lt]
       symm; rw [if_neg]
@@ -702,7 +704,7 @@ theorem balanceL_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : S
     rcases H with (⟨l', e, H | ⟨_, H₂⟩⟩ | ⟨r', e, H | ⟨_, H₂⟩⟩)
     · exact le_trans (le_trans (Nat.le_add_left _ _) H) (mul_pos (by decide) l1 : (0 : ℕ) < _)
     · exact le_trans H₂ (Nat.mul_le_mul_left _ (raised_iff.1 e).1)
-    · cases raised_iff.1 e; unfold delta; cutsat
+    · cases raised_iff.1 e; unfold delta; lia
     · exact le_trans (raised_iff.1 e).1 H₂
 
 theorem balance_sz_dual {l r}

@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.Open
-import Mathlib.AlgebraicGeometry.Over
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Open
+public import Mathlib.AlgebraicGeometry.Over
 
 /-!
 # Restriction of Schemes and Morphisms
@@ -17,6 +19,8 @@ import Mathlib.AlgebraicGeometry.Over
 - `AlgebraicGeometry.morphismRestrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -62,6 +66,12 @@ instance (U : X.Opens) : U.ι.IsOver X where
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
 
 lemma toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
+
+lemma forall_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∀ x, P x) ↔ ∀ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.forall
+
+lemma exists_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∃ x, P x) ↔ ∃ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.exists
 
 @[simp]
 lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
@@ -480,7 +490,7 @@ lemma basicOpenIsoSpecAway_inv_homOfLE {R : CommRingCat.{u}} (f g x : R) (hx : x
   simp only [← Spec.map_comp, ← CommRingCat.ofHom_comp]
   congr
   ext x
-  exact (IsLocalization.Away.awayToAwayRight_eq f g x).symm
+  exact (IsLocalization.Away.awayToAwayRight_eq f g x (S := Localization.Away f)).symm
 
 section MorphismRestrict
 

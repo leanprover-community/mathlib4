@@ -3,14 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.Action.Concrete
-import Mathlib.CategoryTheory.Action.Limits
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.CategoryTheory.Action.Concrete
+public import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Induced monoidal structure on `Action V G`
@@ -18,13 +20,16 @@ import Mathlib.CategoryTheory.Action.Limits
 We show:
 
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
+* When `V` is rigid and `G` is a group, `Action V G` is also rigid.
 -/
+
+@[expose] public section
 
 universe u
 
 open CategoryTheory Limits MonoidalCategory
 
-variable {V : Type*} [Category V] {G : Type*} [Monoid G]
+variable {V : Type*} [Category* V] {G : Type*} [Monoid G]
 
 namespace Action
 
@@ -65,7 +70,7 @@ instance : (Action.forget V G).Monoidal :=
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
 @[simp] lemma forget_ε : ε (Action.forget V G) = 𝟙 _ := rfl
-@[simp] lemma forget_η : ε (Action.forget V G) = 𝟙 _ := rfl
+@[simp] lemma forget_η : η (Action.forget V G) = 𝟙 _ := rfl
 
 variable {V G}
 
@@ -93,7 +98,7 @@ instance : (Action.forget V G).Braided where
 end
 
 instance [SymmetricCategory V] : SymmetricCategory (Action V G) :=
-  symmetricCategoryOfFaithful (Action.forget V G)
+  .ofFaithful (Action.forget V G)
 
 section
 
@@ -206,8 +211,6 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
   mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
 
-@[deprecated (since := "2025-06-02")] alias diagonalSucc := diagonalSuccIsoTensorDiagonal
-
 variable [Group G]
 
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
@@ -282,7 +285,7 @@ namespace CategoryTheory.Functor
 
 open Action
 
-variable {W : Type*} [Category W] [MonoidalCategory V] [MonoidalCategory W]
+variable {W : Type*} [Category* W] [MonoidalCategory V] [MonoidalCategory W]
   (F : V ⥤ W)
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal

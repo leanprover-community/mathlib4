@@ -3,17 +3,20 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Data.List.Chain
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Free groups
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
 is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
+functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -48,6 +51,8 @@ distinguish the quotient types more easily.
 free group, Newman's diamond lemma, Church-Rosser theorem
 -/
 
+@[expose] public section
+
 open Relation
 open scoped List
 
@@ -58,7 +63,7 @@ variable {α : Type u}
 attribute [local simp] List.append_eq_has_append
 
 /- Ensure that `@[to_additive]` uses the right namespace before the definition of `FreeGroup`. -/
-run_meta ToAdditive.insertTranslation `FreeGroup `FreeAddGroup
+insert_to_additive_translation FreeGroup FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
 inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop
@@ -333,7 +338,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     induction L1 with
     | nil =>
       dsimp
-      cutsat
+      lia
     | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _
@@ -662,7 +667,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 
 @[to_additive]
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
-  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux]
+  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux, List.prod_append]
 
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
@@ -672,9 +677,9 @@ from the free group over `α` to `β` -/
 def lift : (α → β) ≃ (FreeGroup α →* β) where
   toFun f :=
     MonoidHom.mk' (Quot.lift (Lift.aux f) fun _ _ => Red.Step.lift) <| by
-      rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
+      rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux, List.prod_append]
   invFun g := g ∘ of
-  left_inv f := List.prod_singleton
+  left_inv f := by ext; simp [of, Lift.aux]
   right_inv g := by ext; simp [of, Lift.aux]
 
 variable {f}
@@ -684,8 +689,7 @@ theorem lift_mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift_apply_of {x} : lift f (of x) = f x :=
-  List.prod_singleton
+theorem lift_apply_of {x} : lift f (of x) = f x := by simp [of]
 
 @[to_additive]
 theorem lift_unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
@@ -791,7 +795,7 @@ def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β wher
   invFun := map e.symm
   left_inv x := by simp [map.comp]
   right_inv x := by simp [map.comp]
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive (attr := simp)]
 theorem freeGroupCongr_refl : freeGroupCongr (Equiv.refl α) = MulEquiv.refl _ :=
@@ -882,6 +886,9 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
 
+-- TODO: find a good way to fix the linter
+-- simp applies to two goals at once, with different simp sets
+set_option linter.flexible false in
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by

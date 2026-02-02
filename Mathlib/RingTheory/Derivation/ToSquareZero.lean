@@ -3,16 +3,22 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Derivation.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
-# Results
+# Derivations into Square-Zero Ideals
+
+## Main statements
 
 - `derivationToSquareZeroOfLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 -/
+
+@[expose] public section
 
 
 section ToSquareZero

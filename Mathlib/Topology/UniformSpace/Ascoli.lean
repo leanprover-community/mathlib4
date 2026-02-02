@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.CompactConvergence
-import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.UniformSpace.Equiv
+module
+
+public import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Topology.UniformSpace.Equicontinuity
+public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Ascoli Theorem
@@ -67,6 +69,8 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 
 equicontinuity, uniform convergence, ascoli
 -/
+
+public section
 
 open Set Filter Uniformity Topology Function UniformConvergence
 

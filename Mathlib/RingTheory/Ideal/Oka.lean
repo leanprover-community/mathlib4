@@ -3,7 +3,9 @@ Copyright (c) 2025 Anthony Fernandes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Fernandes, Marc Robin
 -/
-import Mathlib.RingTheory.Ideal.Colon
+module
+
+public import Mathlib.RingTheory.Ideal.Colon
 
 /-!
 # Oka predicates
@@ -22,6 +24,8 @@ This file introduces the notion of Oka predicates and standard results about the
 - [stacks-project]: The Stacks project, [tag 05K7](https://stacks.math.columbia.edu/tag/05K7)
 - [lam_reyes_2009]: *Oka and Ako ideal families in commutative rings*, 2009
 -/
+
+@[expose] public section
 
 namespace Ideal
 
@@ -45,11 +49,10 @@ include hP
 theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPrime where
   ne_top' hI' := hI.prop (hI' ▸ hP.top)
   mem_or_mem' := by
-    by_contra!
-    obtain ⟨a, b, hab, ha, hb⟩ := this
+    by_contra! ⟨a, b, hab, ha, hb⟩
     have h₁ : P (I ⊔ span {a}) := of_not_not <| hI.not_prop_of_gt (Submodule.lt_sup_iff_notMem.2 ha)
     have h₂ : P (I.colon (span {a})) := of_not_not <| hI.not_prop_of_gt <| lt_of_le_of_ne le_colon
-      (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
+      (fun H ↦ hb <| H ▸ mem_colon_span_singleton.2 (mul_comm a b ▸ hab))
     exact hI.prop (hP.oka h₁ h₂)
 
 /-- If a ring `R` verify:
@@ -59,7 +62,7 @@ theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPri
 Then all the ideals of `R` satisfy `P`. -/
 theorem forall_of_forall_prime (hmax : ∀ I, ¬P I → ∃ I, Maximal (¬P ·) I)
     (hprime : ∀ I, I.IsPrime → P I) (I : Ideal R) : P I := by
-  by_contra! hI
+  by_contra hI
   obtain ⟨I, hI⟩ := hmax I hI
   exact hI.prop <| hprime I (hP.isPrime_of_maximal_not hI)
 

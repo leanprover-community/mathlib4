@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Order.Group.Nat
+module
+
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Ring.Defs
+import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
 /-!
 # Digits of a natural number
@@ -25,6 +29,8 @@ A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` 
 are numerals is not yet ported.
 -/
 
+@[expose] public section
+
 assert_not_exists Finset
 
 namespace Nat
@@ -41,58 +47,20 @@ def digitsAux1 (n : ℕ) : List ℕ :=
   List.replicate n 1
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
-def digitsAux (b : ℕ) (h : 2 ≤ b) (n : ℕ) : List ℕ :=
-  go n (n + 2) init
-where
-  init : (if n = 0 then 0 else n + 1) < n + 2 := by
-    split_ifs <;> simp
-  decreasing (n f : ℕ) (hf : (if n + 1 = 0 then 0 else n + 2) < f + 1) :
-      (if (n + 1) / b = 0 then 0 else ((n + 1) / b) + 1) < f := by
-    rw [if_neg n.add_one_ne_zero] at hf
-    split_ifs with hn
-    · exact zero_lt_of_lt (lt_of_succ_lt_succ hf)
-    · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
-      refine Nat.lt_of_le_of_lt (succ_le_succ ?_) (succ_lt_succ_iff.1 hf)
-      refine Nat.div_le_of_le_mul (Nat.le_trans ?_ (Nat.mul_le_mul_right n h))
-      omega
-  /-- Auxiliary function performing recursion for `Nat.digitsAux`. -/
-  go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else n + 1) < fuel) : List ℕ :=
-    match n, fuel, hfuel with
-    | 0, _, _ => []
-    | n + 1, f + 1, hf =>
-      ((n + 1) % b) :: go ((n + 1) / b) f (decreasing n f hf)
-
-theorem digitsAux.go_zero (b : ℕ) (h : 2 ≤ b) (fuel : ℕ)
-    (hfuel : (if 0 = 0 then 0 else n + 1) < fuel) :
-    digitsAux.go b h 0 fuel hfuel = [] := by
-  rw [digitsAux.go]
-
-theorem digitsAux.go_succ (b : ℕ) (h : 2 ≤ b) (n fuel : ℕ)
-    (hfuel : (if n + 1 = 0 then 0 else n + 2) < fuel + 1) :
-    digitsAux.go b h (n + 1) (fuel + 1) hfuel = ((n + 1) % b) ::
-      digitsAux.go b h ((n + 1) / b) fuel (decreasing b h n fuel hfuel) :=
-  rfl
-
-theorem digitsAux.go_fuel_irrel (b : ℕ) (h : 2 ≤ b) (n fuel fuel' : ℕ)
-    (hfuel : (if n = 0 then 0 else n + 1) < fuel)
-    (hfuel' : (if n = 0 then 0 else n + 1) < fuel') :
-    digitsAux.go b h n fuel hfuel = digitsAux.go b h n fuel' hfuel' := by
-  fun_induction go b h n fuel hfuel generalizing fuel'
-  · rw [go_zero]
-  · cases fuel'
-    · simp at hfuel'
-    · rw [go_succ]
-      solve_by_elim
+@[semireducible] def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
+  | 0 => []
+  | n + 1 =>
+    ((n + 1) % b) :: digitsAux b h ((n + 1) / b)
+decreasing_by exact Nat.div_lt_self (Nat.succ_pos _) h
 
 @[simp]
-theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) :
-    digitsAux b h 0 = [] := by rw [digitsAux, digitsAux.go]
+theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := rfl
 
 theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
     digitsAux b h n = (n % b) :: digitsAux b h (n / b) := by
   cases n
   · cases w
-  · rw [digitsAux, digitsAux.go, digitsAux, digitsAux.go_fuel_irrel]
+  · rw [digitsAux]
 
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
@@ -223,7 +191,7 @@ theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
   simp
 
 theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
-    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b ^ l.length * d := by
   simp only [List.reverse_cons]
   rw [ofDigits_append]
   simp
@@ -390,9 +358,11 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   cases hd
   · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> omega
+    · apply Nat.div_lt_self <;> lia
     · assumption
 
+-- TODO: find a good way to fix the linter error; simp_all is called on three goals, one remains
+set_option linter.flexible false in
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
 theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
   rcases b with (_ | _ | b) <;> try simp_all
@@ -411,6 +381,8 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
     suffices ↑hd < b + 2 by linarith
     exact hl hd List.mem_cons_self
 
+-- TODO: find a good way to fix the linter; simp applies to three goals, leaving one
+set_option linter.flexible false in
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
     ofDigits b l < b ^ l.length := by
@@ -422,6 +394,8 @@ theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m
   convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 
+-- TODO: find a good way to fix the linter; simp applies to three goals, leaving one
+set_option linter.flexible false in
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
 theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m).length := by
   rcases b with (_ | _ | b) <;> try simp_all
@@ -547,7 +521,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
   | succ f ih =>
     grind
 
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) : n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 
@@ -585,106 +559,5 @@ number of digits in the decimal number (represented by `e`). For example, the de
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
 lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e := by
   simpa [Nat.repr] using toDigits_length _ _ _
-
-/-! ### `norm_digits` tactic -/
-
-
-namespace NormDigits
-
-theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
-    (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
-  rcases h with ⟨h, b2, m0⟩
-  have b0 : 0 < b := by omega
-  have n0 : 0 < n := by linarith [mul_pos b0 m0]
-  refine ⟨?_, b2, n0⟩
-  obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
-  subst h; exact Nat.digits_def' b2 n0
-
-theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
-  have b2 : 1 < b := by cutsat
-  refine ⟨?_, b2, n0⟩
-  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
-
-/-
-Porting note: this part of the file is tactic related.
-
-open Tactic
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/-- Helper function for the `norm_digits` tactic. -/ unsafe
-  def
-    eval_aux
-    ( eb : expr ) ( b : ℕ ) : expr → ℕ → instance_cache → tactic ( instance_cache × expr × expr )
-    |
-      en , n , ic
-      =>
-      do
-        let m := n / b
-          let r := n % b
-          let ( ic , er ) ← ic . ofNat r
-          let ( ic , pr ) ← norm_num.prove_lt_nat ic er eb
-          if
-            m = 0
-            then
-            do
-              let ( _ , pn0 ) ← norm_num.prove_pos ic en
-                return
-                  (
-                    ic
-                      ,
-                      q( ( [ $ ( en ) ] : List Nat ) )
-                        ,
-                        q( digits_one $ ( eb ) $ ( en ) $ ( pn0 ) $ ( pr ) )
-                    )
-            else
-            do
-              let em ← expr.of_nat q( ℕ ) m
-                let ( _ , pe ) ← norm_num.derive q( ( $ ( er ) + $ ( eb ) * $ ( em ) : ℕ ) )
-                let ( ic , el , p ) ← eval_aux em m ic
-                return
-                  (
-                    ic
-                      ,
-                      q( @ List.cons ℕ $ ( er ) $ ( el ) )
-                        ,
-                        q(
-                          digits_succ
-                            $ ( eb ) $ ( en ) $ ( em ) $ ( er ) $ ( el ) $ ( pe ) $ ( pr ) $ ( p )
-                          )
-                    )
-
-/-- A tactic for normalizing expressions of the form `Nat.digits a b = l` where
-`a` and `b` are numerals.
-
-```
-example : Nat.digits 10 123 = [3,2,1] := by norm_num
-```
--/
-@[norm_num]
-unsafe def eval : expr → tactic (expr × expr)
-  | q(Nat.digits $(eb) $(en)) => do
-    let b ← expr.to_nat eb
-    let n ← expr.to_nat en
-    if n = 0 then return (q(([] : List ℕ)), q(Nat.digits_zero $(eb)))
-      else
-        if b = 0 then do
-          let ic ← mk_instance_cache q(ℕ)
-          let (_, pn0) ← norm_num.prove_ne_zero' ic en
-          return (q(([$(en)] : List ℕ)), q(@Nat.digits_zero_succ' $(en) $(pn0)))
-        else
-          if b = 1 then do
-            let ic ← mk_instance_cache q(ℕ)
-            let s ← simp_lemmas.add_simp simp_lemmas.mk `list.replicate
-            let (rhs, p2, _) ← simplify s [] q(List.replicate $(en) 1)
-            let p ← mk_eq_trans q(Nat.digits_one $(en)) p2
-            return (rhs, p)
-          else do
-            let ic ← mk_instance_cache q(ℕ)
-            let (_, l, p) ← eval_aux eb b en n ic
-            let p ← mk_app `` And.left [p]
-            return (l, p)
-  | _ => failed
--/
-
-end NormDigits
 
 end Nat

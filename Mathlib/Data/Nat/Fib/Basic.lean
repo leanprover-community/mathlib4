@@ -3,56 +3,52 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Zify
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Zify
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
-# Fibonacci Numbers
+# Fibonacci numbers
 
-This file defines the fibonacci series, proves results about it and introduces
-methods to compute it quickly.
--/
+This file defines the Fibonacci sequence as `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + Fₙ₊₁`. Furthermore, it
+proves results about the sequence and introduces methods to compute it quickly.
 
-/-!
-# The Fibonacci Sequence
-
-## Summary
-
-Definition of the Fibonacci sequence `F₀ = 0, F₁ = 1, Fₙ₊₂ = Fₙ + Fₙ₊₁`.
-
-## Main Definitions
+## Main definitions
 
 - `Nat.fib` returns the stream of Fibonacci numbers.
 
-## Main Statements
+## Main statements
 
-- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.`.
+- `Nat.fib_add_two`: shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`.
 - `Nat.fib_gcd`: `fib n` is a strong divisibility sequence.
 - `Nat.fib_succ_eq_sum_choose`: `fib` is given by the sum of `Nat.choose` along an antidiagonal.
 - `Nat.fib_succ_eq_succ_sum`: shows that `F₀ + F₁ + ⋯ + Fₙ = Fₙ₊₂ - 1`.
 - `Nat.fib_two_mul` and `Nat.fib_two_mul_add_one` are the basis for an efficient algorithm to
   compute `fib` (see `Nat.fastFib`).
 
-## Implementation Notes
+## Implementation notes
 
 For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 ## Tags
 
-fib, fibonacci
+Fibonacci numbers, Fibonacci sequence
 -/
+
+@[expose] public section
 
 namespace Nat
 
 
 
-/-- Implementation of the fibonacci sequence satisfying
+/-- Implementation of the Fibonacci sequence satisfying
 `fib 0 = 0, fib 1 = 1, fib (n + 2) = fib n + fib (n + 1)`.
 
 *Note:* We use a stream iterator for better performance when compared to the naive recursive
@@ -74,7 +70,7 @@ theorem fib_one : fib 1 = 1 :=
 theorem fib_two : fib 2 = 1 :=
   rfl
 
-/-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁.` -/
+/-- Shows that `fib` indeed satisfies the Fibonacci recurrence `Fₙ₊₂ = Fₙ + Fₙ₊₁`. -/
 theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
   simp [fib, Function.iterate_succ_apply']
 

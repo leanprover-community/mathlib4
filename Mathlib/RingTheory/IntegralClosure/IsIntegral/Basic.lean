@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Finiteness.Subalgebra
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Finiteness.Subalgebra
+public import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Properties of integral elements.
@@ -15,12 +17,14 @@ import Mathlib.RingTheory.Polynomial.Tower
 We prove basic properties of integral elements in a ring extension.
 -/
 
+public section
+
 open Polynomial Submodule
 
 section Ring
 
-variable {R S A : Type*}
-variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
+variable {R S A T : Type*}
+variable [CommRing R] [Ring A] [Ring S] [Ring T] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A]
 
 theorem RingHom.isIntegralElem_map {x : R} : f.IsIntegralElem (f x) :=
@@ -29,22 +33,44 @@ theorem RingHom.isIntegralElem_map {x : R} : f.IsIntegralElem (f x) :=
 theorem isIntegral_algebraMap {x : R} : IsIntegral R (algebraMap R A x) :=
   (algebraMap R A).isIntegralElem_map
 
+variable {f} in
+lemma RingHom.IsIntegralElem.map {x : S} (hx : f.IsIntegralElem x) (g : S →+* T) :
+    (g.comp f).IsIntegralElem (g x) := by
+  obtain ⟨p, hp, hx⟩ := hx
+  exact ⟨p, hp, by simp_rw [← hom_eval₂, eval₂_eq_eval_map] at hx ⊢; simp [hx]⟩
+
+variable {f g} in
+lemma RingHom.IsIntegralElem.of_map (hg : Function.Injective g) {x : S}
+    (hx : (g.comp f).IsIntegralElem (g x)) :
+    f.IsIntegralElem x := by
+  obtain ⟨p, hp, hx⟩ := hx
+  exact ⟨p, hp, hg <| by simp [Polynomial.hom_eval₂, hx]⟩
+
+variable {f g} in
+lemma RingHom.IsIntegralElem.map_iff (hg : Function.Injective g) {x : S} :
+    (g.comp f).IsIntegralElem (g x) ↔ f.IsIntegralElem x :=
+  ⟨of_map hg, (map · g)⟩
+
 end Ring
 
 section
 
-variable {R A B S : Type*}
-variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
+variable {R A B S T : Type*}
+variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [Ring T]
 variable [Algebra R A] (f : R →+* S)
+
+variable {f} in
+lemma RingHom.IsIntegralElem.of_comp {g : S →+* T} {x : T} (hx : (g.comp f).IsIntegralElem x) :
+    g.IsIntegralElem x := by
+  obtain ⟨p, hp, hx⟩ := hx
+  exact ⟨p.map f, hp.map _, by simpa only [eval₂_eq_eval_map, map_map] using hx⟩
 
 theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
     [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
-  obtain ⟨P, hP⟩ := hb
-  refine ⟨P, hP.1, ?_⟩
-  rw [← aeval_def, ← aeval_map_algebraMap A,
-    aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, map_zero]
+  rw [IsIntegral, ← ((AlgHomClass.toAlgHom f).restrictScalars R).comp_algebraMap]
+  exact .map hb (RingHomClass.toRingHom f)
 
 section
 
@@ -52,9 +78,7 @@ variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x : A} :
     IsIntegral R (f x) ↔ IsIntegral R x := by
-  refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, ?_⟩, IsIntegral.map f⟩
-  rwa [← f.comp_algebraMap, ← AlgHom.coe_toRingHom, ← hom_eval₂, AlgHom.coe_toRingHom,
-    map_eq_zero_iff f hf] at hx
+  simp [IsIntegral, ← RingHom.IsIntegralElem.map_iff (g := (f : A →+* B)) hf]
 
 end
 
@@ -170,7 +194,7 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
     (h : IsIntegral R x) : IsIntegral R (algebraMap A B x) := by
   rcases h with ⟨f, hf, hx⟩
   use f, hf
-  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, RingHom.map_zero]
+  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, map_zero]
 
 theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A}
     (hAB : Function.Injective (algebraMap A B)) :
@@ -201,11 +225,11 @@ theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsI
 
 theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite)
     (hi : ∀ x ∈ s, IsIntegral R x) : Module.Finite R (adjoin R s) :=
-  Module.Finite.iff_fg.mpr <| fg_adjoin_of_finite hf hi
+  .of_fg <| fg_adjoin_of_finite hf hi
 
 theorem Algebra.finite_adjoin_simple_of_isIntegral {x : B} (hi : IsIntegral R x) :
     Module.Finite R (adjoin R {x}) :=
-  Module.Finite.iff_fg.mpr hi.fg_adjoin_singleton
+  .of_fg hi.fg_adjoin_singleton
 
 theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
     (hs : ∀ x ∈ s, IsIntegral R x) : IsNoetherian R (Algebra.adjoin R (s : Set A)) :=

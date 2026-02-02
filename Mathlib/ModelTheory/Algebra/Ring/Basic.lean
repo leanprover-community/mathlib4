@@ -3,10 +3,11 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.ModelTheory.Syntax
-import Mathlib.ModelTheory.Semantics
-import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # First-Order Language of Rings
@@ -38,6 +39,8 @@ you must add local instances with definitions like `ModelTheory.Field.fieldOfMod
 `FirstOrder.Ring.compatibleRingOfModelField K`.
 (in `Mathlib/ModelTheory/Algebra/Field/Basic.lean`), depending on the Theory.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -311,7 +314,7 @@ abbrev compatibleRingOfRingStructure : CompatibleRing R :=
       rfl
     funMap_one := by
       simp only [Fin.forall_fin_zero_pi]
-      rfl  }
+      rfl }
 
 end Ring
 

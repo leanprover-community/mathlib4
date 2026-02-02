@@ -3,14 +3,20 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Batteries.Data.String.Matcher
-import Mathlib.Data.Nat.Notation
-import Lake.Util.Casing
+public meta import Batteries.Data.String.Matcher
+public meta import Lake.Util.Casing
+public import Batteries.Data.String.Basic
+public import Mathlib.Data.Nat.Notation
+public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
 set_option linter.style.header false
+
+meta section
+
 
 /-!
 ## Text-based linters
@@ -25,6 +31,7 @@ Currently, this file contains linters checking
 - for module names to be in upper camel case,
 - for module names to be valid Windows filenames, and containing no forbidden characters such as
   `!`, `.` or spaces.
+- for any code containing blocklisted unicode characters
 
 For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -39,15 +46,6 @@ open Lean.Linter System
 
 namespace Mathlib.Linter.TextBased
 
-/-- Different kinds of "broad imports" that are linted against. -/
-inductive BroadImports
-  /-- Importing the entire "Mathlib.Tactic" folder -/
-  | TacticFolder
-  /-- Importing any module in `Lake`, unless carefully measured
-  This has caused unexpected regressions in the past. -/
-  | Lake
-deriving BEq
-
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
@@ -60,10 +58,12 @@ inductive StyleError where
   | trailingWhitespace
   /-- A line contains a space before a semicolon -/
   | semicolon
-deriving BEq
+  /-- A unicode character was used that isn't allowed -/
+  | unwantedUnicode (c : Char)
+deriving BEq, Inhabited
 
 /-- How to format style errors -/
-inductive ErrorFormat
+public inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
   /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
@@ -82,6 +82,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     endings (\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
+  | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
+    '{c}' ({UnicodeLinter.printCodepointHex c})."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -91,6 +93,8 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
+  | StyleError.unwantedUnicode _ => "ERR_UNICODE"
+
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -101,6 +105,7 @@ structure ErrorContext where
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
+deriving BEq
 
 /-- Possible results of comparing an `ErrorContext` to an `existing` entry:
 most often, they are different --- if the existing entry covers the new exception,
@@ -153,11 +158,16 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
-/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
+/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
+Used for, e.g., parsing the "exceptions" file.
+
+Need to ensure (see unit tests in `MathlibTest/LintStyle.lean`) that
+  `∀ (ec : ErrorContext), (parse?_errorContext <| outputMessage ec .exceptionsFile) = some ec`
+-/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.splitToList (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
+    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
@@ -171,6 +181,13 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_UNICODE" => do
+          -- extract the offending unicode character from `errorMessage`
+          -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )
+          -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
+          let str ← errorMessage[7]?
+          let c ← String.Pos.Raw.get? str ⟨1⟩ -- take middle character of expected three
+          StyleError.unwantedUnicode c
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -194,7 +211,7 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers. If possible,
+return an array of all style errors with (1-based!) line numbers. If possible,
 also return the collection of all lines, changed as needed to fix the linter errors.
 (Such automatic fixes are only possible for some kinds of `StyleError`s.)
 -/
@@ -205,7 +222,7 @@ abbrev TextbasedLinter := LinterOptions → Array String →
 section
 
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
-register_option linter.adaptationNote : Bool := { defValue := true }
+public register_option linter.adaptationNote : Bool := { defValue := true }
 
 @[inherit_doc linter.adaptationNote]
 def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
@@ -219,7 +236,7 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   return (errors, none)
 
 /-- Lint a collection of input strings if one of them contains trailing whitespace. -/
-register_option linter.trailingWhitespace : Bool := { defValue := true }
+public register_option linter.trailingWhitespace : Bool := { defValue := true }
 
 @[inherit_doc linter.trailingWhitespace]
 def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
@@ -231,11 +248,11 @@ def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set idx line.trimRight
+      fixedLines := fixedLines.set idx line.trimAsciiEnd.copy
   return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
-register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
+public register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
 
 @[inherit_doc linter.whitespaceBeforeSemicolon]
 def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
@@ -247,27 +264,84 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     let pos := line.find (· == ';')
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
-    if pos != line.endPos && (pos.prev line).get line == ' ' then
+    if pos != line.endPos && pos.prev!.get! == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
-      fixedLines := fixedLines.set! idx (line.replace [' ', ';'].asString ";")
+      fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
-
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
   -- The Python version also excluded multi-line comments: for all files generated by `mk_all`,
-  -- this is in fact not necessary. (It is needed for `Tactic/Linter.lean`, though.)
+  -- this is in fact not necessary. (It is needed for `Mathlib/Tactic/Linter.lean`, though.)
   lines.all (fun line ↦ line.startsWith "import " || line == "" || line.startsWith "-- ")
 
 end
 
+namespace UnicodeLinter
+
+/-- Creates `StyleError`s for bad usage of unicode characters. -/
+def findBadUnicodeAux (s : String) (pos : s.Pos)
+    (err : Array StyleError := #[]) : Array StyleError :=
+  if h : pos < s.endPos then
+    let c := pos.get (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
+    let posₙ := pos.next (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
+    have : posₙ.remainingBytes < pos.remainingBytes :=
+        (pos.lt_iff_remainingBytes_lt posₙ).mp pos.lt_next
+    if ! isAllowedCharacter c then
+      -- bad: character not allowed. Add StyleError and continue recursion.
+      findBadUnicodeAux s posₙ (err.push (.unwantedUnicode c))
+    else
+      -- okay. Continue recursion.
+      findBadUnicodeAux s posₙ err
+  else
+    err
+termination_by pos.remainingBytes
+
+/-- Creates `StyleError`s for bad usage of unicode characters. -/
+@[inline]
+def findBadUnicode (s : String) : Array StyleError :=
+  findBadUnicodeAux s s.startPos
+
+end UnicodeLinter
+
+/-- Lint a collection of input strings for disallowed unicode characters. -/
+public register_option linter.unicodeLinter : Bool := { defValue := true }
+
+@[inherit_doc linter.unicodeLinter]
+def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.unicodeLinter opts do return (#[], none)
+
+  let mut changed : Array String := #[]
+  let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
+  let mut lineNumber := 1 -- one-based line numbers!
+  for line in lines do
+    let err := UnicodeLinter.findBadUnicode line
+
+    -- try to auto-fix the style error
+    let mut newLine := line
+    for e in err.reverse do -- reversing is a cheap fix to prevent shifting indices
+      match e with
+      | .unwantedUnicode c =>
+        if let some replacement := UnicodeLinter.replaceDisallowed c then
+            newLine := newLine.replace c replacement
+        else
+            pure ()
+      | _ => unreachable!
+
+    changed := changed.push newLine
+    errors := errors.append (err.map (fun e => (e, lineNumber)))
+    lineNumber := lineNumber + 1
+  return (errors, if (changed == lines) then none else some changed)
+
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter
+    adaptationNoteLinter,
+    semicolonLinter,
+    trailingWhitespaceLinter,
+    unicodeLinter,
   ]
-
 
 /-- Read a file and apply all text-based linters.
 Return a list of all unexpected errors, and, if some errors could be fixed automatically,
@@ -297,13 +371,33 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
   let mut changed := lines
 
   for lint in allLinters do
-    let (err, changes) := lint opts changed
-    allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
-    -- TODO: auto-fixes do not take style exceptions into account
+    let (new_errors, changes) := lint opts changed
     if let some c := changes then
-      changed := c
+      -- apply linter's suggested changes only where no exceptions apply.
+      -- Each changed line must correspond to line number of at least one error.
+      if changed.size != c.size then
+        throw <| IO.userError "linter's suggested changes must have same number of lines as input"
+      -- For each line in `changed`,
+      changed := Array.ofFn fun (lineIdx : Fin changed.size) ↦
+        -- check if any exception applies:
+        if new_errors.any fun (e, idx) ↦
+          (idx - 1 == lineIdx) -- Subtract 1 since linter's line numbers are one-based
+          ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isSome
+        then
+          c[lineIdx]! -- no exception applies. Assign linter's suggestion.
+        else
+          changed[lineIdx]! -- An least one exception applies. Ignore linter's suggested line.
+      -- Note: to keep logic simple, changed lines where an exception applies are left alone,
+      --   even if there are other suggested changes where no exception applies.
+
+    -- append ALL errors to the output. For this, exception filtering happens later below.
+    allOutput := allOutput.append
+      (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) new_errors)
+    if changed != lines then
       changes_made := true
-  -- This list is not sorted: for github, this is fine.
+    -- Note: we ASSUME that the linters' auto-fixes do not introduce new issues!
+
+  -- Filter exceptions. Note: This list is not sorted. For github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
@@ -312,7 +406,7 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
 -- TODO: these linters assume they are being run in `./scripts` and do not work on
 -- downstream projects. Fix this before re-enabling them by default.
 -- Or better yet: port them to Lean 4.
-register_option linter.pythonStyle : Bool := { defValue := false }
+public register_option linter.pythonStyle : Bool := { defValue := false }
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
@@ -323,6 +417,7 @@ Return the number of files which had new style errors.
 `moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
+public
 def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : Array Lean.Name)
     (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
@@ -362,11 +457,12 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
   return numberErrorFiles
 
 /-- Verify that all modules are named in `UpperCamelCase` -/
-register_option linter.modulesUpperCamelCase : Bool := { defValue := true }
+public register_option linter.modulesUpperCamelCase : Bool := { defValue := true }
 
 /-- Verifies that all modules in `modules` are named in `UpperCamelCase`
 (except for explicitly discussed exceptions, which are hard-coded here).
 Return the number of modules violating this. -/
+public
 def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
 
@@ -389,7 +485,7 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
   return badNames.size
 
 /-- Verify that no module name is forbidden according to Windows' filename rules. -/
-register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
+public register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
 
 /-- Verifies that no module in `modules` contains CON, PRN, AUX, NUL, COM1, COM2, COM3, COM4, COM5,
 COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
@@ -400,7 +496,7 @@ Also verify that module names contain no forbidden characters such as `*`, `?` (
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
-def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
   let forbiddenNames := [
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",

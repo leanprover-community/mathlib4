@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 /-!
 
@@ -22,6 +24,8 @@ A non-example is `𝔸ₖ`, because the topology on ideles is not the induced to
 This condition is necessary and sufficient for `U(R)` to be an open subspace of `X(R)`
 for all affine scheme `X` over `R` and all affine open subscheme `U ⊆ X`.
 -/
+
+@[expose] public section
 
 open Topology
 

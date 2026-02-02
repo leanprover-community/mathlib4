@@ -3,9 +3,11 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.Connected.Clopen
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -34,6 +36,8 @@ separated morphisms and unramified morphisms, respectively.
 
 https://stacks.math.columbia.edu/tag/0CY0
 -/
+
+@[expose] public section
 
 open Topology
 

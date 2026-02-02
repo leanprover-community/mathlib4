@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Subobject.FactorThru
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Subobject.FactorThru
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # The lattice of subobjects
@@ -14,6 +16,8 @@ import Mathlib.Data.Finset.Lattice.Fold
 We provide the `SemilatticeInf` with `OrderTop (Subobject X)` instance when `[HasPullback C]`,
 and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCoproducts C]`.
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ u₁ u₂
@@ -31,7 +35,7 @@ namespace MonoOver
 
 section Top
 
-instance {X : C} : Top (MonoOver X) where top := mk' (𝟙 _)
+instance {X : C} : Top (MonoOver X) where top := mk (𝟙 _)
 
 instance {X : C} : Inhabited (MonoOver X) :=
   ⟨⊤⟩
@@ -49,7 +53,7 @@ theorem top_arrow (X : C) : (⊤ : MonoOver X).arrow = 𝟙 X :=
   rfl
 
 /-- `map f` sends `⊤ : MonoOver X` to `⟨X, f⟩ : MonoOver Y`. -/
-def mapTop (f : X ⟶ Y) [Mono f] : (map f).obj ⊤ ≅ mk' f :=
+def mapTop (f : X ⟶ Y) [Mono f] : (map f).obj ⊤ ≅ mk f :=
   iso_of_both_ways (homMk (𝟙 _) rfl) (homMk (𝟙 _) (by simp [id_comp f]))
 
 section
@@ -65,11 +69,11 @@ def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
 as the category is thin this is an isomorphism. -/
 def topLEPullbackSelf {A B : C} (f : A ⟶ B) [Mono f] :
-    (⊤ : MonoOver A) ⟶ (pullback f).obj (mk' f) :=
+    (⊤ : MonoOver A) ⟶ (pullback f).obj (mk f) :=
   homMk _ (pullback.lift_snd _ _ rfl)
 
 /-- The pullback of a monomorphism along itself is isomorphic to the top object. -/
-def pullbackSelf {A B : C} (f : A ⟶ B) [Mono f] : (pullback f).obj (mk' f) ≅ ⊤ :=
+def pullbackSelf {A B : C} (f : A ⟶ B) [Mono f] : (pullback f).obj (mk f) ≅ ⊤ :=
   iso_of_both_ways (leTop _) (topLEPullbackSelf _)
 
 end
@@ -80,7 +84,7 @@ section Bot
 
 variable [HasInitial C] [InitialMonoClass C]
 
-instance {X : C} : Bot (MonoOver X) where bot := mk' (initial.to X)
+instance {X : C} : Bot (MonoOver X) where bot := mk (initial.to X)
 
 @[simp]
 theorem bot_left (X : C) : ((⊥ : MonoOver X) : C) = ⊥_ C :=
@@ -136,7 +140,7 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
-        · apply pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ k.left) _
+        · apply pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ k.hom.left) _
           rw [pullback.condition, assoc, w k]
         dsimp
         rw [pullback.lift_snd_assoc, assoc, w k] }
@@ -150,11 +154,8 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
 
 /-- A morphism version of the `le_inf` axiom. -/
-def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
-  intro k₁ k₂
-  refine homMk (pullback.lift k₂.left k₁.left ?_) ?_
-  · rw [w k₁, w k₂]
-  · erw [pullback.lift_snd_assoc, w k₁]
+def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) :=
+  fun k₁ k₂ ↦ homMk (pullback.lift k₂.hom.left k₁.hom.left (by simp))
 
 end Inf
 
@@ -184,7 +185,7 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
   refine homMk ?_ ?_
-  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
+  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.hom.left k₂.hom.left, _⟩
     ext
     · simp [w k₁]
     · simp [w k₂]
@@ -377,6 +378,17 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     apply Quotient.ind₂'
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
+
+theorem inf_isPullback {A : C} (f g : Subobject A) :
+    IsPullback (ofLE (f ⊓ g) f (by simp)) (ofLE (f ⊓ g) g (by simp)) f.arrow g.arrow := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ (fun s ↦ (f ⊓ g).factorThru (s.fst ≫ f.arrow) ?_)
+    ?_ (fun s ↦ ?_) fun _ _ h _ ↦ ?_⟩⟩
+  · simpa using ⟨factors_comp_arrow s.fst, by simpa [s.condition] using factors_comp_arrow s.snd⟩
+  · cat_disch
+  · ext
+    simp [s.condition]
+  · ext
+    simp [← h]
 
 theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) X (inf_le_left X Y), by simp⟩
@@ -630,7 +642,7 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
-  · refine(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, ?_, ?_⟩
+  · refine (underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, ?_, ?_⟩
     · refine Sigma.desc ?_
       rintro ⟨g, m⟩
       refine underlying.map (homOfLE (k _ ?_))

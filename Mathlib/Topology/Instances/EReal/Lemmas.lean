@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.EReal.Inv
-import Mathlib.Topology.Semicontinuous
+module
+
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Topological structure on `EReal`
@@ -22,6 +24,8 @@ We prove basic properties of the topology on `EReal`.
 
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -212,9 +216,6 @@ lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : 
     (hf : Continuous f) :
     Continuous fun x => (f x).toENNReal :=
   continuous_toENNReal.comp hf
-
-@[deprecated (since := "2025-03-05")] alias _root_.Continous.ereal_toENNReal :=
-  _root_.Continuous.ereal_toENNReal
 
 @[fun_prop]
 lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}

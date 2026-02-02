@@ -3,11 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-import Mathlib.CategoryTheory.Monoidal.Discrete
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # The category of monoids in a monoidal category.
@@ -23,12 +27,28 @@ about morphisms from some (tensor) power of `M` to `M`, where `M` is a (commutat
 in a (braided) monoidal category.
 
 Please read the documentation in `Mathlib/Tactic/Attr/Register.lean` for full details.
+
+## TODO
+
+* Check that `Mon MonCat ≌ CommMonCat`, via the Eckmann-Hilton argument.
+  (You'll have to hook up the Cartesian monoidal structure on `MonCat` first,
+  available in https://github.com/leanprover-community/mathlib3/pull/3463)
+* More generally, check that `Mon (Mon C) ≌ CommMon C` when `C` is braided.
+* Check that `Mon TopCat ≌ [bundled topological monoids]`.
+* Check that `Mon AddCommGrpCat ≌ RingCat`.
+  (We've already got `Mon (ModuleCat R) ≌ AlgCat R`,
+  in `Mathlib/CategoryTheory/Monoidal/Internal/Module.lean`.)
+* Can you transport this monoidal structure to `RingCat` or `AlgCat R`?
+  How does it compare to the "native" one?
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open Function CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 /-- A monoid object internal to a monoidal category.
@@ -54,9 +74,9 @@ namespace MonObj
 variable {M X Y : C} [MonObj M]
 
 @[inherit_doc] scoped notation "μ" => MonObj.mul
-@[inherit_doc] scoped notation "μ["M"]" => MonObj.mul (X := M)
+@[inherit_doc] scoped notation "μ[" M "]" => MonObj.mul (X := M)
 @[inherit_doc] scoped notation "η" => MonObj.one
-@[inherit_doc] scoped notation "η["M"]" => MonObj.one (X := M)
+@[inherit_doc] scoped notation "η[" M "]" => MonObj.one (X := M)
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
@@ -147,7 +167,7 @@ lemma mul_assoc_hom (f : X ⟶ M) :
 
 @[reassoc (attr := mon_tauto)]
 lemma mul_assoc_inv (f : X ⟶ M) :
-    (α_ M M X).inv ≫ (μ ⊗ₘ f) ≫ μ = (𝟙 M ⊗ₘ (𝟙 M ⊗ₘ f) ≫ μ) ≫ μ  := by simp [tensorHom_def']
+    (α_ M M X).inv ≫ (μ ⊗ₘ f) ≫ μ = (𝟙 M ⊗ₘ (𝟙 M ⊗ₘ f) ≫ μ) ≫ μ := by simp [tensorHom_def']
 
 end Mathlib.Tactic.MonTauto
 
@@ -248,7 +268,7 @@ which together form a strength that equips the tensor product functor with a mon
 and the monoid axioms for the tensor product follow from the monoid axioms for the tensor factors
 plus the properties of the strength (i.e., monoidal functor axioms).
 The strength `tensorμ` of the tensor product functor has been defined in
-`Mathlib/CategoryTheory/Monoidal/Braided.lean`.
+`Mathlib/CategoryTheory/Monoidal/Braided/Basic.lean`.
 Its properties, stated as independent lemmas in that module,
 are used extensively in the proofs below.
 Notice that we could have followed the above plan not only conceptually
@@ -262,7 +282,7 @@ The obvious candidates are the associator and unitors from `C`,
 but we need to prove that they are monoid morphisms, i.e., compatible with unit and multiplication.
 These properties translate to the monoidality of the associator and unitors
 (with respect to the monoidal structures on the functors they relate),
-which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided.lean`.
+which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided/Basic.lean`.
 
 -/
 
@@ -644,7 +664,6 @@ instance : SymmetricCategory (Mon C) where
 end Mon
 end SymmetricCategory
 
-namespace CategoryTheory
 variable
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E]
@@ -670,7 +689,7 @@ abbrev monObjObj : MonObj (F.obj X) where
 
 @[deprecated (since := "2025-09-09")] alias mon_ClassObj := monObjObj
 
-scoped[Obj] attribute [instance] CategoryTheory.Functor.monObjObj
+scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.monObjObj
 
 open scoped Obj
 
@@ -871,7 +890,7 @@ def mapMon (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal
   unitIso := mapMonIdIso.symm ≪≫ mapMonNatIso e.unitIso ≪≫ mapMonCompIso
   counitIso := mapMonCompIso.symm ≪≫ mapMonNatIso e.counitIso ≪≫ mapMonIdIso
 
-end CategoryTheory.Equivalence
+end Equivalence
 
 namespace Mon
 
@@ -1014,21 +1033,8 @@ instance [IsCommMonObj M] [IsCommMonObj N] : IsCommMonObj (M ⊗ N) where
   mul_comm := by
     simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
       ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
-      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft,
-      MonObj.tensorObj.mul_def, ← whiskerLeft_comp_assoc, -whiskerLeft_comp]
+      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft, MonObj.tensorObj.mul_def,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, -MonoidalCategory.whiskerLeft_comp]
 
 end SymmetricCategory
-
-/-!
-Projects:
-* Check that `Mon MonCat ≌ CommMonCat`, via the Eckmann-Hilton argument.
-  (You'll have to hook up the Cartesian monoidal structure on `MonCat` first,
-  available in https://github.com/leanprover-community/mathlib3/pull/3463)
-* More generally, check that `Mon (Mon C) ≌ CommMon C` when `C` is braided.
-* Check that `Mon TopCat ≌ [bundled topological monoids]`.
-* Check that `Mon AddCommGrpCat ≌ RingCat`.
-  (We've already got `Mon (ModuleCat R) ≌ AlgCat R`,
-  in `Mathlib/CategoryTheory/Monoidal/Internal/Module.lean`.)
-* Can you transport this monoidal structure to `RingCat` or `AlgCat R`?
-  How does it compare to the "native" one?
--/
+end CategoryTheory

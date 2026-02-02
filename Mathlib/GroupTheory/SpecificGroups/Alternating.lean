@@ -3,13 +3,15 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.IndexNormal
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Logic.Equiv.Fin.Rotate
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Alternating Groups
@@ -56,6 +58,8 @@ alternating group permutation simple characteristic index
 
 -/
 
+@[expose] public section
+
 -- An example on how to determine the order of an element of a finite group.
 example : orderOf (-1 : ℤˣ) = 2 :=
   orderOf_eq_prime (Int.units_sq _) (by decide)
@@ -73,7 +77,7 @@ instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
 instance [Subsingleton α] : Unique (alternatingGroup α) :=
-  ⟨⟨1⟩, fun ⟨p, _⟩ => Subtype.eq (Subsingleton.elim p _)⟩
+  ⟨⟨1⟩, fun ⟨p, _⟩ => Subtype.ext (Subsingleton.elim p _)⟩
 
 variable {α}
 
@@ -85,6 +89,10 @@ namespace Equiv.Perm
 @[simp]
 theorem mem_alternatingGroup {f : Perm α} : f ∈ alternatingGroup α ↔ sign f = 1 :=
   sign.mem_ker
+
+theorem mul_mem_alternatingGroup_of_isSwap {g g' : Perm α} (hg : IsSwap g) (hg' : IsSwap g') :
+    g * g' ∈ alternatingGroup α := by
+  simp [mem_alternatingGroup, map_mul, hg.sign_eq, hg'.sign_eq]
 
 theorem prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
     (hl : ∀ g ∈ l, IsSwap g) : l.prod ∈ alternatingGroup α ↔ Even l.length := by
@@ -156,14 +164,13 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
       exact hσ
     obtain ⟨a, ha, b, hb, ab⟩ := Finset.one_lt_card.1 h2
     refine isConj_iff.2 ⟨⟨π * swap a b, ?_⟩, Subtype.val_injective ?_⟩
-    · rw [mem_alternatingGroup, MonoidHom.map_mul, h, sign_swap ab, Int.units_mul_self]
+    · rw [mem_alternatingGroup, map_mul, h, sign_swap ab, Int.units_mul_self]
     · simp only [← hπ, Subgroup.coe_mul]
       have hd : Disjoint (swap a b) σ := by
         rw [disjoint_iff_disjoint_support, support_swap ab, Finset.disjoint_insert_left,
           Finset.disjoint_singleton_left]
         exact ⟨Finset.mem_compl.1 ha, Finset.mem_compl.1 hb⟩
-      rw [mul_assoc π _ σ, hd.commute.eq, coe_inv, coe_mk]
-      simp [mul_assoc]
+      simp [mul_assoc, hd.commute.eq]
 
 theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
     (hσ : IsThreeCycle (σ : Perm α)) (hτ : IsThreeCycle (τ : Perm α)) : IsConj σ τ :=
@@ -202,6 +209,28 @@ theorem closure_three_cycles_eq_alternating :
         (IsSwap.mul_mem_closure_three_cycles (hl a List.mem_cons_self)
           (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
         (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
+
+/-- The alternating group is the closure of the set of permutations with cycle type (2, 2). -/
+theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
+    Subgroup.closure {g : Perm α | g.cycleType = {2, 2}} = alternatingGroup α := by
+  apply le_antisymm
+  · rw [Subgroup.closure_le]
+    intro g hg
+    simp only [Set.mem_setOf_eq] at hg
+    simp [mem_alternatingGroup, sign_of_cycleType, hg, ← Units.val_inj]
+  · rw [← Equiv.Perm.closure_three_cycles_eq_alternating, Subgroup.closure_le]
+    intro g hg3
+    obtain ⟨a, ha⟩ := hg3.isCycle.nonempty_support
+    have h_support := hg3.support_eq_iff_mem_support.mpr ha
+    have h_nodup := hg3.nodup_iff_mem_support.mpr ha
+    have : 1 < g.supportᶜ.card := by grind [Finset.card_compl, Nat.card_eq_fintype_card]
+    obtain ⟨b, c, hb, hc, hbc⟩ := Finset.one_lt_card_iff.mp this
+    have H : g = (swap a (g a) * (swap b c)) * (swap b c * (swap (g a) (g (g a)))) := by
+      simp [mul_assoc, ← hg3.eq_swap_mul_swap_iff_mem_support.mpr ha]
+    rw [H]
+    apply mul_mem <;>
+    · apply Subgroup.subset_closure
+      exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/

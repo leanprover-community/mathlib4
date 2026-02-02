@@ -3,14 +3,18 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Pointwise actions of finsets
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists MonoidWithZero
@@ -203,6 +207,10 @@ theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
 @[to_additive (attr := simp)]
 theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
+
+@[to_additive (attr := simp)]
+theorem smul_finset_eq_univ [Fintype β] : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_finset_univ]
 
 @[to_additive (attr := simp)]
 theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=

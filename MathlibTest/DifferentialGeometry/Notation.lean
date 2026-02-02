@@ -13,8 +13,7 @@ section
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
@@ -92,7 +91,11 @@ variable {s : ι → ι → (x : M) → V x} {i : ι} in
 variable {X : ι → Π x : M, TangentSpace I x} {i : ι}
 
 -- Error message is okay, but not great.
-/-- error: Could not find a model with corners for `ι` -/
+/--
+error: Could not find a model with corners for `ι`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiffAt (T% X) x
 
@@ -100,12 +103,47 @@ end precedence
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
--- Applying a section to an argument. TODO: beta-reduce instead!
+-- Applying a section to an argument.
+-- This application is not beta-reduced, because of the parentheses around the T%.
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
 
+-- We apply head-beta reduction of the applied form: there is nothing to do here.
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% X x)
+
+-- This variant is beta-reduced.
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x) x)
+
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% X)
+
+-- As is this version.
+/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x))
+
+-- The term `x` is outside parentheses: the form `x ↦ X x` is still reduced because
+-- we apply head beta reduction to the application.
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x)) x
+
+-- Parentheses around the argument are not required right now.
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check T% (fun x ↦ X x) x
+
 -- Applying the same elaborator twice is fine (and idempotent).
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (T% X))
+
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (T% X)) x
@@ -746,7 +784,11 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 
 -- This error message is not great: this is missing *both* a T% elaborator
 -- and an argument i.
-/-- error: Could not find a model with corners for `ι` -/
+/--
+error: Could not find a model with corners for `ι`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiffAt X' x
 
@@ -886,7 +928,7 @@ set_option trace.Elab.DiffGeo true
 variable {f : Unit → Unit}
 
 /--
-error: Could not find a model with corners for `Unit`
+error: Could not find a model with corners for `Unit`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -901,13 +943,37 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on Unit among local instances, and Unit is not the charted space of some type in the local context either.
+      Couldn't find a `ChartedSpace` structure on `Unit` among local instances, and `Unit` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a set of units, in particular not of a complete normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not the complex unit circle
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize
+      failed to synthesize instance of type class
         NontriviallyNormedField Unit
       ⏎
-      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.
 -/
 #guard_msgs in
 #check mfderiv% f

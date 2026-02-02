@@ -3,10 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Typeclasses for algebraic operations
@@ -30,6 +31,8 @@ Note `Zero` has already been defined in core Lean.
 - `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Function.Bijective
 
@@ -74,7 +77,7 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 attribute [to_additive (attr := default_instance)] instHSMul
-attribute [to_additive existing (reorder := 1 2)] instHPow
+attribute [to_additive existing] instHPow
 
 variable {G : Type*}
 
@@ -164,7 +167,7 @@ end ite
 
 variable {α : Type u}
 
-instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α := ⟨0⟩
+@[to_additive]
 instance (priority := 20) One.instNonempty [One α] : Nonempty α := ⟨1⟩
 
 @[to_additive]

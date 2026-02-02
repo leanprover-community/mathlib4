@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.SpecificLimits.Normed
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
@@ -13,6 +15,8 @@ Possible TODO (from the PR's review, https://github.com/leanprover-community/mat
 (`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of [the
 lemmas in this file]."
 -/
+
+public section
 
 
 open Filter Finset

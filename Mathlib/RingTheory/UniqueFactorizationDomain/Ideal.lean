@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+module
+
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
 # Unique factorization and ascending chain condition on ideals
@@ -15,11 +17,13 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   chain condition on principal ideals.
 -/
 
+public section
+
 variable {α : Type*}
 
 open UniqueFactorizationMonoid in
 /-- Every non-zero prime ideal in a unique factorization domain contains a prime element. -/
-theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R] [IsDomain R]
+theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R]
     [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
     ∃ x ∈ I, Prime x := by
   classical

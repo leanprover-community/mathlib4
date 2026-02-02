@@ -1,12 +1,15 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson, Chris Wong
+Authors: Fox Thomson, Chris Wong, Rudy Peterson
 -/
-import Mathlib.Computability.Language
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Computability.Language
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Deterministic Finite Automata
@@ -44,6 +47,8 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 - Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
 
+@[expose] public section
+
 universe u v
 
 open Computability
@@ -71,6 +76,11 @@ def evalFrom (s : σ) : List α → σ :=
 
 @[simp]
 theorem evalFrom_nil (s : σ) : M.evalFrom s [] = s :=
+  rfl
+
+@[simp]
+theorem evalFrom_cons (s : σ) (a : α) (x : List α) :
+    M.evalFrom s (a :: x) = M.evalFrom (M.step s a) x :=
   rfl
 
 @[simp]
@@ -255,14 +265,92 @@ theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
 
 end Maps
 
+section compl
+
+/-- DFAs are closed under complement:
+Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`. -/
+instance : Compl (DFA α σ) where
+  compl M := ⟨M.step, M.start, M.acceptᶜ⟩
+
+theorem compl_def : Mᶜ = ⟨M.step, M.start, M.acceptᶜ⟩ :=
+  rfl
+
+@[simp]
+theorem acceptsFrom_compl (s : σ) : (Mᶜ).acceptsFrom s = (M.acceptsFrom s)ᶜ :=
+  rfl
+
+@[simp]
+theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ :=
+  rfl
+
+end compl
+
+section union
+
+variable {σ1 σ2 : Type v}
+
+/-- DFAs are closed under union. -/
+@[simps]
+def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
+  step (s : σ1 × σ2) (a : α) : σ1 × σ2 := (M1.step s.1 a, M2.step s.2 a)
+  start := (M1.start, M2.start)
+  accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
+
+@[simp]
+theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
+    (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
+  ext x
+  simp only [acceptsFrom]
+  rw [Language.add_def, Set.mem_union]
+  simp_rw [↑Set.mem_setOf]
+  induction x generalizing s1 s2 with
+  | nil => simp
+  | cons a x ih => simp only [evalFrom_cons, union_step, ih]
+
+@[simp]
+theorem accepts_union (M1 : DFA α σ1) (M2 : DFA α σ2) :
+    (M1.union M2).accepts = M1.accepts + M2.accepts := by
+  simp [accepts]
+
+end union
+
+section inter
+
+variable {σ1 σ2 : Type v} (M1 : DFA α σ1) (M2 : DFA α σ2)
+
+/-- DFAs are closed under intersection. -/
+@[simps]
+def inter : DFA α (σ1 × σ2) where
+  step (s : σ1 × σ2) (a : α) : σ1 × σ2 := (M1.step s.1 a, M2.step s.2 a)
+  start := (M1.start, M2.start)
+  accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
+
+@[simp]
+theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
+    (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
+  ext x
+  simp only [acceptsFrom, Language.mem_inf]
+  simp_rw [↑Set.mem_setOf]
+  induction x generalizing s1 s2 with
+  | nil => simp
+  | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
+
+@[simp]
+theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by
+  simp [accepts]
+
+end inter
+
 end DFA
 
+namespace Language
+
 /-- A regular language is a language that is defined by a DFA with finite states. -/
-def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
+def IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
 
 /-- Lifts the state type `σ` inside `Language.IsRegular` to a different universe. -/
-private lemma Language.isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
+private lemma isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
     (hL : ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L) :
     ∃ σ' : Type v', ∃ _ : Fintype σ', ∃ M : DFA T σ', M.accepts = L :=
   have ⟨σ, _, M, hM⟩ := hL
@@ -275,6 +363,35 @@ A language is regular if and only if it is defined by a DFA with finite states.
 This is more general than using the definition of `Language.IsRegular` directly, as the state type
 `σ` is universe-polymorphic.
 -/
-theorem Language.isRegular_iff {T : Type u} {L : Language T} :
+theorem isRegular_iff {T : Type u} {L : Language T} :
     L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L :=
   ⟨Language.isRegular_iff.helper, Language.isRegular_iff.helper⟩
+
+protected theorem IsRegular.compl {T : Type u} {L : Language T} (h : L.IsRegular) : Lᶜ.IsRegular :=
+  have ⟨σ, _, M, hM⟩ := h
+  ⟨σ, inferInstance, Mᶜ, by simp [hM]⟩
+
+protected theorem IsRegular.of_compl {T : Type u} {L : Language T} (h : Lᶜ.IsRegular) :
+  L.IsRegular :=
+  L.compl_compl ▸ h.compl
+
+/-- Regular languages are closed under complement. -/
+@[simp]
+theorem IsRegular_compl {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L.IsRegular :=
+  ⟨.of_compl, .compl⟩
+
+/-- Regular languages are closed under union. -/
+theorem IsRegular.add {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
+    (L1 + L2).IsRegular :=
+  have ⟨σ1, _, M1, hM1⟩ := h1
+  have ⟨σ2, _, M2, hM2⟩ := h2
+  ⟨σ1 × σ2, inferInstance, M1.union M2, by simp [hM1, hM2]⟩
+
+/-- Regular languages are closed under intersection. -/
+theorem IsRegular.inf {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
+    (L1 ⊓ L2).IsRegular :=
+  have ⟨σ1, _, M1, hM1⟩ := h1
+  have ⟨σ2, _, M2, hM2⟩ := h2
+  ⟨σ1 × σ2, inferInstance, M1.inter M2, by simp [hM1, hM2]⟩
+
+end Language

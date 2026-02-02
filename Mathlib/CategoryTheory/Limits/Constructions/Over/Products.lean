@@ -3,7 +3,10 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Products in the over category
@@ -20,6 +23,8 @@ category.
 * Generalise from arbitrary products to arbitrary limits. This is done in Toric.
 * Dualise to get the `Under X` results.
 -/
+
+@[expose] public section
 
 
 universe w v u -- morphism levels before object levels. See note [category_theory universes].

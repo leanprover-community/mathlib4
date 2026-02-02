@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Existence of minimizers (Hilbert projection theorem)
@@ -13,6 +15,8 @@ This file shows the existence of minimizers (also known as the Hilbert projectio
 This is the key tool that is used to define `Submodule.orthogonalProjection` in
 `Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean`.
 -/
+
+public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -123,10 +127,8 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   -- Prove that it satisfies all requirements.
   rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
     ⟨v, hv, w_tendsto⟩
-  use v
-  use hv
-  have h_cont : Continuous fun v => ‖u - v‖ :=
-    Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
+  use v, hv
+  have h_cont : Continuous fun v => ‖u - v‖ := by fun_prop
   have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
     convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
@@ -228,7 +230,6 @@ This point `v` is usually called the orthogonal projection of `u` onto `K`.
 theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E)) :
     ∀ u : E, ∃ v ∈ K, ‖u - v‖ = ⨅ w : (K : Set E), ‖u - w‖ := by
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   let K' : Submodule ℝ E := Submodule.restrictScalars ℝ K
   exact exists_norm_eq_iInf_of_complete_convex ⟨0, K'.zero_mem⟩ h K'.convex
 
@@ -284,7 +285,6 @@ for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subs
 theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
     (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w⟫ = 0 := by
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   let K' : Submodule ℝ E := K.restrictScalars ℝ
   constructor
   · intro H

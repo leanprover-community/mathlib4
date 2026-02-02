@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Precoverage
-import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # The jointly surjective precoverage
@@ -17,6 +19,8 @@ families as coverings. We show that this precoverage is stable under the standar
 See `Mathlib/CategoryTheory/Sites/Types.lean` for the Grothendieck topology of jointly surjective
 covers.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -75,7 +79,7 @@ instance : jointlySurjectivePrecoverage.IsStableUnderSup where
 
 end Types
 
-variable {C : Type*} [Category C] (F : C ⥤ Type u)
+variable {C : Type*} [Category* C] (F : C ⥤ Type u)
 
 lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve X} :
     R ∈ Types.jointlySurjectivePrecoverage.comap F X ↔

@@ -3,13 +3,17 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Logic.Unique
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Logic.Unique
 
 /-!
 # The unit of the natural numbers
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

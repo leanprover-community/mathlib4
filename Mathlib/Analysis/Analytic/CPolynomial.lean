@@ -3,8 +3,10 @@ Copyright (c) 2023 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.CPolynomialDef
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.CPolynomialDef
 
 /-! # Properties of continuously polynomial functions
 
@@ -15,6 +17,8 @@ We also prove that continuous multilinear maps are continuously polynomial, and 
 are continuous linear maps into continuous multilinear maps. In particular, such maps are
 analytic.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -116,7 +120,7 @@ protected theorem hasFiniteFPowerSeriesOnBall :
 
 lemma cpolynomialAt : CPolynomialAt 𝕜 f x :=
   f.hasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
-    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+    (by simp only [Metric.eball_top, Set.mem_univ])
 
 lemma cpolynomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
@@ -154,7 +158,7 @@ noncomputable def toFormalMultilinearSeriesOfMultilinear :
 protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
     HasFiniteFPowerSeriesOnBall (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2)
       f.toFormalMultilinearSeriesOfMultilinear 0 (Fintype.card (Option ι) + 1) ⊤ := by
-  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top  ?_
+  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top ?_
   · intro m hm
     apply dif_neg
     exact Nat.ne_of_lt hm
@@ -166,7 +170,7 @@ protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
 lemma cpolynomialAt_uncurry_of_multilinear :
     CPolynomialAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
   f.hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear.cpolynomialAt_of_mem
-    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+    (by simp only [Metric.eball_top, Set.mem_univ])
 
 lemma cpolynomialOn_uncurry_of_multilinear :
     CPolynomialOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=

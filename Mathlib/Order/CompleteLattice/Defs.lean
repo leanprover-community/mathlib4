@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices
@@ -39,6 +41,8 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 

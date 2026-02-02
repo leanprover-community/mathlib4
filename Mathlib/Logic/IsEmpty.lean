@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relator
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Relator
 
 /-!
 # Types that are empty
@@ -15,6 +17,8 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
+
+@[expose] public section
 
 variable {α β γ : Sort*}
 
@@ -233,3 +237,16 @@ theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
 
 theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
   simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]
+
+theorem Function.Surjective.of_isEmpty [IsEmpty β] (f : α → β) : f.Surjective := IsEmpty.elim ‹_›
+
+theorem Function.surjective_iff_isEmpty [IsEmpty α] (f : α → β) : f.Surjective ↔ IsEmpty β :=
+  ⟨Surjective.isEmpty, fun _ ↦ .of_isEmpty f⟩
+
+theorem Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective :=
+  have := f.isEmpty
+  ⟨injective_of_subsingleton f, .of_isEmpty f⟩
+
+theorem Function.not_surjective_of_isEmpty_of_nonempty [IsEmpty α] [Nonempty β] (f : α → β) :
+    ¬f.Surjective :=
+  (not_isEmpty_of_nonempty β ·.isEmpty)

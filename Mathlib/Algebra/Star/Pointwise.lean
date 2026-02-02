@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise star operation on sets
@@ -20,6 +22,8 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 * `(s⁻¹)⋆ = (s⋆)⁻¹`
 -/
 
+@[expose] public section
+
 
 namespace Set
 
@@ -29,7 +33,7 @@ local postfix:max "⋆" => star
 
 variable {α : Type*} {s t : Set α} {a : α}
 
-/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the scope Pointwise`.
+/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the scope `Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
@@ -49,7 +53,7 @@ theorem nonempty_star [InvolutiveStar α] {s : Set α} : s⋆.Nonempty ↔ s.Non
 theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.Nonempty :=
   nonempty_star.2 h
 
-@[simp]
+@[simp, push]
 theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 
 theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]
@@ -125,6 +129,5 @@ end Set
 @[simp]
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
-  ext x
-  simp only [Set.mem_star, SetLike.mem_coe]
-  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩
+  ext
+  simpa using star_mem_iff

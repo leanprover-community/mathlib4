@@ -3,15 +3,17 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Martingale.Basic
+module
+
+public import Mathlib.Probability.Martingale.Basic
 
 /-!
 # Centering lemma for stochastic processes
 
-Any `ℕ`-indexed stochastic process which is adapted and integrable can be written as the sum of a
-martingale and a predictable process. This result is also known as **Doob's decomposition theorem**.
-From a process `f`, a filtration `ℱ` and a measure `μ`, we define two processes
-`martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
+Any `ℕ`-indexed stochastic process which is strongly adapted and integrable can be written as the
+sum of a martingale and a predictable process. This result is also known as
+**Doob's decomposition theorem**. From a process `f`, a filtration `ℱ` and a measure `μ`, we define
+two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
 
 ## Main definitions
 
@@ -22,11 +24,14 @@ From a process `f`, a filtration `ℱ` and a measure `μ`, we define two process
 
 ## Main statements
 
-* `MeasureTheory.adapted_predictablePart`: `(fun n => predictablePart f ℱ μ (n+1))` is adapted.
+* `MeasureTheory.stronglyAdapted_predictablePart`: `(fun n => predictablePart f ℱ μ (n+1))`
+  is strongly adapted.
   That is, `predictablePart` is predictable.
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter Order
@@ -42,19 +47,21 @@ variable {Ω E ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
 process. This is the predictable process. See `martingalePart` for the martingale. -/
 noncomputable def predictablePart {m0 : MeasurableSpace Ω} (f : ι → Ω → E) (ℱ : Filtration ι m0)
-    (μ : Measure Ω) : ι → Ω → E := fun n ↦ ∑ i ∈ Finset.Iio n, μ[f (succ i) - f i|ℱ i]
+    (μ : Measure Ω) : ι → Ω → E := fun n ↦ ∑ i ∈ Finset.Iio n, μ[f (succ i) - f i | ℱ i]
 
 @[simp]
 theorem predictablePart_zero : predictablePart f ℱ μ ⊥ = 0 := by
   simp_rw [predictablePart, Finset.Iio_bot, Finset.sum_empty]
 
-theorem adapted_predictablePart : Adapted ℱ fun n ↦ predictablePart f ℱ μ (succ n) := fun _ ↦
+theorem stronglyAdapted_predictablePart :
+    StronglyAdapted ℱ fun n ↦ predictablePart f ℱ μ (succ n) := fun _ ↦
   Finset.stronglyMeasurable_sum _ fun _ hin ↦
     stronglyMeasurable_condExp.mono (ℱ.mono
       (by simp only [Finset.mem_Iio] at hin; exact le_of_lt_succ hin))
 
-theorem adapted_predictablePart' : Adapted ℱ fun n ↦ predictablePart f ℱ μ n := fun _ ↦
-  Finset.stronglyMeasurable_sum _ fun _ hin ↦
+theorem stronglyAdapted_predictablePart' :
+    StronglyAdapted ℱ fun n ↦ predictablePart f ℱ μ n :=
+  fun _ ↦ Finset.stronglyMeasurable_sum _ fun _ hin ↦
     stronglyMeasurable_condExp.mono (ℱ.mono (by simp only [Finset.mem_Iio] at hin; exact hin.le))
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
@@ -67,25 +74,26 @@ theorem martingalePart_add_predictablePart (ℱ : Filtration ι m0) (μ : Measur
   sub_add_cancel _ _
 
 theorem martingalePart_eq_sum : martingalePart f ℱ μ = fun n ↦
-    f ⊥ + ∑ i ∈ Finset.Iio n, (f (succ i) - f i - μ[f (succ i) - f i|ℱ i]) := by
+    f ⊥ + ∑ i ∈ Finset.Iio n, (f (succ i) - f i - μ[f (succ i) - f i | ℱ i]) := by
   unfold martingalePart predictablePart
   ext n : 1
   rw [Finset.eq_sum_Iio_sub f n, ← add_sub, ← Finset.sum_sub_distrib]
 
-theorem adapted_martingalePart (hf : Adapted ℱ f) : Adapted ℱ (martingalePart f ℱ μ) :=
-  Adapted.sub hf adapted_predictablePart'
+theorem stronglyAdapted_martingalePart (hf : StronglyAdapted ℱ f) :
+  StronglyAdapted ℱ (martingalePart f ℱ μ) := hf.sub stronglyAdapted_predictablePart'
 
 theorem integrable_martingalePart (hf_int : ∀ n, Integrable (f n) μ) (n : ι) :
     Integrable (martingalePart f ℱ μ n) μ := by
   rw [martingalePart_eq_sum]
   fun_prop
 
-theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrable (f n) μ)
+theorem martingale_martingalePart (hf : StronglyAdapted ℱ f) (hf_int : ∀ n, Integrable (f n) μ)
     [SigmaFiniteFiltration μ ℱ] : Martingale (martingalePart f ℱ μ) ℱ μ := by
-  refine ⟨adapted_martingalePart hf, fun i j hij => ?_⟩
+  refine ⟨stronglyAdapted_martingalePart hf, fun i j hij => ?_⟩
   -- ⊢ μ[martingalePart f ℱ μ j | ℱ i] =ᵐ[μ] martingalePart f ℱ μ i
   have h_eq_sum : μ[martingalePart f ℱ μ j|ℱ i] =ᵐ[μ]
-      f ⊥ + ∑ k ∈ Finset.Iio j, (μ[f (succ k) - f k|ℱ i] - μ[μ[f (succ k) - f k|ℱ k]|ℱ i]) := by
+      f ⊥ + ∑ k ∈ Finset.Iio j,
+        (μ[f (succ k) - f k | ℱ i] - μ[μ[f (succ k) - f k | ℱ k] | ℱ i]) := by
     rw [martingalePart_eq_sum]
     refine (condExp_add (hf_int ⊥) (by fun_prop) _).trans ?_
     refine (EventuallyEq.rfl.add (condExp_finset_sum (fun i _ => by fun_prop) _)).trans ?_
@@ -94,14 +102,15 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
       exact (hf ⊥).mono (ℱ.mono bot_le)
     · exact eventuallyEq_sum fun k _ => condExp_sub (by fun_prop) integrable_condExp _
   refine h_eq_sum.trans ?_
-  have h_ge : ∀ k, i ≤ k → μ[f (succ k) - f k|ℱ i] - μ[μ[f (succ k) - f k|ℱ k]|ℱ i] =ᵐ[μ] 0 := by
+  have h_ge : ∀ k, i ≤ k →
+      μ[f (succ k) - f k | ℱ i] - μ[μ[f (succ k) - f k | ℱ k] | ℱ i] =ᵐ[μ] 0 := by
     intro k hk
-    have : μ[μ[f (succ k) - f k|ℱ k]|ℱ i] =ᵐ[μ] μ[f (succ k) - f k|ℱ i] :=
+    have : μ[μ[f (succ k) - f k | ℱ k] | ℱ i] =ᵐ[μ] μ[f (succ k) - f k | ℱ i] :=
       condExp_condExp_of_le (ℱ.mono hk) (ℱ.le k)
     filter_upwards [this] with x hx
     rw [Pi.sub_apply, Pi.zero_apply, hx, sub_self]
-  have h_lt : ∀ k, k < i → μ[f (succ k) - f k|ℱ i] - μ[μ[f (succ k) - f k|ℱ k]|ℱ i] =ᵐ[μ]
-      f (succ k) - f k - μ[f (succ k) - f k|ℱ k] := by
+  have h_lt : ∀ k, k < i → μ[f (succ k) - f k | ℱ i] - μ[μ[f (succ k) - f k | ℱ k] | ℱ i] =ᵐ[μ]
+      f (succ k) - f k - μ[f (succ k) - f k | ℱ k] := by
     refine fun k hk => EventuallyEq.sub ?_ ?_
     · rw [condExp_of_stronglyMeasurable]
       · exact ((hf (succ k)).mono (ℱ.mono (succ_le_of_lt hk))).sub ((hf k).mono (ℱ.mono hk.le))
@@ -112,7 +121,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
   rw [martingalePart_eq_sum]
   refine EventuallyEq.add EventuallyEq.rfl ?_
   rw [← Finset.sum_Iio_add_sum_Ico _ hij,
-    ← add_zero (∑ i ∈ Finset.Iio i, (f (succ i) - f i - μ[f (succ i) - f i|ℱ i]))]
+    ← add_zero (∑ i ∈ Finset.Iio i, (f (succ i) - f i - μ[f (succ i) - f i | ℱ i]))]
   refine (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_Iio.mp hk)).add ?_
   refine (eventuallyEq_sum fun k hk => h_ge k (Finset.mem_Ico.mp hk).1).trans ?_
   simp only [Finset.sum_const_zero]
@@ -120,19 +129,19 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
 
 -- The following two lemmas demonstrate the essential uniqueness of the decomposition
 theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ι → Ω → E}
-    (hf : Martingale f ℱ μ) (hg : Adapted ℱ fun n => g (succ n)) (hg0 : g ⊥ = 0)
+    (hf : Martingale f ℱ μ) (hg : StronglyAdapted ℱ fun n => g (succ n)) (hg0 : g ⊥ = 0)
     (hgint : ∀ n, Integrable (g n) μ) (n : ι) :
     martingalePart (f + g) ℱ μ n =ᵐ[μ] f n := by
   set h := f - martingalePart (f + g) ℱ μ with hhdef
   have hh : h = predictablePart (f + g) ℱ μ - g := by
     rw [hhdef, sub_eq_sub_iff_add_eq_add, add_comm (predictablePart (f + g) ℱ μ),
       martingalePart_add_predictablePart]
-  have hhpred : Adapted ℱ fun n ↦ h (succ n) := by
+  have hhpred : StronglyAdapted ℱ fun n ↦ h (succ n) := by
     rw [hh]
-    exact adapted_predictablePart.sub hg
+    exact stronglyAdapted_predictablePart.sub hg
   have hhmgle : Martingale h ℱ μ := hf.sub (martingale_martingalePart
-    (hf.adapted.add <| Predictable.adapted hg <| hg0.symm ▸ stronglyMeasurable_zero) fun n =>
-    (hf.integrable n).add <| hgint n)
+    (hf.stronglyAdapted.add <| Predictable.stronglyAdapted hg <| hg0.symm ▸ stronglyMeasurable_zero)
+    fun n => (hf.integrable n).add <| hgint n)
   refine (eventuallyEq_iff_sub.2 ?_).symm
   filter_upwards [hhmgle.eq_zero_of_predictable hhpred n] with ω hω
   unfold h at hω
@@ -141,7 +150,7 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ι → Ω
   simp [hg0]
 
 theorem predictablePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ι → Ω → E}
-    (hf : Martingale f ℱ μ) (hg : Adapted ℱ fun n => g (succ n)) (hg0 : g ⊥ = 0)
+    (hf : Martingale f ℱ μ) (hg : StronglyAdapted ℱ fun n => g (succ n)) (hg0 : g ⊥ = 0)
     (hgint : ∀ n, Integrable (g n) μ) (n : ι) :
     predictablePart (f + g) ℱ μ n =ᵐ[μ] g n := by
   filter_upwards [martingalePart_add_ae_eq hf hg hg0 hgint n] with ω hω

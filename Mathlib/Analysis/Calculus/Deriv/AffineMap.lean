@@ -3,9 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Linear
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Linear
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 /-!
 # Derivatives of affine maps
 
@@ -22,6 +24,8 @@ Mathlib 4.
 
 affine map, derivative, differentiability
 -/
+
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -64,7 +68,7 @@ deduce higher-dimensional lemmas from one-dimensional versions.
 theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by
   simpa using (lineMap a b : 𝕜 →ᵃ[𝕜] E).hasStrictDerivAt
 
-theorem hasDerivAt_lineMap :  HasDerivAt (lineMap a b) (b - a) x :=
+theorem hasDerivAt_lineMap : HasDerivAt (lineMap a b) (b - a) x :=
   hasStrictDerivAt_lineMap.hasDerivAt
 
 theorem hasDerivWithinAt_lineMap : HasDerivWithinAt (lineMap a b) (b - a) s x :=

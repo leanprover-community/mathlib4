@@ -3,7 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.HahnSeries.Multiplication
+module
+
+public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Vertex operators
@@ -25,6 +27,8 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 

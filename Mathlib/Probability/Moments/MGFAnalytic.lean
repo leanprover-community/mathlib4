@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Moments.ComplexMGF
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
-import Mathlib.Analysis.Calculus.Taylor
+module
+
+public import Mathlib.Probability.Moments.ComplexMGF
+public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+public import Mathlib.Analysis.Calculus.Taylor
 
 /-!
 # The moment-generating function is analytic
@@ -23,6 +25,8 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
   `integrableExpSet X μ`.
 
 -/
+
+public section
 
 
 open MeasureTheory Filter Finset Real
@@ -236,7 +240,7 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
-  · simp [hμ, iteratedDeriv_succ]
+  · simp [hμ]
   rw [iteratedDeriv_two_cgf h]
   calc (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ - 2 * (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (cgf X μ) v

@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Ring of integers under a given valuation
@@ -12,6 +14,8 @@ The elements with valuation less than or equal to 1.
 
 TODO: Define characteristic predicate.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -52,7 +56,7 @@ structure Integers : Prop where
 
 -- typeclass shortcut
 instance : Algebra v.integer R :=
-  Algebra.ofSubring v.integer
+  inferInstance
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
@@ -85,14 +89,14 @@ theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x
     rw [← one_mul (v _), ← hvx, ← v.map_mul, ← hu, u.mul_inv, hu, hvx, v.map_one]
   let ⟨r1, hr1⟩ := hv.3 h1
   let ⟨r2, hr2⟩ := hv.3 h2
-  ⟨⟨r1, r2, hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.mul_inv],
-      hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.inv_mul]⟩,
+  ⟨⟨r1, r2, hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.mul_inv],
+      hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.inv_mul]⟩,
     hv.1 <| hr1.trans hu⟩
 
 theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   obtain ⟨z, rfl⟩ := h
-  grw [← mul_one (v (algebraMap O R x)), RingHom.map_mul, v.map_mul, hv.2 z]
+  grw [← mul_one (v (algebraMap O R x)), map_mul, v.map_mul, hv.2 z]
 
 lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
   constructor <;> intro h

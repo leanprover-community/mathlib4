@@ -3,10 +3,12 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Commute.Hom
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.
@@ -32,6 +34,8 @@ elements is commutative and using the `Finset.prod` versions of lemmas to prove 
 version.
 -/
 
+@[expose] public section
+
 variable {F ι α β γ : Type*} (f : α → β → β) (op : α → α → α)
 
 namespace Multiset
@@ -42,7 +46,7 @@ def noncommFoldr (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise fun x y => ∀ b, f x (f y b) = f y (f x b)) (b : β) : β :=
   letI : LeftCommutative (α := { x // x ∈ s }) (f ∘ Subtype.val) :=
     ⟨fun ⟨_, hx⟩ ⟨_, hy⟩ =>
-      haveI : IsRefl α fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
+      haveI : Std.Refl fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
       comm.of_refl hx hy⟩
   s.attach.foldr (f ∘ Subtype.val) b
 
@@ -230,10 +234,7 @@ open scoped Function -- required for scoped `on` notation
 @[to_additive]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) :
-    Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := by
-  simp_rw [Multiset.mem_map]
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _
-  exact comm.of_refl ha hb
+    Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := Multiset.map_set_pairwise comm
 
 /-- Product of a `s : Finset α` mapped with `f : α → β` with `[Monoid β]`,
 given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
@@ -294,24 +295,12 @@ theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
 
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem := noncommSum_insert_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias noncommProd_insert_of_not_mem := noncommProd_insert_of_notMem
-
 @[to_additive]
 theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       noncommProd s f (comm.mono fun _ => mem_insert_of_mem) * f a := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons']
-
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem' := noncommSum_insert_of_notMem'
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias noncommProd_insert_of_not_mem' := noncommProd_insert_of_notMem'
 
 @[to_additive (attr := simp)]
 theorem noncommProd_singleton (a : α) (f : α → β) :
@@ -416,7 +405,7 @@ section FinitePi
 variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
 @[to_additive]
-theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
+theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
@@ -439,12 +428,18 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
       intro h
       simp [*] at *
 
+@[deprecated noncommProd_mulSingle (since := "2025-11-25")]
+alias noncommProd_mul_single := noncommProd_mulSingle
+
+@[deprecated (since := "2025-12-09")]
+alias noncommSum_add_single := noncommSum_single
+
 @[to_additive]
 theorem _root_.MonoidHom.pi_ext [Finite ι] [DecidableEq ι] {f g : (∀ i, M i) →* γ}
     (h : ∀ i x, f (Pi.mulSingle i x) = g (Pi.mulSingle i x)) : f = g := by
   cases nonempty_fintype ι
   ext x
-  rw [← noncommProd_mul_single x, univ.map_noncommProd, univ.map_noncommProd]
+  rw [← noncommProd_mulSingle x, univ.map_noncommProd, univ.map_noncommProd]
   congr 1 with i; exact h i (x i)
 
 end FinitePi

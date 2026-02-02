@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Scalar multiplication on `Finsupp`
@@ -26,6 +28,8 @@ reasonably light.
 
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
+
+@[expose] public section
 
 assert_not_exists Module
 

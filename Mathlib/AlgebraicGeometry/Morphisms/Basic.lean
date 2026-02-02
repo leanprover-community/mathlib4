@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty.Local
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Local
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Properties of morphisms between Schemes
@@ -96,6 +97,8 @@ for the respective local property of morphism properties defined generally for c
 with a `Precoverage`.
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -161,7 +164,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
-    (H : Set.range f.base ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
+    (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
   rw [← IsOpenImmersion.lift_fac (⨆ i, U i).ι f (by simpa using H)]
   apply MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance
@@ -191,6 +194,19 @@ lemma of_forall_source_exists_preimage
     exact ⟨x, h₁ x⟩
   · intro x
     exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
+
+lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f) (hg : P g) :
+    P (coprod.map f g) := by
+  refine IsZariskiLocalAtTarget.of_openCover (coprodOpenCover.{_, 0} _ _) ?_
+  rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
+    convert hf
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
+    convert hg
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
 end IsZariskiLocalAtTarget
 
@@ -303,7 +319,7 @@ lemma iff_exists_resLE [IsZariskiLocalAtTarget P]
     exact MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance _ (hf x)
   · rw [eq_top_iff]
     rintro x -
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     use x, hxU x
 
 end IsZariskiLocalAtSourceAndTarget
@@ -513,7 +529,7 @@ theorem of_iSup_eq_top
   rw [eq_targetAffineLocally P]
   classical
   intro V
-  induction V using of_affine_open_cover U hU  with
+  induction V using of_affine_open_cover U hU with
   | basicOpen U r h =>
     haveI : IsAffine _ := U.2
     have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h

@@ -3,9 +3,14 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
+
+import Mathlib.Algebra.GroupWithZero.Idempotent
 
 /-!
 # Adjacency Matrices
@@ -33,6 +38,8 @@ properties to computational properties of the matrix.
   pair of vertices.
 
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -82,6 +89,13 @@ instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix 
   infer_instance
 
 end IsAdjMatrix
+
+theorem isAdjMatrix_iff_hadamard [DecidableEq V] [MonoidWithZero α]
+    [IsLeftCancelMulZero α] {A : Matrix V V α} :
+    A.IsAdjMatrix ↔ (A ⊙ A = A ∧ A.IsSymm ∧ 1 ⊙ A = 0) := by
+  simp only [hadamard_self_eq_self_iff, IsIdempotentElem.iff_eq_zero_or_one,
+    one_hadamard_eq_zero_iff, funext_iff, diag]
+  exact ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩⟩
 
 /-- For `A : Matrix V V α`, `A.compl` is supposed to be the adjacency matrix of
 the complement graph of the graph induced by `A.adjMatrix`. -/

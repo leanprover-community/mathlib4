@@ -3,10 +3,12 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.GroupTheory.Coprod.Basic
-import Mathlib.GroupTheory.Complement
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.Complement
 
 /-!
 
@@ -30,6 +32,8 @@ and Hanna Neumann.
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -174,7 +178,7 @@ theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
 namespace NormalWord
 
 variable (G A B)
-/-- To put word in the HNN Extension into a normal form, we must choose an element of each right
+/-- To put a word in the HNN Extension into a normal form, we must choose an element of each right
 coset of both `A` and `B`, such that the chosen element of the subgroup itself is `1`. -/
 structure TransversalPair : Type _ where
   /-- The transversal of each subgroup -/
@@ -188,7 +192,7 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
 
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
-`toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
+`toSubgroup A B u`. This is a less strict condition than required for `NormalWord`. -/
 structure ReducedWord : Type _ where
   /-- Every `ReducedWord` is the product of an element of the group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
@@ -196,7 +200,7 @@ structure ReducedWord : Type _ where
   /-- The list of pairs `(ℤˣ × G)`, where each pair `(u, g)` represents the element `t^u * g` of
   `HNNExtension G A B φ` -/
   toList : List (ℤˣ × G)
-  /-- There are no sequences of the form `t^u * g * t^-u` where `g ∈ toSubgroup A B u` -/
+  /-- There are no sequences of the form `t^u * g * t^-u` where `g ∈ toSubgroup A B u`. -/
   chain : toList.IsChain (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1)
 
 /-- The empty reduced word. -/
@@ -526,8 +530,7 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
         -- simp [equiv_symm_eq_conj, mul_assoc].
         simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
           Int.reduceNeg, zpow_neg, zpow_one, inv_inv]
-        erw [equiv_symm_eq_conj]
-        simp [mul_assoc]
+        grind [equiv_symm_eq_conj, mul_assoc]
   · simp only [unitsSMulGroup, SetLike.coe_sort_coe, prod_cons, prod_group_smul, map_mul, map_inv]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
@@ -558,6 +561,8 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
+-- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
+set_option linter.flexible false in
 @[simp]
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
@@ -652,8 +657,8 @@ theorem exists_normalWord_prod_eq
         have : a.fst = -a.fst := by
           have hl : l ≠ [] := by rintro rfl; simp_all
           have : a.fst = (l.head hl).fst := (List.isChain_cons.1 chain).1 (l.head hl)
-            (List.head?_eq_head _) hS
-          rwa [List.head?_eq_head hl, Option.map_some, ← this, Option.some_inj] at hx'
+            (List.head?_eq_some_head _) hS
+          rwa [List.head?_eq_some_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this
       rw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
         t_pow_smul_eq_unitsSMul, unitsSMul]

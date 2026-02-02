@@ -3,12 +3,14 @@ Copyright (c) 2022 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SetFamily.Shadow
-import Mathlib.Data.NNRat.Order
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SetFamily.Shadow
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem
@@ -44,6 +46,8 @@ Provide equality cases. Local LYM gives that the equality case of LYM and Sperne
 
 shadow, lym, slice, sperner, antichain
 -/
+
+@[expose] public section
 
 open Finset Nat
 open scoped FinsetFamily
@@ -125,8 +129,7 @@ def falling : Finset (Finset α) :=
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ #s = k := by
-  simp_rw [falling, mem_sup, mem_powersetCard]
-  aesop
+  grind [falling, mem_sup]
 
 variable (𝒜 k)
 
@@ -219,7 +222,7 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
   calc
     _ = ∑ r ∈ range (Fintype.card α + 1),
         ∑ s ∈ 𝒜 with #s = r, ((Fintype.card α).choose r : 𝕜)⁻¹ := by
-      rw [sum_fiberwise_of_maps_to']; simp [Nat.lt_succ_iff, card_le_univ]
+      rw [sum_fiberwise_of_maps_to']; simp [card_le_univ]
     _ = ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) := by
       simp [slice, div_eq_mul_inv]
     _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜

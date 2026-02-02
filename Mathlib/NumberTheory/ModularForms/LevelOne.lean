@@ -3,9 +3,11 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.NumberTheory.Modular
-import Mathlib.NumberTheory.ModularForms.QExpansion
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.NumberTheory.Modular
+public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
 # Level one modular forms
 
@@ -15,6 +17,8 @@ This file contains results specific to modular forms of level one, i.e. modular 
 TODO: Add finite-dimensionality of these spaces of modular forms.
 
 -/
+
+public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
   CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
@@ -53,28 +57,30 @@ namespace ModularFormClass
 
 variable [ModularFormClass F Γ(1) k]
 
+lemma one_mem_strictPeriods_SL2Z : (1 : ℝ) ∈ Γ(1).strictPeriods := by simp
+
 private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   refine eq_const_of_exists_le (fun q hq ↦ ?_) (exp_nonneg (-π)) ?_ (fun q hq ↦ ?_)
-  · exact (differentiableAt_cuspFunction 1 f (mem_ball_zero_iff.mp hq)).differentiableWithinAt
-  · simp only [exp_lt_one_iff, Left.neg_neg_iff, pi_pos]
+  · exact (differentiableAt_cuspFunction f one_pos one_mem_strictPeriods_SL2Z
+      (mem_ball_zero_iff.mp hq)).differentiableWithinAt
+  · simp [pi_pos]
   · simp only [Metric.mem_closedBall, dist_zero_right]
     rcases eq_or_ne q 0 with rfl | hq'
     · refine ⟨0, by simpa only [norm_zero] using exp_nonneg _, le_rfl⟩
     · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f
         ⟨_, im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
       exact ⟨_, norm_qParam_le_of_one_half_le_im hξ,
-        by simpa only [← eq_cuspFunction 1 f, Nat.cast_one, coe_mk_subtype,
+        by simpa [← eq_cuspFunction f _ one_mem_strictPeriods_SL2Z one_ne_zero,
           qParam_right_inv one_ne_zero hq'] using hξ₂⟩
 
 private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
-    ⇑f = Function.const _ (cuspFunction 1 f 0) := by
+    f = Function.const ℍ (cuspFunction 1 f 0) := by
   ext z
   have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
-    simpa only [Metric.mem_ball, dist_zero_right, neg_mul, mul_zero, div_one, Real.exp_zero]
-      using (norm_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
-  simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, Function.const_apply] using
-    (cuspFunction_eqOn_const_of_nonpos_wt hk f) hQ
+    simpa using (norm_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
+  simpa [← eq_cuspFunction f _ one_mem_strictPeriods_SL2Z one_ne_zero]
+    using cuspFunction_eqOn_const_of_nonpos_wt hk f hQ
 
 lemma levelOne_neg_weight_eq_zero (hk : k < 0) (f : F) : ⇑f = 0 := by
   have hf := levelOne_nonpos_wt_const hk.le f
@@ -96,4 +102,4 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
     Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
-  simpa only [one_smul, ← DFunLike.coe_injective.eq_iff] using levelOne_neg_weight_eq_zero hk f
+  simpa [← coe_eq_zero_iff] using levelOne_neg_weight_eq_zero hk f

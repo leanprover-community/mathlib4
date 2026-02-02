@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Stalk
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
+module
+
+public import Mathlib.AlgebraicGeometry.Stalk
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 
 /-!
 
@@ -25,6 +27,8 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -105,9 +109,6 @@ abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
 lemma evaluation_eq_zero_iff_notMem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f = 0 ↔ x ∉ X.basicOpen f :=
   X.toLocallyRingedSpace.evaluation_eq_zero_iff_notMem_basicOpen ⟨x, hx⟩ f
-
-@[deprecated (since := "2025-05-23")]
-alias evaluation_eq_zero_iff_not_mem_basicOpen := evaluation_eq_zero_iff_notMem_basicOpen
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f ≠ 0 ↔ x ∈ X.basicOpen f := by
@@ -303,8 +304,9 @@ def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
     simp only [CommRingCat.coe_of, Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply,
       Scheme.fromSpecResidueField_apply, exists_true_left]
     rw [← Spec.map_inj, Spec.map_comp, ← cancel_mono (X.fromSpecResidueField _)]
-    erw [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField]
-    simp
+    grind [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField,
+      Scheme.fromSpecResidueField_apply,
+      Scheme.residueFieldCongr_fromSpecResidueField]
 
 end Scheme
 

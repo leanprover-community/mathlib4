@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # Defining precoverages via pre-`0`-hypercovers
@@ -13,6 +15,8 @@ to instead define a condition on all pre-`0`-hypercovers. Such a condition
 for every object is a pre-`0`-hypercover family if these conditions are
 invariant under deduplication.
 -/
+
+@[expose] public section
 
 universe w' w v u
 
@@ -120,5 +124,17 @@ lemma Precoverage.IsStableUnderComposition.of_preZeroHypercoverFamily
     · rwa [← E.presieve₀_mem_precoverage_iff]
     · rw [← (F i).presieve₀_mem_precoverage_iff]
       exact hg i
+
+lemma Precoverage.IsStableUnderSup.of_preZeroHypercoverFamily
+    {P : PreZeroHypercoverFamily C}
+    (h : ∀ ⦃X : C⦄ ⦃E F : PreZeroHypercover.{max u v} X⦄,
+      P E → P F → P (E.sum F)) :
+    P.precoverage.IsStableUnderSup where
+  sup_mem_coverings {X} R S hR hS := by
+    obtain ⟨E, rfl⟩ := R.exists_eq_preZeroHypercover
+    obtain ⟨F, rfl⟩ := S.exists_eq_preZeroHypercover
+    rw [← PreZeroHypercover.presieve₀_sum]
+    rw [PreZeroHypercover.presieve₀_mem_precoverage_iff] at hR hS ⊢
+    exact h hR hS
 
 end CategoryTheory

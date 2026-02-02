@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.LocalProperties.Reduced
+module
+
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
 # Basic properties of schemes
@@ -17,6 +19,8 @@ We provide some basic properties of schemes
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
   are reduced.
 -/
+
+@[expose] public section
 
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
@@ -35,7 +39,7 @@ instance : T0Space X :=
     (isAffineOpen_opensRange (X.affineCover.f _)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
-  apply (config := { allowSynthFailures := true })
+  apply +allowSynthFailures
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.f x))
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.f i).isOpenEmbedding.isOpen_range
   · rintro ⟨_, i, rfl⟩
@@ -65,7 +69,7 @@ theorem isReduced_of_isReduced_stalk [∀ x : X, _root_.IsReduced (X.presheaf.st
   apply Presheaf.section_ext X.sheaf U s 0
   intro x hx
   change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
-  rw [RingHom.map_zero]
+  rw [map_zero]
   change X.presheaf.germ U x hx s = 0
   exact (hs.map _).eq_zero
 
@@ -90,7 +94,7 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersi
     (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
 
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
-  apply (config := { allowSynthFailures := true }) isReduced_of_isReduced_stalk
+  apply +allowSynthFailures isReduced_of_isReduced_stalk
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
@@ -107,6 +111,13 @@ theorem affine_isReduced_iff (R : CommRingCat) :
 theorem isReduced_of_isAffine_isReduced [IsAffine X] [_root_.IsReduced Γ(X, ⊤)] :
     IsReduced X :=
   isReduced_of_isOpenImmersion X.isoSpec.hom
+
+theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)] : IsReduced X := by
+  have (x : X) : _root_.IsReduced (X.presheaf.stalk x) := by
+    obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+    exact isReduced_of_injective _
+      (asIso <| (𝒰.f i).stalkMap x).commRingCatIsoToRingEquiv.injective
+  exact isReduced_of_isReduced_stalk _
 
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
@@ -148,7 +159,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
   apply TopCat.Presheaf.section_ext X.sheaf U
   intro x hx
   change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
-  rw [RingHom.map_zero]
+  rw [map_zero]
   induction U using reduce_to_affine_global generalizing hX with
   | h₁ X U H =>
     obtain ⟨V, hx, i, H⟩ := H ⟨x, hx⟩
@@ -244,7 +255,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     obtain ⟨x, ⟨hxU, hx₁⟩, _, hx₂⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
     replace e := congr_arg (X.presheaf.germ U x hxU) e
-    rw [RingHom.map_mul, RingHom.map_zero] at e
+    rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
     convert hx₁.mul hx₂
     exact e.symm
@@ -261,7 +272,7 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmers
   intro U hU
   rw [← f.preimage_image_eq U]
   have : IsDomain Γ(Y, f ''ᵁ U) := by
-    apply (config := { allowSynthFailures := true }) IsIntegral.component_integral
+    apply +allowSynthFailures IsIntegral.component_integral
     exact ⟨⟨_, _, hU.some.prop, rfl⟩⟩
   exact (asIso <| f.app (f ''ᵁ U) :
     Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _

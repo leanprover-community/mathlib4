@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
 
 /-!
 # The Freyd-Mitchell embedding theorem
@@ -13,7 +15,7 @@ Let `C` be an abelian category. We construct a ring `FreydMitchell.EmbeddingRing
 `FreydMitchell.embedding : C ⥤ ModuleCat.{max u v} (EmbeddingRing C)` which is full, faithful and
 exact.
 
-## Overview over the proof
+## Overview of the proof
 
 The usual strategy to prove the Freyd-Mitchell embedding theorem is as follows:
 
@@ -34,8 +36,8 @@ injectives (see `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/EnoughInjec
 cogenerator (see `Mathlib/CategoryTheory/Generator/Abelian.lean`).
 4. By taking a coproduct of copies of the injective cogenerator, we find a projective separator `G`
 in `Dᵒᵖ` such that every object in the image of `F` is a quotient of `G`. Then the additive Hom
-functor `Hom(G, ·) : Dᵒᵖ ⥤ Module (End G)ᵐᵒᵖ` is faithful (because `G` is a separator), left exact
-(because it is a hom functor), right exact (because `G` is projective) and full (because of a
+functor `Hom(G, ·) : Dᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful (because `G` is a separator), left
+exact (because it is a hom functor), right exact (because `G` is projective) and full (because of a
 combination of the aforementioned properties, see `Mathlib/CategoryTheory/Abelian/Yoneda.lean`).
 We put this all together in the file
 `Mathlib/CategoryTheory/Abelian/GrothendieckCategory/ModuleEmbedding/Opposite.lean`.
@@ -72,6 +74,8 @@ small category, then this does not change anything.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 9.6
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Limits
@@ -99,19 +103,24 @@ noncomputable instance : Ring (EmbeddingRing C) :=
     IsGrothendieckAbelian.OppositeModuleEmbedding.EmbeddingRing
       (Ind.yoneda (C := (AsSmall.{max u v} C)ᵒᵖ)).rightOp
 
+set_option backward.privateInPublic true in
 variable (C) in
 private def F : C ⥤ AsSmall.{max u v} C :=
   AsSmall.equiv.functor
 
+set_option backward.privateInPublic true in
 variable (C) in
 private noncomputable def G : AsSmall.{max u v} C ⥤ (Ind (AsSmall.{max u v} C)ᵒᵖ)ᵒᵖ :=
   Ind.yoneda.rightOp
 
+set_option backward.privateInPublic true in
 variable (C) in
 private noncomputable def H :
     (Ind (AsSmall.{max u v} C)ᵒᵖ)ᵒᵖ ⥤ ModuleCat.{max u v} (EmbeddingRing C) :=
   IsGrothendieckAbelian.OppositeModuleEmbedding.embedding (G C)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (C) in
 /-- This is the full, faithful and exact embedding `C ⥤ ModuleCat (EmbeddingRing C)`. The fact that
 such a functor exists is called the Freyd-Mitchell embedding theorem.

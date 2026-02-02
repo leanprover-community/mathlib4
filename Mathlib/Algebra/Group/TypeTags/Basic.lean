@@ -3,14 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Set
-import Mathlib.Util.AssertExists
-import Mathlib.Logic.Nontrivial.Basic
+module
+
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Set
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
@@ -26,9 +27,11 @@ We also define instances `Additive.*` and `Multiplicative.*` that actually trans
 
 ## See also
 
-This file is similar to `Order.Synonym`.
+This file is similar to `Mathlib/Order/Synonym.lean`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered MonoidHom Finite
 
@@ -287,6 +290,56 @@ theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd 
 @[simp]
 theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : (a ^ n).toAdd = n • a.toAdd :=
   rfl
+
+section Monoid
+variable [Monoid α]
+
+@[simp]
+lemma isAddLeftRegular_ofMul {a : α} : IsAddLeftRegular (Additive.ofMul a) ↔ IsLeftRegular a := .rfl
+
+@[simp]
+lemma isLeftRegular_toMul {a : Additive α} : IsLeftRegular a.toMul ↔ IsAddLeftRegular a := .rfl
+
+@[simp]
+lemma isAddRightRegular_ofMul {a : α} : IsAddRightRegular (Additive.ofMul a) ↔ IsRightRegular a :=
+  .rfl
+
+@[simp]
+lemma isRightRegular_toMul {a : Additive α} : IsRightRegular a.toMul ↔ IsAddRightRegular a := .rfl
+
+@[simp] lemma isAddRegular_ofMul {a : α} : IsAddRegular (Additive.ofMul a) ↔ IsRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+@[simp] lemma isRegular_toMul {a : Additive α} : IsRegular a.toMul ↔ IsAddRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+end Monoid
+
+section AddMonoid
+variable [AddMonoid α]
+
+@[simp]
+lemma isLeftRegular_ofAdd {a : α} : IsLeftRegular (Multiplicative.ofAdd a) ↔ IsAddLeftRegular a :=
+  .rfl
+
+@[simp]
+lemma isAddLeftRegular_toAdd {a : Multiplicative α} : IsAddLeftRegular a.toAdd ↔ IsLeftRegular a :=
+  .rfl
+
+@[simp]
+lemma isRightRegular_ofAdd {a : α} :
+    IsRightRegular (Multiplicative.ofAdd a) ↔ IsAddRightRegular a := .rfl
+
+@[simp] lemma isAddRightRegular_toAdd {a : Multiplicative α} :
+    IsAddRightRegular a.toAdd ↔ IsRightRegular a := .rfl
+
+@[simp] lemma isRegular_ofAdd {a : α} : IsRegular (Multiplicative.ofAdd a) ↔ IsAddRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+@[simp] lemma isAddRegular_toAdd {a : Multiplicative α} : IsAddRegular a.toAdd ↔ IsRegular a := by
+  simp [isAddRegular_iff, isRegular_iff]
+
+end AddMonoid
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
   { Additive.addMonoid, Additive.addLeftCancelSemigroup with }

@@ -3,15 +3,17 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
-import Mathlib.MeasureTheory.Function.L2Space
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+public import Mathlib.MeasureTheory.Function.L2Space
 
 /-! # Conditional expectation in L2
 
 This file contains one step of the construction of the conditional expectation, which is completed
-in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a description of the
-full process.
+in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
+description of the full process.
 
 We build the conditional expectation of an `L²` function, as an element of `L²`. This is the
 orthogonal projection on the subspace of almost everywhere `m`-measurable functions.
@@ -30,6 +32,8 @@ However, some lemmas also use `𝕜 : RCLike`:
   have `NormedSpace 𝕜 F`.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter ContinuousLinearMap
@@ -409,7 +413,7 @@ theorem integrable_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
 theorem condExpIndSMul_empty {x : G} : condExpIndSMul hm MeasurableSet.empty
     ((measure_empty (μ := μ)).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
   rw [condExpIndSMul, indicatorConstLp_empty]
-  simp only [Submodule.coe_zero, ContinuousLinearMap.map_zero]
+  simp only [Submodule.coe_zero, map_zero]
 
 theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) :

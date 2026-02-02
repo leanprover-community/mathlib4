@@ -3,11 +3,13 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
-import Mathlib.CategoryTheory.Abelian.Projective.Basic
-import Mathlib.CategoryTheory.Generator.Preadditive
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+public import Mathlib.CategoryTheory.Abelian.Projective.Basic
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 /-!
 # Fullness of restrictions of `preadditiveCoyonedaObj`
@@ -16,6 +18,8 @@ In this file we give a sufficient criterion for a restriction of the functor
 `preadditiveCoyonedaObj G` to be full: this is the case if `C` is an abelian category and `G : C`
 is a projective separator such that every object in the relevant subcategory is a quotient of `G`.
 -/
+
+public section
 
 open CategoryTheory Opposite Limits
 
