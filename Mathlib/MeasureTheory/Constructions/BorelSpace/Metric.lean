@@ -104,8 +104,8 @@ variable [MeasurableSpace β] {x : α} {ε : ℝ≥0∞}
 open Metric
 
 @[measurability]
-theorem measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
-  EMetric.isOpen_ball.measurableSet
+theorem measurableSet_eball : MeasurableSet (Metric.eball x ε) :=
+  Metric.isOpen_eball.measurableSet
 
 @[fun_prop]
 theorem measurable_edist_right : Measurable (edist x) := by fun_prop
