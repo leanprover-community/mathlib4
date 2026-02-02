@@ -159,6 +159,13 @@ def ofFn : ∀ {n}, (Fin n → α) → Vector α n
 protected def congr {n m : ℕ} (h : n = m) : Vector α n → Vector α m
   | ⟨x, p⟩ => ⟨x, h ▸ p⟩
 
+@[simp]
+lemma List.Vector.listGet_eq_get {n : ℕ} (l : Vector α n) :
+    (fun (i : Fin n) ↦ l.1[(l.2.symm ▸ i).val]) = l.get := by
+  ext i
+  obtain ⟨l1, l2⟩ := l
+  subst l2
+  rfl
 section Accum
 
 open Prod

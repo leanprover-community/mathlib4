@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Powerset
@@ -326,28 +327,17 @@ lemma card_fnFinBool {k n : ℕ} : #{ f : Fin n → Bool | #{i | f i} = k } = n.
   simp only [mem_filter, mem_univ, true_and]
   exact Equiv_fnFinBool_finsetFin_mem_powersetCard_iff n k f
 
-/-- The types `List.Vector α n` and `Fin n → α`are eqivalent by using `List.ofFn`. -/
-def Equiv_fnFinBool_listVector (n : ℕ) : List.Vector α n ≃ (Fin n → α) where
-  toFun := fun l i ↦ l.val.get (l.prop.symm ▸ i)
-  invFun := fun f ↦ ⟨List.ofFn f, List.length_ofFn⟩
-  left_inv := fun l ↦ by
-    obtain ⟨val, property⟩ := l
-    subst property
-    simp_rw [List.get_eq_getElem]
-    exact Subtype.ext (List.ofFn_getElem val)
-  right_inv := fun f ↦ by
-    simp only [List.get_eq_getElem, List.getElem_ofFn]
-    ext i
-    congr <;> simp
-
 lemma card_listVector_card {k n : ℕ} :
     #{v : List.Vector Bool n | v.val.count true = k} = n.choose k := by
   rw [← card_fnFinBool]
-  apply card_equiv (Equiv_fnFinBool_listVector n) (fun v ↦ ?_)
-  obtain ⟨l, hl⟩ := v
-  simp only [mem_filter, mem_univ, true_and, Equiv_fnFinBool_listVector, List.get_eq_getElem,
-    Equiv.coe_fn_mk]
-  refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← List.count_ofFn_eq_card n _ true] <;> aesop
+  apply card_equiv (Equiv.vectorEquivFin _ n) (fun v ↦ ?_)
+  simp only [mem_filter, mem_univ, true_and, Equiv.vectorEquivFin, Equiv.coe_fn_mk]
+  have h' : List.ofFn v.get = v.val
+   := by
+    rw [← List.ofFn_get (l :=  v.1)]
+    aesop
+  refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← List.count_ofFn_eq_card _ _ true] <;> congr
+  rw [h']
 
 end powersetCard
 
