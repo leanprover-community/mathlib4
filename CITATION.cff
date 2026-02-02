@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use mathlib in your work, please cite it using the metadata from this file."
+title: "mathlib4"
+abstract: "The Lean mathematical library"
+type: software
+authors:
+  - name: "The mathlib Community"
+repository-code: "https://github.com/leanprover-community/mathlib4"
+url: "https://leanprover-community.github.io/"
+license: Apache-2.0
+preferred-citation:
+  type: conference-paper
+  title: "The Lean Mathematical Library"
+  authors:
+    - name: "The mathlib Community"
+  collection-title: "Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs"
+  collection-type: proceedings
+  conference:
+    name: "CPP 2020: 9th ACM SIGPLAN International Conference on Certified Programs and Proofs"
+    city: "New Orleans"
+    region: "LA"
+    country: "US"
+    date-start: "2020-01-20"
+    date-end: "2020-01-21"
+  year: 2020
+  month: 1
+  publisher:
+    name: "ACM"
+  doi: "10.1145/3372885.3373824"
+  url: "https://doi.org/10.1145/3372885.3373824"
