@@ -265,7 +265,7 @@ theorem mulLeftMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (m : ι → M) :
 variable {N} in
 theorem mulRightMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (n : ι → N) :
     mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.linearCombination R n) ∘ₗ
-      (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap := by
+      (TensorProduct.finsuppScalarRight R R M ι).symm.toLinearMap := by
   ext; simp
 
 end Semiring

@@ -87,7 +87,7 @@ instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (Lex r s) :=
 instance [Std.Antisymm r] [Std.Antisymm s] : Std.Antisymm (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
-instance [IsTotal α r] [IsTotal β s] : IsTotal (α ⊕ β) (Lex r s) :=
+instance [Std.Total r] [Std.Total s] : Std.Total (Lex r s) :=
   ⟨fun a b =>
     match a, b with
     | inl a, inl b => (total_of r a b).imp Lex.inl Lex.inl
@@ -683,8 +683,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   { Equiv.sumComm α β with
     map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
-      · simp only [ge_iff_le]
-        change
+      · change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual]
@@ -718,20 +717,20 @@ theorem sumLexDualAntidistrib_symm_inr :
   rfl
 
 /-- `Equiv.sumEmpty` as an `OrderIso` with the lexicographic sum. -/
-def sumLexEmpty [IsEmpty β] :
-    Lex (α ⊕ β) ≃o α := RelIso.sumLexEmpty ..
+def sumLexEmpty [IsEmpty β] : Lex (α ⊕ β) ≃o α :=
+  RelIso.sumLexEmpty ..
 
 /-- `Equiv.emptySum` as an `OrderIso` with the lexicographic sum. -/
-def emptySumLex [IsEmpty β] :
-    Lex (β ⊕ α) ≃o α := RelIso.emptySumLex ..
+def emptySumLex [IsEmpty β] : Lex (β ⊕ α) ≃o α :=
+  RelIso.emptySumLex ..
 
 @[simp]
-lemma sumLexEmpty_apply_inl [IsEmpty β] (x : α) :
-  sumLexEmpty (β := β) (toLex <| .inl x) = x := rfl
+lemma sumLexEmpty_apply_inl [IsEmpty β] (x : α) : sumLexEmpty (β := β) (toLex <| .inl x) = x :=
+  rfl
 
 @[simp]
-lemma emptySumLex_apply_inr [IsEmpty β] (x : α) :
-  emptySumLex (β := β) (toLex <| .inr x) = x := rfl
+lemma emptySumLex_apply_inr [IsEmpty β] (x : α) : emptySumLex (β := β) (toLex <| .inr x) = x :=
+  rfl
 
 end OrderIso
 

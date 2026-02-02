@@ -58,7 +58,7 @@ instance : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
   rfl
 
 lemma ofENat_strictMono : StrictMono ofENat :=
-  WithTop.strictMono_iff.2 ⟨Nat.strictMono_cast, nat_lt_aleph0⟩
+  WithTop.strictMono_iff.2 ⟨Nat.strictMono_cast, fun _ ↦ natCast_lt_aleph0⟩
 
 @[simp, norm_cast]
 lemma ofENat_lt_ofENat {m n : ℕ∞} : (m : Cardinal) < n ↔ m < n :=
@@ -163,7 +163,7 @@ lemma toENatAux_nat (n : ℕ) : toENatAux n = n := Nat.cast_injective.extend_app
 lemma toENatAux_zero : toENatAux 0 = 0 := toENatAux_nat 0
 
 lemma toENatAux_eq_top {a : Cardinal} (ha : ℵ₀ ≤ a) : toENatAux a = ⊤ :=
-  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_gt <| hn ▸ nat_lt_aleph0 n
+  extend_apply' _ _ _ fun ⟨_n, hn⟩ ↦ ha.not_gt <| hn ▸ natCast_lt_aleph0
 
 lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
   | (n : ℕ) => toENatAux_nat n
@@ -179,7 +179,7 @@ lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
 theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
   cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
-  | inr hx => simp [toENatAux_eq_top hx, (nat_lt_aleph0 n).trans_le hx]
+  | inr hx => simp [toENatAux_eq_top hx, natCast_lt_aleph0.trans_le hx]
 
 lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
   simp only [le_antisymm_iff, toENatAux_le_nat, ← toENatAux_gc _, ofENat_nat]

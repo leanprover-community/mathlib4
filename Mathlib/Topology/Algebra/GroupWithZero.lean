@@ -148,6 +148,17 @@ noncomputable def unitsHomeomorphNeZero : G₀ˣ ≃ₜ {g : G₀ // g ≠ 0} :=
   Units.isEmbedding_val₀.toHomeomorph.trans <| show _ ≃ₜ {g | _} from .setCongr <|
     Set.ext fun x ↦ (Units.exists_iff_ne_zero (p := (· = x))).trans <| by simp
 
+variable (G₀) in
+/-- If a group with zero has continuous inversion, then the inversion map restricts to an
+auto-homeomorphism on the set of nonzero elements. -/
+def Homeomorph.inv₀ : {g : G₀ // g ≠ 0} ≃ₜ {g : G₀ // g ≠ 0} where
+  toFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
+  invFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  continuous_toFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
+  continuous_invFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
+
 end GroupWithZero
 
 section NhdsInv

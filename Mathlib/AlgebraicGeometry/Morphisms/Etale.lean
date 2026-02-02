@@ -45,15 +45,15 @@ instance : IsStableUnderBaseChange @IsEtale :=
 
 open RingHom in
 instance (priority := 900) [IsEtale f] : FormallyUnramified f where
-  formallyUnramified_of_affine_subset U V e := by
-    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE (↑U) (↑V) e).hom :=
-      HasRingHomProperty.appLE (P := @IsSmoothOfRelativeDimension 0) _ inferInstance ..
+  formallyUnramified_appLE {U} hU {V} hV e := by
+    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE U V e).hom :=
+      HasRingHomProperty.appLE (P := @IsSmoothOfRelativeDimension 0) _
+        inferInstance ⟨U, hU⟩ ⟨V, hV⟩ _
     have : Locally RingHom.FormallyUnramified (f.appLE U V e).hom := by
       apply locally_of_locally _ this
       intro R S _ _ f hf
       algebraize [f]
       rw [RingHom.FormallyUnramified]
-      have : Algebra.IsStandardSmoothOfRelativeDimension 0 R S := hf
       infer_instance
     rwa [← RingHom.locally_iff_of_localizationSpanTarget
       FormallyUnramified.respectsIso FormallyUnramified.ofLocalizationSpanTarget]
