@@ -419,14 +419,7 @@ end Extension
 
 namespace Generators
 
-
--- Warning: https://github.com/leanprover/lean4/issues/12102 applies here.
--- If the universe of `ι` is alphabetically after the already-used universes then
--- `cotangentSpaceBasis` typechecks much more slowly.
-
-universe t
-
-variable {ι : Type t} (P : Generators R S ι)
+variable {ι : Type w} (P : Generators R S ι)
 
 /-- The canonical basis on the `CotangentSpace`. -/
 noncomputable
