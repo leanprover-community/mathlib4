@@ -487,7 +487,7 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
         -- check if any exception applies:
         if new_errors.any fun (e, idx) ↦
           (idx - 1 == lineIdx) -- Subtract 1 since linter's line numbers are one-based
-          ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isSome
+          ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isNone
         then
           c[lineIdx]! -- no exception applies. Assign linter's suggestion.
         else
