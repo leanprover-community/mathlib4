@@ -481,16 +481,6 @@ namespace Height
 
 variable {K : Type*} [Field K]
 
-private lemma le_prod_max_one {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ s) (f : ι → ℝ) :
-    f i ≤ ∏ i ∈ s, max (f i) 1 := by
-  classical
-  rcases lt_or_ge (f i) 0 with hf | hf
-  · exact (hf.trans_le (by positivity)).le
-  have : f i = ∏ j ∈ s, if i = j then f i else 1 := by
-    rw [Finset.prod_eq_single_of_mem i hi fun _ _ _ ↦ by grind]
-    simp
-  exact this ▸ Finset.prod_le_prod (fun _ _ ↦ by grind) fun _ _ ↦ by grind
-
 open Finset in
 -- The "local" version of the height bound for arbitrary sums for archimedean `v`.
 private lemma max_abv_sum_one_le (v : AbsoluteValue K ℝ) {ι : Type*} {s : Finset ι}
@@ -512,7 +502,7 @@ private lemma max_abv_sum_one_le_of_nonarch {v : AbsoluteValue K ℝ} (hv : IsNo
     max (v (∑ i ∈ s, x i)) 1 ≤ ∏ i ∈ s, max (v (x i)) 1 := by
   refine sup_le ?_ <| s.one_le_prod fun _ ↦ le_max_right ..
   grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
-  exact Finset.sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
+  exact Finset.sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ Finset.le_prod_max_one hi fun i ↦ v (x i)
 
 variable [AdmissibleAbsValues K]
 
