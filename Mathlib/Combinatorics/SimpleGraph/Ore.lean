@@ -1247,7 +1247,7 @@ lemma endpoint_ne [Fintype V] {G : SimpleGraph V} {hG : G.Connected} {a b : V} (
 
 
 
-lemma exsist_neighbor_first_point {G : SimpleGraph V} [G.LocallyFinite] {a b v : V} (p : G.Walk a b)
+lemma exsist_neighbor_first_point {G : SimpleGraph V} {a b v : V} (p : G.Walk a b)
   (hp : Walk.IsMaxlongPath p) (h_neighbor_a : v ∈ G.neighborSet a) :
   ∃ (i : Fin (p.support.length - 1)), p.support.get ⟨i.val + 1, by omega⟩ = v := by
   obtain ⟨hp_path, hp_max⟩ := hp
@@ -1300,7 +1300,7 @@ lemma exsist_neighbor_first_point {G : SimpleGraph V} [G.LocallyFinite] {a b v :
 
 
 
-lemma exsist_neighbor_end_point {G : SimpleGraph V} [Finite V] [G.LocallyFinite] {a b v : V} (p : G.Walk a b)
+lemma exsist_neighbor_end_point {G : SimpleGraph V} [G.LocallyFinite] {a b v : V} (p : G.Walk a b)
   (hp : Walk.IsMaxlongPath p) (h_neighbor_b : v ∈ G.neighborSet b) :
   ∃ (i : Fin (p.support.length - 1)), p.support.get ⟨i.val, by omega⟩ = v := by
   obtain ⟨hp_path, hp_max⟩ := hp
