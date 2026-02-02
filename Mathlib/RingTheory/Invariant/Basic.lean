@@ -396,7 +396,7 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
 The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the finite
 extension `B ⧸ Q` of `A ⧸ P`.
 -/
-noncomputable def stabilizerQuotientInertiaEquiv :
+noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
     haveI := Q.normal_inertia_subgroupOf_stabilizer P G
     MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
       Gal((B ⧸ Q)/(A ⧸ P)) :=
