@@ -19,13 +19,14 @@ A tactic for solving equations in commutative (semi)rings,
 where the exponents can also contain variables.
 Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
+
 More precisely, expressions of the following form are supported:
 - constants (non-negative integers)
 - variables
 - coefficients (any rational number, embedded into the (semi)ring)
 - addition of expressions
 - multiplication of expressions (`a * b`)
-- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ`)
+- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ` or `ℤ`)
 - exponentiation of expressions (the exponent must have type `ℕ`)
 - subtraction and negation of expressions (if the base is a full ring)
 
@@ -35,28 +36,12 @@ even though it is not strictly speaking an equation in the language of commutati
 ## Implementation notes
 
 The basic approach to prove equalities is to normalise both sides and check for equality.
-The normalisation is guided by building a value in the type `ExSum` at the meta level,
-together with a proof (at the base level) that the original value is equal to
-the normalised version.
+We use `Mathlib.Tactic.Ring.Common` to implement the normal forms and normalization procedure.
 
-The outline of the file:
-- Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
-  which can represent expressions with `+`, `*`, `^` and rational numerals.
-  The mutual induction ensures that associativity and distributivity are applied,
-  by restricting which kinds of subexpressions appear as arguments to the various operators.
-- Represent addition, multiplication and exponentiation in the `ExSum` type,
-  thus allowing us to map expressions to `ExSum` (the `eval` function drives this).
-  We apply associativity and distributivity of the operators here (helped by `Ex*` types)
-  and commutativity as well (by sorting the subterms; unfortunately not helped by anything).
-  Any expression not of the above formats is treated as an atom (the same as a variable).
+This file defines the evaluation of basic operations such as addition and multipication of the
+rational coefficients as embedded inside the (semi)ring. This is done using `norm_num`.
 
-There are some details we glossed over which make the plan more complicated:
-- The order on atoms is not initially obvious.
-  We construct a list containing them in order of initial appearance in the expression,
-  then use the index into the list as a key to order on.
-- For `pow`, the exponent must be a natural number, while the base can be any semiring `α`.
-  We swap out operations for the base ring `α` with those for the exponent ring `ℕ`
-  as soon as we deal with exponents.
+It further implements the core `ring1` tactic.
 
 ## Caveats and future work
 

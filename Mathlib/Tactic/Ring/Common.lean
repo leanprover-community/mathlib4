@@ -10,19 +10,19 @@ public meta import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Util.AtomM
 
 /-!
-# `ring` tactic
+# `ring`-like tactics
 
-A tactic for solving equations in commutative (semi)rings,
-where the exponents can also contain variables.
+The core normalization procedure for ring-like tactics that solve equations in commutative
+(semi)rings where the exponents can also contain variables.
 Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 More precisely, expressions of the following form are supported:
 - constants (non-negative integers)
 - variables
-- coefficients (any rational number, embedded into the (semi)ring)
+- coefficients (living in `BaseType`; for `ring` this is a rational embedded into the semiring)
 - addition of expressions
 - multiplication of expressions (`a * b`)
-- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ`)
+- scalar multiplication of expressions (`r • a`)
 - exponentiation of expressions (the exponent must have type `ℕ`)
 - subtraction and negation of expressions (if the base is a full ring)
 
@@ -38,7 +38,7 @@ the normalised version.
 
 The outline of the file:
 - Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
-  which can represent expressions with `+`, `*`, `^` and rational numerals.
+  which can represent expressions with `+`, `*`, `^` and some parametric `BaseType`.
   The mutual induction ensures that associativity and distributivity are applied,
   by restricting which kinds of subexpressions appear as arguments to the various operators.
 - Represent addition, multiplication and exponentiation in the `ExSum` type,
@@ -53,7 +53,8 @@ There are some details we glossed over which make the plan more complicated:
   then use the index into the list as a key to order on.
 - For `pow`, the exponent must be a natural number, while the base can be any semiring `α`.
   We swap out operations for the base ring `α` with those for the exponent ring `ℕ`
-  as soon as we deal with exponents.
+  as soon as we deal with exponents. Unfortunately this has to be done with a separate inductive
+  type due to universe issues outlined later in this file.
 
 ## Caveats and future work
 
@@ -120,10 +121,11 @@ universe u v
 ## The ExNat types
 
 The `Ex{Base,Prod,Sum}Nat` types are equivalent to `Ex{Base,Prod,Sum} btℕ sℕ`. `ExProdNat` is only
-used to represent exponents in `ExProd`s. Before we added `BaseType` as a parameter, the `mul`
-constructor of `ExProd` took the exponent as `ExProd sℕ q($e)` and `ExProdNat` did not exist.
-Removing `ExProdNat` again would require passing `BaseType` as an argument to each constructor,
-raising the universe level of `ExProd` from `Type` to `Type 1`, effectively making it noncomputable.
+used to represent exponents in `ExProd`s. We cannot use `ExProd btℕ sℕ` in the `mul` constructor
+of `ExProd` because `BaseType` is a parameter and not an index. Making `BaseType` an index
+(i.e. moving it to the right of the colon) would require including it as an argument to each
+constructor, raising the universe level of `ExProd` from `Type` to `Type 1`. But Lean does not
+support monadic computation in `Type 1`.
 
 That is,
 
@@ -154,8 +156,7 @@ inductive ExBaseNat : (e : Q(ℕ)) → Type
 
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
   The field `index : ℕ` should be a unique number for each class,
-  while `value : expr` contains a representative of this class.
-  The function `resolve_atom` determines the appropriate atom for a given expression.
+  while `e : Q($α)` contains a representative of this class.
   -/
   | atom {e} (id : ℕ) : ExBaseNat e
   /-- A sum of monomials. -/
@@ -201,8 +202,7 @@ inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
 
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
   The field `index : ℕ` should be a unique number for each class,
-  while `value : expr` contains a representative of this class.
-  The function `resolve_atom` determines the appropriate atom for a given expression.
+  while `e : Q($α)` contains a representative of this class.
   -/
   | atom {e} (id : ℕ) : ExBase BaseType sα e
   /-- A sum of monomials. -/
