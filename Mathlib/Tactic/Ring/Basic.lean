@@ -95,25 +95,6 @@ attribute [local instance] monadLiftOptionMetaM
 
 open Lean (MetaM Expr mkRawNatLit)
 
-/-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
-def instCommSemiringNat : CommSemiring ℕ := inferInstance
-
-/-- A shortcut instance for `CommSemiring ℤ` used by ring. -/
-def instCommSemiringInt : CommSemiring ℤ := inferInstance
-
-/--
-A typed expression of type `CommSemiring ℕ` used when we are working on
-ring subexpressions of type `ℕ`.
--/
-def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
-
-/--
-A typed expression of type `CommSemiring ℤ` used when we are working on
-ring subexpressions of type `ℤ`.
--/
-def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
-
-
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 @[reducible, inherit_doc Common.ExBase]
