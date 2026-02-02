@@ -57,6 +57,12 @@ noncomputable def implicitFunction
     E₁ → E₂ :=
   (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂
 
+/-- At the base point `u.1`, the implicit function evaluates to `u.2`. -/
+theorem implicitFunction_apply_self
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    cdf.implicitFunction pn if₂ u.1 = u.2 :=
+  eq_of_tendsto_nhds ((cdf.hasStrictFDerivAt pn).tendsto_implicitFunctionOfProdDomain if₂)
+
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 theorem image_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :

@@ -46,6 +46,11 @@ noncomputable def implicitFunctionOfBivariate : E₁ → E₂ :=
   HasStrictFDerivAt.implicitFunctionOfProdDomain
     (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) <| by simpa using if₂
 
+theorem tendsto_implicitFunctionOfBivariate :
+    Tendsto (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂) (𝓝 u₁) (𝓝 u₂) := by
+  simpa using HasStrictFDerivAt.tendsto_implicitFunctionOfProdDomain
+    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) <| by simpa using if₂
+
 theorem image_implicitFunctionOfBivariate :
     ∀ᶠ x in 𝓝 u₁, f x (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂ x) = f u₁ u₂ := by
   simpa using HasStrictFDerivAt.image_implicitFunctionOfProdDomain
@@ -61,11 +66,6 @@ theorem hasStrictFDerivAt_implicitFunctionOfBivariate :
     HasStrictFDerivAt (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂)
       (-(f₂ u₁ u₂).inverse ∘L f₁ u₁ u₂) u₁ := by
   simpa using HasStrictFDerivAt.hasStrictFDerivAt_implicitFunctionOfProdDomain
-    (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) <| by simpa using if₂
-
-theorem tendsto_implicitFunctionOfBivariate :
-    Tendsto (implicitFunctionOfBivariate df₁ df₂ cf₁ cf₂ if₂) (𝓝 u₁) (𝓝 u₂) := by
-  simpa using HasStrictFDerivAt.tendsto_implicitFunctionOfProdDomain
     (hasStrictFDerivAt_uncurry_coprod df₁ df₂ cf₁ cf₂) <| by simpa using if₂
 
 end
