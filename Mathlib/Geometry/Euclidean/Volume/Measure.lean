@@ -136,7 +136,5 @@ theorem EuclideanGeometry.measurePreserving_vaddConst (p : P) :
 
 omit [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V] in
 theorem AffineSubspace.euclideanHausdorffMeasure_coe_image (d : ℕ) (s : AffineSubspace ℝ P)
-    (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t := by
-  rcases isEmpty_or_nonempty s with _ | _
-  · simp [t.eq_empty_of_isEmpty]
-  exact s.subtypeₐᵢ.isometry.euclideanHausdorffMeasure_image t
+    (t : Set s) : μHE[d] (Subtype.val '' t) = μHE[d] t :=
+  isometry_subtype_coe.euclideanHausdorffMeasure_image _
