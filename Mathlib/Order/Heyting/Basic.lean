@@ -268,11 +268,11 @@ theorem himp_left_comm (a b c : α) : a ⇨ b ⇨ c = b ⇨ a ⇨ c := by simp_r
 @[to_dual (attr := simp)]
 theorem himp_idem : b ⇨ b ⇨ a = b ⇨ a := by rw [himp_himp, inf_idem]
 
-@[to_dual sup_sdiff_distrib]
+@[to_dual (reorder := a c b) sup_sdiff_distrib]
 theorem himp_inf_distrib (a b c : α) : a ⇨ b ⊓ c = (a ⇨ b) ⊓ (a ⇨ c) :=
   eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, le_inf_iff, le_himp_iff]
 
-@[to_dual sdiff_inf_distrib]
+@[to_dual (reorder := a c b) sdiff_inf_distrib]
 theorem sup_himp_distrib (a b c : α) : a ⊔ b ⇨ c = (a ⇨ c) ⊓ (b ⇨ c) :=
   eq_of_forall_le_iff fun d => by
     rw [le_inf_iff, le_himp_comm, sup_le_iff]
@@ -286,7 +286,7 @@ theorem himp_le_himp_left (h : a ≤ b) : c ⇨ a ≤ c ⇨ b :=
 theorem himp_le_himp_right (h : a ≤ b) : b ⇨ c ≤ a ⇨ c :=
   le_himp_iff.2 <| (inf_le_inf_left _ h).trans himp_inf_le
 
-@[to_dual (attr := gcongr)]
+@[to_dual (reorder := hab hcd) (attr := gcongr)]
 theorem himp_le_himp (hab : a ≤ b) (hcd : c ≤ d) : b ⇨ c ≤ a ⇨ d :=
   (himp_le_himp_right hab).trans <| himp_le_himp_left hcd
 
@@ -307,12 +307,12 @@ theorem Codisjoint.himp_eq_right (h : Codisjoint a b) : b ⇨ a = a := by
 theorem Codisjoint.himp_eq_left (h : Codisjoint a b) : a ⇨ b = b :=
   h.symm.himp_eq_right
 
-@[to_dual sup_sdiff_cancel_right]
-theorem Codisjoint.himp_inf_cancel_right (h : Codisjoint a b) : a ⇨ a ⊓ b = b := by
+@[to_dual sup_sdiff_cancel_left]
+theorem Codisjoint.himp_inf_cancel_left (h : Codisjoint a b) : a ⇨ a ⊓ b = b := by
   rw [himp_inf_distrib, himp_self, top_inf_eq, h.himp_eq_left]
 
-@[to_dual sup_sdiff_cancel_left]
-theorem Codisjoint.himp_inf_cancel_left (h : Codisjoint a b) : b ⇨ a ⊓ b = a := by
+@[to_dual sup_sdiff_cancel_right]
+theorem Codisjoint.himp_inf_cancel_right (h : Codisjoint a b) : b ⇨ a ⊓ b = a := by
   rw [himp_inf_distrib, himp_self, inf_top_eq, h.himp_eq_right]
 
 /-- See `himp_le` for a stronger version in Boolean algebras. -/
