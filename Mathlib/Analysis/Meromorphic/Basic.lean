@@ -654,7 +654,7 @@ lemma zpow {f : 𝕜 → 𝕜'} {n : ℤ} (hf : Meromorphic f) : Meromorphic (f 
 
 @[fun_prop]
 protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deriv f) :=
-    fun x ↦ (hf x).deriv
+  fun x ↦ (hf x).deriv
 
 @[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
