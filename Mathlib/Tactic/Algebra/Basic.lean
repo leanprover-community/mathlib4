@@ -271,7 +271,6 @@ def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
   compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompare sR) vy
   isOne := isOne sAlg cR.toCache
   one := ⟨_, ⟨_, (Ring.ExProd.mkNat sR 1).2.toSum⟩, q(by simp)⟩
-  toString := fun ⟨_, vx⟩ ↦ s!"{vx.toString rcℕ (Ring.ringCompute cR.toCache)}"
 
 end BaseType
 
