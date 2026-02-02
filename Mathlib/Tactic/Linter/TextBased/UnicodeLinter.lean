@@ -43,7 +43,7 @@ public def String.printCodepointHex (s : String) : String :=
 public def isAllowedCharacter (c : Char) : Bool :=
   !#['\u00A0'].contains c -- non-breaking space
 
-/-- Provide default replacement (`String`) for a blocklisted character, or `none` if not defined -/
+/-- Provide default replacement (`String`) for a blocklisted character, or `none` if not defined -/
 public def replaceDisallowed : Char → Option String
 | '\u00a0' => " " -- replace non-breaking space with normal whitespace
 | _ => none

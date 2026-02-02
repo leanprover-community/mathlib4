@@ -88,7 +88,7 @@ def suggestion (tac : TSyntax `tactic) (trees : PersistentArray InfoTree) : Tact
   We use emojis for now instead.
   -/
   -- let style? := if goals.isEmpty then some .success else none
-  let preInfo? := if goals.isEmpty then some "🎉 " else none
+  let preInfo? := if goals.isEmpty then some "🎉️ " else none
   let suggestions := collectTryThisSuggestions trees
   let suggestion := match suggestions[0]? with
   | some s => s.suggestion

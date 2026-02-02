@@ -258,7 +258,7 @@ public protected def SelectionPanel.rpc :=
   mkSelectionPanelRPC insertEnter
     "Use shift-click to select one sub-expression in the goal or local context that you want to \
     zoom in on."
-    "Conv 🔍" (onlyGoal := false) (onlyOne := true)
+    "Conv 🔍️" (onlyGoal := false) (onlyOne := true)
 
 /-- The conv widget. -/
 @[widget_module]
