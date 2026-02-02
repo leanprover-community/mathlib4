@@ -1,7 +1,7 @@
 module
 
-public import Mathlib.Algebra.Divisibility.Hom
-public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Data.Set.Insert
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Util.CompileInductive
 
 deprecated_module (since := "2026-01-01")
