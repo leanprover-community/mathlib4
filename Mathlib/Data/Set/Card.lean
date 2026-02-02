@@ -260,6 +260,9 @@ theorem Finite.encard_lt_encard (hs : s.Finite) (h : s ⊂ t) : s.encard < t.enc
 theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) :=
   fun _ _ h ↦ (toFinite _).encard_lt_encard h
 
+theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
+  fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt.ssubset
+
 theorem encard_diff_add_encard (s t : Set α) : (s \ t).encard + t.encard = (s ∪ t).encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self]
 
@@ -813,6 +816,9 @@ theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
 
 theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
+
+theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (setOf Set.Finite) :=
+  fun _ _ _ ht hlt ↦ ncard_lt_ncard hlt.ssubset ht
 
 theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
     (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a) (hf' : ∀ (i) (h : i < n), f i h ∈ s)
