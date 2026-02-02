@@ -482,6 +482,7 @@ where
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
       </li>
 
+/-- The rpc method of the `rw??` widget. -/
 @[server_rpc_method]
 def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
