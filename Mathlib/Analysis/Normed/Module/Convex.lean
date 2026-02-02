@@ -60,11 +60,21 @@ theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dis
 theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
   convexOn_dist z convex_univ
 
-theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
+theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (ball a r) := by
   simpa only [Metric.ball, sep_univ] using (convexOn_univ_dist a).convex_lt r
+
+theorem convex_eball (a : E) (r : ENNReal) : Convex ℝ (eball a r) := by
+  cases r with
+  | top => simp [convex_univ]
+  | coe r => simp [eball_coe, convex_ball]
 
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
+
+theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) := by
+  cases r with
+  | top => simp [convex_univ]
+  | coe r => simp [closedEBall_coe, convex_closedBall]
 
 open Pointwise in
 theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
