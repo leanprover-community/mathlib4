@@ -392,6 +392,19 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
   exact key.of_comp_left (IsFractionRing.fieldEquivOfAlgEquivHom_injective (A ⧸ P) (B ⧸ Q)
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
 
+/--
+The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the finite
+extension `B ⧸ Q` of `A ⧸ P`.
+-/
+noncomputable def stabilizerQuotientInertiaEquiv :
+    haveI := Q.normal_inertia_subgroupOf_stabilizer P G
+    MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
+      Gal((B ⧸ Q)/(A ⧸ P)) :=
+  haveI := Q.normal_inertia_subgroupOf_stabilizer P G
+  (QuotientGroup.quotientMulEquivOfEq (Ideal.Quotient.ker_stabilizerHom Q P G).symm).trans <|
+    QuotientGroup.quotientKerEquivOfSurjective (Ideal.Quotient.stabilizerHom Q P G)
+      (Ideal.Quotient.stabilizerHom_surjective G P Q)
+
 end surjectivity
 
 section normal
