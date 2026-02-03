@@ -683,8 +683,8 @@ jobs:
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
-      - name: Generate app token
-        id: app-token
+      - name: Generate auto merge app token
+        id: auto-merge-app-token
         uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
           app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
@@ -791,7 +791,7 @@ jobs:
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.auto-merge-app-token.outputs.token }}
           issue-number: ${{ steps.PR.outputs.number }}
           body: |
             As this PR is labelled `auto-merge-after-CI`, we are now sending it to bors:
