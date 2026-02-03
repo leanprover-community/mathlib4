@@ -266,6 +266,14 @@ alias ⟨And.rotate, _⟩ := and_rotate
 theorem and_symm_right {α : Sort*} (a b : α) (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]
 theorem and_symm_left {α : Sort*} (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]
 
+@[simp]
+theorem and_imp_iff_and {a b : Prop} : a ∧ (a → b) ↔ a ∧ b :=
+  ⟨fun ⟨a, b'⟩ ↦ ⟨a, b' a⟩, fun ⟨a, b⟩ ↦ ⟨a, fun _ ↦ b⟩⟩
+
+@[simp]
+theorem imp_and_iff_and {a b : Prop} : (a → b) ∧ a ↔ b ∧ a :=
+  ⟨fun ⟨b', a⟩ ↦ ⟨b' a, a⟩, fun ⟨b, a⟩ ↦ ⟨fun _ ↦ b, a⟩⟩
+
 /-! ### Declarations about `or` -/
 
 alias Iff.or := or_congr
