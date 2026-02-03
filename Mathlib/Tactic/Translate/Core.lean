@@ -191,7 +191,7 @@ attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
 
 /-- Get the translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option Name :=
-  (t.translations.getState env).find?
+  t.translations.find? env
 
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
@@ -232,7 +232,7 @@ where
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, tgt))
     trace[translate] "Added translation {src} ↦ {tgt}"
-    if argInfo != ((t.argInfoAttr.getState (← getEnv)).find? src).getD {} then
+    if argInfo != (t.argInfoAttr.find? (← getEnv) src).getD {} then
       trace[translate] "@[{t.attrName}] will reorder the arguments of {src} by {argInfo.reorder}."
       trace[translate_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
       modifyEnv (t.argInfoAttr.addEntry · (src, argInfo))
