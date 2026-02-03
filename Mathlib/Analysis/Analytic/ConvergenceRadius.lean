@@ -225,8 +225,8 @@ theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥
     hp ((summable_geometric_of_lt_one ha.1.le ha.2).mul_left _)
 
 theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
-    (hx : x ∈ EMetric.ball (0 : E) p.radius) : Summable fun n : ℕ => ‖p n fun _ => x‖ := by
-  rw [mem_emetric_ball_zero_iff] at hx
+    (hx : x ∈ Metric.eball (0 : E) p.radius) : Summable fun n : ℕ => ‖p n fun _ => x‖ := by
+  rw [mem_eball_zero_iff] at hx
   refine .of_nonneg_of_le
     (fun _ ↦ norm_nonneg _) (fun n ↦ ((p n).le_opNorm _).trans_eq ?_) (p.summable_norm_mul_pow hx)
   simp
@@ -238,7 +238,7 @@ theorem summable_nnnorm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ�
   exact p.summable_norm_mul_pow h
 
 protected theorem summable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
-    (hx : x ∈ EMetric.ball (0 : E) p.radius) : Summable fun n : ℕ => p n fun _ => x :=
+    (hx : x ∈ Metric.eball (0 : E) p.radius) : Summable fun n : ℕ => p n fun _ => x :=
   (p.summable_norm_apply hx).of_norm
 
 theorem radius_eq_top_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
@@ -434,7 +434,7 @@ theorem radius_unshift (p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z 
   rw [← radius_shift, unshift_shift]
 
 protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
-    (hx : x ∈ EMetric.ball (0 : E) p.radius) : HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
+    (hx : x ∈ Metric.eball (0 : E) p.radius) : HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
   (p.summable hx).hasSum
 
 theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries 𝕜 E F)
