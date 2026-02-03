@@ -38,8 +38,8 @@ instance homotopy_congruence : Congruence (homotopic V c) where
     { refl := fun C => ⟨Homotopy.refl C⟩
       symm := fun ⟨w⟩ => ⟨w.symm⟩
       trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
-  compLeft := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
-  compRight := fun _ ⟨i⟩ => ⟨i.compRight _⟩
+  comp_left := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
+  comp_right := fun _ ⟨i⟩ => ⟨i.compRight _⟩
 
 /-- `HomotopyCategory V c` is the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic. -/

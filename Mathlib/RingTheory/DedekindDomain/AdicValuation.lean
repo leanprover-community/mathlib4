@@ -350,6 +350,10 @@ theorem valuation_exists_uniformizer : ∃ π : K,
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
   exact hr
 
+instance : Valuation.IsNontrivial (v.valuation K) :=
+  have ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+  ⟨π, by aesop⟩
+
 lemma valuation_surjective :
     Function.Surjective (v.valuation K) := by
   intro x
@@ -557,8 +561,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
     (↑(r • x) : v.adicCompletion K) = r • (x : v.adicCompletion K) :=
   rfl
 
-instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by simp
+instance : Module.IsTorsionFree R (v.adicCompletionIntegers K) := .of_smul_eq_zero <| by simp
 
 instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where

@@ -221,7 +221,7 @@ theorem u_exists :
   refine ⟨fun x => (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
   · exact (f_smooth.add (f_smooth.comp contDiff_neg)).div_const _
   · intro x
-    simp only [mem_Icc]
+    push _ ∈ _
     constructor
     · linarith [(B x).1, (B (-x)).1]
     · linarith [(B x).2, (B (-x)).2]
@@ -382,7 +382,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
         fun _ => zero_le_one
     refine ((w_compact_support E Dpos).convolutionExists_left _ ?_
       (locallyIntegrable_const (1 : ℝ)) x).integrable
-    exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
+    exact continuous_const.mul ((u_continuous E).comp (by fun_prop))
   have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
     simp only [convolution, mul_one, lsmul_apply, smul_eq_mul, w_integral E Dpos]
   exact A.trans (le_of_eq B)
@@ -395,7 +395,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
     have B : LocallyIntegrable (φ : E → ℝ) μ :=
       (locallyIntegrable_const _).indicator measurableSet_closedBall
     have C : Continuous (w D : E → ℝ) :=
-      continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
+      continuous_const.mul ((u_continuous E).comp (by fun_prop))
     exact (F_comp.convolutionExists_left (lsmul ℝ ℝ : ℝ →L[ℝ] ℝ →L[ℝ] ℝ) C B x).integrable
   · set z := (D / (1 + D)) • x with hz
     have B : 0 < 1 + D := by linarith
@@ -459,8 +459,6 @@ theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     ⟨fun _ hx => (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx =>
       y_eq_zero_of_notMem_ball Dpos hx⟩
 
-variable {E}
-
 end HelperDefinitions
 
 instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -471,7 +469,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
   exact
     { toFun := fun R x => if 1 < R then y ((R - 1) / (R + 1)) (((R + 1) / 2)⁻¹ • x) else 0
       mem_Icc := fun R x => by
-        simp only [mem_Icc]
+        push _ ∈ _
         split_ifs with h
         · refine ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
         · simp only [le_refl, zero_le_one, and_self]

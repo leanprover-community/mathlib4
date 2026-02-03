@@ -69,7 +69,7 @@ class PredOrder (α : Type*) [Preorder α] where
   /-- Proof that `pred b` is the greatest element less than `b` -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
-attribute [to_dual (reorder := a b)] PredOrder.le_pred_of_lt
+attribute [to_dual existing] PredOrder.le_pred_of_lt
 
 instance [Preorder α] [SuccOrder α] : PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
@@ -1131,6 +1131,7 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
 
 -- See note [reducible non-instances]
 /-- `PredOrder` transfers across equivalences between orders. -/
+@[to_dual existing]
 protected abbrev PredOrder.ofOrderIso [PredOrder X] (f : X ≃o Y) :
     PredOrder Y where
   pred y := f (pred (f.symm y))

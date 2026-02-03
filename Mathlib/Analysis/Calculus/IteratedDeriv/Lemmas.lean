@@ -19,24 +19,45 @@ than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 
 public section
 
-section one_dimensional
-
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
   {n : ℕ} {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) (h : UniqueDiffOn 𝕜 s) {f g : 𝕜 → F}
+  -- For maximum generality, results about `smul` involve a second type besides `𝕜`,
+  -- with varying hypotheses.
+  -- * `R`: general type.
+  {R : Type*} [DistribSMul R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
+  -- * `𝕝`: division semiring. (Addition in `𝕝` is not used, so the results would work with a
+  -- `GroupWithZero` if we had a `DistribSMulWithZero` typeclass.)
+  {𝕝 : Type*} [DivisionSemiring 𝕝] [Module 𝕝 F] [SMulCommClass 𝕜 𝕝 F] [ContinuousConstSMul 𝕝 F]
+  -- * `𝔸`: normed `𝕜`-algebra.
+  {𝔸 : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [Module 𝔸 F] [IsBoundedSMul 𝔸 F]
+    [IsScalarTower 𝕜 𝔸 F]
+  -- * `𝕜'`: normed `𝕜`-division algebra.
+  {𝕜' : Type*} [NormedDivisionRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+    [Module 𝕜' F] [SMulCommClass 𝕜 𝕜' F] [ContinuousSMul 𝕜' F]
+
+section one_dimensional
+
+
+open scoped Topology
 
 section
 
+theorem Filter.EventuallyEq.iteratedDerivWithin_eq (hfg : f =ᶠ[𝓝[s] x] g) (hfg' : f x = g x) :
+    iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
+  congr($(hfg.iteratedFDerivWithin_eq hfg' n) _)
+
+theorem Filter.EventuallyEq.iteratedDerivWithin_eq_of_nhds_insert
+    {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+    (hfg : f =ᶠ[𝓝[insert x s] x] g) :
+    iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
+  (hfg.filter_mono (by simp)).iteratedDerivWithin_eq (hfg.eq_of_nhdsWithin (by simp))
+
 theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
-    Set.EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n g s) s := by
-  induction n generalizing f g with
-  | zero => rwa [iteratedDerivWithin_zero]
-  | succ n IH =>
-    intro y hy
-    rw [iteratedDerivWithin_succ, iteratedDerivWithin_succ]
-    exact derivWithin_congr (IH hfg) (IH hfg hy)
+    Set.EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n g s) s :=
+  fun _ hx ↦ hfg.eventuallyEq_nhdsWithin.iteratedDerivWithin_eq (hfg hx)
 
 include h hx in
 theorem iteratedDerivWithin_add
@@ -72,16 +93,66 @@ include h hx in
 theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s x) :
     iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by
   simp_rw [iteratedDerivWithin]
-  rw [iteratedFDerivWithin_const_smul_apply hf h hx]
+  rw [iteratedFDerivWithin_const_smul_apply (a := c) hf h hx]
   simp only [ContinuousMultilinearMap.smul_apply]
 
 include h hx in
-theorem iteratedDerivWithin_const_mul (c : 𝕜) {f : 𝕜 → 𝕜} (hf : ContDiffWithinAt 𝕜 n f s x) :
-    iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x := by
-  simpa using iteratedDerivWithin_const_smul (F := 𝕜) hx h c hf
+theorem iteratedDerivWithin_fun_const_smul (c : R) (hf : ContDiffWithinAt 𝕜 n f s x) :
+    iteratedDerivWithin n (fun w ↦ c • f w) s x = c • iteratedDerivWithin n f s x :=
+  iteratedDerivWithin_const_smul hx h c hf
+
+/-- A variant of `iteratedDerivWithin_const_smul` without differentiability assumption when
+the scalar multiplication is by division ring elements. -/
+@[simp]
+theorem iteratedDerivWithin_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
+    iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by
+  induction n generalizing f x with
+  | zero => simp
+  | succ n IH =>
+    simp_rw [iteratedDerivWithin_succ, funext (@IH · f), ← Pi.smul_def,
+      derivWithin_const_smul_field]
+
+include h hx in
+theorem iteratedDerivWithin_const_mul (c : 𝔸) {f : 𝕜 → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x) :
+    iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x :=
+  iteratedDerivWithin_fun_const_smul hx h c hf
+
+/-- A variant of `iteratedDerivWithin_fun_const_smul` without differentiability assumption when
+the scalar multiplication is by division ring elements. -/
+@[simp]
+theorem iteratedDerivWithin_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
+    iteratedDerivWithin n (fun z => c • f z) s x = c • iteratedDerivWithin n f s x :=
+  iteratedDerivWithin_const_smul_field c f
+
+@[simp]
+theorem iteratedDerivWithin_const_mul_field (c : 𝕜') (f : 𝕜 → 𝕜') :
+    iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x :=
+  iteratedDerivWithin_fun_const_smul_field c f
+
+include h hx in
+theorem iteratedDerivWithin_smul_const {f : 𝕜 → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x) (v : F) :
+    iteratedDerivWithin n (fun y ↦ f y • v) s x = iteratedDerivWithin n f s x • v := by
+  simp [iteratedDerivWithin, iteratedFDerivWithin_smul_const_apply hf h hx]
+
+include h hx in
+@[simp]
+theorem iteratedDerivWithin_mul_const {f : 𝕜 → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x) (d : 𝔸) :
+    iteratedDerivWithin n (fun z ↦ f z * d) s x = iteratedDerivWithin n f s x * d :=
+  iteratedDerivWithin_smul_const hx h hf d
+
+/-- A variant of `iteratedDerivWithin_mul_const` without differentiability assumption when
+the scalar multiplication is by division ring elements. -/
+@[simp]
+theorem iteratedDerivWithin_mul_const_field (f : 𝕜 → 𝕜') (d : 𝕜') :
+    iteratedDerivWithin n (fun z ↦ f z * d) s x = iteratedDerivWithin n f s x * d := by
+  induction n generalizing f x with
+  | zero => simp
+  | succ n IH =>
+    simp_rw [iteratedDerivWithin_succ, funext (@IH · f), derivWithin_mul_const_field]
 
 variable (f) in
 omit h hx in
+@[simp]
 theorem iteratedDerivWithin_neg :
     iteratedDerivWithin n (-f) s x = -iteratedDerivWithin n f s x := by
   induction n generalizing x with
@@ -132,12 +203,76 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
+lemma iteratedDerivWithin_id :
+    iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
+  obtain (_ | n) := n
+  · simp
+  · rw [iteratedDerivWithin_succ', iteratedDerivWithin_congr (g := fun _ ↦ 1) _ hx]
+    · simp [iteratedDerivWithin_const]
+    · exact fun y hy ↦ derivWithin_id _ _ (h.uniqueDiffWithinAt hy)
+
+lemma iteratedDerivWithin_fun_id :
+    iteratedDerivWithin n (·) s x = if n = 0 then x else if n = 1 then 1 else 0 :=
+  iteratedDerivWithin_id hx h
+
+lemma iteratedDerivWithin_smul {f : 𝕜 → 𝔸} {g : 𝕜 → F}
+    (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x) :
+    iteratedDerivWithin n (f • g) s x = ∑ i ∈ .range (n + 1),
+      n.choose i • iteratedDerivWithin i f s x • iteratedDerivWithin (n - i) g s x := by
+  induction n generalizing f g with
+  | zero => simp
+  | succ n IH =>
+    obtain ⟨U, hU, H⟩ := ((hf.eventually (by simp)).and (hg.eventually (by simp))).exists_mem
+    rw [iteratedDerivWithin_succ', Filter.EventuallyEq.iteratedDerivWithin_eq_of_nhds_insert
+        (g := f • derivWithin g s + derivWithin f s • g)]
+    · rw [Finset.sum_range_succ', iteratedDerivWithin_add hx h, IH, Finset.sum_range_succ', IH]
+      · simp only [Nat.choose_succ_succ', add_smul, Finset.sum_add_distrib]
+        nth_rw 3 [Finset.sum_range_succ]
+        have : ∀ i ∈ Finset.range n, 1 ≤ n - i := by simp; lia
+        simp +contextual [← iteratedDerivWithin_succ', ← n.sub_sub, Nat.sub_add_cancel, this]
+        abel
+      all_goals clear IH H U hU; fun_prop (disch := simp_all)
+    · filter_upwards [hf.eventually (by simp), hg.eventually (by simp)] with y hfy hgy
+      rw [derivWithin_smul (hfy.differentiableWithinAt _) (hgy.differentiableWithinAt _)]
+      all_goals simp
+
+lemma iteratedDerivWithin_mul {f g : 𝕜 → 𝔸}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    iteratedDerivWithin n (f * g) s x = ∑ i ∈ .range (n + 1),
+      n.choose i * iteratedDerivWithin i f s x * iteratedDerivWithin (n - i) g s x := by
+  simp [← smul_eq_mul, iteratedDerivWithin_smul hx h hf hg]
+
+theorem iteratedDerivWithin_pow (m : ℕ) (k : ℕ) :
+    iteratedDerivWithin k (· ^ m) s x = m.descFactorial k * x ^ (m - k) := by
+  induction m generalizing k with
+  | zero => cases k <;> simp [iteratedDerivWithin_const]
+  | succ i IH =>
+    obtain (_ | k) := k
+    · simp
+    simp only [pow_succ]
+    refine (iteratedDerivWithin_mul hx h (by fun_prop) (by fun_prop)).trans ?_
+    have : ((i + 1).descFactorial (k + 1)) =
+        (k + 1) * (i.descFactorial k) + (i.descFactorial (k + 1)) := by
+      rw [Nat.succ_descFactorial_succ]
+      cases le_or_gt k i <;> simp [Nat.descFactorial, ← add_mul, *]; lia
+    obtain hik | hik := le_or_gt i k <;>
+      simp +contextual [IH, iteratedDerivWithin_fun_id, h, hx, Finset.sum_range_succ,
+        show ∀ x ∈ Finset.range k, k + 1 - x ≠ 0 by simp; lia, -Nat.descFactorial_succ,
+        show ∀ x ∈ Finset.range k, k + 1 - x ≠ 1 by simp; lia, this,
+        Nat.descFactorial_eq_zero_iff_lt.mpr, hik,
+        show k < i → i - k = (i - (k + 1) + 1) by lia]; ring
+
 end
 
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ hf hg
+
+-- TODO: `@[to_fun]` generates the wrong name. Same for the various lemmas below.
+lemma iteratedDeriv_fun_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
+    iteratedDeriv n (fun z ↦ f z + g z) x = iteratedDeriv n f x + iteratedDeriv n g x :=
+  iteratedDeriv_add hf hg
 
 theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c + f z) x = iteratedDeriv n f x := by
@@ -147,10 +282,12 @@ theorem iteratedDeriv_const_sub (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c - f z) x = iteratedDeriv n (-f) x := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_const_sub hn c
 
+@[simp]
 lemma iteratedDeriv_fun_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_neg f
 
+@[simp]
 lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (-f) a = -(iteratedDeriv n f a) := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_neg f
@@ -160,17 +297,65 @@ lemma iteratedDeriv_sub (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ hf hg
 
-theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
+lemma iteratedDeriv_fun_sub (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
+    iteratedDeriv n (fun z ↦ f z - g z) x = iteratedDeriv n f x - iteratedDeriv n g x :=
+  iteratedDeriv_sub hf hg
+
+theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜 n f x) (c : R) :
     iteratedDeriv n (c • f) x = c • iteratedDeriv n f x := by
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_const_smul (Set.mem_univ x) uniqueDiffOn_univ
       c (contDiffWithinAt_univ.mpr h)
 
-theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
-    iteratedDeriv n (fun z => c * f z) x = c * iteratedDeriv n f x := by
+theorem iteratedDeriv_fun_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜 n f x) (c : R) :
+    iteratedDeriv n (c • f ·) x = c • iteratedDeriv n f x :=
+  iteratedDeriv_const_smul h c
+
+/-- A variant of `iteratedDeriv_const_smul` without differentiability assumption when
+the scalar multiplication is by division ring elements. -/
+@[simp]
+theorem iteratedDeriv_const_smul_field {n : ℕ} (c : 𝕝) (f : 𝕜 → F) :
+    iteratedDeriv n (c • f) x = c • iteratedDeriv n f x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_const_mul (Set.mem_univ x) uniqueDiffOn_univ
-      c (contDiffWithinAt_univ.mpr h)
+    iteratedDerivWithin_const_smul_field (s := Set.univ) c f
+
+/-- A variant of `iteratedDeriv_fun_const_smul` without differentiability assumption when
+the scalar multiplication is by division ring elements. -/
+@[simp]
+theorem iteratedDeriv_fun_const_smul_field {n : ℕ} (c : 𝕝) (f : 𝕜 → F) :
+    iteratedDeriv n (c • f ·) x = c • iteratedDeriv n f x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_fun_const_smul_field (s := Set.univ) c f
+
+theorem iteratedDeriv_smul_const {f : 𝕜 → 𝔸} (hf : ContDiffAt 𝕜 n f x) (v : F) :
+    iteratedDeriv n (fun y ↦ f y • v) x = iteratedDeriv n f x • v := by
+  simp [iteratedDeriv, iteratedFDeriv_smul_const_apply hf]
+
+theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝔸} (c : 𝔸) (hf : ContDiffAt 𝕜 n f x) :
+    iteratedDeriv n (c * f ·) x = c * iteratedDeriv n f x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_const_mul (Set.mem_univ x) uniqueDiffOn_univ c hf
+
+/-- A variant of `iteratedDeriv_const_mul` without differentiability assumption when
+the multiplication is in a division ring. -/
+@[simp]
+theorem iteratedDeriv_const_mul_field {n : ℕ} (c : 𝕜') (f : 𝕜 → 𝕜') :
+    iteratedDeriv n (c * f ·) x = c * iteratedDeriv n f x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_const_mul_field (s := .univ) c f
+
+/-- A variant of `iteratedDeriv_mul_const` without differentiability assumption when
+the multiplication is in a division ring. -/
+@[simp]
+theorem iteratedDeriv_mul_const_field {n : ℕ} (f : 𝕜 → 𝕜') (c : 𝕜') :
+    iteratedDeriv n (f · * c) x = iteratedDeriv n f x * c := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_mul_const_field (s := .univ) f c
+
+@[simp]
+theorem iteratedDeriv_div_const {n : ℕ} (f : 𝕜 → 𝕜') (c : 𝕜') :
+    iteratedDeriv n (f · / c) x = iteratedDeriv n f x / c := by
+  simp [div_eq_mul_inv]
 
 theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
@@ -191,10 +376,43 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
       funext ih
     rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
-      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul',
+      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul_field,
       neg_smul]
 
-open Topology in
+lemma iteratedDeriv_id {n : ℕ} {x : 𝕜} :
+    iteratedDeriv n id x = if n = 0 then x else if n = 1 then 1 else 0 := by
+  obtain (_ | _ | n) := n <;>
+    simp [iteratedDeriv_succ', iteratedDeriv_const]
+
+lemma iteratedDeriv_fun_id {n : ℕ} {x : 𝕜} :
+    iteratedDeriv n (fun a ↦ a) x = if n = 0 then x else if n = 1 then 1 else 0 :=
+  iteratedDeriv_id
+
+lemma iteratedDeriv_fun_id_zero :
+    iteratedDeriv n (fun a ↦ a) (0 : 𝕜) = if n = 1 then 1 else 0 := by
+  simp +contextual [iteratedDeriv_fun_id]
+
+lemma iteratedDeriv_mul {f g : 𝕜 → 𝔸} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
+    iteratedDeriv n (f * g) x = ∑ i ∈ .range (n + 1),
+      n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x := by
+  simpa using iteratedDerivWithin_mul
+    (Set.mem_univ x) uniqueDiffOn_univ hf.contDiffWithinAt hg.contDiffWithinAt
+
+@[simp]
+theorem iteratedDeriv_pow (m : ℕ) (k : ℕ) :
+    iteratedDeriv k (· ^ m) x = m.descFactorial k * x ^ (m - k) := by
+  simpa using iteratedDerivWithin_pow (Set.mem_univ x) uniqueDiffOn_univ m k
+
+lemma iteratedDeriv_fun_mul {f g : 𝕜 → 𝔸} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
+    iteratedDeriv n (fun x ↦ f x * g x) x = ∑ i ∈ .range (n + 1),
+      n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x :=
+  iteratedDeriv_mul hf hg
+
+lemma iteratedDeriv_fun_pow_zero {n m : ℕ} :
+    iteratedDeriv n (· ^ m) (0 : 𝕜) = if n = m then m.factorial else 0 := by
+  obtain h | h | h := lt_trichotomy n m <;>
+    simp_all [Nat.descFactorial_self, Nat.descFactorial_eq_zero_iff_lt.mpr, ne_of_lt, ne_of_gt]
+
 lemma Filter.EventuallyEq.iteratedDeriv_eq (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} (hfg : f =ᶠ[𝓝 x] g) :
     iteratedDeriv n f x = iteratedDeriv n g x := by
   simp only [← iteratedDerivWithin_univ, iteratedDerivWithin_eq_iteratedFDerivWithin]
@@ -214,7 +432,6 @@ end one_dimensional
 
 section shift_invariance
 
-variable {𝕜 F} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable (n : ℕ) (f : 𝕜 → F) (s : 𝕜)
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
@@ -243,3 +460,38 @@ lemma iteratedDeriv_comp_const_sub :
     iteratedDeriv_comp_neg n (fun z => f (z + s))
 
 end shift_invariance
+
+section sums
+
+/-!
+### Iterated derivatives of sums
+-/
+open Finset
+variable {ι : Type*} {n : ℕ} {x : 𝕜} {f : ι → 𝕜 → F} {I : Finset ι}
+
+lemma iteratedDerivWithin_sum {s : Set 𝕜} (hx : x ∈ s) (hs : UniqueDiffOn 𝕜 s)
+    (hf : ∀ i ∈ I, ContDiffWithinAt 𝕜 n (f i) s x) :
+    iteratedDerivWithin n (∑ i ∈ I, f i) s x =
+      ∑ i ∈ I, iteratedDerivWithin n (f i) s x := by
+  classical
+  induction I using Finset.induction_on with
+  | empty => simp
+  | insert i t hi IH =>
+    rw [forall_mem_insert] at hf
+    simp only [sum_insert hi, sum_fn] at IH ⊢
+    rw [iteratedDerivWithin_add hx hs hf.1 (.sum hf.2), IH hf.2]
+
+lemma iteratedDerivWithin_fun_sum {s : Set 𝕜} (hx : x ∈ s) (hs : UniqueDiffOn 𝕜 s)
+    (hf : ∀ i ∈ I, ContDiffWithinAt 𝕜 n (f i) s x) :
+    iteratedDerivWithin n (∑ i ∈ I, f i ·) s x = ∑ i ∈ I, iteratedDerivWithin n (f i) s x :=
+  by simpa [sum_fn] using iteratedDerivWithin_sum hx hs hf
+
+lemma iteratedDeriv_sum (hf : ∀ i ∈ I, ContDiffAt 𝕜 n (f i) x) :
+    iteratedDeriv n (∑ i ∈ I, f i) x = ∑ i ∈ I, iteratedDeriv n (f i) x := by
+  simpa using iteratedDerivWithin_sum (Set.mem_univ x) uniqueDiffOn_univ hf
+
+lemma iteratedDeriv_fun_sum (hf : ∀ i ∈ I, ContDiffAt 𝕜 n (f i) x) :
+    iteratedDeriv n (fun z ↦ ∑ i ∈ I, f i z) x = ∑ i ∈ I, iteratedDeriv n (f i) x :=
+  by simpa [sum_fn] using iteratedDeriv_sum hf
+
+end sums

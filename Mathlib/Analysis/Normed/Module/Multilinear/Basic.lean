@@ -370,8 +370,7 @@ theorem isLeast_opNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
   simp only [Set.setOf_and, Set.setOf_forall]
-  exact isClosed_Ici.inter (isClosed_iInter fun m ↦
-    isClosed_le continuous_const (continuous_id.mul continuous_const))
+  exact isClosed_Ici.inter (isClosed_iInter fun m ↦ isClosed_le continuous_const (by fun_prop))
 
 theorem opNorm_nonneg (f : ContinuousMultilinearMap 𝕜 E G) : 0 ≤ ‖f‖ :=
   Real.sInf_nonneg fun _ ⟨hx, _⟩ => hx
@@ -433,12 +432,11 @@ theorem opNorm_zero : ‖(0 : ContinuousMultilinearMap 𝕜 E G)‖ = 0 :=
 
 section
 
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
+variable {𝕜' : Type*} [SeminormedRing 𝕜'] [Module 𝕜' G] [IsBoundedSMul 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
 
 theorem opNorm_smul_le (c : 𝕜') (f : ContinuousMultilinearMap 𝕜 E G) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun m ↦ by
-    rw [smul_apply, norm_smul, mul_assoc]
-    exact mul_le_mul_of_nonneg_left (le_opNorm _ _) (norm_nonneg _)
+    grw [smul_apply, norm_smul_le, mul_assoc, le_opNorm]
 
 variable (𝕜 E G) in
 /-- Operator seminorm on the space of continuous multilinear maps, as `Seminorm`.
@@ -499,6 +497,11 @@ instance seminormedAddCommGroup' :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
   ContinuousMultilinearMap.seminormedAddCommGroup
 
+instance : IsBoundedSMul 𝕜' (ContinuousMultilinearMap 𝕜 E G) := .of_norm_smul_le opNorm_smul_le
+
+section NormedField
+variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
+
 instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
   ⟨fun c f => f.opNorm_smul_le c⟩
 
@@ -506,6 +509,8 @@ instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
 search. -/
 instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
+
+end NormedField
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
@@ -1356,7 +1361,7 @@ variable (𝕜 G)
 
 theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by
-  simp
+  simp [ContinuousLinearMap.norm_id]
 
 theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=

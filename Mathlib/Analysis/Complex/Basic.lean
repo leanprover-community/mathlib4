@@ -11,7 +11,6 @@ public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.RealVectorSpace
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 
@@ -370,6 +369,17 @@ def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
     rw [I_sq]
     ring
 
+open scoped ComplexOrder in
+theorem _root_.RCLike.map_nonneg_iff {𝕜 𝕜' : Type*} [RCLike 𝕜] [RCLike 𝕜']
+    (h : RCLike.im (RCLike.I : 𝕜') = 1) {a : 𝕜} :
+    0 ≤ RCLike.map 𝕜 𝕜' a ↔ 0 ≤ a := by
+  rw [RCLike.nonneg_iff, RCLike.nonneg_iff (K := 𝕜)]
+  simp [h]
+
+open scoped ComplexOrder in
+@[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
+    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff rfl
+
 /-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
 @[simps]
@@ -381,6 +391,17 @@ def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
       RCLike.normSq_apply]
     simp [normSq_add]
   __ := RCLike.complexRingEquiv h
+
+@[simp] theorem _root_.RCLike.toContinuousLinearMap_complexLinearIsometryEquiv
+    {𝕜 : Type*} [RCLike 𝕜] (h : RCLike.im (RCLike.I : 𝕜) = 1) :
+    (RCLike.complexLinearIsometryEquiv h : 𝕜 →L[ℝ] ℂ) = RCLike.map 𝕜 ℂ := rfl
+
+@[simp] theorem _root_.RCLike.norm_to_complex {𝕜 : Type*} [RCLike 𝕜] (a : 𝕜) :
+    ‖RCLike.re a + RCLike.im a * Complex.I‖ = ‖a‖ := by
+  obtain (h | h) := RCLike.I_eq_zero_or_im_I_eq_one (K := 𝕜)
+  · rw [← RCLike.re_add_im a, RCLike.im_eq_zero h]
+    simp
+  exact (RCLike.complexLinearIsometryEquiv h).norm_map a
 
 theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
   Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,

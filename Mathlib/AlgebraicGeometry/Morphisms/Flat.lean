@@ -38,8 +38,13 @@ asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkM
 -/
 @[mk_iff]
 class Flat (f : X ⟶ Y) : Prop where
-  flat_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.Flat
+  flat_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
+      (f.appLE U V e).hom.Flat
+
+alias Scheme.Hom.flat_appLE := Flat.flat_appLE
+
+@[deprecated (since := "2026-01-20")] alias Flat.flat_of_affine_subset := Scheme.Hom.flat_appLE
 
 namespace Flat
 
@@ -47,7 +52,7 @@ instance : HasRingHomProperty @Flat RingHom.Flat where
   isLocal_ringHomProperty := RingHom.Flat.propertyIsLocal
   eq_affineLocally' := by
     ext X Y f
-    rw [flat_iff, affineLocally_iff_affineOpens_le]
+    rw [flat_iff, affineLocally_iff_forall_isAffineOpen]
 
 instance (priority := 900) [IsOpenImmersion f] : Flat f :=
   HasRingHomProperty.of_isOpenImmersion

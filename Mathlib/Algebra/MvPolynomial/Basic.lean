@@ -707,8 +707,9 @@ theorem support_X_mul (s : σ) (p : MvPolynomial σ R) :
   AddMonoidAlgebra.support_single_mul p _ (by simp) _
 
 @[simp]
-theorem support_smul_eq {S₁ : Type*} [Semiring S₁] [Module S₁ R] [NoZeroSMulDivisors S₁ R] {a : S₁}
-    (h : a ≠ 0) (p : MvPolynomial σ R) : (a • p).support = p.support :=
+theorem support_smul_eq {S : Type*} [Semiring S] [IsDomain S] [Module S R]
+    [Module.IsTorsionFree S R] {a : S} (h : a ≠ 0) (p : MvPolynomial σ R) :
+    (a • p).support = p.support :=
   Finsupp.support_smul_eq h
 
 theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
@@ -994,9 +995,9 @@ variable (σ M) in
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}
-  add_mem' := by simp+contextual [add_mem]
+  add_mem' := by simp +contextual [add_mem]
   zero_mem' := by simp
-  smul_mem' := by simp+contextual [Submodule.smul_mem]
+  smul_mem' := by simp +contextual [Submodule.smul_mem]
 
 lemma mem_coeffsIn : p ∈ coeffsIn σ M ↔ ∀ i, p.coeff i ∈ M := .rfl
 

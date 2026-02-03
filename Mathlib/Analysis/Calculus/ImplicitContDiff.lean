@@ -70,6 +70,12 @@ namespace IsContDiffImplicitAt
 variable
   {n : WithTop ℕ∞} {f : E × F → G} {f' : E × F →L[𝕜] G} {a : E × F}
 
+omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G] in
+@[deprecated IsContDiffImplicitAt.ne_zero (since := "2025-12-22")]
+theorem one_le (h : IsContDiffImplicitAt n f f' a) : 1 ≤ n := by
+  rw [ENat.one_le_iff_ne_zero_withTop]
+  exact h.ne_zero
+
 /-- We record the parameters of our specific case in order to apply the general implicit function
 theorem. -/
 def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
@@ -98,12 +104,26 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
       exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
 @[simp]
-lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := rfl
+lemma implicitFunctionData_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.pt = a := rfl
 
 @[simp]
+lemma implicitFunctionData_leftFun_apply {h : IsContDiffImplicitAt n f f' a} {xy : E × F} :
+    h.implicitFunctionData.leftFun xy = xy.1 := rfl
+
+@[deprecated "use simp" (since := "2026-01-08")]
+lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := by
+  simp
+
+@[simp]
+lemma implicitFunctionData_rightFun_apply {h : IsContDiffImplicitAt n f f' a} {xy : E × F} :
+    h.implicitFunctionData.rightFun xy = f xy := rfl
+
+@[deprecated "use simp" (since := "2026-01-08")]
 lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := rfl
+    h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := by
+  simp
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
@@ -126,6 +146,10 @@ lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
     h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, f a)).2 :=
   rfl
 
+@[simp]
+lemma implicitFunction_apply (h : IsContDiffImplicitAt n f f' a) (x : E) :
+    h.implicitFunction x = (h.implicitFunctionData.implicitFunction x (f a)).2 := rfl
+
 /-- At the base point `a.1`, the implicit function evaluates to `a.2`. -/
 theorem implicitFunction_apply_self (h : IsContDiffImplicitAt n f f' a) :
     h.implicitFunction a.1 = a.2 :=
@@ -146,6 +170,11 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   ext
   · rw [h1]
   · rfl
+
+theorem eventually_implicitFunction_apply_eq (h : IsContDiffImplicitAt n f f' a) :
+    ∀ᶠ xy in 𝓝 a, f xy = f a → h.implicitFunction xy.1 = xy.2 := by
+  refine h.implicitFunctionData.implicitFunction_apply_image.mono fun xy h₁ h₂ ↦ ?_
+  simp_all
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/

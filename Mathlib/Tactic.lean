@@ -1,4 +1,4 @@
-module
+module  -- shake: keep-all
 
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
@@ -17,11 +17,6 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.ByContra
-public import Mathlib.Tactic.CC
-public import Mathlib.Tactic.CC.Addition
-public import Mathlib.Tactic.CC.Datatypes
-public import Mathlib.Tactic.CC.Lemmas
-public import Mathlib.Tactic.CC.MkProof
 public import Mathlib.Tactic.CancelDenoms
 public import Mathlib.Tactic.CancelDenoms.Core
 public import Mathlib.Tactic.Cases
@@ -32,6 +27,7 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 public import Mathlib.Tactic.CategoryTheory.Coherence
@@ -174,11 +170,13 @@ public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
+public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 public import Mathlib.Tactic.Linter.ValidatePRTitle
+public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
 public import Mathlib.Tactic.MinImports

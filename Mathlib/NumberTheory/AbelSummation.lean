@@ -148,7 +148,7 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
   have : ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), (f ↑(k + 1) - f k) * ∑ n ∈ Icc 0 k, c n =
         ∑ k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋₊, ∫ t in k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n := by
     rw [← Ico_add_one_add_one_eq_Ioc, Nat.sub_add_cancel (by lia), Eq.comm]
-    exact sum_congr rfl fun k hk ↦ (integralmulsum c hf_diff hf_int _ _ _  (mod_cast k.le_succ)
+    exact sum_congr rfl fun k hk ↦ (integralmulsum c hf_diff hf_int _ _ _ (mod_cast k.le_succ)
       le_rfl (mod_cast le_rfl) (ineqofmemIco' hk).1 <| mod_cast (ineqofmemIco' hk).2)
   rw [this, sum_integral_adjacent_intervals_Ico hb, Nat.cast_add, Nat.cast_one,
     ← integral_interval_sub_left (a := a) (c := ⌊a⌋₊ + 1),
@@ -341,9 +341,6 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
   cases n with
   | zero => simp only [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
   | succ n =>
-      have h_mes : Measurable fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ :=
-        (measurable_deriv _).mul <| Measurable.comp' (g := fun n : ℕ ↦ ∑ k ∈ Icc 0 n, ‖c k‖)
-          (fun _ _ ↦ trivial) Nat.measurable_floor
       rw [Nat.range_eq_Icc_zero_sub_one _ n.add_one_ne_zero, add_tsub_cancel_right]
       calc
         _ = ∑ k ∈ Icc 0 n, ‖f k‖ * ‖c k‖ := by simp_rw [norm_mul]
@@ -362,7 +359,7 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
         grw [setIntegral_mono_set ?_ (.of_forall fun _ ↦ norm_nonneg _)
           Set.Ioc_subset_Ioi_self.eventuallyLE]
         rw [← integrableOn_Ici_iff_integrableOn_Ioi, IntegrableOn,
-          integrable_norm_iff h_mes.aestronglyMeasurable]
+          integrable_norm_iff (by fun_prop)]
         exact (locallyIntegrableOn_mul_sum_Icc _ m.cast_nonneg hf_int).integrableOn_of_isBigO_atTop
           hg₁ hg₂
 
