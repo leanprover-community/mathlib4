@@ -29,7 +29,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E₁ H} {I' : ModelWithCorners 𝕜 E₂ H'}
   {J : ModelWithCorners 𝕜 E₃ G} {J' : ModelWithCorners 𝕜 E₄ G'} {J'' : ModelWithCorners 𝕜 E₅ H''}
-  {M M' N N' P : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {M M' N N' P : Type*} [TopologicalSpace M] --[ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
   [TopologicalSpace P] [ChartedSpace H'' P]
@@ -43,8 +43,11 @@ class ImmersedSubmanifold where
   map : M → N
   sliceModel : SliceModel F I J := by infer_instance
   -- TODO: this is too strong a condition; placeholder for the real one!
-  real_condition : IsImmersionOfComplement F I J n map
+  real_condition : n = n --IsImmersionOfComplement F I J n map
 
+-- instance [h : ImmersedSubmanifold I J M N n F] : ChartedSpace H M := sorry
+
+#exit
 namespace ImmersedSubmanifold
 
 lemma isImmersionOfComplement [h : ImmersedSubmanifold I J M N n F] :

@@ -6,7 +6,7 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Submanifold
---public import Mathlib.Geometry.Manifold.SmoothEmbedding
+public import Mathlib.Geometry.Manifold.RegularPoint
 
 /-! # The regular value theorem
 
@@ -46,10 +46,28 @@ Finite-dimensional versions:
 
 -/
 
+public noncomputable section
+
 variable {f : M → N}
 
---lemma regularValueTheorem (hf : ∀ x, HasBoundedRightInverse ())
+variable (I J) in
+def IsRegularValue (f : M → N) (y : N) := ∀ x ∈ f ⁻¹' {y}, IsRegularPoint I J f x
+
+-- Suppose M is not empty. (Otherwise, we can do anything we want.)
+-- Pick a pre-image x of y. Then mfderiv has a bounded right inverse;
+-- take the image of that right inverse.
+
+def IsRegularValue.complement {x : M} (hx : IsRegularValue I J f (f x)) : Type _ :=
+  (hx x rfl).choose.range
+
+instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedAddCommGroup hx.complement := by
+  sorry -- infer_instance
+
+instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.complement := by
+  sorry -- infer_instance
 
 #exit
--- If the differential of
-theorem foo
+--(hf : ∀ x, IsRegularPoint I J f x) :
+def regularValueTheorem {y : N} (hy : IsRegularValue I J f y) :
+    True := by
+  sorry

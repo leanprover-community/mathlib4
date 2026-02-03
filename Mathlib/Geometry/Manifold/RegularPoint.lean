@@ -57,7 +57,7 @@ lemma mdifferentiableAt_of_mfderiv_surjective {f : M → M'} (hf : Surjective (m
 variable (I I' f x) in
 /-- We say a map `f : M → M` splits at `x` if the `fderiv` of
 `writtenInExtChartAt I I f x` at `x' := extChartAt I x x` splits. -/
-def IsRegularPoint (f : M → M') (x : M) : Prop :=
+@[expose] def IsRegularPoint (f : M → M') (x : M) : Prop :=
   fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x) |>.HasBoundedRightInverse
 
 lemma isRegularPointAt_iff {f : M → M'} {x : M} :
