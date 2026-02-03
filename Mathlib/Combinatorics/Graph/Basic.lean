@@ -117,6 +117,10 @@ scoped notation "E(" G ")" => Graph.edgeSet G
 lemma IsLink.edge_mem (h : G.IsLink e x y) : e ∈ E(G) :=
   (edge_mem_iff_exists_isLink ..).2 ⟨x, y, h⟩
 
+@[simp]
+lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
+  mt IsLink.edge_mem he
+
 protected lemma IsLink.symm (h : G.IsLink e x y) : G.IsLink e y x :=
   G.isLink_symm h.edge_mem h
 
@@ -170,10 +174,6 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ s(x, y) = s(x', y') := by
   rw [h.isLink_iff, Sym2.eq_iff]
 
-@[simp]
-lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
-  mt IsLink.edge_mem he
-
 /-! ### Edge-vertex incidence -/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
@@ -184,6 +184,10 @@ def Inc (G : Graph α β) (e : β) (x : α) : Prop := ∃ y, G.IsLink e x y
 -- Cannot be @[simp] because `x` cannot be inferred by `simp`.
 lemma Inc.edge_mem (h : G.Inc e x) : e ∈ E(G) :=
   h.choose_spec.edge_mem
+
+@[simp]
+lemma not_inc_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.Inc e x :=
+  mt Inc.edge_mem he
 
 -- Cannot be @[simp] because `e` cannot be inferred by `simp`.
 lemma Inc.vertex_mem (h : G.Inc e x) : x ∈ V(G) :=
@@ -235,10 +239,6 @@ lemma Inc.eq_or_eq_or_eq (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
   obtain rfl := hy.eq_of_isLink_of_ne_left hx' hxy.symm
   obtain rfl := hz.eq_of_isLink_of_ne_left hx' hxz.symm
   exact hyz rfl
-
-@[simp]
-lemma not_inc_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.Inc e x :=
-  mt Inc.edge_mem he
 
 lemma inc_inj {G₁ G₂ : Graph α β} : G₁.Inc e = G₂.Inc f ↔ G₁.IsLink e = G₂.IsLink f := by
   constructor <;> rintro h
