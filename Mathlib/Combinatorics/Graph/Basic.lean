@@ -416,7 +416,7 @@ the incidence relation (i.e., which pairs of vertices it links) is the same in b
 def Compatible (G H : Graph α β) : Prop :=
   ∀ ⦃e⦄, e ∈ E(G) → e ∈ E(H) → ∀ x y, G.IsLink e x y ↔ H.IsLink e x y
 
-lemma Compatible.isLink_iff (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compatible H) {x y : α} :
+lemma Compatible.isLink_congr (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compatible H) {x y : α} :
     G.IsLink e x y ↔ H.IsLink e x y :=
   h heG heH x y
 
