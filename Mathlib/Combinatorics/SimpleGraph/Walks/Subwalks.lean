@@ -29,7 +29,7 @@ namespace SimpleGraph
 
 namespace Walk
 
-variable {V : Type*} {G G' : SimpleGraph V}
+variable {V : Type*} {G G' : SimpleGraph V} {u v u' v' : V}
 
 /-- `p.IsSubwalk q` means that the walk `p` is a contiguous subwalk of the walk `q`. -/
 def IsSubwalk {u₁ v₁ u₂ v₂} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) : Prop :=
@@ -119,10 +119,55 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     apply ext_support
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
       List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
-    rw [Nat.min_eq_left (by grind [length_support]), List.drop_append, List.drop_append,
-      List.drop_eq_nil_of_le (by lia), List.drop_eq_nil_of_le (by grind [length_support]),
+    rw [Nat.min_eq_left (by grind), List.drop_append, List.drop_append,
+      List.drop_eq_nil_of_le (by lia), List.drop_eq_nil_of_le (by grind),
       p₁.support_eq_cons]
     simp +arith
+
+theorem isSubwalk_iff_darts_isInfix {p₁ : G.Walk u v} {p₂ : G.Walk u' v'} (hnil : ¬p₁.Nil) :
+    p₁.IsSubwalk p₂ ↔ p₁.darts <:+: p₂.darts := by
+  rw [isSubwalk_iff_support_isInfix, List.infix_iff_getElem?, List.infix_iff_getElem?]
+  refine ⟨fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩,
+    fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩⟩
+  · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
+    ext <;> grind [fst_darts_getElem, snd_darts_getElem]
+  · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
+    by_cases hi' : i = p₁.length
+    · have := h <| i - 1
+      grind [not_nil_iff_lt_length, snd_darts_getElem]
+    have := h i
+    grind [fst_darts_getElem]
+
+@[simp]
+theorem isSubwalk_nil_iff_mem_support (p : G.Walk u v) :
+    (nil : G.Walk v' v').IsSubwalk p ↔ v' ∈ p.support :=
+  isSubwalk_iff_support_isInfix.trans <| p.support.singleton_infix_iff _
+
+theorem isSubwalk_toWalk_iff_mem_darts (p : G.Walk u v) (h : G.Adj u' v') :
+    h.toWalk.IsSubwalk p ↔ ⟨⟨u', v'⟩, h⟩ ∈ p.darts := by
+  simp [isSubwalk_iff_darts_isInfix, List.singleton_infix_iff]
+
+theorem isSubwalk_toWalk_adj_iff_mem_darts {d : G.Dart} (p : G.Walk u v) :
+    d.adj.toWalk.IsSubwalk p ↔ d ∈ p.darts :=
+  isSubwalk_toWalk_iff_mem_darts ..
+
+theorem isSubwalk_toWalk_iff_mem_edges {p : G.Walk u v} (h : G.Adj u' v') :
+    h.toWalk.IsSubwalk p ∨ h.symm.toWalk.IsSubwalk p ↔ s(u', v') ∈ p.edges := by
+  rw [isSubwalk_toWalk_iff_mem_darts, isSubwalk_toWalk_iff_mem_darts, edges, List.mem_map]
+  refine ⟨fun h ↦ by grind [Dart.edge], fun h ↦ ?_⟩
+  have ⟨d, hd, h⟩ := h
+  rw [Dart.edge, Sym2.eq, Sym2.rel_iff'] at h
+  refine h.elim (fun h ↦ .inl ?_) (fun h ↦ .inr ?_)
+    <;> convert hd using 2
+    <;> exact h.symm
+
+theorem infix_support_iff_mem_edges {p : G.Walk u v} :
+    [u', v'] <:+: p.support ∨ [v', u'] <:+: p.support ↔ s(u', v') ∈ p.edges := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have := h.elim adj_of_infix_support (adj_of_infix_support · |>.symm)
+    simpa [← isSubwalk_toWalk_iff_mem_edges this, isSubwalk_iff_support_isInfix]
+  · have := (isSubwalk_toWalk_iff_mem_edges <| p.adj_of_mem_edges h).mpr h
+    simpa [isSubwalk_iff_support_isInfix]
 
 lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₁) :
     p₁ = p₂ := by
