@@ -202,8 +202,7 @@ open Classical in
 lemma iUnion (hf : IsSigmaSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ preVariation f (s i)) (preVariation f (⋃ i, s i)) := by
-  refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_ge ?_ ?_)
-  · exact sum_le_preVariation_iUnion f hs hs'
+  refine ENNReal.summable.hasSum_iff.mpr (le_antisymm (sum_le_preVariation_iUnion f hs hs') ?_)
   · refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
     simp only [preVariation, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb
     obtain ⟨Q, hQ⟩ := hb
