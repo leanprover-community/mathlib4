@@ -67,6 +67,6 @@ open scoped FixedPoints
 variable {α : Type*} [Group α] [MulDistribMulAction G α]
 
 instance : MulDistribMulAction (G ⧸ H) (α ^* H) :=
-  instQuotientSubgroupSubtypeMemSubmonoidSubmonoid
+  inferInstanceAs (MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H α))
 
 end MulDistribMulAction
