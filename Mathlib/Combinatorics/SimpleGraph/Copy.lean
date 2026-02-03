@@ -299,7 +299,7 @@ theorem isContained_iff_exists_iso_subgraph :
 theorem isContained_completeGraph_of_card_le_card [Fintype V] [Fintype W]
     (h : Fintype.card V ≤ Fintype.card W) : G ⊑ completeGraph W := by
   obtain ⟨f, hf⟩ := Function.Embedding.nonempty_of_card_le h
-  exact ⟨⟨f, by grind [top_adj, SimpleGraph.irrefl] ⟩, hf⟩
+  exact ⟨⟨f, by grind [top_adj, SimpleGraph.irrefl]⟩, hf⟩
 
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
