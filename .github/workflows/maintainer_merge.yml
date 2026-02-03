@@ -27,6 +27,7 @@ jobs:
       PR_TITLE_PR: ${{ github.event.pull_request.title }}
       PR_URL: ${{ github.event.issue.html_url }}${{ github.event.pull_request.html_url }}
       EVENT_NAME: ${{ github.event_name }}
+      HAS_TRIAGE_SECRET: ${{ secrets.MATHLIB_TRIAGE_APP_ID != '' }}
     name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
     if: >- # crude check to skip running this on most reviews / comments
@@ -37,7 +38,7 @@ jobs:
       )
     steps:
       - name: Generate app token
-        if: ${{ secrets.MATHLIB_TRIAGE_APP_ID != '' }}
+        if: ${{ env.HAS_TRIAGE_SECRET == 'true' }}
         id: app-token
         uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
