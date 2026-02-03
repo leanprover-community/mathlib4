@@ -697,17 +697,66 @@ lemma hasDerivWithinAt_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn
   exact hderiv.congr (fun s hs ↦ by rw [compProj_of_mem hs, heq, ODE.picard_apply])
     (by rw [compProj_of_mem ht, heq, ODE.picard_apply])
 
+/-- Restrict a continuous map from `Icc tmin tmax` to a smaller interval `Icc tmin' tmax'`. -/
+def restrictIcc {tmin tmax tmin' tmax' : ℝ}
+    (α : C(Icc tmin tmax, E)) (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax) :
+    C(Icc tmin' tmax', E) :=
+  α.comp ⟨fun t ↦ ⟨t.1, ⟨htmin.trans t.2.1, t.2.2.trans htmax⟩⟩,
+    continuous_subtype_val.subtype_mk _⟩
+
+omit [NormedSpace ℝ E] [CompleteSpace E] in
+@[simp]
+lemma restrictIcc_apply {tmin tmax tmin' tmax' : ℝ}
+    (α : C(Icc tmin tmax, E)) (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax)
+    (t : Icc tmin' tmax') :
+    restrictIcc α htmin htmax t = α ⟨t.1, ⟨htmin.trans t.2.1, t.2.2.trans htmax⟩⟩ := rfl
+
+omit [NormedSpace ℝ E] [CompleteSpace E] in
+lemma range_restrictIcc_subset {tmin tmax tmin' tmax' : ℝ}
+    (α : C(Icc tmin tmax, E)) (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax) :
+    range (restrictIcc α htmin htmax) ⊆ range α := by
+  intro y hy
+  obtain ⟨t, ht⟩ := hy
+  exact ⟨⟨t.1, ⟨htmin.trans t.2.1, t.2.2.trans htmax⟩⟩, ht⟩
+
+/-- If `T f u t₀ (x₀, α) = 0` on `[tmin, tmax]`, then it also holds on any smaller interval
+`[tmin', tmax']` containing `t₀`. This reflects the fact that being an integral curve is a local
+property: the ODE `α' = f ∘ α` with initial condition `α(t₀) = x₀` has the same solution on any
+interval containing `t₀`. -/
+lemma T_restrictIcc_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0)
+    {tmin' tmax' : ℝ} (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax)
+    (ht₀min : tmin' ≤ t₀.1) (ht₀max : t₀.1 ≤ tmax') :
+    T f u ⟨t₀.1, ⟨ht₀min, ht₀max⟩⟩ (x₀, restrictIcc α htmin htmax) = 0 := by
+  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
+  have hα' : range (restrictIcc α htmin htmax) ⊆ u :=
+    (range_restrictIcc_subset α htmin htmax).trans hα
+  ext t
+  -- TODO: more lemmas going straight from `integralCMLM` to `integralFun`?
+  rw [T, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
+    ContinuousMap.zero_apply, curry0_apply, integralCMLM_apply_if_pos hg,
+    integralCM_apply_if_pos hα', integralFun, restrictIcc_apply]
+  simp_rw [uncurry0_apply]
+  rw [eq_picard_of_T_eq_zero hf hα hT ⟨t.1, ⟨htmin.trans t.2.1, t.2.2.trans htmax⟩⟩,
+    ODE.picard_apply, sub_add_cancel_left, neg_add_eq_zero]
+  apply intervalIntegral.integral_congr
+  intro τ hτ
+  have hτ' : τ ∈ Icc tmin tmax :=
+    uIcc_subset_Icc t₀.2 ⟨htmin.trans t.2.1, t.2.2.trans htmax⟩ hτ
+  simp only [compProj, restrictIcc_apply, projIcc_of_mem (t₀.2.1.trans t₀.2.2) hτ',
+    projIcc_of_mem (ht₀min.trans ht₀max) (uIcc_subset_Icc ⟨ht₀min, ht₀max⟩ t.2 hτ)]
+
 /-- Given a C^1 vector field at x₀ and any neighborhood u of x₀ on which f is continuous, there
 exists an integral curve on some time interval whose range is contained in u and satisfies
 T f u t₀ (x₀, α) = 0.
 
 This lemma packages the Picard-Lindelöf construction in a filter-friendly form: the caller provides
-a neighborhood and an upper bound on the time interval size, and the lemma returns an integral
-curve staying within that neighborhood on a time interval of size at most the given bound. -/
+a neighborhood, and the lemma returns an integral curve staying within that neighborhood. -/
 lemma exists_integralCurve_T_eq_zero {f : E → E} {x₀ : E}
-    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) {u : Set E} (hu : u ∈ 𝓝 x₀) (hfu : ContinuousOn f u)
-    {εbound : ℝ} (hεbound : 0 < εbound) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (_ : ε ≤ εbound), ∃ α : C(Icc (t₀ - ε) (t₀ + ε), E),
+    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) {u : Set E} (hu : u ∈ 𝓝 x₀) (hfu : ContinuousOn f u) :
+    ∃ (ε : ℝ) (hε : 0 < ε), ∃ α : C(Icc (t₀ - ε) (t₀ + ε), E),
       range α ⊆ u ∧ T f u ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 := by
   -- Get Picard-Lindelöf parameters from the C^1 condition
   obtain ⟨ε₀, hε₀pos, a, r, L, K, hrpos, hPL⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
@@ -726,13 +775,12 @@ lemma exists_integralCurve_T_eq_zero {f : E → E} {x₀ : E}
   have ha_small_pos : 0 < a_small := ha_pos_real
   have ha_small_lt_a : (a_small : ℝ) < a := (min_le_left _ _).trans_lt (by linarith)
   have ha_small_lt_δ : (a_small : ℝ) < δ := (min_le_right _ _).trans_lt (by linarith)
-  -- Choose ε small enough: ε ≤ ε₀, ε ≤ εbound, and L * ε < a_small
-  set ε := min (min (ε₀ / 2) εbound) ((a_small : ℝ) / (L + 1)) with hε_def
+  -- Choose ε small enough: ε ≤ ε₀ and L * ε < a_small
+  set ε := min (ε₀ / 2) ((a_small : ℝ) / (L + 1)) with hε_def
   have hεpos : 0 < ε := by
-    apply lt_min (lt_min (by linarith) hεbound)
+    apply lt_min (by linarith)
     exact div_pos (NNReal.coe_pos.mpr ha_small_pos) (by positivity)
-  have hε_le_ε₀ : ε ≤ ε₀ := ((min_le_left _ _).trans (min_le_left _ _)).trans (by linarith)
-  have hε_le_εbound : ε ≤ εbound := (min_le_left _ _).trans (min_le_right _ _)
+  have hε_le_ε₀ : ε ≤ ε₀ := (min_le_left _ _).trans (by linarith)
   have hLε_lt_a_small : (L : ℝ) * ε < a_small := by
     have hapos' : (0 : ℝ) < a_small := NNReal.coe_pos.mpr ha_small_pos
     calc (L : ℝ) * ε
@@ -793,7 +841,7 @@ lemma exists_integralCurve_T_eq_zero {f : E → E} {x₀ : E}
   -- T = 0
   have hT_zero : T f u ⟨t₀, by simp [le_of_lt hεpos]⟩ (x₀, α) = 0 :=
     T_eq_zero_of_isFixedPt_next hfu hPL' hα_range hα_fixed
-  exact ⟨ε, hεpos, hε_le_εbound, α, hα_range, hT_zero⟩
+  exact ⟨ε, hεpos, α, hα_range, hT_zero⟩
 
 /-! ## Derivative of `T` -/
 
@@ -995,19 +1043,25 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
         range α ⊆ u ∧
         T f u ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 ∧
         ‖fderivIntegralCurry0 f u ⟨t₀, by simp [le_of_lt hε]⟩ α‖ < 1 := by
-  -- Get the fderiv bound from exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one
-  obtain ⟨u, hu_nhds, hu_open, ε₁, hε₁pos, hfu, hfderiv_bound⟩ :=
+  obtain ⟨u, hu_nhds, hu_open, ε₀, hε₀pos, hfu, hfderiv_bound⟩ :=
     exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one hf
-  -- Get an integral curve with range in u and ε ≤ ε₁ / 4
-  obtain ⟨ε, hεpos, hε_le, α, hα_range, hT_zero⟩ :=
-    exists_integralCurve_T_eq_zero hf t₀ hu_nhds hfu.continuousOn (by linarith : 0 < ε₁ / 4)
-  -- The interval size 2ε < ε₁ guarantees the fderiv bound
+  -- Get an integral curve with range in `u`
+  obtain ⟨ε₁, hε₁pos, α₁, hα₁_range, hT₁_zero⟩ :=
+    exists_integralCurve_T_eq_zero hf t₀ hu_nhds hfu.continuousOn
+  -- Restrict to `ε = min ε₁ (ε₀/4)` so that `2ε < ε₀`
+  let ε := min (ε₀ / 4) ε₁
+  have hεpos : 0 < ε := lt_min (by linarith) hε₁pos
+  have hε_le : ε ≤ ε₀ / 4 := min_le_left _ _
+  have hε_le_ε₁ : ε ≤ ε₁ := min_le_right _ _
+  let α := restrictIcc α₁ (by linarith : t₀ - ε₁ ≤ t₀ - ε) (by linarith : t₀ + ε ≤ t₀ + ε₁)
+  have hα_range : range α ⊆ u := (range_restrictIcc_subset α₁ _ _).trans hα₁_range
+  have hT_zero : T f u ⟨t₀, by simp [le_of_lt hεpos]⟩ (x₀, α) = 0 :=
+    T_restrictIcc_eq_zero hfu.continuousOn hα₁_range hT₁_zero (by linarith) (by linarith)
+      (by simp [le_of_lt hεpos]) (by simp [le_of_lt hεpos])
   have hα_norm : ‖fderivIntegralCurry0 f u ⟨t₀, by simp [le_of_lt hεpos]⟩ α‖ < 1 := by
-    have hinterval : |(t₀ + ε) - (t₀ - ε)| < ε₁ := by
-      have h1 : (t₀ + ε) - (t₀ - ε) = 2 * ε := by ring
-      rw [h1, abs_of_pos (by linarith : 0 < 2 * ε)]
-      linarith
-    exact hfderiv_bound _ _ ⟨t₀, by simp [le_of_lt hεpos]⟩ α hα_range hinterval
+    apply hfderiv_bound _ _ ⟨t₀, by simp [le_of_lt hεpos]⟩ α hα_range
+    rw [add_sub_sub_cancel, ← two_mul, abs_of_pos (by positivity)]
+    linarith
   exact ⟨u, hu_nhds, hu_open, hfu, ε, hεpos, α, hα_range, hT_zero, hα_norm⟩
 
 /-- When f is C^1 at x₀, the implicit function theorem provides a local flow: there exist
@@ -1027,37 +1081,20 @@ lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (
         ContDiffAt ℝ 1 lf x₀ := by
   obtain ⟨u, _, hu_open, hf_diff, ε, hεpos, α₀, hα₀_range, hT_zero, hnorm⟩ :=
     exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one hf t₀
-  set t₀' : Icc (t₀ - ε) (t₀ + ε) := ⟨t₀, by simp [le_of_lt hεpos]⟩
-  set h := isContDiffImplicitAt_T hf_diff hu_open t₀' x₀ hα₀_range hnorm le_rfl
+  let t₀' : Icc (t₀ - ε) (t₀ + ε) := ⟨t₀, by simp [le_of_lt hεpos]⟩
+  have h := isContDiffImplicitAt_T hf_diff hu_open t₀' x₀ hα₀_range hnorm le_rfl
   refine ⟨ε, hεpos, h.implicitFunction, ?_, h.contDiffAt_implicitFunction⟩
-  -- α₀ = h.implicitFunction x₀ by the implicit function theorem
-  have hα₀_eq : h.implicitFunction x₀ = α₀ := h.implicitFunction_apply_self
   -- Since lf is continuous and range α₀ ⊆ u (open), range (lf x) ⊆ u for x near x₀
   have hcont_lf : ContinuousAt h.implicitFunction x₀ :=
     h.contDiffAt_implicitFunction.continuousAt
-  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ u := by
-    -- Use continuity: for x near x₀, ‖lf x - lf x₀‖ is small, so range (lf x) ⊆ u
-    -- Since range α₀ ⊆ u and u is open, there's room for perturbation
-    have hcompact : IsCompact (range α₀) := isCompact_range α₀.continuous
-    -- Find δ > 0 such that thickening δ (range α₀) ⊆ u
-    obtain ⟨δ, hδpos, hthickening⟩ := hcompact.exists_thickening_subset_open hu_open hα₀_range
-    -- For x near x₀, ‖lf x - α₀‖ < δ (in sup norm)
-    have hcont_near : ∀ᶠ x in 𝓝 x₀, dist (h.implicitFunction x) α₀ < δ := by
-      have := hcont_lf.eventually (Metric.ball_mem_nhds (h.implicitFunction x₀) hδpos)
-      simp only [hα₀_eq] at this
-      exact this
-    filter_upwards [hcont_near] with x hx
-    intro y hy
-    obtain ⟨t, rfl⟩ := hy
-    apply hthickening
-    rw [Metric.mem_thickening_iff]
-    exact ⟨α₀ t, mem_range_self t, (ContinuousMap.dist_apply_le_dist t).trans_lt hx⟩
+  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ u :=
+    hcont_lf.eventually <| ContinuousMap.eventually_range_subset hu_open <| by
+      simp only [h.implicitFunction_apply_self]; exact hα₀_range
   filter_upwards [h.apply_implicitFunction, hrange_near] with x hT_eq hrange
-  have hfu : ContinuousOn f u := hf_diff.continuousOn
   constructor
   · intro t ht
-    exact hasDerivWithinAt_of_T_eq_zero hfu hrange (by rw [hT_eq, hT_zero]) ht
-  · exact eq_of_T_eq_zero hfu hrange (by rw [hT_eq, hT_zero])
+    exact hasDerivWithinAt_of_T_eq_zero hf_diff.continuousOn hrange (by rw [hT_eq, hT_zero]) ht
+  · exact eq_of_T_eq_zero hf_diff.continuousOn hrange (by rw [hT_eq, hT_zero])
 
 end
 
