@@ -6,6 +6,7 @@ Authors: Johan Commelin, Chris Hughes
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Fintype.Inv
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.Tactic.FieldSimp

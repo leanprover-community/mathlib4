@@ -271,7 +271,7 @@ instance : Min (Submonoid M) :=
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mem_inf {p p' : Submonoid M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
