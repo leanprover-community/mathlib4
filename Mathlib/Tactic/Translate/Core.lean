@@ -200,7 +200,7 @@ attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
 
 /-- Get the translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option TranslationInfo :=
-  (t.translations.getState env).find?
+  t.translations.find? env
 
 /-- Get the translation name for the given name. -/
 def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
@@ -246,7 +246,7 @@ def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
 where
   /-- Insert only one direction of a translation. -/
   insertTranslationAux (src : Name) (t : TranslateData) (info : TranslationInfo) : CoreM Unit := do
-    if let some info' := (t.translations.getState (← getEnv)).find? src then
+    if let some info' := t.translations.find? (← getEnv) src then
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
       if info.translation != info'.translation then
