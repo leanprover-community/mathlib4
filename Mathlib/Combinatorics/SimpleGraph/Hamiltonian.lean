@@ -106,6 +106,15 @@ theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surj
   .of_comp <| p.getVert_comp_val_eq_get_support ▸
     isHamiltonian_iff_support_get_bijective.mp hp |>.surjective
 
+lemma IsPath.isHamiltonian_iff_length_eq_card [Fintype α] (hp : p.IsPath) :
+    p.IsHamiltonian ↔ p.length = Fintype.card α - 1 := by
+  by_cases! h : IsEmpty α
+  · exact h.elim' a
+  refine ⟨fun h ↦ h.length_eq, fun h ↦ isHamiltonian_iff_support_get_bijective.mpr ?_⟩
+  have := p.isPath_iff_injective_get_support.mp hp
+  refine ⟨this, this.surjective_of_finite (Fintype.equivFinOfCardEq ?_).symm |>.of_comp⟩
+  simp_rw [length_support, h, Nat.sub_one_add_one Fintype.card_ne_zero]
+
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
   isHamiltonian_tail : p.tail.IsHamiltonian
@@ -157,6 +166,13 @@ lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
 lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
     p.support.count b = 1 := by
   rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
+
+lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
+    p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.length = Fintype.card α := by
+  refine ⟨fun h ↦ ⟨h.isCycle, h.length_eq⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  refine IsPath.mk' ?_ |>.isHamiltonian_iff_length_eq_card.mpr ?_
+  · exact (support_tail_of_not_nil _ h₁.not_nil) ▸ h₁.support_nodup
+  · grind [length_tail_add_one, IsCycle.not_nil]
 
 end Walk
 

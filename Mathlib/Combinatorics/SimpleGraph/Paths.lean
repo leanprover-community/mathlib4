@@ -492,6 +492,19 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
     (by simp only [Set.mem_setOf_eq]; lia) h'
   lia
 
+theorem isCycle_iff_tail_isPath {p : G.Walk u u} : p.IsCycle ↔ p.tail.IsPath ∧ 2 < p.length := by
+  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  · exact ⟨IsPath.mk' <| (support_tail_of_not_nil _ h.not_nil) ▸ h.support_nodup, h.three_le_length⟩
+  · cases p with
+    | nil => simp_all
+    | cons h' p =>
+      simp +arith only [getVert_cons_succ, tail_cons, isPath_copy, length_cons] at h₁ h₂
+      refine (cons_isCycle_iff p _).mpr ⟨h₁, fun hh ↦ ?_⟩
+      have : p.support[0] = p.support[p.length - 1] := by
+        simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
+      have := isPath_iff_injective_get_support _ |>.mp h₁ this
+      lia
+
 /-! ### Walk decompositions -/
 
 section WalkDecomp
