@@ -1145,11 +1145,11 @@ instance Bool.instDistribLattice : DistribLattice Bool := inferInstance
 
 variable [LinearOrder α] {p : α → α → Prop}
 
-lemma pairwise_iff_lt (hp : ∀ a b, p a b → p b a) : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
-  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp _ _ <| h _ _ hab
+lemma pairwise_iff_lt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, a < b → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
 
-lemma pairwise_iff_gt (hp : ∀ a b, p a b → p b a) : Pairwise p ↔ ∀ ⦃a b⦄, b < a → p a b := by
-  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp _ _ <| h _ _ hab
+lemma pairwise_iff_gt (hp : Symmetric p) : Pairwise p ↔ ∀ ⦃a b⦄, b < a → p a b := by
+  simpa [Pairwise, ← lt_or_lt_iff_ne, or_imp, forall_and] using fun h a b hab ↦ hp <| h _ _ hab
 
 alias ⟨_, Pairwise.of_lt⟩ := pairwise_iff_lt
 alias ⟨_, Pairwise.of_gt⟩ := pairwise_iff_gt
