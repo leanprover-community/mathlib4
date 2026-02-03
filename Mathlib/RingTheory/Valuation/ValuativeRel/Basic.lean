@@ -190,6 +190,13 @@ theorem zero_vle (x : R) : 0 ≤ᵥ x := by
 @[deprecated (since := "2025-12-20")] alias zero_rel := zero_vle
 
 @[simp]
+theorem not_vlt_zero (x : R) : ¬ x <ᵥ 0 := by
+  simp
+
+theorem vlt.ne_zero (h : x <ᵥ y) : y ≠ 0 := by
+  rintro rfl; exact not_vlt_zero _ h
+
+@[simp]
 lemma zero_vlt_one : (0 : R) <ᵥ 1 :=
   not_vle_one_zero
 
