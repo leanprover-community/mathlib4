@@ -140,10 +140,7 @@ theorem Perm.exists_extending_pair {α β : Type*} [Finite α] [Finite β]
     (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
     ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
   classical
-  let e : Set.range f ≃ Set.range g :=
-    (Equiv.ofInjective f hf).symm.trans (Equiv.ofInjective g hg)
-  refine ⟨e.extendSubtype, fun a => ?_⟩
-  rw [Equiv.extendSubtype_apply_of_mem e (f a) (Set.mem_range_self a)]
-  simp only [e, Equiv.trans_apply, Equiv.ofInjective_symm_apply, Equiv.ofInjective_apply]
+  refine ⟨((Equiv.ofInjective f hf).symm.trans (Equiv.ofInjective g hg)).extendSubtype, ?_⟩
+  simp [Equiv.extendSubtype_apply_of_mem]
 
 end Equiv
