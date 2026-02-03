@@ -315,15 +315,15 @@ theorem IsCompact.nhds_hausdorff_eq_nhds_vietoris {s : Set α} (hs : IsCompact s
 
 namespace UniformSpace.hausdorff
 
-instance [CompactSpace α] : CompactSpace (Set α) := by
-  constructor
-  rw [isCompact_iff_ultrafilter_le_nhds]
-  rintro f -
-  let := TopologicalSpace.vietoris α
-  -- `f.lim` is the limit of `f` in the Vietoris topology
-  refine ⟨closure f.lim, Set.mem_univ _, ?_⟩
-  grw [isClosed_closure.isCompact.nhds_hausdorff_eq_nhds_vietoris,
-    ← TopologicalSpace.vietoris.specializes_closure.nhds_le_nhds, f.le_nhds_lim]
+instance [CompactSpace α] : CompactSpace (Set α) where
+  isCompact_univ := by
+    rw [isCompact_iff_ultrafilter_le_nhds]
+    rintro f -
+    let := TopologicalSpace.vietoris α
+    -- `f.lim` is the limit of `f` in the Vietoris topology
+    refine ⟨closure f.lim, Set.mem_univ _, ?_⟩
+    grw [isClosed_closure.isCompact.nhds_hausdorff_eq_nhds_vietoris,
+      ← TopologicalSpace.vietoris.specializes_closure.nhds_le_nhds, f.le_nhds_lim]
 
 end UniformSpace.hausdorff
 
@@ -435,10 +435,9 @@ theorem uniformContinuous_closure : UniformContinuous (Closeds.closure (α := α
 theorem continuous_closure : Continuous (Closeds.closure (α := α)) :=
   uniformContinuous_closure.continuous
 
-instance [CompactSpace α] : CompactSpace (Closeds α) := by
-  constructor
-  convert (isCompact_univ (X := Set α)).image continuous_closure
-  rw [Set.image_univ, gi.l_surjective.range_eq]
+instance [CompactSpace α] : CompactSpace (Closeds α) where
+  isCompact_univ := by simpa [gi.l_surjective.range_eq]
+    using isCompact_univ.image continuous_closure
 
 @[simp]
 theorem compactSpace_iff : CompactSpace (Closeds α) ↔ CompactSpace α := by
