@@ -208,8 +208,8 @@ lemma iUnion (hf : IsSigmaSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     obtain ⟨Q, hQ⟩ := hb
     let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
     let P (i : ℕ) := Q.restrict (b := s' i) (Set.subset_iUnion s i)
-    have splitting : ∑ q ∈ Q.parts, f q ≤ ∑' i, ∑ p ∈ (P i).parts, f p := by
-      calc ∑ q ∈ Q.parts, f q
+    have splitting : ∑ q ∈ Q.parts, f q ≤ ∑' i, ∑ p ∈ (P i).parts, f p := calc
+        ∑ q ∈ Q.parts, f q
         _ ≤ ∑ q ∈ Q.parts, ∑' i, f (q ⊓ s' i) := by
             apply Finset.sum_le_sum fun q hq => ?_
             have hq_eq : q.val = ⋃ i, q.val ∩ s i := by
