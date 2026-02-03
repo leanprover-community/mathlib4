@@ -504,11 +504,10 @@ lemma ofTree_toTree (p) : ofTree p.toTree = p := by
   · simp [h, toTree, ofTree]
   · rw [toTree]
     simp_rw [h, ite_false, ofTree]
-    have := semilength_insidePart_lt h
-    have := semilength_outsidePart_lt h
     rw [ofTree_toTree p.insidePart, ofTree_toTree p.outsidePart]
     exact nest_insidePart_add_outsidePart h
 termination_by p.semilength
+decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
 
 lemma toTree_ofTree : ∀ t, (ofTree t).toTree = t
   | Tree.nil => by simp [ofTree, toTree]
