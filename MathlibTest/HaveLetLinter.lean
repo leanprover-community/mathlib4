@@ -28,7 +28,7 @@ example : True := by
   tauto
 
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 
@@ -57,7 +57,7 @@ example : True := by
   exact .intro
 
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 
@@ -70,7 +70,7 @@ example : True := by
   exact .intro
 
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 
@@ -83,7 +83,7 @@ example : True := by
   exact .intro
 
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: '_a : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 
@@ -114,7 +114,7 @@ example : True := by
 set_option linter.haveLet 0 in
 set_option linter.haveLet 1 in
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 
@@ -127,7 +127,7 @@ example : True := by
   exact .intro
   exact 0
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 example : True := by
   have := And.intro (Nat.add_comm ?_ ?_) (Nat.add_comm ?_ ?_)
@@ -135,7 +135,7 @@ example : True := by
   noise
   repeat exact 0
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 example (h : False) : True := by
   have : False := h
@@ -145,7 +145,7 @@ example (h : False) : True := by
 set_option linter.haveLet 0 in
 set_option linter.haveLet 1 in
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
 

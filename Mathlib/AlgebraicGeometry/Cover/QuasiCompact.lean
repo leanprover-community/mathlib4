@@ -104,8 +104,8 @@ instance [QuasiCompactCover 𝒰] {T : Scheme.{u}} (f : T ⟶ S) :
   obtain ⟨s, hf, V, hc, (heq : _ = (U : Set S))⟩ := hU.isCompactOpenCovered 𝒰
   refine ⟨s, hf, fun i hi ↦ pullback.fst f (𝒰.f i) ⁻¹ᵁ U' ⊓ pullback.snd f (𝒰.f i) ⁻¹ᵁ (V i hi),
       fun i hi ↦ ?_, ?_⟩
-  · exact hU'.isCompact_pullback_inf (hc _ _) hU (by simpa using hsub) <| show _ ⊆ _ by
-      simpa [← heq, Set.range_comp] using Set.subset_iUnion_of_subset i
+  · exact hU'.isCompact_pullback_inf (hc _ _) hU (by simpa using hsub) <| by
+      simpa [← SetLike.coe_subset_coe, ← heq, Set.range_comp] using Set.subset_iUnion_of_subset i
         (Set.subset_iUnion_of_subset hi (Set.subset_preimage_image _ _))
   · refine subset_antisymm (by simp) (fun x hx ↦ ?_)
     have : f x ∈ (U : Set S) := hsub ⟨x, hx, rfl⟩
@@ -159,6 +159,12 @@ instance {P : MorphismProperty Scheme.{u}} [P.ContainsIdentities] [P.RespectsIso
     {X Y : Scheme.{u}} {f : X ⟶ Y} [IsIso f] :
     QuasiCompactCover (Scheme.coverOfIsIso (P := P) f).toPreZeroHypercover :=
   of_isOpenMap (fun _ ↦ f.homeomorph.isOpenMap)
+
+instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒰] : QuasiCompactCover (𝒰.sum 𝒱) :=
+  .of_hom (PreZeroHypercover.sumInl _ _)
+
+instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒱] : QuasiCompactCover (𝒰.sum 𝒱) :=
+  .of_hom (PreZeroHypercover.sumInr _ _)
 
 end QuasiCompactCover
 
