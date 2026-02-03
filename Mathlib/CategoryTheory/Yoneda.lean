@@ -533,6 +533,17 @@ theorem reprW_hom_app (F : Cᵒᵖ ⥤ Type v₁) [F.IsRepresentable]
     F.reprW.hom.app X f = F.map f.op F.reprx := by
   apply RepresentableBy.homEquiv_eq
 
+/-- If `F` is representable, it is, modulo universe lifting, isomorphic to
+`Hom(-, X)` for the representing object `X`. -/
+noncomputable def uliftYonedaReprXIso (F : Cᵒᵖ ⥤ Type (max v v₁)) [F.IsRepresentable] :
+    uliftYoneda.{v}.obj F.reprX ≅ F :=
+  (RepresentableBy.equivUliftYonedaIso F _) F.representableBy
+
+lemma uliftYonedaReprXIso_hom_app (F : Cᵒᵖ ⥤ Type (max v v₁)) [F.IsRepresentable]
+    (X : Cᵒᵖ) (f : ULift (unop X ⟶ F.reprX)) :
+    F.uliftYonedaReprXIso.hom.app X f = F.map f.down.op F.reprx :=
+  RepresentableBy.homEquiv_eq _ _
+
 end Representable
 
 section Corepresentable
@@ -571,6 +582,17 @@ theorem coreprW_hom_app (F : C ⥤ Type v₁) [F.IsCorepresentable] (X : C) (f :
     F.coreprW.hom.app X f = F.map f F.coreprx := by
   apply CorepresentableBy.homEquiv_eq
 
+/-- If `F` is corepresentable, it is, modulo universe lifting, isomorphic to
+`Hom(X, -)` for the corepresenting object `X`. -/
+noncomputable def uliftCoyonedaCoreprXIso (F : C ⥤ Type (max v v₁)) [F.IsCorepresentable] :
+    uliftCoyoneda.{v}.obj (op F.coreprX) ≅ F :=
+  (CorepresentableBy.equivUliftCoyonedaIso F _) F.corepresentableBy
+
+lemma uliftCoyonedaCoreprXIso_hom_app (F : C ⥤ Type (max v v₁)) [F.IsCorepresentable]
+    (X : C) (f : ULift (F.coreprX ⟶ X)) :
+    F.uliftCoyonedaCoreprXIso.hom.app X f = F.map f.down F.coreprx :=
+  CorepresentableBy.homEquiv_eq _ _
+
 end Corepresentable
 
 lemma isRepresentable_comp_uliftFunctor_iff {F : Cᵒᵖ ⥤ Type v} :
@@ -582,6 +604,12 @@ lemma isCorepresentable_comp_uliftFunctor_iff {F : C ⥤ Type v} :
     (F ⋙ uliftFunctor.{w}).IsCorepresentable ↔ F.IsCorepresentable where
   mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv R⟩⟩
   mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv.symm R⟩⟩
+
+instance (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] : (F ⋙ uliftFunctor.{w}).IsRepresentable :=
+  isRepresentable_comp_uliftFunctor_iff.mpr ‹_›
+
+instance (F : C ⥤ Type v) [F.IsCorepresentable] : (F ⋙ uliftFunctor.{w}).IsCorepresentable :=
+  isCorepresentable_comp_uliftFunctor_iff.mpr ‹_›
 
 end Functor
 
