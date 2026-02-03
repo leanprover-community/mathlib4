@@ -8,8 +8,9 @@ on:
       - 'trying.tmp*'
       - 'staging*.tmp'
       - 'nolints'
-      # ignore staging branch used by bors, this is handled by bors.yml
+      # ignore staging and trying branches used by bors, these are handled by bors.yml
       - 'staging'
+      - 'trying'
       - 'master'
   pull_request:
 
