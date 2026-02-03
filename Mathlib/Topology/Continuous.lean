@@ -98,9 +98,9 @@ theorem preimage_interior_subset_interior_preimage {t : Set Y} (hf : Continuous 
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 
 theorem continuous_iff_preimage_interior_subset_interior_preimage :
-    Continuous f ↔ ∀ s, f ⁻¹' (interior s) ⊆ interior (f ⁻¹' s) := by
-  refine ⟨fun h s ↦ preimage_interior_subset_interior_preimage h, fun h ↦ ⟨fun s hs ↦ ?_⟩⟩
-  exact subset_interior_iff_isOpen.mp <| by grw [← h, hs.interior_eq]
+    Continuous f ↔ ∀ s, f ⁻¹' (interior s) ⊆ interior (f ⁻¹' s) where
+  mp h s := preimage_interior_subset_interior_preimage h
+  mpr h := ⟨fun s hs ↦ subset_interior_iff_isOpen.mp <| by grw [← h, hs.interior_eq]⟩
 
 @[continuity]
 theorem continuous_id : Continuous (id : X → X) :=
@@ -223,10 +223,10 @@ theorem closure_subset_preimage_closure_image (h : Continuous f) :
   (mapsTo_image _ _).closure h
 
 theorem continuous_iff_image_closure_subset_closure_image :
-    Continuous f ↔ ∀ s, f '' closure s ⊆ closure (f '' s) := by
-  refine ⟨fun h s ↦ image_closure_subset_closure_image h, fun h ↦ continuous_iff_isClosed.mpr ?_⟩
-  refine fun s hs ↦ isClosed_of_closure_subset <| image_subset_iff.mp <| subset_trans (h _) ?_
-  exact subset_trans (closure_mono <| image_preimage_subset f s) hs.closure_subset
+    Continuous f ↔ ∀ s, f '' closure s ⊆ closure (f '' s) where
+  mp h s := image_closure_subset_closure_image h
+  mpr h := continuous_iff_isClosed.mpr fun s hs ↦ isClosed_of_closure_subset <| by
+    grw [image_subset_iff.mp <| h <| f ⁻¹' s, image_preimage_subset, hs.closure_subset]
 
 theorem map_mem_closure {t : Set Y} (hf : Continuous f)
     (hx : x ∈ closure s) (ht : MapsTo f s t) : f x ∈ closure t :=
