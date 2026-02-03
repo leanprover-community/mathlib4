@@ -53,7 +53,7 @@ Set up the monadic context:
 def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
   withCanUnfoldPred (fun _ i => return !b.unfolds.contains i.name && !b.casts.contains i.name) do
   withTransparency .all do
-  let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
+  let ctx ← Simp.mkContext Simp.neutralConfig
   x (Simp.Methods.toMethodsRef { pre }) ctx |>.run' {}
 where
   pre (e : Expr) : SimpM Simp.Step := do
@@ -167,7 +167,7 @@ public inductive UnfoldEntry where
 def UnfoldBoundaries.insert (b : UnfoldBoundaries) : UnfoldEntry → UnfoldBoundaries
   | .unfold declName unfold => { b with
     unfolds := b.unfolds.insert declName
-      { origin := .decl unfold, proof := mkConst unfold, rfl := true } }
+      { origin := .decl unfold, proof := mkConst unfold, rfl := false } }
   | .cast declName unfold refold unfold' refold' => { b with
     casts := b.casts.insert declName (unfold, refold)
     insertionFuns := b.insertionFuns.insertMany [unfold, refold, unfold', refold'] }
