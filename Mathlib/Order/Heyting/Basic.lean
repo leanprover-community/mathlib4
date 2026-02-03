@@ -318,6 +318,7 @@ theorem himp_le_himp_left (h : a ≤ b) : c ⇨ a ≤ c ⇨ b :=
 theorem himp_le_himp_right (h : a ≤ b) : b ⇨ c ≤ a ⇨ c :=
   le_himp_iff.2 <| (inf_le_inf_left _ h).trans himp_inf_le
 
+@[gcongr]
 theorem himp_le_himp (hab : a ≤ b) (hcd : c ≤ d) : b ⇨ c ≤ a ⇨ d :=
   (himp_le_himp_right hab).trans <| himp_le_himp_left hcd
 
