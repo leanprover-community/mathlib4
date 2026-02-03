@@ -275,7 +275,7 @@ lemma id_prod_mapHomotopyCategory_comp_inverse (g : Y ⟶ Y') :
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the first projection. -/
 def inverseCompMapHomotopyCategoryFstIso :
-    inverse X Y ⋙ mapHomotopyCategory (fst _ _) ≅ CategoryTheory.Prod.fst _ _  :=
+    inverse X Y ⋙ mapHomotopyCategory (fst _ _) ≅ CategoryTheory.Prod.fst _ _ :=
   Functor.fullyFaithfulCurry.preimageIso
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
       dsimp
@@ -288,7 +288,7 @@ def inverseCompMapHomotopyCategoryFstIso :
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second projection. -/
 def inverseCompMapHomotopyCategorySndIso :
-    inverse X Y ⋙ mapHomotopyCategory (snd _ _) ≅ CategoryTheory.Prod.snd _ _  :=
+    inverse X Y ⋙ mapHomotopyCategory (snd _ _) ≅ CategoryTheory.Prod.snd _ _ :=
   Functor.fullyFaithfulCurry.preimageIso
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)) (fun x₀ x₁ e ↦ by
       ext y
@@ -367,11 +367,11 @@ def associativityIso :
 variable {X Y Z} in
 lemma associativityIso_hom_app (xyz) :
     (associativityIso X Y Z).hom.app xyz = 𝟙 _ := by
-  dsimp  [associativityIso]
+  dsimp [associativityIso]
   rw [associativity'Iso_hom_app _]
   dsimp
   rw [CategoryTheory.Functor.map_id, Category.id_comp, Category.comp_id,
-    Category.comp_id, ← prod_id,  CategoryTheory.Functor.map_id,
+    Category.comp_id, ← prod_id, CategoryTheory.Functor.map_id,
     CategoryTheory.Functor.map_id]
 
 lemma associativity :
@@ -398,8 +398,6 @@ instance : hoFunctor₂.{u}.Monoidal :=
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 instance hoFunctor.monoidal : hoFunctor.{u}.Monoidal :=
   inferInstanceAs (truncation 2 ⋙ hoFunctor₂).Monoidal
-
-open MonoidalCategory
 
 end Truncated
 

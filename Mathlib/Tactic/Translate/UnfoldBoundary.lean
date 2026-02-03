@@ -34,13 +34,15 @@ namespace Mathlib.Tactic.UnfoldBoundary
 
 open Lean Meta
 
-structure UnfoldBoundaries where
+/-- `UnfoldBoundaries` stores abstraction boundaries for definitions that shouldn't be unfolded. -/
+public structure UnfoldBoundaries where
   /-- For propositions and terms of types, we store a rewrite theorem that unfolds it. -/
-  unfolds : NameMap SimpTheorem
+  unfolds : NameMap SimpTheorem := {}
   /-- For types, we store a cast for translating from and to the type respectively. -/
-  casts : NameMap (Name × Name)
+  casts : NameMap (Name × Name) := {}
   /-- The functions that we want to unfold again after the translation has happened. -/
-  insertionFuns : NameMap Unit
+  insertionFuns : NameSet := {}
+  deriving Inhabited
 
 /--
 Set up the monadic context:
@@ -51,7 +53,7 @@ Set up the monadic context:
 def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
   withCanUnfoldPred (fun _ i => return !b.unfolds.contains i.name && !b.casts.contains i.name) do
   withTransparency .all do
-  let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
+  let ctx ← Simp.mkContext Simp.neutralConfig
   x (Simp.Methods.toMethodsRef { pre }) ctx |>.run' {}
 where
   pre (e : Expr) : SimpM Simp.Step := do
@@ -66,7 +68,7 @@ partial def unfoldConsts (b : UnfoldBoundaries) (e : Expr) : SimpM Expr := do
   let e ← do
     let { expr, proof? := some proof } ← Simp.simp eType | pure e
     trace[translate_detail] "unfoldConsts: added a cast from {eType} to {expr}"
-    mkAppOptM ``cast #[eType, expr, proof, e]
+    mkAppOptM ``Eq.mp #[eType, expr, proof, e]
   let eTypeWhnf ← whnf (← inferType e)
   if let .const c us := eTypeWhnf.getAppFn then
     if let some (cast, _) := b.casts.find? c then
@@ -120,31 +122,9 @@ def mkAppWithCast (b : UnfoldBoundaries) (f a : Expr) : SimpM Expr :=
     let .forallE _ d _ _ ← whnf (← inferType f) | throwFunctionExpected f
     return f.app (← mkCast b a d)
 
-/-- Extensions for handling abstraction boundaries for definitions that shouldn't be unfolded. -/
-public structure UnfoldBoundaryExt where
-  /-- The `insert_cast` attribute is used to tag declarations `foo` that should not be unfolded in
-  a proof that is translated. Instead, a rewrite with an equality theorem is inserted.
-  This equality theorem can then be translated by the translation attribute. -/
-  unfolds : NameMapExtension SimpTheorem
-  /-- The `insert_cast_fun` attribute is used to tag types that should not be unfolded in a proof
-  that is translated. Instead, a casting function is inserted. This casting function then may be
-  translated by the translation attribute. -/
-  casts : NameMapExtension (Name × Name)
-  /-- `insertionFuns` stores the functions that may end up in an expression after inserting casts
-  and applying the translation. -/
-  insertionFuns : NameMapExtension Unit
-
-def UnfoldBoundaryExt.toUnfoldBoundaries (b : UnfoldBoundaryExt) : CoreM UnfoldBoundaries := do
-  let env ← getEnv
-  return {
-    unfolds := b.unfolds.getState env
-    casts := b.casts.getState env
-    insertionFuns := b.insertionFuns.getState env }
-
 /-- Modify `e` so that it has type `expectedType` if the constants in `b` cannot be unfolded. -/
-public def UnfoldBoundaryExt.cast (b : UnfoldBoundaryExt) (e expectedType : Expr) (attr : Name) :
-    MetaM Expr := do
-  let b ← b.toUnfoldBoundaries
+def UnfoldBoundaries.cast (b : UnfoldBoundaries) (e expectedType : Expr) (attr : Name) :
+    MetaM Expr :=
   run b <|
   try
     mkCast b e expectedType
@@ -157,10 +137,9 @@ public def UnfoldBoundaryExt.cast (b : UnfoldBoundaryExt) (e expectedType : Expr
 Note: it may be that `e` contains some constant whose type is not well typed in this setting.
 We don't make an effort to replace such constants.
 It seems that this approximation works well enough. -/
-public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr) (attr : Name) :
-    MetaM Expr := do
-  let b ← b.toUnfoldBoundaries
-  run b <| transform e (post := fun e ↦ e.withApp fun f args =>
+def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (attr : Name) :
+    MetaM Expr :=
+  run b <| Meta.transform e (post := fun e ↦ e.withApp fun f args =>
     try
       return .done <| ← args.foldlM (mkAppWithCast b) f
     catch ex =>
@@ -168,8 +147,7 @@ public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr)
         well typed\n\n{ex.toMessageData}")
 
 /-- Unfold all of the auxiliary functions that were inserted as unfold boundaries. -/
-public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt) : CoreM Expr := do
-  let b ← b.toUnfoldBoundaries
+def UnfoldBoundaries.unfoldInsertions (e : Expr) (b : UnfoldBoundaries) : CoreM Expr :=
   -- This is the same as `Meta.deltaExpand`, but with an extra beta reduction.
   Core.transform e fun e => do
     if let some e ← delta? e b.insertionFuns.contains then
@@ -177,9 +155,46 @@ public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt)
     return .continue
 where
   headBetaBody (e : Expr) : Expr :=
-    if let .lam _ d b bi := e then
-      e.updateLambda! bi d (headBetaBody b)
-    else
-      e.headBeta
+    match e with
+    | .lam _ d b bi => e.updateLambda! bi d (headBetaBody b)
+    | _ => e.headBeta
+
+/-- An entry for the `UnfoldBoundaries` environment extension. -/
+public inductive UnfoldEntry where
+  | unfold (declName : Name) (unfold : Name)
+  | cast (declName : Name) (unfold refold unfold' refold' : Name)
+
+def UnfoldBoundaries.insert (b : UnfoldBoundaries) : UnfoldEntry → UnfoldBoundaries
+  | .unfold declName unfold => { b with
+    unfolds := b.unfolds.insert declName
+      { origin := .decl unfold, proof := mkConst unfold, rfl := false } }
+  | .cast declName unfold refold unfold' refold' => { b with
+    casts := b.casts.insert declName (unfold, refold)
+    insertionFuns := b.insertionFuns.insertMany [unfold, refold, unfold', refold'] }
+
+/-- Extensions for handling abstraction boundaries for definitions that shouldn't be unfolded. -/
+public abbrev UnfoldBoundaryExt := SimplePersistentEnvExtension UnfoldEntry UnfoldBoundaries
+
+/-- Register a new `UnfoldBoundaryExt`. -/
+public def registerUnfoldBoundaryExt : IO UnfoldBoundaryExt := do
+  registerSimplePersistentEnvExtension {
+    addEntryFn := UnfoldBoundaries.insert
+    addImportedFn as := as.foldl (Array.foldl (·.insert ·)) {}
+  }
+
+@[inherit_doc UnfoldBoundaries.cast]
+public def UnfoldBoundaryExt.cast (b : UnfoldBoundaryExt) (e expectedType : Expr) (attr : Name) :
+    MetaM Expr := do
+  (b.getState (← getEnv)).cast e expectedType attr
+
+@[inherit_doc UnfoldBoundaries.insertBoundaries]
+public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr) (attr : Name) :
+    MetaM Expr := do
+  (b.getState (← getEnv)).insertBoundaries e attr
+
+@[inherit_doc UnfoldBoundaries.unfoldInsertions]
+public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt) : CoreM Expr := do
+  (b.getState (← getEnv)).unfoldInsertions e
+
 
 end Mathlib.Tactic.UnfoldBoundary

@@ -288,7 +288,7 @@ The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the c
 `n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
-@[inherit_doc reduce_mod_char]
+@[tactic_alt reduce_mod_char]
 syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
 open Mathlib.Tactic in

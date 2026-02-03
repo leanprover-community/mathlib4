@@ -193,7 +193,7 @@ lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x
   Option.eq_none_iff_forall_some_ne
 
 @[to_dual]
-theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
+theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x ≠ ⊥, p x) ↔ ∀ x : α, p x := by
   simp [ne_bot_iff_exists]
 
 @[to_dual]
@@ -627,6 +627,26 @@ lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) �
   · simp [WithBot.none_eq_bot, eq_bot_iff_forall_le]
   · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ hmn.trans ham⟩
 
+@[to_dual (attr := simp) forall_lt_coe]
+theorem forall_coe_lt {p : WithBot α → Prop} :
+    (∀ x, (a : WithBot α) < x → p x) ↔ ∀ b, a < b → p b := by
+  simp [WithBot.forall]
+
+@[to_dual (attr := simp) exists_lt_coe]
+theorem exists_coe_lt {p : WithBot α → Prop} :
+    (∃ x, (a : WithBot α) < x ∧ p x) ↔ ∃ b, a < b ∧ p b := by
+  simp [WithBot.exists]
+
+@[to_dual (attr := simp) forall_le_coe]
+theorem forall_coe_le {p : WithBot α → Prop} :
+    (∀ x, (a : WithBot α) ≤ x → p x) ↔ ∀ b, a ≤ b → p b := by
+  simp [WithBot.forall]
+
+@[to_dual (attr := simp) exists_le_coe]
+theorem exists_coe_le {p : WithBot α → Prop} :
+    (∃ x, (a : WithBot α) ≤ x ∧ p x) ↔ ∃ b, a ≤ b ∧ p b := by
+  simp [WithBot.exists]
+
 end Preorder
 
 @[to_dual]
@@ -740,11 +760,12 @@ instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance total_le [LE α] [@Std.Total α (· ≤ ·)] : @Std.Total (WithBot α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
-instance _root_.WithTop.isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance _root_.WithTop.total_le [LE α] [@Std.Total α (· ≤ ·)] :
+    @Std.Total (WithTop α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) := Lattice.toLinearOrder _
 

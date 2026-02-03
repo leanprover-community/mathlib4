@@ -21,6 +21,7 @@ to_dual_insert_cast_fun DecidableLE := fun inst a b ↦ inst b a, fun inst a b �
 to_dual_insert_cast_fun DecidableLT := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 
 attribute [to_dual_do_translate] Empty PEmpty Unit PUnit
+attribute [to_dual_ignore_args 2] Subtype
 
 set_option linter.existingAttributeWarning false in
 attribute [to_dual self] ge_iff_le gt_iff_lt

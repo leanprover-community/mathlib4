@@ -55,6 +55,8 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
+
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
 @[simp] lemma carrier_eq_coe (s : Submodule R M) : s.carrier = s := rfl
@@ -111,7 +113,7 @@ theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule 
 theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 
-@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+@[simp] theorem eta (h) : ({ p with smul_mem' := h } : Submodule R M) = p :=
   rfl
 
 @[simp]

@@ -142,7 +142,7 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
   have h : (μ ∗ₘ ν) Set.univ < ⊤ := by
     unfold mconv
     exact IsFiniteMeasure.measure_univ_lt_top
-  exact {measure_univ_lt_top := h}
+  exact { measure_univ_lt_top := h }
 
 /-- Convolution is associative. -/
 @[to_additive /-- Convolution is associative. -/]

@@ -343,6 +343,25 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [Co
       rintro rfl
       exact ⟨1, rfl⟩ }
 
+variable {R S}
+
+lemma Away.mul_of_isUnit (x y : R) [IsLocalization.Away x S] (h : IsUnit (algebraMap R S y)) :
+    IsLocalization.Away (x * y) S :=
+  have : Away (algebraMap R S y) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  .mul' S _ _ _
+
+lemma Away.mul_of_isUnit' (x y : R) [IsLocalization.Away y S] (h : IsUnit (algebraMap R S x)) :
+    IsLocalization.Away (x * y) S :=
+  have : Away (algebraMap R S x) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  .mul S _ _ _
+
+lemma Away.mul_of_associated (x z : R) (y : S) [IsLocalization.Away x S]
+    {T : Type*} [CommRing T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    [IsLocalization.Away y T]
+    (h : Associated (algebraMap R S z) y) : IsLocalization.Away (x * z) T := by
+  have : Away (algebraMap R S z) T := by rwa [iff_of_associated h]
+  exact .mul' S _ _ _
+
 end AtUnits
 
 section Prod

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Group.Basic
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.SetTheory.Game.Birthday

@@ -143,6 +143,20 @@ run_meta
   Lean.logInfo (← Lean.getConstInfo ``lt_le_trans).value!
   Lean.logInfo (← Lean.getConstInfo ``le_refl').value!
 
+-- Test that we do not translate the order on `Prop`
+instance Prop.le : LE Prop :=
+  ⟨(· → ·)⟩
+
+@[to_dual le_of_imp']
+theorem Prop.le_of_imp (_h : a ≤ b) {p q : Prop} : (p → q) → p ≤ q := id
+
+-- Dualize `a ≤ b` but not `p ≤ q`
+/--
+info: «Prop».le_of_imp' {α : Type} [PartialOrder α] (a b : α) (_h : b ≤ a) {p q : Prop} : (p → q) → p ≤ q
+-/
+#guard_msgs in
+#check Prop.le_of_imp'
+
 /-! Test the `to_dual_insert_cast` framework. -/
 
 @[to_dual lt_sum_eq_of_le']
@@ -212,7 +226,39 @@ def Cov.Ioc (a b : α) := fun x ↦ a ⋖ x ∧ x ⩿ b
 
 to_dual_insert_cast Cov.Ico := by grind
 
--- The dual theorems `mem_Ioc'` does not hold by reflexivity.
--- To prove it, some rewrites have been added to the proof of `mem_Ico`.
-@[to_dual mem_Ioc']
-theorem mem_Ico {a b x : α} : Cov.Ico a b x ↔ (a ≤ x ∧ ∀ ⦃c⦄, a < c → ¬c < x) ∧ x ⋖ b := Iff.rfl
+@[to_dual]
+theorem Cov.Ico_def {a b x : α} : (a ≤ x ∧ ∀ ⦃c⦄, a < c → ¬c < x) ∧ x ⋖ b ↔ Cov.Ico a b x := Iff.rfl
+
+/--
+info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+  (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x ↔ Cov.Ioc b a x :=
+@Eq.mpr (∀ {α : Type} [inst : PartialOrder α] {a b x : α}, (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x ↔ Cov.Ioc b a x)
+  (∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+    ((x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c) ↔
+      (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c)
+  (id
+    (forall_congr fun {α} =>
+      forall_congr fun [PartialOrder α] =>
+        forall_congr fun {a} =>
+          forall_congr fun {b} =>
+            forall_congr fun {x} =>
+              congr (congrArg Iff (congrArg (And (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c)) (CovBy._to_dual_cast_4 x b)))
+                (Eq.trans (Cov.Ico._to_dual_cast_3 a b x)
+                  (congr (congrArg And (WCovBy._to_dual_cast_4 a x)) (CovBy._to_dual_cast_4 x b)))))
+  (@Eq.mp
+    (∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+      (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x ↔ (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x)
+    (∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+      ((x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c) ↔
+        (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c)
+    (forall_congr fun {α} =>
+      forall_congr fun [PartialOrder α] =>
+        forall_congr fun {a} =>
+          forall_congr fun {b} =>
+            forall_congr fun {x} =>
+              congr (congrArg Iff (congrArg (And (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c)) (CovBy._to_dual_cast_4 x b)))
+                (congrArg (And (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c)) (CovBy._to_dual_cast_4 x b)))
+    fun {α} [PartialOrder α] {a b x} => Iff.rfl)
+-/
+#guard_msgs in
+#print Cov.Ioc_def

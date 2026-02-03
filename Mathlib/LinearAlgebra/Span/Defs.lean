@@ -383,9 +383,6 @@ theorem codisjoint_iff_exists_add_eq :
   rw [codisjoint_iff, eq_top_iff']
   exact forall_congr' (fun z => mem_sup.trans <| by simp)
 
-@[deprecated (since := "2025-07-05")]
-alias ⟨exists_add_eq_of_codisjoint, _⟩ := codisjoint_iff_exists_add_eq
-
 variable (p p')
 
 theorem coe_sup : ↑(p ⊔ p') = (p + p' : Set M) := by
