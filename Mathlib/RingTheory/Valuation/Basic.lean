@@ -492,13 +492,32 @@ lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   · simp [h]
   · simp [zero_lt_iff.mpr h]
 
-lemma restrict_lt_iff (x y : R) : v.restrict x < v.restrict y ↔ v x < v y := by
+lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
 
-lemma restrict_le_iff (x y : R) : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
+lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ v} :
+    v.restrict x < g ↔ v x < embedding g := by
+  conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
+  rw [embedding_strictMono.lt_iff_lt, restrict_def]
+
+lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ v} :
+    v.restrict x ≤ g ↔ v x ≤ embedding g := by
+  conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
+  rw [embedding_strictMono.le_iff_le, restrict_def]
+
+lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
+  rw [restrict_lt_iff_lt_embedding, map_one]
+
+lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
+  rw [restrict_le_iff_le_embedding, map_one]
+
+lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
+
+lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
+  aesop
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
