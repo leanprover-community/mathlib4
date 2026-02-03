@@ -63,6 +63,7 @@ universe w u
 variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type w}
     [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
 
+/-- The forgetful functor from a concrete category to the category of types. -/
 def forget : C ⥤ Type w where
   obj X := ToType X
   map f := f
@@ -92,8 +93,6 @@ when `h : x = x'` is an equality between elements of objects in a concrete categ
 -/
 protected theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : ToType X} (h : x = x') : f x = f x' :=
   congrArg (f : ToType X → ToType Y) h
-
-section ForgetTwo
 
 variable (C)
 
@@ -162,35 +161,16 @@ lemma ConcreteCategory.forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
       (forget₂ C D).map g ((forget₂ C D).map f x) := by
   rw [Functor.map_comp, ConcreteCategory.comp_apply]
 
--- end ForgetTwo
-
 instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     IsIso (C := Type _) ⇑(ConcreteCategory.hom f) :=
   ((forget C).mapIso (asIso f)).isIso_hom
 
--- /-- A `FunLike` instance on plain functions, in order to instantiate a `ConcreteCategory` structure
--- on the category of types.
-
--- This is not an instance (yet) because that would require a lot of downstream fixes.
-
--- See note [reducible non-instances].
--- -/
--- abbrev
 instance Types.instFunLike : ∀ X Y : Type u, FunLike (X ⟶ Y) X Y := by
   intro X Y
   exact {
     coe f := f
     coe_injective' := fun _ _ _ ↦ by assumption }
 
--- attribute [local instance] Types.instFunLike
-
--- /-- The category of types is concrete, using the identity functor.
-
--- This is not an instance (yet) because that would require a lot of downstream fixes.
-
--- See note [reducible non-instances].
--- -/
--- abbrev
 instance Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ Y) where
   hom f := f
   ofHom f := f
@@ -203,16 +183,17 @@ instance Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X �
 @[simp]
 lemma Types.hom_eq_coe {X Y : Type u} (f : X ⟶ Y) : (ConcreteCategory.hom f) = f := rfl
 
+/-- TODO: remove this hack -/
 @[simps]
 def _root_.FunLike.ofFaithful {C : Type*} [Category* C] (F : C ⥤ Type w) [F.Faithful] (X Y : C) :
     FunLike (X ⟶ Y) (F.obj X) (F.obj Y) where
   coe f := F.map f
   coe_injective' := F.map_injective
 
+/-- TODO: remove this hack -/
 def ConcreteCategory.ofForget {C : Type*} [Category* C] (F : C ⥤ Type w) [F.Faithful] :
     letI := FunLike.ofFaithful F
-    ConcreteCategory C (fun X Y ↦ X ⟶ Y) :=
-  letI := FunLike.ofFaithful F
+    ConcreteCategory C (fun X Y ↦ X ⟶ Y) := letI := FunLike.ofFaithful F
   {
     hom f := f
     ofHom f := f }
@@ -223,4 +204,4 @@ lemma NatTrans.naturality_apply {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X 
     φ.app Y (F.map f x) = G.map f (φ.app X x) := by
   simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
--- end CategoryTheory
+end CategoryTheory

@@ -22,6 +22,6 @@ universe u
 namespace AddCommGrpCat
 
 instance wellPowered_addCommGrp : WellPowered.{u} AddCommGrpCat.{u} :=
-  wellPowered_of_equiv.{u} (forget₂ (ModuleCat.{u} ℤ) AddCommGrpCat.{u}).asEquivalence
+  wellPowered_of_equiv.{u} (ModuleCat.hasForgetToAddCommGroup ℤ).forget₂.asEquivalence
 
 end AddCommGrpCat

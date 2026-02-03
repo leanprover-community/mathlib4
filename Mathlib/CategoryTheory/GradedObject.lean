@@ -286,7 +286,6 @@ variable [ConcreteCategory C FC]
 variable [HasCoproducts.{0} C] [HasZeroMorphisms C]
 
 -- TODO: find a less hacky solution
-
 instance :
     letI := FunLike.ofFaithful (total β C ⋙ forget C)
     ConcreteCategory (GradedObject β C) (fun X Y ↦ X ⟶ Y) :=
