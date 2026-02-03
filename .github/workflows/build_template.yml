@@ -56,7 +56,6 @@ jobs:
           # We just populate the env vars for this step to make them viewable in the logs
       - name: Generate lean-pr-testing app token
         id: lean-pr-testing-token
-        shell: bash
         uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
           app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
