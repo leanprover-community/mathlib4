@@ -479,22 +479,9 @@ theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsA
     h.mem_domChart_source h.mem_codChart_source]
   let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
   have : rhs.Splits := by
-    have : CompleteSpace (E × F) := sorry -- use h : E × F ≃L[𝕜] E'' and completeness of E''
-    apply h.equiv.splits.comp
-    refine ⟨?_, ?_, ?_⟩
-    · intro x y hxy
-      simpa using hxy
-    · have hrange : range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
-          Set.prod (Set.univ) {0} := by
-        sorry -- missing lemmas; `simp` cannot do this yet
-      rw [hrange]
-      exact isClosed_univ.prod isClosed_singleton
-    · have hrange : ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)).range =
-          Submodule.prod ⊤ ⊥ := by
-        erw [LinearMap.range_prod_eq (by simp)] -- TODO investigate!
-        simp
-      simp_rw [hrange]
-      exact Submodule.closedComplemented_top.prod Submodule.closedComplemented_bot
+    have : CompleteSpace (E × F) := by
+      sorry -- use h : E × F ≃L[𝕜] E'' and completeness of E''; does mathlib have this already?
+    exact h.equiv.splits.comp (ContinuousLinearEquiv.refl 𝕜 E).splits_prod_zero
   have aux : fderiv 𝕜 ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I) x)
       = fderiv 𝕜 rhs ((h.domChart.extend I) x) := by
     apply Filter.EventuallyEq.fderiv_eq
@@ -508,27 +495,7 @@ theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsA
 theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsAt I J f x := by
   -- The local representative of f in the nice charts at x, as a continuous linear map.
   let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
-  have : rhs.Splits := by
-    have : CompleteSpace (E × F) := sorry -- h.equiv is a cle E × F and E''; E'' is complete
-    apply h.equiv.splits.comp
-    refine ⟨?_, ?_, ?_⟩
-    · intro x y hxy
-      simpa using hxy
-    · have hrange : range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
-          Set.prod (Set.univ) {0} := by
-        sorry
-      rw [hrange]
-      exact isClosed_univ.prod isClosed_singleton
-    · sorry
-      /- have hrange : LinearMap.range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
-          Submodule.prod ⊤ ⊥ := by
-        erw [LinearMap.range_prod_eq]
-        -- No idea why simp needs to run twice.
-        simp only [ContinuousLinearMap.coe_id, LinearMap.range_id, ContinuousLinearMap.coe_zero,
-          LinearMap.range_zero]
-        simp
-      simp_rw [hrange]
-      exact Submodule.closedComplemented_top.prod Submodule.closedComplemented_bot -/
+  have : rhs.Splits := sorry -- omitted now
   -- Since rhs is linear, it is smooth --- and it equals its own fderiv.
   -- TODO: this is a missing lemma!
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E'')) rhs (I (h.domChart x)) := by

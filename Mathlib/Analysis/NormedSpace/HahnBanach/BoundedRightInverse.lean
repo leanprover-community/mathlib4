@@ -24,7 +24,11 @@ always admits a bounded right inverse.
 
 This concept is used to give a conceptual definition of submersions between Banach manifolds.
 
-**TODO**. Find a better location for this file; the HahnBanach parent folder was emptied!
+## TODO
+- find a better location for this file; the `HahnBanach` folder was emptied intentionally!
+- is "split epimorphism/split surjection" a better term?
+- can we generalise everything to not require a normed, but e.g. topological modules?
+  (in that case, "continuous right inverse" is certainly better terminology)
 
 -/
 
@@ -39,6 +43,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
 
 noncomputable section
 
+/-- `f` a continuous linear map admits a right inverse which is a continuous linear map itself. -/
 @[expose] protected def ContinuousLinearMap.HasBoundedRightInverse (f : E →L[𝕜] F) : Prop :=
   ∃ g : F →L[𝕜] E, RightInverse g f
 
@@ -104,6 +109,18 @@ lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.HasBounde
 lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.HasBoundedRightInverse) :
     (g.toContinuousLinearMap.comp f).HasBoundedRightInverse :=
   g.hasBoundedRightInverse.comp hf
+
+/-- `ContinuousLinearMap.fst` has a bounded right inverse. -/
+lemma continuousLinearMap_fst : (ContinuousLinearMap.fst 𝕜 F G).HasBoundedRightInverse := by
+  use (ContinuousLinearMap.id _ _).prod 0
+  intro x
+  simp
+
+/-- `ContinuousLinearMap.snd` has a bounded right inverse. -/
+lemma continuousLinearMap_snd : (ContinuousLinearMap.snd 𝕜 F G).HasBoundedRightInverse := by
+  use ContinuousLinearMap.prod 0 (.id 𝕜 G)
+  intro x
+  simp
 
 /-- If `f : E → F` is surjective and `F` is finite-dimensional, `f` has a bounded right inverse. -/
 lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]

@@ -19,9 +19,9 @@ always splits.
 
 This concept is used to give a conceptual definition of immersions between Banach manifolds.
 
-XXX. Is this equivalent to admitting a continuous left inverse? If so, also prove this.
-
-**TODO**. Find a better location for this file; the HahnBanach parent folder was emptied!
+## TODO
+- find a better location for this file; the HahnBanach parent folder was emptied!
+- is this equivalent to admitting a continuous left inverse? If so, also prove this!
 
 -/
 
@@ -110,12 +110,33 @@ lemma prodMap (hf : f.Splits) (hg : g.Splits) : (f.prodMap g).Splits := by
     exact (hf.isClosed_range).prod hg.isClosed_range
   · simpa using hf.closedComplemented.prod hg.closedComplemented
 
+/-- For any continuous linear equivalence `f : E → F`, the map `f × 0` splits. -/
+lemma _root_.ContinuousLinearEquiv.splits_prod_zero (f : E ≃L[𝕜] F) :
+    (f.toContinuousLinearMap.prod 0 : E →L[𝕜] F × F').Splits := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro x y hxy
+    simpa using hxy
+  · have hrange : range ((f.toContinuousLinearMap).prod (0 : E →L[𝕜] F')) =
+        Set.prod (Set.univ) {0} := by
+      sorry -- missing lemmas; `simp` cannot do this yet
+    rw [hrange]
+    exact isClosed_univ.prod isClosed_singleton
+  · have hrange : (f.toContinuousLinearMap.prod (0 : E →L[𝕜] F')).range =
+        Submodule.prod ⊤ ⊥ := by
+      erw [LinearMap.range_prod_eq (by simp)] -- TODO investigate!
+      rw [coe_zero, LinearMap.range_zero]
+      congr
+      rw [LinearMap.range_eq_top]
+      exact f.surjective
+    simp_rw [hrange]
+    exact Submodule.closedComplemented_top.prod Submodule.closedComplemented_bot
+
 section
 
 variable [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
 
 /-- If `f : E → F` splits and `E`, `F` are real or complex Banach spaces, `f` is anti-Lipschitz.
-This result is unseful to prove that the composition of split maps is a split map. -/
+This result is useful to prove that the composition of split maps is a split map. -/
 lemma antilipschitz_aux (hf : f.Splits) : ∃ K, AntilipschitzWith K f :=
   ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range f hf.injective hf.isClosed_range
 
