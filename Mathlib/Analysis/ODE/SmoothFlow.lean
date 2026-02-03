@@ -1084,12 +1084,11 @@ lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (
   let t₀' : Icc (t₀ - ε) (t₀ + ε) := ⟨t₀, by simp [le_of_lt hεpos]⟩
   have h := isContDiffImplicitAt_T hf_diff hu_open t₀' x₀ hα₀_range hnorm le_rfl
   refine ⟨ε, hεpos, h.implicitFunction, ?_, h.contDiffAt_implicitFunction⟩
-  -- Since lf is continuous and range α₀ ⊆ u (open), range (lf x) ⊆ u for x near x₀
-  have hcont_lf : ContinuousAt h.implicitFunction x₀ :=
-    h.contDiffAt_implicitFunction.continuousAt
-  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ u :=
-    hcont_lf.eventually <| ContinuousMap.eventually_range_subset hu_open <| by
-      simp only [h.implicitFunction_apply_self]; exact hα₀_range
+  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ u := by
+    apply h.contDiffAt_implicitFunction.continuousAt.eventually
+      <| ContinuousMap.eventually_range_subset hu_open _
+    rw [h.implicitFunction_apply_self]
+    exact hα₀_range
   filter_upwards [h.apply_implicitFunction, hrange_near] with x hT_eq hrange
   constructor
   · intro t ht
