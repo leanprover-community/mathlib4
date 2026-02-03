@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Data.Fintype.Order
 import Mathlib.RingTheory.Nilpotent.Defs
