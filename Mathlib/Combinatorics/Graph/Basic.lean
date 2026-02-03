@@ -425,7 +425,7 @@ lemma Compatible.refl (G : Graph α β) : G.Compatible G :=
   fun _ _ _ _ _ => Iff.rfl
 
 instance : Std.Refl (Compatible : Graph α β → Graph α β → Prop) where
-  refl G := Compatible.refl G
+  refl G := .rfl
 
 @[symm]
 lemma Compatible.symm (h : G.Compatible H) : H.Compatible G :=
