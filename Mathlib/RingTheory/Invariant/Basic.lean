@@ -399,9 +399,11 @@ extension `B ⧸ Q` over `A ⧸ P`.
 noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
     MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
       Gal((B ⧸ Q)/(A ⧸ P)) :=
-  (QuotientGroup.quotientMulEquivOfEq (Ideal.Quotient.ker_stabilizerHom Q P G).symm).trans <|
-    QuotientGroup.quotientKerEquivOfSurjective (Ideal.Quotient.stabilizerHom Q P G)
-      (Ideal.Quotient.stabilizerHom_surjective G P Q)
+  QuotientGroup.liftEquiv (N := (Q.inertia G).subgroupOf (MulAction.stabilizer G Q))
+    (stabilizerHom_surjective G P Q) (ker_stabilizerHom Q P G).symm
+
+theorem Ideal.Quotient.stabilizerQuotientInertiaEquiv_mk (g : MulAction.stabilizer G Q) :
+    stabilizerQuotientInertiaEquiv G P Q g = stabilizerHom Q P G g := rfl
 
 end surjectivity
 
