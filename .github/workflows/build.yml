@@ -7,8 +7,9 @@ on:
       - 'staging.tmp*'
       - 'trying.tmp*'
       - 'staging*.tmp'
-      # ignore staging branch used by bors, this is handled by bors.yml
+      # ignore staging and trying branches used by bors, these are handled by bors.yml
       - 'staging'
+      - 'trying'
   merge_group:
 
 concurrency:
