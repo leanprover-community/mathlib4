@@ -778,18 +778,15 @@ theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f
     use 1
     rfl
   | of b =>
-    rcases hf b with ⟨a, ha⟩
-    refine ⟨FreeGroup.of a, ?_⟩
-    simp [ha]
+    obtain ⟨a, ha⟩ := hf b
+    exact ⟨of a, by simp [ha]⟩
   | inv_of b hb =>
-    rcases hb with ⟨a, ha⟩
-    refine ⟨a⁻¹, ?_⟩
-    simp [ha]
+    obtain ⟨a, ha⟩ := hb
+    exact ⟨a⁻¹, by simp [ha]⟩
   | mul b c hb hc =>
-    rcases hb with ⟨a, ha⟩
-    rcases hc with ⟨d, hd⟩
-    refine ⟨a * d, ?_⟩
-    simp [ha, hd]
+    obtain ⟨a, ha⟩ := hb
+    obtain ⟨d, hd⟩ := hc
+    exact ⟨a * d, by simp [ha, hd]⟩
 
 @[to_additive]
 theorem map.unique (g : FreeGroup α →* FreeGroup β)
