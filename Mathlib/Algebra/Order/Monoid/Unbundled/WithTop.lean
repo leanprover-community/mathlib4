@@ -691,21 +691,23 @@ def withBotCongr : WithBot α ≃+ WithBot β := {
 }
 
 @[to_dual (attr := simp)]
-lemma withBotCongr_toEquiv_eq : e.withBotCongr.toEquiv = e.toEquiv.withBotCongr := rfl
+lemma coe_withBotCongr : e.withBotCongr = WithBot.map e := rfl
 
-@[to_dual (attr := simp)]
-lemma withBotCongr_toAddHom_eq : e.withBotCongr.toAddHom = e.toAddHom.withBotMap := rfl
+@[to_dual]
+lemma coe_withBotCongr_eq_equiv_withBotCongr : e.withBotCongr = (e : α ≃ β).withBotCongr := rfl
 
-@[to_dual (attr := simp)]
+@[to_dual]
+lemma coe_withBotCongr_eq_addHom_withBotMap : e.withBotCongr = (e : AddHom α β).withBotMap := rfl
+
+@[to_dual]
 lemma withBotCongr_apply (a : WithBot α) : e.withBotCongr a = a.map e := rfl
 
 @[to_dual (attr := simp)]
-lemma withBotCongr_refl : withBotCongr (AddEquiv.refl α) = AddEquiv.refl _ :=
+lemma withBotCongr_refl : (AddEquiv.refl α).withBotCongr = AddEquiv.refl _ :=
   AddEquiv.ext <| congr_fun WithBot.map_id
 
 @[to_dual (attr := simp)]
-theorem withBotCongr_symm : e.symm.withBotCongr = e.withBotCongr.symm :=
-  rfl
+theorem withBotCongr_symm : e.symm.withBotCongr = e.withBotCongr.symm := rfl
 
 @[to_dual (attr := simp)]
 theorem withBotCongr_trans :
