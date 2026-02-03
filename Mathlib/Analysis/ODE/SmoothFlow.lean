@@ -893,7 +893,7 @@ lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
       ∀ (tmin tmax : ℝ) (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)),
         range α ⊆ u → |tmax - tmin| < ε →
           ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
-  -- Get a neighborhood where f is C^1
+  -- Get a neighborhood where `f` is `C^1`
   obtain ⟨s, hs_nhds, hfs⟩ := hf.contDiffOn le_rfl nofun
   -- Use continuity to find a neighborhood where the derivative is bounded
   let C := ‖fderiv ℝ f x₀‖ + 1
@@ -920,9 +920,9 @@ lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
 
 /-! ## Connect to the existence of integral curves -/
 
-/-- When f is C^1 at x₀, there exist ε > 0, a > 0, a' ≥ a, and an integral curve α starting at x₀
-defined on `Icc (t₀ - ε) (t₀ + ε)`, such that the range of α is in `ball x₀ a` and
-`‖fderivIntegralCurry0 f (ball x₀ a') t₀' α‖ < 1`.
+/-- When `f` is `C^1` at `x₀`, there exist `ε > 0`, `a > 0`, `a' ≥ a`, and an integral curve `α`
+starting at `x₀` defined on `Icc (t₀ - ε) (t₀ + ε)`, such that the range of `α` is in `ball x₀ a`
+and `‖fderivIntegralCurry0 f (ball x₀ a') t₀' α‖ < 1`.
 
 The integral curve is given as a `FunSpace` satisfying `IsFixedPt (next hPL hx₀) α`,
 which can be converted to a continuous map via `toContinuousMap`. -/
@@ -992,7 +992,7 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
       ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a 0 L K := by
     have hPL_shrink : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
         ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a₂ r L K :=
-      hPL.shrink_time _ (by rfl) (by linarith) (by linarith)
+      hPL.mono_time _ (by rfl) (by linarith) (by linarith)
     refine IsPicardLindelof.of_time_independent ?_ ?_ ?_
     · intro x hx
       apply hPL_shrink.norm_le t₀ (by simp [le_of_lt hεpos]) x

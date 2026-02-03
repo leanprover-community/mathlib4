@@ -607,7 +607,7 @@ lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a r L K) :
   continuousOn_prod_of_continuousOn_lipschitzOnWith' _ K hf.lipschitzOnWith hf.continuousOn
 
 /-- `IsPicardLindelof` is preserved when shrinking the time interval. -/
-lemma shrink_time {f : ℝ → E → E} {tmin tmax tmin' tmax' : ℝ} {t₀ : Icc tmin tmax}
+lemma mono_time {f : ℝ → E → E} {tmin tmax tmin' tmax' : ℝ} {t₀ : Icc tmin tmax}
     {x₀ : E} {a r L K : ℝ≥0} (hf : IsPicardLindelof f t₀ x₀ a r L K) (t₀' : Icc tmin' tmax')
     (ht₀ : t₀.1 = t₀'.1) (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax) :
     IsPicardLindelof f t₀' x₀ a r L K where
@@ -616,12 +616,19 @@ lemma shrink_time {f : ℝ → E → E} {tmin tmax tmin' tmax' : ℝ} {t₀ : Ic
     (hf.continuousOn x hx).mono fun t ht ↦ ⟨le_trans htmin ht.1, le_trans ht.2 htmax⟩
   norm_le t ht x hx := hf.norm_le t ⟨le_trans htmin ht.1, le_trans ht.2 htmax⟩ x hx
   mul_max_le := by
-    have h1 : tmax' - t₀' ≤ tmax - t₀ := by simp only [← ht₀]; linarith
-    have h2 : t₀' - tmin' ≤ t₀ - tmin := by simp only [← ht₀]; linarith
-    have h3 : max (tmax' - t₀') (t₀' - tmin') ≤ max (tmax - t₀) (t₀ - tmin) := max_le_max h1 h2
-    calc (L : ℝ) * max (tmax' - t₀') (t₀' - tmin')
+    have h : max (tmax' - t₀') (t₀' - tmin') ≤ max (tmax - t₀) (t₀ - tmin) :=
+      max_le_max (by linarith) (by linarith)
+    calc
       _ ≤ L * max (tmax - t₀) (t₀ - tmin) := by gcongr
       _ ≤ a - r := hf.mul_max_le
+
+/-- `IsPicardLindelof` is preserved when enlarging the Lipschitz constant `K`. -/
+lemma mono_K (hf : IsPicardLindelof f t₀ x₀ a r L K) {K' : ℝ≥0} (hK : K ≤ K') :
+    IsPicardLindelof f t₀ x₀ a r L K' where
+  lipschitzOnWith t ht := (hf.lipschitzOnWith t ht).weaken hK
+  continuousOn := hf.continuousOn
+  norm_le := hf.norm_le
+  mul_max_le := hf.mul_max_le
 
 /-- The special case where the vector field is independent of time -/
 lemma of_time_independent
