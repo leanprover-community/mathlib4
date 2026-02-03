@@ -21,4 +21,5 @@ jobs:
         with:
           dirtyLabel: "merge-conflict"
           commentOnDirty: "This pull request has conflicts, please merge `master` and resolve them."
+          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
           repoToken: ${{ steps.app-token.outputs.token }}
