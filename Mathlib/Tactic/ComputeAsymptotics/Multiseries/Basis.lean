@@ -136,38 +136,6 @@ theorem pushLogLast {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end WellFormedBasis
 
-/-- Auxiliary lemma. If `f` is eventually positive, `g` tends to `atTop`, and
-`log f =o[atTop] log g` then for any `a` and `b > 0`, `f ^ a =o[atTop] g ^ b`. -/
-theorem basis_compare {f g : ℝ → ℝ} (a : ℝ) {b : ℝ} (hf : ∀ᶠ x in atTop, 0 < f x)
-    (hg : Tendsto g atTop atTop) (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :
-    (fun x ↦ (f x) ^ a) =o[atTop] fun x ↦ (g x) ^ b := by
-  obtain ⟨φ, h1, h2⟩ := IsLittleO.exists_eq_mul <| IsLittleO.const_mul_right' (c := b)
-    (isUnit_iff_ne_zero.mpr hb.ne.symm) (IsLittleO.const_mul_left h a)
-  have hf_exp_log : (fun x ↦ (f x) ^ a) =ᶠ[atTop] fun x ↦ Real.exp (a * (Real.log (f x))) := by
-    rw [EventuallyEq]
-    apply hf.mono
-    intro x hx
-    rw [mul_comm, Real.exp_mul, Real.exp_log hx]
-  have hg_exp_log : (fun x ↦ (g x) ^ b) =ᶠ[atTop] fun x ↦ Real.exp (b * (Real.log (g x))) := by
-    rw [EventuallyEq]
-    apply (Tendsto.eventually_gt_atTop hg 0).mono
-    intro x hx
-    rw [mul_comm, Real.exp_mul, Real.exp_log hx]
-  apply IsLittleO.trans_eventuallyEq _ hg_exp_log.symm
-  apply hf_exp_log.trans_isLittleO
-  have h2 := h2.fun_comp Real.exp
-  eta_expand at h2
-  simp only [Function.comp_apply, Pi.mul_apply] at h2
-  refine EventuallyEq.trans_isLittleO h2 <| isLittleO_of_tendsto' (by norm_num) ?_
-  simp only [← Real.exp_sub, Real.tendsto_exp_comp_nhds_zero]
-  conv =>
-    arg 1
-    ext x
-    rw [show φ x * (b * Real.log (g x)) - b * Real.log (g x) =
-      b * ((φ x - 1) * Real.log (g x)) by ring]
-  exact .const_mul_atBot hb <| .neg_mul_atTop (C := -1) (by simp) (by simpa using h1.sub_const 1)
-    (Real.tendsto_log_atTop.comp hg)
-
 /-! ### Basis extensions -/
 
 /-- Basis extension. It is a `Type`-version of `List.Sublist`.
