@@ -14,38 +14,78 @@ public import Mathlib.Tactic.DepRewrite
 The following definition is abstracted from the "remainder" as in `MonomialOrder.div_set`. And more
 properties of it is covered in this file.
 
-* `MonomialOrder.IsRemainder m f B r`: Given a multivariate polynomial `f` and a set `B` of
-  multivariate polynomials over a commutative semiring `R`, with respect to a monomial order `m`.
-  A polynomial `r` is called a remainder of `f` on division by `B` if there exists:
-  (1) A finite linear combination:
-    `f = ∑ (g(b) * b) + r` where `g : B →₀ R[X]` (finitely supported coefficients).
-  (2) Degree condition:
-    For each `b ∈ B`, the degree of `g(b) * b` is ≤ the degree of `f` under `m`.
-  (3) Remainder irreducibility:
+* `MonomialOrder.IsRemainder m f B r`: Given a multivariate polynomial `f` and a "divisors" set `B`
+  of with respect to a monomial order `m`. A polynomial `r` is called a remainder of `f` on
+  division by `B` if there exists:
+
+  1. Finite linear combination:
+    `f = ∑ (g(b) * b) + r`;
+  2. Degree condition:
+     For each `b ∈ B`, the degree (with bot) of `g(b) * b` ≤ the degree (with bot) of `f` w.r.t.
+     monomial order `m`;
+  3. Remainder irreducibility:
     No term of `r` is divisible by the leading monomial of any non-zero `b ∈ B`.
 
-And there're also some variant equivalent statements.
+And there're also some equivalent variants.
 
-* `MonomialOrder.isRemainder_def'`: A variant of `MonomialOrder.IsRemainder` without coercion of a
-  `Set (MvPolynomial σ R)`.
+* `MonomialOrder.IsRemainder.isRemainder_def'`: A variant of `MonomialOrder.IsRemainder`
+  without coercion of a `Set (MvPolynomial σ R)`.
 
-* `MonomialOrder.isRemainder_def''`: A variant of `MonomialOrder.IsRemainder` where
+* `MonomialOrder.IsRemainder.isRemainder_def''`: A variant of `MonomialOrder.IsRemainder` where
   `g : MvPolynomial σ R →₀ MvPolynomial σ R` is replaced with a
   function `g : MvPolynomial σ R → MvPolynomial σ R` without limitation on its support.
 
-* `MonomialOrder.isRemainder_range`: A variant of `MonomialOrder.IsRemainder` where divisors are
-  given as a map from indexes to polynomials.
+* `MonomialOrder.IsRemainder.isRemainder_def_degree`: A variant where the degree condition is
+  formalized with `m.degree`, which matches the statement of `MonomialOrder.div_set`.
+
+* `MonomialOrder.IsRemainder.isRemainder_range`: A variant of `MonomialOrder.IsRemainder` where
+  divisors are given as a family of polynomials.
+
+There exists a remainder when the polynomial ring is communitive and any divisor either has an
+invertible leading coefficient or is 0.
+
+* `MonomialOrder.IsRemainder.exists_isRemainder`.
 
 ## Naming convention
 
-Some theorems with an argument in type `Set (MvPolynomial σ R)` have 2 variants, named as following
+Some theorems with an argument in type `Set (MvPolynomial σ R)` and a hypothesis that leading
+coefficients of all polynomials in the set are invertible have 2 variants, named as following
 respectively:
 
-* without suffix `'` or `₀`: leading coefficients of all polynomials in the set are non-zero
-  divisors `· ∈ nonZeroDivisors (MvPolynomial σ R)` (or invertible `IsUnit ·`, depending on the
-  theorem);
-* with suffix `₀`: leading coefficients of echo polynomial in the set is non-zero divisors (or
-  invertible) or 0 `· = 0`.
+* without suffix `'` or `₀`: any polynomial `b` in the set has an invertible leading coefficient
+  (`IsUnit (m.leadingCoeff p)`);
+* with suffix `₀`: any polynomial `b` in the set either has an invertible leading coefficient or is
+  equal to 0 (`IsUnit (m.leadingCoeff p) ∨ b = 0`);
+* with suffix `'`: no hypotheses on leading coefficients, while requiring `R` to be a field
+  (`Field k`, where the ring is denoted as `k` instead).
+
+## Implementation notes
+
+The definition of remainder makes sense when `R` is a communitive ring and any polynomial in `B`
+either has an invertible leading coefficient or is 0, while for simplicity we try to formalize
+it without applying these restrictions as its hypotheses.
+
+We try to adjust its formal definition s.t. it corresponds with the informal definition well when
+the above condition holds, while keeps simple and still shares some common properties without these
+hypotheses.
+
+* Degree condition is formalized as
+  ```lean
+  m.toWithBotSyn (m.withBotDegree b.val) + m.toWithBotSyn (m.withBotDegree (g b)) ≤
+    m.toWithBotSyn (m.withBotDegree f)
+  ```
+  instead of `m.withBotDegree (b.val * g b) ≼'[m] m.withBotDegree f`.
+
+  If `IsRemainder` was formalized with the latter one, some properties would require polynomials in
+  `B` to have non-zero divisor leading coefficients since they need
+  `m.withBotDegree (b.val * g b) = m.withBotDegree (b.val) + m.withBotDegree (g b)` with this
+  formalization of `IsRemainder`. They no longer require this if `IsRemainder` is formalized with
+  former one.
+
+* Remainder irreducibility is formalized as `∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c)`,
+  where `¬ (m.degree b ≤ c)` is sufficient but unnecessary for the indivisibility between the
+  leading term of `b` (`m.leadingTerm b`) and the term of `r` with exponents `c`
+  (`monomial c (b.coeff c)`).
 
 ## Reference : [Cox2015]
 
@@ -57,28 +97,37 @@ namespace MonomialOrder
 
 open MvPolynomial
 
+/-- Given a multivariate polynomial `f` and a set `B` of multivariate polynomials over `R`.
+A polynomial `r` is called a remainder of `f` on division by `B` with respect to a monomial order
+`m`, if there exists `g : B →₀ R[X]` and a polynomial `r` s.t.
+
+1. Finite linear combination:
+  `f = ∑ (g(b) * b) + r`;
+2. Degree condition:
+  For eacho `b ∈ B`, the degree (with bot) of `g(b) * b` ≤ the degree (with bot) of `f` w.r.t. `m`;
+3. Remainder irreducibility:
+  No term of `r` is divisible by the leading monomial of any non-zero `b ∈ B`.
+
+The definition of remainder makes sense when `R` is a communitive ring and any polynomial in `B`
+either has an invertible leading coefficient or is 0. See the implementation note for the
+formalization unaligned with the informal definition when not in this case.
+-/
+def IsRemainder {σ : Type*} (m : MonomialOrder σ) {R : Type*} [CommSemiring R]
+    (f : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :=
+  (∃ (g : B →₀ MvPolynomial σ R),
+    f = Finsupp.linearCombination _ (fun (b : B) ↦ b.val) g + r ∧
+    ∀ (b : B),
+      m.toWithBotSyn (m.withBotDegree b.val) + m.toWithBotSyn (m.withBotDegree (g b)) ≤
+        m.toWithBotSyn (m.withBotDegree f)) ∧
+  ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c)
+
+namespace IsRemainder
+
 section CommSemiring
-variable {σ : Type*} (m : MonomialOrder σ)
+variable {σ : Type*} {m : MonomialOrder σ}
 
 variable {R : Type*} [CommSemiring R]
 variable (f p : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
-
-/--
-Given a multivariate polynomial `f` and a set `B` of
-  multivariate polynomials over a commutative semiring `R`, with respect to a monomial order `m`.
-  A polynomial `r` is called a remainder of `f` on division by `B` if there exists:
-  (1) A finite linear combination:
-   `f = ∑ (g(b) * b) + r` where `g : B →₀ R[X]` (finitely supported coefficients).
-  (2) Degree condition:
-   For each `b ∈ B`, the degree of `g(b) * b` is ≤ the degree of `f` under `m`.
-  (3) Remainder irreducibility:
-   No term of `r` is divisible by the leading monomial of any non-zero `b ∈ B`.
--/
-def IsRemainder :=
-  (∃ (g : B →₀ MvPolynomial σ R),
-    f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
-    ∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree f) ∧
-  ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c)
 
 /--
 A variant of `MonomialOrder.IsRemainder` without coercion of a `Set (MvPolynomial σ R)`.
@@ -88,37 +137,19 @@ theorem isRemainder_def' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
       (∃ (g : MvPolynomial σ R →₀ MvPolynomial σ R),
         ↑g.support ⊆ B ∧
         p = Finsupp.linearCombination _ id g + r ∧
-        ∀ b ∈ B, m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree p) ∧
+        ∀ b ∈ B,
+          m.toWithBotSyn (m.withBotDegree b) + m.toWithBotSyn (m.withBotDegree (g b)) ≤
+            m.toWithBotSyn (m.withBotDegree p)) ∧
       ∀ c ∈ r.support, ∀ g' ∈ B, g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
-  classical
-  constructor
-  · intro ⟨⟨g, h₁, h₂⟩, h₃⟩
-    refine ⟨?_, h₃⟩
-    use g.mapDomain Subtype.val
-    split_ands
-    · exact subset_trans (Finset.coe_subset.mpr Finsupp.mapDomain_support) (by simp)
-    · simp [h₁]
-    · intro b hb
-      rw [show b = ↑(Subtype.mk b hb) by rfl, Finsupp.mapDomain_apply (by simp)]
-      exact h₂ ⟨b, hb⟩
-  · intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
-    refine ⟨?_, h₃⟩
-    use {
-      support := (g.support.subtype (· ∈ B)),
-      toFun := (g.toFun ·),
-      mem_support_toFun := by intro; simp; rfl
-    }
-    refine ⟨?_, by simpa⟩
-    rw [h₁, eq_comm]
-    congr 1
-    simp? [Finsupp.linearCombination_apply, Finsupp.sum] says
-      simp only [Finsupp.linearCombination_apply, Finsupp.sum, Finsupp.coe_mk, smul_eq_mul, id_eq]
-    apply Finset.sum_nbij (↑·)
-    · simp_intro ..
-    · simp_intro b _ b₁ _ h [Subtype.ext_iff]
-    · simp_intro b hb
-      exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hb
-    · simp [DFunLike.coe]
+  apply and_congr_left'
+  rw [Function.Surjective.exists (Finsupp.restrictSupportEquiv B (MvPolynomial σ R)).surjective]
+  conv in Finsupp.linearCombination _ _ _ =>
+    -- simp? [Finsupp.linearCombination,
+    --   Finsupp.sum_subtypeDomain_index (p := (· ∈ B)) (h := fun a b ↦ b * a) x.2] says
+    simp only [Finsupp.linearCombination, Finsupp.restrictSupportEquiv_apply, Finsupp.coe_lsum,
+      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, smul_eq_mul,
+      Finsupp.sum_subtypeDomain_index (p := (· ∈ B)) (h := fun a b ↦ b * a) x.2]
+  simp [Subtype.exists, exists_prop, -exists_and_left, and_assoc, Finsupp.linearCombination]
 
 /--
 A variant of `MonomialOrder.IsRemainder` where `g : MvPolynomial σ R →₀ MvPolynomial σ R` is
@@ -127,12 +158,15 @@ support.
 -/
 theorem isRemainder_def'' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
     (r : MvPolynomial σ R) :
-      m.IsRemainder p B r ↔
-        (∃ (g : MvPolynomial σ R → MvPolynomial σ R) (B' : Finset (MvPolynomial σ R)),
-          ↑B' ⊆ B ∧
-          p = B'.sum (fun x => g x * x) + r ∧
-          ∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
-        ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c) := by
+    m.IsRemainder p B r ↔
+      (∃ (g : MvPolynomial σ R → MvPolynomial σ R) (B' : Finset (MvPolynomial σ R)),
+        ↑B' ⊆ B ∧
+        p = B'.sum (fun x => g x * x) + r ∧
+        ∀ b' ∈ B',
+          m.toWithBotSyn (m.withBotDegree (b' : MvPolynomial σ R)) +
+          m.toWithBotSyn (m.withBotDegree (g b')) ≤
+            m.toWithBotSyn (m.withBotDegree p)) ∧
+      ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c) := by
   classical
   rw [isRemainder_def']
   constructor
@@ -170,7 +204,10 @@ theorem isRemainder_finset (p : MvPolynomial σ R) (B' : Finset (MvPolynomial σ
     (r : MvPolynomial σ R) : m.IsRemainder p B' r ↔
       (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
         p = B'.sum (fun x => g x * x) + r ∧
-        ∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
+        ∀ b' ∈ B',
+          m.toWithBotSyn (m.withBotDegree (b' : MvPolynomial σ R)) +
+          m.toWithBotSyn (m.withBotDegree (g b')) ≤
+            m.toWithBotSyn (m.withBotDegree p)) ∧
       ∀ c ∈ r.support, ∀ b ∈ B', b ≠ 0 → ¬ (m.degree b ≤ c) := by
   classical
   constructor
@@ -205,7 +242,10 @@ theorem isRemainder_range {ι : Type*} (f : MvPolynomial σ R)
     m.IsRemainder f (Set.range b) r ↔
       (∃ g : ι →₀ MvPolynomial σ R,
         f = Finsupp.linearCombination _ b g + r ∧
-        ∀ i : ι, m.degree (b i * g i) ≼[m] m.degree f) ∧
+        ∀ i : ι,
+          m.toWithBotSyn (m.withBotDegree (b i : MvPolynomial σ R)) +
+          m.toWithBotSyn (m.withBotDegree (g i)) ≤
+            m.toWithBotSyn (m.withBotDegree f)) ∧
       ∀ c ∈ r.support, ∀ i : ι, b i ≠ 0 → ¬ (m.degree (b i) ≤ c) := by
   classical
   constructor
@@ -259,13 +299,15 @@ theorem isRemainder_range {ι : Type*} (f : MvPolynomial σ R)
         apply Finset.sum_congr rfl
         simp_intro ..
       · intro b1
-        simp? [Finsupp.onFinset, g', Finset.mul_sum] says
-          simp only [Finsupp.onFinset, Finsupp.coe_mk, Finset.mul_sum, g']
-        apply le_trans m.degree_sum_le
-        simp? says
-          simp only [Finset.sup_le_iff, Finset.mem_filter, Finsupp.mem_support_iff, ne_eq, and_imp]
-        intro idx hidx hidx'
-        simp [h₂ idx, ← hidx']
+        rw [Finsupp.onFinset]
+        apply le_trans (add_le_add_right m.withBotDegree_sum_le _)
+        have := (m.toWithBotSyn (m.withBotDegree b1.val) + ·)
+        rw [Finset.comp_sup_eq_sup_comp_of_is_total (m.toWithBotSyn (m.withBotDegree b1.val) + ·)]
+        · simp_rw [Finset.sup_le_iff, Finset.mem_filter]
+          rintro _ ⟨-, h⟩
+          simp [← h, h₂]
+        · simp_intro _ _ _ [add_le_add]
+        simp
     · aesop
 
 /--
@@ -321,13 +363,46 @@ theorem isRemainder_sdiff_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
   · rw [←isRemainder_insert_zero_iff_isRemainder, show insert 0 (B \ {0}) = B by simp [h]]
   · simp [h]
 
-variable {m B} in
+variable {B} in
 theorem isRemainder_zero {r : MvPolynomial σ R}
-    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _)
     (h : m.IsRemainder 0 B r) : r = 0 := by
   classical
   unfold IsRemainder at h
   obtain ⟨⟨g, h0sumg, hg⟩, hr⟩ := h
+  rw [h0sumg, eq_comm]
+  convert zero_add r
+  apply Finset.sum_eq_zero (f := fun x ↦ g x * x.val)
+  intro x _
+  specialize hg x
+  simp? at hg says
+    simp only [withBotDegree_zero, toWithBotSyn_apply_bot, le_bot_iff, WithBot.add_eq_bot,
+      toWithBotSyn_apply_eq_bot_iff, withBotDegree_eq_bot_iff] at hg
+  rcases hg with hg | hg <;> simp [hg]
+
+@[simp]
+theorem isRemainder_zero_iff :
+    m.IsRemainder 0 B r ↔ r = 0 := by
+  refine ⟨isRemainder_zero, fun h ↦ ?_⟩
+  exact ⟨⟨0, by simp [h]⟩, by simp [h]⟩
+
+theorem isRemainder_iff_degree (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _) :
+    m.IsRemainder f B r ↔
+    (∃ (g : B →₀ MvPolynomial σ R),
+      f = Finsupp.linearCombination _ (fun (b : B) ↦ b.val) g + r ∧
+      ∀ (b : B), m.degree (b.val * (g b)) ≼[m] m.degree f) ∧
+    ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c) := by
+  classical
+  wlog! hf : f = 0
+  · simp_rw [IsRemainder, ← map_add,
+        ← m.withBotDegree_mul_of_left_mem_nonZeroDivisors (hB _ (Subtype.prop _)),
+       withBotDegree_le_withBotDegree_iff]
+    simp? [hf, -mem_support_iff] says
+      simp only [hf, IsEmpty.forall_iff, and_true, Subtype.forall, ne_eq]
+  simp_rw [hf, isRemainder_zero_iff]
+  constructor
+  · intro h
+    exact ⟨⟨0, by simp [h]⟩, by simp [h]⟩
+  rintro ⟨⟨g, h0sumg, hg⟩, hr⟩
   simp_rw [m.degree_zero, m.toSyn.map_zero, ← m.eq_zero_iff, AddEquiv.map_eq_zero_iff,
     mul_comm _ (g _)] at hg
   simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, smul_eq_mul] at h0sumg
@@ -351,113 +426,7 @@ theorem isRemainder_zero {r : MvPolynomial σ R}
   rw [← hg] at hr
   simp at hr
 
-variable {m B} in
-theorem isRemainder_zero₀ {r : MvPolynomial σ R}
-    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _ ∨ b = 0) (h : m.IsRemainder 0 B r) :
-      r = 0 := by
-  rw [← m.isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
-  refine m.isRemainder_zero ?_ h
-  simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
-
-variable {m B} in
-theorem isRemainder_zero' [NoZeroDivisors R] {r : MvPolynomial σ R} (h : m.IsRemainder 0 B r) :
-    r = 0 := by
-  refine isRemainder_zero₀ ?_ h
-  intro b _
-  rw [or_iff_not_imp_right]
-  exact (mem_nonZeroDivisors_of_ne_zero <| m.leadingCoeff_ne_zero_iff.mpr ·)
-
-variable {m} in
-theorem isRemainder_finset₁ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial σ R)}
-    (hB' : ∀ b' ∈ B', m.leadingCoeff b' ∈ nonZeroDivisors _)
-    (r : MvPolynomial σ R) :
-    m.IsRemainder p B' r ↔
-      (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
-        p = B'.sum (fun x => g x * x) + r ∧
-        (∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
-        (p = 0 → g = 0)
-      ) ∧
-      ∀ c ∈ r.support, ∀ b ∈ B', b ≠ 0 → ¬ (m.degree b ≤ c) := by
-  constructor
-  · by_cases hp0 : p = 0
-    · rw [hp0]
-      intro h
-      apply m.isRemainder_zero hB' at h
-      simp [h]
-    rw [isRemainder_finset]
-    rintro ⟨⟨g, h₁, h₂⟩, h₃⟩
-    exact ⟨⟨g, h₁, h₂, by simp [hp0]⟩, h₃⟩
-  · rintro ⟨⟨g, h₁, h₂, -⟩, h₃⟩
-    rw [isRemainder_finset]
-    exact ⟨⟨g, h₁, h₂⟩, h₃⟩
-
-variable {m} in
-theorem isRemainder_finset₁₀ (p : MvPolynomial σ R) {B' : Finset (MvPolynomial σ R)}
-    (hB' : ∀ b' ∈ B', m.leadingCoeff b' ∈ nonZeroDivisors _ ∨ b' = 0)
-    (r : MvPolynomial σ R) :
-    m.IsRemainder p B' r ↔
-      (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
-        p = B'.sum (fun x => g x * x) + r ∧
-        (∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
-        (p = 0 → g = 0)
-      ) ∧
-      ∀ c ∈ r.support, ∀ b ∈ B', b ≠ 0 → ¬ (m.degree b ≤ c) := by
-  constructor
-  · by_cases hp0 : p = 0
-    · rw [hp0]
-      intro h
-      apply m.isRemainder_zero₀ hB' at h
-      simp [h]
-    rw [isRemainder_finset]
-    rintro ⟨⟨g, h₁, h₂⟩, h₃⟩
-    exact ⟨⟨g, h₁, h₂, by simp [hp0]⟩, h₃⟩
-  · rintro ⟨⟨g, h₁, h₂, -⟩, h₃⟩
-    rw [isRemainder_finset]
-    exact ⟨⟨g, h₁, h₂⟩, h₃⟩
-
-variable {m} in
-theorem isRemainder_finset₁' [NoZeroDivisors R] (p : MvPolynomial σ R)
-    (B' : Finset (MvPolynomial σ R)) (r : MvPolynomial σ R) :
-    m.IsRemainder p B' r ↔
-      (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
-        p = B'.sum (fun x => g x * x) + r ∧
-        (∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
-        (p = 0 → g = 0)
-      ) ∧
-      ∀ c ∈ r.support, ∀ b ∈ B', b ≠ 0 → ¬ (m.degree b ≤ c) := by
-  constructor
-  · by_cases hp0 : p = 0
-    · rw [hp0]
-      intro h
-      apply m.isRemainder_zero' at h
-      simp [h]
-    rw [isRemainder_finset]
-    rintro ⟨⟨g, h₁, h₂⟩, h₃⟩
-    exact ⟨⟨g, h₁, h₂, by simp [hp0]⟩, h₃⟩
-  · rintro ⟨⟨g, h₁, h₂, -⟩, h₃⟩
-    rw [isRemainder_finset]
-    exact ⟨⟨g, h₁, h₂⟩, h₃⟩
-
-theorem isRemainder_def'₁ [NoZeroDivisors R] (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
-    (r : MvPolynomial σ R) : m.IsRemainder p B r ↔
-      (∃ (g : MvPolynomial σ R →₀ MvPolynomial σ R),
-        ↑g.support ⊆ B ∧
-        p = Finsupp.linearCombination _ id g + r ∧
-        ∀ b ∈ B, m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree p ∧
-        (p = 0 → g = 0)) ∧
-      ∀ c ∈ r.support, ∀ g' ∈ B, g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
-  by_cases! h : p ≠ 0
-  · simp [isRemainder_def', h]
-  rw [h]
-  constructor
-  · intro h'
-    refine ⟨⟨0, ?_, ?_⟩, ?_⟩ <;> simp [isRemainder_zero' h']
-  · intro h'
-    rw [isRemainder_def']
-    aesop
-
-variable {m} in
-lemma mem_ideal_of_isRemainder_of_mem_ideal {B : Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
+lemma mem_ideal_of_mem_ideal {B : Set (MvPolynomial σ R)} {r : MvPolynomial σ R}
     {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
     (hBI : B ⊆ I) (hpBr : m.IsRemainder p B r) (hr : r ∈ I) :
     p ∈ I := by
@@ -468,8 +437,7 @@ lemma mem_ideal_of_isRemainder_of_mem_ideal {B : Set (MvPolynomial σ R)} {r : M
   apply Ideal.sum_mem
   exact fun _ _ ↦ Ideal.mul_mem_left _ _ (Set.mem_of_mem_of_subset (by simp) hBI)
 
-variable {m} in
-lemma term_notMem_span_leadingTerm_of_isRemainder {p r : MvPolynomial σ R}
+lemma term_notMem_span_leadingTerm {p r : MvPolynomial σ R}
     {B : Set (MvPolynomial σ R)} (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p))
     (h : m.IsRemainder p B r) :
     ∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' B) := by
@@ -492,20 +460,18 @@ lemma term_notMem_span_leadingTerm_of_isRemainder {p r : MvPolynomial σ R}
   specialize hB b hb
   simp [hq0, h1ne0.symm] at hB
 
-variable {m} in
-lemma term_notMem_span_leadingTerm_of_isRemainder₀ {p r : MvPolynomial σ R}
+lemma term_notMem_span_leadingTerm₀ {p r : MvPolynomial σ R}
     {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p) ∨ p = 0)
     (h : m.IsRemainder p B r) :
     ∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' B) := by
   classical
   rw [← span_leadingTerm_sdiff_singleton_zero]
-  rw [← m.isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
-  refine m.term_notMem_span_leadingTerm_of_isRemainder ?_ h
+  rw [← isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
+  refine term_notMem_span_leadingTerm ?_ h
   simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
 
-variable {m} in
-lemma monomial_notMem_span_leadingTerm {r : MvPolynomial σ R}
+lemma _root_.monomial_notMem_span_leadingTerm {r : MvPolynomial σ R}
     {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p))
     (h : ∀ c ∈ r.support, ∀ b ∈ B, ¬ (m.degree b ≤ c)) :
@@ -524,13 +490,12 @@ lemma monomial_notMem_span_leadingTerm {r : MvPolynomial σ R}
   · intro b hb
     exact h s hs b hb
 
-variable {m} in
-lemma monomial_notMem_span_leadingTerm_of_isRemainder {p r : MvPolynomial σ R}
+lemma monomial_notMem_span_leadingTerm {p r : MvPolynomial σ R}
     {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p))
     (h : m.IsRemainder p B r) :
     ∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' B) := by
-  apply monomial_notMem_span_leadingTerm hB
+  apply _root_.monomial_notMem_span_leadingTerm hB
   intro c hc b hb
   suffices Nontrivial R from h.2 c hc b hb (m.leadingCoeff_ne_zero_iff.mp (hB _ hb).ne_zero)
   rw [nontrivial_iff_exists_ne 0]
@@ -539,53 +504,90 @@ lemma monomial_notMem_span_leadingTerm_of_isRemainder {p r : MvPolynomial σ R}
   rw [MvPolynomial.mem_support_iff, ← mul_one <| r.coeff c, h1eq0, mul_zero] at hc
   exact hc rfl
 
-variable {m} in
-lemma monomial_notMem_span_leadingTerm_of_isRemainder₀ {p r : MvPolynomial σ R}
+lemma monomial_notMem_span_leadingTerm₀ {p r : MvPolynomial σ R}
     {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p) ∨ p = 0)
     (h : m.IsRemainder p B r) :
     ∀ s ∈ r.support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' B) := by
   rw [← span_leadingTerm_sdiff_singleton_zero]
-  rw [← m.isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
-  refine m.monomial_notMem_span_leadingTerm_of_isRemainder ?_ h
+  rw [← isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
+  refine monomial_notMem_span_leadingTerm ?_ h
   simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
 
-variable {m} in
-lemma exists_degree_le_degree_of_isRemainder_zero
-    (p : MvPolynomial σ R) (hp : p ≠ 0) (B : Set (MvPolynomial σ R))
-    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _)
-    (h : m.IsRemainder p B 0) :
-    ∃ b ∈ B, m.degree b ≤ m.degree p := by
+variable {f r B} in
+lemma withBotDegree_remainder_le (h : m.IsRemainder f B r) :
+    m.withBotDegree r ≼'[m] m.withBotDegree f := by
+  wlog! hf : f ≠ 0
+  · -- simp [hf, isRemainder_zero_iff] at h; simp [hf, h] -- "flexible" linter doesn't work here?
+    simp [hf, isRemainder_zero_iff .. |>.mp <| hf ▸ h]
+  wlog! hr : r ≠ 0
+  · simp [hr]
+  obtain ⟨g, hsum, h⟩ := h.1
+  apply congrArg (m.toWithBotSyn <| m.withBotDegree ·) at hsum
+  contrapose! hsum
+  apply ne_of_lt
+  rw [withBotDegree_add_of_right_lt]
+  · exact hsum
+  apply lt_of_le_of_lt withBotDegree_sum_le
+  rw [Finset.sup_lt_iff (bot_lt_iff_ne_bot.mpr (by simpa))]
+  simp? [-mem_support_iff, -Subtype.forall] says
+    simp only [Finsupp.mem_support_iff, ne_eq, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq,
+      smul_eq_mul]
+  rintro b -
+  apply lt_of_le_of_lt <| m.withBotDegree_mul_le (g b) b
+  simpa [add_comm] using lt_of_le_of_lt (h b) hsum
+
+variable {p B r} in
+lemma exists_withBotDegree_le_degree
+    (h : m.IsRemainder p B r) (hfr : m.withBotDegree p ≠ m.withBotDegree r) :
+    ∃ b ∈ B, m.withBotDegree b ≤ m.withBotDegree p := by
   classical
+  rw [ne_eq, ← m.toWithBotSyn.apply_eq_iff_eq, eq_comm,
+    ← ne_eq, ne_iff_lt_iff_le.mpr <| withBotDegree_remainder_le h] at hfr
+  wlog! hp : p ≠ 0
+  · rw [hp, isRemainder_zero_iff] at h
+    simp [h, hp] at hfr
   rw [isRemainder_def''] at h
   rcases h with ⟨⟨g, B', h₁, hsum, h₃⟩, h₄⟩
-  simp? at hsum says simp only [add_zero] at hsum
   have : m.degree p ∈ p.support := m.degree_mem_support hp
-  rw [hsum] at this
-  obtain ⟨b, hb⟩ := Finset.mem_biUnion.mp <| hsum.symm ▸ Finset.mem_of_subset support_sum this
+  nth_rw 1 [hsum] at this
+  apply Finset.mem_of_subset support_add at this
+  rw [Finset.mem_union] at this
+  rcases this with this | this
+  on_goal 2 =>
+    apply m.le_withBotDegree at this
+    rw [← withBotDegree_eq_coe_degree_iff _ |>.mpr hp, ← not_lt] at this
+    contradiction
+  obtain ⟨b, hb⟩ := Finset.mem_biUnion.mp <| Finset.mem_of_subset support_sum this
   use b
   refine ⟨h₁ hb.1, ?_⟩
   rcases hb with ⟨hb₁, hb₂⟩
   obtain hgbne0 : g b ≠ 0 := by
     contrapose! hb₂
     simp [hb₂]
-  apply le_degree (m:=m) at hb₂
-  apply le_antisymm (mul_comm b _ ▸ h₃ b hb₁) at hb₂
-  simp? at hb₂ says simp only [EmbeddingLike.apply_eq_iff_eq] at hb₂
-  rw [degree_mul_of_right_mem_nonZeroDivisors hgbne0] at hb₂
-  · exact le_of_add_le_right (le_of_eq hb₂)
-  exact hB b (Set.mem_of_mem_of_subset hb₁ h₁)
+  apply le_withBotDegree (m:=m) at hb₂
+  rw [← withBotDegree_eq_coe_degree_iff _ |>.mpr hp] at hb₂
+  apply le_trans' (m.withBotDegree_mul_le' ..) at hb₂
+  rw [add_comm] at hb₂
+  apply le_antisymm (add_comm (m.toWithBotSyn <| m.withBotDegree b) _ ▸ h₃ b hb₁) at hb₂
+  simp only [← map_add, EmbeddingLike.apply_eq_iff_eq] at hb₂
+  rw [← hb₂]
+  exact WithBot.le_self_add (m.withBotDegree_eq_bot_iff _ |>.not.mpr hgbne0) _
 
-variable {m} in
-lemma exists_degree_le_degree_of_isRemainder_zero₀
-    (p : MvPolynomial σ R) (hp : p ≠ 0) (B : Set (MvPolynomial σ R))
-    (hB : ∀ b ∈ B, m.leadingCoeff b ∈ nonZeroDivisors _ ∨ b = 0)
-    (h : m.IsRemainder p B 0) :
-    ∃ b ∈ B, b ≠ 0 ∧ m.degree b ≤ m.degree p := by
-  rw [← isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
-  convert m.exists_degree_le_degree_of_isRemainder_zero p hp (B \ {0}) ?_ h using 2
-  · simp [and_assoc]
-  · simp_intro a b [or_iff_not_imp_right.mp (hB _ _)]
+variable {p B} in
+lemma exists_degree_le_degree_of_zero (hp : p ≠ 0) (h : m.IsRemainder p B 0) :
+    ∃ b ∈ B, m.degree b ≤ m.degree p := by
+  obtain ⟨b, hbB, hb⟩ := exists_withBotDegree_le_degree (r := 0) h (by simpa)
+  use b, hbB
+  wlog! hb0 : b ≠ 0
+  · simp [hb0]
+  simpa [(withBotDegree_eq_coe_degree_iff _).mpr _, hb0, hp] using hb
+
+@[simp, nontriviality]
+lemma of_subsingleton [Subsingleton (MvPolynomial σ R)]
+    {p r : MvPolynomial σ R} {s : Set (MvPolynomial σ R)} :
+    m.IsRemainder p s r := by
+  simp [IsRemainder, Subsingleton.eq_zero (α := MvPolynomial σ R)]
 
 end CommSemiring
 
@@ -593,12 +595,13 @@ section CommRing
 
 variable {σ : Type*} {m : MonomialOrder σ} {R : Type*} [CommRing R]
 
-/-- A variant of `MonomialOrder.div_set` using `MonomialOrder.IsRemainder`. -/
 theorem exists_isRemainder {B : Set (MvPolynomial σ R)}
     (hB : ∀ b ∈ B, IsUnit <| m.leadingCoeff b) (p : MvPolynomial σ R) :
     ∃ (r : MvPolynomial σ R), m.IsRemainder p B r := by
+  classical
   obtain ⟨g, r, h⟩ := MonomialOrder.div_set hB p
   use r
+  rw [isRemainder_iff_degree (hB := fun _ h ↦ (hB _ h).mem_nonZeroDivisors)]
   split_ands
   · use g
     exact ⟨h.1, h.2.1⟩
@@ -611,14 +614,14 @@ theorem exists_isRemainder₀ {B : Set (MvPolynomial σ R)}
     ∃ (r : MvPolynomial σ R), m.IsRemainder p B r := by
   have hB₁ : ∀ b ∈ B \ {0}, IsUnit (m.leadingCoeff b) := by
     simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
-  obtain ⟨r, h⟩ := m.exists_isRemainder hB₁ p
+  obtain ⟨r, h⟩ := exists_isRemainder hB₁ p
   exists r
-  rwa [← m.isRemainder_sdiff_singleton_zero_iff_isRemainder]
+  rwa [← isRemainder_sdiff_singleton_zero_iff_isRemainder]
 
-lemma mem_ideal_iff_of_isRemainder {B : Set (MvPolynomial σ R)}
+lemma mem_ideal_iff {B : Set (MvPolynomial σ R)}
     {r : MvPolynomial σ R} {I : Ideal (MvPolynomial σ R)} {p : MvPolynomial σ R}
     (hBI : B ⊆ I) (hpBr : m.IsRemainder p B r) : r ∈ I ↔ p ∈ I := by
-  refine ⟨m.mem_ideal_of_isRemainder_of_mem_ideal hBI hpBr, ?_⟩
+  refine ⟨mem_ideal_of_mem_ideal hBI hpBr, ?_⟩
   obtain ⟨⟨f, h_eq, h_deg⟩, h_remain⟩ := hpBr
   intro hp
   rw [← sub_eq_of_eq_add' h_eq]
@@ -640,13 +643,13 @@ lemma sub_mem_ideal_of_isRemainder_of_subset_ideal
     intro g hg
     exact Ideal.mul_mem_left I _ (Set.mem_of_mem_of_subset (by simp) hBI)
 
-lemma sub_monomial_notMem_span_leadingTerm_of_isRemainder
+lemma sub_monomial_notMem_span_leadingTerm
     {B : Set (MvPolynomial σ R)} {p r₁ r₂ : MvPolynomial σ R}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p))
     (hr₁ : m.IsRemainder p B r₁) (hr₂ : m.IsRemainder p B r₂) :
     ∀ s ∈ (r₁ - r₂).support, monomial s 1 ∉ Ideal.span (m.leadingTerm '' B) := by
   classical
-  apply m.monomial_notMem_span_leadingTerm hB
+  apply _root_.monomial_notMem_span_leadingTerm hB
   intro c hc
   apply MvPolynomial.support_sub at hc
   rw [Finset.mem_union] at hc
@@ -676,19 +679,16 @@ theorem exists_isRemainder' (B : Set (MvPolynomial σ k))
   apply exists_isRemainder₀
   simp [em']
 
-lemma term_notMem_span_leadingTerm_of_isRemainder' {p r : MvPolynomial σ k}
+lemma term_notMem_span_leadingTerm' {p r : MvPolynomial σ k}
     {B : Set (MvPolynomial σ k)} (h : m.IsRemainder p B r) :
     ∀ s ∈ r.support, monomial s (r.coeff s) ∉ Ideal.span (m.leadingTerm '' B) := by
   rw [←Ideal.span_sdiff_singleton_zero, ← m.image_leadingTerm_sdiff_singleton_zero]
-  apply term_notMem_span_leadingTerm_of_isRemainder
+  apply term_notMem_span_leadingTerm
   · simp
   rwa [←isRemainder_sdiff_singleton_zero_iff_isRemainder] at h
 
-lemma exists_degree_le_degree_of_isRemainder_zero' (p : MvPolynomial σ k) (hp : p ≠ 0)
-    (B : Set (MvPolynomial σ k)) (h : m.IsRemainder p B 0) :
-    ∃ b ∈ B, b ≠ 0 ∧ m.degree b ≤ m.degree p :=
-  m.exists_degree_le_degree_of_isRemainder_zero₀ p hp B (by simp [em']) h
-
 end Field
+
+end IsRemainder
 
 end MonomialOrder

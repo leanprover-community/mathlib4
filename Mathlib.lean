@@ -6239,6 +6239,7 @@ public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.MvPolynomial.Groebner
 public import Mathlib.RingTheory.MvPolynomial.Groebner.Division
+public import Mathlib.RingTheory.MvPolynomial.Groebner.Groebner
 public import Mathlib.RingTheory.MvPolynomial.Groebner.Remainder
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.Ideal
