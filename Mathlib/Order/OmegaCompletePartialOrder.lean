@@ -444,8 +444,7 @@ theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = 
 
 @[fun_prop]
 lemma ωScottContinuous.prodMk
-    {f : α → β} (hf : ωScottContinuous f)
-    {g : α → γ} (hg : ωScottContinuous g) :
+    {f : α → β} (hf : ωScottContinuous f) {g : α → γ} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ (f x, g x) :=
   ScottContinuousOn.prodMk (fun a b hab ↦ ⟨pair a b hab, range_pair a b hab⟩) hf hg
 
@@ -735,7 +734,7 @@ lemma ωScottContinuous_apply
     ωScottContinuous fun x ↦ f x (g x) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · intro x y hxy
-    apply OrderHom.apply_mono (hf.monotone hxy) (hg.monotone hxy)
+    exact OrderHom.apply_mono (hf.monotone hxy) (hg.monotone hxy)
   · rw [hf.map_ωSup, hg.map_ωSup]
     simp only [ωSup_def, ωSup_apply]
     apply le_antisymm
