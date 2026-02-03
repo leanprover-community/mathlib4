@@ -50,24 +50,71 @@ public noncomputable section
 
 variable {f : M → N}
 
+-- Should this include a differentiability assumption? Then
+-- there is no need to manually also pass the `ContMDiff` below.
 variable (I J) in
+@[expose]
 def IsRegularValue (f : M → N) (y : N) := ∀ x ∈ f ⁻¹' {y}, IsRegularPoint I J f x
 
 -- Suppose M is not empty. (Otherwise, we can do anything we want.)
 -- Pick a pre-image x of y. Then mfderiv has a bounded right inverse;
 -- take the image of that right inverse.
 
-def IsRegularValue.complement {x : M} (hx : IsRegularValue I J f (f x)) : Type _ :=
+@[expose]
+def IsRegularValue.Complement {x : M} (hx : IsRegularValue I J f (f x)) : Type _ :=
   (hx x rfl).choose.range
+  deriving NormedAddCommGroup
 
-instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedAddCommGroup hx.complement := by
-  sorry -- infer_instance
+namespace IsRegularValue
 
-instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.complement := by
-  sorry -- infer_instance
+instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.Complement := by
+  delta Complement
+  infer_instance
+
+@[nolint unusedArguments, expose]
+abbrev Preimage {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) : Type _ :=
+  f ⁻¹' {f x}
+
+-- is this true?
+@[nolint unusedArguments, expose]
+def modelSpace {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
+  (mfderiv I J f x).ker
+
+-- This is certainly wrong for manifolds with boundary?
+@[nolint unusedArguments, expose]
+def model {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
+  (mfderiv I J f x).ker
+  deriving TopologicalSpace
+
+instance {x : M} (hx : IsRegularValue I J f (f x)) :
+    NormedAddCommGroup hx.modelSpace :=
+  sorry
+
+instance {x : M} (hx : IsRegularValue I J f (f x)) :
+    NormedSpace 𝕜 hx.modelSpace :=
+  sorry
+
+@[nolint unusedArguments, expose]
+def modelWithCorners {x : M} (hx : IsRegularValue I J f (f x)) :
+    ModelWithCorners 𝕜 hx.modelSpace hx.model :=
+  sorry
+
+/-- The regular value theorem. -/
+instance immersedSubmanifold {x : M} (hx : IsRegularValue I J f (f x))
+    (hf : ContMDiff I J n f) :
+    ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
+  map := Subtype.val
+  sliceModel := sorry
+  real_condition := sorry
+
+instance {x : M} (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
+    ChartedSpace hx.model (hx.Preimage hf) :=
+  (hx.immersedSubmanifold hf).chartedSpace
 
 #exit
 --(hf : ∀ x, IsRegularPoint I J f x) :
 def regularValueTheorem {y : N} (hy : IsRegularValue I J f y) :
     True := by
   sorry
+
+end IsRegularValue

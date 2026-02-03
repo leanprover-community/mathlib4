@@ -43,13 +43,15 @@ class ImmersedSubmanifold where
   map : M → N
   sliceModel : SliceModel F I J := by infer_instance
   -- TODO: this is too strong a condition; placeholder for the real one!
-  real_condition : n = n --IsImmersionOfComplement F I J n map
+  real_condition : n = n ∧ ‹ChartedSpace G N› = ‹ChartedSpace G N›
+    --IsImmersionOfComplement F I J n map
 
--- instance [h : ImmersedSubmanifold I J M N n F] : ChartedSpace H M := sorry
-
-#exit
 namespace ImmersedSubmanifold
 
+def chartedSpace [h : ImmersedSubmanifold I J M N n F] : ChartedSpace H M :=
+  sorry
+
+#exit
 lemma isImmersionOfComplement [h : ImmersedSubmanifold I J M N n F] :
     IsImmersionOfComplement F I J n h.map := sorry
 
