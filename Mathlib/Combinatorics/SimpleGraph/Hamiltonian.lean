@@ -192,8 +192,7 @@ lemma IsHamiltonian.of_card_eq_one (h : Fintype.card α = 1) : G.IsHamiltonian :
 lemma not_isHamiltonian_of_card_eq_two (h : Fintype.card α = 2) : ¬G.IsHamiltonian := by
   intro hG
   have ⟨v, p, hp⟩ := hG <| by lia
-  have := hp.three_le_length.trans_eq hp.length_eq |>.trans_eq h
-  contradiction
+  grind [hp.three_le_length, hp.length_eq]
 
 @[simp]
 lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
