@@ -18,8 +18,16 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 /-- The commutator of two elements `g₁` and `g₂`. -/
 @[to_additive /-- The additive commutator of two elements `g₁` and `g₂`. -/]
-instance commutatorElement {G : Type*} [Group G] : Bracket G G :=
+def commutatorElement {G : Type*} [Group G] : Bracket G G :=
   ⟨fun g₁ g₂ ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹⟩
+
+namespace commutatorElement
+
+attribute [scoped instance] commutatorElement
+
+end commutatorElement
+
+open scoped commutatorElement
 
 @[to_additive]
 theorem commutatorElement_def {G : Type*} [Group G] (g₁ g₂ : G) :
