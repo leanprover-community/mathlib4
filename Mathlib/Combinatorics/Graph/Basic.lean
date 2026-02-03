@@ -412,7 +412,7 @@ We define two graphs to be `Compatible` if for each edge belonging to their shar
 the incidence relation (i.e., which pairs of vertices it links) is the same in both graphs.
 -/
 
-/-- Two graphs are `Compatible` if the edges in their intersection agree on their ends -/
+/-- Two graphs are compatible if their shared edges have the same ends in both graphs. -/
 def Compatible (G H : Graph α β) : Prop :=
   ∀ ⦃e⦄, e ∈ E(G) → e ∈ E(H) → ∀ x y, G.IsLink e x y ↔ H.IsLink e x y
 
