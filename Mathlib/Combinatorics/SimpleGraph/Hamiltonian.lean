@@ -172,6 +172,9 @@ lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamilton
     H.IsHamiltonian :=
   fun hα ↦ let ⟨_, p, hp⟩ := hG hα; ⟨_, p.map <| .ofLE hGH, hp.map _ bijective_id⟩
 
+lemma not_isHamiltonian_of_isEmpty [IsEmpty α] : ¬G.IsHamiltonian :=
+  (IsEmpty.exists_iff.mp <| · <| by simp)
+
 lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
   preconnected a b := by
     obtain rfl | hab := eq_or_ne a b
@@ -181,10 +184,22 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     have a_mem := hp.mem_support a
     have b_mem := hp.mem_support b
     exact ((p.takeUntil a a_mem).reverse.append <| p.takeUntil b b_mem).reachable
-  nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG <| by simp [@Fintype.card_eq_zero]
+  nonempty := not_isEmpty_iff.mp fun _ ↦ not_isHamiltonian_of_isEmpty hG
 
 lemma IsHamiltonian.of_card_eq_one (h : Fintype.card α = 1) : G.IsHamiltonian :=
   (· h |>.elim)
+
+lemma not_isHamiltonian_of_card_eq_two (h : Fintype.card α = 2) : ¬G.IsHamiltonian := by
+  intro hG
+  have ⟨v, p, hp⟩ := hG <| by lia
+  grind [hp.three_le_length, hp.length_eq]
+
+@[simp]
+lemma not_isHamiltonian_bot_of_card_ne_one (h : Fintype.card α ≠ 1) :
+    ¬(⊥ : SimpleGraph α).IsHamiltonian := by
+  intro hG
+  have ⟨v, p, hp⟩ := hG h
+  exact p.adj_snd hp.not_nil
 
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
   of_card_eq_one <| Fintype.card_unique
