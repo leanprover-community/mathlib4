@@ -17,15 +17,6 @@ public import Mathlib.Analysis.Calculus.ImplicitContDiff
 open Function intervalIntegral MeasureTheory Metric Set ContinuousMultilinearMap
 open scoped Nat NNReal Topology
 
-/-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
-`dist x y`. -/
--- TODO: this is the "left" version. make a "right" version too
--- move somewhere
-lemma segment_subset_closedBall {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
-    (x y : E) : segment ℝ x y ⊆ Metric.closedBall x (dist x y) :=
-  (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
-    (Metric.mem_closedBall.mpr (dist_comm y x ▸ le_refl _))
-
 /-- `f` maps `univ` into `t` if and only if the range of `f` is contained in `t`. -/
 -- TODO: move somewhere
 lemma Set.mapsTo_univ_iff_range_subset {α : Type*} {β : Type*} {t : Set β} {f : α → β} :
@@ -357,12 +348,12 @@ lemma norm_image_sub_fderiv_le {F : Type*} [NormedAddCommGroup F] [NormedSpace �
   · intro z hz
     apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
     apply (h z _).1
-    apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
+    apply (mem_closedBall'.mp (segment_subset_closedBall_left x y hz)).trans_lt
     rwa [dist_comm, dist_eq_norm]
   · intro z hz
     rw [← dist_eq_norm, dist_comm]
     apply (h z _).2.le
-    apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
+    apply (mem_closedBall'.mp (segment_subset_closedBall_left x y hz)).trans_lt
     rwa [dist_comm, dist_eq_norm]
 
 omit [CompleteSpace E] in
