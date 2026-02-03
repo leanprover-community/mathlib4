@@ -211,6 +211,7 @@ lemma IsSpanningSubgraph.of_isSpanningSubgraph_right (h : H ≤s G) (hHK : H ≤
 
 /-- An induced subgraph of `G` is a subgraph `H` of `G` such that every link of `G`
 involving two vertices of `H` is also a link of `H`. -/
+@[mk_iff]
 structure IsInducedSubgraph (H G : Graph α β) : Prop where
   le : H ≤ G
   isLink_of_mem_mem : ∀ ⦃e x y⦄, G.IsLink e x y → x ∈ V(H) → y ∈ V(H) → H.IsLink e x y
@@ -228,10 +229,6 @@ instance : IsPartialOrder (Graph α β) (· ≤i ·) where
   refl _ := ⟨le_rfl, by tauto⟩
   trans _ _ _ h₁ h₂ := h₁.trans h₂
   antisymm _ _ h₁ h₂ := antisymm h₁.le h₂.le
-
-lemma isInducedSubgraph_iff :
-    H ≤i G ↔ H ≤ G ∧ ∀ ⦃e x y⦄, G.IsLink e x y → x ∈ V(H) → y ∈ V(H) → H.IsLink e x y :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 lemma IsInducedSubgraph.adj_of_adj (h : H ≤i G) (hxy : G.Adj x y) (hx : x ∈ V(H)) (hy : y ∈ V(H)) :
     H.Adj x y := by
