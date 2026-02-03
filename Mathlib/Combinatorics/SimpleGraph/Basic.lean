@@ -880,4 +880,16 @@ protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V :
 
 end Subsingleton
 
+/-- A vertex in a graph is isolated if it's adjacent to no other vertex. -/
+def IsIsolatedVert (G : SimpleGraph V) (v : V) : Prop := ∀ w, ¬ G.Adj v w
+
+@[simp] lemma neighborSet_eq_empty : G.neighborSet v = ∅ ↔ G.IsIsolatedVert v := by
+  simp [neighborSet, IsIsolatedVert, Set.ext_iff]
+
+@[simp] lemma neighborSet_nonempty : (G.neighborSet v).Nonempty ↔ ¬ G.IsIsolatedVert v := by
+  simp [Set.nonempty_iff_ne_empty]
+
+protected alias ⟨IsIsolatedVert.of_neighborSet_eq_empty, IsIsolatedVert.neighborSet_eq_empty⟩ :=
+  neighborSet_eq_empty
+
 end SimpleGraph

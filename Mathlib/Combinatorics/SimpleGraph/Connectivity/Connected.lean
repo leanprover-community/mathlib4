@@ -271,7 +271,7 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
 
 lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
     (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
-  simp [degree_pos_iff_mem_support, h.support_eq_univ]
+  simp [-degree_pos, degree_pos_iff_mem_support, h.support_eq_univ]
 
 lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : SimpleGraph V}
     [DecidableRel G.Adj] (h : G.Preconnected) : 0 < G.minDegree := by

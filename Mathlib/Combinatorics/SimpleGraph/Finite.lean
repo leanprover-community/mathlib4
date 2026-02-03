@@ -186,6 +186,15 @@ theorem neighborFinset_disjoint_singleton : Disjoint (G.neighborFinset v) {v} :=
 theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
   Finset.disjoint_singleton_left.mpr <| notMem_neighborFinset_self _ _
 
+@[simp] lemma neighborFinset_eq_empty : G.neighborFinset v = ∅ ↔ G.IsIsolatedVert v := by
+  simp [neighborFinset, IsIsolatedVert, Set.ext_iff]
+
+@[simp] lemma neighborFinset_nonempty : (G.neighborFinset v).Nonempty ↔ ¬ G.IsIsolatedVert v := by
+  simp [nonempty_iff_ne_empty]
+
+protected alias ⟨IsIsolatedVert.of_neighborFinset_eq_empty, IsIsolatedVert.neighborFinset_eq_empty⟩
+    := neighborFinset_eq_empty
+
 /-- `G.degree v` is the number of vertices adjacent to `v`. -/
 def degree : ℕ := #(G.neighborFinset v)
 
@@ -195,6 +204,15 @@ theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rf
 @[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
+
+@[simp] lemma degree_eq_zero : G.degree v = 0 ↔ G.IsIsolatedVert v := by
+  simp [← card_neighborFinset_eq_degree]
+
+@[simp] lemma degree_pos : 0 < G.degree v ↔ ¬ G.IsIsolatedVert v := by
+  simp [← card_neighborFinset_eq_degree]
+
+protected alias ⟨IsIsolatedVert.of_degree_eq_zero, IsIsolatedVert.degree_eq_zero⟩ :=
+  degree_eq_zero
 
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
