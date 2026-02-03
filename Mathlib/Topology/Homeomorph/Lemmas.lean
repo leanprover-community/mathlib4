@@ -560,6 +560,6 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
 def Homeomorph.ofDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y) : X ≃ₜ Y where
   toEquiv := f
 
-theorem IsHomeomorph.equiv_of_discreteTopology [DiscreteTopology X] [DiscreteTopology Y]
+theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
     (f : X ≃ Y) : IsHomeomorph f :=
-  (Homeomorph.OfDiscrete f).isHomeomorph
+  (Homeomorph.ofDiscrete f).isHomeomorph
