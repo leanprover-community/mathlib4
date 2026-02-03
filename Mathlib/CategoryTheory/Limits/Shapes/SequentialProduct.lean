@@ -9,8 +9,8 @@ public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 public import Mathlib.CategoryTheory.Limits.Shapes.PiProd
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # ℕ-indexed products as sequential limits
@@ -217,15 +217,15 @@ attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
 lemma functorMap_epi (n : ℕ) : Epi (functorMap f n) := by
   rw [functorMap, Pi.map_eq_prod_map (P := fun m : ℕ ↦ m < n + 1)]
-  apply (config := { allowSynthFailures := true }) epi_comp
-  apply (config := { allowSynthFailures := true }) epi_comp
-  apply (config := { allowSynthFailures := true }) prod.map_epi
-  · apply (config := { allowSynthFailures := true }) Pi.map_epi
+  apply +allowSynthFailures epi_comp
+  apply +allowSynthFailures epi_comp
+  apply +allowSynthFailures prod.map_epi
+  · apply +allowSynthFailures Pi.map_epi
     intro ⟨_, _⟩
     split
     all_goals infer_instance
-  · apply (config := { allowSynthFailures := true }) IsIso.epi_of_iso
-    apply (config := { allowSynthFailures := true }) Pi.map_isIso
+  · apply +allowSynthFailures IsIso.epi_of_iso
+    apply +allowSynthFailures Pi.map_isIso
     intro ⟨_, _⟩
     split
     all_goals infer_instance

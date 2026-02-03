@@ -24,10 +24,10 @@ The more standard Banach-Steinhaus theorem for normed spaces is then deduced fro
 * `BarrelledSpace`: a topological vector space `E` is said to be **barrelled** if all lower
   semicontinuous seminorms on `E` are actually continuous. See the implementation details below for
   more comments on this definition.
-* `WithSeminorms.continuousLinearMapOfTendsto`: fix `E` a barrelled space and `F` a TVS
-  satisfying `WithSeminorms q` for some `q`. Given a sequence of continuous linear maps from
-  `E` to `F` that converges pointwise to a function `f : E → F`, this bundles `f` as a
-  continuous linear map using the Banach-Steinhaus theorem.
+* `continuousLinearMapOfTendsto`: fix `E` a barrelled space and `F` a `PolynormableSpace`.
+  Given a sequence of continuous linear maps from `E` to `F` that converges pointwise to a
+  function `f : E → F`, this bundles `f` as a continuous linear map using the
+  Banach-Steinhaus theorem.
 
 ## Main theorems
 
@@ -37,9 +37,11 @@ The more standard Banach-Steinhaus theorem for normed spaces is then deduced fro
   **Uniform Boundedness Principle**. Fix `E` a barrelled space and `F` a TVS satisfying
   `WithSeminorms q` for some `q`. Any family `𝓕 : ι → E →L[𝕜] F` of continuous linear maps
   that is pointwise bounded is (uniformly) equicontinuous. Here, pointwise bounded means that
-  for all `k` and `x`, the family of real numbers `i ↦ q k (𝓕 i x)` is bounded above,
-  which is equivalent to requiring that `𝓕` is pointwise Von Neumann bounded
-  (see `WithSeminorms.image_isVonNBounded_iff_seminorm_bounded`).
+  for all `k` and `x`, the family of real numbers `i ↦ q k (𝓕 i x)` is bounded above.
+* `PolynormableSpace.banach_steinhaus`: a version of the above which does not make reference
+  to a fixed seminorm family. Fix `E` a barrelled space and `F` a `PolynormableSpace`.
+  Any family `𝓕 : ι → E →L[𝕜] F` of continuous linear maps that is pointwise von Neumann bounded
+  is (uniformly) equicontinuous.
 
 ## Implementation details
 
@@ -175,6 +177,25 @@ protected theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (
   exact ⟨this, Seminorm.continuous_iSup _
     (fun i ↦ (hq.continuous_seminorm k).comp (𝓕 i).continuous) this⟩
 
+end WithSeminorms
+
+section PolynormableSpace
+
+open Bornology
+
+variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGroup F]
+    [ContinuousSMul 𝕜₁ E] [BarrelledSpace 𝕜₁ E] {𝓕 : ι → E →SL[σ₁₂] F} [PolynormableSpace 𝕜₂ F]
+
+/-- The **Banach-Steinhaus** theorem, or **Uniform Boundedness Principle**, for maps from a
+barrelled space to any polynormable space. -/
+protected theorem PolynormableSpace.banach_steinhaus
+    (H : ∀ x, IsVonNBounded 𝕜₂ (range fun i ↦ 𝓕 i x)) :
+    UniformEquicontinuous ((↑) ∘ 𝓕) := by
+  have hp := PolynormableSpace.withSeminorms 𝕜₂ F
+  refine hp.banach_steinhaus ?_
+  simp_rw [hp.isVonNBounded_iff_seminorm_bddAbove, ← range_comp] at H
+  exact fun q x ↦ H x q
+
 variable [ContinuousSMul 𝕜₂ F]
 
 /-- Given a sequence of continuous linear maps which converges pointwise and for which the
@@ -183,7 +204,7 @@ is a *continuous* linear map as well.
 
 This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
 but the proof ultimately goes back to sequences. -/
-protected def continuousLinearMapOfTendsto (hq : WithSeminorms q)
+def continuousLinearMapOfTendsto
     [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
     [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
     E →SL[σ₁₂] F where
@@ -195,13 +216,37 @@ protected def continuousLinearMapOfTendsto (hq : WithSeminorms q)
     rcases l.exists_seq_tendsto with ⟨u, hu⟩
     -- We claim that the limit is continuous because it's a limit of an equicontinuous family.
     -- By the Banach-Steinhaus theorem, this equicontinuity will follow from pointwise boundedness.
-    refine (h.comp hu).continuous_of_equicontinuous (hq.banach_steinhaus ?_).equicontinuous
-    -- For `k` and `x` fixed, we need to show that `(i : ℕ) ↦ q k (g i x)` is bounded.
-    intro k x
-    -- This follows from the fact that this sequence converges (to `q k (f x)`) by hypothesis and
-    -- continuity of `q k`.
+    refine (h.comp hu).continuous_of_equicontinuous
+      (PolynormableSpace.banach_steinhaus ?_).equicontinuous
+    -- For `x` fixed, we need to show that the range of `(i : ℕ) ↦ g i x` is bounded.
+    intro x
+    -- This follows from the fact that this sequence converges (to `f x`) by hypothesis.
     rw [tendsto_pi_nhds] at h
-    exact (((hq.continuous_seminorm k).tendsto _).comp <| (h x).comp hu).bddAbove_range
-end WithSeminorms
+    exact ((h x).comp hu).isVonNBounded_range 𝕜₂
+
+end PolynormableSpace
+
+section Deprecated
+
+variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGroup F]
+    [ContinuousSMul 𝕜₁ E] [BarrelledSpace 𝕜₁ E] [ContinuousSMul 𝕜₂ F] {𝓕 : ι → E →SL[σ₁₂] F}
+    {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
+include hq
+
+/-- Given a sequence of continuous linear maps which converges pointwise and for which the
+domain is barrelled, the Banach-Steinhaus theorem is used to guarantee that the limit map
+is a *continuous* linear map as well.
+
+This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
+but the proof ultimately goes back to sequences. -/
+@[deprecated continuousLinearMapOfTendsto (since := "2026-01-16")]
+protected abbrev WithSeminorms.continuousLinearMapOfTendsto [T2Space F] {l : Filter α}
+    [l.IsCountablyGenerated] [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F}
+    (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
+    E →SL[σ₁₂] F :=
+  haveI : PolynormableSpace 𝕜₂ F := hq.toPolynormableSpace
+  continuousLinearMapOfTendsto g h
+
+end Deprecated
 
 end TVS_anyField

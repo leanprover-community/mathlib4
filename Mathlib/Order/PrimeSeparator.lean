@@ -45,6 +45,7 @@ lemma mem_ideal_sup_principal (a b : α) (J : Ideal α) : b ∈ J ⊔ principal 
   ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
     fun ⟨j, hj, hbja⟩ => ⟨j, hj, a, le_refl a, hbja⟩⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
     ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
   -- Let S be the set of ideals containing I and disjoint from F.

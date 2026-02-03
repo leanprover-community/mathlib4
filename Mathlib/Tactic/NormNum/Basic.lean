@@ -5,13 +5,13 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public meta import Mathlib.Algebra.GroupWithZero.Invertible
-public meta import Mathlib.Algebra.Ring.Int.Defs
-public meta import Mathlib.Data.Nat.Cast.Basic
-public meta import Mathlib.Data.Nat.Cast.Commute
-public meta import Mathlib.Tactic.NormNum.Core
-public meta import Mathlib.Tactic.HaveI
-public meta import Mathlib.Tactic.ClearExclamation
+public meta import Mathlib.Algebra.Group.Invertible.Defs
+public meta import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 # `norm_num` basic plugins
@@ -155,7 +155,7 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
 
 /-! ### Arithmetic -/
 
-library_note2 «norm_num lemma function equality» /--
+library_note «norm_num lemma function equality» /--
 Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
 below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
 `+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied

@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Nat.Prime.Basic
 
 /-!

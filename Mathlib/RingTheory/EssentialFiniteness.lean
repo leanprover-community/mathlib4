@@ -33,6 +33,9 @@ variable [Algebra R S] [Algebra R T]
 An `R`-algebra is essentially of finite type if
 it is the localization of an algebra of finite type.
 See `essFiniteType_iff_exists_subalgebra`.
+
+For field extensions, this is equivalent to being finitely generated as a field.
+See `IntermediateField.fg_top_iff`.
 -/
 class EssFiniteType : Prop where
   cond : ∃ s : Finset S,
@@ -217,6 +220,20 @@ instance [EssFiniteType R S] (M : Submonoid S) : EssFiniteType R (Localization M
 
 end
 
+variable {R S T} in
+lemma EssFiniteType.of_surjective (f : S →ₐ[R] T) (hf : Function.Surjective f)
+    [EssFiniteType R S] : EssFiniteType R T := by
+  let := f.toAlgebra
+  have : IsScalarTower R S T := .of_algebraMap_eq' f.comp_algebraMap.symm
+  have : Module.Finite S T := .of_surjective (Algebra.linearMap S T) hf
+  exact .comp R S T
+
+variable {R S T} in
+lemma EssFiniteType.iff_of_algEquiv (f : S ≃ₐ[R] T) :
+    EssFiniteType R S ↔ EssFiniteType R T where
+  mp _ := .of_surjective f.toAlgHom f.surjective
+  mpr _ := .of_surjective f.symm.toAlgHom f.symm.surjective
+
 variable {R S} in
 lemma EssFiniteType.algHom_ext [EssFiniteType R S]
     (f g : S →ₐ[R] T) (H : ∀ s ∈ finset R S, f s = g s) : f = g := by
@@ -240,6 +257,10 @@ and a ring hom of finite type. See `Algebra.EssFiniteType`. -/
 def EssFiniteType (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.EssFiniteType R S
+
+lemma essFiniteType_algebraMap {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] : (algebraMap R S).EssFiniteType ↔ Algebra.EssFiniteType R S := by
+  rw [RingHom.EssFiniteType, toAlgebra_algebraMap]
 
 /-- A choice of "essential generators" for a ring hom essentially of finite type.
 See `Algebra.EssFiniteType.ext`. -/
