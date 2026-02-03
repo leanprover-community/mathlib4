@@ -209,9 +209,6 @@ lemma nat_mul_negMulLog_inv_eq_log (n : ℕ) (hn : 0 < n) :
     _ = Real.log n := by
           simp [htoReal, Real.log_inv]
 
-#check PMF.uniformOfFintype_apply
-#check PMF.uniformOfFintype
-
 /-- Entropy of the uniform distribution on a finite nonempty type is `log (card α)`. -/
 lemma entropy_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     entropy (PMF.uniformOfFintype α) = Real.log (Fintype.card α) := by
