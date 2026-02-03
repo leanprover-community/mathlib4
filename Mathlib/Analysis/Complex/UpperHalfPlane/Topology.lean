@@ -36,7 +36,7 @@ theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   coe_injective.isEmbedding_induced
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
-  ⟨isEmbedding_coe, by simp⟩
+  ⟨isEmbedding_coe, by simp [isOpen_upperHalfPlaneSet]⟩
 
 @[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=

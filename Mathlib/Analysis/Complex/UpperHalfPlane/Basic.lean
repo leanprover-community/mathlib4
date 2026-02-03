@@ -239,14 +239,10 @@ section upperHalfPlaneSet
 
 /-- The upper half plane as a subset of `ℂ`.
 This is convenient for taking derivatives of functions on the upper half plane. -/
-def upperHalfPlaneSet := {z : ℂ | 0 < z.im}
+abbrev upperHalfPlaneSet := {z : ℂ | 0 < z.im}
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
-@[simp]
-theorem mem_upperHalfPlaneSet {z : ℂ} : z ∈ ℍₒ ↔ 0 < z.im := .rfl
-
-@[simp]
 lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
 
 @[simp]
