@@ -276,7 +276,7 @@ theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective
 
 /-- A surjective group homomorphism `φ : G →* H` with `N = ker(φ)` descends (i.e. `lift`s) to a
 group isomorphism `G/N ≃* H`. -/
-@[to_additive /-- A surjecitve `AddGroup` homomorphism `φ : G →+ H` with `N = ker(φ)` descends
+@[to_additive /-- A surjective `AddGroup` homomorphism `φ : G →+ H` with `N = ker(φ)` descends
 (i.e. `lift`s) to an `AddGroup` isomorphism `G/N ≃+ H`. -/]
 noncomputable def liftEquiv {φ : G →* H} (hφ : Function.Surjective φ)
     (HN : N = φ.ker) : G ⧸ N ≃* H :=
