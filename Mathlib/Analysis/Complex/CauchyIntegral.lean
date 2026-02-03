@@ -754,7 +754,7 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
   rw [← mul_smul]
   rw [mul_comm]
 
-lemma analyticOrderAt_iterated_deriv{𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
+lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
   (hf : AnalyticAt 𝕜 f z₀) (k n : ℕ) [CharZero 𝕜] :
   n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
