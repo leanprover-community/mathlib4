@@ -133,13 +133,13 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
 
 @[to_additive]
 lemma Filter.tendsto_mul_const_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
-    Tendsto (fun k => f k * b) l (nhds (c * b)) ↔ Tendsto f l (𝓝 c) := by
+    Tendsto (f · * b) l (𝓝 (c * b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨?_, Tendsto.mul_const b⟩
   convert Tendsto.mul_const b⁻¹ using 3 <;> rw [mul_inv_cancel_right]
 
 @[to_additive]
 lemma Filter.tendsto_const_mul_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
-    Tendsto (fun k => b * f k) l (nhds (b * c)) ↔ Tendsto f l (𝓝 c) := by
+    Tendsto (b * f ·) l (𝓝 (b * c)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨?_, Tendsto.const_mul b⟩
   convert Tendsto.const_mul b⁻¹ using 3 <;> rw [inv_mul_cancel_left]
 
@@ -524,11 +524,11 @@ variable (G)
 
 @[to_additive]
 theorem nhds_one_symm : comap Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
-  ((Homeomorph.inv G).comap_nhds_eq _).trans (congr_arg nhds inv_one)
+  ((Homeomorph.inv G).comap_nhds_eq _).trans (congr_arg 𝓝 inv_one)
 
 @[to_additive]
 theorem nhds_one_symm' : map Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
-  ((Homeomorph.inv G).map_nhds_eq _).trans (congr_arg nhds inv_one)
+  ((Homeomorph.inv G).map_nhds_eq _).trans (congr_arg 𝓝 inv_one)
 
 @[to_additive]
 theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ ∈ 𝓝 (1 : G) := by
@@ -903,13 +903,13 @@ lemma Filter.tendsto_div_const_iff {G : Type*}
 lemma Filter.tendsto_div_const_iff' {G : Type*}
     [TopologicalSpace G] [Group G] [ContinuousDiv G]
     (b : G) {c : G} {f : α → G} {l : Filter α} :
-    Tendsto (fun k => f k / b) l (nhds (c / b)) ↔ Tendsto f l (𝓝 c) := by
+    Tendsto (f · / b) l (𝓝 (c / b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
   convert h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel, div_one]
 
 @[to_additive const_sub]
 theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
-    (h : Tendsto f l (𝓝 c)) : Tendsto (fun k : α => b / f k) l (𝓝 (b / c)) :=
+    (h : Tendsto f l (𝓝 c)) : Tendsto (b / f ·) l (𝓝 (b / c)) :=
   tendsto_const_nhds.div' h
 
 @[to_additive (attr := continuity) continuous_sub_left]
