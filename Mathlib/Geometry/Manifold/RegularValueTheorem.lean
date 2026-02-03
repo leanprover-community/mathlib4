@@ -93,8 +93,7 @@ structure by the regular value theorem. -/
 abbrev Preimage {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) : Type _ :=
   f ⁻¹' {f x}
 
--- is this true?
-/-- The model space for the manifold structure on `f ⁻¹' {f x}`. -/
+/-- The model normed space for the manifold structure on `f ⁻¹' {f x}`. -/
 @[nolint unusedArguments, expose]
 def modelSpace {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
   (mfderiv I J f x).ker
@@ -111,7 +110,8 @@ instance {x : M} (hx : IsRegularValue I J f (f x)) :
   letI : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs <| NormedSpace _ E₁
   infer_instance
 
--- XXX: This is certainly wrong for manifolds with boundary?
+namespace sandbox
+
 @[nolint unusedArguments, expose]
 def model {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
   I ⁻¹' ((mfderiv I J f x).ker : Set (TangentSpace I x))
@@ -119,15 +119,15 @@ def model {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
 
 @[nolint unusedArguments, expose]
 def modelWithCorners {x : M} (hx : IsRegularValue I J f (f x)) :
-    ModelWithCorners 𝕜 hx.modelSpace hx.model :=
+    ModelWithCorners 𝕜 hx.modelSpace (sandbox.model hx) :=
   letI : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs <| NormedAddCommGroup E₁
   letI : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs <| NormedSpace _ E₁
   .restrictPreimage _ _
 
 /-- The regular value theorem. -/
-instance immersedSubmanifold {x : M} (hx : IsRegularValue I J f (f x))
+def immersedSubmanifold {x : M} (hx : IsRegularValue I J f (f x))
     (hf : ContMDiff I J n f) :
-    ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
+    ImmersedSubmanifold (sandbox.modelWithCorners hx) I (hx.Preimage hf) M n hx.Complement where
   map := Subtype.val
   sliceModel.equiv := sorry
   sliceModel.map := Subtype.val
@@ -136,13 +136,32 @@ instance immersedSubmanifold {x : M} (hx : IsRegularValue I J f (f x))
   real_condition := sorry
 
 instance {x : M} (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
-    ChartedSpace hx.model (hx.Preimage hf) :=
+    ChartedSpace (sandbox.model hx) (hx.Preimage hf) :=
+  (immersedSubmanifold hx hf).chartedSpace
+
+end sandbox
+
+-- Let us assume we have a boundaryless manifold: otherwise, the mathematics is less clear for now.
+section Boundaryless
+
+/-- In a boundaryless manifold, the trivial model with corners is a fine choice. -/
+@[nolint unusedArguments, expose]
+def modelWithCorners {x : M} (hx : IsRegularValue I J f (f x)) :
+    ModelWithCorners 𝕜 hx.modelSpace hx.modelSpace :=
+  𝓘(𝕜, _)
+
+/-- The regular value theorem. -/
+instance immersedSubmanifold [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x))
+    (hf : ContMDiff I J n f) :
+    ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
+  map := Subtype.val
+  sliceModel := sorry -- should be a known condition
+  real_condition := sorry
+
+instance [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
+    ChartedSpace hx.modelSpace (hx.Preimage hf) :=
   (hx.immersedSubmanifold hf).chartedSpace
 
-#exit
---(hf : ∀ x, IsRegularPoint I J f x) :
-def regularValueTheorem {y : N} (hy : IsRegularValue I J f y) :
-    True := by
-  sorry
+end Boundaryless
 
 end IsRegularValue
