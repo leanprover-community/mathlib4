@@ -2043,6 +2043,7 @@ public import Mathlib.Analysis.NormedSpace.ENormedSpace
 public import Mathlib.Analysis.NormedSpace.Extend
 public import Mathlib.Analysis.NormedSpace.Extr
 public import Mathlib.Analysis.NormedSpace.FunctionSeries
+public import Mathlib.Analysis.NormedSpace.HahnBanach.BoundedRightInverse
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation

@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 
-/-! # Linear maps which split
+/-! # Continuous linear maps which split
 
 This file defines split continuous linear maps: an injective continuous linear map splits if and
 only if it has closed range and its image has a closed complement. We prove that
@@ -18,6 +18,8 @@ as well as various weakenings: for instance, an injective linear map on a finite
 always splits.
 
 This concept is used to give a conceptual definition of immersions between Banach manifolds.
+
+**TODO**. Find a better location for this file; the HahnBanach parent folder was emptied!
 
 -/
 
