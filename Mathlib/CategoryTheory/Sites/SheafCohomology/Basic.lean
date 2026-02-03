@@ -146,7 +146,7 @@ theorem H.Equiv₀_comp (x : H F 0) :
   delta Equiv₀
   simp only [Functor.flip_obj_obj, sheafToPresheaf_obj, Functor.flip_obj_map, sheafToPresheaf_map,
     AddEquiv.trans_apply]
-  conv => rhs ; right ; right ; equals Ext.addEquiv₀ x ≫ f => exact addEquiv₀_comp f x
+  conv => rhs; right; right; equals Ext.addEquiv₀ x ≫ f => exact addEquiv₀_comp f x
   rfl
 
 end
