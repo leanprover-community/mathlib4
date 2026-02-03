@@ -274,6 +274,12 @@ theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective
     Function.Surjective (QuotientGroup.lift N φ HN) :=
   Quotient.lift_surjective _ _ hφ
 
+@[to_additive]
+theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
+    (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
+  rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
+    Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
+
 /-- A surjective group homomorphism `φ : G →* H` with `N = ker(φ)` descends (i.e. `lift`s) to a
 group isomorphism `G/N ≃* H`. -/
 @[to_additive /-- A surjective `AddGroup` homomorphism `φ : G →+ H` with `N = ker(φ)` descends
@@ -281,9 +287,8 @@ group isomorphism `G/N ≃* H`. -/
 noncomputable def liftEquiv {φ : G →* H} (hφ : Function.Surjective φ)
     (HN : N = φ.ker) : G ⧸ N ≃* H :=
   MulEquiv.ofBijective (QuotientGroup.lift N φ HN.le)
-    ⟨fun x y ↦ Quotient.inductionOn₂' x y fun a b (h : φ a = φ b) ↦ Quotient.sound' <|
-      by rw [leftRel_apply, HN, MonoidHom.mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_cancel],
-    lift_surjective_of_surjective N φ hφ HN.le⟩
+    ⟨by rw [← MonoidHom.ker_eq_bot_iff, ker_lift, ← HN, QuotientGroup.map_mk'_self],
+      lift_surjective_of_surjective N φ hφ HN.le⟩
 
 @[to_additive (attr := simp)]
 theorem liftEquiv_mk {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
@@ -292,12 +297,6 @@ theorem liftEquiv_mk {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ
 @[to_additive (attr := simp)]
 theorem liftEquiv_mk' {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
     liftEquiv N hφ HN (mk g : Q) = φ g := rfl
-
-@[to_additive]
-theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
-    (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
-  rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
-    Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
 
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
 @[to_additive
