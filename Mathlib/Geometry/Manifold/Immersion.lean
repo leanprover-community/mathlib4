@@ -277,7 +277,7 @@ lemma writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
   rw [IsImmersionAtOfComplement_def] at h
   exact Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
 
--- TODO: is this true? or do we only get a neighbourhood e.g. within `range I`?
+-- TODO: this lemma is false; we only get equality on a nbhd within `range I`
 lemma eventuallyEq_writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
     letI floc := (h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm
     floc =ᶠ[𝓝 ((h.domChart.extend I) x)] (h.equiv ∘ (·, 0)) := by
@@ -484,8 +484,8 @@ theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsA
     exact h.equiv.splits.comp (ContinuousLinearEquiv.refl 𝕜 E).splits_prod_zero
   have aux : fderiv 𝕜 ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I) x)
       = fderiv 𝕜 rhs ((h.domChart.extend I) x) := by
+    -- This conclusion is true; the eventuallyEq statement is false. TODO fix the proof!
     apply Filter.EventuallyEq.fderiv_eq
-    -- is hopefully true! if not, should reconsider definitions...
     apply h.eventuallyEq_writtenInCharts
   rw [aux, rhs.fderiv]
   exact this
