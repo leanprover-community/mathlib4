@@ -424,7 +424,7 @@ variable {s : Set G}
 
 /-- Given a set `s`, `conjugatesOfSet s` is the set of all conjugates of
 the elements of `s`. -/
-@[to_additive /-- Given a set `s`, `conjugatesOfSet s` is the set of all conjugates of
+@[to_additive /-- Given a set `s`, `addConjugatesOfSet s` is the set of all additive conjugates of
 the elements of `s`. -/]
 def conjugatesOfSet (s : Set G) : Set G :=
   ⋃ a ∈ s, conjugatesOf a
@@ -455,7 +455,7 @@ theorem conjugatesOfSet_subset {s : Set G} {N : Subgroup G} [N.Normal] (h : s �
   Set.iUnion₂_subset fun _x H => conjugates_subset_normal (h H)
 
 /-- The set of conjugates of `s` is closed under conjugation. -/
-@[to_additive /-- The set of additive conjugates of `s` is closed under conjugation. -/]
+@[to_additive /-- The set of additive conjugates of `s` is closed under additive conjugation. -/]
 theorem conj_mem_conjugatesOfSet {x c : G} :
     x ∈ conjugatesOfSet s → c * x * c⁻¹ ∈ conjugatesOfSet s := fun H => by
   rcases mem_conjugatesOfSet_iff.1 H with ⟨a, h₁, h₂⟩
