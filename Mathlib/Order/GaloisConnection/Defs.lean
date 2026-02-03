@@ -108,7 +108,7 @@ theorem u_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u'
   le_antisymm (gc'.le_u <| hl (u b) ▸ gc.l_u_le _) (gc.le_u <| (hl (u' b)).symm ▸ gc'.l_u_le _)
 
 /-- If there exists a `b` such that `a = u a`, then `b = l a` is one such element. -/
-@[to_dual /-- If there exists an `a` such that `b = l a`, then `a = u b` is one such element. -/]
+@[to_dual /-- If there exists an `b` such that `a = l b`, then `b = u a` is one such element. -/]
 theorem exists_eq_u (a : α) : (∃ b : β, a = u b) ↔ a = u (l a) :=
   ⟨fun ⟨_, hS⟩ => hS.symm ▸ (gc.u_l_u_eq_u _).symm, fun HI => ⟨_, HI⟩⟩
 
