@@ -533,7 +533,6 @@ section Extension
 theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
     (hk : Function.Injective k) :
     ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE (Fin.le_of_injective k hk) i) = k i :=
-  let e := (Fin.castLEquiv (Fin.le_of_injective k hk)).symm.trans (Equiv.ofInjective k hk)
-  ⟨e.extendSubtype, fun i => Equiv.extendSubtype_apply_of_mem e _ i.isLt⟩
+  Equiv.Perm.exists_extending_pair _ k (Fin.castLE_injective _) hk
 
 end Extension
