@@ -67,6 +67,9 @@ protected theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
     rw [Function.iterate_succ', sub_succ]
     exact congr_arg _ (Nat.pred_iterate a n)
 
+/-- A special case of `Order.covBy_iff_add_one_eq` for use by simp. -/
+@[simp] lemma covBy_iff_add_one_eq : m ⋖ n ↔ m + 1 = n := Order.covBy_iff_add_one_eq
+
 lemma le_succ_iff_eq_or_le : m ≤ n.succ ↔ m = n.succ ∨ m ≤ n := Order.le_succ_iff_eq_or_le
 
 instance : IsSuccArchimedean ℕ :=
@@ -81,7 +84,6 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
 
 end Nat
 
-@[simp, norm_cast]
 theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b :=
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 
