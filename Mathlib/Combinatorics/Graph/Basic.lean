@@ -422,7 +422,10 @@ lemma Compatible.isLink_congr (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compa
 
 @[simp]
 lemma Compatible.refl (G : Graph α β) : G.Compatible G :=
-  fun _ _ _ _ _ => Iff.rfl
+  fun _ _ _ _ _ => .rfl
+
+@[simp]
+lemma Compatible.rfl {G : Graph α β} : G.Compatible G := .refl _
 
 instance : Std.Refl (Compatible : Graph α β → Graph α β → Prop) where
   refl G := .rfl
