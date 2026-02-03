@@ -879,4 +879,29 @@ theorem inv_Iio₀ {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
 
 end LinearOrderedField
 
+section CanonicallyOrdered
+
+variable {α : Type*} [Monoid α]
+variable [Preorder α] [CanonicallyOrderedMul α] [MulRightMono α]
+
+@[to_additive]
+theorem Ici_mul_Ici_eq {a b : α} :
+    Ici a * Ici b = Ici (a * b) := by
+  refine Subset.antisymm (Ici_mul_Ici_subset' ..) (subset_def ▸ fun c c_in ↦
+    mem_mul.mpr ⟨a, ⟨by simp, ?_⟩⟩)
+  obtain ⟨d, hd⟩ := exists_mul_of_le <| mem_Ici.mp c_in
+  exact ⟨b * d, by simp [← mul_assoc, hd]⟩
+
+@[to_additive]
+theorem Ici_pow_eq {a : α} :
+    ∀ n ≠ 0, Ici a ^ n = Ici (a ^ n)
+  | 1, _ => by simp
+  | n + 2, _ => by simp [pow_succ _ n.succ, Ici_pow_eq, Ici_mul_Ici_eq]
+
+omit [MulRightMono α] in
+@[to_additive]
+lemma Ici_one_eq_univ : Set.Ici (1 : α) = Set.univ := by aesop
+
+end CanonicallyOrdered
+
 end Set

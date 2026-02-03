@@ -40,7 +40,7 @@ algebraic closure, algebraically closed
 - `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
   `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
   For the stronger fact that only requires every such polynomial has a root in `K`,
-  see `IsAlgClosure.of_exist_roots`.
+  see `IsAlgClosure.of_exists_root`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 

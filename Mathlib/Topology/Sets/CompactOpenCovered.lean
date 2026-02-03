@@ -117,8 +117,7 @@ lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U
     · simp [Opens.forall]
       aesop
     · simpa using ⟨⟨Us x hx, hUo _ _⟩, ⟨x, by simpa⟩, hUx _ _⟩
-  · simp [Opens.forall]
-    grind
+  · grind
 
 lemma image {i : ι} (V : Opens (X i)) (hV : IsCompact (X := X i) V) :
     IsCompactOpenCovered f (f i '' V) := by
