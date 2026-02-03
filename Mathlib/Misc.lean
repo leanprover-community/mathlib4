@@ -180,8 +180,8 @@ namespace UniqueFactorizationMonoid
 
 open Classical in
 theorem associated_iff_count_normalizedFactors_eq_count_normalizedFactors
-    {α : Type*} [CancelCommMonoidWithZero α] [NormalizationMonoid α] [UniqueFactorizationMonoid α]
-    {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
+    {α : Type*} [CommMonoidWithZero α] [IsCancelMulZero α] [NormalizationMonoid α]
+    [UniqueFactorizationMonoid α] {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Associated x y ↔
       ∀ p, Prime p →
         Multiset.count p (normalizedFactors x) = Multiset.count p (normalizedFactors y) := by
@@ -193,8 +193,9 @@ theorem associated_iff_count_normalizedFactors_eq_count_normalizedFactors
     rw [Multiset.count_eq_zero.mpr, Multiset.count_eq_zero.mpr]
     <;> exact (prime_of_normalized_factor _).mt hp
 
-theorem map_normalizedFactors {α : Type*} [CancelCommMonoidWithZero α] [NormalizationMonoid α]
-    [UniqueFactorizationMonoid α] {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
+theorem map_normalizedFactors {α : Type*} [CommMonoidWithZero α] [IsCancelMulZero α]
+    [NormalizationMonoid α] [UniqueFactorizationMonoid α] {β : Type*}
+    [CommMonoidWithZero β] [IsCancelMulZero β] [NormalizationMonoid β]
     [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {f : F}
     (he : ∀ (x : α), normalize (f x) = f (normalize x)) (a : α) :
     Multiset.map f (normalizedFactors a) = normalizedFactors (f a) := by
@@ -457,8 +458,9 @@ end IsPrimitiveRoot
 section Associates
 
 @[simp]
-theorem Associates.count_top {α : Type*} [CancelCommMonoidWithZero α] [DecidableEq (Associates α)]
-    [(p : Associates α) → Decidable (Irreducible p)] {p : Associates α} :
+theorem Associates.count_top {α : Type*} [CommMonoidWithZero α] [IsCancelMulZero α]
+    [DecidableEq (Associates α)] [(p : Associates α) → Decidable (Irreducible p)]
+    {p : Associates α} :
     Associates.count p ⊤ = 0 := by
   unfold Associates.count
   split_ifs <;> rfl
