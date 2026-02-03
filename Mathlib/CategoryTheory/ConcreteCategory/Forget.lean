@@ -174,11 +174,6 @@ instance Types.instFunLike : ∀ X Y : Type u, FunLike (X ⟶ Y) X Y := by
 instance Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ Y) where
   hom f := f
   ofHom f := f
-  hom_ofHom := by cat_disch
-  ofHom_hom := by cat_disch
-  id_apply {X} x := by
-    change 𝟙 X x = _ -- ???
-    simp
 
 @[simp]
 lemma Types.hom_eq_coe {X Y : Type u} (f : X ⟶ Y) : (ConcreteCategory.hom f) = f := rfl
