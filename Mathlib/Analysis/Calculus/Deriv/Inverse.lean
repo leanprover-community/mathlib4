@@ -91,18 +91,18 @@ theorem OpenPartialHomeomorph.hasDerivAt_symm (f : OpenPartialHomeomorph 𝕜 �
 
 theorem HasDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[s \ {x}] x) (𝓝[≠] f x) :=
-  h.hasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE
-    ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩
+  h.hasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE ⟨‖f'‖₊⁻¹, AntilipschitzWith.of_le_mul_dist
+    fun _ _ ↦ by simp [dist_eq_norm_sub, ← sub_smul, norm_smul]; field_simp; rfl⟩
 
 theorem HasDerivWithinAt.eventually_ne (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c :=
-  h.hasFDerivWithinAt.eventually_ne
-    ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩
+  h.hasFDerivWithinAt.eventually_ne ⟨‖f'‖₊⁻¹, AntilipschitzWith.of_le_mul_dist
+    fun _ _ ↦ by simp [dist_eq_norm_sub, ← sub_smul, norm_smul]; field_simp; rfl⟩
 
 theorem HasDerivWithinAt.eventually_notMem (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0)
     (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t :=
-  h.hasFDerivWithinAt.eventually_notMem
-    ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩ t ht
+  h.hasFDerivWithinAt.eventually_notMem ⟨‖f'‖₊⁻¹, AntilipschitzWith.of_le_mul_dist
+    fun _ _ ↦ by simp [dist_eq_norm_sub, ← sub_smul, norm_smul]; field_simp; rfl⟩ t ht
 
 theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by

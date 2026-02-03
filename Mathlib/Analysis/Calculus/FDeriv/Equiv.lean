@@ -405,7 +405,10 @@ theorem OpenPartialHomeomorph.hasFDerivAt_symm (f : OpenPartialHomeomorph E F) {
   htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
 
 theorem HasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : Tendsto f (𝓝[s \ {x}] x) (𝓝[≠] f x) := by
+    (hf' : ∃ C, AntilipschitzWith C f') : Tendsto f (𝓝[s \ {x}] x) (𝓝[≠] f x) := by
+  replace hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖ := by
+    obtain ⟨C, hC⟩ := hf'
+    exact ⟨C, fun x ↦ by simpa using hC.le_mul_dist 0 x⟩
   have A : (fun z ↦ z - x) =O[𝓝[s] x] fun z ↦ f' (z - x) :=
     isBigO_iff.mpr <| hf'.imp fun C hC ↦ Eventually.of_forall fun z ↦ hC (z - x)
   have : (fun z ↦ f z - f x) ~[𝓝[s] x] fun z ↦ f' (z - x) := h.isLittleO.trans_isBigO A
@@ -416,7 +419,7 @@ theorem HasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasFDerivWithinAt f f' 
     eventually_inf_principal]
 
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
+    (hf' : ∃ C, AntilipschitzWith C f') : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
   rw [← eventually_map (m := f) (P := fun z ↦ z ≠ c)]
   apply Eventually.filter_mono (h.tendsto_nhdsWithin_nhdsNE hf')
   rcases eq_or_ne (f x) c with rfl | hc
@@ -424,20 +427,20 @@ theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
   · exact eventually_ne_nhdsWithin hc
 
 theorem HasFDerivWithinAt.eventually_notMem (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) :
+    (hf' : ∃ C, AntilipschitzWith C f') (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) :
     ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t := by
   rw [accPt_iff_frequently_nhdsNE, not_frequently] at ht
   exact eventually_map.mp (ht.filter_mono (h.tendsto_nhdsWithin_nhdsNE hf'))
 
 theorem HasFDerivAt.tendsto_nhdsNE (h : HasFDerivAt f f' x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by
+    (hf' : ∃ C, AntilipschitzWith C f') : Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
 
-theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
+theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, AntilipschitzWith C f') :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
 
-theorem HasFDerivAt.eventually_notMem (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖)
+theorem HasFDerivAt.eventually_notMem (h : HasFDerivAt f f' x) (hf' : ∃ C, AntilipschitzWith C f')
     (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
 
