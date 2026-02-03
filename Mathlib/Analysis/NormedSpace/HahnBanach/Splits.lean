@@ -19,6 +19,8 @@ always splits.
 
 This concept is used to give a conceptual definition of immersions between Banach manifolds.
 
+XXX. Is this equivalent to admitting a continuous left inverse? If so, also prove this.
+
 **TODO**. Find a better location for this file; the HahnBanach parent folder was emptied!
 
 -/

@@ -98,12 +98,16 @@ end aux
 variable (I I' f x) in
 /-- We say a map `f : M → M` splits at `x` if the `fderiv` of
 `writtenInExtChartAt I I f x` at `x' := extChartAt I x x` splits. -/
+-- This is similar to re-inventing mfderiv, but avoids having to speak about the tangent spaces.
+-- Should we relax the definition of `Splits` to not require a norm?
 def MSplitsAt (f : M → M') (x : M) : Prop :=
   fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x) |>.Splits
+  -- mfderiv I I' f x |>.Splits
 
 lemma mSplitsAt_iff {f : M → M'} {x : M} :
   MSplitsAt I I' f x ↔ (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)).Splits := by rfl
 
+-- TODO: rename to iff_extend
 /-- Whether `f` splits at `x` can be tested in any extended charts for the manifold. -/
 lemma mSplitsAt_iff' {f : M → M'} {x : M}
     {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph M' H'}

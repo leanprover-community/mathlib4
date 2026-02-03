@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-! # Continuous linear maps with a bounded right inverse
 
+XXX. Is "split epimorphism/split surjection" a better term?
+
 This file defines continuous linear maps which admit a bounded right inverse.
 
 We prove that this class of maps
@@ -37,11 +39,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
 
 noncomputable section
 
-/-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
-its image has a closed complement. -/
 @[expose] protected def ContinuousLinearMap.HasBoundedRightInverse (f : E →L[𝕜] F) : Prop :=
-  ∃ g : F →L[𝕜] E, RightInverse f g
-  --Injective f ∧ IsClosed (Set.range f) ∧ Submodule.ClosedComplemented (f.range)
+  ∃ g : F →L[𝕜] E, RightInverse g f
 
 namespace ContinuousLinearMap.HasBoundedRightInverse
 
@@ -50,22 +49,26 @@ variable {f : E →L[𝕜] F}
 /-- Choice of right inverse for `f` -/
 def rightInverse (h : f.HasBoundedRightInverse) : F →L[𝕜] E := Classical.choose h
 
-lemma rightInverse_rightInverse (h : f.HasBoundedRightInverse) : RightInverse f h.rightInverse :=
+lemma rightInverse_rightInverse (h : f.HasBoundedRightInverse) : RightInverse h.rightInverse f :=
   Classical.choose_spec h
 
-example (h : f.HasBoundedRightInverse) (x : E) : h.rightInverse (f x) = x :=
+example (h : f.HasBoundedRightInverse) : f ∘ h.rightInverse = @id _ := by
+  ext x
+  apply h.rightInverse_rightInverse
+
+example (h : f.HasBoundedRightInverse) : Surjective f := h.rightInverse_rightInverse.surjective
+
+example (h : f.HasBoundedRightInverse) (x : F) : f (h.rightInverse x) = x :=
   h.rightInverse_rightInverse x
 
 lemma congr {g : E →L[𝕜] F} (hf : f.HasBoundedRightInverse) (hfg : g = f) :
     g.HasBoundedRightInverse :=
   hfg ▸ hf
 
-variable (hf : f.HasBoundedRightInverse) (x : E) in
-#check hf.rightInverse_rightInverse x
 /-- A continuous linear equivalence splits. -/
 lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) :
     f.toContinuousLinearMap.HasBoundedRightInverse :=
-  ⟨f.symm, rightInverse_of_comp f.coe_symm_comp_coe⟩
+  ⟨f.symm, rightInverse_of_comp (by simp)⟩
 
 /-- An invertible continuous linear map splits. -/
 lemma of_isInvertible (hf : IsInvertible f) : f.HasBoundedRightInverse := by
@@ -106,13 +109,10 @@ lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.HasBoundedR
 lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Surjective f) :
     f.HasBoundedRightInverse := by
-  -- a surjective linear map has a linear inverse
-  -- it is continuous because its domain is
+  -- A surjective linear map has a linear inverse. It is continuous because its domain is.
   obtain ⟨g, hg⟩ :=
     f.toLinearMap.exists_rightInverse_of_surjective (f.range_eq_top_of_surjective hf)
-  use ⟨g, LinearMap.continuous_of_finiteDimensional _⟩
-  intro x; simp
-  sorry -- hg seems to be going the wrong way...
+  exact ⟨⟨g, LinearMap.continuous_of_finiteDimensional _⟩, fun x ↦ congr($hg x)⟩
 
 end ContinuousLinearMap.HasBoundedRightInverse
 
