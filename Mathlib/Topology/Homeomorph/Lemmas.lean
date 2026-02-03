@@ -557,10 +557,8 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
 
 /-- A bijection between discrete topological spaces induces a homeomorphism. -/
-def Homeomorph.OfDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y) : X ≃ₜ Y where
+def Homeomorph.ofDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y) : X ≃ₜ Y where
   toEquiv := f
-  continuous_toFun := continuous_of_discreteTopology
-  continuous_invFun := continuous_of_discreteTopology
 
 theorem IsHomeomorph.equiv_of_discreteTopology [DiscreteTopology X] [DiscreteTopology Y]
     (f : X ≃ Y) : IsHomeomorph f :=
