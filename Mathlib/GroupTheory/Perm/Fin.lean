@@ -537,9 +537,4 @@ theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
   let e := (Fin.castLEquiv (Fin.le_of_injective k hk)).symm.trans (Equiv.ofInjective k hk)
   ⟨e.extendSubtype, fun i => Equiv.extendSubtype_apply_of_mem e _ i.isLt⟩
 
-/-- `StrictMono` version of `Equiv.Perm.exists_extending_injective`. -/
-theorem Equiv.Perm.exists_extending_strictMono {m n : ℕ} (k : Fin m → Fin n) (hk : StrictMono k) :
-    ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE (Fin.le_of_injective k hk.injective) i) = k i :=
-  exists_extending_injective k hk.injective
-
 end Extension
