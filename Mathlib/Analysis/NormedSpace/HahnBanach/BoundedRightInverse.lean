@@ -65,15 +65,15 @@ lemma congr {g : E →L[𝕜] F} (hf : f.HasBoundedRightInverse) (hfg : g = f) :
     g.HasBoundedRightInverse :=
   hfg ▸ hf
 
-/-- A continuous linear equivalence splits. -/
-lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) :
+/-- A continuous linear equivalence has a bounded right inverse. -/
+lemma _root_.ContinuousLinearEquiv.hasBoundedRightInverse (f : E ≃L[𝕜] F) :
     f.toContinuousLinearMap.HasBoundedRightInverse :=
   ⟨f.symm, rightInverse_of_comp (by simp)⟩
 
 /-- An invertible continuous linear map splits. -/
 lemma of_isInvertible (hf : IsInvertible f) : f.HasBoundedRightInverse := by
   obtain ⟨e, rfl⟩ := hf
-  exact e.splits
+  exact e.hasBoundedRightInverse
 
 -- FUTURE (once mathlib has a notion of Fredholm operators):
 -- If `E` and `F` are Banach and `f : E → F` is Fredholm, then `f` has a bounded right inverse.
@@ -99,11 +99,11 @@ lemma of_comp_iff {g : F →L[𝕜] G} (hg : g.HasBoundedRightInverse) :
 
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.HasBoundedRightInverse) :
     (f.comp f₀.toContinuousLinearMap).HasBoundedRightInverse :=
-  hf.comp f₀.splits
+  hf.comp f₀.hasBoundedRightInverse
 
 lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.HasBoundedRightInverse) :
     (g.toContinuousLinearMap.comp f).HasBoundedRightInverse :=
-  g.splits.comp hf
+  g.hasBoundedRightInverse.comp hf
 
 /-- If `f : E → F` is surjective and `F` is finite-dimensional, `f` has a bounded right inverse. -/
 lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
