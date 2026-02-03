@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Generate app token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
           app-id: ${{ secrets.MATHLIB_MERGE_CONFLICTS_APP_ID }}
           private-key: ${{ secrets.MATHLIB_MERGE_CONFLICTS_PRIVATE_KEY }}
