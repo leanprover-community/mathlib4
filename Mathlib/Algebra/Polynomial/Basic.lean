@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.FastInstance
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Theory of univariate polynomials
@@ -72,7 +73,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-open AddMonoidAlgebra Finset
+open AddMonoidAlgebra Finset Module
 open Finsupp hiding single
 open Function hiding Commute
 
@@ -132,11 +133,6 @@ instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] wh
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
 
-instance {S : Type*} [Zero S] [SMulZeroClass S R] [NoZeroSMulDivisors S R] :
-    NoZeroSMulDivisors S R[X] where
-  eq_zero_or_eq_zero_of_smul_eq_zero eq :=
-    (eq_zero_or_eq_zero_of_smul_eq_zero <| congr_arg toFinsupp eq).imp id (congr_arg ofFinsupp)
-
 -- to avoid a bug in the `ring` tactic
 instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
 
@@ -174,6 +170,7 @@ theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
     (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
   rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[simp]
 theorem ofFinsupp_pow (a) (n : ℕ) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
   change _ = npowRec n _
@@ -311,6 +308,10 @@ instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [I
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
+
+instance {S : Type*} [Semiring S] [Module S R] [IsTorsionFree S R] : IsTorsionFree S R[X] where
+  isSMulRegular s hs := by
+    rintro ⟨f⟩ ⟨g⟩ hfg; congr; apply hs.isSMulRegular; simpa using congr(($hfg).toFinsupp)
 
 instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
@@ -468,11 +469,11 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 
-@[simp]
+@[simp, grind =]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
   simp only [← monomial_zero_left, monomial_mul_monomial, zero_add]
 
-@[simp]
+@[simp, grind =]
 theorem monomial_mul_C : monomial n a * C b = monomial n (a * b) := by
   simp only [← monomial_zero_left, monomial_mul_monomial, add_zero]
 
@@ -576,6 +577,9 @@ theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=
 
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f; rfl
 
+theorem finite_range_coeff (f : R[X]) : (Set.range f.coeff).Finite :=
+  Finsupp.finite_range _
+
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [coeff, Finsupp.single_apply]
 
@@ -617,14 +621,12 @@ theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
   rw [coeff_X, if_neg hn.symm]
 
-@[simp]
+@[simp, grind =]
 theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
   simp
 
 theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by

@@ -283,11 +283,11 @@ noncomputable def rotateHomotopyEquivComm₂Homotopy :
 
 @[reassoc (attr := simp)]
 lemma rotateHomotopyEquiv_comm₂ :
-    (HomotopyCategory.quotient _ _ ).map (triangle φ).mor₃ ≫
-      (HomotopyCategory.quotient _ _ ).map (rotateHomotopyEquiv φ).hom =
-      (HomotopyCategory.quotient _ _ ).map (inr (inr φ)) := by
+    (HomotopyCategory.quotient _ _).map (triangle φ).mor₃ ≫
+      (HomotopyCategory.quotient _ _).map (rotateHomotopyEquiv φ).hom =
+      (HomotopyCategory.quotient _ _).map (inr (inr φ)) := by
   simpa only [Functor.map_comp]
-    using HomotopyCategory.eq_of_homotopy _ _  (rotateHomotopyEquivComm₂Homotopy φ)
+    using HomotopyCategory.eq_of_homotopy _ _ (rotateHomotopyEquivComm₂Homotopy φ)
 
 @[reassoc (attr := simp)]
 lemma rotateHomotopyEquiv_comm₃ :
@@ -395,7 +395,7 @@ variable (G : C ⥤ D) [G.Additive]
 
 lemma map_δ :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).map (triangle φ).mor₃ ≫
-      NatTrans.app ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).commShiftIso  1).hom K =
+      NatTrans.app ((Functor.mapHomologicalComplex G (ComplexShape.up ℤ)).commShiftIso 1).hom K =
     (mapHomologicalComplexIso φ G).hom ≫
       (triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).mor₃ := by
   ext n

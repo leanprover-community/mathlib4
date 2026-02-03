@@ -47,8 +47,8 @@ which is a special case where the conditions are easier to check.
 
 ## Implementation details
 
-All the hard work is done in `AlgebraicGeometry/PresheafedSpace/Gluing.lean` where we glue
-presheafed spaces, sheafed spaces, and locally ringed spaces.
+All the hard work is done in `Mathlib/Geometry/RingedSpace/PresheafedSpace/Gluing.lean` where we
+glue presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
 
@@ -133,8 +133,8 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.f j).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
-      ContinuousMap.coe_comp, Set.range_comp]
+  · simp only [LocallyRingedSpace.comp_toHom, PresheafedSpace.comp_base,
+      TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
     exact Set.mem_image_of_mem _ ⟨z, hz⟩
   · infer_instance
 
@@ -223,7 +223,10 @@ theorem ι_isoCarrier_inv (i : D.J) :
     PresheafedSpace.forget_map,
     PresheafedSpace.forget_map, ← PresheafedSpace.comp_base, ← Category.assoc,
     D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
-  erw [← Category.assoc, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
+  dsimp
+  rw [← Category.assoc, ← PresheafedSpace.comp_base,
+    ← InducedCategory.comp_hom, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i,
+    ← PresheafedSpace.comp_base]
   change (_ ≫ D.isoLocallyRingedSpace.inv).base = _
   rw [D.ι_isoLocallyRingedSpace_inv i]
 
@@ -537,7 +540,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
         (le_iSup_of_le ⟨l, hli ≫ k₁.2.1, hlk ≫ k₂.2.2⟩ le_rfl))
       (by simp)
   have : IsOpenImmersion α := by
-    apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_comp
+    apply +allowSynthFailures IsOpenImmersion.of_comp
     · exact inferInstanceAs (IsOpenImmersion (pullback.fst _ _))
     · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, α]
       infer_instance
@@ -680,17 +683,16 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
     F.map f ≫ (glueData F).ι j = (glueData F).ι i := by
   have : IsIso (V F ↓i ↓j).ι := by
     have : V F ↓i ↓j = ⊤ :=
-      top_le_iff.mp (le_iSup_of_le ⟨_, 𝟙 i, f⟩ (by simp [Scheme.Hom.opensRange_of_isIso]))
+      top_le_iff.mp (le_iSup_of_le ⟨_, 𝟙 _, f⟩ (by simp [Scheme.Hom.opensRange_of_isIso]))
     exact this ▸ (topIso _).isIso_hom
   have : t F ↓i ↓j ≫ (V F ↓j ↓i).ι ≫ _ = (V F ↓i ↓j).ι ≫ _ :=
     (glueData F).glue_condition i j
   simp only [t, IsOpenImmersion.lift_fac_assoc] at this
   rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
-    ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 i) f),
+    ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 _) f),
     ← Category.assoc, ← Category.assoc, Category.assoc]
   convert Category.id_comp _
-  rw [← cancel_mono (Opens.ι _)]
-  simp [V, InducedCategory.category, Shrink.instCategoryShrink]
+  simp [← cancel_mono (Opens.ι _), V]
 
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram.
@@ -806,6 +808,19 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
   trans (glueData F).ι k y
   · simp [← glueDataι_naturality F kj]; rfl
   · simp [← glueDataι_naturality F ki, ← hy]; rfl
+
+lemma ι_jointly_surjective (x : ↑(colimit F)) :
+    ∃ (i : J) (xi : F.obj i), colimit.ι F i xi = x := by
+  obtain ⟨i, xi, h⟩ :=
+    (IsLocallyDirected.glueData F).ι_jointly_surjective
+      (((IsLocallyDirected.isColimit F).coconePointUniqueUpToIso (colimit.isColimit _)).inv x)
+  use (equivShrink J).symm i, xi
+  apply ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).inv.isOpenEmbedding.injective
+  simp_rw [← h, colimit.cocone_x, ← Scheme.Hom.comp_apply]
+  congr 5
+  have := eqToHom_naturality (fun j ↦ (glueData F).ι j)
+    (show i = ((equivShrink J) ((equivShrink J).symm i)) by simp)
+  simp [cocone, Functor.const_obj_obj, eqToHom_map, ← this]
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=

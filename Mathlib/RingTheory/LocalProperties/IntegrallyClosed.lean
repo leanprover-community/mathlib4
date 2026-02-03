@@ -20,7 +20,7 @@ In this file, we prove that `IsIntegrallyClosed` is a local property.
   if `Rₘ` is integral closed for any maximal ideal `m` of `R`.
 -/
 
-@[expose] public section
+public section
 
 open scoped nonZeroDivisors
 

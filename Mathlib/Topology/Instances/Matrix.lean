@@ -144,9 +144,6 @@ protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [C
   dsimp only [dotProduct]
   fun_prop
 
-@[deprecated (since := "2025-05-09")]
-alias Continuous.matrix_dotProduct := Continuous.dotProduct
-
 /-- For square matrices the usual `continuous_mul` can be used. -/
 @[continuity, fun_prop]
 theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
@@ -266,7 +263,7 @@ lemma IsOpenEmbedding.matrix_map [Finite m] [Finite n] (hf : IsOpenEmbedding f) 
 
 end Topology
 
--- lemmas about functions in `Data/Matrix/Block.lean`
+-- lemmas about functions in `Mathlib/Data/Matrix/Block.lean`
 section BlockMatrices
 
 @[continuity, fun_prop]

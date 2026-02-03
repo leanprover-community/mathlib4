@@ -31,7 +31,7 @@ We also give several variations around these results.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal Topology
 open Set MeasureTheory Filter

@@ -103,7 +103,7 @@ lemma Coprime.primeFactors_mul {a b : ℕ} (hab : Coprime a b) :
 
 lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
     (a.gcd b).primeFactors = a.primeFactors ∩ b.primeFactors := by
-  ext; simp [dvd_gcd_iff, ha, hb, gcd_ne_zero_left ha]; aesop
+  grind [dvd_gcd_iff]
 
 @[simp] lemma disjoint_primeFactors (ha : a ≠ 0) (hb : b ≠ 0) :
     Disjoint a.primeFactors b.primeFactors ↔ Coprime a b := by

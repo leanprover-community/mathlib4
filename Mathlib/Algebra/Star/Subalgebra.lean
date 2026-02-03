@@ -43,6 +43,8 @@ instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
+instance : PartialOrder (StarSubalgebra R A) := .ofSetLike (StarSubalgebra R A) A
+
 /-- The actual `StarSubalgebra` obtained from an element of a type satisfying `SubsemiringClass`,
 `SMulMemClass` and `StarMemClass`. -/
 @[simps]
@@ -309,7 +311,7 @@ theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ central
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 
 theorem centralizer_toSubalgebra (s : Set A) :
-    (centralizer R s).toSubalgebra = Subalgebra.centralizer R (s ∪ star s):=
+    (centralizer R s).toSubalgebra = Subalgebra.centralizer R (s ∪ star s) :=
   rfl
 
 theorem coe_centralizer_centralizer (s : Set A) :
@@ -440,6 +442,7 @@ theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin <| Set.mem_union_left _ (Set.mem_singleton x)
 
@@ -504,7 +507,7 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
     {a : A} (ha : a ∈ adjoin R s) : p a ha := by
   refine Algebra.adjoin_induction (fun x hx ↦ ?_) algebraMap add mul ha
-  simp only [Set.mem_union, Set.mem_star] at hx
+  push _ ∈ _ at hx
   obtain (hx | hx) := hx
   · exact mem x hx
   · simpa using star _ (Algebra.subset_adjoin (by simpa using Or.inl hx)) (mem _ hx)

@@ -110,27 +110,9 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
   wπ := by aesop
   hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
 
-/-- The homology of a short complex of modules as a concrete quotient. -/
-@[deprecated "This abbreviation is now inlined" (since := "2025-05-14")]
-abbrev moduleCatHomology := S.moduleCatLeftHomologyData.H
-
-/-- The natural projection map to the homology of a short complex of modules as a
-concrete quotient. -/
-@[deprecated "This abbreviation is now inlined" (since := "2025-05-14")]
-abbrev moduleCatHomologyπ := S.moduleCatLeftHomologyData.π
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatLeftHomologyData_i := moduleCatLeftHomologyData_i_hom
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatLeftHomologyData_π := moduleCatLeftHomologyData_π_hom
-
 @[simp]
 lemma moduleCatLeftHomologyData_f'_hom :
     S.moduleCatLeftHomologyData.f'.hom = S.moduleCatToCycles := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatLeftHomologyData_f' := moduleCatLeftHomologyData_f'_hom
 
 @[simp]
 lemma moduleCatLeftHomologyData_descH_hom {M : ModuleCat R}
@@ -154,9 +136,6 @@ noncomputable def moduleCatCyclesIso : S.cycles ≅ S.moduleCatLeftHomologyData.
 lemma moduleCatCyclesIso_hom_i :
     S.moduleCatCyclesIso.hom ≫ S.moduleCatLeftHomologyData.i = S.iCycles :=
   S.moduleCatLeftHomologyData.cyclesIso_hom_comp_i
-
-@[deprecated (since := "2025-05-09")]
-alias moduleCatCyclesIso_hom_subtype := moduleCatCyclesIso_hom_i
 
 @[reassoc (attr := simp, elementwise)]
 lemma moduleCatCyclesIso_inv_iCycles :
@@ -217,3 +196,24 @@ lemma exact_iff_surjective_moduleCatToCycles :
 end ShortComplex
 
 end CategoryTheory
+
+section
+
+variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N] [Module R N]
+
+open CategoryTheory
+
+/-- Given a linear map `f : M → N`, we can obtain a short complex `0 → ker(f) → M → N`. -/
+abbrev LinearMap.shortComplexKer (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
+  f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+  g := ModuleCat.ofHom.{v} f
+  zero := by ext; simp
+
+theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.Surjective f) :
+    f.shortComplexKer.ShortExact where
+  exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr
+    fun _ ↦ by simp [shortComplexKer]
+  mono_f := (ModuleCat.mono_iff_injective _).mpr (LinearMap.ker f).injective_subtype
+  epi_g := (ModuleCat.epi_iff_surjective _).mpr h
+
+end

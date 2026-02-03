@@ -203,7 +203,7 @@ lemma hasFPowerSeries_cuspFunction [ModularFormClass F Γ k] [Γ.HasDetPlusMinus
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     HasFPowerSeriesOnBall (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 1 := by
   refine ⟨qExpansionFormalMultilinearSeries_radius f hh hΓ, zero_lt_one, fun hy ↦ ?_⟩
-  rw [EMetric.mem_ball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
+  rw [Metric.mem_eball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
     ← NNReal.coe_lt_one, coe_nnnorm] at hy
   simpa [qExpansionFormalMultilinearSeries] using hasSum_qExpansion_of_norm_lt f hh hΓ hy
 
@@ -221,7 +221,7 @@ lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k] [Γ.HasDetPlu
     div_eq_inv_mul]
 
 /--
-If `h` is a positivie strict period of `f`, then the `q`-expansion coefficient can be expressed
+If `h` is a positive strict period of `f`, then the `q`-expansion coefficient can be expressed
 as an integral along a horizontal line in the upper half-plane from `t * I` to `h + t * I`, for
 any `0 < t`.
 -/

@@ -44,7 +44,7 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
 
 -/
 
-@[expose] public section
+public section
 
 open MulAction SubMulAction Subgroup
 
@@ -158,7 +158,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       exact ⟨ha, hga⟩
     have hmn : t.ncard - 1 < n := by
       rw [Nat.lt_iff_add_one_le, ← htm, Nat.le_iff_lt_add_one, ← hsn]
-      apply Set.ncard_lt_ncard _ s.toFinite
+      apply Set.ncard_lt_ncard _
       exact ⟨Set.inter_subset_left, fun h ↦ hgb (Set.inter_subset_right (h hb))⟩
     have htm' : t.ncard - 1 + 2 < Nat.card α := lt_trans (Nat.add_lt_add_right hmn 2) hsn'
     suffices IsPretransitive ↥(fixingSubgroup G s) ↥(ofFixingSubgroup G s) →
@@ -200,7 +200,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       · exact fun h ↦ ha (by rw [h]; trivial)
     have hmn : t.ncard - 1 < n := by
       rw [Nat.lt_iff_add_one_le, ← htm, Nat.le_iff_lt_add_one, ← hsn]
-      apply Set.ncard_lt_ncard _ (Set.toFinite s)
+      apply Set.ncard_lt_ncard _
       refine ⟨Set.inter_subset_left, fun h ↦ hb ?_⟩
       suffices s = g • s by
         rw [this]
@@ -378,12 +378,14 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
+omit [Fintype α] in variable [Finite α] in
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
 theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     (hG : IsPreprimitive G α) (g : Perm α) (h2g : IsSwap g) (hg : g ∈ G) :
     G = ⊤ := by
   classical
+  have := Fintype.ofFinite α
   rcases Nat.lt_or_ge (Nat.card α) 3 with hα3 | hα3
   · -- trivial case : Nat.card α ≤ 2
     rw [Nat.lt_succ_iff] at hα3

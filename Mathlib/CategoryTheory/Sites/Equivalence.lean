@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
+
 /-!
 # Equivalences of sheaf categories
 
@@ -76,6 +76,26 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
     K = e.inverse.inducedTopology J := by
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
+
+lemma isDenseSubsite_functor_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.functor.IsDenseSubsite J K where
+  functorPushforward_mem_iff {X S} := by
+    constructor
+    · intro H
+      refine J.superset_covering ?_ (e.functor.cover_lift J K H)
+      rw [(Sieve.fullyFaithfulFunctorGaloisCoinsertion e.functor X).u_l_eq S]
+    · intro H
+      refine K.superset_covering ?_
+        (e.inverse.cover_lift K J (J.pullback_stable (e.unitInv.app X) H))
+      exact fun Y f (H : S _) ↦ ⟨_, _, e.counitInv.app Y, H, by simp⟩
+
+lemma isDenseSubsite_inverse_of_isCocontinuous
+    [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
+    e.inverse.IsDenseSubsite K J :=
+  have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
+  have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
+  isDenseSubsite_functor_of_isCocontinuous _ _ e.symm
 
 variable [e.inverse.IsDenseSubsite K J]
 

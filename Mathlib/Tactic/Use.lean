@@ -5,9 +5,9 @@ Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.WithoutCDot
 public meta import Lean.Meta.Tactic.Util
 public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 /-!
 # The `use` tactic
@@ -174,7 +174,12 @@ example : ∃ x : Nat, x = x := by use 42
 
 example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
-example : ∃ x : String × String, x.1 = x.2 := by use ("forty-two", "forty-two")
+example : Nonempty Nat := by use 5
+
+example : Nonempty (PNat ≃ Nat) := by
+  use PNat.natPred, Nat.succPNat
+  · exact PNat.succPNat_natPred
+  · intro; rfl
 ```
 
 `use! e₁, e₂, ⋯` is similar but it applies constructors everywhere rather than just for
@@ -184,7 +189,7 @@ leaves and nodes of the tree of constructors.
 With `use!` one can feed in each `42` one at a time:
 
 ```lean
-example : ∃ p : Nat × Nat, p.1 = p.2 := by use! 42, 42
+example : ∃ n : {n : Nat // n % 2 = 0}, n.val > 10 := by use! 20; simp
 
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use! (42, 42)
 ```
@@ -203,7 +208,7 @@ elab (name := useSyntax)
     "use" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse false (← mkUseDischarger discharger?) args.getElems.toList
 
-@[inherit_doc useSyntax]
+@[tactic_alt useSyntax]
 elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse true (← mkUseDischarger discharger?) args.getElems.toList
 

@@ -139,7 +139,7 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
   LieEquiv.ofSubalgebras _ _ e.toLieEquiv <| by
     ext A
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
-      simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
+      simpa [-LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
     simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]
 

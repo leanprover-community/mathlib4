@@ -56,9 +56,9 @@ namespace FirstOrder
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
 structure Language where
-  /-- For every arity, a `Type*` of functions of that arity -/
+  /-- For every arity, a `Type u` of functions of that arity -/
   Functions : ℕ → Type u
-  /-- For every arity, a `Type*` of relations of that arity -/
+  /-- For every arity, a `Type v` of relations of that arity -/
   Relations : ℕ → Type v
 
 namespace Language

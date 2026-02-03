@@ -55,7 +55,7 @@ instance [DiscreteTopology G] : IsCyclic G := by
   exact LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered.mpr fun h ↦
     have := h.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
 
-/-- In an Archimedean densely linearly ordered group (with the order topology), a subgroup is
+/-- In an Archimedean linearly ordered group (with the order topology), a subgroup is
 discrete iff it is cyclic. -/
 @[to_additive /-- In an Archimedean linearly ordered additive group (with the order topology), a
 subgroup is discrete iff it is cyclic. -/]

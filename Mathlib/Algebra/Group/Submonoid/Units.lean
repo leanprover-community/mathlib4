@@ -61,7 +61,7 @@ lemma Submonoid.units_mono : Monotone (Submonoid.units (M := M)) :=
 
 @[to_additive (attr := simp)]
 lemma Submonoid.ofUnits_units_le (S : Submonoid M) : S.units.ofUnits ≤ S :=
-  fun  _ ⟨_, hm, he⟩ => he ▸ hm.1
+  fun _ ⟨_, hm, he⟩ => he ▸ hm.1
 
 @[to_additive]
 lemma Subgroup.ofUnits_mono : Monotone (Subgroup.ofUnits (M := M)) :=

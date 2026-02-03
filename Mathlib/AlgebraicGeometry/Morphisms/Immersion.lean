@@ -83,7 +83,7 @@ lemma liftCoborder_app [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
       X.presheaf.map (eqToHom <| f.liftCoborder_preimage U).op := by
   rw [Scheme.Hom.congr_app (f.liftCoborder_ι).symm (f.coborderRange.ι ''ᵁ U)]
   simp [Scheme.Hom.app_eq f.liftCoborder (f.coborderRange.ι.preimage_image_eq U),
-    ← Functor.map_comp_assoc, - Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
+    ← Functor.map_comp_assoc, -Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
 instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
   have : IsPreimmersion (f.liftCoborder ≫ f.coborderRange.ι) := by
@@ -109,7 +109,7 @@ instance : IsZariskiLocalAtTarget @IsImmersion := by
   suffices IsZariskiLocalAtTarget
       (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
     isImmersion_eq_inf ▸ inferInstance
-  apply (config := { allowSynthFailures := true }) topologically_isZariskiLocalAtTarget'
+  apply +allowSynthFailures topologically_isZariskiLocalAtTarget'
   · refine { precomp := ?_, postcomp := ?_ }
     · intro X Y Z i hi f hf
       change IsIso i at hi
@@ -179,6 +179,10 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsImmersion f] : IsImmersion (f ∣_ V) :=
 instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsImmersion f] :
     IsImmersion (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
+
+instance (priority := 900) (f : X ⟶ Y) [IsImmersion f] : LocallyOfFiniteType f := by
+  rw [← f.liftCoborder_ι]
+  infer_instance
 
 open Limits Scheme.Pullback in
 /-- The diagonal morphism is always an immersion. -/

@@ -60,7 +60,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   simp only [card_derangements_invariant h2,
     card_congr
       (@derangementsRecursionEquiv (Fin (n + 1))
-        _),-- push the cardinality through the Σ and ⊕ so that we can use `card_n`
+        _), -- push the cardinality through the Σ and ⊕ so that we can use `card_n`
     card_sigma,
     card_sum, card_derangements_invariant (h1 _), Finset.sum_const, nsmul_eq_mul, Finset.card_fin,
     mul_add, Nat.cast_id]

@@ -51,7 +51,7 @@ Version for `circle`.
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
 
-@[expose] public section
+public section
 
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise
@@ -191,9 +191,6 @@ lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsi
     {s t : Finset G} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
-
-@[to_additive (attr := deprecated cauchy_davenport_of_isMulTorsionFree (since := "2025-04-23"))]
-alias cauchy_davenport_mul_of_isTorsionFree := cauchy_davenport_of_isMulTorsionFree
 
 /-! ### $ℤ/nℤ$ -/
 

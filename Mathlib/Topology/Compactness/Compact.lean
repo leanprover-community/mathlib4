@@ -669,10 +669,10 @@ theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
   obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
   calc
     𝓝ˢ s ×ˢ f
-    _ ≤ 𝓝ˢ s ×ˢ 𝓟 K        := Filter.prod_mono_right _ (Filter.le_principal_iff.mpr hKf)
-    _ ≤ 𝓝ˢ s ×ˢ 𝓝ˢ K       := Filter.prod_mono_right _ principal_le_nhdsSet
-    _ = 𝓝ˢ (s ×ˢ K)         := (hs.nhdsSet_prod_eq hK).symm
-    _ ≤ 𝓝ˢ (s ×ˢ Set.univ)  := nhdsSet_mono (prod_mono_right le_top)
+    _ ≤ 𝓝ˢ s ×ˢ 𝓟 K := Filter.prod_mono_right _ (Filter.le_principal_iff.mpr hKf)
+    _ ≤ 𝓝ˢ s ×ˢ 𝓝ˢ K := Filter.prod_mono_right _ principal_le_nhdsSet
+    _ = 𝓝ˢ (s ×ˢ K) := (hs.nhdsSet_prod_eq hK).symm
+    _ ≤ 𝓝ˢ (s ×ˢ Set.univ) := nhdsSet_mono (prod_mono_right le_top)
 
 theorem prod_nhdsSet_le_of_disjoint_cocompact {t : Set Y} {f : Filter X} (ht : IsCompact t)
     (hf : Disjoint f (Filter.cocompact X)) :
@@ -680,10 +680,10 @@ theorem prod_nhdsSet_le_of_disjoint_cocompact {t : Set Y} {f : Filter X} (ht : I
   obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
   calc
     f ×ˢ 𝓝ˢ t
-    _ ≤ (𝓟 K) ×ˢ 𝓝ˢ t      := Filter.prod_mono_left _ (Filter.le_principal_iff.mpr hKf)
-    _ ≤ 𝓝ˢ K ×ˢ 𝓝ˢ t       := Filter.prod_mono_left _ principal_le_nhdsSet
-    _ = 𝓝ˢ (K ×ˢ t)         := (hK.nhdsSet_prod_eq ht).symm
-    _ ≤ 𝓝ˢ (Set.univ ×ˢ t)  := nhdsSet_mono (prod_mono_left le_top)
+    _ ≤ (𝓟 K) ×ˢ 𝓝ˢ t := Filter.prod_mono_left _ (Filter.le_principal_iff.mpr hKf)
+    _ ≤ 𝓝ˢ K ×ˢ 𝓝ˢ t := Filter.prod_mono_left _ principal_le_nhdsSet
+    _ = 𝓝ˢ (K ×ˢ t) := (hK.nhdsSet_prod_eq ht).symm
+    _ ≤ 𝓝ˢ (Set.univ ×ˢ t) := nhdsSet_mono (prod_mono_left le_top)
 
 theorem nhds_prod_le_of_disjoint_cocompact {f : Filter Y} (x : X)
     (hf : Disjoint f (Filter.cocompact Y)) :
@@ -973,7 +973,7 @@ theorem IsCompact.elim_finite_subfamily_isClosed_subtype
     {ι : Type*} (t : ι → Set X) {I : Set ι}
     (htc : ∀ i ∈ I, IsClosed (s ↓∩ (t i) : Set s))
     (hst : s ∩ ⋂ i ∈ I, t i = ∅) :
-    ∃ u : Finset I, s ∩ ⋂ i ∈ u, t i = ∅  := by
+    ∃ u : Finset I, s ∩ ⋂ i ∈ u, t i = ∅ := by
   suffices univ ∩ ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by
     simpa [eq_empty_iff_forall_notMem] using
       (isCompact_iff_isCompact_univ.mp ks).elim_finite_subfamily_closed
