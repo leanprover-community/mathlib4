@@ -124,9 +124,6 @@ lemma transpose_mem_doublyStochastic_iff :
     = transpose_mem_rowStochastic_iff_mem_colStochastic, = mem_rowStochastic,
     = transpose_mem_colStochastic_iff_mem_rowStochastic, = mem_colStochastic]
 
-@[deprecated (since := "2026-02-02")]
-alias transpose_mem_doublyStochastif_iff := transpose_mem_doublyStochastic_iff
-
 end OrderedSemiring
 
 section LinearOrderedSemifield
