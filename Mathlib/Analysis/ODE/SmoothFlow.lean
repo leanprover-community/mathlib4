@@ -920,26 +920,6 @@ lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
 
 /-! ## Connect to the existence of integral curves -/
 
-omit [NormedSpace ℝ E] [CompleteSpace E] in
-/-- `IsPicardLindelof` is preserved when shrinking the time interval. -/
--- TODO: move to PicardLindelof.lean
-lemma IsPicardLindelof.shrink_time {f : ℝ → E → E} {t₀ : ℝ} {x₀ : E} {a r L K : ℝ≥0}
-    {ε ε' : ℝ} (hε : 0 < ε) (hε' : 0 < ε') (hε'ε : ε' ≤ ε)
-    (hf : IsPicardLindelof f (tmin := t₀ - ε) (tmax := t₀ + ε)
-      ⟨t₀, by simp [le_of_lt hε]⟩ x₀ a r L K) :
-    IsPicardLindelof f (tmin := t₀ - ε') (tmax := t₀ + ε')
-      ⟨t₀, by simp [le_of_lt hε']⟩ x₀ a r L K where
-  lipschitzOnWith t ht := hf.lipschitzOnWith t (by simp at *; constructor <;> linarith)
-  continuousOn x hx :=
-    (hf.continuousOn x hx).mono fun t ht ↦ ⟨by linarith [ht.1], by linarith [ht.2]⟩
-  norm_le t ht x hx := hf.norm_le t (by simp at *; constructor <;> linarith) x hx
-  mul_max_le := by
-    calc (L : ℝ) * max ((t₀ + ε') - t₀) (t₀ - (t₀ - ε'))
-      _ = L * ε' := by simp
-      _ ≤ L * ε := by gcongr
-      _ = L * max ((t₀ + ε) - t₀) (t₀ - (t₀ - ε)) := by simp
-      _ ≤ a - r := hf.mul_max_le
-
 /-- When f is C^1 at x₀, there exist ε > 0, a > 0, a' ≥ a, and an integral curve α starting at x₀
 defined on `Icc (t₀ - ε) (t₀ + ε)`, such that the range of α is in `ball x₀ a` and
 `‖fderivIntegralCurry0 f (ball x₀ a') t₀' α‖ < 1`.
@@ -1010,7 +990,9 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
   -- Shrink PicardLindelof to the smaller time interval with r = 0 and smaller a
   have hPL' : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
       ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a 0 L K := by
-    have hPL_shrink := IsPicardLindelof.shrink_time hε₂pos hεpos hε_le_ε₂ hPL
+    have hPL_shrink : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
+        ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a₂ r L K :=
+      hPL.shrink_time _ (by rfl) (by linarith) (by linarith)
     refine IsPicardLindelof.of_time_independent ?_ ?_ ?_
     · intro x hx
       apply hPL_shrink.norm_le t₀ (by simp [le_of_lt hεpos]) x
