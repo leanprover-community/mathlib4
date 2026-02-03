@@ -268,7 +268,7 @@ theorem snd_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
   grind [map_snd_darts]
 
 @[simp]
-lemma support_getElem_zero (p : G.Walk u v) : p.support[0]'(by simp) = u := by cases p <;> simp
+lemma support_getElem_zero (p : G.Walk u v) : p.support[0] = u := by cases p <;> simp
 
 @[simp]
 lemma support_getElem_length (p : G.Walk u v) : p.support[p.length] = v := by
