@@ -121,7 +121,7 @@ variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
 open AddCommGrpCat Opposite
 
 /-- The additive equivalence between `H F 0` and the evaluation of `F` at the terminal object -/
-noncomputable def H.Equiv₀ : H F 0 ≃+ ((sheafSections J AddCommGrpCat).obj (op T)).obj F :=
+noncomputable def H.equiv₀ : H F 0 ≃+ ((sheafSections J AddCommGrpCat).obj (op T)).obj F :=
     AddEquiv.trans Ext.addEquiv₀ (
       AddEquiv.trans ((constantSheafAdj J AddCommGrpCat hT).homAddEquiv _ F)
         (uliftZMultiplesAddEquiv _))
@@ -141,9 +141,9 @@ lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEq
 
 /-- `H.Equiv₀` is natural -/
 theorem H.Equiv₀_comp (x : H F 0) :
-    ((sheafSections J AddCommGrpCat).obj (op T)).map f (H.Equiv₀ F hT x) =
-    H.Equiv₀ G hT (H.map f 0 x) := by
-  delta Equiv₀
+    ((sheafSections J AddCommGrpCat).obj (op T)).map f (H.equiv₀ F hT x) =
+    H.equiv₀ G hT (H.map f 0 x) := by
+  delta equiv₀
   simp only [Functor.flip_obj_obj, sheafToPresheaf_obj, Functor.flip_obj_map, sheafToPresheaf_map,
     AddEquiv.trans_apply]
   conv => rhs; right; right; equals Ext.addEquiv₀ x ≫ f => exact addEquiv₀_comp f x
