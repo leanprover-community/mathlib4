@@ -160,7 +160,7 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
   let r_cast : Q($R) := q(algebraMap $R' $R $r')
   let res ← pushCast r_cast
   have r₀ : Q($R) := res.expr
-  let pf : Q($r₀ = $r_cast) ← res.getProof
+  let pf : Q($r_cast = $r₀) ← res.getProof
   return ⟨r₀, q(fun a ↦ $pf ▸ algebraMap_smul $R $r' a)⟩
 
 namespace RingCompute

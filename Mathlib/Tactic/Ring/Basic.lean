@@ -479,6 +479,7 @@ def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
 
 end RingCompute
 
+/-- The comarisons on the basetype used to compare normalized ring expressions. -/
 def ringCompare : Common.RingCompare (BaseType sα) sα where
   eq zx zy := zx.value == zy.value
   compare zx zy := compare zx.value zy.value
