@@ -53,6 +53,13 @@ lemma finite_mulSupport_prod_mk {M' : Type*} [One M'] {f : α → M} {g : α →
   mulSupport_prodMk f g ▸ hf.union hg
 
 @[to_additive]
+lemma finite_mulSupport_binop {M N P : Type*} [One M] [One N] [One P] (op : M → N → P)
+    (op1 : op 1 1 = 1) {f : α → M} {g : α → N} (hf : f.mulSupport.Finite)
+    (hg : g.mulSupport.Finite) :
+    (fun a ↦ op (f a) (g a)).mulSupport.Finite :=
+  (hf.union hg).subset <| mulSupport_binop_subset _ op1 ..
+
+@[to_additive]
 lemma finite_mulSupport_mul {M : Type*} [MulOneClass M] {f g : α → M}
     (hf : f.mulSupport.Finite) (hg : g.mulSupport.Finite) :
     (fun a ↦ f a * g a).mulSupport.Finite :=
