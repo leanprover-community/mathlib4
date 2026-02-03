@@ -43,28 +43,26 @@ variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 /-- If `f : M → M'` has injective differential at `x`, it is `MDifferentiable` at `x`. -/
 lemma mdifferentiableAt_of_mfderiv_surjective {f : M → M'} (hf : Surjective (mfderiv I I' f x)) :
     MDifferentiableAt I I' f x := by
-  sorry /-replace hf : LinearMap.ker (mfderiv I I' f x).toLinearMap = ⊥ := by
-    rw [LinearMap.ker_eq_bot]; exact hf
   by_cases h: Subsingleton E
   · exact mdifferentiable_of_subsingleton.mdifferentiableAt
   · by_contra h'
-    have : (⊥ : Submodule 𝕜 (TangentSpace I x)) = ⊤ := by
-      simp [mfderiv_zero_of_not_mdifferentiableAt h', ← hf]
-    have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top this
-    simp_all only [Submodule.subsingleton_iff] -/
-
+    replace hf : (mfderiv I I' f x).toLinearMap.range = ⊤ := by rwa [LinearMap.range_eq_top]
+    have hf' : (mfderiv I I' f x).range = ⊥ := by simp [mfderiv_zero_of_not_mdifferentiableAt h']
+    have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top (by
+      simp only [hf'] at hf; sorry) -- universe issues, why? exact hf
+    simp_all only [Submodule.subsingleton_iff]
 
 variable (I I' f x) in
-/-- We say a map `f : M → M` splits at `x` if the `fderiv` of
-`writtenInExtChartAt I I f x` at `x' := extChartAt I x x` splits. -/
-@[expose] def IsRegularPoint (f : M → M') (x : M) : Prop :=
+/-- We say a map `f : M → M` has a regular point at `x` if the `fderiv` of
+`writtenInExtChartAt I I f x` at `x' := extChartAt I x x` has a bounded right inverse. -/
+def IsRegularPoint (f : M → M') (x : M) : Prop :=
   fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x) |>.HasBoundedRightInverse
 
 lemma isRegularPointAt_iff {f : M → M'} {x : M} :
   IsRegularPoint I I' f x ↔
     (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)).HasBoundedRightInverse := by rfl
 
-/-- Whether `f` splits at `x` can be tested in any extended charts for the manifold. -/
+/-- Whether `f` has a regular point at `x` can be tested in any extended charts for the manifold. -/
 lemma isRegularPointAt_iff_extend {f : M → M'} {x : M}
     {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph M' H'}
     (hφ : φ ∈ IsManifold.maximalAtlas I n M) (hψ : ψ ∈ IsManifold.maximalAtlas I' n M')
@@ -78,12 +76,12 @@ namespace IsRegularPoint
 variable {f g : M → M'} {x : M}
 
 private lemma fderiv_surjective (hf : IsRegularPoint I I' f x) :
-    Injective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) :=
-  sorry -- hf.injective
+    Surjective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) := hf.surjective
 
--- lemma differentiableAt_writtenInExtChartAt (hf : IsRegularPoint I I' f x) :
---     DifferentiableAt 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x) x) :=
---   differentiableAt_of_fderiv_injective hf.fderiv_injective
+-- TODO: is this lemma useful? if so, add `differentiableAt_of_fderiv_surjective` and prove it!
+lemma differentiableAt_writtenInExtChartAt (hf : IsRegularPoint I I' f x) :
+    DifferentiableAt 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x) x) :=
+  sorry -- differentiableAt_of_fderiv_surjective hf.fderiv_surjective
 
 open IsManifold in
 lemma mfderiv_surjective [IsManifold I 1 M] [IsManifold I' 1 M'] (hf : IsRegularPoint I I' f x) :
@@ -91,7 +89,7 @@ lemma mfderiv_surjective [IsManifold I 1 M] [IsManifold I' 1 M'] (hf : IsRegular
   -- TODO: add a version of foo for surjectivity
   --rw [← foo (n := 1) (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas (f x))
   --  (mem_chart_source H x) (mem_chart_source H' (f x))]
-  --exact hf.fderiv_injective
+  --exact hf.fderiv_surjective
   sorry
 
 lemma mdifferentiableAt [IsManifold I 1 M] [IsManifold I' 1 M'] (hf : IsRegularPoint I I' f x) :
@@ -129,22 +127,6 @@ lemma prodMap {y : N} (hf : IsRegularPoint I I' f x) {g : N → N'} (hg : IsRegu
   simp only [Prod.map_apply, Prod.map_fst, Prod.map_snd]
   -- missing simp lemma!
   sorry -/
-
--- section
-
--- /-- A choice of closed complement... -/
--- def complement (hf : MSplitsAt I I' f x) : Type u :=
---   ContinuousLinearMap.Splits.complement hf
-
--- noncomputable instance (hf : MSplitsAt I I' f x) : NormedAddCommGroup hf.complement := by
---   -- have := ContinuousLinearMap.Splits.complement hf
---   --have : NormedAddCommGroup (ContinuousLinearMap.Splits.complement hf) := sorry
---   sorry -- infer_instance
-
--- noncomputable instance (hf : MSplitsAt I I' f x) : NormedSpace 𝕜 hf.complement := by
---   sorry
-
--- end
 
 -- This section needs redoing/might be fully obsolete anyway!
 section
@@ -283,100 +265,3 @@ lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace E] [CompleteSpace F] [C
   exact Filter.eventuallyEq_of_mem (hf this) (by intro; simp)
 
 end IsRegularPoint
-
-/-
-variable (I I') in
-/-- If `f : M → M` is differentiable, we say `f` splits iff it splits at every `x`,
-i.e. each `mfderiv 𝕜 I I' f x` splits. -/
-def MSplits (f : M → M') : Prop := ∀ x, IsRegularPoint I I' f x
-
-lemma msplits_iff : MSplits I I' f ↔ ∀ x, MSplitsAt I I' f x := by rfl
-
-namespace MSplits
-
-variable {f g : M → M'}
-
-lemma congr (hf : MSplits I I' f) (hfg : g = f) : MSplits I I' g :=
-  fun x ↦ (hf x).congr hfg.eventuallyEq
-
-lemma prodMap [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J 1 N] [IsManifold J' 1 N']
-    (hf : MSplits I I' f) {g : N → N'} (hg : MSplits J J' g) :
-    MSplits (I.prod J) (I'.prod J') (Prod.map f g) := fun (x, y) ↦ (hf x).prodMap (hg y)
-
-lemma _root_.IsLocalDiffeomorph.splits {f : M → M'}
-    (hf : IsLocalDiffeomorph I I' n f) (hn : n ≠ 0) : MSplits I I' f :=
-  fun x ↦ (hf x).msplitsAt hn
-
-lemma _root_.Diffeomorph.splits (f : Diffeomorph I I' M M' n) (hn : n ≠ 0) : MSplits I I' f :=
-  f.isLocalDiffeomorph.splits hn
-
-/-- If `f` and `g` split, then so does `g ∘ f`. -/
-lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : MSplits I' J g) (hf : MSplits I I' f) : MSplits I J (g ∘ f) :=
-  fun x ↦ (hg (f x)).comp (hf x)
-
-lemma of_comp {g : M' → N} (hg : MSplits I' J g) (hfg : MSplits I J (g ∘ f)) :
-    MSplits I I' f := by
-  rw [msplits_iff] at hg hfg ⊢
-  exact fun x ↦ (hg (f x)).of_comp (hfg x)
-
-lemma of_comp_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : MSplits I' J g) : MSplits I J (g ∘ f) ↔ MSplits I I' f :=
-  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
-
-lemma comp_isLocalDiffeomorph_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (hf : MSplits I I' f) {f₀ : N → M} (hf₀ : IsLocalDiffeomorph J I n f₀) (hn : n ≠ 0) :
-    MSplits J I' (f ∘ f₀) :=
-  hf.comp (hf₀.splits hn)
-
--- XXX: is this true if hf₀ is just a local diffeomorphism and *not* surjective?
--- (With surjective, this reduces to its MSplitsAt cousin.)
-lemma comp_diffeomorph_left_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (f₀ : Diffeomorph J I N M n) (hn : n ≠ 0) : MSplits I I' f ↔ MSplits J I' (f ∘ f₀) :=
-  ⟨fun hf ↦ hf.comp_isLocalDiffeomorph_left f₀.isLocalDiffeomorph hn,
-    fun h ↦ (h.comp_isLocalDiffeomorph_left f₀.symm.isLocalDiffeomorph hn).congr (by ext; simp)⟩
-
-lemma comp_isLocalDiffeomorph_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : IsLocalDiffeomorph I' J n g) (hn : n ≠ 0) (hf : MSplits I I' f) :
-    MSplits I J (g ∘ f) :=
-  (hg.splits hn).comp hf
-
-lemma comp_diffeomorph_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSpace E']
-    [IsManifold I 1 M] [IsManifold J 1 N]
-    {g : M' → N} (hg : IsLocalDiffeomorph I' J n g) (hn : n ≠ 0) :
-    MSplits I I' f ↔  MSplits I J (g ∘ f) := by
-  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorph_right hg hn, fun h x ↦ ?_⟩
-  rw [MSplitsAt.comp_isLocalDiffeomorphAt_right_iff (hg (f x)) hn (I := I)]
-  exact h x
-
-variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H : Type*} [TopologicalSpace H] {G : Type*} [TopologicalSpace G]
-  {I : ModelWithCorners 𝕜 E H} {J : ModelWithCorners 𝕜 F G}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  {f : M → N} {x : M} {n : WithTop ℕ∞}
-
-/-- If `f : M → N` is injective and `M` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
-    (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
-  intro x
-  --have : FiniteDimensional 𝕜 (TangentSpace I x) := by assumption
-  apply ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace-- (hf' x)
-  sorry -- apply `foo` apply foo.mp--rw [foo (φ := chartAt H x) (ψ := chartAt G (f x))]
-
-/-- If `f : M → N` is injective and `N` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 F]
-    (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
-  intro x
-  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional sorry -- apply foo! (hf' x)
-
--- FUTURE (once mathlib has a notion of Fredholm operators):
--- If `f : M → N` is injective, `M` and `N` are Banach manifolds and each differential
--- `mfderiv I J f x` is Fredholm, then `f` splits.
-
-end MSplits -/
-
-open scoped Manifold
-
-end

@@ -57,11 +57,8 @@ def rightInverse (h : f.HasBoundedRightInverse) : F →L[𝕜] E := Classical.ch
 lemma rightInverse_rightInverse (h : f.HasBoundedRightInverse) : RightInverse h.rightInverse f :=
   Classical.choose_spec h
 
-example (h : f.HasBoundedRightInverse) : f ∘ h.rightInverse = @id _ := by
-  ext x
-  apply h.rightInverse_rightInverse
-
-example (h : f.HasBoundedRightInverse) : Surjective f := h.rightInverse_rightInverse.surjective
+lemma surjective (h : f.HasBoundedRightInverse) : Surjective f :=
+  h.rightInverse_rightInverse.surjective
 
 example (h : f.HasBoundedRightInverse) (x : F) : f (h.rightInverse x) = x :=
   h.rightInverse_rightInverse x

@@ -77,16 +77,23 @@ section aux
 /-- The `mfderiv` of `f: M → N` at `x` is injective iff a local coordinate expression
 `ψ ∘ f ∘ φ⁻¹` has injective `fderiv` at `φ x`, where `φ` and `ψ` are extended charts
 around `x` and `f x`, respectively. -/
-lemma foo {f : M → M'} {x : M} {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph M' H'}
+lemma foo (f : M → M') {x : M} {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph M' H'}
     (hφ : φ ∈ IsManifold.maximalAtlas I n M) (hψ : ψ ∈ IsManifold.maximalAtlas I' n M')
     (hxφ : x ∈ φ.source) (hxψ : f x ∈ ψ.source) :
     letI floc := ((ψ.extend I') ∘ f ∘ (φ.extend I).symm)
-    Injective (fderiv 𝕜 floc (φ.extend I x)) ↔ Injective (mfderiv I I' f x):= by
+    Injective (fderiv 𝕜 floc (φ.extend I x)) ↔ Injective (mfderiv I I' f x) := by
   -- proof sketch: fderiv floc = mfderiv of floc = mfderivs of ψ.extend I', f and φ.extend I |>.symm
   -- composed. The first and last are invertible, hence do not affect this.
   -- (see `isInvertible_mfderiv_extChartAt` and `isInvertible_mfderivWithin_extChartAt_symm)`,
   -- these should be generalised to any extended chart).
   sorry
+
+open IsManifold in
+lemma foo' [IsManifold I n M] [IsManifold I' n M'] (f : M → M') (x : M) :
+    Injective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) ↔
+    Injective (mfderiv I I' f x) :=
+  foo (n := n) f (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas (f x))
+    (mem_chart_source H x) (mem_chart_source H' (f x))
 
 -- TODO: add analogous results for surjectivity, and the rank of the differential in general
 
@@ -132,7 +139,7 @@ lemma differentiableAt_writtenInExtChartAt (hf : MSplitsAt I I' f x) :
 open IsManifold in
 lemma mfderiv_injective [IsManifold I 1 M] [IsManifold I' 1 M'] (hf : MSplitsAt I I' f x) :
     Injective (mfderiv I I' f x) := by
-  rw [← foo (n := 1) (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas (f x))
+  rw [← foo _ (n := 1) (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas (f x))
     (mem_chart_source H x) (mem_chart_source H' (f x))]
   exact hf.fderiv_injective
 
@@ -230,7 +237,9 @@ lemma extend_symm (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartA
 end
 
 lemma of_isInvertible (hf : (mfderiv I I' f x).IsInvertible) : MSplitsAt I I' f x := by
-  sorry
+  rw [mSplitsAt_iff]
+  apply ContinuousLinearMap.Splits.of_isInvertible
+  sorry -- version of `foo` applied to `hf`
 
 lemma _root_.IsLocalDiffeomorphAt.msplitsAt
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : n ≠ 0) : MSplitsAt I I' f x :=
@@ -395,21 +404,24 @@ variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
   {I : ModelWithCorners 𝕜 E H} {J : ModelWithCorners 𝕜 F G}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  [IsManifold I 1 M] [IsManifold J 1 N]
   {f : M → N} {x : M} {n : WithTop ℕ∞}
 
 /-- If `f : M → N` is injective and `M` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
     (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
   intro x
-  --have : FiniteDimensional 𝕜 (TangentSpace I x) := by assumption
-  apply ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace-- (hf' x)
-  sorry -- apply `foo` apply foo.mp--rw [foo (φ := chartAt H x) (ψ := chartAt G (f x))]
+  apply ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace
+  rw [foo' (n := 1) f x]
+  exact hf' x
 
 /-- If `f : M → N` is injective and `N` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 F]
     (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
   intro x
-  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional sorry -- apply foo! (hf' x)
+  apply ContinuousLinearMap.Splits.of_injective_of_finiteDimensional --sorry -- apply foo! (hf' x)
+  rw [foo' (n := 1) f x]
+  exact hf' x
 
 -- FUTURE (once mathlib has a notion of Fredholm operators):
 -- If `f : M → N` is injective, `M` and `N` are Banach manifolds and each differential
