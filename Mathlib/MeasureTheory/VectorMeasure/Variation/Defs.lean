@@ -121,7 +121,7 @@ lemma exists_Finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0
     a < ∑ p ∈ P.parts, f p := by
   simp_all [preVariation, lt_iSup_iff]
 
-lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
+lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
     (h : preVariation f s ≠ ⊤) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     preVariation f s ≤ ∑ p ∈ P.parts, f p + ε := by
