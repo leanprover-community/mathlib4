@@ -131,6 +131,18 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
     DiscreteTopology G :=
   discreteTopology_iff_isOpen_singleton_one.mpr h
 
+@[to_additive]
+lemma Filter.tendsto_mul_const_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
+    Tendsto (fun k => f k * b) l (nhds (c * b)) ↔ Tendsto f l (𝓝 c) := by
+  refine ⟨?_, Tendsto.mul_const b⟩
+  convert Tendsto.mul_const b⁻¹ using 3 <;> rw [mul_inv_cancel_right]
+
+@[to_additive]
+lemma Filter.tendsto_const_mul_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
+    Tendsto (fun k => b * f k) l (nhds (b * c)) ↔ Tendsto f l (𝓝 c) := by
+  refine ⟨?_, Tendsto.const_mul b⟩
+  convert Tendsto.const_mul b⁻¹ using 3 <;> rw [inv_mul_cancel_left]
+
 end ContinuousMulGroup
 
 /-!
@@ -875,38 +887,30 @@ section ContinuousDiv
 
 variable [TopologicalSpace G] [Div G] [ContinuousDiv G]
 
-@[to_additive const_sub]
-theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
-    (h : Tendsto f l (𝓝 c)) : Tendsto (fun k : α => b / f k) l (𝓝 (b / c)) :=
-  tendsto_const_nhds.div' h
-
-@[to_additive]
-lemma Filter.tendsto_const_div_iff {G : Type*} [CommGroup G] [TopologicalSpace G] [ContinuousDiv G]
-    (b : G) {c : G} {f : α → G} {l : Filter α} :
-    Tendsto (fun k : α ↦ b / f k) l (𝓝 (b / c)) ↔ Tendsto f l (𝓝 c) := by
-  refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
-  convert h.const_div' b with k <;> rw [div_div_cancel]
-
 @[to_additive sub_const]
 theorem Filter.Tendsto.div_const' {c : G} {f : α → G} {l : Filter α} (h : Tendsto f l (𝓝 c))
     (b : G) : Tendsto (f · / b) l (𝓝 (c / b)) :=
   h.div' tendsto_const_nhds
 
 lemma Filter.tendsto_div_const_iff {G : Type*}
-    [CommGroupWithZero G] [TopologicalSpace G] [ContinuousDiv G]
+    [GroupWithZero G] [TopologicalSpace G] [ContinuousDiv G]
     {b : G} (hb : b ≠ 0) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · / b) l (𝓝 (c / b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
-  convert h.div_const' b⁻¹ with k <;> rw [div_div, mul_inv_cancel₀ hb, div_one]
+  convert h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel₀ hb, div_one]
 
-lemma Filter.tendsto_sub_const_iff {G : Type*}
-    [AddCommGroup G] [TopologicalSpace G] [ContinuousSub G]
+@[to_additive tendsto_sub_const_iff]
+lemma Filter.tendsto_div_const_iff' {G : Type*}
+    [TopologicalSpace G] [Group G] [ContinuousDiv G]
     (b : G) {c : G} {f : α → G} {l : Filter α} :
-    Tendsto (f · - b) l (𝓝 (c - b)) ↔ Tendsto f l (𝓝 c) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.sub_const h b⟩
-  convert h.sub_const (-b) with k <;> rw [sub_sub, ← sub_eq_add_neg, sub_self, sub_zero]
+    Tendsto (fun k => f k / b) l (nhds (c / b)) ↔ Tendsto f l (𝓝 c) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
+  convert h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel, div_one]
 
-variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
+@[to_additive const_sub]
+theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
+    (h : Tendsto f l (𝓝 c)) : Tendsto (fun k : α => b / f k) l (𝓝 (b / c)) :=
+  tendsto_const_nhds.div' h
 
 @[to_additive (attr := continuity) continuous_sub_left]
 lemma continuous_div_left' (a : G) : Continuous (a / ·) := by fun_prop
@@ -919,6 +923,16 @@ end ContinuousDiv
 section DivInvTopologicalGroup
 
 variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+@[to_additive]
+lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter α} :
+    Tendsto (fun k : α ↦ b / f k) l (𝓝 (b / c)) ↔ Tendsto f l (𝓝 c) := by
+  refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
+  convert h.inv.mul_const b with k <;> rw [inv_div, div_mul_cancel]
+
+@[deprecated (since := "2026-02-03")]
+alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
+
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
