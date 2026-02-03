@@ -57,7 +57,7 @@ open Finset Fintype
 
 universe u
 namespace SimpleGraph
-variable {α : Type u}
+variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop := Transitive (¬ G.Adj · ·)
@@ -65,7 +65,9 @@ def IsCompleteMultipartite (G : SimpleGraph α) : Prop := Transitive (¬ G.Adj �
 theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite := by
   simp [IsCompleteMultipartite, Transitive]
 
-variable {G : SimpleGraph α}
+protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
+    (G.induce s).IsCompleteMultipartite := fun _u _v _w huv ↦ hG huv
+
 /-- The setoid given by non-adjacency -/
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
     ⟨(¬ G.Adj · ·), ⟨G.loopless, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
