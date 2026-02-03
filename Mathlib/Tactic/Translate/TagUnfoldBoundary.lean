@@ -21,7 +21,7 @@ namespace Mathlib.Tactic.Translate
 
 open Lean Meta Elab Command Term UnfoldBoundary
 
-/-- There are 3 kinds of casting functions for a definiion `foo := body`:
+/-- There are 3 kinds of casting functions for a definition `foo := body`:
 1. Equality: `foo = body`
 2. Unfolding: `foo → body`
 3. Refolding: `body → foo`
@@ -74,7 +74,7 @@ def elabInsertCastAux (declName : Name) (castKind : CastKind) (stx : Term) (t : 
     let newName ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
     addDecl newName newType (← instantiateMVars newValue)
     -- Now add the translation attribute to relate the two new declarations
-    let relevantArg? := (t.argInfoAttr.find? (← getEnv) declName).map (·.relevantArg)
+    let relevantArg? := (t.translations.find? (← getEnv) declName).map (·.relevantArg)
     _ ← addTranslationAttr t name
       { tgt := newName, existing := true, ref := .missing, relevantArg? }
     return (name, newName)
