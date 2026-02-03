@@ -534,8 +534,7 @@ theorem x_sub_y_dvd_pow (y : ℕ) :
   | n + 2 => by
     have : (2 * a * y - y * y - 1 : ℤ) ∣ ↑(y ^ (n + 2)) - ↑(2 * a) * ↑(y ^ (n + 1)) + ↑(y ^ n) :=
       ⟨-↑(y ^ n), by
-        simp [_root_.pow_succ, mul_comm,
-          mul_left_comm]
+        simp [_root_.pow_succ, mul_comm, mul_left_comm]
         ring⟩
     rw [xz_succ_succ, yz_succ_succ, x_sub_y_dvd_pow_lem ↑(y ^ (n + 2)) ↑(y ^ (n + 1)) ↑(y ^ n)]
     exact _root_.dvd_sub (dvd_add this <| (x_sub_y_dvd_pow _ (n + 1)).mul_left _)
@@ -864,11 +863,7 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
   have hya : y < a := (Nat.le_self_pow hk0 _).trans_lt hyk
   calc
     (↑(y ^ k) : ℤ) < a := Nat.cast_lt.2 hyk
-    _ ≤ (a : ℤ) ^ 2 - (a - 1 : ℤ) ^ 2 - 1 := by
-      rw [sub_sq, mul_one, one_pow, sub_add, sub_sub_cancel, two_mul, sub_sub, ← add_sub,
-        le_add_iff_nonneg_right, sub_nonneg, Int.add_one_le_iff]
-      norm_cast
-      exact lt_of_le_of_lt (Nat.succ_le_of_lt (Nat.pos_of_ne_zero hy0)) hya
+    _ ≤ (a : ℤ) ^ 2 - (a - 1 : ℤ) ^ 2 - 1 := by lia
     _ ≤ (a : ℤ) ^ 2 - (a - y : ℤ) ^ 2 - 1 := by
       have := hya.le
       gcongr <;> norm_cast <;> lia

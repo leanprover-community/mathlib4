@@ -26,9 +26,9 @@ universe w' w v v₁ v₂ u u₁ u₂
 
 open CategoryTheory
 
-namespace CategoryTheory.Limits
+namespace CategoryTheory
 
-section
+namespace Limits
 
 variable {J : Type w} [Category.{w'} J] {C : Type u} [Category.{v} C] {P : ObjectProperty C}
 
@@ -105,12 +105,42 @@ instance hasColimitsOfShape_of_closedUnderColimits [P.IsClosedUnderColimitsOfSha
     [HasColimitsOfShape J C] : HasColimitsOfShape J P.FullSubcategory :=
   { has_colimit := fun F => hasColimit_of_closedUnderColimits J P F }
 
-end
+end Limits
+
+namespace ObjectProperty
+
+open Limits
+
+variable {C : Type u} [Category.{v} C] (P : ObjectProperty C) (J : Type w) [Category.{w'} J]
+
+lemma isClosedUnderColimitsOfShape_of_preservesColimitsOfShape_ι
+    [HasColimitsOfShape J P.FullSubcategory] [P.IsClosedUnderIsomorphisms]
+    [PreservesColimitsOfShape J P.ι] :
+    P.IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro X ⟨p⟩
+    exact P.prop_of_iso (IsColimit.coconePointUniqueUpToIso
+      (isColimitOfPreserves P.ι (colimit.isColimit (P.lift p.diag p.prop_diag_obj)))
+        p.isColimit) (colimit (P.lift p.diag p.prop_diag_obj)).property
+
+lemma isClosedUnderLimitsOfShape_of_preservesLimitsOfShape_ι
+    [HasLimitsOfShape J P.FullSubcategory] [P.IsClosedUnderIsomorphisms]
+    [PreservesLimitsOfShape J P.ι] :
+    P.IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    exact P.prop_of_iso (IsLimit.conePointUniqueUpToIso
+      (isLimitOfPreserves P.ι (limit.isLimit (P.lift p.diag p.prop_diag_obj)))
+        p.isLimit) (limit (P.lift p.diag p.prop_diag_obj)).property
+
+end ObjectProperty
 
 variable {J : Type w} [Category.{w'} J]
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable (F : C ⥤ D)
+
+namespace Limits
 
 /-- The essential image of a functor is closed under the limits it preserves. -/
 instance [HasLimitsOfShape J C] [PreservesLimitsOfShape J F] [F.Full] [F.Faithful] :

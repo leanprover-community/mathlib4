@@ -226,8 +226,10 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   by_cases hRS : Function.Injective (algebraMap R S)
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
-  have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
+  rw [← faithfulSMul_iff_algebraMap_injective] at hRS
+  have := NoZeroDivisors.of_faithfulSMul R S
   have := Algebra.nontrivial_of_isAlgebraic R S
+  have : IsDomain R := NoZeroDivisors.to_isDomain _
   classical
   have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
@@ -235,8 +237,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
   have : IsAlgebraic (integralClosure R S) a := by
     refine ⟨p, ?_, ?_⟩
-    · have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hRS
-      simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) Subtype.val_injective,
+    · simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) Subtype.val_injective,
         p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
     rw [← eval_map_algebraMap, Subalgebra.algebraMap_eq, ← map_map, ← Subalgebra.toSubring_subtype,
       map_toSubring, eval_map_algebraMap, ← AlgHom.restrictScalars_apply R,
@@ -628,14 +629,14 @@ namespace Algebra.IsAlgebraic
 
 @[stacks 0G1M] theorem rank_fractionRing_polynomial :
     Module.rank (FractionRing R[X]) (FractionRing S[X]) = Module.rank R S := by
-  have := (FaithfulSMul.algebraMap_injective R S).isDomain
+  have := IsDomain.of_faithfulSMul R S
   rw [rank_fractionRing, rank_polynomial_polynomial]
 
 open Cardinal in
 @[stacks 0G1M] theorem rank_fractionRing_mvPolynomial (σ : Type u) :
     Module.rank (FractionRing (MvPolynomial σ R)) (FractionRing (MvPolynomial σ S)) =
     lift.{u} (Module.rank R S) := by
-  have := (FaithfulSMul.algebraMap_injective R S).isDomain
+  have := IsDomain.of_faithfulSMul R S
   rw [rank_fractionRing, rank_mvPolynomial_mvPolynomial]
 
 end Algebra.IsAlgebraic
