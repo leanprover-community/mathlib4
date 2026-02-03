@@ -52,6 +52,7 @@ theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst
   · dsimp [x, y]
     simp
 
+attribute [-instance] AddCommGroup.toIntModule in
 /-- `biprod.snd ≫ x` is pseudoequal to `biprod.snd y`. -/
 theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) := by
   refine ⟨of ℤ ℚ, 𝟙 _, 2 • 𝟙 _, inferInstance, ?_, ?_⟩
