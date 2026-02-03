@@ -152,7 +152,7 @@ theorem chainHeight_eq_of_relEmbedding (e : r ↪r r') :
       ha₃.preimage_relEmbedding e
   · obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
     rw [← ha₂, ← e.injective.encard_image]
-    exact encard_le_chainHeight_of_isChain _ _ (by grind) <| ha₃.image_relEmbedding e
+    exact encard_le_chainHeight_of_isChain _ _ (by grind) <| ha₃.image e
 
 theorem chainHeight_eq_of_relIso (e : r ≃r r') : (e '' s).chainHeight r' = s.chainHeight r :=
   chainHeight_eq_of_relEmbedding s e.toRelEmbedding
