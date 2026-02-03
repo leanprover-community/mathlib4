@@ -20,6 +20,8 @@ This file defines intersecting families and proves their basic properties.
 * `Set.Intersecting.card_le`: An intersecting family can only take up to half the elements, because
   `a` and `aᶜ` cannot simultaneously be in it.
 * `Set.Intersecting.is_max_iff_card_eq`: Any maximal intersecting family takes up half the elements.
+* `Set.IsIntersectingWith`: Predicate stating that a family of finsets is `ℓ`-intersecting, i.e.,
+  every pair of members intersects in at least `ℓ` elements.
 
 ## References
 
@@ -188,5 +190,63 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_comm]
   exact ht.card_le
+
+/-!
+### `ℓ`-intersecting families
+
+This section defines `ℓ`-intersecting families and establishes their basic properties.
+-/
+
+variable {ℓ : ℕ}
+variable {α : Type*} [DecidableEq α]
+variable {𝒜 ℬ : Set (Finset α)}
+
+/--
+A family `𝒜` of finite subsets of `α` is `ℓ`-intersecting if every pair of members
+intersects in at least `ℓ` elements.
+
+That is, for all `s, t ∈ 𝒜`, we have `ℓ ≤ |s ∩ t|`.
+-/
+def IsIntersectingWith (ℓ : ℕ) (𝒜 : Set (Finset α)) : Prop :=
+  ∀ ⦃s⦄, s ∈ 𝒜 → ∀ ⦃t⦄, t ∈ 𝒜 → ℓ ≤ (s ∩ t).card
+
+namespace IsIntersectingWith
+
+/--
+An `ℓ`-intersecting family remains `ℓ`-intersecting under restriction to any subfamily.
+-/
+@[gcongr]
+theorem mono (h : ℬ ⊆ 𝒜) (h𝒜 : IsIntersectingWith ℓ 𝒜) : IsIntersectingWith ℓ ℬ := by
+  grind [IsIntersectingWith]
+
+/--
+Every family of finite sets is `0`-intersecting.
+-/
+theorem zero : IsIntersectingWith 0 𝒜 := by
+  simp [IsIntersectingWith]
+
+/--
+The empty family of finite sets is `ℓ`-intersecting, vacuously, because it contains no pairs of
+sets.
+-/
+theorem empty : IsIntersectingWith ℓ (∅ : Set (Finset α)) := by
+  simp [IsIntersectingWith]
+
+/--
+Every member of an `ℓ`-intersecting family has cardinality at least `ℓ`.
+-/
+theorem card_le (h𝒜 : IsIntersectingWith ℓ 𝒜) : ∀ s ∈ 𝒜, ℓ ≤ s.card := by
+  grind [IsIntersectingWith]
+
+/--
+If `ℓ ≠ 0`, an `ℓ`-intersecting family is intersecting in the usual sense, meaning that every pair
+of members has a nonempty intersection.
+-/
+theorem intersecting (hℓ : ℓ ≠ 0) (h𝒜 : IsIntersectingWith ℓ 𝒜) : Intersecting 𝒜 := by
+  intro a ha b hb
+  have : ℓ ≤ (a ∩ b).card := h𝒜 ha hb
+  grind [Finset.disjoint_iff_inter_eq_empty]
+
+end IsIntersectingWith
 
 end Set
