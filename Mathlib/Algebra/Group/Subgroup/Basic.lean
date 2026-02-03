@@ -424,30 +424,38 @@ variable {s : Set G}
 
 /-- Given a set `s`, `conjugatesOfSet s` is the set of all conjugates of
 the elements of `s`. -/
+@[to_additive /-- Given a set `s`, `conjugatesOfSet s` is the set of all conjugates of
+the elements of `s`. -/]
 def conjugatesOfSet (s : Set G) : Set G :=
   ⋃ a ∈ s, conjugatesOf a
 
+@[to_additive]
 theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
   rw [conjugatesOfSet, Set.mem_iUnion₂]
   simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
 
+@[to_additive]
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
   mem_conjugatesOfSet_iff.2 ⟨x, h, IsConj.refl _⟩
 
+@[to_additive]
 theorem conjugatesOfSet_mono {s t : Set G} (h : s ⊆ t) : conjugatesOfSet s ⊆ conjugatesOfSet t :=
   Set.biUnion_subset_biUnion_left h
 
+@[to_additive]
 theorem conjugates_subset_normal {N : Subgroup G} [tn : N.Normal] {a : G} (h : a ∈ N) :
     conjugatesOf a ⊆ N := by
   rintro a hc
   obtain ⟨c, rfl⟩ := isConj_iff.1 hc
   exact tn.conj_mem a h c
 
+@[to_additive]
 theorem conjugatesOfSet_subset {s : Set G} {N : Subgroup G} [N.Normal] (h : s ⊆ N) :
     conjugatesOfSet s ⊆ N :=
   Set.iUnion₂_subset fun _x H => conjugates_subset_normal (h H)
 
 /-- The set of conjugates of `s` is closed under conjugation. -/
+@[to_additive /-- The set of additive conjugates of `s` is closed under conjugation. -/]
 theorem conj_mem_conjugatesOfSet {x c : G} :
     x ∈ conjugatesOfSet s → c * x * c⁻¹ ∈ conjugatesOfSet s := fun H => by
   rcases mem_conjugatesOfSet_iff.1 H with ⟨a, h₁, h₂⟩
@@ -463,19 +471,25 @@ variable {s : Set G}
 
 /-- The normal closure of a set `s` is the subgroup closure of all the conjugates of
 elements of `s`. It is the smallest normal subgroup containing `s`. -/
+@[to_additive /-- The normal closure of a set `s` is the closure of all the additive conjugates of
+elements of `s`. It is the smallest normal additive subgroup containing `s`. -/]
 def normalClosure (s : Set G) : Subgroup G :=
   closure (conjugatesOfSet s)
 
+@[to_additive]
 theorem conjugatesOfSet_subset_normalClosure : conjugatesOfSet s ⊆ normalClosure s :=
   subset_closure
 
+@[to_additive]
 theorem subset_normalClosure : s ⊆ normalClosure s :=
   Set.Subset.trans subset_conjugatesOfSet conjugatesOfSet_subset_normalClosure
 
+@[to_additive]
 theorem le_normalClosure {H : Subgroup G} : H ≤ normalClosure ↑H := fun _ h =>
   subset_normalClosure h
 
 /-- The normal closure of `s` is a normal subgroup. -/
+@[to_additive /-- The normal closure of `s` is a normal additive subgroup. -/]
 instance normalClosure_normal : (normalClosure s).Normal :=
   ⟨fun n h g => by
     refine Subgroup.closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_)
@@ -488,6 +502,8 @@ instance normalClosure_normal : (normalClosure s).Normal :=
       exact inv_mem ihx⟩
 
 /-- The normal closure of `s` is the smallest normal subgroup containing `s`. -/
+@[to_additive /-- The normal closure of `s` is the smallest normal additive subgroup containing`s`.
+-/]
 theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : normalClosure s ≤ N := by
   intro a w
   refine closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_) (fun x _ ihx => ?_) w
@@ -496,57 +512,68 @@ theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : norm
   · exact mul_mem ihx ihy
   · exact inv_mem ihx
 
+@[to_additive]
 theorem normalClosure_subset_iff {N : Subgroup G} [N.Normal] : s ⊆ N ↔ normalClosure s ≤ N :=
   ⟨normalClosure_le_normal, Set.Subset.trans subset_normalClosure⟩
 
-@[gcongr]
+@[to_additive (attr := gcongr)]
 theorem normalClosure_mono {s t : Set G} (h : s ⊆ t) : normalClosure s ≤ normalClosure t :=
   normalClosure_le_normal (Set.Subset.trans h subset_normalClosure)
 
+@[to_additive]
 theorem normalClosure_eq_iInf :
     normalClosure s = ⨅ (N : Subgroup G) (_ : Normal N) (_ : s ⊆ N), N :=
   le_antisymm (le_iInf fun _ => le_iInf fun _ => le_iInf normalClosure_le_normal)
     (iInf_le_of_le (normalClosure s)
       (iInf_le_of_le (by infer_instance) (iInf_le_of_le subset_normalClosure le_rfl)))
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem normalClosure_eq_self (H : Subgroup G) [H.Normal] : normalClosure ↑H = H :=
   le_antisymm (normalClosure_le_normal rfl.subset) le_normalClosure
 
+@[to_additive]
 theorem normalClosure_idempotent : normalClosure ↑(normalClosure s) = normalClosure s :=
   normalClosure_eq_self _
 
+@[to_additive]
 theorem closure_le_normalClosure {s : Set G} : closure s ≤ normalClosure s := by
   simp only [subset_normalClosure, closure_le]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
+@[to_additive /-- The normal core of an additive subgroup `H` is the largest normal additive
+subgroup of `G` contained in `H`, as shown by `AddSubgroup.normalCore_eq_iSup`. -/]
 def normalCore (H : Subgroup G) : Subgroup G where
   carrier := { a : G | ∀ b : G, b * a * b⁻¹ ∈ H }
   one_mem' a := by rw [mul_one, mul_inv_cancel]; exact H.one_mem
   inv_mem' {_} h b := (congr_arg (· ∈ H) conj_inv).mp (H.inv_mem (h b))
   mul_mem' {_ _} ha hb c := (congr_arg (· ∈ H) conj_mul).mp (H.mul_mem (ha c) (hb c))
 
+@[to_additive]
 theorem normalCore_le (H : Subgroup G) : H.normalCore ≤ H := fun a h => by
   rw [← mul_one a, ← inv_one, ← one_mul a]
   exact h 1
 
+@[to_additive]
 instance normalCore_normal (H : Subgroup G) : H.normalCore.Normal :=
   ⟨fun a h b c => by
     rw [mul_assoc, mul_assoc, ← mul_inv_rev, ← mul_assoc, ← mul_assoc]; exact h (c * b)⟩
 
+@[to_additive]
 theorem normal_le_normalCore {H : Subgroup G} {N : Subgroup G} [hN : N.Normal] :
     N ≤ H.normalCore ↔ N ≤ H :=
   ⟨ge_trans H.normalCore_le, fun h_le n hn g => h_le (hN.conj_mem n hn g)⟩
 
+@[to_additive]
 theorem normalCore_mono {H K : Subgroup G} (h : H ≤ K) : H.normalCore ≤ K.normalCore :=
   normal_le_normalCore.mpr (H.normalCore_le.trans h)
 
+@[to_additive]
 theorem normalCore_eq_iSup (H : Subgroup G) :
     H.normalCore = ⨆ (N : Subgroup G) (_ : Normal N) (_ : N ≤ H), N :=
   le_antisymm
@@ -554,10 +581,11 @@ theorem normalCore_eq_iSup (H : Subgroup G) :
       (le_iSup_of_le H.normalCore_normal (le_iSup_of_le H.normalCore_le le_rfl)))
     (iSup_le fun _ => iSup_le fun _ => iSup_le normal_le_normalCore.mpr)
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
   le_antisymm H.normalCore_le (normal_le_normalCore.mpr le_rfl)
 
+@[to_additive]
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
 
