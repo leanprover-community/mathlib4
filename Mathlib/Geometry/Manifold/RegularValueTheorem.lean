@@ -50,6 +50,22 @@ public noncomputable section
 
 variable {f : M → N}
 
+variable (I) in
+def ModelWithCorners.restrictPreimage (M : Submodule 𝕜 E₁) : ModelWithCorners 𝕜 M (I ⁻¹' M) where
+  toPartialEquiv.toFun := Set.restrictPreimage M I
+  toPartialEquiv.invFun := Set.MapsTo.restrict I.symm _ _ fun x hx ↦ sorry
+  toPartialEquiv.source := sorry
+  toPartialEquiv.target := sorry
+  toPartialEquiv.map_source' := sorry
+  toPartialEquiv.map_target' := sorry
+  toPartialEquiv.left_inv' := sorry
+  toPartialEquiv.right_inv' := sorry
+  source_eq := sorry
+  convex_range' := sorry
+  nonempty_interior' := sorry
+  continuous_toFun := sorry
+  continuous_invFun := sorry
+
 -- Should this include a differentiability assumption? Then
 -- there is no need to manually also pass the `ContMDiff` below.
 variable (I J) in
@@ -71,40 +87,52 @@ instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.Complem
   delta Complement
   infer_instance
 
+/-- The set `f ⁻¹' {f x}` coerced to a type that will be endowed with a manifold
+structure by the regular value theorem. -/
 @[nolint unusedArguments, expose]
 abbrev Preimage {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) : Type _ :=
   f ⁻¹' {f x}
 
 -- is this true?
+/-- The model space for the manifold structure on `f ⁻¹' {f x}`. -/
 @[nolint unusedArguments, expose]
 def modelSpace {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
   (mfderiv I J f x).ker
 
--- This is certainly wrong for manifolds with boundary?
+instance {x : M} (hx : IsRegularValue I J f (f x)) :
+    NormedAddCommGroup hx.modelSpace := by
+  unfold modelSpace
+  infer_instance
+
+instance {x : M} (hx : IsRegularValue I J f (f x)) :
+    NormedSpace 𝕜 hx.modelSpace := by
+  unfold modelSpace
+  letI : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs <| NormedAddCommGroup E₁
+  letI : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs <| NormedSpace _ E₁
+  infer_instance
+
+-- XXX: This is certainly wrong for manifolds with boundary?
 @[nolint unusedArguments, expose]
 def model {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
-  (mfderiv I J f x).ker
+  I ⁻¹' ((mfderiv I J f x).ker : Set (TangentSpace I x))
   deriving TopologicalSpace
-
-instance {x : M} (hx : IsRegularValue I J f (f x)) :
-    NormedAddCommGroup hx.modelSpace :=
-  sorry
-
-instance {x : M} (hx : IsRegularValue I J f (f x)) :
-    NormedSpace 𝕜 hx.modelSpace :=
-  sorry
 
 @[nolint unusedArguments, expose]
 def modelWithCorners {x : M} (hx : IsRegularValue I J f (f x)) :
     ModelWithCorners 𝕜 hx.modelSpace hx.model :=
-  sorry
+  letI : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs <| NormedAddCommGroup E₁
+  letI : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs <| NormedSpace _ E₁
+  .restrictPreimage _ _
 
 /-- The regular value theorem. -/
 instance immersedSubmanifold {x : M} (hx : IsRegularValue I J f (f x))
     (hf : ContMDiff I J n f) :
     ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
   map := Subtype.val
-  sliceModel := sorry
+  sliceModel.equiv := sorry
+  sliceModel.map := Subtype.val
+  sliceModel.hmap := .subtypeVal
+  sliceModel.compatible := sorry
   real_condition := sorry
 
 instance {x : M} (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
