@@ -311,7 +311,8 @@ theorem right_comm (x : A) (r : R) (y : A) :
     x * algebraMap R A r * y = x * y * algebraMap R A r := by
   rw [mul_assoc, commutes, ← mul_assoc]
 
-instance _root_.IsScalarTower.right : IsScalarTower R A A :=
+/-- This has high priority because it is almost always the right instance when it applies. -/
+instance (priority := high) _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 
 @[simp]

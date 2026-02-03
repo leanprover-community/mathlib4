@@ -460,6 +460,10 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
   have := smul_left_injective _ hx' (hr.trans (one_smul _ x).symm)
   exact I.eq_top_iff_one.not.mp h (this ▸ r.prop)
 
+@[deprecated (since := "2026-01-17")]
+alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
+  Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree
+
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by

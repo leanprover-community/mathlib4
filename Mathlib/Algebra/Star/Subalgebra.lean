@@ -43,6 +43,8 @@ instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
+instance : PartialOrder (StarSubalgebra R A) := .ofSetLike (StarSubalgebra R A) A
+
 /-- The actual `StarSubalgebra` obtained from an element of a type satisfying `SubsemiringClass`,
 `SMulMemClass` and `StarMemClass`. -/
 @[simps]
@@ -505,7 +507,7 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
     {a : A} (ha : a ∈ adjoin R s) : p a ha := by
   refine Algebra.adjoin_induction (fun x hx ↦ ?_) algebraMap add mul ha
-  simp only [Set.mem_union, Set.mem_star] at hx
+  push _ ∈ _ at hx
   obtain (hx | hx) := hx
   · exact mem x hx
   · simpa using star _ (Algebra.subset_adjoin (by simpa using Or.inl hx)) (mem _ hx)
