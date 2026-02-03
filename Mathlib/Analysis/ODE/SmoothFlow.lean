@@ -821,6 +821,23 @@ lemma contDiffOn_iteratedFDerivUncurry_uncurry0 {f : E → E} {u : Set E} {k : �
   contDiffOn_iteratedFDerivUncurry
     ((continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf) hu hm'
 
+/-- `fderivIntegralCurry0 f u t₀ α` is independent of the set `u` when `range α` is contained in
+the smaller set and `f` is `C^1` on the larger set. This is because the underlying integral only
+depends on values of `fderiv ℝ f` along `range α`. -/
+lemma fderivIntegralCurry0_eq_of_subset {f : E → E} {u₁ u₂ : Set E}
+    (hu : u₁ ⊆ u₂) (hu₂ : IsOpen u₂) (hf : ContDiffOn ℝ 1 f u₂)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u₁) :
+    fderivIntegralCurry0 f u₁ t₀ α = fderivIntegralCurry0 f u₂ t₀ α := by
+  simp only [fderivIntegralCurry0]
+  congr 1
+  have hg :=
+    (contDiffOn_iteratedFDerivUncurry_uncurry0 (m := 0) (k := 1) hf hu₂ le_rfl).continuousOn
+  ext dα x t
+  simp only [ContinuousMultilinearMap.curryLeft_apply]
+  rw [integralCMLM_apply_if_pos (hg.mono hu), integralCM_apply_if_pos hα,
+      integralCMLM_apply_if_pos hg, integralCM_apply_if_pos (hα.trans hu)]
+
 omit [CompleteSpace E] in
 /-- The Fréchet derivative of `uncurry0 ∘ f` at `x` is `uncurry0 ∘ fderiv f x`. This is the chain
 rule applied to the composition of `f` with the linear isometry `uncurry0`. -/
@@ -872,7 +889,7 @@ such that for any time interval `[tmin, tmax]` of size less than `ε` and any co
 `‖fderivIntegralCurry0 f u t₀ α‖ < 1`. -/
 lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) :
-    ∃ u ∈ 𝓝 x₀, ∃ ε > 0, ContDiffOn ℝ 1 f u ∧
+    ∃ u ∈ 𝓝 x₀, IsOpen u ∧ ∃ ε > 0, ContDiffOn ℝ 1 f u ∧
       ∀ (tmin tmax : ℝ) (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)),
         range α ⊆ u → |tmax - tmin| < ε →
           ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
@@ -891,7 +908,7 @@ lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
   -- Choose ε so that ε * C < 1
   set ε := 1 / (C + 1) with hε_def
   have hεpos : 0 < ε := by positivity
-  refine ⟨u, hu_nhds, ε, hεpos, hfu, ?_⟩
+  refine ⟨u, hu_nhds, hu_open, ε, hεpos, hfu, ?_⟩
   intro tmin tmax t₀ α hαu hsmall
   have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ (hu_cond x (hαu hx)).2
   apply opNorm_fderivIntegralCurry0_lt_one hfu hu_open t₀ hαu hCpos.le hbound'
@@ -904,15 +921,15 @@ lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
 /-! ## Connect to the existence of integral curves -/
 
 omit [NormedSpace ℝ E] [CompleteSpace E] in
-/-- `IsPicardLindelof` is preserved when shrinking the time interval for time-independent ODEs. -/
+/-- `IsPicardLindelof` is preserved when shrinking the time interval. -/
 -- TODO: move to PicardLindelof.lean
-lemma IsPicardLindelof.shrink_time_indep {f : E → E} {t₀ : ℝ} {x₀ : E} {a r L K : ℝ≥0}
+lemma IsPicardLindelof.shrink_time {f : ℝ → E → E} {t₀ : ℝ} {x₀ : E} {a r L K : ℝ≥0}
     {ε ε' : ℝ} (hε : 0 < ε) (hε' : 0 < ε') (hε'ε : ε' ≤ ε)
-    (hf : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
+    (hf : IsPicardLindelof f (tmin := t₀ - ε) (tmax := t₀ + ε)
       ⟨t₀, by simp [le_of_lt hε]⟩ x₀ a r L K) :
-    IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε') (tmax := t₀ + ε')
+    IsPicardLindelof f (tmin := t₀ - ε') (tmax := t₀ + ε')
       ⟨t₀, by simp [le_of_lt hε']⟩ x₀ a r L K where
-  lipschitzOnWith t _ := hf.lipschitzOnWith t (by simp at *; constructor <;> linarith)
+  lipschitzOnWith t ht := hf.lipschitzOnWith t (by simp at *; constructor <;> linarith)
   continuousOn x hx :=
     (hf.continuousOn x hx).mono fun t ht ↦ ⟨by linarith [ht.1], by linarith [ht.2]⟩
   norm_le t ht x hx := hf.norm_le t (by simp at *; constructor <;> linarith) x hx
@@ -941,8 +958,11 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
         ‖fderivIntegralCurry0 f (ball x₀ a') ⟨t₀, by simp [le_of_lt hε]⟩ α.toContinuousMap‖
           < 1 := by
   -- Get parameters from the two key lemmas
-  obtain ⟨a₁, ha₁pos, ε₁, hε₁pos, hf_diff, hfderiv_bound⟩ :=
-    exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one hf
+  obtain ⟨u, hu_nhds, hu_open, ε₁, hε₁pos, hfu, hfderiv_bound⟩ :=
+    exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one hf
+  -- Extract a ball from the neighborhood
+  obtain ⟨a₁, ha₁pos, ha₁_sub⟩ := Metric.mem_nhds_iff.mp hu_nhds
+  have hf_diff : ContDiffOn ℝ 1 f (ball x₀ a₁) := hfu.mono ha₁_sub
   obtain ⟨ε₂, hε₂pos, a₂, r, L, K, hrpos, hPL⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
   -- We have a₂ > 0 since r > 0 and a₂ ≥ r (from the mul_max_le constraint)
   have ha₂pos : (0 : ℝ) < a₂ := by
@@ -990,7 +1010,7 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
   -- Shrink PicardLindelof to the smaller time interval with r = 0 and smaller a
   have hPL' : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
       ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a 0 L K := by
-    have hPL_shrink := IsPicardLindelof.shrink_time_indep hε₂pos hεpos hε_le_ε₂ hPL
+    have hPL_shrink := IsPicardLindelof.shrink_time hε₂pos hεpos hε_le_ε₂ hPL
     refine IsPicardLindelof.of_time_independent ?_ ?_ ?_
     · intro x hx
       apply hPL_shrink.norm_le t₀ (by simp [le_of_lt hεpos]) x
@@ -1034,7 +1054,10 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
       rw [h1, abs_of_pos (by linarith)]
       linarith
     have ht₀mem : t₀ ∈ Icc (t₀ - ε) (t₀ + ε) := by simp [le_of_lt hεpos]
-    exact hfderiv_bound (t₀ - ε) (t₀ + ε) ⟨t₀, ht₀mem⟩ α_fun.toContinuousMap hα_range hinterval
+    -- Use fderivIntegralCurry0_eq_of_subset to relate ball x₀ a' to u
+    have ha'_sub_u : ball x₀ ↑a' ⊆ u := by simp only [ha'_def]; exact ha₁_sub
+    rw [fderivIntegralCurry0_eq_of_subset ha'_sub_u hu_open hfu ⟨t₀, ht₀mem⟩ hα_range]
+    exact hfderiv_bound (t₀ - ε) (t₀ + ε) ⟨t₀, ht₀mem⟩ _ (hα_range.trans ha'_sub_u) hinterval
   exact ⟨ε, hεpos, a, a', L, K, hapos, haa', hf_diff, hPL', α_fun, hα_fixed, hα_ball, hα_norm⟩
 
 /-- When f is C^1 at x₀, there exist ε > 0, a > 0, and a continuous map
