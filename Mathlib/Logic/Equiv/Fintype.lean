@@ -134,4 +134,16 @@ theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p 
   convert (e.toCompl ⟨x, hx⟩).2
   rw [e.extendSubtype_apply_of_not_mem _ hx]
 
+/-- Given two injective functions `f` and `g` from a finite type `α` to a finite type `β`,
+there exists a permutation of `β` that maps `f` to `g`. -/
+theorem Perm.exists_extending_pair {α β : Type*} [Finite α] [Finite β]
+    (f g : α → β) (hf : Function.Injective f) (hg : Function.Injective g) :
+    ∃ σ : Perm β, ∀ a, σ (f a) = g a := by
+  classical
+  let e : Set.range f ≃ Set.range g :=
+    (Equiv.ofInjective f hf).symm.trans (Equiv.ofInjective g hg)
+  refine ⟨e.extendSubtype, fun a => ?_⟩
+  rw [Equiv.extendSubtype_apply_of_mem e (f a) (Set.mem_range_self a)]
+  simp only [e, Equiv.trans_apply, Equiv.ofInjective_symm_apply, Equiv.ofInjective_apply]
+
 end Equiv
