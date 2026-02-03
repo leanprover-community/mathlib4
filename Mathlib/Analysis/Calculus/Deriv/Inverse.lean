@@ -126,7 +126,7 @@ theorem derivWithin_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[s \ {x}] 
     exact hf.hasDerivWithinAt.eventually_ne h
   · exact derivWithin_zero_of_not_differentiableWithinAt hf
 
-/-- If a function frequently (in `𝓝[s ∖ {x}]`) takes values in a set `t` that does not
+/-- If a function frequently (in `𝓝[s ∖ {x}] x`) takes values in a set `t` that does not
 accumulate at `f x`, then its derivative within `s` at `x` equals zero,
 either because it has derivative zero or because it isn't differentiable at this point. -/
 theorem derivWithin_zero_of_frequently_mem (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t))
@@ -143,7 +143,7 @@ theorem deriv_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[≠] x, f y = c
   rw [← derivWithin_univ, derivWithin_zero_of_frequently_const]
   rwa [← compl_eq_univ_diff]
 
-/-- If a function frequently (in `𝓝[s ∖ {x}]`) takes values in a set `t` that does not
+/-- If a function frequently (in `𝓝[≠] x`) takes values in a set `t` that does not
 accumulate at `f x`, then its derivative at `x` equals zero,
 either because it has derivative zero or because it isn't differentiable at this point. -/
 theorem deriv_zero_of_frequently_mem (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t))
