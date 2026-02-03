@@ -235,7 +235,7 @@ instance : Nontrivial ℍ := inferInstance
 
 end RealAddAction
 
-section UpperHalfPlaneSet
+section upperHalfPlaneSet
 
 /-- The upper half plane as a subset of `ℂ`.
 This is convenient for taking derivatives of functions on the upper half plane. -/
@@ -253,6 +253,6 @@ lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Com
 theorem range_coe : Set.range UpperHalfPlane.coe = ℍₒ := by
   ext; simp [UpperHalfPlane.exists]
 
-end UpperHalfPlaneSet
+end upperHalfPlaneSet
 
 end UpperHalfPlane
