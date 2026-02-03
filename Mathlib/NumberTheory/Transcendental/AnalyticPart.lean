@@ -40,8 +40,7 @@ lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero (z₀ : ℂ) (f : ℂ → ℂ)
     simp
 
 
-lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred
-{z₀ : ℂ} {f : ℂ → ℂ} (hf : AnalyticAt ℂ f z₀)
+lemma analyticOrderAt_eq_succ_iff_deriv_order_eq_pred {z₀ : ℂ} {f : ℂ → ℂ} (hf : AnalyticAt ℂ f z₀)
     {n : ℕ} (hzero : f z₀ = 0) (horder : analyticOrderAt (deriv f) z₀ = n) :
     analyticOrderAt f z₀ = n + 1 := by
   cases Hn' : analyticOrderAt f z₀ with
@@ -133,21 +132,15 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero {z₀ : ℂ} (n : ℕ) :
           ho.symm (by grind) (by grind)
         grind only [AnalyticAt.analyticOrderAt_eq_zero (hf := iterated_deriv hf (n + 1))]
 
-lemma analyticOrderAt_eq_nat_imp_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ}
-    (hf : AnalyticAt ℂ f z₀) (n : ℕ) :
-  analyticOrderAt f z₀ = n → (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) := fun h ↦
-  (analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero n (f := f) hf).mpr h
+lemma analyticOrderAt_eq_nat_imp_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ} (hf : AnalyticAt ℂ f z₀)
+    (n : ℕ) : analyticOrderAt f z₀ = n → (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) :=
+  fun h ↦ (analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero n (f := f) hf).mpr h
 
 lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero {f : ℂ → ℂ} {z₀ : ℂ}
-  (hf : AnalyticAt ℂ f z₀) (n : ℕ) (ho : analyticOrderAt f z₀ ≠ ⊤) :
+    (hf : AnalyticAt ℂ f z₀) (n : ℕ) (ho : analyticOrderAt f z₀ ≠ ⊤) :
     (∀ k < n, (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by
   intro hkn
   obtain ⟨m, Hm⟩ := ENat.ne_top_iff_exists (n := analyticOrderAt f z₀).mp ho
   rw [← Hm, ENat.coe_le_coe]
   by_contra! h
   exact ((analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero (n := m) f hf).mpr (Hm.symm)).2 (hkn m h)
-
--- --will move later, there is some conflict with existing lemmas
--- lemma mul_mem_emetric_ball_iff {E : Type _} [SeminormedAddCommGroup E] {a b c : E} (r : ENNReal) :
---     a + c ∈ EMetric.ball (b + c) r  ↔ a ∈ EMetric.ball b r:= by
---   simp
