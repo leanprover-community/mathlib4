@@ -390,7 +390,7 @@ lemma nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝 (c • x) = c • �
   nhds_smul (Units.mk0 c hc) x
 
 open scoped Pointwise in
-lemma punctured_nhds_smul₀ {c : G₀} (x : α) (hc : c ≠ 0) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
+lemma punctured_nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
   punctured_nhds_smul (Units.mk0 c hc) x
 
 /-- `smul` is a closed map in the second argument.
