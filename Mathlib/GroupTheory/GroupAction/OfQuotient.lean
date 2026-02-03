@@ -52,15 +52,8 @@ variable {H : Subgroup G} [H.Normal]
 
 instance : MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H A) where
   __ := instQuotientSubgroupElemFixedPointsSubtypeMem
-  smul_mul _ _ _ := by
-    ext
-    repeat
-      rw [← quotient_out_smul_fixedPoints]
-    simp [-quotient_out_smul_fixedPoints]
-    rfl
-  smul_one _ := by
-    ext; rw [← quotient_out_smul_fixedPoints]
-    simp [-quotient_out_smul_fixedPoints]
+  smul_mul g a b := g.induction_on fun g ↦ Subtype.ext (smul_mul g a.1 b.1)
+  smul_one g := g.induction_on fun g ↦ Subtype.ext (smul_one g)
 
 open scoped FixedPoints
 
