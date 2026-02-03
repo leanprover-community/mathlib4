@@ -92,25 +92,25 @@ lemma finite_mulSupport_pow {M : Type*} [Monoid M] {f : α → M} (hf : f.mulSup
 lemma finite_mulSupport_max [LinearOrder M] {f g : α → M} (hf : f.mulSupport.Finite)
     (hg : g.mulSupport.Finite) :
     (fun a ↦ max (f a) (g a)).mulSupport.Finite :=
-    (hf.union hg).subset <| mulSupport_max ..
+  (hf.union hg).subset <| mulSupport_max ..
 
 @[to_additive]
 lemma finite_mulSupport_min [LinearOrder M] {f g : α → M} (hf : f.mulSupport.Finite)
     (hg : g.mulSupport.Finite) :
     (fun a ↦ min (f a) (g a)).mulSupport.Finite :=
-    (hf.union hg).subset <| mulSupport_min ..
+  (hf.union hg).subset <| mulSupport_min ..
 
 @[to_additive]
 lemma finite_mulSupport_sup [SemilatticeSup M] {f g : α → M} (hf : f.mulSupport.Finite)
     (hg : g.mulSupport.Finite) :
     (fun a ↦ f a ⊔ g a).mulSupport.Finite :=
-    (hf.union hg).subset <| mulSupport_sup ..
+  (hf.union hg).subset <| mulSupport_sup ..
 
 @[to_additive]
 lemma finite_mulSupport_inf [SemilatticeInf M] {f g : α → M} (hf : f.mulSupport.Finite)
     (hg : g.mulSupport.Finite) :
     (fun a ↦ f a ⊓ g a).mulSupport.Finite :=
-    (hf.union hg).subset <| mulSupport_inf ..
+  (hf.union hg).subset <| mulSupport_inf ..
 
 @[to_additive]
 lemma finite_mulSupport_iSup [ConditionallyCompleteLattice M] {ι : Sort*} [Nonempty ι]
