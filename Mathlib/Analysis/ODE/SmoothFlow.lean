@@ -17,16 +17,6 @@ public import Mathlib.Analysis.Calculus.ImplicitContDiff
 open Function intervalIntegral MeasureTheory Metric Set ContinuousMultilinearMap
 open scoped Nat NNReal Topology
 
--- TODO: move to Mathlib/Analysis/Normed/Operator/LinearIsometry.lean
-/-- The coercion of a `LinearIsometryEquiv` to `ContinuousLinearMap` via `toContinuousLinearEquiv`
-equals the coercion via `toLinearIsometry`. -/
-@[simp]
-theorem LinearIsometryEquiv.toContinuousLinearEquiv_toContinuousLinearMap {𝕜 : Type*}
-    [NontriviallyNormedField 𝕜] {E E₂ : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] (e : E ≃ₗᵢ[𝕜] E₂) :
-    e.toContinuousLinearEquiv.toContinuousLinearMap = e.toLinearIsometry.toContinuousLinearMap :=
-  rfl
-
 /-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
 `dist x y`. -/
 -- TODO: this is the "left" version. make a "right" version too
@@ -856,7 +846,7 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
     (hα : range α ⊆ u) {C : ℝ} (hC : 0 ≤ C) (hbound : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C)
     (hsmall : |tmax - tmin| * C < 1) :
     ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
-  rw [fderivIntegralCurry0, LinearIsometryEquiv.toContinuousLinearEquiv_toContinuousLinearMap,
+  rw [fderivIntegralCurry0, ← LinearIsometryEquiv.toContinuousLinearMap_toLinearIsometry,
     continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E) C(Icc tmin tmax, E)
       |>.toLinearIsometry.norm_toContinuousLinearMap_comp]
   apply lt_of_le_of_lt _ hsmall
@@ -875,8 +865,7 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
     have hτ' : τ ∈ Icc tmin tmax := uIcc_subset_Icc t₀.2 t.2 (uIoc_subset_uIcc hτ)
     have hmem : compProj t₀ α τ ∈ range α := ⟨⟨τ, hτ'⟩, (compProj_of_mem hτ').symm⟩
     have hdiff := (hf.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds (hα hmem))
-    rw [fderiv_uncurry0_comp hdiff,
-      LinearIsometryEquiv.toContinuousLinearEquiv_toContinuousLinearMap,
+    rw [fderiv_uncurry0_comp hdiff, ← LinearIsometryEquiv.toContinuousLinearMap_toLinearIsometry,
       (continuousMultilinearCurryFin0 ℝ E E).symm.toLinearIsometry.norm_toContinuousLinearMap_comp]
     exact mul_le_mul (hbound _ hmem) (dα.norm_coe_le_norm _) (norm_nonneg _) hC
   · rw [mul_comm _ C, ← mul_assoc, mul_comm _ C]
