@@ -136,8 +136,10 @@ instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
     change (I' ∘ SliceModel.map F I I') x = ((SliceModel.equiv I I') ∘ ((·, 0) : E → E × F) ∘ I) x
     rw [h.compatible]
 
+namespace SliceModel
+
 /-- If `E' ≃ E × F`, then the trivial models with corners of `E` and `E'` form a slice model. -/
-def SliceModel.modelWithCornersSelf (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
+def modelWithCornersSelf (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
   equiv := h
   map := h ∘ (·, (0 : F))
   hmap := by
@@ -149,7 +151,7 @@ def SliceModel.modelWithCornersSelf (h : (E × F) ≃L[𝕜] E') : SliceModel F 
 -- TODO: make an instance/ figure out why Lean complains about synthesisation order!
 /-- If `I` is a slice model w.r.t. `I'` and `I'` is a slice model w.r.t. `I''`,
 then `I` is a slice model w.r.t. `I''`. -/
-def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
+def trans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
   equiv := (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm.trans
     ((h.equiv.prodCongr (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
   map := h'.map ∘ h.map
@@ -174,12 +176,14 @@ def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (
 /-- *Any* model with corners on `E` which is an embedding is a slice model with the trivial model
 on `E`. (The embedding condition excludes strange cases of submanifolds with boundary.)
 For boundaryless models, that is always true. -/
-def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
+def ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
     SliceModel (⊥ : Subspace 𝕜 E) I 𝓘(𝕜, E) where
   equiv := ContinuousLinearEquiv.prodUnique 𝕜 E _
   map := I
   hmap := hI
   compatible := by ext; simp
+
+end SliceModel
 
 -- TODO: prove that I is an embedding if I is boundaryless, then add the corresponding definition
 
