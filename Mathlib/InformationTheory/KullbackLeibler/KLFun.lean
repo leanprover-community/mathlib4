@@ -73,7 +73,9 @@ lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
 
 /-- `klFun` is continuous. -/
 @[continuity, fun_prop]
-lemma continuous_klFun : Continuous klFun := by unfold klFun; fun_prop
+lemma continuous_klFun : Continuous klFun := by
+  -- TODO: why does this fail? fun_prop [klFun]
+  unfold klFun; fun_prop
 
 /-- `klFun` is measurable. -/
 @[fun_prop]

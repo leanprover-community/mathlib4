@@ -1506,7 +1506,7 @@ theorem ContDiff.continuous_deriv_one (h : ContDiff 𝕜 1 f₂) : Continuous (d
 
 @[fun_prop]
 theorem ContDiff.differentiable_deriv_two (h : ContDiff 𝕜 2 f₂) : Differentiable 𝕜 (deriv f₂) := by
-  unfold deriv; fun_prop
+  fun_prop [deriv]
 
 @[fun_prop]
 protected lemma ContDiffAt.derivWithin {x : 𝕜} (H : ContDiffAt 𝕜 n f₂ x) (hmn : m + 1 ≤ n) :
@@ -1515,7 +1515,7 @@ protected lemma ContDiffAt.derivWithin {x : 𝕜} (H : ContDiffAt 𝕜 n f₂ x)
 
 @[fun_prop]
 theorem ContDiff.deriv' (h : ContDiff 𝕜 (n + 1) f₂) : ContDiff 𝕜 n (deriv f₂) := by
-  unfold deriv; fun_prop
+  fun_prop [deriv]
 
 @[fun_prop]
 theorem ContDiff.iterate_deriv :
