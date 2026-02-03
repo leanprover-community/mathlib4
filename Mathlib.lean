@@ -374,6 +374,7 @@ public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Group.Ext
 public import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.Algebra.Group.Fin.Tuple
+public import Mathlib.Algebra.Group.FiniteSupport
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.Algebra.Group.Graph
