@@ -308,20 +308,23 @@ end ClosedSubmodule
 
 namespace ClosedSubmodule
 
-variable (f : M ≃L[R] N) (s : ClosedSubmodule R M)
+variable (f : M ≃L[R] N)
 
 /-- The image of a closed submodule under a continuous linear equivalence is a closed
 submodule. -/
-def mapEquiv : ClosedSubmodule R N where
-  toSubmodule := s.toSubmodule.map f.toLinearMap
-  isClosed' := by
-    simp only [Submodule.carrier_eq_coe, Submodule.map_coe, LinearEquiv.coe_coe,
-      ContinuousLinearEquiv.coe_toLinearEquiv, coe_toSubmodule,
-      ContinuousLinearEquiv.isClosed_image]
-    exact isClosed s
+def mapEquiv : ClosedSubmodule R M ≃ ClosedSubmodule R N where
+  toFun s := ⟨s.toSubmodule.map f.toLinearMap, by simpa using s.isClosed⟩
+  invFun t := ⟨t.toSubmodule.map f.symm.toLinearMap, by simpa using t.isClosed⟩
+  left_inv := by intro _; ext _; simp
+  right_inv := by intro _; ext _; simp
+
+variable (s : ClosedSubmodule R M)
 
 @[simp]
 lemma mapEquiv_apply : (s.mapEquiv f).toSubmodule = s.toSubmodule.map f.toLinearMap := rfl
+
+@[simp]
+lemma mapEquiv_symm : mapEquiv f.symm = (mapEquiv f).symm := rfl
 
 @[simp]
 lemma mem_mapEquiv_iff (x : N) : x ∈ (s.mapEquiv f) ↔ f.symm x ∈ s :=
