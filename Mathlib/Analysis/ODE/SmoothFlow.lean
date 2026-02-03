@@ -866,54 +866,37 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
     gcongr 1
     exact Icc.abs_sub_le t t₀
 
-/-- For `f` that is `C^1` at `x₀`, there exist `a > 0` and `ε > 0` such that for any
-time interval `[tmin, tmax]` of size less than `ε` and any continuous curve `α` with
-`range α ⊆ ball x₀ a`, the operator norm `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`.
-
-We could state this with `∃ u ∈ 𝓝 x₀` instead of `a`, but we will need this `a` in a later proof. -/
-lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
+/-- For `f` that is `C^1` at `x₀`, there exist a neighbourhood `u` of `x₀` and `ε > 0`
+such that for any time interval `[tmin, tmax]` of size less than `ε` and any continuous curve
+`α : [tmin, tmax] → E` with `range α ⊆ u`, the operator norm
+`‖fderivIntegralCurry0 f u t₀ α‖ < 1`. -/
+lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) :
-    ∃ a > 0, ∃ ε > 0, ContDiffOn ℝ 1 f (ball x₀ a) ∧
+    ∃ u ∈ 𝓝 x₀, ∃ ε > 0, ContDiffOn ℝ 1 f u ∧
       ∀ (tmin tmax : ℝ) (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)),
-        range α ⊆ ball x₀ a → |tmax - tmin| < ε →
-          ‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1 := by
-  -- Extract an open neighborhood where f is C^1
-  obtain ⟨u, hu_mem, hfu⟩ := hf.contDiffOn le_rfl nofun
-  obtain ⟨a', ha'pos, ha'u⟩ := Metric.mem_nhds_iff.mp hu_mem
-  -- Restrict to the open ball
-  have hfball : ContDiffOn ℝ 1 f (ball x₀ a') := hfu.mono ha'u
-  -- The derivative is continuous on ball x₀ a'
-  have hfderiv_cont : ContinuousOn (fderiv ℝ f) (ball x₀ a') :=
-    hfball.continuousOn_fderiv_of_isOpen isOpen_ball (le_refl 1)
-  have hx₀ball : x₀ ∈ ball x₀ a' := mem_ball_self ha'pos
-  -- Use continuity at x₀ to get a ball where the derivative is bounded
-  set C := ‖fderiv ℝ f x₀‖ + 1 with hC_def
+        range α ⊆ u → |tmax - tmin| < ε →
+          ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
+  -- Get a neighborhood where f is C^1
+  obtain ⟨s, hs_nhds, hfs⟩ := hf.contDiffOn le_rfl nofun
+  -- Use continuity to find a neighborhood where the derivative is bounded
+  let C := ‖fderiv ℝ f x₀‖ + 1
   have hCpos : 0 < C := by positivity
-  obtain ⟨δ, hδpos, hδbound⟩ := Metric.continuousOn_iff.mp hfderiv_cont x₀ hx₀ball 1 one_pos
-  -- Choose a to be small enough for both conditions
-  set a := min (a' / 2) (δ / 2) with ha_def
-  have hapos : 0 < a := lt_min (by linarith) (by linarith)
-  have ha_lt_a' : a < a' := (min_le_left _ _).trans_lt (by linarith)
-  have ha_lt_δ : a < δ := (min_le_right _ _).trans_lt (by linarith)
-  have hball_sub : ball x₀ a ⊆ ball x₀ a' := ball_subset_ball (le_of_lt ha_lt_a')
-  have hfu' : ContDiffOn ℝ 1 f (ball x₀ a) := hfball.mono hball_sub
-  -- On ball x₀ a, the derivative is bounded by C
-  have hbound : ∀ x ∈ ball x₀ a, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ by
-    have hxball : x ∈ ball x₀ a' := hball_sub hx
-    have hdist : dist x x₀ < δ := (mem_ball.mp hx).trans ha_lt_δ
-    have hnorm_diff : dist (fderiv ℝ f x) (fderiv ℝ f x₀) < 1 := hδbound x hxball hdist
-    have h1 : ‖fderiv ℝ f x‖ ≤ ‖fderiv ℝ f x₀‖ + ‖fderiv ℝ f x - fderiv ℝ f x₀‖ :=
-      norm_le_insert' _ _
-    have h2 : ‖fderiv ℝ f x - fderiv ℝ f x₀‖ < 1 := by rwa [← dist_eq_norm]
-    linarith
+  have hbound_ev : ∀ᶠ x in 𝓝 x₀, ‖fderiv ℝ f x‖ ≤ C :=
+    hf.fderiv_right (m := 0) le_rfl |>.continuousAt.norm.eventually_le_const (by linarith)
+  -- Combine conditions and extract an open neighborhood
+  have h_combined := Filter.eventually_mem_set.mpr hs_nhds |>.and hbound_ev
+  obtain ⟨u, hu_cond, hu_open, hx₀u⟩ := _root_.eventually_nhds_iff.mp h_combined
+  have hu_nhds : u ∈ 𝓝 x₀ := hu_open.mem_nhds hx₀u
+  have hfu : ContDiffOn ℝ 1 f u := hfs.mono fun x hx ↦ (hu_cond x hx).1
   -- Choose ε so that ε * C < 1
   set ε := 1 / (C + 1) with hε_def
   have hεpos : 0 < ε := by positivity
-  refine ⟨a, hapos, ε, hεpos, hfu', ?_⟩
-  intro tmin tmax t₀ α hαball hsmall
-  have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ hbound x (hαball hx)
-  apply opNorm_fderivIntegralCurry0_lt_one hfu' isOpen_ball t₀ hαball hCpos.le hbound'
-  calc |tmax - tmin| * C
+  refine ⟨u, hu_nhds, ε, hεpos, hfu, ?_⟩
+  intro tmin tmax t₀ α hαu hsmall
+  have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ (hu_cond x (hαu hx)).2
+  apply opNorm_fderivIntegralCurry0_lt_one hfu hu_open t₀ hαu hCpos.le hbound'
+  -- TODO: add usable version of `mul_lt_one` for reals
+  calc
     _ < ε * C := mul_lt_mul_of_pos_right hsmall hCpos
     _ = C / (C + 1) := by rw [hε_def]; ring
     _ < 1 := (div_lt_one (by positivity : 0 < C + 1)).mpr (lt_add_one C)
