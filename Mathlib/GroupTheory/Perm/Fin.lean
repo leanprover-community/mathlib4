@@ -9,7 +9,6 @@ public import Mathlib.Data.Fin.Pigeonhole
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Fin.Rotate
-public import Mathlib.Logic.Equiv.Fintype
 
 /-!
 # Permutations of `Fin n`
