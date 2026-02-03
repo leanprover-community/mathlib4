@@ -73,7 +73,7 @@ quantity `∑ p ∈ P.parts, f p`. If `s` is not measurable then it is set to `0
 noncomputable def preVariation (s : Set X) : ℝ≥0∞ :=
   if h : MeasurableSet s then
     ⨆ (P : Finpartition (⟨s, h⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, f p
-    else 0
+  else 0
 
 end
 
