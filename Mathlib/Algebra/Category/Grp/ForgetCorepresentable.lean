@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.Algebra.Category.Grp.Preadditive
 
 /-!
 # The forget functor is corepresentable
@@ -79,3 +80,12 @@ instance AddGrpCat.forget_isCorepresentable :
 instance AddCommGrpCat.forget_isCorepresentable :
     (forget AddCommGrpCat.{u}).IsCorepresentable :=
   Functor.IsCorepresentable.mk' AddCommGrpCat.coyonedaObjIsoForget
+
+theorem uliftZMultiplesHom.add (G : Type u) [AddCommGroup G] (x y : G) :
+    (uliftZMultiplesHom G) (x + y) = ((uliftZMultiplesHom G) x) + ((uliftZMultiplesHom G) y) := by
+  ext ; simp_all only [uliftZMultiplesHom_apply_apply, smul_add, AddMonoidHom.add_apply]
+
+/-- The additive equivalence `(ℤ ⟶ G) ≃+ G` -/
+def AddCommGrpCat.uliftZMultiplesAddEquiv (G : AddCommGrpCat) : (of (ULift ℤ) ⟶ G) ≃+ ↑G :=
+  AddEquiv.trans (@AddCommGrpCat.homAddEquiv (AddCommGrpCat.of (ULift ℤ)) G)
+    (AddEquiv.mk' (uliftZMultiplesHom G) (uliftZMultiplesHom.add G)).symm
