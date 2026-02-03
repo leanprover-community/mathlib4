@@ -1,8 +1,21 @@
-### NB: This is the master file for autogenerating
-### NB: `.github/workflows/{bors, build_fork, build}.yml`.
-### NB: If you need to edit any of those files, you should edit this file instead,
-### NB: and regenerate those files by manually running
-### NB: .github/workflows/mk_build_yml.sh
+# Reusable workflow invoked by build.yml, bors.yml, and build_fork.yml.
+
+on:
+  workflow_call:
+    inputs:
+      concurrency_group:
+        type: string
+        required: true
+      pr_branch_ref:
+        type: string
+        required: true
+      job_name_suffix:
+        type: string
+        required: false
+        default: ""
+      runs_on:
+        type: string
+        required: true
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -12,24 +25,10 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
 
-concurrency:
-  # label each workflow run; only the latest with each label will run
-  # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
-  # cancel any running workflow with the same label
-  cancel-in-progress: true
-
-# Limit permissions for GITHUB_TOKEN for the entire workflow
-permissions:
-  contents: read
-  pull-requests: write  # Only allow PR comments/labels
-  # All other permissions are implicitly 'none'
-
 jobs:
   build:
-    if: FORK_CONDITION
-    name: BuildJOB_NAME
-    runs-on: RUNS_ON
+    name: Build${{ inputs.job_name_suffix }}
+    runs-on: ${{ inputs.runs_on }}
     outputs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
@@ -51,7 +50,7 @@ jobs:
           REF: ${{ github.ref }}
           EVENT_NAME: ${{ github.event_name }}
           RUN_ID: ${{ github.run_id }}
-          CONCURRENCY_GROUP: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
+          CONCURRENCY_GROUP: ${{ inputs.concurrency_group }}
         shell: bash # there is no script body, so this is safe to "run" outside landrun.
         run: |
           # We just populate the env vars for this step to make them viewable in the logs
@@ -78,7 +77,7 @@ jobs:
 
       # Checkout the master branch into a subdirectory
       - name: Checkout master branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
@@ -88,9 +87,9 @@ jobs:
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: "${{ PR_BRANCH_REF }}"
+          ref: ${{ inputs.pr_branch_ref }}
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
@@ -591,18 +590,17 @@ jobs:
           master-branch/scripts/lean-pr-testing-comments.sh batteries
 
   post_steps:
-    name: Post-Build StepJOB_NAME
-    if: FORK_CONDITION
+    name: Post-Build Step${{ inputs.job_name_suffix }}
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: "${{ PR_BRANCH_REF }}"
+          ref: ${{ inputs.pr_branch_ref }}
 
       - name: Configure Lean
-        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
@@ -671,19 +669,17 @@ jobs:
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.
   style_lint:
-    name: Lint styleJOB_NAME
-    if: FORK_CONDITION
+    name: Lint style${{ inputs.job_name_suffix }}
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
           mode: check
           lint-bib-file: true
-          ref: ${{ PR_BRANCH_REF }}
+          ref: ${{ inputs.pr_branch_ref }}
 
   final:
-    name: Post-CI jobJOB_NAME
-    if: FORK_CONDITION
+    name: Post-CI job${{ inputs.job_name_suffix }}
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
