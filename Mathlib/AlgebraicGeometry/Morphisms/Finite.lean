@@ -37,7 +37,9 @@ the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
 class IsFinite {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
-  finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+  finite_app (f) (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+
+alias Scheme.Hom.finite_app := IsFinite.finite_app
 
 namespace IsFinite
 

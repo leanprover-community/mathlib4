@@ -257,9 +257,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
         grind [leadingCoeff_mul, leadingCoeff_X_sub_C]
       suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
-      rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
-      grind [leadingCoeff, nextCoeff_of_natDegree_pos, eq_of_sub_eq_zero,
-        coeff_X_sub_C_mul]
+      grind [leadingCoeff, nextCoeff_of_natDegree_pos, eq_of_sub_eq_zero, coeff_X_sub_C_mul]
     · suffices ((X - C η) * P).eraseLead.eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := leadingCoeff_cons_eraseLead h₉
         have := coeffList_eraseLead (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₉)

@@ -28,7 +28,7 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
   locally Artinian if and only if it is LocallyNoetherian and it has the discrete topology.
 
 * `AlgebraicGeometry.IsArtinianScheme.iff_isNoetherian_and_discreteTopology`: A scheme is Artinian
-  if andonly if it is Noetherian and has the discrete topology.
+  if and only if it is Noetherian and has the discrete topology.
 
 * `AlgebraicGeometry.IsArtinianScheme.finite`: An Artinian scheme is finite.
 
@@ -108,7 +108,7 @@ alias IsLocallyArtinian.discreteTopology_of_isAffine := IsLocallyArtinian.discre
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
-  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_,_⟩ ↦ .of_isLocallyNoetherian_of_discreteTopology⟩
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ .of_isLocallyNoetherian_of_discreteTopology⟩
 
 -- This can be extended to locally quasi-finite morphisms.
 theorem IsLocallyArtinian.of_isImmersion [IsImmersion f] [IsLocallyArtinian Y] :
