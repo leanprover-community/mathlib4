@@ -17,21 +17,6 @@ public import Mathlib.Analysis.Calculus.ImplicitContDiff
 open Function intervalIntegral MeasureTheory Metric Set ContinuousMultilinearMap
 open scoped Nat NNReal Topology
 
-/-- `f` maps `univ` into `t` if and only if the range of `f` is contained in `t`. -/
--- TODO: move somewhere
-lemma Set.mapsTo_univ_iff_range_subset {α : Type*} {β : Type*} {t : Set β} {f : α → β} :
-    MapsTo f univ t ↔ range f ⊆ t :=
-  mapsTo_univ_iff.trans range_subset_iff.symm
-
-/-- The set of continuous maps whose range is contained in an open set is open,
-provided the domain is compact. -/
--- TODO: move to Mathlib/Topology/CompactOpen.lean
-theorem ContinuousMap.isOpen_setOf_range_subset {X : Type*} {Y : Type*} [TopologicalSpace X]
-    [CompactSpace X] [TopologicalSpace Y] {U : Set Y} (hU : IsOpen U) :
-    IsOpen {f : C(X, Y) | range f ⊆ U} := by
-  simp_rw [← mapsTo_univ_iff_range_subset]
-  exact ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hU
-
 /-- The distance between two points in `Icc tmin tmax` is at most `|tmax - tmin|`. -/
 -- TODO: move somewhere
 lemma _root_.Set.Icc.abs_sub_le {tmin tmax : ℝ} (t t₀ : Icc tmin tmax) :
