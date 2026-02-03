@@ -836,16 +836,15 @@ theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=
   ⟨embeddingOfSubset _ _ h⟩
 
-lemma card_lt_card_of_right_lt_aleph0 {A B : Set α} (hfin : #B < ℵ₀) (hlt : A ⊂ B) : #A < #B := by
-  have : #A ≤ #B := mk_subtype_mono hlt.1
-  have : Fintype A := ((lt_aleph0_iff_fintype).1 <| this.trans_lt hfin).some
-  have : Fintype B := ((lt_aleph0_iff_fintype).1 hfin).some
+lemma card_lt_card_of_right_lt_aleph0 {A B : Set α} (hfin : B.Finite) (hlt : A ⊂ B) : #A < #B := by
+  have : Fintype A := (hfin.subset hlt.subset).fintype
+  have : Fintype B := hfin.fintype
   simpa using Finset.card_lt_card <| Set.toFinset_ssubset_toFinset.mpr hlt
 
-lemma card_lt_card_of_left_lt_aleph0 {A B : Set α} (hfin : #A < ℵ₀) (hlt : A ⊂ B) : #A < #B := by
-  rcases lt_or_ge #B ℵ₀ with hfin | hinf
+lemma card_lt_card_of_left_lt_aleph0 {A B : Set α} (hfin : A.Finite) (hlt : A ⊂ B) : #A < #B := by
+  rcases finite_or_infinite B with hfin | hinf
   · exact card_lt_card_of_right_lt_aleph0 hfin hlt
-  · exact hfin.trans_le hinf
+  · exact (lt_aleph0_iff_subtype_finite.mpr hfin).trans_le <| Cardinal.aleph0_le_mk_iff.mpr hinf
 
 theorem le_mk_diff_add_mk (S T : Set α) : #S ≤ #(S \ T : Set α) + #T :=
   (mk_le_mk_of_subset <| subset_diff_union _ _).trans <| mk_union_le _ _
