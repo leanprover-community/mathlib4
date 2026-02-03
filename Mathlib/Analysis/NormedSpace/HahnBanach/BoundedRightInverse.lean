@@ -80,7 +80,7 @@ lemma prodMap {g : E' →L[𝕜] F'} (hf : f.HasBoundedRightInverse) (hg : g.Has
     (f.prodMap g).HasBoundedRightInverse := by
   sorry -- left for Samantha
 
--- Th next results may or may not require additional completeness hypotheses.
+-- The next results may or may not require additional completeness hypotheses.
 lemma comp {g : F →L[𝕜] G} (hg : g.HasBoundedRightInverse) (hf : f.HasBoundedRightInverse) :
     (g.comp f).HasBoundedRightInverse := by
   sorry
