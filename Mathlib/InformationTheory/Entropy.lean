@@ -1,16 +1,11 @@
 /-
-Copyright (c) 2022 Wrenna Robson. All rights reserved.
+Copyright (c) 2026 Semar Augusto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wrenna Robson
+Authors: Semar Augusto
 -/
 module
 
-/- public import Mathlib.Topology.Instances.ENNReal.Lemmas -/
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
-public import Mathlib.Probability.ProbabilityMassFunction.Constructions
-public import Mathlib.Probability.ProbabilityMassFunction.Monad
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
 public import Mathlib.Probability.Distributions.Uniform
@@ -23,22 +18,15 @@ as probability mass functions (PMFs).
 
 ## Main Definitions
 
-* `entropy p`: The Shannon entropy (in nats) of a PMF `p`, defined as
-  `∑' a, - (p a).toReal * log ((p a).toReal)`
+* `entropy p`: the Shannon entropy (in nats) of a PMF `p`,
+  `∑' a, Real.negMulLog (ENNReal.toReal (p a))`.
 
 ## Main Results
 
 * `entropy_nonneg`: Entropy is nonnegative
 * `entropy_eq_zero_iff`: Entropy is zero if and only if the distribution is deterministic
-* `entropy_pure`: Entropy of a deterministic distribution is zero
 * `entropy_bernoulli_eq_binEntropy`: Connection to binary entropy function
-* `entropy_uniform`: Entropy of uniform distribution on n elements equals `log n`
-
-## Examples
-
-* Uniform distribution on `{0, 1}` has entropy `log 2`
-* Bernoulli distribution with `p = 1/2` has entropy `log 2`
-* Deterministic distributions have entropy `0`
+* `entropy_uniformOfFinset`: Entropy of uniform distribution on n elements equals `log n`
 
 ## Tags
 
@@ -65,14 +53,6 @@ is over all possible outcomes and we use the convention `0 · log(0) = 0`. -/
 noncomputable def entropy (p : PMF α) : ℝ :=
   ∑' a : α, Real.negMulLog (ENNReal.toReal (p a))
 
-@[simp] lemma entropy_def (p : PMF α) :
-    entropy p = ∑' a : α, Real.negMulLog (ENNReal.toReal (p a)) := by simp only [entropy]
-
-/-- Entropy computed over a finset (useful for finite distributions). -/
-@[pp_nodot] noncomputable def entropyFinset [DecidableEq α]
-    (s : Finset α) (p : α → ℝ) : ℝ :=
-  ∑ a ∈ s, Real.negMulLog (p a)
-
 /-! ### Basic Properties -/
 
 /-- Entropy of a deterministic distribution (pure) is zero. -/
@@ -93,6 +73,18 @@ noncomputable def entropy (p : PMF α) : ℝ :=
   exact ENNReal.toReal_le_of_le_ofReal (by simp) (by
       simpa only [ENNReal.ofReal_one] using (PMF.coe_le_one p a))
 
+/-!
+### Helper lemmas for `entropy_eq_zero_iff`
+
+The proof that entropy is strictly positive for a non-pure distribution proceeds by extracting two
+distinct elements of the support, showing both summands are strictly positive, 
+and then comparing the full sum to a partial sum that includes at least one of those positive terms.
+
+The following helper lemmas isolate the fiddly support / `toReal` / `tsum` plumbing so that the main
+proof reads at a higher level.
+-/
+
+/-- If a PMF is not pure, then its support contains at least two points. -/
 private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p = PMF.pure a) :
     Set.Nontrivial p.support := by
   obtain ⟨a0, ha0⟩ := p.support_nonempty
@@ -107,6 +99,7 @@ private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p 
       simpa [this] using (p.apply_eq_zero_iff x).mpr (by simp [heq, hx])
   exact h ⟨a0, this⟩
 
+/-- If `x ∈ support p` and `p` is not pure, then `(p x).toReal < 1`. -/
 private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx : x ∈ p.support)
     (h : ¬ ∃ a : α, p = PMF.pure a) : (p x).toReal < 1 := by
   by_contra h_not
@@ -125,16 +118,21 @@ private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx
       simpa [this] using (p.apply_eq_zero_iff y).mpr (by simp [hsupp, hy])
   exact h ⟨x, hpure⟩
 
+/-- A pointwise nonnegativity lemma for the “remove one term from the entropy sum” trick. -/
 private lemma negMulLog_ite_nonneg (p : PMF α) (a b : α) [DecidableEq α] :
     0 ≤ (if b = a then 0 else Real.negMulLog ((p b).toReal)) := by
   by_cases hb : b = a
   · simpa only [hb, ite_true] using le_rfl
+    -- `negMulLog` is nonnegative on `[0,1]`.
   · simpa only [hb, ite_false] using Real.negMulLog_nonneg ENNReal.toReal_nonneg (by
       have hpb : p b ≤ (1 : ENNReal) := PMF.coe_le_one p b
       exact ENNReal.toReal_le_of_le_ofReal (by simp only [zero_le_one]) (
         by simpa only [ENNReal.ofReal_one] using hpb)
       )
 
+/-- A one-term lower bound on the “rest” of the entropy sum.
+This is used to compare the total entropy to the sum with one index removed, ensuring a positive
+contribution remains when the support has at least two points. -/
 private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a' : α) (ha' : a' ≠ a) :
     Real.negMulLog ((p a').toReal) ≤
       ∑' b : α, if b = a then 0 else Real.negMulLog ((p b).toReal) := by
@@ -145,6 +143,7 @@ private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a
   have hle := Summable.le_tsum h_rest_summable a' h_nonneg'
   simpa [ha'] using hle
 
+/-- Entropy is zero iff the distribution is deterministic (`PMF.pure`). -/
 lemma entropy_eq_zero_iff (p : PMF α) [Finite α] :
   entropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by
   classical
@@ -170,6 +169,7 @@ lemma entropy_eq_zero_iff (p : PMF α) [Finite α] :
   · rintro ⟨a, rfl⟩
     simp only [entropy_pure]
 
+/-- If a PMF is not pure, then its entropy is strictly positive. -/
 lemma entropy_pos_of_not_pure (p : PMF α) [Finite α]
     (hp : ¬ ∃ a : α, p = PMF.pure a) :
     0 < entropy p := by
@@ -181,42 +181,20 @@ lemma entropy_pos_of_not_pure (p : PMF α) [Finite α]
   exact lt_of_le_of_ne hnonneg (by simpa [eq_comm] using hne)
 
 /-! ### Connection to Binary Entropy -/
-/-- The entropy of a Bernoulli PMF equals the binary entropy function.
-This connects the general entropy definition with the specialized binary entropy
-function defined in `Mathlib.Analysis.SpecialFunctions.BinaryEntropy`. -/
+
+/-- The entropy of a Bernoulli PMF equals the binary entropy function. -/
 theorem entropy_bernoulli_eq_binEntropy (p : ℝ≥0) (h : p ≤ 1) :
     entropy (PMF.bernoulli p h) = Real.binEntropy (p : ℝ) := by
   simp only [entropy, PMF.bernoulli_apply]
   simp_all [Real.binEntropy_eq_negMulLog_add_negMulLog_one_sub, ENNReal.toReal]
 
-/-- Entropy of uniform distribution on two elements equals `log 2`. -/
-example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ) = Real.log 2 := by
-  classical
-  simp only [entropy, PMF.uniformOfFinset]
-  -- We compute: - (1/2) * log(1/2) - (1/2) * log(1/2) = - log(1/2) = log 2
-  have h1 : Real.negMulLog ((2⁻¹ : ENNReal).toReal) = Real.log 2 / 2 := by
-    simp only [Real.negMulLog, ENNReal.toReal_inv, ENNReal.toReal_ofNat,
-               Real.log_inv, mul_neg, neg_mul, neg_neg]
-    ring_nf
-  have h2 : (fun a : ℕ =>
-      Real.negMulLog (ENNReal.toReal (if a = 0 ∨ a = 1 then (2⁻¹ : ENNReal) else 0)))
-      = (fun a : ℕ => (if a = 0 then Real.log 2 / 2 else 0) +
-                      (if a = 1 then Real.log 2 / 2 else 0)) := by
-    funext a
-    aesop
-  simp [h2]
-  have hsumm1 : HasSum (fun (n : ℕ) => (if n = 0 then Real.log 2 / 2 else 0)) (Real.log 2 / 2) := by
-    apply hasSum_ite_eq 0
-  have hsumm2 : HasSum (fun (n : ℕ) => (if n = 1 then Real.log 2 / 2 else 0)) (Real.log 2 / 2) := by
-    apply hasSum_ite_eq 1
-  simp only [Summable.tsum_add (HasSum.summable hsumm1) (HasSum.summable hsumm2),
-             tsum_ite_eq, add_halves]
+/-! ### Uniform distributions -/
 
+/-- A helper identity used to compute entropy of the uniform distribution. -/
 lemma nat_mul_negMulLog_inv_eq_log (n : ℕ) (hn : 0 < n) :
     (n : ℝ) * Real.negMulLog (((n : ENNReal)⁻¹).toReal) = Real.log n := by
   -- set up positivity / nonzero facts for coercions
   have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hn)
-  have hn_pos : 0 < (n : ℝ) := by exact_mod_cast hn
   have htoReal : (((n : ENNReal)⁻¹).toReal) = (n : ℝ)⁻¹ := by
     simp only [ENNReal.toReal_inv, ENNReal.toReal_natCast]
   calc
@@ -231,6 +209,23 @@ lemma nat_mul_negMulLog_inv_eq_log (n : ℕ) (hn : 0 < n) :
     _ = Real.log n := by
           simp [htoReal, Real.log_inv]
 
+#check PMF.uniformOfFintype_apply
+#check PMF.uniformOfFintype
+
+/-- Entropy of the uniform distribution on a finite nonempty type is `log (card α)`. -/
+lemma entropy_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
+    entropy (PMF.uniformOfFintype α) = Real.log (Fintype.card α) := by
+  classical
+  -- unfold entropy and use that the summand is constant
+  simp [entropy, PMF.uniformOfFintype_apply, tsum_fintype, Finset.sum_const, nsmul_eq_mul]
+  -- goal is now `card * negMulLog(1/card) = log card`
+  simpa using nat_mul_negMulLog_inv_eq_log (Fintype.card α) (Fintype.card_pos)
+
+
+/-- Entropy of the uniform distribution on a nonempty finset is `log (card s)`.
+
+This works over an arbitrary type `α` (possibly infinite), because the uniform distribution on a
+finset has finite support. -/
 lemma entropy_uniformOfFinset
     (s : Finset α) (hs : s.Nonempty) :
     entropy (PMF.uniformOfFinset s hs : PMF α) = Real.log s.card := by
@@ -243,7 +238,7 @@ lemma entropy_uniformOfFinset
     intro a ha
     simp [f, p, PMF.uniformOfFinset, ha]
   -- unfold entropy and use htsum
-  simp only [entropy_def, f, htsum]
+  simp only [entropy, f, htsum]
   have hcard : 0 < s.card := hs.card_pos
   calc
     ∑ a ∈ s, Real.negMulLog (ENNReal.toReal (p a))
@@ -260,12 +255,19 @@ lemma entropy_uniformOfFinset
       have h := nat_mul_negMulLog_inv_eq_log s.card hcard
       simpa only [ENNReal.toReal_inv, ENNReal.toReal_natCast] using h
 
+/-! ### Examples -/
+
 /-- Entropy of a deterministic distribution is zero. -/
 example : entropy (PMF.pure ()) = 0 := by simp only [entropy_pure]
 
 /-- Entropy of another deterministic distribution is zero. -/
 example : entropy (PMF.pure true) = 0 := by simp only [entropy_pure]
 
+/-- Entropy of the uniform distribution on `{0,1, ..., n}` is `log n`. -/
+example (n : ℕ) [NeZero n] : entropy (PMF.uniformOfFintype (Fin n)) = Real.log n := by
+  simpa using (entropy_uniformOfFintype (α := Fin n))
+
+/-- Entropy of the uniform distribution on `{0,1}` is `log 2`. -/
 example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ) = Real.log 2 := by
   simpa using
     (entropy_uniformOfFinset (α := ℕ) ({0, 1} : Finset ℕ) (by simp))
