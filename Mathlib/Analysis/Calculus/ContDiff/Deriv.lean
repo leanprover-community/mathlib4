@@ -10,9 +10,9 @@ public import Mathlib.Analysis.Calculus.ContDiff.Comp
 /-!
 # Higher differentiability in one dimension
 
-All results up to now have been expressed in terms of the general Fréchet derivative `fderiv`. For
-maps defined on the field, the one-dimensional derivative `deriv` is often easier to use. In this
-paragraph, we reformulate some higher smoothness results in terms of `deriv`.
+The general theory of higher derivatives in Mathlib is developed using the Fréchet derivative
+`fderiv`; but for maps defined on the field, the one-dimensional derivative `deriv` is often easier
+to use. In this file, we reformulate some higher smoothness results in terms of `deriv`.
 
 ## Tags
 

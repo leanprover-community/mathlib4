@@ -19,26 +19,18 @@ constants, products, composition with linear maps, etc.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public section
-
-noncomputable section
-
-open scoped NNReal Nat ContDiff
-
-universe u uE uF uG
-
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
+public noncomputable section
 
 open Set Fin Filter Function
 
-open scoped Topology
+open scoped Topology ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
-  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
+attribute [local instance 1001] NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
+
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {s t : Set E} {f : E → F} {x : E} {b : E × F → G} {m n : WithTop ℕ∞}
+  {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
 section constants
