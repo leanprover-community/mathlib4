@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.Kaehler.TensorProduct
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Smooth.Local
-public import Mathlib.RingTheory.Smooth.Locus
+public import Mathlib.RingTheory.Etale.Locus
 
 /-!
 
@@ -187,26 +187,30 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
 
 end IsLocalRing
 
-lemma mem_smoothLocus_of_formallySmooth_fiber
-    [Algebra.FinitePresentation R S] (p : Ideal R) (q : PrimeSpectrum S)
-    [p.IsPrime] [q.asIdeal.LiesOver p] [FormallySmooth p.ResidueField (p.Fiber S)] :
-    q ∈ smoothLocus R S := by
+-- It is not hard to generalize the proof to get the full generality of the stacks tag.
+-- The hard part is figuring out the right way to state the result. Hence we refrain from this
+-- generalization until we have an application.
+@[stacks 00TF "We require the whole fiber to be smooth instead"]
+lemma IsSmoothAt.of_formallySmooth_fiber
+    [Algebra.FinitePresentation R S] (p : Ideal R) (q : Ideal S)
+    [p.IsPrime] [q.IsPrime] [q.LiesOver p] [FormallySmooth p.ResidueField (p.Fiber S)] :
+    Algebra.IsSmoothAt R q := by
   let Rp := Localization.AtPrime p
   let Sp := Localization (algebraMapSubmonoid S p.primeCompl)
-  let Sq := Localization.AtPrime q.asIdeal
+  let Sq := Localization.AtPrime q
   let f : Sp →ₐ[S] Sq := IsLocalization.liftAlgHom (M := algebraMapSubmonoid S p.primeCompl)
         (f := Algebra.ofId _ _) (by
       rintro ⟨_, x, hx, rfl⟩
-      simpa using IsLocalization.map_units (M := q.asIdeal.primeCompl) Sq ⟨algebraMap _ _ x,
-        by simp_all [q.asIdeal.over_def p]⟩)
+      simpa using IsLocalization.map_units (M := q.primeCompl) Sq ⟨algebraMap _ _ x,
+        by simp_all [q.over_def p]⟩)
   algebraize [f.toRingHom]
   have : IsScalarTower R Sp Sq := .to₁₃₄ _ S _ _
   have : IsScalarTower Rp Sp Sq := .of_algebraMap_eq' <| by
     apply IsLocalization.ringHom_ext p.primeCompl
     simp only [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq]
-  have : IsLocalization (algebraMapSubmonoid Sp q.asIdeal.primeCompl) Sq :=
+  have : IsLocalization (algebraMapSubmonoid Sp q.primeCompl) Sq :=
     .isLocalization_of_submonoid_le _ _ (algebraMapSubmonoid S p.primeCompl) _
-    (by rintro _ ⟨x, hx, rfl⟩; simp_all [q.asIdeal.over_def p])
+    (by rintro _ ⟨x, hx, rfl⟩; simp_all [q.over_def p])
   have : FinitePresentation Rp Sp := by
     have : Algebra.IsPushout R Rp S Sp :=
       .symm <| Algebra.isPushout_of_isLocalization p.primeCompl _ _ _
@@ -228,20 +232,30 @@ lemma mem_smoothLocus_of_formallySmooth_fiber
       { __ := e', commutes' r := congr($this r) }
     exact .of_equiv e''
   have := FormallySmooth.of_formallySmooth_residueField_tensor
-    (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.asIdeal.primeCompl)
+    (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.primeCompl)
   exact .comp R Rp Sq
 
 lemma Smooth.of_formallySmooth_fiber [Algebra.FinitePresentation R S]
     (H : ∀ (I : Ideal R) [I.IsPrime], FormallySmooth I.ResidueField (I.Fiber S)) :
     Algebra.Smooth R S := by
   refine ⟨smoothLocus_eq_univ_iff.mp (Set.eq_univ_iff_forall.mpr fun q ↦ ?_), ‹_›⟩
-  exact Algebra.mem_smoothLocus_of_formallySmooth_fiber (q.asIdeal.under R) _
+  exact .of_formallySmooth_fiber (q.asIdeal.under R) _
 
 attribute [local instance] FormallyEtale.of_formallyUnramified_of_field in
+@[stacks 08WD "(3) => (1)"]
 lemma Etale.of_formallyUnramified_of_flat {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.FinitePresentation R S] [Module.Flat R S] [FormallyUnramified R S] :
     Etale R S :=
   have : Smooth R S := .of_formallySmooth_fiber inferInstance
   ⟨⟨inferInstance, inferInstance⟩, ‹_›⟩
+
+lemma IsEtaleAt.of_isUnramifiedAt_of_flat
+    [Algebra.FinitePresentation R S] (q : Ideal S) [q.IsPrime] [IsUnramifiedAt R q] :
+    IsEtaleAt R q := by
+  obtain ⟨f, hfp, H⟩ := exists_unramified_of_isUnramifiedAt (R := R) q
+  change ⟨q, ‹_›⟩ ∈ etaleLocus R S
+  suffices Algebra.Etale R (Localization.Away f) from
+    (basicOpen_subset_etaleLocus_iff (R := R) (f := f)).mpr inferInstance hfp
+  exact .of_formallyUnramified_of_flat
 
 end Algebra
