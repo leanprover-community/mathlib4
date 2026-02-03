@@ -62,51 +62,51 @@ variable [Preorder α] [Preorder β]
 def Monotone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f a ≤ f b
 
-to_dual_insert_cast Monotone := by grind
+to_dual_insert_cast Monotone := forall_comm.eq
 
 /-- A function `f` is antitone if `a ≤ b` implies `f b ≤ f a`. -/
 def Antitone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f b ≤ f a
 
-to_dual_insert_cast Antitone := by grind
+to_dual_insert_cast Antitone := forall_comm.eq
 
 /-- A function `f` is monotone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f a ≤ f b`. -/
 def MonotoneOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a ≤ b → f a ≤ f b
 
-to_dual_insert_cast MonotoneOn := by grind
+to_dual_insert_cast MonotoneOn := by grind only
 
 /-- A function `f` is antitone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f b ≤ f a`. -/
 def AntitoneOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a ≤ b → f b ≤ f a
 
-to_dual_insert_cast AntitoneOn := by grind
+to_dual_insert_cast AntitoneOn := by grind only
 
 /-- A function `f` is strictly monotone if `a < b` implies `f a < f b`. -/
 def StrictMono (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f a < f b
 
-to_dual_insert_cast StrictMono := by grind
+to_dual_insert_cast StrictMono := forall_comm.eq
 
 /-- A function `f` is strictly antitone if `a < b` implies `f b < f a`. -/
 def StrictAnti (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f b < f a
 
-to_dual_insert_cast StrictAnti := by grind
+to_dual_insert_cast StrictAnti := forall_comm.eq
 
 /-- A function `f` is strictly monotone on `s` if, for all `a, b ∈ s`, `a < b` implies
 `f a < f b`. -/
 def StrictMonoOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f a < f b
 
-to_dual_insert_cast StrictMonoOn := by grind
+to_dual_insert_cast StrictMonoOn := by grind only
 
 /-- A function `f` is strictly antitone on `s` if, for all `a, b ∈ s`, `a < b` implies
 `f b < f a`. -/
 def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b < f a
 
-to_dual_insert_cast StrictAntiOn := by grind
+to_dual_insert_cast StrictAntiOn := by grind only
 
 end MonotoneDef
 
