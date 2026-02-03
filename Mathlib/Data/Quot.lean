@@ -426,6 +426,42 @@ theorem Quotient.choice_eq {ι : Type*} {α : ι → Type*} {S : ∀ i, Setoid (
     (Quotient.choice (S := S) fun i ↦ ⟦f i⟧) = ⟦f⟧ :=
   Quotient.sound fun _ ↦ Quotient.mk_out _
 
+/-- The computable (but unsafe) implementation of `Quotient.countableChoice`. -/
+unsafe def Quotient.countableChoice_impl {α : Nat → Type*} {S : ∀ i, Setoid (α i)}
+    (f : ∀ i, Quotient (S i)) :
+    @Quotient (∀ i, α i) (by infer_instance) :=
+  ⟦fun i ↦ (f i).unquot⟧
+  -- NOTE: safer (but slower) equivalent implementation
+  -- Quotient.lift₂
+  --   (fun z s ↦ ⟦fun | .zero => z | .succ n => s n⟧)
+  --   (fun z₁ s₁ z₂ s₂ h₁ h₂ ↦ by
+  --     apply sound
+  --     rintro ⟨_|n⟩
+  --     · apply h₁
+  --     · apply h₂)
+  --   (f 0)
+  --   (countableChoice_impl (fun n ↦ f n.succ))
+
+/-- Given a function `f : Π i : ℕ, Quotient (S i)`, returns the class of functions `Π i, α i`
+sending each `i` to an element of the class `f i`. Unlike `Quotient.choice`, this function is
+computable. -/
+@[implemented_by Quotient.countableChoice_impl]
+def Quotient.countableChoice {α : Nat → Type*} {S : ∀ i, Setoid (α i)}
+    (f : ∀ i, Quotient (S i)) :
+    @Quotient (∀ i, α i) (by infer_instance) :=
+  Quotient.choice f
+
+@[simp]
+theorem Quotient.countableChoice_eq {α : Nat → Type*} {S : ∀ i, Setoid (α i)} (f : ∀ i, α i) :
+    (Quotient.countableChoice (S := S) fun i ↦ ⟦f i⟧) = ⟦f⟧ :=
+  Quotient.choice_eq f
+
+@[simp]
+theorem Quotient.eval_countableChoice
+    {α : Nat → Type*} {S : ∀ i, Setoid (α i)} (f : ∀ i, Quotient (S i)) {i} :
+    (Quotient.countableChoice (S := S) f).eval i = f i := by
+  simp only [eval, countableChoice, choice, map_mk, out_eq]
+
 @[elab_as_elim]
 theorem Quotient.induction_on_pi {ι : Type*} {α : ι → Sort*} {s : ∀ i, Setoid (α i)}
     {p : (∀ i, Quotient (s i)) → Prop} (f : ∀ i, Quotient (s i))
@@ -555,6 +591,34 @@ protected theorem nonempty (q : Trunc α) : Nonempty α :=
   q.exists_rep.nonempty
 
 end Trunc
+
+def Quotient.dependentChoiceExists
+    {α : Sort*} {s : Setoid α} (f : α → Quotient s) (init : α)
+    : Nonempty (Trunc { seq : Nat → α //
+        seq 0 = init ∧
+        ∀ n, f (seq n) = Quotient.mk s (seq (n + 1)) }) := by
+  constructor
+  apply Trunc.mk
+  use Nat.rec init (fun _ x ↦ (f x).out)
+  simp only [Quotient.out_eq, implies_true, and_true]
+  rfl
+
+attribute [local instance] Quotient.dependentChoiceExists in
+partial def Quotient.dependentChoice {α : Sort*} {s : Setoid α} (f : α → Quotient s) (init : α) :
+    Trunc { seq : Nat → α // seq 0 = init ∧ ∀ n, f (seq n) = Quotient.mk s (seq (n + 1)) } :=
+  Quotient.recOnSubsingleton (motive := fun a ↦ a = f init → _) (f init) (fun a h ↦
+  Quotient.recOnSubsingleton (Quotient.dependentChoice f a) (fun s ↦
+    ⟦{
+      val
+        | 0 => init
+        | n + 1 => s.val n
+      property := by
+        simp only [true_and]
+        intro n
+        cases n
+        · simp only [s.property.1, h]
+        · simp only [s.property.2]
+    }⟧)) rfl
 
 /-! ### `Quotient` with implicit `Setoid` -/
 
