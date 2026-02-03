@@ -16,8 +16,10 @@ public import Mathlib.Data.Bracket
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-/-- The commutator of two elements `g₁` and `g₂`. -/
-@[to_additive /-- The additive commutator of two elements `g₁` and `g₂`. -/]
+/-- The commutator of two elements `g₁` and `g₂`. This is a scoped instance in the
+`commutatorElement` namespace to avoid clashing with other brackets. -/
+@[to_additive /-- The additive commutator of two elements `g₁` and `g₂`. This is a scoped instance
+in the `commutatorElement` namespace to avoid clashing with other brackets -/]
 def commutatorElement {G : Type*} [Group G] : Bracket G G :=
   ⟨fun g₁ g₂ ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹⟩
 
