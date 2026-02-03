@@ -77,7 +77,7 @@ noncomputable def entropy (p : PMF α) : ℝ :=
 ### Helper lemmas for `entropy_eq_zero_iff`
 
 The proof that entropy is strictly positive for a non-pure distribution proceeds by extracting two
-distinct elements of the support, showing both summands are strictly positive, 
+distinct elements of the support, showing both summands are strictly positive,
 and then comparing the full sum to a partial sum that includes at least one of those positive terms.
 
 The following helper lemmas isolate the fiddly support / `toReal` / `tsum` plumbing so that the main
@@ -93,7 +93,7 @@ private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p 
   have h1 : p a0 = 1 := (p.apply_eq_one_iff a0).2 heq
   have : p = PMF.pure a0 := PMF.ext fun x => by
     by_cases hx : x = a0
-    · subst hx; 
+    · subst hx;
       simpa only [PMF.pure_apply, ↓reduceIte] using h1
     · have : (PMF.pure a0) x = 0 := by simp only [PMF.pure_apply, if_neg hx]
       simpa [this] using (p.apply_eq_zero_iff x).mpr (by simp [heq, hx])
@@ -112,7 +112,7 @@ private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx
   have hsupp : p.support = {x} := (p.apply_eq_one_iff x).1 hx_eq_one
   have hpure : p = PMF.pure x := PMF.ext fun y => by
     by_cases hy : y = x
-    · subst hy; 
+    · subst hy;
       simpa only [PMF.pure_apply, ↓reduceIte] using hx_eq_one
     · have : (PMF.pure x) y = 0 := by simp only [PMF.pure_apply, if_neg hy]
       simpa [this] using (p.apply_eq_zero_iff y).mpr (by simp [hsupp, hy])
