@@ -487,7 +487,7 @@ and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (pos
 Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
 subtrees to a new root node. -/
 def toTree (p : DyckWord) : Tree Unit :=
-  if p = 0 then nil else toTree p.insidePart △ toTree p.outsidePart
+  if p = 0 then nil else p.insidePart.toTree △ p.outsidePart.toTree
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt ‹_›, semilength_outsidePart_lt ‹_›]
 
@@ -499,7 +499,7 @@ def ofTree : Tree Unit → DyckWord
   | Tree.nil => 0
   | Tree.node _ l r => (ofTree l).nest + ofTree r
 
-lemma ofTree_toTree (p) : ofTree (toTree p) = p := by
+lemma ofTree_toTree (p) : ofTree p.toTree = p := by
   by_cases h : p = 0
   · simp [h, toTree, ofTree]
   · rw [toTree]
@@ -510,7 +510,7 @@ lemma ofTree_toTree (p) : ofTree (toTree p) = p := by
     exact nest_insidePart_add_outsidePart h
 termination_by p.semilength
 
-lemma toTree_ofTree : ∀ t, toTree (ofTree t) = t
+lemma toTree_ofTree : ∀ t, (ofTree t).toTree = t
   | Tree.nil => by simp [ofTree, toTree]
   | Tree.node _ _ _ => by simp [ofTree, toTree, toTree_ofTree]
 
@@ -518,7 +518,7 @@ lemma toTree_ofTree : ∀ t, toTree (ofTree t) = t
 @[simps] def equivTree : DyckWord ≃ Tree Unit := ⟨toTree, ofTree, ofTree_toTree, toTree_ofTree⟩
 
 @[simp]
-lemma numNodes_toTree (p) : (toTree p).numNodes = p.semilength := by
+lemma numNodes_toTree (p : DyckWord) : p.toTree.numNodes = p.semilength := by
   by_cases h : p = 0
   · simp [h, toTree]
   · rw [toTree]
