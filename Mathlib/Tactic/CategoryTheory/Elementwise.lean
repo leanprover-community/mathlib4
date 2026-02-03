@@ -70,7 +70,7 @@ def elementwiseThms : List Name :=
     ``forget_hom_Type, ``forall_congr_forget_Type, ``types_comp_apply, ``types_id_apply,
     -- further simplifications to turn `HasForget` definitions into `ConcreteCategory` ones
     -- (if available)
-    ``forget_obj, -- ``ConcreteCategory.forget_map_eq_coe, ``coe_toHasForget_instFunLike,
+    ``forget_obj, ``ConcreteCategory.forget_map_eq_coe, --``coe_toHasForget_instFunLike,
     -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
     -- easier to detect when this has occurred.
     ``implies_true]

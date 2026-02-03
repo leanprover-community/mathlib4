@@ -23,7 +23,7 @@ Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` prese
 
 universe v u w u' v'
 
-open CategoryTheory Sheaf Limits HasForget GrothendieckTopology
+open CategoryTheory Sheaf Limits GrothendieckTopology
 
 namespace LightCondensed
 

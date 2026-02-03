@@ -172,8 +172,8 @@ open Presheaf CategoryTheory
 
 section
 
-variable [HasLimitsOfSize.{x, x} C] [(HasForget.forget (C := C)).ReflectsIsomorphisms]
-variable [PreservesLimitsOfSize.{x, x} (HasForget.forget (C := C))]
+variable [HasLimitsOfSize.{x, x} C] [(CategoryTheory.forget C).ReflectsIsomorphisms]
+variable [PreservesLimitsOfSize.{x, x} (CategoryTheory.forget C)]
 variable {X : TopCat.{x}} (F : Sheaf C X) {ι : Type*} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.

@@ -124,7 +124,7 @@ lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
-    (forget MonCat).map f = f := rfl
+    (forget MonCat).map f = (f : _ → _) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

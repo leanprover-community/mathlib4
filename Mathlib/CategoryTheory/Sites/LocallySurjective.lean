@@ -291,7 +291,6 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
   imageSieve_mem x := by
     obtain ⟨S, x, rfl⟩ := exists_rep x
     refine J.superset_covering (fun Y f hf => ⟨x.1 ⟨Y, f, hf⟩, ?_⟩) S.2
-    dsimp
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩

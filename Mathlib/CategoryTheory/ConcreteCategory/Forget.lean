@@ -74,7 +74,10 @@ instance : (forget C).Faithful where
 
 variable {C}
 
-theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = (f : _ → _) := rfl
+@[simp]
+theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) :
+    (forget C).map f = (f : _ → _) :=
+  rfl
 
 theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
@@ -140,6 +143,8 @@ def HasForget₂.mk' (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (f
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
 
+
+variable (C D) in
 /-- Composition of `HasForget₂` instances. -/
 @[reducible]
 def HasForget₂.trans (E : Type*) [Category* E] {FE : outParam <| E → E → Type*}
@@ -194,6 +199,9 @@ instance Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X �
   id_apply {X} x := by
     change 𝟙 X x = _ -- ???
     simp
+
+@[simp]
+lemma Types.hom_eq_coe {X Y : Type u} (f : X ⟶ Y) : (ConcreteCategory.hom f) = f := rfl
 
 @[simps]
 def _root_.FunLike.ofFaithful {C : Type*} [Category* C] (F : C ⥤ Type w) [F.Faithful] (X Y : C) :

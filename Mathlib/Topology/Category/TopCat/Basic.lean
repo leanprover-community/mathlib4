@@ -139,19 +139,19 @@ lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = 
 lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
   simp
 
-/--
-Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
-equal function coercion for a continuous map `C(X, Y)`.
--/
-@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : C(X, Y)} {x} :
-    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) HasForget.instFunLike
-      (ofHom f) x =
-    @DFunLike.coe C(X, Y) X
-      (fun _ ↦ Y) _
-      f x :=
-  rfl
+-- /--
+-- Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
+-- equal function coercion for a continuous map `C(X, Y)`.
+-- -/
+-- @[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+--     {f : C(X, Y)} {x} :
+--     @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
+--       (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) HasForget.instFunLike
+--       (ofHom f) x =
+--     @DFunLike.coe C(X, Y) X
+--       (fun _ ↦ Y) _
+--       f x :=
+--   rfl
 
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩

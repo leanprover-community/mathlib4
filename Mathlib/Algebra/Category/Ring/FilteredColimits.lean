@@ -135,11 +135,11 @@ def descAddMonoidHom : R F →+ t.1 :=
       ((forget₂ SemiRingCat AddCommMonCat).mapCocone t)).hom
 
 lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
-    descAddMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
+    descAddMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x := by
+  exact congr_fun ((forget _).congr_map
     ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat)).fac
-        ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
+        ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) _
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
 def descMonoidHom : R F →* t.1 :=
@@ -147,10 +147,10 @@ def descMonoidHom : R F →* t.1 :=
     (F ⋙ forget₂ _ _)).desc ((forget₂ _ _).mapCocone t)).hom
 
 lemma descMonoidHom_quotMk {j : J} (x : F.obj j) :
-    descMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
+    descMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x := by
+  exact congr_fun ((forget _).congr_map
     ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
-      (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) x
+      (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) _
 
 lemma descMonoidHom_apply_eq (x : R F) :
     descMonoidHom t x = descAddMonoidHom t x := by
@@ -172,7 +172,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   fac t j := by ext x; exact descAddMonoidHom_quotMk t x
   uniq t m hm := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (hm j)) x).trans
+    exact (congr_fun ((forget _).congr_map (hm j)) _).trans
       (descAddMonoidHom_quotMk t x).symm
 
 instance forget₂Mon_preservesFilteredColimits :

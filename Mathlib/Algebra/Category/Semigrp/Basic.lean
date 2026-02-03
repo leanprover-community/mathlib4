@@ -130,7 +130,7 @@ lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X →
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : MagmaCat} (f : X ⟶ Y) :
-    (forget MagmaCat).map f = f := rfl
+    (forget MagmaCat).map f = (f : _ → _) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
