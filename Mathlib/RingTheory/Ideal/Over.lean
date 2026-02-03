@@ -325,24 +325,10 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
     stabilizerHom P p G g b = ↑(g • b) :=
   rfl
 
-/--
-The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ P`.
--/
-abbrev _root_.Ideal.inertia (I : Ideal B) : Subgroup G := AddSubgroup.inertia I.toAddSubgroup G
-
 lemma ker_stabilizerHom :
     (stabilizerHom P p G).ker = (P.inertia G).subgroupOf _ := by
   ext σ
   simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
-
-include p in
-/--
-This cannot be an instance since Lean cannot infer `A` or `P`.
--/
-theorem _root_.Ideal.normal_inertia_subgroupOf_stabilizer :
-    ((inertia G P).subgroupOf (MulAction.stabilizer G P)).Normal := by
-  rw [← Ideal.Quotient.ker_stabilizerHom P p]
-  exact MonoidHom.normal_ker (Ideal.Quotient.stabilizerHom P p G)
 
 theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.inertia G := by

@@ -397,10 +397,8 @@ The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of
 extension `B ⧸ Q` over `A ⧸ P`.
 -/
 noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
-    haveI := Q.normal_inertia_subgroupOf_stabilizer P G
     MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
       Gal((B ⧸ Q)/(A ⧸ P)) :=
-  haveI := Q.normal_inertia_subgroupOf_stabilizer P G
   (QuotientGroup.quotientMulEquivOfEq (Ideal.Quotient.ker_stabilizerHom Q P G).symm).trans <|
     QuotientGroup.quotientKerEquivOfSurjective (Ideal.Quotient.stabilizerHom Q P G)
       (Ideal.Quotient.stabilizerHom_surjective G P Q)

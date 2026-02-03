@@ -298,7 +298,7 @@ open Algebra
 attribute [local instance 1001] Ideal.Quotient.field Module.Free.of_divisionRing in
 lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
-    (p.primesOver S).ncard * Nat.card (P.toAddSubgroup.inertia G) *
+    (p.primesOver S).ncard * Nat.card (P.inertia G) *
       Module.finrank (R ⧸ p) (S ⧸ P) = Nat.card G := by
   trans (p.primesOver S).ncard * Nat.card (MulAction.stabilizer G P); swap
   · rw [← IsInvariant.orbit_eq_primesOver R S G p P]
@@ -326,7 +326,7 @@ lemma card_inertia_eq_ramificationIdxIn
     [IsTorsionFree R S]
     (p : Ideal R) (hp : p ≠ ⊥)
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
-    Nat.card (P.toAddSubgroup.inertia G) = Ideal.ramificationIdxIn p S := by
+    Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
   refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
