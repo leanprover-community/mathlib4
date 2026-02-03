@@ -13,17 +13,25 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
 
     steps:
+    - name: Generate app token
+      id: app-token
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout mathlib4 repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches
-        token: ${{ secrets.NIGHTLY_TESTING }}
+        token: ${{ steps.app-token.outputs.token }}
 
     - name: Set up Git
       run: |
-        git config --global user.name "leanprover-community-mathlib4-bot"
-        git config --global user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+        git config --global user.name "mathlib-nightly-testing[bot]"
+        git config --global user.email "mathlib-nightly-testing[bot]@users.noreply.github.com"
 
     - name: Configure Lean
       uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0

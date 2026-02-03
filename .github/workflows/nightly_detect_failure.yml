@@ -35,12 +35,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Generate app token
+      id: app-token
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout code
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: nightly-testing # checkout nightly-testing branch
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
-        token: ${{ secrets.NIGHTLY_TESTING }}
+        token: ${{ steps.app-token.outputs.token }}
     - name: Update the nightly-testing-green branch
       continue-on-error: true
       run: |
@@ -313,7 +321,7 @@ jobs:
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
         fetch-depth: 0 # checkout all branches
-        token: ${{ secrets.NIGHTLY_TESTING }}
+        token: ${{ steps.app-token.outputs.token }}
 
     - name: Attempt automatic PR creation
       id: auto_pr
@@ -323,7 +331,7 @@ jobs:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
-        GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       run: |
         echo "Current version: ${NIGHTLY}"
