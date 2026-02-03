@@ -885,23 +885,18 @@ lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
 
 /-! ## Connect to the existence of integral curves -/
 
-/-- When `f` is `C^1` at `x₀`, there exist `ε > 0`, `a > 0`, `a' ≥ a`, and an integral curve `α`
-starting at `x₀` defined on `Icc (t₀ - ε) (t₀ + ε)`, such that the range of `α` is in `ball x₀ a`
-and `‖fderivIntegralCurry0 f (ball x₀ a') t₀' α‖ < 1`.
+/-- When f is C^1 at x₀, there exist a neighbourhood `u` of `x₀`, `ε > 0`, and a continuous map
+`α : C(Icc (t₀ - ε) (t₀ + ε), E)` such that `f` is C^1 on `u`, the range of α is in `u`,
+`T f u t₀ (x₀, α) = 0`, and `‖fderivIntegralCurry0 f u t₀ α‖ < 1`.
 
-The integral curve is given as a `FunSpace` satisfying `IsFixedPt (next hPL hx₀) α`,
-which can be converted to a continuous map via `toContinuousMap`. -/
+Note that `T = 0` implies `α(t₀) = x₀` since the integral from `t₀` to `t₀` vanishes. -/
 lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (a a' : ℝ≥0) (L K : ℝ≥0) (_ : 0 < a) (_ : a ≤ a')
-      (_ : ContDiffOn ℝ 1 f (ball x₀ a'))
-      (hPL : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
-        ⟨t₀, by simp [le_of_lt hε]⟩ x₀ a 0 L K),
-      ∃ α : ODE.FunSpace ⟨t₀, by simp [le_of_lt hε]⟩ x₀ 0 L,
-        IsFixedPt (ODE.FunSpace.next hPL (mem_closedBall_self le_rfl)) α ∧
-        (∀ t, α t ∈ ball x₀ a) ∧
-        ‖fderivIntegralCurry0 f (ball x₀ a') ⟨t₀, by simp [le_of_lt hε]⟩ α.toContinuousMap‖
-          < 1 := by
+    ∃ u ∈ 𝓝 x₀, IsOpen u ∧ ContDiffOn ℝ 1 f u ∧ ∃ (ε : ℝ) (hε : 0 < ε),
+      ∃ α : C(Icc (t₀ - ε) (t₀ + ε), E),
+        range α ⊆ u ∧
+        T f u ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 ∧
+        ‖fderivIntegralCurry0 f u ⟨t₀, by simp [le_of_lt hε]⟩ α‖ < 1 := by
   -- Get parameters from the two key lemmas
   obtain ⟨u, hu_nhds, hu_open, ε₁, hε₁pos, hfu, hfderiv_bound⟩ :=
     exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one hf
@@ -916,22 +911,20 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
     have hmax : 0 < max (t₀ + ε₂ - t₀) (t₀ - (t₀ - ε₂)) := by simp; linarith
     have hrpos' : (0 : ℝ) < r := hrpos
     nlinarith
-  -- Choose a = min a₁ (a₂ / 2) so that closedBall x₀ a ⊆ closedBall x₀ a₂ (for Lipschitz/bound)
-  -- and ball x₀ a ⊆ ball x₀ a₁ (for the fderiv bound)
+  -- Choose a_small = min a₁ (a₂ / 2) so that closedBall x₀ a_small ⊆ closedBall x₀ a₂
+  -- (for Lipschitz/bound) and ball x₀ a_small ⊆ ball x₀ a₁ (for the fderiv bound)
   have ha_pos_real : 0 < min a₁ ((a₂ : ℝ) / 2) := lt_min ha₁pos (by linarith)
-  set a : ℝ≥0 := ⟨min a₁ (a₂ / 2), le_of_lt ha_pos_real⟩ with ha_def
-  set a' : ℝ≥0 := ⟨a₁, le_of_lt ha₁pos⟩ with ha'_def
-  have hapos : 0 < a := by simp only [a]; exact ha_pos_real
-  have ha_le_a₁ : (a : ℝ) ≤ a₁ := min_le_left _ _
-  have haa' : a ≤ a' := NNReal.coe_le_coe.mp ha_le_a₁
-  have ha_lt_a₂ : (a : ℝ) < a₂ := (min_le_right _ _).trans_lt (by linarith)
+  set a_small : ℝ≥0 := ⟨min a₁ (a₂ / 2), le_of_lt ha_pos_real⟩ with ha_small_def
+  have ha_small_pos : 0 < a_small := by simp only [a_small]; exact ha_pos_real
+  have ha_small_le_a₁ : (a_small : ℝ) ≤ a₁ := min_le_left _ _
+  have ha_small_lt_a₂ : (a_small : ℝ) < a₂ := (min_le_right _ _).trans_lt (by linarith)
   -- Choose ε small enough for both conditions
   -- Need: 2ε < ε₁ (for fderiv bound), ε ≤ ε₂ (for PicardLindelof),
-  -- and L * ε < a (strict, for mem_ball)
-  set ε := min (min (ε₁ / 4) (ε₂ / 2)) ((a : ℝ) / (L + 1)) with hε_def
+  -- and L * ε < a_small (strict, for mem_ball)
+  set ε := min (min (ε₁ / 4) (ε₂ / 2)) ((a_small : ℝ) / (L + 1)) with hε_def
   have hεpos : 0 < ε := by
     apply lt_min (lt_min (by positivity) (by positivity))
-    exact div_pos (NNReal.coe_pos.mpr hapos) (by positivity)
+    exact div_pos (NNReal.coe_pos.mpr ha_small_pos) (by positivity)
   have hε_lt_ε₁ : 2 * ε < ε₁ := by
     calc 2 * ε ≤ 2 * (ε₁ / 4) := by gcongr; exact (min_le_left _ _).trans (min_le_left _ _)
       _ = ε₁ / 2 := by ring
@@ -939,12 +932,12 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
   have hε_le_ε₂ : ε ≤ ε₂ := by
     calc ε ≤ ε₂ / 2 := (min_le_left _ _).trans (min_le_right _ _)
       _ ≤ ε₂ := by linarith
-  have hLε_lt_a : (L : ℝ) * ε < a := by
-    have hapos' : (0 : ℝ) < a := NNReal.coe_pos.mpr hapos
+  have hLε_lt_a_small : (L : ℝ) * ε < a_small := by
+    have hapos' : (0 : ℝ) < a_small := NNReal.coe_pos.mpr ha_small_pos
     calc (L : ℝ) * ε
-      _ ≤ L * ((a : ℝ) / (L + 1)) := by gcongr; exact min_le_right _ _
-      _ = L * a / (L + 1) := by ring
-      _ < a := by
+      _ ≤ L * ((a_small : ℝ) / (L + 1)) := by gcongr; exact min_le_right _ _
+      _ = L * a_small / (L + 1) := by ring
+      _ < a_small := by
         rcases eq_or_lt_of_le L.2 with hL | hL
         · have : (L : ℝ) = 0 := hL.symm; simp only [this, zero_mul, zero_div, hapos']
         · have hLnonneg : (0 : ℝ) ≤ L := L.2
@@ -952,25 +945,25 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
           have hLne : (L : ℝ) + 1 ≠ 0 := ne_of_gt hLpos1
           field_simp [hLne]
           nlinarith
-  -- Shrink PicardLindelof to the smaller time interval with r = 0 and smaller a
+  -- Shrink PicardLindelof to the smaller time interval with r = 0 and smaller a_small
   have hPL' : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
-      ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a 0 L K := by
+      ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a_small 0 L K := by
     have hPL_shrink : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
         ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a₂ r L K :=
       hPL.mono_time _ (by rfl) (by linarith) (by linarith)
     refine IsPicardLindelof.of_time_independent ?_ ?_ ?_
     · intro x hx
       apply hPL_shrink.norm_le t₀ (by simp [le_of_lt hεpos]) x
-      exact closedBall_subset_closedBall (le_of_lt ha_lt_a₂) hx
+      exact closedBall_subset_closedBall (le_of_lt ha_small_lt_a₂) hx
     · apply (hPL_shrink.lipschitzOnWith t₀ (by simp [le_of_lt hεpos])).mono
-      exact closedBall_subset_closedBall (le_of_lt ha_lt_a₂)
+      exact closedBall_subset_closedBall (le_of_lt ha_small_lt_a₂)
     · simp only [NNReal.coe_zero, sub_zero, add_sub_cancel_left, sub_sub_cancel, max_self]
-      exact le_of_lt hLε_lt_a
+      exact le_of_lt hLε_lt_a_small
   -- Get the fixed point (integral curve) from Picard-Lindelöf
   have hx₀ : x₀ ∈ closedBall x₀ (0 : ℝ≥0) := mem_closedBall_self le_rfl
   obtain ⟨α_fun, hα_fixed⟩ := ODE.FunSpace.exists_isFixedPt_next hPL' hx₀
-  -- Show α t ∈ ball x₀ a for all t
-  have hα_ball : ∀ t, α_fun t ∈ ball x₀ a := fun t ↦ by
+  -- Show α t ∈ ball x₀ a_small for all t
+  have hα_ball : ∀ t, α_fun t ∈ ball x₀ a_small := fun t ↦ by
     rw [mem_ball, dist_eq_norm]
     calc ‖α_fun t - x₀‖
         ≤ ‖α_fun t - α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩‖ +
@@ -986,62 +979,31 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
           simp only [add_zero]
           gcongr
           exact abs_sub_le_max_sub t.2.1 t.2.2 _
-      _ < a := by simp only [add_sub_cancel_left, sub_sub_cancel, max_self]; exact hLε_lt_a
+      _ < a_small := by
+          simp only [add_sub_cancel_left, sub_sub_cancel, max_self]; exact hLε_lt_a_small
+  -- Prepare properties with the exported radius a = a₁
+  set α := α_fun.toContinuousMap
+  have hα_range : range α ⊆ ball x₀ a₁ := by
+    intro y hy
+    obtain ⟨t, ht⟩ := hy
+    rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
+    exact ball_subset_ball ha_small_le_a₁ (hα_ball t)
+  -- Show T = 0
+  have hT_zero : T f (ball x₀ a₁) ⟨t₀, by simp [le_of_lt hεpos]⟩ (x₀, α) = 0 := by
+    have hfu : ContinuousOn f (ball x₀ a₁) := hf_diff.continuousOn
+    exact T_eq_zero_of_isFixedPt_next hfu hPL' hα_range hα_fixed
   -- Show the operator norm bound
-  have hα_norm :
-      ‖fderivIntegralCurry0 f (ball x₀ a') ⟨t₀, by simp [le_of_lt hεpos]⟩ α_fun.toContinuousMap‖
-        < 1 := by
-    have hα_range : range α_fun.toContinuousMap ⊆ ball x₀ a' := by
-      intro y hy
-      obtain ⟨t, ht⟩ := hy
-      rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
-      exact ball_subset_ball ha_le_a₁ (hα_ball t)
+  have hα_norm : ‖fderivIntegralCurry0 f (ball x₀ a₁) ⟨t₀, by simp [le_of_lt hεpos]⟩ α‖ < 1 := by
     have hinterval : |(t₀ + ε) - (t₀ - ε)| < ε₁ := by
       have h1 : (t₀ + ε) - (t₀ - ε) = 2 * ε := by ring
       rw [h1, abs_of_pos (by linarith)]
       linarith
     have ht₀mem : t₀ ∈ Icc (t₀ - ε) (t₀ + ε) := by simp [le_of_lt hεpos]
-    -- Use fderivIntegralCurry0_eq_of_subset to relate ball x₀ a' to u
-    have ha'_sub_u : ball x₀ ↑a' ⊆ u := by simp only [ha'_def]; exact ha₁_sub
-    rw [fderivIntegralCurry0_eq_of_subset ha'_sub_u hu_open hfu ⟨t₀, ht₀mem⟩ hα_range]
-    exact hfderiv_bound (t₀ - ε) (t₀ + ε) ⟨t₀, ht₀mem⟩ _ (hα_range.trans ha'_sub_u) hinterval
-  exact ⟨ε, hεpos, a, a', L, K, hapos, haa', hf_diff, hPL', α_fun, hα_fixed, hα_ball, hα_norm⟩
-
-/-- When f is C^1 at x₀, there exist ε > 0, a > 0, and a continuous map
-`α : C(Icc (t₀ - ε) (t₀ + ε), E)` such that `f` is C^1 on `ball x₀ a`, the range of α is in
-`ball x₀ a`, `T f (ball x₀ a) t₀ (x₀, α) = 0`, and `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`.
-
-Note that `T = 0` implies `α(t₀) = x₀` since the integral from `t₀` to `t₀` vanishes.
-
-This is a reformulation of `exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one` that avoids
-mentioning `ODE.FunSpace`, expressing everything in terms of continuous maps. -/
-lemma exists_contMap_T_eq_zero_opNorm_lt_one {f : E → E} {x₀ : E}
-    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (a : ℝ) (_ : 0 < a)
-      (α : C(Icc (t₀ - ε) (t₀ + ε), E)),
-        ContDiffOn ℝ 1 f (ball x₀ a) ∧
-        range α ⊆ ball x₀ a ∧
-        T f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 ∧
-        ‖fderivIntegralCurry0 f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ α‖ < 1 := by
-  obtain ⟨ε, hεpos, a, a', L, K, hapos, haa', hf_diff, hPL, α, hα_fixed, hα_ball, hα_norm⟩ :=
-    exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one hf t₀
-  refine ⟨ε, hεpos, a', NNReal.coe_pos.mp (hapos.trans_le (NNReal.coe_le_coe.mpr haa')),
-    α.toContinuousMap, hf_diff, ?_, ?_, ?_⟩
-  · -- range α ⊆ ball x₀ a'
-    intro y hy
-    obtain ⟨t, ht⟩ := hy
-    rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
-    exact ball_subset_ball (NNReal.coe_le_coe.mpr haa') (hα_ball t)
-  · -- T f (ball x₀ a') t₀ (x₀, α.toContinuousMap) = 0
-    have hfu : ContinuousOn f (ball x₀ a') := hf_diff.continuousOn
-    have hrange : range α.toContinuousMap ⊆ ball x₀ a' := by
-      intro y hy
-      obtain ⟨t, ht⟩ := hy
-      rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
-      exact ball_subset_ball (NNReal.coe_le_coe.mpr haa') (hα_ball t)
-    exact T_eq_zero_of_isFixedPt_next hfu hPL hrange hα_fixed
-  · -- ‖fderivIntegralCurry0 f (ball x₀ a') t₀ α.toContinuousMap‖ < 1
-    exact hα_norm
+    -- Use fderivIntegralCurry0_eq_of_subset to relate ball x₀ a₁ to u
+    rw [fderivIntegralCurry0_eq_of_subset ha₁_sub hu_open hfu ⟨t₀, ht₀mem⟩ hα_range]
+    exact hfderiv_bound (t₀ - ε) (t₀ + ε) ⟨t₀, ht₀mem⟩ _ (hα_range.trans ha₁_sub) hinterval
+  exact ⟨ball x₀ a₁, Metric.ball_mem_nhds x₀ ha₁pos, isOpen_ball, hf_diff, ε, hεpos, α,
+    hα_range, hT_zero, hα_norm⟩
 
 /-- When f is C^1 at x₀, the implicit function theorem provides a local flow: there exist
 ε > 0, a > 0, and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that for x near x₀:
@@ -1058,22 +1020,22 @@ lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (
               (f ((lf x) ⟨t, ht⟩)) (Icc (t₀ - ε) (t₀ + ε)) t) ∧
           (lf x) ⟨t₀, by simp [le_of_lt hε]⟩ = x) ∧
         ContDiffAt ℝ 1 lf x₀ := by
-  obtain ⟨ε, hεpos, a, _, α₀, hf_diff, hα₀_range, hT_zero, hnorm⟩ :=
-    exists_contMap_T_eq_zero_opNorm_lt_one hf t₀
+  obtain ⟨u, _, hu_open, hf_diff, ε, hεpos, α₀, hα₀_range, hT_zero, hnorm⟩ :=
+    exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one hf t₀
   set t₀' : Icc (t₀ - ε) (t₀ + ε) := ⟨t₀, by simp [le_of_lt hεpos]⟩
-  set h := isContDiffImplicitAt_T hf_diff isOpen_ball t₀' x₀ hα₀_range hnorm le_rfl
+  set h := isContDiffImplicitAt_T hf_diff hu_open t₀' x₀ hα₀_range hnorm le_rfl
   refine ⟨ε, hεpos, h.implicitFunction, ?_, h.contDiffAt_implicitFunction⟩
   -- α₀ = h.implicitFunction x₀ by the implicit function theorem
   have hα₀_eq : h.implicitFunction x₀ = α₀ := h.implicitFunction_apply_self
-  -- Since lf is continuous and range α₀ ⊆ ball x₀ a (open), range (lf x) ⊆ ball x₀ a for x near x₀
+  -- Since lf is continuous and range α₀ ⊆ u (open), range (lf x) ⊆ u for x near x₀
   have hcont_lf : ContinuousAt h.implicitFunction x₀ :=
     h.contDiffAt_implicitFunction.continuousAt
-  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ ball x₀ a := by
-    -- Use continuity: for x near x₀, ‖lf x - lf x₀‖ is small, so range (lf x) ⊆ ball x₀ a
-    -- Since range α₀ ⊆ ball x₀ a and ball is open, there's room for perturbation
+  have hrange_near : ∀ᶠ x in 𝓝 x₀, range (h.implicitFunction x) ⊆ u := by
+    -- Use continuity: for x near x₀, ‖lf x - lf x₀‖ is small, so range (lf x) ⊆ u
+    -- Since range α₀ ⊆ u and u is open, there's room for perturbation
     have hcompact : IsCompact (range α₀) := isCompact_range α₀.continuous
-    -- Find δ > 0 such that thickening δ (range α₀) ⊆ ball x₀ a
-    obtain ⟨δ, hδpos, hthickening⟩ := hcompact.exists_thickening_subset_open isOpen_ball hα₀_range
+    -- Find δ > 0 such that thickening δ (range α₀) ⊆ u
+    obtain ⟨δ, hδpos, hthickening⟩ := hcompact.exists_thickening_subset_open hu_open hα₀_range
     -- For x near x₀, ‖lf x - α₀‖ < δ (in sup norm)
     have hcont_near : ∀ᶠ x in 𝓝 x₀, dist (h.implicitFunction x) α₀ < δ := by
       have := hcont_lf.eventually (Metric.ball_mem_nhds (h.implicitFunction x₀) hδpos)
@@ -1086,7 +1048,7 @@ lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (
     rw [Metric.mem_thickening_iff]
     exact ⟨α₀ t, mem_range_self t, (ContinuousMap.dist_apply_le_dist t).trans_lt hx⟩
   filter_upwards [h.apply_implicitFunction, hrange_near] with x hT_eq hrange
-  have hfu : ContinuousOn f (ball x₀ a) := hf_diff.continuousOn
+  have hfu : ContinuousOn f u := hf_diff.continuousOn
   constructor
   · intro t ht
     exact hasDerivWithinAt_of_T_eq_zero hfu hrange (by rw [hT_eq, hT_zero]) ht
