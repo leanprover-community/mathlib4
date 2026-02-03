@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Data.Fintype.Order
 import Mathlib.RingTheory.Nilpotent.Defs
 
@@ -82,6 +82,8 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
       (archAbsVal.map (· x)).prod * ∏ᶠ v : nonarchAbsVal, v.val x = 1
 
 open AdmissibleAbsValues Real Function
+
+attribute [fun_prop] mulSupport_finite
 
 variable (K : Type*) [Field K] [AdmissibleAbsValues K]
 
@@ -266,6 +268,7 @@ private lemma max_eq_iSup {α : Type*} [ConditionallyCompleteLattice α] (a b : 
 
 variable [Finite ι]
 
+@[fun_prop]
 private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0) :
     (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).HasFiniteMulSupport := by
   have : Nonempty {j // x j ≠ 0} := nonempty_subtype.mpr <| ne_iff.mp hx
@@ -279,16 +282,14 @@ private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0)
     · rw [h, v.val.map_zero]
       exact Real.iSup_nonneg' ⟨⟨i, hi⟩, v.val.nonneg ..⟩
     · exact le_ciSup_of_le (Finite.bddAbove_range _) ⟨j, h⟩ le_rfl
-  exact (Set.finite_iUnion fun i : {j | x j ≠ 0} ↦ mulSupport_finite i.prop).subset <|
-    mulSupport_iSup _
+  fun_prop (disch := grind)
 
+@[fun_prop]
 private lemma mulSupport_max_nonarchAbsVal_finite (x : K) :
     (fun v : nonarchAbsVal ↦ v.val x ⊔ 1).HasFiniteMulSupport := by
-  convert mulSupport_iSup_nonarchAbsVal_finite (x := ![x, 1]) <| by simp with v
-  rw [max_eq_iSup]
-  congr 1
-  ext1 i
-  fin_cases i <;> simp
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp [HasFiniteMulSupport]
+  fun_prop (disch := assumption)
 
 /-- The multiplicative height of a tuple does not change under scaling. -/
 lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
