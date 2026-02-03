@@ -227,19 +227,6 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
     𝓓^{n}(Ω, F) :=
   ⟨f, f.contDiff, f.compact_supp, f.tsupport_subset.trans K_sub_Ω⟩
 
-variable (𝕜) in
-/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
-def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
-    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(Ω, F) where
-  toFun f := ofSupportedIn K_sub_Ω f
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-@[simp] theorem coe_ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
-    (K_sub_Ω : (K : Set E) ⊆ Ω) :
-    (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
-  rfl
-
 variable (𝕜 n k) in
 /-- `fderivWithOrderLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)` to
 its derivative as an element of `𝓓^{k}(Ω, E →L[ℝ] F)`.
