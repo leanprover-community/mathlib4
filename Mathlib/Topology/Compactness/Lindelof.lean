@@ -764,7 +764,7 @@ lemma eq_open_union_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι]
     rwa [biUnion_range] at htu
 
 lemma eq_closed_inter_countable [HereditarilyLindelofSpace X] {ι : Type*} (C : ι → Set X)
-    (h : ∀ i, IsClosed (C i)) : ∃ t : Set ι, t.Countable ∧ ⋂ i∈t, C i = ⋂ i, C i := by
+    (h : ∀ i, IsClosed (C i)) : ∃ t : Set ι, t.Countable ∧ ⋂ i ∈ t, C i = ⋂ i, C i := by
   conv in _ = _ => rw [← compl_inj_iff]; simp
   exact eq_open_union_countable (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
 
