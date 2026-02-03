@@ -51,7 +51,7 @@ of `s ↦ ‖μ s‖ₑ`.
 
 variable {X : Type*} [MeasurableSpace X]
 
-open MeasureTheory BigOperators ENNReal Function
+open MeasureTheory BigOperators NNReal ENNReal Function
 
 namespace MeasureTheory
 
