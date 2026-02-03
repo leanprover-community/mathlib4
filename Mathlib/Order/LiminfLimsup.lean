@@ -392,7 +392,7 @@ theorem HasBasis.limsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : 
   (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image]
 
 lemma limsSup_principal_eq_sSup (s : Set α) : limsSup (𝓟 s) = sSup s := by
-  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_csSup s
+  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_sSup s
 
 lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
   simpa only [limsInf, eventually_principal] using sSup_lowerBounds_eq_sInf s
