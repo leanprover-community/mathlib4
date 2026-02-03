@@ -150,30 +150,31 @@ lemma isNonloopAt_eqOn_of_le (hHG : H ≤ G) : EqOn H.IsNonloopAt G.IsNonloopAt 
   ext x
   exact isNonloopAt_iff_of_le hHG he
 
-lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (h : G < H) : V(G) ⊂ V(H) ∨ E(G) ⊂ E(H) := by
-  rw [lt_iff_le_and_ne] at h
-  simp only [ssubset_iff_subset_ne, vertexSet_mono h.1, ne_eq, true_and, edgeSet_mono h.1]
+lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (hGH : G < H) : V(G) ⊂ V(H) ∨ E(G) ⊂ E(H) := by
+  rw [lt_iff_le_and_ne] at hGH
+  simp only [ssubset_iff_subset_ne, vertexSet_mono hGH.1, ne_eq, true_and, edgeSet_mono hGH.1]
   by_contra! heq
-  exact h.2 <| ext_of_le_le h.1 le_rfl heq.1 heq.2
+  exact hGH.2 <| ext_of_le_le hGH.1 le_rfl heq.1 heq.2
 
 /-- Two subgraphs of the same graph are compatible. -/
-lemma compatible_of_le_le {H₁ H₂ : Graph α β} (h₁ : H₁ ≤ G) (h₂ : H₂ ≤ G) : H₁.Compatible H₂ :=
-  ((isLink_eqOn_of_le h₁).mono inter_subset_left).trans <|
-    (isLink_eqOn_of_le h₂).symm.mono inter_subset_right
+lemma compatible_of_le_le {H₁ H₂ : Graph α β} (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=
+  ((isLink_eqOn_of_le hH₁G).mono inter_subset_left).trans <|
+    (isLink_eqOn_of_le hH₂G).symm.mono inter_subset_right
 
-lemma compatible_of_le (h : H ≤ G) : H.Compatible G := compatible_of_le_le h le_rfl
+lemma compatible_of_le (hHG : H ≤ G) : H.Compatible G := compatible_of_le_le hHG le_rfl
 
-lemma Compatible.anti_left {G₀ : Graph α β} (hG₀ : G₀ ≤ G) (h : Compatible G H) : Compatible G₀ H :=
-  ((isLink_eqOn_of_le hG₀).mono inter_subset_left).trans
-    (h.mono (inter_subset_inter_left _ (edgeSet_mono hG₀)))
+lemma Compatible.anti_left {G₀ : Graph α β} (hG₀G : G₀ ≤ G) (h : Compatible G H) :
+    Compatible G₀ H :=
+  ((isLink_eqOn_of_le hG₀G).mono inter_subset_left).trans
+    (h.mono (inter_subset_inter_left _ (edgeSet_mono hG₀G)))
 
-lemma Compatible.anti_right {H₀ : Graph α β} (hH₀ : H₀ ≤ H) (h : Compatible G H) :
+lemma Compatible.anti_right {H₀ : Graph α β} (hH₀H : H₀ ≤ H) (h : Compatible G H) :
     Compatible G H₀ :=
-  (h.symm.anti_left hH₀).symm
+  (h.symm.anti_left hH₀H).symm
 
-lemma Compatible.anti {G₀ H₀ : Graph α β} (hG : G₀ ≤ G) (hH : H₀ ≤ H) (h : G.Compatible H) :
+lemma Compatible.anti {G₀ H₀ : Graph α β} (hG₀G : G₀ ≤ G) (hH₀H : H₀ ≤ H) (h : G.Compatible H) :
     G₀.Compatible H₀ :=
-  (h.anti_left hG).anti_right hH
+  (h.anti_left hG₀G).anti_right hH₀H
 
 /-! ### Spanning Subgraphs -/
 
