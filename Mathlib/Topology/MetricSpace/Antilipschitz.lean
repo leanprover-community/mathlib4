@@ -155,6 +155,18 @@ lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace �
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.isUniformInducing hfc, hf.injective⟩
 
+theorem comap_nhds_le (hf : AntilipschitzWith K f) (x : α) : (𝓝 (f x)).comap f ≤ 𝓝 x := by
+  simp only [nhds_eq_comap_uniformity]
+  grw [← hf.comap_uniformity_le]
+  simp [comap_comap, Function.comp_def]
+
+theorem isInducing (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsInducing f :=
+  isInducing_iff_nhds.mpr fun x ↦ le_antisymm (hfc.tendsto x).le_comap <| hf.comap_nhds_le _
+
+lemma isEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
+    (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsEmbedding f :=
+  hf.isInducing hfc |>.isEmbedding
+
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
   (hf.isUniformInducing hfc).isComplete_range
