@@ -156,7 +156,7 @@ noncomputable abbrev homologyEulerChar (C : HomologicalComplex (ModuleCat R) c)
 the `finsum` Euler characteristic equals the finite sum over that set. -/
 theorem eulerChar_eq_sum_finSet_of_finrankSupport_subset (C : HomologicalComplex (ModuleCat R) c)
     (indices : Finset ι)
-    (h_support : GradedObject.finrankSupport (C.X) ⊆ indices) :
+    (h_support : GradedObject.finrankSupport C.X ⊆ indices) :
     eulerChar C = ∑ i ∈ indices, (c.χ i : ℤ) * Module.finrank R (C.X i) :=
   GradedObject.eulerChar_eq_sum_finSet_of_finrankSupport_subset c C.X indices h_support
 
