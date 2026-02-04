@@ -14,9 +14,55 @@ import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 /-!
 # Chain rule for the Kullback-Leibler divergence
 
+Suppose that we have two finite joint measures on a product `α × β`, which can be decomposed as
+`μ ⊗ₘ κ` and `ν ⊗ₘ η`, where `μ` and `ν` are measures on `α` and `κ` and `η` are Markov kernels
+from `α` to `β`. Then we can express the Kullback-Leibler divergence between these two joint
+measures as a sum of `klDiv μ ν` and the conditional Kullback-Leibler divergence between the kernels
+`κ` and `η`, averaged over `μ`. The resulting equality is most often written as
+`klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + μ[fun x ↦ klDiv (κ x) (η x)]`.
+
+Here we first prove the following version:
+`klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + klDiv (μ ⊗ₘ κ) (μ ⊗ₘ η)`.
+This version avoids the issue of measurability of the function `x ↦ klDiv (κ x) (η x)`, which is not
+always guaranteed, and thus holds for all measurable spaces `α` and `β`, without any assumptions.
+
 ## Main statements
 
-* `todo` :
+* `klDiv_compProd_eq_add`: `klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + klDiv (μ ⊗ₘ κ) (μ ⊗ₘ η)`
+
+## Proof
+
+The Kullback-Leibler divergence is defined with an if-then-else statement: if the measures are
+absolutely continuous and the log-likelihood ratio is integrable, then it is defined as an integral,
+otherwise it is defined to be `∞`.
+
+We first deal with the case in which absolute continuity does not hold. The crucial observation is
+that `μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ μ ⊗ₘ κ ≪ μ ⊗ₘ η`, which means that if one of the two sides of the
+KL equality is infinite because of lack of absolute continuity, then the other side is also infinite
+for the same reason.
+
+Then, we deal with the case in which absolute continuity holds but integrability does not. Again,
+we can show a similar equivalence for integrability, which allows us to conclude that both sides
+are infinite.
+`Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ)` is equivalent to
+`Integrable (llr μ ν) μ ∧ Integrable (llr (μ ⊗ₘ κ) (μ ⊗ₘ η)) (μ ⊗ₘ κ)`.
+This is harder to prove than the absolute continuity and relies on the convexity of
+the function `x ↦ x * log x`.
+
+Finally, we prove the equality in the case in which both absolute continuity and integrability hold.
+In that case, `klDiv μ ν = ∫ x, llr μ ν x ∂μ` and similarly for the other terms.
+The main ingredient is the chain rule for Radon-Nikodym derivatives:
+`∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) = ∂μ/∂ν * ∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
+Finally, the computation is as follows:
+```
+∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂μ ⊗ₘ κ
+_ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal ∂(ν ⊗ₘ η)
+_ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal *
+    (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(ν ⊗ₘ η)
+_ = ∫ p, (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(μ ⊗ₘ κ)
+_ = ∫ p, log ((∂μ/∂ν) p.1).toReal ∂(μ ⊗ₘ κ) + ∫ p, log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal ∂(μ ⊗ₘ κ)
+_ = ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ)
+```
 
 -/
 
