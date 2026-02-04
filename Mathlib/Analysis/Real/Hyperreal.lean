@@ -165,6 +165,9 @@ theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
 
+theorem ofSeq_le_ofSeq {f g : ℕ → ℝ} : ofSeq f ≤ ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n ≤ g n :=
+  Germ.coe_le
+
 /-! #### ω -/
 
 /-- A sample infinite hyperreal ω = ⟦(0, 1, 2, 3, ⋯)⟧. -/
@@ -230,6 +233,45 @@ theorem epsilon_mul_omega : ε * ω = 1 :=
 theorem archimedeanClassMk_epsilon_pos : 0 < mk ε := by
   simpa [← inv_omega] using archimedeanClassMk_omega_neg
 
+/-!
+### Some facts about `Tendsto`
+-/
+
+@[simp]
+theorem tendsto_ofSeq {f : ℕ → ℝ} {lb : Filter ℝ} :
+    (ofSeq f).Tendsto lb ↔ Tendsto f (hyperfilter ℕ) lb :=
+  .rfl
+
+theorem tendsto_iff_forall {x : ℝ*} {r : ℝ} :
+    x.Tendsto (𝓝 r) ↔ (∀ s < r, s ≤ x) ∧ (∀ s > r, x ≤ s) := by
+  rcases ofSeq_surjective x with ⟨f, rfl⟩
+  rw [tendsto_ofSeq, (nhds_basis_Ioo _).tendsto_right_iff]
+  simp_rw [Set.mem_Ioo, eventually_and, ← ofSeq_lt_ofSeq]
+  refine ⟨fun H ↦ ⟨fun s hs ↦ ?_, fun s hs ↦ ?_⟩, fun H ⟨s, t⟩ ⟨hs, ht⟩ ↦ ⟨?_, ?_⟩⟩
+  · obtain ⟨t, ht⟩ := exists_gt r
+    exact (H ⟨s, t⟩ ⟨hs, ht⟩).1.le
+  · obtain ⟨t, ht⟩ := exists_lt r
+    exact (H ⟨t, s⟩ ⟨ht, hs⟩).2.le
+  · obtain ⟨u, hu, hu'⟩ := exists_between hs
+    exact (coe_lt_coe.2 hu).trans_le (H.1 _ hu')
+  · obtain ⟨u, hu, hu'⟩ := exists_between ht
+    exact (H.2 _ hu).trans_lt (coe_lt_coe.2 hu')
+
+theorem archimedeanClassMk_nonneg_of_tendsto {x : ℝ*} {r : ℝ} (hx : x.Tendsto (𝓝 r)) :
+    0 ≤ mk x := by
+  rw [tendsto_iff_forall] at hx
+  obtain ⟨s, hs⟩ := exists_lt r
+  obtain ⟨t, ht⟩ := exists_gt r
+  exact mk_nonneg_of_le_of_le_of_archimedean coeRingHom (hx.1 s hs) (hx.2 t ht)
+
+theorem stdPart_of_tendsto {x : ℝ*} {r : ℝ} (hx : x.Tendsto (𝓝 r)) : stdPart x = r := by
+  rw [tendsto_iff_forall] at hx
+  exact stdPart_eq coeRingHom hx.1 hx.2
+
+theorem archimedeanClassMk_pos_of_tendsto {x : ℝ*} (hx : x.Tendsto (𝓝 0)) : 0 < mk x := by
+  apply (archimedeanClassMk_nonneg_of_tendsto hx).lt_of_ne'
+  rw [← stdPart_eq_zero, stdPart_of_tendsto hx]
+
 @[simp]
 theorem stdPart_epsilon : stdPart ε = 0 :=
   stdPart_eq_zero.2 <| archimedeanClassMk_epsilon_pos.ne'
@@ -243,18 +285,59 @@ theorem epsilon_lt_of_neg {r : ℝ} : r < 0 → r < ε :=
 @[deprecated (since := "2026-01-05")]
 alias epsilon_lt_pos := epsilon_lt_of_pos
 
+@[deprecated archimedeanClassMk_pos_of_tendsto (since := "2026-01-05")]
 theorem lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
     ∀ {r : ℝ}, 0 < r → ofSeq f < (r : ℝ*) := fun hr ↦
   ofSeq_lt_ofSeq.2 <| (hf.eventually <| gt_mem_nhds hr).filter_mono Nat.hyperfilter_le_atTop
 
+set_option linter.deprecated false in
+@[deprecated archimedeanClassMk_pos_of_tendsto (since := "2026-01-05")]
 theorem neg_lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
     ∀ {r : ℝ}, 0 < r → (-r : ℝ*) < ofSeq f := fun hr =>
   have hg := hf.neg
   neg_lt_of_neg_lt (by rw [neg_zero] at hg; exact lt_of_tendsto_zero_of_pos hg hr)
 
+set_option linter.deprecated false in
+@[deprecated archimedeanClassMk_pos_of_tendsto (since := "2026-01-05")]
 theorem gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
     ∀ {r : ℝ}, r < 0 → (r : ℝ*) < ofSeq f := fun {r} hr => by
   rw [← neg_neg r, coe_neg]; exact neg_lt_of_tendsto_zero_of_pos hf (neg_pos.mpr hr)
+
+theorem lt_of_tendsto_atTop {x : ℝ*} (r : ℝ) (hx : x.Tendsto atTop) : r < x := by
+  rcases ofSeq_surjective x with ⟨f, rfl⟩
+  rw [tendsto_ofSeq] at hx
+  exact ofSeq_lt_ofSeq.2 <| hx.eventually_mem (Ioi_mem_atTop r)
+
+theorem lt_of_tendsto_atBot {x : ℝ*} (r : ℝ) (hx : x.Tendsto atBot) : x < r := by
+  rcases ofSeq_surjective x with ⟨f, rfl⟩
+  rw [tendsto_ofSeq] at hx
+  exact ofSeq_lt_ofSeq.2 <| hx.eventually_mem (Iio_mem_atBot r)
+
+theorem archimedeanClassMk_neg_of_tendsto_atTop {x : ℝ*} (hx : x.Tendsto atTop) : mk x < 0 := by
+  have : 0 < x := lt_of_tendsto_atTop 0 hx
+  intro n
+  simpa [abs_of_pos this] using lt_of_tendsto_atTop n hx
+
+theorem archimedeanClassMk_neg_of_tendsto_atBot {x : ℝ*} (hx : x.Tendsto atBot) : mk x < 0 := by
+  have : x < 0 := lt_of_tendsto_atBot 0 hx
+  intro n
+  simpa [abs_of_neg this, lt_neg] using lt_of_tendsto_atBot (-n) hx
+
+theorem tendsto_atTop_iff {x : ℝ*} : x.Tendsto atTop ↔ 0 < x ∧ mk x < 0 where
+  mp h := ⟨lt_of_tendsto_atTop 0 h, archimedeanClassMk_neg_of_tendsto_atTop h⟩
+  mpr h := by
+    rcases ofSeq_surjective x with ⟨f, rfl⟩
+    rw [tendsto_ofSeq, tendsto_atTop]
+    exact fun r ↦ ofSeq_le_ofSeq.1 <|
+      (lt_of_mk_lt_mk_of_nonneg (h.2.trans_le <| archimedeanClassMk_coe_nonneg r) h.1.le).le
+
+theorem tendsto_atBot_iff {x : ℝ*} : x.Tendsto atBot ↔ x < 0 ∧ mk x < 0 where
+  mp h := ⟨lt_of_tendsto_atBot 0 h, archimedeanClassMk_neg_of_tendsto_atBot h⟩
+  mpr h := by
+    rcases ofSeq_surjective x with ⟨f, rfl⟩
+    rw [tendsto_ofSeq, tendsto_atBot]
+    exact fun r ↦ ofSeq_le_ofSeq.1 <|
+      (lt_of_mk_lt_mk_of_nonpos (h.2.trans_le <| archimedeanClassMk_coe_nonneg r) h.1.le).le
 
 /-!
 ### Some facts about standard parts
