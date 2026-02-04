@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 /-!
 # Volume measure for Euclidean geometry
@@ -178,7 +179,7 @@ theorem MeasureTheory.euclideanHausdorffMeasure_homothety_preimage (d : ℕ) (x 
 
 end Homothety
 
-variable {V P : Type*}
+variable {V P Q : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
 variable [FiniteDimensional ℝ V]
 variable [MetricSpace P] [MeasurableSpace P] [BorelSpace P] [NormedAddTorsor V P]
@@ -353,3 +354,19 @@ theorem EuclideanGeometry.euclideanHausdorffMeasure_eq_lintegral (p : P) {v : V}
   have hx (x : ℝ) : x • v +ᵥ p = g x := by rfl
   simp_rw [(AffineSubspace.mk' p (ℝ ∙ v)).euclideanHausdorffMeasure_eq_lintegral ht, hx, hm,
     lintegral_smul_measure, hg.lintegral_map, smul_eq_mul, hrank', AffineSubspace.direction_mk']
+
+/-
+
+
+variable [MetricSpace Q] [MeasurableSpace Q] [BorelSpace Q] [NormedAddTorsor V Q]
+
+
+
+theorem EuclideanGeometry.map_affineMap_euclideanHausdorffMeasure [FiniteDimensional ℝ V]
+    {f : P →ᵃ[ℝ] Q} (hf : f.linear.det ≠ 0) :
+    (μHE[finrank ℝ V] : Measure P).map f =
+    ENNReal.ofReal |f.linear.det⁻¹| • (μHE[finrank ℝ V] : Measure Q) := by
+
+  sorry
+
+-/
