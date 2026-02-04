@@ -164,6 +164,7 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
 
 variable {ι : Type*} {ρ : ι → Type*} [∀ i, Preorder (ρ i)]
 
+/-- Constructs a chain of `Sigma`s from a chain of elements of the same index. -/
 def inj {i} (c : Chain (ρ i)) : Chain ((i : ι) × ρ i) where
   toFun n := ⟨i, c n⟩
   monotone' _ _ hn := Sigma.mk_mono i (c.monotone hn)
