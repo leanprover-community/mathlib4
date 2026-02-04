@@ -41,7 +41,7 @@ namespace BoundedVariationOn
 
 /-- The Stieltjes function associated to a bounded variation function. It is given by
 the variation of the function `f.rightLim` from a fixed base point.
-Using right limits ensures the right continuity, which is used to construct Sieltjes measures. -/
+Using right limits ensures the right continuity, which is used to construct Stieltjes measures. -/
 @[simps] noncomputable def stieltjesFunctionRightLim
     (hf : BoundedVariationOn f univ) (x₀ : α) : StieltjesFunction α where
   toFun x := variationOnFromTo f.rightLim univ x₀ x
