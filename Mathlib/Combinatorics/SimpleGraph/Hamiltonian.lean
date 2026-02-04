@@ -106,7 +106,7 @@ theorem IsHamiltonian.getVert_surjective (hp : p.IsHamiltonian) : p.getVert.Surj
   .of_comp <| p.getVert_comp_val_eq_get_support ▸
     isHamiltonian_iff_support_get_bijective.mp hp |>.surjective
 
-lemma isHamiltonian_iff_isPath_and_length [Fintype α] :
+lemma isHamiltonian_iff_isPath_and_length_eq [Fintype α] :
     p.IsHamiltonian ↔ p.IsPath ∧ p.length = Fintype.card α - 1 := by
   by_cases! h : IsEmpty α
   · exact h.elim' a
@@ -171,9 +171,8 @@ lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a 
 lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.length = Fintype.card α := by
   refine ⟨fun h ↦ ⟨h.isCycle, h.length_eq⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
-  refine isHamiltonian_iff_isPath_and_length.mpr ⟨IsPath.mk' ?_, ?_⟩
-  · exact (support_tail_of_not_nil _ h₁.not_nil) ▸ h₁.support_nodup
-  · grind [length_tail_add_one, IsCycle.not_nil]
+  refine isHamiltonian_iff_isPath_and_length_eq.mpr ⟨h₁.isPath_tail, ?_⟩
+  grind [length_tail_add_one, IsCycle.not_nil]
 
 end Walk
 
