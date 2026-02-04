@@ -37,7 +37,7 @@ possibilities are a finite set or using a structure (which brings along a proof 
 
 ## References
 
-* [de Bruyn *Tensor products of convex cones*][https://arxiv.org/abs/2009.11843v2]
+* [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
 
 -/
 
