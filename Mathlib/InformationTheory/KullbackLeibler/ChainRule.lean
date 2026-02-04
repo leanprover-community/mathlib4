@@ -143,28 +143,6 @@ lemma _root_.ConvexOn.exists_affine_le (hf : ConvexOn ℝ s f) (hs : Convex ℝ 
 
 end ConvexOn
 
-variable (μ ν) in
-lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] :
-    ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := by
-  let t := (Measure.mutuallySingular_singularPart ν μ).nullSet
-  have ht : MeasurableSet t := (Measure.mutuallySingular_singularPart ν μ).measurableSet_nullSet
-  have ht0 : ν.singularPart μ t = 0 := (Measure.mutuallySingular_singularPart ν μ).measure_nullSet
-  suffices ∫⁻ x, μ.rnDeriv ν x ∂(ν.singularPart μ) = 0 from
-    (lintegral_eq_zero_iff (by fun_prop)).mp this
-  refine le_antisymm ?_ (zero_le _)
-  calc ∫⁻ x, (∂μ/∂ν) x ∂ν.singularPart μ
-  _ = ∫⁻ x in tᶜ, (∂μ/∂ν) x ∂ν.singularPart μ := by
-    rw [← lintegral_add_compl _ ht, setLIntegral_measure_zero _ _ ht0, zero_add]
-  _ ≤ ∫⁻ x in tᶜ, (∂μ/∂ν) x ∂ν := by
-    have : ∫⁻ x in tᶜ, (∂μ/∂ν) x ∂ν = ∫⁻ x in tᶜ, (∂μ/∂ν) x ∂(ν.singularPart μ) + ∫⁻ x in tᶜ,
-        (∂μ/∂ν) x ∂(μ.withDensity (ν.rnDeriv μ)) := by
-      rw [← MeasureTheory.lintegral_add_measure, ← Measure.restrict_add]
-      rw [add_comm, Measure.rnDeriv_add_singularPart ν μ]
-    rw [this]
-    exact self_le_add_right _ _
-  _ ≤ μ tᶜ := Measure.setLIntegral_rnDeriv_le _
-  _ = 0 := (Measure.mutuallySingular_singularPart ν μ).measure_compl_nullSet
-
 variable (ν) in
 lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
     (h : ∀ᵐ a ∂μ, p a) :
@@ -172,7 +150,7 @@ lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α
   rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
   constructor
   · rw [← ν.haveLebesgueDecomposition_add μ]
-    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := rnDeriv_eq_zero_ae_singularPart μ ν
+    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := μ.rnDeriv_eq_zero_ae_singularPart ν
     filter_upwards [this] with x hx h_absurd using absurd hx h_absurd
   · have h_ac : μ.withDensity (ν.rnDeriv μ) ≪ μ := withDensity_absolutelyContinuous _ _
     rw [← ν.haveLebesgueDecomposition_add μ]

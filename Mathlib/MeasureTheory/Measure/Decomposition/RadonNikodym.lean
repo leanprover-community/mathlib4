@@ -200,6 +200,12 @@ lemma rnDeriv_eq_zero_of_mutuallySingular {ν' : Measure α} [HaveLebesgueDecomp
     exact h_ac'.ae_le this
   exact rnDeriv_zero _
 
+variable (μ ν) in
+lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] :
+    ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := by
+  refine rnDeriv_eq_zero_of_mutuallySingular (mutuallySingular_singularPart ν μ).symm ?_
+  exact (Measure.singularPart_le _ _).absolutelyContinuous
+
 /-- Auxiliary lemma for `rnDeriv_add_right_of_mutuallySingular`. -/
 lemma rnDeriv_add_right_of_absolutelyContinuous_of_mutuallySingular {ν' : Measure α}
     [HaveLebesgueDecomposition μ ν] [HaveLebesgueDecomposition μ (ν + ν')] [SigmaFinite ν]
