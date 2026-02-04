@@ -737,6 +737,25 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
+section
+
+variable {F G N : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [TopologicalSpace G] {J : ModelWithCorners 𝕜 F G} [TopologicalSpace N] [ChartedSpace G N]
+
+lemma writtenInExtChartAt_comp_eqOn (x : M) (g : M' → N) (f : M → M') :
+    EqOn (writtenInExtChartAt I J x (g ∘ f))
+      ((writtenInExtChartAt I' J (f x) g) ∘ (writtenInExtChartAt I I' x f))
+      ((f ∘ (extChartAt I x).symm) ⁻¹' (chartAt H' (f x)).source) := by
+  intro y hy
+  simp only [writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend, comp_apply,
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, toFun_eq_coe,
+    PartialEquiv.coe_trans_symm, coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+    ModelWithCorners.left_inv]
+  congr
+  exact ((chartAt H' _).left_inv hy).symm
+
+end
+
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
 
