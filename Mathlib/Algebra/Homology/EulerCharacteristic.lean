@@ -5,15 +5,11 @@ Authors: Jesse Alama
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplex
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Homology.ComplexShape
-public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.GradedObject
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Euler characteristic of homological complexes
