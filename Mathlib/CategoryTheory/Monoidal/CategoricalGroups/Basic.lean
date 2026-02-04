@@ -3,8 +3,10 @@ Copyright (c) 2026 Amogh Parab. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amogh Parab
 -/
-import Mathlib.CategoryTheory.Monoidal.Discrete
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!
 # Categorical Groups
@@ -38,7 +40,7 @@ Appl. Categ., 12:423–491, 2004
 
 -/
 
-
+@[expose] public section
 
 universe u v
 
