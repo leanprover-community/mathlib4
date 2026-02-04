@@ -88,8 +88,9 @@ def Complement (hx : IsRegularValue I J f (f x)) : Type _ :=
 
 /-- A complement in the model normed spaces `E` of `M` for an arbitrary regular value `y`.
 If `y` is not in the range of `f`, we simply take the trivial normed space. -/
-@[expose] def Complement' {y : N} (hy : IsRegularValue I J f y) : Type _ := by
-  classical exact if h : y ∈ range f then (h.choose_spec ▸ hy).Complement else PUnit
+@[expose] def Complement' {y : N} (hy : IsRegularValue I J f y) : Type _ :=
+  open scoped Classical in
+  if h : y ∈ range f then (h.choose_spec ▸ hy).Complement else PUnit
 
 instance (hy : IsRegularValue I J f y) : NormedAddCommGroup hy.Complement' := by
   by_cases h : y ∈ range f <;> simp only [Complement', h, ↓reduceDIte] <;> infer_instance
@@ -100,11 +101,21 @@ instance (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.Complement := b
 
 -- TODO: expanding the definition of Complement' does not seem to work, at all!
 instance (hy : IsRegularValue I J f y) : NormedSpace 𝕜 hy.Complement' := by
+  classical
+  /-
+  -- issue: the motive depends on the parameter; NormedSpace 𝕜 x depends on x in that it requires
+  -- a `NormedAddCommGorup x` instance.
+  unfold Complement'
+  -- also need to unfold Complement' in the NormedAddCommGroup instance...
+  rw [dif_pos]
+  let aux := dif_pos
+  --apply iteInduction (c := y ∈ range f) (α := Type _) (motive := fun _ ↦ ))
   by_cases h : y ∈ range f
   · simp [Complement', h]
+    --simp_rw [if_pos h]
     --have : NormedSpace 𝕜 (h.choose_spec ▸ hy).Complement := sorry
     sorry
-  simp only [Complement'] --, h, ↓reduceDIte]
+  simp only [Complement'] --, h, ↓reduceDIte] -/
   sorry
 
 /-- The set `f ⁻¹' y` coerced to a type that will be endowed with a manifold
@@ -231,23 +242,40 @@ def immersedSubmanifold_aux [I.Boundaryless] (hx : IsRegularValue I J f (f x))
   sliceModel := sorry -- should be a known condition
   real_condition := sorry
 
-/-- The **regular value theorem** for boundaryless manifolds, for any regular value `y` of `f`. -/
-instance immersedSubmanifold [I.Boundaryless] (hy : IsRegularValue I J f y)
-    (hf : ContMDiff I J n f) :
-    ImmersedSubmanifold 𝓘(𝕜, hy.modelSpace') I (hy.Preimage hf) M n hy.Complement' := by
-  sorry
-
-instance [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
-    ChartedSpace hy.modelSpace' (hy.Preimage hf) :=
-  (hy.immersedSubmanifold hf).chartedSpace
-
-instance [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
-    IsManifold 𝓘(𝕜, hy.modelSpace') n (hy.Preimage hf) :=
-  (hy.immersedSubmanifold hf).isManifold
-
 -- ideally, this would not be necessary
 abbrev inclusion (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) : (hy.Preimage hf) → M :=
     fun x ↦ x.val
+
+-- TODO: steal a universe level from M or so; this statement has free universe levels!
+/-- The **regular value theorem** for boundaryless manifolds, for any regular value `y` of `f`. -/
+lemma immersedSubmanifold [I.Boundaryless] (hy : IsRegularValue I J f y)
+    (hf : ContMDiff I J n f) :
+    ∃ (E''' C : Type _) (_ : NormedAddCommGroup E''') (_ : NormedSpace 𝕜 E''')
+      (_ : NormedAddCommGroup C) (_ : NormedSpace 𝕜 C),
+    Nonempty (ImmersedSubmanifold 𝓘(𝕜, E''') I (hy.Preimage hf) M n C) := by
+  sorry
+
+/-- The **regular value theorem** for boundaryless manifolds, for any regular value `y` of `f`. -/
+lemma immersedSubmanifolds_foo [I.Boundaryless] (hy : IsRegularValue I J f y)
+    (hf : ContMDiff I J n f) :
+    ∃ (E''' : Type*) (_ : NormedAddCommGroup E''') (_ : NormedSpace 𝕜 E''')
+      (_ : ChartedSpace E''' (hy.Preimage hf)) (_ : IsManifold 𝓘(𝕜, E''') n (hy.Preimage hf)),
+    IsImmersion 𝓘(𝕜, E''') I n (hy.inclusion hf) := by
+  -- revisit once the above statement is fixed!
+  -- choose modelSpace complement _ _ _ h using immersedSubmanifold hy hf
+  sorry
+
+-- use the other lemma
+instance [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
+    ChartedSpace hy.modelSpace' (hy.Preimage hf) :=
+  sorry -- use immersedSubmanifolds_foo
+  -- was: (hy.immersedSubmanifold hf).chartedSpace
+
+instance [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
+    IsManifold 𝓘(𝕜, hy.modelSpace') n (hy.Preimage hf) :=
+  sorry -- use immersedSubmanifolds_foo
+  -- was: (hy.immersedSubmanifold hf).isManifold
+
 
 lemma foo [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
     IsSmoothEmbedding 𝓘(𝕜, hy.modelSpace') I n (hy.inclusion hf) :=
