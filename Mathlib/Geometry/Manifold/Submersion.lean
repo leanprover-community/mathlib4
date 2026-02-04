@@ -304,7 +304,7 @@ lemma isSubmersionOfComplement_complement (h : IsSubmersion I J n f) :
   Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 /-- If `f` is a submersion, it is a submersion at each point. -/
-lemma isSubmersion (h : IsSubmersion I J n f) (x : M) :
+lemma isSubmersionAt (h : IsSubmersion I J n f) (x : M) :
     IsSubmersionAt I J n f x :=
   ⟨h.complement, inferInstance, inferInstance,
     h.isSubmersionOfComplement_complement.isSubmersionAtOfComplement x⟩

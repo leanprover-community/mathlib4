@@ -264,4 +264,12 @@ lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace E] [CompleteSpace F] [C
     sorry
   exact Filter.eventuallyEq_of_mem (hf this) (by intro; simp)
 
+/-- If `mfderiv I J f x` is surjective and `N` is finite-dimensional,
+then `x` is a regular point. -/
+lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
+    (hf' : Surjective (mfderiv I I' f x)) : IsRegularPoint I I' f x := by
+  unfold IsRegularPoint
+  apply ContinuousLinearMap.HasBoundedRightInverse.of_surjective_of_finiteDimensional
+  sorry -- use hf', and a lemma foo' for surjectivity!
+
 end IsRegularPoint

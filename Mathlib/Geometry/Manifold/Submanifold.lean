@@ -51,14 +51,21 @@ namespace ImmersedSubmanifold
 def chartedSpace [h : ImmersedSubmanifold I J M N n F] : ChartedSpace H M :=
   sorry
 
-#exit
+def isManifold [h : ImmersedSubmanifold I J M N n F] :
+    haveI := h.chartedSpace; IsManifold I n M :=
+  sorry
+
+
 lemma isImmersionOfComplement [h : ImmersedSubmanifold I J M N n F] :
+    haveI := h.chartedSpace;
     IsImmersionOfComplement F I J n h.map := sorry
 
 lemma isImmersion [h : ImmersedSubmanifold I J M N n F] :
+    haveI := h.chartedSpace;
     IsImmersion I J n h.map :=
-  h.isImmersionOfComplement.isImmersion
+  sorry -- h.isImmersionOfComplement.isImmersion
 
+/- commented until we have the definition ironed out
 def of_isImmersionOfComplement [SliceModel F I J]
     {f : M → N} (hf : IsImmersionOfComplement F I J n f) :
   ImmersedSubmanifold I J M N n F where
@@ -78,6 +85,7 @@ def of_isImmersion {f : M → N} (hf : IsImmersion I J n f) : --[SliceModel hf.c
 -- Let's postpone the details...
 def SliceModel.of_isImmersionOfComplement {f : M → N} (hf : IsImmersionOfComplement F I J n f) :
     SliceModel F I J := sorry
+-/
 
 def trans [h : ImmersedSubmanifold I J M N n F] [h' : ImmersedSubmanifold J J'' N P n F'] :
     ImmersedSubmanifold I J'' M P n (F × F') where
@@ -94,13 +102,15 @@ class EmbeddedSubmanifold extends ImmersedSubmanifold I J M N n F where
 namespace EmbeddedSubmanifold
 
 lemma isSmoothEmbedding [h : EmbeddedSubmanifold I J M N n F] :
+    haveI := h.chartedSpace;
     IsSmoothEmbedding I J n h.map := sorry
 
+/- Commented until we have the definition ironed out
 def of_isSmoothEmbedding --[SliceModel F I J]
     {f : M → N} (hf : IsSmoothEmbedding I J n f) :
     EmbeddedSubmanifold I J M N n hf.isImmersion.complement where
   toImmersedSubmanifold := .of_isImmersion hf.isImmersion
-  isEmbedding := sorry
+  isEmbedding := sorry -/
 
 def trans [h : EmbeddedSubmanifold I J M N n F] [h' : EmbeddedSubmanifold J J'' N P n F'] :
     EmbeddedSubmanifold I J'' M P n (F × F') where

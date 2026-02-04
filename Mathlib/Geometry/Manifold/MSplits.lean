@@ -407,7 +407,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
   [IsManifold I 1 M] [IsManifold J 1 N]
   {f : M → N} {x : M} {n : WithTop ℕ∞}
 
-/-- If `f : M → N` is injective and `M` is finite-dimensional, then `f` splits. -/
+/-- If `mfderiv I J f x` is injective and `M` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
     (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
   intro x
@@ -415,7 +415,7 @@ lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
   rw [foo' (n := 1) f x]
   exact hf' x
 
-/-- If `f : M → N` is injective and `N` is finite-dimensional, then `f` splits. -/
+/-- If `mfderiv I J f x` is injective and `N` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 F]
     (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
   intro x
@@ -424,7 +424,7 @@ lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 F]
   exact hf' x
 
 -- FUTURE (once mathlib has a notion of Fredholm operators):
--- If `f : M → N` is injective, `M` and `N` are Banach manifolds and each differential
+-- If `mfderiv I J f x` is injective, `M` and `N` are Banach manifolds and each differential
 -- `mfderiv I J f x` is Fredholm, then `f` splits.
 
 end MSplits
