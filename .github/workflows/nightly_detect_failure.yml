@@ -88,12 +88,21 @@ jobs:
     - name: Cleanup workspace
       run: |
         sudo rm -rf -- *
+    - name: Generate lean-pr-testing app token
+      id: lean-pr-testing-token
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
+        owner: leanprover
+        repositories: lean4
     # Checkout the Lean repository on 'nightly-with-mathlib'
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout Lean repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         repository: leanprover/lean4
-        token: ${{ secrets.LEAN_PR_TESTING }}
+        token: ${{ steps.lean-pr-testing-token.outputs.token }}
         ref: nightly-with-mathlib
     # Merge the relevant nightly.
     - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'

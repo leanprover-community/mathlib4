@@ -9,10 +9,6 @@ on:
       pr_branch_ref:
         type: string
         required: true
-      job_name_suffix:
-        type: string
-        required: false
-        default: ""
       runs_on:
         type: string
         required: true
@@ -27,7 +23,7 @@ env:
 
 jobs:
   build:
-    name: Build${{ inputs.job_name_suffix }}
+    name: Build
     runs-on: ${{ inputs.runs_on }}
     outputs:
       build-outcome: ${{ steps.build.outcome }}
@@ -54,6 +50,14 @@ jobs:
         shell: bash # there is no script body, so this is safe to "run" outside landrun.
         run: |
           # We just populate the env vars for this step to make them viewable in the logs
+      - name: Generate lean-pr-testing app token
+        id: lean-pr-testing-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
+          owner: leanprover
+          repositories: lean4
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
@@ -571,11 +575,12 @@ jobs:
             exit 1
           fi
 
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
         if: always()
         shell: bash
         env:
-          TOKEN: ${{ secrets.LEAN_PR_TESTING }}
+          TOKEN: ${{ steps.lean-pr-testing-token.outputs.token }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
@@ -590,7 +595,7 @@ jobs:
           master-branch/scripts/lean-pr-testing-comments.sh batteries
 
   post_steps:
-    name: Post-Build Step${{ inputs.job_name_suffix }}
+    name: Post-Build Step
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
@@ -669,7 +674,7 @@ jobs:
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.
   style_lint:
-    name: Lint style${{ inputs.job_name_suffix }}
+    name: Lint style
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
@@ -679,10 +684,17 @@ jobs:
           ref: ${{ inputs.pr_branch_ref }}
 
   final:
-    name: Post-CI job${{ inputs.job_name_suffix }}
+    name: Post-CI job
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
+      - name: Generate auto merge app token
+        id: auto-merge-app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_AUTO_MERGE_PRIVATE_KEY }}
+
       - id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
@@ -779,11 +791,12 @@ jobs:
           username: ${{ steps.get-label-actor.outputs.username }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - if: ${{ contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') && (contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') || contains(steps.actorTeams.outputs.teams, 'bot-users')) }}
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}
+          token: ${{ steps.auto-merge-app-token.outputs.token }}
           issue-number: ${{ steps.PR.outputs.number }}
           body: |
             As this PR is labelled `auto-merge-after-CI`, we are now sending it to bors:
