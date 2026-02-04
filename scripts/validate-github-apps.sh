@@ -124,10 +124,11 @@ validate_app() {
     # Check app is installed on org
     local installations
     if installations=$(gh api "/orgs/$expected_org/installations" 2>/dev/null); then
-        local installed suspended
+        local installed suspended repo_selection installation_id
         installed=$(echo "$installations" | jq -r ".installations[] | select(.app_slug == \"$slug\") | .id" | head -1)
         if [[ -n "$installed" ]]; then
             ok "App installed on $expected_org"
+            installation_id="$installed"
 
             # Check if suspended
             suspended=$(echo "$installations" | jq -r ".installations[] | select(.app_slug == \"$slug\") | .suspended_at // empty" | head -1)
@@ -135,6 +136,13 @@ validate_app() {
                 ok "App not suspended"
             else
                 fail "App is suspended!"
+            fi
+
+            # Check repository selection - if "selected", we need to verify each repo
+            repo_selection=$(echo "$installations" | jq -r ".installations[] | select(.app_slug == \"$slug\") | .repository_selection" | head -1)
+            if [[ "$repo_selection" == "selected" ]]; then
+                # App is installed on selected repos only - verify each secret repo has the app
+                validate_app_repo_installations "$slug" "$installation_id" "$expected_org"
             fi
         else
             fail "App not installed on $expected_org"
@@ -150,6 +158,18 @@ validate_app() {
     validate_app_workflows "$slug"
 
     ((APPS_VALIDATED++)) || true
+}
+
+# Validate app is installed on each repo that needs secrets (for "selected" repo installations)
+validate_app_repo_installations() {
+    local slug="$1"
+    local installation_id="$2"
+    local org="$3"
+
+    # Note: We cannot reliably check per-repo installations without app-level authentication.
+    # The /repos/{repo}/installation endpoint requires the app's JWT, not user auth.
+    # Instead, we just remind the user to verify manually for "selected" installations.
+    info "App uses 'selected' repos - verify installation includes all repos at: https://github.com/organizations/$org/settings/installations/$installation_id"
 }
 
 # Validate secrets exist for an app

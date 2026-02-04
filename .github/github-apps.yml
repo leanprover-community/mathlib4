@@ -201,9 +201,14 @@ apps:
       - repo: leanprover-community/mathlib4
         app_id: MATHLIB_AUTO_MERGE_APP_ID
         private_key: MATHLIB_AUTO_MERGE_PRIVATE_KEY
+      - repo: leanprover-community/mathlib4-nightly-testing
+        app_id: MATHLIB_AUTO_MERGE_APP_ID
+        private_key: MATHLIB_AUTO_MERGE_PRIVATE_KEY
 
     workflows:
       - repo: leanprover-community/mathlib4
+        files: [build_template.yml]
+      - repo: leanprover-community/mathlib4-nightly-testing
         files: [build_template.yml]
 
   # ============================================================================
@@ -222,11 +227,16 @@ apps:
       pull_requests: write
 
     secrets:
-      # Secrets are in mathlib4, but app is installed on lean4
+      # Secrets are in mathlib4 and mathlib4-nightly-testing, but app is installed on lean4
       - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_LEAN_PR_TESTING_APP_ID
+        private_key: MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY
+      - repo: leanprover-community/mathlib4-nightly-testing
         app_id: MATHLIB_LEAN_PR_TESTING_APP_ID
         private_key: MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY
 
     workflows:
       - repo: leanprover-community/mathlib4
+        files: [build_template.yml, nightly_detect_failure.yml]
+      - repo: leanprover-community/mathlib4-nightly-testing
         files: [build_template.yml, nightly_detect_failure.yml]
