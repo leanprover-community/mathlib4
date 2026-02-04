@@ -75,9 +75,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
       m botSet = 0 ∧ ∀ s, ‖m s‖ₑ ≤ hf.measureAux s := by
   /- We will apply the general extension theorem
   `VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom`. For this, we
-  need to check that the additive content is bounded by the measure `measureAux`, and that the
-  semiring of sets given by the open-closed intervals covers the space modulo `0`. Indeed,
-  it covers everying except the bot element if there is one. -/
+  need to check that the additive content is bounded by the measure `measureAux`. -/
   rcases isEmpty_or_nonempty α with h'α | h'α
   · exact ⟨0, by simp⟩
   let m := AddContent.onIoc f.rightLim
@@ -97,33 +95,8 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     borelize α
     convert borel_eq_generateFrom_Ioc_le α using 2
     grind only
-  have C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}
-      ∧ hf.measureAux (⋃₀ D)ᶜ = 0 := by
-    obtain ⟨s, s_count, s_dense, s_bot, s_top⟩ :
-        ∃ s, s.Countable ∧ Dense s ∧ (∀ (x : α), IsBot x → x ∈ s) ∧ ∀ (x : α), IsTop x → x ∈ s :=
-      exists_countable_dense_bot_top α
-    let D := {t : Set α | ∃ u v, u ≤ v ∧ t = Ioc u v ∧ u ∈ s ∧ v ∈ s}
-    refine ⟨D, ?_, by grind, ?_⟩
-    · have : D ⊆ (fun (p : α × α) ↦ Ioc p.1 p.2) '' (s ×ˢ s) := by
-        rintro - ⟨u, v, -, rfl, us, vs⟩
-        exact mem_image_of_mem (x := (u, v)) _ (by simp [us, vs])
-      exact Countable.mono this ((s_count.prod s_count).image _)
-    have : (⋃₀ D)ᶜ ⊆ botSet := by
-      rw [compl_subset_comm, botSet]
-      intro x hx
-      simp only [mem_sUnion]
-      obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, y < x := by
-        have : (Iio x).Nonempty := by simpa [IsBot] using hx
-        exact s_dense.exists_mem_open isOpen_Iio this
-      by_cases h'x : IsTop x
-      · exact ⟨Ioc y x, ⟨y, x, hy.le, rfl, ys, s_top _ h'x⟩, ⟨hy, le_rfl⟩⟩
-      obtain ⟨z, zs, hz⟩ : ∃ z ∈ s, x < z := by
-        have : (Ioi x).Nonempty := by simpa [IsTop] using h'x
-        exact s_dense.exists_mem_open isOpen_Ioi this
-      exact ⟨Ioc y z, ⟨y, z, (hy.trans hz).le, rfl, ys, zs⟩, ⟨hy, hz.le⟩⟩
-    exact measure_mono_null this (by simp [measureAux, h'α])
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
-    IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
+    IsSetSemiring.Ioc A B with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, ?_, h'm'⟩
   · rw [hm']
     · exact AddContent.onIoc_apply huv
@@ -172,7 +145,7 @@ lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     · simp [heqa]
   obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
-    ∃ u : ℕ → α, StrictMono u ∧ (∀ n : ℕ, u n ∈ Ioo b a) ∧ Tendsto u atTop (𝓝 a) :=
+      ∃ u : ℕ → α, StrictMono u ∧ (∀ n : ℕ, u n ∈ Ioo b a) ∧ Tendsto u atTop (𝓝 a) :=
     exists_seq_strictMono_tendsto' hb
   replace u_lt_a n : u n < a := (u_lt_a n).2
   have A : {a} = ⋂ n, Ioc (u n) a := by
@@ -223,11 +196,6 @@ theorem vectorMeasure_Ici (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Ici a) = limUnder atTop f - f.leftLim a := by
   have : Nonempty α := ⟨a⟩
   have hlim : Tendsto f atTop (𝓝 (limUnder atTop f)) := hf.tendsto_atTop_limUnder
-  cases topOrderOrNoTopOrder α
-  · have : Ici a = Icc a ⊤ := by simp
-    rw [atTop_eq_pure_of_isTop isTop_top] at hlim ⊢
-    rw [this, hf.vectorMeasure_Icc le_top, tendsto_nhds_unique hlim (tendsto_pure_nhds f ⊤),
-      rightLim_eq_of_isTop isTop_top]
   obtain ⟨u, u_mono, hu⟩ : ∃ u, Monotone u ∧ Tendsto u atTop atTop :=
     Filter.exists_seq_monotone_tendsto_atTop_atTop α
   have A : Tendsto (fun n ↦ hf.vectorMeasure (Icc a (u n))) atTop
@@ -263,12 +231,7 @@ theorem vectorMeasure_Iic (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Iic a) = f.rightLim a - limUnder atBot f := by
   have : Nonempty α := ⟨a⟩
   have hlim : Tendsto f atBot (𝓝 (limUnder atBot f)) :=  hf.tendsto_atBot_limUnder
-  cases botOrderOrNoBotOrder α
-  · have : Iic a = Icc ⊥ a := by simp
-    rw [atBot_eq_pure_of_isBot isBot_bot] at hlim ⊢
-    rw [this, hf.vectorMeasure_Icc bot_le, tendsto_nhds_unique hlim (tendsto_pure_nhds f ⊥),
-      leftLim_eq_of_isBot isBot_bot]
-  obtain ⟨u, u_mono, hu⟩ : ∃ u, Antitone u ∧ Tendsto u atTop atBot :=
+  obtain ⟨u, u_anti, hu⟩ : ∃ u, Antitone u ∧ Tendsto u atTop atBot :=
     Filter.exists_seq_antitone_tendsto_atTop_atBot α
   have A : Tendsto (fun n ↦ hf.vectorMeasure (Icc (u n) a)) atTop
       (𝓝 (hf.vectorMeasure (Iic a))) := by
@@ -299,8 +262,10 @@ theorem vectorMeasure_Iio (hf : BoundedVariationOn f univ) (a : α) :
     measurableSet_Icc, hf.vectorMeasure_Icc le_rfl] at this
   grind
 
-theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) [hα : Nonempty α] :
+theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure univ = limUnder atTop f - limUnder atBot f := by
+  rcases isEmpty_or_nonempty α with hα | hα
+  · simp [univ_eq_empty_iff.mpr hα, limUnder_eq_of_isEmpty (atTop : Filter α) atBot]
   rw [← Iio_union_Ici (a := hα.some), VectorMeasure.of_union (by simp) measurableSet_Iio
     measurableSet_Ici, hf.vectorMeasure_Iio, hf.vectorMeasure_Ici]
   abel
