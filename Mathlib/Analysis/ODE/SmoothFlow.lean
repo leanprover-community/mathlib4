@@ -599,11 +599,11 @@ lemma T_eq_zero_of_isFixedPt_next {f : E → E} {u : Set E} (hf : ContinuousOn f
     T f u t₀ (x₀, α.toContinuousMap) = 0 := by
   ext t
   have heq := (ODE.FunSpace.isFixedPt_next_iff hPL (mem_closedBall_self le_rfl)).mp h t
-  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+  have hf' : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   rw [T, curry0_apply, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
     ODE.FunSpace.toContinuousMap_apply_eq_apply, ContinuousMap.zero_apply, heq, ODE.picard_apply,
-    integralCMLM_apply_if_pos hg, integralCM_apply_if_pos hα, integralFun, sub_add_cancel_left,
+    integralCMLM_apply_if_pos hf', integralCM_apply_if_pos hα, integralFun, sub_add_cancel_left,
     neg_add_eq_zero]
   congr
 
@@ -614,10 +614,10 @@ lemma eq_picard_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0) (t : Icc tmin tmax) :
     α t = ODE.picard (fun _ ↦ f) t₀ x₀ (fun t ↦ compProj t₀ α t) t := by
   replace hT := ContinuousMap.ext_iff.mp hT t
-  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+  have hf' : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   rw [T, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
-    ContinuousMap.zero_apply, ContinuousMultilinearMap.curry0_apply, integralCMLM_apply_if_pos hg,
+    ContinuousMap.zero_apply, ContinuousMultilinearMap.curry0_apply, integralCMLM_apply_if_pos hf',
     integralCM_apply_if_pos hα, integralFun, sub_add_eq_add_sub, sub_eq_zero] at hT
   simp [← hT]
 
@@ -680,14 +680,14 @@ lemma T_restrictIcc_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     {tmin' tmax' : ℝ} (htmin : tmin ≤ tmin') (htmax : tmax' ≤ tmax)
     (ht₀min : tmin' ≤ t₀.1) (ht₀max : t₀.1 ≤ tmax') :
     T f u ⟨t₀.1, ⟨ht₀min, ht₀max⟩⟩ (x₀, restrictIcc α htmin htmax) = 0 := by
-  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+  ext t
+  have hf' : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   have hα' : range (restrictIcc α htmin htmax) ⊆ u :=
     (range_restrictIcc_subset α htmin htmax).trans hα
-  ext t
   -- TODO: more lemmas going straight from `integralCMLM` to `integralFun`?
   rw [T, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
-    ContinuousMap.zero_apply, curry0_apply, integralCMLM_apply_if_pos hg,
+    ContinuousMap.zero_apply, curry0_apply, integralCMLM_apply_if_pos hf',
     integralCM_apply_if_pos hα', integralFun, restrictIcc_apply]
   simp_rw [uncurry0_apply]
   rw [eq_picard_of_T_eq_zero hf hα hT ⟨t.1, ⟨htmin.trans t.2.1, t.2.2.trans htmax⟩⟩,
@@ -754,10 +754,10 @@ lemma hasFDerivAt_integralCMLM_curry0 {f : E → E} {u : Set E} (hf : ContDiffOn
     HasFDerivAt (fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0)
       (fderivIntegralCurry0 f u t₀ α) α :=
   -- TODO: repetitive
-  have hg : ContDiffOn ℝ 1 (fun y ↦ uncurry0 ℝ E (f y)) u :=
+  have hf' : ContDiffOn ℝ 1 (fun y ↦ uncurry0 ℝ E (f y)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
   continuousMultilinearCurryFin0 ℝ C(Icc tmin tmax, E) C(Icc tmin tmax, E)
-    |>.toContinuousLinearEquiv.hasFDerivAt.comp α <| hasFDerivAt_integralCMLM hg hu t₀ hα
+    |>.toContinuousLinearEquiv.hasFDerivAt.comp α <| hasFDerivAt_integralCMLM hf' hu t₀ hα
 
 /-- The Fréchet derivative of `T f u t₀` at `(x, α)`. This is the continuous linear map
 `(dx, dα) ↦ const dx - dα + D(integral term)(dα)`. -/
@@ -835,12 +835,12 @@ lemma fderivIntegralCurry0_eq_of_subset {f : E → E} {u₁ u₂ : Set E}
     fderivIntegralCurry0 f u₁ t₀ α = fderivIntegralCurry0 f u₂ t₀ α := by
   simp only [fderivIntegralCurry0]
   congr 1
-  have hg :=
-    (contDiffOn_iteratedFDerivUncurry_uncurry0 (m := 0) (k := 1) hf hu₂ le_rfl).continuousOn
+  have hf' :=
+    contDiffOn_iteratedFDerivUncurry_uncurry0 (m := 0) (k := 1) hf hu₂ le_rfl |>.continuousOn
   ext dα x t
   simp only [ContinuousMultilinearMap.curryLeft_apply]
-  rw [integralCMLM_apply_if_pos (hg.mono hu), integralCM_apply_if_pos hα,
-      integralCMLM_apply_if_pos hg, integralCM_apply_if_pos (hα.trans hu)]
+  rw [integralCMLM_apply_if_pos (hf'.mono hu), integralCM_apply_if_pos hα,
+      integralCMLM_apply_if_pos hf', integralCM_apply_if_pos (hα.trans hu)]
 
 omit [CompleteSpace E] in
 /-- The Fréchet derivative of `uncurry0 ∘ f` at `x` is `uncurry0 ∘ fderiv f x`. This is the chain
@@ -868,8 +868,9 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
   refine opNorm_le_bound (by positivity) fun v ↦ ?_
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
-  have hg := (contDiffOn_iteratedFDerivUncurry_uncurry0 (m := 0) (k := 1) hf hu le_rfl).continuousOn
-  rw [curryLeft_apply, integralCMLM_apply_if_pos hg,
+  have hf' :=
+    (contDiffOn_iteratedFDerivUncurry_uncurry0 (m := 0) (k := 1) hf hu le_rfl).continuousOn
+  rw [curryLeft_apply, integralCMLM_apply_if_pos hf',
     integralCM_apply_if_pos hα, integralFun, Fin.prod_univ_zero, mul_one, mul_comm]
   refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C * ‖dα‖) ?_).trans ?_
   · intro τ hτ
