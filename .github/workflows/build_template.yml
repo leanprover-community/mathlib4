@@ -1,8 +1,17 @@
-### NB: This is the master file for autogenerating
-### NB: `.github/workflows/{bors, build_fork, build}.yml`.
-### NB: If you need to edit any of those files, you should edit this file instead,
-### NB: and regenerate those files by manually running
-### NB: .github/workflows/mk_build_yml.sh
+# Reusable workflow invoked by build.yml, bors.yml, and build_fork.yml.
+
+on:
+  workflow_call:
+    inputs:
+      concurrency_group:
+        type: string
+        required: true
+      pr_branch_ref:
+        type: string
+        required: true
+      runs_on:
+        type: string
+        required: true
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -12,24 +21,10 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
 
-concurrency:
-  # label each workflow run; only the latest with each label will run
-  # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
-  # cancel any running workflow with the same label
-  cancel-in-progress: true
-
-# Limit permissions for GITHUB_TOKEN for the entire workflow
-permissions:
-  contents: read
-  pull-requests: write  # Only allow PR comments/labels
-  # All other permissions are implicitly 'none'
-
 jobs:
   build:
-    if: FORK_CONDITION
-    name: BuildJOB_NAME
-    runs-on: RUNS_ON
+    name: Build
+    runs-on: ${{ inputs.runs_on }}
     outputs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
@@ -51,10 +46,18 @@ jobs:
           REF: ${{ github.ref }}
           EVENT_NAME: ${{ github.event_name }}
           RUN_ID: ${{ github.run_id }}
-          CONCURRENCY_GROUP: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ (github.event_name == 'push' && contains(fromJSON('["refs/heads/master", "refs/heads/staging"]'), github.ref) && github.run_id) || '' }}
+          CONCURRENCY_GROUP: ${{ inputs.concurrency_group }}
         shell: bash # there is no script body, so this is safe to "run" outside landrun.
         run: |
           # We just populate the env vars for this step to make them viewable in the logs
+      - name: Generate lean-pr-testing app token
+        id: lean-pr-testing-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
+          owner: leanprover
+          repositories: lean4
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
@@ -82,15 +85,16 @@ jobs:
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
-          # For PRs and pushes to this repository, we will use `nightly-testing` instead.
-          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing' || 'master' }}
+          # For PRs and pushes to this repository, we will use `nightly-testing-green` instead,
+          # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
+          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master' }}
           path: master-branch
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: "${{ PR_BRANCH_REF }}"
+          ref: ${{ inputs.pr_branch_ref }}
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
@@ -572,11 +576,12 @@ jobs:
             exit 1
           fi
 
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
         if: always()
         shell: bash
         env:
-          TOKEN: ${{ secrets.LEAN_PR_TESTING }}
+          TOKEN: ${{ steps.lean-pr-testing-token.outputs.token }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
@@ -591,15 +596,14 @@ jobs:
           master-branch/scripts/lean-pr-testing-comments.sh batteries
 
   post_steps:
-    name: Post-Build StepJOB_NAME
-    if: FORK_CONDITION
+    name: Post-Build Step
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: "${{ PR_BRANCH_REF }}"
+          ref: ${{ inputs.pr_branch_ref }}
 
       - name: Configure Lean
         uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
@@ -671,22 +675,27 @@ jobs:
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.
   style_lint:
-    name: Lint styleJOB_NAME
-    if: FORK_CONDITION
+    name: Lint style
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
           mode: check
           lint-bib-file: true
-          ref: ${{ PR_BRANCH_REF }}
+          ref: ${{ inputs.pr_branch_ref }}
 
   final:
-    name: Post-CI jobJOB_NAME
-    if: FORK_CONDITION
+    name: Post-CI job
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
+      - name: Generate auto merge app token
+        id: auto-merge-app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_AUTO_MERGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_AUTO_MERGE_PRIVATE_KEY }}
+
       - id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
@@ -783,11 +792,12 @@ jobs:
           username: ${{ steps.get-label-actor.outputs.username }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - if: ${{ contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') && (contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') || contains(steps.actorTeams.outputs.teams, 'bot-users')) }}
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}
+          token: ${{ steps.auto-merge-app-token.outputs.token }}
           issue-number: ${{ steps.PR.outputs.number }}
           body: |
             As this PR is labelled `auto-merge-after-CI`, we are now sending it to bors:

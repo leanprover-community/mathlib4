@@ -1015,6 +1015,12 @@ theorem le_intro (h : ∀ s, MeasurableSet s → s.Nonempty → μ₁ s ≤ μ�
 
 theorem le_iff' : μ₁ ≤ μ₂ ↔ ∀ s, μ₁ s ≤ μ₂ s := .rfl
 
+@[gcongr] theorem measure_mono_left (h : μ ≤ ν) (s : Set α) : μ s ≤ ν s := h s
+
+@[gcongr]
+theorem measure_mono_both (h₁ : μ ≤ ν) (h₂ : s ⊆ t) : μ s ≤ ν t :=
+  (h₁ s).trans (measure_mono h₂)
+
 theorem lt_iff : μ < ν ↔ μ ≤ ν ∧ ∃ s, MeasurableSet s ∧ μ s < ν s :=
   lt_iff_le_not_ge.trans <|
     and_congr Iff.rfl <| by simp only [le_iff, not_forall, not_le, exists_prop]
