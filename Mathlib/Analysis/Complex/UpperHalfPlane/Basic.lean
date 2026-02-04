@@ -243,10 +243,6 @@ abbrev upperHalfPlaneSet := {z : ℂ | 0 < z.im}
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
-@[simp]
-theorem mem_upperHalfPlaneSet {z : ℂ} : z ∈ ℍₒ ↔ 0 < z.im := .rfl
-
-@[simp]
 lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Complex.continuous_im
 
 @[simp]
