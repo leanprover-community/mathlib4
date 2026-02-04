@@ -254,7 +254,7 @@ lemma integrable_llr_of_integrable_llr_compProd
     continuous_mul_log.stronglyMeasurable continuous_mul_log.continuousOn h_int hκη_ac
   exact (integrable_rnDeriv_mul_log_iff hμν_ac).mp h_int
 
-lemma aux2 [IsMarkovKernel κ]
+lemma rnDeriv_compProd_mul_log_eq_mul_add [IsMarkovKernel κ]
     [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     ∀ᵐ p ∂(ν ⊗ₘ η), ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal =
       (((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * (log ((∂μ/∂ν) p.1).toReal +
@@ -268,21 +268,13 @@ lemma aux2 [IsMarkovKernel κ]
   · simp [h_zero2]
   simp [log_mul h_zero1 h_zero2]
 
-lemma aux [IsMarkovKernel κ]
-    [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
-    Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ) ↔
-       Integrable (fun x ↦ log ((∂μ/∂ν) x.1).toReal +
-         log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal) (μ ⊗ₘ κ) := by
-  have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
-  rw [← integrable_rnDeriv_mul_log_iff h_ac, integrable_congr (aux2 h_ac_κη)]
-  exact integrable_rnDeriv_smul_iff h_ac
-
 lemma integrable_llr_compProd_iff [IsMarkovKernel κ]
     [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ) ↔
       Integrable (llr μ ν) μ ∧ Integrable (llr (μ ⊗ₘ κ) (μ ⊗ₘ η)) (μ ⊗ₘ κ) := by
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
-  rw [← integrable_rnDeriv_mul_log_iff h_ac, integrable_congr (aux2 h_ac_κη)]
+  rw [← integrable_rnDeriv_mul_log_iff h_ac,
+    integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
   have : Integrable (fun x ↦ ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) x).toReal *
         (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal)) (ν ⊗ₘ η) ↔
       Integrable (fun x ↦ (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal))
@@ -299,10 +291,17 @@ lemma integrable_llr_compProd_iff [IsMarkovKernel κ]
   rw [h_iff_κ]
   -- goal of the form `Integrable (f + g) ↔ Integrable f ∧ Integrable g`
   refine ⟨fun h_int ↦ ?_, fun ⟨h_int1, h_int2⟩ ↦ h_int1.add h_int2⟩
-  rw [← aux h_ac] at h_int
+  have h_int_iff : Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ) ↔
+      Integrable (fun x ↦ log ((∂μ/∂ν) x.1).toReal +
+        log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal) (μ ⊗ₘ κ) := by
+    have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
+    rw [← integrable_rnDeriv_mul_log_iff h_ac,
+     integrable_congr (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)]
+    exact integrable_rnDeriv_smul_iff h_ac
+  rw [← h_int_iff] at h_int
   have h_int1 := integrable_llr_of_integrable_llr_compProd h_ac h_int
   rw [h_iff_κ] at h_int1
-  rw [aux h_ac, integrable_add_iff_integrable_right'] at h_int
+  rw [h_int_iff, integrable_add_iff_integrable_right'] at h_int
   · refine ⟨h_int1, h_int⟩
   · exact h_int1
 
@@ -360,7 +359,7 @@ theorem klDiv_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarko
     rw [integral_rnDeriv_mul_log h_ac]
   _ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal *
       (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(ν ⊗ₘ η) :=
-    integral_congr_ae (aux2 h_ac_κη)
+    integral_congr_ae (rnDeriv_compProd_mul_log_eq_mul_add h_ac_κη)
   _ = ∫ p, (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(μ ⊗ₘ κ) :=
     integral_rnDeriv_smul h_ac
   _ = ∫ p, log ((∂μ/∂ν) p.1).toReal ∂(μ ⊗ₘ κ) +
