@@ -26,7 +26,7 @@ open scoped symmDiff
 
 namespace MeasureTheory.VectorMeasure
 
-variable {α : Type*} [hα : MeasurableSpace α] {E : Type*} [NormedAddCommGroup E]
+variable {α : Type*} {hα : MeasurableSpace α} {E : Type*} [NormedAddCommGroup E]
 [CompleteSpace E] {μ : Measure α}
 
 /-- A finitely additive vector measure which is dominated by a finite positive measure is in
@@ -81,11 +81,13 @@ def of_additive_of_le_measure
     exact tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
       (fun i ↦ (f_meas i).nullMeasurableSet) f_disj
 
+open scoped ENNReal
+
 /-- Consider an additive content on a dense ring of sets. Assume that it is dominated by a finite
 positive measure. Then it extends to a countably additive vector measure. -/
 lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
-    {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetRing C)
-    (hC : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
+    {C : Set (Set α)} {m : AddContent E C} (hC : IsSetRing C)
+    (hCmeas : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
     (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C, μ (s ∆ t) < ε) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
   /- We will extend by continuity the function `m` from the class `C` to all measurable sets,
@@ -105,7 +107,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     simp only [Dense, EMetric.mem_closure_iff, gt_iff_lt]
     intro x ε εpos
     rcases h'C x ε x.2 εpos with ⟨s, sC, hs⟩
-    refine ⟨⟨s, hC s sC⟩, ⟨s, sC, rfl⟩, ?_⟩
+    refine ⟨⟨s, hCmeas s sC⟩, ⟨s, sC, rfl⟩, ?_⟩
     rw [edist_comm]
     exact hs
   /- Let `m₀` be the function `m` expressed on the subtype of `MeasuredSets μ` made of
@@ -116,22 +118,20 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     intro s t
     have : edist s t = edist (s : MeasuredSets μ) t := rfl
     simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, edist_eq_enorm_sub]
-    rw [measure_symmDiff_eq]; rotate_left
-    · exact s.1.2.nullMeasurableSet
-    · exact t.1.2.nullMeasurableSet
+    rw [measure_symmDiff_eq (by exact s.1.2.nullMeasurableSet) (by exact t.1.2.nullMeasurableSet)]
     have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_diff _ _
     have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_diff _ _
     nth_rewrite 1 [← Is]
     nth_rewrite 3 [← It]
-    rw [addContent_union hCs (hCs.inter_mem (C'C _ t.2) (C'C _ s.2))
-        (hCs.diff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
-      addContent_union hCs (hCs.inter_mem (C'C _ s.2) (C'C _ t.2))
-        (hCs.diff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
+    rw [addContent_union hC (hC.inter_mem (C'C _ t.2) (C'C _ s.2))
+        (hC.diff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
+      addContent_union hC (hC.inter_mem (C'C _ s.2) (C'C _ t.2))
+        (hC.diff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
     simp only [add_sub_add_left_eq_sub, ge_iff_le]
     apply enorm_sub_le.trans
     gcongr
-    · exact hm _ (hCs.diff_mem (C'C _ s.2) (C'C _ t.2))
-    · exact hm _ (hCs.diff_mem (C'C _ t.2) (C'C _ s.2))
+    · exact hm _ (hC.diff_mem (C'C _ s.2) (C'C _ t.2))
+    · exact hm _ (hC.diff_mem (C'C _ t.2) (C'C _ s.2))
   -- Let `m₁` be the extension of `m₀` to all elements of `MeasuredSets μ` by continuity
   let m₁ : MeasuredSets μ → E := C'_dense.extend m₀
   -- It is again Lipschitz continuous and bounded by `μ`
@@ -151,9 +151,8 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   have hAddit (s t : MeasuredSets μ) (h : Disjoint (s : Set α) t) :
       m₁ ⟨s ∪ t, s.2.union t.2⟩ = m₁ s + m₁ t := by
     suffices ∀ ε > 0, ‖m₁ (⟨s ∪ t, s.2.union t.2⟩) - m₁ s - m₁ t‖ₑ < ε by
-      rw [← sub_eq_zero, ← enorm_eq_zero]
-      contrapose! this
-      exact ⟨‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - (m₁ s + m₁ t)‖ₑ, this.bot_lt, le_of_eq (by abel_nf)⟩
+      rw [← sub_eq_zero, ← enorm_eq_zero, sub_add_eq_sub_sub]
+      exact eq_bot_iff.2 (le_of_forall_gt this)
     intro ε εpos
     obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ 8 * δ = ε :=
       ⟨ε / 8, (ENNReal.div_pos εpos.ne' (by simp)), ENNReal.mul_div_cancel (by simp) (by simp)⟩
@@ -161,8 +160,8 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     obtain ⟨s', s'C, hs'⟩ : ∃ s' ∈ C, μ (s' ∆ s) < δ := h'C _ _ s.2 δpos
     obtain ⟨t', t'C, ht'⟩ : ∃ t' ∈ C, μ (t' ∆ t) < δ := h'C _ _ t.2 δpos
     have It : ‖m t' - m₁ t‖ₑ < δ := by
-      have : m₁ ⟨t', hC _ t'C⟩ = m t' :=
-        C'_dense.extend_eq lip.continuous ⟨⟨t', hC _ t'C⟩, ⟨t', t'C, rfl⟩⟩
+      have : m₁ ⟨t', hCmeas _ t'C⟩ = m t' :=
+        C'_dense.extend_eq lip.continuous ⟨⟨t', hCmeas _ t'C⟩, ⟨t', t'C, rfl⟩⟩
       rw [← this, ← edist_eq_enorm_sub]
       apply (m₁_lip _ _).trans_lt
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
@@ -178,24 +177,24 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     -- Therefore, the set `s'' := s' \ t'` still approximates well the original set `s`, it belongs
     -- to `C`, and moreover `s''` and `t'` are disjoint.
     let s'' := s' \ t'
-    have s''C : s'' ∈ C := hCs.diff_mem s'C t'C
+    have s''C : s'' ∈ C := hC.diff_mem s'C t'C
     have hs'' : μ (s'' ∆ s) < 3 * δ := calc
       μ (s'' ∆ s)
       _ ≤ μ (s'' ∆ s') + μ (s' ∆ s) := measure_symmDiff_le _ _ _
       _ < 2 * δ + δ := by gcongr; simp [s'', symmDiff, hμ']
       _ = 3 * δ := by ring
     have Is : ‖m s'' - m₁ s‖ₑ < 3 * δ := by
-      have : m₁ ⟨s'', hC _ s''C⟩ = m s'' :=
-        C'_dense.extend_eq lip.continuous ⟨⟨s'', hC _ s''C⟩, ⟨s'', s''C, rfl⟩⟩
+      have : m₁ ⟨s'', hCmeas _ s''C⟩ = m s'' :=
+        C'_dense.extend_eq lip.continuous ⟨⟨s'', hCmeas _ s''C⟩, ⟨s'', s''C, rfl⟩⟩
       rw [← this, ← edist_eq_enorm_sub]
       apply (m₁_lip _ _).trans_lt
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
       exact hs''
     -- `s'' ∪ t'` also approximates well `s ∪ t`.
     have Ist : ‖m (s'' ∪ t') - m₁ ⟨s ∪ t, s.2.union t.2⟩‖ₑ < 4 * δ := by
-      have s''t'C : s'' ∪ t' ∈ C := hCs.union_mem s''C t'C
-      have : m₁ ⟨s'' ∪ t', hC _ s''t'C⟩ = m (s'' ∪ t') :=
-        C'_dense.extend_eq lip.continuous ⟨⟨s'' ∪ t', hC _ s''t'C⟩, ⟨s'' ∪ t', s''t'C, rfl⟩⟩
+      have s''t'C : s'' ∪ t' ∈ C := hC.union_mem s''C t'C
+      have : m₁ ⟨s'' ∪ t', hCmeas _ s''t'C⟩ = m (s'' ∪ t') :=
+        C'_dense.extend_eq lip.continuous ⟨⟨s'' ∪ t', hCmeas _ s''t'C⟩, ⟨s'' ∪ t', s''t'C, rfl⟩⟩
       rw [← this, ← edist_eq_enorm_sub]
       apply (m₁_lip _ _).trans_lt
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
@@ -214,7 +213,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     _ ≤ ‖m (s'' ∪ t') - m s'' - m t'‖ₑ + ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ
           + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := enorm_add₄_le
     _ = ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := by
-      rw [addContent_union hCs s''C t'C Set.disjoint_sdiff_left]
+      rw [addContent_union hC s''C t'C Set.disjoint_sdiff_left]
       simp
     _ < 4 * δ + 3 * δ + δ := by
       gcongr
@@ -237,8 +236,8 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
       simp [m', hs]
   refine ⟨m'', fun s hs ↦ ?_, fun s ↦ ?_⟩
   · change m' s = m s
-    simp only [hC s hs, ↓reduceDIte, m']
-    exact C'_dense.extend_eq lip.continuous ⟨⟨s, hC _ hs⟩, ⟨s, hs, rfl⟩⟩
+    simp only [hCmeas s hs, ↓reduceDIte, m']
+    exact C'_dense.extend_eq lip.continuous ⟨⟨s, hCmeas _ hs⟩, ⟨s, hs, rfl⟩⟩
   · change ‖m' s‖ₑ ≤ μ s
     by_cases hs : MeasurableSet s
     · simp only [hs, ↓reduceDIte, m']
@@ -249,44 +248,71 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
 it is dominated by a finite positive measure. Then it extends to a countably additive
 vector measure. -/
 lemma exists_extension_of_isSetSemiring_of_le_measure_of_dense [IsFiniteMeasure μ]
-    {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
-    (hC : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
+    {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
+    (hCmeas : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
     (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ supClosure C, μ (s ∆ t) < ε) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
-  set m₀ : AddContent E (supClosure C) := m.supClosure hCs with hm₀
+  set m₀ : AddContent E (supClosure C) := m.supClosure hC with hm₀
   have A (s) (hs : s ∈ supClosure C) : ‖m₀ s‖ₑ ≤ μ s := by
-    rw [hCs.mem_supClosure_iff] at hs
+    rw [hC.mem_supClosure_iff] at hs
     rcases hs with ⟨P, PC⟩
     nth_rewrite 2 [← P.sup_parts]
-    rw [hm₀, AddContent.supClosure_apply_finpartition hCs _ PC, Finset.sup_set_eq_biUnion,
-      measure_biUnion_finset P.disjoint (fun b hb ↦ hC _ (PC hb))]
+    rw [hm₀, AddContent.supClosure_apply_finpartition hC _ PC, Finset.sup_set_eq_biUnion,
+      measure_biUnion_finset P.disjoint (fun b hb ↦ hCmeas _ (PC hb))]
     apply (enorm_sum_le _ _).trans
     gcongr with t ht
     exact hm _ (PC ht)
   have B (s) (hs : s ∈ supClosure C) : MeasurableSet s := by
-    rw [hCs.mem_supClosure_iff] at hs
+    rw [hC.mem_supClosure_iff] at hs
     rcases hs with ⟨P, PC⟩
     rw [← P.sup_parts, Finset.sup_set_eq_biUnion]
-    exact Finset.measurableSet_biUnion _ (fun b hb ↦ hC _ (PC hb))
+    exact Finset.measurableSet_biUnion _ (fun b hb ↦ hCmeas _ (PC hb))
   rcases VectorMeasure.exists_extension_of_isSetRing_of_le_measure_of_dense
-    hCs.isSetRing_supClosure B A h'C with ⟨m', hm', m'bound⟩
+    hC.isSetRing_supClosure B A h'C with ⟨m', hm', m'bound⟩
   refine ⟨m', fun s hs ↦ ?_, m'bound⟩
   rw [hm' _ (subset_supClosure hs)]
   exact AddContent.supClosure_apply_of_mem _ _ hs
 
 /-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
 measure `μ`. Assume that `C` generates the sigma-algebra and covers the space up to measure zero.
-Then `m` extends to a countably additive vector measure, which is dominated by `μ`. -/
-theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
-    [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
+Then `m` extends to a countably additive vector measure which is dominated by `μ`. -/
+private lemma exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom_of_cover
+    [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
     (h'C : hα = generateFrom C) (h''C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
-  apply VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_dense hCs ?_ hm ?_
+  apply VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_dense hC ?_ hm ?_
   · intro s hs
     rw [h'C]
     exact measurableSet_generateFrom hs
   · intro t ε ht εpos
-    exact exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hCs h''C h'C ht εpos
+    exact exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h''C h'C ht εpos
+
+/-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
+measure `μ`. Assume that `C` generates the sigma-algebra.
+Then `m` extends to a countably additive vector measure which is dominated by `μ`. -/
+/- TODO: weaken the assumption that `C` generates the sigma-algebra to measurability of all
+elements of `C`, once integrals wrt vector measures is available (by composing the integral wrt `m'`
+on the generated sigma-algebra, with conditional expectation of the indicator function to project
+on the generated sigma-algebra). -/
+theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
+    [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
+    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : hα = generateFrom C) :
+    ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
+  have M (s) (hs : s ∈ C) : MeasurableSet s := by
+    rw [h'C]; exact measurableSet_generateFrom hs
+  rcases Measure.exists_ae_subset_biUnion_countable μ M with ⟨D, DC, D_count, hD⟩
+  have MD : MeasurableSet (⋃₀ D) := MeasurableSet.sUnion D_count (fun t ht ↦ M _ (DC ht))
+  let μ' := μ.restrict (⋃₀ D)
+  obtain ⟨m', h, h'⟩ : ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
+    apply exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom_of_cover hC
+      (fun s hs ↦ ?_) h'C ?_
+    · exact ⟨D, D_count, DC, by simp [μ', Measure.restrict_apply' MD]⟩
+    · apply (hm s hs).trans
+      simp only [Measure.restrict_apply' MD, μ']
+      apply measure_mono_ae
+      nth_rewrite 1 [← Set.inter_self s]
+      exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
+  exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
 
 end MeasureTheory.VectorMeasure

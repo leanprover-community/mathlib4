@@ -267,6 +267,13 @@ theorem snd_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
     p.darts[i].snd = p.support.tail[i]'(by grind) := by
   grind [map_snd_darts]
 
+@[simp]
+lemma support_getElem_zero (p : G.Walk u v) : p.support[0] = u := by cases p <;> simp
+
+@[simp]
+lemma support_getElem_length (p : G.Walk u v) : p.support[p.length] = v := by
+  induction p <;> simp_all
+
 theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     ⟨⟨u', v'⟩, h⟩ ∈ p.darts ↔ [u', v'] <:+: p.support := by
   refine .trans ⟨fun h ↦ ?_, fun ⟨i, hi, h⟩ ↦ ?_⟩ List.infix_iff_getElem?.symm
