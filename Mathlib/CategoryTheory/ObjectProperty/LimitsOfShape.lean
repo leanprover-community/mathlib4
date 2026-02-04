@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Limits.Presentation
 
+import Mathlib.CategoryTheory.Adjunction.Limits
+
 /-!
 # Objects that are limits of objects satisfying a certain property
 
@@ -45,7 +47,7 @@ namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category* C] (P : ObjectProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -228,6 +230,20 @@ lemma IsClosedUnderLimitsOfShape.of_equivalence (e : J ≌ J')
     [P.IsClosedUnderLimitsOfShape J] :
     P.IsClosedUnderLimitsOfShape J' := by
   rwa [← P.isClosedUnderLimitsOfShape_iff_of_equivalence e]
+
+instance IsClosedUnderLimitsOfShape.inverseImage
+    (P : ObjectProperty D) (F : C ⥤ D) [P.IsClosedUnderLimitsOfShape J]
+    [PreservesLimitsOfShape J F] : (P.inverseImage F).IsClosedUnderLimitsOfShape J :=
+  ⟨fun _ ⟨c, H⟩ ↦ ObjectProperty.LimitOfShape.prop (P := P) ⟨c.map F, H⟩⟩
+
+lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
+    [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
+    (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
+  refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
+  convert inferInstanceAs
+    (((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
+  ext X
+  simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 
 end ObjectProperty
 
