@@ -85,8 +85,9 @@ jobs:
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
-          # For PRs and pushes to this repository, we will use `nightly-testing` instead.
-          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing' || 'master' }}
+          # For PRs and pushes to this repository, we will use `nightly-testing-green` instead,
+          # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
+          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master' }}
           path: master-branch
 
       # Checkout the PR branch into a subdirectory
