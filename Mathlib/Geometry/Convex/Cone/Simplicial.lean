@@ -84,20 +84,20 @@ lemma generator_mem (h : C.IsSimplicial) (i : h.generators) : (i : M) ∈ C :=
   (h.span_generators ▸ subset_span) i.prop
 
 /-- The generators of a simplicial generating cone linearly span the module. -/
-lemma span_generators_eq_top (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating) :
+lemma span_generators_eq_top (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating) :
     Submodule.span R (h_simp.generators : Set M) = ⊤ := by
   simpa only [eq_top_iff, ← Submodule.span_span_of_tower R≥0 R (h_simp.generators : Set M),
     h_simp.span_generators] using h_gen.symm.le
 
 /-- The generators of a simplicial generating cone form a basis for the module. -/
-noncomputable def toBasis (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating) :
+noncomputable def toBasis (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating) :
     Module.Basis h_simp.generators R M :=
   Module.Basis.mk h_simp.linearIndependent_generators <| by
     simpa using (h_simp.span_generators_eq_top h_gen).ge
 
 /-- `toBasis` maps each generator to itself. -/
 @[simp]
-lemma toBasis_apply (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating)
+lemma toBasis_apply (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating)
     (i : h_simp.generators) : h_simp.toBasis h_gen i = i := by simp [toBasis]
 
 end IsSimplicial

@@ -237,13 +237,4 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
 
 end Salient
 
-section Generating
-
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
-
-/-- Abbreviation: A pointed cone is generating iff its underlying convex cone is generating. -/
-abbrev IsGenerating (C : PointedCone R E) : Prop := (C : ConvexCone R E).IsGenerating
-
-end Generating
-
 end PointedCone
