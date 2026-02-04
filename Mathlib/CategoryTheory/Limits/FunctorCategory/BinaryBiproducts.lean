@@ -88,7 +88,7 @@ def isLimitFuncMapCone (d : D) : IsLimit (((evaluation D C).obj d).mapCone
     specialize h j
     cases j with
     | mk j =>
-      cases j <;> simp at * <;> apply h
+      cases j <;> simp [h] at *
 
 /-- Applying `toCocone` and an evaluation functor to `funcBinaryBicone F G`
 gives a colimit cone. -/
@@ -108,7 +108,7 @@ def isColimitFuncMapCocone (d : D) : IsColimit (((evaluation D C).obj d).mapCoco
     specialize h j
     cases j with
     | mk j =>
-      cases j <;> simp at * <;> apply h
+      cases j <;> simp [h] at *
 
 /-- Applying `toCone` to the bicone associated with `F` and `G` gives a limit cone. -/
 def funcBinaryBicone.isLimit : IsLimit (funcBinaryBicone F G).toCone :=
