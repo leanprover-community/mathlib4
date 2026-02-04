@@ -75,7 +75,7 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
     [IsUniformAddGroup R] [IsValuativeTopology R] :
     Valued R (ValueGroupWithZero R) where
   «v» := valuation R
-  is_topological_valuation := mem_nhds_zero_iff
+  is_topological_valuation := sorry --mem_nhds_zero_iff
 
 lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :

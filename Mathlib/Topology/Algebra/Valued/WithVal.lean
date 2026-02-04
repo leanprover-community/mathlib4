@@ -178,26 +178,66 @@ theorem IsEquiv.orderRingIso_apply (h : v.IsEquiv w) (x : WithVal v) :
 theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
     h.orderRingIso.symm x = (equivWithVal v w).symm x := rfl
 
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
-theorem IsEquiv.uniformContinuous_equivWithVal
+/- theorem IsEquiv.uniformContinuous_equivWithVal
     (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ) (h : v.IsEquiv w) :
+    /- (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
+      w.restrict r / w.restrict s = γ.1) -/ --(h : v.IsEquiv w) :
+    UniformContinuous (equivWithVal v w) := by
+  refine uniformContinuous_of_continuousAt_zero _ ?_
+  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+  intro γ
+  obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw (Units.map (embedding (f := (instValued w).v)) γ)
+  use .mk0 (v.restrict r / v.restrict s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]),
+    fun x hx ↦ ?_
+  rw [← hr, Set.mem_setOf_eq]
+  sorry -/
+ /-  ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
+    lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
+    ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
+    ← h.orderRingIso.lt_symm_apply] -/
+  --simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
+
+theorem IsEquiv.uniformContinuous_equivWithVal
+    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
+      w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
     UniformContinuous (equivWithVal v w) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
-  use .mk0 (v r / v s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
-  rw [← hr, Set.mem_setOf_eq, ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
+  use .mk0 (v.restrict r / v.restrict s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]),
+    fun x hx ↦ ?_
+  rw [← hr, Set.mem_setOf_eq]
+  simp only [equivWithVal_apply, restrict_def, restrict₀_apply, apply_symm_equiv]
+  rw [dif_neg hr₀.ne.symm, dif_neg hs₀.ne.symm]
+  split_ifs
+  · exact compareOfLessAndEq_eq_lt.mp rfl
+  · simp only [← WithZero.coe_div, WithZero.coe_lt_coe]
+    suffices Units.mk0 (w ((equiv v) x)) (by sorry) <
+        Units.mk0 (w r) (by sorry) / Units.mk0 (w s) (by sorry) by
+      sorry
+    rw [← Units.val_lt_val]
+    simp only [Units.val_mk0, Units.val_div_eq_div_val]
+    rw [← (equiv w).apply_symm_apply r,
+    lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul]
+    sorry
+ /-  ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
     lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
     ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
-    ← h.orderRingIso.lt_symm_apply]
-  simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
+    ← h.orderRingIso.lt_symm_apply] -/
+  --simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
-def IsEquiv.uniformEquiv (hv : ∀ γ : Γ₀ˣ, ∃ r s, 0 < v r ∧ 0 < v s ∧ v r / v s = γ)
-    (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ)
+def IsEquiv.uniformEquiv (hv : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ,
+    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1)
+    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ,
+      ∃ r s, 0 < w r ∧ 0 < w s ∧ w.restrict r / w.restrict s = γ.1)
     (h : v.IsEquiv w) : WithVal v ≃ᵤ WithVal w where
   __ := equivWithVal v w
   uniformContinuous_toFun := h.uniformContinuous_equivWithVal hw
@@ -209,16 +249,33 @@ theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
+theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
+    (γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ) :
+    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
+  obtain ⟨r, hr⟩ := MonoidWithZeroHom.ValueGroup₀.restrict₀_surjective v γ
+  classical
+  exact ⟨r, 1, by
+    simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
+    rw [← map_zero v, ← embedding_restrict₀,  ← embedding_restrict₀ r, hr,
+      embedding_strictMono.lt_iff_lt, map_zero]
+    refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
+
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
-    {w : Valuation K Γ₀'} (h : v.IsEquiv w) (hv : Function.Surjective v)
-    (hw : Function.Surjective w) {x : v.Completion} :
-    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv (exists_div_eq_of_surjective hv)
-      (exists_div_eq_of_surjective hw)) x) ≤ 1 := by
+    {w : Valuation K Γ₀'} (h : v.IsEquiv w) {x : v.Completion} :
+    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv (restrict_exists_div_eq v)
+      (restrict_exists_div_eq w)) x) ≤ 1 := by
   induction x using induction_on with
   | hp =>
-    exact (mapEquiv (h.uniformEquiv _ _)).toHomeomorph.isClosed_setOf_iff
+    have h1 (x : UniformSpace.Completion (WithVal v)) :
+      Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
+    simp_rw [h1]
+    convert (mapEquiv (h.uniformEquiv (restrict_exists_div_eq v)
+      (restrict_exists_div_eq w))).toHomeomorph.isClosed_setOf_iff
       (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+    rw [restrict_le_one_iff]
+    rfl
   | ih a =>
     simpa [Valued.valuedCompletion_apply, ← WithVal.apply_equiv] using h.le_one_iff_le_one
 
