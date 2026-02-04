@@ -166,6 +166,10 @@ variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a r L : ℝ≥0}
 
 instance : CoeFun (FunSpace t₀ x₀ r L) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
+@[ext]
+lemma ext {α β : FunSpace t₀ x₀ r L} (h : ∀ t, α t = β t) : α = β := by
+  cases α; cases β; simp only [mk.injEq]; ext t; exact h t
+
 /-- `FunSpace t₀ x₀ r L` contains the constant map at `x₀`. -/
 instance : Inhabited (FunSpace t₀ x₀ r L) :=
   ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken (zero_le _), mem_closedBall_self r.2⟩
@@ -179,6 +183,10 @@ def toContinuousMap : FunSpace t₀ x₀ r L ↪ C(Icc tmin tmax, E) :=
 @[simp]
 lemma toContinuousMap_apply_eq_apply (α : FunSpace t₀ x₀ r L) (t : Icc tmin tmax) :
     α.toContinuousMap t = α t := rfl
+
+/-- When the radius is zero, a curve in `FunSpace` evaluated at `t₀` equals `x₀`. -/
+lemma apply_of_zero (α : FunSpace t₀ x₀ 0 L) : α t₀ = x₀ := by
+  simpa using α.mem_closedBall₀
 
 /-- The metric between two curves `α` and `β` is the supremum of the metric between `α t` and `β t`
 over all `t` in the domain. This is finite when the domain is compact, such as a closed
@@ -300,12 +308,16 @@ lemma next_apply (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedB
 lemma next_apply₀ (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (α : FunSpace t₀ x₀ r L) : next hf hx α t₀ = x := by simp
 
-/-- If `α` is a fixed point of `next`, then `α` satisfies the integral equation
-`α t = x + ∫_{t₀}^t f τ (α τ) dτ`. -/
-lemma eq_picard_of_isFixedPt (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
-    {α : FunSpace t₀ x₀ r L} (hα : IsFixedPt (next hf hx) α) {t : Icc tmin tmax} :
-    α t = picard f t₀ x α.compProj t :=
-  congrArg (· t) hα |>.symm
+/-- `α` is a fixed point of `next` if and only if it satisfies the integral equation
+`α t = x + ∫_{t₀}^t f τ (α τ) dτ` for all `t`. -/
+lemma isFixedPt_next_iff (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    {α : FunSpace t₀ x₀ r L} :
+    IsFixedPt (next hf hx) α ↔ ∀ t, α t = picard f t₀ x α.compProj t := by
+  constructor
+  · exact fun hα t ↦ congrArg (· t) hα |>.symm
+  · intro h
+    ext t
+    rw [h, next_apply]
 
 /-- A key step in the inductive case of `dist_iterate_next_apply_le` -/
 lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)

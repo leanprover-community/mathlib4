@@ -648,9 +648,9 @@ lemma T_eq_zero_of_isFixedPt_next {f : E → E} {u : Set E} (hfu : ContinuousOn 
   -- TODO: repetitive
   have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
+  have heq := (ODE.FunSpace.isFixedPt_next_iff hPL (mem_closedBall_self le_rfl)).mp h t
   rw [T, curry0_apply, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
-    ODE.FunSpace.toContinuousMap_apply_eq_apply, ContinuousMap.zero_apply,
-    α.eq_picard_of_isFixedPt hPL (mem_closedBall_self le_rfl) h, ODE.picard_apply,
+    ODE.FunSpace.toContinuousMap_apply_eq_apply, ContinuousMap.zero_apply, heq, ODE.picard_apply,
     integralCMLM_apply_if_pos hg, integralCM_apply_if_pos hα, integralFun, sub_add_cancel_left,
     neg_add_eq_zero]
   congr
