@@ -388,7 +388,7 @@ instance isTotal : IsTotal PartENat (· ≤ ·) where
 
 noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
-    le_total := IsTotal.total
+    le_total := isTotal.total
     toDecidableLE := Classical.decRel _
     max := (· ⊔ ·)
     max_def a b := congr_fun₂ (@sup_eq_maxDefault PartENat _ (_) _) _ _ }
@@ -745,9 +745,11 @@ theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=
 
 end Find
 
-noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
-  { PartENat.linearOrder, PartENat.isOrderedAddMonoid, PartENat.orderTop with
-    top_add' := top_add }
+noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat where
+  top_add' := top_add
+  isAddLeftRegular_of_ne_top a ha b c hbc := by
+    contrapose! hbc
+    simpa only [ne_iff_lt_or_gt, PartENat.add_lt_add_iff_left ha] using hbc.lt_or_gt
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,

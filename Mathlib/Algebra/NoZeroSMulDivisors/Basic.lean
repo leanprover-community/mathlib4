@@ -6,90 +6,20 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # `NoZeroSMulDivisors`
 
-This file defines the `NoZeroSMulDivisors` class, and includes some tests
-for the vanishing of elements (especially in modules over division rings).
+This file proves more lemmas about the `NoZeroSMulDivisors` class, which is deprecated in favor of
+`Module.IsTorsionFree`.
 -/
 
 @[expose] public section
 
 assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 
-section NoZeroSMulDivisors
-
 variable {R M : Type*}
-
-section AddCommGroup
-
--- `R` can still be a semiring here
-variable [Semiring R] [AddCommGroup M] [Module R M]
-
-section SMulInjective
-
-variable (M) in
-theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
-    Function.Injective (c • · : M → M) :=
-  (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
-
-theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
-    c • x = c • y ↔ x = y :=
-  (smul_right_injective M hc).eq_iff
-
-end SMulInjective
-
-section Nat
-variable (R M) [CharZero R] [NoZeroSMulDivisors R M]
-
-include R in
-lemma IsAddTorsionFree.of_noZeroSMulDivisors : IsAddTorsionFree M where
-  nsmul_right_injective n hn := by
-    simp_rw [← Nat.cast_smul_eq_nsmul R]; apply smul_right_injective; simpa
-
-@[deprecated IsAddTorsionFree.of_noZeroSMulDivisors (since := "2025-10-19")]
-theorem Nat.noZeroSMulDivisors
-    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors ℕ M where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
-
-end Nat
-end AddCommGroup
-
-section Module
-
-variable [Ring R] [AddCommGroup M] [Module R M]
-
-section SMulInjective
-
-variable (R)
-variable [NoZeroSMulDivisors R M]
-
-theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
-  fun c d h ↦ by simpa [← sub_smul, hx, sub_eq_zero] using congr($h - d • x)
-
-end SMulInjective
-
-variable (R M)
-
-@[deprecated IsAddTorsionFree.of_noZeroSMulDivisors (since := "2025-10-19")]
-theorem NoZeroSMulDivisors.int_of_charZero
-    (R) (M) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] [CharZero R] :
-    NoZeroSMulDivisors ℤ M :=
-  ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩
-
-/-- Only a ring of characteristic zero can have a non-trivial module without additive or
-scalar torsion. -/
-theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [IsAddTorsionFree M] : CharZero R := by
-  refine ⟨fun {n m h} ↦ ?_⟩
-  obtain ⟨x, hx⟩ := exists_ne (0 : M)
-  replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
-  simpa using smul_left_injective ℤ hx h
-
-end Module
 
 section GroupWithZero
 
@@ -101,5 +31,3 @@ instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDiviso
   ⟨fun {a _} h ↦ or_iff_not_imp_left.2 fun ha ↦ (smul_eq_zero_iff_eq <| Units.mk0 a ha).1 h⟩
 
 end GroupWithZero
-
-end NoZeroSMulDivisors

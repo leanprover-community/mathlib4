@@ -6,7 +6,8 @@ Authors: Kyle Miller, Andreas Gittis
 module
 
 public meta import Mathlib.Data.Nat.Log
-public meta import Mathlib.Tactic.NormNum
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 
@@ -62,7 +63,7 @@ Evaluates the `Nat.log` function.
 @[norm_num Nat.log _ _]
 def evalNatLog : NormNumExt where eval {u α} e := do
   let mkApp2 _ (b : Q(ℕ)) (n : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨eb, pb⟩ ← deriveNat b sℕ
   let ⟨en, pn⟩ ← deriveNat n sℕ
   let ⟨ek, pf⟩ := proveNatLog eb en
@@ -119,7 +120,7 @@ Evaluates the `Nat.clog` function.
 @[norm_num Nat.clog _ _]
 def evalNatClog : NormNumExt where eval {u α} e := do
   let mkApp2 _ (b : Q(ℕ)) (n : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨eb, pb⟩ ← deriveNat b sℕ
   let ⟨en, pn⟩ ← deriveNat n sℕ
   let ⟨ek, pf⟩ := proveNatClog eb en

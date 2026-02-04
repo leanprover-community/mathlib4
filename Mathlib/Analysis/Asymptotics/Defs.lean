@@ -14,6 +14,7 @@ We introduce these relations:
 
 * `IsBigOWith c l f g` : "f is big O of g along l with constant c";
 * `f =O[l] g` : "f is big O of g along l";
+* `f =Θ[l] g` : "f is big O of g along l and vice versa";
 * `f =o[l] g` : "f is little o of g along l".
 
 Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
@@ -41,6 +42,12 @@ nonzero, we have
 In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
 the Fréchet derivative.)
+
+Sometimes Landau notation may be embedded in more complex expressions, such as
+$f(n) = n ^ {1 + O(g(n))}$. This can be expressed using the existential pattern, for example:
+
+  `∃ (e : ℕ → ℝ) (he : e =O[l] g), f =ᶠ[l] fun n ↦ n ^ (1 + e n)`.
+
 -/
 
 @[expose] public section
@@ -154,6 +161,21 @@ theorem IsBigO.of_norm_eventuallyLE {g : α → ℝ} (h : (‖f ·‖) ≤ᶠ[l]
 
 theorem IsBigO.of_norm_le {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) : f =O[l] g :=
   .of_norm_eventuallyLE <| .of_forall h
+
+/-- We say that `f` is `Θ(g)` along a filter `l` (notation: `f =Θ[l] g`) if `f =O[l] g` and
+`g =O[l] f`. -/
+def IsTheta (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+  IsBigO l f g ∧ IsBigO l g f
+
+@[inherit_doc]
+notation:100 f " =Θ[" l "] " g:100 => IsTheta l f g
+
+theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=
+  ⟨h₁, h₂⟩
+
+lemma IsTheta.isBigO (h : f =Θ[l] g) : f =O[l] g := h.1
+
+lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
 
 /-- The Landau notation `f =o[l] g` where `f` and `g` are two functions on a type `α` and `l` is
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant

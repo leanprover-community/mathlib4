@@ -147,7 +147,7 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
   top_mem' X Y f := by
     rw [Sieve.pullback_top]
-    exact Presieve.isSheafFor_top_sieve P
+    exact Presieve.isSheafFor_top P
   pullback_stable' X Y S f hS Z g := by
     rw [← pullback_comp]
     apply hS
@@ -195,9 +195,14 @@ theorem isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yon
   fun _ _ hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
 
 /-- A representable functor is a sheaf for the canonical topology. -/
-theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] :
-    Presieve.IsSheaf (canonicalTopology C) P :=
-  Presieve.isSheaf_iso (canonicalTopology C) P.reprW (isSheaf_yoneda_obj _)
+theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type w) [P.IsRepresentable] :
+    Presieve.IsSheaf (canonicalTopology C) P := by
+  rw [← Presieve.isSheaf_comp_uliftFunctor_iff]
+  refine Presieve.isSheaf_iso (canonicalTopology C) (P ⋙ uliftFunctor.{v}).uliftYonedaReprXIso ?_
+  rw [← isSheaf_iff_isSheaf_of_type]
+  refine GrothendieckTopology.HasSheafCompose.isSheaf _ ?_
+  rw [isSheaf_iff_isSheaf_of_type]
+  exact isSheaf_yoneda_obj _
 
 end Sheaf
 
@@ -226,10 +231,8 @@ theorem of_isSheaf_yoneda_obj (J : GrothendieckTopology C)
 
 /-- If `J` is subcanonical, then any representable is a `J`-sheaf. -/
 theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
-    (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] : Presieve.IsSheaf J P :=
+    (P : Cᵒᵖ ⥤ Type w) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
-
-variable {J : GrothendieckTopology C}
 
 end Subcanonical
 
@@ -293,10 +296,10 @@ def fullyFaithfulUliftYoneda : (GrothendieckTopology.uliftYoneda.{w} J).FullyFai
   J.yonedaFullyFaithful.comp (fullyFaithfulSheafCompose J fullyFaithfulULiftFunctor)
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Full :=
-    (J.fullyFaithfulUliftYoneda).full
+  (J.fullyFaithfulUliftYoneda).full
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Faithful :=
-    (J.fullyFaithfulUliftYoneda).faithful
+  (J.fullyFaithfulUliftYoneda).faithful
 
 end GrothendieckTopology
 

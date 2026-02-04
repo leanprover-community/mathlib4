@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
-# Preservations of pullback/pushout squares
+# Preservation of pullback/pushout squares
 
 If a functor `F : C ⥤ D` preserves suitable cospans (resp. spans),
 and `sq : Square C` is a pullback square (resp. a pushout square)

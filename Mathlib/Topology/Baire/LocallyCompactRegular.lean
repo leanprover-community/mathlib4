@@ -17,9 +17,10 @@ In this file we prove that a locally compact regular topological space has Baire
 
 open TopologicalSpace Set
 
+variable {X : Type*} [TopologicalSpace X] {s : Set X} [R1Space X] [LocallyCompactSpace X]
+
 /-- **Second Baire theorem**: locally compact R₁ spaces are Baire. -/
-instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace {X : Type*}
-    [TopologicalSpace X] [R1Space X] [LocallyCompactSpace X] : BaireSpace X := by
+instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpace X := by
   constructor
   intro f ho hd
   /- To prove that an intersection of open dense subsets is dense, prove that its intersection
@@ -56,3 +57,16 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace {X : Type*}
       (fun n => closure_mono <| hK_anti n) (fun n => (K n).nonempty.closure)
       (K 0).isCompact.closure fun n => isClosed_closure
   exact hK_nonempty.mono hK_subset
+
+/-- A Gδ subset of a locally compact R₁ space is Baire. -/
+theorem IsGδ.of_t2Space_locallyCompactSpace (hG : IsGδ s) : BaireSpace s := by
+  have : BaireSpace (closure s) := by
+    convert BaireSpace.of_t2Space_locallyCompactSpace using 1
+    · infer_instance
+    · exact isClosed_closure.locallyCompactSpace
+  have : BaireSpace ((↑) ⁻¹' s : Set (closure s)) :=
+    (isGδ_induced continuous_subtype_val hG).baireSpace_of_dense
+    (by simp [Subtype.dense_iff, inter_eq_right.mpr subset_closure])
+  have h_homeo : Homeomorph ((↑) ⁻¹' s : Set (closure s)) s := ⟨⟨fun x => ⟨x, x.2⟩,
+    fun x => ⟨⟨x, subset_closure x.2⟩, x.2⟩, by grind, by grind⟩, by fun_prop, by fun_prop⟩
+  exact h_homeo.baireSpace

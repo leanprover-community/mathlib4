@@ -103,6 +103,7 @@ that occur in the formal sum `a`. -/
 def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 
+@[simp]
 theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
   rw [support, Finsupp.mem_support_iff]
   exact Iff.rfl
@@ -127,8 +128,7 @@ theorem support_neg (a : FreeAbelianGroup X) : support (-a) = support a := by
 theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
-  simp only [mem_support_iff, map_zsmul]
-  simp only [h, zsmul_int_int, false_or, Ne, mul_eq_zero]
+  simp [h]
 
 @[simp]
 theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :

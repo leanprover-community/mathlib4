@@ -47,7 +47,7 @@ example [Subsingleton R] : Ring.KrullDimLE 0 R := inferInstance
 lemma Ring.KrullDimLE.isField_of_isDomain [IsDomain R] : IsField R := by
   by_contra h
   obtain ⟨p, hp, h⟩ := Ring.not_isField_iff_exists_prime.mp h
-  exact hp.symm (Ideal.bot_prime.isMaximal'.eq_of_le h.ne_top bot_le)
+  exact hp.symm (Ideal.isPrime_bot.isMaximal'.eq_of_le h.ne_top bot_le)
 
 omit [Ring.KrullDimLE 0 R] in
 lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :

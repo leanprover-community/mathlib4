@@ -115,7 +115,6 @@ theorem map_eq_span_zeta_sub_one_pow :
 
 theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
-  have := liesOver_span_zeta_sub_one p k hζ
   have h := isPrime_span_zeta_sub_one p k hζ
   rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
     IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,

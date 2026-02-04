@@ -31,11 +31,11 @@ We show:
 
 ## Implementation details
 
-The diagram of the five lemmas is given by a morphism in the category `ComposableArrows C 4`
+The diagram of the five lemma is given by a morphism in the category `ComposableArrows C 4`
 between two objects which satisfy `ComposableArrows.Exact`. Similarly, the two versions of the
 four lemma are stated in terms of the category `ComposableArrows C 3`.
 
-The five lemmas is deduced from the two versions of the four lemma. Both of these versions
+The five lemma is deduced from the two versions of the four lemma. Both of these versions
 are proved separately. It would be easy to deduce the epi version from the mono version
 using duality, but this would require lengthy API developments for `ComposableArrows` (TODO).
 

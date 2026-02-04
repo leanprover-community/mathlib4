@@ -608,10 +608,10 @@ Distribution calculus:
     stability by multiplication by a slowly growing smooth function: 'SchwartzMap.bilinLeftCLM'
     Gaussian functions: ''
     Fourier transforms on $\mathcal{S}(\R^d)$: 'SchwartzMap.fourierTransformCLM'
-    convolution of two functions of $\mathcal{S}(\R^d)$: ''
+    convolution of two functions of $\mathcal{S}(\R^d)$: 'SchwartzMap.convolution'
   Tempered distributions:
     definition: 'TemperedDistribution'
-    derivation of tempered distributions: ''
+    derivation of tempered distributions: 'TemperedDistribution.instLineDeriv'
     multiplication by a function $C^\infty$ of slow growth: 'TemperedDistribution.smulLeftCLM'
     $L^2$ functions and Riesz representation: ''
     $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
