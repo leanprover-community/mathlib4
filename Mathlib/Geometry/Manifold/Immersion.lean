@@ -416,7 +416,7 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
     IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
-  use h.smallComplement, by infer_instance, by infer_instance
+  use h.smallComplement, inferInstance, inferInstance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
 open IsManifold in
@@ -590,7 +590,7 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'')
   rw [IsImmersionAt_def]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, inferInstance, inferInstance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
@@ -607,7 +607,7 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
   rw [IsImmersionAt_def]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, inferInstance, inferInstance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
@@ -713,7 +713,7 @@ then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsImmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt I J n g x := by
   rw [IsImmersionAt_def]
-  use hf.complement, by infer_instance, by infer_instance
+  use hf.complement, inferInstance, inferInstance
   exact hf.isImmersionAtOfComplement_complement.congr_of_eventuallyEq hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
@@ -743,7 +743,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
   rw [IsImmersionAt_def]
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, inferInstance, inferInstance
   apply Manifold.IsImmersionAtOfComplement.of_opens
 
 /-- Prefer using `IsImmersionAt.continuousAt` instead -/
@@ -889,11 +889,11 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f := by
   by_cases! hM : IsEmpty M
   · rw [IsImmersion]
-    use PUnit, by infer_instance, by infer_instance
+    use PUnit, inferInstance, inferInstance
     exact fun x ↦ (IsEmpty.false x).elim
   inhabit M
   let x : M := Inhabited.default
-  use (h x).smallComplement, by infer_instance, by infer_instance
+  use (h x).smallComplement, inferInstance, inferInstance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
 open IsManifold in
@@ -995,7 +995,7 @@ different connected components of `M`.
 -/
 lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
-  use h.complement, by infer_instance, by infer_instance, h.isImmersionOfComplement_complement x
+  use h.complement, inferInstance, inferInstance, h.isImmersionOfComplement_complement x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion I J n f) (heq : f = g) : IsImmersion I J n g :=
@@ -1012,12 +1012,12 @@ theorem prodMap {f : M → N} {g : M' → N'}
 open IsManifold in
 /-- The identity map is an immersion. -/
 protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
-  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.id⟩
+  ⟨PUnit, inferInstance, inferInstance, IsImmersionOfComplement.id⟩
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
-  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩
+  ⟨PUnit, inferInstance, inferInstance, IsImmersionOfComplement.of_opens s⟩
 
 /-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
