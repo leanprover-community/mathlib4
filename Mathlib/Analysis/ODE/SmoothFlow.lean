@@ -721,7 +721,7 @@ lemma range_restrictIcc_subset {tmin tmax tmin' tmax' : ℝ}
 
 /-- If `T f u t₀ (x₀, α) = 0` on `[tmin, tmax]`, then it also holds on any smaller interval
 `[tmin', tmax']` containing `t₀`. This reflects the fact that being an integral curve is a local
-property: the ODE `α' = f ∘ α` with initial condition `α(t₀) = x₀` has the same solution on any
+property: the ODE `α' = f ∘ α` with initial condition `α t₀ = x₀` has the same solution on any
 interval containing `t₀`. -/
 lemma T_restrictIcc_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
@@ -748,9 +748,9 @@ lemma T_restrictIcc_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
   simp only [compProj, restrictIcc_apply, projIcc_of_mem (t₀.2.1.trans t₀.2.2) hτ',
     projIcc_of_mem (ht₀min.trans ht₀max) (uIcc_subset_Icc ⟨ht₀min, ht₀max⟩ t.2 hτ)]
 
-/-- Given a C^1 vector field at x₀ and any neighborhood u of x₀ on which f is continuous, there
-exists an integral curve on some time interval whose range is contained in u and satisfies
-T f u t₀ (x₀, α) = 0.
+/-- Given a `C^1` vector field at `x₀` and any neighborhood `u` of `x₀` on which `f` is continuous,
+there exists an integral curve on some time interval whose range is contained in `u` and satisfies
+`T f u t₀ (x₀, α) = 0`.
 
 This lemma packages the Picard-Lindelöf construction in a filter-friendly form: the caller provides
 a neighborhood, and the lemma returns an integral curve staying within that neighborhood. -/
@@ -765,36 +765,23 @@ lemma exists_integralCurve_T_eq_zero {f : E → E} {x₀ : E}
     have hLε : (0 : ℝ) ≤ L * ε₀ := by positivity
     have hrpos' : (0 : ℝ) < r := hrpos
     linarith
-  -- Extract a ball from the neighborhood u
+  -- Extract a ball from the neighborhood `u`
   obtain ⟨δ, hδpos, hδ_sub⟩ := Metric.mem_nhds_iff.mp hu
-  -- Choose a_small to fit inside both the Picard-Lindelöf ball and u
-  have ha_pos_real : 0 < min ((a : ℝ) / 2) (δ / 2) := lt_min (by linarith) (by linarith)
-  set a_small : ℝ≥0 := ⟨min (a / 2) (δ / 2), le_of_lt ha_pos_real⟩
-  have ha_small_pos : 0 < a_small := ha_pos_real
-  have ha_small_le_a : a_small ≤ a := (min_le_left (α := ℝ) _ _).trans (half_le_self (by linarith))
-  have ha_small_lt_δ : (a_small : ℝ) < δ := (min_le_right _ _).trans_lt (by linarith)
-  -- Shrink Picard-Lindelöf to a smaller time interval with r = 0 and smaller a_small
-  obtain ⟨ε, hεpos, hPL'⟩ := hPL.exists_shrink_radius hε₀pos ha_small_le_a ha_small_pos
+  -- Choose `a'` to fit inside both the Picard-Lindelöf ball and `u`
+  have ha'pos : 0 < min ((a : ℝ) / 2) (δ / 2) := by positivity
+  let a' : ℝ≥0 := ⟨min (a / 2) (δ / 2), le_of_lt ha'pos⟩
+  have ha'le : a' ≤ a := (min_le_left _ _).trans (half_le_self hapos.le)
+  have ha'lt : (a' : ℝ) < δ := (min_le_right _ _).trans_lt (half_lt_self hδpos)
+  -- Shrink Picard-Lindelöf to a smaller time interval with `r = 0` and smaller `a'`
+  obtain ⟨ε, hεpos, hPL'⟩ :=
+    hPL.exists_shrink_radius hε₀pos ha'le (zero_lt_iff.mpr (ne_of_gt ha'pos))
   -- Get the fixed point (integral curve) from Picard-Lindelöf
-  obtain ⟨α_fun, hα_fixed⟩ :=
-    ODE.FunSpace.exists_isFixedPt_next hPL' (mem_closedBall_self le_rfl)
-  -- Show α t ∈ closedBall x₀ a_small for all t (using Lipschitz bound and r = 0)
-  have hLε : (L : ℝ) * ε ≤ a_small := by simpa using hPL'.mul_max_le
-  have hα_closedBall : ∀ t, α_fun t ∈ closedBall x₀ a_small := fun t ↦ by
-    have hα₀ : α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩ = x₀ := by
-      simpa [dist_le_zero] using α_fun.mem_closedBall₀
-    rw [mem_closedBall, dist_eq_norm]
-    calc ‖α_fun t - x₀‖
-      _ ≤ ‖α_fun t - α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩‖ := by simp [hα₀]
-      _ ≤ L * |t.1 - t₀| := by rw [← dist_eq_norm]; exact α_fun.lipschitzWith.dist_le_mul t _
-      _ ≤ L * ε := by gcongr; simpa using abs_sub_le_max_sub t.2.1 t.2.2 t₀
-      _ ≤ a_small := hLε
-  -- The range is contained in closedBall x₀ a_small ⊆ ball x₀ δ ⊆ u
-  set α := α_fun.toContinuousMap
+  obtain ⟨α_fun, hα_fixed⟩ := ODE.FunSpace.exists_isFixedPt_next hPL' (mem_closedBall_self le_rfl)
+  let α := α_fun.toContinuousMap
   have hα_range : range α ⊆ u := by
     rintro _ ⟨t, rfl⟩
     rw [ODE.FunSpace.toContinuousMap_apply_eq_apply]
-    exact hδ_sub (closedBall_subset_ball ha_small_lt_δ (hα_closedBall t))
+    exact hδ_sub <| closedBall_subset_ball ha'lt <| α_fun.mem_closedBall hPL'.mul_max_le
   exact ⟨ε, hεpos, α, hα_range, T_eq_zero_of_isFixedPt_next hfu hPL' hα_range hα_fixed⟩
 
 /-! ## Derivative of `T` -/
@@ -985,11 +972,11 @@ lemma exists_nhds_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
 
 /-! ## Connect to the existence of integral curves -/
 
-/-- When f is C^1 at x₀, there exist a neighbourhood `u` of `x₀`, `ε > 0`, and a continuous map
-`α : C(Icc (t₀ - ε) (t₀ + ε), E)` such that `f` is C^1 on `u`, the range of α is in `u`,
+/-- When `f` is `C^1` at `x₀`, there exist a neighbourhood `u` of `x₀`, `ε > 0`, and a continuous
+map `α : C(Icc (t₀ - ε) (t₀ + ε), E)` such that `f` is `C^1` on `u`, the range of `α` is in `u`,
 `T f u t₀ (x₀, α) = 0`, and `‖fderivIntegralCurry0 f u t₀ α‖ < 1`.
 
-Note that `T = 0` implies `α(t₀) = x₀` since the integral from `t₀` to `t₀` vanishes. -/
+Note that `T = 0` implies `α t₀ = x₀` since the integral from `t₀` to `t₀` vanishes. -/
 lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ u ∈ 𝓝 x₀, IsOpen u ∧ ContDiffOn ℝ 1 f u ∧ ∃ (ε : ℝ) (hε : 0 < ε),
@@ -1018,11 +1005,11 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
     linarith
   exact ⟨u, hu_nhds, hu_open, hfu, ε, hεpos, α, hα_range, hT_zero, hα_norm⟩
 
-/-- When f is C^1 at x₀, the implicit function theorem provides a local flow: there exist
-ε > 0, a > 0, and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that for x near x₀:
+/-- When `f` is `C^1` at `x₀`, the implicit function theorem provides a local flow: there exist
+`ε > 0`, `a > 0`, and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that for `x` near `x₀`:
 - `lf x` is an integral curve of `f` on `Icc (t₀ - ε) (t₀ + ε)`
 - `lf x` passes through `x` at time `t₀`
-Furthermore, `lf` is C^1 at x₀.
+Furthermore, `lf` is `C^1` at `x₀`.
 
 This is the key result connecting the ODE theory to the implicit function theorem. -/
 lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
