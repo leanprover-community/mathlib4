@@ -262,3 +262,9 @@ info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α
 -/
 #guard_msgs in
 #print Cov.Ioc_def
+
+-- Test that hypotheses can also have a translation when using `to_dual_insert_cast`
+@[to_dual self]
+def nonemptyIcc {a b : α} (_ : a ≤ b) := fun x ↦ a ≤ x ∧ x ≤ b
+
+to_dual_insert_cast nonemptyIcc := by grind
