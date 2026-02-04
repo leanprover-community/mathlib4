@@ -22,7 +22,7 @@ suitable ring, but `ℝ` is the motivating case), into the following classes:
 * elliptic elements (`Matrix.IsElliptic`) - two distinct non-real complex eigenvalues
 
 This classification is used (among other places) in classifying the fixed points of elements of
-`GL(2, ℝ)⁺` acting on the upper half-plane. See [Wikipeda:SL2(R)#Classification_of_elements]
+`GL(2, ℝ)⁺` acting on the upper half-plane. See [Wikipedia:SL2(R)#Classification_of_elements]
 (https://en.wikipedia.org/wiki/SL2(R)#Classification_of_elements).
 -/
 
