@@ -611,7 +611,7 @@ lemma none_eq_ωSup_iff (c : Chain (Option α)) : .none = ωSup c ↔ ∀ n, c n
 @[fun_prop]
 lemma ωScottContinuous_some : ωScottContinuous (.some : α → Option α) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
-  · apply Option.some_mono
+  · exact Option.some_mono
   · have : c.map ⟨some, Option.some_mono⟩ = Chain.some 0 c := by ext; simp
     simp only [this, ωSup_some]
 
@@ -636,7 +636,7 @@ lemma ωScottContinuous_bind [OmegaCompletePartialOrder β] [OmegaCompletePartia
           simp [Chain.ext_iff, funext_iff] at hc
           grind
         simp only [Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, this, bind_some]
-        apply hg.monotone (Prod.GCongr.mk_le_mk (c.monotone (by grind)) le_rfl)
+        exact hg.monotone (Prod.GCongr.mk_le_mk (c.monotone (by grind)) le_rfl)
       · apply ωSup_le _ _ fun i ↦ ?_
         apply le_ωSup_of_le i
         by_cases h : i < n
@@ -649,7 +649,7 @@ lemma ωScottContinuous_bind [OmegaCompletePartialOrder β] [OmegaCompletePartia
             grind
           simp only [Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, this, bind_some, zip_coe,
             Function.uncurry_apply_pair, ge_iff_le]
-          apply hg.monotone (Prod.GCongr.mk_le_mk le_rfl (c'.monotone (by grind)))
+          exact hg.monotone (Prod.GCongr.mk_le_mk le_rfl (c'.monotone (by grind)))
 
 @[fun_prop]
 lemma ωScottContinuous_map [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ]

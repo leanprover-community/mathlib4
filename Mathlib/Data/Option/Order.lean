@@ -40,43 +40,30 @@ instance [LE α] : OrderBot (Option α) where
 lemma some_mono [Preorder α] : Monotone (some : α → Option α) := by
   simp only [Monotone, some_le_some, imp_self, implies_true]
 
-lemma get_mono
-    [Preorder α]
-    {x : Option α} (hx : x.isSome)
-    {y : Option α} (hy : y.isSome)
-    (h : x ≤ y)
-    : x.get hx ≤ y.get hy := by
+lemma get_mono [Preorder α] {x : Option α} {y : Option α}
+    (hx : x.isSome) (hy : y.isSome) (h : x ≤ y) :
+    x.get hx ≤ y.get hy := by
   cases x
-  · simp only [isSome_none, Bool.false_eq_true] at hx
-  cases y
-  · simp only [isSome_none, Bool.false_eq_true] at hy
-  simp_all only [some_le_some, get_some]
+  · simp at hx
+  · cases y <;> simp_all
 
 lemma isSome_mono [Preorder α] : Monotone (isSome : Option α → Bool)
   | none, _, _ => by simp only [isSome_none, Bool.false_le]
   | _, none, _ => by simp_all only [le_none, isSome_none, le_refl]
   | some x, some y, h => by simp only [isSome_some, le_refl]
 
-lemma bind_mono
-    [Preorder α]
-    {β : Type*} [Preorder β]
-    {γ : Type*} [Preorder γ]
+lemma bind_mono {β γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α → Option β} (hf : Monotone f)
-    {g : α → β → Option γ} (hg : Monotone fun x : _ × _ ↦ g x.1 x.2)
-    : Monotone (fun x ↦ Option.bind (f x) (g x)) := by
+    {g : α → β → Option γ} (hg : Monotone (Function.uncurry g)) :
+    Monotone (fun x ↦ Option.bind (f x) (g x)) := by
   intro x₁ x₂ hx
-  dsimp only
-  cases hfx₁ : f x₁ with
-  | none => simp only [bind_none, none_le]
-  | some x =>
-    specialize hf hx
-    cases hfx₂ : f x₂ with
-    | none => grind
-    | some y =>
-      simp only [hfx₁, hfx₂, some_le_some] at hf
-      simp only [bind_some]
-      apply hg (?_ : (_, _) ≤ (_, _))
-      simp only [ge_iff_le, Prod.mk_le_mk, hx, true_and, hf]
+  cases hfx₁ : f x₁
+  · grind
+  · cases hfx₂ : f x₂
+    · grind [Monotone]
+    · simp only [hfx₁, bind_some, hfx₂]
+      apply hg (Prod.GCongr.mk_le_mk hx ?_)
+      grind [Monotone]
 
 lemma map_mono
     [Preorder α]
@@ -86,6 +73,6 @@ lemma map_mono
     {g : α → Option β} (hg : Monotone g)
     : Monotone (fun x ↦ Option.map (f x) (g x)) := by
   simp only [map_eq_bind, Function.comp_apply]
-  apply bind_mono hg (Monotone.comp some_mono hf)
+  exact bind_mono hg (Monotone.comp some_mono hf)
 
 end Option
