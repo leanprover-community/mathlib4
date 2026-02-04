@@ -62,8 +62,7 @@ noncomputable section
 
 namespace UniqueFactorizationMonoid
 
--- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
-variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
+variable {M : Type*} [CommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M] {a b u : M}
 
 open scoped Classical in
@@ -356,7 +355,7 @@ open UniqueFactorizationMonoid
 /-! Theorems for UFDs -/
 namespace UniqueFactorizationDomain
 
-variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
+variable {R : Type*} [CommRing R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R] {a b : R}
 
 @[simp]

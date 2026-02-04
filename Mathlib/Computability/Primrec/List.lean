@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.Primrec.Basic
+public import Mathlib.Logic.Encodable.Pi
 
 /-!
 # Primitive recursive functions on Lists

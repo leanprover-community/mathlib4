@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Order.Nonneg.Floor
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Basic results on nonnegative real numbers
@@ -28,7 +29,7 @@ public section
 
 assert_not_exists TrivialStar
 
-open Function
+open Function Set
 open scoped BigOperators
 
 namespace NNReal
@@ -111,6 +112,18 @@ theorem finset_sup_mul {α} (s : Finset α) (f : α → ℝ≥0) (r : ℝ≥0) :
 theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
     s.sup f / r = s.sup fun a => f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
 
+section Set
+
+@[simp] lemma bddAbove_natCast_image_iff {s : Set ℕ} : BddAbove ((↑) '' s : Set ℝ≥0) ↔ BddAbove s :=
+  ⟨.imp' Nat.floor (by simp [upperBounds, Nat.le_floor_iff]), .imp' (↑) (by simp [upperBounds])⟩
+
+@[simp, norm_cast] lemma bddAbove_range_natCast_iff {ι : Sort*} (f : ι → ℕ) :
+    BddAbove (Set.range (f ·) : Set NNReal) ↔ BddAbove (Set.range f) := by
+  rw [← bddAbove_natCast_image_iff, ← Set.range_comp]
+  rfl
+
+end Set
+
 open Real
 
 section Sub
@@ -178,6 +191,63 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
     a ≤ iInf g * iInf h :=
   le_iInf_mul fun i => le_mul_iInf <| H i
 
+@[simp, norm_cast] lemma natCast_iSup {ι : Sort*} (f : ι → ℕ) :
+    ⨆ i, f i = (⨆ i, f i : NNReal) := by
+  by_cases h : BddAbove (Set.range f)
+  · apply eq_of_forall_ge_iff
+    simp [ciSup_le_iff', ← Nat.le_floor_iff, *]
+  · simp [*]
+
+@[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) :
+    ⨅ i, f i = (⨅ i, f i : NNReal) := by
+  obtain hι | hι := isEmpty_or_nonempty ι
+  · simp [iInf_empty]
+  apply eq_of_forall_le_iff
+  simp [le_ciInf_iff, ← Nat.ceil_le]
+
 end Csupr
+
+@[simp]
+theorem range_coe : range toReal = Ici 0 := Subtype.range_coe
+
+@[simp]
+theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtype_val_Ici_Ici ..
+
+@[simp]
+theorem image_coe_Iic (x : ℝ≥0) : toReal '' Iic x = Icc 0 ↑x := image_subtype_val_Ici_Iic ..
+
+@[simp]
+theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := image_subtype_val_Ici_Ioi ..
+
+@[simp]
+theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := image_subtype_val_Ici_Iio ..
+
+@[simp]
+theorem image_coe_Icc (x y : ℝ≥0) : toReal '' Icc x y = Icc ↑x ↑y :=
+  image_subtype_val_Icc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_Ioc (x y : ℝ≥0) : toReal '' Ioc x y = Ioc ↑x ↑y :=
+  image_subtype_val_Ioc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_Ico (x y : ℝ≥0) : toReal '' Ico x y = Ico ↑x ↑y :=
+  image_subtype_val_Ico (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_Ioo (x y : ℝ≥0) : toReal '' Ioo x y = Ioo ↑x ↑y :=
+  image_subtype_val_Ioo (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_uIcc (x y : ℝ≥0) : toReal '' uIcc x y = uIcc ↑x ↑y :=
+  image_subtype_val_uIcc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_uIoc (x y : ℝ≥0) : toReal '' uIoc x y = uIoc ↑x ↑y :=
+  image_subtype_val_uIoc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_uIoo (x y : ℝ≥0) : toReal '' uIoo x y = uIoo ↑x ↑y :=
+  image_subtype_val_uIoo (s := Ici 0) ..
 
 end NNReal

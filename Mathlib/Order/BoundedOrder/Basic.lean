@@ -9,7 +9,6 @@ public import Mathlib.Order.Max
 public import Mathlib.Order.ULift
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Util.AssertExists
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -59,6 +58,22 @@ noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : OrderTop α ⊕' N
   · exact PSum.inr ⟨H⟩
   · letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
+
+section ite
+
+variable [Top α] {p : Prop} [Decidable p]
+
+@[to_dual (attr := aesop (rule_sets := [finiteness]) unsafe 70% apply)]
+theorem dite_ne_top {a : p → α} {b : ¬p → α} (ha : ∀ h, a h ≠ ⊤) (hb : ∀ h, b h ≠ ⊤) :
+    (if h : p then a h else b h) ≠ ⊤ := by
+  split <;> solve_by_elim
+
+@[to_dual (attr := aesop (rule_sets := [finiteness]) unsafe 70% apply)]
+theorem ite_ne_top {a b : α} (ha : p → a ≠ ⊤) (hb : ¬p → b ≠ ⊤) :
+    (if p then a else b) ≠ ⊤ :=
+  dite_ne_top ha hb
+
+end ite
 
 section LE
 

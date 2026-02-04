@@ -14,8 +14,8 @@ public import Mathlib.Topology.EMetricSpace.Defs
 This file defines a few notions of separations of sets in a metric space.
 
 
-The first notion (`Metric.IsSeparated`) is quantitative and about a single set: A set `s` is
-`ε`-separated if its elements are pairwise at distance at least `ε` from each other.
+The first notion (`Metric.IsSeparated`) is quantitative and describes a single set: a set `s` is
+`ε`-separated if the distance between any two distinct elements is strictly greater than `ε`
 
 The second notion (`Metric.AreSeparated`) is qualitative and about two sets: Two sets `s` and `t`
 are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
@@ -38,8 +38,8 @@ variable {X : Type*} [PseudoEMetricSpace X] {s t : Set X} {ε δ : ℝ≥0∞} {
 In this section we define the predicate `Metric.IsSeparated` for `ε`-separated sets.
 -/
 
-/-- A set `s` is `ε`-separated if its elements are pairwise at distance at least `ε` from each
-other. -/
+/-- A set `s` is `ε`-separated if the extended distance between any two distinct
+elements is strictly greater than `ε`. -/
 def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < edist · ·)
 
 lemma isSeparated_iff_setRelIsSeparated :

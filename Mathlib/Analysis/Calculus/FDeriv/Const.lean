@@ -295,13 +295,22 @@ theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
     isLittleO_pure, ContinuousLinearMap.zero_apply, sub_self]
 
 @[fun_prop]
+theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
+    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
+  by_cases hs : s = ∅
+  · simp [hs]
+  · obtain ⟨a, rfl⟩ := exists_eq_singleton_iff_nonempty_subsingleton (s := s)|>.mpr
+      ⟨by rwa [nonempty_iff_ne_empty], subsingleton_of_subsingleton⟩
+    exact HasFDerivWithinAt.singleton
+
+@[fun_prop]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
     HasFDerivAt f (0 : E →L[𝕜] F) x := by
   rw [← hasFDerivWithinAt_univ, subsingleton_univ.eq_singleton_of_mem (mem_univ x)]
   exact hasFDerivWithinAt_singleton f x
 
-@[fun_prop]
-theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
+theorem differentiable_of_subsingleton [Subsingleton E] {f : E → F} : Differentiable 𝕜 f :=
+  fun x ↦ (hasFDerivAt_of_subsingleton f x (𝕜 := 𝕜)).differentiableAt
 
 @[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
@@ -363,13 +372,16 @@ theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=
   closure_minimal (support_fderiv_subset 𝕜) isClosed_closure
 
+theorem tsupport_fderiv_apply_subset (v : E) : tsupport (fderiv 𝕜 f · v) ⊆ tsupport f :=
+  (tsupport_comp_subset (g := fun L : E →L[𝕜] F ↦ L v) rfl _).trans (tsupport_fderiv_subset 𝕜)
+
 protected theorem HasCompactSupport.fderiv (hf : HasCompactSupport f) :
     HasCompactSupport (fderiv 𝕜 f) :=
   hf.mono' <| support_fderiv_subset 𝕜
 
 protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v : E) :
     HasCompactSupport (fderiv 𝕜 f · v) :=
-  hf.fderiv 𝕜 |>.comp_left (g := fun L : E →L[𝕜] F ↦ L v) rfl
+  hf.of_isClosed_subset (isClosed_tsupport _) (tsupport_fderiv_apply_subset 𝕜 v)
 
 end Support
 

@@ -13,6 +13,7 @@ public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.Exponent
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.Group
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cyclic groups
@@ -784,20 +785,19 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     ZMod (Nat.card G) ≃+ G := by
   let n := Nat.card G
   let ⟨g, surj⟩ := Classical.indefiniteDescription _ h.exists_generator
-  have kereq : ((zmultiplesHom G) g).ker = zmultiples ↑(Nat.card G) := by
+  have kereq : zmultiples ↑(Nat.card G) = ((zmultiplesHom G) g).ker := by
     rw [zmultiplesHom_ker_eq]
     congr
     rw [← Nat.card_zmultiples]
-    exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
-  exact Int.quotientZMultiplesNatEquivZMod n
-    |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
-    |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
+    exact Nat.card_congr (Equiv.subtypeUnivEquiv surj).symm
+  exact Int.quotientZMultiplesNatEquivZMod n |>.symm.trans <|
+    QuotientAddGroup.liftEquiv _ (φ := zmultiplesHom G g) surj kereq
 
 /-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
 theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
-    ∃ p : ℕ, (Nat.Prime p) ∧ Nonempty (Additive G ≃+ ZMod p) := by
+    ∃ p : ℕ, Nat.Prime p ∧ Nonempty (Additive G ≃+ ZMod p) := by
   obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (inferInstance : IsCyclic G)
-  use orderOf g; rw [← (orderOf_eq_card_of_zpowers_eq_top hg).symm]
+  use orderOf g; rw [orderOf_eq_card_of_zpowers_eq_top hg]
   constructor
   · exact IsSimpleGroup.prime_card
   · exact ⟨(zmodAddCyclicAddEquiv (G := Additive G) inferInstance).symm⟩
