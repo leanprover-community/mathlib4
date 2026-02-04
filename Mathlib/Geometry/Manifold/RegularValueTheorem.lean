@@ -62,6 +62,16 @@ lemma IsRegularPoint.isSubmersionAt (hx : IsRegularPoint I J f x) :
 lemma IsSubmersionAt.isRegularPoint (hf : IsSubmersionAt I J n f x) : IsRegularPoint I J f x := by
   sorry
 
+lemma IsSubmersion.of_isRegularPoint (hf : ∀ x, IsRegularPoint I J f x) :
+    IsSubmersion I J n f := by
+  -- TODO think: do we get a global submersion, or just "IsSubmersionAt" for all x?
+  sorry
+
+lemma IsSubmersion.of_mfderiv_surjective_of_finiteDimensional
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E₃] (hf : ∀ x, Surjective (mfderiv I J f x)) :
+    IsSubmersion I J n f :=
+  of_isRegularPoint <| fun x ↦ IsRegularPoint.of_surjective_of_finiteDimensional (hf x)
+
 end move
 
 variable (I J) in
@@ -280,6 +290,36 @@ instance [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f)
 lemma foo [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
     IsSmoothEmbedding 𝓘(𝕜, hy.modelSpace') I n (hy.inclusion hf) :=
   sorry -- general submanifold nonsense
+
+
+/-- The **regular value theorem** for boundaryless manifolds:
+if `f` is a submersion, for any value in the range of f. -/
+def immersedSubmanifold_submersion [I.Boundaryless] (hf : IsSubmersion I J n f) :
+    letI hx := hf.isRegularValue (f x)
+    ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf.contMDiff) M n hx.Complement where
+  map := Subtype.val
+  sliceModel := sorry -- should be a known condition
+  real_condition := sorry
+
+/-- The **regular value theorem** for boundaryless manifolds: if `f : M → N` has surjective
+differential everywhere and `N` is finite-dimensional over a complete field,
+`f ⁻¹' {y}` is a submanifold for each `y ∈ range f`. -/
+def immersedSubmanifold_submersion' [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E₃] [I.Boundaryless]
+    (hf : ∀ (x : M), Surjective ⇑(mfderiv I J f x)) :
+    letI  hf' := IsSubmersion.of_mfderiv_surjective_of_finiteDimensional hf (n := n)
+    letI hx := hf'.isRegularValue (f x)
+    ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf'.contMDiff) M n hx.Complement :=
+  immersedSubmanifold_submersion (.of_mfderiv_surjective_of_finiteDimensional hf)
+
+/-- The **constank rank theorem** for boundaryless manifolds: if the differential of `f : M → N`
+has constant rank and `N` is finite-dimensional over a complete field,
+`f ⁻¹' {y}` is a submanifold for each `y ∈ range f`. -/
+def ImmersedSubmanifold.of_constant_rank [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E₃] [I.Boundaryless]
+    {k : ℕ} (hf : ∀ (x : M), (mfderiv I J f x).rank = k) :
+    -- TODO: this statement needs work: need to redefine the model with corners
+    -- ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf'.contMDiff) M n hx.Complement := by
+    sorry := by
+  sorry
 
 end Boundaryless
 
