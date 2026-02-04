@@ -107,7 +107,6 @@ instance (hy : IsRegularValue I J f y) : NormedSpace 𝕜 hy.Complement' := by
   simp only [Complement'] --, h, ↓reduceDIte]
   sorry
 
---- XXX(MR): do we really need _hf here?
 /-- The set `f ⁻¹' y` coerced to a type that will be endowed with a manifold
 structure by the regular value theorem.
 
@@ -120,7 +119,6 @@ abbrev Preimage (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) : Type 
   f ⁻¹' {y}
 
 /-
---- XXX(MR): do we really need _hf here?
 @[nolint unusedArguments, expose]
 abbrev PreimageWithin (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) (s : Set M) : Type _ :=
   (s ∩ (f ⁻¹' {y})) -/
@@ -133,6 +131,11 @@ abbrev PreimageWithin (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) (
 def modelSpace (_hx : IsRegularValue I J f (f x)) : Type _ :=
   (mfderiv I J f x).ker
 
+/-- The model normed space for the manifold structure on `f ⁻¹' {y}`. -/
+@[nolint unusedArguments, expose]
+def modelSpace' (_hy : IsRegularValue I J f y) : Type _ := by
+  classical exact if h : y ∈ range f then (h.choose_spec ▸ _hy).modelSpace else PUnit
+
 instance (hx : IsRegularValue I J f (f x)) :
     NormedAddCommGroup hx.modelSpace := by
   unfold modelSpace
@@ -144,6 +147,14 @@ instance (hx : IsRegularValue I J f (f x)) :
   letI : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs <| NormedAddCommGroup E₁
   letI : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs <| NormedSpace _ E₁
   infer_instance
+
+instance (hy : IsRegularValue I J f y) : NormedAddCommGroup hy.modelSpace' := by
+  by_cases h : y ∈ range f <;> simp only [modelSpace', h, ↓reduceDIte] <;> infer_instance
+
+instance (hy : IsRegularValue I J f y) :
+    NormedSpace 𝕜 hy.modelSpace' := by
+  sorry -- TODO: why does this not work?
+  -- by_cases h : y ∈ range f <;> simp only [modelSpace', h, ↓reduceDIte] <;> infer_instance
 
 namespace sandbox
 
@@ -220,35 +231,26 @@ def immersedSubmanifold_aux [I.Boundaryless] (hx : IsRegularValue I J f (f x))
   sliceModel := sorry -- should be a known condition
   real_condition := sorry
 
-/-- The **regular value theorem** for boundaryless manifolds, for any regular `y` of `f`. -/
+/-- The **regular value theorem** for boundaryless manifolds, for any regular value `y` of `f`. -/
 instance immersedSubmanifold [I.Boundaryless] (hy : IsRegularValue I J f y)
     (hf : ContMDiff I J n f) :
-    -- hy.modelWithCorners does not typecheck yet!
-    ImmersedSubmanifold hy.modelWithCorners I (hy.Preimage hf) M n hy.Complement' := by
+    ImmersedSubmanifold 𝓘(𝕜, hy.modelSpace') I (hy.Preimage hf) M n hy.Complement' := by
   sorry
 
-/-- The regular value theorem. -/
-instance immersedSubmanifold [I.Boundaryless] (hx : IsRegularValue I J f (f x))
-    (hf : ContMDiff I J n f) :
-    ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
-  map := Subtype.val
-  sliceModel := sorry -- should be a known condition
-  real_condition := sorry
+instance [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
+    ChartedSpace hy.modelSpace' (hy.Preimage hf) :=
+  (hy.immersedSubmanifold hf).chartedSpace
 
-instance [I.Boundaryless] (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
-    ChartedSpace hx.modelSpace (hx.Preimage hf) :=
-  (hx.immersedSubmanifold hf).chartedSpace
-
-instance [I.Boundaryless] (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
-    IsManifold hx.modelWithCorners n (hx.Preimage hf) :=
-  (hx.immersedSubmanifold hf).isManifold
+instance [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
+    IsManifold 𝓘(𝕜, hy.modelSpace') n (hy.Preimage hf) :=
+  (hy.immersedSubmanifold hf).isManifold
 
 -- ideally, this would not be necessary
-abbrev inclusion (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) : (hx.Preimage hf) → M :=
+abbrev inclusion (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) : (hy.Preimage hf) → M :=
     fun x ↦ x.val
 
-lemma foo [I.Boundaryless] (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
-    IsSmoothEmbedding hx.modelWithCorners I n (hx.inclusion hf) :=
+lemma foo [I.Boundaryless] (hy : IsRegularValue I J f y) (hf : ContMDiff I J n f) :
+    IsSmoothEmbedding 𝓘(𝕜, hy.modelSpace') I n (hy.inclusion hf) :=
   sorry -- general submanifold nonsense
 
 end Boundaryless
