@@ -765,7 +765,7 @@ theorem mk_lt_mk_of_ssubset {s t : Set α} (hs : s.Finite) (h : s ⊂ t) : #s < 
 theorem mk_strictMono [Finite α] : StrictMono (α := Set α) (mk ∘ (↑)) :=
   fun _ _ ↦ mk_lt_mk_of_ssubset <| toFinite _
 
-theorem mk_strictMonoOn : StrictMonoOn (α := Set α) (mk ∘ (↑)) (setOf Set.Finite) :=
+theorem mk_strictMonoOn : StrictMonoOn (mk ∘ (↑)) {s : Set α | s.Finite} :=
   fun _ hs _ _ ↦ mk_lt_mk_of_ssubset hs
 
 end computing
