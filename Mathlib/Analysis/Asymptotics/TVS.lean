@@ -227,7 +227,7 @@ theorem IsThetaTVS.isBigOTVS (h : f =Θ[𝕜; l] g) : f =O[𝕜; l] g := h.left
 @[symm]
 theorem IsThetaTVS.symm (h : f =Θ[𝕜; l] g) : g =Θ[𝕜; l] f := And.symm h
 
-theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g=Θ[𝕜; l] f := and_comm
+theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g =Θ[𝕜; l] f := and_comm
 
 /-!
 ### Transitivity lemmas
@@ -825,7 +825,15 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
         ac_rfl
       _ ≤ _ := div_le_egauge_ball _ _ _
 
-alias ⟨isBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
+alias ⟨IsBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
+
+@[deprecated (since := "2026-02-03")]
+alias isBigOTVS.isBigO := IsBigOTVS.isBigO
+
+lemma isThetaTVS_iff_isTheta : f =Θ[𝕜; l] g ↔ f =Θ[l] g :=
+  .and isBigOTVS_iff_isBigO isBigOTVS_iff_isBigO
+
+alias ⟨IsThetaTVS.isTheta, IsTheta.isThetaTVS⟩ := isThetaTVS_iff_isTheta
 
 end NormedSpace
 

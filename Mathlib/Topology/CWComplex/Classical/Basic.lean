@@ -571,6 +571,8 @@ instance : SetLike (Subcomplex C) X where
     rw [hE, hF]
     simpa using h
 
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
+
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 
 lemma mem_carrier {E : Subcomplex C} {x : X} : x ∈ E.carrier ↔ x ∈ (E : Set X) := Iff.rfl
