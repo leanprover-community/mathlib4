@@ -142,9 +142,13 @@ theorem ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : Measurable
     (ht : ∀ᵐ x ∂μ, f x ∈ t) : ∀ᵐ x ∂ν, g x ∈ t :=
   h.ae_snd tmeas ht
 
-theorem of_hasLaw {κ : Measure γ} (h₀ : HasLaw f κ μ) (h₁ : HasLaw g κ ν) :
-    (IdentDistrib f g μ ν) :=
+theorem _root_.ProbabilityTheory.HasLaw.identDistrib {κ : Measure γ} (h₀ : HasLaw f κ μ)
+    (h₁ : HasLaw g κ ν) : IdentDistrib f g μ ν :=
   ⟨h₀.aemeasurable, h₁.aemeasurable, by simp [h₀.map_eq, h₁.map_eq]⟩
+
+theorem _root_.ProbabilityTheory.HasLaw.of_hasLaw_of_identDistrib {κ : Measure γ}
+    (h₀ : HasLaw f κ μ) (h₁ : IdentDistrib f g μ ν) : HasLaw g κ ν :=
+  ⟨h₁.aemeasurable_snd, by simp [h₀.map_eq, ← h₁.map_eq]⟩
 
 /-- In a second countable topology, the first function in an identically distributed pair is a.e.
 strongly measurable. So is the second function, but use `h.symm.aestronglyMeasurable_fst` as
