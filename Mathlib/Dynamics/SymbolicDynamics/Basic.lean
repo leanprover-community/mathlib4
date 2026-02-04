@@ -619,10 +619,8 @@ lemma isClosed_mulForbidden [DiscreteTopology A] (F : Set (Pattern A G)) :
     IsClosed (mulForbidden F) := by
   rw [mulForbidden]
   -- Rewrite as an intersection indexed by `p ∈ F` and `v : G`.
-  have h_eq :
-      {x | ∀ p ∈ F, ∀ v : G, ¬ p.mulOccursInAt x v}
-        = ⋂ (p : Pattern A G) (hp : p ∈ F) (v : G), {x | ¬ p.mulOccursInAt x v} := by
-    ext x; simp
+  have h_eq : {x | ∀ p ∈ F, ∀ v : G, ¬ p.mulOccursInAt x v}
+    = ⋂ (p : Pattern A G) (hp : p ∈ F) (v : G), {x | ¬ p.mulOccursInAt x v} := by ext; simp
   rw [h_eq]
   -- Now prove that this big intersection is closed.
   have h_closed :
