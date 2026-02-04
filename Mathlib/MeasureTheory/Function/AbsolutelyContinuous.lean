@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
 /-!
 # Absolutely Continuous Functions
@@ -307,6 +308,13 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ ≤ K * (ε / (K + 1)) := by gcongr
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
+
+/-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
+    AbsolutelyContinuousOnInterval f a b := by
+  obtain ⟨K, hK⟩ := hf.exists_lipschitzOnWith (by decide) (convex_Icc _ _) isCompact_Icc
+  exact hK.absolutelyContinuousOnInterval
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
