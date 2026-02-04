@@ -65,7 +65,7 @@ private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summan
   congr with a
   have H2 := qExpansion_identity_pnat (k := 1) (by grind)
     ⟨(a + 1) * z, by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.2⟩
-  simp only [coe_mk_subtype, add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
+  simp only [add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
     Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one] at H2
   simp_rw [zpow_ofNat, H2, ← tsum_mul_left, ← tsum_neg, ← exp_nsmul]
   refine tsum_congr fun b ↦ ?_
@@ -214,7 +214,7 @@ private lemma aux_tsum_identity_2 (d : ℕ+) :
 private lemma aux_tendsto_tsum_cexp_pnat :
     Tendsto (fun N : ℕ+ ↦ ∑' (n : ℕ+), cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) atTop (𝓝 0) := by
   have := tendsto_zero_geometric_tsum_pnat (norm_exp_two_pi_I_lt_one ⟨_, im_pnat_div_pos 1 z⟩)
-  simp only [coe_mk_subtype, ← exp_nsmul, nsmul_eq_mul, Nat.cast_mul] at *
+  simp only [← exp_nsmul, nsmul_eq_mul, Nat.cast_mul] at *
   exact this.congr <| by grind
 
 /- Now this sum of terms with `-1 / z` tendsto `-2 * π * I / z` which is exactly `D2_S`. The key is
@@ -226,8 +226,8 @@ private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
       (fun n : ℕ+ ↦ (-2 * π * I / z) - (2 / z * (2 * π * I)) *
       (∑' m : ℕ+, cexp (2 * π * I * (-n / z)) ^ (m : ℕ)) + 2 / n) := by
     ext N
-    have h2 := cot_series_rep (coe_mem_integerComplement ⟨-N / z, im_pnat_div_pos N z⟩)
-    rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add',coe_mk_subtype, one_div, inv_div, neg_mul, ← h2,
+    have h2 := cot_series_rep <| coe_mem_integerComplement ⟨-N / z, im_pnat_div_pos N z⟩
+    rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add', one_div, inv_div, neg_mul, ← h2,
       ← tsum_zero_pnat_eq_tsum_nat
       (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, im_pnat_div_pos N z⟩)] at *
     field [ne_zero z]
