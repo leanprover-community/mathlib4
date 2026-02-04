@@ -256,7 +256,7 @@ Formally, it is composed of:
 * `isClosed`: the set is topologically closed in `A^G`.
 * `mapsTo`: the set is invariant under all right-translation shifts
   `(mulShift g)`. -/
-@[to_additive existing Subshift]
+@[to_additive existing]
 structure MulSubshift where
   /-- The underlying set of configurations. -/
   carrier : Set (G → A)
