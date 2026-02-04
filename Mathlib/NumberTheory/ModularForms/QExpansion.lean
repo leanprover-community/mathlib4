@@ -476,7 +476,7 @@ lemma qExpansion_smul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (qExpansion h (a • f)) = (a • qExpansion h f) := by
   ext m
   simp_rw [_root_.map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
-    (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_fun_const_smul]
+    (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_const_smul_field]
   grind [Pi.smul_apply, smul_eq_mul]
 
 lemma qExpansion_neg [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
@@ -492,8 +492,7 @@ lemma qExpansion_zero (hh : 0 < h) : qExpansion h 0 = 0 := by
     rw [this]
     by_cases hm : m = 0
     · simp only [hm, Nat.factorial_zero, one_ne_zero, iteratedDeriv_zero, Pi.zero_apply, or_true]
-    · right
-      simpa [hm] using iteratedDeriv_const (𝕜 := ℂ) (F := ℂ) (x := 0) (c := 0) (n := m)
+    · simp
   apply (Function.Periodic.differentiableAt_cuspFunction_zero hh (by simp) (by simp) _).continuousAt
   simpa using ZeroAtFilter.boundedAtFilter (zero_zeroAtFilter I∞)
 
@@ -578,7 +577,7 @@ private lemma hasSum_cuspFunction_of_hasSum_annulus [Γ.HasDetPlusMinusOne] [Dis
   have h1 := Function.Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1
   have h2 := hf ⟨(Periodic.invQParam h q), h1⟩
   have := eq_cuspFunction (h := h) f ⟨(Periodic.invQParam h q), h1⟩ hΓ (by grind)
-  simp only [smul_eq_mul, ne_eq, coe_mk_subtype] at *
+  simp only [smul_eq_mul, ne_eq] at *
   rw [Function.Periodic.qParam_right_inv (by grind) hq1] at this h2
   simpa [← this] using h2
 
@@ -595,7 +594,7 @@ lemma cuspFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ]
       (f := fun q : ℂ ↦ fun m : ℕ ↦ c m * q ^ m) (g := fun m ↦ c m * 0 ^ m)
       (bound := fun m ↦ ‖c m‖ * (1 / 2 ) ^ m ) ?_ ?_ ?_
     · convert hD
-      rw [Summable.tsum_eq_zero_add (by simpa [← summable_nat_add_iff 1] using summable_zero)]
+      rw [Summable.tsum_eq_zero_add (by simp [← summable_nat_add_iff 1])]
       simp
     · simpa using (this (1/2) (by norm_num)
         (by apply one_div_ne_zero; exact Ne.symm (NeZero.ne' 2))).summable.norm
@@ -620,8 +619,8 @@ lemma hasSum_cuspFunction_of_hasSum [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ
     HasSum (fun m : ℕ ↦ c m • q ^ m) (cuspFunction h f q) := by
   by_cases hq1 : q = 0
   · simp_rw [hq1, cuspFunction_zero_eq_const_coeff hh hΓ c f hf, smul_eq_mul]
-    rw [Summable.hasSum_iff (by simpa [← summable_nat_add_iff 1] using summable_zero),
-      Summable.tsum_eq_zero_add (by simpa [← summable_nat_add_iff 1] using summable_zero)]
+    rw [Summable.hasSum_iff (by simp [← summable_nat_add_iff 1]),
+      Summable.tsum_eq_zero_add (by simp [← summable_nat_add_iff 1])]
     simp
   · exact hasSum_cuspFunction_of_hasSum_annulus hh hΓ c f hf hq hq1
 
@@ -629,7 +628,7 @@ private lemma qParam_onto_annulus (r h : ℝ) (hr : 0 < r) (hr2 : r < 1) (hh : 0
     ∃ (z : ℍ), ‖𝕢 h z‖ = r := by
   use ⟨Periodic.invQParam h r, ?_⟩
   · have hq := Function.Periodic.qParam_right_inv (h := h) (q := r) (by grind) (by aesop)
-    simp [UpperHalfPlane.coe, hq, hr.le]
+    simp [hq, hr.le]
   · rw [Function.Periodic.im_invQParam, norm_real, Real.norm_eq_abs, Real.log_abs, mul_pos_iff]
     right
     refine ⟨div_neg_of_neg_of_pos (by simp [hh]) (Real.two_pi_pos), (Real.log_neg_iff hr).mpr hr2⟩
@@ -656,13 +655,13 @@ lemma qExpansion_coeff_unique [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (c :
         apply FormalMultilinearSeries.le_radius_of_summable
         simp only [hqq2, PowerSeries.coeff_mk, qExpansion2]
         by_cases hr0 : r = 0
-        · simpa [hr0, ← summable_nat_add_iff 1] using summable_zero
+        · simp [hr0, ← summable_nat_add_iff 1]
         · obtain ⟨z, hz⟩ := qParam_onto_annulus r h ((by simp [pos_iff_ne_zero.mpr hr0] ))
             (by simpa using hr) hh
           simpa [NNReal.coe_pow, ← hz] using (summable_norm_iff.mpr (hf z).summable)
     refine ⟨H21 , zero_lt_one, ?_⟩
     intro y hy
-    simp only [EMetric.mem_ball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
+    simp only [Metric.mem_eball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
       ← NNReal.coe_lt_one, coe_nnnorm, zero_add] at hy ⊢
     apply (hasSum_cuspFunction_of_hasSum hh hΓ c f hf hy).congr
     simp [smul_eq_mul, PowerSeries.coeff_mk, qq, qExpansion2]
