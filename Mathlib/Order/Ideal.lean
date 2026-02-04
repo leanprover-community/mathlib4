@@ -619,8 +619,8 @@ instance [LE P] [OrderTop P] : IsCoatomic (Ideal P) := by
     (hS₁.image _ _ _ ?_) (hS₂.image _), ?_, ?_⟩
   · simp [Ideal.isIdeal]
   · simp
-  · simp_rw [top_notMem_iff, lt_top_iff_ne_top, ne_eq] at hS₃
-    simpa [mem_toIdeal, eq_top_iff_top_mem, ← fun x => (eq_top_iff_top_mem (I := x)).not, ne_eq]
+  · simp_rw [top_notMem_iff, lt_top_iff_ne_top] at hS₃
+    simpa [mem_toIdeal, eq_top_iff_top_mem, ← fun x => (eq_top_iff_top_mem (I := x)).not]
   · intro J hJ
     simpa [le_toIdeal] using Set.subset_biUnion_of_mem hJ
 
