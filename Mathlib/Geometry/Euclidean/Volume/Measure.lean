@@ -70,7 +70,7 @@ scoped[MeasureTheory] notation "μHE[" d "]" => MeasureTheory.Measure.euclideanH
 
 /-- show the scaling factor equals to the ratio between the volume of `d`-dimensional
 `Metric.ball` with Euclidean metric and with sup metric (i.e. a cube), or explicity,
-$\pi^(d/2) / (2^d \Gamma (d/2+1))$. -/
+$\pi^{d/2} / (2^d \Gamma (d/2+1))$. -/
 proof_wanted MeasureTheory.Measure.addHaarScalarFactor_hausdorffMeasure_eq (d : ℕ):
   addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] =
   volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) / volume (Metric.ball (0 : Fin d -> ℝ) 1)
