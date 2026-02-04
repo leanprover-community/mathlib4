@@ -651,7 +651,7 @@ theorem mem_map_restrict_ae_iff {β} {s : Set α} {t : Set β} {f : α → β} (
   add_eq_zero
 
 /-- See also `Measure.ae_sum_iff`. -/
-@[simp] lemma ae_sum_measure_iff {p : α → Prop} {s : Finset ι} {μ : ι → Measure α} :
+@[simp] lemma ae_finsetSum_measure_iff {p : α → Prop} {s : Finset ι} {μ : ι → Measure α} :
     (∀ᵐ x ∂∑ i ∈ s, μ i, p x) ↔ ∀ i ∈ s, ∀ᵐ x ∂μ i, p x := by
   induction s using Finset.cons_induction <;> simp [*]
 

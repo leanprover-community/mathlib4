@@ -329,15 +329,15 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]
     · simp only [coe_finset_sum, Finset.sum_apply, smul_apply]
-      congr! 1 with a ha
-      by_cases ha₁ : a ∈ t <;> simp [*]
-    simpa [Function.onFun]
-  mpr hμ := by rw [hμ, ae_sum_measure_iff]; rintro i hi; refine ae_smul_measure (by simpa) _
+      congr with a
+      by_cases ha : a ∈ t <;> simp [*]
+    simpa
+  mpr hμ := by rw [hμ, ae_finsetSum_measure_iff]; exact fun i hi ↦ ae_smul_measure (by simpa) _
 
 lemma ae_eq_or_eq_iff_eq_dirac_add_dirac (ha : a₁ ≠ a₂) :
     (∀ᵐ a ∂μ, a = a₁ ∨ a = a₂) ↔ μ = μ {a₁} • .dirac a₁ + μ {a₂} • .dirac a₂ := by
   -- FIXME: Why does `simpa using ...` not work?
-  convert ae_mem_finset_iff (s := .cons a₁ {a₂} <| by simpa) (μ := μ) <;> simp
+  convert ae_mem_finset_iff (s := .cons a₁ {a₂} <| by simpa) <;> simp
 
 lemma ae_mem_finset_iff_map_eq_sum_dirac {μ : Measure β} (hf : AEMeasurable f μ) :
     (∀ᵐ b ∂μ, f b ∈ s) ↔ μ.map f = ∑ a ∈ s, μ (f ⁻¹' {a}) • .dirac a := by
@@ -349,6 +349,6 @@ lemma ae_eq_or_eq_iff_map_eq_dirac_add_dirac {μ : Measure β} (hf : AEMeasurabl
     (∀ᵐ b ∂μ, f b = a₁ ∨ f b = a₂) ↔
       μ.map f = μ (f ⁻¹' {a₁}) • .dirac a₁ + μ (f ⁻¹' {a₂}) • .dirac a₂ := by
   -- FIXME: Why does `simpa using ...` not work?
-  convert ae_mem_finset_iff_map_eq_sum_dirac (s := .cons a₁ {a₂} <| by simpa) (μ := μ) hf <;> simp
+  convert ae_mem_finset_iff_map_eq_sum_dirac (s := .cons a₁ {a₂} <| by simpa) hf <;> simp
 
 end MeasureTheory.Measure
