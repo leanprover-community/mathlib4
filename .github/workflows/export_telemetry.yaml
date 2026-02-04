@@ -1,0 +1,36 @@
+name: Export workflow telemetry
+
+on:
+  workflow_run:
+    workflows:
+      # The *names* of the workflows to collect telemetry for
+      - "continuous integration"
+      - "continuous integration (mathlib forks)"
+      - "continuous integration (staging)"
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  otel-export:
+    if: github.repository == 'leanprover-community/mathlib4'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export workflow telemetry
+        uses: corentinmusard/otel-cicd-action@7e307f7baefcf4929d94d2844bc72d87566a75c3 # v3.0.0
+        with:
+          otlpEndpoint: ${{ secrets.OTLP_ENDPOINT }}
+          otlpHeaders: ${{ secrets.OTLP_HEADERS }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          runId: ${{ github.event.workflow_run.id }}
+
+      - name: Export workflow telemetry (alt endpoint)
+        uses: corentinmusard/otel-cicd-action@7e307f7baefcf4929d94d2844bc72d87566a75c3 # v3.0.0
+        with:
+          otlpEndpoint: ${{ secrets.OTLP_ENDPOINT_ALT }}
+          otlpHeaders: ${{ secrets.OTLP_HEADERS_ALT }}
+          otelServiceName: "mathlib-ci"
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          runId: ${{ github.event.workflow_run.id }}
