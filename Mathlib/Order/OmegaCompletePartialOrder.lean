@@ -179,10 +179,9 @@ def some (n : ℕ) (c : Chain α) : Chain (Option α) where
     · apply monotone_const
     · apply Monotone.comp Option.some_mono
       apply Monotone.comp c.monotone
-      intro i₁ i₂ hi
-      grind
+      grind [Monotone]
     · grind
-    · simp only [Option.none_le, implies_true]
+    · simp
 
 @[simp]
 lemma some_coe (n) (c : Chain α) (i) : some n c i = if i < n then none else c (i - n) := by rfl
@@ -217,8 +216,7 @@ lemma dropOption_some (n) : dropOption (some n c) ⟨n, by simp⟩ = c := by
   ext i
   simp only [dropOption_coe, some_coe, Option.isSome_ite', not_lt, Option.get_ite']
   have h : ∃ m, n ≤ m := by use n
-  have : Nat.find h = n := by
-    simp only [Nat.find_eq_iff, le_refl, not_le, imp_self, implies_true, and_self]
+  have : Nat.find h = n := by simp [Nat.find_eq_iff]
   simp only [this, Nat.add_sub_cancel]
 
 /-- Converts a `Chain` of `Option`s into an `Option`al `Chain`. -/
@@ -230,54 +228,35 @@ noncomputable def toOption (c : Chain (Option α)) : Option (Chain α) :=
 
 @[simp]
 lemma toOption_none : toOption (const none) = (.none : Option (Chain α)) := by
-  simp only [toOption, const_coe, Option.isSome_none, Bool.false_eq_true, exists_const, ↓reduceDIte]
+  simp [toOption]
 
 @[simp]
 lemma toOption_some (n) : toOption (some n c) = (.some c : Option (Chain α)) := by
-  simp only [
-    toOption, some_coe, Option.isSome_ite', not_lt, dropOption_some, dite_eq_ite,
+  simp only [toOption, some_coe, Option.isSome_ite', not_lt, dropOption_some, dite_eq_ite,
     ite_eq_left_iff, not_exists, not_le, reduceCtorEq, imp_false, not_forall]
   use n
 
 @[elab_as_elim]
-lemma option_cases
-    {p : Chain (Option α) → Prop}
-    (none : p (const .none))
-    (some : ∀ n c, p (.some n c))
+lemma option_cases {p : Chain (Option α) → Prop}
+    (none : p (const .none)) (some : ∀ n c, p (.some n c))
     (c : Chain (Option α)) : p c := by
   classical
   let ℓ := if h : ∃n, (c n).isSome then Nat.find h else 0
   suffices this : c.toOption.elim (const .none) (.some ℓ) = c by
     rw [← this]
-    cases c.toOption with
-    | none => simp only [Option.elim_none, none]
-    | some _ => simp only [Option.elim_some, some]
-  by_cases h : ∃n, (c n).isSome
-  · simp only [toOption, h, ↓reduceDIte, Option.elim_some]
-    ext n
-    simp only [
-      h, ↓reduceDIte, some_coe, Nat.lt_find_iff, Bool.not_eq_true,
-      Option.isSome_eq_false_iff, Option.isNone_iff_eq_none, dropOption_coe,
-      Option.some_get, Option.ite_none_left_eq_some, not_forall, ℓ]
-    cases le_or_gt (Nat.find h) n with
-    | inl h' => grind
-    | inr h' =>
-      have hn₁ : n ≤ Nat.find h := by grind
-      have hn₂ : c n = .none := by
-        simpa only [Bool.not_eq_true, Option.isSome_eq_false_iff, Option.isNone_iff_eq_none]
-          using Nat.find_min h h'
-      simp only [
-        exists_prop, hn₁, Nat.sub_eq_zero_of_le, Nat.zero_add, hn₂,
-        reduceCtorEq, iff_false, not_and, forall_exists_index, and_imp]
-      intro m hm hm'
-      have := c.monotone hm
-      simp only [hn₂, Option.le_none] at this
-      contradiction
-  · ext n
-    have : ∀ (x : ℕ), c x = .none := by simpa using h
-    simp only [
-      toOption, this, Option.isSome_none, Bool.false_eq_true, exists_const,
-      ↓reduceDIte, Option.elim_none, const_coe, reduceCtorEq]
+    cases c.toOption <;> simp [none, some]
+  ext n
+  wlog h : ∃n, (c n).isSome
+  · have : ∀ (x : ℕ), c x = .none := by simpa using h
+    simp [toOption, this]
+  cases le_or_gt (Nat.find h) n with
+  | inl h' =>
+    simp [toOption, h]
+    grind
+  | inr h' =>
+    have : c n = .none := by simpa using Nat.find_min h h'
+    simp [toOption, h]
+    grind [Option.le_none, @c.monotone.imp]
 
 end Chain
 
@@ -582,6 +561,17 @@ lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) :=
 
 end Prod
 
+namespace OmegaCompletePartialOrder
+
+variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ]
+
+lemma ωScottContinuous.map_ωSup₂ {f : α → β → γ}
+    (hf : ωScottContinuous (Function.uncurry f)) (c₁ : Chain α) (c₂ : Chain β) :
+    f (ωSup c₁) (ωSup c₂) = ωSup ((c₁.zip c₂).map ⟨Function.uncurry f, hf.monotone⟩) :=
+  ωSup_eq_of_isLUB hf.isLUB
+
+end OmegaCompletePartialOrder
+
 namespace Option
 
 variable [OmegaCompletePartialOrder α]
@@ -591,107 +581,82 @@ noncomputable instance : OmegaCompletePartialOrder (Option α) where
   le_ωSup c i := by
     cases c using option_cases with
     | none => simp only [const_coe, toOption_none, map_none, le_refl]
-    | some j =>
-      simp only [some_coe, toOption_some, map_some]
-      by_cases h : i < j
-      · simp only [h, ↓reduceIte, none_le]
-      · simp only [h, ↓reduceIte, some_le_some]
-        apply le_ωSup
+    | some j => by_cases h : i < j <;> simp [h, le_ωSup]
   ωSup_le := by
-    rintro c x h
+    intro c x h
     cases c using option_cases with
     | none => simp only [toOption_none, map_none, none_le]
     | some n c =>
-      cases x with
-      | none =>
-        specialize h n
-        simp only [some_coe] at h
-        grind
-      | some x =>
-        replace h i := h (i + n)
-        simp only [toOption_some, map_some, some_le_some, ωSup_le_iff]
-        simp only [some_coe, Nat.add_sub_cancel] at h
-        grind
+      replace h i := h (i + n)
+      have : ∀ i, ¬ (i + n < n) := by grind
+      simp only [some_coe, this, ↓reduceIte, Nat.add_sub_cancel] at h
+      cases x <;> simp_all
 
 @[simp]
 lemma ωSup_some (n) (c : Chain α) : ωSup (.some n c) = ωSup c := by
   simp only [ωSup, toOption_some, map_some]
 
+lemma ωSup_eq_none_iff (c : Chain (Option α)) : ωSup c = .none ↔ ∀ n, c n = .none := by
+  apply Iff.intro
+  · intro h
+    have : ωSup c ≤ none := by grind
+    simpa using this
+  · intro h
+    apply le_antisymm <;> simp [h]
+
+lemma none_eq_ωSup_iff (c : Chain (Option α)) : .none = ωSup c ↔ ∀ n, c n = .none := by
+  rw [← ωSup_eq_none_iff]
+  grind
+
 @[fun_prop]
 lemma ωScottContinuous_some : ωScottContinuous (.some : α → Option α) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · apply Option.some_mono
-  · have : c.map ⟨some, Option.some_mono⟩ = Chain.some 0 c := by
-      ext n
-      simp only [
-        Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, some.injEq,
-        some_coe, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero]
+  · have : c.map ⟨some, Option.some_mono⟩ = Chain.some 0 c := by ext; simp
     simp only [this, ωSup_some]
 
 @[fun_prop]
-lemma ωScottContinuous_bind
-    [OmegaCompletePartialOrder β]
-    [OmegaCompletePartialOrder γ]
+lemma ωScottContinuous_bind [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ]
     {f : α → Option β} (hf : ωScottContinuous f)
-    {g : α → β → Option γ} (hg : ωScottContinuous fun x : _ × _ ↦ g x.1 x.2)
-    : ωScottContinuous (fun x ↦ Option.bind (f x) (g x)) := by
+    {g : α → β → Option γ} (hg : ωScottContinuous (Function.uncurry g)) :
+    ωScottContinuous (fun x ↦ Option.bind (f x) (g x)) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · apply Option.bind_mono hf.monotone hg.monotone
   · rw [hf.map_ωSup]
     cases hc : c.map ⟨f, hf.monotone⟩ using option_cases with
     | none =>
-      simp only [ωSup_const, bind_none]
-      apply le_antisymm
-      · simp only [none_le]
-      · simp only [
-          Chain.ext_iff, Chain.map_coe, OrderHom.coe_mk,
-          const_coe, funext_iff, Function.comp_apply] at hc
-        simp only [
-          ωSup_le_iff, Chain.map_coe, OrderHom.coe_mk,
-          Function.comp_apply, hc, bind_none, le_refl, implies_true]
+      have : ∀ (x : ℕ), f (c x) = none := by simpa [Chain.ext_iff, funext_iff] using hc
+      simp [none_eq_ωSup_iff, this]
     | some n c' =>
-      simp only [ωSup_some, bind_some]
-      have := hg.map_ωSup (c.zip c')
-      change g (ωSup c) (ωSup c') = _ at this
-      rw [this]
-      simp only [
-        Chain.ext_iff, Chain.map_coe, OrderHom.coe_mk,
-        funext_iff, Function.comp_apply, some_coe] at hc
+      simp only [ωSup_some, bind_some, hg.map_ωSup₂]
       apply le_antisymm
-      · simp only [ωSup_le_iff, Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, zip_coe]
-        intro i
+      · apply ωSup_le _ _ fun i ↦ ?_
         apply le_ωSup_of_le (i + n)
-        have : ¬ (i + n < n) := by grind
-        simp only [
-          Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, hc, this,
-          ↓reduceIte, Nat.add_sub_cancel, bind_some, ge_iff_le]
-        apply hg.monotone (?_ : (_, _) ≤ (_, _))
-        simp only [ge_iff_le, Prod.mk_le_mk, le_refl, and_true]
-        apply c.monotone
-        simp only [Nat.le_add_right]
-      · simp only [ωSup_le_iff, Chain.map_coe, OrderHom.coe_mk, Function.comp_apply]
-        intro i
+        have : f (c (i + n)) = some (c' i) := by
+          simp [Chain.ext_iff, funext_iff] at hc
+          grind
+        simp only [Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, this, bind_some]
+        apply hg.monotone (Prod.GCongr.mk_le_mk (c.monotone (by grind)) le_rfl)
+      · apply ωSup_le _ _ fun i ↦ ?_
         apply le_ωSup_of_le i
         by_cases h : i < n
-        · simp only [
-            hc, h, ↓reduceIte, bind_none, Chain.map_coe, OrderHom.coe_mk,
-            Function.comp_apply, zip_coe, none_le]
-        · simp only [
-            hc, h, ↓reduceIte, bind_some, Chain.map_coe,
-            OrderHom.coe_mk, Function.comp_apply, zip_coe]
-          apply hg.monotone (?_ : (_, _) ≤ (_, _))
-          simp only [ge_iff_le, Prod.mk_le_mk, le_refl, true_and]
-          apply c'.monotone
-          simp only [Nat.sub_le]
+        · have : f (c i) = none := by
+            simp [Chain.ext_iff, funext_iff] at hc
+            grind
+          simp [this]
+        · have : f (c i) = some (c' (i - n)) := by
+            simp [Chain.ext_iff, funext_iff] at hc
+            grind
+          simp only [Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, this, bind_some, zip_coe,
+            Function.uncurry_apply_pair, ge_iff_le]
+          apply hg.monotone (Prod.GCongr.mk_le_mk le_rfl (c'.monotone (by grind)))
 
 @[fun_prop]
-lemma ωScottContinuous_map
-    [OmegaCompletePartialOrder β]
-    [OmegaCompletePartialOrder γ]
-    {f : α → β → γ} (hg : ωScottContinuous fun x : _ × _ ↦ f x.1 x.2)
+lemma ωScottContinuous_map [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ]
+    {f : α → β → γ} (hg : ωScottContinuous (Function.uncurry f))
     {g : α → Option β} (hf : ωScottContinuous g)
     : ωScottContinuous (fun x ↦ Option.map (f x) (g x)) := by
-  simp only [map_eq_bind, Function.comp_apply]
+  simp_rw [map_eq_bind]
   fun_prop
 
 end Option
