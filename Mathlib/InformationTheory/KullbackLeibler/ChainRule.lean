@@ -10,6 +10,7 @@ public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Notation
 
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+import Mathlib.Probability.Kernel.Composition.RadonNikodym
 
 /-!
 # Chain rule for the Kullback-Leibler divergence
@@ -32,9 +33,10 @@ always guaranteed, and thus holds for all measurable spaces `α` and `β`, witho
 
 ## Proof
 
-The Kullback-Leibler divergence is defined with an if-then-else statement: if the measures are
-absolutely continuous and the log-likelihood ratio is integrable, then it is defined as an integral,
-otherwise it is defined to be `∞`.
+The Kullback-Leibler divergence `klDiv μ ν` is defined with an if-then-else statement:
+if the measures are absolutely continuous (`μ ≪ ν`) and the log-likelihood ratio `llr μ ν` is
+integrable, then it is defined as `∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`, otherwise
+it is defined to be `∞`.
 
 We first deal with the case in which absolute continuity does not hold. The crucial observation is
 that `μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ μ ⊗ₘ κ ≪ μ ⊗ₘ η`, which means that if one of the two sides of the
@@ -50,12 +52,13 @@ This is harder to prove than the absolute continuity and relies on the convexity
 the function `x ↦ x * log x`.
 
 Finally, we prove the equality in the case in which both absolute continuity and integrability hold.
-In that case, `klDiv μ ν = ∫ x, llr μ ν x ∂μ` and similarly for the other terms.
+In that case, `klDiv μ ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ` and similarly for
+the other terms. It is easy to see that it suffices to prove the equality of the integrals parts.
 The main ingredient is the chain rule for Radon-Nikodym derivatives:
 `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) = ∂μ/∂ν * ∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
-Finally, the computation is as follows:
+Finally, the computation for the integral of the log-likelihood ratio is as follows:
 ```
-∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂μ ⊗ₘ κ
+∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂(μ ⊗ₘ κ)
 _ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal ∂(ν ⊗ₘ η)
 _ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal *
     (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(ν ⊗ₘ η)
@@ -63,6 +66,11 @@ _ = ∫ p, (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ 
 _ = ∫ p, log ((∂μ/∂ν) p.1).toReal ∂(μ ⊗ₘ κ) + ∫ p, log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal ∂(μ ⊗ₘ κ)
 _ = ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ)
 ```
+
+## TODO
+
+Add a version of the chain rule for the integral form of the contional KL divergence, i.e.
+`μ[fun x ↦ klDiv (κ x) (η x)]`.
 
 -/
 
@@ -76,69 +84,6 @@ namespace InformationTheory
 
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {μ ν : Measure α} {κ η : Kernel α β}
-
-/-- Auxiliary lemma for `rnDeriv_measure_compProd_left`. -/
-lemma rnDeriv_measure_compProd_left_of_ac (hμν : μ ≪ ν) (κ : Kernel α β)
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] :
-    ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ) =ᵐ[ν ⊗ₘ κ] fun p ↦ (∂μ/∂ν) p.1 := by
-  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) (by fun_prop) fun s hs _ ↦ ?_
-  have h_key t₁ t₂ : MeasurableSet t₁ → MeasurableSet t₂ →
-      ∫⁻ x in t₁ ×ˢ t₂, (∂μ ⊗ₘ κ/∂ν ⊗ₘ κ) x ∂ν ⊗ₘ κ = ∫⁻ x in t₁ ×ˢ t₂, (∂μ/∂ν) x.1 ∂ν ⊗ₘ κ := by
-    intro ht₁ ht₂
-    rw [Measure.setLIntegral_rnDeriv (hμν.compProd_left _),
-      Measure.setLIntegral_compProd (by fun_prop) ht₁ ht₂]
-    simp only [MeasureTheory.lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
-      univ_inter]
-    rw [setLIntegral_rnDeriv_mul hμν (κ.measurable_coe ht₂).aemeasurable ht₁,
-      Measure.compProd_apply_prod ht₁ ht₂]
-  refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ s hs
-  · simp
-  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩
-    exact h_key t₁ t₂ ht₁ ht₂
-  · intro t ht ht_eq
-    rw [setLIntegral_compl ht, ht_eq, setLIntegral_compl ht]
-    · congr 1
-      specialize h_key .univ .univ .univ .univ
-      simpa only [univ_prod_univ, Measure.restrict_univ] using h_key
-    · rw [← ht_eq]
-      exact ((Measure.setLIntegral_rnDeriv_le _).trans_lt (measure_lt_top _ _)).ne
-    · exact ((Measure.setLIntegral_rnDeriv_le _).trans_lt (measure_lt_top _ _)).ne
-  · intro f' hf_disj hf_meas hf_eq
-    rw [lintegral_iUnion hf_meas hf_disj, lintegral_iUnion hf_meas hf_disj]
-    congr with i
-    exact hf_eq i
-
-lemma todo (μ ν : Measure α) (κ η : Kernel α β)
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] [IsFiniteKernel η] :
-    ∂(ν.withDensity (μ.rnDeriv ν) ⊗ₘ κ)/∂(ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η) := by
-  conv_rhs => rw [Measure.haveLebesgueDecomposition_add μ ν]
-  rw [Measure.compProd_add_left]
-  have h := Measure.rnDeriv_add' (μ.singularPart ν ⊗ₘ κ) (ν.withDensity (μ.rnDeriv ν) ⊗ₘ κ)
-    (ν ⊗ₘ η)
-  have h2 : ∂μ.singularPart ν ⊗ₘ κ/∂ν ⊗ₘ η =ᵐ[ν ⊗ₘ η] 0 := by
-    refine Measure.rnDeriv_eq_zero_of_mutuallySingular ?_ ?_
-    · exact Measure.MutuallySingular.compProd_of_left (μ.mutuallySingular_singularPart _) _ _
-    · exact Measure.AbsolutelyContinuous.rfl
-  filter_upwards [h, h2] with x hx hx2
-  simp [hx, hx2]
-
-/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ)` (with the same kernel) equals `∂μ/∂ν`. -/
-lemma rnDeriv_measure_compProd_left (μ ν : Measure α) (κ : Kernel α β)
-    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] :
-    ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ) =ᵐ[ν ⊗ₘ κ] fun p ↦ (∂μ/∂ν) p.1 := by
-  refine (todo μ ν κ κ).symm.trans ?_
-  refine (rnDeriv_measure_compProd_left_of_ac
-    (MeasureTheory.withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) κ).trans ?_
-  refine Measure.ae_eq_compProd_of_ae_eq_fst _ (by fun_prop) (by fun_prop) ?_
-  exact Measure.rnDeriv_withDensity ν (by fun_prop)
-
-lemma rnDeriv_compProd [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η]
-    (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) (ν : Measure α) [IsFiniteMeasure ν] :
-    (fun p ↦ μ.rnDeriv ν p.1 * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) p)
-      =ᵐ[ν ⊗ₘ η] (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := by
-  refine Filter.EventuallyEq.trans ?_ (Measure.rnDeriv_mul_rnDeriv h_ac)
-  filter_upwards [rnDeriv_measure_compProd_left μ ν η] with p hp
-  rw [Pi.mul_apply, hp, mul_comm]
 
 section ConvexOn
 
@@ -383,7 +328,7 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral [IsFiniteMeasure μ] [IsFinit
     (fun a ↦ f ((∂μ/∂ν) a).toReal)
       ≤ᵐ[ν] fun a ↦ ∫ b, f ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) (a, b)).toReal ∂(η a) := by
   have h_compProd : (fun p ↦ (∂μ/∂ν) p.1 * (∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
-      ∂μ ⊗ₘ κ/∂ν ⊗ₘ η := rnDeriv_compProd hκη ν
+      ∂μ ⊗ₘ κ/∂ν ⊗ₘ η := (rnDeriv_compProd hκη ν).symm
   have h_lt_top := Measure.ae_ae_of_ae_compProd <| (μ ⊗ₘ κ).rnDeriv_lt_top (ν ⊗ₘ η)
   have h_integrable := Measure.integrable_toReal_rnDeriv (μ := μ ⊗ₘ κ) (ν := ν ⊗ₘ η)
   rw [Measure.integrable_compProd_iff] at h_integrable h_int
@@ -463,7 +408,7 @@ lemma aux2 [IsMarkovKernel κ]
       (((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * (log ((∂μ/∂ν) p.1).toReal +
         log ((∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)) p).toReal)) := by
   filter_upwards [rnDeriv_compProd h_ac ν] with p hp
-  simp_rw [← hp]
+  simp_rw [hp]
   simp only [ENNReal.toReal_mul]
   by_cases h_zero1 : ((∂μ/∂ν) p.1).toReal = 0
   · simp [h_zero1]
@@ -477,8 +422,6 @@ lemma aux [IsMarkovKernel κ]
        Integrable (fun x ↦ log ((∂μ/∂ν) x.1).toReal +
          log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal) (μ ⊗ₘ κ) := by
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
-  have h_rnDeriv : (fun p ↦ (∂μ/∂ν) p.1 * (∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
-      ∂μ ⊗ₘ κ/∂ν ⊗ₘ η := rnDeriv_compProd h_ac_κη ν
   rw [← integrable_rnDeriv_mul_log_iff h_ac, integrable_congr (aux2 h_ac_κη)]
   exact integrable_rnDeriv_smul_iff h_ac
 
