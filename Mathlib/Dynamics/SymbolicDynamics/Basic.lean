@@ -691,7 +691,7 @@ lemma finite_patterns_with_support
     ({ p : Pattern A G | p.support = U } : Set (Pattern A G)).Finite := by
   classical
   -- Local equivalence between the subtype and functions on U
-  have e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
+  let e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
   { toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
     invFun  := fun f => ⟨{ support := U, data := f }, rfl⟩
     left_inv := by
