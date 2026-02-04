@@ -272,35 +272,27 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
 
 /-! ## Derivative of `integralCMLM` -/
 
-/-- If `f` is continuous on an open set `u` containing a compact set `s`, then for any `ε > 0`,
-there exists `δ > 0` such that for any `x ∈ s` and any `y` with `dist x y < δ`, we have `y ∈ u`
-and `dist (f x) (f y) < ε`.
-
-This combines uniform continuity on compact sets with the fact that
-a compact set has positive distance from the complement of an open set containing it. -/
+/-- For a compact set `s` with `f` continuous at each point, there exists a uniform `δ > 0` such
+that `f` has controlled variation near `s`: if `x ∈ s` and `y` is within distance `δ` of `x`,
+then `f x` and `f y` are within distance `ε`. -/
 -- TODO: add to Mathlib?
-lemma _root_.IsCompact.exists_mem_open_dist_lt_of_continuousOn
+lemma _root_.IsCompact.exists_dist_lt_of_forall_continuousAt
     {X : Type*} [PseudoMetricSpace X] {Y : Type*} [PseudoMetricSpace Y]
-    {u : Set X} {s : Set X} {f : X → Y} (hs : IsCompact s) (hf : ContinuousOn f u) (hu : IsOpen u)
-    (hsu : s ⊆ u) {ε : ℝ} (hε : 0 < ε) :
-    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → y ∈ u ∧ dist (f x) (f y) < ε := by
-  obtain ⟨δ₁, hδ₁, hthick⟩ := hs.exists_thickening_subset_open hu hsu
-  have h := fun x (hx : x ∈ s) ↦ Metric.continuousOn_iff.mp hf x (hsu hx) (ε / 2) (half_pos hε)
+    {s : Set X} {f : X → Y} (hs : IsCompact s) (hf : ∀ x ∈ s, ContinuousAt f x)
+    {ε : ℝ} (hε : 0 < ε) :
+    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → dist (f x) (f y) < ε := by
+  have h := fun x (hx : x ∈ s) ↦ Metric.continuousAt_iff.mp (hf x hx) (ε / 2) (half_pos hε)
   choose δₓ hδₓ h using h
   let c : s → Set X := fun ⟨x, hx⟩ ↦ ball x (δₓ x hx)
   have hcover : s ⊆ ⋃ i, c i := fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, mem_ball_self (hδₓ x hx)⟩
-  obtain ⟨δ₂, hδ₂, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
-  refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun x hx y hxy ↦ ?_⟩
-  have hy : y ∈ u := hthick (mem_thickening_iff.mpr
-    ⟨x, hx, dist_comm x y ▸ hxy.trans_le (min_le_left _ _)⟩)
-  refine ⟨hy, ?_⟩
+  obtain ⟨δ, hδ, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
+  refine ⟨δ, hδ, fun x hx y hxy ↦ ?_⟩
   obtain ⟨⟨z, hz⟩, hball⟩ := hleb x hx
-  have hx' : dist x z < δₓ z hz := hball (mem_ball_self hδ₂)
-  have hy' : dist y z < δₓ z hz := hball
-    (by simpa only [mem_ball, dist_comm] using hxy.trans_le (min_le_right _ _))
+  have hxz : dist x z < δₓ z hz := hball (mem_ball_self hδ)
+  have hyz : dist y z < δₓ z hz := hball (by simpa only [mem_ball, dist_comm])
   calc dist (f x) (f y)
     _ ≤ dist (f x) (f z) + dist (f y) (f z) := dist_triangle_right _ _ _
-    _ < ε / 2 + ε / 2 := add_lt_add (h z hz x (hsu hx) hx') (h z hz y hy hy')
+    _ < ε / 2 + ε / 2 := add_lt_add (h z hz hxz) (h z hz hyz)
     _ = ε := add_halves ε
 
 omit [CompleteSpace E] in
@@ -380,23 +372,33 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
       ((integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α).curryLeft) α := by
   rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
   intro ε hε
-  obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα (by positivity : 0 < ε / (1 + |tmax - tmin|))
+  let ε' := ε / (1 + |tmax - tmin|)
+  have hε' : 0 < ε' := by positivity
+  have hs : IsCompact (range α) := isCompact_range α.continuous
+  have hfderiv : ContinuousOn (fderiv ℝ g) u := hg.continuousOn_fderiv_of_isOpen hu le_rfl
+  obtain ⟨δ₁, hδ₁, hthick⟩ := hs.exists_thickening_subset_open hu hα
+  obtain ⟨δ₂, hδ₂, hdist⟩ := hs.exists_dist_lt_of_forall_continuousAt
+    (fun x hx ↦ hfderiv.continuousAt (hu.mem_nhds (hα hx))) hε'
   rw [Metric.eventually_nhds_iff]
-  refine ⟨δ, hδ, fun α' hdist ↦ ?_⟩
+  refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun α' hdist' ↦ ?_⟩
+  -- Combine the two conditions
+  have h : ∀ x ∈ range α, ∀ z, dist x z < min δ₁ δ₂ →
+      z ∈ u ∧ dist (fderiv ℝ g x) (fderiv ℝ g z) < ε' :=
+    fun x hx z hz ↦ ⟨hthick (mem_thickening_iff.mpr ⟨x, hx, dist_comm x z ▸
+      hz.trans_le (min_le_left _ _)⟩), hdist x hx z (hz.trans_le (min_le_right _ _))⟩
   have hα' : range α' ⊆ u := fun _ ⟨t, ht⟩ ↦ ht ▸ (h (α t) (mem_range_self t) _ (by
     rw [dist_comm, dist_eq_norm]
-    exact (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt (dist_eq_norm α' α ▸ hdist))).1
+    exact (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt (dist_eq_norm α' α ▸ hdist'))).1
   -- Reduce bound on `ContinuousLinearMap`s to a bound on elements of `E`
   refine norm_integralCMLM_sub_fderiv_le hg hu t₀ hα hα' hε fun t ↦ ?_
   calc
     _ = ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
         (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ α' t - compProj t₀ α t)‖ := by
       simp only [compProj, ContinuousMap.sub_apply]
-    _ ≤ ε / (1 + |tmax - tmin|) * ‖compProj t₀ α' t - compProj t₀ α t‖ := by
+    _ ≤ ε' * ‖compProj t₀ α' t - compProj t₀ α t‖ := by
       refine norm_image_sub_fderiv_le hg hu ?_ fun z hz ↦ h _ (mem_range_self _) z hz
-      exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist)
-    _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
+      exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist')
+    _ ≤ ε' * ‖α' - α‖ := by
       gcongr; exact ContinuousMap.norm_coe_le_norm (α' - α) _
 
 /-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
