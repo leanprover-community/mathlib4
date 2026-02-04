@@ -117,6 +117,28 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
     obtain ⟨c, ha, hb⟩ := exists_between h
     exact ⟨⟨i, c⟩, LT.fiber i a c ha, LT.fiber i c b hb⟩
 
+lemma fst_mono [Preorder ι] [∀ i, Preorder (α i)] : Monotone (fst : (Σ i, α i) → ι) := by
+  rintro _ _ ⟨_, _, _, _⟩
+  rfl
+
+lemma snd_mono {β : Type*} [Preorder β] : Monotone (snd : (_ : ι) × β → β) := by
+  rintro _ _ ⟨_, _, _, h⟩
+  exact h
+
+lemma mk_mono [∀ i, Preorder (α i)] (i : ι) : Monotone (mk i : α i → Σ i, α i) := by
+  simp only [Monotone, mk_le_mk_iff, imp_self, implies_true]
+
+lemma rec_mono {δ β : Type*} [Preorder δ] [Preorder β] [∀ i, Preorder (α i)]
+    {f : δ → (i : ι) × α i} (hf : Monotone f)
+    {g : δ → (i : ι) → α i → β} (hg : ∀ i, Monotone (Function.uncurry (g · i ·))) :
+    Monotone (fun x ↦ Sigma.rec (motive := fun _ ↦ β) (g x) (f x)) := by
+  intro i₁ i₂ hi
+  dsimp only
+  specialize hf hi
+  generalize f i₁ = fi₁, f i₂ = fi₂ at *
+  rcases hf with ⟨i, _, _, hf⟩
+  exact hg i (Prod.GCongr.mk_le_mk hi hf)
+
 /-! ### Lexicographical order on `Sigma` -/
 
 
