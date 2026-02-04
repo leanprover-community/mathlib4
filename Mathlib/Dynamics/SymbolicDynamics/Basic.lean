@@ -674,7 +674,7 @@ a *finite* family of patterns.
 
 Formally, `subshift_of_finite_type F` is `Subshift.ofForbidden F` where `F` is a
 `Finset (Pattern A G)`. -/]
-def mulSubshift_of_finite_type [DiscreteTopology A] (F : Finset (Pattern A G)) : MulSubshift A G :=
+def mulSubshiftOfFiniteType [DiscreteTopology A] (F : Finset (Pattern A G)) : MulSubshift A G :=
   MulSubshift.ofForbidden (F : Set (Pattern A G))
 
 end DefSubshiftByForbidden
@@ -688,12 +688,12 @@ variable {G : Type*}
 lemma finite_setOf_pattern_support_eq
     {A G : Type*} [Fintype A]
     (U : Finset G) :
-    ({ p : Pattern A G | p.support = U } : Set (Pattern A G)).Finite := by
+    ({p : Pattern A G | p.support = U}).Finite := by
   classical
   -- Local equivalence between the subtype and functions on U
   let e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
-  { toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
-    invFun  := fun f => ⟨{ support := U, data := f }, rfl⟩
+  { toFun := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
+    invFun := fun f => ⟨{ support := U, data := f }, rfl⟩
     left_inv := by
       rintro ⟨p, hU⟩
       apply Subtype.ext
@@ -727,12 +727,8 @@ lemma finite_setOf_pattern_support_eq
 
 This is the set of all finite patterns obtained by restricting some configuration
 `x ∈ X` to `U`. -/
-@[to_additive languageOn]
 def mulLanguageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, Pattern.fromConfig x U = p }
-
-attribute [inherit_doc SymbolicDynamics.FullShift.mulLanguageOn]
-  SymbolicDynamics.FullShift.languageOn
 
 /-- The language of a subshift `Y` on a finite shape `U`. -/
 @[to_additive /-- The language of a subshift `Y` on a finite shape `U`. -/]
