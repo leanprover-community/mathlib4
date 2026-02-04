@@ -206,13 +206,6 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
 
-/-- In a compact space, the type of closed subsets is compact. -/
-instance instCompactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
-  ⟨by
-    have := Closeds.totallyBounded_subsets_of_totallyBounded (α := α) isCompact_univ.totallyBounded
-    simp_rw [subset_univ, setOf_true] at this
-    exact this.isCompact_of_isClosed isClosed_univ⟩
-
 theorem isometry_singleton : Isometry ({·} : α → Closeds α) :=
   fun _ _ => hausdorffEDist_singleton
 

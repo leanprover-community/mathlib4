@@ -113,27 +113,33 @@ private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u →
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
-meta def delabSup : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr f@Max.max α inst _ _ := ← getExpr | failure
-  have u := f.constLevels![0]!
-  if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
-    failure -- use the default delaborator
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊔ $y)
-  annotateGoToSyntaxDef stx
+meta def delabSup : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 4 do
+    let_expr f@Max.max α inst _ _ := ← getExpr | failure
+    have u := f.constLevels![0]!
+    if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
+      failure -- use the default delaborator
+    let x ← withNaryArg 2 delab
+    let y ← withNaryArg 3 delab
+    let stx ← `($x ⊔ $y)
+    annotateGoToSyntaxDef stx
 
 /-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
-meta def delabInf : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
-  let_expr f@Min.min α inst _ _ := ← getExpr | failure
-  have u := f.constLevels![0]!
-  if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then
-    failure -- use the default delaborator
-  let x ← withNaryArg 2 delab
-  let y ← withNaryArg 3 delab
-  let stx ← `($x ⊓ $y)
-  annotateGoToSyntaxDef stx
+meta def delabInf : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 4 do
+    let_expr f@Min.min α inst _ _ := ← getExpr | failure
+    have u := f.constLevels![0]!
+    if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then
+      failure -- use the default delaborator
+    let x ← withNaryArg 2 delab
+    let y ← withNaryArg 3 delab
+    let stx ← `($x ⊓ $y)
+    annotateGoToSyntaxDef stx
 
 end Mathlib.Meta
 

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.MeanValue

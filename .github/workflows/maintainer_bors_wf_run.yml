@@ -13,9 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
+
       - name: Download artifact
         id: download-artifact
-        uses: dawidd6/action-download-artifact@883bc3da0e2f55ddd0a8fc8e99378551c1991a55 # v13
+        uses: dawidd6/action-download-artifact@5c98f0b039f36ef966fdb7dfa9779262785ecb05 # v14
         with:
           workflow: maintainer_bors.yml
           name: workflow-data
@@ -80,7 +87,8 @@ jobs:
           issue_number: ${{ steps.extract-data.outputs.pr_number }}
           labels: '["${{ steps.extract-data.outputs.mOrD }}"]'
         env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
+          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
@@ -93,7 +101,7 @@ jobs:
           for label in awaiting-author maintainer-merge; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: On bors r/d-, remove ready-to-merge or delegated label
@@ -104,7 +112,7 @@ jobs:
           for label in ready-to-merge delegated; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: Set up Python

@@ -162,7 +162,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  let m := AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg)
+  let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
   transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
 
 @[tactic_alt ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
@@ -182,7 +182,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ AtomM.RecurseM.run s cfg.toConfig evalExpr (cleanup cfg) <| proveEq g
+  liftMetaMAtMain fun g ↦ AtomM.RecurseM.run s cfg.toConfig
+    (wellBehavedDischarge := true) evalExpr (cleanup cfg) <| proveEq g
 
 @[tactic_alt ring1]
 macro "ring1_nf!" cfg:optConfig : tactic =>
@@ -195,7 +196,8 @@ macro "ring1_nf!" cfg:optConfig : tactic =>
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult
-      (← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) (← instantiateMVars (← Conv.getLhs)))
+      (← AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
+        (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig : conv =>

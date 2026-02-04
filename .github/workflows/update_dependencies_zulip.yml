@@ -33,11 +33,19 @@ jobs:
           delimiter="EOF"
           printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_PRIVATE_KEY }}
+
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Construct message
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         id: construct_message
         with:
-          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
           script: |
             const owner = context.repo.owner, repo = context.repo.repo;
@@ -99,11 +107,19 @@ jobs:
           delimiter="EOF"
           printf 'changes<<%s\n%s\n%s' "$delimiter" "${message}" "$delimiter"
 
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_PRIVATE_KEY }}
+
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Construct success message
         id: construct_message
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
-          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
           script: |
             const owner = context.repo.owner, repo = context.repo.repo;

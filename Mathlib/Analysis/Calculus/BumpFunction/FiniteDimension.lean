@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.SmoothSeries
 public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
-public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.Calculus.ContDiff.Convolution
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 public import Mathlib.Data.Set.Pointwise.Support
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace

@@ -32,6 +32,9 @@ That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
 * `AnalyticAt.eventually_constant_or_nhds_le_map_nhds` is the local version of the open mapping
   theorem around a point;
 * `AnalyticOnNhd.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
+
+As an immediate corollary, we show that a holomorphic function whose real part is constant is itself
+constant.
 -/
 
 public section
@@ -175,6 +178,64 @@ theorem AnalyticOnNhd.is_constant_or_isOpenMap (hg : AnalyticOnNhd ℂ g .univ) 
     (∃ w, ∀ z, g z = w) ∨ IsOpenMap g :=
   (hg.is_constant_or_isOpen PreconnectedSpace.isPreconnected_univ).imp
     (fun ⟨w, eq⟩ ↦ ⟨w, fun z ↦ eq z ⟨⟩⟩) (· · <| subset_univ _)
+
+/-!
+## Holomorphic Functions with Constant Real or Imaginary Part
+-/
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
+constant.
+-/
+theorem AnalyticOnNhd.eq_const_of_re_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+    (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+    ∃ c, ∀ x ∈ U, f x = c := by
+  obtain ⟨z₀, _⟩ := h₂U.nonempty
+  by_contra h₅
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (re '' (f '' U)) = { c₀ }), isOpenMap_re
+    (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
+constant.
+-/
+theorem AnalyticOnNhd.eq_re_add_const_mul_I_of_re_eq_const {U : Set ℂ} {c₀ : ℝ}
+    (h₁f : AnalyticOnNhd ℂ f U) (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U)
+    (h₂U : IsConnected U) :
+    ∃ (c : ℝ), ∀ x ∈ U, f x = c₀ + c * I := by
+  obtain ⟨cc, hcc⟩ := eq_const_of_re_eq_const h₁f h₂f h₁U h₂U
+  use cc.im
+  simp_rw [Complex.ext_iff]
+  aesop
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose imaginary part is constant is
+itself constant.
+-/
+theorem AnalyticOnNhd.eq_const_of_im_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+    (h₂f : ∀ x ∈ U, (f x).im = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+    ∃ c, ∀ x ∈ U, f x = c := by
+  obtain ⟨z₀, _⟩ := h₂U.nonempty
+  by_contra h₅
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (im '' (f '' U)) = { c₀ }), isOpenMap_im
+    (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose imaginary part is constant is
+itself constant.
+-/
+theorem AnalyticOnNhd.eq_const_add_im_mul_I_of_re_eq_const {U : Set ℂ} {c₀ : ℝ}
+    (h₁f : AnalyticOnNhd ℂ f U) (h₂f : ∀ x ∈ U, (f x).im = c₀) (h₁U : IsOpen U)
+    (h₂U : IsConnected U) :
+    ∃ (c : ℝ), ∀ x ∈ U, f x = c + c₀ * I := by
+  obtain ⟨cc, hcc⟩ := AnalyticOnNhd.eq_const_of_im_eq_const h₁f h₂f h₁U h₂U
+  use cc.re
+  simp_rw [Complex.ext_iff]
+  aesop
+
+/-!
+## Holomorphic Functions as Open Quotient Maps
+-/
 
 theorem Polynomial.C_eq_or_isOpenQuotientMap_eval (p : Polynomial ℂ) :
     (∃ x, C x = p) ∨ IsOpenQuotientMap p.eval := by

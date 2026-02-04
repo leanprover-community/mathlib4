@@ -157,7 +157,7 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_meta guard <| argInfoAttr.find? (← getEnv) `Test.foo21 matches some ⟨[], 1⟩
+run_meta guard <| translations.find? (← getEnv) `Test.foo21 matches some ⟨`Test.bar21, [], 1⟩
 
 @[to_additive bar22]
 abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
@@ -188,9 +188,9 @@ inductive MulInd : ℕ → Prop where
   | one : MulInd 1
 
 run_cmd do
-  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
-  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd.basic == some `Test.AddInd.basic do throwError "2"
-  unless findTranslation? (← getEnv) ToAdditive.data `Test.MulInd == some `Test.AddInd do throwError "3"
+  unless findTranslationName? (← getEnv) ToAdditive.data `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslationName? (← getEnv) ToAdditive.data `Test.MulInd.basic == some `Test.AddInd.basic do throwError "2"
+  unless findTranslationName? (← getEnv) ToAdditive.data `Test.MulInd == some `Test.AddInd do throwError "3"
 
 @[to_additive addFixedNumeralTest]
 def fixedNumeralTest {α} [One α] :=
@@ -456,9 +456,9 @@ insert_to_additive_translation localize add_localize
 @[to_additive] def localize.s := Nat
 
 run_cmd do
-  unless findTranslation? (← getEnv) ToAdditive.data `localize.r == some `add_localize.r do throwError "1"
-  unless findTranslation? (← getEnv) ToAdditive.data `localize   == some `add_localize   do throwError "2"
-  unless findTranslation? (← getEnv) ToAdditive.data `localize.s == some `add_localize.s do throwError "3"
+  unless findTranslationName? (← getEnv) ToAdditive.data `localize.r == some `add_localize.r do throwError "1"
+  unless findTranslationName? (← getEnv) ToAdditive.data `localize   == some `add_localize   do throwError "2"
+  unless findTranslationName? (← getEnv) ToAdditive.data `localize.s == some `add_localize.s do throwError "3"
 
 /--
 warning: The source declaration one_eq_one was given the simp-attribute(s) simp, reduce_mod_char before calling @[to_additive].
@@ -802,20 +802,7 @@ variable {G : Type} [Monoid G]
 instance : Mul (MonoidAlgebra' Nat G) where
   mul a b := ⟨fun i => a.1 i * b.1 1⟩
 
--- Unfortunately, `relevant_arg` information isn't passed to `*.casesOn`:
-/--
-error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
-instAddAddMonoidAlgebra'Nat_1.match_1:
-Application type mismatch: The argument
-  fun x => motive x x✝
-has type
-  AddMonoidAlgebra' ℕ G → Sort u_1
-but is expected to have type
-  MonoidAlgebra' ℕ G → Sort u_1
-in the application
-  @MonoidAlgebra'.casesOn ℕ G fun x => motive x x✝
--/
-#guard_msgs in
+-- `relevant_arg` information is inherited from the base translation in `*.casesOn`:
 @[to_additive]
 instance : Mul (MonoidAlgebra' Nat G) where
   mul | ⟨a⟩, ⟨b⟩ => ⟨fun i => a i * b 1⟩
