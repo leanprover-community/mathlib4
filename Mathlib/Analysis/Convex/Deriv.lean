@@ -717,6 +717,63 @@ lemma isMinOn_of_leftDeriv_eq_zero (hf : ConvexOn ℝ S f) (hx : x ∈ interior 
   refine hf.isMinOn_of_leftDeriv_nonpos_of_rightDeriv_nonneg hx hf_ld.le ?_
   exact hf_ld.symm.le.trans (hf.leftDeriv_le_rightDeriv_of_mem_interior hx)
 
+section AffineLowerBound
+
+-- todo: move
+lemma _root_.Convex.subsingleton_of_interior_eq_empty (hs : Convex ℝ S) (h : interior S = ∅) :
+    S.Subsingleton := by
+  intro x hx y hy
+  by_contra h_ne
+  wlog h_lt : x < y
+  · refine this hs h hy hx (Ne.symm h_ne) ?_
+    exact lt_of_le_of_ne (not_lt.mp h_lt) (Ne.symm h_ne)
+  · have h_subset : Set.Icc x y ⊆ S := by
+      rw [← segment_eq_Icc h_lt.le]
+      exact hs.segment_subset hx hy
+    have : Set.Ioo x y ⊆ interior S := by
+      rw [← interior_Icc]
+      exact interior_mono h_subset
+    simp only [h, Set.subset_empty_iff, Set.Ioo_eq_empty_iff] at this
+    exact this h_lt
+
+lemma affine_le_of_mem_interior (hf : ConvexOn ℝ S f) {x y : ℝ}
+    (hx : x ∈ interior S) (hy : y ∈ S) :
+    derivWithin f (Set.Ioi x) x * y + (f x - derivWithin f (Set.Ioi x) x * x) ≤ f y := by
+  rw [add_comm]
+  rcases lt_trichotomy x y with hxy | h_eq | hyx
+  · have : derivWithin f (Set.Ioi x) x ≤ slope f x y :=
+      hf.rightDeriv_le_slope_of_mem_interior hx hy hxy
+    rw [slope_def_field] at this
+    rwa [le_div_iff₀ (by simp [hxy]), le_sub_iff_add_le, add_comm, mul_sub, add_sub,
+      add_sub_right_comm] at this
+  · simp [h_eq]
+  · have : slope f x y ≤ derivWithin f (Set.Ioi x) x := by
+      have := (hf.slope_le_leftDeriv_of_mem_interior hy hx hyx).trans
+        (hf.leftDeriv_le_rightDeriv_of_mem_interior hx)
+      rwa [slope_comm]
+    rw [slope_def_field] at this
+    rw [← neg_div_neg_eq, neg_sub, neg_sub] at this
+    rwa [div_le_iff₀ (by simp [hyx]), sub_le_iff_le_add, mul_sub, ← sub_le_iff_le_add',
+      sub_sub_eq_add_sub, add_sub_right_comm] at this
+
+lemma exists_affine_le (hf : ConvexOn ℝ S f) (hs : Convex ℝ S) :
+    ∃ c c', ∀ x ∈ S, c * x + c' ≤ f x := by
+  cases Set.eq_empty_or_nonempty (interior S) with
+  | inl h => -- there is at most one point in `S`
+    have hs_sub : S.Subsingleton := hs.subsingleton_of_interior_eq_empty h
+    cases Set.eq_empty_or_nonempty S with
+    | inl h' => simp [h']
+    | inr h' => -- there is exactly one point in `S`
+      obtain ⟨x, hxs⟩ := h'
+      refine ⟨0, f x, fun y hys ↦ ?_⟩
+      simp [hs_sub hxs hys]
+  | inr h => -- there is a point in the interior of `S`
+    obtain ⟨x, hx⟩ := h
+    refine ⟨derivWithin f (Set.Ioi x) x, f x - derivWithin f (Set.Ioi x) x * x, fun y hy ↦ ?_⟩
+    exact hf.affine_le_of_mem_interior hx hy
+
+end AffineLowerBound
+
 end ConvexOn
 
 namespace StrictConvexOn
