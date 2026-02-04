@@ -6,8 +6,8 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
-public import Mathlib.Analysis.NormedSpace.HahnBanach.Splits
 public import Mathlib.Analysis.Normed.Module.Complemented
+public import Mathlib.Analysis.Normed.Module.Splits
 public import Mathlib.Analysis.Normed.Operator.Banach
 
 /-! # MDifferentiable maps which split

@@ -1969,6 +1969,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.Normed.Module.ContinuousRightInverse
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Module.ENormedSpace
@@ -1989,6 +1990,7 @@ public import Mathlib.Analysis.Normed.Module.Ray
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Span
+public import Mathlib.Analysis.Normed.Module.Splits
 public import Mathlib.Analysis.Normed.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.MulAction
@@ -2043,11 +2045,9 @@ public import Mathlib.Analysis.NormedSpace.ENormedSpace
 public import Mathlib.Analysis.NormedSpace.Extend
 public import Mathlib.Analysis.NormedSpace.Extr
 public import Mathlib.Analysis.NormedSpace.FunctionSeries
-public import Mathlib.Analysis.NormedSpace.HahnBanach.BoundedRightInverse
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-public import Mathlib.Analysis.NormedSpace.HahnBanach.Splits
 public import Mathlib.Analysis.NormedSpace.HomeomorphBall
 public import Mathlib.Analysis.NormedSpace.IndicatorFunction
 public import Mathlib.Analysis.NormedSpace.Int

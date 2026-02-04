@@ -23,7 +23,6 @@ always admits a continuous/bounded right inverse.
 This concept is used to give a conceptual definition of submersions between Banach manifolds.
 
 ## TODO
-- find a better location for this file; the `HahnBanach` folder was emptied intentionally!
 - is "split epimorphism/split surjection" a better term?
 
 -/

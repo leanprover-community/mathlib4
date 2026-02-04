@@ -20,7 +20,6 @@ always splits.
 This concept is used to give a conceptual definition of immersions between Banach manifolds.
 
 ## TODO
-- find a better location for this file; the HahnBanach parent folder was emptied!
 - is this equivalent to admitting a continuous left inverse? If so, also prove this!
 
 -/
