@@ -23,10 +23,19 @@ jobs:
       COMMENT_REVIEW: ${{ github.event.review.body }}
       PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
       HAS_DELEGATED_LABEL: ${{ contains(github.event.issue.labels.*.name, 'delegated') }}
+      HAS_TRIAGE_SECRET: ${{ secrets.MATHLIB_TRIAGE_APP_ID != '' }}
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
+      - name: Generate app token
+        if: ${{ env.HAS_TRIAGE_SECRET == 'true' }}
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
+
       - name: Find bors merge/delegate
         id: merge_or_delegate
         run: |
@@ -58,7 +67,8 @@ jobs:
           printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
           if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
              [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ] ||
-             [ "${AUTHOR}" == 'mathlib-bors[bot]' ]
+             [ "${AUTHOR}" == 'mathlib-bors[bot]' ] ||
+             [ "${AUTHOR}" == 'mathlib-triage[bot]' ]
           then
             printf $'bot=true\n'
             printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
@@ -70,7 +80,7 @@ jobs:
           fi
 
           # write an artifact with all data needed below if we don't have access to necessary secrets
-          if [[ -z '${{ secrets.TRIAGE_TOKEN }}' ]]
+          if [[ -z '${{ secrets.MATHLIB_TRIAGE_APP_ID }}' ]]
           then
             printf 'No access to secrets, writing to file.\n'
             jq -n \
@@ -131,7 +141,8 @@ jobs:
           issue_number: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
           labels: '["${{ steps.merge_or_delegate.outputs.mOrD }}"]'
         env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
+          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' &&
           (! steps.merge_or_delegate.outputs.mOrD == '' &&
@@ -145,7 +156,7 @@ jobs:
           for label in awaiting-author maintainer-merge; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: On bors r/d-, remove ready-to-merge or delegated label
@@ -158,7 +169,7 @@ jobs:
           for label in ready-to-merge delegated; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: Set up Python
