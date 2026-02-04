@@ -313,9 +313,6 @@ theorem differentiable_of_subsingleton [Subsingleton E] {f : E → F} : Differen
   fun x ↦ (hasFDerivAt_of_subsingleton f x (𝕜 := 𝕜)).differentiableAt
 
 @[fun_prop]
-theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
-
-@[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
   forall_eq.2 (hasFDerivWithinAt_singleton f x).differentiableWithinAt
 
