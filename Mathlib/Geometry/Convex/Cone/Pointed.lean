@@ -236,5 +236,4 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
   simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
 
 end Salient
-
 end PointedCone
