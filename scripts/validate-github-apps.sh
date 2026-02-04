@@ -165,11 +165,16 @@ validate_app_repo_installations() {
     local slug="$1"
     local installation_id="$2"
     local org="$3"
+    local secrets_json
 
     # Note: We cannot reliably check per-repo installations without app-level authentication.
     # The /repos/{repo}/installation endpoint requires the app's JWT, not user auth.
-    # Instead, we just remind the user to verify manually for "selected" installations.
-    info "App uses 'selected' repos - verify installation includes all repos at: https://github.com/organizations/$org/settings/installations/$installation_id"
+    # List which repos need this app and remind user to verify.
+    secrets_json=$(yq -o=json ".apps[\"$slug\"].secrets // []" "$CONFIG_PATH")
+    local repos
+    repos=$(echo "$secrets_json" | jq -r '.[].repo' | sort -u | tr '\n' ', ' | sed 's/,$//')
+
+    warn "App uses 'selected' repos. Verify $repos are included at: https://github.com/organizations/$org/settings/installations/$installation_id"
 }
 
 # Validate secrets exist for an app
