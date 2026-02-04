@@ -54,11 +54,12 @@ variable (I I' f x) in
 /-- We say a map `f : M → M` has a regular point at `x` if the `fderiv` of
 `writtenInExtChartAt I I f x` at `x' := extChartAt I x x` has a bounded right inverse. -/
 @[expose] def IsRegularPoint (f : M → M') (x : M) : Prop :=
-  fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x) |>.HasBoundedRightInverse
+  --fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)
+   mfderiv I I' f x |>.HasBoundedRightInverse
 
 lemma isRegularPointAt_iff {f : M → M'} {x : M} :
   IsRegularPoint I I' f x ↔
-    (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)).HasBoundedRightInverse := by rfl
+    (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)).HasBoundedRightInverse := by sorry
 
 /-- Whether `f` has a regular point at `x` can be tested in any extended charts for the manifold. -/
 lemma isRegularPointAt_iff_extend {f : M → M'} {x : M}
@@ -73,8 +74,8 @@ namespace IsRegularPoint
 
 variable {f g : M → M'} {x : M}
 
-private lemma fderiv_surjective (hf : IsRegularPoint I I' f x) :
-    Surjective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) := hf.surjective
+--private lemma fderiv_surjective (hf : IsRegularPoint I I' f x) :
+--    Surjective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) := hf.surjective
 
 -- I *think* this lemma is useful for the proof of `comp`.
 -- add `differentiableAt_of_fderiv_surjective`, then deduce this lemma!
@@ -106,8 +107,9 @@ lemma congr (hf : IsRegularPoint I I' f x) (hfg : g =ᶠ[𝓝 x] f) : IsRegularP
     -- should this be a separate lemma?
     have := ContinuousAt.tendsto (f := (extChartAt I x).symm) (continuousAt_extChartAt_symm x)
     rwa [extChartAt_to_inv x] at this
-  rw [writtenInExtChartAt, hfg.eq_of_nhds, (aux.fun_comp _).fderiv_eq]
-  exact hf
+  rwa [hfg.mfderiv_eq]
+  --rw [writtenInExtChartAt, hfg.eq_of_nhds, (aux.fun_comp _).fderiv_eq]
+  --exact hf
 
 variable [IsManifold I 1 M] [IsManifold J 1 N] [IsManifold I' 1 M'] [IsManifold J' 1 N'] in
 lemma prodMap {y : N} (hf : IsRegularPoint I I' f x) {g : N → N'} (hg : IsRegularPoint J J' g y) :
@@ -115,7 +117,7 @@ lemma prodMap {y : N} (hf : IsRegularPoint I I' f x) {g : N → N'} (hg : IsRegu
   have hf' := hf.mdifferentiableAt
   have hg' := hg.mdifferentiableAt
   unfold IsRegularPoint at hf hg ⊢
-  rw [writtenInExtChart_prod] -- TODO misnamed lemma!
+  --rw [writtenInExtChart_prod] -- TODO misnamed lemma!
   -- missing lemma: fderiv of Prod.map (assuming both maps are differentiable, I presume?)
   -- then hopefully just
   -- apply ContinuousLinearMap.HasBoundedRightInverse.prodMap
@@ -137,53 +139,30 @@ lemma _root_.IsLocalDiffeomorphAt.isRegularPoint
   of_isInvertible (hf.isInvertible_mfderiv hn)
 
 /-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
--- TODO: I guess we don't need completeness at all!
-lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+lemma comp [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J 1 N]
     {g : M' → N} (hg : IsRegularPoint I' J g (f x)) (hf : IsRegularPoint I I' f x) :
     IsRegularPoint I J (g ∘ f) x := by
+  have hf' := hf.mdifferentiableAt
+  have hg' := hg.mdifferentiableAt
   unfold IsRegularPoint at hf hg ⊢
-  have aux := hg.comp hf
-  sorry
-  -- have hg' := hg.differentiableAt_writtenInExtChartAt
-  -- have hx' :
-  --     (writtenInExtChartAt I I' x f) ((extChartAt I x) x) = (extChartAt I' (f x)) (f x) := by simp
-  -- rw [← hx'] at hg'
-  -- -- better: do a calc proof of the mfderiv!
+  rw [mfderiv_comp x hg' hf']
+  exact hg.comp hf
 
-  -- have aux := fderiv_comp (f := writtenInExtChartAt I I' x f) (extChartAt I x x)
-  --   hg' hf.differentiableAt_writtenInExtChartAt
-  -- unfold MSplitsAt at hf hg ⊢
-  -- have loc := hg.comp hf
-  -- --rw [aux] at loc--rw [mSplitsAt_iff] at loc
-  -- --unfold MSplitsAt
-  -- --apply loc
-  -- --rw [fderiv_comp]
-  -- sorry -- needs redoing!
-  -- /- rw [MSplitsAt] -- slight code smell?
-  -- rw [mfderiv_comp x (mdifferentiableAt_of_mfderiv_injective hg.mfderiv_injective)
-  --   (mdifferentiableAt_of_mfderiv_injective hf.mfderiv_injective)]
-  -- have : CompleteSpace (TangentSpace I x) := by assumption
-  -- have : CompleteSpace (TangentSpace I' (f x)) := by assumption
-  -- have : CompleteSpace (TangentSpace J (g (f x))) := by assumption
-  -- rw [MSplitsAt] at hf hg
-  -- apply hg.comp hf -/
+lemma of_comp {g : M' → N}
+    (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I' J g (f x))
+    (hfg : IsRegularPoint I J (g ∘ f) x) :
+    IsRegularPoint I' J g (f x) := by
+  unfold IsRegularPoint at hfg ⊢
+  rw [mfderiv_comp x hg hf] at hfg
+  exact ContinuousLinearMap.HasBoundedRightInverse.of_comp hfg
 
-lemma of_comp {g : M' → N} (hg : IsRegularPoint I' J g (f x)) (hfg : IsRegularPoint I J (g ∘ f) x) :
-    IsRegularPoint I I' f x := by
-  sorry -- reduce to Splits.of_comp and some local computation
-
-lemma of_comp_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : IsRegularPoint I' J g (f x)) :
-    IsRegularPoint I J (g ∘ f) x ↔ IsRegularPoint I I' f x :=
-  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
-
-lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+lemma comp_isLocalDiffeomorphAt_left [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J 1 N]
     (hf : IsRegularPoint I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
     (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
     IsRegularPoint J I' (f ∘ f₀) y :=
   (hxy ▸ hf).comp (hf₀.isRegularPoint hn)
 
-lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+lemma comp_isLocalDiffeomorphAt_left_iff [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J 1 N]
     {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
     IsRegularPoint I I' f x ↔ IsRegularPoint J I' (f ∘ f₀) y := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn, fun h ↦ ?_⟩
@@ -195,13 +174,13 @@ lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [C
   apply this.congr
   exact (hxy ▸ hf₀.localInverse_eventuallyEq_right.symm).fun_comp f
 
-lemma comp_isLocalDiffeomorphAt_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+lemma comp_isLocalDiffeomorphAt_right [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J 1 N]
     (hf : IsRegularPoint I I' f x) {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
     IsRegularPoint I J (g ∘ f) x :=
   (hg.isRegularPoint hn).comp hf
 
 -- TODO: fix the last sorry, is a small mathematical question
-lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSpace E']
+lemma comp_isLocalDiffeomorphAt_right_iff [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J 1 N]
     [IsManifold I 1 M] [IsManifold J 1 N]
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
     IsRegularPoint I I' f x ↔ IsRegularPoint I J (g ∘ f) x := by
@@ -230,7 +209,11 @@ then `x` is a regular point. -/
 lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
     (hf' : Surjective (mfderiv I I' f x)) : IsRegularPoint I I' f x := by
   unfold IsRegularPoint
-  apply ContinuousLinearMap.HasBoundedRightInverse.of_surjective_of_finiteDimensional
-  sorry -- use hf', and a lemma foo' for surjectivity!
+  have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := inferInstanceAs (FiniteDimensional 𝕜 E')
+  haveI : NormedAddCommGroup (TangentSpace I' (f x)) := inferInstanceAs (NormedAddCommGroup E')
+  have : NormedSpace 𝕜 (TangentSpace I' (f x)) := by
+    sorry--exact inferInstanceAs (NormedSpace 𝕜 E')
+  sorry -- apply ContinuousLinearMap.HasBoundedRightInverse.of_surjective_of_finiteDimensional
+  --sorry -- use hf', and a lemma foo' for surjectivity!
 
 end IsRegularPoint
