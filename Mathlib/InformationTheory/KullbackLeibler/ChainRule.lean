@@ -31,29 +31,16 @@ namespace InformationTheory
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {μ ν : Measure α} {κ η : Kernel α β}
 
-lemma ae_compProd_of_ae_fst (κ : Kernel α β) {p : α → Prop} (hp : MeasurableSet {x | p x})
-    (h : ∀ᵐ a ∂μ, p a) :
-    ∀ᵐ x ∂(μ ⊗ₘ κ), p x.1 :=
-  Measure.ae_compProd_of_ae_ae (measurable_fst hp) <| by
-    filter_upwards [h] with a ha using by simp [ha]
-
-lemma ae_eq_compProd_of_ae_eq_fst [MeasurableEq γ] (κ : Kernel α β) {f g : α → γ}
-    (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
-    (fun p ↦ f p.1) =ᵐ[μ ⊗ₘ κ] (fun p ↦ g p.1) :=
-  ae_compProd_of_ae_fst κ (measurableSet_eq_fun hf hg) h
-
+/-- Auxiliary lemma for `rnDeriv_measure_compProd_left`. -/
 lemma rnDeriv_measure_compProd_left_of_ac (hμν : μ ≪ ν) (κ : Kernel α β)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] :
     ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ) =ᵐ[ν ⊗ₘ κ] fun p ↦ (∂μ/∂ν) p.1 := by
-  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite ?_ ?_ (fun s hs _ ↦ ?_)
-  · exact Measure.measurable_rnDeriv _ _
-  · exact (Measure.measurable_rnDeriv _ _).comp measurable_fst
+  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) (by fun_prop) fun s hs _ ↦ ?_
   have h_key t₁ t₂ : MeasurableSet t₁ → MeasurableSet t₂ →
       ∫⁻ x in t₁ ×ˢ t₂, (∂μ ⊗ₘ κ/∂ν ⊗ₘ κ) x ∂ν ⊗ₘ κ = ∫⁻ x in t₁ ×ˢ t₂, (∂μ/∂ν) x.1 ∂ν ⊗ₘ κ := by
     intro ht₁ ht₂
-    rw [Measure.setLIntegral_rnDeriv (hμν.compProd_left _)]
-    rw [Measure.setLIntegral_compProd _ ht₁ ht₂]
-    swap; · exact (Measure.measurable_rnDeriv _ _).comp measurable_fst
+    rw [Measure.setLIntegral_rnDeriv (hμν.compProd_left _),
+      Measure.setLIntegral_compProd (by fun_prop) ht₁ ht₂]
     simp only [MeasureTheory.lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
       univ_inter]
     rw [setLIntegral_rnDeriv_mul hμν (κ.measurable_coe ht₂).aemeasurable ht₁,
@@ -89,16 +76,15 @@ lemma todo (μ ν : Measure α) (κ η : Kernel α β)
   filter_upwards [h, h2] with x hx hx2
   simp [hx, hx2]
 
+/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ)` (with the same kernel) equals `∂μ/∂ν`. -/
 lemma rnDeriv_measure_compProd_left (μ ν : Measure α) (κ : Kernel α β)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] :
     ∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ) =ᵐ[ν ⊗ₘ κ] fun p ↦ (∂μ/∂ν) p.1 := by
   refine (todo μ ν κ κ).symm.trans ?_
   refine (rnDeriv_measure_compProd_left_of_ac
     (MeasureTheory.withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) κ).trans ?_
-  refine ae_eq_compProd_of_ae_eq_fst _ ?_ ?_ ?_
-  · exact Measure.measurable_rnDeriv _ _
-  · exact Measure.measurable_rnDeriv _ _
-  · exact Measure.rnDeriv_withDensity ν (Measure.measurable_rnDeriv _ _)
+  refine Measure.ae_eq_compProd_of_ae_eq_fst _ (by fun_prop) (by fun_prop) ?_
+  exact Measure.rnDeriv_withDensity ν (by fun_prop)
 
 lemma rnDeriv_compProd [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η]
     (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) (ν : Measure α) [IsFiniteMeasure ν] :
@@ -107,11 +93,6 @@ lemma rnDeriv_compProd [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel 
   refine Filter.EventuallyEq.trans ?_ (Measure.rnDeriv_mul_rnDeriv h_ac)
   filter_upwards [rnDeriv_measure_compProd_left μ ν η] with p hp
   rw [Pi.mul_apply, hp, mul_comm]
-
-lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    Integrable (fun a ↦ (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal) ν
-      ↔ Integrable (llr μ ν) μ :=
-  integrable_rnDeriv_smul_iff hμν
 
 section ConvexOn
 
@@ -278,8 +259,7 @@ lemma measure_inter_compl_singularPartSet' (μ ν : Measure α) [SigmaFinite μ]
         exact hx.2
       · exact hx_top.ne
     rw [this, Measure.setLIntegral_rnDeriv (rfl.absolutelyContinuous.add_right _)]
-  rw [this, setLIntegral_rnDeriv_mul hν_ac _ (ht.inter hs.compl)]
-  swap; · exact ((μ.measurable_rnDeriv _).div (ν.measurable_rnDeriv _)).aemeasurable
+  rw [this, setLIntegral_rnDeriv_mul hν_ac (by fun_prop) (ht.inter hs.compl)]
   refine setLIntegral_congr_fun_ae (ht.inter hs.compl) ?_
   filter_upwards [μ.rnDeriv_eq_div ν] with x hx
   exact hx ▸ fun _ ↦ rfl
@@ -322,8 +302,8 @@ lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α
   constructor
   · rw [← ν.haveLebesgueDecomposition_add μ]
     have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := by
-      refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (μ.measurable_rnDeriv _)
-        measurable_const (fun s hs _ ↦ ?_)
+      refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) (by fun_prop)
+        (fun s hs _ ↦ ?_)
       simp only [lintegral_const, Measure.restrict_apply .univ, Set.univ_inter, zero_mul]
       rw [← restrict_singularPartSet_eq_singularPart, Measure.restrict_restrict hs,
         Measure.setLIntegral_rnDeriv hμν]
@@ -348,9 +328,8 @@ section Integrable
 
 variable {E : Type*} {f g : ℝ → ℝ}
 
-lemma f_rnDeriv_ae_le_integral
-    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (κ η : Kernel α β) [IsMarkovKernel κ] [IsMarkovKernel η]
+lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    [IsMarkovKernel κ] [IsMarkovKernel η]
     (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
     (h_int : Integrable (fun p ↦ f ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
@@ -402,46 +381,22 @@ lemma f_rnDeriv_ae_le_integral
     rw [← average_eq_integral, ← average_eq_integral]
     exact ConvexOn.map_average_le hf_cvx hf_cont isClosed_Ici (by simp) h_int' h_int
 
-lemma integrable_f_rnDeriv
-    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (κ η : Kernel α β) [IsMarkovKernel κ] [IsMarkovKernel η]
+lemma _root_.ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ] [IsMarkovKernel η]
     (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
-    (h_int : Integrable (fun p ↦ f ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
+    (hf_int : Integrable (fun p ↦ f ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
     (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     Integrable (fun a ↦ f ((∂μ/∂ν) a).toReal) ν := by
   obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
     hf_cvx.exists_affine_le (convex_Ici 0)
   refine integrable_of_le_of_le (f := fun a ↦ f ((∂μ/∂ν) a).toReal)
-    (g₁ := fun x ↦ c * ((∂μ/∂ν) x ).toReal + c')
-    (g₂ := fun x ↦ ∫ b, f ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) (x, b)).toReal ∂(η x))
-    ?_ ?_ ?_ ?_ ?_
+    (g₁ := fun x ↦ c * ((∂μ/∂ν) x).toReal + c')
+    (g₂ := fun x ↦ ∫ b, f ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) (x, b)).toReal ∂(η x)) ?_ ?_ ?_ (by fun_prop) ?_
   · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
-  · exact ae_of_all _ (fun x ↦ h _ ENNReal.toReal_nonneg)
-  · exact f_rnDeriv_ae_le_integral μ ν κ η hf hf_cvx hf_cont h_int hκη
-  · refine (Integrable.const_mul ?_ _).add (integrable_const _)
-    exact Measure.integrable_toReal_rnDeriv
-  · exact h_int.integral_compProd
-
-lemma integrable_f_rnDeriv_of_integrable_compProd'
-    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (κ η : Kernel α β) [IsMarkovKernel κ] [IsMarkovKernel η]
-    (hf : StronglyMeasurable f)
-    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
-    (hf_int : Integrable (fun p ↦ f ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
-    (h_deriv : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
-    Integrable (fun x ↦ f ((∂μ/∂ν) x).toReal) ν := by
-  obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
-    hf_cvx.exists_affine_le (convex_Ici 0)
-  refine integrable_of_le_of_le (f := fun a ↦ f ((∂μ/∂ν) a).toReal)
-    (g₁ := fun a ↦ c * ((∂μ/∂ν) a).toReal + c')
-    (g₂ := fun a ↦ f ((∂μ/∂ν) a).toReal)
-    ?_ ?_ ?_ ?_ ?_
-  · exact (hf.comp_measurable (μ.measurable_rnDeriv _).ennreal_toReal).aestronglyMeasurable
-  · exact ae_of_all _ (fun x ↦ h _ ENNReal.toReal_nonneg)
-  · rfl
-  · exact (Measure.integrable_toReal_rnDeriv.const_mul _).add (integrable_const _)
-  · exact integrable_f_rnDeriv μ ν κ η hf hf_cvx hf_cont hf_int h_deriv
+  · exact ae_of_all _ fun x ↦ h _ ENNReal.toReal_nonneg
+  · exact hf_cvx.apply_rnDeriv_ae_le_integral hf hf_cont hf_int hκη
+  · exact hf_int.integral_compProd
 
 end Integrable
 
@@ -452,10 +407,23 @@ lemma integrable_llr_of_integrable_llr_compProd
     Integrable (llr μ ν) μ := by
   have ⟨hμν_ac, hκη_ac⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   rw [← integrable_rnDeriv_mul_log_iff h_ac] at h_int
-  replace h_int := integrable_f_rnDeriv_of_integrable_compProd' μ ν κ η
-    continuous_mul_log.stronglyMeasurable convexOn_mul_log continuous_mul_log.continuousOn h_int
-    hκη_ac
+  replace h_int := convexOn_mul_log.integrable_apply_rnDeriv_of_integrable_compProd
+    continuous_mul_log.stronglyMeasurable continuous_mul_log.continuousOn h_int hκη_ac
   exact (integrable_rnDeriv_mul_log_iff hμν_ac).mp h_int
+
+lemma aux2 [IsMarkovKernel κ]
+    [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
+    ∀ᵐ p ∂(ν ⊗ₘ η), ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal =
+      (((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * (log ((∂μ/∂ν) p.1).toReal +
+        log ((∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)) p).toReal)) := by
+  filter_upwards [rnDeriv_compProd h_ac ν] with p hp
+  simp_rw [← hp]
+  simp only [ENNReal.toReal_mul]
+  by_cases h_zero1 : ((∂μ/∂ν) p.1).toReal = 0
+  · simp [h_zero1]
+  by_cases h_zero2 : ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal = 0
+  · simp [h_zero2]
+  simp [log_mul h_zero1 h_zero2]
 
 lemma aux [IsMarkovKernel κ]
     [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
@@ -465,45 +433,15 @@ lemma aux [IsMarkovKernel κ]
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   have h_rnDeriv : (fun p ↦ (∂μ/∂ν) p.1 * (∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
       ∂μ ⊗ₘ κ/∂ν ⊗ₘ η := rnDeriv_compProd h_ac_κη ν
-  rw [← integrable_rnDeriv_mul_log_iff h_ac]
-  have h_eq : ∀ᵐ p ∂(ν ⊗ₘ η), ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal =
-      (((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * (log ((∂μ/∂ν) p.1).toReal +
-        log ((∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)) p).toReal)) := by
-    filter_upwards [rnDeriv_compProd h_ac_κη ν] with p hp
-    simp_rw [← hp]
-    simp only [ENNReal.toReal_mul]
-    by_cases h_zero1 : ((∂μ/∂ν) p.1).toReal = 0
-    · simp [h_zero1]
-    by_cases h_zero2 : ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal = 0
-    · simp [h_zero2]
-    simp [log_mul h_zero1 h_zero2]
-  rw [integrable_congr h_eq]
-  have : Integrable (fun x ↦ ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) x).toReal *
-        (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal)) (ν ⊗ₘ η) ↔
-      Integrable (fun x ↦ (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal))
-        (μ ⊗ₘ κ) := integrable_rnDeriv_smul_iff h_ac
-  rw [this]
+  rw [← integrable_rnDeriv_mul_log_iff h_ac, integrable_congr (aux2 h_ac_κη)]
+  exact integrable_rnDeriv_smul_iff h_ac
 
 lemma integrable_llr_compProd_iff [IsMarkovKernel κ]
     [IsMarkovKernel η] [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
     Integrable (llr (μ ⊗ₘ κ) (ν ⊗ₘ η)) (μ ⊗ₘ κ) ↔
       Integrable (llr μ ν) μ ∧ Integrable (llr (μ ⊗ₘ κ) (μ ⊗ₘ η)) (μ ⊗ₘ κ) := by
   have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
-  have h_rnDeriv : (fun p ↦ (∂μ/∂ν) p.1 * (∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
-      ∂μ ⊗ₘ κ/∂ν ⊗ₘ η := rnDeriv_compProd h_ac_κη ν
-  rw [← integrable_rnDeriv_mul_log_iff h_ac]
-  have h_eq : ∀ᵐ p ∂(ν ⊗ₘ η), ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal =
-      (((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * (log ((∂μ/∂ν) p.1).toReal +
-        log ((∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)) p).toReal)) := by
-    filter_upwards [rnDeriv_compProd h_ac_κη ν] with p hp
-    simp_rw [← hp]
-    simp only [ENNReal.toReal_mul]
-    by_cases h_zero1 : ((∂μ/∂ν) p.1).toReal = 0
-    · simp [h_zero1]
-    by_cases h_zero2 : ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal = 0
-    · simp [h_zero2]
-    simp [log_mul h_zero1 h_zero2]
-  rw [integrable_congr h_eq]
+  rw [← integrable_rnDeriv_mul_log_iff h_ac, integrable_congr (aux2 h_ac_κη)]
   have : Integrable (fun x ↦ ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) x).toReal *
         (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal)) (ν ⊗ₘ η) ↔
       Integrable (fun x ↦ (log ((∂μ/∂ν) x.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) x).toReal))
@@ -567,11 +505,7 @@ theorem klDiv_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarko
   simp_rw [measureReal_def, Measure.compProd_apply_univ]
   rw [add_sub_cancel_right]
   suffices ∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂μ ⊗ₘ κ =
-      ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ) by
-    rw [this]
-    ring
-  have h_rnDeriv : (fun p ↦ (∂μ/∂ν) p.1 * (∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
-      ∂μ ⊗ₘ κ/∂ν ⊗ₘ η := rnDeriv_compProd h_ac_κη ν
+      ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ) by rw [this]; ring
   have h_int1 : Integrable (fun p ↦ log ((∂μ/∂ν) p.1).toReal) (μ ⊗ₘ κ) := by
     rw [Measure.integrable_compProd_iff]
     · simp only [ne_eq, enorm_ne_top, not_false_eq_true, integrable_const_enorm,
@@ -584,22 +518,14 @@ theorem klDiv_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarko
   _ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal ∂(ν ⊗ₘ η) := by
     rw [integral_rnDeriv_mul_log h_ac]
   _ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal *
-      (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(ν ⊗ₘ η) := by
-    refine integral_congr_ae ?_
-    filter_upwards [h_rnDeriv] with p hp
-    simp_rw [← hp]
-    simp only [ENNReal.toReal_mul]
-    by_cases h_zero1 : ((∂μ/∂ν) p.1).toReal = 0
-    · simp [h_zero1]
-    by_cases h_zero2 : ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal = 0
-    · simp [h_zero2]
-    simp [log_mul h_zero1 h_zero2]
+      (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(ν ⊗ₘ η) :=
+    integral_congr_ae (aux2 h_ac_κη)
   _ = ∫ p, (log ((∂μ/∂ν) p.1).toReal + log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal) ∂(μ ⊗ₘ κ) :=
     integral_rnDeriv_smul h_ac
   _ = ∫ p, log ((∂μ/∂ν) p.1).toReal ∂(μ ⊗ₘ κ) +
       ∫ p, log ((∂μ ⊗ₘ κ/∂μ ⊗ₘ η) p).toReal ∂(μ ⊗ₘ κ) := by
     rw [integral_add h_int1]
-    exact Integrable.ofReal h_int_κη
+    exact h_int_κη.ofReal
   _ = ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ ⊗ₘ κ) := by
     congr
     rw [Measure.integral_compProd h_int1]
