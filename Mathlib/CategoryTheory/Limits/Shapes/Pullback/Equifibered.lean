@@ -155,4 +155,3 @@ end Opposite
 end NatTrans
 
 end CategoryTheory
-#min_imports
