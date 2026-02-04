@@ -27,8 +27,8 @@ open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 variable {f : E → F} {x : E} {s : Set E}
 
@@ -37,8 +37,7 @@ section Const
 @[fun_prop]
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
-    simp only [zero_apply, sub_self, Pi.zero_apply]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
 
 @[fun_prop]
 theorem hasStrictFDerivAt_zero (x : E) :
@@ -214,8 +213,8 @@ theorem fderivWithin_intCast [IntCast F] (z : ℤ) : fderivWithin 𝕜 (z : E �
 theorem fderivWithin_ofNat (n : ℕ) [OfNat F n] : fderivWithin 𝕜 (ofNat(n) : E → F) s = 0 :=
   fderivWithin_const _
 
-theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
-  (hasFDerivAt_const c x).fderiv
+theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 := by
+  rw [fderiv, fderivWithin_const_apply]
 
 @[simp]
 theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
@@ -291,8 +290,9 @@ theorem differentiableOn_ofNat (n : ℕ) [OfNat F n] :
 @[fun_prop]
 theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) {x} x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_singleton, hasFDerivAtFilter_iff_isLittleO,
-    isLittleO_pure, ContinuousLinearMap.zero_apply, sub_self]
+  refine .of_not_accPt ?_
+  rw [accPt_iff_clusterPt, inf_principal]
+  simp [ClusterPt]
 
 @[fun_prop]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
@@ -313,7 +313,8 @@ theorem Set.Subsingleton.differentiableOn (hs : s.Subsingleton) : Differentiable
 
 theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ => c) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
-  (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
+  -- TODO: restore (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
+  .of_isLittleOTVS <| .congr' (.zero _ _) (hf.mono <| by simp +contextual [hf.self_of_nhds]) .rfl
 
 end Const
 
