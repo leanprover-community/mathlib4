@@ -310,14 +310,47 @@ def immersedSubmanifold_submersion' [CompleteSpace 𝕜] [FiniteDimensional 𝕜
     ImmersedSubmanifold hx.modelWithCorners I hx.Preimage M n hx.Complement :=
   immersedSubmanifold_submersion (.of_mfderiv_surjective_of_finiteDimensional hf)
 
+
+/-- The model normed space for the manifold structure on `f ⁻¹' {y}`,
+in case the differential at `x` has constant rank. -/
+@[nolint unusedArguments, expose]
+def _root_.modelSpace'' {k : ℕ} (_hx : (mfderiv I J f x).rank = k) : Type _ :=
+  (mfderiv I J f x).ker
+
+instance {k : ℕ} (hx : (mfderiv I J f x).rank = k) :
+    NormedAddCommGroup (modelSpace'' hx) := by
+  delta modelSpace''
+  infer_instance
+
+instance {k : ℕ} (hx : (mfderiv I J f x).rank = k) :
+    NormedSpace 𝕜 (modelSpace'' hx) := by
+  delta modelSpace''
+  letI : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs <| NormedAddCommGroup E₁
+  letI : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs <| NormedSpace _ E₁
+  infer_instance
+
+-- TODO: think about this complement in general and provide one;
+-- perhaps 𝕜^(finrak E₃ - k) already works
+/-- A complement in the model normed spaces `E` of `M` for the point `f x`
+with differential of fixed rank. -/
+@[expose]
+def Complement'' {k : ℕ} (hx : (mfderiv I J f x).rank = k) : Type _ :=
+  sorry
+  --deriving NormedAddCommGroup
+
+instance {k : ℕ} (hx : (mfderiv I J f x).rank = k) : NormedAddCommGroup (Complement'' hx) := by
+  sorry
+
+instance {k : ℕ} (hx : (mfderiv I J f x).rank = k) : NormedSpace 𝕜 (Complement'' hx) := by sorry
+
+
 /-- The **constank rank theorem** for boundaryless manifolds: if the differential of `f : M → N`
 has constant rank and `N` is finite-dimensional over a complete field,
 `f ⁻¹' {y}` is a submanifold for each `y ∈ range f`. -/
 def ImmersedSubmanifold.of_constant_rank [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E₃] [I.Boundaryless]
     {k : ℕ} (hf : ∀ (x : M), (mfderiv I J f x).rank = k) :
-    -- TODO: this statement needs work: need to redefine the model with corners
-    ImmersedSubmanifold 𝓘(𝕜, hx.modelSpace) I hx.Preimage M n hx.Complement := by
-    --sorry := by
+    ImmersedSubmanifold 𝓘(𝕜, (modelSpace'' (hf x))) I (f ⁻¹' {y}) M n (Complement'' (hf x)) := by
+  -- This will require a separate proof, similar to the regular value theorem above.
   sorry
 
 end Boundaryless
