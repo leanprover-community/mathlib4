@@ -64,22 +64,6 @@ lemma IsSubmersionAt.isRegularPoint (hf : IsSubmersionAt I J n f x) : IsRegularP
 
 end move
 
-variable (I) in
-def ModelWithCorners.restrictPreimage (M : Submodule 𝕜 E₁) : ModelWithCorners 𝕜 M (I ⁻¹' M) where
-  toPartialEquiv.toFun := Set.restrictPreimage M I
-  toPartialEquiv.invFun := Set.MapsTo.restrict I.symm _ _ fun x hx ↦ sorry
-  toPartialEquiv.source := sorry
-  toPartialEquiv.target := sorry
-  toPartialEquiv.map_source' := sorry
-  toPartialEquiv.map_target' := sorry
-  toPartialEquiv.left_inv' := sorry
-  toPartialEquiv.right_inv' := sorry
-  source_eq := sorry
-  convex_range' := sorry
-  nonempty_interior' := sorry
-  continuous_toFun := sorry
-  continuous_invFun := sorry
-
 -- Should this include a differentiability assumption? Then
 -- there is no need to manually also pass the `ContMDiff` below.
 variable (I J) in
@@ -125,6 +109,22 @@ instance {x : M} (hx : IsRegularValue I J f (f x)) :
   infer_instance
 
 namespace sandbox
+
+variable (I) in
+def _root_.ModelWithCorners.restrictPreimage (M : Submodule 𝕜 E₁) : ModelWithCorners 𝕜 M (I ⁻¹' M) where
+  toPartialEquiv.toFun := Set.restrictPreimage M I
+  toPartialEquiv.invFun := Set.MapsTo.restrict I.symm _ _ fun x hx ↦ sorry
+  toPartialEquiv.source := sorry
+  toPartialEquiv.target := sorry
+  toPartialEquiv.map_source' := sorry
+  toPartialEquiv.map_target' := sorry
+  toPartialEquiv.left_inv' := sorry
+  toPartialEquiv.right_inv' := sorry
+  source_eq := sorry
+  convex_range' := sorry
+  nonempty_interior' := sorry
+  continuous_toFun := sorry
+  continuous_invFun := sorry
 
 @[nolint unusedArguments, expose]
 def model {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
