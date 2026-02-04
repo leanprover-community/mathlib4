@@ -29,6 +29,7 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open Real
 

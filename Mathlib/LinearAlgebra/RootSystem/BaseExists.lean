@@ -38,6 +38,8 @@ to yield slightly more general results.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function IsAddIndecomposable Module Set Submodule
 
 namespace RootPairing

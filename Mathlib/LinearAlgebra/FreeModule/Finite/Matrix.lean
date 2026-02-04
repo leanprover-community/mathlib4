@@ -23,6 +23,7 @@ We provide some instances for finite and free modules involving matrices.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 universe u u' v w
 

@@ -38,6 +38,8 @@ public import Mathlib.RingTheory.Ideal.Defs
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists ModuleCat
 
 noncomputable section

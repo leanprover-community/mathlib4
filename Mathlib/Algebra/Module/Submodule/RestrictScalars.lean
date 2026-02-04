@@ -24,6 +24,8 @@ this restriction of scalars for submodules.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 namespace Submodule
 
 variable (S : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]

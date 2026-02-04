@@ -22,6 +22,8 @@ public import Mathlib.LinearAlgebra.Quotient.Pi
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Module
 open scoped DirectSum
 

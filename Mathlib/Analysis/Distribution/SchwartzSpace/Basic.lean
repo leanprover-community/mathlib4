@@ -60,6 +60,8 @@ Schwartz space, tempered distributions
 
 @[expose] public noncomputable section
 
+open scoped AddCommGroup
+
 open scoped Nat NNReal ContDiff
 
 variable {ι 𝕜 𝕜' D E F G H V : Type*}

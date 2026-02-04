@@ -47,6 +47,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Affine Module
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that

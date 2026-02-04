@@ -33,6 +33,8 @@ lie algebra, lower central series, nilpotent, max nilpotent ideal
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe u v w w₁ w₂
 
 section NilpotentModules

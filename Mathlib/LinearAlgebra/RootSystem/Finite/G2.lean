@@ -46,6 +46,8 @@ Once sufficient API for `RootPairing.Base` has been developed:
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open FaithfulSMul Function Set Submodule

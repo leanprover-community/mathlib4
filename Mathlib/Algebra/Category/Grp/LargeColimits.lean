@@ -20,6 +20,8 @@ by the relations given by the morphisms in the diagram) is `w`-small.
 
 public section
 
+open scoped AddCommGroup
+
 universe w u v
 
 open CategoryTheory Limits

@@ -19,6 +19,7 @@ index.
 
 public section
 
+open scoped AddCommGroup
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
 

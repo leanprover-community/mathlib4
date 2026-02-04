@@ -34,6 +34,8 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Set Function
 open Submodule (span)
 open Module

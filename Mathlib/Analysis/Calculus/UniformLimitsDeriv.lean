@@ -96,6 +96,7 @@ uniform convergence, limits of derivatives
 
 public section
 
+open scoped AddCommGroup
 
 open Filter
 

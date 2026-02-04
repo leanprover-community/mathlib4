@@ -32,6 +32,8 @@ import Mathlib.Algebra.Module.Torsion.Field
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 variable {R R₂ K M M₂ V S : Type*}
 
 namespace Submodule

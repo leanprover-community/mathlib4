@@ -30,6 +30,8 @@ This file defines rays in modules.
 
 @[expose] public noncomputable section
 
+open scoped AddCommGroup
+
 open Module
 
 section StrictOrderedCommSemiring

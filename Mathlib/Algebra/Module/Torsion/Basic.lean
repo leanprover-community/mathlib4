@@ -72,6 +72,8 @@ Torsion, submodule, module, quotient
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Module
 
 namespace Ideal

@@ -37,6 +37,8 @@ module can be accessed via `ρ.asModule`. Conversely, given a `k[G]`-module `M`,
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open MonoidAlgebra (lift of)
 open LinearMap Module
 open scoped MonoidAlgebra

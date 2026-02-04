@@ -28,6 +28,8 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)

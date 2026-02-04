@@ -63,6 +63,7 @@ converges to `f` in the uniform-convergence topology of `C(AddCircle T, ℂ)`.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 noncomputable section
 

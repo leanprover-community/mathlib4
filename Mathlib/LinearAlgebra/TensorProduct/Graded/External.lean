@@ -47,7 +47,7 @@ multiplication follows trivially from this after some point-free nonsense.
 
 @[expose] public section
 
-open scoped TensorProduct DirectSum
+open scoped AddCommGroup TensorProduct DirectSum
 
 variable {R ι : Type*}
 

@@ -45,6 +45,8 @@ equivalence to an inner-product space.
 
 public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open MeasureTheory Filter Complex Set Module

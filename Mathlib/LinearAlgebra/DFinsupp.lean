@@ -39,6 +39,8 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Module
 
 variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}

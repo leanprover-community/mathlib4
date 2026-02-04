@@ -21,6 +21,8 @@ This file relates `Module.Finite` and `_root_.Finite`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function (Surjective)
 open Finsupp
 

@@ -32,6 +32,7 @@ This file contains proofs of ergodicity for maps of the additive circle.
 
 public section
 
+open scoped AddCommGroup
 
 open Set Function MeasureTheory MeasureTheory.Measure Filter Metric
 

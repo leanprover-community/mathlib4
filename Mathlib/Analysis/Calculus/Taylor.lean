@@ -49,6 +49,7 @@ Taylor polynomial, Taylor's theorem
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open scoped Interval Topology Nat
 

@@ -24,6 +24,7 @@ This file provides embedding of any archimedean groups into reals.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 variable {M : Type*}
 variable [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M] [One M]

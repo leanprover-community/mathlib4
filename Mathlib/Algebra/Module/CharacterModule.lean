@@ -31,6 +31,8 @@ an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l`
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open CategoryTheory
 
 universe uR uA uB

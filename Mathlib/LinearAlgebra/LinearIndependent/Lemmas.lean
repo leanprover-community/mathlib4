@@ -53,6 +53,7 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 assert_not_exists Cardinal
 

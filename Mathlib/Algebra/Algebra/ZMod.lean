@@ -14,6 +14,8 @@ public import Mathlib.Data.ZMod.Basic
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists TwoSidedIdeal
 
 namespace ZMod

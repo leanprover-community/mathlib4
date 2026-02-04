@@ -54,6 +54,8 @@ distributions, test function
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology
 

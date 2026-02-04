@@ -24,6 +24,8 @@ Uniformize API between analytic and meromorphic functions
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Filter Set
 open scoped Topology
 

@@ -22,6 +22,8 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 public section
 
+open scoped AddCommGroup
+
 open Module Submodule
 
 section Submodule

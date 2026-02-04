@@ -56,6 +56,8 @@ general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 namespace ZLattice

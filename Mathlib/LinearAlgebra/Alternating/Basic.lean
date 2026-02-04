@@ -44,6 +44,8 @@ using `map_swap` as a definition, and does not require `Neg N`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Module
 
 -- semiring / add_comm_monoid

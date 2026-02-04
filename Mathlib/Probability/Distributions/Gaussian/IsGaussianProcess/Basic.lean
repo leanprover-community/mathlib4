@@ -32,6 +32,8 @@ Gaussian process
 
 public section
 
+open scoped AddCommGroup
+
 open MeasureTheory Finset
 
 namespace ProbabilityTheory.IsGaussianProcess

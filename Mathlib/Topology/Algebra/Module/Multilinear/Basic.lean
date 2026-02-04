@@ -36,6 +36,7 @@ especially when defining iterated derivatives.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open Function Fin Set
 

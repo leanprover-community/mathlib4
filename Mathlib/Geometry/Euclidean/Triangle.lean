@@ -39,6 +39,8 @@ unnecessarily.
 
 public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open scoped CharZero Real RealInnerProductSpace

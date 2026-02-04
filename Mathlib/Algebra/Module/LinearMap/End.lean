@@ -25,6 +25,8 @@ including the action of `Module.End` on the module we are considering endomorphi
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe u v
 
 /-- Linear endomorphisms of a module, with associated ring structure

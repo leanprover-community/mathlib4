@@ -32,6 +32,7 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 noncomputable section
 

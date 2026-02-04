@@ -79,6 +79,8 @@ distributions
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 

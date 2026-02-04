@@ -46,6 +46,7 @@ vector measure, signed measure, complex measure
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 noncomputable section
 

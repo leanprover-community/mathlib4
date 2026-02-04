@@ -40,6 +40,8 @@ it.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 variable {M : Type*} [AddCommMonoid M]
 
 local notation "↑ⁿ" => PNat.equivNonZeroDivisorsNat

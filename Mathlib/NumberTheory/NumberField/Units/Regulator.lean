@@ -35,6 +35,8 @@ number field, units, regulator
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open scoped NumberField
 
 noncomputable section

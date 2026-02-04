@@ -25,6 +25,8 @@ If furthermore the base ring is a domain, this is equivalent to the naïve
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Module
 
 variable {R S M N : Type*}

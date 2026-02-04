@@ -35,6 +35,8 @@ and `RingTheory.Derivation.ToSquareZero` for
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Algebra
 
 /-- `D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`

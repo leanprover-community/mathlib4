@@ -49,6 +49,8 @@ is too strong.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open Function Set Submodule

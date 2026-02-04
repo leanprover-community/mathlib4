@@ -87,6 +87,9 @@ type with a zero. They are denoted `R⸨X⸩`.
 -/
 
 @[expose] public section
+
+open scoped AddCommGroup
+
 universe u
 
 open scoped PowerSeries

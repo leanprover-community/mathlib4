@@ -22,6 +22,7 @@ about these definitions.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 variable {𝕜 𝕜' E F α : Type*}
 

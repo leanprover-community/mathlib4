@@ -22,6 +22,8 @@ public import Mathlib.Algebra.Module.Prod
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function
 
 variable {R : Type*} {R₂ : Type*}

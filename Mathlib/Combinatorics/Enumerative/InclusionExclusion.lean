@@ -45,6 +45,8 @@ See also `MeasureTheory.integral_biUnion_eq_sum_powerset` for the version with i
 
 public section
 
+open scoped AddCommGroup
+
 assert_not_exists Field
 
 namespace Finset

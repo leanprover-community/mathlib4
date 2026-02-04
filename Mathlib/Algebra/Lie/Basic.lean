@@ -51,6 +51,7 @@ lie bracket, jacobi identity, lie ring, lie algebra, lie module
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 universe u v w w₁ w₂
 

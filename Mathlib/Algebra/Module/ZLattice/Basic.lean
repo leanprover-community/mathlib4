@@ -55,6 +55,7 @@ consistent with the `ZSpan` construction of `ℤ`-lattices.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 noncomputable section
 

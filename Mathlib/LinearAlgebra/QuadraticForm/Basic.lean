@@ -79,6 +79,8 @@ quadratic map, homogeneous polynomial, quadratic polynomial
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe u v w
 
 variable {S T : Type*}

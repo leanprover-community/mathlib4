@@ -55,6 +55,7 @@ inequalities this can be changed.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 

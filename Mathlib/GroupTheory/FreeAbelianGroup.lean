@@ -68,6 +68,8 @@ are about `FreeAbelianGroup.map`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Cardinal Multiset
 
 universe u v

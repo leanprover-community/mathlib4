@@ -54,6 +54,7 @@ linear map
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 assert_not_exists TrivialStar DomMulAct Pi.module WCovBy.image Field
 

@@ -18,6 +18,7 @@ also preadditive. Dually, the category `Coalgebra F` is also preadditive.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 universe v₁ u₁
 

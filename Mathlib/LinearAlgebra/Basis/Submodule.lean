@@ -14,6 +14,8 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function Set Submodule Finsupp Module
 
 assert_not_exists Ordinal

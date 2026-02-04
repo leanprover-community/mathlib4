@@ -59,6 +59,7 @@ See the sections *Main theorems on weak FE-pairs* and
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 /- TODO: Consider extending the results to allow functional equations of the form
 `f (N / x) = (const) • x ^ k • g x` for a real parameter `0 < N`. This could be done either by

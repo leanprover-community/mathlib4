@@ -31,6 +31,8 @@ root pairings.
 
 public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open Function Set

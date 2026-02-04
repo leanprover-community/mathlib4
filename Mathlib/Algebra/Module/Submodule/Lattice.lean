@@ -32,6 +32,8 @@ to unify the APIs where possible.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe v
 
 variable {R S M : Type*}

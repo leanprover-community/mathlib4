@@ -18,6 +18,8 @@ or, having constructed that monoidal structure directly, show this functor is mo
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 
 open CategoryTheory
 

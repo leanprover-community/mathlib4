@@ -53,6 +53,8 @@ should connect (or unify) these definitions with `Module.reflection` defined her
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function Set
 open Module
 open Submodule (span)

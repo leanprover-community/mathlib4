@@ -29,6 +29,8 @@ length, `p + q` is at most 3.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open FaithfulSMul Function Set Submodule

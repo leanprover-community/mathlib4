@@ -43,6 +43,8 @@ Bojanic
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Finset IsUltrametricDist NNReal Filter
 
 open scoped fwdDiff ZeroAtInfty Topology

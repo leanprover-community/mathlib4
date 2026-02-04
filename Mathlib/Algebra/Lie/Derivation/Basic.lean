@@ -40,6 +40,8 @@ as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected defini
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 /-- A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an `R`-linear map
 that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`. -/
 structure LieDerivation (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]

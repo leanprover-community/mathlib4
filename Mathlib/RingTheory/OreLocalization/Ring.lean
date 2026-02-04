@@ -20,6 +20,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Subgroup
 
 universe u

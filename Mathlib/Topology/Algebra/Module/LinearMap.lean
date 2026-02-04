@@ -24,6 +24,8 @@ Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists TrivialStar
 
 open LinearMap (ker range)

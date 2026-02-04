@@ -29,6 +29,7 @@ This file defines notions of two points being on the same or opposite sides of a
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 variable {R V V' P P' : Type*}
 

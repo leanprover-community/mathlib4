@@ -27,6 +27,7 @@ for `ContinuousLinearMap R E F`.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 /-- A continuous map of affine spaces -/
 structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddCommGroup V]

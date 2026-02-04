@@ -28,6 +28,8 @@ submodule, subspace, linear map, pushforward, pullback
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function Pointwise Set
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}

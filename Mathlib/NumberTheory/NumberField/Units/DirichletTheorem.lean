@@ -39,6 +39,8 @@ number field, units, Dirichlet unit theorem
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open Module NumberField NumberField.InfinitePlace NumberField.Units

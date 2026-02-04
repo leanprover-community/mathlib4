@@ -67,6 +67,8 @@ Further results in Elliot's paper:
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function Polynomial
 
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by

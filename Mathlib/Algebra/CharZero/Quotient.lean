@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 public section
 
+open scoped AddCommGroup
 
 variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}
 

@@ -47,6 +47,8 @@ this map to be injective it suffices that the range omits `1`. In this setting w
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 /-! ## Subalgebras -/
 
 namespace Unitization

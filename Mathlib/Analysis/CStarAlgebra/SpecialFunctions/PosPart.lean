@@ -12,6 +12,8 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 public section
 
+open scoped AddCommGroup
+
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace CStarAlgebra

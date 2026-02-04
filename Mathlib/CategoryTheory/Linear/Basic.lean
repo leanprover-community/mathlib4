@@ -35,6 +35,8 @@ a category enriched in `Module R`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe w v u
 
 open CategoryTheory.Limits

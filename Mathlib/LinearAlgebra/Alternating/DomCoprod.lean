@@ -22,6 +22,8 @@ taking values in the tensor product of the codomains of the original maps.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]

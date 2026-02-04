@@ -36,6 +36,7 @@ when `A` is an abelian category.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Subobject
 

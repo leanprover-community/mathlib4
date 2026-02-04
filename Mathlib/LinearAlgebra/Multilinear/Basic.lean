@@ -71,6 +71,8 @@ and so the equality can just be substituted.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Fin Function Finset Set
 
 universe uR uS uι v v' v₁ v₁' v₁'' v₂ v₃ v₄

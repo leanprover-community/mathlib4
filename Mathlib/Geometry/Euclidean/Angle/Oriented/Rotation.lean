@@ -21,6 +21,7 @@ This file defines rotations by oriented angles in real inner product spaces.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 noncomputable section
 

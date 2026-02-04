@@ -28,6 +28,8 @@ Statements with connectedness instead of path-connectedness are also given.
 
 public section
 
+open scoped AddCommGroup
+
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal
 

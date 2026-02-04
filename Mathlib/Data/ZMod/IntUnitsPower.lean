@@ -27,6 +27,8 @@ by using `Module R (Additive M)` in its place, especially since this already has
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Ideal TwoSidedIdeal
 
 instance : SMul (ZMod 2) (Additive ℤˣ) where

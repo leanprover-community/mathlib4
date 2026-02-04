@@ -25,6 +25,8 @@ This file proves that finitely generated cancellative torsion-free commutative m
 
 public section
 
+open scoped AddCommGroup
+
 open Algebra AddLocalization Function
 
 variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [IsAddTorsionFree M]

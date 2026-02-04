@@ -76,6 +76,7 @@ There is a CHSH tuple in 4-by-4 matrices such that
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 universe u
 

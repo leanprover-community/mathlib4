@@ -36,6 +36,8 @@ For this reason, we have `-` before the sum in our formal statement.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Filter ContinuousAlternatingMap Finset VectorField
 open scoped Topology
 

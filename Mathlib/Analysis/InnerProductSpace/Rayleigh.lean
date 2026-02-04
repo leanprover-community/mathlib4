@@ -39,6 +39,7 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 
 public section
 
+open scoped AddCommGroup
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]

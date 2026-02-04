@@ -35,6 +35,8 @@ We also prove some auxiliary results about iterated forward differences of the f
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Finset Nat Function Polynomial
 
 variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G] (h : M)

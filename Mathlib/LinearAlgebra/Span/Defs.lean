@@ -23,6 +23,8 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Field
 
 variable {R R₂ K M M₂ V S : Type*}

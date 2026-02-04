@@ -26,6 +26,8 @@ a proper subset, provided the coefficients are a sufficiently large field.
 
 public section
 
+open scoped AddCommGroup
+
 open Function Set
 
 variable {ι K M : Type*} [Field K] [AddCommGroup M] [Module K M]

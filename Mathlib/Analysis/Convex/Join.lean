@@ -17,6 +17,7 @@ convex hulls of finite sets.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open Set
 

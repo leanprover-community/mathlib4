@@ -47,6 +47,8 @@ We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe v u
 
 noncomputable section

@@ -45,6 +45,8 @@ will be used to prove that the second exterior derivative of a differential form
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Fin Function
 
 namespace AlternatingMap

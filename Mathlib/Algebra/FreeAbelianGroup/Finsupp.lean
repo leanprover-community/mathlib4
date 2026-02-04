@@ -24,6 +24,8 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Cardinal Module.Basis
 
 noncomputable section

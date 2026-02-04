@@ -24,6 +24,7 @@ This file contains results on the `R`-module structure on functions of finite su
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 noncomputable section
 

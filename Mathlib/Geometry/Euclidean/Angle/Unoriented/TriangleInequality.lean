@@ -16,6 +16,8 @@ import Mathlib.Geometry.Euclidean.Triangle
 This file contains the proof that angles obey the triangle inequality.
 -/
 
+open scoped AddCommGroup
+
 open InnerProductGeometry
 open NormedSpace
 

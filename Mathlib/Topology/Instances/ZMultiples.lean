@@ -18,6 +18,7 @@ intersection with compact sets is finite.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 noncomputable section
 

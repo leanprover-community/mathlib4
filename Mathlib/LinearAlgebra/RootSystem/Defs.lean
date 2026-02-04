@@ -61,6 +61,8 @@ require that it is compatible with reflections and coreflections.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Set Function
 open Module hiding reflection
 open Submodule (span span_image)

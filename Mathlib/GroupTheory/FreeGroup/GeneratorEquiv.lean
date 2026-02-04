@@ -16,6 +16,8 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 variable {α β G H : Type*}

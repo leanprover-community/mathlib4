@@ -29,6 +29,8 @@ of scalars of `M.obj Y` via `R.map f`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe v v₁ u₁ u
 
 open CategoryTheory LinearMap Opposite

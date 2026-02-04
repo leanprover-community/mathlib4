@@ -31,6 +31,8 @@ We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category wit
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 suppress_compilation
 
 open CategoryTheory Limits

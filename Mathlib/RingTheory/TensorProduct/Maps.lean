@@ -32,6 +32,8 @@ This file provides results about maps between tensor products of `R`-algebras.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Equiv.Perm.cycleType
 
 open scoped TensorProduct

@@ -31,6 +31,8 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Finset
 
 open Function Set

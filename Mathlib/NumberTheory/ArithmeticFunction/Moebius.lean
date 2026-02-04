@@ -36,6 +36,8 @@ arithmetic functions, dirichlet convolution, divisors
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Finset Nat
 
 variable {R : Type*}

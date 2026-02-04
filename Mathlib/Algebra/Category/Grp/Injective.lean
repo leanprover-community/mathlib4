@@ -26,6 +26,8 @@ in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open CategoryTheory
 
 open Pointwise

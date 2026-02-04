@@ -15,6 +15,8 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 
 public section
 
+open scoped AddCommGroup
+
 open Set
 open FaithfulSMul (algebraMap_injective)
 

@@ -25,6 +25,8 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 noncomputable section
 
 open Module

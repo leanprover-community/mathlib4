@@ -20,6 +20,8 @@ This file contains some results on absolute values applied to integers.
 
 public section
 
+open scoped AddCommGroup
+
 variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
 
 @[simp]

@@ -19,6 +19,7 @@ preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is 
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 universe v₁ u₁
 

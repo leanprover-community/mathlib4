@@ -64,6 +64,7 @@ rectangle are contained in `s` by convexity. The general case follows by lineari
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open Asymptotics Set Filter
 

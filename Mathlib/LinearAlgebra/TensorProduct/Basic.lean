@@ -40,6 +40,8 @@ bilinear, tensor, tensor product
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 set_option linter.style.longFile 1700
 
 section Semiring

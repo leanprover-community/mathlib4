@@ -31,6 +31,8 @@ linear algebra, vector space, module
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function
 
 open Pointwise

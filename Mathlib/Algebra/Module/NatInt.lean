@@ -72,13 +72,15 @@ section AddCommGroup
 
 variable (M) [AddCommGroup M]
 
-instance AddCommGroup.toIntModule : Module ℤ M where
+scoped instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul
   mul_smul m n a := mul_zsmul a m n
   smul_add n a b := zsmul_add a b n
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
   add_smul r s x := add_zsmul x r s
+
+open scoped AddCommGroup
 
 theorem DistribSMul.toAddMonoidHom_eq_zsmulAddGroupHom :
     toAddMonoidHom M = zsmulAddGroupHom := rfl

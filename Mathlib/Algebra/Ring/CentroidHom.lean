@@ -47,6 +47,8 @@ centroid
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 assert_not_exists Field
 
 open Function

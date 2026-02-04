@@ -56,6 +56,7 @@ separately.
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open NNReal ENNReal ContinuousLinearMap MulOpposite
 

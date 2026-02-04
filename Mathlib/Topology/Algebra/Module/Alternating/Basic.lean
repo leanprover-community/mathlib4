@@ -28,6 +28,8 @@ multilinear map, alternating map, continuous
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function Matrix
 
 /-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,

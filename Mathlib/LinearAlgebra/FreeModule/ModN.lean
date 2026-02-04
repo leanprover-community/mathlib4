@@ -17,6 +17,8 @@ If `G` is a rank `d` free `ℤ`-module, then `G/nG` is a finite group of cardina
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Finsupp Function Module
 
 variable {G H M : Type*} [AddCommGroup G] {n : ℕ}

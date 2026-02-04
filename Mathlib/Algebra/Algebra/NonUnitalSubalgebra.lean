@@ -23,6 +23,8 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 universe u u' v v' w w'
 
 section NonUnitalSubalgebraClass

@@ -19,6 +19,8 @@ public import Mathlib.Algebra.Exact
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Function (Surjective)
 open Finsupp
 

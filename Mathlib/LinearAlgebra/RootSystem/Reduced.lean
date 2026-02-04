@@ -34,6 +34,8 @@ solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.
 
 @[expose] public section
 
+open scoped AddCommGroup
+
 open Module Set Function
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]

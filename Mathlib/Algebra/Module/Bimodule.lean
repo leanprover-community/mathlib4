@@ -57,6 +57,7 @@ Develop the theory of two-sided ideals, which have type `Submodule (R ⊗[ℕ] R
 
 @[expose] public section
 
+open scoped AddCommGroup
 
 open TensorProduct
 
