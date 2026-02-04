@@ -43,11 +43,12 @@ implementation details below.
 * `DSmooth f`: predicate stating that a map `f : X → Y` between diffeological spaces is smooth in
   the sense that it sends plots to plots. This is the correct notion of morphisms between
   diffeological spaces.
-* `DTop`: the D-topology on a diffeological space, consisting of all sets `U` whose preimage
+* `dTopology`: the D-topology on a diffeological space, consisting of all sets `U` whose preimage
   `p ⁻¹' u` is open for all plots `p`. This is a definition rather than an instance to avoid
-  typeclass diamonds (see below), and meant for use with notation such as `Continuous[_,DTop]`.
-* `IsDTopCompatible X`: typeclass stating that `X` is equipped with a topology that is equal (but
-  not necessarily defeq) to the D-topology.
+  typeclass diamonds (see below), and meant for use with notation such as
+  `Continuous[_, dTopology]`.
+* `IsDTopologyCompatible X`: typeclass stating that `X` is equipped with a topology that is equal
+  (but not necessarily defeq) to the D-topology.
 * `NormedSpace.toDiffeology`: the standard diffeology on any finite-dimensional normed space `X`,
   consisting of all conventionally smooth maps ℝⁿ → X. This is again a definition rather than a
   instance for typeclass diamond reasons; however, we do put this as an instance on `ℝ` and
@@ -93,9 +94,9 @@ While the D-topology is quite well-behaved in some regards, it does unfortunatel
 with e.g. products. This means that it can not be registered as an instance - otherwise, there would
 be two `TopologicalSpace`-instances on binary products, the product topology of the D-topologies on
 the factors and the D-topology of the product diffeology. We thus instead define a typeclass
-`IsDTopCompatible X` to express when the topology on `X` does match the D-topology, and also give
-the D-topology the short name `DTop` to enable use of notations such as `Continuous[_,DTop]`
-for continuity with respect to the D-topology.
+`IsDTopologyCompatible X` to express when the topology on `X` does match the D-topology, and also
+give the D-topology the short name `dTopology` to enable use of notations such as
+`Continuous[_, dTopology]` for continuity with respect to the D-topology.
 
 In order to make it easier to work with diffeological spaces whose natural diffeology does match
 the D-topology, we also include the D-topology as part of the data of `DiffeologicalSpace X`.
@@ -184,7 +185,7 @@ section Defs
 /-- D-topology of a diffeological space. This is a definition rather than an instance
 because the D-topology might not agree with already registered topologies like the one
 on normed spaces. -/
-def DTop : TopologicalSpace X := DiffeologicalSpace.dTopology
+def dTopology : TopologicalSpace X := DiffeologicalSpace.dTopology
 
 /-- A map `p : EuclideanSpace ℝ (Fin n) → X` is called a plot iff it is part of the diffeology on
 `X`. This is equivalent to `p` being smooth with respect to the standard diffeology on
@@ -225,14 +226,15 @@ protected lemma IsPlot.dsmooth_comp' {n : ℕ} {p : 𝔼ⁿ → X} {f : X → Y}
   hf n p hp
 
 lemma isOpen_iff_preimages_plots {u : Set X} :
-    IsOpen[DTop] u ↔ ∀ (n : ℕ) (p : 𝔼ⁿ → X), IsPlot p → IsOpen (p ⁻¹' u) :=
+    IsOpen[dTopology] u ↔ ∀ (n : ℕ) (p : 𝔼ⁿ → X), IsPlot p → IsOpen (p ⁻¹' u) :=
   DiffeologicalSpace.isOpen_iff_preimages_plots
 
 protected lemma IsPlot.continuous {n : ℕ} {p : 𝔼ⁿ → X} (hp : IsPlot p) :
-    Continuous[_, DTop] p :=
+    Continuous[_, dTopology] p :=
   continuous_def.2 fun _ hu ↦ isOpen_iff_preimages_plots.1 hu n p hp
 
-protected theorem DSmooth.continuous {f : X → Y} (hf : DSmooth f) : Continuous[DTop, DTop] f := by
+protected theorem DSmooth.continuous {f : X → Y} (hf : DSmooth f) :
+    Continuous[dTopology, dTopology] f := by
   simp_rw [continuous_def, isOpen_iff_preimages_plots (X := X), isOpen_iff_preimages_plots (X := Y)]
   exact fun u hu n p hp ↦ hu n (f ∘ p) (hf n p hp)
 
@@ -259,13 +261,13 @@ theorem dsmooth_const {y : Y} : DSmooth fun _ : X ↦ y :=
 /-- Replaces the D-topology of a diffeology with another topology equal to it. Useful
 to construct diffeologies with better definitional equalities. -/
 def _root_.DiffeologicalSpace.replaceDTopology {X : Type*} (d : DiffeologicalSpace X)
-    (t : TopologicalSpace X) (h : @DTop _ d = t) : DiffeologicalSpace X where
+    (t : TopologicalSpace X) (h : @dTopology _ d = t) : DiffeologicalSpace X where
   dTopology := t
   isOpen_iff_preimages_plots := by intro _; rw [← d.isOpen_iff_preimages_plots, ← h]
   __ := d
 
 lemma _root_.DiffeologicalSpace.replaceDTopology_eq {X : Type*} {d : DiffeologicalSpace X}
-    {t : TopologicalSpace X} {h : @DTop _ d = t} : d.replaceDTopology t h = d := by
+    {t : TopologicalSpace X} {h : @dTopology _ d = t} : d.replaceDTopology t h = d := by
   ext; rfl
 
 /-- A structure with plots specified on open subsets of ℝⁿ rather than ℝⁿ itself. Useful
@@ -363,16 +365,16 @@ class IsContDiffCompatible (X : Type*) [NormedAddCommGroup X] [NormedSpace ℝ X
 /-- Technical condition saying that the topology on a type agrees with the D-topology.
 Necessary because the D-topologies on for example products and subspaces don't agree with
 the product and subspace topologies. -/
-class IsDTopCompatible (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X] : Prop where
-  dTop_eq : DTop = t
+class IsDTopologyCompatible (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X] : Prop where
+  dTop_eq : dTopology = t
 
-theorem dTop_eq (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X] [IsDTopCompatible X] :
-    DTop = t := IsDTopCompatible.dTop_eq
+theorem dTop_eq (X : Type*) [t : TopologicalSpace X] [DiffeologicalSpace X]
+    [IsDTopologyCompatible X] : dTopology = t := IsDTopologyCompatible.dTop_eq
 
 /-- A smooth function between spaces that are equipped with the D-topology is continuous. -/
 protected theorem DSmooth.continuous' {X Y : Type*} [TopologicalSpace X] [DiffeologicalSpace X]
-    [IsDTopCompatible X] [TopologicalSpace Y] [DiffeologicalSpace Y]
-    [IsDTopCompatible Y] {f : X → Y} (hf : DSmooth f) : Continuous f :=
+    [IsDTopologyCompatible X] [TopologicalSpace Y] [DiffeologicalSpace Y]
+    [IsDTopologyCompatible Y] {f : X → Y} (hf : DSmooth f) : Continuous f :=
   dTop_eq X ▸ dTop_eq Y ▸ hf.continuous
 
 instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
@@ -385,21 +387,21 @@ lemma contDiffCompatible_iff_eq_toDiffeology {X : Type*} [NormedAddCommGroup X]
   ⟨fun _ ↦ by ext n p; exact IsContDiffCompatible.isPlot_iff, fun h ↦ h ▸ inferInstance⟩
 
 instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
-    [FiniteDimensional ℝ X] : @IsDTopCompatible X _ NormedSpace.toDiffeology :=
+    [FiniteDimensional ℝ X] : @IsDTopologyCompatible X _ NormedSpace.toDiffeology :=
   let _ := NormedSpace.toDiffeology (X := X); ⟨rfl⟩
 
 noncomputable instance : DiffeologicalSpace ℝ := NormedSpace.toDiffeology
 
 example : IsContDiffCompatible ℝ := inferInstance
 
-example : IsDTopCompatible ℝ := inferInstance
+example : IsDTopologyCompatible ℝ := inferInstance
 
 noncomputable instance {ι : Type*} [Fintype ι] : DiffeologicalSpace (EuclideanSpace ℝ ι) :=
   NormedSpace.toDiffeology
 
 example {ι : Type*} [Fintype ι] : IsContDiffCompatible (EuclideanSpace ℝ ι) := inferInstance
 
-example {ι : Type*} [Fintype ι] : IsDTopCompatible (EuclideanSpace ℝ ι) := inferInstance
+example {ι : Type*} [Fintype ι] : IsDTopologyCompatible (EuclideanSpace ℝ ι) := inferInstance
 
 @[fun_prop]
 protected theorem IsPlot.dsmooth {n : ℕ} {p : 𝔼ⁿ → X} (hp : IsPlot p) : DSmooth p :=
