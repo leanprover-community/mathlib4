@@ -376,7 +376,6 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("addSubshift", "subshift"),
   ("AddSubshift", "Subshift"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
-  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
   ("addExact", "exact")]
 
 /-- The bundle of environment extensions for `to_additive` -/
