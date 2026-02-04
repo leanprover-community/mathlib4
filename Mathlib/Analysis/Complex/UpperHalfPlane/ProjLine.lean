@@ -22,27 +22,12 @@ lemma toOnePoint_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (τ : ℍ) :
   have : g 1 0 * (τ : ℂ) + g 1 1 ≠ 0 := UpperHalfPlane.denom_ne_zero g τ
   simp [OnePoint.smul_some_eq_ite, this, UpperHalfPlane.coe_smul_of_det_pos hg, num, denom]
 
-/-- Parabolicity is preserved under extension of scalars. -/
-lemma Matrix.GeneralLinearGroup.IsParabolic.map {A B : Type*} [Field A] [CommRing B] [Nontrivial B]
-    {g : GL (Fin 2) A} (hgp : g.IsParabolic) (f : A →+* B) :
-    (g.map f).IsParabolic := by
-  have hfi : Function.Injective f := RingHom.injective f
-  constructor
-  · rintro ⟨a, ha⟩
-    obtain rfl : a = f (g 0 0) := by simpa using congr_arg (· 0 0) ha
-    apply hgp.1
-    use g 0 0
-    simpa [← (Matrix.map_injective <| RingHom.injective f).eq_iff] using ha
-  · -- should we make `Matrix.discr_map`? Or `Polynomial.discr_map`?
-    convert (map_eq_zero_iff _ hfi).mpr hgp.2
-    simp [discr_fin_two, AddMonoidHom.map_trace, map_ofNat, RingHom.map_det]
-
 /-- If `g` is parabolic, then `g` has no fixed points in `ℍ`. -/
 lemma UpperHalfPlane.smul_ne_self_of_isParabolic
     {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (hgp : g.IsParabolic) (τ : ℍ) :
     g • τ ≠ τ := by
   rw [Ne, UpperHalfPlane.ext_iff, ← OnePoint.coe_eq_coe, toOnePoint_smul hg,
-    (hgp.map _).smul_eq_self_iff]
+    (hgp.map _ <| RingHom.injective _).smul_eq_self_iff]
   intro hτ
   apply τ.im_ne_zero
   simp only [parabolicFixedPoint, Fin.isValue, GeneralLinearGroup.map_apply,
@@ -56,13 +41,10 @@ lemma UpperHalfPlane.smul_ne_self_of_isParabolic
 lemma UpperHalfPlane.smul_ne_self_of_isHyperbolic {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val)
     (hgh : g.IsHyperbolic) (τ : ℍ) :
     g • τ ≠ τ := by
-  rw [Ne, UpperHalfPlane.ext_iff, ← OnePoint.coe_eq_coe, toOnePoint_smul hg,
-    ← fixpointPolynomial_aeval_eq_zero_iff]
   rcases τ with ⟨τ, hτ⟩
-  simp only [coe_mk_subtype, fixpointPolynomial, Fin.isValue, GeneralLinearGroup.map_apply,
-    Complex.ofRealHom_eq_coe, map_sub, Polynomial.coe_aeval_eq_eval, Polynomial.eval_add,
-    Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X,
-    Polynomial.eval_sub]
+  suffices g 1 0 * τ ^ 2 + (g 1 1 - g 0 0) * τ - g 0 1 ≠ 0 by
+    rw [Ne, UpperHalfPlane.ext_iff, ← OnePoint.coe_eq_coe]
+    simpa [toOnePoint_smul hg, ← fixpointPolynomial_aeval_eq_zero_iff, fixpointPolynomial]
   contrapose! hτ
   by_cases hc : g 1 0 = 0
   · -- silly case : c = 0

@@ -21,16 +21,25 @@ namespace Matrix
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [Nontrivial R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [CommRing R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.discr = 0
 
 variable {m}
 
+/-- Parabolic matrices can only exist if the base ring is not the zero ring. (This is not a
+mathematically interesting statement, it is just in order to avoid cluttering statements of lemmas
+with non-triviality assumptions.) -/
+lemma IsParabolic.nontrivial (hmp : IsParabolic m) : Nontrivial R := by
+  contrapose! hmp
+  simpa only [Fin.isValue, hmp.eq_zero, ne_eq, not_true_eq_false, and_false, iff_false,
+      IsParabolic, not_and_or, not_not] using .inl ⟨0, by simp [Subsingleton.eq_zero]⟩
+
 section conjugation
 
 @[simp] lemma discr_conj : (g.val * m * g.val⁻¹).discr = m.discr := by
+  nontriviality R
   simp only [discr_fin_two, ← Matrix.coe_units_inv, trace_units_conj, det_units_conj]
 
 @[simp] lemma discr_conj' : (g.val⁻¹ * m * g.val).discr = m.discr := by
@@ -51,6 +60,9 @@ end conjugation
 
 lemma isParabolic_iff_of_upperTriangular [IsReduced R] (hm : m 1 0 = 0) :
     m.IsParabolic ↔ m 0 0 = m 1 1 ∧ m 0 1 ≠ 0 := by
+  -- silly case of R = zero ring
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · simp [IsParabolic.nontrivial.mt (not_nontrivial _), hR.eq_zero]
   rw [IsParabolic]
   have aux : m.discr = 0 ↔ m 0 0 = m 1 1 := by
     suffices m.discr = (m 0 0 - m 1 1) ^ 2 by
@@ -65,6 +77,22 @@ lemma isParabolic_iff_of_upperTriangular [IsReduced R] (hm : m 1 0 = 0) :
       ext i j
       fin_cases i <;> fin_cases j <;> simp [h, h', hm]
   tauto
+
+/-- Parabolicity is preserved under mapping by an injective ring homomorphism. -/
+lemma IsParabolic.map (hmp : m.IsParabolic) {S : Type*} [CommRing S]
+    (f : R →+* S) (hf : Function.Injective f) :
+    (m.map f).IsParabolic := by
+  have := hmp.nontrivial
+  have := hf.nontrivial
+  constructor
+  · rintro ⟨a, ha⟩
+    obtain rfl : a = f (m 0 0) := congr_arg (· 0 0) ha
+    apply hmp.1
+    use m 0 0
+    simpa [← (map_injective hf).eq_iff] using ha
+  · -- should we make `Matrix.discr_map`? Or `Polynomial.discr_map`?
+    convert (map_eq_zero_iff _ hf).mpr hmp.2
+    simp [discr_fin_two, AddMonoidHom.map_trace, map_ofNat, RingHom.map_det]
 
 end CommRing
 
@@ -117,8 +145,7 @@ end Field
 
 section LinearOrderedRing
 
-variable {R : Type*} [CommRing R] [Nontrivial R] [Preorder R]
-  (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [CommRing R] [Preorder R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
 def IsHyperbolic : Prop := 0 < m.discr
@@ -173,6 +200,12 @@ abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
 @[simp] lemma isParabolic_conj_iff' [Nontrivial R] (g h : GL (Fin 2) R) :
     IsParabolic (g⁻¹ * h * g) ↔ IsParabolic h := by
   simp [IsParabolic]
+
+/-- Parabolicity is preserved under mapping by an injective ring homomorphism. -/
+lemma IsParabolic.map {g : GL (Fin 2) R} (hgp : g.IsParabolic)
+    {S : Type*} [CommRing S] (f : R →+* S) (hf : Function.Injective f) :
+    (g.map f).IsParabolic :=
+  Matrix.IsParabolic.map hgp f hf
 
 /-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
 abbrev IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
