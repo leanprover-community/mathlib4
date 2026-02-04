@@ -924,7 +924,7 @@ section DivInvTopologicalGroup
 
 variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
-@[to_additive]
+@[to_additive tendsto_const_sub_iff]
 lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (fun k : α ↦ b / f k) l (𝓝 (b / c)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
