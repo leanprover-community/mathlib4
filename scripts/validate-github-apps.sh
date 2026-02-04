@@ -247,9 +247,13 @@ validate_app_workflows() {
 check_exhaustivity() {
     echo -e "\n${BLUE}[Exhaustivity Check]${NC}"
 
-    # Get all documented secret names
+    # Get all documented secret names (from apps)
     local documented_secrets
     documented_secrets=$(yq -r '.apps[].secrets[].app_id, .apps[].secrets[].private_key' "$CONFIG_PATH" | sort -u)
+
+    # Get excepted secrets (non-app secrets that are known and intentional)
+    local excepted_secrets
+    excepted_secrets=$(yq -r '.excepted_secrets[].name // ""' "$CONFIG_PATH" | sort -u)
 
     # Get all MATHLIB_* secrets from mathlib4
     local actual_secrets
@@ -261,13 +265,19 @@ check_exhaustivity() {
     # Find undocumented secrets
     local undocumented=()
     while IFS= read -r secret; do
-        if ! echo "$documented_secrets" | grep -q "^${secret}$"; then
-            undocumented+=("$secret")
+        # Skip if documented as app secret
+        if echo "$documented_secrets" | grep -q "^${secret}$"; then
+            continue
         fi
+        # Skip if in excepted list
+        if echo "$excepted_secrets" | grep -q "^${secret}$"; then
+            continue
+        fi
+        undocumented+=("$secret")
     done <<< "$actual_secrets"
 
     if [[ ${#undocumented[@]} -eq 0 ]]; then
-        ok "All MATHLIB_* secrets are documented"
+        ok "All MATHLIB_* secrets are documented or excepted"
     else
         for secret in "${undocumented[@]}"; do
             warn "Secret $secret in mathlib4 not documented in config"
