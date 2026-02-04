@@ -226,8 +226,6 @@ lemma finite_abs_eval_lt_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
     {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
   let c := Int.castRingHom ℚ
   have key : Tendsto (fun x ↦ (Q.map c).eval x / (P.map c).eval x) (atTop ⊔ atBot) (𝓝 0) := by
-    rcases eq_or_ne P 0 with rfl | hP; · simp
-    rcases eq_or_ne Q 0 with rfl | hQ; · simp
     have l₁ : (Q.map c).degree < (P.map c).degree := by
       simpa [degree_map_eq_of_injective c.injective_int]
     have l₂ : ((Q.map c).comp (-X)).degree < ((P.map c).comp (-X)).degree := by
