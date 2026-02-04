@@ -411,7 +411,7 @@ inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Pro
 
 /-- A string is from the embedding or terminals iff every `Symbol` in it is. -/
 def FromEmbeddingOrTerminalString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
-  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → FromEmbeddingOrTerminal G a
+  List.Forall (FromEmbeddingOrTerminal G) s
 
 lemma fromEmbeddingOrTerminalString_singleton {s : Symbol T g.NT}
     (hs : G.FromEmbeddingOrTerminal s) : G.FromEmbeddingOrTerminalString [s] := by
@@ -428,9 +428,11 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
+  have hw₁_mem : ∀ a ∈ u ++ [Symbol.nonterminal r.input] ++ v, G.FromEmbeddingOrTerminal a := by
+    simpa [FromEmbeddingOrTerminalString, List.forall_iff_forall_mem] using hw₁
   have from_embedding_or_terminal_input :
       G.FromEmbeddingOrTerminal (Symbol.nonterminal r.input) := by
-    apply hw₁
+    apply hw₁_mem
     simp
   revert from_embedding_or_terminal_input
   generalize hr_eq : r.input = n
@@ -463,8 +465,9 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
             List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
           using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
     · rw [aft, ← hrr₀]
-      simp only [FromEmbeddingOrTerminalString, List.forall_mem_append] at hw₁ ⊢
-      refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
+      simp only [FromEmbeddingOrTerminalString, List.forall_iff_forall_mem,
+        List.forall_mem_append] at hw₁_mem ⊢
+      refine ⟨⟨hw₁_mem.left.left, ?_⟩, hw₁_mem.right⟩
       intro a ha
       cases a
       · constructor
