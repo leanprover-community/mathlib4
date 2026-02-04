@@ -253,10 +253,9 @@ end Submartingale
 
 section Submartingale
 
-theorem submartingale_of_setIntegral_le [LinearOrder E] [OrderTopology E] [MeasurableSpace E]
-    [BorelSpace E] [HasSolidNorm E] [SecondCountableTopology E] [IsOrderedAddMonoid E]
-    [IsStrictOrderedModule ℝ E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E}
-    (hadp : StronglyAdapted ℱ f) (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,
+theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
+    {f : ι → Ω → ℝ} (hadp : StronglyAdapted ℱ f)
+    (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,
       i ≤ j → ∀ s : Set Ω, MeasurableSet[ℱ i] s → ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ) :
     Submartingale f ℱ μ := by
   refine ⟨hadp, fun i j hij => ?_, hint⟩
