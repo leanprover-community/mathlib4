@@ -318,13 +318,6 @@ theorem limUnder_nhdsWithin_id {x : X} {s : Set X} (h : x ∈ closure s) :
     @limUnder _ _ _ ⟨x⟩ (𝓝[s] x) id = x :=
   lim_nhdsWithin h
 
-lemma limUnder_eq_of_isEmpty {α β : Type*} [IsEmpty α] [Nonempty β] [TopologicalSpace β]
-    (a b : Filter α) (f : α → β) :
-    limUnder a f = limUnder b f := by
-  simp only [limUnder, lim]
-  congr with x
-  simp [filter_eq_bot_of_isEmpty]
-
 end limUnder
 
 /-!

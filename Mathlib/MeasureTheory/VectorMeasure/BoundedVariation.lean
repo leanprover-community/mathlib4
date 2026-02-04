@@ -265,7 +265,7 @@ theorem vectorMeasure_Iio (hf : BoundedVariationOn f univ) (a : α) :
 theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure univ = limUnder atTop f - limUnder atBot f := by
   rcases isEmpty_or_nonempty α with hα | hα
-  · simp [univ_eq_empty_iff.mpr hα, limUnder_eq_of_isEmpty (atTop : Filter α) atBot]
+  · simp [univ_eq_empty_iff.mpr hα, filter_eq_bot_of_isEmpty]
   rw [← Iio_union_Ici (a := hα.some), VectorMeasure.of_union (by simp) measurableSet_Iio
     measurableSet_Ici, hf.vectorMeasure_Iio, hf.vectorMeasure_Ici]
   abel
