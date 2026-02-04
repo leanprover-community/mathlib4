@@ -862,6 +862,7 @@ theorem hnot_hnot_le : ￢￢a ≤ a :=
 
 theorem hnot_anti : Antitone (hnot : α → α) := fun _ _ h => hnot_le_comm.1 <| hnot_hnot_le.trans h
 
+@[gcongr]
 theorem hnot_le_hnot (h : a ≤ b) : ￢b ≤ ￢a :=
   hnot_anti h
 
