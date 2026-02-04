@@ -64,8 +64,6 @@ lemma IsSubmersionAt.isRegularPoint (hf : IsSubmersionAt I J n f x) : IsRegularP
 
 end move
 
--- Should this include a differentiability assumption? Then
--- there is no need to manually also pass the `ContMDiff` below.
 variable (I J) in
 @[expose]
 def IsRegularValue (f : M → N) (y : N) := ∀ x ∈ f ⁻¹' {y}, IsRegularPoint I J f x
@@ -111,11 +109,16 @@ instance {y : N} (hy : IsRegularValue I J f y) : NormedSpace 𝕜 hy.Complement'
   sorry
 
 --- XXX(MR): do we really need _hf here?
-/-- The set `f ⁻¹' {f x}` coerced to a type that will be endowed with a manifold
-structure by the regular value theorem. -/
+/-- The set `f ⁻¹' y` coerced to a type that will be endowed with a manifold
+structure by the regular value theorem.
+
+Note: we want the hypotheses `hy` and `hf` to appear in the type of this definition,
+so the instance `immersedSubmanifold` mentions `hy` and `hf` somewhere. -/
+-- TODO: do we actually need CMDiff n f, or is CMDiffAt n f x (for each x) sufficient?
+-- That would be implied by y being a regular value...
 @[nolint unusedArguments, expose]
-abbrev Preimage {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) : Type _ :=
-  f ⁻¹' {f x}
+abbrev Preimage {y : N} (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) : Type _ :=
+  f ⁻¹' {y}
 
 /-
 --- XXX(MR): do we really need _hf here?
@@ -222,7 +225,7 @@ def immersedSubmanifold_aux [I.Boundaryless] {x : M} (hx : IsRegularValue I J f 
 /-- The **regular value theorem** for boundaryless manifolds, for any regular `y` of `f`. -/
 instance immersedSubmanifold [I.Boundaryless] {y : N} (hy : IsRegularValue I J f y)
     (hf : ContMDiff I J n f) :
-    -- hy.Preimage hf does not typecheck yet!
+    -- hy.modelWithCorners does not typecheck yet!
     ImmersedSubmanifold hy.modelWithCorners I (hy.Preimage hf) M n hy.Complement' := by
   sorry
 
