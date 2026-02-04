@@ -273,29 +273,6 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
 /-! ## Derivative of `integralCMLM` -/
 
 omit [CompleteSpace E] in
-/-- If `g` is `C^1` on an open set `u` and `h` provides uniform control on the derivative's
-variation near a point `x ∈ u`, then `g` is well-approximated by its derivative with error
-proportional to the displacement. -/
--- TODO: look at this and maybe add to Mathlib
-lemma norm_image_sub_fderiv_le {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    {g : E → F} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u)
-    {x y : E} {C δ : ℝ} (hxy : ‖y - x‖ < δ)
-    (h : ∀ z, dist x z < δ → z ∈ u ∧ dist (fderiv ℝ g x) (fderiv ℝ g z) < C) :
-    ‖g y - g x - (fderiv ℝ g x) (y - x)‖ ≤ C * ‖y - x‖ := by
-  apply Convex.norm_image_sub_le_of_norm_fderiv_le' _ _ (convex_segment x y)
-    (left_mem_segment ℝ x y) (right_mem_segment ℝ x y)
-  · intro z hz
-    apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
-    apply (h z _).1
-    apply (mem_closedBall'.mp (segment_subset_closedBall_left x y hz)).trans_lt
-    rwa [dist_comm, dist_eq_norm]
-  · intro z hz
-    rw [← dist_eq_norm, dist_comm]
-    apply (h z _).2.le
-    apply (mem_closedBall'.mp (segment_subset_closedBall_left x y hz)).trans_lt
-    rwa [dist_comm, dist_eq_norm]
-
-omit [CompleteSpace E] in
 -- TODO: add to Mathlib?
 lemma _root_.ContDiffOn.continuousOn_fderiv_uncurryLeft
     {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
@@ -358,25 +335,38 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
     (fun x hx ↦ hfderiv.continuousAt (hu.mem_nhds (hα hx))) hε'
   rw [Metric.eventually_nhds_iff]
   refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun α' hdist' ↦ ?_⟩
-  -- Combine the two conditions
-  have h : ∀ x ∈ range α, ∀ z, dist x z < min δ₁ δ₂ →
-      z ∈ u ∧ dist (fderiv ℝ g x) (fderiv ℝ g z) < ε' :=
-    fun x hx z hz ↦ ⟨hthick (mem_thickening_iff.mpr ⟨x, hx, dist_comm x z ▸
-      hz.trans_le (min_le_left _ _)⟩), hdist x hx z (hz.trans_le (min_le_right _ _))⟩
-  have hα' : range α' ⊆ u := fun _ ⟨t, ht⟩ ↦ ht ▸ (h (α t) (mem_range_self t) _ (by
+  have h1 : ∀ x ∈ range α, ∀ z, dist x z < min δ₁ δ₂ → z ∈ u := fun x hx z hz ↦
+    hthick (mem_thickening_iff.mpr ⟨x, hx, dist_comm x z ▸ hz.trans_le (min_le_left _ _)⟩)
+  have h2 : ∀ x ∈ range α, ∀ z, dist x z < min δ₁ δ₂ → ‖fderiv ℝ g x - fderiv ℝ g z‖ < ε' :=
+    fun x hx z hz ↦ hdist x hx z (hz.trans_le (min_le_right _ _))
+  have hα' : range α' ⊆ u := fun _ ⟨t, ht⟩ ↦ ht ▸ h1 (α t) (mem_range_self t) _ (by
     rw [dist_comm, dist_eq_norm]
-    exact (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt (dist_eq_norm α' α ▸ hdist'))).1
+    exact (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt (dist_eq_norm α' α ▸ hdist'))
   -- Reduce bound on `ContinuousLinearMap`s to a bound on elements of `E`
   refine norm_integralCMLM_sub_fderiv_le hg hu t₀ hα hα' hε fun t ↦ ?_
   calc
     _ = ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
         (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ α' t - compProj t₀ α t)‖ := by
       simp only [compProj, ContinuousMap.sub_apply]
-    _ ≤ ε' * ‖compProj t₀ α' t - compProj t₀ α t‖ := by
-      refine norm_image_sub_fderiv_le hg hu ?_ fun z hz ↦ h _ (mem_range_self _) z hz
-      exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist')
+    _ ≤ ε' * ‖compProj t₀ α' t - compProj t₀ α t‖ := ?_
     _ ≤ ε' * ‖α' - α‖ := by
       gcongr; exact ContinuousMap.norm_coe_le_norm (α' - α) _
+  -- Apply the mean value theorem
+  let x := compProj t₀ α t
+  let y := compProj t₀ α' t
+  have hseg : ∀ z ∈ segment ℝ x y, dist x z < min δ₁ δ₂ := fun z hz ↦ calc
+    dist x z ≤ dist x y := mem_closedBall'.mp (segment_subset_closedBall_left x y hz)
+    _ = ‖y - x‖ := dist_eq_norm' x y
+    _ ≤ ‖α' - α‖ := (α' - α).norm_coe_le_norm _
+    _ < min δ₁ δ₂ := dist_eq_norm α' α ▸ hdist'
+  apply (convex_segment x y).norm_image_sub_le_of_norm_fderiv_le' _ _
+    (left_mem_segment ℝ x y) (right_mem_segment ℝ x y)
+  · intro z hz
+    apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
+    exact h1 x (mem_range_self _) z (hseg z hz)
+  · intro z hz
+    rw [norm_sub_rev]
+    exact h2 x (mem_range_self _) z (hseg z hz) |>.le
 
 /-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
 `integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Uncurrying of multilinear maps
