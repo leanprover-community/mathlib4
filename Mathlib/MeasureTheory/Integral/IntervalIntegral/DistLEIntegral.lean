@@ -44,7 +44,8 @@ then `‖f b - f a‖ ≤ ∫ t in a..b, B t`.
 lemma norm_sub_le_integral_of_norm_deriv_le_of_le {B : ℝ → ℝ} (hab : a ≤ b)
     (hfc : ContinuousOn f (Icc a b)) (hfd : DifferentiableOn ℝ f (Ioo a b))
     (hfB : ∀ᵐ t, t ∈ Ioo a b → ‖deriv f t‖ ≤ B t)
-    (hBi : IntervalIntegrable B volume a b) : ‖f b - f a‖ ≤ ∫ t in a..b, B t := by
+    (hBi : IntervalIntegrable B volume a b) :
+    ‖f b - f a‖ ≤ ∫ t in a..b, B t := by
   -- WLOG, the codomain is a complete space.
   wlog hE : CompleteSpace E generalizing E
   · set g : ℝ → UniformSpace.Completion E := (↑) ∘ f with hg
@@ -52,8 +53,7 @@ lemma norm_sub_le_integral_of_norm_deriv_le_of_le {B : ℝ → ℝ} (hab : a ≤
       (UniformSpace.Completion.continuous_coe E).comp_continuousOn hfc
     have hgd : DifferentiableOn ℝ g (Ioo a b) :=
       UniformSpace.Completion.toComplL.differentiable.comp_differentiableOn hfd
-    have hdg : ∀ t ∈ Ioo a b, deriv g t = deriv f t := by
-      intro t ht
+    have hdg t (ht : t ∈ Ioo a b) : deriv g t = deriv f t := by
       have : HasFDerivAt (𝕜 := ℝ) (↑) UniformSpace.Completion.toComplL (f t) := by
         rw [← UniformSpace.Completion.coe_toComplL (𝕜 := ℝ)]
         exact (UniformSpace.Completion.toComplL (E := E) (𝕜 := ℝ)).hasFDerivAt
@@ -200,7 +200,8 @@ If $Df(x) = O(‖x - a‖ ^ r)$ as `x → a`, where `r ≥ 0`, and `f a = 0`,
 then $f(x) = O(‖x - a‖ ^ {r + 1})$ as `x → a`. -/
 theorem isBigO_norm_rpow_add_one_of_fderiv_of_apply_eq_zero (hr : 0 ≤ r)
     (hdf : ∀ᶠ x in 𝓝 a, DifferentiableAt ℝ f x) (hderiv : fderiv ℝ f =O[𝓝 a] (‖· - a‖ ^ r))
-    (hf₀ : f a = 0) : f =O[𝓝 a] (‖· - a‖ ^ (r + 1)) := by
+    (hf₀ : f a = 0) :
+    f =O[𝓝 a] (‖· - a‖ ^ (r + 1)) := by
   simpa [hf₀] using sub_isBigO_norm_rpow_add_one_of_fderiv hr hdf hderiv
 
 end NormedSpace
