@@ -60,7 +60,8 @@ structure ModuleCat where
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
 
-attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
+attribute [instance] ModuleCat.isAddCommGroup
+attribute [instance 1100] ModuleCat.isModule
 
 namespace ModuleCat
 
