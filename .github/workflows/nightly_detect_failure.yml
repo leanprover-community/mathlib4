@@ -35,12 +35,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Generate app token
+      id: app-token
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout code
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: nightly-testing # checkout nightly-testing branch
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
-        token: ${{ secrets.NIGHTLY_TESTING }}
+        token: ${{ steps.app-token.outputs.token }}
     - name: Update the nightly-testing-green branch
       continue-on-error: true
       run: |
@@ -80,12 +88,21 @@ jobs:
     - name: Cleanup workspace
       run: |
         sudo rm -rf -- *
+    - name: Generate lean-pr-testing app token
+      id: lean-pr-testing-token
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
+        owner: leanprover
+        repositories: lean4
     # Checkout the Lean repository on 'nightly-with-mathlib'
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Checkout Lean repository
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         repository: leanprover/lean4
-        token: ${{ secrets.LEAN_PR_TESTING }}
+        token: ${{ steps.lean-pr-testing-token.outputs.token }}
         ref: nightly-with-mathlib
     # Merge the relevant nightly.
     - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'
@@ -308,12 +325,12 @@ jobs:
       run: |
         sudo rm -rf -- *
     - name: Checkout Mathlib4 repository
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       if: steps.check_branch.outputs.result == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
         fetch-depth: 0 # checkout all branches
-        token: ${{ secrets.NIGHTLY_TESTING }}
+        token: ${{ steps.app-token.outputs.token }}
 
     - name: Attempt automatic PR creation
       id: auto_pr
@@ -323,7 +340,7 @@ jobs:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
-        GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       run: |
         echo "Current version: ${NIGHTLY}"

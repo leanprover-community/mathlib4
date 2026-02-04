@@ -321,7 +321,7 @@ instance : OrderBot (SupBotHom α β) where
   bot_le _ _ := bot_le
 
 @[simp]
-theorem coe_sup (f g : SupBotHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
+theorem coe_sup (f g : SupBotHom α β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
 @[simp]
@@ -471,7 +471,7 @@ instance : OrderTop (InfTopHom α β) where
   le_top _ _ := le_top
 
 @[simp]
-theorem coe_inf (f g : InfTopHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
+theorem coe_inf (f g : InfTopHom α β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
 @[simp]
