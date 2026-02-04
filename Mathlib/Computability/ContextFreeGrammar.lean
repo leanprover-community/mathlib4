@@ -731,20 +731,16 @@ private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
       (List.map Symbol.terminal w)) :
     w ∈ g₁.language := by
   apply w.filterMap_symbol_filterMap_terminal g₁g.projectNT ▸ g₁g.derives_filterMap hw
-  intro a ha
-  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rw [ha]
-  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₁.initial
+  simpa using
+    (ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal (G := g₁g) g₁.initial)
 
 private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial) : (g₁.union g₂).NT)]
       (List.map Symbol.terminal w)) :
     w ∈ g₂.language := by
   apply w.filterMap_symbol_filterMap_terminal g₂g.projectNT ▸ g₂g.derives_filterMap hw
-  intro a ha
-  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rw [ha]
-  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₂.initial
+  simpa using
+    (ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal (G := g₂g) g₂.initial)
 
 private lemma map_inl_injective : ((ContextFreeRule.map · (Option.some ∘ Sum.inl)) :
     ContextFreeRule T g₁.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))).Injective := by
