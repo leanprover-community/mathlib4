@@ -9,10 +9,6 @@ on:
       pr_branch_ref:
         type: string
         required: true
-      job_name_suffix:
-        type: string
-        required: false
-        default: ""
       runs_on:
         type: string
         required: true
@@ -27,7 +23,7 @@ env:
 
 jobs:
   build:
-    name: Build${{ inputs.job_name_suffix }}
+    name: Build
     runs-on: ${{ inputs.runs_on }}
     outputs:
       build-outcome: ${{ steps.build.outcome }}
@@ -599,7 +595,7 @@ jobs:
           master-branch/scripts/lean-pr-testing-comments.sh batteries
 
   post_steps:
-    name: Post-Build Step${{ inputs.job_name_suffix }}
+    name: Post-Build Step
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
@@ -678,7 +674,7 @@ jobs:
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.
   style_lint:
-    name: Lint style${{ inputs.job_name_suffix }}
+    name: Lint style
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
@@ -688,7 +684,7 @@ jobs:
           ref: ${{ inputs.pr_branch_ref }}
 
   final:
-    name: Post-CI job${{ inputs.job_name_suffix }}
+    name: Post-CI job
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:

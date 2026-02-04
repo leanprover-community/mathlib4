@@ -20,12 +20,12 @@ permissions:
 
 jobs:
   build:
+    name: ci (staging)
     if: ${{ github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing' }}
     uses: ./.github/workflows/build_template.yml
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_id }}
       pr_branch_ref: ${{ github.sha }}
-      job_name_suffix: ""
       # We don't wan't 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
     secrets: inherit
