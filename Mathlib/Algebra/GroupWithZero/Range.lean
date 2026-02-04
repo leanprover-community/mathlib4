@@ -216,6 +216,9 @@ lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ 
 
 open Function
 
+lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict₀ f) :=
+  fun _ ↦ mem_range.mp (by simp [ValueGroup₀.restrict₀_range_eq_top])
+
 variable [DecidablePred fun b : B ↦ b = 0]
 
 open Function
