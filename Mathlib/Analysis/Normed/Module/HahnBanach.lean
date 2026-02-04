@@ -141,44 +141,46 @@ section Seminormed
 
 variable {E : Type u} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+/-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
+element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
+theorem exists_dual_vector (x : E) (h : ‖x‖ ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
+  have hnz : x ≠ 0 := by intro; simp_all -- easier? add to Analysis.Normed.Group.Basic?
+  have hnp : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) h.symm
+  have h_homothety := LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x hnz
+  let coord : span 𝕜 {x} →L[𝕜] 𝕜 := (ofHomothety _ _ hnp h_homothety).symm.toContinuousLinearMap
+  obtain ⟨g, hg⟩ := exists_extension_norm_eq (span 𝕜 {x}) ((‖x‖ : 𝕜) • coord)
+  have hr : g x = ↑‖x‖ := by
+    have hgx : g x = g (⟨x, by simp⟩ : span 𝕜 {x}) := by rw [Submodule.coe_mk]
+    have hcx : coord ⟨x, _⟩ = 1 := LinearEquiv.coord_self 𝕜 E x hnz
+    simp [-algebraMap_smul, hgx, ↓hg.left, hcx]
+  refine ⟨g, le_antisymm ?_ ?_, hr⟩
+  · simp only [hg.right, norm_smul, norm_algebraMap', norm_norm]
+    grw [coord.opNorm_le_bound (by positivity)
+      (fun y ↦ (homothety_inverse _ hnp _ h_homothety y).le), mul_inv_cancel₀ h]
+  · have hle := g.le_opNorm x
+    simp only [hr, norm_algebraMap', norm_norm] at hle
+    exact one_le_of_le_mul_right₀ (by positivity) hle
+
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
 the dual element has norm at most `1` (this cannot be improved for the trivial
-vector space). Valid for seminormed spaces. -/
+vector space). -/
 theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
-  by_cases hx : 0 < ‖x‖
-  · have hnz : x ≠ 0 := by intro; simp_all
-    have h_homothety := LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x hnz
-    let coord : span 𝕜 {x} →L[𝕜] 𝕜 := (ofHomothety _ _ hx h_homothety).symm.toContinuousLinearMap
-    obtain ⟨g, hg⟩ := exists_extension_norm_eq (span 𝕜 {x}) ((‖x‖ : 𝕜) • coord)
-    refine ⟨g, ?_, ?_⟩
-    · simp only [hg.right, norm_smul, norm_algebraMap', norm_norm]
-      grw [coord.opNorm_le_bound (by positivity)
-        (fun y ↦ (homothety_inverse _ hx _ h_homothety y).le), mul_inv_cancel₀ hx.ne']
-    · have hgx : g x = g (⟨x, by simp⟩ : span 𝕜 {x}) := by rw [Submodule.coe_mk]
-      have hcx : coord ⟨x, _⟩ = 1 := LinearEquiv.coord_self 𝕜 E x hnz
-      simp [-algebraMap_smul, hgx, ↓hg.left, hcx]
-  · exact ⟨0, by simp, by simp [le_antisymm (not_lt.mp hx) (norm_nonneg x)]⟩
+  by_cases hx : ‖x‖ = 0
+  · exact ⟨0, by simp, by simp [hx]⟩
+  · obtain ⟨g, hg⟩ := exists_dual_vector 𝕜 x hx
+    exact ⟨g, hg.left.le, hg.right⟩
 
 end Seminormed
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-/-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
-element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
-theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
-  obtain ⟨g, hg⟩ := exists_dual_vector'' 𝕜 x
-  refine ⟨g, le_antisymm hg.left ?_, hg.right⟩
-  have hle := g.le_opNorm x
-  simp only [hg.right, norm_algebraMap', norm_norm] at hle
-  exact one_le_of_le_mul_right₀ (by positivity) hle
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
 the dual element arbitrarily when `x = 0`. -/
 theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   by_cases hx : x = 0
   · obtain ⟨y, hy⟩ := exists_ne (0 : E)
-    obtain ⟨g, hg⟩ := exists_dual_vector 𝕜 y hy
+    obtain ⟨g, hg⟩ := exists_dual_vector 𝕜 y (norm_ne_zero_iff.mpr hy)
     exact ⟨g, hg.left, by simp [hx]⟩
-  · exact exists_dual_vector 𝕜 x hx
+  · exact exists_dual_vector 𝕜 x (norm_ne_zero_iff.mpr hx)
 
 end DualVector
