@@ -295,13 +295,22 @@ theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
     isLittleO_pure, ContinuousLinearMap.zero_apply, sub_self]
 
 @[fun_prop]
+theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
+    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
+  by_cases hs : s = ∅
+  · simp [hs]
+  · obtain ⟨a, rfl⟩ := exists_eq_singleton_iff_nonempty_subsingleton (s := s)|>.mpr
+      ⟨by rwa [nonempty_iff_ne_empty], subsingleton_of_subsingleton⟩
+    exact HasFDerivWithinAt.singleton
+
+@[fun_prop]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
     HasFDerivAt f (0 : E →L[𝕜] F) x := by
   rw [← hasFDerivWithinAt_univ, subsingleton_univ.eq_singleton_of_mem (mem_univ x)]
   exact hasFDerivWithinAt_singleton f x
 
-@[fun_prop]
-theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
+theorem differentiable_of_subsingleton [Subsingleton E] {f : E → F} : Differentiable 𝕜 f :=
+  fun x ↦ (hasFDerivAt_of_subsingleton f x (𝕜 := 𝕜)).differentiableAt
 
 @[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
