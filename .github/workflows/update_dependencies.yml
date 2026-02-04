@@ -12,11 +12,19 @@ jobs:
     env:
       BRANCH_NAME: "update-dependencies-bot-use-only"
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_PRIVATE_KEY }}
+
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Configure Lean
         uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
@@ -116,8 +124,7 @@ jobs:
         if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
-          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
-          author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
+          token: ${{ steps.app-token.outputs.token }}
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
           # this branch is referenced in update_dependencies_zulip.yml
           branch: ${{ env.BRANCH_NAME }}
