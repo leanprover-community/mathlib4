@@ -685,7 +685,7 @@ variable {A : Type*} [Fintype A]
 variable {G : Type*}
 
 /-- Patterns with support exactly `U` form a finite set. -/
-lemma finite_patterns_with_support
+lemma finite_setOf_pattern_support_eq
     {A G : Type*} [Fintype A]
     (U : Finset G) :
     ({ p : Pattern A G | p.support = U } : Set (Pattern A G)).Finite := by
