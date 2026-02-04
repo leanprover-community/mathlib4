@@ -127,3 +127,54 @@ def IsManifold.locallyRingedSpace : LocallyRingedSpace where
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
+
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+  {EM : Type u} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
+  {HM : Type u} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
+  {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
+
+def ModelWithCorners.locallyRingedSpace : LocallyRingedSpace.{u} :=
+  IsManifold.locallyRingedSpace IM HM
+
+namespace AlgebraicGeometry
+
+--def LocallyRingedSpace.LocallyIsomorphic (X Y : LocallyRingedSpace.{u}) : Prop :=
+--  ∀ x : X, ∃ (U : Opens X) (_ : x ∈ U) (V : Opens Y),
+--    Nonempty (X.restrict U.isOpenEmbedding ≅ Y.restrict V.isOpenEmbedding)
+
+class LocallyRingedSpace.IsManifold (H : ModelWithCorners 𝕜 EM HM) (X : LocallyRingedSpace.{u}) :
+    Prop where
+  forall_exists_restrict_iso (H) : ∀ x : X, ∃ (U : Opens X) (_ : x ∈ U) (V : Opens HM),
+    Nonempty (X.restrict U.isOpenEmbedding ≅ IsManifold.locallyRingedSpace H V)
+
+namespace LocallyRingedSpace.IsManifold
+
+variable {H : ModelWithCorners 𝕜 EM HM}
+
+variable (H) in
+def modelOpenAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) : Opens X :=
+  (forall_exists_restrict_iso H x).choose
+
+lemma mem_modelOpenAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) : x ∈ modelOpenAt H X x :=
+  (forall_exists_restrict_iso H x).choose_spec.choose
+
+variable (H) in
+def openModelAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) : Opens HM :=
+  (forall_exists_restrict_iso H x).choose_spec.choose_spec.choose
+
+def restrictIsoAt (X : LocallyRingedSpace) [X.IsManifold H] (x : X) :
+    X.restrict (modelOpenAt H X x).isOpenEmbedding ≅
+      IsManifold.locallyRingedSpace H (openModelAt H X x) :=
+  (forall_exists_restrict_iso H x).choose_spec.choose_spec.choose_spec.some
+
+def chartedSpace (X : LocallyRingedSpace) [X.IsManifold H] :
+    ChartedSpace HM X where
+  atlas := sorry
+  chartAt x :=
+    sorry
+  mem_chart_source := sorry
+  chart_mem_atlas := sorry
+
+end LocallyRingedSpace.IsManifold
+
+end AlgebraicGeometry
