@@ -483,7 +483,7 @@ instance _root_.Order.PFilter.instLattice [SemilatticeInf P] [IsDirectedOrder P]
     inf_le_right := fun I _ j hj ↦
       let ⟨w, hw⟩ := I.nonempty
       ⟨w, hw, j, hj, inf_le_right⟩
-    le_inf := fun K _ _ hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦ 
+    le_inf := fun K _ _ hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
       K.upper ha <| PFilter.inf_mem (PFilter.mem_of_mem_of_le hi hIK)
         (PFilter.mem_of_mem_of_le hj hJK) }
 
