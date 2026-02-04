@@ -756,92 +756,46 @@ This lemma packages the Picard-Lindelöf construction in a filter-friendly form:
 a neighborhood, and the lemma returns an integral curve staying within that neighborhood. -/
 lemma exists_integralCurve_T_eq_zero {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) {u : Set E} (hu : u ∈ 𝓝 x₀) (hfu : ContinuousOn f u) :
-    ∃ (ε : ℝ) (hε : 0 < ε), ∃ α : C(Icc (t₀ - ε) (t₀ + ε), E),
+    ∃ (ε : ℝ) (hε : 0 < ε) (α : C(Icc (t₀ - ε) (t₀ + ε), E)),
       range α ⊆ u ∧ T f u ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 := by
   -- Get Picard-Lindelöf parameters from the C^1 condition
   obtain ⟨ε₀, hε₀pos, a, r, L, K, hrpos, hPL⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
-  -- a > 0 since r > 0 and a ≥ r (from mul_max_le)
   have hapos : (0 : ℝ) < a := by
-    have h := hPL.mul_max_le; simp only at h
-    have hL : (0 : ℝ) ≤ L := L.2
-    have hmax : 0 < max (t₀ + ε₀ - t₀) (t₀ - (t₀ - ε₀)) := by simp; linarith
+    have := hPL.mul_max_le; simp only [add_sub_cancel_left, sub_sub_cancel, max_self] at this
+    have hLε : (0 : ℝ) ≤ L * ε₀ := by positivity
     have hrpos' : (0 : ℝ) < r := hrpos
-    nlinarith
+    linarith
   -- Extract a ball from the neighborhood u
   obtain ⟨δ, hδpos, hδ_sub⟩ := Metric.mem_nhds_iff.mp hu
   -- Choose a_small to fit inside both the Picard-Lindelöf ball and u
   have ha_pos_real : 0 < min ((a : ℝ) / 2) (δ / 2) := lt_min (by linarith) (by linarith)
-  set a_small : ℝ≥0 := ⟨min (a / 2) (δ / 2), le_of_lt ha_pos_real⟩ with ha_small_def
+  set a_small : ℝ≥0 := ⟨min (a / 2) (δ / 2), le_of_lt ha_pos_real⟩
   have ha_small_pos : 0 < a_small := ha_pos_real
-  have ha_small_lt_a : (a_small : ℝ) < a := (min_le_left _ _).trans_lt (by linarith)
+  have ha_small_le_a : a_small ≤ a := (min_le_left (α := ℝ) _ _).trans (half_le_self (by linarith))
   have ha_small_lt_δ : (a_small : ℝ) < δ := (min_le_right _ _).trans_lt (by linarith)
-  -- Choose ε small enough: ε ≤ ε₀ and L * ε < a_small
-  set ε := min (ε₀ / 2) ((a_small : ℝ) / (L + 1)) with hε_def
-  have hεpos : 0 < ε := by
-    apply lt_min (by linarith)
-    exact div_pos (NNReal.coe_pos.mpr ha_small_pos) (by positivity)
-  have hε_le_ε₀ : ε ≤ ε₀ := (min_le_left _ _).trans (by linarith)
-  have hLε_lt_a_small : (L : ℝ) * ε < a_small := by
-    have hapos' : (0 : ℝ) < a_small := NNReal.coe_pos.mpr ha_small_pos
-    calc (L : ℝ) * ε
-      _ ≤ L * ((a_small : ℝ) / (L + 1)) := by gcongr; exact min_le_right _ _
-      _ = L * a_small / (L + 1) := by ring
-      _ < a_small := by
-        rcases eq_or_lt_of_le L.2 with hL | hL
-        · have : (L : ℝ) = 0 := hL.symm; simp only [this, zero_mul, zero_div, hapos']
-        · have hLnonneg : (0 : ℝ) ≤ L := L.2
-          have hLpos1 : (0 : ℝ) < (L : ℝ) + 1 := by linarith
-          have hLne : (L : ℝ) + 1 ≠ 0 := ne_of_gt hLpos1
-          field_simp [hLne]
-          nlinarith
-  -- Shrink Picard-Lindelöf to the smaller time interval with r = 0 and smaller a_small
-  have hPL' : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
-      ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a_small 0 L K := by
-    have hPL_shrink : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
-        ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a r L K :=
-      hPL.mono_time _ (by rfl) (by linarith) (by linarith)
-    refine IsPicardLindelof.of_time_independent ?_ ?_ ?_
-    · intro x hx
-      apply hPL_shrink.norm_le t₀ (by simp [le_of_lt hεpos]) x
-      exact closedBall_subset_closedBall (le_of_lt ha_small_lt_a) hx
-    · apply (hPL_shrink.lipschitzOnWith t₀ (by simp [le_of_lt hεpos])).mono
-      exact closedBall_subset_closedBall (le_of_lt ha_small_lt_a)
-    · simp only [NNReal.coe_zero, sub_zero, add_sub_cancel_left, sub_sub_cancel, max_self]
-      exact le_of_lt hLε_lt_a_small
+  -- Shrink Picard-Lindelöf to a smaller time interval with r = 0 and smaller a_small
+  obtain ⟨ε, hεpos, hPL'⟩ := hPL.exists_shrink_radius hε₀pos ha_small_le_a ha_small_pos
   -- Get the fixed point (integral curve) from Picard-Lindelöf
-  have hx₀ : x₀ ∈ closedBall x₀ (0 : ℝ≥0) := mem_closedBall_self le_rfl
-  obtain ⟨α_fun, hα_fixed⟩ := ODE.FunSpace.exists_isFixedPt_next hPL' hx₀
-  -- Show α t ∈ ball x₀ a_small for all t
-  have hα_ball : ∀ t, α_fun t ∈ ball x₀ a_small := fun t ↦ by
-    rw [mem_ball, dist_eq_norm]
+  obtain ⟨α_fun, hα_fixed⟩ :=
+    ODE.FunSpace.exists_isFixedPt_next hPL' (mem_closedBall_self le_rfl)
+  -- Show α t ∈ closedBall x₀ a_small for all t (using Lipschitz bound and r = 0)
+  have hLε : (L : ℝ) * ε ≤ a_small := by simpa using hPL'.mul_max_le
+  have hα_closedBall : ∀ t, α_fun t ∈ closedBall x₀ a_small := fun t ↦ by
+    have hα₀ : α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩ = x₀ := by
+      simpa [dist_le_zero] using α_fun.mem_closedBall₀
+    rw [mem_closedBall, dist_eq_norm]
     calc ‖α_fun t - x₀‖
-        ≤ ‖α_fun t - α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩‖ +
-            ‖α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩ - x₀‖ :=
-          norm_sub_le_norm_sub_add_norm_sub ..
-      _ ≤ L * |t.1 - t₀| + 0 := by
-          apply add_le_add
-          · rw [← dist_eq_norm]; exact α_fun.lipschitzWith.dist_le_mul t _
-          · have := α_fun.mem_closedBall₀
-            simp only [NNReal.coe_zero, mem_closedBall] at this
-            rw [dist_le_zero.mp this, sub_self, norm_zero]
-      _ ≤ L * max ((t₀ + ε) - t₀) (t₀ - (t₀ - ε)) := by
-          simp only [add_zero]
-          gcongr
-          exact abs_sub_le_max_sub t.2.1 t.2.2 _
-      _ < a_small := by
-          simp only [add_sub_cancel_left, sub_sub_cancel, max_self]; exact hLε_lt_a_small
-  -- The range is contained in ball x₀ δ ⊆ u
-  set α := α_fun.toContinuousMap with hα_def
+      _ ≤ ‖α_fun t - α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩‖ := by simp [hα₀]
+      _ ≤ L * |t.1 - t₀| := by rw [← dist_eq_norm]; exact α_fun.lipschitzWith.dist_le_mul t _
+      _ ≤ L * ε := by gcongr; simpa using abs_sub_le_max_sub t.2.1 t.2.2 t₀
+      _ ≤ a_small := hLε
+  -- The range is contained in closedBall x₀ a_small ⊆ ball x₀ δ ⊆ u
+  set α := α_fun.toContinuousMap
   have hα_range : range α ⊆ u := by
-    intro y hy
-    obtain ⟨t, ht⟩ := hy
-    rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
-    apply hδ_sub
-    exact ball_subset_ball (le_of_lt ha_small_lt_δ) (hα_ball t)
-  -- T = 0
-  have hT_zero : T f u ⟨t₀, by simp [le_of_lt hεpos]⟩ (x₀, α) = 0 :=
-    T_eq_zero_of_isFixedPt_next hfu hPL' hα_range hα_fixed
-  exact ⟨ε, hεpos, α, hα_range, hT_zero⟩
+    rintro _ ⟨t, rfl⟩
+    rw [ODE.FunSpace.toContinuousMap_apply_eq_apply]
+    exact hδ_sub (closedBall_subset_ball ha_small_lt_δ (hα_closedBall t))
+  exact ⟨ε, hεpos, α, hα_range, T_eq_zero_of_isFixedPt_next hfu hPL' hα_range hα_fixed⟩
 
 /-! ## Derivative of `T` -/
 
