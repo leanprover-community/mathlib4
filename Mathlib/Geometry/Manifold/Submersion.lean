@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.RegularPoint
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 
@@ -190,6 +191,13 @@ theorem contMDiffAt (h : IsSubmersionAtOfComplement F I J n f x) : ContMDiffAt I
 
 -- TODO: add characterisation in terms of the differential admitting a bounded right inverse!
 
+lemma isRegularPoint (hf : IsSubmersionAt I J n f x) : IsRegularPoint I J f x := by
+  sorry
+
+lemma IsRegularPoint.isSubmersionAt (hx : IsRegularPoint I J f x) :
+    IsSubmersionAt I J n f x := by
+  sorry
+
 end IsSubmersionAt
 
 variable (F I J n) in
@@ -328,6 +336,15 @@ theorem contMDiff (h : IsSubmersion I J n f) : ContMDiff I J n f :=
 
 -- TODO: add characterisation in terms of the differential admitting a bounded right inverse,
 -- the the composition property
+
+lemma of_isRegularPoint (hf : ∀ x, IsRegularPoint I J f x) : IsSubmersion I J n f := by
+  -- TODO think: do we get a global submersion, or just "IsSubmersionAt" for all x?
+  sorry
+
+lemma of_mfderiv_surjective_of_finiteDimensional
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E''] (hf : ∀ x, Surjective (mfderiv I J f x)) :
+    IsSubmersion I J n f :=
+  of_isRegularPoint <| fun x ↦ IsRegularPoint.of_surjective_of_finiteDimensional (hf x)
 
 end IsSubmersion
 

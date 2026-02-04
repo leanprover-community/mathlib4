@@ -63,29 +63,6 @@ public noncomputable section
 
 variable {f : M → N}
 
-section move
-
-variable {x : M}
-
-lemma IsRegularPoint.isSubmersionAt (hx : IsRegularPoint I J f x) :
-    IsSubmersionAt I J n f x := by
-  sorry
-
-lemma IsSubmersionAt.isRegularPoint (hf : IsSubmersionAt I J n f x) : IsRegularPoint I J f x := by
-  sorry
-
-lemma IsSubmersion.of_isRegularPoint (hf : ∀ x, IsRegularPoint I J f x) :
-    IsSubmersion I J n f := by
-  -- TODO think: do we get a global submersion, or just "IsSubmersionAt" for all x?
-  sorry
-
-lemma IsSubmersion.of_mfderiv_surjective_of_finiteDimensional
-    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E₃] (hf : ∀ x, Surjective (mfderiv I J f x)) :
-    IsSubmersion I J n f :=
-  of_isRegularPoint <| fun x ↦ IsRegularPoint.of_surjective_of_finiteDimensional (hf x)
-
-end move
-
 variable (I J) in
 @[expose]
 def IsRegularValue (f : M → N) (y : N) := ∀ x ∈ f ⁻¹' {y}, IsRegularPoint I J f x
