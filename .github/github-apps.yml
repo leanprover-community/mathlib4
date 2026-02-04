@@ -149,6 +149,7 @@ apps:
           - nightly_merge_master.yml
       - repo: leanprover-community/batteries
         files:
+          - discover-lean-pr-testing.yml
           - nightly_bump_toolchain.yml
           - nightly_detect_failure.yml
           - nightly_merge_master.yml
