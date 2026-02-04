@@ -11,7 +11,28 @@ public import Mathlib.Geometry.Manifold.Submersion
 
 /-! # The regular value theorem
 
-to be written!
+TODO: flesh out this doc-string; a few notes
+
+- general version, for a regular value
+- specialisation for finite dimensions (over a complete field): differential is surjective
+
+- constant rank theorem: rank of the differential is constant
+
+Full sorry-free statements require ironing out the definition of immersed and embedded submanifolds.
+
+## Implementation notes
+
+* currently, all statements assume a boundaryless manifold: in that case, the proof essentially
+  follows from the characterisation of submersions by a split differential
+* for manifolds with boundary, the statement and proof need to be adapted: the regular value `y`
+  should be an interior point of the target, and we also require `y` to be a regular value of
+  `f` restricted to the boundary. (This only makes sense if the boundary of `M` is a smooth
+  manifold; for corners, even more care is needed.)
+  Formalising this will require a notion of manifolds with smooth boundary and no corners
+  (which is being worked on).
+  In the medium-term, this theorem may be proven separately for particular models with boundary.
+  Mathlib's definition of manifolds with boundary and corners might be too general to easily handle.
+
 -/
 
 public section
@@ -37,15 +58,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {n : WithTop ℕ∞}
   {F F' : Type u} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-
-/-
-
-Finite-dimensional versions:
-- constant rank theorem; differential has constant rank
-- standard version: differential is surjective everyhere
-- conceptual version: differential (is surjective and) has a bounded right inverse
-
--/
 
 public noncomputable section
 
