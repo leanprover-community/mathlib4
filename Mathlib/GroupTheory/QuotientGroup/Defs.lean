@@ -291,11 +291,11 @@ noncomputable def liftEquiv {φ : G →* H} (hφ : Function.Surjective φ)
       lift_surjective_of_surjective N φ hφ HN.le⟩
 
 @[to_additive (attr := simp)]
-theorem liftEquiv_mk {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
+theorem liftEquiv_coe {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
     liftEquiv N hφ HN (g : Q) = φ g := rfl
 
 @[to_additive (attr := simp)]
-theorem liftEquiv_mk' {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
+theorem liftEquiv_mk {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
     liftEquiv N hφ HN (mk g : Q) = φ g := rfl
 
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
