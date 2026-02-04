@@ -143,11 +143,9 @@ theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (
 instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
   PartialOrder.lift SetLike.coe SetLike.coe_injective
 
-@[deprecated SetLike.coe_subset_coe (since := "2026-02-03")]
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
 
-@[deprecated SetLike.coe_ssubset_coe (since := "2026-02-03")]
 theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
 
@@ -446,9 +444,8 @@ theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
 instance : CompleteLattice (Ideal P) :=
   { (inferInstance : Lattice (Ideal P)),
     completeLatticeOfInf (Ideal P) fun S ↦ by
-      refine ⟨fun s hs ↦ ?_, fun s hs ↦ by
-        rwa [← SetLike.coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
-      rw [← SetLike.coe_subset_coe, coe_sInf]
+      refine ⟨fun s hs ↦ ?_, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
+      rw [← coe_subset_coe, coe_sInf]
       exact biInter_subset_of_mem hs with }
 
 end SemilatticeSupOrderBot
