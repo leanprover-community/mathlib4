@@ -142,7 +142,7 @@ theorem _root_.HasCompactSupport.convolution_integrand_bound_right (hcg : HasCom
 
 theorem _root_.Continuous.convolution_integrand_fst [ContinuousSub G] (hg : Continuous g) (t : G) :
     Continuous fun x => L (f t) (g (x - t)) :=
-  L.continuous₂.comp₂ continuous_const <| hg.comp <| continuous_id.sub continuous_const
+  L.continuous₂.comp₂ continuous_const <| by fun_prop
 
 theorem _root_.HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupport f)
     (hf : Continuous f) {x t : G} {s : Set G} (hx : x ∈ s) :
@@ -285,7 +285,7 @@ theorem Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable
   refine Integrable.mono' ?_ h2_meas
       (Eventually.of_forall fun t => (?_ : _ ≤ ‖L‖ * ‖f t‖ * ∫ x, ‖g (x - t)‖ ∂μ))
   · simp only [integral_sub_right_eq_self (‖g ·‖)]
-    exact (hf.norm.const_mul _).mul_const _
+    fun_prop
   · simp_rw [← integral_const_mul]
     rw [Real.norm_of_nonneg (by positivity)]
     exact integral_mono_of_nonneg (Eventually.of_forall fun t => norm_nonneg _)
@@ -618,12 +618,10 @@ theorem _root_.BddAbove.continuous_convolution_right_of_integrable
   have : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t : G ∂μ, ‖L (f t) (g (x - t))‖ ≤ ‖L‖ * ‖f t‖ * ⨆ i, ‖g i‖ := by
     filter_upwards with x; filter_upwards with t
     apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
-  refine continuousAt_of_dominated ?_ this ?_ ?_
+  refine continuousAt_of_dominated ?_ this (by fun_prop) ?_
   · exact Eventually.of_forall fun x =>
       hf.aestronglyMeasurable.convolution_integrand_snd' L hg.aestronglyMeasurable
-  · exact (hf.norm.const_mul _).mul_const _
-  · exact Eventually.of_forall fun t => (L.continuous₂.comp₂ continuous_const <|
-      hg.comp <| continuous_id.sub continuous_const).continuousAt
+  · filter_upwards with t; fun_prop
 
 end Group
 
@@ -896,15 +894,13 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
       (μ.prod ν) := by
     refine L₃.aestronglyMeasurable_comp₂ hf.comp_snd ?_
     refine L₄.aestronglyMeasurable_comp₂ hg.comp_fst ?_
-    refine (hk.mono_ac ?_).comp_measurable
-      ((measurable_const.sub measurable_snd).sub measurable_fst)
+    refine (hk.mono_ac ?_).comp_measurable (by fun_prop)
     refine QuasiMeasurePreserving.absolutelyContinuous ?_
-    refine QuasiMeasurePreserving.prod_of_left
-      ((measurable_const.sub measurable_snd).sub measurable_fst) (Eventually.of_forall fun y => ?_)
+    refine QuasiMeasurePreserving.prod_of_left (by fun_prop) (Eventually.of_forall fun y => ?_)
     dsimp only
     exact quasiMeasurePreserving_sub_left_of_right_invariant μ _
   have h2_meas :
-    AEStronglyMeasurable (fun y => ∫ x, ‖L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))‖ ∂μ) ν :=
+      AEStronglyMeasurable (fun y => ∫ x, ‖L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))‖ ∂μ) ν :=
     h_meas.prod_swap.norm.integral_prod_right'
   have h3 : map (fun z : G × G => (z.1 - z.2, z.2)) (μ.prod ν) = μ.prod ν :=
     (measurePreserving_sub_prod μ ν).map_eq

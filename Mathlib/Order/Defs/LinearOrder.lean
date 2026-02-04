@@ -236,4 +236,27 @@ instance : Std.LawfulBCmp (compare (α := α)) where
 
 end Ord
 
+/-- The category of linear orders.
+
+This will get reused to define `OrderType`. -/
+structure LinOrd where
+  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying linearly ordered type. -/
+  (carrier : Type*)
+  [str : LinearOrder carrier]
+
+attribute [instance] LinOrd.str
+
+initialize_simps_projections LinOrd (carrier → coe, -str)
+
+namespace LinOrd
+
+instance : CoeSort LinOrd (Type _) :=
+  ⟨LinOrd.carrier⟩
+
+attribute [coe] LinOrd.carrier
+
+end LinOrd
+
 end LinearOrder
