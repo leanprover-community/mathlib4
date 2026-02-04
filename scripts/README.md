@@ -145,6 +145,14 @@ to learn about it as well!
 **Version tag verification**
 - `verify_version_tags.py` verifies that Mathlib version tags are correctly published across git, GitHub, elan toolchains, and build cache.
 
+**GitHub App management**
+- `validate-github-apps.sh`
+  Validates the GitHub Apps configuration in `.github/github-apps.yml` against actual GitHub state.
+  Checks that apps exist with expected IDs, are installed and not suspended, required secrets exist
+  in each repository, and workflow files reference the correct secrets. Also warns about any
+  undocumented `MATHLIB_*` secrets. Run manually or via the weekly `validate-github-apps.yml` workflow.
+  Requires `gh`, `yq`, and `jq` installed.
+
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`
   Prints information on certain kind of technical debt in Mathlib.

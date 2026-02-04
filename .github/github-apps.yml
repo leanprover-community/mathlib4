@@ -1,0 +1,222 @@
+# GitHub Apps used by mathlib4 and related repositories
+#
+# This file documents all GitHub Apps, their secrets, and which workflows use them.
+# Run `.github/scripts/validate-github-apps.sh` to verify this configuration.
+#
+# To add a new app:
+# 1. Create the app at https://github.com/organizations/{org}/settings/apps
+# 2. Note the App ID from the app settings page
+# 3. Generate a private key and add both secrets to the repository
+# 4. Add the app configuration below
+# 5. Run the validation script to verify
+
+apps:
+  # ============================================================================
+  # mathlib-merge-conflicts
+  # Labels PRs with `merge-conflict` and posts a reminder comment
+  # ============================================================================
+  mathlib-merge-conflicts:
+    id: 2784000
+    org: leanprover-community
+    settings_url: https://github.com/organizations/leanprover-community/settings/apps/mathlib-merge-conflicts
+    description: Labels mathlib4 PRs that have merge conflicts and posts a reminder comment
+    permissions:
+      pull_requests: write
+
+    secrets:
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_MERGE_CONFLICTS_APP_ID
+        private_key: MATHLIB_MERGE_CONFLICTS_PRIVATE_KEY
+      - repo: leanprover-community/batteries
+        app_id: MATHLIB_MERGE_CONFLICTS_APP_ID
+        private_key: MATHLIB_MERGE_CONFLICTS_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files: [merge_conflicts.yml]
+      - repo: leanprover-community/batteries
+        files: [merge_conflicts.yml]
+
+  # ============================================================================
+  # mathlib-dependent-issues
+  # Tracks `- [ ] depends on:` syntax and adds `blocked-by-other-PR` label
+  # ============================================================================
+  mathlib-dependent-issues:
+    id: 2784145
+    org: leanprover-community
+    settings_url: https://github.com/organizations/leanprover-community/settings/apps/mathlib-dependent-issues
+    description: "Tracks PR dependencies using - [ ] depends on: syntax and adds the blocked-by-other-PR label"
+    permissions:
+      pull_requests: write
+
+    secrets:
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_DEPENDENT_ISSUES_APP_ID
+        private_key: MATHLIB_DEPENDENT_ISSUES_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files: [dependent-issues.yml]
+
+  # ============================================================================
+  # mathlib-nolints
+  # Weekly nolints.json updates and deprecated declaration removal
+  # ============================================================================
+  mathlib-nolints:
+    id: 2784168
+    org: leanprover-community
+    settings_url: https://github.com/organizations/leanprover-community/settings/apps/mathlib-nolints
+    description: Weekly updates to nolints.json
+    permissions:
+      contents: write
+      pull_requests: write
+
+    secrets:
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_NOLINTS_APP_ID
+        private_key: MATHLIB_NOLINTS_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files: [nolints.yml, remove_deprecated_decls.yml]
+
+  # ============================================================================
+  # mathlib-update-dependencies
+  # Hourly dependency updates
+  # ============================================================================
+  mathlib-update-dependencies:
+    id: 2784189
+    org: leanprover-community
+    settings_url: https://github.com/organizations/leanprover-community/settings/apps/mathlib-update-dependencies
+    description: Hourly dependency updates via lake update
+    permissions:
+      contents: write
+      pull_requests: write
+      issues: write
+
+    secrets:
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_UPDATE_DEPENDENCIES_APP_ID
+        private_key: MATHLIB_UPDATE_DEPENDENCIES_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files: [update_dependencies.yml, update_dependencies_zulip.yml]
+
+  # ============================================================================
+  # mathlib-nightly-testing
+  # Nightly toolchain bumps, merge master to nightly, Lean PR testing
+  # Note: Installed as "Any account" to allow cross-org installation on cslib
+  # ============================================================================
+  mathlib-nightly-testing:
+    id: 2784211
+    org: leanprover-community
+    settings_url: https://github.com/organizations/leanprover-community/settings/apps/mathlib-nightly-testing
+    description: Nightly toolchain bumps and master merges for mathlib4-nightly-testing
+    installation: any_account  # Allows cross-org installation
+    permissions:
+      contents: write
+      pull_requests: write
+      workflows: write
+
+    secrets:
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_NIGHTLY_TESTING_APP_ID
+        private_key: MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY
+      - repo: leanprover-community/batteries
+        app_id: MATHLIB_NIGHTLY_TESTING_APP_ID
+        private_key: MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY
+      - repo: leanprover/cslib
+        app_id: MATHLIB_NIGHTLY_TESTING_APP_ID
+        private_key: MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files:
+          - discover-lean-pr-testing.yml
+          - nightly_bump_toolchain.yml
+          - nightly_detect_failure.yml
+          - nightly_merge_master.yml
+      - repo: leanprover-community/batteries
+        files:
+          - nightly_bump_toolchain.yml
+          - nightly_detect_failure.yml
+          - nightly_merge_master.yml
+      - repo: leanprover/cslib
+        files:
+          - bump_toolchain_nightly-testing.yml
+          - merge_main_into_nightly-testing.yml
+          - report_failures_nightly-testing.yml
+
+  # ============================================================================
+  # mathlib-triage
+  # Label management for bors commands (ready-to-merge, delegated)
+  # ============================================================================
+  mathlib-triage:
+    id: 2784271
+    org: leanprover-community
+    settings_url: https://github.com/organizations/leanprover-community/settings/apps/mathlib-triage
+    description: Adds the maintainer-merge label when mathlib reviewers use maintainer merge commands
+    permissions:
+      pull_requests: write
+      issues: write
+
+    secrets:
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_TRIAGE_APP_ID
+        private_key: MATHLIB_TRIAGE_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files:
+          - maintainer_bors.yml
+          - maintainer_bors_wf_run.yml
+          - maintainer_merge.yml
+          - maintainer_merge_wf_run.yml
+
+  # ============================================================================
+  # mathlib-auto-merge
+  # Posts "bors merge" comment after CI passes for PRs with auto-merge label
+  # ============================================================================
+  mathlib-auto-merge:
+    id: 2784285
+    org: leanprover-community
+    settings_url: https://github.com/organizations/leanprover-community/settings/apps/mathlib-auto-merge
+    description: Posts bors merge comment after CI passes on auto-merge labeled PRs
+    permissions:
+      pull_requests: write
+      issues: write
+
+    secrets:
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_AUTO_MERGE_APP_ID
+        private_key: MATHLIB_AUTO_MERGE_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files: [build_template.yml]
+
+  # ============================================================================
+  # mathlib-lean-pr-testing
+  # Posts comments to Lean PRs about mathlib compatibility
+  # Note: This app is in the leanprover org, NOT leanprover-community
+  # ============================================================================
+  mathlib-lean-pr-testing:
+    id: 2785182
+    org: leanprover  # Different org!
+    settings_url: https://github.com/organizations/leanprover/settings/apps/mathlib-lean-pr-testing
+    description: Posts comments to Lean PRs about mathlib test results and pushes lean-pr-testing branches
+    installed_on: [leanprover/lean4]
+    permissions:
+      contents: write
+      pull_requests: write
+
+    secrets:
+      # Secrets are in mathlib4, but app is installed on lean4
+      - repo: leanprover-community/mathlib4
+        app_id: MATHLIB_LEAN_PR_TESTING_APP_ID
+        private_key: MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY
+
+    workflows:
+      - repo: leanprover-community/mathlib4
+        files: [build_template.yml, nightly_detect_failure.yml]

@@ -1,0 +1,39 @@
+# Validates GitHub Apps configuration weekly
+#
+# This workflow runs the validate-github-apps.sh script to ensure:
+# - All documented GitHub Apps exist and have correct IDs
+# - Apps are installed and not suspended
+# - Required secrets exist in each repository
+# - Workflow files reference the correct secrets
+#
+# The workflow runs weekly and can be triggered manually.
+
+name: Validate GitHub Apps
+
+on:
+  schedule:
+    # Run every Monday at 09:00 UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install dependencies
+        run: |
+          # yq is pre-installed on GitHub runners, but ensure latest
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          # jq is pre-installed on GitHub runners
+
+      - name: Validate GitHub Apps configuration
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/validate-github-apps.sh
+          ./scripts/validate-github-apps.sh
