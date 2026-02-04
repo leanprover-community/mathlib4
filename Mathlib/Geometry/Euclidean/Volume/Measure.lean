@@ -5,10 +5,10 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Volume measure for Euclidean geometry
@@ -25,8 +25,8 @@ Internally, this is defined as the `MeasureTheory.Measure.hausdorffMeasure` scal
 The factor is defined nonconstructively as the `MeasureTheory.Measure.addHaarScalarFactor` between
 the Hausdorff measure and the Lebesgue measure on a model Euclidean space.
 
-TODO: show the scaling factor equals to $\pi^(d/2) / (2^d \Gamma (d/2+1))$, the volume ratio between
-a ball and a cube.
+TODO: show the scaling factor equals to the ratio between the volume of `d`-dimensional
+`Metric.ball` with Euclidean metric and with sup metric.
 
 ## Main definitions
 
@@ -57,8 +57,8 @@ variable [EMetricSpace Y] [MeasurableSpace Y] [BorelSpace Y]
 
 /--
 Euclidean Hausdorff measure `μHE[d]`, defined as `μH[d]` scaled to agree with Lebesgue measure
-on a Euclidean space. While this is defined on any (e)metric space, it is intended to be
-used for affine space associated with an inner product space, where it agrees with the volume
+on a `d`-dimensional Euclidean space. While this is defined on any (e)metric space, it is intended
+to be used for affine space associated with an inner product space, where it agrees with the volume
 measure on the inner product space.
 -/
 noncomputable
@@ -67,6 +67,18 @@ def MeasureTheory.Measure.euclideanHausdorffMeasure (d : ℕ) : Measure X :=
 
 @[inherit_doc]
 scoped[MeasureTheory] notation "μHE[" d "]" => MeasureTheory.Measure.euclideanHausdorffMeasure d
+
+/-- show the scaling factor equals to the ratio between the volume of `d`-dimensional
+`Metric.ball` with Euclidean metric and with sup metric (i.e. a cube), or explicity,
+$\pi^(d/2) / (2^d \Gamma (d/2+1))$. -/
+proof_wanted MeasureTheory.Measure.addHaarScalarFactor_hausdorffMeasure_eq (d : ℕ):
+  addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] =
+  volume (Metric.ball (0 : EuclideanSpace ℝ (Fin d)) 1) / volume (Metric.ball (0 : Fin d -> ℝ) 1)
+
+theorem MeasureTheory.Measure.euclideanHausdorffMeasure_def (d : ℕ) :
+    (μHE[d] : Measure X) =
+    addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] • μH[d] := by
+  rfl
 
 /-!
 ### `μHE[d]` is preserved through isometry
