@@ -101,11 +101,6 @@ instance [WeaklyLocallyCompactSpace X] : WeaklyLocallyCompactSpace (Multiplicati
 instance [LocallyCompactSpace X] : LocallyCompactSpace (Additive X) := ‹LocallyCompactSpace X›
 instance [LocallyCompactSpace X] : LocallyCompactSpace (Multiplicative X) := ‹LocallyCompactSpace X›
 
-instance [TotallyDisconnectedSpace X] : TotallyDisconnectedSpace (Additive X) :=
-  ‹TotallyDisconnectedSpace X›
-instance [TotallyDisconnectedSpace X] : TotallyDisconnectedSpace (Multiplicative X) :=
-  ‹TotallyDisconnectedSpace X›
-
 theorem continuous_ofMul : Continuous (ofMul : X → Additive X) := continuous_id
 
 theorem continuous_toMul : Continuous (toMul : Additive X → X) := continuous_id
