@@ -42,3 +42,10 @@ theorem IsAtomic.of_isChain_bounded {α : Type*} [PartialOrder α] [OrderBot α]
         IsChain (· ≤ ·) c → c.Nonempty → ⊥ ∉ c → ∃ x ≠ ⊥, x ∈ lowerBounds c) :
     IsAtomic α :=
   isCoatomic_dual_iff_isAtomic.mp <| IsCoatomic.of_isChain_bounded fun c hc => h c hc.symm
+
+-- workaround for `to_dual`
+@[to_dual existing IsCoatomic.of_isChain_bounded]
+theorem IsAtomic.of_isChain_bounded' {α : Type*} [PartialOrder α] [OrderBot α]
+    (h : ∀ c : Set α, IsChain (· ≥ ·) c → c.Nonempty → ⊥ ∉ c → ∃ x ≠ ⊥, x ∈ lowerBounds c) :
+    IsAtomic α :=
+  isCoatomic_dual_iff_isAtomic.mp <| IsCoatomic.of_isChain_bounded fun c hc => h c hc

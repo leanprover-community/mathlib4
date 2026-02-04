@@ -6057,7 +6057,6 @@ public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.PFilter
 public import Mathlib.Order.Part
 public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Partition.Basic

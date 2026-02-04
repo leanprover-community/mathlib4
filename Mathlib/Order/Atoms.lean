@@ -152,6 +152,7 @@ variable [Preorder α]
 
 /-- A coatom of an `OrderTop` is an element with no other element between it and `⊤`,
   which is not `⊤`. -/
+@[to_dual existing]
 def IsCoatom [OrderTop α] (a : α) : Prop :=
   a ≠ ⊤ ∧ ∀ b, a < b → b = ⊤
 
@@ -329,7 +330,7 @@ class IsAtomic [OrderBot α] : Prop where
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
-@[mk_iff]
+@[to_dual existing IsAtomic, mk_iff]
 class IsCoatomic [OrderTop α] : Prop where
   /-- Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
