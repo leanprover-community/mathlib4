@@ -48,7 +48,7 @@ implementation details below.
   typeclass diamonds (see below), and meant for use with notation such as `Continuous[_,DTop]`.
 * `IsDTopCompatible X`: typeclass stating that `X` is equipped with a topology that is equal (but
   not necessarily defeq) to the D-topology.
-* `euclideanDiffeology`: the standard diffeology on any finite-dimensional normed space `X`,
+* `NormedSpace.toDiffeology`: the standard diffeology on any finite-dimensional normed space `X`,
   consisting of all conventionally smooth maps ℝⁿ → X. This is again a definition rather than a
   instance for typeclass diamond reasons; however, we do put this as an instance on `ℝ` and
   `EuclideanSpace ℝ ι` for finite `ι`.
@@ -85,7 +85,7 @@ One downside of this choice compared to that of all open subsets of ℝⁿ is ho
 sheaf condition / locality condition of diffeologies ("any map that is locally a plot is also
 globally a plot") somewhat awkward to state and prove. To mitigate this, we provide
 `DiffeologicalSpace.ofPlotsOn` as a way to construct a diffeology from plots whose domains are
-subsets of ℝⁿ. See the definition of `euclideanDiffeology` for an example where this is used.
+subsets of ℝⁿ. See the definition of `NormedSpace.toDiffeology` for an example where this is used.
 
 ### D-Topology
 
@@ -107,31 +107,27 @@ defined in such a way that the D-topology is defeq to the topology that the spac
 Every normed spaces carries a natural diffeology consisting of all smooth maps from ℝⁿ. While this
 "normed space diffeology" does commute with arbitrary products, we can't register it as an instance
 because it wouldn't be defeq to the product diffeology on products of normed spaces. We thus only
-give it as a definition (`euclideanDiffeology`) instead of an instance, and instead provide a
+give it as a definition (`NormedSpace.toDiffeology`) instead of an instance, and instead provide a
 typeclass `IsContDiffCompatible X` for talking about normed spaces equipped with the normed space
 diffeology.
 
-To make working with finite-dimensional spaces easier, `euclideanDiffeology` is defined in such a
-way that its D-topology is defeq to the topology induced by the norm - however, this currently comes
-at the cost of making the definition work only on finite-dimensional spaces. It should be possible
-to extend this to all Banach or Fréchet spaces though in the future.
+To make working with finite-dimensional spaces easier, `NormedSpace.toDiffeology` is defined in such
+a way that its D-topology is defeq to the topology induced by the norm - however, this currently
+comes at the cost of making the definition work only on finite-dimensional spaces. It should be
+possible to extend this to all normed spaces though in the future.
 
 ## TODO
 
 Much of the basic theory of diffeological spaces has already been formalised at
 https://github.com/peabrainiac/lean-orbifolds and just needs to be upstreamed. However, some TODOs
 that haven't been formalised at all yet and only depend on the material here are:
-* Define a `normedSpaceDiffeology` analogous to `euclideanDiffeology` for all normed spaces (as
-  opposed to just finite-dimensional ones) and show that `IsContDiffCompatible` holds precisely for
-  this diffeology.
-* Show that the D-topology of the normed space diffeology is simply the topology induced by the
-  norm. On paper, this is relatively straightforward: for a set U ⊆ X that is not open under the
-  standard normed space topology, take a sequence x_i outside of U that converges to a point in U,
-  a smooth map ℝ → X under which a convergent sequence in ℝ maps to this sequence (x_i), and use it
-  to conclude that U is not D-open either. However, constructing the needed smooth map explicitly is
-  probably a lot of work. If this can be done without too much effort, change
-  `normedSpaceDiffeology` to make this a definitional equality, and remove `euclideanDiffeology` in
-  favour of `normedSpaceDiffeology` completely.
+* Generalise `NormedSpace.toDiffeology` to infinite-dimensional normed spaces. The hard part of this
+  is showing that the D-topology of any normed space is just its usual topology, as is needed to
+  make that equality definitional. On paper, this is relatively straightforward:
+  for a set U ⊆ X that is not open under the standard normed space topology, take a sequence x_i
+  outside of U that converges to a point in U, a smooth map ℝ → X under which a convergent sequence
+  in ℝ maps to this sequence (x_i), and use it to conclude that U is not D-open either. However,
+  constructing the needed smooth map explicitly is probably a lot of work.
 * Generalise `dsmooth_iff_contDiff` to infinite-dimensional normed spaces if possible. There should
   be some references at least for the case of Banach spaces in the literature.
 
@@ -337,7 +333,7 @@ section FiniteDimensionalNormedSpace
 /-- Diffeology on a finite-dimensional normed space. We make this a definition instead of an
 instance because we also want to have product diffeologies as an instance, and having both would
 cause instance diamonds on spaces like `Fin n → ℝ`. -/
-def euclideanDiffeology {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
+def _root_.NormedSpace.toDiffeology {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
     [FiniteDimensional ℝ X] : DiffeologicalSpace X :=
   DiffeologicalSpace.ofCorePlotsOn {
     isPlotOn := fun {_ u} _ p ↦ ContDiffOn ℝ ∞ p u
@@ -380,26 +376,26 @@ protected theorem DSmooth.continuous' {X Y : Type*} [TopologicalSpace X] [Diffeo
   dTop_eq X ▸ dTop_eq Y ▸ hf.continuous
 
 instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
-    [FiniteDimensional ℝ X] : @IsContDiffCompatible X _ _ euclideanDiffeology :=
-  let _ := euclideanDiffeology (X := X); ⟨Iff.rfl⟩
+    [FiniteDimensional ℝ X] : @IsContDiffCompatible X _ _ NormedSpace.toDiffeology :=
+  let _ := NormedSpace.toDiffeology (X := X); ⟨Iff.rfl⟩
 
-lemma contDiffCompatible_iff_eq_euclideanDiffeology {X : Type*} [NormedAddCommGroup X]
+lemma contDiffCompatible_iff_eq_toDiffeology {X : Type*} [NormedAddCommGroup X]
     [NormedSpace ℝ X] [FiniteDimensional ℝ X] [d : DiffeologicalSpace X] :
-    IsContDiffCompatible X ↔ d = euclideanDiffeology :=
+    IsContDiffCompatible X ↔ d = NormedSpace.toDiffeology :=
   ⟨fun _ ↦ by ext n p; exact IsContDiffCompatible.isPlot_iff, fun h ↦ h ▸ inferInstance⟩
 
 instance {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
-    [FiniteDimensional ℝ X] : @IsDTopCompatible X _ euclideanDiffeology :=
-  let _ := euclideanDiffeology (X := X); ⟨rfl⟩
+    [FiniteDimensional ℝ X] : @IsDTopCompatible X _ NormedSpace.toDiffeology :=
+  let _ := NormedSpace.toDiffeology (X := X); ⟨rfl⟩
 
-noncomputable instance : DiffeologicalSpace ℝ := euclideanDiffeology
+noncomputable instance : DiffeologicalSpace ℝ := NormedSpace.toDiffeology
 
 example : IsContDiffCompatible ℝ := inferInstance
 
 example : IsDTopCompatible ℝ := inferInstance
 
 noncomputable instance {ι : Type*} [Fintype ι] : DiffeologicalSpace (EuclideanSpace ℝ ι) :=
-  euclideanDiffeology
+  NormedSpace.toDiffeology
 
 example {ι : Type*} [Fintype ι] : IsContDiffCompatible (EuclideanSpace ℝ ι) := inferInstance
 
