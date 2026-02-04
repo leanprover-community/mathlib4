@@ -74,13 +74,15 @@ lemma IsSubmersion.isRegularValue (hf : IsSubmersion I J n f) (y : N) : IsRegula
 
 namespace IsRegularValue
 
+variable {x : M} {y : N}
+
 -- Suppose M is not empty. (Otherwise, we can do anything we want.)
 -- Pick a pre-image x of y. Then mfderiv has a bounded right inverse;
 -- take the image of that right inverse.
 
 /-- A complement in the model normed spaces `E` of `M` for the regular value `f x`. -/
 @[expose]
-def Complement {x : M} (hx : IsRegularValue I J f (f x)) : Type _ :=
+def Complement (hx : IsRegularValue I J f (f x)) : Type _ :=
   (hx x rfl).choose.range
   deriving NormedAddCommGroup
 
@@ -89,18 +91,15 @@ If `y` is not in the range of `f`, we simply take the trivial normed space. -/
 @[expose] def Complement' {y : N} (hy : IsRegularValue I J f y) : Type _ := by
   classical exact if h : y ∈ range f then (h.choose_spec ▸ hy).Complement else PUnit
 
-instance {y : N} (hy : IsRegularValue I J f y) : NormedAddCommGroup hy.Complement' := by
-  by_cases h : y ∈ range f
-  · simp only [Complement', h, ↓reduceDIte]; infer_instance
-  simp only [Complement', h, ↓reduceDIte]
-  infer_instance
+instance (hy : IsRegularValue I J f y) : NormedAddCommGroup hy.Complement' := by
+  by_cases h : y ∈ range f <;> simp only [Complement', h, ↓reduceDIte] <;> infer_instance
 
-instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.Complement := by
+instance (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.Complement := by
   delta Complement
   infer_instance
 
 -- TODO: expanding the definition of Complement' does not seem to work, at all!
-instance {y : N} (hy : IsRegularValue I J f y) : NormedSpace 𝕜 hy.Complement' := by
+instance (hy : IsRegularValue I J f y) : NormedSpace 𝕜 hy.Complement' := by
   by_cases h : y ∈ range f
   · simp [Complement', h]
     --have : NormedSpace 𝕜 (h.choose_spec ▸ hy).Complement := sorry
@@ -117,29 +116,29 @@ so the instance `immersedSubmanifold` mentions `hy` and `hf` somewhere. -/
 -- TODO: do we actually need CMDiff n f, or is CMDiffAt n f x (for each x) sufficient?
 -- That would be implied by y being a regular value...
 @[nolint unusedArguments, expose]
-abbrev Preimage {y : N} (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) : Type _ :=
+abbrev Preimage (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) : Type _ :=
   f ⁻¹' {y}
 
 /-
 --- XXX(MR): do we really need _hf here?
 @[nolint unusedArguments, expose]
-abbrev PreimageWithin {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) (s : Set M) : Type _ :=
-  (s ∩ (f ⁻¹' {f x})) -/
+abbrev PreimageWithin (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) (s : Set M) : Type _ :=
+  (s ∩ (f ⁻¹' {y})) -/
 
--- @[simp] lemma preimageWithin_univ {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) :
---  PreimageWithin _hx _hf univ = Preimage _hx _hf := sorry
+-- @[simp] lemma preimageWithin_univ (_hy : IsRegularValue I J f y) (_hf : ContMDiff I J n f) :
+--  PreimageWithin _hy _hf univ = Preimage _hy _hf := sorry
 
-/-- The model normed space for the manifold structure on `f ⁻¹' {f x}`. -/
+/-- The model normed space for the manifold structure on `f ⁻¹' {y}`. -/
 @[nolint unusedArguments, expose]
-def modelSpace {x : M} (_hx : IsRegularValue I J f (f x)) : Type _ :=
+def modelSpace (_hx : IsRegularValue I J f (f x)) : Type _ :=
   (mfderiv I J f x).ker
 
-instance {x : M} (hx : IsRegularValue I J f (f x)) :
+instance (hx : IsRegularValue I J f (f x)) :
     NormedAddCommGroup hx.modelSpace := by
   unfold modelSpace
   infer_instance
 
-instance {x : M} (hx : IsRegularValue I J f (f x)) :
+instance (hx : IsRegularValue I J f (f x)) :
     NormedSpace 𝕜 hx.modelSpace := by
   unfold modelSpace
   letI : NormedAddCommGroup (TangentSpace I x) := inferInstanceAs <| NormedAddCommGroup E₁
@@ -196,7 +195,6 @@ end sandbox
 -- Let us assume we have a boundaryless manifold: otherwise, the mathematics is less clear for now.
 section Boundaryless
 
-variable {x : M}
 /- Idea of proof: if x is a regular point of f, then f is a submersion at x.
 The submersion's given charts induce a slice chart,
 making f ⁻¹' {f x} ∩ chart source a charted space.
@@ -209,13 +207,13 @@ making f ⁻¹' {f x} ∩ chart source a charted space.
 
 /-- In a boundaryless manifold, the trivial model with corners is a fine choice. -/
 @[nolint unusedArguments, expose]
-def modelWithCorners {x : M} (hx : IsRegularValue I J f (f x)) :
+def modelWithCorners (hx : IsRegularValue I J f (f x)) :
     ModelWithCorners 𝕜 hx.modelSpace hx.modelSpace :=
   𝓘(𝕜, _)
 
 /-- The **regular value theorem** for boundaryless manifolds, main case:
 for a regular value `y` of `f` which lies in `range f`. -/
-def immersedSubmanifold_aux [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x))
+def immersedSubmanifold_aux [I.Boundaryless] (hx : IsRegularValue I J f (f x))
     (hf : ContMDiff I J n f) :
     ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
   map := Subtype.val
@@ -223,14 +221,14 @@ def immersedSubmanifold_aux [I.Boundaryless] {x : M} (hx : IsRegularValue I J f 
   real_condition := sorry
 
 /-- The **regular value theorem** for boundaryless manifolds, for any regular `y` of `f`. -/
-instance immersedSubmanifold [I.Boundaryless] {y : N} (hy : IsRegularValue I J f y)
+instance immersedSubmanifold [I.Boundaryless] (hy : IsRegularValue I J f y)
     (hf : ContMDiff I J n f) :
     -- hy.modelWithCorners does not typecheck yet!
     ImmersedSubmanifold hy.modelWithCorners I (hy.Preimage hf) M n hy.Complement' := by
   sorry
 
 /-- The regular value theorem. -/
-instance immersedSubmanifold [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x))
+instance immersedSubmanifold [I.Boundaryless] (hx : IsRegularValue I J f (f x))
     (hf : ContMDiff I J n f) :
     ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
   map := Subtype.val
@@ -241,7 +239,7 @@ instance [I.Boundaryless] (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J 
     ChartedSpace hx.modelSpace (hx.Preimage hf) :=
   (hx.immersedSubmanifold hf).chartedSpace
 
-instance [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
+instance [I.Boundaryless] (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
     IsManifold hx.modelWithCorners n (hx.Preimage hf) :=
   (hx.immersedSubmanifold hf).isManifold
 
