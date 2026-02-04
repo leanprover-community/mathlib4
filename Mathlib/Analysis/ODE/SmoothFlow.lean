@@ -187,7 +187,6 @@ lemma integralCM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set 
     integralCM hg t₀ α dα t = 0 := by
   simp [integralCM_def, dif_neg hα]
 
--- TODO: Should this proof and `integralCM_update_smul` be pushed up to `integralFun`?
 lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (x y : C(Icc tmin tmax, E)) :
@@ -286,37 +285,23 @@ lemma _root_.IsCompact.exists_mem_open_dist_lt_of_continuousOn
     (hsu : s ⊆ u) {ε : ℝ} (hε : 0 < ε) :
     ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → y ∈ u ∧ dist (f x) (f y) < ε := by
   obtain ⟨δ₁, hδ₁, hthick⟩ := hs.exists_thickening_subset_open hu hsu
-  -- Each `x ∈ s` is associated with a ball in which the value of `f` is close to `f x`
   have h := fun x (hx : x ∈ s) ↦ Metric.continuousOn_iff.mp hf x (hsu hx) (ε / 2) (half_pos hε)
   choose δₓ hδₓ h using h
   let c : s → Set X := fun ⟨x, hx⟩ ↦ ball x (δₓ x hx)
   have hcover : s ⊆ ⋃ i, c i := fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, mem_ball_self (hδₓ x hx)⟩
-  -- Lebesgue number lemma extracts a uniform radius for all `x ∈ s`
   obtain ⟨δ₂, hδ₂, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
   refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun x hx y hxy ↦ ?_⟩
-  have hy : y ∈ u := by
-    apply hthick
-    rw [mem_thickening_iff]
-    refine ⟨x, hx, ?_⟩
-    rw [dist_comm]
-    exact hxy.trans_le (min_le_left _ _)
+  have hy : y ∈ u := hthick (mem_thickening_iff.mpr
+    ⟨x, hx, dist_comm x y ▸ hxy.trans_le (min_le_left _ _)⟩)
   refine ⟨hy, ?_⟩
   obtain ⟨⟨z, hz⟩, hball⟩ := hleb x hx
-  have hx' : dist x z < (δₓ z hz) := by
-    rw [← mem_ball]
-    exact hball (mem_ball_self hδ₂)
-  have hy' : dist y z < (δₓ z hz) := by
-    rw [← mem_ball]
-    apply hball
-    rw [mem_ball, dist_comm]
-    exact hxy.trans_le (min_le_right _ _)
-  calc
-    _ ≤ dist (f x) (f z) + dist (f z) (f y) := dist_triangle _ _ _
-    _ = dist (f x) (f z) + dist (f y) (f z) := by rw [dist_comm (f z) (f y)]
-    _ < ε / 2 + ε / 2 := add_lt_add
-        (h z hz x (hsu hx) (Metric.mem_ball.mp hx'))
-        (h z hz y hy (Metric.mem_ball.mp hy'))
-    _ = ε := by ring
+  have hx' : dist x z < δₓ z hz := hball (mem_ball_self hδ₂)
+  have hy' : dist y z < δₓ z hz := hball
+    (by simpa only [mem_ball, dist_comm] using hxy.trans_le (min_le_right _ _))
+  calc dist (f x) (f y)
+    _ ≤ dist (f x) (f z) + dist (f y) (f z) := dist_triangle_right _ _ _
+    _ < ε / 2 + ε / 2 := add_lt_add (h z hz x (hsu hx) hx') (h z hz y hy hy')
+    _ = ε := add_halves ε
 
 omit [CompleteSpace E] in
 /-- If `g` is `C^1` on an open set `u` and `h` provides uniform control on the derivative's
