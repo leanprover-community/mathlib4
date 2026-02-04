@@ -218,4 +218,59 @@ theorem isBigO_of_degree_le (h : P.degree ≤ Q.degree) :
     · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_zero_of_degree_lt P Q h)
     · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_leadingCoeff_div_of_degree_eq P Q h)
 
+section Int
+
+open Filter Topology in
+/-- If `deg Q < deg P`, there are only finitely many integers `x` where `|P(x)| ≤ |Q(x)|`. -/
+lemma finite_abs_eval_lt_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
+    {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
+  let c := Int.castRingHom ℚ
+  have key : Tendsto (fun x ↦ (Q.map c).eval x / (P.map c).eval x) (atTop ⊔ atBot) (𝓝 0) := by
+    rcases eq_or_ne P 0 with rfl | hP; · simp
+    rcases eq_or_ne Q 0 with rfl | hQ; · simp
+    have l₁ : (Q.map c).degree < (P.map c).degree := by
+      simpa [degree_map_eq_of_injective c.injective_int]
+    have l₂ : ((Q.map c).comp (-X)).degree < ((P.map c).comp (-X)).degree := by
+      simpa [degree_comp_neg_X, degree_map_eq_of_injective c.injective_int]
+    apply Tendsto.sup
+    · exact div_tendsto_zero_of_degree_lt _ _ l₁
+    · convert (div_tendsto_zero_of_degree_lt _ _ l₂).comp tendsto_neg_atBot_atTop using 2
+      simp
+  replace key := key.abs
+  simp only [abs_div, abs_zero] at key
+  replace key := key.eventually (gt_mem_nhds zero_lt_one)
+  rw [eventually_sup, eventually_atTop, eventually_atBot] at key
+  obtain ⟨⟨M₂, hM₂⟩, ⟨M₁, hM₁⟩⟩ := key
+  have l : ∀ x ∉ Set.Ioo M₁ M₂, |(Q.map c).eval x| / |(P.map c).eval x| < 1 := fun x nx ↦ by
+    simp_rw [Set.mem_Ioo, not_and_or, not_lt] at nx
+    exact nx.elim (hM₁ _) (hM₂ _)
+  replace l : ∀ x ∉ Finset.Ioo ⌊M₁⌋ ⌈M₂⌉, P.eval x ≠ 0 → |Q.eval x| < |P.eval x| := fun x nx hx ↦ by
+    have nx' : ↑x ∉ Set.Ioo M₁ M₂ := by
+      simp only [Finset.mem_Ioo, Set.mem_Ioo, not_and_or, not_lt] at nx ⊢
+      exact nx.elim (fun l ↦ .inl (Int.le_floor.mp l)) fun l ↦ .inr (Int.ceil_le.mp l)
+    specialize l _ nx'
+    simp only [eval_intCast_map, Int.cast_eq, eq_intCast] at l
+    rw [div_lt_one₀ (by positivity)] at l
+    norm_cast at l
+  refine (Finset.Ioo ⌊M₁⌋ ⌈M₂⌉ ∪ P.roots.toFinset).finite_toSet.subset fun x hx ↦ ?_
+  contrapose! hx
+  rw [Set.mem_setOf_eq, not_le]
+  rw [SetLike.mem_coe, Finset.mem_union, not_or, Multiset.mem_toFinset, mem_roots', not_and] at hx
+  exact l _ hx.1 (hx.2 (ne_zero_of_degree_gt h))
+
+/-- If `Q(x) ∣ P(x)` at infinitely many integers `x` and `Q` is monic, `Q ∣ P`. -/
+theorem dvd_of_infinite_eval_dvd_eval
+    {P Q : ℤ[X]} (mQ : Q.Monic) (h : {a | Q.eval a ∣ P.eval a}.Infinite) : Q ∣ P := by
+  have eqR := modByMonic_add_div P mQ
+  have degR := degree_modByMonic_lt P mQ
+  rw [← modByMonic_eq_zero_iff_dvd mQ]
+  set R := P %ₘ Q
+  apply eq_zero_of_infinite_isRoot
+  refine (h.diff (finite_abs_eval_lt_of_degree_lt degR)).mono fun x mx ↦ ?_
+  simp only [Set.mem_diff, Set.mem_setOf_eq, not_le] at mx
+  rw [← eqR, eval_add, eval_mul, Int.dvd_add_self_mul, ← abs_dvd] at mx
+  exact Int.eq_zero_of_abs_lt_dvd mx.1 mx.2
+
+end Int
+
 end Polynomial

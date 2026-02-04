@@ -429,6 +429,14 @@ lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
   · rw [key, comp_C, C_eq_zero] at h
     exact Or.inr ⟨h, key⟩
 
+@[simp] lemma degree_comp_neg_X [Ring R] [NoZeroDivisors R] (p : R[X]) :
+    (p.comp (-X)).degree = p.degree := by
+  nontriviality R
+  by_cases h : p = 0
+  · simp [h]
+  rw [degree_eq_natDegree h, degree_eq_natDegree (by simp [comp_eq_zero_iff, h]), natDegree_comp]
+  simp
+
 section DivisionRing
 
 variable {K : Type*} [DivisionRing K]
