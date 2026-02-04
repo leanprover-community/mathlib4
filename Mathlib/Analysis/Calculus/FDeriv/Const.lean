@@ -22,7 +22,8 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Asymptotics Function Filter Set Metric
+open scoped Topology NNReal ENNReal
 
 noncomputable section
 
@@ -61,8 +62,7 @@ theorem hasStrictFDerivAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
 
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
     HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
-    simp only [zero_apply, sub_self, Pi.zero_apply]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
 
 theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
     HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
@@ -313,8 +313,7 @@ theorem Set.Subsingleton.differentiableOn (hs : s.Subsingleton) : Differentiable
 
 theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ => c) :
     HasFDerivAt f (0 : E →L[𝕜] F) x :=
-  -- TODO: restore (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
-  .of_isLittleOTVS <| .congr' (.zero _ _) (hf.mono <| by simp +contextual [hf.self_of_nhds]) .rfl
+  (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
 
 end Const
 
@@ -323,7 +322,7 @@ theorem differentiableWithinAt_of_isInvertible_fderivWithin
   contrapose hf
   rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
   contrapose! hf
-  rcases isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
+  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
   exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
 
 theorem differentiableAt_of_isInvertible_fderiv
@@ -331,15 +330,10 @@ theorem differentiableAt_of_isInvertible_fderiv
   simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
   exact differentiableWithinAt_of_isInvertible_fderivWithin hf
 
-
 /-! ### Support of derivatives -/
 
 section Support
-
-open Function
-
-variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
+variable (𝕜)
 
 theorem HasStrictFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
@@ -354,8 +348,9 @@ theorem HasFDerivWithinAt.of_notMem_tsupport {s : Set E} {x : E} (h : x ∉ tsup
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
   (HasFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivWithinAt
 
-theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
-  (HasFDerivAt.of_notMem_tsupport 𝕜 h).fderiv
+theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 := by
+  rw [notMem_tsupport_iff_eventuallyEq] at h
+  simp [h.fderiv_eq]
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
   rw [← not_imp_not, notMem_support]
