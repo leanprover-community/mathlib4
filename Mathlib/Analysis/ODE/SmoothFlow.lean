@@ -542,7 +542,7 @@ lemma contDiffOn_integralCMLM_nat {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : 
       apply (continuousMultilinearCurryLeftEquiv ℝ _ _).contDiff.comp_contDiffOn (ih hg') |>.congr
       intro α hα
       rw [(hasFDerivAt_integralCMLM hg.one_of_succ hu t₀ hα).fderiv]
-      simp
+      rfl
 
 /-- If `g` is `C^k` on `u`, then `integralCMLM g u t₀` is `C^k` on the set of curves whose range is
 contained in `u`. -/

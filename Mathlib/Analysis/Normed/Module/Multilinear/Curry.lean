@@ -161,19 +161,10 @@ def continuousMultilinearCurryLeftEquiv :
 
 variable {𝕜 Ei G}
 
-theorem continuousMultilinearCurryLeftEquiv_toFun (f : ContinuousMultilinearMap 𝕜 Ei G) :
-    continuousMultilinearCurryLeftEquiv 𝕜 Ei G f = f.curryLeft :=
-  rfl
-
 @[simp]
 theorem continuousMultilinearCurryLeftEquiv_apply
     (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0) (v : Π i : Fin n, Ei i.succ) :
     continuousMultilinearCurryLeftEquiv 𝕜 Ei G f x v = f (cons x v) :=
-  rfl
-
-theorem continuousMultilinearCurryLeftEquiv_symm_toFun
-    (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
-    (continuousMultilinearCurryLeftEquiv 𝕜 Ei G).symm f = f.uncurryLeft :=
   rfl
 
 @[simp]
@@ -295,19 +286,10 @@ def continuousMultilinearCurryRightEquiv' : (G [×n.succ]→L[𝕜] G') ≃ₗ�
 
 variable {n 𝕜 G Ei G'}
 
-theorem continuousMultilinearCurryRightEquiv_toFun (f : ContinuousMultilinearMap 𝕜 Ei G) :
-    continuousMultilinearCurryRightEquiv 𝕜 Ei G f = f.curryRight :=
-  rfl
-
 @[simp]
 theorem continuousMultilinearCurryRightEquiv_apply
     (f : ContinuousMultilinearMap 𝕜 Ei G) (v : Π i : Fin n, Ei <| castSucc i) (x : Ei (last n)) :
     continuousMultilinearCurryRightEquiv 𝕜 Ei G f v x = f (snoc v x) :=
-  rfl
-
-theorem continuousMultilinearCurryRightEquiv_symm_toFun
-    (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G)) :
-    (continuousMultilinearCurryRightEquiv 𝕜 Ei G).symm f = f.uncurryRight :=
   rfl
 
 @[simp]
@@ -317,19 +299,10 @@ theorem continuousMultilinearCurryRightEquiv_symm_apply
     (continuousMultilinearCurryRightEquiv 𝕜 Ei G).symm f v = f (init v) (v (last n)) :=
   rfl
 
-theorem continuousMultilinearCurryRightEquiv_toFun' (f : G [×n.succ]→L[𝕜] G') :
-    continuousMultilinearCurryRightEquiv' 𝕜 n G G' f = f.curryRight :=
-  rfl
-
 @[simp]
 theorem continuousMultilinearCurryRightEquiv_apply'
     (f : G [×n.succ]→L[𝕜] G') (v : Fin n → G) (x : G) :
     continuousMultilinearCurryRightEquiv' 𝕜 n G G' f v x = f (snoc v x) :=
-  rfl
-
-theorem continuousMultilinearCurryRightEquiv_symm_toFun'
-    (f : G [×n]→L[𝕜] G →L[𝕜] G') :
-    (continuousMultilinearCurryRightEquiv' 𝕜 n G G').symm f = f.uncurryRight :=
   rfl
 
 @[simp]
@@ -501,17 +474,9 @@ def continuousMultilinearCurryFin0 : (G [×0]→L[𝕜] G') ≃ₗᵢ[𝕜] G' w
 
 variable {𝕜 G G'}
 
-theorem continuousMultilinearCurryFin0_toFun (f : G [×0]→L[𝕜] G') :
-    continuousMultilinearCurryFin0 𝕜 G G' f = f.curry0 :=
-  rfl
-
 @[simp]
 theorem continuousMultilinearCurryFin0_apply (f : G [×0]→L[𝕜] G') :
     continuousMultilinearCurryFin0 𝕜 G G' f = f 0 :=
-  rfl
-
-theorem continuousMultilinearCurryFin0_symm_toFun (x : G') :
-    (continuousMultilinearCurryFin0 𝕜 G G').symm x = ContinuousMultilinearMap.uncurry0 𝕜 G x :=
   rfl
 
 @[simp]
@@ -534,18 +499,9 @@ def continuousMultilinearCurryFin1 : (G [×1]→L[𝕜] G') ≃ₗᵢ[𝕜] G �
 
 variable {𝕜 G G'}
 
-theorem continuousMultilinearCurryFin1_toFun (f : G [×1]→L[𝕜] G') :
-    continuousMultilinearCurryFin1 𝕜 G G' f = f.curryRight.curry0 :=
-  rfl
-
 @[simp]
 theorem continuousMultilinearCurryFin1_apply (f : G [×1]→L[𝕜] G') (x : G) :
     continuousMultilinearCurryFin1 𝕜 G G' f x = f (Fin.snoc 0 x) :=
-  rfl
-
-theorem continuousMultilinearCurryFin1_symm_toFun (f : G →L[𝕜] G') :
-    (continuousMultilinearCurryFin1 𝕜 G G').symm f =
-      (ContinuousMultilinearMap.uncurry0 𝕜 G f).uncurryRight :=
   rfl
 
 @[simp]
