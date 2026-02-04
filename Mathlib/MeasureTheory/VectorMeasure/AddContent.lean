@@ -26,7 +26,7 @@ open scoped symmDiff
 
 namespace MeasureTheory.VectorMeasure
 
-variable {α : Type*} [hα : MeasurableSpace α] {E : Type*} [NormedAddCommGroup E]
+variable {α : Type*} {hα : MeasurableSpace α} {E : Type*} [NormedAddCommGroup E]
 [CompleteSpace E] {μ : Measure α}
 
 /-- A finitely additive vector measure which is dominated by a finite positive measure is in
@@ -294,8 +294,7 @@ Then `m` extends to a countably additive vector measure which is dominated by `�
 /- TODO: weaken the assumption that `C` generates the sigma-algebra to measurability of all
 elements of `C`, once integrals wrt vector measures is available (by composing the integral wrt `m'`
 on the generated sigma-algebra, with conditional expectation of the indicator function to project
-on the generated sigma-algebra).
--/
+on the generated sigma-algebra). -/
 theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hC : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'C : hα = generateFrom C) :
