@@ -5,6 +5,8 @@ Authors: Christopher Hoskin
 -/
 module
 
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.ToFun
 import Mathlib.Order.Bounds.Image
@@ -138,6 +140,22 @@ lemma ScottContinuousOn.snd {D} : ScottContinuousOn D (Prod.snd : α × β → �
   simp only [isLUB_prod] at ha
   exact ha.2
 
+@[simp, fun_prop]
+lemma ScottContinuousOn.inl : ScottContinuousOn D (Sum.inl : α → α ⊕ β) := by
+  intro _ _ _ _
+  simp only [isLUB_iff_le_iff, mem_upperBounds, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, Sum.forall, Sum.inl_le_inl_iff, Sum.not_inl_le_inr, imp_false,
+    false_iff, not_forall, not_not]
+  grind [mem_lowerBounds, mem_upperBounds, Set.nonempty_def]
+
+@[simp, fun_prop]
+lemma ScottContinuousOn.inr : ScottContinuousOn D (Sum.inr : α → β ⊕ α) := by
+  intro _ _ _ _
+  simp only [isLUB_iff_le_iff, mem_upperBounds, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, Sum.forall, Sum.not_inr_le_inl, imp_false, false_iff, not_forall,
+    not_not, Sum.inr_le_inr_iff]
+  grind [mem_lowerBounds, mem_upperBounds, Set.nonempty_def]
+
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
 sets. It can be shown that a function is Scott continuous if and only if it is continuous w.r.t. the
 Scott topology.
@@ -183,6 +201,14 @@ lemma ScottContinuous.fst : ScottContinuous (Prod.fst : α × β → α) := by
 @[simp, fun_prop]
 lemma ScottContinuous.snd : ScottContinuous (Prod.snd : α × β → β) := by
   simp_rw [← scottContinuousOn_univ, ScottContinuousOn.snd]
+
+@[simp, fun_prop]
+lemma ScottContinuous.inl : ScottContinuous (Sum.inl : α → α ⊕ β) := by
+  simp_rw [← scottContinuousOn_univ, ScottContinuousOn.inl]
+
+@[simp, fun_prop]
+lemma ScottContinuous.inr : ScottContinuous (Sum.inr : β → α ⊕ β) := by
+  simp_rw [← scottContinuousOn_univ, ScottContinuousOn.inr]
 
 end ScottContinuous
 
