@@ -90,19 +90,17 @@ theorem IsometryEquiv.measurePreserving_euclideanHausdorffMeasure (e : X ≃ᵢ 
 
 theorem Isometry.euclideanHausdorffMeasure_image {f : X → Y} {d : ℕ} (hf : Isometry f) (s : Set X) :
     μHE[d] (f '' s) = μHE[d] s := by
-  unfold euclideanHausdorffMeasure
-  simp_rw [smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
   rw [Isometry.hausdorffMeasure_image hf (by simp)]
 
 theorem Isometry.euclideanHausdorffMeasure_preimage {f : X → Y} {d : ℕ} (hf : Isometry f)
     (s : Set Y) : μHE[d] (f ⁻¹' s) = μHE[d] (s ∩ Set.range f) := by
-  unfold euclideanHausdorffMeasure
-  simp_rw [smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
   rw [Isometry.hausdorffMeasure_preimage hf (by simp)]
 
 theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Isometry f) :
     μHE[d].map f = μHE[d].restrict (Set.range f) := by
-  unfold euclideanHausdorffMeasure
+  simp_rw [euclideanHausdorffMeasure_def]
   rw [Measure.map_smul, map_hausdorffMeasure hf (by simp), Measure.restrict_smul]
 
 /-!
@@ -114,7 +112,7 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {
     [NormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
     [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
     μHE[d] (r • s) = ‖r‖₊ ^ d • μHE[d] s := by
-  rw [euclideanHausdorffMeasure, Measure.smul_apply, hausdorffMeasure_smul₀ (by simp) hr,
+  rw [euclideanHausdorffMeasure_def, Measure.smul_apply, hausdorffMeasure_smul₀ (by simp) hr,
     Measure.smul_apply, smul_comm]
   simp
 
@@ -130,7 +128,7 @@ variable [MetricSpace P] [MeasurableSpace P] [BorelSpace P] [NormedAddTorsor V P
 
 theorem EuclideanSpace.euclideanHausdorffMeasure_eq_volume (d : ℕ) :
     (μHE[d] : Measure (EuclideanSpace ℝ (Fin d))) = volume := by
-  rw [euclideanHausdorffMeasure, ← isAddLeftInvariant_eq_smul]
+  rw [euclideanHausdorffMeasure_def, ← isAddLeftInvariant_eq_smul]
 
 theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
     (μHE[Module.finrank ℝ V] : Measure V) = volume := by
