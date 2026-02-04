@@ -569,13 +569,6 @@ lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
 
 /-! ## Implicit equation `T` -/
 
-omit [CompleteSpace E] in
-/-- If `f : E → E` is continuous on `u`, then `uncurry0 ∘ f` is continuous on `u`. -/
--- TODO: add to Mathlib?
-lemma continuousOn_uncurry0_comp {f : E → E} {u : Set E} (hf : ContinuousOn f u) :
-    ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
-  (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
-
 /-- The implicit equation that defines the flow as its implicit function (when `T = 0`) -/
 def T (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (p : E × C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) :=
@@ -599,17 +592,19 @@ lemma contDiffAt_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (
 /-- If `α : FunSpace t₀ x₀ 0 L` is a fixed point of `next hPL hx₀`, then
 `T f u t₀ (x₀, α.toContinuousMap) = 0`. This connects the Picard-Lindelöf fixed point to the
 implicit function theorem formulation. -/
-lemma T_eq_zero_of_isFixedPt_next {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+lemma T_eq_zero_of_isFixedPt_next {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a L K : ℝ≥0}
     (hPL : IsPicardLindelof (fun _ ↦ f) t₀ x₀ a 0 L K) {α : ODE.FunSpace t₀ x₀ 0 L}
     (hα : range α ⊆ u) (h : IsFixedPt (ODE.FunSpace.next hPL (mem_closedBall_self le_rfl)) α) :
     T f u t₀ (x₀, α.toContinuousMap) = 0 := by
   ext t
   have heq := (ODE.FunSpace.isFixedPt_next_iff hPL (mem_closedBall_self le_rfl)).mp h t
+  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   rw [T, curry0_apply, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
     ODE.FunSpace.toContinuousMap_apply_eq_apply, ContinuousMap.zero_apply, heq, ODE.picard_apply,
-    integralCMLM_apply_if_pos (continuousOn_uncurry0_comp hfu), integralCM_apply_if_pos hα,
-    integralFun, sub_add_cancel_left, neg_add_eq_zero]
+    integralCMLM_apply_if_pos hg, integralCM_apply_if_pos hα, integralFun, sub_add_cancel_left,
+    neg_add_eq_zero]
   congr
 
 /-- If `T f u t₀ (x₀, α) = 0`, then `α` satisfies the integral equation for the ODE `α' = f ∘ α`
@@ -619,9 +614,10 @@ lemma eq_picard_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0) (t : Icc tmin tmax) :
     α t = ODE.picard (fun _ ↦ f) t₀ x₀ (fun t ↦ compProj t₀ α t) t := by
   replace hT := ContinuousMap.ext_iff.mp hT t
+  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   rw [T, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
-    ContinuousMap.zero_apply, ContinuousMultilinearMap.curry0_apply,
-    integralCMLM_apply_if_pos (continuousOn_uncurry0_comp hf),
+    ContinuousMap.zero_apply, ContinuousMultilinearMap.curry0_apply, integralCMLM_apply_if_pos hg,
     integralCM_apply_if_pos hα, integralFun, sub_add_eq_add_sub, sub_eq_zero] at hT
   simp [← hT]
 
