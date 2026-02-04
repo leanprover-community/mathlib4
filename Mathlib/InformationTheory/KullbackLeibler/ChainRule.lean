@@ -143,7 +143,8 @@ lemma _root_.ConvexOn.exists_affine_le (hf : ConvexOn ℝ s f) (hs : Convex ℝ 
 
 end ConvexOn
 
-lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+variable (μ ν) in
+lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] :
     ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := by
   let t := (Measure.mutuallySingular_singularPart ν μ).nullSet
   have ht : MeasurableSet t := (Measure.mutuallySingular_singularPart ν μ).measurableSet_nullSet
@@ -161,16 +162,17 @@ lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] (hμν :
       rw [add_comm, Measure.rnDeriv_add_singularPart ν μ]
     rw [this]
     exact self_le_add_right _ _
-  _ = μ tᶜ := by rw [Measure.setLIntegral_rnDeriv hμν]
+  _ ≤ μ tᶜ := Measure.setLIntegral_rnDeriv_le _
   _ = 0 := (Measure.mutuallySingular_singularPart ν μ).measure_compl_nullSet
 
+variable (ν) in
 lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
-    (h : ∀ᵐ a ∂μ, p a) (hμν : μ ≪ ν) :
+    (h : ∀ᵐ a ∂μ, p a) :
     ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
   rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
   constructor
   · rw [← ν.haveLebesgueDecomposition_add μ]
-    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := rnDeriv_eq_zero_ae_singularPart hμν
+    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := rnDeriv_eq_zero_ae_singularPart μ ν
     filter_upwards [this] with x hx h_absurd using absurd hx h_absurd
   · have h_ac : μ.withDensity (ν.rnDeriv μ) ≪ μ := withDensity_absolutelyContinuous _ _
     rw [← ν.haveLebesgueDecomposition_add μ]
@@ -184,7 +186,7 @@ lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α →
     have h := ν.rnDeriv_withDensity (μ.measurable_rnDeriv ν)
     filter_upwards [this, h] with x hx1 hx2
     rwa [hx2] at hx1
-  refine ae_rnDeriv_ne_zero_imp_of_ae_aux ?_ (withDensity_absolutelyContinuous _ _)
+  refine ae_rnDeriv_ne_zero_imp_of_ae_aux ν ?_
   exact (Measure.absolutelyContinuous_of_le (μ.withDensity_rnDeriv_le ν)) h
 
 section Integrable
