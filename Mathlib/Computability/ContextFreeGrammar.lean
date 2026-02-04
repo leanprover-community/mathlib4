@@ -385,7 +385,7 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
 namespace ContextFreeGrammar.Embedding
 variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
 
-/-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
+/-- Production by `g₀` can be mirrored by production by `g`. -/
 lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
     (hG : g₀.Produces w₁ w₂) :
     g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -397,7 +397,7 @@ lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
-/-- Derivation by `G.g₀` can be mirrored by derivation by `G.g`. -/
+/-- Derivation by `g₀` can be mirrored by derivation by `g`. -/
 lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
     (hG : g₀.Derives w₁ w₂) :
     g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -405,34 +405,28 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
-/-- A `Symbol` comes from the embedding or is a terminal iff it is one of those nonterminals that
+/-- A `Symbol` stems from the embedding or is a terminal iff it is one of those nonterminals that
 result from projecting or it is any terminal. -/
 inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Prop
   | terminal (t : T) : FromEmbeddingOrTerminal G (.terminal t)
   | nonterminal (n₀ : g₀.NT) : FromEmbeddingOrTerminal G (.nonterminal (G.embedNT n₀))
 
-/-- A string is from the embedding or terminals iff every `Symbol` in it is. -/
-def FromEmbeddingOrTerminalString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
-  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → FromEmbeddingOrTerminal G a
-
-lemma fromEmbeddingOrTerminalString_singleton {s : Symbol T g.NT}
-    (hs : G.FromEmbeddingOrTerminal s) : G.FromEmbeddingOrTerminalString [s] := by
-  simpa [FromEmbeddingOrTerminalString] using hs
-
-/-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain any
-nonterminals that `G.g₀` lacks. -/
+/-- Production by `g` can be mirrored by `g₀` production if the first word does not contain any
+nonterminals that `g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Produces w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
+    (hG : g.Produces w₁ w₂) (hw₁ : List.Forall (FromEmbeddingOrTerminal G) w₁) :
     g₀.Produces
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    G.FromEmbeddingOrTerminalString w₂ := by
+    List.Forall (FromEmbeddingOrTerminal G) w₂ := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
+  have hw₁_mem : ∀ a ∈ u ++ [Symbol.nonterminal r.input] ++ v, G.FromEmbeddingOrTerminal a := by
+    simpa [List.forall_iff_forall_mem] using hw₁
   have from_embedding_or_terminal_input :
       G.FromEmbeddingOrTerminal (Symbol.nonterminal r.input) := by
-    apply hw₁
+    apply hw₁_mem
     simp
   revert from_embedding_or_terminal_input
   generalize hr_eq : r.input = n
@@ -465,8 +459,8 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
             List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
           using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
     · rw [aft, ← hrr₀]
-      simp only [FromEmbeddingOrTerminalString, List.forall_mem_append] at hw₁ ⊢
-      refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
+      simp only [List.forall_iff_forall_mem, List.forall_mem_append] at hw₁_mem ⊢
+      refine ⟨⟨hw₁_mem.left.left, ?_⟩, hw₁_mem.right⟩
       intro a ha
       cases a
       · constructor
@@ -479,21 +473,21 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
       | nonterminal s' => exact FromEmbeddingOrTerminal.nonterminal s'
 
 private lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
+    (hG : g.Derives w₁ w₂) (hw₁ : List.Forall (FromEmbeddingOrTerminal G) w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    G.FromEmbeddingOrTerminalString w₂ := by
+    List.Forall (FromEmbeddingOrTerminal G) w₂ := by
   induction hG with
   | refl => exact ⟨by rfl, hw₁⟩
   | tail _ orig ih =>
     have both := produces_filterMap orig ih.right
     exact ⟨ContextFreeGrammar.Derives.trans_produces ih.left both.left, both.right⟩
 
-/-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
-any nonterminals that `G.g₀` lacks. -/
+/-- Derivation by `g` can be mirrored by `g₀` derivation if the starting word does not contain
+any nonterminals that `g₀` lacks. -/
 lemma derives_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
+    (hG : g.Derives w₁ w₂) (hw₁ : List.Forall (FromEmbeddingOrTerminal G) w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
@@ -738,20 +732,16 @@ private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
       (List.map Symbol.terminal w)) :
     w ∈ g₁.language := by
   apply w.filterMap_symbol_filterMap_terminal g₁g.projectNT ▸ g₁g.derives_filterMap hw
-  intro a ha
-  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rw [ha]
-  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₁.initial
+  simpa using
+    (ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal (G := g₁g) g₁.initial)
 
 private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial) : (g₁.union g₂).NT)]
       (List.map Symbol.terminal w)) :
     w ∈ g₂.language := by
   apply w.filterMap_symbol_filterMap_terminal g₂g.projectNT ▸ g₂g.derives_filterMap hw
-  intro a ha
-  simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-  rw [ha]
-  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₂.initial
+  simpa using
+    (ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal (G := g₂g) g₂.initial)
 
 private lemma map_inl_injective : ((ContextFreeRule.map · (Option.some ∘ Sum.inl)) :
     ContextFreeRule T g₁.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))).Injective := by
