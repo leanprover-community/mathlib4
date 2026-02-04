@@ -313,14 +313,14 @@ def enrichedBifunctorEquiv.from (F : EnrichedFunctor V (C × D) E) : EnrichedBif
       tensorHom_comp_tensorHom, Category.assoc, Iso.inv_hom_id, Category.comp_id]
     rw [tensorμ_unit_unit]
 
-lemma enrichedFunctorEq (F G : EnrichedFunctor V C D) (obj_eq : F.obj = G.obj)
-    (map_eq : HEq F.map G.map) : F = G := by
-  induction F with
-    | mk F_obj F_map F_map_id F_map_comp =>
-    induction G with
-    | mk G_obj G_map G_map_id G_map_comp =>
-      simp only [EnrichedFunctor.mk.injEq]
-      exact And.intro obj_eq map_eq
+-- lemma enrichedFunctorEq (F G : EnrichedFunctor V C D) (obj_eq : F.obj = G.obj)
+--     (map_eq : HEq F.map G.map) : F = G := by
+--   induction F with
+--     | mk F_obj F_map F_map_id F_map_comp =>
+--     induction G with
+--     | mk G_obj G_map G_map_id G_map_comp =>
+--       simp only [EnrichedFunctor.mk.injEq]
+--       exact And.intro obj_eq map_eq
 
 def enrichedBifunctorEquiv : (EnrichedBifunctor V C D E) ≃ (EnrichedFunctor V (C × D) E) where
   toFun := enrichedBifunctorEquiv.to V C D E
@@ -329,8 +329,10 @@ def enrichedBifunctorEquiv : (EnrichedBifunctor V C D E) ≃ (EnrichedFunctor V 
     refine EnrichedBifunctor.ext rfl ?_ ?_
     case refine_1 =>
       refine heq_of_eq (funext₃ (fun c c' d => ?_))
-      have : (enrichedBifunctorEquiv.from V C D E (enrichedBifunctorEquiv.to V C D E F)).map_left c c' d
-        = (ρ_ _).inv ≫ (_ ◁ eId V d) ≫ (enrichedBifunctorEquiv.to V C D E F).map ⟨c, d⟩ ⟨c', d⟩ := rfl
+      have : (enrichedBifunctorEquiv.from V C D E
+          (enrichedBifunctorEquiv.to V C D E F)).map_left c c' d =
+          (ρ_ _).inv ≫ (_ ◁ eId V d) ≫ (enrichedBifunctorEquiv.to V C D E F).map ⟨c, d⟩ ⟨c', d⟩ :=
+        rfl
       rw [this]
       have : (enrichedBifunctorEquiv.to V C D E F).map ⟨c, d⟩ ⟨c', d⟩
         = ((F.map_left c c' d) ⊗ₘ (F.map_right c' d d)) ≫ eComp V _ _ _ := rfl
@@ -344,11 +346,12 @@ def enrichedBifunctorEquiv : (EnrichedBifunctor V C D E) ≃ (EnrichedFunctor V 
       rw [e_comp_id]
       exact Category.comp_id _
     refine heq_of_eq (funext₃ (fun c d d' => ?_))
-    have : (enrichedBifunctorEquiv.from V C D E (enrichedBifunctorEquiv.to V C D E F)).map_right c d d'
-      = (λ_ _).inv ≫ (eId V c ▷ _) ≫ (enrichedBifunctorEquiv.to V C D E F).map ⟨c, d⟩ ⟨c, d'⟩ := rfl
+    have : (enrichedBifunctorEquiv.from V C D E
+      (enrichedBifunctorEquiv.to V C D E F)).map_right c d d' =
+      (λ_ _).inv ≫ (eId V c ▷ _) ≫ (enrichedBifunctorEquiv.to V C D E F).map ⟨c, d⟩ ⟨c, d'⟩ := rfl
     rw [this]
-    have : (enrichedBifunctorEquiv.to V C D E F).map ⟨c, d⟩ ⟨c, d'⟩
-      = ((F.map_left c c d) ⊗ₘ (F.map_right c d d')) ≫ eComp V _ _ _ := rfl
+    have : (enrichedBifunctorEquiv.to V C D E F).map ⟨c, d⟩ ⟨c, d'⟩ =
+      ((F.map_left c c d) ⊗ₘ (F.map_right c d d')) ≫ eComp V _ _ _ := rfl
     rw [this]
     rw [← tensorHom_id]
     rw [tensorHom_comp_tensorHom_assoc]
@@ -359,9 +362,12 @@ def enrichedBifunctorEquiv : (EnrichedBifunctor V C D E) ≃ (EnrichedFunctor V 
     rw [e_id_comp]
     exact Category.comp_id _
   right_inv := fun F => by
-    apply enrichedFunctorEq
-    · exact rfl
-    refine heq_of_eq (funext₂ (fun p q => ?_))
+    fapply EnrichedFunctor.ext
+    · intro p
+      exact rfl
+    intro p q
+    rw [eqToHom_refl, Category.comp_id]
+    -- refine heq_of_eq (funext₂ (fun p q => ?_))
     let F' := enrichedBifunctorEquiv.from V C D E F
     have : (enrichedBifunctorEquiv.to V C D E F').map p q =
       ((F'.map_left p.1 q.1 p.2) ⊗ₘ (F'.map_right q.1 p.2 q.2)) ≫ eComp V _ _ _ := rfl
