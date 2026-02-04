@@ -272,29 +272,6 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
 
 /-! ## Derivative of `integralCMLM` -/
 
-/-- For a compact set `s` with `f` continuous at each point, there exists a uniform `δ > 0` such
-that `f` has controlled variation near `s`: if `x ∈ s` and `y` is within distance `δ` of `x`,
-then `f x` and `f y` are within distance `ε`. -/
--- TODO: add to Mathlib?
-lemma _root_.IsCompact.exists_dist_lt_of_forall_continuousAt
-    {X : Type*} [PseudoMetricSpace X] {Y : Type*} [PseudoMetricSpace Y]
-    {s : Set X} {f : X → Y} (hs : IsCompact s) (hf : ∀ x ∈ s, ContinuousAt f x)
-    {ε : ℝ} (hε : 0 < ε) :
-    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → dist (f x) (f y) < ε := by
-  have h := fun x (hx : x ∈ s) ↦ Metric.continuousAt_iff.mp (hf x hx) (ε / 2) (half_pos hε)
-  choose δₓ hδₓ h using h
-  let c : s → Set X := fun ⟨x, hx⟩ ↦ ball x (δₓ x hx)
-  have hcover : s ⊆ ⋃ i, c i := fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, mem_ball_self (hδₓ x hx)⟩
-  obtain ⟨δ, hδ, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
-  refine ⟨δ, hδ, fun x hx y hxy ↦ ?_⟩
-  obtain ⟨⟨z, hz⟩, hball⟩ := hleb x hx
-  have hxz : dist x z < δₓ z hz := hball (mem_ball_self hδ)
-  have hyz : dist y z < δₓ z hz := hball (by simpa only [mem_ball, dist_comm])
-  calc dist (f x) (f y)
-    _ ≤ dist (f x) (f z) + dist (f y) (f z) := dist_triangle_right _ _ _
-    _ < ε / 2 + ε / 2 := add_lt_add (h z hz hxz) (h z hz hyz)
-    _ = ε := add_halves ε
-
 omit [CompleteSpace E] in
 /-- If `g` is `C^1` on an open set `u` and `h` provides uniform control on the derivative's
 variation near a point `x ∈ u`, then `g` is well-approximated by its derivative with error
@@ -377,7 +354,7 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
   have hs : IsCompact (range α) := isCompact_range α.continuous
   have hfderiv : ContinuousOn (fderiv ℝ g) u := hg.continuousOn_fderiv_of_isOpen hu le_rfl
   obtain ⟨δ₁, hδ₁, hthick⟩ := hs.exists_thickening_subset_open hu hα
-  obtain ⟨δ₂, hδ₂, hdist⟩ := hs.exists_dist_lt_of_forall_continuousAt
+  obtain ⟨δ₂, hδ₂, hdist⟩ := hs.exists_forall_le_dist
     (fun x hx ↦ hfderiv.continuousAt (hu.mem_nhds (hα hx))) hε'
   rw [Metric.eventually_nhds_iff]
   refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun α' hdist' ↦ ?_⟩
