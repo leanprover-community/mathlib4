@@ -629,8 +629,7 @@ lemma isClosed_mulForbidden [DiscreteTopology A] (F : Set (Pattern A G)) :
     refine isClosed_iInter (fun hp => ?_)
     refine isClosed_iInter (fun v => ?_)
     -- For each `p, hp, v`, the section is the complement of an open occurrence set.
-    have : {x | ¬ p.mulOccursInAt x v} = {x | p.mulOccursInAt x v}ᶜ := by
-      ext x; simp
+    have : {x | ¬ p.mulOccursInAt x v} = {x | p.mulOccursInAt x v}ᶜ := by ext; simp
     simpa [this, isClosed_compl_iff] using
       isOpen_mulOccursInAt (A := A) (G := G) p v
   simpa using h_closed
