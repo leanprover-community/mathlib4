@@ -93,6 +93,20 @@ theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Iso
   unfold euclideanHausdorffMeasure
   rw [Measure.map_smul, map_hausdorffMeasure hf (by simp), Measure.restrict_smul]
 
+/-!
+### Applying scalers to `μHE[d]`
+-/
+
+open Pointwise in
+theorem MeasureTheory.Measure.euclideanHausdorffMeasure_smul₀ {𝕜 : Type*} {E : Type*}
+    [NormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+    [MeasurableSpace E] [BorelSpace E] (d : ℕ) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
+    μHE[d] (r • s) = ‖r‖₊ ^ d • μHE[d] s := by
+  rw [euclideanHausdorffMeasure, Measure.smul_apply, hausdorffMeasure_smul₀ (by simp) hr,
+    Measure.smul_apply, smul_comm]
+  simp
+
+
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
 variable [FiniteDimensional ℝ V]
@@ -104,14 +118,14 @@ variable [MetricSpace P] [MeasurableSpace P] [BorelSpace P] [NormedAddTorsor V P
 
 theorem EuclideanSpace.euclideanHausdorffMeasure_eq_volume (d : ℕ) :
     (μHE[d] : Measure (EuclideanSpace ℝ (Fin d))) = volume := by
-  rw [euclideanHausdorffMeasure, ← MeasureTheory.Measure.isAddLeftInvariant_eq_smul]
+  rw [euclideanHausdorffMeasure, ← isAddLeftInvariant_eq_smul]
 
 theorem InnerProductSpace.euclideanHausdorffMeasure_eq_volume :
     (μHE[Module.finrank ℝ V] : Measure V) = volume := by
-  rw [← (stdOrthonormalBasis ℝ V).measurePreserving_repr_symm.map_eq]
-  rw [← (stdOrthonormalBasis ℝ V).repr.toIsometryEquiv
-      |>.symm.measurePreserving_euclideanHausdorffMeasure _ |>.map_eq]
-  rw [EuclideanSpace.euclideanHausdorffMeasure_eq_volume]
+  rw [← (stdOrthonormalBasis ℝ V).measurePreserving_repr_symm.map_eq,
+    ← (stdOrthonormalBasis ℝ V).repr.toIsometryEquiv
+      |>.symm.measurePreserving_euclideanHausdorffMeasure _ |>.map_eq,
+    EuclideanSpace.euclideanHausdorffMeasure_eq_volume]
   rfl
 
 /-!
