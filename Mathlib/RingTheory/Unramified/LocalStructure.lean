@@ -20,9 +20,9 @@ there exists `f ∉ Q` and a standard etale algebra `A` over `R` that surjects o
 Geometrically, this says that unramified morphisms locally are closed subsets of etale covers.
 
 ## Main definition and results
-- `HasStandardEtaleSurjectionAt`: The predicate
+- `HasStandardEtaleSurjectionOn`: The predicate
   "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
-- `Algebra.IsUnramified.exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top`:
+- `Algebra.IsUnramified.exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top`:
   The claim is true when `S` has the form `R[X]/I` and is finite over `R`.
 
 ## TODO (@erdOne)
@@ -42,20 +42,20 @@ variable {R A S : Type*} [CommRing R] [CommRing A] [CommRing S] [Algebra R S] [A
 variable (R) in
 /-- The predicate "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
 We shall show if `S` is `R`-unramified at `Q` then there exists `f ∉ Q` satisfying it. -/
-def HasStandardEtaleSurjectionAt (f : S) : Prop :=
+def HasStandardEtaleSurjectionOn (f : S) : Prop :=
   ∃ (P : StandardEtalePair R) (φ : P.Ring →ₐ[R] Localization.Away f), Function.Surjective φ
 
-lemma HasStandardEtaleSurjectionAt.mk [Algebra.IsStandardEtale R A]
+lemma HasStandardEtaleSurjectionOn.mk [Algebra.IsStandardEtale R A]
     {Sf : Type*} [CommRing Sf] [Algebra R Sf] [Algebra S Sf] [IsScalarTower R S Sf]
     {f : S} [IsLocalization.Away f Sf] (φ : A →ₐ[R] Sf) (H : Function.Surjective φ) :
-    HasStandardEtaleSurjectionAt R f :=
+    HasStandardEtaleSurjectionOn R f :=
   let P : StandardEtalePresentation R A := Nonempty.some inferInstance
   ⟨P.P, (((IsLocalization.algEquiv (.powers f) (Localization.Away f) Sf).restrictScalars R)
     |>.symm.toAlgHom).comp (φ.comp P.equivRing.symm.toAlgHom), by simpa⟩
 
-lemma HasStandardEtaleSurjectionAt.of_dvd
-    {f g : S} (H : HasStandardEtaleSurjectionAt R f) (h : f ∣ g) :
-    HasStandardEtaleSurjectionAt R g := by
+lemma HasStandardEtaleSurjectionOn.of_dvd
+    {f g : S} (H : HasStandardEtaleSurjectionOn R f) (h : f ∣ g) :
+    HasStandardEtaleSurjectionOn R g := by
   obtain ⟨P, φ, hsurj⟩ := H
   obtain ⟨g, rfl⟩ := h
   obtain ⟨a, ha⟩ := hsurj (algebraMap _ _ g)
@@ -65,14 +65,14 @@ lemma HasStandardEtaleSurjectionAt.of_dvd
   exact .mk _ (IsLocalization.Away.mapₐ_surjective_of_surjective
     (Aₚ := Localization.Away a) (Bₚ := Localization.Away (φ a)) a hsurj)
 
-lemma HasStandardEtaleSurjectionAt.isStandardEtale
-    {f : S} (H : HasStandardEtaleSurjectionAt R f) [Algebra.Etale R (Localization.Away f)] :
+lemma HasStandardEtaleSurjectionOn.isStandardEtale
+    {f : S} (H : HasStandardEtaleSurjectionOn R f) [Algebra.Etale R (Localization.Away f)] :
     Algebra.IsStandardEtale R (Localization.Away f) :=
   .of_surjective _ _ _ _ H.choose_spec.choose_spec
 
 namespace Algebra.IsUnramifiedAt
 
-private theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₁
+private theorem exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₁
     (P : Ideal R) [P.IsPrime] (x : S) (hx : adjoin R {x} = ⊤) :
     (RingHom.ker (aeval (R := R) x).toRingHom).map (mapRingHom (algebraMap R P.ResidueField)) =
       RingHom.ker (aeval (1 ⊗ₜ x : P.ResidueField ⊗[R] S)).toRingHom := by
@@ -93,7 +93,7 @@ private theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq
   · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-private theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₂
+private theorem exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂
     (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime]
     [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q] (x : S) (p : R[X])
     (hp₁ : Ideal.span {p.map (algebraMap R P.ResidueField)} =
@@ -119,10 +119,10 @@ private theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq
   · apply Algebra.algebra_ext; intros r; congr 1; ext x; simp [← IsScalarTower.algebraMap_apply]
   · simp [← Algebra.TensorProduct.right_algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
-lemma exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top
+lemma exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
     [Module.Finite R S] (H : ∃ x : S, Algebra.adjoin R {x} = ⊤)
     (Q : Ideal S) [Q.IsPrime] [Algebra.IsUnramifiedAt R Q] :
-    ∃ f ∉ Q, HasStandardEtaleSurjectionAt R f := by
+    ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
   cases subsingleton_or_nontrivial S
   · cases Ideal.IsPrime.ne_top' (Subsingleton.elim Q ⊤)
   have := (algebraMap R S).domain_nontrivial
@@ -134,13 +134,13 @@ lemma exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top
   obtain ⟨p, hpI, hp⟩ := Ideal.exists_mem_span_singleton_map_residueField_eq P I
   have hI' : I.map (mapRingHom (algebraMap R P.ResidueField)) =
       RingHom.ker (aeval (1 ⊗ₜ x : P.ResidueField ⊗[R] S)).toRingHom :=
-    exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₁ P x hx
+    exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₁ P x hx
   have hmp₁ : minpoly P.ResidueField (algebraMap S Q.ResidueField x) ∣ p.map (algebraMap _ _) := by
     rw [minpoly.dvd_iff, aeval_map_algebraMap, aeval_algebraMap_apply,
       show aeval x p = 0 from RingHom.mem_ker.mp hpI, map_zero]
   have hmp₂ :
       ¬ minpoly P.ResidueField (algebraMap S Q.ResidueField x) ^ 2 ∣ p.map (algebraMap _ _) :=
-    exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₂
+    exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂
       P Q x p (hp.trans hI') hx
   let q := minpoly R x ^ (p.natDegree + 2) + p
   have ⟨w, h₁, h₂⟩ : ∃ w, q.map (algebraMap R P.ResidueField) =

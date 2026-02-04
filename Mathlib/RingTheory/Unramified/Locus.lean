@@ -70,9 +70,7 @@ theorem IsUnramifiedAt.residueField
     (hQ' : Q = Q'.comap Algebra.TensorProduct.includeRight.toRingHom) :
     IsUnramifiedAt P.ResidueField Q' := by
   let f₀ : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q' :=
-    ⟨Localization.localRingHom Q Q' _ hQ', fun r ↦ by
-      simp [Localization.localRingHom_to_map,
-        IsScalarTower.algebraMap_apply R A (Localization.AtPrime _)]; rfl⟩
+    Localization.localAlgHom Q Q' _ hQ'
   have hf₀ : Function.Surjective f₀ := by
     subst hQ'; exact P.surjectiveOnStalks_residueField.baseChange' _ _
   let f : P.Fiber (Localization.AtPrime Q) →ₐ[P.ResidueField] Localization.AtPrime Q' :=
