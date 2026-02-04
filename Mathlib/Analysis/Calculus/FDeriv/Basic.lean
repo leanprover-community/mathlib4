@@ -282,6 +282,9 @@ protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
 protected theorem DifferentiableWithinAt.empty : DifferentiableWithinAt 𝕜 f ∅ x :=
   ⟨0, .empty⟩
 
+@[fun_prop]
+theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
+
 theorem HasFDerivWithinAt.of_finite [T1Space E] (h : s.Finite) : HasFDerivWithinAt f f' s x := by
   induction s, h using Set.Finite.induction_on with
   | empty => exact .empty
