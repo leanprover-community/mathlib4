@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Submanifold
 public import Mathlib.Geometry.Manifold.RegularPoint
+public import Mathlib.Geometry.Manifold.Submersion
 
 /-! # The regular value theorem
 
@@ -49,6 +50,19 @@ Finite-dimensional versions:
 public noncomputable section
 
 variable {f : M → N}
+
+section move
+
+variable {x : M}
+
+lemma IsRegularPoint.isSubmersionAt (hx : IsRegularPoint I J f x) :
+    IsSubmersionAt I J n f x := by
+  sorry
+
+lemma IsSubmersionAt.isRegularPoint (hf : IsSubmersionAt I J n f x) : IsRegularPoint I J f x := by
+  sorry
+
+end move
 
 variable (I) in
 def ModelWithCorners.restrictPreimage (M : Submodule 𝕜 E₁) : ModelWithCorners 𝕜 M (I ⁻¹' M) where

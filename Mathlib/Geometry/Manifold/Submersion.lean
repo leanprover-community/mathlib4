@@ -133,7 +133,7 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
   rw [IsSubmersionAt]
-  use h.smallComplement, by infer_instance, by infer_instance
+  use h.smallComplement, inferInstance, inferInstance
   sorry -- will follow once the API is added!
   -- exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
@@ -223,7 +223,7 @@ namespace IsSubmersionOfComplement
 variable {f g : M → N}
 
 /-- If `f` is a submersion, it is a submersion at each point. -/
-lemma isSubmersionAt (h : IsSubmersionOfComplement F I J n f) (x : M) :
+lemma isSubmersionAtOfComplement (h : IsSubmersionOfComplement F I J n f) (x : M) :
     IsSubmersionAtOfComplement F I J n f x :=
   h x
 
@@ -249,11 +249,11 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isSubmersion (h : IsSubmersionOfComplement F I J n f) : IsSubmersion I J n f := by
   by_cases! hM : IsEmpty M
   · rw [IsSubmersion]
-    use PUnit, by infer_instance, by infer_instance
+    use PUnit, inferInstance, inferInstance
     exact fun x ↦ (IsEmpty.false x).elim
   inhabit M
   let x : M := Inhabited.default
-  use (h x).smallComplement, by infer_instance, by infer_instance
+  use (h x).smallComplement, inferInstance, inferInstance
   sorry -- exact (IsSubmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
 open IsManifold in
@@ -303,6 +303,12 @@ lemma isSubmersionOfComplement_complement (h : IsSubmersion I J n f) :
     IsSubmersionOfComplement h.complement I J n f :=
   Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
+/-- If `f` is a submersion, it is a submersion at each point. -/
+lemma isSubmersion (h : IsSubmersion I J n f) (x : M) :
+    IsSubmersionAt I J n f x :=
+  ⟨h.complement, inferInstance, inferInstance,
+    h.isSubmersionOfComplement_complement.isSubmersionAtOfComplement x⟩
+
 /-- If `f: M → N` and `g: M' × N'` are submersions, so is `f × g: M × N → M' × N'`. -/
 theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
@@ -314,7 +320,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
 open IsManifold in
 /-- The identity map is a submersion. -/
 protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) :=
-  ⟨PUnit, by infer_instance, by infer_instance, sorry /-IsSubmersionOfComplement.id-/⟩
+  ⟨PUnit, inferInstance, inferInstance, sorry /-IsSubmersionOfComplement.id-/⟩
 
 /-- A `C^n` submersion is `C^n`. -/
 theorem contMDiff (h : IsSubmersion I J n f) : ContMDiff I J n f :=
