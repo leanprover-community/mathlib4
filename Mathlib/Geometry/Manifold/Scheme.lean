@@ -7,11 +7,15 @@ module
 
 public import Mathlib.Geometry.Manifold.RegularValueTheorem
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+public import Mathlib.Geometry.Manifold.Sheaf.LocallyRingedSpace
 
 /-! # Analytification of a standard smooth algebra as a manifold
 
 to be written!
 -/
+
+universe u
 
 public section
 
@@ -19,6 +23,34 @@ open scoped ContDiff
 open Manifold Topology Function Set
 
 section
+
+noncomputable
+def Module.End.funMap {ι : Type*} {R S : Type*} [CommRing R] [CommRing S]
+    (f : R → S) [Fintype ι] [DecidableEq ι]
+    (l : Module.End R (ι → R)) : Module.End S (ι → S) :=
+  (l.toMatrix'.map f).toLin'
+
+noncomputable
+def Module.End.funMapHom {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
+    Module.End R (ι → R) →+* Module.End S (ι → S) :=
+  (Matrix.toLinAlgEquiv (Pi.basisFun _ _)).toRingHom.comp <|
+    f.mapMatrix.comp (LinearMap.toMatrixAlgEquiv (Pi.basisFun _ _)).toRingHom
+
+@[simp]
+lemma Module.End.funMapHom_apply {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) (l : Module.End R (ι → R)) :
+    Module.End.funMapHom f l = l.funMap f := by
+  rfl
+
+@[simp]
+lemma Module.End.funMap_single {ι : Type*} {R S : Type*} [CommRing R] [CommRing S]
+    (f : R → S) [Fintype ι] [DecidableEq ι]
+    (l : Module.End R (ι → R)) (i : ι) (x : S) :
+    l.funMap f (Pi.single i x) = x • (f ∘ l (Pi.single i 1)) := by
+  ext
+  rw [← Pi.basisFun_apply, ← mul_one x, ← smul_eq_mul, Pi.single_smul]
+  simp [funMap, ← Pi.single_apply]
 
 lemma Function.Injective.extend_single_zero {α β γ : Type*} [DecidableEq α] [DecidableEq β] [Zero γ]
     (f : α → β) (hf : Function.Injective f) (a : α) (x : γ) :
@@ -80,11 +112,11 @@ lemma MvPolynomial.eval_pderiv_eq_fderiv_aeval {ι : Type*} [DecidableEq ι] [Fi
 
 namespace Algebra
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {R : Type*} [CommRing R] [Algebra 𝕜 R]
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {R : Type u} [CommRing R] [Algebra 𝕜 R]
 variable {S : Type*} [CommRing S] [Algebra R S]
 variable {T : Type*} [CommRing T] [Algebra R T]
-variable {ι σ : Type*}
+variable {ι σ : Type u}
 
 namespace Presentation
 
@@ -103,6 +135,7 @@ def evaluation' (P : Presentation R S ι σ) (x : (ι → R)) : σ → R :=
   fun r ↦ (P.relation r).eval x
 
 end Algebra
+
 end Presentation
 
 namespace PreSubmersivePresentation
@@ -116,6 +149,17 @@ noncomputable
 def aevalDifferential' (x : ι → T) : (σ → T) →ₗ[T] (σ → T) :=
   (Pi.basisFun T σ).constr T fun i j ↦
     MvPolynomial.aeval x (MvPolynomial.pderiv (P.map i) (P.relation j))
+
+@[simp]
+lemma aevalDifferential'_single [DecidableEq σ] (x : ι → T) (i j : σ) :
+    P.aevalDifferential' x (Pi.single i 1) j = ((P.relation j).pderiv (P.map i)).aeval x := by
+  simp [← Pi.basisFun_apply, aevalDifferential']
+
+lemma aevalDifferential'_comp [Fintype σ] [DecidableEq σ] {A : Type*} [CommRing A]
+    [Algebra R A] (f : T →ₐ[R] A) (x : ι → T) :
+    P.aevalDifferential' (f ∘ x) = Module.End.funMap f (P.aevalDifferential' x) := by
+  refine (Pi.basisFun A σ).ext fun i ↦ ?_
+  simp [aevalDifferential', MvPolynomial.comp_aeval_apply, Function.comp_def]
 
 end Algebra
 
@@ -153,27 +197,102 @@ end PreSubmersivePresentation
 
 namespace SubmersivePresentation
 
+section Algebra
+
+variable [Finite σ] (P : SubmersivePresentation R S ι σ)
+
+lemma aevalDifferential'_bijective {x : ι → R} (hx : P.evaluation x = 0) :
+    Function.Bijective (P.aevalDifferential' x) := by
+  classical
+  cases nonempty_fintype σ
+  rw [← Module.End.isUnit_iff, ← LinearMap.isUnit_toMatrix'_iff]
+  let f : S →ₐ[R] R :=
+    (Ideal.Quotient.liftₐ _ (MvPolynomial.aeval x) <| by
+      simp_rw [← RingHom.mem_ker, ← SetLike.le_def]
+      rw [← P.span_range_relation_eq_ker, Ideal.span_le, Set.range_subset_iff]
+      intro i
+      exact congr($(hx) i)).comp
+    (P.quotientEquiv.symm.toAlgHom.restrictScalars R)
+  have (i : ι) : P.quotientEquiv.symm (P.val i) = Ideal.Quotient.mk _ (MvPolynomial.X i) := by
+    simp [← P.quotientEquiv.injective.eq_iff]
+  have hx : x = f ∘ P.val := by ext; simp [f, -Presentation.quotientEquiv_symm, this]
+  have heq (i : σ) : Pi.single i 1 = f.toRingHom ∘ Pi.single i 1 := by ext; simp [Pi.single_apply]
+  -- TODO: remove the `transpose` when mathlib's `aevalDifferential` is fixed
+  have : LinearMap.toMatrix' (P.aevalDifferential' x) =
+      f.mapMatrix P.aevalDifferential.toMatrix'.transpose := by
+    refine Matrix.ext_of_mulVec_single fun i ↦ ?_
+    ext j
+    conv_rhs => rw [heq]
+    rw [LinearMap.toMatrix'_mulVec, AlgHom.mapMatrix_apply, ← AlgHom.coe_toRingHom,
+      ← AlgHom.toRingHom_eq_coe, ← f.map_mulVec _ (Pi.single i 1) j]
+    simp [← Pi.single_apply, P.aevalDifferential_single, hx, Function.comp_def]
+  rw [this]
+  refine IsUnit.map _ ?_
+  simpa [Module.End.isUnit_iff, ← P.isUnit_jacobian_iff_aevalDifferential_bijective] using
+    P.jacobian_isUnit
+
+end Algebra
+
 section Analysis
 
 variable [Fintype ι] [Fintype σ] (P : SubmersivePresentation 𝕜 R ι σ)
 
 variable [CompleteSpace 𝕜]
 
-lemma isRegularValue_zero :
-    IsRegularValue 𝓘(𝕜, ι → 𝕜) 𝓘(𝕜, σ → 𝕜) P.evaluation 0 := by
+/-- The evaluation `(ι → 𝕜) → (σ → 𝕜)` given by evaluating the defining equations of `P`
+has regular value `0`. -/
+lemma isRegularValue_zero : IsRegularValue 𝓘(𝕜, ι → 𝕜) 𝓘(𝕜, σ → 𝕜) P.evaluation 0 := by
   intro x hx
-  unfold IsRegularPoint
+  dsimp only [IsRegularPoint]
   refine .of_surjective_of_finiteDimensional ?_
-  dsimp
-  have := P.fderiv_evaluation x
   suffices h : Function.Surjective (P.aevalDifferential' x) by
     rw [← P.fderiv_evaluation x] at h
     apply Function.Surjective.of_comp
     exact h
+  exact (P.aevalDifferential'_bijective hx).surjective
+
+@[expose]
+def manifold : Type u :=
+  P.isRegularValue_zero.Preimage
+  deriving TopologicalSpace
+
+instance : ChartedSpace P.isRegularValue_zero.modelSpace' P.manifold :=
+  inferInstanceAs <| ChartedSpace P.isRegularValue_zero.modelSpace' P.isRegularValue_zero.Preimage
+
+instance : IsManifold 𝓘(𝕜, P.isRegularValue_zero.modelSpace') ω P.manifold :=
+  inferInstanceAs <|
+    IsManifold 𝓘(𝕜, P.isRegularValue_zero.modelSpace') ω P.isRegularValue_zero.Preimage
+
+def manifoldι : P.manifold → (ι → 𝕜) :=
+  P.isRegularValue_zero.inclusion
+
+lemma isSmoothEmbedding_manifoldι :
+    IsSmoothEmbedding 𝓘(𝕜, P.isRegularValue_zero.modelSpace') 𝓘(𝕜, ι → 𝕜) ω P.manifoldι :=
+  P.isRegularValue_zero.foo
+
+variable {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
+  {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
+  {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
+
+open AlgebraicGeometry CategoryTheory Limits IsManifold
+
+def manifoldEquivAlgHom : P.manifold ≃ (R →ₐ[𝕜] 𝕜) :=
+  sorry
+
+def toSpec (x : P.manifold) : Spec (.of R) :=
+  ⟨Ideal.map (MvPolynomial.aeval (R := 𝕜) P.val)
+    (Ideal.span <| Set.range <| fun i : ι ↦ MvPolynomial.X i - (MvPolynomial.C (x.1 i))),
+    sorry⟩
+
+/-- `P.manifold` is the analytification of `Spec R`. -/
+theorem exists_toSpec_comp_eq
+    (f : locallyRingedSpace IM M ⟶ Scheme.forgetToLocallyRingedSpace.obj (Spec (.of R))) :
+    ∃ (g : M → P.manifold),
+      ContMDiff IM 𝓘(𝕜, P.isRegularValue_zero.modelSpace') ω g ∧
+        P.toSpec ∘ g = (LocallyRingedSpace.forgetToTop.map f).hom.1 := by
   sorry
 
 end Analysis
-
 
 end SubmersivePresentation
 
