@@ -19,6 +19,7 @@ public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.UnfoldBoundary
 public meta import Mathlib.Util.MemoFix
 
 /-!
@@ -179,6 +180,11 @@ structure TranslateData : Type where
     translated thanks to this, you generally have to specify the translated name manually.
   -/
   doTranslateAttr : NameMapExtension Bool
+  /-- The `insert_cast`/`insert_cast_fun` attributes create an abstraction boundary for the tagged
+  constant when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
+  morally self-dual, but their definition is not self-dual. So, in order to allow these constants
+  to be self-dual, we need to not unfold their definition in the proof term that we translate. -/
+  unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaryExt := none
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension TranslationInfo
@@ -194,7 +200,7 @@ attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
 
 /-- Get the translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option TranslationInfo :=
-  (t.translations.getState env).find?
+  t.translations.find? env
 
 /-- Get the translation name for the given name. -/
 def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
@@ -240,7 +246,7 @@ def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
 where
   /-- Insert only one direction of a translation. -/
   insertTranslationAux (src : Name) (t : TranslateData) (info : TranslationInfo) : CoreM Unit := do
-    if let some info' := (t.translations.getState (← getEnv)).find? src then
+    if let some info' := t.translations.find? (← getEnv) src then
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
       if info.translation != info'.translation then
@@ -560,11 +566,21 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
-    renameBinderNames t decl.type
-  if let some v := decl.value? (allowOpaque := true) then
-    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
-  return decl
+  let mut value := decl.value! (allowOpaque := true)
+  if let some b := t.unfoldBoundaries? then
+    value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+  trace[translate] "Value before translation:{indentExpr value}"
+  value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
+  if let some b := t.unfoldBoundaries? then
+    value ← b.unfoldInsertions value
+  decl := decl.updateValue value
+  let mut type := decl.type
+  if let some b := t.unfoldBoundaries? then
+    type ← b.insertBoundaries decl.type t.attrName
+  type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
+  if let some b := t.unfoldBoundaries? then
+    type ← b.unfoldInsertions type
+  return decl.updateType type
 
 /--
 Find the argument of `nm` that appears in the first translatable (type-class) argument.
@@ -601,9 +617,7 @@ def declUnfoldSimpAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let mut decl := decl
   decl := decl.updateType <| ← unfold decl.type
   if let some v := decl.value? (allowOpaque := true) then
-    trace[translate] "value before unfold:{indentExpr v}"
     decl := decl.updateValue <| ← unfold v
-    trace[translate] "value after unfold:{indentExpr decl.value!}"
   return decl
 
 /-- Find the target name of `src`, which is assumed to have been selected by `findAuxDecls`. -/
@@ -898,7 +912,10 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
-  let srcType ← applyReplacementForall t cfg.dontTranslate srcDecl.type
+  let mut srcType := srcDecl.type
+  if let some b := t.unfoldBoundaries? then
+    srcType ← b.insertBoundaries srcType t.attrName
+  srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←
@@ -920,12 +937,14 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       Please remove the attribute, or provide an explicit `(reorder := ...)` argument.\n\
       If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
       use `{t.attrName}_do_translate` instead"
-  let srcType ← reorderForall reorder srcType
+  srcType ← reorderForall reorder srcType
+  if let some b := t.unfoldBoundaries? then
+    srcType ← b.unfoldInsertions srcType
   if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   -- instantiate both types with the same universes. `instantiateLevelParams` does some
   -- normalization, so we apply it to both types.
-  let srcType := srcType.instantiateLevelParams
+  srcType := srcType.instantiateLevelParams
     srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
