@@ -25,8 +25,6 @@ This concept is used to give a conceptual definition of submersions between Bana
 ## TODO
 - find a better location for this file; the `HahnBanach` folder was emptied intentionally!
 - is "split epimorphism/split surjection" a better term?
-- can we generalise *everything* to not require a normed, but e.g. topological modules?
-  (in that case, "continuous right inverse" is certainly better terminology)
 
 -/
 
@@ -66,7 +64,7 @@ lemma congr {g : E →L[R] F} (hf : f.HasBoundedRightInverse) (hfg : g = f) :
     g.HasBoundedRightInverse :=
   hfg ▸ hf
 
-/-- A continuous linear equivalence has a bounded right inverse. -/
+/-- A continuous linear equivalence has a continuous right inverse. -/
 lemma _root_.ContinuousLinearEquiv.hasBoundedRightInverse (f : E ≃L[R] F) :
     f.toContinuousLinearMap.HasBoundedRightInverse :=
   ⟨f.symm, rightInverse_of_comp (by simp)⟩
@@ -77,71 +75,61 @@ lemma of_isInvertible (hf : IsInvertible f) : f.HasBoundedRightInverse := by
   exact e.hasBoundedRightInverse
 
 -- FUTURE (once mathlib has a notion of Fredholm operators):
--- If `E` and `F` are Banach and `f : E → F` is Fredholm, then `f` has a bounded right inverse.
+-- If `E` and `F` are Banach and `f : E → F` is Fredholm, then `f` has a continuous right inverse.
 
 /-- If `f` and `g` split, then so does `f × g`. -/
 lemma prodMap {g : E' →L[R] F'} (hf : f.HasBoundedRightInverse) (hg : g.HasBoundedRightInverse) :
     (f.prodMap g).HasBoundedRightInverse := by
   sorry -- left for Samantha
 
--- TODO: after completing the sorries here,
--- investigate if the hypotheses on `R` can be weakened, and if e.g. working with a ring suffices
-section Field
+variable [TopologicalSpace G] [AddCommMonoid G] [Module R G]
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
-  [TopologicalSpace E] [AddCommMonoid E] [Module 𝕜 E]
-  [TopologicalSpace E'] [AddCommMonoid E'] [Module 𝕜 E']
-  [TopologicalSpace F] [AddCommMonoid F] [Module 𝕜 F]
-  [TopologicalSpace F'] [AddCommMonoid F'] [Module 𝕜 F']
-  [TopologicalSpace G] [AddCommMonoid G] [Module 𝕜 G] {f : E →L[𝕜] F}
-
--- The next results may or may not require additional completeness hypotheses.
-lemma comp {g : F →L[𝕜] G} (hg : g.HasBoundedRightInverse) (hf : f.HasBoundedRightInverse) :
+lemma comp {g : F →L[R] G} (hg : g.HasBoundedRightInverse) (hf : f.HasBoundedRightInverse) :
     (g.comp f).HasBoundedRightInverse := by
-  sorry
+  -- TODO: sorry for Samantha
+  obtain ⟨finv, hfinv⟩ := hf
+  obtain ⟨ginv, hginv⟩ := hg
+  refine ⟨finv.comp ginv, fun x ↦ ?_⟩
+  simp only [coe_comp', Function.comp_apply]
+  rw [hfinv, hginv]
 
-lemma of_comp {g : F →L[𝕜] G}
-    (hg : g.HasBoundedRightInverse) (hfg : (g.comp f).HasBoundedRightInverse) :
-    f.HasBoundedRightInverse := by
-  sorry
+lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasBoundedRightInverse) :
+    g.HasBoundedRightInverse := by
+  -- TODO: sorry for Samantha
+  obtain ⟨fginv, hfginv⟩ := hfg
+  refine ⟨f.comp fginv, fun y ↦ ?_⟩
+  simp only [coe_comp', Function.comp_apply]
+  exact hfginv y
 
-lemma of_comp_iff {g : F →L[𝕜] G} (hg : g.HasBoundedRightInverse) :
-    (g.comp f).HasBoundedRightInverse ↔ f.HasBoundedRightInverse :=
-  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
-
-end Field
-
-section
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  --[NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  [TopologicalSpace G] [AddCommMonoid G] [Module 𝕜 G]
-  {f : E →L[𝕜] F}
-
--- TODO: the completeness hypotheses might not be necessary; remove if .comp is sorry-free!
-lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.HasBoundedRightInverse) :
+lemma compCLE_left {f₀ : F' ≃L[R] E} (hf : f.HasBoundedRightInverse) :
     (f.comp f₀.toContinuousLinearMap).HasBoundedRightInverse :=
   hf.comp f₀.hasBoundedRightInverse
 
-lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.HasBoundedRightInverse) :
+lemma compCLE_right {g : F ≃L[R] F'} (hf : f.HasBoundedRightInverse) :
     (g.toContinuousLinearMap.comp f).HasBoundedRightInverse :=
   g.hasBoundedRightInverse.comp hf
 
-/-- `ContinuousLinearMap.fst` has a bounded right inverse. -/
-lemma continuousLinearMap_fst : (ContinuousLinearMap.fst 𝕜 F G).HasBoundedRightInverse := by
+/-- `ContinuousLinearMap.fst` has a continuous right inverse. -/
+lemma continuousLinearMap_fst : (ContinuousLinearMap.fst R F G).HasBoundedRightInverse := by
   use (ContinuousLinearMap.id _ _).prod 0
   intro x
   simp
 
-/-- `ContinuousLinearMap.snd` has a bounded right inverse. -/
-lemma continuousLinearMap_snd : (ContinuousLinearMap.snd 𝕜 F G).HasBoundedRightInverse := by
-  use ContinuousLinearMap.prod 0 (.id 𝕜 G)
+/-- `ContinuousLinearMap.snd` has a continuous right inverse. -/
+lemma continuousLinearMap_snd : (ContinuousLinearMap.snd R F G).HasBoundedRightInverse := by
+  use ContinuousLinearMap.prod 0 (.id R G)
   intro x
   simp
 
-/-- If `f : E → F` is surjective and `F` is finite-dimensional, `f` has a bounded right inverse. -/
+section NontriviallyNormedField
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {f : E →L[𝕜] F}
+
+/-- If `f : E → F` is surjective and `F` is finite-dimensional,
+`f` has a continuous right inverse. -/
 lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Surjective f) :
     f.HasBoundedRightInverse := by
@@ -150,7 +138,7 @@ lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional
     f.toLinearMap.exists_rightInverse_of_surjective (f.range_eq_top_of_surjective hf)
   exact ⟨⟨g, LinearMap.continuous_of_finiteDimensional _⟩, fun x ↦ congr($hg x)⟩
 
-end
+end NontriviallyNormedField
 
 end ContinuousLinearMap.HasBoundedRightInverse
 
