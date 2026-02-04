@@ -47,7 +47,6 @@ namespace CategoryTheory
 open Category MonoidalCategory
 
 
-<<<<<<< HEAD
 /-- Auxiliary structure to carry only the data fields of (and provide notation for)
 `CategoricalGroup`. -/
 class CategoricalGroupStruct (C : Type u) [Groupoid.{v} C] [MonoidalCategory.{v} C] where
@@ -110,45 +109,9 @@ extends CategoricalGroupStruct C where
       ≫ (α_ (X′) X (X′)).inv ≫ (ε_ X).hom ▷ (X′) =
       (ρ_ (X′)).hom  ≫
       (λ_ (X′)).inv := by cat_disch
-=======
 
 
-/-- A braided monoidal category is a monoidal category equipped with a braiding isomorphism
-`β_ X Y : X ⊗ Y ≅ Y ⊗ X`
-which is natural in both arguments,
-and also satisfies the two hexagon identities.
--/
-class CategoricalGroup (C : Type u) [Groupoid.{v} C] [MonoidalCategory.{v} C] where
-  /-- The negator functor -/
-  negator : C ⥤  C
-  /-- Left cancellation isomorphism, usually denoted by ε -/
-  cancel_left : ∀ X : C, negator.obj X ⊗ X ≅ 𝟙_ C
-  /-- Right cancellation isomorphism, usually denoted by η -/
-  cancel_right : ∀ X : C, 𝟙_ C ≅ X ⊗ negator.obj X
-  cancel_naturality_left :
-    ∀  {X Y : C} (f : X ⟶ Y),
-      (negator.map f) ▷ X ≫ (negator.obj Y) ◁ f ≫ (cancel_left Y).hom = (cancel_left X).hom  := by
-    cat_disch
-  cancel_naturality_right :
-    ∀ {X Y : C} (f : X ⟶ Y),
-      (X ◁ (negator.map f)) ≫ (f ▷ (negator.obj Y)) ≫ ((cancel_right Y).inv)
-        = (cancel_right X).inv := by
-    cat_disch
->>>>>>> 1382fcff18 (The definition is complete)
 
-  cancellation_right :
-    ∀ X : C,
-      (λ_ X).inv ≫ (cancel_right X).hom ▷ X ≫ (α_ X (negator.obj X) X).hom ≫
-        X ◁ (cancel_left X).hom ≫ (ρ_ X).hom = 𝟙 X  := by cat_disch
-
-  cancellation_left :
-    ∀ X : C,
-      (ρ_ (negator.obj X)).inv ≫ (negator.obj X) ◁ (cancel_right X).hom
-      ≫ (α_ (negator.obj X) X (negator.obj X)).inv ≫ (cancel_left X).hom ▷ (negator.obj X) ≫
-      (λ_ (negator.obj X)).hom = 𝟙 (negator.obj X) := by cat_disch
-
-
-<<<<<<< HEAD
 attribute [reassoc (attr := simp)]
   CategoricalGroup.zigzag_1
 attribute [reassoc (attr := simp)]
@@ -159,23 +122,6 @@ namespace CategoricalGroup
 
 variable {C : Type u} [Groupoid.{v} C] [MonoidalCategory.{v} C] [CategoricalGroup C]
 
-=======
-
-attribute [reassoc (attr := simp)]
-  CategoricalGroup.cancellation_right
-  CategoricalGroup.cancellation_left
--- attribute [reassoc] CategoricalGroup.cancellation_left CategoricalGroup.cancellation_right
-
-open CategoricalGroup
-
-@[inherit_doc]
-notation "η_" => CategoricalGroup.cancel_right
-notation "ε_" => CategoricalGroup.cancel_left
-
-namespace CategoricalGroup
-
-variable {C : Type u} [Groupoid.{v} C] [MonoidalCategory.{v} C] [CategoricalGroup.{v} C]
->>>>>>> 1382fcff18 (The definition is complete)
 
 /-- The negator on morphisms -/
 def negatorHom {X Y : C} (f : X ⟶ Y) : X′ ⟶ Y′ :=
