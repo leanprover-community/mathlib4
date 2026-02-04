@@ -51,8 +51,7 @@ namespace AddCommGrpCat
 
 theorem injective_as_module_iff : Injective (ModuleCat.of ℤ A) ↔
     Injective (C := AddCommGrpCat) (AddCommGrpCat.of A) :=
-  ((forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).asEquivalence.map_injective_iff
-    (ModuleCat.of ℤ A)).symm
+  ((forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).asEquivalence.map_injective_iff (ModuleCat.of ℤ A)).symm
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
     Injective (C := AddCommGrpCat) (AddCommGrpCat.of A) :=
