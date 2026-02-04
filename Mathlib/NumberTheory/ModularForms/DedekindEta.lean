@@ -33,7 +33,7 @@ it is a multiple of the Eisenstein series `E2`.
 open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex
 
-open _root_.UpperHalfPlane hiding I
+open UpperHalfPlane hiding I
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
@@ -155,11 +155,10 @@ lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   unfold eta
   rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
     Periodic.qParam]) (eta_tprod_ne_zero z.2) (by fun_prop) (differentiableAt_eta_tprod z.2)]
-  have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet (x := z)
+  have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet (x := ⟨z, z.2⟩)
     (f := fun n x => 1 - eta_q n x) (fun i ↦ one_sub_eta_q_ne_zero i z.2)
     (by simp_rw [eta_q_eq_pow]; fun_prop) (summable_logDeriv_one_sub_eta_q z.2)
     (multipliableLocallyUniformlyOn_eta ) (eta_tprod_ne_zero z.2)
-  rw [show z.1 = UpperHalfPlane.coe z by rfl] at HG
   simp only [logDeriv_qParam 24 z, HG, tsum_logDeriv_eta_q z, E2, one_div,
     mul_inv_rev, Pi.smul_apply, smul_eq_mul]
   rw [G2_eq_tsum_cexp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
