@@ -21,9 +21,7 @@ open Function Set Topology
 public section
 
 universe u
--- XXX. I *think* a `NontriviallyNormedField` suffices; if RCLike is required, it will be for the
--- composition of split continuous linear maps. I believe this is fine, but the proof is not
--- sorry-free yet.
+-- A `NontriviallyNormedField` suffices; one lemma requires 𝕜 to be complete.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F F' G : Type*} {E' : Type u}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
@@ -78,7 +76,8 @@ variable {f g : M → M'} {x : M}
 private lemma fderiv_surjective (hf : IsRegularPoint I I' f x) :
     Surjective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) := hf.surjective
 
--- TODO: is this lemma useful? if so, add `differentiableAt_of_fderiv_surjective` and prove it!
+-- I *think* this lemma is useful for the proof of `comp`.
+-- add `differentiableAt_of_fderiv_surjective`, then deduce this lemma!
 lemma differentiableAt_writtenInExtChartAt (hf : IsRegularPoint I I' f x) :
     DifferentiableAt 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x) x) :=
   sorry -- differentiableAt_of_fderiv_surjective hf.fderiv_surjective
@@ -103,7 +102,7 @@ lemma continuousAt (hf : IsRegularPoint I I' f x) : ContinuousAt f x :=
 lemma congr (hf : IsRegularPoint I I' f x) (hfg : g =ᶠ[𝓝 x] f) : IsRegularPoint I I' g x := by
   unfold IsRegularPoint at hf ⊢
   have aux : g ∘ (extChartAt I x).symm =ᶠ[𝓝 ((extChartAt I x) x)] f ∘ (extChartAt I x).symm := by
-    apply Filter.EventuallyEq.comp_tendsto hfg
+    apply hfg.comp_tendsto
     -- should this be a separate lemma?
     have := ContinuousAt.tendsto (f := (extChartAt I x).symm) (continuousAt_extChartAt_symm x)
     rwa [extChartAt_to_inv x] at this
@@ -113,62 +112,22 @@ lemma congr (hf : IsRegularPoint I I' f x) (hfg : g =ᶠ[𝓝 x] f) : IsRegularP
 variable [IsManifold I 1 M] [IsManifold J 1 N] [IsManifold I' 1 M'] [IsManifold J' 1 N'] in
 lemma prodMap {y : N} (hf : IsRegularPoint I I' f x) {g : N → N'} (hg : IsRegularPoint J J' g y) :
     IsRegularPoint (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
-  sorry -- proof was the following!
-  /- have hf' := hf.mdifferentiableAt
+  have hf' := hf.mdifferentiableAt
   have hg' := hg.mdifferentiableAt
-  unfold MSplitsAt at hf hg ⊢
-  rw [mfderiv_prodMk ?_ sorry]
-  swap
-  · have : (fun x ↦ (Prod.map f g x).1) = (fun x ↦ f x.1) := sorry
-    rw [this]
-    have (x : M × N) : MDifferentiableAt (I.prod J) I (fun x : M × N ↦ x.1) x := sorry
-    sorry --apply MDifferentiableAt.comp x.1 this hf
-  convert hf.prodMap hg
-  simp only [Prod.map_apply, Prod.map_fst, Prod.map_snd]
-  -- missing simp lemma!
-  sorry -/
-
--- This section needs redoing/might be fully obsolete anyway!
-section
-
-variable [IsManifold I 1 M] {e : OpenPartialHomeomorph M H} {x : M}
-
-/-- The `mfderiv` of an extended chart is a local diffeomorphism. -/
--- XXX: proven on a prior version of #9273; without any assumptions on the boundary
-def extendMfderivToContinousLinearEquiv
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) E := sorry
-
-@[simp, mfld_simps]
-lemma extendMfderivToContinousLinearEquiv_coe
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    (extendMfderivToContinousLinearEquiv he hx).toContinuousLinearMap =
-      mfderiv I (modelWithCornersSelf 𝕜 E) (e.extend I) x :=
-  sorry -- rfl
-
-def extend_symm_mfderivToContinousLinearEquiv
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) E (TangentSpace I x) := sorry
-
-@[simp, mfld_simps]
-lemma extend_symm_mfderivToContinousLinearEquiv_coe
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    (extend_symm_mfderivToContinousLinearEquiv he hx).toContinuousLinearMap =
-      mfderiv (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) := sorry
-
-------------------
-
-lemma extend (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    IsRegularPoint I (modelWithCornersSelf 𝕜 E) (e.extend I) x :=
-  sorry -- needs redoing; we don't need this lemma directly any more
-  -- proof was: (extendMfderivToContinousLinearEquiv he hx).splits.congr (by simp)
-
-lemma extend_symm (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    IsRegularPoint (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) :=
-  sorry -- needs redoing; we don't need this lemma directly any more
-  -- proof was: (extend_symm_mfderivToContinousLinearEquiv he hx).splits.congr (by simp)
-
-end
+  unfold IsRegularPoint at hf hg ⊢
+  rw [writtenInExtChart_prod] -- TODO misnamed lemma!
+  -- missing lemma: fderiv of Prod.map (assuming both maps are differentiable, I presume?)
+  -- then hopefully just
+  -- apply ContinuousLinearMap.HasBoundedRightInverse.prodMap
+  -- seeds from the immersion proof
+  -- swap
+  -- · have : (fun x ↦ (Prod.map f g x).1) = (fun x ↦ f x.1) := sorry
+  --   rw [this]
+  --   have (x : M × N) : MDifferentiableAt (I.prod J) I (fun x : M × N ↦ x.1) x := sorry
+  --   sorry --apply MDifferentiableAt.comp x.1 this hf
+  -- convert hf.prodMap hg
+  -- simp only [Prod.map_apply, Prod.map_fst, Prod.map_snd]
+  sorry
 
 lemma of_isInvertible (hf : (mfderiv I I' f x).IsInvertible) : IsRegularPoint I I' f x := by
   sorry
@@ -178,9 +137,12 @@ lemma _root_.IsLocalDiffeomorphAt.isRegularPoint
   of_isInvertible (hf.isInvertible_mfderiv hn)
 
 /-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
+-- TODO: I guess we don't need completeness at all!
 lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {g : M' → N} (hg : IsRegularPoint I' J g (f x)) (hf : IsRegularPoint I I' f x) :
     IsRegularPoint I J (g ∘ f) x := by
+  unfold IsRegularPoint at hf hg ⊢
+  have aux := hg.comp hf
   sorry
   -- have hg' := hg.differentiableAt_writtenInExtChartAt
   -- have hx' :
@@ -224,8 +186,7 @@ lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [Compl
 lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
     IsRegularPoint I I' f x ↔ IsRegularPoint J I' (f ∘ f₀) y := by
-  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn,
-    fun h ↦ ?_⟩
+  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn, fun h ↦ ?_⟩
   have hg₀' : IsLocalDiffeomorphAt I J n hf₀.localInverse (f₀ y) :=
     hf₀.localInverse_isLocalDiffeomorphAt
   have : hf₀.localInverse x = y := hxy ▸ hf₀.localInverse_left_inv hf₀.localInverse_mem_target
@@ -243,7 +204,7 @@ lemma comp_isLocalDiffeomorphAt_right [CompleteSpace E] [CompleteSpace E'] [Comp
 lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSpace E']
     [IsManifold I 1 M] [IsManifold J 1 N]
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
-    IsRegularPoint I I' f x ↔  IsRegularPoint I J (g ∘ f) x := by
+    IsRegularPoint I I' f x ↔ IsRegularPoint I J (g ∘ f) x := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_right hg hn,
     fun h ↦ ?_⟩
   have hg' : IsLocalDiffeomorphAt J I' n hg.localInverse (g (f x)) :=

@@ -324,18 +324,18 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsSubmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
   hf.isSubmersionOfComplement_complement.prodMap hg.isSubmersionOfComplement_complement
     |>.isSubmersion
-#check IsSubmersionOfComplement.id
+
 open IsManifold in
 /-- The identity map is a submersion. -/
 protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) :=
-  ⟨PUnit, inferInstance, inferInstance, sorry /-IsSubmersionOfComplement.id-/⟩
+  ⟨PUnit, inferInstance, inferInstance, IsSubmersionOfComplement.id⟩
 
 /-- A `C^n` submersion is `C^n`. -/
 theorem contMDiff (h : IsSubmersion I J n f) : ContMDiff I J n f :=
   sorry
 
 -- TODO: add characterisation in terms of the differential admitting a bounded right inverse,
--- the the composition property
+-- then the composition property
 
 lemma of_isRegularPoint (hf : ∀ x, IsRegularPoint I J f x) : IsSubmersion I J n f := by
   -- TODO think: do we get a global submersion, or just "IsSubmersionAt" for all x?
