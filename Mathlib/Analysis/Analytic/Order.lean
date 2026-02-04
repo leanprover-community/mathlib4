@@ -597,4 +597,17 @@ theorem preimage_zero_mem_codiscrete [ConnectedSpace 𝕜] {x : 𝕜} (hf : Anal
     f ⁻¹' {0}ᶜ ∈ codiscrete 𝕜 :=
   hf.preimage_zero_mem_codiscreteWithin hx trivial isConnected_univ
 
+lemma analyticOrderAt_eq_top_iff_eq_zero [PreconnectedSpace 𝕜] {f : 𝕜 → E} (z : 𝕜)
+    (hf : ∀ z₀, AnalyticAt 𝕜 f z₀) : analyticOrderAt f z = ⊤ ↔ f = 0 := by
+  refine analyticOrderAt_eq_top.trans ⟨fun h ↦ eqOn_univ .. |>.mp ?_, by simp +contextual⟩
+  apply eqOn_zero_of_preconnected_of_frequently_eq_zero (fun z _ ↦ hf z) isPreconnected_univ trivial
+  exact hf z |>.frequently_eq_iff_eventually_eq analyticAt_const |>.mpr h
+
+lemma _root_.IsOpen.forall_analyticOrderAt_eq_top_iff_eqOn_zero {s : Set 𝕜} (hs : IsOpen s)
+    (f : 𝕜 → E) : (∀ z ∈ s, analyticOrderAt f z = ⊤) ↔ EqOn f 0 s := by
+  refine ⟨(EventuallyEq.eq_of_nhds <| analyticOrderAt_eq_top.mp <| · · ·), fun hzero z hz ↦ ?_⟩
+  apply analyticOrderAt_eq_top.mpr
+  filter_upwards [hs.mem_nhds hz]
+  exact fun _ ↦ hzero.eq_of_mem
+
 end AnalyticOnNhd
