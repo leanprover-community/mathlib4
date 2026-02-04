@@ -229,7 +229,6 @@ instance : CommRing Nimber where
   __ : AddCommGroupWithOne Nimber := inferInstance
 
 instance : IsDomain Nimber where
-instance : CancelMonoidWithZero Nimber where
 
 /-! ### Nimber division -/
 

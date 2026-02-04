@@ -477,7 +477,7 @@ end DiscreteUniformity
 def TotallyBounded (s : Set α) : Prop :=
   ∀ d ∈ 𝓤 α, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, { x | (x, y) ∈ d }
 
-/-- A filter `f` is totally bounded if for every entourage `d`, the `d`-neigborhood of some finite
+/-- A filter `f` is totally bounded if for every entourage `d`, the `d`-neighborhood of some finite
 set is in `f`. -/
 protected def Filter.TotallyBounded (f : Filter α) :=
   ∀ d : SetRel α α, d ∈ 𝓤 α → ∃ t : Set α, t.Finite ∧ d.preimage t ∈ f
@@ -683,7 +683,7 @@ protected theorem Filter.totallyBounded_iff_filter {g : Filter α} :
     have hb : Antitone fun t : Finset α ↦ g ⊓ 𝓟 (d.preimage t)ᶜ :=
       fun s t (h : s ⊆ t) => by beta_reduce; gcongr
     have : Filter.NeBot f :=
-      (Filter.iInf_neBot_iff_of_directed' <| hb.directed_ge ).mpr fun t =>
+      (Filter.iInf_neBot_iff_of_directed' <| hb.directed_ge).mpr fun t =>
         Filter.notMem_iff_inf_principal_compl.mp <| hd_cover t t.finite_toSet
     have : f ≤ g := iInf_le_of_le ∅ (by simp)
     refine ⟨f, ‹_›, ‹_›, fun c hcf hc => ?_⟩
@@ -800,7 +800,7 @@ theorem isCompact_closure_interUnionBalls {p : ℕ → Prop} {U : ℕ → SetRel
 
 In this section we prove that a uniform space is complete provided that it is sequentially complete
 (i.e., any Cauchy sequence converges) and its uniformity filter admits a countable generating set.
-In particular, this applies to (e)metric spaces, see the files `Topology/MetricSpace/EmetricSpace`
+In particular, this applies to (e)metric spaces, see the files `Topology/MetricSpace/EMetricSpace`
 and `Topology/MetricSpace/Basic`.
 
 More precisely, we assume that there is a sequence of entourages `U_n` such that any other

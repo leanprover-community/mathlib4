@@ -321,12 +321,13 @@ end Valuation
 
 end PadicSeq
 
+-- Porting note: Commented out `padic_index_simp` tactic
+
+/-
 section
 
 open PadicSeq
 
--- Porting note: Commented out `padic_index_simp` tactic
-/-
 private unsafe def index_simp_core (hh hf hg : expr)
     (at_ : Interactive.Loc := Interactive.Loc.ns [none]) : tactic Unit := do
   let [v1, v2, v3] ← [hh, hf, hg].mapM fun n => tactic.mk_app `` stationary_point [n] <|> return n
@@ -344,9 +345,9 @@ unsafe def tactic.interactive.padic_index_simp (l : interactive.parse interactiv
     (at_ : interactive.parse interactive.types.location) : tactic Unit := do
   let [h, f, g] ← l.mapM tactic.i_to_expr
   index_simp_core h f g at_
--/
 
 end
+-/
 
 namespace PadicSeq
 

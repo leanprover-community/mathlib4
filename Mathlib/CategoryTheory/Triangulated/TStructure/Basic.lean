@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
@@ -28,6 +29,7 @@ use depending on the context.
 
 ## TODO
 
+
 * define functors `t.truncLE n : C ⥤ C`, `t.truncGE n : C ⥤ C` and the
   associated distinguished triangles
 * promote these truncations to a (functorial) spectral object
@@ -48,10 +50,10 @@ namespace CategoryTheory
 
 open Limits
 
-namespace Triangulated
-
-variable (C : Type _) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+
+namespace Triangulated
 
 open Pretriangulated
 
@@ -177,11 +179,14 @@ lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n wh
 lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
   ge := (t.ge n).prop_of_iso e (t.ge_of_isGE X n)
 
-lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsLE X p] : t.IsLE X q where
+lemma isLE_of_le (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsLE X p] : t.IsLE X q where
   le := le_monotone t hpq _ (t.le_of_isLE X p)
 
-lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsGE X q] : t.IsGE X p where
+lemma isGE_of_ge (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsGE X q] : t.IsGE X p where
   ge := ge_antitone t hpq _ (t.ge_of_isGE X q)
+
+@[deprecated (since := "2026-01-30")] alias isLE_of_LE := isLE_of_le
+@[deprecated (since := "2026-01-30")] alias isGE_of_GE := isGE_of_ge
 
 lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) [t.IsLE X n] :
     t.IsLE (X⟦a⟧) n' :=
@@ -221,7 +226,7 @@ lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁ := by lia)
     [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 := by
   have := t.isLE_shift X n₀ n₀ 0 (add_zero n₀)
   have := t.isGE_shift Y n₁ n₀ (n₁ - n₀)
-  have := t.isGE_of_GE (Y⟦n₀⟧) 1 (n₁ - n₀)
+  have := t.isGE_of_ge (Y⟦n₀⟧) 1 (n₁ - n₀)
   apply (shiftFunctor C n₀).map_injective
   simp only [Functor.map_zero]
   apply t.zero'
@@ -236,6 +241,41 @@ lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁ := by lia)
     [t.IsLE X n₀] [t.IsGE X n₁] : IsZero X := by
   rw [IsZero.iff_id_eq_zero]
   exact t.zero _ n₀ n₁ h
+
+/-- The full subcategory consisting of `t`-bounded above objects. -/
+def minus : ObjectProperty C := fun X ↦ ∃ (n : ℤ), t.IsLE X n
+
+/-- The full subcategory consisting of `t`-bounded below objects. -/
+def plus : ObjectProperty C := fun X ↦ ∃ (n : ℤ), t.IsGE X n
+
+/-- The full subcategory consisting of `t`-bounded objects. -/
+def bounded : ObjectProperty C := t.plus ⊓ t.minus
+
+instance : t.minus.IsClosedUnderIsomorphisms where
+  of_iso e := by rintro ⟨n, _⟩; exact ⟨_, t.isLE_of_iso e n⟩
+
+instance : t.minus.IsStableUnderShift ℤ where
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro X ⟨i, _⟩
+        exact ⟨i - n, t.isLE_shift _ i _ _ (by omega)⟩ }
+
+instance : t.plus.IsClosedUnderIsomorphisms where
+  of_iso e := by rintro ⟨n, _⟩; exact ⟨_, t.isGE_of_iso e n⟩
+
+instance : t.plus.IsStableUnderShift ℤ where
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro X ⟨i, _⟩
+        exact ⟨i - n, t.isGE_shift _ i _ _ (by omega)⟩ }
+
+instance : t.bounded.IsClosedUnderIsomorphisms := by
+  dsimp [bounded]
+  infer_instance
+
+instance : t.bounded.IsStableUnderShift ℤ := by
+  dsimp [bounded]
+  infer_instance
 
 end TStructure
 

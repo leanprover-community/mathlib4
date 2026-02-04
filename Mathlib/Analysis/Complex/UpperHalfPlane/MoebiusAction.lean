@@ -221,7 +221,7 @@ lemma denom_cocycle_σ (g h : GL (Fin 2) ℝ) (z : ℍ) :
   denom_cocycle' g h z
 
 lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
-    g • z = mk (num g z / denom g z) (coe_smul_of_det_pos hg z ▸ (g • z).property) := by
+    g • z = ⟨num g z / denom g z, coe_smul_of_det_pos hg z ▸ (g • z).im_pos⟩ := by
   ext; simp [coe_smul_of_det_pos hg]
 
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
@@ -348,7 +348,7 @@ lemma forall_smul_eq_iff {g : GL (Fin 2) ℝ} : (∀ τ : ℍ, g • τ = τ) �
     simpa [hr, UpperHalfPlane.ext_iff, coe_smul, σ, Units.smul_def, (mul_self_nonneg r.val).not_gt,
       num, denom, div_eq_iff (Complex.ofReal_ne_zero.mpr r.ne_zero), Complex.ext_iff, neg_eq_self]
       using h ((1 : ℝ) +ᵥ I)
-  mpr := fun ⟨r, hr⟩ τ ↦ ext <| by
+  mpr := fun ⟨r, hr⟩ τ ↦ UpperHalfPlane.ext <| by
     simp [hr, coe_smul, σ, Units.smul_def, sq_pos_of_ne_zero r.ne_zero, num, denom]
 
 lemma forall_smul_eq_iff_of_det_eq_one {g : GL (Fin 2) ℝ} (hg : g.det = 1) :
@@ -388,7 +388,7 @@ theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : S
     g • z = mk
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
       ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ)))
-      (coe_specialLinearGroup_apply g z ▸ (g • z).property) := by
+      (coe_specialLinearGroup_apply g z ▸ (g • z).im_pos) := by
   ext; simp [coe_specialLinearGroup_apply]
 
 /- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;

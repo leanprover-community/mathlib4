@@ -477,7 +477,7 @@ theorem Valid.merge {l r} (hl : Valid l) (hr : Valid r)
     (sep : l.All fun x => r.All fun y => x < y) : Valid (@merge α l r) :=
   (Valid'.merge_aux hl hr sep).1
 
-theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
+theorem insertWith.valid_aux [@Std.Total α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) :
     ∀ {t o₁ o₂},
       Valid' o₁ t o₂ →
@@ -506,7 +506,7 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α �
         exact (e.add_left _).add_right _
       exact Or.inr ⟨_, e, h.3.1⟩
 
-theorem insertWith.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
+theorem insertWith.valid [@Std.Total α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) {t} (h : Valid t) : Valid (insertWith f x t) :=
   (insertWith.valid_aux _ _ hf h ⟨⟩ ⟨⟩).1
 
@@ -516,7 +516,7 @@ theorem insert_eq_insertWith [DecidableLE α] (x : α) :
   | node _ l y r => by
     unfold Ordnode.insert insertWith; cases cmpLE x y <;> simp [insert_eq_insertWith]
 
-theorem insert.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) {t} (h : Valid t) :
+theorem insert.valid [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) {t} (h : Valid t) :
     Valid (Ordnode.insert x t) := by
   rw [insert_eq_insertWith]; exact insertWith.valid _ _ (fun _ _ => ⟨le_rfl, le_rfl⟩) h
 
@@ -526,7 +526,7 @@ theorem insert'_eq_insertWith [DecidableLE α] (x : α) :
   | node _ l y r => by
     unfold insert' insertWith; cases cmpLE x y <;> simp [insert'_eq_insertWith]
 
-theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableLE α]
+theorem insert'.valid [@Std.Total α (· ≤ ·)] [DecidableLE α]
     (x : α) {t} (h : Valid t) : Valid (insert' x t) := by
   rw [insert'_eq_insertWith]; exact insertWith.valid _ _ (fun _ => id) h
 
@@ -688,16 +688,16 @@ instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, this replaces it. -/
-protected def insert [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
+protected def insert [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨Ordnode.insert x s.1, insert.valid _ s.2⟩
 
-instance instInsert [IsTotal α (· ≤ ·)] [DecidableLE α] : Insert α (Ordset α) :=
+instance instInsert [@Std.Total α (· ≤ ·)] [DecidableLE α] : Insert α (Ordset α) :=
   ⟨Ordset.insert⟩
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, the set is returned as is. -/
-nonrec def insert' [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
+nonrec def insert' [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨insert' x s.1, insert'.valid _ s.2⟩
 
