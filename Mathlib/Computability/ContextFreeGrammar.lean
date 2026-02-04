@@ -1174,18 +1174,20 @@ lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
         -- Use splitting to get two separate derivations
         obtain ⟨u'', v'', hu'', hv'', huv''⟩ := concatenation_split _ _ _ hg
         -- Extract words from the combined grammar back to original grammars
-        have feot_u : (@g₁g_concat T g₁ g₂).FromEmbeddingOrTerminalString
-            [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
-          intro a ha
-          simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-          rw [ha]
-          exact Embedding.FromEmbeddingOrTerminal.nonterminal g₁.initial
-        have feot_v : (@g₂g_concat T g₁ g₂).FromEmbeddingOrTerminalString
-            [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
-          intro a ha
-          simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
-          rw [ha]
-          exact Embedding.FromEmbeddingOrTerminal.nonterminal g₂.initial
+        have feot_u :
+            List.Forall (Embedding.FromEmbeddingOrTerminal
+                (G := (g₁g_concat (T := T) (g₁ := g₁) (g₂ := g₂))))
+              [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
+          simpa using
+            (Embedding.FromEmbeddingOrTerminal.nonterminal
+              (G := (g₁g_concat (T := T) (g₁ := g₁) (g₂ := g₂))) g₁.initial)
+        have feot_v :
+            List.Forall (Embedding.FromEmbeddingOrTerminal
+                (G := (g₂g_concat (T := T) (g₁ := g₁) (g₂ := g₂))))
+              [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
+          simpa using
+            (Embedding.FromEmbeddingOrTerminal.nonterminal
+              (G := (g₂g_concat (T := T) (g₁ := g₁) (g₂ := g₂))) g₂.initial)
         have hu_filter := (@g₁g_concat T g₁ g₂).derives_filterMap hu'' feot_u
         have hv_filter := (@g₂g_concat T g₁ g₂).derives_filterMap hv'' feot_v
         -- Extract the terminal words
