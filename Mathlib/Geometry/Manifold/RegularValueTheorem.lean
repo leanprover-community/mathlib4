@@ -70,26 +70,61 @@ variable (I J) in
 @[expose]
 def IsRegularValue (f : M → N) (y : N) := ∀ x ∈ f ⁻¹' {y}, IsRegularPoint I J f x
 
+/-- If `f` is a submersion, every point in `y` is a regular value of `f`. -/
+lemma IsSubmersion.isRegularValue (hf : IsSubmersion I J n f) (y : N) : IsRegularValue I J f y :=
+  fun x _hx ↦ (hf.isSubmersionAt x).isRegularPoint
+
+namespace IsRegularValue
+
 -- Suppose M is not empty. (Otherwise, we can do anything we want.)
 -- Pick a pre-image x of y. Then mfderiv has a bounded right inverse;
 -- take the image of that right inverse.
 
+/-- A complement in the model normed spaces `E` of `M` for the regular value `f x`. -/
 @[expose]
-def IsRegularValue.Complement {x : M} (hx : IsRegularValue I J f (f x)) : Type _ :=
+def Complement {x : M} (hx : IsRegularValue I J f (f x)) : Type _ :=
   (hx x rfl).choose.range
   deriving NormedAddCommGroup
 
-namespace IsRegularValue
+/-- A complement in the model normed spaces `E` of `M` for an arbitrary regular value `y`.
+If `y` is not in the range of `f`, we simply take the trivial normed space. -/
+@[expose] def Complement' {y : N} (hy : IsRegularValue I J f y) : Type _ := by
+  classical exact if h : y ∈ range f then (h.choose_spec ▸ hy).Complement else PUnit
+
+instance {y : N} (hy : IsRegularValue I J f y) : NormedAddCommGroup hy.Complement' := by
+  by_cases h : y ∈ range f
+  · simp only [Complement', h, ↓reduceDIte]; infer_instance
+  simp only [Complement', h, ↓reduceDIte]
+  infer_instance
 
 instance {x : M} (hx : IsRegularValue I J f (f x)) : NormedSpace 𝕜 hx.Complement := by
   delta Complement
   infer_instance
 
+-- TODO: expanding the definition of Complement' does not seem to work, at all!
+instance {y : N} (hy : IsRegularValue I J f y) : NormedSpace 𝕜 hy.Complement' := by
+  by_cases h : y ∈ range f
+  · simp [Complement', h]
+    --have : NormedSpace 𝕜 (h.choose_spec ▸ hy).Complement := sorry
+    sorry
+  simp only [Complement'] --, h, ↓reduceDIte]
+  sorry
+
+--- XXX(MR): do we really need _hf here?
 /-- The set `f ⁻¹' {f x}` coerced to a type that will be endowed with a manifold
 structure by the regular value theorem. -/
 @[nolint unusedArguments, expose]
 abbrev Preimage {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) : Type _ :=
   f ⁻¹' {f x}
+
+/-
+--- XXX(MR): do we really need _hf here?
+@[nolint unusedArguments, expose]
+abbrev PreimageWithin {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) (s : Set M) : Type _ :=
+  (s ∩ (f ⁻¹' {f x})) -/
+
+-- @[simp] lemma preimageWithin_univ {x : M} (_hx : IsRegularValue I J f (f x)) (_hf : ContMDiff I J n f) :
+--  PreimageWithin _hx _hf univ = Preimage _hx _hf := sorry
 
 /-- The model normed space for the manifold structure on `f ⁻¹' {f x}`. -/
 @[nolint unusedArguments, expose]
@@ -158,11 +193,38 @@ end sandbox
 -- Let us assume we have a boundaryless manifold: otherwise, the mathematics is less clear for now.
 section Boundaryless
 
+variable {x : M}
+/- Idea of proof: if x is a regular point of f, then f is a submersion at x.
+The submersion's given charts induce a slice chart,
+making f ⁻¹' {f x} ∩ chart source a charted space.
+(XXX: do we need to shrink the source to ensure f ⁻¹ f x has only one component belonging to x?
+ Maybe not!) -/
+-- Let's state this for a regular value, just to be safe.
+-- -- lemma intuition (hx : IsRegularPoint I J f x) :
+-- lemma intuition (hx : IsRegularValue I J f (f x)) :
+--  ChartedSpace (PreimageWithin f v hx.isSubmersionAt.domChart.source) hx.modelSpace := sorry
+
 /-- In a boundaryless manifold, the trivial model with corners is a fine choice. -/
 @[nolint unusedArguments, expose]
 def modelWithCorners {x : M} (hx : IsRegularValue I J f (f x)) :
     ModelWithCorners 𝕜 hx.modelSpace hx.modelSpace :=
   𝓘(𝕜, _)
+
+/-- The **regular value theorem** for boundaryless manifolds, main case:
+for a regular value `y` of `f` which lies in `range f`. -/
+def immersedSubmanifold_aux [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x))
+    (hf : ContMDiff I J n f) :
+    ImmersedSubmanifold hx.modelWithCorners I (hx.Preimage hf) M n hx.Complement where
+  map := Subtype.val
+  sliceModel := sorry -- should be a known condition
+  real_condition := sorry
+
+/-- The **regular value theorem** for boundaryless manifolds, for any regular `y` of `f`. -/
+instance immersedSubmanifold [I.Boundaryless] {y : N} (hy : IsRegularValue I J f y)
+    (hf : ContMDiff I J n f) :
+    -- hy.Preimage hf does not typecheck yet!
+    ImmersedSubmanifold hy.modelWithCorners I (hy.Preimage hf) M n hy.Complement' := by
+  sorry
 
 /-- The regular value theorem. -/
 instance immersedSubmanifold [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x))
@@ -172,9 +234,21 @@ instance immersedSubmanifold [I.Boundaryless] {x : M} (hx : IsRegularValue I J f
   sliceModel := sorry -- should be a known condition
   real_condition := sorry
 
-instance [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
+instance [I.Boundaryless] (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
     ChartedSpace hx.modelSpace (hx.Preimage hf) :=
   (hx.immersedSubmanifold hf).chartedSpace
+
+instance [I.Boundaryless] {x : M} (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
+    IsManifold hx.modelWithCorners n (hx.Preimage hf) :=
+  (hx.immersedSubmanifold hf).isManifold
+
+-- ideally, this would not be necessary
+abbrev inclusion (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) : (hx.Preimage hf) → M :=
+    fun x ↦ x.val
+
+lemma foo [I.Boundaryless] (hx : IsRegularValue I J f (f x)) (hf : ContMDiff I J n f) :
+    IsSmoothEmbedding hx.modelWithCorners I n (hx.inclusion hf) :=
+  sorry -- general submanifold nonsense
 
 end Boundaryless
 
