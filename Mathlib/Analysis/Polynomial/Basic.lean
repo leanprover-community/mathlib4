@@ -231,7 +231,7 @@ lemma finite_abs_eval_lt_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
     have l₁ : (Q.map c).degree < (P.map c).degree := by
       simpa [degree_map_eq_of_injective c.injective_int]
     have l₂ : ((Q.map c).comp (-X)).degree < ((P.map c).comp (-X)).degree := by
-      simpa [degree_comp_neg_X, degree_map_eq_of_injective c.injective_int]
+      simpa [degree_map_eq_of_injective c.injective_int]
     apply Tendsto.sup
     · exact div_tendsto_zero_of_degree_lt _ _ l₁
     · convert (div_tendsto_zero_of_degree_lt _ _ l₂).comp tendsto_neg_atBot_atTop using 2
