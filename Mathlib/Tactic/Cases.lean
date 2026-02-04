@@ -152,7 +152,8 @@ producing one goal for each constructor of `t`, in which `x` is replaced by that
 applied to newly introduced variables. This is a backwards-compatible variant of the
 `cases` tactic in Lean 4 core.
 
-Prefer `cases`, `rcases`, or `obtain` when possible, because these tactics promote structured proofs.
+Prefer `cases`, `rcases`, or `obtain` when possible, because these tactics promote
+structured proofs.
 
 * `cases' x with n1 n2 ...` names the arguments to the constructors. This is the main difference
   with `cases` in core Lean.
