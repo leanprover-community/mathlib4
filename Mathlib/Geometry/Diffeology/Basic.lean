@@ -201,20 +201,11 @@ smoothness of plots. -/
 @[fun_prop]
 def DSmooth (f : X → Y) : Prop := ∀ (n : ℕ) (p : 𝔼ⁿ → X), IsPlot p → IsPlot (f ∘ p)
 
-/-- Notation for the D-topology of non-standard diffeologies. -/
-notation (name := DTop_of) "DTop[" d "]" => @DTop _ d
-
-/-- Notation for the plots of non-standard diffeologies. -/
-notation (name := IsPlot_of) "IsPlot[" d "]" => @IsPlot _ d
-
-/-- Notation for smoothness with respect to non-standard diffeologies. -/
-notation (name := DSmooth_of) "DSmooth[" d₁ ", " d₂ "]" => @DSmooth _ _ d₁ d₂
-
 end Defs
 
 @[ext]
 protected theorem _root_.DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : DiffeologicalSpace X}
-    (h : IsPlot[d₁] = IsPlot[d₂]) : d₁ = d₂ := by
+    (h : @IsPlot _ d₁ = @IsPlot _ d₂) : d₁ = d₂ := by
   obtain ⟨p₁, _, _, _, t₁, h₁⟩ := d₁
   obtain ⟨p₂, _, _, _, t₂, h₂⟩ := d₂
   congr 1; ext s
@@ -272,13 +263,13 @@ theorem dsmooth_const {y : Y} : DSmooth fun _ : X ↦ y :=
 /-- Replaces the D-topology of a diffeology with another topology equal to it. Useful
 to construct diffeologies with better definitional equalities. -/
 def _root_.DiffeologicalSpace.replaceDTopology {X : Type*} (d : DiffeologicalSpace X)
-    (t : TopologicalSpace X) (h : DTop[d] = t) : DiffeologicalSpace X where
+    (t : TopologicalSpace X) (h : @DTop _ d = t) : DiffeologicalSpace X where
   dTopology := t
   isOpen_iff_preimages_plots := by intro _; rw [← d.isOpen_iff_preimages_plots, ← h]
   __ := d
 
 lemma _root_.DiffeologicalSpace.replaceDTopology_eq {X : Type*} {d : DiffeologicalSpace X}
-    {t : TopologicalSpace X} {h : DTop[d] = t} : d.replaceDTopology t h = d := by
+    {t : TopologicalSpace X} {h : @DTop _ d = t} : d.replaceDTopology t h = d := by
   ext; rfl
 
 /-- A structure with plots specified on open subsets of ℝⁿ rather than ℝⁿ itself. Useful
