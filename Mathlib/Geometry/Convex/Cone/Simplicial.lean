@@ -100,6 +100,11 @@ noncomputable def toBasis (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M
 lemma toBasis_apply (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating)
     (i : h_simp.generators) : h_simp.toBasis h_gen i = i := by simp [toBasis]
 
+/-- Each element of `toBasis` lies in the cone. -/
+lemma toBasis_mem (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating)
+    (i : h_simp.generators) : h_simp.toBasis h_gen i ∈ C :=
+  h_simp.toBasis_apply h_gen i ▸ h_simp.generator_mem i
+
 end IsSimplicial
 
 end PointedCone
