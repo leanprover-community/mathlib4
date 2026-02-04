@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Mario Carneiro. All rights reserved.
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Yury Kudryashov
+Authors: Yaël Dillies
 -/
 module
 
@@ -15,307 +15,250 @@ public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
-# Additional lemmas about sum types
+# Orders on a sigma type
 
-Most of the former contents of this file have been moved to Batteries.
+This file defines two orders on a sigma type:
+* The disjoint sum of orders. `a` is less `b` iff `a` and `b` are in the same summand and `a` is
+  less than `b` there.
+* The lexicographical order. `a` is less than `b` if its summand is strictly less than the summand
+  of `b` or they are in the same summand and `a` is less than `b` there.
+
+We make the disjoint sum of orders the default set of instances. The lexicographic order goes on a
+type synonym.
+
+## Notation
+
+* `_root_.Lex (Sigma α)`: Sigma type equipped with the lexicographic order.
+  Type synonym of `Σ i, α i`.
+
+## See also
+
+Related files are:
+* `Data.Finset.CoLex`: Colexicographic order on finite sets.
+* `Data.List.Lex`: Lexicographic order on lists.
+* `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
+* `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`. Basically a twin of this file.
+* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+
+## TODO
+
+Upgrade `Equiv.sigma_congr_left`, `Equiv.sigma_congr`, `Equiv.sigma_assoc`,
+`Equiv.sigma_prod_of_equiv`, `Equiv.sigma_equiv_prod`, ... to order isomorphisms.
 -/
 
 @[expose] public section
 
 
-universe u v w x
+namespace Sigma
 
-variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
+variable {ι : Type*} {α : ι → Type*}
 
-lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by simp
+/-! ### Disjoint sum of orders on `Sigma` -/
 
-namespace Sum
+/-- Disjoint sum of orders. `⟨i, a⟩ ≤ ⟨j, b⟩` iff `i = j` and `a ≤ b`. -/
+protected inductive LE [∀ i, LE (α i)] : ∀ _a _b : Σ i, α i, Prop
+  | fiber (i : ι) (a b : α i) : a ≤ b → Sigma.LE ⟨i, a⟩ ⟨i, b⟩
 
-@[simp]
-theorem elim_swap {f : α → γ} {g : β → γ} :
-    Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
-  grind
+/-- Disjoint sum of orders. `⟨i, a⟩ < ⟨j, b⟩` iff `i = j` and `a < b`. -/
+protected inductive LT [∀ i, LT (α i)] : ∀ _a _b : Σ i, α i, Prop
+  | fiber (i : ι) (a b : α i) : a < b → Sigma.LT ⟨i, a⟩ ⟨i, b⟩
 
-@[simp]
-theorem elim_swap_apply {f : α → γ} {g : β → γ} {x : β ⊕ α} :
-    Sum.elim f g (Sum.swap x) = Sum.elim g f x := by
-  grind
+protected instance [∀ i, LE (α i)] : LE (Σ i, α i) where
+  le := Sigma.LE
 
--- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
-attribute [simp] Sum.forall Sum.exists
-
-theorem exists_sum {γ : α ⊕ β → Sort*} (p : (∀ ab, γ ab) → Prop) :
-    (∃ fab, p fab) ↔ (∃ fa fb, p (Sum.rec fa fb)) := by
-  rw [← not_forall_not, forall_sum]
-  simp
-
-theorem inl_injective : Function.Injective (inl : α → α ⊕ β) := fun _ _ ↦ inl.inj
-
-theorem inr_injective : Function.Injective (inr : β → α ⊕ β) := fun _ _ ↦ inr.inj
-
-theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
-    {x y : α ⊕ β} (h : x = y) :
-    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
-
-section get
-
-variable {x : α ⊕ β}
-
-theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
-  cases x <;> simp
-
-theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
-  cases x <;> simp
-
-theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
-    x.getLeft h₁ = x.getLeft?.get h₂ := by grind
-
-theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
-    x.getRight h₁ = x.getRight?.get h₂ := by grind
-
-@[simp] theorem isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
-  grind
-
-@[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
-  grind
-
-end get
-
-open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_of_forall_ne)
+protected instance [∀ i, LT (α i)] : LT (Σ i, α i) where
+  lt := Sigma.LT
 
 @[simp]
-theorem update_elim_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : α}
-    {x : γ} : update (Sum.elim f g) (inl i) x = Sum.elim (update f i x) g :=
-  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
+theorem mk_le_mk_iff [∀ i, LE (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) ≤ ⟨i, b⟩ ↔ a ≤ b :=
+  ⟨fun ⟨_, _, _, h⟩ => h, Sigma.LE.fiber _ _ _⟩
 
 @[simp]
-theorem update_elim_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : β}
-    {x : γ} : update (Sum.elim f g) (inr i) x = Sum.elim f (update g i x) :=
-  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
+theorem mk_lt_mk_iff [∀ i, LT (α i)] {i : ι} {a b : α i} : (⟨i, a⟩ : Sigma α) < ⟨i, b⟩ ↔ a < b :=
+  ⟨fun ⟨_, _, _, h⟩ => h, Sigma.LT.fiber _ _ _⟩
 
-@[simp]
-theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α}
-    {x : γ} : update f (inl i) x ∘ inl = update (f ∘ inl) i x :=
-  update_comp_eq_of_injective _ inl_injective _ _
+theorem le_def [∀ i, LE (α i)] {a b : Σ i, α i} : a ≤ b ↔ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 := by
+  constructor
+  · rintro ⟨i, a, b, h⟩
+    exact ⟨rfl, h⟩
+  · obtain ⟨i, a⟩ := a
+    obtain ⟨j, b⟩ := b
+    rintro ⟨rfl : i = j, h⟩
+    exact LE.fiber _ _ _ h
 
-@[simp]
-theorem update_inl_apply_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i j : α}
-    {x : γ} : update f (inl i) x (inl j) = update (f ∘ inl) i x j := by
-  grind
+theorem lt_def [∀ i, LT (α i)] {a b : Σ i, α i} : a < b ↔ ∃ h : a.1 = b.1, h.rec a.2 < b.2 := by
+  constructor
+  · rintro ⟨i, a, b, h⟩
+    exact ⟨rfl, h⟩
+  · obtain ⟨i, a⟩ := a
+    obtain ⟨j, b⟩ := b
+    rintro ⟨rfl : i = j, h⟩
+    exact LT.fiber _ _ _ h
 
-@[simp]
-theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {x : γ} :
-    update f (inl i) x ∘ inr = f ∘ inr :=
-  (update_comp_eq_of_forall_ne _ _) fun _ ↦ inr_ne_inl
+protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σ i, α i) :=
+  { le_refl := fun ⟨i, a⟩ => Sigma.LE.fiber i a a le_rfl,
+    le_trans := by
+      rintro _ _ _ ⟨i, a, b, hab⟩ ⟨_, _, c, hbc⟩
+      exact LE.fiber i a c (hab.trans hbc),
+    lt_iff_le_not_ge := fun _ _ => by
+      constructor
+      · rintro ⟨i, a, b, hab⟩
+        rwa [mk_le_mk_iff, mk_le_mk_iff, ← lt_iff_le_not_ge]
+      · rintro ⟨⟨i, a, b, hab⟩, h⟩
+        rw [mk_le_mk_iff] at h
+        exact mk_lt_mk_iff.2 (hab.lt_of_not_ge h) }
 
-theorem update_inl_apply_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
-    update f (inl i) x (inr j) = f (inr j) :=
-  Function.update_of_ne inr_ne_inl ..
+instance [∀ i, PartialOrder (α i)] : PartialOrder (Σ i, α i) :=
+  { Sigma.preorder with
+    le_antisymm := by
+      rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
+      exact congr_arg (Sigma.mk _ ·) <| hab.antisymm hba }
 
-@[simp]
-theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β} {x : γ} :
-    update f (inr i) x ∘ inl = f ∘ inl :=
-  (update_comp_eq_of_forall_ne _ _) fun _ ↦ inl_ne_inr
+instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σ i, α i) where
+  dense := by
+    rintro ⟨i, a⟩ ⟨_, _⟩ ⟨_, _, b, h⟩
+    obtain ⟨c, ha, hb⟩ := exists_between h
+    exact ⟨⟨i, c⟩, LT.fiber i a c ha, LT.fiber i c b hb⟩
 
-theorem update_inr_apply_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
-    update f (inr j) x (inl i) = f (inl i) :=
-  Function.update_of_ne inl_ne_inr ..
+/-! ### Lexicographical order on `Sigma` -/
 
-@[simp]
-theorem update_inr_comp_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β}
-    {x : γ} : update f (inr i) x ∘ inr = update (f ∘ inr) i x :=
-  update_comp_eq_of_injective _ inr_injective _ _
 
-@[simp]
-theorem update_inr_apply_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i j : β}
-    {x : γ} : update f (inr i) x (inr j) = update (f ∘ inr) i x j := by
-  rw [← update_inr_comp_inr, Function.comp_apply]
+namespace Lex
+/-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
+notation3 "Σₗ " (...) ", " r:(scoped p => _root_.Lex (Sigma p)) => r
 
-@[simp]
-theorem update_inl_apply_inl' {γ : α ⊕ β → Type*} [DecidableEq α] [DecidableEq (α ⊕ β)]
-    {f : (i : α ⊕ β) → γ i} {i : α} {x : γ (.inl i)} (j : α) :
-    update f (.inl i) x (Sum.inl j) = update (fun j ↦ f (.inl j)) i x j :=
-  Function.update_apply_of_injective f Sum.inl_injective i x j
+/-- The lexicographical `≤` on a sigma type. -/
+protected instance LE [LT ι] [∀ i, LE (α i)] : LE (Σₗ i, α i) where
+  le := Lex (· < ·) fun _ => (· ≤ ·)
 
-@[simp]
-theorem update_inr_apply_inr' {γ : α ⊕ β → Type*} [DecidableEq β] [DecidableEq (α ⊕ β)]
-    {f : (i : α ⊕ β) → γ i} {i : β} {x : γ (.inr i)} (j : β) :
-    update f (.inr i) x (Sum.inr j) = update (fun j ↦ f (.inr j)) i x j :=
-  Function.update_apply_of_injective f Sum.inr_injective i x j
+/-- The lexicographical `<` on a sigma type. -/
+protected instance LT [LT ι] [∀ i, LT (α i)] : LT (Σₗ i, α i) where
+  lt := Lex (· < ·) fun _ => (· < ·)
 
-@[simp]
-lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
-    (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (a : α) (x : γ (.inl a)) :
-    Sum.rec (update f a x) g = update (Sum.rec f g) (.inl a) x :=
-  Function.rec_update Sum.inl_injective (Sum.rec · g) (fun _ _ => rfl) (fun
-    | _, _, .inl _, h => (h _ rfl).elim
-    | _, _, .inr _, _ => rfl) _ _ _
+theorem le_def [LT ι] [∀ i, LE (α i)] {a b : Σₗ i, α i} :
+    a ≤ b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 ≤ b.2 :=
+  Sigma.lex_iff
 
-@[simp]
-lemma rec_update_right {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
-    (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (b : β) (x : γ (.inr b)) :
-    Sum.rec f (update g b x) = update (Sum.rec f g) (.inr b) x :=
-  Function.rec_update Sum.inr_injective (Sum.rec f) (fun _ _ => rfl) (fun
-    | _, _, .inr _, h => (h _ rfl).elim
-    | _, _, .inl _, _ => rfl) _ _ _
+theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
+    a < b ↔ a.1 < b.1 ∨ ∃ h : a.1 = b.1, h.rec a.2 < b.2 :=
+  Sigma.lex_iff
 
-@[simp]
-lemma elim_update_left {γ : Sort*} [DecidableEq α] [DecidableEq β]
-    (f : α → γ) (g : β → γ) (a : α) (x : γ) :
-    Sum.elim (update f a x) g = update (Sum.elim f g) (.inl a) x :=
-  rec_update_left _ _ _ _
+/-- The lexicographical preorder on a sigma type. -/
+instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
+  { Sigma.Lex.LE, Sigma.Lex.LT with
+    le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
+    le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+    lt_iff_le_not_ge := by
+      refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
+      · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
+        · exact hij.not_gt hji
+        · exact lt_irrefl _ hji
+        · exact lt_irrefl _ hij
+        · exact hab.not_ge hba
+      · rintro ⟨⟨a, b, hij⟩ | ⟨a, b, hab⟩, hba⟩
+        · exact Sigma.Lex.left _ _ hij
+        · exact Sigma.Lex.right _ _ (hab.lt_of_not_ge fun h => hba <| Sigma.Lex.right _ _ h) }
 
-@[simp]
-lemma elim_update_right {γ : Sort*} [DecidableEq α] [DecidableEq β]
-    (f : α → γ) (g : β → γ) (b : β) (x : γ) :
-    Sum.elim f (update g b x) = update (Sum.elim f g) (.inr b) x :=
-  rec_update_right _ _ _ _
+/-- The lexicographical partial order on a sigma type. -/
+instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
+    PartialOrder (Σₗ i, α i) :=
+  { Lex.preorder with
+    le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
 
-@[simp]
-theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
-  swap_swap
 
-@[simp]
-theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
-  swap_swap
 
-mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
+/-- The lexicographical linear order on a sigma type. -/
+instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
+    LinearOrder (Σₗ i, α i) :=
+  { Lex.partialOrder with
+    le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+    toDecidableEq := Sigma.instDecidableEqSigma
+    toDecidableLE := Lex.decidable _ _
+    toDecidableLT := Lex.decidable _ _ }
 
-namespace LiftRel
+/-- The lexicographical linear order on a sigma type. -/
+instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :
+    OrderBot (Σₗ i, α i) where
+  bot := ⟨⊥, ⊥⟩
+  bot_le := fun ⟨a, b⟩ => by
+    obtain rfl | ha := eq_bot_or_bot_lt a
+    · exact Lex.right _ _ bot_le
+    · exact Lex.left _ _ ha
 
-variable {r : α → γ → Prop} {s : β → δ → Prop} {x : α ⊕ β} {y : γ ⊕ δ}
-  {a : α} {b : β} {c : γ} {d : δ}
+/-- The lexicographical linear order on a sigma type. -/
+instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [OrderTop (α ⊤)] :
+    OrderTop (Σₗ i, α i) where
+  top := ⟨⊤, ⊤⟩
+  le_top := fun ⟨a, b⟩ => by
+    obtain rfl | ha := eq_top_or_lt_top a
+    · exact Lex.right _ _ le_top
+    · exact Lex.left _ _ ha
 
-theorem isLeft_congr (h : LiftRel r s x y) : x.isLeft ↔ y.isLeft := by cases h <;> rfl
-theorem isRight_congr (h : LiftRel r s x y) : x.isRight ↔ y.isRight := by cases h <;> rfl
+/-- The lexicographical linear order on a sigma type. -/
+instance boundedOrder [PartialOrder ι] [BoundedOrder ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)]
+    [OrderTop (α ⊤)] : BoundedOrder (Σₗ i, α i) :=
+  { Lex.orderBot, Lex.orderTop with }
 
-theorem isLeft_left (h : LiftRel r s x (inl c)) : x.isLeft := by cases h; rfl
-theorem isLeft_right (h : LiftRel r s (inl a) y) : y.isLeft := by cases h; rfl
-theorem isRight_left (h : LiftRel r s x (inr d)) : x.isRight := by cases h; rfl
-theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
+instance denselyOrdered [Preorder ι] [DenselyOrdered ι] [∀ i, Nonempty (α i)] [∀ i, Preorder (α i)]
+    [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σₗ i, α i) where
+  dense := by
+    rintro ⟨i, a⟩ ⟨j, b⟩ (⟨_, _, h⟩ | ⟨_, b, h⟩)
+    · obtain ⟨k, hi, hj⟩ := exists_between h
+      obtain ⟨c⟩ : Nonempty (α k) := inferInstance
+      exact ⟨⟨k, c⟩, left _ _ hi, left _ _ hj⟩
+    · obtain ⟨c, ha, hb⟩ := exists_between h
+      exact ⟨⟨i, c⟩, right _ _ ha, right _ _ hb⟩
 
-theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
-    ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
-  grind
+instance denselyOrdered_of_noMaxOrder [Preorder ι] [∀ i, Preorder (α i)]
+    [∀ i, DenselyOrdered (α i)] [∀ i, NoMaxOrder (α i)] :
+    DenselyOrdered (Σₗ i, α i) where
+  dense := by
+    rintro ⟨i, a⟩ ⟨j, b⟩ (⟨_, _, h⟩ | ⟨_, b, h⟩)
+    · obtain ⟨c, ha⟩ := exists_gt a
+      exact ⟨⟨i, c⟩, right _ _ ha, left _ _ h⟩
+    · obtain ⟨c, ha, hb⟩ := exists_between h
+      exact ⟨⟨i, c⟩, right _ _ ha, right _ _ hb⟩
 
-theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
-    ∃ a c, r a c ∧ x = inl a ∧ y = inl c := exists_of_isLeft_left h₁ ((isLeft_congr h₁).mpr h₂)
+instance denselyOrdered_of_noMinOrder [Preorder ι] [∀ i, Preorder (α i)]
+    [∀ i, DenselyOrdered (α i)] [∀ i, NoMinOrder (α i)] :
+    DenselyOrdered (Σₗ i, α i) where
+  dense := by
+    rintro ⟨i, a⟩ ⟨j, b⟩ (⟨_, _, h⟩ | ⟨_, b, h⟩)
+    · obtain ⟨c, hb⟩ := exists_lt b
+      exact ⟨⟨j, c⟩, left _ _ h, right _ _ hb⟩
+    · obtain ⟨c, ha, hb⟩ := exists_between h
+      exact ⟨⟨i, c⟩, right _ _ ha, right _ _ hb⟩
 
-theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
-    ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
-  grind
+instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrder ι]
+    [∀ i, Nonempty (α i)] : NoMaxOrder (Σₗ i, α i) where
+  exists_gt := by
+    rintro ⟨i, a⟩
+    obtain ⟨j, h⟩ := exists_gt i
+    obtain ⟨b⟩ : Nonempty (α j) := inferInstance
+    exact ⟨⟨j, b⟩, left _ _ h⟩
 
-theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
-    ∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
-  exists_of_isRight_left h₁ ((isRight_congr h₁).mpr h₂)
+instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrder ι]
+    [∀ i, Nonempty (α i)] : NoMinOrder (Σₗ i, α i) where
+  exists_lt := by
+    rintro ⟨i, a⟩
+    obtain ⟨j, h⟩ := exists_lt i
+    obtain ⟨b⟩ : Nonempty (α j) := inferInstance
+    exact ⟨⟨j, b⟩, left _ _ h⟩
 
-end LiftRel
+instance noMaxOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMaxOrder (α i)] :
+    NoMaxOrder (Σₗ i, α i) where
+  exists_gt := by
+    rintro ⟨i, a⟩
+    obtain ⟨b, h⟩ := exists_gt a
+    exact ⟨⟨i, b⟩, right _ _ h⟩
 
-end Sum
+instance noMinOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMinOrder (α i)] :
+    NoMinOrder (Σₗ i, α i) where
+  exists_lt := by
+    rintro ⟨i, a⟩
+    obtain ⟨b, h⟩ := exists_lt a
+    exact ⟨⟨i, b⟩, right _ _ h⟩
 
-open Sum
+end Lex
 
-namespace Function
-
-theorem Injective.sumElim {γ : Sort*} {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
-    (hfg : ∀ a b, f a ≠ g b) : Injective (Sum.elim f g)
-  | inl _, inl _, h => congr_arg inl <| hf h
-  | inl _, inr _, h => (hfg _ _ h).elim
-  | inr _, inl _, h => (hfg _ _ h.symm).elim
-  | inr _, inr _, h => congr_arg inr <| hg h
-
-theorem Injective.sumMap {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
-    Injective (Sum.map f g)
-  | inl _, inl _, h => congr_arg inl <| hf <| inl.inj h
-  | inr _, inr _, h => congr_arg inr <| hg <| inr.inj h
-
-theorem Surjective.sumMap {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
-    Surjective (Sum.map f g)
-  | inl y =>
-    let ⟨x, hx⟩ := hf y
-    ⟨inl x, congr_arg inl hx⟩
-  | inr y =>
-    let ⟨x, hx⟩ := hg y
-    ⟨inr x, congr_arg inr hx⟩
-
-theorem Bijective.sumMap {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :
-    Bijective (Sum.map f g) :=
-  ⟨hf.injective.sumMap hg.injective, hf.surjective.sumMap hg.surjective⟩
-
-end Function
-
-namespace Sum
-
-open Function
-
-@[simp]
-theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
-    Injective (Sum.elim f g) ↔ Injective f ∧ Injective g ∧ ∀ a b, f a ≠ g b where
-  mp h := ⟨h.comp inl_injective, h.comp inr_injective, fun _ _ => h.ne inl_ne_inr⟩
-  mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
-
-@[simp]
-theorem map_injective {f : α → γ} {g : β → δ} :
-    Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
-  mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
-  mpr | ⟨hf, hg⟩ => hf.sumMap hg
-
-@[simp]
-theorem map_surjective {f : α → γ} {g : β → δ} :
-    Surjective (Sum.map f g) ↔ Surjective f ∧ Surjective g where
-  mp h := ⟨
-      (fun c => by
-        obtain ⟨a | b, h⟩ := h (inl c)
-        · exact ⟨a, inl_injective h⟩
-        · cases h),
-      (fun d => by
-        obtain ⟨a | b, h⟩ := h (inr d)
-        · cases h
-        · exact ⟨b, inr_injective h⟩)⟩
-  mpr | ⟨hf, hg⟩ => hf.sumMap hg
-
-@[simp]
-theorem map_bijective {f : α → γ} {g : β → δ} :
-    Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
-  (map_injective.and map_surjective).trans <| and_and_and_comm
-
-end Sum
-
-/-!
-### Ternary sum
-
-Abbreviations for the maps from the summands to `α ⊕ β ⊕ γ`. This is useful for pattern-matching.
--/
-
-namespace Sum3
-
-/-- The map from the first summand into a ternary sum. -/
-@[match_pattern, simp, reducible]
-def in₀ (a : α) : α ⊕ (β ⊕ γ) :=
-  inl a
-
-/-- The map from the second summand into a ternary sum. -/
-@[match_pattern, simp, reducible]
-def in₁ (b : β) : α ⊕ (β ⊕ γ) :=
-  inr <| inl b
-
-/-- The map from the third summand into a ternary sum. -/
-@[match_pattern, simp, reducible]
-def in₂ (c : γ) : α ⊕ (β ⊕ γ) :=
-  inr <| inr c
-
-end Sum3
-
-/-!
-### PSum
--/
-
-namespace PSum
-
-variable {α β : Sort*}
-
-theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ inl.inj
-
-theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ inr.inj
-
-end PSum
+end Sigma
