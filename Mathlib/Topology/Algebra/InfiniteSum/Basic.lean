@@ -632,6 +632,26 @@ protected theorem Multipliable.tprod_mul [L.NeBot]
     ∏'[L] b, (f b * g b) = (∏'[L] b, f b) * ∏'[L] b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
 
+omit [T2Space α] in
+lemma Multipliable.pow [L.NeBot] (hf : Multipliable f L) (n : ℕ) :
+     Multipliable (fun i => f i ^ n) L := by
+  induction n with
+  | zero =>
+    simp [pow_zero, multipliable_one]
+  | succ n hn =>
+    simp_rw [pow_succ]
+    apply Multipliable.mul hn hf
+
+lemma Multipliable.tprod_pow [L.NeBot] (hf : Multipliable f L) (n : ℕ) :
+    (∏'[L] b, f b) ^ n = ∏'[L] b, (f b) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [pow_succ, hn, ← Multipliable.tprod_mul]
+    · simp_rw [pow_succ]
+    · exact hf.pow n
+    exact hf
+
 @[to_additive]
 protected theorem Multipliable.tprod_finsetProd [L.NeBot] {f : γ → β → α} {s : Finset γ}
     (hf : ∀ i ∈ s, Multipliable (f i) L) : ∏'[L] b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏'[L] b, f i b :=
