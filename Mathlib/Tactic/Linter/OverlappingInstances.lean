@@ -5,9 +5,10 @@ Authors: Jovan Gerbscheid, Thomas R. Murrills
 -/
 module
 
-public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.ContextInfo
+public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Mathlib.Lean.Message
 
 /-!
 # A linter to declarations with local instances that have overlapping data
@@ -140,11 +141,6 @@ register_option linter.overlappingInstances : Bool := {
     overlaps and on declaration bodies."
 }
 
-/-- Surrounds an expression representing the type of an instance with square brackets, taking care
-to group and nest appropriately. -/
-private def _root_.Lean.MessageData.ofInstanceType (e : Expr) : MessageData :=
-  m!"{e}".sbracket
-
 /--
 Creates a description of the current declaration in messages: "declaration <declName>" if the `parentDecl?` is known, and "current declaration" otherwise. May be preceded by "the".
 
@@ -169,9 +165,9 @@ def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM Messa
     let (instsOfOverlap, parentsOfOverlap) :=
       fvars.toList.partitionMap fun (fvar, isFVarType) =>
         if isFVarType then .inl fvar else .inr fvar
-    let overlapType := m!"`{.ofInstanceType overlap}`"
+    let overlapType := m!"`{.ofInstanceBinderType overlap}`"
     let parentTypesOfOverlap := MessageData.andList <|← parentsOfOverlap.mapM fun fvar =>
-      return m!"`{.ofInstanceType <|← inferType fvar}`"
+      return m!"`{.ofInstanceBinderType <|← inferType fvar}`"
     let parentTypesOfOverlap :=
       m!"{if let [_, _] := parentsOfOverlap then m!"both " else m!""}{parentTypesOfOverlap}"
 
@@ -209,11 +205,11 @@ def overlappingInstances : Linter where
     -- Note: we don't break on errors; we want to lint even on partial declarations
     for t in ← getInfoTrees do
       for (ctx, info) in t.getDeclBodyInfos do
-        let some (lctx, localInstances, remainingType?) := info.getLCtxBefore?
+        let some (lctx, localInstances?, remainingType?) := info.getLCtxBefore?
           | continue
         -- TODO: better logging location
         let outerRef ← getRef
-        ctx.runMetaMWithMessages lctx (localInstances := localInstances) <|
+        ctx.runMetaMWithMessages lctx (localInstances := localInstances?) <|
           withRef outerRef do
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or return type for anything. -/
