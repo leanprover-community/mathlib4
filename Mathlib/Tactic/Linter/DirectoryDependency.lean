@@ -243,6 +243,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
   (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.ContextInfo),
   (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.Tactic.Meta),
+  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Message),
   (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Environment),
   (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.InfoTree),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
