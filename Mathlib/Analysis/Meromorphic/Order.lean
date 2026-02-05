@@ -159,8 +159,7 @@ lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x <
       g_an.continuousAt.continuousWithinAt.tendsto.norm
     have : Tendsto (fun z ↦ z - x) (𝓝[≠] x) (𝓝[≠] 0) := by
       refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
-      · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
-          ContinuousAt.continuousWithinAt (by fun_prop)
+      · have : ContinuousWithinAt (fun z ↦ z - x) {x}ᶜ x := by fun_prop
         simpa using this.tendsto
       · filter_upwards [self_mem_nhdsWithin] with y hy
         simpa [sub_eq_zero] using hy
