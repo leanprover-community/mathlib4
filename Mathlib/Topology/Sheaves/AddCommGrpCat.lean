@@ -46,8 +46,9 @@ instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
 instance : HasExt.{u} (Sheaf AddCommGrpCat.{u} X) :=
   hasExt_of_enoughInjectives (Sheaf AddCommGrpCat X)
 
-theorem Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
-    {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
+theorem Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact
+    {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)} {s : S.X₂.obj (op U)}
+    (h : S.g.app (op U) s = 0) (hS : S.Exact) :
     ∃ (t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
   dsimp [Presheaf] at S
   let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (op U)
@@ -76,6 +77,6 @@ lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂
     ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
   have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
     (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
-  exact Presheaf.addCommGrpCat_shortExact_app_zero h (this S ⟨hS.1, hS.2⟩).left
+  exact Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact h (this S ⟨hS.1, hS.2⟩).left
 
 end TopCat.Sheaf.AddCommGrpCat
