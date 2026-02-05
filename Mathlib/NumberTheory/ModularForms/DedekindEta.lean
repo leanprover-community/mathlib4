@@ -150,7 +150,7 @@ lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
 open EisensteinSeries in
 lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   unfold eta
-  rw [logDeriv_mul _ (Periodic.qParam_ne_zero _) (eta_tprod_ne_zero z.2) (by fun_prop) 
+  rw [logDeriv_mul _ (Periodic.qParam_ne_zero _) (eta_tprod_ne_zero z.2) (by fun_prop)
     (differentiableAt_eta_tprod z.2)]
   have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet (x := ⟨z, z.2⟩)
     (one_sub_eta_q_ne_zero · z.2)
