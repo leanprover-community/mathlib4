@@ -101,7 +101,7 @@ theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
   IsIso.inv_eq_of_hom_inv_id (h.left_triangle_components X)
 
-/-- If the unit is an isomorphism, bundle one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
+/-- If the unit of an adjunction is an isomorphism, then one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
 @[simps!]
 noncomputable def whiskerLeftLCounitIsoOfIsIsoUnit [IsIso h.unit] : L ⋙ R ⋙ L ≅ L :=
   (L.associator R L).symm ≪≫ isoWhiskerRight (asIso h.unit).symm L ≪≫ Functor.leftUnitor _
@@ -113,7 +113,8 @@ theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
   IsIso.inv_eq_of_inv_hom_id (h.right_triangle_components X)
 
-/-- If the counit of an is an isomorphism, one has an isomorphism `(R ⋙ L ⋙ R) ≅ R`. -/
+/-- If the counit of an adjunction is an isomorphism, then one has an isomorphism
+`(R ⋙ L ⋙ R) ≅ R`. -/
 @[simps!]
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _

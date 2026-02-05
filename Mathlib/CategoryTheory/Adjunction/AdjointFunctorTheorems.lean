@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Subobject.Comma
 
 This file proves the (general) adjoint functor theorem, in the form:
 * If `G : D ⥤ C` preserves limits and `D` has limits, and satisfies the solution set condition,
-  then it has a left adjoint: `isRightAdjoint_of_preservesLimits_of_isCoseparating`.
+  then it has a left adjoint: `isRightAdjoint_of_preservesLimits_of_solutionSetCondition`.
 
 We show that the converse holds, i.e. that if `G` has a left adjoint then it satisfies the solution
 set condition, see `solutionSetCondition_of_isRightAdjoint`
