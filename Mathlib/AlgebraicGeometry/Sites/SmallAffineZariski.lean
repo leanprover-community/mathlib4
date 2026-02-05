@@ -294,7 +294,7 @@ def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     (AffineZariskiSite.directedCover X).RelativeGluingData where
   functor := F.rightOp ⋙ Scheme.Spec
   natTrans := Functor.whiskerRight α.rightOp Scheme.Spec ≫ (restrictIsoSpec X).inv
-  equifibered := .comp (H.rightOp.whiskerRight _) (NatTrans.equifibered_of_isIso _)
+  equifibered := (H.rightOp.whiskerRight _).comp (.of_isIso _)
 
 @[deprecated "By `inferInstance`." (since := "2026-02-01")]
 lemma PreservesLocalization.isLocallyDirected (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
@@ -333,12 +333,12 @@ lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ 
 
 @[deprecated (since := "2026-02-01")]
 alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
-  NatTrans.Coequifibered_of_isIso
+  NatTrans.Coequifibered.of_isIso
 
 variable (X) in
 /-- `X` is the colimit of its affine opens. -/
 noncomputable def isColimitCocone : IsColimit (cocone X) :=
-  letI D := relativeGluingData (X := X) (NatTrans.Coequifibered_of_isIso (𝟙 _))
+  letI D := relativeGluingData (X := X) (.of_isIso (𝟙 _))
   letI F := D.functor
   -- Why doesn't typeclass synthesis work here?
   -- It does fire if one adds `(C := no_index(_))` to the composition in the instance.
