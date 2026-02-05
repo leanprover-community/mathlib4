@@ -72,8 +72,8 @@ def existsPublicOrPrivate (decl : Name) : CoreM Bool := withoutExporting <| do
 Adds a declaration, and (unlike `addDecl`) display a friendly error message if the
 declaration already exists.
 -/
-def addDeclSafe (decl : Declaration) (forceExpose := false) : CoreM Unit := withoutExporting <| do
-  let env ← getEnv
+def addDeclSafe (decl : Declaration) (forceExpose := false) : CoreM Unit := do
+  let env ← withoutExporting getEnv
   for nm in decl.getNames do
     if env.containsPublicOrPrivate nm then
       if decl.getNames.length == 1 then

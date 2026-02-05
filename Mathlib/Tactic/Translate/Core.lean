@@ -33,7 +33,7 @@ See the docstring of `to_additive` for more information
 
 public meta section
 
-open Lean Meta Elab Command Std Mathlib
+open Lean Meta Elab Command Std
 
 namespace Mathlib.Tactic.Translate
 open Translate -- currently needed to enable projection notation
@@ -691,12 +691,11 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   let origKind := getOriginalConstKind? env src |>.get!
   -- error if this declaration is a definition or theorem, but we cannot access its value
   if origKind != srcDecl.kind then
-    throwError "{origKind.toString} `{privateToUserName src}` is \
-      declared in an imported \
+    throwError "{origKind.toString} `{privateToUserName src}` is declared in an imported \
       module, and its value/proof is not available, so it cannot be translated.\n\
       Possible solutions: put this attribute in the module where the declaration was declared, \
       avoid the module system, or run\n  \
-      import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}."
+      import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}"
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
@@ -762,7 +761,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       throwError "@[{t.attrName}] failed. \
         The translated value is not type correct. For help, see the docstring \
         of `to_additive`, section `Troubleshooting`. \
-        Failed to add declaration\n{privateToUserName tgt}:\n{ex.toMessageData}"
+        Failed to add declaration `{privateToUserName tgt}`:\n{ex.toMessageData}"
     throwError "@[{t.attrName}] failed. Nested error message:\n{ex.toMessageData}"
   if let .defnInfo { hints := .abbrev, .. } := trgDecl then
     if (← getReducibilityStatus src) == .reducible then
@@ -827,7 +826,8 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
     unless lemmas.size == nLemmas do
-      throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
+      throwError "{names[0]!} and {nm} do not generate the same number of {desc}:\n\
+        {auxLemmas[0]!}\nvs.\n{lemmas}"
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
       insertTranslation t srcLemma tgtLemma reorder relevantArg ref
@@ -1257,12 +1257,12 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   if let some dupe := dupe? then
     -- since `tgt` already exists, we just need to
     -- add translations `src.x ↦ tgt.x'` for any subfields.
-    trace[translate_detail] "declaration {privateToUserName tgt} already exists."
     proceedFields t src dupe reorder relevantArg cfg.ref
   else
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg.ref src tgt src cfg.dontTranslate reorder
-  let nestedNames ← copyMetaData t cfg src tgt reorder relevantArg
+  trace[translate_detail] "tgt: {tgt} equals {(← findPublicOrPrivate? tgt).map (·.name)}"
+  let nestedNames ← withoutExporting <| copyMetaData t cfg src tgt reorder relevantArg
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
   Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := dupe?.isNone)

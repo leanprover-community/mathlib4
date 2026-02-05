@@ -13,7 +13,7 @@ import all Mathlib.Algebra.Notation.Defs
 /--
 error: theorem `Nat.add_comm` is declared in an imported module, and its value/proof is not available, so it cannot be translated.
 Possible solutions: put this attribute in the module where the declaration was declared, avoid the module system, or run
-import all Init.Data.Nat.Basic.
+  import all Init.Data.Nat.Basic
 -/
 #guard_msgs (substring := true) in
 attribute [to_additive foo] Nat.add_comm
@@ -27,8 +27,7 @@ class MyRing (R : Type*) extends Add R, Mul R
 
 -- test name printing
 /--
-Failed to add declaration
-dummyBar:
+Failed to add declaration `dummyBar`:
 Application type mismatch: The argument
   inst✝.toMul
 has type
