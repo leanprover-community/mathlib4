@@ -79,7 +79,7 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
     exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
 
 lemma orderEmbedding'_eq_embedding (x : ValueGroup₀ f) :
-    orderEmbedding' x = embedding x := by simp [orderEmbedding'_apply]
+    orderEmbedding' x = embedding x := by simp [embedding_apply, orderEmbedding'_apply]
 
 lemma embedding_strictMono :
     StrictMono (embedding (f := f)) := by

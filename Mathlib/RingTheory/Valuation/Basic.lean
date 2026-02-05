@@ -484,7 +484,6 @@ def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀
 @[simp]
 lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
 
-@[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with h

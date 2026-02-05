@@ -1152,8 +1152,7 @@ lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
 lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
     ValueGroup₀.embedding (embed (valuation R) γ) = γ := by
   induction γ using ValueGroupWithZero.ind
-  simp [-ValueGroup₀.embedding_apply, -ValueGroup₀.restrict₀_apply,
-    embed_mk,  ValueGroup₀.embedding_restrict₀, map_div₀]
+  simp [ -ValueGroup₀.restrict₀_apply, embed_mk,  ValueGroup₀.embedding_restrict₀, map_div₀]
   simp [mk_eq_div]
 
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
@@ -1283,3 +1282,5 @@ instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
   exact .comap f.toMonoidHom hf
 
 end ValuativeRel
+
+#lint

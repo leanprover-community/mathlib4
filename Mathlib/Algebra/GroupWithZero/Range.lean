@@ -128,12 +128,13 @@ variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
   [DecidablePred fun b : B ↦ b = 0]
 
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
-@[simps!]
 def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
   MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
     <| WithZero.map' (valueGroup f).subtype
 
--- TODO: embedding_apply should not be a simp lemma.
+lemma ValueGroup₀.embedding_apply (a : ValueGroup₀ f) :
+  ValueGroup₀.embedding a =
+    WithZero.recZeroCoe 0 Units.val ((WithZero.map' (valueGroup f).subtype) a) := rfl
 
 variable (f) in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/
