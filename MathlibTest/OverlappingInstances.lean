@@ -110,3 +110,29 @@ There should only be a single instance of these data-carrying typeclasses in the
 private def foo [Add Nat] [Add Nat] : Bool := true
 
 end Foo
+
+section classInductive
+
+/-! Make sure we warn on duplicate inductive data-carrying inductive classes, even though these do
+not have and cannot be structure projections. -/
+
+class inductive IndFoo where
+| mk₁ (n : Nat) | mk₂ (b : Bool)
+
+/--
+warning: The declaration `indFoo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+
+There are 2 instances of `[IndFoo]`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `indFoo`.
+-/
+#guard_msgs in
+def indFoo [IndFoo] [IndFoo] : Bool := true
+
+class inductive IndFooProp : Prop where
+| mk₁ (n : Nat) | mk₂ (b : Bool)
+
+-- Should not warn, these are props
+def indFooProp [IndFooProp] [IndFooProp] : Bool := true
+
+end classInductive

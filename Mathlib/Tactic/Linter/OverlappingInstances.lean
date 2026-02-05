@@ -21,37 +21,45 @@ public meta section
 
 namespace Mathlib.Tactic.OverlappingInstances
 
-/-- Given an instance `e`, compute all data carrying classes that are
+/--
+Given an instance `e`, compute all data carrying classes that are
 the type of `e` itself, or a child class, together with the indices of the parents of each
-projection as they appear in this array. -/
-private partial def getStructureDataProjections (e : Expr) (acc : Array (List Nat × Expr) := #[])
+projection as they appear in this array.
+
+This also records data-carrying non-structure inductive classes in a one-element array.
+-/
+private partial def getClassDataProjections (e : Expr) (acc : Array (List Nat × Expr) := #[])
     (parentIdx? : Option Nat := none) :
-    StateRefT (NameMap (Option Nat)) MetaM (Array (List Nat × Expr)) := do
+    StateRefT (NameMap Nat) MetaM (Array (List Nat × Expr)) := do
   let eType ← whnf (← inferType e)
   if ← isProp eType then return acc
   let .const structName us := eType.getForallBody.getAppFn
-    | throwError "{e} is not an instance of a structure"
-  if let some structIdx? := (← get).get? structName then
-    if let some structIdx := structIdx? then -- `structName` may not have actually been a structure
-      if let some parentIdx := parentIdx? then
-        -- `e` has already been recorded, but is being encountered as the child of a new parent at
-        -- `parentIdx`. Add this parent index to `e`'s original parent indices.
-        return acc.modify structIdx fun (parents, struct) => (parentIdx :: parents, struct)
+    | throwError "`{e}` is not an instance of a structure"
+  -- Check if already recorded
+  if let some structIdx := (← get).get? structName then
+    if let some parentIdx := parentIdx? then
+      -- `e` has already been recorded, but is being encountered as the child of a new parent at
+      -- `parentIdx`. Add this parent index to `e`'s original parent indices.
+      return acc.modify structIdx fun (parents, struct) => (parentIdx :: parents, struct)
+    -- In ordinary usage, where only the first invocation of `getStructureDataProjections` has no
+    -- parent, this case cannot be reached.
     return acc
+  -- Record current class and recurse
+  let currentIdx := acc.size
+  let acc := acc.push (parentIdx?.toList, eType)
   if let some info := getStructureInfo? (← getEnv) structName then
-    let currentIdx := acc.size
     -- Record the index at which this structure occurs in `acc`, so we can add to its parents later
     -- if it is encountered as a projection of something else.
     modify (·.insert structName currentIdx)
-    info.parentInfo.foldlM (init := acc.push (parentIdx?.toList, eType)) fun acc info ↦ do
+    info.parentInfo.foldlM (init := acc) fun acc info ↦ do
       if ← isInstance info.projFn then
         let proj := Expr.app (mkAppN (.const info.projFn us) eType.getAppArgs) e
-        getStructureDataProjections proj acc currentIdx
+        getClassDataProjections proj acc currentIdx
       else
         return acc
   else
-    -- Record that we've encountered this constant; however, it is not in the array.
-    modify (·.insert structName none)
+    -- This case should only be reached by non-structure inductive classes, and therefore only
+    -- occur at the root. We still want to record these to warn on duplicate inductive classes.
     return acc
 
 /-- Given an array of projection types paired with indices for their parents, returns `true` if `p`
@@ -101,7 +109,7 @@ def findOverlappingDataInstances : MetaM Overlaps := do
   for { fvar := fvar₁, .. } in ← getLocalInstances do
     unless (← fvar₁.fvarId!.getBinderInfo).isInstImplicit do continue
     let projClasses ← forallTelescope (← inferType fvar₁) fun xs _ ↦ do
-      (← getStructureDataProjections (mkAppN fvar₁ xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
+      (← getClassDataProjections (mkAppN fvar₁ xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
         return (parentIdx?, ← mkForallFVars xs expr)
     for (parentIdxs, cls) in projClasses, idx in 0...* do
       if let some (fvar₂, isTypeOfFVar₂) := encounteredClasses[cls]? then
