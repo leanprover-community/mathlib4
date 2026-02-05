@@ -123,16 +123,13 @@ namespace Sym2
 variable [DecidableEq α]
 
 /-- The `diag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s`. -/
-theorem card_image_diag (s : Finset α) : #(s.diag.image Sym2.mk) = #s := by
-  rw [card_image_of_injOn, diag_card]
-  rintro ⟨x₀, x₁⟩ hx _ _ h
-  cases Sym2.eq.1 h
-  · rfl
-  · simp only [mem_coe, mem_diag] at hx
-    rw [hx.2]
+theorem card_image_diag (s : Finset α) : #(s.diag.image fun (a, b) ↦ s(a, b)) = #s := by
+  simp [card_image_of_injOn]
 
-lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk) = #s.offDiag := by
-  rw [card_eq_sum_card_image (Sym2.mk : α × α → _), sum_const_nat (Sym2.ind _), mul_comm]
+lemma two_mul_card_image_offDiag (s : Finset α) :
+    2 * #(s.offDiag.image fun (a, b) ↦ s(a, b)) = #s.offDiag := by
+  rw [card_eq_sum_card_image (fun (a, b) ↦ s(a, b) : α × α → _), sum_const_nat (Sym2.ind _),
+    mul_comm]
   rintro x y hxy
   simp_rw [mem_image, mem_offDiag] at hxy
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
@@ -140,7 +137,7 @@ lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
     cases h <;> refine ⟨‹_›, ‹_›, ?_⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
-  have : {z ∈ s.offDiag | Sym2.mk z = s(x, y)} = {(x, y), (y, x)} := by
+  have : {z ∈ s.offDiag | s(z.1, z.2) = s(x, y)} = {(x, y), (y, x)} := by
     ext ⟨x₁, y₁⟩
     rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk_inj, Prod.mk_inj,
       and_iff_right_iff_imp]
@@ -153,7 +150,8 @@ lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s.offDiag / 2`.
 This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes from exactly two
 pairs: `(x, y)` and `(y, x)`. -/
-theorem card_image_offDiag (s : Finset α) : #(s.offDiag.image Sym2.mk) = (#s).choose 2 := by
+theorem card_image_offDiag (s : Finset α) :
+    #(s.offDiag.image fun (a, b) ↦ s(a, b)) = (#s).choose 2 := by
   rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
 
