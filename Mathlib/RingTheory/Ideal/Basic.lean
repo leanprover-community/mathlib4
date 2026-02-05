@@ -221,7 +221,6 @@ variable {K : Type*} [DivisionSemiring K] (I : Ideal K)
 
 namespace Ideal
 
-open Classical in
 variable (K) in
 /-- A bijection between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
 and `⊤` to `1`. -/

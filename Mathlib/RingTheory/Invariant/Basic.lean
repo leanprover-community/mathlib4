@@ -225,7 +225,6 @@ variable (K L : Type*) [Field K] [Field L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]
   [Algebra.IsInvariant A B G]
 
-open Classical in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux1 :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
@@ -282,7 +281,6 @@ private theorem fixed_of_fixed1_aux1 :
     · rw [smul_zero, sub_zero]
       exact hr' h⁻¹ hh
 
-open Classical in
 /-- A technical lemma for `fixed_of_fixed1`. -/
 private theorem fixed_of_fixed1_aux2 (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :

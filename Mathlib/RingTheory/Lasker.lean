@@ -46,7 +46,6 @@ variable {R M}
 
 namespace Submodule
 
-open Classical in
 lemma decomposition_erase_inf {N : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = N) :
     ∃ t : Finset (Submodule R M), t ⊆ s ∧ t.inf id = N ∧
@@ -88,80 +87,31 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     contrapose! hIJ
     suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
-<<<<<<< HEAD
-    · rw [← hI, radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
-
-open Classical in
-lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
-    {I : Ideal R} {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
-    ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      ((t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)) ∧
-||||||| 2a3045afb70
-    · rw [← hI, radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
-
-lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition [DecidableEq (Ideal R)]
-    {I : Ideal R} {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
-    ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      ((t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)) ∧
-=======
     · rw [← hI, colon_finsetInf,
         radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
       rw [hIJ, ← hJ, colon_finsetInf,
         radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
-    [DecidableEq (Submodule R M)] {N : Submodule R M} {s : Finset (Submodule R M)}
+    {N : Submodule R M} {s : Finset (Submodule R M)}
     (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       ((t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)) ∧
->>>>>>> origin/master
       (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
   obtain ⟨t, ht, ht', ht''⟩ := isPrimary_decomposition_pairwise_ne_radical hs hs'
   obtain ⟨u, hut, hu, hu'⟩ := decomposition_erase_inf ht
   exact ⟨u, hu, fun _ hi ↦ ht' (hut hi), ht''.mono hut, hu'⟩
 
-<<<<<<< HEAD
-open Classical in
-/-- A `Finset` of ideals is a maximal primary decomposition of `I` if the ideals intersect to `I`,
-are primary, have pairwise distinct radicals, and removing any ideal changes the intersection. -/
-structure IsMinimalPrimaryDecomposition (I : Ideal R) (t : Finset (Ideal R)) : Prop where
-  inf_eq : t.inf id = I
-||||||| 2a3045afb70
-/-- A `Finset` of ideals is a maximal primary decomposition of `I` if the ideals intersect to `I`,
-are primary, have pairwise distinct radicals, and removing any ideal changes the intersection. -/
-structure IsMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
-    (I : Ideal R) (t : Finset (Ideal R)) : Prop where
-  inf_eq : t.inf id = I
-=======
 /-- A `Finset` of submodules is a minimal primary decomposition of `N` if the submodules `Nᵢ`
 intersect to `N`, are primary, the `√Ann(M/Nᵢ)` are distinct, and each `Nᵢ` is necessary. -/
-structure IsMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
+structure IsMinimalPrimaryDecomposition
     (N : Submodule R M) (t : Finset (Submodule R M)) where
   inf_eq : t.inf id = N
->>>>>>> origin/master
   primary : ∀ ⦃J⦄, J ∈ t → J.IsPrimary
   distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)
   minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
 
-<<<<<<< HEAD
-lemma IsLasker.exists_isMinimalPrimaryDecomposition (h : IsLasker R) (I : Ideal R) :
-    ∃ t : Finset (Ideal R), I.IsMinimalPrimaryDecomposition t := by
-  obtain ⟨s, hs₁, hs₂⟩ := h I
-  obtain ⟨t, h₁, h₂, h₃, h₄⟩ :=
-    exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs₁ hs₂
-  exact ⟨t, h₁, h₂, h₃, h₄⟩
-||||||| 2a3045afb70
-lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
-    (h : IsLasker R) (I : Ideal R) :
-    ∃ t : Finset (Ideal R), I.IsMinimalPrimaryDecomposition t := by
-  obtain ⟨s, hs₁, hs₂⟩ := h I
-  obtain ⟨t, h₁, h₂, h₃, h₄⟩ :=
-    exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs₁ hs₂
-  exact ⟨t, h₁, h₂, h₃, h₄⟩
-=======
-lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
+lemma IsLasker.exists_isMinimalPrimaryDecomposition
     (h : IsLasker R M) (N : Submodule R M) :
     ∃ t : Finset (Submodule R M), N.IsMinimalPrimaryDecomposition t := by
   obtain ⟨s, hs1, hs2⟩ := h N
@@ -177,7 +127,6 @@ alias Ideal.decomposition_erase_inf := Submodule.decomposition_erase_inf
 @[deprecated (since := "2026-01-19")]
 alias Ideal.isPrimary_decomposition_pairwise_ne_radical :=
   Submodule.isPrimary_decomposition_pairwise_ne_radical
->>>>>>> origin/master
 
 @[deprecated (since := "2026-01-19")]
 alias Ideal.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition :=
