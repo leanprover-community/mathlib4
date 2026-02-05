@@ -72,19 +72,17 @@ lemma HasStandardEtaleSurjectionOn.isStandardEtale
 
 namespace Algebra.IsUnramifiedAt
 
-private theorem exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₁
+private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₁
     (P : Ideal R) [P.IsPrime] (x : S) (hx : adjoin R {x} = ⊤) :
     (RingHom.ker (aeval (R := R) x).toRingHom).map (mapRingHom (algebraMap R P.ResidueField)) =
       RingHom.ker (aeval (1 ⊗ₜ x : P.Fiber S)).toRingHom := by
   have hx' : Function.Surjective (aeval (R := R) x) :=
     (AlgHom.range_eq_top _).mp ((adjoin_singleton_eq_range_aeval R x).symm.trans hx)
-  let I := RingHom.ker (RingHomClass.toRingHom <| aeval (R := R) x)
+  let I := RingHom.ker (aeval (R := R) x).toRingHom
   let e : P.Fiber S ≃ₐ[P.ResidueField]
-      P.ResidueField[X] ⧸ (I.map (mapRingHom (algebraMap _ P.ResidueField))) :=
+      P.ResidueField[X] ⧸ I.map (mapRingHom (algebraMap _ P.ResidueField)) :=
     Polynomial.fiberEquivQuotient (aeval (R := R) x) hx' _
   rw [← RingHom.ker_comp_of_injective _ (f := e.toRingHom) e.injective]
-  have H : (Ideal.quotientKerAlgEquivOfSurjective hx').symm x = (X : R[X]) :=
-    (Ideal.quotientKerAlgEquivOfSurjective hx').symm_apply_eq.mpr (aeval_X _).symm
   convert Ideal.mk_ker.symm
   ext a
   · dsimp [-TensorProduct.algebraMap_apply]
@@ -93,7 +91,7 @@ private theorem exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq
   · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-private theorem exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂
+private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂
     {P : Ideal R} [P.IsPrime] {Q : Ideal S} [Q.IsPrime]
     [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q] (x : S) (p : R[X])
     (hp₁ : Ideal.span {p.map (algebraMap R P.ResidueField)} =
@@ -106,8 +104,6 @@ private theorem exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq
   have : Q'.LiesOver Q := ⟨congr($((PrimeSpectrum.primesOverOrderIsoFiber R S P).symm_apply_apply
     ⟨Q, ‹_›, ‹_›⟩).1).symm⟩
   have : Q'.LiesOver P := .trans _ Q _
-  have : Q'.IsPrime := inferInstance
-  clear_value Q'
   have : IsUnramifiedAt P.ResidueField Q' := .residueField P Q _ (Q'.over_def Q)
   have : Function.Surjective (aeval (R := P.ResidueField) ((1 : P.ResidueField) ⊗ₜ[R] x)) := by
     rw [← AlgHom.range_eq_top, ← adjoin_singleton_eq_range_aeval]
@@ -120,7 +116,7 @@ private theorem exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq
   · simp [← Algebra.TensorProduct.right_algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
 attribute [local simp] aeval_algebraMap_apply in
-lemma exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
+lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
     [Module.Finite R S] (H : ∃ x : S, Algebra.adjoin R {x} = ⊤)
     (Q : Ideal S) [Q.IsPrime] [Algebra.IsUnramifiedAt R Q] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
@@ -156,7 +152,7 @@ lemma exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
   obtain ⟨p, hpI, hp⟩ := Ideal.exists_mem_span_singleton_map_residueField_eq P I
   have hI' : I.map (mapRingHom (algebraMap R P.ResidueField)) =
       RingHom.ker (aeval (1 ⊗ₜ x : P.Fiber S)).toRingHom :=
-    exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₁ P x hx
+    exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₁ P x hx
   -- Let `x` denote the image of `X` in `S`,
   -- and let `m` be the minimal polynomial of `x` (viewed as an element of `κ(Q)`) over `κ(P)`.
   -- By unramified-ness we know that `m` divides `p` only once.
@@ -165,7 +161,7 @@ lemma exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
   have hm : Prime m := minpoly.prime (Algebra.IsIntegral.isIntegral _)
   have hmp₁ : m ∣ p.map (algebraMap _ _) := by simp_all [m, I, minpoly.dvd_iff]
   have hmp₂ : ¬ m ^ 2 ∣ p.map (algebraMap _ _) :=
-    exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂ x p (hp.trans hI') hx
+    exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂ x p (hp.trans hI') hx
   -- But the issue is that `p` is not necessarily monic.
   -- Let `q := M + p` for some monic `M ∈ I` with large enough degree (since `S` is `R`-finite).
   -- I claim that `q` satisfies the desired properties.

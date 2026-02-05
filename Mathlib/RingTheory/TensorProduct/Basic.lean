@@ -535,9 +535,9 @@ then `{ 1 ⊗ x | x ∈ s }` generates `A ⊗[R] T` as an `A`-algebra. -/
 lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
     [Semiring B] [Algebra R A] [Algebra R B]
     (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
-  convert congr(adjoin A (($hs).map (includeRight : B →ₐ[R] A ⊗[R] B)).carrier) using 1
-  · rw [AlgHom.map_adjoin]; simp [-adjoin_toSubsemiring, adjoin_adjoin_of_tower]
-  rw [eq_comm, ← top_le_iff, Algebra.map_top]
+  suffices h : adjoin A ((⊤ : Subalgebra R B).map (includeRight (A := A)) : Set (A ⊗[R] B)) = ⊤ by
+    simp [← h, ← hs, AlgHom.map_adjoin, -adjoin_toSubsemiring, adjoin_adjoin_of_tower]
+  rw [← top_le_iff, Algebra.map_top]
   change ⊤ ≤ (adjoin A includeRight.range.carrier).toSubmodule
   rw [← Submodule.baseChange_top, Submodule.baseChange_eq_span, Submodule.map_top]
   exact span_le_adjoin _ _
