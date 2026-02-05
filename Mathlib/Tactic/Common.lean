@@ -33,6 +33,7 @@ public import Mathlib.Tactic.ApplyCongr
 -- import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.ApplyAt
 public import Mathlib.Tactic.ApplyWith
+public import Mathlib.Tactic.AssumptionQuestion
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.ByContra
