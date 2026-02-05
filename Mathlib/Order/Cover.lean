@@ -65,7 +65,7 @@ theorem AntisymmRel.wcovBy (h : AntisymmRel (· ≤ ·) a b) : a ⩿ b :=
 theorem WCovBy.wcovBy_iff_le (hab : a ⩿ b) : b ⩿ a ↔ b ≤ a :=
   ⟨fun h => h.le, fun h => h.wcovBy_of_le hab.le⟩
 
-@[to_dual wcovBy_of_eq_or_eq']
+@[to_dual none]
 theorem wcovBy_of_eq_or_eq (hab : a ≤ b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⩿ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
@@ -82,7 +82,7 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
   ⟨fun h => h.trans_antisymm_rel hab, fun h => h.trans_antisymm_rel hab.symm⟩
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
-@[to_dual not_wcovBy_iff']
+@[to_dual none]
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
