@@ -73,7 +73,8 @@ simplifies to `{x, y}` and not `{y, x}`. -/
 
 @[simp, grind =]
 lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
-  rw [Finset.union_comm, singleton_union]
+  rw [Finset.union_comm]
+  rfl
 
 @[simp, grind =]
 lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
