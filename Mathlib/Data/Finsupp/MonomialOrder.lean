@@ -122,15 +122,14 @@ lemma toWithBotSyn_symm_apply_bot : m.toWithBotSyn.symm ⊥ = ⊥ := rfl
 lemma toWithBotSyn_apply_eq_bot_iff (a) : m.toWithBotSyn a = ⊥ ↔ a = ⊥ := by
   simp [← m.toWithBotSyn.eq_symm_apply]
 
-@[simp]
 lemma toWithBotSyn_apply_le_bot_iff (a) : m.toWithBotSyn a ≤ ⊥ ↔ a = ⊥ := by
-  simp [← m.toWithBotSyn.eq_symm_apply]
+  simp
 
 @[simp]
 lemma toWithBotSyn_apply_coe (a : σ →₀ ℕ) : m.toWithBotSyn a = m.toSyn a := rfl
 
 @[simp]
-lemma bot_lt_toWithBotSyn_apply_iff (a) : ⊥ < m.toWithBotSyn a ↔ a ≠ ⊥ := by
+lemma bot_lt_toWithBotSyn_apply_iff (a) : ⊥ < m.toWithBotSyn a ↔ ⊥ < a := by
   simp [bot_lt_iff_ne_bot]
 
 @[simp]
