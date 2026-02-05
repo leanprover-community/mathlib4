@@ -54,7 +54,7 @@ variable {K : Type*} [Field K]
 
 /-- The fixed points of an invertible linear map acting on the projectivization of a vector
 space are precisely the eigenspaces. -/
-theorem smul_eq_self_iff' {M : Type*} [AddCommGroup M] [Module K M] [FiniteDimensional K M]
+theorem smul_eq_self_iff' {M : Type*} [AddCommGroup M] [Module K M]
     {g : LinearMap.GeneralLinearGroup K M} {y : Projectivization K M} :
     g • y = y ↔ ∃ a, y.submodule ≤ Module.End.eigenspace g a := by
   induction y with | h y hy =>
