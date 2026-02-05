@@ -842,19 +842,15 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSol
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
 
-lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [hs : IsSimpleGroup G] [IsNilpotent G] :
-    nilpotencyClass G ≤ 1 := by
-  refine lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mp ?_
-  obtain ht | ht := hs.eq_bot_or_eq_top_of_normal _ (commutator_normal ⊤ ⊤)
-  · exact ht
-  · have : ⁅(⊤), ⊤⁆ < (⊤ : Subgroup G) := IsSolvable.commutator_lt_of_ne_bot top_ne_bot
-    simp_all only [lt_self_iff_false]
+instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
+  ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
 
-instance IsSimpleGroup_IsNilpotent.isCyclic [IsSimpleGroup G] [IsNilpotent G] :
-    IsCyclic G := by
-  have hn1 : nilpotencyClass G ≤ 1 := nilpotencyClass_le_one_of_isSimple_of_isNilpotent
-  let : CommGroup G := commGroupOfNilpotencyClass hn1
-  infer_instance
+instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
+  inferInstance
+
+lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [IsSimpleGroup G] [IsNilpotent G] :
+    nilpotencyClass G ≤ 1 :=
+  CommGroup.nilpotencyClass_le_one
 
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition
