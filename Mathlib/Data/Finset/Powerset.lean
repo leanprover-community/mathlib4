@@ -314,25 +314,26 @@ def Equiv.fnBool_finset {ι : Type*} [DecidableEq ι] [Fintype ι] : (ι → Boo
   left_inv := fun l ↦ by simp
   right_inv := fun l ↦ by simp
 
-lemma Equiv_fnFinBool_finsetFin_mem_powersetCard_iff (n k : ℕ) (f : Fin n → Bool) :
-    #{i | f i = true} = k ↔ (Equiv.fnBool_finset (ι := Fin n)) f ∈ powersetCard k univ := by
+lemma Equiv_fnFinBool_finsetFin_mem_powersetCard_iff {ι : Type*} [DecidableEq ι] [Fintype ι] (k : ℕ)
+    (f : ι → Bool) : #{i | f i = true} = k ↔ (Equiv.fnBool_finset) f ∈ powersetCard k univ := by
   simp [Equiv.fnBool_finset]
 
-/-- The number of maps `f : Fin n → Bool` with `#{i | f i} = k` equals `n.choose k`. -/
-lemma card_fnFinBool {k n : ℕ} : #{ f : Fin n → Bool | #{i | f i} = k } = n.choose k := by
-  conv => right; rw [← card_fin n]
-  rw [← card_powersetCard k (univ : Finset (Fin n))]
-  apply card_equiv (Equiv.fnBool_finset (ι := Fin n)) (fun i ↦ ?_)
+/-- For some `Fintype ι`, the number of maps `f : ι → Bool` with `#{i | f i} = k` equals
+`n.choose k`. -/
+lemma card_fnBool {ι : Type*} [DecidableEq ι] [Fintype ι] {k : ℕ} :
+    #{ f : ι → Bool | #{i | f i} = k } = (univ : Finset ι).card.choose k := by
+  rw [← card_powersetCard k (univ : Finset ι)]
+  apply card_equiv (Equiv.fnBool_finset) (fun i ↦ ?_)
   simp only [mem_filter, mem_univ, true_and]
-  exact Equiv_fnFinBool_finsetFin_mem_powersetCard_iff n k i
+  exact Equiv_fnFinBool_finsetFin_mem_powersetCard_iff k i
 
 lemma card_listVector_card {k n : ℕ} :
     #{v : List.Vector Bool n | v.val.count true = k} = n.choose k := by
-  rw [← card_fnFinBool]
+  rw [← card_fin n, ← card_fnBool, card_fin n]
   apply card_equiv (Equiv.vectorEquivFin _ n) (fun v ↦ ?_)
   simp only [mem_filter, mem_univ, true_and, Equiv.vectorEquivFin, Equiv.coe_fn_mk]
   refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← List.count_ofFn_eq_card _ _ true] <;> congr <;>
-  rw [← List.ofFn_get (l := v.1)] <;> aesop
+  rw [← List.ofFn_get (l :=  v.1)] <;> aesop
 
 end powersetCard
 
