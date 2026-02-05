@@ -546,6 +546,7 @@ can act recursively, and the side goals that couldn't be discharged by `sideGoal
 def _root_.Lean.MVarId.gcongrCore (g : MVarId)
     (relName : Name) (lhs rhs : Expr) (sideGoalDischarger : MVarId → MetaM Unit) :
     GCongrM (Array GCongrSubgoal) := do
+  -- Check that the goal is of the form `rel (head _ ... _) (head _ ... _)`
   let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
   let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs |
@@ -616,7 +617,6 @@ partial def _root_.Lean.MVarId.gcongr
         return true
   -- If we have reached the depth limit, return the unsolved goal
   let depth + 1 := depth | pushNewGoal g; return false -- we know that there is no mdata to remove
-  -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
   -- If there is a pattern annotation
