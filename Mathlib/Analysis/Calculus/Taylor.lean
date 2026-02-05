@@ -5,18 +5,13 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Taylor's theorem
@@ -40,10 +35,12 @@ which states that if `f` is sufficiently smooth, then
 * `taylor_mean_remainder_cauchy`: Taylor's theorem with the Cauchy remainder
 * `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector-valued functions with a
   polynomial bound on the remainder
+* `taylor_integral_remainder_of_AbsolutelyContinuous`,
+`taylor_integral_remainder_of_contDiffOn_succ`: Taylor's theorem with the integral form of the
+remainder
 
 ## TODO
 
-* the integral form of the remainder
 * Generalization to higher dimensions
 
 ## Tags
@@ -289,7 +286,7 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
 
 /-- **Taylor's theorem** with the general mean value form of the remainder.
 
-We assume that `f` is `n+1`-times continuously differentiable in the closed set `uIcc x₀ x` and
+We assume that `f` is `n`-times continuously differentiable in the closed set `uIcc x₀ x` and
 `n+1`-times differentiable on the open set `uIoo x₀ x`, and `g` is a differentiable function on
 `uIoo x₀ x` and continuous on `uIcc x₀ x`. Then there exists an `x' ∈ uIoo x₀ x` such that
 $$f(x) - (P_n f)(x₀, x) = \frac{(x - x')^n}{n!} \frac{g(x) - g(x₀)}{g' x'},$$
@@ -317,7 +314,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
 set_option linter.unusedSimpArgs false in
 /-- **Taylor's theorem** with the Lagrange form of the remainder.
 
-We assume that `f` is `n+1`-times continuously differentiable in the closed set `uIcc x₀ x` and
+We assume that `f` is `n`-times continuously differentiable in the closed set `uIcc x₀ x` and
 `n+1`-times differentiable on the open set `uIoo x₀ x`. Then there exists an `x' ∈ uIoo x₀ x` such
 that
 $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
@@ -358,7 +355,7 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
 
 /-- **Taylor's theorem** with the Cauchy form of the remainder.
 
-We assume that `f` is `n+1`-times continuously differentiable on the closed set `uIcc x₀ x` and
+We assume that `f` is `n`-times continuously differentiable on the closed set `uIcc x₀ x` and
 `n+1`-times differentiable on the open set `uIoo x₀ x`. Then there exists an `x' ∈ uIoo x₀ x` such
 that
 $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
@@ -441,58 +438,119 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
 
 /-- **Taylor's theorem** with the Integral form of the remainder.
 
+We assume that for any `k ≤ n`, the following equation on integration by parts hold:
+$$\int_{x_0}^x \frac{f^{(k+1)}(t) (x - t)^k}{k!} =
+\frac{f^{(k)}(t) (x - t)^k}{k!} |_{x_0}^x -\int_{x_0}^x \frac{f^{(k)}(t) (x - t)^{k-1}}{(k-1)!}.$$
+Then
+$$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
+where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
+derivative. -/
+theorem taylor_integral_remainder_of_byParts [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
+    (hf : ∀ k ≤ n, let u := fun t ↦ (x - t) ^ k / k !;
+      let v := fun t ↦ iteratedDerivWithin k f [[x₀, x]] t;
+      ∫ (t : ℝ) in x₀..x, u t • deriv v t = u x • v x - u x₀ • v x₀ -
+      ∫ (t : ℝ) in x₀..x, deriv u t • v t) :
+    f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
+      ∫ t in x₀..x, ((x - t) ^ n / n !) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t  := by
+  rcases eq_or_ne x₀ x with rfl | this
+  · simp
+  induction n with
+  | zero =>
+    simp only [taylor_within_zero_eval, pow_zero, Nat.factorial_zero, Nat.cast_one, ne_eq,
+      one_ne_zero, not_false_eq_true, div_self, zero_add, iteratedDerivWithin_one, one_smul]
+    simp only [nonpos_iff_eq_zero, sub_self, deriv_div_const, forall_eq, pow_zero,
+      Nat.factorial_zero, Nat.cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
+      iteratedDerivWithin_zero, one_smul, deriv_const', div_one, zero_smul,
+      intervalIntegral.integral_zero, sub_zero] at hf
+    rw [← hf]
+    apply intervalIntegral.integral_congr_ae
+    filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
+    grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+  | succ n ih =>
+    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
+    specialize ih (by grind)
+    simp only [taylorWithinEval_succ, mul_inv_rev]
+    rw [sub_add_eq_sub_sub, ih]
+    simp only [Nat.factorial, Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
+    have := hf (n + 1) (by rfl)
+    convert this.symm using 1
+    · simp only [sub_self, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
+        zero_pow, zero_div, zero_smul, zero_sub, deriv_div_const, Nat.factorial]
+      apply fun (a b c d : F) (_ : b = c) (_ : a = -d) ↦ show a - b = -c - d by grind
+      · grind
+      · rw [← intervalIntegral.integral_neg]
+        congr
+        ext t
+        rw [deriv_fun_pow (by fun_prop), deriv_const_sub, deriv_id'', ← neg_smul]
+        congr
+        field_simp
+        grind
+    · apply intervalIntegral.integral_congr_ae
+      filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
+      rw [iteratedDerivWithin_succ]
+      congr
+      · rw [Nat.factorial]; grind
+      · grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+
+/-- **Taylor's theorem** with the Integral form of the remainder.
+
 We assume that `f` is `n`-times continuously differentiable on the closed set `uIcc x₀ x` and
 its `n`-th derivative is absolutely continuous on `uIcc x₀ x`. Then
 $$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
-theorem taylor_mean_remainder_integral {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ ≠ x)
+theorem taylor_integral_remainder_of_AbsolutelyContinuous {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ}
     (hf₁ : ContDiffOn ℝ n f (uIcc x₀ x))
     (hf₂ : AbsolutelyContinuousOnInterval (iteratedDerivWithin n f (uIcc x₀ x)) x₀ x) :
     f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
-      ∫ t in x₀..x, iteratedDerivWithin (n + 1) f (uIcc x₀ x) t * (x - t) ^ n / n ! := by
-  induction n with
-  | zero =>
-    simp only [taylor_within_zero_eval, zero_add, iteratedDerivWithin_one, pow_zero, mul_one,
-      Nat.factorial_zero, Nat.cast_one, div_one]
-    have := AbsolutelyContinuousOnInterval.integral_deriv_eq_sub hf₂
-    simp only [iteratedDerivWithin_zero] at this
-    rw [← this]
-    apply intervalIntegral.integral_congr_ae
-    filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x,
-      hf₂.ae_differentiableAt] with _ _ _ _ _
-    symm
-    apply derivWithin_of_mem_nhds
-    grind [Icc_mem_nhds, uIcc]
-  | succ n ih =>
+      ∫ t in x₀..x, ((x - t) ^ n / n !) * iteratedDerivWithin (n + 1) f (uIcc x₀ x) t := by
+  rcases eq_or_ne x₀ x with rfl | this
+  · simp
+  apply taylor_integral_remainder_of_byParts
+  intro k hk
+  apply AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul
+  · apply ContDiffOn.absolutelyContinuousOnInterval
+    fun_prop
+  · rcases hk.eq_or_lt with rfl | hk
+    · exact hf₂
     have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
-    rw [contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin this] at hf₁
-    specialize ih hf₁.left hf₁.right.absolutelyContinuousOnInterval
-    simp only [taylorWithinEval_succ, mul_inv_rev, smul_eq_mul, intervalIntegral.integral_div]
-    rw [sub_add_eq_sub_sub, ih]
-    simp only [intervalIntegral.integral_div, Nat.factorial, Nat.succ_eq_add_one, Nat.cast_mul,
-      Nat.cast_add, Nat.cast_one]
-    field_simp
-    have := AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul
-      (g := fun t ↦ iteratedDerivWithin (n + 1) f [[x₀, x]] t)
-      (((contDiffOn_const.sub contDiffOn_id).pow _).absolutelyContinuousOnInterval
-        (f := fun t ↦ (x - t) ^ (n + 1)))
-      hf₂
-    convert this.symm using 1
-    · simp only [sub_self, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
-        zero_pow, zero_mul, zero_sub]
-      nth_rw 1 [sub_eq_neg_add]
-      congr
-      rw [← intervalIntegral.integral_neg, ← intervalIntegral.integral_mul_const]
-      congr
-      ext t
-      rw [deriv_fun_pow (by fun_prop), deriv_const_sub]
-      grind [deriv_id'']
-    · apply intervalIntegral.integral_congr_ae
-      filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x,
-        hf₂.ae_differentiableAt] with _ _ _ _ _
+    replace hf₁ := hf₁.of_le (m := k.succ) (by norm_cast)
+    grind [ContDiffOn.absolutelyContinuousOnInterval,
+      contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin]
+
+/-- **Taylor's theorem** with the Integral form of the remainder.
+
+We assume that `f` is `n+1`-times continuously differentiable on the closed set `uIcc x₀ x`. Then
+$$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
+where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
+derivative. -/
+theorem taylor_integral_remainder_of_contDiffOn_succ [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [CompleteSpace F] {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
+    (hf : ContDiffOn ℝ (n + 1 : ℕ) f (uIcc x₀ x)) :
+    f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
+      ∫ t in x₀..x, ((x - t) ^ n / n !) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t := by
+  rcases eq_or_ne x₀ x with rfl | this
+  · simp
+  have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
+  apply taylor_integral_remainder_of_byParts
+  intro k hk
+  apply intervalIntegral.integral_smul_deriv_eq_deriv_smul_of_hasDerivAt
+    (u := fun t ↦ (x - t) ^ k / k !) (v := fun t ↦ iteratedDerivWithin k f (uIcc x₀ x) t)
+  · fun_prop
+  · exact hf.continuousOn_iteratedDerivWithin (by norm_cast; omega) this
+  · intro t ht
+    apply DifferentiableAt.hasDerivAt
+    fun_prop
+  · intro t ht
+    refine DifferentiableOn.hasDerivAt (s := uIoo x₀ x) ?_ (by grind [Ioo_mem_nhds, uIoo])
+    exact hf.differentiableOn_iteratedDerivWithin (by norm_cast; omega) this
+      |>.mono (by grind [uIoo, uIcc])
+  · apply ContinuousOn.intervalIntegrable
+    fun_prop
+  · apply IntervalIntegrable.congr_ae (f := iteratedDerivWithin (k + 1) f [[x₀, x]])
+    · exact hf.continuousOn_iteratedDerivWithin (by norm_cast; omega) this |>.intervalIntegrable
+    · rw [Filter.EventuallyEq, MeasureTheory.ae_restrict_iff' (by measurability)]
+      filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
       rw [iteratedDerivWithin_succ]
-      nth_rw 1 [mul_comm]
-      congr
-      apply derivWithin_of_mem_nhds
-      grind [Icc_mem_nhds, uIcc]
+      grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]

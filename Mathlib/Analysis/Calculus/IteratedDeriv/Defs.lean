@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Defs
-public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 
 /-!
 # One-dimensional iterated derivatives
@@ -217,23 +215,11 @@ theorem iteratedDerivWithin_succ' :
 
 /-- `C^{n + 1}` is equivalent to `C^n` and the `n`-th derivative being `C^1`. -/
 theorem contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin {n : ℕ}
-    (hs : UniqueDiffOn 𝕜 s) : ContDiffOn 𝕜 n.succ f s ↔
+    (hs : UniqueDiffOn 𝕜 s) : ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
       ContDiffOn 𝕜 n f s ∧ ContDiffOn 𝕜 1 (iteratedDerivWithin n f s) s := by
-  rw [← Nat.cast_one]
-  simp only [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv, hs]
-  constructor
-  · intro ⟨h₁, h₂⟩
-    refine ⟨by grind, fun m hm ↦ ?_, fun m hm ↦ by grind [iteratedDerivWithin_zero]⟩
-    interval_cases m
-    · grind [iteratedDerivWithin_zero]
-    · rw [iteratedDerivWithin_one, ← iteratedDerivWithin_succ]
-      grind
-  · intro ⟨_, ⟨h₁, h₂⟩⟩
-    have := h₁ 1 (by rfl)
-    rw [iteratedDerivWithin_one, ← iteratedDerivWithin_succ] at this
-    have := h₂ 0 (by decide)
-    rw [iteratedDerivWithin_zero] at this
-    grind
+  simp only [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv, hs,
+    contDiffOn_one_iff_derivWithin, ← iteratedDerivWithin_succ]
+  grind
 
 /-! ### Properties of the iterated derivative on the whole space -/
 
@@ -399,20 +385,7 @@ lemma iteratedDerivWithin_const_zero {s : Set 𝕜} :
   simp [Pi.zero_def]
 
 /-- `C^{n + 1}` is equivalent to `C^n` and the `n`-th derivative being `C^1`. -/
-theorem contDiff_nat_succ_iff_iteratedDeriv {n : ℕ} : ContDiff 𝕜 n.succ f ↔
-      ContDiff 𝕜 n f ∧ ContDiff 𝕜 1 (iteratedDeriv n f) := by
-  rw [← Nat.cast_one]
-  simp only [contDiff_nat_iff_iteratedDeriv]
-  constructor
-  · intro ⟨h₁, h₂⟩
-    refine ⟨by grind, fun m hm ↦ ?_, fun m hm ↦ by grind [iteratedDeriv_zero]⟩
-    interval_cases m
-    · grind [iteratedDeriv_zero]
-    · rw [iteratedDeriv_one, ← iteratedDeriv_succ]
-      grind
-  · intro ⟨_, ⟨h₁, h₂⟩⟩
-    have := h₁ 1 (by rfl)
-    rw [iteratedDeriv_one, ← iteratedDeriv_succ] at this
-    have := h₂ 0 (by decide)
-    rw [iteratedDeriv_zero] at this
-    grind
+theorem contDiff_nat_succ_iff_contDiff_one_iteratedDeriv {n : ℕ} : ContDiff 𝕜 (n + 1 : ℕ) f ↔
+    ContDiff 𝕜 n f ∧ ContDiff 𝕜 1 (iteratedDeriv n f) := by
+  simp only [contDiff_nat_iff_iteratedDeriv, contDiff_one_iff_deriv, ← iteratedDeriv_succ]
+  grind
