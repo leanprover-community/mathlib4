@@ -695,7 +695,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       declared in an imported \
       module, and its value/proof is not available, so it cannot be translated.\n\
       Possible solutions: put this attribute in the module where the declaration was declared, \
-      avoid the module system, or run\n\
+      avoid the module system, or run\n  \
       import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}."
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
