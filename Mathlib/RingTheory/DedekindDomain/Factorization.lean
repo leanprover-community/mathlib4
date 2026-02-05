@@ -70,7 +70,7 @@ open scoped Classical in
 def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
   v.asIdeal ^ (Associates.mk v.asIdeal).count (Associates.mk I).factors
 
-open Classical Associates in
+open Associates in
 theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
     {I : Ideal R} (hI : I ≠ 0) :
     maxPowDividing v I =
@@ -265,7 +265,6 @@ theorem finprod_heightOneSpectrum_factorization_principal_fraction {n : R} (hn :
     rw [IsFractionRing.mk'_eq_div, div_eq_mul_inv, mul_comm]
   exact finprod_heightOneSpectrum_factorization h0 hI
 
-open Classical in
 /-- For a nonzero `k = r/s ∈ K`, the fractional ideal `(k)` is equal to the product
 `∏_v v^(val_v(r) - val_v(s))`. -/
 theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R⁰ K} (hI : I ≠ 0)
@@ -286,7 +285,6 @@ theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R
 
 variable (K)
 
-open Classical in
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that `I = a⁻¹J`,
 then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we set `val_v(I) = 0`. -/
 def count (I : FractionalIdeal R⁰ K) : ℤ :=
@@ -299,7 +297,6 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
 /-- val_v(0) = 0. -/
 lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dif_pos]
 
-open Classical in
 lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
     count K v I = ((Associates.mk v.asIdeal).count (Associates.mk
       (choose (choose_spec (exists_eq_spanSingleton_mul I)))).factors -
@@ -307,7 +304,6 @@ lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
         (Associates.mk (Ideal.span {choose (exists_eq_spanSingleton_mul I)})).factors : ℤ) := by
   simp only [count, dif_neg hI]
 
-open Classical in
 /-- `val_v(I)` does not depend on the choice of `a` and `J` used to represent `I`. -/
 theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     {J : Ideal R} (h_aJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :

@@ -207,7 +207,7 @@ theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠
 namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
-open Classical in
+
 theorem ramificationIdx_eq_normalizedFactors_count
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
     (hP0 : P ≠ ⊥) : ramificationIdx f p P = (normalizedFactors (map f p)).count P := by
@@ -229,7 +229,6 @@ theorem ramificationIdx_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) 
     ← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors _ hp, normalize_eq]
   exact irreducible_iff_prime.mpr <| prime_of_isPrime hP₂ hP
 
-open Classical in
 theorem ramificationIdx_eq_factors_count
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
     ramificationIdx f p P = (factors (map f p)).count P := by
