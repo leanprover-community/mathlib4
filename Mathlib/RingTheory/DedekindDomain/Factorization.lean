@@ -188,6 +188,7 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
   rw [not_le] at h_not_dvd
   apply Nat.eq_of_le_of_lt_succ h_dvd h_not_dvd
 
+open Classical in
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
@@ -285,6 +286,7 @@ theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R
 
 variable (K)
 
+open Classical in
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that `I = a⁻¹J`,
 then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we set `val_v(I) = 0`. -/
 def count (I : FractionalIdeal R⁰ K) : ℤ :=
@@ -297,6 +299,7 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
 /-- val_v(0) = 0. -/
 lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dif_pos]
 
+open Classical in
 lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
     count K v I = ((Associates.mk v.asIdeal).count (Associates.mk
       (choose (choose_spec (exists_eq_spanSingleton_mul I)))).factors -
@@ -304,6 +307,7 @@ lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
         (Associates.mk (Ideal.span {choose (exists_eq_spanSingleton_mul I)})).factors : ℤ) := by
   simp only [count, dif_neg hI]
 
+open Classical in
 /-- `val_v(I)` does not depend on the choice of `a` and `J` used to represent `I`. -/
 theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     {J : Ideal R} (h_aJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
