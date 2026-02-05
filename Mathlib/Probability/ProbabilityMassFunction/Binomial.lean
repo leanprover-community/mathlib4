@@ -142,12 +142,12 @@ theorem mgf_binomialReal (hX : μ.map X = binomialReal p h n) (t : ℝ) :
   norm_cast
 
 theorem mgf_fun_id_binomialReal :
-    mgf (fun x ↦ x) (binomialReal p h n) = fun t ↦ (1 - ↑p + ↑p * rexp t) ^ n := by
+    mgf (fun x ↦ x) (binomialReal p h n) = fun t ↦ (1 - p + p * rexp t) ^ n := by
   ext t
   exact mgf_binomialReal (h := h) (by simp) t
 
 theorem mgf_id_binomialReal :
-    mgf id (binomialReal p h n) = fun t ↦ (1 - ↑p + ↑p * rexp t) ^ n :=
+    mgf id (binomialReal p h n) = fun t ↦ (1 - p + p * rexp t) ^ n :=
   mgf_fun_id_binomialReal
 
 /-- The cumulant-generating function of a random variable with binomial distribution with success
