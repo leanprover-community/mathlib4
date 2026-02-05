@@ -16,7 +16,7 @@ properties of it is covered in this file.
 
 * `MonomialOrder.IsRemainder m f B r`: Given a multivariate polynomial `f` and a "divisors" set `B`
   of with respect to a monomial order `m`. A polynomial `r` is called a remainder of `f` on
-  division by `B` if there exists:
+  division by `B` if there exists a finitely supported function `g` s.t.
 
   1. Finite linear combination:
     `f = ∑ (g(b) * b) + r`;
@@ -97,9 +97,9 @@ namespace MonomialOrder
 
 open MvPolynomial
 
-/-- Given a multivariate polynomial `f` and a set `B` of multivariate polynomials over `R`.
+/-- Given a multivariate polynomial `f` and a "divisors" set `B` of multivariate polynomials over `R`.
 A polynomial `r` is called a remainder of `f` on division by `B` with respect to a monomial order
-`m`, if there exists `g : B →₀ R[X]` and a polynomial `r` s.t.
+`m`, if there exists `g : B →₀ MvPolynomial σ R` s.t.
 
 1. Finite linear combination:
   `f = ∑ (g(b) * b) + r`;
