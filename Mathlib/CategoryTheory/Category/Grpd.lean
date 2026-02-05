@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Data.Finset.Attr
