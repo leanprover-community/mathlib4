@@ -373,7 +373,8 @@ namespace Affine
 
 namespace Simplex
 
-variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {k V V₂ P P₂ : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
 of the vertices with weights in a set `I`. -/
@@ -419,28 +420,32 @@ lemma setInterior_subset_affineSpan {I : Set k} {n : ℕ} {s : Simplex k P n} :
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
 
+lemma setInterior_map (I : Set k) {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k] P₂}
+    (hf : Function.Injective f) : (s.map f hf).setInterior I = f '' s.setInterior I := by
+  ext p
+  rw [Set.mem_image]
+  by_cases hp : p ∈ affineSpan k (Set.range (s.map f hf).points)
+  · obtain ⟨w, hw1, hw⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
+    rw [hw, Affine.Simplex.affineCombination_mem_setInterior_iff hw1, Simplex.map_points,
+      ← Finset.map_affineCombination _ _ _ hw1]
+    simp_rw [hf.eq_iff]
+    simp [Affine.Simplex.affineCombination_mem_setInterior_iff hw1]
+  · apply iff_of_false
+    · exact fun h ↦ hp (Set.mem_of_mem_of_subset h (s.map f hf).setInterior_subset_affineSpan)
+    · contrapose! hp
+      obtain ⟨q, hq, hqp⟩ := hp
+      rw [s.map_points, Set.range_comp, ← AffineSubspace.map_span, AffineSubspace.mem_map]
+      exact ⟨q, (Set.mem_of_mem_of_subset hq s.setInterior_subset_affineSpan), hqp⟩
+
 lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).setInterior I = S.subtype ⁻¹' (s.setInterior I) := by
   letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-  ext p
-  rw [Set.mem_preimage]
-  by_cases hp : S.subtype p ∈ affineSpan k (Set.range s.points)
-  · obtain ⟨w, hw1, hw⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
-    have hw' : p = (Finset.affineCombination k Finset.univ (s.restrict S hS).points) w := by
-      rw [← S.subtype_injective.eq_iff, hw, Finset.map_affineCombination _ _ _ hw1]
-      rfl
-    rw [hw, hw', Affine.Simplex.affineCombination_mem_setInterior_iff hw1,
-      Affine.Simplex.affineCombination_mem_setInterior_iff hw1]
-  · apply iff_of_false
-    · contrapose! hp
-      have h : S.subtype p ∈
-          AffineSubspace.map S.subtype (affineSpan k (Set.range (s.restrict S hS).points)) := by
-        simpa using Set.mem_of_mem_of_subset hp (s.restrict S hS).setInterior_subset_affineSpan
-      rw [AffineSubspace.map_span, ← Set.image_univ, Set.image_image] at h
-      simpa using h
-    · exact fun h ↦ hp (Set.mem_of_mem_of_subset h s.setInterior_subset_affineSpan)
+  rw [← S.subtype_injective.image_injective.eq_iff,
+    Set.image_preimage_eq_of_subset (s.setInterior_subset_affineSpan.trans (by simpa using hS)),
+    ← (s.restrict S hS).setInterior_map I S.subtype_injective]
+  rfl
 
 variable [PartialOrder k]
 
@@ -585,6 +590,14 @@ lemma affineCombination_mem_closedInterior_face_iff_nonneg [IsOrderedAddMonoid k
   refine ⟨by grind, fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ ⟨hii i hi, ?_⟩, hi0⟩⟩
   rw [← hw, ← Finset.sum_subset (Finset.subset_univ fs) fun j _ ↦ hi0 j]
   exact Finset.single_le_sum (fun t ht ↦ (hii t ht)) hi
+
+lemma interior_map {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k] P₂} (hf : Function.Injective f) :
+    (s.map f hf).interior = f '' s.interior :=
+  s.setInterior_map _ hf
+
+lemma closedInterior_map {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k] P₂} (hf : Function.Injective f) :
+    (s.map f hf).closedInterior = f '' s.closedInterior :=
+  s.setInterior_map _ hf
 
 lemma interior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
     (hS : affineSpan k (Set.range s.points) ≤ S) :
