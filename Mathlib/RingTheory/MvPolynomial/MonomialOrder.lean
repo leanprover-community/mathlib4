@@ -16,7 +16,8 @@ public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 We consider a type `σ` of indeterminates and a commutative semiring `R`
 and a monomial order `m : MonomialOrder σ`.
 
-* `m.degree f` is the degree of `f` for the monomial ordering `m`.
+* `m.degree f` is the degree of `f` for the monomial ordering `m`, where polynomial `0` has degree
+  `0`.
 
 * `m.leadingCoeff f` is the leading coefficient of `f` for the monomial ordering `m`.
 
@@ -25,6 +26,9 @@ and a monomial order `m : MonomialOrder σ`.
 * `m.leadingTerm f` is the leading term of `f` for the monomial ordering `m`.
 
 * `m.sPolynomial f g` is S-polynomial of `f` and `g`.
+
+* `m.withBotDegree f` is the degree of `f` for the monomial ordering `m`, where polynomial `0` has
+  degree `⊥`, which is not equal to `0`.
 
 * `m.leadingCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
 
@@ -104,7 +108,8 @@ section Semiring
 variable {R : Type*} [CommSemiring R]
 
 variable (m) in
-/-- the degree of a multivariate polynomial with respect to a monomial ordering -/
+/-- the degree of a multivariate polynomial with respect to a monomial ordering, where polynomial
+`0` has degree `0`. -/
 def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.support.sup m.toSyn)
 
@@ -772,6 +777,249 @@ lemma degree_mul_lt_iff_left_lt_of_ne_zero [NoZeroDivisors R] {p p' q : MvPolyno
   intro h
   simpa [m.degree_mul hp hq, m.degree_mul (show p' ≠ 0 by contrapose! h; simp [h]) hq] using h
 
+@[simp]
+lemma monic_leadingTerm (p : MvPolynomial σ R) :
+    m.Monic (m.leadingTerm p) ↔ m.Monic p := by simp [leadingTerm, Monic]
+
+lemma support_leadingTerm (p : MvPolynomial σ R) [Decidable (p = 0)] :
+    support (m.leadingTerm p) = if p = 0 then ∅ else {m.degree p} := by
+  classical
+  simp [leadingTerm, support_monomial]
+
+lemma support_leadingTerm' {p : MvPolynomial σ R} (hp : p ≠ 0) :
+    support (m.leadingTerm p) = {m.degree p} := by
+  classical
+  simp [leadingTerm, support_monomial, hp]
+
+lemma le_degree_of_mem_support {p : MvPolynomial σ R} {a : σ →₀ ℕ}
+    (ha : a ∈ p.support) : a ≼[m] m.degree p := by
+  simp [degree, Finset.le_sup ha]
+
+lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
+    m.leadingTerm p = m.leadingTerm q ↔
+    m.leadingCoeff p = m.leadingCoeff q ∧ m.degree p = m.degree q := by
+  rw [leadingTerm, leadingTerm, monomial_eq_monomial_iff]
+  aesop
+
+@[simp]
+lemma monic_one' : m.Monic (1 : MvPolynomial σ R) := monic_one
+
+@[simp, nontriviality]
+lemma monic_of_subsingleton [Subsingleton (MvPolynomial σ R)] (p : MvPolynomial σ R) :
+    m.Monic p := by
+  simp [Subsingleton.eq_one (α := MvPolynomial σ R)]
+
+lemma degree_le_degree_of_support_subset {p q : MvPolynomial σ R} (h : p.support ⊆ q.support) :
+    m.degree p ≼[m] m.degree q := by
+  simp_rw [degree, m.toSyn.apply_symm_apply]
+  exact Finset.sup_mono h
+
+theorem degree_mul_le' {f g : MvPolynomial σ R} :
+    m.toSyn (m.degree (f * g)) ≤ m.toSyn (m.degree f) + m.toSyn (m.degree g) :=
+  map_add m.toSyn _ _ ▸ degree_mul_le
+
+lemma mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors
+    {f : MvPolynomial σ R}
+    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) : f ∈ nonZeroDivisors _ := by
+  rw [← nonZeroDivisorsLeft_eq_nonZeroDivisors, mem_nonZeroDivisorsLeft_iff]
+  intro g
+  rw [← not_imp_not, ← m.leadingCoeff_eq_zero_iff (f := f * g)]
+  intro h
+  rwa [m.leadingCoeff_mul_of_left_mem_nonZeroDivisors hf h,
+    mul_left_mem_nonZeroDivisors_eq_zero_iff hf, m.leadingCoeff_eq_zero_iff]
+
+section withBotDegree
+
+variable (f g : MvPolynomial σ R)
+
+variable (m) in
+/-- the degree of a multivariate polynomial with respect to a monomial ordering, where polynomial
+`0` has degree `⊥`, which is not equal to `0`. -/
+def withBotDegree : WithBot (σ →₀ ℕ) :=
+  f.support.image m.toSyn |>.max.map m.toSyn.symm
+
+lemma withBotDegree_eq [Decidable (f = 0)] :
+    m.withBotDegree f = if f = 0 then ⊥ else ↑(m.degree f) := by
+  simp [withBotDegree, degree]
+  by_cases hf : f = 0
+  · simp [hf]
+  · simp [hf, Finset.max_eq_sup_coe, ← Finset.coe_sup_of_nonempty _ (⇑m.toSyn)]
+
+@[simp]
+lemma withBotDegree_eq_coe_degree_iff : m.withBotDegree f = m.degree f ↔ f ≠ 0 := by
+  classical
+  simp [withBotDegree_eq]
+
+@[simp]
+lemma withBotDegree_eq_bot_iff : m.withBotDegree f = ⊥ ↔ f = 0 := by
+  classical
+  simp [withBotDegree_eq]
+
+lemma degree_eq_unbotD_withBotDegree : m.degree f = (m.withBotDegree f).unbotD 0 := by
+  classical
+  by_cases h : f = 0 <;> simp [withBotDegree_eq, h]
+
+@[simp]
+lemma withBotDegree_zero : m.withBotDegree (R := R) 0 = ⊥ := rfl
+
+lemma withBotDegree_monomial (d) (c) [Decidable (c = 0)] :
+    m.withBotDegree (R := R) (monomial d c) = if c = 0 then ⊥ else ↑d := by
+  classical
+  split_ifs <;> simp [withBotDegree_eq, *, m.degree_monomial]
+
+lemma withBotDegree_C (c) [Decidable (c = 0)] :
+    m.withBotDegree (R := R) (C c) = if c = 0 then ⊥ else 0 := by
+  classical
+  rw [← monomial_zero', withBotDegree_monomial]
+  rfl
+
+@[simp]
+lemma withBotDegree_leadingTerm : m.withBotDegree (m.leadingTerm f) = m.withBotDegree f := by
+  classical
+  simp [withBotDegree_eq]
+
+@[simp]
+lemma withBotDegree_one [Nontrivial R] : m.withBotDegree (R := R) 1 = 0 := by
+  classical
+  simp [withBotDegree_eq]
+
+variable {f g} in
+lemma withBotDegree_mul_of_left_mem_nonZeroDivisors (hf : m.leadingCoeff f ∈ nonZeroDivisors _) :
+    m.withBotDegree (f * g) = m.withBotDegree f + m.withBotDegree g := by
+  classical
+  wlog! +distrib h0 : f ≠ 0 ∧ g ≠ 0
+  · rcases h0 with h0 | h0 <;> simp [h0]
+  have : f * g ≠ 0 := not_imp_not.mpr
+    ((mem_nonZeroDivisors_iff.mp (mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors hf)).1 _)
+    h0.2
+  simp [m.withBotDegree_eq, h0, m.degree_mul_of_left_mem_nonZeroDivisors hf, this]
+
+variable {f g} in
+lemma withBotDegree_mul_of_right_mem_nonZeroDivisors (hf : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    m.withBotDegree (f * g) = m.withBotDegree f + m.withBotDegree g := by
+  rw [mul_comm, add_comm, withBotDegree_mul_of_left_mem_nonZeroDivisors (hf := hf)]
+
+@[simp]
+lemma withBotDegree_mul [NoZeroDivisors R] :
+    m.withBotDegree (f * g) = m.withBotDegree f + m.withBotDegree g := by
+  wlog! trivial : Nontrivial R
+  · simp [Subsingleton.eq_zero (α := MvPolynomial σ R)]
+  wlog! hf : f ≠ 0
+  · simp [hf]
+  rw [← m.leadingCoeff_ne_zero_iff] at hf
+  exact m.withBotDegree_mul_of_left_mem_nonZeroDivisors (mem_nonZeroDivisors_iff_ne_zero.mpr hf)
+
+lemma withBotDegree_mul_le :
+    m.withBotDegree (f * g) ≼'[m] m.withBotDegree f + m.withBotDegree g := by
+  wlog! +distrib h0 : f * g ≠ 0
+  · simp [h0]
+  simp only [m.withBotDegree_eq_coe_degree_iff _ |>.mpr h0, toWithBotSyn_apply_coe,
+    m.withBotDegree_eq_coe_degree_iff f |>.mpr (by aesop),
+    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by aesop), ← WithBot.coe_add, WithBot.coe_le_coe,
+    m.degree_mul_le]
+
+lemma withBotDegree_mul_le' :
+    m.toWithBotSyn (m.withBotDegree (f * g)) ≤
+      m.toWithBotSyn (m.withBotDegree f) + m.toWithBotSyn (m.withBotDegree g) := by
+  wlog! +distrib h0 : f * g ≠ 0
+  · simp [h0]
+  simp [m.withBotDegree_eq_coe_degree_iff f |>.mpr (by aesop),
+    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by aesop),
+    m.withBotDegree_eq_coe_degree_iff _ |>.mpr h0, ← WithBot.coe_add,
+    m.degree_mul_le']
+
+lemma withBotDegree_le_withBotDegree_iff :
+    m.withBotDegree f ≼'[m] m.withBotDegree g ↔
+      (m.degree f ≼[m] m.degree g ∧ (g = 0 → f = 0)) := by
+  classical
+  wlog! +distrib h : f ≠ 0 ∧ g ≠ 0
+  · rcases h with h | h
+    · simp [h, m.toWithBotSyn_apply]
+    · simp_rw [m.toWithBotSyn_apply]
+      aesop
+  simp [m.withBotDegree_eq, h, m.toWithBotSyn_apply]
+
+variable {g} in
+lemma withBotDegree_le_withBotDegree_iff_of_ne_zero (hg : g ≠ 0) :
+    m.withBotDegree f ≼'[m] m.withBotDegree g ↔ m.degree f ≼[m] m.degree g := by
+  simp [withBotDegree_le_withBotDegree_iff, hg]
+
+lemma withBotDegree_lt_withBotDegree_iff :
+    m.withBotDegree f ≺'[m] m.withBotDegree g ↔
+      (m.degree f ≺[m] m.degree g ∨ (f = 0 ∧ g ≠ 0)) := by
+  classical
+  by_cases! hg : g = 0
+  · simp_rw [toWithBotSyn_apply]
+    aesop
+  by_cases! hf : f = 0
+  · simp [hg, hf, bot_lt_iff_ne_bot, toWithBotSyn_apply]
+  simp [m.withBotDegree_eq, hf, hg, m.toWithBotSyn_apply]
+
+lemma withBotDegree_lt_withBotDegree_iff_of_ne_zero (hf : f ≠ 0) :
+    m.withBotDegree f ≺'[m] m.withBotDegree g ↔ m.degree f ≺[m] m.degree g := by
+  simp [withBotDegree_lt_withBotDegree_iff, hf]
+
+lemma withBotDegree_eq_withBotDegree_iff :
+    m.withBotDegree f = m.withBotDegree g ↔ (m.degree f = m.degree g ∧ (f = 0 ↔ g = 0)) := by
+  classical
+  wlog! +distrib h : f ≠ 0 ∧ g ≠ 0
+  · rcases h with h | h
+    all_goals
+      simp_rw [h]
+      revert f g
+      simp [m.withBotDegree_eq, m.degree_zero]
+  simp [h, m.withBotDegree_eq]
+
+lemma withBotDegree_add_le :
+    (m.toWithBotSyn <| m.withBotDegree (f + g)) ≤
+      (m.toWithBotSyn <| m.withBotDegree f) ⊔ (m.toWithBotSyn <| m.withBotDegree g) := by
+  wlog! +distrib h : f ≠ 0 ∧ g ≠ 0
+  · rcases h with h | h <;> simp [h, m.toWithBotSyn_apply]
+  simpa [withBotDegree_le_withBotDegree_iff, h] using degree_add_le (R := R)
+
+lemma withBotDegree_add_of_lt (h : m.withBotDegree g ≺'[m] m.withBotDegree f) :
+    m.withBotDegree (f + g) = m.withBotDegree f := by
+  wlog! hg : g ≠ 0
+  · simp [hg]
+  simp? [withBotDegree_lt_withBotDegree_iff, hg] at h says
+    simp only [withBotDegree_lt_withBotDegree_iff, hg, ne_eq, false_and, or_false] at h
+  simp? [withBotDegree_eq_withBotDegree_iff, show f ≠ 0 by contrapose h; simp [h]] says
+    simp only [withBotDegree_eq_withBotDegree_iff, show f ≠ 0 by contrapose h; simp [h], iff_false]
+  rw [← and_imp_iff_and]
+  refine ⟨m.degree_add_of_lt h, ?_⟩
+  intro h'
+  contrapose! h
+  simp [← h ▸ h']
+
+lemma withBotDegree_add_of_right_lt (h : m.withBotDegree f ≺'[m] m.withBotDegree g) :
+    m.withBotDegree (f + g) = m.withBotDegree g := by
+  rw [add_comm]
+  exact m.withBotDegree_add_of_lt _ _ h
+
+lemma withBotDegree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
+    (m.toWithBotSyn <| m.withBotDegree <| ∑ x ∈ s, f x) ≤
+      s.sup fun x ↦ (m.toWithBotSyn <| m.withBotDegree <| f x) := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s haA h =>
+    rw [Finset.sum_cons, Finset.sup_cons]
+    exact le_trans (m.withBotDegree_add_le _ _) (max_le_max le_rfl h)
+
+lemma le_withBotDegree {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : d ∈ f.support) :
+    d ≼'[m] m.withBotDegree f := by
+  classical
+  simp [withBotDegree_eq, toWithBotSyn_apply, ne_zero_iff.mpr ⟨d, by simpa using hd⟩, le_degree hd]
+
+lemma withBotDegree_le_withBotDegree_of_support_subset
+    {p q : MvPolynomial σ R} (h : p.support ⊆ q.support) :
+    m.withBotDegree p ≼'[m] m.withBotDegree q := by
+  wlog! hq : q ≠ 0
+  · simpa [hq] using h
+  rw [m.withBotDegree_le_withBotDegree_iff_of_ne_zero _ hq]
+  exact m.degree_le_degree_of_support_subset h
+
+end withBotDegree
+
 end Semiring
 
 section Ring
@@ -1027,6 +1275,12 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
       rw [sPolynomial]
       obtain (⟨h, -⟩ | h) := hd b' hb' <;>
         simp [h, ← smul_eq_C_mul, smul_sub, ← mul_smul, mul_comm (m.leadingCoeff (g b'))]
+
+@[simp]
+lemma withBotDegree_neg (f : MvPolynomial σ R) :
+    m.withBotDegree (-f) = m.withBotDegree f := by
+  classical
+  simp [m.withBotDegree_eq]
 
 end Ring
 
