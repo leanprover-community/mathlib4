@@ -628,7 +628,7 @@ lemma Pi.mem_span_range_single_inl_iff
 
 section Extend
 
-variable (R) {η : Type x} [Semiring R] (s : ι → η)
+variable (R) {η : Type*} [Semiring R] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
 @[simps]
