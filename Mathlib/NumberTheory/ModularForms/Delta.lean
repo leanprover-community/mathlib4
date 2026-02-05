@@ -107,77 +107,73 @@ private lemma csqrt_pow_24 (z : ℂ) (hz : z ≠ 0) : (csqrt z) ^ 24 = z ^ 12 :=
   ring_nf
   rw [show (log z * 12) = (12 : ℕ) * log z by ring, Complex.exp_nat_mul, Complex.exp_log hz]
 
-lemma eta_logDeriv_eql (z : ℍ) :
-    (logDeriv (η ∘ (fun z : ℂ => -1 / z))) z = (logDeriv (csqrt * η)) z := by
-  let Z := (⟨_ , by simpa using im_pnat_div_pos 1 z⟩ : ℍ)
-  have h0 : (logDeriv (η ∘ (fun z : ℂ => -1 / z))) z = ((z : ℂ) ^ (2 : ℤ))⁻¹ * (logDeriv η) Z := by
+lemma test (z : ℍ) :
+    let Z := (⟨-1 / z , by simpa using im_pnat_div_pos 1 z⟩ : ℍ)
+    (logDeriv (η ∘ (fun z : ℂ => -1 / z))) z = ((z : ℂ) ^ (2 : ℤ))⁻¹ * (logDeriv η) Z := by
     rw [logDeriv_comp, mul_comm]
-    congr
-    · conv =>
+    · congr
+      conv =>
         enter [1,1, z]
         simp [neg_div]
       simp only [deriv.fun_neg', deriv_inv', neg_neg, inv_inj]
       norm_cast
-    · simpa only using
-      differentiableAt_eta_of_mem_upperHalfPlaneSet (by simpa using im_pnat_div_pos 1 z)
-    conv =>
-      enter [2]
-      ext z
-      rw [neg_div]
-      simp
-    apply DifferentiableAt.neg
-    apply DifferentiableAt.inv
-    simp only [differentiableAt_fun_id]
-    exact ne_zero z
+    · exact differentiableAt_eta_of_mem_upperHalfPlaneSet (by simpa using im_pnat_div_pos 1 z)
+    · conv =>
+        enter [2, z]
+        simp [neg_div]
+      apply DifferentiableAt.neg
+      exact DifferentiableAt.inv (differentiableAt_fun_id) (ne_zero z)
+
+lemma eta_logDeriv_eql (z : ℍ) :
+    (logDeriv (η ∘ (fun z : ℂ => -1 / z))) z = (logDeriv (csqrt * η)) z := by
+  let Z := (⟨-1 / z , by simpa using im_pnat_div_pos 1 z⟩ : ℍ)
+  have h0 := test z
   rw [h0, show ((csqrt) * η) = (fun x => (csqrt) x * η x) by rfl, logDeriv_mul]
-  nth_rw 2 [logDeriv_apply]
-  unfold csqrt
-  have := csqrt_deriv (upperHalfPlane_mem_slitPlane z)
-  rw [this]
-  simp only [one_div, neg_mul,Z, smul_eq_mul]
-  nth_rw 2 [div_eq_mul_inv]
-  rw [← Complex.exp_neg, show 2⁻¹ * cexp (-(2⁻¹ * Complex.log ↑z)) * cexp (-(2⁻¹ * Complex.log ↑z)) =
-   (cexp (-(2⁻¹ * Complex.log ↑z)) * cexp (-(2⁻¹ * Complex.log ↑z)))* 2⁻¹ by ring, ← Complex.exp_add,
-   ← sub_eq_add_neg, show -(2⁻¹ * Complex.log ↑z) - 2⁻¹ * Complex.log ↑z = -Complex.log ↑z by ring,
-    Complex.exp_neg, Complex.exp_log, logDeriv_eta_eq_E2 z]
-  have Rb := logDeriv_eta_eq_E2 Z
-  simp only [coe_mk_subtype] at Rb
-  rw [Rb]
-  have E := EisensteinSeries.E2_slash_action  ModularGroup.S
-  have EE := congrFun E z
-  simp only [one_div, neg_mul, smul_eq_mul, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
-    Int.reduceNeg, zpow_neg] at *
-  have h00 :  (UpperHalfPlane.mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos) = Z := by
-    simp [Z ]
-    ring_nf
-  rw [h00] at EE
-  rw [← mul_assoc, mul_comm, ← mul_assoc]
-  simp  [UpperHalfPlane.coe] at *
-  rw [EE]
-  congr 1
-  have hzne := ne_zero z
-  have hI : Complex.I ≠ 0 := by
-    exact I_ne_zero
-  have hpi : (π : ℂ) ≠ 0 := by
-    simp only [ne_eq, ofReal_eq_zero]
-    exact Real.pi_ne_zero
-  simp [ EisensteinSeries.D2, riemannZeta_two ] at *
-  field_simp
-  ring
-  simp [add_comm, ModularGroup.S]
-  · exact ne_zero z
+  · nth_rw 2 [logDeriv_apply]
+    unfold csqrt
+    have := csqrt_deriv (upperHalfPlane_mem_slitPlane z)
+    rw [this]
+    simp only [one_div, neg_mul]
+    nth_rw 2 [div_eq_mul_inv]
+    rw [← Complex.exp_neg, show 2⁻¹ * cexp (-(2⁻¹ * Complex.log ↑z)) *
+      cexp (-(2⁻¹ * Complex.log ↑z)) =
+      (cexp (-(2⁻¹ * Complex.log ↑z)) * cexp (-(2⁻¹ * Complex.log ↑z)))* 2⁻¹ by ring,
+      ← Complex.exp_add, ← sub_eq_add_neg, show -(2⁻¹ * Complex.log ↑z) - 2⁻¹ *
+      Complex.log ↑z = -Complex.log ↑z by ring,
+      Complex.exp_neg, Complex.exp_log, logDeriv_eta_eq_E2 z]
+    · have Rb := logDeriv_eta_eq_E2 Z
+      rw [Rb]
+      have EE := congrFun (EisensteinSeries.E2_slash_action  ModularGroup.S) z
+      simp only [one_div, neg_mul, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
+        Int.reduceNeg, zpow_neg] at *
+      have h00 :  (UpperHalfPlane.mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos) = Z := by
+        simp [Z ]
+        ring_nf
+      rw [h00] at EE
+      rw [← mul_assoc, mul_comm, ← mul_assoc]
+      simp only [inv_neg, mul_inv_rev, Pi.sub_apply, Pi.smul_apply, smul_eq_mul] at *
+      rw [EE]
+      have hzne := ne_zero z
+      have hI : Complex.I ≠ 0 := by
+        exact I_ne_zero
+      have hpi : (π : ℂ) ≠ 0 := by
+        simp only [ne_eq, ofReal_eq_zero]
+        exact Real.pi_ne_zero
+      simp [ EisensteinSeries.D2, riemannZeta_two ] at *
+      field_simp
+      ring_nf
+      simp [add_comm, ModularGroup.S]
+    · exact ne_zero z
   · simp only [csqrt, one_div, ne_eq, Complex.exp_ne_zero, not_false_eq_true]
   · apply ModularForm.eta_ne_zero z.2
   · apply csqrt_differentiableAt upperHalfPlane_mem_slitPlane
   · apply differentiableAt_eta_of_mem_upperHalfPlaneSet z.2
-
 
 lemma eta_logderivs : {z : ℂ | 0 < z.im}.EqOn (logDeriv (η ∘ (fun z : ℂ => -1/z)))
   (logDeriv ((csqrt) * η)) := by
   intro z hz
   have := eta_logDeriv_eql ⟨z, hz⟩
   exact this
-
 
 lemma eta_logderivs_const : ∃ z : ℂ, z ≠ 0 ∧ {z : ℂ | 0 < z.im}.EqOn ((η ∘ (fun z : ℂ => -1/z)))
   (z • ((csqrt) * η)) := by
@@ -224,7 +220,7 @@ lemma eta_logderivs_const : ∃ z : ℂ, z ≠ 0 ∧ {z : ℂ | 0 < z.im}.EqOn (
     simp only [one_div, Complex.exp_ne_zero, not_false_eq_true]
   · intro x hx
     simp only [comp_apply, ne_eq]
-    have := ModularForm.eta_ne_zero (z := -1 / x) (by sorry)
+    have := ModularForm.eta_ne_zero (z := -1 / x) (by simpa using im_pnat_div_pos 1 ⟨x, hx⟩)
     simpa only [ne_eq, coe_mk_subtype] using this
 
 lemma eta_equality : {z : ℂ | 0 < z.im}.EqOn ((η ∘ (fun z : ℂ => -1/z)))
@@ -248,7 +244,6 @@ lemma eta_equality : {z : ℂ | 0 < z.im}.EqOn ((η ∘ (fun z : ℂ => -1/z)))
   rw [@inv_eq_iff_eq_inv] at hcd
   rw [hcd] at h2
   exact h2
-
 
 lemma Discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   ext z
