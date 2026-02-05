@@ -357,8 +357,7 @@ def StandardEtalePresentation.baseChange :
   lift_bijective := by
     algebraize [(algebraMap T (P.map (algebraMap R T)).Ring).comp (algebraMap R T)]
     have H : P.HasMap (P.map (algebraMap R T)).X := by
-      exact ⟨by simpa using (P.map (algebraMap R T)).hasMap_X.1,
-        by simpa using (P.map (algebraMap R T)).hasMap_X.2⟩
+      simpa [StandardEtalePair.HasMap] using (P.map (algebraMap R T)).hasMap_X
     let f : T ⊗[R] S →ₐ[T] (P.map (algebraMap R T)).Ring :=
       Algebra.TensorProduct.lift (Algebra.ofId _ _) ((P.lift (P.map _).X H).comp P.equivRing)
         fun _ _ ↦ .all _ _

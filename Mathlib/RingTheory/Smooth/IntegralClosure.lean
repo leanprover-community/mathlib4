@@ -209,8 +209,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
     rintro rfl
     simpa using (RingHom.ker_ne_top φ.toRingHom).symm.trans_eq hfx
   classical
-  let := (φ.toRingHom.comp C).toAlgebra
-  have : IsScalarTower R S B := .of_algebraMap_eq' (φ.comp CAlgHom).comp_algebraMap.symm
+  algebraize [φ.toRingHom.comp C]
   have := (algebraMap S B).domain_nontrivial
   obtain ⟨y, rfl⟩ := hφ y
   obtain ⟨S', _, _, _, _, _, hS'⟩ := hf.exists_splits_map
@@ -240,8 +239,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
       conv_lhs => rw [← Multiset.cons_erase ham]
       rw [Multiset.map_cons, Multiset.prod_cons, mul_comm]
       refine mul_dvd_mul_left _ ?_
-      rw [Polynomial.dvd_iff_isRoot]
-      simp
+      simp [Polynomial.dvd_iff_isRoot]
     rw [map_modByMonic _ hf]
     refine (div_modByMonic_unique g _ (hf.map _) ⟨(sub_eq_iff_eq_add'.mp hg).symm, ?_⟩).2
     refine degree_lt_degree ?_
@@ -251,7 +249,6 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
       and_imp, forall_apply_eq_imp_iff₂]
     refine fun a ha ↦ (natDegree_mul_C_le _ _).trans ((natDegree_multiset_prod_le _).trans ?_)
     simp [ha, hmc]
-  have : IsScalarTower R[X] S[X] S'[X] := .of_algebraMap_eq' (mapRingHom_comp ..).symm
   have H' : IsIntegral R[X] (f.derivative * y %ₘ f) := by
     refine .tower_bot (B := S'[X]) (map_injective _ (FaithfulSMul.algebraMap_injective S S')) ?_
     simp only [algebraMap_def, coe_mapRingHom, H]
@@ -284,9 +281,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   have 𝓟 := Classical.ofNonempty (α := StandardEtalePresentation R S)
   obtain ⟨n, hx⟩ : ∃ n, ∀ m, IsIntegral R ((aeval 𝓟.x 𝓟.g) ^ (n + m) • x) := by
     let e := 𝓟.equivRing.trans 𝓟.equivAwayAdjoinRoot
-    let := (e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot 𝓟.f) _)).toAlgebra
-    have := IsScalarTower.of_algebraMap_eq'
-      (e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot 𝓟.f) _)).comp_algebraMap.symm
+    algebraize [(e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot 𝓟.f) _)).toRingHom]
     have := IsLocalization.isLocalization_of_algEquiv (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g))
       { toRingEquiv := e.symm.toRingEquiv, commutes' := by simp [RingHom.algebraMap_toAlgebra] }
     obtain ⟨⟨_, m, rfl⟩, hm⟩ := IsIntegral.exists_multiple_integral_of_isLocalization
@@ -331,7 +326,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
       RingHom.id_apply, map_mul, Algebra.TensorProduct.comm_symm_tmul, AlgEquiv.symm_apply_apply,
       AlgEquiv.apply_symm_apply] at this
     rw [H, pow_add, map_mul, mul_assoc, IsLocalization.mk'_spec'_mk, ← map_mul] at this
-    obtain ⟨k, hk⟩ := IsLocalization.Away.exists_isIntegral_smul_of_isIntegral_map hfg this
+    obtain ⟨k, hk⟩ := IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap hfg this
     refine ⟨k + n, by convert hk using 1; ring_nf⟩
   obtain ⟨y, hy, hRy⟩ := exists_derivative_mul_eq_and_isIntegral_coeff
     (φ := (AdjoinRoot.mkₐ 𝓟'.f).restrictScalars R) AdjoinRoot.mk_surjective 𝓟'.monic_f
@@ -359,7 +354,6 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
 -- This should be private once we know this for arbitrary smooth algebra.
 theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale [Algebra.IsStandardEtale R S] :
     Function.Bijective (toIntegralClosure R S B) := by
-  have : Algebra.Smooth R S := {}
   refine ⟨toIntegralClosure_injective_of_flat, ?_⟩
   intro ⟨x, hx⟩
   simp only [toIntegralClosure, Subtype.ext_iff, AlgHom.coe_codRestrict, ← AlgHom.mem_range]
