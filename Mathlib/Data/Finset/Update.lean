@@ -122,4 +122,8 @@ theorem updateFinset_univ [Fintype ι] {y : ∀ i : Finset.univ, π i} :
     updateFinset x .univ y = fun i : ι ↦ y ⟨i, Finset.mem_univ i⟩ := by
   simp [updateFinset_def]
 
+theorem updateFinset_univ_apply [Fintype ι] {y : ∀ i : Finset.univ, π i} {i : ι} :
+    updateFinset x .univ y i = y ⟨i, Finset.mem_univ i⟩ := by
+  simp [updateFinset_def]
+
 end Function

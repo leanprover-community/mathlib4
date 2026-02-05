@@ -70,7 +70,7 @@ theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
 
 /- We formulate `singleton_union` after `union_singleton` to ensure that `{x} ∪ {y}`
 simplifies to `{x, y}` and not `{y, x}`. -/
-Wx`
+
 @[simp, grind =]
 lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
   rw [Finset.union_comm, singleton_union]
