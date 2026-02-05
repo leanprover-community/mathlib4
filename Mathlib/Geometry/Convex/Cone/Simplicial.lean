@@ -28,7 +28,6 @@ the (simplicial) generators linearly span the module.
 * `PointedCone.IsSimplicial.toBasis`: A simplicial generating cone determines a basis.
 * `PointedCone.IsSimplicial.toBasis_mem`: The elements of `toBasis` are in the cone.
 
-
 ## Implementation notes
 
 This is a minimal API containing only what is needed to prove basic properties of
@@ -64,47 +63,42 @@ namespace IsSimplicial
 
 /-- The conic span of a finite linearly independent set is simplicial. -/
 protected theorem span (s : Finset M) (hli : LinearIndependent R ((↑) : s → M)) :
-    (PointedCone.span R (s : Set M)).IsSimplicial :=
-  ⟨s, hli, rfl⟩
+    (PointedCone.span R (s : Set M)).IsSimplicial := ⟨s, hli, rfl⟩
 
 variable {C}
 
-/-- The generators of a simplicial cone. -/
-noncomputable def generators (h : C.IsSimplicial) : Finset M := h.choose
-
 /-- The generators of a simplicial cone are linearly independent. -/
 lemma linearIndependent_generators (h : C.IsSimplicial) :
-    LinearIndependent R ((↑) : h.generators → M) :=
+    LinearIndependent R ((↑) : h.choose → M) :=
   h.choose_spec.1
 
 /-- A simplicial cone equals the conic span of its generators. -/
-lemma span_generators (h : C.IsSimplicial) : span R (h.generators : Set M) = C :=
-  h.choose_spec.2
+lemma span_generators (h : C.IsSimplicial) : span R (h.choose : Set M) = C := h.choose_spec.2
 
 /-- Each generator of a simplicial cone is a member of the cone. -/
-lemma generator_mem (h : C.IsSimplicial) (i : h.generators) : (i : M) ∈ C :=
+lemma generator_mem (h : C.IsSimplicial) (i : h.choose) : (i : M) ∈ C :=
   (h.span_generators ▸ subset_span) i.prop
 
 /-- The generators of a simplicial generating cone linearly span the module. -/
 lemma span_generators_eq_top (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating) :
-    Submodule.span R (h_simp.generators : Set M) = ⊤ := by
-  simpa only [eq_top_iff, ← Submodule.span_span_of_tower R≥0 R (h_simp.generators : Set M),
+    Submodule.span R (h_simp.choose : Set M) = ⊤ := by
+  simpa only [eq_top_iff, ← Submodule.span_span_of_tower R≥0 R (h_simp.choose : Set M),
     h_simp.span_generators] using h_gen.symm.le
 
 /-- The generators of a simplicial generating cone form a basis of the module. -/
 noncomputable def toBasis (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating) :
-    Module.Basis h_simp.generators R M :=
+    Module.Basis h_simp.choose R M :=
   Module.Basis.mk h_simp.linearIndependent_generators <| by
     simpa using (h_simp.span_generators_eq_top h_gen).ge
 
 /-- `toBasis` maps each generator to itself. -/
 @[simp]
 lemma toBasis_apply (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating)
-    (i : h_simp.generators) : h_simp.toBasis h_gen i = i := by simp [toBasis]
+    (i : h_simp.choose) : h_simp.toBasis h_gen i = i := by simp [toBasis]
 
 /-- Each element of `toBasis` lies in the cone. -/
 lemma toBasis_mem (h_simp : C.IsSimplicial) (h_gen : (C : ConvexCone R M).IsGenerating)
-    (i : h_simp.generators) : h_simp.toBasis h_gen i ∈ C :=
+    (i : h_simp.choose) : h_simp.toBasis h_gen i ∈ C :=
   h_simp.toBasis_apply h_gen i ▸ h_simp.generator_mem i
 
 end IsSimplicial
