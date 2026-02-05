@@ -271,7 +271,7 @@ instance normal_top : (⊤ : Subgroup G).Normal where
   conj_mem _ a _ := a
 
 /-- The trivial subgroup `{1}`is normal. -/
-@[to_additive (attr := simp) /-- The trivial subgroup `{0}`is normal. -/]
+@[to_additive (attr := simp) /-- The trivial subgroup `{0}` is normal. -/]
 instance normal_bot : (⊥ : Subgroup G).Normal where
   conj_mem := by simp
 
