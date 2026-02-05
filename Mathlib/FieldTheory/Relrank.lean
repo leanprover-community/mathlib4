@@ -92,12 +92,22 @@ theorem relfinrank_self : relfinrank A A = 1 := by
   simp [relfinrank_eq_toNat_relrank]
 
 variable {A B} in
-theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 := by
-  rw [← inf_relrank_right, inf_eq_right.2 h, relrank_self]
+theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A := by
+  rw [relrank, IntermediateField.rank_eq_one_iff, ← IntermediateField.toSubfield_inj,
+    extendScalars_toSubfield, IntermediateField.bot_toSubfield, algebraMap_ofSubfield,
+    fieldRange_subtype, right_eq_inf]
 
 variable {A B} in
-theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 := by
-  simp [relfinrank_eq_toNat_relrank, relrank_eq_one_of_le h]
+theorem relfinrank_eq_one_iff : relfinrank A B = 1 ↔ B ≤ A := by
+  rw [relfinrank_eq_toNat_relrank, toNat_eq_one, relrank_eq_one_iff]
+
+variable {A B} in
+theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 :=
+  relrank_eq_one_iff.mpr h
+
+variable {A B} in
+theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 :=
+  relfinrank_eq_one_iff.mpr h
 
 variable {A B} in
 theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Module.rank A E := by
@@ -329,12 +339,20 @@ theorem relrank_self : relrank A A = 1 := A.toSubfield.relrank_self
 theorem relfinrank_self : relfinrank A A = 1 := A.toSubfield.relfinrank_self
 
 variable {A B} in
-theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 := by
-  rw [← inf_relrank_right, inf_eq_right.2 h, relrank_self]
+theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A :=
+  Subfield.relrank_eq_one_iff
 
 variable {A B} in
-theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 := by
-  simp [relfinrank_eq_toNat_relrank, relrank_eq_one_of_le h]
+theorem relfinrank_eq_one_iff : relfinrank A B = 1 ↔ B ≤ A :=
+  Subfield.relfinrank_eq_one_iff
+
+variable {A B} in
+theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 :=
+  relrank_eq_one_iff.mpr h
+
+variable {A B} in
+theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 :=
+  relfinrank_eq_one_iff.mpr h
 
 theorem lift_rank_comap (f : L →ₐ[F] E) :
     Cardinal.lift.{v} (Module.rank (A.comap f) L) = Cardinal.lift.{w} (relrank A f.fieldRange) :=
