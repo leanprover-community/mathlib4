@@ -90,7 +90,7 @@ Prefer `induction` when possible, because it promotes structured proofs.
 * `induction' x using r` uses `r` as the principle of induction. Here `r` should be a term whose
   result type is of the form `C t1 t2 ...`, where `C` is a bound variable and `t1`, `t2`, ... (if
   present) are bound variables.
-* `induction x generalizing z1 z2 ...` generalizes over the local variables `z1`, `z2`, ... in the
+* `induction' x generalizing z1 z2 ...` generalizes over the local variables `z1`, `z2`, ... in the
   inductive hypothesis.
 
 Example:
