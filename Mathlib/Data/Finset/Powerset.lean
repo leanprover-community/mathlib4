@@ -307,7 +307,6 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       simp only [map_subset_map, has, card_map, and_self]
 
 /-- The number of maps `f : Fin n → Bool` with `#{i | f i} = k` equals `n.choose k`. -/
--- must stay here
 lemma card_fnFinBool {k n : ℕ} : #{ f : Fin n → Bool | #{i | f i} = k } = n.choose k := by
   conv => right; rw [← card_fin n]
   rw [← card_powersetCard k (univ : Finset (Fin n))]
