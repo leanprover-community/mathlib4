@@ -104,6 +104,7 @@ example (n : ℕ) : 0 < factorial n := by
   · rw [factorial_succ]
     apply mul_pos (succ_pos n) ih
 
+-- Equivalent to the preferred version:
 example (n : ℕ) : 0 < factorial n := by
   induction n
   case zero =>
@@ -169,14 +170,15 @@ structured proofs.
 Example:
 ```
 example (h : p ∨ q) : q ∨ p := by
-  cases h with
-  | inl hp => exact Or.inr hp
-  | inr hq => exact Or.inl hq
-
-example (h : p ∨ q) : q ∨ p := by
   cases' h with hp hq
   · exact Or.inr hp
   · exact Or.inl hq
+
+-- Equivalent to the preferred versions:
+example (h : p ∨ q) : q ∨ p := by
+  cases h with
+  | inl hp => exact Or.inr hp
+  | inr hq => exact Or.inl hq
 
 example (h : p ∨ q) : q ∨ p := by
   rcases h with hp | hq
