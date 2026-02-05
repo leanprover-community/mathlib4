@@ -101,11 +101,9 @@ theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A := by
 theorem relfinrank_eq_one_iff : relfinrank A B = 1 ↔ B ≤ A := by
   rw [relfinrank_eq_toNat_relrank, toNat_eq_one, relrank_eq_one_iff]
 
-theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 :=
-  relrank_eq_one_iff.mpr h
+alias ⟨_, relrank_eq_one_of_le⟩ := relrank_eq_one_iff
 
-theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 :=
-  relfinrank_eq_one_iff.mpr h
+alias ⟨_, relfinrank_eq_one_of_le⟩ := relfinrank_eq_one_iff
 
 theorem relrank_mul_rank_top (h : A ≤ B) : relrank A B * Module.rank B E = Module.rank A E := by
   rw [relrank_eq_rank_of_le h]
@@ -344,11 +342,9 @@ theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A :=
 theorem relfinrank_eq_one_iff : relfinrank A B = 1 ↔ B ≤ A :=
   Subfield.relfinrank_eq_one_iff
 
-theorem relrank_eq_one_of_le (h : B ≤ A) : relrank A B = 1 :=
-  relrank_eq_one_iff.mpr h
+alias ⟨_, relrank_eq_one_of_le⟩ := relrank_eq_one_iff
 
-theorem relfinrank_eq_one_of_le (h : B ≤ A) : relfinrank A B = 1 :=
-  relfinrank_eq_one_iff.mpr h
+alias ⟨_, relfinrank_eq_one_of_le⟩ := relfinrank_eq_one_iff
 
 variable (A B)
 
