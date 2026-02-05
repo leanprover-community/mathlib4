@@ -111,6 +111,20 @@ theorem tendsto_nhds_iff {c : 𝕜} :
 
 end PolynomialAtTop
 
+section PolynomialAtBot
+
+theorem isEquivalent_atBot_lead : P.eval ~[atBot] (P.leadingCoeff * · ^ P.natDegree) := by
+  convert (P.comp (-X)).isEquivalent_atTop_lead.comp_tendsto tendsto_neg_atBot_atTop using 2
+  · simp
+  · rw [Function.comp_apply, comp_neg_X_leadingCoeff_eq, ← mul_rotate]
+    simp [natDegree_comp, ← mul_pow, mul_comm]
+
+theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot atTop := by
+  convert ((P.comp (-X)).abs_tendsto_atTop (by simp [hdeg])).comp tendsto_neg_atBot_atTop using 2
+  simp
+
+end PolynomialAtBot
+
 section PolynomialDivAtTop
 
 theorem isEquivalent_atTop_div :
@@ -207,15 +221,70 @@ theorem abs_div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q 
 
 end PolynomialDivAtTop
 
-theorem isBigO_of_degree_le (h : P.degree ≤ Q.degree) :
-    (fun x => eval x P) =O[atTop] fun x => eval x Q := by
+section PolynomialDivAtBot
+
+theorem isEquivalent_atBot_div :
+    (fun x ↦ P.eval x / Q.eval x) ~[atBot] fun x ↦
+      P.leadingCoeff / Q.leadingCoeff * x ^ (P.natDegree - Q.natDegree : ℤ) := by
+  by_cases hP : P = 0
+  · simp [hP, IsEquivalent.refl]
+  by_cases hQ : Q = 0
+  · simp [hQ, IsEquivalent.refl]
+  refine
+    (P.isEquivalent_atBot_lead.symm.div Q.isEquivalent_atBot_lead.symm).symm.trans
+      (EventuallyEq.isEquivalent ((eventually_lt_atBot 0).mono fun x hx => ?_))
+  simp [← div_mul_div_comm, zpow_sub₀ hx.ne]
+
+theorem div_tendsto_atBot_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
+    Tendsto (fun x ↦ eval x P / eval x Q) atBot (𝓝 0) := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at hdeg
+  convert (div_tendsto_zero_of_degree_lt _ _ hdeg).comp tendsto_neg_atBot_atTop using 2
+  simp
+
+theorem div_tendsto_atBot_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
+    Tendsto (fun x ↦ eval x P / eval x Q) atBot (𝓝 (P.leadingCoeff / Q.leadingCoeff)) := by
+  refine (isEquivalent_atBot_div P Q).symm.tendsto_nhds ?_
+  simp [natDegree_eq_natDegree hdeg]
+
+theorem abs_div_tendsto_atBot_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
+    Tendsto (fun x ↦ |eval x P / eval x Q|) atBot atTop := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at hdeg
+  replace hQ : Q.comp (-X) ≠ 0 := by
+    rw [Ne, comp_eq_zero_iff]
+    simp [hQ]
+  convert (abs_div_tendsto_atTop_of_degree_gt _ _ hdeg hQ).comp tendsto_neg_atBot_atTop using 2
+  simp
+
+end PolynomialDivAtBot
+
+theorem isLittleO_atTop_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atTop] Q.eval := by
   by_cases hp : P = 0
-  · simpa [hp] using isBigO_zero (fun x => eval x Q) atTop
+  · simp [hp]
+  · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h.le hp
+    have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
+      mem_of_superset (eventually_no_roots Q hq) fun x h h' ↦ absurd h' h
+    exact isLittleO_of_tendsto' hPQ (div_tendsto_zero_of_degree_lt P Q h)
+
+theorem isLittleO_atBot_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atBot] Q.eval := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at h
+  convert (isLittleO_atTop_of_degree_lt _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
+  all_goals simp
+
+theorem isBigO_atTop_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atTop] Q.eval := by
+  by_cases hp : P = 0
+  · simpa [hp] using isBigO_zero Q.eval atTop
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h hp
-    have hPQ : ∀ᶠ x : 𝕜 in atTop, eval x Q = 0 → eval x P = 0 :=
-      Filter.mem_of_superset (Polynomial.eventually_no_roots Q hq) fun x h h' => absurd h' h
+    have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
+      mem_of_superset (eventually_no_roots Q hq) fun x h h' ↦ absurd h' h
     rcases le_iff_lt_or_eq.mp h with h | h
     · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_zero_of_degree_lt P Q h)
     · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_leadingCoeff_div_of_degree_eq P Q h)
+
+theorem isBigO_atBot_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atBot] Q.eval := by
+  rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at h
+  convert (isBigO_atTop_of_degree_le _ _ h).comp_tendsto tendsto_neg_atBot_atTop using 2
+  all_goals simp
+
+@[deprecated (since := "2026-02-05")] alias isBigO_of_degree_le := isBigO_atTop_of_degree_le
 
 end Polynomial
