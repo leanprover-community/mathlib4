@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
-
 /-!
 # Dedekind eta function
 
