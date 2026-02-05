@@ -171,9 +171,7 @@ def ExSum.eq
 end
 
 -- TODO: this should be somewhere else
-instance : Ord Rat where
-  compare a b := if a ≤ b then if b ≤ a then .eq else .lt else .gt
-
+local instance : Ord Rat := ⟨fun x y ↦ compareOfLessAndEq x y⟩
 mutual
 /--
 A total order on normalized expressions.
@@ -1436,4 +1434,3 @@ elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
 end Ring
 
 end Mathlib.Tactic
-#min_imports
