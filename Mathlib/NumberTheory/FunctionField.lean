@@ -243,7 +243,8 @@ instance : Inhabited (FqtInfty Fq) :=
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
 
-theorem valuedFqtInfty.def {x : FqtInfty Fq} : Valued.v x = (inftyValuedFqt Fq).extension x := rfl
+theorem valuedFqtInfty.def {x : FqtInfty Fq} :
+  Valued.v x = (inftyValuedFqt Fq).extensionValuation x := rfl
 
 end InftyValuation
 

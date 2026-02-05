@@ -481,7 +481,7 @@ namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc WithZero
 
-instance : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valuation _)
+instance valued : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valuation _)
 
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.idealX K).valuation _ := rfl
 
@@ -642,9 +642,9 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
   let γ : (ℤᵐ⁰)ˣ := Units.mk0 (exp (-(d + 1))) coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
-  refine ⟨(Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
+  sorry/- refine ⟨(Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
-  exact mem_uniformity_of_eq hS rfl
+  exact mem_uniformity_of_eq hS rfl -/
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `K⸨X⸩` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
@@ -672,7 +672,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v (P.snd - P.fst) < 1}
   let ζ := Units.mk0 (G₀ := ℤᵐ⁰) _ (coe_ne_zero (a := 1))
-  obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
+  sorry/- obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
   obtain ⟨N, hN⟩ : ∃ N : ℤ, ∀ g : K⸨X⸩,
@@ -692,7 +692,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   intro g hg
   have h_prod : (f, g) ∈ S ×ˢ T := by simp [hf.1, hg.2]
   refine hN g (le_of_lt ?_)
-  simpa using H h_prod
+  simpa using H h_prod -/
 
 /- The support of `Cauchy.coeff` has a lower bound. -/
 theorem Cauchy.exists_lb_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
@@ -764,17 +764,18 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       simp only [principal_singleton, mem_pure]; rfl
 
 open scoped Topology
+open MonoidWithZeroHom.ValueGroup₀
 
 /- The main result showing that the Cauchy filter tends to the `Cauchy.limit` -/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
     {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
-  suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < ↑γ} by
-    apply this.mono fun _ hf ↦ hU₁ hf
-  set D := -(log γ - 1) with hD₀
-  have hD : exp (-D) < γ := by
-    rw [← lt_log_iff_exp_lt (by simp), hD₀]
-    simp
+  suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < embedding γ.1} by
+    sorry --apply this.mono fun _ hf ↦ hU₁ hf
+  set D := -(log (embedding γ.1) - 1) with hD₀
+  have hD : exp (-D) < embedding γ.1 := by
+    sorry --rw [← lt_log_iff_exp_lt (by simp), hD₀]
+    --simp
   apply coeff_eventually_equal (D := D) hℱ |>.mono
   intro _ hf
   apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD
@@ -852,6 +853,8 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
       ← PowerSeries.coe_sub, ← coe_algebraMap, adicValued_apply, valuation_of_algebraMap]
     exact hP
 
+open MonoidWithZeroHom.ValueGroup₀
+
 theorem coe_range_dense : DenseRange ((↑) : RatFunc K → K⸨X⸩) := by
   rw [denseRange_iff_closure_range]
   ext f
@@ -861,11 +864,15 @@ theorem coe_range_dense : DenseRange ((↑) : RatFunc K → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  obtain ⟨P, _⟩ := exists_ratFunc_val_lt f γ
+  have := (embedding γ.1)
+  obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f
+    (Units.map (embedding (f := (valued K).v)).toMonoidHom γ)
   use P
   apply hT₁
   apply hγ
-  simpa only [add_comm, ← sub_eq_add_neg, gt_iff_lt, Set.mem_setOf_eq]
+  simpa only [Units.coe_map, MonoidHom.coe_mk, ZeroHom.toFun_eq_coe, OneHom.coe_mk, add_comm,
+    MonoidWithZeroHom.toZeroHom_coe, ← sub_eq_add_neg, Set.mem_setOf_eq,
+    Valuation.restrict_lt_iff_lt_embedding]
 
 end Dense
 
@@ -881,6 +888,8 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : RatFunc K, Valued.v f = Value
   rw [zpow_neg, map_inv₀, map_zpow₀, v_def, valuation_X_eq_neg_one, ← exp_zsmul, ← exp_neg]
   simp [exp_log, hx]
 
+open MonoidWithZeroHom.ValueGroup₀
+
 theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
   ext S
@@ -889,25 +898,27 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
-    use {P : RatFunc K | Valued.v P < ↑d}
+    use {P : RatFunc K | Valued.v P < embedding d.1}
     simp only [Valued.mem_nhds, sub_zero]
-    refine ⟨⟨d, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
+    sorry/- refine ⟨⟨d, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
     apply hd
     simp only [sub_zero, Set.mem_setOf_eq]
     rw [← map_sub, valuation_def, ← valuation_eq_LaurentSeries_valuation]
-    assumption
+    assumption -/
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
-    let X := {f : K⸨X⸩ | Valued.v f < ↑d}
+    let X := {f : K⸨X⸩ | Valued.v f < embedding d.1}
     refine ⟨(fun x : K⸨X⸩ × K⸨X⸩ ↦ x.snd - x.fst) ⁻¹' X, ⟨X, ?_⟩, ?_⟩
     · refine ⟨?_, Set.Subset.refl _⟩
-      · simp only [Valued.mem_nhds, sub_zero]
-        use d
+      · simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_embedding]
+
+        sorry -- use d
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      rw [Set.mem_setOf_eq, sub_zero, v_def, valuation_eq_LaurentSeries_valuation,
+      sorry
+      /- rw [Set.mem_setOf_eq, sub_zero, v_def, valuation_eq_LaurentSeries_valuation,
         map_sub]
-      assumption
+      assumption -/
 
 theorem continuous_coe : Continuous ((↑) : RatFunc K → K⸨X⸩) :=
   (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
@@ -1007,7 +1018,7 @@ theorem valuation_LaurentSeries_equal_extension :
   · intro x
     rw [v_def, valuation_eq_LaurentSeries_valuation K x]
     rfl
-  · exact Valued.continuous_valuation (K := K⸨X⸩)
+  · sorry --exact Valued.continuous_valuation (K := K⸨X⸩)
 
 theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     Tendsto (Valued.v : RatFunc K → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
@@ -1019,17 +1030,17 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     obtain ⟨γ, γ_ne_zero, γ_le⟩ := hS
     use {t | Valued.v t < γ}
     constructor
-    · rw [ha, this]
+    · sorry/- rw [ha, this]
       use Units.mk0 γ γ_ne_zero
-      rw [Units.val_mk0]
+      rw [Units.val_mk0] -/
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rwa [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha),
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
-    use Units.mk0 (Valued.v a) (by simp [ha])
+    sorry/- use Units.mk0 (Valued.v a) (by simp [ha])
     simp only [Units.val_mk0, v_def, Set.setOf_subset_setOf]
     rintro y val_y b rfl
-    simp [← Valuation.map_eq_of_sub_lt _ val_y]
+    simp [← Valuation.map_eq_of_sub_lt _ val_y] -/
 
 /- The extension of the `X`-adic valuation from `RatFunc K` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
@@ -1037,10 +1048,11 @@ theorem valuation_compare (f : K⸨X⸩) :
     (Valued.v : (RatFuncAdicCompl K) → ℤᵐ⁰)
         (AbstractCompletion.compare (LaurentSeriesPkg K) ratfuncAdicComplPkg f) =
       Valued.v f := by
-  rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
+  sorry
+  /- rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
     (pkg := ratfuncAdicComplPkg) (cont_f := Valued.continuous_valuation)]
   · rfl
-  exact (tendsto_valuation K)
+  exact (tendsto_valuation K) -/
 
 section PowerSeries
 

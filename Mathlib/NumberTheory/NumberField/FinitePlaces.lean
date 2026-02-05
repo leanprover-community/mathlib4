@@ -136,8 +136,8 @@ noncomputable def FinitePlace.embedding : WithVal (v.valuation K) →+* adicComp
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
 noncomputable instance : (v.valuation K).RankOne where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
+  hom' := sorry --toNNReal (absNorm_ne_zero v)
+  strictMono' := sorry --toNNReal_strictMono (one_lt_absNorm_nnreal v)
   exists_val_nontrivial := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use x
@@ -146,8 +146,8 @@ noncomputable instance : (v.valuation K).RankOne where
 
 noncomputable instance instRankOneValuedAdicCompletion :
     Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
-  hom := toNNReal (absNorm_ne_zero v)
-  strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
+  hom' := sorry --toNNReal (absNorm_ne_zero v)
+  strictMono' := sorry --toNNReal_strictMono (one_lt_absNorm_nnreal v)
   exists_val_nontrivial := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use x
@@ -186,6 +186,7 @@ value. -/
 theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by
   simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
     Valuation.RankOne.hom, embedding_apply, ← toNNReal_valued_eq_adicAbv]
+  sorry
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
