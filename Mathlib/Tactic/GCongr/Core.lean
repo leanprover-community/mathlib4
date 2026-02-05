@@ -571,11 +571,11 @@ def _root_.Lean.MVarId.gcongrCore (g : MVarId)
       continue
     let some e ← getExprMVarAssignment? g | panic! "unassigned?"
     let args := e.getAppArgs
-    let mainSubGoals ← lem.mainSubgoals.mapM fun (i, numHyps, isContra) ↦
+    let mainSubGoals ← lem.mainSubgoals.mapM fun (i, numIntro, isContra) ↦
       -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
       -- unification ...
       if let some (.mvar goal) := args[i]? then
-        return { goal := ← introN goal numHyps, isContra }
+        return { goal := ← introN goal numIntro, isContra }
       else
         panic! "what kind of lemma is this?"
     -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
