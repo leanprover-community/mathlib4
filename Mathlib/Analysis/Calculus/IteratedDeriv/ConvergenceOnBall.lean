@@ -24,22 +24,22 @@ variable {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
 /-- If `f` is analytic on `Bᵣ(x₀)` and its Taylor series converges on this ball, then it converges
 to `f`. -/
 theorem AnalyticOn.hasFPowerSeriesOnSubball
-    {r : ENNReal} (hr_pos : 0 < r) (h : AnalyticOn 𝕜 f (EMetric.ball x r)) :
+    {r : ENNReal} (hr_pos : 0 < r) (h : AnalyticOn 𝕜 f (Metric.eball x r)) :
     letI p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
     r ≤ p.radius → HasFPowerSeriesOnBall f p x r := by
-  rw [EMetric.isOpen_ball.analyticOn_iff_analyticOnNhd] at h
+  rw [Metric.isOpen_eball.analyticOn_iff_analyticOnNhd] at h
   intro hr
   set p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial)
   let g (t : 𝕜) := p.sum (t - x)
   have hg : HasFPowerSeriesOnBall g p x p.radius := by
     simpa using (p.hasFPowerSeriesOnBall (by order)).comp_sub x
-  have hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x p.radius) := by
+  have hg' : AnalyticOnNhd 𝕜 g (Metric.eball x p.radius) := by
     simpa using p.analyticOnNhd.comp_sub x
-  replace hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x r) := hg'.mono (EMetric.ball_subset_ball hr)
+  replace hg' : AnalyticOnNhd 𝕜 g (Metric.eball x r) := hg'.mono (Metric.eball_subset_eball hr)
   apply h.eqOn_of_preconnected_of_eventuallyEq at hg'
   apply (hg.mono hr_pos hr).congr
   symm
-  apply hg' (Metric.isConnected_eball hr_pos).isPreconnected (show x ∈ EMetric.ball x r by simpa) ?_
+  apply hg' (Metric.isConnected_eball hr_pos).isPreconnected (show x ∈ Metric.eball x r by simpa) ?_
   have hf : AnalyticAt 𝕜 f x := h _ (by simp [hr_pos])
   apply AnalyticAt.hasFPowerSeriesAt at hf
   unfold Filter.EventuallyEq Filter.Eventually
@@ -55,7 +55,7 @@ For example, over the `p`-adic numbers, the indicator function of the unit ball 
 analytic everywhere, but it agrees with the sum of its Taylor series only on this unit ball. -/
 theorem AnalyticOn.hasFPowerSeriesOnBall :
     letI p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial);
-    0 < p.radius → AnalyticOn 𝕜 f (EMetric.ball x p.radius) →
+    0 < p.radius → AnalyticOn 𝕜 f (Metric.eball x p.radius) →
     HasFPowerSeriesOnBall f p x p.radius := by
   intro hr hs
   exact hs.hasFPowerSeriesOnSubball hr le_rfl
