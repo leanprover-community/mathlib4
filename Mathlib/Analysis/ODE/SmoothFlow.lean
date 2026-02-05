@@ -76,14 +76,6 @@ lemma _root_.Continuous.continuous_compProj_pi₂ {X : Type*} [TopologicalSpace 
     Continuous (fun p : X × ℝ ↦ compProj t₀ (f p.1) p.2) :=
   (continuous_compProj₂ t₀).comp ((hf.comp continuous_fst).prodMk continuous_snd)
 
-/-- Composing a function with `compProj` is continuous when the curve varies continuously. -/
-lemma _root_.ContinuousOn.continuous_comp_compProj_pi₂ {X F : Type*} [TopologicalSpace X]
-    [TopologicalSpace F] {g : E → F} {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ}
-    (t₀ : Icc tmin tmax) {f : X → C(Icc tmin tmax, E)} (hf : Continuous f)
-    (hf_mem : ∀ x, range (f x) ⊆ u) :
-    Continuous (fun p : X × ℝ ↦ g (compProj t₀ (f p.1) p.2)) :=
-  hg.comp_continuous (hf.continuous_compProj_pi₂ t₀) fun p ↦ hf_mem p.1 (mem_range_self _)
-
 /-- Joint continuity of evaluating a family of curves via `compProj`. -/
 lemma _root_.Continuous.continuous_compProj_pi_apply₂ {X : Type*} [TopologicalSpace X]
     {ι : Type*} {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {f : X → ι → C(Icc tmin tmax, E)}
@@ -164,28 +156,11 @@ lemma integralCM_def {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : 
     integralCM hg t₀ α =
       fun dα ↦ if hα : range α ⊆ u then integralCMAux hg t₀ hα dα else 0 := rfl
 
-lemma integralCM_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
-    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
-    integralCM hg t₀ α = integralCMAux hg t₀ hα := by
-  simp [integralCM_def, dif_pos hα]
-
-lemma integralCM_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
-    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
-    (hα : ¬ range α ⊆ u) :
-    integralCM hg t₀ α = fun _ ↦ 0 := by
-  simp [integralCM_def, dif_neg hα]
-
 lemma integralCM_apply_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u)
     {dα : Fin n → C(Icc tmin tmax, E)} {t : Icc tmin tmax} :
     integralCM hg t₀ α dα t = integralFun g t₀ α dα t := by
   simp [integralCM_def, dif_pos hα, integralCMAux]
-
-lemma integralCM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
-    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : ¬ range α ⊆ u)
-    {dα : Fin n → C(Icc tmin tmax, E)} {t : Icc tmin tmax} :
-    integralCM hg t₀ α dα t = 0 := by
-  simp [integralCM_def, dif_neg hα]
 
 lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
@@ -221,10 +196,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     Continuous (integralCM hg t₀ α) := by
   rw [integralCM_def]
   split_ifs with hα
-  · let X := Fin n → C(Icc tmin tmax, E)
-    let fparam : (X × Icc tmin tmax) → ℝ → E :=
-      fun p τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (p.1 i) τ)
-    apply ContinuousMap.continuous_of_continuous_uncurry
+  · apply ContinuousMap.continuous_of_continuous_uncurry
     apply continuous_parametric_intervalIntegral_of_continuous _
       (continuous_induced_dom.comp continuous_snd)
     exact (continuous_integrand_pi₂ hg t₀ hα).comp
@@ -263,12 +235,6 @@ lemma integralCMLM_apply_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     (hg : ContinuousOn g u) :
     integralCMLM g u t₀ α dα = integralCM hg t₀ α dα := by
   rw [integralCMLM, dif_pos hg, integralCMLMAux_apply]
-
-lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {tmin tmax : ℝ}
-    {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} {dα : Fin n → C(Icc tmin tmax, E)}
-    (hg : ¬ ContinuousOn g u) :
-    integralCMLM g u t₀ α dα = 0 := by
-  rw [integralCMLM, dif_neg hg, zero_apply]
 
 lemma integralCMLM_apply {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {tmin tmax : ℝ}
     {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
@@ -379,13 +345,6 @@ def gComp (I : Type*) {F : Type*} [TopologicalSpace I] [TopologicalSpace F] {g :
   ⟨g ∘ α, hg.comp_continuous α.1.continuous_toFun (fun _ ↦ α.2 (mem_range_self _))⟩
 
 omit [NormedSpace ℝ E] [CompleteSpace E] in
-lemma gComp_apply_projIcc {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E}
-    (hg : ContinuousOn g u) {tmin tmax : ℝ} {t₀ : Icc tmin tmax}
-    {α : {α : C(Icc tmin tmax, E) | range α ⊆ u}} (t : ℝ) :
-    gComp (Icc tmin tmax) hg α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t) =
-      g (compProj t₀ α t) := rfl
-
-omit [NormedSpace ℝ E] [CompleteSpace E] in
 lemma continuous_gComp {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E}
     (hg : ContinuousOn g u) (tmin tmax : ℝ) :
     Continuous (gComp (Icc tmin tmax) hg) := by
@@ -404,9 +363,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   rw [mem_setOf, NormedSpace.isVonNBounded_iff] at hB
   rw [← equicontinuous_iff_continuous]
   simp_rw [comp_apply, restrict_apply, toUniformOnFun_toFun]
-  intro α₀
-  simp_rw [EquicontinuousAt, Subtype.forall] -- redundant?
-  intro U hU
+  intro α₀ U hU
   -- Express in terms of ε-δ
   obtain ⟨ε, hε, hεU⟩ := mem_uniformity_dist.mp hU
   obtain ⟨C, hC⟩ := hB.exists_norm_le
@@ -418,15 +375,14 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   have hV : (gComp (Icc tmin tmax) hg) ⁻¹' V ∈ 𝓝 α₀ :=
     (continuous_gComp hg tmin tmax).continuousAt.preimage_mem_nhds (ball_mem_nhds _ hδ)
   apply Filter.eventually_of_mem hV
-  intro α hα dα hdα
+  intro α hα ⟨dα, hdα⟩
   rw [mem_preimage, mem_ball, ContinuousMap.dist_lt_iff hδ] at hα
   apply hεU
-  -- rw [integralCMLM_apply hg α₀.2]
   rw [ContinuousMap.dist_lt_iff hε]
   intro t
   rw [integralCMLM_apply hg α₀.2, integralCMLM_apply hg α.2, dist_eq_norm,
     ← integral_sub (intervalIntegrable_integrand hg _ α₀.2 ..)
-      (intervalIntegrable_integrand hg _ α.2 ..)]
+      (intervalIntegrable_integrand hg _ α.2 ..), Subtype.coe_mk dα]
   calc
     _ ≤ δ * (max C 0) ^ n * |↑t - ↑t₀| := by
       apply intervalIntegral.norm_integral_le_of_norm_le_const
@@ -438,7 +394,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       apply mul_le_mul (hα _).le _ (by positivity) (by positivity)
       have heq' : n = (Finset.univ : Finset (Fin n)).card := by simp
       nth_rw 5 [heq']
-      -- replace with `prod_le_pow_card'` that works on `ℝ`, not just `ℝ≥0`
+      -- TODO: replace with `prod_le_pow_card'` that works on `ℝ`, not just `ℝ≥0`
       apply (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) _).trans_eq (Finset.prod_const _)
       intro i _
       rw [compProj_of_mem hτ]
@@ -749,23 +705,6 @@ lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDi
     simp only [ne_eq, WithTop.coe_eq_zero]
     exact (one_pos.trans_le hn).ne'
 
-/-- `fderivIntegralCurry0 f u t₀ α` is independent of the set `u` when `range α` is contained in
-the smaller set and `f` is `C^1` on the larger set. This is because the underlying integral only
-depends on values of `fderiv ℝ f` along `range α`. -/
-lemma fderivIntegralCurry0_eq_of_subset {f : E → E} {u₁ u₂ : Set E}
-    (hu : u₁ ⊆ u₂) (hu₂ : IsOpen u₂) (hf : ContDiffOn ℝ 1 f u₂)
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : range α ⊆ u₁) :
-    fderivIntegralCurry0 f u₁ t₀ α = fderivIntegralCurry0 f u₂ t₀ α := by
-  simp only [fderivIntegralCurry0]
-  congr 1
-  have hf' : ContinuousOn (iteratedFDeriv ℝ 1 f) u₂ := fun _ hx ↦
-    hf.contDiffAt (hu₂.mem_nhds hx) |>.iteratedFDeriv_right (m := 0) le_rfl
-      |>.continuousAt.continuousWithinAt
-  ext dα x t
-  simp only [ContinuousMultilinearMap.curryLeft_apply]
-  rw [integralCMLM_apply (hf'.mono hu) hα, integralCMLM_apply hf' (hα.trans hu)]
-
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
 lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
@@ -788,8 +727,6 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
   refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C * ‖dα‖) ?_).trans ?_
   · intro τ hτ
     apply (le_opNorm _ _).trans
-    have heq : iteratedFDeriv ℝ 1 f (compProj t₀ α τ) =
-        (fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) (compProj t₀ α τ)).uncurryLeft := rfl
     rw [norm_iteratedFDeriv_one, Fin.prod_univ_one]
     have hτ' : τ ∈ Icc tmin tmax := uIcc_subset_Icc t₀.2 t.2 (uIoc_subset_uIcc hτ)
     have hmem : compProj t₀ α τ ∈ range α := ⟨⟨τ, hτ'⟩, (compProj_of_mem hτ').symm⟩
