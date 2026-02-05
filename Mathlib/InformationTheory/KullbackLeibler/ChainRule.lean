@@ -15,9 +15,9 @@ import Mathlib.Probability.Kernel.Composition.RadonNikodym
 /-!
 # Chain rule for the Kullback-Leibler divergence
 
-Suppose that we have two finite joint measures on a product `α × β`, which can be decomposed as
-`μ ⊗ₘ κ` and `ν ⊗ₘ η`, where `μ` and `ν` are measures on `α` and `κ` and `η` are Markov kernels
-from `α` to `β`. Then we can express the Kullback-Leibler divergence between these two joint
+Suppose that we have two finite joint measures on a product `𝓧 × 𝓨`, which can be decomposed as
+`μ ⊗ₘ κ` and `ν ⊗ₘ η`, where `μ` and `ν` are measures on `𝓧` and `κ` and `η` are Markov kernels
+from `𝓧` to `𝓨`. Then we can express the Kullback-Leibler divergence between these two joint
 measures as a sum of `klDiv μ ν` and the conditional Kullback-Leibler divergence between the kernels
 `κ` and `η`, averaged over `μ`. The resulting equality is most often written as
 `klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + μ[fun x ↦ klDiv (κ x) (η x)]`.
@@ -25,7 +25,7 @@ measures as a sum of `klDiv μ ν` and the conditional Kullback-Leibler divergen
 Here we first prove the following version:
 `klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + klDiv (μ ⊗ₘ κ) (μ ⊗ₘ η)`.
 This version avoids the issue of measurability of the function `x ↦ klDiv (κ x) (η x)`, which is not
-always guaranteed, and thus holds for all measurable spaces `α` and `β`, without any assumptions.
+always guaranteed, and thus holds for all measurable spaces `𝓧` and `𝓨`, without any assumptions.
 
 ## Main statements
 
@@ -82,8 +82,8 @@ open scoped ENNReal
 
 namespace InformationTheory
 
-variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
-  {μ ν : Measure α} {κ η : Kernel α β}
+variable {𝓧 𝓨 γ : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨} {mγ : MeasurableSpace γ}
+  {μ ν : Measure 𝓧} {κ η : Kernel 𝓧 𝓨}
 
 /-- If the log-likelihood ration between two composition-products is integrable, then so is the
 log-likelihood ratio between the two measures on the first space.

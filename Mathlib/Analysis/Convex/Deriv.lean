@@ -719,14 +719,13 @@ lemma isMinOn_of_leftDeriv_eq_zero (hf : ConvexOn ℝ S f) (hx : x ∈ interior 
 
 section AffineLowerBound
 
--- todo: move
+/-- A convex set of `ℝ` with empty interior is a subsingleton. -/
 lemma _root_.Convex.subsingleton_of_interior_eq_empty (hs : Convex ℝ S) (h : interior S = ∅) :
     S.Subsingleton := by
   intro x hx y hy
   by_contra h_ne
   wlog h_lt : x < y
-  · refine this hs h hy hx (Ne.symm h_ne) ?_
-    exact lt_of_le_of_ne (not_lt.mp h_lt) (Ne.symm h_ne)
+  · exact this hs h hy hx (Ne.symm h_ne) (lt_of_le_of_ne' (not_lt.mp h_lt) h_ne)
   · have h_subset : Set.Icc x y ⊆ S := by
       rw [← segment_eq_Icc h_lt.le]
       exact hs.segment_subset hx hy
