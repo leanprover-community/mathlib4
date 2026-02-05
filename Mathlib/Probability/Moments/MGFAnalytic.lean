@@ -281,7 +281,8 @@ lemma exists_cgf_eq_iteratedDeriv_two_cgf_mul [IsZeroOrProbabilityMeasure μ] (h
   have hu : UniqueDiffOn ℝ (Set.Icc 0 t) := uniqueDiffOn_Icc ht
   rw [← sub_zero (cgf X μ t)]
   nth_rw 3 [← sub_zero t]
-  convert taylor_mean_remainder_lagrange_iteratedDeriv ht ((analyticOn_cgf.mono hs).contDiffOn hu)
+  convert taylor_mean_remainder_lagrange_iteratedDeriv ht.ne
+    ((analyticOn_cgf.mono hs).contDiffOn hu)
   have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
     convert (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
     · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
