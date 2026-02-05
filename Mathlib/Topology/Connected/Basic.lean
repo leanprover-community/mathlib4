@@ -200,6 +200,51 @@ theorem IsConnected.iUnion_of_reflTransGen {ι : Type*} [Nonempty ι] {s : ι �
   ⟨nonempty_iUnion.2 <| Nonempty.elim ‹_› fun i : ι => ⟨i, (H _).nonempty⟩,
     IsPreconnected.iUnion_of_reflTransGen (fun i => (H i).isPreconnected) K⟩
 
+section SuccOrder
+
+open Order
+
+variable [LinearOrder β] [SuccOrder β] [IsSuccArchimedean β]
+
+/-- The iUnion of connected sets indexed by a type with an archimedean successor (like `ℕ` or `ℤ`)
+  such that any two neighboring sets meet is preconnected. -/
+theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconnected (s n))
+    (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsPreconnected (⋃ n, s n) :=
+  IsPreconnected.iUnion_of_reflTransGen H fun _ _ =>
+    reflTransGen_of_succ _ (fun i _ => K i) (by grind)
+
+/-- The iUnion of connected sets indexed by a type with an archimedean successor (like `ℕ` or `ℤ`)
+  such that any two neighboring sets meet is connected. -/
+theorem IsConnected.iUnion_of_chain [Nonempty β] {s : β → Set α} (H : ∀ n, IsConnected (s n))
+    (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n, s n) :=
+  IsConnected.iUnion_of_reflTransGen H fun _ _ => reflTransGen_of_succ _ (fun i _ => K i) (by grind)
+
+/-- The iUnion of preconnected sets indexed by a subset of a type with an archimedean successor
+  (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
+theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : OrdConnected t)
+    (H : ∀ n ∈ t, IsPreconnected (s n))
+    (K : ∀ n : β, n ∈ t → succ n ∈ t → (s n ∩ s (succ n)).Nonempty) :
+    IsPreconnected (⋃ n ∈ t, s n) := by
+  have h1 : ∀ {i j k : β}, i ∈ t → j ∈ t → k ∈ Ico i j → k ∈ t := fun hi hj hk =>
+    ht.out hi hj (Ico_subset_Icc_self hk)
+  have h2 : ∀ {i j k : β}, i ∈ t → j ∈ t → k ∈ Ico i j → succ k ∈ t := fun hi hj hk =>
+    ht.out hi hj ⟨hk.1.trans <| le_succ _, succ_le_of_lt hk.2⟩
+  have h3 : ∀ {i j k : β}, i ∈ t → j ∈ t → k ∈ Ico i j → (s k ∩ s (succ k)).Nonempty :=
+    fun hi hj hk => K _ (h1 hi hj hk) (h2 hi hj hk)
+  refine IsPreconnected.biUnion_of_reflTransGen H fun i hi j hj => ?_
+  exact reflTransGen_of_succ _ (fun k hk => ⟨h3 hi hj hk, h1 hi hj hk⟩) fun k hk =>
+      ⟨by rw [inter_comm]; exact h3 hj hi hk, h2 hj hi hk⟩
+
+/-- The iUnion of connected sets indexed by a subset of a type with an archimedean successor
+  (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
+theorem IsConnected.biUnion_of_chain {s : β → Set α} {t : Set β} (hnt : t.Nonempty)
+    (ht : OrdConnected t) (H : ∀ n ∈ t, IsConnected (s n))
+    (K : ∀ n : β, n ∈ t → succ n ∈ t → (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n ∈ t, s n) :=
+  ⟨nonempty_biUnion.2 <| ⟨hnt.some, hnt.some_mem, (H _ hnt.some_mem).nonempty⟩,
+    IsPreconnected.biUnion_of_chain ht (fun i hi => (H i hi).isPreconnected) K⟩
+
+end SuccOrder
+
 /-- Theorem of bark and tree: if a set is within a preconnected set and its closure, then it is
 preconnected as well. See also `IsConnected.subset_closure`. -/
 protected theorem IsPreconnected.subset_closure {s : Set α} {t : Set α} (H : IsPreconnected s)
@@ -329,6 +374,25 @@ theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : D
     simp_rw [Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty,
       disjoint_iff_inter_eq_empty.1 huv] at hs
     exact Or.inl ((hs s.disjoint_empty).subset_left_of_subset_union hsuv)
+
+section OrderClosedTopology
+
+variable [LinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] {f : α → β} {b : β}
+
+lemma IsPreconnected.mapsTo_Ioi_or_Iio (hs : IsPreconnected s) (hf : ContinuousOn f s)
+    (hfb : ∀ x ∈ s, f x ≠ b) : Set.MapsTo f s (Set.Ioi b) ∨ Set.MapsTo f s (Set.Iio b) := by
+  simpa [mapsTo_iff_image_subset] using
+    (hs.image f hf).subset_or_subset isOpen_Ioi isOpen_Iio (by grind) (by grind)
+
+lemma IsPreconnected.lt_of_ne (hs : IsPreconnected s) (hf : ContinuousOn f s)
+    (hfb : ∀ x ∈ s, f x ≠ b) (hfx : ∃ x ∈ s, b < f x) {x : α} (hx : x ∈ s) : b < f x :=
+  (hs.mapsTo_Ioi_or_Iio hf hfb).resolve_right (not_forall₂_of_exists₂_not (by grind)) hx
+
+lemma IsPreconnected.gt_of_ne (hs : IsPreconnected s) (hf : ContinuousOn f s)
+    (hfb : ∀ x ∈ s, f x ≠ b) (hfx : ∃ x ∈ s, f x < b) {x : α} (hx : x ∈ s) : f x < b :=
+  (hs.mapsTo_Ioi_or_Iio hf hfb).resolve_left (not_forall₂_of_exists₂_not (by grind)) hx
+
+end OrderClosedTopology
 
 theorem IsPreconnected.subset_left_of_subset_union (hu : IsOpen u) (hv : IsOpen v)
     (huv : Disjoint u v) (hsuv : s ⊆ u ∪ v) (hsu : (s ∩ u).Nonempty) (hs : IsPreconnected s) :
@@ -669,75 +733,5 @@ theorem isPreconnected_iff_preconnectedSpace {s : Set α} : IsPreconnected s ↔
 theorem isConnected_iff_connectedSpace {s : Set α} : IsConnected s ↔ ConnectedSpace s :=
   ⟨Subtype.connectedSpace, fun h =>
     ⟨nonempty_subtype.mp h.2, isPreconnected_iff_preconnectedSpace.mpr h.1⟩⟩
-
-section Order
-
-open Order
-
-variable [LinearOrder β]
-
-section OrderClosedTopology
-
-variable [TopologicalSpace β] [OrderClosedTopology β] {f : α → β} {b : β}
-
-lemma IsPreconnected.mapsTo_Ioi_or_Iio (hs : IsPreconnected s) (hf : ContinuousOn f s)
-    (hfb : ∀ x ∈ s, f x ≠ b) : Set.MapsTo f s (Set.Ioi b) ∨ Set.MapsTo f s (Set.Iio b) := by
-  simpa [mapsTo_iff_image_subset] using
-    (hs.image f hf).subset_or_subset isOpen_Ioi isOpen_Iio (by grind) (by grind)
-
-lemma IsPreconnected.lt_of_ne (hs : IsPreconnected s) (hf : ContinuousOn f s)
-    (hfb : ∀ x ∈ s, f x ≠ b) (hfx : ∃ x ∈ s, b < f x) {x : α} (hx : x ∈ s) : b < f x :=
-  (hs.mapsTo_Ioi_or_Iio hf hfb).resolve_right (not_forall₂_of_exists₂_not (by grind)) hx
-
-lemma IsPreconnected.gt_of_ne (hs : IsPreconnected s) (hf : ContinuousOn f s)
-    (hfb : ∀ x ∈ s, f x ≠ b) (hfx : ∃ x ∈ s, f x < b) {x : α} (hx : x ∈ s) : f x < b :=
-  (hs.mapsTo_Ioi_or_Iio hf hfb).resolve_left (not_forall₂_of_exists₂_not (by grind)) hx
-
-end OrderClosedTopology
-
-section SuccOrder
-
-variable [SuccOrder β] [IsSuccArchimedean β]
-
-/-- The iUnion of connected sets indexed by a type with an archimedean successor (like `ℕ` or `ℤ`)
-  such that any two neighboring sets meet is preconnected. -/
-theorem IsPreconnected.iUnion_of_chain {s : β → Set α} (H : ∀ n, IsPreconnected (s n))
-    (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsPreconnected (⋃ n, s n) :=
-  IsPreconnected.iUnion_of_reflTransGen H fun _ _ =>
-    reflTransGen_of_succ _ (fun i _ => K i) (by grind)
-
-/-- The iUnion of connected sets indexed by a type with an archimedean successor (like `ℕ` or `ℤ`)
-  such that any two neighboring sets meet is connected. -/
-theorem IsConnected.iUnion_of_chain [Nonempty β] {s : β → Set α} (H : ∀ n, IsConnected (s n))
-    (K : ∀ n, (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n, s n) :=
-  IsConnected.iUnion_of_reflTransGen H fun _ _ => reflTransGen_of_succ _ (fun i _ => K i) (by grind)
-
-/-- The iUnion of preconnected sets indexed by a subset of a type with an archimedean successor
-  (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
-theorem IsPreconnected.biUnion_of_chain {s : β → Set α} {t : Set β} (ht : OrdConnected t)
-    (H : ∀ n ∈ t, IsPreconnected (s n))
-    (K : ∀ n : β, n ∈ t → succ n ∈ t → (s n ∩ s (succ n)).Nonempty) :
-    IsPreconnected (⋃ n ∈ t, s n) := by
-  have h1 : ∀ {i j k : β}, i ∈ t → j ∈ t → k ∈ Ico i j → k ∈ t := fun hi hj hk =>
-    ht.out hi hj (Ico_subset_Icc_self hk)
-  have h2 : ∀ {i j k : β}, i ∈ t → j ∈ t → k ∈ Ico i j → succ k ∈ t := fun hi hj hk =>
-    ht.out hi hj ⟨hk.1.trans <| le_succ _, succ_le_of_lt hk.2⟩
-  have h3 : ∀ {i j k : β}, i ∈ t → j ∈ t → k ∈ Ico i j → (s k ∩ s (succ k)).Nonempty :=
-    fun hi hj hk => K _ (h1 hi hj hk) (h2 hi hj hk)
-  refine IsPreconnected.biUnion_of_reflTransGen H fun i hi j hj => ?_
-  exact reflTransGen_of_succ _ (fun k hk => ⟨h3 hi hj hk, h1 hi hj hk⟩) fun k hk =>
-      ⟨by rw [inter_comm]; exact h3 hj hi hk, h2 hj hi hk⟩
-
-/-- The iUnion of connected sets indexed by a subset of a type with an archimedean successor
-  (like `ℕ` or `ℤ`) such that any two neighboring sets meet is preconnected. -/
-theorem IsConnected.biUnion_of_chain {s : β → Set α} {t : Set β} (hnt : t.Nonempty)
-    (ht : OrdConnected t) (H : ∀ n ∈ t, IsConnected (s n))
-    (K : ∀ n : β, n ∈ t → succ n ∈ t → (s n ∩ s (succ n)).Nonempty) : IsConnected (⋃ n ∈ t, s n) :=
-  ⟨nonempty_biUnion.2 <| ⟨hnt.some, hnt.some_mem, (H _ hnt.some_mem).nonempty⟩,
-    IsPreconnected.biUnion_of_chain ht (fun i hi => (H i hi).isPreconnected) K⟩
-
-end SuccOrder
-
-end Order
 
 end Preconnected
