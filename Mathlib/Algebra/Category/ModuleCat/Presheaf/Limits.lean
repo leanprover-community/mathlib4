@@ -146,14 +146,13 @@ section Small
 variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
-
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} (PresheafOfModules.{v} R) where
 
-noncomputable instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
-    PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfShape J (evaluation.{v} R X) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfSize.{v, v} (evaluation.{v} R X) where
 
-noncomputable instance toPresheaf_preservesLimitsOfShape :
-    PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfSize.{v, v} (toPresheaf.{v} R) where
 
 end Small
 

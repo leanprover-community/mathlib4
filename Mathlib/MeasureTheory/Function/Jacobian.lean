@@ -1181,7 +1181,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
 /-! ### Change of variable formulas in integrals -/
 
 
-/- Change of variable formula for differentiable functions: if a function `f` is
+/-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Lebesgue integral of a function
 `g : E → ℝ≥0∞` on `f '' s` coincides with the integral of `|(f' x).det| * g ∘ f` on `s`.
 Note that the measurability of `f '' s` is given by `measurable_image_of_fderivWithin`. -/

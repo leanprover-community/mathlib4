@@ -5,9 +5,10 @@ Authors: Filippo A. E. Nuccio, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.NoetherianSpace
 
 /-!
@@ -25,15 +26,10 @@ open TopologicalSpace
 
 section IsNoetherianRing
 
-variable (R : Type u) [CommRing R] [IsNoetherianRing R]
+variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
 
 instance : NoetherianSpace (PrimeSpectrum R) :=
   ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
-
-lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
-  minimalPrimes.equivIrreducibleComponents R
-    |>.set_finite_iff
-    |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 lemma finite_setOf_isMin :
     {x : PrimeSpectrum R | IsMin x}.Finite := by
@@ -41,12 +37,6 @@ lemma finite_setOf_isMin :
   refine Set.Finite.of_finite_image (f := asIdeal) ?_ this.injOn
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
-
-lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
-    I.minimalPrimes.Finite := by
-  rw [I.minimalPrimes_eq_comap]
-  apply Set.Finite.image
-  apply minimalPrimes.finite_of_isNoetherianRing
 
 end IsNoetherianRing
 
