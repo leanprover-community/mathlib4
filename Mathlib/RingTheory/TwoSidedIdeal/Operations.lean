@@ -138,7 +138,7 @@ def comap : TwoSidedIdeal S →o TwoSidedIdeal R where
     specialize @h (f x)
     simpa [mem_iff, RingCon.comap]
 
-lemma comap_le_comap {I J : TwoSidedIdeal S} (h : I ≤ J) :
+lemma comap_mono {I J : TwoSidedIdeal S} (h : I ≤ J) :
     comap f I ≤ comap f J :=
   (comap f).monotone h
 
@@ -147,9 +147,6 @@ lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
   simp [comap, RingCon.comap, mem_iff]
 
 lemma comap_coe (I : TwoSidedIdeal S) : I.comap f = f ⁻¹' I := by ext; simp [mem_comap]
-
-lemma comap_mono {f : F} {I J : TwoSidedIdeal S} (h : I ≤ J) : I.comap f ≤ J.comap f :=
-  SetLike.coe_subset_coe.1 <| by simpa [comap_coe] using Set.preimage_mono h
 
 lemma map_le_iff_le_comap (I : TwoSidedIdeal R) (J : TwoSidedIdeal S) :
     I.map f ≤ J ↔ I ≤ J.comap f := span_le.trans <| Set.image_subset_iff.trans <|
@@ -183,7 +180,7 @@ lemma map_bot {R S : Type*}
     {F : Type*} [FunLike F R S] [ZeroHomClass F R S] {f : F} :
     (⊥ : TwoSidedIdeal R).map f = ⊥ := by
   ext x
-  simp [map, coe_bot, Set.image_singleton, map_zero f, mem_bot, span_singleton_eq_bot.2]
+  simp [map, span_singleton_eq_bot.2]
 
 protected theorem mem_map_of_mem {R S : Type*}
     [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
@@ -205,7 +202,7 @@ lemma comap_map_of_surjective {f : F} (hf : Function.Surjective f) (I : TwoSided
     let ⟨x, hx, hx'⟩ := I.mem_image_of_mem_map_of_surjective hf (mem_comap f|>.1 h)
     mem_sup.2 ⟨x, hx, r - x, (mem_comap f).2 <| mem_bot _|>.2 <| by rw [map_sub, hx', sub_self],
       add_sub_cancel _ _⟩) <|
-    sup_le (map_le_iff_le_comap .. |>.1 le_rfl) (comap_mono bot_le)
+    sup_le (map_le_iff_le_comap .. |>.1 le_rfl) (comap_mono _ bot_le)
 
 lemma map_congr {F G : Type*} [FunLike G R S] [FunLike F R S] {f : F} {g : G} {I : TwoSidedIdeal R}
     (hfg : ∀ x, f x = g x) : I.map f = I.map g := by
