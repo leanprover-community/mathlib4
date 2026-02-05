@@ -232,6 +232,19 @@ theorem isRemainder_finset (p : MvPolynomial σ R) (B' : Finset (MvPolynomial σ
     · simp [hsum]
     · simp_intro .. [hg]
 
+theorem isRemainder_iff_exists_isRemainder_finset (p : MvPolynomial σ R)
+    (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
+    m.IsRemainder p B r ↔
+      (∃ (B' : Finset (MvPolynomial σ R)), ↑B' ⊆ B ∧ m.IsRemainder p B' r) ∧
+        ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c) := by
+  simp_rw [isRemainder_def'' (B := B), isRemainder_finset]
+  constructor
+  · rintro ⟨⟨g, B', hB'B, hsum, hdeg⟩, hdeg'⟩
+    refine ⟨⟨↑B', hB'B, ?_⟩ , hdeg'⟩
+    refine ⟨⟨g, hsum, hdeg⟩, fun _ h _ hb ↦ hdeg' _ h _ (hB'B hb)⟩
+  · rintro ⟨⟨B', hB'B, ⟨⟨g, hsum, hdeg⟩, -⟩⟩, hdeg'⟩
+    exact ⟨⟨g, B', hB'B, hsum, hdeg⟩, hdeg'⟩
+
 /-- `r` is a remainder of a family of polynomials, if and only if it is a remainder with properities
 defined in `MonomialOrder.div` with this family of polynomials given as a map from indexes to them.
 
