@@ -12,9 +12,21 @@ import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 /-!
 # Radon-Nikodym derivative of a composition product
 
+We compute the Radon-Nikodym derivative of a composition product `μ ⊗ₘ κ` with respect to another
+composition product `ν ⊗ₘ η` in terms of the Radon-Nikodym derivatives `∂μ/∂ν` and
+`∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
+
 ## Main statements
 
-* `rnDeriv_compProd`
+* `rnDeriv_compProd`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of
+  `∂μ/∂ν` and `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
+* `rnDeriv_measure_compProd_left`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ)`
+  (with the same kernel) equals `∂μ/∂ν`.
+
+## TODO
+
+Under suitable assumptions to have Radon-Nikodym derivatives defined for kernels, we should give
+equivalent statements with `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` replaced by `∂κ/∂η`.
 
 -/
 
@@ -61,7 +73,8 @@ lemma rnDeriv_measure_compProd_left_of_ac (hμν : μ ≪ ν) (κ : Kernel α β
     congr with i
     exact hf_eq i
 
-lemma todo (μ ν : Measure α) (κ η : Kernel α β)
+/-- Auxiliary lemma for `rnDeriv_measure_compProd_left`. -/
+lemma rnDeriv_compProd_withDensity_rnDeriv (μ ν : Measure α) (κ η : Kernel α β)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] [IsFiniteKernel η] :
     (ν.withDensity (μ.rnDeriv ν) ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := by
   conv_rhs => rw [Measure.haveLebesgueDecomposition_add μ ν]
@@ -79,12 +92,18 @@ lemma todo (μ ν : Measure α) (κ η : Kernel α β)
 lemma rnDeriv_measure_compProd_left (μ ν : Measure α) (κ : Kernel α β)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] :
     (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ κ) =ᵐ[ν ⊗ₘ κ] fun p ↦ (μ.rnDeriv ν) p.1 := by
-  refine (todo μ ν κ κ).symm.trans ?_
-  refine (rnDeriv_measure_compProd_left_of_ac
-    (MeasureTheory.withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) κ).trans ?_
-  refine Measure.ae_eq_compProd_of_ae_eq_fst _ (by fun_prop) (by fun_prop) ?_
-  exact Measure.rnDeriv_withDensity ν (by fun_prop)
+  calc (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ κ)
+  _ =ᵐ[ν ⊗ₘ κ] (ν.withDensity (μ.rnDeriv ν) ⊗ₘ κ).rnDeriv (ν ⊗ₘ κ) :=
+    (rnDeriv_compProd_withDensity_rnDeriv μ ν κ κ).symm
+  _ =ᵐ[ν ⊗ₘ κ] (fun p ↦ (ν.withDensity (μ.rnDeriv ν)).rnDeriv ν p.1) :=
+    rnDeriv_measure_compProd_left_of_ac
+      (MeasureTheory.withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) κ
+  _ =ᵐ[ν ⊗ₘ κ] fun p ↦ μ.rnDeriv ν p.1 :=
+    Measure.ae_eq_compProd_of_ae_eq_fst _ (by fun_prop) (by fun_prop)
+      (Measure.rnDeriv_withDensity ν (by fun_prop))
 
+/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of `∂μ/∂ν` and
+`∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`. -/
 lemma rnDeriv_compProd [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η]
     (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) (ν : Measure α) [IsFiniteMeasure ν] :
     (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η]
