@@ -238,7 +238,7 @@ theorem symm_toAlgEquiv (e : A ≃A[R] B) : e.symm.toAlgEquiv = e.toAlgEquiv.sym
 theorem symm_toHomeomorph (e : A ≃A[R] B) : e.symm.toHomeomorph = e.toHomeomorph.symm := rfl
 
 @[simp]
-theorem symm_toContinuousLinearEquiv (e : A ≃A[R] B) :
+theorem toContinuousLinearEquiv_symm (e : A ≃A[R] B) :
     e.symm.toContinuousLinearEquiv = e.toContinuousLinearEquiv.symm := rfl
 
 theorem symm_map_nhds_eq (e : A ≃A[R] B) (a : A) : Filter.map e.symm (𝓝 (e a)) = 𝓝 a :=
