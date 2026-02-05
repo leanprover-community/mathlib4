@@ -442,8 +442,8 @@ def elabCHoleExpand : Term.TermElab := fun stx expectedType? => do
 section Trans
 
 /-!
-The lemmas `rel_imp_rel`, `rel_trans` and `rel_trans'` are too general to be tagged with
-`@[gcongr]`, so instead we use `getTransLemma?` to look up these lemmas.
+The lemmas `rel_imp_rel` is too general to be tagged with `@[gcongr]`,
+so instead we use `relImpRelLemma` to look it up.
 -/
 
 variable {α : Sort*} {r : α → α → Prop} [IsTrans α r] {a b c d : α}
@@ -455,7 +455,7 @@ lemma rel_imp_rel (h₁ : r c a) (h₂ : r b d) : r a b → r c d :=
 Construct a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
 This will be tried if there is no other available `@[gcongr]` lemma.
 For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a congruence of the form
-`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`, `rel_trans` or `rel_trans'`.
+`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`.
 -/
 def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
@@ -503,6 +503,75 @@ def _root_.Lean.MVarId.applyWithArity (mvarId : MVarId) (e : Expr) (arity : Nat)
     result.forM (·.headBetaType)
     return result
 
+/-- A main subgoal produced by a single step of the `gcongr` tactic. -/
+structure GCongrSubgoal where
+  /-- The goal -/
+  goal : MVarId
+  /-- Whether the direction of the relation has been swapped. -/
+  isContra : Bool
+  /-- The number of times to run `intro` on this goal. -/
+  numHyps : Nat
+  deriving Inhabited
+
+/-- Perform a single step of the `gcongr` tactic. Return the main subgoals, on which `gcongr`
+can act recursively, and the side goals that couldn't be discharged by `sideGoalDischarger`. -/
+def _root_.Lean.MVarId.gcongrCore (g : MVarId)
+    (relName : Name) (lhs rhs : Expr) (sideGoalDischarger : MVarId → MetaM Unit) :
+    MetaM (Array GCongrSubgoal × Array MVarId) := do
+  let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
+  let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
+  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs |
+    throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
+  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs |
+    throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
+  unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
+    throwTacticEx `gcongr g m!"{lhs} and {rhs} are not of the same shape"
+  let s ← saveState
+  -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
+  -- the goal
+  let key := { relName, head := lhsHead, arity := lhsArgs.size }
+  let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
+  if relName == `_Implies then
+    lemmas := lemmas ++ relImpRelLemma lhsArgs.size
+  for lem in lemmas do
+    let gs ← try
+      -- Try `apply`-ing such a lemma to the goal.
+      let const ← mkConstWithFreshMVarLevels lem.declName
+      withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
+    catch _ =>
+      s.restore
+      continue
+    let some e ← getExprMVarAssignment? g | panic! "unassigned?"
+    let args := e.getAppArgs
+    let mut subgoals := #[]
+    let mainSubGoals := lem.mainSubgoals.map fun (i, numHyps, isContra) ↦
+      -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
+      -- unification ...
+      if let some (.mvar mvarId) := args[i]? then
+        ⟨mvarId, isContra, numHyps⟩
+      else
+        panic! "what kind of lemma is this?"
+    let mut sideGoals := #[]
+    -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
+    -- by the `apply`.
+    for g in gs do
+      if !(← g.isAssigned) && !subgoals.contains g then
+        let s ← saveState
+        try
+          sideGoalDischarger (← g.intros).2
+        catch _ =>
+          s.restore
+          sideGoals := sideGoals.push g
+    -- Return all unresolved subgoals, "main" or "side"
+    return (mainSubGoals, sideGoals)
+  if lemmas.isEmpty then
+    throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
+      for relation '{relName}' and constant '{lhsHead}'."
+  else
+    throwTacticEx `gcongr g
+      m!"none of the `@[gcongr]` lemmas were applicable to the goal {← withReducible g.getType'}.\
+      \n  attempted lemmas: {lemmas.map (·.declName)}"
+
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
 "main" goals which are generated, and run the discharger on side goals which are generated. If there
@@ -547,75 +616,21 @@ partial def _root_.Lean.MVarId.gcongr
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`"
     -- If there are more annotations, then continue on.
-
-  let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
-  let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
-  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs |
-    if mdataLhs?.isNone then return (false, names, #[g])
-    throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
-  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs |
-    if mdataLhs?.isNone then return (false, names, #[g])
-    throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
-  unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
-    if mdataLhs?.isNone then return (false, names, #[g])
-    throwTacticEx `gcongr g m!"{lhs} and {rhs} are not of the same shape"
-  let s ← saveState
-  -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
-  -- the goal
-  let key := { relName, head := lhsHead, arity := lhsArgs.size }
-  let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
-  if relName == `_Implies then
-    lemmas := lemmas ++ relImpRelLemma lhsArgs.size
-  for lem in lemmas do
-    let gs ← try
-      -- Try `apply`-ing such a lemma to the goal.
-      let const ← mkConstWithFreshMVarLevels lem.declName
-      withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
-    catch _ =>
-      s.restore
-      continue
-    let some e ← getExprMVarAssignment? g | panic! "unassigned?"
-    let args := e.getAppArgs
-    let mut subgoals := #[]
-    let mut names := names
-    -- If the `apply` succeeds, iterate over the lemma's `mainSubgoals` list.
-    for (i, numHyps, isContra) in lem.mainSubgoals do
-      -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
-      -- unification ...
-      let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
-      -- Introduce all variables and hypotheses in this subgoal.
-      let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names (maxIntros? := numHyps)
-      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
-      -- appropriate template
-      let mdataLhs?' := mdataLhs?.map (· != isContra)
-      let (_, names2, subgoals2) ← mvarId.gcongr mdataLhs?' names2 depth mainGoalDischarger
-        sideGoalDischarger
-      (names, subgoals) := (names2, subgoals ++ subgoals2)
-    let mut out := #[]
-    -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
-    -- by the `apply`.
-    for g in gs do
-      if !(← g.isAssigned) && !subgoals.contains g then
-        let s ← saveState
-        try
-          sideGoalDischarger (← g.intros).2
-        catch _ =>
-          s.restore
-          out := out.push g
-    -- Return all unresolved subgoals, "main" or "side"
-    return (true, names, out ++ subgoals)
-  -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
-  -- report this goal back.
-  if mdataLhs?.isNone then
-    return (false, names, #[g])
-  -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
-  -- fail.
-  if lemmas.isEmpty then
-    throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
-      for relation '{relName}' and constant '{lhsHead}'."
-  else
-    throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
-      \n  attempted lemmas: {lemmas.map (·.declName)}"
+  let (mainSubgoals, sideGoals) ←
+    try g.gcongrCore relName lhs rhs sideGoalDischarger
+    catch ex => if mdataLhs?.isNone then return (false, names, #[g]) else throw ex
+  let mut subgoals := sideGoals
+  let mut names := names
+  -- Iterate over the main subgoals.
+  for { goal, numHyps, isContra } in mainSubgoals do
+    -- Introduce `numHyps` variables and hypotheses in this subgoal.
+    let (names2, _vs, goal) ← goal.introsWithBinderIdents names (maxIntros? := numHyps)
+    -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
+    let (_, names2, subgoals2) ← goal.gcongr (mdataLhs?.map (· != isContra)) names2 depth
+      mainGoalDischarger sideGoalDischarger
+    names := names2
+    subgoals := subgoals ++ subgoals2
+  return (true, names, subgoals)
 
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
 between an LHS and RHS.  For example,
