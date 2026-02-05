@@ -728,23 +728,6 @@ lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass [IsNilpotent G] {a 
   · intros i j hi hj
     refine (upperCentralSeries.StrictMonoOn G).injOn ?_ ?_ <;> grind
 
-lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [hs : IsSimpleGroup G] [IsNilpotent G] :
-    nilpotencyClass G ≤ 1 := by
-  by_contra! h2
-  have := upperCentralSeries.card_image_eq_of_le_nilpotencyClass (G := G) (a := 2) (by grind)
-  rw [Set.ncard_eq_three] at this
-  obtain ⟨H₁, H₂, H₃, h12, h13, h23, h⟩ := this
-  have := hs.eq_bot_or_eq_top_of_normal (upperCentralSeries G 0) (upperCentralSeries_normal ..)
-  have := hs.eq_bot_or_eq_top_of_normal (upperCentralSeries G 1) (upperCentralSeries_normal ..)
-  grind only [upperCentralSeries_eq_top_iff_nilpotencyClass_le, upperCentralSeries_zero,
-    IsNilpotent.nilpotent, IsNilpotent.nilpotent', upperCentralSeries.eq_ge_of_eq_succ]
-
-instance IsSimpleGroup_IsNilpotent.isCyclic [IsSimpleGroup G] [IsNilpotent G] :
-    IsCyclic G := by
-  have hn1 : nilpotencyClass G ≤ 1 := nilpotencyClass_le_one_of_isSimple_of_isNilpotent
-  let : CommGroup G := commGroupOfNilpotencyClass hn1
-  infer_instance
-
 section Prod
 
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂]
@@ -858,6 +841,20 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSol
   use n
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
+
+lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [hs : IsSimpleGroup G] [IsNilpotent G] :
+    nilpotencyClass G ≤ 1 := by
+  refine lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mp ?_
+  obtain ht | ht := hs.eq_bot_or_eq_top_of_normal _ (commutator_normal ⊤ ⊤)
+  · exact ht
+  · have : ⁅(⊤), ⊤⁆ < (⊤ : Subgroup G) := IsSolvable.commutator_lt_of_ne_bot top_ne_bot
+    simp_all only [lt_self_iff_false]
+
+instance IsSimpleGroup_IsNilpotent.isCyclic [IsSimpleGroup G] [IsNilpotent G] :
+    IsCyclic G := by
+  have hn1 : nilpotencyClass G ≤ 1 := nilpotencyClass_le_one_of_isSimple_of_isNilpotent
+  let : CommGroup G := commGroupOfNilpotencyClass hn1
+  infer_instance
 
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition
