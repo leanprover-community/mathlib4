@@ -247,11 +247,8 @@ lemma map {G'} [Group G'] {f : G →* G'} (hf : Function.Surjective f) (hS : H.I
     apply top
   | step H K h_le hSubn hN ih =>
     apply step _ (map f K) (map_mono h_le) ih
-    refine normal_subgroupOf_of_le_normalizer ?_
-    rw [map_le_iff_le_comap, comap_normalizer_eq_of_le_range fun ⦃x⦄ a ↦ hf x, comap_map_eq]
-    trans H.normalizer
-    · exact (normal_subgroupOf_iff_le_normalizer h_le).mp hN
-    · exact normalizer_le_normalizer_sup_normal
+    rw [normal_subgroupOf_iff_le_normalizer h_le] at hN
+    exact normal_subgroupOf_of_le_normalizer ((map_mono hN).trans (H.le_normalizer_map f))
 
 /-- The quotient of a subnormal subgroup by a normal subgroup is subnormal. -/
 @[to_additive
