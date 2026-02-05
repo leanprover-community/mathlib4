@@ -117,7 +117,7 @@ theorem upperCentralSeriesStep_eq_comap_center :
     div_eq_mul_inv, mul_inv_rev, mul_assoc]
 
 @[to_additive]
-theorem Subgroup.Characteristic.comap [hH : Characteristic H] {K : Subgroup (G ⧸ H)}
+theorem Subgroup.Characteristic.quotient [hH : Characteristic H] {K : Subgroup (G ⧸ H)}
     (hK : K.Characteristic) :
     Characteristic (K.comap (mk' H)) := by
   refine characteristic_iff_map_le.2 fun ϕ x ⟨y, hy⟩ => ?_
@@ -132,7 +132,7 @@ theorem Subgroup.Characteristic.comap [hH : Characteristic H] {K : Subgroup (G �
 
 instance Subgroup.Characteristic.upperCentralSeriesStep [hH : H.Characteristic] :
     Characteristic (upperCentralSeriesStep H) :=
-  (upperCentralSeriesStep_eq_comap_center H) ▸ hH.comap H centerCharacteristic
+  (upperCentralSeriesStep_eq_comap_center H) ▸ hH.quotient H centerCharacteristic
 
 variable (G)
 
