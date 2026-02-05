@@ -612,30 +612,17 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
 lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
-    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ s) (hi' : i ∈ s ∪ t) :
-    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = f ⟨i, hi⟩ := by
-  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
-  -- painful dependent type manipulations. `set` doesn't work properly, which makes it more painful
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/set.20tactic.20doesn't.20work.20with.20dependent.20functions
-  generalize_proofs h'
-  set x := (Finset.union s t h).symm ⟨i, hi'⟩
-  have : x = Sum.inl ⟨i, hi⟩ := Finset.union_symm_left h hi hi'
-  show cast h' ((sumPiEquivProdPi fun b ↦ α (Finset.union s t h b)).symm (f, g) x) = _
-  clear_value x
-  subst this
+    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ s) (hi' : i ∈ s ∪ t):
+    piFinsetUnion α h (f, g) ⟨i, hi'⟩ = f ⟨i, hi⟩ := by
+  simp_rw [piFinsetUnion, sumPiEquivProdPi, piCongrLeft, piCongrLeft', trans_apply, coe_fn_symm_mk]
+  rw! [Finset.union_symm_left h hi hi']
   rfl
 
 lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
     (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ t) (hi' : i ∈ s ∪ t) :
     Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = g ⟨i, hi⟩ := by
-  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
-  -- painful dependent type manipulations.
-  generalize_proofs h'
-  set x := (Finset.union s t h).symm ⟨i, hi'⟩
-  have : x = Sum.inr ⟨i, hi⟩ := Finset.union_symm_right h hi hi'
-  show cast h' ((sumPiEquivProdPi fun b ↦ α (Finset.union s t h b)).symm (f, g) x) = _
-  clear_value x
-  subst this
+  simp_rw [piFinsetUnion, sumPiEquivProdPi, piCongrLeft, piCongrLeft', trans_apply, coe_fn_symm_mk]
+  rw! [Finset.union_symm_right h hi hi']
   rfl
 
 /-- A finset is equivalent to its coercion as a set. -/
