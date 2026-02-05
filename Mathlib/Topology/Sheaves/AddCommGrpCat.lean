@@ -46,7 +46,7 @@ instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
 instance : HasExt.{u} (Sheaf AddCommGrpCat.{u} X) :=
   hasExt_of_enoughInjectives (Sheaf AddCommGrpCat X)
 
-theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
+theorem Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
     ∃ (t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
   dsimp [Presheaf] at S
