@@ -142,7 +142,7 @@ register_option linter.overlappingInstances : Bool := {
 }
 
 /--
-Creates a description of the current declaration in messages: "declaration <declName>" if the `parentDecl?` is known, and "current declaration" otherwise. May be preceded by "the".
+Creates a description of the current declaration in messages: "declaration `<declName>`" if the `parentDecl?` is known, and "current declaration" otherwise. May be preceded by "the".
 
 TODO: For now, this does not produce hovers on `<declName>`, since the name may clash with the aux
 decl of the same name in the local context. In the future, we should account for this, and render
