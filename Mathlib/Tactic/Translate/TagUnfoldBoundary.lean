@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.Translate.Core
+public meta import Mathlib.Tactic.Translate.Core
 
 /-!
 # Tagging of unfold boundaries for translation attributes

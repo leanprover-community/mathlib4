@@ -20,7 +20,6 @@ public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.UnfoldBoundary
-public meta import Mathlib.Util.MemoFix
 
 /-!
 # The translation attribute.

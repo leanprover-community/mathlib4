@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.FiniteSupport
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Set.Finite.Lattice
 

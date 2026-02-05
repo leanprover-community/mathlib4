@@ -11,6 +11,7 @@ public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Tactic.NormNum.Result
 public meta import Mathlib.Tactic.Ring.Common
+public import Mathlib.Tactic.Ring.Common
 
 /-!
 # `ring` tactic

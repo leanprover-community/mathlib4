@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.GroupTheory.GroupAction.Blocks
 public import Mathlib.GroupTheory.GroupAction.Transitive
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Primitive actions

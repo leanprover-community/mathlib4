@@ -5,10 +5,11 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.ToFun
 import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
 
 /-!
 # Scott continuity

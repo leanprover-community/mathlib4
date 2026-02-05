@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Trivial Square-Zero Extension

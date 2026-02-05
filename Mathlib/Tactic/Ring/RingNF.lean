@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Tactic.Ring.Basic
 public meta import Mathlib.Tactic.Conv
 public meta import Mathlib.Util.AtLocation
 public meta import Mathlib.Util.AtomM.Recurse

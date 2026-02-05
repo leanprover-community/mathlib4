@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Data.ENNReal.BigOperators
-public import Mathlib.Tactic.Bound
 public import Mathlib.Topology.Order.LiminfLimsup
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Instances.NNReal.Lemmas
