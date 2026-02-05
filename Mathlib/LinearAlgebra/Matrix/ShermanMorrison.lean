@@ -35,23 +35,35 @@ namespace Matrix
 
 open scoped Matrix
 
-section CommRing
-
-variable [Fintype n] [CommRing α]
-
-/-- Product of two outer products is a scalar multiple of an outer product. -/
-theorem vecMulVec_mul_vecMulVec' (u v w x : n → α) :
-    vecMulVec u v * vecMulVec w x = (v ⬝ᵥ w) • vecMulVec u x := by
-  rw [vecMulVec_mul_vecMulVec]
-  ext i j
-  simp only [smul_apply, vecMulVec_apply, smul_eq_mul, Pi.smul_apply]
-  ring
-
-end CommRing
-
 section Field
 
 variable [Fintype n] [DecidableEq n] [Field α]
+
+/-- Sherman-Morrison formula in `replicateCol`/`replicateRow` form.
+
+This is the Woodbury identity `add_mul_mul_inv_eq_sub` specialized to rank-1 updates. -/
+theorem inv_add_replicateCol_mul_replicateRow (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.det)
+    (hden : 1 + v ⬝ᵥ (A⁻¹ *ᵥ u) ≠ 0) :
+    (A + replicateCol Unit u * replicateRow Unit v)⁻¹ =
+      A⁻¹ - (1 + v ⬝ᵥ (A⁻¹ *ᵥ u))⁻¹ •
+        (A⁻¹ * (replicateCol Unit u * replicateRow Unit v) * A⁻¹) := by
+  have hA' : IsUnit A := A.isUnit_iff_isUnit_det.mpr hA
+  have hAC : IsUnit (1 + replicateRow Unit v * A⁻¹ * replicateCol Unit u) := by
+    exact (1 + replicateRow Unit v * A⁻¹ * replicateCol Unit u).isUnit_iff_isUnit_det.mpr <| by
+      rw [det_unique, add_apply, one_apply_eq, ← replicateRow_vecMul]
+      simp only [replicateRow_mul_replicateCol_apply, ← dotProduct_mulVec]
+      exact hden.isUnit
+  -- Apply Woodbury identity with C = 1
+  have key := add_mul_mul_inv_eq_sub A (replicateCol Unit u) 1 (replicateRow Unit v)
+    hA' isUnit_one (by simpa using hAC)
+  simp only [Matrix.mul_one, inv_one] at key
+  -- Regroup and convert 1×1 matrix inverse to scalar
+  rw [key, ← Matrix.mul_assoc _ (replicateCol Unit u),
+    Matrix.mul_assoc _ (replicateRow Unit v), Matrix.mul_assoc _ (replicateRow Unit v)]
+  rw [← replicateCol_mulVec, ← replicateRow_vecMul, replicateRow_mul_replicateCol,
+    smul_eq_mul_diagonal, inv_subsingleton (m := Unit)]
+  simp only [Ring.inverse_eq_inv, ← dotProduct_mulVec, add_apply, one_apply_eq, of_apply]
+  rw [← smul_eq_mul_diagonal, Matrix.smul_mul, smul_eq_mul_diagonal]
 
 /-- The **Sherman-Morrison formula** for the inverse of a rank-1 update. -/
 theorem inv_add_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.det)
@@ -59,44 +71,14 @@ theorem inv_add_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.de
     (A + vecMulVec u v)⁻¹ =
       A⁻¹ - (1 / (1 + v ⬝ᵥ (A⁻¹ *ᵥ u))) •
         vecMulVec (A⁻¹ *ᵥ u) (v ᵥ* A⁻¹) := by
-  set R := A⁻¹ with hR
-  set c := (1 + v ⬝ᵥ (R *ᵥ u))⁻¹ with hc
-  set RHS := R - c • vecMulVec (R *ᵥ u) (v ᵥ* R) with hRHS
-  have hc_eq : (1 / (1 + v ⬝ᵥ (A⁻¹ *ᵥ u))) = c := by simp only [one_div, hc, hR]
-  rw [hc_eq, ← hRHS]
-  apply inv_eq_left_inv
-  have hRA : R * A = 1 := nonsing_inv_mul _ hA
-  have hvRA : (v ᵥ* R) ᵥ* A = v := by rw [vecMul_vecMul, hRA, vecMul_one]
-  have hdot_eq : (v ᵥ* R) ⬝ᵥ u = v ⬝ᵥ (R *ᵥ u) := by rw [← dotProduct_mulVec]
-  have hcoeff : 1 - c - c * ((v ᵥ* R) ⬝ᵥ u) = 0 := by
-    rw [hdot_eq]
-    have h1 : c * (1 + v ⬝ᵥ (R *ᵥ u)) = 1 := inv_mul_cancel₀ hden
-    calc 1 - c - c * (v ⬝ᵥ (R *ᵥ u))
-        = 1 - c * (1 + v ⬝ᵥ (R *ᵥ u)) := by ring
-      _ = 1 - 1 := by rw [h1]
-      _ = 0 := by ring
-  have step1 : RHS * (A + vecMulVec u v) =
-      R * A + R * vecMulVec u v
-      - c • (vecMulVec (R *ᵥ u) (v ᵥ* R) * A)
-      - c • (vecMulVec (R *ᵥ u) (v ᵥ* R) * vecMulVec u v) := by
-    simp only [hRHS, sub_mul, smul_mul_assoc, mul_add]
-    abel
-  have step2 : R * A + R * vecMulVec u v
-      - c • (vecMulVec (R *ᵥ u) (v ᵥ* R) * A)
-      - c • (vecMulVec (R *ᵥ u) (v ᵥ* R) * vecMulVec u v) =
-      1 + vecMulVec (R *ᵥ u) v
-      - c • vecMulVec (R *ᵥ u) v
-      - c • (((v ᵥ* R) ⬝ᵥ u) • vecMulVec (R *ᵥ u) v) := by
-    rw [hRA, mul_vecMulVec, vecMulVec_mul, hvRA, vecMulVec_mul_vecMulVec']
-  have step3 : 1 + vecMulVec (R *ᵥ u) v
-      - c • vecMulVec (R *ᵥ u) v
-      - c • (((v ᵥ* R) ⬝ᵥ u) • vecMulVec (R *ᵥ u) v) =
-      1 + (1 - c - c * ((v ᵥ* R) ⬝ᵥ u)) • vecMulVec (R *ᵥ u) v := by
-    rw [smul_smul]
-    ext i j
-    simp only [add_apply, sub_apply, smul_apply, one_apply, smul_eq_mul]
-    ring
-  rw [step1, step2, step3, hcoeff, zero_smul, add_zero]
+  rw [vecMulVec_eq Unit, inv_add_replicateCol_mul_replicateRow A u v hA hden, one_div]
+  congr 2
+  -- A⁻¹ * (replicateCol * replicateRow) * A⁻¹ = vecMulVec (A⁻¹ *ᵥ u) (v ᵥ* A⁻¹)
+  -- First flatten: A⁻¹ * (U * V) * A⁻¹ → A⁻¹ * U * V * A⁻¹
+  -- Then regroup: A⁻¹ * U * V * A⁻¹ → (A⁻¹ * U) * (V * A⁻¹)
+  rw [Matrix.mul_assoc A⁻¹ _ A⁻¹, Matrix.mul_assoc (replicateCol Unit u) (replicateRow Unit v) A⁻¹,
+      ← Matrix.mul_assoc A⁻¹ (replicateCol Unit u) (replicateRow Unit v * A⁻¹),
+      ← replicateCol_mulVec, ← replicateRow_vecMul, ← vecMulVec_eq Unit]
 
 /-- Variant of `inv_add_vecMulVec` with subtraction. -/
 theorem inv_sub_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.det)
