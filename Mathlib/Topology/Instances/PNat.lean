@@ -3,13 +3,17 @@ Copyright (c) 2024 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
-import Mathlib.Topology.Instances.Nat
+module
+
+public import Mathlib.Topology.Instances.Nat
 
 /-!
 # Topology on the positive natural numbers
 
 The structure of a metric space on `ℕ+` is introduced in this file, induced from `ℝ`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -25,9 +29,6 @@ theorem dist_eq (x y : ℕ+) : dist x y = |(↑x : ℝ) - ↑y| := rfl
 theorem dist_coe (x y : ℕ+) : dist (↑x : ℕ) (↑y : ℕ) = dist x y := rfl
 
 theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : ℕ+ → ℕ) := isUniformEmbedding_subtype_val
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe := isUniformEmbedding_coe
 
 instance : DiscreteTopology ℕ+ := inferInstanceAs (DiscreteTopology { n : ℕ // 0 < n })
 

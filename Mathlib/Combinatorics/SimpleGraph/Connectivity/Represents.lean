@@ -3,9 +3,10 @@ Copyright (c) 2025 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Data.Set.Card
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Data.Set.Card
 
 /-!
 # Representation of components by a set of vertices
@@ -15,6 +16,8 @@ import Mathlib.Data.Set.Card
 * `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of
   components if it contains exactly one vertex from each component.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -42,14 +45,14 @@ lemma image_out (C : Set G.ConnectedComponent) :
 lemma existsUnique_rep (hrep : Represents s C) (h : c ∈ C) : ∃! x, x ∈ s ∩ c.supp := by
   obtain ⟨x, ⟨hx, rfl⟩⟩ := hrep.2.2 h
   use x
-  simp only [Set.mem_inter_iff, hx, SetLike.mem_coe, mem_supp_iff, and_self, and_imp, true_and]
+  simp only [Set.mem_inter_iff, hx, mem_supp_iff, and_self, and_imp, true_and]
   exact fun y hy hyx ↦ hrep.2.1 hy hx hyx
 
 lemma exists_inter_eq_singleton (hrep : Represents s C) (h : c ∈ C) : ∃ x, s ∩ c.supp = {x} := by
   obtain ⟨a, ha⟩ := existsUnique_rep hrep h
   aesop
 
-lemma disjoint_supp_of_not_mem (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
+lemma disjoint_supp_of_notMem (hrep : Represents s C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_left]
   intro a ha hc
   simp only [mem_supp_iff] at hc
@@ -60,14 +63,29 @@ lemma ncard_inter (hrep : Represents s C) (h : c ∈ C) : (s ∩ c.supp).ncard =
   rw [Set.ncard_eq_one]
   exact exists_inter_eq_singleton hrep h
 
+lemma ncard_eq (hrep : Represents s C) : s.ncard = C.ncard :=
+  hrep.image_eq ▸ hrep.injOn.ncard_image.symm
+
 lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
     (c.supp \ s).ncard = c.supp.ncard - 1 := by
   obtain ⟨a, ha⟩ := exists_inter_eq_singleton hrep h
   rw [← Set.diff_inter_self_eq_diff, ha, Set.ncard_diff, Set.ncard_singleton]
   simp [← ha]
 
-lemma ncard_sdiff_of_not_mem (hrep : Represents s C) (h : c ∉ C) :
+lemma ncard_sdiff_of_notMem (hrep : Represents s C) (h : c ∉ C) :
     (c.supp \ s).ncard = c.supp.ncard := by
-  rw [(disjoint_supp_of_not_mem hrep h).sdiff_eq_right]
+  rw [(disjoint_supp_of_notMem hrep h).sdiff_eq_right]
 
-end SimpleGraph.ConnectedComponent.Represents
+end ConnectedComponent.Represents
+
+lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedComponent)
+    (hrep : ConnectedComponent.Represents s G.oddComponents) :
+    Even (K.supp \ s).ncard := by
+  by_cases h : Even K.supp.ncard
+  · simpa [hrep.ncard_sdiff_of_notMem
+      (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h
+  · have : K.supp.ncard ≠ 0 := Nat.ne_of_odd_add (Nat.not_even_iff_odd.mp h)
+    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by lia)]
+    simpa [Nat.even_sub] using Nat.not_even_iff_odd.mp h
+
+end SimpleGraph

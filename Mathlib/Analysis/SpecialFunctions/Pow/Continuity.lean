@@ -4,13 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
 # Continuity of power functions
 
 This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`.
 -/
+
+public section
 
 
 noncomputable section
@@ -82,12 +86,12 @@ theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
 
 theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
     ContinuousAt (· ^ b) a :=
-  Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prod continuousAt_const)
+  Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prodMk continuousAt_const)
 
 theorem Filter.Tendsto.cpow {l : Filter α} {f g : α → ℂ} {a b : ℂ} (hf : Tendsto f l (𝓝 a))
     (hg : Tendsto g l (𝓝 b)) (ha : a ∈ slitPlane) :
     Tendsto (fun x => f x ^ g x) l (𝓝 (a ^ b)) :=
-  (@continuousAt_cpow (a, b) ha).tendsto.comp (hf.prod_mk_nhds hg)
+  (@continuousAt_cpow (a, b) ha).tendsto.comp (hf.prodMk_nhds hg)
 
 theorem Filter.Tendsto.const_cpow {l : Filter α} {f : α → ℂ} {a b : ℂ} (hf : Tendsto f l (𝓝 b))
     (h : a ≠ 0 ∨ b ≠ 0) : Tendsto (fun x => a ^ f x) l (𝓝 (a ^ b)) := by
@@ -182,16 +186,14 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
   cases hp with
   | inl hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_neg hp)]
-    refine ContinuousAt.mul ?_ (continuous_cos.continuousAt.comp ?_)
+    refine ContinuousAt.mul ?_ (by fun_prop)
     · refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
-      refine (continuousAt_log ?_).comp continuous_fst.continuousAt
-      exact hp.ne
-    · exact continuous_snd.continuousAt.mul continuousAt_const
+      exact (continuousAt_log hp.ne).comp continuous_fst.continuousAt
   | inr hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_pos hp)]
     refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
     refine (continuousAt_log ?_).comp continuous_fst.continuousAt
-    exact hp.lt.ne.symm
+    exact hp.ne'
 
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
@@ -201,7 +203,7 @@ theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
   · exact continuousAt_rpow_of_ne (x, y) hx
   have A : Tendsto (fun p : ℝ × ℝ => exp (log p.1 * p.2)) (𝓝[≠] 0 ×ˢ 𝓝 y) (𝓝 0) :=
     tendsto_exp_atBot.comp
-      ((tendsto_log_nhdsWithin_zero.comp tendsto_fst).atBot_mul hp tendsto_snd)
+      ((tendsto_log_nhdsNE_zero.comp tendsto_fst).atBot_mul_pos hp tendsto_snd)
   have B : Tendsto (fun p : ℝ × ℝ => p.1 ^ p.2) (𝓝[≠] 0 ×ˢ 𝓝 y) (𝓝 0) :=
     squeeze_zero_norm (fun p => abs_rpow_le_exp_log_mul p.1 p.2) A
   have C : Tendsto (fun p : ℝ × ℝ => p.1 ^ p.2) (𝓝[{0}] 0 ×ˢ 𝓝 y) (pure 0) := by
@@ -217,14 +219,19 @@ theorem continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
 @[fun_prop]
 theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
     ContinuousAt (fun x : ℝ => x ^ q) x := by
-· rw [le_iff_lt_or_eq, ← or_assoc] at h
-  obtain h|rfl := h
+  rw [le_iff_lt_or_eq, ← or_assoc] at h
+  obtain h | rfl := h
   · exact (continuousAt_rpow (x, q) h).comp₂ continuousAt_id continuousAt_const
   · simp_rw [rpow_zero]; exact continuousAt_const
 
 @[fun_prop]
 theorem continuous_rpow_const {q : ℝ} (h : 0 ≤ q) : Continuous (fun x : ℝ => x ^ q) :=
   continuous_iff_continuousAt.mpr fun x ↦ continuousAt_rpow_const x q (.inr h)
+
+@[fun_prop]
+lemma continuous_const_rpow {a : ℝ} (h : a ≠ 0) : Continuous (fun x : ℝ ↦ a ^ x) :=
+  continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_const_rpow h
+
 end Real
 
 section
@@ -233,7 +240,7 @@ variable {α : Type*}
 
 theorem Filter.Tendsto.rpow {l : Filter α} {f g : α → ℝ} {x y : ℝ} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) (h : x ≠ 0 ∨ 0 < y) : Tendsto (fun t => f t ^ g t) l (𝓝 (x ^ y)) :=
-  (Real.continuousAt_rpow (x, y) h).tendsto.comp (hf.prod_mk_nhds hg)
+  (Real.continuousAt_rpow (x, y) h).tendsto.comp (hf.prodMk_nhds hg)
 
 theorem Filter.Tendsto.rpow_const {l : Filter α} {f : α → ℝ} {x p : ℝ} (hf : Tendsto f l (𝓝 x))
     (h : x ≠ 0 ∨ 0 ≤ p) : Tendsto (fun a => f a ^ p) l (𝓝 (x ^ p)) :=
@@ -293,7 +300,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) (0, z) := by
   have hz₀ : z ≠ 0 := ne_of_apply_ne re hz.ne'
   rw [ContinuousAt, zero_cpow hz₀, tendsto_zero_iff_norm_tendsto_zero]
-  refine squeeze_zero (fun _ => norm_nonneg _) (fun _ => abs_cpow_le _ _) ?_
+  refine squeeze_zero (fun _ => norm_nonneg _) (fun _ => norm_cpow_le _ _) ?_
   simp only [div_eq_mul_inv, ← Real.exp_neg]
   refine Tendsto.zero_mul_isBoundedUnder_le ?_ ?_
   · convert
@@ -326,7 +333,8 @@ theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.
 assumptions about `w`. -/
 theorem continuousAt_cpow_const_of_re_pos {z w : ℂ} (hz : 0 ≤ re z ∨ im z ≠ 0) (hw : 0 < re w) :
     ContinuousAt (fun x => x ^ w) z :=
-  Tendsto.comp (@continuousAt_cpow_of_re_pos (z, w) hz hw) (continuousAt_id.prod continuousAt_const)
+  Tendsto.comp (@continuousAt_cpow_of_re_pos (z, w) hz hw)
+    (continuousAt_id.prodMk continuousAt_const)
 
 /-- Continuity of `(x, y) ↦ x ^ y` as a function on `ℝ × ℂ`. -/
 theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
@@ -351,14 +359,11 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
     apply ContinuousAt.mul
     · refine (continuousAt_cpow (Or.inl ?_)).comp A
       rwa [neg_re, ofReal_re, neg_pos]
-    · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
+    · fun_prop
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
-    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x := by
-  exact ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
-          ((continuous_id (X := ℝ)).prod_mk (continuous_const (y := y))).continuousAt
+    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
+  (continuousAt_ofReal_cpow x y h).comp₂_of_eq (by fun_prop) (by fun_prop) rfl
 
 theorem continuous_ofReal_cpow_const {y : ℂ} (hs : 0 < y.re) :
     Continuous (fun x => (x : ℂ) ^ y : ℝ → ℂ) :=
@@ -379,13 +384,13 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
     (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) =
       Real.toNNReal ∘ (fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun p : ℝ≥0 × ℝ => (p.1.1, p.2) := by
     ext p
-    erw [coe_rpow, Real.coe_toNNReal _ (Real.rpow_nonneg p.1.2 _)]
-    rfl
+    simp only [coe_rpow, val_eq_coe, Function.comp_apply, coe_toNNReal', left_eq_sup]
+    exact_mod_cast zero_le (p.1 ^ p.2)
   rw [this]
   refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow
     simpa using h
-  · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
+  · fun_prop
 
 theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
@@ -403,7 +408,7 @@ open Filter
 theorem Filter.Tendsto.nnrpow {α : Type*} {f : Filter α} {u : α → ℝ≥0} {v : α → ℝ} {x : ℝ≥0}
     {y : ℝ} (hx : Tendsto u f (𝓝 x)) (hy : Tendsto v f (𝓝 y)) (h : x ≠ 0 ∨ 0 < y) :
     Tendsto (fun a => u a ^ v a) f (𝓝 (x ^ y)) :=
-  Tendsto.comp (NNReal.continuousAt_rpow h) (hx.prod_mk_nhds hy)
+  Tendsto.comp (NNReal.continuousAt_rpow h) (hx.prodMk_nhds hy)
 
 namespace NNReal
 
@@ -427,7 +432,7 @@ theorem continuousOn_rpow_const_compl_zero {r : ℝ} :
 @[fun_prop]
 theorem continuousOn_rpow_const {r : ℝ} {s : Set ℝ≥0}
     (h : 0 ∉ s ∨ 0 ≤ r) : ContinuousOn (fun z : ℝ≥0 => z ^ r) s :=
-  h.elim (fun _ ↦ ContinuousOn.mono (s := {0}ᶜ) (by fun_prop) (by aesop))
+  h.elim (fun _ ↦ ContinuousOn.mono (s := {0}ᶜ) (by fun_prop) (by simp_all))
     (NNReal.continuous_rpow_const · |>.continuousOn)
 
 end NNReal

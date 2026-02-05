@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Split
-import Mathlib.AlgebraicTopology.DoldKan.PInfty
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
+public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
 
@@ -28,6 +30,8 @@ which shall be an equivalence for any additive category `C`.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -38,7 +42,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
+variable {C : Type*} [Category* C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
   {Δ Δ' Δ'' : SimplexCategory}
 
 /-- `Isδ₀ i` is a simple condition used to check whether a monomorphism `i` in
@@ -92,20 +96,17 @@ def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ)
     · exact K.d Δ.len Δ'.len
     · exact 0
 
-variable (Δ)
-
+variable (Δ) in
 theorem mapMono_id : mapMono K (𝟙 Δ) = 𝟙 _ := by
   unfold mapMono
-  simp only [eq_self_iff_true, eqToHom_refl, dite_eq_ite, if_true]
-
-variable {Δ}
+  simp only [eqToHom_refl, dite_eq_ite, if_true]
 
 theorem mapMono_δ₀' (i : Δ' ⟶ Δ) [Mono i] (hi : Isδ₀ i) : mapMono K i = K.d Δ.len Δ'.len := by
   unfold mapMono
   suffices Δ ≠ Δ' by
     simp only [dif_neg this, dif_pos hi]
   rintro rfl
-  simpa only [self_eq_add_right, Nat.one_ne_zero] using hi.1
+  simpa only [left_eq_add, Nat.one_ne_zero] using hi.1
 
 @[simp]
 theorem mapMono_δ₀ {n : ℕ} : mapMono K (δ (0 : Fin (n + 2))) = K.d (n + 1) n :=
@@ -137,21 +138,21 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   -- case where i : Δ' ⟶ Δ is the identity
   by_cases h₁ : Δ = Δ'
   · subst h₁
-    simp only [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K, eqToHom_refl]
+    simp only [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K]
   -- case where i' : Δ'' ⟶ Δ' is the identity
   by_cases h₂ : Δ' = Δ''
   · subst h₂
-    simp only [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K, eqToHom_refl]
+    simp only [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K]
   -- then the RHS is always zero
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i h₁)
   obtain ⟨k', hk'⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i' h₂)
-  have eq : Δ.len = Δ''.len + (k + k' + 2) := by omega
+  have eq : Δ.len = Δ''.len + (k + k' + 2) := by lia
   rw [mapMono_eq_zero K (i' ≫ i) _ _]; rotate_left
   · by_contra h
-    simp only [self_eq_add_right, h, add_eq_zero, and_false, reduceCtorEq] at eq
+    simp only [left_eq_add, h, add_eq_zero, and_false, reduceCtorEq] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
-    omega
+    lia
   -- in all cases, the LHS is also zero, either by definition, or because d ≫ d = 0
   by_cases h₃ : Isδ₀ i
   · by_cases h₄ : Isδ₀ i'
@@ -204,7 +205,9 @@ def obj (K : ChainComplex C ℕ) : SimplicialObject C where
   map_id Δ := colimit.hom_ext (fun ⟨A⟩ => by
     dsimp
     have fac : A.e ≫ 𝟙 A.1.unop = (𝟙 Δ).unop ≫ A.e := by rw [unop_id, comp_id, id_comp]
-    erw [Obj.map_on_summand₀ K A fac, Obj.Termwise.mapMono_id, id_comp, comp_id]
+    rw [Obj.map_on_summand₀ K A fac, Obj.Termwise.mapMono_id, id_comp]
+    dsimp only [Obj.obj₂]
+    rw [comp_id]
     rfl)
   map_comp {Δ'' Δ' Δ} θ' θ := colimit.hom_ext (fun ⟨A⟩ => by
     have fac : θ.unop ≫ θ'.unop ≫ A.e = (θ' ≫ θ).unop ≫ A.e := by rw [unop_comp, assoc]
@@ -237,10 +240,14 @@ theorem Obj.map_on_summand {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.Index
   change (_ ≫ (Γ₀.obj K).map A.e.op) ≫ (Γ₀.obj K).map θ = _
   rw [assoc, ← Functor.map_comp]
   dsimp [splitting]
-  erw [Γ₀.Obj.map_on_summand₀ K (Splitting.IndexSet.id A.1)
-    (show e ≫ i = ((Splitting.IndexSet.e A).op ≫ θ).unop ≫ 𝟙 _ by rw [comp_id, fac]; rfl),
-    Γ₀.Obj.map_on_summand₀ K (Splitting.IndexSet.id (op Δ''))
-      (show e ≫ 𝟙 Δ'' = e.op.unop ≫ 𝟙 _ by simp), Termwise.mapMono_id, id_comp]
+  rw [Γ₀.Obj.map_on_summand₀ K (Splitting.IndexSet.id A.1)
+    (show e ≫ i = ((Splitting.IndexSet.e A).op ≫ θ).unop ≫ 𝟙 _ by rw [comp_id, fac]; rfl)]
+  dsimp only [Splitting.IndexSet.id_fst, Splitting.IndexSet.mk, op_unop, Splitting.IndexSet.e]
+  rw [Γ₀.Obj.map_on_summand₀ K (Splitting.IndexSet.id (op Δ''))
+      (show e ≫ 𝟙 Δ'' = e.op.unop ≫ 𝟙 _ by simp), Termwise.mapMono_id]
+  dsimp only [Splitting.IndexSet.id_fst]
+  rw [id_comp]
+  rfl
 
 @[reassoc]
 theorem Obj.map_on_summand' {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) (θ : Δ ⟶ Δ') :
@@ -326,7 +333,7 @@ theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : 
       (PInfty : K[Γ₀.obj K] ⟶ _).f n =
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   rw [PInfty_f]
-  rcases n with _|n
+  rcases n with _ | n
   · simpa only [P_f_0_eq] using comp_id _
   · exact (HigherFacesVanish.on_Γ₀_summand_id K n).comp_P_eq_self
 

@@ -3,9 +3,13 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+
 
 /-!
 # Adic topology
@@ -40,6 +44,8 @@ to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R
 
 -/
 
+@[expose] public section
+
 
 variable {R : Type*} [CommRing R]
 
@@ -52,19 +58,19 @@ namespace Ideal
 theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
   { inter := by
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
-        simpa only [smul_eq_mul, mul_top, Algebra.id.map_eq_id, map_id, le_inf_iff] using this
+        simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using this
       intro i j
       exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
     leftMul := by
       suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
-        simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
       intro r n
       use n
       rintro a ⟨x, hx, rfl⟩
       exact (I ^ n).smul_mem r hx
     mul := by
       suffices ∀ i : ℕ, ∃ j : ℕ, (↑(I ^ j) * ↑(I ^ j) : Set R) ⊆ (↑(I ^ i) : Set R) by
-        simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
       intro n
       use n
       rintro a ⟨x, _hx, b, hb, rfl⟩
@@ -130,7 +136,7 @@ def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
   convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
   change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
-  simp [smul_top_eq_map, Algebra.id.map_eq_id, map_id, restrictScalars_self]
+  simp
 
 end Ideal
 
@@ -204,6 +210,16 @@ theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [IsTopolog
       use 1
       simp [mem_of_mem_nhds U_nhds]
 
+omit [IsTopologicalRing R] in
+theorem IsAdic.hasBasis_nhds_zero {I : Ideal R} (hI : IsAdic I) :
+    (𝓝 (0 : R)).HasBasis (fun _ ↦ True) fun n ↦ ↑(I ^ n) :=
+  hI ▸ Ideal.hasBasis_nhds_zero_adic I
+
+omit [IsTopologicalRing R] in
+theorem IsAdic.hasBasis_nhds {I : Ideal R} (hI : IsAdic I) (x : R) :
+    (𝓝 x).HasBasis (fun _ ↦ True) fun n ↦ (x + ·) '' ↑(I ^ n) :=
+  hI ▸ Ideal.hasBasis_nhds_adic I x
+
 end IsAdic
 
 /-- The ring `R` is equipped with a preferred ideal. -/
@@ -222,10 +238,10 @@ instance (priority := 100) : NonarchimedeanRing R :=
   RingSubgroupsBasis.nonarchimedean _
 
 instance (priority := 100) : UniformSpace R :=
-  IsTopologicalAddGroup.toUniformSpace R
+  IsTopologicalAddGroup.rightUniformSpace R
 
-instance (priority := 100) : UniformAddGroup R :=
-  comm_topologicalAddGroup_is_uniform
+instance (priority := 100) : IsUniformAddGroup R :=
+  isUniformAddGroup_of_addCommGroup
 
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/

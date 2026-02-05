@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Monomorphisms in `Module R`
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 This file shows that an `R`-linear map is a monomorphism in the category of `R`-modules
 if and only if it is injective, and similarly an epimorphism if and only if it is surjective.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -58,12 +62,14 @@ instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (ModuleCat.ofHom U.mkQ) :=
 
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
-      erw [CategoryTheory.epi_iff_surjective, ← epi_iff_surjective]
+      rw [CategoryTheory.epi_iff_surjective, ConcreteCategory.forget_map_eq_coe,
+        ← epi_iff_surjective]
       exact hf
 
 instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
-      erw [CategoryTheory.mono_iff_injective, ← mono_iff_injective]
+      rw [CategoryTheory.mono_iff_injective, ConcreteCategory.forget_map_eq_coe,
+        ← mono_iff_injective]
       exact hf
 
 end ModuleCat

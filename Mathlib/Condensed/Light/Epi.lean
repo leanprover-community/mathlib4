@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
-import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
-import Mathlib.Condensed.Light.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
+public import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
+public import Mathlib.Condensed.Light.Limits
 /-!
 
 # Epimorphisms of light condensed objects
@@ -17,6 +19,8 @@ of light profinite sets.
 Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` preserves epimorphisms.
 -/
 
+@[expose] public section
+
 universe v u w u' v'
 
 open CategoryTheory Sheaf Limits HasForget GrothendieckTopology
@@ -24,7 +28,7 @@ open CategoryTheory Sheaf Limits HasForget GrothendieckTopology
 namespace LightCondensed
 
 variable (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}
-variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)][ConcreteCategory.{w} A FA]
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA]
   [PreservesFiniteProducts (CategoryTheory.forget A)]
 
 variable {X Y : LightCondensed.{u} A} (f : X ⟶ Y)
@@ -113,7 +117,7 @@ variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M 
 instance : Epi (Limits.Pi.map f) := by
   have : Limits.Pi.map f = (cone f).π.app ⟨0⟩ := rfl
   rw [this]
-  exact epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simp; infer_instance)
+  exact epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simpa using by infer_instance)
 
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by

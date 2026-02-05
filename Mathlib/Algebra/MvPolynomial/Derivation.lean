@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Derivations of multivariate polynomials
@@ -14,6 +16,8 @@ monomials `MvPolynomial.X i`. We also provide a constructor `MvPolynomial.mkDeri
 builds a derivation from its values on `X i`s and a linear equivalence
 `MvPolynomial.mkDerivationEquiv` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -39,7 +43,7 @@ end
 theorem mkDerivationₗ_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivationₗ R f (monomial s r) =
       r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
-  sum_monomial_eq <| LinearMap.map_zero _
+  sum_monomial_eq <| map_zero _
 
 theorem mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0 :=
   (mkDerivationₗ_monomial f _ _).trans (smul_zero _)
@@ -86,16 +90,17 @@ theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
   have hC : ∀ r, D (C r) = 0 := by intro r; rw [C_eq_smul_one, D.map_smul, h₁, smul_zero]
   have : ∀ p i, D (p * X i) = p • D (X i) + (X i : MvPolynomial σ R) • D p := by
     intro p i
-    induction' p using MvPolynomial.induction_on' with s r p q hp hq
-    · rw [← mul_one r, ← C_mul_monomial, mul_assoc, C_mul', D.map_smul, H, C_mul', smul_assoc,
+    induction p using MvPolynomial.induction_on' with
+    | monomial s r =>
+      rw [← mul_one r, ← C_mul_monomial, mul_assoc, C_mul', D.map_smul, H, C_mul', smul_assoc,
         smul_add, D.map_smul, smul_comm r (X i)]
-    · rw [add_mul, map_add, map_add, hp, hq, add_smul, smul_add, add_add_add_comm]
+    | add p q hp hq => rw [add_mul, map_add, map_add, hp, hq, add_smul, smul_add, add_add_add_comm]
   intro p q
   induction q using MvPolynomial.induction_on with
-  | h_C c =>
+  | C c =>
     rw [mul_comm, C_mul', hC, smul_zero, zero_add, D.map_smul, C_eq_smul_one, smul_one_smul]
-  | h_add q₁ q₂ h₁ h₂ => simp only [mul_add, map_add, h₁, h₂, smul_add, add_smul]; abel
-  | h_X q i hq =>
+  | add q₁ q₂ h₁ h₂ => simp only [mul_add, map_add, h₁, h₂, smul_add, add_smul]; abel
+  | mul_X q i hq =>
     simp only [this, ← mul_assoc, hq, mul_smul, smul_add, add_assoc]
     rw [smul_comm (X i), smul_comm (X i)]
 

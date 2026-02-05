@@ -3,12 +3,13 @@ Copyright (c) 2024 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
+module
 
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-import Mathlib.CategoryTheory.Abelian.Subobject
-import Mathlib.CategoryTheory.Abelian.Transfer
-import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
-import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Abelian.Subobject
+public import Mathlib.CategoryTheory.Abelian.Transfer
+public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 
@@ -42,6 +43,8 @@ Relevant implications of `IsGrothendieckAbelian` are established in
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
@@ -63,7 +66,7 @@ properties of Grothendieck categories is ensured by `IsGrothendieckAbelian.of_eq
 which shows that every instance for `C` implies an instance for `ShrinkHoms C` with hom sets in
 `Type w`.
 -/
-@[stacks 079B]
+@[stacks 079B, pp_with_univ]
 class IsGrothendieckAbelian [Abelian C] : Prop where
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{w, w} C := by infer_instance
@@ -102,6 +105,10 @@ instance IsGrothendieckAbelian.hasLimits : HasLimitsOfSize.{w, w} C :=
 
 instance IsGrothendieckAbelian.wellPowered : WellPowered.{w} C :=
   wellPowered_of_equiv.{w} (ShrinkHoms.equivalence.{w} C).symm
+
+instance IsGrothendieckAbelian.ab4OfSize : AB4OfSize.{w} C := by
+  have : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+  apply AB4.of_AB5
 
 end Instances
 

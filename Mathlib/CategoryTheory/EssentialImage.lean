@@ -3,8 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.FullSubcategory
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Essential image of a functor
@@ -20,6 +23,8 @@ a functor decomposes into an essentially surjective functor and a fully faithful
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
 
+@[expose] public section
+
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -28,7 +33,7 @@ noncomputable section
 namespace CategoryTheory
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D}
+  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ E}
 
 namespace Functor
 
@@ -37,26 +42,28 @@ isomorphic to an object in the image of the function `F.obj`. In other words, th
 under isomorphism of the function `F.obj`.
 This is the "non-evil" way of describing the image of a functor.
 -/
-def essImage (F : C ⥤ D) : Set D := fun Y => ∃ X : C, Nonempty (F.obj X ≅ Y)
+def essImage (F : C ⥤ D) : ObjectProperty D := fun Y => ∃ X : C, Nonempty (F.obj X ≅ Y)
 
 /-- Get the witnessing object that `Y` is in the subcategory given by `F`. -/
-def essImage.witness {Y : D} (h : Y ∈ F.essImage) : C :=
+def essImage.witness {Y : D} (h : F.essImage Y) : C :=
   h.choose
 
 /-- Extract the isomorphism between `F.obj h.witness` and `Y` itself. -/
--- Porting note: in the next, the dot notation `h.witness` no longer works
-def essImage.getIso {Y : D} (h : Y ∈ F.essImage) : F.obj (essImage.witness h) ≅ Y :=
+def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj h.witness ≅ Y :=
   Classical.choice h.choose_spec
 
 /-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
-theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : Y ∈ essImage F) : Y' ∈ essImage F :=
+theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : essImage F Y) : essImage F Y' :=
   hY.imp fun _ => Nonempty.map (· ≪≫ h)
+
+instance : F.essImage.IsClosedUnderIsomorphisms where
+  of_iso e h := essImage.ofIso e h
 
 /-- If `Y` is in the essential image of `F` then it is in the essential image of `F'` as long as
 `F ≅ F'`.
 -/
-theorem essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : Y ∈ essImage F) :
-    Y ∈ essImage F' :=
+theorem essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : essImage F Y) :
+    essImage F' Y :=
   hY.imp fun X => Nonempty.map fun t => h.symm.app X ≪≫ t
 
 /-- Isomorphic functors have equal essential images. -/
@@ -64,34 +71,15 @@ theorem essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essIm
   funext fun _ => propext ⟨essImage.ofNatIso h, essImage.ofNatIso h.symm⟩
 
 /-- An object in the image is in the essential image. -/
-theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
+theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : essImage F (F.obj Y) :=
   ⟨Y, ⟨Iso.refl _⟩⟩
 
 /-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
--- Porting note: no hasNonEmptyInstance linter yet
-def EssImageSubcategory (F : C ⥤ D) :=
-  FullSubcategory F.essImage
-
--- Porting note: `deriving Category` is not able to derive this instance
-instance : Category (EssImageSubcategory F) :=
-  (inferInstance : Category.{v₂} (FullSubcategory _))
-
-/-- The essential image as a subcategory has a fully faithful inclusion into the target category. -/
-@[simps!]
-def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
-  fullSubcategoryInclusion _
-
--- Porting note: `deriving Full` is not able to derive this instance
-instance : Full (essImageInclusion F) :=
-  (inferInstance : Full (fullSubcategoryInclusion _))
-
--- Porting note: `deriving Faithful` is not able to derive this instance
-instance : Faithful (essImageInclusion F) :=
-  (inferInstance : Faithful (fullSubcategoryInclusion _))
+abbrev EssImageSubcategory (F : C ⥤ D) := F.essImage.FullSubcategory
 
 lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
-    (h : F.essImageInclusion.map f = F.essImageInclusion.map g) : f = g := by
-  simpa using h
+    (h : F.essImage.ι.map f = F.essImage.ι.map g) : f = g :=
+  F.essImage.ι.map_injective h
 
 /--
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential
@@ -99,31 +87,31 @@ image of `F`.
 -/
 @[simps!]
 def toEssImage (F : C ⥤ D) : C ⥤ F.EssImageSubcategory :=
-  FullSubcategory.lift _ F (obj_mem_essImage _)
+  F.essImage.lift F (obj_mem_essImage _)
 
 /-- The functor `F` factorises through its essential image, where the first functor is essentially
 surjective and the second is fully faithful.
 -/
 @[simps!]
-def toEssImageCompEssentialImageInclusion (F : C ⥤ D) : F.toEssImage ⋙ F.essImageInclusion ≅ F :=
-  FullSubcategory.lift_comp_inclusion _ _ _
+def toEssImageCompι (F : C ⥤ D) : F.toEssImage ⋙ F.essImage.ι ≅ F :=
+  ObjectProperty.liftCompιIso _ _ _
 
 /-- A functor `F : C ⥤ D` is essentially surjective if every object of `D` is in the essential
 image of `F`. In other words, for every `Y : D`, there is some `X : C` with `F.obj X ≅ Y`. -/
 @[stacks 001C]
 class EssSurj (F : C ⥤ D) : Prop where
   /-- All the objects of the target category are in the essential image. -/
-  mem_essImage (Y : D) : Y ∈ F.essImage
+  mem_essImage (Y : D) : F.essImage Y
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
-  mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+  mem_essImage := fun ⟨_, hY⟩ => ⟨hY.witness, ⟨F.essImage.isoMk hY.getIso⟩⟩
 
 theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
   mem_essImage Y := by
     obtain ⟨X, rfl⟩ := h Y
     apply obj_mem_essImage
 
+section EssSurj
 variable (F)
 variable [F.EssSurj]
 
@@ -139,12 +127,14 @@ def objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 
 /-- The induced functor of a faithful functor is faithful. -/
-instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage :=
-  Faithful.of_comp_iso F.toEssImageCompEssentialImageInclusion
+instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage := by
+  dsimp only [Functor.toEssImage]
+  infer_instance
 
 /-- The induced functor of a full functor is full. -/
-instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
-  Full.of_comp_faithful_iso F.toEssImageCompEssentialImageInclusion
+instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage := by
+  dsimp only [Functor.toEssImage]
+  infer_instance
 
 instance instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
@@ -159,6 +149,40 @@ instance essSurj_comp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [G.EssSurj] :
 lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssSurj]
     [G.Faithful] [G.Full] : F.EssSurj where
   mem_essImage X := ⟨_, ⟨G.preimageIso ((F ⋙ G).objObjPreimageIso (G.obj X))⟩⟩
+
+variable {F} {X : E}
+
+/-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
+lemma essImage_comp_apply_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X where
+  mp := fun ⟨Y, ⟨e⟩⟩ ↦ ⟨F.obj Y, ⟨e⟩⟩
+  mpr := fun ⟨Y, ⟨e⟩⟩ ↦
+    let ⟨Z, ⟨e'⟩⟩ := Functor.EssSurj.mem_essImage Y; ⟨Z, ⟨(G.mapIso e').trans e⟩⟩
+
+/-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
+@[simp] lemma essImage_comp_of_essSurj : (F ⋙ G).essImage = G.essImage :=
+  funext fun _X ↦ propext essImage_comp_apply_of_essSurj
+
+end EssSurj
+
+variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
+  (G : J ⥤ D) (F : C ⥤ D) [F.Full] [F.Faithful] (hG : ∀ j, F.essImage (G.obj j))
+
+/-- Lift a functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` to a
+functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/
+@[simps] def essImage.liftFunctor : J ⥤ C where
+  obj j := F.toEssImage.objPreimage ⟨G.obj j, hG j⟩
+  map {i j} f :=
+    F.preimage <|
+    (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG i⟩).hom.hom ≫ G.map f ≫
+      (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv.hom
+  map_id _ := F.map_injective (by simp)
+  map_comp _ _ := F.map_injective (by simp)
+
+/-- A functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` does
+factor through `essImage.liftFunctor G F hG`. -/
+@[simps!] def essImage.liftFunctorCompIso : essImage.liftFunctor G F hG ⋙ F ≅ G :=
+  NatIso.ofComponents
+    (fun i ↦ F.essImage.ι.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))
 
 end Functor
 

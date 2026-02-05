@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.RingTheory.Kaehler.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.RingTheory.Kaehler.Basic
 
 /-!
 # The differentials of a morphism in the category of commutative rings
@@ -17,6 +19,8 @@ We also construct the module of differentials
 `CommRingCat.KaehlerDifferential f : ModuleCat B` and the corresponding derivation.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -30,10 +34,10 @@ variable {A B : CommRingCat.{u}} (M : ModuleCat.{v} B) (f : A ⟶ B)
 
 /-- The type of derivations with values in a `B`-module `M` relative
 to a morphism `f : A ⟶ B` in the category `CommRingCat`. -/
-nonrec def Derivation : Type _ :=
+def Derivation : Type _ :=
   letI := f.hom.toAlgebra
   letI := Module.compHom M f.hom
-  Derivation A B M
+  _root_.Derivation A B M
 
 namespace Derivation
 
@@ -50,7 +54,7 @@ def mk (d : B → M) (d_add : ∀ (b b' : B), d (b + b') = d b + d b' := by simp
     map_add' := d_add
     map_smul' := fun a b ↦ by
       dsimp
-      erw [d_mul, d_map, smul_zero, add_zero]
+      rw [RingHom.smul_toAlgebra, d_mul, d_map, smul_zero, add_zero]
       rfl
     map_one_eq_zero' := by
       dsimp

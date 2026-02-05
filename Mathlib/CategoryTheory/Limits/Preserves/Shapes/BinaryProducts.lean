@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving binary products
@@ -15,6 +17,8 @@ to concrete binary fans.
 In particular, we show that `ProdComparison G X Y` is an isomorphism iff `G` preserves
 the product of `X` and `Y`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -64,6 +68,10 @@ def isLimitOfHasBinaryProductOfPreservesLimit [PreservesLimit (pair X Y) G] :
     IsLimit (BinaryFan.mk (G.map (Limits.prod.fst : X ⨯ Y ⟶ X)) (G.map Limits.prod.snd)) :=
   mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd X Y)
 
+instance [PreservesLimit (pair X Y) G] :
+    HasBinaryProduct (G.obj X) (G.obj Y) :=
+  ⟨_, isLimitOfHasBinaryProductOfPreservesLimit G X Y⟩
+
 variable [HasBinaryProduct (G.obj X) (G.obj Y)]
 
 /-- If the product comparison map for `G` at `(X,Y)` is an isomorphism, then `G` preserves the
@@ -103,6 +111,18 @@ theorem PreservesLimitPair.iso_inv_snd :
 instance : IsIso (prodComparison G X Y) := by
   rw [← PreservesLimitPair.iso_hom]
   infer_instance
+
+/-- If the product comparison maps of `G` at every pair `(X,Y)` is an
+isomorphism, then `G` preserves binary products. -/
+lemma preservesBinaryProducts_of_isIso_prodComparison
+    [HasBinaryProducts C] [HasBinaryProducts D]
+    [i : ∀ {X Y : C}, IsIso (prodComparison G X Y)] :
+    PreservesLimitsOfShape (Discrete WalkingPair) G where
+  preservesLimit := by
+    intro K
+    have : PreservesLimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G :=
+      PreservesLimitPair.of_iso_prod_comparison ..
+    apply preservesLimit_of_iso_diagram G (diagramIsoPair K).symm
 
 end
 
@@ -172,6 +192,18 @@ theorem PreservesColimitPair.iso_hom :
 instance : IsIso (coprodComparison G X Y) := by
   rw [← PreservesColimitPair.iso_hom]
   infer_instance
+
+/-- If the coproduct comparison maps of `G` at every pair `(X,Y)` is an
+isomorphism, then `G` preserves binary coproducts. -/
+lemma preservesBinaryCoproducts_of_isIso_coprodComparison
+    [HasBinaryCoproducts C] [HasBinaryCoproducts D]
+    [i : ∀ {X Y : C}, IsIso (coprodComparison G X Y)] :
+    PreservesColimitsOfShape (Discrete WalkingPair) G where
+  preservesColimit := by
+    intro K
+    have : PreservesColimit (pair (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)) G :=
+      PreservesColimitPair.of_iso_coprod_comparison ..
+    apply preservesColimit_of_iso_diagram G (diagramIsoPair K).symm
 
 end
 

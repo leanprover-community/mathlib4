@@ -3,9 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Basic
-import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+module
+
+public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # `monoidal` tactic
@@ -17,10 +19,12 @@ source and target. In other words, `monoidal` solves equalities where both sides
 string diagrams.
 
 The core function for the `monoidal` tactic is provided in
-`Mathlib.Tactic.CategoryTheory.Coherence.Basic`. See this file for more details about the
+`Mathlib/Tactic/CategoryTheory/Coherence/Basic.lean`. See this file for more details about the
 implementation.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 open CategoryTheory Mathlib.Tactic.BicategoryLike

@@ -3,9 +3,11 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
-import Mathlib.Topology.Algebra.ClopenNhdofOne
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+public import Mathlib.Topology.Algebra.ClopenNhdofOne
 
 /-!
 # A profinite group is the projective limit of finite groups
@@ -31,6 +33,8 @@ its quotients by open normal subgroups.
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory IsTopologicalGroup
@@ -50,10 +54,10 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ Finite
     _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
 /-- The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by
-open normal subgroups ordered by inclusion.-/
+open normal subgroups ordered by inclusion -/
 def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
-  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ => rfl⟩
+  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ ↦ fun _ _ ↦ rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
@@ -74,13 +78,13 @@ lemma toLimit_fun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimit_fun P)
   exact Iff.symm (Set.mem_smul_set_iff_inv_smul_mem)
 
 /-- The morphism in the category of `ProfiniteGrp` from a profinite group `P` to
-the projective limit of its quotients by open normal subgroups ordered by inclusion.-/
+the projective limit of its quotients by open normal subgroups ordered by inclusion -/
 def toLimit (P : ProfiniteGrp.{u}) : P ⟶
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) :=
   ofHom { toLimit_fun P with
   continuous_toFun := toLimit_fun_continuous P }
 
-/--An auxiliary result, superceded by `toLimit_surjective`.-/
+/-- An auxiliary result, superseded by `toLimit_surjective` -/
 theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
@@ -100,7 +104,7 @@ theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   intro a a_in_J
   let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
   rw [← (P.toLimit origin).property M_to_Na]
-  show (P.toFiniteQuotientFunctor.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
+  change (P.toFiniteQuotientFunctor.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
   rw [horigin]
   exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2
 
@@ -111,11 +115,11 @@ theorem toLimit_surjective (P : ProfiniteGrp.{u}) : Function.Surjective (toLimit
     Dense.closure_eq (denseRange_toLimit P)]
 
 theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P) := by
-  show Function.Injective (toLimit P).hom.toMonoidHom
+  change Function.Injective (toLimit P).hom.toMonoidHom
   rw [← MonoidHom.ker_eq_bot_iff, Subgroup.eq_bot_iff_forall]
   intro x h
   by_contra xne1
-  rcases exist_openNormalSubgroup_sub_open_nhd_of_one (isOpen_compl_singleton)
+  rcases exist_openNormalSubgroup_sub_open_nhds_of_one (isOpen_compl_singleton)
     (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
   exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
 

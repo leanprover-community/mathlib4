@@ -3,9 +3,11 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
 
 /-!
 # `rify` tactic
@@ -31,6 +33,8 @@ example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
 TODO: Investigate whether we should generalize this to other fields.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.Rify
 
 open Lean
@@ -49,7 +53,7 @@ The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith
 ```
 example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
     (0 : ℝ) < n - k - 1 := by
-  rify at hn hk /- Now have hn : 8 ≤ (n : ℝ)   hk : 2 * (k : ℝ) ≤ (n : ℝ) + 2-/
+  rify at hn hk /- Now have hn : 8 ≤ (n : ℝ)   hk : 2 * (k : ℝ) ≤ (n : ℝ) + 2 -/
   linarith
 ```
 

@@ -3,9 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.Tactic.Algebraize
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.RingHom.Etale
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
+public import Mathlib.Tactic.Algebraize
 
 /-!
 # Standard smooth ring homomorphisms
@@ -13,12 +16,22 @@ import Mathlib.Tactic.Algebraize
 In this file we define standard smooth ring homomorphisms and show their
 meta properties.
 
+## Main definitions
+
+- `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
+  smooth as `R`-algebra.
+- `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
+  smooth of relative dimension `n` if `S` is standard smooth of relative dimension `n` as
+  `R`-algebra.
+
 ## Notes
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
 
 -/
+
+@[expose] public section
 universe t t' w w' u v
 
 variable (n m : ℕ)
@@ -32,26 +45,35 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 /-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `R`-algebra. -/
 @[algebraize RingHom.IsStandardSmooth.toAlgebra]
 def IsStandardSmooth (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
+  @Algebra.IsStandardSmooth _ _ _ _ f.toAlgebra
+
+lemma isStandardSmooth_algebraMap [Algebra R S] :
+    (algebraMap R S).IsStandardSmooth ↔ Algebra.IsStandardSmooth R S := by
+  rw [RingHom.IsStandardSmooth, toAlgebra_algebraMap]
 
 /-- Helper lemma for the `algebraize` tactic -/
-lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth.{t, w} f) :
-    @Algebra.IsStandardSmooth.{t, w} R S _ _ f.toAlgebra := hf
+lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth f) :
+    @Algebra.IsStandardSmooth R S _ _ f.toAlgebra := hf
 
 /-- A ring homomorphism `R →+* S` is standard smooth of relative dimension `n` if
 `S` is standard smooth of relative dimension `n` as `R`-algebra. -/
 @[algebraize RingHom.IsStandardSmoothOfRelativeDimension.toAlgebra]
 def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
+  @Algebra.IsStandardSmoothOfRelativeDimension n _ _ _ _ f.toAlgebra
+
+lemma isStandardSmoothOfRelativeDimension_algebraMap [Algebra R S] :
+    (algebraMap R S).IsStandardSmoothOfRelativeDimension n ↔
+      Algebra.IsStandardSmoothOfRelativeDimension n R S := by
+  rw [RingHom.IsStandardSmoothOfRelativeDimension, toAlgebra_algebraMap]
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmoothOfRelativeDimension.toAlgebra {f : R →+* S}
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S _ _ f.toAlgebra := hf
+    (hf : IsStandardSmoothOfRelativeDimension n f) :
+    @Algebra.IsStandardSmoothOfRelativeDimension n R S _ _ f.toAlgebra := hf
 
 lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    IsStandardSmooth.{t, w} f := by
+    (hf : IsStandardSmoothOfRelativeDimension n f) :
+    IsStandardSmooth f := by
   algebraize [f]
   exact Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
 
@@ -59,42 +81,42 @@ variable {n m}
 
 variable (R) in
 lemma IsStandardSmoothOfRelativeDimension.id :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 (RingHom.id R) :=
+    IsStandardSmoothOfRelativeDimension 0 (RingHom.id R) :=
   Algebra.IsStandardSmoothOfRelativeDimension.id R
 
 lemma IsStandardSmoothOfRelativeDimension.equiv (e : R ≃+* S) :
-    IsStandardSmoothOfRelativeDimension.{t, w} 0 (e : R →+* S) := by
+    IsStandardSmoothOfRelativeDimension 0 (e : R →+* S) := by
   algebraize [e.toRingHom]
   exact Algebra.IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective e.bijective
 
 variable {T : Type*} [CommRing T]
 
 lemma IsStandardSmooth.comp {g : S →+* T} {f : R →+* S}
-    (hg : IsStandardSmooth.{t', w'} g) (hf : IsStandardSmooth.{t, w} f) :
-    IsStandardSmooth.{max t t', max w w'} (g.comp f) := by
+    (hg : IsStandardSmooth g) (hf : IsStandardSmooth f) :
+    IsStandardSmooth (g.comp f) := by
   rw [IsStandardSmooth]
   algebraize [f, g, (g.comp f)]
-  exact Algebra.IsStandardSmooth.trans.{t, t', w, w'} R S T
+  exact Algebra.IsStandardSmooth.trans R S T
 
 lemma IsStandardSmoothOfRelativeDimension.comp {g : S →+* T} {f : R →+* S}
-    (hg : IsStandardSmoothOfRelativeDimension.{t', w'} n g)
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} m f) :
-    IsStandardSmoothOfRelativeDimension.{max t t', max w w'} (n + m) (g.comp f) := by
+    (hg : IsStandardSmoothOfRelativeDimension n g)
+    (hf : IsStandardSmoothOfRelativeDimension m f) :
+    IsStandardSmoothOfRelativeDimension (n + m) (g.comp f) := by
   rw [IsStandardSmoothOfRelativeDimension]
   algebraize [f, g, (g.comp f)]
   exact Algebra.IsStandardSmoothOfRelativeDimension.trans m n R S T
 
 lemma isStandardSmooth_stableUnderComposition :
-    StableUnderComposition @IsStandardSmooth.{t, w} :=
+    StableUnderComposition @IsStandardSmooth :=
   fun _ _ _ _ _ _ _ _ hf hg ↦ hg.comp hf
 
-lemma isStandardSmooth_respectsIso : RespectsIso @IsStandardSmooth.{t, w} := by
+lemma isStandardSmooth_respectsIso : RespectsIso @IsStandardSmooth := by
   apply isStandardSmooth_stableUnderComposition.respectsIso
   introv
   exact (IsStandardSmoothOfRelativeDimension.equiv e).isStandardSmooth
 
 lemma isStandardSmoothOfRelativeDimension_respectsIso :
-    RespectsIso (@IsStandardSmoothOfRelativeDimension.{t, w} n) where
+    RespectsIso (@IsStandardSmoothOfRelativeDimension n) where
   left {R S T _ _ _} f e hf := by
     rw [← zero_add n]
     exact (IsStandardSmoothOfRelativeDimension.equiv e).comp hf
@@ -103,7 +125,7 @@ lemma isStandardSmoothOfRelativeDimension_respectsIso :
     exact hf.comp (IsStandardSmoothOfRelativeDimension.equiv e)
 
 lemma isStandardSmooth_isStableUnderBaseChange :
-    IsStableUnderBaseChange @IsStandardSmooth.{t, w} := by
+    IsStableUnderBaseChange @IsStandardSmooth := by
   apply IsStableUnderBaseChange.mk
   · exact isStandardSmooth_respectsIso
   · introv h
@@ -116,7 +138,7 @@ lemma isStandardSmooth_isStableUnderBaseChange :
 variable (n)
 
 lemma isStandardSmoothOfRelativeDimension_isStableUnderBaseChange :
-    IsStableUnderBaseChange (@IsStandardSmoothOfRelativeDimension.{t, w} n) := by
+    IsStableUnderBaseChange (@IsStandardSmoothOfRelativeDimension n) := by
   apply IsStableUnderBaseChange.mk
   · exact isStandardSmoothOfRelativeDimension_respectsIso
   · introv h
@@ -130,7 +152,7 @@ lemma isStandardSmoothOfRelativeDimension_isStableUnderBaseChange :
 
 lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : Type*} [CommRing Rᵣ]
     [Algebra R Rᵣ] (r : R) [IsLocalization.Away r Rᵣ] :
-    IsStandardSmoothOfRelativeDimension.{0, 0} 0 (algebraMap R Rᵣ) := by
+    IsStandardSmoothOfRelativeDimension 0 (algebraMap R Rᵣ) := by
   have : (algebraMap R Rᵣ).toAlgebra = ‹Algebra R Rᵣ› := by
     ext
     rw [Algebra.smul_def]
@@ -138,30 +160,30 @@ lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : 
   rw [IsStandardSmoothOfRelativeDimension, this]
   exact Algebra.IsStandardSmoothOfRelativeDimension.localization_away r
 
-lemma isStandardSmooth_localizationPreserves : LocalizationPreserves IsStandardSmooth.{t, w} :=
+lemma isStandardSmooth_localizationPreserves : LocalizationPreserves IsStandardSmooth :=
   isStandardSmooth_isStableUnderBaseChange.localizationPreserves
 
 lemma isStandardSmoothOfRelativeDimension_localizationPreserves :
-    LocalizationPreserves (IsStandardSmoothOfRelativeDimension.{t, w} n) :=
+    LocalizationPreserves (IsStandardSmoothOfRelativeDimension n) :=
   (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n).localizationPreserves
 
 lemma isStandardSmooth_holdsForLocalizationAway :
-    HoldsForLocalizationAway IsStandardSmooth.{0, 0} := by
+    HoldsForLocalizationAway IsStandardSmooth := by
   introv R h
   exact (IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r).isStandardSmooth
 
 lemma isStandardSmoothOfRelativeDimension_holdsForLocalizationAway :
-    HoldsForLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} 0) := by
+    HoldsForLocalizationAway (IsStandardSmoothOfRelativeDimension 0) := by
   introv R h
   exact IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r
 
 lemma isStandardSmooth_stableUnderCompositionWithLocalizationAway :
-    StableUnderCompositionWithLocalizationAway IsStandardSmooth.{0, 0} :=
+    StableUnderCompositionWithLocalizationAway IsStandardSmooth :=
   isStandardSmooth_stableUnderComposition.stableUnderCompositionWithLocalizationAway
     isStandardSmooth_holdsForLocalizationAway
 
 lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway :
-    StableUnderCompositionWithLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} n) where
+    StableUnderCompositionWithLocalizationAway (IsStandardSmoothOfRelativeDimension n) where
   left R S _ _ _ _ _ r _ _ hf :=
     have : (algebraMap R S).IsStandardSmoothOfRelativeDimension 0 :=
       IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r
@@ -170,5 +192,78 @@ lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalization
     have : (algebraMap S T).IsStandardSmoothOfRelativeDimension 0 :=
       IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
     zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
+
+variable (R S) in
+/-- Every standard smooth homomorphism `R → S` factors into `R -> R[X₁,...,Xₙ] → S`
+where `n` is the relative dimension and `R[X₁,...,Xₙ] → S` is etale. -/
+theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
+    [Algebra R S] [Algebra.IsStandardSmoothOfRelativeDimension n R S] :
+    ∃ g : MvPolynomial (Fin n) R →ₐ[R] S, g.Etale := by
+  classical
+  let := Fintype.ofFinite
+  obtain ⟨ι, σ, _, _, P, e⟩ :=
+    Algebra.IsStandardSmoothOfRelativeDimension.out (R := R) (S := S) (n := n)
+  let e₀ : σ ⊕ Fin n ≃ ι := ((Equiv.ofInjective _ P.map_inj).sumCongr
+      (Finite.equivFinOfCardEq (by rw [Nat.card_coe_set_eq, Set.ncard_compl,
+        Set.ncard_range_of_injective P.map_inj, ← e, Algebra.Presentation.dimension])).symm).trans
+      (Equiv.Set.sumCompl _)
+  let e : MvPolynomial σ (MvPolynomial (Fin n) R) ≃ₐ[R] P.Ring :=
+    (MvPolynomial.sumAlgEquiv R _ _).symm.trans (MvPolynomial.renameEquiv _ e₀)
+  let φ := e.toAlgHom.comp (IsScalarTower.toAlgHom _ (MvPolynomial (Fin n) R) _)
+  algebraize [φ.toRingHom, (algebraMap P.Ring S).comp φ.toRingHom]
+  have := IsScalarTower.of_algebraMap_eq' φ.comp_algebraMap.symm
+  have : IsScalarTower R (MvPolynomial (Fin n) R) S := .to₁₂₄ _ _ P.Ring _
+  refine ⟨IsScalarTower.toAlgHom _ _ _, ?_⟩
+  have H : (MvPolynomial.aeval fun x ↦ (algebraMap P.Ring S) (e (MvPolynomial.X x))).toRingHom =
+      (algebraMap P.Ring S).comp e.toRingHom := by
+    ext
+    · simp [e, IsScalarTower.algebraMap_eq R (MvPolynomial (Fin n) R) S]
+    · simp [e, @RingHom.algebraMap_toAlgebra (MvPolynomial (Fin n) R) S, φ]
+    · simp [e]
+  let P' : Algebra.PreSubmersivePresentation (MvPolynomial (Fin n) R) S σ σ :=
+  { toGenerators := .ofSurjective (algebraMap _ _ <| e <| .X ·) <| by
+      convert P.algebraMap_surjective.comp e.surjective
+      exact congr($H)
+    relation := e.symm ∘ P.relation
+    span_range_relation_eq_ker := by
+      rw [Set.range_comp, ← AlgEquiv.coe_ringEquiv e.symm, AlgEquiv.symm_toRingEquiv,
+        ← Ideal.map_span, P.span_range_relation_eq_ker, Ideal.map_symm]
+      exact congr(RingHom.ker $H).symm
+    map := _
+    map_inj := Function.injective_id }
+  let P' : Algebra.SubmersivePresentation (MvPolynomial (Fin n) R) S σ σ :=
+  { __ := P'
+    jacobian_isUnit := by
+      convert P.jacobian_isUnit using 1
+      simp_rw [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det, map_det]
+      congr 1
+      ext i j
+      trans algebraMap P.Ring S (e ((e.symm (P.relation j)).pderiv i))
+      · simpa [Algebra.PreSubmersivePresentation.jacobiMatrix_apply, P',
+          Algebra.Generators.ofSurjective] using congr($H _)
+      suffices e ((e.symm (P.relation j)).pderiv i) = (P.relation j).pderiv (P.map i) by
+        simp [Algebra.PreSubmersivePresentation.jacobiMatrix_apply, this]
+      simp [e, MvPolynomial.pderiv_sumToIter, ← MvPolynomial.pderiv_rename e₀.injective,
+        show e₀ (Sum.inl i) = P.map i from rfl] }
+  exact etale_algebraMap.mpr (Algebra.Etale.iff_isStandardSmoothOfRelativeDimension_zero.mpr
+    ⟨_, _, _, inferInstance, P', by simp [Algebra.Presentation.dimension]⟩)
+
+/-- Every standard smooth homomorphism `R → S` factors into `R -> R[X₁,...,Xₙ] → S`
+where `n` is the relative dimension and `R[X₁,...,Xₙ] → S` is etale. -/
+theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
+    {f : R →+* S} {n : ℕ} (hf : f.IsStandardSmoothOfRelativeDimension n) :
+    ∃ g : MvPolynomial (Fin n) R →+* S, g.comp MvPolynomial.C = f ∧ g.Etale := by
+  classical
+  algebraize [f]
+  obtain ⟨g, hg⟩ := Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial n R S
+  exact ⟨_, g.comp_algebraMap, hg⟩
+
+theorem IsStandardSmooth.exists_etale_mvPolynomial
+    {f : R →+* S} (hf : f.IsStandardSmooth) :
+    ∃ n, ∃ g : MvPolynomial (Fin n) R →+* S, g.comp MvPolynomial.C = f ∧ g.Etale := by
+  obtain ⟨_, _, _, _, ⟨P⟩⟩ := hf
+  let := f.toAlgebra
+  exact ⟨_, RingHom.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
+    ⟨_, _, _, ‹_›, P, rfl⟩⟩
 
 end RingHom

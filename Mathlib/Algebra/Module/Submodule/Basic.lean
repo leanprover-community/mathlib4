@@ -3,11 +3,13 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Submodules of a module
@@ -19,6 +21,8 @@ As such it is a good target for organizing and splitting further.
 
 submodule, subspace, linear map
 -/
+
+@[expose] public section
 
 open Function
 
@@ -77,10 +81,8 @@ instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐ�
     [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S p :=
   p.toSubMulAction.isCentralScalar
 
-instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
-  ⟨fun {c} {x : p} h =>
-    have : c = 0 ∨ (x : M) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
+instance instIsTorsionFree [Module.IsTorsionFree R M] : Module.IsTorsionFree R p :=
+  Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
 section AddAction
 
@@ -132,6 +134,14 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 
+@[simp]
+theorem toAddSubgroup_toAddSubmonoid (p : Submodule R M) :
+    p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid :=
+  rfl
+
+@[gcongr]
+protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.toAddSubgroup_le
+
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=
   Set.ext fun _ => p.neg_mem_iff
@@ -143,14 +153,14 @@ section IsDomain
 variable [Ring R] [IsDomain R]
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
-theorem not_mem_of_ortho {x : M} {N : Submodule R M}
+theorem notMem_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
   intro hx
   simpa using ortho (-1) x hx
 
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=
-  mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (not_mem_of_ortho ortho)
+  mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (notMem_of_ortho ortho)
 
 end IsDomain
 

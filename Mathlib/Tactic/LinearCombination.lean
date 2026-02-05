@@ -3,10 +3,11 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.LinearCombination.Lemmas
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Ring.Compare
+module
+
+public import Mathlib.Tactic.LinearCombination.Lemmas
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring.Compare
 
 /-!
 # linear_combination Tactic
@@ -26,7 +27,7 @@ This tactic works by creating a weighted sum of the given equations with the
 given coefficients.  Then, it subtracts the right side of the weighted sum
 from the left side so that the right side equals 0, and it does the same with
 the target.  Afterwards, it sets the goal to be the equality between the
-lefthand side of the new goal and the lefthand side of the new weighted sum.
+left-hand side of the new goal and the left-hand side of the new weighted sum.
 Lastly, calls a normalization tactic on this target.
 
 ## References
@@ -35,9 +36,11 @@ Lastly, calls a normalization tactic on this target.
 
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.LinearCombination
 open Lean
-open Elab Meta Term Mathlib Ineq
+open Elab Meta Term Ineq
 
 /-- Result of `expandLinearCombo`, either an equality/inequality proof or a value. -/
 inductive Expanded

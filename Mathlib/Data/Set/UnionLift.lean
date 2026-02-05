@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Directed
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Directed
 
 /-!
 # Union lift
@@ -35,6 +37,8 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 
 directed union, directed supremum, glue, gluing
 -/
+
+@[expose] public section
 
 variable {α : Type*} {ι β : Sort _}
 
@@ -146,7 +150,7 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
   {hS : iUnion S = univ}
 
 /-- Glue together functions defined on each of a collection `S` of sets that cover a type. See
-  also `Set.iUnionLift`.   -/
+also `Set.iUnionLift`. -/
 noncomputable def liftCover (S : ι → Set α) (f : ∀ i, S i → β)
     (hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩)
     (hS : iUnion S = univ) (a : α) : β :=

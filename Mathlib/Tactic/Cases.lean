@@ -3,10 +3,13 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Induction
-import Batteries.Tactic.OpenPrivate
-import Mathlib.Lean.Expr.Basic
-import Batteries.Data.List.Basic
+module
+
+public meta import Lean.Elab.Tactic.Induction
+public meta import Batteries.Data.List.Basic
+public meta import Batteries.Lean.Expr
+import all Lean.Elab.Tactic.Induction
+public import Mathlib.Init
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
@@ -33,6 +36,8 @@ example (h : p ∨ q) : q ∨ p := by
 
 Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Elab.Tactic
@@ -67,7 +72,6 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     subgoals := subgoals.push g
   pure subgoals
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 /-- The `induction'` tactic is similar to the `induction` tactic in Lean 4 core,
 but with slightly different syntax (such as, no requirement to name the constructors).
 
@@ -90,17 +94,17 @@ example (n : ℕ) : 0 < factorial n := by
     rw [factorial_succ]
     apply mul_pos (succ_pos n) ih
 ```
- -/
-elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
+-/
+elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with" (ppSpace colGt binderIdent)+)?)
     genArg:((" generalizing" (ppSpace colGt ident)+)?) : tactic => do
-  let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabElimTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
     let targets ← addImplicitTargets elimInfo targets
-    evalInduction.checkTargets targets
+    checkInductionTargets targets
     let targetFVarIds := targets.map (·.fvarId!)
     g.withContext do
       let genArgs ← if genArg.1.isNone then pure #[] else getFVarIds genArg.1[1].getArgs
@@ -146,9 +150,9 @@ example (h : p ∨ q) : q ∨ p := by
 
 Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
-elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident)?)
+elab (name := cases') "cases' " tgts:(Parser.Tactic.elimTarget,+) usingArg:((" using " ident)?)
   withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
-  let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabElimTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := false)

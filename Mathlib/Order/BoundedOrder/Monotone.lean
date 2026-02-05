@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Monotone.Basic
+module
+
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Monotone.Basic
 
 /-!
 # Monotone functions on bounded orders
 
 -/
+
+public section
 
 assert_not_exists SemilatticeSup
 
@@ -53,7 +57,7 @@ theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = �
 
 end OrderBot
 
-theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [OrderBot β] {f : α → β}
+theorem StrictMono.minimal_preimage_bot [LinearOrder α] [Preorder β] [OrderBot β] {f : α → β}
     (H : StrictMono f) {a} (h_bot : f a = ⊥) (x : α) : a ≤ x :=
   H.minimal_of_minimal_image
     (fun p => by

@@ -3,14 +3,18 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+module
+
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prime dimension,
 then there are no non-trivial `F`-subalgebras.
 -/
+
+public section
 
 open Module Submodule
 
@@ -27,7 +31,3 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDo
       · exact
           Algebra.toSubmodule_eq_top.1 (eq_top_of_finrank_eq <| K.finrank_toSubmodule.trans h) }
 -- TODO: `IntermediateField` version
-
-@[deprecated (since := "2024-08-11")]
-alias FiniteDimensional.Subalgebra.is_simple_order_of_finrank_prime :=
-  Subalgebra.isSimpleOrder_of_finrank_prime

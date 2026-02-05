@@ -3,11 +3,12 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Part
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Nat.Upto
-import Mathlib.Data.Stream.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Part
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Nat.Upto
+public import Mathlib.Data.Stream.Defs
 
 /-!
 # Fixed point
@@ -18,9 +19,11 @@ An instance is defined for `Part`.
 
 ## Main definition
 
- * class `Fix`
- * `Part.fix`
+* class `Fix`
+* `Part.fix`
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -75,12 +78,12 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
   generalize Upto.zero = z; intro _this hk
-  suffices ∀ x',
-    WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
-    from this _
+  suffices ∀ x' hwf,
+    WellFounded.fix hwf (fixAux f) z x' = Fix.approx f (succ k) x'
+    from this _ _
   induction k generalizing z with
   | zero =>
-    intro x'
+    intro x' _
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
     congr
     ext x : 1
@@ -89,15 +92,13 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     · rw [Nat.zero_add] at _this
       simpa only [not_not, Coe]
   | succ n n_ih =>
-    intro x'
+    intro x' _
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
     congr
     ext : 1
     have hh : ¬(Fix.approx f z.val x).Dom := by
       apply Nat.find_min h'
-      rw [hk, Nat.succ_add_eq_add_succ]
-      apply Nat.lt_of_succ_le
-      apply Nat.le_add_left
+      lia
     rw [succ_add_eq_add_succ] at _this hk
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 

@@ -3,16 +3,20 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Opposite
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Opposite
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`Mathlib.Algebra.GroupWithZero.Action.Opposite`.
+`Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap
 

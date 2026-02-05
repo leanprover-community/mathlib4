@@ -3,10 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Manifold.Algebra.Structures
-import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Topology.MetricSpace.PartitionOfUnity
-import Mathlib.Topology.ShrinkingLemma
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Structures
+public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Topology.MetricSpace.PartitionOfUnity
+public import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -23,6 +26,7 @@ Given a real manifold `M` and its subset `s`, a `SmoothBumpCovering ι I M s` is
 * the center of each `f i` belongs to `s`;
 * the family of sets `support (f i)` is locally finite;
 * for each `x ∈ s`, there exists `i : ι` such that `f i =ᶠ[𝓝 x] 1`.
+
 In the same settings, a `SmoothPartitionOfUnity ι I M s` is a collection of smooth nonnegative
 functions `f i : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯`, `i : ι`, such that
 
@@ -35,29 +39,31 @@ index `i`, we have `tsupport (f i) ⊆ U (f i).c`. This notion is a bit more gen
 being subordinate to an open covering of `M`, because we make no assumption about the way `U x`
 depends on `x`.
 
-We prove that on a smooth finitely dimensional real manifold with `σ`-compact Hausdorff topology,
+We prove that on a smooth finite-dimensional real manifold with `σ`-compact Hausdorff topology,
 for any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
 subordinate to `U`. Then we use this fact to prove a similar statement about smooth partitions of
 unity, see `SmoothPartitionOfUnity.exists_isSubordinate`.
 
 Finally, we use existence of a partition of unity to prove lemma
-`exists_smooth_forall_mem_convex_of_local` that allows us to construct a globally defined smooth
-function from local functions.
+`exists_contMDiffMap_forall_mem_convex_of_local` that allows us to construct a globally defined
+smooth function from local functions.
 
 ## TODO
 
-* Build a framework for to transfer local definitions to global using partition of unity and use it
+* Build a framework to transfer local definitions to global using partition of unity and use it
   to define, e.g., the integral of a differential form over a manifold. Lemma
-  `exists_smooth_forall_mem_convex_of_local` is a first step in this direction.
+  `exists_contMDiffMap_forall_mem_convex_of_local` is a first step in this direction.
 
 ## Tags
 
 smooth bump function, partition of unity
 -/
 
+@[expose] public section
+
 universe uι uE uH uM uF
 
-open Function Filter Module Set
+open Bundle Function Filter Module Set
 open scoped Topology Manifold ContDiff
 
 noncomputable section
@@ -71,12 +77,12 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
 ### Covering by supports of smooth bump functions
 
 In this section we define `SmoothBumpCovering ι I M s` to be a collection of
-`SmoothBumpFunction`s such that their supports is a locally finite family of sets and for each
+`SmoothBumpFunction`s such that their supports are a locally finite family of sets and for each
 `x ∈ s` some function `f i` from the collection is equal to `1` in a neighborhood of `x`. A covering
 of this type is useful to construct a smooth partition of unity and can be used instead of a
 partition of unity in some proofs.
 
-We prove that on a smooth finite dimensional real manifold with `σ`-compact Hausdorff topology, for
+We prove that on a smooth finite-dimensional real manifold with `σ`-compact Hausdorff topology, for
 any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
 subordinate to `U`. -/
 
@@ -89,7 +95,7 @@ variable (ι M)
 * for each point `x ∈ s` there exists `i` such that `f i =ᶠ[𝓝 x] 1`;
   in other words, `x` belongs to the interior of `{y | f i y = 1}`;
 
-If `M` is a finite dimensional real manifold which is a `σ`-compact Hausdorff topological space,
+If `M` is a finite-dimensional real manifold which is a `σ`-compact Hausdorff topological space,
 then for every covering `U : M → Set M`, `∀ x, U x ∈ 𝓝 x`, there exists a `SmoothBumpCovering`
 subordinate to `U`, see `SmoothBumpCovering.exists_isSubordinate`.
 
@@ -162,8 +168,6 @@ def toPartitionOfUnity : PartitionOfUnity ι M s :=
 theorem contMDiff_sum : ContMDiff I 𝓘(ℝ) ∞ fun x => ∑ᶠ i, f i x :=
   contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
 
-@[deprecated (since := "2024-11-21")] alias smooth_sum := contMDiff_sum
-
 theorem le_one (i : ι) (x : M) : f i x ≤ 1 :=
   f.toPartitionOfUnity.le_one i x
 
@@ -180,8 +184,6 @@ theorem contMDiff_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), ContMDi
     ((f i).contMDiff.contMDiffAt.of_le (mod_cast le_top)).smul <| hg x
       <| tsupport_smul_subset_left _ _ hx
 
-@[deprecated (since := "2024-11-21")] alias smooth_smul := contMDiff_smul
-
 /-- If `f` is a smooth partition of unity on a set `s : Set M` and `g : ι → M → F` is a family of
 functions such that `g i` is $C^n$ smooth at every point of the topological support of `f i`, then
 the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
@@ -191,15 +193,13 @@ theorem contMDiff_finsum_smul {g : ι → M → F}
   (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
     f.locallyFinite.subset fun _ => support_smul_subset_left _ _
 
-@[deprecated (since := "2024-11-21")] alias smooth_finsum_smul := contMDiff_finsum_smul
-
 theorem contMDiffAt_finsum {x₀ : M} {g : ι → M → F}
     (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContMDiffAt I 𝓘(ℝ, F) n (g i) x₀) :
     ContMDiffAt I 𝓘(ℝ, F) n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
   refine _root_.contMDiffAt_finsum (f.locallyFinite.smul_left _) fun i ↦ ?_
   by_cases hx : x₀ ∈ tsupport (f i)
   · exact ContMDiffAt.smul ((f i).contMDiff.of_le (mod_cast le_top)).contMDiffAt (hφ i hx)
-  · exact contMDiffAt_of_not_mem (compl_subset_compl.mpr
+  · exact contMDiffAt_of_notMem (compl_subset_compl.mpr
       (tsupport_smul_subset_left (f i) (g i)) hx) n
 
 theorem contDiffAt_finsum {s : Set E} (f : SmoothPartitionOfUnity ι 𝓘(ℝ, E) E s) {x₀ : E}
@@ -213,7 +213,7 @@ section finsupport
 variable {s : Set M} (ρ : SmoothPartitionOfUnity ι I M s) (x₀ : M)
 
 /-- The support of a smooth partition of unity at a point `x₀` as a `Finset`.
-This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i x₀ ≠ 0`. -/
 def finsupport : Finset ι := ρ.toPartitionOfUnity.finsupport x₀
 
 @[simp]
@@ -288,9 +288,6 @@ theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubor
     ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
   f.contMDiff_finsum_smul fun i _ hx => (hg i).contMDiffAt <| (ho i).mem_nhds (hf i hx)
 
-@[deprecated (since := "2024-11-21")]
-alias IsSubordinate.smooth_finsum_smul := IsSubordinate.contMDiff_finsum_smul
-
 end IsSubordinate
 
 end SmoothPartitionOfUnity
@@ -303,11 +300,8 @@ theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [Norme
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
     (hf : ∀ i, ContMDiff I 𝓘(ℝ) ∞ (f i)) (i : ι) : ContMDiff I 𝓘(ℝ) ∞ (f.toPartitionOfUnity i) :=
   (hf i).mul <| (contMDiff_finprod_cond fun j _ => contMDiff_const.sub (hf j)) <| by
-    simp only [Pi.sub_def, mulSupport_one_sub]
+    simp only [mulSupport_one_sub]
     exact f.locallyFinite
-
-@[deprecated (since := "2024-11-21")]
-alias smooth_toPartitionOfUnity := contMDiff_toPartitionOfUnity
 
 variable {s : Set M}
 
@@ -363,7 +357,7 @@ theorem IsSubordinate.support_subset {fs : SmoothBumpCovering ι I M s} {U : M �
   Subset.trans subset_closure (h i)
 
 variable (I) in
-/-- Let `M` be a smooth manifold modelled on a finite dimensional real vector space.
+/-- Let `M` be a smooth manifold modelled on a finite-dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
 in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
 Then there exists a smooth bump covering of `s` that is subordinate to `U`. -/
@@ -439,8 +433,7 @@ def toBumpCovering : BumpCovering ι M s where
   le_one' i _ := (fs i).le_one
   eventuallyEq_one' := fs.eventuallyEq_one'
 
--- Porting note: `simpNF` says that `simp` can't simplify LHS but it can.
-@[simp, nolint simpNF]
+@[simp]
 theorem isSubordinate_toBumpCovering {f : SmoothBumpCovering ι I M s} {U : M → Set M} :
     (f.toBumpCovering.IsSubordinate fun i => U (f.c i)) ↔ f.IsSubordinate U :=
   Iff.rfl
@@ -458,16 +451,14 @@ theorem toSmoothPartitionOfUnity_apply (i : ι) (x : M) :
 open Classical in
 theorem toSmoothPartitionOfUnity_eq_mul_prod (i : ι) (x : M) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → fs j x ≠ 0 → j ∈ t) :
-    fs.toSmoothPartitionOfUnity i x =
-      fs i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
+    fs.toSmoothPartitionOfUnity i x = fs i x * ∏ j ∈ t with WellOrderingRel j i, (1 - fs j x) :=
   fs.toBumpCovering.toPartitionOfUnity_eq_mul_prod i x t ht
 
 open Classical in
 theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
-        fs i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
-  -- Porting note: was defeq, now the continuous lemma uses bundled homs
+        fs i * ∏ j ∈ t with WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
   simpa using fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 
 theorem toSmoothPartitionOfUnity_zero_of_zero {i : ι} {x : M} (h : fs i x = 0) :
@@ -490,53 +481,64 @@ end SmoothBumpCovering
 
 variable (I)
 variable [FiniteDimensional ℝ E]
-variable [IsManifold I ∞ M]
+variable [IsManifold I ∞ M] {n : ℕ∞}
 
-/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
+/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` on `s` and to `1` on `t`.
-See also `exists_msmooth_zero_iff_one_iff_of_isClosed`, which ensures additionally that
+See also `exists_contMDiff_zero_iff_one_iff_of_isClosed`, which ensures additionally that
 `f` is equal to `0` exactly on `s` and to `1` exactly on `t`. -/
-theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s t : Set M}
+theorem exists_contMDiffMap_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc 0 1 := by
+    ∃ f : C^n⟮I, M; 𝓘(ℝ), ℝ⟯, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc 0 1 := by
   have : ∀ x ∈ t, sᶜ ∈ 𝓝 x := fun x hx => hs.isOpen_compl.mem_nhds (disjoint_right.1 hd hx)
   rcases SmoothBumpCovering.exists_isSubordinate I ht this with ⟨ι, f, hf⟩
   set g := f.toSmoothPartitionOfUnity
   refine
-    ⟨⟨_, g.contMDiff_sum⟩, fun x hx => ?_, fun x => g.sum_eq_one, fun x =>
+    ⟨⟨_, g.contMDiff_sum.of_le (by simp)⟩, fun x hx => ?_, fun x => g.sum_eq_one, fun x =>
       ⟨g.sum_nonneg x, g.sum_le_one x⟩⟩
   suffices ∀ i, g i x = 0 by simp only [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
   refine fun i => f.toSmoothPartitionOfUnity_zero_of_zero ?_
-  exact nmem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
+  exact notMem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
 
-/-- Given two disjoint closed sets `s, t` in a Hausdorff normal σ-compact finite dimensional
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_zero_one_of_isClosed := exists_contMDiffMap_zero_one_of_isClosed
+
+/-- Given two disjoint closed sets `s, t` in a Hausdorff normal σ-compact finite-dimensional
 manifold `M`, there exists a smooth function `f : M → [0,1]` that vanishes in a neighbourhood of `s`
 and is equal to `1` in a neighbourhood of `t`. -/
-theorem exists_smooth_zero_one_nhds_of_isClosed [T2Space M] [NormalSpace M] [SigmaCompactSpace M]
+theorem exists_contMDiffMap_zero_one_nhds_of_isClosed
+    [T2Space M] [NormalSpace M] [SigmaCompactSpace M]
     {s t : Set M} (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, (∀ᶠ x in 𝓝ˢ s, f x = 0) ∧ (∀ᶠ x in 𝓝ˢ t, f x = 1) ∧
+    ∃ f : C^n⟮I, M; 𝓘(ℝ), ℝ⟯, (∀ᶠ x in 𝓝ˢ s, f x = 0) ∧ (∀ᶠ x in 𝓝ˢ t, f x = 1) ∧
       ∀ x, f x ∈ Icc 0 1 := by
   obtain ⟨u, u_op, hsu, hut⟩ := normal_exists_closure_subset hs ht.isOpen_compl
     (subset_compl_iff_disjoint_left.mpr hd.symm)
   obtain ⟨v, v_op, htv, hvu⟩ := normal_exists_closure_subset ht isClosed_closure.isOpen_compl
     (subset_compl_comm.mp hut)
-  obtain ⟨f, hfu, hfv, hf⟩ := exists_smooth_zero_one_of_isClosed I isClosed_closure isClosed_closure
-    (subset_compl_iff_disjoint_left.mp hvu)
+  obtain ⟨f, hfu, hfv, hf⟩ := exists_contMDiffMap_zero_one_of_isClosed I isClosed_closure
+    isClosed_closure (subset_compl_iff_disjoint_left.mp hvu) (n := n)
   refine ⟨f, ?_, ?_, hf⟩
   · exact eventually_of_mem (mem_of_superset (u_op.mem_nhdsSet.mpr hsu) subset_closure) hfu
   · exact eventually_of_mem (mem_of_superset (v_op.mem_nhdsSet.mpr htv) subset_closure) hfv
 
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_zero_one_nhds_of_isClosed := exists_contMDiffMap_zero_one_nhds_of_isClosed
+
 /-- Given two sets `s, t` in a Hausdorff normal σ-compact finite-dimensional manifold `M`
 with `s` open and `s ⊆ interior t`, there is a smooth function `f : M → [0,1]` which is equal to `s`
 in a neighbourhood of `s` and has support contained in `t`. -/
-theorem exists_smooth_one_nhds_of_subset_interior [T2Space M] [NormalSpace M] [SigmaCompactSpace M]
+theorem exists_contMDiffMap_one_nhds_of_subset_interior
+    [T2Space M] [NormalSpace M] [SigmaCompactSpace M]
     {s t : Set M} (hs : IsClosed s) (hd : s ⊆ interior t) :
-    ∃ f : C^∞⟮I, M; 𝓘(ℝ), ℝ⟯, (∀ᶠ x in 𝓝ˢ s, f x = 1) ∧ (∀ x ∉ t, f x = 0) ∧
+    ∃ f : C^n⟮I, M; 𝓘(ℝ), ℝ⟯, (∀ᶠ x in 𝓝ˢ s, f x = 1) ∧ (∀ x ∉ t, f x = 0) ∧
       ∀ x, f x ∈ Icc 0 1 := by
-  rcases exists_smooth_zero_one_nhds_of_isClosed I isOpen_interior.isClosed_compl hs
-    (by rwa [← subset_compl_iff_disjoint_left, compl_compl]) with ⟨f, h0, h1, hf⟩
+  rcases exists_contMDiffMap_zero_one_nhds_of_isClosed I isOpen_interior.isClosed_compl hs
+    (by rwa [← subset_compl_iff_disjoint_left, compl_compl]) (n := n) with ⟨f, h0, h1, hf⟩
   refine ⟨f, h1, fun x hx ↦ ?_, hf⟩
   exact h0.self_of_nhdsSet _ fun hx' ↦ hx <| interior_subset hx'
+
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_one_nhds_of_subset_interior := exists_contMDiffMap_one_nhds_of_subset_interior
 
 namespace SmoothPartitionOfUnity
 
@@ -561,13 +563,13 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
-  -- porting note(https://github.com/leanprover/std4/issues/116):
+  -- porting note(https://github.com/leanprover-community/batteries/issues/116):
   -- split `rcases` into `have` + `rcases`
   have := BumpCovering.exists_isSubordinate_of_prop (ContMDiff I 𝓘(ℝ) ∞) ?_ hs U ho hU
   · rcases this with ⟨f, hf, hfU⟩
     exact ⟨f.toSmoothPartitionOfUnity hf, hfU.toSmoothPartitionOfUnity hf⟩
   · intro s t hs ht hd
-    rcases exists_smooth_zero_one_of_isClosed I hs ht hd with ⟨f, hf⟩
+    rcases exists_contMDiffMap_zero_one_of_isClosed I hs ht hd with ⟨f, hf⟩
     exact ⟨f, f.contMDiff, hf⟩
 
 theorem exists_isSubordinate_chartAt_source_of_isClosed {s : Set M} (hs : IsClosed s) :
@@ -586,97 +588,173 @@ end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
+/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite-dimensional topological manifold
+`M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
+Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
+section `s_loc : M → V x` such that `s_loc` is $C^n$ smooth on `U_x₀` (when viewed as a map to
+the total space of the bundle) and `s_loc y ∈ t y` for all `y ∈ U_x₀`.
+Then there exists a global $C^n$ smooth section `s : Cₛ^n⟮I_M; F_fiber, V⟯` such that
+`s x ∈ t x` for all `x : M`.
+-/
+theorem exists_contMDiffSection_forall_mem_convex_of_local
+    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
+    (V : M → Type*) [∀ x, AddCommGroup (V x)] [∀ x, TopologicalSpace (V x)] [∀ x, Module ℝ (V x)]
+    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
+    (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
+    (Hloc :
+      ∀ x₀ : M, ∃ U_x₀ ∈ 𝓝 x₀, ∃ (s_loc : (x : M) → V x),
+        (ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
+          (fun x ↦ TotalSpace.mk' F_fiber x (s_loc x)) U_x₀) ∧
+        (∀ y ∈ U_x₀, s_loc y ∈ t y)) :
+    ∃ s : Cₛ^n⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x := by
+  choose W h_nhds s_loc s_smooth h_mem_t using Hloc
+  -- Construct an open cover from the interiors of the given neighborhoods.
+  let U (x : M) : Set M := interior (W x)
+  have hU_covers_univ : univ ⊆ ⋃ x, U x := by
+    intro x_pt _
+    simp only [mem_iUnion]
+    exact ⟨x_pt, mem_interior_iff_mem_nhds.mpr (h_nhds x_pt)⟩
+  -- Obtain a smooth partition of unity subordinate to this open cover.
+  obtain ⟨ρ, hρU⟩ : ∃ ρ : SmoothPartitionOfUnity M I M univ, ρ.IsSubordinate U :=
+    SmoothPartitionOfUnity.exists_isSubordinate
+      I isClosed_univ U (fun x ↦ isOpen_interior) hU_covers_univ
+  -- Define the global section `s` by taking a weighted sum of the local sections.
+  let s x : V x := ∑ᶠ j, (ρ j x) • s_loc j x
+  -- Prove that `s`, when viewed as a map to the total space, is smooth.
+  have (j : M) : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x ((ρ j x) • (s_loc j x))) := by
+    refine ContMDiffOn.smul_section_of_tsupport ?_ isOpen_interior (hρU j)
+      ((s_smooth j).mono interior_subset)
+    exact ((ρ j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
+  have hs : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) := by
+    apply ContMDiff.finsum_section_of_locallyFinite ?_ this
+    -- Future: can grind do this?
+    apply ρ.locallyFinite.subset fun i x hx ↦ ?_
+    rw [support]
+    rw [mem_setOf_eq] at hx ⊢
+    exact left_ne_zero_of_smul hx
+  -- Construct the smooth section and prove it lies in the convex sets `t x`.
+  refine ⟨⟨s, hs⟩, fun x ↦ ?_⟩
+  apply (ht_conv x).finsum_mem (ρ.nonneg · x) (ρ.sum_eq_one (mem_univ x))
+  intro j h_ρjx_ne_zero
+  have h_x_in_tsupport_ρj : x ∈ tsupport (ρ j) := subset_closure (mem_support.mpr h_ρjx_ne_zero)
+  have h_x_in_Umap_j : x ∈ W j := interior_subset (hρU j h_x_in_tsupport_ρj)
+  exact h_mem_t j x h_x_in_Umap_j
+
+@[deprecated (since := "2025-12-17")]
+alias exists_contMDiffOn_section_forall_mem_convex_of_local :=
+  exists_contMDiffSection_forall_mem_convex_of_local
+
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_section_forall_mem_convex_of_local :=
+  exists_contMDiffSection_forall_mem_convex_of_local
+
+/-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
-`y ∈ U`. Then there exists a $C^n$ smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
-for all `x`. See also `exists_smooth_forall_mem_convex_of_local` and
-`exists_smooth_forall_mem_convex_of_local_const`. -/
-theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
+`y ∈ U`. Then there exists a $C^n$ smooth function `g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
+for all `x`.
+
+This is a special case of `exists_contMDiffSection_forall_mem_convex_of_local` where `V` is the
+trivial bundle. See also `exists_contMDiffMap_mem_convex_of_local_const`. -/
+theorem exists_contMDiffMap_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
-    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x := by
-  choose U hU g hgs hgt using Hloc
-  obtain ⟨f, hf⟩ :=
-    SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ (fun x => interior (U x))
-      (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
-  refine ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
-      hf.contMDiff_finsum_smul (fun i => isOpen_interior) fun i => (hgs i).mono interior_subset⟩,
-    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ ?_) (ht _)⟩
-  exact interior_subset (hf _ <| subset_closure hi)
+    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
+  let ⟨s, hs⟩ := exists_contMDiffSection_forall_mem_convex_of_local I (fun _ ↦ F) t ht
+    (fun x₀ ↦ let ⟨U, hU, g, hgs, hgt⟩ := Hloc x₀
+      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section |>.mpr <| hgs y hy, hgt⟩)
+  ⟨⟨s, (Bundle.contMDiffAt_section _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
-be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
-`U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
-Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
-See also `exists_contMDiffOn_forall_mem_convex_of_local` and
-`exists_smooth_forall_mem_convex_of_local_const`. -/
-theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) ∞ g U ∧ ∀ y ∈ U, g y ∈ t y) :
-    ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
-  exists_contMDiffOn_forall_mem_convex_of_local I ht Hloc
+@[deprecated (since := "2025-12-17")]
+alias exists_contMDiffOn_forall_mem_convex_of_local :=
+  exists_contMDiffMap_forall_mem_convex_of_local
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F` be
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_forall_mem_convex_of_local := exists_contMDiffMap_forall_mem_convex_of_local
+
+/-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F` be
 a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
 for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
-`g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.  See also
-`exists_contMDiffOn_forall_mem_convex_of_local` and `exists_smooth_forall_mem_convex_of_local`. -/
-theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
-  exists_smooth_forall_mem_convex_of_local I ht fun x =>
+`g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`. See also
+`exists_contMDiffMap_forall_mem_convex_of_local`. -/
+theorem exists_contMDiffMap_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
+    (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
+  exists_contMDiffMap_forall_mem_convex_of_local I ht fun x =>
     let ⟨c, hc⟩ := Hloc x
     ⟨_, hc, fun _ => c, contMDiffOn_const, fun _ => id⟩
+
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_forall_mem_convex_of_local_const :=
+  exists_contMDiffMap_forall_mem_convex_of_local_const
 
 /-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
 finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
 all `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and
-`x ∈ K i`, we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
-theorem Emetric.exists_smooth_forall_closedBall_subset {M} [EMetricSpace M] [ChartedSpace H M]
+`x ∈ K i`, we have `Metric.closedEBall x (δ x) ⊆ U i`. -/
+theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
+    {M : Type*} [EMetricSpace M] [ChartedSpace H M]
     [IsManifold I ∞ M] [SigmaCompactSpace M] {K : ι → Set M} {U : ι → Set M}
     (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i)
     (hfin : LocallyFinite K) :
-    ∃ δ : C^∞⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
-      (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, EMetric.closedBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
+    ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
+      (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedEBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
   simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_swap ι M]
-    using exists_smooth_forall_mem_convex_of_local_const I
-      EMetric.exists_forall_closedBall_subset_aux₂
-      (EMetric.exists_forall_closedBall_subset_aux₁ hK hU hKU hfin)
+    using exists_contMDiffMap_forall_mem_convex_of_local_const I
+      Metric.exists_forall_closedEBall_subset_aux₂
+      (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
+
+@[deprecated (since := "2026-01-24")]
+alias Emetric.exists_contMDiffMap_forall_closedBall_subset :=
+  Metric.exists_contMDiffMap_forall_closedEBall_subset
+
+@[deprecated (since := "2025-12-17")]
+alias Emetric.exists_smooth_forall_closedBall_subset :=
+  Metric.exists_contMDiffMap_forall_closedEBall_subset
 
 /-- Let `M` be a smooth σ-compact manifold with a metric. Let `K : ι → Set M` be a locally finite
 family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for all
 `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and `x ∈ K i`,
 we have `Metric.closedBall x (δ x) ⊆ U i`. -/
-theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [ChartedSpace H M]
+theorem Metric.exists_contMDiffMap_forall_closedBall_subset
+    {M : Type*} [MetricSpace M] [ChartedSpace H M]
     [IsManifold I ∞ M] [SigmaCompactSpace M] {K : ι → Set M} {U : ι → Set M}
     (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i)
     (hfin : LocallyFinite K) :
-    ∃ δ : C^∞⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
-      (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, Metric.closedBall x (δ x) ⊆ U i := by
-  rcases Emetric.exists_smooth_forall_closedBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
+    ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
+      (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedBall x (δ x) ⊆ U i := by
+  rcases Metric.exists_contMDiffMap_forall_closedEBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
   refine ⟨δ, hδ0, fun i x hx => ?_⟩
-  rw [← Metric.emetric_closedBall (hδ0 _).le]
+  rw [← Metric.closedEBall_ofReal (hδ0 _).le]
   exact hδ i x hx
 
-lemma IsOpen.exists_msmooth_support_eq_aux {s : Set H} (hs : IsOpen s) :
-    ∃ f : H → ℝ, f.support = s ∧ ContMDiff I 𝓘(ℝ) ∞ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
+@[deprecated (since := "2025-12-17")]
+alias Metric.exists_smooth_forall_closedBall_subset :=
+  Metric.exists_contMDiffMap_forall_closedBall_subset
+
+lemma IsOpen.exists_contMDiff_support_eq_aux {s : Set H} (hs : IsOpen s) :
+    ∃ f : H → ℝ, f.support = s ∧ ContMDiff I 𝓘(ℝ) n f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   have h's : IsOpen (I.symm ⁻¹' s) := I.continuous_symm.isOpen_preimage _ hs
-  rcases h's.exists_smooth_support_eq with ⟨f, f_supp, f_diff, f_range⟩
+  rcases h's.exists_contDiff_support_eq with ⟨f, f_supp, f_diff, f_range⟩
   refine ⟨f ∘ I, ?_, ?_, ?_⟩
   · rw [support_comp_eq_preimage, f_supp, ← preimage_comp]
     simp only [ModelWithCorners.symm_comp_self, preimage_id_eq, id_eq]
   · exact f_diff.comp_contMDiff contMDiff_model
   · exact Subset.trans (range_comp_subset_range _ _) f_range
 
+@[deprecated (since := "2025-12-17")]
+alias IsOpen.exists_msmooth_support_eq_aux := IsOpen.exists_contMDiff_support_eq_aux
+
 /-- Given an open set in a finite-dimensional real manifold, there exists a nonnegative smooth
 function with support equal to `s`. -/
-theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
-    ∃ f : M → ℝ, f.support = s ∧ ContMDiff I 𝓘(ℝ) ∞ f ∧ ∀ x, 0 ≤ f x := by
+theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
+    ∃ f : M → ℝ, f.support = s ∧ ContMDiff I 𝓘(ℝ) n f ∧ ∀ x, 0 ≤ f x := by
   rcases SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source I M with ⟨f, hf⟩
   have A : ∀ (c : M), ∃ g : H → ℝ,
       g.support = (chartAt H c).target ∩ (chartAt H c).symm ⁻¹' s ∧
-      ContMDiff I 𝓘(ℝ) ∞ g ∧ Set.range g ⊆ Set.Icc 0 1 := by
+      ContMDiff I 𝓘(ℝ) n g ∧ Set.range g ⊆ Set.Icc 0 1 := by
     intro i
-    apply IsOpen.exists_msmooth_support_eq_aux
-    exact PartialHomeomorph.isOpen_inter_preimage_symm _ hs
+    apply IsOpen.exists_contMDiff_support_eq_aux
+    exact OpenPartialHomeomorph.isOpen_inter_preimage_symm _ hs
   choose g g_supp g_diff hg using A
   have h'g : ∀ c x, 0 ≤ g c x := fun c x ↦ (hg c (mem_range_self (f := g c) x)).1
   have h''g : ∀ c x, 0 ≤ f c x * g c (chartAt H c x) :=
@@ -691,7 +769,7 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
         rw [← mem_support, g_supp, ← mem_preimage, preimage_inter]
         have Hx : x ∈ tsupport (f c) := subset_tsupport _ (ne_of_gt hc)
         simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
-      apply finsum_pos' (fun c ↦ h''g c x) B
+      apply finsum_pos (fun c ↦ h''g c x) B
       apply (f.locallyFinite.point_finite x).subset
       apply compl_subset_compl.2
       rintro c (hc : f c x = 0)
@@ -700,12 +778,12 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
       intro c
       by_cases Hx : x ∈ tsupport (f c)
       · suffices g c (chartAt H c x) = 0 by simp only [this, mul_zero]
-        rw [← nmem_support, g_supp, ← mem_preimage, preimage_inter]
+        rw [← notMem_support, g_supp, ← mem_preimage, preimage_inter]
         contrapose! hx
         simp only [mem_inter_iff, mem_preimage, (chartAt H c).left_inv (hf c Hx)] at hx
         exact hx.2
       · have : x ∉ support (f c) := by contrapose! Hx; exact subset_tsupport _ Hx
-        rw [nmem_support] at this
+        rw [notMem_support] at this
         simp [this]
   · apply SmoothPartitionOfUnity.contMDiff_finsum_smul
     intro c x hx
@@ -715,17 +793,20 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
   · intro x
     apply finsum_nonneg (fun c ↦ h''g c x)
 
+@[deprecated (since := "2025-12-17")]
+alias IsOpen.exists_msmooth_support_eq := IsOpen.exists_contMDiff_support_eq
+
 /-- Given an open set `s` containing a closed set `t` in a finite-dimensional real manifold, there
 exists a smooth function with support equal to `s`, taking values in `[0,1]`, and equal to `1`
 exactly on `t`. -/
-theorem exists_msmooth_support_eq_eq_one_iff
+theorem exists_contMDiff_support_eq_eq_one_iff
     {s t : Set M} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
-    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) ∞ f ∧ range f ⊆ Icc 0 1 ∧ support f = s
+    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) n f ∧ range f ⊆ Icc 0 1 ∧ support f = s
       ∧ (∀ x, x ∈ t ↔ f x = 1) := by
   /- Take `f` with support equal to `s`, and `g` with support equal to `tᶜ`. Then `f / (f + g)`
   satisfies the conclusion of the theorem. -/
-  rcases hs.exists_msmooth_support_eq I with ⟨f, f_supp, f_diff, f_pos⟩
-  rcases ht.isOpen_compl.exists_msmooth_support_eq I with ⟨g, g_supp, g_diff, g_pos⟩
+  rcases hs.exists_contMDiff_support_eq I with ⟨f, f_supp, f_diff, f_pos⟩
+  rcases ht.isOpen_compl.exists_contMDiff_support_eq I with ⟨g, g_supp, g_diff, g_pos⟩
   have A : ∀ x, 0 < f x + g x := by
     intro x
     by_cases xs : x ∈ support f
@@ -736,8 +817,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose! xs
-        simp? at xs says simp only [mem_compl_iff, Decidable.not_not] at xs
-        exact h.trans f_supp.symm.subset xs
+        exact h.trans f_supp.symm.subset (by simpa using xs)
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
   -- show that `f / (f + g)` is smooth
@@ -751,16 +831,23 @@ theorem exists_msmooth_support_eq_eq_one_iff
     simp only [support_div, f_supp, B, inter_univ]
   -- show that the function equals one exactly on `t`
   · intro x
-    simp [div_eq_one_iff_eq (A x).ne', self_eq_add_right, ← nmem_support, g_supp]
+    simp [div_eq_one_iff_eq (A x).ne', left_eq_add, ← notMem_support, g_supp]
 
-/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
+@[deprecated (since := "2025-12-17")]
+alias exists_msmooth_support_eq_eq_one_iff := exists_contMDiff_support_eq_eq_one_iff
+
+/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` exactly on `s` and to `1`
-exactly on `t`. See also `exists_smooth_zero_one_of_isClosed` for a slightly weaker version. -/
-theorem exists_msmooth_zero_iff_one_iff_of_isClosed {s t : Set M}
+exactly on `t`. See also `exists_contMDiffMap_zero_one_of_isClosed` for a
+slightly weaker version. -/
+theorem exists_contMDiff_zero_iff_one_iff_of_isClosed {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) ∞ f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
+    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) n f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
       ∧ (∀ x, x ∈ t ↔ f x = 1) := by
-  rcases exists_msmooth_support_eq_eq_one_iff I hs.isOpen_compl ht hd.subset_compl_left with
+  rcases exists_contMDiff_support_eq_eq_one_iff I hs.isOpen_compl ht hd.subset_compl_left with
     ⟨f, f_diff, f_range, fs, ft⟩
   refine ⟨f, f_diff, f_range, ?_, ft⟩
-  simp [← nmem_support, fs]
+  simp [← notMem_support, fs]
+
+@[deprecated (since := "2025-12-17")]
+alias exists_msmooth_zero_iff_one_iff_of_isClosed := exists_contMDiff_zero_iff_one_iff_of_isClosed

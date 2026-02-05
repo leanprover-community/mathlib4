@@ -6,6 +6,9 @@ import Mathlib.Data.ZMod.Defs
 def k := 11213
 def p := 2^k - 1
 
+#adaptation_note /-- 2025-06-23 in the new compiler, the csimp lemma does not appear to apply,
+and the interpreter has a stack overflow. -/
+/-
 set_option exponentiation.threshold 100000 in
 -- We ensure here that the `@[csimp]` attribute successfully replaces (at runtime)
 -- the default value of `npowRec` for the exponentiation operation in `Monoid`
@@ -13,3 +16,4 @@ set_option exponentiation.threshold 100000 in
 /-- info: 1 -/
 #guard_msgs in
 #eval (37 : ZMod p)^(p-1)
+-/

@@ -3,11 +3,13 @@ Copyright (c) 2021 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Tactic.GCongr
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
+public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
@@ -37,7 +39,9 @@ Moreover, we show the convergence of the continued fractions computations, that 
 convergence, fractions
 -/
 
-variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
+public section
+
+variable {K : Type*} (v : K) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 open GenContFract (of)
 open scoped Topology
@@ -45,7 +49,7 @@ open scoped Topology
 namespace GenContFract
 
 theorem of_convs_eq_convs' : (of v).convs = (of v).convs' :=
-  @ContFract.convs_eq_convs' _ _ (ContFract.of v)
+  ContFract.convs_eq_convs' (c := ContFract.of v)
 
 /-- The recurrence relation for the convergents of the continued fraction expansion
 of an element `v` of `K` in terms of the convergents of the inverse of its fractional part.
@@ -59,7 +63,7 @@ section Convergence
 /-!
 ### Convergence
 
-We next show that `(GenContFract.of v).convs v` converges to `v`.
+We next show that `(GenContFract.of v).convs n` converges to `v`.
 -/
 
 

@@ -3,11 +3,13 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PathCategory.Basic
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.PathCategory.Basic
+public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # Vertex group
@@ -25,6 +27,8 @@ This file defines the vertex group (*aka* isotropy group) of a groupoid at a ver
 
 isotropy, vertex group, groupoid
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -45,10 +49,6 @@ instance vertexGroup (c : C) : Group (c ⟶ c) where
   mul_one := Category.comp_id
   inv := Groupoid.inv
   inv_mul_cancel := inv_comp
-
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-attribute [nolint simpNF] CategoryTheory.Groupoid.vertexGroup_one
 
 /-- The inverse in the group is equal to the inverse given by `CategoryTheory.inv`. -/
 theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
@@ -75,7 +75,7 @@ def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) wher
 def vertexGroupIsomOfPath {c d : C} (p : Quiver.Path c d) : (c ⟶ c) ≃* (d ⟶ d) :=
   vertexGroupIsomOfMap (composePath p)
 
-/-- A functor defines a morphism of vertex group. -/
+/-- A functor defines a morphism of vertex groups. -/
 @[simps]
 def CategoryTheory.Functor.mapVertexGroup {D : Type v} [Groupoid D] (φ : C ⥤ D) (c : C) :
     (c ⟶ c) →* (φ.obj c ⟶ φ.obj c) where

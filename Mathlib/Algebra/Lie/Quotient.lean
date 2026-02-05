@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -27,6 +29,8 @@ is a statement and proof of the universal property of these quotients.
 
 lie algebra, quotient
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -64,8 +68,8 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
 instance inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 
-/-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
-lie_submodule of the lie_module `N`. -/
+/-- Map sending an element of `M` to the corresponding element of `M ⧸ N`, when `N` is a
+Lie submodule of the Lie module `M`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
@@ -218,9 +222,11 @@ noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
   { (f : L →ₗ[R] L').quotKerEquivRange with
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
-      rintro ⟨x⟩ ⟨y⟩
-      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket]
-      simp only [Submodule.Quotient.quot_mk_eq_mk, LinearMap.quotKerEquivRange_apply_mk, ←
-        LieSubmodule.Quotient.mk_bracket, coe_toLinearMap, map_lie] }
+      intro x y
+      induction x using Submodule.Quotient.induction_on
+      induction y using Submodule.Quotient.induction_on
+      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket f.range]
+      simp only [← LieSubmodule.Quotient.mk_bracket, LinearMap.quotKerEquivRange_apply_mk,
+        coe_toLinearMap, map_lie] }
 
 end LieHom

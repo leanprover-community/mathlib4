@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta, Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.Order.Copy
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.Order.Copy
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Grothendieck topologies
@@ -20,6 +22,7 @@ Alternate versions of the axioms (in arrow form) are also described.
 Two explicit examples of Grothendieck topologies are given:
 * The dense topology
 * The atomic topology
+
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
@@ -48,6 +51,8 @@ small category and Lawvere-Tierney topologies on its presheaf topos, as well as 
 between Grothendieck topoi and left exact reflective subcategories of presheaf toposes.
 -/
 
+@[expose] public section
+
 
 universe v₁ u₁ v u
 
@@ -70,15 +75,14 @@ See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
 @[stacks 00Z4]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
-    which satisfy some axioms. -/
+  which satisfy some axioms. -/
   sieves : ∀ X : C, Set (Sieve X)
   /-- The sieves associated to each object must contain the top sieve.
-    Use `GrothendieckTopology.top_mem`. -/
+  Use `GrothendieckTopology.top_mem`. -/
   top_mem' : ∀ X, ⊤ ∈ sieves X
   /-- Stability under pullback. Use `GrothendieckTopology.pullback_stable`. -/
   pullback_stable' : ∀ ⦃X Y : C⦄ ⦃S : Sieve X⦄ (f : Y ⟶ X), S ∈ sieves X → S.pullback f ∈ sieves Y
-  /-- Transitivity of sieves in a Grothendieck topology.
-    Use `GrothendieckTopology.transitive`. -/
+  /-- Transitivity of sieves in a Grothendieck topology. Use `GrothendieckTopology.transitive`. -/
   transitive' :
     ∀ ⦃X⦄ ⦃S : Sieve X⦄ (_ : S ∈ sieves X) (R : Sieve X),
       (∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ sieves Y) → R ∈ sieves X
@@ -129,13 +133,36 @@ theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ 
 
 theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_mem X
 
+/-- Given a `GrothendieckTopology` and a set of sieves `s` that is equal, form a new
+`GrothendieckTopology` whose set of sieves is definitionally equal to `s`. -/
+def copy (J : GrothendieckTopology C) (s : ∀ X : C, Set (Sieve X)) (h : J.sieves = s) :
+    GrothendieckTopology C where
+  sieves := s
+  top_mem' := h ▸ J.top_mem'
+  pullback_stable' := h ▸ J.pullback_stable'
+  transitive' := h ▸ J.transitive'
+
+@[simp]
+theorem sieves_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    (J.copy s h).sieves = s :=
+  rfl
+
+@[simp]
+theorem coe_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    ⇑(J.copy s h) = s :=
+  rfl
+
+theorem copy_eq {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    J.copy s h = J :=
+  GrothendieckTopology.ext h.symm
+
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
 See also discussion after [MM92] Chapter III, Section 2, Definition 1. -/
 @[stacks 00Z5 "(2)"]
 theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   apply J.transitive sjx R fun Y f hf => _
-  intros Y f hf
+  intro Y f hf
   apply covering_of_eq_top
   rw [← top_le_iff, ← S.pullback_eq_top_of_mem hf]
   apply Sieve.pullback_monotone _ Hss
@@ -146,7 +173,7 @@ See also [MM92] Chapter III, Section 2, Definition 1 (iv). -/
 @[stacks 00Z5 "(1)"]
 theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
   apply J.transitive rj _ fun Y f Hf => _
-  intros Y f hf
+  intro Y f hf
   rw [Sieve.pullback_inter, R.pullback_eq_top_of_mem hf]
   simp [sj]
 
@@ -158,6 +185,12 @@ theorem intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X 
 theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)
     (hR : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (H : S f), R H ∈ J Y) : Sieve.bind S R ∈ J X :=
   J.transitive hS _ fun _ f hf => superset_covering J (Sieve.le_pullback_bind S R f hf) (hR hf)
+
+lemma bindOfArrows {ι : Type*} {X : C} {Z : ι → C} {f : ∀ i, Z i ⟶ X} {R : ∀ i, Presieve (Z i)}
+    (h : Sieve.ofArrows Z f ∈ J X) (hR : ∀ i, Sieve.generate (R i) ∈ J _) :
+    Sieve.generate (Presieve.bindOfArrows Z f R) ∈ J X := by
+  refine J.superset_covering (Presieve.bind_ofArrows_le_bindOfArrows _ _ _) ?_
+  exact J.bind_covering h fun _ _ _ ↦ J.pullback_stable _ (hR _)
 
 /-- The sieve `S` on `X` `J`-covers an arrow `f` to `X` if `S.pullback f ∈ J Y`.
 This definition is an alternate way of presenting a Grothendieck topology.
@@ -172,7 +205,7 @@ theorem covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X)
 
 /-- The maximality axiom in 'arrow' form: Any arrow `f` in `S` is covered by `S`. -/
 theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
-  rw [Covers, (Sieve.pullback_eq_top_iff_mem f).1 hf]
+  rw [Covers, (Sieve.mem_iff_pullback_eq_top f).1 hf]
   apply J.top_mem
 
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
@@ -259,7 +292,7 @@ instance : InfSet (GrothendieckTopology C) where
 
 lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
     S ∈ sInf s X ↔ ∀ t ∈ s, S ∈ t X := by
-  show S ∈ sInf (sieves '' s) X ↔ _
+  change S ∈ sInf (sieves '' s) X ↔ _
   simp
 
 @[stacks 00Z7]
@@ -275,7 +308,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
   CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
-      · exact @CompleteLattice.le_top _ (completeLatticeOfInf _ isGLB_sInf) (discrete C)
+      · exact (completeLatticeOfInf _ isGLB_sInf).le_top (discrete C)
       · intro X S _
         apply Set.mem_univ)
     (trivial C)
@@ -284,7 +317,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+      · exact (completeLatticeOfInf _ isGLB_sInf).bot_le (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=
@@ -307,7 +340,7 @@ theorem top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
   ⟨⟩
 
 theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).Covers S f ↔ S f := by
-  rw [covers_iff, bot_covering, ← Sieve.pullback_eq_top_iff_mem]
+  rw [covers_iff, bot_covering, ← Sieve.mem_iff_pullback_eq_top]
 
 @[simp]
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
@@ -365,13 +398,9 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
 
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
--- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
-  { S : Sieve X // S ∈ J X } -- deriving Preorder
-
--- Porting note: `deriving` didn't work above, so we add the preorder instance manually.
-instance (X : C) : Preorder (J.Cover X) :=
-  show Preorder {S : Sieve X // S ∈ J X} from inferInstance
+  { S : Sieve X // S ∈ J X }
+deriving Preorder
 
 namespace Cover
 
@@ -424,7 +453,7 @@ structure Arrow.Relation {S : J.Cover X} (I₁ I₂ : S.Arrow) where
   /-- The second arrow defining the relation. -/
   g₂ : Z ⟶ I₂.Y
   /-- The relation itself. -/
-  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by aesop_cat
+  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by cat_disch
 
 attribute [reassoc] Arrow.Relation.w
 
@@ -439,6 +468,7 @@ from `I.precomp g` to `I`. -/
 @[simps]
 def Arrow.precompRelation {S : J.Cover X} (I : S.Arrow) {Z : C} (g : Z ⟶ I.Y) :
     (I.precomp g).Relation I where
+  Z := (I.precomp g).Y
   g₁ := 𝟙 _
   g₂ := g
 
@@ -450,8 +480,8 @@ def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=
 /-- Map an `Arrow.Relation` along a refinement `S ⟶ T`. -/
 @[simps]
 def Arrow.Relation.map {S T : J.Cover X} {I₁ I₂ : S.Arrow}
-    (r : I₁.Relation I₂) (f : S ⟶ T) : (I₁.map f).Relation (I₂.map f) where
-  w := r.w
+    (r : I₁.Relation I₂) (f : S ⟶ T) : (I₁.map f).Relation (I₂.map f) :=
+  { r with }
 
 /-- Pull back a cover along a morphism. -/
 def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
@@ -465,10 +495,8 @@ def Arrow.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Arrow) : S.Arro
 /-- A relation of `S.pullback f` gives rise to a relation of `S`. -/
 def Arrow.Relation.base
     {f : Y ⟶ X} {S : J.Cover X} {I₁ I₂ : (S.pullback f).Arrow}
-    (r : I₁.Relation I₂) : I₁.base.Relation I₂.base where
-  g₁ := r.g₁
-  g₂ := r.g₂
-  w := by simp [r.w_assoc]
+    (r : I₁.Relation I₂) : I₁.base.Relation I₂.base :=
+  { r with w := by simp [r.w_assoc] }
 
 @[simp]
 theorem coe_pullback {Z : C} (f : Y ⟶ X) (g : Z ⟶ Y) (S : J.Cover X) :
@@ -498,19 +526,19 @@ def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bi
     exact h1
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the object `B`. -/
+and `B ⟶ X` is an arrow of `S`. This is the object `B`. -/
 noncomputable def Arrow.middle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : C :=
   I.hf.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`. -/
 noncomputable def Arrow.toMiddleHom {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : I.Y ⟶ I.middle :=
   I.hf.choose_spec.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`. -/
 noncomputable def Arrow.fromMiddleHom {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : I.middle ⟶ X :=
   I.hf.choose_spec.choose_spec.choose
@@ -520,7 +548,7 @@ theorem Arrow.from_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow
   I.hf.choose_spec.choose_spec.choose_spec.choose
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`, as an arrow. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `B ⟶ X`, as an arrow. -/
 noncomputable def Arrow.fromMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : S.Arrow :=
   ⟨_, I.fromMiddleHom, I.from_middle_condition⟩
@@ -530,7 +558,7 @@ theorem Arrow.to_middle_condition {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.1
 
 /-- An arrow in bind has the form `A ⟶ B ⟶ X` where `A ⟶ B` is an arrow in `T I` for some `I`.
- and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`, as an arrow. -/
+and `B ⟶ X` is an arrow of `S`. This is the hom `A ⟶ B`, as an arrow. -/
 noncomputable def Arrow.toMiddle {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover I.Y}
     (I : (S.bind T).Arrow) : (T I.fromMiddle).Arrow :=
   ⟨_, I.toMiddleHom, I.to_middle_condition⟩
@@ -543,9 +571,9 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
 @[ext]
 structure Relation (S : J.Cover X) where
   /-- The first arrow. -/
-  fst : S.Arrow
+  {fst : S.Arrow}
   /-- The second arrow. -/
-  snd : S.Arrow
+  {snd : S.Arrow}
   /-- The relation between the two arrows. -/
   r : fst.Relation snd
 
@@ -554,6 +582,8 @@ structure Relation (S : J.Cover X) where
 @[simps]
 def Relation.mk' {S : J.Cover X} {fst snd : S.Arrow} (r : fst.Relation snd) :
     S.Relation where
+  fst := fst
+  snd := snd
   r := r
 
 

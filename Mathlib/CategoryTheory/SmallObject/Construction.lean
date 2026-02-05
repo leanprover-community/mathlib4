@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 
 /-!
 # Construction for the small object argument
@@ -46,6 +47,8 @@ provides a tautological morphism `B i ⟶ functorObj f πX`
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 universe t w v u
 
 namespace CategoryTheory
@@ -62,7 +65,7 @@ variable {S X : C} (πX : X ⟶ S)
 
 /-- Given a family of morphisms `f i : A i ⟶ B i` and a morphism `πX : X ⟶ S`,
 this type parametrizes the commutative squares with a morphism `f i` on the left
-and `πX` in the right. -/
+and `πX` on the right. -/
 structure FunctorObjIndex where
   /-- an element in the index type -/
   i : I
@@ -152,6 +155,8 @@ noncomputable def attachCellsιFunctorObj :
   g₁ := functorObjTop f πX
   g₂ := ρFunctorObj f πX
   isPushout := IsPushout.of_hasPushout (functorObjTop f πX) (functorObjLeft f πX)
+  cofan₁ := _
+  cofan₂ := _
 
 section Small
 
@@ -302,7 +307,7 @@ variable [HasPushouts C]
 
 /-- The functor `Arrow C ⥤ Arrow C` that is constructed in order to apply the small
 object argument to a family of morphisms `f i : A i ⟶ B i`, see the introduction
-of the file `Mathlib.CategoryTheory.SmallObject.Construction` -/
+of the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` -/
 @[simps! obj map]
 noncomputable def functor : Arrow C ⥤ Arrow C where
   obj π := Arrow.mk (πFunctorObj f π.hom)
@@ -314,7 +319,7 @@ noncomputable def functor : Arrow C ⥤ Arrow C where
   map_comp {π₁ π₂ π₃} τ τ' := by
     ext
     · dsimp
-      simp [functorMap]
+      simp only [functorMap, Arrow.comp_left, Arrow.mk_left]
       ext ⟨i, t, b, w⟩
       · simp
       · simp [ι_functorMapTgt_assoc f τ i t b w _ rfl _ rfl,

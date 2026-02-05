@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Data.Multiset.Fold
+module
+
+public import Mathlib.Data.Multiset.FinsetOps
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Lattice operations on multisets
 -/
+
+@[expose] public section
 
 
 namespace Multiset
@@ -78,8 +82,6 @@ theorem sup_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).sup = a ⊔ s.s
 
 theorem nodup_sup_iff {α : Type*} [DecidableEq α] {m : Multiset (Multiset α)} :
     m.sup.Nodup ↔ ∀ a : Multiset α, a ∈ m → a.Nodup := by
-  -- Porting note: this was originally `apply m.induction_on`, which failed due to
-  -- `failed to elaborate eliminator, expected type is not available`
   induction m using Multiset.induction_on with
   | empty => simp
   | cons _ _ h => simp [h]

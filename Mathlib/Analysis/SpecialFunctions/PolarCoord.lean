@@ -3,14 +3,17 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.Jacobian
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.MeasureTheory.Function.Jacobian
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Polar coordinates
 
-We define polar coordinates, as a partial homeomorphism in `ℝ^2` between `ℝ^2 - (-∞, 0]` and
+We define polar coordinates, as an open partial homeomorphism in `ℝ^2` between `ℝ^2 - (-∞, 0]` and
 `(0, +∞) × (-π, π)`. Its inverse is given by `(r, θ) ↦ (r cos θ, r sin θ)`.
 
 It satisfies the following change of variables formula (see `integral_comp_polarCoord_symm`):
@@ -18,16 +21,18 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 -/
 
+@[expose] public section
+
 noncomputable section Real
 
 open Real Set MeasureTheory
 
 open scoped ENNReal Real Topology
 
-/-- The polar coordinates partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
-It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
+/-- The polar coordinates are an open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)`
+to `(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
-def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
+def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   toFun q := (√(q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
   invFun p := (p.1 * cos p.2, p.1 * sin p.2)
   source := {q | 0 < q.1} ∪ {q | q.2 ≠ 0}
@@ -43,7 +48,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
-    simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
+    simp only [prodMk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
       true_and, Complex.arg_lt_pi_iff]
     constructor
     · rcases hxy with hxy | hxy
@@ -54,9 +59,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       · exact Or.inr hxy
   right_inv' := by
     rintro ⟨r, θ⟩ ⟨hr, hθ⟩
-    dsimp at hr hθ
-    simp only [Prod.mk.inj_iff]
-    constructor
+    ext <;> dsimp at hr hθ ⊢
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
       congr 1
       ring
@@ -66,21 +69,16 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       ring
   left_inv' := by
     rintro ⟨x, y⟩ _
-    have A : √(x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
-      rw [Complex.abs_apply, Complex.normSq_add_mul_I]
-    have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
-    simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
-      mul_assoc] at Z
+    have A : √(x ^ 2 + y ^ 2) = ‖x + y * Complex.I‖ := by
+      rw [Complex.norm_def, Complex.normSq_add_mul_I]
     simp [A]
   open_target := isOpen_Ioi.prod isOpen_Ioo
   open_source :=
     (isOpen_lt continuous_const continuous_fst).union
       (isOpen_ne_fun continuous_snd continuous_const)
-  continuousOn_invFun :=
-    ((continuous_fst.mul (continuous_cos.comp continuous_snd)).prod_mk
-        (continuous_fst.mul (continuous_sin.comp continuous_snd))).continuousOn
+  continuousOn_invFun := by fun_prop
   continuousOn_toFun := by
-    apply ((continuous_fst.pow 2).add (continuous_snd.pow 2)).sqrt.continuousOn.prod
+    refine .prodMk (by fun_prop) ?_
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
@@ -89,16 +87,21 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+@[fun_prop]
+theorem continuous_polarCoord_symm :
+    Continuous polarCoord.symm :=
+  .prodMk (by fun_prop) (by fun_prop)
+
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
-  LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
-    (Basis.finTwoProd ℝ) !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])
+  (Matrix.toLin (.finTwoProd ℝ) (.finTwoProd ℝ)
+    !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]).toContinuousLinearMap
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm (fderivPolarCoordSymm p) p := by
   unfold fderivPolarCoordSymm
   rw [Matrix.toLin_finTwoProd_toContinuousLinearMap]
-  convert HasFDerivAt.prod (𝕜 := ℝ)
+  convert HasFDerivAt.prodMk (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
@@ -111,7 +114,7 @@ theorem det_fderivPolarCoordSymm (p : ℝ × ℝ) :
     Matrix.det_fin_two_of, sub_neg_eq_add]
   ring
 
--- Porting note: this instance is needed but not automatically synthesised
+/-- This instance is required to see through the defeq `volume = volume.prod volume`. -/
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
   Measure.prod.instIsAddHaarMeasure _ _
 
@@ -140,8 +143,9 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
       apply setIntegral_congr_set
       exact polarCoord_source_ae_eq_univ.symm
     _ = ∫ p in polarCoord.target, |p.1| • f (polarCoord.symm p) := by
-      rw [← PartialHomeomorph.symm_target, integral_target_eq_integral_abs_det_fderiv_smul volume
-      (fun p _ ↦ hasFDerivAt_polarCoord_symm p), PartialHomeomorph.symm_source]
+      rw [← OpenPartialHomeomorph.symm_target,
+      integral_target_eq_integral_abs_det_fderiv_smul volume
+      (fun p _ ↦ hasFDerivAt_polarCoord_symm p), OpenPartialHomeomorph.symm_source]
       simp_rw [det_fderivPolarCoordSymm]
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
       apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx => ?_
@@ -154,15 +158,15 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
   calc
     _ = ∫⁻ p in polarCoord.symm '' polarCoord.target, f p := by
       rw [← setLIntegral_univ, setLIntegral_congr polarCoord_source_ae_eq_univ.symm,
-        polarCoord.symm_image_target_eq_source ]
+        polarCoord.symm_image_target_eq_source]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal |p.1| • f (polarCoord.symm p) := by
       rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume _
         (fun p _ ↦ (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt)]
       · simp_rw [det_fderivPolarCoordSymm]; rfl
       exacts [polarCoord.symm.injOn, measurableSet_Ioi.prod measurableSet_Ioo]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal p.1 • f (polarCoord.symm p) := by
-      refine setLIntegral_congr_fun polarCoord.open_target.measurableSet ?_
-      filter_upwards with _ hx using by rw [abs_of_pos hx.1]
+      refine setLIntegral_congr_fun polarCoord.open_target.measurableSet (fun x hx ↦ ?_)
+      rw [abs_of_pos hx.1]
 
 end Real
 
@@ -172,14 +176,14 @@ namespace Complex
 
 open scoped Real ENNReal
 
-/-- The polar coordinates partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
-It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
-protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
-  equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
+/-- The polar coordinates open partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to
+`(r, θ)`. It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
+protected noncomputable def polarCoord : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
+  equivRealProdCLM.toHomeomorph.transOpenPartialHomeomorph polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
-    Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
-  simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
+    Complex.polarCoord a = (‖a‖, Complex.arg a) := by
+  simp_rw [Complex.norm_def, Complex.normSq_apply, ← pow_two]
   rfl
 
 protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
@@ -195,8 +199,8 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
     (measurableEquivRealProd.symm (polarCoord.symm p)) = Complex.polarCoord.symm p := rfl
 
-theorem polarCoord_symm_abs (p : ℝ × ℝ) :
-    Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+theorem norm_polarCoord_symm (p : ℝ × ℝ) :
+    ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
@@ -235,12 +239,17 @@ theorem abs_fst_of_mem_pi_polarCoord_target {p : ι → ℝ × ℝ}
     |(p i).1| = (p i).1 :=
   abs_of_pos ((Set.mem_univ_pi.mp hp) i).1
 
-variable [Fintype ι]
-
-theorem hasFDerivAt_pi_polarCoord_symm (p : ι → ℝ × ℝ) :
+theorem hasFDerivAt_pi_polarCoord_symm [Finite ι] (p : ι → ℝ × ℝ) :
     HasFDerivAt (fun x i ↦ polarCoord.symm (x i)) (fderivPiPolarCoordSymm p) p := by
+  have := Fintype.ofFinite ι
   rw [fderivPiPolarCoordSymm, hasFDerivAt_pi]
   exact fun i ↦ HasFDerivAt.comp _ (hasFDerivAt_polarCoord_symm _) (hasFDerivAt_apply i _)
+
+theorem measurableSet_pi_polarCoord_target [Finite ι] :
+    MeasurableSet (Set.univ.pi fun _ : ι ↦ polarCoord.target) :=
+  MeasurableSet.univ_pi fun _ ↦ polarCoord.open_target.measurableSet
+
+variable [Fintype ι]
 
 theorem det_fderivPiPolarCoordSymm (p : ι → ℝ × ℝ) :
     (fderivPiPolarCoordSymm p).det = ∏ i, (p i).1 := by
@@ -251,10 +260,6 @@ theorem pi_polarCoord_symm_target_ae_eq_univ :
         =ᵐ[volume] Set.univ := by
   rw [Set.piMap_image_univ_pi, polarCoord.symm_image_target_eq_source, volume_pi, ← Set.pi_univ]
   exact ae_eq_set_pi fun _ _ ↦ polarCoord_source_ae_eq_univ
-
-theorem measurableSet_pi_polarCoord_target :
-    MeasurableSet (Set.univ.pi fun _ : ι ↦ polarCoord.target) :=
-  MeasurableSet.univ_pi fun _ ↦ polarCoord.open_target.measurableSet
 
 theorem integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : (ι → ℝ × ℝ) → E) :
@@ -283,8 +288,7 @@ theorem lintegral_comp_pi_polarCoord_symm (f : (ι → ℝ × ℝ) → ℝ≥0�
   convert (lintegral_image_eq_lintegral_abs_det_fderiv_mul volume measurableSet_pi_polarCoord_target
     (fun p _ ↦ (hasFDerivAt_pi_polarCoord_symm p).hasFDerivWithinAt)
       injOn_pi_polarCoord_symm f).symm using 1
-  refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target ?_
-  filter_upwards with x hx
+  refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target (fun x hx ↦ ?_)
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦
     abs_nonneg _), abs_fst_of_mem_pi_polarCoord_target hx]
 

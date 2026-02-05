@@ -3,7 +3,9 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
@@ -51,21 +53,24 @@ the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly c
 entropy, semiconjugacy
 -/
 
-namespace Dynamics
+public section
 
 open Function Prod Set Uniformity UniformSpace
+open scoped SetRel
 
-variable {X Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
+namespace Dynamics
 
-lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n : ℕ} {s : Set X}
-    (h' : IsDynCoverOf S F ((map φ φ) ⁻¹' V) n s) :
+variable {X Y : Type*} {s F : Set X} {V : SetRel Y Y} {S : X → X} {T : Y → Y} {φ : X → Y} {n : ℕ}
+
+lemma IsDynCoverOf.image (h : Semiconj φ S T) (h' : IsDynCoverOf S F (map φ φ ⁻¹' V) n s) :
     IsDynCoverOf T (φ '' F) V n (φ '' s) := by
-  simp only [IsDynCoverOf, image_subset_iff, preimage_iUnion₂, biUnion_image]
-  refine h'.trans (iUnion₂_mono fun i _ ↦ subset_of_eq ?_)
-  rw [← h.preimage_dynEntourage V n, ball_preimage]
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨y, hy, hxy⟩ := h' hx
+  refine ⟨_, Set.mem_image_of_mem _ hy, show (x, y) ∈ map φ φ ⁻¹' dynEntourage T V n from ?_⟩
+  rwa [h.preimage_dynEntourage V n]
 
-lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) {n : ℕ} {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
+lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
+    (h' : IsDynCoverOf T (φ '' F) V n t) :
     ∃ s : Finset X, IsDynCoverOf S F ((map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
@@ -74,81 +79,74 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
   -- element of `t`. This is complicated by the fact that `t` may not be a subset of `φ '' F`,
   -- and may not even be in the range of `φ`. Hence, we first modify `t` to make it a subset
   -- of `φ '' F`. This requires taking larger entourages.
-  rcases h'.nonempty_inter with ⟨s, s_cover, s_card, s_inter⟩
-  choose! g gs_cover using fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
-  choose! f f_section using fun (y : Y) (a : y ∈ φ '' F) ↦ a
-  refine ⟨s.image (f ∘ g), And.intro ?_ (Finset.card_image_le.trans s_card)⟩
-  simp only [IsDynCoverOf, Finset.mem_coe, image_subset_iff, preimage_iUnion₂] at s_cover ⊢
-  apply s_cover.trans
-  rw [← h.preimage_dynEntourage (V ○ V) n, Finset.set_biUnion_finset_image]
-  refine iUnion₂_mono fun i i_s ↦ ?_
-  rw [comp_apply, ball_preimage, (f_section (g i) (gs_cover i i_s).2).2]
-  refine preimage_mono fun x x_i ↦ mem_ball_dynEntourage_comp T n V_symm x (g i) ⟨i, ?_⟩
-  replace gs_cover := (gs_cover i i_s).1
-  rw [mem_ball_symmetry (V_symm.dynEntourage T n)] at x_i gs_cover
-  exact ⟨x_i, gs_cover⟩
+  obtain ⟨s, s_cover, s_card, s_inter⟩ := h'.nonempty_inter
+  choose! g g_rel g_mem using fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
+  choose! f _ φ_f using fun (y : Y) (hy : y ∈ φ '' F) ↦ hy
+  refine ⟨s.image (f ∘ g), fun x hx ↦ ?_, Finset.card_image_le.trans s_card⟩
+  simp only [Finset.coe_image, comp_apply, mem_image, SetLike.mem_coe, ← h.preimage_dynEntourage,
+    mem_preimage, map_apply, exists_exists_and_eq_and]
+  obtain ⟨y, hy, hxy⟩ := s_cover (Set.mem_image_of_mem _ hx)
+  refine ⟨y, hy, dynEntourage_comp_subset _ _ _ _ ⟨_, hxy, ?_⟩⟩
+  rw [φ_f _ (g_mem _ hy)]
+  exact g_rel _ hy
 
-lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) (n : ℕ) :
+lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by
   rcases eq_top_or_lt_top (coverMincard T (φ '' F) V n) with h' | h'
   · exact h' ▸ le_top
-  rcases (coverMincard_finite_iff T (φ '' F) V n).1 h' with ⟨t, t_cover, t_card⟩
-  rcases t_cover.preimage h V_symm with ⟨s, s_cover, s_card⟩
+  obtain ⟨t, t_cover, t_card⟩ := (coverMincard_finite_iff T (φ '' F) V n).1 h'
+  obtain ⟨s, s_cover, s_card⟩ := t_cover.preimage h
   rw [← t_card]
   exact s_cover.coverMincard_le_card.trans (WithTop.coe_le_coe.2 s_card)
 
-lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y)) (n : ℕ) :
+lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) (n : ℕ) :
     coverMincard T (φ '' F) V n ≤ coverMincard S F ((map φ φ) ⁻¹' V) n := by
   classical
   rcases eq_top_or_lt_top (coverMincard S F ((map φ φ) ⁻¹' V) n) with h' | h'
   · exact h' ▸ le_top
-  rcases (coverMincard_finite_iff S F ((map φ φ) ⁻¹' V) n).1 h' with ⟨s, s_cover, s_card⟩
+  obtain ⟨s, s_cover, s_card⟩ := (coverMincard_finite_iff S F ((map φ φ) ⁻¹' V) n).1 h'
   rw [← s_card]
   have := s_cover.image h
   rw [← s.coe_image] at this
   exact this.coverMincard_le_card.trans (WithTop.coe_le_coe.2 s.card_image_le)
 
-open ENNReal EReal Filter
+open ENNReal EReal ExpGrowth Filter
 
-lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) :
+lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] :
     coverEntropyEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyEntourage T (φ '' F) V :=
-  limsup_le_limsup (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))
+  expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (le_coverMincard_image h F n)
 
-lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) :
+lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] :
     coverEntropyInfEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyInfEntourage T (φ '' F) V :=
-  liminf_le_liminf (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))
+  expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (le_coverMincard_image h F n)
 
-lemma coverEntropyEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y)) :
+lemma coverEntropyEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) :
     coverEntropyEntourage T (φ '' F) V ≤ coverEntropyEntourage S F ((map φ φ) ⁻¹' V) :=
-  limsup_le_limsup (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    (log_monotone (ENat.toENNReal_mono (coverMincard_image_le h F V n)))))
+  expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_image_le h F V n)
 
-lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y)) :
+lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : SetRel Y Y) :
     coverEntropyInfEntourage T (φ '' F) V ≤ coverEntropyInfEntourage S F ((map φ φ) ⁻¹' V) :=
-  liminf_le_liminf (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-    (log_monotone (ENat.toENNReal_mono (coverMincard_image_le h F V n)))))
+  expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_image_le h F V n)
 
 /-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
   of the uniform structure of `Y`. -/
 theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropy T (φ '' F) = @coverEntropy X (comap φ u) S F := by
+  let : UniformSpace X := comap φ u
   apply le_antisymm
-  · refine iSup₂_le fun V V_uni ↦ (coverEntropyEntourage_image_le h F V).trans ?_
-    apply @coverEntropyEntourage_le_coverEntropy X (comap φ u) S F
+  · refine iSup₂_le fun V V_uni ↦
+      (coverEntropyEntourage_antitone _ _ SetRel.symmetrize_subset_self).trans <|
+      (coverEntropyEntourage_image_le h F _).trans ?_
+    apply coverEntropyEntourage_le_coverEntropy
     rw [uniformity_comap φ, mem_comap]
-    exact ⟨V, V_uni, Subset.rfl⟩
+    exact ⟨_, symmetrize_mem_uniformity V_uni, .rfl⟩
   · refine iSup₂_le fun U U_uni ↦ ?_
     simp only [uniformity_comap φ, mem_comap] at U_uni
-    rcases U_uni with ⟨V, V_uni, V_sub⟩
-    rcases comp_symm_mem_uniformity_sets V_uni with ⟨W, W_uni, W_symm, W_V⟩
+    obtain ⟨V, V_uni, V_sub⟩ := U_uni
+    obtain ⟨W, W_uni, W_symm, W_V⟩ := comp_symm_mem_uniformity_sets V_uni
     apply (coverEntropyEntourage_antitone S F ((preimage_mono W_V).trans V_sub)).trans
-    apply (le_coverEntropyEntourage_image h F W_symm).trans
+    apply (le_coverEntropyEntourage_image h F).trans
     exact coverEntropyEntourage_le_coverEntropy T (φ '' F) W_uni
 
 /-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
@@ -156,17 +154,20 @@ theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y �
 theorem coverEntropyInf_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropyInf T (φ '' F) = @coverEntropyInf X (comap φ u) S F := by
+  let : UniformSpace X := comap φ u
   apply le_antisymm
-  · refine iSup₂_le fun V V_uni ↦ (coverEntropyInfEntourage_image_le h F V).trans ?_
-    apply @coverEntropyInfEntourage_le_coverEntropyInf X (comap φ u) S F
+  · refine iSup₂_le fun V V_uni ↦
+      (coverEntropyInfEntourage_antitone _ _ SetRel.symmetrize_subset_self).trans <|
+      (coverEntropyInfEntourage_image_le h F _).trans ?_
+    apply coverEntropyInfEntourage_le_coverEntropyInf
     rw [uniformity_comap φ, mem_comap]
-    exact ⟨V, V_uni, Subset.rfl⟩
+    exact ⟨_, symmetrize_mem_uniformity V_uni, .rfl⟩
   · refine iSup₂_le fun U U_uni ↦ ?_
     simp only [uniformity_comap φ, mem_comap] at U_uni
-    rcases U_uni with ⟨V, V_uni, V_sub⟩
-    rcases comp_symm_mem_uniformity_sets V_uni with ⟨W, W_uni, W_symm, W_V⟩
+    obtain ⟨V, V_uni, V_sub⟩ := U_uni
+    obtain ⟨W, W_uni, W_symm, W_V⟩ := comp_symm_mem_uniformity_sets V_uni
     apply (coverEntropyInfEntourage_antitone S F ((preimage_mono W_V).trans V_sub)).trans
-    apply (le_coverEntropyInfEntourage_image h F W_symm).trans
+    apply (le_coverEntropyInfEntourage_image h F).trans
     exact coverEntropyInfEntourage_le_coverEntropyInf T (φ '' F) W_uni
 
 open Subtype

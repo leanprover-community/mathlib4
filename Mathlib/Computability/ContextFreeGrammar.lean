@@ -3,7 +3,9 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Computability.Language
+module
+
+public import Mathlib.Computability.Language
 
 /-!
 # Context-Free Grammars
@@ -23,6 +25,8 @@ nonterminal symbols that are referred to by its finitely many rules.
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
 -/
 
+@[expose] public section
+
 open Function
 
 /-- Rule that rewrites a single nonterminal to any string (a list of symbols). -/
@@ -33,6 +37,9 @@ structure ContextFreeRule (T N : Type*) where
   /-- Output string a.k.a. right-hand side. -/
   output : List (Symbol T N)
 deriving DecidableEq, Repr
+
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instReprContextFreeRule.repr
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type*) where
@@ -76,7 +83,7 @@ lemma Rewrites.input_output : r.Rewrites [.nonterminal r.input] r.output := by
 lemma rewrites_of_exists_parts (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
     r.Rewrites (p ++ [Symbol.nonterminal r.input] ++ q) (p ++ r.output ++ q) := by
   induction p with
-  | nil         => exact Rewrites.head q
+  | nil => exact Rewrites.head q
   | cons d l ih => exact Rewrites.cons d ih
 
 /-- Rule `r` rewrites string `u` is to string `v` iff they share both a prefix `p` and postfix `q`
@@ -86,6 +93,9 @@ theorem rewrites_iff :
     r.Rewrites u v ↔ ∃ p q : List (Symbol T N),
       u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q :=
   ⟨Rewrites.exists_parts, by rintro ⟨p, q, rfl, rfl⟩; apply rewrites_of_exists_parts⟩
+
+lemma Rewrites.nonterminal_input_mem : r.Rewrites u v → .nonterminal r.input ∈ u := by
+  simp +contextual [rewrites_iff, List.append_assoc]
 
 /-- Add extra prefix to context-free rewriting. -/
 lemma Rewrites.append_left (hvw : r.Rewrites u v) (p : List (Symbol T N)) :
@@ -165,9 +175,17 @@ lemma Derives.eq_or_head {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
     u = w ∨ ∃ v : List (Symbol T g.NT), g.Produces u v ∧ g.Derives v w :=
   Relation.ReflTransGen.cases_head huw
 
+lemma derives_iff_eq_or_head {u w : List (Symbol T g.NT)} :
+    g.Derives u w ↔ u = w ∨ ∃ v : List (Symbol T g.NT), g.Produces u v ∧ g.Derives v w :=
+  Relation.ReflTransGen.cases_head_iff
+
 lemma Derives.eq_or_tail {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
-    u = w ∨ ∃ v : List (Symbol T g.NT), g.Derives u v ∧ g.Produces v w :=
-  (Relation.ReflTransGen.cases_tail huw).casesOn (Or.inl ∘ Eq.symm) Or.inr
+    w = u ∨ ∃ v : List (Symbol T g.NT), g.Derives u v ∧ g.Produces v w :=
+  Relation.ReflTransGen.cases_tail huw
+
+lemma derives_iff_eq_or_tail {u w : List (Symbol T g.NT)} :
+    g.Derives u w ↔ w = u ∨ ∃ v : List (Symbol T g.NT), g.Derives u v ∧ g.Produces v w :=
+  Relation.ReflTransGen.cases_tail_iff g.Produces u w
 
 /-- Add extra prefix to context-free producing. -/
 lemma Produces.append_left {v w : List (Symbol T g.NT)}
@@ -196,6 +214,24 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
   induction hvw with
   | refl => rfl
   | tail _ last ih => exact ih.trans_produces <| last.append_right p
+
+lemma Produces.exists_nonterminal_input_mem {u v : List (Symbol T g.NT)} (hguv : g.Produces u v) :
+    ∃ r ∈ g.rules, .nonterminal r.input ∈ u := by
+  obtain ⟨w, l, r⟩ := hguv
+  exact ⟨w, l, r.nonterminal_input_mem⟩
+
+lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
+    (s : List (Symbol T g.NT)) (hs : s ≠ [.nonterminal t]) :
+    ¬g.Derives [.nonterminal t] s := by
+  rw [derives_iff_eq_or_head]
+  push_neg
+  refine ⟨hs.symm, fun _ hx ↦ ?_⟩
+  have hxr := hx.exists_nonterminal_input_mem
+  simp_rw [List.mem_singleton, Symbol.nonterminal.injEq] at hxr
+  tauto
+
+lemma language_eq_zero_of_forall_input_ne_initial (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
+    g.language = 0 := by ext; simp +contextual [derives_nonterminal, hg]
 
 end ContextFreeGrammar
 

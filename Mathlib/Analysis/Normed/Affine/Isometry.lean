@@ -3,12 +3,15 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Restrict
-import Mathlib.Tactic.FailIfNoProgress
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
+public import Mathlib.Topology.Algebra.AffineSubspace
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Affine isometries
@@ -33,8 +36,9 @@ algebra-homomorphisms.)
 
 -/
 
+@[expose] public section
 
-open Function Set
+open Function Set Metric
 
 variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜]
@@ -159,10 +163,10 @@ protected theorem antilipschitz : AntilipschitzWith 1 f :=
 protected theorem continuous : Continuous f :=
   f.isometry.continuous
 
-theorem ediam_image (s : Set P) : EMetric.diam (f '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set P) : ediam (f '' s) = ediam s :=
   f.isometry.ediam_image s
 
-theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set P) :=
+theorem ediam_range : ediam (range f) = ediam (univ : Set P) :=
   f.isometry.ediam_range
 
 theorem diam_image (s : Set P) : Metric.diam (f '' s) = Metric.diam s :=
@@ -170,6 +174,21 @@ theorem diam_image (s : Set P) : Metric.diam (f '' s) = Metric.diam s :=
 
 theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
   f.isometry.diam_range
+
+/-- Interpret an affine isometry as a continuous affine map. -/
+def toContinuousAffineMap : P →ᴬ[𝕜] P₂ := { f with cont := f.continuous }
+
+theorem toContinuousAffineMap_injective :
+    Function.Injective (toContinuousAffineMap : _ → P →ᴬ[𝕜] P₂) := fun x _ h =>
+  coeFn_injective (congr_arg _ h : ⇑x.toContinuousAffineMap = _)
+
+@[simp]
+theorem toContinuousAffineMap_inj {f g : P →ᵃⁱ[𝕜] P₂} :
+    f.toContinuousAffineMap = g.toContinuousAffineMap ↔ f = g :=
+  toContinuousAffineMap_injective.eq_iff
+
+@[simp]
+theorem coe_toContinuousAffineMap : ⇑f.toContinuousAffineMap = f := rfl
 
 @[simp]
 theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
@@ -190,6 +209,10 @@ theorem id_apply (x : P) : (AffineIsometry.id : P →ᵃⁱ[𝕜] P) x = x :=
 
 @[simp]
 theorem id_toAffineMap : (id.toAffineMap : P →ᵃ[𝕜] P) = AffineMap.id 𝕜 P :=
+  rfl
+
+@[simp]
+theorem toContinuousAffineMap_id : id.toContinuousAffineMap = ContinuousAffineMap.id 𝕜 P :=
   rfl
 
 instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
@@ -256,6 +279,11 @@ theorem subtypeₐᵢ_toAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
     s.subtypeₐᵢ.toAffineMap = s.subtype :=
   rfl
 
+@[simp]
+theorem toContinuousAffineMap_subtypeₐᵢ (s : AffineSubspace 𝕜 P) [Nonempty s] :
+    s.subtypeₐᵢ.toContinuousAffineMap = s.subtypeA :=
+  rfl
+
 end AffineSubspace
 
 variable (𝕜 P P₂)
@@ -308,6 +336,9 @@ theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P ≃ᵃⁱ[𝕜] 
 @[ext]
 theorem ext {e e' : P ≃ᵃⁱ[𝕜] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   toAffineEquiv_injective <| AffineEquiv.ext h
+
+theorem coeFn_injective : @Injective (P ≃ᵃⁱ[𝕜] P₂) (P → P₂) (fun f => f) :=
+  DFunLike.coe_injective
 
 /-- Reinterpret an `AffineIsometryEquiv` as an `AffineIsometry`. -/
 def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
@@ -408,6 +439,27 @@ protected theorem continuousOn {s} : ContinuousOn e s :=
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
   e.continuous.continuousWithinAt
 
+/-- Interpret a `AffineIsometryEquiv` as a `ContinuousAffineEquiv`. -/
+def toContinuousAffineEquiv : P ≃ᴬ[𝕜] P₂ :=
+  { e.toAffineEquiv, e.toHomeomorph with }
+
+theorem toContinuousAffineEquiv_injective :
+    Function.Injective (toContinuousAffineEquiv : _ → P ≃ᴬ[𝕜] P₂) := fun x _ h =>
+  coeFn_injective (congr_arg _ h : ⇑x.toContinuousAffineEquiv = _)
+
+@[simp]
+theorem toContinuousAffineEquiv_inj {f g : P ≃ᵃⁱ[𝕜] P₂} :
+    f.toContinuousAffineEquiv = g.toContinuousAffineEquiv ↔ f = g :=
+  toContinuousAffineEquiv_injective.eq_iff
+
+@[simp]
+theorem coe_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv = e :=
+  rfl
+
+/-- Reinterpret a `AffineIsometryEquiv` as a `ContinuousAffineEquiv`. -/
+instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
+  ⟨fun e => e.toContinuousAffineEquiv⟩
+
 variable (𝕜 P)
 
 /-- Identity map as an `AffineIsometryEquiv`. -/
@@ -426,6 +478,9 @@ theorem coe_refl : ⇑(refl 𝕜 P) = id :=
 @[simp]
 theorem toAffineEquiv_refl : (refl 𝕜 P).toAffineEquiv = AffineEquiv.refl 𝕜 P :=
   rfl
+
+@[simp]
+theorem toContinuousAffineEquiv_refl : (refl 𝕜 P).toContinuousAffineEquiv = .refl 𝕜 P := rfl
 
 @[simp]
 theorem toIsometryEquiv_refl : (refl 𝕜 P).toIsometryEquiv = IsometryEquiv.refl P :=
@@ -454,15 +509,35 @@ theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[�
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
+theorem toAffineEquiv_symm : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
   rfl
 
 @[simp]
-theorem toIsometryEquiv_symm : e.toIsometryEquiv.symm = e.symm.toIsometryEquiv :=
+theorem coe_symm_toAffineEquiv : ⇑e.toAffineEquiv.symm = e.symm :=
   rfl
 
 @[simp]
-theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+theorem toContinuousAffineEquiv_symm :
+    e.symm.toContinuousAffineEquiv = e.toContinuousAffineEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 /-- Composition of `AffineIsometryEquiv`s as an `AffineIsometryEquiv`. -/
@@ -558,7 +633,7 @@ protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 
 @[simp]
-theorem ediam_image (s : Set P) : EMetric.diam (e '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set P) : ediam (e '' s) = ediam s :=
   e.isometry.ediam_image s
 
 @[simp]
@@ -613,13 +688,10 @@ lemma ofEq_symm (h : s₁ = s₂) : (ofEq s₁ s₂ h).symm = ofEq s₂ s₁ h.s
 lemma ofEq_rfl : ofEq s₁ s₁ rfl = refl 𝕜 s₁ :=
   rfl
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The map `v ↦ v +ᵥ p` as an affine isometric equivalence between `V` and `P`. -/
 def vaddConst (p : P) : V ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.vaddConst 𝕜 p with norm_map := fun _ => rfl }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
@@ -638,13 +710,10 @@ theorem vaddConst_toAffineEquiv (p : P) :
     (vaddConst 𝕜 p).toAffineEquiv = AffineEquiv.vaddConst 𝕜 p :=
   rfl
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- `p' ↦ p -ᵥ p'` as an affine isometric equivalence. -/
 def constVSub (p : P) : P ≃ᵃⁱ[𝕜] V :=
   { AffineEquiv.constVSub 𝕜 p with norm_map := norm_neg }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (p -ᵥ ·) :=
@@ -657,14 +726,11 @@ theorem symm_constVSub (p : P) :
   ext
   rfl
 
-variable (𝕜 P)
-
+variable (𝕜 P) in
 /-- Translation by `v` (that is, the map `p ↦ v +ᵥ p`) as an affine isometric automorphism of `P`.
 -/
 def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
-
-variable {𝕜 P}
 
 @[simp]
 theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
@@ -682,13 +748,10 @@ theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
   convert (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
   exact funext hg
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- Point reflection in `x` as an affine isometric automorphism. -/
 def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
   (constVSub 𝕜 x).trans (vaddConst 𝕜 x)
-
-variable {𝕜}
 
 theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = (x -ᵥ y) +ᵥ x :=
   rfl
@@ -742,32 +805,6 @@ theorem pointReflection_midpoint_right (x y : P) : pointReflection ℝ (midpoint
 end Constructions
 
 end AffineIsometryEquiv
-
-/-- If `f` is an affine map, then its linear part is continuous iff `f` is continuous. -/
-theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f.linear ↔ Continuous f := by
-  inhabit P
-  have :
-    (f.linear : V → V₂) =
-      (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
-
-/-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
-theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.linear ↔ IsOpenMap f := by
-  inhabit P
-  have :
-    (f.linear : V → V₂) =
-      (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
-
-attribute [local instance] AffineSubspace.nonempty_map -- Porting note: removed `fails_quickly`
 
 namespace AffineSubspace
 

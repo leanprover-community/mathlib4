@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Fintype.Quotient
-import Mathlib.ModelTheory.Semantics
+module
+
+public import Mathlib.Data.Fintype.Quotient
+public import Mathlib.ModelTheory.Semantics
 
 /-!
 # Quotients of First-Order Structures
@@ -18,6 +20,8 @@ This file defines prestructures and quotients of first-order structures.
 - The structure `FirstOrder.Language.quotientStructure s` is the resulting structure on
   `Quotient s`.
 -/
+
+@[expose] public section
 
 
 namespace FirstOrder
@@ -33,6 +37,7 @@ open Structure
 /-- A prestructure is a first-order structure with a `Setoid` equivalence relation on it,
   such that quotienting by that equivalence relation is still a structure. -/
 class Prestructure (s : Setoid M) where
+  /-- The underlying first-order structure -/
   toStructure : L.Structure M
   fun_equiv : ∀ {n} {f : L.Functions n} (x y : Fin n → M), x ≈ y → funMap f x ≈ funMap f y
   rel_equiv : ∀ {n} {r : L.Relations n} (x y : Fin n → M) (_ : x ≈ y), RelMap r x = RelMap r y

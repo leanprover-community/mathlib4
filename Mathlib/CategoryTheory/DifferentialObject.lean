@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Differential objects in a category.
@@ -19,6 +21,8 @@ We build the category of differential objects, and some basic constructions
 such as the forgetful functor, zero morphisms and zero objects, and the shift functor
 on differential objects.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Limits
@@ -39,7 +43,7 @@ structure DifferentialObject where
   /-- The differential of a differential object. -/
   d : obj ⟶ obj⟦(1 : S)⟧
   /-- The differential `d` satisfies that `d² = 0`. -/
-  d_squared : d ≫ d⟦(1 : S)⟧' = 0 := by aesop_cat
+  d_squared : d ≫ d⟦(1 : S)⟧' = 0 := by cat_disch
 
 attribute [reassoc (attr := simp)] DifferentialObject.d_squared
 
@@ -52,7 +56,7 @@ namespace DifferentialObject
 structure Hom (X Y : DifferentialObject S C) where
   /-- The morphism between underlying objects of the two differentiable objects. -/
   f : X.obj ⟶ Y.obj
-  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat
+  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -76,7 +80,7 @@ instance categoryOfDifferentialObjects : Category (DifferentialObject S C) where
   comp f g := Hom.comp f g
 
 @[ext]
-theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
+theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by cat_disch) : f = g :=
   Hom.ext w
 
 @[simp]
@@ -273,8 +277,9 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
     { f := f.f⟦n⟧'
       comm := by
         dsimp
-        erw [Category.assoc, shiftComm_hom_comp, ← Functor.map_comp_assoc, f.comm,
-          Functor.map_comp_assoc]
+        rw [Category.assoc]
+        erw [shiftComm_hom_comp]
+        rw [← Functor.map_comp_assoc, f.comm, Functor.map_comp_assoc]
         rfl }
   map_id X := by ext1; dsimp; rw [Functor.map_id]
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
@@ -303,7 +308,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
   · erw [← NatTrans.naturality]
     dsimp
     simp only [shiftFunctorZero_hom_app_shift, Category.assoc]
-  · aesop_cat
+  · cat_disch
 
 end
 

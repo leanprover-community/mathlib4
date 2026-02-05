@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.Pow
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Smoothness of `Real.sqrt`
@@ -17,6 +19,8 @@ dot-notation lemmas.
 sqrt, differentiable
 -/
 
+@[expose] public section
+
 
 open Set
 
@@ -26,7 +30,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := (√·)
   source := Ioi 0
@@ -42,7 +46,7 @@ noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt (√·) (1 / (2 * √x)) x ∧ ∀ n, ContDiffAt ℝ n (√·) x := by
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
     have : (√·) =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
     exact
@@ -57,6 +61,7 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
 theorem hasStrictDerivAt_sqrt {x : ℝ} (hx : x ≠ 0) : HasStrictDerivAt (√·) (1 / (2 * √x)) x :=
   (deriv_sqrt_aux hx).1
 
+@[fun_prop]
 theorem contDiffAt_sqrt {x : ℝ} {n : WithTop ℕ∞} (hx : x ≠ 0) : ContDiffAt ℝ n (√·) x :=
   (deriv_sqrt_aux hx).2 n
 
@@ -99,7 +104,7 @@ end deriv
 section fderiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : WithTop ℕ∞}
-  {s : Set E} {x : E} {f' : E →L[ℝ] ℝ}
+  {s : Set E} {x : E} {f' : StrongDual ℝ E}
 
 theorem HasFDerivAt.sqrt (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :
     HasFDerivAt (fun y => √(f y)) ((1 / (2 * √(f x))) • f') x :=
@@ -113,17 +118,21 @@ theorem HasFDerivWithinAt.sqrt (hf : HasFDerivWithinAt f f' s x) (hx : f x ≠ 0
     HasFDerivWithinAt (fun y => √(f y)) ((1 / (2 * √(f x))) • f') s x :=
   (hasDerivAt_sqrt hx).comp_hasFDerivWithinAt x hf
 
+@[fun_prop]
 theorem DifferentiableWithinAt.sqrt (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0) :
     DifferentiableWithinAt ℝ (fun y => √(f y)) s x :=
   (hf.hasFDerivWithinAt.sqrt hx).differentiableWithinAt
 
+@[fun_prop]
 theorem DifferentiableAt.sqrt (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     DifferentiableAt ℝ (fun y => √(f y)) x :=
   (hf.hasFDerivAt.sqrt hx).differentiableAt
 
+@[fun_prop]
 theorem DifferentiableOn.sqrt (hf : DifferentiableOn ℝ f s) (hs : ∀ x ∈ s, f x ≠ 0) :
     DifferentiableOn ℝ (fun y => √(f y)) s := fun x hx => (hf x hx).sqrt (hs x hx)
 
+@[fun_prop]
 theorem Differentiable.sqrt (hf : Differentiable ℝ f) (hs : ∀ x, f x ≠ 0) :
     Differentiable ℝ fun y => √(f y) := fun x => (hf x).sqrt (hs x)
 
@@ -137,17 +146,21 @@ theorem fderiv_sqrt (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     fderiv ℝ (fun x => √(f x)) x = (1 / (2 * √(f x))) • fderiv ℝ f x :=
   (hf.hasFDerivAt.sqrt hx).fderiv
 
+@[fun_prop]
 theorem ContDiffAt.sqrt (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
     ContDiffAt ℝ n (fun y => √(f y)) x :=
   (contDiffAt_sqrt hx).comp x hf
 
+@[fun_prop]
 theorem ContDiffWithinAt.sqrt (hf : ContDiffWithinAt ℝ n f s x) (hx : f x ≠ 0) :
     ContDiffWithinAt ℝ n (fun y => √(f y)) s x :=
   (contDiffAt_sqrt hx).comp_contDiffWithinAt x hf
 
+@[fun_prop]
 theorem ContDiffOn.sqrt (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn ℝ n (fun y => √(f y)) s := fun x hx => (hf x hx).sqrt (hs x hx)
 
+@[fun_prop]
 theorem ContDiff.sqrt (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) : ContDiff ℝ n fun y => √(f y) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.sqrt (h x)
 

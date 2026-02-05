@@ -3,32 +3,35 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.Algebra.Exact
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
 
 -/
 
+@[expose] public section
+
 open Function (Surjective)
 open Finsupp
 
 namespace Submodule
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M N P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+  [Module R N] [AddCommGroup P] [Module R P]
 
 open Set
 
-variable {P : Type*} [AddCommMonoid P] [Module R P]
-variable (f : M →ₗ[R] P)
-
-variable {f}
-
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
-theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M}
+theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
     (hs1 : (s.map f).FG)
     (hs2 : (s ⊓ LinearMap.ker f).FG) : s.FG := by
   haveI := Classical.decEq R
@@ -102,24 +105,65 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
 
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/
-theorem fg_ker_comp {R M N P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-    [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf1 : (LinearMap.ker f).FG) (hf2 : (LinearMap.ker g).FG)
-    (hsur : Function.Surjective f) : (g.comp f).ker.FG := by
+    (hsur : Function.Surjective f) : (LinearMap.ker (g.comp f)).FG := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
   · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 
+/-- If $M → N → P → 0$ is exact and $M$ and $P$ are finitely generated then so is $N$.
+
+This is the `Module.Finite` version of `Submodule.fg_of_fg_map_of_fg_inf_ker`. -/
+@[stacks 0519 "(1)"]
+lemma _root_.Module.Finite.of_exact {f : M →ₗ[R] N} {g : N →ₗ[R] P}
+    (h_exact : Function.Exact f g) (h_surj : Function.Surjective g)
+    [Module.Finite R M] [Module.Finite R P] : Module.Finite R N := by
+  refine ⟨(⊤ : Submodule R _).fg_of_fg_map_of_fg_inf_ker g ?_ ?_⟩
+  · rw [← LinearMap.range_eq_top] at h_surj
+    rw [Submodule.map_top, h_surj]
+    exact Module.Finite.fg_top
+  · simp [LinearMap.exact_iff.1 h_exact]
+
+theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.Finite R N]
+    [Module.Finite R (M ⧸ N)] : Module.Finite R M :=
+  .of_exact (LinearMap.exact_subtype_mkQ N) (Quotient.mk_surjective _)
+
 end Submodule
 
 section
 
-variable {R V} [Ring R] [AddCommGroup V] [Module R V]
+variable {R V} [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=
   Module.Finite.equiv (Finsupp.linearEquivFunOnFinite R V ι).symm
 
 end
+
+namespace AddMonoidAlgebra
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+
+instance moduleFinite : Module.Finite R S[M] := .finsupp
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+
+instance moduleFinite : Module.Finite R S[M] := .finsupp
+
+end MonoidAlgebra
+
+namespace FreeAbelianGroup
+variable {σ : Type*} [Finite σ]
+
+instance : Module.Finite ℤ (FreeAbelianGroup σ) :=
+  .of_surjective _ (FreeAbelianGroup.equivFinsupp σ).toIntLinearEquiv.symm.surjective
+
+instance : AddMonoid.FG (FreeAbelianGroup σ) := by
+  rw [← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]; infer_instance
+
+end FreeAbelianGroup

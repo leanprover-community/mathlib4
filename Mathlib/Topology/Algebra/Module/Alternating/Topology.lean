@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
-import Mathlib.Topology.Algebra.Module.Alternating.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+public import Mathlib.Topology.Algebra.Module.Alternating.Basic
 
 /-!
 # Topology on continuous alternating maps
@@ -15,6 +17,8 @@ on the space of continuous alternating maps between topological vector spaces.
 The structures are induced by those on `ContinuousMultilinearMap`s,
 and most of the lemmas follow from the corresponding lemmas about `ContinuousMultilinearMap`s.
 -/
+
+@[expose] public section
 
 open Bornology Function Set Topology
 open scoped UniformConvergence Filter
@@ -40,9 +44,9 @@ lemma isClosed_range_toContinuousMultilinearMap [ContinuousSMul 𝕜 E] [T2Space
 
 end IsClosedRange
 
-section UniformAddGroup
+section IsUniformAddGroup
 
-variable [UniformSpace F] [UniformAddGroup F]
+variable [UniformSpace F] [IsUniformAddGroup F]
 
 instance instUniformSpace : UniformSpace (E [⋀^ι]→L[𝕜] F) :=
   .comap toContinuousMultilinearMap inferInstance
@@ -51,9 +55,6 @@ lemma isUniformEmbedding_toContinuousMultilinearMap :
     IsUniformEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) → _) where
   injective := toContinuousMultilinearMap_injective
   comap_uniformity := rfl
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toContinuousMultilinearMap := isUniformEmbedding_toContinuousMultilinearMap
 
 lemma uniformContinuous_toContinuousMultilinearMap :
     UniformContinuous (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) → _) :=
@@ -68,8 +69,8 @@ theorem uniformContinuous_eval_const [ContinuousSMul 𝕜 E] (x : ι → E) :
     UniformContinuous fun f : E [⋀^ι]→L[𝕜] F ↦ f x :=
   uniformContinuous_pi.1 uniformContinuous_coe_fun x
 
-instance instUniformAddGroup : UniformAddGroup (E [⋀^ι]→L[𝕜] F) :=
-  isUniformEmbedding_toContinuousMultilinearMap.uniformAddGroup
+instance instIsUniformAddGroup : IsUniformAddGroup (E [⋀^ι]→L[𝕜] F) :=
+  isUniformEmbedding_toContinuousMultilinearMap.isUniformAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
 instance instUniformContinuousConstSMul {M : Type*}
@@ -77,8 +78,8 @@ instance instUniformContinuousConstSMul {M : Type*}
     UniformContinuousConstSMul M (E [⋀^ι]→L[𝕜] F) :=
   isUniformEmbedding_toContinuousMultilinearMap.uniformContinuousConstSMul fun _ _ ↦ rfl
 
-theorem isUniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G]
-    [Module 𝕜 G] (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
+theorem isUniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G]
+    [IsUniformAddGroup G] [Module 𝕜 G] (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
     IsUniformInducing (g.compContinuousAlternatingMap : (E [⋀^ι]→L[𝕜] F) → (E [⋀^ι]→L[𝕜] G)) := by
   rw [← isUniformEmbedding_toContinuousMultilinearMap.1.of_comp_iff]
   exact (ContinuousMultilinearMap.isUniformInducing_postcomp g hg).comp
@@ -89,7 +90,7 @@ section CompleteSpace
 variable [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
-theorem completeSpace (h : RestrictGenTopology {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
+theorem completeSpace (h : IsCoherentWith {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) := by
   wlog hF : T2Space F generalizing F
   · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
@@ -121,27 +122,21 @@ theorem isUniformEmbedding_restrictScalars :
   exact (ContinuousMultilinearMap.isUniformEmbedding_restrictScalars 𝕜').comp
     isUniformEmbedding_toContinuousMultilinearMap
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
-
 theorem uniformContinuous_restrictScalars :
     UniformContinuous (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
   (isUniformEmbedding_restrictScalars 𝕜').uniformContinuous
 
 end RestrictScalars
 
-end UniformAddGroup
+end IsUniformAddGroup
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 lemma isEmbedding_toContinuousMultilinearMap :
     IsEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
-  letI := IsTopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  letI := IsTopologicalAddGroup.rightUniformSpace F
+  haveI := isUniformAddGroup_of_addCommGroup (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMultilinearMap := isEmbedding_toContinuousMultilinearMap
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
   isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
@@ -174,6 +169,8 @@ theorem hasBasis_nhds_zero :
       fun SV => { f | MapsTo f SV.1 SV.2 } :=
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
 
+section ContinuousSMul
+
 variable [ContinuousSMul 𝕜 E]
 
 lemma isClosedEmbedding_toContinuousMultilinearMap [T2Space F] :
@@ -181,23 +178,22 @@ lemma isClosedEmbedding_toContinuousMultilinearMap [T2Space F] :
       (E [⋀^ι]→L[𝕜] F) → ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) :=
   ⟨isEmbedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMultilinearMap := isClosedEmbedding_toContinuousMultilinearMap
-
 instance instContinuousEvalConst : ContinuousEvalConst (E [⋀^ι]→L[𝕜] F) (ι → E) F :=
   .of_continuous_forget continuous_toContinuousMultilinearMap
-
-@[deprecated (since := "2024-10-05")]
-protected alias continuous_eval_const := continuous_eval_const
-
-@[deprecated (since := "2024-10-05")]
-protected alias continuous_coe_fun := continuous_coeFun
 
 instance instT2Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coeFun
 
 instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
   inferInstance
+
+/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
+as a continuous linear map. -/
+@[simps! -fullyApplied]
+def toContinuousMultilinearMapCLM
+    (R : Type*) [Semiring R] [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜 R F] :
+    E [⋀^ι]→L[𝕜] F →L[R] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
+  ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
 
 section RestrictScalars
 
@@ -206,12 +202,9 @@ variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
 
 theorem isEmbedding_restrictScalars :
     IsEmbedding (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
-  letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
+  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_restrictScalars := isEmbedding_restrictScalars
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :
@@ -220,7 +213,7 @@ theorem continuous_restrictScalars :
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def restrictScalarsCLM [ContinuousConstSMul 𝕜' F] :
     E [⋀^ι]→L[𝕜] F →L[𝕜'] E [⋀^ι]→L[𝕜'] F where
   toFun := restrictScalars 𝕜'
@@ -229,10 +222,33 @@ def restrictScalarsCLM [ContinuousConstSMul 𝕜' F] :
 
 end RestrictScalars
 
+end ContinuousSMul
+
+section ContinuousConstSMul
+
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousConstSMul 𝕜 F]
+
+/-- Given a continuous linear map taking values in the space of continuous multilinear maps
+such that all of its values are alternating maps,
+lift it to a continuous linear map taking values in the space of continuous alternating maps. -/
+def liftCLM (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)
+    (hf : ∀ x v i j, v i = v j → i ≠ j → f x v = 0) : G →L[𝕜] (E [⋀^ι]→L[𝕜] F) where
+  toFun x := ⟨f x, hf x⟩
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  cont := continuous_induced_rng.mpr (map_continuous f)
+
+@[simp]
+lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)
+    (hf : ∀ x v i j, v i = v j → i ≠ j → f x v = 0) (x : G) (v : ι → E) :
+    liftCLM f hf x v = f x v :=
+  rfl
+
+variable [ContinuousSMul 𝕜 E]
 variable (𝕜 E F)
 
 /-- The application of a multilinear map as a `ContinuousLinearMap`. -/
-def apply [ContinuousConstSMul 𝕜 F] (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
+def apply (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -241,16 +257,17 @@ def apply [ContinuousConstSMul 𝕜 F] (m : ι → E) : E [⋀^ι]→L[𝕜] F �
 variable {𝕜 E F}
 
 @[simp]
-lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : ι → E} {c : E [⋀^ι]→L[𝕜] F} :
-    apply 𝕜 E F m c = c m := rfl
+lemma apply_apply {m : ι → E} {c : E [⋀^ι]→L[𝕜] F} : apply 𝕜 E F m c = c m := rfl
 
-theorem hasSum_eval {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F}
-    {q : E [⋀^ι]→L[𝕜] F} (h : HasSum p q) (m : ι → E) :
+end ContinuousConstSMul
+
+variable [ContinuousSMul 𝕜 E] {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F}
+
+theorem hasSum_eval {q : E [⋀^ι]→L[𝕜] F} (h : HasSum p q) (m : ι → E) :
     HasSum (fun a => p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
 
-theorem tsum_eval [T2Space F] {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F} (hp : Summable p)
-    (m : ι → E) : (∑' a, p a) m = ∑' a, p a m :=
+theorem tsum_eval [T2Space F] (hp : Summable p) (m : ι → E) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
 
 end ContinuousAlternatingMap

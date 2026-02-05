@@ -14,14 +14,14 @@ example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim
 example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim
 example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim
-example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by solve_by_elim
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n + 1)) (a : α 0) : α 4 := by solve_by_elim
 
 example (h : Nat) : Nat := by solve_by_elim []
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim []
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim []
 example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim []
 example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim []
-example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by solve_by_elim []
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n + 1)) (a : α 0) : α 4 := by solve_by_elim []
 
 example {α β : Type} (f : α → β) (a : α) : β := by
   fail_if_success solve_by_elim [-f]
@@ -39,7 +39,7 @@ example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim only [f
 example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim only [f, a]
 example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim only [f, g, a]
 example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim only [g, b]
-example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 4 := by
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n + 1)) (a : α 0) : α 4 := by
   solve_by_elim only [f, a]
 
 set_option linter.unusedVariables false in
@@ -56,7 +56,7 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a : α), P₁ a → P₂ a → β)
   solve_by_elim
 
 example {X : Type} (x : X) : x = x := by
-  fail_if_success solve_by_elim (config := {constructor := false}) only -- needs the `rfl` lemma
+  fail_if_success solve_by_elim -constructor only -- needs the `rfl` lemma
   solve_by_elim
 
 -- Needs to apply `rfl` twice, with different implicit arguments each time.
@@ -64,12 +64,12 @@ example {X : Type} (x : X) : x = x := by
 example {X : Type} (x y : X) (p : Prop) (h : x = x → y = y → p) : p := by solve_by_elim
 
 example : True := by
-  fail_if_success solve_by_elim (config := {constructor := false}) only -- needs the `trivial` lemma
+  fail_if_success solve_by_elim -constructor only -- needs the `trivial` lemma
   solve_by_elim
 
 example : True := by
   -- uses the `trivial` lemma, which should now be removed from the default set:
-  solve_by_elim (config := {constructor := false})
+  solve_by_elim -constructor
 
 example : True := by
   solve_by_elim only -- uses the constructor discharger.
@@ -82,11 +82,11 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
   solve_by_elim
 
 example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y := by
-  fail_if_success solve_by_elim (config := {symm := false})
+  fail_if_success solve_by_elim -symm
   solve_by_elim
 
 example (P : True → False) : 3 = 7 := by
-  fail_if_success solve_by_elim (config := {exfalso := false})
+  fail_if_success solve_by_elim -exfalso
   solve_by_elim
 
 -- Verifying that `solve_by_elim` acts only on the main goal.
@@ -122,11 +122,11 @@ example (f g : Nat → Prop) : (∃ k : Nat, f k) ∨ (∃ k : Nat, g k) ↔ ∃
   rintro (⟨n, fn⟩ | ⟨n, gn⟩)
   pick_goal 3
   rintro ⟨n, hf | hg⟩
-  solve_by_elim* (config := {maxDepth := 13}) [Or.inl, Or.inr, Exists.intro]
+  solve_by_elim* (maxDepth := 13) [Or.inl, Or.inr, Exists.intro]
 
 -- Test that we can disable the `intro` discharger.
 example (P : Prop) : P → P := by
-  fail_if_success solve_by_elim (config := {intro := false})
+  fail_if_success solve_by_elim -intro
   solve_by_elim
 
 example (P Q : Prop) : P ∧ Q → P ∧ Q := by
@@ -143,12 +143,12 @@ example {α : Type} {p : α → Prop} (h₀ : ∀ x, p x) (y : α) : p y := by
 
 -- Check that `apply_assumption` uses `symm`.
 example (a b : α) (h : b = a) : a = b := by
-  fail_if_success apply_assumption (config := {symm := false})
+  fail_if_success apply_assumption -symm
   apply_assumption
 
 -- Check that `apply_assumption` uses `exfalso`.
 example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : Nat := by
-  fail_if_success apply_assumption (config := {exfalso := false})
+  fail_if_success apply_assumption -exfalso
   apply_assumption <;> assumption
 
 end apply_assumption

@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Sums over residue classes
@@ -16,6 +18,8 @@ The main result is `summable_indicator_mod_iff`, which states that when `f : ℕ
 decreasing, then the sum over `f` restricted to any residue class
 mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
+
+@[expose] public section
 
 
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
@@ -72,15 +76,14 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
     (hf : Antitone f) {k : ZMod m} (l : ZMod m)
     (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
     Summable ({n : ℕ | (n : ZMod m) = l}.indicator f) := by
-  by_cases hf₀ : ∀ n, 0 ≤ f n -- the interesting case
+  by_cases! hf₀ : ∀ n, 0 ≤ f n -- the interesting case
   · rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable] at hs
     have hl : (l.val + m : ZMod m) = l := by
       simp only [ZMod.natCast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
     rw [← hl, ← Nat.cast_add, summable_indicator_mod_iff_summable]
     exact hs.of_nonneg_of_le (fun _ ↦ hf₀ _)
       fun _ ↦ hf <| Nat.add_le_add Nat.le.refl (k.val_lt.trans_le <| m.le_add_left l.val).le
-  · push_neg at hf₀
-    obtain ⟨n, hn⟩ := hf₀
+  · obtain ⟨n, hn⟩ := hf₀
     exact (not_summable_indicator_mod_of_antitone_of_neg hf hn k hs).elim
 
 /-- A decreasing sequence of real numbers is summable on a residue class
@@ -97,9 +100,9 @@ open ZMod
 
 /-- If `f` is a summable function on `ℕ`, and `0 < N`, then we may compute `∑' n : ℕ, f n` by
 summing each residue class mod `N` separately. -/
-lemma Nat.sumByResidueClasses {R : Type*} [AddCommGroup R] [UniformSpace R] [UniformAddGroup R]
+lemma Nat.sumByResidueClasses {R : Type*} [AddCommGroup R] [UniformSpace R] [IsUniformAddGroup R]
     [CompleteSpace R] [T0Space R] {f : ℕ → R} (hf : Summable f) (N : ℕ) [NeZero N] :
     ∑' n, f n = ∑ j : ZMod N, ∑' m, f (j.val + N * m) := by
-  rw [← (residueClassesEquiv N).symm.tsum_eq f, tsum_prod, tsum_fintype, residueClassesEquiv,
-    Equiv.coe_fn_symm_mk]
+  rw [← (residueClassesEquiv N).symm.tsum_eq f, Summable.tsum_prod, tsum_fintype,
+    residueClassesEquiv, Equiv.coe_fn_symm_mk]
   exact hf.comp_injective (residueClassesEquiv N).symm.injective

@@ -3,14 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Interval.Set.InitialSeg
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.Interval.Set.InitialSeg
 
 /-! # Transfinite iterations of a successor structure
 
@@ -41,14 +44,14 @@ we introduce a structure `Φ.Iteration j` for any `j : J`. This
 structure contains all the expected data and properties for
 all the indices that are `≤ j`. In this file, we show that
 `Φ.Iteration j` is a subsingleton. The existence shall be
-obtained in the file `SmallObject.Iteration.Nonempty`, and
+obtained in the file `Mathlib/CategoryTheory/SmallObject/Iteration/Nonempty.lean`, and
 the construction of the functor `Φ.iterationFunctor J : J ⥤ C`
-and of its colimit `Φ.iteration J : C` will done in the
-file `SmallObject.TransfiniteIteration`.
+and of its colimit `Φ.iteration J : C` will be done in the
+file `Mathlib/CategoryTheory/SmallObject/TransfiniteIteration.lean`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
-objects `X` and `Y` may have non isomorphic successors. This is
+objects `X` and `Y` may have non-isomorphic successors. This is
 the reason why we make an extensive use of equalities in
 `C` and in `Arrow C` in the definitions.
 
@@ -62,6 +65,8 @@ Reid Barton in 2018 towards the model category structure on
 topological spaces.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -114,7 +119,7 @@ end
 
 variable (C) in
 /-- A successor structure on a category consists of the
-data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ toSucc X`
+data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ succ X`
 (which does not need to be natural), and a zeroth object `X₀`.
 -/
 structure SuccStruct where
@@ -132,7 +137,7 @@ induces a successor structure on `C ⥤ C`. -/
 @[simps]
 def ofNatTrans {F : C ⥤ C} (ε : 𝟭 C ⟶ F) : SuccStruct (C ⥤ C) where
   succ G := G ⋙ F
-  toSucc G := whiskerLeft G ε
+  toSucc G := Functor.whiskerLeft G ε
   X₀ := 𝟭 C
 
 variable (Φ : SuccStruct C)
@@ -229,7 +234,7 @@ end
 
 variable [SuccOrder J] [OrderBot J] [HasIterationOfShape J C]
 
-/-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
+/-- The category of `j`th iterations of a successor structure `Φ : SuccStruct C`.
 An object consists of the data of all iterations of `Φ` for `i : J` such
 that `i ≤ j` (this is the field `F`). Such objects are
 equipped with data and properties which characterizes uniquely the iterations
@@ -359,49 +364,49 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
     suffices iter₁.F = iter₂.F by aesop
     revert iter₁ iter₂
     induction j using SuccOrder.limitRecOn with
-    | hm j h =>
-        obtain rfl := h.eq_bot
-        intro iter₁ iter₂
-        refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
-        obtain rfl : k₂ = ⊥ := by simpa using h₂
-        obtain rfl : k₁ = ⊥ := by simpa using h₁₂
-        apply mapEq_refl _ _ (by simp only [obj_bot])
-    | hs j hj₁ hj₂ =>
-        intro iter₁ iter₂
-        refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
-        have h₀ := Order.le_succ j
-        replace hj₂ := hj₂ (iter₁.trunc h₀) (iter₂.trunc h₀)
-        have hsucc := Functor.congr_obj hj₂ ⟨j, by simp⟩
-        dsimp at hj₂ hsucc
-        wlog h : k₂ ≤ j generalizing k₁ k₂
-        · obtain h₂ | rfl := h₂.lt_or_eq
-          · exact this _ _ _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).1 h₂)
-          · by_cases h' : k₁ ≤ j
-            · apply mapEq_trans _ h₀ (this k₁ j h' h₀ (by simp))
-              simp only [MapEq, ← arrowSucc_def _ _ (Order.lt_succ_of_not_isMax hj₁),
-                arrowSucc_eq, hsucc]
-            · simp only [not_le] at h'
-              obtain rfl : k₁ = Order.succ j := le_antisymm h₁₂
-                ((Order.succ_le_iff_of_not_isMax hj₁).2 h')
-              rw [MapEq, arrowMap_refl, arrowMap_refl,
-                obj_succ _ _ h', obj_succ _ _ h', hsucc]
-        simp only [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
-    | hl j h₁ h₂ =>
-        intro iter₁ iter₂
-        refine ext (fun k₁ k₂ h₁₂ h₃ ↦ ?_)
-        wlog h₄ : k₂ < j generalizing k₁ k₂; swap
-        · have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
-          simp at this
-          simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
-        · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
-          have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
-            Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
-          by_cases h₅ : k₁ < j
-          · dsimp [MapEq]
-            simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]
-          · obtain rfl : k₁ = j := le_antisymm h₁₂ (by simpa using h₅)
-            apply mapEq_refl
-            simp only [obj_limit _ _ h₁, this]
+    | isMin j h =>
+      obtain rfl := h.eq_bot
+      intro iter₁ iter₂
+      refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
+      obtain rfl : k₂ = ⊥ := by simpa using h₂
+      obtain rfl : k₁ = ⊥ := by simpa using h₁₂
+      apply mapEq_refl _ _ (by simp only [obj_bot])
+    | succ j hj₁ hj₂ =>
+      intro iter₁ iter₂
+      refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
+      have h₀ := Order.le_succ j
+      replace hj₂ := hj₂ (iter₁.trunc h₀) (iter₂.trunc h₀)
+      have hsucc := Functor.congr_obj hj₂ ⟨j, by simp⟩
+      dsimp at hj₂ hsucc
+      wlog h : k₂ ≤ j generalizing k₁ k₂
+      · obtain h₂ | rfl := h₂.lt_or_eq
+        · exact this _ _ _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).1 h₂)
+        · by_cases h' : k₁ ≤ j
+          · apply mapEq_trans _ h₀ (this k₁ j h' h₀ (by simp))
+            simp only [MapEq, ← arrowSucc_def _ _ (Order.lt_succ_of_not_isMax hj₁),
+              arrowSucc_eq, hsucc]
+          · simp only [not_le] at h'
+            obtain rfl : k₁ = Order.succ j := le_antisymm h₁₂
+              ((Order.succ_le_iff_of_not_isMax hj₁).2 h')
+            rw [MapEq, arrowMap_refl, arrowMap_refl,
+              obj_succ _ _ h', obj_succ _ _ h', hsucc]
+      simp only [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
+    | isSuccLimit j h₁ h₂ =>
+      intro iter₁ iter₂
+      refine ext (fun k₁ k₂ h₁₂ h₃ ↦ ?_)
+      wlog h₄ : k₂ < j generalizing k₁ k₂; swap
+      · have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
+        simp at this
+        simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
+      · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
+        have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
+          Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
+        by_cases h₅ : k₁ < j
+        · dsimp [MapEq]
+          simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]
+        · obtain rfl : k₁ = j := le_antisymm h₁₂ (by simpa using h₅)
+          apply mapEq_refl
+          simp only [obj_limit _ _ h₁, this]
 
 lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :

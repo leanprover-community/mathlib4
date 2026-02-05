@@ -3,8 +3,10 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 
 /-!
 # Colimits on Grothendieck constructions preserving limits
@@ -13,10 +15,14 @@ We characterize the condition in which colimits on Grothendieck constructions pr
 preserving limits on the Grothendieck construction's base category as well as on each of its fibers.
 -/
 
+@[expose] public section
+
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
+
+open Functor
 
 namespace Limits
 
@@ -40,9 +46,9 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
        (limitCompWhiskeringLeftIsoCompLimit K (Grothendieck.ι F c)).symm ≪≫
       preservesLimitIso colim _ ≪≫
       HasLimit.isoOfNatIso
-        (Functor.associator _ _ _ ≪≫
+        (associator _ _ _ ≪≫
         isoWhiskerLeft _ (fiberwiseColimCompEvaluationIso _).symm ≪≫
-        (Functor.associator _ _ _).symm) ≪≫
+        (associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
     fun {c₁ c₂} f => by
       simp only [fiberwiseColimit_obj, fiberwiseColimit_map, Iso.trans_hom, Iso.symm_hom,
@@ -73,11 +79,11 @@ instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [Has
           preservesLimitIso colim (K ⋙ fiberwiseColim _ _)
     _ ≅ limit (K ⋙ colim) :=
       HasLimit.isoOfNatIso
-       (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
+       (associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
     convert Iso.isIso_hom i₂
     ext
-    simp only [colim_obj, Functor.comp_obj, limit.post_π, colim_map, Iso.instTransIso_trans,
+    simp only [colim_obj, Functor.comp_obj, limit.post_π, colim_map, Iso.trans_def,
       Iso.trans_assoc, Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,
       fiberwiseColim_obj, isoWhiskerLeft_hom, NatTrans.comp_app, Functor.associator_hom_app,
       whiskerLeft_app, fiberwiseColimCompColimIso_hom_app, Category.id_comp,

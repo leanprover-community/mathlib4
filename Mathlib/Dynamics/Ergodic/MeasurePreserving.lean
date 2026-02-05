@@ -3,13 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.AEMeasurable
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.MeasureTheory.Measure.AEMeasurable
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
-# Measure preserving maps
+# Measure-preserving maps
 
-We say that `f : α → β` is a measure preserving map w.r.t. measures `μ : Measure α` and
+We say that `f : α → β` is a measure-preserving map w.r.t. measures `μ : Measure α` and
 `ν : Measure β` if `f` is measurable and `map f μ = ν`. In this file we define the predicate
 `MeasureTheory.MeasurePreserving` and prove its basic properties.
 
@@ -23,8 +25,10 @@ Isabelle formalization.
 
 ## Tags
 
-measure preserving map, measure
+measure-preserving map, measure
 -/
+
+@[expose] public section
 
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
@@ -36,7 +40,7 @@ namespace MeasureTheory
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
-/-- `f` is a measure preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
+/-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
 structure MeasurePreserving (f : α → β)
   (μa : Measure α := by volume_tac) (μb : Measure β := by volume_tac) : Prop where
@@ -90,6 +94,17 @@ protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
   ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
 
+protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
+    (hg : Measurable g) (hf : Measurable f) :
+    MeasurePreserving g (μa.map f) μc :=
+  ⟨hg, (map_map hg hf).trans hgf.map_eq⟩
+
+protected theorem of_semiconj {f : α → β} {ga : α → α} {gb : β → β}
+    (hfm : MeasurePreserving f μa μb) (hga : MeasurePreserving ga μa μa) (hf : Semiconj f ga gb)
+    (hgb : Measurable gb) : MeasurePreserving gb μb μb := by
+  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp hgb hfm.measurable
+  rwa [hfm.map_eq] at this
+
 /-- An alias of `MeasureTheory.MeasurePreserving.comp` with a convenient defeq and argument order
 for `MeasurableEquiv` -/
 protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
@@ -114,10 +129,19 @@ protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb)
     SigmaFinite μa :=
   SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
 
+protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SFinite μa] :
+    SFinite μb := by
+  rw [← hf.map_eq]
+  infer_instance
+
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
   rw [map_apply₀ hf.1.aemeasurable hs]
+
+theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
+  simp [measureReal_def, measure_preimage hf hs]
 
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
@@ -126,6 +150,15 @@ theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
 theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa μb) (s : Set β) :
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
+
+theorem measure_preimage_le {f : α → β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) ≤ μb s := by
+  rw [← hf.map_eq]
+  exact le_map_apply hf.aemeasurable _
+
+theorem preimage_null {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : μb s = 0) : μa (f ⁻¹' s) = 0 :=
+  hf.quasiMeasurePreserving.preimage_null hs
 
 theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : β → γ} (hg : NullMeasurable g μb) :
@@ -160,12 +193,14 @@ open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
-  induction' n with n ih; · simp
-  simp only [add_smul, one_smul, ← n.add_one]
-  refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih ?_)
-  replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
-    hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
-  rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [add_smul, one_smul]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n + 1] ⁻¹' s)]
+    replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
+      hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
+    rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/
@@ -180,13 +215,9 @@ theorem exists_mem_iterate_mem_of_measure_univ_lt_mul_measure (hf : MeasurePrese
       ∃ i < n, ∃ j < n, i ≠ j ∧ (f^[i] ⁻¹' s ∩ f^[j] ⁻¹' s).Nonempty := by
     simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ (fun m _ ↦ A m) this
   wlog hlt : i < j generalizing i j
-  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
+  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_gt.resolve_left hlt)
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
-
-@[deprecated (since := "2024-08-12")]
-alias exists_mem_iterate_mem_of_volume_lt_mul_volume :=
-  exists_mem_iterate_mem_of_measure_univ_lt_mul_measure
 
 /-- A self-map preserving a finite measure is conservative: if `μ s ≠ 0`, then at least one point
 `x ∈ s` comes back to `s` under iterations of `f`. Actually, a.e. point of `s` comes back to `s`
@@ -199,6 +230,11 @@ theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ
   exact ⟨x, hx, m, hm.1.ne', hmx⟩
 
 end MeasurePreserving
+
+lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
+    MeasurePreserving (Subtype.val : s → α) (μa.comap Subtype.val) (μa.restrict s) where
+  measurable := measurable_subtype_coe
+  map_eq := map_comap_subtype_coe hs _
 
 namespace MeasurableEquiv
 

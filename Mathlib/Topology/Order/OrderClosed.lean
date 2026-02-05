@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.LeftRight
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Order-closed topologies
@@ -26,8 +28,8 @@ We prove many basic properties of such topologies.
 
 This file contains the proofs of the following facts.
 For exact requirements
-(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology,
-`Preorder` vs `PartialOrder` vs `LinearOrder` etc)
+(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology`,
+`Preorder` vs `PartialOrder` vs `LinearOrder`, etc.)
 see their statements.
 
 ### Open / closed sets
@@ -55,7 +57,9 @@ see their statements.
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 -/
 
-open Set Filter
+@[expose] public section
+
+open Set Filter TopologicalSpace
 open OrderDual (toDual)
 open scoped Topology
 
@@ -84,6 +88,7 @@ class OrderClosedTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Pro
 
 instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := h
 instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := h
+instance [TopologicalSpace α] [h : SeparableSpace α] : SeparableSpace αᵒᵈ := h
 
 theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=
@@ -214,15 +219,9 @@ theorem Filter.Tendsto.eventually_const_lt {l : Filter γ} {f : γ → α} {u v 
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u < f a :=
   h.eventually <| eventually_gt_nhds hv
 
-@[deprecated (since := "2024-11-17")]
-alias eventually_gt_of_tendsto_gt := Filter.Tendsto.eventually_const_lt
-
 theorem Filter.Tendsto.eventually_const_le {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u ≤ f a :=
   h.eventually <| eventually_ge_nhds hv
-
-@[deprecated (since := "2024-11-17")]
-alias eventually_ge_of_tendsto_gt := Filter.Tendsto.eventually_const_le
 
 protected theorem Dense.exists_gt [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, x < y :=
@@ -257,23 +256,15 @@ in another file.
 theorem Ioo_mem_nhdsLT (H : a < b) : Ioo a b ∈ 𝓝[<] b := by
   simpa only [← Iio_inter_Ioi] using inter_mem_nhdsWithin _ (Ioi_mem_nhds H)
 
-@[deprecated (since := "2024-12-21")] alias Ioo_mem_nhdsWithin_Iio' := Ioo_mem_nhdsLT
-
 theorem Ioo_mem_nhdsLT_of_mem (H : b ∈ Ioc a c) : Ioo a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsLT H.1) <| Ioo_subset_Ioo_right H.2
-
-@[deprecated (since := "2024-12-21")] alias Ioo_mem_nhdsWithin_Iio := Ioo_mem_nhdsLT_of_mem
 
 protected theorem CovBy.nhdsLT (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsLT h.1
 
-@[deprecated (since := "2024-12-21")] protected alias CovBy.nhdsWithin_Iio := CovBy.nhdsLT
-
 protected theorem PredOrder.nhdsLT [PredOrder α] : 𝓝[<] a = ⊥ := by
   if h : IsMin a then simp [h.Iio_eq]
   else exact (Order.pred_covBy_of_not_isMin h).nhdsLT
-
-@[deprecated (since := "2024-12-21")] protected alias PredOrder.nhdsWithin_Iio := PredOrder.nhdsLT
 
 theorem PredOrder.nhdsGT_eq_nhdsNE [PredOrder α] (a : α) : 𝓝[>] a = 𝓝[≠] a := by
   rw [← nhdsLT_sup_nhdsGT, PredOrder.nhdsLT, bot_sup_eq]
@@ -284,43 +275,25 @@ theorem PredOrder.nhdsGE_eq_nhds [PredOrder α] (a : α) : 𝓝[≥] a = 𝓝 a 
 theorem Ico_mem_nhdsLT_of_mem (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsLT_of_mem H) Ioo_subset_Ico_self
 
-@[deprecated (since := "2024-12-21")] alias Ico_mem_nhdsWithin_Iio := Ico_mem_nhdsLT_of_mem
-
 theorem Ico_mem_nhdsLT (H : a < b) : Ico a b ∈ 𝓝[<] b := Ico_mem_nhdsLT_of_mem ⟨H, le_rfl⟩
-
-@[deprecated (since := "2024-12-21")] alias Ico_mem_nhdsWithin_Iio' := Ico_mem_nhdsLT
 
 theorem Ioc_mem_nhdsLT_of_mem (H : b ∈ Ioc a c) : Ioc a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsLT_of_mem H) Ioo_subset_Ioc_self
 
-@[deprecated (since := "2024-12-21")] alias Ioc_mem_nhdsWithin_Iio := Ioc_mem_nhdsLT_of_mem
-
 theorem Ioc_mem_nhdsLT (H : a < b) : Ioc a b ∈ 𝓝[<] b := Ioc_mem_nhdsLT_of_mem ⟨H, le_rfl⟩
-
-@[deprecated (since := "2024-12-21")] alias Ioc_mem_nhdsWithin_Iio' := Ioc_mem_nhdsLT
 
 theorem Icc_mem_nhdsLT_of_mem (H : b ∈ Ioc a c) : Icc a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsLT_of_mem H) Ioo_subset_Icc_self
 
-@[deprecated (since := "2024-12-21")] alias Icc_mem_nhdsWithin_Iio := Icc_mem_nhdsLT_of_mem
-
 theorem Icc_mem_nhdsLT (H : a < b) : Icc a b ∈ 𝓝[<] b := Icc_mem_nhdsLT_of_mem ⟨H, le_rfl⟩
-
-@[deprecated (since := "2024-12-21")] alias Icc_mem_nhdsWithin_Iio' := Icc_mem_nhdsLT
 
 @[simp]
 theorem nhdsWithin_Ico_eq_nhdsLT (h : a < b) : 𝓝[Ico a b] b = 𝓝[<] b :=
   nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 
-@[deprecated (since := "2024-12-21")]
-alias nhdsWithin_Ico_eq_nhdsWithin_Iio := nhdsWithin_Ico_eq_nhdsLT
-
 @[simp]
 theorem nhdsWithin_Ioo_eq_nhdsLT (h : a < b) : 𝓝[Ioo a b] b = 𝓝[<] b :=
   nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
-
-@[deprecated (since := "2024-12-21")]
-alias nhdsWithin_Ioo_eq_nhdsWithin_Iio := nhdsWithin_Ioo_eq_nhdsLT
 
 @[simp]
 theorem continuousWithinAt_Ico_iff_Iio (h : a < b) :
@@ -339,61 +312,33 @@ theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
 protected theorem CovBy.nhdsLE (H : a ⋖ b) : 𝓝[≤] b = pure b := by
   rw [← Iio_insert, nhdsWithin_insert, H.nhdsLT, sup_bot_eq]
 
-@[deprecated (since := "2024-12-21")]
-protected alias CovBy.nhdsWithin_Iic := CovBy.nhdsLE
-
 protected theorem PredOrder.nhdsLE [PredOrder α] : 𝓝[≤] b = pure b := by
   rw [← Iio_insert, nhdsWithin_insert, PredOrder.nhdsLT, sup_bot_eq]
-
-@[deprecated (since := "2024-12-21")]
-protected alias PredOrder.nhdsWithin_Iic := PredOrder.nhdsLE
 
 theorem Ioc_mem_nhdsLE (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=
   inter_mem (nhdsWithin_le_nhds <| Ioi_mem_nhds H) self_mem_nhdsWithin
 
-@[deprecated (since := "2024-12-21")] alias Ioc_mem_nhdsWithin_Iic' := Ioc_mem_nhdsLE
-
 theorem Ioo_mem_nhdsLE_of_mem (H : b ∈ Ioo a c) : Ioo a c ∈ 𝓝[≤] b :=
   mem_of_superset (Ioc_mem_nhdsLE H.1) <| Ioc_subset_Ioo_right H.2
-
-@[deprecated (since := "2024-12-21")] alias Ioo_mem_nhdsWithin_Iic := Ioo_mem_nhdsLE_of_mem
 
 theorem Ico_mem_nhdsLE_of_mem (H : b ∈ Ioo a c) : Ico a c ∈ 𝓝[≤] b :=
   mem_of_superset (Ioo_mem_nhdsLE_of_mem H) Ioo_subset_Ico_self
 
-@[deprecated (since := "2024-12-22")]
-alias Ico_mem_nhdsWithin_Iic := Ico_mem_nhdsLE_of_mem
-
 theorem Ioc_mem_nhdsLE_of_mem (H : b ∈ Ioc a c) : Ioc a c ∈ 𝓝[≤] b :=
   mem_of_superset (Ioc_mem_nhdsLE H.1) <| Ioc_subset_Ioc_right H.2
-
-@[deprecated (since := "2024-12-22")]
-alias Ioc_mem_nhdsWithin_Iic := Ioc_mem_nhdsLE_of_mem
 
 theorem Icc_mem_nhdsLE_of_mem (H : b ∈ Ioc a c) : Icc a c ∈ 𝓝[≤] b :=
   mem_of_superset (Ioc_mem_nhdsLE_of_mem H) Ioc_subset_Icc_self
 
-@[deprecated (since := "2024-12-22")]
-alias Icc_mem_nhdsWithin_Iic := Icc_mem_nhdsLE_of_mem
-
 theorem Icc_mem_nhdsLE (H : a < b) : Icc a b ∈ 𝓝[≤] b := Icc_mem_nhdsLE_of_mem ⟨H, le_rfl⟩
-
-@[deprecated (since := "2024-12-22")]
-alias Icc_mem_nhdsWithin_Iic' := Icc_mem_nhdsLE
 
 @[simp]
 theorem nhdsWithin_Icc_eq_nhdsLE (h : a < b) : 𝓝[Icc a b] b = 𝓝[≤] b :=
   nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Icc_eq_nhdsWithin_Iic := nhdsWithin_Icc_eq_nhdsLE
-
 @[simp]
 theorem nhdsWithin_Ioc_eq_nhdsLE (h : a < b) : 𝓝[Ioc a b] b = 𝓝[≤] b :=
   nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
-
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Ioc_eq_nhdsWithin_Iic := nhdsWithin_Ioc_eq_nhdsLE
 
 @[simp]
 theorem continuousWithinAt_Icc_iff_Iic (h : a < b) :
@@ -507,15 +452,9 @@ theorem Filter.Tendsto.eventually_lt_const {l : Filter γ} {f : γ → α} {u v 
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a < u :=
   h.eventually <| eventually_lt_nhds hv
 
-@[deprecated (since := "2024-11-17")]
-alias eventually_lt_of_tendsto_lt := Filter.Tendsto.eventually_lt_const
-
 theorem Filter.Tendsto.eventually_le_const {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a ≤ u :=
   h.eventually <| eventually_le_nhds hv
-
-@[deprecated (since := "2024-11-17")]
-alias eventually_le_of_tendsto_lt := Filter.Tendsto.eventually_le_const
 
 protected theorem Dense.exists_lt [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, y < x :=
@@ -547,21 +486,12 @@ in another file.
 theorem Ioo_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioo a c ∈ 𝓝[>] b :=
   mem_nhdsWithin.2
     ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
-
-@[deprecated (since := "2024-12-22")] alias Ioo_mem_nhdsWithin_Ioi := Ioo_mem_nhdsGT_of_mem
 
 theorem Ioo_mem_nhdsGT (H : a < b) : Ioo a b ∈ 𝓝[>] a := Ioo_mem_nhdsGT_of_mem ⟨le_rfl, H⟩
 
-@[deprecated (since := "2024-12-22")] alias Ioo_mem_nhdsWithin_Ioi' := Ioo_mem_nhdsGT
-
 protected theorem CovBy.nhdsGT (h : a ⋖ b) : 𝓝[>] a = ⊥ := h.toDual.nhdsLT
 
-@[deprecated (since := "2024-12-22")] alias CovBy.nhdsWithin_Ioi := CovBy.nhdsGT
-
 protected theorem SuccOrder.nhdsGT [SuccOrder α] : 𝓝[>] a = ⊥ := PredOrder.nhdsLT (α := αᵒᵈ)
-
-@[deprecated (since := "2024-12-22")] alias SuccOrder.nhdsWithin_Ioi := SuccOrder.nhdsGT
 
 theorem SuccOrder.nhdsLT_eq_nhdsNE [SuccOrder α] (a : α) : 𝓝[<] a = 𝓝[≠] a :=
   PredOrder.nhdsGT_eq_nhdsNE (α := αᵒᵈ) a
@@ -572,44 +502,25 @@ theorem SuccOrder.nhdsLE_eq_nhds [SuccOrder α] (a : α) : 𝓝[≤] a = 𝓝 a 
 theorem Ioc_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsGT_of_mem H) Ioo_subset_Ioc_self
 
-@[deprecated (since := "2024-12-22")]
-alias Ioc_mem_nhdsWithin_Ioi := Ioc_mem_nhdsGT_of_mem
-
 theorem Ioc_mem_nhdsGT (H : a < b) : Ioc a b ∈ 𝓝[>] a := Ioc_mem_nhdsGT_of_mem ⟨le_rfl, H⟩
-
-@[deprecated (since := "2024-12-22")] alias Ioc_mem_nhdsWithin_Ioi' := Ioc_mem_nhdsGT
 
 theorem Ico_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ico a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsGT_of_mem H) Ioo_subset_Ico_self
 
-@[deprecated (since := "2024-12-22")] alias Ico_mem_nhdsWithin_Ioi := Ico_mem_nhdsGT_of_mem
-
 theorem Ico_mem_nhdsGT (H : a < b) : Ico a b ∈ 𝓝[>] a := Ico_mem_nhdsGT_of_mem ⟨le_rfl, H⟩
-
-@[deprecated (since := "2024-12-22")] alias Ico_mem_nhdsWithin_Ioi' := Ico_mem_nhdsGT
 
 theorem Icc_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Icc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsGT_of_mem H) Ioo_subset_Icc_self
 
-@[deprecated (since := "2024-12-22")] alias Icc_mem_nhdsWithin_Ioi := Icc_mem_nhdsGT_of_mem
-
 theorem Icc_mem_nhdsGT (H : a < b) : Icc a b ∈ 𝓝[>] a := Icc_mem_nhdsGT_of_mem ⟨le_rfl, H⟩
-
-@[deprecated (since := "2024-12-22")] alias Icc_mem_nhdsWithin_Ioi' := Icc_mem_nhdsGT
 
 @[simp]
 theorem nhdsWithin_Ioc_eq_nhdsGT (h : a < b) : 𝓝[Ioc a b] a = 𝓝[>] a :=
   nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Ioc_eq_nhdsWithin_Ioi := nhdsWithin_Ioc_eq_nhdsGT
-
 @[simp]
 theorem nhdsWithin_Ioo_eq_nhdsGT (h : a < b) : 𝓝[Ioo a b] a = 𝓝[>] a :=
   nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
-
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Ioo_eq_nhdsWithin_Ioi := nhdsWithin_Ioo_eq_nhdsGT
 
 @[simp]
 theorem continuousWithinAt_Ioc_iff_Ioi (h : a < b) :
@@ -627,59 +538,33 @@ theorem continuousWithinAt_Ioo_iff_Ioi (h : a < b) :
 
 protected theorem CovBy.nhdsGE (H : a ⋖ b) : 𝓝[≥] a = pure a := H.toDual.nhdsLE
 
-@[deprecated (since := "2024-12-22")] alias CovBy.nhdsWithin_Ici := CovBy.nhdsGE
-
 protected theorem SuccOrder.nhdsGE [SuccOrder α] : 𝓝[≥] a = pure a :=
   PredOrder.nhdsLE (α := αᵒᵈ)
-
-@[deprecated (since := "2024-12-22")]
-alias SuccOrder.nhdsWithin_Ici := SuccOrder.nhdsGE
 
 theorem Ico_mem_nhdsGE (H : a < b) : Ico a b ∈ 𝓝[≥] a :=
   inter_mem_nhdsWithin _ <| Iio_mem_nhds H
 
-@[deprecated (since := "2024-12-22")] alias Ico_mem_nhdsWithin_Ici' := Ico_mem_nhdsGE
-
 theorem Ico_mem_nhdsGE_of_mem (H : b ∈ Ico a c) : Ico a c ∈ 𝓝[≥] b :=
   mem_of_superset (Ico_mem_nhdsGE H.2) <| Ico_subset_Ico_left H.1
-
-@[deprecated (since := "2024-12-22")]
-alias Ico_mem_nhdsWithin_Ici := Ico_mem_nhdsGE_of_mem
 
 theorem Ioo_mem_nhdsGE_of_mem (H : b ∈ Ioo a c) : Ioo a c ∈ 𝓝[≥] b :=
   mem_of_superset (Ico_mem_nhdsGE H.2) <| Ico_subset_Ioo_left H.1
 
-@[deprecated (since := "2024-12-22")]
-alias Ioo_mem_nhdsWithin_Ici := Ioo_mem_nhdsGE_of_mem
-
 theorem Ioc_mem_nhdsGE_of_mem (H : b ∈ Ioo a c) : Ioc a c ∈ 𝓝[≥] b :=
   mem_of_superset (Ioo_mem_nhdsGE_of_mem H) Ioo_subset_Ioc_self
-
-@[deprecated (since := "2024-12-22")] alias Ioc_mem_nhdsWithin_Ici := Ioc_mem_nhdsGE_of_mem
 
 theorem Icc_mem_nhdsGE_of_mem (H : b ∈ Ico a c) : Icc a c ∈ 𝓝[≥] b :=
   mem_of_superset (Ico_mem_nhdsGE_of_mem H) Ico_subset_Icc_self
 
-@[deprecated (since := "2024-12-22")]
-alias Icc_mem_nhdsWithin_Ici := Icc_mem_nhdsGE_of_mem
-
 theorem Icc_mem_nhdsGE (H : a < b) : Icc a b ∈ 𝓝[≥] a := Icc_mem_nhdsGE_of_mem ⟨le_rfl, H⟩
-
-@[deprecated (since := "2024-12-22")] alias Icc_mem_nhdsWithin_Ici' := Icc_mem_nhdsGE
 
 @[simp]
 theorem nhdsWithin_Icc_eq_nhdsGE (h : a < b) : 𝓝[Icc a b] a = 𝓝[≥] a :=
   nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Icc_eq_nhdsWithin_Ici := nhdsWithin_Icc_eq_nhdsGE
-
 @[simp]
 theorem nhdsWithin_Ico_eq_nhdsGE (h : a < b) : 𝓝[Ico a b] a = 𝓝[≥] a :=
   nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
-
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Ico_eq_nhdsWithin_Ici := nhdsWithin_Ico_eq_nhdsGE
 
 @[simp]
 theorem continuousWithinAt_Icc_iff_Ici (h : a < b) :
@@ -716,7 +601,7 @@ theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
 
 theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { b | f b ≤ g b } :=
-  continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_le_prod
+  continuous_iff_isClosed.mp (hf.prodMk hg) _ isClosed_le_prod
 
 instance : ClosedIicTopology α where
   isClosed_Iic _ := isClosed_le continuous_id continuous_const
@@ -734,10 +619,13 @@ theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 
+theorem le_of_tendsto_of_tendsto_of_frequently {f g : β → α} {b : Filter β} {a₁ a₂ : α}
+    (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∃ᶠ x in b, f x ≤ g x) : a₁ ≤ a₂ :=
+  t.isClosed_le'.mem_of_frequently_of_tendsto h (hf.prodMk_nhds hg)
+
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
-  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prod_mk_nhds hg
-  show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
+  le_of_tendsto_of_tendsto_of_frequently hf hg <| Eventually.frequently h
 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
@@ -758,13 +646,13 @@ theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s
     (hx : x ∈ closure s) (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x)
     (h : ∀ y ∈ s, f y ≤ g y) : f x ≤ g x :=
   show (f x, g x) ∈ { p : α × α | p.1 ≤ p.2 } from
-    OrderClosedTopology.isClosed_le'.closure_subset ((hf.prod hg).mem_closure hx h)
+    OrderClosedTopology.isClosed_le'.closure_subset ((hf.prodMk hg).mem_closure hx h)
 
 /-- If `s` is a closed set and two functions `f` and `g` are continuous on `s`,
 then the set `{x ∈ s | f x ≤ g x}` is a closed set. -/
 theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed ({ x ∈ s | f x ≤ g x }) :=
-  (hf.prod hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
+  (hf.prodMk hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
 
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)
     (hf : ContinuousOn f (closure s)) (hg : ContinuousOn g (closure s)) ⦃x⦄ (hx : x ∈ closure s) :
@@ -779,6 +667,26 @@ theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs
 theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
   (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
+
+/-- The set of monotone functions on a set is closed. -/
+theorem isClosed_monotoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | MonotoneOn f s} := by
+  simp only [isClosed_iff_clusterPt, clusterPt_principal_iff_frequently]
+  intro g hg a ha b hb hab
+  have hmain (x) : Tendsto (fun f' ↦ f' x) (𝓝 g) (𝓝 (g x)) := continuousAt_apply x _
+  exact le_of_tendsto_of_tendsto_of_frequently (hmain a) (hmain b) (hg.mono fun g h ↦ h ha hb hab)
+
+/-- The set of monotone functions is closed. -/
+theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} := by
+  simp_rw [← monotoneOn_univ]
+  exact isClosed_monotoneOn
+
+/-- The set of antitone functions on a set is closed. -/
+theorem isClosed_antitoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | AntitoneOn f s} :=
+  isClosed_monotoneOn (α := αᵒᵈ) (β := β)
+
+/-- The set of antitone functions is closed. -/
+theorem isClosed_antitone [Preorder β] : IsClosed {f : β → α | Antitone f} :=
+  isClosed_monotone (α := αᵒᵈ) (β := β)
 
 end Preorder
 
@@ -800,7 +708,7 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
-  simpa only [lt_iff_not_le] using (isClosed_le hg hf).isOpen_compl
+  simpa only [lt_iff_not_ge] using (isClosed_le hg hf).isOpen_compl
 
 theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
   isOpen_lt continuous_fst continuous_snd
@@ -917,16 +825,15 @@ theorem continuous_max : Continuous fun p : α × α => max p.1 p.2 :=
 
 protected theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
-  (continuous_max.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_max.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
-  (continuous_min.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_min.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max a (f i)) l (𝓝 a) := by
-  convert ((continuous_max.comp (@Continuous.Prod.mk α α _ _ a)).tendsto a).comp h
-  simp
+  simpa only [sup_idem] using (tendsto_const_nhds (x := a)).max h
 
 protected theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max (f i) a) l (𝓝 a) := by
