@@ -835,7 +835,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   if let some b := t.unfoldBoundaries? then
     srcType ← b.insertBoundaries srcType t.attrName
   srcType ← applyReplacementForall t cfg.dontTranslate srcType
-  let reorder' ← guessReorder srcType tgtDecl.type {}
+  let reorder' ← guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'.toString}"
   let reorder ←
     if let some reorder := cfg.reorder? then
