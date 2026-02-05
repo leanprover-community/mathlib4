@@ -62,15 +62,15 @@ def Reorder.reverse (r : Reorder) : Reorder := {
 decreasing_by
   cases r; grind [→ Array.sizeOf_lt_of_mem]
 
-/-- Return the minimum size of an array on which `Reorder.permute!` can run. -/
-def Reorder.size (r : Reorder) : Nat :=
+/-- Return the minimum size of an array on which `Reorder.permute!` is valid. -/
+def Reorder.range (r : Reorder) : Nat :=
   if r.isEmpty then 0 else
   1 + r.argReorders.foldl (max · ·.1) (r.perm.iter.flatMap (·.1.iter) |>.fold max 0)
 
 /-- Check whether the permutations are equal by running both on `(0...=max).toArray`. -/
 partial def Reorder.beq (r₁ r₂ : Reorder) : Bool :=
-  r₁.size == r₂.size &&
-    r₁.permute! (0...r₁.size).toArray == r₂.permute! (0...r₁.size).toArray &&
+  r₁.range == r₂.range &&
+    r₁.permute! (0...r₁.range).toArray == r₂.permute! (0...r₁.range).toArray &&
       have : BEq Reorder := ⟨Reorder.beq⟩
       r₁.argReorders == r₂.argReorders
 
@@ -85,8 +85,8 @@ decreasing_by
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 partial def reorderForall (reorder : Reorder) (src : Expr) : MetaM Expr := do
-  forallBoundedTelescope src reorder.size fun xs e => do
-  unless xs.size = reorder.size do
+  forallBoundedTelescope src reorder.range fun xs e => do
+  unless xs.size = reorder.range do
     throwError "the permutation\n{reorder.perm}\nprovided by the `(reorder := ...)` option is \
       out of bounds, the type{indentExpr src}\nhas only {xs.size} arguments"
   let mut lctx ← getLCtx
@@ -99,11 +99,11 @@ partial def reorderForall (reorder : Reorder) (src : Expr) : MetaM Expr := do
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 partial def reorderLambda (reorder : Reorder) (src : Expr) : MetaM Expr := do
-  let (xs, _, e) ← lambdaMetaTelescope src reorder.size
-  let (ys, _, _) ← forallMetaBoundedTelescope (← inferType e) (reorder.size - xs.size)
+  let (xs, _, e) ← lambdaMetaTelescope src reorder.range
+  let (ys, _, _) ← forallMetaBoundedTelescope (← inferType e) (reorder.range - xs.size)
   let e := mkAppN e ys
   let mut xs := xs ++ ys
-  unless xs.size = reorder.size do
+  unless xs.size = reorder.range do
     throwError "the permutation\n{reorder.perm}\nis out of bounds, \
       the function{indentExpr src}\nhas only {xs.size} arguments"
   for (n, reorder) in reorder.argReorders do

@@ -440,8 +440,8 @@ where
   @[inline]
   visitAppReorder (e f : Expr) (args : Array Expr) (reorder : Reorder) := do
       -- If the number of arguments is too small for `reorder`, we need to eta expand first
-      if args.size < reorder.size then
-        let e' ← etaExpandN (reorder.size - args.size) e
+      if args.size < reorder.range then
+        let e' ← etaExpandN (reorder.range - args.size) e
         trace[translate_detail] "eta expanded {e} to {e'}"
         return ← visit e'
       unless reorder.perm.isEmpty do
@@ -498,8 +498,8 @@ where
             ((← getFVarLocalDecl x).setType d'))
     else
       let e := e.instantiateRev fvars
-      if fvars.size < reorder.size then
-        visitLambdaReorder reorder (← etaExpandN (reorder.size - fvars.size) e) fvars tmpLCtx
+      if fvars.size < reorder.range then
+        visitLambdaReorder reorder (← etaExpandN (reorder.range - fvars.size) e) fvars tmpLCtx
       else
         return tmpLCtx.mkLambda (reorder.permute! fvars) (← visit e)
 
