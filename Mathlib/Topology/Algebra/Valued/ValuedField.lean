@@ -211,7 +211,8 @@ lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → (ValueGroup₀ hv.
   simp
 
 local instance : LinearOrderedCommGroupWithZero (ValueGroup₀ hv.v) :=
-  MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroValueGroup₀
+  MonoidWithZeroHom.ValueGroup₀.instLinearOrderedCommGroupWithZero
+
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → ValueGroup₀ hv.v :=
   Completion.isDenseInducing_coe.extend (v.restrict : K → (ValueGroup₀ hv.v))

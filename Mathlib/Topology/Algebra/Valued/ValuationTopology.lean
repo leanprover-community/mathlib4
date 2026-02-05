@@ -71,7 +71,7 @@ theorem subgroups_basis :
       tauto
     mul := by
       letI : LinearOrderedCommGroupWithZero (ValueGroup₀ v) := --inferInstance failed (?)
-        MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroValueGroup₀
+        MonoidWithZeroHom.ValueGroup₀.instLinearOrderedCommGroupWithZero
       rintro γ
       obtain ⟨γ₀, h⟩ := exists_square_le γ
       use γ₀

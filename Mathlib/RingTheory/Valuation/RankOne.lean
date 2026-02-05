@@ -43,21 +43,26 @@ variable {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
 
 namespace Valuation
 
-/-- A valuation has rank one if it is nontrivial and its image (defined as
-`MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
+/-- A valuation has rank at most one if its image (defined as `MonoidWithZeroHom.valueGroup₀ v`)
+is contained in `ℝ≥0`. Note that this class includes the data
 of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`. -/
-class RankOne (v : Valuation R Γ₀) extends Valuation.IsNontrivial v where
+class RankLeOne (v : Valuation R Γ₀) where
   /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
-  hom (v) : ValueGroup₀ v →*₀ ℝ≥0
-  strictMono' : StrictMono hom
+  hom' (v) : ValueGroup₀ v →*₀ ℝ≥0
+  strictMono' : StrictMono hom'
+
+/-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
+  Note that this class includes the data of an inclusion morphism `Γ₀ → ℝ≥0`. -/
+class RankOne (v : Valuation R Γ₀) extends RankLeOne v, Valuation.IsNontrivial v
 
 open WithZero
 
 lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
     Nonempty v.RankOne ↔ MulArchimedean (ValueGroup₀ v) := by
   constructor
-  · rintro ⟨⟨f, hf⟩⟩
-    exact MulArchimedean.comap f.toMonoidHom hf
+  · intro h
+    obtain hv := Nonempty.some h
+    exact MulArchimedean.comap hv.hom'.toMonoidHom hv.strictMono'
   · intro _
     obtain ⟨f, hf⟩ :=
       Archimedean.exists_orderAddMonoidHom_real_injective (Additive  (ValueGroup₀ v)ˣ)
@@ -80,7 +85,7 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
       intro a b h
       simpa [← Units.val_lt_val, ← NNReal.coe_lt_coe, rf] using he h
     exact ⟨{
-      hom := withZeroUnitsEquiv.toMonoidWithZeroHom.comp <| (map' (rf.comp e)).comp
+      hom' := withZeroUnitsEquiv.toMonoidWithZeroHom.comp <| (map' (rf.comp e)).comp
         withZeroUnitsEquiv.symm.toMonoidWithZeroHom
       strictMono' := withZeroUnitsEquiv_strictMono.comp <| H.comp
         withZeroUnitsEquiv_symm_strictMono
@@ -88,9 +93,11 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
 
 namespace RankOne
 
-variable (v : Valuation R Γ₀) [RankOne v]
+variable (v : Valuation R Γ₀) [hv : RankOne v]
 
-lemma strictMono : StrictMono (hom v) := strictMono'
+abbrev hom := RankLeOne.hom' v
+
+lemma strictMono : StrictMono (hom v) := hv.strictMono'
 
 lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := IsNontrivial.exists_val_nontrivial
 
@@ -134,13 +141,79 @@ instance restrict_Nontrivial [v.IsNontrivial] : (v.restrict).IsNontrivial where
 
 variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
 
-instance restrict_RankOne [RankOne v] : RankOne (v.restrict) where
-  hom := (RankOne.hom v).comp embedding
+instance restrict_RankOne : RankOne (v.restrict) where
+  hom' := (RankOne.hom v).comp embedding
   strictMono' := (strictMono v).comp embedding_strictMono
+
+@[simp]
+lemma restrict_RankOne_hom_eq :
+  RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl
+
+theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [hv : RankOne v]
+    {γ : ℝ≥0} (hγ : γ ≠ 0) :
+    (∃ (x : K), x ≠ 0 ∧ RankOne.hom v (v.restrict x) < γ) := by
+  have hγ_pos : 0 < γ := pos_iff_ne_zero.mpr hγ
+  obtain ⟨x, h⟩ :=
+    NNReal.exists_lt_of_strictMono (RankOne.strictMono v.restrict) hγ_pos
+  obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
+  use k
+  refine ⟨?_, ?_⟩
+  · simp only [restrict₀_apply, restrict_def, map_eq_zero, dite_eq_left_iff, coe_ne_zero,
+      imp_false, not_not] at hk
+    by_contra h0
+    rw [dif_pos (by  rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
+    simp at hk
+  · convert h
+    simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply]
+    erw [← hk, embedding_restrict₀]
+    rfl
 
 end Restrict
 
 end RankOne
+
+namespace RankLeOne
+
+variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [hv : RankLeOne v]
+
+/-- If a valuation has rank at most one and is non trivial,
+then it has rank one -/
+def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v :=
+  { hv with
+    exists_val_nontrivial := by
+      by_contra H'
+      push_neg at H'
+      obtain ⟨x, hx, hx'⟩ := H
+      exact hx' (H' x ((ne_zero_iff v).mpr hx)) }
+
+/-- If a valuation has rank at most one and is non trivial,
+then it has rank one -/
+def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v :=
+  { hv with
+    exists_val_nontrivial := by
+      by_contra H'
+      push_neg at H'
+      rw [nontrivial_iff_exists_ne 1] at H
+      obtain ⟨x, hx⟩ := H
+      obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
+      have h0 : v k ≠ 0 := by
+        rw [ne_eq, ← restrict₀_eq_zero_iff, hk]
+        simp
+      have h1 : v k ≠ 1 := by
+        rw [ne_eq, ← restrict₀_eq_one_iff, hk]
+        simp [hx]
+      exact h1 (H' k h0) }
+
+theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
+    Subsingleton ((ValueGroup₀ v)ˣ) ∨
+      ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom' v) (v.restrict x) < γ := by
+  classical
+  simp only [ne_eq, or_iff_not_imp_left, not_subsingleton_iff_nontrivial]
+  intro H
+  let hv : RankOne v := rankOne_of_nontrivial v H
+  apply RankOne.exists_val_lt
+
+end RankLeOne
 
 end Valuation
 
@@ -154,7 +227,7 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 and the rank is at most one. -/
 def Valuation.RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
     Valuation.RankOne (valuation R) where
-  hom := e.emb.comp embedding
+  hom' := e.emb.comp embedding
   strictMono' := e.strictMono.comp embedding_strictMono
 
 instance [IsNontrivial R] [IsRankLeOne R] :

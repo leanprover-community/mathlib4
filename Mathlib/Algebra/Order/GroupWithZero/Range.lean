@@ -29,63 +29,74 @@ variable {f : A →*₀ B}
 
 open WithZero
 
+namespace ValueGroup₀
+
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an homomorphism of monoids with zero. -/
 @[simps!]
-def ValueGroup₀.orderMonoidWithZeroHom : ValueGroup₀ f →*₀o WithZero Bˣ where
+def orderMonoidWithZeroHom : ValueGroup₀ f →*₀o WithZero Bˣ where
   __ := WithZero.map' (valueGroup f).subtype
   monotone' := map'_strictMono (Subtype.strictMono_coe _)|>.monotone
 
-lemma ValueGroup₀.monoidWithZeroHom_strictMono :
+lemma monoidWithZeroHom_strictMono :
     StrictMono (ValueGroup₀.orderMonoidWithZeroHom (f := f)) :=
   map'_strictMono (Subtype.strictMono_coe _)
 
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
 the use of `ValueGroup₀.MonoidWithZeroHom` and apply the above lemma
 `ValueGroup₀.MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
-def ValueGroup₀.orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
+def orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
   __ := ValueGroup₀.orderMonoidWithZeroHom
-  inj' := ValueGroup₀.monoidWithZeroHom_strictMono.injective
-  map_rel_iff' := ValueGroup₀.monoidWithZeroHom_strictMono.le_iff_le
+  inj' := monoidWithZeroHom_strictMono.injective
+  map_rel_iff' := monoidWithZeroHom_strictMono.le_iff_le
 
 @[simp]
-lemma ValueGroup₀.orderEmbedding_apply (x : ValueGroup₀ f) :
-    ValueGroup₀.orderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
+lemma orderEmbedding_apply (x : ValueGroup₀ f) :
+    orderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
 
-lemma ValueGroup₀.orderEmbedding_mul (x y : ValueGroup₀ f) :
-    ValueGroup₀.orderEmbedding (x * y) =
-      ValueGroup₀.orderEmbedding x * ValueGroup₀.orderEmbedding y := by simp
+lemma orderEmbedding_mul (x y : ValueGroup₀ f) :
+    orderEmbedding (x * y) =
+      orderEmbedding x * orderEmbedding y := by simp
 
 /-- The inclusion of `ValueGroup₀ f` into `B` as an order embedding. -/
-def ValueGroup₀.orderEmbedding' : ValueGroup₀ f ↪o B :=
-  ValueGroup₀.orderEmbedding.trans OrderIso.withZeroUnits.toOrderEmbedding
+def orderEmbedding' : ValueGroup₀ f ↪o B :=
+  orderEmbedding.trans OrderIso.withZeroUnits.toOrderEmbedding
 
-lemma ValueGroup₀.orderEmbedding'_apply (x : ValueGroup₀ f) :
-    ValueGroup₀.orderEmbedding' x =
+lemma orderEmbedding'_apply (x : ValueGroup₀ f) :
+    orderEmbedding' x =
       OrderIso.withZeroUnits.toOrderEmbedding (WithZero.map' (valueGroup f).subtype x) := rfl
 
-lemma ValueGroup₀.orderEmbedding'_mul (x y : ValueGroup₀ f) :
-    ValueGroup₀.orderEmbedding' (x * y) =
-      ValueGroup₀.orderEmbedding' x * ValueGroup₀.orderEmbedding' y := by
-  simp [ValueGroup₀.orderEmbedding'_apply, map_mul, OrderIso.withZeroUnits]
+lemma orderEmbedding'_mul (x y : ValueGroup₀ f) :
+    orderEmbedding' (x * y) = orderEmbedding' x * orderEmbedding' y := by
+  simp [orderEmbedding'_apply, map_mul, OrderIso.withZeroUnits]
 instance : IsOrderedMonoid (ValueGroup₀ f) :=
-  Function.Injective.isOrderedMonoid ValueGroup₀.orderEmbedding' ValueGroup₀.orderEmbedding'_mul
-    <| OrderEmbedding.le_iff_le ValueGroup₀.orderEmbedding'
+  Function.Injective.isOrderedMonoid orderEmbedding' orderEmbedding'_mul
+    <| OrderEmbedding.le_iff_le orderEmbedding'
 
 instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
   zero_le := by simp
   mul_lt_mul_of_pos_left a ha b c hbc := by
-    simp only [← OrderEmbedding.lt_iff_lt ValueGroup₀.orderEmbedding',
-      ValueGroup₀.orderEmbedding'_mul] at *
+    simp only [← OrderEmbedding.lt_iff_lt orderEmbedding', orderEmbedding'_mul] at *
     exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
 
-lemma ValueGroup₀.orderEmbedding'_eq_embedding (x : ValueGroup₀ f) :
-    ValueGroup₀.orderEmbedding' x = ValueGroup₀.embedding x := by
-  simp [orderEmbedding'_apply]
+lemma orderEmbedding'_eq_embedding (x : ValueGroup₀ f) :
+    orderEmbedding' x = embedding x := by simp [orderEmbedding'_apply]
 
-lemma ValueGroup₀.embedding_strictMono :
-    StrictMono (ValueGroup₀.embedding (f := f)) := by
+lemma embedding_strictMono :
+    StrictMono (embedding (f := f)) := by
   intro x y hxy
-  simp only [← ValueGroup₀.orderEmbedding'_eq_embedding]
+  simp only [← orderEmbedding'_eq_embedding]
   exact (OrderEmbedding.lt_iff_lt orderEmbedding').mpr hxy
+
+lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) :
+    0 < embedding a.1 := by
+  --rw [← map_zero f, ← embedding_restrict₀ (0 : A)] -- fails; problem with Dec. inst.
+  conv_lhs => rw [← map_zero f, ← ValueGroup₀.embedding_restrict₀ (0 : A)]
+  rw [embedding_strictMono.lt_iff_lt]
+  simp
+
+lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) :
+    embedding a.1 ≠ 0 := (embedding_unit_pos a).ne.symm
+
+end ValueGroup₀
 
 end MonoidWithZeroHom

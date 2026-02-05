@@ -53,6 +53,14 @@ def valuation : Valuation K ℝ≥0 where
 @[simp]
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
+
+
+/-- The valuation of a normed field has rank at most one -/
+instance : RankLeOne (valuation (K := K)) where
+  hom' := embedding
+  strictMono' := embedding_strictMono
+
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
@@ -60,14 +68,59 @@ def toValued : Valued K ℝ≥0 :=
     v := valuation
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]
-      exact ⟨fun ⟨ε, hε, h⟩  =>
+      refine ⟨?_, ?_⟩
+      · rintro ⟨ε, hε, h⟩
+        rcases RankLeOne.exists_val_lt (valuation (K := K)) with H | H
+         -- isTriviallyValued_or_exists h hε with (H | ⟨x, hpos, h_lt⟩)
+        · sorry /- refine ⟨1, one_mem _, one_ne_zero, ?_⟩
+          intro x hx
+          simp only [Units.val_one, mem_setOf_eq] at hx
+          suffices x = 0 by
+            apply hU
+            simp only [this, Metric.mem_ball, dist_self, hε]
+          by_cases hx' : valuation (K := K)  x = 0
+          · exact nnnorm_eq_zero.mp hx'
+          · exfalso
+            apply not_le.mpr hx
+            apply le_of_eq
+            symm
+            have : IsUnit (⟨valuation x, valuation.mem_rangeGroup₀⟩ : valuation.rangeGroup₀) := by
+              rw [isUnit_iff_ne_zero, ne_eq, ← Subtype.coe_inj,
+                MonoidHomWithZero.range₀_coe_zero]
+              exact hx'
+            simpa only [Units.ext_iff, this.unit_spec, Units.val_one,
+              Submonoid.mk_eq_one] using H.elim this.unit 1 -/
+        · obtain ⟨x, hx, hxy⟩ := H (γ := ⟨ε, le_of_lt hε⟩) (pos_iff_ne_zero.mp hε)
+          use Units.mk0 (valuation.restrict x) (by sorry)
+          intro y hy
+          apply h
+          simp only [Metric.mem_ball, dist_zero_right]
+          simp only [Units.val_mk0, mem_setOf_eq, restrict_lt_iff] at hy
+
+          sorry/- valuation.mem_rangeGroup₀,
+            (ne_zero_iff valuation).mpr hx
+          intro y hy
+          apply hU
+          simp only [Metric.mem_ball, dist_zero_right]
+          simp only [Units.val_mk0, mem_setOf_eq] at hy
+          exact lt_trans hy hxy -/
+/-       · rintro ⟨γ, _, hγ, hU⟩
+        use (γ : ℝ), NNReal.coe_pos.mpr (pos_of_ne_zero hγ)
+        intro x hx
+        apply hU
+        simpa only [Metric.mem_ball, dist_zero_right, mem_setOf_eq] using hx -/
+      · rintro ⟨ε, hε⟩
+        sorry
+        --⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
+          --fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩
+      /- exact ⟨fun ⟨ε, hε, h⟩  =>
           ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
         fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
-          fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩ }
+          fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩  -/}
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
-  hom := ValueGroup₀.embedding
+  hom' := ValueGroup₀.embedding
   strictMono' := ValueGroup₀.embedding_strictMono
   exists_val_nontrivial := (exists_one_lt_norm K).imp fun x h ↦ by
     have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
@@ -85,9 +138,9 @@ variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
 --TODO: replace by Valuation.norm
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/
-def norm : L → ℝ := fun x : L => hv.hom (Valued.v.restrict x)
+def norm : L → ℝ := fun x : L => hv.hom _ (Valued.v.restrict x)
 
-theorem norm_def {x : L} : Valued.norm x = hv.hom (Valued.v.restrict x) := rfl
+theorem norm_def {x : L} : Valued.norm x = hv.hom _ (Valued.v.restrict x) := rfl
 
 theorem norm_nonneg (x : L) : 0 ≤ norm x := by simp only [norm, NNReal.zero_le_coe]
 

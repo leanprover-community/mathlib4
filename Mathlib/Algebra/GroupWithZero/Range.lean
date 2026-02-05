@@ -133,6 +133,8 @@ def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
   MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
     <| WithZero.map' (valueGroup f).subtype
 
+-- TODO: embedding_apply should not be a simp lemma.
+
 variable (f) in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/
 @[simps!]
