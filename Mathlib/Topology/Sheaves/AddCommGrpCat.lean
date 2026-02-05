@@ -34,9 +34,11 @@ variable {X : TopCat.{u}} {U V : Opens X} {C : Type v} [Category.{w} C]
 
 instance [Abelian C] : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
-instance : Abelian (Sheaf AddCommGrpCat X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
+instance [Abelian C] [HasSheafify (Opens.grothendieckTopology X) C] :
+    Abelian (Sheaf C X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
-instance : (Sheaf.forget AddCommGrpCat X).Additive where
+instance [Abelian C] [HasSheafify (Opens.grothendieckTopology X) C] : 
+    (Sheaf.forget C X).Additive where
 
 instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
 
