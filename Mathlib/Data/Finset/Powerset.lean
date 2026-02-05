@@ -306,38 +306,27 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       simp only [map_subset_map, has, card_map, and_self]
 
-/-- The types `Fin n → Bool` and `Finset (Fin n)` are eqivalent by using `s : Finset (Fin n)`
-as the set where the `f : Fin n → Bool` is `true`. -/
-def Equiv_fnFinBool_finsetFin (n : ℕ) : (Fin n → Bool) ≃ (Finset (Fin n)) where
-  toFun := fun f ↦ {i | f i}
-  invFun := fun s i ↦ i ∈ s
-  left_inv := fun l ↦ by simp
-  right_inv := fun l ↦ by simp
-
-lemma Equiv_fnFinBool_finsetFin_mem_powersetCard_iff (n k : ℕ) (f : Fin n → Bool) :
-    #{i | f i = true} = k ↔ (Equiv_fnFinBool_finsetFin n) f ∈ powersetCard k univ := by
-  simp [Equiv_fnFinBool_finsetFin]
-
 /-- The number of maps `f : Fin n → Bool` with `#{i | f i} = k` equals `n.choose k`. -/
 -- must stay here
 lemma card_fnFinBool {k n : ℕ} : #{ f : Fin n → Bool | #{i | f i} = k } = n.choose k := by
   conv => right; rw [← card_fin n]
   rw [← card_powersetCard k (univ : Finset (Fin n))]
-  apply card_equiv (Equiv_fnFinBool_finsetFin n) (fun f ↦ ?_)
-  simp only [mem_filter, mem_univ, true_and]
-  exact Equiv_fnFinBool_finsetFin_mem_powersetCard_iff n k f
+  apply card_equiv (Equiv.trans (Equiv.trans (Equiv.arrowCongr' (Equiv.refl _)
+    Equiv.propEquivBool.symm) (Equiv.cast rfl))
+    Fintype.finsetEquivSet.symm)  (fun f ↦ ?_)
+  simp only [mem_filter, mem_univ, true_and, Equiv.arrowCongr', Equiv.arrowCongr,
+    Equiv.propEquivBool, Equiv.coe_fn_symm_mk, Equiv.refl_symm, Equiv.coe_refl, comp_id,
+    Equiv.symm_symm, Equiv.coe_fn_mk, Equiv.cast_refl, Equiv.trans_refl, Fintype.finsetEquivSet,
+    Equiv.trans_apply, mem_powersetCard, subset_univ, Set.toFinset_card, Fintype.card_ofFinset]
+  refine Eq.congr_left (by congr)
 
 lemma card_listVector_card {k n : ℕ} :
     #{v : List.Vector Bool n | v.val.count true = k} = n.choose k := by
   rw [← card_fnFinBool]
   apply card_equiv (Equiv.vectorEquivFin _ n) (fun v ↦ ?_)
   simp only [mem_filter, mem_univ, true_and, Equiv.vectorEquivFin, Equiv.coe_fn_mk]
-  have h' : List.ofFn v.get = v.val
-   := by
-    rw [← List.ofFn_get (l :=  v.1)]
-    aesop
-  refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← List.count_ofFn_eq_card _ _ true] <;> congr
-  rw [h']
+  refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← List.count_ofFn_eq_card _ _ true] <;> congr <;>
+  rw [← List.ofFn_get (l := v.1)] <;> aesop
 
 end powersetCard
 

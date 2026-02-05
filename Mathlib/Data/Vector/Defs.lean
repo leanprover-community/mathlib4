@@ -158,6 +158,7 @@ def ofFn : ∀ {n}, (Fin n → α) → Vector α n
 /-- Create a vector from another with a provably equal length. -/
 protected def congr {n m : ℕ} (h : n = m) : Vector α n → Vector α m
   | ⟨x, p⟩ => ⟨x, h ▸ p⟩
+
 section Accum
 
 open Prod
