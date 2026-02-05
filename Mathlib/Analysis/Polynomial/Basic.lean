@@ -83,7 +83,7 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
   · exact tendsto_abs_atTop_atTop.comp (P.tendsto_atTop_of_leadingCoeff_nonneg hdeg hP)
   · exact tendsto_abs_atBot_atTop.comp (P.tendsto_atBot_of_leadingCoeff_nonpos hdeg hP)
 
-theorem abs_isBoundedUnder_iff :
+theorem abs_isBoundedUnder_atTop_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
   refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
     (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
@@ -91,9 +91,11 @@ theorem abs_isBoundedUnder_iff :
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
 
+@[deprecated (since := "2026-02-05")] alias abs_isBoundedUnder_iff := abs_isBoundedUnder_atTop_iff
+
 theorem abs_tendsto_atTop_iff : Tendsto (fun x => abs <| eval x P) atTop atTop ↔ 0 < P.degree :=
-  ⟨fun h => not_le.mp (mt (abs_isBoundedUnder_iff P).mpr (not_isBoundedUnder_of_tendsto_atTop h)),
-    abs_tendsto_atTop P⟩
+  ⟨fun h ↦ not_le.mp (mt (abs_isBoundedUnder_atTop_iff P).mpr
+    (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atTop P⟩
 
 theorem tendsto_nhds_iff {c : 𝕜} :
     Tendsto (fun x => eval x P) atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
@@ -122,6 +124,18 @@ theorem isEquivalent_atBot_lead : P.eval ~[atBot] (P.leadingCoeff * · ^ P.natDe
 theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot atTop := by
   convert ((P.comp (-X)).abs_tendsto_atTop (by simp [hdeg])).comp tendsto_neg_atBot_atTop using 2
   simp
+
+theorem abs_isBoundedUnder_atBot_iff :
+    (IsBoundedUnder (· ≤ ·) atBot (|eval · P|)) ↔ P.degree ≤ 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
+    (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
+    (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
+  contrapose! h
+  exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atBot P h)
+
+theorem abs_tendsto_atBot_iff : Tendsto (|P.eval ·|) atBot atTop ↔ 0 < P.degree :=
+  ⟨fun h ↦ not_le.mp (mt (abs_isBoundedUnder_atBot_iff P).mpr
+    (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atBot P⟩
 
 end PolynomialAtBot
 
