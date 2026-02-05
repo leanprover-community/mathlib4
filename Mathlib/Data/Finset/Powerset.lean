@@ -314,7 +314,7 @@ def Equiv.fnBool_finset {ι : Type*} [DecidableEq ι] [Fintype ι] : (ι → Boo
   left_inv := fun l ↦ by simp
   right_inv := fun l ↦ by simp
 
-lemma Equiv_fnFinBool_finsetFin_mem_powersetCard_iff {ι : Type*} [DecidableEq ι] [Fintype ι] (k : ℕ)
+lemma Equiv_fnBool_finset_mem_powersetCard_iff {ι : Type*} [DecidableEq ι] [Fintype ι] (k : ℕ)
     (f : ι → Bool) : #{i | f i = true} = k ↔ (Equiv.fnBool_finset) f ∈ powersetCard k univ := by
   simp [Equiv.fnBool_finset]
 
@@ -325,7 +325,7 @@ lemma card_fnBool {ι : Type*} [DecidableEq ι] [Fintype ι] {k : ℕ} :
   rw [← card_powersetCard k (univ : Finset ι)]
   apply card_equiv (Equiv.fnBool_finset) (fun i ↦ ?_)
   simp only [mem_filter, mem_univ, true_and]
-  exact Equiv_fnFinBool_finsetFin_mem_powersetCard_iff k i
+  exact Equiv_fnBool_finset_mem_powersetCard_iff k i
 
 lemma card_listVector_card {k n : ℕ} :
     #{v : List.Vector Bool n | v.val.count true = k} = n.choose k := by
