@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Support
 
+import Mathlib.RingTheory.Localization.InvSubmonoid
+
 /-!
 # Unramified locus of an algebra
 
@@ -91,6 +93,18 @@ lemma unramifiedLocus_eq_univ_iff :
 lemma isOpen_unramifiedLocus [EssFiniteType R A] : IsOpen (unramifiedLocus R A) := by
   rw [unramifiedLocus_eq_compl_support, Module.support_eq_zeroLocus]
   exact (PrimeSpectrum.isClosed_zeroLocus _).isOpen_compl
+
+lemma exists_formallyUnramified_of_isUnramifiedAt [EssFiniteType R A] (p : Ideal A) [p.IsPrime]
+    [IsUnramifiedAt R p] : ∃ f ∉ p, Algebra.FormallyUnramified R (Localization.Away f) := by
+  obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hr⟩ :=
+    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
+      (show ⟨p, ‹_›⟩ ∈ unramifiedLocus R A from ‹_›) isOpen_unramifiedLocus
+  exact ⟨r, hpr, basicOpen_subset_unramifiedLocus_iff.mp hr⟩
+
+lemma exists_unramified_of_isUnramifiedAt [Algebra.FiniteType R A] (p : Ideal A) [p.IsPrime]
+    [IsUnramifiedAt R p] : ∃ f ∉ p, Algebra.Unramified R (Localization.Away f) := by
+  obtain ⟨f, hfp, H⟩ := exists_formallyUnramified_of_isUnramifiedAt (R := R) p
+  exact ⟨f, hfp, ⟨H, .trans ‹_› (IsLocalization.finiteType_of_monoid_fg (.powers f) _)⟩⟩
 
 end
 
