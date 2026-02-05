@@ -1179,8 +1179,9 @@ lemma leftInverse_embedding_embed : Function.LeftInverse (ValueGroup₀.embeddin
   induction x using ValueGroupWithZero.ind
   simp only [ValueGroupWithZero.embed, ValueGroup₀.restrict₀_apply,
     ValueGroupWithZero.lift_mk, map_div₀]
-  split_ifs <;> simp_all [ValueGroupWithZero.mk_eq_div]
+  split_ifs <;> simp_all [ValueGroup₀.embedding_apply, ValueGroupWithZero.mk_eq_div]
 
+/-- The isomorphism between `ValueGroupWithZero R` and `ValueGroup₀ (valuation R)`. -/
 def valueGroupWithZero_equiv_valueGroup₀ :
     ValueGroupWithZero R ≃* ValueGroup₀ (valuation R) :=
   { ValuativeRel.ValueGroupWithZero.embed (v := valuation R) with
@@ -1282,5 +1283,3 @@ instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
   exact .comap f.toMonoidHom hf
 
 end ValuativeRel
-
-#lint
