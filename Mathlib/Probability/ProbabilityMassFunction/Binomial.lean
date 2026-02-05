@@ -73,13 +73,16 @@ open scoped NNReal Real
 
 open Complex MeasureTheory ProbabilityTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ}
-  {p : ℝ≥0} {h : p ≤ 1} {n : ℕ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {p : ℝ≥0} {h : p ≤ 1}
+  {n : ℕ}
 
+/-- A binomial distribution on `Fin (n + 1)` with success probability `p`
+and `n` independent trials. -/
 noncomputable
 def binomialMeasure (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : Measure (Fin (n + 1)) :=
   (PMF.binomial p h n).toMeasure
 
+/-- A binomial distribution on `ℝ` with success probability `p` and `n` independent trials. -/
 noncomputable
 def binomialReal (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : Measure ℝ :=
   (binomialMeasure p h n).map (fun k : Fin (n + 1) => (k : ℝ))
