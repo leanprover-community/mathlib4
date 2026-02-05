@@ -722,7 +722,6 @@ instance isCountablyGenerated_nhdsWithin (x : α) [IsCountablyGenerated (𝓝 x)
     IsCountablyGenerated (𝓝[s] x) :=
   Inf.isCountablyGenerated _ _
 
-
 variable (α) in
 /-- A topological space `α` is called weakly first countable if there exists a function
 `V : α → ℕ → Set α`, such that:
