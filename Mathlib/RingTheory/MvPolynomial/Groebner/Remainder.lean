@@ -97,9 +97,9 @@ namespace MonomialOrder
 
 open MvPolynomial
 
-/-- Given a multivariate polynomial `f` and a "divisors" set `B` of multivariate polynomials over `R`.
-A polynomial `r` is called a remainder of `f` on division by `B` with respect to a monomial order
-`m`, if there exists `g : B →₀ MvPolynomial σ R` s.t.
+/-- Given a multivariate polynomial `f` and a "divisors" set `B` of multivariate polynomials over
+`R`. A polynomial `r` is called a remainder of `f` on division by `B` with respect to a monomial
+order `m`, if there exists `g : B →₀ MvPolynomial σ R` s.t.
 
 1. Finite linear combination:
   `f = ∑ (g(b) * b) + r`;
@@ -333,7 +333,7 @@ theorem isRemainder_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
   unfold IsRemainder
   convert and_congr_left' ?_
   · aesop
-  rw [(Finsupp.comapDomain_surjective' (f := (⟨·.val, by simp⟩ : B → ↑(insert 0 B))) ?_).exists]
+  rw [(Finsupp.comapDomain_surjective (f := (⟨·.val, by simp⟩ : B → ↑(insert 0 B))) ?_).exists]
   on_goal 2 => simp [Function.Injective]
   congr! with g
   on_goal 2 => aesop
