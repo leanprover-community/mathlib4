@@ -154,7 +154,10 @@ structure GCongrKey where
   /-- The number of arguments that `head` is applied to.
   For example, `a + b ≤ a + c` has `arity := 6`, because `HAdd.hAdd` has 6 arguments. -/
   arity : Nat
-deriving Inhabited, BEq, Hashable
+deriving Inhabited, BEq
+
+instance : Ord GCongrKey where
+  compare a b := a.1.quickCmp b.1 |>.then (a.2.quickCmp b.2) |>.then (compare a.3 b.3)
 
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
@@ -178,7 +181,7 @@ structure GCongrLemma where
   deriving Inhabited
 
 /-- A collection of `GCongrLemma`, to be stored in the environment extension. -/
-abbrev GCongrLemmas := Std.HashMap GCongrKey (List GCongrLemma)
+abbrev GCongrLemmas := Std.TreeMap GCongrKey (List GCongrLemma)
 
 /-- Return `true` if the priority of `a` is less than or equal to the priority of `b`. -/
 def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
@@ -186,9 +189,9 @@ def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
 
 /-- Insert a `GCongrLemma` in a collection of lemmas, making sure that the lemmas are sorted. -/
 def addGCongrLemmaEntry (m : GCongrLemmas) (l : GCongrLemma) : GCongrLemmas :=
-  match m[l.key]? with
-  | none    => m.insert l.key [l]
-  | some es => m.insert l.key <| insert l es
+  m.alter l.key fun
+  | none    => [l]
+  | some es => insert l es
 where
   /--- Insert a `GCongrLemma` in the correct place in a list of lemmas. -/
   insert (l : GCongrLemma) : List GCongrLemma → List GCongrLemma
@@ -196,8 +199,7 @@ where
     | l'::ls => if l'.prioLE l then l::l'::ls else l' :: insert l ls
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
-initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma
-    (Std.HashMap GCongrKey (List GCongrLemma)) ←
+initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma GCongrLemmas ←
   registerSimpleScopedEnvExtension {
     addEntry := addGCongrLemmaEntry
     initial := {}
