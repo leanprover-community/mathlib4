@@ -681,7 +681,7 @@ def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 
     rw [← upperCentralSeries_one]
     exact upperCentralSeries_eq_top_iff_nilpotencyClass_le.mpr h
 
-lemma upperCentralSeries.succ_eq {a b : ℕ} (ab : a ≤ b)
+lemma upperCentralSeries.eq_ge_of_eq_succ {a b : ℕ} (ab : a ≤ b)
     (hn : upperCentralSeries G a = upperCentralSeries G (a + 1)) :
     upperCentralSeries G a = upperCentralSeries G b := by
   refine Nat.le_induction rfl ?_ b ab
@@ -689,10 +689,10 @@ lemma upperCentralSeries.succ_eq {a b : ℕ} (ab : a ≤ b)
 
 /-- If two different elements of the `upperCentralSeries` of a group `G` are equal, then
 they are all equal, starting from the smaller index. -/
-lemma upperCentralSeries.eq_of_eq {a b c : ℕ} (ab : a < b) (ac : a ≤ c)
+lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a < b) (ac : a ≤ c)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     upperCentralSeries G a = upperCentralSeries G c := by
-  refine succ_eq ac (le_antisymm ?_ ?_)
+  refine eq_ge_of_eq_succ ac (le_antisymm ?_ ?_)
   · exact upperCentralSeries_mono _ <| Nat.le_succ ..
   · rw [hn]
     exact upperCentralSeries_mono _ (by grind)
@@ -701,7 +701,7 @@ lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a < b)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     upperCentralSeries G a = ⊤ := by
   grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent,
-    upperCentralSeries_eq_top_iff_nilpotencyClass_le, eq_of_eq]
+    upperCentralSeries_eq_top_iff_nilpotencyClass_le, eq_ge_of_eq_gt]
 
 lemma nilpotencyClass_le_of_upperCentralSeries_eq [IsNilpotent G] {a b : ℕ} (ab : a < b)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
@@ -737,7 +737,7 @@ lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [hs : IsSimpleGroup G] [
   have := hs.eq_bot_or_eq_top_of_normal (upperCentralSeries G 0) (upperCentralSeries_normal ..)
   have := hs.eq_bot_or_eq_top_of_normal (upperCentralSeries G 1) (upperCentralSeries_normal ..)
   grind only [upperCentralSeries_eq_top_iff_nilpotencyClass_le, upperCentralSeries_zero,
-    IsNilpotent.nilpotent, IsNilpotent.nilpotent', upperCentralSeries.succ_eq]
+    IsNilpotent.nilpotent, IsNilpotent.nilpotent', upperCentralSeries.eq_ge_of_eq_succ]
 
 instance IsSimpleGroup_IsNilpotent.isCyclic [IsSimpleGroup G] [IsNilpotent G] :
     IsCyclic G := by
