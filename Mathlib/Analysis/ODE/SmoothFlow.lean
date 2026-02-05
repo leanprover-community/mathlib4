@@ -272,14 +272,6 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
 
 /-! ## Derivative of `integralCMLM` -/
 
-omit [CompleteSpace E] in
--- TODO: add to Mathlib?
-lemma _root_.ContDiffOn.continuousOn_fderiv_uncurryLeft
-    {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
-    ContinuousOn (fun x ↦ (fderiv ℝ g x).uncurryLeft (Ei := fun _ ↦ E)) u :=
-  (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm.continuous.comp_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl)
-
 /-- Helper lemma which reduces a bound on `integralCMLM`s as `ContinuousLinearMap`s to a bound on
 integrands as elements of `E` -/
 lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
@@ -294,7 +286,9 @@ lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
   refine opNorm_le_bound (by positivity) fun dα ↦ ?_
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
-  have hg' := hg.continuousOn_fderiv_uncurryLeft hu
+  have hg' : ContinuousOn (fun x ↦ (fderiv ℝ g x).uncurryLeft (Ei := fun _ ↦ E)) u :=
+    continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E |>.symm.continuous.comp_continuousOn
+      <| hg.continuousOn_fderiv_of_isOpen hu le_rfl
   have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα' dα t₀ t
   have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
   have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons (α' - α) dα) t₀ t
@@ -779,17 +773,6 @@ lemma fderivIntegralCurry0_eq_of_subset {f : E → E} {u₁ u₂ : Set E}
   simp only [ContinuousMultilinearMap.curryLeft_apply]
   rw [integralCMLM_apply_if_pos (hf'.mono hu), integralCM_apply_if_pos hα,
       integralCMLM_apply_if_pos hf', integralCM_apply_if_pos (hα.trans hu)]
-
-omit [CompleteSpace E] in
-/-- The Fréchet derivative of `uncurry0 ∘ f` at `x` is `uncurry0 ∘ fderiv f x`. This is the chain
-rule applied to the composition of `f` with the linear isometry `uncurry0`. -/
--- TODO: add to Mathlib?
-lemma fderiv_uncurry0_comp {f : E → E} {x : E} (hf : DifferentiableAt ℝ f x) :
-    fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) x =
-      (continuousMultilinearCurryFin0 ℝ E E).symm.toContinuousLinearEquiv.toContinuousLinearMap.comp
-        (fderiv ℝ f x) := by
-  convert fderiv_comp x (continuousMultilinearCurryFin0 ℝ E E).symm.differentiableAt hf using 1
-  rw [(continuousMultilinearCurryFin0 ℝ E E).symm.fderiv]
 
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
