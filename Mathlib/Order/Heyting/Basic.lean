@@ -340,7 +340,7 @@ theorem himp_triangle (a b c : α) : (a ⇨ b) ⊓ (b ⇨ c) ≤ a ⇨ c := by
 theorem himp_inf_himp_cancel (hba : b ≤ a) (hcb : c ≤ b) : (a ⇨ b) ⊓ (b ⇨ c) = a ⇨ c :=
   (himp_triangle _ _ _).antisymm <| le_inf (himp_le_himp_left hcb) (himp_le_himp_right hba)
 
--- @[to_dual gc_sdiff_sup]
+@[to_dual gc_sdiff_sup]
 theorem gc_inf_himp : GaloisConnection (a ⊓ ·) (a ⇨ ·) :=
   fun _ _ ↦ Iff.symm le_himp_iff'
 
@@ -495,9 +495,6 @@ theorem inf_sdiff_sup_left : a \ c ⊓ (a ⊔ b) = a \ c :=
 @[simp, to_dual none]
 theorem inf_sdiff_sup_right : a \ c ⊓ (b ⊔ a) = a \ c :=
   inf_of_le_left <| sdiff_le.trans le_sup_right
-
-theorem gc_sdiff_sup : GaloisConnection (· \ a) (a ⊔ ·) :=
-  fun _ _ ↦ sdiff_le_iff
 
 -- See note [lower instance priority]
 @[to_dual existing]
@@ -660,35 +657,38 @@ theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
 theorem le_compl_compl : a ≤ aᶜᶜ :=
   disjoint_compl_right.le_compl_right
 
--- @[to_dual]
+@[to_dual]
 theorem compl_anti : Antitone (compl : α → α) := fun _ _ h =>
   le_compl_comm.1 <| h.trans le_compl_compl
 
-@[gcongr]
+@[to_dual (attr := gcongr)]
 theorem compl_le_compl (h : a ≤ b) : bᶜ ≤ aᶜ :=
   compl_anti h
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem compl_compl_compl (a : α) : aᶜᶜᶜ = aᶜ :=
   (compl_anti le_compl_compl).antisymm le_compl_compl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem disjoint_compl_compl_left_iff : Disjoint aᶜᶜ b ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_left, compl_compl_compl]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]
 
+@[to_dual le_hnot_inf_hnot]
 theorem compl_sup_compl_le : aᶜ ⊔ bᶜ ≤ (a ⊓ b)ᶜ :=
   sup_le (compl_anti inf_le_left) <| compl_anti inf_le_right
 
+@[to_dual]
 theorem compl_compl_inf_distrib (a b : α) : (a ⊓ b)ᶜᶜ = aᶜᶜ ⊓ bᶜᶜ := by
   refine ((compl_anti compl_sup_compl_le).trans (compl_sup_distrib _ _).le).antisymm ?_
   rw [le_compl_iff_disjoint_right, disjoint_assoc, disjoint_compl_compl_left_iff,
     disjoint_left_comm, disjoint_compl_compl_left_iff, ← disjoint_assoc, inf_comm]
   exact disjoint_compl_right
 
+@[to_dual]
 theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜᶜ := by
   apply le_antisymm
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
@@ -738,47 +738,6 @@ end HeytingAlgebra
 section CoheytingAlgebra
 
 variable [CoheytingAlgebra α] {a b : α}
-
-@[to_dual existing]
-theorem hnot_anti : Antitone (hnot : α → α) := fun _ _ h => hnot_le_comm.1 <| hnot_hnot_le.trans h
-
-@[to_dual existing]
-@[gcongr]
-theorem hnot_le_hnot (h : a ≤ b) : ￢b ≤ ￢a :=
-  hnot_anti h
-
-@[to_dual existing, simp]
-theorem hnot_hnot_hnot (a : α) : ￢￢￢a = ￢a :=
-  hnot_hnot_le.antisymm <| hnot_anti hnot_hnot_le
-
-@[to_dual existing, simp]
-theorem codisjoint_hnot_hnot_left_iff : Codisjoint (￢￢a) b ↔ Codisjoint a b := by
-  simp_rw [← hnot_le_iff_codisjoint_right, hnot_hnot_hnot]
-
-@[to_dual existing, simp]
-theorem codisjoint_hnot_hnot_right_iff : Codisjoint a (￢￢b) ↔ Codisjoint a b := by
-  simp_rw [← hnot_le_iff_codisjoint_left, hnot_hnot_hnot]
-
-@[to_dual existing compl_sup_compl_le]
-theorem le_hnot_inf_hnot : ￢(a ⊔ b) ≤ ￢a ⊓ ￢b :=
-  le_inf (hnot_anti le_sup_left) <| hnot_anti le_sup_right
-
-@[to_dual existing]
-theorem hnot_hnot_sup_distrib (a b : α) : ￢￢(a ⊔ b) = ￢￢a ⊔ ￢￢b := by
-  refine ((hnot_inf_distrib _ _).ge.trans <| hnot_anti le_hnot_inf_hnot).antisymm' ?_
-  rw [hnot_le_iff_codisjoint_left, codisjoint_assoc, codisjoint_hnot_hnot_left_iff,
-    codisjoint_left_comm, codisjoint_hnot_hnot_left_iff, ← codisjoint_assoc, sup_comm]
-  exact codisjoint_hnot_right
-
-@[to_dual existing]
-theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b := by
-  apply le_antisymm
-  · refine hnot_le_comm.1 ((hnot_anti sdiff_le_inf_hnot).trans' ?_)
-    rw [hnot_inf_distrib, hnot_le_iff_codisjoint_right, codisjoint_left_comm, ←
-      hnot_le_iff_codisjoint_right]
-    exact le_sdiff_sup
-  · rw [sdiff_le_iff, ← hnot_hnot_sup_distrib]
-    exact hnot_anti (hnot_anti le_sup_sdiff)
 
 @[to_dual existing]
 instance Prod.instCoheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × β) where
