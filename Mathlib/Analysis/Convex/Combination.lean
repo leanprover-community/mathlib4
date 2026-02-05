@@ -440,7 +440,7 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
   · exact iUnion_subset fun i => iUnion_subset convexHull_mono
 
 /-- The `vectorSpan` of a segment is the span of the difference of its endpoints. -/
-theorem vectorSpan_segment (p₁ p₂ : E) :
+theorem vectorSpan_segment {p₁ p₂ : E} :
     vectorSpan R (segment R p₁ p₂) = R ∙ (p₂ -ᵥ p₁) := by
   rw [← convexHull_pair, ← direction_affineSpan, affineSpan_convexHull,
       direction_affineSpan, vectorSpan_pair_rev, vsub_eq_sub]
