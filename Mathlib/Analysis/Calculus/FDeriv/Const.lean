@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
+import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Fréchet derivative of constant functions
@@ -22,13 +23,14 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Asymptotics Function Filter Set Metric
+open scoped Topology NNReal ENNReal
 
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 variable {f : E → F} {x : E} {s : Set E}
 
@@ -37,8 +39,7 @@ section Const
 @[fun_prop]
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
-    simp only [zero_apply, sub_self, Pi.zero_apply]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
 
 @[fun_prop]
 theorem hasStrictFDerivAt_zero (x : E) :
@@ -62,8 +63,7 @@ theorem hasStrictFDerivAt_ofNat (n : ℕ) [OfNat F n] (x : E) :
 
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
     HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
-    simp only [zero_apply, sub_self, Pi.zero_apply]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by simp
 
 theorem hasFDerivAtFilter_zero (x : E) (L : Filter E) :
     HasFDerivAtFilter (0 : E → F) (0 : E →L[𝕜] F) x L := hasFDerivAtFilter_const _ _ _
@@ -214,8 +214,8 @@ theorem fderivWithin_intCast [IntCast F] (z : ℤ) : fderivWithin 𝕜 (z : E �
 theorem fderivWithin_ofNat (n : ℕ) [OfNat F n] : fderivWithin 𝕜 (ofNat(n) : E → F) s = 0 :=
   fderivWithin_const _
 
-theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
-  (hasFDerivAt_const c x).fderiv
+theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 := by
+  rw [fderiv, fderivWithin_const_apply]
 
 @[simp]
 theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
@@ -291,8 +291,18 @@ theorem differentiableOn_ofNat (n : ℕ) [OfNat F n] :
 @[fun_prop]
 theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) {x} x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_singleton, hasFDerivAtFilter_iff_isLittleO,
-    isLittleO_pure, ContinuousLinearMap.zero_apply, sub_self]
+  refine .of_not_accPt ?_
+  rw [accPt_iff_clusterPt, inf_principal]
+  simp [ClusterPt]
+
+@[fun_prop]
+theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
+    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
+  by_cases hs : s = ∅
+  · simp [hs]
+  · obtain ⟨a, rfl⟩ := exists_eq_singleton_iff_nonempty_subsingleton (s := s)|>.mpr
+      ⟨by rwa [nonempty_iff_ne_empty], subsingleton_of_subsingleton⟩
+    exact HasFDerivWithinAt.singleton
 
 @[fun_prop]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
@@ -300,8 +310,8 @@ theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
   rw [← hasFDerivWithinAt_univ, subsingleton_univ.eq_singleton_of_mem (mem_univ x)]
   exact hasFDerivWithinAt_singleton f x
 
-@[fun_prop]
-theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
+theorem differentiable_of_subsingleton [Subsingleton E] {f : E → F} : Differentiable 𝕜 f :=
+  fun x ↦ (hasFDerivAt_of_subsingleton f x (𝕜 := 𝕜)).differentiableAt
 
 @[fun_prop]
 theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
@@ -322,7 +332,7 @@ theorem differentiableWithinAt_of_isInvertible_fderivWithin
   contrapose hf
   rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
   contrapose! hf
-  rcases isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
+  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
   exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
 
 theorem differentiableAt_of_isInvertible_fderiv
@@ -330,15 +340,10 @@ theorem differentiableAt_of_isInvertible_fderiv
   simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
   exact differentiableWithinAt_of_isInvertible_fderivWithin hf
 
-
 /-! ### Support of derivatives -/
 
 section Support
-
-open Function
-
-variable (𝕜 : Type*) {E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {x : E}
+variable (𝕜)
 
 theorem HasStrictFDerivAt.of_notMem_tsupport (h : x ∉ tsupport f) :
     HasStrictFDerivAt f (0 : E →L[𝕜] F) x := by
@@ -353,8 +358,9 @@ theorem HasFDerivWithinAt.of_notMem_tsupport {s : Set E} {x : E} (h : x ∉ tsup
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x :=
   (HasFDerivAt.of_notMem_tsupport 𝕜 h).hasFDerivWithinAt
 
-theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 :=
-  (HasFDerivAt.of_notMem_tsupport 𝕜 h).fderiv
+theorem fderiv_of_notMem_tsupport (h : x ∉ tsupport f) : fderiv 𝕜 f x = 0 := by
+  rw [notMem_tsupport_iff_eventuallyEq] at h
+  simp [h.fderiv_eq]
 
 theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x ↦ by
   rw [← not_imp_not, notMem_support]

@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # Faithful actions involving groups with zero
 -/
+deprecated_module (since := "2026-02-03")
 
 @[expose] public section
 
@@ -21,9 +23,6 @@ open Function
 variable {α : Type*}
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
-instance IsRightCancelMulZero.faithfulSMul [MonoidWithZero α] [IsRightCancelMulZero α] :
-    FaithfulSMul α α where
-  eq_of_smul_eq_smul h := by
-    cases subsingleton_or_nontrivial α
-    · exact Subsingleton.elim ..
-    · exact mul_left_injective₀ one_ne_zero (h 1)
+@[nolint unusedArguments, deprecated "subsumed by `instFaithfulSMul`" (since := "2026-02-03")]
+lemma IsRightCancelMulZero.faithfulSMul [MonoidWithZero α] [IsRightCancelMulZero α] :
+    FaithfulSMul α α := inferInstance
