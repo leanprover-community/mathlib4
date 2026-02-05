@@ -95,11 +95,13 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+open MonoidWithZeroHom.ValueGroup₀
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
-  hom         := MonoidWithZeroHom.id ℝ≥0
-  strictMono' := strictMono_id
+  hom'        := embedding
+  strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
@@ -125,7 +127,7 @@ instance valued : Valued ℂ_[p] ℝ≥0 := inferInstance
 
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlgCl p`. -/
 theorem valuation_extends (x : PadicAlgCl p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
-  Valued.extension_extends _
+  Valued.extensionValuation_extends _
 
 theorem coe_eq (x : PadicAlgCl p) : (x : ℂ_[p]) = algebraMap (PadicAlgCl p) ℂ_[p] x := rfl
 
@@ -153,11 +155,13 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
     PadicAlgCl.valuation_p]
 
+open MonoidWithZeroHom.ValueGroup₀
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where
-  hom         := MonoidWithZeroHom.id ℝ≥0
-  strictMono' := strictMono_id
+  hom'        := embedding
+  strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
@@ -165,8 +169,8 @@ instance : RankOne (PadicComplex.valued p).v where
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
-lemma rankOne_hom_eq :
-    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl
+/- lemma rankOne_hom_eq :
+    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl -/
 
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation. -/
@@ -176,7 +180,9 @@ theorem norm_def : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
 
 /-- The norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`. -/
 theorem norm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
-  rw [norm_def, Valued.norm, ← coe_nnnorm, valuation_extends p x, coe_nnnorm]
+  rw [norm_def, Valued.norm, ← coe_nnnorm] -- valuation_extends p x, coe_nnnorm]
+  simp only [RankOne.hom, RankLeOne.hom', restrict_def, embedding_restrict₀,
+    valuation_extends p x, coe_nnnorm]
   rfl
 
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends that on `PadicAlgCl p`. -/

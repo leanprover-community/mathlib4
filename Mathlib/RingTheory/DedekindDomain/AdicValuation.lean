@@ -424,8 +424,8 @@ variable (K)
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
 abbrev adicCompletion := (v.valuation K).Completion
 
-theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
-  rfl
+theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
+  Valued.v x = Valued.extensionValuation x := rfl
 
 lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=

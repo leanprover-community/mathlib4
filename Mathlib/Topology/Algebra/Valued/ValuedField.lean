@@ -355,6 +355,10 @@ lemma extension_eq_zero_iff {x : hat K} :
     simpa only [extensionValuation_toFun, Function.comp_apply, map_eq_zero] using this
   rw [Valuation.zero_iff]
 
+@[simp]
+theorem extensionValuation_extends (x : K) : extensionValuation (x : hat K) = v x := by
+  rw [extensionValuation_toFun, Function.comp_apply, extension_extends,
+    Valuation.restrict_def, embedding_restrict₀]
 
 /- lemma continuous_extensionValuation : Continuous (Valued.extensionValuation : hat K → Γ₀) :=
   continuous_extension -/
