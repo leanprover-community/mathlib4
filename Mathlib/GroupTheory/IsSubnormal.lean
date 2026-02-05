@@ -168,7 +168,6 @@ the following one.
 
 The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
 -/
--- TODO: consider using `MonotoneOn f {i | i ≤ n}` or some variant.
 @[to_additive /-- A characterisation of satisfying `IsSubnormal` in terms of chains of additive
 subgroups, each normal in the following one.
 
