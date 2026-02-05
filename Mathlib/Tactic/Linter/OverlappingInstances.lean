@@ -95,16 +95,19 @@ Find data-carrying overlaps between the current local instances of the `MetaM` c
 
 The resulting `Overlaps` can be assumed to have at least two fvars present for each recorded class.
 Further, it will only record overlaps at "maximal" nodes in the projection DAG; for example, if
-`fvar₁` and `fvar₂` overlap on `cls`, we will not redundantly record their overlap on any
-projection `cls.proj`.
+`fvar₁` and `fvar₂` overlap on `cls`, the resulting `Overlaps` will not redundantly record their
+overlap on any projection `cls.proj`.
 -/
 def findOverlappingDataInstances : MetaM Overlaps := do
+  /- Records only the overlaps that will eventually be reported. This remains empty iff no
+  messages should be logged. -/
   let mut overlaps : Overlaps := {}
   /- Associates all (data-carrying) typeclasses encountered to the first fvar that has a projection
-  into this given typeclass, allowing us to detect when a projection has been seen before.
+  into the typeclass. We check every projection against this hashmap to detect if it has been seen
+  before, and add it to the hashmap if not.
 
-  The `Bool` indicates whether the given class key is exactly the type of the associated fvar
-  value. We use this for error reporting. -/
+  The keys are classes, and the values are fvars. The `Bool` indicates whether the class key is
+  exactly the type of the associated fvar. We use this for error reporting. -/
   let mut encounteredClasses : Std.HashMap Expr (Expr × Bool) := {}
   for { fvar := fvar₁, .. } in ← getLocalInstances do
     unless (← fvar₁.fvarId!.getBinderInfo).isInstImplicit do continue
