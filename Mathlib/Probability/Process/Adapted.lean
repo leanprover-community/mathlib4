@@ -52,7 +52,9 @@ section Adapted
 variable {β : ι → Type*} [∀ i, MeasurableSpace (β i)] {u v : (i : ι) → Ω → β i}
 
 /-- A sequence of functions `u` is adapted to a filtration `f` if for all `i`,
-`u i` is `f i`-measurable. -/
+`u i` is `f i`-measurable.
+
+The definition known as `Adapted` before 2026-01-13 is now `StronglyAdapted`. -/
 def Adapted (f : Filtration ι m) (u : (i : ι) → Ω → β i) : Prop :=
   ∀ i : ι, Measurable[f i] (u i)
 
