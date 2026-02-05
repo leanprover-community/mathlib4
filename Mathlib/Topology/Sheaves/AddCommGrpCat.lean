@@ -69,7 +69,7 @@ lemma Γ.map_app {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) :
 lemma restrict_sum {F : Sheaf AddCommGrpCat X} (h : V ≤ U) (s t : F.val.obj (op U)) :
     (s + t) |_ V = s |_V + t |_V := by
   delta Presheaf.restrictOpen Presheaf.restrict
-  aesop_cat
+  cat_disch
 
 lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂.val.obj (op U))
     (h : S.g.val.app (op U) s = 0) (hS : S.ShortExact) :
