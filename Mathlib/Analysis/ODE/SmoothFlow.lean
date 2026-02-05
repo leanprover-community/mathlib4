@@ -270,6 +270,14 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     integralCMLM g u t₀ α dα = 0 := by
   rw [integralCMLM, dif_neg hg, zero_apply]
 
+lemma integralCMLM_apply {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {tmin tmax : ℝ}
+    {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
+    (hg : ContinuousOn g u) (hα : range α ⊆ u)
+    {dα : Fin n → C(Icc tmin tmax, E)} {t : Icc tmin tmax} :
+    integralCMLM g u t₀ α dα t =
+      ∫ τ in (t₀ : ℝ)..(t : ℝ), g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ) := by
+  rw [integralCMLM_apply_if_pos hg, integralCM_apply_if_pos hα, integralFun]
+
 /-! ## Derivative of `integralCMLM` -/
 
 /-- Helper lemma which reduces a bound on `integralCMLM`s as `ContinuousLinearMap`s to a bound on
@@ -292,9 +300,9 @@ lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
   have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα' dα t₀ t
   have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
   have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons (α' - α) dα) t₀ t
-  simp only [sub_apply, curryLeft_apply, integralCMLM_apply_if_pos hg.continuousOn,
-    integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, integralCM_apply_if_pos hα',
-    integralCM_apply_if_pos hα, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
+  simp only [sub_apply, curryLeft_apply, integralCMLM_apply hg.continuousOn hα',
+    integralCMLM_apply hg.continuousOn hα, integralCMLM_apply hg' hα, ContinuousMap.sub_apply,
+    ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
     ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
   set C := ε / (1 + |tmax - tmin|) * ‖α' - α‖ * ∏ i, ‖dα i‖ with hC
   refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) ?_).trans ?_
@@ -362,19 +370,6 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
     rw [norm_sub_rev]
     exact h2 x (mem_range_self _) z (hseg z hz) |>.le
 
-/-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
-`integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Uncurrying of multilinear maps
-is needed to ensure the types on both sides of the equation match. -/
--- TODO: this lemma's existence is due to missing lemmas about `= (_).curryLeft`
-lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : range α ⊆ u) :
-    (fderiv ℝ (integralCMLM g u t₀) α).uncurryLeft =
-      (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α) := by
-  rw [← uncurry_curryLeft (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α)]
-  congr 1
-  exact (hasFDerivAt_integralCMLM hg hu t₀ hα).fderiv
-
 /-! ## Smoothness of `integralCMLM` -/
 
 /-- Composition of a function `g : E → F` continuous on `u` with a continuous curve `α : C(I, E)`
@@ -426,10 +421,11 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   intro α hα dα hdα
   rw [mem_preimage, mem_ball, ContinuousMap.dist_lt_iff hδ] at hα
   apply hεU
-  rw [integralCMLM_apply_if_pos hg, integralCMLM_apply_if_pos hg, ContinuousMap.dist_lt_iff hε]
+  -- rw [integralCMLM_apply hg α₀.2]
+  rw [ContinuousMap.dist_lt_iff hε]
   intro t
-  rw [integralCM_apply_if_pos α₀.2, integralCM_apply_if_pos α.2, dist_eq_norm, integralFun,
-    integralFun, ← integral_sub (intervalIntegrable_integrand hg _ α₀.2 ..)
+  rw [integralCMLM_apply hg α₀.2, integralCMLM_apply hg α.2, dist_eq_norm,
+    ← integral_sub (intervalIntegrable_integrand hg _ α₀.2 ..)
       (intervalIntegrable_integrand hg _ α.2 ..)]
   calc
     _ ≤ δ * (max C 0) ^ n * |↑t - ↑t₀| := by
@@ -541,9 +537,8 @@ lemma T_eq_zero_of_isFixedPt_next {f : E → E} {u : Set E} (hf : ContinuousOn f
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   rw [T, curry0_apply, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
     ODE.FunSpace.toContinuousMap_apply_eq_apply, ContinuousMap.zero_apply, heq, ODE.picard_apply,
-    integralCMLM_apply_if_pos hf', integralCM_apply_if_pos hα, integralFun, sub_add_cancel_left,
-    neg_add_eq_zero]
-  congr
+    integralCMLM_apply hf' hα, sub_add_cancel_left, neg_add_eq_zero]
+  rfl
 
 /-- If `T f u t₀ (x₀, α) = 0`, then `α` satisfies the integral equation for the ODE `α' = f ∘ α`
 with initial condition `α t₀ = x₀`. This is equivalent to saying `α` is an integral curve of `f`. -/
@@ -555,8 +550,8 @@ lemma eq_picard_of_T_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
   have hf' : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   rw [T, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
-    ContinuousMap.zero_apply, ContinuousMultilinearMap.curry0_apply, integralCMLM_apply_if_pos hf',
-    integralCM_apply_if_pos hα, integralFun, sub_add_eq_add_sub, sub_eq_zero] at hT
+    ContinuousMap.zero_apply, ContinuousMultilinearMap.curry0_apply, integralCMLM_apply hf' hα,
+    sub_add_eq_add_sub, sub_eq_zero] at hT
   simp [← hT]
 
 /-- If `T f u t₀ (x₀, α) = 0`, then `α t₀ = x₀`. This follows from the fact that the integral
@@ -623,10 +618,8 @@ lemma T_restrictIcc_eq_zero {f : E → E} {u : Set E} (hf : ContinuousOn f u)
     (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hf
   have hα' : range (restrictIcc α htmin htmax) ⊆ u :=
     (range_restrictIcc_subset α htmin htmax).trans hα
-  -- TODO: more lemmas going straight from `integralCMLM` to `integralFun`?
   rw [T, ContinuousMap.add_apply, ContinuousMap.sub_apply, ContinuousMap.const_apply,
-    ContinuousMap.zero_apply, curry0_apply, integralCMLM_apply_if_pos hf',
-    integralCM_apply_if_pos hα', integralFun, restrictIcc_apply]
+    ContinuousMap.zero_apply, curry0_apply, integralCMLM_apply hf' hα', restrictIcc_apply]
   simp_rw [uncurry0_apply]
   rw [eq_picard_of_T_eq_zero hf hα hT ⟨t.1, ⟨htmin.trans t.2.1, t.2.2.trans htmax⟩⟩,
     ODE.picard_apply, sub_add_cancel_left, neg_add_eq_zero]
@@ -771,8 +764,7 @@ lemma fderivIntegralCurry0_eq_of_subset {f : E → E} {u₁ u₂ : Set E}
       |>.continuousAt.continuousWithinAt
   ext dα x t
   simp only [ContinuousMultilinearMap.curryLeft_apply]
-  rw [integralCMLM_apply_if_pos (hf'.mono hu), integralCM_apply_if_pos hα,
-      integralCMLM_apply_if_pos hf', integralCM_apply_if_pos (hα.trans hu)]
+  rw [integralCMLM_apply (hf'.mono hu) hα, integralCMLM_apply hf' (hα.trans hu)]
 
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
 sufficiently small relative to the derivative bound on `range α`. -/
@@ -792,8 +784,7 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
   have hf' : ContinuousOn (iteratedFDeriv ℝ 1 f) u := fun _ hx ↦
     hf.contDiffAt (hu.mem_nhds hx) |>.iteratedFDeriv_right (m := 0) le_rfl
       |>.continuousAt.continuousWithinAt
-  rw [curryLeft_apply, integralCMLM_apply_if_pos hf',
-    integralCM_apply_if_pos hα, integralFun, Fin.prod_univ_zero, mul_one, mul_comm]
+  rw [curryLeft_apply, integralCMLM_apply hf' hα, Fin.prod_univ_zero, mul_one, mul_comm]
   refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C * ‖dα‖) ?_).trans ?_
   · intro τ hτ
     apply (le_opNorm _ _).trans
