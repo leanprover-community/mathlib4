@@ -330,40 +330,17 @@ Remainders are preserved on insertion of the zero polynomial into the set of div
 theorem isRemainder_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
     (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
     m.IsRemainder p (insert 0 B) r ↔ m.IsRemainder p B r := by
-  classical
-  constructor
-  · by_cases hB : 0 ∈ B
-    · simp [hB]
-    simp_rw [isRemainder_def'']
-    intro ⟨⟨g, B', hB', h₁, h₂⟩, h₃⟩
-    split_ands
-    · use g, (B'.erase 0)
-      split_ands
-      · simp [hB']
-      · rw [h₁]
-        congr 1
-        by_cases hB'0 : 0 ∈ B'
-        · nth_rw 1 [← Finset.insert_erase hB'0]
-          rw [Finset.sum_insert_zero (a:=0)]
-          simp
-        · rw [Finset.erase_eq_self.mpr hB'0]
-      · simp_intro b' hb'
-        exact h₂ b' hb'.2
-    · intro c hc b hbB hb
-      exact h₃ c hc b (by simp [hbB]) hb
-  · rw [isRemainder_def', isRemainder_def']
-    intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
-    split_ands
-    · use g
-      split_ands
-      · exact subset_trans hg (Set.subset_insert _ _)
-      · exact h₁
-      · intro b hb
-        by_cases hb0 : b = 0
-        · simp [hb0]
-        · exact h₂ b ((Set.mem_insert_iff.mp hb).resolve_left hb0)
-    · intro c hc b hb hbne0
-      exact h₃ c hc b ((Set.mem_insert_iff.mp hb).resolve_left hbne0) hbne0
+  unfold IsRemainder
+  convert and_congr_left' ?_
+  · aesop
+  rw [(Finsupp.comapDomain_surjective' (f := (⟨·.val, by simp⟩ : B → ↑(insert 0 B))) ?_).exists]
+  on_goal 2 => simp [Function.Injective]
+  congr! with g
+  on_goal 2 => aesop
+  rw [Finsupp.linearCombination_comapDomain, Finsupp.linearCombination_apply, Finsupp.sum]
+  convert (g.support.sum_preimage ..).symm
+  intro x hx hx'
+  simp [or_iff_not_imp_right.mp x.prop (by simpa using hx')]
 
 /--
 Remainders are preserved with the zero polynomial removed from the set of divisors.
