@@ -146,9 +146,8 @@ theorem _root_.ProbabilityTheory.HasLaw.identDistrib {κ : Measure γ} (h₀ : H
     (h₁ : HasLaw g κ ν) : IdentDistrib f g μ ν :=
   ⟨h₀.aemeasurable, h₁.aemeasurable, by simp [h₀.map_eq, h₁.map_eq]⟩
 
-theorem _root_.ProbabilityTheory.HasLaw.of_hasLaw_of_identDistrib {κ : Measure γ}
-    (h₀ : HasLaw f κ μ) (h₁ : IdentDistrib f g μ ν) : HasLaw g κ ν :=
-  ⟨h₁.aemeasurable_snd, by simp [h₀.map_eq, ← h₁.map_eq]⟩
+theorem hasLaw {κ : Measure γ} (h₀ : IdentDistrib f g μ ν) (h₁ : HasLaw f κ μ) : HasLaw g κ ν :=
+  ⟨h₀.aemeasurable_snd, by simp [h₀.map_eq, ← h₁.map_eq]⟩
 
 /-- In a second countable topology, the first function in an identically distributed pair is a.e.
 strongly measurable. So is the second function, but use `h.symm.aestronglyMeasurable_fst` as
