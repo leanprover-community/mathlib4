@@ -159,7 +159,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     _ ≤ ∑' i, δ i + μ (⋃ i ∈ Ici n, f i) := by
       gcongr; exact ENNReal.sum_le_tsum (Finset.range n)
     _ < ε / 2 + ε / 2 := by gcongr
-    _ = ε :=  ENNReal.add_halves ε
+    _ = ε := ENNReal.add_halves ε
 
 /-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, any measurable set can be approximated by finite unions of elements of `C`. -/

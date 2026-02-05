@@ -300,7 +300,7 @@ theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s 
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
   by_cases hs : s = ∅
   · simp [hs]
-  · obtain ⟨a, rfl⟩ := exists_eq_singleton_iff_nonempty_subsingleton (s := s)|>.mpr
+  · obtain ⟨a, rfl⟩ := exists_eq_singleton_iff_nonempty_subsingleton (s := s) |>.mpr
       ⟨by rwa [nonempty_iff_ne_empty], subsingleton_of_subsingleton⟩
     exact HasFDerivWithinAt.singleton
 

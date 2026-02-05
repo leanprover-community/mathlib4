@@ -191,7 +191,7 @@ lemma frobeniusMorphism_isPullback :
   apply IsPullback.of_right (t := (inf_isPullback ((«exists» f).obj A') B').flip)
     (p := by simp [frobeniusMorphism])
   simpa [frobeniusMorphism, IsPullback.lift_fst, ← imageFactorisation_F_m,
-    (isPullback f B').paste_horiz_iff ] using
+    (isPullback f B').paste_horiz_iff] using
     (inf_isPullback A' ((Subobject.pullback f).obj B')).flip
 
 instance : IsRegularEpi (frobeniusMorphism f A' B') := by
