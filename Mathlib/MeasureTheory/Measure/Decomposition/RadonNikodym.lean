@@ -470,10 +470,7 @@ lemma rnDeriv_add_self_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite �
   refine ENNReal.sub_eq_of_eq_add (by simp) ?_
   nth_rewrite 2 [← one_mul (μ.rnDeriv ν a + 1)⁻¹]
   have h := add_mul (μ.rnDeriv ν a) 1 (μ.rnDeriv ν a + 1)⁻¹
-  rw [ENNReal.mul_inv_cancel] at h
-  · exact h
-  · simp
-  · simp [ha_lt_top.ne]
+  rwa [ENNReal.mul_inv_cancel (by simp) (by simp [ha_lt_top.ne])] at h
 
 lemma rnDeriv_eq_div_rnDeriv_add (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv (μ + ν) x / ν.rnDeriv (μ + ν) x := by
