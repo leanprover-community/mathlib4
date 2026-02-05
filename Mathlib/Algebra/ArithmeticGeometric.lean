@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Data.EReal.Inv
