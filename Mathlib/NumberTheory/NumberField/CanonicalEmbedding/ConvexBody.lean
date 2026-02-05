@@ -3,10 +3,12 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.MeasureTheory.Group.GeometryOfNumbers
-import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+module
+
+public import Mathlib.MeasureTheory.Group.GeometryOfNumbers
+public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
 /-!
 # Convex Bodies
@@ -36,6 +38,8 @@ associated to a number field of signature `K` and proves several existence theor
 
 number field, infinite places
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 
@@ -99,7 +103,7 @@ theorem convexBodyLT_volume :
           * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)))
           * ((∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) *
             NNReal.pi ^ nrComplexPlaces K) := by
-      simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
+      simp_rw [ofReal_mul (by simp : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_univ, ofReal_ofNat, ofReal_coe_nnreal, coe_ofNat]
     _ = (convexBodyLTFactor K) * ((∏ x : {w // InfinitePlace.IsReal w}, .ofReal (f x.val)) *
         (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by
@@ -227,7 +231,7 @@ theorem convexBodyLT'_volume :
           (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
             ((∏ x ∈ Finset.univ.erase w₀, ENNReal.ofReal (f x.val) ^ 2) *
               ↑pi ^ (nrComplexPlaces K - 1) * (4 * (f w₀) ^ 2)) := by
-      simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
+      simp_rw [ofReal_mul (by simp : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, ofReal_ofNat,
         ofReal_coe_nnreal, coe_ofNat]
     _ = convexBodyLT'Factor K * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))
@@ -307,11 +311,7 @@ variable (K)
 
 theorem convexBodySumFun_continuous :
     Continuous (convexBodySumFun : mixedSpace K → ℝ) := by
-  refine continuous_finset_sum Finset.univ fun w ↦ ?_
-  obtain hw | hw := isReal_or_isComplex w
-  all_goals
-  · simp only [normAtPlace_apply_of_isReal, normAtPlace_apply_of_isComplex, hw]
-    fun_prop
+  fun_prop
 
 /-- The convex body equal to the set of points `x : mixedSpace K` such that
   `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
@@ -411,8 +411,8 @@ theorem convexBodySum_volume :
           ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ nrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ nrComplexPlaces K := by
-        rw [integral_fintype_prod_volume_eq_pow _ (fun x => exp (-‖x‖)),
-          integral_fintype_prod_volume_eq_pow _ (fun x => exp (-2 * ‖x‖))]
+        rw [integral_fintype_prod_volume_eq_pow (fun x => exp (-‖x‖)),
+          integral_fintype_prod_volume_eq_pow (fun x => exp (-2 * ‖x‖))]
         simp_rw [norm_eq_abs]
       _ = (2 * Gamma (1 / 1 + 1)) ^ nrRealPlaces K *
               (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ nrComplexPlaces K := by
@@ -465,11 +465,10 @@ theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top <|
     ENNReal.pow_lt_top ENNReal.ofNat_lt_top
 
-theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
-  classical
-  refine zero_lt_iff.mpr (mul_ne_zero ?_ ?_)
-  · exact ZSpan.measure_fundamentalDomain_ne_zero _
-  · exact ENNReal.pow_ne_zero two_ne_zero _
+theorem minkowskiBound_pos : 0 < minkowskiBound K I :=
+  -- TODO: The `NormedAddCommGroup (mixedSpace K)` instance should not need any decidability.
+  ENNReal.mul_pos (by classical exact ZSpan.measure_fundamentalDomain_ne_zero _) <|
+    ENNReal.pow_ne_zero two_ne_zero _
 
 variable {f : InfinitePlace K → ℝ≥0} (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 

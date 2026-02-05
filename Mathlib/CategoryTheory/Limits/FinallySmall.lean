@@ -3,8 +3,10 @@ Copyright (c) 2023 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Logic.Small.Set
-import Mathlib.CategoryTheory.Filtered.Final
+module
+
+public import Mathlib.Logic.Small.Set
+public import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Finally small categories
@@ -14,15 +16,17 @@ A category given by `(J : Type u) [Category.{v} J]` is `w`-finally small if ther
 `FinalModel J ⥤ J`.
 
 This means that if a category `C` has colimits of size `w` and `J` is `w`-finally small, then
-`C` has colimits of shape `J`. In this way, the notion of "finally small" can be seen of a
+`C` has colimits of shape `J`. In this way, the notion of "finally small" can be seen as a
 generalization of the notion of "essentially small" for indexing categories of colimits.
 
 Dually, we have a notion of initially small category.
 
 We show that a finally small category admits a small weakly terminal set, i.e., a small set `s` of
-objects such that from every object there a morphism to a member of `s`. We also show that the
+objects such that from every object there is a morphism to a member of `s`. We also show that the
 converse holds if `J` is filtered.
 -/
+
+@[expose] public section
 
 universe w v v₁ u u₁
 
@@ -77,6 +81,10 @@ theorem finallySmall_of_final_of_essentiallySmall [EssentiallySmall.{w} K] (F : 
   have := finallySmall_of_essentiallySmall K
   finallySmall_of_final_of_finallySmall F
 
+instance [Limits.HasTerminal J] : FinallySmall.{w} J :=
+  have := Functor.final_const_terminal (C := PUnit.{w + 1}) (D := J)
+  .mk' ((Functor.const PUnit.{w + 1}).obj (⊤_ J))
+
 end FinallySmall
 
 section InitiallySmall
@@ -126,7 +134,17 @@ theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K]
   have := initiallySmall_of_essentiallySmall K
   initiallySmall_of_initial_of_initiallySmall F
 
+instance [Limits.HasInitial J] : InitiallySmall.{w} J :=
+  have := Functor.initial_const_initial (C := PUnit.{w + 1}) (D := J)
+  .mk' ((Functor.const PUnit.{w + 1}).obj (⊥_ J))
+
 end InitiallySmall
+
+instance {J : Type u} [Category.{v} J] [InitiallySmall.{w} J] : FinallySmall.{w} Jᵒᵖ where
+  final_smallCategory := ⟨_, _, (fromInitialModel.{w} J).op, inferInstance⟩
+
+instance {J : Type u} [Category.{v} J] [FinallySmall.{w} J] : InitiallySmall.{w} Jᵒᵖ where
+  initial_smallCategory := ⟨_, _, (fromFinalModel.{w} J).op, inferInstance⟩
 
 section WeaklyTerminal
 

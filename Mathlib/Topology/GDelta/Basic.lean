@@ -3,8 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Data.Set.Notation
+import Mathlib.Topology.Constructions
 
 /-!
 # `Gδ` sets
@@ -39,6 +43,8 @@ continuity set of a function from a topological space to a metrizable space is a
 
 Gδ set, residual set, nowhere dense set, meagre set
 -/
+
+@[expose] public section
 
 assert_not_exists UniformSpace
 
@@ -85,10 +91,10 @@ lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
   refine ⟨?_, ?_⟩
   · rintro ⟨T, hT, T_count, rfl⟩
-    rcases Set.eq_empty_or_nonempty T with rfl|hT
+    rcases Set.eq_empty_or_nonempty T with rfl | hT
     · exact ⟨fun _n ↦ univ, fun _n ↦ isOpen_univ, by simp⟩
     · obtain ⟨f, hf⟩ : ∃ (f : ℕ → Set X), T = range f := Countable.exists_eq_range T_count hT
-      exact ⟨f, by aesop, by simp [hf]⟩
+      exact ⟨f, by simp_all, by simp [hf]⟩
   · rintro ⟨f, hf, rfl⟩
     exact .iInter_of_isOpen hf
 
@@ -101,8 +107,6 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine ⟨⋃ i, T i, ?_, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι'] using hTo
-
-@[deprecated (since := "2024.02.15")] alias isGδ_iInter := IsGδ.iInter
 
 theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
@@ -147,6 +151,13 @@ theorem IsGδ.biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
 theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
   .sUnion (finite_range _) <| forall_mem_range.2 h
 
+/- The preimage of a Gδ set under a continuous map is Gδ. -/
+theorem isGδ_induced [TopologicalSpace Y] {f : X → Y} {s : Set Y} (hf : Continuous f)
+    (hs : IsGδ s) : IsGδ (f ⁻¹' s) := by
+  obtain ⟨U, hU1, hU2⟩ := hs.eq_iInter_nat
+  simp_all only [preimage_iInter]
+  exact IsGδ.iInter_of_isOpen (fun i => hf.isOpen_preimage (U i) (hU1 i))
+
 end IsGδ
 
 section residual
@@ -181,7 +192,7 @@ end residual
 
 section IsMeagre
 open Function TopologicalSpace Set
-variable {X : Type*} [TopologicalSpace X]
+variable [TopologicalSpace X]
 
 /-- A set is called **nowhere dense** iff its closure has empty interior. -/
 def IsNowhereDense (s : Set X) := interior (closure s) = ∅
@@ -190,6 +201,11 @@ def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 @[simp]
 lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
   rw [IsNowhereDense, closure_empty, interior_empty]
+
+/-- A subset of a nowhere dense set is nowhere dense. -/
+@[gcongr]
+lemma IsNowhereDense.mono {s t : Set X} (ht : t ⊆ s) (hs : IsNowhereDense s) : IsNowhereDense t :=
+  Set.eq_empty_of_subset_empty <| by grw [ht]; rw [hs]
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
@@ -212,6 +228,32 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
 
+/-- To check that `s` is nowhere dense, it suffices to check that no point of `s`
+is in the interior of `closure s`. -/
+lemma isNowhereDense_iff_disjoint {s : Set X} :
+    IsNowhereDense s ↔ Disjoint s (interior (closure s)) :=
+  ⟨fun H ↦ H ▸ disjoint_empty _, fun H ↦
+    H.closure_left isOpen_interior |>.mono_left interior_subset |>.eq_bot_of_self⟩
+
+/-- To check that `s` is nowhere dense, it suffices to check that `closure s` is not a
+neighborhood of any point of `s`. -/
+lemma isNowhereDense_iff_forall_notMem_nhds {s : Set X} :
+    IsNowhereDense s ↔ ∀ x ∈ s, closure s ∉ 𝓝 x := by
+  simp [isNowhereDense_iff_disjoint, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem,
+    mem_interior_iff_mem_nhds]
+
+/-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
+lemma Topology.IsInducing.isNowhereDense_image [TopologicalSpace Y] {f : X → Y}
+    (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
+  rw [isNowhereDense_iff_forall_notMem_nhds, forall_mem_image] at *
+  simp_rw [hf.nhds_eq_comap, hf.closure_eq_preimage_closure_image] at h
+  exact fun x x_mem hx ↦ h x x_mem (preimage_mem_comap hx)
+
+/-- A set is nowhere dense if it is nowhere dense in some subspace. -/
+lemma IsNowhereDense.image_val {Y : Set X} {s : Set Y}
+    (hs : IsNowhereDense s) : IsNowhereDense (s : Set X) :=
+  Topology.IsInducing.subtypeVal.isNowhereDense_image hs
+
 /-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
 def IsMeagre (s : Set X) := sᶜ ∈ residual X
 
@@ -221,7 +263,8 @@ lemma IsMeagre.empty : IsMeagre (∅ : Set X) := by
   exact Filter.univ_mem
 
 /-- Subsets of meagre sets are meagre. -/
-lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts : t ⊆ s) : IsMeagre t :=
+@[gcongr]
+lemma IsMeagre.mono {s t : Set X} (hts : t ⊆ s) (hs : IsMeagre s) : IsMeagre t :=
   Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
 
 /-- An intersection with a meagre set is meagre. -/
@@ -234,10 +277,18 @@ lemma IsMeagre.union {s t : Set X} (hs : IsMeagre s) (ht : IsMeagre t) : IsMeagr
   exact inter_mem hs ht
 
 /-- A countable union of meagre sets is meagre. -/
-lemma isMeagre_iUnion [Countable ι] {f : ι → Set X} (hs : ∀ i, IsMeagre (f i))
-    : IsMeagre (⋃ i, f i) := by
+lemma isMeagre_iUnion [Countable ι'] {f : ι' → Set X} (hs : ∀ i, IsMeagre (f i)) :
+    IsMeagre (⋃ i, f i) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
+
+lemma isMeagre_biUnion {I : Set ι} (c : I.Countable) {f : ι → Set X}
+    (h : ∀ i ∈ I, IsMeagre (f i)) : IsMeagre (⋃ i ∈ I, f i) := by
+  suffices IsMeagre (⋃ i : I, f i) by simpa
+  have : Countable I := c
+  apply isMeagre_iUnion
+  intro ⟨i, hi⟩
+  exact h i hi
 
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
 lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
@@ -252,5 +303,39 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     rw [forall_mem_image]
     exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
       (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
+
+/-- A set of second category (i.e. non-meagre) is nonempty. -/
+lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := by
+  contrapose! hs
+  simpa [hs] using IsMeagre.empty
+
+/-- A nowhere dense set is meagre. -/
+lemma IsNowhereDense.isMeagre {s : Set X} (h : IsNowhereDense s) : IsMeagre s := by
+  rw [isMeagre_iff_countable_union_isNowhereDense]
+  exact ⟨{s}, by simpa, by simp, by simp⟩
+
+lemma exists_of_not_isMeagre_biUnion {I : Set ι}
+    (c : I.Countable) {A : ι → Set X} (h : ¬IsMeagre (⋃ i ∈ I, A i)) :
+    ∃ i ∈ I, ¬IsMeagre (A i) := by
+  contrapose! h
+  exact isMeagre_biUnion c h
+
+/-- The image of a meagre set through an inducing map is meagre. -/
+lemma Topology.IsInducing.isMeagre_image [TopologicalSpace Y] {f : X → Y}
+    (hf : Topology.IsInducing f) {s : Set X} (h : IsMeagre s) : IsMeagre (f '' s) := by
+  rw [isMeagre_iff_countable_union_isNowhereDense] at *
+  obtain ⟨T, isNowhereDense, countable, cover⟩ := h
+  refine ⟨(Set.image f) '' T, ?isNowhereDense, countable.image _, ?cover⟩
+  case isNowhereDense =>
+    intro u ⟨t, tT, tu⟩
+    rw [← tu]
+    apply hf.isNowhereDense_image (isNowhereDense t tT)
+  case cover =>
+    rw [← Set.image_sUnion]
+    grw [cover]
+
+/-- A set is meagre if it is meagre in some subspace. -/
+lemma IsMeagre.image_val {s : Set X} {m : Set s} (h : IsMeagre (m : Set s)) :
+    IsMeagre (m : Set X) := Topology.IsInducing.subtypeVal.isMeagre_image h
 
 end IsMeagre

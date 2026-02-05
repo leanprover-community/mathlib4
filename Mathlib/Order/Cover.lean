@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn, Bhavik Mehta
 -/
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.Hom.WithTopBot
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Interval.Set.WithBotTop
+module
+
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # The covering relation
@@ -23,6 +25,8 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 * `a ⩿ b` means that `b` weakly covers `a`.
 -/
 
+@[expose] public section
+
 
 open Set OrderDual
 
@@ -34,6 +38,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
 
+@[to_dual self]
 theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
 
@@ -42,20 +47,25 @@ theorem WCovBy.refl (a : α) : a ⩿ a :=
 
 @[simp] lemma WCovBy.rfl : a ⩿ a := WCovBy.refl a
 
+@[to_dual wcovBy']
 protected theorem Eq.wcovBy (h : a = b) : a ⩿ b :=
   h ▸ WCovBy.rfl
 
+@[to_dual self]
 theorem wcovBy_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
   ⟨h1, fun _ hac hcb => (hac.trans hcb).not_ge h2⟩
 
+@[to_dual self]
 alias LE.le.wcovBy_of_le := wcovBy_of_le_of_le
 
 theorem AntisymmRel.wcovBy (h : AntisymmRel (· ≤ ·) a b) : a ⩿ b :=
   wcovBy_of_le_of_le h.1 h.2
 
+@[to_dual self]
 theorem WCovBy.wcovBy_iff_le (hab : a ⩿ b) : b ⩿ a ↔ b ≤ a :=
   ⟨fun h => h.le, fun h => h.wcovBy_of_le hab.le⟩
 
+@[to_dual none]
 theorem wcovBy_of_eq_or_eq (hab : a ≤ b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⩿ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
@@ -72,66 +82,64 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
   ⟨fun h => h.trans_antisymm_rel hab, fun h => h.trans_antisymm_rel hab.symm⟩
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
+@[to_dual none]
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
-instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
+@[to_dual stdRefl']
+instance WCovBy.stdRefl : @Std.Refl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
 
+@[to_dual self]
 theorem WCovBy.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
   eq_empty_iff_forall_notMem.2 fun _ hx => h.2 hx.1 hx.2
 
+@[to_dual self]
 theorem wcovBy_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
   and_congr_right' <| by simp [eq_empty_iff_forall_notMem]
 
+@[to_dual of_le_of_le']
 lemma WCovBy.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
   ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
 
-lemma WCovBy.of_le_of_le' (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : a ⩿ b :=
-  ⟨hab, fun _x hax hxb ↦ hac.2 hax <| hxb.trans_le hbc⟩
-
+@[to_dual self]
 theorem WCovBy.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
   ⟨f.le_iff_le.mp h.le, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
 
+@[to_dual self]
 theorem WCovBy.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnected) : f a ⩿ f b := by
   refine ⟨f.monotone hab.le, fun c ha hb => ?_⟩
   obtain ⟨c, rfl⟩ := h.out (mem_range_self _) (mem_range_self _) ⟨ha.le, hb.le⟩
   rw [f.lt_iff_lt] at ha hb
   exact hab.2 ha hb
 
+@[to_dual self]
 theorem Set.OrdConnected.apply_wcovBy_apply_iff (f : α ↪o β) (h : (range f).OrdConnected) :
     f a ⩿ f b ↔ a ⩿ b :=
   ⟨fun h2 => h2.of_image f, fun hab => hab.image f h⟩
 
-@[simp]
+@[simp, to_dual self]
 theorem apply_wcovBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     e a ⩿ e b ↔ a ⩿ b :=
   (ordConnected_range (e : α ≃o β)).apply_wcovBy_apply_iff ((e : α ≃o β) : α ↪o β)
 
-@[simp]
+@[simp, to_dual self]
 theorem toDual_wcovBy_toDual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
-@[simp]
+@[simp, to_dual self]
 theorem ofDual_wcovBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b ⩿ a :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
+@[to_dual self]
 alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
+@[to_dual self]
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
 
-theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y := by
-  use f.le_iff_le.1 h.1
-  intro a
-  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
-  apply h.2
+@[deprecated (since := "2025-11-07")] alias OrderEmbedding.wcovBy_of_apply := WCovBy.of_image
 
-theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y := by
-  use f.toOrderEmbedding.wcovBy_of_apply
-  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
-  exact f.symm.toOrderEmbedding.wcovBy_of_apply
+@[deprecated (since := "2025-11-07")] alias OrderIso.map_wcovBy := apply_wcovBy_apply_iff
 
 end Preorder
 
@@ -189,6 +197,7 @@ section LT
 
 variable [LT α] {a b : α}
 
+@[to_dual self]
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
 
@@ -201,6 +210,7 @@ alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
 alias LT.lt.exists_lt_lt := exists_lt_lt_of_not_covBy
 
 /-- In a dense order, nothing covers anything. -/
+@[to_dual self]
 theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
   let ⟨_, hc⟩ := exists_between h.1
   h.2 hc.1 hc.2
@@ -209,16 +219,18 @@ theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
-@[simp]
+@[to_dual self, simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
-@[simp]
+@[to_dual self, simp]
 theorem ofDual_covBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b ⋖ a :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
+@[to_dual self]
 alias ⟨_, CovBy.toDual⟩ := toDual_covBy_toDual_iff
 
+@[to_dual self]
 alias ⟨_, CovBy.ofDual⟩ := ofDual_covBy_ofDual_iff
 
 end LT
@@ -282,7 +294,7 @@ instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
   ⟨fun _ _ =>
     covBy_iff_wcovBy_and_not_le.trans <| and_congr_right fun h => h.wcovBy_iff_le.not.symm⟩
 
-instance CovBy.isIrrefl : IsIrrefl α (· ⋖ ·) :=
+instance CovBy.irrefl : @Std.Irrefl α (· ⋖ ·) :=
   ⟨fun _ ha => ha.ne rfl⟩
 
 theorem CovBy.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
@@ -309,18 +321,9 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
-theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y := by
-  use f.lt_iff_lt.1 h.1
-  intro a
-  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
-  apply h.2
+@[deprecated (since := "2025-11-07")] alias OrderEmbedding.covBy_of_apply := CovBy.of_image
 
-theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
-    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y := by
-  use f.toOrderEmbedding.covBy_of_apply
-  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
-  exact f.symm.toOrderEmbedding.covBy_of_apply
+@[deprecated (since := "2025-11-07")] alias OrderIso.map_covBy := apply_covBy_apply_iff
 
 end Preorder
 
@@ -419,10 +422,7 @@ alias ⟨CovBy.le_iff_lt_right, _⟩ := covBy_iff_le_iff_lt_right
 of `Set.Ioi b'`. -/
 lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
-  by_cases h' : a ⋖ b
-  · exact ⟨b, h, a, h, fun x hx y hy => hx.trans_le <| h'.ge_of_gt hy⟩
-  · rcases h.exists_lt_lt h' with ⟨c, ha, hb⟩
-    exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
+  grind
 
 end LinearOrder
 
@@ -459,6 +459,9 @@ variable {s t : Set α} {a : α}
 @[simp] lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovBy_insert _ _).covBy_of_lt <| ssubset_insert ha
 
+@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Set α) :=
+  insert_empty_eq (β := Set α) a ▸ covBy_insert <| notMem_empty a
+
 @[simp] lemma sdiff_singleton_covBy (ha : a ∈ s) : s \ {a} ⋖ s :=
   ⟨sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _, (sdiff_singleton_wcovBy _ _).2⟩
 
@@ -483,15 +486,15 @@ section Relation
 
 open Relation
 
-lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
+lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : (· ⩿ · : α → α → Prop) = ReflGen (· ⋖ ·) := by
   ext x y; simp_rw [wcovBy_iff_eq_or_covBy, @eq_comm _ x, reflGen_iff]
 
 lemma transGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    TransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, transGen_reflGen]
 
 lemma reflTransGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    ReflTransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, reflTransGen_reflGen]
 
 end Relation
@@ -703,11 +706,11 @@ namespace WithTop
 variable [Preorder α] {a b : α}
 
 @[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withTopCoe <| by
+  Set.OrdConnected.apply_wcovBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[simp, norm_cast] lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withTopCoe <| by
+  Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
@@ -724,11 +727,11 @@ namespace WithBot
 variable [Preorder α] {a b : α}
 
 @[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithBot α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withBotCoe <| by
+  Set.OrdConnected.apply_wcovBy_apply_iff WithBot.coeOrderHom <| by
     simp [WithBot.range_coe, ordConnected_Ioi]
 
 @[simp, norm_cast] lemma coe_covBy_coe : (a : WithBot α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withBotCoe <| by
+  Set.OrdConnected.apply_covBy_apply_iff WithBot.coeOrderHom <| by
     simp [WithBot.range_coe, ordConnected_Ioi]
 
 @[simp] lemma bot_covBy_coe : ⊥ ⋖ (a : WithBot α) ↔ IsMin a := by

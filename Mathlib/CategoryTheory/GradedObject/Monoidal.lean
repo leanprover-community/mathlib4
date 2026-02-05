@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.GradedObject.Unitor
-import Mathlib.Data.Fintype.Prod
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Unitor
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The monoidal category structures on graded objects
@@ -23,13 +25,15 @@ product commutes, we obtain a monoidal category structure on `GradedObject ℕ C
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace CategoryTheory
 
 open Limits MonoidalCategory Category
 
-variable {I : Type u} [AddMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
+variable {I : Type u} [AddMonoid I] {C : Type*} [Category* C] [MonoidalCategory C]
 
 namespace GradedObject
 
@@ -59,8 +63,8 @@ variable (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
 
 /-- The inclusion of a summand in a tensor product of two graded objects. -/
 noncomputable def ιTensorObj (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
-  X₁ i₁ ⊗ X₂ i₂ ⟶ tensorObj X₁ X₂ i₁₂ :=
-    ιMapBifunctorMapObj (curriedTensor C) _ _ _ _ _ _ h
+    X₁ i₁ ⊗ X₂ i₂ ⟶ tensorObj X₁ X₂ i₁₂ :=
+  ιMapBifunctorMapObj (curriedTensor C) _ _ _ _ _ _ h
 
 variable {X₁ X₂}
 
@@ -119,15 +123,11 @@ lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
 @[reassoc]
-lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
+lemma tensorHom_comp_tensorHom {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
     (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃) [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₃ Y₃] :
-    tensorHom (f₁ ≫ f₂) (g₁ ≫ g₂) = tensorHom f₁ g₁ ≫ tensorHom f₂ g₂ := by
-  dsimp only [tensorHom, mapBifunctorMapMap]
-  rw [← mapMap_comp]
-  apply congr_mapMap
+    tensorHom f₁ g₁ ≫ tensorHom f₂ g₂ = tensorHom (f₁ ≫ f₂) (g₁ ≫ g₂) := by
+  ext
   simp
 
 /-- The isomorphism `tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂` induced by isomorphisms of graded
@@ -138,13 +138,13 @@ noncomputable def tensorIso {X₁ X₂ Y₁ Y₂ : GradedObject I C} (e : X₁ �
     tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂ where
   hom := tensorHom e.hom e'.hom
   inv := tensorHom e.inv e'.inv
-  hom_inv_id := by simp only [← tensor_comp, Iso.hom_inv_id, id_tensorHom_id]
-  inv_hom_id := by simp only [← tensor_comp, Iso.inv_hom_id, id_tensorHom_id]
+  hom_inv_id := by simp [tensorHom_comp_tensorHom]
+  inv_hom_id := by simp [tensorHom_comp_tensorHom]
 
 lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₂ Y₁] :
     tensorHom f g = whiskerRight f Y₁ ≫ whiskerLeft X₂ g := by
-  rw [← tensor_comp, id_comp, comp_id]
+  rw [tensorHom_comp_tensorHom, id_comp, comp_id]
 
 /-- This is the addition map `I × I × I → I` for an additive monoid `I`. -/
 def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
@@ -217,10 +217,10 @@ lemma ιTensorObj₃_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f�
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom f₁ (tensorHom f₂ f₃) j =
       (f₁ i₁ ⊗ₘ f₂ i₂ ⊗ₘ f₃ i₃) ≫ ιTensorObj₃ Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
-  rw [ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
-    ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
-    ← id_tensorHom, ← id_tensorHom, ← MonoidalCategory.tensor_comp_assoc, ι_tensorHom,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, comp_id]
+  rw [ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _ rfl,
+    ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _ rfl, assoc, ι_tensorHom,
+    ← id_tensorHom, ← id_tensorHom, MonoidalCategory.tensorHom_comp_tensorHom_assoc, ι_tensorHom,
+    MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, comp_id]
 
 @[ext (iff := false)]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
@@ -261,10 +261,10 @@ lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom (tensorHom f₁ f₂) f₃ j =
       ((f₁ i₁ ⊗ₘ f₂ i₂) ⊗ₘ f₃ i₃) ≫ ιTensorObj₃' Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
-  rw [ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
-    ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
-    ← tensorHom_id, ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,
-    ι_tensorHom, ← MonoidalCategory.tensor_comp_assoc, comp_id]
+  rw [ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _ rfl,
+    ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _ rfl, assoc, ι_tensorHom,
+    ← tensorHom_id, ← tensorHom_id, MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp,
+    ι_tensorHom, MonoidalCategory.tensorHom_comp_tensorHom_assoc, comp_id]
 
 @[ext (iff := false)]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
@@ -284,8 +284,8 @@ variable [HasTensor X₁ X₂] [HasTensor (tensorObj X₁ X₂) X₃] [HasTensor
 
 /-- The associator isomorphism for graded objects. -/
 noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃] :
-  tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
-    mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
+    tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
+  mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
 
 @[reassoc (attr := simp)]
 lemma ιTensorObj₃'_associator_hom
@@ -314,12 +314,7 @@ lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ 
     [HasGoodTensor₁₂Tensor Y₁ Y₂ Y₃] [HasGoodTensorTensor₂₃ Y₁ Y₂ Y₃] :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
-        #adaptation_note /-- https://github.com/leanprover/lean4/pull/4154
-        this used to be aesop_cat -/
-        ext x i₁ i₂ i₃ h : 2
-        simp only [categoryOfGradedObjects_comp, ιTensorObj₃'_tensorHom_assoc,
-          associator_conjugation, ιTensorObj₃'_associator_hom, assoc, Iso.inv_hom_id_assoc,
-          ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_tensorHom]
+        cat_disch
 
 end
 
@@ -462,9 +457,8 @@ lemma pentagon : tensorHom (associator X₁ X₂ X₃).hom (𝟙 X₄) ≫
     (associator (tensorObj X₁ X₂) X₃ X₄).hom ≫ (associator X₁ X₂ (tensorObj X₃ X₄)).hom := by
   rw [← cancel_epi (associator (tensorObj X₁ X₂) X₃ X₄).inv,
     ← cancel_epi (associator X₁ X₂ (tensorObj X₃ X₄)).inv, Iso.inv_hom_id_assoc,
-    Iso.inv_hom_id, ← pentagon_inv_assoc, ← tensor_comp_assoc, id_comp, Iso.inv_hom_id,
-    id_tensorHom_id, id_comp, Iso.inv_hom_id_assoc, ← tensor_comp, id_comp, Iso.inv_hom_id,
-    id_tensorHom_id]
+    Iso.inv_hom_id, ← pentagon_inv_assoc]
+  simp [tensorHom_comp_tensorHom, tensorHom_comp_tensorHom_assoc]
 
 end Pentagon
 
@@ -596,7 +590,7 @@ noncomputable instance monoidalCategory : MonoidalCategory (GradedObject I C) wh
   leftUnitor_naturality := Monoidal.leftUnitor_naturality
   rightUnitor X := Monoidal.rightUnitor X
   rightUnitor_naturality := Monoidal.rightUnitor_naturality
-  tensor_comp f₁ f₂ g₁ g₂ := Monoidal.tensor_comp f₁ g₁ f₂ g₂
+  tensorHom_comp_tensorHom f₁ f₂ g₁ g₂ := Monoidal.tensorHom_comp_tensorHom f₁ g₁ f₂ g₂
   pentagon X₁ X₂ X₃ X₄ := Monoidal.pentagon X₁ X₂ X₃ X₄
   triangle X₁ X₂ := Monoidal.triangle X₁ X₂
 
@@ -606,13 +600,13 @@ section
 
 instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ =>
-    ((⟨i₁, by omega⟩, ⟨i₂, by omega⟩) : Fin (n + 1) × Fin (n + 1) )) ?_
+    ((⟨i₁, by lia⟩, ⟨i₂, by lia⟩) : Fin (n + 1) × Fin (n + 1))) ?_
   rintro ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ h
   simpa using h
 
 instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n }) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
-    (⟨⟨i₁, by omega⟩, ⟨i₂, by omega⟩, ⟨i₃, by omega⟩⟩ :
+    (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h
   simpa using h

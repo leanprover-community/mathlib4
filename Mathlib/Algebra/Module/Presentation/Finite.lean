@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.Algebra.Module.FinitePresentation
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.Algebra.Module.FinitePresentation
 
 /-!
 # Characterization of finitely presented modules
@@ -13,6 +15,8 @@ A module is finitely presented (in the sense of `Module.FinitePresentation`) iff
 it admits a presentation with finitely many generators and relations.
 
 -/
+
+public section
 
 universe w₀ w₁ v u
 

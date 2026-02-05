@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -15,10 +17,12 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `AlgHom R A B`: the type of `R`-algebra morphisms from `A` to `B`.
 * `Algebra.ofId R A : R →ₐ[R] A`: the canonical map from `R` to `A`, as an `AlgHom`.
 
-## Notations
+## Notation
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
@@ -122,12 +126,14 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f :
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 
+/-- Turn an algebra homomorpism into the corresponding multiplicative monoid homomorphism. -/
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
+/-- Turn an algebra homomorphism into the corresponding additive monoid homomorphism. -/
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
@@ -273,6 +279,9 @@ theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A �
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
   rfl
 
+instance {φ₁ : B →ₐ[R] C} {φ₂ : A →ₐ[R] B} :
+    RingHomCompTriple φ₂.toRingHom φ₁.toRingHom (φ₁.comp φ₂).toRingHom := ⟨rfl⟩
+
 /-- R-Alg ⥤ R-Mod -/
 def toLinearMap : A →ₗ[R] B where
   toFun := φ
@@ -282,6 +291,9 @@ def toLinearMap : A →ₗ[R] B where
 @[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
+
+@[simp]
+lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
 theorem toLinearMap_injective :
     Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
@@ -307,7 +319,7 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    commutes' c := by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
@@ -345,7 +357,7 @@ theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
 @[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
-   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+  n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
@@ -359,8 +371,23 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
 
+/-- `AlgHom.toLinearMap` as a `MonoidHom`. -/
+@[simps] def toEnd : (A →ₐ[R] A) →* Module.End R A where
+  toFun := toLinearMap
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
 end Semiring
 end AlgHom
+
+namespace AlgHomClass
+
+@[simp]
+lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+
+end AlgHomClass
 
 namespace RingHom
 
@@ -409,6 +436,9 @@ variable {R}
 
 @[simp] lemma ofId_self : ofId R R = .id R R := rfl
 
+@[simp] lemma toRingHom_ofId : ofId R A = algebraMap R A := rfl
+
+@[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 
@@ -416,7 +446,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
 
-/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+/-- This ext lemma closes trivial subgoals created when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
@@ -438,7 +468,7 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
 
 end MulDistribMulAction
 
-variable (M : Submonoid R) {B : Type w} [CommRing B] [Algebra R B] {A}
+variable (M : Submonoid R) {B : Type w} [Semiring B] [Algebra R B] {A}
 
 lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
@@ -468,7 +498,7 @@ variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 /-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
-`DistribMulAction.toLinearMap`. -/
+`DistribSMul.toLinearMap`. -/
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
@@ -480,3 +510,18 @@ theorem toAlgHom_injective [FaithfulSMul M A] :
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+  [Subsingleton T]
+
+instance uniqueOfRight : Unique (S →ₐ[R] T) where
+  default := AlgHom.ofLinearMap default (Subsingleton.elim _ _) (fun _ _ ↦ (Subsingleton.elim _ _))
+  uniq _ := AlgHom.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgHom.default_apply (x : S) : (default : S →ₐ[R] T) x = 0 :=
+  rfl
+
+end

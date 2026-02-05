@@ -3,9 +3,11 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+module
+
+public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 /-!
 # Long exact sequence in group cohomology
@@ -24,6 +26,8 @@ to specialize API about long exact sequences to group cohomology.
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
 
 -/
+
+public section
 
 universe u v
 
@@ -97,7 +101,8 @@ theorem isIso_δ_of_isZero (n : ℕ) (h : IsZero (groupCohomology X.X₂ n))
     IsIso (δ hX n (n + 1) rfl) := SnakeInput.isIso_δ _ h hs
 
 /-- Given an exact sequence of `G`-representations `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0`, this expresses an
-`n + 1`-cochain `x : Gⁿ⁺¹ → X₁` such that `f ∘ x ∈ Bⁿ⁺¹(G, X₂)` as a cocycle. -/
+`n + 1`-cochain `x : Gⁿ⁺¹ → X₁` such that `f ∘ x ∈ Bⁿ⁺¹(G, X₂)` as a cocycle.
+Stated for readability of `δ_apply`. -/
 noncomputable abbrev cocyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) → X.X₂}
     {x : (Fin j → G) → X.X₁} (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     cocycles X.X₁ j :=
@@ -119,15 +124,13 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using hx) (j + 1) (by simp)
 
+/-- Stated for readability of `δ₀_apply`. -/
 theorem mem_cocycles₁_of_comp_eq_d₀₁
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = d₀₁ X.X₂ y) :
     x ∈ cocycles₁ X.X₁ := by
   apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
-
-@[deprecated (since := "2025-07-02")]
-alias mem_oneCocycles_of_comp_eq_dZero := mem_cocycles₁_of_comp_eq_d₀₁
 
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
@@ -144,15 +147,13 @@ theorem δ₀_apply
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x)) g
 
+/-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cocycles₂_of_comp_eq_d₁₂
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = d₁₂ X.X₂ y) :
     x ∈ cocycles₂ X.X₁ := by
   apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
-
-@[deprecated (since := "2025-07-02")]
-alias mem_twoCocycles_of_comp_eq_dOne := mem_cocycles₂_of_comp_eq_d₁₂
 
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.

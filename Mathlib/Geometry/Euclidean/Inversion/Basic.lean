@@ -3,24 +3,28 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space
 
 In this file we define inversion in a sphere in an affine space. This map sends each point `x` to
 the point `y` such that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center
-and the radius the sphere.
+and the radius of the sphere.
 
-In many applications, it is convenient to assume that the inversions swaps the center and the point
+In many applications, it is convenient to assume that the inversion swaps the center and the point
 at infinity. In order to stay in the original affine space, we define the map so that it sends
 center to itself.
 
 Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality, see
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -91,12 +95,11 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   rcases eq_or_ne x c with (rfl | hx)
   · simp
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- was `field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]`,
-  -- but really slow. Replaced by `simp only ...` to speed up.
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [inversion, sq, mul_div_assoc', div_mul_eq_mul_div,
-    div_div, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
-    abs_dist, ← dist_eq_norm_vsub, mul_assoc, eq_div_iff, div_eq_iff]
+  simp only [inversion]
+  field_simp
+  simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
+    abs_dist, ← dist_eq_norm_vsub]
+  field
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
@@ -162,12 +165,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   have hy' : inversion c R y ≠ c := by simp [*]
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
-  have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- used to be `field_simp`, but was really slow; replaced by `simp only ...` to speed up
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [mul_div_assoc', div_div_eq_mul_div, div_mul_eq_mul_div,
-    div_eq_iff]
-  ring
+  field [dist_ne_zero.2 hx]
 
 /-!
 ### Ptolemy's inequality
@@ -194,7 +192,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
   rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
-  convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
+  convert H using 1 <;> simp [field, dist_comm a]; ring
 
 end EuclideanGeometry
 

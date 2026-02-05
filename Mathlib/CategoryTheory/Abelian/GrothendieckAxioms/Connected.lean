@@ -3,10 +3,11 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
 /-!
 # Pulling back connected colimits
@@ -24,6 +25,8 @@ let `f : ℤ → ℤ ⊕ ℤ` be the diagonal map, and let `g := 𝟙 (ℤ ⊕ �
 `IsColimit.pullback_zero_ext` are satisfied, but `f ≫ g` is not zero.
 
 -/
+
+@[expose] public section
 
 universe w' w v u
 
@@ -94,7 +97,7 @@ theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]
   rw [← cancel_mono (pushoutObjIso _ _ _).hom]
   simpa using hf j
 
-/-- Detecting vanishing of a morphism factoring though a connected limit by pushing out along the
+/-- Detecting vanishing of a morphism factoring through a connected limit by pushing out along the
 projections of the limit. -/
 theorem IsLimit.pushout_zero_ext [HasZeroMorphisms C] [HasPushouts C] [HasLimitsOfShape J C]
     [HasExactLimitsOfShape J C] {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) {X Y : C}

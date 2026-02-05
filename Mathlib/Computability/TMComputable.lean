@@ -3,9 +3,11 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Computability.Encoding
-import Mathlib.Computability.TuringMachine
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Computability.Encoding
+public import Mathlib.Computability.TuringMachine
 
 /-!
 # Computable functions
@@ -28,6 +30,8 @@ generally contains multiple "fundamental" steps (pushing, popping, and so on).
 However, as functions only contain a finite number of executions and each one is executed at most
 once, this execution time is up to multiplication by a constant the amount of fundamental steps.
 -/
+
+@[expose] public section
 
 
 

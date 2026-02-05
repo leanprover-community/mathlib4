@@ -3,8 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Basic
-import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Cylinders
@@ -33,6 +36,8 @@ in the lemma `Cylinder.exists_very_good`.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Category Limits
@@ -52,8 +57,8 @@ structure Precylinder (A : C) where
   i₁ : A ⟶ I
   /-- the codiagonal of the (pre)cylinder -/
   π : I ⟶ A
-  i₀_π : i₀ ≫ π = 𝟙 A := by aesop_cat
-  i₁_π : i₁ ≫ π = 𝟙 A := by aesop_cat
+  i₀_π : i₀ ≫ π = 𝟙 A := by cat_disch
+  i₁_π : i₁ ≫ π = 𝟙 A := by cat_disch
 
 namespace Precylinder
 
@@ -96,8 +101,7 @@ lemma inr_i : coprod.inr ≫ P.i = P.i₁ := by simp [i]
 end
 
 @[simp, reassoc]
-lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
-  (coprod.braiding A A).hom ≫ P.i := by aesop_cat
+lemma symm_i [HasBinaryCoproducts C] : P.symm.i = (coprod.braiding A A).hom ≫ P.i := by cat_disch
 
 end Precylinder
 
@@ -211,7 +215,7 @@ noncomputable def ofFactorizationData : Cylinder A where
   π := h.p
 
 @[simp]
-lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by aesop_cat
+lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by cat_disch
 
 instance : (ofFactorizationData h).IsVeryGood where
   cofibration_i := by simpa using inferInstanceAs (Cofibration h.i)

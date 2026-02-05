@@ -3,8 +3,9 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Central Algebras
@@ -54,6 +55,8 @@ need this assumption.
 central algebra, center, simple ring, central simple algebra
 
 -/
+
+@[expose] public section
 
 universe u v
 

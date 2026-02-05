@@ -3,8 +3,10 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Data.PNat.Prime
+module
+
+public import Mathlib.Tactic.Ring
+public import Mathlib.Data.PNat.Prime
 
 /-!
 # Euclidean algorithm for ℕ
@@ -30,6 +32,8 @@ the theory of continued fractions.
 
 See `Nat.Xgcd` for a very similar algorithm allowing values in `ℤ`.
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -136,7 +140,9 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   constructor <;> intro h <;> simp only [w, succPNat, succ_eq_add_one, z] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
   · simp_all [← h]; ring
-  · simp [Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
+  · simp only [Nat.mul_add, Nat.add_mul, one_mul, mul_one, ← Nat.add_assoc,
+      Nat.add_right_cancel_iff] at h
+    rw [← h]; ring
 
 /-- `IsReduced` holds if the two entries in the vector are the
 same.  The reduction algorithm will produce a system with this
@@ -225,10 +231,9 @@ theorem start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
 
 theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
-  rw [one_mul, one_mul, zero_mul, zero_mul]
   have := a.pos
   have := b.pos
-  congr <;> omega
+  lia
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=
@@ -399,10 +404,9 @@ theorem gcd_props :
         b = b' * d ∧
           z * a' = succPNat (x * b') ∧
             w * b' = succPNat (y * a') ∧ (z * a : ℕ) = x * b + d ∧ (w * b : ℕ) = y * a + d := by
-  intros d w x y z a' b'
+  intro d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
-  have _ : d = ur.a := rfl
   have hb : d = ur.b := u.reduce_isReduced'
   have ha' : (a' : ℕ) = w + x := gcdA'_coe a b
   have hb' : (b' : ℕ) = y + z := gcdB'_coe a b
@@ -410,7 +414,6 @@ theorem gcd_props :
   constructor
   · exact hdet
   have hdet' : (w * z : ℕ) = x * y + 1 := by rw [← mul_coe, hdet, succPNat_coe]
-  have _ : u.v = ⟨a, b⟩ := XgcdType.start_v a b
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv
@@ -432,10 +435,7 @@ theorem gcd_props :
   constructor
   · apply eq
     rw [succPNat_coe, Nat.succ_eq_add_one, mul_coe, hwb']
-  rw [ha'', hb'']
-  repeat rw [← @mul_assoc]
-  rw [hza', hwb']
-  constructor <;> ring
+  grind
 
 theorem gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩

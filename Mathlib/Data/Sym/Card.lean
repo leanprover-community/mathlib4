@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Stars and bars
@@ -50,6 +52,8 @@ while the "stars and bars" technique gives
 
 stars and bars, multichoose
 -/
+
+@[expose] public section
 
 
 open Finset Fintype Function Sum Nat
@@ -169,6 +173,9 @@ theorem card_subtype_not_diag [Fintype α] :
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
+
+lemma card_diagSet_compl [Fintype α] : card (diagSetᶜ : Set (Sym2 α)) = (card α).choose 2 :=
+  card_subtype_not_diag
 
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem card {α} [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=

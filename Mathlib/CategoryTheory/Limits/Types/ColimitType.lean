@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Types
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # The colimit type of a functor to types
@@ -27,10 +29,12 @@ in a categorical sense is a colimit.
 
 ## TODO
 * refactor `DirectedSystem` and the construction of colimits in `Type`
-by using `Functor.ColimitType`.
+  by using `Functor.ColimitType`.
 * add a similar API for limits in `Type`?
 
 -/
+
+@[expose] public section
 
 universe w₃ w₂ w₁ w₀ w₀' v u
 
@@ -84,6 +88,14 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
 
+/-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
+the induced cocone in `(G ⋙ F).CoconeTypes`. -/
+@[simps]
+def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category* J'] (G : J' ⥤ J) :
+    CoconeTypes.{w₁} (G ⋙ F) where
+  pt := c.pt
+  ι _ := c.ι _
+
 end CoconeTypes
 
 /-- Given `F : J ⥤ Type w₀`, this is the relation `Σ j, F.obj j` which
@@ -121,8 +133,8 @@ def coconeTypes : F.CoconeTypes where
   pt := F.ColimitType
   ι j := F.ιColimitType j
 
-/-- An heterogeneous universe version of the universal property of the colimit is
-satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
+/-- A heterogeneous universe version of the universal property of the colimit is
+satisfied by `F.ColimitType` together with the maps `F.ιColimitType j`. -/
 def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
   Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)
 
@@ -138,9 +150,20 @@ namespace CoconeTypes
 
 variable {F} (c : CoconeTypes.{w₁} F)
 
+lemma descColimitType_surjective_iff :
+    Function.Surjective (F.descColimitType c) ↔
+      ∀ (z : c.pt), ∃ (i : J) (x : F.obj i), c.ι i x = z := by
+  constructor
+  · intro h z
+    obtain ⟨⟨i, x⟩, rfl⟩ := h z
+    exact ⟨i, x, rfl⟩
+  · intro h z
+    obtain ⟨i, x, rfl⟩ := h z
+    exact ⟨F.ιColimitType i x, rfl⟩
+
 /-- Given `F : J ⥤ Type w₀` and `c : F.CoconeTypes`, this is the property
 that `c` is a colimit. It is defined by saying the canonical map
-`F.descColimitType c : F.ColimiType → c.pt` is a bijection. -/
+`F.descColimitType c : F.ColimitType → c.pt` is a bijection. -/
 structure IsColimit : Prop where
   bijective : Function.Bijective (F.descColimitType c)
 
@@ -150,7 +173,7 @@ variable {c} (hc : c.IsColimit)
 
 include hc
 
-/-- Given `F : J ⥤ Type w₀`, and `c : F.CoconeTypes` a cocone that is colimit,
+/-- Given `F : J ⥤ Type w₀`, and `c : F.CoconeTypes` a cocone that is a colimit,
 this is the equivalence `F.ColimitType ≃ c.pt`. -/
 @[simps! apply]
 noncomputable def equiv : F.ColimitType ≃ c.pt :=
@@ -199,7 +222,18 @@ lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     convert Function.Bijective.comp e.bijective hc.bijective
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
-    aesop
+    simp_all
+
+lemma iff_bijective {c' : CoconeTypes.{w₂} F}
+    (f : c.pt → c'.pt) (hf : ∀ j x, c'.ι j x = f (c.ι j x)) :
+    c'.IsColimit ↔ Function.Bijective f := by
+  refine ⟨fun hc' ↦ ?_, fun h ↦ hc.of_equiv (Equiv.ofBijective _ h) hf⟩
+  have h₁ := hc.bijective
+  rw [← Function.Bijective.of_comp_iff _ hc.bijective]
+  convert hc'.bijective
+  ext x
+  obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective x
+  simp [hf]
 
 end IsColimit
 

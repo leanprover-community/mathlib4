@@ -3,12 +3,14 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.FactorizedRational
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+
+public import Mathlib.Analysis.Meromorphic.FactorizedRational
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Integrability for Logarithms of Meromorphic Functions
@@ -18,6 +20,8 @@ functions are interval integrable over every interval of the real line. This imp
 that logarithms of trigonometric functions are interval integrable. In the complex setting, the
 functions are circle integrable over every circle in the complex plane.
 -/
+
+public section
 
 open Filter Interval MeasureTheory MeromorphicOn Metric Real
 
@@ -64,7 +68,7 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
       by_contra hCon
       simp_all [← h₁x.meromorphicOrderAt_eq_zero_iff, t₀ ⟨x, h₂x⟩]
     rw [intervalIntegrable_congr_codiscreteWithin this]
-    apply _root_.intervalIntegrable_const_iff.2
+    apply Iff.mpr _root_.intervalIntegrable_const_iff
     tauto
 
 /--

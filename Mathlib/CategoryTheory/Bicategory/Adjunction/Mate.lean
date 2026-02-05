@@ -3,8 +3,10 @@ Copyright (c) 2025 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Mates in bicategories
@@ -42,6 +44,8 @@ polymorphic, so they are not simple specializations of the definitions in this f
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
@@ -64,7 +68,7 @@ def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h
   invFun β := (λ_ _).inv ≫ adj.unit ▷ _ ≫ (α_ _ _ _).hom ≫ l ◁ β
   left_inv γ :=
     calc
-      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _:= by
+      _ = 𝟙 _ ⊗≫ (adj.unit ▷ g ≫ (l ≫ r) ◁ γ) ⊗≫ l ◁ adj.counit ▷ h ⊗≫ 𝟙 _ := by
         bicategory
       _ = γ ⊗≫ leftZigzag adj.unit adj.counit ▷ h ⊗≫ 𝟙 _ := by
         rw [← whisker_exchange]
@@ -88,7 +92,7 @@ def homEquiv₁ {g : b ⟶ d} {h : c ⟶ d} : (g ⟶ l ≫ h) ≃ (r ≫ g ⟶ h
 @[simps -isSimp]
 def homEquiv₂ {g : a ⟶ b} {h : a ⟶ c} : (g ≫ l ⟶ h) ≃ (g ⟶ h ≫ r) where
   toFun α := (ρ_ _).inv ≫ g ◁ adj.unit ≫ (α_ _ _ _).inv ≫ α ▷ r
-  invFun γ := γ ▷ l ≫ (α_ _ _ _ ).hom ≫ h ◁ adj.counit ≫ (ρ_ _).hom
+  invFun γ := γ ▷ l ≫ (α_ _ _ _).hom ≫ h ◁ adj.counit ≫ (ρ_ _).hom
   left_inv α :=
     calc
       _ = 𝟙 _ ⊗≫ g ◁ adj.unit ▷ l ⊗≫ (α ▷ (r ≫ l) ≫ h ◁ adj.counit) ⊗≫ 𝟙 _ := by
@@ -121,19 +125,22 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 
 /-- Suppose we have a square of 1-morphisms (where the top and bottom are adjunctions `l₁ ⊣ r₁`
 and `l₂ ⊣ r₂` respectively).
-
+```
       c ↔ d
     g ↓   ↓ h
       e ↔ f
+```
 
 Then we have a bijection between natural transformations `g ≫ l₂ ⟶ l₁ ≫ h` and
 `r₁ ≫ g ⟶ h ≫ r₂`. This can be seen as a bijection of the 2-cells:
 
+```
          l₁                  r₁
       c --→ d             c ←-- d
     g ↓  ↗  ↓ h         g ↓  ↘  ↓ h
       e --→ f             e ←-- f
          L₂                  R₂
+```
 
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
@@ -500,6 +507,7 @@ lemma conjugateEquiv_whiskerRight
     leftUnitor_inv_whiskerRight, Iso.inv_hom_id, triangle_assoc_comp_right_assoc] at this
   simp [conjugateEquiv_apply, this]
 
+set_option linter.flexible false in -- simp followed by bicategory
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
@@ -626,11 +634,13 @@ variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : c ⟶ d} {r₂ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : f₁ ⊣ u₁) (adj₄ : f₂ ⊣ u₂)
 
 /-- When all four morphisms in a square are left adjoints, the mates operation can be iterated:
+```
          l₁                  r₁                  r₁
       c --→ d             c ←-- d             c ←-- d
    f₁ ↓  ↗  ↓  f₂      f₁ ↓  ↘  ↓ f₂       u₁ ↑  ↙  ↑ u₂
       a --→ b             a ←-- b             a ←-- b
          l₂                  r₂                  r₂
+```
 In this case the iterated mate equals the conjugate of the original 2-morphism and is thus an
 isomorphism if and only if the original 2-morphism is. This explains why some Beck-Chevalley
 2-morphisms are isomorphisms.
@@ -660,7 +670,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r�
 /-- Composition of a squares between left adjoints with a conjugate square. -/
 def leftAdjointSquareConjugate.vcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : l₃ ⟶ l₂) :
     g ≫ l₃ ⟶ l₁ ≫ h :=
-   g ◁ β ≫ α
+  g ◁ β ≫ α
 
 /-- Composition of a squares between right adjoints with a conjugate square. -/
 def rightAdjointSquareConjugate.vcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₂ ⟶ r₃) :
@@ -677,7 +687,7 @@ theorem mateEquiv_conjugateEquiv_vcomp
     _ = 𝟙 _ ⊗≫
           rightAdjointSquare.vcomp
             (mateEquiv adj₁ adj₂ α)
-            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _  := by
+            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _ := by
       dsimp only [conjugateEquiv_apply, rightAdjointSquareConjugate.vcomp,
         rightAdjointSquare.vcomp]
       bicategory

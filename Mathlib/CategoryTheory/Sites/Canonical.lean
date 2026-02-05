@@ -3,7 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The canonical topology on a category
@@ -31,8 +34,10 @@ equivalently it is subcanonical iff every representable presheaf is a sheaf.
 * https://math.stackexchange.com/a/358709/
 -/
 
+@[expose] public section
 
-universe v u
+
+universe w v u
 
 namespace CategoryTheory
 
@@ -81,11 +86,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     trans s (m ≫ l ≫ h ≫ f) this
     · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
       rw [op_comp, FunctorToTypes.map_comp_apply] at this
-      rw [this]
-      change s _ _ = s _ _
-      -- Porting note: the proof was `by simp`
-      congr 1
-      simp only [assoc]
+      grind
     · have h : s _ _ = _ := (ht hf _ hm).symm
       -- Porting note: this was done by `simp only [assoc] at`
       conv_lhs at h => congr; rw [assoc, assoc]
@@ -146,7 +147,7 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
   top_mem' X Y f := by
     rw [Sieve.pullback_top]
-    exact Presieve.isSheafFor_top_sieve P
+    exact Presieve.isSheafFor_top P
   pullback_stable' X Y S f hS Z g := by
     rw [← pullback_comp]
     apply hS
@@ -194,9 +195,14 @@ theorem isSheaf_yoneda_obj (X : C) : Presieve.IsSheaf (canonicalTopology C) (yon
   fun _ _ hS => sheaf_for_finestTopology _ (Set.mem_range_self _) _ hS
 
 /-- A representable functor is a sheaf for the canonical topology. -/
-theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] :
-    Presieve.IsSheaf (canonicalTopology C) P :=
-  Presieve.isSheaf_iso (canonicalTopology C) P.reprW (isSheaf_yoneda_obj _)
+theorem isSheaf_of_isRepresentable (P : Cᵒᵖ ⥤ Type w) [P.IsRepresentable] :
+    Presieve.IsSheaf (canonicalTopology C) P := by
+  rw [← Presieve.isSheaf_comp_uliftFunctor_iff]
+  refine Presieve.isSheaf_iso (canonicalTopology C) (P ⋙ uliftFunctor.{v}).uliftYonedaReprXIso ?_
+  rw [← isSheaf_iff_isSheaf_of_type]
+  refine GrothendieckTopology.HasSheafCompose.isSheaf _ ?_
+  rw [isSheaf_iff_isSheaf_of_type]
+  exact isSheaf_yoneda_obj _
 
 end Sheaf
 
@@ -225,10 +231,8 @@ theorem of_isSheaf_yoneda_obj (J : GrothendieckTopology C)
 
 /-- If `J` is subcanonical, then any representable is a `J`-sheaf. -/
 theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
-    (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] : Presieve.IsSheaf J P :=
+    (P : Cᵒᵖ ⥤ Type w) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
-
-variable {J : GrothendieckTopology C}
 
 end Subcanonical
 
@@ -245,6 +249,23 @@ def yoneda [J.Subcanonical] : C ⥤ Sheaf J (Type v) where
     apply Subcanonical.isSheaf_of_isRepresentable⟩
   map f := ⟨CategoryTheory.yoneda.map f⟩
 
+/-- Variant of the Yoneda embedding which allows a raise in the universe level
+for the category of types. -/
+@[pp_with_univ, simps!]
+def uliftYoneda [J.Subcanonical] : C ⥤ Sheaf J (Type max v w) :=
+  J.yoneda ⋙ sheafCompose J uliftFunctor.{w}
+
+@[deprecated (since := "2025-11-10")] alias yonedaULift := uliftYoneda
+
+/-- If `C` is a category with `[Category.{max w v} C]`, this is the isomorphism
+`uliftYoneda.{w} (C := C) ≅ yoneda`. -/
+@[simps!]
+def uliftYonedaIsoYoneda {C : Type u} [Category.{max w v} C] (J : GrothendieckTopology C)
+    [J.Subcanonical] :
+    GrothendieckTopology.uliftYoneda.{w} J ≅ J.yoneda :=
+  NatIso.ofComponents (fun _ => (fullyFaithfulSheafToPresheaf J _).preimageIso
+    (NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso)))
+
 variable [Subcanonical J]
 
 /--
@@ -255,6 +276,13 @@ def yonedaCompSheafToPresheaf :
     J.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
   Iso.refl _
 
+/-- A variant of `yonedaCompSheafToPresheaf` with a raise in the universe level. -/
+@[simps!]
+def uliftYonedaCompSheafToPresheaf :
+    GrothendieckTopology.uliftYoneda.{w} J ⋙ sheafToPresheaf J (Type max v w) ≅
+      CategoryTheory.uliftYoneda.{w} :=
+  Iso.refl _
+
 /-- The yoneda functor into the sheaf category is fully faithful -/
 def yonedaFullyFaithful : (J.yoneda).FullyFaithful :=
   Functor.FullyFaithful.ofCompFaithful (G := sheafToPresheaf J (Type v)) Yoneda.fullyFaithful
@@ -263,18 +291,16 @@ instance : (J.yoneda).Full := (J.yonedaFullyFaithful).full
 
 instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
 
-end GrothendieckTopology
+/-- A variant of `yonedaFullyFaithful` with a raise in the universe level. -/
+def fullyFaithfulUliftYoneda : (GrothendieckTopology.uliftYoneda.{w} J).FullyFaithful :=
+  J.yonedaFullyFaithful.comp (fullyFaithfulSheafCompose J fullyFaithfulULiftFunctor)
 
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical := GrothendieckTopology.Subcanonical
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.of_isSheaf_yoneda_obj :=
-  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.isSheaf_of_isRepresentable :=
-  GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yoneda :=
-  GrothendieckTopology.yoneda
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yonedaCompSheafToPresheaf :=
-  GrothendieckTopology.yonedaCompSheafToPresheaf
-@[deprecated (since := "2024-10-29")] alias Sheaf.Subcanonical.yonedaFullyFaithful :=
-  GrothendieckTopology.yonedaFullyFaithful
+instance : (GrothendieckTopology.uliftYoneda.{w} J).Full :=
+  (J.fullyFaithfulUliftYoneda).full
+
+instance : (GrothendieckTopology.uliftYoneda.{w} J).Faithful :=
+  (J.fullyFaithfulUliftYoneda).faithful
+
+end GrothendieckTopology
 
 end CategoryTheory
