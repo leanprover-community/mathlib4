@@ -242,20 +242,32 @@ lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
   hasFDerivWithinAt_of_mem_nhds (h.mem_nhds hx)
 
 @[simp]
+theorem hasFDerivWithinAt_insert_self :
+    HasFDerivWithinAt f f' (insert x s) x ↔ HasFDerivWithinAt f f' s x := by
+  simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
+  apply isLittleOTVS_insert
+  simp only [sub_self, map_zero]
+
+protected alias ⟨_, HasFDerivWithinAt.insert⟩ := hasFDerivWithinAt_insert_self
+
+theorem HasFDerivWithinAt.of_insert {y : E} (h : HasFDerivWithinAt f f' (insert y s) x) :
+    HasFDerivWithinAt f f' s x :=
+  h.mono <| subset_insert y s
+
+@[simp]
 theorem hasFDerivWithinAt_insert [T1Space E] {y : E} :
     HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
   rcases eq_or_ne x y with (rfl | h)
-  · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
-    apply isLittleOTVS_insert
-    simp only [sub_self, map_zero]
-  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
-  simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
+  · apply hasFDerivWithinAt_insert_self
+  · refine ⟨.of_insert, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
+    simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 
-alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
+alias ⟨_, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
 
-protected theorem HasFDerivWithinAt.insert [T1Space E] (h : HasFDerivWithinAt g g' s x) :
-    HasFDerivWithinAt g g' (insert x s) x :=
-  h.insert'
+@[simp]
+theorem hasFDerivWithinAt_diff_singleton_self :
+    HasFDerivWithinAt f f' (s \ {x}) x ↔ HasFDerivWithinAt f f' s x := by
+  rw [← hasFDerivWithinAt_insert_self, insert_diff_singleton, hasFDerivWithinAt_insert_self]
 
 @[simp]
 theorem hasFDerivWithinAt_diff_singleton [T1Space E] (y : E) :
@@ -269,6 +281,9 @@ protected theorem HasFDerivWithinAt.empty : HasFDerivWithinAt f f' ∅ x := by
 @[simp]
 protected theorem DifferentiableWithinAt.empty : DifferentiableWithinAt 𝕜 f ∅ x :=
   ⟨0, .empty⟩
+
+@[fun_prop]
+theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
 
 theorem HasFDerivWithinAt.of_finite [T1Space E] (h : s.Finite) : HasFDerivWithinAt f f' s x := by
   induction s, h using Set.Finite.induction_on with
@@ -342,24 +357,23 @@ theorem DifferentiableWithinAt.differentiableAt (h : DifferentiableWithinAt 𝕜
 
 /-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem HasFDerivWithinAt.of_not_accPt [T1Space E] (h : ¬AccPt x (𝓟 s)) :
+theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     HasFDerivWithinAt f f' s x := by
   rw [accPt_principal_iff_nhdsWithin, not_neBot] at h
-  rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h,
+  rw [← hasFDerivWithinAt_diff_singleton_self, HasFDerivWithinAt, h,
     hasFDerivAtFilter_iff_isLittleOTVS]
   exact .bot
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
-theorem HasFDerivWithinAt.of_notMem_closure [T1Space E] (h : x ∉ closure s) :
-  HasFDerivWithinAt f f' s x :=
+theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
   .of_not_accPt (h ·.clusterPt.mem_closure)
 
-theorem fderivWithin_zero_of_not_accPt [T1Space E] (h : ¬AccPt x (𝓟 s)) :
+theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) :
     fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_not_accPt h)]
 
-theorem fderivWithin_zero_of_notMem_closure [T1Space E] (h : x ∉ closure s) :
+theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
     fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
 
@@ -431,23 +445,21 @@ theorem differentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     DifferentiableWithinAt 𝕜 f (s ∩ t) x ↔ DifferentiableWithinAt 𝕜 f s x := by
   simp only [DifferentiableWithinAt, hasFDerivWithinAt_inter' ht]
 
-theorem differentiableWithinAt_insert_self [T1Space E] :
+theorem differentiableWithinAt_insert_self :
     DifferentiableWithinAt 𝕜 f (insert x s) x ↔ DifferentiableWithinAt 𝕜 f s x :=
   ⟨fun h ↦ h.mono (subset_insert x s), fun h ↦ h.hasFDerivWithinAt.insert.differentiableWithinAt⟩
 
+protected alias ⟨_, DifferentiableWithinAt.insert⟩ := differentiableWithinAt_insert_self
+
+theorem DifferentiableWithinAt.of_insert {y : E} (h : DifferentiableWithinAt 𝕜 f (insert y s) x) :
+    DifferentiableWithinAt 𝕜 f s x :=
+  h.mono <| subset_insert _ _
+
 theorem differentiableWithinAt_insert [T1Space E] {y : E} :
     DifferentiableWithinAt 𝕜 f (insert y s) x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  rcases eq_or_ne x y with (rfl | h)
-  · exact differentiableWithinAt_insert_self
-  apply differentiableWithinAt_congr_nhds
-  exact nhdsWithin_insert_of_ne h
+  simp only [DifferentiableWithinAt, hasFDerivWithinAt_insert]
 
-alias ⟨DifferentiableWithinAt.of_insert, DifferentiableWithinAt.insert'⟩ :=
-differentiableWithinAt_insert
-
-protected theorem DifferentiableWithinAt.insert [T1Space E] (h : DifferentiableWithinAt 𝕜 f s x) :
-    DifferentiableWithinAt 𝕜 f (insert x s) x :=
-  h.insert'
+alias ⟨_, DifferentiableWithinAt.insert'⟩ := differentiableWithinAt_insert
 
 theorem DifferentiableAt.differentiableWithinAt (h : DifferentiableAt 𝕜 f x) :
     DifferentiableWithinAt 𝕜 f s x :=
