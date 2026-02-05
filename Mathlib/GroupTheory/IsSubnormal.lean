@@ -236,6 +236,8 @@ lemma trans (HK : H ≤ K) (Hsn : IsSubnormal (H.subgroupOf K)) (Ksn : IsSubnorm
   rwa [map_subgroupOf_eq_of_le HK] at key
 
 /-- The image of a subnormal subgroup under a surjective homomorphism is subnormal. -/
+@[to_additive
+/-- The image of a subnormal additive subgroup under a surjective homomorphism is subnormal. -/]
 protected
 lemma map {G'} [Group G'] {f : G →* G'} (hf : Function.Surjective f) (hS : H.IsSubnormal) :
     IsSubnormal (map f H) := by
@@ -252,11 +254,15 @@ lemma map {G'} [Group G'] {f : G →* G'} (hf : Function.Surjective f) (hS : H.I
     · exact normalizer_le_normalizer_sup_normal
 
 /-- The quotient of a subnormal subgroup by a normal subgroup is subnormal. -/
+@[to_additive
+/-- The quotient of a subnormal additive subgroup by a normal additive subgroup is subnormal. -/]
 lemma quotient [K.Normal] (hS : H.IsSubnormal) :
     IsSubnormal (map (QuotientGroup.mk' K) H) :=
   hS.map (QuotientGroup.mk'_surjective K)
 
 /-- The inverse image of a subnormal subgroup under a group homomorphism is a subnormal subgroup. -/
+@[to_additive /-- The inverse image of a subnormal additive subgroup under an additive group
+homomorphism is a subnormal additive subgroup. -/]
 protected
 nonrec
 lemma comap {G'} [Group G'] {H' : Subgroup G'} (f : G →* G') (h : H'.IsSubnormal) :
@@ -270,11 +276,12 @@ lemma comap {G'} [Group G'] {H' : Subgroup G'} (f : G →* G') (h : H'.IsSubnorm
     refine le_trans ?_ (le_normalizer_comap ..)
     exact comap_mono hN
 
-@[simp]
+@[to_additive (attr := simp)]
 protected
 lemma subgroupOf (hH : H.IsSubnormal) : (H.subgroupOf K).IsSubnormal := hH.comap _
 
 /-- The intersection of two subnormal subgroups is subnormal. -/
+@[to_additive /-- The intersection of two subnormal additive subgroups is additive subnormal. -/]
 lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal :=
   IsSubnormal.trans inf_le_right (by simp [hH.subgroupOf]) hK
 
@@ -285,6 +292,8 @@ lemma conjAct (hS : H.IsSubnormal) (g : ConjAct G) : (g • H).IsSubnormal :=
   IsSubnormal.map (conjAct_bijective g).surjective hS
 
 /-- If a group `G` is trivial, then all of its subgroups are subnormal. -/
+@[to_additive /-- If an additive group `G` is trivial, then all of its subgroups are additive
+subnormal. -/]
 lemma subsingleton [Subsingleton G] : H.IsSubnormal := by
   rw [top_unique (le_of_subsingleton (b := H))]
   exact top
