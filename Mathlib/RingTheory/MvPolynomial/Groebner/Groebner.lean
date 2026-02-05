@@ -86,12 +86,12 @@ section CommSemiring
 variable {σ : Type*} {m : MonomialOrder σ} {R : Type*} [CommSemiring R]
 variable (f p : MvPolynomial σ R) (r : MvPolynomial σ R)
 
-def subset {G : Set (MvPolynomial σ R)} {I} (h : m.IsGroebnerBasis G I) : G ⊆ I := h.1
+lemma subset {G : Set (MvPolynomial σ R)} {I} (h : m.IsGroebnerBasis G I) : G ⊆ I := h.1
 
-def span_leadingTerm_image {G : Set (MvPolynomial σ R)} {I} (h : m.IsGroebnerBasis G I) :
+lemma span_leadingTerm_image {G : Set (MvPolynomial σ R)} {I} (h : m.IsGroebnerBasis G I) :
     Ideal.span (m.leadingTerm '' ↑I) = Ideal.span (m.leadingTerm '' G) := h.2
 
-def isGroebnerBasis_iff (G : Set (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :
+lemma isGroebnerBasis_iff (G : Set (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) :
     m.IsGroebnerBasis G I ↔
       G ⊆ I ∧ m.leadingTerm '' ↑I ⊆ (Ideal.span (m.leadingTerm '' G) : Set (MvPolynomial σ R)) := by
   constructor
