@@ -434,7 +434,7 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
 
-private lemma eVariation_le_ofDual (f : α → E) (s : Set α) :
+private lemma eVariationOn_le_ofDual (f : α → E) (s : Set α) :
     eVariationOn f s ≤ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
   apply iSup_le
   rintro ⟨n, u, u_mono, u_mem⟩
@@ -451,7 +451,7 @@ private lemma eVariation_le_ofDual (f : α → E) (s : Set α) :
 
 @[simp] lemma eVariationOn_ofDual (f : α → E) (s : Set α) :
     eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s :=
-  le_antisymm (eVariation_le_ofDual _ _) (eVariation_le_ofDual _ _)
+  le_antisymm (eVariationOn_le_ofDual _ _) (eVariationOn_le_ofDual _ _)
 
 lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     BoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
