@@ -272,9 +272,8 @@ lemma comap {G'} [Group G'] {H' : Subgroup G'} (f : G →* G') (h : H'.IsSubnorm
   | step H K h_le hSubn hN ih =>
     apply step _ (comap f K) (comap_mono h_le) ih
     rw [normal_subgroupOf_iff_le_normalizer h_le] at hN
-    rw [@normal_subgroupOf_iff_le_normalizer_inf, ← @comap_inf, inf_of_le_left h_le]
-    refine le_trans ?_ (le_normalizer_comap ..)
-    exact comap_mono hN
+    rw [normal_subgroupOf_iff_le_normalizer (comap_mono h_le)]
+    exact (comap_mono hN).trans (le_normalizer_comap f)
 
 @[to_additive (attr := simp)]
 protected
@@ -282,8 +281,8 @@ lemma subgroupOf (hH : H.IsSubnormal) : (H.subgroupOf K).IsSubnormal := hH.comap
 
 /-- The intersection of two subnormal subgroups is subnormal. -/
 @[to_additive /-- The intersection of two subnormal additive subgroups is additive subnormal. -/]
-lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal :=
-  IsSubnormal.trans inf_le_right (by simp [hH.subgroupOf]) hK
+lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal := by
+  simpa using hH.subgroupOf.trans' hK
 
 open scoped Pointwise
 
@@ -297,8 +296,7 @@ lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnorma
 /-- If a group `G` is trivial, then all of its subgroups are subnormal. -/
 @[to_additive /-- If an additive group `G` is trivial, then all of its subgroups are additive
 subnormal. -/]
-lemma subsingleton [Subsingleton G] : H.IsSubnormal := by
-  rw [top_unique (le_of_subsingleton (b := H))]
-  exact top
+lemma subsingleton [Subsingleton H] : H.IsSubnormal := by
+  simp [eq_bot_of_subsingleton H]
 
 end Subgroup.IsSubnormal
