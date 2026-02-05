@@ -321,29 +321,35 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   exact mul_mem hyz (inv_mem (h hz))
 
 @[to_additive]
-lemma normalizer_le_normalizer_sup_of_normalizer_le_left {H K : Subgroup G}
-    (hHnK : H.normalizer ≤ K.normalizer) :
-    H.normalizer ≤ (H ⊔ K).normalizer := by
-  have hK : H ≤ K.normalizer := le_normalizer.trans hHnK
-  intro n hH h
-  have hnK : n ∈ K.normalizer := hHnK hH
-  rw [← SetLike.mem_coe, coe_mul_of_left_le_normalizer_right _ _ hK,
-      ← SetLike.mem_coe, coe_mul_of_left_le_normalizer_right _ _ hK]
-  apply Iff.intro
-  · rintro ⟨h, hh, k, hHnk, rfl⟩
-    dsimp
-    rw [← conj_mul]
-    use n * h * n⁻¹, (hH h).mp hh, n * k * n⁻¹
-    rw [mem_normalizer_iff] at hnK
-    simpa [← hnK]
-  · rintro ⟨h', hh', k, kK, hid⟩
-    rw [← conj_inv_eq_iff_eq_conj] at hid
-    rw [← hid, ← conj_inv_mul]
-    use n⁻¹ * h' * n, ?_, n⁻¹ * k * n
-    · rw [mem_normalizer_iff''] at hnK
-      simpa [← hnK]
-    · apply (hH _).mpr
-      simpa [mul_assoc]
+lemma conj_mem_sup_of_mem_inf_normalizer_of_mem_inf
+    {H K : Subgroup G} {s : G} (hs : s ∈ H.normalizer ⊓ K.normalizer) (g : G) (hg : g ∈ H ⊔ K) :
+    s * g * s⁻¹ ∈ H ⊔ K := by
+  simp only [mem_inf, mem_normalizer_iff] at hs
+  rw [sup_eq_closure] at hg
+  refine closure_induction ?_ ?_ ?_ ?_ hg
+  · intro x hx
+    obtain hl | hr := (mem_union x _ _).mpr hx
+    · exact mem_sup_left (by rwa [← hs.1])
+    · exact mem_sup_right (by rwa [← hs.2])
+  · simp
+  · intros x y hx hy hsx hsy
+    rw [show s * (x * y) * s⁻¹ = (s * x * s⁻¹) * (s * y * s⁻¹) by simp]
+    exact mul_mem hsx hsy
+  · intros x hx hsx
+    exact inv_mem_iff.mp (by simpa [← mul_assoc])
+
+@[to_additive]
+lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
+    H.normalizer ⊓ K.normalizer ≤ (H ⊔ K).normalizer := by
+  intro s hs g
+  refine ⟨conj_mem_sup_of_mem_inf_normalizer_of_mem_inf hs g, ?_⟩
+  simpa [← mul_assoc] using conj_mem_sup_of_mem_inf_normalizer_of_mem_inf (inv_mem hs) (s * g * s⁻¹)
+
+@[to_additive]
+lemma normalizer_le_normalizer_sup_of_normalizer_le_left
+    {G : Type*} [Group G] {H K : Subgroup G} (hHnK : H.normalizer ≤ K.normalizer) :
+    H.normalizer ≤ (H ⊔ K).normalizer :=
+  (inf_of_le_left hHnK).symm.trans_le (H.normalizer_inf_normalizer_le_normalizer_sup K)
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}
