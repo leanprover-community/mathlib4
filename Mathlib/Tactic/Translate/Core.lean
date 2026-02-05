@@ -12,6 +12,7 @@ public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Mathlib.Data.Array.Defs
 public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Lean.Meta.CoeAttr
 public import Batteries.Lean.NameMapAttribute
@@ -31,7 +32,7 @@ See the docstring of `to_additive` for more information
 
 public meta section
 
-open Lean Meta Elab Command Std
+open Lean Meta Elab Command Std Mathlib
 
 namespace Mathlib.Tactic.Translate
 open Translate -- currently needed to enable projection notation
@@ -652,20 +653,6 @@ def findAuxDecls (decl : ConstantInfo) (pre : Name) : CoreM (Array Name) := do
     else
       l
 
-/-- The name of each constant-info kind. -/
-def Lean.ConstantKind.toString : ConstantKind → String
-  | .defn     => "def"
-  | .axiom    => "axiom"
-  | .thm      => "theorem"
-  | .opaque   => "opaque"
-  | .quot     => "Quotient primitive"
-  | .induct   => "inductive"
-  | .ctor     => "constructor"
-  | .recursor => "recursor"
-
-def Lean.ConstantInfo.kind := @ConstantKind.ofConstantInfo
-
-
 /-- Translate the declaration `src` and recursively all declarations `pre._proof_i`
 occurring in `src` using the `translations` dictionary.
 
@@ -700,13 +687,15 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
         {privateToUserName src}."
     return
   let srcDecl ← withoutExporting do getConstInfo src
+  let origKind := getOriginalConstKind? env src |>.get!
   -- error if this declaration is a definition or theorem, but we cannot access its value
-  if getOriginalConstKind? env src != srcDecl.kind then
-    throwError "{getOriginalConstKind? env src |>.get!.toString} {privateToUserName src} is \
+  if origKind != srcDecl.kind then
+    throwError "{origKind.toString} `{privateToUserName src}` is \
       declared in an imported \
-      module, and it's value/proof is not available, so it cannot be translated.\n\
+      module, and its value/proof is not available, so it cannot be translated.\n\
       Possible solutions: put this attribute in the module where the declaration was declared,\
-      or avoid the module system."
+      avoid the module system, or run\n\
+      import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}."
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
@@ -773,7 +762,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
         The translated value is not type correct. For help, see the docstring \
         of `to_additive`, section `Troubleshooting`. \
         Failed to add declaration\n{privateToUserName tgt}:\n{ex.toMessageData}"
-    throwError "@[{t.attrName}] failed.\n{ex.toMessageData}"
+    throwError "@[{t.attrName}] failed. Nested error message:\n{ex.toMessageData}"
   if let .defnInfo { hints := .abbrev, .. } := trgDecl then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
@@ -951,7 +940,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   let tgtDecl ← getConstInfo tgt
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
-      universe levels, but '{privateToUserName tgt}' has {tgtDecl.levelParams.length} universe levels"
+      universe levels, but '{privateToUserName tgt}' has {tgtDecl.levelParams.length} \
+      universe levels"
   let mut srcType := srcDecl.type
   if let some b := t.unfoldBoundaries? then
     srcType ← b.insertBoundaries srcType t.attrName

@@ -12,11 +12,13 @@ import Mathlib.Tactic.Linter.Header  --shake: keep
 
 /-!
 # Additional utilities for `Lean.Environment`
+
+Including operations on `ConstantVal`, `ConstantKind`, `ConstantInfo`.
 -/
 
-namespace Lean.Environment
+public section
 
-public section constKind
+namespace Lean.Environment
 
 /- The following declarations account for the fact that the `ConstantKind` of a declaration is
 accessible when getting its `ConstantVal`, but is not recorded in said `ConstantVal`. -/
@@ -51,6 +53,26 @@ def findTheoremConstVal? (env : Environment) (decl : Name)
     (skipRealize := false) : Option ConstantVal := do
   env.findConstValOfKind? (· matches .thm) decl skipRealize
 
-end constKind
-
 end Lean.Environment
+
+namespace Lean
+
+/-- The name of each `ConstantKind`. -/
+def ConstantKind.toString : ConstantKind → String
+  | .defn     => "def"
+  | .axiom    => "axiom"
+  | .thm      => "theorem"
+  | .opaque   => "opaque"
+  | .quot     => "Quotient primitive"
+  | .induct   => "inductive"
+  | .ctor     => "constructor"
+  | .recursor => "recursor"
+
+instance : ToString ConstantKind := ⟨ConstantKind.toString⟩
+
+/-- Alias for `ConstantKind.ofConstantInfo`, to enable dot notation. -/
+def ConstantInfo.kind := @ConstantKind.ofConstantInfo
+
+end Lean
+
+end
