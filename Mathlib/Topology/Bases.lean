@@ -722,6 +722,39 @@ instance isCountablyGenerated_nhdsWithin (x : α) [IsCountablyGenerated (𝓝 x)
     IsCountablyGenerated (𝓝[s] x) :=
   Inf.isCountablyGenerated _ _
 
+
+variable (α) in
+/-- A topological space `α` is called weakly first countable if there exists a function
+`V : α → ℕ → Set α`, such that:
+* For all `x : α, n : ℕ` we have `x ∈ V x n`
+* For all `x : α, n : ℕ`: `V x (n + 1) ⊆ V x n`
+* `s ⊆ α` is open iff `∀ x ∈ s, ∃ n : ℕ, V x n ⊆ s`
+-/
+class _root_.WeaklyFirstCountableTopology : Prop where
+  nhds_countable_weak_basis : ∃ V : α → ℕ → Set α,
+    (∀ (x : α), Antitone (V x) ∧ ∀ (n : ℕ), x ∈ V x n)
+      ∧ ∀ s : Set α, IsOpen s ↔ ∀ x ∈ s, ∃ k : ℕ, V x k ⊆ s
+
+variable (α) in
+/-- Every first countable space is weakly first countable. -/
+instance FirstCountableTopology.to_weaklyFirstCountableTopology [FirstCountableTopology α] :
+    WeaklyFirstCountableTopology α := by
+  have has_basis: ∀ a : α, ∃ x : ℕ → Set α, (𝓝 a).HasAntitoneBasis x :=
+    fun a ↦ isCountablyGenerated_iff_exists_antitone_basis.mp
+      (FirstCountableTopology.nhds_generated_countable a)
+  let U : α → ℕ → Set α := fun x ↦ (has_basis x).choose
+  have hU : ∀ x, (𝓝 x).HasAntitoneBasis (U x) :=
+    fun x ↦ Exists.choose_spec (has_basis x)
+  use U
+  constructor
+  · exact fun x ↦ ⟨(hU x).antitone, fun n ↦ mem_of_mem_nhds (HasAntitoneBasis.mem (hU x) n)⟩
+  intro
+  rw [isOpen_iff_mem_nhds]
+  constructor <;> intro h x hx
+  · exact (HasAntitoneBasis.mem_iff (hU x)).mp (h x hx)
+  · obtain ⟨n, hn⟩ := h x hx
+    exact mem_of_superset (HasAntitoneBasis.mem (hU x) n) hn
+
 variable (α) in
 /-- A second-countable space is one with a countable basis. -/
 class _root_.SecondCountableTopology : Prop where
