@@ -124,6 +124,17 @@ theorem range_face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1
     (h : #fs = m + 1) : Set.range (s.face h).points = s.points '' ↑fs := by
   rw [face_points', Set.range_comp, Finset.range_orderEmbOfFin]
 
+lemma affineSpan_face_le {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
+    (h : #fs = m + 1) :
+    affineSpan k (Set.range (s.face h).points) ≤ affineSpan k (Set.range s.points) :=
+  affineSpan_mono k (s.range_face_points h ▸ Set.image_subset_range _ _)
+
+lemma points_mem_affineSpan_face [Nontrivial k] {n : ℕ} (s : Simplex k P n)
+    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) (i : Fin (n + 1)) :
+    s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
+  rw [range_face_points]
+  exact s.independent.mem_affineSpan_iff i fs
+
 /-- The face of a simplex with all but one point. -/
 def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Simplex k P (n - 1) :=
   s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le])
@@ -131,6 +142,21 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
 @[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
     Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ := by
   simp [faceOpposite]
+
+lemma affineSpan_faceOpposite_le {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    affineSpan k (Set.range (s.faceOpposite i).points) ≤ affineSpan k (Set.range s.points) :=
+  s.affineSpan_face_le _
+
+lemma points_mem_affineSpan_faceOpposite [Nontrivial k] {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) (j : Fin (n + 1)) :
+    s.points j ∈ affineSpan k (Set.range (s.faceOpposite i).points) ↔ j ≠ i := by
+  rw [faceOpposite, s.points_mem_affineSpan_face _ j]
+  simp
+
+lemma points_notMem_affineSpan_faceOpposite [Nontrivial k] {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) : s.points i ∉ affineSpan k (Set.range (s.faceOpposite i).points) := by
+  rw [points_mem_affineSpan_faceOpposite]
+  simp
 
 lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
     (i : Fin (n + 1)) (j : Fin (n - 1 + 1)) :
@@ -319,6 +345,24 @@ lemma restrict_reindex {m n : ℕ} (s : Affine.Simplex k P n) (e : Fin (n + 1) �
     (s.reindex e).restrict S (s.reindex_range_points e ▸ hS) = (s.restrict S hS).reindex e :=
   rfl
 
+lemma face_restrict {n : ℕ} (s : Affine.Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) {fs : Finset (Fin (n + 1))} {m : ℕ}
+    (h : #fs = m + 1) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).face h = (s.face h).restrict S ((s.affineSpan_face_le h).trans hS) := by
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  ext i
+  rw [restrict_points_coe]
+  simp_rw [Affine.Simplex.face_points]
+  simp
+
+lemma faceOpposite_restrict {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).faceOpposite i = (s.faceOpposite i).restrict S
+      ((s.affineSpan_faceOpposite_le i).trans hS) :=
+  s.face_restrict hS _
+
 end restrict
 
 end Simplex
@@ -374,6 +418,29 @@ lemma setInterior_subset_affineSpan {I : Set k} {n : ℕ} {s : Simplex k P n} :
     s.setInterior I ⊆ affineSpan k (Set.range s.points) := by
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
+
+lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).setInterior I = S.subtype ⁻¹' (s.setInterior I) := by
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  ext p
+  rw [Set.mem_preimage]
+  by_cases hp : S.subtype p ∈ affineSpan k (Set.range s.points)
+  · obtain ⟨w, hw1, hw⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
+    have hw' : p = (Finset.affineCombination k Finset.univ (s.restrict S hS).points) w := by
+      rw [← S.subtype_injective.eq_iff, hw, Finset.map_affineCombination _ _ _ hw1]
+      rfl
+    rw [hw, hw', Affine.Simplex.affineCombination_mem_setInterior_iff hw1,
+      Affine.Simplex.affineCombination_mem_setInterior_iff hw1]
+  · apply iff_of_false
+    · contrapose! hp
+      have h : S.subtype p ∈
+          AffineSubspace.map S.subtype (affineSpan k (Set.range (s.restrict S hS).points)) := by
+        simpa using Set.mem_of_mem_of_subset hp (s.restrict S hS).setInterior_subset_affineSpan
+      rw [AffineSubspace.map_span, ← Set.image_univ, Set.image_image] at h
+      simpa using h
+    · exact fun h ↦ hp (Set.mem_of_mem_of_subset h s.setInterior_subset_affineSpan)
 
 variable [PartialOrder k]
 
@@ -518,6 +585,18 @@ lemma affineCombination_mem_closedInterior_face_iff_nonneg [IsOrderedAddMonoid k
   refine ⟨by grind, fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ ⟨hii i hi, ?_⟩, hi0⟩⟩
   rw [← hw, ← Finset.sum_subset (Finset.subset_univ fs) fun j _ ↦ hi0 j]
   exact Finset.single_le_sum (fun t ht ↦ (hii t ht)) hi
+
+lemma interior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).interior = S.subtype ⁻¹' s.interior :=
+  s.setInterior_restrict _ hS
+
+lemma closedInterior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).closedInterior = S.subtype ⁻¹' s.closedInterior :=
+  s.setInterior_restrict _ hS
 
 end Simplex
 
