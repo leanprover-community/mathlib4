@@ -22,6 +22,7 @@ public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 public meta import Mathlib.Util.MemoFix
+public meta import Mathlib.Lean.Meta
 
 /-!
 # The translation attribute.
@@ -255,7 +256,7 @@ where
           translated to `{info'.translation}` instead of `{info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
-    trace[translate] "Added translation {privateToUserName src} ↦ {privateToUserName tgt}\
+    trace[translate] "Added translation {privateToUserName src} ↦ {privateToUserName tgt} \
       {if info.reorder.isEmpty then "" else s!" reorder := ({info.reorder})"} \
       (relevant_arg := {info.relevantArg})"
 
@@ -693,7 +694,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     throwError "{origKind.toString} `{privateToUserName src}` is \
       declared in an imported \
       module, and its value/proof is not available, so it cannot be translated.\n\
-      Possible solutions: put this attribute in the module where the declaration was declared,\
+      Possible solutions: put this attribute in the module where the declaration was declared, \
       avoid the module system, or run\n\
       import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}."
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
@@ -748,7 +749,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     -- set `Elab.async` to `false` in order to be able to catch kernel errors
     withOptions (Elab.async.set · false) do
     if isNoncomputable env src then
-      addDecl trgDecl.toDeclaration!
+      addDeclSafe trgDecl.toDeclaration!
       setEnv <| addNoncomputable (← getEnv) tgt
     else
       addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
@@ -1236,33 +1237,35 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     throwError "`{t.attrName}` can only be used as a global attribute"
   withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
-  let alreadyExists := (← getEnv).contains tgt
-  if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
+  let dupe? := (← findPublicOrPrivate? tgt) |>.map (·.name)
+  trace[translate_detail] "found {dupe?} in environment when searching for {tgt}"
+  if cfg.existing != dupe?.isSome && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.translateExisting cfg.ref <|
-      if alreadyExists then
-        m!"The translated declaration already exists. Please specify this explicitly using \
-           `@[{t.attrName} existing]`."
+      if dupe?.isSome then
+        m!"The translated declaration `{privateToUserName tgt}` already exists. \
+          Please specify this explicitly using `@[{t.attrName} existing]`."
       else
-        "The translated declaration doesn't exist. Please remove the option `existing`."
+        "The translated declaration `{privateToUserName tgt}` doesn't exist. \
+        Please remove the option `existing`."
   let reorder ←
-    if alreadyExists then
-      MetaM.run' <| checkExistingType t src tgt cfg
+    if let some dupe := dupe? then
+      MetaM.run' <| checkExistingType t src dupe cfg
     else
       pure (cfg.reorder?.getD [])
   let relevantArg ← cfg.relevantArg?.getDM <| findRelevantArg t src
   insertTranslation t src tgt reorder relevantArg cfg.ref
-  if alreadyExists then
+  if let some dupe := dupe? then
     -- since `tgt` already exists, we just need to
     -- add translations `src.x ↦ tgt.x'` for any subfields.
     trace[translate_detail] "declaration {privateToUserName tgt} already exists."
-    proceedFields t src tgt reorder relevantArg cfg.ref
+    proceedFields t src dupe reorder relevantArg cfg.ref
   else
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg.ref src tgt src cfg.dontTranslate reorder
   let nestedNames ← copyMetaData t cfg src tgt reorder relevantArg
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
-  Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := !alreadyExists)
+  Term.addTermInfo' cfg.ref (← mkConstWithLevelParams tgt) (isBinder := dupe?.isNone)
     |>.run' |>.run'
   if let some doc := cfg.doc then
     addDocStringCore tgt doc

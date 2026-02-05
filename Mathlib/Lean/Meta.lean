@@ -11,6 +11,8 @@ public import Lean.Elab.Tactic.Basic
 public import Lean.Meta.Tactic.Assert
 public import Lean.Meta.Tactic.Clear
 
+import Mathlib.Lean.Environment
+
 /-! ## Additional utilities in `Lean.MVarId` -/
 
 public section
@@ -51,6 +53,39 @@ where
       pure (acc, g)
 
 end Lean.MVarId
+
+namespace Lean
+
+/--
+Find the `ConstantInfo` for `decl` publicly or privately.
+-/
+def findPublicOrPrivate? (decl : Name) : CoreM (Option ConstantInfo) := withoutExporting <| do
+  return (← getEnv).findPublicOrPrivate? decl
+
+/--
+Checks whether the current environment contains `decl` publicly or privately.
+-/
+def existsPublicOrPrivate (decl : Name) : CoreM Bool := withoutExporting <| do
+  return (← getEnv).containsPublicOrPrivate decl
+
+/--
+Adds a declaration, and (unlike `addDecl`) display a friendly error message if the
+declaration already exists.
+-/
+def addDeclSafe (decl : Declaration) (forceExpose := false) : CoreM Unit := withoutExporting <| do
+  let env ← getEnv
+  for nm in decl.getNames do
+    if env.containsPublicOrPrivate nm then
+      if decl.getNames.length == 1 then
+        throwError "Cannot add declaration {privateToUserName decl.getNames[0]!} \
+          to the environment, a declaration already exists with that name."
+      else
+        throwError "Cannot add declarations {decl.getNames.map privateToUserName} \
+          to the environment.\n\
+          Declaration {privateToUserName nm} already exists."
+  addDecl decl forceExpose
+
+end Lean
 
 namespace Lean.Meta
 
