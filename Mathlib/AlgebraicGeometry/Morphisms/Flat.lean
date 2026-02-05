@@ -414,7 +414,7 @@ lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
   have := hI.to_subtype
   exact mono_pushoutSection_of_iSup_eq (ι := I) H hUST hUSX hUY (·) (by rwa [iSup_subtype, eq_comm])
     (fun i ↦ have := isIso_pushoutSection_of_isAffineOpen H hUST _ rfl hUS hUT i.1.2; inferInstance)
-    (Flat.flat_of_affine_subset ⟨_, hUS⟩ ⟨_, hUT⟩ _)
+    (f.flat_appLE hUS hUT _)
 
 lemma mono_pushoutSection_of_isCompact_of_flat_left [Flat iX]
     (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX) (hUT : IsCompact (X := T) UT) :
@@ -435,7 +435,7 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
     eq_comm]) (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.1.2) (fun i j ↦
     mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.1.1.2
     i.1.2.isCompact (hIUX _) j.1.1.2 j.1.2.isCompact))
-    (Flat.flat_of_affine_subset ⟨_, hUS⟩ ⟨_, hUT⟩ _)
+    (f.flat_appLE hUS hUT _)
 
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat iX]
     (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX)
