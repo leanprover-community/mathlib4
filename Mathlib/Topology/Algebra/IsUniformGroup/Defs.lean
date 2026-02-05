@@ -150,8 +150,6 @@ theorem uniformity_eq_comap_nhds_one_swapped :
   rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
   simp
 
-variable {Gₗ Gᵣ}
-
 end LeftRight
 
 section IsUniformGroup
@@ -412,8 +410,6 @@ theorem IsUniformGroup.uniformity_countably_generated [(𝓝 (1 : α)).IsCountab
   rw [uniformity_eq_comap_nhds_one]
   exact Filter.comap.isCountablyGenerated _ _
 
-open MulOpposite
-
 end
 
 section OfLeftAndRight
@@ -571,6 +567,13 @@ theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β
   uniformContinuous_of_tendsto_one <|
     suffices Tendsto f (𝓝 1) (𝓝 (f 1)) by rwa [map_one] at this
     h.tendsto 1
+
+@[to_additive]
+theorem MonoidHom.isUniformInducing_of_isInducing {Hom : Type*} [UniformSpace β] [Group β]
+    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom α β] {f : Hom} (h : IsInducing f) :
+    IsUniformInducing f where
+  comap_uniformity := by
+    simp [uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def, h.nhds_eq_comap]
 
 end IsUniformGroup
 

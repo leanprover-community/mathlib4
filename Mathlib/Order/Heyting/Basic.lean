@@ -743,6 +743,7 @@ variable [CoheytingAlgebra α] {a b : α}
 theorem hnot_anti : Antitone (hnot : α → α) := fun _ _ h => hnot_le_comm.1 <| hnot_hnot_le.trans h
 
 @[to_dual existing]
+@[gcongr]
 theorem hnot_le_hnot (h : a ≤ b) : ￢b ≤ ￢a :=
   hnot_anti h
 

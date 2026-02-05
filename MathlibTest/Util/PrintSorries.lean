@@ -1,12 +1,12 @@
 import Mathlib.Util.PrintSorries
 
-set_option pp.mvars false
+set_option pp.mvars.anonymous false
 
 /-!
 Direct use of `sorry`
 -/
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem thm1 : 1 = 2 := by sorry
 
@@ -53,7 +53,7 @@ info: thm1 has sorry of type
 Reports sorries (indirectly) appearing in the types of theorems.
 -/
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 def f (n : Nat) : Nat := sorry
 theorem thm3 : f 1 = f 2 := rfl -- (!) This works since it's a fixed `sorry : Nat`
@@ -69,11 +69,11 @@ info: f has sorry of type
 If `sorry` appears in the type of a theorem, when it's used, it reports the theorem
 with the `sorry`, even though `sorry` appears in the theorem that used it as well.
 -/
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem thm_sorry (n : Nat) : n = sorry := sorry
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem thm_use_it (m n : Nat) : m = n := by
   rw [thm_sorry m, thm_sorry n]
@@ -91,7 +91,7 @@ thm_sorry has sorry of type
 Reports synthetic sorries specially.
 -/
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 def f' : Nat → Nat := sorry
 /--
@@ -124,7 +124,7 @@ Unfolding functions can lead to many copies of `sorry` in a term.
 This proof contains 4 sorry terms.
 -/
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem thm : True := by
   let f : Nat → Nat := sorry
@@ -147,7 +147,7 @@ Raw, unlabeled sorry.
 Its "go to definition" unfortunately goes to `sorryAx` itself.
 -/
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem thm' : True := sorryAx _ false
 
@@ -161,7 +161,7 @@ info: thm' has sorry of type
 /-!
 The `sorry` pretty printing can handle free variables.
 -/
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in def g (α : Type) : α := sorry
 
 /--
@@ -178,7 +178,7 @@ info: g has sorry of type
 info: in_test_1 has sorry of type
   True
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 #print sorries in theorem in_test_1 : True := sorry
@@ -197,7 +197,7 @@ Check that `admit` and `stop` are correctly handled
 info: thm4 has sorry of type
   True
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 #print sorries in
@@ -207,7 +207,7 @@ theorem thm4 : True := by admit
 info: thm5 has sorry of type
   True
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 #print sorries in

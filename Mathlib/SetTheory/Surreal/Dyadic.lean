@@ -3,11 +3,10 @@ Copyright (c) 2021 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Group.Basic
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.SetTheory.Game.Birthday
