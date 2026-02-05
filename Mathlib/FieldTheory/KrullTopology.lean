@@ -38,11 +38,11 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology_t2 K L`. For an integral field extension `L/K`, the topology `krullTopology K L`
   is Hausdorff.
 
-- `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
-  in `Gal(L/K)` of any element in `L` is open for the Krull topology.
-
 - `krullTopology_isTotallySeparated K L`. For an integral field extension `L/K`, the topology
   `krullTopology K L` is totally separated.
+
+- `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
+  in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
 - `IntermediateField.finrank_eq_fixingSubgroup_index`: given a Galois extension `K/k` and an
   intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
@@ -221,23 +221,6 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 end KrullT2
 
-section MulAction
-
-variable {K L : Type*} [Field K] [Field L] [Algebra K L]
-
-/-- If `L/K` is an algebraic field extension, then the stabilizer
-in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
-theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
-    IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
-  open IntermediateField in
-  let E := adjoin K {x}
-  have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
-  convert fixingSubgroup_isOpen E
-  ext g
-  simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
-
-end MulAction
-
 section TotallySeparated
 
 instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
@@ -270,6 +253,23 @@ instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Fiel
   change IsOpen ((⊥ : Subgroup Gal(L/K)) : Set Gal(L/K))
   rw [← IntermediateField.fixingSubgroup_top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤
+
+section MulAction
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+/-- If `L/K` is an algebraic field extension, then the stabilizer
+in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
+theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
+    IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
+  open IntermediateField in
+  let E := adjoin K {x}
+  have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
+  convert fixingSubgroup_isOpen E
+  ext g
+  simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
+
+end MulAction
 
 namespace IntermediateField
 
