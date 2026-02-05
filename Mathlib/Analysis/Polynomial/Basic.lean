@@ -33,8 +33,13 @@ namespace Polynomial
 
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
-theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
+theorem eventually_atTop_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
+
+@[deprecated (since := "2026-02-05")] alias eventually_no_roots := eventually_atTop_no_roots
+
+theorem eventually_atBot_no_roots (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
+  atBot_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
 
 variable [OrderTopology 𝕜]
 
@@ -300,7 +305,7 @@ theorem isLittleO_atTop_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atTop
   · simp [hp]
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h.le hp
     have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
-      mem_of_superset (eventually_no_roots Q hq) fun x h h' ↦ absurd h' h
+      mem_of_superset (eventually_atTop_no_roots Q hq) fun x h h' ↦ absurd h' h
     exact isLittleO_of_tendsto' hPQ (div_tendsto_atTop_zero_of_degree_lt P Q h)
 
 theorem isLittleO_atBot_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atBot] Q.eval := by
@@ -313,7 +318,7 @@ theorem isBigO_atTop_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atTop]
   · simpa [hp] using isBigO_zero Q.eval atTop
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h hp
     have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
-      mem_of_superset (eventually_no_roots Q hq) fun x h h' ↦ absurd h' h
+      mem_of_superset (eventually_atTop_no_roots Q hq) fun x h h' ↦ absurd h' h
     rcases le_iff_lt_or_eq.mp h with h | h
     · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_atTop_zero_of_degree_lt P Q h)
     · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_atTop_leadingCoeff_div_of_degree_eq P Q h)
