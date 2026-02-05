@@ -497,11 +497,11 @@ where
           visitLambdaReorder reorder b (fvars.push x) (tmpLCtx.addDecl
             ((← getFVarLocalDecl x).setType d'))
     else
+      let e := e.instantiateRev fvars
       if fvars.size < reorder.size then
         visitLambdaReorder reorder (← etaExpandN (reorder.size - fvars.size) e) fvars tmpLCtx
       else
-        let e ← visit (e.instantiateRev fvars)
-        return tmpLCtx.mkLambda (reorder.permute! fvars) e
+        return tmpLCtx.mkLambda (reorder.permute! fvars) (← visit e)
 
 /-- Rename binder names in pi type. -/
 def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
