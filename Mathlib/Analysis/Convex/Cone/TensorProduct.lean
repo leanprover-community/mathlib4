@@ -140,8 +140,8 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
   -- Show z ∈ min by showing b_i ∈ C₁ and y_i ∈ C₂
   exact Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct
     (h₁_simp.toBasis_apply h₁_gen i ▸ h₁_simp.generator_mem i)
-    (by erw [TensorProduct.equivFinsuppOfBasisLeft_apply,
-          ← ProperCone.dual_dual_flip (dualPairing ℝ F) C₂, ProperCone.mem_dual]
+    (by simp only [TensorProduct.equivFinsuppOfBasisLeft_apply]
+        rw [← ProperCone.dual_dual_flip (dualPairing ℝ F) C₂]
         intro ψ hψ
         simp only [dualPairing_apply, mem_maxTensorProduct] at hz ⊢
         convert hz (b.coord i) (h_coord_dual i) ψ hψ
