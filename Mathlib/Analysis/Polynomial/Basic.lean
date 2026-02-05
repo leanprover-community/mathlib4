@@ -126,9 +126,9 @@ theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot at
   simp
 
 theorem abs_isBoundedUnder_atBot_iff :
-    (IsBoundedUnder (· ≤ ·) atBot (|eval · P|)) ↔ P.degree ≤ 0 := by
+    (IsBoundedUnder (· ≤ ·) atBot (|P.eval ·|)) ↔ P.degree ≤ 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
-    (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
+    (forall_imp (fun _ ↦ le_of_eq) fun x ↦ congr_arg abs <| _root_.trans (congr_arg (eval x)
     (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atBot P h)
