@@ -543,7 +543,6 @@ def _root_.Lean.MVarId.gcongrCore (g : MVarId)
       continue
     let some e ← getExprMVarAssignment? g | panic! "unassigned?"
     let args := e.getAppArgs
-    let mut subgoals := #[]
     let mainSubGoals := lem.mainSubgoals.map fun (i, numHyps, isContra) ↦
       -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
       -- unification ...
@@ -555,7 +554,7 @@ def _root_.Lean.MVarId.gcongrCore (g : MVarId)
     -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
     -- by the `apply`.
     for g in gs do
-      if !(← g.isAssigned) && !subgoals.contains g then
+      if !(← g.isAssigned) && !mainSubGoals.any (·.goal == g) then
         let s ← saveState
         try
           sideGoalDischarger (← g.intros).2
