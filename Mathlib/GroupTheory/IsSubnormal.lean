@@ -287,9 +287,12 @@ lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal :=
 
 open scoped Pointwise
 
-/-- The conjugate of a subnormal sugroup is subnormal. -/
-lemma conjAct (hS : H.IsSubnormal) (g : ConjAct G) : (g • H).IsSubnormal :=
-  IsSubnormal.map (conjAct_bijective g).surjective hS
+/--
+If `g : Γ` is an element of a group acting on `G` and `H` is subnormal, then `g • H` is subnormal.
+-/
+lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnormal)
+    (g : Γ) : (g • H).IsSubnormal :=
+  IsSubnormal.map (MulAction.surjective g) hS
 
 /-- If a group `G` is trivial, then all of its subgroups are subnormal. -/
 @[to_additive /-- If an additive group `G` is trivial, then all of its subgroups are additive
