@@ -1018,11 +1018,6 @@ lemma withBotDegree_le_withBotDegree_of_support_subset
   rw [m.withBotDegree_le_withBotDegree_iff_of_ne_zero _ hq]
   exact m.degree_le_degree_of_support_subset h
 
-lemma withBotDegree_rename_killCompl_le_withBotDegree {σ'} {f : σ' → σ}
-    (hf : f.Injective) (p : MvPolynomial σ R) :
-    m.withBotDegree ((p.killCompl hf).rename f) ≼'[m] m.withBotDegree p :=
-  m.withBotDegree_le_withBotDegree_of_support_subset (support_rename_killCompl_subset hf)
-
 end withBotDegree
 
 end Semiring
