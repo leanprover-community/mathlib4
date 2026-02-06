@@ -89,7 +89,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
         exact embedding_unit_pos _
       · rw [← lt_log_iff_exp_lt (embedding_unit_ne_zero _)]
         simp_all [← zpow_natCast, zpow_pos, inv_le_inv₀, zpow_le_zpow_iff_right₀ hp1', abs_le,
-          Int.lt_iff_add_one_le, -embedding_apply]
+          Int.lt_iff_add_one_le]
     · simp [Nat.Prime.ne_zero Fact.out]
 
 lemma isDenseInducing_cast_withVal : IsDenseInducing ((Rat.castHom ℚ_[p]).comp

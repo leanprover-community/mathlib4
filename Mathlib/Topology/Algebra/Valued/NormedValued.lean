@@ -71,52 +71,40 @@ def toValued : Valued K ℝ≥0 :=
       refine ⟨?_, ?_⟩
       · rintro ⟨ε, hε, h⟩
         rcases RankLeOne.exists_val_lt (valuation (K := K)) with H | H
-         -- isTriviallyValued_or_exists h hε with (H | ⟨x, hpos, h_lt⟩)
-        · sorry /- refine ⟨1, one_mem _, one_ne_zero, ?_⟩
+        · use Units.mk0 (valuation.restrict 1) (by simp)
           intro x hx
-          simp only [Units.val_one, mem_setOf_eq] at hx
-          suffices x = 0 by
-            apply hU
-            simp only [this, Metric.mem_ball, dist_self, hε]
-          by_cases hx' : valuation (K := K)  x = 0
-          · exact nnnorm_eq_zero.mp hx'
+          simp only [Units.val_mk0, mem_setOf_eq, map_one] at hx
+          by_cases hx0 : x = 0
+          · exact h (hx0 ▸ Metric.mem_ball_self hε)
           · exfalso
+            rw [← (valuation (K := K)).restrict.zero_iff, ← ne_eq, ← isUnit_iff_ne_zero] at hx0
             apply not_le.mpr hx
             apply le_of_eq
-            symm
-            have : IsUnit (⟨valuation x, valuation.mem_rangeGroup₀⟩ : valuation.rangeGroup₀) := by
-              rw [isUnit_iff_ne_zero, ne_eq, ← Subtype.coe_inj,
-                MonoidHomWithZero.range₀_coe_zero]
-              exact hx'
-            simpa only [Units.ext_iff, this.unit_spec, Units.val_one,
-              Submonoid.mk_eq_one] using H.elim this.unit 1 -/
+            rw [eq_comm]
+            simpa only [Units.ext_iff, hx0.unit_spec, Units.val_one,
+              Submonoid.mk_eq_one] using H.elim hx0.unit 1
         · obtain ⟨x, hx, hxy⟩ := H (γ := ⟨ε, le_of_lt hε⟩) (pos_iff_ne_zero.mp hε)
-          use Units.mk0 (valuation.restrict x) (by sorry)
+          use Units.mk0 (valuation.restrict x) (by simp [hx])
           intro y hy
           apply h
           simp only [Metric.mem_ball, dist_zero_right]
-          simp only [Units.val_mk0, mem_setOf_eq, restrict_lt_iff] at hy
-
-          sorry/- valuation.mem_rangeGroup₀,
-            (ne_zero_iff valuation).mpr hx
-          intro y hy
-          apply hU
-          simp only [Metric.mem_ball, dist_zero_right]
-          simp only [Units.val_mk0, mem_setOf_eq] at hy
-          exact lt_trans hy hxy -/
-/-       · rintro ⟨γ, _, hγ, hU⟩
-        use (γ : ℝ), NNReal.coe_pos.mpr (pos_of_ne_zero hγ)
-        intro x hx
-        apply hU
-        simpa only [Metric.mem_ball, dist_zero_right, mem_setOf_eq] using hx -/
+          simp only [Units.val_mk0, mem_setOf_eq, restrict_lt_iff, ← NNReal.coe_lt_coe] at hy
+          apply lt_trans hy
+          simp only [← NNReal.coe_lt_coe, NNReal.coe_mk] at hxy
+          convert hxy
+          simp only [valuation_apply, RankLeOne.hom', valuation.restrict_def,
+            embedding_restrict₀]
       · rintro ⟨ε, hε⟩
-        sorry
-        --⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
-          --fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩
-      /- exact ⟨fun ⟨ε, hε, h⟩  =>
-          ⟨Units.mk0 ⟨ε, le_of_lt hε⟩ (ne_of_gt hε), fun x hx ↦ h (mem_ball_zero_iff.mpr hx)⟩,
-        fun ⟨ε, hε⟩ => ⟨(ε : ℝ), NNReal.coe_pos.mpr (Units.zero_lt _),
-          fun x hx ↦ hε (mem_ball_zero_iff.mp hx)⟩⟩  -/}
+        let r := embedding ε.1
+        use ((embedding ε.1 : ℝ≥0) : ℝ)
+        refine ⟨?_, ?_⟩
+        · refine NNReal.coe_pos.mpr ?_
+          conv_lhs => rw [← map_zero (embedding (f := valuation (K := K)))]
+          exact embedding_strictMono.lt_iff_lt.mpr (Units.zero_lt ε)
+        · intro x hx
+          apply hε
+          simp only [mem_setOf_eq, restrict_lt_iff_lt_embedding]
+          exact (mem_ball_zero_iff.mp hx) }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     Valuation.RankOne (valuation (K := K)) where
@@ -180,8 +168,7 @@ def toNormedField : NormedField L :=
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
       · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
         refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
-        · --TODO: I think `Valued.isTopologicalValuation` needs to use `ValueGroup₀`.
-          sorry/- set δ : ℝ≥0 := hv.hom ε with hδ
+        · set δ : ℝ≥0 := hv.hom _ ε with hδ
           have hδ_pos : 0 < δ := by
             rw [hδ, ← map_zero hv.hom]
             exact hv.strictMono _ (Units.zero_lt ε)
@@ -190,18 +177,17 @@ def toNormedField : NormedField L :=
           intro x hx
           simp only [mem_setOf_eq, norm, hδ, NNReal.coe_lt_coe] at hx
           rw [mem_setOf, ← neg_sub, Valuation.map_neg]
-          exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx -/
+          exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
         · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
             ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
           obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
-
-          sorry/- use u
+          use u
           apply subset_trans _ hr
           intro x hx
           simp only [norm, mem_setOf_eq]
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
-          exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx -/
+          exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
       · simp only [Directed]
         intro x y
         use min x y

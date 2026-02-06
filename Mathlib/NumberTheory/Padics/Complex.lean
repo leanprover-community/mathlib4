@@ -127,7 +127,7 @@ instance valued : Valued ℂ_[p] ℝ≥0 := inferInstance
 
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlgCl p`. -/
 theorem valuation_extends (x : PadicAlgCl p) : Valued.v (x : ℂ_[p]) = Valued.v x :=
-  Valued.extensionValuation_extends _
+  Valued.extensionValuation_apply_coe _
 
 theorem coe_eq (x : PadicAlgCl p) : (x : ℂ_[p]) = algebraMap (PadicAlgCl p) ℂ_[p] x := rfl
 
