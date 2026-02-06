@@ -725,21 +725,33 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :
     Summable f :=
-  hg.trans_sub (summable_of_isBigO' hg h.isLittleO.isBigO)
+  summable_of_isBigO' hg h.isBigO
 
 theorem summable_of_isEquivalent_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (hg : Summable g) (h : f ~[atTop] g) :
     Summable f :=
-  hg.trans_sub (summable_of_isBigO_nat' hg h.isLittleO.isBigO)
+  summable_of_isBigO_nat' hg h.isBigO
+
+theorem IsTheta.summable_iff {ι E F : Type*} [NormedAddCommGroup E]
+  [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E]
+  [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F} (h : f =Θ[cofinite] g) :
+    Summable f ↔ Summable g :=
+  ⟨fun hf => summable_of_isBigO' hf h.isBigO_symm, fun hg => summable_of_isBigO' hg h.isBigO⟩
+
+theorem IsTheta.summable_iff_nat {E F : Type*} [NormedAddCommGroup E]
+  [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E]
+  [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F} (h : f =Θ[atTop] g) :
+    Summable f ↔ Summable g :=
+  IsTheta.summable_iff <| by simpa [← Nat.cofinite_eq_atTop] using h
 
 theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (h : f ~[cofinite] g) :
     Summable f ↔ Summable g :=
-  ⟨fun hf => summable_of_isEquivalent hf h.symm, fun hg => summable_of_isEquivalent hg h⟩
+  IsTheta.summable_iff h.isTheta
 
 theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
-  ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩
+  IsTheta.summable_iff_nat h.isTheta
 
 namespace Module.Basis
 
