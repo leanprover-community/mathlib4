@@ -21,7 +21,7 @@ derivative of `ψ` follows.
 implicit function
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology

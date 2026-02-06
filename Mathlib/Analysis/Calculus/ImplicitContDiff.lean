@@ -5,7 +5,7 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ImplicitFunction.OfProdDomain
+public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 
 /-!
@@ -25,7 +25,7 @@ neighbourhood of `u₁`. Furthermore, `ψ` is $C^n$ at `u₁`.
 implicit function, inverse function
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [RCLike 𝕜]
   {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
