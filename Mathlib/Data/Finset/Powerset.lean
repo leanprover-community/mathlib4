@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Powerset
 public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.Logic.Equiv.Fintype
 
 /-!
 # The powerset of a finset
@@ -306,16 +306,8 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       simp only [map_subset_map, has, card_map, and_self]
 
-/-- For some `Fintype ι`, the types `ι → Bool` and `Finset ι` are eqivalent by using `s : Finset ι`
-as the set where the `f : ι → Bool` is `true`. -/
-def Equiv.fnBool_finset {ι : Type*} [DecidableEq ι] [Fintype ι] : (ι → Bool) ≃ (Finset ι) where
-  toFun := fun f ↦ {i | f i}
-  invFun := fun s i ↦ i ∈ s
-  left_inv := fun l ↦ by simp
-  right_inv := fun l ↦ by simp
-
 lemma Equiv_fnBool_finset_mem_powersetCard_iff {ι : Type*} [DecidableEq ι] [Fintype ι] (k : ℕ)
-    (f : ι → Bool) : #{i | f i = true} = k ↔ (Equiv.fnBool_finset) f ∈ powersetCard k univ := by
+    (f : ι → Bool) : (Equiv.fnBool_finset) f ∈ powersetCard k univ ↔ #{i | f i = true} = k := by
   simp [Equiv.fnBool_finset]
 
 /-- For some `Fintype ι`, the number of maps `f : ι → Bool` with `#{i | f i} = k` equals
@@ -325,7 +317,7 @@ lemma card_fnBool {ι : Type*} [DecidableEq ι] [Fintype ι] {k : ℕ} :
   rw [← card_powersetCard k (univ : Finset ι)]
   apply card_equiv (Equiv.fnBool_finset) (fun i ↦ ?_)
   simp only [mem_filter, mem_univ, true_and]
-  exact Equiv_fnBool_finset_mem_powersetCard_iff k i
+  exact (Equiv_fnBool_finset_mem_powersetCard_iff k i).symm
 
 lemma card_listVector_card {k n : ℕ} :
     #{v : List.Vector Bool n | v.val.count true = k} = n.choose k := by

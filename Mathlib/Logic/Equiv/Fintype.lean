@@ -134,4 +134,12 @@ theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p 
   convert (e.toCompl ⟨x, hx⟩).2
   rw [e.extendSubtype_apply_of_not_mem _ hx]
 
+/-- For some `Fintype α`, there is (computably) a bijection `α → Bool` and `Finset α` by using
+`s : Finset α` as the set where the `f : α → Bool` is `true`. -/
+def fnBool_finset [DecidableEq α] [Fintype α] : (α → Bool) ≃ (Finset α) where
+  toFun := fun f ↦ Finset.univ.filter (f · = true)
+  invFun := fun s i ↦ decide (i ∈ s)
+  left_inv := fun l ↦ by simp
+  right_inv := fun l ↦ by simp
+
 end Equiv
