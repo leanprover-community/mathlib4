@@ -302,6 +302,13 @@ def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
   natTrans := Functor.whiskerRight α.rightOp Scheme.Spec ≫ (restrictIsoSpec X).inv
   equifibered := (H.rightOp.whiskerRight _).comp (.of_isIso _)
 
+instance {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
+    {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F}
+    (H : α.Coequifibered) : ((relativeGluingData H).functor ⋙ forget).IsLocallyDirected :=
+  -- Why doesn't typeclass synthesis work here?
+  -- It does fire if one adds `(C := no_index(_))` to the composition in the instance.
+  Cover.RelativeGluingData.instIsLocallyDirectedI₀CompFunctorForgetOfIsThin ..
+
 @[deprecated "By `inferInstance`." (since := "2026-02-01")]
 lemma PreservesLocalization.isLocallyDirected (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
@@ -330,12 +337,14 @@ lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommR
 @[deprecated (since := "2026-02-01")]
 alias PreservesLocalization.opensRange_map := opensRange_relativeGluingData_map
 
-@[deprecated Cover.RelativeGluingData.toBase_preimage_eq_opensRange_ι (since := "2026-02-01")]
-lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
+lemma relativeGluingData_toBase_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
-    (H : α.Coequifibered) (U : X.AffineZariskiSite) :
-    (relativeGluingData H).toBase ⁻¹ᵁ U.1 = ((relativeGluingData H).cover.f U).opensRange := by
-  simpa using (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
+    (H : α.Coequifibered) (U : X.Opens) (hU : IsAffineOpen U) :
+    (relativeGluingData H).toBase ⁻¹ᵁ U = ((relativeGluingData H).cover.f ⟨U, hU⟩).opensRange := by
+  simpa using (relativeGluingData H).toBase_preimage_eq_opensRange_ι ⟨U, hU⟩
+
+@[deprecated (since := "2026-02-06")]
+alias PreservesLocalization.colimitDesc_preimage := relativeGluingData_toBase_preimage
 
 @[deprecated (since := "2026-02-01")]
 alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
@@ -346,10 +355,6 @@ variable (X) in
 noncomputable def isColimitCocone : IsColimit (cocone X) :=
   letI D := relativeGluingData (X := X) (.of_isIso (𝟙 _))
   letI F := D.functor
-  -- Why doesn't typeclass synthesis work here?
-  -- It does fire if one adds `(C := no_index(_))` to the composition in the instance.
-  haveI : (D.functor ⋙ forget).IsLocallyDirected :=
-    Cover.RelativeGluingData.instIsLocallyDirectedI₀CompFunctorForgetOfIsThin ..
   haveI : IsIso ((colimit.isColimit F).desc (cocone X:)) := by
     refine (IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms _)
       (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X))).mpr fun U ↦ ?_
