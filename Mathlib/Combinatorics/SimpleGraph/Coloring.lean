@@ -120,11 +120,12 @@ theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
     (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h => C.valid h (Eq.trans hv (Eq.symm hw))
 
-theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
-  fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
-
 theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c :=
-  C.color_classes_independent c
+  fun _ hv _ hw _ ↦ C.not_adj_of_mem_colorClass hv hw
+
+@[deprecated isIndepSet_colorClass (since := "2026-02-07")]
+theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
+  C.isIndepSet_colorClass c
 
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
