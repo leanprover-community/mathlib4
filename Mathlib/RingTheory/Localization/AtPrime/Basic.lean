@@ -275,6 +275,21 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
   localRingHom_unique _ _ _ _ fun r => by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
+variable {S} in
+/-- For an algebra hom `f : S →ₐ[R] P` and a prime ideal `J` in `P`, the induced ring hom from the
+localization of `R` at `J ∩ S` to the localization of `P` at `J`. -/
+noncomputable def localAlgHom [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
+    (f : S →ₐ[R] P) (hIJ : I = J.comap f) :
+    Localization.AtPrime I →ₐ[R] Localization.AtPrime J where
+  __ := localRingHom I J f.toRingHom hIJ
+  commutes' r := by
+    simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime I),
+      localRingHom_to_map, IsScalarTower.algebraMap_apply R P (Localization.AtPrime J)]
+
+variable {S} in
+@[simp] lemma localAlgHom_apply [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
+    (f : S →ₐ[R] P) (hIJ : I = J.comap f) (x) :
+    localAlgHom I J f hIJ x = localRingHom I J f.toRingHom hIJ x := rfl
 namespace AtPrime
 
 section
