@@ -141,24 +141,31 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
       rw [Finset.coe_insert, Submodule.span_insert]
       exact h₂ _ _ (h₁ _) ih
 
-theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module S M] [Module R M] [IsScalarTower R S M] (N : Submodule S M)
-    (hfin : N.FG) (h : Function.Surjective (algebraMap R S)) :
-    (Submodule.restrictScalars R N).FG := by
-  obtain ⟨X, rfl⟩ := hfin
-  use X
-  exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
+section RestrictScalars
 
-lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M]
-    [SMul R A] [Module R M] [Module A M] [IsScalarTower R A M] (S : Submodule A M)
+variable {R A M : Type*} [Semiring A] [AddCommMonoid M] [Module A M]
+variable {S : Submodule A M}
+
+theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A] [Module R M]
+    [IsScalarTower R A M] (hS : S.FG) (h : Function.Surjective (algebraMap R A)) :
+    (restrictScalars R S).FG := by
+  obtain ⟨s, rfl⟩ := hS
+  exact ⟨s, .symm <| restrictScalars_span R A h _⟩
+
+@[deprecated (since := "2026-01-24")]
+alias fg_restrictScalars := FG.restrictScalars_of_surjective
+
+theorem FG.of_restrictScalars (R) [Semiring R] [Module R M] [SMul R A] [IsScalarTower R A M]
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
-  refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
-  · change Submodule.span A s ≤ S
-    have := Submodule.span_le.mp e.le
-    rwa [Submodule.span_le]
+  refine ⟨s, restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
+  · change span A s ≤ S
+    have := span_le.mp e.le
+    rwa [span_le]
   · rw [← e]
-    exact Submodule.span_le_restrictScalars _ _ _
+    exact span_le_restrictScalars _ _ _
+
+end RestrictScalars
 
 theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
@@ -406,6 +413,29 @@ instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R 
       ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finite_sup S₁ S₂
+
+section RestrictScalars
+
+variable {R : Type*} [Semiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
+variable {S : Submodule A M}
+
+theorem FG.restrictScalars [Module.Finite R A] (hS : S.FG) : (S.restrictScalars R).FG := by
+  rw [← Module.Finite.iff_fg] at *
+  exact Module.Finite.trans A S
+
+@[simp]
+theorem FG.restrictScalars_iff [Module.Finite R A] : (S.restrictScalars R).FG ↔ S.FG :=
+  ⟨of_restrictScalars R, restrictScalars⟩
+
+/-- If a ring `R` is finite over a subring `S` then the `R`-span of an FG `S`-submodule is FG. -/
+protected theorem FG.span (hS : S.FG) : (span A (S : Set M)).FG := by
+  obtain ⟨t, ht⟩ := hS
+  use t
+  rw [← ht, Submodule.span_span_of_tower]
+
+end RestrictScalars
 
 end Submodule
 
