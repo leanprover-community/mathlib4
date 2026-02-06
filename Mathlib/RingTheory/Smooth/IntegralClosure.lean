@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.Polynomial.IsIntegral
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.Etale.StandardEtale
