@@ -1193,9 +1193,9 @@ theorem inv_congr {R} [Semifield R] {a a' b : R} (_ : a = a')
 theorem div_congr {R} [Semifield R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
-theorem hsmul_congr {R α : Type*} [CommSemiring α] [HSMul R α α]
-    {r s : R} {a b t c : α}
-    (_ : r = s) (_ : a = b) (_ : ∀ (x : α), s • x = t * x) (_ : t * b = c) :
+theorem smul_congr {R α : Type*} [CommSemiring α] [SMul R α]
+    {r : R} {a b t c : α}
+    (_ : a = b) (_ : ∀ (x : α), r • x = t * x) (_ : t * b = c) :
     r • a = c := by
   subst_vars
   simp [*]
@@ -1273,7 +1273,7 @@ partial def eval  {u : Lean.Level}
         let ⟨_, vb, pb⟩ ← eval rc c a
         let ⟨_, vt, pt⟩ ← rc.cast _ _ q($sR) q(inferInstance) _
         let ⟨_, vc, pc⟩ ← evalMul rc rcℕ vt vb
-        return ⟨_, vc, q(hsmul_congr rfl $pb $pt $pc)⟩
+        return ⟨_, vc, q(smul_congr $pb $pt $pc)⟩
       catch _ => els
     | _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
