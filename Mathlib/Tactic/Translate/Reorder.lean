@@ -160,7 +160,8 @@ and to observe which variables are swapped.
 We also apply this heuristic recurisvely in hypotheses. -/
 partial def guessReorder (src tgt : Expr) : MetaM Reorder := withReducible do
   let src ← whnf src; let tgt ← whnf tgt
-  let depth := min (depForallDepth src) (depForallDepth tgt)
+  let depth := depForallDepth src
+  unless depth == depForallDepth tgt do return {}
   forallBoundedTelescope src depth fun srcVars src ↦ do
   forallBoundedTelescope tgt depth fun tgtVars tgt ↦ do
   let srcMap : Std.HashMap FVarId Nat := .ofArray <| srcVars.mapIdx fun i x => (x.fvarId!, i)
@@ -174,7 +175,7 @@ partial def guessReorder (src tgt : Expr) : MetaM Reorder := withReducible do
     let r ← guessReorder src.bindingDomain! tgt.bindingDomain!
     unless r.isEmpty do
       argReorders := argReorders.push (n, r)
-    -- This step won't create loose bound variables
+    -- This won't create loose bound variables, because we already introduced all dependent foralls.
     src := src.bindingBody!
     tgt := tgt.bindingBody!
     n := n + 1
