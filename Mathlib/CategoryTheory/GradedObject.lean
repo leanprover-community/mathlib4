@@ -277,33 +277,6 @@ end GradedObject
 
 namespace GradedObject
 
-noncomputable section
-
-variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C]
-variable {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [ConcreteCategory C FC]
-variable [HasCoproducts.{0} C] [HasZeroMorphisms C]
-
--- TODO: find a less hacky solution
-instance :
-    letI := FunLike.ofFaithful (total β C ⋙ forget C)
-    ConcreteCategory (GradedObject β C) (fun X Y ↦ X ⟶ Y) :=
-  letI := FunLike.ofFaithful (total β C ⋙ forget C)
-  ConcreteCategory.ofForget (total β C ⋙ forget C)
-
-instance :
-    letI := FunLike.ofFaithful (total β C ⋙ forget C)
-    HasForget₂ (GradedObject β C) C :=
-  letI := FunLike.ofFaithful (total β C ⋙ forget C)
-  { forget₂ := total β C }
-
-end
-
-end GradedObject
-
-namespace GradedObject
-
 variable {I J K : Type*} {C : Type*} [Category* C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 

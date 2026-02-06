@@ -178,21 +178,6 @@ instance Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X �
 @[simp]
 lemma Types.hom_eq_coe {X Y : Type u} (f : X ⟶ Y) : (ConcreteCategory.hom f) = f := rfl
 
-/-- TODO: remove this hack -/
-@[simps]
-def _root_.FunLike.ofFaithful {C : Type*} [Category* C] (F : C ⥤ Type w) [F.Faithful] (X Y : C) :
-    FunLike (X ⟶ Y) (F.obj X) (F.obj Y) where
-  coe f := F.map f
-  coe_injective' := F.map_injective
-
-/-- TODO: remove this hack -/
-def ConcreteCategory.ofForget {C : Type*} [Category* C] (F : C ⥤ Type w) [F.Faithful] :
-    letI := FunLike.ofFaithful F
-    ConcreteCategory C (fun X Y ↦ X ⟶ Y) := letI := FunLike.ofFaithful F
-  {
-    hom f := f
-    ofHom f := f }
-
 @[simp]
 lemma NatTrans.naturality_apply {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y)
     (x : ToType (F.obj X)) :
