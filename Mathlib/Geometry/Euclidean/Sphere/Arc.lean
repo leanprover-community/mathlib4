@@ -289,8 +289,7 @@ lemma throughMidpoint_mem (A B C : P) (hA : A ∈ s) (hC : C ∈ s)
   · exact pointReflection_center_mem_sphere (minorMidpoint_mem hA hC hNotDiam)
 
 /-- Arc from A to C passing through B. -/
-def through {A B C : P} (hA : A ∈ s) (_hB : B ∈ s) (hC : C ∈ s)
-    (_hB_ne_A : B ≠ A) (_hB_ne_C : B ≠ C)
+def through {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
     (hNotDiam : ¬s.IsDiameter A C) : Arc s where
   left := A
   midpoint := throughMidpoint s A B C
@@ -298,25 +297,24 @@ def through {A B C : P} (hA : A ∈ s) (_hB : B ∈ s) (hC : C ∈ s)
   midpoint_mem := throughMidpoint_mem A B C hA hC hNotDiam
 
 /-- Arc from A to C not passing through B. -/
-def avoiding {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C)
+def avoiding {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
     (hNotDiam : ¬s.IsDiameter A C) : Arc s :=
-  (through hA hB hC hB_ne_A hB_ne_C hNotDiam).opposite
+  (through (B := B) hA hC hNotDiam).opposite
 
 @[simp]
-lemma through_left {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    (through hA hB hC hB_ne_A hB_ne_C hNotDiam).left = A := rfl
+lemma through_left {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    (through (B := B) hA hC hNotDiam).left = A := rfl
 
-lemma through_midpoint {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    (through hA hB hC hB_ne_A hB_ne_C hNotDiam).midpoint = throughMidpoint s A B C := rfl
+lemma through_midpoint {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    (through (B := B) hA hC hNotDiam).midpoint = throughMidpoint s A B C := rfl
 
 /-- The right endpoint of `through A B C` equals C. -/
 @[simp]
-lemma through_right {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    (through hA hB hC hB_ne_A hB_ne_C hNotDiam).right = C := by
+lemma through_right {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    (through (B := B) hA hC hNotDiam).right = C := by
   classical
   have hminor : (minor hA hC hNotDiam).right = C := minor_right hA hC hNotDiam
   have hmajor : (major hA hC hNotDiam).right = C := major_right hA hC hNotDiam
@@ -324,61 +322,61 @@ lemma through_right {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
   split_ifs with h <;> assumption
 
 @[simp]
-lemma avoiding_left {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    (avoiding hA hB hC hB_ne_A hB_ne_C hNotDiam).left = A := by
+lemma avoiding_left {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    (avoiding (B := B) hA hC hNotDiam).left = A := by
   simp only [avoiding, opposite_left, through_left]
 
 @[simp]
-lemma avoiding_right {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    (avoiding hA hB hC hB_ne_A hB_ne_C hNotDiam).right = C := by
+lemma avoiding_right {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    (avoiding (B := B) hA hC hNotDiam).right = C := by
   simp only [avoiding, opposite_right, through_right]
 
-lemma avoiding_eq_through_opposite {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    avoiding hA hB hC hB_ne_A hB_ne_C hNotDiam =
-      (through hA hB hC hB_ne_A hB_ne_C hNotDiam).opposite := rfl
+lemma avoiding_eq_through_opposite {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    avoiding (B := B) hA hC hNotDiam =
+      (through (B := B) hA hC hNotDiam).opposite := rfl
 
-lemma through_eq_minor_of_wSameSide {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C)
+lemma through_eq_minor_of_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C)
     (h : (s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    through hA hB hC hB_ne_A hB_ne_C hNotDiam = minor hA hC hNotDiam := by
+    through (B := B) hA hC hNotDiam = minor hA hC hNotDiam := by
   classical
   simp only [through, minor, throughMidpoint, if_pos h]
 
-lemma through_eq_major_of_not_wSameSide {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C)
+lemma through_eq_major_of_not_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C)
     (h : ¬(s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    through hA hB hC hB_ne_A hB_ne_C hNotDiam = major hA hC hNotDiam := by
+    through (B := B) hA hC hNotDiam = major hA hC hNotDiam := by
   classical
   simp only [through, major, opposite, minor, throughMidpoint, if_neg h]
 
-lemma avoiding_eq_major_of_wSameSide {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C)
+lemma avoiding_eq_major_of_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C)
     (h : (s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    avoiding hA hB hC hB_ne_A hB_ne_C hNotDiam = major hA hC hNotDiam := by
-  simp only [avoiding, through_eq_minor_of_wSameSide hA hB hC hB_ne_A hB_ne_C hNotDiam h,
+    avoiding (B := B) hA hC hNotDiam = major hA hC hNotDiam := by
+  simp only [avoiding, through_eq_minor_of_wSameSide hA hC hNotDiam h,
              minor_opposite_eq_major]
 
-lemma avoiding_eq_minor_of_not_wSameSide {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C)
+lemma avoiding_eq_minor_of_not_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C)
     (h : ¬(s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    avoiding hA hB hC hB_ne_A hB_ne_C hNotDiam = minor hA hC hNotDiam := by
-  simp only [avoiding, through_eq_major_of_not_wSameSide hA hB hC hB_ne_A hB_ne_C hNotDiam h,
+    avoiding (B := B) hA hC hNotDiam = minor hA hC hNotDiam := by
+  simp only [avoiding, through_eq_major_of_not_wSameSide hA hC hNotDiam h,
              major_opposite_eq_minor]
 
 @[simp]
-lemma through_opposite {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    (through hA hB hC hB_ne_A hB_ne_C hNotDiam).opposite =
-      avoiding hA hB hC hB_ne_A hB_ne_C hNotDiam := rfl
+lemma through_opposite {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    (through (B := B) hA hC hNotDiam).opposite =
+      avoiding (B := B) hA hC hNotDiam := rfl
 
 @[simp]
-lemma avoiding_opposite {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
-    (hB_ne_A : B ≠ A) (hB_ne_C : B ≠ C) (hNotDiam : ¬s.IsDiameter A C) :
-    (avoiding hA hB hC hB_ne_A hB_ne_C hNotDiam).opposite =
-      through hA hB hC hB_ne_A hB_ne_C hNotDiam := by
+lemma avoiding_opposite {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) :
+    (avoiding (B := B) hA hC hNotDiam).opposite =
+      through (B := B) hA hC hNotDiam := by
   simp only [avoiding, opposite_opposite]
 
 end Arc
