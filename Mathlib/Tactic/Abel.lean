@@ -15,6 +15,14 @@ public import Mathlib.Util.AtomM.Recurse
 
 Evaluate expressions in the language of additive, commutative monoids and groups.
 
+## Future work
+
+* In mathlib 3, `abel` accepted additional optional arguments:
+  ```
+  syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
+  ```
+  It is undecided whether these features should be restored eventually.
+
 -/
 
 public meta section
@@ -29,35 +37,25 @@ initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
 
 /--
-Tactic for evaluating equations in the language of
-*additive*, commutative monoids and groups.
+`abel` solves equations in the language of *additive*, commutative monoids and groups.
 
 `abel` and its variants work as both tactics and conv tactics.
 
 * `abel1` fails if the target is not an equality that is provable by the axioms of
   commutative monoids/groups.
 * `abel_nf` rewrites all group expressions into a normal form.
-  * In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
+  * `abel_nf at h` rewrites in a hypothesis.
   * `abel_nf (config := cfg)` allows for additional configuration:
-    * `red`: the reducibility setting (overridden by `!`)
-    * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
-    * `recursive`: if true, `abel_nf` will also recurse into atoms
-* `abel!`, `abel1!`, `abel_nf!` will use a more aggressive reducibility setting to identify atoms.
+    * `red`: the reducibility setting (overridden by `!`).
+    * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
+    * `recursive`: if true, `abel_nf` also recurses into atoms.
+* `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
 
-For example:
-
+Examples:
 ```
 example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
 example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
 ```
-
-## Future work
-
-* In mathlib 3, `abel` accepted additional optional arguments:
-  ```
-  syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
-  ```
-  It is undecided whether these features should be restored eventually.
 -/
 syntax (name := abel) "abel" "!"? : tactic
 
