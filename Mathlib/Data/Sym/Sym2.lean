@@ -10,6 +10,7 @@ public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Tactic.DepRewrite
 
 /-!
 # The symmetric square
@@ -590,6 +591,11 @@ alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
 def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
   OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
+theorem mem_fromRel_comap {r : β → β → Prop} (sym : Symmetric r) (f : α → β) (z : Sym2 α) :
+    z ∈ fromRel (sym.comap f) ↔ z.map f ∈ fromRel sym := by
+  cases z
+  simp
+
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_notMem fun e => _
   apply Sym2.ind
@@ -646,6 +652,40 @@ lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α �
     rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
     forall_exists_index, and_imp]
   exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
+
+/-- Non-dependent recursor on members of a `fromRel` set -/
+def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
+    (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (sym h)) :
+    motive :=
+  z.hrec (fun p ↦ f p.fst p.snd)
+    (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
+
+/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
+equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
+`Quot` version -/
+def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} (f : r →r r') :
+    fromRel sym ≃ Σ q, fromRel <| sym.comap <| @Subtype.val α ((Quot.mk r' · = q) ∘ f) where
+  toFun z := fromRelNdrec z.prop
+    (fun a b h ↦ ⟨.mk r' <| f a, s(⟨a, rfl⟩, ⟨b, (Quot.sound <| f.map_rel h).symm⟩), h⟩)
+    fun a b h ↦ by
+      dsimp only
+      rw! [Quot.sound <| f.map_rel h, eq_swap]
+      rfl
+  invFun z := ⟨z.snd.val.map Subtype.val, mem_fromRel_comap sym .. |>.mp z.snd.prop⟩
+  left_inv z := by
+    rcases z with ⟨⟨⟩⟩
+    rfl
+  right_inv z := by
+    rcases z with ⟨q, ⟨⟨a, ha⟩, ⟨b, hb⟩⟩, h⟩
+    subst ha
+    rfl
+
+/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
+equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
+`Quotient` version -/
+def _root_.Equiv.sigmaQuotientFromRel (sym : Symmetric r) {r' : Setoid β} (f : r →r r') :
+    fromRel sym ≃ Σ q, fromRel <| sym.comap <| @Subtype.val α ((Quotient.mk r' · = q) ∘ f) :=
+  .sigmaQuotFromRel sym f
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/

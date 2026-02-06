@@ -438,6 +438,20 @@ def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
   left_inv := fun ⟨a, h⟩ ↦ by cases h; simp
   right_inv b := by simp
 
+/-- A sigma over a quotient summing the equivalence classes is equivalent to the original type,
+`Quot` version -/
+@[simps]
+def sigmaQuot {α : Type*} (r : α → α → Prop) : α ≃ Σ q, { x // Quot.mk r x = q } where
+  toFun x := ⟨.mk r x, x, rfl⟩
+  invFun x := x.snd.val
+  left_inv _ := rfl
+  right_inv x := Sigma.subtype_ext x.snd.prop rfl
+
+/-- A sigma over a quotient summing the equivalence classes is equivalent to the original type,
+`Quotient` version -/
+@[simps!]
+def sigmaQuotient {α : Type*} (r : Setoid α) : α ≃ Σ q, { x // Quotient.mk r x = q } :=
+  .sigmaQuot r
 
 section
 attribute [local simp] Trans.trans sigmaAssoc subtypeSigmaEquiv uniqueSigma eqRec_eq_cast
