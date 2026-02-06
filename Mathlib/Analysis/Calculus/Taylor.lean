@@ -35,7 +35,7 @@ which states that if `f` is sufficiently smooth, then
 * `taylor_mean_remainder_cauchy`: Taylor's theorem with the Cauchy remainder
 * `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector-valued functions with a
   polynomial bound on the remainder
-* `taylor_integral_remainder_of_AbsolutelyContinuous`,
+* `taylor_integral_remainder_of_absolutelyContinuous`,
 `taylor_integral_remainder_of_contDiffOn_succ`: Taylor's theorem with the integral form of the
 remainder
 
@@ -500,7 +500,7 @@ its `n`-th derivative is absolutely continuous on `uIcc x₀ x`. Then
 $$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
-theorem taylor_integral_remainder_of_AbsolutelyContinuous {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ}
+theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ}
     (hf₁ : ContDiffOn ℝ n f (uIcc x₀ x))
     (hf₂ : AbsolutelyContinuousOnInterval (iteratedDerivWithin n f (uIcc x₀ x)) x₀ x) :
     f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
