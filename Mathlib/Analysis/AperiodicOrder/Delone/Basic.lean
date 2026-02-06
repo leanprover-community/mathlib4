@@ -77,6 +77,7 @@ structure DeloneSet (X : Type*) [MetricSpace X] where
 
 namespace DeloneSet
 
+/-- The underlying set of points of a Delone set. -/
 @[coe] def toSet (D : DeloneSet X) : Set X := D.carrier
 
 instance : Coe (DeloneSet X) (Set X) where
