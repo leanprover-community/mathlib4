@@ -683,11 +683,13 @@ end ConnectedComponent
 
 variable (G) in
 /-- The vertices of a graph are partitioned among its connected components -/
+@[simps!]
 def verticesEquivSigmaConnectedComponent : V ≃ Σ (c : G.ConnectedComponent), c :=
-  .sigmaQuot G.Reachable
+  .symm <| .sigmaFiberEquiv <| Quot.mk G.Reachable
 
 variable (G) in
 /-- The edges of a graph are partitioned among its connected components -/
+@[simps!]
 def edgeSetEquivSigmaConnectedComponent :
     G.edgeSet ≃ Σ (c : G.ConnectedComponent), c.toSimpleGraph.edgeSet :=
   .sigmaQuotFromRel G.symm <| .ofLE <| fun _ _ ↦ Adj.reachable
