@@ -33,12 +33,12 @@ namespace Polynomial
 
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
-theorem eventually_atTop_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
+theorem eventually_atTop_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
 
-@[deprecated (since := "2026-02-05")] alias eventually_no_roots := eventually_atTop_no_roots
+@[deprecated (since := "2026-02-05")] alias eventually_no_roots := eventually_atTop_not_isRoot
 
-theorem eventually_atBot_no_roots (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
+theorem eventually_atBot_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
   atBot_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
 
 variable [OrderTopology 𝕜]
@@ -88,7 +88,7 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
   · exact tendsto_abs_atTop_atTop.comp (P.tendsto_atTop_of_leadingCoeff_nonneg hdeg hP)
   · exact tendsto_abs_atBot_atTop.comp (P.tendsto_atBot_of_leadingCoeff_nonpos hdeg hP)
 
-theorem abs_isBoundedUnder_atTop_iff :
+theorem isBoundedUnder_abs_atTop_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
   refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
     (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
@@ -96,10 +96,10 @@ theorem abs_isBoundedUnder_atTop_iff :
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
 
-@[deprecated (since := "2026-02-05")] alias abs_isBoundedUnder_iff := abs_isBoundedUnder_atTop_iff
+@[deprecated (since := "2026-02-05")] alias abs_isBoundedUnder_iff := isBoundedUnder_abs_atTop_iff
 
 theorem abs_tendsto_atTop_iff : Tendsto (fun x => abs <| eval x P) atTop atTop ↔ 0 < P.degree :=
-  ⟨fun h ↦ not_le.mp (mt (abs_isBoundedUnder_atTop_iff P).mpr
+  ⟨fun h ↦ not_le.mp (mt (isBoundedUnder_abs_atTop_iff P).mpr
     (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atTop P⟩
 
 theorem tendsto_nhds_iff {c : 𝕜} :
@@ -130,7 +130,7 @@ theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot at
   convert ((P.comp (-X)).abs_tendsto_atTop (by simp [hdeg])).comp tendsto_neg_atBot_atTop using 2
   simp
 
-theorem abs_isBoundedUnder_atBot_iff :
+theorem isBoundedUnder_abs_atBot_iff :
     (IsBoundedUnder (· ≤ ·) atBot (|P.eval ·|)) ↔ P.degree ≤ 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
     (forall_imp (fun _ ↦ le_of_eq) fun x ↦ congr_arg abs <| _root_.trans (congr_arg (eval x)
@@ -139,7 +139,7 @@ theorem abs_isBoundedUnder_atBot_iff :
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atBot P h)
 
 theorem abs_tendsto_atBot_iff : Tendsto (|P.eval ·|) atBot atTop ↔ 0 < P.degree :=
-  ⟨fun h ↦ not_le.mp (mt (abs_isBoundedUnder_atBot_iff P).mpr
+  ⟨fun h ↦ not_le.mp (mt (isBoundedUnder_abs_atBot_iff P).mpr
     (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atBot P⟩
 
 end PolynomialAtBot
@@ -305,7 +305,7 @@ theorem isLittleO_atTop_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atTop
   · simp [hp]
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h.le hp
     have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
-      mem_of_superset (eventually_atTop_no_roots Q hq) fun x h h' ↦ absurd h' h
+      mem_of_superset (eventually_atTop_not_isRoot Q hq) fun x h h' ↦ absurd h' h
     exact isLittleO_of_tendsto' hPQ (div_tendsto_atTop_zero_of_degree_lt P Q h)
 
 theorem isLittleO_atBot_of_degree_lt (h : P.degree < Q.degree) : P.eval =o[atBot] Q.eval := by
@@ -318,7 +318,7 @@ theorem isBigO_atTop_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atTop]
   · simpa [hp] using isBigO_zero Q.eval atTop
   · have hq : Q ≠ 0 := ne_zero_of_degree_ge_degree h hp
     have hPQ : ∀ᶠ x in atTop, Q.eval x = 0 → P.eval x = 0 :=
-      mem_of_superset (eventually_atTop_no_roots Q hq) fun x h h' ↦ absurd h' h
+      mem_of_superset (eventually_atTop_not_isRoot Q hq) fun x h h' ↦ absurd h' h
     rcases le_iff_lt_or_eq.mp h with h | h
     · exact isBigO_of_div_tendsto_nhds hPQ 0 (div_tendsto_atTop_zero_of_degree_lt P Q h)
     · exact isBigO_of_div_tendsto_nhds hPQ _ (div_tendsto_atTop_leadingCoeff_div_of_degree_eq P Q h)
