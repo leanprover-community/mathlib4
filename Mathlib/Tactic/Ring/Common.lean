@@ -1267,13 +1267,7 @@ partial def eval  {u : Lean.Level}
       pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
   | ``HSMul.hSMul, _, _ | ``SMul.smul, _, _ => match e with
-    | ~q(@HSMul.hSMul $R $α' _ $inst $r $a') =>
-      if ! (← isDefEq α α') then
-        return ← els
-      have : u_2 =QL u := ⟨⟩
-      have : $α =Q $α' := ⟨⟩
-      have a : Q($α) := a'
-      have : $a =Q $a' := ⟨⟩
+    | ~q(@HSMul.hSMul $R _ _ (@instHSMul _ _ $inst) $r $a) =>
       try
         let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
         let ⟨_, vb, pb⟩ ← eval rc c a
