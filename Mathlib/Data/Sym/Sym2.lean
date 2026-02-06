@@ -664,7 +664,7 @@ def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
 `Quot` version -/
 def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} (f : r →r r') :
-    fromRel sym ≃ Σ q, fromRel <| sym.comap <| @Subtype.val α ((Quot.mk r' · = q) ∘ f) where
+    fromRel sym ≃ Σ q : Quot r', fromRel <| sym.comap <| @Subtype.val α ((.mk r' · = q) ∘ f) where
   toFun z := fromRelNdrec z.prop
     (fun a b h ↦ ⟨.mk r' <| f a, s(⟨a, rfl⟩, ⟨b, (Quot.sound <| f.map_rel h).symm⟩), h⟩)
     fun a b h ↦ by
@@ -684,7 +684,7 @@ def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} 
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
 `Quotient` version -/
 def _root_.Equiv.sigmaQuotientFromRel (sym : Symmetric r) {r' : Setoid β} (f : r →r r') :
-    fromRel sym ≃ Σ q, fromRel <| sym.comap <| @Subtype.val α ((Quotient.mk r' · = q) ∘ f) :=
+    fromRel sym ≃ Σ q : Quotient r', fromRel <| sym.comap <| @Subtype.val α ((⟦·⟧ = q) ∘ f) :=
   .sigmaQuotFromRel sym f
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
