@@ -11,8 +11,8 @@ public meta import Lean.Elab.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Mathlib.Data.Array.Defs
+public meta import Mathlib.Lean.Meta
 public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Lean.Meta.CoeAttr
 public import Batteries.Lean.NameMapAttribute
@@ -22,7 +22,6 @@ public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 public meta import Mathlib.Util.MemoFix
-public meta import Mathlib.Lean.Meta
 
 /-!
 # The translation attribute.
@@ -645,9 +644,7 @@ These auxiliary declarations may be private or not, independent of whether `pre`
 -/
 def findAuxDecls (decl : ConstantInfo) (pre : Name) : CoreM (Array Name) := do
   let env ← withoutExporting getEnv
-  let typeAndValue :=
-    if let some value := decl.value? (allowOpaque := true) then decl.type.app value else decl.type
-  return typeAndValue.foldConsts #[] fun n l ↦
+  return (decl.type.app (decl.value! (allowOpaque := true))).foldConsts #[] fun n l ↦
     if (env.find? n).any (·.hasValue (allowOpaque := true)) &&
       ((match n with | .str _ s => "_proof_".isPrefixOf s | _ => false) ||
       (privateToUserName n).getPrefix == privateToUserName pre || n.hasMacroScopes) then
@@ -1262,7 +1259,6 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   else
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg.ref src tgt src cfg.dontTranslate reorder
-  trace[translate_detail] "tgt: {tgt} equals {(← findPublicOrPrivate? tgt).map (·.name)}"
   let nestedNames ← withoutExporting <| copyMetaData t cfg src tgt reorder relevantArg
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
