@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-public import Mathlib.RingTheory.UniquePrimeOver
+public import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
