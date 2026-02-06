@@ -718,7 +718,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
   trace[translate] "translating\n\
-    {srcDecl.kind.toString} {.ofConstName src} : {srcDecl.type} :=\n  {srcDecl.value!}"
+    {srcDecl.kind} {.ofConstName src} : {srcDecl.type} :=\n  {srcDecl.value!}"
   -- now transform the source declaration
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
   if src == pre && srcDecl.isThm && trgDecl.type == srcDecl.type then
@@ -726,7 +726,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       of theorem `{.ofConstName src}`. Please remove the attribute."
   let value := srcDecl.value! (allowOpaque := true)
   trace[translate] "generating\n\
-    {trgDecl.kind.toString} {privateToUserName tgt} : {trgDecl.type} :=\n  {value}"
+    {trgDecl.kind} {privateToUserName tgt} : {trgDecl.type} :=\n  {value}"
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
   has executable code.
