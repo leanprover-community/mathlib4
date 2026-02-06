@@ -1300,7 +1300,7 @@ partial def eval  {u : Lean.Level}
   | ``Inv.inv, _, some dsα => match e with
     | ~q($a⁻¹) =>
       let ⟨_, va, pa⟩ ← eval rc c a
-      let ⟨b, vb, p⟩Tactic ← va.evalInv rc rcℕ dsα c.czα
+      let ⟨b, vb, p⟩ ← va.evalInv rc rcℕ dsα c.czα
       pure ⟨b, vb, q(inv_congr $pa $p)⟩
     | _ => els
   | ``HDiv.hDiv, _, some dsα | ``Div.div, _, some dsα => match e with
