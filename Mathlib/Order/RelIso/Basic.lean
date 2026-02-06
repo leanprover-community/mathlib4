@@ -144,6 +144,7 @@ protected def id (r : α → α → Prop) : r →r r :=
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
 
+/-- The identity relation homomorphism between subrelations -/
 protected def ofLE {r' : α → α → Prop} (le : r ≤ r') : r →r r' := ⟨id, @le⟩
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
