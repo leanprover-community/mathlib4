@@ -1,13 +1,15 @@
 /-
-Copyright (c) 2025 Sebastian Kumar. All rights reserved.
+Copyright (c) 2026 Sebastian Kumar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Kumar
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Geometry.Manifold.Instances.Sphere
-import Mathlib.Tactic.DepRewrite
-import Mathlib.Topology.FoldTrans
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Tactic.DepRewrite
+public import Mathlib.Topology.Subpath
 
 /-!
 # The `n`-dimensional sphere is simply connected for `n ≥ 2`.
@@ -16,8 +18,7 @@ This file follows the proof from [hatcher02] that the `n`-sphere is simply conne
 
 ## Main results
 
-- `exists_loops_homotopic_foldTrans_of_open_cover`: lemma 1.15 from [hatcher02].
-- `homotopic_refl_of_not_surjective`: non-surjective loops in the sphere are homotopically trivial.
+- `exists_loops_homotopic_concat_of_open_cover`: lemma 1.15 from [hatcher02].
 - `EuclideanSphere.simplyConnectedSpace`: the `n`-sphere is simply connected for `n ≥ 2`.
 
 ## Notations
@@ -29,11 +30,13 @@ This file follows the proof from [hatcher02] that the `n`-sphere is simply conne
 * [A. Hatcher, *Algebraic Topology*][hatcher02]
 -/
 
+@[expose] public section
+
 open CategoryTheory Fin Function FundamentalGroupoid PartialEquiv Path PiLp Set unitInterval
 
 universe u v
 
--- This first section builds up to proving `exists_loops_homotopic_foldTrans_of_open_cover`.
+-- This first section builds up to proving `exists_loops_homotopic_concat_of_open_cover`.
 section
 
 variable {X : Type u} [TopologicalSpace X] {ι : Type v} {c : ι → Set X} {a b : X}
@@ -50,7 +53,7 @@ theorem exists_partition_unitInterval_of_open_cover (hc₁ : ∀ i, IsOpen (c i)
     (fun i ↦ IsOpen.preimage (Path.continuous γ) (hc₁ i))
     (fun s _ ↦ (preimage_iUnion ▸ hc₂ (mem_univ _)))
   use n, t ∘ Fin.toNat
-  simp [ht₀, ht₁]
+  suffices ∀ (k : Fin (n + 1)), ∃ i, uIcc (t ↑k) (t (↑k + 1)) ⊆ ⇑γ ⁻¹' c i by simpa [ht₀, ht₁]
   intro k
   have ⟨i, hi⟩ := ht_sub k
   use i
@@ -73,20 +76,23 @@ theorem exists_path_range_of_isPathConnected_inter (hc₃ : ∀ i j, IsPathConne
 namespace Homotopic
 
 /-- This lemma looks complicated but amounts to cancelling out each path `G k` with its reverse. -/
-lemma foldTrans_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
+lemma concat_trans_trans_symm {n : ℕ} (p q : Fin (n + 1) → X)
     (F : ∀ k : Fin n, Path (p k.castSucc) (p k.succ)) (G : ∀ k : Fin (n + 1), Path (q k) (p k)) :
-    (foldTrans q (fun k ↦ ((G (k.castSucc)).trans (F k)).trans (G (k.succ)).symm)).Homotopic
-      (((G 0).trans (foldTrans p F)).trans (G (last n)).symm) := by
-  induction' n with n hn
-  · simp_rw [foldTrans_zero, ← fromPath'_eq_iff_homotopic]
+    (concat q (fun k ↦ ((G (k.castSucc)).trans (F k)).trans (G (k.succ)).symm)).Homotopic
+      (((G 0).trans (concat p F)).trans (G (last n)).symm) := by
+  induction n with
+  | zero =>
+    simp_rw [concat_zero, ← fromPath_eq_iff_homotopic]
     aesop_cat
-  · simp_rw [foldTrans_succ]
-    have := (fromPath'_eq_iff_homotopic _ _).mpr
+  | succ n hn =>
+    have := Quotient.eq.mpr
       (hn (p ∘ castSucc) (q ∘ castSucc) (fun k ↦ F (k.castSucc)) (fun k ↦ G (k.castSucc)))
-    rw [← fromPath'_eq_iff_homotopic]
-    aesop_cat
+    simp at this
+    apply Quotient.exact
+    simp [concat_succ, this]
+    grind
 
-/-- Technical lemma to prove homotopy in `exists_loops_homotopic_foldTrans_of_open_cover`. -/
+/-- Technical lemma to prove homotopy in `exists_loops_homotopic_concat_of_open_cover`. -/
 lemma cast_trans_trans_homotopic_of_homotopic_cast {x x₀ x₁ : X} {h₀ : x₀ = x} {h₁ : x₁ = x}
     {p : Path x₀ x₁} {q : Path x x} (h : p.Homotopic (q.cast h₀ h₁)) :
     ((((Path.refl x).cast rfl h₀).trans p).trans ((Path.refl x).cast h₁ rfl)).Homotopic q := by
@@ -99,9 +105,9 @@ we may find a sequence of loops `D k`, each contained in some `c i`, such that `
 to the concatenation of the `D k`'s.
 
 This is Lemma 1.15 from [hatcher02]. -/
-theorem exists_loops_homotopic_foldTrans_of_open_cover (hc₁ : ∀ i, IsOpen (c i))
+theorem exists_loops_homotopic_concat_of_open_cover (hc₁ : ∀ i, IsOpen (c i))
     (hc₂ : univ ⊆ ⋃ i, c i) (hc₃ : ∀ i j, IsPathConnected (c i ∩ c j)) (ha : ∀ i, a ∈ c i)
-    (γ : Path a a) : ∃ (n : ℕ) (D : Fin (n + 1) → Path a a), Homotopic (foldTrans (fun _ ↦ a) D) γ
+    (γ : Path a a) : ∃ (n : ℕ) (D : Fin (n + 1) → Path a a), Homotopic (concat (fun _ ↦ a) D) γ
       ∧ (∀ k, ∃ i : ι , Set.range (D k) ⊆ c i) := by
   have ⟨n, t, ht₀, ht₁, ht_range⟩ := exists_partition_unitInterval_of_open_cover hc₁ hc₂ γ
   -- `τ` indexes a sequence of sets in our open cover which our path traverses between.
@@ -143,9 +149,9 @@ theorem exists_loops_homotopic_foldTrans_of_open_cover (hc₁ : ∀ i, IsOpen (c
   use n, fun k ↦
     ((G' (k.castSucc)).trans (γ.subpath (t k.castSucc) (t k.succ))).trans (G' (k.succ)).symm
   constructor
-  · apply trans (foldTrans_trans_trans_symm _ _ _ _)
-    rw [hG'₀, hG'₁, symm_cast, refl_symm]
-    refine cast_trans_trans_homotopic_of_homotopic_cast (trans (foldTrans_subpath _ _) ?_)
+  · apply trans (concat_trans_trans_symm _ _ _ _)
+    rw [hG'₀, hG'₁, ← cast_symm, refl_symm]
+    refine cast_trans_trans_homotopic_of_homotopic_cast (trans (concat_subpath _ _) ?_)
     rw! (castMode := .all) [ht₀, ht₁, subpath_zero_one]
     rfl
   · intro k
@@ -170,6 +176,8 @@ lemma PartialEquiv.symm_image_target_minus_singleton_eq {α β : Type*} (e : Par
 
 -- We now establish some lemmas about the Euclidean sphere before proving our main result.
 namespace EuclideanSphere
+
+open scoped EuclideanSpace
 
 /-- `S n` is the `n`-dimensional sphere (so it lives in `(n + 1)`-dimensional Euclidean space). -/
 abbrev S (n : ℕ) := Metric.sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1
@@ -228,7 +236,7 @@ theorem isPathConnected_compl_singleton_inter_neg (v : S (n + 2)) :
       (by rw [← Module.finrank_eq_rank, finrank_euclideanSpace_fin]; exact Nat.one_lt_ofNat) 0
   · exact ContinuousOn.mono proj.continuousOn_invFun diff_subset
 
--- We now define the cover of `S n` to be used in `exists_loops_homotopic_foldTrans_of_open_cover`.
+-- We now define the cover of `S n` to be used in `exists_loops_homotopic_concat_of_open_cover`.
 variable {n : ℕ}
 
 /-- `c v` is the open cover of `S n` by the complement of `v` and the complement of `-v`. -/
@@ -304,20 +312,20 @@ theorem homotopic_refl_of_not_surjective {n : ℕ} {v : S n} (γ : Path v v)
   }
   have h : SimplyConnectedSpace w_compl := inferInstance
   let incl : C(w_compl, S n) := ⟨Subtype.val, continuous_subtype_val⟩
-  exact Homotopic.map ((simply_connected_iff_loops_trivial.mp h).right γ') incl
+  exact Homotopic.map ((simply_connected_iff_loops_nullhomotopic.mp h).right v' γ') incl
 
 /-- The Euclidean `n`-sphere is simply connected for `n ≥ 2`. -/
 protected theorem simplyConnectedSpace (n : ℕ) : SimplyConnectedSpace (S (n + 2)) := by
-  rw [simply_connected_iff_loops_trivial]
+  rw [simply_connected_iff_loops_nullhomotopic]
   constructor
   · infer_instance
   · intro x p
     let ⟨v, hv⟩ := hx x
-    have ⟨m, D, hDh, hDr⟩ := Homotopic.exists_loops_homotopic_foldTrans_of_open_cover
+    have ⟨m, D, hDh, hDr⟩ := Homotopic.exists_loops_homotopic_concat_of_open_cover
       (hc₁ v) (hc₂ v) (hc₃ v) hv p
     apply Homotopic.trans hDh.symm
-    rw [← foldTrans_refl]
-    apply Homotopic.fold_hcomp
+    rw [← concat_refl]
+    apply Homotopic.concat_hcomp
     intro k
     have ⟨i, hi⟩ := hDr k
     fin_cases i
