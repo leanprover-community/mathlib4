@@ -265,8 +265,8 @@ theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)
     change f b' = T f b'
     rw [hf]
 
-/-- Non-primitive corecursor for `Seq α` that allows using a friendly operation in the tail of the
-corecursive definition. -/
+/-- (General) non-primitive corecursor for `Seq α` that allows using a friendly operation in the
+tail of the corecursive definition. -/
 noncomputable def gcorec (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
     [FriendlyOperationClass op] :
   β → Seq α := (FriendlyOperation.exists_fixed_point F op).choose
