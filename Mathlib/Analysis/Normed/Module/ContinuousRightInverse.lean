@@ -39,7 +39,7 @@ variable {R : Type*} [Semiring R] {E E' F F' G : Type*}
 
 noncomputable section
 
-/-- `f` a continuous linear map admits a right inverse which is a continuous linear map itself. -/
+/-- A continuous linear map admits a right inverse which is a continuous linear map itself. -/
 @[expose] protected def ContinuousLinearMap.HasBoundedRightInverse (f : E →L[R] F) : Prop :=
   ∃ g : F →L[R] E, RightInverse g f
 
