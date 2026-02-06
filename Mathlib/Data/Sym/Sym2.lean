@@ -676,8 +676,7 @@ def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} 
     rcases z with ⟨⟨⟩⟩
     rfl
   right_inv z := by
-    rcases z with ⟨q, ⟨⟨a, ha⟩, ⟨b, hb⟩⟩, h⟩
-    subst ha
+    rcases z with ⟨q, ⟨⟨a, rfl⟩, ⟨b, hb⟩⟩, h⟩
     rfl
 
 /-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
