@@ -267,6 +267,13 @@ theorem snd_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
     p.darts[i].snd = p.support.tail[i]'(by grind) := by
   grind [map_snd_darts]
 
+@[simp]
+lemma support_getElem_zero (p : G.Walk u v) : p.support[0] = u := by cases p <;> simp
+
+@[simp]
+lemma support_getElem_length (p : G.Walk u v) : p.support[p.length] = v := by
+  induction p <;> simp_all
+
 theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     ⟨⟨u', v'⟩, h⟩ ∈ p.darts ↔ [u', v'] <:+: p.support := by
   refine .trans ⟨fun h ↦ ?_, fun ⟨i, hi, h⟩ ↦ ?_⟩ List.infix_iff_getElem?.symm
@@ -382,6 +389,11 @@ lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
+
+lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
+  match p with
+  | nil => Nil.nil
+  | cons h w => Unique.eq_default G ▸ h |>.elim
 
 /-- The recursion principle for nonempty walks -/
 @[elab_as_elim]

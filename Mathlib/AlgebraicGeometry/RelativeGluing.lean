@@ -102,6 +102,9 @@ noncomputable abbrev glued : Scheme.{u} :=
 noncomputable def cover : OpenCover d.glued :=
   Scheme.IsLocallyDirected.openCover _
 
+instance : Category d.cover.I₀ :=
+  inferInstanceAs <| Category 𝒰.I₀
+
 /-- The structure map from the colimit of the `Xᵢ` to `S`. -/
 noncomputable def toBase : d.glued ⟶ S :=
   colimit.desc _
@@ -112,6 +115,27 @@ noncomputable def toBase : d.glued ⟶ S :=
 lemma ι_toBase (i : 𝒰.I₀) :
     colimit.ι d.functor i ≫ d.toBase = d.natTrans.app i ≫ 𝒰.f i := by
   simp [toBase]
+
+instance : d.cover.LocallyDirected where
+  trans {i j} hij := d.functor.map hij
+  directed {i j} x := by
+    let xi := pullback.fst (d.cover.f i) _ x
+    let xj := pullback.snd (d.cover.f i) _ x
+    obtain ⟨k, fi, fj, uk, h1, h2⟩ :=
+        𝒰.exists_of_f_eq_f (d.natTrans.app i xi) (d.natTrans.app j xj) <| by
+      dsimp [functorOfLocallyDirected_obj, xi, xj]
+      rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, ← ι_toBase, pullback.condition_assoc]
+      simp
+    use k, fi, fj
+    obtain ⟨xk, h1, h2⟩ := exists_preimage_of_isPullback (d.equifibered fj) xj uk <| by
+      apply (𝒰.f j).injective
+      dsimp only [functorOfLocallyDirected_obj, functorOfLocallyDirected_map]
+      rw [← Scheme.Hom.comp_apply]
+      simp [xj, h2]
+    use xk
+    apply (pullback.snd (d.cover.f i) _).injective
+    rw [← Scheme.Hom.comp_apply]
+    simp [h1, xj]
 
 lemma preimage_toBase_eq_range_ι (i : 𝒰.I₀) :
     d.toBase ⁻¹' (Set.range <| 𝒰.f i) = Set.range (colimit.ι d.functor i) := by

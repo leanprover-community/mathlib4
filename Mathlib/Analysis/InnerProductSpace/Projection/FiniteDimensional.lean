@@ -198,7 +198,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     have : finrank ℝ Vᗮ ≤ n := by
       change finrank ℝ Wᗮ ≤ n + 1 at hn
       have : finrank ℝ W + 1 ≤ finrank ℝ V :=
-        finrank_lt_finrank_of_lt (SetLike.lt_iff_le_and_exists.2 ⟨H₂V, v, H₁V, hv'⟩)
+        finrank_lt_finrank_of_lt ((SetLike.lt_iff_le_and_exists (B := F)).2 ⟨H₂V, v, H₁V, hv'⟩)
       have : finrank ℝ V + finrank ℝ Vᗮ = finrank ℝ F := V.finrank_add_finrank_orthogonal
       have : finrank ℝ W + finrank ℝ Wᗮ = finrank ℝ F := W.finrank_add_finrank_orthogonal
       lia

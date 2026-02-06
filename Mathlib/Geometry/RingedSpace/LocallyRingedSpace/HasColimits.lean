@@ -136,8 +136,8 @@ theorem coequalizer_π_app_isLocalHom
   haveI : IsIso (PreservesCoequalizer.iso
       SheafedSpace.forgetToPresheafedSpace f.toShHom g.toShHom).hom.c :=
     inferInstance
-  apply (config := { allowSynthFailures := true }) RingHom.isLocalHom_comp
-  · apply (config := { allowSynthFailures := true }) RingHom.isLocalHom_comp
+  apply +allowSynthFailures RingHom.isLocalHom_comp
+  · apply +allowSynthFailures RingHom.isLocalHom_comp
     · apply CommRingCat.equalizer_ι_isLocalHom'
     · apply isLocalHom_of_isIso
   · apply isLocalHom_of_isIso

@@ -14,7 +14,7 @@ public import Mathlib.Order.Monotone.Defs
 This file defines binomial coefficients and proves simple lemmas (i.e. those not
 requiring more imports).
 For the lemma that `n.choose k` counts the `k`-element-subsets of an `n`-element set,
-see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
+see `Finset.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 
 ## Main definition and results
 
@@ -45,7 +45,7 @@ namespace Nat
 
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial
 coefficients. For the fact that this is the number of `k`-element-subsets of an `n`-element
-set, see `Fintype.card_powersetCard`. -/
+set, see `Finset.card_powersetCard`. -/
 def choose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0
