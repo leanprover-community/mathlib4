@@ -429,12 +429,21 @@ lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
   · rw [key, comp_C, C_eq_zero] at h
     exact Or.inr ⟨h, key⟩
 
-@[simp] lemma degree_comp_neg_X [Ring R] [NoZeroDivisors R] (p : R[X]) :
+lemma degree_comp [Semiring R] [NoZeroDivisors R] {p q : R[X]} (hq : 0 < q.degree) :
+    (p.comp q).degree = p.degree * q.degree := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [zero_comp, degree_zero, WithBot.bot_mul']
+    simp [hq.ne']
+  rw [degree_eq_natDegree hp, degree_eq_natDegree (ne_zero_of_degree_gt hq), ← Nat.cast_mul,
+    ← natDegree_comp]
+  apply degree_eq_natDegree
+  simp_rw [Ne, comp_eq_zero_iff, hp, false_or, not_and_or, ← degree_le_zero_iff]
+  simp [hq]
+
+@[simp] lemma degree_comp_neg_X [Ring R] [NoZeroDivisors R] {p : R[X]} :
     (p.comp (-X)).degree = p.degree := by
   nontriviality R
-  by_cases h : p = 0
-  · simp [h]
-  rw [degree_eq_natDegree h, degree_eq_natDegree (by simp [comp_eq_zero_iff, h]), natDegree_comp]
+  rw [degree_comp (by simp)]
   simp
 
 section DivisionRing
