@@ -114,7 +114,7 @@ theorem eq_empty_or_singleton_of_subsingleton [Subsingleton α] (s : Set α) :
 
 theorem eq_empty_or_singleton_of_unique [Unique α] (s : Set α) :
     s = ∅ ∨ s = {default} :=
-  s.eq_empty_or_singleton_of_subsingleton.imp_right <| fun ⟨a, ha⟩ => Unique.eq_default a ▸ ha
+  s.eq_empty_or_singleton_of_subsingleton.imp_right fun ⟨a, ha⟩ => Unique.eq_default a ▸ ha
 
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]
