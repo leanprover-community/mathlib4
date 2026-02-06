@@ -858,7 +858,7 @@ order homomorphisms gives an order isomorphism between the two function prosets.
 @[simps apply symm_apply]
 def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
     (f : α ≃o γ) (g : β ≃o δ) : (α →o β) ≃o (γ →o δ) where
-  toFun  p := .comp g <| .comp p f.symm
+  toFun p := .comp g <| .comp p f.symm
   invFun p := .comp g.symm <| .comp p f
   left_inv p := DFunLike.coe_injective <| by
     change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
@@ -931,11 +931,9 @@ section LE
 
 variable [LE α] [LE β]
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
-
-@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_le_apply⟩ := le_iff_le
 
 theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e x ≤ y :=
   e.rel_symm_apply
@@ -954,11 +952,9 @@ protected theorem monotone (e : α ≃o β) : Monotone e :=
 protected theorem strictMono (e : α ≃o β) : StrictMono e :=
   e.toOrderEmbedding.strictMono
 
-@[simp, to_dual self]
+@[simp, gcongr, to_dual self]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
-
-@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_lt_apply⟩ := lt_iff_lt
 
 theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x < y := by
   rw [← e.lt_iff_lt, e.apply_symm_apply]

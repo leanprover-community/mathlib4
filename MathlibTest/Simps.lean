@@ -29,7 +29,7 @@ initialize_simps_projections Foo1 (Projone → toNat, two → toBool, three → 
 
 run_cmd liftTermElabM do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Foo1).get!
+  let state := (Simps.structureExt.find? env `Foo1).get!
   guard <| state.1 == []
   guard <| state.2.map (·.1) == #[`toNat, `toBool, `coe, `four, `five]
   liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.Projone)) none))
@@ -60,7 +60,7 @@ initialize_simps_projections Foo2
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
 
 -- run_cmd do
---   logInfo m!"{Simps.structureExt.getState (← getEnv) |>.find? `Foo2 |>.get!}"
+--   logInfo m!"{Simps.structureExt.find? (← getEnv) `Foo2 |>.get!}"
 
 structure Left (α : Type _) extends Foo2 α where
   moreData1 : Nat
@@ -75,7 +75,7 @@ initialize_simps_projections Right (elim → newProjection, -otherData, +toFoo2)
 
 run_cmd liftTermElabM do
   let env ← getEnv
-  let state := ((Simps.structureExt.getState env).find? `Right).get!
+  let state := (Simps.structureExt.find? env `Right).get!
   -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
   guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]

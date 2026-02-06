@@ -12,7 +12,7 @@ class SemilatticeSup (α : Type) extends PartialOrder α, Max α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 
 attribute [to_dual] SemilatticeInf
-attribute [to_dual (reorder := 3 4 5)] SemilatticeSup.sup_le
+attribute [to_dual existing] SemilatticeSup.sup_le
 
 @[to_dual]
 lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
@@ -80,6 +80,13 @@ theorem le_imp_le'' : a ≤ b → a ≤ b := id
 
 -- We can even overwrite it with the empty `reorder`:
 /--
+warning: `to_dual self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `le_imp_le'''`,
+use `to_dual_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+---
 error: `to_dual` validation failed: expected
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), b ≤ a → b ≤ a
 but 'le_imp_le'''' has type
@@ -96,18 +103,16 @@ theorem refl₁ (a b c d e : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 @[to_dual existing refl₁]
 theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 
-/-
-TODO: If we tag something with `@[to_dual self]` and if there is no reorder, then this is useless.
-So, we should have a linter warning about this.
-The only exception is if we want to influence the translation heuristic.
-For example we tag `PUnit` with `@[to_dual self]`.
-Maybe we should have a new command `@[to_dual_translate]`, analogous to `@[to_dual_dont_translate]`,
-instead of using `@[to_dual self]` for those cases.
--/
-@[to_dual self]
-theorem not_lt_self : ¬ a < a := lt_irrefl a
-
 -- Test that we do not translate numerals like we do in `@[to_additive]`
+/--
+warning: `to_dual self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `one_le_one`,
+use `to_dual_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[to_dual self]
 theorem one_le_one [One α] : (1 : α) ≤ 1 := le_rfl
 
@@ -137,3 +142,123 @@ info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => 
 run_meta
   Lean.logInfo (← Lean.getConstInfo ``lt_le_trans).value!
   Lean.logInfo (← Lean.getConstInfo ``le_refl').value!
+
+-- Test that we do not translate the order on `Prop`
+instance Prop.le : LE Prop :=
+  ⟨(· → ·)⟩
+
+@[to_dual le_of_imp']
+theorem Prop.le_of_imp (_h : a ≤ b) {p q : Prop} : (p → q) → p ≤ q := id
+
+-- Dualize `a ≤ b` but not `p ≤ q`
+/--
+info: «Prop».le_of_imp' {α : Type} [PartialOrder α] (a b : α) (_h : b ≤ a) {p q : Prop} : (p → q) → p ≤ q
+-/
+#guard_msgs in
+#check Prop.le_of_imp'
+
+/-! Test the `to_dual_insert_cast` framework. -/
+
+@[to_dual lt_sum_eq_of_le']
+def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
+    a < b ⊕' a = b :=
+  if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
+
+@[to_dual DecidableLE1_dual]
+def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
+
+@[to_dual DecidableLE2_dual]
+def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
+
+-- Not yet supported because it probably won't show up in practice
+-- (though it wouldn't be too hard to fix `unfoldConsts` to support this)
+/--
+error: @[to_dual] failed to insert a cast to make `fun {α} [PartialOrder α] h =>
+  h` have type `{α : Type} → [inst : PartialOrder α] → DecidableLE α → (a b : α) → Decidable (a ≤ b)`
+
+fun {α} [PartialOrder α] h =>
+  h : {α : Type} →
+  [inst : PartialOrder α] →
+    DecidableLE α →
+      DecidableLE
+        α does not have type {α : Type} → [inst : PartialOrder α] → DecidableLE α → (a b : α) → Decidable (a ≤ b).
+-/
+#guard_msgs in
+@[to_dual DecidableLE3_dual]
+def DecidableLE3 (h : DecidableLE α) : ∀ a b : α, Decidable (a ≤ b) := h
+
+@[to_dual DecidableLE4_dual]
+def DecidableLE4 (h : DecidableLE α) (a b : α) : Decidable (a ≤ b) := h a b
+
+-- The arguments to `h` have been introduced, and swapped:
+/--
+info: fun {α} [PartialOrder α] h a b => h b a
+---
+info: fun {α} [PartialOrder α] h => id fun a b => h b a
+---
+info: fun {α} [PartialOrder α] h a b => h b a
+-/
+#guard_msgs in
+open Lean in
+run_meta
+  logInfo m!"{(← getConstInfo ``DecidableLE1_dual).value!}"
+  logInfo m!"{(← getConstInfo ``DecidableLE2_dual).value!}"
+  logInfo m!"{(← getConstInfo ``DecidableLE4_dual).value!}"
+
+-- The arguments to `inst✝` have been swapped:
+/--
+info: @dite (a < b ⊕' a = b) (b ≤ a) (inst✝ b a) (fun hba => PSum.inr ⋯) fun hba => PSum.inl ⋯
+---
+info: @dite (b < a ⊕' a = b) (a ≤ b) (inst✝ a b) (fun hba => PSum.inr ⋯) fun hba => PSum.inl ⋯
+-/
+#guard_msgs in
+open Lean Meta in
+run_meta
+  lambdaTelescope (← getConstInfo ``lt_sum_eq_of_le).value! fun _ => (logInfo m!"{·.setPPExplicit true}")
+  lambdaTelescope (← getConstInfo ``lt_sum_eq_of_le').value! fun _ => (logInfo m!"{·.setPPExplicit true}")
+
+/-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
+def Cov.Ico (a b : α) := fun x ↦ a ⩿ x ∧ x ⋖ b
+
+/-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
+@[to_dual existing (reorder := a b)]
+def Cov.Ioc (a b : α) := fun x ↦ a ⋖ x ∧ x ⩿ b
+
+to_dual_insert_cast Cov.Ico := by grind
+
+@[to_dual]
+theorem Cov.Ico_def {a b x : α} : (a ≤ x ∧ ∀ ⦃c⦄, a < c → ¬c < x) ∧ x ⋖ b ↔ Cov.Ico a b x := Iff.rfl
+
+/--
+info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+  (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x ↔ Cov.Ioc b a x :=
+@Eq.mpr (∀ {α : Type} [inst : PartialOrder α] {a b x : α}, (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x ↔ Cov.Ioc b a x)
+  (∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+    ((x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c) ↔
+      (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c)
+  (id
+    (forall_congr fun {α} =>
+      forall_congr fun [PartialOrder α] =>
+        forall_congr fun {a} =>
+          forall_congr fun {b} =>
+            forall_congr fun {x} =>
+              congr (congrArg Iff (congrArg (And (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c)) (CovBy._to_dual_cast_4 x b)))
+                (Eq.trans (Cov.Ico._to_dual_cast_3 a b x)
+                  (congr (congrArg And (WCovBy._to_dual_cast_4 a x)) (CovBy._to_dual_cast_4 x b)))))
+  (@Eq.mp
+    (∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+      (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x ↔ (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b ⋖ x)
+    (∀ {α : Type} [inst : PartialOrder α] {a b x : α},
+      ((x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c) ↔
+        (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c) ∧ b < x ∧ ∀ ⦃c : α⦄, c < x → ¬b < c)
+    (forall_congr fun {α} =>
+      forall_congr fun [PartialOrder α] =>
+        forall_congr fun {a} =>
+          forall_congr fun {b} =>
+            forall_congr fun {x} =>
+              congr (congrArg Iff (congrArg (And (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c)) (CovBy._to_dual_cast_4 x b)))
+                (congrArg (And (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c)) (CovBy._to_dual_cast_4 x b)))
+    fun {α} [PartialOrder α] {a b x} => Iff.rfl)
+-/
+#guard_msgs in
+#print Cov.Ioc_def

@@ -91,7 +91,7 @@ lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_no
 @[to_dual self] alias LT.lt.not_ge := not_le_of_gt
 @[to_dual self] alias LE.le.not_gt := not_lt_of_ge
 
-@[to_dual self] lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
+lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
 
 @[to_dual lt_of_lt_of_le']
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
@@ -132,11 +132,8 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-@[to_dual decidableLT'OfDecidableLE' /-- `<` is decidable if `≤` is. -/]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
-
-@[deprecated (since := "2025-12-09")] alias decidableGTOfDecidableGE := decidableLT'OfDecidableLE'
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
@@ -144,6 +141,8 @@ This means that `a ≤ b` and there is no element in between. This is denoted `a
 @[to_dual self (reorder := 3 4)]
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+to_dual_insert_cast WCovBy := by grind
 
 @[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
@@ -153,6 +152,8 @@ between. This is denoted `a ⋖ b`. -/
 @[to_dual self (reorder := 3 4)]
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+to_dual_insert_cast CovBy := by grind
 
 @[inherit_doc]
 infixl:50 " ⋖ " => CovBy
@@ -197,15 +198,11 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-@[to_dual decidableEqOfDecidableLE' /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
-
-@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableGE := decidableEqOfDecidableLE'
-@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableLE' := decidableEqOfDecidableLE'
 
 -- See Note [decidable namespace]
 @[to_dual Decidable.lt_or_eq_of_le']

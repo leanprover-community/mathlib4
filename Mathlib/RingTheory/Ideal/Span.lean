@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Idempotent
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.RingTheory.Ideal.Lattice
 public import Mathlib.Tactic.Ring
@@ -90,7 +89,7 @@ theorem span_eq : span (I : Set α) = I :=
 theorem span_singleton_one : span ({1} : Set α) = ⊤ :=
   (eq_top_iff_one _).2 <| subset_span <| mem_singleton _
 
-theorem isCompactElement_top : CompleteLattice.IsCompactElement (⊤ : Ideal α) := by
+theorem isCompactElement_top : IsCompactElement (⊤ : Ideal α) := by
   simpa only [← span_singleton_one] using Submodule.singleton_span_isCompactElement 1
 
 theorem mem_span_insert {s : Set α} {x y} :
@@ -233,6 +232,11 @@ theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h
     (Ideal.span_le.2 <| singleton_subset_iff.2 <| Ideal.mem_span_singleton.2 ⟨b₂, rfl⟩) fun h =>
     h₂ <| isUnit_of_dvd_one <|
         (mul_dvd_mul_iff_left h₁).1 <| by rwa [mul_one, ← Ideal.span_singleton_le_span_singleton]
+
+variable {I} in
+lemma mem_iff_of_associated {x y : α} (h : Associated x y) : x ∈ I ↔ y ∈ I := by
+  obtain ⟨u, rfl⟩ := h.symm
+  exact I.mul_unit_mem_iff_mem u.isUnit
 
 end CommSemiring
 

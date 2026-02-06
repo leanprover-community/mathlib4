@@ -17,11 +17,6 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.ByContra
-public import Mathlib.Tactic.CC
-public import Mathlib.Tactic.CC.Addition
-public import Mathlib.Tactic.CC.Datatypes
-public import Mathlib.Tactic.CC.Lemmas
-public import Mathlib.Tactic.CC.MkProof
 public import Mathlib.Tactic.CancelDenoms
 public import Mathlib.Tactic.CancelDenoms.Core
 public import Mathlib.Tactic.Cases
@@ -32,6 +27,7 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 public import Mathlib.Tactic.CategoryTheory.Coherence
@@ -152,6 +148,7 @@ public import Mathlib.Tactic.LinearCombination'
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.CommandRanges
+public import Mathlib.Tactic.Linter.CommandStart
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -173,6 +170,7 @@ public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
+public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
@@ -257,6 +255,7 @@ public import Mathlib.Tactic.RewriteSearch
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.Ring.Common
 public import Mathlib.Tactic.Ring.Compare
 public import Mathlib.Tactic.Ring.NamePolyVars
 public import Mathlib.Tactic.Ring.PNat
@@ -297,8 +296,10 @@ public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
 public import Mathlib.Tactic.Translate.ToDual
+public import Mathlib.Tactic.Translate.UnfoldBoundary
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.TypeCheck
 public import Mathlib.Tactic.TypeStar

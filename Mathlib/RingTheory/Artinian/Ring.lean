@@ -67,7 +67,7 @@ theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
 variable (R) in
 /-- Commutative Artinian reduced local ring is a field. -/
 theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
-  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+  (IsArtinianRing.equivPi R).toRingEquiv.trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
     (Ideal.Quotient.field _).toIsField
 
 section Localization

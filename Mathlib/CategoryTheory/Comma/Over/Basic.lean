@@ -286,6 +286,11 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 noncomputable def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
+-- We could make this defeq if we care.
+@[simp] lemma mkIdTerminal_from_left (Y : Over X) : (mkIdTerminal.from Y).left = Y.hom := by
+  rw [mkIdTerminal.hom_ext (mkIdTerminal.from Y) (homMk Y.hom)]
+  rfl
+
 instance forget_faithful : (forget X).Faithful where
 
 -- TODO: Show the converse holds if `T` has binary products.
@@ -512,6 +517,17 @@ def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
 
 end Over
+
+/--
+Restrict a cone to the diagram over `j`. This preserves being limiting if the forgetful functor
+`Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
+-/
+@[simps]
+def Limits.Cone.overPost
+    {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C} (c : Cone D) (j : J) :
+    Cone (Over.post (X := j) D) where
+  pt := Over.mk (c.π.app j)
+  π.app k := Over.homMk (c.π.app k.left)
 
 namespace CostructuredArrow
 
@@ -769,6 +785,11 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 noncomputable def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
 
+-- We could make this defeq if we care.
+@[simp] lemma mkIdInitial_to_right (Y : Under X) : (mkIdInitial.to Y).right = Y.hom := by
+  rw [mkIdInitial.hom_ext (mkIdInitial.to Y) (homMk Y.hom)]
+  rfl
+
 instance forget_faithful : (forget X).Faithful where
 
 -- TODO: Show the converse holds if `T` has binary coproducts.
@@ -926,6 +947,17 @@ def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
+
+/--
+Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
+`Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
+-/
+@[simps]
+def Limits.Cocone.underPost {J C : Type*} [Category* J] [Category* C]
+    {D : J ⥤ C} (c : Cocone D) (j : J) :
+    Cocone (Under.post (X := j) D) where
+  pt := Under.mk (c.ι.app j)
+  ι.app k := Under.homMk (c.ι.app k.right)
 
 namespace StructuredArrow
 

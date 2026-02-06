@@ -423,16 +423,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   rw [← getD_eq_getElem _ 1, ← getD_eq_getElem _ 1] at dup
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
-  have h₃ : t' = (ris ω).getD j' 1 := by
-    rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
-      (Nat.sub_add_cancel (by lia) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
-      drop_append, drop_of_length_le (by simp [j_lt_j'.le]), length_take, drop_drop,
-      nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
-      ← add_assoc, Nat.sub_add_cancel (by lia), mul_left_inj, mul_right_inj]
-    congr 2
-    show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?
-    rw [getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
-    grind
+  have h₃ : t' = (ris ω).getD j' 1 := by grind [cs.getD_rightInvSeq, drop_of_length_le, drop_drop]
   have h₄ : t * t' = 1 := by
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _
@@ -474,7 +465,6 @@ theorem getElem_leftInvSeq_alternatingWord
     simp only [CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp [h]),
       take_zero, wordProd_nil, one_mul, inv_one, mul_one, alternatingWord, concat_eq_append,
       nil_append, wordProd_singleton]
-    apply congr_arg
     simp only [getElem_alternatingWord i j (2 * p) 0 (by simp [h]), add_zero, even_two,
       Even.mul_right, ↓reduceIte]
   | succ k hk =>

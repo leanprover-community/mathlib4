@@ -38,7 +38,7 @@ variable [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D]
 def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∐ fun _ : c ⟶ t => d
-      map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f}
+      map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f }
   map {_ d₂} f :=
     { app := fun _ => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
       naturality := by

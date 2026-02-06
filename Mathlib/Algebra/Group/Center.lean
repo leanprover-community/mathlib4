@@ -114,22 +114,9 @@ lemma mem_centralizer_iff {c : M} : c ∈ centralizer S ↔ ∀ m ∈ S, m * c =
 
 @[to_additive (attr := simp) add_mem_addCenter]
 theorem mul_mem_center {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : z₂ ∈ Set.center M) :
-    z₁ * z₂ ∈ Set.center M where
-  comm a := calc
-    z₁ * z₂ * a = z₂ * z₁ * a := by rw [hz₁.comm]
-    _ = z₂ * (z₁ * a) := by rw [hz₁.mid_assoc z₂]
-    _ = (a * z₁) * z₂ := by rw [hz₁.comm, hz₂.comm]
-    _ = a * (z₁ * z₂) := by rw [hz₂.right_assoc a z₁]
-  left_assoc (b c : M) := calc
-    z₁ * z₂ * (b * c) = z₁ * (z₂ * (b * c)) := by rw [hz₂.mid_assoc]
-    _ = z₁ * ((z₂ * b) * c) := by rw [hz₂.left_assoc]
-    _ = (z₁ * (z₂ * b)) * c := by rw [hz₁.left_assoc]
-    _ = z₁ * z₂ * b * c := by rw [hz₂.mid_assoc]
-  right_assoc (a b : M) := calc
-    a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
-    _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
-    _ = a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
-    _ = a * (b * (z₁ * z₂)) := by rw [hz₁.mid_assoc]
+    z₁ * z₂ ∈ Set.center M := by
+  simp only [commute_iff_eq, mem_center_iff, isMulCentral_iff] at *
+  grind
 
 @[to_additive addCenter_subset_addCentralizer]
 lemma center_subset_centralizer (S : Set M) : Set.center M ⊆ S.centralizer :=
@@ -143,20 +130,14 @@ lemma centralizer_union : centralizer (S ∪ T) = centralizer S ∩ centralizer 
 lemma centralizer_subset (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun _ ht s hs ↦ ht s (h hs)
 
 @[to_additive subset_addCentralizer_addCentralizer]
-lemma subset_centralizer_centralizer : S ⊆ S.centralizer.centralizer := by
-  intro x hx
-  simp only [Set.mem_centralizer_iff]
-  exact fun y hy => (hy x hx).symm
+lemma subset_centralizer_centralizer : S ⊆ S.centralizer.centralizer :=
+  fun x hx _ hy ↦ (hy x hx).symm
 
 @[to_additive (attr := simp) addCentralizer_addCentralizer_addCentralizer]
 lemma centralizer_centralizer_centralizer (S : Set M) :
     S.centralizer.centralizer.centralizer = S.centralizer := by
   refine Set.Subset.antisymm ?_ Set.subset_centralizer_centralizer
-  intro x hx
-  rw [Set.mem_centralizer_iff]
-  intro y hy
-  rw [Set.mem_centralizer_iff] at hx
-  exact hx y <| Set.subset_centralizer_centralizer hy
+  exact fun x hx y hy ↦ hx y <| Set.subset_centralizer_centralizer hy
 
 @[to_additive decidableMemAddCentralizer]
 instance decidableMemCentralizer [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a * b] :
@@ -167,10 +148,8 @@ lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x
     ∀ x ∈ S.centralizer.centralizer, ∀ y ∈ S.centralizer.centralizer, x * y = y * x :=
   fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
 
-@[to_additive addCentralizer_empty]
-theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
-  simp only [centralizer, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, setOf_true,
-    top_eq_univ]
+@[to_additive (attr := simp) addCentralizer_empty]
+theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by simp [centralizer]
 
 /-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
 @[to_additive addCentralizer_prod]
@@ -178,55 +157,31 @@ theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
     (hS : S.Nonempty) (hT : T.Nonempty) :
     (S ×ˢ T).centralizer = S.centralizer ×ˢ T.centralizer := by
   ext
-  simp_rw [mem_prod, mem_centralizer_iff, mem_prod, and_imp, Prod.forall,
-    Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq]
-  obtain ⟨b, hb⟩ := hS
-  obtain ⟨c, hc⟩ := hT
-  exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
-    fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
+  simp only [mem_prod, mem_centralizer_iff, Prod.forall, Prod.mul_def]
+  grind [Set.Nonempty]
 
 @[to_additive prod_addCentralizer_subset_addCentralizer_prod]
 theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
     S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
-  rw [subset_def]
-  simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
-  exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
+  simp_all [subset_def, mem_centralizer_iff]
 
 @[to_additive addCenter_prod]
 theorem center_prod {N : Type*} [Mul N] :
     center (M × N) = center M ×ˢ center N := by
-  ext x
-  simp only [mem_prod, mem_center_iff, isMulCentral_iff, commute_iff_eq, Prod.ext_iff]
-  exact ⟨
-    fun ⟨h1, h2, h3⟩ => ⟨
-      ⟨ fun a => (h1 (a, x.2)).1,
-        fun b c => (h2 (b, x.2) (c, x.2)).1,
-        fun a b => (h3 (a, x.2) (b, x.2)).1⟩,
-      ⟨ fun a => (h1 (x.1, a)).2,
-        fun a b => (h2 (x.1, a) (x.1, b)).2,
-        fun a b => (h3 (x.1, a) (x.1, b)).2⟩⟩,
-    fun ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩ => ⟨
-      fun _ => ⟨h1 _, h4 _⟩,
-      fun _ _ => ⟨h2 _ _, h5 _ _⟩,
-      fun _ _ => ⟨h3 _ _, h6 _ _⟩⟩⟩
+  aesop (add simp [Prod.forall, forall_and, commute_iff_eq, isMulCentral_iff, mem_center_iff])
 
 open Function in
 @[to_additive addCenter_pi]
 theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
-    center (Π i, A i) = univ.pi (fun i => center (A i)) := by
+    center (Π i, A i) = univ.pi fun i ↦ center (A i) := by
   classical
   ext x
   simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
     commute_iff_eq, funext_iff, Pi.mul_def]
-  exact ⟨
-    fun ⟨h1, h2, h3⟩ i => ⟨
-      fun a => by simpa using h1 (update x i a) i,
-      fun b c => by simpa using h2 (update x i b) (update x i c) i,
-      fun a b => by simpa using h3 (update x i a) (update x i b) i⟩,
-    fun h => ⟨
-      fun a i => (h i).1 (a i),
-      fun b c i => (h i).2.1 (b i) (c i),
-      fun a b i => (h i).2.2 (a i) (b i)⟩⟩
+  refine ⟨fun ⟨h1, h2, h3⟩ i ↦ ?_, by grind⟩
+  exact ⟨fun a ↦ by simpa using h1 (update x i a) i,
+    fun b c ↦ by simpa using h2 (update x i b) (update x i c) i,
+    fun a b ↦ by simpa using h3 (update x i a) (update x i b) i⟩
 
 end Mul
 

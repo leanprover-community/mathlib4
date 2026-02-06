@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Flat.EquationalCriterion
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
@@ -16,6 +15,8 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.Support
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Finite modules over local rings
@@ -411,7 +412,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   apply IsLocalRing.linearCombination_bijective_of_flat
   rw [← (AlgebraTensorModule.cancelBaseChange _ _ P.ResidueField ..).comp_bijective,
     ← (AlgebraTensorModule.cancelBaseChange R (R ⧸ P) P.ResidueField ..).symm.comp_bijective]
-  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ P.ResidueField _).symm.bijective
+  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
   refine funext fun r ↦ Finsupp.induction_linear r (by simp) (by simp +contextual) fun _ _ ↦ ?_
   simp [smul_tmul', ← funext_iff.mp (hb _)]
 

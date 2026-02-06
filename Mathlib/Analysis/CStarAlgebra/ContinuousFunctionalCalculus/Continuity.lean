@@ -329,7 +329,7 @@ theorem ContinuousOn.cfc_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpace X] {
     ContinuousOn (fun x ↦ cfc f (a x)) t := by
   have hs' := hs
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
-  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum 𝕜 x' ⊆ S) ∧ S ⊆ s:= by
+  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum 𝕜 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
       spectrum.isCompact (𝕜 := 𝕜) (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
     refine ⟨S, hS₂, ?_, hS₃⟩
@@ -497,7 +497,7 @@ theorem ContinuousOn.cfc_nnreal_of_mem_nhdsSet [CompleteSpace A] [TopologicalSpa
     ContinuousOn (fun x ↦ cfc f (a x)) t := by
   have hs' := hs
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
-  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s:= by
+  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), spectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
       spectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
     refine ⟨S, hS₂, ?_, hS₃⟩
@@ -1012,7 +1012,7 @@ theorem ContinuousOn.cfcₙ_nnreal_of_mem_nhdsSet [CompleteSpace A] [Topological
     ContinuousOn (fun x ↦ cfcₙ f (a x)) t := by
   have hs' := hs
   simp only [nhdsSet_iUnion, mem_iSup] at hs'
-  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s:= by
+  have (x : t) : ∃ S, IsCompact S ∧ (∀ᶠ (x' : A) in 𝓝 (a x), quasispectrum ℝ≥0 x' ⊆ S) ∧ S ⊆ s := by
     obtain ⟨S, ⟨hS₁, hS₂⟩, hS₃⟩ :=
       quasispectrum.isCompact_nnreal (a x) |>.nhdsSet_basis_isCompact.mem_iff.mp (hs' x x.2)
     refine ⟨S, hS₂, ?_, hS₃⟩
