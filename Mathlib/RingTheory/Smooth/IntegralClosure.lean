@@ -212,10 +212,12 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
   algebraize [φ.toRingHom.comp C]
   have := (algebraMap S B).domain_nontrivial
   obtain ⟨y, rfl⟩ := hφ y
+  -- Consider the universal extension `S'` of `S` that splits `f`, so that `f = ∏ᵢ X - aᵢ`.
   obtain ⟨S', _, _, _, _, _, hS'⟩ := hf.exists_splits_map
   obtain ⟨m, hm⟩ := Polynomial.splits_iff_exists_multiset.mp hS'
   simp only [hf.map _, Monic.leadingCoeff, map_one, one_mul] at hm
   algebraize [(algebraMap S S').comp (algebraMap R S)]
+  -- Each `aᵢ` is integral since `f` is still monic in `S'`.
   have hm' : ∀ a ∈ m, IsIntegral R a := by
     refine fun a ham ↦ .of_aeval_monic_of_isIntegral_coeff (hf.map (algebraMap _ _)) ?_ ?_ ?_
     · rwa [hf.natDegree_map]
@@ -226,6 +228,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
       exact fun _ ↦ (hf' _).algebraMap
   have hmc : m.card = f.natDegree := by
     simpa [hf.natDegree_map, natDegree_multiset_prod_of_monic] using congr(($hm).natDegree).symm
+  -- The key identity is `y * f' ≡ ∑ᵢ y(aᵢ) * ∏_{j ≠ i} X - aⱼ (mod f)`.
   have H : (f.derivative * y %ₘ f).map (algebraMap S S') =
         (m.map fun x ↦ ((m.erase x).map (X - C ·)).prod * C (aeval x y)).sum := by
     have ⟨g, hg⟩ : f.map (algebraMap _ _) ∣ (f.derivative * y).map (algebraMap S S') -
@@ -249,7 +252,17 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
       and_imp, forall_apply_eq_imp_iff₂]
     refine fun a ha ↦ (natDegree_mul_C_le _ _).trans ((natDegree_multiset_prod_le _).trans ?_)
     simp [ha, hmc]
-  have H' : IsIntegral R[X] (f.derivative * y %ₘ f) := by
+  -- Every `y(aᵢ)` is `R`-integral as y is also `R`-integral by assumption.
+  have H' (a : S') (ham : a ∈ m) : IsIntegral R (aeval a y) := by
+    let ψ : B →ₐ[R] S' := AlgHom.liftOfSurjective _ hφ ((aeval a).restrictScalars R) <| by
+      rw [hfx, Ideal.span_le]
+      suffices (m.map (a - ·)).prod = 0 by simpa [← eval_map_algebraMap, hm, eval_multiset_prod]
+      rw [Multiset.prod_eq_zero]
+      simpa using ⟨a, ham, by simp⟩
+    simpa [ψ] using hy.map ψ
+  -- So `y * f' mod f` is integral over `R[X]` (i.e. its coefficients are `R`-integral)
+  -- as a sum of products of integral elements.
+  have H'' : IsIntegral R[X] (f.derivative * y %ₘ f) := by
     refine .tower_bot (B := S'[X]) (map_injective _ (FaithfulSMul.algebraMap_injective S S')) ?_
     simp only [algebraMap_def, coe_mapRingHom, H]
     refine .multiset_sum ?_
@@ -259,14 +272,8 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
         and_imp, forall_apply_eq_imp_iff₂, coeff_sub]
       exact fun b hbm n ↦ .sub (by simp [coeff_X, apply_ite, isIntegral_one, isIntegral_zero])
         (by simp [coeff_C, apply_ite, isIntegral_zero, hm' b (Multiset.mem_of_mem_erase hbm)])
-    · let ψ : B →ₐ[R] S' := AlgHom.liftOfSurjective _ hφ ((aeval a).restrictScalars R) <| by
-        rw [hfx, Ideal.span_le]
-        suffices (m.map (a - ·)).prod = 0 by simpa [← eval_map_algebraMap, hm, eval_multiset_prod]
-        rw [Multiset.prod_eq_zero]
-        simpa using ⟨a, ham, by simp⟩
-      simpa [Polynomial.isIntegral_iff_isIntegral_coeff,
-        coeff_C, apply_ite, isIntegral_zero, ψ] using hy.map ψ
-  refine ⟨_, ?_, Polynomial.isIntegral_iff_isIntegral_coeff.mp H'⟩
+    · simpa [isIntegral_iff_isIntegral_coeff, coeff_C, apply_ite, isIntegral_zero] using H' a ham
+  refine ⟨_, ?_, Polynomial.isIntegral_iff_isIntegral_coeff.mp H''⟩
   rw [modByMonic_eq_sub_mul_div _ hf, map_sub, map_mul, map_mul,
     show φ f = 0 from hfx.ge (Ideal.mem_span_singleton_self _), zero_mul, sub_zero]
 
@@ -275,11 +282,13 @@ open TensorProduct
 attribute [local instance] Polynomial.algebra in
 @[stacks 03GE "without the generalization to arbitrary etale algebra"]
 theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEtale R S]
-    (x : S ⊗[R] B) (hx : IsIntegral S x) :
-    x ∈ Algebra.adjoin S
+    (a : S ⊗[R] B) (hx : IsIntegral S a) :
+    a ∈ Algebra.adjoin S
       ((integralClosure R B).map Algebra.TensorProduct.includeRight : Subalgebra R (S ⊗[R] B)) := by
+  -- By assumption, `S = (R[X]/f)[1/g]` for some `f g : R[X]`. Let `x : S` denote the image of `X`.
   have 𝓟 := Classical.ofNonempty (α := StandardEtalePresentation R S)
-  obtain ⟨n, hx⟩ : ∃ n, ∀ m, IsIntegral R ((aeval 𝓟.x 𝓟.g) ^ (n + m) • x) := by
+  -- Since `a` is integral over `S = (R[X]/f)[1/g]`, `gⁿ • a` is `R`-integral for `n` large enough.
+  obtain ⟨n, hx⟩ : ∃ n, ∀ m, IsIntegral R ((aeval 𝓟.x 𝓟.g) ^ (n + m) • a) := by
     let e := 𝓟.equivRing.trans 𝓟.equivAwayAdjoinRoot
     algebraize [(e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot 𝓟.f) _)).toRingHom]
     have := IsLocalization.isLocalization_of_algEquiv (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g))
@@ -295,12 +304,13 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
       ⟨m, fun k ↦ this ▸ isIntegral_trans (R := R) _ (hm k)⟩
     simp [RingHom.algebraMap_toAlgebra, e, StandardEtalePair.equivAwayAdjoinRoot,
       ← aeval_def, ← aeval_algHom_apply]
+  -- Under `S ⊗[R] B ≃ (B[X]/f)[1/g]`, we may write `a` as `a/gᵐ` with `a` now living in `B[X]/f`.
   let 𝓟' := 𝓟.baseChange (T := B)
   let e := 𝓟'.equivRing.trans 𝓟'.equivAwayAdjoinRoot
-  obtain ⟨x, rfl⟩ := (Algebra.TensorProduct.comm _ _ _).surjective x
-  obtain ⟨x, rfl⟩ := e.symm.surjective x
-  obtain ⟨x, ⟨_, m, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
-    (R := AdjoinRoot 𝓟'.f) (.powers (.mk _ 𝓟'.g)) x
+  obtain ⟨a, rfl⟩ := (Algebra.TensorProduct.comm _ _ _).surjective a
+  obtain ⟨a, rfl⟩ := e.symm.surjective a
+  obtain ⟨a, ⟨_, m, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
+    (R := AdjoinRoot 𝓟'.f) (.powers (.mk _ 𝓟'.g)) a
   have hfg : IsIntegral R (AdjoinRoot.mk 𝓟'.f 𝓟'.g) := by
     have := 𝓟.monic_f.finite_adjoinRoot
     let e : AdjoinRoot 𝓟.f →ₐ[R] AdjoinRoot 𝓟'.f :=
@@ -317,7 +327,8 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
     rw [← e.eq_symm_apply]
     simp [e, StandardEtalePair.equivAwayAdjoinRoot, ← aeval_def, ← aeval_algHom_apply]
     rfl
-  obtain ⟨k, hk⟩ : ∃ k, IsIntegral R (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k * x) := by
+  -- And `gᵏ • a` is still `R`-integral for `k` large enough.
+  obtain ⟨k, hk⟩ : ∃ k, IsIntegral R (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k * a) := by
     have H : ∀ k, e (1 ⊗ₜ (aeval 𝓟.x 𝓟.g ^ k)) = algebraMap _ _ (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k) := by
       intro k; convert congr($(heg 𝓟.g) ^ k) <;>
         simp [← map_pow, 𝓟', StandardEtalePresentation.baseChange]
@@ -328,10 +339,14 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
     rw [H, pow_add, map_mul, mul_assoc, IsLocalization.mk'_spec'_mk, ← map_mul] at this
     obtain ⟨k, hk⟩ := IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap hfg this
     refine ⟨k + n, by convert hk using 1; ring_nf⟩
+  -- We now use the key lemma `exists_derivative_mul_eq_and_isIntegral_coeff` to get a `y : B[X]`
+  -- with `R`-integral coefficients such that `f' * gᵏ * a = y` in `S ⊗[R] B`.
   obtain ⟨y, hy, hRy⟩ := exists_derivative_mul_eq_and_isIntegral_coeff
     (φ := (AdjoinRoot.mkₐ 𝓟'.f).restrictScalars R) AdjoinRoot.mk_surjective 𝓟'.monic_f
     (by simp [𝓟', StandardEtalePresentation.baseChange, isIntegral_algebraMap]) Ideal.mk_ker hk
   simp only [AlgHom.coe_restrictScalars', AdjoinRoot.coe_mkₐ] at hy
+  -- Since `f' * gᵏ` is invertible in S,
+  -- to show that `a ∈ S ⊗ B'`, it suffices to show that `y ∈ S ⊗ B'`,
   rw [← Subalgebra.mem_toSubmodule, ← Submodule.smul_mem_iff_of_isUnit _
     (𝓟.hasMap.isUnit_derivative_f.mul <| (𝓟.hasMap.2.pow k).mul (𝓟.hasMap.2.pow m))]
   convert_to eval₂ Algebra.TensorProduct.includeRight.toRingHom (𝓟.x ⊗ₜ[R] 1) y ∈ _ using 1
@@ -347,9 +362,10 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
         ← coe_eval₂RingHom]
       congr 1
       ext <;> simp [e, StandardEtalePair.equivAwayAdjoinRoot]; rfl
-  · rw [eval₂_eq_sum_range]
-    exact sum_mem fun i hi ↦ Subalgebra.mul_mem _ (Algebra.subset_adjoin ⟨_, hRy _, rfl⟩)
-      (pow_mem (Subalgebra.algebraMap_mem _ _) _)
+  -- which follows from the fact that `y` has `R`-integral coefficients.
+  rw [eval₂_eq_sum_range]
+  exact sum_mem fun i hi ↦ Subalgebra.mul_mem _ (Algebra.subset_adjoin ⟨_, hRy _, rfl⟩)
+    (pow_mem (Subalgebra.algebraMap_mem _ _) _)
 
 -- This should be private once we know this for arbitrary smooth algebra.
 theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale [Algebra.IsStandardEtale R S] :
