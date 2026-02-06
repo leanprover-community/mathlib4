@@ -111,7 +111,7 @@ structure _root_.Mathlib.Tactic.Ring.BaseType {u : Lean.Level} {α : Q(Type u)}
 deriving Inhabited
 
 /-- The data used to represent coefficients in exponents. This is the same data that `ring` uses. -/
-def btℕ (e : Q(ℕ)) : Type := Ring.BaseType sℕ q($e)
+abbrev btℕ (e : Q(ℕ)) : Type := Ring.BaseType sℕ q($e)
 
 instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
 
