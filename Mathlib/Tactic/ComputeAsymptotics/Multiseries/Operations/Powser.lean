@@ -163,7 +163,7 @@ theorem toFun_nil : toFun Seq.nil = 0 := by
 
 theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
     (h : Convergent (Seq.cons s_hd s_tl))
-    (ht : t ∈ EMetric.ball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius) :
+    (ht : t ∈ Metric.eball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius) :
     toFun (.cons s_hd s_tl) t = s_hd + t * ((toFun s_tl) t) := by
   have h_tl := tail_convergent h
   have h_hsum := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h
@@ -193,8 +193,8 @@ theorem toFun_cons_eventually_eq {s_hd : ℝ} {s_tl : LazySeries}
     (h : Convergent (Seq.cons s_hd s_tl)) :
     toFun (.cons s_hd s_tl) =ᶠ[𝓝 0] (fun t ↦ s_hd + t * ((toFun s_tl) t)) := by
   rw [Filter.eventuallyEq_iff_exists_mem]
-  use EMetric.ball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius
-  refine ⟨EMetric.ball_mem_nhds 0 h, fun t ht ↦ ?_⟩
+  use Metric.eball 0 (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).radius
+  refine ⟨Metric.eball_mem_nhds 0 h, fun t ht ↦ ?_⟩
   rw [toFun_cons h ht]
 
 theorem toFun_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
@@ -203,9 +203,9 @@ theorem toFun_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
   simp only [toFun]
   obtain ⟨r, h⟩ := h
   rw [Filter.eventuallyEq_iff_exists_mem]
-  use EMetric.ball 0 r
+  use Metric.eball 0 r
   constructor
-  · refine EMetric.ball_mem_nhds 0 h.r_pos
+  · refine Metric.eball_mem_nhds 0 h.r_pos
   simp only [Set.EqOn]
   intro x hx
   rw [← HasFPowerSeriesOnBall.sum h hx]
@@ -226,7 +226,7 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
       not_false_eq_true, zero_pow, zero_mul, tsum_zero, add_zero]
       unfold toFormalMultilinearSeries
       simp [FormalMultilinearSeries.ofScalars, FormalMultilinearSeries.coeff, coeff]
-    · simpa using summable_zero
+    · simp
   conv =>
     arg 3
     rw [← this]

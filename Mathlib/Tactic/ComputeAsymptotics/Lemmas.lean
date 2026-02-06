@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # TODO
@@ -187,12 +188,6 @@ theorem isBigO_of_tendsto_nhds {f g : ℝ → ℝ} {l : Filter ℝ} {c : ℝ}
 theorem isEquivalent_of_tendsto_one {f g : ℝ → ℝ} {l : Filter ℝ}
     (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) :
     f ~[l] g := by
-  apply Asymptotics.isEquivalent_of_tendsto_one _ h
-  have : ∀ᶠ x in l, 1 / 2 ≤ f x / g x := by
-    apply Filter.Tendsto.eventually_const_le _ h
-    norm_num
-  apply this.mono
-  intro x hx hg
-  norm_num [hg] at hx
+  apply Asymptotics.isEquivalent_of_tendsto_one h
 
 end ComputeAsymptotics

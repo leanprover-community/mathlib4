@@ -107,7 +107,7 @@ theorem powSeries_toFun_eq {t : ℝ} {a : ℝ} (ht : ‖t‖ < 1) : (powSeries a
   simp only [LazySeries.toFun, powSeries_eq_binomialSeries]
   rw [← HasFPowerSeriesOnBall.sum Real.one_add_rpow_hasFPowerSeriesOnBall_zero]
   · simp
-  · simpa [← ENNReal.ofReal_one, Metric.emetric_ball]
+  · simpa [← ENNReal.ofReal_one]
 
 theorem powSeries_toFun_eq' (a : ℝ) : (powSeries a).toFun =ᶠ[𝓝 0] (fun t ↦ (1 + t)^a) := by
   apply Filter.eventuallyEq_of_mem (s := Metric.ball 0 1)
