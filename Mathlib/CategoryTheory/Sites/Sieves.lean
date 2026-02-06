@@ -622,6 +622,9 @@ theorem le_generate (R : Presieve X) : R ≤ generate R :=
 theorem generate_sieve (S : Sieve X) : generate S = S :=
   giGenerate.l_u_eq S
 
+lemma generate_mono : Monotone (generate : Presieve X → _) :=
+  (giGenerate (X := X)).gc.monotone_l
+
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
   ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩
@@ -1166,5 +1169,15 @@ lemma Presieve.bind_ofArrows_le_bindOfArrows {ι : Type*} {X : C} (Z : ι → C)
   rintro T g ⟨W, v, v', hv', ⟨S, u, u', h, hu⟩, rfl⟩
   rw [← Sieve.ofArrows.fac hv', ← reassoc_of% hu]
   exact ⟨S, u, u' ≫ f _, ⟨_, _, h⟩, rfl⟩
+
+lemma Presieve.functorPushforward_overForget
+    {S : C} {X : Over S} (R : Presieve X) :
+    Presieve.functorPushforward (Over.forget S) R =
+      (Sieve.generate (Presieve.map (Over.forget S) R)).arrows := by
+  refine le_antisymm ?_ ?_
+  · rintro Y _ ⟨Z, a, b, ha, rfl⟩
+    exact ⟨Z.left, b, a.left, ⟨ha⟩, rfl⟩
+  · rintro Y _ ⟨Z, a, b, ⟨hd⟩, rfl⟩
+    exact ⟨_, _, a, hd, by simp⟩
 
 end CategoryTheory

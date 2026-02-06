@@ -184,6 +184,15 @@ factor through `essImage.liftFunctor G F hG`. -/
   NatIso.ofComponents
     (fun i ↦ F.essImage.ι.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))
 
+lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
+    (P.ι ⋙ F).essImage = P.map F := by
+  ext Y
+  constructor
+  · rintro ⟨X, ⟨e⟩⟩
+    exact ⟨X.1, X.2, ⟨e⟩⟩
+  · rintro ⟨X, hX, ⟨e⟩⟩
+    exact ⟨⟨X, hX⟩, ⟨e⟩⟩
+
 end Functor
 
 end CategoryTheory
