@@ -212,6 +212,9 @@ theorem isometry_singleton : Isometry ({·} : α → Closeds α) :=
 theorem lipschitz_sup : LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
   .of_edist_le fun _ _ => hausdorffEDist_union_le
 
+theorem lipschitz_prod : LipschitzWith 1 fun p : Closeds α × Closeds β => p.1 ×ˢ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEDist_prod_le
+
 end Closeds
 
 namespace Compacts
