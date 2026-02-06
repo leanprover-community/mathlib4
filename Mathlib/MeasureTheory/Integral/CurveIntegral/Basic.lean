@@ -136,11 +136,11 @@ theorem curveIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E
 
 theorem curveIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     curveIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by
-  simp only [curveIntegralFun, NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegralFun, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_def [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
     curveIntegral ω γ = ∫ t in 0..1, curveIntegralFun ω γ t := by
-  simp only [curveIntegral, NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegral, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_eq_intervalIntegral_deriv [NormedSpace ℝ E] [NormedSpace ℝ F]
     (ω : E → E →L[𝕜] F) (γ : Path a b) :

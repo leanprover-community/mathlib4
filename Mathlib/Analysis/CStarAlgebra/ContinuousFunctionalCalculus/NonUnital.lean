@@ -798,7 +798,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
         ContinuousMap.coe_zero, range_zero, image_union, image_singleton,
         quasispectrum.coe_zero, ← range_comp, val_comp_inclusion, image_univ, Subtype.range_coe,
         quasispectrum_eq_spectrum_union_zero]
-  simp_rw [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
+  simp_rw +instances [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
     @inf_uniformity _ (.comap _ _) (.comap _ _), uniformity_comap, Filter.comap_inf,
     Filter.comap_comap]
   refine .symm <| inf_eq_left.mpr <| le_top.trans <| eq_top_iff.mp ?_

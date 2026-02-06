@@ -1150,7 +1150,7 @@ lemma ι_map_tensorHom_eq {d₁ d₁' d₂ d₂' : D} (f : d₁ ⟶ d₂) (f' : 
   ext ⟨u₁, u₂⟩
   dsimp
   simp only [DayConvolution.unit_app_map_app, Functor.comp_obj, tensor_obj]
-  simp [convolutions, convolutionUnitApp_eq]
+  simp +instances [convolutions, convolutionUnitApp_eq]
 
 /-- The monoidal category struct constructed in `DayConvolution.mkMonoidalCategoryStruct` extends
 to a `LawfulDayConvolutionMonoidalCategoryStruct`. -/

@@ -526,14 +526,14 @@ lemma ChartedSpace.sum_chartAt_inl (x : M) :
     haveI : Nonempty H := nonempty_of_chartedSpace x
     chartAt H (Sum.inl x)
       = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl := by
-  simp only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
+  simp +instances only [chartAt, sum, nonempty_of_chartedSpace x, ↓reduceDIte]
   rfl
 
 lemma ChartedSpace.sum_chartAt_inr (x' : M') :
     haveI : Nonempty H := nonempty_of_chartedSpace x'
     chartAt H (Sum.inr x')
       = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr := by
-  simp only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
+  simp +instances only [chartAt, sum, nonempty_of_chartedSpace x', ↓reduceDIte]
   rfl
 
 @[simp, mfld_simps] lemma sum_chartAt_inl_apply {x y : M} :
@@ -554,7 +554,7 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
       ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
     ∨ (∃ f' : OpenPartialHomeomorph M' H, f' ∈ (atlas H M') ∧
       e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
-  simp only [atlas, sum, h, ↓reduceDIte] at he
+  simp +instances only [atlas, sum, h, ↓reduceDIte] at he
   obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
   · rw [← hxe]; left; use x
   · rw [← hxe]; right; use x

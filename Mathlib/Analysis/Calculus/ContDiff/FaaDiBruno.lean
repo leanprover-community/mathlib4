@@ -1025,10 +1025,9 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
       (fun i ↦ p (c.partSize i)) i).comp (p (c.partSize i + 1)).curryLeft := by
   ext e v
   simp? [OrderedFinpartition.extend, extendMiddle, applyOrderedFinpartition_apply] says
-    simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendMiddle,
-      ContinuousMultilinearMap.curryLeft_apply,
-      FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
-      ContinuousLinearMap.coe_comp', comp_apply,
+    simp only [OrderedFinpartition.extend, extendMiddle, ContinuousMultilinearMap.curryLeft_apply,
+      Nat.succ_eq_add_one, FormalMultilinearSeries.compAlongOrderedFinpartition_apply,
+      applyOrderedFinpartition_apply, ContinuousLinearMap.coe_comp', comp_apply,
       ContinuousMultilinearMap.toContinuousLinearMap_apply, compAlongOrderedFinpartitionL_apply,
       compAlongOrderFinpartition_apply]
   congr

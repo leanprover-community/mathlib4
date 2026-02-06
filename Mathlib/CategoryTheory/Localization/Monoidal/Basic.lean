@@ -236,17 +236,17 @@ lemma associator_hom_app (X₁ X₂ X₃ : C) :
 
 lemma id_tensorHom (X : LocalizedMonoidal L W ε) {Y₁ Y₂ : LocalizedMonoidal L W ε} (f : Y₁ ⟶ Y₂) :
     𝟙 X ⊗ₘ f = X ◁ f := by
-  simp [monoidalCategoryStruct]
+  simp +instances [monoidalCategoryStruct]
 
 lemma tensorHom_id {X₁ X₂ : LocalizedMonoidal L W ε} (f : X₁ ⟶ X₂) (Y : LocalizedMonoidal L W ε) :
     f ⊗ₘ 𝟙 Y = f ▷ Y := by
-  simp [monoidalCategoryStruct]
+  simp +instances [monoidalCategoryStruct]
 
 @[reassoc]
 lemma tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) = (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) := by
-  simp [monoidalCategoryStruct]
+  simp +instances [monoidalCategoryStruct]
 
 lemma id_tensorHom_id (X₁ X₂ : LocalizedMonoidal L W ε) : 𝟙 X₁ ⊗ₘ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by
   simp +instances [monoidalCategoryStruct]
@@ -365,7 +365,7 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
 
 lemma leftUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
     𝟙_ (LocalizedMonoidal L W ε) ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
-  simp [monoidalCategoryStruct]
+  simp +instances [monoidalCategoryStruct]
 
 lemma rightUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
     f ▷ 𝟙_ (LocalizedMonoidal L W ε) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f :=
@@ -430,11 +430,11 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
 
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) where
-  tensorHom_def := by intros; simp [monoidalCategoryStruct]
+  tensorHom_def := by intros; simp +instances [monoidalCategoryStruct]
   id_tensorHom_id := by
     intros
     simp +instances [monoidalCategoryStruct]
-  tensorHom_comp_tensorHom := by intros; simp [monoidalCategoryStruct]
+  tensorHom_comp_tensorHom := by intros; simp +instances [monoidalCategoryStruct]
   whiskerLeft_id := by
     intros
     simp +instances [monoidalCategoryStruct]
@@ -442,7 +442,7 @@ noncomputable instance :
     intros
     simp +instances [monoidalCategoryStruct]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by apply associator_naturality
-  leftUnitor_naturality := by intros; simp [monoidalCategoryStruct]
+  leftUnitor_naturality := by intros; simp +instances [monoidalCategoryStruct]
   rightUnitor_naturality := fun f ↦ (rightUnitor L W ε).hom.naturality f
   pentagon := pentagon
   triangle := triangle

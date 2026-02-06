@@ -110,11 +110,11 @@ lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
   · simp only [mpullbackWithin_apply]
     have : (extChartAt I x).symm ((extChartAt I x) x) = x := by simp
     rw [this, hV]
-    simp
+    simp +instances
   · simp only [mpullbackWithin_apply]
     have : (extChartAt I x).symm ((extChartAt I x) x) = x := by simp
     rw [this, hW]
-    simp
+    simp +instances
 
 lemma mlieBracketWithin_swap_apply :
     mlieBracketWithin I V W s x = - mlieBracketWithin I W V s x := by

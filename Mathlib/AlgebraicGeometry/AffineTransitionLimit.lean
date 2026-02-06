@@ -782,7 +782,7 @@ lemma exists_app_map_eq_map_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.
     (hs : (c.π.app i).app U s = (c.π.app i).app U t) :
     ∃ (j : I) (f : j ⟶ i), (D.map f).app U s = (D.map f).app U t := by
   simpa [sub_eq_zero] using exists_app_map_eq_zero_of_isLimit _ _ hc hU (s - t)
-    (by simpa [map_sub, sub_eq_zero])
+    (by simpa +instances [map_sub, sub_eq_zero])
 
 include hc in
 lemma exists_appTop_π_eq_of_isAffine_of_isLimit

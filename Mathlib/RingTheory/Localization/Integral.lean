@@ -306,7 +306,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
   have (i : _) : aeval t (reflect N (q.coeff i)) = t ^ N * (aeval s (q.coeff i)) := by
     letI : Invertible t := ⟨s, hst, (mul_comm _ _).trans hst⟩
     rw [aeval_def, ← eval₂_reflect_mul_pow _ _ N _ ((natDegree_reflect_le ..).trans (by simp [hN]))]
-    simp [mul_comm, this, aeval_def]
+    simp +instances [mul_comm, this, aeval_def]
   refine ⟨q', ?_, ?_⟩
   · refine monic_of_natDegree_le_of_coeff_eq_one (q.natDegree + N) ?_ ?_
     · refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_

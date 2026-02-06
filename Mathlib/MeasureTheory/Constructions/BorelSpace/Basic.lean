@@ -360,7 +360,8 @@ instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
   constructor
   have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (X a)) (i : Finset ι),
       (∀ a ∈ i, s a ∈ countableBasis (X a)) ∧ t = pi (↑i) s } := by
-    simp only [funext fun a => @eq_generateFrom_countableBasis (X a) _ _, pi_generateFrom_eq]
+    simp +instances only [funext fun a => @eq_generateFrom_countableBasis (X a) _ _,
+      pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
@@ -378,7 +379,7 @@ instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*}
     have := Classical.choice (nonempty_unique ι)
     rw [borel, MeasurableSpace.pi, ciSup_unique]
     refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
-    simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
+    simp +instances only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
       Set.mem_setOf_eq] at hs
     obtain ⟨t, ht, rfl⟩ := hs
     exact ⟨t, ht.measurableSet, rfl⟩

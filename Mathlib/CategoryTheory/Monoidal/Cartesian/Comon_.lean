@@ -40,7 +40,10 @@ def cartesianComon : C ⥤ Comon C where
       counit := toUnit _
     }
   }
-  map f := .mk' f
+  map f := .mk' f (f_comul := by
+    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+    this argument was provided by the auto_param. -/
+    simp +instances)
 
 @[deprecated (since := "2025-09-15")] alias cartesianComon_ := cartesianComon
 

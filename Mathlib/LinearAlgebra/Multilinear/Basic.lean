@@ -414,11 +414,11 @@ def compMultilinearMap (g : MultilinearMap R M₁ M₂) (f : (i : ι) → Multil
   toFun m := g fun i ↦ f i (Sigma.curry m i)
   map_update_add' {hDecEqSigma} := by
     classical
-    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+    simp +instances [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
       Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
   map_update_smul' {hDecEqSigma} := by
     classical
-    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+    simp +instances [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
       Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
 
 end compMultilinear

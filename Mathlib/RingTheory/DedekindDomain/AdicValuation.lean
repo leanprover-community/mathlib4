@@ -521,7 +521,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rw [mul_comm]
   smul_def' r x := by
     ext
-    simp only [Algebra.smul_def]
+    simp +instances only [Algebra.smul_def]
     rfl
 
 @[simp]

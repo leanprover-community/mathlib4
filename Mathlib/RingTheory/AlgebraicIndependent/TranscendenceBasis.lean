@@ -272,7 +272,7 @@ private def indepMatroid : IndepMatroid A where
       exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
-    simp_rw [id_eq]
+    simp_rw +instances [id_eq]
     rw [Subtype.range_val] at B_base ⊢
     refine ⟨fun a ↦ (B_base.1 a).adjoin_of_forall_isAlgebraic fun x hx ↦ ?_⟩
     contrapose! h

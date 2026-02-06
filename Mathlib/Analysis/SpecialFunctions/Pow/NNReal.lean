@@ -808,7 +808,7 @@ theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (h
   cases x
   · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
     rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-    simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos, le_refl] <;>
+    simp [Hy, Hz, top_rpow_of_neg, top_rpow_of_pos] <;>
     linarith
   · simp only [one_le_coe_iff] at hx
     simp [← coe_rpow_of_ne_zero (ne_of_gt (lt_of_lt_of_le zero_lt_one hx)),
@@ -828,7 +828,7 @@ theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1)
   by_cases h : x = 0
   · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
     rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
-    simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos, le_refl] <;>
+    simp [Hy, Hz, h, zero_rpow_of_neg, zero_rpow_of_pos] <;>
     linarith
   · rw [coe_le_one_iff] at hx1
     simp [← coe_rpow_of_ne_zero h,

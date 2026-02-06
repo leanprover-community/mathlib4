@@ -160,13 +160,17 @@ def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : Monoi
     tensorHom := fun f g ↦ Limits.coprod.map f g
     tensorUnit := ⊥_ C
     associator := coprod.associator
-    leftUnitor := fun P ↦ coprod.leftUnitor P
-    rightUnitor := fun P ↦ coprod.rightUnitor P
+    leftUnitor := coprod.leftUnitor
+    rightUnitor := coprod.rightUnitor
   }
   .ofTensorHom
     (pentagon := coprod.pentagon)
     (triangle := coprod.triangle)
     (associator_naturality := @coprod.associator_naturality _ _ _)
+    (id_tensorHom_id := fun _ _ => coprod.map_id_id)
+    (tensorHom_comp_tensorHom := coprod.map_map)
+    (leftUnitor_naturality := coprod.leftUnitor_naturality)
+    (rightUnitor_naturality := coprod.rightUnitor_naturality)
 
 end
 

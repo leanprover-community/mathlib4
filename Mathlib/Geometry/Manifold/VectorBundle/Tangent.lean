@@ -395,7 +395,7 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
       have : Continuous (chartAt (ModelProd H E) p) := by
         rw [← continuousOn_univ]
         convert (chartAt (ModelProd H E) p).continuousOn
-        simp only [TangentSpace.fiberBundle, mfld_simps]
+        simp only [mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩

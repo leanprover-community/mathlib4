@@ -235,8 +235,6 @@ attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in
 instance : IsCommMonObj H where
 
 instance [IsCommMonObj G.X] (f : G ⟶ H) : IsMonHom f where
-  one_hom := by ext; simp [Grp.instMonObj]
-  mul_hom := by ext; simp [Grp.instMonObj]
 
 end Grp
 

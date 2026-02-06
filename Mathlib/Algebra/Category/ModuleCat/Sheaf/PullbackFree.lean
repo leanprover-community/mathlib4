@@ -80,7 +80,7 @@ lemma pushforwardSections_unitHomEquiv
   ext X
   have := unitToPushforwardObjUnit_val_app_apply φ (X := X) 1
   dsimp at this ⊢
-  simp [this, map_one]
+  simp +instances [this, map_one]
   rfl
 
 variable [(pushforward.{u} φ).IsRightAdjoint]

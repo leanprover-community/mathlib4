@@ -98,7 +98,7 @@ instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
 
 protected theorem OrderTopology.continuous_iff [OrderTopology α] [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsOpen (f ⁻¹' Ioi a) ∧ IsOpen (f ⁻¹' Iio a) := by
-  simp_rw [OrderTopology.topology_eq_generate_intervals, continuous_generateFrom_iff]
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals, continuous_generateFrom_iff]
   aesop
 
 theorem isOpen_iff_generate_intervals [t : OrderTopology α] {s : Set α} :

@@ -368,7 +368,7 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
         refine ⟨s * s, ?_, by rwa [eq_sub_iff_add_eq', eq_comm] at hs₂⟩
         exact AddSubmonoid.subset_closure ⟨s, by simp [hs₁.star_eq]⟩
       · rintro ⟨p, hp, rfl⟩
-        simp only [spectralOrder, add_sub_cancel_left]
+        simp +instances only [spectralOrder, add_sub_cancel_left]
         induction hp using AddSubmonoid.closure_induction with
         | mem x hx =>
           obtain ⟨s, rfl⟩ := hx

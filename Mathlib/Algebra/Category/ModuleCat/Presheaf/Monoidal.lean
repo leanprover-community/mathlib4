@@ -68,7 +68,7 @@ noncomputable def tensorObj : PresheafOfModules (R ⋙ forget₂ _ _) where
   map_comp f g := ModuleCat.MonoidalCategory.tensor_ext (by
     intro m₁ m₂
     dsimp [tensorObjMap]
-    simp)
+    simp +instances)
 
 variable {M₁ M₂ M₃ M₄}
 

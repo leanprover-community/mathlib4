@@ -201,8 +201,7 @@ def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i :
   linear.map_smul {X Y} f r := by
     ext (v : ι → X)
     simp only [ModuleCat.matrixEquivalence_functor, ModuleCat.toMatrixModCat_obj_carrier,
-      ModuleCat.toMatrixModCat_obj_isModule, ModuleCat.toMatrixModCat_map, ModuleCat.hom_smul,
-      ModuleCat.hom_ofHom, LinearMap.smul_apply]
+      ModuleCat.toMatrixModCat_map, ModuleCat.hom_smul, ModuleCat.hom_ofHom, LinearMap.smul_apply]
     ext i
     simp only [LinearMap.mapMatrixModule_apply, LinearMap.compLeft_apply, Function.comp_apply,
       LinearMap.smul_apply]

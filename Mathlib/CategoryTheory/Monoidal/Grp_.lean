@@ -192,8 +192,8 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
-  left_inv := by simp [MonObj.ofIso]
-  right_inv := by simp [MonObj.ofIso]
+  left_inv := by simp +instances [MonObj.ofIso]
+  right_inv := by simp +instances [MonObj.ofIso]
 
 instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
@@ -574,9 +574,9 @@ abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
   __ := hF.monObj X
   inv := hF.preimage ι[F.obj X]
   left_inv := hF.map_injective <| by
-    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+    simp [OplaxMonoidal.η_of_cartesianMonoidalCategory]
   right_inv := hF.map_injective <| by
-    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+    simp [OplaxMonoidal.η_of_cartesianMonoidalCategory]
 
 @[deprecated (since := "2025-09-13")] alias FullyFaithful.grp_Class := FullyFaithful.grpObj
 

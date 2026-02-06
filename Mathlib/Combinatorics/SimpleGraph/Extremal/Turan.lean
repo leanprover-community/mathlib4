@@ -191,7 +191,7 @@ lemma degree_eq_card_sub_part_card [DecidableEq V] :
     _ = _ := by
       congr; ext; rw [mem_filter]
       convert Finpartition.mem_part_ofSetoid_iff_rel.symm
-      simp [setoid]
+      simp +instances [setoid]
 
 /-- The parts of a Turán-maximal graph form an equipartition. -/
 theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by

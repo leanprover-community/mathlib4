@@ -150,6 +150,8 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
     e.functor.mapIso ((whiskerLeftIso _ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
 
+#adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+the fields `whiskerList_eq` and following were all filled by the `cat_disch` auto_param. -/
 attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
@@ -157,7 +159,13 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse
     { μIso := fun _ _ => e.unitIso.app _
-      εIso := e.unitIso.app _ }
+      εIso := e.unitIso.app _
+      whiskerLeft_eq := by simp +zetaDelta +instances
+      whiskerRight_eq := by simp +zetaDelta +instances
+      tensorHom_eq := by simp +zetaDelta +instances
+      associator_eq := by simp +zetaDelta +instances
+      leftUnitor_eq := by simp +zetaDelta +instances
+      rightUnitor_eq := by simp +zetaDelta +instances }
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
 @[nolint unusedArguments]

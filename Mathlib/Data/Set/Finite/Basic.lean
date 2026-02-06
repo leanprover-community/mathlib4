@@ -756,7 +756,7 @@ theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
+  simp [Fintype.card_ofFinset]
 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)

@@ -297,7 +297,7 @@ variable [Field R] {p q : R[X]}
 
 theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
   ⟨degree_eq_zero_of_isUnit, fun h =>
-    have : degree p ≤ 0 := by simp [*, le_refl]
+    have : degree p ≤ 0 := by simp [*]
     have hc : coeff p 0 ≠ 0 := fun hc => by
       rw [eq_C_of_degree_le_zero this, hc] at h; simp only [map_zero] at h; contradiction
     isUnit_iff_dvd_one.2

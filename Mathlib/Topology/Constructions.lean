@@ -1099,7 +1099,7 @@ theorem pi_eq_generateFrom :
         { g | ∃ (s : ∀ a, Set (A a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
   _ = @Pi.topologicalSpace ι A fun _ => generateFrom { s | IsOpen s } := by
-    simp only [generateFrom_setOf_isOpen]
+    simp +instances only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]

@@ -29,14 +29,14 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal
 instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     BraidedCategory (Transported e) :=
   .ofFaithful e.inverse (fun _ _ ↦ e.functor.mapIso (β_ _ _)) fun _ _ ↦ by
-    simp [fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
+    simp +instances [fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
 
 local notation "e'" e => equivalenceTransported e
 
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).inverse.Braided where
   braided X Y := by
-    simp [Transported.instBraidedCategory, BraidedCategory.ofFaithful,
+    simp +instances [Transported.instBraidedCategory, BraidedCategory.ofFaithful,
       fromInducedCoreMonoidal, Functor.CoreMonoidal.toLaxMonoidal]
 
 noncomputable section
@@ -70,13 +70,10 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
             (β_ (((e' e).functor ⋙ (e' e).inverse).obj X)
               (((e' e).functor ⋙ (e' e).inverse).obj Y)).hom := by
       simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
-        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, assoc,
-        Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
+        assoc, Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
     simp? [-Adjunction.rightAdjointLaxMonoidal_μ] at this says
-      simp only [Functor.comp_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
-        Equivalence.symm_inverse, Equivalence.symm_functor, comp_μ, Functor.comp_map,
-        Equivalence.inv_fun_map, Functor.id_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
-        comp_δ, assoc] at this
+      simp only [Functor.comp_obj, comp_μ, Functor.comp_map,
+        Equivalence.inv_fun_map, Functor.id_obj, comp_δ, assoc] at this
     simp [-Adjunction.rightAdjointLaxMonoidal_μ, ← this]
 
 end
