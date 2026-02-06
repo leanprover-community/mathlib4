@@ -62,6 +62,7 @@ namespace Delone
 
 /-- A **Delone set** consists of a set together with explicit radii
 witnessing uniform discreteness and relative denseness. -/
+@[ext]
 structure DeloneSet (X : Type*) [MetricSpace X] where
   /-- The underlying set. -/
   carrier : Set X
@@ -76,25 +77,26 @@ structure DeloneSet (X : Type*) [MetricSpace X] where
 
 namespace DeloneSet
 
+@[coe] def toSet (D : DeloneSet X) : Set X := D.carrier
+
+instance : Coe (DeloneSet X) (Set X) where
+  coe := DeloneSet.toSet
+
 instance : Membership X (DeloneSet X) where
-  mem S x := x ∈ S.carrier
+  mem D x := x ∈ (D : Set X)
+
+@[simp, norm_cast]
+lemma mem_coe {D : DeloneSet X} {x : X} : x ∈ (D : Set X) ↔ x ∈ D := .rfl
 
 @[simp] lemma mem_carrier {D : DeloneSet X} {x : X} :
     x ∈ D.carrier ↔ x ∈ D := .rfl
 
-lemma nonempty [Nonempty X] (D : DeloneSet X) : D.carrier.Nonempty :=
+lemma nonempty [Nonempty X] (D : DeloneSet X) : (D : Set X).Nonempty :=
   D.isCover_coveringRadius.nonempty Set.univ_nonempty
-
-/-- Extensionality for Delone sets. -/
-@[ext] lemma ext {D E : DeloneSet X}
-    (h_carrier : D.carrier = E.carrier)
-    (h_packing : D.packingRadius = E.packingRadius)
-    (h_covering : D.coveringRadius = E.coveringRadius) : D = E := by
-  cases D; cases E; congr
 
 /-- Copy of a Delone set with new fields equal to the old ones.
 Useful to fix definitional equalities. -/
-protected def copy (D : DeloneSet X) (carrier : Set X) (packingRadius : ℝ≥0) (coveringRadius : ℝ≥0)
+protected def copy (D : DeloneSet X) (carrier : Set X) (packingRadius coveringRadius : ℝ≥0)
     (h_carrier : carrier = D.carrier) (h_packing : packingRadius = D.packingRadius)
     (h_covering : coveringRadius = D.coveringRadius) :
     DeloneSet X where
@@ -111,7 +113,7 @@ protected def copy (D : DeloneSet X) (carrier : Set X) (packingRadius : ℝ≥0)
 theorem copy_eq (D : DeloneSet X)
     (carrier packingRadius coveringRadius h_carrier h_packing h_covering) :
     D.copy carrier packingRadius coveringRadius h_carrier h_packing h_covering = D :=
-  ext h_carrier h_packing h_covering
+  DeloneSet.ext h_carrier h_packing h_covering
 
 lemma packingRadius_lt_dist_of_mem_ne (D : DeloneSet X) {x y : X}
     (hx : x ∈ D) (hy : y ∈ D) (hne : x ≠ y) :
