@@ -689,14 +689,19 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
         {.ofConstName src}."
     return
   let srcDecl ← withoutExporting do getConstInfo src
-  let origKind := getOriginalConstKind? env src |>.get!
-  -- error if this declaration is a theorem (or definition), but we cannot access its value
-  if origKind != srcDecl.kind then
-    throwError "{origKind.toString} `{.ofConstName src}` is declared in an imported \
-      module, and its value/proof is not available, so it cannot be translated.\n\
-      Possible solutions: put this attribute in the module where the declaration was declared, \
-      avoid the module system, or run\n  \
-      import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}"
+  -- throw error if `srcDecl` has no value
+  if srcDecl.value?.isNone then
+    let origKind := getOriginalConstKind? env src |>.get!
+    -- expand the error message if this declaration is a theorem but we cannot access its value
+    if origKind != srcDecl.kind then
+      throwError "{origKind.toString} `{.ofConstName src}` is declared in an imported \
+        module, and its value/proof is not available, so it cannot be translated.\n\
+        Possible solutions: put this attribute in the module where the declaration was declared, \
+        avoid the module system, or run\n  \
+        import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}"
+    throwError "Cannot translate {srcDecl.kind} `{.ofConstName src}`. \
+      It is not a definition or theorem."
+  -- (this is also caught by the next check, but we give a )
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
@@ -716,22 +721,16 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       let namesPre := (← getConstInfo pre).type.getForallBinderNames
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
-  if let some value := srcDecl.value? then
-    trace[translate] "translating\n\
-      {srcDecl.kind.toString} {.ofConstName src} : {srcDecl.type} :=\n  {value}"
-  else
-    trace[translate] "translating\n{srcDecl.kind.toString} {.ofConstName src} : {srcDecl.type}"
+  trace[translate] "translating\n\
+    {srcDecl.kind.toString} {.ofConstName src} : {srcDecl.type} :=\n  {srcDecl.value!}"
   -- now transform the source declaration
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
   if src == pre && srcDecl.isThm && trgDecl.type == srcDecl.type then
     Linter.logLintIf linter.translateRedundant ref m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
-  let value? := trgDecl.value? (allowOpaque := true)
-  if let some value := value? then
-    trace[translate] "generating\n\
-      {trgDecl.kind.toString} {privateToUserName tgt} : {trgDecl.type} :=\n  {value}"
-  else
-    trace[translate] "generating\n{trgDecl.kind.toString} {privateToUserName tgt} : {trgDecl.type}"
+  let value := srcDecl.value! (allowOpaque := true)
+  trace[translate] "generating\n\
+    {trgDecl.kind.toString} {privateToUserName tgt} : {trgDecl.type} :=\n  {value}"
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
   has executable code.
@@ -756,8 +755,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   catch ex =>
     -- Try to emit a better error message if the kernel throws an error.
     try
-      if let some value := value? then
-        withoutExporting <| MetaM.run' <| check value
+      withoutExporting <| MetaM.run' <| check value
     catch ex =>
       throwError "@[{t.attrName}] failed. \
         The translated value is not type correct. For help, see the docstring \
