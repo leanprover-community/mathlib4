@@ -26,9 +26,9 @@ namespace Tactic.ComputeAsymptotics
 open Topology Filter Asymptotics
 
 /-- `Majorized f g exp` for real functions `f` and `g` means that for any `exp' < exp`,
-`f =o[atTop] g ^ exp'`. This is used to define the `MultiseriesExpansion.Approximates` predicate. The naming
-`Majorized` is non-standard because this notion is invented for the purposes of this tactic, and
-does not exists in literature. -/
+`f =o[atTop] g ^ exp'`. This is used to define the `MultiseriesExpansion.Approximates` predicate.
+The naming `Majorized` is non-standard because this notion is invented for the purposes of
+this tactic, and does not exists in literature. -/
 def Majorized (f b : ℝ → ℝ) (exp : ℝ) : Prop :=
   ∀ exp' > exp, f =o[atTop] (b ^ exp')
 
