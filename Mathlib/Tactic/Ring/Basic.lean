@@ -378,7 +378,7 @@ mutual
 
 /-- Add two rational number expressions. If the result is zero, returns a proof of this fact. -/
 partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
+    {a b : Q($α)} (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
   let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
@@ -394,7 +394,7 @@ partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 /-- Evaluate the product of two rational number expressions. -/
 partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
+    {a b : Q($α)} (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a * $b)) := do
   let res ← za.toResult.mul zb.toResult
   return ← BaseType.ofResult sα res
@@ -428,7 +428,7 @@ partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (
 
 /-- Negate rational number expressions. -/
 partial def neg {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
+    {a : Q($α)} (_crα : Q(CommRing $α)) (za : BaseType sα a) :
     MetaM (Result (BaseType sα) q(-$a)) := do
   let res ← za.toResult.neg q(inferInstance)
   -- We have to unpack this result due to instance issues.
@@ -439,7 +439,7 @@ partial def neg {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 Fails if the exponent is not a literal. -/
 partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
+    {a : Q($α)} {b : Q(ℕ)} (za : BaseType sα a)
     (vb : Common.ExProdNat q($b)) :
     OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
   match vb with
@@ -602,6 +602,4 @@ elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
 @[tactic_alt ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
 
 end
-end Ring
-end Tactic
-end Mathlib
+end Mathlib.Tactic.Ring
