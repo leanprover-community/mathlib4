@@ -138,6 +138,12 @@ theorem Coequifibered.unop {F G : Jᵒᵖ ⥤ Cᵒᵖ} {α : F ⟶ G} (hα : Coe
 theorem Equifibered.unop {F G : Jᵒᵖ ⥤ Cᵒᵖ} {α : F ⟶ G} (hα : Equifibered α) :
     Coequifibered (NatTrans.unop α) := fun _ _ f ↦ (hα f.op).unop
 
+theorem Equifibered.rightOp {F G : Jᵒᵖ ⥤ C} {α : F ⟶ G} (hα : Equifibered α) :
+    Coequifibered α.rightOp := fun _ _ f ↦ (hα f.op).op
+
+theorem Coequifibered.rightOp {F G : Jᵒᵖ ⥤ C} {α : F ⟶ G} (hα : Coequifibered α) :
+    Equifibered α.rightOp := fun _ _ f ↦ (hα f.op).op
+
 theorem coequifibered_op_iff {F G : J ⥤ C} {α : F ⟶ G} :
     Coequifibered (NatTrans.op α) ↔ Equifibered α := ⟨Coequifibered.unop, Equifibered.op⟩
 
