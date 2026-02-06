@@ -271,7 +271,8 @@ instance : HasForget₂ ProfiniteGrp Profinite where
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
   map_injective := fun {_ _} _ _ h =>
-    ConcreteCategory.hom_ext _ _ (CategoryTheory.congr_fun h) }
+    ConcreteCategory.hom_ext _ _ fun x ↦ CategoryTheory.congr_fun h x }
+
 
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
   reflects {X Y} f _ := by

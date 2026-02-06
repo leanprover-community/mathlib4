@@ -657,7 +657,7 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                   apply not_le.mpr h'
                   convert f.toOrderHom.monotone (le_of_not_ge h'')
                   all_goals
-                    exact (congr_hom (Iso.inv_hom_id
+                    exact (ConcreteCategory.congr_hom (Iso.inv_hom_id
                       (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
