@@ -124,6 +124,31 @@ lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
     ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, and_true, ← Units.exists_iff_ne_zero, eq_comm,
     Units.smul_def]
 
+open Classical in
+/-- The line through two points on a sphere, or the orthogonal radius (tangent) at that point
+when they coincide. -/
+noncomputable def lineOrOrthRadius (s : Sphere P) (p q : P) : AffineSubspace ℝ P :=
+  if p = q then s.orthRadius p else line[ℝ, p, q]
+
+variable {s : Sphere P} {p q : P}
+
+@[simp]
+lemma lineOrOrthRadius_of_eq (h : p = q) : s.lineOrOrthRadius p q = s.orthRadius p := by
+  rw [lineOrOrthRadius, if_pos h]
+
+@[simp]
+lemma lineOrOrthRadius_of_ne (h : p ≠ q) : s.lineOrOrthRadius p q = line[ℝ, p, q] := by
+  rw [lineOrOrthRadius, if_neg h]
+
+lemma left_mem_lineOrOrthRadius : p ∈ s.lineOrOrthRadius p q := by
+  by_cases h : p = q <;> simp [lineOrOrthRadius, h, self_mem_orthRadius, left_mem_affineSpan_pair]
+
+lemma right_mem_lineOrOrthRadius : q ∈ s.lineOrOrthRadius p q := by
+  by_cases h : p = q <;> simp [lineOrOrthRadius, h, self_mem_orthRadius, right_mem_affineSpan_pair]
+
+lemma lineOrOrthRadius_comm : s.lineOrOrthRadius p q = s.lineOrOrthRadius q p := by
+  by_cases h : p = q <;> simp [lineOrOrthRadius, h, Ne.symm, affineSpan_pair_comm]
+
 end Sphere
 
 end EuclideanGeometry
