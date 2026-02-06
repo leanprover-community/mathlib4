@@ -111,8 +111,7 @@ theorem upperCentralSeriesStep_eq_comap_center :
     upperCentralSeriesStep H = Subgroup.comap (mk' H) (center (G ⧸ H)) := by
   ext
   rw [mem_comap, mem_center_iff, forall_mk]
-  apply forall_congr'
-  intro y
+  refine forall_congr' fun y => ?_
   rw [coe_mk', ← QuotientGroup.mk_mul, ← QuotientGroup.mk_mul, eq_comm, eq_iff_div_mem,
     div_eq_mul_inv, mul_inv_rev, mul_assoc]
 
@@ -121,17 +120,11 @@ theorem Subgroup.Characteristic.quotient [hH : Characteristic H] {K : Subgroup (
     (hK : K.Characteristic) :
     Characteristic (K.comap (mk' H)) := by
   refine characteristic_iff_map_le.2 fun ϕ x ⟨y, hy⟩ => ?_
-  let φ := congr H H ϕ (characteristic_iff_map_eq.1 hH ϕ)
-  have hp := characteristic_iff_map_eq.1 hK φ
-  simp_all [mem_comap]
-  have := mem_map_of_mem φ.toMonoidHom hy.1
-  simp [φ, hy.2] at this
-  obtain ⟨z, hz⟩ := this
-  have : φ z ∈ K := hp ▸ mem_map_of_mem φ.toMonoidHom hz.1
-  grind
+  have := characteristic_iff_map_eq.1 hK (congr H H ϕ (characteristic_iff_map_eq.1 hH ϕ))
+  have := mem_map_of_mem (congr H H ϕ (characteristic_iff_map_eq.1 hH ϕ)).toMonoidHom hy.1
+  simp_all
 
-instance Subgroup.Characteristic.upperCentralSeriesStep [hH : H.Characteristic] :
-    Characteristic (upperCentralSeriesStep H) :=
+instance [hH : H.Characteristic] : Characteristic (upperCentralSeriesStep H) :=
   (upperCentralSeriesStep_eq_comap_center H) ▸ hH.quotient H centerCharacteristic
 
 variable (G)
