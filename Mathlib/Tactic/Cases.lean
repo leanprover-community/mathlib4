@@ -104,7 +104,7 @@ example (n : ℕ) : 0 < factorial n := by
   · rw [factorial_succ]
     apply mul_pos (succ_pos n) ih
 
--- Equivalent to the preferred version:
+-- Though the following equivalent spellings should be preferred
 example (n : ℕ) : 0 < factorial n := by
   induction n
   case zero =>
