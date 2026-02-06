@@ -324,7 +324,7 @@ lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.
   p.isPath_reverse_iff.mp ((reverse_append _ _ ▸ hcyc.reverse).isPath_of_append_right (by simpa))
 
 theorem IsCycle.isPath_tail {p : G.Walk u u} (h : p.IsCycle) : p.tail.IsPath :=
-  IsPath.mk' <| (support_tail_of_not_nil _ h.not_nil) ▸ h.support_nodup
+  IsPath.mk' <| p.support_tail_of_not_nil h.not_nil ▸ h.support_nodup
 
 lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   cases p with
@@ -501,7 +501,7 @@ theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
   cases p with
   | nil => simp_all
   | cons h' p =>
-    simp +arith only [getVert_cons_succ, tail_cons, isPath_copy, length_cons] at h₁ h₂
+    simp only [getVert_cons_succ, tail_cons, isPath_copy, length_cons] at h₁ h₂
     refine (cons_isCycle_iff p _).mpr ⟨h₁, fun hh ↦ ?_⟩
     have : p.support[0] = p.support[p.length - 1] := by
       simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
