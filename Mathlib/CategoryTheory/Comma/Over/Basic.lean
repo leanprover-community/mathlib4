@@ -287,7 +287,7 @@ noncomputable def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
 -- We could make this defeq if we care.
-@[simp] lemma mkIdInitial_from_left (Y : Over X) : (mkIdTerminal.from Y).left = Y.hom := by
+@[simp] lemma mkIdTerminal_from_left (Y : Over X) : (mkIdTerminal.from Y).left = Y.hom := by
   rw [mkIdTerminal.hom_ext (mkIdTerminal.from Y) (homMk Y.hom)]
   rfl
 

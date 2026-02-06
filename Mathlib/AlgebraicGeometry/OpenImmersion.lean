@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
@@ -81,6 +80,10 @@ theorem isOpenEmbedding : IsOpenEmbedding f :=
 def opensRange : Y.Opens :=
   ⟨_, f.isOpenEmbedding.isOpen_range⟩
 
+@[simp]
+theorem mem_opensRange {f : X ⟶ Y} [IsOpenImmersion f] {y : Y} :
+    y ∈ opensRange f ↔ ∃ x, f x = y := .rfl
+
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 def opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
@@ -99,6 +102,10 @@ lemma image_mono {U V : X.Opens} (e : U ≤ V) : f ''ᵁ U ≤ f ''ᵁ V := Set.
 lemma opensFunctor_map_homOfLE {U V : X.Opens} (e : U ≤ V) :
     (Scheme.Hom.opensFunctor f).map (homOfLE e) = homOfLE (f.image_mono e) :=
   rfl
+
+instance : f.opensFunctor.IsContinuous
+    (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) :=
+  f.isOpenEmbedding.functor_isContinuous
 
 @[simp]
 lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
@@ -243,6 +250,23 @@ lemma appIso_inv_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U V
   simp only [appLE, appIso_inv_app_assoc, eqToHom_op]
   rw [← Functor.map_comp]
   rfl
+
+lemma appIso_inv_app_presheafMap (U : X.Opens) :
+    (f.appIso U).inv ≫ f.app _ ≫
+      X.presheaf.map (eqToHom (f.preimage_image_eq U).symm).op = 𝟙 _ := by
+  rw [Scheme.Hom.appIso_inv_app_assoc, ← Functor.map_comp, ← X.presheaf.map_id]; rfl
+
+@[simp]
+lemma id_appIso (U : X.Opens) :
+    (𝟙 X :).appIso U = X.presheaf.mapIso (eqToIso (by simp)).op := by
+  ext; simp [appIso_hom]
+
+@[simp]
+lemma comp_appIso {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion f]
+    [IsOpenImmersion g] (U : X.Opens) :
+    (f ≫ g).appIso U =
+      Z.presheaf.mapIso (eqToIso (by simp)).op ≪≫ g.appIso _ ≪≫ f.appIso U := by
+  ext : 1; simp [appIso_hom, app_eq_appLE, appLE_comp_appLE, -comp_appLE]
 
 end Scheme.Hom
 
@@ -442,7 +466,7 @@ lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion 
 instance : MorphismProperty.HasOfPostcompProperty @IsOpenImmersion @IsOpenImmersion where
   of_postcomp f g _ _ := .of_comp f g
 
-theorem iff_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) :
+theorem iff_isIso_stalkMap {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsOpenImmersion f ↔ IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) :=
   ⟨fun H ↦ ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toPshHom.stalkMap x)⟩,
     fun ⟨h, _⟩ ↦ .of_isIso_stalkMap f h⟩

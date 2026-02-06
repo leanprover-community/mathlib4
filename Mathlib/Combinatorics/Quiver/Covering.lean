@@ -50,8 +50,8 @@ open Function Quiver
 
 universe u v w
 
-variable {U : Type _} [Quiver.{u + 1} U] {V : Type _} [Quiver.{v + 1} V] (φ : U ⥤q V) {W : Type _}
-  [Quiver.{w + 1} W] (ψ : V ⥤q W)
+variable {U : Type _} [Quiver.{u} U] {V : Type _} [Quiver.{v} V] (φ : U ⥤q V) {W : Type _}
+  [Quiver.{w} W] (ψ : V ⥤q W)
 
 /-- The `Quiver.Star` at a vertex is the collection of arrows whose source is the vertex.
 The type `Quiver.Star u` is defined to be `Σ (v : U), (u ⟶ v)`. -/

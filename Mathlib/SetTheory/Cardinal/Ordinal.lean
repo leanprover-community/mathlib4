@@ -24,7 +24,7 @@ open Cardinal Ordinal Set
 namespace Cardinal
 
 /-- Bounds the cardinal of an ordinal-indexed union of sets. -/
-lemma mk_iUnion_Ordinal_lift_le_of_le {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}}
+lemma mk_biUnion_le_of_le_lift {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}}
     (ho : lift.{v} o.card ≤ lift.{u} c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
   simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← ToType.mk.symm.surjective.range_comp]
@@ -35,11 +35,17 @@ lemma mk_iUnion_Ordinal_lift_le_of_le {β : Type v} {o : Ordinal.{u}} {c : Cardi
   intro i
   simpa using hA _ i.toOrd.prop
 
-lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
+@[deprecated (since := "2026-01-26")]
+alias mk_iUnion_Ordinal_lift_le_of_le := mk_biUnion_le_of_le_lift
+
+lemma mk_biUnion_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
-  apply mk_iUnion_Ordinal_lift_le_of_le _ hc A hA
+  apply mk_biUnion_le_of_le_lift _ hc A hA
   rwa [Cardinal.lift_le]
+
+@[deprecated (since := "2026-01-26")]
+alias mk_iUnion_Ordinal_le_of_le := mk_biUnion_le_of_le
 
 end Cardinal
 
@@ -113,7 +119,7 @@ theorem card_opow_le (a b : Ordinal) : (a ^ b).card ≤ max ℵ₀ (max a.card b
   obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
   · obtain ⟨m, rfl⟩ | hb := eq_nat_or_omega0_le b
     · rw [← natCast_opow, card_nat]
-      exact le_max_of_le_left (nat_lt_aleph0 _).le
+      exact le_max_of_le_left natCast_le_aleph0
     · exact (card_opow_le_of_omega0_le_right _ hb).trans (le_max_right _ _)
   · exact (card_opow_le_of_omega0_le_left ha _).trans (le_max_right _ _)
 
