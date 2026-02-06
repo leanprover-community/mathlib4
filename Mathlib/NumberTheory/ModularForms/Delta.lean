@@ -3,23 +3,32 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-
- import Mathlib.NumberTheory.ModularForms.DedekindEta
- import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
+public import Mathlib.NumberTheory.ModularForms.DedekindEta
+public import Mathlib.NumberTheory.ModularForms.Basic
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 /-!
-# Delta function
+# The modular discriminant Δ
+
+This file defines the modular discriminant `Δ(z) = η(z) ^ 24`, where `η` is the Dedekind eta
+function, and proves its key properties including invariance under the generators of `SL(2, ℤ)`.
 
 ## Main definitions
 
-* We define the Delta function as the infinite product
-`η(z) = q * ∏' (1 - q ^ (n + 1)) ^ 24 ` where `q = e ^ (2πiz)` and `z` is in the upper half-plane.
-The product is taken over all non-negative integers `n`. We then show it is modular form and
-non-vanishing.
+* `ModularForm.Delta`: The modular discriminant function `Δ(z) = η(z) ^ 24`, which can also be
+  expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
+
+## Main results
+
+* `ModularForm.Delta_ne_zero`: The discriminant is non-vanishing on the upper half-plane.
+* `ModularForm.Discriminant_T_invariant`: Invariance under the translation `T : z ↦ z + 1`.
+* `ModularForm.Discriminant_S_invariant`: Invariance under the inversion `S : z ↦ -1 / z`,
+  showing `Δ(-1 / z) = z ^ 12 · Δ(z)`.
 
 ## References
+
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
@@ -35,7 +44,8 @@ noncomputable section
 
 namespace ModularForm
 
-def Delta (z : ℍ) := (eta z) ^ 24
+/-- The modular discriminant `Δ(z) = η(z) ^ 24`, a weight 12 modular form for `SL(2, ℤ)`. -/
+public def Delta (z : ℍ) := (eta z) ^ 24
 
 local notation "Δ" => Delta
 
@@ -142,6 +152,7 @@ lemma exp_periodo (z : ℍ) :
 end auxiliary
 @[expose] public section
 
+/-- The discriminant expressed as a q-expansion: `Δ(z) = q * ∏' (1 - q ^ (n + 1)) ^ 24`. -/
 lemma Delta_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n z) ^ 24 := by
   simp only [Delta, eta, mul_pow]
   congr
@@ -151,15 +162,18 @@ lemma Delta_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n z) ^ 24
   · rw [Multipliable.tprod_pow]
     exact multipliableLocallyUniformlyOn_eta.multipliable z.2
 
-/-This should be easy from the definition and the Mulitpliable bit. -/
+/-- The modular discriminant is non-vanishing on the upper half-plane. -/
 lemma Delta_ne_zero (z : ℍ) : Δ z ≠ 0 := by
   simpa [Delta] using eta_ne_zero z.2
 
+/-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
 lemma Discriminant_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
   rw [SL_slash_apply, denom, UpperHalfPlane.modular_T_smul, ModularGroup.T]
   simp [Delta_eq_q_prod, eta_q,  Periodic.qParam, exp_periodo z]
 
+/-- The transformation formula for `η` under `S : z ↦ -1/z`: we have
+`η(-1/z) = (√I)⁻¹ · √z · η(z)` on the upper half-plane. -/
 lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
     (η ∘ (fun z : ℂ ↦ -1 / z)) ((I ^ (1 / 2 : ℂ))⁻¹ • ((· ^ (1 / 2 : ℂ)) * η)) := by
   obtain ⟨z, hz, h⟩ := eta_comp_eqOn_const_mul_csqrt_eta
@@ -171,6 +185,8 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
   have hcd := (mul_eq_right₀ (eta_ne_zero (mem_setOf.mpr hI))).mp h3.symm
   grind
 
+/-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
+we have `Δ(-1/z) = z ^ 12 · Δ(z)`. -/
 lemma Discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   ext z
   rw [SL_slash_apply, denom, UpperHalfPlane.modular_S_smul]
