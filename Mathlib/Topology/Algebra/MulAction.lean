@@ -241,13 +241,18 @@ each stabilizer is an open subgroup. -/
 theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
     ContinuousSMul M X ↔ ∀ x : X, IsOpen (MulAction.stabilizer M x : Set M) := by
   refine ⟨fun _ _ ↦ stabilizer_isOpen .., fun h ↦ ⟨?_⟩⟩
+  rw [continuous_prod_of_discrete_right]
+  intro y
   rw [continuous_discrete_rng]
-  refine fun x ↦ isOpen_prod_iff.mpr fun m y (hmy : m • y = x) ↦ ?_
+  intro x
   let U := {m' : M | m' • y = x}
   have hU : IsOpen U := by
-    convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹) using 1
-    ext; simp [← smul_smul, ← hmy, U]
-  simpa using ⟨U, hU, by simp [U, hmy], ⟨{y}, by simp, by simp [U, ← Set.image_subset_iff]⟩⟩
+    by_cases hU' : U ≠ ∅
+    · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
+      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹) using 1
+      ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
+    simp_all
+  simpa using hU
 
 end IsTopologicalGroup
 
