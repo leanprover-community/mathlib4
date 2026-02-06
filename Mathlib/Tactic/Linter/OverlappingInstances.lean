@@ -88,9 +88,7 @@ def Overlaps.pushAt (cls : Expr) (fvar : Expr × Bool) (overlaps : Overlaps) : O
 
 /-- Returns `true` iff `fvar₁` and `fvar₂` overlap on the `cls` projection typeclass. -/
 def Overlaps.containsOverlapOn (fvar₁ fvar₂ : Expr) (cls : Expr) (overlaps : Overlaps) : Bool :=
-  match overlaps[cls]? with
-  | none => false
-  | some overlap => overlap.any (·.1 == fvar₁) && overlap.any (·.1 == fvar₂)
+  overlaps[cls]?.any fun overlap => overlap.any (·.1 == fvar₁) && overlap.any (·.1 == fvar₂)
 
 /--
 Find data-carrying overlaps between the current local instances of the `MetaM` context.
