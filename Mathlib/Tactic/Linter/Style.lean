@@ -476,7 +476,11 @@ public register_option linter.style.nameCheck : Bool := {
 
 namespace Style.nameCheck
 
-/-- Is `s` a string consisting only of digits, uppercase letters and primes? -/
+/--
+Is `s` a string consisting only of digits, uppercase letters and primes?
+
+TODO: This heuristic is not correct and leads to plenty false-negatives like `_LE` or `_TFAE` which should indeed be lower-cased as `_le` and `_tfae` following the style convention. See #34440 for more details.
+-/
 def isAcronymLike (s : String) : Bool :=
   s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || "'₀₁₂₃₄₅₆₇₈₉".contains c)
 
