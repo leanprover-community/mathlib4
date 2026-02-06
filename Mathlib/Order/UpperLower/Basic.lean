@@ -99,12 +99,12 @@ theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} : IsUpperSet (toDual �
 lemma IsUpperSet.isLowerSet_preimage_coe (hs : IsUpperSet s) :
     IsLowerSet ((↑) ⁻¹' t : Set s) ↔ ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t := by aesop
 
-@[to_dual]
+@[to_dual sdiff]
 lemma IsUpperSet.sdiff (hs : IsUpperSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     IsUpperSet (s \ t) :=
   fun _b _c hbc hb ↦ ⟨hs hbc hb.1, fun hc ↦ hb.2 <| ht _ hb.1 _ hc hbc⟩
 
-@[to_dual]
+@[to_dual sdiff_of_isUpperSet]
 lemma IsUpperSet.sdiff_of_isLowerSet (hs : IsUpperSet s) (ht : IsLowerSet t) : IsUpperSet (s \ t) :=
   hs.sdiff <| by aesop
 
