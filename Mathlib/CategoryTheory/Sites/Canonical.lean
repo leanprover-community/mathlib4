@@ -58,7 +58,7 @@ This is mostly an auxiliary lemma to show `isSheafFor_trans`.
 Adapted from [Elephant], Lemma C2.1.7(i) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709/
 -/
-theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, U f → Sieve Y)
+theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type*) (U : Sieve X) (B : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, U f → Sieve Y)
     (hU : Presieve.IsSheafFor P (U : Presieve X))
     (hB : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (hf : U f), Presieve.IsSheafFor P (B hf : Presieve Y))
     (hB' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (h : U f) ⦃Z⦄ (g : Z ⟶ Y),
@@ -113,7 +113,7 @@ This is mostly an auxiliary lemma to construct `finestTopology`.
 Adapted from [Elephant], Lemma C2.1.7(ii) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709
 -/
-theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
+theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type*) (R S : Sieve X)
     (hR : Presieve.IsSheafFor P (R : Presieve X))
     (hR' : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : S f), Presieve.IsSeparatedFor P (R.pullback f : Presieve Y))
     (hS : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (_ : R f), Presieve.IsSheafFor P (S.pullback f : Presieve Y)) :

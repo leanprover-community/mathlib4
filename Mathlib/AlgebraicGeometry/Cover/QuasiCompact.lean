@@ -194,6 +194,31 @@ lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover (Scheme.p
   · infer_instance
   · infer_instance
 
+/--
+Lift a quasi-compact cover of a `u`-scheme in an arbitrary universe to `u`. The indexing
+type is constructed by choosing finitely many compact opens above every affine open.
+This cover is again quasi-compact.
+-/
+noncomputable def ulift {S : Scheme.{u}} (𝒰 : PreZeroHypercover.{w} S) [QuasiCompactCover 𝒰] :
+    PreZeroHypercover.{u} S :=
+  𝒰.restrictIndex
+      fun i : (Σ U : S.affineOpens, Fin (exists_isAffineOpen_of_isCompact 𝒰 U.2.isCompact).choose) ↦
+    (exists_isAffineOpen_of_isCompact 𝒰 i.1.2.isCompact).choose_spec.choose i.2
+
+/-- The refinement morphism of the lifted cover. -/
+noncomputable def uliftHom {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
+    (ulift 𝒰).Hom 𝒰 :=
+  𝒰.restrictIndexHom _
+
+instance {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
+    QuasiCompactCover (ulift 𝒰) where
+  isCompactOpenCovered_of_isAffineOpen {U} hU :=
+    let H := exists_isAffineOpen_of_isCompact 𝒰 hU.isCompact
+    .of_finite (fun i : Fin H.choose ↦ ⟨⟨U, hU⟩, i⟩)
+      (fun _ ↦ H.choose_spec.choose_spec.choose _)
+      (fun _ ↦ H.choose_spec.choose_spec.choose_spec.left _ |>.isCompact)
+      H.choose_spec.choose_spec.choose_spec.right
+
 end QuasiCompactCover
 
 namespace Scheme

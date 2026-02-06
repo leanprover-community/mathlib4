@@ -3,10 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
-import Mathlib.AlgebraicGeometry.Cover.Sigma
-import Mathlib.CategoryTheory.Sites.Preserves
+module
+
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
+public import Mathlib.AlgebraicGeometry.Cover.Sigma
+public import Mathlib.CategoryTheory.Sites.Preserves
 
 /-!
 # The quasi-compact topology of a scheme
@@ -18,6 +20,8 @@ We show that a presheaf is a sheaf in this topology if and only if it is a sheaf
 in the Zariski topology and a sheaf on single object `P`-coverings of affine schemes.
 -/
 
+@[expose] public section
+
 universe w' w v u
 
 open CategoryTheory Limits Opposite
@@ -27,40 +31,6 @@ namespace CategoryTheory
 open Limits
 
 variable {C : Type*} [Category C]
-
--- TODO: this is almost in mathlib, with slightly less general universe assumptions on `F`
--- and with a wrong name
-lemma Presieve.IsSheafFor.of_isSheafFor_pullback'' (F : Cᵒᵖ ⥤ Type*) {X : C}
-    (S T : Sieve X)
-    (hF : Presieve.IsSheafFor F S.arrows)
-    (hF' : ∀ {Y : C} (f : Y ⟶ X), Presieve.IsSeparatedFor F (S.pullback f).arrows)
-    (H : ∀ {Y : C} (f : Y ⟶ X), S f → Presieve.IsSheafFor F (T.pullback f).arrows) :
-    Presieve.IsSheafFor F T.arrows := by
-  intro t ht
-  have ⦃Y : C⦄ (f : Y ⟶ X) (hf : S f) := H f hf (t.pullback f) (ht.pullback f)
-  choose s hs huniq using this
-  have hr : FamilyOfElements.Compatible s := by
-    rw [Presieve.compatible_iff_sieveCompatible]
-    intro Y Z f g hf
-    refine (H (g ≫ f) (by simp [hf])).isSeparatedFor.ext fun U o ho ↦ ?_
-    simp only [Sieve.pullback_apply] at ho
-    dsimp only [FamilyOfElements.IsAmalgamation, FamilyOfElements.pullback] at hs
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, hs _ _ _ ho, hs _ _ _ (by simpa)]
-    congr 1
-    simp
-  obtain ⟨t', ht', hunique⟩ := hF s hr
-  refine ⟨t', fun Y f hf ↦ (hF' f).ext fun Z g hg ↦ ?_, fun y hy ↦ ?_⟩
-  · rw [← FunctorToTypes.map_comp_apply, ← op_comp, ht' (g ≫ f) hg, ← t.comp_of_compatible _ ht]
-    have := hs (g ≫ f) hg (𝟙 _)
-    dsimp only [Presieve.FamilyOfElements.IsAmalgamation,
-      Presieve.FamilyOfElements.pullback] at this
-    simp only [Sieve.pullback_apply, Category.id_comp, op_id, FunctorToTypes.map_id_apply] at this
-    rw [this]
-    · congr 1
-      simp
-    · simp [hf]
-  · refine hunique _ fun Y f hf ↦ huniq _ _ _ fun Z g hg ↦ ?_
-    simp [Presieve.FamilyOfElements.pullback, ← hy _ hg]
 
 lemma Presieve.IsSheafFor.of_isSheafFor_pullback
     (F : Cᵒᵖ ⥤ Type*) {X : C}
@@ -188,148 +158,7 @@ open Scheme
 
 variable {P : MorphismProperty Scheme.{u}}
 
-@[simp]
-lemma Scheme.Cover.ofArrows_sigma {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P))
-    [IsZariskiLocalAtSource P] :
-    Presieve.ofArrows 𝒰.sigma.X 𝒰.sigma.f = Presieve.singleton (Sigma.desc 𝒰.f) := by
-  refine le_antisymm ?_ ?_
-  · intro T g ⟨i⟩
-    exact Presieve.singleton_self _
-  · intro T g ⟨⟩
-    exact ⟨⟨⟩⟩
-
-/-- The `qc`-precoverage of a scheme wrt. to a morphism property `P` is the precoverage
-given by quasi compact covers satisfying `P`. -/
-abbrev propqcPrecoverage (P : MorphismProperty Scheme.{u}) : Precoverage Scheme.{u} :=
-  qcPrecoverage ⊓ Scheme.precoverage P
-
-instance {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
-    (𝒰 : Scheme.Cover (propqcPrecoverage P) S) : QuasiCompactCover 𝒰.toPreZeroHypercover := by
-  rw [← Scheme.presieve₀_mem_qcPrecoverage_iff]
-  exact 𝒰.mem₀.1
-
-@[simps toPreZeroHypercover]
-abbrev Scheme.Cover.forgetQc {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
-    (𝒰 : Scheme.Cover (propqcPrecoverage P) S) :
-    S.Cover (precoverage P) where
-  __ := 𝒰.toPreZeroHypercover
-  mem₀ := 𝒰.mem₀.2
-
-instance {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
-    (𝒰 : Scheme.Cover (propqcPrecoverage P) S) :
-    QuasiCompactCover 𝒰.forgetQc.toPreZeroHypercover := by
-  dsimp; infer_instance
-
-@[simps toPreZeroHypercover]
-def Scheme.Cover.ofQuasiCompactCover {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
-    (𝒰 : Scheme.Cover (precoverage P) S) [qc : QuasiCompactCover 𝒰.1] :
-    Scheme.Cover (propqcPrecoverage P) S where
-  __ := 𝒰.toPreZeroHypercover
-  mem₀ := ⟨Scheme.presieve₀_mem_qcPrecoverage_iff.mpr ‹_›, 𝒰.mem₀⟩
-
-namespace QuasiCompactCover
-
-structure IdxAux {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] : Type u where
-  affineOpen : S.affineOpens
-  idx : Fin (exists_isAffineOpen_of_isCompact 𝒰 affineOpen.2.isCompact).choose
-
-noncomputable def ulift {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
-    PreZeroHypercover.{u} S :=
-  𝒰.restrictIndex fun i : IdxAux 𝒰 ↦
-    (exists_isAffineOpen_of_isCompact 𝒰 i.affineOpen.2.isCompact).choose_spec.choose i.idx
-
-noncomputable
-def uliftHom {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
-    (ulift 𝒰).Hom 𝒰 :=
-  𝒰.restrictIndexHom _
-
-instance {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
-    QuasiCompactCover (ulift 𝒰) where
-  isCompactOpenCovered_of_isAffineOpen {U} hU :=
-    let H := exists_isAffineOpen_of_isCompact 𝒰 hU.isCompact
-    .of_finite (fun i : Fin H.choose ↦ ⟨⟨U, hU⟩, i⟩)
-      (fun _ ↦ H.choose_spec.choose_spec.choose _)
-      (fun _ ↦ H.choose_spec.choose_spec.choose_spec.left _ |>.isCompact)
-      H.choose_spec.choose_spec.choose_spec.right
-
-end QuasiCompactCover
-
-noncomputable
-def Scheme.Cover.ulift' {P : MorphismProperty Scheme.{u}}
-    {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P)) [QuasiCompactCover 𝒰.1] :
-    Scheme.Cover.{u} (precoverage P) S where
-  __ := 𝒰.ulift.toPreZeroHypercover.sum (QuasiCompactCover.ulift 𝒰.1)
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ⟨.inl x, 𝒰.covers _⟩, fun i ↦ ?_⟩
-    induction i <;> exact 𝒰.map_prop _
-
-instance (P : MorphismProperty Scheme.{u})
-    {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P)) [QuasiCompactCover 𝒰.1] :
-    QuasiCompactCover (Scheme.Cover.ulift' 𝒰).1 :=
-  .of_hom (PreZeroHypercover.sumInr _ _)
-
-instance : Precoverage.Small.{u} (propqcPrecoverage P) where
-  zeroHypercoverSmall {S} (𝒰 : S.Cover _) := by
-    refine ⟨𝒰.forgetQc.ulift'.I₀, Sum.elim 𝒰.forgetQc.idx (QuasiCompactCover.uliftHom _).s₀,
-      ⟨?_, ?_⟩⟩
-    · rw [Scheme.presieve₀_mem_qcPrecoverage_iff]
-      exact .of_hom (𝒱 := QuasiCompactCover.ulift 𝒰.1) ⟨Sum.inr, fun i ↦ 𝟙 _, by cat_disch⟩
-    · rw [Scheme.presieve₀_mem_precoverage_iff]
-      exact ⟨fun x ↦ ⟨Sum.inl x, 𝒰.forgetQc.covers _⟩, fun i ↦ 𝒰.forgetQc.map_prop _⟩
-
-@[grind .]
-lemma propqcPrecoverage_le_precoverage (P : MorphismProperty Scheme.{u}) :
-    propqcPrecoverage P ≤ precoverage P :=
-  inf_le_right
-
-lemma mem_propqcPrecoverage_iff_exists_quasiCompactCover {P : MorphismProperty Scheme.{u}}
-    {S : Scheme.{u}} {R : Presieve S} :
-    R ∈ propqcPrecoverage P S ↔ ∃ (𝒰 : Scheme.Cover.{u + 1} (precoverage P) S),
-      QuasiCompactCover 𝒰.toPreZeroHypercover ∧ R = 𝒰.presieve₀ := by
-  rw [Precoverage.mem_iff_exists_zeroHypercover]
-  refine ⟨fun ⟨𝒰, h⟩ ↦ ⟨𝒰.weaken <| propqcPrecoverage_le_precoverage P, ?_, h⟩,
-    fun ⟨𝒰, _, h⟩ ↦ ⟨⟨𝒰.1, ⟨by simpa, 𝒰.mem₀⟩⟩, h⟩⟩
-  rw [← Scheme.presieve₀_mem_qcPrecoverage_iff]
-  exact 𝒰.mem₀.1
-
-abbrev propqcTopology (P : MorphismProperty Scheme.{u}) : GrothendieckTopology Scheme.{u} :=
-  (propqcPrecoverage P).toGrothendieck
-
-lemma Scheme.Hom.singleton_mem_qcPrecoverage {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [Surjective f] [QuasiCompact f] :
-    Presieve.singleton f ∈ qcPrecoverage Y := by
-  let E : Cover.{u} _ _ := f.cover (P := ⊤) trivial
-  rw [qcPrecoverage, PreZeroHypercoverFamily.mem_precoverage_iff]
-  refine ⟨(f.cover (P := ⊤) trivial).toPreZeroHypercover, ?_, by simp⟩
-  simp only [qcCoverFamily_property, quasiCompactCover_iff]
-  infer_instance
-
 attribute [grind .] Scheme.Hom.surjective
-
-@[simp]
-lemma Scheme.Hom.singleton_mem_propqcPrecoverage [P.IsMultiplicative] [P.IsStableUnderBaseChange]
-    {X Y : Scheme.{u}} {f : X ⟶ Y} (hf : P f) [Surjective f] [QuasiCompact f] :
-    Presieve.singleton f ∈ propqcPrecoverage P Y := by
-  refine ⟨f.singleton_mem_qcPrecoverage, ?_⟩
-  grind [singleton_mem_precoverage_iff]
-
-@[simp]
-lemma Scheme.Hom.generate_singleton_mem_propqcTopology [P.IsMultiplicative]
-    [P.IsStableUnderBaseChange] {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : P f) [Surjective f]
-    [QuasiCompact f] : Sieve.generate (Presieve.singleton f) ∈ propqcTopology P Y := by
-  apply Precoverage.generate_mem_toGrothendieck
-  exact f.singleton_mem_propqcPrecoverage hf
-
-@[simp]
-lemma Scheme.Cover.generate_ofArrows_mem_propqcTopology [P.IsMultiplicative]
-    [P.IsStableUnderBaseChange] {S : Scheme.{u}} (𝒰 : Cover.{u} (precoverage P) S)
-    [QuasiCompactCover 𝒰.1] :
-    .generate (.ofArrows 𝒰.X 𝒰.f) ∈ propqcTopology P S := by
-  apply Precoverage.generate_mem_toGrothendieck
-  refine ⟨?_, ?_⟩
-  · rwa [presieve₀_mem_qcPrecoverage_iff]
-  · exact 𝒰.mem₀
 
 -- This holds more generally if `𝒰.J` is `u`-small, but we don't need that for now.
 lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type w} [IsZariskiLocalAtSource P]
@@ -343,7 +172,7 @@ lemma Scheme.Cover.isSheafFor_sigma_iff {F : Scheme.{u}ᵒᵖ ⥤ Type w} [IsZar
     preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology hF
   conv_rhs => rw [← Presieve.isSheafFor_sigmaDesc_iff]
   congr!
-  rw [Scheme.Cover.ofArrows_sigma]
+  rw [← PreZeroHypercover.presieve₀, 𝒰.presieve₀_sigma]
 
 variable (P : MorphismProperty Scheme.{u})
 
@@ -405,7 +234,7 @@ nonrec lemma isSheaf_propqcTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒ�
   · exact Presieve.isSheaf_of_le _ (zariskiTopology_le_propqcTopology P) hF
   · apply hF.isSheafFor
     rw [← Hom.presieve₀_cover _ hf]
-    exact Cover.generate_ofArrows_mem_propqcTopology _
+    exact Cover.mem_propqcTopology _
   · rw [Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange_of_small.{u}]
     intro T (𝒰 : Scheme.Cover _ _)
     wlog hT : ∃ (R : CommRingCat.{u}), T = Spec R generalizing T
