@@ -368,10 +368,10 @@ lemma IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X} (hf : Is
     fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible
 
 lemma IsIrreducible.preimage_of_isPreirreducible_fiber (ht : IsIrreducible t)
-    (f : Y → X) (hf : IsOpenMap f) (hf' : ∀ x, IsPreirreducible (f ⁻¹' {x}))
+    (f : Y → X) (hf₂ : IsOpenMap f) (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x}))
     (h : (t ∩ Set.range f).Nonempty) :
     IsIrreducible (f ⁻¹' t) := by
-  refine ⟨?_, IsPreirreducible.preimage_of_isPreirreducible_fiber ht.2 f hf hf'⟩
+  refine ⟨?_, IsPreirreducible.preimage_of_isPreirreducible_fiber ht.2 f hf₂ hf₃⟩
   obtain ⟨-, hx, x, rfl⟩ := h
   exact ⟨x, hx⟩
 
@@ -381,14 +381,14 @@ lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
     (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
 
 lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
-    (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₀ : Continuous f) (hf : IsOpenMap f)
-    (hf' : ∀ x, IsPreirreducible (f ⁻¹'{x})) (h : (t ∩ Set.range f).Nonempty) :
+    (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
+    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹'{x})) (h : (t ∩ range f).Nonempty) :
     f ⁻¹' t ∈ irreducibleComponents Y := by
-  refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf hf' h, fun u hu htu ↦ Set.image_subset_iff.mp
-    (subset_closure.trans (ht.2 (hu.image f hf₀.continuousOn).closure ?_))⟩
-  suffices t ≤ closure (f '' (f ⁻¹' t)) from this.trans (closure_mono (Set.image_mono htu))
-  rw [Set.image_preimage_eq_inter_range]
-  exact subset_closure_inter_of_isPreirreducible_of_isOpen ht.1.2 hf.isOpen_range h
+  refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf₂ hf₃ h, fun u hu htu ↦ image_subset_iff.mp
+    (subset_closure.trans (ht.2 (hu.image f hf₁.continuousOn).closure ?_))⟩
+  suffices t ≤ closure (f '' (f ⁻¹' t)) from this.trans (closure_mono (image_mono htu))
+  rw [image_preimage_eq_inter_range]
+  exact subset_closure_inter_of_isPreirreducible_of_isOpen ht.1.2 hf₂.isOpen_range h
 
 lemma preimage_mem_irreducibleComponents (ht : t ∈ irreducibleComponents X) {f : Y → X}
     (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) :
