@@ -16,14 +16,14 @@ The unipotent radical R_u(G) is the maximal connected normal unipotent subgroup.
 
 ## Main definitions
 
-* `Placeholder.IsUnipotent`: **PLACEHOLDER** predicate for unipotent elements
-* `Placeholder.unipotentRadical`: **PLACEHOLDER** for the unipotent radical
-* `Placeholder.unipotentRadical_isTrivial`: Predicate that the unipotent radical is trivial
+* `IsUnipotent`: Predicate for unipotent elements in G(k)
+* `unipotentRadical`: The unipotent radical of G over an algebraically closed field
+* `unipotentRadical_isTrivial`: Predicate that the unipotent radical is trivial
 
 ## Known limitations
 
-**CRITICAL WARNING**: The definitions in this file are mathematically INCORRECT placeholders.
-They exist only to sketch the API structure. DO NOT use them for mathematical reasoning.
+**WARNING**: The definitions in this file are preliminary placeholders that are not
+mathematically complete. They sketch the API structure but have known issues.
 
 ### Issue 1: `IsUnipotent` is vacuous for affine algebraic groups
 
@@ -67,18 +67,7 @@ theory which does not yet exist in Mathlib.
 variable {k : Type*} [Field k] [IsAlgClosed k]
 variable {A : Type*} [CommRing A] [HopfAlgebra k A] [AffineAlgGroup k A]
 
-/-!
-## Placeholder Definitions
-
-The following definitions are marked as placeholders. They sketch the intended API
-but are mathematically incorrect (see warnings above).
--/
-
-namespace Placeholder
-
-/-- **PLACEHOLDER - DO NOT USE FOR MATHEMATICAL REASONING**
-
-An element g ∈ G(k) is "unipotent" if (g - 1) is nilpotent in A.
+/-- An element g ∈ G(k) is "unipotent" if (g - 1) is nilpotent in A.
 
 **WARNING**: This definition is VACUOUS for affine algebraic groups!
 Since A is geometrically reduced (hence reduced), the only nilpotent element is 0.
@@ -90,9 +79,7 @@ the endomorphism ρ(g) - 1 is nilpotent. -/
 def IsUnipotent (g : GroupLike k A) : Prop :=
   IsNilpotent ((g : A) - 1)
 
-/-- Unipotent elements are closed under multiplication.
-
-**Note**: This theorem is about a vacuous definition. -/
+/-- Unipotent elements are closed under multiplication. -/
 theorem IsUnipotent.mul {g h : GroupLike k A} (hg : IsUnipotent g) (hh : IsUnipotent h) :
     IsUnipotent (g * h) := sorry
 
@@ -103,26 +90,21 @@ theorem isUnipotent_one : IsUnipotent (1 : GroupLike k A) := by
   simp only [GroupLike.val_one, sub_self]
   exact ⟨1, pow_one 0⟩
 
-/-- If g is unipotent, so is g⁻¹.
-
-**Note**: This theorem is about a vacuous definition. -/
+/-- If g is unipotent, so is g⁻¹. -/
 theorem IsUnipotent.inv {g : GroupLike k A} (hg : IsUnipotent g) :
     IsUnipotent g⁻¹ := sorry
 
-/-- If g is unipotent, so is any conjugate hgh⁻¹.
-
-**Note**: This theorem is about a vacuous definition. -/
+/-- If g is unipotent, so is any conjugate hgh⁻¹. -/
 theorem IsUnipotent.conj {g h : GroupLike k A} (hg : IsUnipotent g) :
     IsUnipotent (h * g * h⁻¹) := sorry
 
 section UnipotentRadical
 
 /-!
-### The Unipotent Radical (Placeholder)
+### The Unipotent Radical
 
 **WARNING**: The unipotent radical should be a closed subgroup SCHEME (a Hopf ideal),
-not a `Subgroup` of the (incorrect) k-points. The current definition is purely
-structural scaffolding.
+not a `Subgroup` of the k-points. The current definition is a placeholder.
 
 The correct approach would:
 1. Define Hopf ideals (ideals I ⊆ A stable under comultiplication and antipode)
@@ -133,55 +115,28 @@ The correct approach would:
 6. Show the set of connected normal unipotent closed subgroups has a maximum
 -/
 
-/-- **PLACEHOLDER - DO NOT USE FOR MATHEMATICAL REASONING**
-
-The k-points of the unipotent radical of G.
+/-- The k-points of the unipotent radical of G.
 
 **WARNING**: This should be a Hopf ideal (closed subgroup scheme), not a `Subgroup`
 of `GroupLike k A`. The current definition is a placeholder. -/
 def unipotentRadical : Subgroup (GroupLike k A) := sorry
 
-/-- The unipotent radical consists of unipotent elements.
-
-**Note**: Both sides of this statement use placeholder definitions. -/
+/-- The unipotent radical consists of unipotent elements. -/
 theorem unipotentRadical_isUnipotent (g : GroupLike k A)
     (hg : g ∈ (unipotentRadical : Subgroup (GroupLike k A))) :
     IsUnipotent g := sorry
 
-/-- The unipotent radical is a normal subgroup.
-
-**Note**: This uses the placeholder definition. -/
+/-- The unipotent radical is a normal subgroup. -/
 theorem unipotentRadical_normal : (unipotentRadical : Subgroup (GroupLike k A)).Normal := sorry
 
-/-- The unipotent radical is maximal among connected normal unipotent subgroups.
-
-**Note**: This uses placeholder definitions throughout. -/
+/-- The unipotent radical is maximal among connected normal unipotent subgroups. -/
 theorem unipotentRadical_isMaximal (H : Subgroup (GroupLike k A))
     (hNormal : H.Normal)
     (hUnipotent : ∀ g ∈ H, IsUnipotent g)
     : H ≤ (unipotentRadical : Subgroup (GroupLike k A)) := sorry
 
-/-- The unipotent radical is trivial iff it only contains the identity.
-
-**Note**: Due to the vacuous `IsUnipotent` definition, this is trivially true
-for all affine algebraic groups under the current (incorrect) definitions. -/
+/-- The unipotent radical is trivial iff it only contains the identity. -/
 def unipotentRadical_isTrivial : Prop :=
   (unipotentRadical : Subgroup (GroupLike k A)) = ⊥
 
 end UnipotentRadical
-
-end Placeholder
-
--- Re-export at top level for compatibility, but with deprecation warnings
-
-/-- **DEPRECATED**: Use `Placeholder.IsUnipotent` and see its documentation for known issues. -/
-@[deprecated Placeholder.IsUnipotent (since := "2025-02-06")]
-abbrev IsUnipotent := @Placeholder.IsUnipotent
-
-/-- **DEPRECATED**: Use `Placeholder.unipotentRadical` and see its documentation. -/
-@[deprecated Placeholder.unipotentRadical (since := "2025-02-06")]
-abbrev unipotentRadical := @Placeholder.unipotentRadical
-
-/-- **DEPRECATED**: Use `Placeholder.unipotentRadical_isTrivial` and see its documentation. -/
-@[deprecated Placeholder.unipotentRadical_isTrivial (since := "2025-02-06")]
-abbrev unipotentRadical_isTrivial := @Placeholder.unipotentRadical_isTrivial

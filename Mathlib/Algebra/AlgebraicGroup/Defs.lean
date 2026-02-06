@@ -111,15 +111,6 @@ instance AlgPoints.instGroup : Group (AlgPoints k A) := sorry
 /-- For a cocommutative Hopf algebra, the k-points form a commutative group. -/
 instance AlgPoints.instCommGroup [Coalgebra.IsCocomm k A] : CommGroup (AlgPoints k A) := sorry
 
-/-- **DEPRECATED**: Group-like elements of the Hopf algebra.
-
-WARNING: This is NOT the correct k-points! For a commutative Hopf algebra, `GroupLike k A`
-always forms a commutative group, which is wrong for non-abelian algebraic groups like GL_n.
-
-Use `AlgPoints k A` instead for the functor of points. -/
-@[deprecated AlgPoints (since := "2025-02-06")]
-def points (k A : Type*) [Field k] [CommRing A] [HopfAlgebra k A] := GroupLike k A
-
 /-!
 ### Connectedness
 
