@@ -41,10 +41,10 @@ theorem isUpperSet_empty : IsUpperSet (∅ : Set α) := fun _ _ _ => id
 @[to_dual]
 theorem isUpperSet_univ : IsUpperSet (univ : Set α) := fun _ _ _ => id
 
-@[to_dual]
+@[to_dual compl]
 theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb ha => hb <| hs h ha
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) isLowerSet_compl]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
     convert h.compl
