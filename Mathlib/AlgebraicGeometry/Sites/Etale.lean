@@ -27,13 +27,17 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry.Scheme
 
+/-- Big étale site: the étale precoverage on the category of schemes. -/
+def etalePrecoverage : Precoverage Scheme.{u} :=
+  precoverage @IsEtale
+
 /-- Big étale site: the étale pretopology on the category of schemes. -/
 def etalePretopology : Pretopology Scheme.{u} :=
   pretopology @IsEtale
 
 /-- Big étale site: the étale topology on the category of schemes. -/
 abbrev etaleTopology : GrothendieckTopology Scheme.{u} :=
-  etalePretopology.toGrothendieck
+  etalePrecoverage.toGrothendieck
 
 lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
   apply grothendieckTopology_monotone
