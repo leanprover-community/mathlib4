@@ -129,12 +129,12 @@ def Fuzzy : Game → Game → Prop :=
   Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
 
 -- Porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
-instance : IsTrichotomous Game LF :=
-  ⟨by
+instance : Std.Trichotomous LF :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap <| by
     rintro ⟨x⟩ ⟨y⟩
     change _ ∨ ⟦x⟧ = ⟦y⟧ ∨ _
     rw [Quotient.eq]
-    apply lf_or_equiv_or_gf⟩
+    apply lf_or_equiv_or_gf
 
 /-! It can be useful to use these lemmas to turn `PGame` inequalities into `Game` inequalities, as
 the `AddCommGroup` structure on `Game` often simplifies many proofs. -/
