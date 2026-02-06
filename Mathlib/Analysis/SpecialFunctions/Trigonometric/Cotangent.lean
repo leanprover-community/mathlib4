@@ -150,7 +150,7 @@ lemma cot_pi_mul_contDiffWithinAt (k : ℕ∞) (hx : x ∈ ℂ_ℤ) :
 lemma tendsto_logDeriv_euler_sin_div (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ ↦ logDeriv (fun z ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x)
         atTop (𝓝 <| logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) x) := by
-  refine logDeriv_tendsto (isOpen_compl_range_intCast) hx
+  refine logDeriv_tendsto isOpen_compl_range_intCast hx
       HasProdLocallyUniformlyOn_euler_sin_prod.tendstoLocallyUniformlyOn_finsetRange ?_ ?_
   · filter_upwards with n using by fun_prop
   · simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]

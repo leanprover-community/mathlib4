@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
-
 /-!
 # Dedekind eta function
 
@@ -85,14 +84,14 @@ lemma multipliableLocallyUniformlyOn_eta :
   · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
     simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
 
-lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : (∏' n, (1 - eta_q n z)) ≠ 0 := by
+lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
   · exact fun i ↦ by simpa using one_sub_eta_q_ne_zero i hz
   · simpa [eta_q, ← summable_norm_iff] using summable_eta_q ⟨z, hz⟩
 
 /-- Eta is non-vanishing on the upper half plane. -/
-lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
-  apply mul_ne_zero (Periodic.qParam_ne_zero z) (eta_tprod_ne_zero hz)
+lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 :=
+  mul_ne_zero (Periodic.qParam_ne_zero z) (eta_tprod_ne_zero hz)
 
 lemma logDeriv_one_sub_cexp (r : ℂ) : logDeriv (fun z ↦ 1 - r * cexp z) =
     fun z ↦ -r * cexp z / (1 - r * cexp z) := by

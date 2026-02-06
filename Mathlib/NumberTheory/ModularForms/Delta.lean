@@ -54,7 +54,7 @@ local notation "η" => eta
 local notation "𝕢" => Periodic.qParam
 section auxiliary
 
-noncomputable abbrev csqrt : ℂ → ℂ := fun a : ℂ ↦ a ^ (1 / (2 : ℂ))
+noncomputable abbrev csqrt : ℂ → ℂ := (· ^ (1 / 2 : ℂ))
 
 lemma csqrt_eq {z : ℂ} (hz : z ≠ 0) : csqrt z = cexp ((Complex.log z) * (1 / 2)) := by
   unfold csqrt
@@ -156,8 +156,7 @@ end auxiliary
 lemma Delta_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n z) ^ 24 := by
   simp only [Delta, eta, mul_pow]
   congr
-  · simp [Periodic.qParam]
-    simp only [← exp_nsmul, nsmul_eq_mul, Nat.cast_ofNat]
+  · simp [Periodic.qParam, ← exp_nsmul, nsmul_eq_mul, Nat.cast_ofNat]
     grind
   · rw [Multipliable.tprod_pow]
     exact multipliableLocallyUniformlyOn_eta.multipliable z.2
@@ -173,7 +172,7 @@ lemma Discriminant_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   simp [Delta_eq_q_prod, eta_q,  Periodic.qParam, exp_periodo z]
 
 /-- The transformation formula for `η` under `S : z ↦ -1/z`: we have
-`η(-1/z) = (√I)⁻¹ · √z · η(z)` on the upper half-plane. -/
+`η(-1 / z) = (√I)⁻¹ · √z · η(z)` on the upper half-plane. -/
 lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
     (η ∘ (fun z : ℂ ↦ -1 / z)) ((I ^ (1 / 2 : ℂ))⁻¹ • ((· ^ (1 / 2 : ℂ)) * η)) := by
   obtain ⟨z, hz, h⟩ := eta_comp_eqOn_const_mul_csqrt_eta

@@ -198,10 +198,9 @@ section LogDeriv
 function is the logarithmic derivative of the limit function. -/
 theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} {f : ι → ℂ → ℂ} {g : ℂ → ℂ}
     {s : Set ℂ} (hs : IsOpen s) {x : ℂ} (hx : x ∈ s) (hF : TendstoLocallyUniformlyOn f g p s)
-    (hf : ∀ᶠ n : ι in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
-    Tendsto (fun n : ι => logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by
-  simp_rw [logDeriv]
-  apply Tendsto.div ((hF.deriv hf hs).tendsto_at hx) (hF.tendsto_at hx) hg
+    (hf : ∀ᶠ n in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
+    Tendsto (fun n ↦ logDeriv (f n) x) p (𝓝 (logDeriv g x)) :=
+  ((hF.deriv hf hs).tendsto_at hx).div (hF.tendsto_at hx) hg
 
 end LogDeriv
 

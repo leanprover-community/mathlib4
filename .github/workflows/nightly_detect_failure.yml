@@ -190,6 +190,7 @@ jobs:
         exit 0
 
     - name: Fetch latest bump branch name
+      if: steps.check_branch.outputs.result == 'false'
       id: latest_bump_branch
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       with:
@@ -210,6 +211,7 @@ jobs:
           return latestBranch;
 
     - name: Fetch lean-toolchain from latest bump branch
+      if: steps.check_branch.outputs.result == 'false'
       id: bump_version
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       with:
@@ -280,7 +282,7 @@ jobs:
           return match[1];
 
     - name: Send warning message on Zulip if pattern doesn't match
-      if: failure()
+      if: failure() && steps.bump_version.outcome == 'failure'
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
