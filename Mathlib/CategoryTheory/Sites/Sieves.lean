@@ -177,15 +177,6 @@ lemma ofArrows.mk' {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {Z : C} {g
   subst hg
   constructor
 
-theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
-  funext Y
-  ext g
-  constructor
-  · rintro ⟨_⟩
-    apply singleton.mk
-  · rintro ⟨_⟩
-    exact ofArrows.mk PUnit.unit
-
 instance {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     [∀ i, HasPullback (g i) f] : (ofArrows Z g).HasPullbacks f where
   hasPullback {_} _ := fun ⟨i⟩ ↦ inferInstance
@@ -273,6 +264,17 @@ lemma ofArrows_comp_eq_of_surjective {X : C} {ι σ : Type*} {Y : ι → C}
 lemma ofArrows_le_iff {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {R : Presieve X} :
     Presieve.ofArrows Y f ≤ R ↔ ∀ i, R (f i) :=
   ⟨fun hle i ↦ hle _ ⟨i⟩, fun h _ g ⟨i⟩ ↦ h i⟩
+
+lemma ofArrows_of_unique {X : C} {ι : Type*} [Unique ι] {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    ofArrows Y f = singleton (f default) := by
+  refine le_antisymm ?_ fun Y _ ⟨⟩ ↦ ⟨default⟩
+  rw [ofArrows_le_iff]
+  intro i
+  obtain rfl : i = default := Subsingleton.elim _ _
+  simp
+
+theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
+  rw [ofArrows_of_unique]
 
 /-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
 This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see

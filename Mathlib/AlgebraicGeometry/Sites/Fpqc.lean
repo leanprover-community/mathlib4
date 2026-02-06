@@ -28,14 +28,6 @@ open Limits
 
 variable {C : Type*} [Category C]
 
-lemma Presieve.ofArrows_of_unique {S : C} {ι : Type*} [Unique ι] {X : ι → C} (f : ∀ i, X i ⟶ S) :
-    ofArrows X f = singleton (f default) := by
-  refine le_antisymm ?_ fun Y _ ⟨⟩ ↦ ⟨default⟩
-  rw [ofArrows_le_iff]
-  intro i
-  obtain rfl : i = default := Subsingleton.elim _ _
-  simp
-
 -- TODO: this is almost in mathlib, with slightly less general universe assumptions on `F`
 -- and with a wrong name
 lemma Presieve.IsSheafFor.of_isSheafFor_pullback'' (F : Cᵒᵖ ⥤ Type*) {X : C}
@@ -194,20 +186,6 @@ lemma isSheafFor_singleton_iff_of_iso
   subst he
   rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
     Presieve.isSheafFor_ofArrows_comp_iff]
-
-@[gcongr]
-lemma Pretopology.toGrothendieck_mono {C : Type*} [Category C] [HasPullbacks C]
-    {J K : Pretopology C} (h : J ≤ K) : J.toGrothendieck ≤ K.toGrothendieck :=
-  fun _ _ ⟨R, hR, hle⟩ ↦ ⟨R, h _ hR, hle⟩
-
-attribute [grind .] GrothendieckTopology.pullback_stable GrothendieckTopology.transitive
-
-@[gcongr]
-lemma Precoverage.toPretopology_mono {C : Type*} [Category C] [Limits.HasPullbacks C]
-    {J K : Precoverage C} [J.HasIsos] [J.IsStableUnderBaseChange] [J.IsStableUnderComposition]
-    [K.HasIsos] [K.IsStableUnderBaseChange] [K.IsStableUnderComposition]
-    (h : J ≤ K) : J.toPretopology ≤ K.toPretopology :=
-  h
 
 variable {C : Type*} [Category C]
 
