@@ -16,25 +16,47 @@ The unipotent radical R_u(G) is the maximal connected normal unipotent subgroup.
 
 ## Main definitions
 
-* `IsUnipotent`: Predicate for unipotent elements in G(k)
-* `unipotentRadical`: The unipotent radical of G over an algebraically closed field
-* `unipotentRadical_isTrivial`: Predicate that the unipotent radical is trivial
+* `Placeholder.IsUnipotent`: **PLACEHOLDER** predicate for unipotent elements
+* `Placeholder.unipotentRadical`: **PLACEHOLDER** for the unipotent radical
+* `Placeholder.unipotentRadical_isTrivial`: Predicate that the unipotent radical is trivial
 
-## Implementation notes
+## Known limitations
 
-The definition of `IsUnipotent` is simplified: we say g is unipotent if (g - 1) is nilpotent
-directly in the Hopf algebra A. This agrees with the standard definition for linear algebraic
-groups (embedded in GL_n), because group-like elements correspond to invertible matrices,
-and an invertible matrix M has (M - 1) nilpotent iff all eigenvalues of M are 1.
+**CRITICAL WARNING**: The definitions in this file are mathematically INCORRECT placeholders.
+They exist only to sketch the API structure. DO NOT use them for mathematical reasoning.
 
-The full definition via faithful representations would require:
-1. Defining comodules over A (which correspond to representations of G)
-2. Defining "faithful" comodules (injective coaction)
-3. Showing the definition is independent of the choice of faithful comodule
+### Issue 1: `IsUnipotent` is vacuous for affine algebraic groups
 
-The unipotent radical is defined using `sorry`; the full construction requires showing
-that the set of connected normal unipotent subgroups has a maximum, which uses
-dimension theory for algebraic groups.
+The definition `IsUnipotent g := IsNilpotent ((g : A) - 1)` checks if `(g - 1)` is nilpotent
+in the coordinate ring A. However:
+
+1. `AffineAlgGroup` requires A to be geometrically reduced
+2. Geometrically reduced implies reduced (no nonzero nilpotent elements)
+3. Therefore `(g - 1)` nilpotent forces `g - 1 = 0`, i.e., `g = 1`
+4. **Conclusion**: Only the identity element satisfies `IsUnipotent`!
+
+This makes the definition vacuous and every group "reductive" by this criterion.
+
+### Issue 2: Uses `GroupLike` instead of `AlgPoints`
+
+The definitions use `GroupLike k A` (group-like elements of the Hopf algebra), but:
+- `GroupLike k A` always forms a COMMUTATIVE group for commutative A
+- The correct k-points are `AlgPoints k A := A →ₐ[k] k` with convolution
+
+### Issue 3: `unipotentRadical` should be a subgroup SCHEME
+
+The unipotent radical is defined as a `Subgroup` of `GroupLike k A`, but it should be a
+closed subgroup scheme, corresponding to a Hopf ideal of A. This requires Hopf ideal
+theory which does not yet exist in Mathlib.
+
+### What would be needed for correct definitions
+
+1. **Comodule theory**: Define comodules over Hopf algebras (representations of G)
+2. **Faithful comodules**: Define what it means for a comodule to be faithful
+3. **Representation-theoretic `IsUnipotent`**: g is unipotent iff for every faithful
+   finite-dimensional comodule V, the induced endomorphism ρ(g) - 1 is nilpotent
+4. **Hopf ideals**: Define Hopf ideals as ideals stable under comultiplication and antipode
+5. **Closed subgroups**: Define closed subgroup schemes via Hopf ideals
 
 ## References
 
@@ -45,27 +67,36 @@ dimension theory for algebraic groups.
 variable {k : Type*} [Field k] [IsAlgClosed k]
 variable {A : Type*} [CommRing A] [HopfAlgebra k A] [AffineAlgGroup k A]
 
-/-- An element g ∈ G(k) is unipotent if (g - 1) is nilpotent in A.
+/-!
+## Placeholder Definitions
 
-Over an algebraically closed field, this is equivalent to: for every faithful
-finite-dimensional representation ρ : G → GL_n, the endomorphism ρ(g) - 1 is nilpotent
-(equivalently, all eigenvalues of ρ(g) are 1, equivalently, ρ(g) is conjugate to an
-upper triangular matrix with 1's on the diagonal).
+The following definitions are marked as placeholders. They sketch the intended API
+but are mathematically incorrect (see warnings above).
+-/
 
-**Simplified definition**: We define unipotence directly in terms of nilpotence in the
-coordinate ring. This is correct for linear algebraic groups and avoids the need for
-comodule theory. -/
+namespace Placeholder
+
+/-- **PLACEHOLDER - DO NOT USE FOR MATHEMATICAL REASONING**
+
+An element g ∈ G(k) is "unipotent" if (g - 1) is nilpotent in A.
+
+**WARNING**: This definition is VACUOUS for affine algebraic groups!
+Since A is geometrically reduced (hence reduced), the only nilpotent element is 0.
+Therefore `IsNilpotent ((g : A) - 1)` forces `g = 1`.
+
+The correct definition requires representation/comodule theory:
+g is unipotent iff for every faithful finite-dimensional representation ρ : G → GL_n,
+the endomorphism ρ(g) - 1 is nilpotent. -/
 def IsUnipotent (g : GroupLike k A) : Prop :=
   IsNilpotent ((g : A) - 1)
 
 /-- Unipotent elements are closed under multiplication.
 
-Proof sketch: If (g-1) and (h-1) are nilpotent, then gh - 1 = (g-1)(h-1) + (g-1) + (h-1)
-is nilpotent because the sum of commuting nilpotent elements is nilpotent.
-Note: g and h commute with their differences from 1, so this works. -/
+**Note**: This theorem is about a vacuous definition. -/
 theorem IsUnipotent.mul {g h : GroupLike k A} (hg : IsUnipotent g) (hh : IsUnipotent h) :
     IsUnipotent (g * h) := sorry
 
+omit [IsAlgClosed k] [AffineAlgGroup k A] in
 /-- The identity is unipotent (trivially: 1 - 1 = 0 is nilpotent). -/
 theorem isUnipotent_one : IsUnipotent (1 : GroupLike k A) := by
   unfold IsUnipotent
@@ -74,78 +105,83 @@ theorem isUnipotent_one : IsUnipotent (1 : GroupLike k A) := by
 
 /-- If g is unipotent, so is g⁻¹.
 
-Proof sketch: If g - 1 is nilpotent, say (g-1)^n = 0, then we can write
-g⁻¹ = (1 - (1-g))⁻¹ = 1 + (1-g) + (1-g)² + ... + (1-g)^{n-1}
-so g⁻¹ - 1 = (1-g) + (1-g)² + ... = (1-g)(1 + (1-g) + ... + (1-g)^{n-2})
-which shows g⁻¹ - 1 is divisible by (1-g) = -(g-1), hence nilpotent. -/
+**Note**: This theorem is about a vacuous definition. -/
 theorem IsUnipotent.inv {g : GroupLike k A} (hg : IsUnipotent g) :
     IsUnipotent g⁻¹ := sorry
 
-/-- If g is unipotent, so is any conjugate hgh⁻¹. -/
+/-- If g is unipotent, so is any conjugate hgh⁻¹.
+
+**Note**: This theorem is about a vacuous definition. -/
 theorem IsUnipotent.conj {g h : GroupLike k A} (hg : IsUnipotent g) :
     IsUnipotent (h * g * h⁻¹) := sorry
 
 section UnipotentRadical
 
 /-!
-### The Unipotent Radical
+### The Unipotent Radical (Placeholder)
 
-The unipotent radical of an affine algebraic group G over an algebraically closed field
-is the maximal connected normal unipotent subgroup.
+**WARNING**: The unipotent radical should be a closed subgroup SCHEME (a Hopf ideal),
+not a `Subgroup` of the (incorrect) k-points. The current definition is purely
+structural scaffolding.
 
-For now, we define this as a subgroup of G(k) and state the required properties as theorems
-with `sorry` proofs. A full implementation would:
-1. Define closed subgroups via Hopf subalgebras (quotients of A)
-2. Define connected closed subgroups (quotients that are integral domains)
-3. Define normal closed subgroups (invariant under the adjoint action)
-4. Show the set of connected normal unipotent subgroups is bounded in dimension
-5. Construct the maximum as a Hopf subalgebra
-
-The existence of a maximal such subgroup follows from dimension considerations:
-unipotent groups over algebraically closed fields have bounded dimension
-(they embed into strictly upper triangular matrices), so there exists a maximum.
+The correct approach would:
+1. Define Hopf ideals (ideals I ⊆ A stable under comultiplication and antipode)
+2. Define closed subgroups as quotients A/I with induced Hopf structure
+3. Define "connected" as A/I being an integral domain
+4. Define "normal" as I being stable under the adjoint action
+5. Define "unipotent" using correct representation theory
+6. Show the set of connected normal unipotent closed subgroups has a maximum
 -/
 
-/-- The k-points of the unipotent radical of G.
+/-- **PLACEHOLDER - DO NOT USE FOR MATHEMATICAL REASONING**
 
-This is the maximal connected normal unipotent subgroup of G(k).
-The full construction would give a closed subgroup scheme, i.e., a Hopf subalgebra of A.
+The k-points of the unipotent radical of G.
 
-**Construction outline** (not implemented):
-- Consider all connected normal unipotent closed subgroups H ⊆ G
-- These correspond to Hopf ideals I ⊆ A such that A/I is an integral domain
-  and the induced subgroup of G(k) consists of unipotent elements
-- The dimensions of such H are bounded (unipotent groups embed in U_n)
-- Take the unique maximal such H -/
+**WARNING**: This should be a Hopf ideal (closed subgroup scheme), not a `Subgroup`
+of `GroupLike k A`. The current definition is a placeholder. -/
 def unipotentRadical : Subgroup (GroupLike k A) := sorry
 
-/-- The unipotent radical consists of unipotent elements. -/
+/-- The unipotent radical consists of unipotent elements.
+
+**Note**: Both sides of this statement use placeholder definitions. -/
 theorem unipotentRadical_isUnipotent (g : GroupLike k A)
     (hg : g ∈ (unipotentRadical : Subgroup (GroupLike k A))) :
     IsUnipotent g := sorry
 
 /-- The unipotent radical is a normal subgroup.
 
-This follows from the characterization as the maximal connected normal unipotent subgroup:
-for any h ∈ G(k), the conjugate h · R_u(G) · h⁻¹ is also a connected normal unipotent
-subgroup, hence contained in R_u(G), which gives normality. -/
+**Note**: This uses the placeholder definition. -/
 theorem unipotentRadical_normal : (unipotentRadical : Subgroup (GroupLike k A)).Normal := sorry
 
 /-- The unipotent radical is maximal among connected normal unipotent subgroups.
 
-Note: The statement includes a `sorry` for connectedness because we haven't defined
-what it means for a subgroup of G(k) to be "connected" (this would correspond to
-the associated Hopf subalgebra being an integral domain). -/
+**Note**: This uses placeholder definitions throughout. -/
 theorem unipotentRadical_isMaximal (H : Subgroup (GroupLike k A))
     (hNormal : H.Normal)
     (hUnipotent : ∀ g ∈ H, IsUnipotent g)
-    /- (hConnected : ...) -- TODO: need notion of connectedness for subgroups -/
     : H ≤ (unipotentRadical : Subgroup (GroupLike k A)) := sorry
 
 /-- The unipotent radical is trivial iff it only contains the identity.
 
-For a reductive group G, this condition holds after base change to the algebraic closure. -/
+**Note**: Due to the vacuous `IsUnipotent` definition, this is trivially true
+for all affine algebraic groups under the current (incorrect) definitions. -/
 def unipotentRadical_isTrivial : Prop :=
   (unipotentRadical : Subgroup (GroupLike k A)) = ⊥
 
 end UnipotentRadical
+
+end Placeholder
+
+-- Re-export at top level for compatibility, but with deprecation warnings
+
+/-- **DEPRECATED**: Use `Placeholder.IsUnipotent` and see its documentation for known issues. -/
+@[deprecated Placeholder.IsUnipotent (since := "2025-02-06")]
+abbrev IsUnipotent := @Placeholder.IsUnipotent
+
+/-- **DEPRECATED**: Use `Placeholder.unipotentRadical` and see its documentation. -/
+@[deprecated Placeholder.unipotentRadical (since := "2025-02-06")]
+abbrev unipotentRadical := @Placeholder.unipotentRadical
+
+/-- **DEPRECATED**: Use `Placeholder.unipotentRadical_isTrivial` and see its documentation. -/
+@[deprecated Placeholder.unipotentRadical_isTrivial (since := "2025-02-06")]
+abbrev unipotentRadical_isTrivial := @Placeholder.unipotentRadical_isTrivial
