@@ -75,7 +75,7 @@ lemma Opens.IsBasis.isOpenCover_mem_and_le {S : Set (Opens X)} (hS : Opens.IsBas
   refine top_le_iff.mp fun x _ ↦ ?_
   obtain ⟨i, hxi⟩ := hU.exists_mem x
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hS.exists_subset_of_mem_open hxi (U i).2
-  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk, Set.mem_iUnion, SetLike.mem_coe]
+  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Set.mem_iUnion, SetLike.mem_coe]
   exact ⟨⟨(V, i), hV, hVU⟩, hxV⟩
 
 end TopologicalSpace
