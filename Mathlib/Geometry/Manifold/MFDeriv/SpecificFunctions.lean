@@ -178,9 +178,8 @@ section Const
 variable {c : M'}
 
 theorem hasMFDerivAt_const (c : M') (x : M) :
-    HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
-  refine ⟨continuous_const.continuousAt, ?_⟩
-  simp only [writtenInExtChartAt, Function.comp_def, hasFDerivWithinAt_const]
+    HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
+  ⟨by fun_prop, by simp [Function.comp_def, hasFDerivWithinAt_const]⟩
 
 theorem hasMFDerivWithinAt_const (c : M') (s : Set M) (x : M) :
     HasMFDerivWithinAt I I' (fun _ : M => c) s x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=

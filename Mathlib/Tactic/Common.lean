@@ -13,6 +13,7 @@ public import Plausible
 
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 public import ImportGraph.Imports
+public import ImportGraph.Lean.Environment
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
@@ -116,7 +117,6 @@ public import Mathlib.Tactic.Widget.CongrM
 public import Mathlib.Tactic.Widget.Conv
 public import Mathlib.Tactic.Widget.LibraryRewrite
 public import Mathlib.Tactic.WLOG
-public import Mathlib.Util.AssertExists
 public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
