@@ -298,11 +298,9 @@ theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
 @[fun_prop]
 theorem hasFDerivWithinAt_of_subsingleton [h : Subsingleton E] (f : E → F) (s : Set E) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) s x := by
-  by_cases hs : s = ∅
-  · simp [hs]
-  · obtain ⟨a, rfl⟩ := exists_eq_singleton_iff_nonempty_subsingleton (s := s) |>.mpr
-      ⟨by rwa [nonempty_iff_ne_empty], subsingleton_of_subsingleton⟩
-    exact HasFDerivWithinAt.singleton
+  obtain rfl | ⟨a, rfl⟩ := s.eq_empty_or_singleton_of_subsingleton
+  · simp
+  · exact HasFDerivWithinAt.singleton
 
 @[fun_prop]
 theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :

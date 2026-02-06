@@ -113,7 +113,7 @@ instance [Std.Asymm r] [∀ i, Std.Antisymm (s i)] : Std.Antisymm (Lex r s) :=
     · exact (irrefl _ hji).elim
     · exact congr_arg (Sigma.mk _ ·) <| antisymm hab hba⟩
 
-instance [IsTrichotomous ι r] [∀ i, Std.Total (s i)] : Std.Total (Lex r s) :=
+instance [Std.Trichotomous r] [∀ i, Std.Total (s i)] : Std.Total (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
@@ -123,8 +123,8 @@ instance [IsTrichotomous ι r] [∀ i, Std.Total (s i)] : Std.Total (Lex r s) :=
       · exact Or.inr (Lex.right _ _ hba)
     · exact Or.inr (Lex.left _ _ hji)⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) :=
-  ⟨by
+instance [Std.Trichotomous r] [∀ i, Std.Trichotomous (s i)] : Std.Trichotomous (Lex r s) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap <| by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (Lex.left _ _ hij)
@@ -132,7 +132,7 @@ instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichoto
       · exact Or.inl (Lex.right _ _ hab)
       · exact Or.inr (Or.inl rfl)
       · exact Or.inr (Or.inr <| Lex.right _ _ hba)
-    · exact Or.inr (Or.inr <| Lex.left _ _ hji)⟩
+    · exact Or.inr (Or.inr <| Lex.left _ _ hji)
 
 end Sigma
 
