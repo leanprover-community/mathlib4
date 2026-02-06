@@ -115,6 +115,14 @@ theorem mul {f_exp g_exp : ℝ} (hf : Majorized f b f_exp)
   simp only [Pi.pow_apply]
   conv_rhs => rw [show exp = (f_exp + ε) + (g_exp + ε) by dsimp [ε]; ring_nf, Real.rpow_add hx]
 
+theorem mul_bounded {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorized f basis_hd exp)
+    (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
+    Majorized (f * g) basis_hd exp := by
+  intro exp h_exp
+  convert IsLittleO.mul_isBigO (hf _ h_exp) hg using 1
+  simp
+  rfl
+
 end Majorized
 
 end Tactic.ComputeAsymptotics
