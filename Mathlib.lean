@@ -52,6 +52,9 @@ public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.Algebra.AlgebraicCard
+public import Mathlib.Algebra.AlgebraicGroup.Defs
+public import Mathlib.Algebra.AlgebraicGroup.Reductive
+public import Mathlib.Algebra.AlgebraicGroup.Unipotent
 public import Mathlib.Algebra.ArithmeticGeometric
 public import Mathlib.Algebra.Azumaya.Basic
 public import Mathlib.Algebra.Azumaya.Defs
