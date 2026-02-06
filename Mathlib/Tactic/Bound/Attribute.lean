@@ -6,7 +6,6 @@ Authors: Geoffrey Irving
 module
 
 public import Aesop
-public import Aesop
 public import Mathlib.Tactic.Bound.Init
 public import Qq
 
