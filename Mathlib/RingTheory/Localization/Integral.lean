@@ -36,32 +36,6 @@ open Polynomial
 
 variable [IsLocalization M S]
 
-open scoped Classical in
-/-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
-`integerNormalization p` -/
-@[deprecated "deprecated without replacement" (since := "2026-02-05")]
-noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
-  if hi : i ∈ p.support then
-    Classical.choose
-      (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
-        (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  else 0
-
-set_option linter.deprecated false in
-@[deprecated "deprecated without replacement" (since := "2026-02-05")]
-theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
-    coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
-    dif_neg, not_false_iff]
-
-set_option linter.deprecated false in
-@[deprecated "deprecated without replacement" (since := "2026-02-05")]
-theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
-    (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
-  contrapose h
-  rw [coeffIntegerNormalization, dif_neg h]
-
-
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 theorem exists_integer_polynomial_multiple (p : S[X]) :
     ∃ b : M, IsInteger R[X] ((b : R) • p) := by
@@ -75,15 +49,41 @@ by clearing the denominators -/
 noncomputable def integerNormalization (p : S[X]) : R[X] :=
   (exists_integer_polynomial_multiple M p).choose_spec.choose
 
-@[nolint synTaut, deprecated "deprecated without replacement" (since := "2026-02-05")]
-theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
-    (integerNormalization M p).coeff i = (integerNormalization M p).coeff i :=
-  rfl
-
 theorem integerNormalization_spec (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
   ⟨(exists_integer_polynomial_multiple M p).choose,
   (exists_integer_polynomial_multiple M p).choose_spec.choose_spec⟩
+
+/-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
+`integerNormalization p` -/
+@[deprecated integerNormalization (since := "2026-02-05")]
+noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
+  (integerNormalization M p).coeff i
+
+set_option linter.deprecated false in
+@[deprecated "deprecated without replacement" (since := "2026-02-05")]
+theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
+    coeffIntegerNormalization M p i = 0 := by
+  obtain ⟨b, hb⟩ := integerNormalization_spec M p
+  have := congr($(hb).coeff i)
+  simp [h] at this
+  exact?
+  sorry
+
+
+set_option linter.deprecated false in
+@[deprecated "deprecated without replacement" (since := "2026-02-05")]
+theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
+    (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
+  contrapose h
+  simp only [mem_support_iff, ne_eq, not_not] at h
+  exact coeffIntegerNormalization_of_coeff_zero M p i h
+
+set_option linter.deprecated false in
+@[deprecated "deprecated without replacement" (since := "2026-02-05")]
+theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
+    (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
+  rfl
 
 @[deprecated (since := "2026-02-05")]
 alias integerNormalization_map_to_map := integerNormalization_spec
