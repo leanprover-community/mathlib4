@@ -249,7 +249,7 @@ theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
   have hU : IsOpen U := by
     by_cases hU' : U ≠ ∅
     · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
-      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹) using 1
+      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
       ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
     simp_all
   simpa using hU
