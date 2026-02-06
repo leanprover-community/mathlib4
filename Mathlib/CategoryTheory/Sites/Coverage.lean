@@ -481,6 +481,13 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
 
 end Presieve
 
+lemma Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange
+    {J : Precoverage C} [J.HasPullbacks] [J.IsStableUnderBaseChange] (P : Cᵒᵖ ⥤ Type*) :
+    Presieve.IsSheaf J.toGrothendieck P ↔ ∀ ⦃X : C⦄ (R : Presieve X),
+      R ∈ J X → Presieve.IsSheafFor P R := by
+  rw [← J.toCoverage_toPrecoverage, Coverage.toGrothendieck_toPrecoverage,
+    Presieve.isSheaf_coverage]
+
 namespace Presheaf
 
 theorem isSheaf_iff_isLimit_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ D) :

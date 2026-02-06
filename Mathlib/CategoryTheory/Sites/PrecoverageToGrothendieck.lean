@@ -72,6 +72,16 @@ lemma generate_mem_toGrothendieck {X : C} {R : Presieve X} (hR : R ∈ J X) :
     Sieve.generate R ∈ J.toGrothendieck X :=
   .of _ _ hR
 
+@[gcongr]
+lemma toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
+    J.toGrothendieck ≤ K.toGrothendieck := by
+  intro X S hS
+  induction hS with
+  | of X S hS => exact generate_mem_toGrothendieck (h _ hS)
+  | top X => simp
+  | pullback X S _ Y f _ => grind
+  | transitive X S R _ _ _ _ => grind
+
 /--
 An alternative characterization of the Grothendieck topology associated to a precoverage `J`:
 it is the infimum of all Grothendieck topologies containing `Sieve.generate S` for all presieves

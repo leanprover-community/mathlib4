@@ -645,6 +645,10 @@ theorem generate_top : generate (⊤ : Presieve X) = ⊤ :=
   generate_of_contains_isSplitEpi (𝟙 _) ⟨⟩
 
 @[simp]
+lemma generate_bot : generate (⊥ : Presieve X) = ⊥ := by
+  simp only [eq_bot_iff, generate_le_iff, bot_le]
+
+@[simp]
 lemma comp_mem_iff (i : X ⟶ Y) (f : Y ⟶ Z) [IsIso i] (S : Sieve Z) :
     S (i ≫ f) ↔ S f := by
   refine ⟨fun H ↦ ?_, fun H ↦ S.downward_closed H _⟩

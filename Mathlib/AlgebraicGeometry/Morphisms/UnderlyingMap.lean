@@ -130,6 +130,11 @@ def Scheme.Hom.cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X
     rw [singleton_mem_precoverage_iff]
     exact ⟨f.surjective, hf⟩
 
+@[simp]
+lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S)
+    (hf : P f) [Surjective f] : (f.cover hf).presieve₀ = Presieve.singleton f := by
+  simp [cover]
+
 instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
     [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=
   inferInstanceAs <| Unique PUnit

@@ -166,6 +166,34 @@ instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒰] : QuasiCompactCov
 instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒱] : QuasiCompactCover (𝒰.sum 𝒱) :=
   .of_hom (PreZeroHypercover.sumInr _ _)
 
+lemma exists_hom [P.IsMultiplicative] {S : Scheme.{u}} (𝒰 : S.Cover (Scheme.precoverage P))
+    [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [QuasiCompactCover 𝒰.toPreZeroHypercover] :
+    ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),
+      Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.h₀ j) := by
+  obtain ⟨n, f, V, hV, h⟩ := QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.1
+    (show IsCompact (⊤ : TopologicalSpace.Opens S).carrier from isCompact_univ)
+  simp only [coe_top, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_iUnion,
+    Set.mem_image, SetLike.mem_coe, forall_const] at h
+  choose idx x hmem hx using h
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · exact
+      { I₀ := ULift (Fin n)
+        X i := Γ(_, V i.down)
+        f i := (hV _).fromSpec ≫ 𝒰.f (f _)
+        idx s := ⟨idx s⟩
+        covers s := by
+          use (hV _).isoSpec.hom.base ⟨x s, hmem s⟩
+          rw [← Scheme.Hom.comp_apply, ← IsAffineOpen.isoSpec_inv_ι, Category.assoc,
+            Iso.hom_inv_id_assoc]
+          simp [hx]
+        map_prop i :=
+          RespectsLeft.precomp (Q := IsOpenImmersion) _ inferInstance _ (𝒰.map_prop _) }
+  · exact
+      { s₀ i := f i.down
+        h₀ i := (hV i.down).fromSpec }
+  · infer_instance
+  · infer_instance
+
 end QuasiCompactCover
 
 namespace Scheme
