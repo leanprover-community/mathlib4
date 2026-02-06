@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Data.Nat.Cast.Field
-public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Derivative
 
 /-!
 # Exponential Power Series
 
-This file defines the exponential power series `exp A = ∑ Xⁿ/n!` over ℚ-algebras.
+This file defines the exponential power series `exp A = ∑ Xⁿ/n!` over ℚ-algebras and develops
+its key properties, including the fundamental differential equation `(exp A)' = exp A`,
+a uniqueness characterization, and the functional equation for multiplication.
 
 ## Main definitions
 
@@ -23,6 +25,11 @@ This file defines the exponential power series `exp A = ∑ Xⁿ/n!` over ℚ-al
 * `PowerSeries.coeff_exp`: The coefficient of `exp A` at `n` is `1/n!`.
 * `PowerSeries.constantCoeff_exp`: The constant term of `exp A` is `1`.
 * `PowerSeries.map_exp`: `exp` is preserved by ring homomorphisms between ℚ-algebras.
+* `PowerSeries.derivative_exp`: The derivative of exp equals exp: `d⁄dX A (exp A) = exp A`.
+* `PowerSeries.exp_unique_of_derivative_eq_self`: A power series with derivative equal to itself
+  and constant term `1` must be `exp`.
+* `PowerSeries.isUnit_exp`: `exp A` is a unit (invertible).
+* `PowerSeries.order_exp`: The order of `exp A` is `0`.
 * `PowerSeries.exp_mul_exp_eq_exp_add`: The functional equation `e^{aX} * e^{bX} = e^{(a+b)X}`.
 * `PowerSeries.exp_mul_exp_neg_eq_one`: The identity `e^X * e^{-X} = 1`.
 * `PowerSeries.exp_pow_eq_rescale_exp`: Powers of exp satisfy `(e^X)^k = e^{kX}`.
@@ -41,9 +48,7 @@ open Nat
 def exp : PowerSeries A :=
   mk fun n => algebraMap ℚ A (1 / n !)
 
-variable {A A'} (n : ℕ)
-
-variable (f : A →+* A')
+variable {A A'} (n : ℕ) (f : A →+* A')
 
 @[simp]
 theorem coeff_exp : coeff n (exp A) = algebraMap ℚ A (1 / n !) :=
@@ -58,6 +63,54 @@ theorem constantCoeff_exp : constantCoeff (exp A) = 1 := by
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by
   ext
   simp
+
+/-! ### Derivative of exp -/
+
+theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
+    d⁄dX A (exp A) = exp A := by
+  ext n
+  rw [coeff_derivative, coeff_exp, coeff_exp]
+  have key : (n + 1 : A) = algebraMap ℚ A (n + 1) := by
+    rw [map_add, map_natCast, map_one]
+  rw [key, ← map_mul, factorial_succ, Nat.cast_mul, Nat.cast_add_one]
+  congr 1
+  field_simp
+
+/-! ### Uniqueness characterization -/
+
+variable {A : Type*}
+
+/-- A power series with derivative equal to itself and constant term 1 must be `exp`.
+
+The proof uses induction on coefficients: if `f' = f` and `f(0) = 1`, then
+`coeff (n+1) f * (n+1) = coeff n f`, which determines all coefficients uniquely. -/
+theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [IsAddTorsionFree A]
+    {f : PowerSeries A} (hd : d⁄dX A f = f) (hc : constantCoeff f = 1) :
+    f = exp A := by
+  ext n
+  induction n with
+  | zero =>
+    rw [coeff_zero_eq_constantCoeff, hc, constantCoeff_exp]
+  | succ n ih =>
+    have eq1 : coeff n (d⁄dX A f) = coeff n f := congrArg (coeff n) hd
+    rw [coeff_derivative] at eq1
+    have eq2 : coeff n (d⁄dX A (exp A)) = coeff n (exp A) := congrArg (coeff n) (derivative_exp A)
+    rw [coeff_derivative] at eq2
+    rw [ih] at eq1
+    have h : coeff (n + 1) f * (n + 1) = coeff (n + 1) (exp A) * (n + 1) := by
+      rw [eq1, eq2]
+    rw [← Nat.cast_succ, mul_comm, ← nsmul_eq_mul, mul_comm, ← nsmul_eq_mul] at h
+    exact (smul_right_inj (Nat.succ_ne_zero n)).mp h
+
+/-! ### Order and invertibility -/
+
+theorem isUnit_exp (A : Type*) [Ring A] [Algebra ℚ A] : IsUnit (exp A) :=
+  isUnit_iff_constantCoeff.mpr (by simp)
+
+@[simp]
+theorem order_exp (A : Type*) [Ring A] [Algebra ℚ A] [Nontrivial A] : (exp A).order = 0 :=
+  order_zero_of_unit (isUnit_exp A)
+
 
 open RingHom
 

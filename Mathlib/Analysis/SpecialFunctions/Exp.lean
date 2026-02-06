@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Complex and real exponential
@@ -121,7 +122,7 @@ theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
 
 /-- The complex exponential function is uniformly continuous on left half planes. -/
 lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
-  have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
+  have : Continuous (cexp - 1) := Continuous.sub (by fun_prop) continuous_one
   rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
   intro ε hε
   simp only [gt_iff_lt, Pi.sub_apply, Pi.one_apply, dist_sub_eq_dist_add_right,
@@ -210,6 +211,12 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
   have B : ∀ᶠ x in atTop, x + 1 ≤ exp x := eventually_atTop.2 ⟨0, fun x _ => add_one_le_exp x⟩
   exact tendsto_atTop_mono' atTop B A
 
+/-- The function `y ↦ y * exp (-y)` is bounded above by `exp (-1)`. -/
+theorem mul_exp_neg_le_exp_neg_one (y : ℝ) : y * exp (-y) ≤ exp (-1) := by
+  have h_le : y ≤ exp (y - 1) := by simpa using add_one_le_exp (y - 1)
+  have h_mul_le : y * rexp (-y) ≤ rexp (y - 1) * rexp (-y) := by gcongr
+  simpa [← exp_add, sub_add_eq_add_sub] using h_mul_le
+
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
@@ -294,10 +301,11 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
 
 /-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
-  StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
+  StrictMono.orderIsoOfSurjective _
+    (exp_strictMono.codRestrict fun x ↦ Set.mem_Ioi.mpr (exp_pos x)) <|
     (continuous_exp.subtype_mk _).surjective
       (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
-      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsGT])
+      (by simp [tendsto_exp_atBot_nhdsGT])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=

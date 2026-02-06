@@ -572,6 +572,10 @@ theorem measurable_pi_iff {g : α → ∀ a, X a} : Measurable g ↔ ∀ a, Meas
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, X a => f a :=
   measurable_pi_iff.1 measurable_id a
 
+theorem MeasurableSpace.comap_le_comap_pi {g : (a : δ) → β → X a} (a : δ) :
+    .comap (g a) inferInstance ≤ pi.comap (fun b c ↦ g c b) := by
+  simpa only [pi, comap_iSup] using le_iSup_of_le a <| by measurability
+
 theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
@@ -862,6 +866,7 @@ lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a 
 lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∨ q a :=
   measurableSet_setOf.1 <| hp.setOf.union hq.setOf
 
+@[fun_prop]
 lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
   measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
 
@@ -869,6 +874,7 @@ lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a 
 lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
   measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
 
+@[fun_prop]
 lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
     Measurable fun a ↦ ∀ i, p i a :=
   measurableSet_setOf.1 <| by rw [setOf_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf

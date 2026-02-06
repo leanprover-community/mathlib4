@@ -70,9 +70,9 @@ def normalizationDiagramMap : Y.presheaf ⟶ f.normalizationDiagram where
 
 variable [QuasiCompact f] [QuasiSeparated f]
 
-lemma preservesLocalization_normalizationDiagramMap :
-    PreservesLocalization _ ((toOpensFunctor Y).op.whiskerLeft f.normalizationDiagramMap) := by
-  intro U r
+lemma coequifibered_normalizationDiagramMap :
+    ((toOpensFunctor Y).op.whiskerLeft f.normalizationDiagramMap).Coequifibered := by
+  refine coequifibered_iff_forall_isLocalizationAway.mpr fun U r ↦ ?_
   let : Algebra Γ(Y, U.1) Γ(X, f ⁻¹ᵁ U.1) := (f.app U.1).hom.toAlgebra
   let : Algebra Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r) :=
     (f.app (U.basicOpen r).1).hom.toAlgebra
@@ -107,24 +107,23 @@ lemma preservesLocalization_normalizationDiagramMap :
     (integralClosure Γ(Y, Y.basicOpen r) Γ(X, f ⁻¹ᵁ Y.basicOpen r)) := .of_algebraMap_eq' rfl
   exact IsLocalization.Away.integralClosure r
 
-instance : ((((toOpensFunctor Y).op ⋙ f.normalizationDiagram).rightOp ⋙ Scheme.Spec) ⋙
-      Scheme.forget).IsLocallyDirected :=
-  f.preservesLocalization_normalizationDiagramMap.isLocallyDirected
+@[deprecated (since := "2026-02-01")]
+alias preservesLocalization_normalizationDiagramMap := coequifibered_normalizationDiagramMap
 
-instance {U V} (i : U ⟶ V) :
-    IsOpenImmersion (((((toOpensFunctor Y).op ⋙
-      f.normalizationDiagram).rightOp ⋙ Scheme.Spec)).map i) :=
-  f.preservesLocalization_normalizationDiagramMap.isOpenImmersion _ _ _
+/-- The diagram of affine schemes that we glue to form the normalization. -/
+def normalizationGlueData := relativeGluingData f.coequifibered_normalizationDiagramMap
+
+instance : (f.normalizationGlueData.functor ⋙ Scheme.forget).IsLocallyDirected :=
+  Cover.RelativeGluingData.instIsLocallyDirectedI₀CompFunctorForgetOfIsThin ..
 
 /-- Given `f : X ⟶ Y`, `f.normalization` is the relative normalization of `Y` in `X`. -/
 @[stacks 035H]
-def normalization : Scheme :=
-  colimit (((toOpensFunctor Y).op ⋙ f.normalizationDiagram).rightOp ⋙ Scheme.Spec)
+def normalization : Scheme := f.normalizationGlueData.glued
 
 /-- This is the open cover of `f.normalization` by `Spec` of integral closures of `Γ(Y, U)`
 in `Γ(X, f ⁻¹ U)` where `U` ranges over all affine opens. -/
 def normalizationOpenCover : f.normalization.OpenCover :=
-  Scheme.IsLocallyDirected.openCover _
+  f.normalizationGlueData.cover
 
 /-- The dominant morphism into the relative normalization. -/
 def toNormalization : X ⟶ f.normalization :=
@@ -143,9 +142,8 @@ def toNormalization : X ⟶ f.normalization :=
   rw [← Iso.inv_comp_eq, reassoc_of% this, ← Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc,
     ← Spec.map_comp_assoc]
   dsimp [normalizationOpenCover]
-  rw [← colimit.w (((toOpensFunctor Y).op ⋙
-    normalizationDiagram f).rightOp ⋙ Scheme.Spec) i]
-  dsimp
+  rw [← colimit.w f.normalizationGlueData.functor i]
+  dsimp [normalizationGlueData, relativeGluingData]
   rw [← Spec.map_comp_assoc]
   rfl
 
@@ -164,10 +162,7 @@ lemma ι_toNormalization (U : Y.affineOpens) :
 
 /-- The morphism from the relative normalization to itself. This map is integral. -/
 def fromNormalization : f.normalization ⟶ Y :=
-  colimit.desc _
-  { pt := _
-    ι := Functor.whiskerRight ((toOpensFunctor Y).op.whiskerLeft
-      f.normalizationDiagramMap).rightOp Scheme.Spec ≫ (cocone Y).ι }
+  f.normalizationGlueData.toBase
 
 @[reassoc]
 lemma ι_fromNormalization (U : Y.affineOpens) :
@@ -176,8 +171,8 @@ lemma ι_fromNormalization (U : Y.affineOpens) :
   colimit.ι_desc _ _
 
 lemma fromNormalization_preimage (U : Y.affineOpens) :
-    f.fromNormalization ⁻¹ᵁ U = (f.normalizationOpenCover.f U).opensRange :=
-  f.preservesLocalization_normalizationDiagramMap.colimitDesc_preimage _ _ _
+    f.fromNormalization ⁻¹ᵁ U = (f.normalizationOpenCover.f U).opensRange := by
+  simpa using f.normalizationGlueData.toBase_preimage_eq_opensRange_ι U
 
 @[reassoc (attr := simp)]
 lemma toNormalization_fromNormalization :
@@ -294,7 +289,7 @@ instance [IsReduced X] : IsReduced f.normalization :=
     have : _root_.IsReduced ((normalizationDiagram f).obj (.op i.1)) :=
       let := (f.app i.1).hom.toAlgebra
       isReduced_of_injective (Subalgebra.val _) Subtype.val_injective
-    dsimp [normalizationOpenCover]
+    dsimp [normalizationOpenCover, normalizationGlueData, relativeGluingData]
     infer_instance
   .of_openCover _ f.normalizationOpenCover
 
@@ -327,7 +322,7 @@ def normalizationDesc (H : f = f₁ ≫ f₂) : f.normalization ⟶ T := by
         Hom.app_eq_appLE, Hom.appLE_comp_appLE, ← H]
     exact .algebraMap (R := Γ(Y, U.1)) (B := Γ(X, f ⁻¹ᵁ U.1)) (f₂.isIntegral_app U.1 U.2 x)
   · intros U V i
-    dsimp
+    dsimp [normalizationGlueData, relativeGluingData]
     rw [Category.comp_id, ← Spec.map_comp_assoc, ← (V.2.preimage f₂).map_fromSpec (U.2.preimage f₂)
       (homOfLE (f₂.preimage_mono (Scheme.AffineZariskiSite.toOpens_mono i.le))).op,
       ← Spec.map_comp_assoc]
@@ -355,8 +350,10 @@ lemma normalizationDesc_comp (H : f = f₁ ≫ f₂) :
     f.normalizationDesc f₁ f₂ H ≫ f₂ = f.fromNormalization := by
   refine colimit.hom_ext fun U ↦ ?_
   dsimp [normalizationDesc, fromNormalization]
-  rw [colimit.ι_desc_assoc, colimit.ι_desc, Category.assoc,
+  rw [colimit.ι_desc_assoc, (normalizationGlueData f).ι_toBase, Category.assoc,
     ← IsAffineOpen.SpecMap_appLE_fromSpec _ U.2 _ le_rfl, ← Spec.map_comp_assoc]
+  dsimp [normalizationGlueData, relativeGluingData, restrictIsoSpec]
+  rw [Category.assoc]
   congr 2
   ext i
   dsimp [normalizationDiagram, normalizationDiagramMap, RingHom.algebraMap_toAlgebra]
