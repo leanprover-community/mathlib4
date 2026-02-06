@@ -219,7 +219,6 @@ partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sβ a) : AtomM (Result 
   | .const ⟨c, hc⟩ =>
     have n : Q(ℕ) := a.appArg!
     have : $a =Q Nat.rawCast $n := ⟨⟩
-    -- WARNING: I don't think the hc here is correct.
     pure ⟨q(Nat.rawCast $n), .const ⟨c, hc⟩, q(natCast_nat (R := $α) $n)⟩
   | .mul (e := a₂) va₁ va₂ va₃ => do
     let ⟨_, vb₁, pb₁⟩ ← ExBase.evalNatCast va₁
@@ -380,14 +379,14 @@ namespace RingCompute
 def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
-  let isZero : Option Q(IsNat ($a + $b) 0) := match res with
-  | Result.isNat inst lit pf =>
+  let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
+  | Result.isNat inst lit pf => do
     if lit.natLit! == 0 then
-      -- WARNING: unsafe Qq, issues with assumeInstancesCommute, even in MetaM.
-      some pf
+      have : $lit =Q 0 := ⟨⟩
+      pure <| some q($pf)
     else
-      none
-  | _ => none
+      pure none
+  | _ => pure none
   let r ← BaseType.ofResult sα res
   return ⟨r, isZero⟩
 
@@ -478,7 +477,7 @@ def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
 end RingCompute
 
 /-- The comarisons on the basetype used to compare normalized ring expressions. -/
-def ringCompare : Common.RingCompare (BaseType sα) sα where
+def ringCompare : Common.RingCompare (BaseType sα) where
   eq zx zy := zx.value == zy.value
   compare zx zy := compare zx.value zy.value
 

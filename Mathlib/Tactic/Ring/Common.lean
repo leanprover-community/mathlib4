@@ -145,6 +145,7 @@ mutual
 
 /-- The base `e` of a normalized exponent expression in ℕ.
   Used to represent normalized natural number expressions in exponents.
+
   `ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
 inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
@@ -165,6 +166,7 @@ inductive ExBaseNat : (e : Q(ℕ)) → Type
 /-- A monomial, which is a product of powers of `ExBaseNat` expressions in ℕ,
   terminated by a (nonzero) constant coefficient.
   Used to represent normalized natural number expressions in exponents.
+
   `ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two.
 -/
 inductive ExProdNat : (e : Q(ℕ)) → Type
@@ -178,8 +180,9 @@ inductive ExProdNat : (e : Q(ℕ)) → Type
     ExBaseNat x → ExProdNat e → ExProdNat b → ExProdNat q($x ^ $e * $b)
 
 /-- A polynomial expression, which is a sum of monomials.
-Used to represent normalized natural number expressions in exponents.
-`ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two. -/
+  Used to represent normalized natural number expressions in exponents.
+
+  `ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two. -/
 inductive ExSumNat : (e : Q(ℕ)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero : ExSumNat q(0)
@@ -256,38 +259,39 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
 
 
 /-- Defines how comparisons and binary equality are computed in the base type. These are seperated
-from ringCompute because they can often be defined without using instance caches. -/
-structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
-    (sα : Q(CommSemiring $α)) where
+from RingCompute because they can often be defined without using instance caches. -/
+structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type) where
   /-- Returns whether two coefficients are equal -/
-  eq (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Bool
-  /-- Returns whether `x` is less than, equal to or greater than `y`. -/
-  compare (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
+  eq : ∀ {x y : Q($α)}, BaseType x → BaseType y → Bool
+  /-- Returns whether `x` is less than, equal to or greater than `y`. Can be any total order. -/
+  compare : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
 
 /-- Stores all of the normalization procedures on the coefficient type.
 
 `ring` implements these using `norm_num`
-`algebra` implements these using `ring` -/
+`algebra` will implement these using `ring` -/
 structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
-  (sα : Q(CommSemiring $α)) extends RingCompare BaseType sα where
+  (sα : Q(CommSemiring $α)) extends RingCompare BaseType where
   /-- Evaluate the sum of two coefficents.
+
   If the result is zero returns a proof of this fact, which is used to remove zero terms. -/
   add (sα) : ∀ x y : Q($α), BaseType x → BaseType y →
     MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
   /-- Evaluate the product of two coefficents. -/
   mul (sα) : ∀ x y : Q($α), BaseType x → BaseType y → MetaM (Result BaseType q($x * $y))
   /-- Given a ring `β` with a scalar multiplication action on `α` and a `x : β`, cast `x` to `α`
-  such that the scalar multiplication turns in to normal multiplication. Typically one can think of
+  such that the scalar multiplication turns into normal multiplication. Typically one can think of
   `α` as being an algebra over `β`, but this file does not know about `Algebra`s. -/
-  cast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
+  cast (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
       (_ : Q(HSMul $β $α $α)) (x : Q($β)),
       (AtomM <| Result (ExSum (Ring.BaseType sβ) q($sβ)) q($x)) →
     AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
   /-- Evaluate the negation of a coefficient. -/
   neg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → BaseType x → MetaM (Result BaseType q(-$x))
   /-- Raise a coefficient to some natural power.
-  The exponent may not be a natural literal. If the tactic can only raise coefficients to the power
-  of a literal (e.g. `ring`), it should check for this and return `none` otherwise. -/
+
+  The exponent is not necessarily a natural literal. If the tactic can only raise coefficients to
+  the power of a literal (e.g. `ring`), it should check for this and return `none` otherwise. -/
   pow (sα) : ∀ x : Q($α), BaseType x → (b : Q(ℕ)) → (vb : ExProdNat q($b)) →
     OptionT MetaM (Result BaseType q($x ^ $b))
   /-- Evaluate the inverse of a coefficient. -/
@@ -301,7 +305,7 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   one (sα) : Result BaseType q((nat_lit 1).rawCast)
 
 instance {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
-    (sα : Q(CommSemiring $α)) : Coe (RingCompute BaseType sα) (RingCompare BaseType sα) where
+    (sα : Q(CommSemiring $α)) : CoeOut (RingCompute BaseType sα) (RingCompare BaseType) where
   coe x := x.toRingCompare
 
 instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
@@ -375,11 +379,11 @@ def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
 -- Partial because the termination checker failed
 mutual
 
-variable (rcℕ : RingCompare btℕ sℕ)
+variable (rcℕ : RingCompare btℕ)
 
 /-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
 partial def ExBase.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt sα)
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt)
     {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Bool
   | .atom i, .atom j => i == j
@@ -388,7 +392,7 @@ partial def ExBase.eq
 
 @[inherit_doc ExBase.eq]
 partial def ExProd.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt sα)
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt)
     {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Bool
   | .const i, .const j => rc.eq i j
@@ -397,7 +401,7 @@ partial def ExProd.eq
 
 @[inherit_doc ExBase.eq]
 partial def ExSum.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt sα)
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompare bt)
     {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Bool
   | .zero, .zero => true
@@ -414,7 +418,7 @@ A total order on normalized expressions.
 This is not an `Ord` instance because it is heterogeneous.
 -/
 partial def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
-    (rc : RingCompare bt sα) {a b : Q($α)} :
+    (rc : RingCompare bt) {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Ordering
   | .atom i, .atom j => compare i j
   | .sum a, .sum b => a.cmp rc b
@@ -423,7 +427,7 @@ partial def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemir
 
 @[inherit_doc ExBase.cmp]
 partial def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
-    (rc : RingCompare bt sα) {a b : Q($α)} :
+    (rc : RingCompare bt) {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Ordering
   | .const i, .const j => rc.compare i j
   | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ =>
@@ -433,7 +437,7 @@ partial def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemir
 
 @[inherit_doc ExBase.cmp]
 partial def ExSum.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
-    (rc : RingCompare bt sα) {a b : Q($α)} :
+    (rc : RingCompare bt) {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Ordering
   | .zero, .zero => .eq
   | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp rc b₁).then (a₂.cmp rc b₂)
@@ -866,7 +870,7 @@ private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
 /-- There are several special cases when exponentiating monomials:
 
 * `1 ^ n = 1`
-* `x ^ y = (x ^ y)` when `x` and `y` are constants
+* `x ^ y = (x ^ y)` when `x` is a constant (Note this may fail if e.g. `y` is not a constant)
 * `(a * b) ^ e = a ^ e * b ^ e`
 
 In all other cases we use `evalPowProdAtom`.
@@ -881,6 +885,7 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
       | .some pf =>
         return ⟨_, va, q(one_pow $b $pf)⟩
       | .none =>
+        -- NOTE: rc.pow may fail, e.g. for `ring` when `vb` is not a constant.
         let ⟨_, zc, pc⟩ ← rc.pow _ za _ vb
         return ⟨_, .const zc, q($pc)⟩
     | .mul vxa₁ (e := ea₁) vea₁ va₂ =>
@@ -960,7 +965,7 @@ Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 -/
 partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExProdNat b) :
     MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
-  let NotPowOne : MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
+  let notPowOne : MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
     match va with
     | .zero => match vb.evalPos with
       | some p => return ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
@@ -983,9 +988,9 @@ partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExP
     | .some pf =>
       assumeInstancesCommute
       return ⟨_, va, q(pow_one_cast_of_isNat $a _ $pf)⟩
-    | .none => NotPowOne
+    | .none => notPowOne
   | _ =>
-    NotPowOne
+    notPowOne
 
 theorem pow_zero (a : R) {e : R} (h : (nat_lit 1).rawCast = e) :
     a ^ 0 = e + 0 := by simp [← h]
@@ -1095,10 +1100,10 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt 
     match ← rc.inv czα q($dsα) c with
     | some ⟨_, vd, pd⟩ => pure ⟨_, .const vd, q($pd)⟩
     | none =>
-        let ⟨_, vc, pc⟩ ← evalInvAtom dsα a
-        let ⟨_, one, pf⟩ := rcℕ.one
-        let ⟨_, vc', pc'⟩ := vc.toProd rc (ExProdNat.const (one))
-        pure ⟨_, vc', q($pc' ▸ toProd_pf $pc $pf)⟩
+      let ⟨_, vc, pc⟩ ← evalInvAtom dsα a
+      let ⟨_, one, pf⟩ := rcℕ.one
+      let ⟨_, vc', pc'⟩ := vc.toProd rc (ExProdNat.const (one))
+      pure ⟨_, vc', q($pc' ▸ toProd_pf $pc $pf)⟩
   | .mul (x := a₁) (e := _a₂) _va₁ va₂ va₃ => do
     let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom dsα a₁
     let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
@@ -1250,7 +1255,7 @@ partial def eval  {u : Lean.Level}
   | ``HSMul.hSMul, _, _ | ``SMul.smul, _, _ => match e with
     | ~q(@HSMul.hSMul $R $α' _ $inst $r $a') =>
       if ! (← isDefEq α α') then
-        throwError "HSmul not implemented"
+        return ← els
       have : u_2 =QL u := ⟨⟩
       have : $α =Q $α' := ⟨⟩
       have a : Q($α) := a'
@@ -1259,7 +1264,7 @@ partial def eval  {u : Lean.Level}
         let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
         -- Lazily evaluate `vs` only if we actually need the normalized expression in `R`.
         let vs : AtomM <| Result (ExSum (Ring.BaseType sR) sR) q($r) := do
-          -- TODO: special case Nat and Int for the cache?
+          -- TODO: special case Nat and Int for the cache? This would probably be neglegable.
           let cR ← mkCache sR
           eval (rcRing cR) cR r
         let ⟨_, vb, pb⟩ ← eval rc c a
