@@ -161,14 +161,13 @@ theorem Lex.wellFounded (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFound
   ⟨fun x => by classical exact Lex.acc hbot hs x fun i _ => hr.apply i⟩
 
 theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
-    [IsTrichotomous ι r] (hr : WellFounded (Function.swap r)) :
-    WellFounded (DFinsupp.Lex r s) :=
+    [Std.Trichotomous r] (hr : WellFounded (Function.swap r)) : WellFounded (DFinsupp.Lex r s) :=
   Lex.wellFounded hbot hs <| Subrelation.wf
-    (fun {i j} h => ((@IsTrichotomous.trichotomous ι r _ i j).resolve_left h.1).resolve_left h.2) hr
+    (fun {i j} h ↦ Not.imp_symm (@Std.Trichotomous.trichotomous ι r _ i j h.left) h.right) hr
 
 end Zero
 
-instance Lex.wellFoundedLT [LT ι] [IsTrichotomous ι (· < ·)] [hι : WellFoundedGT ι]
+instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellFoundedGT ι]
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
@@ -185,7 +184,7 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert emptyWf.wf
   letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
-  haveI := IsTrans.swap r; haveI := IsIrrefl.swap r; haveI := Fintype.ofFinite ι
+  haveI := IsTrans.swap r; haveI := Std.Irrefl.swap r; haveI := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) hs ?_)
   exacts [(hs i).not_lt_min ⊤ _ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 
@@ -214,7 +213,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     let _ : ∀ i, Zero (β i) := fun i ↦ ⟨e i 0⟩
     have : WellFounded (DFinsupp.Lex (Function.swap <| @WellOrderingRel ι)
         (fun _ ↦ (· < ·) : (i : ι) → β i → β i → Prop)) := by
-      have := IsTrichotomous.swap (@WellOrderingRel ι)
+      have := Std.Trichotomous.swap (@WellOrderingRel ι)
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot

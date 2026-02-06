@@ -60,7 +60,8 @@ structure ModuleCat where
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
 
-attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
+attribute [instance] ModuleCat.isAddCommGroup
+attribute [instance 1100] ModuleCat.isModule
 
 namespace ModuleCat
 
@@ -218,7 +219,7 @@ lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M :=
 
 @[simp]
 lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
-    (forget (ModuleCat.{v} R)).map f = f :=
+    (forget (ModuleCat.{v} R)).map f = (f : _ → _) :=
   rfl
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrpCat where
@@ -246,13 +247,6 @@ instance : Inhabited (ModuleCat R) :=
 @[simp] theorem of_coe (X : ModuleCat R) : of R X = X := rfl
 
 variable {R}
-
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-module. -/
-@[deprecated Iso.refl (since := "2025-05-15")]
-def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
 
 theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M where
   unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
@@ -356,7 +350,7 @@ set_option backward.privateInPublic.warn false in
 instance : SMul ℤ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommGroup (M ⟶ N) :=
   Function.Injective.addCommGroup (Hom.hom) hom_injective
@@ -573,7 +567,7 @@ with the scalar multiplication. -/
 def homMk : M ⟶ N where
   hom'.toFun := φ
   hom'.map_add' _ _ := φ.hom.map_add _ _
-  hom'.map_smul' r x := (congr_hom (hφ r) x).symm
+  hom'.map_smul' r x := (ConcreteCategory.congr_hom (hφ r) x).symm
 
 lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGrpCat).map (homMk φ hφ) = φ := rfl

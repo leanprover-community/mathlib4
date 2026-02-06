@@ -671,7 +671,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       _ ≤ 16 * ‖y - x‖ * (ε / 16) := by gcongr
       _ = ε * ‖y - x‖ := by ring
   -- Conclusion of the proof
-  rw [← this.derivWithin (uniqueDiffOn_Ici x x Set.left_mem_Ici)] at f'K
+  rw [← this.derivWithin (uniqueDiffOn_Ici x x Set.self_mem_Ici)] at f'K
   exact ⟨this.differentiableWithinAt, f'K⟩
 
 theorem differentiable_set_eq_D (hK : IsComplete K) :

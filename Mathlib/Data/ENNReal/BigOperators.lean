@@ -16,7 +16,7 @@ In this file we prove elementary properties of sums and products on `ℝ≥0∞`
 interact with the order structure on `ℝ≥0∞`.
 -/
 
-@[expose] public section
+public section
 
 open Set NNReal ENNReal
 

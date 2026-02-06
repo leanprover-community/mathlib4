@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
+public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 /-!
 # Eisenstein series q-expansions
@@ -32,7 +32,7 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 
 -/
 
-@[expose] public section
+public section
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
@@ -224,7 +224,7 @@ lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 :
     exact tsum_congr fun y ↦ by simp [eisSummand, ← neg_add _ (y : ℂ), -neg_add_rev, hk2.neg_pow]
   have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind) ⟨b * z, by simpa using z.2⟩
   simp_rw [show k - 1 + 1 = k by grind, one_div] at H
-  simp only [coe_mk_subtype, neg_mul] at H
+  simp only [neg_mul] at H
   rw [nsmul_eq_mul, mul_assoc]
   congr
   · simp [eisSummand, two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (by grind) hk2]

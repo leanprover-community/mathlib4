@@ -215,6 +215,14 @@ theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZ
   let e : F ≅ G := hF.iso hG
   exact (isZero_zero _).of_iso (e.app X)
 
+lemma IsZero.of_full_of_faithful_of_isZero
+    (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) (hX : IsZero (F.obj X)) :
+    IsZero X := by
+  have h : F.FullyFaithful := .ofFullyFaithful _
+  have (Y : C) := (hX.unique_to (F.obj Y)).some
+  have (Y : C) := (hX.unique_from (F.obj Y)).some
+  exact ⟨fun Y ↦ ⟨h.homEquiv.unique⟩, fun Y ↦ ⟨h.homEquiv.unique⟩⟩
+
 namespace HasZeroObject
 
 variable [HasZeroObject C]

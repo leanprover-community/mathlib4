@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.ByContra
+public import Mathlib.Tactic.Push
 
 /-! # Embeddings of complex shapes
 
@@ -261,9 +261,6 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     dsimp
     lia
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
-
 lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
   constructor
@@ -273,8 +270,5 @@ lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
   · intros
     dsimp
     lia
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff
 
 end ComplexShape

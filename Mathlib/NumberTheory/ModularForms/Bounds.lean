@@ -23,7 +23,7 @@ bounds for its q-expansion coefficients. The main results are
 * `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a a cusp form of weight `k` (for
   an arithmetic subgroup `Γ`): the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
-@[expose] public section
+public section
 
 open Filter Topology Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
 
@@ -279,10 +279,8 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
     · grw [hn' _ (by simp [← UpperHalfPlane.coe_im])]
       simp [← UpperHalfPlane.coe_im, Real.rpow_neg_eq_inv_rpow, hne]
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
-  · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
-    · simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
-      fun_prop
-    · exact (continuous f).comp (by fun_prop)
+  · apply Continuous.intervalIntegrable
+    fun_prop (disch := simp [Function.Periodic.qParam_ne_zero])
   · exact continuous_const.intervalIntegrable ..
   · simp [field, intervalIntegral.integral_const, hne]
 

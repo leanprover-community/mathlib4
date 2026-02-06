@@ -573,9 +573,6 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
     (hn.symm ▸ p.getVert_length.symm)
   lia
 
-@[deprecated (since := "2025-05-23")]
-alias endpoint_not_mem_support_takeUntil := endpoint_notMem_support_takeUntil
-
 end WalkDecomp
 
 end Walk
@@ -633,8 +630,6 @@ theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
 
 theorem notMem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
     e ∉ (p : G.Walk v v).edges := by simp [p.loop_eq]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_edges_of_loop := notMem_edges_of_loop
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
     (he : s(u, v) ∉ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by

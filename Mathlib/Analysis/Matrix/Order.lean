@@ -8,7 +8,8 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.RCLike.Sqrt
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 /-!
 # The partial order on matrices
@@ -166,7 +167,7 @@ lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A
 
 lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
-  rw [eq_comm, CFC.sqrt_eq_iff _ _  hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
+  rw [eq_comm, CFC.sqrt_eq_iff _ _ hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
 
 end sqrtDeprecated
@@ -187,7 +188,20 @@ theorem toLinearMap₂'_zero_iff [DecidableEq n]
     Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
   simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
+theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
+    (CFC.sqrt A).det = RCLike.sqrt A.det := by
+  rw [CFC.sqrt_eq_cfc, cfc_nnreal_eq_real _ A, hA.1.cfc_eq, RCLike.sqrt_of_nonneg hA.det_nonneg]
+  simp only [IsHermitian.cfc, Real.coe_sqrt, Real.coe_toNNReal', det_map, det_diagonal,
+    Function.comp_apply, hA.isHermitian.det_eq_prod_eigenvalues, ← RCLike.ofReal_prod,
+    RCLike.ofReal_re, Real.sqrt_prod _ fun _ _ ↦ hA.eigenvalues_nonneg _]
+  grind
+
 end PosSemidef
+
+theorem IsHermitian.det_abs [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+    det (CFC.abs A) = ‖det A‖ := by
+  rw [CFC.abs_eq_cfc_norm A, hA.cfc_eq]
+  simp [IsHermitian.cfc, -Unitary.conjStarAlgAut_apply, hA.det_eq_prod_eigenvalues]
 
 /-- A matrix is positive semidefinite if and only if it has the form `Bᴴ * B` for some `B`. -/
 @[deprecated CStarAlgebra.nonneg_iff_eq_star_mul_self (since := "2025-09-22")]
@@ -195,9 +209,6 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
     PosSemidef A ↔ ∃ (B : Matrix n n 𝕜), A = Bᴴ * B := by
   classical
   exact nonneg_iff_posSemidef (A := A) |>.eq ▸ CStarAlgebra.nonneg_iff_eq_star_mul_self
-
-@[deprecated (since := "2025-05-07")]
-alias posSemidef_iff_eq_transpose_mul_self := CStarAlgebra.nonneg_iff_eq_star_mul_self
 
 theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by

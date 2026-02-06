@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.MvPolynomial.Groebner
@@ -51,7 +51,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 -/
 
-@[expose] public section
+public section
 
 open Finsupp
 

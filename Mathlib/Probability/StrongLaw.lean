@@ -343,10 +343,8 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       rw [← intervalIntegral.integral_const_mul, intervalIntegral.integral_of_le Ik,
         intervalIntegral.integral_of_le Ik]
       refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc fun x hx => ?_
-      · apply Continuous.integrableOn_Ioc
-        exact continuous_const.mul (continuous_pow 2)
-      · apply Continuous.integrableOn_Ioc
-        exact continuous_const.mul continuous_id'
+      · apply Continuous.integrableOn_Ioc (by fun_prop)
+      · apply Continuous.integrableOn_Ioc (by fun_prop)
       · calc
           2 / (↑k + 1) * x ^ 2 = x / (k + 1) * (2 * x) := by ring
           _ ≤ 1 * (2 * x) := by
@@ -755,7 +753,7 @@ lemma strong_law_ae_of_measurable
   -- consider `n` large enough for which the above convergences have taken place within `δ`.
   have I : ∀ᶠ n in atTop, (∑ i ∈ range n, ‖(X i - Y k i) ω‖) / n < δ :=
     (tendsto_order.1 (h'ω k)).2 δ hk
-  have J : ∀ᶠ (n : ℕ) in atTop, ‖(n : ℝ) ⁻¹ • (∑ i ∈ range n, Y k i ω) - μ[Y k 0]‖ < δ := by
+  have J : ∀ᶠ (n : ℕ) in atTop, ‖(n : ℝ)⁻¹ • (∑ i ∈ range n, Y k i ω) - μ[Y k 0]‖ < δ := by
     specialize hω k
     rw [tendsto_iff_norm_sub_tendsto_zero] at hω
     exact (tendsto_order.1 hω).2 δ δpos
