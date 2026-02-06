@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 module
 
 public import Mathlib.Tactic.GCongr.Core
-public import Mathlib.Util.AssertExists
 
 /-!
 # Join of a list of lists
@@ -33,6 +32,10 @@ protected theorem Sublist.flatten {l₁ l₂ : List (List α)} (h : l₁ <+ l₂
 protected theorem Sublist.flatMap {l₁ l₂ : List α} (h : l₁ <+ l₂) (f : α → List β) :
     l₁.flatMap f <+ l₂.flatMap f :=
   (h.map f).flatten
+
+protected theorem Sublist.flatMap_right (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a <+ g a) :
+    l.flatMap f <+ l.flatMap g := by
+  induction l with grind
 
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/

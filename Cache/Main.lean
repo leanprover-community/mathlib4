@@ -7,7 +7,7 @@ Authors: Arthur Paulino, Jon Eugster
 import Cache.Requests
 
 def help : String := "Mathlib4 caching CLI
-Usage: cache [COMMAND] [OPTIONS]
+Usage: cache [OPTIONS] [COMMAND]
 
 Commands:
   # No privilege required

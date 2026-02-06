@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Convert
@@ -382,7 +382,7 @@ theorem identical_of_isEmpty (x y : PGame)
 def identicalSetoid : Setoid PGame :=
   ⟨Identical, Identical.refl, Identical.symm, Identical.trans⟩
 
-instance : IsRefl PGame (· ≡ ·) := ⟨Identical.refl⟩
+instance : Std.Refl (· ≡ ·) := ⟨Identical.refl⟩
 instance : Std.Symm (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
 instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
 instance : IsEquiv PGame (· ≡ ·) := { }

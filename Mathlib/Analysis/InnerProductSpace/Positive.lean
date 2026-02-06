@@ -129,6 +129,11 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   rw [add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
+theorem isPositive_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset ι)
+    (hT : ∀ i ∈ s, (T i).IsPositive) : (∑ i ∈ s, T i).IsPositive := by
+  refine ⟨isSymmetric_sum s fun _ hi ↦ (hT _ hi).isSymmetric, fun _ ↦ ?_⟩
+  simpa [sum_inner] using Finset.sum_nonneg fun _ hi ↦ (hT _ hi).re_inner_nonneg_left _
+
 open ComplexOrder in
 theorem IsPositive.ne_zero_iff {T : E →ₗ[𝕜] E} (hT : T.IsPositive) :
     T ≠ 0 ↔ ∃ x, 0 < inner 𝕜 (T x) x := by
@@ -202,7 +207,7 @@ open scoped ComplexOrder in
 @[simp] theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
   simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
-    EuclideanSpace.inner_eq_star_dotProduct, Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
+    EuclideanSpace.inner_eq_star_dotProduct, Matrix.ofLp_toLpLin, Matrix.toLin'_apply,
     dotProduct_comm (A.mulVec _), Matrix.posSemidef_iff_dotProduct_mulVec, and_congr_right_iff,
     RCLike.nonneg_iff (K := 𝕜)]
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
@@ -334,6 +339,10 @@ theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPosi
     (T + S).IsPositive :=
   (isPositive_toLinearMap_iff _).mp (hT.toLinearMap.add hS.toLinearMap)
 
+theorem isPositive_sum {ι : Type*} {T : ι → (E →L[𝕜] E)} (s : Finset ι)
+    (hT : ∀ i ∈ s, (T i).IsPositive) : (∑ i ∈ s, T i).IsPositive :=
+  (isPositive_toLinearMap_iff _).mp <| by simp [LinearMap.isPositive_sum s hT]
+
 open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
@@ -393,7 +402,7 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
     Function.comp_apply, coe_comp']
-  simp_rw [← coe_coe, U.starProjection_isSymmetric _ , hT.isSymmetric _,
+  simp_rw [← coe_coe, U.starProjection_isSymmetric _, hT.isSymmetric _,
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
@@ -523,3 +532,30 @@ theorem LinearMap.IsPositive.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsP
   simp_rw [ContinuousLinearMap.isPositive_iff, isSymmetric_rankOne_self, rankOne_apply,
     inner_smul_left, RCLike.conj_mul, ← RCLike.ofReal_pow, RCLike.ofReal_nonneg]
   simp
+
+/-- In finite-dimensional spaces, a continuous linear map is positive iff it is equal to the sum
+of rank-one positive operators. -/
+theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional 𝕜 E] {T : E →L[𝕜] E} :
+    T.IsPositive ↔ ∃ (m : ℕ) (u : Fin m → E), T = ∑ i : Fin m, rankOne 𝕜 (u i) (u i) := by
+  refine ⟨fun hT ↦ ?_, fun ⟨m, u, hT⟩ ↦ hT ▸ isPositive_sum _ fun _ _ ↦ isPositive_rankOne_self _⟩
+  let a (i : Fin (Module.finrank 𝕜 E)) : E :=
+    ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
+  refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
+  simp_rw [sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
+    mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul, ← Real.sqrt_mul
+      (hT.toLinearMap.nonneg_eigenvalues rfl _), Real.sqrt_mul_self
+      (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜), ← smul_eq_mul, smul_assoc,
+    ← hT.isSymmetric.apply_eigenvectorBasis, ← map_smul, ← map_sum,
+    ← OrthonormalBasis.repr_apply_apply, OrthonormalBasis.sum_repr, coe_coe]
+
+open scoped ComplexOrder in
+theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Finite n] {M : Matrix n n 𝕜} :
+    M.PosSemidef ↔ ∃ (m : ℕ) (v : Fin m → (n → 𝕜)), M = ∑ i, vecMulVec (v i) (star (v i)) := by
+  classical
+  have := Fintype.ofFinite n
+  rw [← isPositive_toEuclideanLin_iff, ← isPositive_toContinuousLinearMap_iff,
+    isPositive_iff_eq_sum_rankOne]
+  simp_rw [eq_comm, ← LinearEquiv.symm_apply_eq, coe_toContinuousLinearMap_symm,
+    ContinuousLinearMap.coe_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
+  exact ⟨fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ (u i).ofLp, hu⟩,
+    fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ WithLp.toLp 2 (u i), hu⟩⟩

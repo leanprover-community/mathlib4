@@ -56,6 +56,8 @@ instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
   coe_injective' s1 s2 h := by cases s1; congr
 
+instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
+
 @[simp] lemma mem_carrier : a ∈ S.carrier ↔ a ∈ S := .rfl
 
 @[simp] lemma mem_mk (carrier : Set X) (sInf_mem' himp_mem') :
@@ -108,7 +110,7 @@ instance carrier.instCompleteLattice : CompleteLattice S where
 
 instance carrier.instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
-  compl a :=  a ⇨ ⊥
+  compl a := a ⇨ ⊥
   himp_bot _ := rfl
 
 instance carrier.instFrame : Order.Frame S where

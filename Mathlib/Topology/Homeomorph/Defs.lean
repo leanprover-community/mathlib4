@@ -229,6 +229,20 @@ protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) : Discr
 theorem discreteTopology_iff (h : X ≃ₜ Y) : DiscreteTopology X ↔ DiscreteTopology Y :=
   ⟨fun _ ↦ h.discreteTopology, fun _ ↦ h.symm.discreteTopology⟩
 
+protected theorem indiscreteTopology [IndiscreteTopology X] (h : X ≃ₜ Y) :
+    IndiscreteTopology Y :=
+  h.symm.isInducing.indiscreteTopology
+
+theorem indiscreteTopology_iff (h : X ≃ₜ Y) : IndiscreteTopology X ↔ IndiscreteTopology Y :=
+  ⟨fun _ ↦ h.indiscreteTopology, fun _ ↦ h.symm.indiscreteTopology⟩
+
+protected theorem nontrivialTopology [NontrivialTopology X] (h : X ≃ₜ Y) :
+    NontrivialTopology Y :=
+  h.isInducing.nontrivialTopology
+
+theorem nontrivialTopology_iff (h : X ≃ₜ Y) : NontrivialTopology X ↔ NontrivialTopology Y :=
+  ⟨fun _ ↦ h.nontrivialTopology, fun _ ↦ h.symm.nontrivialTopology⟩
+
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
   h.isQuotientMap.isOpen_preimage
@@ -443,7 +457,7 @@ theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
 
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
-  map_continuous  f := map_continuous f
+  map_continuous f := map_continuous f
 
 instance : HomeomorphClass (α ≃ₜ β) α β where
   map_continuous e := e.continuous_toFun

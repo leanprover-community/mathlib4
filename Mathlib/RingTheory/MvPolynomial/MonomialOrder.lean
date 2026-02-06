@@ -10,7 +10,6 @@ public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Data.List.TFAE
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
@@ -568,7 +567,7 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     · rw [hn, pow_zero, degree_one]
     · rw [zero_pow hn, degree_zero]
   apply degree_pow_of_pow_leadingCoeff_ne_zero
-  apply IsReduced.pow_ne_zero
+  apply pow_ne_zero
   rw [leadingCoeff_ne_zero_iff]
   exact hf
 
@@ -956,6 +955,8 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
     tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
     tsub_add_eq_add_tsub le_sup_left, tsub_add_eq_add_tsub le_sup_right,
     add_comm d₁, add_comm d₂, add_tsub_add_eq_tsub_right, add_tsub_add_eq_tsub_right]
+
+@[deprecated (since := "2025-12-15")] alias sPolynomial_mul_monomial := sPolynomial_monomial_mul
 
 lemma sPolynomial_monomial_mul' [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
     (c₁ c₂ : R) :
