@@ -110,28 +110,28 @@ def findOverlappingDataInstances : MetaM Overlaps := do
   The keys are classes, and the values are fvars. The `Bool` indicates whether the class key is
   exactly the type of the associated fvar. We use this for error reporting. -/
   let mut encounteredClasses : Std.HashMap Expr (Expr × Bool) := {}
-  for { fvar := fvar₁, .. } in ← getLocalInstances do
-    unless (← fvar₁.fvarId!.getBinderInfo).isInstImplicit do continue
-    let projClasses ← forallTelescope (← inferType fvar₁) fun xs _ ↦ do
-      (← getClassDataProjections (mkAppN fvar₁ xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
+  for { fvar := fvar, .. } in ← getLocalInstances do
+    unless (← fvar.fvarId!.getBinderInfo).isInstImplicit do continue
+    let projClasses ← forallTelescope (← inferType fvar) fun xs _ ↦ do
+      (← getClassDataProjections (mkAppN fvar xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
         return (parentIdx?, ← mkForallFVars xs expr)
     for (parentIdxs, cls) in projClasses, idx in 0...* do
-      if let some (fvar₂, isTypeOfFVar₂) := encounteredClasses[cls]? then
+      if let some (fvar₀, clsIsTypeOfFVar₀) := encounteredClasses[cls]? then
         -- We have encountered a projection with this type already; we should now record an overlap,
         -- unless it is (or will) be redundant.
         -- Note that the actions in this branch are allowed to be "slow".
         let shouldIgnoreCurrent (parentIdx : Nat) (parentClass : Expr) :=
-          -- If a parent further on in `projClasses` will overlap via `fvar₂`, ignore this child.
+          -- If a parent further on in `projClasses` will overlap via `fvar₀`, ignore this child.
           -- Note that we can assume `false`, as only the first array element has `true`.
-          (idx < parentIdx && encounteredClasses[parentClass]?.isEqSome (fvar₂, false))
-          -- If `fvar₁` and `fvar₂` already overlap on a parent, ignore this redundant overlap.
-            || overlaps.containsOverlapOn fvar₁ fvar₂ parentClass
+          (idx < parentIdx && encounteredClasses[parentClass]?.isEqSome (fvar₀, false))
+          -- If `fvar` and `fvar₀` already overlap on a parent, ignore this redundant overlap.
+            || overlaps.containsOverlapOn fvar fvar₀ parentClass
         -- See if any parent of the current projection, starting with the immediate `parentIdxs`,
         -- imply it is redundant.
         unless hasParentP! projClasses shouldIgnoreCurrent parentIdxs do
-          overlaps := overlaps.insert cls (fvar₁, parentIdxs.isEmpty) (fvar₂, isTypeOfFVar₂)
+          overlaps := overlaps.insert cls (fvar, parentIdxs.isEmpty) (fvar₀, clsIsTypeOfFVar₀)
       else
-        encounteredClasses := encounteredClasses.insert cls (fvar₁, parentIdxs.isEmpty)
+        encounteredClasses := encounteredClasses.insert cls (fvar, parentIdxs.isEmpty)
   return overlaps
 
 /-- Lints against data-carrying overlaps between instances in the local contexts of declarations. -/
