@@ -5757,6 +5757,7 @@ public import Mathlib.Order.Synonym
 public import Mathlib.Order.TeichmullerTukey
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.Order.TypeTags
+public import Mathlib.Order.Types.Arithmetic
 public import Mathlib.Order.Types.Defs
 public import Mathlib.Order.ULift
 public import Mathlib.Order.UpperLower.Basic
