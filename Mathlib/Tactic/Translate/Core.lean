@@ -698,7 +698,6 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
         import all {env.header.moduleNames[env.getModuleIdxFor? src |>.get!]!}"
     throwError "Cannot translate {srcDecl.kind} `{.ofConstName src}`. \
       It is not a definition or theorem."
-  -- (this is also caught by the next check, but we give a )
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldSimpAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
