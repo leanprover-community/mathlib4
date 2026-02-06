@@ -1274,6 +1274,15 @@ theorem range_finsuppTotal :
 
 end Total
 
+
+/-- `Associates (Ideal R)` almost never has decidable equality.
+We add a global instance that `Associates (Ideal R)` has decidable
+equality, coming from the choice axiom, so that we don't have to provide
+`[DecidableEq (Associates (Ideal R))]` arguments in lemma statements. -/
+noncomputable instance {R : Type*} [CommSemiring R] :
+    DecidableEq (Associates (Ideal R)) :=
+  Classical.typeDecidableEq _
+
 end Ideal
 
 section span_range
