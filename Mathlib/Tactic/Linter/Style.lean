@@ -479,14 +479,16 @@ namespace Style.nameCheck
 /--
 Is `s` a string consisting only of digits, uppercase letters and primes?
 
-TODO: This heuristic is not correct and leads to plenty false-negatives like `_LE` or `_TFAE` which should indeed be lower-cased as `_le` and `_tfae` following the style convention. See #34440 for more details.
+TODO: This heuristic is not correct and leads to plenty of false-negatives like `_LE` or `_TFAE` which
+should indeed be lower-cased as `_le` and `_tfae` following the style convention.
+See #34440 for more details.
 -/
 def isAcronymLike (s : String) : Bool :=
   s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || "'₀₁₂₃₄₅₆₇₈₉".contains c)
 
 /-- Explicit allow-list of naming components which are allowed to be in uppercase. -/
 def allowed : Array String.Slice := #[
-  "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio",
+  "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio", "Iotop",
   "IicProdIoc", "IocProdIoc", -- all components (Iic, Prod, Ioc etc.) are allowed
   "Lp", "Lq", -- TODO: should Lp and Lq be used in names?
 ]
@@ -494,8 +496,9 @@ def allowed : Array String.Slice := #[
 /-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
 def isWronglyCased (s : String) : Bool :=
   -- The string starts with an uppercase character, is not like an acronym
-  -- and (after removing any trailing primes) is not an allowed exception.
- s.front.isUpper && !(isAcronymLike s) && (!allowed.contains (s.dropEndWhile '\''))
+  -- and (after removing any trailing primes and subscript 0) is not an allowed exception.
+ s.front.isUpper && !(isAcronymLike s) &&
+ (!allowed.contains (s.dropEndWhile (fun c : Char ↦ "'₀".contains c)))
 
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do

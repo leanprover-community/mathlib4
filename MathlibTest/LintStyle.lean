@@ -625,12 +625,20 @@ open Mathlib.Linter.Style.nameCheck
 -- Explicit exceptions.
 #guard !isWronglyCased "Ioo"
 #guard !isWronglyCased "Lp"
+#guard !isWronglyCased "Iotop"
 #guard !isWronglyCased "Ioo'"
+#guard !isWronglyCased "Ioc₀"
+#guard !isWronglyCased "Ioi₀"
 #guard !isWronglyCased "L1"
 #guard !isWronglyCased "L1H'"
 #guard !isWronglyCased "L1"
 #guard !isWronglyCased "L₁"
 #guard !isWronglyCased "I₀'"
+
+-- False negative, TODO fix!
+#guard !isWronglyCased "myDef_LE"
+-- This version is reported correctly; the `LE` is wrong.
+#guard isWronglyCased "Ioc_LE"
 
 end nameCheck
 
