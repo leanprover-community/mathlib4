@@ -688,6 +688,7 @@ theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : �
   count_normalizedFactors_eq' ((Ideal.isPrime_iff_bot_or_prime.mp hp).imp_right Prime.irreducible)
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
 
+open Classical in -- to get `DecidableEq (Associates (Ideal R))`
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
 when regarding these ideals as associated elements of the monoid of ideals. -/
 theorem count_associates_factors_eq
@@ -703,6 +704,7 @@ theorem count_associates_factors_eq
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
   lia
 
+open Classical in -- to get `DecidableEq (Associates (Ideal R))`
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq
     {a a₀ x : R} {n : ℕ} (hx : Prime x) (ha : ¬x ∣ a) (heq : a₀ = x ^ n * a) :
@@ -721,6 +723,7 @@ theorem Ideal.count_associates_eq
   · exact (span_singleton_prime hx0).mpr hx
   · simp only [ne_eq, span_singleton_eq_bot]; exact hx0
 
+open Classical in -- to get `DecidableEq (Associates (Ideal R))`
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq'
     {a x : R} (hx : Prime x) {n : ℕ} (hle : x ^ n ∣ a) (hlt : ¬x ^ (n + 1) ∣ a) :

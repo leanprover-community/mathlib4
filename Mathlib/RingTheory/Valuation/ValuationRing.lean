@@ -285,6 +285,7 @@ instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
+open Classical in
 /- Todo: get rid of the `DecidableLE` argument.
 Currently, this argument causes this instance to not be called often,
 which hides a loop in simp-lemmas. See
