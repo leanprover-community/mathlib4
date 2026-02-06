@@ -217,8 +217,7 @@ variable (R : CommRingCat) (x)
 where `p` is the prime corresponding to `x`. -/
 noncomputable
 def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ .of (Localization.AtPrime x.asIdeal) :=
-  (IsLocalization.algEquiv x.asIdeal.primeCompl
-    ((Spec.structureSheaf R).presheaf.stalk _) _).toRingEquiv.toCommRingCatIso
+  StructureSheaf.stalkIso ..
 
 @[reassoc (attr := simp)]
 lemma Spec.algebraMap_stalkIso_inv :

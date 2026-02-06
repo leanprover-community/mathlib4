@@ -297,7 +297,7 @@ lemma Spec.algebraMap_residueFieldIso_inv :
   rw [← Spec.algebraMap_stalkIso_inv_assoc]; rfl
 
 @[reassoc (attr := simp)]
-lemma Spec.residue_residueFieldIso_inv :
+lemma Spec.residue_residueFieldIso_hom :
     (Spec R).residue x ≫ (residueFieldIso R x).hom =
       (Spec.stalkIso R x).hom ≫ CommRingCat.ofHom (algebraMap _ _) := rfl
 

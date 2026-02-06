@@ -123,7 +123,7 @@ instance (U : X.Opens) (V : Y.Opens) (e) [LocallyQuasiFinite f] :
 
 nonrec lemma IsLocallyArtinian.of_locallyQuasiFinite [LocallyQuasiFinite f]
     [IsLocallyArtinian Y] : IsLocallyArtinian X := by
-  change id _
+  change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
   · exact (isLocallyArtinian_iff_openCover (Y.affineCover.pullback₁ f)).mpr fun i ↦
       this (pullback.snd _ _) ⟨_, rfl⟩
@@ -169,7 +169,7 @@ lemma Scheme.Hom.tendsto_cofinite_cofinite [LocallyQuasiFinite f] [QuasiCompact 
 
 nonrec lemma IsFinite.of_locallyQuasiFinite (f : X ⟶ Y) [LocallyQuasiFinite f]
     [QuasiCompact f] [IsLocallyArtinian Y] : IsFinite f := by
-  change id _
+  change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
   · exact (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (pullback.snd _ _) ⟨_, rfl⟩
@@ -193,7 +193,7 @@ instance (f : X ⟶ Y) [LocallyQuasiFinite f] [QuasiCompact f] (x : Y) :
 
 nonrec lemma LocallyQuasiFinite.of_isFinite_fiberToSpecResidueField
     (hf : ∀ x, IsFinite (f.fiberToSpecResidueField x)) : LocallyQuasiFinite f := by
-  change id _
+  change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
   · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
@@ -204,11 +204,7 @@ nonrec lemma LocallyQuasiFinite.of_isFinite_fiberToSpecResidueField
     let g : (pullback.snd f (Y.affineCover.f i)).fiber x ⟶ f.fiber (Y.affineCover.f i x) :=
       pullback.map _ _ _ _ (pullback.fst _ _) (Spec.map ((Y.affineCover.f i).residueFieldMap _))
         (Y.affineCover.f i) (by simp [pullback.condition]) (by simp)
-    have : IsClosedImmersion g := by
-      suffices IsPreimmersion g from .of_isPreimmersion _ (isClosed_discrete _)
-      suffices IsPreimmersion (g ≫ f.fiberι _) from .of_comp _ (f.fiberι _)
-      simp only [Hom.fiberι, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, g]
-      infer_instance
+    have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
     convert (inferInstanceAs (IsFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨R, rfl⟩ := hY
@@ -219,11 +215,7 @@ nonrec lemma LocallyQuasiFinite.of_isFinite_fiberToSpecResidueField
       .of_locallyQuasiFinite (f.fiberToSpecResidueField x)
     let g : (X.affineCover.f i ≫ f).fiber x ⟶ f.fiber x :=
       pullback.map _ _ _ _ (X.affineCover.f i) (𝟙 _) (𝟙 _) (by simp) (by simp)
-    have : IsClosedImmersion g := by
-      suffices IsPreimmersion g from .of_isPreimmersion _ (isClosed_discrete _)
-      suffices IsPreimmersion (g ≫ f.fiberι _) from .of_comp _ (f.fiberι _)
-      simp only [Hom.fiberι, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, g]
-      infer_instance
+    have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
     convert (inferInstanceAs (IsFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨S, rfl⟩ := hX
@@ -250,7 +242,7 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
     {f : X ⟶ Y} [LocallyOfFiniteType f] :
     LocallyQuasiFinite f ↔ ∀ x, IsDiscrete (f ⁻¹' {x}) := by
   refine ⟨fun _ ↦ f.isDiscrete_preimage_singleton, fun H ↦ ?_⟩
-  change id _
+  change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
   · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
@@ -273,7 +265,7 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
 
 nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
     [LocallyOfFiniteType f] (hf : ∀ x, (f ⁻¹' {x}).Finite) : LocallyQuasiFinite f := by
-  change id _
+  change id _ -- avoid typeclass synthesis from getting stuck on the wlog hypothesis.
   wlog hY : ∃ R, Y = Spec R
   · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
