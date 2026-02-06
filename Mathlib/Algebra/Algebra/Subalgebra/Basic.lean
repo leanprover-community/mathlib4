@@ -46,6 +46,8 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (Subalgebra R A) := .ofSetLike (Subalgebra R A) A
+
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
 @[simp]

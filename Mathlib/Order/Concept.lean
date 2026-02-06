@@ -205,16 +205,14 @@ theorem mem_intent_of_intent_rel [IsTrans α r'] {x y} (hy : r' x y) (hx : x ∈
   rw [← upperPolar_extent]
   exact fun z hz ↦ _root_.trans (rel_extent_intent hz hx) hy
 
-theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
+theorem codisjoint_extent_intent [Std.Trichotomous r'] [IsTrans α r'] :
     Codisjoint c'.extent c'.intent := by
   rw [codisjoint_iff_le_sup]
   refine fun x _ ↦ or_iff_not_imp_left.2 fun hx ↦ ?_
   rw [← upperPolar_extent]
   intro y hy
-  obtain h | rfl | h := trichotomous_of r' x y
-  · cases hx <| mem_extent_of_rel_extent h hy
-  · contradiction
-  · assumption
+  apply Not.imp_symm <| Std.Trichotomous.trichotomous x y (hx <| mem_extent_of_rel_extent · hy)
+  exact (hx <| · ▸ hy)
 
 theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') :
     IsCompl c'.extent c'.intent :=
