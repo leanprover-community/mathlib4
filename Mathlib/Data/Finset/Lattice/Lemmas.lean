@@ -72,7 +72,7 @@ theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
 lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
   rfl
 
-/- We lowe the simp-priority of `union_singleton` to ensure that `{x} ∪ {y}`
+/- We lower the simp-priority of `union_singleton` to ensure that `{x} ∪ {y}`
 simplifies to `{x, y}` and not `{y, x}`. -/
 
 @[simp 900, grind =]
