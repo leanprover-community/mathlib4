@@ -1096,7 +1096,6 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   · have inst : IsAffine c.pt := isAffine_of_isLimit _ hc
     let e' : (D ⋙ Scheme.Spec).op ⋙ Γ ≅ D.leftOp := D.leftOp.isoWhiskerLeft SpecΓIdentity
     let c' := coneOfCoconeLeftOp ((Cocones.precompose e'.inv).obj (Γ.mapCocone c.op))
-    have inst : IsAffine (Scheme.Spec.mapCone c').pt := by dsimp; infer_instance
     have inst : ∀ i, IsAffine ((D ⋙ Scheme.Spec).op.obj i).unop := by dsimp; infer_instance
     obtain ⟨i, f, hf⟩ := this (Scheme.Spec.mapCone c') (isLimitOfPreserves _
       (isLimitConeOfCoconeLeftOp _ ((IsColimit.precomposeHomEquiv e'.symm _).symm
