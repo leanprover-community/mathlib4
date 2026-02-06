@@ -236,6 +236,7 @@ inductive ExSum {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
   | add {a b : Q($α)} :
     ExProd BaseType sα a → ExSum BaseType sα b → ExSum BaseType sα q($a + $b)
+
 end
 
 variable {u : Lean.Level}
@@ -282,9 +283,8 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   /-- Given a ring `β` with a scalar multiplication action on `α` and a `x : β`, cast `x` to `α`
   such that the scalar multiplication turns into normal multiplication. Typically one can think of
   `α` as being an algebra over `β`, but this file does not know about `Algebra`s. -/
-  cast (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
+  cast (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (_ : Q(CommSemiring $β))
       (_ : Q(HSMul $β $α $α)) (x : Q($β)),
-      (AtomM <| Result (ExSum (Ring.BaseType sβ) q($sβ)) q($x)) →
     AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
   /-- Evaluate the negation of a coefficient. -/
   neg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → BaseType x → MetaM (Result BaseType q(-$x))
@@ -307,6 +307,21 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
 instance {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : CoeOut (RingCompute BaseType sα) (RingCompare BaseType) where
   coe x := x.toRingCompare
+
+instance (u : Lean.Level) (α : Q(Type u)) (BaseType : Q($α) → Type) [∀ e, Inhabited <| BaseType e]
+    (sα : Q(CommSemiring «$α»)) : Inhabited <|
+    Common.RingCompute (BaseType) sα := ⟨{
+      eq := fun _ _ ↦ false
+      compare := default
+      add := default
+      mul := default
+      cast _ _ _ _ _ _ := do return ⟨_, .zero (BaseType := BaseType) (sα := sα), default⟩
+      neg := default
+      pow := default
+      inv := default
+      derive := default
+      isOne := default
+      one := default }⟩
 
 instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
 instance : Inhabited (Σ e, (ExSumNat) e) := ⟨_, .zero⟩
@@ -1219,8 +1234,7 @@ def isAtomOrDerivable
 
 end
 
-variable (rcRing : ∀ {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)},
-  Cache sα → RingCompute (Ring.BaseType sα) sα) (rcℕ : RingCompute btℕ sℕ) in
+variable (rcℕ : RingCompute btℕ sℕ) in
 
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
@@ -1262,13 +1276,8 @@ partial def eval  {u : Lean.Level}
       have : $a =Q $a' := ⟨⟩
       try
         let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
-        -- Lazily evaluate `vs` only if we actually need the normalized expression in `R`.
-        let vs : AtomM <| Result (ExSum (Ring.BaseType sR) sR) q($r) := do
-          -- TODO: special case Nat and Int for the cache? This would probably be neglegable.
-          let cR ← mkCache sR
-          eval (rcRing cR) cR r
         let ⟨_, vb, pb⟩ ← eval rc c a
-        let ⟨_, vt, pt⟩ ← rc.cast _ _ q($sR) q(inferInstance) _ vs
+        let ⟨_, vt, pt⟩ ← rc.cast _ _ q($sR) q(inferInstance) _
         let ⟨_, vc, pc⟩ ← evalMul rc rcℕ vt vb
         return ⟨_, vc, q(hsmul_congr rfl $pb $pt $pc)⟩
       catch _ => els

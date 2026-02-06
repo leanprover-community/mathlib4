@@ -374,9 +374,11 @@ def BaseType.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result (
   return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
 
 namespace RingCompute
+mutual
 
 /-- Add two rational number expressions. If the result is zero, returns a proof of this fact. -/
-def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
+partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
   let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
@@ -391,18 +393,20 @@ def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
   return ⟨r, isZero⟩
 
 /-- Evaluate the product of two rational number expressions. -/
-def mul (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
+partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a * $b)) := do
   let res ← za.toResult.mul zb.toResult
   return ← BaseType.ofResult sα res
 
 /-- Cast ℕ and ℤ normalized expressions ExSums into `α`, used to evaluate scalar multiplications. -/
-def cast (cα : Common.Cache sα) (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
-    (_smul : Q(HSMul $β $α $α)) (_x : Q($β))
-    (rx : AtomM (Result (Common.ExSum (BaseType sβ) q($sβ)) q($_x))) :
+partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cα : Common.Cache sα)
+    (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (_smul : Q(HSMul $β $α $α))
+    (x : Q($β)) :
     AtomM ((y : Q($α)) × Common.ExSum (BaseType sα) sα q($y) ×
-      Q(∀ (a : $α), $_x • a = $y * a)) := do
-  let ⟨x', vx, px⟩ ← rx
+      Q(∀ (a : $α), $x • a = $y * a)) := do
+  let cβ ← Common.mkCache sβ
+  let ⟨x', vx, px⟩ ← Common.eval (ringCompute .nat) (ringCompute cβ) cβ x
   if (← isDefEq sα sβ) then
     have : u =QL v := ⟨⟩
     have : $α =Q $β := ⟨⟩
@@ -423,7 +427,8 @@ def cast (cα : Common.Cache sα) (v : Lean.Level) (β : Q(Type v)) (sβ : Q(Com
   | _ => failure
 
 /-- Negate rational number expressions. -/
-def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
+partial def neg {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
     MetaM (Result (BaseType sα) q(-$a)) := do
   let res ← za.toResult.neg q(inferInstance)
   -- We have to unpack this result due to instance issues.
@@ -433,7 +438,8 @@ def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
 /-- Raise a rational number expression to the power of a natural number.
 
 Fails if the exponent is not a literal. -/
-def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
+partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
     (vb : Common.ExProdNat q($b)) :
     OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
   match vb with
@@ -450,8 +456,9 @@ def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
   | _ => OptionT.fail
 
 /-- Evaluate the inverse of a natural number expression. -/
-def inv {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α))
-    (za : BaseType sα a) : AtomM (Option (Result (BaseType sα) q($a⁻¹))) := do
+partial def inv {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α)) (za : BaseType sα a) :
+    AtomM (Option (Result (BaseType sα) q($a⁻¹))) := do
   match (← (Lean.observing? <| za.toResult.inv _ czα :)) with
   | some res =>
     let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
@@ -459,13 +466,15 @@ def inv {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α))
   | none => return none
 
 /-- Try to evaluate an expression as a rational constant using norm_num. -/
-def derive (x : Q($α)) : MetaM (Result (Common.ExSum (BaseType sα) sα) q($x)) := do
+partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (x : Q($α)) :
+    MetaM (Result (Common.ExSum (BaseType sα) sα) q($x)) := do
   let res ← NormNum.derive x
   let ⟨_, va, pa⟩ ← evalCast sα res
   return ⟨_, va, q($pa)⟩
 
 /-- Decide if `x` is 1 and provide a proof if so. -/
-def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
+partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
   let ⟨qx, _hx⟩ := zx
   if qx == 1 then
     have : $x =Q Nat.rawCast 1 := ⟨⟩
@@ -474,17 +483,16 @@ def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
   else
     failure
 
-end RingCompute
-
 /-- The comarisons on the basetype used to compare normalized ring expressions. -/
-def ringCompare : Common.RingCompare (BaseType sα) where
+partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type u)}
+    (sα : Q(CommSemiring $α)) : Common.RingCompare (BaseType sα) where
   eq zx zy := zx.value == zy.value
   compare zx zy := compare zx.value zy.value
 
-variable {sα} in
-open RingCompute in
 /-- The data used by the `ring` tactic to normalize the constant coefficients. -/
-def ringCompute (cα : Common.Cache sα) : Common.RingCompute (BaseType sα) sα where
+partial def _root_.Mathlib.Tactic.Ring.ringCompute
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} (cα : Common.Cache sα) :
+    Common.RingCompute (BaseType sα) sα where
   add := add sα
   mul := mul sα
   cast := cast sα cα
@@ -495,6 +503,9 @@ def ringCompute (cα : Common.Cache sα) : Common.RingCompute (BaseType sα) sα
   isOne := isOne sα
   one := ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
   toRingCompare := ringCompare sα
+
+end
+end RingCompute
 
 /-- The data used by `ring`-like tactics to normalize constant coefficients of natural number
 expressions. -/
@@ -569,8 +580,8 @@ where
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
     let c ← Common.mkCache sα
     profileitM Exception "ring" (← getOptions) do
-      let ⟨a, va, pa⟩ ← Common.eval ringCompute rcℕ (ringCompute c) c e₁
-      let ⟨b, vb, pb⟩ ← Common.eval ringCompute rcℕ (ringCompute c) c e₂
+      let ⟨a, va, pa⟩ ← Common.eval rcℕ (ringCompute c) c e₁
+      let ⟨b, vb, pb⟩ ← Common.eval rcℕ (ringCompute c) c e₂
       unless va.eq rcℕ (ringCompute c) vb do
         let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
         throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
