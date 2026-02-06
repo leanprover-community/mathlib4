@@ -114,20 +114,14 @@ end IsLocalRing
 section IsUnramifiedAt
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable [EssFiniteType R S] (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
 
 /-- Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
 Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`. -/
-lemma isUnramifiedAt_iff_map_eq [EssFiniteType R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
+lemma isUnramifiedAt_iff_map_eq :
     Algebra.IsUnramifiedAt R q ↔
       Algebra.IsSeparable p.ResidueField q.ResidueField ∧
       p.map (algebraMap R (Localization.AtPrime q)) = maximalIdeal _ := by
-  letI : Algebra (Localization.AtPrime p) (Localization.AtPrime q) :=
-    (Localization.localRingHom p q (algebraMap R S) Ideal.LiesOver.over).toAlgebra
-  have : IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q) := .of_algebraMap_eq
-    fun x ↦ (Localization.localRingHom_to_map p q (algebraMap R S) Ideal.LiesOver.over x).symm
-  letI : IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
-    Localization.isLocalHom_localRingHom _ _ _ Ideal.LiesOver.over
   have : EssFiniteType (Localization.AtPrime p) (Localization.AtPrime q) := .of_comp R _ _
   trans Algebra.FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q)
   · exact ⟨fun _ ↦ .of_restrictScalars R _ _,
@@ -137,6 +131,12 @@ lemma isUnramifiedAt_iff_map_eq [EssFiniteType R S]
   rw [RingHom.algebraMap_toAlgebra, ← Localization.AtPrime.map_eq_maximalIdeal,
     Ideal.map_map, Localization.localRingHom,
     IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
+
+instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
+  ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
+
+instance [Algebra.IsUnramifiedAt R q] : Module.Finite p.ResidueField q.ResidueField :=
+  Algebra.FormallyUnramified.finite_of_free _ _
 
 end IsUnramifiedAt
 
