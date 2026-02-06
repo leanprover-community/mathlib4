@@ -266,6 +266,7 @@ theorem finprod_heightOneSpectrum_factorization_principal_fraction {n : R} (hn :
     rw [IsFractionRing.mk'_eq_div, div_eq_mul_inv, mul_comm]
   exact finprod_heightOneSpectrum_factorization h0 hI
 
+open Classical in
 /-- For a nonzero `k = r/s ∈ K`, the fractional ideal `(k)` is equal to the product
 `∏_v v^(val_v(r) - val_v(s))`. -/
 theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R⁰ K} (hI : I ≠ 0)
