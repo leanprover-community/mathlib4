@@ -35,22 +35,15 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
     Let `𝔣` be the conductor of `x` (i.e. the largest `S`-ideal in `R⟨x⟩`).
     `x` as an element of `S/√𝔣` is strongly transcendental over `R`.
   - `Algebra.not_quasiFiniteAt_of_stronglyTranscendental`:
-    If `R ⊆ S`, `S` is reduced, and `x : S` is strongly transcendental over `R`,
-    then there's a contradiction.
-    The proof first reduces to when `S` is a domain, and then to when `R` is integrally closed.
-    We get a going down theorem when `R` is integrally closed, which we apply to
+    If `S` is reduced, then `x : S` is not strongly transcendental over `R`.
+    One first reduces to when `R ⊆ S` are domains, and then to when `R` is integrally closed.
+    A going down theorem is now available, which could be applied to
     `Polynomial.map_under_lt_comap_of_quasiFiniteAt`:`(p ∩ R)[X] < p ∩ R<x>` to get a contradiction.
-  The second result applied to `R/(√𝔣 ∩ R) ⊆ S/√𝔣` together with the first result implies that
+  The second result applied to `S/√𝔣` together with the first result implies that
   `p` does not contain `𝔣`.
   The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
 3. TODO (@erdOne): Induct on the number of `{ xᵢ }` such that `S` is finite over `R⟨xᵢ⟩` to get the
   general statement.
-
-The final statement would be
-```
-example {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
-    (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] : ZariskiMainProperty R p
-```
 
 -/
 
@@ -306,12 +299,12 @@ attribute [local instance] Polynomial.isLocalization Polynomial.algebra
 
 section not_quasiFiniteAt
 
-/-- Use `not_quasiFiniteAt_of_stronglyTranscendental` below instead. -/
-private lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isIntegrallyClosed [FaithfulSMul R S]
+/-- Use `not_isStronglyTranscendental_of_quasiFiniteAt` below instead. -/
+private lemma not_isStronglyTranscendental_of_quasiFiniteAt_of_isIntegrallyClosed [FaithfulSMul R S]
     [IsIntegrallyClosed R] [IsDomain S]
-    {x : S} (hx : IsStronglyTranscendental R x) (hx' : (aeval (R := R) x).Finite)
-    (P : Ideal S) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P := by
-  intro H
+    {x : S} (hx' : (aeval (R := R) x).Finite)
+    (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] : ¬ IsStronglyTranscendental R x := by
+  intro hx
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
   have hf' : Function.Injective (aeval (R := R) x) := (injective_iff_map_eq_zero _).mpr
     fun p hp ↦ not_not.mp fun hp' ↦ hx.transcendental ⟨p, hp', hp⟩
@@ -336,9 +329,9 @@ private lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isIntegrallyClosed 
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
 to aid typeclass synthesis.
 
-Use `not_quasiFiniteAt_of_stronglyTranscendental` below instead. -/
+Use `not_isStronglyTranscendental_of_quasiFiniteAt` below instead. -/
 @[stacks 00Q1]
-private lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain_aux
+private lemma not_isStronglyTranscendental_of_quasiFiniteAt_of_isDomain_aux
     (K L : Type*) [Field K] [Field L] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L]
     [IsScalarTower R K L] [IsScalarTower R S L] [IsFractionRing R K] [IsFractionRing S L]
     {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra R' S'] [Algebra R S']
@@ -348,8 +341,9 @@ private lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain_aux
     (f : S →ₐ[R] S') (hf₁ : Function.Surjective
       (Algebra.TensorProduct.lift (Algebra.ofId R' S') f fun _ _ ↦ .all _ _))
     (hf₂ : (algebraMap S' L).comp f.toRingHom = algebraMap _ _)
-    {x : S} (hx : IsStronglyTranscendental R x) (hx' : (aeval (R := R) x).Finite)
-    (P : Ideal S) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P := by
+    {x : S} (hx' : (aeval (R := R) x).Finite)
+    (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] : ¬ IsStronglyTranscendental R x := by
+  intro hx
   have := (FaithfulSMul.algebraMap_injective S' L).isDomain
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   have : Algebra.IsIntegral R R' := IsIntegralClosure.isIntegral_algebra _ K
@@ -382,7 +376,8 @@ private lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain_aux
       (polyEquivTensor R R').toRingEquiv.finite using 1
     ext <;> simp [g]
   obtain ⟨⟨Q, _⟩, hQ⟩ := hf₄.comap_surjective hf₃ ⟨P, ‹_›⟩
-  refine fun H ↦ not_quasiFiniteAt_of_stronglyTranscendental_of_isIntegrallyClosed H₁ H₂ Q ?_
+  suffices QuasiFiniteAt R' Q from
+    not_isStronglyTranscendental_of_quasiFiniteAt_of_isIntegrallyClosed H₂ Q H₁
   have : Algebra.QuasiFiniteAt R' (Q.comap g.toRingHom) := .baseChange P _ <| by
     rw [Ideal.comap_comap]
     convert congr(($hQ.symm).1)
@@ -390,26 +385,28 @@ private lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain_aux
   exact .of_surjectiveOnStalks _ g (RingHom.surjectiveOnStalks_of_surjective hf₁) _ rfl
 
 @[stacks 00Q2]
-nonrec lemma not_quasiFiniteAt_of_stronglyTranscendental [IsReduced S] [FaithfulSMul R S]
-    {x : S} (hx : IsStronglyTranscendental R x) (hx' : (aeval (R := R) x).Finite)
-    (P : Ideal S) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P := by
-  wlog hS : IsDomain S
-  · intro H
+nonrec lemma not_isStronglyTranscendental_of_quasiFiniteAt [IsReduced S]
+    {x : S} (hx' : (aeval (R := R) x).toRingHom.Finite)
+    (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] : ¬ IsStronglyTranscendental R x := by
+  wlog hS : IsDomain S ∧ FaithfulSMul R S
+  · intro hx
     obtain ⟨p, hp, hpP⟩ := Ideal.exists_minimalPrimes_le (J := P) bot_le
     have inst := hp.1.1
     have inst : (P.map (Ideal.Quotient.mk p)).IsPrime :=
       Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective (by simpa)
-    refine this (R := R ⧸ p.under R)
-      ((isStronglyTranscendental_mk_of_mem_minimalPrimes hx p hp).of_surjective_left
-        Ideal.Quotient.mk_surjective) ?_ (P.map (Ideal.Quotient.mk p)) inferInstance ?_
-    · refine RingHom.Finite.of_comp_finite (f := mapRingHom (Ideal.Quotient.mk _)) ?_
-      convert (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := p))).comp hx'
-      ext <;> simp
-    · suffices Algebra.QuasiFiniteAt R (P.map (Ideal.Quotient.mk p)) from .of_restrictScalars R _ _
+    have inst : QuasiFiniteAt (R ⧸ Ideal.under R p) (Ideal.map (Ideal.Quotient.mk p) P) := by
+      suffices Algebra.QuasiFiniteAt R (P.map (Ideal.Quotient.mk p)) from .of_restrictScalars R _ _
       refine .of_surjectiveOnStalks P (Ideal.Quotient.mkₐ _ _)
         (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective) _ ?_
       refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm
       simpa [← RingHom.ker_eq_comap_bot]
+    refine this (R := R ⧸ p.under R) ?_ (P.map (Ideal.Quotient.mk p)) ⟨inferInstance, inferInstance⟩
+      ((isStronglyTranscendental_mk_of_mem_minimalPrimes hx p hp).of_surjective_left
+        Ideal.Quotient.mk_surjective)
+    refine RingHom.Finite.of_comp_finite (f := mapRingHom (Ideal.Quotient.mk _)) ?_
+    convert (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := p))).comp hx'
+    ext <;> simp
+  cases hS
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
   let K := FractionRing R
   let L := FractionRing S
@@ -427,7 +424,7 @@ nonrec lemma not_quasiFiniteAt_of_stronglyTranscendental [IsReduced S] [Faithful
       Subalgebra.coe_val, AlgHom.coe_range, Set.range_subset_iff, Set.mem_image, Set.mem_range,
       exists_exists_eq_and, S']
     exact fun y ↦ ⟨1 ⊗ₜ y, by simp [g, S']; rfl⟩
-  exact not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain_aux K L f hf rfl hx hx' P
+  exact not_isStronglyTranscendental_of_quasiFiniteAt_of_isDomain_aux K L f hf rfl hx' P
 
 end not_quasiFiniteAt
 
@@ -492,29 +489,23 @@ lemma ZariskisMainProperty.of_algHom_polynomial
     refine RingHom.Finite.of_comp_finite (f := mapRingHom (algebraMap R _)) ?_
     convert (show f.toRingHom.Finite from hf)
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes]
-  have := isStronglyTranscendental_mk_radical_conductor H (f X) (by convert hf; ext; simp)
-  have := this.of_surjective_left (S := R ⧸ (conductor R (f X)).radical.under R)
-    Ideal.Quotient.mk_surjective
   have : ¬ conductor R (f X) ≤ p := by
     intro hp
     rw [← ‹p.IsPrime›.isRadical.radical_le_iff] at hp
-    have inst : (p.map (Ideal.Quotient.mk (conductor R (f X)).radical)).IsPrime :=
+    set J := (conductor R (f X)).radical
+    have inst : (p.map (Ideal.Quotient.mk J)).IsPrime :=
       Ideal.map_isPrime_of_surjective Ideal.Quotient.mk_surjective (by simpa using hp)
-    have inst : IsReduced (S ⧸ (conductor R (f X)).radical) :=
-      (Ideal.isRadical_iff_quotient_reduced _).mp (Ideal.radical_isRadical _)
-    refine not_quasiFiniteAt_of_stronglyTranscendental this ?_
-      (p.map (Ideal.Quotient.mk (conductor R (f X)).radical)) ?_
-    · refine RingHom.Finite.of_comp_finite (f := mapRingHom (Ideal.Quotient.mk _)) ?_
-      convert (RingHom.Finite.of_surjective (Ideal.Quotient.mk (conductor R (f X)).radical)
-        Ideal.Quotient.mk_surjective).comp hf using 1
-      have (x : _) : f (C x) = algebraMap _ _ x := f.commutes _
-      ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes]
-    · suffices Algebra.QuasiFiniteAt R (p.map (Ideal.Quotient.mk (conductor R (f X)).radical)) from
-        .of_restrictScalars R _ _
-      refine .of_surjectiveOnStalks p (Ideal.Quotient.mkₐ R (conductor R (f X)).radical)
+    have inst : IsReduced (S ⧸ J) :=
+        (Ideal.isRadical_iff_quotient_reduced _).mp (Ideal.radical_isRadical _)
+    have inst : QuasiFiniteAt R (p.map (Ideal.Quotient.mk J)) := by
+      refine .of_surjectiveOnStalks p (Ideal.Quotient.mkₐ R _)
         (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective) _
         ((Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective p).trans ?_).symm
       simpa [← RingHom.ker_eq_comap_bot]
+    refine not_isStronglyTranscendental_of_quasiFiniteAt ?_ (p.map (Ideal.Quotient.mk J))
+      (isStronglyTranscendental_mk_radical_conductor H (f X) (by convert hf; ext; simp))
+    convert (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf using 1
+    ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes, J]
   obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp this
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
   refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
