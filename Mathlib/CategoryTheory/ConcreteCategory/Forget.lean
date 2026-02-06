@@ -69,9 +69,7 @@ def forget : C ⥤ Type w where
   map f := f
 
 instance : (forget C).Faithful where
-  map_injective h := by
-    ext
-    exact DFunLike.coe_injective h
+  map_injective h := ConcreteCategory.coe_ext h
 
 variable {C}
 
@@ -159,7 +157,7 @@ lemma ConcreteCategory.forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) (x : ToType ((forget₂ C D).obj X)) :
     ((forget₂ C D).map (f ≫ g) x) =
       (forget₂ C D).map g ((forget₂ C D).map f x) := by
-  rw [Functor.map_comp, ConcreteCategory.comp_apply]
+  rw [Functor.map_comp, CategoryTheory.comp_apply]
 
 instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     IsIso (C := Type _) ⇑(ConcreteCategory.hom f) :=
