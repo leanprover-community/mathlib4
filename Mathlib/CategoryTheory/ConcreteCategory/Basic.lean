@@ -158,9 +158,8 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
     (x : ToType X) : (f ≫ g) x = g (f x) := by
   simp [ConcreteCategory.comp_apply]
 
--- /-- Variation of `ConcreteCategory.comp_apply` that uses `forget` instead. -/
--- theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
---     (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
+@[deprecated (since := "2026-02-06")] alias _root_.CategoryTheory.comp_apply' :=
+  _root_.CategoryTheory.comp_apply
 
 theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : ToType X} (h : x = x') : f x = f x' :=
   congrArg (f : ToType X → ToType Y) h
