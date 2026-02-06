@@ -46,7 +46,7 @@ assert_not_exists IsOrderedMonoid
 
 noncomputable section
 
-universe v u v' u'
+universe v
 
 open CategoryTheory
 
@@ -60,8 +60,8 @@ open Opposite
 
 open scoped AlgebraicGeometry
 
-variable {C : Type u} [Category.{v} C]
-variable [HasColimits.{v} C]
+variable {C : Type*} [Category C]
+variable [HasColimitsOfSize.{v, v} C]
 variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
@@ -380,8 +380,10 @@ end stalkSpecializes
 
 section Concrete
 
-variable {C} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [instCC : ConcreteCategory.{v} C FC]
+universe w
+
+variable {C} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [instCC : ConcreteCategory.{w} C FC]
 
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V)
@@ -391,16 +393,16 @@ theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV
   rw [← F.germ_res iWU x hxW, ← F.germ_res iWV x hxW, ConcreteCategory.comp_apply,
     ConcreteCategory.comp_apply, ih]
 
-variable [PreservesFilteredColimits (forget C)]
+variable [PreservesFilteredColimitsOfSize.{v, v} (forget C)]
 
 /--
 For presheaves valued in a concrete category whose forgetful functor preserves filtered colimits,
 every element of the stalk is the germ of a section.
 -/
-theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk.{v, u} F x)) :
+theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk F x)) :
     ∃ (U : Opens X) (m : x ∈ U) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
   obtain ⟨U, s, e⟩ :=
-    Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
+    Types.jointly_surjective _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
   induction U with | op U => ?_
   obtain ⟨V, m⟩ := U
@@ -410,12 +412,11 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk.{v, u} F x)) :
 theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     (s : ToType (F.obj (op U))) (t : ToType (F.obj (op V)))
     (h : F.germ U x mU s = F.germ V x mV t) :
-    ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
-  obtain ⟨W, iU, iV, e⟩ :=
-    (Types.FilteredColimit.isColimit_eq_iff.{v, v} _
-          (isColimitOfPreserves (forget C) (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp
-        h
-  exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
+    ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t :=
+  have ⟨W, iU, iV, e⟩ :=
+    (Types.FilteredColimit.isColimit_eq_iff _
+      (isColimitOfPreserves (forget C) (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp h
+  ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
 
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
@@ -466,7 +467,8 @@ lemma stalkFunctor_map_injective_of_isBasis
 
 end IsBasis
 
-variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
+variable [HasLimitsOfSize.{v, v} C] [PreservesLimitsOfSize.{v, v} (forget C)]
+  [(forget C).ReflectsIsomorphisms]
 
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.
@@ -502,6 +504,8 @@ theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshe
       ∀ U : Opens X, Function.Injective (f.app (op U)) :=
   ⟨fun h U => app_injective_of_stalkFunctor_map_injective f U fun x _ => h x,
     stalkFunctor_map_injective_of_app_injective⟩
+
+attribute [local instance] PreservesLimitsOfSize.preservesFiniteLimits
 
 instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) :=

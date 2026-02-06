@@ -256,7 +256,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     ⟨fun q ↦ (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
       ⟨q.1, q.2.1⟩, fun q ↦ ?_⟩, by
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
-          germ_ext (C := ModuleCat R) (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
+          germ_ext (C := ModuleCat.{u} R) (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
             (iWV := homOfLE inf_le_left) _ <|
           Subtype.ext <| funext fun y ↦ by
             simp [smul_section_apply, ← smul_assoc, Localization.smul_mk]; rfl⟩
