@@ -248,21 +248,17 @@ theorem Ioc_self (a : α) : Ioc a a = ∅ :=
 theorem Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, gcongr)]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   ⟨fun h => h self_mem_Ici, fun h _ hx ↦ hx.trans h⟩
 
-@[to_dual (attr := gcongr)] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
-
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, gcongr)]
 theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b where
   mp h := by
     obtain ⟨ab, c, cb, ac⟩ := ssubset_iff_exists.mp h
     exact lt_of_le_not_ge (Iic_subset_Iic.mp ab) (fun h' ↦ ac (cb.trans h'))
   mpr h := (ssubset_iff_of_subset (Iic_subset_Iic.mpr h.le)).mpr
     ⟨b, self_mem_Iic, fun h' => h.not_ge h'⟩
-
-@[to_dual (attr := gcongr)] alias ⟨_, _root_.GCongr.Iic_ssubset_Iic_of_le⟩ := Iic_ssubset_Iic
 
 @[to_dual (attr := simp)]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=

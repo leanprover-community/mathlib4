@@ -76,9 +76,9 @@ instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty
 theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 
 /-- A quiver is thin if it has no parallel arrows. -/
-@[to_dual IsThin' /-- `isThin'` is equivalent to `IsThin`.
-It is used by `@[to_dual]` to be able to translate `IsThin`. -/]
 abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
+
+to_dual_insert_cast_fun IsThin := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 
 
 section

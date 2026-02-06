@@ -638,13 +638,17 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
 theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
   ⟨Set.embeddingOfSubset s t h⟩
 
+@[deprecated mk_eq_zero (since := "2026-01-31")]
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
-theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ := by
+theorem mk_set_eq_zero_iff {s : Set α} : #s = 0 ↔ s = ∅ := by
   rw [mk_eq_zero_iff, isEmpty_coe_sort]
 
-lemma mk_set_ne_zero_iff {α : Type u} (s : Set α) : #s ≠ 0 ↔ s.Nonempty := by
+@[deprecated (since := "2026-01-31")]
+alias mk_emptyCollection_iff := mk_set_eq_zero_iff
+
+theorem mk_set_ne_zero_iff {s : Set α} : #s ≠ 0 ↔ s.Nonempty := by
   rw [mk_ne_zero_iff, nonempty_coe_sort]
 
 @[simp]
@@ -793,6 +797,10 @@ theorem mk_eq_nat_iff_fintype {n : ℕ} : #α = n ↔ ∃ h : Fintype α, @Finty
     exact ⟨⟨t, eq_univ_iff_forall.1 ht⟩, hn⟩
   · rintro ⟨⟨t, ht⟩, hn⟩
     exact ⟨t, eq_univ_iff_forall.2 ht, hn⟩
+
+theorem mk_set_eq_one_iff {s : Set α} : #s = 1 ↔ ∃ x, s = {x} := by
+  rw [eq_one_iff_unique, Set.exists_eq_singleton_iff_nonempty_subsingleton,
+    Set.nonempty_coe_sort, Set.subsingleton_coe, and_comm]
 
 theorem mk_union_add_mk_inter {α : Type u} {S T : Set α} :
     #(S ∪ T : Set α) + #(S ∩ T : Set α) = #S + #T := by
