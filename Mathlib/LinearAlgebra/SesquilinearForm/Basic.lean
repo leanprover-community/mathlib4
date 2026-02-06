@@ -383,15 +383,17 @@ variable {s t : Set M₁}
 theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ orthogonalBilin B s ↔ ∀ n ∈ s, B.IsOrtho n m :=
   Iff.rfl
 
-theorem orthogonalBilin_le (h : s ⊆ t) : orthogonalBilin B t ≤ orthogonalBilin B s :=
+theorem orthogonalBilin_anti (h : s ⊆ t) : orthogonalBilin B t ≤ orthogonalBilin B s :=
   fun _ hn l hl ↦ hn l (h hl)
 
-alias orthogonalBilin_anti := orthogonalBilin_le
+@[deprecated (since := "2026-02-02")]
+alias orthogonalBilin_le := orthogonalBilin_anti
 
 -- TODO: orthogonalBilin_antitone
 
+@[simp]
 theorem orthogonalBilin_span : orthogonalBilin B (Submodule.span R₁ s) = orthogonalBilin B s := by
-  refine le_antisymm (orthogonalBilin_le Submodule.subset_span) (fun x hx y hy => ?_)
+  refine le_antisymm (orthogonalBilin_anti Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx _ h
   | zero => simp [LinearMap.isOrtho_def]
