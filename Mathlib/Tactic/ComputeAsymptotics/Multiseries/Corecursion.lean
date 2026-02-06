@@ -19,7 +19,7 @@ def foo (x : X) := hd x :: foo (tlArg x)
 ```
 (where hd and tlArg are arbitrary functions) can be encoded via the corecursor `Seq.corec`.
 
-It is not enough, however, to define multiplication and powser operation for multiseries.
+It is not enough, however, to define multiplication and `powser` operation for multiseries.
 
 This file implements a more general form of corecursion in the spirit of [blanchette2015].
 This is a bare minimum that needed for the tactic, it justifies a weaker class of
