@@ -880,20 +880,14 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 
 end Sum
 
-/-- The bijection between the free group on the empty type, and a type with one element. -/
-@[to_additive /-- The bijection between the additive free group on the empty type, and a type with
+/-- The isomorphism between the free group on the empty type, and a type with one element. -/
+@[to_additive /-- The isomorphism between the additive free group on the empty type, and a type with
   one element. -/]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃* Unit where
   toFun _ := ()
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
-
-/-- We define the free group on no generators as isomorphic to the trivial `Unit` group. -/
-@[to_additive /-- We define the additive free group on no generators as isomorphic to the trivial
-`Unit` group. -/]
-def freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
-{ toEquiv := freeGroupEmptyEquivUnit
-  map_mul' _ _ := rfl }
+  map_mul' _ _ := rfl
 
 /-- We define the free group on no generators as isomorphic to the trivial `PUnit` group. -/
 @[to_additive /-- We define the additive free group on no generators as isomorphic to the trivial
