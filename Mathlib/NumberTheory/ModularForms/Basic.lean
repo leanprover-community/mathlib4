@@ -42,7 +42,7 @@ lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext
-  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos), coe_mk_subtype]
+  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos)]
 
 @[simp] lemma val_J : J.val = !![-1, 0; 0, 1] := rfl
 
@@ -611,10 +611,6 @@ def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
      {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
   prod (s := s) (s.card * k) (by simp) F
-
-open BigOperators
-
-
 
 end GradedRing
 

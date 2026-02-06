@@ -114,8 +114,8 @@ variable (E F) in
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     𝓢(E, F) →L[ℂ] 𝓢'(E, F) where
   toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
   cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
     fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
 
@@ -257,6 +257,33 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasT
     smulLeftCLM F g₂ ∘L smulLeftCLM F g₁ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
   simp [hg₁, hg₂]
+
+theorem smulLeftCLM_smul {g : E → ℂ} (hg : g.HasTemperateGrowth) (c : ℂ) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_smul hg]
+
+theorem smulLeftCLM_add {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ + g₂) = smulLeftCLM F g₁ + smulLeftCLM F g₂ := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_add hg₁ hg₂]
+
+theorem smulLeftCLM_sub {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ - g₂) = smulLeftCLM F g₁ - smulLeftCLM F g₂ := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_sub hg₁ hg₂]
+
+theorem smulLeftCLM_neg {g : E → ℂ} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (-g) = -smulLeftCLM F g := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_neg hg]
+
+theorem smulLeftCLM_sum {g : ι → E → ℂ} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_sum hg]
 
 open ENNReal MeasureTheory
 
@@ -453,6 +480,8 @@ instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
 instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
 
+section embedding
+
 variable [CompleteSpace F]
 
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
@@ -477,6 +506,42 @@ theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
 
 @[deprecated (since := "2026-01-14")]
 alias fourierTransformInv_toTemperedDistributionCLM_eq := fourierInv_toTemperedDistributionCLM_eq
+
+end embedding
+
+open LineDeriv Real
+
+/- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
+of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
+theorem lineDerivOp_fourier_eq (f : 𝓢'(E, F)) (m : E) :
+    ∂_{m} (𝓕 f) = 𝓕 (- (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
+  ext u
+  have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
+  simp [SchwartzMap.fourier_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this]
+
+/- The Fourier transform of line derivative in direction `m` is given by multiplication of
+`(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
+theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
+    𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕 f) := by
+  ext u
+  have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
+  simp [SchwartzMap.lineDerivOp_fourier_eq, ← smulLeftCLM_ofReal ℂ this]
+
+/- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
+Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner ℝ · m)`. -/
+theorem lineDerivOp_fourierInv_eq (f : 𝓢'(E, F)) (m : E) :
+    ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
+  ext u
+  have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
+  simp [SchwartzMap.fourierInv_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this]
+
+/- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
+`-(2 * π * Complex.I) • (inner ℝ · m)` with the inverse Fourier transform. -/
+theorem fourierInv_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
+    𝓕⁻ (∂_{m} f) = -(2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕⁻ f) := by
+  ext u
+  have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
+  simp [SchwartzMap.lineDerivOp_fourierInv_eq, ← smulLeftCLM_ofReal ℂ this]
 
 end Fourier
 

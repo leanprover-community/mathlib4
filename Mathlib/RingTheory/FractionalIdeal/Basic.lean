@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Fractional ideals
@@ -163,6 +162,8 @@ section SetLike
 instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
   coe_injective' := SetLike.coe_injective.comp Subtype.coe_injective
+
+instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
 
 @[simp]
 theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
