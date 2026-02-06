@@ -174,7 +174,7 @@ example (h : p ∨ q) : q ∨ p := by
   · exact Or.inr hp
   · exact Or.inl hq
 
--- Equivalent to the preferred versions:
+-- Though the following equivalent spellings should be preferred
 example (h : p ∨ q) : q ∨ p := by
   cases h with
   | inl hp => exact Or.inr hp
