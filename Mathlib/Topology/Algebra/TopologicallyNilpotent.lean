@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.RingTheory.Ideal.Basic
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Topologically nilpotent elements
 

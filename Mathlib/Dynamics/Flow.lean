@@ -144,7 +144,7 @@ def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
 /-- Restriction of a flow onto an invariant set. -/
 def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
   toFun t := (h t).restrict _ _ _
-  cont' := (ϕ.continuous continuous_fst continuous_subtype_val.snd').subtype_mk _
+  cont' := Continuous.subtype_mk (by fun_prop) _
   map_add' _ _ _ := Subtype.ext (map_add _ _ _ _)
   map_zero' _ := Subtype.ext (map_zero_apply _ _)
 
@@ -283,8 +283,6 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   invFun := ϕ (-t)
   left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
-  continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
 
 theorem image_eq_preimage_symm (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
   (ϕ.toHomeomorph t).toEquiv.image_eq_preimage_symm s
