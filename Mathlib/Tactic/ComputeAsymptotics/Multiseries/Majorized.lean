@@ -16,7 +16,7 @@ This file defines the `Majorized` predicate, along with a few basic lemmas.
 
 * `Majorized f b exp` means that `f =o[atTop] (b ^ exp')` for any `exp' > exp`.
   Intuitively, this means that the right order of `f` in terms of `b` is at most `b ^ exp`.
-  This predicate is used in the definition of the `PreMS.Approximates` predicate.
+  This predicate is used in the definition of the `MultiseriesExpansion.Approximates` predicate.
 -/
 
 @[expose] public section
@@ -26,7 +26,7 @@ namespace Tactic.ComputeAsymptotics
 open Topology Filter Asymptotics
 
 /-- `Majorized f g exp` for real functions `f` and `g` means that for any `exp' < exp`,
-`f =o[atTop] g ^ exp'`. This is used to define the `PreMS.Approximates` predicate. The naming
+`f =o[atTop] g ^ exp'`. This is used to define the `MultiseriesExpansion.Approximates` predicate. The naming
 `Majorized` is non-standard because this notion is invented for the purposes of this tactic, and
 does not exists in literature. -/
 def Majorized (f b : ℝ → ℝ) (exp : ℝ) : Prop :=
