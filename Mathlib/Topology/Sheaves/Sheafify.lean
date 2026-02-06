@@ -46,7 +46,6 @@ namespace TopCat.Presheaf
 
 namespace Sheafify
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
@@ -100,8 +99,6 @@ are locally equal to germs.
 -/
 def sheafify : Sheaf (Type _) X :=
   subsheafToTypes (Sheafify.isLocallyGerm F)
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 /-- The morphism from a presheaf to its sheafification,
 sending each section to its germs.

@@ -484,7 +484,6 @@ def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ f := f.1
 
 open TopCat.Presheaf
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The functions satisfying a local predicate satisfy the sheaf condition.
 -/
 theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredicate).IsSheaf :=
