@@ -30,12 +30,6 @@ open Limits
 /-! The forgetful functor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
 over to `forget (Type u)`.
 
-We currently have two instances for `HasForget (Type u)`:
-
-* A global `HasForget` instance where `forget (Type u)` reduces to `𝟭 Type`
-* A locally enabled `ConcreteCategory` where `forget (Type u)` is only reducible-with-instances
-  equal to `𝟭 Type`.
-
 Since instance synthesis only looks through reducible definitions, we need to help it out by copying
 over the instances that wouldn't be found otherwise.
 -/

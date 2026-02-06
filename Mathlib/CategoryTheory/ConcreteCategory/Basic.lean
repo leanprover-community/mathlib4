@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
+Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov, Anne Baanen, Dagur Asgeirsson
 -/
 module
 
@@ -12,29 +12,13 @@ public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 A concrete category is a category `C` where the objects and morphisms correspond with types and
 (bundled) functions between these types. We define concrete categories using
-`class ConcreteCategory`. To convert an object to a type, write `ToHom`. To convert a morphism
+`class ConcreteCategory`. To convert an object to a type, write `ToType`. To convert a morphism
 to a (bundled) function, write `hom`.
 
 Each concrete category `C` comes with a canonical faithful functor `forget C : C ⥤ Type*`,
-see `class HasForget`. In particular, we impose no restrictions on the category `C`, so `Type`
-has the identity forgetful functor.
-
-We say that a concrete category `C` admits a *forgetful functor* to a concrete category `D`, if it
-has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D) = forget C`, see
-`class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
-`forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
-automatically, see `HasForget₂.mk'`.
+see the file `Mathlib.CategoryTheory.ConcreteCategory.Forget`
 
 ## Implementation notes
-
-We are currently switching over from `HasForget` to a new class `ConcreteCategory`,
-see Zulip thread: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Concrete.20category.20class.20redesign
-
-Previously, `ConcreteCategory` had the same definition as now `HasForget`; the coercion of
-objects/morphisms to types/functions was defined as `(forget C).obj` and `(forget C).map`
-respectively. This leads to defeq issues since existing `CoeFun` and `FunLike` instances provide
-their own casts. We replace this with a less bundled `ConcreteCategory` that does not directly
-use these coercions.
 
 We do not use `CoeSort` to convert objects in a concrete category to types, since this would lead
 to elaboration mismatches between results taking a `[ConcreteCategory C]` instance and specific
@@ -43,9 +27,6 @@ the second gets unfolded to the actual `coe` field.
 
 `ToType` and `ToHom` are `abbrev`s so that we do not need to copy over instances such as `Ring`
 or `RingHomClass` respectively.
-
-Since `X → Y` is not a `FunLike`, the category of types is not a `ConcreteCategory`, but it does
-have a `HasForget` instance.
 
 ## References
 
@@ -148,15 +129,6 @@ lemma coe_ext {X Y : C} {f g : X ⟶ Y} (h : ⇑(hom f) = ⇑(hom g)) : f = g :=
 
 lemma ext_apply {X Y : C} {f g : X ⟶ Y} (h : ∀ x, f x = g x) : f = g :=
   ext (DFunLike.ext _ _ h)
-
--- /-- A concrete category comes with a forgetful functor to `Type`.
-
--- Warning: because of the way that `ConcreteCategory` and `HasForget` are set up, we can't make
--- `forget Type` reducibly defeq to the identity functor. -/
--- instance toHasForget : HasForget C where
---   forget.obj := ToType
---   forget.map f := ⇑(hom f)
---   forget_faithful.map_injective h := coe_ext h
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext low]

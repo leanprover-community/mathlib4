@@ -448,10 +448,7 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     let e : X ≃* Y := { f.hom, i.toEquiv with }
     exact e.toSemigrpIso.isIso_hom
 
-/--
-Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms.
-We could have used `CategoryTheory.HasForget.ReflectsIso` alternatively.
--/
+/-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
 @[to_additive]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩
