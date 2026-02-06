@@ -63,8 +63,8 @@ abbrev CoequifiberedAlgCatForget (X : Scheme.{u}) :
     X.CoequifiberedAlgCat ⥤ Under ((toOpensFunctor X).op ⋙ X.presheaf) :=
   ObjectProperty.ι _
 
-noncomputable
-abbrev CoequifiberedAlgCat.gluingData {X : Scheme.{u}} (F : X.CoequifiberedAlgCat) :
+/-- The gluing data for relative spec associated to a quasi-coherent `𝒪ₓ`-algebra. -/
+noncomputable abbrev CoequifiberedAlgCat.gluingData {X : Scheme.{u}} (F : X.CoequifiberedAlgCat) :
     (directedCover X).RelativeGluingData := relativeGluingData F.property
 
 @[reassoc (attr := simp)]
