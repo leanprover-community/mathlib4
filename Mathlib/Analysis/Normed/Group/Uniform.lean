@@ -187,6 +187,16 @@ theorem uniformContinuous_norm' : UniformContinuous (norm : E → ℝ) :=
 theorem uniformContinuous_nnnorm' : UniformContinuous fun a : E => ‖a‖₊ :=
   uniformContinuous_norm'.subtype_mk _
 
+@[to_additive LipschitzWith.norm]
+theorem LipschitzWith.norm' {f : E → F} {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LipschitzWith K (fun x ↦ ‖f x‖) := by
+  simpa using lipschitzWith_one_norm'.comp hf
+
+@[to_additive LipschitzWith.nnnorm]
+theorem LipschitzWith.nnnorm' {f : E → F} {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LipschitzWith K (fun x ↦ ‖f x‖₊) := by
+  simpa using lipschitzWith_one_nnnorm'.comp hf
+
 end SeminormedGroup
 
 section SeminormedCommGroup

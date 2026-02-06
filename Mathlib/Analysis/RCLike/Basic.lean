@@ -1264,10 +1264,6 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
 theorem _root_.Continuous.normSq [TopologicalSpace α] (hf : Continuous f) :
     Continuous (fun x ↦ normSq (f x)) := continuous_normSq.comp hf
 
-theorem _root_.LipschitzWith.norm [PseudoEMetricSpace α] {Kf : NNReal} {f : α → K}
-    (hf : LipschitzWith Kf f) : LipschitzWith Kf (fun x ↦ ‖f x‖) := by
-  simpa using lipschitzWith_one_norm.comp hf
-
 /-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
 @[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
   toFun x := re x + im x * (I : 𝕜')
