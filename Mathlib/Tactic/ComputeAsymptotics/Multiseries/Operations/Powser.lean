@@ -23,7 +23,7 @@ open Filter Asymptotics Topology Stream'
 
 namespace ComputeAsymptotics
 
-namespace PreMS
+namespace MultiseriesExpansion
 
 /-- Lazy series is a sequence of real numbers constructed as a formal series
 `c₀ + c₁ * x + c₂ * x² + ...`. -/
@@ -272,100 +272,93 @@ theorem convergent_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) :
 
 end LazySeries
 
--- TODO: move
-theorem mul_bounded_Majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorated f basis_hd exp)
-    (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
-    Majorated (f * g) basis_hd exp := by
-  simp only [Majorated] at *
-  intro exp h_exp
-  conv =>
-    rhs; ext t; rw [← mul_one (basis_hd t ^ exp)]
-  apply IsLittleO.mul_isBigO
-  · exact hf _ h_exp
-  · exact hg
-
-/-- `SeqMS`-part of `PreMS.powser`. -/
-noncomputable def SeqMS.powser (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd basis_tl :=
+/-- `Multiseries`-part of `MultiseriesExpansion.powser`. -/
+noncomputable def Multiseries.powser (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ms : Multiseries basis_hd basis_tl) : Multiseries basis_hd basis_tl :=
   let T := LazySeries
-  let g : T → Option (ℝ × PreMS basis_tl × SeqMS basis_hd basis_tl × T) := fun s =>
+  let g : T → Option (ℝ × MultiseriesExpansion basis_tl × Multiseries basis_hd basis_tl × T) :=
+    fun s =>
     match s.destruct with
     | none => none
     | some (c, cs) =>
-      some (0, PreMS.const _ c, ms, cs)
-  SeqMS.gcorec g SeqMS.mul s
+      some (0, MultiseriesExpansion.const _ c, ms, cs)
+  Multiseries.gcorec g Multiseries.mul s
 
 /-- Applies a lazy series to a multiseries: `c0 * ms + c1 * ms^2 + c2 * ms^3 + ...`. -/
 noncomputable def powser (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
-  mk (SeqMS.powser s ms.seq) (s.toFun ∘ ms.toFun)
+    (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
+    MultiseriesExpansion (basis_hd :: basis_tl) :=
+  mk (Multiseries.powser s ms.seq) (s.toFun ∘ ms.toFun)
 
 @[simp]
 theorem powser_toFun {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)} :
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
     (powser s ms).toFun = s.toFun ∘ ms.toFun :=
   rfl
 
 @[simp]
 theorem powser_seq {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)} :
-    (powser s ms).seq = SeqMS.powser s ms.seq :=
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    (powser s ms).seq = Multiseries.powser s ms.seq :=
   rfl
 
 @[simp]
-theorem SeqMS.powser_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl} :
-    SeqMS.powser .nil ms = .nil := by
-  simp [SeqMS.powser, SeqMS.gcorec_nil]
+theorem Multiseries.powser_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : Multiseries basis_hd basis_tl} :
+    Multiseries.powser .nil ms = .nil := by
+  simp [Multiseries.powser, Multiseries.gcorec_nil]
 
 @[simp]
-theorem SeqMS.powser_cons {s_hd : ℝ} {s_tl : LazySeries}
-    {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl} :
-    (SeqMS.powser (.cons s_hd s_tl) ms) =
-    .cons 0 (PreMS.const _ s_hd) (ms.mul (SeqMS.powser s_tl ms)) := by
-  simp only [SeqMS.powser]
-  rw [SeqMS.gcorec_some]
+theorem Multiseries.powser_cons {s_hd : ℝ} {s_tl : LazySeries}
+    {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multiseries basis_hd basis_tl} :
+    (Multiseries.powser (.cons s_hd s_tl) ms) =
+    .cons 0 (MultiseriesExpansion.const _ s_hd) (ms.mul (Multiseries.powser s_tl ms)) := by
+  simp only [Multiseries.powser]
+  rw [Multiseries.gcorec_some]
   rfl
 
-theorem SeqMS.powser_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : SeqMS basis_hd basis_tl} :
-    (SeqMS.powser s ms).leadingExp ≤ 0 := by
+theorem Multiseries.powser_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : Multiseries basis_hd basis_tl} :
+    (Multiseries.powser s ms).leadingExp ≤ 0 := by
   cases s <;> simp
 
-theorem SeqMS.powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : SeqMS basis_hd basis_tl}
+theorem Multiseries.powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : Multiseries basis_hd basis_tl}
     (h_wo : ms.Sorted) (h_neg : ms.leadingExp < 0) :
-    (SeqMS.powser s ms).Sorted := by
-  let motive (X : SeqMS basis_hd basis_tl) : Prop :=
-    ∃ s, X = SeqMS.powser s ms
-  apply SeqMS.Sorted.mul_coind motive
+    (Multiseries.powser s ms).Sorted := by
+  let motive (X : Multiseries basis_hd basis_tl) : Prop :=
+    ∃ s, X = Multiseries.powser s ms
+  apply Multiseries.Sorted.mul_coind motive
   · use s
   intro exp coef tl ⟨s, h_eq⟩
   cases s with
   | nil => simp at h_eq
   | cons s_hd s_tl =>
-  simp only [powser_cons, SeqMS.cons_eq_cons] at h_eq
-  simp only [h_eq, PreMS.const_Sorted, SeqMS.mul_leadingExp, WithBot.coe_zero, true_and]
+  simp only [powser_cons, Multiseries.cons_eq_cons] at h_eq
+  simp only [h_eq, MultiseriesExpansion.const_Sorted, Multiseries.mul_leadingExp,
+    WithBot.coe_zero, true_and]
   constructor
   · generalize ms.leadingExp = x at *
-    have : (SeqMS.powser s_tl ms).leadingExp ≤ 0 := powser_leadingExp_le_zero
-    generalize (SeqMS.powser s_tl ms).leadingExp = y at *
+    have : (Multiseries.powser s_tl ms).leadingExp ≤ 0 := powser_leadingExp_le_zero
+    generalize (Multiseries.powser s_tl ms).leadingExp = y at *
     cases x <;> cases y <;> simp; norm_cast at this h_neg ⊢; linarith
   exact ⟨_, _, rfl, h_wo, s_tl, rfl⟩
 
 theorem powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)} (h_wo : ms.Sorted) (h_neg : ms.leadingExp < 0) :
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} (h_wo : ms.Sorted)
+    (h_neg : ms.leadingExp < 0) :
     (powser s ms).Sorted := by
   simp only [Sorted_iff_Seq_Sorted, leadingExp_def, powser_seq] at *
-  exact SeqMS.powser_Sorted h_wo h_neg
+  exact Multiseries.powser_Sorted h_wo h_neg
 
 theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basis_hd : ℝ → ℝ}
-    {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {basis_tl : Basis} {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (h_neg : ms.leadingExp < 0) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) : (powser s ms).Approximates := by
   have hf_tendsto_zero : Tendsto ms.toFun atTop (𝓝 0) := by
     apply neg_leadingExp_tendsto_zero h_neg h_approx
-  let motive (X : PreMS (basis_hd :: basis_tl)) : Prop :=
+  let motive (X : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
     ∃ (s : LazySeries), s.Convergent ∧ X ≈ powser s ms
   apply Approximates.mul_coind h_basis motive (powser_Sorted h_wo h_neg)
   · use s
@@ -377,15 +370,16 @@ theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basi
   | cons s_hd s_tl =>
   right
   simp only [powser_toFun] at hf_eq
-  simp only [↓existsAndEq, h_seq_eq, powser_seq, SeqMS.powser_cons, mul_seq, SeqMS.cons_eq_cons,
-    Sorted_iff_Seq_Sorted, true_and, const_toFun', real_real_rpow_zero, one_mul]
+  simp only [↓existsAndEq, h_seq_eq, powser_seq, Multiseries.powser_cons, mul_seq,
+    Multiseries.cons_eq_cons, Sorted_iff_Seq_Sorted, true_and, const_toFun', Real.pi_rpow_zero,
+    one_mul]
   have : LazySeries.toFun (Seq.cons s_hd s_tl) ∘ ms.toFun =ᶠ[atTop]
       (fun t ↦ s_hd + t * ((LazySeries.toFun s_tl) t)) ∘ ms.toFun := by
     apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
     exact LazySeries.toFun_cons_eventually_eq h_convergent
   use ms, powser s_tl ms
   simp only [powser_seq, const_Approximates h_basis.tail, powser_toFun, h_approx,
-    SeqMS.powser_Sorted (by simpa using h_wo) h_neg, true_and]
+    Multiseries.powser_Sorted (by simpa using h_wo) h_neg, true_and]
   constructorm* _ ∧ _
   · apply Majorated_of_EventuallyEq hf_eq
     apply LazySeries.toFun_Majorated_zero h_convergent hf_tendsto_zero
@@ -445,7 +439,8 @@ theorem zeros_convergent : Convergent zeros := by
     simp
 
 -- I am almost sure we don't really need `h_wo` and `h_approx`
-theorem zeros_powser_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: basis_tl)}
+theorem zeros_powser_Approximates {basis_hd} {basis_tl}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) (h_neg : ms.leadingExp < 0) :
     (ms.powser zeros).Approximates :=
@@ -454,6 +449,6 @@ theorem zeros_powser_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd ::
 end Zeros
 
 
-end PreMS
+end MultiseriesExpansion
 
 end ComputeAsymptotics

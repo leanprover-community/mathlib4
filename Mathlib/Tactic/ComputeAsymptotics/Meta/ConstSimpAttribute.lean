@@ -14,5 +14,5 @@ public import Qq
 
 public meta section
 
-/-- Simp attribute for the `PreMS []`. -/
-register_simp_attr PreMS_const
+/-- Simp attribute for the `MultiseriesExpansion []`. -/
+register_simp_attr MultiseriesExpansion_const

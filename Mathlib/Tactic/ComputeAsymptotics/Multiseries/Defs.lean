@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
@@ -9,21 +9,27 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 
 /-!
-# Main definitions
 
-* `PreMS basis` is the type of lazy formal multiseries, where `basis` is the list of basis
-functions. It is defined recursively as `PreMS [] = ℝ` (constants), and
-`PreMS (b₁ :: tl) = Seq (ℝ × PreMS tl)`. This is lazy possibly infinite list of pairs, where each
-pair `(exp, coef)` represents the monomial `b₁ ^ exp * coef`. The type is isomorphic to the type
-of trees of finite fixed depth with possibly infinite branching and `ℝ`-valued labels in vertexes.
-* `Sorted ms` is the predicate meaning that at each level of `ms` as a nested tree all
-exponents are Pairwise by TODO (убывание).
-* `Approximates ms f` is the predicate meaning that the multiseries `ms` can be used to obtain
-an asymptotical approximations of the real function `f`.
-For details see the docs for `Approximates`.
+# Multiseries definitions
 
-# Definition used inside the theory
-* `leadingExp ms` is the value of leading exponent of `ms`. Is `ms = []` then it is `⊥`.
+In this file we define the multiseries and its main properties: sortedness and approximation.
+
+## Main definitions
+
+* `Basis` is the list of functions used to construct monomials in multiseries.
+* `Multiseries basis_hd basis_tl` is the type of multiseries in a basis `basis_hd :: basis_tl`.
+* `MultiseriesExpansion basis` is an multiseries expansion of some function `f : ℝ → ℝ`.
+  If `basis = []` then the mutliseries represents a constant function, otherwise it is
+  a pair of a multiseries `ms : Multiseries basis_hd basis_tl` and a function `f : ℝ → ℝ`.
+* `Multiseries.Sorted ms` means that at each level of `ms` as a nested tree all exponents are
+  strictly decreasing.
+* `MultiseriesExpansion.Approximates ms` means that the multiseries `ms` can be used to obtain
+  an asymptotical approximations of its attached function.
+
+## Implementation details
+
+* `Multiseries basis_hd basis_tl` is defined as a `Seq (ℝ × MultiseriesExpansion basis_tl)`, so
+  we need to port some `Seq` API to `Multiseries`.
 
 -/
 
@@ -36,40 +42,51 @@ open Filter Asymptotics Topology Stream'
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
 
-/-- TODO -/
-def PreMS (basis : Basis) : Type :=
+/-- Multiseries representing a given function `f : ℝ → ℝ`.
+`MultiseriesExpansion []` is just `ℝ`: multiseries representing constant functions.
+Otherwise it is a pair of a `Multiseries basis_hd basis_tl` and a function `ℝ → ℝ`. We call
+the former an expansion of the latter. -/
+def MultiseriesExpansion (basis : Basis) : Type :=
   match basis with
   | [] => ℝ
-  | .cons _ tl => Seq (ℝ × PreMS tl) × (ℝ → ℝ)
+  | .cons _ basis_tl => Seq (ℝ × MultiseriesExpansion basis_tl) × (ℝ → ℝ)
 
-namespace PreMS
+namespace MultiseriesExpansion
 
 set_option linter.unusedVariables false in
-/-- TODO -/
+/-- Multiseries in a basis `basis_hd :: basis_tl`. It is a generalisation of asymptotic expansions.
+A multiseries in a basis `[b₁, ..., bₙ]` is a formal series made from monomials
+`b₁ ^ e₁ * ... * bₙ ^ eₙ` where `e₁, ..., eₙ` are real numbers. We treat multivariate series in
+a basis `[b₁, ..., bₙ]` as a univariate series in the variable `b₁` (`basis_hd`) with coefficients
+being multiseries in the basis `[b₂, ..., bₙ]` (`basis_tl`). We represent such a series as a lazy
+list (`Seq`) of pairs `(exp, coef)` where `exp` is the exponent of `b₁` and `coef` is the
+coefficient (a multiseries in `basis_tl`). -/
 @[nolint unusedArguments]
-def SeqMS (basis_hd : ℝ → ℝ) (basis_tl : Basis) : Type := Seq (ℝ × PreMS basis_tl)
+def Multiseries (basis_hd : ℝ → ℝ) (basis_tl : Basis) : Type :=
+  Seq (ℝ × MultiseriesExpansion basis_tl)
 
-namespace SeqMS
+namespace Multiseries
 
-/-- Converts a `SeqMS basis_hd basis_tl` to a `Seq (ℝ × PreMS basis_tl)`. -/
-def toSeq {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) : Seq (ℝ × PreMS basis_tl) :=
+/-- Converts a `Multiseries basis_hd basis_tl` to a `Seq (ℝ × MultiseriesExpansion basis_tl)`. -/
+def toSeq {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
+    Seq (ℝ × MultiseriesExpansion basis_tl) :=
   ms
 
 /-- The empty multiseries. -/
-def nil {basis_hd basis_tl} : SeqMS basis_hd basis_tl := Seq.nil
+def nil {basis_hd basis_tl} : Multiseries basis_hd basis_tl := Seq.nil
 
 /-- Prepend a monomial to a multiseries. -/
-def cons {basis_hd basis_tl} (exp : ℝ) (coef : PreMS basis_tl)
-    (tl : SeqMS basis_hd basis_tl) :
-    SeqMS basis_hd basis_tl :=
+def cons {basis_hd basis_tl} (exp : ℝ) (coef : MultiseriesExpansion basis_tl)
+    (tl : Multiseries basis_hd basis_tl) :
+    Multiseries basis_hd basis_tl :=
   Seq.cons (exp, coef) tl
 
-/-- Recursion principle for `SeqMS basis_hd basis_tl`. It is equivalent to
+/-- Recursion principle for `Multiseries basis_hd basis_tl`. It is equivalent to
 `Stream'.Seq.recOn` but provides some convenience. -/
 @[cases_eliminator]
-def recOn {basis_hd basis_tl} {motive : SeqMS basis_hd basis_tl → Sort*}
-    (ms : SeqMS basis_hd basis_tl) (nil : motive nil)
-    (cons : ∀ exp coef (tl : SeqMS basis_hd basis_tl), motive (cons exp coef tl)) :
+def recOn {basis_hd basis_tl} {motive : Multiseries basis_hd basis_tl → Sort*}
+    (ms : Multiseries basis_hd basis_tl) (nil : motive nil)
+    (cons : ∀ exp coef (tl : Multiseries basis_hd basis_tl), motive (cons exp coef tl)) :
     motive ms := by
   cases ms using Stream'.Seq.recOn with
   | nil => apply nil
@@ -77,62 +94,66 @@ def recOn {basis_hd basis_tl} {motive : SeqMS basis_hd basis_tl → Sort*}
 
 /-- Destruct a multiseries into a triple `(exp, coef, tl)`, where `exp` is leading exponent,
 `coef` is leading coefficient, and `tl` is tail. -/
-def destruct {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
-    Option (ℝ × PreMS basis_tl × SeqMS basis_hd basis_tl) :=
+def destruct {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
+    Option (ℝ × MultiseriesExpansion basis_tl × Multiseries basis_hd basis_tl) :=
   (Seq.destruct ms).map (fun ((exp, coef), tl) => (exp, coef, tl))
 
 /-- The head of a multiseries, i.e. the first two elements of `destruct`. -/
-def head {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) : Option (ℝ × PreMS basis_tl) :=
+def head {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
+    Option (ℝ × MultiseriesExpansion basis_tl) :=
   Seq.head ms
 
 /-- The tail of a multiseries, i.e. the last element of `destruct`. -/
-def tail {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd basis_tl :=
+def tail {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) : Multiseries basis_hd basis_tl :=
   Seq.tail ms
 
-/-- Given two functions `f : ℝ → ℝ` and `g : PreMS basis_tl → PreMS basis_tl'`, apply them to
-exponents and coefficients of a multiseries. -/
+/-- Given two functions `f : ℝ → ℝ` and
+`g : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl'`, apply them to exponents and
+coefficients of a multiseries. -/
 def map {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
-    (g : PreMS basis_tl → PreMS basis_tl')
-    (ms : SeqMS basis_hd basis_tl) :
-    SeqMS basis_hd' basis_tl' :=
+    (g : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl')
+    (ms : Multiseries basis_hd basis_tl) :
+    Multiseries basis_hd' basis_tl' :=
   Seq.map (fun (exp, coef) ↦ (f exp, g coef)) ms
 
-/-- Corecursor for `SeqMS basis_hd basis_tl`. -/
-def corec {β : Type*} {basis_hd} {basis_tl} (f : β → Option (ℝ × PreMS basis_tl × β)) (b : β) :
-    SeqMS basis_hd basis_tl :=
+/-- Corecursor for `Multiseries basis_hd basis_tl`. -/
+def corec {β : Type*} {basis_hd} {basis_tl}
+    (f : β → Option (ℝ × MultiseriesExpansion basis_tl × β)) (b : β) :
+    Multiseries basis_hd basis_tl :=
   Seq.corec (fun a => (f a).map (fun (exp, coef, next) => ((exp, coef), next))) b
 
 /-- An operation on multiseries called a "friend" if any `n`-prefix of its output depends only on
 the `n`-prefix of the input. Such operations can be used in the tail of (non-primitive) corecursive
 definitions. -/
 def FriendOperation {basis_hd basis_tl}
-    (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) : Prop :=
+    (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop :=
   Stream'.Seq.FriendOperation op
 
 /-- A family of friendly operations on multiseries indexed by a type `γ`. -/
 class FriendOperationClass {basis_hd basis_tl} {γ : Type*}
-    (op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) : Prop
+    (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop
     extends Stream'.Seq.FriendOperationClass op
 
 theorem FriendOperationClass.mk' {basis_hd basis_tl} {γ : Type*}
-    {op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (h : ∀ c, FriendOperation (op c)) :
     FriendOperationClass op := by
   suffices Stream'.Seq.FriendOperationClass op by constructor
   exact ⟨h⟩
 
-private lemma destruct_eq_destruct_map {basis_hd basis_tl} (s : Stream'.Seq (ℝ × PreMS basis_tl)) :
-    s.destruct = (SeqMS.destruct (basis_hd := basis_hd) s).map
+private lemma destruct_eq_destruct_map {basis_hd basis_tl}
+    (s : Stream'.Seq (ℝ × MultiseriesExpansion basis_tl)) :
+    s.destruct = (Multiseries.destruct (basis_hd := basis_hd) s).map
       (fun (exp, coef, tl) => ((exp, coef), tl)) := by
   simp only [destruct, Option.map_map]
   exact Option.map_id_apply.symm
 
 theorem FriendOperation.coind_comp_friend_left {basis_hd basis_tl}
-    {op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
-    (motive : (SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) → Prop)
+    {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
+    (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive op)
-    (h_step : ∀ op, motive op → ∃ T : Option (ℝ × PreMS basis_tl) →
-        Option (ℝ × PreMS basis_tl × Subtype FriendOperation × Subtype motive),
+    (h_step : ∀ op, motive op → ∃ T : Option (ℝ × MultiseriesExpansion basis_tl) →
+        Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendOperation × Subtype motive),
       ∀ s, (op s).destruct =
         (T s.head).map (fun (exp, coef, opf, op') => (exp, coef, opf.val <| op'.val (s.tail)))) :
     FriendOperation op := by
@@ -148,11 +169,11 @@ theorem FriendOperation.coind_comp_friend_left {basis_hd basis_tl}
   rfl
 
 theorem FriendOperation.coind_comp_friend_right {basis_hd basis_tl}
-    {op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
-    (motive : (SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) → Prop)
+    {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
+    (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive op)
-    (h_step : ∀ op, motive op → ∃ T : Option (ℝ × PreMS basis_tl) →
-        Option (ℝ × PreMS basis_tl × Subtype FriendOperation × Subtype motive),
+    (h_step : ∀ op, motive op → ∃ T : Option (ℝ × MultiseriesExpansion basis_tl) →
+        Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendOperation × Subtype motive),
       ∀ s, (op s).destruct =
         (T s.head).map (fun (exp, coef, opf, op') => (exp, coef, op'.val <| opf.val (s.tail)))) :
     FriendOperation op := by
@@ -167,51 +188,53 @@ theorem FriendOperation.coind_comp_friend_right {basis_hd basis_tl}
   simp [Seq.head]
   rfl
 
-/-- Non-primitive corecursor for `SeqMS basis_hd basis_tl` allowing to use a friendly operation
-in the tail of the corecursive definition. -/
+/-- Non-primitive corecursor for `Multiseries basis_hd basis_tl` allowing to use a friendly
+operation in the tail of the corecursive definition. -/
 noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
-    (F : β → Option (ℝ × PreMS basis_tl × γ × β))
-    (op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl)
+    (F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β))
+    (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
     [FriendOperationClass op]
     (b : β) :
-    SeqMS basis_hd basis_tl :=
+    Multiseries basis_hd basis_tl :=
   Stream'.Seq.gcorec (fun a => (F a).map (fun (exp, coef, c, next) => ((exp, coef), c, next))) op b
 
 
-instance (basis_hd basis_tl) : Inhabited (SeqMS basis_hd basis_tl) where
-  default := (default : Seq (ℝ × PreMS basis_tl))
+instance (basis_hd basis_tl) : Inhabited (Multiseries basis_hd basis_tl) where
+  default := (default : Seq (ℝ × MultiseriesExpansion basis_tl))
 
-instance {basis_hd basis_tl} : Membership (ℝ × PreMS basis_tl) (SeqMS basis_hd basis_tl) where
+instance {basis_hd basis_tl} :
+    Membership (ℝ × MultiseriesExpansion basis_tl) (Multiseries basis_hd basis_tl) where
   mem ms x := x ∈ ms.toSeq
 
-theorem eq_of_bisim {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : SeqMS basis_hd basis_tl}
-    (motive : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl → Prop)
+theorem eq_of_bisim {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : Multiseries basis_hd basis_tl}
+    (motive : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl → Prop)
     (base : motive x y)
     (step : ∀ x y, motive x y → (x = .nil ∧ y = .nil) ∨ ∃ exp coef,
-      ∃ (x' y' : SeqMS basis_hd basis_tl),
+      ∃ (x' y' : Multiseries basis_hd basis_tl),
       x = cons exp coef x' ∧ y = cons exp coef y' ∧ motive x' y') :
     x = y := Seq.eq_of_bisim' motive base (by grind [nil, cons])
 
 theorem eq_of_bisim_strong {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {x y : SeqMS basis_hd basis_tl}
-    (motive : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl → Prop)
+    {x y : Multiseries basis_hd basis_tl}
+    (motive : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl → Prop)
     (base : motive x y)
     (step : ∀ x y, motive x y → (x = y) ∨ ∃ exp coef,
-      ∃ (x' y' : SeqMS basis_hd basis_tl),
+      ∃ (x' y' : Multiseries basis_hd basis_tl),
       x = cons exp coef x' ∧ y = cons exp coef y' ∧ motive x' y') :
     x = y := Seq.eq_of_bisim_strong motive base (by grind [nil, cons])
 
 theorem FriendOperationClass.FriendOperation {basis_hd basis_tl} {γ : Type*}
-    {op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     [h : FriendOperationClass op]
     (c : γ) :
     FriendOperation (op c) :=
   h.friend c
 
 theorem FriendOperation.destruct {basis_hd basis_tl}
-    {op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (h : FriendOperation op) :
-    ∃ T : Option (ℝ × PreMS basis_tl) → Option (ℝ × PreMS basis_tl × Subtype FriendOperation),
+    ∃ T : Option (ℝ × MultiseriesExpansion basis_tl) →
+      Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendOperation),
       ∀ ms, destruct (op ms) = (T ms.head).map
         (fun (exp, coef, op') ↦ (exp, coef, op'.val ms.tail)) := by
   have h' := Stream'.Seq.FriendOperation.destruct h
@@ -219,65 +242,65 @@ theorem FriendOperation.destruct {basis_hd basis_tl}
   use fun hd? ↦ (T hd?).map (fun ((exp, coef), op') ↦ (exp, coef, op'))
   intro ms
   specialize hT ms
-  unfold SeqMS.destruct
+  unfold Multiseries.destruct
   simp [hT]
   simp [head, tail]
   cases T (Seq.head ms) <;> simp
 
 theorem FriendOperation.head_eq_head {basis_hd basis_tl}
-    {op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
-    (h : FriendOperation op) {x y : SeqMS basis_hd basis_tl}
+    {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
+    (h : FriendOperation op) {x y : Multiseries basis_hd basis_tl}
     (h_head : x.head = y.head) : (op x).head = (op y).head :=
   Stream'.Seq.FriendOperation.head_eq_head h h_head
 
 theorem FriendOperation.id {basis_hd basis_tl} :
-    FriendOperation (id : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) :=
+    FriendOperation (id : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) :=
   Stream'.Seq.FriendOperation.id
 
 theorem FriendOperation.comp {basis_hd basis_tl}
-    {op₁ op₂ : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op₁ op₂ : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂) :
     FriendOperation (op₁ ∘ op₂) :=
   Stream'.Seq.FriendOperation.comp h₁ h₂
 
-theorem FriendOperation.const {basis_hd basis_tl} {s : SeqMS basis_hd basis_tl} :
+theorem FriendOperation.const {basis_hd basis_tl} {s : Multiseries basis_hd basis_tl} :
     FriendOperation (fun _ ↦ s) :=
   Stream'.Seq.FriendOperation.const
 
 theorem FriendOperation.ite {basis_hd basis_tl}
-    {op₁ op₂ : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op₁ op₂ : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂)
-    {P : Option (ℝ × PreMS basis_tl) → Prop} [DecidablePred P] :
+    {P : Option (ℝ × MultiseriesExpansion basis_tl) → Prop} [DecidablePred P] :
     FriendOperation (fun ms ↦ if P ms.head then op₁ ms else op₂ ms) :=
   Stream'.Seq.FriendOperation.ite h₁ h₂
 
-theorem FriendOperation.cons {basis_hd basis_tl} (exp : ℝ) (coef : PreMS basis_tl) :
+theorem FriendOperation.cons {basis_hd basis_tl} (exp : ℝ) (coef : MultiseriesExpansion basis_tl) :
     FriendOperation (cons (basis_hd := basis_hd) exp coef) :=
   Stream'.Seq.FriendOperation.cons _
 
 theorem FriendOperation.cons_tail {basis_hd basis_tl}
-    {op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
-    {exp : ℝ} {coef : PreMS basis_tl}
+    {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
+    {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     (h : FriendOperation op) :
     FriendOperation (fun ms ↦ (op (.cons exp coef ms)).tail) :=
   Stream'.Seq.FriendOperation.cons_tail h
 
 theorem FriendOperationClass.comp {basis_hd basis_tl} {γ γ' : Type*}
     {g : γ' → γ}
-    {op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     [h : FriendOperationClass op] : FriendOperationClass (fun c ↦ op (g c)) := by
   have : Stream'.Seq.FriendOperationClass (fun c ↦ op (g c)) := by
     apply Stream'.Seq.FriendOperationClass.comp
   constructor
 
 theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     [FriendOperationClass op]
-    {x y : SeqMS basis_hd basis_tl}
-    (motive : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl → Prop)
+    {x y : Multiseries basis_hd basis_tl}
+    (motive : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl → Prop)
     (base : motive x y)
     (step : ∀ x y, motive x y → (x = y) ∨ ∃ exp coef,
-      ∃ (c : γ) (x' y' : SeqMS basis_hd basis_tl),
+      ∃ (c : γ) (x' y' : Multiseries basis_hd basis_tl),
       x = cons exp coef (op c x') ∧ y = cons exp coef (op c y') ∧ motive x' y') :
     x = y := by
   apply Stream'.Seq.FriendOperationClass.eq_of_bisim (op := op) motive base
@@ -291,42 +314,46 @@ theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Bas
 section simp
 
 @[simp]
-theorem cons_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} :
+theorem cons_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
     cons exp coef tl ≠ .nil := by
   intro h
   simp only [cons, nil] at h
   apply Seq.cons_ne_nil h
 
 @[simp]
-theorem nil_ne_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} :
+theorem nil_ne_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
     .nil ≠ cons exp coef tl := cons_ne_nil.symm
 
 @[simp]
 theorem cons_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp1 exp2 : ℝ}
-    {coef1 coef2 : PreMS basis_tl} {tl1 tl2 : SeqMS basis_hd basis_tl} :
+    {coef1 coef2 : MultiseriesExpansion basis_tl} {tl1 tl2 : Multiseries basis_hd basis_tl} :
     cons exp1 coef1 tl1 = cons exp2 coef2 tl2 ↔ exp1 = exp2 ∧ coef1 = coef2 ∧ tl1 = tl2 := by
   rw [cons, cons, Seq.cons_eq_cons]
   grind
 
 theorem corec_nil {β : Type*} {basis_hd} {basis_tl}
-    {f : β → Option (ℝ × PreMS basis_tl × β)} {b : β} (h : f b = none) :
-    corec f b = (nil : SeqMS basis_hd basis_tl) := by
+    {f : β → Option (ℝ × MultiseriesExpansion basis_tl × β)} {b : β} (h : f b = none) :
+    corec f b = (nil : Multiseries basis_hd basis_tl) := by
   simp only [corec, nil]
   rw [Seq.corec_nil]
   simpa
 
-theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl} {next : β}
-    {f : β → Option (ℝ × PreMS basis_tl × β)} {b : β}
+theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl} {next : β}
+    {f : β → Option (ℝ × MultiseriesExpansion basis_tl × β)} {b : β}
     (h : f b = some (exp, coef, next)) :
-    (corec f b : SeqMS basis_hd basis_tl) = cons exp coef (corec f next) := by
+    (corec f b : Multiseries basis_hd basis_tl) = cons exp coef (corec f next) := by
   simp only [corec, cons]
   rw [Seq.corec_cons]
   simpa
 
-theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl} {F : β → Option (ℝ × PreMS basis_tl × γ × β)}
-    {op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl}
+    {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
+    {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     [FriendOperationClass op] {b : β}
     (h : F b = none) :
     gcorec F op b = nil := by
@@ -336,10 +363,10 @@ theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl} {F : β → Option (ℝ
   · simpa
 
 theorem gcorec_some {β γ : Type*} {basis_hd} {basis_tl}
-    {F : β → Option (ℝ × PreMS basis_tl × γ × β)}
-    {op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
+    {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     [FriendOperationClass op] {b : β}
-    {exp : ℝ} {coef : PreMS basis_tl} {c : γ} {next : β}
+    {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {c : γ} {next : β}
     (h : F b = some (exp, coef, c, next)) :
     gcorec F op b = cons exp coef (op c (gcorec F op next)) := by
   unfold gcorec
@@ -350,22 +377,23 @@ theorem gcorec_some {β γ : Type*} {basis_hd} {basis_tl}
 
 @[simp]
 theorem destruct_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    destruct (nil : SeqMS basis_hd basis_tl) = none := by
+    destruct (nil : Multiseries basis_hd basis_tl) = none := by
   simp [destruct, nil]
 
 @[simp]
-theorem destruct_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} :
+theorem destruct_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
     destruct (cons exp coef tl) = some (exp, coef, tl) := by
   simp [destruct, cons]
 
-theorem destruct_eq_none {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
+theorem destruct_eq_none {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multiseries basis_hd basis_tl}
     (h : destruct ms = none) : ms = nil := by
   apply Stream'.Seq.destruct_eq_none
   simpa [destruct] using h
 
-theorem destruct_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
-    {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+theorem destruct_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multiseries basis_hd basis_tl}
+    {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : destruct ms = some (exp, coef, tl)) : ms = cons exp coef tl := by
   apply Stream'.Seq.destruct_eq_cons
   simp [destruct] at h
@@ -373,140 +401,145 @@ theorem destruct_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS
 
 @[simp]
 theorem head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    (nil : SeqMS basis_hd basis_tl).head = none := by
+    (nil : Multiseries basis_hd basis_tl).head = none := by
   simp [head, nil]
 
 @[simp]
-theorem head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} :
+theorem head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
     (cons exp coef tl).head = some (exp, coef) := by
   simp [head, cons]
 
 @[simp]
 theorem tail_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    (nil : SeqMS basis_hd basis_tl).tail = nil := by
+    (nil : Multiseries basis_hd basis_tl).tail = nil := by
   simp [tail, nil]
 
 @[simp]
-theorem tail_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} :
+theorem tail_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
     (cons exp coef tl).tail = tl := by
   simp [tail, cons]
 
 @[simp]
 theorem map_nil {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
-    (g : PreMS basis_tl → PreMS basis_tl') :
-    (nil : SeqMS basis_hd basis_tl).map f g = (nil : SeqMS basis_hd' basis_tl') := by
+    (g : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl') :
+    (nil : Multiseries basis_hd basis_tl).map f g = (nil : Multiseries basis_hd' basis_tl') := by
   simp [map, nil]
 
 @[simp]
 theorem map_cons {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → ℝ)
-    (g : PreMS basis_tl → PreMS basis_tl') {exp : ℝ}
-    {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} :
+    (g : MultiseriesExpansion basis_tl → MultiseriesExpansion basis_tl') {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl} :
     (cons exp coef tl).map f g = cons (basis_hd := basis_hd')
       (f exp) (g coef) (map f g tl) := by
   simp [map, cons]
 
 @[simp]
-theorem map_id {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
+theorem map_id {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
     ms.map (fun exp => exp) (fun coef => coef) = ms :=
   Stream'.Seq.map_id ms
 
 @[simp← ]
 theorem map_comp {b₁ b₂ b₃ bs₁ bs₂ bs₃}
-    (f₁ : ℝ → ℝ) (g₁ : PreMS bs₁ → PreMS bs₂)
-    (f₂ : ℝ → ℝ) (g₂ : PreMS bs₂ → PreMS bs₃)
-    (ms : SeqMS b₁ bs₁) :
-    (ms.map (f₂ ∘ f₁) (g₂ ∘ g₁) : SeqMS b₃ bs₃) =
-    (ms.map f₁ g₁ : SeqMS b₂ bs₂).map f₂ g₂ := by
+    (f₁ : ℝ → ℝ) (g₁ : MultiseriesExpansion bs₁ → MultiseriesExpansion bs₂)
+    (f₂ : ℝ → ℝ) (g₂ : MultiseriesExpansion bs₂ → MultiseriesExpansion bs₃)
+    (ms : Multiseries b₁ bs₁) :
+    (ms.map (f₂ ∘ f₁) (g₂ ∘ g₁) : Multiseries b₃ bs₃) =
+    (ms.map f₁ g₁ : Multiseries b₂ bs₂).map f₂ g₂ := by
   simp [map, ← Stream'.Seq.map_comp]
   rfl
 
 @[simp]
-theorem notMem_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x : ℝ × PreMS basis_tl} :
-    x ∉ (nil : SeqMS basis_hd basis_tl) :=
+theorem notMem_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x : ℝ × MultiseriesExpansion basis_tl} :
+    x ∉ (nil : Multiseries basis_hd basis_tl) :=
   Seq.notMem_nil _
 
 @[simp]
-theorem mem_cons_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {x : ℝ × PreMS basis_tl} :
+theorem mem_cons_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {x : ℝ × MultiseriesExpansion basis_tl} :
     x ∈ cons exp coef tl ↔ x = (exp, coef) ∨ x ∈ tl :=
   Seq.mem_cons_iff
 
 @[simp]
 theorem Pairwise_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {R} :
-    Seq.Pairwise R (nil : SeqMS basis_hd basis_tl) := by
+    Seq.Pairwise R (nil : Multiseries basis_hd basis_tl) := by
   simp [nil]
 
 @[simp]
 theorem Pairwise_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {R exp coef} :
-    Seq.Pairwise R (cons exp coef (nil : SeqMS basis_hd basis_tl)) := by
+    Seq.Pairwise R (cons exp coef (nil : Multiseries basis_hd basis_tl)) := by
   simp [cons, nil]
 
 end simp
 
-end SeqMS
+end Multiseries
 
 /-- Convert a real number to a multiseries in empty basis. -/
-def ofReal (c : ℝ) : PreMS [] := c
+def ofReal (c : ℝ) : MultiseriesExpansion [] := c
 
 /-- Convert a multiseries in empty basis to a real number. -/
-def toReal (ms : PreMS []) : ℝ := ms
+def toReal (ms : MultiseriesExpansion []) : ℝ := ms
 
 /-- Convert a multiseries in non-empty basis to a sequence of pairs `(exp, coef)`. -/
-def seq {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
-    SeqMS basis_hd basis_tl :=
+def seq {basis_hd basis_tl} (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
+    Multiseries basis_hd basis_tl :=
   ms.1
 
 /-- Convert a multiseries to a function. -/
-def toFun {basis : Basis} (ms : PreMS basis) : ℝ → ℝ :=
+def toFun {basis : Basis} (ms : MultiseriesExpansion basis) : ℝ → ℝ :=
   match basis with
   | [] => fun _ ↦ ms.toReal
   | .cons _ _ =>  ms.2
 
-/-- Constructs a multiseries from a `SeqMS basis_hd basis_tl` and a function. -/
-def mk {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
-    PreMS (basis_hd :: basis_tl) :=
+/-- Constructs a multiseries from a `Multiseries basis_hd basis_tl` and a function. -/
+def mk {basis_hd basis_tl} (s : Multiseries basis_hd basis_tl) (f : ℝ → ℝ) :
+    MultiseriesExpansion (basis_hd :: basis_tl) :=
   (s, f)
 
-/-- Recursion principle for `PreMS (basis_hd :: basis_tl)`. -/
+/-- Recursion principle for `MultiseriesExpansion (basis_hd :: basis_tl)`. -/
 @[cases_eliminator]
-def recOn {basis_hd basis_tl} {motive : PreMS (basis_hd :: basis_tl) → Sort*}
+def recOn {basis_hd basis_tl} {motive : MultiseriesExpansion (basis_hd :: basis_tl) → Sort*}
     (nil : ∀ f, motive (mk .nil f))
     (cons : ∀ exp coef tl f, motive (.mk (.cons exp coef tl) f))
-    (ms : PreMS (basis_hd :: basis_tl)) : motive ms := by
+    (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : motive ms := by
   let ⟨s, f⟩ := ms
   cases s with
   | nil => apply nil
   | cons hd tl => apply cons
 
-instance (basis : Basis) : Inhabited (PreMS basis) :=
+instance (basis : Basis) : Inhabited (MultiseriesExpansion basis) :=
   match basis with
   | [] => ⟨(default : ℝ)⟩
-  | List.cons basis_hd basis_tl => ⟨(default : SeqMS basis_hd basis_tl × (ℝ → ℝ))⟩
+  | List.cons basis_hd basis_tl => ⟨(default : Multiseries basis_hd basis_tl × (ℝ → ℝ))⟩
 
-theorem eq_mk {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
+theorem eq_mk {basis_hd basis_tl} (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
     ms = mk ms.seq ms.toFun := rfl
 
-theorem mk_eq_mk_iff {basis_hd basis_tl} (s t : SeqMS basis_hd basis_tl) (f g : ℝ → ℝ) :
+theorem mk_eq_mk_iff {basis_hd basis_tl} (s t : Multiseries basis_hd basis_tl) (f g : ℝ → ℝ) :
     mk (basis_hd := basis_hd) s f = mk (basis_hd := basis_hd) t g ↔ s = t ∧ f = g where
   mp h := by rwa [mk, mk, Prod.mk_inj] at h
   mpr h := by simp [h]
 
 @[simp]
-theorem ms_eq_mk_iff {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl))
-    (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
-    ms = mk s f ↔ ms.seq = s ∧ ms.toFun = f := by
+theorem ms_eq_mk_iff {basis_hd basis_tl}
+    (ms : MultiseriesExpansion (basis_hd :: basis_tl))
+    (s : Multiseries basis_hd basis_tl) (f : ℝ → ℝ) : ms = mk s f ↔ ms.seq = s ∧ ms.toFun = f := by
   conv => lhs; lhs; rw [eq_mk ms]
   rw [mk_eq_mk_iff]
 
 @[simp]
-theorem mk_eq_mk_iff_iff {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl))
-    (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
+theorem mk_eq_mk_iff_iff {basis_hd basis_tl}
+    (ms : MultiseriesExpansion (basis_hd :: basis_tl))
+    (s : Multiseries basis_hd basis_tl) (f : ℝ → ℝ) :
     mk s f = ms ↔ ms.seq = s ∧ ms.toFun = f := by
   rw [@Eq.comm _ (mk s f) ms, ms_eq_mk_iff]
 
-theorem ms_eq_ms_iff_mk_eq_mk {basis_hd basis_tl} (ms₁ ms₂ : PreMS (basis_hd :: basis_tl)) :
+theorem ms_eq_ms_iff_mk_eq_mk {basis_hd basis_tl}
+    (ms₁ ms₂ : MultiseriesExpansion (basis_hd :: basis_tl)) :
     ms₁ = ms₂ ↔ ms₁.seq = ms₂.seq ∧ ms₁.toFun = ms₂.toFun where
   mp h := by simp [h]
   mpr h := by
@@ -514,75 +547,74 @@ theorem ms_eq_ms_iff_mk_eq_mk {basis_hd basis_tl} (ms₁ ms₂ : PreMS (basis_hd
     simp [h]
 
 @[simp]
-theorem const_toFun (ms : PreMS []) : ms.toFun = fun _ ↦ ms.toReal := rfl
+theorem const_toFun (ms : MultiseriesExpansion []) : ms.toFun = fun _ ↦ ms.toReal := rfl
 
 @[simp]
-theorem mk_toFun {basis_hd basis_tl} {s : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
+theorem mk_toFun {basis_hd basis_tl} {s : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
     (mk (basis_hd := basis_hd) s f).toFun = f := rfl
 
 @[simp]
-theorem mk_seq {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
+theorem mk_seq {basis_hd basis_tl} (s : Multiseries basis_hd basis_tl) (f : ℝ → ℝ) :
     (mk (basis_hd := basis_hd) s f).seq = s := rfl
 
 /-- Replace the function attached to a multiseries. -/
-def replaceFun {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
-    PreMS (basis_hd :: basis_tl) :=
+def replaceFun {basis_hd basis_tl} (ms : MultiseriesExpansion (basis_hd :: basis_tl))
+    (f : ℝ → ℝ) : MultiseriesExpansion (basis_hd :: basis_tl) :=
   mk ms.seq f
 
 @[simp]
-theorem mk_replaceFun {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) (f g : ℝ → ℝ) :
+theorem mk_replaceFun {basis_hd basis_tl} (s : Multiseries basis_hd basis_tl)
+    (f g : ℝ → ℝ) :
     (mk (basis_hd := basis_hd) s f).replaceFun g = mk (basis_hd := basis_hd) s g :=
   rfl
 
 @[simp]
-theorem replaceFun_toFun {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
+theorem replaceFun_toFun {basis_hd basis_tl}
+    (ms : MultiseriesExpansion (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
     (ms.replaceFun f).toFun = f := rfl
 
 @[simp]
-theorem replaceFun_seq {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
+theorem replaceFun_seq {basis_hd basis_tl}
+    (ms : MultiseriesExpansion (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
     (ms.replaceFun f).seq = ms.seq := rfl
 
 section leadingExp
 
--- TODO: move
-@[simp]
-theorem bot_lt_zero : (⊥ : WithBot ℝ) < 0 := by
-  rw [← sign_eq_neg_one_iff]
-  rfl
+variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+  {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
 
-variable {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-
-namespace SeqMS
+namespace Multiseries
 
 /-- The leading exponent of multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
-def leadingExp (s : SeqMS basis_hd basis_tl) : WithBot ℝ :=
+def leadingExp (s : Multiseries basis_hd basis_tl) : WithBot ℝ :=
   match s.head with
   | none => ⊥
   | some (exp, _) => exp
 
 @[simp]
-theorem leadingExp_nil : (nil : SeqMS basis_hd basis_tl).leadingExp = ⊥ :=
+theorem leadingExp_nil : (nil : Multiseries basis_hd basis_tl).leadingExp = ⊥ :=
   rfl
 
 @[simp]
-theorem leadingExp_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} :
+theorem leadingExp_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
     (cons exp coef tl).leadingExp = exp :=
   rfl
 
 /-- If `ms.leadingExp = ⊥` then `ms = []`. -/
 @[simp]
-theorem leadingExp_eq_bot (s : SeqMS basis_hd basis_tl) :
+theorem leadingExp_eq_bot (s : Multiseries basis_hd basis_tl) :
     s.leadingExp = ⊥ ↔ s = nil := by
   cases s <;> simp
 
-end SeqMS
+end Multiseries
 
 /-- The leading exponent of multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
-def leadingExp (ms : PreMS (basis_hd :: basis_tl)) : WithBot ℝ :=
+def leadingExp (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : WithBot ℝ :=
   ms.seq.leadingExp
 
 @[simp]
-theorem leadingExp_def (ms : PreMS (basis_hd :: basis_tl)) :
+theorem leadingExp_def (ms : MultiseriesExpansion (basis_hd :: basis_tl)) :
     leadingExp ms = ms.seq.leadingExp := rfl
 
 end leadingExp
@@ -591,28 +623,28 @@ section Sorted
 
 /-- Auxilary instance for order on pairs `(exp, coef)` used below to define `Sorted` in terms
 of `Stream'.Seq.Pairwise`. `(exp₁, coef₁) ≤ (exp₂, coef₂)` iff `exp₁ ≤ exp₂`. -/
-scoped instance {basis} : Preorder (ℝ × PreMS basis) := Preorder.lift Prod.fst
+scoped instance {basis} : Preorder (ℝ × MultiseriesExpansion basis) := Preorder.lift Prod.fst
 
-private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS basis} :
+private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : MultiseriesExpansion basis} :
     (exp1, coef1) < (exp2, coef2) ↔ exp1 < exp2 := by
   rfl
 
 /-- Multiseries `ms` is `Sorted` when at each its level exponents are sorted. -/
-inductive Sorted : {basis : Basis} → (PreMS basis) → Prop
-| const (ms : PreMS []) : Sorted ms
-| seq {hd} {tl} (ms : PreMS (hd :: tl))
+inductive Sorted : {basis : Basis} → (MultiseriesExpansion basis) → Prop
+| const (ms : MultiseriesExpansion []) : Sorted ms
+| seq {hd} {tl} (ms : MultiseriesExpansion (hd :: tl))
     (h_coef : ∀ x ∈ ms.seq, x.2.Sorted)
     (h_Pairwise : Seq.Pairwise (· > ·) ms.seq) : ms.Sorted
 
 /-- Multiseries `ms` is `Sorted` when at each its level exponents are sorted. -/
-def SeqMS.Sorted {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) : Prop :=
+def Multiseries.Sorted {basis_hd basis_tl} (s : Multiseries basis_hd basis_tl) : Prop :=
   (mk s 0).Sorted (basis := basis_hd :: basis_tl)
 
 variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 @[simp]
-theorem Sorted_iff_Seq_Sorted {ms : PreMS (basis_hd :: basis_tl)} :
-    ms.Sorted ↔ SeqMS.Sorted ms.seq where
+theorem Sorted_iff_Seq_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    ms.Sorted ↔ Multiseries.Sorted ms.seq where
   mp h := by
     cases h with | seq _ h_coef h_Pairwise =>
     constructor
@@ -624,23 +656,23 @@ theorem Sorted_iff_Seq_Sorted {ms : PreMS (basis_hd :: basis_tl)} :
     · simpa using h_coef
     · simpa using h_Pairwise
 
-namespace SeqMS
+namespace Multiseries
 
 @[simp]
-theorem Sorted.nil : Sorted (nil : SeqMS basis_hd basis_tl) := by
+theorem Sorted.nil : Sorted (nil : Multiseries basis_hd basis_tl) := by
   unfold Sorted
   constructor <;> simp
 
 /-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
-theorem Sorted.cons_nil {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+theorem Sorted.cons_nil {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     (h_coef : coef.Sorted) :
-    Sorted (cons exp coef (.nil : SeqMS basis_hd basis_tl)) := by
+    Sorted (cons exp coef (.nil : Multiseries basis_hd basis_tl)) := by
   constructor
   · simpa
   · simp
 
-theorem Sorted.cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl}
+theorem Sorted.cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
     (h_coef : coef.Sorted)
     (h_comp : leadingExp tl < exp)
     (h_tl : tl.Sorted) :
@@ -656,8 +688,8 @@ theorem Sorted.cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
 
 /-- The fact `Sorted (cons (exp, coef) tl)` implies that `coef` and `tl` are `Sorted`, and
 leading exponent of `tl` is less than `exp`. -/
-theorem Sorted_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} (h : Sorted (cons exp coef tl)) :
+theorem Sorted_cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} (h : Sorted (cons exp coef tl)) :
     coef.Sorted ∧ leadingExp tl < exp ∧ tl.Sorted := by
   cases h with | seq _ h_coef h_Pairwise =>
   constructor
@@ -678,7 +710,7 @@ theorem Sorted_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     grind
   · assumption
 
-theorem Sorted.tail {ms : SeqMS basis_hd basis_tl} (h : ms.Sorted) :
+theorem Sorted.tail {ms : Multiseries basis_hd basis_tl} (h : ms.Sorted) :
     ms.tail.Sorted := by
   cases ms with
   | nil => simp
@@ -688,8 +720,8 @@ theorem Sorted.tail {ms : SeqMS basis_hd basis_tl} (h : ms.Sorted) :
 if `motive ms` (base case) and the predicate "survives" destruction of its argument, then `ms` is
 `Sorted`. Here "survive" means that if `x = cons (exp, coef) tl` than `motive x` must imply
 `coef.Sorted`, `tl.leadingExp < exp` and `motive tl`. -/
-theorem Sorted.coind {s : SeqMS basis_hd basis_tl}
-    (motive : (ms : SeqMS basis_hd basis_tl) → Prop)
+theorem Sorted.coind {s : Multiseries basis_hd basis_tl}
+    (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive s)
     (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
         coef.Sorted ∧
@@ -716,29 +748,29 @@ theorem Sorted.coind {s : SeqMS basis_hd basis_tl}
 
 /-- A predicate that says that a function `op` preserves well-orderedness of multiseries. -/
 abbrev PreservesSorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) : Prop :=
+    (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop :=
   ∀ x, x.Sorted → (op x).Sorted
 
 theorem PreservesSorted.comp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {op op' : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
+    {op op' : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (h_preserves : PreservesSorted op) (h_preserves' : PreservesSorted op') :
     PreservesSorted (op ∘ op') := by
   simp [PreservesSorted] at *
   grind
 
-theorem Sorted.coind_friend {ms : SeqMS basis_hd basis_tl}
-    (motive : (ms : SeqMS basis_hd basis_tl) → Prop)
+theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
+    (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive ms)
     (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
         coef.Sorted ∧
         tl.leadingExp < exp ∧
-        ∃ (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl)
-        (x : SeqMS basis_hd basis_tl), tl = op x ∧
+        ∃ (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
+        (x : Multiseries basis_hd basis_tl), tl = op x ∧
         FriendOperation op ∧ PreservesSorted op ∧ motive x) :
     ms.Sorted := by
-  let motive' (ms : SeqMS basis_hd basis_tl) : Prop :=
-    ∃ (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl)
-      (x : SeqMS basis_hd basis_tl), ms = op x ∧ FriendOperation op ∧
+  let motive' (ms : Multiseries basis_hd basis_tl) : Prop :=
+    ∃ (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
+      (x : Multiseries basis_hd basis_tl), ms = op x ∧ FriendOperation op ∧
       PreservesSorted op ∧ motive x
   apply Sorted.coind motive'
   · use id, ms
@@ -756,7 +788,7 @@ theorem Sorted.coind_friend {ms : SeqMS basis_hd basis_tl}
   | cons x_exp x_coef x_tl =>
   obtain ⟨hx_coef, hx_comp, op', y, hx_tl, h_friend', h_preserves', hy⟩ :=
     h_step x_exp x_coef x_tl hx
-  obtain ⟨x_tl', hx_tl_head, this⟩ : ∃ (x_tl' : SeqMS basis_hd basis_tl),
+  obtain ⟨x_tl', hx_tl_head, this⟩ : ∃ (x_tl' : Multiseries basis_hd basis_tl),
       x_tl.head = x_tl'.head ∧ Sorted (.cons x_exp x_coef x_tl') := by
     cases x_tl with
     | nil =>
@@ -824,7 +856,7 @@ theorem Sorted.coind_friend {ms : SeqMS basis_hd basis_tl}
       (op (.cons x_exp x_coef z)).tail else .nil) ∘ op')
     apply FriendOperation.comp _ h_friend'
     simp only [leadingExp]
-    let P (hd : Option (ℝ × PreMS basis_tl)) : Prop :=
+    let P (hd : Option (ℝ × MultiseriesExpansion basis_tl)) : Prop :=
       (match hd with | none => ⊥ | some (exp, _) => exp) < (x_exp : WithBot ℝ)
     apply FriendOperation.ite (P := P)
     · apply FriendOperation.cons_tail h_friend
@@ -838,10 +870,10 @@ theorem Sorted.coind_friend {ms : SeqMS basis_hd basis_tl}
     · apply Sorted.nil
   · exact hy
 
-theorem Sorted.coind_friend' {ms : SeqMS basis_hd basis_tl}
-    {γ : Type*} (op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl)
+theorem Sorted.coind_friend' {ms : Multiseries basis_hd basis_tl}
+    {γ : Type*} (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
     [FriendOperationClass op]
-    (motive : (ms : SeqMS basis_hd basis_tl) → Prop)
+    (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
     (C : γ → Prop)
     (h_op : ∀ c x, C c → x.Sorted → (op c x).Sorted)
     (h_base : motive ms)
@@ -854,37 +886,39 @@ theorem Sorted.coind_friend' {ms : SeqMS basis_hd basis_tl}
   intro exp coef tl ih
   specialize h_step exp coef tl ih
   obtain ⟨h_coef_wo, h_comp, c, x, h_tl, h_C, hx⟩ := h_step
-  refine ⟨h_coef_wo, h_comp, op c, x, h_tl, FriendOperationClass.FriendOperation _, by grind, hx⟩
+  refine ⟨h_coef_wo, h_comp, op c, x, h_tl, FriendOperationClass.FriendOperation _,
+    by grind, hx⟩
 
-end SeqMS
+end Multiseries
 
 /-- `[]` is `Sorted`. -/
 theorem Sorted.nil (f : ℝ → ℝ) : @Sorted (basis_hd :: basis_tl) (mk .nil f) := by
   simp
 
 /-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
-theorem Sorted.cons_nil {exp : ℝ} {coef : PreMS basis_tl} {f : ℝ → ℝ}
+theorem Sorted.cons_nil {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {f : ℝ → ℝ}
     (h_coef : coef.Sorted) :
     @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef .nil) f) := by
-  simp [SeqMS.Sorted.cons_nil h_coef]
+  simp [Multiseries.Sorted.cons_nil h_coef]
 
 /-- `cons (exp, coef) tl` is `Sorted` when `coef` and `tl` are `Sorted` and leading
 exponent of `tl` is less than `exp`. -/
-theorem Sorted.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+theorem Sorted.cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
     {f : ℝ → ℝ}
     (h_coef : coef.Sorted)
     (h_comp : tl.leadingExp < exp)
     (h_tl : tl.Sorted) :
     @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
-  simp [SeqMS.Sorted.cons h_coef h_comp h_tl]
+  simp [Multiseries.Sorted.cons h_coef h_comp h_tl]
 
 /-- The fact `Sorted (cons (exp, coef) tl)` implies that `coef` and `tl` are `Sorted`, and
 leading exponent of `tl` is less than `exp`. -/
-theorem Sorted_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
-    {f : ℝ → ℝ}
+theorem Sorted_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
     (h : @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
     coef.Sorted ∧ tl.leadingExp < exp ∧ tl.Sorted := by
-  apply SeqMS.Sorted_cons (by simpa using h)
+  apply Multiseries.Sorted_cons (by simpa using h)
 
 end Sorted
 
@@ -905,7 +939,6 @@ theorem Majorated_of_EventuallyEq {f g basis_hd : ℝ → ℝ} {exp : ℝ} (h_eq
   specialize h exp' h_exp
   exact EventuallyEq.trans_isLittleO h_eq h
 
--- TODO: upstream?
 /-- For any function `f`, `f^exp` is Majorated with `f` with exponent `exp`. -/
 theorem Majorated_self {f : ℝ → ℝ} {exp : ℝ}
     (h : Tendsto f atTop atTop) :
@@ -1005,12 +1038,19 @@ theorem mul_Majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : Maj
       rw [show exp = (f_exp + ε) + (g_exp + ε) by dsimp [ε]; ring_nf]
       rw [Real.rpow_add hx]
 
+theorem mul_bounded_Majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorated f basis_hd exp)
+    (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
+    Majorated (f * g) basis_hd exp := by
+  intro exp h_exp
+  convert IsLittleO.mul_isBigO (hf _ h_exp) hg using 1
+  simp
+
 end Majorated
 
 mutual
   /-- Auxilliary monotone map, for which `Approximates` is the greatest fixed point. -/
-  def Approximates.T (basis : Basis) : (PreMS basis → Prop) →o
-      (PreMS basis → Prop) :=
+  def Approximates.T (basis : Basis) : (MultiseriesExpansion basis → Prop) →o
+      (MultiseriesExpansion basis → Prop) :=
     match (generalizing := true) basis with
     | [] => {
       toFun := fun P ms => True
@@ -1019,7 +1059,7 @@ mutual
     | .cons basis_hd basis_tl => {
       toFun := fun P ms =>
         (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
-        (∃ (exp : ℝ) (coef : PreMS basis_tl) (tl : SeqMS basis_hd basis_tl),
+        (∃ (exp : ℝ) (coef : MultiseriesExpansion basis_tl) (tl : Multiseries basis_hd basis_tl),
           ms.seq = .cons exp coef tl ∧ coef.Approximates ∧
           Majorated ms.toFun basis_hd exp ∧
           P (mk tl (ms.toFun - basis_hd ^ exp * coef.toFun)))
@@ -1037,19 +1077,19 @@ mutual
     `coef` approximates some function `fC`, and
     `tl` approximates `f - fC * basis_hd ^ exp`
   -/
-  def Approximates {basis} (ms : PreMS basis) : Prop :=
+  def Approximates {basis} (ms : MultiseriesExpansion basis) : Prop :=
     (Approximates.T basis).gfp ms
 end
 
 variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
-private theorem Approximates.step {basis} {ms : PreMS basis} :
-    ms.Approximates ↔ (Approximates.T basis Approximates ms) := by
+private theorem Approximates.step {basis} {ms : MultiseriesExpansion basis} :
+    ms.Approximates ↔ Approximates.T basis Approximates ms := by
   conv_lhs => unfold Approximates; rw [← OrderHom.isFixedPt_gfp]
   conv_rhs => arg 2; eta_expand; unfold Approximates; change OrderHom.gfp _
 
 @[simp]
-theorem Approximates.const {c : PreMS []} : Approximates c := by
+theorem Approximates.const {c : MultiseriesExpansion []} : Approximates c := by
   rw [Approximates.step]
   simp [T]
 
@@ -1062,7 +1102,8 @@ theorem Approximates.nil (h : f =ᶠ[atTop] 0) :
 /-- `cons (exp, coef) tl` approximates `f` when `f` can be Majorated with exponent `exp`, and
 there exists some function `fC` such that `coef` approximates `fC` and `tl` approximates
 `f - fC * basis_hd ^ exp`. -/
-theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+theorem Approximates.cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
     (h_coef : coef.Approximates)
     (h_maj : Majorated f basis_hd exp)
     (h_tl : (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates) :
@@ -1071,8 +1112,8 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_
   simp [T]
   grind
 
-theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
-    (motive : PreMS (basis_hd :: basis_tl) → Prop)
+theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
     (h_base : motive ms)
     (h_step : ∀ ms, motive ms →
       (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
@@ -1105,7 +1146,7 @@ theorem Approximates_nil_iff {f : ℝ → ℝ} :
 there exists function `fC` such that `coef` approximates `fC` and `tl` approximates
 `f - fC * basis_hd ^ exp`. -/
 theorem Approximates_cons {exp : ℝ}
-    {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+    {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
     coef.Approximates ∧
     Majorated f basis_hd exp ∧
@@ -1113,17 +1154,17 @@ theorem Approximates_cons {exp : ℝ}
   rw [Approximates.step] at h
   simpa [Approximates.T] using h
 
-theorem replaceFun_Sorted {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
-    (h_wo : ms.Sorted) :
+theorem replaceFun_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    {f : ℝ → ℝ} (h_wo : ms.Sorted) :
     (ms.replaceFun f).Sorted := by
   simpa using h_wo
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
-theorem replaceFun_Approximates {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
     (h_equiv : ms.toFun =ᶠ[atTop] f) (h_approx : ms.Approximates) :
     (ms.replaceFun f).Approximates := by
-  let motive (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
-      ∃ (ms' : PreMS (basis_hd :: basis_tl)) (f' : ℝ → ℝ),
+  let motive (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
+      ∃ (ms' : MultiseriesExpansion (basis_hd :: basis_tl)) (f' : ℝ → ℝ),
       ms = ms'.replaceFun f' ∧ ms'.Approximates ∧ ms'.toFun =ᶠ[atTop] f'
   apply Approximates.coind motive
   · simp only [motive]
@@ -1131,8 +1172,8 @@ theorem replaceFun_Approximates {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ →
   rintro _ ⟨ms, f, rfl, h_approx, h_eq⟩
   cases ms with
   | nil g =>
-    simp only [Approximates_nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and, SeqMS.nil_ne_cons,
-      false_and, exists_const, or_false] at h_approx h_eq ⊢
+    simp only [Approximates_nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and,
+      Multiseries.nil_ne_cons, false_and, exists_const, or_false] at h_approx h_eq ⊢
     grw [← h_eq, h_approx]
   | cons exp coef tl g =>
     right
@@ -1146,7 +1187,8 @@ theorem replaceFun_Approximates {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ →
     simp only [mk_toFun]
     grw [h_eq]
 
-instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) : Setoid (PreMS (basis_hd :: basis_tl)) where
+instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) :
+    Setoid (MultiseriesExpansion (basis_hd :: basis_tl)) where
   r x y := x.seq = y.seq ∧ x.toFun =ᶠ[atTop] y.toFun
   iseqv := by
     constructor
@@ -1155,12 +1197,12 @@ instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) : Setoid (PreMS (basis_hd :
     · grind [EventuallyEq.trans]
 
 @[simp]
-theorem equiv_def {x y : PreMS (basis_hd :: basis_tl)} :
+theorem equiv_def {x y : MultiseriesExpansion (basis_hd :: basis_tl)} :
     x ≈ y ↔ x.seq = y.seq ∧ x.toFun =ᶠ[atTop] y.toFun := by
   rfl
 
 end Approximates
 
-end PreMS
+end MultiseriesExpansion
 
 end ComputeAsymptotics

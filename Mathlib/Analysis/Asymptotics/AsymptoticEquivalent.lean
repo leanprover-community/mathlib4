@@ -334,6 +334,15 @@ theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atBot ↔ Tendsto v l atBot :=
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
 
+theorem IsEquivalent.eventually_pos [ClosedIicTopology β] {l : Filter α}
+    {f g : α → β} (h : f ~[l] g)
+    (hg : ∀ᶠ t in l, 0 < g t) : ∀ᶠ x in l, 0 < f x := by
+  obtain ⟨φ, hφ_tendsto, h_eq⟩ := h.exists_eq_mul
+  have hφ : ∀ᶠ x in l, 1 / 2 < φ x := hφ_tendsto.eventually_const_lt (by linarith)
+  refine ((h_eq.and hφ).and hg).mono fun x ⟨⟨h_eq, hφ⟩, hg⟩ ↦ ?_
+  simp [h_eq]
+  nlinarith
+
 end NormedLinearOrderedField
 
 section Real

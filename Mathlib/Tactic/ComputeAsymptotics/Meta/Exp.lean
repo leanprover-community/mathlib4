@@ -46,8 +46,8 @@ deriving Inhabited
 
 /-- Given `ms : MS` with `ms.basis = left ++ cur :: right` return the place where `ms` can be
 inserted into the log-basis. Assumes `ms` is o-little of logarithms of `left`. -/
-partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
-    (h_pos : Q(Term.FirstIsPos (PreMS.leadingTerm $ms.val).exps))
+partial def findPlaceAux (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val))
+    (h_pos : Q(Term.FirstIsPos (MultiseriesExpansion.leadingTerm $ms.val).exps))
     (left : Q(Basis)) (cur : Q(ℝ → ℝ)) (right : Q(Basis))
     (logBasis : Q(LogBasis ($cur :: $right)))
     (h_logBasis : Q(LogBasis.WellFormed $logBasis))
@@ -61,9 +61,8 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
     have : $left' =Q $left := ⟨⟩
     have : $cur =Q List.getLast $ms.basis sorry := ⟨⟩
     let h_right : Q((Real.log ∘ $cur) =o[atTop] $(ms.val).toFun) :=
-      q(PreMS.log_basis_getLast_IsLittleO $ms.h_basis $ms.h_wo $ms.h_approx $h_trimmed $h_pos)
-      -- (q(PreMS.log_basis_getLast_IsLittleO $ms.h_basis $ms.h_wo $ms.h_approx
-      --   $h_trimmed $h_pos) : Expr)
+      q(MultiseriesExpansion.log_basis_getLast_IsLittleO $ms.h_basis $ms.h_wo $ms.h_approx
+        $h_trimmed $h_pos)
     return {
       left := left'
       right_hd := cur
@@ -132,8 +131,8 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
 
 /-- Finds `left`, `right_hd`, `right_tl` such that `ms.basis = left ++ right_hd :: right_tl`,
 `ms` is o-little of logs of `left`, and `left` is maximal. Assumes `ms` tendsto infinity. -/
-partial def findPlace (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
-    (h_pos : Q(Term.FirstIsPos (PreMS.leadingTerm $ms.val).exps)) :
+partial def findPlace (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val))
+    (h_pos : Q(Term.FirstIsPos (MultiseriesExpansion.leadingTerm $ms.val).exps)) :
     BasisM (FindPlaceResult ms) := do
   let basis : Q(Basis) := (← get).basis
   let ~q(List.cons $basis_hd $basis_tl) := basis | panic! "Unexpected basis (nil) in findPlace"
@@ -147,47 +146,50 @@ structure ExtractDeepCoefResult (ms : MS) (depth : Q(Nat)) where
   /-- Proof that `coef` is trimmed -/
   trimmed : Q(($coef.val).Trimmed)
   /-- Proof that `coef` has the same `exps` as `ms` -/
-  h_exps : Q(List.replicate $depth 0 ++ (PreMS.leadingTerm $coef.val).exps =
-    (PreMS.leadingTerm $ms.val).exps)
+  h_exps : Q(List.replicate $depth 0 ++ (MultiseriesExpansion.leadingTerm $coef.val).exps =
+    (MultiseriesExpansion.leadingTerm $ms.val).exps)
   /-- Proof that `coef` has the same real coefficient as `ms` -/
   h_coef : Q(($ms.val).leadingTerm.coef = ($coef.val).leadingTerm.coef)
 
-lemma PreMS.leadingTerm_cons_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} {depth : ℕ}
-    {basis : Basis} {deepCoef : PreMS basis}
+lemma MultiseriesExpansion.leadingTerm_cons_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} {depth : ℕ}
+    {basis : Basis} {deepCoef : MultiseriesExpansion basis}
     (h : List.replicate depth 0 ++ deepCoef.leadingTerm.exps = coef.leadingTerm.exps) :
     List.replicate (depth + 1) 0 ++ deepCoef.leadingTerm.exps =
-      (PreMS.mk (.cons 0 coef tl) f).leadingTerm.exps := by
-  simp [PreMS.leadingTerm, List.replicate_succ]
-  simpa [PreMS.leadingTerm] using h
+      (MultiseriesExpansion.mk (.cons 0 coef tl) f).leadingTerm.exps := by
+  simp [MultiseriesExpansion.leadingTerm, List.replicate_succ]
+  simpa [MultiseriesExpansion.leadingTerm] using h
 
 /-- Given trimmed `ms : MS` finds its coefficient on depth `depth`. -/
-def extractDeepCoef (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (depth : Nat) :
+def extractDeepCoef (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val)) (depth : Nat) :
     MetaM <| ExtractDeepCoefResult ms q($depth) := do
   match depth with
   | 0 => return ⟨ms, q($h_trimmed), q(rfl), q(rfl)⟩
   | newDepth + 1 =>
     let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "Unexpected basis in extractDeepCoef"
-    let ~q(PreMS.mk (.cons $exp $coef $tl) $f) := ms.val | panic! "Unexpected ms in extractDeepCoef"
+    let ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) := ms.val
+      | panic! "Unexpected ms in extractDeepCoef"
     let newMS : MS := {
       basis := q($basis_tl)
       logBasis := q(LogBasis.tail $ms.logBasis)
       val := q($coef)
-      h_approx := q((PreMS.Approximates_cons $ms.h_approx).left)
-      h_wo := q((PreMS.Sorted_cons $ms.h_wo).left)
+      h_approx := q((MultiseriesExpansion.Approximates_cons $ms.h_approx).left)
+      h_wo := q((MultiseriesExpansion.Sorted_cons $ms.h_wo).left)
       h_basis := q(WellFormedBasis.tail $ms.h_basis)
       h_logBasis := q(LogBasis.tail_WellFormed $ms.h_logBasis)
     }
-    let new_h_trimmed : Q(PreMS.Trimmed $coef) := q((PreMS.Trimmed_cons $h_trimmed).left)
+    let new_h_trimmed : Q(MultiseriesExpansion.Trimmed $coef) :=
+      q((MultiseriesExpansion.Trimmed_cons $h_trimmed).left)
     let ⟨deepCoef, h_coef_trimmed, h_exps, h_coef⟩ ← extractDeepCoef newMS new_h_trimmed newDepth
     have : $exp =Q 0 := ⟨⟩
     return ⟨deepCoef, q($h_coef_trimmed),
-      q(@PreMS.leadingTerm_cons_exps _ _ $coef $tl $f $newDepth _ _ $h_exps),
-      q((@PreMS.leadingTerm_cons_coef _ _ $exp $coef $tl $f).trans $h_coef)⟩
+      q(@MultiseriesExpansion.leadingTerm_cons_exps _ _ $coef $tl $f $newDepth _ _ $h_exps),
+      q((@MultiseriesExpansion.leadingTerm_cons_coef _ _ $exp $coef $tl $f).trans $h_coef)⟩
 
 
 -- -- TODO: rename
-theorem PreMS.inv_exp_neg_toFun {basis : Basis} {n : Fin basis.length}
+theorem MultiseriesExpansion.inv_exp_neg_toFun {basis : Basis} {n : Fin basis.length}
     {f : ℝ → ℝ}
     (h : basis[n] = Real.exp ∘ (-f)) :
     (monomialRpow basis n (-1)).toFun =ᶠ[atTop] (Real.exp ∘ f) := by
@@ -196,13 +198,15 @@ theorem PreMS.inv_exp_neg_toFun {basis : Basis} {n : Fin basis.length}
   ext t
   simp [Real.rpow_neg_one, Real.exp_neg]
 
-theorem PreMS.neg_log_exp_toFun {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ} (h : ms.toFun = f) :
+theorem MultiseriesExpansion.neg_log_exp_toFun {basis : Basis}
+    {ms : MultiseriesExpansion basis} {f : ℝ → ℝ} (h : ms.toFun = f) :
     ms.neg.toFun = (Real.log ∘ Real.exp ∘ (-f)) := by
   subst h
   ext t
   simp
 
-lemma PreMS.log_exp_toFun {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ} (h : ms.toFun = f) :
+lemma MultiseriesExpansion.log_exp_toFun {basis : Basis}
+    {ms : MultiseriesExpansion basis} {f : ℝ → ℝ} (h : ms.toFun = f) :
     ms.toFun = Real.log ∘ (Real.exp ∘ f) := by
   subst h
   ext t
@@ -228,10 +232,11 @@ abbrev getInsertedIndex (left right : Basis) (newElem : ℝ → ℝ) :
 Finds a deep coef `G` of `ms` to insert.
 Inserts `exp ±G.f` (with the right sign) in the basis between `left` and `right_hd :: right_tl`.
 Returns `G` and the MS representing `exp G.f`. -/
-def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (left : Q(Basis))
+def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val))
+    (left : Q(Basis))
     (right_hd : Q(ℝ → ℝ)) (right_tl : Q(Basis))
     (coef : Q(ℝ)) (exps : Q(List ℝ))
-    (h_leading : Q((PreMS.leadingTerm $ms.val) = ⟨$coef, $exps⟩))
+    (h_leading : Q((MultiseriesExpansion.leadingTerm $ms.val) = ⟨$coef, $exps⟩))
     (h_first_is_pos' : Q(Term.FirstIsPos $exps))
     (h_left : Q(∀ g ∈ List.getLast? $left, $(ms.val).toFun =o[atTop] (Real.log ∘ g)))
     (h_right : Q((Real.log ∘ $right_hd) =o[atTop] $(ms.val).toFun)) : BasisM (MS × MS) := do
@@ -243,11 +248,12 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
   let ⟨G, hG_trimmed, hG_exps, hG_coef⟩ := ← extractDeepCoef ms h_trimmed depth
   let ⟨Gf, hGf⟩ ← Normalization.getFun G.val
   haveI : $G.basis =Q $right_hd :: $right_tl := ⟨⟩
-  let h_ms_equiv_G : Q($(ms.val).toFun ~[atTop] $Gf) :=
-    let hG_exps : Q(List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $G.val).exps =
-        (PreMS.leadingTerm $ms.val).exps) := hG_exps
-    q(PreMS.IsEquivalent_of_leadingTerm_zeros_append $ms.h_wo $G.h_wo $ms.h_approx $G.h_approx
-      $h_trimmed $hG_trimmed $hGf $ms.h_basis $hG_coef $hG_exps)
+    let h_ms_equiv_G : Q($(ms.val).toFun ~[atTop] $Gf) :=
+      let hG_exps : Q(List.replicate (List.length $left) 0 ++
+          (MultiseriesExpansion.leadingTerm $G.val).exps =
+          (MultiseriesExpansion.leadingTerm $ms.val).exps) := hG_exps
+      q(MultiseriesExpansion.IsEquivalent_of_leadingTerm_zeros_append $ms.h_wo $G.h_wo
+        $ms.h_approx $G.h_approx $h_trimmed $hG_trimmed $hGf $ms.h_basis $hG_coef $hG_exps)
   do
   -- insert `exp g` in basis
   match ← compareReal coef with
@@ -271,7 +277,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       logBasis := q($logBasis)
       h_logBasis :=
         q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis $G.h_wo
-        $G.h_approx (PreMS.log_exp_toFun $hGf) $hG_trimmed)
+        $G.h_approx (MultiseriesExpansion.log_exp_toFun $hGf) $hG_trimmed)
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
@@ -299,8 +305,10 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := q($logBasis)
       h_logBasis := q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis
-        (PreMS.neg_Sorted $G.h_wo) (PreMS.neg_Approximates $G.h_approx)
-        (PreMS.neg_log_exp_toFun $hGf) (PreMS.neg_Trimmed $hG_trimmed))
+        (MultiseriesExpansion.neg_Sorted $G.h_wo)
+        (MultiseriesExpansion.neg_Approximates $G.h_approx)
+        (MultiseriesExpansion.neg_log_exp_toFun $hGf)
+        (MultiseriesExpansion.neg_Trimmed $hG_trimmed))
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
@@ -309,14 +317,16 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
     let ~q($basis_hd :: $basis_tl) := G_exp.basis
       | panic! "Unexpected basis in insertEquivalentToBasis"
     let h : Q(($G_exp.val).toFun =ᶠ[atTop] Real.exp ∘ $Gf) := ← mkAppOptM
-      ``PreMS.inv_exp_neg_toFun #[G_exp.basis, new_idx, Gf, ← mkEqRefl q(Real.exp ∘ (-$Gf))]
+      ``MultiseriesExpansion.inv_exp_neg_toFun
+        #[G_exp.basis, new_idx, Gf, ← mkEqRefl q(Real.exp ∘ (-$Gf))]
     let G_exp ← (G_exp.replaceFun q(Real.exp ∘ $Gf) q($h))
     return (← updateBasis G, G_exp)
   | .zero _ => panic! "Unexpected coef = zero in insertEquivalentToBasis"
 
 end BasisUpdate
 
-theorem PreMS.sub_exp_toFun {basis : Basis} {ms G G_exp H : PreMS basis} {f : ℝ → ℝ}
+theorem MultiseriesExpansion.sub_exp_toFun {basis : Basis}
+    {ms G G_exp H : MultiseriesExpansion basis} {f : ℝ → ℝ}
     {Gf : ℝ → ℝ}
     (hf : ms.toFun = f)
     (hGf : G.toFun = Gf)
@@ -329,10 +339,10 @@ theorem PreMS.sub_exp_toFun {basis : Basis} {ms G G_exp H : PreMS basis} {f : �
   ext t
   simp [← Real.exp_add]
 
-theorem PreMS.sub_log_exp_toFun {basis basis' : Basis} {ex : BasisExtension basis}
-    {L : PreMS basis}
-    {ms H : PreMS ex.getBasis}
-    {B expH : PreMS basis'}
+theorem MultiseriesExpansion.sub_log_exp_toFun {basis basis' : Basis} {ex : BasisExtension basis}
+    {L : MultiseriesExpansion basis}
+    {ms H : MultiseriesExpansion ex.getBasis}
+    {B expH : MultiseriesExpansion basis'}
     {f : ℝ → ℝ} {c : ℝ}
     {i : Fin basis'.length}
     (h_basis : WellFormedBasis basis')
@@ -357,7 +367,7 @@ theorem PreMS.sub_log_exp_toFun {basis basis' : Basis} {ex : BasisExtension basi
   simp
 
 /-- Given a partially trimmed `ms` returns the MS approximating `exp ∘ ms.f`. -/
-partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val)) :
+partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion.Trimmed $ms.val)) :
     BasisM <| (res : MS) × Q(($res.val).toFun = Real.exp ∘ ($ms.val).toFun) := do
   let ⟨leading, h_leading⟩ ← getLeadingTermWithProof ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
@@ -366,8 +376,8 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.va
     let h_nonpos : Q(¬ Term.FirstIsPos ($ms.val).leadingTerm.exps) := q($h_leading ▸ $h_nonpos')
     let res := ms.exp q($h_nonpos)
     have : $res.basis =Q $ms.basis := ⟨⟩
-    have : $res.val =Q PreMS.exp $ms.val := ⟨⟩
-    return ⟨res, q(PreMS.exp_toFun)⟩
+    have : $res.val =Q MultiseriesExpansion.exp $ms.val := ⟨⟩
+    return ⟨res, q(MultiseriesExpansion.exp_toFun)⟩
   | .right h_first_is_pos' =>
     let h_first_is_pos : Q(Term.FirstIsPos (($ms.val).leadingTerm).exps) :=
       q($h_leading ▸ $h_first_is_pos')
@@ -388,13 +398,13 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.va
       let B := MS.monomialRpow q($expH.basis) q($expH.logBasis) n q($c)
         q($expH.h_basis) q($expH.h_logBasis)
       let hB : Q(($B.val).toFun = List.get _ $n ^ $c) :=
-        ← mkAppOptM ``PreMS.monomialRpow_toFun #[expH.basis, n, c]
+        ← mkAppOptM ``MultiseriesExpansion.monomialRpow_toFun #[expH.basis, n, c]
       -- B ~ b_i^c
       -- expH ~ exp (f - c * log b_i)
       let res := B.mul expH
       let ⟨ms_f, hms_f⟩ ← Normalization.getFun ms.val
       let h : Q(($res.val).toFun =ᶠ[atTop] (Real.exp ∘ $ms_f)) :=
-        ← mkAppOptM ``PreMS.sub_log_exp_toFun #[log_right_hd.basis, expH.basis, ex,
+        ← mkAppOptM ``MultiseriesExpansion.sub_log_exp_toFun #[log_right_hd.basis, expH.basis, ex,
           log_right_hd.val, ms.val, H.val, B.val, expH.val,
           ms_f, c, n, expH.h_basis, hms_f, hB, h_log_right_hd_fun, hH_fun, h_expH]
       return ← res.replaceFun' q(Real.exp ∘ $ms_f) q($h)
@@ -421,12 +431,13 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.va
       let ~q($basis_hd :: $basis_tl) := G_exp.basis | panic! "unexpected G_exp basis in createExpMS"
       let ⟨ms_f, hms_f⟩ ← Normalization.getFun ms.val
       let h : Q((($G_exp.val).mul $H_exp.val).toFun =ᶠ[atTop] Real.exp ∘ $ms_f) :=
-        ← mkAppOptM ``PreMS.sub_exp_toFun #[G_exp.basis, ms.val, G.val, G_exp.val, H.val, ms_f, Gf,
-        hms_f, hGf, hH_fun, h_G_exp_f]
+        ← mkAppOptM ``MultiseriesExpansion.sub_exp_toFun
+          #[G_exp.basis, ms.val, G.val, G_exp.val, H.val, ms_f, Gf,
+            hms_f, hGf, hH_fun, h_G_exp_f]
       return ← (G_exp.mul H_exp).replaceFun' q(Real.exp ∘ $ms_f) h
 
 /-- Given a partially trimmed `ms` returns the MS approximating `exp ∘ ms.f`. -/
-partial def createExpMS (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val)) :
+partial def createExpMS (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion.Trimmed $ms.val)) :
     BasisM MS := do
   return (← createExpMSImp ms h_trimmed?).fst
 

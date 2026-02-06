@@ -36,14 +36,16 @@ partial def proveLastExpZero (li : Q(List ℝ)) : TacticM <| Option <|
     panic! "proveLastExpZero: unexpected result of rfl"
   return .some q(fun _ ha ↦ proveLastExpZero_aux ha $h_eq $h_zero)
 
-theorem last_exp_zero_aux {basis : Basis} {ms : PreMS basis} {coef : ℝ} {exps : List ℝ}
-    (h_leading : PreMS.leadingTerm ms = ⟨coef, exps⟩)
+theorem last_exp_zero_aux {basis : Basis} {ms : MultiseriesExpansion basis}
+    {coef : ℝ} {exps : List ℝ}
+    (h_leading : MultiseriesExpansion.leadingTerm ms = ⟨coef, exps⟩)
     (h_last : ∀ a, List.getLast? exps = .some a → a = 0) :
     ∀ a, List.getLast? ms.leadingTerm.exps = .some a → a = 0 := by
   grind
 
 /-- Given a trimmed `ms` returns the MS approximating `log ∘ ms.f`. -/
-def createLogMS (arg : Q(ℝ)) (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : BasisM MS := do
+def createLogMS (arg : Q(ℝ)) (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.val)) :
+    BasisM MS := do
   let ⟨leading, h_leading⟩ ← getLeadingTermWithProof ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"
   let .some h_pos ← getLeadingTermCoefPos ms.val

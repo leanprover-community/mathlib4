@@ -18,7 +18,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
 
 public meta section
 
-open Filter Topology Asymptotics Stream'.Seq
+open Filter Topology Asymptotics
 
 open Lean Elab Meta Tactic Qq
 
@@ -28,7 +28,7 @@ theorem init_basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] :=
   WellFormedBasis.single _ (fun _ a ↦ a)
 
 theorem monomialRpow_toFun_eq_inv (basis : Basis) (n : Fin (List.length basis)) :
-    (@PreMS.monomialRpow basis n (-1)).toFun =ᶠ[atTop] basis[n]⁻¹ := by
+    (@MultiseriesExpansion.monomialRpow basis n (-1)).toFun =ᶠ[atTop] basis[n]⁻¹ := by
   apply EventuallyEq.of_eq
   ext
   simp [Real.rpow_neg_one]
@@ -106,7 +106,7 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
         let ~q($basis_hd :: $basis_tl) := res.basis | panic! "Unexpected basis in createMS pow"
         let ⟨_, h_msF⟩ ← Normalization.getFun q($ms.val)
         let ⟨_, h_resF⟩ ← Normalization.getFun q($res.val)
-        let h : Q(($res.val).toFun =ᶠ[atTop] $g) := ← mkAppM ``PreMS.pow_eq_exp_toFun
+        let h : Q(($res.val).toFun =ᶠ[atTop] $g) := ← mkAppM ``MultiseriesExpansion.pow_eq_exp_toFun
           #[ms.h_basis, ms.h_wo, ms.h_approx, h_trimmed, h_pos, h_msF, h_resF]
         return ← res.replaceFun q($g) q($h)
       else
@@ -126,7 +126,8 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
     let res ← createMSImp x q($arg ^ (1 / 2 : ℝ))
     let g : Q(ℝ → ℝ) ← mkLambdaFVars #[x] q(Real.sqrt $arg)
     let ⟨_, h_resF⟩ ← Normalization.getFun q($res.val)
-    let h : Q(($res.val).toFun =ᶠ[atTop] $g) := ← mkAppM ``PreMS.sqrt_of_pow_toFun #[h_resF]
+    let h : Q(($res.val).toFun =ᶠ[atTop] $g) :=
+      ← mkAppM ``MultiseriesExpansion.sqrt_of_pow_toFun #[h_resF]
     return ← res.replaceFun q($g) q($h)
   | _ => throwError f!"Unsupported body in createMS: {body}"
 
@@ -152,27 +153,30 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
       | panic! "Unexpected basis in computeTendstoAtTop"
     -- I don't know how to avoid Expr here.
     let h_tendsto : Expr ← match ms_trimmed.val with
-    | ~q(PreMS.mk .nil $f) =>
-      pure (q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
-    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
+    | ~q(MultiseriesExpansion.mk .nil $f) =>
+      pure (q(MultiseriesExpansion.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
+    | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
       let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
       let h_tendsto ← match ← getFirstIs exps with
       | .pos h_exps =>
         match ← compareReal q($coef) with
         | .neg h_coef =>
-          pure q(PreMS.tendsto_bot_of_FirstIsPos (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
-            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef rfl)
+          pure q(MultiseriesExpansion.tendsto_bot_of_FirstIsPos (f := $f)
+            $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
+            $h_leading_eq $h_exps $h_coef rfl)
         | .pos h_coef =>
-          pure q(PreMS.tendsto_top_of_FirstIsPos (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
-            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef rfl)
+          pure q(MultiseriesExpansion.tendsto_top_of_FirstIsPos (f := $f)
+            $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis
+            $h_leading_eq $h_exps $h_coef rfl)
         | .zero _ => panic! "Unexpected zero coef with FirstIsPos"
       | .neg h_exps =>
-        pure q(PreMS.tendsto_zero_of_FirstIsNeg (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
-          $h_leading_eq $h_exps rfl)
+        pure q(MultiseriesExpansion.tendsto_zero_of_FirstIsNeg (f := $f) $ms_trimmed.h_wo
+          $ms_trimmed.h_approx $h_leading_eq $h_exps rfl)
       | .zero h_exps =>
-        pure (q(PreMS.tendsto_const_of_AllZero (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
-          $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps rfl) : Expr)
+        pure (q(MultiseriesExpansion.tendsto_const_of_AllZero (f := $f) $ms_trimmed.h_wo
+          $ms_trimmed.h_approx $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps rfl) :
+            Expr)
     | _ => panic! "Unexpected result of trimMS"
     let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto
       | panic! "Unexpected h_tendsto's universe level"

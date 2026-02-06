@@ -15,30 +15,30 @@ term.
 
 @[expose] public section
 
-open Filter Asymptotics Topology Stream'
+open Filter Asymptotics Topology
 
 namespace ComputeAsymptotics
 
-namespace PreMS
+namespace MultiseriesExpansion
 
 mutual
 
-/-- List of leading exponents of a `SeqMS basis_hd basis_tl`. -/
-def SeqMS.exps {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) : List ℝ :=
+/-- List of leading exponents of a `Multiseries basis_hd basis_tl`. -/
+def Multiseries.exps {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) : List ℝ :=
   match ms.head with
   | none => List.replicate (basis_hd :: basis_tl).length 0
   | some (exp, coef) => exp :: coef.exps
 
-/-- List of leading exponents of a `PreMS basis`. -/
-def exps {basis : Basis} (ms : PreMS basis) : List ℝ :=
+/-- List of leading exponents of a `MultiseriesExpansion basis`. -/
+def exps {basis : Basis} (ms : MultiseriesExpansion basis) : List ℝ :=
   match basis with
   | [] => []
   | List.cons _ _ => ms.seq.exps
 
 end
 
-/-- Real coefficient at the leading monomial of a `PreMS basis`. -/
-def realCoef {basis : Basis} (ms : PreMS basis) : ℝ :=
+/-- Real coefficient at the leading monomial of a `MultiseriesExpansion basis`. -/
+def realCoef {basis : Basis} (ms : MultiseriesExpansion basis) : ℝ :=
   match basis with
   | [] => ms.toReal
   | List.cons _ _ =>
@@ -46,38 +46,39 @@ def realCoef {basis : Basis} (ms : PreMS basis) : ℝ :=
     | none => 0
     | some (_, coef) => coef.realCoef
 
-/-- Leading monomial of a `PreMS basis`. -/
-def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
+/-- Leading monomial of a `MultiseriesExpansion basis`. -/
+def leadingTerm {basis : Basis} (ms : MultiseriesExpansion basis) : Term :=
   ⟨ms.realCoef, ms.exps⟩
 
 @[simp]
-theorem const_realCoef' {ms : PreMS []} :
+theorem const_realCoef' {ms : MultiseriesExpansion []} :
     ms.realCoef = ms.toReal := rfl
 
 @[simp]
-theorem const_exps' {ms : PreMS []} :
+theorem const_exps' {ms : MultiseriesExpansion []} :
     ms.exps = [] := by
   simp [exps]
 
 @[simp]
-theorem const_leadingTerm {ms : PreMS []} : ms.leadingTerm = ⟨ms.toReal, []⟩ := by
+theorem const_leadingTerm {ms : MultiseriesExpansion []} : ms.leadingTerm = ⟨ms.toReal, []⟩ := by
   simp [leadingTerm]
 
 @[simp]
-theorem exps_eq_Seq_exps {basis_hd basis_tl} {ms : PreMS (basis_hd :: basis_tl)} :
+theorem exps_eq_Seq_exps {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
     ms.exps = ms.seq.exps := by
-  simp [exps, SeqMS.exps]
+  simp [exps, Multiseries.exps]
 
 @[simp]
-theorem SeqMS.nil_exps {basis_hd basis_tl} :
-    (nil : SeqMS basis_hd basis_tl).exps = List.replicate (basis_hd :: basis_tl).length 0 := by
-  simp [SeqMS.exps]
+theorem Multiseries.nil_exps {basis_hd basis_tl} :
+    (nil : Multiseries basis_hd basis_tl).exps =
+      List.replicate (basis_hd :: basis_tl).length 0 := by
+  simp [Multiseries.exps]
 
 @[simp]
-theorem SeqMS.cons_exps {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} :
+theorem Multiseries.cons_exps {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} :
     (cons exp coef tl).exps = exp :: coef.exps := by
-  simp [SeqMS.exps]
+  simp [Multiseries.exps]
 
 @[simp]
 theorem nil_realCoef {basis_hd} {basis_tl} {f : ℝ → ℝ} :
@@ -85,8 +86,8 @@ theorem nil_realCoef {basis_hd} {basis_tl} {f : ℝ → ℝ} :
   simp [realCoef]
 
 @[simp]
-theorem cons_realCoef {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
+theorem cons_realCoef {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
     (@realCoef (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) =
     coef.realCoef := by
   simp [realCoef]
@@ -96,14 +97,14 @@ theorem nil_leadingTerm {basis_hd basis_tl} {f : ℝ → ℝ} :
     ⟨0, List.replicate (basis_hd :: basis_tl).length 0⟩ := by
   simp [leadingTerm]
 
-theorem cons_leadingTerm {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
+theorem cons_leadingTerm {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
     (@leadingTerm (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) =
     ⟨coef.leadingTerm.coef, exp :: coef.leadingTerm.exps⟩ := by
   simp [leadingTerm]
 
-theorem cons_leadingTerm' {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} {coef' : ℝ} {exps : List ℝ}
+theorem cons_leadingTerm' {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} {coef' : ℝ} {exps : List ℝ}
     (h_eq : coef.leadingTerm = ⟨coef', exps⟩) :
     (@leadingTerm (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) =
     ⟨coef', exp :: exps⟩ := by
@@ -111,38 +112,38 @@ theorem cons_leadingTerm' {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_
   simp [h_eq]
 
 /-- `Term.coef ms.coef.leadingTerm` is equal to `Term.coef ms.leadingTerm`. -/
-theorem leadingTerm_cons_coef {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
+theorem leadingTerm_cons_coef {basis_hd} {basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ} :
     (@leadingTerm (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)).coef =
     coef.leadingTerm.coef := by
   simp [leadingTerm]
 
 mutual
 
-theorem SeqMS.exps_length {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
+theorem Multiseries.exps_length {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
     ms.exps.length = (basis_hd :: basis_tl).length := by
   cases ms with
   | nil => simp
   | cons exp coef tl =>
-    simp only [SeqMS.cons_exps, List.length_cons, Nat.add_right_cancel_iff]
+    simp only [Multiseries.cons_exps, List.length_cons, Nat.add_right_cancel_iff]
     rw [exps_length]
 
-theorem exps_length {basis : Basis} (ms : PreMS basis) :
+theorem exps_length {basis : Basis} (ms : MultiseriesExpansion basis) :
     ms.exps.length = basis.length := by
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
     simp only [exps_eq_Seq_exps, List.length_cons]
-    rw [SeqMS.exps_length]
+    rw [Multiseries.exps_length]
     simp
 
 end
 
-theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
+theorem leadingTerm_length {basis : Basis} {ms : MultiseriesExpansion basis} :
     ms.leadingTerm.exps.length = basis.length := by
   simp [leadingTerm, exps_length]
 
-theorem SeqMS.exps_ne_nil {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
+theorem Multiseries.exps_ne_nil {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) :
     ms.exps ≠ [] := by
   cases ms with
   | nil => simp
@@ -150,38 +151,39 @@ theorem SeqMS.exps_ne_nil {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
     simp
 
 theorem leadingTerm_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)} :
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
     ms.leadingTerm.exps ≠ [] := by
-  simp [leadingTerm, SeqMS.exps_ne_nil]
+  simp [leadingTerm, Multiseries.exps_ne_nil]
 
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
-    {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} (t : ℝ) :
+    {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
+    (t : ℝ) :
     (leadingTerm (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)).toFun
       (basis_hd :: basis_tl) t =
     (basis_hd t) ^ exp * (leadingTerm coef).toFun basis_tl t := by
-  simp only [Term.toFun, leadingTerm, cons_realCoef, exps_eq_Seq_exps, mk_seq, SeqMS.cons_exps,
-    List.zip_cons_cons, List.foldl_cons]
+  simp only [Term.toFun, leadingTerm, cons_realCoef, exps_eq_Seq_exps, mk_seq,
+    Multiseries.cons_exps, List.zip_cons_cons, List.foldl_cons]
   conv =>
     congr <;> rw [Term.fold_eq_mul]
     lhs
     rw [mul_comm] -- why do I need these rws? Why ring_nf can't solve the goal?
   rw [← mul_assoc]
 
-theorem IsZero_of_leadingTerm_zero_coef {basis : Basis} {ms : PreMS basis} (h_trimmed : ms.Trimmed)
-    (h : ms.leadingTerm.coef = 0) : IsZero ms:= by
+theorem IsZero_of_leadingTerm_zero_coef {basis : Basis} {ms : MultiseriesExpansion basis}
+    (h_trimmed : ms.Trimmed) (h : ms.leadingTerm.coef = 0) : IsZero ms:= by
   cases basis with
   | nil => simpa [leadingTerm] using h
   | cons basis_hd basis_tl =>
     cases ms with
     | nil => simp
     | cons exp coef tl =>
-    simp only [leadingTerm, cons_realCoef, exps_eq_Seq_exps, mk_seq, SeqMS.cons_exps] at h
+    simp only [leadingTerm, cons_realCoef, exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps] at h
     replace h_trimmed := Trimmed_cons h_trimmed
     have : IsZero coef := IsZero_of_leadingTerm_zero_coef h_trimmed.left h
     simp [this] at h_trimmed
 
 /-- If `ms` is not zero, then eventually `ms.leadingTerm.toFun` is non-zero. -/
-theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
+theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_trimmed : ms.Trimmed) (h_ne_zero : ¬ IsZero ms)
     (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, ms.leadingTerm.toFun basis t ≠ 0 := by
@@ -201,8 +203,8 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
         (h_basis.tail)
       apply (coef_ih.and (basis_head_eventually_pos h_basis)).mono
       rintro t ⟨coef_ih, h_basis_hd_pos⟩
-      simp only [Term.toFun, leadingTerm, cons_realCoef, exps_eq_Seq_exps, mk_seq, SeqMS.cons_exps,
-        List.zip_cons_cons, List.foldl_cons, ne_eq]
+      simp only [Term.toFun, leadingTerm, cons_realCoef, exps_eq_Seq_exps, mk_seq,
+        Multiseries.cons_exps, List.zip_cons_cons, List.foldl_cons, ne_eq]
       simp only [Term.toFun] at coef_ih
       conv =>
         arg 1
@@ -220,7 +222,7 @@ mutual
   /-- If function `f` is approximated by `cons (exp, coef) tl` and `coef` approximates `fC`, then
   `f` is asymptotically equivalent to `fC * basis_hd ^ exp`. -/
   theorem IsEquivalent_coef {basis_hd f : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
-      {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+      {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
       (h_approx : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f))
       (h_wo : Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f))
       (h_coef_trimmed : coef.Trimmed)
@@ -241,7 +243,7 @@ mutual
       apply Asymptotics.isLittleO_zero -- should be simp lemma
     | cons tl_exp tl_coef tl_tl =>
       obtain ⟨_, h_tl_maj, _⟩ := Approximates_cons h_tl
-      simp only [SeqMS.leadingExp_cons, WithBot.coe_lt_coe] at h_comp
+      simp only [Multiseries.leadingExp_cons, WithBot.coe_lt_coe] at h_comp
       let exp' := (exp + tl_exp) / 2
       specialize h_tl_maj exp' (by simp only [exp']; linarith)
       apply IsLittleO.trans h_tl_maj
@@ -288,7 +290,7 @@ mutual
 
   /-- If `f` is approximated by trimmed multiseries `ms`, then it is asymptotically equivalent to
   `ms.leadingTerm.toFun`. -/
-  theorem IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis}
+  theorem IsEquivalent_leadingTerm {basis : Basis} {ms : MultiseriesExpansion basis}
       (h_wo : ms.Sorted)
       (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed)
       (h_basis : WellFormedBasis basis) :
@@ -304,8 +306,8 @@ mutual
       | nil =>
         have hF := Approximates_nil h_approx
         unfold leadingTerm
-        simp only [mk_toFun, realCoef, mk_seq, SeqMS.head_nil, exps_eq_Seq_exps, SeqMS.nil_exps,
-          List.length_cons, Term.zero_coef_toFun']
+        simp only [mk_toFun, realCoef, mk_seq, Multiseries.head_nil, exps_eq_Seq_exps,
+          Multiseries.nil_exps, List.length_cons, Term.zero_coef_toFun']
         apply EventuallyEq.isEquivalent (by assumption)
       | cons exp coef tl f =>
         obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
@@ -322,32 +324,18 @@ mutual
         exact coef_ih
 end
 
--- TODO: to another file
--- TODO: generalize
-lemma eventually_pos_of_IsEquivallent {l : Filter ℝ} {f g : ℝ → ℝ} (h : f ~[l] g)
-    (hg : ∀ᶠ t in l, 0 < g t) : ∀ᶠ x in l, 0 < f x := by
-  obtain ⟨φ, hφ_tendsto, h_eq⟩ := Asymptotics.IsEquivalent.exists_eq_mul h
-  have hφ : ∀ᶠ x in l, 1/2 < φ x := by
-    apply Filter.Tendsto.eventually_const_lt _ hφ_tendsto
-    linarith
-  apply ((h_eq.and hφ).and hg).mono
-  intro x ⟨⟨h_eq, hφ⟩, hg⟩
-  rw [h_eq]
-  simp
-  nlinarith
-
 /-- If `f` is approximated by `ms`, and `ms.leadingTerm.coef > 0`, then
 `f` is eventually positive. -/
-theorem eventually_pos_of_coef_pos {basis : Basis} {ms : PreMS basis}
+theorem eventually_pos_of_coef_pos {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_pos : 0 < ms.realCoef) (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, 0 < ms.toFun t := by
-  apply eventually_pos_of_IsEquivallent (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)
+  apply (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis).eventually_pos
   exact Term.toFun_pos h_basis h_pos
 
 /-- If `f` is approximated by `ms`, and `ms` is not zero, then
 `f` is eventually non-zero. -/
-theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : PreMS basis}
+theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_ne_zero : ¬ IsZero ms) (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, ms.toFun t ≠ 0 := by
@@ -460,7 +448,7 @@ theorem Term.IsLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Term}
   apply Term.IsLittleO_of_lt_exps h_basis <;> simpa [t2']
 
 theorem IsLittleO_of_lt_leadingTerm_left {left right : Basis}
-    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
+    {ms1 : MultiseriesExpansion (left ++ right)} {ms2 : MultiseriesExpansion right}
     (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
@@ -479,7 +467,7 @@ theorem IsLittleO_of_lt_leadingTerm_left {left right : Basis}
     exact IsZero_of_leadingTerm_zero_coef h_trimmed2 h2
 
 theorem IsLittleO_of_lt_leadingTerm_right {left right : Basis}
-    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
+    {ms1 : MultiseriesExpansion (left ++ right)} {ms2 : MultiseriesExpansion right}
     (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
@@ -499,7 +487,7 @@ theorem IsLittleO_of_lt_leadingTerm_right {left right : Basis}
 
 
 theorem IsLittleO_of_lt_leadingTerm {basis : Basis}
-    {ms1 ms2 : PreMS basis}
+    {ms1 ms2 : MultiseriesExpansion basis}
     (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
@@ -511,7 +499,7 @@ theorem IsLittleO_of_lt_leadingTerm {basis : Basis}
     h_trimmed2 h_basis h2 h_lt
 
 theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis} {f2 : ℝ → ℝ}
-    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
+    {ms1 : MultiseriesExpansion (left ++ right)} {ms2 : MultiseriesExpansion right}
     (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
@@ -538,7 +526,7 @@ theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis} {f2 : ℝ 
   rw [h_coef]
 
 theorem IsEquivalent_of_leadingTerm_zeros_append_mul_coef {left right : Basis}
-    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
+    {ms1 : MultiseriesExpansion (left ++ right)} {ms2 : MultiseriesExpansion right}
     {coef1 coef2 : ℝ} {exps1 exps2 : List ℝ}
     (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
@@ -572,7 +560,7 @@ theorem IsEquivalent_of_leadingTerm_zeros_append_mul_coef {left right : Basis}
   contrapose! h_coef
   simp [h_coef]
 
-theorem FirstIsPos_ne_zero {basis : Basis} {ms : PreMS basis}
+theorem FirstIsPos_ne_zero {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_pos : Term.FirstIsPos ms.exps) :
     ¬ IsZero ms := by
   intro h
@@ -581,102 +569,104 @@ theorem FirstIsPos_ne_zero {basis : Basis} {ms : PreMS basis}
     cases h_pos
   · apply Term.not_FirstIsPos_of_AllZero _ h_pos
     cases h with | nil f =>
-    simp only [exps_eq_Seq_exps, mk_seq, SeqMS.nil_exps, List.length_cons]
+    simp only [exps_eq_Seq_exps, mk_seq, Multiseries.nil_exps, List.length_cons]
     exact Term.AllZero_of_replicate
 
 @[simp]
 theorem const_realCoef {basis : Basis} {c : ℝ} :
-    (@PreMS.const basis c).realCoef = c := by
+    (@MultiseriesExpansion.const basis c).realCoef = c := by
   cases basis with
   | nil => simp [const, realCoef, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp only [realCoef, const, SeqMS.const, mk_seq, SeqMS.head_cons]
+    simp only [realCoef, const, Multiseries.const, mk_seq, Multiseries.head_cons]
     rw [const_realCoef]
 
 mutual
 
 @[simp]
-theorem SeqMS.const_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
-    (SeqMS.const basis_hd basis_tl c).exps = List.replicate (basis_hd :: basis_tl).length 0 := by
-  simp only [SeqMS.const, SeqMS.cons_exps, List.length_cons]
+theorem Multiseries.const_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
+    (Multiseries.const basis_hd basis_tl c).exps =
+      List.replicate (basis_hd :: basis_tl).length 0 := by
+  simp only [Multiseries.const, Multiseries.cons_exps, List.length_cons]
   rw [const_exps]
   simp [List.replicate_succ]
 
 @[simp]
 theorem const_exps {basis : Basis} {c : ℝ} :
-    (@PreMS.const basis c).exps = List.replicate basis.length 0 := by
+    (@MultiseriesExpansion.const basis c).exps = List.replicate basis.length 0 := by
   cases basis with
   | nil => simp
   | cons =>
     simp only [exps_eq_Seq_exps, const_seq, List.length_cons]
-    rw [SeqMS.const_exps]
+    rw [Multiseries.const_exps]
     simp
 
 end
 
 theorem const_leadingTerm_eq {basis : Basis} {c : ℝ} :
-    (@PreMS.const basis c).leadingTerm = ⟨c, List.replicate basis.length 0⟩ := by
+    (@MultiseriesExpansion.const basis c).leadingTerm = ⟨c, List.replicate basis.length 0⟩ := by
   simp [leadingTerm, const_realCoef, const_exps]
 
 theorem monomialRpow_realCoef {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
-    (@PreMS.monomialRpow basis n r).realCoef = 1 := by
+    (@MultiseriesExpansion.monomialRpow basis n r).realCoef = 1 := by
   cases basis with
   | nil => simp at h
   | cons basis_hd basis_tl =>
     cases n with
     | zero =>
-      simp [realCoef, SeqMS.monomialRpow, one, const_realCoef]
+      simp [realCoef, Multiseries.monomialRpow, one, const_realCoef]
     | succ n =>
-      simp [realCoef, SeqMS.monomialRpow, monomialRpow_realCoef (by simpa using h)]
+      simp [realCoef, Multiseries.monomialRpow, monomialRpow_realCoef (by simpa using h)]
 
 mutual
 
-theorem SeqMS.monomialRpow_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ}
+theorem Multiseries.monomialRpow_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ}
     (h : n < (basis_hd :: basis_tl).length) :
-    (SeqMS.monomialRpow basis_hd basis_tl n r).exps =
+    (Multiseries.monomialRpow basis_hd basis_tl n r).exps =
     List.replicate n 0 ++ r :: List.replicate ((basis_hd :: basis_tl).length - n - 1) 0 := by
   cases n with
-  | zero => simp [SeqMS.monomialRpow, one]
+  | zero => simp [Multiseries.monomialRpow, one]
   | succ n =>
-    simp only [SeqMS.monomialRpow, SeqMS.cons_exps, List.replicate_succ, List.length_cons,
-      Nat.reduceSubDiff, List.cons_append, List.cons.injEq, true_and]
+    simp only [Multiseries.monomialRpow, Multiseries.cons_exps, List.replicate_succ,
+      List.length_cons, Nat.reduceSubDiff, List.cons_append, List.cons.injEq, true_and]
     rw [monomialRpow_exps (by simpa using h)]
 
 theorem monomialRpow_exps {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
-    (@PreMS.monomialRpow basis n r).exps =
+    (@MultiseriesExpansion.monomialRpow basis n r).exps =
     List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0 := by
   cases basis with
   | nil => simp at h
   | cons basis_hd basis_tl =>
     simp only [exps_eq_Seq_exps, monomialRpow_seq, List.length_cons]
-    rw [SeqMS.monomialRpow_exps h]
+    rw [Multiseries.monomialRpow_exps h]
     simp
 
 end
 
 theorem monomialRpow_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) (r : ℝ) :
-    (@PreMS.monomialRpow basis n r).leadingTerm =
+    (@MultiseriesExpansion.monomialRpow basis n r).leadingTerm =
     ⟨1, List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0⟩ := by
   simp [leadingTerm, monomialRpow_realCoef h, monomialRpow_exps h]
 
 theorem monomial_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) :
-    (@PreMS.monomial basis n).leadingTerm =
+    (@MultiseriesExpansion.monomial basis n).leadingTerm =
       ⟨1, List.replicate n 0 ++ 1 :: List.replicate (basis.length - n - 1) 0⟩ :=
   monomialRpow_leadingTerm_eq h 1
 
-theorem extendBasisEnd_leadingTerm_eq {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis} :
+theorem extendBasisEnd_leadingTerm_eq {basis : Basis} {b : ℝ → ℝ}
+    {ms : MultiseriesExpansion basis} :
     (ms.extendBasisEnd b).leadingTerm = ⟨ms.leadingTerm.coef, ms.leadingTerm.exps ++ [0]⟩ := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp [extendBasisEnd, leadingTerm, const, SeqMS.const, ofReal]
+  · simp [extendBasisEnd, leadingTerm, const, Multiseries.const, ofReal]
   cases ms with
-  | nil f => simp [extendBasisEnd, leadingTerm, List.replicate_succ', SeqMS.extendBasisEnd]
+  | nil f => simp [extendBasisEnd, leadingTerm, List.replicate_succ', Multiseries.extendBasisEnd]
   | cons exp coef tl f =>
     have := extendBasisEnd_leadingTerm_eq (b := b) (ms := coef)
     simp [leadingTerm] at this
-    simp [extendBasisEnd, leadingTerm, SeqMS.extendBasisEnd, this]
+    simp [extendBasisEnd, leadingTerm, Multiseries.extendBasisEnd, this]
 
 lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
-    {ms : PreMS basis}
+    {ms : MultiseriesExpansion basis}
     (h_pos : Term.FirstIsPos ms.exps) :
     basis ≠ [] := by
   contrapose! h_pos
@@ -685,7 +675,7 @@ lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
   exact id
 
 theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
-    {ms : PreMS basis} (h_wo : ms.Sorted) (h_approx : ms.Approximates)
+    {ms : MultiseriesExpansion basis} (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
     (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] ms.toFun := by
   simp only [leadingTerm] at h_pos
@@ -693,16 +683,20 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   · simp only [const_exps'] at h_pos
     cases h_pos
   have h_basis' := insertLastLog_WellFormedBasis h_basis
-  let ms' : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
+  let ms' :
+      MultiseriesExpansion
+        (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
     ms.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp))
-  have h_wo' : ms'.Sorted := PreMS.extendBasisEnd_Sorted h_wo
-  have h_approx' : ms'.Approximates := PreMS.extendBasisEnd_Approximates h_basis' h_approx
+  have h_wo' : ms'.Sorted := MultiseriesExpansion.extendBasisEnd_Sorted h_wo
+  have h_approx' : ms'.Approximates :=
+    MultiseriesExpansion.extendBasisEnd_Approximates h_basis' h_approx
   have h_trimmed' : ms'.Trimmed := extendBasisEnd_Trimmed h_trimmed
   have h_toFun : ms'.toFun = ms.toFun := by
     simp [ms']
   let ms_log :
-      PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
-    PreMS.monomial _ (basis_tl.length + 1)
+      MultiseriesExpansion
+        (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
+    MultiseriesExpansion.monomial _ (basis_tl.length + 1)
   have h_log_wo : ms_log.Sorted := monomial_Sorted
   have h_log_approx : ms_log.Approximates :=
     monomial_Approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
@@ -740,7 +734,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
 --------------------------------
 
 -- TODO: remove assumptions here using `zero_of_leadingTerm_zero_coef`
-theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis}
+theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
@@ -754,7 +748,7 @@ theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis}
   rw [h_eq]
   apply Term.tendsto_zero_of_coef_zero _ h_coef
 
-theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+theorem tendsto_const_of_AllZero {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
     (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
@@ -772,7 +766,7 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {f : ℝ →
   · convert leadingTerm_length (ms := ms)
     simp [h_eq]
 
-theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : PreMS basis}
+theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     {t_coef : ℝ} {t_exps : List ℝ}
@@ -790,8 +784,8 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : PreMS basis}
   | cons exp coef tl f =>
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
     obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons h_approx
-    simp only [leadingTerm, realCoef, mk_seq, SeqMS.head_cons, exps_eq_Seq_exps, SeqMS.cons_exps,
-      Term.mk.injEq] at h_eq
+    simp only [leadingTerm, realCoef, mk_seq, Multiseries.head_cons, exps_eq_Seq_exps,
+      Multiseries.cons_exps, Term.mk.injEq] at h_eq
     simp only [← h_eq.right, Term.FirstIsNeg] at h_exps
     obtain h_neg | h_zero := h_exps
     · exact Majorated_tendsto_zero_of_neg h_neg h_maj
@@ -809,7 +803,7 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : PreMS basis}
       rfl
     simpa using Tendsto.add h_tl hC
 
-theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
     (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     {t_coef : ℝ} {t_exps : List ℝ}
@@ -820,7 +814,7 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ �
   rw [hf_eq]
   apply tendsto_zero_of_FirstIsNeg_aux h_wo h_approx h_eq h_exps
 
-theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
     (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
@@ -838,7 +832,7 @@ theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ �
   apply Term.tendsto_top_of_FirstIsPos h_basis leadingTerm_length
   all_goals simpa [leadingTerm, h_eq]
 
-theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
     (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
@@ -856,6 +850,6 @@ theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ �
   apply Term.tendsto_bot_of_FirstIsPos h_basis leadingTerm_length
   all_goals simpa [leadingTerm, h_eq]
 
-end PreMS
+end MultiseriesExpansion
 
 end ComputeAsymptotics

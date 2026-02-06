@@ -194,8 +194,8 @@ theorem basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0
 basis' head with zero exponent. -/
 theorem basis_tail_pow_Majorated_head {hd f : ℝ → ℝ} {tl : Basis}
     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
-    PreMS.Majorated (fun x ↦ (f x)^r) hd 0 := by
-  simp only [PreMS.Majorated]
+    MultiseriesExpansion.Majorated (fun x ↦ (f x)^r) hd 0 := by
+  simp only [MultiseriesExpansion.Majorated]
   intro exp h_exp
   apply basis_compare
   · apply (basis_eventually_pos h_basis.tail).mono
@@ -208,18 +208,11 @@ theorem basis_tail_pow_Majorated_head {hd f : ℝ → ℝ} {tl : Basis}
     tauto
   · exact h_exp
 
--- /-- Any function from well-formed basis' tail is Majorated by basis' head with zero exponent. -/
--- theorem basis_tail_Majorated_head {hd f : ℝ → ℝ} {tl : Basis}
---     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) :
---     PreMS.Majorated f hd 0 := by
---   convert basis_tail_pow_Majorated_head h_basis hf 1 using 1
---   ext t
---   simp
-
 /-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
-`ms : PreMS basis_tl`, then `fC` can be Majorated by `basis_hd` with zero exponent. -/
-theorem PreMS.Approximates_coef_Majorated_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS basis_tl} (h_approx : ms.Approximates)
+`ms : MultiseriesExpansion basis_tl`, then `fC` can be Majorated by `basis_hd` with zero
+exponent. -/
+theorem MultiseriesExpansion.Approximates_coef_Majorated_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : MultiseriesExpansion basis_tl} (h_approx : ms.Approximates)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorated ms.toFun basis_hd 0 := by
   cases basis_tl with

@@ -75,16 +75,17 @@ inductive CompareResult (f g : Q(ℝ → ℝ))
 | eq (c : Q(ℝ)) (hc : Q($c ≠ 0)) (h : Q($f ~[atTop] $c • $g))
 
 /-- Prove that a trimmed multiseries is not zero. -/
-def proveNeZero (ms : MS) : MetaM Q(¬ PreMS.IsZero $ms.val) := do
+def proveNeZero (ms : MS) : MetaM Q(¬ MultiseriesExpansion.IsZero $ms.val) := do
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "proveNeZero: unexpected basis"
-  let ~q(PreMS.mk (.cons $exp $coef $tl) $f) := ms.val | panic! "proveNeZero: unexpected val"
-  return q(PreMS.cons_not_IsZero)
+  let ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) := ms.val
+    | panic! "proveNeZero: unexpected val"
+  return q(MultiseriesExpansion.cons_not_IsZero)
 
 /-- Compare two trimmed multiseries. It assumes that `x.basis = ... ++ y.basis` and that `x` and
 `y` both are not `nil`s. -/
 def compare (x y : MS)
-    (hx_trimmed : Q(PreMS.Trimmed $x.val))
-    (hy_trimmed : Q(PreMS.Trimmed $y.val)) :
+    (hx_trimmed : Q(MultiseriesExpansion.Trimmed $x.val))
+    (hy_trimmed : Q(MultiseriesExpansion.Trimmed $y.val)) :
     TacticM <| CompareResult q(($x.val).toFun) q(($y.val).toFun) := do
   let left ← expressAsAppend x.basis y.basis
   haveI : $x.basis =Q $left ++ $y.basis := ⟨⟩; do
@@ -95,7 +96,7 @@ def compare (x y : MS)
   let n : Nat := (← computeLength x.basis) - (← computeLength y.basis)
   let zeros ← replicate n q(0 : ℝ)
   let y_exps' : Q(List ℝ) := ← reduceAppend (α := q(ℝ)) q($zeros) q($y_exps)
-  -- haveI : $x_exps =Q (PreMS.leadingTerm $x.val).exps := ⟨⟩; do
+  -- haveI : $x_exps =Q (MultiseriesExpansion.leadingTerm $x.val).exps := ⟨⟩; do
   haveI : $y_exps' =Q List.replicate (List.length $left) 0 ++ $y_exps := ⟨⟩
   do
   let res ← compareLists q($x_exps) q($y_exps')
@@ -103,20 +104,20 @@ def compare (x y : MS)
   | .lt h' =>
     let h : Q(($x.val).leadingTerm.exps < List.replicate (List.length $left) 0 ++
       ($y.val).leadingTerm.exps) := q($htx ▸ $hty ▸ $h')
-    let h_ne_zero : Q(¬ PreMS.IsZero $y.val) ← proveNeZero y
-    return .lt q(PreMS.IsLittleO_of_lt_leadingTerm_left $x.h_wo $y.h_wo $x.h_approx $y.h_approx
-      $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
+    let h_ne_zero : Q(¬ MultiseriesExpansion.IsZero $y.val) ← proveNeZero y
+    return .lt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_left $x.h_wo $y.h_wo
+      $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .gt h' =>
     let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps <
       ($x.val).leadingTerm.exps) := q($hty ▸ $htx ▸ $h')
-    let h_ne_zero : Q(¬ PreMS.IsZero $x.val) ← proveNeZero x
-    return .gt q(PreMS.IsLittleO_of_lt_leadingTerm_right $x.h_wo $y.h_wo $x.h_approx $y.h_approx
-      $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
+    let h_ne_zero : Q(¬ MultiseriesExpansion.IsZero $x.val) ← proveNeZero x
+    return .gt q(MultiseriesExpansion.IsLittleO_of_lt_leadingTerm_right $x.h_wo $y.h_wo
+      $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .eq h' =>
     let c : Q(ℝ) := q($x_coef / $y_coef)
     let hc' := ← CompareReal.proveNeZero c
     return .eq c q($hc')
-      q((PreMS.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
+      q((MultiseriesExpansion.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
       $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $htx $hty $hc' ($h').symm))
 
 end MS
@@ -156,13 +157,13 @@ lemma log_left_concat (left : Basis) {f last : ℝ → ℝ} (h : f =o[atTop] (Re
     ∀ g ∈ List.getLast? (left ++ [last]), f =o[atTop] (Real.log ∘ g) := by
   simpa
 
-open PreMS
+open MultiseriesExpansion
 
 lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
     {f' : ℝ → ℝ}
-    {ms : PreMS (left ++ right_hd :: right_tl)}
+    {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_wo : ms.Sorted) (h_approx : ms.Approximates)
-    (h_trimmed : PreMS.Trimmed ms)
+    (h_trimmed : MultiseriesExpansion.Trimmed ms)
     (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
     (h_coef : 0 < (ms.leadingTerm).coef)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
@@ -173,15 +174,16 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   apply WellFormedBasis.insert h_basis
   · apply Tendsto.comp Real.tendsto_exp_atTop
     apply h_equiv.tendsto_atTop
-    exact PreMS.tendsto_top_of_FirstIsPos h_wo h_approx h_trimmed h_basis rfl h_exps h_coef rfl
+    exact MultiseriesExpansion.tendsto_top_of_FirstIsPos h_wo h_approx h_trimmed h_basis rfl
+      h_exps h_coef rfl
   · exact log_congr_IsEquivalent_left left h_equiv h_left
   · exact log_congr_IsEquivalent_right' right_hd right_tl h_equiv h_right
 
 lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
     {f' : ℝ → ℝ}
-    {ms : PreMS (left ++ right_hd :: right_tl)}
+    {ms : MultiseriesExpansion (left ++ right_hd :: right_tl)}
     (h_wo : ms.Sorted) (h_approx : ms.Approximates)
-    (h_trimmed : PreMS.Trimmed ms)
+    (h_trimmed : MultiseriesExpansion.Trimmed ms)
     (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
     (h_coef : (ms.leadingTerm).coef < 0)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))

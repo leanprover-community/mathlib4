@@ -22,7 +22,7 @@ open Filter Asymptotics Topology
 
 namespace ComputeAsymptotics
 
-namespace PreMS
+namespace MultiseriesExpansion
 
 open LazySeries Stream'
 
@@ -119,13 +119,13 @@ theorem powSeries_toFun_eq' (a : ℝ) : (powSeries a).toFun =ᶠ[𝓝 0] (fun t 
 
 mutual
 
-/-- `SeqMS`-part of `PreMS.pow`. -/
-noncomputable def SeqMS.pow {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) (a : ℝ) :
-    SeqMS basis_hd basis_tl :=
+/-- `Multiseries`-part of `MultiseriesExpansion.pow`. -/
+noncomputable def Multiseries.pow {basis_hd basis_tl} (ms : Multiseries basis_hd basis_tl) (a : ℝ) :
+    Multiseries basis_hd basis_tl :=
   match ms.destruct with
   | none =>
     if a = 0 then
-      SeqMS.one
+      Multiseries.one
     else
       .nil
   | some (exp, coef, tl) =>
@@ -133,35 +133,39 @@ noncomputable def SeqMS.pow {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) (
       (coef.pow a) (exp * a)
 
 /-- Real power of a multiseries. -/
-noncomputable def pow {basis : Basis} (ms : PreMS basis) (a : ℝ) : PreMS basis :=
+noncomputable def pow {basis : Basis} (ms : MultiseriesExpansion basis) (a : ℝ) :
+    MultiseriesExpansion basis :=
   match basis with
   | [] => ofReal <| ms.toReal ^ a
-  | List.cons _ _ => mk (SeqMS.pow ms.seq a) (ms.toFun ^ a)
+  | List.cons _ _ => mk (Multiseries.pow ms.seq a) (ms.toFun ^ a)
 
 end
 
 /-- Natural power of a multiseries. -/
-noncomputable def npow {basis : Basis} (ms : PreMS basis) (a : ℕ) : PreMS basis :=
+noncomputable def npow {basis : Basis} (ms : MultiseriesExpansion basis) (a : ℕ) :
+    MultiseriesExpansion basis :=
   match basis with
   | [] => ofReal <| ms.toReal ^ a
   | List.cons _ _ => (ms.pow a).replaceFun (ms.toFun ^ a)
 
 /-- Integer power of a multiseries. -/
-noncomputable def zpow {basis : Basis} (ms : PreMS basis) (a : ℤ) : PreMS basis :=
+noncomputable def zpow {basis : Basis} (ms : MultiseriesExpansion basis) (a : ℤ) :
+    MultiseriesExpansion basis :=
   match basis with
   | [] => ofReal <| ms.toReal ^ a
   | List.cons _ _ => (ms.pow a).replaceFun (ms.toFun ^ a)
 
 @[simp]
-theorem pow_toFun {basis : Basis} {ms : PreMS basis} {a : ℝ} :
+theorem pow_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ} :
     (ms.pow a).toFun = ms.toFun ^ a := by
   cases basis with
   | nil => simp [pow, toReal]; rfl
   | cons basis_hd basis_tl => simp [pow]
 
 @[simp]
-theorem pow_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} {a : ℝ} :
-    (ms.pow a).seq = SeqMS.pow ms.seq a := by
+theorem pow_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {a : ℝ} :
+    (ms.pow a).seq = Multiseries.pow ms.seq a := by
   cases ms with
   | nil => simp [pow]
   | cons exp coef tl => simp [pow]
@@ -206,20 +210,21 @@ theorem powSeries_zero_toFun_eq : (powSeries 0).toFun = 1 := by
 
 mutual
 
-theorem SeqMS.neg_zpow {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : SeqMS basis_hd basis_tl} {a : ℤ} :
+theorem Multiseries.neg_zpow {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : Multiseries basis_hd basis_tl} {a : ℤ} :
     ms.neg.pow a = (ms.pow a).mulConst ((-1)^a) := by
   cases ms with
   | nil =>
-    conv_lhs => simp [SeqMS.pow]
-    split_ifs with ha <;> simp [SeqMS.pow, ha, SeqMS.one]
+    conv_lhs => simp [Multiseries.pow]
+    split_ifs with ha <;> simp [Multiseries.pow, ha, Multiseries.one]
   | cons exp coef tl =>
-    simp only [SeqMS.pow, SeqMS.neg_cons, SeqMS.destruct_cons]
-    rw [neg_zpow, SeqMS.mulMonomial_mulConst_right]
+    simp only [Multiseries.pow, Multiseries.neg_cons, Multiseries.destruct_cons]
+    rw [neg_zpow, Multiseries.mulMonomial_mulConst_right]
     congr 3
-    rw [neg_inv_comm, SeqMS.mulMonomial_neg_left, SeqMS.mulMonomial_neg_right, SeqMS.neg_neg]
+    rw [neg_inv_comm, Multiseries.mulMonomial_neg_left, Multiseries.mulMonomial_neg_right,
+      Multiseries.neg_neg]
 
-theorem neg_zpow {basis : Basis} {ms : PreMS basis} {a : ℤ} :
+theorem neg_zpow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ} :
     ms.neg.pow a = (ms.pow a).mulConst ((-1)^a) := by
   cases basis with
   | nil => simp [neg, pow, mulConst, ← mul_zpow, ofReal, toReal]
@@ -227,7 +232,7 @@ theorem neg_zpow {basis : Basis} {ms : PreMS basis} {a : ℤ} :
     simp only [ms_eq_ms_iff_mk_eq_mk, pow_seq, neg_seq, mulConst_seq, pow_toFun, neg_toFun,
       mulConst_toFun]
     constructor
-    · exact SeqMS.neg_zpow
+    · exact Multiseries.neg_zpow
     · ext t
       simp only [Pi.pow_apply, Pi.neg_apply, Real.rpow_intCast, Pi.smul_apply, smul_eq_mul]
       rw [neg_eq_neg_one_mul, mul_zpow]
@@ -236,25 +241,25 @@ end
 
 mutual
 
-theorem SeqMS.pow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : SeqMS basis_hd basis_tl} {a : ℝ} (h_wo : ms.Sorted) :
+theorem Multiseries.pow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : Multiseries basis_hd basis_tl} {a : ℝ} (h_wo : ms.Sorted) :
     (ms.pow a).Sorted := by
   cases ms with
   | nil =>
-    simp only [SeqMS.pow, SeqMS.destruct_nil]
+    simp only [Multiseries.pow, Multiseries.destruct_nil]
     split_ifs
-    · apply SeqMS.one_Sorted
+    · apply Multiseries.one_Sorted
     · apply Sorted.nil
   | cons exp coef tl =>
     obtain ⟨h_coef, h_comp, h_tl⟩ := Sorted_cons h_wo
-    simp only [SeqMS.pow, SeqMS.destruct_cons]
-    apply SeqMS.mulMonomial_Sorted
-    · apply SeqMS.powser_Sorted
-      · apply SeqMS.mulMonomial_Sorted
+    simp only [Multiseries.pow, Multiseries.destruct_cons]
+    apply Multiseries.mulMonomial_Sorted
+    · apply Multiseries.powser_Sorted
+      · apply Multiseries.mulMonomial_Sorted
         · exact h_tl
         · apply inv_Sorted
           exact h_coef
-      · simp only [SeqMS.mulMonomial_leadingExp]
+      · simp only [Multiseries.mulMonomial_leadingExp]
         generalize tl.leadingExp = w at *
         cases w with
         | bot => simp [Ne.bot_lt']
@@ -262,17 +267,17 @@ theorem SeqMS.pow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     · apply pow_Sorted
       exact h_coef
 
-theorem pow_Sorted {basis : Basis} {ms : PreMS basis} {a : ℝ}
+theorem pow_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
     (h_wo : ms.Sorted) : (ms.pow a).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
     simp only [Sorted_iff_Seq_Sorted, pow_seq] at *
-    apply SeqMS.pow_Sorted h_wo
+    apply Multiseries.pow_Sorted h_wo
 
 end
 
-theorem pow_zero_Approximates {basis : Basis} {ms : PreMS basis}
+theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     (h_basis : WellFormedBasis basis) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
     (ms.pow 0).Approximates := by
@@ -282,31 +287,31 @@ theorem pow_zero_Approximates {basis : Basis} {ms : PreMS basis}
     cases ms with
     | nil f =>
       apply Approximates_nil at h_approx
-      simp only [pow, mk_seq, SeqMS.pow, SeqMS.destruct_nil, ↓reduceIte, mk_toFun,
-        real_real_rpow_zero]
+      simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_nil, ↓reduceIte, mk_toFun,
+        Real.pi_rpow_zero]
       convert one_Approximates h_basis
-      simp [one, SeqMS.one]
+      simp [one, Multiseries.one]
       rfl
     | cons exp coef tl f =>
       apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
       obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
-      simp only [pow, mk_seq, SeqMS.pow, SeqMS.destruct_cons, mul_zero, mk_toFun,
-        real_real_rpow_zero]
+      simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_cons, mul_zero, mk_toFun,
+        Real.pi_rpow_zero]
       let ms := (((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).powser
         (powSeries 0)).mulMonomial (coef.pow 0) 0
       have h : ms.Approximates := by
         simp only [ms]
         apply mulMonomial_Approximates h_basis
         · apply powser_Approximates powSeries_convergent h_basis
-          · simp only [leadingExp_def, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_leadingExp]
+          · simp only [leadingExp_def, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_leadingExp]
             generalize tl.leadingExp = w at h_comp
             cases w with
             | bot => simp [Ne.bot_lt']
             | coe => simpa [← WithBot.coe_add] using h_comp
           · simp only [Sorted_iff_Seq_Sorted, mulMonomial_seq, mk_seq]
-            apply SeqMS.mulMonomial_Sorted h_tl_wo
+            apply Multiseries.mulMonomial_Sorted h_tl_wo
             apply inv_Sorted h_coef_wo
           · apply mulMonomial_Approximates h_basis h_tl
             apply inv_Approximates h_basis.tail h_coef_wo h_coef h_coef_trimmed
@@ -314,7 +319,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : PreMS basis}
       convert replaceFun_Approximates _ h
       simp [ms, powSeries_zero_toFun_eq]
 
-theorem pow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℝ}
+theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
     (h_basis : WellFormedBasis basis) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) (h_pos : 0 < ms.leadingTerm.coef) :
     (ms.pow a).Approximates := by
@@ -327,7 +332,7 @@ theorem pow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℝ}
     cases ms with
     | nil f =>
       apply Approximates_nil at h_approx
-      simp only [pow, mk_seq, SeqMS.pow, SeqMS.destruct_nil, mk_toFun]
+      simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_nil, mk_toFun]
       split_ifs
       apply Approximates.nil
       grw [h_approx]
@@ -340,20 +345,20 @@ theorem pow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℝ}
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
       obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
-      simp only [pow, mk_seq, SeqMS.pow, SeqMS.destruct_cons, mk_toFun]
+      simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_cons, mk_toFun]
       let ms := (((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).powser
         (powSeries a)).mulMonomial (coef.pow a) (exp * a)
       have h : ms.Approximates := by
         simp only [ms]
         apply mulMonomial_Approximates h_basis
         · apply powser_Approximates powSeries_convergent h_basis
-          · simp only [leadingExp_def, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_leadingExp]
+          · simp only [leadingExp_def, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_leadingExp]
             generalize tl.leadingExp = w at h_comp
             cases w with
             | bot => simp [Ne.bot_lt']
             | coe => simpa [← WithBot.coe_add] using h_comp
           · simp only [Sorted_iff_Seq_Sorted, mulMonomial_seq, mk_seq]
-            apply SeqMS.mulMonomial_Sorted h_tl_wo
+            apply Multiseries.mulMonomial_Sorted h_tl_wo
             apply inv_Sorted h_coef_wo
           · apply mulMonomial_Approximates h_basis h_tl
             apply inv_Approximates h_basis.tail h_coef_wo h_coef h_coef_trimmed
@@ -381,7 +386,7 @@ theorem pow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℝ}
           apply Asymptotics.IsEquivalent.congr_left _ this.symm
           apply IsEquivalent.div hF_equiv.symm
           rfl
-        apply eventually_pos_of_IsEquivallent hC_equiv
+        apply hC_equiv.eventually_pos
         apply (hF_pos.and h_basis_hd_pos).mono
         intro t ⟨hF_pos, h_basis_hd_pos⟩
         simp only [Pi.div_apply, gt_iff_lt]
@@ -408,7 +413,7 @@ theorem pow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℝ}
       · exact this
       · positivity
 
-theorem npow_eq_pow {basis : Basis} {ms : PreMS basis} {a : ℕ} :
+theorem npow_eq_pow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ} :
     (ms.npow a) = ms.pow a := by
   cases basis with
   | nil => simp [npow, pow, toReal]
@@ -417,7 +422,7 @@ theorem npow_eq_pow {basis : Basis} {ms : PreMS basis} {a : ℕ} :
     ext t
     simp
 
-theorem zpow_eq_pow {basis : Basis} {ms : PreMS basis} {a : ℤ} :
+theorem zpow_eq_pow {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ} :
     (ms.zpow a) = ms.pow a := by
   cases basis with
   | nil => simp [zpow, pow, toReal]
@@ -427,28 +432,28 @@ theorem zpow_eq_pow {basis : Basis} {ms : PreMS basis} {a : ℤ} :
     simp
 
 @[simp]
-theorem npow_toFun {basis : Basis} {ms : PreMS basis} {a : ℕ} :
+theorem npow_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ} :
     (ms.npow a).toFun = ms.toFun ^ a := by
   ext t
   simp [npow_eq_pow]
 
 @[simp]
-theorem zpow_toFun {basis : Basis} {ms : PreMS basis} {a : ℤ} :
+theorem zpow_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ} :
     (ms.zpow a).toFun = ms.toFun ^ a := by
   ext t
   simp [zpow_eq_pow]
 
-theorem npow_Sorted {basis : Basis} {ms : PreMS basis} {a : ℕ}
+theorem npow_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ}
     (h_wo : ms.Sorted) : (ms.npow a).Sorted := by
   rw [npow_eq_pow]
   apply pow_Sorted h_wo
 
-theorem zpow_Sorted {basis : Basis} {ms : PreMS basis} {a : ℤ}
+theorem zpow_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ}
     (h_wo : ms.Sorted) : (ms.zpow a).Sorted := by
   rw [zpow_eq_pow]
   apply pow_Sorted h_wo
 
-theorem zpow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℤ}
+theorem zpow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℤ}
     (h_basis : WellFormedBasis basis) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
     (ms.zpow a).Approximates := by
@@ -461,7 +466,7 @@ theorem zpow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℤ}
     | cons basis_hd basis_tl =>
       have h_fun := IsZero_Approximates_zero this h_approx
       simp only [IsZero_iff_seq_nil] at this
-      simp only [pow, this, SeqMS.pow, SeqMS.destruct_nil, Int.cast_eq_zero]
+      simp only [pow, this, Multiseries.pow, Multiseries.destruct_nil, Int.cast_eq_zero]
       split_ifs with ha
       · subst ha
         convert one_Approximates h_basis
@@ -482,7 +487,7 @@ theorem zpow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℤ}
     rw [h_eq]
     apply mulConst_Approximates h_neg_approx
 
-theorem npow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℕ}
+theorem npow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℕ}
     (h_basis : WellFormedBasis basis) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
     (ms.npow a).Approximates := by
@@ -490,7 +495,7 @@ theorem npow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℕ}
   apply zpow_Approximates h_basis h_wo h_approx h_trimmed
 
 
-theorem sqrt_of_pow_toFun {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+theorem sqrt_of_pow_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {f : ℝ → ℝ}
     (h : ms.toFun = (f ^ (1 / 2 : ℝ))) :
     ms.toFun =ᶠ[atTop] (Real.sqrt ∘ f) := by
   apply EventuallyEq.of_eq
@@ -498,6 +503,6 @@ theorem sqrt_of_pow_toFun {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
   ext t
   simp [Real.sqrt_eq_rpow]
 
-end PreMS
+end MultiseriesExpansion
 
 end ComputeAsymptotics

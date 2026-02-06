@@ -131,7 +131,7 @@ theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
     .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem map_id : map (id : α → α) = id :=
   Option.map_id
 

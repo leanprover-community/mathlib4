@@ -24,7 +24,7 @@ inductive LogBasis : Basis → Type
 | single (f : ℝ → ℝ) : LogBasis [f]
 | cons (basis_hd basis_tl_hd : ℝ → ℝ) (basis_tl_tl : Basis)
     (logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl))
-    (ms : PreMS (basis_tl_hd :: basis_tl_tl)) :
+    (ms : MultiseriesExpansion (basis_tl_hd :: basis_tl_tl)) :
     LogBasis (basis_hd :: basis_tl_hd :: basis_tl_tl)
 
 namespace LogBasis
@@ -47,28 +47,32 @@ theorem nil_WellFormed : WellFormed (.nil) := by simp [WellFormed]
 theorem single_WellFormed (f : ℝ → ℝ) : WellFormed (.single f) := by simp [WellFormed]
 
 theorem WellFormed_cons_Sorted {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
-    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
+    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)}
+    {ms : MultiseriesExpansion (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
     ms.Sorted := by
   simp only [WellFormed] at h
   exact h.left
 
 theorem WellFormed_cons_Approximates {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
-    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
+    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)}
+    {ms : MultiseriesExpansion (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
     ms.Approximates := by
   simp only [WellFormed] at h
   exact h.right.left
 
 theorem WellFormed_cons_Trimmed {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
-    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
+    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)}
+    {ms : MultiseriesExpansion (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
     ms.Trimmed := by
   simp only [WellFormed] at h
   exact h.right.right.left
 
 theorem WellFormed_cons_toFun {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
-    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
+    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)}
+    {ms : MultiseriesExpansion (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
     ms.toFun = Real.log ∘ basis_hd := by
   simp only [WellFormed] at h
@@ -95,7 +99,8 @@ theorem tail_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 approximating its logarithm. -/
 @[reducible]
 noncomputable def extendBasisMiddle {right_hd : ℝ → ℝ} {left right_tl : Basis} (f : ℝ → ℝ)
-    (logBasis : LogBasis (left ++ right_hd :: right_tl)) (ms : PreMS (right_hd :: right_tl)) :
+    (logBasis : LogBasis (left ++ right_hd :: right_tl))
+    (ms : MultiseriesExpansion (right_hd :: right_tl)) :
     LogBasis (left ++ f :: right_hd :: right_tl) :=
   match left with
   | [] => .cons _ _ _ logBasis ms
@@ -117,7 +122,7 @@ noncomputable def extendBasisMiddle {right_hd : ℝ → ℝ} {left right_tl : Ba
 approximating the logarithm of the last function in the current basis. -/
 @[reducible]
 noncomputable def extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
-    (logBasis : LogBasis (basis_hd :: basis_tl)) (ms : PreMS [f]) :
+    (logBasis : LogBasis (basis_hd :: basis_tl)) (ms : MultiseriesExpansion [f]) :
     LogBasis (basis_hd :: basis_tl ++ [f]) :=
   match logBasis with
   | .single _ => .cons _ _ _ (.single _) ms
@@ -131,17 +136,19 @@ the basis. -/
 noncomputable def insertLastLog {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (logBasis : LogBasis (basis_hd :: basis_tl)) :
     LogBasis ((basis_hd :: basis_tl) ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
-  logBasis.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)) (PreMS.monomial _ 0)
+  logBasis.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp))
+    (MultiseriesExpansion.monomial _ 0)
 
 -- TODO: rename and move
-theorem Approximates_log_basis_ne_zero {basis basis' : Basis} {ms : PreMS basis'} {f : ℝ → ℝ}
+theorem Approximates_log_basis_ne_zero {basis basis' : Basis}
+    {ms : MultiseriesExpansion basis'} {f : ℝ → ℝ}
     (h_basis : WellFormedBasis basis)
     (h_approx : ms.Approximates)
     (h_fun : ms.toFun = Real.log ∘ f)
     (hf : f ∈ basis) :
     ¬ ms.IsZero := by
   intro h
-  replace h := PreMS.IsZero_Approximates_zero h h_approx
+  replace h := MultiseriesExpansion.IsZero_Approximates_zero h h_approx
   rw [h_fun] at h
   have h_top : Tendsto (Real.log ∘ f) atTop atTop := by
     apply Tendsto.comp Real.tendsto_log_atTop
@@ -152,13 +159,14 @@ theorem Approximates_log_basis_ne_zero {basis basis' : Basis} {ms : PreMS basis'
   simp only [disjoint_self, Filter.NeBot.ne'] at this
 
 theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : Basis} {f : ℝ → ℝ}
-    {logBasis : LogBasis (left ++ right_hd :: right_tl)} {ms : PreMS (right_hd :: right_tl)}
+    {logBasis : LogBasis (left ++ right_hd :: right_tl)}
+    {ms : MultiseriesExpansion (right_hd :: right_tl)}
     (h_basis : WellFormedBasis (left ++ f :: right_hd :: right_tl))
     (h_wf : logBasis.WellFormed)
     (h_wo : ms.Sorted) (h_approx : ms.Approximates) (hf : ms.toFun = Real.log ∘ f)
     (h_trimmed : ms.Trimmed) :
     (logBasis.extendBasisMiddle f ms).WellFormed := by
-  simp only [PreMS.Sorted_iff_Seq_Sorted] at h_wo
+  simp only [MultiseriesExpansion.Sorted_iff_Seq_Sorted] at h_wo
   cases left with
   | nil =>
     cases logBasis with
@@ -170,17 +178,18 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
   cases left_tl with
   | nil =>
     cases logBasis with | cons _ _ _ logBasis_tl ms' =>
-    simp only [WellFormed, PreMS.Sorted_iff_Seq_Sorted] at h_wf
+    simp only [WellFormed, MultiseriesExpansion.Sorted_iff_Seq_Sorted] at h_wf
     simp only [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed,
-      PreMS.Sorted_iff_Seq_Sorted, PreMS.extendBasisMiddle_toFun, h_wf.right, h_wo,
+      MultiseriesExpansion.Sorted_iff_Seq_Sorted,
+      MultiseriesExpansion.extendBasisMiddle_toFun, h_wf.right, h_wo,
       h_approx, and_true, true_and]
     constructorm* _ ∧ _
-    · rw [← PreMS.Sorted_iff_Seq_Sorted]
-      apply PreMS.extendBasisMiddle_Sorted
+    · rw [← MultiseriesExpansion.Sorted_iff_Seq_Sorted]
+      apply MultiseriesExpansion.extendBasisMiddle_Sorted
       simp
       grind
-    · apply PreMS.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
-    · apply PreMS.extendBasisMiddle_Trimmed h_wf.right.right.left
+    · apply MultiseriesExpansion.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
+    · apply MultiseriesExpansion.extendBasisMiddle_Trimmed h_wf.right.right.left
       apply Approximates_log_basis_ne_zero h_basis h_wf.right.left (f := left_hd)
       · simp [h_wf]
       · left
@@ -191,19 +200,20 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     simp only [WellFormed, List.append_eq] at h_wf
     simp only [List.append_eq]
     constructor
-    · exact PreMS.extendBasisMiddle_Sorted h_wf.left
+    · exact MultiseriesExpansion.extendBasisMiddle_Sorted h_wf.left
     constructor
-    · exact PreMS.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
+    · exact MultiseriesExpansion.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
     constructor
-    · apply PreMS.extendBasisMiddle_Trimmed h_wf.right.right.left
+    · apply MultiseriesExpansion.extendBasisMiddle_Trimmed h_wf.right.right.left
       apply Approximates_log_basis_ne_zero h_basis h_wf.right.left (f := left_hd)
       · simp [h_wf]
       · left
-    · simp only [List.append_eq, PreMS.extendBasisMiddle_toFun, List.cons_append, h_wf, true_and]
+    · simp only [List.append_eq, MultiseriesExpansion.extendBasisMiddle_toFun,
+        List.cons_append, h_wf, true_and]
       exact extendBasisMiddle_WellFormed h_basis.tail (by grind) (by simpa) h_approx hf h_trimmed
 
 theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
-    {logBasis : LogBasis (basis_hd :: basis_tl)} {ms : PreMS [f]}
+    {logBasis : LogBasis (basis_hd :: basis_tl)} {ms : MultiseriesExpansion [f]}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl ++ [f]))
     (h_wf : logBasis.WellFormed)
     (h_wo : ms.Sorted)
@@ -220,12 +230,12 @@ theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f
     unfold extendBasisEnd
     simp only [WellFormed, List.append_eq]
     constructor
-    · exact PreMS.extendBasisEnd_Sorted h_wf.left
+    · exact MultiseriesExpansion.extendBasisEnd_Sorted h_wf.left
     constructor
-    · exact PreMS.extendBasisEnd_Approximates h_basis.tail h_wf.right.left
+    · exact MultiseriesExpansion.extendBasisEnd_Approximates h_basis.tail h_wf.right.left
     constructor
-    · exact PreMS.extendBasisEnd_Trimmed h_wf.right.right.left
-    · simp only [PreMS.extendBasisEnd_toFun, h_wf, true_and]
+    · exact MultiseriesExpansion.extendBasisEnd_Trimmed h_wf.right.right.left
+    · simp only [MultiseriesExpansion.extendBasisEnd_toFun, h_wf, true_and]
       apply extendBasisEnd_WellFormed h_basis.tail (by simp [h_wf]) h_wo h_approx hf h_trimmed
 
 theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -237,18 +247,19 @@ theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   apply extendBasisEnd_WellFormed
   · exact insertLastLog_WellFormedBasis h_basis
   · exact h_wf
-  · exact PreMS.monomial_Sorted
+  · exact MultiseriesExpansion.monomial_Sorted
   · have : WellFormedBasis [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)] := by
       apply WellFormedBasis.single
       apply Filter.Tendsto.comp Real.tendsto_log_atTop
       apply h_basis.right
       simp
-    exact PreMS.monomial_Approximates this (n := ⟨0, by simp⟩)
-  · simp only [PreMS.monomial, PreMS.monomialRpow, List.length_cons, List.length_nil, zero_add,
-    zero_lt_one, getElem!_pos, List.getElem_cons_zero, PreMS.mk_toFun]
+    exact MultiseriesExpansion.monomial_Approximates this (n := ⟨0, by simp⟩)
+  · simp only [MultiseriesExpansion.monomial, MultiseriesExpansion.monomialRpow,
+      List.length_cons, List.length_nil, zero_add,
+      zero_lt_one, getElem!_pos, List.getElem_cons_zero, MultiseriesExpansion.mk_toFun]
     ext t
     simp
-  · exact PreMS.monomial_Trimmed (by simp)
+  · exact MultiseriesExpansion.monomial_Trimmed (by simp)
 
 end LogBasis
 

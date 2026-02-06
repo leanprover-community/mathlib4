@@ -142,7 +142,7 @@ partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
   | (``LogBasis.single, _) => return logBasis
   | (``LogBasis.cons, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl_hd : Q(ℝ → ℝ)), (basis_tl_tl : Q(Basis)),
       (logBasis_tl : Q(LogBasis ($basis_tl_hd :: $basis_tl_tl))),
-      (ms : Q(PreMS ($basis_tl_hd :: $basis_tl_tl)))]) =>
+      (ms : Q(MultiseriesExpansion ($basis_tl_hd :: $basis_tl_tl)))]) =>
     have : $basis =Q $basis_hd :: $basis_tl_hd :: $basis_tl_tl := ⟨⟩
     let basis_tl_tl' ← reduceBasis basis_tl_tl
     let logBasis_tl' ← reduceLogBasis logBasis_tl
@@ -160,7 +160,7 @@ partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
   | (``LogBasis.extendBasisMiddle, #[(right_hd : Q(ℝ → ℝ)), (left : Q(Basis)),
       (right_tl : Q(Basis)), (f : Q(ℝ → ℝ)),
       (logBasis_arg : Q(LogBasis ($left ++ $right_hd :: $right_tl))),
-      (ms : Q(PreMS ($right_hd :: $right_tl)))]) =>
+      (ms : Q(MultiseriesExpansion ($right_hd :: $right_tl)))]) =>
     have : $basis =Q $left ++ $f :: $right_hd :: $right_tl := ⟨⟩
     let logBasis_arg' ← reduceLogBasis logBasis_arg
     have : $logBasis_arg' =Q $logBasis_arg := ⟨⟩
@@ -173,20 +173,20 @@ partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
         | ~q(LogBasis.cons _ _ _ $logBasis_tl $ms') =>
           return q(LogBasis.cons _ _ _
             (LogBasis.extendBasisMiddle (left := []) $f $logBasis_tl $ms)
-            (PreMS.extendBasisMiddle (left := []) $f $ms'))
+            (MultiseriesExpansion.extendBasisMiddle (left := []) $f $ms'))
         | _ => unreachable!
       | ~q(List.cons $left_tl_hd $left_tl_tl) =>
         match logBasis_arg' with
         | ~q(LogBasis.cons _ _ _ $logBasis_tl $ms') =>
           return q(LogBasis.cons $left_hd $left_tl_hd ($left_tl_tl ++ $f :: $right_hd :: $right_tl)
             (LogBasis.extendBasisMiddle (left := $left_tl_hd :: $left_tl_tl) $f $logBasis_tl $ms)
-            (PreMS.extendBasisMiddle (left := $left_tl_hd :: $left_tl_tl) $f $ms'))
+            (MultiseriesExpansion.extendBasisMiddle (left := $left_tl_hd :: $left_tl_tl) $f $ms'))
         | _ => unreachable!
       | _ => panic! "Unexpected left_tl in reduceLogBasis"
     | _ => panic! "Unexpected left in reduceLogBasis"
   | (``LogBasis.extendBasisEnd, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl : Q(Basis)), (f : Q(ℝ → ℝ)),
       (logBasis_arg : Q(LogBasis ($basis_hd :: $basis_tl))),
-      (ms : Q(PreMS ([$f])))]) =>
+      (ms : Q(MultiseriesExpansion ([$f])))]) =>
     have : $basis =Q $basis_hd :: $basis_tl ++ [$f] := ⟨⟩
     let logBasis_arg' ← reduceLogBasis logBasis_arg
     have : $logBasis_arg' =Q $logBasis_arg := ⟨⟩
@@ -194,14 +194,14 @@ partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
     | ~q(List.nil), ~q(LogBasis.single _) => return q(LogBasis.cons _ _ _ (.single _) $ms)
     | ~q(List.cons $basis_tl_hd $basis_tl_tl), ~q(LogBasis.cons _ _ _ $logBasis_tl $ms') =>
       return q(LogBasis.cons $basis_hd $basis_tl_hd ($basis_tl_tl ++ [$f])
-        (LogBasis.extendBasisEnd $f $logBasis_tl $ms) (PreMS.extendBasisEnd _ $ms'))
+        (LogBasis.extendBasisEnd $f $logBasis_tl $ms) (MultiseriesExpansion.extendBasisEnd _ $ms'))
     | _ => panic! "Unexpected basis_tl or logBasis_arg' in reduceLogBasis"
   | (``LogBasis.insertLastLog, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl : Q(Basis)),
       (logBasis_arg : Q(LogBasis ($basis_hd :: $basis_tl)))]) =>
     let .some lastElem ← getLast (α := q(ℝ → ℝ)) q($basis_hd :: $basis_tl) | unreachable!
     have : $basis =Q $basis_hd :: $basis_tl ++ [Real.log ∘ $lastElem] := ⟨⟩
     let logBasis' : Q(LogBasis $basis) := q(LogBasis.extendBasisEnd (Real.log ∘ $lastElem)
-      $logBasis_arg (PreMS.monomial [Real.log ∘ $lastElem] 0))
+      $logBasis_arg (MultiseriesExpansion.monomial [Real.log ∘ $lastElem] 0))
     reduceLogBasis logBasis'
   | _ => panic! "Unexpected logBasis in reduceLogBasis"
 

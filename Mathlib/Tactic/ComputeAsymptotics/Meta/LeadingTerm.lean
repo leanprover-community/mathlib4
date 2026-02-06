@@ -19,60 +19,64 @@ open Lean Meta Elab Tactic Qq
 namespace ComputeAsymptotics
 
 /-- Given a trimmed multiseries `ms`, computes its leading term. -/
-partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(Term) := do
+partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
+    MetaM Q(Term) := do
   match basis with
   | ~q(List.nil) =>
     return q(⟨$ms, List.nil⟩)
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
-    | ~q(PreMS.mk .nil $f) =>
+    | ~q(MultiseriesExpansion.mk .nil $f) =>
       return q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩)
-    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
+    | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       match ← getLeadingTerm coef with
       | ~q(⟨$coef_coef, $coef_exps⟩) =>
         return q(⟨$coef_coef, $exp :: $coef_exps⟩)
       | _ =>
-        return q(⟨Term.coef (PreMS.leadingTerm $coef), $exp :: Term.exps (PreMS.leadingTerm $coef)⟩)
+        return q(⟨Term.coef (MultiseriesExpansion.leadingTerm $coef),
+          $exp :: Term.exps (MultiseriesExpansion.leadingTerm $coef)⟩)
     | _ =>
-      return q(PreMS.leadingTerm $ms)
+      return q(MultiseriesExpansion.leadingTerm $ms)
   | _ => panic! "Unexpected basis in getLeadingTerm"
 
 /-- Given a trimmed multiseries `ms`, computes its leading term with a proof. -/
-partial def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
-    TacticM ((t : Q(Term)) × Q(PreMS.leadingTerm $ms = $t)) := do
+partial def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
+    TacticM ((t : Q(Term)) × Q(MultiseriesExpansion.leadingTerm $ms = $t)) := do
   match basis with
   | ~q(List.nil) =>
     let coef_t := q(($ms).toReal)
     let ⟨coef_t', h_coef_t_eq⟩ ← normalizeReal q($coef_t)
-    return ⟨q(⟨$coef_t', List.nil⟩), q($h_coef_t_eq ▸ PreMS.const_leadingTerm)⟩
+    return ⟨q(⟨$coef_t', List.nil⟩), q($h_coef_t_eq ▸ MultiseriesExpansion.const_leadingTerm)⟩
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
-    | ~q(PreMS.mk .nil $f) =>
+    | ~q(MultiseriesExpansion.mk .nil $f) =>
       return ⟨q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩),
-        q(PreMS.nil_leadingTerm)⟩
-    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
+        q(MultiseriesExpansion.nil_leadingTerm)⟩
+    | ~q(MultiseriesExpansion.mk (.cons $exp $coef $tl) $f) =>
       let ⟨coef_t, coef_h_eq⟩ ← getLeadingTermWithProof coef
       match coef_t with
       | ~q(⟨$coef_coef, $coef_exps⟩) =>
-        return ⟨q(⟨$coef_coef, $exp :: $coef_exps⟩), q(PreMS.cons_leadingTerm' $coef_h_eq)⟩
+        return ⟨q(⟨$coef_coef, $exp :: $coef_exps⟩),
+          q(MultiseriesExpansion.cons_leadingTerm' $coef_h_eq)⟩
       | _ =>
-        return ⟨q(⟨Term.coef (PreMS.leadingTerm $coef),
-          $exp :: Term.exps (PreMS.leadingTerm $coef)⟩), q(PreMS.cons_leadingTerm)⟩
+        return ⟨q(⟨Term.coef (MultiseriesExpansion.leadingTerm $coef),
+          $exp :: Term.exps (MultiseriesExpansion.leadingTerm $coef)⟩),
+          q(MultiseriesExpansion.cons_leadingTerm)⟩
     | _ =>
-      return ⟨q(PreMS.leadingTerm $ms), q(rfl)⟩
+      return ⟨q(MultiseriesExpansion.leadingTerm $ms), q(rfl)⟩
   | _ => panic! "Unexpected basis in getLeadingTerm"
 
 /-- Proves that the coefficient of the leading term of a trimmed multiseries is positive.
 Return `none` if cannot prove it. -/
-def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
-    TacticM (Option Q(0 < (PreMS.leadingTerm $ms).coef)) := do
+def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
+    TacticM (Option Q(0 < (MultiseriesExpansion.leadingTerm $ms).coef)) := do
   match basis with
   | ~q(List.nil) =>
     let .pos pf ← compareReal q(($ms).toReal) | return .none
     return .some pf
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
-    | ~q(PreMS.mk .nil $f) => return .none
+    | ~q(MultiseriesExpansion.mk .nil $f) => return .none
     | _ =>
       let ⟨rhs, h_eq⟩ ← getLeadingTermWithProof ms
       let ~q(⟨$coef, $exps⟩) := rhs | return .none

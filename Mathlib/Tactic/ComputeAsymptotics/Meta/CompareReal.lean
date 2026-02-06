@@ -39,10 +39,10 @@ inductive CompareResult (x : Q(Real))
 | zero (pf : Q($x = 0))
 
 open Mathlib.Meta.NormNum in
-/-- Normalize a real number using `norm_num` and `PreMS_const` simp lemmas. -/
+/-- Normalize a real number using `norm_num` and `MultiseriesExpansion_const` simp lemmas. -/
 def normalizeReal (x : Q(ℝ)) : TacticM <| (x' : Q(ℝ)) × Q($x = $x') := do
   let simpCtx ← Elab.Tactic.mkSimpContext
-    (← `(tactic| simp -failIfUnchanged only [PreMS_const])) false
+    (← `(tactic| simp -failIfUnchanged only [MultiseriesExpansion_const])) false
   let simpCtx := simpCtx.ctx
   let ⟨⟨(x1 : Q(ℝ)), pf1?, _⟩, _⟩ := ← simp x simpCtx
   let pf1 : Q($x = $x1) := pf1?.getD (← mkEqRefl x)
