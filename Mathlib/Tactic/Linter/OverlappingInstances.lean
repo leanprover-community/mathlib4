@@ -136,7 +136,7 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
         unless overlapsOnParent parentIdxs do
           -- If no overlap exists yet for `cls`, start by inserting `fvar₀`.
           -- Otherwise, we assume `fvar₀`, being the representative of `cls`, was already
-          -- inserted into the overlap when it was first populated.
+          -- inserted into the overlap when the overlap was first populated.
           unless overlaps.contains cls do
             overlaps := overlaps.pushAt cls (fvar₀, clsIsTypeOfFVar₀)
           overlaps := overlaps.pushAt cls (fvar, parentIdxs.isEmpty)
