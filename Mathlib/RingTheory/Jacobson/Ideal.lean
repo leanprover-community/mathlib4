@@ -240,7 +240,7 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
     by_cases r𝔪 : r ∈ 𝔪
     · apply 𝔪.smul_mem _ r𝔪
     -- 𝔪₀ := { a : R | a*r ∈ 𝔪 }
-    let 𝔪₀ : Ideal R := Submodule.comap (DistribMulAction.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
+    let 𝔪₀ : Ideal R := Submodule.comap (DistribSMul.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
     suffices x ∈ 𝔪₀ by simpa [𝔪₀] using this
     have I𝔪₀ : I ≤ 𝔪₀ := fun i iI =>
       𝔪_mem.left (I.mul_mem_right _ iI)

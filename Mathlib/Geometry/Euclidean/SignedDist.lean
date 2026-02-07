@@ -205,6 +205,29 @@ lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -
   rw [← neg_eq_iff_eq_neg, ← signedDist_neg, neg_vsub_eq_vsub_rev]
   apply signedDist_vsub_self
 
+lemma signedDist_lineMap_lineMap (c₁ c₂ : ℝ) :
+    signedDist v (AffineMap.lineMap p q c₁) (AffineMap.lineMap p q c₂) =
+      (c₂ - c₁) * signedDist v p q := by
+  trans c₂ * signedDist v p q + c₁ * signedDist v q p
+  · simp [AffineMap.lineMap_apply_ring']
+  · rw [sub_mul, ← signedDist_anticomm v p, mul_neg, sub_eq_add_neg]
+
+lemma signedDist_lineMap_left (c : ℝ) :
+    signedDist v (AffineMap.lineMap p q c) p = -c * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q c 0
+
+lemma signedDist_left_lineMap (c : ℝ) :
+    signedDist v p (AffineMap.lineMap p q c) = c * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q 0 c
+
+lemma signedDist_lineMap_right (c : ℝ) :
+    signedDist v (AffineMap.lineMap p q c) q = (1 - c) * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q c 1
+
+lemma signedDist_right_lineMap (c : ℝ) :
+    signedDist v q (AffineMap.lineMap p q c) = (c - 1) * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q 1 c
+
 end signedDist
 
 namespace AffineSubspace

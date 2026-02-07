@@ -103,19 +103,21 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
     ?_ (zero_mem _) (fun y z _ _ hy hz ↦ add_mem hy hz) (fun b y _ hy ↦ smul_mem _ b hy) hx, ?_⟩
   · rintro ⟨b, _, rfl⟩
     rw [Algebra.linearMap_apply, Algebra.algebraMap_eq_smul_one]
-    exact smul_mem _ _ <| subset_span ⟨1, by simp [one_mem_one]⟩
+    exact smul_mem _ _ <| subset_span ⟨1, by simpa using one_mem_one⟩
   · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact ⟨f a, ha, by rw [Algebra.linearMap_apply, Algebra.linearMap_apply, map_eq]⟩
 
 theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
   obtain ⟨J, rfl⟩ := le_one_iff_exists_coeIdeal.mp hI
   intro x hx
-  simp only [val_eq_coe, mem_coe, mem_extended_iff, mem_span_image_iff_exists_fun,
-    Finset.univ_eq_attach, coe_one] at hx ⊢
+  simp only [mem_extended_iff, mem_span_image_iff_exists_fun, Finset.univ_eq_attach] at hx
+  rw [← mem_coe, coe_one] -- TODO : FractionalIdeal.mem_one
   obtain ⟨s, hs, c, rfl⟩ := hx
-  refine Submodule.sum_smul_mem _ _ fun x h ↦ mem_one.mpr ?_
+  refine Submodule.sum_smul_mem (1 : Submodule B L) _ fun x h ↦ mem_one.mpr ?_
   obtain ⟨a, ha⟩ : ∃ a, (algebraMap A K) a = ↑x := by
-    simpa [val_eq_coe, coe_one, mem_one] using hI <| hs x.prop
+    have := hI <| hs x.prop
+    rw [← mem_coe, coe_one, mem_one] at this -- TODO : FractionalIdeal.mem_one
+    exact this
   exact ⟨f a, by rw [← ha, map_eq]⟩
 
 theorem one_le_extended_of_one_le (hI : 1 ≤ I) : 1 ≤ extended L hf I := by

@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
-import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Affine spaces
@@ -397,6 +397,21 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
 
+lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₁ p₂ r = p := by
+  constructor
+  · intro h
+    rw [← vsub_vadd p p₁, vadd_left_mem_affineSpan_pair] at h
+    obtain ⟨r, hr⟩ := h
+    refine ⟨r, ?_⟩
+    rw [← vsub_vadd p p₁, ← hr, AffineMap.lineMap_apply]
+  · rintro ⟨r, rfl⟩
+    exact AffineMap.lineMap_mem_affineSpan_pair _ _ _
+
+lemma mem_affineSpan_pair_iff_exists_lineMap_rev_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₂ p₁ r = p := by
+  rw [Set.pair_comm, mem_affineSpan_pair_iff_exists_lineMap_eq]
+
 end AffineSpace'
 
 namespace AffineSubspace
@@ -493,10 +508,15 @@ section
 
 variable (f : P₁ →ᵃ[k] P₂)
 
+/-- The affine version of `LinearMap.map_span`. -/
 @[simp]
-theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
+theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
+
+-- this name was backwards
+@[deprecated (since := "2026-01-20")]
+alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
 
 namespace AffineSubspace
 
@@ -549,7 +569,7 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) :
     (s.map f).direction = s.direction.map f.linear := by
-  simp [direction_eq_vectorSpan, AffineMap.vectorSpan_image_eq_submodule_map]
+  simp [direction_eq_vectorSpan, AffineMap.map_vectorSpan]
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)

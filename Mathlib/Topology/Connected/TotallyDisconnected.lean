@@ -169,6 +169,12 @@ instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [Topolo
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
   totallyDisconnectedSpace_subtype_iff.2 (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Additive α) :=
+  ‹TotallyDisconnectedSpace α›
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Multiplicative α) :=
+  ‹TotallyDisconnectedSpace α›
+
 end TotallyDisconnected
 
 section TotallySeparated
