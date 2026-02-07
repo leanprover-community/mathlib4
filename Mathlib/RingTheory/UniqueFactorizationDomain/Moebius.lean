@@ -23,13 +23,6 @@ We define the Moebius function on a unique factorization monoid.
 * `IsRelPrime.moebius_mul`: The Moebius function is a multiplicative function.
 
 -/
-
-
-/-!
-# The Moebius function on a unique factorization monoid
-
--/
-
 @[expose] public section
 
 namespace UniqueFactorizationMonoid
