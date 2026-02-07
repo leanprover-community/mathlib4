@@ -30,8 +30,8 @@ when the ideal `I` is finitely generated.
 * `AdicCompletion.pow_smul_top_eq_eval_ker`: `I ^ n • AdicCompletion I M` is exact the kernel
   of the evaluation map `eval I M n` when `I` is finitely generated.
 
-* `AdicCompletion.instIsAdicComplete`: The main instance showing that if `I` is finitely
-  generated, then `AdicCompletion I M` is `I`-adically complete.
+* `AdicCompletion.IsAdicComplete`: `AdicCompletion I M` is `I`-adically complete if `I` is
+  finitely generated.
 
 -/
 
@@ -214,8 +214,8 @@ theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
   exact ⟨u, by rw [powSmulTopInclusion, ← LinearMap.comp_apply, map_comp]; rfl⟩
 
 variable {I} in
-/-- `AdicCompletion I M` is complete when `I` is finitely generated. -/
-instance (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
+/-- `AdicCompletion I M` is adic complete when `I` is finitely generated. -/
+theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
   prec' x hx := by
     let L : AdicCompletion I M := {
       val i := (x i).val i
