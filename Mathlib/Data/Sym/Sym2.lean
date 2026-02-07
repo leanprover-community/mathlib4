@@ -660,16 +660,15 @@ def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
   z.hrec (fun p ↦ f p.fst p.snd)
     (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
 
-/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
-equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
-`Quot` version -/
-def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} (f : r →r r') :
-    fromRel sym ≃ Σ q : Quot r', fromRel <| sym.comap <| @Subtype.val α ((.mk r' · = q) ∘ f) where
+/-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
+fibers of `f` -/
+def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r ≤ Setoid.ker f) :
+    fromRel sym ≃ Σ b : β, fromRel <| sym.comap <| @Subtype.val α (f · = b) where
   toFun z := fromRelNdrec z.prop
-    (fun a b h ↦ ⟨.mk r' <| f a, s(⟨a, rfl⟩, ⟨b, (Quot.sound <| f.map_rel h).symm⟩), h⟩)
+    (fun a b h ↦ ⟨f a, s(⟨a, rfl⟩, ⟨b, (hf _ _ h).symm⟩), h⟩)
     fun a b h ↦ by
       dsimp only
-      rw! [Quot.sound <| f.map_rel h, eq_swap]
+      rw! [hf _ _ h, eq_swap]
       rfl
   invFun z := ⟨z.snd.val.map Subtype.val, mem_fromRel_comap sym .. |>.mp z.snd.prop⟩
   left_inv z := by
@@ -678,6 +677,13 @@ def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} 
   right_inv z := by
     rcases z with ⟨q, ⟨⟨a, rfl⟩, ⟨b, hb⟩⟩, h⟩
     rfl
+
+/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
+equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
+`Quot` version -/
+def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} (f : r →r r') :
+    fromRel sym ≃ Σ q : Quot r', fromRel <| sym.comap <| @Subtype.val α ((.mk r' · = q) ∘ f) :=
+  .sigmaFiberFromRel sym fun _ _ h ↦ Quot.sound <| f.map_rel h
 
 /-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
