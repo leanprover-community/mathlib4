@@ -270,28 +270,21 @@ lemma sup_mk (f g : ℕ →. ℕ) :
     (toAntisymmetrization TuringReducible g) =
     toAntisymmetrization TuringReducible (f ⊕ g) := rfl
 
-/-- Left injection into `sup`: \(a \le a ⊔ b\). -/
-lemma le_sup_left (a b : TuringDegree) : a ≤ TuringDegree.sup a b := by
-  induction a using Quotient.inductionOn'
-  induction b using Quotient.inductionOn'
-  exact left_le_join _ _
-
-/-- Right injection into `sup`: \(b \le a ⊔ b\). -/
-lemma le_sup_right (a b : TuringDegree) : b ≤ TuringDegree.sup a b := by
-  induction a using Quotient.inductionOn'
-  induction b using Quotient.inductionOn'
-  exact right_le_join _ _
-
-/-- Supremum property: if `a ≤ c` and `b ≤ c` then `a ⊔ b ≤ c`. -/
-lemma sup_le {a b c : TuringDegree} (ha : a ≤ c) (hb : b ≤ c) :
-    TuringDegree.sup a b ≤ c := by
-  induction a using Quotient.inductionOn'
-  induction b using Quotient.inductionOn'
-  induction c using Quotient.inductionOn'
-  exact join_le _ _ _ ha hb
-
-instance instSemilatticeSup : SemilatticeSup TuringDegree :=
-  { sup := sup, le_sup_left, le_sup_right, sup_le := fun _ _ _ => sup_le }
+instance instSemilatticeSup : SemilatticeSup TuringDegree where
+  sup := sup
+  le_sup_left a b := by
+    induction a using Quotient.inductionOn'
+    induction b using Quotient.inductionOn'
+    exact left_le_join _ _
+  le_sup_right a b := by
+    induction a using Quotient.inductionOn'
+    induction b using Quotient.inductionOn'
+    exact right_le_join _ _
+  sup_le {a b c} ha hb := by
+    induction a using Quotient.inductionOn'
+    induction b using Quotient.inductionOn'
+    induction c using Quotient.inductionOn'
+    exact join_le _ _ _ ha hb
 
 /-- The sup on Turing degrees agrees with the Turing join on representatives. -/
 @[simp]
