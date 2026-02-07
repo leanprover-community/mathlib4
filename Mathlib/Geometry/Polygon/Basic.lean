@@ -121,7 +121,7 @@ end Affine.Triangle
 namespace Polygon
 
 variable {R V P : Type*}
-variable [DivisionRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 variable (R) in
 /-- Convert a polygon with 3 nondegenerate vertices to an `Affine.Triangle`. -/
@@ -147,7 +147,7 @@ end Polygon
 namespace Affine.Triangle
 
 variable {R V P : Type*}
-variable [DivisionRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 /-- The polygon obtained from a triangle has nondegenerate vertices. -/
 theorem toPolygon_hasNondegenerateVertices (t : Affine.Triangle R P) :
