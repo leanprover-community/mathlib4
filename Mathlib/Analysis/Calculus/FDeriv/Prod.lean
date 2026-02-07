@@ -5,9 +5,10 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov, Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Const
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+import Mathlib.Analysis.Calculus.FDeriv.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Derivative of the Cartesian product of functions
@@ -29,16 +30,10 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable (e : E →L[𝕜] F)
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+variable {G' : Type*} [AddCommGroup G'] [Module 𝕜 G'] [TopologicalSpace G']
 
 section CartesianProduct
 
@@ -47,17 +42,24 @@ section CartesianProduct
 
 section Prod
 
+variable [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable (e : E →L[𝕜] F)
+variable {x : E}
+variable {s t : Set E}
+variable {L : Filter E}
 variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 
 protected theorem HasStrictFDerivAt.prodMk (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
     HasStrictFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
-  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
+  .of_isLittleOTVS <| hf₁.isLittleOTVS.prodMk hf₂.isLittleOTVS
 
 theorem HasFDerivAtFilter.prodMk (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
     HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
-  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
+  .of_isLittleOTVS <| hf₁.isLittleOTVS.prodMk hf₂.isLittleOTVS
 
 @[fun_prop]
 nonrec theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
@@ -69,16 +71,6 @@ nonrec theorem HasFDerivWithinAt.prodMk (hf₁ : HasFDerivWithinAt f₁ f₁' s 
 nonrec theorem HasFDerivAt.prodMk (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
   hf₁.prodMk hf₂
-
-@[fun_prop]
-theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
-    HasFDerivAt (fun e : E => (e, f₀)) (inl 𝕜 E F) e₀ :=
-  (hasFDerivAt_id e₀).prodMk (hasFDerivAt_const f₀ e₀)
-
-@[fun_prop]
-theorem hasFDerivAt_prodMk_right (e₀ : E) (f₀ : F) :
-    HasFDerivAt (fun f : F => (e₀, f)) (inr 𝕜 E F) f₀ :=
-  (hasFDerivAt_const e₀ f₀).prodMk (hasFDerivAt_id f₀)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.prodMk (hf₁ : DifferentiableWithinAt 𝕜 f₁ s x)
@@ -100,6 +92,9 @@ theorem Differentiable.prodMk (hf₁ : Differentiable 𝕜 f₁) (hf₂ : Differ
     Differentiable 𝕜 fun x : E => (f₁ x, f₂ x) := fun x ↦
   (hf₁ x).prodMk (hf₂ x)
 
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousAdd G]
+  [T2Space F] [T2Space G]
+
 theorem DifferentiableAt.fderiv_prodMk (hf₁ : DifferentiableAt 𝕜 f₁ x)
     (hf₂ : DifferentiableAt 𝕜 f₂ x) :
     fderiv 𝕜 (fun x : E => (f₁ x, f₂ x)) x = (fderiv 𝕜 f₁ x).prod (fderiv 𝕜 f₂ x) :=
@@ -113,9 +108,19 @@ theorem DifferentiableWithinAt.fderivWithin_prodMk (hf₁ : DifferentiableWithin
 
 end Prod
 
+@[fun_prop]
+theorem hasFDerivAt_prodMk_left (e₀ : E) (f₀ : F) :
+    HasFDerivAt (fun e : E => (e, f₀)) (inl 𝕜 E F) e₀ :=
+  .of_isLittleOTVS <| .congr_left (.zero _ _) <| by simp
+
+@[fun_prop]
+theorem hasFDerivAt_prodMk_right (e₀ : E) (f₀ : F) :
+    HasFDerivAt (fun f : F => (e₀, f)) (inr 𝕜 E F) f₀ :=
+  .of_isLittleOTVS <| .congr_left (.zero _ _) <| by simp
+
 section Fst
 
-variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
+variable {s : Set E} {x : E} {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F} {L : Filter E}
 
 @[fun_prop]
 theorem hasStrictFDerivAt_fst : HasStrictFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
@@ -124,34 +129,34 @@ theorem hasStrictFDerivAt_fst : HasStrictFDerivAt (@Prod.fst E F) (fst 𝕜 E F)
 @[fun_prop]
 protected theorem HasStrictFDerivAt.fst (h : HasStrictFDerivAt f₂ f₂' x) :
     HasStrictFDerivAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
-  hasStrictFDerivAt_fst.comp x h
+  (fst 𝕜 F G).comp_hasStrictFDerivAt h
 
 theorem hasFDerivAtFilter_fst {L : Filter (E × F)} :
-    HasFDerivAtFilter (@Prod.fst E F) (fst 𝕜 E F) p L :=
+    HasFDerivAtFilter Prod.fst (fst 𝕜 E F) p L :=
   (fst 𝕜 E F).hasFDerivAtFilter
 
 protected theorem HasFDerivAtFilter.fst (h : HasFDerivAtFilter f₂ f₂' x L) :
     HasFDerivAtFilter (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x L :=
-  hasFDerivAtFilter_fst.comp x h tendsto_map
+  (fst 𝕜 F G).comp_hasFDerivAtFilter h
 
 @[fun_prop]
 theorem hasFDerivAt_fst : HasFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
   hasFDerivAtFilter_fst
 
 @[fun_prop]
-protected nonrec theorem HasFDerivAt.fst (h : HasFDerivAt f₂ f₂' x) :
+protected theorem HasFDerivAt.fst (h : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
-  h.fst
+  HasFDerivAtFilter.fst h
 
 @[fun_prop]
 theorem hasFDerivWithinAt_fst {s : Set (E × F)} :
-    HasFDerivWithinAt (@Prod.fst E F) (fst 𝕜 E F) s p :=
+    HasFDerivWithinAt Prod.fst (fst 𝕜 E F) s p :=
   hasFDerivAtFilter_fst
 
 @[fun_prop]
-protected nonrec theorem HasFDerivWithinAt.fst (h : HasFDerivWithinAt f₂ f₂' s x) :
+protected theorem HasFDerivWithinAt.fst (h : HasFDerivWithinAt f₂ f₂' s x) :
     HasFDerivWithinAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') s x :=
-  h.fst
+  HasFDerivAtFilter.fst h
 
 @[fun_prop]
 theorem differentiableAt_fst : DifferentiableAt 𝕜 Prod.fst p :=
@@ -160,7 +165,7 @@ theorem differentiableAt_fst : DifferentiableAt 𝕜 Prod.fst p :=
 @[simp, fun_prop]
 protected theorem DifferentiableAt.fst (h : DifferentiableAt 𝕜 f₂ x) :
     DifferentiableAt 𝕜 (fun x => (f₂ x).1) x :=
-  differentiableAt_fst.comp x h
+  (fst 𝕜 F G).comp_differentiableAt h
 
 @[fun_prop]
 theorem differentiable_fst : Differentiable 𝕜 (Prod.fst : E × F → E) := fun _ =>
@@ -169,7 +174,7 @@ theorem differentiable_fst : Differentiable 𝕜 (Prod.fst : E × F → E) := fu
 @[simp, fun_prop]
 protected theorem Differentiable.fst (h : Differentiable 𝕜 f₂) :
     Differentiable 𝕜 fun x => (f₂ x).1 :=
-  differentiable_fst.comp h
+  (fst 𝕜 F G).comp_differentiable h
 
 @[fun_prop]
 theorem differentiableWithinAt_fst {s : Set (E × F)} : DifferentiableWithinAt 𝕜 Prod.fst s p :=
@@ -178,7 +183,7 @@ theorem differentiableWithinAt_fst {s : Set (E × F)} : DifferentiableWithinAt �
 @[fun_prop]
 protected theorem DifferentiableWithinAt.fst (h : DifferentiableWithinAt 𝕜 f₂ s x) :
     DifferentiableWithinAt 𝕜 (fun x => (f₂ x).1) s x :=
-  differentiableAt_fst.comp_differentiableWithinAt x h
+  (fst 𝕜 F G).comp_differentiableWithinAt h
 
 @[fun_prop]
 theorem differentiableOn_fst {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.fst s :=
@@ -187,20 +192,23 @@ theorem differentiableOn_fst {s : Set (E × F)} : DifferentiableOn 𝕜 Prod.fst
 @[fun_prop]
 protected theorem DifferentiableOn.fst (h : DifferentiableOn 𝕜 f₂ s) :
     DifferentiableOn 𝕜 (fun x => (f₂ x).1) s :=
-  differentiable_fst.comp_differentiableOn h
+  (fst 𝕜 F G).comp_differentiableOn h
 
-theorem fderiv_fst : fderiv 𝕜 Prod.fst p = fst 𝕜 E F :=
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
+
+theorem fderiv_fst [T2Space E] : fderiv 𝕜 Prod.fst p = fst 𝕜 E F :=
   hasFDerivAt_fst.fderiv
 
-theorem fderiv.fst (h : DifferentiableAt 𝕜 f₂ x) :
+theorem fderiv.fst [T2Space F] (h : DifferentiableAt 𝕜 f₂ x) :
     fderiv 𝕜 (fun x => (f₂ x).1) x = (fst 𝕜 F G).comp (fderiv 𝕜 f₂ x) :=
   h.hasFDerivAt.fst.fderiv
 
-theorem fderivWithin_fst {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
+theorem fderivWithin_fst [T2Space E] {s : Set (E × F)} (hs : UniqueDiffWithinAt 𝕜 s p) :
     fderivWithin 𝕜 Prod.fst s p = fst 𝕜 E F :=
   hasFDerivWithinAt_fst.fderivWithin hs
 
-theorem fderivWithin.fst (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableWithinAt 𝕜 f₂ s x) :
+theorem fderivWithin.fst [T2Space F] (hs : UniqueDiffWithinAt 𝕜 s x)
+    (h : DifferentiableWithinAt 𝕜 f₂ s x) :
     fderivWithin 𝕜 (fun x => (f₂ x).1) s x = (fst 𝕜 F G).comp (fderivWithin 𝕜 f₂ s x) :=
   h.hasFDerivWithinAt.fst.fderivWithin hs
 

@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 /-!
 # The derivative of bounded linear maps
@@ -14,8 +16,11 @@ public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 For detailed documentation of the Fréchet derivative,
 see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
-This file contains the usual formulas (and existence assertions) for the derivative of
-bounded linear maps.
+This file contains the usual formulas (and existence assertions)
+for the derivative of continuous linear maps, both bundled and unbundled.
+
+We also prove versions of the chain rule when one of the map is a continuous linear map,
+whenever they can be proved with fewer typeclass assumptions than the general chain rules.
 -/
 
 public section
@@ -27,10 +32,6 @@ namespace ContinuousLinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
-variable (f : E →L[𝕜] F)
-variable {x : E}
-variable {s : Set E}
-variable {L : Filter E}
 
 /-!
 ### Bundled continuous linear maps
@@ -40,6 +41,9 @@ There are currently two variants of these in mathlib, the bundled version
 and the unbundled version (with a predicate `IsBoundedLinearMap`, requires normed spaces).
 This section deals with the first form, see below for the unbundled version
 -/
+
+section Basic
+variable (f : E →L[𝕜] F) {x : E} {s : Set E} {L : Filter E}
 
 @[fun_prop]
 protected theorem hasStrictFDerivAt : HasStrictFDerivAt f f x :=
@@ -84,6 +88,69 @@ protected theorem fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 f s x = f := by
   rw [DifferentiableAt.fderivWithin f.differentiableAt hxs]
   exact f.fderiv
+
+end Basic
+
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+
+/-!
+### Chain rule for continuous linear maps
+
+The chain rule says that given two differentiable functions `g` and `f`,
+the function `g ∘ f` is differentiable too, with derivative `g' ∘L f'`.
+
+In the context of topological vector spaces,
+the chain rule needs all 3 spaces to be TVS, not just vector spaces with topology.
+It means that the addition and scalar multiplication need to be continuous.
+While we do not actually care about derivatives on non-TVS vector spaces with topology,
+the theorems below allow us to save a few typeclass instance searches
+compared to the generic chain rule.
+-/
+
+section CompLeft
+variable (g : F →L[𝕜] G) {f : E → F} {f' : E →L[𝕜] F} {s : Set E} {x : E} {L : Filter E}
+
+theorem comp_hasFDerivAtFilter (hf : HasFDerivAtFilter f f' x L) :
+    HasFDerivAtFilter (g ∘ f) (g ∘L f') x L :=
+  .of_isLittleOTVS <| by
+    simpa [Function.comp_def] using g.isBigOTVS_comp.trans_isLittleOTVS hf.isLittleOTVS
+
+theorem comp_hasStrictFDerivAt (hf : HasStrictFDerivAt f f' x) :
+    HasStrictFDerivAt (g ∘ f) (g ∘L f') x :=
+  .of_isLittleOTVS <| by
+    simpa [Function.comp_def] using g.isBigOTVS_comp.trans_isLittleOTVS hf.isLittleOTVS
+
+theorem comp_hasFDerivAt (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g ∘L f') x :=
+  g.comp_hasFDerivAtFilter hf
+
+theorem comp_hasFDerivWithinAt (hf : HasFDerivWithinAt f f' s x) :
+    HasFDerivWithinAt (g ∘ f) (g ∘L f') s x :=
+  g.comp_hasFDerivAtFilter hf
+
+theorem comp_differentiableWithinAt (hf : DifferentiableWithinAt 𝕜 f s x) :
+    DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
+  g.comp_hasFDerivWithinAt hf.hasFDerivWithinAt |>.differentiableWithinAt
+
+theorem comp_differentiableOn (hf : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (g ∘ f) s :=
+  fun x hx ↦ g.comp_differentiableWithinAt (hf x hx)
+
+theorem comp_differentiableAt (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (g ∘ f) x :=
+  g.comp_hasFDerivAt hf.hasFDerivAt |>.differentiableAt
+
+theorem comp_differentiable (hf : Differentiable 𝕜 f) : Differentiable 𝕜 (g ∘ f) :=
+  fun x ↦ g.comp_differentiableAt (hf x)
+
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd G] [ContinuousSMul 𝕜 G] [T2Space G]
+
+theorem fderiv_comp_left (hf : DifferentiableAt 𝕜 f x) : fderiv 𝕜 (g ∘ f) x = g ∘L fderiv 𝕜 f x :=
+  g.comp_hasFDerivAt hf.hasFDerivAt |>.fderiv
+
+theorem fderivWithin_comp_left (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (g ∘ f) s x = g ∘L fderivWithin 𝕜 f s x :=
+  g.comp_hasFDerivWithinAt hf.hasFDerivWithinAt |>.fderivWithin hs
+
+end CompLeft
 
 end ContinuousLinearMap
 
