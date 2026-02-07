@@ -478,7 +478,8 @@ theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
   dsimp at hn
-  rw [hn, ← map_expand_pow_char, frobenius_pow hn, RingHom.one_def, map_id]
+  rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
+    frobenius_pow hn, RingHom.one_def, map_id]
 
 end FiniteField
 
@@ -743,7 +744,7 @@ theorem Subfield.splits_bot :
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
-      (splits_bot F p).map_roots (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
+      (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield

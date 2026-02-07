@@ -32,7 +32,7 @@ A 1-form represented this way is closed
 iff its Fréchet derivative `dω : E → E →L[𝕜] E →L[𝕜] F` is symmetric, `dω a x y = dω a y x`.
 -/
 
-@[expose] public section
+public section
 
 open scoped unitInterval Interval Pointwise Topology
 open AffineMap Filter Function MeasureTheory Set
@@ -214,8 +214,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     · exact zero_le_one
     · exact s'
     · exact hs'c
-    · exact hηc.clm_apply continuousOn_const
-    · exact hηc.clm_apply continuousOn_const |>.neg
+    · fun_prop
+    · fun_prop
     · exact hf'
     · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']

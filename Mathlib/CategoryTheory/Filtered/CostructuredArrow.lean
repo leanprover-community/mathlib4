@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
 public import Mathlib.CategoryTheory.Limits.Final
@@ -20,7 +21,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

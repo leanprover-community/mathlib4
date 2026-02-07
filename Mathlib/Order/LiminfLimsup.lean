@@ -392,7 +392,7 @@ theorem HasBasis.limsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : 
   (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image]
 
 lemma limsSup_principal_eq_sSup (s : Set α) : limsSup (𝓟 s) = sSup s := by
-  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_csSup s
+  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_sSup s
 
 lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
   simpa only [limsInf, eventually_principal] using sSup_lowerBounds_eq_sInf s
@@ -706,7 +706,7 @@ theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
   simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
-  refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose! h
+  refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
   · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
   · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩

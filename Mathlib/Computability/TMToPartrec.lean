@@ -8,7 +8,7 @@ module
 public import Mathlib.Computability.Halting
 public import Mathlib.Computability.TuringMachine
 public import Mathlib.Data.Num.Lemmas
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
 public import Mathlib.Computability.TMConfig
 
 /-!
@@ -249,7 +249,7 @@ def peek' (k : K') : Stmt' → Stmt' :=
 /-- Push the value in the local store to the given stack. -/
 @[simp]
 def push' (k : K') : Stmt' → Stmt' :=
-  push k fun x => x.iget
+  push k fun x => x.getD default
 
 /-- Move everything from the `rev` stack to the `main` stack (reversed). -/
 def unrev :=
@@ -294,7 +294,7 @@ def tr : Λ' → Stmt'
       branch (fun s => s.elim true p) (goto fun _ => q)
         (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)
   | Λ'.push k f q =>
-    branch (fun s => (f s).isSome) ((push k fun s => (f s).iget) <| goto fun _ => q)
+    branch (fun s => (f s).isSome) ((push k fun s => (f s).getD default) <| goto fun _ => q)
       (goto fun _ => q)
   | Λ'.read q => goto q
   | Λ'.clear p k q =>
@@ -312,9 +312,9 @@ def tr : Λ' → Stmt'
     pop' main <|
       branch (fun s => s = some Γ'.bit0)
           ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
-        branch (fun s => natEnd s.iget) (goto fun _ => q₁)
+        branch (fun s => natEnd (s.getD default)) (goto fun _ => q₁)
           (peek' main <|
-            branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
+            branch (fun s => natEnd (s.getD default)) (goto fun _ => unrev q₂)
               ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))
   | Λ'.ret (Cont'.cons₁ fs k) =>
     goto fun _ =>
@@ -326,7 +326,8 @@ def tr : Λ' → Stmt'
   | Λ'.ret (Cont'.fix f k) =>
     pop' main <|
       goto fun s =>
-        cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
+        cond (natEnd (s.getD default)) (Λ'.ret k) <|
+          Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
   | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
 
 @[simp]
@@ -336,7 +337,7 @@ theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
 
 @[simp]
 theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
-    ((push k fun s => (f s).iget) <| goto fun _ => q) (goto fun _ => q) := rfl
+    ((push k fun s => (f s).getD default) <| goto fun _ => q) (goto fun _ => q) := rfl
 
 @[simp]
 theorem tr_read (q) : tr (Λ'.read q) = goto q := rfl
@@ -359,9 +360,9 @@ theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'
 @[simp]
 theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
     ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
-    branch (fun s => natEnd s.iget) (goto fun _ => q₁)
+    branch (fun s => natEnd (s.getD default)) (goto fun _ => q₁)
       (peek' main <|
-        branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
+        branch (fun s => natEnd (s.getD default)) (goto fun _ => unrev q₂)
           ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))) := rfl
 
 @[simp]
@@ -379,7 +380,8 @@ theorem tr_ret_comp (f k) : tr (Λ'.ret (Cont'.comp f k)) = goto fun _ => trNorm
 
 @[simp]
 theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s =>
-    cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
+    cond (natEnd (s.getD default)) (Λ'.ret k) <|
+      Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
 
 @[simp]
 theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
@@ -569,15 +571,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     swap
     · rw [Function.update_of_ne h₁.symm, List.reverseAux_nil]
     refine TransGen.head' rfl ?_
-    rw [tr]; simp only [pop', TM2.stepAux]
-    revert e; rcases S k₁ with - | ⟨a, Sk⟩ <;> intro e
-    · cases e
-      rfl
-    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
-    revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
-    simp only [e]
-    rfl
+    simp only [tr_move, pop', TM2.stepAux]
+    grind [splitAtPred.eq_def]
   | cons a L₁ IH =>
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', Option.elim, TM2.stepAux, push']
@@ -613,7 +608,8 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
     simp only [Function.update_of_ne h₁.2.2.symm, Function.update_of_ne h₁.2.1,
       Function.update_of_ne h₁.1.symm, List.reverseAux_eq, h₂, Function.update_self,
       List.append_nil, List.reverse_reverse]
-  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+  · simp only [Option.getD_some]
+    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_self,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
@@ -815,7 +811,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
       cases m <;> refine ⟨_, _, rfl, rfl⟩
     refine ⟨Γ'.bit0 :: l₁, _, some a, rfl, TransGen.single ?_⟩
     simp [trPosNum, PosNum.succ, e, h, show some Γ'.bit1 ≠ some Γ'.bit0 by decide,
-      Option.iget, -natEnd]
+      Option.getD, -natEnd]
     rfl
 
 theorem trNormal_respects (c k v s) :
@@ -884,9 +880,10 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
   | fix f k IH =>
     rw [stepRet]
     have :
-      if v.headI = 0 then natEnd (trList v).head?.iget = true ∧ (trList v).tail = trList v.tail
+      if v.headI = 0 then natEnd ((trList v).head?.getD default) = true ∧
+          (trList v).tail = trList v.tail
       else
-        natEnd (trList v).head?.iget = false ∧
+        natEnd ((trList v).head?.getD default) = false ∧
           (trList v).tail = (trNat v.headI).tail ++ Γ'.cons :: trList v.tail := by
       obtain - | n := v
       · exact ⟨rfl, rfl⟩
@@ -1139,7 +1136,7 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
   | fix =>
     rw [contSupp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
-    intro s; dsimp only; cases natEnd s.iget
+    intro s; dsimp only; cases natEnd (s.getD default)
     · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 

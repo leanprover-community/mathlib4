@@ -13,6 +13,7 @@ public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -144,9 +145,6 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
 @[rclike_simps]
 theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
-
-@[deprecated (since := "2025-05-29")]
-alias zero_re' := zero_re
 
 @[rclike_simps]
 theorem zero_im : im (0 : K) = (0 : ℝ) :=
@@ -359,6 +357,7 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
     _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
@@ -1154,6 +1153,20 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
   _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
+/-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
+@[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
+  toFun x := re x + im x * (I : 𝕜')
+  map_add' _ _ := by simp only [map_add, add_mul]; ring
+  map_smul' _ _ := by simp [real_smul_eq_coe_mul, mul_assoc]
+  cont := by fun_prop
+
+@[simp] theorem map_same_eq_id : map K K = .id ℝ K := by ext; simp
+
+@[simp] theorem map_to_real : map K ℝ = reCLM := by
+  ext; simp only [map_apply, I, mul_zero, add_zero]; rfl
+
+@[simp] theorem map_from_real : map ℝ K = ofRealCLM := by ext; simp
+
 end LinearMaps
 
 /-!
@@ -1182,7 +1195,7 @@ def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
 @[simps]
 noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
   map_smul' := smul_re
-  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
+  norm_map' z := by rw [← re_add_im z]; simp [-re_add_im, h]
   __ := realRingEquiv h
 
 end CaseSpecific

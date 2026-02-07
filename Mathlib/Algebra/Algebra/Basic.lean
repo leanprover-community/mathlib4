@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Int.CharZero
 
+import Mathlib.Algebra.Ring.Hom.InjSurj
+
 /-!
 # Further basic results about `Algebra`.
 
@@ -25,11 +27,11 @@ This file could usefully be split further.
 
 universe u v w u₁ v₁
 
-open Function
+open Function Module
 
 namespace Algebra
 
-variable {R : Type u} {A : Type w}
+variable {R A M : Type*}
 
 section Semiring
 
@@ -362,33 +364,6 @@ instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
 
 end FaithfulSMul
 
-namespace NoZeroSMulDivisors
-
--- see Note [lower instance priority]
-instance (priority := 100) instOfFaithfulSMul {R A : Type*}
-    [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A] [FaithfulSMul R A] :
-    NoZeroSMulDivisors R A :=
-  ⟨fun hcx => (mul_eq_zero.mp ((Algebra.smul_def _ _).symm.trans hcx)).imp_left
-    (map_eq_zero_iff (algebraMap R A) <| FaithfulSMul.algebraMap_injective R A).mp⟩
-
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
-
-instance [Nontrivial A] [NoZeroSMulDivisors R A] : FaithfulSMul R A where
-  eq_of_smul_eq_smul {r₁ r₂} h := by
-    specialize h 1
-    rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at h
-    exact h.resolve_right one_ne_zero
-
-theorem iff_faithfulSMul [IsDomain A] : NoZeroSMulDivisors R A ↔ FaithfulSMul R A :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
-
-theorem iff_algebraMap_injective [IsDomain A] :
-    NoZeroSMulDivisors R A ↔ Injective (algebraMap R A) := by
-  rw [iff_faithfulSMul]
-  exact faithfulSMul_iff_algebraMap_injective R A
-
-end NoZeroSMulDivisors
-
 section IsScalarTower
 
 variable {R : Type*} [CommSemiring R]
@@ -402,14 +377,9 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
-/-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [FaithfulSMul R A] [AddCommMonoid M] [Module R M] [Module A M]
-    [IsScalarTower R A M] [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
-  eq_zero_or_eq_zero_of_smul_eq_zero hx := by
-    rw [← algebraMap_smul (A := A)] at hx
-    simpa only [map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A] using
-      eq_zero_or_eq_zero_of_smul_eq_zero hx
+lemma isSMulRegular_algebraMap_iff {r : R} :
+    IsSMulRegular M (algebraMap R A r) ↔ IsSMulRegular M r :=
+  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul A r)
 
 variable {A}
 
@@ -425,8 +395,8 @@ instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M 
 instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 
--- see Note [lower instance priority]
-instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
+/-- This has high priority because it is almost always the right instance when it applies. -/
+instance (priority := high) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
 
@@ -442,22 +412,55 @@ theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a
 
 end IsScalarTower
 
-/-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
-to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
-are all defined in `LinearAlgebra/Basic.lean`. -/
+section FaithfulSMul
+variable (R S A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [FaithfulSMul R A]
 
-section Module
+lemma NoZeroDivisors.of_faithfulSMul [NoZeroDivisors A] : NoZeroDivisors R :=
+  (FaithfulSMul.algebraMap_injective R A).noZeroDivisors _ (by simp) (by simp)
 
-variable (R : Type*) {S M N : Type*} [Semiring R] [Semiring S] [SMul R S]
-variable [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+lemma IsCancelMulZero.of_faithfulSMul [IsCancelMulZero A] : IsCancelMulZero R :=
+  (FaithfulSMul.algebraMap_injective R A).isCancelMulZero _ (by simp) (by simp)
 
-@[simp]
-theorem LinearMap.ker_restrictScalars (f : M →ₗ[S] N) :
-    LinearMap.ker (f.restrictScalars R) = (LinearMap.ker f).restrictScalars R :=
-  rfl
+lemma IsDomain.of_faithfulSMul [IsDomain A] : IsDomain R :=
+  (FaithfulSMul.algebraMap_injective R A).isDomain
+
+lemma Module.IsTorsionFree.of_faithfulSMul [Semiring S] [Module S R] [Module S A]
+    [IsScalarTower S R A] [IsTorsionFree S A] : IsTorsionFree S R :=
+  (FaithfulSMul.algebraMap_injective R A).moduleIsTorsionFree _
+    (by simp [Algebra.algebraMap_eq_smul_one])
+
+lemma Module.IsTorsionFree.trans_faithfulSMul [Nontrivial R] [IsCancelMulZero A] [AddCommMonoid M]
+    [Module A M] [Module R M] [IsTorsionFree A M] [IsScalarTower R A M] : IsTorsionFree R M :=
+  .comap (algebraMap R A) (fun r hr ↦ .of_ne_zero <| by simpa using hr.ne_zero) (by simp)
+
+-- see Note [lower instance priority]
+instance (priority := 100) FaithfulSMul.to_isTorsionFree [Nontrivial R] [IsCancelMulZero A] :
+    IsTorsionFree R A := .trans_faithfulSMul R A A
+
+end FaithfulSMul
+
+namespace Module
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+
+instance (priority := 101) IsTorsionFree.to_faithfulSMul [IsCancelMulZero R] [Nontrivial A]
+    [IsTorsionFree R A] : FaithfulSMul R A where
+  eq_of_smul_eq_smul h := smul_left_injective _ one_ne_zero <| h 1
+
+variable [IsDomain R] [IsDomain A]
+
+lemma isTorsionFree_iff_faithfulSMul : IsTorsionFree R A ↔ FaithfulSMul R A :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+lemma isTorsionFree_iff_algebraMap_injective : IsTorsionFree R A ↔ Injective (algebraMap R A) := by
+  rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
 end Module
+
+@[deprecated (since := "2026-01-21")]
+alias NoZeroSMulDivisors.iff_algebraMap_injective := isTorsionFree_iff_algebraMap_injective
+
+@[deprecated (since := "2026-01-21")]
+alias NoZeroSMulDivisors.iff_faithfulSMul := isTorsionFree_iff_faithfulSMul
 
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=

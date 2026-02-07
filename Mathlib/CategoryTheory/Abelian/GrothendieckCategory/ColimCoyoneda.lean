@@ -18,7 +18,7 @@ that all the objects `X : C` are `κ`-presentable for some regular
 cardinal `κ`. However, we only prove a weaker result (which
 is enough in order to obtain the existence of enough
 injectives (TODO)): let `κ` be a big enough regular
-cardinal `κ` such that if `Y : J ⥤ C` is a functor from
+cardinal such that if `Y : J ⥤ C` is a functor from
 a `κ`-filtered category, and `c : Cocone Y` is a colimit cocone,
 then the map from the colimit of the types `X ⟶ Y j` to
 `X ⟶ c.pt` is injective, and it is bijective under the
@@ -76,7 +76,7 @@ def g : (Functor.const _).obj X ⟶ Under.forget j₀ ⋙ Y where
     simp only [Category.id_comp, Category.assoc, ← Functor.map_comp, Under.w]
 
 /-- The obvious morphism `colimit (kernel (g y)) ⟶ X` (which is an epimorphism
-if `J` is filtered, see `epi_f`.). -/
+if `J` is filtered, see `epi_f`). -/
 noncomputable def f : colimit (kernel (g y)) ⟶ X :=
   IsColimit.map (colimit.isColimit _) (constCocone _ X) (kernel.ι _)
 

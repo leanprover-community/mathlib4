@@ -37,6 +37,9 @@ protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.isInducing.secondCountableTopology
 
+protected theorem baireSpace [BaireSpace X] (f : X ≃ₜ Y) : BaireSpace Y :=
+  f.isOpenQuotientMap.baireSpace
+
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
 @[simp]
 theorem isCompact_image {s : Set X} (h : X ≃ₜ Y) : IsCompact (h '' s) ↔ IsCompact s :=
@@ -552,3 +555,11 @@ lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalS
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsHomeomorph (f i)) :
     IsHomeomorph (fun (x : ∀ i, X i) i ↦ f i (x i)) :=
   (Homeomorph.piCongrRight fun i ↦ (h i).homeomorph (f i)).isHomeomorph
+
+/-- A bijection between discrete topological spaces induces a homeomorphism. -/
+def Homeomorph.ofDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y) : X ≃ₜ Y where
+  toEquiv := f
+
+theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
+    (f : X ≃ Y) : IsHomeomorph f :=
+  (Homeomorph.ofDiscrete f).isHomeomorph

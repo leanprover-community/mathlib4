@@ -590,10 +590,14 @@ lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
 lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
-@[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
+
+theorem TopologicalSpace.prod_mono {α β : Type*} {σ₁ σ₂ : TopologicalSpace α}
+    {τ₁ τ₂ : TopologicalSpace β} (hσ : σ₁ ≤ σ₂) (hτ : τ₁ ≤ τ₂) :
+    @instTopologicalSpaceProd α β σ₁ τ₁ ≤ @instTopologicalSpaceProd α β σ₂ τ₂ :=
+  le_inf (inf_le_left.trans <| induced_mono hσ) (inf_le_right.trans <| induced_mono hτ)
 
 -- Homeomorphisms between the various product: products of two homeomorphisms,
 -- as well as commutativity and associativity. See below for the analogous results for sums,

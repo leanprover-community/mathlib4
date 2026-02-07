@@ -39,7 +39,7 @@ An API needs to be built around that concept, which would include:
 and so on.
 -/
 
-@[expose] public section
+public section
 
 
 open Real

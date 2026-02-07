@@ -62,7 +62,7 @@ theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
   rw [← inner_conj_symm]
   exact star_eq_zero
 
-instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
+instance {ι : Sort*} (v : ι → E) : Std.Symm fun i j => ⟪v i, v j⟫ = 0 where
   symm _ _ := inner_eq_zero_symm.1
 
 theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by
@@ -120,42 +120,60 @@ theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * �
 theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_right, Algebra.smul_def]
 
-/-- The inner product as a sesquilinear form.
+
+variable (𝕜)
+
+/-- The inner product as a sesquilinear map.
 
 Note that in the case `𝕜 = ℝ` this is a bilinear form. -/
-@[simps!]
-def sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜 :=
-  LinearMap.mk₂'ₛₗ (RingHom.id 𝕜) (starRingEnd _) (fun x y => ⟪y, x⟫)
-    (fun _x _y _z => inner_add_right _ _ _) (fun _r _x _y => inner_smul_right _ _ _)
-    (fun _x _y _z => inner_add_left _ _ _) fun _r _x _y => inner_smul_left _ _ _
+def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
+  LinearMap.mk₂'ₛₗ _ _ (fun v w => ⟪v, w⟫) inner_add_left (fun _ _ _ => inner_smul_left _ _ _)
+    inner_add_right fun _ _ _ => inner_smul_right _ _ _
 
-/-- The real inner product as a bilinear form.
+@[simp]
+theorem coe_innerₛₗ_apply (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
+  rfl
 
-Note that unlike `sesqFormOfInner`, this does not reverse the order of the arguments. -/
-@[simps!]
-def bilinFormOfRealInner : BilinForm ℝ F := sesqFormOfInner.flip
+@[simp]
+theorem innerₛₗ_apply_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
+  rfl
+
+variable (F)
+/-- The inner product as a bilinear map in the real case. -/
+def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
+
+@[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
+  ext v w
+  exact real_inner_comm v w
+
+variable {F}
+
+@[simp] lemma innerₗ_apply_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
+
+variable {𝕜}
+
+@[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
+@[deprecated (since := "2025-12-26")] alias bilinFormOfRealInner := innerₗ
 
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪∑ i ∈ s, f i, x⟫ = ∑ i ∈ s, ⟪f i, x⟫ :=
-  map_sum (sesqFormOfInner (𝕜 := 𝕜) (E := E) x) _ _
+  map_sum ((innerₛₗ 𝕜).flip x) _ _
 
 /-- An inner product with a sum on the right. -/
 theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪x, ∑ i ∈ s, f i⟫ = ∑ i ∈ s, ⟪x, f i⟫ :=
-  map_sum (LinearMap.flip sesqFormOfInner x) _ _
+  map_sum (innerₛₗ 𝕜 x) _ _
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
-protected theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
-  convert sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
-  simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
+protected theorem Finsupp.sum_inner {ι : Type*} {M : Type*} [Zero M] (l : ι →₀ M)
+    (v : ι → M → E) (x : E) : ⟪l.sum v, x⟫ = l.sum fun (i : ι) (a : M) ↦ ⟪v i a, x⟫ := by
+  simp [sum, sum_inner]
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
-protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
-  convert inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
-  simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
+protected theorem Finsupp.inner_sum {ι : Type*} {M : Type*} [Zero M] (l : ι →₀ M)
+    (v : ι → M → E) (x : E) : ⟪x, l.sum v⟫ = l.sum fun (i : ι) (a : M) ↦ ⟪x, v i a⟫ := by
+  simp [sum, inner_sum]
 
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)

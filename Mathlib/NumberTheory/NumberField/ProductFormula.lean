@@ -31,7 +31,7 @@ ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 number field, embeddings, places, infinite places, finite places, product formula
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField
 

@@ -18,7 +18,7 @@ If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/�
 holomorphic on the ball.  This implies in particular that harmonic functions are real-analytic.
 -/
 
-@[expose] public section
+public section
 
 open Complex InnerProductSpace Metric Topology
 

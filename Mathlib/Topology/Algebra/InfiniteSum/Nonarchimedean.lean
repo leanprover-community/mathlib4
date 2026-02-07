@@ -25,7 +25,7 @@ sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
