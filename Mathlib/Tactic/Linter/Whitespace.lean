@@ -165,13 +165,13 @@ def parallelScanAux (as : Array FormatError) (L M : String.Slice) : Array Format
   if let (some newL, some newM) := (L.dropPrefix? "/--", M.dropPrefix? "/--") then
     parallelScanAux as newL newM
   else if L.startsWith "--" then
-    let mut diff := 0
-    let mut pos := L.startPos
-    for (⟨currPos, h⟩, currDiff) in L.positions.zip ((0 : Nat)...*).iter do
-      diff := currDiff
-      pos := currPos
-      if currPos.get h == ' ' then
-        break
+    let (pos, diff) := Id.run do
+      let mut diff := 0
+      for ⟨pos, h⟩ in L.positions do
+        if pos.get h == '\n' then
+          return (pos, diff)
+        diff := diff + 1
+      return (L.endPos, diff)
 
     let newL := L.sliceFrom pos
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
