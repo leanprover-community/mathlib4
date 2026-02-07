@@ -749,10 +749,16 @@ theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff
 
+@[deprecated Asymptotics.IsEquivalent.summable_iff (since := "2026-02-07")]
+alias IsEquivalent.summable_iff := Asymptotics.IsEquivalent.summable_iff
+
 theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) :
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff_nat
+
+@[deprecated Asymptotics.IsEquivalent.summable_iff_nat (since := "2026-02-07")]
+alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 
 namespace Module.Basis
 
