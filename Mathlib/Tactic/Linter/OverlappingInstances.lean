@@ -20,7 +20,7 @@ open Lean Meta Elab Command
 
 public meta section
 
-namespace Mathlib.Tactic.OverlappingInstances
+namespace Mathlib.Linter.OverlappingInstances
 
 /--
 Given an instance `e`, compute all data carrying classes that are
@@ -229,4 +229,4 @@ def overlappingInstances : Linter where
 
 initialize addLinter overlappingInstances
 
-end Mathlib.Tactic.OverlappingInstances
+end Mathlib.Linter.OverlappingInstances
