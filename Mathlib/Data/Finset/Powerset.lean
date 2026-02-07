@@ -321,12 +321,12 @@ lemma card_fnBool {ι : Type*} [DecidableEq ι] [Fintype ι] {k : ℕ} :
   exact (arrowBoolEquivFinset_mem_powersetCard_iff k i).symm
 
 lemma card_listVector_card {k n : ℕ} :
-    #{v : List.Vector Bool n | v.val.count true = k} = n.choose k := by
+    #{v : List.Vector Bool n | v.toList.count true = k} = n.choose k := by
   rw [← card_fin n, ← card_fnBool, card_fin n]
   apply card_equiv (Equiv.vectorEquivFin _ n) (fun v ↦ ?_)
   simp only [mem_filter, mem_univ, true_and, Equiv.vectorEquivFin, Equiv.coe_fn_mk]
   refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← List.count_ofFn_eq_card _ _ true] <;> congr <;>
-  rw [← List.ofFn_get (l :=  v.1)] <;> aesop
+  rw [← List.ofFn_get (l :=  v.toList)] <;> aesop
 
 end powersetCard
 
