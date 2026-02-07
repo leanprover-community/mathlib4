@@ -419,7 +419,7 @@ end NoZeroDivisors
   simp [((Commute.neg_one_left _).pow_left _).eq, h]
 
 @[simp]
-theorem comp_neg_X_eq_zero [Ring R] {p : R[X]} : p.comp (-X) = 0 ↔ p = 0 := by
+theorem comp_neg_X_eq_zero_iff [Ring R] {p : R[X]} : p.comp (-X) = 0 ↔ p = 0 := by
   simp [← leadingCoeff_eq_zero]
 
 lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
