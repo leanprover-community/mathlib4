@@ -52,7 +52,13 @@ partial def normalizeLS (s : Q(LazySeries)) : TacticM (ResultLS s) := do
   | ~q(Seq.cons $hd $tl) =>
     return ← ResultLS.consNormalize q($hd) q($tl) q(rfl)
   | ~q(invSeries) =>
-    return ← ResultLS.consNormalize q(1) q(invSeries) q(invSeries_eq_cons_self)
+    return ← ResultLS.consNormalize q(1) q(invSeriesFrom true) q(invSeries_eq_cons)
+  | ~q(invSeriesFrom $b) =>
+    match b with
+    | ~q(false) =>
+      return ← ResultLS.consNormalize q(1) q(invSeriesFrom true) q(invSeriesFrom_false_eq_cons)
+    | ~q(true) =>
+      return ← ResultLS.consNormalize q(-1) q(invSeriesFrom false) q(invSeriesFrom_true_eq_cons)
   | ~q(powSeriesFrom $x $acc $n) =>
     return ← ResultLS.consNormalize q($acc)
       q(MultiseriesExpansion.powSeriesFrom $x ($acc * ($x - $n) / ($n + 1)) ($n + 1))
@@ -288,7 +294,7 @@ lemma inv_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : Multiseries bas
     {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : ms = .cons exp coef tl) :
     ms.inv = .mulMonomial
-      ((tl.neg.mulMonomial coef.inv (-exp)).powser invSeries) coef.inv (-exp) := by
+      ((tl.mulMonomial coef.inv (-exp)).powser invSeries) coef.inv (-exp) := by
   subst h
   simp [Multiseries.inv]
 
@@ -499,7 +505,7 @@ partial def normalizeMultiseries {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis
     | .cons exp coef tl h =>
       let ms' : Q(Multiseries $basis_hd $basis_tl) :=
         q(Multiseries.mulMonomial
-          (((Multiseries.neg $tl).mulMonomial ($coef).inv (-$exp)).powser invSeries)
+          ((($tl).mulMonomial ($coef).inv (-$exp)).powser invSeries)
           ($coef).inv (-$exp))
       let res' ← normalizeMultiseries ms'
       return res'.cast q(inv_cons $h)

@@ -38,47 +38,6 @@ theorem logSeries_eq_cons :
   congr
   norm_num
 
--- TODO: move
-theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + t))
-    (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
-  suffices HasFPowerSeriesAt Real.log (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 1 by
-    rw [show (0 : ℝ) = 1 + (-1) by simp]
-    conv => arg 1; ext t; rw [show 1 + t = t - (-1) by ring]
-    exact HasFPowerSeriesAt.comp_sub this _
-  suffices ((FormalMultilinearSeries.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) =
-      FormalMultilinearSeries.ofScalars ℝ
-        (fun n ↦ iteratedDeriv n Real.log 1 / (n.factorial : ℝ))) by
-    convert AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
-    exact analyticAt_log (by simp)
-  ext n
-  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff,
-    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, mul_eq_mul_left_iff]
-  left
-  -- clear v
-  obtain _ | n := n
-  · simp
-  rw [Nat.factorial_succ, pow_succ]
-  field_simp
-  push_cast
-  move_mul [((n : ℝ) + 1)]
-  simp only [mul_eq_mul_right_iff]
-  left
-  suffices iteratedDeriv (n + 1) Real.log =
-      fun (x : ℝ) ↦ (-1 : ℝ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) by
-    rw [this]
-    simp
-  induction n with
-  | zero =>
-    simp
-  | succ n ih =>
-    simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg]
-    rw [iteratedDeriv_succ, ih]
-    ext x
-    simp only [deriv_const_mul_field', deriv_zpow', Int.cast_sub,
-      Int.cast_neg, Int.cast_natCast, Int.cast_one, pow_succ, mul_neg, mul_one, Nat.factorial_succ,
-      Nat.cast_mul, Nat.cast_add, Nat.cast_one, neg_mul, Int.reduceNeg]
-    ring_nf
-
 theorem logSeries_toFormalMultilinearSeries_eq :
     logSeries.toFormalMultilinearSeries = .ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n) := by
   simp only [toFormalMultilinearSeries, FormalMultilinearSeries.ofScalars_series_eq_iff]
@@ -89,12 +48,12 @@ theorem logSeries_toFormalMultilinearSeries_eq :
 
 theorem logSeries_convergent : logSeries.Convergent := by
   apply convergent_of_HasFPowerSeriesAt
-  convert Real.log_hasFPowerSeriesAt
+  convert hasFPowerSeriesAt_log
   rw [logSeries_toFormalMultilinearSeries_eq]
 
 theorem logSeries_toFun : logSeries.toFun =ᶠ[𝓝 0] (fun t ↦ Real.log (1 + t)) := by
   apply toFun_of_HasFPowerSeriesAt
-  convert Real.log_hasFPowerSeriesAt
+  convert hasFPowerSeriesAt_log
   rw [logSeries_toFormalMultilinearSeries_eq]
 
 mutual

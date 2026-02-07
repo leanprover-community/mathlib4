@@ -716,6 +716,72 @@ lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : Ana
   simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
   apply pow hf
 
+
+/-!
+### Composition with a linear map
+-/
+
+section compContinuousLinearMap
+
+variable {u : E →L[𝕜] F} {f : F → G} {pf : FormalMultilinearSeries 𝕜 F G} {s : Set F} {x : E}
+  {r : ℝ≥0∞}
+
+theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinOnBall f pf s (u x) r) :
+    HasFPowerSeriesWithinOnBall (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x (r / ‖u‖ₑ) where
+  r_le := by
+    calc
+      _ ≤ pf.radius / ‖u‖ₑ := by
+        gcongr
+        exact hf.r_le
+      _ ≤ _ := pf.div_le_radius_compContinuousLinearMap _
+  r_pos := by
+    simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
+    exact pos_iff_ne_zero.mp hf.r_pos
+  hasSum hy1 hy2 := by
+    convert hf.hasSum _ _
+    · simp
+    · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
+      rcases hy1 with (hy1 | hy1) <;> simp [hy1]
+    · simp only [Metric.eball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
+      exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
+
+theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
+    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖ₑ) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
+  exact hf.compContinuousLinearMap
+
+theorem HasFPowerSeriesAt.compContinuousLinearMap (hf : HasFPowerSeriesAt f pf (u x)) :
+    HasFPowerSeriesAt (f ∘ u) (pf.compContinuousLinearMap u) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
+
+theorem HasFPowerSeriesWithinAt.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinAt f pf s (u x)) :
+    HasFPowerSeriesWithinAt (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
+
+theorem AnalyticAt.compContinuousLinearMap (hf : AnalyticAt 𝕜 f (u x)) :
+    AnalyticAt 𝕜 (f ∘ u) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticAtWithin.compContinuousLinearMap (hf : AnalyticWithinAt 𝕜 f s (u x)) :
+    AnalyticWithinAt 𝕜 (f ∘ u) (u ⁻¹' s) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticOn.compContinuousLinearMap (hf : AnalyticOn 𝕜 f s) :
+    AnalyticOn 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAtWithin.compContinuousLinearMap (hf (u x) hx)
+
+theorem AnalyticOnNhd.compContinuousLinearMap (hf : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAt.compContinuousLinearMap (hf (u x) hx)
+
+end compContinuousLinearMap
+
 /-!
 ### Restriction of scalars
 -/
@@ -823,6 +889,69 @@ lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
 
 end Geometric
 
+section Geometric
+variable (𝕜 A)
+
+/-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
+def formalMultilinearSeries_geometric_alternating : FormalMultilinearSeries 𝕜 A A :=
+  .ofScalars A fun n ↦ (-1 : 𝕜) ^ n
+
+lemma formalMultilinearSeries_geometric_alternating_eq_formalMultilinearSeries_geometric_comp_neg :
+    formalMultilinearSeries_geometric_alternating 𝕜 A =
+    (formalMultilinearSeries_geometric 𝕜 A).compContinuousLinearMap
+      (-ContinuousLinearMap.id 𝕜 A) := by
+  ext n v
+  have : ((-ContinuousLinearMap.id 𝕜 A : A →L[𝕜] A) : A → A) = Neg.neg (α := A) := by
+   ext
+   simp
+  simp only [formalMultilinearSeries_geometric_alternating, FormalMultilinearSeries.ofScalars,
+    ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
+    formalMultilinearSeries_geometric_eq_ofScalars,
+    FormalMultilinearSeries.compContinuousLinearMap_apply, one_smul, this, ← List.map_ofFn,
+    List.prod_map_neg, List.length_ofFn]
+  rcases n.even_or_odd with (h | h)
+  · simp [h.neg_one_pow]
+  · simp [h.neg_one_pow]
+
+lemma formalMultilinearSeries_geometric_alternating_apply_norm_le (n : ℕ) :
+    ‖formalMultilinearSeries_geometric_alternating 𝕜 A n‖ ≤ max 1 ‖(1 : A)‖ := by
+  simpa [formalMultilinearSeries_geometric_alternating] using
+    ContinuousMultilinearMap.norm_mkPiAlgebraFin_le
+
+lemma formalMultilinearSeries_geometric_alternating_apply_norm [NormOneClass A] (n : ℕ) :
+    ‖formalMultilinearSeries_geometric_alternating 𝕜 A n‖ = 1 := by
+  simp [formalMultilinearSeries_geometric_alternating]
+
+lemma one_le_formalMultilinearSeries_geometric_alternating_radius [Nontrivial A] :
+    1 ≤ (formalMultilinearSeries_geometric_alternating 𝕜 A).radius := by
+  simpa only [FormalMultilinearSeries.radius_compNeg,
+    formalMultilinearSeries_geometric_alternating_eq_formalMultilinearSeries_geometric_comp_neg]
+    using one_le_formalMultilinearSeries_geometric_radius 𝕜 A
+
+lemma formalMultilinearSeries_geometric_alternating_radius [NormOneClass A] :
+    (formalMultilinearSeries_geometric_alternating 𝕜 A).radius = 1 :=
+  FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
+
+lemma hasFPowerSeriesOnBall_inverse_one_add [HasSummableGeomSeries A] [Nontrivial A] :
+    HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 + x))
+      (formalMultilinearSeries_geometric_alternating 𝕜 A) 0 1 := by
+  rw [formalMultilinearSeries_geometric_alternating_eq_formalMultilinearSeries_geometric_comp_neg]
+  convert_to HasFPowerSeriesOnBall ((fun x ↦ Ring.inverse (1 - x)) ∘ (-ContinuousLinearMap.id 𝕜 A))
+    ((formalMultilinearSeries_geometric 𝕜 A).compContinuousLinearMap (-ContinuousLinearMap.id 𝕜 A))
+    0 1
+  · ext
+    simp
+  convert HasFPowerSeriesOnBall.compContinuousLinearMap (𝕜 := 𝕜) _ (r := 1)
+  · simp [← ofReal_norm]
+  · simpa using (hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A)
+
+@[fun_prop]
+lemma analyticAt_inverse_one_add [HasSummableGeomSeries A] [Nontrivial A] :
+    AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 + x)) 0 :=
+  ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_add 𝕜 A⟩⟩
+
+end Geometric
+
 /-- If `A` is a normed algebra over `𝕜` with summable geometric series, then inversion on `A` is
 analytic at any unit. -/
 @[fun_prop]
@@ -869,6 +998,18 @@ variable (𝕝) in
 @[fun_prop]
 lemma analyticAt_inv_one_sub : AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inv_one_sub 𝕜 𝕝⟩⟩
+
+variable (𝕜 𝕝) in
+lemma hasFPowerSeriesOnBall_inv_one_add :
+    HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 + x)⁻¹)
+    (formalMultilinearSeries_geometric_alternating 𝕜 𝕝) 0 1 := by
+  convert hasFPowerSeriesOnBall_inverse_one_add 𝕜 𝕝
+  exact Ring.inverse_eq_inv'.symm
+
+variable (𝕝) in
+@[fun_prop]
+lemma analyticAt_inv_one_add : AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 + x)⁻¹) 0 :=
+  ⟨_, ⟨_, hasFPowerSeriesOnBall_inv_one_add 𝕜 𝕝⟩⟩
 
 /-- If `𝕝` is a normed field extension of `𝕜`, then the inverse map `𝕝 → 𝕝` is `𝕜`-analytic
 away from 0. -/
@@ -1188,68 +1329,3 @@ theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) 
   hrf.unshift.hasFPowerSeriesWithinAt
 
 end
-
-/-!
-### Composition with a linear map
--/
-
-section compContinuousLinearMap
-
-variable {u : E →L[𝕜] F} {f : F → G} {pf : FormalMultilinearSeries 𝕜 F G} {s : Set F} {x : E}
-  {r : ℝ≥0∞}
-
-theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
-    (hf : HasFPowerSeriesWithinOnBall f pf s (u x) r) :
-    HasFPowerSeriesWithinOnBall (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x (r / ‖u‖ₑ) where
-  r_le := by
-    calc
-      _ ≤ pf.radius / ‖u‖ₑ := by
-        gcongr
-        exact hf.r_le
-      _ ≤ _ := pf.div_le_radius_compContinuousLinearMap _
-  r_pos := by
-    simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
-    exact pos_iff_ne_zero.mp hf.r_pos
-  hasSum hy1 hy2 := by
-    convert hf.hasSum _ _
-    · simp
-    · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
-      rcases hy1 with (hy1 | hy1) <;> simp [hy1]
-    · simp only [Metric.eball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
-      exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
-
-theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
-    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖ₑ) := by
-  rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
-  exact hf.compContinuousLinearMap
-
-theorem HasFPowerSeriesAt.compContinuousLinearMap (hf : HasFPowerSeriesAt f pf (u x)) :
-    HasFPowerSeriesAt (f ∘ u) (pf.compContinuousLinearMap u) x :=
-  let ⟨r, hr⟩ := hf
-  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
-
-theorem HasFPowerSeriesWithinAt.compContinuousLinearMap
-    (hf : HasFPowerSeriesWithinAt f pf s (u x)) :
-    HasFPowerSeriesWithinAt (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x :=
-  let ⟨r, hr⟩ := hf
-  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
-
-theorem AnalyticAt.compContinuousLinearMap (hf : AnalyticAt 𝕜 f (u x)) :
-    AnalyticAt 𝕜 (f ∘ u) x :=
-  let ⟨p, hp⟩ := hf
-  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
-
-theorem AnalyticAtWithin.compContinuousLinearMap (hf : AnalyticWithinAt 𝕜 f s (u x)) :
-    AnalyticWithinAt 𝕜 (f ∘ u) (u ⁻¹' s) x :=
-  let ⟨p, hp⟩ := hf
-  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
-
-theorem AnalyticOn.compContinuousLinearMap (hf : AnalyticOn 𝕜 f s) :
-    AnalyticOn 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
-  AnalyticAtWithin.compContinuousLinearMap (hf (u x) hx)
-
-theorem AnalyticOnNhd.compContinuousLinearMap (hf : AnalyticOnNhd 𝕜 f s) :
-    AnalyticOnNhd 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
-  AnalyticAt.compContinuousLinearMap (hf (u x) hx)
-
-end compContinuousLinearMap

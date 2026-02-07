@@ -18,8 +18,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 @[expose] public section
 
--- TODO: refactor using Pow.lean?
-
 open Filter Asymptotics
 open scoped Topology
 
@@ -29,51 +27,71 @@ namespace MultiseriesExpansion
 
 open LazySeries Stream'
 
-/-- Taylor series for 1 / (1 - t), i.e.
+def invSeriesFrom (b : Bool) : LazySeries :=
+  let g : Bool → Option (ℝ × Bool) := fun b => some (if b then -1 else 1, !b)
+  Seq.corec g b
+
+/-- Taylor series for 1 / (1 + t), i.e.
 ```
-1 / (1 - t) = 1 + t + t^2 + t^3 + ...
+1 / (1 + t) = 1 - t + t^2 - t^3 + ...
 ```
 -/
 def invSeries : LazySeries :=
-  let g : Unit → Option (ℝ × Unit) := fun () => some (1, ())
-  Seq.corec g ()
+  invSeriesFrom false
 
-theorem invSeries_eq_cons_self : invSeries = .cons 1 invSeries := by
-  simp only [invSeries]
-  conv =>
-    lhs
-    rw [Seq.corec_cons (by rfl)]
+theorem invSeriesFrom_eq_cons (b : Bool) :
+    invSeriesFrom b = .cons (if b then -1 else 1) (invSeriesFrom !b) := by
+  rw [invSeriesFrom, Seq.corec_cons (by rfl)]
+  rfl
 
-theorem invSeries_get_eq_one {n : ℕ} : invSeries.get? n = .some 1 := by
-  induction n with
+theorem invSeriesFrom_true_eq_cons :
+    invSeriesFrom true = .cons (-1) (invSeriesFrom false) := by
+  rw [invSeriesFrom_eq_cons]
+  simp
+
+theorem invSeriesFrom_false_eq_cons :
+    invSeriesFrom false = .cons 1 (invSeriesFrom true) := by
+  rw [invSeriesFrom_eq_cons]
+  simp
+
+theorem invSeries_eq_cons :
+    invSeries = .cons 1 (invSeriesFrom true) := by
+  rw [invSeries, invSeriesFrom_eq_cons]
+  simp
+
+theorem invSeriesFrom_get_eq {b : Bool} {n : ℕ} :
+    (invSeriesFrom b).get? n = .some (if b then (-1) ^ (n + 1) else (-1) ^ n) := by
+  induction n generalizing b with
   | zero =>
-    rw [invSeries_eq_cons_self]
+    rw [invSeriesFrom_eq_cons]
     simp
   | succ m ih =>
-    rw [invSeries_eq_cons_self]
-    simpa using ih
+    rw [invSeriesFrom_eq_cons]
+    simp [ih]
+    cases b <;> simp
+    ring
+
+theorem invSeries_get_eq {n : ℕ} : invSeries.get? n = .some ((-1) ^ n) := by
+  simp [invSeries, invSeriesFrom_get_eq]
 
 theorem invSeries_eq_geom :
-    invSeries.toFormalMultilinearSeries = formalMultilinearSeries_geometric ℝ ℝ := by
+    invSeries.toFormalMultilinearSeries = formalMultilinearSeries_geometric_alternating ℝ ℝ := by
   ext n
-  simp only [formalMultilinearSeries_geometric, FormalMultilinearSeries.apply_eq_prod_smul_coeff,
-    toFormalMultilinearSeries_coeff, invSeries_get_eq_one, smul_eq_mul, Option.getD_some, mul_one,
-    ContinuousMultilinearMap.mkPiAlgebraFin_apply]
-  exact Eq.symm List.prod_ofFn
+  simp [formalMultilinearSeries_geometric_alternating, invSeries_get_eq]
 
 theorem invSeries_convergent : Convergent invSeries := by
-  simp [Convergent, invSeries_eq_geom, formalMultilinearSeries_geometric_radius]
+  simp [Convergent, invSeries_eq_geom, formalMultilinearSeries_geometric_alternating_radius]
 
 -- TODO: rewrite
-theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 - t)⁻¹ := by
+theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 + t)⁻¹ := by
   simp only [LazySeries.toFun, invSeries_eq_geom]
-  have := hasFPowerSeriesOnBall_inv_one_sub ℝ ℝ
+  have := hasFPowerSeriesOnBall_inv_one_add ℝ ℝ
   have := HasFPowerSeriesOnBall.sum this (y := t)
     (by simpa [edist, PseudoMetricSpace.edist] using ht)
   simp only [zero_add] at this
   exact this.symm
 
-theorem invSeries_toFun_eq' : invSeries.toFun =ᶠ[𝓝 0] (fun t ↦ (1 - t)⁻¹) := by
+theorem invSeries_toFun_eq' : invSeries.toFun =ᶠ[𝓝 0] (fun t ↦ (1 + t)⁻¹) := by
   apply Filter.eventuallyEq_of_mem (s := Metric.ball 0 1)
   · apply Metric.ball_mem_nhds
     simp
@@ -89,7 +107,7 @@ noncomputable def Multiseries.inv {basis_hd basis_tl} (ms : Multiseries basis_hd
   match ms.destruct with
   | none => .nil
   | some (exp, coef, tl) => Multiseries.mulMonomial
-    (Multiseries.powser invSeries (tl.neg.mulMonomial coef.inv (-exp))) coef.inv (-exp)
+    (Multiseries.powser invSeries (tl.mulMonomial coef.inv (-exp))) coef.inv (-exp)
 
 /-- If `ms` approximates `f`, then `ms.inv` approximates `f⁻¹`. -/
 noncomputable def inv {basis : Basis} (ms : MultiseriesExpansion basis) :
@@ -125,8 +143,7 @@ theorem Multiseries.neg_inv_comm {basis_hd basis_tl} {ms : Multiseries basis_hd 
   cases ms with
   | nil => simp [Multiseries.inv]
   | cons exp coef tl =>
-    simp only [Multiseries.neg_cons, Multiseries.inv, Multiseries.destruct_cons,
-      Multiseries.neg_neg]
+    simp only [Multiseries.neg_cons, Multiseries.inv, Multiseries.destruct_cons]
     rw [neg_inv_comm, Multiseries.mulMonomial_neg_left]
     congr 3
     simp [Multiseries.mulMonomial_neg_left, Multiseries.mulMonomial_neg_right]
@@ -156,10 +173,10 @@ theorem Multiseries.inv_Sorted {basis_hd basis_tl} {ms : Multiseries basis_hd ba
     apply Multiseries.mulMonomial_Sorted
     · apply Multiseries.powser_Sorted
       · apply Multiseries.mulMonomial_Sorted
-        · apply Multiseries.neg_Sorted h_tl
+        · apply h_tl
         · apply inv_Sorted
           exact h_coef
-      · simp only [Multiseries.mulMonomial_leadingExp, Multiseries.neg_leadingExp]
+      · simp only [Multiseries.mulMonomial_leadingExp]
         generalize tl.leadingExp = w at *
         cases w with
         | bot => simp [Ne.bot_lt']
@@ -231,7 +248,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
         basis_head_eventually_pos h_basis
       simp only [inv, mk_seq, Multiseries.inv, Multiseries.destruct_cons, mk_toFun]
       let ms : MultiseriesExpansion (basis_hd :: basis_tl) :=
-        (((mk tl (f - basis_hd ^ exp * coef.toFun)).neg.mulMonomial
+        (((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial
           coef.inv (-exp)).powser invSeries).mulMonomial coef.inv (-exp)
       have h : ms.Approximates := by
         simp only [ms]
@@ -239,33 +256,23 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
         swap
         · apply inv_Approximates h_basis.tail h_coef_wo h_coef h_coef_trimmed
         apply powser_Approximates invSeries_convergent h_basis
-        · simp only [leadingExp_def, mulMonomial_seq, neg_seq, mk_seq,
-          Multiseries.mulMonomial_leadingExp, Multiseries.neg_leadingExp]
+        · simp only [leadingExp_def, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_leadingExp]
           generalize tl.leadingExp = w at h_comp
           cases w with
           | bot => simp [Ne.bot_lt']
           | coe => simpa [← WithBot.coe_add] using h_comp
-        · simp only [Sorted_iff_Seq_Sorted, mulMonomial_seq, neg_seq, mk_seq]
-          apply Multiseries.mulMonomial_Sorted
-          · apply Multiseries.neg_Sorted h_tl_wo
-          · apply inv_Sorted h_coef_wo
-        apply mulMonomial_Approximates h_basis
-        · apply neg_Approximates h_tl
-        · apply inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
+        · simp only [Sorted_iff_Seq_Sorted, mulMonomial_seq, mk_seq]
+          apply Multiseries.mulMonomial_Sorted h_tl_wo (inv_Sorted h_coef_wo)
+        apply mulMonomial_Approximates h_basis h_tl
+        apply inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
       convert replaceFun_Approximates _ h
-      have h_tendsto_zero : Tendsto ((basis_hd ^ exp * coef.toFun - f) * basis_hd ^ (-exp) *
+      have h_tendsto_zero : Tendsto ((f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) *
           coef.toFun⁻¹) atTop (𝓝 0) := by
         convert (tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_wo h_approx
-          h_trimmed).neg.congr' _
-        · simp
-        simp only [mulMonomial_toFun, mk_toFun, inv_toFun, Pi.mul_apply, Pi.sub_apply, Pi.pow_apply,
-          Pi.inv_apply]
-        apply (h_coef_ne_zero.and h_basis_hd_pos).mono
-        intro t ⟨h_coef_ne_zero, h_basis_hd_pos⟩
+          h_trimmed).congr' _
         simp
-        field
-      simp only [mulMonomial_toFun, powser_toFun, neg_toFun, mk_toFun, neg_sub, inv_toFun, ms]
-      set g := (basis_hd ^ exp * coef.toFun - f) * basis_hd ^ (-exp) * coef.toFun⁻¹
+      simp only [mulMonomial_toFun, powser_toFun, mk_toFun, inv_toFun, ms]
+      set g := (f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) * coef.toFun⁻¹
       apply invSeries_toFun_eq'.comp_tendsto at h_tendsto_zero
       grw [h_tendsto_zero]
       apply (h_coef_ne_zero.and h_basis_hd_pos).mono
