@@ -35,8 +35,8 @@ theorem zero_lt_eval_of_roots_lt_of_leadingCoeff_pos
   by_cases! hdeg : P.degree ≤ 0
   · rwa [eq_C_of_degree_le_zero hdeg, ← natDegree_eq_zero_iff_degree_le_zero.mpr hdeg, eval_C]
   contrapose! hroots
-  obtain ⟨z, hz⟩ := ((P.tendsto_atTop_of_leadingCoeff_nonneg
-    hdeg hlc.le).eventually_gt_atTop 0).exists_forall_of_atTop
+  obtain ⟨z, hz⟩ := Filter.Eventually.exists_forall_of_atTop <|
+    (P.tendsto_atTop_of_leadingCoeff_nonneg hdeg hlc.le).eventually_gt_atTop 0
   let w := max x z
   have hw : x ≤ w ∧ 0 < P.eval w := ⟨le_max_left .., hz w (le_max_right ..)⟩
   obtain ⟨y, hy⟩ := (Set.mem_image ..).mp
@@ -49,9 +49,8 @@ theorem zero_le_eval_of_roots_le_of_leadingCoeff_nonneg
   · obtain ⟨y, hroot, hle⟩ := hroots'
     rw [eq_of_le_of_ge hle (hroots y hroot), hroot]
   by_cases! hlc' : P.leadingCoeff ≤ 0
-  · have : P = 0 := by exact leadingCoeff_eq_zero.mp (eq_of_le_of_ge hlc' hlc)
-    rw [leadingCoeff_eq_zero.mp <| eq_of_le_of_ge hlc' hlc, eval_zero]
-  exact (zero_lt_eval_of_roots_lt_of_leadingCoeff_pos hroots' hlc').le
+  · rw [leadingCoeff_eq_zero.mp <| eq_of_le_of_ge hlc' hlc, eval_zero]
+  · exact (zero_lt_eval_of_roots_lt_of_leadingCoeff_pos hroots' hlc').le
 
 theorem eval_lt_zero_of_roots_lt_of_leadingCoeff_neg
     (hroots : ∀ y, P.IsRoot y → y < x) (hlc : P.leadingCoeff < 0) : P.eval x < 0 := by
