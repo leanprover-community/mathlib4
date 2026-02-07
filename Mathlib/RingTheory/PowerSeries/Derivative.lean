@@ -181,7 +181,7 @@ theorem derivative_pow (g : A⟦X⟧) (n : ℕ) :
     · simp
     · simp only [add_tsub_cancel_right, pow_succ]; push_cast; ring
 
-/-- Chain rule for polynomials viewed as power series. -/
+/-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
 private theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
     d⁄dX A ((p : A⟦X⟧).subst g) = (d⁄dX A (p : A⟦X⟧)).subst g * d⁄dX A g := by
   simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) (derivative A) p,
