@@ -663,19 +663,19 @@ def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
 /-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
 fibers of `f` -/
 def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r ≤ Setoid.ker f) :
-    fromRel sym ≃ Σ b : β, fromRel (α := { x // f x = b }) <| sym.comap (↑) where
+    fromRel sym ≃ Σ b : β, fromRel (α := { a // f a = b }) <| sym.comap (↑) where
   toFun z := fromRelNdrec z.prop
-    (fun a b h ↦ ⟨f a, s(⟨a, rfl⟩, ⟨b, (hf _ _ h).symm⟩), h⟩)
-    fun a b h ↦ by
+    (fun a₁ a₂ h ↦ ⟨f a₁, s(⟨a₁, rfl⟩, ⟨a₂, hf a₁ a₂ h |>.symm⟩), h⟩)
+    fun a₁ a₂ h ↦ by
       dsimp only
-      rw! [hf _ _ h, eq_swap]
+      rw! [hf a₁ a₂ h, eq_swap]
       rfl
   invFun z := ⟨z.snd.val.map Subtype.val, mem_fromRel_comap sym .. |>.mp z.snd.prop⟩
   left_inv z := by
-    rcases z with ⟨⟨⟩⟩
+    rcases z with ⟨⟨a₁, a₂⟩, h⟩
     rfl
   right_inv z := by
-    rcases z with ⟨q, ⟨⟨a, rfl⟩, ⟨b, hb⟩⟩, h⟩
+    rcases z with ⟨b, ⟨⟨a₁, rfl⟩, ⟨a₂, ha₂⟩⟩, h⟩
     rfl
 
 /-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
