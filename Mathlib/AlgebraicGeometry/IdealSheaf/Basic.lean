@@ -475,7 +475,6 @@ lemma ext_of_isAffine [IsAffine X] {I J : IdealSheafData X}
   (le_of_isAffine H.le).antisymm (le_of_isAffine H.ge)
 
 /-- Over affine schemes, ideal sheaves are in bijection with ideals of the global sections. -/
-@[simps]
 def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃+*o Ideal Γ(X, ⊤) where
   toFun := (ideal · ⟨⊤, isAffineOpen_top X⟩)
   invFun := ofIdealTop
@@ -484,6 +483,14 @@ def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃+*o Ideal Γ(X, ⊤) wher
   map_mul' := by simp
   map_add' := by simp
   map_le_map_iff' := ⟨le_of_isAffine, (· _)⟩
+
+@[simp]
+lemma equivOfIsAffine_apply [IsAffine X] (I : IdealSheafData X) :
+    equivOfIsAffine I = I.ideal ⟨⊤, isAffineOpen_top X⟩ := rfl
+
+@[simp]
+lemma equivOfIsAffine_symm_apply [IsAffine X] (I : Ideal Γ(X, ⊤)) :
+    equivOfIsAffine.symm I = ofIdealTop I := rfl
 
 end IsAffine
 
