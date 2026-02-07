@@ -5,36 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Finiteness.NilpotentKer
-public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
-public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
-public import Mathlib.RingTheory.TensorProduct.Pi
-public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
-/-!
-# Quasi-finite algebras
-
-In this file, we define the notion of quasi-finite algebras and prove basic properties about them
-
-## Main definition and results
-- `Algebra.QuasiFinite`: The class of quasi-finite algebras.
-  We say that an `R`-algebra `S` is quasi-finite
-  if `κ(p) ⊗[R] S` is finite-dimensional over `κ(p)` for all primes `p` of `R`.
-- `Algebra.QuasiFinite.finite_comap_preimage_singleton`:
-  Quasi-finite algebras have finite fibers.
-- `Algebra.QuasiFinite.iff_of_isArtinianRing`:
-  Over an artinian ring, an algebra is quasi-finite iff it is module-finite.
-- `Algebra.QuasiFinite.iff_finite_comap_preimage_singleton`: For a finite-type `R`-algebra `S`,
-  `S` is quasi-finite if and only if `Spec S → Spec R` has finite fibers.
-- `Algebra.QuasiFiniteAt`: If `S` is an `R`-algebra and `p` a prime of `S`,
-  we say that `S` is `R`-quasi-finite at `p` if `Sₚ` is `R`-quasi-finite.
-
--/
+/-! # Quasi-finite primes in polynomial algebras -/
 
 @[expose] public section
 
