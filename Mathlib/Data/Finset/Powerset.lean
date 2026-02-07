@@ -306,18 +306,19 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       simp only [map_subset_map, has, card_map, and_self]
 
-lemma Equiv_fnBool_finset_mem_powersetCard_iff {ι : Type*} [DecidableEq ι] [Fintype ι] (k : ℕ)
-    (f : ι → Bool) : (Equiv.fnBool_finset) f ∈ powersetCard k univ ↔ #{i | f i = true} = k := by
-  simp [Equiv.fnBool_finset]
+lemma arrowBoolEquivFinset_mem_powersetCard_iff {ι : Type*} [DecidableEq ι] [Fintype ι] (k : ℕ)
+    (f : ι → Bool) : (Equiv.arrowBoolEquivFinset) f ∈ powersetCard k univ ↔
+    #{i | f i = true} = k := by
+  simp [Equiv.arrowBoolEquivFinset]
 
 /-- For some `Fintype ι`, the number of maps `f : ι → Bool` with `#{i | f i} = k` equals
 `n.choose k`. -/
 lemma card_fnBool {ι : Type*} [DecidableEq ι] [Fintype ι] {k : ℕ} :
     #{ f : ι → Bool | #{i | f i} = k } = (univ : Finset ι).card.choose k := by
   rw [← card_powersetCard k (univ : Finset ι)]
-  apply card_equiv (Equiv.fnBool_finset) (fun i ↦ ?_)
+  apply card_equiv (Equiv.arrowBoolEquivFinset) (fun i ↦ ?_)
   simp only [mem_filter, mem_univ, true_and]
-  exact (Equiv_fnBool_finset_mem_powersetCard_iff k i).symm
+  exact (arrowBoolEquivFinset_mem_powersetCard_iff k i).symm
 
 lemma card_listVector_card {k n : ℕ} :
     #{v : List.Vector Bool n | v.val.count true = k} = n.choose k := by
