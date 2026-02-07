@@ -111,7 +111,7 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
     unless (← fvar.fvarId!.getBinderInfo).isInstImplicit do continue
     let projClasses ← forallTelescope (← inferType fvar) fun xs _ ↦ do
       (← getClassDataProjections (mkAppN fvar xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
-        return (parentIdx?, ← mkForallFVars xs expr)
+        return (parentIdx?, ← instantiateMVars <|← mkForallFVars xs expr)
     for (parentIdxs, cls) in projClasses do
       if let some (fvar₀, clsIsTypeOfFVar₀) := encounteredClasses[cls]? then
         -- We have encountered a projection with this type already; we should now record an overlap,
