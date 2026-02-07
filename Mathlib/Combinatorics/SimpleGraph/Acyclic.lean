@@ -612,4 +612,20 @@ noncomputable def IsAcyclic.coloringTwo (hG : G.IsAcyclic) : G.Coloring (Fin 2) 
 lemma IsAcyclic.isBipartite (hG : G.IsAcyclic) : G.IsBipartite :=
   ⟨hG.coloringTwo⟩
 
+/-- An acyclic graph (forest) is 2-colorable. -/
+lemma IsAcyclic.colorable_two (hG : G.IsAcyclic) : G.Colorable 2 :=
+  hG.isBipartite
+
+/-- A tree is 2-colorable. -/
+lemma IsTree.colorable_two (hG : G.IsTree) : G.Colorable 2 :=
+  hG.IsAcyclic.colorable_two
+
+/-- The chromatic number of an acyclic graph (forest) is at most 2. -/
+lemma IsAcyclic.chromaticNumber_le_two (hG : G.IsAcyclic) : G.chromaticNumber ≤ 2 :=
+  hG.colorable_two.chromaticNumber_le
+
+/-- The chromatic number of a tree is at most 2. -/
+lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
+  hG.colorable_two.chromaticNumber_le
+
 end SimpleGraph
