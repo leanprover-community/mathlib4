@@ -117,7 +117,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType OverlappingInstances
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
@@ -131,6 +131,7 @@ run_cmd liftTermElabM do
   let some (_, wlLinters) := ls.find? (·.1 == ``linter.weeklyLintSet) |
     throwError m!"'linter.weeklyLintSet is not defined."
   for mll in mlLinters ∪ nrLinters ∪ wlLinters do
+    logInfo m!"{← realizeGlobalName mll}"
     let [(mlRes, _)] ← realizeGlobalName mll |
       if !DefinedInScripts.contains mll then
         throwError "Unknown option '{mll}'!"
