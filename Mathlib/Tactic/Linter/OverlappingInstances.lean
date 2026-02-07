@@ -63,16 +63,6 @@ private partial def getClassDataProjections (e : Expr) (acc : Array (List Nat ×
     -- occur at the root. We still want to record these to warn on duplicate inductive classes.
     return acc
 
-/-- Given an array of projection types paired with indices for their parents, returns `true` if `p`
-is true for the types at any of the starting indices or their transitive parents. -/
-private partial def hasParentP! (projections : Array (List Nat × Expr)) (p : Nat → Expr → Bool)
-    (startingIdxs : List Nat) : Bool :=
-  match startingIdxs with
-  | []          => false
-  | idx :: idxs =>
-    let (parentIdxs, expr) := projections[idx]!
-    p idx expr || hasParentP! projections p parentIdxs || hasParentP! projections p idxs
-
 /-- Stores the local instance overlaps per class. The keys are the class, and the values are local
 instances which have the class as a projection. The `Bool` value of each entry indicates whether
 its type is exactly the key class. The code constructing values of this class is responsible for
@@ -86,9 +76,9 @@ def Overlaps.pushAt (cls : Expr) (fvar : Expr × Bool) (overlaps : Overlaps) : O
     | none => some #[fvar]
     | some o => o.push fvar
 
-/-- Returns `true` iff `fvar₁` and `fvar₂` overlap on the `cls` projection typeclass. -/
-def Overlaps.containsOverlapOn (fvar₁ fvar₂ : Expr) (cls : Expr) (overlaps : Overlaps) : Bool :=
-  overlaps[cls]?.any fun overlap => overlap.any (·.1 == fvar₁) && overlap.any (·.1 == fvar₂)
+/-- Returns `true` iff `fvar` is among the overlaps recorded for `cls`. -/
+def Overlaps.containsAt (cls : Expr) (fvar : Expr) (overlaps : Overlaps) : Bool :=
+  overlaps[cls]?.any fun overlap => overlap.any (·.1 == fvar)
 
 /--
 Find data-carrying overlaps between the current local instances of the `MetaM` context.
@@ -98,7 +88,7 @@ Further, it will only record overlaps at "maximal" nodes in the projection DAG; 
 `fvar₁` and `fvar₂` overlap on `cls`, the resulting `Overlaps` will not redundantly record their
 overlap on any projection `cls.proj`.
 -/
-def findOverlappingDataInstances : MetaM Overlaps := do
+partial def findOverlappingDataInstances : MetaM Overlaps := do
   /- Records only the overlaps that will eventually be reported. This remains empty iff no
   messages should be logged. -/
   let mut overlaps : Overlaps := {}
@@ -106,33 +96,52 @@ def findOverlappingDataInstances : MetaM Overlaps := do
   into the typeclass. We check every projection against this hashmap to detect if it has been seen
   before, and add it to the hashmap if not.
 
-  The keys are classes, and the values are fvars. The `Bool` indicates whether the class key is
-  exactly the type of the associated fvar. We use this for error reporting. -/
+  The keys are classes, and the values are the representative fvars. The `Bool` indicates whether
+  the class key is exactly the type of the associated fvar. We use this for error reporting. -/
   let mut encounteredClasses : Std.HashMap Expr (Expr × Bool) := {}
   for { fvar := fvar, .. } in ← getLocalInstances do
     unless (← fvar.fvarId!.getBinderInfo).isInstImplicit do continue
     let projClasses ← forallTelescope (← inferType fvar) fun xs _ ↦ do
       (← getClassDataProjections (mkAppN fvar xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
         return (parentIdx?, ← mkForallFVars xs expr)
-    for (parentIdxs, cls) in projClasses, idx in 0...* do
+    for (parentIdxs, cls) in projClasses do
       if let some (fvar₀, clsIsTypeOfFVar₀) := encounteredClasses[cls]? then
         -- We have encountered a projection with this type already; we should now record an overlap,
         -- unless it is (or will) be redundant.
         -- Note that the actions in this branch are allowed to be "slow".
-        let shouldIgnoreCurrent (parentIdx : Nat) (parentClass : Expr) :=
-          -- If a parent further on in `projClasses` will overlap via `fvar₀`, ignore this child.
-          -- Note that we can assume `false`, as only the first array element has `true`.
-          (idx < parentIdx && encounteredClasses[parentClass]?.isEqSome (fvar₀, false))
-          -- If `fvar` and `fvar₀` already overlap on a parent, ignore this redundant overlap.
-            || overlaps.containsOverlapOn fvar₀ fvar parentClass
-        -- See if any parent of the current projection, starting with the immediate `parentIdxs`,
-        -- imply it is redundant.
-        unless hasParentP! projClasses shouldIgnoreCurrent parentIdxs do
+
+        /- Whether `fvar₀` yields the presciently-named class `parentClass` as a projection. This
+        occurs iff either
+        - `fvar₀` represents `cls` in `encounteredClasses`
+        - or `fvar₀` is in an overlap on `cls`.
+        Note: since in this context of use `parentClass` may be further on in `fvar`'s
+        `projClasses` (and so an overlap between `fvar` and `fvar₀` may not have been recorded yet)
+        we must check `encounteredClasses`. -/
+        let isProjectionOfFVar₀ (parentClass : Expr) :=
+          encounteredClasses[parentClass]?.any (·.1 == fvar₀)
+            /- Technical note: this does not test that `fvar` is in the *same* overlap as `fvar₀`.
+            However, if `fvar₀` is in *an* overlap on some parent of `fvar`, we trust it at least
+            shares an overlap with `fvar` on some (possibly distinct) parent of `fvar`. -/
+            || overlaps.containsAt parentClass fvar₀
+        let rec
+            /-- Tests if any (strict) parents are yielded by `fvar₀`. If so, then some parent of
+            the current `cls` is yielded by both `fvar` and `fvar₀`, and we should (only) record
+            the overlap on the parent class; the current overlap is redundant. -/
+            overlapsOnParent (parentIdxs : List Nat) : Bool :=
+          parentIdxs.any fun parentIdx =>
+            let (nextParentIdxs, parentClass) := projClasses[parentIdx]!
+            isProjectionOfFVar₀ parentClass || overlapsOnParent nextParentIdxs
+
+        -- If `fvar` overlaps with `fvar₀` on a parent, don't record an overlap--it is redundant.
+        unless overlapsOnParent parentIdxs do
           -- If no overlap exists yet for `cls`, start by inserting `fvar₀`.
+          -- Otherwise, we assume `fvar₀`, being the representative of `cls`, was already
+          -- inserted into the overlap when it was first populated.
           unless overlaps.contains cls do
             overlaps := overlaps.pushAt cls (fvar₀, clsIsTypeOfFVar₀)
           overlaps := overlaps.pushAt cls (fvar, parentIdxs.isEmpty)
       else
+        -- `cls` has no representative yet, so insert the current fvar as the representative.
         encounteredClasses := encounteredClasses.insert cls (fvar, parentIdxs.isEmpty)
   return overlaps
 
