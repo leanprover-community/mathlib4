@@ -144,9 +144,9 @@ mutual
 
 
 /-- The base `e` of a normalized exponent expression in ℕ.
-  Used to represent normalized natural number expressions in exponents.
+Used to represent normalized natural number expressions in exponents.
 
-  `ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
+`ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
 inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
   An atomic expression `e` with id `id`.
@@ -164,10 +164,10 @@ inductive ExBaseNat : (e : Q(ℕ)) → Type
   | sum {e} (_ : ExSumNat e) : ExBaseNat e
 
 /-- A monomial, which is a product of powers of `ExBaseNat` expressions in ℕ,
-  terminated by a (nonzero) constant coefficient.
-  Used to represent normalized natural number expressions in exponents.
+terminated by a (nonzero) constant coefficient.
+Used to represent normalized natural number expressions in exponents.
 
-  `ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two.
+`ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two.
 -/
 inductive ExProdNat : (e : Q(ℕ)) → Type
   /-- A coefficient `value`, holding the data that `ring` uses to represent rational coefficients.
@@ -180,9 +180,9 @@ inductive ExProdNat : (e : Q(ℕ)) → Type
     ExBaseNat x → ExProdNat e → ExProdNat b → ExProdNat q($x ^ $e * $b)
 
 /-- A polynomial expression, which is a sum of monomials.
-  Used to represent normalized natural number expressions in exponents.
+Used to represent normalized natural number expressions in exponents.
 
-  `ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two. -/
+`ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two. -/
 inductive ExSumNat : (e : Q(ℕ)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero : ExSumNat q(0)
@@ -284,7 +284,7 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   such that the scalar multiplication turns into normal multiplication. Typically one can think of
   `α` as being an algebra over `β`, but this file does not know about `Algebra`s. -/
   cast (v : Lean.Level) (β : Q(Type v)) (_ : Q(CommSemiring $β))
-      (_ : Q(HSMul $β $α $α)) (x : Q($β)) :
+      (_ : Q(SMul $β $α)) (x : Q($β)) :
     AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
   /-- Evaluate the negation of a coefficient. -/
   neg {x : Q($α)} (rα : Q(CommRing $α)) : BaseType x → MetaM (Result BaseType q(-$x))
@@ -309,19 +309,20 @@ instance {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   coe x := x.toRingCompare
 
 instance (u : Lean.Level) (α : Q(Type u)) (BaseType : Q($α) → Type) [∀ e, Inhabited <| BaseType e]
-    (sα : Q(CommSemiring «$α»)) : Inhabited <|
+    (sα : Q(CommSemiring «$α»)) : Nonempty <|
     Common.RingCompute (BaseType) sα := ⟨{
-      eq := fun _ _ ↦ false
-      compare := default
-      add := default
-      mul := default
-      cast _ _ _ _ _ _ := do return ⟨_, .zero (BaseType := BaseType) (sα := sα), default⟩
-      neg := default
-      pow := default
-      inv := default
-      derive := default
-      isOne := default
-      one := default }⟩
+  eq := default
+  compare := default
+  add := default
+  mul := default
+  cast _ _ _ _ _ _ := do return ⟨_, .zero (BaseType := BaseType) (sα := sα), default⟩
+  neg := default
+  pow := default
+  inv := default
+  derive := default
+  isOne := default
+  one := default
+}⟩
 
 instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
 instance : Inhabited (Σ e, (ExSumNat) e) := ⟨_, .zero⟩

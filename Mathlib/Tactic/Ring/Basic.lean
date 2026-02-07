@@ -401,7 +401,7 @@ partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 /-- Cast ℕ and ℤ normalized expressions ExSums into `α`, used to evaluate scalar multiplications. -/
 partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cα : Common.Cache sα)
-    (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (_smul : Q(HSMul $β $α $α))
+    (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (_smul : Q(SMul $β $α))
     (x : Q($β)) :
     AtomM ((y : Q($α)) × Common.ExSum (BaseType sα) sα q($y) ×
       Q(∀ (a : $α), $x • a = $y * a)) := do
