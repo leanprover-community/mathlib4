@@ -191,6 +191,7 @@ theorem map_lsmul_eq_lsmul_of (r : R) : map I (LinearMap.lsmul R M r) =
     LinearMap.lsmul (AdicCompletion I R) (AdicCompletion I M) (of I R r) := by rfl
 
 variable {I} in
+@[stacks 05GG "(2)"]
 theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
   classical
   refine le_antisymm (pow_smul_top_le_eval_ker ..) ?_
