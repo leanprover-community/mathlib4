@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 
@@ -140,6 +141,13 @@ theorem ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : Measurabl
 theorem ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : MeasurableSet t)
     (ht : ∀ᵐ x ∂μ, f x ∈ t) : ∀ᵐ x ∂ν, g x ∈ t :=
   h.ae_snd tmeas ht
+
+theorem _root_.ProbabilityTheory.HasLaw.identDistrib {κ : Measure γ} (h₀ : HasLaw f κ μ)
+    (h₁ : HasLaw g κ ν) : IdentDistrib f g μ ν :=
+  ⟨h₀.aemeasurable, h₁.aemeasurable, by simp [h₀.map_eq, h₁.map_eq]⟩
+
+theorem hasLaw {κ : Measure γ} (h₀ : IdentDistrib f g μ ν) (h₁ : HasLaw f κ μ) : HasLaw g κ ν :=
+  ⟨h₀.aemeasurable_snd, by simp [h₀.map_eq, ← h₁.map_eq]⟩
 
 /-- In a second countable topology, the first function in an identically distributed pair is a.e.
 strongly measurable. So is the second function, but use `h.symm.aestronglyMeasurable_fst` as
