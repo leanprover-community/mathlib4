@@ -21,9 +21,9 @@ has binary biproducts
 open CategoryTheory CategoryTheory.Limits
 namespace CategoryTheory.Limits.BinaryBiproduct
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasBinaryBiproducts C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasBinaryBiproducts C]
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 variable (F G : D ⥤ C)
 
@@ -64,59 +64,21 @@ def funcBinaryBicone : BinaryBicone F G where
   inl := biprodFunc.inl F G
   inr := biprodFunc.inr F G
 
-/- There is no definitional equality between
-`(((evaluation D C).obj d).mapCone (funcBinaryBicone F G).toCone)` and
-`BinaryFan.mk (F.obj d) (G.obj d)`, so we need to prove the following two lemmas
-by hand, rather than using `convert BinaryBiproduct.isLimit (F.obj d) (G.obj d)`
-or `convert BinaryBiproduct.isColimit (F.obj d) (G.obj d)` -/
-
-/-- Applying `toCone` and an evaluation functor to `funcBinaryBicone F G`
-gives a limit cone. -/
-def isLimitFuncMapCone (d : D) : IsLimit (((evaluation D C).obj d).mapCone
-    (funcBinaryBicone F G).toCone) where
-  lift s :=
-    (BinaryBiproduct.isLimit (F.obj d) (G.obj d)).lift
-      (BinaryFan.mk (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩))
-  fac s j := by
-    cases j with
-    | mk j =>
-      cases j <;> simp
-  uniq s m h := by
-    apply (BinaryBiproduct.isLimit (F.obj d) (G.obj d)).uniq
-      (BinaryFan.mk (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩))
-    intro j
-    specialize h j
-    cases j with
-    | mk j =>
-      cases j <;> simp [h] at *
-
-/-- Applying `toCocone` and an evaluation functor to `funcBinaryBicone F G`
-gives a colimit cone. -/
-def isColimitFuncMapCocone (d : D) : IsColimit (((evaluation D C).obj d).mapCocone
-    (funcBinaryBicone F G).toCocone) where
-  desc s :=
-    (BinaryBiproduct.isColimit (F.obj d) (G.obj d)).desc
-      (BinaryCofan.mk (s.ι.app ⟨WalkingPair.left⟩) (s.ι.app ⟨WalkingPair.right⟩))
-  fac s j := by
-    cases j with
-    | mk j =>
-      cases j <;> simp
-  uniq s m h := by
-    apply (BinaryBiproduct.isColimit (F.obj d) (G.obj d)).uniq
-      (BinaryCofan.mk (s.ι.app ⟨WalkingPair.left⟩) (s.ι.app ⟨WalkingPair.right⟩))
-    intro j
-    specialize h j
-    cases j with
-    | mk j =>
-      cases j <;> simp [h] at *
-
 /-- Applying `toCone` to the bicone associated with `F` and `G` gives a limit cone. -/
 def funcBinaryBicone.isLimit : IsLimit (funcBinaryBicone F G).toCone :=
-  evaluationJointlyReflectsLimits _ (isLimitFuncMapCone _ _)
+  evaluationJointlyReflectsLimits _ fun d => by
+    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isLimit) (F.obj d) (G.obj d))
+    · symm; apply pairComp
+    · refine Cones.ext (Iso.refl _) ?_
+      rintro (_ | _ | _) <;> cat_disch
 
 /-- Applying `toCocone` to the bicone associated with `F` and `G` gives a colimit cocone. -/
 def funcBinaryBicone.isColimit : IsColimit (funcBinaryBicone F G).toCocone :=
-  evaluationJointlyReflectsColimits _ (isColimitFuncMapCocone _ _)
+  evaluationJointlyReflectsColimits _ fun d => by
+    refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isColimit) (F.obj d) (G.obj d))
+    · symm; apply pairComp
+    · refine Cocones.ext (Iso.refl _) ?_
+      rintro (_ | _ | _) <;> cat_disch
 
 /-- The bicone associated with `F` and `G` is a bilimit bicone. -/
 @[simps]
