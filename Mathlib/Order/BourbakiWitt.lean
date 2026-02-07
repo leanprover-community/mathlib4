@@ -46,6 +46,8 @@ instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
   coe_injective' _ _ := NonemptyChain.ext
 
+instance {α : Type*} [LE α] : PartialOrder (NonemptyChain α) := .ofSetLike (NonemptyChain α) α
+
 /-- A chain complete partial order (CCPO) is a nonempty partial order such that every
 nonempty chain has a supremum (which we call `cSup`) -/
 class ChainCompletePartialOrder (α : Type*) extends PartialOrder α where

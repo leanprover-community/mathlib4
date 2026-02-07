@@ -299,8 +299,8 @@ lemma HasFPowerSeriesWithinOnBall.prod {e : E} {f : E → F} {g : E → G} {r s 
     intro y h'y hy
     simp_rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.prod_apply]
     refine (hf.hasSum h'y ?_).prodMk (hg.hasSum h'y ?_)
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
+    · exact Metric.mem_eball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
+    · exact Metric.mem_eball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
 
 lemma HasFPowerSeriesOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ≥0∞}
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
@@ -810,7 +810,7 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
   · exact one_le_formalMultilinearSeries_geometric_radius 𝕜 A
   · exact one_pos
   · intro y hy
-    simp only [EMetric.mem_ball, edist_dist, dist_zero_right, ofReal_lt_one] at hy
+    simp only [Metric.mem_eball, edist_dist, dist_zero_right, ofReal_lt_one] at hy
     simp only [zero_add, NormedRing.inverse_one_sub _ hy, Units.oneSub, Units.inv_mk,
       formalMultilinearSeries_geometric, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
       List.ofFn_const, List.prod_replicate]
@@ -1215,7 +1215,7 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
     · simp
     · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
       rcases hy1 with (hy1 | hy1) <;> simp [hy1]
-    · simp only [EMetric.ball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
+    · simp only [Metric.eball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
       exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
 
 theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
