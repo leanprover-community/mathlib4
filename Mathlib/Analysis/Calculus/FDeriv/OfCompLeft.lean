@@ -24,30 +24,30 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
   {f : E → F} {f' : E →L[𝕜] F} {s : Set E}
   {g : G → E} {h : G → F} {h' : G →L[𝕜] F} {a : G} {t : Set G}
 
-theorem HasFDerivWithinAt.of_comp_left_of_leftInverse {f'symm : F →L[𝕜] E}
+theorem HasFDerivWithinAt.of_comp_of_leftInverse {f'symm : F →L[𝕜] E}
     (hst : Tendsto g (𝓝[t] a) (𝓝[s] (g a))) (hf : HasFDerivWithinAt f f' s (g a))
     (hh : HasFDerivWithinAt h h' t a) (hcomp : f ∘ g =ᶠ[𝓝[t] a] h)
     (hf'symm : Function.LeftInverse f'symm f') (ha : a ∈ t) :
     HasFDerivWithinAt g (f'symm ∘L h') t a := by
-  refine .of_isLittleO ?_
+  refine .of_isLittleOTVS ?_
   calc (fun x' ↦ g x' - g a - (f'symm ∘L h') (x' - a))
-    _ =O[𝓝[t] a] fun x' ↦ f' (g x' - g a) - h' (x' - a) :=
-      f'symm.isBigO_comp _ _ |>.congr_left <| by simp [hf'symm _]
-    _ =o[𝓝[t] a] (· - a) := ?_
-  refine hf.isLittleO.comp_tendsto hst |>.symm |>.trans_isBigO ?_ |>.triangle ?_
-  · have hlip : AntilipschitzWith ‖f'symm‖₊ f' := fun x y ↦ by
-      simpa [hf'symm _] using f'symm.lipschitz (f' x) (f' y)
-    refine hf.isBigO_sub_rev hlip |>.comp_tendsto hst |>.trans ?_
-    refine hh.isBigO_sub.congr' (hcomp.mono fun x hx ↦ ?_) .rfl
+    _ =O[𝕜; 𝓝[t] a] fun x' ↦ f' (g x' - g a) - h' (x' - a) :=
+      f'symm.isBigOTVS_comp.congr_left <| by simp [hf'symm _]
+    _ =o[𝕜; 𝓝[t] a] (· - a) := ?_
+  refine hf.isLittleOTVS.comp_tendsto hst |>.symm |>.trans_isBigOTVS ?_ |>.triangle ?_
+  · refine hf.isThetaTVS_sub
+      (Topology.IsEmbedding.of_leftInverse hf'symm (map_continuous _) (map_continuous _)).isInducing
+      |>.symm.isBigOTVS.comp_tendsto hst |>.trans ?_
+    refine hh.isBigOTVS_sub.congr' (hcomp.mono fun x hx ↦ ?_) .rfl
     simp [← hx, ← hcomp.self_of_nhdsWithin ha]
-  · refine hh.isLittleO.congr' (hcomp.mono fun x hx ↦ ?_) .rfl
+  · refine hh.isLittleOTVS.congr' (hcomp.mono fun x hx ↦ ?_) .rfl
     simp [← hx, ← hcomp.self_of_nhdsWithin ha]
 
-theorem HasFDerivWithinAt.of_comp_left (hst : Tendsto g (𝓝[t] a) (𝓝[s] (g a)))
+theorem HasFDerivWithinAt.of_comp (hst : Tendsto g (𝓝[t] a) (𝓝[s] (g a)))
     (hf : HasFDerivWithinAt f f' s (g a)) (hh : HasFDerivWithinAt h h' t a)
     (hcomp : f ∘ g =ᶠ[𝓝[t] a] h) (hf' : f'.IsInvertible) (ha : a ∈ t) :
     HasFDerivWithinAt g (f'.inverse ∘L h') t a :=
-  .of_comp_left_of_leftInverse hst hf hh hcomp hf'.inverse_apply_self ha
+  .of_comp_of_leftInverse hst hf hh hcomp hf'.inverse_apply_self ha
 
 /-- If `f (g y) = y` for `y` in a neighborhood of `a` within `t`,
 `g` maps a neighborhood of `a` within `t` to a neighborhood of `g a` within `s`,
@@ -60,7 +60,7 @@ theorem HasFDerivWithinAt.of_local_left_inverse {g : F → E} {f' : E ≃L[𝕜]
     (hg : Tendsto g (𝓝[t] a) (𝓝[s] (g a))) (hf : HasFDerivWithinAt f (f' : E →L[𝕜] F) s (g a))
     (ha : a ∈ t) (hfg : ∀ᶠ y in 𝓝[t] a, f (g y) = y) :
     HasFDerivWithinAt g (f'.symm : F →L[𝕜] E) t a := by
-  simpa using hf.of_comp_left hg (hasFDerivWithinAt_id ..) hfg (by simp) ha
+  simpa using hf.of_comp hg (hasFDerivWithinAt_id ..) hfg (by simp) ha
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a` in the strict sense, then `g` has the derivative `f'⁻¹` at `a`
