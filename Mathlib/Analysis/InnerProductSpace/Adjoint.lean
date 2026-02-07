@@ -713,24 +713,6 @@ theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H
 
 end ContinuousLinearMap
 
--- TODO: move to earlier file
-open ContinuousLinearMap in
-public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
-    {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
-    [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
-    [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
-    [ContinuousSMul R V] [ContinuousSMul R W] (f g : V ≃L[R] W) :
-    f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : Rˣ, f = α • g := by
-  conv_lhs => rw [eq_comm]
-  simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
-    ← eq_toContinuousLinearMap_symm_comp, ← comp_assoc, eq_comp_toContinuousLinearMap_symm,
-    comp_assoc, ← comp_assoc _ f.toContinuousLinearMap, comp_coe, ← mul_def,
-    ← Subalgebra.mem_center_iff (R := R), Algebra.IsCentral.center_eq_bot, ← comp_coe,
-    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one, ContinuousLinearEquiv.ext_iff]
-  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : R), by ext; simp [h]⟩⟩
-  if hy : y = 0 then exact ⟨1, funext fun x ↦ by simp [by simpa [hy] using congr($h x).symm]⟩
-  else exact ⟨.mk0 y hy, funext fun x ↦ by simp [by simpa [eq_symm_apply] using congr($h x)]⟩
-
 namespace LinearIsometryEquiv
 
 open ContinuousLinearMap ContinuousLinearEquiv in
