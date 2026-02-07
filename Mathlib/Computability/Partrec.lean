@@ -772,4 +772,79 @@ theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
   exact ((Partrec.rfind hp).bind (hF.bind (sumCasesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq
     fun a => ext fun b => by simpa [p] using fix_aux f _ _
 
+/-- The function that returns 1 if its two (unpaired) arguments are equal, 0 otherwise -/
+def kronecker : ℕ →. ℕ := fun p => Part.some (if (Nat.unpair p).1 = (Nat.unpair p).2 then 1 else 0)
+
+lemma kronecker_partrec : Nat.Partrec Partrec.kronecker := by
+  have hc : Computable (fun p : ℕ => (Nat.unpair p).1 == (Nat.unpair p).2) :=
+    (Primrec.beq.comp Primrec.fst Primrec.snd).to_comp.comp Computable.unpair
+  have hcomp : Computable (fun p : ℕ => cond ((Nat.unpair p).1 == (Nat.unpair p).2) (1 : ℕ) 0) :=
+    Computable.cond hc (Computable.const 1) (Computable.const 0)
+  exact (Partrec.nat_iff).1 (hcomp.partrec.of_eq fun p => by
+    simp only [Partrec.kronecker]; exact congrArg Part.some (Bool.cond_decide _ _ _))
+
+def flip10 (m : ℕ) : ℕ := if m = 1 then 0 else 1
+
+lemma flip10_partrec : Nat.Partrec (fun m => Part.some (Partrec.flip10 m)) := by
+  have hc : Computable (fun m : ℕ => m == 1) :=
+    (Primrec.beq.comp Primrec.id (Primrec.const 1)).to_comp
+  have hcomp : Computable (fun m : ℕ => cond (m == 1) (0 : ℕ) 1) :=
+    Computable.cond hc (Computable.const 0) (Computable.const 1)
+  exact (Partrec.nat_iff).1 (hcomp.partrec.of_eq fun m => by
+    simp only [Partrec.flip10]
+    exact congrArg Part.some (Bool.cond_decide _ _ _))
+
+lemma kronecker_rfind_none :
+    Nat.rfind (fun k => (fun m : ℕ => m = 0) <$>
+        Part.map Partrec.flip10
+          (((Nat.pair <$> (Part.none : Part ℕ) <*> Part.some k) >>= Partrec.kronecker))) =
+      Part.none :=
+  Nat.rfind_zero_none
+    (p := fun k => (fun m : ℕ => m = 0) <$>
+      Part.map Partrec.flip10
+        (((Nat.pair <$> (Part.none : Part ℕ) <*> Part.some k) >>= Partrec.kronecker)))
+    (by simp [Seq.seq])
+
+lemma kronecker_rfind_some (n : ℕ) :
+    Nat.rfind (fun k => (fun m : ℕ => m = 0) <$>
+        Part.map Partrec.flip10
+          (((Nat.pair <$> (Part.some n : Part ℕ) <*> Part.some k) >>= Partrec.kronecker))) =
+      Part.some n := by
+  refine Part.mem_right_unique (Nat.mem_rfind.2 ⟨?_, ?_⟩) (Part.mem_some n)
+  · simp [Partrec.kronecker, Partrec.flip10, Seq.seq]
+  · intro m hm; simp [Partrec.kronecker, Partrec.flip10, Seq.seq, Nat.ne_of_gt hm]
+
+lemma kronecker_rfind (v : Part ℕ) :
+    Nat.rfind (fun k => (fun m : ℕ => m = 0) <$>
+        Part.map Partrec.flip10
+          (((Nat.pair <$> v <*> Part.some k) >>= Partrec.kronecker))) = v := by
+  refine Part.induction_on v ?_ ?_
+  · simpa using kronecker_rfind_none
+  · intro n; simpa using kronecker_rfind_some n
+
+/--
+The join of partial functions `f` and `g`, coding a disjoint union by parity.
+-/
+def join (f g : ℕ →. ℕ) : ℕ →. ℕ :=
+  fun n =>
+    cond n.bodd ((g n.div2).map (fun y => 2 * y + 1)) ((f n.div2).map (fun y => 2 * y))
+@[inherit_doc]
+scoped infix:50 " ⊕ " => Partrec.join
+
+namespace Join
+
+variable {f g h : ℕ →. ℕ}
+
+@[simp]
+lemma even (f g : ℕ →. ℕ) (n : ℕ) :
+    Partrec.join f g (2 * n) = (f n).map (fun y => 2 * y) := by
+  simp [Partrec.join]
+
+@[simp]
+lemma odd (f g : ℕ →. ℕ) (n : ℕ) :
+    Partrec.join f g (2 * n + 1) = (g n).map (fun y => 2 * y + 1) := by
+  simp [Partrec.join, Nat.bodd_mul]
+
+end Join
+
 end Partrec
