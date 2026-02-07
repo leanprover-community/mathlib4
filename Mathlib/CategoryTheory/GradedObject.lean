@@ -277,22 +277,6 @@ end GradedObject
 
 namespace GradedObject
 
-noncomputable section
-
-variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasCoproducts.{0} C]
-  [HasZeroMorphisms C]
-
-instance : HasForget (GradedObject β C) where forget := total β C ⋙ forget C
-
-instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
-
-end
-
-end GradedObject
-
-namespace GradedObject
-
 variable {I J K : Type*} {C : Type*} [Category* C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 

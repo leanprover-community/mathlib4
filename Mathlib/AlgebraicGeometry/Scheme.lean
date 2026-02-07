@@ -233,6 +233,7 @@ lemma iSup_preimage_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
 
 @[deprecated (since := "2025-10-07")] alias preimage_iSup_eq_top := iSup_preimage_eq_top
 
+@[gcongr]
 lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
     f ⁻¹ᵁ U ≤ f ⁻¹ᵁ U' :=
   fun _ ha ↦ hUU' ha

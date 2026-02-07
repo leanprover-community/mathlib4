@@ -91,7 +91,7 @@ lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : Preord} (f : X ⟶ Y) :
-    (forget Preord).map f = f := rfl
+    (forget Preord).map f = (f : X → Y) := rfl
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

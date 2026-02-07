@@ -40,8 +40,6 @@ namespace AlgebraicGeometry
 
 open CategoryTheory Category Limits Opposite
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
-
 universe u
 
 namespace Scheme

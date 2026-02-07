@@ -39,12 +39,14 @@ open Lean Meta CategoryTheory
 namespace Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-- Version of `IsIso.hom_inv_id` for internal use of the `cancelIso` simproc. Do not use. -/
+@[to_dual none]
 lemma hom_inv_id_of_eq {C : Type*} [Category* C] {x y : C}
     (f : x ⟶ y) [IsIso f] (g : y ⟶ x) (h : inv f = g) : f ≫ g = 𝟙 _ := by
   rw [← h]
   exact IsIso.hom_inv_id f
 
 /-- Version of `IsIso.hom_inv_id_assoc` for internal use of the `cancelIso` simproc. Do not use. -/
+@[to_dual none]
 lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
     (f : x ⟶ y) [IsIso f] (g : y ⟶ x) (h : inv f = g) {z : C} (k : x ⟶ z) : f ≫ g ≫ k = k := by
   rw [← h]

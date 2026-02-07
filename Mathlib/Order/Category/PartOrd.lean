@@ -88,7 +88,7 @@ lemma coe_comp {X Y Z : PartOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : PartOrd} (f : X ⟶ Y) :
-    (forget PartOrd).map f = f := rfl
+    (forget PartOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : PartOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

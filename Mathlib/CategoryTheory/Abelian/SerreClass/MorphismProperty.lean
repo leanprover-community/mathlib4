@@ -5,10 +5,14 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.Square
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
+public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-!
@@ -85,6 +89,16 @@ lemma epiModSerre_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] :
     P.epiModSerre f :=
   P.epimorphisms_le_epiModSerre f (epimorphisms.infer_property f)
 
+@[simp]
+lemma epiModSerre_zero_iff (X Y : C) :
+    P.epiModSerre (0 : X ⟶ Y) ↔ P Y :=
+  P.prop_iff_of_iso cokernelZeroIsoTarget
+
+@[simp]
+lemma monoModSerre_zero_iff (X Y : C) :
+    P.monoModSerre (0 : X ⟶ Y) ↔ P X :=
+  P.prop_iff_of_iso kernelZeroIsoSource
+
 lemma isoModSerre_iff {X Y : C} (f : X ⟶ Y) :
     P.isoModSerre f ↔ P.monoModSerre f ∧ P.epiModSerre f := Iff.rfl
 
@@ -107,6 +121,11 @@ lemma isoModSerre_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (hf : P.epiModSerre f
 lemma isoModSerre_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (hf : P.monoModSerre f) :
     P.isoModSerre f := by
   rwa [isoModSerre_iff_of_epi]
+
+@[simp]
+lemma isoModSerre_zero_iff (X Y : C) :
+    P.isoModSerre (0 : X ⟶ Y) ↔ P X ∧ P Y := by
+  simp [isoModSerre_iff]
 
 lemma isomorphisms_le_isoModSerre : isomorphisms C ≤ P.isoModSerre :=
   fun _ _ f (_ : IsIso f) ↦ ⟨P.monoModSerre_of_mono f, P.epiModSerre_of_epi f⟩
@@ -168,6 +187,34 @@ lemma isoModSerre_isInvertedBy_iff (F : C ⥤ D)
     (((ShortComplex.mk _ _ (cokernel.condition f)).exact_of_g_is_cokernel
       (cokernelIsCokernel f)).map F).epi_f (((hF _ h₂).eq_of_tgt _ _))
   exact isIso_of_mono_of_epi (F.map f)
+
+instance : P.monoModSerre.IsStableUnderBaseChange where
+  of_isPullback sq h :=
+    have := isIso_kernel_map_of_isPullback sq.flip
+    P.prop_of_iso (asIso (kernel.map _ _ _ _ sq.w.symm)).symm h
+
+instance : P.epiModSerre.IsStableUnderBaseChange where
+  of_isPullback sq h :=
+    have := Abelian.mono_cokernel_map_of_isPullback sq.flip
+    P.prop_of_mono (cokernel.map _ _ _ _ sq.w.symm) h
+
+instance : P.isoModSerre.IsStableUnderBaseChange := by
+  dsimp [isoModSerre]
+  infer_instance
+
+instance : P.monoModSerre.IsStableUnderCobaseChange where
+  of_isPushout sq h :=
+    have := Abelian.epi_kernel_map_of_isPushout sq.flip
+    P.prop_of_epi (kernel.map _ _ _ _ sq.w.symm) h
+
+instance : P.epiModSerre.IsStableUnderCobaseChange where
+  of_isPushout sq h :=
+    have := isIso_cokernel_map_of_isPushout sq.flip
+    P.prop_of_iso (asIso (cokernel.map _ _ _ _ sq.w.symm)) h
+
+instance : P.isoModSerre.IsStableUnderCobaseChange := by
+  dsimp [isoModSerre]
+  infer_instance
 
 end ObjectProperty
 

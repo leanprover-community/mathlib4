@@ -196,7 +196,7 @@ lemma forget_obj {M : SemimoduleCat.{v} R} : (forget (SemimoduleCat.{v} R)).obj 
 
 @[simp]
 lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    (forget (SemimoduleCat.{v} R)).map f = f :=
+    (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
   rfl
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where

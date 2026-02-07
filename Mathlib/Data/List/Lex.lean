@@ -55,7 +55,7 @@ theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [
 
 namespace Lex
 
-instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
+instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [Std.Trichotomous r] :
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
     aux
@@ -70,18 +70,15 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
       · exact (aux _ l₂ _ h).imp cons cons
       · exact Or.inr (rel ab)
 
-instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
-    IsTrichotomous (List α) (Lex r) where
+instance trichotomous (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (Lex r) where
   trichotomous := aux where
     aux
-    | [], [] => Or.inr (Or.inl rfl)
-    | [], _ :: _ => Or.inl nil
-    | _ :: _, [] => Or.inr (Or.inr nil)
-    | a :: l₁, b :: l₂ => by
-      rcases trichotomous_of r a b with (ab | rfl | ab)
-      · exact Or.inl (rel ab)
-      · exact (aux l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
-      · exact Or.inr (Or.inr (rel ab))
+    | [], [], _, _ => rfl
+    | [], _ :: _, hab, _ => hab nil |>.elim
+    | _ :: _, [], _, hba => hba nil |>.elim
+    | a :: l₁, b :: l₂, hab, hba => by
+      obtain rfl := Std.Trichotomous.trichotomous a b (mt rel hab) (mt rel hba)
+      rw [aux l₁ l₂ (mt cons hab) (mt cons hba)]
 
 instance asymm (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (Lex r) where
   asymm := aux where

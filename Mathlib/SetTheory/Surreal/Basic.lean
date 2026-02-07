@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.SetTheory.Game.Ordinal

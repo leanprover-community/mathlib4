@@ -277,7 +277,7 @@ lemma eq_or_eq_of_isPushout' (h : IsPushout t l r b)
 
 /-- A pushout square in `Type` where the top map is injective is a pullback square.
 This is also essentially the lemma `isPullback_of_isPushout_of_mono_left`
-from the file `CategoryTheory.Adhesive` in the case of the adhesive category of types. -/
+from the file `CategoryTheory.Adhesive.Basic` in the case of the adhesive category of types. -/
 lemma isPullback_of_isPushout (h : IsPushout t l r b) (ht : Function.Injective t) :
     IsPullback t l r b := by
   rw [isPullback_iff]

@@ -871,13 +871,17 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   simp_rw [CategoryTheory.Iso.trans_hom, ← TopCat.comp_app, ← PresheafedSpace.comp_base] at eq
   rw [ι_preservesColimitIso_inv] at eq
   change
-    ((SheafedSpace.forget C).map (colimit.ι F i) ≫ _) y =
-      ((SheafedSpace.forget C).map (colimit.ι F j) ≫ _) x at eq
+    ((SheafedSpace.forget C).map (colimit.ι F i) ≫ (preservesColimitIso (forget C) F).hom ≫
+          (HasColimit.isoOfNatIso Discrete.natIsoFunctor).hom ≫
+            (TopCat.sigmaIsoSigma ((F ⋙ forget C).obj ∘ Discrete.mk)).hom) y =
+      ((SheafedSpace.forget C).map (colimit.ι F j) ≫ (preservesColimitIso (forget C) F).hom ≫
+          (HasColimit.isoOfNatIso Discrete.natIsoFunctor).hom ≫
+            (TopCat.sigmaIsoSigma ((F ⋙ forget C).obj ∘ Discrete.mk)).hom) x at eq
   cases i; cases j
   rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
-  exact h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
+  convert h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 
 instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     SheafedSpace.IsOpenImmersion (colimit.ι F i) where

@@ -482,8 +482,9 @@ where
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
       </li>
 
-@[server_rpc_method_cancellable]
-private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+/-- The rpc method of the `rw??` widget. -/
+@[server_rpc_method]
+def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |

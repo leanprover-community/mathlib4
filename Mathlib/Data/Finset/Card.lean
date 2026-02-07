@@ -675,9 +675,11 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
   · grind
   · rintro ⟨hst, h⟩
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} := card_eq_one.mp (by grind)
-    exact
-      ⟨a, fun hs => (by grind : a ∉ {a}) <| mem_singleton_self _, by
-        rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
+    grind =>
+      have : a ∈ t \ s
+      have h : insert a s ⊆ t
+      have := eq_of_subset_of_card_le h
+      instantiate
 
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty

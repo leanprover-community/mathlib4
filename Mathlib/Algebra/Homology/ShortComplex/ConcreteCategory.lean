@@ -172,17 +172,13 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
     (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   apply (mono_iff_injective (e.hom.app _)).1 inferInstance
-  refine (congr_hom (e.hom.naturality D.δ) x₃).trans
-    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_).trans
-    (congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
-  · refine ((congr_fun (e.hom.naturality D.L₁.g) x₂).symm.trans ?_).trans
-      (congr_fun (e.hom.naturality D.v₀₁.τ₃) x₃)
-    dsimp
-    rw [h₂]
-  · refine ((congr_fun (e.hom.naturality D.L₂.f) x₁).symm.trans ?_).trans
-      (congr_fun (e.hom.naturality D.v₁₂.τ₂) x₂)
-    dsimp
-    rw [h₁]
+  exact (ConcreteCategory.congr_hom (e.hom.naturality D.δ) x₃).trans ((D.δ_apply _ _ _
+    (((congr_fun (e.hom.naturality D.L₁.g) x₂).symm.trans (by simp [h₂])).trans
+      (congr_fun (e.hom.naturality D.v₀₁.τ₃) x₃))
+    (((congr_fun (e.hom.naturality D.L₂.f) x₁).symm.trans (by simp [h₁])).trans
+      (congr_fun (e.hom.naturality D.v₁₂.τ₂) x₂))).trans
+    (ConcreteCategory.congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
+
 
 end SnakeInput
 

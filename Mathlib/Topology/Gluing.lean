@@ -117,9 +117,7 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
 
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => ⟨inv (D.f _ _) x.2, IsIso.inv_hom_id_apply (D.f x.fst x.fst) _,
-    -- Use `elementwise_of%` elaborator instead of `IsIso.inv_hom_id_apply` to work around
-    -- `ConcreteCategory`/`HasForget` mismatch:
-    by simp [elementwise_of% IsIso.inv_hom_id (D.f x.fst x.fst)]⟩, by
+    by simp [IsIso.inv_hom_id_apply (D.f x.fst x.fst)]⟩, by
     rintro a b ⟨x, e₁, e₂⟩
     exact ⟨D.t _ _ x, e₂, by rw [← e₁, D.t_inv_apply]⟩, by
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ ⟨x, e₁, e₂⟩

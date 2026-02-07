@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.Common

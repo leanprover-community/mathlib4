@@ -12,16 +12,14 @@ import Mathlib.Analysis.Asymptotics.Theta
 /-!
 # Asymptotic equivalence
 
-In this file, we define the relation `IsEquivalent l u v`, which means that `u-v` is little o of
-`v` along the filter `l`.
+In this file, we prove properties of the relation `IsEquivalent l u v`,
+which means that `u-v` is little o of `v` along the filter `l`.
 
 Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the same codomain `β`.
-While the definition only requires `β` to be a `NormedAddCommGroup`, most interesting properties
-require it to be a `NormedField`.
 
 ## Notation
 
-We introduce the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
+We use the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
 `Asymptotics` locale.
 
 ## Main results
@@ -69,14 +67,6 @@ open Topology
 section NormedAddCommGroup
 
 variable {α β : Type*} [NormedAddCommGroup β]
-
-/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
-  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
-  when `u x - v x = o(v x)` as `x` converges along `l`. -/
-def IsEquivalent (l : Filter α) (u v : α → β) :=
-  (u - v) =o[l] v
-
-@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 variable {u v w : α → β} {l : Filter α}
 

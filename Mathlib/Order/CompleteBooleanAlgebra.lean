@@ -403,6 +403,12 @@ theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
     (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j := by
   simp only [inf_iSup_eq]
 
+theorem himp_iInf_eq {f : ι → α} : a ⇨ (⨅ x, f x) = ⨅ x, a ⇨ f x :=
+  eq_of_forall_le_iff fun b => by simp
+
+theorem iSup_himp_eq {f : ι → α} : (⨆ x, f x) ⇨ a = ⨅ x, f x ⇨ a :=
+  eq_of_forall_le_iff fun b => by simp [inf_iSup_eq]
+
 theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨆ i, f i) ⊓ ⨆ j, g j) = ⨆ i : ι × ι', f i.1 ⊓ g i.2 := by
   simp_rw [iSup_inf_eq, inf_iSup_eq, iSup_prod]
@@ -503,6 +509,12 @@ theorem iInf₂_sup_eq {f : ∀ i, κ i → α} (a : α) : (⨅ (i) (j), f i j) 
 
 theorem sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ (i) (j), f i j) = ⨅ (i) (j), a ⊔ f i j :=
   @inf_iSup₂_eq αᵒᵈ _ _ _ _ _
+
+theorem iSup_sdiff_eq {f : ι → α} : (⨆ x, f x) \ a = ⨆ x, f x \ a :=
+  eq_of_forall_ge_iff fun _ => by simp
+
+theorem sdiff_iSup_eq {f : ι → α} : a \ ⨅ x, f x = ⨆ x, a \ f x :=
+  eq_of_forall_ge_iff fun _ => by simp [iInf_sup_eq]
 
 theorem iInf_sup_iInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨅ i, f i) ⊔ ⨅ i, g i) = ⨅ i : ι × ι', f i.1 ⊔ g i.2 :=

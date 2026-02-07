@@ -33,8 +33,6 @@ open CategoryTheory Limits TopologicalSpace
 
 variable {T : Type u} [TopologicalSpace T]
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
-
 /-- A square consisting of opens `X₂ ⊓ X₃`, `X₂`, `X₃` and `X₂ ⊔ X₃` is
 a Mayer-Vietoris square. -/
 @[simps! toSquare]

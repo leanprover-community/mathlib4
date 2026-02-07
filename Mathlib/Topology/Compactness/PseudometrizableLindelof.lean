@@ -3,7 +3,7 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Data.Finset.Attr

@@ -46,7 +46,6 @@ namespace TopCat.Presheaf
 
 namespace Sheafify
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 The prelocal predicate on functions into the stalks, asserting that the function is equal to a germ.
 -/
@@ -68,7 +67,6 @@ are locally equal to germs.
 def sheafify : Sheaf (Type v) X :=
   subsheafToTypes (Sheafify.isLocallyGerm F)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The morphism from a presheaf to its sheafification,
 sending each section to its germs.
 (This forms the unit of the adjunction.)
@@ -87,7 +85,6 @@ In `sheafifyStalkIso` we show this is an isomorphism.
 def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x ⟶ F.stalk x :=
   TopCat.stalkToFiber (Sheafify.isLocallyGerm F) x
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_surjective
   intro t
@@ -97,7 +94,6 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   · exact fun y => F.germ _ _ y.2 s
   · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_injective
   intro U V fU hU fV hV e

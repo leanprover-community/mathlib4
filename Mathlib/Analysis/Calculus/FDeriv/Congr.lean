@@ -26,8 +26,8 @@ noncomputable section
 
 section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
@@ -39,22 +39,38 @@ section congr
 
 /-! ### congr properties of the derivative -/
 
-theorem hasFDerivWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
   calc
-    HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' (s \ {y}) x :=
-      (hasFDerivWithinAt_diff_singleton _).symm
-    _ ↔ HasFDerivWithinAt f f' (t \ {y}) x := by
-      suffices 𝓝[s \ {y}] x = 𝓝[t \ {y}] x by simp only [HasFDerivWithinAt, this]
-      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
-        inter_comm] using h
-    _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_diff_singleton _
+    HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' (s \ {x}) x :=
+      hasFDerivWithinAt_diff_singleton_self.symm
+    _ ↔ HasFDerivWithinAt f f' (t \ {x}) x := by
+      suffices 𝓝[s \ {x}] x = 𝓝[t \ {x}] x by simp only [HasFDerivWithinAt, this]
+      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq, inter_comm]
+        using h
+    _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_diff_singleton_self
 
 theorem hasFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
-  hasFDerivWithinAt_congr_set' x <| h.filter_mono inf_le_left
+  hasFDerivWithinAt_congr_set_nhdsNE <| h.filter_mono inf_le_left
 
-theorem differentiableWithinAt_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+/-- In the case `y = x`, see also `hasFDerivWithinAt_congr_set_nhdsNE`,
+which does not require the domain to be a T₁ space. -/
+theorem hasFDerivWithinAt_congr_set' [T1Space E] (y : E)
+    (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x := by
+  rcases eq_or_ne x y with rfl | hne
+  · exact hasFDerivWithinAt_congr_set_nhdsNE h
+  · rw [hne.nhdsWithin_compl_singleton] at h
+    exact hasFDerivWithinAt_congr_set h
+
+theorem differentiableWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
+    DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
+  exists_congr fun _ => hasFDerivWithinAt_congr_set_nhdsNE h
+
+/-- In the case `y = x`, see also `differentiableWithinAt_congr_set_nhdsNE`,
+which does not require the domain to be a T₁ space. -/
+theorem differentiableWithinAt_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   exists_congr fun _ => hasFDerivWithinAt_congr_set' _ h
 
@@ -62,21 +78,29 @@ theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   exists_congr fun _ => hasFDerivWithinAt_congr_set h
 
-theorem fderivWithin_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem fderivWithin_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
+    fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
+  classical
+  simp only [fderivWithin, differentiableWithinAt_congr_set_nhdsNE h,
+    hasFDerivWithinAt_congr_set_nhdsNE h]
+
+/-- In the case `y = x`, see also `fderivWithin_congr_set_nhdsNE`,
+which does not require the domain to be a T₁ space. -/
+theorem fderivWithin_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
   classical
   simp only [fderivWithin, differentiableWithinAt_congr_set' _ h, hasFDerivWithinAt_congr_set' _ h]
 
 theorem fderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
-  fderivWithin_congr_set' x <| h.filter_mono inf_le_left
+  fderivWithin_congr_set_nhdsNE <| h.filter_mono inf_le_left
 
-theorem fderivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem fderivWithin_eventually_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s =ᶠ[𝓝 x] fderivWithin 𝕜 f t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => fderivWithin_congr_set' y
 
 theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 f s =ᶠ[𝓝 x] fderivWithin 𝕜 f t :=
-  fderivWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
+  (eventually_eventually_nhds.2 h).mono fun _ => fderivWithin_congr_set
 
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
     HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
@@ -188,7 +212,9 @@ theorem DifferentiableAt.congr_of_eventuallyEq (h : DifferentiableAt 𝕜 f x) (
     DifferentiableAt 𝕜 f₁ x :=
   hL.differentiableAt_iff.2 h
 
-theorem DifferentiableWithinAt.fderivWithin_congr_mono (h : DifferentiableWithinAt 𝕜 f s x)
+theorem DifferentiableWithinAt.fderivWithin_congr_mono
+    [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
+    (h : DifferentiableWithinAt 𝕜 f s x)
     (hs : EqOn f₁ f t) (hx : f₁ x = f x) (hxt : UniqueDiffWithinAt 𝕜 t x) (h₁ : t ⊆ s) :
     fderivWithin 𝕜 f₁ t x = fderivWithin 𝕜 f s x :=
   (HasFDerivWithinAt.congr_mono h.hasFDerivWithinAt hs hx h₁).fderivWithin hxt

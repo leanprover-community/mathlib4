@@ -23,7 +23,7 @@ Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` prese
 
 universe v u w u' v'
 
-open CategoryTheory Sheaf Limits HasForget GrothendieckTopology
+open CategoryTheory Sheaf Limits GrothendieckTopology
 
 namespace LightCondensed
 
@@ -48,7 +48,6 @@ namespace LightCondSet
 
 variable {X Y : LightCondSet.{u}} (f : X ⟶ Y)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
@@ -62,7 +61,6 @@ namespace LightCondMod
 
 variable (R : Type u) [Ring R] {X Y : LightCondMod.{u} R} (f : X ⟶ Y)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
@@ -70,13 +68,11 @@ lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
   rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.forget R).ReflectsEpimorphisms where
   reflects f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
     exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.val).mpr hf
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.forget R).PreservesEpimorphisms where
   preserves f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
@@ -90,7 +86,6 @@ variable (R : Type*) [Ring R]
 variable {F : ℕᵒᵖ ⥤ LightCondMod R} {c : Cone F} (hc : IsLimit c)
   (hF : ∀ n, Epi (F.map (homOfLE (Nat.le_succ n)).op))
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 include hc hF in
 lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
   apply Functor.epi_of_epi_map (forget R)

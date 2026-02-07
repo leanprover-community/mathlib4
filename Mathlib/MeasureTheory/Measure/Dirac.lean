@@ -194,7 +194,7 @@ open Measure
 theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s := by
   by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, *]
 
-theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
+@[simp] theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
   mem_ae_dirac_iff hp
 
@@ -313,3 +313,42 @@ lemma injective_dirac [SeparatesPoints α] :
 end dirac_injective
 
 end MeasureTheory
+
+namespace MeasureTheory.Measure
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  [MeasurableSingletonClass α] {f : β → α} {μ : Measure α} {s : Finset α} {a₁ a₂ : α}
+
+lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a} • .dirac a where
+  mp hμ := by
+    ext t ht
+    rw [← measure_diff_null (s := t) hμ]
+    dsimp
+    classical
+    rw [Set.diff_compl, ← (s : Set α).biUnion_of_singleton]
+    simp_rw [Finset.mem_coe, Set.inter_iUnion]
+    rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
+      (by measurability)]
+    · simp only [coe_finset_sum, Finset.sum_apply, smul_apply]
+      congr with a
+      by_cases ha : a ∈ t <;> simp [*]
+    simpa
+  mpr hμ := by rw [hμ, ae_finsetSum_measure_iff]; exact fun i hi ↦ ae_smul_measure (by simpa) _
+
+lemma ae_eq_or_eq_iff_eq_dirac_add_dirac (ha : a₁ ≠ a₂) :
+    (∀ᵐ a ∂μ, a = a₁ ∨ a = a₂) ↔ μ = μ {a₁} • .dirac a₁ + μ {a₂} • .dirac a₂ := by
+  -- FIXME: Why does `simpa using ...` not work?
+  convert ae_mem_finset_iff (s := .cons a₁ {a₂} <| by simpa) <;> simp
+
+lemma ae_mem_finset_iff_map_eq_sum_dirac {μ : Measure β} (hf : AEMeasurable f μ) :
+    (∀ᵐ b ∂μ, f b ∈ s) ↔ μ.map f = ∑ a ∈ s, μ (f ⁻¹' {a}) • .dirac a := by
+  rw [← ae_map_iff hf (by measurability), ae_mem_finset_iff]
+  simp [map_apply₀ hf]
+
+lemma ae_eq_or_eq_iff_map_eq_dirac_add_dirac {μ : Measure β} (hf : AEMeasurable f μ)
+    (ha : a₁ ≠ a₂) :
+    (∀ᵐ b ∂μ, f b = a₁ ∨ f b = a₂) ↔
+      μ.map f = μ (f ⁻¹' {a₁}) • .dirac a₁ + μ (f ⁻¹' {a₂}) • .dirac a₂ := by
+  -- FIXME: Why does `simpa using ...` not work?
+  convert ae_mem_finset_iff_map_eq_sum_dirac (s := .cons a₁ {a₂} <| by simpa) hf <;> simp
+
+end MeasureTheory.Measure

@@ -114,6 +114,14 @@ variable [NoZeroDivisors M₀]
 @[simp] lemma support_mul' (f g : ι → M₀) : support (f * g) = support f ∩ support g :=
   support_mul _ _
 
+/-- If `f` is everywhere nonzero, then `support (f * g) = support g`. -/
+lemma support_mul_of_ne_zero_left {f : ι → M₀} (hf : ∀ x, f x ≠ 0) (g : ι → M₀) :
+    support (fun x => f x * g x) = support g := by simp [support_eq_univ hf]
+
+/-- If `g` is everywhere nonzero, then `support (f * g) = support f`. -/
+lemma support_mul_of_ne_zero_right (f : ι → M₀) {g : ι → M₀} (hg : ∀ x, g x ≠ 0) :
+    support (fun x => f x * g x) = support f := by simp [support_eq_univ hg]
+
 end MulZeroClass
 
 section MonoidWithZero

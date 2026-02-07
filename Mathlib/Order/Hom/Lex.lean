@@ -31,7 +31,7 @@ variable {α : Type*}
 
 namespace RelIso
 
-variable {r : α → α → Prop} {x y : α} [IsTrans α r] [IsTrichotomous α r] [DecidableRel r]
+variable {r : α → α → Prop} {x y : α} [IsTrans α r] [Std.Trichotomous r] [DecidableRel r]
 
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements less than `x` and elements not

@@ -10,7 +10,7 @@ public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.Deriving.Util  -- shake: keep (???)
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.Pairing
-meta import Aesop.BuiltinRules
+import Aesop.BuiltinRules
 
 /-!
 # `Encodable` deriving handler

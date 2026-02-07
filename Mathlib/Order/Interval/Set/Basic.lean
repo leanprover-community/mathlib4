@@ -286,13 +286,11 @@ theorem Ioc_self (a : α) : Ioc a a = ∅ :=
 theorem Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
-@[simp]
+@[simp, gcongr]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
   ⟨fun h => h self_mem_Ici, fun h _ => h.trans⟩
 
-@[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
-
-@[simp]
+@[simp, gcongr]
 theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
   mp h := by
     obtain ⟨ab, c, cb, ac⟩ := ssubset_iff_exists.mp h
@@ -300,19 +298,13 @@ theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
   mpr h := (ssubset_iff_of_subset (Ici_subset_Ici.mpr h.le)).mpr
     ⟨b, self_mem_Iic, fun h' => h.not_ge h'⟩
 
-@[gcongr] alias ⟨_, _root_.GCongr.Ici_ssubset_Ici_of_le⟩ := Ici_ssubset_Ici
-
-@[simp]
+@[simp, gcongr]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 
-@[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
-
-@[simp]
+@[simp, gcongr]
 theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b :=
   @Ici_ssubset_Ici αᵒᵈ _ _ _
-
-@[gcongr] alias ⟨_, _root_.GCongr.Iic_ssubset_Iic_of_le⟩ := Iic_ssubset_Iic
 
 @[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=

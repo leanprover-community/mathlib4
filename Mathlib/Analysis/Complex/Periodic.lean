@@ -78,6 +78,11 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
   simp [qParam, exp_ne_zero]
 
 @[fun_prop]
+lemma continuous_qParam : Continuous (𝕢 h) := by
+  unfold qParam
+  fun_prop
+
+@[fun_prop]
 lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
   unfold qParam
   fun_prop

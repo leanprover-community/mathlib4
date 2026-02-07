@@ -234,6 +234,20 @@ end WellFounded
 
 /-! ### Miscellaneous monotonicity results -/
 
+section PreorderPartialOrder
+
+variable [Preorder α] [PartialOrder β] {f : α → β} {s : Set α}
+
+theorem MonotoneOn.strictMonoOn_of_injOn (hmono : MonotoneOn f s) (hinj : s.InjOn f) :
+    StrictMonoOn f s :=
+  fun _ hx _ hy h ↦ hmono hx hy h.le |>.lt_of_ne <| mt (hinj hx hy) h.ne
+
+theorem AntitoneOn.strictAntiOn_of_injOn (hanti : AntitoneOn f s) (hinj : s.InjOn f) :
+    StrictAntiOn f s :=
+  fun _ hx _ hy h ↦ hanti hx hy h.le |>.lt_of_ne' <| mt (hinj hx hy) h.ne
+
+end PreorderPartialOrder
+
 section Preorder
 
 variable [Preorder α] [Preorder β] {f g : α → β} {a : α}
@@ -429,13 +443,19 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder β] {f : α → β}
+variable [PartialOrder β] {f : α → β} {s : Set α}
 
 theorem Monotone.strictMono_iff_injective (hf : Monotone f) : StrictMono f ↔ Injective f :=
   ⟨fun h ↦ h.injective, hf.strictMono_of_injective⟩
 
 theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ Injective f :=
   ⟨fun h ↦ h.injective, hf.strictAnti_of_injective⟩
+
+theorem MonotoneOn.strictMonoOn_iff_injOn (hf : MonotoneOn f s) : StrictMonoOn f s ↔ s.InjOn f :=
+  ⟨StrictMonoOn.injOn, hf.strictMonoOn_of_injOn⟩
+
+theorem AntitoneOn.strictAnti_iff_injOn (hf : AntitoneOn f s) : StrictAntiOn f s ↔ s.InjOn f :=
+  ⟨StrictAntiOn.injOn, hf.strictAntiOn_of_injOn⟩
 
 /-- If a monotone function is equal at two points, it is equal between all of them -/
 theorem Monotone.eq_of_ge_of_le {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) {i : α}

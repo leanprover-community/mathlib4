@@ -17,8 +17,8 @@ public import Mathlib.Tactic.Basic
 /-!
 # Relation closures
 
-This file defines the reflexive, transitive, reflexive transitive and equivalence closures
-of relations and proves some basic results on them.
+This file defines the reflexive, symmetric, transitive, reflexive transitive and equivalence
+closures of relations and proves some basic results on them.
 
 Note that this is about unbundled relations, that is terms of types of the form `α → β → Prop`. For
 the bundled version, see `Rel`.
@@ -27,6 +27,8 @@ the bundled version, see `Rel`.
 
 * `Relation.ReflGen`: Reflexive closure. `ReflGen r` relates everything `r` related, plus for all
   `a` it relates `a` with itself. So `ReflGen r a b ↔ r a b ∨ a = b`.
+* `Relation.SymmGen`: Symmetric closure. This is also the comparability relation,
+  such that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`)
 * `Relation.TransGen`: Transitive closure. `TransGen r` relates everything `r` related
   transitively. So `TransGen r a b ↔ ∃ x₀ ... xₙ, r a x₀ ∧ r x₀ x₁ ∧ ... ∧ r xₙ b`.
 * `Relation.ReflTransGen`: Reflexive transitive closure. `ReflTransGen r` relates everything
@@ -304,6 +306,11 @@ inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
 
+/-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
+  that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
+def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
+  r a b ∨ r b a
+
 variable (r) in
 /-- `EqvGen r`: equivalence closure of `r`. -/
 @[mk_iff]
@@ -332,6 +339,46 @@ instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
 
 end ReflGen
+
+namespace SymmGen
+
+theorem of_rel (h : r a b) : SymmGen r a b :=
+  Or.inl h
+
+theorem of_rel_symm (h : r b a) : SymmGen r a b :=
+  Or.inr h
+
+theorem swap (h : SymmGen r b a) : SymmGen (swap r) a b := by
+  induction h with
+  | inl hba => exact of_rel hba
+  | inr hab => exact of_rel_symm hab
+
+@[simp, refl]
+theorem refl (r : α → α → Prop) [Std.Refl r] (a : α) : SymmGen r a a :=
+  .of_rel (_root_.refl _)
+
+theorem rfl [Std.Refl r] : SymmGen r a a := .refl ..
+
+instance [Std.Refl r] : Std.Refl (SymmGen r) where
+  refl := .refl r
+
+@[symm]
+theorem symm : SymmGen r a b → SymmGen r b a :=
+  Or.symm
+
+instance : Std.Symm (SymmGen r) where
+  symm _ _ := SymmGen.symm
+
+instance decidableRel [DecidableRel r] : DecidableRel (SymmGen r) :=
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
+
+theorem of_le {α : Type*} [LE α] {a b : α} (h : a ≤ b) : SymmGen (· ≤ ·) a b := .of_rel h
+theorem of_ge {α : Type*} [LE α] {a b : α} (h : b ≤ a) : SymmGen (· ≤ ·) a b := .of_rel_symm h
+
+alias _root_.LE.le.symmGen := SymmGen.of_le
+alias _root_.LE.le.symmGen_symm := SymmGen.of_ge
+
+end SymmGen
 
 namespace ReflTransGen
 
@@ -492,6 +539,23 @@ lemma reflGen_minimal {r' : α → α → Prop} (hr' : Reflexive r') (h : ∀ x 
   simpa [reflGen_eq_self hr'] using ReflGen.mono h hxy
 
 end reflGen
+
+section SymmGen
+
+theorem symmGen_swap (r : α → α → Prop) : SymmGen (swap r) = SymmGen r :=
+  funext₂ fun _ _ ↦ propext or_comm
+
+theorem symmGen_swap_apply (r : α → α → Prop) : SymmGen (swap r) a b ↔ SymmGen r a b :=
+  or_comm
+
+theorem symmGen_comm {a b : α} : SymmGen r a b ↔ SymmGen r b a :=
+  or_comm
+
+@[simp]
+theorem symmGen_of_total [Std.Total r] (a b : α) : SymmGen r a b :=
+  Std.Total.total a b
+
+end SymmGen
 
 section TransGen
 
