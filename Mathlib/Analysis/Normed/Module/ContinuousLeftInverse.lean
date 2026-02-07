@@ -268,15 +268,24 @@ def leftInverse_of_injective_of_isClosed_range
       (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x
   )
 
+@[simp]
+lemma leftInverse_of_injective_of_isClosed_range_apply
+    (f : E →L[R] F) (hf : Injective f) (hf' : IsClosed (range f)) (x : f.range) :
+    f.leftInverse_of_injective_of_isClosed_range hf hf' x = f.leftInverse x := by
+  simp only [leftInverse_of_injective_of_isClosed_range]
+  simp
+  obtain ⟨x, hx⟩ := x
+  simp
+  sorry
+
 /-- A split linear map has a bounded left inverse. -/
 lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoundedLeftInverse := by
-  have : (f.rangeRestrict).ker = ⊥ := by
-    rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective
   -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
   obtain ⟨p, hp⟩ := hf.closedComplemented
   let g := f.leftInverse_of_injective_of_isClosed_range hf.injective hf.isClosed_range
   refine ⟨g.comp p, fun x ↦ ?_⟩
-  simpa [g, hp (⟨f x, by simp⟩)] using f.rangeRestrict.leftInverse_apply_of_inj this x
+  simpa [g, hp (⟨f x, by simp⟩)] using
+    f.leftInverse_apply_of_inj (LinearMap.ker_eq_bot.mpr hf.injective) x
 
 end ContinuousLinearMap
 
