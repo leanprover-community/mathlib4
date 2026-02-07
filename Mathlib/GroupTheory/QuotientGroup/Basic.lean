@@ -408,6 +408,16 @@ def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup
   left_inv _ := by simp
   right_inv _ := by ext; simp
 
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
+    [H.Normal] (f : (MonoidHom.restrictHom H A).ker) (g : G) :
+    restrictHomKerEquiv A H f g = f.val g := rfl
+
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_symm_coe_apply (A : Type*) [CommGroup A]
+    (H : Subgroup G) [H.Normal] (f : G ⧸ H →* A) (g : G) :
+    ((restrictHomKerEquiv A H).symm f).val g = f g := rfl
+
 end QuotientGroup
 
 namespace QuotientAddGroup
