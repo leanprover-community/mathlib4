@@ -131,7 +131,6 @@ run_cmd liftTermElabM do
   let some (_, wlLinters) := ls.find? (·.1 == ``linter.weeklyLintSet) |
     throwError m!"'linter.weeklyLintSet is not defined."
   for mll in mlLinters ∪ nrLinters ∪ wlLinters do
-    logInfo m!"{← realizeGlobalName mll}"
     let [(mlRes, _)] ← realizeGlobalName mll |
       if !DefinedInScripts.contains mll then
         throwError "Unknown option '{mll}'!"
