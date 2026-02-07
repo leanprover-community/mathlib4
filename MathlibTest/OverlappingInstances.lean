@@ -142,6 +142,14 @@ section instantiateMVars
 
 variable {α : Type*} [Repr α]
 
+/--
+warning: The declaration `needsInstantiateMVars` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+
+There are 2 instances of `[Repr α]`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `needsInstantiateMVars`.
+-/
+#guard_msgs in
 def needsInstantiateMVars [Repr α] : Bool := true
 
 end instantiateMVars
