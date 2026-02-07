@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.PowerSeries.Inverse
-public import Mathlib.Algebra.Polynomial.Derivation
-public import Mathlib.RingTheory.Derivation.Basic
-public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
