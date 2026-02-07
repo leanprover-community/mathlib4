@@ -592,7 +592,7 @@ structure GCongrSubgoal where
 
 /-- Try applying the gcongr lemma `lem` to the goal `g`.
 In case of success, add any unsolved side goals to the `GCongrM` state. -/
-def tryGCongrLemma (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarId → MetaM Unit) :
+def tryGCongrLemma? (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarId → MetaM Unit) :
     GCongrM (Option (Array GCongrSubgoal)) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
   let gs ← try
@@ -638,7 +638,7 @@ def _root_.Lean.MVarId.gcongrStep (g : MVarId)
   if relName == `_Implies then
     lemmas := lemmas ++ relImpRelLemma lhsArgs.size
   for lem in lemmas do
-    if let some result ← tryGCongrLemma g lem sideGoalDischarger then
+    if let some result ← tryGCongrLemma? g lem sideGoalDischarger then
       return result
   if lemmas.isEmpty then
     throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
