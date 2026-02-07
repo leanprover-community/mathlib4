@@ -732,26 +732,27 @@ theorem summable_of_isEquivalent_nat {E : Type*} [NormedAddCommGroup E] [NormedS
     Summable f :=
   summable_of_isBigO_nat' hg h.isBigO
 
-theorem IsTheta.summable_iff {ι E F : Type*} [NormedAddCommGroup E]
+theorem Asymptotics.IsTheta.summable_iff {ι E F : Type*} [NormedAddCommGroup E]
   [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E]
   [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F} (h : f =Θ[cofinite] g) :
     Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isBigO' hf h.isBigO_symm, fun hg => summable_of_isBigO' hg h.isBigO⟩
 
-theorem IsTheta.summable_iff_nat {E F : Type*} [NormedAddCommGroup E]
+theorem Asymptotics.IsTheta.summable_iff_nat {E F : Type*} [NormedAddCommGroup E]
   [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] [FiniteDimensional ℝ E]
   [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F} (h : f =Θ[atTop] g) :
     Summable f ↔ Summable g :=
   IsTheta.summable_iff <| by simpa [← Nat.cofinite_eq_atTop] using h
 
-theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (h : f ~[cofinite] g) :
     Summable f ↔ Summable g :=
-  IsTheta.summable_iff h.isTheta
+  h.isTheta.summable_iff
 
-theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
-  IsTheta.summable_iff_nat h.isTheta
+theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) :
+    Summable f ↔ Summable g :=
+  h.isTheta.summable_iff_nat
 
 namespace Module.Basis
 
