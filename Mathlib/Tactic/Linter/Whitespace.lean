@@ -6,8 +6,6 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
-public meta import Std.Data.Iterators.Combinators.Zip
-public meta import Std.Data.Iterators.Producers.Range
 
 /-!
 # The `whitespace` linter
