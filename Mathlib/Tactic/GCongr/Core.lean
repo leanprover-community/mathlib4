@@ -590,7 +590,8 @@ structure GCongrSubgoal where
   isContra : Bool
   deriving Inhabited
 
-/-- Try applying the gcongr lemma `lem` to the goal `g`. -/
+/-- Try applying the gcongr lemma `lem` to the goal `g`.
+In case of success, add any unsolved side goals to the `GCongrM` state. -/
 def tryGCongrLemma (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarId → MetaM Unit) :
     GCongrM (Option (Array GCongrSubgoal)) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
@@ -617,7 +618,7 @@ def tryGCongrLemma (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarId
   return some mainSubGoals
 
 /-- Perform a single step of the `gcongr` tactic. Return the main subgoals, on which `gcongr`
-can act recursively, and the side goals that couldn't be discharged by `sideGoalDischarger`. -/
+can act recursively. -/
 def _root_.Lean.MVarId.gcongrStep (g : MVarId)
     (relName : Name) (lhs rhs : Expr) (sideGoalDischarger : MVarId → MetaM Unit) :
     GCongrM (Array GCongrSubgoal) := do
