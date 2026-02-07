@@ -858,7 +858,7 @@ order homomorphisms gives an order isomorphism between the two function prosets.
 @[simps apply symm_apply]
 def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
     (f : α ≃o γ) (g : β ≃o δ) : (α →o β) ≃o (γ →o δ) where
-  toFun  p := .comp g <| .comp p f.symm
+  toFun p := .comp g <| .comp p f.symm
   invFun p := .comp g.symm <| .comp p f
   left_inv p := DFunLike.coe_injective <| by
     change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
@@ -883,6 +883,13 @@ def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
   map_rel_iff' := Prod.swap_le_swap
+
+/-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
+@[simps! (attr := grind =)]
+def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
+    (α × β) × γ ≃o α × (β × γ) where
+  toEquiv := .prodAssoc α β γ
+  map_rel_iff' := @fun ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ ↦ by simp [Equiv.prodAssoc, and_assoc]
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
@@ -924,11 +931,9 @@ section LE
 
 variable [LE α] [LE β]
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
-
-@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_le_apply⟩ := le_iff_le
 
 theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e x ≤ y :=
   e.rel_symm_apply
@@ -947,11 +952,9 @@ protected theorem monotone (e : α ≃o β) : Monotone e :=
 protected theorem strictMono (e : α ≃o β) : StrictMono e :=
   e.toOrderEmbedding.strictMono
 
-@[simp, to_dual self]
+@[simp, gcongr, to_dual self]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
-
-@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_lt_apply⟩ := lt_iff_lt
 
 theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x < y := by
   rw [← e.lt_iff_lt, e.apply_symm_apply]
@@ -1068,6 +1071,10 @@ noncomputable def ofUnique
     α ≃o β where
   toEquiv := Equiv.ofUnique α β
   map_rel_iff' := by simp
+
+/-- `Equiv.equivOfIsEmpty` promoted to an `OrderIso`. -/
+def ofIsEmpty (α β : Type*) [Preorder α] [Preorder β] [IsEmpty α] [IsEmpty β] : α ≃o β :=
+  ⟨Equiv.equivOfIsEmpty α β, @isEmptyElim _ _ _⟩
 
 end OrderIso
 

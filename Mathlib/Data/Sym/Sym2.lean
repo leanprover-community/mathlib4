@@ -326,6 +326,8 @@ instance : SetLike (Sym2 α) α where
     simp only [mem_iff'] at hx hy hx' hy'
     aesop
 
+instance : PartialOrder (Sym2 α) := .ofSetLike (Sym2 α) α
+
 @[simp]
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
   Iff.rfl
@@ -483,7 +485,7 @@ lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s
 
 /-! ### Diagonal -/
 
-variable {e : Sym2 α} {f : α → β}
+variable {z : Sym2 α} {f : α → β}
 
 /-- A type `α` is naturally included in the diagonal of `α × α`, and this function gives the image
 of this diagonal in `Sym2 α`.
@@ -505,49 +507,51 @@ theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
 theorem isDiag_iff_proj_eq (z : α × α) : IsDiag (Sym2.mk z) ↔ z.1 = z.2 :=
   Prod.recOn z fun _ _ => mk_isDiag_iff
 
-protected lemma IsDiag.map : e.IsDiag → (e.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) e
+protected lemma IsDiag.map : z.IsDiag → (z.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) z
 
-lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
-  Sym2.ind (fun _ _ ↦ hf.eq_iff) e
+lemma isDiag_map (hf : Injective f) : (z.map f).IsDiag ↔ z.IsDiag :=
+  Sym2.ind (fun _ _ ↦ hf.eq_iff) z
 
 @[simp]
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
-theorem isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag :=
-  z.ind Subsingleton.elim
+@[simp, nontriviality]
+lemma isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag := z.ind Subsingleton.elim
 
 /-- The set of all `Sym2 α` elements on the diagonal. -/
-def diagSet : Set (Sym2 α) :=
-  Set.range diag
+def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 
-@[simp]
-theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag :=
-  ⟨fun ⟨_, h⟩ ↦ h ▸ rfl, z.ind fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩⟩
+@[simp] lemma mem_diagSet : z ∈ diagSet ↔ z.IsDiag := .rfl
+
+@[deprecated mem_diagSet (since := "2025-12-10")]
+theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rfl
+
+@[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
+  ext ⟨a, b⟩; simp [diag, eq_comm]
 
 @[deprecated (since := "2025-11-05")] alias ⟨_, IsDiag.mem_range_diag⟩ := mem_diagSet_iff_isDiag
 
-@[deprecated mem_diagSet_iff_isDiag (since := "2025-11-05")]
-theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
-  z.mem_diagSet_iff_isDiag.symm
+@[deprecated range_diag (since := "2025-11-05")]
+theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) := by simp
 
-theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by
-  simp
+@[deprecated mem_diagSet (since := "2025-11-05")]
+theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by simp
 
-theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} :=
-  Set.ext mem_diagSet_iff_isDiag
+theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
+set_option linter.deprecated false in
+@[deprecated Set.compl_setOf (since := "2025-12-10")]
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
   congrArg _ diagSet_eq_setOf_isDiag
 
-theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ :=
-  Set.ext fun z ↦ ⟨fun _ ↦ trivial, z.ind fun a b _ ↦ Subsingleton.elim a b ▸ ⟨_, rfl⟩⟩
+theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ := by ext; simp
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
 
-instance diagSet_decidablePred (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagSet α) :=
-  diagSet_eq_setOf_isDiag ▸ IsDiag.decidablePred _
+instance decidablePred_mem_diagSet (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagSet α) :=
+  IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
@@ -600,20 +604,28 @@ theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | 
   ext z; exact z.ind (by simp)
 
 lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmetric := by
-  ext z
-  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq
+  ext ⟨a, b⟩; simp
 
 lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
-  ext z
-  exact z.ind fun _ _ ↦ mem_diagSet_iff_eq.not
+  ext ⟨a, b⟩; simp
 
+@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Reflexive r := by
+  simp [Set.subset_def, Sym2.forall, Reflexive]
+
+@[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
+    Disjoint diagSet (fromRel hr) ↔ Irreflexive r := by
+  simp [Set.disjoint_left, Sym2.forall, Irreflexive]
+
+@[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
+    fromRel hr ⊆ diagSetᶜ ↔ Irreflexive r := by simp [Set.subset_compl_iff_disjoint_left]
+
+@[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
 theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
-    Reflexive r ↔ diagSet ⊆ fromRel sym :=
-  ⟨fun hr _ ⟨_, hd⟩ ↦ hd ▸ hr _, fun h _ ↦ h ⟨_, rfl⟩⟩
+    Reflexive r ↔ diagSet ⊆ fromRel sym := by simp
 
+@[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
 theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
-    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ :=
-  ⟨fun hr _ hz ⟨_, hd⟩ ↦ hr _ <| fromRel_prop.mp <| hd ▸ hz, fun h _ ha ↦ h ha ⟨_, rfl⟩⟩
+    Irreflexive r ↔ fromRel sym ⊆ diagSetᶜ := by simp
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=

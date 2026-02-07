@@ -5,15 +5,23 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.TryThis
-public meta import Mathlib.Util.AtLocation
 public meta import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.TryThis
+public import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
 
 Evaluate expressions in the language of additive, commutative monoids and groups.
+
+## Future work
+
+* In mathlib 3, `abel` accepted additional optional arguments:
+  ```
+  syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
+  ```
+  It is undecided whether these features should be restored eventually.
 
 -/
 
@@ -29,35 +37,25 @@ initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
 
 /--
-Tactic for evaluating equations in the language of
-*additive*, commutative monoids and groups.
+`abel` solves equations in the language of *additive*, commutative monoids and groups.
 
 `abel` and its variants work as both tactics and conv tactics.
 
 * `abel1` fails if the target is not an equality that is provable by the axioms of
   commutative monoids/groups.
 * `abel_nf` rewrites all group expressions into a normal form.
-  * In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
+  * `abel_nf at h` rewrites in a hypothesis.
   * `abel_nf (config := cfg)` allows for additional configuration:
-    * `red`: the reducibility setting (overridden by `!`)
-    * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
-    * `recursive`: if true, `abel_nf` will also recurse into atoms
-* `abel!`, `abel1!`, `abel_nf!` will use a more aggressive reducibility setting to identify atoms.
+    * `red`: the reducibility setting (overridden by `!`).
+    * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
+    * `recursive`: if true, `abel_nf` also recurses into atoms.
+* `abel!`, `abel1!`, `abel_nf!` use a more aggressive reducibility setting to identify atoms.
 
-For example:
-
+Examples:
 ```
 example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
 example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
 ```
-
-## Future work
-
-* In mathlib 3, `abel` accepted additional optional arguments:
-  ```
-  syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
-  ```
-  It is undecided whether these features should be restored eventually.
 -/
 syntax (name := abel) "abel" "!"? : tactic
 
@@ -273,10 +271,10 @@ def evalSMul (k : Expr × ℤ) : NormalExpr → M (NormalExpr × Expr)
     return (← term' (n'.expr, k.2 * n.2) x a',
       ← iapp ``term_smul #[k.1, n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
-theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term]
+theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term, one_nsmul]
 theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp [termg]
 theorem term_atom_pf {α} [AddCommMonoid α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
-  simp [term, h]
+  simp [term, h, one_nsmul]
 theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
   simp [termg, h]
 
@@ -504,7 +502,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  let m := AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg)
+  let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
   transformAtLocation (m ·) "abel_nf" loc (failIfUnchanged := true) false
 
 @[tactic_alt abel]
@@ -522,7 +520,8 @@ def elabAbelNFConv : Tactic := fun stx ↦ match stx with
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult
-      (← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) (← instantiateMVars (← Conv.getLhs)))
+      (← AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
+        (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abel]

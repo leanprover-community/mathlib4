@@ -268,6 +268,16 @@ theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.I
     innerSL 𝕜 x ∘L f = innerSL 𝕜 (f x) := by
   ext; simp [hf]
 
+@[simp] lemma _root_.InnerProductSpace.adjoint_rankOne (x : E) (y : F) :
+    adjoint (rankOne 𝕜 x y) = rankOne 𝕜 y x := by
+  simp [rankOne_def', adjoint_comp, ← adjoint_innerSL_apply]
+
+lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [CompleteSpace G]
+    (x : E) (y : F) (f : G →L[𝕜] F) :
+    rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
+  simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
+
 end ContinuousLinearMap
 
 /-! ### Self-adjoint operators -/
@@ -317,16 +327,11 @@ theorem _root_.isSelfAdjoint_starProjection
     IsSelfAdjoint U.starProjection :=
   U.starProjection_isSymmetric.isSelfAdjoint
 
-@[deprecated (since := "2025-07-05")] alias _root_.orthogonalProjection_isSelfAdjoint :=
-  isSelfAdjoint_starProjection
-
 theorem conj_starProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T)
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     IsSelfAdjoint (U.starProjection ∘L T ∘L U.starProjection) := by
   rw [← mul_def, ← mul_def, ← mul_assoc]
   exact hT.conjugate_self <| isSelfAdjoint_starProjection U
-
-@[deprecated (since := "2025-07-05")] alias conj_orthogonalProjection := conj_starProjection
 
 end IsSelfAdjoint
 
@@ -395,15 +400,19 @@ theorem isStarProjection_iff_isSymmetricProjection :
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
+alias ⟨IsStarProjection.isSymmetricProjection, LinearMap.IsSymmetricProjection.isStarProjection⟩ :=
+  isStarProjection_iff_isSymmetricProjection
+
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ S.range = T.range := by
-  simpa using LinearMap.IsSymmetricProjection.ext_iff
-    (isStarProjection_iff_isSymmetricProjection.mp hS)
-    (isStarProjection_iff_isSymmetricProjection.mp hT)
+  simpa using hS.isSymmetricProjection.ext_iff hT.isSymmetricProjection
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
+
+theorem _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
+    IsStarProjection (rankOne 𝕜 x x) := (isSymmetricProjection_rankOne_self hx).isStarProjection
 
 end ContinuousLinearMap
 
@@ -418,7 +427,7 @@ open ContinuousLinearMap in
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p ↔ ∃ (_ : p.range.HasOrthogonalProjection),
     p = p.range.starProjection := by
-  simp_rw [← p.isStarProjection_iff_isSymmetricProjection.symm.eq,
+  simp_rw [p.isStarProjection_iff_isSymmetricProjection.eq,
     LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range, coe_inj]
 
 lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
@@ -634,6 +643,15 @@ theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
+theorem adjoint_innerₛₗ_apply (x : E) :
+    adjoint (innerₛₗ 𝕜 x) = toSpanSingleton 𝕜 E x :=
+  have := FiniteDimensional.complete 𝕜 E
+  ext fun _ ↦ congr($(ContinuousLinearMap.adjoint_innerSL_apply x) _)
+
+theorem adjoint_toSpanSingleton (x : E) :
+    adjoint (toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
+  simp [← adjoint_innerₛₗ_apply]
+
 end LinearMap
 
 section Unitary
@@ -663,6 +681,14 @@ lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
     _ = adjoint (e : H →L[𝕜] K) ∘L e ∘L (e.symm : K →L[𝕜] H) := by simp
     _ = e.symm := by
       rw [← comp_assoc, norm_map_iff_adjoint_comp_self _ |>.mp e.norm_map, one_def, id_comp]
+
+omit [CompleteSpace H] [CompleteSpace K] in
+theorem _root_.LinearIsometryEquiv.adjoint_toLinearMap_eq_symm
+    [FiniteDimensional 𝕜 H] [FiniteDimensional 𝕜 K] (e : H ≃ₗᵢ[𝕜] K) :
+    LinearMap.adjoint e.toLinearMap = e.symm.toLinearMap :=
+  have := FiniteDimensional.complete 𝕜 H
+  have := FiniteDimensional.complete 𝕜 K
+  congr($e.adjoint_eq_symm)
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :

@@ -5,8 +5,9 @@ Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Sum
 
 /-!
 # Graph products
@@ -31,7 +32,7 @@ Define all other graph products!
 
 @[expose] public section
 
-variable {α β γ : Type*}
+variable {α β γ V V₁ V₂ W W₁ W₂ : Type*}
 
 namespace SimpleGraph
 
@@ -92,6 +93,24 @@ def boxProdRight (a : α) : H ↪g G □ H where
   toFun := Prod.mk a
   inj' _ _ := congr_arg Prod.snd
   map_rel_iff' {_ _} := boxProd_adj_right
+
+namespace Iso
+
+/-- The box product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def boxProdSumDistrib (G : SimpleGraph V) (H₁ : SimpleGraph W₁) (H₂ : SimpleGraph W₂) :
+    G □ (H₁ ⊕g H₂) ≃g G □ H₁ ⊕g G □ H₂ where
+  toEquiv := .prodSumDistrib ..
+  map_rel_iff' := by simp
+
+/-- The box product distributes over the disjoint sum of graphs. -/
+@[simps!, simps toEquiv]
+def sumBoxProdDistrib (G₁ : SimpleGraph V₁) (G₂ : SimpleGraph V₂) (H : SimpleGraph W) :
+    (G₁ ⊕g G₂) □ H ≃g G₁ □ H ⊕g G₂ □ H where
+  toEquiv := .sumProdDistrib ..
+  map_rel_iff' := by simp
+
+end Iso
 
 namespace Walk
 

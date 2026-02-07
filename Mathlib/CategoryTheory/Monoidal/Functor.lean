@@ -639,7 +639,7 @@ def toOplaxMonoidal : F.OplaxMonoidal where
       associativity_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv, comp_id]
   oplax_left_unitality _ := by
     rw [← cancel_epi (λ_ _).hom, Iso.hom_inv_id, h.left_unitality, assoc, assoc,
-      Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc,hom_inv_whiskerRight]
+      Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc, hom_inv_whiskerRight]
   oplax_right_unitality _ := by
     rw [← cancel_epi (ρ_ _).hom, Iso.hom_inv_id, h.right_unitality, assoc, assoc,
       Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv]

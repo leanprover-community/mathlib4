@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.Limits.Presentation
 
+import Mathlib.CategoryTheory.Adjunction.Limits
+
 /-!
 # Objects that are colimits of objects satisfying a certain property
 
@@ -52,7 +54,7 @@ namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category* C] (P : ObjectProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -230,6 +232,21 @@ lemma IsClosedUnderColimitsOfShape.of_equivalence (e : J ≌ J')
     [P.IsClosedUnderColimitsOfShape J] :
     P.IsClosedUnderColimitsOfShape J' := by
   rwa [← P.isClosedUnderColimitsOfShape_iff_of_equivalence e]
+
+instance IsClosedUnderColimitsOfShape.inverseImage
+    (P : ObjectProperty D) (F : C ⥤ D) [P.IsClosedUnderColimitsOfShape J]
+    [PreservesColimitsOfShape J F] : (P.inverseImage F).IsClosedUnderColimitsOfShape J :=
+  ⟨fun _ ⟨c, H⟩ ↦ ColimitOfShape.prop (P := P) ⟨c.map F, H⟩⟩
+
+lemma isClosedUnderColimitsOfShape_inverseImage_iff (P : ObjectProperty D)
+    [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
+    (P.inverseImage e.functor).IsClosedUnderColimitsOfShape J ↔
+      P.IsClosedUnderColimitsOfShape J := by
+  refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
+  convert inferInstanceAs
+    (((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderColimitsOfShape J)
+  ext X
+  simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 
 lemma colimitsOfShape_eq_unop_limitsOfShape :
     P.colimitsOfShape J = (P.op.limitsOfShape Jᵒᵖ).unop := by

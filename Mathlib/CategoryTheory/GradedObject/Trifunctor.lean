@@ -10,10 +10,10 @@ public import Mathlib.CategoryTheory.Functor.Trifunctor
 /-!
 # The action of trifunctors on graded objects
 
-Given a trifunctor `F. C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and types `I₁`, `I₂` and `I₃`, we define a functor
+Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and types `I₁`, `I₂` and `I₃`, we define a functor
 `GradedObject I₁ C₁ ⥤ GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject (I₁ × I₂ × I₃) C₄`
 (see `mapTrifunctor`). When we have a map `p : I₁ × I₂ × I₃ → J` and suitable coproducts
-exists, we define a functor
+exist, we define a functor
 `GradedObject I₁ C₁ ⥤ GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄`
 (see `mapTrifunctorMap`) which sends graded objects `X₁`, `X₂`, `X₃` to the graded object
 which sets `j` to the coproduct of the objects `((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃)`
@@ -75,7 +75,7 @@ section
 variable {F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄}
 
 /-- The natural transformation `mapTrifunctor F I₁ I₂ I₃ ⟶ mapTrifunctor F' I₁ I₂ I₃`
-induced by a natural transformation `F ⟶ F` of trifunctors. -/
+induced by a natural transformation `F ⟶ F'` of trifunctors. -/
 @[simps]
 def mapTrifunctorMapNatTrans (α : F ⟶ F') (I₁ I₂ I₃ : Type*) :
     mapTrifunctor F I₁ I₂ I₃ ⟶ mapTrifunctor F' I₁ I₂ I₃ where
@@ -92,7 +92,7 @@ def mapTrifunctorMapNatTrans (α : F ⟶ F') (I₁ I₂ I₃ : Type*) :
     simp only [← NatTrans.comp_app, NatTrans.naturality]
 
 /-- The natural isomorphism `mapTrifunctor F I₁ I₂ I₃ ≅ mapTrifunctor F' I₁ I₂ I₃`
-induced by a natural isomorphism `F ≅ F` of trifunctors. -/
+induced by a natural isomorphism `F ≅ F'` of trifunctors. -/
 @[simps]
 def mapTrifunctorMapIso (e : F ≅ F') (I₁ I₂ I₃ : Type*) :
     mapTrifunctor F I₁ I₂ I₃ ≅ mapTrifunctor F' I₁ I₂ I₃ where

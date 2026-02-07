@@ -460,6 +460,14 @@ lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq
 
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
+lemma height_pos_of_bot_lt {x : α} [OrderBot α] (h : ⊥ < x) : 0 < height x := by
+  rw [height_pos]
+  grind [not_isMin_iff]
+
+lemma coheight_pos_of_lt_top {x : α} [OrderTop α] (h : x < ⊤) : 0 < coheight x := by
+  rw [coheight_pos]
+  grind [not_isMax_iff]
+
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
   mp h := by
@@ -607,14 +615,6 @@ lemma krullDim_le_one_iff : krullDim α ≤ 1 ↔ ∀ x : α, IsMin x ∨ IsMax 
   · rintro ⟨x, ⟨y, hxy⟩, z, hzx⟩
     exact ⟨⟨2, ![y, x, z], fun i ↦ by fin_cases i <;> simpa⟩, by simp⟩
 
-lemma krullDim_le_one_iff_forall_isMax {α : Type*} [PartialOrder α] [OrderBot α] :
-    krullDim α ≤ 1 ↔ ∀ x : α, x ≠ ⊥ → IsMax x := by
-  simp [krullDim_le_one_iff, ← or_iff_not_imp_left]
-
-lemma krullDim_le_one_iff_forall_isMin {α : Type*} [PartialOrder α] [OrderTop α] :
-    krullDim α ≤ 1 ↔ ∀ x : α, x ≠ ⊤ → IsMin x := by
-  simp [krullDim_le_one_iff, ← or_iff_not_imp_right]
-
 lemma krullDim_pos_iff : 0 < krullDim α ↔ ∃ x y : α, x < y := by
   contrapose!
   simp_rw [← isMax_iff_forall_not_lt, ← krullDim_nonpos_iff_forall_isMax]
@@ -637,6 +637,10 @@ section PartialOrder
 
 variable {α : Type*} [PartialOrder α]
 
+lemma krullDim_le_one_iff_forall_isMax [OrderBot α] :
+    krullDim α ≤ 1 ↔ ∀ x : α, x ≠ ⊥ → IsMax x := by
+  simp [krullDim_le_one_iff, ← or_iff_not_imp_left]
+
 lemma krullDim_eq_zero_iff_of_orderBot [OrderBot α] :
     krullDim α = 0 ↔ Subsingleton α :=
   ⟨fun H ↦ subsingleton_of_forall_eq ⊥ fun _ ↦ le_bot_iff.mp
@@ -648,6 +652,10 @@ lemma krullDim_pos_iff_of_orderBot [OrderBot α] :
     ← ne_eq, ← lt_or_lt_iff_ne, or_iff_right]
   simp [Order.krullDim_nonneg]
 
+lemma krullDim_le_one_iff_forall_isMin [OrderTop α] :
+    krullDim α ≤ 1 ↔ ∀ x : α, x ≠ ⊤ → IsMin x := by
+  simp [krullDim_le_one_iff, ← or_iff_not_imp_right]
+
 lemma krullDim_eq_zero_iff_of_orderTop [OrderTop α] :
     krullDim α = 0 ↔ Subsingleton α :=
   ⟨fun H ↦ subsingleton_of_forall_eq ⊤ fun _ ↦ top_le_iff.mp
@@ -658,6 +666,10 @@ lemma krullDim_pos_iff_of_orderTop [OrderTop α] :
   rw [← not_subsingleton_iff_nontrivial, ← Order.krullDim_eq_zero_iff_of_orderTop,
     ← ne_eq, ← lt_or_lt_iff_ne, or_iff_right]
   simp [Order.krullDim_nonneg]
+
+lemma krullDim_le_one_iff_of_boundedOrder [BoundedOrder α] :
+    krullDim α ≤ 1 ↔ ∀ x : α, x = ⊥ ∨ x = ⊤ := by
+  simp [Order.krullDim_le_one_iff]
 
 end PartialOrder
 
@@ -901,9 +913,8 @@ section calculations
 
 lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [BoundedOrder α] :
     krullDim α = 1 ↔ IsSimpleOrder α := by
-  rw [le_antisymm_iff, krullDim_le_one_iff, WithBot.one_le_iff_pos,
-    Order.krullDim_pos_iff_of_orderBot, isSimpleOrder_iff]
-  simp only [isMin_iff_eq_bot, isMax_iff_eq_top, and_comm]
+  rw [le_antisymm_iff, krullDim_le_one_iff_of_boundedOrder, WithBot.one_le_iff_pos,
+    Order.krullDim_pos_iff_of_orderBot, isSimpleOrder_iff, and_comm]
 
 @[simp] lemma krullDim_of_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
     [IsSimpleOrder α] : krullDim α = 1 :=
@@ -934,7 +945,7 @@ proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
   obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
   apply coheight_eq_top_iff.mpr
   intro m
-  use {length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
+  use { length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
   case h => simp [RelSeries.head]
   case step =>
     intro ⟨i, hi⟩

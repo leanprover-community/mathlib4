@@ -270,9 +270,6 @@ theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : Ord
     {o : Ordinal} (ho : IsSuccLimit o) : f o = ⨆ a : Iio o, f a :=
   Order.IsNormal.apply_of_isSuccLimit H ho
 
-@[deprecated (since := "2025-07-08")]
-alias IsNormal.apply_of_isLimit := Order.IsNormal.apply_of_isSuccLimit
-
 theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
   obtain rfl | hn := s.eq_empty_or_nonempty
   · simp
