@@ -590,6 +590,32 @@ structure GCongrSubgoal where
   isContra : Bool
   deriving Inhabited
 
+/-- Try applying the gcongr lemma `lem` to the goal `g`. -/
+def tryGCongrLemma (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarId → MetaM Unit) :
+    GCongrM (Option (Array GCongrSubgoal)) := do
+  let const ← mkConstWithFreshMVarLevels lem.declName
+  let gs ← try
+    withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
+  catch _ =>
+    return none
+  let some e ← getExprMVarAssignment? g | panic! "unassigned?"
+  let args := e.getAppArgs
+  let mainSubGoals ← lem.mainSubgoals.mapM fun (i, numIntro, isContra) ↦
+    -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
+    -- unification ...
+    if let some (.mvar goal) := args[i]? then
+      return { goal := ← introN goal numIntro, isContra }
+    else
+      panic! "what kind of lemma is this?"
+  -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
+  -- by the `apply`.
+  gs.forM fun g ↦ do
+    if !(← g.isAssigned) && !mainSubGoals.any (·.goal == g) then
+      try sideGoalDischarger (← g.intros).2
+      catch _ => pushNewGoal g
+  -- Return all unresolved subgoals, "main" or "side"
+  return some mainSubGoals
+
 /-- Perform a single step of the `gcongr` tactic. Return the main subgoals, on which `gcongr`
 can act recursively, and the side goals that couldn't be discharged by `sideGoalDischarger`. -/
 def _root_.Lean.MVarId.gcongrStep (g : MVarId)
@@ -604,7 +630,6 @@ def _root_.Lean.MVarId.gcongrStep (g : MVarId)
     throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
   unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
     throwTacticEx `gcongr g m!"{lhs} and {rhs} are not of the same shape"
-  let mctx ← getMCtx
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
   let key := { relName, head := lhsHead, arity := lhsArgs.size }
@@ -612,31 +637,8 @@ def _root_.Lean.MVarId.gcongrStep (g : MVarId)
   if relName == `_Implies then
     lemmas := lemmas ++ relImpRelLemma lhsArgs.size
   for lem in lemmas do
-    let gs ← try
-      -- Try `apply`-ing such a lemma to the goal.
-      let const ← mkConstWithFreshMVarLevels lem.declName
-      withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
-    catch _ =>
-      setMCtx mctx
-      continue
-    let some e ← getExprMVarAssignment? g | panic! "unassigned?"
-    let args := e.getAppArgs
-    let mainSubGoals ← lem.mainSubgoals.mapM fun (i, numIntro, isContra) ↦
-      -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
-      -- unification ...
-      if let some (.mvar goal) := args[i]? then
-        return { goal := ← introN goal numIntro, isContra }
-      else
-        panic! "what kind of lemma is this?"
-    -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
-    -- by the `apply`.
-    gs.forM fun g ↦ do
-      if !(← g.isAssigned) && !mainSubGoals.any (·.goal == g) then
-        let mctx ← getMCtx
-        try sideGoalDischarger (← g.intros).2
-        catch _ => setMCtx mctx; pushNewGoal g
-    -- Return all unresolved subgoals, "main" or "side"
-    return mainSubGoals
+    if let some result ← tryGCongrLemma g lem sideGoalDischarger then
+      return result
   if lemmas.isEmpty then
     throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
       for relation '{relName}' and constant '{lhsHead}'."
