@@ -75,6 +75,7 @@ instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) where
     congr with n xy
     rw [ha, hb]
 
+set_option linter.overlappingInstances false in
 -- The goal of this lemma is to allow to rewrite antidiagonal
 -- when the decidability instances obsucate Lean
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
