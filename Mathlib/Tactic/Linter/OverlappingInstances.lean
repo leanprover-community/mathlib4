@@ -115,7 +115,7 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
     for (parentIdxs, cls) in projClasses do
       if let some (fvar₀, clsIsTypeOfFVar₀) := encounteredClasses[cls]? then
         -- We have encountered a projection with this type already; we should now record an overlap,
-        -- unless it is (or will) be redundant.
+        -- unless it is (or will be) redundant.
         -- Note that the actions in this branch are allowed to be "slow".
 
         /- Whether `fvar₀` yields the presciently-named class `parentClass` as a projection. This
