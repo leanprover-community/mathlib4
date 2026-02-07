@@ -121,15 +121,9 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
         /- Whether `fvar₀` yields the presciently-named class `parentClass` as a projection. This
         occurs iff either
         - `fvar₀` represents `cls` in `encounteredClasses`
-        - or `fvar₀` is in an overlap on `cls`.
-        Note: since in this context of use `parentClass` may be further on in `fvar`'s
-        `projClasses` (and so an overlap between `fvar` and `fvar₀` may not have been recorded yet)
-        we must check `encounteredClasses`. -/
+        - or `fvar₀` is in an overlap on `cls`. -/
         let isProjectionOfFVar₀ (parentClass : Expr) :=
           encounteredClasses[parentClass]?.any (·.1 == fvar₀)
-            /- Technical note: this does not test that `fvar` is in the *same* overlap as `fvar₀`.
-            However, if `fvar₀` is in *an* overlap on some parent of `fvar`, we trust it at least
-            shares an overlap with `fvar` on some (possibly distinct) parent of `cls`. -/
             || overlaps.containsAt parentClass fvar₀
 
         /- Tests if any (strict) parents of `cls` are yielded by `fvar₀` as a projection. If so,
