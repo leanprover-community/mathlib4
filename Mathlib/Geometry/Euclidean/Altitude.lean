@@ -217,9 +217,9 @@ open scoped RealInnerProductSpace
 
 variable {n : ℕ} (s : Simplex ℝ P n)
 
-/-- The inner product of the vectors from `i` and `j` to the altitude foot of `i` is equal to
-zero. -/
-lemma inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero [NeZero n] {i j : Fin (n + 1)} (h : i ≠ j) :
+/-- Altitudes are perpendicular to the faces containing their foot.  -/
+lemma inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero {i j : Fin (n + 1)} (h : i ≠ j) :
+    have : NeZero n := by grind [neZero_iff]
     ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 := by
   refine Submodule.inner_right_of_mem_orthogonal
     (K := vectorSpan ℝ (s.points '' {i}ᶜ))
