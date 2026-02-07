@@ -392,12 +392,12 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
 
 open Subgroup in
 @[to_additive]
-theorem _root_.Subgroup.Characteristic.comap_quotient_mk {N : Subgroup G} [hN : N.Characteristic]
-    {K : Subgroup (G ⧸ N)} (hK : K.Characteristic) :
-    Characteristic (K.comap (mk' N)) := by
-  refine characteristic_iff_map_le.2 fun ϕ x ⟨y, hy⟩ => ?_
-  have := characteristic_iff_map_eq.1 hK (congr N N ϕ (characteristic_iff_map_eq.1 hN ϕ))
-  have := mem_map_of_mem (congr N N ϕ (characteristic_iff_map_eq.1 hN ϕ)).toMonoidHom hy.1
+theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [H.Characteristic]
+    {K : Subgroup (G ⧸ H)} (hK : K.Characteristic) :
+    Characteristic (K.comap (mk' H)) := by
+  refine characteristic_iff_map_le.2 fun ϕ x ⟨y, hy, _⟩ => ?_
+  have := characteristic_iff_map_eq.1 hK (congr H H ϕ (characteristic_iff_map_eq.1 inferInstance ϕ))
+  have := mem_map_of_mem (congr H H ϕ (characteristic_iff_map_eq.1 inferInstance ϕ)).toMonoidHom hy
   simp_all
 
 end QuotientGroup
