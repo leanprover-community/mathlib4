@@ -149,7 +149,7 @@ theorem mul_sub_mul_mem [I.IsTwoSided]
 /--
 The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`.
 -/
-abbrev inertia (G : Type*) [Group G] [MulSemiringAction G α] (I : Ideal α) :
+abbrev inertia (G : Type*) [Group G] [MulAction G α] (I : Ideal α) :
     Subgroup G := AddSubgroup.inertia I.toAddSubgroup G
 
 end Ideal
