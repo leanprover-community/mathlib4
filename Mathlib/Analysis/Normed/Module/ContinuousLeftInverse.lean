@@ -191,22 +191,21 @@ lemma HasBoundedLeftInverse.foo [IsTopologicalAddGroup F]
     (hf.leftInverse.ker).ClosedComplemented :=
   ContinuousLinearMap.closedComplemented_ker_of_rightInverse _ f hf.leftInverse_leftInverse
 
-lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) : f.Splits := by
-  refine ⟨hf.injective, ?_, ?_⟩
-  · -- Proof sketch: assume z_n = f y_n is a sequence in range f converging to z.
-    -- Then z_n = f y_n = f g (f y_n) converges to f g z (by continuity of f and g),
-    -- hence (if in a T2 space, perhaps weaker) z = f (g z) ∈ range f also.
-    -- Not sure about the best way to formalise this, but it certainly works.
-    sorry
-  -- Let g be a left inverse for f. Then ker g is a closed subspace of F,
-  -- and a complement to range f. Proof sketch:
-  -- If y = f x ∈ ker g, we have x = g f x = g y = 0, so y = f 0 = 0 is trivial.
-  -- For any z ∈ F, observe that z = (z - f g z) + f g z; the latter lies in range f,
-  -- while the former is in ker g as we have g (f g z) = g z for any z.
+lemma HasBoundedLeftInverse.isClosed_range {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) :
+    IsClosed (range f) := by
+  -- Proof sketch: assume z_n = f y_n is a sequence in range f converging to z.
+  -- Then z_n = f y_n = f g (f y_n) converges to f g z (by continuity of f and g),
+  -- hence (if in a T2 space, perhaps weaker) z = f (g z) ∈ range f also.
+  -- Not sure about the best way to formalise this, but it certainly works.
+  sorry
 
-  -- Issue: Lean expects a continuous projection to f.range instead, so we cannot just do
-  -- `use hf.leftInverse.ker`. TODO how does this work? just some API gap?
-  -- idea: do y ↦ f g y; is continuous as both maps are, idempotent as continuous left inverse
+lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) : f.Splits := by
+  refine ⟨hf.injective, hf.isClosed_range, ?_⟩
+  -- Idea of proof: let g be a left inverse for f. Then ker g is a closed subspace of F,
+  -- and a complement to range f.
+  -- Mathlib's definition of closed complement takes a continuous projection to f.range instead
+  -- of a complementary subspace: consider `f.comp g` instead, which is continuous as both maps are.
+  -- and idempotent as a continuous left inverse.
   let p' := f.comp hf.leftInverse
   -- have aux : ∀ (x : (f).range), (p'.codRestrict (f).range (by intro y; simp [p'])) x = x := by
   --   intro y; simp [p']
@@ -218,55 +217,36 @@ lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInver
     simp only [coe_coe, coe_comp', Function.comp_apply, p']
     rw [hf.leftInverse_leftInverse]
   sorry -- some Lean quibbles; morally the previous sorry
-#check Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl
--- would also work, but might be more effort than this one...
 
-variable {R E F : Type*} [NontriviallyNormedField R] -- XXX weaken later!
-  [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
+section -- alternative proof; requiring stronger typeclass assumptions
+
+variable {R E F : Type*} [NontriviallyNormedField R]
+  [NormedAddCommGroup E] [NormedSpace R E]
   [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
 
+lemma HasBoundedLeftInverse.splits' {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) : f.Splits := by
+  refine ⟨hf.injective, hf.isClosed_range, ?_⟩
+  -- Idea of proof: let g be a left inverse for f.
+  -- Then ker g is a closed subspace of F and a complement to range f.
+  refine Submodule.ClosedComplemented.of_isCompl_isClosed ⟨?_, ?_⟩
+    hf.isClosed_range hf.leftInverse.isClosed_ker
+  · -- If y = f x ∈ ker g, we have x = g f x = g y = 0, so y = f 0 = 0 is trivial.
+    rw [Submodule.disjoint_def]
+    rintro y ⟨x, hx⟩ hker
+    have : x = 0 := by rw [← hf.leftInverse_leftInverse x]; erw [hx]; exact hker
+    simp [← hx, this]
+  · -- For any z ∈ F, observe that z = (z - f g z) + f g z; the latter lies in range f,
+    -- while the former is in ker g as we have g (f g z) = g z for any z.
+    rw [codisjoint_iff, Submodule.sup_eq_top_iff]
+    intro z
+    exact ⟨f (hf.leftInverse z), by simp,
+      z - (f (hf.leftInverse z)), by simp [hf.leftInverse_leftInverse (hf.leftInverse z)], by simp⟩
 
-#check LinearMap.exists_leftInverse_of_injective -- without continuity, is easy
--- Conversely, suppose f is injective with closed range and a closed complement Y ⊆ F.
--- We need to find a continuous left inverse g : F → X.
--- We will define g to be zero on Y, and an inverse to f on range f.
--- TODO: how can we make sure to do this linearly, while g is continuous?
--- (If we could choose a closed complement X of ker f, we'd get an iso f : X → range f,
--- and the inverse would be our natural choice. It would be bounded as f is anti-Lipschitz
--- because... well, somehow should be true.)
--- Actually, I'm stupid: f is injective, so the kernel of course has a complement.
--- In fact, f is anti-Lipschitz (assuming sufficient completeness), hence the inverse is bounded.
-/- So, proof strategy is:
-1. restrict f to range f; observe that map is still injective
-2. therefore, it is an equivalence (mathlib knows this) and has an inverse (range f) → X
-3. define the inverse g as y ∈ Y -> project to (range f) -> X; that projection exists by our
-  definition of closed complement. :-)
-4. the inverse is bounded as f was anti-Lipschitz
-  (and we had a closed complement, i.e. continuous projection)!
+end
 
-Why is this map a left inverse? need to check g f x = x for all x.
-Observe y = f x ∈ range f, so g y = inv (y) = x... by construction (hopefully!)
--/
-#check ContinuousLinearMap.rangeRestrict -- restrict f, step 1
--- step 2, restriction is injective: missing lemma, but almost "by grind"
--- -> is a linear equiv, has an inverse: should be in Lean
-
-/-- A choice of continuous left inverse of an injective continuous linear map with closed range:
-this is `LinearMap.leftInverse` as a continuous linear map;
-by injectivity, the junk value of `leftInverse` never matters, and continuity of the inverse
-follows form the closed range condition. -/
-def leftInverse_of_injective_of_isClosed_range
-    (f : E →L[R] F) (hf : Injective f) (hf' : IsClosed (range f)) : f.range →L[R] E :=
-  letI K := f.antilipschitzConstant_of_injective_of_isClosed_range hf hf'
-  letI hfK := f.antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range hf hf'
-  LinearMap.mkContinuous f.rangeRestrict.leftInverse K (by
-    rintro ⟨y, ⟨x, rfl⟩⟩
-    have aux := hfK.le_mul_dist x 0
-    simp only [dist_zero_right, map_zero] at aux
-    convert aux
-    exact f.rangeRestrict.leftInverse_apply_of_inj
-      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x
-  )
+variable {R E F : Type*} [NontriviallyNormedField R]
+  [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
+  [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
 
 /-- A split linear map has a bounded left inverse. -/
 lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoundedLeftInverse := by
@@ -276,7 +256,7 @@ lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoun
   obtain ⟨p, hp⟩ := hf.closedComplemented
   let g := f.leftInverse_of_injective_of_isClosed_range hf.injective hf.isClosed_range
   refine ⟨g.comp p, fun x ↦ ?_⟩
-  simpa [g, hp (⟨f x, by simp⟩)] using f.rangeRestrict.leftInverse_apply_of_inj this x
+  simpa [g, hp ⟨f x, by simp⟩] using f.rangeRestrict.leftInverse_apply_of_inj this x
 
 end ContinuousLinearMap
 
