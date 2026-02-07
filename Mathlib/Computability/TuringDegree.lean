@@ -17,7 +17,7 @@ import Aesop
 This file defines Turing reducibility and Turing equivalence in terms of oracle computability,
 as well as the notion of Turing degrees as equivalence classes under mutual reducibility.
 
-## Main Definitions
+## Main definitions
 
 * `TuringReducible f g`:
   The function `f` is Turing reducible to `g` if `f` is recursive in the singleton set `{g}`.
