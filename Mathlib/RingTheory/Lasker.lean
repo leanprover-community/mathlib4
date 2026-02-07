@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.Noetherian.Defs
   that the decomposition is minimal: each `Nᵢ` is necessary, and the `√Ann(M/Nᵢ)` are distinct.
 - `IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff`: The first uniqueness theorem for
   primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
-  `I = ⨅ i, q_i`, the ideals `√(q_i : M)` are exactly the associated primes of `I`.
+  `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
 
 -/
@@ -119,8 +119,8 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
 
 -- TODO: rephrase in terms of `associatedPrimes` once the definition is changed to match.
 /-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
-In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `√(q_i : M)` are exactly the
-associated primes of `I`. -/
+In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly
+the associated primes of `I`. -/
 lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff [DecidableEq (Submodule R M)]
     {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t)
     {p : Ideal R} :
