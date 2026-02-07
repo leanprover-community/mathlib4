@@ -177,11 +177,27 @@ theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
   use p
   simp
 
+/-- If `ps` is cospherical, then any of its isometric images is cospherical. -/
+theorem Isometry.cospherical {E F : Type*} [MetricSpace E] [MetricSpace F] {f : E → F}
+    (hf : Isometry f) {ps : Set E} (hps : Cospherical ps) : Cospherical (f '' ps) := by
+  rcases hps with ⟨c, r, hc⟩
+  refine ⟨f c, r, ?_⟩
+  rintro _ ⟨p, hp, rfl⟩
+  rw [hf.dist_eq, hc p hp]
+
 end MetricSpace
 
 section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+/-- If a set of points is cospherical, then its restriction to any affine subspace containing it is
+cospherical. -/
+theorem Cospherical.restrict {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
+    (hps : Cospherical ps) (hS : S₁ ≤ S₂) :
+    Cospherical (AffineSubspace.inclusion hS '' ps) := by
+    refine Isometry.cospherical ?_ hps
+    exact S₁.subtypeₐᵢ.isometry
 
 lemma Sphere.nonempty_iff [Nontrivial V] {s : Sphere P} : (s : Set P).Nonempty ↔ 0 ≤ s.radius := by
   refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
