@@ -65,15 +65,11 @@ lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover �
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
 lemma IsCover.image_lipschitz {f : X → Y} {s : Set X} {N : Set X} {ε K₂ : ℝ≥0}
-  (hs : IsCover ε s N) (hf : LipschitzWith K₂ f) : IsCover (K₂ * ε) (f '' s) (f '' N) := by
-rintro _ ⟨x, hx, rfl⟩
-obtain ⟨x₀, hx₀, hcover⟩ := hs hx
-refine ⟨f x₀, ⟨x₀, hx₀, by grind⟩, ?_⟩
-calc
-  edist _ (f x₀) = edist (f x) (f x₀) := by grind
-  _ ≤ ↑K₂ * edist x x₀ := hf x x₀
-  _ ≤ ↑K₂ * ↑ε := mul_le_mul le_rfl hcover (zero_le _) (by simp only [zero_le])
-  _ = ↑(K₂ * ε) := ENNReal.coe_mul K₂ ε
+    (hs : IsCover ε s N) (hf : LipschitzWith K₂ f) : IsCover (K₂ * ε) (f '' s) (f '' N) := by
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨x₀, hx₀, hcover⟩ := hs hx
+  dsimp at *
+  exact ⟨f x₀, ⟨x₀, hx₀, by grind⟩, by grw [hf x x₀, hcover]⟩
 
 lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X} {ε K₂ : ℝ≥0}
     (hs : IsCover ε (s.preimage f) N) (hf : LipschitzWith K₂ f) (hf_surj : f.Surjective) :
