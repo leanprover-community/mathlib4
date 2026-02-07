@@ -663,7 +663,7 @@ def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
 /-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
 fibers of `f` -/
 def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r ≤ Setoid.ker f) :
-    fromRel sym ≃ Σ b : β, fromRel <| sym.comap <| @Subtype.val α (f · = b) where
+    fromRel sym ≃ Σ b : β, fromRel (α := { x // f x = b }) <| sym.comap (↑) where
   toFun z := fromRelNdrec z.prop
     (fun a b h ↦ ⟨f a, s(⟨a, rfl⟩, ⟨b, (hf _ _ h).symm⟩), h⟩)
     fun a b h ↦ by
@@ -682,14 +682,14 @@ def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r �
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
 `Quot` version -/
 def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} (f : r →r r') :
-    fromRel sym ≃ Σ q : Quot r', fromRel <| sym.comap <| @Subtype.val α ((.mk r' · = q) ∘ f) :=
+    fromRel sym ≃ Σ q : Quot r', fromRel (α := { x // .mk r' (f x) = q }) <| sym.comap (↑) :=
   .sigmaFiberFromRel sym fun _ _ h ↦ Quot.sound <| f.map_rel h
 
 /-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
 `Quotient` version -/
 def _root_.Equiv.sigmaQuotientFromRel (sym : Symmetric r) {r' : Setoid β} (f : r →r r') :
-    fromRel sym ≃ Σ q : Quotient r', fromRel <| sym.comap <| @Subtype.val α (⟦f ·⟧ = q) :=
+    fromRel sym ≃ Σ q : Quotient r', fromRel (α := { x // ⟦f x⟧ = q }) <| sym.comap (↑) :=
   .sigmaQuotFromRel sym f
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
