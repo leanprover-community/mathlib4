@@ -257,7 +257,8 @@ class HasRingHomProperty (P : MorphismProperty Scheme.{u})
 
 namespace HasRingHomProperty
 
-variable (P : MorphismProperty Scheme.{u}) {Q} [HasRingHomProperty P Q]
+variable (P P' : MorphismProperty Scheme.{u}) {Q Q'}
+variable [HasRingHomProperty P Q] [HasRingHomProperty P' Q']
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 lemma copy {P' : MorphismProperty Scheme.{u}}
@@ -306,7 +307,7 @@ theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
     (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso]
   exact H _ ⟨_, V.2.image_of_isOpenImmersion _⟩ _
 
-variable {P f}
+variable {P P' f}
 
 lemma iff_appLE : P f ↔ ∀ (U : Y.affineOpens) (V : X.affineOpens) (e), Q (f.appLE U V e).hom := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le]
@@ -477,23 +478,28 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     rw [iff_of_isAffine (P := P)] at hf hg ⊢
     exact hP _ _ hg hf
 
-theorem of_comp
+instance : HasRingHomProperty ⊤ ⊤ where
+  isLocal_ringHomProperty := by constructor <;> intro <;> simp
+  eq_affineLocally' := by ext; simp [affineLocally, targetAffineLocally, sourceAffineLocally]
+
+/-- Variant that takes an extra morpism property on the target. -/
+theorem of_comp'
     (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
-      ∀ (f : R →+* S) (g : S →+* T), Q (g.comp f) → Q g)
-    {X Y Z : Scheme.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (h : P (f ≫ g)) : P f := by
+      ∀ (f : R →+* S) (g : S →+* T), Q (g.comp f) → Q' f → Q g)
+    {X Y Z : Scheme.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (h : P (f ≫ g)) (h' : P' g) : P f := by
   wlog hZ : IsAffine Z generalizing X Y Z
   · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _
       (g.iSup_preimage_eq_top (iSup_affineOpens_eq_top Z))]
     intro U
     have H := IsZariskiLocalAtTarget.restrict h U.1
     rw [morphismRestrict_comp] at H
-    exact this H inferInstance
+    exact this H (IsZariskiLocalAtTarget.restrict h' _) inferInstance
   wlog hY : IsAffine Y generalizing X Y
   · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top Y)]
     intro U
     have H := comp_of_isOpenImmersion P (f ⁻¹ᵁ U.1).ι (f ≫ g) h
     rw [← morphismRestrict_ι_assoc] at H
-    exact this H inferInstance
+    exact this H (comp_of_isOpenImmersion _ _ _ h') inferInstance
   wlog hY : IsAffine X generalizing X
   · rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top X)]
     intro U
@@ -501,7 +507,13 @@ theorem of_comp
     rw [← Category.assoc] at H
     exact this H inferInstance
   rw [iff_of_isAffine (P := P)] at h ⊢
-  exact H _ _ h
+  exact H _ _ h ((iff_of_isAffine (P := P')).mp h')
+
+theorem of_comp
+    (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
+      ∀ (f : R →+* S) (g : S →+* T), Q (g.comp f) → Q g)
+    {X Y Z : Scheme.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (h : P (f ≫ g)) : P f :=
+  of_comp' (P' := ⊤) (by simpa) h trivial
 
 lemma isMultiplicative (hPc : RingHom.StableUnderComposition Q)
     (hPi : RingHom.ContainsIdentities Q) :
