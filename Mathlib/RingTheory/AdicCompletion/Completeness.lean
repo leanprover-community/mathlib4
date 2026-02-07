@@ -27,7 +27,7 @@ when the ideal `I` is finitely generated.
 
 ## Main results
 
-* `AdicCompletion.pow_smul_top_eq_eval_ker`: `I ^ n • AdicCompletion I M` is exact the kernel
+* `AdicCompletion.pow_smul_top_eq_eval_ker`: `I ^ n • AdicCompletion I M` is exactly the kernel
   of the evaluation map `eval I M n` when `I` is finitely generated.
 
 * `AdicCompletion.IsAdicComplete`: `AdicCompletion I M` is `I`-adically complete if `I` is
@@ -73,7 +73,7 @@ theorem smul_top_eq_range_directSum (s : Set R) : (s • ⊤ : Submodule R M) =
 
 variable (R) in
 open scoped Pointwise in
-theorem set_smul_top_eq_restrictScalars_image_smul_top {S : Type*} [CommSemiring S] [Module S M]
+theorem smul_top_eq_restrictScalars_image_smul_top {S : Type*} [CommSemiring S] [Module S M]
     [Algebra S R] [IsScalarTower S R M] (s : Set S) : (s • ⊤ : Submodule S M) =
         ((algebraMap S R) '' s • ⊤ : Submodule R M).restrictScalars S := by
   refine le_antisymm (set_smul_le _ _ _ fun r x r_in _ ↦ ?_) ?_
@@ -197,7 +197,7 @@ theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
   replace h := Ideal.FG.pow (n := n) h
   rcases h with ⟨s, hs⟩
   simp only [← hs, span_smul_eq]
-  rw [set_smul_top_eq_restrictScalars_image_smul_top (AdicCompletion I R), show
+  rw [smul_top_eq_restrictScalars_image_smul_top (AdicCompletion I R), show
     ⇑(algebraMap R (AdicCompletion I R)) = of I R by rfl, ← powSmulTopInclusion_range_eq_eval_ker,
     restrictScalars_le, image_smul_top_eq_range_directSum]
   simp only [SetLike.coe_sort_coe, ← map_lsmul_eq_lsmul_of, ← map_toModule_sum_eq_toModule_map]
