@@ -1,6 +1,7 @@
 module
 
 import Mathlib.Tactic.Linter.OverlappingInstances
+import Mathlib.Tactic.TypeStar
 
 set_option linter.overlappingInstances true
 
@@ -136,3 +137,11 @@ class inductive IndFooProp : Prop where
 def indFooProp [IndFooProp] [IndFooProp] : Bool := true
 
 end classInductive
+
+section instantiateMVars
+
+variable {α : Type*} [Repr α]
+
+def needsInstantiateMVars [Repr α] : Bool := true
+
+end instantiateMVars
