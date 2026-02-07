@@ -16,6 +16,7 @@ This file proves the Sherman-Morrison formula for matrix inverses under rank-1 u
 ## Main results
 
 * `Matrix.inv_add_vecMulVec`: The Sherman-Morrison formula for `(A + vecMulVec u v)⁻¹`.
+* `Matrix.inv_sub_vecMulVec`: The Sherman-Morrison formula for `(A - vecMulVec u v)⁻¹`.
 * `Matrix.isUnit_det_add_vecMulVec`: Invertibility of `A + vecMulVec u v`.
 
 ## References
