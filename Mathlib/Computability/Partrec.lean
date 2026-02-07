@@ -783,40 +783,29 @@ lemma kronecker_partrec : Nat.Partrec Partrec.kronecker := by
   exact (Partrec.nat_iff).1 (hcomp.partrec.of_eq fun p => by
     simp only [Partrec.kronecker]; exact congrArg Part.some (Bool.cond_decide _ _ _))
 
-def flip10 (m : ℕ) : ℕ := if m = 1 then 0 else 1
-
-lemma flip10_partrec : Nat.Partrec (fun m => Part.some (Partrec.flip10 m)) := by
-  have hc : Computable (fun m : ℕ => m == 1) :=
-    (Primrec.beq.comp Primrec.id (Primrec.const 1)).to_comp
-  have hcomp : Computable (fun m : ℕ => cond (m == 1) (0 : ℕ) 1) :=
-    Computable.cond hc (Computable.const 0) (Computable.const 1)
-  exact (Partrec.nat_iff).1 (hcomp.partrec.of_eq fun m => by
-    simp only [Partrec.flip10]
-    exact congrArg Part.some (Bool.cond_decide _ _ _))
-
 lemma kronecker_rfind_none :
     Nat.rfind (fun k => (fun m : ℕ => m = 0) <$>
-        Part.map Partrec.flip10
+        Part.map (1 - ·)
           (((Nat.pair <$> (Part.none : Part ℕ) <*> Part.some k) >>= Partrec.kronecker))) =
       Part.none :=
   Nat.rfind_zero_none
     (p := fun k => (fun m : ℕ => m = 0) <$>
-      Part.map Partrec.flip10
+      Part.map (1 - ·)
         (((Nat.pair <$> (Part.none : Part ℕ) <*> Part.some k) >>= Partrec.kronecker)))
     (by simp [Seq.seq])
 
 lemma kronecker_rfind_some (n : ℕ) :
     Nat.rfind (fun k => (fun m : ℕ => m = 0) <$>
-        Part.map Partrec.flip10
+        Part.map (1 - ·)
           (((Nat.pair <$> (Part.some n : Part ℕ) <*> Part.some k) >>= Partrec.kronecker))) =
       Part.some n := by
   refine Part.mem_right_unique (Nat.mem_rfind.2 ⟨?_, ?_⟩) (Part.mem_some n)
-  · simp [Partrec.kronecker, Partrec.flip10, Seq.seq]
-  · intro m hm; simp [Partrec.kronecker, Partrec.flip10, Seq.seq, Nat.ne_of_gt hm]
+  · simp [Partrec.kronecker, Seq.seq]
+  · intro m hm; simp [Partrec.kronecker, Seq.seq, Nat.ne_of_gt hm]
 
 lemma kronecker_rfind (v : Part ℕ) :
     Nat.rfind (fun k => (fun m : ℕ => m = 0) <$>
-        Part.map Partrec.flip10
+        Part.map (1 - ·)
           (((Nat.pair <$> v <*> Part.some k) >>= Partrec.kronecker))) = v := by
   refine Part.induction_on v ?_ ?_
   · simpa using kronecker_rfind_none

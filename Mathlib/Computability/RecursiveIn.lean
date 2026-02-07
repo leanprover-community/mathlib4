@@ -3,7 +3,6 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve, Elan Roth
 -/
-
 module
 
 public import Mathlib.Computability.Partrec
@@ -345,13 +344,14 @@ theorem cond_core_rfind {c : ℕ → Bool} {f g : ℕ →. ℕ}
           (fun n => cond (c n) (f n) (g n)) := by
   have kronecker_recursiveIn : RecursiveIn O Partrec.kronecker :=
     Nat.Partrec.recursiveIn (O := O) Partrec.kronecker_partrec
-  have flip10_recursiveIn : RecursiveIn O (fun m => Part.some (Partrec.flip10 m)) :=
-    Nat.Partrec.recursiveIn (O := O) Partrec.flip10_partrec
+  have sub1_recursiveIn : RecursiveIn O (fun m => Part.some (1 - m)) :=
+    Nat.Partrec.recursiveIn (O := O)
+      ((Partrec.nat_iff).1 (Primrec.nat_sub.comp (Primrec.const 1) Primrec.id).to_comp)
   let eq (h : ℕ →. ℕ) : ℕ →. ℕ := fun p =>
     ((Nat.pair <$>
           ((fun n : ℕ => (Nat.unpair n).1) p >>= h) <*>
           (fun n : ℕ => (Nat.unpair n).2) p) >>= Partrec.kronecker) >>=
-      fun m => Part.some (Partrec.flip10 m)
+      fun m => Part.some (1 - m)
   have heq {h : ℕ →. ℕ} (hh : RecursiveIn O h) : RecursiveIn O (eq h) := by
     have hbase : RecursiveIn O (fun p =>
         (Nat.pair <$> ((fun n : ℕ => (Nat.unpair n).1) p >>= h) <*>
@@ -361,8 +361,8 @@ theorem cond_core_rfind {c : ℕ → Bool} {f g : ℕ →. ℕ}
     have : RecursiveIn O (fun p =>
         ((Nat.pair <$> ((fun n : ℕ => (Nat.unpair n).1) p >>= h) <*>
             (fun n : ℕ => (Nat.unpair n).2) p) >>= Partrec.kronecker) >>=
-          fun m => Part.some (Partrec.flip10 m)) :=
-      RecursiveIn.comp flip10_recursiveIn hbase
+          fun m => Part.some (1 - m)) :=
+      RecursiveIn.comp sub1_recursiveIn hbase
     simpa [eq] using this
   let c1 : ℕ → Bool := fun p => c (Nat.unpair p).1
   let c2 : ℕ → Bool := fun p => !c (Nat.unpair p).1

@@ -8,8 +8,8 @@ module
 
 public import Mathlib.Tactic.Cases
 public import Mathlib.Tactic.NormNum
-public import Aesop
 public import Mathlib.Computability.RecursiveIn
+import Aesop
 
 /-!
 # Turing Reducibility and Turing Degrees
