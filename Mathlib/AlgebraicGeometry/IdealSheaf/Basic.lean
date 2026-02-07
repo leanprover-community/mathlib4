@@ -325,6 +325,9 @@ lemma coe_support_eq_eq_iInter_zeroLocus :
     (I.support : Set X) = ⋂ U, X.zeroLocus (U := U.1) (I.ideal U) :=
   I.supportSet_eq_iInter_zeroLocus
 
+@[simp] lemma mem_supportSet_iff_mem_support {I : IdealSheafData X} {x} :
+    x ∈ I.supportSet ↔ x ∈ I.support := .rfl
+
 lemma mem_support_iff {I : IdealSheafData X} {x} :
     x ∈ I.support ↔ ∀ U, x ∈ X.zeroLocus (U := U.1) (I.ideal U) :=
   (Set.ext_iff.mp I.supportSet_eq_iInter_zeroLocus _).trans Set.mem_iInter
@@ -397,38 +400,21 @@ instance : One X.IdealSheafData where one := ⊤
 instance : Add X.IdealSheafData where add := (· ⊔ ·)
 
 instance : Mul X.IdealSheafData where
-  mul I J :=
-  { ideal := I.ideal * J.ideal
-    map_ideal_basicOpen U f := by simp [Ideal.map_mul, map_ideal_basicOpen]
-    supportSet := I.supportSet ∪ J.supportSet
-    supportSet_eq_iInter_zeroLocus := by
-      simp only [Pi.mul_apply, Set.iInter_coe_set, zeroLocus_mul]
-      apply subset_antisymm
-      · simp only [Set.subset_iInter_iff, Set.union_subset_iff]
-        exact fun U hU ↦ ⟨Set.subset_union_of_subset_left (I.supportSet_subset_zeroLocus ..) _,
-          Set.subset_union_of_subset_right (J.supportSet_subset_zeroLocus ..) _⟩
-      · simp only [Set.subset_def, Set.mem_iInter, Set.mem_union]
-        intro x hx
-        obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-          X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
-        refine (hx U hU).imp (mem_support_iff_of_mem (U := ⟨U, hU⟩) hxU).mpr
-          (mem_support_iff_of_mem (U := ⟨U, hU⟩) hxU).mpr }
+  mul I J := mkOfMemSupportIff (I.ideal * J.ideal) (by simp [Ideal.map_mul, map_ideal_basicOpen])
+    (I.supportSet ∪ J.supportSet) fun U x hxU ↦ by
+    simp [-mem_zeroLocus_iff, zeroLocus_mul, mem_support_iff_of_mem hxU]
 
 instance : Pow X.IdealSheafData ℕ where
-  pow I n :=
-  { ideal := I.ideal ^ n
-    map_ideal_basicOpen := by simp [Ideal.map_pow, map_ideal_basicOpen]
-    supportSet := n.casesOn ∅ fun _ ↦ I.supportSet
-    supportSet_eq_iInter_zeroLocus := by
-      induction n with
-      | zero => convert (⊤ : X.IdealSheafData).supportSet_eq_iInter_zeroLocus; ext; simp
-      | succ n IH =>
-        let J : X.IdealSheafData := ⟨_, by simp [Ideal.map_pow, map_ideal_basicOpen], _, IH⟩
-        exact (Set.union_eq_right.mpr (by cases n <;> simp [J])).symm.trans
-          (J * I).supportSet_eq_iInter_zeroLocus }
+  pow I n := mkOfMemSupportIff (I.ideal ^ n) (by simp [Ideal.map_pow, map_ideal_basicOpen])
+    (if n = 0 then ∅ else I.supportSet) fun U x hxU ↦ .symm <| by
+    induction n <;> simp_all [-mem_zeroLocus_iff, zeroLocus_mul,
+      pow_succ, mem_support_iff_of_mem hxU]
 
 @[simp] lemma ideal_mul : (I * J).ideal = I.ideal * J.ideal := rfl
 @[simp] lemma support_mul : (I * J).support = I.support ⊔ J.support := rfl
+@[simp] lemma ideal_pow (n : ℕ) : (I ^ n).ideal = I.ideal ^ n := rfl
+@[simp] lemma support_pow_succ (n : ℕ) : (I ^ (n + 1)).support = I.support := rfl
+lemma support_pow (n : ℕ) (hn : n ≠ 0) : (I ^ n).support = I.support := by cases n <;> simp_all
 
 @[simp] lemma top_mul : ⊤ * I = I := by ext; simp
 @[simp] lemma mul_top : I * ⊤ = I := by ext; simp
