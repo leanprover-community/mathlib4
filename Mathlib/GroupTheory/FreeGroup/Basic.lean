@@ -931,8 +931,8 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
         simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 
-/-- We define the free group on one element as isomorphic to ℤ. -/
-def freeGroupUnitMulEquivInt :
+/-- We define the free group on one element as isomorphic to `Multiplicative ℤ`. -/
+  def freeGroupUnitMulEquivInt :
     FreeGroup Unit ≃* Multiplicative ℤ where
     toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
     invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
