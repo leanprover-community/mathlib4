@@ -941,7 +941,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
       ext
       simp [freeGroupUnitEquivInt]
 
-/-- Free group on any `Unique` type is isomorphic to `Multiplicative ℤ`. -/
+/-- We define the free group on any `Unique` type as isomorphic to `Multiplicative ℤ`. -/
 def freeGroupUniqueMulEquivInt [Unique α] : FreeGroup α ≃* Multiplicative ℤ :=
   (freeGroupCongr (Equiv.ofUnique α Unit)).trans freeGroupUnitMulEquivInt
 
