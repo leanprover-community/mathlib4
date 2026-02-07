@@ -884,7 +884,7 @@ end Sum
 /-- The isomorphism between the free group on an arbitrary empty type, and a `Unique` group. -/
 @[to_additive /-- The isomorphism between the additive free group on an arbitrary empty type,
 and a `Unique` group. -/]
-def freeGroupIsEmptyMulEquivUnique (α : Type*) [IsEmpty α] (G : Type*) [Group G] [Unique G] :
+def freeGroupIsEmptyMulEquivUnique [IsEmpty α] (G : Type*) [Group G] [Unique G] :
     FreeGroup α ≃* G :=
   (MulEquiv.ofUnique : FreeGroup α ≃* G)
 
