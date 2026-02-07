@@ -487,7 +487,7 @@ variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
 @[simp]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
-  rw [iSup_of_empty', csSup_empty]
+  rw [iSup_of_empty', sSup_empty]
 
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f

@@ -205,13 +205,13 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   __ := instLinearOrder
   sSup := fun _ => unit
   sInf := fun _ => unit
-  le_sSup := by intros; trivial
-  sSup_le := by intros; trivial
-  sInf_le := by intros; trivial
-  le_sInf := by intros; trivial
   le_himp_iff := by intros; trivial
   himp_bot := by intros; trivial
   sdiff_le_iff := by intros; trivial
   top_sdiff := by intros; trivial
+  isLUB_sSup_of_exists_isLUB _ _ := ⟨top_mem_upperBounds _, bot_mem_lowerBounds _⟩
+  isGLB_sInf_of_exists_isGLB _ _ := ⟨bot_mem_lowerBounds _, top_mem_upperBounds _⟩
+  exists_isLUB _ := ⟨unit, top_mem_upperBounds _, bot_mem_lowerBounds _⟩
+  exists_isGLB _ := ⟨unit, bot_mem_lowerBounds _, top_mem_upperBounds _⟩
 
 end PUnit

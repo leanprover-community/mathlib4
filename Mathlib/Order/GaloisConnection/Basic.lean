@@ -435,16 +435,18 @@ abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l 
 -- See note [reducible non-instances]
 /-- Lift all suprema and infima along a Galois insertion -/
 abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
+  letI sInf := fun s => gi.choice (sInf (u '' s)) <| (isGLB_sInf _).2 <|
+    gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
+  haveI isGLB_sInf (s) : IsGLB s (sInf s) := by
+    simp only [sInf, gi.choice_eq]
+    exact gi.isGLB_of_u_image (isGLB_sInf _)
   { gi.liftBoundedOrder, gi.liftLattice with
     sSup := fun s => l (sSup (u '' s))
-    sSup_le := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).2
-    le_sSup := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).1
-    sInf := fun s =>
-      gi.choice (sInf (u '' s)) <|
-        (isGLB_sInf _).2 <|
-          gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
-    sInf_le := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
-    le_sInf := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+    sInf := sInf
+    isLUB_sSup_of_exists_isLUB s _ := gi.isLUB_of_u_image (isLUB_sSup _)
+    isGLB_sInf_of_exists_isGLB s _ := isGLB_sInf s
+    exists_isLUB s := ⟨_, gi.isLUB_of_u_image (isLUB_sSup _)⟩
+    exists_isGLB s := ⟨sInf s, isGLB_sInf s⟩ }
 
 end lift
 

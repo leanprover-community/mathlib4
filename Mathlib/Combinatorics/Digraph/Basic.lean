@@ -154,6 +154,12 @@ instance supSet : SupSet (Digraph V) where
 instance infSet : InfSet (Digraph V) where
   sInf s := { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
 
+protected theorem isLUB_sSup (s : Set (Digraph V)) : IsLUB s (sSup s) :=
+  ⟨fun G hG _ _ hab ↦ ⟨G, hG, hab⟩, fun _ hG _ _ ⟨_, hH, hab⟩ ↦ hG hH hab⟩
+
+protected theorem isGLB_sInf (s : Set (Digraph V)) : IsGLB s (sInf s) :=
+  ⟨fun _ hG _ _ hab ↦ hab hG, fun _ hG _ _ hab _ hH ↦ hG hH hab⟩
+
 @[simp]
 theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
 
@@ -178,12 +184,10 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
   bot_le _ _ _ h := h.elim
   inf_compl_le_bot _ _ _ h := absurd h.1 h.2
   top_le_sup_compl G v w _ := by tauto
-  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
-  sSup_le s G hG a b := by
-    rintro ⟨H, hH, hab⟩
-    exact hG _ hH hab
-  sInf_le _ _ hG _ _ hab := hab hG
-  le_sInf _ _ hG _ _ hab _ hH := hG _ hH hab
+  isLUB_sSup_of_exists_isLUB _ _ := Digraph.isLUB_sSup _
+  isGLB_sInf_of_exists_isGLB _ _ := Digraph.isGLB_sInf _
+  exists_isLUB _ := ⟨_, Digraph.isLUB_sSup _⟩
+  exists_isGLB _ := ⟨_, Digraph.isGLB_sInf _⟩
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial

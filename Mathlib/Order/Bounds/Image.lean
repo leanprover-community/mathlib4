@@ -133,6 +133,7 @@ include Hf
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
+@[to_dual existing]
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
@@ -480,7 +481,7 @@ lemma bddBelow_range_prod {F : ι → α × β} :
     BddBelow (range F) ↔ BddBelow (range <| Prod.fst ∘ F) ∧ BddBelow (range <| Prod.snd ∘ F) :=
   bddAbove_range_prod (α := αᵒᵈ) (β := βᵒᵈ)
 
-theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
+theorem isLUB_prod {s : Set (α × β)} {p : α × β} :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine
     ⟨fun H =>
@@ -496,7 +497,7 @@ theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 
-theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
+theorem isGLB_prod {s : Set (α × β)} {p : α × β} :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 

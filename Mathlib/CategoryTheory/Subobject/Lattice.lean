@@ -604,8 +604,8 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
   sInf := sInf
-  sInf_le := sInf_le
-  le_sInf := le_sInf
+  isGLB_sInf_of_exists_isGLB _ _ := ⟨sInf_le _, le_sInf _⟩
+  exists_isGLB _ := ⟨_, sInf_le _, le_sInf _⟩
 
 end Inf
 
@@ -655,8 +655,8 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
   sSup := sSup
-  le_sSup := le_sSup
-  sSup_le := sSup_le
+  isLUB_sSup_of_exists_isLUB _ _ := ⟨le_sSup _, sSup_le _⟩
+  exists_isLUB _ := ⟨_, le_sSup _, sSup_le _⟩
 
 end Sup
 
@@ -668,8 +668,13 @@ variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasWidePullbacks.{w} C]
 attribute [local instance] has_smallest_coproducts_of_hasCoproducts
 
 instance {B : C} : CompleteLattice (Subobject B) :=
-  { Subobject.semilatticeInf, Subobject.semilatticeSup, Subobject.boundedOrder,
-    Subobject.completeSemilatticeInf, Subobject.completeSemilatticeSup with }
+  { Subobject.semilatticeInf, Subobject.semilatticeSup, Subobject.boundedOrder with
+    sSup := sSup
+    sInf := sInf
+    isLUB_sSup_of_exists_isLUB _ _ := ⟨le_sSup _, sSup_le _⟩
+    isGLB_sInf_of_exists_isGLB _ _ := ⟨sInf_le _, le_sInf _⟩
+    exists_isLUB _ := ⟨_, le_sSup _, sSup_le _⟩
+    exists_isGLB _ := ⟨_, sInf_le _, le_sInf _⟩ }
 
 end CompleteLattice
 

@@ -274,6 +274,20 @@ instance infSet : InfSet (SimpleGraph V) where
       symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
       loopless := fun _ h => h.2 rfl }
 
+theorem isLUB_mk_fun (s : Set (SimpleGraph V)) :
+    IsLUB s
+      { Adj := fun a b => ∃ G ∈ s, Adj G a b
+        symm := fun _ _ => Exists.imp fun _ => And.imp_right Adj.symm
+        loopless := fun _ ⟨_, _, ha⟩ ↦ ha.ne rfl } :=
+  ⟨fun G hG _ _ hab ↦ ⟨G, hG, hab⟩, fun _ hG _ _ ⟨_, hH, hab⟩ ↦ hG hH hab⟩
+
+theorem isGLB_mk_fun (s : Set (SimpleGraph V)) :
+    IsGLB s
+      { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
+        symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
+        loopless := fun _ h => h.2 rfl } :=
+  ⟨fun _ hG _ _ hab ↦ hab.1 hG, fun _ hG _ _ hab ↦ ⟨fun _ hH => hG hH hab, hab.ne⟩⟩
+
 @[simp]
 theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
   Iff.rfl
@@ -321,12 +335,10 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     by_cases h : G.Adj v w
     · exact Or.inl h
     · exact Or.inr ⟨hvw, h⟩
-  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
-  sSup_le s G hG a b := by
-    rintro ⟨H, hH, hab⟩
-    exact hG _ hH hab
-  sInf_le _ _ hG _ _ hab := hab.1 hG
-  le_sInf _ _ hG _ _ hab := ⟨fun _ hH => hG _ hH hab, hab.ne⟩
+  isLUB_sSup_of_exists_isLUB _ _ := isLUB_mk_fun _
+  isGLB_sInf_of_exists_isGLB _ _ := isGLB_mk_fun _
+  exists_isLUB _ := ⟨_, isLUB_mk_fun _⟩
+  exists_isGLB _ := ⟨_, isGLB_mk_fun _⟩
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤

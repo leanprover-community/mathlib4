@@ -850,12 +850,9 @@ variable (s : Set PUnit.{u + 1})
 
 instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
   __ := PUnit.instBooleanAlgebra
+  __ := PUnit.instCompleteLinearOrder
   sSup _ := unit
   sInf _ := unit
-  le_sSup _ _ _ := trivial
-  sSup_le _ _ _ := trivial
-  sInf_le _ _ _ := trivial
-  le_sInf _ _ _ := trivial
   iInf_iSup_eq _ := rfl
 
 instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance

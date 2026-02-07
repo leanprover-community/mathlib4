@@ -178,10 +178,10 @@ def CompleteLattice.copy (c : CompleteLattice α)
   bot := bot
   sSup := sSup
   sInf := sInf
-  le_sSup := by intro _ _ h; simp [eq_le, eq_sSup, le_sSup _ _ h]
-  sSup_le := by intro _ _ h; simpa [eq_le, eq_sSup] using h
-  sInf_le := by intro _ _ h; simp [eq_le, eq_sInf, sInf_le _ _ h]
-  le_sInf := by intro _ _ h; simpa [eq_le, eq_sInf] using h
+  isLUB_sSup_of_exists_isLUB := by simpa only [eq_le, eq_sSup] using c.isLUB_sSup_of_exists_isLUB
+  isGLB_sInf_of_exists_isGLB := by simpa only [eq_le, eq_sInf] using c.isGLB_sInf_of_exists_isGLB
+  exists_isLUB := by simp [eq_le, exists_isLUB]
+  exists_isGLB := by simp [eq_le, exists_isGLB]
   le_top := by intros; simp [eq_le, eq_top]
   bot_le := by intros; simp [eq_le, eq_bot]
 
@@ -250,7 +250,9 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     le eq_le sup eq_sup inf eq_inf
   sSup := sSup
   sInf := sInf
-  le_csSup := by intro _ _ hb h; subst_vars; exact le_csSup _ _ hb h
-  csSup_le := by intro _ _ hb h; subst_vars; exact csSup_le _ _ hb h
-  csInf_le := by intro _ _ hb h; subst_vars; exact csInf_le _ _ hb h
-  le_csInf := by intro _ _ hb h; subst_vars; exact le_csInf _ _ hb h
+  isLUB_sSup_of_exists_isLUB := by simpa only [eq_le, eq_sSup] using c.isLUB_sSup_of_exists_isLUB
+  isGLB_sInf_of_exists_isGLB := by simpa only [eq_le, eq_sInf] using c.isGLB_sInf_of_exists_isGLB
+  exists_isLUB_of_nonempty_of_bddAbove := by
+    simpa only [eq_le] using c.exists_isLUB_of_nonempty_of_bddAbove
+  exists_isGLB_of_nonempty_of_bddBelow := by
+    simpa only [eq_le] using c.exists_isGLB_of_nonempty_of_bddBelow
