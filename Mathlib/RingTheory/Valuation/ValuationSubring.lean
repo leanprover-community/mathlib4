@@ -290,7 +290,6 @@ theorem idealOfLE_self : A.idealOfLE A (refl _) = IsLocalRing.maximalIdeal A := 
 theorem idealOfLE_top : A.idealOfLE ⊤ (fun _ _ => trivial) = ⊥ := by
   rw [Submodule.eq_bot_iff, ValuationSubring.idealOfLE]
   intro x hx
-  let := fieldTop K
   simp only [IsLocalRing.maximalIdeal_eq_bot, Ideal.mem_comap, Submodule.mem_bot, Subtype.ext_iff,
     ZeroMemClass.coe_zero] at hx ⊢
   rw [← hx]
