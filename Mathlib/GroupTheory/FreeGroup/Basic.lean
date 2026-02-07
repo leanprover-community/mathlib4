@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Free groups
@@ -880,26 +881,24 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 
 end Sum
 
+/-- The isomorphism between the free group on an arbitrary empty type, and a `Unique` group. -/
+@[to_additive /-- The isomorphism between the additive free group on an arbitrary empty type,
+and a `Unique` group. -/]
+def freeGroupIsEmptyMulEquivUnique (α : Type*) [IsEmpty α] (G : Type*) [Group G] [Unique G] :
+    FreeGroup α ≃* G :=
+  (MulEquiv.ofUnique : FreeGroup α ≃* G)
+
 /-- The isomorphism between the free group on the empty type, and a type with one element. -/
 @[to_additive /-- The isomorphism between the additive free group on the empty type, and a type with
   one element. -/]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃* Unit where
-  toFun _ := ()
-  invFun _ := 1
-  left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
-  map_mul' _ _ := rfl
+def freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit := by
+  simpa using (freeGroupIsEmptyMulEquivUnique (α := Empty) (G := Unit))
 
 /-- We define the free group on no generators as isomorphic to the trivial `PUnit` group. -/
 @[to_additive /-- We define the additive free group on no generators as isomorphic to the trivial
-`PUnit` group. -/
-]
-def freeGroupEmptyMulEquivPUnit : FreeGroup Empty ≃* PUnit where
-  toEquiv :=
-  { toFun _ := PUnit.unit
-    invFun _ := 1
-    left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
-    right_inv := by intro; rfl }
-  map_mul' _ _ := rfl
+`PUnit` group. -/]
+def freeGroupEmptyMulEquivPUnit : FreeGroup Empty ≃* PUnit := by
+  simpa using (freeGroupIsEmptyMulEquivUnique (α := Empty) (G := PUnit))
 
 -- TODO: find a good way to fix the linter
 -- simp applies to two goals at once, with different simp sets
