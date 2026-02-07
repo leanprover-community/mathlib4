@@ -31,7 +31,7 @@ as well as the notion of Turing degrees as equivalence classes under mutual redu
 * `f ≤ᵀ g`: `f` is Turing reducible to `g`.
 * `f ≡ᵀ g`: `f` is Turing equivalent to `g`.
 
-## Implementation Notes
+## Implementation notes
 
 We define `TuringDegree` as the `Antisymmetrization` of the preorder of partial functions under
 Turing reducibility. This gives a concrete representation of degrees as equivalence classes.

@@ -13,7 +13,7 @@ public import Mathlib.Order.Antisymmetrization
 
 This file defines oracle computability using partial recursive functions with access to oracles.
 
-## Main Definitions
+## Main definitions
 
 * `RecursiveIn O f`: A partial function `f : ℕ →. ℕ` is partial recursive given access to oracles
   in the set `O`.
@@ -22,7 +22,7 @@ This file defines oracle computability using partial recursive functions with ac
 * `RecursiveIn' O f`: Lifts `RecursiveIn` to partial functions between `Primcodable` types.
 * `ComputableIn O f`: A total function `f : α → σ` is computable given access to oracles in `O`.
 
-## Main Results
+## Main results
 
 * `Nat.Partrec.recursiveIn`: Every partial recursive function is recursive in any oracle set.
 * `partrec_iff_forall_recursiveIn`: A function is partial recursive iff it is recursive in every
@@ -31,7 +31,7 @@ This file defines oracle computability using partial recursive functions with ac
   partial recursive.
 * `RecursiveIn.mono`: Monotonicity of `RecursiveIn` with respect to oracle sets.
 
-## Implementation Notes
+## Implementation notes
 
 The type of partial functions recursive in a set of oracles `O` is the smallest type containing
 the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
