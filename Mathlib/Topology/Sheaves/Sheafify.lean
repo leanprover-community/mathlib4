@@ -85,7 +85,7 @@ def adjunctionPrelocalPredicate (F : Presheaf (Type u) X) {G : X → Type u}
     fun U V i ↦ funext fun s ↦ Subtype.ext <| funext fun x ↦ congr_arg _ (F.germ_res_apply ..)⟩
   invFun f := ⟨fun x ↦ stalkToFiber P x ∘ (stalkFunctor _ x).map f,
     fun U s' ⟨s, eq⟩ ↦ by
-      simp_rw [PrelocalPredicate.pullback, Pullback, eq, Function.comp_apply]
+      simp_rw [PrelocalPredicate.pullback, Predicate.Pullback, eq, Function.comp_apply]
       convert (f.app _ s).2
       exact (congr_arg _ (stalkFunctor_map_germ_apply _ _ _ f _)).trans (stalkToFiber_germ ..)⟩
   left_inv f := Subtype.ext <| funext fun x ↦ funext fun g ↦ by

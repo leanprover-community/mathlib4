@@ -129,7 +129,7 @@ def Predicate.Pullback ⦃U : Opens X⦄ (s : Π x : U, T x) : Prop := P (F _ <|
 
 /-- The pullback of a prelocal predicate. -/
 def PrelocalPredicate.pullback (P : PrelocalPredicate S) : PrelocalPredicate T where
-  pred := Pullback F P.pred
+  pred := Predicate.Pullback F P.pred
   res i f := P.res i (F _ <| f ·)
 
 /-- The pullback of a local predicate. -/
