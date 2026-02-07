@@ -202,7 +202,7 @@ def parallelScanAux (as : Array FormatError) (L M : String.Slice) : Array Format
           (pushFormatError as (mkFormatError L.copy M.copy "remove line break")) ls.trimAsciiStart M
     | l => -- `l` is not whitespace
       if l == m then
-        parallelScanAux as ls.copy ms.copy
+        parallelScanAux as ls ms
       else if m.isWhitespace then
         parallelScanAux
           (pushFormatError as (mkFormatError L.copy M.copy "missing space")) L ms.trimAsciiStart
