@@ -891,6 +891,12 @@ def freeGroupIsEmptyMulEquivUnique (α : Type*) [IsEmpty α] (G : Type*) [Group 
 /-- The isomorphism between the free group on the empty type, and a type with one element. -/
 @[to_additive /-- The isomorphism between the additive free group on the empty type, and a type with
   one element. -/]
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit := by
+  simpa using (freeGroupIsEmptyMulEquivUnique (α := Empty) (G := Unit)).toEquiv
+
+/-- The isomorphism between the free group on the empty type, and a type with one element. -/
+@[to_additive /-- The isomorphism between the additive free group on the empty type, and a type with
+  one element. -/]
 def freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit := by
   simpa using (freeGroupIsEmptyMulEquivUnique (α := Empty) (G := Unit))
 
