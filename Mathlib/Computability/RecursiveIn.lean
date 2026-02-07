@@ -80,7 +80,7 @@ inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Prop
         Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a n)
 
 namespace Nat
-/-- The primitive recursive functions `ℕ → ℕ`. -/
+/-- The primitive recursive functions `ℕ → ℕ`, with respect to an oracle `O`. -/
 protected inductive PrimrecIn (O : Set (ℕ → ℕ)) : (ℕ → ℕ) → Prop
   | zero : Nat.PrimrecIn O fun _ => 0
   | protected succ : Nat.PrimrecIn O succ
