@@ -409,7 +409,7 @@ variable [Ring.KrullDimLE 1 A] {B : ValuationSubring K}
 
 variable {A} in
 theorem eq_self_or_eq_top_of_le (hle : A ≤ B) : A = B ∨ B = ⊤ := by
-  obtain h | h := IsLocalRing.primeSpectrum_eq_of_KrullDimLEOne
+  obtain h | h := IsLocalRing.Ring.KrullDimLE.eq_bot_or_eq_top
     ((primeSpectrumEquiv A).symm ⟨B, hle⟩) <;>
     (replace h := congr((primeSpectrumEquiv A) $h); simp_all [← idealOfLE_self])
 
