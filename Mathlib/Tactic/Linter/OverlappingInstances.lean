@@ -198,6 +198,28 @@ def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM Messa
     at a time. Consider choosing different instance hypotheses for the {declDescr}."
   addMessageContextFull msg
 
+/-- `withSetOptionIn` currently breaks infotree searches, so we simply set `Bool` options
+until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
+
+This declaration will be removed in favor of `withSetOptionIn` when lean4#11313 lands. -/
+private partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
+  | `(command| set_option $opt:ident $val in $cmd:command) => do
+    match val.raw with
+    | Syntax.atom _ "true"  =>
+      withBoolOption opt.getId true <| withSetBoolOptionIn x cmd
+    | Syntax.atom _ "false" =>
+      withBoolOption opt.getId false <| withSetBoolOptionIn x cmd
+    | _ => withSetBoolOptionIn x cmd
+  | `(command| $_:command in $cmd:command) => withSetBoolOptionIn x cmd
+  | stx => x stx
+where
+  /-- Set a `Bool` option in `CommandElabM`. Ideally, `CommandElabM` would have a
+  `MonadWithOptions` instance to this effect. -/
+  withBoolOption (n : Name) (val : Bool) (k : CommandElabM Unit) : CommandElabM Unit := do
+    let opts := (← getOptions).setBool n val
+    Command.withScope (fun scope => { scope with opts }) k
+
+
 open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
@@ -205,7 +227,7 @@ Lints against data-carrying overlaps between instances in the local contexts of 
 Note: currently does not respect `set_option`.
 -/
 def overlappingInstances : Linter where
-  run cmd := do
+  run := withSetBoolOptionIn fun cmd => do
     unless getLinterValue linter.overlappingInstances (← getLinterOptions) do
       return
     /- TODO: use `withSetOptionIn` when either it's fixed via the open lean PR or
