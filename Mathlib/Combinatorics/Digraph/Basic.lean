@@ -534,8 +534,7 @@ lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
     exfalso
     exact hcontra h
 
-instance (G : Digraph V) : CompleteBooleanAlgebra
-  (G.SpanningSubgraph) where
+instance (G : Digraph V) : CompleteBooleanAlgebra G.SpanningSubgraph where
   sup := sup
   le_sup_left := le_sup_left
   le_sup_right := le_sup_right
