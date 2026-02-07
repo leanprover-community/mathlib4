@@ -151,6 +151,16 @@ def KaehlerDifferential.mvPolynomialEquiv3 (σ : Type v) :
 -- then mvPolynomialEquiv3 (slow elaboration, quick typechecking)
 -- then mvPolynomialEquiv1 (slow elaboration, slow typechecking)
 
+-- next we'll do mvPolynomialBasis with the same three universe
+-- choices (unspecified, before u, after u) and also try
+-- all three choices when defining the term, so we have
+-- 9 declarations here.
+
+-- The conclusion of the below experiment is that it is highly
+-- advised to keep the same universe choices (unspecified, before u, after u)
+-- in the declaration and its value; making any changes can be
+-- very costly.
+
 /-- [Elab.command] [830145.000000]
 
 [Elab.async] [28350.000000] Lean.addDecl ▼
@@ -182,7 +192,8 @@ def KaehlerDifferential.mvPolynomialBasis13 (σ : Type v) :
     Basis σ (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
   ⟨mvPolynomialEquiv1 R σ⟩
 
--- Remark: 13 is very fast, but uses the very slow mvPolynomialEquiv1
+-- Remark: 13 is very fast, but uses the very slow mvPolynomialEquiv1.
+-- It is the one of two very fast one which use different universe choices.
 
 /-- [Elab.command] [38246963.000000]
 
@@ -229,7 +240,8 @@ def KaehlerDifferential.mvPolynomialBasis31 (σ) :
     Basis σ (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
   ⟨mvPolynomialEquiv3 R σ⟩
 
--- That was not bad, although it uses Equiv3 which has bad elaboration
+-- 31 was the other fast one which uses different universe choices. Note
+-- that it uses Equiv3 which has bad elaboration
 
 /-- [Elab.command] [1788413.000000]
 
