@@ -15,9 +15,12 @@ This file proves the Sherman-Morrison formula for matrix inverses under rank-1 u
 
 ## Main results
 
+* `Matrix.inv_add_replicateCol_mul_replicateRow`: Sherman-Morrison in
+  `replicateCol`/`replicateRow` form.
 * `Matrix.inv_add_vecMulVec`: The Sherman-Morrison formula for `(A + vecMulVec u v)⁻¹`.
 * `Matrix.inv_sub_vecMulVec`: The Sherman-Morrison formula for `(A - vecMulVec u v)⁻¹`.
 * `Matrix.isUnit_det_add_vecMulVec`: Invertibility of `A + vecMulVec u v`.
+* `Matrix.isUnit_det_sub_vecMulVec`: Invertibility of `A - vecMulVec u v`.
 
 ## References
 
@@ -74,9 +77,7 @@ theorem inv_add_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.de
         vecMulVec (A⁻¹ *ᵥ u) (v ᵥ* A⁻¹) := by
   rw [vecMulVec_eq Unit, inv_add_replicateCol_mul_replicateRow A u v hA hden, one_div]
   congr 2
-  -- A⁻¹ * (replicateCol * replicateRow) * A⁻¹ = vecMulVec (A⁻¹ *ᵥ u) (v ᵥ* A⁻¹)
-  -- First flatten: A⁻¹ * (U * V) * A⁻¹ → A⁻¹ * U * V * A⁻¹
-  -- Then regroup: A⁻¹ * U * V * A⁻¹ → (A⁻¹ * U) * (V * A⁻¹)
+  -- Regroup: A⁻¹ * (U * V) * A⁻¹ → (A⁻¹ * U) * (V * A⁻¹)
   rw [Matrix.mul_assoc A⁻¹ _ A⁻¹, Matrix.mul_assoc (replicateCol Unit u) (replicateRow Unit v) A⁻¹,
       ← Matrix.mul_assoc A⁻¹ (replicateCol Unit u) (replicateRow Unit v * A⁻¹),
       ← replicateCol_mulVec, ← replicateRow_vecMul, ← vecMulVec_eq Unit]
@@ -93,13 +94,8 @@ theorem inv_sub_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.de
     simp only [mulVec_neg, dotProduct_neg, sub_eq_add_neg]
   have hden' : 1 + v ⬝ᵥ (A⁻¹ *ᵥ (-u)) ≠ 0 := h2 ▸ hden
   rw [h1, inv_add_vecMulVec A (-u) v hA hden']
-  simp only [mulVec_neg, neg_vecMulVec, one_div]
-  ext i j
-  simp only [add_apply, sub_apply, smul_apply, smul_eq_mul, neg_apply]
-  have hdot_neg : v ⬝ᵥ -(A⁻¹ *ᵥ u) = -(v ⬝ᵥ (A⁻¹ *ᵥ u)) :=
-    dotProduct_neg v (A⁻¹ *ᵥ u)
-  simp only [hdot_neg, mul_neg]
-  ring
+  simp only [mulVec_neg, neg_vecMulVec, one_div, dotProduct_neg, smul_neg,
+    sub_eq_add_neg, neg_neg]
 
 /-- Invertibility of a rank-1 update under the Sherman-Morrison hypotheses. -/
 theorem isUnit_det_add_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.det)
@@ -122,6 +118,16 @@ theorem isUnit_det_add_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUn
     ring
   rw [hdet_eq, dotProduct_comm, ← heq]
   exact hden.isUnit
+
+/-- Invertibility of a rank-1 subtraction under the Sherman-Morrison hypotheses. -/
+theorem isUnit_det_sub_vecMulVec (A : Matrix n n α) (u v : n → α) (hA : IsUnit A.det)
+    (hden : 1 - v ⬝ᵥ (A⁻¹ *ᵥ u) ≠ 0) : IsUnit (A - vecMulVec u v).det := by
+  have h1 : A - vecMulVec u v = A + vecMulVec (-u) v := by
+    rw [neg_vecMulVec, sub_eq_add_neg]
+  have h2 : 1 + v ⬝ᵥ (A⁻¹ *ᵥ (-u)) = 1 - v ⬝ᵥ (A⁻¹ *ᵥ u) := by
+    simp only [mulVec_neg, dotProduct_neg, sub_eq_add_neg]
+  rw [h1]
+  exact isUnit_det_add_vecMulVec A (-u) v hA (h2 ▸ hden)
 
 end Field
 
