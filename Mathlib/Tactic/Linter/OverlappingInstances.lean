@@ -121,7 +121,7 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
           encounteredClasses[parentClass]?.any (·.1 == fvar₀)
             /- Technical note: this does not test that `fvar` is in the *same* overlap as `fvar₀`.
             However, if `fvar₀` is in *an* overlap on some parent of `fvar`, we trust it at least
-            shares an overlap with `fvar` on some (possibly distinct) parent of `fvar`. -/
+            shares an overlap with `fvar` on some (possibly distinct) parent of `cls`. -/
             || overlaps.containsAt parentClass fvar₀
         let rec
             /-- Tests if any (strict) parents are yielded by `fvar₀`. If so, then some parent of
