@@ -257,18 +257,15 @@ by injectivity, the junk value of `leftInverse` never matters, and continuity of
 follows form the closed range condition. -/
 def leftInverse_of_injective_of_isClosed_range
     (f : E →L[R] F) (hf : Injective f) (hf' : IsClosed (range f)) : f.range →L[R] E :=
-  have hg₀ := f.rangeRestrict.leftInverse_apply_of_inj
-    (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf)
-  have hf' := f.antilipschitz_of_injective_of_isClosed_range hf hf'
-  letI K := Classical.choose hf'
-  letI hfK := Classical.choose_spec hf'
+  letI K := f.antilipschitzConstant_of_injective_of_isClosed_range hf hf'
+  letI hfK := f.antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range hf hf'
   LinearMap.mkContinuous f.rangeRestrict.leftInverse K (by
     rintro ⟨y, ⟨x, rfl⟩⟩
-    rw [antilipschitzWith_iff_le_mul_dist] at hfK
-    specialize hfK x 0
-    simp only [dist_zero_right, map_zero] at hfK
-    convert hfK
-    exact hg₀ x
+    have aux := hfK.le_mul_dist x 0
+    simp only [dist_zero_right, map_zero] at aux
+    convert aux
+    exact f.rangeRestrict.leftInverse_apply_of_inj
+      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x
   )
 
 /-- A split linear map has a bounded left inverse. -/
