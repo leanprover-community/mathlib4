@@ -3777,6 +3777,7 @@ public import Mathlib.Data.List.Shortlex
 public import Mathlib.Data.List.Sigma
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.List.SplitBy
+public import Mathlib.Data.List.SplitClassify
 public import Mathlib.Data.List.SplitLengths
 public import Mathlib.Data.List.SplitOn
 public import Mathlib.Data.List.Sublists
