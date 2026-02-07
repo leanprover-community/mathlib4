@@ -181,9 +181,8 @@ theorem encard_prod {s : Set α} {t : Set β} : (s ×ˢ t).encard = s.encard * t
 @[simp]
 theorem encard_pi_eq_prod_encard [h : Fintype α] {ι : α → Type*} {s : ∀ i : α, Set (ι i)} :
     (Set.pi Set.univ s).encard = ∏ i, (s i).encard := by
-  simp only [encard, ENat.card]
-  rw [Cardinal.mk_congr (Equiv.Set.univPi s)]
-  simp [Cardinal.prod_eq_of_fintype]
+  unfold encard ENat.card
+  simp [Cardinal.mk_congr (Equiv.Set.univPi s), Cardinal.prod_eq_of_fintype]
 
 section Lattice
 
@@ -197,21 +196,19 @@ theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_encard
 
 theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.encard = t.encard := by
-  rw [← encard_union_eq disjoint_sdiff_left, diff_union_self, union_eq_self_of_subset_right h]
+  rw [← encard_union_eq disjoint_sdiff_left, diff_union_of_subset h]
 
 theorem encard_diff (h : s ⊆ t) (hs : s.Finite) :
     (t \ s).encard = t.encard - s.encard := by
   rw [← @Set.encard_diff_add_encard_of_subset _ s t h]
-  exact AddLECancellable.eq_tsub_of_add_eq
-    (ENat.addLECancellable_of_ne_top (encard_ne_top_iff.mpr hs)) rfl
+  exact (ENat.addLECancellable_of_ne_top <| encard_ne_top_iff.mpr hs).eq_tsub_of_add_eq rfl
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
 
 theorem encard_diff_add_encard_inter (s t : Set α) :
     (s \ t).encard + (s ∩ t).encard = s.encard := by
-  rw [← encard_union_eq (disjoint_of_subset_right inter_subset_right disjoint_sdiff_left),
-    diff_union_inter]
+  rw [← encard_union_eq disjoint_sdiff_inter, diff_union_inter]
 
 theorem encard_union_add_encard_inter (s t : Set α) :
     (s ∪ t).encard + (s ∩ t).encard = s.encard + t.encard := by
@@ -262,6 +259,9 @@ theorem Finite.encard_lt_encard (hs : s.Finite) (h : s ⊂ t) : s.encard < t.enc
 
 theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) :=
   fun _ _ h ↦ (toFinite _).encard_lt_encard h
+
+theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
+  fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt.ssubset
 
 theorem encard_diff_add_encard (s t : Set α) : (s \ t).encard + t.encard = (s ∪ t).encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self]
@@ -816,6 +816,9 @@ theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
 
 theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
+
+theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (setOf Set.Finite) :=
+  fun _ _ _ ht hlt ↦ ncard_lt_ncard hlt.ssubset ht
 
 theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
     (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a) (hf' : ∀ (i) (h : i < n), f i h ∈ s)
