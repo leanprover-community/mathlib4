@@ -120,8 +120,8 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
 
         /- Whether `fvar₀` yields the presciently-named class `parentClass` as a projection. This
         occurs iff either
-        - `fvar₀` represents `cls` in `encounteredClasses`
-        - or `fvar₀` is in an overlap on `cls`. -/
+        - `fvar₀` represents `parentClass` in `encounteredClasses`
+        - or `fvar₀` is in an overlap on `parentClass`. -/
         let isProjectionOfFVar₀ (parentClass : Expr) :=
           encounteredClasses[parentClass]?.any (·.1 == fvar₀)
             || overlaps.containsAt parentClass fvar₀
