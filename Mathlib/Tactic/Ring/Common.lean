@@ -308,7 +308,7 @@ instance {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : CoeOut (RingCompute BaseType sα) (RingCompare BaseType) where
   coe x := x.toRingCompare
 
-instance (u : Lean.Level) (α : Q(Type u)) (BaseType : Q($α) → Type) [∀ e, Inhabited <| BaseType e]
+instance (u : Lean.Level) (α : Q(Type u)) (BaseType : Q($α) → Type) [∀ e, Nonempty (BaseType e)]
     (sα : Q(CommSemiring «$α»)) : Nonempty <|
     Common.RingCompute (BaseType) sα := ⟨{
   eq := default
@@ -321,7 +321,9 @@ instance (u : Lean.Level) (α : Q(Type u)) (BaseType : Q($α) → Type) [∀ e, 
   inv := default
   derive := default
   isOne := default
-  one := default
+  one :=
+    have (e : Q($α)) : Inhabited (BaseType e) := Classical.inhabited_of_nonempty'
+    default
 }⟩
 
 instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
