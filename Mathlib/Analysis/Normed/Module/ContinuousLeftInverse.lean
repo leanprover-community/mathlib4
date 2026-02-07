@@ -221,11 +221,9 @@ lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInver
 #check Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl
 -- would also work, but might be more effort than this one...
 
-variable {R E E' F F' G : Type*} [Field R] -- XXX weaken later!
-  [TopologicalSpace E] [AddCommGroup E] [Module R E]
-  [TopologicalSpace E'] [AddCommMonoid E'] [Module R E']
-  [TopologicalSpace F] [AddCommGroup F] [Module R F]
-  [TopologicalSpace F'] [AddCommMonoid F'] [Module R F']
+variable {R E F : Type*} [NontriviallyNormedField R] -- XXX weaken later!
+  [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
+  [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
 
 
 #check LinearMap.exists_leftInverse_of_injective -- without continuity, is easy
@@ -254,16 +252,19 @@ Observe y = f x ∈ range f, so g y = inv (y) = x... by construction (hopefully!
 -- -> is a linear equiv, has an inverse: should be in Lean
 
 lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoundedLeftInverse := by
+  have hg₀ := f.rangeRestrict.leftInverse_apply_of_inj
+    (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective)
+  obtain ⟨K, hfK⟩ := f.antilipschitz_of_injective_of_isClosed_range hf.injective hf.isClosed_range
+  let g : f.range →L[R] E := LinearMap.mkContinuous f.rangeRestrict.leftInverse K (by
+    rintro ⟨y, ⟨x, rfl⟩⟩
+    rw [antilipschitzWith_iff_le_mul_dist] at hfK
+    specialize hfK x 0
+    simp only [dist_zero_right, map_zero] at hfK
+    convert hfK
+    exact hg₀ x
+  )
   -- Let p be the projection to range f.
   obtain ⟨p, hp⟩ := hf.closedComplemented
-  let f' := f.rangeRestrict
-  have hg₀ := f'.leftInverse_apply_of_inj
-    (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective)
-  have : Continuous f'.leftInverse /- f.range to E -/ := by
-    -- if f were not injective, we'd have the zero map, which is fine...
-    -- otherwise, anti-Lipschitzness of f suffices
-    sorry
-  let g : f.range →L[R] E := ContinuousLinearMap.mk f'.leftInverse this
   use g.comp p
   intro x
   simpa [g, hp (⟨f x, by simp⟩)] using hg₀ x
