@@ -27,6 +27,7 @@ namespace MultiseriesExpansion
 
 open LazySeries Stream'
 
+/-- Alternating series [1, -1, 1, -1, ...] starting with `(-1) ^ b` -/
 def invSeriesFrom (b : Bool) : LazySeries :=
   let g : Bool → Option (ℝ × Bool) := fun b => some (if b then -1 else 1, !b)
   Seq.corec g b
