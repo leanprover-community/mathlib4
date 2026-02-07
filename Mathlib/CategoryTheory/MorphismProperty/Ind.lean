@@ -123,6 +123,9 @@ instance [P.IsStableUnderCobaseChange] [HasPushouts C] : P.ind.IsStableUnderCoba
   rw [ind_iff_ind_underMk] at hf ⊢
   exact ind_underObj_pushout g hf
 
+instance [P.ContainsIdentities] : (ind.{w} P).ContainsIdentities where
+  id_mem X := le_ind _ _ (P.id_mem X)
+
 /-- `ind` is idempotent if `P` implies finitely presentable. -/
 lemma ind_ind (hp : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
     ind.{w} (ind.{w} P) = ind.{w} P := by
@@ -148,5 +151,77 @@ lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C) {X Y : C} (f : X �
           CategoryTheory.Under.homMk v, by ext; simpa, hW⟩
   · intro Y hY
     exact H _ hY
+
+/--
+A property of morphisms `P` is said to pre-ind-spread if `P`-morphisms out of filtered colimits
+descend to a finite level. More precisely, let `Dᵢ` be a filtered family of objects.
+Then:
+
+- If `f : colim Dᵢ ⟶ T` satisfies `P`, there exists an index `j` and a pushout square
+  ```
+    Dⱼ ----f'---> T'
+    |             |
+    |             |
+    v             v
+  colim Dᵢ --f--> T
+  ```
+  such that `f'` satisfies `P`.
+-/
+class PreIndSpreads (P : MorphismProperty C) : Prop where
+  exists_isPushout {J : Type w} [SmallCategory J] [IsFiltered J] {D : J ⥤ C}
+    {c : Cocone D} (_ : IsColimit c) {T : C} (f : c.pt ⟶ T) :
+    P f →
+    ∃ (j : J) (T' : C) (f' : D.obj j ⟶ T') (g : T' ⟶ T),
+      IsPushout (c.ι.app j) f' f g ∧ P f'
+
+alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
+
+/-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
+is stable under composition if `P` is. -/
+@[stacks 0BSI "The stacks project lemma is for the special case of ind-étale ring homomorphisms."]
+lemma IsStableUnderComposition.ind_of_preIndSpreads
+    [∀ X : C, (IsFinitelyAccessibleCategory.{w} (Under X))] [HasPushouts C]
+    [P.IsStableUnderComposition] [P.IsStableUnderCobaseChange]
+    [PreIndSpreads.{w} P] (H : P ≤ isFinitelyPresentable.{w} C) :
+    (ind.{w} P).IsStableUnderComposition where
+  comp_mem {X Y Z} f g hf hg := by
+    rw [ind_iff_exists H]
+    intro T p u hp hpu
+    obtain ⟨J₁, _, _, D₁, s₁, t₁, ht₁, h₁⟩ := hf
+    obtain ⟨J₂, _, _, D₂, s₂, t₂, ht₂, h₂⟩ := hg
+    have : IsFinitelyPresentable (CategoryTheory.Under.mk p) := hp
+    obtain ⟨j₂, q, hcomp, hu⟩ := IsFinitelyPresentable.exists_hom_of_isColimit_under
+        ht₂ p ((Functor.const _).map f ≫ s₂) u <| by simp [h₂, hpu]
+    obtain ⟨j₁, W, f', g', h, hf'⟩ :=
+      P.exists_isPushout_of_isFiltered ht₁ (s₂.app j₂) (h₂ j₂).left
+    let D' : Under j₁ ⥤ C :=
+      (Under.post D₁ ⋙ Under.pushout f') ⋙ CategoryTheory.Under.forget _
+    let c' : Cocone D' :=
+      (Under.pushout f' ⋙ CategoryTheory.Under.forget _).mapCocone
+        ((Cocone.mk _ t₁).underPost j₁) |>.extend h.isoPushout.inv
+    let hc' : IsColimit c' :=
+      IsColimit.extendIso _ <| isColimitOfPreserves _ (ht₁.underPost j₁)
+    let s' : (Functor.const (Under j₁)).obj X ⟶ D' :=
+      { app k := s₁.app k.right ≫ pushout.inl _ _
+        naturality k l a := by
+          have h2 := s₁.naturality a.right
+          simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp] at h2
+          simp [h2, D'] }
+    obtain ⟨j₃, v, hcomp', hq⟩ := IsFinitelyPresentable.exists_hom_of_isColimit_under
+        hc' p s' q <| fun k ↦ by
+      simp [c', s', hcomp, reassoc_of% (h₁ k.right).right]
+    refine ⟨D'.obj j₃, v, c'.ι.app j₃ ≫ t₂.app j₂, ?_, ?_⟩
+    · rwa [reassoc_of% hq]
+    · rw [hcomp']
+      exact P.comp_mem _ _ (h₁ _).left (P.pushout_inl _ _ hf')
+
+/-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
+is multiplicative if `P` is. -/
+lemma IsMultiplicative.ind_of_preIndSpreads
+    [∀ X : C, (IsFinitelyAccessibleCategory.{w} (Under X))] [HasPushouts C]
+    [P.IsMultiplicative] [P.IsStableUnderCobaseChange]
+    [PreIndSpreads.{w} P] (H : P ≤ isFinitelyPresentable.{w} C) :
+    (ind.{w} P).IsMultiplicative where
+  __ := IsStableUnderComposition.ind_of_preIndSpreads H
 
 end CategoryTheory.MorphismProperty

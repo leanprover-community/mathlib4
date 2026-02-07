@@ -97,6 +97,27 @@ lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
   rw [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff.ne]
   exact huv.ne
 
+lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.edist u v ≤ k :=
+  iSup_le_iff
+
+lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  constructor
+  · intro h v huv
+    have hd : G.edist u v ≤ 1 := edist_le_eccent.trans h
+    have hd' : 1 ≤ G.edist u v := Order.one_le_iff_pos.mpr (G.edist_pos_of_ne huv)
+    exact edist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
+  · intro hall
+    rw [eccent_le_iff]
+    intro v
+    rw [edist_le_one_iff_adj_or_eq]
+    exact or_iff_not_imp_right.mpr (hall v)
+
+lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
+    G.eccent u = 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  have h : 1 ≤ G.eccent u := ENat.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
+  rw [← h.ge_iff_eq']
+  exact eccent_le_one_iff u
+
 end eccent
 
 section ediam
@@ -243,7 +264,6 @@ lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
   ENat.toNat_le_toNat edist_le_ediam h
 
 lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
-  apply G.nontrivial_of_ediam_ne_zero
   contrapose! h
   simp [diam, h]
 

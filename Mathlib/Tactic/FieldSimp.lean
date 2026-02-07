@@ -6,12 +6,13 @@ Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, 
 module
 
 public meta import Mathlib.Data.Ineq
-public meta import Mathlib.Tactic.FieldSimp.Attr
-public meta import Mathlib.Tactic.FieldSimp.Discharger
-public meta import Mathlib.Tactic.FieldSimp.Lemmas
 public meta import Mathlib.Util.AtLocation
-public meta import Mathlib.Util.AtomM.Recurse
-public meta import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Data.Ineq
+public import Mathlib.Tactic.FieldSimp.Attr
+public import Mathlib.Tactic.FieldSimp.Discharger
+public import Mathlib.Tactic.FieldSimp.Lemmas
+public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # `field_simp` tactic
@@ -705,7 +706,8 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
   let disch ← parseDischarger d args
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
-  let m := AtomM.recurse s {} (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
+  let m := AtomM.recurse s { contextual := true } (wellBehavedDischarge := false)
+    (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
 

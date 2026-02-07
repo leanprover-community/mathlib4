@@ -6,8 +6,8 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.PiLex
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Complete linear order instance on lexicographically ordered pi types

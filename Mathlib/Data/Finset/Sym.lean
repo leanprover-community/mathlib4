@@ -87,9 +87,7 @@ theorem sym2_univ [Fintype α] (inst : Fintype (Sym2 α) := Sym2.instFintype) :
 
 @[simp, mono]
 theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := by
-  rw [← val_le_iff, sym2_val, sym2_val]
-  apply Multiset.sym2_mono
-  rwa [val_le_iff]
+  grind
 
 theorem monotone_sym2 : Monotone (Finset.sym2 : Finset α → _) := fun _ _ => sym2_mono
 
@@ -132,10 +130,7 @@ end
 
 variable {s t : Finset α} {a b : α}
 
-section
-variable [DecidableEq α]
-
-theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
+theorem sym2_eq_image [DecidableEq α] : s.sym2 = (s ×ˢ s).image Sym2.mk := by
   ext z
   refine z.ind fun x y ↦ ?_
   grind
@@ -147,8 +142,6 @@ theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) :
     ¬ (Sym2.mk a).IsDiag := by
   rw [Sym2.isDiag_iff_proj_eq]
   exact (mem_offDiag.1 h).2.2
-
-end
 
 section Sym2
 

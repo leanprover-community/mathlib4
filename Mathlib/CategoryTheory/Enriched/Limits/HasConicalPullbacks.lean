@@ -34,12 +34,12 @@ example {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasConicalPullback V f g] : Has
 variable (C)
 
 /--
-`HasConicalPullbacks` represents the existence of conical pullback for every pair of
-morphisms
+`HasConicalPullbacks` represents the existence of conical pullbacks for every pair of
+morphisms.
 -/
 abbrev HasConicalPullbacks : Prop := HasConicalLimitsOfShape WalkingCospan V C
 
-/-- ensure pullbacks exist of existence of conical pullbacks -/
+/-- Ensure pullbacks exist from the existence of conical pullbacks. -/
 example [HasConicalPullbacks V C] : HasPullbacks C := inferInstance
 
 end CategoryTheory.Enriched
