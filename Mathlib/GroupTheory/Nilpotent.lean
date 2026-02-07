@@ -116,7 +116,7 @@ theorem upperCentralSeriesStep_eq_comap_center :
     div_eq_mul_inv, mul_inv_rev, mul_assoc]
 
 instance [hH : H.Characteristic] : Characteristic (upperCentralSeriesStep H) :=
-  (upperCentralSeriesStep_eq_comap_center H) ▸ comap_Characteristic H centerCharacteristic
+  (upperCentralSeriesStep_eq_comap_center H) ▸ centerCharacteristic.comap_quotient_mk
 
 variable (G)
 

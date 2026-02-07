@@ -392,8 +392,8 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
 
 open Subgroup in
 @[to_additive]
-theorem comap_Characteristic [hN : N.Characteristic] {K : Subgroup (G ⧸ N)}
-    (hK : K.Characteristic) :
+theorem _root_.Subgroup.Characteristic.comap_quotient_mk {N : Subgroup G} [hN : N.Characteristic]
+    {K : Subgroup (G ⧸ N)} (hK : K.Characteristic) :
     Characteristic (K.comap (mk' N)) := by
   refine characteristic_iff_map_le.2 fun ϕ x ⟨y, hy⟩ => ?_
   have := characteristic_iff_map_eq.1 hK (congr N N ϕ (characteristic_iff_map_eq.1 hN ϕ))
