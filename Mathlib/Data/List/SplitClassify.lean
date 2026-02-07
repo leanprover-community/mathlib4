@@ -83,6 +83,7 @@ inductive SwapSplit (Δx Δy Δ1 Δ2 : List α) (A B S : α) : Type _
       (hΔ2 : Δ2 = Δy)
   | atB (hΔx : Δx = Δ1) (hBS : B = S) (hΔ2 : Δ2 = A :: Δy)
 
+/-- Constructively classify equalities `Δa ++ X :: Δb = Δ1 ++ S :: Δ2`. -/
 def classify_cons_vs_split
     (Δa Δb Δ1 Δ2 : List α) (X S : α)
     (h : Δa ++ X :: Δb = Δ1 ++ S :: Δ2) :
@@ -131,6 +132,7 @@ def classify_cons_vs_split
               refine ConsSplit.atSlot ?_ hXS hΔb
               simpa using congrArg (fun t => a :: t) hΔa
 
+/-- Constructively classify equalities `Δx ++ B :: A :: Δy = Δ1 ++ S :: Δ2`. -/
 def classify_swap_vs_split
     (Δx Δy Δ1 Δ2 : List α) (A B S : α)
     (h : Δx ++ B :: A :: Δy = Δ1 ++ S :: Δ2) :
