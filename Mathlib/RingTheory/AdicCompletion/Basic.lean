@@ -673,6 +673,20 @@ theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
 
 end Bijective
 
+theorem pow_smul_top_le_eval_ker (n : ℕ) : I ^ n • ⊤ ≤ (eval I M n).ker := by
+  simp only [smul_le, mem_top, LinearMap.mem_ker, map_smul, coe_eval, forall_const]
+  intro r r_in x
+  rw [← Submodule.Quotient.mk_out (x.val n), ← Quotient.mk_smul, Quotient.mk_eq_zero]
+  exact smul_mem_smul r_in mem_top
+
+lemma val_apply_mem_smul_top_iff {m n : ℕ} {x : AdicCompletion I M}
+    (m_ge : n ≤ m) : x.val m ∈ I ^ n • (⊤ : Submodule R (M ⧸ I ^ m • ⊤)) ↔ x.val n = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← x.prop m_ge, transitionMap, Submodule.factorPow, Submodule.factor, mapQ,
+      ← LinearMap.mem_ker]
+    simpa [ker_liftQ]
+  simpa [mapQ, h, ← LinearMap.mem_ker, ker_liftQ] using x.prop m_ge
+
 end AdicCompletion
 
 namespace IsAdicComplete
