@@ -63,6 +63,14 @@ private partial def getClassDataProjections (e : Expr) (acc : Array (List Nat ×
     -- occur at the root. We still want to record these to warn on duplicate inductive classes.
     return acc
 
+/-- Given an array of projection types paired with the locations of their parents, returns `true`
+if `p` is true for the types at any of the starting indices or their transitive parents. -/
+private partial def hasAnyParentWhich (p : Expr → Bool)
+    (projections : Array (List Nat × Expr)) (startingIdxs : List Nat) : Bool :=
+  startingIdxs.any fun idx =>
+    let (parentIdxs, cls) := projections[idx]!
+    p cls || hasAnyParentWhich p projections parentIdxs
+
 /-- Stores the local instance overlaps per class. The keys are the class, and the values are local
 instances which have the class as a projection. The `Bool` value of each entry indicates whether
 its type is exactly the key class. The code constructing values of this class is responsible for
@@ -123,17 +131,12 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
             However, if `fvar₀` is in *an* overlap on some parent of `fvar`, we trust it at least
             shares an overlap with `fvar` on some (possibly distinct) parent of `cls`. -/
             || overlaps.containsAt parentClass fvar₀
-        let rec
-            /-- Tests if any (strict) parents are yielded by `fvar₀`. If so, then some parent of
-            the current `cls` is yielded by both `fvar` and `fvar₀`, and we should (only) record
-            the overlap on the parent class; the current overlap is redundant. -/
-            overlapsOnParent (parentIdxs : List Nat) : Bool :=
-          parentIdxs.any fun parentIdx =>
-            let (nextParentIdxs, parentClass) := projClasses[parentIdx]!
-            isProjectionOfFVar₀ parentClass || overlapsOnParent nextParentIdxs
 
-        -- If `fvar` overlaps with `fvar₀` on a parent, don't record an overlap--it is redundant.
-        unless overlapsOnParent parentIdxs do
+        /- Tests if any (strict) parents of `cls` are yielded by `fvar₀` as a projection. If so,
+        then `fvar` and `fvar₀` overlap (or will overlap) on some parent of the current `cls`.
+        We should (only) record overlaps on the maximal parent class(es); the current overlap is
+        therefore redundant, and we skip it. -/
+        unless hasAnyParentWhich isProjectionOfFVar₀ projClasses parentIdxs do
           -- If no overlap exists yet for `cls`, start by inserting `fvar₀`.
           -- Otherwise, we assume `fvar₀`, being the representative of `cls`, was already
           -- inserted into the overlap when the overlap was first populated.
