@@ -293,8 +293,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
           ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inr_isoPushout_hom) x))
     simp only [RingHom.comp_assoc, H₁]
     ext x j
-    simp [ψY, H₂, ← CommRingCat.comp_apply, -CommRingCat.hom_comp, -ConcreteCategory.comp_apply,
-      pushoutSection]
+    simp [ψY, H₂, ← CategoryTheory.comp_apply, pushoutSection]
   · have H₁ : e.inv.hom.comp Algebra.TensorProduct.includeRight.toRingHom =
         (pushout.inl (C := CommRingCat) _ _).hom :=
       congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inl_isoPushout_hom).hom)
@@ -304,8 +303,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
           ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inl_isoPushout_hom) (x j)))
     simp only [RingHom.comp_assoc, H₁]
     ext x j
-    simp [ψY, H₂, ← CommRingCat.comp_apply, -CommRingCat.hom_comp, -ConcreteCategory.comp_apply,
-      pushoutSection, ψ]
+    simp [ψY, H₂, -CommRingCat.hom_comp, ← CategoryTheory.comp_apply, pushoutSection, ψ]
 
 lemma isIso_pushoutSection_of_iSup_eq
     {ι : Type u} [Finite ι] (VX : ι → X.Opens) (hVU : iSup VX = UX)
