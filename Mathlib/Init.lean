@@ -96,6 +96,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.show
   linter.style.maxHeartbeats
+  linter.overlappingInstances
   linter.unusedDecidableInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
