@@ -382,6 +382,17 @@ lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
   ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitz⟩
 
+/-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
+(assuming `E` and `F` are Banach spaces). -/
+noncomputable def antilipschitzConstant_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ℝ≥0 :=
+  Classical.choose (f.antilipschitz_of_injective_of_isClosed_range hf hf')
+
+lemma antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) :
+    AntilipschitzWith (f.antilipschitzConstant_of_injective_of_isClosed_range hf hf') f :=
+  Classical.choose_spec (f.antilipschitz_of_injective_of_isClosed_range hf hf')
+
 /-- An injective bounded linear operator between Banach spaces has closed range
 iff it is anti-Lipschitz. -/
 lemma isClosed_range_iff_antilipschitz_of_injective (f : E →L[𝕜] F)

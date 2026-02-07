@@ -251,11 +251,18 @@ Observe y = f x ∈ range f, so g y = inv (y) = x... by construction (hopefully!
 -- step 2, restriction is injective: missing lemma, but almost "by grind"
 -- -> is a linear equiv, has an inverse: should be in Lean
 
-lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoundedLeftInverse := by
+/-- A choice of continuous left inverse of an injective continuous linear map with closed range:
+this is `LinearMap.leftInverse` as a continuous linear map;
+by injectivity, the junk value of `leftInverse` never matters, and continuity of the inverse
+follows form the closed range condition. -/
+def leftInverse_of_injective_of_isClosed_range
+    (f : E →L[R] F) (hf : Injective f) (hf' : IsClosed (range f)) : f.range →L[R] E :=
   have hg₀ := f.rangeRestrict.leftInverse_apply_of_inj
-    (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective)
-  obtain ⟨K, hfK⟩ := f.antilipschitz_of_injective_of_isClosed_range hf.injective hf.isClosed_range
-  let g : f.range →L[R] E := LinearMap.mkContinuous f.rangeRestrict.leftInverse K (by
+    (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf)
+  have hf' := f.antilipschitz_of_injective_of_isClosed_range hf hf'
+  letI K := Classical.choose hf'
+  letI hfK := Classical.choose_spec hf'
+  LinearMap.mkContinuous f.rangeRestrict.leftInverse K (by
     rintro ⟨y, ⟨x, rfl⟩⟩
     rw [antilipschitzWith_iff_le_mul_dist] at hfK
     specialize hfK x 0
@@ -263,11 +270,16 @@ lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoun
     convert hfK
     exact hg₀ x
   )
-  -- Let p be the projection to range f.
+
+/-- A split linear map has a bounded left inverse. -/
+lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoundedLeftInverse := by
+  have : (f.rangeRestrict).ker = ⊥ := by
+    rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective
+  -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
   obtain ⟨p, hp⟩ := hf.closedComplemented
-  use g.comp p
-  intro x
-  simpa [g, hp (⟨f x, by simp⟩)] using hg₀ x
+  let g := f.leftInverse_of_injective_of_isClosed_range hf.injective hf.isClosed_range
+  refine ⟨g.comp p, fun x ↦ ?_⟩
+  simpa [g, hp (⟨f x, by simp⟩)] using f.rangeRestrict.leftInverse_apply_of_inj this x
 
 end ContinuousLinearMap
 
