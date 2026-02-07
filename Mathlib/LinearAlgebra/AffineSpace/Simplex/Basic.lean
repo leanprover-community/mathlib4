@@ -130,7 +130,7 @@ lemma affineSpan_face_le {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1)
   affineSpan_mono k (s.range_face_points h ▸ Set.image_subset_range _ _)
 
 lemma points_mem_affineSpan_face [Nontrivial k] {n : ℕ} (s : Simplex k P n)
-    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) (i : Fin (n + 1)) :
+    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {i : Fin (n + 1)} :
     s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
   rw [range_face_points]
   exact s.independent.mem_affineSpan_iff i fs
@@ -148,9 +148,9 @@ lemma affineSpan_faceOpposite_le {n : ℕ} [NeZero n] (s : Simplex k P n) (i : F
   s.affineSpan_face_le _
 
 lemma points_mem_affineSpan_faceOpposite [Nontrivial k] {n : ℕ} [NeZero n] (s : Simplex k P n)
-    (i : Fin (n + 1)) (j : Fin (n + 1)) :
+    {i j : Fin (n + 1)} :
     s.points j ∈ affineSpan k (Set.range (s.faceOpposite i).points) ↔ j ≠ i := by
-  rw [faceOpposite, s.points_mem_affineSpan_face _ j]
+  rw [faceOpposite, s.points_mem_affineSpan_face]
   simp
 
 lemma points_notMem_affineSpan_faceOpposite [Nontrivial k] {n : ℕ} [NeZero n] (s : Simplex k P n)
