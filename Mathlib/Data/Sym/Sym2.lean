@@ -689,7 +689,7 @@ def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} 
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
 `Quotient` version -/
 def _root_.Equiv.sigmaQuotientFromRel (sym : Symmetric r) {r' : Setoid β} (f : r →r r') :
-    fromRel sym ≃ Σ q : Quotient r', fromRel <| sym.comap <| @Subtype.val α ((⟦·⟧ = q) ∘ f) :=
+    fromRel sym ≃ Σ q : Quotient r', fromRel <| sym.comap <| @Subtype.val α (⟦f ·⟧ = q) :=
   .sigmaQuotFromRel sym f
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
