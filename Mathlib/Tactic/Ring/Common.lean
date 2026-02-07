@@ -124,11 +124,7 @@ The `Ex{Base,Prod,Sum}Nat` types are equivalent to `Ex{Base,Prod,Sum} btℕ sℕ
 used to represent exponents in `ExProd`s. We cannot use `ExProd btℕ sℕ` in the `mul` constructor
 of `ExProd` because `BaseType` is a parameter and not an index. Making `BaseType` an index
 (i.e. moving it to the right of the colon) would require including it as an argument to each
-constructor, raising the universe level of `ExProd` from `Type` to `Type 1`. But Lean does not
-support monadic computation in `Type 1`.
-
-That is,
-
+constructor, raising the universe level of `ExProd` from `Type` to `Type 1`; that is:
 ```
 inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) (e : Q($α)), Type
@@ -138,7 +134,11 @@ inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → 
     ExBase BaseType sα x → ExProd btℕ sℕ e → ExProd BaseType sα b →
       ExProd BaseType sα q($x ^ $e * $b)
 ```
-would fail to compile because `ExProd` lives in `Type 1`. -/
+would fail to compile because `ExProd` lives in `Type 1`.
+
+Lean does not support monadic computation in `Type 1` in its core monad types,
+so we cannot tolerate this universe bump.
+-/
 
 mutual
 
