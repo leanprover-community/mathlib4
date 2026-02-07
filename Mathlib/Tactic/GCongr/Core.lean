@@ -592,7 +592,7 @@ structure GCongrSubgoal where
 
 /-- Perform a single step of the `gcongr` tactic. Return the main subgoals, on which `gcongr`
 can act recursively, and the side goals that couldn't be discharged by `sideGoalDischarger`. -/
-def _root_.Lean.MVarId.gcongrCore (g : MVarId)
+def _root_.Lean.MVarId.gcongrStep (g : MVarId)
     (relName : Name) (lhs rhs : Expr) (sideGoalDischarger : MVarId → MetaM Unit) :
     GCongrM (Array GCongrSubgoal) := do
   -- Check that the goal is of the form `rel (head _ ... _) (head _ ... _)`
@@ -689,7 +689,7 @@ partial def _root_.Lean.MVarId.gcongr
         and is not closed by `rfl`"
     -- If there are more annotations, then continue on.
   let mainSubgoals ←
-    try g.gcongrCore relName lhs rhs sideGoalDischarger
+    try g.gcongrStep relName lhs rhs sideGoalDischarger
     catch ex => if mdataLhs?.isNone then pushNewGoal g; return false else throw ex
   -- Recursively iterate over the main subgoals.
   mainSubgoals.forM fun { goal, isContra } ↦
