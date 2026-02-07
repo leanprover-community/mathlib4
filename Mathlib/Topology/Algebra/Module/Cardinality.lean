@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Card
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Topology.MetricSpace.Perfect
 
 /-!
@@ -24,7 +23,7 @@ argument and the fact that a complete nontrivially normed field has cardinality 
 continuum, proved in `continuum_le_cardinal_of_nontriviallyNormedField`.
 -/
 
-@[expose] public section
+public section
 universe u v
 
 open Filter Pointwise Set Function Cardinal

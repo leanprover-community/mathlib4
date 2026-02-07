@@ -449,8 +449,8 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 open IsLocalRing in
-theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
-    [IsNoetherianRing R] [NoZeroSMulDivisors R M]
+theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
+    [IsNoetherianRing R] [Module.IsTorsionFree R M]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
@@ -460,8 +460,12 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
   have := smul_left_injective _ hx' (hr.trans (one_smul _ x).symm)
   exact I.eq_top_iff_one.not.mp h (this ▸ r.prop)
 
+@[deprecated (since := "2026-01-17")]
+alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
+  Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree
+
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors (M := R) h
+  convert I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
   simp

@@ -186,6 +186,7 @@ lemma pairingIn_mul_eq_pairingIn_mul_swap :
   simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
     B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[simp]
 lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
     (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
@@ -200,6 +201,13 @@ lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
       ↔ 0 < 2 * B.posForm ri rj := by rw [mul_pos_iff_of_pos_left zero_lt_two]
     _ ↔ 0 < P.pairingIn S i j * B.posForm rj rj := by rw [this]
     _ ↔ 0 < P.pairingIn S i j := by rw [mul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
+
+@[simp]
+lemma posForm_apply_root_root_le_zero_iff [IsStrictOrderedRing S]
+    (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
+    (hj : P.root j ∈ span S (range P.root) := subset_span (mem_range_self j)) :
+    B.posForm ⟨P.root i, hi⟩ ⟨P.root j, hj⟩ ≤ 0 ↔ P.pairingIn S i j ≤ 0 := by
+  rw [← not_iff_not, not_le, not_le, zero_lt_apply_root_root_iff]
 
 end RootPositiveForm
 

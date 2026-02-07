@@ -193,7 +193,7 @@ lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x
   Option.eq_none_iff_forall_some_ne
 
 @[to_dual]
-theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
+theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x ≠ ⊥, p x) ↔ ∀ x : α, p x := by
   simp [ne_bot_iff_exists]
 
 @[to_dual]
@@ -627,6 +627,26 @@ lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) �
   · simp [WithBot.none_eq_bot, eq_bot_iff_forall_le]
   · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ hmn.trans ham⟩
 
+@[to_dual (attr := simp) forall_lt_coe]
+theorem forall_coe_lt {p : WithBot α → Prop} :
+    (∀ x, (a : WithBot α) < x → p x) ↔ ∀ b, a < b → p b := by
+  simp [WithBot.forall]
+
+@[to_dual (attr := simp) exists_lt_coe]
+theorem exists_coe_lt {p : WithBot α → Prop} :
+    (∃ x, (a : WithBot α) < x ∧ p x) ↔ ∃ b, a < b ∧ p b := by
+  simp [WithBot.exists]
+
+@[to_dual (attr := simp) forall_le_coe]
+theorem forall_coe_le {p : WithBot α → Prop} :
+    (∀ x, (a : WithBot α) ≤ x → p x) ↔ ∀ b, a ≤ b → p b := by
+  simp [WithBot.forall]
+
+@[to_dual (attr := simp) exists_le_coe]
+theorem exists_coe_le {p : WithBot α → Prop} :
+    (∃ x, (a : WithBot α) ≤ x ∧ p x) ↔ ∃ b, a ≤ b ∧ p b := by
+  simp [WithBot.exists]
+
 end Preorder
 
 @[to_dual]
@@ -740,11 +760,12 @@ instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance total_le [LE α] [@Std.Total α (· ≤ ·)] : @Std.Total (WithBot α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
-instance _root_.WithTop.isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance _root_.WithTop.total_le [LE α] [@Std.Total α (· ≤ ·)] :
+    @Std.Total (WithTop α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) := Lattice.toLinearOrder _
 
@@ -794,13 +815,15 @@ instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] :
     DenselyOrdered (WithBot α) :=
   denselyOrdered_iff.mpr inferInstance
 
-instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
-    IsTrichotomous (WithBot α) (· < ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
+instance trichotomous.lt [Preorder α] [@Std.Trichotomous α (· < ·)] :
+    @Std.Trichotomous (WithBot α) (· < ·) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap fun {x y} ↦ by
+    cases x <;> cases y <;> simp [trichotomous]
 
-instance _root_.WithTop.trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
-    IsTrichotomous (WithTop α) (· < ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
+instance _root_.WithTop.trichotomous.lt [Preorder α] [@Std.Trichotomous α (· < ·)] :
+    @Std.Trichotomous (WithTop α) (· < ·) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap fun {x y} ↦ by
+    cases x <;> cases y <;> simp [trichotomous]
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedLT`, remove this.
 instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
@@ -810,13 +833,13 @@ instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
 instance _root_.WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
   IsWellOrder (WithTop α) (· < ·) where
 
-instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
-    IsTrichotomous (WithBot α) (· > ·) :=
-  have : IsTrichotomous α (· < ·) := .swap _; .swap _
+instance trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
+    @Std.Trichotomous (WithBot α) (· > ·) :=
+  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
 
-instance _root_.WithTop.trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
-    IsTrichotomous (WithTop α) (· > ·) :=
-  have : IsTrichotomous α (· < ·) := .swap _; .swap _
+instance _root_.WithTop.trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
+    @Std.Trichotomous (WithTop α) (· > ·) :=
+  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
 instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
@@ -896,16 +919,34 @@ protected def ofDual : WithBot αᵒᵈ ≃ WithTop α :=
   Equiv.refl _
 
 @[to_dual (attr := simp)]
+theorem toDual_symm : WithBot.toDual.symm = WithTop.ofDual (α := α) := rfl
+
+@[to_dual]
 theorem toDual_symm_apply (a : WithTop αᵒᵈ) : WithBot.toDual.symm a = WithTop.ofDual a := rfl
 
+attribute [deprecated toDual_symm (since := "2025-12-30")] toDual_symm_apply
+attribute [deprecated WithTop.toDual_symm (since := "2025-12-30")] WithTop.toDual_symm_apply
+
 @[to_dual (attr := simp)]
+theorem ofDual_symm : WithBot.ofDual.symm = WithTop.toDual (α := α) := rfl
+
+@[to_dual]
 theorem ofDual_symm_apply (a : WithTop α) : WithBot.ofDual.symm a = WithTop.toDual a := rfl
 
-@[to_dual (attr := simp)]
-theorem toDual_apply_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ := rfl
+attribute [deprecated ofDual_symm (since := "2025-12-30")] ofDual_symm_apply
+attribute [deprecated WithTop.ofDual_symm (since := "2025-12-30")] WithTop.ofDual_symm_apply
 
 @[to_dual (attr := simp)]
-theorem ofDual_apply_bot : WithBot.ofDual (⊥ : WithBot αᵒᵈ) = ⊤ := rfl
+theorem toDual_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ := rfl
+
+@[deprecated (since := "2025-12-30")] alias toDual_apply_bot := toDual_bot
+@[deprecated (since := "2025-12-30")] alias _root_.WithTop.toDual_apply_top := WithTop.toDual_top
+
+@[to_dual (attr := simp)]
+theorem ofDual_bot : WithBot.ofDual (⊥ : WithBot αᵒᵈ) = ⊤ := rfl
+
+@[deprecated (since := "2025-12-30")] alias ofDual_apply_bot := ofDual_bot
+@[deprecated (since := "2025-12-30")] alias _root_.WithTop.ofDual_apply_top := WithTop.ofDual_top
 
 open OrderDual
 

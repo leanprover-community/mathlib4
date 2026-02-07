@@ -16,7 +16,7 @@ ia a local ring (complete local ring).
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
 

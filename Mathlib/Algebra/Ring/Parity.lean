@@ -218,6 +218,38 @@ lemma Even.sub_odd (ha : Even a) (hb : Odd b) : Odd (a - b) := by
 lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
   rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 
+@[simp]
+lemma even_add_one : Even (a + 1) ↔ Odd a :=
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma even_sub_one : Even (a - 1) ↔ Odd a :=
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma even_add_two : Even (a + 2) ↔ Even a :=
+  ⟨(by convert ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+
+@[simp]
+lemma even_sub_two : Even (a - 2) ↔ Even a :=
+  ⟨(by convert ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+
+@[simp]
+lemma odd_add_one : Odd (a + 1) ↔ Even a :=
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma odd_sub_one : Odd (a - 1) ↔ Even a :=
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma odd_add_two : Odd (a + 2) ↔ Odd a := by
+  rw [← one_add_one_eq_two, ← add_assoc, odd_add_one, even_add_one]
+
+@[simp]
+lemma odd_sub_two : Odd (a - 2) ↔ Odd a := by
+  rw [← odd_add_two (a := a - 2), add_comm_sub, sub_self, add_zero]
+
 end Ring
 
 namespace Nat
@@ -305,6 +337,10 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by grind
 
 lemma two_dvd_mul_add_one (k : ℕ) : 2 ∣ k * (k + 1) :=
   even_iff_two_dvd.mp (even_mul_succ_self k)
+
+lemma two_dvd_mul_sub_one (k : ℕ) : 2 ∣ k * (k - 1) := by
+  rcases k with rfl | k; · simp
+  simpa [mul_comm (k + 1)] using k.two_dvd_mul_add_one
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by

@@ -40,7 +40,7 @@ Gaussian measure, characteristic function
 public section
 
 
-open Complex MeasureTheory WithLp NormedSpace ContinuousLinearMap
+open Complex MeasureTheory WithLp ContinuousLinearMap
 
 open scoped Matrix NNReal Real RealInnerProductSpace ProbabilityTheory
 
@@ -106,7 +106,7 @@ lemma gaussian_charFunDual_congr [IsFiniteMeasure μ] {m : E}
     ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj', sub_im, mul_im, div_ofNat_im,
     zero_div, sub_zero] at hn
   constructor
-  · rw [eq_iff_forall_dual_eq ℝ]
+  · rw [NormedSpace.eq_iff_forall_dual_eq ℝ]
     simp [hn]
   · rw [← toBilinForm_inj]
     apply LinearMap.BilinForm.ext_of_isSymm hf.isSymm isPosSemidef_covarianceBilinDual.isSymm

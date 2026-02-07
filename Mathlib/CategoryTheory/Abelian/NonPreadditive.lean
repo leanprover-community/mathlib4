@@ -14,9 +14,8 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 /-!
 # Every NonPreadditiveAbelian category is preadditive
 
-In mathlib, we define an abelian category as a preadditive category with a zero object,
-kernels and cokernels, products and coproducts and in which every monomorphism and epimorphism is
-normal.
+In mathlib, we define an abelian category as a preadditive category with finite products,
+kernels and cokernels, and in which every monomorphism and epimorphism is normal.
 
 While virtually every interesting abelian category has a natural preadditive structure (which is why
 it is included in the definition), preadditivity is not actually needed: Every category that has
@@ -41,7 +40,7 @@ categories, and will be used there.
 The construction is non-trivial and it is quite remarkable that this abelian group structure can
 be constructed purely from the existence of a few limits and colimits. Even more remarkably,
 since abelian categories admit exactly one preadditive structure (see
-`subsingletonPreadditiveOfHasBinaryBiproducts`), the construction manages to exactly
+`subsingleton_preadditive_of_hasBinaryBiproducts`), the construction manages to exactly
 reconstruct any natural preadditive structure the category may have.
 
 ## References
@@ -67,7 +66,7 @@ universe v u
 
 variable (C : Type u) [Category.{v} C]
 
-/-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
+/-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, finite
 products and coproducts, and every monomorphism and every epimorphism is normal.
 
 Notice that every such category is abelian (see `CategoryTheory.NonPreadditiveAbelian.preadditive`),

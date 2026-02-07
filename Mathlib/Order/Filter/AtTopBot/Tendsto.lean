@@ -15,7 +15,7 @@ In this file we prove many lemmas on the combination of `Filter.atTop` and `Filt
 and `Tendsto`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

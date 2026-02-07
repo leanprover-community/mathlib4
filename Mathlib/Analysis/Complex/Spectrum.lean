@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Complex.Basic
 # Some lemmas on the spectrum and quasispectrum of elements and positivity on `ℂ`
 -/
 
-@[expose] public section
+public section
 
 namespace SpectrumRestricts
 variable {A : Type*} [Ring A]

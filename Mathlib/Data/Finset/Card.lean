@@ -574,11 +574,13 @@ theorem card_sdiff : #(t \ s) = #t - #(s ∩ t) := by
 
 theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : #(t \ s) + #s = #t := by grind
 
-theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) :=
+lemma card_sub_card_eq (s t : Finset α) : #t - #s = #(t \ s) - #(s \ t) :=
   calc
-    #t - #s ≤ #t - #(s ∩ t) := by grind
-    _ = #(t \ (s ∩ t)) := by grind
-    _ ≤ #(t \ s) := by grind
+    #t - #s = #t - #(s ∩ t) - #(s \ t) := by grind
+    _ = #(t \ (s ∩ t)) - #(s \ t) := by grind
+    _ = #(t \ s) - #(s \ t) := by grind
+
+theorem le_card_sdiff (s t : Finset α) : #t - #s ≤ #(t \ s) := by grind
 
 grind_pattern le_card_sdiff => #(t \ s), #t
 grind_pattern le_card_sdiff => #(t \ s), #s
@@ -673,9 +675,11 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
   · grind
   · rintro ⟨hst, h⟩
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} := card_eq_one.mp (by grind)
-    exact
-      ⟨a, fun hs => (by grind : a ∉ {a}) <| mem_singleton_self _, by
-        rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
+    grind =>
+      have : a ∈ t \ s
+      have h : insert a s ⊆ t
+      have := eq_of_subset_of_card_le h
+      instantiate
 
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty

@@ -146,7 +146,7 @@ end
 def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
   toFun n := LinearMap.range (f ^ n)
   monotone' n m w x h := by
-    obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le  w
+    obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_range] at h
     obtain ⟨m, rfl⟩ := h
     rw [LinearMap.mem_range]
@@ -345,8 +345,6 @@ def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } 
     dsimp
     rw [map_le_iff_le_comap,
       comap_map_eq_of_injective (show Injective p.subtype from Subtype.coe_injective) p₂]
-
-@[deprecated (since := "2025-06-03")] alias MapSubtype.relIso := MapSubtype.orderIso
 
 /-- If `p ⊆ M` is a submodule, the ordering of submodules of `p` is embedded in the ordering of
 submodules of `M`. -/

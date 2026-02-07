@@ -5,10 +5,10 @@ Authors: Francisco Silva
 -/
 module
 
-public import Mathlib.GroupTheory.Sylow
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Data.Finite.Perm
-public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 # Regular wreath product
