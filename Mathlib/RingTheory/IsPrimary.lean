@@ -102,6 +102,12 @@ theorem IsPrimary.radical_colon_singleton_of_notMem (hI : S.IsPrimary) {m : M} (
     (hI.2 (Submodule.mem_colon_singleton.mp hy)).resolve_left hm)
     (radical_mono (Submodule.colon_mono le_rfl (Set.subset_univ {m})))
 
+theorem IsPrimary.radical_colon_singleton_eq_ite (hS : S.IsPrimary) (m : M) [Decidable (m ∈ S)] :
+    radical (S.colon {m}) = if m ∈ S then ⊤ else radical (S.colon Set.univ) := by
+  split_ifs with hm
+  · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
+  · exact hS.radical_colon_singleton_of_notMem hm
+
 end CommSemiring
 
 section CommRing

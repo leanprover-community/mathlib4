@@ -127,14 +127,11 @@ lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff [DecidableEq (Su
     p ∈ (fun J : Submodule R M ↦ radical (J.colon .univ)) '' t ↔
       IsPrime p ∧ ∃ x : M, p = radical (N.colon {x}) := by
   classical
-  have h {x} q (hq : q ∈ t) :
-      radical (colon q {x}) = if x ∈ q then ⊤ else radical (q.colon .univ) := by
-    split_ifs with hx
-    · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
-    · exact (ht.primary hq).radical_colon_singleton_of_notMem hx
   replace h x : radical (colon N {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (colon q .univ) := by
-    rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply]
-    simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
+    simp_rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply, map_finset_inf,
+      Function.comp_def, radicalInfTopHom_apply, id_eq]
+    rw [Finset.inf_congr rfl (fun q hq ↦ (ht.primary hq).radical_colon_singleton_eq_ite x),
+      Finset.inf_ite, Finset.inf_top, top_inf_eq]
   constructor
   · rintro ⟨q, hqt, rfl⟩
     obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
