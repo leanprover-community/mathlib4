@@ -195,7 +195,7 @@ noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
   colimit.isoColimitCocone initialColimitCocone.{u, 0}
 
 /-- The initial object in `Type u` is `PEmpty`. -/
-noncomputable def isInitialPunit : IsInitial (PEmpty : Type u) :=
+noncomputable def isInitialPEmpty : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
 
 /-- An object in `Type u` is initial if and only if it is empty. -/
@@ -204,7 +204,7 @@ lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := b
   · intro ⟨h⟩
     exact Function.isEmpty (IsInitial.to h PEmpty)
   · intro h
-    exact ⟨IsInitial.ofIso Types.isInitialPunit <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
+    exact ⟨IsInitial.ofIso Types.isInitialPEmpty <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
 
 /-- The sum type `X ⊕ Y` forms a cocone for the binary coproduct of `X` and `Y`. -/
