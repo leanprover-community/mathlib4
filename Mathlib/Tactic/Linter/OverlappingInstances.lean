@@ -32,7 +32,7 @@ This also records data-carrying non-structure inductive classes in a one-element
 private partial def getClassDataProjections (e : Expr) (acc : Array (List Nat × Expr) := #[])
     (parentIdx? : Option Nat := none) :
     StateRefT (NameMap Nat) MetaM (Array (List Nat × Expr)) := do
-  let eType ← whnf (← inferType e)
+  let eType ← whnf <|← instantiateMVars <|← inferType e
   if ← isProp eType then return acc
   let .const structName us := eType.getForallBody.getAppFn
     | throwError "`{e}` is not an instance of a structure"
@@ -115,7 +115,7 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
     unless (← fvar.fvarId!.getBinderInfo).isInstImplicit do continue
     let projClasses ← forallTelescope (← inferType fvar) fun xs _ ↦ do
       (← getClassDataProjections (mkAppN fvar xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
-        return (parentIdx?, ← instantiateMVars <|← mkForallFVars xs expr)
+        return (parentIdx?, ← mkForallFVars xs expr)
     trace[debug] "Got projections for `{fvar} : `{← inferType fvar}`:\
       {indentD <| toMessageData projClasses}"
     for (parentIdxs, cls) in projClasses do
