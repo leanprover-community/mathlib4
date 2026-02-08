@@ -9,7 +9,7 @@ public import Mathlib.Computability.Partrec
 public import Mathlib.Order.Antisymmetrization
 
 /-!
-# Oracle Computability
+# Oracle computability
 
 This file defines oracle computability using partial recursive functions with access to oracles.
 
