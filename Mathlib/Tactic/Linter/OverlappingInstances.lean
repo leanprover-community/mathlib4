@@ -71,22 +71,30 @@ private partial def hasAnyParentWhich (p : Expr → Bool)
     let (parentIdxs, cls) := projections[idx]!
     p cls || hasAnyParentWhich p projections parentIdxs
 
-/-- Stores the local instance overlaps per class. The keys are the class, and the values are local
-instances which have the class as a projection. The `Bool` value of each entry indicates whether
-its type is exactly the key class. The code constructing values of this class is responsible for
-ensuring that (1) every `Array` value contains at least two elements (2) no element of the array
-appears twice. -/
-abbrev Overlaps := ExprMap (Array (Expr × Bool))
+/-- Stores the local instance overlaps per class. The "keys" are the class, and the values are local
+instances which have the class as a projection. The `Bool` in the value of each entry indicates
+whether its type is exactly the key class.
 
-/-- Inserts a single `fvar` into the set of overlaps for `cls`. -/
-def Overlaps.pushAt (cls : Expr) (fvar : Expr × Bool) (overlaps : Overlaps) : Overlaps :=
-  overlaps.alter cls fun
-    | none => some #[fvar]
-    | some o => o.push fvar
+The code constructing values of this class is responsible for ensuring that (1) every `Array` value
+contains at least two elements (2) no element of the array appears twice.
+
+We use an `Array` instead of a hashmap in order to record the overlaps in the order the classes
+appear. -/
+abbrev Overlaps := Array <| Expr × Array (Expr × Bool)
+
+/-- Inserts `fvar₁` into the overlap for `cls` with `fvar₀`, assuming `fvar₀` is the representative
+of the class. Since this is the only way we insert fvars and the representatives do not change, we
+assume the representative `fvar₀` has already been inserted if the overlap exists, and do not
+re-insert it. -/
+def Overlaps.pushOverlap (fvar₀ : Expr × Bool) (cls : Expr) (fvar₁ : Expr × Bool)
+    (overlaps : Overlaps) : Overlaps :=
+  match overlaps.findIdx? (·.1 == cls) with
+  | none => overlaps.push (cls, #[fvar₀, fvar₁])
+  | some idx => overlaps.modify idx fun (cls, overlap) => (cls, overlap.push fvar₁)
 
 /-- Returns `true` iff `fvar` is among the overlaps recorded for `cls`. -/
 def Overlaps.containsAt (cls : Expr) (fvar : Expr) (overlaps : Overlaps) : Bool :=
-  overlaps[cls]?.any fun overlap => overlap.any (·.1 == fvar)
+  overlaps.any fun (cls', overlap) => cls == cls' && overlap.any (·.1 == fvar)
 
 /--
 Find data-carrying overlaps between the current local instances of the `MetaM` context.
@@ -137,24 +145,14 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
         then `fvar` and `fvar₀` overlap (or will overlap) on some parent of the current `cls`.
         We should (only) record overlaps on the maximal parent class(es); the current overlap is
         therefore redundant, and we skip it. -/
-        if hasAnyParentWhich isProjectionOfFVar₀ projClasses parentIdxs then
-          trace[debug] "  False alarm, will overlap on parent."
-        else
-          trace[debug] "  Inserting overlap."
-          -- If no overlap exists yet for `cls`, start by inserting `fvar₀`.
-          -- Otherwise, we assume `fvar₀`, being the representative of `cls`, was already
-          -- inserted into the overlap when the overlap was first populated.
-          unless overlaps.contains cls do
-            trace[debug] "  (initialized overlap)"
-            overlaps := overlaps.pushAt cls (fvar₀, clsIsTypeOfFVar₀)
-          overlaps := overlaps.pushAt cls (fvar, parentIdxs.isEmpty)
+        unless hasAnyParentWhich isProjectionOfFVar₀ projClasses parentIdxs do
+          overlaps := overlaps.pushOverlap (fvar₀, clsIsTypeOfFVar₀) cls (fvar, parentIdxs.isEmpty)
       else
         trace[debug] "• `{cls}`: not found."
         -- `cls` has no representative yet, so insert the current fvar as the representative.
         encounteredClasses := encounteredClasses.insert cls (fvar, parentIdxs.isEmpty)
   return overlaps
 
-#check Alternative
 /-- Lints against data-carrying overlaps between instances in the local contexts of declarations. -/
 register_option linter.overlappingInstances : Bool := {
   defValue := false
