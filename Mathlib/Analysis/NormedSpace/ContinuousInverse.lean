@@ -21,19 +21,27 @@ This concept is used to give an equivalent definition of immersions and submersi
 
 ## Main definitions and results
 
+* `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a left inverse
+  which is a continuous linear map itself
 * `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a right inverse
   which is a continuous linear map itself
-* `ContinuousLinearEquiv.hasRightInverse`: a continuous linear equivalence
-  admits a continuous right inverse
-* `ContinuousLinearMap.HasRightInverse.comp`: if `f : E → F` and `g : F → G` both admit
-  a continuous right inverse, so does `g.comp f`.
-* `ContinuousLinearMap.HasRightInverse.of_comp`: if `f : E → F` and `g : F → G` are
-  continuous linear maps such that `g.comp f : E → G` admits a continuous right inverse,
-  then so does `g`.
-* `ContinuousLinearMap.HasRightInverse.prodMap`: having a continuous right inverse
-  is closed under taking products
-* `ContinuousLinearMap.HasRightInverse.fst`:
-  `ContinuousLinearMap.fst` has a continuous right inverse; similar for `snd`
+* `ContinuousLinearEquiv.hasRightInverse` and `ContinuousLinearEquiv.hasRightInverse`:
+  a continuous linear equivalence admits a continuous left (resp. right) inverse
+* `ContinuousLinearMap.HasLeftInverse.comp`, `ContinuousLinearMap.HasRightInverse.comp`:
+  if `f : E → F` and `g : F → G` both admit a continuous left (resp. right) inverse,
+  so does `g.comp f`.
+* `ContinuousLinearMap.HasLefttInverse.of_comp`, `ContinuousLinearMap.HasRightInverse.of_comp`:
+  suppose `f : E → F` and `g : F → G` are continuous linear maps.
+  If `g.comp f : E → G` admits a continuous left inverse, then so does `f`.
+  If `g.comp f : E → G` admits a continuous right inverse, then so does `g`.
+* `ContinuousLinearMap.HasLeftInverse.prodMap`, `ContinuousLinearMap.HasRightInverse.prodMap`:
+  having a continuous right inverse is closed under taking products
+* `ContinuousLinearMap.HasLeftInverse.inl`, `ContinuousLinearMap.HasLeftInverse.inr`:
+  `ContinuousLinearMap.inl` and `.inr` have a continuous left inverse
+* `ContinuousLinearMap.HasRightInverse.fst`, `ContinuousLinearMap.HasRightInverse.snd`:
+  `ContinuousLinearMap.fst` and `.snd` hav a continuous right inverse
+* `ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional`:
+  if `f : E → F` is injective and `F` is finite-dimensional, `f` has a continuous left inverse.
 * `ContinuousLinearMap.HasRightInverse.of_surjective_of_finiteDimensional`:
   if `f : E → F` is surjective and `F` is finite-dimensional, `f` has a continuous right inverse.
 
@@ -134,13 +142,13 @@ lemma continuousLinearEquivalence_comp {g : F ≃L[R] F'} (hf : f.HasLeftLeftInv
   g.hasLeftInverse.comp hf
 
 /-- `ContinuousLinearMap.inl` has a continuous left inverse. -/
-lemma continuousLinearMap_inl : (ContinuousLinearMap.inl R F G).HasLeftLeftInverse := by
+protected lemma inl : (ContinuousLinearMap.inl R F G).HasLeftLeftInverse := by
   use ContinuousLinearMap.fst _ _ _
   intro x
   simp
 
 /-- `ContinuousLinearMap.inr` has a continuous left inverse. -/
-lemma continuousLinearMap_inr : (ContinuousLinearMap.inr R F G).HasLeftLeftInverse := by
+protected lemma inr : (ContinuousLinearMap.inr R F G).HasLeftLeftInverse := by
   use ContinuousLinearMap.snd _ _ _
   intro x
   simp
@@ -219,11 +227,11 @@ lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasRightInverse) :
   obtain ⟨fginv, hfginv⟩ := hfg
   exact ⟨f.comp fginv, fun y ↦ by simpa using hfginv y⟩
 
-lemma compCLE_left {f₀ : F' ≃L[R] E} (hf : f.HasRightInverse) :
+lemma comp_continuousLinearEquivalence {f₀ : F' ≃L[R] E} (hf : f.HasRightInverse) :
     (f.comp f₀.toContinuousLinearMap).HasRightInverse :=
   hf.comp f₀.hasRightInverse
 
-lemma compCLE_right {g : F ≃L[R] F'} (hf : f.HasRightInverse) :
+lemma continuousLinearEquivalence_comp {g : F ≃L[R] F'} (hf : f.HasRightInverse) :
     (g.toContinuousLinearMap.comp f).HasRightInverse :=
   g.hasRightInverse.comp hf
 
