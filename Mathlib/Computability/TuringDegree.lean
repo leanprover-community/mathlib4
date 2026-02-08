@@ -14,8 +14,8 @@ import Aesop
 /-!
 # Turing Reducibility and Turing Degrees
 
-This file defines Turing reducibility and Turing equivalence in terms of oracle computability,
-as well as the notion of Turing degrees as equivalence classes under mutual reducibility.
+This file defines Turing reducibility and equivalence, proves that Turing equivalence is an
+equivalence relation, and defines Turing degrees as the quotient under this relation.
 
 ## Main definitions
 
@@ -44,7 +44,7 @@ Turing reducibility. This gives a concrete representation of degrees as equivale
 
 ## Tags
 
-Computability, Turing Degrees, Reducibility, Equivalence Relation
+Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
 
 @[expose] public section
