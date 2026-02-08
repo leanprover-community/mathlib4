@@ -97,6 +97,12 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
   preserves _ h := by rwa [mono_iff_injective] at h ⊢
 
+instance {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
+    (restrictScalars f).ReflectsIsomorphisms :=
+  have : (restrictScalars f ⋙ CategoryTheory.forget (ModuleCat R)).ReflectsIsomorphisms :=
+    inferInstanceAs (CategoryTheory.forget (ModuleCat S)).ReflectsIsomorphisms
+  reflectsIsomorphisms_of_comp _ (CategoryTheory.forget _)
+
 -- Porting note: this should be automatic
 -- TODO: this instance gives diamonds if `f : S →+* S`, see `PresheafOfModules.pushforward₀`.
 -- The correct solution is probably to define explicit maps between `M` and
@@ -145,6 +151,31 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
       map_add' := by simp
       map_smul' := g.hom.map_smul }
   map_add' _ _ := rfl
+
+/-- Restrictions scalars along equal ring homomorphisms are naturally isomorphic. -/
+def restrictScalarsCongr
+    {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f g : R →+* S} (e : f = g) :
+    ModuleCat.restrictScalars f ≅ ModuleCat.restrictScalars g :=
+  NatIso.ofComponents (fun X ↦ LinearEquiv.toModuleIso
+    (X₁ := (ModuleCat.restrictScalars f).obj X) (X₂ := (ModuleCat.restrictScalars g).obj X)
+    { __ := AddEquiv.refl _, map_smul' _ _ := by subst e; rfl }) fun _ ↦ by subst e; rfl
+
+@[simp]
+lemma restrictScalarsCongr_symm
+    {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f g : R →+* S} (e : f = g) :
+  (restrictScalarsCongr e).symm = restrictScalarsCongr e.symm := rfl
+
+@[simp]
+lemma restrictScalarsCongr_hom_app
+    {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f g : R →+* S} (e : f = g)
+    (M : ModuleCat S) (x : M) :
+  (restrictScalarsCongr e).hom.app M x = x := rfl
+
+@[simp]
+lemma restrictScalarsCongr_inv_app
+    {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f g : R →+* S} (e : f = g)
+    (M : ModuleCat S) (x : M) :
+  (restrictScalarsCongr e).inv.app M x = x := rfl
 
 section
 
@@ -870,7 +901,7 @@ instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
   have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrpCat) :=
     inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrpCat))
   apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
-  apply isColimitOfReflects (forget₂ _ AddCommGrpCat)
+  apply isColimitOfReflects (forget₂ (ModuleCat.{v} R) AddCommGrpCat)
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrpCat.{v})
   exact HasColimit.isColimitColimitCocone F
 

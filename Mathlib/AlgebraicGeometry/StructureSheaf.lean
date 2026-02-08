@@ -797,7 +797,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     -- Unfortunately, `ht_cover` uses a bounded union over the set `t`, while here we have the
     -- Union indexed by the type `tt`, so we need some boilerplate to translate one to the other
     intro x hx
-    rw [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup]
+    rw [TopologicalSpace.Opens.mem_iSup]
     have := ht_cover hx
     rw [← Finset.set_biUnion_coe, Set.mem_iUnion₂] at this
     rcases this with ⟨i, i_mem, x_mem⟩

@@ -483,9 +483,9 @@ performed.
 -/
 syntax (name := linarith?) "linarith?" "!"? linarithArgsRest : tactic
 
-@[inherit_doc linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
+@[tactic_alt linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
   `(tactic| linarith ! $rest:linarithArgsRest)
-@[inherit_doc linarith?] macro "linarith?!" rest:linarithArgsRest : tactic =>
+@[tactic_alt linarith?] macro "linarith?!" rest:linarithArgsRest : tactic =>
   `(tactic| linarith? ! $rest:linarithArgsRest)
 
 /--
@@ -501,7 +501,7 @@ in `linarith`. The preprocessing is as follows:
   where `R ∈ {<, ≤, =}` is the appropriate comparison derived from `R1, R2`.
 -/
 syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
-@[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
+@[tactic_alt nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
 /--

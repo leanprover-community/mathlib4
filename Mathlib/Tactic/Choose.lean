@@ -5,8 +5,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan C
 -/
 module
 
-public import Batteries.Lean.Expr
-public meta import Batteries.Lean.Expr
 public import Mathlib.Logic.Function.Basic
 public meta import Mathlib.Tactic.Basic
 
@@ -286,7 +284,7 @@ elab_rules : tactic
     let g ← elabChoose b.isSome h args (.failure []) (← getMainGoal)
     replaceMainGoal [g]
 
-@[inherit_doc choose]
+@[tactic_alt choose]
 syntax "choose!" (ppSpace colGt chooseBinder)+ (" using " term)? : tactic
 
 macro_rules
