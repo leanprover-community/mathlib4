@@ -2078,6 +2078,7 @@ public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.NormedSpace.BallAction
 public import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 public import Mathlib.Analysis.NormedSpace.Connected
+public import Mathlib.Analysis.NormedSpace.ContinuousInverse
 public import Mathlib.Analysis.NormedSpace.DualNumber
 public import Mathlib.Analysis.NormedSpace.ENormedSpace
 public import Mathlib.Analysis.NormedSpace.Extend
