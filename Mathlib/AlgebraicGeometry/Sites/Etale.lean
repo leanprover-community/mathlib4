@@ -56,23 +56,6 @@ def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
 instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @IsEtale)) (i : 𝒰.I₀) : IsEtale (𝒰.f i) :=
   𝒰.map_prop i
 
-section Points
-
-@[simps]
-def _root_.CategoryTheory.Functor.Elements.initial' {C : Type*} [Category C] (A : Cᵒᵖ) :
-    (coyoneda.obj A).Elements :=
-  ⟨A.unop, 𝟙 _⟩
-
-def _root_.CategoryTheory.Functor.Elements.isInitial' {C : Type*} [Category C] (A : Cᵒᵖ) :
-    IsInitial (Functor.Elements.initial' A) :=
-  .ofUniqueHom (fun X ↦ ⟨X.2, by simp⟩) <| by rintro Y ⟨_, h⟩; ext; simpa using h
-
-instance {C : Type*} [Category C] (A : Cᵒᵖ) : HasInitial ((coyoneda.obj A).Elements) :=
-  (Functor.Elements.isInitial' A).hasInitial
-
-instance {C : Type*} [Category C] (A : C) : HasInitial ((yoneda.obj A).Elements) :=
-  (Functor.Elements.isInitial A).hasInitial
-
 /-- A separably closed field `Ω` defines a point on the étale topology by the fiber
 functor `X ↦ Hom(Spec Ω, X)`. -/
 def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Point where
@@ -93,8 +76,5 @@ def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Poi
       ext1; exact b.comp_algebraMap
     use Spec.map (CommRingCat.ofHom b.toRingHom) ≫ (𝒰.X i).fromSpecResidueField y
     simp [SpecToEquivOfField, ← hfac]
-  isCofiltered := Functor.isCofiltered_elements _
-
-end Points
 
 end AlgebraicGeometry.Scheme
