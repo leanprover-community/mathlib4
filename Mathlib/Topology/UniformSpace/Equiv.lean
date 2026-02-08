@@ -278,6 +278,8 @@ def prodPUnit : α × PUnit ≃ᵤ α where
   uniformContinuous_toFun := uniformContinuous_fst
   uniformContinuous_invFun := uniformContinuous_id.prodMk uniformContinuous_const
 
+@[deprecated (since := "2026-02-08")] alias prodPunit := prodPUnit
+
 /-- `{*} × α` is uniformly isomorphic to `α`. -/
 def punitProd : PUnit × α ≃ᵤ α :=
   (prodComm _ _).trans (prodPUnit _)

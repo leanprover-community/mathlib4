@@ -80,6 +80,8 @@ noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
 noncomputable def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 
+@[deprecated (since := "2026-02-08")] alias isTerminalPunit := isTerminalPUnit
+
 noncomputable instance : Inhabited (⊤_ (Type u)) :=
   ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
 

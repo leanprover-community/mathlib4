@@ -125,6 +125,8 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
 noncomputable def specPUnitIsInitial : IsInitial (Spec <| .of PUnit.{u + 1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
+@[deprecated (since := "2026-02-08")] alias specPunitIsInitial := specPUnitIsInitial
+
 lemma isInitial_iff_isEmpty {X : Scheme.{u}} : Nonempty (IsInitial X) ↔ IsEmpty X :=
   ⟨fun ⟨h⟩ ↦ (h.uniqueUpToIso specPUnitIsInitial).hom.homeomorph.isEmpty,
     fun _ ↦ ⟨isInitialOfIsEmpty⟩⟩
