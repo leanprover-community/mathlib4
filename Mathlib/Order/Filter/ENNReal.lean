@@ -231,9 +231,11 @@ lemma ofReal_limsup {u : α → ℝ}
     filter_upwards [h (.ofReal x) (by simpa [this] using hx)] with a ha
     exact (toReal_lt_of_lt_ofReal ha).trans_le' (by simp [toReal_ofReal'])
 
-lemma toReal_limsup [f.NeBot] {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
+lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
     (h₂ : IsBoundedUnder (· ≤ ·) f fun a ↦ (u a).toReal := by isBoundedDefault) :
     (limsup u f).toReal = limsup (fun a ↦ (u a).toReal) f := by
+  obtain rfl | hf := f.eq_or_neBot
+  · simp [limsup, limsSup]
   have : IsCoboundedUnder (· ≤ ·) f fun a ↦ (u a).toReal := .of_frequently_ge (a := 0) (by simpa)
   refine eq_of_forall_ge_iff fun r ↦ ?_
   obtain hr | hr := lt_or_ge r 0
