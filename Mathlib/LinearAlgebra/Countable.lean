@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finsupp.Encodable
 public import Mathlib.Data.Set.Countable
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Countable modules
@@ -28,5 +29,11 @@ instance {ι : Type*} [Countable R] [Countable ι] (v : ι → M) :
   refine Set.countable_coe_iff.mpr (Set.Countable.mono ?_ (Set.countable_range
       (fun c : (ι →₀ R) => c.sum fun i _ => (c i) • v i)))
   exact fun _ h => Finsupp.mem_span_range_iff_exists_finsupp.mp (SetLike.mem_coe.mp h)
+
+theorem Countable.of_module_finite [Countable R] [Module.Finite R M] : Countable M := by
+  obtain ⟨n, s, h⟩ := Module.Finite.exists_fin (R := R) (M := M)
+  rw [← Set.countable_univ_iff]
+  have : Countable (Submodule.span R (Set.range s)) := inferInstance
+  rwa [h] at this
 
 end Finsupp
