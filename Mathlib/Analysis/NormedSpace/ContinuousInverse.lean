@@ -25,19 +25,20 @@ This concept is used to give an equivalent definition of immersions and submersi
   which is a continuous linear map itself
 * `ContinuousLinearEquiv.hasBoundedRightInverse`: a continuous linear equivalence
   admits a continuous right inverse
-* `ContinuousLinearEquiv.HasBoundedRightInverse.comp`: if `f : E → F` and `g : F → G` both admit
+* `ContinuousLinearMap.HasBoundedRightInverse.comp`: if `f : E → F` and `g : F → G` both admit
   a continuous right inverse, so does `g.comp f`.
-* `ContinuousLinearEquiv.HasBoundedRightInverse.of_comp`: if `f : E → F` and `g : F → G` are
+* `ContinuousLinearMap.HasBoundedRightInverse.of_comp`: if `f : E → F` and `g : F → G` are
   continuous linear maps such that `g.comp f : E → G` admits a continuous right inverse,
   then so does `g`.
+* `ContinuousLinearMap.HasBoundedRightInverse.prodMap`: having a continuous right inverse
+  is closed under taking products
 * `ContinuousLinearMap.HasBoundedRightInverse.continuousLinearMap_fst`:
   `ContinuousLinearMap.fst` has a continuous right inverse; similar for `snd`
 * `ContinuousLinearMap.HasBoundedRightInverse.of_surjective_of_finiteDimensional`:
   if `f : E → F` is surjective and `F` is finite-dimensional, `f` has a continuous right inverse.
 
 ## TODO
-* `ContinuousLinearEquiv.HasBoundedRightInverse.prodMap`: having a continuous right inverse
-  is closed under taking products
+
 * If `E` and `F` are Banach and `f : E → F` is surject and Fredholm,
   `f` has a continuous right inverse.
 * is "split epimorphism/split surjection" a better term?
