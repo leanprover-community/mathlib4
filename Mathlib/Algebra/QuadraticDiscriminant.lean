@@ -74,8 +74,8 @@ theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s ^
     a * (x * x) + b * x + c ≠ 0 :=
   mt discrim_eq_sq_of_quadratic_eq_zero (h _)
 
-/-- Roots of a quadratic equation. -/
-theorem quadratic_eq_zero_iff' [NeZero (2 : R)] [NeZero a] [NoZeroDivisors R] {s : R} (h : discrim a b c = s * s) (x : R) :
+theorem quadratic_eq_zero_iff' [NeZero (2 : R)] [NeZero a] [NoZeroDivisors R]
+  {s : R} (h : discrim a b c = s * s) (x : R) :
     a * (x * x) + b * x + c = 0 ↔ x * (2 * a) = (-b + s) ∨ x * (2 * a) = (-b - s) := by
   rw [quadratic_eq_zero_iff_discrim_eq_sq (NeZero.ne a), h, sq, mul_self_eq_mul_self_iff]
   grind

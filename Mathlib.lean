@@ -6424,6 +6424,7 @@ public import Mathlib.RingTheory.RootsOfUnity.Complex
 public import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 public import Mathlib.RingTheory.RootsOfUnity.Lemmas
+public import Mathlib.RingTheory.RootsOfUnity.LowDegree
 public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.RingTheory.SimpleModule.Basic
