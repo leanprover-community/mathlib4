@@ -10,10 +10,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
-public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.RingHom.Etale
-public import Mathlib.RingTheory.Etale.Field
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
 /-!
 

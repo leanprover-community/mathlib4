@@ -6,13 +6,10 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.Small
-public import Mathlib.CategoryTheory.Sites.Point.Basic
-public import Mathlib.FieldTheory.IsSepClosed
-public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Limits.Elements
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
 
