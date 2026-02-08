@@ -9,14 +9,16 @@ public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Logic.Basic
 public import Mathlib.Order.Defs.Unbundled
+public import Batteries.Logic
+public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.Basic
 
 /-!
 # Relation closures
 
-This file defines the reflexive, transitive, reflexive transitive and equivalence closures
-of relations and proves some basic results on them.
+This file defines the reflexive, symmetric, transitive, reflexive transitive and equivalence
+closures of relations and proves some basic results on them.
 
 Note that this is about unbundled relations, that is terms of types of the form `α → β → Prop`. For
 the bundled version, see `Rel`.
@@ -25,6 +27,8 @@ the bundled version, see `Rel`.
 
 * `Relation.ReflGen`: Reflexive closure. `ReflGen r` relates everything `r` related, plus for all
   `a` it relates `a` with itself. So `ReflGen r a b ↔ r a b ∨ a = b`.
+* `Relation.SymmGen`: Symmetric closure. This is also the comparability relation,
+  such that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`)
 * `Relation.TransGen`: Transitive closure. `TransGen r` relates everything `r` related
   transitively. So `TransGen r a b ↔ ∃ x₀ ... xₙ, r a x₀ ∧ r x₀ x₁ ∧ ... ∧ r xₙ b`.
 * `Relation.ReflTransGen`: Reflexive transitive closure. `ReflTransGen r` relates everything
@@ -36,8 +40,8 @@ the bundled version, see `Rel`.
 * `Relation.EqvGen`: Equivalence closure. `EqvGen r` relates everything `ReflTransGen r` relates,
   plus for all related pairs it relates them in the opposite order.
 * `Relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
-  `s : β → γ → Prop`, `r ∘r s`relates `a : α` and `c : γ` iff there exists `b : β` that's related to
-  both.
+  `s : β → γ → Prop`, `r ∘r s` relates `a : α` and `c : γ` iff there exists `b : β` that's related
+  to both.
 * `Relation.Map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,
   `g : β → δ`, `Map r f g` is the relation `γ → δ → Prop` relating `f a` and `g b` for all `a`, `b`
   related by `r`.
@@ -50,13 +54,15 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ ε ζ : Type*}
+variable {α β γ δ ε ζ : Sort*}
 
 section NeImp
 
 variable {r : α → α → Prop}
 
-theorem IsRefl.reflexive [IsRefl α r] : Reflexive r := fun x ↦ IsRefl.refl x
+theorem Std.Refl.reflexive [Std.Refl r] : Reflexive r := fun x ↦ Std.Refl.refl x
+
+@[deprecated (since := "2026-01-09")] alias IsRefl.reflexive := Std.Refl.reflexive
 
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
@@ -69,9 +75,9 @@ theorem Reflexive.ne_imp_iff (h : Reflexive r) {x y : α} : x ≠ y → r x y �
   ⟨h.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
 /-- If a reflexive relation `r : α → α → Prop` holds over `x y : α`,
-then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses `[IsRefl α r]`. -/
-theorem reflexive_ne_imp_iff [IsRefl α r] {x y : α} : x ≠ y → r x y ↔ r x y :=
-  IsRefl.reflexive.ne_imp_iff
+then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses `[Std.Refl r]`. -/
+theorem reflexive_ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x y :=
+  Std.Refl.reflexive.ne_imp_iff
 
 theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
   grind [Reflexive, Subrelation]
@@ -250,12 +256,44 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : �
     ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
+lemma le_onFun_map {r : α → α → Prop} (f : α → β) : Subrelation r (Relation.Map r f f on f) := by
+  intro
+  grind [Relation.Map]
+
+lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
+    (Relation.Map r f f on f) = r := by
+  ext x y
+  exact ⟨fun ⟨x', y', hr, hx, hy⟩ ↦ hinj hx ▸ hinj hy ▸ hr, fun h ↦ ⟨x, y, h, rfl, rfl⟩⟩
+
+lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Subrelation (Relation.Map (r on f) f f) r := by
+  intro
+  grind [Relation.Map]
+
+lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
+    Relation.Map (r on f) f f = r := by
+  ext x y
+  have _ := hsurj x
+  have _ := hsurj y
+  grind [Relation.Map]
+
+lemma map_onFun_map_eq_map {r : α → α → Prop} (f : α → β) :
+    Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f := by
+  grind [Relation.Map]
+
+lemma onFun_map_onFun_eq_onFun {r : β → β → Prop} (f : α → β) :
+    (Relation.Map (r on f) f f on f) = (r on f) := by
+  grind [Relation.Map]
+
+lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} (f : α → β) (a₁ a₂ : α) :
+    Relation.Map (r on f) f f (f a₁) (f a₂) ↔ r (f a₁) (f a₂) := by
+  grind [Relation.Map]
+
 end Map
 
 variable {r : α → α → Prop} {a b c : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
-@[mk_iff ReflTransGen.cases_tail_iff]
+@[mk_iff ReflTransGen.cases_tail_iff, grind]
 inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflTransGen r a a
   | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
@@ -263,10 +301,15 @@ inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
 attribute [refl] ReflTransGen.refl
 
 /-- `ReflGen r`: reflexive closure of `r` -/
-@[mk_iff]
+@[mk_iff, grind]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
+
+/-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation, such
+  that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
+def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
+  r a b ∨ r b a
 
 variable (r) in
 /-- `EqvGen r`: equivalence closure of `r`. -/
@@ -278,7 +321,9 @@ inductive EqvGen : α → α → Prop
   | trans x y z : EqvGen x y → EqvGen y z → EqvGen x z
 
 attribute [mk_iff] TransGen
+attribute [grind] TransGen
 attribute [refl] ReflGen.refl
+attribute [grind =] reflGen_iff
 
 namespace ReflGen
 
@@ -290,10 +335,50 @@ theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b
   | a, _, ReflGen.refl => by rfl
   | a, b, single h => single (hp a b h)
 
-instance : IsRefl α (ReflGen r) :=
+instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
 
 end ReflGen
+
+namespace SymmGen
+
+theorem of_rel (h : r a b) : SymmGen r a b :=
+  Or.inl h
+
+theorem of_rel_symm (h : r b a) : SymmGen r a b :=
+  Or.inr h
+
+theorem swap (h : SymmGen r b a) : SymmGen (swap r) a b := by
+  induction h with
+  | inl hba => exact of_rel hba
+  | inr hab => exact of_rel_symm hab
+
+@[simp, refl]
+theorem refl (r : α → α → Prop) [Std.Refl r] (a : α) : SymmGen r a a :=
+  .of_rel (_root_.refl _)
+
+theorem rfl [Std.Refl r] : SymmGen r a a := .refl ..
+
+instance [Std.Refl r] : Std.Refl (SymmGen r) where
+  refl := .refl r
+
+@[symm]
+theorem symm : SymmGen r a b → SymmGen r b a :=
+  Or.symm
+
+instance : Std.Symm (SymmGen r) where
+  symm _ _ := SymmGen.symm
+
+instance decidableRel [DecidableRel r] : DecidableRel (SymmGen r) :=
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
+
+theorem of_le {α : Type*} [LE α] {a b : α} (h : a ≤ b) : SymmGen (· ≤ ·) a b := .of_rel h
+theorem of_ge {α : Type*} [LE α] {a b : α} (h : b ≤ a) : SymmGen (· ≤ ·) a b := .of_rel_symm h
+
+alias _root_.LE.le.symmGen := SymmGen.of_le
+alias _root_.LE.le.symmGen_symm := SymmGen.of_ge
+
+end SymmGen
 
 namespace ReflTransGen
 
@@ -431,11 +516,18 @@ theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
   rcases IH with ⟨d, had, hdb⟩
   exact ⟨_, had, hdb.tail hbc⟩
 
+theorem symmetric (hr : Symmetric r) : Symmetric (TransGen r) := by
+  intro x y h
+  induction h with
+  | single i => exact .single (hr i)
+  | tail _ h₁ h₂ => exact .head (hr h₁) h₂
+
 end TransGen
 
 
 section reflGen
 
+@[grind =]
 lemma reflGen_eq_self (hr : Reflexive r) : ReflGen r = r := by
   ext x y
   simpa only [reflGen_iff, or_iff_right_iff_imp] using fun h ↦ h ▸ hr y
@@ -447,6 +539,23 @@ lemma reflGen_minimal {r' : α → α → Prop} (hr' : Reflexive r') (h : ∀ x 
   simpa [reflGen_eq_self hr'] using ReflGen.mono h hxy
 
 end reflGen
+
+section SymmGen
+
+theorem symmGen_swap (r : α → α → Prop) : SymmGen (swap r) = SymmGen r :=
+  funext₂ fun _ _ ↦ propext or_comm
+
+theorem symmGen_swap_apply (r : α → α → Prop) : SymmGen (swap r) a b ↔ SymmGen r a b :=
+  or_comm
+
+theorem symmGen_comm {a b : α} : SymmGen r a b ↔ SymmGen r b a :=
+  or_comm
+
+@[simp]
+theorem symmGen_of_total [Std.Total r] (a b : α) : SymmGen r a b :=
+  Std.Total.total a b
+
+end SymmGen
 
 section TransGen
 
@@ -465,6 +574,7 @@ instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
 instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
   ⟨TransGen.trans_right⟩
 
+@[grind =]
 theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
   funext fun a ↦ funext fun b ↦ propext <|
     ⟨fun h ↦ by
@@ -474,6 +584,7 @@ theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
 
 theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.trans
 
+@[grind =]
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self transitive_transGen
 
@@ -518,9 +629,11 @@ section ReflTransGen
 
 open ReflTransGen
 
+@[grind =]
 theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a := by
   rw [cases_head_iff]; simp [h, eq_comm]
 
+@[grind =]
 theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ TransGen r a b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · cases h with
@@ -538,16 +651,13 @@ theorem ReflTransGen.mono {p : α → α → Prop} : (∀ a b, r a b → p a b) 
     ReflTransGen r a b → ReflTransGen p a b :=
   ReflTransGen.lift id
 
+@[grind =]
 theorem reflTransGen_eq_self (refl : Reflexive r) (trans : Transitive r) : ReflTransGen r = r :=
   funext fun a ↦ funext fun b ↦ propext <|
     ⟨fun h ↦ by
       induction h with
       | refl => apply refl
       | tail _ h₂ IH => exact trans IH h₂, single⟩
-
-lemma reflTransGen_minimal {r' : α → α → Prop} (hr₁ : Reflexive r') (hr₂ : Transitive r')
-    (h : ∀ x y, r x y → r' x y) {x y : α} (hxy : ReflTransGen r x y) : r' x y := by
-  simpa [reflTransGen_eq_self hr₁ hr₂] using ReflTransGen.mono h hxy
 
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 
@@ -559,12 +669,13 @@ instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
 instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
   ⟨tail⟩
 
-instance : IsRefl α (ReflTransGen r) :=
+instance : Std.Refl (ReflTransGen r) :=
   ⟨@ReflTransGen.refl α r⟩
 
 instance : IsTrans α (ReflTransGen r) :=
   ⟨@ReflTransGen.trans α r⟩
 
+@[grind =]
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self reflexive_reflTransGen transitive_reflTransGen
 
@@ -585,11 +696,11 @@ theorem ReflTransGen.swap (h : ReflTransGen r b a) : ReflTransGen (swap r) a b :
 theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   ⟨ReflTransGen.swap, ReflTransGen.swap⟩
 
-@[simp] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
+@[simp, grind =] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y
   simp_rw [reflTransGen_iff_eq_or_transGen, reflGen_iff]
 
-@[simp] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
+@[simp, grind =] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simpa [reflTransGen_idem]
@@ -598,16 +709,18 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
     · exact .single .refl
     · exact TransGen.mono (fun _ _ ↦ .single) h
 
-@[simp] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
+@[simp, grind =] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [← transGen_reflGen, reflGen_eq_self reflexive_reflGen]
 
-@[simp] lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
+@[simp, grind =] lemma reflTransGen_transGen : ReflTransGen (TransGen r) = ReflTransGen r := by
   simp only [← reflGen_transGen, transGen_idem]
 
+@[grind =]
 lemma reflTransGen_eq_transGen (hr : Reflexive r) :
     ReflTransGen r = TransGen r := by
   rw [← transGen_reflGen, reflGen_eq_self hr]
 
+@[grind =]
 lemma reflTransGen_eq_reflGen (hr : Transitive r) :
     ReflTransGen r = ReflGen r := by
   rw [← reflGen_transGen, transGen_eq_self hr]
@@ -703,9 +816,10 @@ theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : 
 
 theorem reflTransGen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r)
     (ht : Transitive r) (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
-  induction h' with
-  | refl => exact hr _
-  | tail _ hbc ih => exact ht ih (h _ _ hbc)
+  simpa [reflTransGen_eq_self hr ht] using ReflTransGen.mono h h'
+
+@[deprecated (since := "2025-12-17")] alias reflTransGen_minimal :=
+  reflTransGen_of_transitive_reflexive
 
 theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
     (∀ a b, r' a b → r a b) → ReflTransGen r' a b → r a b :=

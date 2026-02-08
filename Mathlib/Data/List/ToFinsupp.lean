@@ -97,11 +97,11 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
   | inl h =>
     rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩
-    cutsat
+    lia
   | inr h =>
     rcases Nat.exists_eq_add_of_le h with ⟨k, rfl⟩
     rw [getD_append_right _ _ _ _ h, Nat.add_sub_cancel_left, getD_eq_default _ _ h, zero_add]
-    exact Eq.symm (Finsupp.embDomain_apply _ _ _)
+    exact Eq.symm (Finsupp.embDomain_apply_self _ _ _)
 
 theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :

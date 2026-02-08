@@ -201,14 +201,13 @@ If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of
 trailing coefficient of the function with the lowest order.
 -/
 theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt {f₁ f₂ : 𝕜 → E}
-  (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
+    (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
     meromorphicTrailingCoeffAt (f₁ + f₂) x = meromorphicTrailingCoeffAt f₁ x := by
   -- Trivial case: f₁ not meromorphic at x
-  by_cases hf₁ : ¬MeromorphicAt f₁ x
+  by_cases! hf₁ : ¬MeromorphicAt f₁ x
   · have : ¬MeromorphicAt (f₁ + f₂) x := by
       rwa [add_comm, hf₂.meromorphicAt_add_iff_meromorphicAt₁]
     simp_all
-  rw [not_not] at hf₁
   -- Trivial case: f₂ vanishes locally around x
   by_cases h₁f₂ : meromorphicOrderAt f₂ x = ⊤
   · apply meromorphicTrailingCoeffAt_congr_nhdsNE
@@ -241,9 +240,9 @@ If `f₁` and `f₂` have equal order at `x` and if their trailing coefficients 
 trailing coefficient of `f₁ + f₂` at `x` is the sum of the trailing coefficients.
 -/
 theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add {f₁ f₂ : 𝕜 → E}
-  (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
-  (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
-  (h₂ : meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0) :
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
+    (h₂ : meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0) :
     meromorphicTrailingCoeffAt (f₁ + f₂) x
       = meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x := by
   -- Trivial case: f₁ vanishes locally around x

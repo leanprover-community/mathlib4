@@ -40,8 +40,8 @@ namespace AlgebraicGeometry
 
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
 @[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
-abbrev RingedSpace : Type max (u+1) (v+1) :=
-  SheafedSpace.{v+1, v, u} CommRingCat.{v}
+abbrev RingedSpace : Type max (u + 1) (v + 1) :=
+  SheafedSpace.{v + 1, v, u} CommRingCat.{v}
 
 namespace RingedSpace
 
@@ -50,7 +50,7 @@ open SheafedSpace
 @[simp]
 lemma res_zero {X : RingedSpace.{u}} {U V : TopologicalSpace.Opens X}
     (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U = (0 : X.presheaf.obj (op U)) :=
-  RingHom.map_zero _
+  map_zero _
 
 variable (X : RingedSpace)
 
@@ -95,7 +95,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x x.2 (h x.1 x.2)
   have hcover : U ≤ iSup V := by
     intro x hxU
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe, Subtype.exists]
+    simp only [Opens.mem_iSup]
     tauto
   -- Let `g x` denote the inverse of `f` in `U x`.
   choose g hg using fun x : U => IsUnit.exists_right_inv (h_unit x)
@@ -109,18 +109,17 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     -- Porting note: change was not necessary in Lean3
     change X.presheaf.germ _ z hzVx _ * (X.presheaf.germ _ z hzVx _) =
       X.presheaf.germ _ z hzVx _ * X.presheaf.germ _ z hzVy (g y)
-    rw [← RingHom.map_mul, hg x, germ_res_apply X.presheaf _ _ _ f,
-      ← germ_res_apply X.presheaf (iVU y) z hzVy f,
-      ← RingHom.map_mul, (hg y), RingHom.map_one, RingHom.map_one]
+    rw [← map_mul, hg x, germ_res_apply X.presheaf _ _ _ f,
+      ← germ_res_apply X.presheaf (iVU y) z hzVy f, ← map_mul, (hg y), map_one, map_one]
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
-    -- We need to rephrase the result from `HasForget` to `CommRingCat`.
+    -- We need to rephrase the result from `ConcreteCategory` to `CommRingCat`.
     ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   refine .of_mul_eq_one gl <| X.sheaf.eq_of_locally_eq' V U iVU hcover _ _ fun i ↦ ?_
-  -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
+  -- We need to rephrase the goal from `ConcreteCategory` to `CommRingCat`.
   change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
-  rw [RingHom.map_one, RingHom.map_mul, gl_spec]
+  rw [map_one, map_mul, gl_spec]
   exact hg i
 
 /-- The basic open of a section `f` is the set of all points `x`, such that the germ of `f` at
@@ -210,7 +209,7 @@ theorem basicOpen_of_isUnit {U : Opens X} {f : X.presheaf.obj (op U)} (hf : IsUn
   apply le_antisymm
   · exact X.basicOpen_le f
   intro x hx
-  rw [SetLike.mem_coe, X.mem_basicOpen f x hx]
+  rw [X.mem_basicOpen f x hx]
   exact RingHom.isUnit_map _ hf
 
 /--

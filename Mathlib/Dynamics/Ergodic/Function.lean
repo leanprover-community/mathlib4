@@ -18,7 +18,7 @@ We also formulate a version for `MeasureTheory.AEEqFun` functions
 with all a.e. equalities replaced with equalities in the quotient space.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter MeasureTheory Topology TopologicalSpace
 

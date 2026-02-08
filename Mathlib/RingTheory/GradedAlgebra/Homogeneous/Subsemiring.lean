@@ -50,6 +50,8 @@ instance setLike : SetLike (HomogeneousSubsemiring 𝒜) A where
   coe x := x.carrier
   coe_injective' _ _ h := toSubsemiring_injective <| SetLike.coe_injective h
 
+instance : PartialOrder (HomogeneousSubsemiring 𝒜) := .ofSetLike (HomogeneousSubsemiring 𝒜) A
+
 theorem isHomogeneous (R : HomogeneousSubsemiring 𝒜) :
     IsHomogeneous 𝒜 R := R.is_homogeneous'
 
@@ -96,10 +98,12 @@ theorem IsHomogeneous.subsemiringClosure {s : Set A}
 
 theorem IsHomogeneous.subsemiringClosure_of_isHomogeneousElem {s : Set A}
     (h : ∀ x ∈ s, IsHomogeneousElem 𝒜 x) :
-    IsHomogeneous 𝒜 (Subsemiring.closure s) :=
-  Subsemiring.closure_insert_zero s ▸ IsHomogeneous.subsemiringClosure fun i x hx ↦
-    hx.elim (by subst ·; simp) fun hx ↦ by
-    obtain ⟨j, hj⟩ := h x hx
+    IsHomogeneous 𝒜 (Subsemiring.closure s) := by
+  rw [← Subsemiring.closure_insert_zero s]
+  refine IsHomogeneous.subsemiringClosure fun i x hx ↦ ?_
+  obtain rfl | hx := mem_insert_iff.mp hx
+  · simp
+  · obtain ⟨j, hj⟩ := h x hx
     obtain rfl | h := eq_or_ne i j <;> simp [decompose_of_mem _ hj, of_eq_of_ne, *]
 
 end HomogeneousDef

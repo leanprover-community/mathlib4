@@ -73,7 +73,7 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
       QuotientGroup.leftRel (H.comap f) x y ↔ QuotientGroup.leftRel H (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
-  refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
+  refine Nat.card_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
     refine Quotient.ind' fun x => ?_
     refine Quotient.ind' fun y => ?_
@@ -111,9 +111,9 @@ theorem relIndex_map_map (f : G →* G') (H K : Subgroup G) :
 variable {H K L}
 
 @[to_additive relIndex_mul_index]
-theorem relIndex_mul_index (h : H ≤ K) : H.relIndex K * K.index = H.index :=
-  ((mul_comm _ _).trans (Cardinal.toNat_mul _ _).symm).trans
-    (congr_arg Cardinal.toNat (Equiv.cardinal_eq (quotientEquivProdOfLE h))).symm
+theorem relIndex_mul_index (h : H ≤ K) : H.relIndex K * K.index = H.index := by
+  rw [mul_comm]
+  simp_rw [relIndex, index, ← Nat.card_prod, Nat.card_congr <| quotientEquivProdOfLE h]
 
 @[deprecated (since := "2025-08-12")] alias relindex_mul_index := relIndex_mul_index
 
@@ -288,7 +288,7 @@ theorem index_top : (⊤ : Subgroup G).index = 1 :=
 
 @[to_additive (attr := simp)]
 theorem index_bot : (⊥ : Subgroup G).index = Nat.card G :=
-  Cardinal.toNat_congr QuotientGroup.quotientBot.toEquiv
+  Nat.card_congr QuotientGroup.quotientBot.toEquiv
 
 @[to_additive (attr := simp)]
 theorem relIndex_top_left : (⊤ : Subgroup G).relIndex H = 1 :=
@@ -635,12 +635,12 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
   suffices ∃ n₁ n₂, n₁ < n₂ ∧ n₂ ≤ H.index ∧ ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hlt, hle, he⟩
-    refine ⟨n₂ - n₁, by cutsat, by cutsat, ?_⟩
+    refine ⟨n₂ - n₁, by lia, by lia, ?_⟩
     rw [eq_comm, QuotientGroup.eq, ← zpow_natCast, ← zpow_natCast, ← zpow_neg, ← zpow_add,
         add_comm] at he
     rw [← zpow_natCast]
     convert he
-    cutsat
+    lia
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩

@@ -150,7 +150,7 @@ lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
 
-section Edist
+section EDist
 
 variable [∀ i, EDist (β i)]
 
@@ -180,9 +180,9 @@ theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
 
 theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
 
-end Edist
+end EDist
 
-section EdistProp
+section EDistProp
 
 variable {β}
 variable [∀ i, PseudoEMetricSpace (β i)]
@@ -203,7 +203,7 @@ protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   · simp only [edist_eq_iSup, edist_comm]
   · simp only [edist_eq_sum h, edist_comm]
 
-end EdistProp
+end EDistProp
 
 section Dist
 
@@ -418,6 +418,7 @@ private lemma isUniformInducing_ofLp_aux : IsUniformInducing (@ofLp p (∀ i, β
     (antilipschitzWith_ofLp_aux p β).isUniformInducing
       (lipschitzWith_ofLp_aux p β).uniformContinuous
 
+set_option backward.privateInPublic true in
 private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[UniformSpace.comap ofLp inferInstance] := by
   rw [← (isUniformInducing_ofLp_aux p β).comap_uniformity]
   rfl
@@ -425,6 +426,7 @@ private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[UniformSpace.comap ofLp i
 instance bornology (p : ℝ≥0∞) (β : ι → Type*) [∀ i, Bornology (β i)] :
     Bornology (PiLp p β) := Bornology.induced ofLp
 
+set_option backward.privateInPublic true in
 private lemma cobounded_aux : @cobounded _ PseudoMetricSpace.toBornology = cobounded (PiLp p α) :=
   le_antisymm (antilipschitzWith_ofLp_aux p α).tendsto_cobounded.le_comap
     (lipschitzWith_ofLp_aux p α).comap_cobounded_le
@@ -502,6 +504,8 @@ section Fintype
 variable [hp : Fact (1 ≤ p)]
 variable [Fintype ι]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
@@ -512,6 +516,8 @@ edistance, and having as uniformity the product uniformity. -/
 instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
   EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
@@ -590,8 +596,10 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
       simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
         dist_eq_norm, sub_apply]
 
-lemma isUniformInducing_toLp [∀ i, PseudoEMetricSpace (β i)] :
+omit [Fintype ι] in
+lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
     IsUniformInducing (@toLp p (Π i, β i)) :=
+  have := Fintype.ofFinite ι
   (antilipschitzWith_toLp p β).isUniformInducing
     (lipschitzWith_toLp p β).uniformContinuous
 
@@ -900,7 +908,7 @@ def sumPiLpEquivProdLpPiLp :
       ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
       ≪≫ₗ LinearEquiv.prodCongr (WithLp.linearEquiv p _ _).symm
         (WithLp.linearEquiv _ _ _).symm
-      ≪≫ₗ (WithLp.linearEquiv  p _ _).symm
+      ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy
     · simp [← Finset.univ_disjSum_univ, Finset.sup_disjSum, Pi.norm_def]
@@ -1095,6 +1103,9 @@ group structure. These are meant to be used to put the desired instances on type
 of `Π i, α i`. See for instance `Matrix.frobeniusSeminormedAddCommGroup`.
 -/
 
+-- This prevents Lean from elaborating terms of `Π i, α i` with an unintended norm.
+attribute [-instance] Pi.seminormedAddGroup
+
 variable [Fact (1 ≤ p)] [Fintype ι]
 
 /-- This definition allows to endow `Π i, α i` with the Lp distance with the uniformity and
@@ -1127,7 +1138,7 @@ lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (
     @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
-instance isBoundedSMulSeminormedAddCommGroupToPi
+lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
@@ -1137,7 +1148,7 @@ instance isBoundedSMulSeminormedAddCommGroupToPi
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
 
-instance normSMulClassSeminormedAddCommGroupToPi
+lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
@@ -1146,7 +1157,9 @@ instance normSMulClassSeminormedAddCommGroupToPi
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 
-instance normedSpaceSeminormedAddCommGroupToPi
+/-- This definition allows to endow `Π i, α i` with a normed space structure corresponding to
+the Lp norm. It is useful for type synonyms of `Π i, α i`. -/
+abbrev normedSpaceSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [NormedField R]
     [∀ i, NormedSpace R (α i)] :
     letI := seminormedAddCommGroupToPi p α

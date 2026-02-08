@@ -44,12 +44,12 @@ structure Tag where
   comment : String
   deriving BEq, Hashable
 
-/-- Defines the `tagExt` extension for adding a `HashSet` of `Tag`s
-to the environment. -/
-initialize tagExt : SimplePersistentEnvExtension Tag (Std.HashSet Tag) ←
+/-- Defines the `tagExt` extension for storing all `Tag`s in the environment.
+`addImportedFn` is a constant function to avoid a performance overhead during initialization. -/
+initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
-    addEntryFn := .insert
+    addImportedFn tags := tags
+    addEntryFn tags _ := tags
   }
 
 /--
@@ -79,7 +79,7 @@ def stacksTagFn : ParserFn := fun c s =>
     ParserState.mkError s "stacks tag"
   else
     let tag := c.extract i s.pos
-    if !tag.all fun c => c.isDigit || c.isUpper then
+    if !tag.all fun (c : Char) => c.isDigit || c.isUpper then
       ParserState.mkUnexpectedError s
         "Stacks tags must consist only of digits and uppercase letters."
     else if tag.length != 4 then
@@ -171,7 +171,8 @@ end Mathlib.StacksTag
 `getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
 private def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
-  tagExt.getState env |>.toArray.qsort (·.tag < ·.tag)
+  let tags := PersistentEnvExtension.getState tagExt env
+  tags.2.flatten.appendList tags.1 |>.qsort (·.tag < ·.tag)
 
 /--
 `getSortedStackProjectDeclNames env tag` returns the array of declaration names of results

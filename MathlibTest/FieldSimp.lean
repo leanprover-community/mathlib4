@@ -583,7 +583,7 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
 
 end
 
-/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+/-! Sometimes it takes iterated alternation between `ring_nf` and `field_simp` in order to
 normalize properly.
 
 It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
@@ -837,7 +837,7 @@ example (n : ℕ) (h : n ≠ 0) : 1 / (n : K) * n = 1 := by
 example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
   field_simp
 
--- Minimised from Fourier/AddCircle.lean
+-- Minimised from `Mathlib/Analysis/Fourier/AddCircle.lean`
 example (n : ℕ) (T : ℝ) {hT : T ≠ 0} (hn : n ≠ 0) {a : ℝ} :
     (2 * a / T * (n * (T / 2 / n))) = a := by
   field_simp
@@ -956,7 +956,7 @@ example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^
 example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by
   field_simp
 
--- Extracted from `Analysis/SpecificLimits/Basic.lean`
+-- Extracted from `Mathlib/Analysis/SpecificLimits/Basic.lean`
 
 -- `field_simp` assumes commutativity: in its absence, it does nothing.
 /-- error: field_simp made no progress on goal -/
@@ -969,3 +969,29 @@ example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 
 example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
   field_simp
+
+/-! ## Contextual rewrites in subexpressions -/
+
+-- Ensure that the discharger has access to changes in the local context, and that the simp cache
+-- does not attempt to reuse the proof in an invalid context.
+example (x : ℚ) : (if x ≠ 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x ≠ 0 then 1 else x / x) = 1
+  exact test_sorry
+
+example (x : ℚ) : (if x = 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x = 0 then x / x else 1) = 1
+  exact test_sorry
+
+/- Test whether the discharger has access to implication hypotheses. -/
+example (x : ℚ) : (x ≠ 0 → x / x = 1) := by
+  field_simp
+  guard_target = (x ≠ 0 → True)
+  exact test_sorry
+
+/- Ensure that the `x = 0` hypothesis isn't used by `simp` to substitute. -/
+example (x : ℚ) : (x = 0 → x / x = 1) := by
+  field_simp
+  guard_target = (x = 0 → x / x = 1)
+  exact test_sorry

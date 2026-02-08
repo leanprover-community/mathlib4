@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Fernique's theorem for rotation-invariant measures
@@ -413,7 +412,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   -- We dispense with an edge case. If `μ {x | ‖x‖ ≤ a} = 1`, then the integral over
   -- the complement of the ball is zero and we are done.
   by_cases ha : μ {x | ‖x‖ ≤ a} = 1
-  · simp [c, ha] at ht_int_zero ⊢
+  · simp only [ha, one_mul, ENNReal.toReal_div, neg_mul, ge_iff_le, c] at ht_int_zero ⊢
     refine le_add_right ((le_of_eq ?_).trans ht_int_zero)
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_

@@ -680,7 +680,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
           exact F.map_mul
         | inv x ih_x =>
           have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
-          rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
+          rw [hm, map_inv, map_inv, ih_x]
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.
 -/

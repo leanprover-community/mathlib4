@@ -24,7 +24,7 @@ For any `p : Submodule A M`:
 ## Implementation notes
 
 The **notion** of homogeneous submodule does not rely on a graded ring, only a decomposition of the
-the module. However, most interesting properties of homogeneous submodules do rely on the base ring
+module. However, most interesting properties of homogeneous submodules do rely on the base ring
 being a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the
 instance that `HomogeneousSubmodule` is a complete lattice cannot be synthesized due to
@@ -79,6 +79,8 @@ instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
     rintro ⟨p, hp⟩ ⟨q, hq⟩ (h : (p : Set M) = q)
     simpa using h
 
+instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ) M
+
 instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
   zero_mem p := p.toSubmodule.zero_mem
   add_mem hx hy := Submodule.add_mem _ hx hy
@@ -101,6 +103,8 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
   coe_injective' _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
+
+instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ) M
 
 @[ext]
 theorem HomogeneousSubmodule.ext

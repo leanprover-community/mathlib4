@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Nonnegative real numbers
@@ -313,15 +314,16 @@ lemma algebraMap_eq_coe : (algebraMap ℝ≥0 ℝ : ℝ≥0 → ℝ) = (↑) := 
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
-@[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
+@[simp, norm_cast, gcongr] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
 
-@[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
+@[simp, norm_cast, gcongr] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
-@[gcongr] private alias ⟨_, GCongr.coe_le_coe_of_le⟩ := coe_le_coe
-@[gcongr, bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+set_option backward.privateInPublic true in
+@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
+set_option backward.privateInPublic true in
 @[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
@@ -330,9 +332,6 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 @[simp, norm_cast] lemma coe_lt_one : (r : ℝ) < 1 ↔ r < 1 := by rw [← coe_lt_coe, coe_one]
 
 @[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
-
-/-- Alias for the use of `gcongr` -/
-@[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
 protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max_right _ h
@@ -908,6 +907,9 @@ theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := 
   ext
   rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 
+@[simp]
+theorem nnabs_pos {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
+
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
   obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by simpa using le_total ..
@@ -981,7 +983,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq
 
-private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
+alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
@@ -994,5 +996,29 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
+
+/-- Extension for the `positivity` tactic: `Real.toNNReal. -/
+@[positivity Real.toNNReal _]
+meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
+    assertInstancesCommute
+    match (← core q(inferInstance) q(inferInstance) a) with
+    | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
+    | _ => failure
+  | _, _, _ => throwError "not Real.toNNReal"
+
+alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
+
+/-- Extension for the `positivity` tactic: `Real.nnabs. -/
+@[positivity Real.nnabs _]
+meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
+    assertInstancesCommute
+    match (← core q(inferInstance) q(inferInstance) a).toNonzero with
+    | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
+    | _ => failure
+  | _, _, _ => throwError "not Real.nnabs"
 
 end Mathlib.Meta.Positivity

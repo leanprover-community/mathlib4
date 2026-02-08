@@ -12,11 +12,11 @@ public import Mathlib.Algebra.Ring.Int.Parity
 # Results about powers in fields or division rings.
 
 This file exists to ensure we can define `Field` with minimal imports,
-so contains some lemmas about powers of elements which need imports
+so it contains some lemmas about powers of elements which need imports
 beyond those needed for the basic definition.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

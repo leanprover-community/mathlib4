@@ -20,7 +20,7 @@ injectivity, surjectivity, bijectivity and exactness of linear maps are local pr
 More precisely, we show that these can be checked at maximal ideals and on standard covers.
 -/
 
-@[expose] public section
+public section
 
 open Submodule LocalizedModule Ideal LinearMap
 

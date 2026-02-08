@@ -3,11 +3,10 @@ Copyright (c) 2021 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Order.Group.Basic
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.SetTheory.Game.Birthday
@@ -207,7 +206,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
   · rw [h₂, add_comm]
     simp_rw [Int.cast_mul, Int.cast_pow, Int.cast_ofNat, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
-    norm_cast at h₂; cutsat
+    norm_cast at h₂; lia
 
 /-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
 noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where

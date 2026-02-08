@@ -9,21 +9,22 @@ public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+public import Mathlib.LinearAlgebra.Determinant
 
 /-! # Base change properties for modules of linear maps
 
 * `IsBaseChange.linearMapRight`:
-  If `M` has a finite basis and `P` is a base change of `N` to `S`,
+  If `M` is finite free and `P` is a base change of `N` to `S`,
   then `M →ₗ[R] P` is a base change of `M →ₗ[R] N` to `S`.
 
 * `IsBaseChange.linearMapLeftRight`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   if `Q` is a base change of `N` to `S`,
   then `P →ₗ[S] Q` is a base change of `M →ₗ[R] N` to `S`.
 
 * `IsBaseChange.end`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
 -/
@@ -32,14 +33,13 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 namespace IsBaseChange
 
-open LinearMap TensorProduct
+open LinearMap TensorProduct Module
 
 variable {R : Type*} [CommSemiring R]
     (S : Type*) [CommSemiring S] [Algebra R S]
-    (M : Type*) [AddCommMonoid M] [Module R M] -- [Module S M] [IsScalarTower R S M]
+    (M : Type*) [AddCommMonoid M] [Module R M]
     {N : Type*} [AddCommMonoid N] [Module R N]
-    {ι : Type*} [DecidableEq ι]
-    {P : Type*} [AddCommMonoid P] [Module R P] -- [Module S P] [IsScalarTower R S P]
+    {P : Type*} [AddCommMonoid P] [Module R P]
 
 section LinearMapRight
 
@@ -53,13 +53,13 @@ def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
     map_add' x y := by ext; simp [add_smul]
     map_smul' r s := by aesop }).toAddHom
   map_smul' s x := by
-    simp
+    simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
     induction x using TensorProduct.induction_on with
     | zero => simp
     | add x y hx hy => simp [smul_add, hx, hy]
     | tmul t f => simp [TensorProduct.smul_tmul', mul_smul]
 
-variable [Module.Free R M] [Module.Finite R M]
+variable [Free R M] [Module.Finite R M]
 
 variable {S}
 
@@ -68,9 +68,9 @@ noncomputable def linearMapRightBaseChangeEquiv
     {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
     S ⊗[R] (M →ₗ[R] N) ≃ₗ[S] (M →ₗ[R] P) := by
   apply LinearEquiv.ofBijective (linearMapRightBaseChangeHom S M ε)
-  let b := Module.Free.chooseBasis R M
-  set ι := Module.Free.ChooseBasisIndex R M
-  have := Module.Free.ChooseBasisIndex.fintype R M
+  let b := Free.chooseBasis R M
+  set ι := Free.ChooseBasisIndex R M
+  have := Free.ChooseBasisIndex.fintype R M
   let e := (b.repr.congrLeft N R).trans (Finsupp.llift N R R ι).symm
   let f := (b.repr.congrLeft P S).trans (Finsupp.llift P R S ι).symm
   let h := linearMapRightBaseChangeHom S M ε
@@ -83,9 +83,7 @@ noncomputable def linearMapRightBaseChangeEquiv
     apply LinearEquiv.bijective
   suffices f.toLinearMap.comp (linearMapRightBaseChangeHom S M ε) =
       (finitePow ι ibc).equiv.toLinearMap.comp e'.toLinearMap by
-    simp [h', this]
-    rw [← LinearEquiv.trans_assoc]
-    simp
+    simp [h', this, ← LinearEquiv.trans_assoc e'.symm e']
   ext φ i
   simp
   simp [f, e', linearMapRightBaseChangeHom, LinearEquiv.baseChange, equiv_tmul,
@@ -122,7 +120,17 @@ theorem linearMapLeftRightHom_apply
     linearMapLeftRightHom j β f p = ((liftBaseChangeEquiv S) (β ∘ₗ f)) (j.equiv.symm p) := by
   rfl
 
-variable [Module.Free R M] [Module.Finite R M]
+@[simp] theorem linearMapLeftRightHom_comp_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (m : M) :
+    linearMapLeftRightHom j β f (α m) = β (f m) := by
+  simp [linearMapLeftRightHom_apply, IsBaseChange.equiv_symm_apply]
+
+@[simp] theorem linearMapLeftRightHom_comp
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) :
+    (linearMapLeftRightHom j β f).restrictScalars R ∘ₗ α = β ∘ₗ f := by
+  ext; simp [linearMapLeftRightHom_comp_apply]
+
+variable [Free R M] [Module.Finite R M]
 
 theorem linearMapLeftRight {α : M →ₗ[R] P} (j : IsBaseChange S α)
     {β : N →ₗ[R] Q} (k : IsBaseChange S β) :
@@ -153,7 +161,26 @@ theorem endHom_apply
     endHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
   rfl
 
-variable [Module.Free R M] [Module.Finite R M]
+theorem endHom_comp_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (m : M) :
+    endHom j f (α m) = α (f m) := by
+  simp [endHom_apply, IsBaseChange.equiv_symm_apply]
+
+theorem endHom_comp
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
+    (endHom j f).restrictScalars R ∘ₗ α = α ∘ₗ f := by
+  ext; simp [endHom_comp_apply]
+
+theorem endHom_one {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    j.endHom 1 = 1 := by
+  ext p
+  induction p using j.inductionOn with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | smul _ _ h => simp [h]
+  | tmul m => simp [endHom_comp_apply]
+
+variable [Free R M] [Module.Finite R M]
 
 theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
     IsBaseChange S (endHom j) := by
@@ -161,16 +188,56 @@ theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
       (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
   intro f
   ext p
-  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
-
-theorem « end » {α : M →ₗ[R] P} (j : IsBaseChange S α) :
-    IsBaseChange S (endHom j) := by
-  apply of_equiv <|
-      (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
-  intro f
-  ext p
-  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
+  simp [equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
 
 end End
+
+section Matrix
+
+variable {Q : Type*} [AddCommMonoid Q] [Module R Q] [Module S P] [IsScalarTower R S P]
+  [Module S Q] [IsScalarTower R S Q]
+  {α : M →ₗ[R] P} {β : N →ₗ[R] Q}
+  (ibcM : IsBaseChange S α) (ibcN : IsBaseChange S β)
+  {ι θ : Type*} [DecidableEq ι] [Fintype ι] [Fintype θ]
+  (b : Module.Basis ι R M) (c : Module.Basis θ R N)
+
+theorem linearMapLeftRightHom_toMatrix (f : M →ₗ[R] N) :
+    (linearMapLeftRightHom ibcM β f).toMatrix (ibcM.basis b) (ibcN.basis c) =
+      (f.toMatrix b c).map (algebraMap R S) := by
+  ext i j
+  simp only [toMatrix_apply, Matrix.map_apply, basis_apply,
+    linearMapLeftRightHom_comp_apply, basis_repr_comp_apply]
+
+theorem endHom_toMatrix (f : M →ₗ[R] M) :
+    (endHom ibcM f).toMatrix (ibcM.basis b) (ibcM.basis b) =
+      (f.toMatrix b b).map (algebraMap R S) := by
+  ext i j
+  simp only [toMatrix_apply, Matrix.map_apply]
+  simp only [basis_apply, endHom_comp_apply, basis_repr_comp_apply]
+
+
+end Matrix
+
+section determinant
+
+variable {R : Type*} [CommRing R]
+    (S : Type*) [CommRing S] [Algebra R S]
+    (M : Type*) [AddCommGroup M] [Module R M]
+    {P : Type*} [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P]
+
+variable [Free R M] [Module.Finite R M]
+
+theorem det_endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
+    LinearMap.det (endHom j f) = algebraMap R S (LinearMap.det f) := by
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · have : f = 1 := by
+      have : Subsingleton M := Module.subsingleton R M
+      exact Subsingleton.eq_one f
+    simp [this, endHom_one]
+  let b := Module.finBasis R M
+  rw [← f.det_toMatrix b, ← (j.endHom f).det_toMatrix (j.basis b),
+    endHom_toMatrix, ← RingHom.mapMatrix_apply, ← RingHom.map_det]
+
+end determinant
 
 end IsBaseChange

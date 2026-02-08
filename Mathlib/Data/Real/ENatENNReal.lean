@@ -101,7 +101,7 @@ theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_pow (x : ℕ∞) (n : ℕ) : (x ^ n : ℕ∞) = (x : ℝ≥0∞) ^ n :=
-  RingHom.map_pow toENNRealRingHom x n
+  map_pow toENNRealRingHom x n
 
 @[simp, norm_cast]
 theorem toENNReal_min (m n : ℕ∞) : ↑(min m n) = (min m n : ℝ≥0∞) :=

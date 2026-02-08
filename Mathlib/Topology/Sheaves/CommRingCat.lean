@@ -137,7 +137,7 @@ noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
 deriving Epi
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  apply (config := { allowSynthFailures := true }) NatTrans.mono_of_mono_app
+  apply +allowSynthFailures NatTrans.mono_of_mono_app
   intro U
   apply ConcreteCategory.mono_of_injective
   dsimp [toTotalQuotientPresheaf]
@@ -149,7 +149,7 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
-  rw [RingHom.map_zero]
+  rw [map_zero]
   apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 

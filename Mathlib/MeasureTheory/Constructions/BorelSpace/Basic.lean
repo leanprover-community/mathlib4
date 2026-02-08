@@ -28,7 +28,7 @@ public import Mathlib.Topology.Instances.Rat
 * `IsOpen.measurableSet`, `IsClosed.measurableSet`: open and closed sets are measurable;
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
-  is continuous, then `fun x => op (f x, g y)` is measurable;
+  is continuous, then `fun x => op (f x, g x)` is measurable;
 * `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
@@ -203,7 +203,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
-    OpensMeasurableSpace α ↔  (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
+    OpensMeasurableSpace α ↔ (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ ⟨generateFrom_le h⟩⟩
   exact OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ hs
 
@@ -368,6 +368,21 @@ instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
   rw [eq_generateFrom_countableBasis (X a)]
   exact .basic _ (hi a ha)
 
+/-- This is not covered by `Pi.opensMeasurableSpace` as it does not require second countability. -/
+instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, OpensMeasurableSpace (X i)] :
+    OpensMeasurableSpace (∀ i, X i) where
+  borel_le := by
+    obtain h | h := isEmpty_or_nonempty ι
+    · exact fun s _ ↦ Subsingleton.set_cases .empty .univ s
+    have := Classical.choice (nonempty_unique ι)
+    rw [borel, MeasurableSpace.pi, ciSup_unique]
+    refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
+    simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
+      Set.mem_setOf_eq] at hs
+    obtain ⟨t, ht, rfl⟩ := hs
+    exact ⟨t, ht.measurableSet, rfl⟩
+
 /-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
 the two spaces has second countable topology. This is the right assumption to ensure that continuous
 maps from `α` to `β` are strongly measurable. -/
@@ -390,7 +405,7 @@ product sigma-algebra. -/
 instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
     OpensMeasurableSpace (α × β) := by
   apply opensMeasurableSpace_iff_forall_measurableSet.2 (fun s hs ↦ ?_)
-  rcases h.out with hα|hβ
+  rcases h.out with hα | hβ
   · let F : Set α → Set β := fun a ↦ {y | ∃ b, IsOpen b ∧ y ∈ b ∧ a ×ˢ b ⊆ s}
     have A : ∀ a, IsOpen (F a) := by
       intro a
@@ -504,13 +519,9 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul γ] :
     MeasurableMul γ where
-  measurable_const_mul _ := (continuous_const.mul continuous_id).measurable
-  measurable_mul_const _ := (continuous_id.mul continuous_const).measurable
 
 instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub γ] :
     MeasurableSub γ where
-  measurable_const_sub _ := (continuous_const.sub continuous_id).measurable
-  measurable_sub_const _ := (continuous_id.sub continuous_const).measurable
 
 @[to_additive]
 instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv γ] :
@@ -520,24 +531,20 @@ instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv �
 instance (priority := 100) ContinuousConstSMul.toMeasurableConstSMul {M α} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SMul M α] [ContinuousConstSMul M α] :
     MeasurableConstSMul M α where
-  measurable_const_smul _ := (continuous_const_smul _).measurable
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.toMeasurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
     [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α where
-  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 section Homeomorph
 
-@[measurability]
+@[fun_prop]
 protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 
 /-- A homeomorphism between two Borel spaces is a measurable equivalence. -/
 def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
-  measurable_toFun := h.measurable
-  measurable_invFun := h.symm.measurable
   toEquiv := h.toEquiv
 
 lemma Homeomorph.measurableEmbedding (h : γ ≃ₜ γ₂) : MeasurableEmbedding h :=
@@ -554,7 +561,7 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
 
 end Homeomorph
 
-@[measurability]
+@[fun_prop]
 theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 
@@ -597,6 +604,9 @@ instance (priority := 100) ContinuousSMul.measurableSMul₂ {M α} [TopologicalS
     [ContinuousSMul M α] : MeasurableSMul₂ M α :=
   ⟨continuous_smul.measurable⟩
 
+instance [SecondCountableTopology α] [T2Space α] : MeasurableEq α :=
+  ⟨isClosed_diagonal.measurableSet⟩
+
 end
 
 section BorelSpace
@@ -621,6 +631,12 @@ theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
 
 instance Pi.borelSpace {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
     [∀ i, MeasurableSpace (X i)] [∀ i, SecondCountableTopology (X i)] [∀ i, BorelSpace (X i)] :
+    BorelSpace (∀ i, X i) :=
+  ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
+
+/-- This is not covered by `Pi.borelSpace` as it does not require second countability. -/
+instance Pi.borelSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, BorelSpace (X i)] :
     BorelSpace (∀ i, X i) :=
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 

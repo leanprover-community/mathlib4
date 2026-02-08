@@ -24,7 +24,7 @@ we derive `Polynomial.coeff_eq_esymm_roots_of_card`, the relationship between th
 the roots of `p` for a polynomial `p` that splits (i.e. having as many roots as its degree).
 -/
 
-@[expose] public section
+public section
 
 open Finset Polynomial
 
@@ -125,7 +125,7 @@ theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
 
 /-- Vieta's formula for split polynomials over a field. -/
 theorem _root_.Polynomial.coeff_eq_esymm_roots_of_splits {F} [Field F] {p : F[X]}
-    (hsplit : (p.map (RingHom.id F)).Splits) {k : ℕ} (h : k ≤ p.natDegree) :
+    (hsplit : p.Splits) {k : ℕ} (h : k ≤ p.natDegree) :
     p.coeff k = p.leadingCoeff * (-1) ^ (p.natDegree - k) * p.roots.esymm (p.natDegree - k) :=
   Polynomial.coeff_eq_esymm_roots_of_card (splits_iff_card_roots.1 hsplit) h
 

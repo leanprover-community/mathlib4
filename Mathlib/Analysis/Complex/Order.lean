@@ -71,6 +71,16 @@ theorem nonpos_iff {z : ℂ} : z ≤ 0 ↔ z.re ≤ 0 ∧ z.im = 0 :=
 theorem neg_iff {z : ℂ} : z < 0 ↔ z.re < 0 ∧ z.im = 0 :=
   lt_def
 
+theorem sq_nonneg_iff {z : ℂ} : 0 ≤ z ^ 2 ↔ z.im = 0 := by
+  rw [nonneg_iff, pow_two, mul_re, mul_im, mul_comm z.im z.re, ← mul_two, eq_comm,
+    mul_eq_zero_iff_right two_ne_zero, ← pow_two, ← pow_two, mul_eq_zero]
+  exact ⟨by aesop, fun h ↦ by simpa [h] using sq_nonneg z.re⟩
+
+theorem sq_nonpos_iff {z : ℂ} : z ^ 2 ≤ 0 ↔ z.re = 0 := by
+  rw [nonpos_iff, pow_two, mul_re, mul_im, mul_comm z.im z.re, ← mul_two, mul_eq_zero_iff_right
+    two_ne_zero, ← pow_two, ← pow_two, mul_eq_zero]
+  exact ⟨by aesop, fun h ↦ by simpa [h] using sq_nonneg z.im⟩
+
 @[simp, norm_cast]
 theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal]
 
@@ -124,9 +134,9 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Complex
 open scoped ComplexOrder
 
-private alias ⟨_, ofReal_pos⟩ := zero_lt_real
-private alias ⟨_, ofReal_nonneg⟩ := zero_le_real
-private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
+alias ⟨_, ofReal_pos⟩ := zero_lt_real
+alias ⟨_, ofReal_nonneg⟩ := zero_le_real
+alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/

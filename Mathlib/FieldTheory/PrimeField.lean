@@ -34,10 +34,10 @@ instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
   (congr($h x) : _ = x) ▸ Subtype.prop _
 
 instance (p : ℕ) [hp : Fact (Nat.Prime p)] : Subsingleton (Subfield (ZMod p)) :=
- subsingleton_of_top_le_bot fun x _ ↦
-  have h := Subsingleton.elim ((⊥ : Subfield (ZMod p)).subtype.comp
-    (ZMod.castHom dvd_rfl _)) (.id _ : ZMod p →+* ZMod p)
-  (congr($h x) : _ = x) ▸ Subtype.prop _
+  subsingleton_of_top_le_bot fun x _ ↦
+    have h := Subsingleton.elim ((⊥ : Subfield (ZMod p)).subtype.comp
+      (ZMod.castHom dvd_rfl _)) (.id _ : ZMod p →+* ZMod p)
+    (congr($h x) : _ = x) ▸ Subtype.prop _
 
 /--
 The smallest subfield of a field of characteristic `0` is (the image of) `ℚ`.

@@ -32,7 +32,7 @@ namespace SimplicialObject
 
 namespace Splitting
 
-variable {C : Type*} [Category C] {X : SimplicialObject C}
+variable {C : Type*} [Category* C] {X : SimplicialObject C}
   (s : Splitting X)
 
 /-- The projection on a summand of the coproduct decomposition given
@@ -80,7 +80,7 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
   rw [IndexSet.eqId_iff_len_eq]
   have h := SimplexCategory.len_le_of_epi A.e
   dsimp at h ⊢
-  cutsat
+  lia
 
 /-- If a simplicial object `X` in an additive category is split,
 then `PInfty` vanishes on all the summands of `X _⦋n⦌` which do
@@ -217,7 +217,7 @@ end Splitting
 
 namespace Split
 
-variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
+variable {C : Type*} [Category* C] [Preadditive C] [HasFiniteCoproducts C]
 
 /-- The functor which sends a split simplicial object in a preadditive category to
 the chain complex which consists of nondegenerate simplices. -/

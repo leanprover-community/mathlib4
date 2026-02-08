@@ -107,9 +107,7 @@ variable (s t)
 variable {s t}
 
 @[to_additive (attr := simp)] lemma mulEnergy_pos_iff : 0 < Eₘ[s, t] ↔ s.Nonempty ∧ t.Nonempty where
-  mp h := of_not_not fun H => by
-    simp_rw [not_and_or, not_nonempty_iff_eq_empty] at H
-    obtain rfl | rfl := H <;> simp at h
+  mp h := by by_contra! +distrib rfl | rfl <;> simp at h
   mpr h := mulEnergy_pos h.1 h.2
 
 @[to_additive (attr := simp)] lemma mulEnergy_eq_zero_iff : Eₘ[s, t] = 0 ↔ s = ∅ ∨ t = ∅ := by
@@ -148,7 +146,7 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
     _ ≤ #u * ∑ c ∈ u, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
         simpa using sum_mul_sq_le_sq_mul_sq (R := ℕ) _ 1 _
     _ ≤ #u * ∑ c ∈ s * t, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
-        refine mul_le_mul_left' (sum_le_sum_of_ne_zero ?_) _
+        refine mul_le_mul_right (sum_le_sum_of_ne_zero ?_) _
         aesop (add simp [filter_eq_empty_iff]) (add unsafe mul_mem_mul)
     _ = #u * Eₘ[s, t] := by rw [mulEnergy_eq_sum_sq']
 
@@ -158,8 +156,6 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
     _ = #{xy ∈ s ×ˢ t | xy.1 * xy.2 ∈ s * t} ^ 2 := by
       rw [filter_eq_self.2, card_product, mul_pow]; aesop (add unsafe mul_mem_mul)
     _ ≤ #(s * t) * Eₘ[s, t] := card_sq_le_card_mul_mulEnergy _ _ _
-
-@[deprecated (since := "2025-07-07")] alias le_card_add_mul_mulEnergy := le_card_mul_mul_mulEnergy
 
 end Mul
 

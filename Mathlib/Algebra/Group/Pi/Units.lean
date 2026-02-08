@@ -34,6 +34,10 @@ lemma Pi.isUnit_iff :
   exact Classical.skolem (p := fun i y ↦ x i * y = 1 ∧ y * x i = 1).symm
 
 @[to_additive]
+instance Pi.instSubsingletonUnits [∀ i, Subsingleton (M i)ˣ] : Subsingleton (∀ i, M i)ˣ :=
+  .units_of_isUnit <| by simp [Pi.isUnit_iff, funext_iff]
+
+@[to_additive]
 alias ⟨IsUnit.apply, _⟩ := Pi.isUnit_iff
 
 @[to_additive]

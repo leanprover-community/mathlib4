@@ -3,7 +3,7 @@ Copyright (c) 2024 Theodore Hwa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Violeta Hernández Palacios, Junyan Xu, Theodore Hwa
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Logic.Hydra
 public import Mathlib.SetTheory.Surreal.Basic
@@ -195,7 +195,7 @@ def P124 : Args → Prop
 
 /-- The property that all arguments are numeric is leftward-closed under `ArgsRel`. -/
 lemma ArgsRel.numeric_closed {a' a} : ArgsRel a' a → a.Numeric → a'.Numeric :=
-  TransGen.closed' <| @cutExpand_closed _ IsOption ⟨wf_isOption.isIrrefl.1⟩ _ Numeric.isOption
+  TransGen.closed' <| @cutExpand_closed _ IsOption ⟨wf_isOption.irrefl.1⟩ _ Numeric.isOption
 
 /-- A specialized induction hypothesis used to prove P1. -/
 def IH1 (x y : PGame) : Prop :=

@@ -42,6 +42,7 @@ instance CauchyFilter.isTrans_gen {s : SetRel X X} [s.IsTrans] : (gen s).IsTrans
 @[deprecated (since := "2025-10-17")]
 alias IsTransitiveRel.cauchyFilter_gen := CauchyFilter.isTrans_gen
 
+set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
     IsUltraUniformity (CauchyFilter X) := by
   apply mk_of_hasBasis (CauchyFilter.basis_uniformity IsUltraUniformity.hasBasis)
@@ -53,6 +54,7 @@ instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
   ⟨fun _ ↦ CauchyFilter.isUniformInducing_pureCauchy.isUltraUniformity,
    fun _ ↦ inferInstance⟩
 
+set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.separationQuotient [IsUltraUniformity X] :
     IsUltraUniformity (SeparationQuotient X) := by
   have := IsUltraUniformity.hasBasis.map

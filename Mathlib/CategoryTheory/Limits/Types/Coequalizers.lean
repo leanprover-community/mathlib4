@@ -40,7 +40,7 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
       (fun _ ↦ rfl)
       (fun _ _ hm ↦ funext (fun x ↦ Quot.inductionOn x (congr_fun hm)))
 
-/-- If `π : Y ⟶ Z` is an coequalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
+/-- If `π : Y ⟶ Z` is a coequalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
 then `π ⁻¹' (π '' U) = U`.
 -/
 theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ π = g ≫ π)

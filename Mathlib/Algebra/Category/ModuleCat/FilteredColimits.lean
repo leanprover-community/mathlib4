@@ -130,7 +130,7 @@ instance colimitModule : Module R (M F) :=
       colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add,
       colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
-      (IsFiltered.rightToMax i j), LinearMap.map_smul, LinearMap.map_smul]
+      (IsFiltered.rightToMax i j), map_smul, map_smul]
   add_smul r s x := by
     obtain ⟨i, x, rfl⟩ := M.mk_surjective F x
     simp [_root_.add_smul, colimit_add_mk_eq'] }
@@ -163,7 +163,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
   let h := (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
   let f : colimit F →+ t.pt := (h.desc ((forget₂ _ _).mapCocone t)).hom
   have hf {j : J} (x : F.obj j) : f (M.mk _ ⟨j, x⟩) = t.ι.app j x :=
-    congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
+    congr_fun ((forget AddCommGrpCat).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
       map_smul' := fun r x => by
@@ -182,8 +182,8 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   fac t j := by simp
   uniq t _ h := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (h j)) x).trans
-      (congr_fun ((forget _).congr_map (ι_colimitDesc F t j)) x).symm
+    exact (congr_fun ((forget (ModuleCat _)).congr_map (h j)) _).trans
+      (congr_fun ((forget (ModuleCat _)).congr_map (ι_colimitDesc F t j)) x).symm
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where

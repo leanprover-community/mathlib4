@@ -35,7 +35,7 @@ A description of this formalization is in [Gusakov2021].
 Hall's Marriage Theorem, indexed families
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -56,7 +56,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   haveI := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
-  by_cases he : s'.Nonempty
+  by_cases! he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
@@ -68,8 +68,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
       exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_notMem hb]
       exact Nat.le_of_lt ha'
-  · rw [nonempty_iff_ne_empty, not_not] at he
-    subst s'
+  · subst s'
     simp
 
 /-- First case of the inductive step: assuming that

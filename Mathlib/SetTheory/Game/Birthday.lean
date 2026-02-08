@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.SetTheory.Game.Ordinal
@@ -196,7 +196,7 @@ theorem birthday_quot_le_pGameBirthday (x : PGame) : birthday ⟦x⟧ ≤ x.birt
 
 @[simp]
 theorem birthday_zero : birthday 0 = 0 := by
-  rw [← Ordinal.le_zero, ← PGame.birthday_zero]
+  rw [← nonpos_iff_eq_zero, ← PGame.birthday_zero]
   exact birthday_quot_le_pGameBirthday _
 
 @[simp]
@@ -284,7 +284,7 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
   let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}
   let H : Small.{u} S := @small_biUnion _ _ _ _ _ IH
   obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
-  · simp_rw [Ordinal.not_lt_zero]
+  · simp_rw [not_lt_zero]
     exact small_empty
   · simp_rw [Order.lt_succ_iff, le_iff_lt_or_eq]
     convert small_union.{u} {x | birthday x < a} {x | birthday x = a}
