@@ -135,10 +135,10 @@ lemma continuousLinearMap_snd : (ContinuousLinearMap.snd R F G).HasBoundedRightI
 
 section NontriviallyNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  {f : E →L[𝕜] F}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
+  [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+  [T2Space F] {f : E →L[𝕜] F}
 
 /-- If `f : E → F` is surjective and `F` is finite-dimensional,
 `f` has a continuous right inverse. -/
