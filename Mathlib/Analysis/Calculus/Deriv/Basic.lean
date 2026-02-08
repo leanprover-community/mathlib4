@@ -22,8 +22,8 @@ The theory is developed analogously to the [Fréchet
 derivatives](./fderiv.html). We first introduce predicates defined in terms
 of the corresponding predicates for Fréchet derivatives:
 
-- `HasDerivAtFilter f f' x L` states that the function `f` has the
-  derivative `f'` at the point `x` as `x` goes along the filter `L`.
+- `HasDerivAtFilter f f' L` states that the function `f` has the
+  derivative `f'` along the filter `L`.
 
 - `HasDerivWithinAt f f' s x` states that the function `f` has the
   derivative `f'` at the point `x` within the subset `s`.
@@ -109,9 +109,9 @@ variable {F : Type v} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 section
 variable [ContinuousSMul 𝕜 F]
 
-/-- `f` has the derivative `f'` at the point `x` as `x` goes along the filter `L`.
+/-- `f` has the derivative `f'` along the filter `L`.
 
-That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges along the filter `L`.
+That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `(x', x)` converges along the filter `L`.
 -/
 def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (L : Filter (𝕜 × 𝕜)) :=
   HasFDerivAtFilter f (toSpanSingleton 𝕜 f') L
@@ -587,9 +587,16 @@ theorem Filter.EventuallyEq.hasDerivWithinAt_iff_of_mem (h₁ : f₁ =ᶠ[𝓝[s
   ⟨fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁.symm hx,
   fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁ hx⟩
 
-theorem HasStrictDerivAt.congr_of_eventuallyEq (h : HasStrictDerivAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
+/-- If `f` has derivative `f'` in the strict sense and `f x' = f₁ x'` near `x`,
+then `f₁` has the same derivative in the strict sense.
+
+Note that this lemma assumes `f =ᶠ[𝓝 x] f₁`, while other lemmas in this file assume `f₁ =ᶠ[𝓝 x] f`.
+This is done for backward compatibility, and may change in the future.
+See [Zulip discussion](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/MyProp.2Econgr_*.20lemmas.2C.20LHS.20vs.20RHS/with/572593573).
+-/
+theorem HasStrictDerivAt.congr_of_eventuallyEq (h : HasStrictDerivAt f f' x) (h₁ : f =ᶠ[𝓝 x] f₁) :
     HasStrictDerivAt f₁ f' x :=
-  HasDerivAtFilter.congr_of_eventuallyEq h (h₁.prodMap_nhds h₁)
+  HasDerivAtFilter.congr_of_eventuallyEq h (h₁.symm.prodMap_nhds h₁.symm)
 
 theorem HasStrictDerivAt.congr_deriv (h : HasStrictDerivAt f f' x) (h' : f' = g') :
     HasStrictDerivAt f g' x :=

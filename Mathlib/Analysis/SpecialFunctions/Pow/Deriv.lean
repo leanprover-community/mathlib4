@@ -54,7 +54,7 @@ theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
   · replace h := h.neg_resolve_left rfl
     rw [log_zero, mul_zero]
     refine (hasStrictDerivAt_const y 0).congr_of_eventuallyEq ?_
-    exact (isOpen_ne.eventually_mem h).mono fun y hy => zero_cpow hy
+    exact (isOpen_ne.eventually_mem h).mono fun y hy => (zero_cpow hy).symm
   · simpa only [cpow_def_of_ne_zero hx, mul_one] using
       ((hasStrictDerivAt_id y).const_mul (log x)).cexp
 
