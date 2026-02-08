@@ -253,8 +253,14 @@ lemma lpNorm_smul_measure_of_ne_top (hp : p ≠ ∞) {f : α → E} (c : ℝ≥0
     simpa [hc] using h.smul_measure c⁻¹]
   simp
 
-@[simp] lemma lpNorm_conj {K : Type*} [RCLike K] {f : α → K} (hf : AEStronglyMeasurable f μ)
-    (hf' : AEStronglyMeasurable (conj f) μ) (p : ℝ≥0∞) : lpNorm (conj f) p μ = lpNorm f p μ := by
-  rw [← lpNorm_norm hf, ← lpNorm_norm hf']; simp
+@[simp] lemma lpNorm_conj {K : Type*} [RCLike K] [SecondCountableTopology K] (f : α → K) (p : ℝ≥0∞)
+    (μ : Measure α) : lpNorm (conj f) p μ = lpNorm f p μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · rw [← lpNorm_norm hf, ← lpNorm_norm]
+    · simp
+    · exact (continuous_star.measurable.comp_aemeasurable hf.aemeasurable).aestronglyMeasurable
+  · rw [lpNorm_of_not_aestronglyMeasurable hf, lpNorm_of_not_aestronglyMeasurable fun h ↦ hf ?_]
+    simpa [Function.comp_def]
+      using (continuous_star.measurable.comp_aemeasurable h.aemeasurable).aestronglyMeasurable
 
 end MeasureTheory
