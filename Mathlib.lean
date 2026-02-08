@@ -7162,6 +7162,7 @@ public import Mathlib.Topology.Category.TopCat.Adjunctions
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 public import Mathlib.Topology.Category.TopCat.EpiMono
+public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
