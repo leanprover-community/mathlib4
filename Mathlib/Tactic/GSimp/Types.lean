@@ -16,11 +16,6 @@ structure Result where
   proof? : Option Expr := none
   deriving Inhabited
 
-abbrev CacheIndex := Nat
-
-theorem imp_rfl (p : Prop) : p → p := id
-theorem imp_trans (p q r : Prop) : (p → q) → (q → r) → p → r := flip Function.comp
-
 /-- The cache associated to a relation. -/
 structure CacheEntry where
   cache : Std.HashMap Expr Result := {}
@@ -30,6 +25,11 @@ structure CacheEntry where
 
 def CacheEntry.insert (entry : CacheEntry) (e : Expr) (r : Result) : CacheEntry :=
   { entry with cache := entry.cache.insert e r }
+
+theorem imp_rfl (p : Prop) : p → p := id
+theorem imp_trans (p q r : Prop) : (p → q) → (q → r) → p → r := flip Function.comp
+
+abbrev CacheIndex := Nat
 
 /-- The cache used by `gsimp` to store previous rewrites.
 
@@ -41,9 +41,9 @@ As a result, the expressions appearing in the `DefEqMap` are always valid.
 -- TODO: cache the proofs of side-goals, just like how it's done in `field_simp`
 structure Cache where
   /-- Map from relations to array index. -/
-  relMap : Std.HashMap Expr Nat := {}
+  relMap : Std.HashMap Expr CacheIndex := {}
   /-- Map for relations in the reverse direction. -/
-  invRelMap : Std.HashMap Expr Nat := {}
+  invRelMap : Std.HashMap Expr CacheIndex := {}
   /-- For each relation, a proof of transitivity, and a cache of previously handled expressions.
   By convention, the first element in the array corresponds to the implication relation. -/
   entries : Array CacheEntry := #[{
@@ -146,7 +146,11 @@ structure GSimpTheorems where
 structure Context where
   config : Config := {}
   gsimpTheorems : GSimpTheorems
-  gcongrTheorems : GCongr.GCongrLemmas := {}
+  gcongrTheorems : GCongr.GCongrLemmas
+  idx : CacheIndex
+  rel : Expr
+  relName : Name
+  inv : Bool
 
 
 private opaque MethodsRefPointed : NonemptyType.{0}
@@ -171,9 +175,9 @@ def getConfig : GSimpM Config :=
   modify fun s => { s with cache := {} }
   try x finally modify fun s => { s with cache := cacheSaved }
 
-def getCacheIdx (rel : Expr) (inv : Bool) : GSimpM CacheIndex := do
+def getCacheIdx (rel : Expr) : GSimpM CacheIndex := do
   let c := (← get).cache
-  if inv then
+  if (← readThe Context).inv then
     if let some idx := c.invRelMap[rel]? then
       return idx
     else
@@ -295,5 +299,9 @@ def GSimpM.run {α} (ctx : Context) (s : State := {}) (methods : Methods := {}) 
     MetaM α := do
   withReducible do
     k methods.toMethodsRef ctx |>.run' s
+
+-- def defaultMethods : Methods where
+--   mkMethods simprocs dischargeDefault? (wellBehavedDischarge := true)
+
 
 end Mathlib.Tactic.GSimp

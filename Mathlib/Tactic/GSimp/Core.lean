@@ -22,17 +22,17 @@ open Lean Meta
 mutual
 
 /-- Process the given congruence theorem hypothesis. Return true if it made "progress". -/
-partial def processGCongrSubgoal (h : Expr) (hType : Expr) (numIntro : Nat) (inv : Bool) :
+partial def processGCongrSubgoal (h : Expr) (hType : Expr) (numIntro : Nat) :
     GSimpM Bool := do
   forallBoundedTelescope hType numIntro fun xs hType =>
     (if xs.isEmpty then id else withFreshCache) do
     let (idx, relName, rel, lhs, rhs) ← match hType with
       | .forallE _ lhs rhs _ => pure (0, `_Implies, default, lhs, rhs)
-      | mkApp2 rel lhs rhs => pure (← getCacheIdx rel inv, rel.getAppFn.constName, rel, lhs, rhs)
+      | mkApp2 rel lhs rhs => pure (← getCacheIdx rel, rel.getAppFn.constName, rel, lhs, rhs)
       | _ => throwError "invalid `gcongr` subgoal {hType}"
-    let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
+    let (lhs, rhs) := if (← readThe Context).inv then (rhs, lhs) else (lhs, rhs)
     let lhs ← instantiateMVars lhs
-    let r ← gsimp lhs rel relName idx inv
+    let r ← gsimp lhs rel relName idx
     rhs.withApp fun m zs => do
       unless zs.all (·.isFVar) do failure -- TODO: this should be checked by `@[gcongr]`
       let val ← mkLambdaFVars zs r.expr
@@ -76,10 +76,11 @@ partial def tryGCongrTheorem? (lem : GCongr.GCongrLemma) (e rel : Expr) (inv : B
 
   let mut modified := false
   for (i, numIntro, isContra) in lem.mainSubgoals do
+    withTheReader MethodsRef (fun ctx ↦ { ctx with inv := ctx.inv != isContra }) do
     let h := xs[i]!
     let hType ← instantiateMVars (← inferType h)
     try
-      if ← processGCongrSubgoal h hType numIntro (inv != isContra) then
+      if ← processGCongrSubgoal h hType numIntro then
         modified := true
     catch _ =>
       trace[gsimp.congr] "processCongrHypothesis {lem.declName} failed {hType}"
