@@ -43,7 +43,7 @@ variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
 variable {s : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {L : Filter (𝕜 × 𝕜)}
 
 /-! ### Derivative of bilinear maps -/
 
@@ -167,8 +167,8 @@ theorem HasStrictDerivAt.const_smul (c : R) (hf : HasStrictDerivAt f f' x) :
   simpa using (HasStrictFDerivAt.const_smul hf c).hasStrictDerivAt
 
 @[to_fun]
-theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (c • f) (c • f') x L := by
+theorem HasDerivAtFilter.const_smul (c : R) (hf : HasDerivAtFilter f f' L) :
+    HasDerivAtFilter (c • f) (c • f') L := by
   simpa using (HasFDerivAtFilter.const_smul hf c).hasDerivAtFilter
 
 @[to_fun]

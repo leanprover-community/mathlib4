@@ -49,9 +49,8 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
   rcases hx.lt_or_gt with hx | hx
   · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
     have : (√·) =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
-    exact
-      ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this.symm, fun n =>
-        contDiffAt_const.congr_of_eventuallyEq this⟩
+    exact ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this, fun n =>
+      contDiffAt_const.congr_of_eventuallyEq this⟩
   · have : ↑2 * √x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
     constructor
     · simpa using sqPartialHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)

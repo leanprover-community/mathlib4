@@ -51,7 +51,7 @@ theorem ContDiff.abs (hf : ContDiff ℝ n f) (h₀ : ∀ x, f x ≠ 0) : ContDif
 theorem hasStrictDerivAt_abs_neg {x : ℝ} (hx : x < 0) :
     HasStrictDerivAt (|·|) (-1) x :=
   (hasStrictDerivAt_neg x).congr_of_eventuallyEq <|
-    EqOn.eventuallyEq_of_mem (fun _ hy ↦ (abs_of_neg (mem_Iio.1 hy)).symm) (Iio_mem_nhds hx)
+    EqOn.eventuallyEq_of_mem (fun _ hy ↦ abs_of_neg (mem_Iio.1 hy)) (Iio_mem_nhds hx)
 
 theorem hasDerivAt_abs_neg {x : ℝ} (hx : x < 0) :
     HasDerivAt (|·|) (-1) x := (hasStrictDerivAt_abs_neg hx).hasDerivAt
@@ -59,7 +59,7 @@ theorem hasDerivAt_abs_neg {x : ℝ} (hx : x < 0) :
 theorem hasStrictDerivAt_abs_pos {x : ℝ} (hx : 0 < x) :
     HasStrictDerivAt (|·|) 1 x :=
   (hasStrictDerivAt_id x).congr_of_eventuallyEq <|
-    EqOn.eventuallyEq_of_mem (fun _ hy ↦ (abs_of_pos (mem_Iio.1 hy)).symm) (Ioi_mem_nhds hx)
+    EqOn.eventuallyEq_of_mem (fun _ hy ↦ abs_of_pos (mem_Iio.1 hy)) (Ioi_mem_nhds hx)
 
 theorem hasDerivAt_abs_pos {x : ℝ} (hx : 0 < x) :
     HasDerivAt (|·|) 1 x := (hasStrictDerivAt_abs_pos hx).hasDerivAt

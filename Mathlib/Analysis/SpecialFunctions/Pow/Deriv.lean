@@ -54,7 +54,7 @@ theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
   · replace h := h.neg_resolve_left rfl
     rw [log_zero, mul_zero]
     refine (hasStrictDerivAt_const y 0).congr_of_eventuallyEq ?_
-    exact (isOpen_ne.eventually_mem h).mono fun y hy => (zero_cpow hy).symm
+    exact (isOpen_ne.eventually_mem h).mono fun y hy => zero_cpow hy
   · simpa only [cpow_def_of_ne_zero hx, mul_one] using
       ((hasStrictDerivAt_id y).const_mul (log x)).cexp
 
@@ -189,7 +189,7 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
 nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa using (hf.cpow hg h0).hasStrictDerivAt
+  simpa using (hf.hasStrictFDerivAt.cpow hg h0).hasStrictDerivAt
 
 theorem HasStrictDerivAt.const_cpow (hf : HasStrictDerivAt f f' x) (h : c ≠ 0 ∨ f x ≠ 0) :
     HasStrictDerivAt (fun x => c ^ f x) (c ^ f x * Complex.log c * f') x :=
@@ -386,7 +386,7 @@ theorem hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
 
 lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
     DifferentiableAt ℝ (fun x => x ^ p) x :=
-  (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
+  (hasStrictDerivAt_rpow_const_of_ne hx p).hasStrictFDerivAt.differentiableAt
 
 theorem not_differentiableAt_rpow_const_zero {r : ℝ} (hr : r < 1) (hr' : r ≠ 0) :
     ¬ DifferentiableAt ℝ (fun x ↦ x ^ r) (0 : ℝ) := by
