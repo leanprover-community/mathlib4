@@ -48,6 +48,9 @@ lemma mem_center_iff_val_mem_range_scalar {g : GL n R} :
   · refine fun ⟨a, ha⟩ ↦ Subgroup.mem_center_iff.mpr fun h ↦ ?_
     simpa [Units.ext_iff, ← ha] using (scalar_commute a (mul_comm a ·) h.val).symm
 
+@[deprecated (since := "2026-02-08")]
+alias mem_center_iff_val_eq_scalar := mem_center_iff_val_mem_range_scalar
+
 /-- The center of `GL n R` is the image of `Rˣ`. -/
 lemma center_eq_range_scalar :
     Subgroup.center (GL n R) = (scalar n).range := by
@@ -67,6 +70,9 @@ lemma center_eq_range_scalar :
       simp [Units.ext_iff, ← ha]
   · rintro ⟨a, rfl⟩
     exact mem_center_iff_val_mem_range_scalar.mpr ⟨a, rfl⟩
+
+@[deprecated (since := "2026-02-08")]
+alias center_eq_range_units := center_eq_range_scalar
 
 end Center
 
