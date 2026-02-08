@@ -32,7 +32,7 @@ This concept is used to give an equivalent definition of immersions and submersi
   then so does `g`.
 * `ContinuousLinearMap.HasRightInverse.prodMap`: having a continuous right inverse
   is closed under taking products
-* `ContinuousLinearMap.HasRightInverse.continuousLinearMap_fst`:
+* `ContinuousLinearMap.HasRightInverse.fst`:
   `ContinuousLinearMap.fst` has a continuous right inverse; similar for `snd`
 * `ContinuousLinearMap.HasRightInverse.of_surjective_of_finiteDimensional`:
   if `f : E → F` is surjective and `F` is finite-dimensional, `f` has a continuous right inverse.
@@ -125,11 +125,11 @@ lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasLeftLeftInverse) :
   simp only [coe_comp', Function.comp_apply]
   exact hfginv y
 
-lemma compCLE_left {f₀ : F' ≃L[R] E} (hf : f.HasLeftLeftInverse) :
+lemma comp_continuousLinearEquivalence {f₀ : F' ≃L[R] E} (hf : f.HasLeftLeftInverse) :
     (f.comp f₀.toContinuousLinearMap).HasLeftLeftInverse :=
   hf.comp f₀.hasLeftInverse
 
-lemma compCLE_right {g : F ≃L[R] F'} (hf : f.HasLeftLeftInverse) :
+lemma continuousLinearEquivalence_comp {g : F ≃L[R] F'} (hf : f.HasLeftLeftInverse) :
     (g.toContinuousLinearMap.comp f).HasLeftLeftInverse :=
   g.hasLeftInverse.comp hf
 
@@ -228,13 +228,13 @@ lemma compCLE_right {g : F ≃L[R] F'} (hf : f.HasRightInverse) :
   g.hasRightInverse.comp hf
 
 /-- `ContinuousLinearMap.fst` has a continuous right inverse. -/
-lemma continuousLinearMap_fst : (ContinuousLinearMap.fst R F G).HasRightInverse := by
+protected lemma fst : (ContinuousLinearMap.fst R F G).HasRightInverse := by
   use (ContinuousLinearMap.id _ _).prod 0
   intro x
   simp
 
 /-- `ContinuousLinearMap.snd` has a continuous right inverse. -/
-lemma continuousLinearMap_snd : (ContinuousLinearMap.snd R F G).HasRightInverse := by
+protected lemma snd : (ContinuousLinearMap.snd R F G).HasRightInverse := by
   use ContinuousLinearMap.prod 0 (.id R G)
   intro x
   simp
