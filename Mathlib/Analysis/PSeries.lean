@@ -235,6 +235,22 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
     (pow_right_strictMono₀ one_lt_two) two_ne_zero h_succ_diff
   simp [pow_succ, mul_two]
 
+/-- Cauchy condensation test for eventually antitone and nonnegative series of real numbers. -/
+theorem summable_condensed_iff_of_nonneg' {f : ℕ → ℝ} (h_nonneg : 0 ≤ᶠ[Filter.atTop] f)
+    (h_mono : ∃ k : ℕ, AntitoneOn f (Set.Ici k)) :
+    (Summable fun k : ℕ => (2 : ℝ) ^ k * f (2 ^ k)) ↔ Summable f := by
+  rw [Filter.EventuallyLE, Filter.eventually_atTop] at h_nonneg
+  rcases h_nonneg with ⟨n,hn⟩
+  rcases h_mono with ⟨m,hm⟩
+  convert summable_condensed_iff_of_nonneg (f := fun k ↦ f (max k (n + m))) _ _ using 1
+  · rw [summable_congr_atTop]
+    have h_pow := tendsto_pow_atTop_atTop_of_one_lt (r := 2) (by simp)
+    filter_upwards [h_pow.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
+  · rw [summable_congr_atTop]
+    filter_upwards [Filter.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]
+  · exact fun _ ↦ by apply hn; simp
+  · exact fun _ _ _ _ ↦ hm (by simp) (by simp) (by bound)
+
 section p_series
 
 /-!
