@@ -296,7 +296,7 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
 /-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
-def actionPunitEquivalence : Action V PUnit ≌ V where
+def actionPUnitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
   inverse :=
     { obj := fun X => ⟨X, 1⟩

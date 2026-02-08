@@ -77,7 +77,7 @@ noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
   limit.isoLimitCone terminalLimitCone.{u, 0}
 
 /-- The terminal object in `Type u` is `PUnit`. -/
-noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
+noncomputable def isTerminalPUnit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 
 noncomputable instance : Inhabited (⊤_ (Type u)) :=

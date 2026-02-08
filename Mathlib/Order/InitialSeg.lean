@@ -457,7 +457,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
   rfl
 
 /-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
-abbrev pemptyToPunit : @emptyRelation PEmpty ≺i @emptyRelation PUnit :=
+abbrev pemptyToPUnit : @emptyRelation PEmpty ≺i @emptyRelation PUnit :=
   (@ofIsEmpty _ _ emptyRelation _ _ PUnit.unit) fun _ => not_false
 
 protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s (f a) :=
