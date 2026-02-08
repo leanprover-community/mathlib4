@@ -198,6 +198,8 @@ noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
 noncomputable def isInitialPEmpty : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
 
+@[deprecated (since := "2026-02-08")] alias isInitialPunit := isInitialPEmpty
+
 /-- An object in `Type u` is initial if and only if it is empty. -/
 lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
   constructor
