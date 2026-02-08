@@ -26,8 +26,9 @@ variable {K : Type*} [CommRing K] [IsDomain K]
 #### Quadratic roots of unity
 -/
 
-lemma quadratic_roots_of_unity [Invertible (2 : K)] (z : K) :
-    z ^ 2 = 1 ↔ z = 1 ∨ z = -1 := by
+lemma quadratic_roots_of_unity_eq [Invertible (2 : K)] : {z : K | z ^ 2 = 1} = {1, -1} := by
+  simp only [Set.ext_iff, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  intro z
   have h := quadratic_eq_zero_iff' (show discrim (1 : K) 0 (-1) = 2 * 2 by rw [discrim]; norm_num) z
   norm_num at h
   conv_lhs at h => rw [← @add_left_cancel_iff _ _ _ (1 : K)]
@@ -39,7 +40,13 @@ lemma quadratic_roots_of_unity [Invertible (2 : K)] (z : K) :
   ring_nf at h
   exact h
 
-lemma quadratic_roots_of_minus_one {s : K} (hs : s * s = -1) :
+lemma Complex.quadratic_roots_of_unity : {z : ℂ | z ^ 2 = 1} = {1, -1} :=
+  quadratic_roots_of_unity_eq
+
+lemma Real.quadratic_roots_of_unity : {z : ℝ | z ^ 2 = 1} = {1, -1} :=
+  quadratic_roots_of_unity_eq
+
+lemma quadratic_roots_of_minus_one_of_sq_eq {s : K} (hs : s * s = -1) :
     {z : K | z ^ 2 = -1} = {s, -s} := by
   simp only [Set.ext_iff, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
   intro z
@@ -47,6 +54,18 @@ lemma quadratic_roots_of_minus_one {s : K} (hs : s * s = -1) :
   · intro hz
     sorry
   · grind only
+
+omit [IsDomain K] in
+lemma quadratic_roots_of_minus_one_of_sq_ne (hs : ¬ IsSquare (-1 : K)) :
+    {z : K | z ^ 2 = -1} = ∅ := by
+  simp only [Set.ext_iff, Set.mem_setOf_eq, Set.mem_empty_iff_false]
+  grind only [IsSquare, pow_two]
+
+lemma Complex.quadratic_roots_of_minus_one : {z : ℂ | z ^ 2 = -1} = {I, -I} :=
+  quadratic_roots_of_minus_one_of_sq_eq (by norm_num)
+
+lemma Real.quadratic_roots_of_minus_one : {z : ℝ | z ^ 2 = -1} = ∅ :=
+  quadratic_roots_of_minus_one_of_sq_ne (by simp)
 
 /-!
 #### Cubic roots of unity
@@ -105,12 +124,16 @@ lemma Real.cubic_roots_of_unity : {z : ℝ | z ^ 3 = 1} = {1} := by
 lemma quartic_roots_of_unity_of_sq_eq [Invertible (2 : K)] {s : K} (hs : s * s = -1) :
     {z : K | z ^ 4 = 1} = {1, s, -1, -s} := by
   simp only [Set.ext_iff, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-  intro z
-  have : z ^ 2 = -1 ↔ z = s ∨ z = -s := by
-    have h := quadratic_roots_of_minus_one hs
+  have (z : K): z ^ 2 = -1 ↔ z = s ∨ z = -s := by
+    have h := quadratic_roots_of_minus_one_of_sq_eq hs
     rw [Set.ext_iff] at h
     apply h
-  grind only [show z ^ 4 = (z ^ 2) ^ 2 by ring, quadratic_roots_of_unity]
+  have (z : K) : z ^ 2 = 1 ↔ z = 1 ∨ z = -1 := by
+    have h := @quadratic_roots_of_unity_eq K _
+    rw [Set.ext_iff] at h
+    apply h
+  intro z
+  grind [show z ^ 4 = (z ^ 2) ^ 2 by ring]
 
 lemma quartic_roots_of_unity_of_sq_ne (h : ¬ IsSquare (-1 : K)) :
     {z : K | z ^ 4 = 1} = {1, -1} := by
