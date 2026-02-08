@@ -52,7 +52,6 @@ def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
   one_mem' := by
     simp [zero_le_one_elem]
 
-@[grind =]
 lemma mem_rowStochastic :
     M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧  M *ᵥ 1 = 1 :=
   Iff.rfl
@@ -139,7 +138,6 @@ def colStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
   one_mem' := by
     simp [zero_le_one_elem]
 
-@[grind =]
 lemma mem_colStochastic :
     M ∈ colStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ 1 ᵥ* M = 1 :=
   Iff.rfl
@@ -195,6 +193,13 @@ lemma mulVec_dotProduct_one_eq_one_colStochastic (hM : M ∈ colStochastic R n)
     (hx : 1 ⬝ᵥ x = 1) : 1 ⬝ᵥ (M *ᵥ x) = 1 := by
   rw [dotProduct_mulVec, hM.2, hx]
 
+/-- Applying a column-stochastic matrix to a vector preserves its sum. -/
+lemma sum_mulVec_of_mem_colStochastic {M : Matrix n n R} {x : n → R}
+    (hA : M ∈ colStochastic R n) : ∑ i, (M *ᵥ x) i = ∑ i, x i := by
+  simp only [Matrix.mulVec, dotProduct]
+  rw [Finset.sum_comm]
+  simp [sum_col_of_mem_colStochastic hA, ← Finset.sum_mul]
+
 /-- The set of column stochastic matrices is convex. -/
 lemma convex_colStochastic : Convex R (colStochastic R n : Set (Matrix n n R)) := by
   intro x hx y hy a b ha hb h
@@ -225,5 +230,47 @@ lemma transpose_mem_colStochastic_iff_mem_rowStochastic :
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
   exact fun _ ↦ forall_swap
+
+/-- Reindexing a matrix preserves row-stochasticity. -/
+@[aesop safe apply]
+lemma reindex_mem_rowStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} (hM : M ∈ rowStochastic R n) : M.reindex e₁ e₂ ∈ rowStochastic R m := by
+  refine ⟨?_, ?_⟩
+  · intro i j
+    simp only [reindex_apply, submatrix_apply]
+    exact nonneg_of_mem_rowStochastic hM
+  · simp [submatrix_mulVec_equiv, hM.2]
+
+@[grind =]
+lemma reindex_mem_rowStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} : M.reindex e₁ e₂ ∈ rowStochastic R m ↔ M ∈ rowStochastic R n := by
+  refine ⟨fun h => ?_, reindex_mem_rowStochastic⟩
+  have : M = (M.reindex e₁ e₂).reindex e₁.symm e₂.symm := by simp
+  rw [this]
+  exact reindex_mem_rowStochastic h
+
+/-- Reindexing a matrix preserves column-stochasticity. -/
+@[aesop safe apply, grind .]
+lemma reindex_mem_colStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} (hM : M ∈ colStochastic R n) : M.reindex e₁ e₂ ∈ colStochastic R m := by
+  refine ⟨?_, ?_⟩
+  · intro i j
+    simp only [reindex_apply, submatrix_apply]
+    exact nonneg_of_mem_colStochastic hM
+  · simp only [reindex_apply, one_vecMul]
+    ext j
+    simp only [Finset.sum_apply, submatrix_apply, Pi.one_apply]
+    have : ∑ x, M (e₁.symm x) (e₂.symm j) = ∑ x, M x (e₂.symm j) :=
+      Finset.sum_equiv e₁.symm (by simp) (fun i _ => rfl)
+    rw [this]
+    exact sum_col_of_mem_colStochastic hM (e₂.symm j)
+
+@[grind =]
+lemma reindex_mem_colStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
+    {e₁ e₂ : n ≃ m} : M.reindex e₁ e₂ ∈ colStochastic R m ↔ M ∈ colStochastic R n := by
+  refine ⟨fun h => ?_, reindex_mem_colStochastic⟩
+  have : M = (M.reindex e₁ e₂).reindex e₁.symm e₂.symm := by simp
+  rw [this]
+  exact reindex_mem_colStochastic h
 
 end Matrix
