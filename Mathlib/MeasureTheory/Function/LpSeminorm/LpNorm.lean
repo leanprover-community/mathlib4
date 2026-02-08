@@ -25,6 +25,8 @@ namespace MeasureTheory
 variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] {f g h : α → E}
 
+@[simp] lemma lpNorm_nonneg : 0 ≤ lpNorm f p μ := by simp [lpNorm]
+
 lemma ofReal_lpNorm_eq_eLpNorm (hf : MemLp f p μ) : .ofReal (lpNorm f p μ) = eLpNorm f p μ := by
   rw [lpNorm, ENNReal.ofReal_toReal hf.eLpNorm_ne_top]
 
@@ -37,7 +39,7 @@ lemma lpNorm_eq_integral_norm_rpow_toReal (hp₀ : p ≠ 0) (hp : p ≠ ∞)
   · exact .of_forall fun x ↦ ENNReal.rpow_lt_top_of_nonneg (by positivity) (by simp)
 
 lemma lpNorm_nnreal_eq_integral_norm_rpow {p : ℝ≥0} (hp : p ≠ 0)
-    (hf : AEMeasurable (fun x ↦ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal) μ) :
+    (hf : AEMeasurable (fun x ↦ ‖f x‖ₑ ^ p.toReal) μ) :
     lpNorm f p μ = (∫ x, ‖f x‖ ^ (p : ℝ) ∂μ) ^ (p⁻¹ : ℝ) := by
   rw [lpNorm_eq_integral_norm_rpow_toReal (by positivity) (by simp) hf]; simp
 
@@ -49,7 +51,10 @@ lemma lpNorm_one_eq_integral_norm (hf : AEMeasurable (fun x ↦ ‖f x‖ₑ) μ
 @[simp] lemma lpNorm_exponent_zero (f : α → E) : lpNorm f 0 μ = 0 := by simp [lpNorm]
 @[simp] lemma lpNorm_measure_zero (f : α → E) : lpNorm f p (0 : Measure α) = 0 := by simp [lpNorm]
 
-lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x‖ ≤ lpNorm f ⊤ μ := by
+lemma lpNorm_of_not_memLp (hf : AEStronglyMeasurable f μ) (hf' : ¬ MemLp f p μ) :
+    lpNorm f p μ = 0 := by simp_all [MemLp, lpNorm]
+
+lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x‖ ≤ lpNorm f ∞ μ := by
   simpa only [lpNorm, ← ENNReal.ofReal_le_iff_le_toReal hf.2.ne, ofReal_norm]
     using ae_le_eLpNormEssSup
 
@@ -140,34 +145,42 @@ lemma lpNorm_fun_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α �
 
 end NormedField
 
-lemma lpNorm_add_le (hf : MemLp f p μ) (hg : MemLp g p μ) (hp : 1 ≤ p) :
+lemma lpNorm_add_le (hf : MemLp f p μ) (hg : AEStronglyMeasurable g μ) (hp : 1 ≤ p) :
     lpNorm (f + g) p μ ≤ lpNorm f p μ + lpNorm g p μ := by
-  unfold lpNorm
-  rw [← ENNReal.toReal_add hf.eLpNorm_ne_top hg.eLpNorm_ne_top]
-  gcongr
-  exacts [ENNReal.add_ne_top.2 ⟨hf.eLpNorm_ne_top, hg.eLpNorm_ne_top⟩,
-    eLpNorm_add_le hf.aestronglyMeasurable hg.aestronglyMeasurable hp]
+  by_cases hg' : MemLp g p μ
+  · unfold lpNorm
+    rw [← ENNReal.toReal_add hf.eLpNorm_ne_top hg'.eLpNorm_ne_top]
+    gcongr
+    exacts [ENNReal.add_ne_top.2 ⟨hf.eLpNorm_ne_top, hg'.eLpNorm_ne_top⟩,
+      eLpNorm_add_le hf.aestronglyMeasurable hg'.aestronglyMeasurable hp]
+  · rw [lpNorm_of_not_memLp (hf.aestronglyMeasurable.add hg) fun hfg ↦ hg' <| by
+      simpa using hfg.sub hf, lpNorm_of_not_memLp hg hg', add_zero]
+    exact lpNorm_nonneg
 
-lemma lpNorm_sub_le (hf : MemLp f p μ) (hg : MemLp g p μ) (hp : 1 ≤ p) :
+lemma lpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : MemLp g p μ) (hp : 1 ≤ p) :
+    lpNorm (f + g) p μ ≤ lpNorm f p μ + lpNorm g p μ := by
+  simpa [add_comm] using lpNorm_add_le hg hf hp
+
+lemma lpNorm_sub_le (hf : MemLp f p μ) (hg : AEStronglyMeasurable g μ) (hp : 1 ≤ p) :
     lpNorm (f - g) p μ ≤ lpNorm f p μ + lpNorm g p μ := by
   simpa [sub_eq_add_neg] using lpNorm_add_le hf hg.neg hp
 
-lemma lpNorm_le_lpNorm_add_lpNorm_sub' (hf : MemLp f p μ) (hg : MemLp g p μ) (hp : 1 ≤ p) :
-    lpNorm f p μ ≤ lpNorm g p μ + lpNorm (f - g) p μ := by
-  simpa using lpNorm_add_le hg (hf.sub hg) hp
+lemma lpNorm_le_lpNorm_add_lpNorm_sub' (hf : AEStronglyMeasurable f μ) (hg : MemLp g p μ)
+    (hp : 1 ≤ p) : lpNorm f p μ ≤ lpNorm g p μ + lpNorm (f - g) p μ := by
+  simpa using lpNorm_add_le hg (hf.sub hg.aestronglyMeasurable) hp
 
-lemma lpNorm_le_lpNorm_add_lpNorm_sub (hf : MemLp f p μ) (hg : MemLp g p μ) (hp : 1 ≤ p) :
-    lpNorm f p μ ≤ lpNorm g p μ + lpNorm (g - f) p μ := by
-  simpa [neg_add_eq_sub] using lpNorm_add_le hg.neg (hg.sub hf) hp
+lemma lpNorm_le_lpNorm_add_lpNorm_sub (hf : AEStronglyMeasurable f μ) (hg : MemLp g p μ)
+    (hp : 1 ≤ p) : lpNorm f p μ ≤ lpNorm g p μ + lpNorm (g - f) p μ := by
+  simpa [neg_add_eq_sub] using lpNorm_add_le hg.neg (hg.aestronglyMeasurable.sub hf) hp
 
-lemma lpNorm_le_add_lpNorm_add (hf : MemLp f p μ) (hg : MemLp g p μ) (hp : 1 ≤ p) :
+lemma lpNorm_le_add_lpNorm_add (hf : AEStronglyMeasurable f μ) (hg : MemLp g p μ) (hp : 1 ≤ p) :
     lpNorm f p μ ≤ lpNorm (f + g) p μ + lpNorm g p μ := by
-  simpa using lpNorm_add_le (hf.add hg) hg.neg hp
+  simpa using lpNorm_add_le' (hf.add hg.aestronglyMeasurable) hg.neg hp
 
 lemma lpNorm_sub_le_lpNorm_sub_add_lpNorm_sub (hf : MemLp f p μ) (hg : MemLp g p μ)
-    (hh : MemLp h p μ) (hp : 1 ≤ p) :
+    (hh : AEStronglyMeasurable h μ) (hp : 1 ≤ p) :
     lpNorm (f - h) p μ ≤ lpNorm (f - g) p μ + lpNorm (g - h) p μ := by
-  simpa using lpNorm_add_le (hf.sub hg) (hg.sub hh) hp
+  simpa using lpNorm_add_le (hf.sub hg) (hg.aestronglyMeasurable.sub hh) hp
 
 lemma lpNorm_sum_le {ι : Type*} {s : Finset ι} {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ)
     (hp : 1 ≤ p) : lpNorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, lpNorm (f i) p μ := by
