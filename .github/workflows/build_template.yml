@@ -50,14 +50,6 @@ jobs:
         shell: bash # there is no script body, so this is safe to "run" outside landrun.
         run: |
           # We just populate the env vars for this step to make them viewable in the logs
-      - name: Generate lean-pr-testing app token
-        id: lean-pr-testing-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
-        with:
-          app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
-          owner: leanprover
-          repositories: lean4
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
         run: |
@@ -85,8 +77,9 @@ jobs:
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
-          # For PRs and pushes to this repository, we will use `nightly-testing` instead.
-          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing' || 'master' }}
+          # For PRs and pushes to this repository, we will use `nightly-testing-green` instead,
+          # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
+          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master' }}
           path: master-branch
 
       # Checkout the PR branch into a subdirectory
@@ -366,17 +359,6 @@ jobs:
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
 
-      - name: upload artifact containing contents of pr-branch
-        # temporary measure for debugging no-build failures
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        with:
-          name: mathlib4_artifact
-          include-hidden-files: true
-          # we exclude .git since there may be secrets in there
-          path: |
-            pr-branch/
-            !pr-branch/.git/
-
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: Upload cache to Azure
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -575,6 +557,17 @@ jobs:
             exit 1
           fi
 
+      # Generate a fresh token just before posting comments.
+      # GitHub App tokens expire after 1 hour, and the build can take longer than that.
+      - name: Generate lean-pr-testing app token
+        if: always()
+        id: lean-pr-testing-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
+          owner: leanprover
+          repositories: lean4
       # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
         if: always()

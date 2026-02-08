@@ -70,6 +70,9 @@ attribute [ext] SMul VAdd
 @[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
 
+recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
+recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
+
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
 attribute [to_additive (reorder := 1 2) SMul] Pow
 attribute [to_additive (reorder := 1 2)] HPow
