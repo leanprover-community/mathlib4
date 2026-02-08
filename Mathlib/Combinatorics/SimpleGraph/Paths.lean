@@ -502,10 +502,10 @@ theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
   | nil => simp_all
   | cons h' p =>
     simp only [getVert_cons_succ, tail_cons, isPath_copy, length_cons] at h₁ h₂
-    refine (cons_isCycle_iff p _).mpr ⟨h₁, fun hh ↦ ?_⟩
+    refine p.cons_isCycle_iff h' |>.mpr ⟨h₁, fun hh ↦ ?_⟩
     have : p.support[0] = p.support[p.length - 1] := by
       simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
-    have := isPath_iff_injective_get_support _ |>.mp h₁ this
+    have := p.isPath_iff_injective_get_support.mp h₁ this
     lia
 
 /-! ### Walk decompositions -/
