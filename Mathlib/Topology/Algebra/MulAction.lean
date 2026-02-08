@@ -271,9 +271,8 @@ instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ 
 instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)]
     {N : ι → Type*} [∀ i, TopologicalSpace (N i)] [∀ i, SMul (N i) (γ i)]
     [∀ i, ContinuousSMul (N i) (γ i)] : ContinuousSMul (∀ i, N i) (∀ i, γ i) :=
-  ⟨continuous_pi fun i ↦
-    (Continuous.smul ((continuous_apply i).comp (Continuous.fst continuous_id'))
-      ((continuous_apply i).comp (Continuous.snd continuous_id')))⟩
+  ⟨continuous_pi fun i ↦ ((continuous_apply i).comp continuous_id'.fst).smul 
+    ((continuous_apply i).comp continuous_id'.snd)⟩
 
 end Main
 
