@@ -326,13 +326,22 @@ jobs:
       if: steps.check_branch.outputs.result == 'false'
       run: |
         sudo rm -rf -- *
+    # Regenerate the app token just before use.
+    # GitHub App tokens expire after 1 hour, and the preceding steps can take longer than that.
+    - name: Regenerate app token for Mathlib4 checkout
+      if: steps.check_branch.outputs.result == 'false'
+      id: app-token-2
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
     - name: Checkout Mathlib4 repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       if: steps.check_branch.outputs.result == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
         fetch-depth: 0 # checkout all branches
-        token: ${{ steps.app-token.outputs.token }}
+        token: ${{ steps.app-token-2.outputs.token }}
 
     - name: Attempt automatic PR creation
       id: auto_pr
@@ -342,7 +351,7 @@ jobs:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        GH_TOKEN: ${{ steps.app-token-2.outputs.token }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
       run: |
         echo "Current version: ${NIGHTLY}"
