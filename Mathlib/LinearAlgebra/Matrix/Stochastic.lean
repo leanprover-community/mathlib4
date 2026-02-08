@@ -250,7 +250,7 @@ lemma reindex_mem_rowStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M :
   exact reindex_mem_rowStochastic h
 
 /-- Reindexing a matrix preserves column-stochasticity. -/
-@[aesop safe apply, grind .]
+@[aesop safe apply]
 lemma reindex_mem_colStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
     {e₁ e₂ : n ≃ m} (hM : M ∈ colStochastic R n) : M.reindex e₁ e₂ ∈ colStochastic R m := by
   refine ⟨?_, ?_⟩
