@@ -39,7 +39,8 @@ Turing reducibility. This gives a concrete representation of degrees as equivale
 ## References
 
 * [Odifreddi1989] Odifreddi, Piergiorgio.
-  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers*, Vol. I.
+* [Odifreddi, Piergiorgio.
+  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers*, Vol. I.][Odifreddi1989] 
 
 ## Tags
 
