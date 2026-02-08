@@ -9,18 +9,10 @@ public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.Height.Basic
 
 /-!
-# Instances of AdmissibleAbsValues
+# Heights over number fields
 
-We provide instances of `Height.AdmissibleAbsValues` for
-
-* algebraic number fields.
-
-## TODO
-
-* Fields of rational functions in `n` variables.
-
-* Finite extensions of fields with `Height.AdmissibleAbsValues`.
-
+We provide an instance of `Height.AdmissibleAbsValues` for algebraic number fields
+and set up some API.
 -/
 
 @[expose] public section

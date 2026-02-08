@@ -41,17 +41,13 @@ def mersenne (p : ℕ) : ℕ :=
 theorem strictMono_mersenne : StrictMono mersenne := fun m n h ↦
   (Nat.sub_lt_sub_iff_right <| Nat.one_le_pow _ _ two_pos).2 <| by gcongr; norm_num1
 
-@[simp]
+@[simp, gcongr]
 theorem mersenne_lt_mersenne {p q : ℕ} : mersenne p < mersenne q ↔ p < q :=
   strictMono_mersenne.lt_iff_lt
 
-@[gcongr] protected alias ⟨_, GCongr.mersenne_lt_mersenne⟩ := mersenne_lt_mersenne
-
-@[simp]
+@[simp, gcongr]
 theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q :=
   strictMono_mersenne.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.mersenne_le_mersenne⟩ := mersenne_le_mersenne
 
 @[simp] theorem mersenne_zero : mersenne 0 = 0 := rfl
 

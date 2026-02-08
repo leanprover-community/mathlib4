@@ -237,7 +237,7 @@ variable (V G)
 
 /-- (implementation) The forgetful functor from bundled actions to the underlying objects.
 
-Use the `CategoryTheory.forget` API provided by the `HasForget` instance below,
+Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
 rather than using this directly.
 -/
 @[simps]
@@ -246,9 +246,6 @@ def forget : Action V G ⥤ V where
   map f := f.hom
 
 instance : (forget V G).Faithful where map_injective w := Hom.ext w
-
-instance [HasForget V] : HasForget (Action V G) where
-  forget := forget V G ⋙ HasForget.forget
 
 /-- The type of `V`-morphisms that can be lifted back to morphisms in the category `Action`. -/
 abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
@@ -274,7 +271,8 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
   id_apply := ConcreteCategory.id_apply (C := V)
   comp_apply _ _ := ConcreteCategory.comp_apply (C := V) _ _
 
-instance hasForgetToV [HasForget V] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance hasForgetToV {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] : HasForget₂ (Action V G) V where forget₂ := forget V G
 
 /-- The forgetful functor is intertwined by `functorCategoryEquivalence` with
 evaluation at `PUnit.star`. -/

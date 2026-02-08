@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.Data.Countable.Small
 
@@ -333,7 +333,8 @@ noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
-variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC]
 
 section
 

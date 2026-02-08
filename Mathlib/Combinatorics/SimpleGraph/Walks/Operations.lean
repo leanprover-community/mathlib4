@@ -566,6 +566,16 @@ lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
+lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [take] at h ⊢
+  | succ n ih =>
+    cases p
+    · simp [take]
+    rw [length_cons, Nat.add_le_add_iff_right] at h
+    simp [take, ih h]
+
 lemma darts_take (p : G.Walk u v) (n : ℕ) : (p.take n).darts = p.darts.take n := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
@@ -591,6 +601,10 @@ def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
+
+lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    (p.drop n).Nil := by
+  rw [nil_iff_length_eq, drop_length, Nat.sub_eq_zero_of_le h]
 
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
@@ -675,6 +689,16 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     (p.copy hu hv).Nil = p.Nil := by
   subst_vars
   rfl
+
+lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) :
+    p = Walk.nil.copy rfl h.eq := by
+  have := h.eq
+  subst this
+  simp [nil_iff_eq_nil.mp h]
+
+lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
+  (nil_drop_of_length_le h).eq_copy_nil
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
