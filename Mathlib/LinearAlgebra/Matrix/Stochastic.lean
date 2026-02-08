@@ -241,6 +241,7 @@ lemma reindex_mem_rowStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Mat
     exact nonneg_of_mem_rowStochastic hM
   · simp [submatrix_mulVec_equiv, hM.2]
 
+/-- Reindexing a matrix preserves row-stochasticity. -/
 @[grind =]
 lemma reindex_mem_rowStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
     {e₁ e₂ : n ≃ m} : M.reindex e₁ e₂ ∈ rowStochastic R m ↔ M ∈ rowStochastic R n := by
@@ -265,6 +266,7 @@ lemma reindex_mem_colStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Mat
     rw [this]
     exact sum_col_of_mem_colStochastic hM (e₂.symm j)
 
+/-- Reindexing a matrix preserves column-stochasticity. -/
 @[grind =]
 lemma reindex_mem_colStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
     {e₁ e₂ : n ≃ m} : M.reindex e₁ e₂ ∈ colStochastic R m ↔ M ∈ colStochastic R n := by
