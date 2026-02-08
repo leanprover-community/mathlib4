@@ -38,6 +38,8 @@ This concept is used to give an equivalent definition of immersions and submersi
 ## TODO
 * `ContinuousLinearEquiv.HasBoundedRightInverse.prodMap`: having a continuous right inverse
   is closed under taking products
+* If `E` and `F` are Banach and `f : E → F` is surject and Fredholm,
+  `f` has a continuous right inverse.
 * is "split epimorphism/split surjection" a better term?
 
 -/
@@ -88,19 +90,18 @@ lemma of_isInvertible (hf : IsInvertible f) : f.HasBoundedRightInverse := by
   obtain ⟨e, rfl⟩ := hf
   exact e.hasBoundedRightInverse
 
--- FUTURE (once mathlib has a notion of Fredholm operators):
--- If `E` and `F` are Banach and `f : E → F` is Fredholm, then `f` has a continuous right inverse.
-
 /-- If `f` and `g` split, then so does `f × g`. -/
 lemma prodMap {g : E' →L[R] F'} (hf : f.HasBoundedRightInverse) (hg : g.HasBoundedRightInverse) :
     (f.prodMap g).HasBoundedRightInverse := by
-  sorry -- left for Samantha
+  obtain ⟨finv, hfinv⟩ := hf
+  obtain ⟨ginv, hginv⟩ := hg
+  use finv.prodMap ginv
+  simp [hfinv, hginv]
 
 variable [TopologicalSpace G] [AddCommMonoid G] [Module R G]
 
 lemma comp {g : F →L[R] G} (hg : g.HasBoundedRightInverse) (hf : f.HasBoundedRightInverse) :
     (g.comp f).HasBoundedRightInverse := by
-  -- TODO: sorry for Samantha
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
@@ -109,11 +110,8 @@ lemma comp {g : F →L[R] G} (hg : g.HasBoundedRightInverse) (hf : f.HasBoundedR
 
 lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasBoundedRightInverse) :
     g.HasBoundedRightInverse := by
-  -- TODO: sorry for Samantha
   obtain ⟨fginv, hfginv⟩ := hfg
-  refine ⟨f.comp fginv, fun y ↦ ?_⟩
-  simp only [coe_comp', Function.comp_apply]
-  exact hfginv y
+  exact ⟨f.comp fginv, fun y ↦ by simpa using hfginv y⟩
 
 lemma compCLE_left {f₀ : F' ≃L[R] E} (hf : f.HasBoundedRightInverse) :
     (f.comp f₀.toContinuousLinearMap).HasBoundedRightInverse :=
@@ -150,7 +148,7 @@ lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional
   -- A surjective linear map has a linear inverse. It is continuous because its domain is.
   obtain ⟨g, hg⟩ :=
     f.toLinearMap.exists_rightInverse_of_surjective (f.range_eq_top_of_surjective hf)
-  exact ⟨⟨g, LinearMap.continuous_of_finiteDimensional _⟩, fun x ↦ congr($hg x)⟩
+  exact ⟨⟨g, g.continuous_of_finiteDimensional⟩, fun x ↦ congr($hg x)⟩
 
 end NontriviallyNormedField
 
