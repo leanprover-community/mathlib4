@@ -160,9 +160,14 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
   simp [isSheafFor_top]
 
+/-- A presheaf is a sheaf after composiing with a universe lift if and only if it is a sheaf. -/
+@[simp]
+theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ IsSheaf J P :=
+  (isSheaf_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
+
 /-- The composition of a sheaf with a ULift functor is still a sheaf. -/
-theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) :=
-  isSheaf_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl) h
+theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) := by
+  rwa [isSheaf_comp_uliftFunctor_iff]
 
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve

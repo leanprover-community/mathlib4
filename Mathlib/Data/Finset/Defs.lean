@@ -127,6 +127,8 @@ instance : SetLike (Finset α) α where
   coe s := {a | a ∈ s}
   coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
+instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
+
 /-- Convert a finset to a set in the natural way. -/
 @[deprecated SetLike.coe (since := "2025-10-22")]
 abbrev toSet (s : Finset α) : Set α := s
@@ -262,11 +264,9 @@ theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s
 theorem subset_iff {s₁ s₂ : Finset α} : s₁ ⊆ s₂ ↔ ∀ ⦃x⦄, x ∈ s₁ → x ∈ s₂ :=
   Iff.rfl
 
-@[norm_cast]
+@[norm_cast, gcongr]
 theorem coe_subset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊆ s₂ ↔ s₁ ⊆ s₂ :=
   Iff.rfl
-
-@[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset
 
 @[simp]
 theorem val_le_iff {s₁ s₂ : Finset α} : s₁.1 ≤ s₂.1 ↔ s₁ ⊆ s₂ :=
