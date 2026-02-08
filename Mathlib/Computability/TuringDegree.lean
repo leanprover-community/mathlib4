@@ -33,9 +33,9 @@ equivalence relation, and defines Turing degrees as the quotient under this rela
 
 ## References
 
-* [Odifreddi1989] Odifreddi, Piergiorgio.
 * [Odifreddi, Piergiorgio.
-  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers*, Vol. I.][Odifreddi1989]
+  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers*, Vol. I.]
+  [Odifreddi1989]
 
 ## Tags
 
