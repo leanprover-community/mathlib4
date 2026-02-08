@@ -211,7 +211,7 @@ variable [Category.{v₄} D]
     A → B
   U ↓   ↓ V
     C → D
-      R
+      L
 ```
 
 where `U` has a right adjoint, `A` has coreflexive equalizers and `V` has a right adjoint such that
@@ -234,7 +234,7 @@ lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C
     A → B
   U ↓   ↓ V
     C → D
-      R
+      L
 ```
 
 where `U` has a right adjoint, `A` has reflexive equalizers and `V` is comonadic.

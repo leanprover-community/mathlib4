@@ -132,7 +132,7 @@ variable [HasPullbacks C]
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
 but we reuse all the names from `SemilatticeInf` because they will be used to construct
-`SemilatticeInf (subobject A)` shortly.
+`SemilatticeInf (Subobject A)` shortly.
 -/
 @[simps]
 def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
@@ -361,6 +361,16 @@ instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf_le_left := inf_le_left
   inf_le_right := inf_le_right
   le_inf := le_inf
+
+@[reassoc]
+lemma inf_comp_left {A : C} (f g : Subobject A) :
+   (ofLE (f ⊓ g) f (by simp)) ≫ f.arrow = (f ⊓ g).arrow :=
+  ofLE_arrow (inf_le_left f g)
+
+@[reassoc]
+lemma inf_comp_right {A : C} (f g : Subobject A) :
+   (ofLE (f ⊓ g) g (by simp)) ≫ g.arrow = (f ⊓ g).arrow :=
+  ofLE_arrow (inf_le_right f g)
 
 theorem factors_left_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (h : (X ⊓ Y).Factors f) : X.Factors f :=

@@ -815,13 +815,15 @@ instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] :
     DenselyOrdered (WithBot α) :=
   denselyOrdered_iff.mpr inferInstance
 
-instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
-    IsTrichotomous (WithBot α) (· < ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
+instance trichotomous.lt [Preorder α] [@Std.Trichotomous α (· < ·)] :
+    @Std.Trichotomous (WithBot α) (· < ·) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap fun {x y} ↦ by
+    cases x <;> cases y <;> simp [trichotomous]
 
-instance _root_.WithTop.trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
-    IsTrichotomous (WithTop α) (· < ·) where
-  trichotomous x y := by cases x <;> cases y <;> simp [trichotomous]
+instance _root_.WithTop.trichotomous.lt [Preorder α] [@Std.Trichotomous α (· < ·)] :
+    @Std.Trichotomous (WithTop α) (· < ·) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap fun {x y} ↦ by
+    cases x <;> cases y <;> simp [trichotomous]
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedLT`, remove this.
 instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
@@ -831,13 +833,13 @@ instance IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
 instance _root_.WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] :
   IsWellOrder (WithTop α) (· < ·) where
 
-instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
-    IsTrichotomous (WithBot α) (· > ·) :=
-  have : IsTrichotomous α (· < ·) := .swap _; .swap _
+instance trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
+    @Std.Trichotomous (WithBot α) (· > ·) :=
+  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
 
-instance _root_.WithTop.trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
-    IsTrichotomous (WithTop α) (· > ·) :=
-  have : IsTrichotomous α (· < ·) := .swap _; .swap _
+instance _root_.WithTop.trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
+    @Std.Trichotomous (WithTop α) (· > ·) :=
+  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
 instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
