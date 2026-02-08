@@ -767,27 +767,6 @@ theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
 theorem map.of {x} : map f (of x) = of (f x) :=
   rfl
 
-/-- If `α` and `β` are arbitrary types and there is a surjection between them,
-then the induced map on their free groups is also surjective. -/
-@[to_additive /-- If `α` and `β` are arbitrary types and there is a surjection between them,
-then the induced map on their additive free groups is also surjective. -/]
-theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
-  intro x
-  induction x using FreeGroup.induction_on with
-  | C1 =>
-    use 1
-    rfl
-  | of b =>
-    obtain ⟨a, ha⟩ := hf b
-    exact ⟨of a, by simp [ha]⟩
-  | inv_of b hb =>
-    obtain ⟨a, ha⟩ := hb
-    exact ⟨a⁻¹, by simp [ha]⟩
-  | mul b c hb hc =>
-    obtain ⟨a, ha⟩ := hb
-    obtain ⟨d, hd⟩ := hc
-    exact ⟨a * d, by simp [ha, hd]⟩
-
 @[to_additive]
 theorem map.unique (g : FreeGroup α →* FreeGroup β)
     (hg : ∀ x, g (FreeGroup.of x) = FreeGroup.of (f x)) :
@@ -802,8 +781,19 @@ theorem map.unique (g : FreeGroup α →* FreeGroup β)
           FreeGroup.map f (FreeGroup.of x * FreeGroup.mk t) by simp [g.map_mul, hg, ih])
 
 @[to_additive]
-theorem map_eq_lift : map f x = lift (of ∘ f) x :=
-  Eq.symm <| map.unique _ fun x => by simp
+theorem map_eq_lift : map f = lift (of ∘ f) := by
+  ext; simp
+
+@[to_additive]
+theorem range_map : (map f).range = Subgroup.closure (of '' Set.range f) := by
+  rw [map_eq_lift, range_lift_eq_closure, Set.range_comp]
+
+/-- If `α` and `β` are arbitrary types and there is a surjection between them,
+then the induced map on their free groups is also surjective. -/
+@[to_additive /-- If `α` and `β` are arbitrary types and there is a surjection between them,
+then the induced map on their additive free groups is also surjective. -/]
+theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := by
+  rw [← MonoidHom.range_eq_top, range_map, hf.range_eq, Set.image_univ, closure_range_of]
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
