@@ -171,7 +171,7 @@ instance [Functor.IsContinuous.{t} F J K] :
 lemma isContinuous_toGrothendieck_of_pullbacksPreservedBy (J : Precoverage C)
     (K : Precoverage D) [J.IsStableUnderBaseChange] [J.HasPullbacks] [K.IsStableUnderBaseChange]
     [K.HasPullbacks] [J.PullbacksPreservedBy F] (h : J ≤ K.comap F) :
-    F.IsContinuous J.toGrothendieck K.toGrothendieck where
+    Functor.IsContinuous.{w} F J.toGrothendieck K.toGrothendieck where
   op_comp_isSheaf_of_types := fun ⟨G, H⟩ ↦ by
     rw [isSheaf_iff_isSheaf_of_type] at H
     rw [← Precoverage.toGrothendieck_toCoverage, Presieve.isSheaf_coverage] at H ⊢
