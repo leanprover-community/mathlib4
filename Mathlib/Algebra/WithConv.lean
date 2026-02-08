@@ -78,6 +78,7 @@ instance [Unique A] : Unique (WithConv A) := (WithConv.equiv A).unique
 instance [DecidableEq A] : DecidableEq (WithConv A) := (WithConv.equiv A).decidableEq
 instance [AddMonoid A] : AddMonoid (WithConv A) := (WithConv.equiv A).addMonoid
 instance [AddCommMonoid A] : AddCommMonoid (WithConv A) := (WithConv.equiv A).addCommMonoid
+instance [AddGroup A] : AddGroup (WithConv A) := (WithConv.equiv A).addGroup
 instance [AddCommGroup A] : AddCommGroup (WithConv A) := (WithConv.equiv A).addCommGroup
 @[to_additive] instance [SMul R A] : SMul R (WithConv A) := (WithConv.equiv A).smul R
 @[to_additive] instance [Monoid R] [MulAction R A] : MulAction R (WithConv A) :=
@@ -97,15 +98,15 @@ protected def congr (f : A ≃ B) : WithConv A ≃ WithConv B :=
 lemma symm_congr_apply (f : A ≃ B) (x : WithConv B) :
     (WithConv.congr f).symm x = toConv (f.symm x.ofConv) := by simp
 
-section AddCommGroup
-variable [AddCommGroup A]
+section AddGroup
+variable [AddGroup A]
 
 @[simp] lemma toConv_sub (x y : A) : toConv (x - y) = toConv x - toConv y := rfl
 @[simp] lemma ofConv_sub (x y : WithConv A) : ofConv (x - y) = ofConv x - ofConv y := rfl
 @[simp] lemma ofConv_neg (x : WithConv A) : ofConv (-x) = -ofConv x := rfl
 @[simp] lemma toConv_neg (x : A) : toConv (-x) = -toConv x := rfl
 
-end AddCommGroup
+end AddGroup
 
 @[simp] lemma ofConv_smul [SMul R A] (c : R) (x : WithConv A) : ofConv (c • x) = c • ofConv x := rfl
 @[simp] lemma toConv_smul [SMul R A] (c : R) (x : A) : toConv (c • x) = c • toConv x := rfl
