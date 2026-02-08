@@ -185,44 +185,27 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 namespace Submodule
 
 variable (M) in
-/-- The canonical inclusion from `I ^ a • M ⧸ I ^ b • (I ^ a • M)` to `M ⧸ I ^ c • M`
-when `c = a + b`. -/
-def powSmulQuotInclusion {a b c : ℕ} (h : c = a + b) := liftQ (I ^ b •
-  ⊤ : Submodule R ↥(I ^ a • (⊤ : Submodule R M))) ((mkQ (I ^ c • ⊤)).comp <| topEquiv.comp <|
-    inclusion (le_top (a := I ^ a • (⊤ : Submodule R M)))) (by
-      suffices ∀ r ∈ I ^ b, ∀ t ∈ I ^ a • ⊤, r • t ∈ I ^ c • ⊤ by
-        simpa [smul_le, ← Quotient.mk_smul]
-      intro r r_in t t_in
-      rw [h, Nat.add_comm, pow_add, ← smul_smul]
-      exact smul_mem_smul r_in t_in)
+/-- The canonical inclusion from `I ^ a • N ⧸ I ^ b • (I ^ a • N)` to `M ⧸ I ^ c • N`
+when `c = b + a`. -/
+def powSmulQuotInclusion {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
+    ↑(I ^ a • N) ⧸ (I ^ b • ⊤ : Submodule R ↑(I ^ a • N)) →ₗ[R] M ⧸ (I ^ c • N) :=
+  mapQ _ _ (I ^ a • N).subtype <| by simp [← map_le_iff_le_comap, h, pow_add, mul_smul]
 
-theorem powSmulQuotInclusion_injective {a b c : ℕ} (h : c = a + b) :
-    Function.Injective (powSmulQuotInclusion I M h) := by
-  rw [powSmulQuotInclusion, ← LinearMap.ker_eq_bot, ker_liftQ, eq_bot_iff, SetLike.le_def]
-  simp only [mem_map, LinearMap.mem_ker, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, topEquiv_apply, coe_inclusion, mkQ_apply, Quotient.mk_eq_zero,
-    Subtype.exists, exists_and_left, mem_bot, forall_exists_index, and_imp]
-  intro _ _ _ _ h'
-  rwa [← h', Quotient.mk_eq_zero, mem_smul_top_iff, smul_smul, ← pow_add, Nat.add_comm, ← h]
+theorem powSmulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
+    Function.Injective (powSmulQuotInclusion I M h N) := by
+  rw [← LinearMap.ker_eq_bot]
+  simp [powSmulQuotInclusion, mapQ, ← le_bot_iff, ker_liftQ, LinearMap.ker_comp, pow_add, mul_smul,
+    map_le_iff_le_comap, ← Submodule.map_le_map_iff_of_injective (I ^ a • N).subtype_injective, h]
 
-theorem factorPow_powSmulQuotInclusion_comm {a b c d e : ℕ} (h : c = a + b) (h' : e = c + d) :
-    (factorPow I M (show c ≤ e by lia)) ∘ₗ (powSmulQuotInclusion I M (show e = a + (b + d) by lia))
-      = (powSmulQuotInclusion I M h) ∘ₗ
-        (factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d)) := by
-  ext; rfl
+theorem factorPow_powSmulQuotInclusion_comm {a b c d e : ℕ} (h : c = b + a) (h' : e = d + c) :
+    (factorPow I M (show c ≤ e by lia)) ∘ₗ
+      (powSmulQuotInclusion I M (show e = (b + d) + a by lia) ⊤)
+    = (powSmulQuotInclusion I M h ⊤) ∘ₗ
+      (factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d)) := by ext; rfl
 
-theorem powSmulQuotInclusion_range {a b c : ℕ} (h : c = a + b) :
-    (powSmulQuotInclusion I M h).range = I ^ a • ⊤ := by
-  have : Function.Surjective ((I ^ c • ⊤ : Submodule R M).mkQ ∘ₗ
-    topEquiv (R := R) (M := M) : ↥(⊤ : Submodule R M) →ₗ[R] M ⧸ I ^ c • ⊤) := by
-    simpa using mkQ_surjective (I ^ c • ⊤)
-  rw [powSmulQuotInclusion, range_liftQ, LinearMap.range_comp, LinearMap.range_comp,
-    range_inclusion, ← map_comp, ← map_comap_eq_of_surjective this (I ^ a • ⊤)]
-  congr 1; ext ⟨t, _⟩
-  simp only [mem_comap, subtype_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    topEquiv_apply]
-  rw [← mem_comap, ← sup_eq_right.mpr (pow_smul_top_le I M (show a ≤ c by lia)), ← comap_map_mkQ,
-    map_smul'', map_top, range_mkQ]
+theorem powSmulQuotInclusion_range {a b c : ℕ} (h : c = b + a) :
+    (powSmulQuotInclusion I M h ⊤).range = I ^ a • ⊤ := by
+  simp [powSmulQuotInclusion, mapQ, range_liftQ, LinearMap.range_comp]
 
 end Submodule
 
