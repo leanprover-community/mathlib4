@@ -20,6 +20,11 @@ universe u v
 variable {m : Type u → Type v} [Monad m] [Alternative m]
 variable {β : Type u}
 
+-- `Monad` and `Alternative` overlap on `Applicative`.
+-- Batteries provides `AlternativeMonad` to resolve this, but given that this file is early in the
+-- hierarchy and intended to extend `Lean.LocalContext`, we rely on core's design instead.
+set_option linter.overlappingInstances false
+
 /-- Return the result of `f` on the first local declaration on which `f` succeeds. -/
 @[specialize] def firstDeclM (lctx : LocalContext) (f : LocalDecl → m β) : m β :=
   do match (← lctx.findDeclM? (optional ∘ f)) with
