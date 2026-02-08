@@ -12,7 +12,7 @@ public import Mathlib.Computability.RecursiveIn
 import Aesop
 
 /-!
-# Turing Reducibility and Turing Degrees
+# Turing degrees
 
 This file defines Turing reducibility and equivalence, proves that Turing equivalence is an
 equivalence relation, and defines Turing degrees as the quotient under this relation.
