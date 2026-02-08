@@ -125,6 +125,7 @@ section Pullback
 
 variable {X T} {S : X → Type*} (F : Π x : X, T x → S x) (P : Π ⦃U : Opens X⦄, (Π x : U, S x) → Prop)
 
+/-- The pullback of a predicate. -/
 def Predicate.Pullback ⦃U : Opens X⦄ (s : Π x : U, T x) : Prop := P (F _ <| s ·)
 
 /-- The pullback of a prelocal predicate. -/
