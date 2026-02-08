@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+
 import Mathlib.Geometry.Manifold.SmoothApprox
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 
