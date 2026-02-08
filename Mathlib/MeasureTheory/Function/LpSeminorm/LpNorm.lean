@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Tactic.Positivity.Finset
 
 /-!
@@ -253,8 +254,8 @@ lemma lpNorm_smul_measure_of_ne_top (hp : p ≠ ∞) {f : α → E} (c : ℝ≥0
     simpa [hc] using h.smul_measure c⁻¹]
   simp
 
-@[simp] lemma lpNorm_conj {K : Type*} [RCLike K] [SecondCountableTopology K] (f : α → K) (p : ℝ≥0∞)
-    (μ : Measure α) : lpNorm (conj f) p μ = lpNorm f p μ := by
+@[simp] lemma lpNorm_conj {K : Type*} [RCLike K] (f : α → K) (p : ℝ≥0∞) (μ : Measure α) :
+    lpNorm (conj f) p μ = lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · rw [← lpNorm_norm hf, ← lpNorm_norm]
     · simp
