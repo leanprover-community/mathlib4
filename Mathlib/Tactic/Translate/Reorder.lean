@@ -265,8 +265,11 @@ attribute [nolint docBlame] reorderPart
 
 /--
 `(reorder := ...)` reorders the arguments/hypotheses in the generated declaration.
-It uses cycle notation. This is used in `to_dual` to swap the arguments in
-`≤`, `<` and `⟶`, and it is used in `to_additive` to translate from `a ^ n` to `n • a`.
+This is used in `to_dual` to swap the arguments in `≤`, `<` and `⟶`,
+and it is used in `to_additive` to translate from `a ^ n` to `n • a`.
+It uses disjoint cycle notation for the permutation. For reordering arguments of an argument `a`,
+it uses the notation `a (...)` where `...` can be any reorder.
+
 For example:
 - `(reorder := α β, 5 6)` swaps the arguments `α` and `β` with each other and the fifth and
   the sixth argument.
@@ -302,7 +305,7 @@ def elabArgStx (stx : TSyntax [`ident, `num]) (argNames : Array Name) (fvars : A
 partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name)
     (args : Array Expr) (head : MessageData) : MetaM Reorder :=
   match stx with
-  | `(reorder| $[$parts],*) => do
+  | `(reorder| $[$parts],*) => withRef stx do
     let mut perm := []
     let mut argReorders := #[]
     for part in parts do
@@ -313,11 +316,8 @@ partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name
         perm := ⟨cycle, h⟩ :: perm
       else if argReorder?.isNone then
         throwErrorAt cycleStx[0] "\
-          invalid cycle `{cycleStx[0]}`, a cycle must have at least 2 elements.\n\
-          `(reorder := ...)` uses cycle notation to specify a permutation.\n\
-          For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other \
-          and the fifth and the sixth argument and `(reorder := 3 4 5)` will move \
-          the fifth argument before the third argument."
+          Invalid cycle `{cycleStx[0]}`, a cycle must have at least 2 elements.\n\
+          See the docstring of `reorder` for how to specify reorders."
       if let some argReorder := argReorder? then
         for arg in cycle do
           let reorder ←
@@ -330,8 +330,9 @@ partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name
     -- Check that the cycles are disjoint
     _ ← perm.iter.flatMap (·.1.iter) |>.foldM (init := ({} : Std.HashSet Nat)) fun s n ↦ do
       let (contains, s) := s.containsThenInsert n
-      if contains then throwError "(reorder := ...) uses disjoint cycle notation. \
-        Please remove the duplicate entries"
+      if contains then throwError
+        "Please remove the duplicate entries from the disjoint cycle representation.\n\
+        See the docstring of `reorder` for how to specify reorders."
       return s
     argReorders := argReorders.qsort (·.1 < ·.1)
     -- check that the `argReorders` aren't duplicated.
@@ -339,7 +340,7 @@ partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name
       let arg₀ := argReorders[i]; let arg₁ := argReorders[i + 1]
       if arg₀.1 == arg₁.1 then
         throwError "The reorder within argument {arg₀.1 + 1} has been set to both \
-          {arg₀.2.toString} and {arg₁.2.toString}. Please only specify it once."
+          `{arg₀.2.toString}` and `{arg₁.2.toString}`. Please specify it only once."
     return { perm, argReorders }
   | _ => throwUnsupportedSyntax
 
