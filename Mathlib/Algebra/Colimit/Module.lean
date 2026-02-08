@@ -42,12 +42,11 @@ namespace Module
 alias DirectedSystem.map_self := DirectedSystem.map_self'
 alias DirectedSystem.map_map := DirectedSystem.map_map'
 
-variable [DecidableEq ι]
 variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)] (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- The relation on the direct sum that generates the additive congruence that defines the
 colimit as a quotient. -/
-inductive DirectLimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
+inductive DirectLimit.Eqv [DecidableEq ι] : DirectSum ι G → DirectSum ι G → Prop
   | of_map {i j} (h : i ≤ j) (x : G i) :
     Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
 
@@ -59,6 +58,8 @@ variable (G)
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
 def DirectLimit [DecidableEq ι] : Type _ := (DirectLimit.moduleCon f).Quotient
+
+variable [DecidableEq ι]
 
 namespace DirectLimit
 
