@@ -408,7 +408,7 @@ def freeCommRingPUnitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X
   (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.pUnitAlgEquiv ℤ).toRingEquiv
 
 @[deprecated (since := "2026-02-08")]
-alias freeCommRingPunitEquivPolynomialInt := freeCommRingPUnitEquivPolynomialInt
+noncomputable alias freeCommRingPunitEquivPolynomialInt := freeCommRingPUnitEquivPolynomialInt
 
 open FreeRing
 
@@ -421,4 +421,4 @@ def freeRingPUnitEquivPolynomialInt : FreeRing PUnit.{u + 1} ≃+* ℤ[X] :=
   RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPUnitEquivPolynomialInt
 
 @[deprecated (since := "2026-02-08")]
-alias freeRingPunitEquivPolynomialInt := freeRingPUnitEquivPolynomialInt
+noncomputable alias freeRingPunitEquivPolynomialInt := freeRingPUnitEquivPolynomialInt
