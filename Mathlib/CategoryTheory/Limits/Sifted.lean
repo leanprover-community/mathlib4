@@ -185,7 +185,7 @@ instance colim_preservesTerminal_of_isSifted :
   apply (_ : ⊤_ (Type u) ≅ PUnit.{u + 1}).trans
   · apply_rules [(Types.colimitConstPUnitIsoPUnit C).symm.trans, HasColimit.isoOfNatIso,
       IsTerminal.uniqueUpToIso _ terminalIsTerminal, evaluationJointlyReflectsLimits]
-    exact fun _ ↦ isLimitChangeEmptyCone _ Types.isTerminalPunit _ <| Iso.refl _
+    exact fun _ ↦ isLimitChangeEmptyCone _ Types.isTerminalPUnit _ <| Iso.refl _
   · exact Types.isTerminalEquivIsoPUnit (⊤_ (Type u)) |>.toFun terminalIsTerminal
 
 instance colim_preservesLimitsOfShape_pempty_of_isSifted :
@@ -238,7 +238,7 @@ lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
     exact Types.terminalIso
   · apply_rules [IsTerminal.uniqueUpToIso _ terminalIsTerminal, evaluationJointlyReflectsLimits]
     intro _
-    exact isLimitChangeEmptyCone _ Types.isTerminalPunit _ <| Iso.refl _
+    exact isLimitChangeEmptyCone _ Types.isTerminalPUnit _ <| Iso.refl _
 
 /-- If the `colim` functor `(C ⥤ Type) ⥤ Type` preserves finite products, then `C` is sifted. -/
 theorem of_colim_preservesFiniteProducts
