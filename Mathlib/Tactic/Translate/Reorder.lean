@@ -53,7 +53,8 @@ open Lean Meta Elab
 structure Reorder where
   /-- The list of disjoint cycles that represents the permutation. -/
   perm : List {l : List Nat // 2 ≤ l.length} := []
-  /-- It is assumed to be sorted. -/
+  /-- The recursive reorders for reordering arguments of arguments.
+  This array is assumed to be sorted by the argument index (the first element in the pair). -/
   argReorders : Array (Nat × Reorder) := #[]
   deriving Inhabited
 
@@ -98,10 +99,11 @@ def Reorder.range (r : Reorder) : Nat :=
   if r.isEmpty then 0 else
   1 + r.argReorders.foldl (max · ·.1) (r.perm.iter.flatMap (·.1.iter) |>.fold max 0)
 
-/-- Check whether the permutations are equal by running both on `(0...=max).toArray`. -/
+/-- Two `Reorder`s are considered equal if they act on expressions in the same way. -/
 partial def Reorder.beq (r₁ r₂ : Reorder) : Bool :=
   r₁.range == r₂.range &&
-    r₁.permute! (0...r₁.range).toArray == r₂.permute! (0...r₁.range).toArray &&
+    let rangeArr := (0...r₁.range).toArray;
+    r₁.permute! rangeArr == r₂.permute! rangeArr &&
       have : BEq Reorder := ⟨Reorder.beq⟩
       r₁.argReorders == r₂.argReorders
 
@@ -118,40 +120,64 @@ decreasing_by
 instance : ToString Reorder := ⟨fun x ↦ x.toString⟩
 instance : ToMessageData Reorder := ⟨fun x ↦ x.toString⟩
 
-/-- Reorder the arguments of a function type using the given `Reorder`. -/
-partial def reorderForall (reorder : Reorder) (src : Expr) : MetaM Expr := do
-  forallBoundedTelescope src reorder.range fun xs e => do
-  unless xs.size = reorder.range do
-    throwError "the permutation (reorder := {reorder}) is out of bounds, \
-      the type{indentExpr src}\nhas only {xs.size} arguments"
-  -- Recursively reorder the types of the free variables.
-  let mut lctx ← getLCtx
+/-! ### Reordering an expression -/
+
+/-- Apply the given binder infos to the binders in expression `e`. -/
+private def fixBinderInfos (bis : List BinderInfo) (e : Expr) : Expr :=
+  match bis, e with
+  | bi :: bis, .forallE n d b _ => .forallE n d (fixBinderInfos bis b) bi
+  | bi :: bis, .lam n d b _ => .lam n d (fixBinderInfos bis b) bi
+  | _, _ => e
+
+/-
+In the implementation of `reorderForall` and `reorderLambda` we use metavariables.
+To reorder the arguments in one, we assign it to a reordered new metavariable.
+This trick lets us avoid traversing the expression manually when handling recurive reorderings.
+Instead, we implicitly rely on `instantiateMVars`.
+-/
+mutual
+
+/-- Reorder the given metavariables using the given `Reorder`. -/
+private partial def reorderMVars (mvars : Array Expr) (reorder : Reorder) : MetaM (Array Expr) := do
+  let mut mvars := mvars
   for (arg, argReorder) in reorder.argReorders do
-    let x := xs[arg]!.fvarId!
-    let type ← x.getType
-    let type ← reorderForall argReorder type
-    lctx := lctx.modifyLocalDecl x (·.setType type)
-  return lctx.mkForall (reorder.permute! xs) e
+    let mvarId := mvars[arg]!.mvarId!
+    let decl ← mvarId.getDecl
+    let mvarId' ← mkFreshExprMVar (← reorderForall argReorder decl.type) (userName := decl.userName)
+    mvarId.assign (← reorderLambda argReorder.reverse mvarId')
+    mvars := mvars.set! arg mvarId'
+  return reorder.permute! mvars
 
-/-- Reorder the arguments of a function using the given `Reorder`.
-
-Trick: in the implementation we use metavariables and assign/instantiate them,
-to avoid having to traverse the term manually to handle recurive reorderings. -/
-partial def reorderLambda (reorder : Reorder) (src : Expr) : MetaM Expr := do
-  let (xs, _, e) ← lambdaMetaTelescope src reorder.range
-  let (ys, _, _) ← forallMetaBoundedTelescope (← inferType e) (reorder.range - xs.size)
-  let e := mkAppN e ys
-  let mut xs := xs ++ ys
-  unless xs.size = reorder.range do
+/-- Reorder the arguments of a function type using the given `Reorder`. -/
+partial def reorderForall (reorder : Reorder) (e : Expr) : MetaM Expr := do
+  let (mvars, bis, e) ← forallMetaBoundedTelescope e reorder.range
+  unless mvars.size = reorder.range do
     throwError "the permutation (reorder := {reorder}) is out of bounds, \
-      the function{indentExpr src}\nhas only {xs.size} arguments"
-  -- Recursively reorder the metavariables.
-  for (n, argReorder) in reorder.argReorders do
-    let x := xs[n]!.mvarId!
-    let x' ← mkFreshExprMVar (← reorderForall argReorder (← x.getType))
-    x.assign (← reorderLambda argReorder.reverse x')
-    xs := xs.set! n x'
-  mkLambdaFVars (reorder.permute! xs) e
+      the type{indentExpr e}\nhas only {mvars.size} arguments"
+  let bis := reorder.permute! bis |>.toList
+  fixBinderInfos bis <$> mkForallFVars (← reorderMVars mvars reorder) e
+
+/-- Reorder the arguments of a function using the given `Reorder`. -/
+partial def reorderLambda (reorder : Reorder) (e : Expr) : MetaM Expr := do
+  let (mvars, bis, e) ← lambdaMetaTelescope e reorder.range
+  let (mvars', bis', _) ← forallMetaBoundedTelescope (← inferType e) (reorder.range - mvars.size)
+  let mut mvars := mvars ++ mvars'
+  unless mvars.size = reorder.range do
+    throwError "the permutation (reorder := {reorder}) is out of bounds, \
+      the function{indentExpr e}\nhas only {mvars.size} arguments"
+  let bis := reorder.permute! (bis ++ bis') |>.toList
+  fixBinderInfos bis <$> mkLambdaFVars (← reorderMVars mvars reorder) (mkAppN e mvars')
+
+end
+
+/-! ### Guessing the reorder given the reordered expression -/
+
+/-- Determine how many forall binders should be introduced to get a non-dependent conclusion. -/
+private def depForallDepth : Expr → Nat
+  | .forallE _ _ b _ =>
+    let d := depForallDepth b
+    if d == 0 && !b.hasLooseBVar 0 then 0 else d + 1
+  | _ => 0
 
 /-- Try to determine the value of the `(reorder := ...)` option that would be needed to translate
 type `e₁` to type `e₂`. If there is no good guess, default to `[]`.
@@ -182,7 +208,8 @@ partial def guessReorder (src tgt : Expr) : MetaM Reorder := withReducible do
   return { perm, argReorders }
 where
   /-- Decompose the permutation `map` into its disjoint cycle representation. -/
-  decomposePerm {n} (map : Vector (Option (Fin n)) n) := Id.run do
+  decomposePerm {n} (map : Vector (Option (Fin n)) n) :
+      List { l : List Nat // 2 ≤ l.length } := Id.run do
     let mut map := map
     let mut perm := []
     for h : i in 0...n do
@@ -199,12 +226,6 @@ where
         cycle := ⟨cycle.1 ++ [↑j], by grind⟩
       perm := cycle :: perm
     return perm
-  /-- Determine how many variables should be introduced to get a non-dependent conclusion. -/
-  depForallDepth : Expr → Nat
-    | .forallE _ _ b _ =>
-      let d := depForallDepth b
-      if d == 0 && !b.hasLooseBVar 0 then 0 else d + 1
-    | _ => 0
   /-- Determine for each `i : Fin n` to what `j : Fin n` it should get translated. -/
   visit (src tgt : Expr) {n : Nat} (map : Vector (Option (Fin n)) n) :
       ReaderT (Std.HashMap FVarId Nat × Std.HashMap FVarId Nat)
@@ -233,6 +254,15 @@ where
     | .lit _, .lit _ | .bvar _, .bvar _ | .sort _, .sort _ | .const .., .const .. => some map
     | _, _ => none
 
+/-! ### Syntax for specifying a reorder -/
+
+-- Note: We have to use `declare_syntax_cat` because the reorder syntax is recursive.
+/-- The syntax category for the reorder syntax. -/
+declare_syntax_cat translateReorder
+
+syntax reorderPart := (ident <|> num)+ (" (" translateReorder ")")?
+attribute [nolint docBlame] reorderPart
+
 /--
 `(reorder := ...)` reorders the arguments/hypotheses in the generated declaration.
 It uses cycle notation. This is used in `to_dual` to swap the arguments in
@@ -245,13 +275,6 @@ For example:
 
 If the translated declaration already exists (i.e. when using `existing` or `self`), the reorder
 argument is automatically inferred using the function `guessReorder`. -/
-
-declare_syntax_cat translateReorder
-
-syntax reorderPart := (ident <|> num)+ (" (" translateReorder ")")?
-attribute [nolint docBlame] reorderPart
-
-@[inherit_doc Lean.Parser.Category.translateReorder]
 syntax (name := reorder) reorderPart,* : translateReorder
 
 /-- Elaborate syntax that refers to an argument of a declaration or hypothesis.
