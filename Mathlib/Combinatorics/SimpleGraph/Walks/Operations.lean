@@ -524,6 +524,13 @@ lemma drop_add_eq (p : G.Walk u v) (n m : ℕ) :
 lemma nil_drop_iff (p : G.Walk u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ n := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
 
+lemma drop_cons_eq (h : G.Adj u v) (p : G.Walk v w) (n : ℕ) (hn : n ≠ 0) :
+    (cons h p).drop n = (p.drop (n - 1)).copy (p.getVert_cons h hn).symm rfl := by
+  apply ext_support
+  obtain ⟨_, rfl⟩ := Nat.exists_add_one_eq.mpr (Nat.ne_zero_iff_zero_lt.mp hn)
+  conv_lhs => unfold drop
+  simp
+
 lemma darts_drop (p : G.Walk u v) (n : ℕ) : (p.drop n).darts = p.darts.drop n := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
 
@@ -575,6 +582,11 @@ lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     · simp [take]
     rw [length_cons, Nat.add_le_add_iff_right] at h
     simp [take, ih h]
+
+lemma take_cons_eq (h : G.Adj u v) (p : G.Walk v w) (n : ℕ) (hn : n ≠ 0) :
+    (cons h p).take n = cons h ((p.take <| n - 1).copy rfl (p.getVert_cons h hn).symm) := by
+  apply ext_support
+  grind [support_copy, take_support_eq_support_take_succ]
 
 lemma darts_take (p : G.Walk u v) (n : ℕ) : (p.take n).darts = p.darts.take n := by
   induction p generalizing n <;> cases n <;> simp [*, take]
