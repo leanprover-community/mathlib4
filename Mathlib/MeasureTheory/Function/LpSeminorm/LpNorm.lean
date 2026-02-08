@@ -31,21 +31,23 @@ lemma ofReal_lpNorm_eq_eLpNorm (hf : MemLp f p μ) : .ofReal (lpNorm f p μ) = e
   rw [lpNorm, ENNReal.ofReal_toReal hf.eLpNorm_ne_top]
 
 lemma lpNorm_eq_integral_norm_rpow_toReal (hp₀ : p ≠ 0) (hp : p ≠ ∞)
-    (hf : AEMeasurable (fun x ↦ ‖f x‖ₑ ^ p.toReal) μ) :
+    (hf : AEMeasurable (fun x ↦ ‖f x‖) μ) :
     lpNorm f p μ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
   rw [lpNorm, eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp, ← ENNReal.toReal_rpow,
-    ← integral_toReal hf]
+    ← integral_toReal]
   · simp [← ENNReal.toReal_rpow]
+  · simp_rw [← ofReal_norm]
+    fun_prop
   · exact .of_forall fun x ↦ ENNReal.rpow_lt_top_of_nonneg (by positivity) (by simp)
 
 lemma lpNorm_nnreal_eq_integral_norm_rpow {p : ℝ≥0} (hp : p ≠ 0)
-    (hf : AEMeasurable (fun x ↦ ‖f x‖ₑ ^ p.toReal) μ) :
+    (hf : AEMeasurable (fun x ↦ ‖f x‖) μ) :
     lpNorm f p μ = (∫ x, ‖f x‖ ^ (p : ℝ) ∂μ) ^ (p⁻¹ : ℝ) := by
   rw [lpNorm_eq_integral_norm_rpow_toReal (by positivity) (by simp) hf]; simp
 
-lemma lpNorm_one_eq_integral_norm (hf : AEMeasurable (fun x ↦ ‖f x‖ₑ) μ) :
+lemma lpNorm_one_eq_integral_norm (hf : AEMeasurable (fun x ↦ ‖f x‖) μ) :
     lpNorm f 1 μ = ∫ x, ‖f x‖ ∂μ := by
-  rw [lpNorm_eq_integral_norm_rpow_toReal one_ne_zero ENNReal.coe_ne_top (by simpa using hf)]
+  rw [lpNorm_eq_integral_norm_rpow_toReal one_ne_zero ENNReal.coe_ne_top hf]
   simp
 
 @[simp] lemma lpNorm_exponent_zero (f : α → E) : lpNorm f 0 μ = 0 := by simp [lpNorm]
