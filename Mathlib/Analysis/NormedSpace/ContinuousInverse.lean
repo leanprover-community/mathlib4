@@ -42,6 +42,8 @@ This concept is used to give an equivalent definition of immersions and submersi
 * Suppose `E` and `F` are Banach and `f : E → F` is Fredholm.
   If `f` is surjective, it has a continuous right inverse.
   If `f` is injective, it has a continuout left inverse.
+* `f` has a continuous left inverse if and only if it is injective, has closed range,
+  and its range admits a closed complement
 * Are "split monomorphism/split injection" resp. "split epimorphism/split surjection" better terms?
 
 -/
