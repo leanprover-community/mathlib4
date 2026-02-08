@@ -362,15 +362,14 @@ lemma HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall (hf : HasFPowerSeriesOnB
   exact hf.mono (subset_univ _)
 
 lemma hasFPowerSeriesWithinAt_nhds_iff (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) {U : Set E}
-    (hU : U ∈ nhds x) :
+    (hU : U ∈ 𝓝 x) :
     HasFPowerSeriesWithinAt f p U x ↔ HasFPowerSeriesAt f p x := by
   refine ⟨fun ⟨renn, r_le, r_pos, hs⟩ ↦ ?_,
     fun ⟨r, hr⟩ ↦ ⟨r, HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall hr⟩⟩
-  · have hzmem := mem_of_mem_nhds hU
-    rw [Metric.mem_nhds_iff] at hU
-    obtain ⟨r', hr', hball⟩ := hU
-    use min renn (Option.some ⟨r', by linarith⟩)
-    refine ⟨by aesop, by aesop, fun hy s ↦ hs (U := s) (y := _) (by aesop) (by aesop)⟩
+  rw [Metric.mem_nhds_iff] at hU
+  obtain ⟨r', hr', hball⟩ := hU
+  exact ⟨min renn (Option.some ⟨r', by linarith⟩),
+    by aesop, by aesop, fun hy s ↦ hs (U := s) (y := _) (by aesop) (by aesop)⟩
 
 lemma HasFPowerSeriesWithinAt.mono (hf : HasFPowerSeriesWithinAt f p s x) (h : t ⊆ s) :
     HasFPowerSeriesWithinAt f p t x := by
