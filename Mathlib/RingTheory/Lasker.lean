@@ -124,8 +124,8 @@ the associated primes of `I`. -/
 lemma IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff [DecidableEq (Submodule R M)]
     {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t)
     {p : Ideal R} :
-    p ∈ (fun J : Submodule R M ↦ radical (colon J .univ)) '' t ↔
-      IsPrime p ∧ ∃ x : M, p = radical (colon N {x}) := by
+    p ∈ (fun J : Submodule R M ↦ radical (J.colon .univ)) '' t ↔
+      IsPrime p ∧ ∃ x : M, p = radical (N.colon {x}) := by
   classical
   have h {x} q (hq : q ∈ t) :
       radical (colon q {x}) = if x ∈ q then ⊤ else radical (q.colon .univ) := by
