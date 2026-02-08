@@ -39,12 +39,14 @@ namespace CategoryTheory
 open Limits Category
 
 variable (C : Type*) [Category* C] {A B : Type*} [AddMonoid A] [AddMonoid B]
-  (φ : A →+ B) [HasShift C B]
+  (φ : A →+ B)
 
 /-- The category `PullbackShift C φ` is equipped with a shift such that for all `a`,
 the shift functor by `a` is `shiftFunctor C (φ a)`. -/
 @[nolint unusedArguments]
 def PullbackShift (_ : A →+ B) [HasShift C B] := C
+
+variable [HasShift C B]
 
 instance : Category (PullbackShift C φ) := by
   dsimp only [PullbackShift]
