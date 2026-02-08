@@ -39,9 +39,10 @@ This concept is used to give an equivalent definition of immersions and submersi
 
 ## TODO
 
-* If `E` and `F` are Banach and `f : E → F` is surject and Fredholm,
-  `f` has a continuous right inverse.
-* is "split epimorphism/split surjection" a better term?
+* Suppose `E` and `F` are Banach and `f : E → F` is Fredholm.
+  If `f` is surjective, it has a continuous right inverse.
+  If `f` is injective, it has a continuout left inverse.
+* Are "split monomorphism/split injection" resp. "split epimorphism/split surjection" better terms?
 
 -/
 
@@ -57,11 +58,113 @@ variable {R : Type*} [Semiring R] {E E' F F' G : Type*}
 
 noncomputable section
 
+/-- A continuous linear map admits a left inverse which is a continuous linear map itself. -/
+@[expose] protected def ContinuousLinearMap.HasBoundedLeftInverse (f : E →L[R] F) : Prop :=
+  ∃ g : F →L[R] E, LeftInverse g f
+
 /-- A continuous linear map admits a right inverse which is a continuous linear map itself. -/
 @[expose] protected def ContinuousLinearMap.HasBoundedRightInverse (f : E →L[R] F) : Prop :=
   ∃ g : F →L[R] E, RightInverse g f
 
-namespace ContinuousLinearMap.HasBoundedRightInverse
+namespace ContinuousLinearMap
+
+namespace HasBoundedLeftInverse
+
+variable {f : E →L[R] F}
+
+/-- Choice of left inverse for `f` -/
+def leftInverse (h : f.HasBoundedLeftInverse) : F →L[R] E := Classical.choose h
+
+lemma leftInverse_leftInverse (h : f.HasBoundedLeftInverse) : LeftInverse h.leftInverse f :=
+  Classical.choose_spec h
+
+lemma injective (h : f.HasBoundedLeftInverse) : Injective f :=
+  h.leftInverse_leftInverse.injective
+
+example (h : f.HasBoundedLeftInverse) (x : E) : h.leftInverse (f x) = x :=
+  h.leftInverse_leftInverse x
+
+lemma congr {g : E →L[R] F} (hf : f.HasBoundedLeftInverse) (hfg : g = f) :
+    g.HasBoundedLeftInverse :=
+  hfg ▸ hf
+
+/-- A continuous linear equivalence has a continuous left inverse. -/
+lemma _root_.ContinuousLinearEquiv.hasBoundedLeftInverse (f : E ≃L[R] F) :
+    f.toContinuousLinearMap.HasBoundedLeftInverse :=
+  ⟨f.symm, rightInverse_of_comp (by simp)⟩
+
+/-- An invertible continuous linear map has a continuous left inverse. -/
+lemma of_isInvertible (hf : IsInvertible f) : f.HasBoundedLeftInverse := by
+  obtain ⟨e, rfl⟩ := hf
+  exact e.hasBoundedLeftInverse
+
+/-- If `f` and `g` admit continuous left inverses, so does `f × g`. -/
+lemma prodMap {g : E' →L[R] F'} (hf : f.HasBoundedLeftInverse) (hg : g.HasBoundedLeftInverse) :
+    (f.prodMap g).HasBoundedLeftInverse := by
+  obtain ⟨finv, hfinv⟩ := hf
+  obtain ⟨ginv, hginv⟩ := hg
+  use finv.prodMap ginv
+  simp [hfinv, hginv]
+
+variable [TopologicalSpace G] [AddCommMonoid G] [Module R G]
+
+lemma comp {g : F →L[R] G} (hg : g.HasBoundedLeftInverse) (hf : f.HasBoundedLeftInverse) :
+    (g.comp f).HasBoundedLeftInverse := by
+  obtain ⟨finv, hfinv⟩ := hf
+  obtain ⟨ginv, hginv⟩ := hg
+  refine ⟨finv.comp ginv, fun x ↦ ?_⟩
+  simp only [coe_comp', Function.comp_apply]
+  rw [hginv, hfinv]
+
+lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasBoundedLeftInverse) :
+    f.HasBoundedLeftInverse := by
+  obtain ⟨fginv, hfginv⟩ := hfg
+  refine ⟨fginv.comp g, fun y ↦ ?_⟩
+  simp only [coe_comp', Function.comp_apply]
+  exact hfginv y
+
+lemma compCLE_left {f₀ : F' ≃L[R] E} (hf : f.HasBoundedLeftInverse) :
+    (f.comp f₀.toContinuousLinearMap).HasBoundedLeftInverse :=
+  hf.comp f₀.hasBoundedLeftInverse
+
+lemma compCLE_right {g : F ≃L[R] F'} (hf : f.HasBoundedLeftInverse) :
+    (g.toContinuousLinearMap.comp f).HasBoundedLeftInverse :=
+  g.hasBoundedLeftInverse.comp hf
+
+/-- `ContinuousLinearMap.inl` has a continuous left inverse. -/
+lemma continuousLinearMap_inl : (ContinuousLinearMap.inl R F G).HasBoundedLeftInverse := by
+  use ContinuousLinearMap.fst _ _ _
+  intro x
+  simp
+
+/-- `ContinuousLinearMap.inr` has a continuous left inverse. -/
+lemma continuousLinearMap_inr : (ContinuousLinearMap.inr R F G).HasBoundedLeftInverse := by
+  use ContinuousLinearMap.snd _ _ _
+  intro x
+  simp
+
+section NontriviallyNormedField
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
+  [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+  [T2Space F] {f : E →L[𝕜] F}
+
+/-- If `f : E → F` is injective and `E` is finite-dimensional,
+`f` has a continuous left inverse. -/
+lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
+    (hf : Injective f) :
+    f.HasBoundedLeftInverse := by
+  -- A surjective linear map has a linear inverse. It is continuous because its domain is.
+  obtain ⟨g, hg⟩ :=
+    f.toLinearMap.exists_leftInverse_of_injective (f.ker_eq_bot_of_injective hf)
+  exact ⟨⟨g, LinearMap.continuous_of_finiteDimensional _⟩, fun x ↦ congr($hg x)⟩
+
+end NontriviallyNormedField
+
+end HasBoundedLeftInverse
+
+namespace HasBoundedRightInverse
 
 variable {f : E →L[R] F}
 
@@ -153,6 +256,8 @@ lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional
 
 end NontriviallyNormedField
 
-end ContinuousLinearMap.HasBoundedRightInverse
+end HasBoundedRightInverse
+
+end ContinuousLinearMap
 
 end
