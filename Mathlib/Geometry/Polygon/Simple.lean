@@ -21,9 +21,10 @@ namespace Polygon
 variable {poly : Polygon P n}
 
 variable (R) in
-/-- A polygon is simple if non-adjacent edges are disjoint
+/-- A polygon is simple if it has nondegenerate edges, non-adjacent edges are disjoint,
 and adjacent edges meet only at their shared vertex. -/
 def IsSimple (poly : Polygon P n) : Prop :=
+  poly.HasNondegenerateEdges ∧
   (∀ i j : Fin n, i ≠ j → i ≠ j + 1 → j ≠ i + 1 →
     Disjoint (poly.edgeSet R i) (poly.edgeSet R j)) ∧
   (∀ i : Fin n,
@@ -31,14 +32,17 @@ def IsSimple (poly : Polygon P n) : Prop :=
 
 namespace IsSimple
 
+theorem hasNondegenerateEdges (h : poly.IsSimple R) : poly.HasNondegenerateEdges :=
+  h.1
+
 theorem nonadjacent_disjoint {i j : Fin n} (h : poly.IsSimple R)
     (hij : i ≠ j) (hi : i ≠ j + 1) (hj : j ≠ i + 1) :
     Disjoint (poly.edgeSet R i) (poly.edgeSet R j) :=
-  h.left i j hij hi hj
+  h.2.1 i j hij hi hj
 
 theorem adjacent_inter (h : poly.IsSimple R) (i : Fin n) :
     poly.edgeSet R i ∩ poly.edgeSet R (i + 1) = {poly (i + 1)} :=
-  h.right i
+  h.2.2 i
 
 end IsSimple
 
