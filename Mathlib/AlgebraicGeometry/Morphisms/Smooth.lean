@@ -113,6 +113,9 @@ instance smooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChan
 @[deprecated (since := "2026-02-09")]
 alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
 
+@[deprecated (since := "2026-02-09")]
+alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
+
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
