@@ -228,10 +228,10 @@ theorem abs_im_div_norm_le_one (z : ℂ) : |z.im / ‖z‖| ≤ 1 :=
   else by
     simp_rw [_root_.abs_div, abs_norm, div_le_iff₀ (norm_pos_iff.mpr hz), one_mul, abs_im_le_norm]
 
-theorem dist_eq (z w : ℂ) : dist z w = ‖z - w‖ := rfl
+theorem dist_eq (z w : ℂ) : dist z w = ‖z - w‖ := dist_eq_norm _ _
 
 theorem dist_eq_re_im (z w : ℂ) : dist z w = √((z.re - w.re) ^ 2 + (z.im - w.im) ^ 2) := by
-  rw [sq, sq]
+  rw [sq, sq, dist_eq]
   rfl
 
 @[simp]
@@ -288,9 +288,12 @@ noncomputable def cauSeqIm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_im f⟩
 
 theorem isCauSeq_norm {f : ℕ → ℂ} (hf : IsCauSeq (‖·‖) f) :
-    IsCauSeq abs ((‖·‖) ∘ f) := fun ε ε0 ↦
+    IsCauSeq abs ((‖·‖) ∘ f) := by
+  intro ε ε0
   let ⟨i, hi⟩ := hf ε ε0
-  ⟨i, fun j hj ↦  lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
+  refine ⟨i, fun j hj ↦ lt_of_le_of_lt (abs_norm_sub_norm_le _ _) ?_⟩
+  rw [← dist_eq_norm_neg_add, dist_eq_norm]
+  exact hi j hj
 
 /-- The limit of a Cauchy sequence of complex numbers. -/
 noncomputable def limAux (f : CauSeq ℂ (‖·‖)) : ℂ :=
@@ -347,10 +350,12 @@ theorem lim_conj (f : CauSeq ℂ (‖·‖)) : lim (cauSeqConj f) = conj (lim f)
 noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_norm f.2⟩
 
-theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ :=
-  lim_eq_of_equiv_const fun ε ε0 ↦
-    let ⟨i, hi⟩ := equiv_lim f ε ε0
-    ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
+theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ := by
+  apply lim_eq_of_equiv_const (fun ε ε0 ↦ ?_)
+  let ⟨i, hi⟩ := equiv_lim f ε ε0
+  refine ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) ?_⟩
+  rw [← dist_eq_norm_neg_add, dist_eq_norm]
+  exact hi j hj
 
 lemma ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : s ≠ 0 :=
   fun h ↦ (zero_re ▸ h ▸ hs).false

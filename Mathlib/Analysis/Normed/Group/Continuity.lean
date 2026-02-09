@@ -320,17 +320,24 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
     lim_z.cauchySeq.subseq_mem mem_𝓤
   set w : ℕ → E := z ∘ φ
   have hw : Tendsto w atTop (𝓝 a) := lim_z.comp φ_extr.tendsto_atTop
-  set v : ℕ → E := fun i => if i = 0 then w 0 else (w i)⁻¹ * w (i - 1)
+  set v : ℕ → E := fun i => if i = 0 then w 0 else (w (i - 1))⁻¹ * w i
   refine ⟨v, ?_, ?_, hn₀ _ (n₀.le_add_left _), ?_⟩
   · apply hw.congr (fun n ↦ ?_)
-
-
+    rw [Finset.prod_range_succ']
+    have : ∏ k ∈ range n, v (k + 1) = (v 0)⁻¹ * w n := by
+      apply prod_range_induction _ _ (by simp [v]) _ (fun k hk ↦ ?_)
+      simp only [↓reduceIte, Nat.add_eq_zero_iff, one_ne_zero, and_false, add_tsub_cancel_right, v]
+      group
+    simp [this]
   · rintro ⟨⟩
     · change w 0 ∈ s
       apply u_in
     · exact s.mul_mem (s.inv_mem (u_in _)) (u_in _)
   · intro l hl
     obtain ⟨k, rfl⟩ : ∃ k, l = k + 1 := Nat.exists_eq_succ_of_ne_zero hl.ne'
+    rw [← norm_inv']
+    simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, add_tsub_cancel_right,
+      mul_inv_rev, inv_inv, v]
     apply hφ
 
 @[to_additive]
@@ -357,9 +364,11 @@ lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsNE (a : E) : Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) :=
-  (tendsto_norm_div_self a).inf <|
-    tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
+theorem tendsto_norm_div_self_nhdsNE (a : E) :
+    Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) := by
+  apply (tendsto_norm_div_self a).inf
+  apply tendsto_principal_principal.2 (fun _x hx => norm_pos_iff'.2 ?_)
+  simpa [inv_mul_eq_one] using hx
 
 variable (E)
 

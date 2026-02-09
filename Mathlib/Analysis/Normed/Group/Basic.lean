@@ -395,14 +395,12 @@ theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ �
   exact h
 
 @[to_additive]
-theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a⁻¹ * b‖₊ :=
+theorem nndist_eq_nnnorm_inv_mul (a b : E) : nndist a b = ‖a⁻¹ * b‖₊ :=
   NNReal.eq <| dist_eq_norm_inv_mul _ _
-
-alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 
 @[to_additive (attr := simp)]
 theorem nndist_one_right (a : E) : nndist 1 a = ‖a‖₊ := by
-  simp [nndist_eq_nnnorm_div]
+  simp [nndist_eq_nnnorm_inv_mul]
 
 @[to_additive (attr := simp)]
 lemma edist_one_right (a : E) : edist 1 a = ‖a‖ₑ := by simp [edist_nndist, nndist_one_right, enorm]
@@ -450,7 +448,7 @@ theorem nnnorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E
   NNReal.eq <| norm_isUnit_zsmul a n.isUnit
 
 @[to_additive (attr := simp)]
-theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_inv_mul]
 
 @[to_additive (attr := simp)]
 theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
@@ -526,7 +524,7 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
 theorem nontrivialTopology_iff_exists_nnnorm_ne_zero' :
     NontrivialTopology E ↔ ∃ x : E, ‖x‖₊ ≠ 0 := by
   simp_rw [TopologicalSpace.nontrivial_iff_exists_not_inseparable, Metric.inseparable_iff_nndist,
-    nndist_eq_nnnorm_div]
+    nndist_eq_nnnorm_inv_mul]
   exact ⟨fun ⟨x, y, hxy⟩ => ⟨_, hxy⟩, fun ⟨x, hx⟩ => ⟨x, 1, by simpa using hx⟩⟩
 
 @[to_additive indiscreteTopology_iff_forall_nnnorm_eq_zero]
@@ -612,15 +610,15 @@ lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
 
 @[to_additive]
-theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
+theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm_eq_enorm']
 
 @[to_additive]
-theorem edist_one_eq_enorm (x : E) : edist 1 x = ‖x‖ₑ := by simp [edist_eq_enorm_div]
+theorem edist_one_eq_enorm (x : E) : edist 1 x = ‖x‖ₑ := by simp [edist_eq_enorm_inv_mul]
 
 @[to_additive]
 lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a ⁻¹ * b‖ₑ = ‖b⁻¹ * a‖ₑ := by
-  rw [← edist_eq_enorm_div, edist_comm, edist_eq_enorm_div]
+  rw [← edist_eq_enorm_inv_mul, edist_comm, edist_eq_enorm_inv_mul]
 
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
@@ -752,6 +750,16 @@ theorem dist_eq_norm_div' (a b : E) : dist a b = ‖b / a‖ := by
 alias dist_eq_norm := dist_eq_norm_sub
 
 alias dist_eq_norm' := dist_eq_norm_sub'
+
+@[to_additive]
+theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
+  NNReal.eq <| dist_eq_norm_div _ _
+
+alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
+
+@[to_additive]
+theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
+  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_enorm']
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
