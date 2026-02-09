@@ -306,14 +306,13 @@ def downloadFile (repo : String) (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
-/-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345) -/
+/-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345).
+    Handles both `.ltar` and `.ltar.part` files using `FilePath.fileStem`. -/
 def hashFromFileName (path : FilePath) : Option UInt64 := do
-  -- Get the filename stem, handling .ltar.part files
   let some stem := path.fileStem | .none
-  -- For .ltar.part files, fileStem gives "hash.ltar", so strip .ltar if present
-  let stem := stem.dropSuffix ".ltar" |>.toString
-  -- Parse the 16-character hex string to UInt64
-  stem.parseHexToUInt64?
+  -- For .ltar.part files, fileStem gives "hash.ltar"; apply fileStem again to strip .ltar
+  let stem := (FilePath.mk (toString stem)).fileStem.getD stem
+  (toString stem).parseHexToUInt64?
 
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
