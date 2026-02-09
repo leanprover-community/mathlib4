@@ -40,7 +40,7 @@ algebraic closure, algebraically closed
 - `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
   `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
   For the stronger fact that only requires every such polynomial has a root in `K`,
-  see `IsAlgClosure.of_exist_roots`.
+  see `IsAlgClosure.of_exists_root`.
 
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 
@@ -54,11 +54,9 @@ open Module Polynomial
 
 variable (k : Type u) [Field k]
 
-/-- Typeclass for algebraically closed fields.
-
-To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
-see `IsAlgClosed.splits_domain`.
--/
+/-- An algebraically closed field is one where every polynomial splits. Equivalently, all
+non-constant polynomials have a root. See `IsAlgClosed.exists_root` and
+`IsAlgClosed.of_exists_root`. -/
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits
@@ -331,9 +329,8 @@ theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
 
 variable [Algebra.IsAlgebraic K L] (K L M)
 
-set_option backward.privateInPublic true in
 /-- Less general version of `lift`. -/
-private noncomputable irreducible_def liftAux : L →ₐ[K] M :=
+private noncomputable def liftAux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits _⟩)
     (IntermediateField.adjoin_univ K L)
@@ -344,8 +341,6 @@ variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M]
 
 variable {M}
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 private instance FractionRing.isAlgebraic :
     letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
@@ -354,17 +349,13 @@ private instance FractionRing.isAlgebraic :
   letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have := (IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 inferInstance
-  constructor
-  intro
-  exact (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
-      (Algebra.IsAlgebraic.isAlgebraic _)
+  exact ⟨fun _ ↦ (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
+    (Algebra.IsAlgebraic.isAlgebraic _)⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
-@[stacks 09GU]
-noncomputable irreducible_def lift : S →ₐ[R] M := by
+@[stacks 09GU, no_expose]
+noncomputable def lift : S →ₐ[R] M := by
   letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
   letI := FractionRing.liftAlgebra R (FractionRing S)
