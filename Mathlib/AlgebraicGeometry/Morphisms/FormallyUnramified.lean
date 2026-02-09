@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.RingHom.Unramified
+public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 # Formally unramified morphisms
@@ -140,6 +141,35 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
   algebraize [f.hom]
   rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_SpecMap R S,
     cancel_right_of_respectsIso (P := @IsOpenImmersion)]
+  infer_instance
+
+lemma stalkMap [FormallyUnramified f] (x : X) : (f.stalkMap x).hom.FormallyUnramified :=
+  HasRingHomProperty.stalkMap
+    (fun f hf p q ↦
+      RingHom.FormallyUnramified.holdsForLocalization.localRingHom
+        RingHom.FormallyUnramified.stableUnderComposition
+        RingHom.FormallyUnramified.isStableUnderBaseChange.localizationPreserves _ hf) ‹_› x
+
+instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
+    letI : Algebra (Y.residueField (f.base x)) (X.residueField x) :=
+      (f.residueFieldMap x).hom.toAlgebra
+    Algebra.IsSeparable (Y.residueField (f.base x)) (X.residueField x) := by
+  algebraize [(f.stalkMap x).hom]
+  have : IsLocalHom (algebraMap (Y.presheaf.stalk (f x)) (X.presheaf.stalk x)) :=
+    inferInstanceAs <| IsLocalHom (f.stalkMap x).hom
+  suffices h : Algebra.IsSeparable
+      (IsLocalRing.ResidueField <| Y.presheaf.stalk (f x))
+      (IsLocalRing.ResidueField <| X.presheaf.stalk x) by
+    convert h
+    refine Algebra.algebra_ext _ _ fun x ↦ ?_
+    obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
+    rfl
+  have : Algebra.EssFiniteType (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) := by
+    rw [← RingHom.essFiniteType_algebraMap, RingHom.algebraMap_toAlgebra]
+    exact LocallyOfFiniteType.stalkMap f x
+  have : Algebra.FormallyUnramified (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) := by
+    rw [← RingHom.formallyUnramified_algebraMap, RingHom.algebraMap_toAlgebra]
+    exact stalkMap f x
   infer_instance
 
 end FormallyUnramified
