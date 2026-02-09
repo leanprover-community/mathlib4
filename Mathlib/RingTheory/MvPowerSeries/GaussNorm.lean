@@ -59,10 +59,9 @@ lemma le_gaussNorm (hbd : HasGaussNorm v c f) (t : σ →₀ ℕ) :
 theorem gaussNorm_nonneg (vNonneg : ∀ a, v a ≥ 0) : 0 ≤ gaussNorm v c f := by
   rw [gaussNorm]
   by_cases h : HasGaussNorm v c f
-  · calc
-    _ ≤ v (constantCoeff f) := by simp [vNonneg]
-    _ ≤ _ := by
-      convert (le_gaussNorm v c f h 0)
+  · trans v (constantCoeff f)
+    · simp [vNonneg]
+    · convert (le_gaussNorm v c f h 0)
       simp
   · simp [h]
 
