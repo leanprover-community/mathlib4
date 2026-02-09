@@ -23,7 +23,7 @@ not imported in the other file: the Hahn decomposition of finite measures and me
   `sub_le_iff_le_add_of_le` for the case where only `ν` is finite, with the additional hypothesis
   `ν ≤ μ`.
 * `withDensity_sub`: If `μ.withDensity g` is finite, then
-  `μ.withDensity f - μ.withDensity g = μ.withDensity (f - g)`.
+  `μ.withDensity (f - g) = μ.withDensity f - μ.withDensity g`.
 
 -/
 
@@ -53,7 +53,7 @@ lemma sub_le_iff_le_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] : μ - ν ≤ 
 
 lemma withDensity_sub_of_le {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity g)]
     (hg : Measurable g) (hgf : g ≤ᵐ[μ] f) :
-    (μ.withDensity f - μ.withDensity g) = μ.withDensity (f - g) := by
+    μ.withDensity (f - g) = μ.withDensity f - μ.withDensity g := by
   ext s hs
   rw [sub_apply hs (withDensity_mono hgf), withDensity_apply _ hs, withDensity_apply _ hs,
     withDensity_apply _ hs, ← lintegral_sub hg _ (ae_restrict_of_ae hgf)]
@@ -62,11 +62,8 @@ lemma withDensity_sub_of_le {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withD
 
 lemma withDensity_sub {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity g)]
     (hf : Measurable f) (hg : Measurable g) :
-    μ.withDensity f - μ.withDensity g = μ.withDensity (f - g) := by
+    μ.withDensity (f - g) = μ.withDensity f - μ.withDensity g := by
   refine le_antisymm ?_ ?_
-  · refine sub_le_of_le_add ?_
-    rw [← withDensity_add_right _ hg]
-    exact withDensity_mono (ae_of_all _ fun x ↦ le_tsub_add)
   · let t := {x | f x ≤ g x}
     have ht : MeasurableSet t := measurableSet_le hf hg
     rw [← restrict_add_restrict_compl (μ := μ.withDensity (f - g)) ht,
@@ -88,5 +85,8 @@ lemma withDensity_sub {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity
     refine ae_restrict_of_forall_mem ht.compl fun x hx ↦ ?_
     simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le, t] at hx
     exact hx.le
+  · refine sub_le_of_le_add ?_
+    rw [← withDensity_add_right _ hg]
+    exact withDensity_mono (ae_of_all _ fun x ↦ le_tsub_add)
 
 end MeasureTheory.Measure
