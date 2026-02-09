@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Free groups
@@ -878,13 +877,6 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
   (prod : FreeGroup (Multiplicative α) →* Multiplicative α).map_inv _
 
 end Sum
-
-/-- The isomorphism between the free group on an arbitrary empty type, and a `Unique` group. -/
-@[to_additive /-- The isomorphism between the additive free group on an arbitrary empty type,
-and a `Unique` group. -/]
-def freeGroupIsEmptyMulEquivUnique [IsEmpty α] (G : Type*) [Group G] [Unique G] :
-    FreeGroup α ≃* G :=
-  (MulEquiv.ofUnique : FreeGroup α ≃* G)
 
 -- TODO: find a good way to fix the linter
 -- simp applies to two goals at once, with different simp sets
