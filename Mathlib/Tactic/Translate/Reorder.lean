@@ -310,23 +310,22 @@ partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name
     let mut argReorders := #[]
     for part in parts do
       let `(reorderPart| $[$cycleStx]* $[($argReorder?)]?) := part | throwUnsupportedSyntax
-      if h : cycleStx.size = 0 then throwUnsupportedSyntax else
       let cycle ← cycleStx.toList.mapM (elabArgStx · argNames args head)
       if h : 2 ≤ cycle.length then
         perm := ⟨cycle, h⟩ :: perm
       else if argReorder?.isNone then
-        throwErrorAt cycleStx[0] "\
-          Invalid cycle `{cycleStx[0]}`, a cycle must have at least 2 elements.\n\
-          See the docstring of `reorder` for how to specify reorders."
+        throwErrorAt part "\
+          Invalid cycle `{part}`, a cycle must have at least 2 elements.\n\
+            See the docstring of `reorder` for how to specify reorders."
       if let some argReorder := argReorder? then
         for arg in cycle do
-          let reorder ←
-            -- Use a reducing telescope to see through `autoParam`.
-            withReducible <| forallTelescopeReducing (← inferType args[arg]!) fun xs _ ↦ do
-              let argNames ← xs.mapM (·.fvarId!.getUserName)
-              -- Recursively elaborate the nested reorder syntax.
-              elabReorder argReorder argNames xs m!"{args[arg]!}"
-          argReorders := argReorders.push (arg, reorder)
+        let reorder ←
+          -- Use a reducing telescope to see through `autoParam`.
+          withReducible <| forallTelescopeReducing (← inferType args[arg]!) fun xs _ ↦ do
+            let argNames ← xs.mapM (·.fvarId!.getUserName)
+            -- Recursively elaborate the nested reorder syntax.
+            elabReorder argReorder argNames xs m!"{args[arg]!}"
+        argReorders := argReorders.push (arg, reorder)
     -- Check that the cycles are disjoint
     _ ← perm.iter.flatMap (·.1.iter) |>.foldM (init := ({} : Std.HashSet Nat)) fun s n ↦ do
       let (contains, s) := s.containsThenInsert n
