@@ -191,13 +191,41 @@ lemma HasBoundedLeftInverse.foo [IsTopologicalAddGroup F]
     (hf.leftInverse.ker).ClosedComplemented :=
   ContinuousLinearMap.closedComplemented_ker_of_rightInverse _ f hf.leftInverse_leftInverse
 
+lemma why? {F : Type*} [AddCommGroup F] {x y : F} (h : y - x = 0) : y = x := by
+  -- TODO: why is there no other basic tactic which can do this? what am I missing?
+  rw [@sub_eq_zero] at h
+  grind
+
+-- TODO: give the right name...
+omit [TopologicalSpace E] [TopologicalSpace F] in
+lemma aux {f : E →ₗ[R] F} {g : F →ₗ[R] E} (h : LeftInverse g f) :
+    range f = ((f.comp g) - LinearMap.id).ker := by
+  apply subset_antisymm
+  · -- If `y = f x ∈ range f`, we have `(f ∘ g) y = f (g (f x)) = f x = y` by hypothesis `h`.
+    rintro y ⟨x, rfl⟩
+    simp [h x]
+  · exact fun x hx ↦ ⟨g x, by simpa [sub_eq_zero] using hx⟩
+
+lemma range_toLinearMap {f : E →L[R] F} : range f.toLinearMap = range f := by simp
+
+-- This definition needs stronger hypotheses.
+variable {R E E' F F' G : Type*} [Ring R]
+  [TopologicalSpace E] [AddCommGroup E] [Module R E]
+  [TopologicalSpace E'] [AddCommMonoid E'] [Module R E']
+  [TopologicalSpace F] [AddCommGroup F] [Module R F]
+  [TopologicalSpace F'] [AddCommMonoid F'] [Module R F']
+  -- TODO: is this hypothesis truly needed for ContinuousLinearMap.sub?
+  [IsTopologicalAddGroup F] [T1Space F]
+
 lemma HasBoundedLeftInverse.isClosed_range {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) :
     IsClosed (range f) := by
   -- Proof sketch: assume z_n = f y_n is a sequence in range f converging to z.
   -- Then z_n = f y_n = f g (f y_n) converges to f g z (by continuity of f and g),
   -- hence (if in a T2 space, perhaps weaker) z = f (g z) ∈ range f also.
   -- Not sure about the best way to formalise this, but it certainly works.
-  sorry
+  -- Better proof: `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
+  rw [← f.range_toLinearMap, aux hf.leftInverse_leftInverse]
+  exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
 
 lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) : f.Splits := by
   refine ⟨hf.injective, hf.isClosed_range, ?_⟩
