@@ -55,6 +55,38 @@ lemma prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : 
 lemma one_le_prod (hf : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i := by
   simpa using prod_le_prod (by simp) hf
 
+@[gcongr]
+theorem prod_le_prod_of_subset_of_one_le (h : s ⊆ t)
+    (hf0 : ∀ i ∈ s, 0 ≤ f i)
+    (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
+  have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
+  classical
+  calc
+      ∏ i ∈ s, f i ≤ (∏ i ∈ t \ s, f i) * ∏ i ∈ s, f i :=
+        le_mul_of_one_le_left (prod_nonneg hf0) <| one_le_prod <| by simpa only [mem_sdiff, and_imp]
+      _ = ∏ i ∈ t \ s ∪ s, f i := (prod_union sdiff_disjoint).symm
+      _ = ∏ i ∈ t, f i := by rw [sdiff_union_of_subset h]
+
+theorem prod_le_prod_of_subset_of_le_one (h : s ⊆ t) (hf0 : ∀ i ∈ t, 0 ≤ f i)
+    (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
+    ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i := by
+  have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
+  classical
+  calc
+    ∏ i ∈ t, f i = ∏ i ∈ t \ s ∪ s, f i := by rw [sdiff_union_of_subset h]
+    _ = (∏ i ∈ t \ s, f i) * ∏ i ∈ s, f i := prod_union sdiff_disjoint
+    _ ≤ ∏ i ∈ s, f i :=
+      mul_le_of_le_one_left (prod_nonneg (by grind)) (prod_le_one (by grind) (by grind))
+
+theorem prod_mono_set_of_one_le (hf : ∀ x, 1 ≤ f x) :
+    Monotone fun s ↦ ∏ x ∈ s, f x :=
+  fun _ _ hst ↦ prod_le_prod_of_subset_of_one_le hst
+    (fun i _ ↦ zero_le_one.trans (hf i)) (fun x _ _ ↦ hf x)
+
+theorem prod_anti_set_of_le_one (hf0 : ∀ (x : ι), 0 ≤ f x) (hf : ∀ (x : ι), f x ≤ 1) :
+    Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
+  fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by grind) (by simp [hf])
+
 end PosMulMono
 
 section PosMulStrictMono
