@@ -17,6 +17,12 @@ linear equivalences, and a sufficient criterion in finite dimension: a surjectiv
 finite-dimensional space always admits a continuous right inverse; an injective linear map on a
 finite-dimensional space always admits a continuous left inverse.
 
+We also prove an equivalent characterisation of admitting a continuous left inverse: `f` admits a
+continuous left inverse if and only if it is injective, has closed range and its range admits a
+closed complement. This characterisation is used to extract a complement from immersions, for use
+in the regular value theorem. (For submersions, there is a natural choice of complement, and an
+analogous statement is not necessary.)
+
 This concept is used to give an equivalent definition of immersions and submersions of manifolds.
 
 ## Main definitions and results
@@ -25,6 +31,11 @@ This concept is used to give an equivalent definition of immersions and submersi
   which is a continuous linear map itself
 * `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a right inverse
   which is a continuous linear map itself
+* `ContinuousLinearMap.Splits`: `f` splits iff it is injective, has closed range and `range f`
+  admits a closed complement
+* `ContinuousLinearMap.HasLeftInverse.splits` and `ContinuousLinearMap.Splits.hasLeftInverse`:
+  `f` splits if and only if it admits a continuous left inverse
+
 * `ContinuousLinearEquiv.hasRightInverse` and `ContinuousLinearEquiv.hasRightInverse`:
   a continuous linear equivalence admits a continuous left (resp. right) inverse
 * `ContinuousLinearMap.HasLeftInverse.comp`, `ContinuousLinearMap.HasRightInverse.comp`:
