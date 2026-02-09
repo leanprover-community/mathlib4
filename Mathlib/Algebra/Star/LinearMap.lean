@@ -80,7 +80,8 @@ alias _root_.StarHomClass.isSelfAdjoint := _root_.IntrinsicStar.StarHomClass.isS
 variable {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G] [StarModule R G]
 
 theorem intrinsicStar_comp (f : WithConv (E →ₗ[R] F)) (g : WithConv (G →ₗ[R] E)) :
-    star (f.comp g) = (star f).comp (star g) := by ext; simp
+    star (toConv (f.ofConv ∘ₗ g.ofConv)) = toConv ((star f).ofConv ∘ₗ (star g).ofConv) := by
+  ext; simp
 
 @[simp] theorem intrinsicStar_id :
     star (toConv (LinearMap.id (R := R) (M := E))) = toConv LinearMap.id := by ext; simp
@@ -196,8 +197,10 @@ instance Units.intrinsicStar : Star (WithConv (End R E)ˣ) where
     refine ⟨(star (toConv ↑f.ofConv : WithConv (End R E))).ofConv,
       (star (toConv ↑(f.ofConv⁻¹ : (End R E)ˣ))).ofConv, ?_, ?_⟩
     all_goals
-      rw [← toConv_injective.eq_iff, mul_eq_comp, ← comp_def, ← LinearMap.intrinsicStar_comp]
-      simp [comp_def, ← mul_eq_comp, one_eq_id]
+      ext
+      simp only [mul_apply, LinearMap.intrinsicStar_apply, star_star]
+      rw [← LinearMap.comp_apply]
+      simp [← mul_eq_comp, one_eq_id]
 
 theorem IsUnit.intrinsicStar {f : WithConv (End R E)} (hf : IsUnit f.ofConv) :
     IsUnit (star f).ofConv := by

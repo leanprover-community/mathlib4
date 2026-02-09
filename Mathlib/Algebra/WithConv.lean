@@ -164,12 +164,6 @@ section
 variable [Semiring R] [Module R A] [AddCommMonoid B] [Module R B]
   [AddCommMonoid C] [Module R C] (f : WithConv (B →ₗ[R] C)) (g : WithConv (A →ₗ[R] B))
 
-/-- The composition of linear maps as elements in `WithConv`. -/
-protected def comp : WithConv (A →ₗ[R] C) := toConv (f.ofConv ∘ₗ g.ofConv)
-
-lemma comp_def : f.comp g = toConv (f.ofConv ∘ₗ g.ofConv) := rfl
-@[simp] lemma comp_apply (x : A) : f.comp g x = f.ofConv (g.ofConv x) := rfl
-
 /-- Lift a linear equivalence between `A` and `B` to `WithConv A` and `WithConv B`. -/
 def congrLinearEquiv (f : A ≃ₗ[R] B) : WithConv A ≃ₗ[R] WithConv B :=
   (WithConv.linearEquiv R A).trans (f.trans (WithConv.linearEquiv R B).symm)
