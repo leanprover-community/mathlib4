@@ -57,8 +57,7 @@ lemma toConv_injective : Function.Injective (@toConv A) :=
 lemma ofConv_bijective : Function.Bijective (@ofConv A) := ⟨ofConv_injective, ofConv_surjective⟩
 lemma toConv_bijective : Function.Bijective (@toConv A) := ⟨toConv_injective, toConv_surjective⟩
 
-instance {B C} [CoeFun A (fun _ ↦ B → C)] : CoeFun (WithConv A) (fun _ ↦ B → C) where
-  coe f := ⇑f.ofConv
+instance [CoeFun A (fun _ ↦ B → C)] : CoeFun (WithConv A) (fun _ ↦ B → C) where coe f := ⇑f.ofConv
 
 @[ext] protected theorem ext {x y : WithConv A}
     (h : x.ofConv = y.ofConv) : x = y := ofConv_injective h
@@ -162,7 +161,6 @@ protected def linearEquiv [Semiring R] [Module R A] : WithConv A ≃ₗ[R] A whe
 
 section
 variable [Semiring R] [Module R A] [AddCommMonoid B] [Module R B]
-  [AddCommMonoid C] [Module R C] (f : WithConv (B →ₗ[R] C)) (g : WithConv (A →ₗ[R] B))
 
 /-- Lift a linear equivalence between `A` and `B` to `WithConv A` and `WithConv B`. -/
 def congrLinearEquiv (f : A ≃ₗ[R] B) : WithConv A ≃ₗ[R] WithConv B :=
