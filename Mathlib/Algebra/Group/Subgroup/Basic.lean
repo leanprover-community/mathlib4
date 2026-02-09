@@ -497,6 +497,7 @@ theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : norm
   · exact inv_mem ihx
 
 /-- The normal closure of an empty set is the trivial subgroup. -/
+@[simp]
 lemma normalClosure_empty :
   normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
 apply le_antisymm
