@@ -390,22 +390,6 @@ def getLocalCacheSet : IO <| Std.TreeSet String compare := do
 def isFromMathlib (mod : Name) : Bool :=
   mod.getRoot == `Mathlib
 
-/-- Parse a single hex digit character to its numeric value. -/
-def hexDigitToNat (c : Char) : Option Nat :=
-  if '0' ≤ c ∧ c ≤ '9' then some (c.toNat - '0'.toNat)
-  else if 'a' ≤ c ∧ c ≤ 'f' then some (c.toNat - 'a'.toNat + 10)
-  else if 'A' ≤ c ∧ c ≤ 'F' then some (c.toNat - 'A'.toNat + 10)
-  else none
-
-/-- Parse a hex string (like "4bd6700ff435e8d0") to a UInt64. -/
-def parseHexString (s : String) : IO (Option UInt64) := do
-  if s.length != 16 then return none
-  let mut result : UInt64 := 0
-  for c in s.toList do
-    let some digit := hexDigitToNat c | return none
-    result := (result <<< 4) ||| digit.toUInt64
-  return some result
-
 /-- Get the trace file path for a module. -/
 def getTracePath (mod : Name) : CacheM FilePath := do
   let sp := (← read).srcSearchPath
@@ -422,7 +406,7 @@ def readTraceHash (tracePath : FilePath) : IO (Option UInt64) := do
   let some json := Lean.Json.parse contents |>.toOption | return none
   let some depHashStr := json.getObjValAs? String "depHash" |>.toOption | return none
   -- Parse hex string to UInt64
-  parseHexString depHashStr
+  return depHashStr.parseHexToUInt64?
 
 /-- Read the Lake depHash from an ltar file header.
     The ltar format is: 4-byte magic (LTAR/LTR2/LTR3) + 8-byte little-endian u64 hash. -/
@@ -442,7 +426,7 @@ def readLtarHash (ltarPath : FilePath) : IO (Option UInt64) := do
     hash := hash ||| ((bytes.get! (4 + i)).toUInt64 <<< (i * 8).toUInt64)
   return some hash
 
-/-- Check if a module's trace file indicates it is already unpacked with the correct hash.
+/-- Check if a module's trace file indicates it is already decompressed with the correct hash.
     The hash to compare comes from the ltar file header, not the mathlib cache hash.
     Returns `true` if the module needs decompression, `false` if it can be skipped. -/
 def needsDecompression (mod : Name) (mathlibHash : UInt64) : CacheM Bool := do
@@ -452,7 +436,7 @@ def needsDecompression (mod : Name) (mathlibHash : UInt64) : CacheM Bool := do
   -- Read the trace file hash
   let tracePath ← getTracePath mod
   let some traceHash ← readTraceHash tracePath | return true
-  -- They should match if the file is already unpacked
+  -- They should match if the file is already decompressed
   return ltarHash != traceHash
 
 /-- Filter the hashmap to only include modules that need decompression.
@@ -475,7 +459,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   if size > 0 then
     let now ← IO.monoMsNow
     if skipped > 0 then
-      IO.println s!"Decompressing {size} file(s) ({skipped} already unpacked)"
+      IO.println s!"Decompressing {size} file(s) ({skipped} already decompressed)"
     else
       IO.println s!"Decompressing {size} file(s)"
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
@@ -508,10 +492,10 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println s!"Decompressed in {(← IO.monoMsNow) - now} ms"
     IO.println "Completed successfully!"
   else if totalCached > 0 then
-    IO.println s!"Already unpacked ({totalCached} file(s))"
+    IO.println s!"Already decompressed {totalCached} file(s)"
   else
     IO.println "No cache files to decompress"
 
