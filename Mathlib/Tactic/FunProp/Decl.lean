@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
 -/
+
+public meta section
 
 
 namespace Mathlib
@@ -36,7 +40,7 @@ structure FunPropDecls where
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
@@ -47,7 +51,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with decls := d.decls.insertCore e.path e}
+      {d with decls := d.decls.insertKeyValue e.path e}
   }
 
 /-- Register new function property. -/
@@ -58,14 +62,14 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   let (xs, bi, b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
-    throwError "invalid fun_prop declaration, has to be `Prop` valued function"
+    throwError "invalid fun_prop declaration, has to be `Prop`-valued function"
 
   let lvls := info.levelParams.map (fun l => Level.param l)
   let e := mkAppN (.const declName lvls) xs
   let path ← DiscrTree.mkPath e
 
   -- find the argument position of the function `f` in `P f`
-  let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+  let mut some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
     if (← inferType x).isForall && bi.isExplicit then
       return true
     else
@@ -80,7 +84,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
 
-  trace[Meta.Tactic.funProp.attr]
+  trace[Meta.Tactic.fun_prop.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 
@@ -107,7 +111,7 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
-/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x => f x y z` -/
+/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x ↦ f x y z` -/
 def isFunPropGoal (e : Expr) : MetaM Bool := do
   forallTelescope e fun _ b =>
   return (← getFunProp? b).isSome
@@ -115,15 +119,15 @@ def isFunPropGoal (e : Expr) : MetaM Bool := do
 /-- Returns function property declaration from `e = P f`. -/
 def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
   match ← getFunProp? e with
-  | .some (decl,_) => return decl
-  | .none => return none
+  | some (decl, _) => return decl
+  | none => return none
 
 
 /-- Returns function `f` from `e = P f` and `P` is function property. -/
 def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
   match ← getFunProp? e with
-  | .some (_,f) => return f
-  | .none => return none
+  | some (_, f) => return f
+  | none => return none
 
 
 open Elab Term in
@@ -134,18 +138,17 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
-        withoutModifyingStateWithInfoAndMessages do
-          instantiateMVarDeclMVars mvar.mvarId!
+        instantiateMVarDeclMVars mvar.mvarId!
 
-          let _ ←
-            withSynthesize (postpone := .no) do
-              Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
+        let _ ←
+          withSynthesize (postpone := .no) do
+            Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
 
-          let result ← instantiateMVars mvar
-          if result.hasExprMVar then
-            return none
-          else
-            return some result
+        let result ← instantiateMVars mvar
+        if result.hasExprMVar then
+          return none
+        else
+          return some result
       catch _ =>
         return none
     let (result?, _) ← runTac?.run {} {}

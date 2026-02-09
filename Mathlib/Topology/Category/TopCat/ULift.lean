@@ -3,8 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Lifting topological spaces to a higher universe
@@ -14,7 +17,9 @@ which sends a topological space `X : Type u` to a homeomorphic space in `Type (m
 
 -/
 
-universe v u
+@[expose] public section
+
+universe w w' v u
 
 open CategoryTheory
 
@@ -49,7 +54,7 @@ lemma uliftFunctorObjHomeo_symm_naturality_apply {X Y : TopCat.{u}} (f : X ⟶ Y
 with the one defined on categories of types. -/
 @[simps!]
 def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} ≅
-  forget TopCat.{u} ⋙ CategoryTheory.uliftFunctor.{v, u} := Iso.refl _
+    forget TopCat.{u} ⋙ CategoryTheory.uliftFunctor.{v, u} := Iso.refl _
 
 /-- The `ULift` functor on categories of topological spaces is fully faithful. -/
 def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where
@@ -60,5 +65,35 @@ instance : uliftFunctor.{v, u}.Full :=
 
 instance : uliftFunctor.{v, u}.Faithful :=
   uliftFunctorFullyFaithful.faithful
+
+open Limits
+
+instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} := by
+  refine ⟨⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩
+  rw [nonempty_isLimit_iff_eq_induced]
+  · refine le_antisymm ?_ ?_
+    · rw [le_iInf_iff]
+      rintro j s ⟨t, ht, rfl⟩
+      refine ⟨Homeomorph.ulift.symm ⁻¹' ((uliftFunctor.map (c.π.app j)) ⁻¹' t), ?_, rfl⟩
+      apply Homeomorph.ulift.continuous_invFun.isOpen_preimage
+      apply (uliftFunctor.map (c.π.app j)).hom.continuous_toFun.isOpen_preimage _ ht
+    · change _ ≤ TopologicalSpace.induced _ _
+      rw [← generateFrom_iUnion_isOpen, induced_of_isLimit _ hc, induced_iInf, le_iInf_iff]
+      rintro i s ⟨-, ⟨t, ht, rfl⟩, rfl⟩
+      refine .basic _ ?_
+      rw [Set.mem_iUnion]
+      exact ⟨i, ULift.down ⁻¹' t, Homeomorph.ulift.continuous_toFun.isOpen_preimage _ ht, rfl⟩
+  · exact isLimitOfPreserves (forget TopCat ⋙ CategoryTheory.uliftFunctor) hc
+
+instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} := by
+  refine ⟨⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩
+  rw [nonempty_isColimit_iff_eq_coinduced]
+  · ext s
+    rw [Homeomorph.ulift.symm.isOpenEmbedding.isOpen_iff_preimage_isOpen (by simp),
+      isOpen_iff_of_isColimit _ hc, isOpen_iSup_iff]
+    congr!
+    rw [Homeomorph.ulift.isOpenEmbedding.isOpen_iff_preimage_isOpen (by simp)]
+    rfl
+  · exact isColimitOfPreserves (forget TopCat ⋙ CategoryTheory.uliftFunctor) hc
 
 end TopCat

@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-! # Convexity properties of the Gamma function
 
@@ -36,6 +38,8 @@ to a constant, and it should be possible to deduce the value of this constant us
 formula).
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -44,6 +48,8 @@ open Filter Set MeasureTheory
 open scoped Nat ENNReal Topology Real
 
 namespace Real
+
+local notation "Γ" => Gamma
 
 section Convexity
 
@@ -68,7 +74,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     intro c x hc u hx
     dsimp only [f]
     rw [mul_rpow (exp_pos _).le ((rpow_nonneg hx.le) _), ← exp_mul, ← rpow_mul hx.le]
-    congr 2 <;> field_simp [hc.ne']; ring
+    congr 2 <;> field
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
@@ -86,9 +92,8 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
       congr 1
       exact (norm_of_nonneg (posf _ _ x hx)).symm
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
-      refine (Continuous.continuousOn ?_).mul (continuousOn_of_forall_continuousAt fun x hx => ?_)
-      · exact continuous_exp.comp (continuous_const.mul continuous_id')
-      · exact continuousAt_rpow_const _ _ (Or.inl (mem_Ioi.mp hx).ne')
+      refine .mul (by fun_prop) (continuousOn_of_forall_continuousAt fun x hx ↦ ?_)
+      exact continuousAt_rpow_const _ _ (Or.inl (mem_Ioi.mp hx).ne')
   -- now apply Hölder:
   rw [Gamma_eq_integral hs, Gamma_eq_integral ht, Gamma_eq_integral hst]
   convert
@@ -111,7 +116,7 @@ theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   have : b = 1 - a := by linarith
   subst this
   simp_rw [Function.comp_apply, smul_eq_mul]
-  simp only [mem_Ioi] at hx hy
+  push _ ∈ _ at hx hy
   rw [← log_rpow, ← log_rpow, ← log_mul]
   · gcongr
     exact Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma hx hy ha hb hab
@@ -158,7 +163,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   | succ n hn =>
     have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
-    · rw [Finset.range_succ, Finset.sum_insert Finset.notMem_range_self]
+    · rw [Finset.range_add_one, Finset.sum_insert Finset.notMem_range_self]
       abel
     · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
 
@@ -176,7 +181,7 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
 theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : 2 ≤ n) (hx : 0 < x) :
     f n + x * log (n - 1) ≤ f (n + x) := by
-  have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; omega
+  have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; lia
   have c :=
     (convexOn_iff_slope_mono_adjacent.mp <| hf_conv).2 npos (by linarith : 0 < (n : ℝ) + x)
       (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
@@ -206,7 +211,7 @@ theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     f x ≤ f 1 + x * log (n + 1) - x * log n + logGammaSeq x n := by
   rw [logGammaSeq, ← add_sub_assoc, le_sub_iff_add_le, ← f_add_nat_eq (@hf_feq) hx, add_comm x]
   refine (f_add_nat_le hf_conv (@hf_feq) (Nat.add_one_ne_zero n) hx hx').trans (le_of_eq ?_)
-  rw [f_nat_eq @hf_feq (by omega : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
+  rw [f_nat_eq @hf_feq (by lia : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
   ring
 
 theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -218,7 +223,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel_right]
     · ring
     · exact Nat.succ_ne_zero _
-  · omega
+  · lia
 
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
@@ -232,7 +237,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
     convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring
-  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
+  · change ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
     filter_upwards [eventually_ne_atTop 0] with n hn using
       le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
 
@@ -241,16 +246,18 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
   suffices ∀ m : ℕ, ↑m < x → x ≤ m + 1 → Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) by
     refine this ⌈x - 1⌉₊ ?_ ?_
-    · rcases lt_or_le x 1 with ⟨⟩
+    · rcases lt_or_ge x 1 with ⟨⟩
       · rwa [Nat.ceil_eq_zero.mpr (by linarith : x - 1 ≤ 0), Nat.cast_zero]
       · convert Nat.ceil_lt_add_one (by linarith : 0 ≤ x - 1)
         abel
     · rw [← sub_le_iff_le_add]; exact Nat.le_ceil _
   intro m
-  induction' m with m hm generalizing x
-  · rw [Nat.cast_zero, zero_add]
+  induction m generalizing x with
+  | zero =>
+    rw [Nat.cast_zero, zero_add]
     exact fun _ hx' => tendsto_logGammaSeq_of_le_one hf_conv (@hf_feq) hx hx'
-  · intro hy hy'
+  | succ m hm =>
+    intro hy hy'
     rw [Nat.cast_succ, ← sub_le_iff_le_add] at hy'
     rw [Nat.cast_succ, ← lt_sub_iff_add_lt] at hy
     specialize hm ((Nat.cast_nonneg _).trans_lt hy) hy hy'
@@ -322,9 +329,9 @@ theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
-  -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
-  -- log-convexity to avoid unnecessary imports.
-  have A : (0 : ℝ) < 3 / 2 := by norm_num
+  -- `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean`, but we give a
+  -- self-contained proof using log-convexity to avoid unnecessary imports.
+  have A : (0 : ℝ) < 3 / 2 := by simp
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos
       (by norm_num : 1 / 2 ≤ (1 : ℝ))
@@ -342,13 +349,29 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
       exp_log] <;>
     norm_num
 
+theorem Gamma_strictAntiOn_Ioc : StrictAntiOn Gamma (Ioc 0 1) :=
+  convexOn_Gamma.strictAntiOn (by simp) (by norm_num) <|
+    Gamma_one.symm ▸ Gamma_three_div_two_lt_one
+
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
-    convexOn_Gamma.strict_mono_of_lt (by norm_num : (0 : ℝ) < 3 / 2)
+    convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
   rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
+
+-- TODO: prove uniqueness once the necessary material to do so makes its way into Mathlib
+theorem exists_isMinOn_Gamma_Ioi : ∃ x ∈ Ioo 1 2, IsMinOn Gamma (Ioi 0) x := by
+  have ⟨x, hx, hmin⟩ := isCompact_Icc.exists_isMinOn (nonempty_Icc.mpr one_le_two) <|
+    differentiableOn_Gamma_Ioi.continuousOn.mono <| by grind
+  have ⟨h1, h2, h3half⟩ : Γ (3 / 2) < Γ 1 ∧ Γ (3 / 2) < Γ 2 ∧ Γ x ≤ Γ (3 / 2) := by
+    simpa [Gamma_three_div_two_lt_one] using hmin <| by norm_num
+  refine ⟨x, by grind, fun y _ ↦ ?_⟩
+  obtain hy | hy | hy : y ∈ Ioc 0 1 ∨ y ∈ Icc 1 2 ∨ y ∈ Ici 2 := by grind
+  · exact h3half.trans h1.le |>.trans <| Gamma_strictAntiOn_Ioc.antitoneOn hy (by simp) hy.right
+  · exact hmin hy
+  · exact h3half.trans h2.le |>.trans <| Gamma_strictMonoOn_Ici.monotoneOn (by simp) hy hy
 
 end StrictMono
 
@@ -394,20 +417,20 @@ theorem log_doublingGamma_eq :
 theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ doublingGamma) := by
   refine (((ConvexOn.add ?_ ?_).add ?_).add_const _).congr log_doublingGamma_eq.symm
   · convert
-      convexOn_log_Gamma.comp_affineMap (DistribMulAction.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
+      convexOn_log_Gamma.comp_affineMap (DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1
-    · simpa only [zero_div] using (preimage_const_mul_Ioi (0 : ℝ) one_half_pos).symm
+    · simpa only [zero_div] using (preimage_const_mul_Ioi₀ (0 : ℝ) one_half_pos).symm
     · ext1 x
-      simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribMulAction.toLinearMap_apply]
+      simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribSMul.toLinearMap_apply]
       rw [smul_eq_mul, mul_comm, mul_one_div]
   · refine ConvexOn.subset ?_ (Ioi_subset_Ioi <| neg_one_lt_zero.le) (convex_Ioi _)
     convert
       convexOn_log_Gamma.comp_affineMap
-        ((DistribMulAction.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
+        ((DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
           AffineMap.const ℝ ℝ (1 / 2 : ℝ)) using 1
     · change Ioi (-1 : ℝ) = ((fun x : ℝ => x + 1 / 2) ∘ fun x : ℝ => (1 / 2 : ℝ) * x) ⁻¹' Ioi 0
       rw [preimage_comp, preimage_add_const_Ioi, zero_sub,
-        preimage_const_mul_Ioi (_ : ℝ) one_half_pos, neg_div, div_self (@one_half_pos ℝ _).ne']
+        preimage_const_mul_Ioi₀ (_ : ℝ) one_half_pos, neg_div, div_self (@one_half_pos ℝ _).ne']
     · ext1 x
       change log (Gamma (x / 2 + 1 / 2)) = log (Gamma ((1 / 2 : ℝ) • x + 1 / 2))
       rw [smul_eq_mul, mul_comm, mul_one_div]
@@ -429,8 +452,7 @@ theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
   rw [← doublingGamma_eq_Gamma (mul_pos two_pos hs), doublingGamma,
     mul_div_cancel_left₀ _ (two_ne_zero' ℝ), (by abel : 1 - 2 * s = -(2 * s - 1)),
     rpow_neg zero_le_two]
-  field_simp [(sqrt_pos_of_pos pi_pos).ne', (rpow_pos_of_pos two_pos (2 * s - 1)).ne']
-  ring
+  field
 
 end Doubling
 

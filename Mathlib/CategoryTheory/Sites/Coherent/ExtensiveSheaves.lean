@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Sites.Canonical
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.Sites.Preserves
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Sites.Canonical
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.Sites.Preserves
 /-!
 
 # Sheaves for the extensive topology
@@ -19,13 +21,15 @@ This file characterises sheaves for the extensive topology.
   extensive topology are precisely those preserving finite products.
 -/
 
+@[expose] public section
+
 universe w
 
 namespace CategoryTheory
 
 open Limits Presieve Opposite
 
-variable {C : Type*} [Category C] {D : Type*} [Category D]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
 variable [FinitaryPreExtensive C]
 
@@ -37,7 +41,7 @@ class Presieve.Extensive {X : C} (R : Presieve X) : Prop where
   arrows_nonempty_isColimit : ∃ (α : Type) (_ : Finite α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
     R = Presieve.ofArrows Z π ∧ Nonempty (IsColimit (Cofan.mk X π))
 
-instance {X : C} (S : Presieve X) [S.Extensive] : S.hasPullbacks where
+instance {X : C} (S : Presieve X) [S.Extensive] : S.HasPairwisePullbacks where
   has_pullbacks := by
     obtain ⟨_, _, _, _, rfl, ⟨hc⟩⟩ := Presieve.Extensive.arrows_nonempty_isColimit (R := S)
     intro _ _ _ _ _ hg
@@ -45,16 +49,16 @@ instance {X : C} (S : Presieve X) [S.Extensive] : S.hasPullbacks where
     apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct hc
 
 /--
-A finite product preserving presheaf is a sheaf for the extensive topology on a category which is
+A finite-product-preserving presheaf is a sheaf for the extensive topology on a category which is
 `FinitaryPreExtensive`.
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.Extensive]
-    (F : Cᵒᵖ ⥤ Type w) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
+    (F : Cᵒᵖ ⥤ Type w) [PreservesFiniteProducts F] : S.IsSheafFor F := by
   obtain ⟨α, _, Z, π, rfl, ⟨hc⟩⟩ := Extensive.arrows_nonempty_isColimit (R := S)
-  have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
-    (inferInstance : (ofArrows Z π).hasPullbacks)
+  have : (ofArrows Z (Cofan.mk X π).inj).HasPairwisePullbacks :=
+    (inferInstance : (ofArrows Z π).HasPairwisePullbacks)
   cases nonempty_fintype α
-  exact isSheafFor_of_preservesProduct _ _ hc
+  exact isSheafFor_of_preservesProduct F _ hc
 
 instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).Extensive :=
   ⟨⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩⟩
@@ -83,8 +87,8 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
   refine ⟨fun hF ↦ ⟨fun n ↦ ⟨fun {K} ↦ ?_⟩⟩, fun hF ↦ ?_⟩
   · rw [extensiveTopology, isSheaf_coverage] at hF
     let Z : Fin n → C := fun i ↦ unop (K.obj ⟨i⟩)
-    have : (ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks :=
-      inferInstanceAs (ofArrows Z (Sigma.ι Z)).hasPullbacks
+    have : (ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).HasPairwisePullbacks :=
+      inferInstanceAs (ofArrows Z (Sigma.ι Z)).HasPairwisePullbacks
     have : ∀ (i : Fin n), Mono (Cofan.inj (Cofan.mk (∐ Z) (Sigma.ι Z)) i) :=
       inferInstanceAs <| ∀ (i : Fin n), Mono (Sigma.ι Z i)
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor

@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Adjunctions and (co)monads
@@ -24,10 +26,12 @@ Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflec
 `ComonadicLeftAdjoint`.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -40,7 +44,6 @@ namespace Adjunction
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps! coe η μ]
 def toMonad (h : L ⊣ R) : Monad C where
   toFunctor := L ⋙ R
@@ -58,7 +61,6 @@ def toMonad (h : L ⊣ R) : Monad C where
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps coe ε δ]
 def toComonad (h : L ⊣ R) : Comonad D where
   toFunctor := R ⋙ L
@@ -89,7 +91,7 @@ unit is an isomorphism.
 -/
 def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
   hom := adj.unit
-  inv :=  i.hom ≫ (adj.toMonad.transport i).μ
+  inv := i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
     rw [← assoc]
     ext X
@@ -335,7 +337,7 @@ instance comparison_essSurj [Reflective R] :
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Reflective
 
@@ -357,13 +359,13 @@ instance comparison_essSurj [Coreflective R] :
   refine Comonad.Coalgebra.isoMk ?_ ?_
   · exact (asIso ((coreflectorAdjunction R).counit.app X.A))
   rw [← cancel_mono ((coreflectorAdjunction R).counit.app X.A)]
-  simp only [Adjunction.counit_naturality, Functor.comp_obj, Functor.id_obj,
-    Adjunction.left_triangle_components_assoc, assoc]
+  simp only [Functor.comp_obj, Functor.id_obj,
+    assoc]
   simpa using (coreflectorAdjunction R).counit.app X.A ≫= X.counit.symm
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
     (Comonad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Coreflective
 
@@ -371,7 +373,7 @@ end Coreflective
 -- just the existence of an inverse on each object.
 -- see Note [lower instance priority]
 /-- Any reflective inclusion has a monadic right adjoint.
-    cf Prop 5.3.3 of [Riehl][riehl2017] -/
+cf Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
   L := reflector R
@@ -379,7 +381,7 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
   eqv := { full := Reflective.comparison_full _ }
 
 /-- Any coreflective inclusion has a comonadic left adjoint.
-    cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
+cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
   R := coreflector R

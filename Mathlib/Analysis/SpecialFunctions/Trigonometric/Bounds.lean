@@ -3,8 +3,10 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+module
+
+public import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-!
 # Polynomial bounds for trigonometric functions
@@ -29,6 +31,8 @@ Here we prove the following:
 sin, cos, tan, angle
 -/
 
+public section
+
 open Set
 
 namespace Real
@@ -36,7 +40,7 @@ variable {x : ℝ}
 
 /-- For 0 < x, we have sin x < x. -/
 theorem sin_lt (h : 0 < x) : sin x < x := by
-  rcases lt_or_le 1 x with h' | h'
+  rcases lt_or_ge 1 x with h' | h'
   · exact (sin_le_one x).trans_lt h'
   have hx : |x| = x := abs_of_nonneg h.le
   have := le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
@@ -45,7 +49,7 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
   refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
-  norm_num
+  simp
 
 lemma sin_le (hx : 0 ≤ x) : sin x ≤ x := by
   obtain rfl | hx := hx.eq_or_lt
@@ -88,15 +92,15 @@ lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x
 /-- Half of **Jordan's inequality** for absolute values. -/
 lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
+  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
   rw [abs_of_nonneg hx₀] at hx ⊢
   exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
 
 lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
-  wlog hx₀ : 0 < x
+  wlog! hx₀ : 0 < x
   case inr =>
-    simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le <| le_of_not_lt hx₀
-  rcases le_or_lt x 1 with hxπ | hxπ
+    simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le hx₀
+  rcases le_or_gt x 1 with hxπ | hxπ
   case inl =>
     exact pow_lt_pow_left₀ (sin_lt hx₀)
       (sin_nonneg_of_nonneg_of_le_pi hx₀.le (by linarith [two_le_pi])) (by simp)
@@ -112,7 +116,7 @@ lemma abs_sin_lt_abs (hx : x ≠ 0) : |sin x| < |x| := sq_lt_sq.1 (sin_sq_lt_sq 
 lemma abs_sin_le_abs : |sin x| ≤ |x| := sq_le_sq.1 sin_sq_le_sq
 
 lemma one_sub_sq_div_two_lt_cos (hx : x ≠ 0) : 1 - x ^ 2 / 2 < cos x := by
-  have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2)).symm
+  have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2))
   ring_nf at this
   linarith
 
@@ -132,7 +136,7 @@ lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π *
 
 lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
+  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
   rw [abs_of_nonneg hx₀] at hx
   have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
   have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
@@ -153,7 +157,7 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
   rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
   refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
-  norm_num
+  simp
 
 /-- The derivative of `tan x - x` is `1/(cos x)^2 - 1` away from the zeroes of cos. -/
 theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
@@ -210,7 +214,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
       · rw [neg_sq]
   intro y hy1 hy2
   have hy3 : ↑0 < y ^ 2 + 1 := by linarith [sq_nonneg y]
-  rcases lt_or_le y (π / 2) with (hy2' | hy1')
+  rcases lt_or_ge y (π / 2) with (hy2' | hy1')
   · -- Main case : `0 < y < π / 2`
     have hy4 : 0 < cos y := cos_pos_of_mem_Ioo ⟨by linarith, hy2'⟩
     rw [← abs_of_nonneg (cos_nonneg_of_mem_Icc ⟨by linarith, hy2'.le⟩), ←
@@ -228,5 +232,31 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   rcases eq_or_ne x 0 with (rfl | hx3)
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
+
+theorem lipschitzWith_sin : LipschitzWith 1 sin :=
+  lipschitzWith_of_nnnorm_deriv_le differentiable_sin <| by simpa using abs_cos_le_one
+
+theorem lipschitzWith_cos : LipschitzWith 1 cos :=
+  lipschitzWith_of_nnnorm_deriv_le differentiable_cos <| by simpa using abs_sin_le_one
+
+theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
+  simpa [edist_dist] using lipschitzWith_sin x y
+
+theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
+  simpa [edist_dist] using lipschitzWith_cos x y
+
+theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
+  rw [Complex.norm_exp_I_mul_ofReal_sub_one]
+  calc
+    _ = 2 * |Real.sin (x / 2)| := by simp
+    _ ≤ 2 * |x / 2| := (mul_le_mul_iff_of_pos_left zero_lt_two).mpr Real.abs_sin_le_abs
+    _ = _ := by rw [abs_div, Nat.abs_ofNat, Real.norm_eq_abs]; ring
+
+theorem enorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ₑ ≤ ‖x‖ₑ := by
+  iterate 2 rw [← enorm_norm, Real.enorm_of_nonneg (norm_nonneg _)]
+  exact ENNReal.ofReal_le_ofReal norm_exp_I_mul_ofReal_sub_one_le
+
+theorem nnnorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
+  rw [← ENNReal.coe_le_coe]; exact enorm_exp_I_mul_ofReal_sub_one_le
 
 end Real

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
 # Lebesgue measure on `ℂ`
@@ -17,7 +19,9 @@ used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`, d
 of `MeasureTheory.measurePreserving`).
 -/
 
-open MeasureTheory
+@[expose] public section
+
+open MeasureTheory Module
 
 noncomputable section
 
@@ -44,14 +48,13 @@ theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a
 
 @[simp]
 theorem measurableEquivRealProd_symm_apply (p : ℝ × ℝ) :
-    measurableEquivRealProd.symm p = {re := p.1, im := p.2} := rfl
+    measurableEquivRealProd.symm p = { re := p.1, im := p.2 } := rfl
 
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
   convert (measurableEquivPi.symm.measurable.measurePreserving volume).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
     measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe,
-    ContinuousLinearEquiv.symm_toHomeomorph, ContinuousLinearEquiv.coe_toHomeomorph,
-    Basis.map_addHaar, eq_comm]
+    ContinuousLinearEquiv.coe_symm_toHomeomorph, Basis.map_addHaar, eq_comm]
   exact (Basis.addHaar_eq_iff _ _).mpr Complex.orthonormalBasisOneI.volume_parallelepiped
 
 theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRealProd :=

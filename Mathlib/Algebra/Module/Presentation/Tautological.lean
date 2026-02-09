@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.Algebra.Module.Presentation.Basic
 
 /-!
 # The tautological presentation of a module
@@ -14,6 +15,8 @@ Given an `A`-module `M`, we provide its tautological presentation:
 * the relations are `[m₁] + [m₂] - [m₁ + m₂] = 0` and `a • [m] - [a • m] = 0`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -54,8 +57,6 @@ noncomputable def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup 
   invFun f :=
     { var := f
       linearCombination_var_relation := by rintro (_ | _) <;> simp }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The obvious solution of `tautologicalRelations A M` in the module `M`. -/
 @[simps! var]

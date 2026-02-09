@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.Unramified.Locus
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Frobenius elements
@@ -16,7 +18,7 @@ integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime 
 there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
 `Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
 
-Following `RingTheory/Invariant.lean`, we develop the theory in the setting that
+Following `Mathlib/RingTheory/Invariant/Basic.lean`, we develop the theory in the setting that
 there is a finite group `G` acting on a ring `S`, and `R` is the fixed subring of `S`.
 
 ## Main results
@@ -30,7 +32,7 @@ and `P := R ∩ Q` with finite residue field of cardinality `q`.
   Suppose `S` is a domain and `φ` is a Frobenius at `Q`,
   then `φ ζ = ζ ^ q` for any `m`-th root of unity `ζ` with `q ∤ m`.
 - `AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`:
-  Suppose `S` is noetherian, `Q` contains all zero-divisors, and the extension is unramified at `Q`.
+  Suppose `S` is Noetherian, `Q` contains all zero-divisors, and the extension is unramified at `Q`.
   Then the Frobenius is unique (if exists).
 
 Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of `S`.
@@ -42,6 +44,8 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
 - `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -61,8 +65,7 @@ lemma mk_apply (x) : Ideal.Quotient.mk Q (φ x) = x ^ Nat.card (R ⧸ Q.under R)
   exact H x
 
 lemma finite_quotient : _root_.Finite (R ⧸ Q.under R) := by
-  rw [← not_infinite_iff_finite]
-  intro h
+  by_contra! h
   obtain rfl : Q = ⊤ := by simpa [Nat.card_eq_zero_of_infinite, ← Ideal.eq_top_iff_one] using H 0
   simp only [Ideal.comap_top] at h
   exact not_finite (R ⧸ (⊤ : Ideal R))
@@ -111,8 +114,8 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   have hk' : ↑k ∉ Q := fun h ↦ hk' (Q.mem_of_dvd (Nat.cast_dvd_cast (hζ.2 m ‹_›)) h)
   have : NeZero k := ⟨hk.ne'⟩
   obtain ⟨i, hi, e⟩ := hζ.eq_pow_of_pow_eq_one (ξ := φ ζ) (by rw [← map_pow, hζ.1, map_one])
-  have (j) : 1 - ζ ^ ((q + k - i) * j) ∈ Q := by
-    rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit k.pos_of_neZero).pow (i * j)),
+  have (j : _) : 1 - ζ ^ ((q + k - i) * j) ∈ Q := by
+    rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit NeZero.out).pow (i * j)),
       sub_mul, one_mul, ← pow_add, ← add_mul, tsub_add_cancel_of_le (by linarith), add_mul,
         pow_add, pow_mul _ k, hζ.1, one_pow, mul_one, pow_mul, e, ← map_pow, mul_comm, pow_mul]
     exact H _
@@ -147,7 +150,7 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
     rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime Q), ← Ideal.comap_comap,
       Localization.AtPrime.comap_maximalIdeal]
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
   simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
     ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,
@@ -155,14 +158,12 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
   simp only [SubmonoidClass.coe_pow, ← Ideal.Quotient.eq_zero_iff_mem]
   simp [H.mk_apply]
 
-/-- Suppose `S` is noetherian and `Q` is a prime of `S` containing all zero divisors.
+/-- Suppose `S` is Noetherian and `Q` is a prime of `S` containing all zero divisors.
 If `S/R` is unramified at `Q`, then the Frobenius `φ : S →ₐ[R] S` over `Q` is unique. -/
 lemma eq_of_isUnramifiedAt
     (H' : ψ.IsArithFrobAt Q) [Q.IsPrime] (hQ : Q.primeCompl ≤ S⁰)
     [Algebra.IsUnramifiedAt R Q] [IsNoetherianRing S] : φ = ψ := by
   have : H.localize = H'.localize := by
-    have : IsNoetherianRing (Localization.AtPrime Q) :=
-      IsLocalization.isNoetherianRing Q.primeCompl _ inferInstance
     apply Algebra.FormallyUnramified.ext_of_iInf _
       (Ideal.iInf_pow_eq_bot_of_isLocalRing (maximalIdeal _) Ideal.IsPrime.ne_top')
     intro x
@@ -179,7 +180,7 @@ Suppose `S` is an `R` algebra, `M` is a monoid acting on `S` whose action is tri
 `σ : M` is an (arithmetic) Frobenius at an ideal `Q` of `S` if `σ • x ≡ x ^ q (mod Q)` for all `x`.
 -/
 abbrev IsArithFrobAt {M : Type*} [Monoid M] [MulSemiringAction M S] [SMulCommClass M R S]
-  (σ : M) (Q : Ideal S) : Prop :=
+    (σ : M) (Q : Ideal S) : Prop :=
   (MulSemiringAction.toAlgHom R S σ).IsArithFrobAt Q
 
 namespace IsArithFrobAt
@@ -214,7 +215,6 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   let P := Q.under R
   have := Algebra.IsInvariant.isIntegral R S G
   have : Q.IsMaximal := Ideal.Quotient.maximal_of_isField _ (Finite.isField_of_domain (S ⧸ Q))
-  have : P.IsMaximal := Ideal.isMaximal_comap_of_isIntegral_of_isMaximal Q
   obtain ⟨p, hc⟩ := CharP.exists (R ⧸ P)
   have : Finite (R ⧸ P) := .of_injective _ Ideal.algebraMap_quotient_injective
   cases nonempty_fintype (R ⧸ P)

@@ -3,10 +3,12 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -31,6 +33,8 @@ which provides the element as a continuous linear map. (Even though `WeakDual �
 character space, Gelfand transform, functional calculus
 
 -/
+
+@[expose] public section
 
 
 namespace WeakDual
@@ -62,8 +66,8 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
--- until the `ContinuousLinearMapClass` instance is declared
+/-- This has to come after `WeakDual.CharacterSpace.instFunLike`, otherwise the right-hand side
+gets coerced via `Subtype.val` instead of directly via `DFunLike`. -/
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
   rfl
@@ -141,8 +145,8 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   { CharacterSpace.instNonUnitalAlgHomClass with
     map_one := map_one'
     commutes := fun φ r => by
-      rw [Algebra.algebraMap_eq_smul_one, Algebra.id.map_eq_id, RingHom.id_apply]
-      rw [map_smul, Algebra.id.smul_eq_mul, map_one' φ, mul_one] }
+      rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_self, RingHom.id_apply]
+      rw [map_smul, smul_eq_mul, map_one' φ, mul_one] }
 
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
 @[simps]
@@ -198,8 +202,7 @@ variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 
 /-- The `RingHom.ker` of `φ : characterSpace 𝕜 A` is maximal. -/
 instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
-  RingHom.ker_isMaximal_of_surjective φ fun z =>
-    ⟨algebraMap 𝕜 A z, by simp only [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply]⟩
+  RingHom.ker_isMaximal_of_surjective φ fun z ↦ ⟨algebraMap 𝕜 A z, by simp [AlgHomClass.commutes]⟩
 
 end Kernel
 
@@ -220,7 +223,7 @@ def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }
   map_one' := by ext a; simp only [coe_mk, coe_one, Pi.one_apply, map_one a]
   map_mul' a b := by ext; simp only [map_mul, coe_mk, coe_mul, Pi.mul_apply]
-  map_zero' := by ext; simp only [map_zero, coe_mk, coe_mul, coe_zero, Pi.zero_apply]
+  map_zero' := by ext; simp only [map_zero, coe_mk, coe_zero, Pi.zero_apply]
   map_add' a b := by ext; simp only [map_add, coe_mk, coe_add, Pi.add_apply]
   commutes' k := by ext; simp [AlgHomClass.commutes]
 

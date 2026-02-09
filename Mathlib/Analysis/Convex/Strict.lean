@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Strictly convex sets
@@ -14,6 +16,8 @@ This file defines strictly convex sets.
 
 A set is strictly convex if the open segment between any two distinct points lies in its interior.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -137,12 +141,12 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 section LinearOrderedCancelAddCommMonoid
 
 variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [OrderTopology β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [OrderTopology β] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
   refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
-  rcases hxy.lt_or_lt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
+  rcases hxy.lt_or_gt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
         (isOpen_Ioo.subset_interior_iff.2 <| Ioo_subset_Icc_self.trans <| hs.out ‹_› ‹_›)
@@ -258,13 +262,8 @@ end AddCommGroup
 end OrderedSemiring
 
 section CommSemiring
-
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E]
-
-section AddCommGroup
-
-variable [AddCommGroup E] [Module 𝕜 E] [NoZeroSMulDivisors 𝕜 E] [ContinuousConstSMul 𝕜 E]
-  {s : Set E}
+variable [CommSemiring 𝕜] [IsDomain 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [AddCommGroup E]
+  [Module 𝕜 E] [Module.IsTorsionFree 𝕜 E] [ContinuousConstSMul 𝕜 E] {s : Set E}
 
 theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
     StrictConvex 𝕜 ((fun z => c • z) ⁻¹' s) := by
@@ -277,8 +276,6 @@ theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
     refine hs.linear_preimage (LinearMap.lsmul _ _ c) ?_ (smul_right_injective E hc)
     unfold LinearMap.lsmul LinearMap.mk₂ LinearMap.mk₂' LinearMap.mk₂'ₛₗ
     exact continuous_const_smul _
-
-end AddCommGroup
 
 end CommSemiring
 
@@ -304,7 +301,7 @@ theorem StrictConvex.eq_of_openSegment_subset_frontier
 theorem StrictConvex.add_smul_mem [AddRightStrictMono 𝕜]
     (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy : x + y ∈ s)
     (hy : y ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • y ∈ interior s := by
-  have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> field_simp
+  have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> simp
   rw [h]
   exact hs hx hxy (fun h => hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
     (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel 1 t)
@@ -362,7 +359,7 @@ theorem strictConvex_iff_div :
     StrictConvex 𝕜 s ↔
       s.Pairwise fun x y =>
         ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → (a / (a + b)) • x + (b / (a + b)) • y ∈ interior s :=
-  ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field_simp),
+  ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field),
     fun h x hx y hy hxy a b ha hb hab ↦ by
     convert h hx hy hxy ha hb <;> rw [hab, div_one]⟩
 

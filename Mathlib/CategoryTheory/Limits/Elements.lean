@@ -3,10 +3,13 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Limits in the category of elements
@@ -15,7 +18,17 @@ We show that if `C` has limits of shape `I` and `A : C ⥤ Type w` preserves lim
 the category of elements of `A` has limits of shape `I` and the forgetful functor
 `π : A.Elements ⥤ C` creates them.
 
+## Further results
+
+- If `A` is (co)representable, then `A.Elements` has an initial object.
+
+## TODOs
+
+- Show that `A` is (co)representable if `A.Elements` has an initial object.
+
 -/
+
+@[expose] public section
 
 universe w v₁ v u₁ u
 
@@ -65,7 +78,7 @@ lemma map_π_liftedConeElement (i : I) :
     (preservesLimitIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
   simp_all [liftedConeElement]
 
-/-- (implementation) The constructured limit cone. -/
+/-- (implementation) The constructed limit cone. -/
 @[simps]
 noncomputable def liftedCone : Cone F where
   pt := ⟨_, liftedConeElement F⟩
@@ -77,7 +90,7 @@ noncomputable def liftedCone : Cone F where
 noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F ⋙ π A) :=
   Iso.refl _
 
-/-- (implementation) The constuctured limit cone is a limit cone. -/
+/-- (implementation) The constructed limit cone is a limit cone. -/
 noncomputable def isLimit : IsLimit (liftedCone F) where
   lift s := ⟨limit.lift (F ⋙ π A) ((π A).mapCone s), by simp⟩
   uniq s m h := ext _ _ _ <| limit.hom_ext
@@ -100,6 +113,16 @@ noncomputable instance : CreatesLimitsOfShape I (π A) where
 
 instance : HasLimitsOfShape I A.Elements :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (π A)
+
+section Initial
+
+instance {F : Cᵒᵖ ⥤ Type*} [F.IsRepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfRepresentableBy F.representableBy).hasInitial
+
+instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfCorepresentableBy F.corepresentableBy).hasInitial
+
+end Initial
 
 end CategoryOfElements
 

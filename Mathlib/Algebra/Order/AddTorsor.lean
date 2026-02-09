@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
@@ -47,6 +49,8 @@ an ordered field.
 * WithTop (in a different file?)
 -/
 
+@[expose] public section
+
 open Function
 
 variable {G P : Type*}
@@ -57,8 +61,8 @@ class IsOrderedVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
   protected vadd_le_vadd_right : ∀ c d : G, c ≤ d → ∀ a : P, c +ᵥ a ≤ d +ᵥ a
 
 /-- An ordered scalar multiplication is a bi-monotone scalar multiplication. Note that this is
-different from `OrderedSMul`, which uses strict inequality, requires `G` to be a semiring, and the
-defining conditions are restricted to positive elements of `G`. -/
+different from `IsOrderedModule` whose defining conditions are restricted to nonnegative elements.
+-/
 @[to_additive]
 class IsOrderedSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop where
   protected smul_le_smul_left : ∀ a b : P, a ≤ b → ∀ c : G, c • a ≤ c • b
@@ -70,8 +74,8 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (· �
 
 @[to_additive]
 instance [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
-  smul_le_smul_left _ _ := mul_le_mul_left'
-  smul_le_smul_right _ _ := mul_le_mul_right'
+  smul_le_smul_left _ _ := mul_le_mul_right
+  smul_le_smul_right _ _ := mul_le_mul_left
 
 @[to_additive]
 theorem IsOrderedSMul.smul_le_smul [LE G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
@@ -84,17 +88,6 @@ theorem Monotone.smul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul
     Monotone fun x => f x • g x :=
   fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
     (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
-
-/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
-class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
-  protected right_cancel : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
-
-/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
-@[to_additive]
-class IsCancelSMul (G P : Type*) [SMul G P] : Prop where
-  protected left_cancel : ∀ (a : G) (b c : P), a • b = a • c → b = c
-  protected right_cancel : ∀ (a b : G) (c : P), a • c = b • c → a = b
 
 /-- An ordered cancellative vector addition is an ordered vector addition that is cancellative. -/
 class IsOrderedCancelVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop
@@ -113,9 +106,9 @@ class IsOrderedCancelSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop
 @[to_additive]
 instance [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] :
     IsCancelSMul G P where
-  left_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
+  left_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_left a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_left a c b h.ge)
-  right_cancel a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
+  right_cancel' a b c h := (IsOrderedCancelSMul.le_of_smul_le_smul_right a b c h.le).antisymm
     (IsOrderedCancelSMul.le_of_smul_le_smul_right b a c h.ge)
 
 @[to_additive]
@@ -133,22 +126,22 @@ namespace SMul
 @[to_additive]
 theorem smul_lt_smul_of_le_of_lt [LE G] [Preorder P] [SMul G P] [IsOrderedCancelSMul G P]
     {a b : G} {c d : P} (h₁ : a ≤ b) (h₂ : c < d) :
-  a • c < b • d := by
+    a • c < b • d := by
   refine lt_of_le_of_lt (IsOrderedSMul.smul_le_smul_right a b h₁ c) ?_
-  refine lt_of_le_not_le (IsOrderedSMul.smul_le_smul_left c d (le_of_lt h₂) b) ?_
+  refine lt_of_le_not_ge (IsOrderedSMul.smul_le_smul_left c d (le_of_lt h₂) b) ?_
   by_contra hbdc
   have h : d ≤ c := IsOrderedCancelSMul.le_of_smul_le_smul_left b d c hbdc
-  rw [@lt_iff_le_not_le] at h₂
+  rw [@lt_iff_le_not_ge] at h₂
   simp_all only [not_true_eq_false, and_false]
 
 @[to_additive]
 theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [IsOrderedCancelSMul G P]
     {a b : G} {c d : P} (h₁ : a < b) (h₂ : c ≤ d) : a • c < b • d := by
   refine lt_of_le_of_lt (IsOrderedSMul.smul_le_smul_left c d h₂ a) ?_
-  refine lt_of_le_not_le (IsOrderedSMul.smul_le_smul_right a b (le_of_lt h₁) d) ?_
+  refine lt_of_le_not_ge (IsOrderedSMul.smul_le_smul_right a b (le_of_lt h₁) d) ?_
   by_contra hbad
   have h : b ≤ a := IsOrderedCancelSMul.le_of_smul_le_smul_right b a d hbad
-  rw [@lt_iff_le_not_le] at h₁
+  rw [@lt_iff_le_not_ge] at h₁
   simp_all only [not_true_eq_false, and_false]
 
 end SMul

@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Action.End
+module
+
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Action.End
 
 /-!
 # Prod instances for multiplicative actions with zero
@@ -17,6 +19,8 @@ This file defines instances for `MulActionWithZero` and related structures on `�
 * `Algebra.GroupWithZero.Action.Pi`
 * `Algebra.GroupWithZero.Action.Units`
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -51,6 +55,14 @@ instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
   smul_mul _ _ _ := by ext <;> exact smul_mul' ..
   smul_one _ := by ext <;> exact smul_one _
+
+instance smulWithZero {R : Type*} [Zero R] [Zero M] [Zero N] [SMulWithZero R M] [SMulWithZero R N] :
+    SMulWithZero R (M × N) where
+  zero_smul _ := by ext <;> exact zero_smul ..
+
+instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
+    [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
+  { Prod.mulAction, Prod.smulWithZero with }
 
 end Prod
 

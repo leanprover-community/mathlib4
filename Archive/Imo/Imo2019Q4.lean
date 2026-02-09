@@ -47,12 +47,12 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       emultiplicity_pow_self_of_prime Int.prime_two, Nat.cast_lt, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
-  calc ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ ∈ range n, (2:ℤ) ^ n := ?_
-    _ < ↑ k ! := ?_
+  calc ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ≤ ∏ __ ∈ range n, (2 : ℤ) ^ n := ?_
+    _ < k ! := ?_
   · gcongr
     · intro i hi
       simp only [mem_range] at hi
-      have : (2:ℤ) ^ i ≤ (2:ℤ) ^ n := by gcongr; norm_num
+      have : (2 : ℤ) ^ i ≤ (2 : ℤ) ^ n := by gcongr; norm_num
       linarith
     · apply sub_le_self
       positivity
@@ -61,25 +61,27 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ < (∑ i ∈ range n, i)! := ?_
     _ ≤ k ! := by gcongr
   clear h h2
-  induction' n, hn using Nat.le_induction with n' hn' IH
-  · decide
-  let A := ∑ i ∈ range n', i
-  have le_sum : ∑ i ∈ range 6, i ≤ A := by
-    apply sum_le_sum_of_subset
-    simpa using hn'
-  calc 2 ^ ((n' + 1) * (n' + 1))
-      ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
-    _ = 2 ^ (n' * n') * (2 ^ 4) ^ n' := by rw [← pow_mul, ← pow_add]
-    _ < A ! * (2 ^ 4) ^ n' := by gcongr
-    _ = A ! * (15 + 1) ^ n' := rfl
-    _ ≤ A ! * (A + 1) ^ n' := by gcongr; exact le_sum
-    _ ≤ (A + n')! := factorial_mul_pow_le_factorial
-    _ = (∑ i ∈ range (n' + 1), i)! := by rw [sum_range_succ]
+  induction n, hn using Nat.le_induction with
+  | base => decide
+  | succ n' hn' IH =>
+    let A := ∑ i ∈ range n', i
+    have le_sum : ∑ i ∈ range 6, i ≤ A := by
+      apply sum_le_sum_of_subset
+      simpa using hn'
+    calc 2 ^ ((n' + 1) * (n' + 1))
+        ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
+      _ = 2 ^ (n' * n') * (2 ^ 4) ^ n' := by rw [← pow_mul, ← pow_add]
+      _ < A ! * (2 ^ 4) ^ n' := by gcongr
+      _ = A ! * (15 + 1) ^ n' := rfl
+      _ ≤ A ! * (A + 1) ^ n' := by gcongr; exact le_sum
+      _ ≤ (A + n')! := factorial_mul_pow_le_factorial
+      _ = (∑ i ∈ range (n' + 1), i)! := by rw [sum_range_succ]
 
 end Imo2019Q4
 
+set_option linter.flexible false in
 theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
-    (k ! : ℤ) = ∏ i ∈ range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
+    (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
   constructor
   swap

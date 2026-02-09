@@ -3,9 +3,16 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Abel
+module -- shake: keep-all
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimber multiplication and division
@@ -23,6 +30,8 @@ uses mutual induction and mimics the definition for the surreal inverse. This de
 
 - Show the nimbers are algebraically closed.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -187,10 +196,10 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
 termination_by (a, b, c)
 
 instance : IsCancelMulZero Nimber where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.mul_add, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_left ha)
-  mul_right_cancel_of_ne_zero ha h := by
+  mul_right_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.add_mul, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_right ha)
 
@@ -220,7 +229,6 @@ instance : CommRing Nimber where
   __ : AddCommGroupWithOne Nimber := inferInstance
 
 instance : IsDomain Nimber where
-instance : CancelMonoidWithZero Nimber where
 
 /-! ### Nimber division -/
 
@@ -263,17 +271,17 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
 /-- An enumeration of elements in `invSet` by a type in the same universe. -/
-private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
+private def List.toNimber {a : Nimber} : List a.toOrdinal.ToType → Nimber
   | [] => 0
   | x :: l =>
-    let a' := ∗((Ordinal.enumIsoToType a.toOrdinal).symm x)
+    let a' := ∗(x)
     invAux a' * (1 + (a + a') * toNimber l)
 
 instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   refine @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@List.toNimber a))
   refine fun x hx ↦ invSet_recOn a ⟨[], rfl⟩ ?_ x hx
   rintro a' ha _ _ ⟨l, rfl⟩
-  use Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩ :: l
+  use .mk ⟨toOrdinal a', ha⟩ :: l
   rw [List.toNimber]
   simp
 
@@ -294,8 +302,6 @@ theorem mem_invSet_of_lt_invAux (h : b < invAux a) : b ∈ invSet a := by
 theorem invAux_notMem_invSet (a : Nimber) : invAux a ∉ invSet a := by
   rw [invAux]
   exact csInf_mem (invSet_nonempty a)
-
-@[deprecated (since := "2025-05-23")] alias invAux_not_mem_invSet := invAux_notMem_invSet
 
 theorem invAux_mem_invSet_of_lt (ha : a ≠ 0) (hb : a < b) : invAux a ∈ invSet b := by
   have H := cons_mem_invSet ha hb (zero_mem_invSet b)

@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Order properties of cast of integers
@@ -20,6 +22,8 @@ which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Ba
 Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 -/
 
+@[expose] public section
+
 open Function Nat
 
 variable {R : Type*}
@@ -30,6 +34,7 @@ section OrderedAddCommGroupWithOne
 variable [AddCommGroupWithOne R] [PartialOrder R] [AddLeftMono R]
 variable [ZeroLEOneClass R]
 
+@[gcongr]
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
   rw [← sub_nonneg] at h
@@ -37,25 +42,23 @@ lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
 
-@[gcongr] protected lemma GCongr.intCast_mono {m n : ℤ} (hmn : m ≤ n) : (m : R) ≤ n := cast_mono hmn
+@[simp] lemma cast_nonneg : ∀ {n : ℤ}, 0 ≤ n → (0 : R) ≤ n | (n : ℕ), _ => by simp
 
 variable [NeZero (1 : R)] {m n : ℤ}
 
-@[simp] lemma cast_nonneg : ∀ {n : ℤ}, (0 : R) ≤ n ↔ 0 ≤ n
+@[simp] lemma cast_nonneg_iff : ∀ {n : ℤ}, (0 : R) ≤ n ↔ 0 ≤ n
   | (n : ℕ) => by simp
   | -[n+1] => by
     have : -(n : R) < 1 := lt_of_le_of_lt (by simp) zero_lt_one
-    simpa [(negSucc_lt_zero n).not_le, ← sub_eq_add_neg, le_neg] using this.not_le
+    simpa [(negSucc_lt_zero n).not_ge, ← sub_eq_add_neg, le_neg] using this.not_ge
 
 @[simp, norm_cast] lemma cast_le : (m : R) ≤ n ↔ m ≤ n := by
-  rw [← sub_nonneg, ← cast_sub, cast_nonneg, sub_nonneg]
+  rw [← sub_nonneg, ← cast_sub, cast_nonneg_iff, sub_nonneg]
 
 lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
   strictMono_of_le_iff_le fun _ _ => cast_le.symm
 
-@[simp, norm_cast] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
-
-@[gcongr] protected alias ⟨_, GCongr.intCast_strictMono⟩ := Int.cast_lt
+@[simp, norm_cast, gcongr] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
 
 @[simp] lemma cast_nonpos : (n : R) ≤ 0 ↔ n ≤ 0 := by rw [← cast_zero, cast_le]
 
@@ -85,7 +88,7 @@ lemma cast_le_neg_one_of_neg (h : a < 0) : (a : R) ≤ -1 := by
 
 variable (R) in
 lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : R) ≤ -1 ∨ 1 ≤ (n : R) :=
-  hn.lt_or_lt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
+  hn.lt_or_gt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
 
 lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by
@@ -100,12 +103,7 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
   · simp [le_total 0 x]
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 
--- TODO: move to a better place
-omit [LinearOrder R] [IsStrictOrderedRing R] in
-lemma cast_natAbs : (n.natAbs : R) = |n| := by
-  cases n
-  · simp
-  · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_natCast, cast_succ]
+@[deprecated (since := "2025-11-07")] alias cast_natAbs := Nat.cast_natAbs
 
 end LinearOrderedRing
 end Int

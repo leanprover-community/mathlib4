@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Unique factorization and multiplicity
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   irreducible factor of a nonzero element is exactly the number of times the normalized factor
   occurs in the `normalizedFactors`.
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -34,24 +38,18 @@ theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a
     (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
   max_power_factor' h hx.not_isUnit
 
-theorem FiniteMultiplicity.of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.finite_of_not_isUnit := FiniteMultiplicity.of_not_isUnit
-
-theorem FiniteMultiplicity.of_prime_left [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_unit hb
 
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.finite_prime_left := FiniteMultiplicity.of_prime_left
-
 namespace UniqueFactorizationMonoid
 
-variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 section multiplicity
 
@@ -66,7 +64,9 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
   rw [← pow_dvd_iff_le_emultiplicity]
   revert b
-  induction' n with n ih; · simp
+  induction n with
+  | zero => simp
+  | succ n ih => ?_
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩
@@ -89,7 +89,7 @@ theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha :
     (hb : b ≠ 0) : emultiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply Order.le_of_lt_add_one
-    rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,
+    rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge,
       le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
     simp
   rw [le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]

@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Adjoints of fully faithful functors
@@ -29,6 +31,8 @@ See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
 `CategoryTheory.Adjunction.isIso_counit_of_iso`.
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -36,7 +40,7 @@ namespace CategoryTheory.Adjunction
 
 universe v₁ v₂ u₁ u₂
 
-open Category
+open Category Functor
 
 open Opposite
 
@@ -48,7 +52,7 @@ variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-/-- If the left adjoint is faithful, then each component of the unit is an monomorphism. -/
+/-- If the left adjoint is faithful, then each component of the unit is a monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=
     L.map_injective <| (h.homEquiv Y (L.obj X)).injective <| by simpa using hfg
@@ -97,7 +101,7 @@ theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
   IsIso.inv_eq_of_hom_inv_id (h.left_triangle_components X)
 
-/-- If the unit is an isomorphism, bundle one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
+/-- If the unit of an adjunction is an isomorphism, then one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
 @[simps!]
 noncomputable def whiskerLeftLCounitIsoOfIsIsoUnit [IsIso h.unit] : L ⋙ R ⋙ L ≅ L :=
   (L.associator R L).symm ≪≫ isoWhiskerRight (asIso h.unit).symm L ≪≫ Functor.leftUnitor _
@@ -109,7 +113,8 @@ theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
   IsIso.inv_eq_of_inv_hom_id (h.right_triangle_components X)
 
-/-- If the counit of an is an isomorphism, one has an isomorphism `(R ⋙ L ⋙ R) ≅ R`. -/
+/-- If the counit of an adjunction is an isomorphism, then one has an isomorphism
+`(R ⋙ L ⋙ R) ≅ R`. -/
 @[simps!]
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
@@ -127,7 +132,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
     use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
     suffices L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) by simp [this]
     rw [← comp_id (L.map (section_ (h.unit.app Y)))]
-    simp only [Functor.comp_obj, Functor.id_obj, comp_id, ← h.left_triangle_components Y,
+    simp only [Functor.comp_obj, Functor.id_obj, ← h.left_triangle_components Y,
       ← assoc, ← Functor.map_comp, IsSplitEpi.id, Functor.map_id, id_comp]
 
 /-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
@@ -147,7 +152,7 @@ lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R
     use (retraction (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f)
     suffices R.map (retraction (h.counit.app X)) = h.unit.app (R.obj X) by simp [this]
     rw [← id_comp (R.map (retraction (h.counit.app X)))]
-    simp only [Functor.id_obj, Functor.comp_obj, id_comp, ← h.right_triangle_components X,
+    simp only [Functor.id_obj, Functor.comp_obj, ← h.right_triangle_components X,
       assoc, ← Functor.map_comp, IsSplitMono.id, Functor.map_id, comp_id]
 
 /-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/

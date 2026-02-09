@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+BENCH="scripts/bench"
+
+# Prepare build
+# Use build cache for proofwidgets, but not for anything else.
+lake clean
+LEAN_PATH=$(lean --print-libdir) lake build proofwidgets
+rm -f .lake/packages/batteries/.lake/build/bin/runLinter
+
+# Run build
+LAKE_OVERRIDE_LEAN=true LEAN=$(realpath "$BENCH/build/fake-root/bin/lean") \
+  "$BENCH/measure.py" -t build \
+  -m instructions -m maxrss -m task-clock -m wall-clock -- \
+  lakeprof record lake build --no-cache
+
+# Analyze lakeprof data
+lakeprof report -pj | jq -c '{metric: "build/lakeprof/longest build path//wall-clock", value: .[-1][2], unit: "s"}' >> measurements.jsonl
+lakeprof report -rj | jq -c '{metric: "build/lakeprof/longest rebuild path//wall-clock", value: .[-1][2], unit: "s"}' >> measurements.jsonl
+
+# Upload lakeprof report
+# Guarded to prevent accidental uploads (which wouldn't work anyways) during local runs.
+if [ -f build_upload_lakeprof_report ]; then
+  python3 "$BENCH/build/lakeprof_report_upload.py"
+fi

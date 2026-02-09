@@ -3,20 +3,24 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.Tactic.IntervalCases
 
 /-!
-# Finite dimensional vector spaces
+# Finite-dimensional vector spaces
 
-This file contains some further development of finite dimensional vector spaces, their dimensions,
+This file contains some further development of finite-dimensional vector spaces, their dimensions,
 and linear maps on such spaces.
 
 Definitions are in `Mathlib/LinearAlgebra/FiniteDimensional/Defs.lean`
 and results that require fewer imports are in `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid.exponent Module.IsTorsion
 
@@ -42,7 +46,8 @@ See also `Submodule.length_lt`. -/
 theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
-  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h.lt_top))
+  rw [← Quotient.nontrivial_iff] at h
+  exact Nat.lt_add_of_pos_right finrank_pos
 
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
 theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional K s]
@@ -139,7 +144,7 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
   have h₁ := f.finrank_range_add_finrank_ker
   have h₂ : finrank K (LinearMap.range f) ≤ finrank K V₂ := (LinearMap.range f).finrank_le
   suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
-  omega
+  lia
 
 end DivisionRing
 
@@ -193,7 +198,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
   (comapSubtypeEquivOfLe hst.le).finrank_eq.symm.trans_lt <|
-    finrank_lt <| by simp [not_le_of_lt hst]
+    finrank_lt <| by simp [not_le_of_gt hst]
 
 theorem finrank_strictMono [FiniteDimensional K V] :
     StrictMono fun s : Submodule K V => finrank K s := fun _ _ => finrank_lt_finrank_of_lt
@@ -366,7 +371,6 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
           _ ≤ finrank K ↑(LinearMap.ker (f ^ n.succ)) := Nat.succ_le_of_lt h_finrank_lt_finrank
     have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn =>
       (h_le_ker_pow n hn).trans (Submodule.finrank_le _)
-    show False
     exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
 
 theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {m : ℕ}
@@ -383,10 +387,10 @@ theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {
 
 theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : ℕ) :
     LinearMap.ker (f ^ m) ≤ LinearMap.ker (f ^ finrank K V) := by
-  by_cases h_cases : m < finrank K V
-  · rw [← add_tsub_cancel_of_le (Nat.le_of_lt h_cases), add_comm, pow_add]
+  by_cases! h_cases : m < finrank K V
+  · rw [← add_tsub_cancel_of_le h_cases.le, add_comm, pow_add]
     apply LinearMap.ker_le_ker_comp
-  · rw [ker_pow_eq_ker_pow_finrank_of_le (le_of_not_lt h_cases)]
+  · rw [ker_pow_eq_ker_pow_finrank_of_le h_cases]
 
 end End
 

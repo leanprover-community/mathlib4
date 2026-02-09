@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Tactic.GCongr
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -26,11 +28,13 @@ Generalize to `PseudoMetrizableSpace`s.
 metric space, paracompact space, normal space
 -/
 
+@[expose] public section
+
 variable {α : Type*}
 
 open ENNReal Topology Set
 
-namespace EMetric
+namespace Metric
 
 -- See note [lower instance priority]
 /-- A `PseudoEMetricSpace` is always a paracompact space.
@@ -47,7 +51,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- Consider an open covering `S : Set (Set α)`
   refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
-  -- choose a well founded order on `S`
+  -- choose a well-founded order on `S`
   obtain ⟨_, wf⟩ := exists_wellOrder ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   let ind (x : α) : ι := wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
@@ -65,35 +69,35 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -/
   set D : ℕ → ι → Set α := fun n =>
     Nat.strongRecOn' n fun n D' i =>
-      ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
-        ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), ball x (2⁻¹ ^ n) with hD
-  have Dn (n i) : D n i = ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i)
-      (hlt : ∀ m < n, ∀ (j : ι), x ∉ D m j), ball x (2⁻¹ ^ n) := by
+      ⋃ (x : α) (hxs : ind x = i) (hb : eball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
+        ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), eball x (2⁻¹ ^ n) with hD
+  have Dn (n i) : D n i = ⋃ (x : α) (hxs : ind x = i) (hb : eball x (3 * 2⁻¹ ^ n) ⊆ s i)
+      (hlt : ∀ m < n, ∀ (j : ι), x ∉ D m j), eball x (2⁻¹ ^ n) := by
     simp only [hD]
     rw [Nat.strongRecOn'_beta]
   have memD {n i y} :
-      y ∈ D n i ↔ ∃ x : α, ind x = i ∧ ball x (3 * 2⁻¹ ^ n) ⊆ s i ∧
+      y ∈ D n i ↔ ∃ x : α, ind x = i ∧ eball x (3 * 2⁻¹ ^ n) ⊆ s i ∧
         (∀ m < n, ∀ (j : ι), x ∉ D m j) ∧ edist y x < 2⁻¹ ^ n := by
     rw [Dn n i]
-    simp only [mem_iUnion, mem_ball, exists_prop]
+    simp only [mem_iUnion, mem_eball, exists_prop]
   -- The sets `D n i` cover the whole space. Indeed, for each `x` we can choose `n` such that
   -- `ball x (3 / 2 ^ n) ⊆ s (ind x)`, then either `x ∈ D n i`, or `x ∈ D m i` for some `m < n`.
   have Dcov (x) : ∃ n i, x ∈ D n i := by
-    obtain ⟨n, hn⟩ : ∃ n : ℕ, ball x (3 * 2⁻¹ ^ n) ⊆ s (ind x) := by
+    obtain ⟨n, hn⟩ : ∃ n : ℕ, eball x (3 * 2⁻¹ ^ n) ⊆ s (ind x) := by
       -- This proof takes 5 lines because we can't import `specific_limits` here
-      rcases isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
+      rcases EMetric.isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
       have : 0 < ε / 3 := ENNReal.div_pos_iff.2 ⟨ε0.lt.ne', ENNReal.coe_ne_top⟩
       rcases ENNReal.exists_inv_two_pow_lt this.ne' with ⟨n, hn⟩
-      refine ⟨n, Subset.trans (ball_subset_ball ?_) hε⟩
+      refine ⟨n, Subset.trans (eball_subset_eball ?_) hε⟩
       simpa only [div_eq_mul_inv, mul_comm] using (ENNReal.mul_lt_of_lt_div hn).le
     by_contra! h
     apply h n (ind x)
-    exact memD.2 ⟨x, rfl, hn, fun _ _ _ => h _ _, mem_ball_self (pow_pos _)⟩
+    exact memD.2 ⟨x, rfl, hn, fun _ _ _ => h _ _, mem_eball_self (pow_pos _)⟩
   -- Each `D n i` is a union of open balls, hence it is an open set
   have Dopen (n i) : IsOpen (D n i) := by
     rw [Dn]
     iterate 4 refine isOpen_iUnion fun _ => ?_
-    exact isOpen_ball
+    exact isOpen_eball
   -- the covering `D n i` is a refinement of the original covering: `D n i ⊆ s i`
   have HDS (n i) : D n i ⊆ s i := fun x => by
     rw [memD]
@@ -114,28 +118,28 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     rcases Dcov x with ⟨n, i, hn⟩
     have : D n i ∈ 𝓝 x := IsOpen.mem_nhds (Dopen _ _) hn
     rcases (nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
-      ⟨k, -, hsub : ball x (2⁻¹ ^ k) ⊆ D n i⟩
-    set B := ball x (2⁻¹ ^ (n + k + 1))
-    refine ⟨B, ball_mem_nhds _ (pow_pos _), ?_⟩
+      ⟨k, -, hsub : eball x (2⁻¹ ^ k) ⊆ D n i⟩
+    set B := eball x (2⁻¹ ^ (n + k + 1))
+    refine ⟨B, eball_mem_nhds _ (pow_pos _), ?_⟩
     -- The sets `D m i`, `m > n + k`, are disjoint with `B`
     have Hgt (m) (hm : n + k + 1 ≤ m) (i : ι) : Disjoint (D m i) B := by
       rw [disjoint_iff_inf_le]
       rintro y ⟨hym, hyx⟩
       rcases memD.1 hym with ⟨z, rfl, _hzi, H, hz⟩
-      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by omega) i (hsub hz')
+      have : z ∉ eball x (2⁻¹ ^ k) := fun hz' => H n (by lia) i (hsub hz')
       apply this
       calc
         edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := ENNReal.add_lt_add hz hyx
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
-          (add_le_add (hpow_le <| by omega) (hpow_le <| by omega))
+          (add_le_add (hpow_le <| by lia) (hpow_le <| by lia))
         _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]
     -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
     have Hle (m) (hm : m ≤ n + k) : Set.Subsingleton { j | (D m j ∩ B).Nonempty } := by
       rintro j₁ ⟨y, hyD, hyB⟩ j₂ ⟨z, hzD, hzB⟩
       by_contra! h' : j₁ ≠ j₂
       wlog h : j₁ < j₂ generalizing j₁ j₂ y z
-      · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_lt.resolve_left h)
+      · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_gt.resolve_left h)
       rcases memD.1 hyD with ⟨y', rfl, hsuby, -, hdisty⟩
       rcases memD.1 hzD with ⟨z', rfl, -, -, hdistz⟩
       suffices edist z' y' < 3 * 2⁻¹ ^ m from notMem_of_lt_ind h (hsuby this)
@@ -161,4 +165,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
 
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
 
-end EMetric
+end Metric
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.t4Space := Metric.t4Space

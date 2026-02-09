@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Localization
-import Mathlib.CategoryTheory.Sites.CompatibleSheafification
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Sites.Localization
+public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-! # Functors which preserve sheafification
 
@@ -39,14 +41,16 @@ suitable limits and colimits.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-  {A B : Type*} [Category A] [Category B] (F : A ⥤ B)
+  {A B : Type*} [Category* A] [Category* B] (F : A ⥤ B)
 
 namespace GrothendieckTopology
 
@@ -143,7 +147,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     erw [adj₁.unit.naturality f]
     dsimp only [Functor.comp_map]
     rw [whiskerRight_comp, (W _).precomp_iff _ _ (h P₁)]
-    apply Localization.LeftBousfield.W_of_isIso
+    apply ObjectProperty.isLocal_of_isIso
 
 section HasSheafCompose
 
@@ -168,7 +172,7 @@ def sheafComposeNatTrans :
 lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
-        whiskerRight (adj₁.unit.app P) F  := by
+        whiskerRight (adj₁.unit.app P) F := by
   simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map,
     Adjunction.homEquiv_counit]
 
@@ -189,7 +193,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasShea
     NatTrans.isIso_iff_isIso_app]
   apply forall_congr'
   intro P
-  rw [← J.W_iff_isIso_map_of_adjunction adj₂, ← J.W_sheafToPreheaf_map_iff_isIso,
+  rw [← J.W_iff_isIso_map_of_adjunction adj₂, ← J.W_sheafToPresheaf_map_iff_isIso,
     ← sheafComposeNatTrans_fac J F adj₁ adj₂,
     (W _).precomp_iff _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
 
@@ -286,8 +290,7 @@ instance : PreservesSheafification J F := by
 
 end
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-example {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → Type (max v u)}
+instance {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → Type (max v u)}
     [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{max v u} D FD]
     [PreservesLimits (forget D)]
     [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
@@ -295,7 +298,7 @@ example {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → 
     [∀ (J : MulticospanShape.{max v u, max v u}),
       Limits.HasLimitsOfShape (Limits.WalkingMulticospan J) D]
     [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) :=
-  instPreservesSheafification _ _
+  inferInstance
 
 end GrothendieckTopology
 

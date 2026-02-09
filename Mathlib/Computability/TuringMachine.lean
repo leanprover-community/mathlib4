@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.PFun
-import Mathlib.Computability.PostTuringMachine
+module
+
+public import Mathlib.Computability.Tape
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.PFun
+public import Mathlib.Computability.PostTuringMachine
 
 /-!
 # Turing machines
@@ -33,7 +35,7 @@ computation. These are the parameters for the language:
 
 All of these variables denote "essentially finite" types, but for technical reasons it is
 convenient to allow them to be infinite anyway. When using an infinite type, we will be interested
-to prove that only finitely many values of the type are ever interacted with.
+in proving that only finitely many values of the type are ever interacted with.
 
 Given these parameters, there are a few common structures for the model that arise:
 
@@ -58,6 +60,8 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -117,7 +121,7 @@ variable (σ : Type*)
 /-- The TM2 model removes the tape entirely from the TM1 model,
   replacing it with an arbitrary (finite) collection of stacks.
   The operation `push` puts an element on one of the stacks,
-  and `pop` removes an element from a stack (and modifying the
+  and `pop` removes an element from a stack (and modifies the
   internal state based on the result). `peek` modifies the
   internal state but does not remove an element. -/
 inductive Stmt
@@ -217,7 +221,7 @@ theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → 
     · exact Finset.mem_insert_of_mem (Finset.mem_union_right _ (IH₂ h₁₂))
   | goto l => subst h₁₂; exact h₀₁
   | halt => subst h₁₂; exact h₀₁
-  | load  _ q IH | _ _ _ q IH =>
+  | load _ q IH | _ _ _ q IH =>
     rcases h₁₂ with (rfl | h₁₂)
     · unfold stmts₁ at h₀₁
       exact h₀₁
@@ -333,7 +337,7 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
     L.nth n k = S.reverse[n]? := by
   rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk,
-    List.getI_eq_iget_getElem?, List.getElem?_map]
+    List.getI_eq_getElem?_getD, List.getElem?_map]
   cases S.reverse[n]? <;> rfl
 
 variable (K : Type*)
@@ -488,7 +492,7 @@ theorem step_run {k : K} (q : TM2.Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k
 
 end
 
-/-- The translation of TM2 statements to TM1 statements. regular actions have direct equivalents,
+/-- The translation of TM2 statements to TM1 statements. Regular actions have direct equivalents,
 but stack actions are deferred by going to the corresponding `go` state, so that we can find the
 appropriate stack top. -/
 def trNormal : TM2.Stmt Γ Λ σ → TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ
@@ -517,7 +521,7 @@ noncomputable def trStmts₁ : TM2.Stmt Γ Λ σ → Finset (Λ' K Γ Λ σ)
   | _ => ∅
 
 theorem trStmts₁_run {k : K} {s : StAct K Γ σ k} {q : TM2.Stmt Γ Λ σ} :
-open scoped Classical in
+    open scoped Classical in
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
   cases s <;> simp only [trStmts₁, stRun]
 
@@ -557,8 +561,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
       rcases lt_or_gt_of_ne h with h | h
       · rw [List.getI_append]
         simpa only [List.length_map, List.length_reverse] using h
-      · rw [gt_iff_lt] at h
-        rw [List.getI_eq_default, List.getI_eq_default] <;>
+      · rw [List.getI_eq_default, List.getI_eq_default] <;>
           simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
             List.length_append, List.length_map]
     · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
@@ -599,8 +602,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
         rcases lt_or_gt_of_ne h with h | h
         · rw [List.getI_append]
           simpa only [List.length_map, List.length_reverse] using h
-        · rw [gt_iff_lt] at h
-          rw [List.getI_eq_default, List.getI_eq_default] <;>
+        · rw [List.getI_eq_default, List.getI_eq_default] <;>
             simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
               List.length_append, List.length_map]
       · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
@@ -677,7 +679,6 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   intro c₁ c₂ h
   obtain @⟨- | l, v, S, L, hT⟩ := h; · constructor
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
@@ -689,6 +690,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | load a _ IH => exact IH _ hT
   | branch p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | goto => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
@@ -702,7 +704,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
   rw [(_ : TM1.init _ = _)]
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ ?_⟩
     refine ListBlank.ext fun i ↦ ?_
-    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map_map]
+    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
     rw [this, List.getElem?_map, proj, PointedMap.mk_val]
@@ -710,9 +712,9 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
     by_cases h : k' = k
     · subst k'
       simp only [Function.update_self]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, ← List.map_reverse, List.getElem?_map]
+      rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, ← List.map_reverse, List.getElem?_map]
     · simp only [Function.update_of_ne h]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map, List.reverse_nil]
+      rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map, List.reverse_nil]
       cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]
     congr <;> cases L.reverse <;> try rfl
@@ -766,7 +768,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       obtain ⟨IH₁, IH₂⟩ := IH ss' fun x hx ↦ sub x <| Or.inr hx
       refine ⟨by simp only [trNormal_run, TM1.SupportsStmt]; intros; exact hgo, fun l h ↦ ?_⟩
       rw [trStmts₁_run] at h
-      simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+      simp only [Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         at h
       rcases h with (⟨rfl | rfl⟩ | h)
       · cases s

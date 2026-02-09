@@ -3,14 +3,17 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Compare
-import Mathlib.Order.Max
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Compare
+public import Mathlib.Order.Max
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Choose
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # Monotonicity
@@ -48,35 +51,13 @@ monotone, strictly monotone, antitone, strictly antitone, increasing, strictly i
 decreasing, strictly decreasing
 -/
 
+public section
+
 open Function OrderDual
 
-universe u v w
+universe u v
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
-
-section Decidable
-
-variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
-
-instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
-instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f a ≤ f b)] :
-    Decidable (MonotoneOn f s) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f b ≤ f a)] :
-    Decidable (AntitoneOn f s) := i
-
-instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
-instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f a < f b)] :
-    Decidable (StrictMonoOn f s) := i
-
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
-    Decidable (StrictAntiOn f s) := i
-
-end Decidable
+variable {ι : Type*} {α : Type u} {β : Type v}
 
 /-! ### Monotonicity on the dual order
 
@@ -101,16 +82,12 @@ theorem monotone_comp_ofDual_iff : Monotone (f ∘ ofDual) ↔ Antitone f :=
 theorem antitone_comp_ofDual_iff : Antitone (f ∘ ofDual) ↔ Monotone f :=
   forall_swap
 
--- Porting note:
--- Here (and below) without the type ascription, Lean is seeing through the
--- defeq `βᵒᵈ = β` and picking up the wrong `Preorder` instance.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/logic.2Eequiv.2Ebasic.20mathlib4.23631/near/311744939
 @[simp]
-theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f : α → βᵒᵈ) ↔ Antitone f :=
+theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
   Iff.rfl
 
 @[simp]
-theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f : α → βᵒᵈ) ↔ Monotone f :=
+theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
   Iff.rfl
 
 @[simp]
@@ -122,11 +99,11 @@ theorem antitoneOn_comp_ofDual_iff : AntitoneOn (f ∘ ofDual) s ↔ MonotoneOn 
   forall₂_swap
 
 @[simp]
-theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ AntitoneOn f s :=
+theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f) s ↔ AntitoneOn f s :=
   Iff.rfl
 
 @[simp]
-theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ MonotoneOn f s :=
+theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f) s ↔ MonotoneOn f s :=
   Iff.rfl
 
 @[simp]
@@ -257,6 +234,20 @@ end WellFounded
 
 /-! ### Miscellaneous monotonicity results -/
 
+section PreorderPartialOrder
+
+variable [Preorder α] [PartialOrder β] {f : α → β} {s : Set α}
+
+theorem MonotoneOn.strictMonoOn_of_injOn (hmono : MonotoneOn f s) (hinj : s.InjOn f) :
+    StrictMonoOn f s :=
+  fun _ hx _ hy h ↦ hmono hx hy h.le |>.lt_of_ne <| mt (hinj hx hy) h.ne
+
+theorem AntitoneOn.strictAntiOn_of_injOn (hanti : AntitoneOn f s) (hinj : s.InjOn f) :
+    StrictAntiOn f s :=
+  fun _ hx _ hy h ↦ hanti hx hy h.le |>.lt_of_ne' <| mt (hinj hx hy) h.ne
+
+end PreorderPartialOrder
+
 section Preorder
 
 variable [Preorder α] [Preorder β] {f g : α → β} {a : α}
@@ -266,6 +257,7 @@ theorem StrictMono.isMax_of_apply (hf : StrictMono f) (ha : IsMax (f a)) : IsMax
     let ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMax ha
 
+@[to_dual existing]
 theorem StrictMono.isMin_of_apply (hf : StrictMono f) (ha : IsMin (f a)) : IsMin a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMin_iff.1 h
@@ -281,12 +273,12 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     let ⟨_, hb⟩ := not_isMin_iff.1 h
     (hf hb).not_isMax ha
 
-lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n) := by
   rw [Nat.add_comm m, Nat.add_comm m]
   induction m with
   | zero => rw [Nat.add_zero, Nat.add_zero]
   | succ m ih =>
-    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le_iff]
     exact ih.trans_lt (hf (n + m).lt_succ_self)
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
@@ -356,12 +348,14 @@ open Ordering
 
 theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a ≤ f b ↔ a ≤ b :=
-  ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_le h, fun h ↦
+  ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_ge h, fun h ↦
     h.lt_or_eq_dec.elim (fun h' ↦ (hf ha hb h').le) fun h' ↦ h' ▸ le_rfl⟩
 
-theorem StrictAntiOn.le_iff_le (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+theorem StrictAntiOn.le_iff_ge (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a ≤ f b ↔ b ≤ a :=
   hf.dual_right.le_iff_le hb ha
+
+@[deprecated (since := "2025-08-12")] alias StrictAntiOn.le_iff_le := StrictAntiOn.le_iff_ge
 
 theorem StrictMonoOn.eq_iff_eq (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a = f b ↔ a = b :=
@@ -375,23 +369,29 @@ theorem StrictAntiOn.eq_iff_eq (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s)
 
 theorem StrictMonoOn.lt_iff_lt (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ a < b := by
-  rw [lt_iff_le_not_le, lt_iff_le_not_le, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
+  rw [lt_iff_le_not_ge, lt_iff_le_not_ge, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
 
-theorem StrictAntiOn.lt_iff_lt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+theorem StrictAntiOn.lt_iff_gt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ b < a :=
   hf.dual_right.lt_iff_lt hb ha
+
+@[deprecated (since := "2025-08-12")] alias StrictAntiOn.lt_iff_lt := StrictAntiOn.lt_iff_gt
 
 theorem StrictMono.le_iff_le (hf : StrictMono f) {a b : α} : f a ≤ f b ↔ a ≤ b :=
   (hf.strictMonoOn Set.univ).le_iff_le trivial trivial
 
-theorem StrictAnti.le_iff_le (hf : StrictAnti f) {a b : α} : f a ≤ f b ↔ b ≤ a :=
-  (hf.strictAntiOn Set.univ).le_iff_le trivial trivial
+theorem StrictAnti.le_iff_ge (hf : StrictAnti f) {a b : α} : f a ≤ f b ↔ b ≤ a :=
+  (hf.strictAntiOn Set.univ).le_iff_ge trivial trivial
+
+@[deprecated (since := "2025-08-12")] alias StrictAnti.le_iff_le := StrictAnti.le_iff_ge
 
 theorem StrictMono.lt_iff_lt (hf : StrictMono f) {a b : α} : f a < f b ↔ a < b :=
   (hf.strictMonoOn Set.univ).lt_iff_lt trivial trivial
 
-theorem StrictAnti.lt_iff_lt (hf : StrictAnti f) {a b : α} : f a < f b ↔ b < a :=
-  (hf.strictAntiOn Set.univ).lt_iff_lt trivial trivial
+theorem StrictAnti.lt_iff_gt (hf : StrictAnti f) {a b : α} : f a < f b ↔ b < a :=
+  (hf.strictAntiOn Set.univ).lt_iff_gt trivial trivial
+
+@[deprecated (since := "2025-08-12")] alias StrictAnti.lt_iff_lt := StrictAnti.lt_iff_gt
 
 protected theorem StrictMonoOn.compares (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : ∀ {o : Ordering}, o.Compares (f a) (f b) ↔ o.Compares a b
@@ -433,17 +433,17 @@ theorem StrictMono.minimal_of_minimal_image (hf : StrictMono f) {a} (hmin : ∀ 
 
 theorem StrictAnti.minimal_of_maximal_image (hf : StrictAnti f) {a} (hmax : ∀ p, p ≤ f a) (x : α) :
     a ≤ x :=
-  hf.le_iff_le.mp (hmax (f x))
+  hf.le_iff_ge.mp (hmax (f x))
 
 theorem StrictAnti.maximal_of_minimal_image (hf : StrictAnti f) {a} (hmin : ∀ p, f a ≤ p) (x : α) :
     x ≤ a :=
-  hf.le_iff_le.mp (hmin (f x))
+  hf.le_iff_ge.mp (hmin (f x))
 
 end Preorder
 
 section PartialOrder
 
-variable [PartialOrder β] {f : α → β}
+variable [PartialOrder β] {f : α → β} {s : Set α}
 
 theorem Monotone.strictMono_iff_injective (hf : Monotone f) : StrictMono f ↔ Injective f :=
   ⟨fun h ↦ h.injective, hf.strictMono_of_injective⟩
@@ -451,19 +451,29 @@ theorem Monotone.strictMono_iff_injective (hf : Monotone f) : StrictMono f ↔ I
 theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ Injective f :=
   ⟨fun h ↦ h.injective, hf.strictAnti_of_injective⟩
 
+theorem MonotoneOn.strictMonoOn_iff_injOn (hf : MonotoneOn f s) : StrictMonoOn f s ↔ s.InjOn f :=
+  ⟨StrictMonoOn.injOn, hf.strictMonoOn_of_injOn⟩
+
+theorem AntitoneOn.strictAnti_iff_injOn (hf : AntitoneOn f s) : StrictAntiOn f s ↔ s.InjOn f :=
+  ⟨StrictAntiOn.injOn, hf.strictAntiOn_of_injOn⟩
+
 /-- If a monotone function is equal at two points, it is equal between all of them -/
-theorem Monotone.eq_of_le_of_le {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) {i : α}
+theorem Monotone.eq_of_ge_of_le {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) {i : α}
     (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
   apply le_antisymm
   · rw [h_fa]; exact h_mon h₂
   · exact h_mon h₁
 
+@[deprecated (since := "2025-07-18")] alias Monotone.eq_of_le_of_le := Monotone.eq_of_ge_of_le
+
 /-- If an antitone function is equal at two points, it is equal between all of them -/
-theorem Antitone.eq_of_le_of_le {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂) {i : α}
+theorem Antitone.eq_of_ge_of_le {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂) {i : α}
     (h₁ : a₁ ≤ i) (h₂ : i ≤ a₂) : f i = f a₁ := by
   apply le_antisymm
   · exact h_anti h₁
   · rw [h_fa]; exact h_anti h₂
+
+@[deprecated (since := "2025-07-18")] alias Antitone.eq_of_le_of_le := Antitone.eq_of_ge_of_le
 
 end PartialOrder
 
@@ -474,30 +484,8 @@ downright. -/
 lemma not_monotone_not_antitone_iff_exists_le_le :
     ¬ Monotone f ∧ ¬ Antitone f ↔
       ∃ a b c, a ≤ b ∧ b ≤ c ∧ ((f a < f b ∧ f c < f b) ∨ (f b < f a ∧ f b < f c)) := by
-  simp_rw [Monotone, Antitone, not_forall, not_le]
-  refine Iff.symm ⟨?_, ?_⟩
-  · rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-    exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩]
-  rintro ⟨⟨a, b, hab, hfba⟩, c, d, hcd, hfcd⟩
-  obtain hda | had := le_total d a
-  · obtain hfad | hfda := le_total (f a) (f d)
-    · exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩
-    · exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩
-  obtain hac | hca := le_total a c
-  · obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩
-    obtain hfca | hfac := lt_or_le (f c) (f a)
-    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩
-    obtain hbd | hdb := le_total b d
-    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
-    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
-  · obtain hfdb | hfbd := le_or_lt (f d) (f b)
-    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩
-    obtain hfca | hfac := lt_or_le (f c) (f a)
-    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩
-    obtain hbd | hdb := le_total b d
-    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
-    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
+  simp only [Monotone, Antitone]
+  grind [not_le]
 
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
@@ -544,7 +532,7 @@ theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans
   | refl => exact h _ hab
   | step b_lt_k r_b_k => exact _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)
 
-theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
+theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r]
     {f : ℕ → β} {a : ℕ} (h : ∀ n, a ≤ n → r (f n) (f (n + 1)))
     ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b ≤ c) : r (f b) (f c) :=
   hbc.eq_or_lt.elim (fun h ↦ h ▸ refl _) (Nat.rel_of_forall_rel_succ_of_le_of_lt r h hab)
@@ -553,15 +541,49 @@ theorem Nat.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℕ⦄ (hab : a < b) : r (f a) (f b) :=
   Nat.rel_of_forall_rel_succ_of_le_of_lt r (fun n _ ↦ h n) le_rfl hab
 
-theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℕ → β}
+theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r] {f : ℕ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℕ⦄ (hab : a ≤ b) : r (f a) (f b) :=
   Nat.rel_of_forall_rel_succ_of_le_of_le r (fun n _ ↦ h n) le_rfl hab
 
 theorem monotone_nat_of_le_succ {f : ℕ → α} (hf : ∀ n, f n ≤ f (n + 1)) : Monotone f :=
   Nat.rel_of_forall_rel_succ_of_le (· ≤ ·) hf
 
+theorem monotone_add_nat_of_le_succ {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f n ≤ f (n + 1)) :
+    Monotone (fun n ↦ f (n + k)) :=
+  fun _ _ hle ↦ Nat.rel_of_forall_rel_succ_of_le_of_le (· ≤ ·) hf
+    (Nat.le_add_left k _) (Nat.add_le_add_iff_right.mpr hle)
+
+-- TODO replace `{ x | k ≤ x }` with `Set.Ici k`
+theorem monotoneOn_nat_Ici_of_le_succ {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f n ≤ f (n + 1)) :
+    MonotoneOn f { x | k ≤ x } :=
+  fun _ hab _ _ hle ↦ Nat.rel_of_forall_rel_succ_of_le_of_le (· ≤ ·) hf hab hle
+
+-- TODO replace `{ x | k ≤ x }` with `Set.Ici k`
+theorem monotone_add_nat_iff_monotoneOn_nat_Ici {f : ℕ → α} {k : ℕ} :
+    Monotone (fun n ↦ f (n + k)) ↔ MonotoneOn f { x | k ≤ x } := by
+  refine ⟨fun h x hx y hy hle ↦ ?_, fun h x y hle ↦ ?_⟩
+  · rw [← Nat.sub_add_cancel hx, ← Nat.sub_add_cancel hy]
+    rw [← Nat.sub_le_sub_iff_right hy] at hle
+    exact h hle
+  · rw [← Nat.add_le_add_iff_right] at hle
+    exact h (Nat.le_add_left k x) (Nat.le_add_left k y) hle
+
 theorem antitone_nat_of_succ_le {f : ℕ → α} (hf : ∀ n, f (n + 1) ≤ f n) : Antitone f :=
   @monotone_nat_of_le_succ αᵒᵈ _ _ hf
+
+theorem antitone_add_nat_of_succ_le {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f (n + 1) ≤ f n) :
+    Antitone (fun n ↦ f (n + k)) :=
+  @monotone_add_nat_of_le_succ αᵒᵈ _ f k hf
+
+-- TODO replace `{ x | k ≤ x }` with `Set.Ici k`
+theorem antitoneOn_nat_Ici_of_succ_le {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f (n + 1) ≤ f n) :
+    AntitoneOn f { x | k ≤ x } :=
+  @monotoneOn_nat_Ici_of_le_succ αᵒᵈ _ f k hf
+
+-- TODO replace `{ x | k ≤ x }` with `Set.Ici k`
+theorem antitone_add_nat_iff_antitoneOn_nat_Ici {f : ℕ → α} {k : ℕ} :
+    Antitone (fun n ↦ f (n + k)) ↔ AntitoneOn f { x | k ≤ x } :=
+  @monotone_add_nat_iff_monotoneOn_nat_Ici αᵒᵈ _ f k
 
 theorem strictMono_nat_of_lt_succ {f : ℕ → α} (hf : ∀ n, f n < f (n + 1)) : StrictMono f :=
   Nat.rel_of_forall_rel_succ_of_lt (· < ·) hf
@@ -625,7 +647,7 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
   | zero => rw [Int.ofNat_one]; apply h
   | succ n ihn => rw [Int.natCast_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
-theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
+theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=
   hab.eq_or_lt.elim (fun h ↦ h ▸ refl _) fun h' ↦ Int.rel_of_forall_rel_succ_of_lt r h h'
 
@@ -655,7 +677,7 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
   refine ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ ?_⟩
   rintro (n | _ | n)
   · exact hf n.lt_succ_self
-  · show g 1 < f 0
+  · change g 1 < f 0
     rw [hf₀, ← hg₀]
     exact hg Nat.zero_lt_one
   · exact hg (Nat.lt_succ_self _)
@@ -673,28 +695,28 @@ end Int
 theorem Monotone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Monotone f) (n : ℕ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℕ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h1).not_le (Nat.le_of_lt_succ <| hf.reflect_lt h2)
+  exact (hf.reflect_lt h1).not_ge (Nat.le_of_lt_succ <| hf.reflect_lt h2)
 
 /-- If `f` is an antitone function from `ℕ` to a preorder such that `x` lies between `f (n + 1)` and
 `f n`, then `x` doesn't lie in the range of `f`. -/
 theorem Antitone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Antitone f) (n : ℕ) {x : α}
     (h1 : f (n + 1) < x) (h2 : x < f n) (a : ℕ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h2).not_le (Nat.le_of_lt_succ <| hf.reflect_lt h1)
+  exact (hf.reflect_lt h2).not_ge (Nat.le_of_lt_succ <| hf.reflect_lt h1)
 
 /-- If `f` is a monotone function from `ℤ` to a preorder and `x` lies between `f n` and
   `f (n + 1)`, then `x` doesn't lie in the range of `f`. -/
 theorem Monotone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Monotone f) (n : ℤ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℤ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h1).not_le (Int.le_of_lt_add_one <| hf.reflect_lt h2)
+  exact (hf.reflect_lt h1).not_ge (Int.le_of_lt_add_one <| hf.reflect_lt h2)
 
 /-- If `f` is an antitone function from `ℤ` to a preorder and `x` lies between `f (n + 1)` and
 `f n`, then `x` doesn't lie in the range of `f`. -/
 theorem Antitone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Antitone f) (n : ℤ) {x : α}
     (h1 : f (n + 1) < x) (h2 : x < f n) (a : ℤ) : f a ≠ x := by
   rintro rfl
-  exact (hf.reflect_lt h2).not_le (Int.le_of_lt_add_one <| hf.reflect_lt h1)
+  exact (hf.reflect_lt h2).not_ge (Int.le_of_lt_add_one <| hf.reflect_lt h1)
 
 end Preorder
 
@@ -721,15 +743,9 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
   induction c with
   | zero => use 0, 0, fun n _ ↦ Nat.eq_zero_of_le_zero (hc n)
   | succ c ih =>
-    by_cases h : ∀ n, f n ≤ c
+    by_cases! h : ∀ n, f n ≤ c
     · exact ih h
-    · push_neg at h; obtain ⟨N, hN⟩ := h
-      replace hN : f N = c + 1 := by specialize hc N; omega
+    · obtain ⟨N, hN⟩ := h
+      replace hN : f N = c + 1 := by specialize hc N; lia
       use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; omega
-
-@[deprecated (since := "2024-11-27")]
-alias Group.card_pow_eq_card_pow_card_univ_aux := Nat.stabilises_of_monotone
-
-@[deprecated (since := "2024-11-27")]
-alias Group.card_nsmul_eq_card_nsmulpow_card_univ_aux := Nat.stabilises_of_monotone
+      specialize mono_f hn; specialize hc n; lia

@@ -3,9 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Iván Renison
 -/
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.ZMod.Defs
+module
+
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Parity in `Fin n`
@@ -17,6 +19,8 @@ We also prove a lemma about parity of `Fin.succAbove i j + Fin.predAbove j i`
 which can be used to prove `d ∘ d = 0` for de Rham cohomologies.
 -/
 
+public section
+
 open Fin
 
 namespace Fin
@@ -27,7 +31,7 @@ variable {n : ℕ} {k : Fin n}
 
 theorem even_succAbove_add_predAbove (i : Fin (n + 1)) (j : Fin n) :
     Even (i.succAbove j + j.predAbove i : ℕ) ↔ Odd (i + j : ℕ) := by
-  rcases lt_or_le j.castSucc i with hji | hij
+  rcases lt_or_ge j.castSucc i with hji | hij
   · have : 1 ≤ (i : ℕ) := (Nat.zero_le j).trans_lt hji
     simp [succAbove_of_castSucc_lt _ _ hji, predAbove_of_castSucc_lt _ _ hji, this, iff_comm,
       parity_simps]
@@ -71,7 +75,7 @@ lemma odd_iff_of_even [NeZero n] (hn : Even n) : Odd k ↔ Odd k.val := by
   rcases hn with ⟨n, rfl⟩
   refine ⟨?_, odd_of_val⟩
   rintro ⟨l, rfl⟩
-  rw [val_add, val_mul, val_one', show Fin.val 2 = 2 % _ from rfl]
+  rw [val_add, val_mul, coe_ofNat_eq_mod, coe_ofNat_eq_mod]
   simp only [Nat.mod_mul_mod, Nat.add_mod_mod, Nat.mod_add_mod, Nat.odd_iff]
   rw [Nat.mod_mod_of_dvd _ ⟨n, (two_mul n).symm⟩, ← Nat.odd_iff, Nat.odd_add_one,
     Nat.not_odd_iff_even]

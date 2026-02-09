@@ -3,9 +3,11 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Directed
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Directed
 
 /-!
 # Monotone functions on intervals
@@ -13,6 +15,8 @@ import Mathlib.Order.Directed
 This file shows many variants of the fact that a monotone function `f` sends an interval with
 endpoints `a` and `b` to the interval with endpoints `f a` and `f b`.
 -/
+
+public section
 
 variable {α β : Type*} {f : α → β}
 

@@ -3,15 +3,19 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.CategoryTheory.Category.Bipointed
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.GroupWithZero.WithZero
+public import Mathlib.CategoryTheory.Category.Bipointed
 
 /-!
 # The category of groups with zero
 
 This file defines `GrpWithZero`, the category of groups with zero.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -21,6 +25,8 @@ open CategoryTheory
 
 /-- The category of groups with zero. -/
 structure GrpWithZero where
+  /-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
+  of ::
   /-- The underlying group with zero. -/
   carrier : Type*
   [str : GroupWithZero carrier]
@@ -31,10 +37,6 @@ namespace GrpWithZero
 
 instance : CoeSort GrpWithZero Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
-abbrev of (α : Type*) [GroupWithZero α] : GrpWithZero where
-  carrier := α
 
 instance : Inhabited GrpWithZero :=
   ⟨of (WithZero PUnit)⟩
@@ -65,7 +67,8 @@ lemma coe_id {X : GrpWithZero} : (𝟙 X : X → X) = id := rfl
 lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
-  (forget GrpWithZero).map f = f := rfl
+    (forget GrpWithZero).map f = (f : _ → _) :=
+  rfl
 
 instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=

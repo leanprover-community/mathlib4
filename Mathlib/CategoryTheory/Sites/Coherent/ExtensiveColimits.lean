@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-import Mathlib.CategoryTheory.Sites.Limits
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+public import Mathlib.CategoryTheory.Sites.Limits
 /-!
 
 # Colimits in categories of extensive sheaves
@@ -19,13 +21,15 @@ This can also easily be applied to filtered `J` in the case when `A` is a catego
 eventually to sifted `J` once that API is developed.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits Sheaf GrothendieckTopology Opposite
 
 section
 
-variable {A C J : Type*} [Category A] [Category C] [Category J]
+variable {A C J : Type*} [Category* A] [Category* C] [Category* J]
   [FinitaryExtensive C] [HasColimitsOfShape J A]
 
 lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A))]
@@ -33,7 +37,7 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
     Presheaf.IsSheaf (extensiveTopology C) (pointwiseCocone (G ⋙ sheafToPresheaf _ A)).pt := by
   rw [Presheaf.isSheaf_iff_preservesFiniteProducts]
   dsimp only [pointwiseCocone_pt]
-  apply (config := { allowSynthFailures := true } ) comp_preservesFiniteProducts
+  apply +allowSynthFailures comp_preservesFiniteProducts
   have : ∀ (i : J), PreservesFiniteProducts ((G ⋙ sheafToPresheaf _ A).obj i) := fun i ↦ by
     rw [← Presheaf.isSheaf_iff_preservesFiniteProducts]
     exact Sheaf.cond _
@@ -42,8 +46,7 @@ lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A)
 
 instance [Preadditive A] : PreservesFiniteProducts (colim (J := J) (C := A)) where
   preserves _ := by
-    apply (config := { allowSynthFailures := true })
-      preservesProductsOfShape_of_preservesBiproductsOfShape
+    apply +allowSynthFailures preservesProductsOfShape_of_preservesBiproductsOfShape
     apply preservesBiproductsOfShape_of_preservesCoproductsOfShape
 
 instance [PreservesFiniteProducts (colim (J := J) (C := A))] :

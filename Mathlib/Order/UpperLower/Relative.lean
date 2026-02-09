@@ -3,16 +3,20 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.SetNotation
 
 /-!
 # Properties of relative upper/lower sets
 
 This file proves results on `IsRelUpperSet` and `IsRelLowerSet`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -127,6 +131,8 @@ instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (RelUpperSet P) := .ofSetLike (RelUpperSet P) α
+
 instance : SetLike (RelLowerSet P) α where
   coe := RelLowerSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
@@ -145,7 +151,7 @@ lemma isRelUpperSet_Icc_le : IsRelUpperSet (Icc a c) (· ≤ c) := fun _ b ↦ b
   exact fun _ x _ ↦ b.1.trans x
 
 lemma isRelLowerSet_Icc_ge : IsRelLowerSet (Icc c a) (c ≤ ·) := fun _ b ↦ by
-  simp_all only [mem_Icc, and_true, true_and]
+  simp_all only [mem_Icc, true_and]
   exact fun _ x _ ↦ x.trans b.2
 
 end Preorder

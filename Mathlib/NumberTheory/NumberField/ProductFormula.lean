@@ -3,8 +3,10 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.NumberTheory.NumberField.FinitePlaces
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+module
+
+public import Mathlib.NumberTheory.NumberField.FinitePlaces
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The Product Formula for number fields
@@ -20,14 +22,16 @@ ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 ## Main Results
 
 * `NumberField.FinitePlace.prod_eq_inv_abs_norm`: for any non-zero element `x` of a number field
-`K`, the product `∏ |x|ᵥ` of the absolute values of `x` associated to the finite places of `K` is
-equal to the inverse of the norm of `x`.
+  `K`, the product `∏ |x|ᵥ` of the absolute values of `x` associated to the finite places of `K` is
+  equal to the inverse of the norm of `x`.
 * `NumberField.prod_abs_eq_one`: for any non-zero element `x` of a number field `K`, we have
-`∏ |x|ᵥ=1`, where the product runs over the equivalence classes of absolute values of `K`.
+  `∏ |x|ᵥ=1`, where the product runs over the equivalence classes of absolute values of `K`.
 
 ## Tags
 number field, embeddings, places, infinite places, finite places, product formula
 -/
+
+public section
 
 namespace NumberField
 
@@ -36,7 +40,7 @@ variable {K : Type*} [Field K] [NumberField K]
 open Algebra
 
 open Function Ideal IsDedekindDomain HeightOneSpectrum in
-/-- For any non-zero `x` in `𝓞 K`, the prduct of `w x`, where `w` runs over `FinitePlace K`, is
+/-- For any non-zero `x` in `𝓞 K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℤ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     ∏ᶠ w : FinitePlace K, w x = (|norm ℤ x| : ℝ)⁻¹ := by
@@ -54,7 +58,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   have h_fin₁ : t₁.Finite := h_fin₀.subset <| by simp [norm_eq_one_iff_notMem, t₁, t₀]
   have h_fin₂ : t₂.Finite := by
     refine h_fin₀.subset ?_
-    simp only [Set.le_eq_subset, mulSupport_subset_iff, Set.mem_setOf_eq, t₂, t₀,
+    simp only [mulSupport_subset_iff, Set.mem_setOf_eq, t₂, t₀,
       maxPowDividing, ← dvd_span_singleton]
     intro v hv
     simp only [map_pow, Nat.cast_pow, ← pow_zero (absNorm v.asIdeal : ℝ)] at hv
@@ -68,7 +72,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
   exact finprod_eq_one_of_forall_eq_one fun v ↦ v.embedding_mul_absNorm h_x_nezero
 
-/-- For any non-zero `x` in `K`, the prduct of `w x`, where `w` runs over `FinitePlace K`, is
+/-- For any non-zero `x` in `K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℚ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
     ∏ᶠ w : FinitePlace K, w x = |(Algebra.norm ℚ) x|⁻¹ := by
@@ -85,7 +89,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
   have hb₀ : ((Algebra.norm ℤ) b : ℝ) ≠ 0 := by simp [hb]
   refine (eq_div_of_mul_eq hb₀ ?_).symm
   norm_cast
-  rw [coe_norm_int a, coe_norm_int b, ← MonoidHom.map_mul, div_mul_cancel₀ _
+  rw [coe_norm_int a, coe_norm_int b, ← map_mul, div_mul_cancel₀ _
     (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
 
 open FinitePlace in

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Topology.Basic
 
 /-!
 # Interior, closure and frontier of a set
@@ -23,6 +25,8 @@ endowed with a topology.
 
 interior, closure, frontier
 -/
+
+public section
 
 open Set
 
@@ -45,8 +49,17 @@ theorem interior_subset : interior s ⊆ s :=
 theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
 
+@[grind =]
 theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
+
+theorem forall_isOpen_iff {p : Set X → Prop} :
+    (∀ t, IsOpen t → p t) ↔ ∀ t, p (interior t) :=
+  ⟨fun h t ↦ h (interior t) isOpen_interior, fun h t ht ↦ ht.interior_eq ▸ h t⟩
+
+theorem exists_isOpen_iff {p : Set X → Prop} :
+    (∃ t, IsOpen t ∧ p t) ↔ ∃ t, p (interior t) :=
+  ⟨fun ⟨_, h⟩ ↦ ⟨_, h.1.interior_eq ▸ h.2⟩, fun ⟨_, h⟩ ↦ ⟨_, isOpen_interior, h⟩⟩
 
 theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
   ⟨fun h => h ▸ isOpen_interior, IsOpen.interior_eq⟩
@@ -67,6 +80,9 @@ lemma interior_subset_iff : interior s ⊆ t ↔ ∀ U, IsOpen U → U ⊆ s →
 @[mono, gcongr]
 theorem interior_mono (h : s ⊆ t) : interior s ⊆ interior t :=
   interior_maximal (Subset.trans interior_subset h) isOpen_interior
+
+theorem subset_interior_union : interior s ∪ interior t ⊆ interior (s ∪ t) :=
+  union_subset (interior_mono subset_union_left) (interior_mono subset_union_right)
 
 @[simp]
 theorem interior_empty : interior (∅ : Set X) = ∅ :=
@@ -120,6 +136,14 @@ theorem interior_iInter₂_le_nat {n : ℕ} (f : ℕ → Set X) :
     interior (⋂ m ≤ n, f m) = ⋂ m ≤ n, interior (f m) :=
   (finite_le_nat n).interior_biInter f
 
+theorem interior_union_inter_interior_compl_left_subset :
+    interior (s ∪ t) ∩ interior sᶜ ⊆ interior t :=
+  interior_inter.symm.trans_subset <| interior_mono (union_inter_compl_left_subset ..)
+
+theorem interior_union_inter_interior_compl_right_subset :
+    interior (s ∪ t) ∩ interior tᶜ ⊆ interior s :=
+  interior_inter.symm.trans_subset <| interior_mono (union_inter_compl_right_subset ..)
+
 theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
   have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ =>
@@ -172,8 +196,6 @@ theorem subset_closure : s ⊆ closure s :=
 theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
 
@@ -187,6 +209,14 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
 
 @[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
+
+theorem forall_isClosed_iff {p : Set X → Prop} :
+    (∀ t, IsClosed t → p t) ↔ ∀ t, p (closure t) :=
+  ⟨fun h t ↦ h (closure t) isClosed_closure, fun h t ht ↦ ht.closure_eq ▸ h t⟩
+
+theorem exists_isClosed_iff {p : Set X → Prop} :
+    (∃ t, IsClosed t ∧ p t) ↔ ∃ t, p (closure t) :=
+  ⟨fun ⟨_, h⟩ ↦ ⟨_, h.1.closure_eq ▸ h.2⟩, fun ⟨_, h⟩ ↦ ⟨_, isClosed_closure, h⟩⟩
 
 theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
   closure_minimal (Subset.refl _) hs
@@ -204,6 +234,9 @@ theorem closure_mono (h : s ⊆ t) : closure s ⊆ closure t :=
 
 theorem monotone_closure (X : Type*) [TopologicalSpace X] : Monotone (@closure X _) := fun _ _ =>
   closure_mono
+
+theorem closure_inter_subset : closure (s ∩ t) ⊆ closure s ∩ closure t :=
+  subset_inter (closure_mono inter_subset_left) (closure_mono inter_subset_right)
 
 theorem diff_subset_closure_iff : s \ t ⊆ closure t ↔ s ⊆ closure t := by
   rw [diff_subset_iff, union_eq_self_of_subset_left subset_closure]
@@ -276,6 +309,14 @@ theorem closure_iUnion₂_le_nat {n : ℕ} (f : ℕ → Set X) :
     closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) :=
   (finite_le_nat n).closure_biUnion f
 
+theorem subset_closure_inter_union_closure_compl_left :
+    closure t ⊆ closure (s ∩ t) ∪ closure sᶜ :=
+  (closure_mono <| subset_inter_union_compl_left ..).trans_eq closure_union
+
+theorem subset_closure_inter_union_closure_compl_right :
+    closure s ⊆ closure (s ∩ t) ∪ closure tᶜ :=
+  (closure_mono <| subset_inter_union_compl_right ..).trans_eq closure_union
+
 theorem interior_subset_closure : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
 
@@ -286,6 +327,24 @@ theorem interior_compl : interior sᶜ = (closure s)ᶜ := by
 @[simp]
 theorem closure_compl : closure sᶜ = (interior s)ᶜ := by
   simp [closure_eq_compl_interior_compl]
+
+theorem interior_eq_compl_closure_compl : interior s = (closure sᶜ)ᶜ := by simp
+
+theorem interior_union_of_disjoint_closure (h : Disjoint (closure s) (closure t)) :
+    interior (s ∪ t) = interior s ∪ interior t := by
+  have full : interior sᶜ ∪ interior tᶜ = univ := by simpa [disjoint_iff, ← compl_inter] using h
+  refine subset_antisymm ?_ subset_interior_union
+  rw [← (interior _).inter_univ, ← full, inter_union_distrib_left]
+  exact union_subset
+    (interior_union_inter_interior_compl_left_subset.trans subset_union_right)
+    (interior_union_inter_interior_compl_right_subset.trans subset_union_left)
+
+theorem closure_inter_of_codisjoint_interior (h : Codisjoint (interior s) (interior t)) :
+    closure (s ∩ t) = closure s ∩ closure t := by
+  rw [← compl_inj_iff]
+  simp only [← interior_compl, compl_inter]
+  apply interior_union_of_disjoint_closure
+  simpa only [closure_compl, disjoint_compl_left_iff, ← codisjoint_iff_compl_le_left]
 
 theorem mem_closure_iff :
     x ∈ closure s ↔ ∀ o, IsOpen o → x ∈ o → (o ∩ s).Nonempty :=
@@ -368,9 +427,13 @@ theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
 theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
   hs.nonempty_iff.2 h
 
-@[mono]
+@[mono, gcongr]
 theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
+
+lemma DenseRange.of_comp {α β : Type*} {f : α → X} {g : β → α}
+    (h : DenseRange (f ∘ g)) : DenseRange f :=
+  Dense.mono (range_comp_subset_range g f) h
 
 /-- Complement to a singleton is dense if and only if the singleton is not an open set. -/
 theorem dense_compl_singleton_iff_not_open :
@@ -393,6 +456,16 @@ theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
 
 theorem IsClosed.closure_interior_subset {s : Set X} (s_closed : IsClosed s) :
     closure (interior s) ⊆ s := s_closed.closure_subset_iff.mpr interior_subset
+
+@[simp] theorem closure_interior_idem :
+    closure (interior (closure (interior s))) = closure (interior s) :=
+  isClosed_closure.closure_interior_subset.antisymm
+    (closure_mono isOpen_interior.subset_interior_closure)
+
+@[simp] theorem interior_closure_idem :
+    interior (closure (interior (closure s))) = interior (closure s) :=
+  (interior_mono isClosed_closure.closure_interior_subset).antisymm
+    isOpen_interior.subset_interior_closure
 
 end Closure
 
@@ -448,7 +521,7 @@ theorem frontier_inter_subset (s t : Set X) :
     frontier (s ∩ t) ⊆ frontier s ∩ closure t ∪ closure s ∩ frontier t := by
   simp only [frontier_eq_closure_inter_closure, compl_inter, closure_union]
   refine (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq ?_
-  simp only [inter_union_distrib_left, union_inter_distrib_right, inter_assoc,
+  simp only [inter_union_distrib_left, inter_assoc,
     inter_comm (closure t)]
 
 theorem frontier_union_subset (s t : Set X) :
