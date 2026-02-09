@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.Equiv.Basic
 
@@ -887,24 +885,6 @@ and a `Unique` group. -/]
 def freeGroupIsEmptyMulEquivUnique [IsEmpty α] (G : Type*) [Group G] [Unique G] :
     FreeGroup α ≃* G :=
   (MulEquiv.ofUnique : FreeGroup α ≃* G)
-
-/-- The bijection between the free group on the empty type, and a type with one element. -/
-@[to_additive /-- The bijection between the additive free group on the empty type, and a type with
-  one element. -/]
-def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit := by
-  simpa using (freeGroupIsEmptyMulEquivUnique (α := Empty) (G := Unit)).toEquiv
-
-/-- The isomorphism between the free group on the empty type, and a type with one element. -/
-@[to_additive /-- The isomorphism between the additive free group on the empty type, and a type with
-  one element. -/]
-def freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit := by
-  simpa using (freeGroupIsEmptyMulEquivUnique (α := Empty) (G := Unit))
-
-/-- We define the free group on no generators as isomorphic to the trivial `PUnit` group. -/
-@[to_additive /-- We define the additive free group on no generators as isomorphic to the trivial
-`PUnit` group. -/]
-def freeGroupEmptyMulEquivPUnit : FreeGroup Empty ≃* PUnit := by
-  simpa using (freeGroupIsEmptyMulEquivUnique (α := Empty) (G := PUnit))
 
 -- TODO: find a good way to fix the linter
 -- simp applies to two goals at once, with different simp sets
