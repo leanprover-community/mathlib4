@@ -181,30 +181,19 @@ lemma isCompl_complement (h : f.Splits) : IsCompl f.range h.complement :=
 
 end ContinuousLinearMap.Splits
 
--- The first test: continuous left inverse implies splits
-
-namespace ContinuousLinearMap
-
--- the kernel of the left inverse has a closed complement; nice!
-lemma HasBoundedLeftInverse.foo [IsTopologicalAddGroup F]
-    {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) :
-    (hf.leftInverse.ker).ClosedComplemented :=
-  ContinuousLinearMap.closedComplemented_ker_of_rightInverse _ f hf.leftInverse_leftInverse
-
-lemma why? {F : Type*} [AddCommGroup F] {x y : F} (h : y - x = 0) : y = x := by
-  -- TODO: why is there no other basic tactic which can do this? what am I missing?
-  rw [@sub_eq_zero] at h
-  grind
-
--- TODO: give the right name...
 omit [TopologicalSpace E] [TopologicalSpace F] in
-lemma aux {f : E →ₗ[R] F} {g : F →ₗ[R] E} (h : LeftInverse g f) :
-    range f = ((f.comp g) - LinearMap.id).ker := by
+/-- If `f : E →ₗ[R] F` has a left inverse `g`, then `range f = ker (f ∘ g - id)`.
+
+This is the dual version of `LinearMap.ker_eq_range_of_comp_eq_id`. -/
+lemma _root_.LinearMap.range_eq_ker_of_leftInverse {f : E →ₗ[R] F} {g : F →ₗ[R] E}
+    (h : LeftInverse g f) : range f = ((f.comp g) - LinearMap.id).ker := by
   apply subset_antisymm
   · -- If `y = f x ∈ range f`, we have `(f ∘ g) y = f (g (f x)) = f x = y` by hypothesis `h`.
     rintro y ⟨x, rfl⟩
     simp [h x]
   · exact fun x hx ↦ ⟨g x, by simpa [sub_eq_zero] using hx⟩
+
+namespace ContinuousLinearMap
 
 lemma range_toLinearMap {f : E →L[R] F} : range f.toLinearMap = range f := by simp
 
@@ -213,9 +202,7 @@ variable {R E E' F F' G : Type*} [Ring R]
   [TopologicalSpace E] [AddCommGroup E] [Module R E]
   [TopologicalSpace E'] [AddCommMonoid E'] [Module R E']
   [TopologicalSpace F] [AddCommGroup F] [Module R F]
-  [TopologicalSpace F'] [AddCommMonoid F'] [Module R F']
-  -- TODO: is this hypothesis truly needed for ContinuousLinearMap.sub?
-  [IsTopologicalAddGroup F] [T1Space F]
+  [TopologicalSpace F'] [AddCommMonoid F'] [Module R F'] [IsTopologicalAddGroup F] [T1Space F]
 
 lemma HasBoundedLeftInverse.isClosed_range {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) :
     IsClosed (range f) := by
@@ -224,8 +211,15 @@ lemma HasBoundedLeftInverse.isClosed_range {f : E →L[R] F} (hf : f.HasBoundedL
   -- hence (if in a T2 space, perhaps weaker) z = f (g z) ∈ range f also.
   -- Not sure about the best way to formalise this, but it certainly works.
   -- Better proof: `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
-  rw [← f.range_toLinearMap, aux hf.leftInverse_leftInverse]
+  rw [← f.range_toLinearMap, LinearMap.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
   exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
+
+omit [IsTopologicalAddGroup F] [T1Space F] in
+theorem extracted' (q : Submodule R F) (p : F →L[R] F) (h : ∀ (x : F), p x ∈ q) (y : F) :
+    (p.codRestrict q h) y = ⟨p y, h y⟩ := by
+  -- how does this work? TODO understand!
+  ext
+  simp
 
 lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) : f.Splits := by
   refine ⟨hf.injective, hf.isClosed_range, ?_⟩
@@ -235,16 +229,11 @@ lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInver
   -- of a complementary subspace: consider `f.comp g` instead, which is continuous as both maps are.
   -- and idempotent as a continuous left inverse.
   let p' := f.comp hf.leftInverse
-  -- have aux : ∀ (x : (f).range), (p'.codRestrict (f).range (by intro y; simp [p'])) x = x := by
-  --   intro y; simp [p']
-  --   sorry
   use p'.codRestrict f.range (by intro y; simp [p'])
-  intro ⟨y, hy⟩
-  have : p' y = y := by
-    obtain ⟨x, rfl⟩ := hy
-    simp only [coe_coe, coe_comp', Function.comp_apply, p']
-    rw [hf.leftInverse_leftInverse]
-  sorry -- some Lean quibbles; morally the previous sorry
+  rintro ⟨y, x, rfl⟩
+  ext
+  simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply, p']
+  rw [hf.leftInverse_leftInverse]
 
 section -- alternative proof; requiring stronger typeclass assumptions
 
