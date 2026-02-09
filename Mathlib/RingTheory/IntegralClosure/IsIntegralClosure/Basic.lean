@@ -13,6 +13,8 @@ public import Mathlib.RingTheory.Polynomial.IntegralNormalization
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
+import Mathlib.RingTheory.Polynomial.Subring
+
 /-!
 # # Integral closure as a characteristic predicate
 
