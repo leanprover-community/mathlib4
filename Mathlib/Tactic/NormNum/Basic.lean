@@ -30,7 +30,6 @@ public section
 universe u
 
 namespace Mathlib.Meta.NormNum
-open Lean Meta
 
 /-- If `b` divides `a` and `a` is invertible, then `b` is invertible. -/
 def invertibleOfMul {α} [Semiring α] (k : ℕ) (b : α) :
@@ -48,7 +47,7 @@ theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
 
 meta section
 
-open Qq
+open Lean Meta Qq
 
 /-! ### Constructors and constants -/
 
