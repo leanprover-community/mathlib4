@@ -54,7 +54,7 @@ structure Reorder where
   /-- The list of disjoint cycles that represents the permutation. -/
   perm : List {l : List Nat // 2 ≤ l.length} := []
   /-- The recursive reorders for reordering arguments of arguments.
-  This array is assumed to be sorted by the argument index (the first element in the pair). -/
+  For the purpose of checking equality between reorders, this should be sorted. -/
   argReorders : Array (Nat × Reorder) := #[]
   deriving Inhabited
 
@@ -70,21 +70,9 @@ def Reorder.permuteUniv {α} (r : Reorder) (us : List α) : List α :=
 /-- Return `true` if the reorder doesn't do anything. -/
 def Reorder.isEmpty (r : Reorder) : Bool := r matches {}
 
-/-- Return the nested reorder for argument `arg`. -/
-def Reorder.argReorder? (r : Reorder) (arg : Nat) : Option Reorder :=
-  r.argReorders.binSearch (arg, default) (·.1 < ·.1) |>.map (·.2)
-
 /-- Permute an array of arguments using the given reorder. -/
 def Reorder.permute! {α} [Inhabited α] (r : Reorder) : Array α → Array α :=
   r.perm.foldl (·.cyclicPermute! ·.1)
-
-/-- Compute where the `n`-th element in an array is sent to by `Reorder.permute!`. -/
-def Reorder.permuteSingle (r : Reorder) (n : Nat) : Nat :=
-  r.perm.findSome? (fun cycle ↦ getNext (cycle.1.head (by grind)) cycle.1) |>.getD n
-where
-  getNext (head : Nat) : List Nat → Option Nat
-    | [] => none
-    | b :: bs => if b = n then bs.head?.getD head else getNext head bs
 
 /-- Return the reorder that reverses the action of the given reorder. -/
 def Reorder.reverse (r : Reorder) : Reorder := {
@@ -93,8 +81,16 @@ def Reorder.reverse (r : Reorder) : Reorder := {
 }
 decreasing_by
   cases r; grind [→ Array.sizeOf_lt_of_mem]
+where
+  /-- Compute where `Reorder.permute!` sends the `n`-th element in an array. -/
+  permuteSingle (r : Reorder) (n : Nat) : Nat :=
+    r.perm.findSome? (fun cycle ↦ getCycleSuccessor n (cycle.1.head (by grind)) cycle.1) |>.getD n
+  /-- Return the successor of `n` in a cycle, where `head` is the head of the cycle list. -/
+  getCycleSuccessor (n head : Nat) : List Nat → Option Nat
+    | [] => none
+    | b :: bs => if b = n then bs.head?.getD head else getCycleSuccessor n head bs
 
-/-- Return the minimum size of an array on which `Reorder.permute!` is valid. -/
+/-- Return the minimum size of an array on which the given reorder is valid. -/
 def Reorder.range (r : Reorder) : Nat :=
   if r.isEmpty then 0 else
   1 + r.argReorders.foldl (max · ·.1) (r.perm.iter.flatMap (·.1.iter) |>.fold max 0)
