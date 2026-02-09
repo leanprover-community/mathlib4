@@ -2008,6 +2008,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.Normed.Module.ContinuousInverse
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Module.ENormedSpace
@@ -2078,7 +2079,6 @@ public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.NormedSpace.BallAction
 public import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 public import Mathlib.Analysis.NormedSpace.Connected
-public import Mathlib.Analysis.NormedSpace.ContinuousInverse
 public import Mathlib.Analysis.NormedSpace.DualNumber
 public import Mathlib.Analysis.NormedSpace.ENormedSpace
 public import Mathlib.Analysis.NormedSpace.Extend
