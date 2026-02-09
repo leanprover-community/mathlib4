@@ -200,12 +200,6 @@ lemma rnDeriv_eq_zero_of_mutuallySingular {ν' : Measure α} [HaveLebesgueDecomp
     exact h_ac'.ae_le this
   exact rnDeriv_zero _
 
-variable (μ ν) in
-lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] :
-    ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := by
-  refine rnDeriv_eq_zero_of_mutuallySingular (mutuallySingular_singularPart ν μ).symm ?_
-  exact (Measure.singularPart_le _ _).absolutelyContinuous
-
 /-- Auxiliary lemma for `rnDeriv_add_right_of_mutuallySingular`. -/
 lemma rnDeriv_add_right_of_absolutelyContinuous_of_mutuallySingular {ν' : Measure α}
     [HaveLebesgueDecomposition μ ν] [HaveLebesgueDecomposition μ (ν + ν')] [SigmaFinite ν]
@@ -301,30 +295,6 @@ lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
 lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (ν.rnDeriv μ)⁻¹ =ᵐ[μ] μ.rnDeriv ν := by
   filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
-
-variable (ν) in
-lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
-    (h : ∀ᵐ a ∂μ, p a) :
-    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
-  rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
-  constructor
-  · rw [← ν.haveLebesgueDecomposition_add μ]
-    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := μ.rnDeriv_eq_zero_ae_singularPart ν
-    filter_upwards [this] with x hx h_absurd using absurd hx h_absurd
-  · have h_ac : μ.withDensity (ν.rnDeriv μ) ≪ μ := withDensity_absolutelyContinuous _ _
-    rw [← ν.haveLebesgueDecomposition_add μ]
-    suffices ∀ᵐx ∂μ, μ.rnDeriv ν x ≠ 0 → p x from h_ac this
-    filter_upwards [h] with _ h _ using h
-
-lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
-    (h : ∀ᵐ a ∂μ, p a) :
-    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
-  suffices ∀ᵐ a ∂ν, (ν.withDensity (μ.rnDeriv ν)).rnDeriv ν a ≠ 0 → p a by
-    have h := ν.rnDeriv_withDensity (μ.measurable_rnDeriv ν)
-    filter_upwards [this, h] with x hx1 hx2
-    rwa [hx2] at hx1
-  refine ae_rnDeriv_ne_zero_imp_of_ae_aux ν ?_
-  exact (Measure.absolutelyContinuous_of_le (μ.withDensity_rnDeriv_le ν)) h
 
 section integral
 
