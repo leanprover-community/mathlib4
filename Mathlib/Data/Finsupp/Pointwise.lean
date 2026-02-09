@@ -99,8 +99,9 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
 -- def rather than an instance.
-/-- The pointwise scalar multiplication of a function `α → β` on a finsupp `α →₀ β`. -/
-def pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
+/-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
+-- see Note [reducible non-instances]
+abbrev pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
