@@ -263,4 +263,10 @@ lemma formallyEtale_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
   rw [FormallyEtale, toAlgebra_algebraMap]
 
+lemma FormallyEtale.comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyEtale)
+    (hg : g.FormallyEtale) :
+    (g.comp f).FormallyEtale := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallyEtale.comp R S T
+
 end RingHom
