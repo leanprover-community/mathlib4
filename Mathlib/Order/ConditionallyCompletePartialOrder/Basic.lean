@@ -233,6 +233,7 @@ theorem csSup_Iic : sSup (Iic a) = a :=
 theorem csSup_Ioc (h : a < b) : sSup (Ioc a b) = b :=
   (isGreatest_Ioc h).csSup_eq
 
+@[simp]
 theorem csSup_Icc {a b : α} (h : a ≤ b) : sSup (Icc a b) = b :=
   (isGreatest_Icc h).csSup_eq
 
