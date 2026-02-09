@@ -370,7 +370,7 @@ example (h : ∀ a b c d : Nat, True) : True := trivial
 @[to_additive (reorder := 00 100 200)]
 example : True := trivial
 
-/-- error: invalid argument 'x', it is not an argument of '_example'. -/
+/-- error: invalid argument `x`, it is not an argument of `_example`. -/
 #guard_msgs in
 @[to_additive (reorder := x y z)]
 example : True := trivial

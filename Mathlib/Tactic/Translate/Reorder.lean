@@ -288,7 +288,7 @@ def elabArgStx (stx : TSyntax [`ident, `num]) (argNames : Array Name) (fvars : A
     | `($name:ident) => match argNames.idxOf? name.getId with
       | some n => pure n
       | none => throwErrorAt stx
-        "invalid argument '{stx}', it is not an argument of '{head}'."
+        "invalid argument `{stx}`, it is not an argument of `{head}`."
     | `($n:num) =>
       if n.getNat = 0 then
         throwErrorAt stx "invalid index `{stx}`, arguments are counted starting from 1."
