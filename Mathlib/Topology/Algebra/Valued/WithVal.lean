@@ -60,7 +60,7 @@ namespace WithVal
 
 section Instances
 
-variable {P S : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {P S : Type*}
 
 instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs (Ring R)
 
