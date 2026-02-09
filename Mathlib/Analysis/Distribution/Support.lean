@@ -6,8 +6,6 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
-import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-! # Support of distributions
 
