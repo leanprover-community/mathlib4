@@ -224,7 +224,7 @@ variable [CommMagma G] {a : G}
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 @[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+instance CommMagma.to_isCommutative : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
 
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
@@ -591,6 +591,14 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   match k with
   | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRec_zero]
   | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
+
+@[to_additive] theorem npowBinRec_zero {M : Type*} [Mul M] [One M] (m : M) :
+    npowBinRec 0 m = 1 := rfl
+
+@[to_additive] theorem npowBinRec_succ {M : Type*} [Semigroup M] [One M] (n : ℕ) (m : M) :
+    npowBinRec (n + 1) m = npowBinRec n m * m := by
+  iterate 2 rw [← npowBinRecAuto, ← npowRec_eq_npowBinRec]
+  rfl
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
