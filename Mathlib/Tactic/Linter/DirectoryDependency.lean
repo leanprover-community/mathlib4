@@ -187,7 +187,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean, `Batteries.Data.Fin),
   (`Mathlib.Lean, `Batteries.Data.List),
   (`Mathlib.Lean, `Batteries.Lean),
-  (`Mathlib.Lean, `Batteries.Control.ForInStep),
+  (`Mathlib.Lean, `Batteries.Control),
   (`Mathlib.Lean, `Batteries.Tactic.Alias),
   (`Mathlib.Lean, `Batteries.Util.ProofWanted),
 
