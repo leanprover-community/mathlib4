@@ -244,7 +244,11 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
     @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
     {m} in {target}"
   -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
-  let some (relName, lhs, rhs) := getRel (← whnf target) | fail "No relation found"
+  -- Try `getRel` on the syntactic target first, before `whnf`. This avoids unfolding
+  -- `@[reducible]` class projections (like `HasSSubset.SSubset`) that would destroy the
+  -- relation structure.
+  let some (relName, lhs, rhs) := getRel target <|> getRel (← whnf target)
+    | fail "No relation found"
   let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
   let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
   let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
