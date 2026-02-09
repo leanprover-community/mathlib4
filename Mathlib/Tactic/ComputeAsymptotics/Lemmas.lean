@@ -159,15 +159,39 @@ theorem isLittleO_of_tendsto_bot {f g : ℝ → ℝ} {l : Filter ℝ}
   ext x
   simp [div_neg_eq_neg_div]
 
+theorem isBigOWith_of_tendsto_top {C : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atTop) (hC : 0 < C) :
+    IsBigOWith C l f g :=
+  (isLittleO_of_tendsto_top h).forall_isBigOWith hC
+
+theorem isBigOWith_of_tendsto_bot {C : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atBot) (hC : 0 < C) :
+    IsBigOWith C l f g :=
+  (isLittleO_of_tendsto_bot h).forall_isBigOWith hC
+
+theorem isBigOWith_of_tendsto_nhds {C a : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l (𝓝 a)) (hC : 0 < C) (ha : C⁻¹ < |a|) :
+    IsBigOWith C l f g := by
+  simp only [IsBigOWith, Real.norm_eq_abs]
+  apply (((continuous_abs.tendsto _).comp h).eventually_const_le ha).mono
+  intro x hx
+  simp only [Function.comp_apply, abs_div] at hx
+  by_cases hf : f x = 0
+  · simp [hf] at hx
+    linarith
+  rw [le_div_iff₀ (by positivity)] at hx
+  field_simp at hx
+  exact hx
+
 theorem isBigO_of_tendsto_top {f g : ℝ → ℝ} {l : Filter ℝ}
     (h : Tendsto (fun x ↦ g x / f x) l atTop) :
     f =O[l] g :=
-  Asymptotics.IsLittleO.isBigO (isLittleO_of_tendsto_top h)
+  (isLittleO_of_tendsto_top h).isBigO
 
 theorem isBigO_of_tendsto_bot {f g : ℝ → ℝ} {l : Filter ℝ}
     (h : Tendsto (fun x ↦ g x / f x) l atBot) :
     f =O[l] g :=
-  Asymptotics.IsLittleO.isBigO (isLittleO_of_tendsto_bot h)
+  (isLittleO_of_tendsto_bot h).isBigO
 
 theorem isBigO_of_tendsto_nhds {f g : ℝ → ℝ} {l : Filter ℝ} {c : ℝ}
     (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
@@ -184,10 +208,12 @@ theorem isBigO_of_tendsto_nhds {f g : ℝ → ℝ} {l : Filter ℝ} {c : ℝ}
       · simp
     · simpa
 
--- TODO: upstream
-theorem isEquivalent_of_tendsto_one {f g : ℝ → ℝ} {l : Filter ℝ}
-    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) :
-    f ~[l] g := by
-  apply Asymptotics.isEquivalent_of_tendsto_one h
+theorem isTheta_of_tendsto_nhds {c : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
+    f =Θ[l] g := by
+  refine ⟨isBigO_of_tendsto_nhds h hc, isBigO_of_tendsto_nhds ?_ (inv_ne_zero hc)⟩
+  convert h.inv₀ hc using 1
+  ext
+  simp
 
 end ComputeAsymptotics

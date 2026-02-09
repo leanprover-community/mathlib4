@@ -329,7 +329,56 @@ def proveIsLittleO {α β γ : Q(Type)} (source : Q(Filter $α)) (f : Q($α → 
   return q(ConvertDomain.IsLittleO_cast_codomain $f $g $source $castf $castg
     $h_castf $h_castg $h_goal)
 
-/-- Proves that `f : ℝ → ℝ` is big-o of `g : ℝ → ℝ` at `source`. -/
+/-- Proves that `f : ℝ → ℝ` is big-O with `C` of `g : ℝ → ℝ` at `source`. -/
+def proveIsBigOWithReal (C : Q(ℝ)) (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) :
+    TacticM Q(IsBigOWith $C $source $f $g) := do
+  let ⟨limit, h_tendsto⟩ ← computeTendsto q(fun x ↦ $g x / $f x) source
+  let hC_pos ← mkFreshExprMVarQ q(0 < $C)
+  let extraGoals ← evalTacticAt (← `(tactic| norm_num)) hC_pos.mvarId!
+  appendGoals extraGoals
+  match limit with
+  | ~q(atTop) => return q(isBigOWith_of_tendsto_top $h_tendsto $hC_pos)
+  | ~q(atBot) => return q(isBigOWith_of_tendsto_bot $h_tendsto $hC_pos)
+  | ~q(𝓝 $a) =>
+    let ha ← mkFreshExprMVarQ q(($C)⁻¹ < |$a|)
+    let extraGoals ← evalTacticAt (← `(tactic| norm_num)) ha.mvarId!
+    appendGoals extraGoals
+    return q(isBigOWith_of_tendsto_nhds $h_tendsto $hC_pos $ha)
+
+/-- Proves that `f : α → ℝ` is big-O with `C` of `g : α → ℝ` at `source`. -/
+partial def proveIsBigOWithRealCodomain {α : Q(Type)} (C : Q(ℝ)) (source : Q(Filter $α))
+    (f g : Q($α → ℝ)) :
+    TacticM Q(IsBigOWith $C $source $f $g) := do
+  match α with
+  | ~q(ℝ) => return (← proveIsBigOWithReal q($C) q($source) q($f) q($g))
+  | _ =>
+    let ⟨castf, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
+    let ⟨castg, _, _, g', _⟩ ← ConvertDomain.convertFunDomain q($g) q($source)
+    haveI : $castf =Q $castg := ⟨⟩; do
+    let pf ← proveIsBigOWithReal q($C) q($source') q($f') q($g')
+    return q(ConvertDomain.IsBigOWith_cast_domain $C $f' $g' $source $source' $castf $pf $h_source)
+
+/-- Proves that `f : α → β` is big-O with `C` of `g : α → γ` at `source`. -/
+partial def proveIsBigOWith {α β γ : Q(Type)} (C : Q(ℝ)) (source : Q(Filter $α)) (f : Q($α → $β))
+    (g : Q($α → $γ)) (β_norm : Q(NormedAddCommGroup $β)) (γ_norm : Q(NormedAddCommGroup $γ)) :
+    TacticM Q(IsBigOWith $C $source $f $g) := do
+  let ⟨castf, h_castf⟩ ← ConvertDomain.getLawfulCodomainCast β β_norm
+  let ⟨castg, h_castg⟩ ← ConvertDomain.getLawfulCodomainCast γ γ_norm
+  let f' : Q($α → ℝ) := q(fun x ↦ $castf ($f x))
+  let g' : Q($α → ℝ) := q(fun x ↦ $castg ($g x))
+  let h_goal ← mkFreshExprMVarQ q(IsBigOWith $C $source $f' $g')
+  let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
+    | panic! "proveIsBigOWith: Unexpected number of goals after push_cast"
+  let t : Q(Prop) ← inferType (.mvar newGoal)
+  let ~q(@IsBigOWith.{0, 0, 0} $α'' ℝ ℝ _ _ $C'' $source'' $f'' $g'') := t
+    | panic! "proveIsBigOWith: Unexpected newGoal type"
+  haveI : $α'' =Q $α := ⟨⟩; do
+  newGoal.assign (← proveIsBigOWithRealCodomain q($C) q($source) q($f'') q($g''))
+  assumeInstancesCommute
+  return q(ConvertDomain.IsBigOWith_cast_codomain $C $f $g $source $castf $castg
+    $h_castf $h_castg $h_goal)
+
+/-- Proves that `f : ℝ → ℝ` is big-O of `g : ℝ → ℝ` at `source`. -/
 def proveIsBigOReal (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q($f =O[$source] $g) := do
   let ⟨limit, h_tendsto⟩ ← computeTendsto q(fun x ↦ $g x / $f x) source
   match limit with
@@ -342,7 +391,7 @@ def proveIsBigOReal (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q(
     appendGoals extraGoals
     return q(isBigO_of_tendsto_nhds $h_tendsto $h_ne)
 
-/-- Proves that `f : α → ℝ` is big-o of `g : α → ℝ` at `source`. -/
+/-- Proves that `f : α → ℝ` is big-O of `g : α → ℝ` at `source`. -/
 partial def proveIsBigORealCodomain {α : Q(Type)} (source : Q(Filter $α)) (f g : Q($α → ℝ)) :
     TacticM Q($f =O[$source] $g) := do
   match α with
@@ -354,7 +403,7 @@ partial def proveIsBigORealCodomain {α : Q(Type)} (source : Q(Filter $α)) (f g
     let pf ← proveIsBigOReal q($source') q($f') q($g')
     return q(ConvertDomain.IsBigO_cast_domain $f' $g' $source $source' $castf $pf $h_source)
 
-/-- Proves that `f : α → β` is big-o of `g : α → γ` at `source`. -/
+/-- Proves that `f : α → β` is big-O of `g : α → γ` at `source`. -/
 partial def proveIsBigO {α β γ : Q(Type)} (source : Q(Filter $α)) (f : Q($α → $β)) (g : Q($α → $γ))
     (β_norm : Q(NormedAddCommGroup $β)) (γ_norm : Q(NormedAddCommGroup $γ)) :
     TacticM Q($f =O[$source] $g) := do
@@ -374,11 +423,54 @@ partial def proveIsBigO {α β γ : Q(Type)} (source : Q(Filter $α)) (f : Q($α
   return q(ConvertDomain.IsBigO_cast_codomain $f $g $source $castf $castg
     $h_castf $h_castg $h_goal)
 
+/-- Proves that `f = Θ(g)` at `source` for `f g : ℝ → ℝ`. -/
+def proveIsThetaReal (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) :
+    TacticM Q($f =Θ[$source] $g) := do
+  let ⟨limit, h_tendsto⟩ ← computeTendsto q(fun x ↦ $g x / $f x) source
+  match limit with
+  | ~q(𝓝 $c) =>
+    let hc ← mkFreshExprMVarQ q($c ≠ 0)
+    let extraGoals ← evalTacticAt (← `(tactic| norm_num)) hc.mvarId!
+    appendGoals extraGoals
+    return q(isTheta_of_tendsto_nhds $h_tendsto $hc)
+
+/-- Proves that `f = Θ(g)` at `source` for `f g : α → ℝ`. -/
+def proveIsThetaRealCodomain {α : Q(Type)} (source : Q(Filter $α)) (f g : Q($α → ℝ)) :
+    TacticM Q($f =Θ[$source] $g) := do
+  match α with
+  | ~q(ℝ) => return (← proveIsThetaReal q($source) q($f) q($g))
+  | _ =>
+    let ⟨castf, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
+    let ⟨castg, _, _, g', _⟩ ← ConvertDomain.convertFunDomain q($g) q($source)
+    haveI : $castf =Q $castg := ⟨⟩; do
+    let pf ← proveIsThetaReal q($source') q($f') q($g')
+    return q(ConvertDomain.IsTheta_cast_domain $f' $g' $source $source' $castf $pf $h_source)
+
+/-- Proves that `f = Θ(g)` at `source` for `f : α → β`, `g : α → γ`. -/
+def proveIsTheta {α β γ : Q(Type)} (source : Q(Filter $α)) (f : Q($α → $β)) (g : Q($α → $γ))
+    (β_norm : Q(NormedAddCommGroup $β)) (γ_norm : Q(NormedAddCommGroup $γ)) :
+    TacticM Q($f =Θ[$source] $g) := do
+  let ⟨castf, h_castf⟩ ← ConvertDomain.getLawfulCodomainCast β β_norm
+  let ⟨castg, h_castg⟩ ← ConvertDomain.getLawfulCodomainCast γ γ_norm
+  let f' : Q($α → ℝ) := q(fun x ↦ $castf ($f x))
+  let g' : Q($α → ℝ) := q(fun x ↦ $castg ($g x))
+  let h_goal ← mkFreshExprMVarQ q($f' =Θ[$source] $g')
+  let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
+    | panic! "proveIsTheta: Unexpected number of goals after push_cast"
+  let t : Q(Prop) ← inferType (.mvar newGoal)
+  let ~q(@IsTheta.{0, 0, 0} $α'' ℝ ℝ _ _ $source'' $f'' $g'') := t
+    | panic! "proveIsTheta: Unexpected newGoal type"
+  haveI : $α'' =Q $α := ⟨⟩; do
+  newGoal.assign (← proveIsThetaRealCodomain q($source) q($f'') q($g''))
+  assumeInstancesCommute
+  return q(ConvertDomain.IsTheta_cast_codomain $f $g $source $castf $castg
+    $h_castf $h_castg $h_goal)
+
 /-- Proves that `f` is equivalent to `g` at `source`. -/
 def proveIsEquivalentReal (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) :
     TacticM Q($f ~[$source] $g) := do
   let pf ← proveTendsto q(fun x ↦ $f x / $g x) source q(𝓝 1)
-  return q(isEquivalent_of_tendsto_one $pf)
+  return q(Asymptotics.isEquivalent_of_tendsto_one $pf)
 
 /-- Proves that `f : α → ℝ` is equivalent to `g : α → ℝ` at `source`. -/
 def proveIsEquivalentRealCodomain {α : Q(Type)} (source : Q(Filter $α)) (f g : Q($α → ℝ)) :
@@ -411,7 +503,8 @@ def proveIsEquivalent {α β : Q(Type)} (source : Q(Filter $α)) (f : Q($α → 
   return q(ConvertDomain.IsEquivalent_cast_codomain $f $g $source $cast $h_cast $h_goal)
 
 /-- Computes asymptotics of functions. Domain and codomain of the function must be `ℕ`, `ℤ`,
-`ℚ` or `ℝ`. It is able to close goals of types `Tendsto`, `IsLittleO`, `IsBigO` and `IsEquivalent`.
+`ℚ` or `ℝ`. It is able to close goals of types `Tendsto`, `IsLittleO`, `IsBigO` `IsBigOWith`,
+`IsTheta`, and `IsEquivalent`.
 
 It works on wide class of function, that is constructed by arithmetic operations, powers, `exp` and
 `log` operations. -/
@@ -426,14 +519,22 @@ elab "compute_asymptotics" : tactic =>
     | ~q(@IsLittleO.{0, 0, 0} $α $β $γ $inst_β $inst_γ $source $f $g) =>
       let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
       let inst_γ' ← synthInstanceQ q(NormedAddCommGroup $γ)
-      goal.assign (← proveIsLittleO source f g inst_β' inst_γ')
+      goal.assign (← proveIsLittleO q($source) q($f) q($g) q($inst_β') q($inst_γ'))
+    | ~q(@IsBigOWith.{0, 0, 0} $α $β $γ $inst_β $inst_γ $C $source $f $g) =>
+      let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
+      let inst_γ' ← synthInstanceQ q(NormedAddCommGroup $γ)
+      goal.assign (← proveIsBigOWith q($C) q($source) q($f) q($g) q($inst_β') q($inst_γ'))
     | ~q(@IsBigO.{0, 0, 0} $α $β $γ $inst_β $inst_γ $source $f $g) =>
       let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
       let inst_γ' ← synthInstanceQ q(NormedAddCommGroup $γ)
-      goal.assign (← proveIsBigO source f g inst_β' inst_γ')
+      goal.assign (← proveIsBigO q($source) q($f) q($g) q($inst_β') q($inst_γ'))
+    | ~q(@IsTheta.{0, 0, 0} $α $β $γ $inst_β $inst_γ $source $f $g) =>
+      let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
+      let inst_γ' ← synthInstanceQ q(NormedAddCommGroup $γ)
+      goal.assign (← proveIsTheta q($source) q($f) q($g) q($inst_β') q($inst_γ'))
     | ~q(@IsEquivalent.{0, 0} $α $β $inst_β $source $f $g) =>
       let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
-      goal.assign (← proveIsEquivalent source f g inst_β')
+      goal.assign (← proveIsEquivalent q($source) q($f) q($g) q($inst_β'))
     | _ =>
       throwError "unsupported goal"
 

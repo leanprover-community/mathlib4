@@ -173,6 +173,14 @@ lemma IsLittleO_cast_domain {α : Type} (f g : ℝ → ℝ) (l : Filter α) (l' 
   rw [← Asymptotics.isLittleO_map, ← h_filter]
   exact Asymptotics.IsLittleO.mono h map_comap_le
 
+lemma IsBigOWith_cast_domain {α : Type} (C : ℝ) (f g : ℝ → ℝ) (l : Filter α) (l' : Filter ℝ)
+    (cast : α → ℝ)
+    (h : IsBigOWith C l' f g)
+    (h_filter : l'.comap cast = l) :
+    IsBigOWith C l (f ∘ cast) (g ∘ cast) := by
+  rw [← Asymptotics.isBigOWith_map, ← h_filter]
+  exact Asymptotics.IsBigOWith.mono h map_comap_le
+
 lemma IsBigO_cast_domain {α : Type} (f g : ℝ → ℝ) (l : Filter α) (l' : Filter ℝ)
     (cast : α → ℝ)
     (h : IsBigO l' f g)
@@ -180,6 +188,13 @@ lemma IsBigO_cast_domain {α : Type} (f g : ℝ → ℝ) (l : Filter α) (l' : F
     IsBigO l (f ∘ cast) (g ∘ cast) := by
   rw [← Asymptotics.isBigO_map, ← h_filter]
   exact Asymptotics.IsBigO.mono h map_comap_le
+
+lemma IsTheta_cast_domain {α : Type} (f g : ℝ → ℝ) (l : Filter α) (l' : Filter ℝ)
+    (cast : α → ℝ)
+    (h : IsTheta l' f g)
+    (h_filter : l'.comap cast = l) :
+    IsTheta l (f ∘ cast) (g ∘ cast) :=
+  ⟨IsBigO_cast_domain _ _ _ _ _ h.left h_filter, IsBigO_cast_domain _ _ _ _ _ h.right h_filter⟩
 
 lemma IsEquivalent_cast_domain {α : Type} (f g : ℝ → ℝ) (l : Filter α) (l' : Filter ℝ)
     (cast : α → ℝ)
@@ -303,6 +318,15 @@ lemma IsLittleO_cast_codomain {α β γ : Type} (f : α → β) (g : α → γ) 
     IsLittleO l f g := by
   simpa [IsLittleO, IsBigOWith, h_castf.left, h_castg.left] using h
 
+lemma IsBigOWith_cast_codomain {α β γ : Type} (C : ℝ) (f : α → β) (g : α → γ) (l : Filter α)
+    [NormedAddCommGroup β] [NormedAddCommGroup γ]
+    (castf : β → ℝ) (castg : γ → ℝ)
+    (h_castf : LawfulCodomainCast castf)
+    (h_castg : LawfulCodomainCast castg)
+    (h : IsBigOWith C l (castf ∘ f) (castg ∘ g)) :
+    IsBigOWith C l f g := by
+  simpa [IsBigOWith, h_castf.left, h_castg.left] using h
+
 lemma IsBigO_cast_codomain {α β γ : Type} (f : α → β) (g : α → γ) (l : Filter α)
     [NormedAddCommGroup β] [NormedAddCommGroup γ]
     (castf : β → ℝ) (castg : γ → ℝ)
@@ -311,6 +335,16 @@ lemma IsBigO_cast_codomain {α β γ : Type} (f : α → β) (g : α → γ) (l 
     (h : IsBigO l (castf ∘ f) (castg ∘ g)) :
     IsBigO l f g := by
   simpa [IsBigO, IsBigOWith, h_castf.left, h_castg.left] using h
+
+lemma IsTheta_cast_codomain {α β γ : Type} (f : α → β) (g : α → γ) (l : Filter α)
+    [NormedAddCommGroup β] [NormedAddCommGroup γ]
+    (castf : β → ℝ) (castg : γ → ℝ)
+    (h_castf : LawfulCodomainCast castf)
+    (h_castg : LawfulCodomainCast castg)
+    (h : IsTheta l (castf ∘ f) (castg ∘ g)) :
+    IsTheta l f g :=
+  ⟨IsBigO_cast_codomain _ _ _ _ _ h_castf h_castg h.left,
+    IsBigO_cast_codomain _ _ _ _ _ h_castg h_castf h.right⟩
 
 lemma IsEquivalent_cast_codomain {α β : Type} (f g : α → β) (l : Filter α)
     [NormedAddCommGroup β]

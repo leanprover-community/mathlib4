@@ -434,7 +434,7 @@ example (a : ℝ) :
 
 end DifferentFilters
 
-section ONotation
+section LandauNotation
 
 example :
     let f := fun (x : ℝ) ↦ exp x;
@@ -466,7 +466,19 @@ example :
     f =o[atTop] g := by
   compute_asymptotics
 
-end ONotation
+example :
+    let f := fun (x : ℝ) ↦ √(x ^ 2 + 1);
+    let g := fun (x : ℝ) ↦ Real.log (Real.exp (2 * x));
+    f =Θ[atTop] g := by
+  compute_asymptotics
+
+example :
+    let f := fun (x : ℝ) ↦ x * (-3 * x - 5);
+    let g := fun (x : ℝ) ↦ (x ^ 2 + √x);
+    IsBigOWith 4 atTop f g := by
+  compute_asymptotics
+
+end LandauNotation
 
 section DifferentDomainsCodomains
 
