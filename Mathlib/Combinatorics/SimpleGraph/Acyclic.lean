@@ -63,7 +63,7 @@ structure IsTree : Prop where
 
 variable {G G'}
 
-def SimpleGraph.isTree_leaf {G : SimpleGraph V}[Fintype V][DecidableRel G.Adj](v : V):Prop :=
+def isTree_leaf {G : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] (v : V):Prop :=
   (G.IsTree) ∧ (G.degree v = 1)
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
@@ -511,59 +511,54 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   exact h.minDegree_eq_one_of_nontrivial
 
 /-- A nontrivial tree there exists at least two leaves. -/
-theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGraph V}[Fintype V][DecidableEq V][DecidableRel G.Adj](hTree : G.IsTree)(hSize : 1 < Fintype.card V):
-  ∃ (v1 v2: V), v1 ≠ v2 ∧ G.isTree_leaf v1 ∧ G.isTree_leaf v2 := by
+theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+(hTree : G.IsTree) (hSize : 1 < Fintype.card V) :
+∃ (v1 v2: V), v1 ≠ v2 ∧ G.isTree_leaf v1 ∧ G.isTree_leaf v2 := by
   have : Nonempty V := by
     rw [<- Fintype.card_pos_iff]
-    exact lt_trans (by simp) hSize
-  obtain ⟨u, v, p, hp_isPath, hp_max⟩ := SimpleGraph.Walk.exists_isPath_forall_isPath_length_le_length G
+    exact lt_trans (Nat.zero_lt_one) hSize
+  obtain ⟨u, v, p, hp_isPath, hp_max⟩ :=
+    SimpleGraph.Walk.exists_isPath_forall_isPath_length_le_length G
   have : Nontrivial V := Fintype.one_lt_card_iff_nontrivial.mp hSize
   obtain ⟨x, y, hxy⟩ := exists_pair_ne V
-  have h_reach : G.Reachable x y := hTree.isConnected x y
   obtain ⟨walk_xy, h_walk_is_path⟩ := SimpleGraph.Connected.exists_isPath hTree.isConnected x y
   have h_len_ge_1 : 1 ≤ p.length := by
     trans walk_xy.length
-    · cases walk_xy
-      · exfalso
-        exact hxy rfl
-      · simp [SimpleGraph.Walk.length_cons]
-    · apply hp_max
-      exact h_walk_is_path
+    · cases walk_xy with
+      | nil => exact (hxy rfl).elim
+      | cons _ _ => exact Nat.succ_le_succ (Nat.zero_le _)
+    · exact hp_max _ _ _ h_walk_is_path
   use u, v
   constructor
   · intro h_eq
     subst h_eq
-    have h_nil : p = SimpleGraph.Walk.nil := by
-      cases p
-      · rfl
-      · exfalso
-        rw [SimpleGraph.Walk.isPath_def, SimpleGraph.Walk.support_cons, List.nodup_cons] at hp_isPath
-        apply hp_isPath.1
-        exact SimpleGraph.Walk.end_mem_support _
-
-    rw [h_nil] at h_len_ge_1
-    simp at h_len_ge_1
-
-  · -- Proof for leaf u
-    constructor
-    · refine ⟨hTree, ?_⟩
+    cases p with
+    | nil =>
+        simp only [SimpleGraph.Walk.length_nil] at h_len_ge_1
+        exact (Nat.not_succ_le_zero 0 h_len_ge_1).elim
+    | cons h_adj p_tail =>
+        rw [SimpleGraph.Walk.isPath_def, SimpleGraph.Walk.support_cons, List.nodup_cons]
+        at hp_isPath
+        exact hp_isPath.1 (SimpleGraph.Walk.end_mem_support _)
+  constructor
+  · constructor
+    · exact hTree
+    · show G.degree u = 1
       by_contra h_deg_not_1
-      have h_pos : 0 < G.degree u := by
-        rw [SimpleGraph.degree_pos_iff_exists_adj]
-        cases p with
-        | nil => linarith [h_len_ge_1, @SimpleGraph.Walk.length_nil V G u]
-        | cons h_adj _ => exact ⟨_, h_adj⟩
-
       have h_ge_2 : 2 ≤ G.degree u := by
-        cases h_val : G.degree u with
-        | zero => linarith
-        | succ n =>
-          cases n with
-          | zero => exfalso; exact h_deg_not_1 h_val
-          | succ m => linarith
-
+        have h_pos : 0 < G.degree u := by
+          cases p with
+          | nil => exact (Nat.not_succ_le_zero 0 h_len_ge_1).elim
+          | cons h_adj _ =>
+            rw [SimpleGraph.degree_pos_iff_exists_adj]
+            exact ⟨_, h_adj⟩
+        match h_val : G.degree u with
+        | 0 => exact (Nat.not_lt_zero 0 (h_val ▸ h_pos)).elim
+        | 1 => exact (h_deg_not_1 h_val).elim
+        | n + 2 => exact Nat.le_add_left 2 n
       obtain ⟨w, hw_adj, hw_not_next⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (p.getVert 1)
       let p_ext := (SimpleGraph.Walk.cons' w u v hw_adj.symm p)
+      letI : DecidableEq V := Classical.decEq V
       have hw_not_in_p: w ∉ p.support := by
         by_contra hw_in_p
         have h_acyclic := hTree.IsAcyclic
@@ -576,7 +571,7 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
         have h_ne : p1 ≠ p2 := by
           intro h_eq
           have h_len : p1.length = p2.length := by rw [h_eq]
-          simp [p1] at h_len
+          simp only [length_cons, length_nil, zero_add, p1] at h_len
           have h1 : w = p.getVert 1 := by
             rw [h_len]
             rw [h_p2_def]
@@ -586,76 +581,71 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
           have h_path_eq := h_acyclic ⟨p1, hp1_path⟩ ⟨p2, hp2_path⟩
           exact congr_arg Subtype.val h_path_eq
         exact h_ne h_eq
-      have h_ext_path : p_ext.IsPath := by
-        rw [SimpleGraph.Walk.cons_isPath_iff]
-        exact ⟨hp_isPath, hw_not_in_p⟩
-
-      have h_len : p_ext.length = p.length + 1 := by
-        simp [p_ext, SimpleGraph.Walk.length_cons]
-      have h_contr := hp_max w v p_ext h_ext_path
-      linarith
-    · -- Proof for leaf v
-      constructor
-      · exact hTree
-      · by_contra h_deg_v
-        let p_rev := p.reverse
-        have h_rev : p_rev = p.reverse := rfl
-        have hp_rev_path : p_rev.IsPath := hp_isPath.reverse
-
-        have h_ge_2 : 2 ≤ G.degree v := by
-          have h_pos : 0 < G.degree v := by
+      have h_ext_path : p_ext.IsPath :=
+        (SimpleGraph.Walk.cons_isPath_iff _ _).mpr ⟨hp_isPath, hw_not_in_p⟩
+      have h_le := hp_max w v p_ext h_ext_path
+      exact (Nat.not_succ_le_self p.length h_le).elim
+  · constructor
+    · exact hTree
+    · show G.degree v = 1
+      by_contra h_deg_v_not_1
+      set p_rev := p.reverse with h_rev_def
+      have hp_rev_path : p_rev.IsPath := hp_isPath.reverse
+      have h_ge_2 : 2 ≤ G.degree v := by
+        have h_pos : 0 < G.degree v := by
+          cases h_len : p_rev with
+          | nil =>
+              have h_len0 : p.length = 0 := by
+                rw [← p.length_reverse]
+                rw [← h_rev_def]
+                rw [p_rev.length_eq_zero_iff]
+                exact h_len
+              have h_contr : 1 ≤ 0 := by
+                trans p.length
+                · exact h_len_ge_1
+                · exact h_len0.le
+              exact (Nat.not_succ_le_zero 0 h_contr).elim
+          | cons h_adj_rev _ =>
             rw [SimpleGraph.degree_pos_iff_exists_adj]
-            cases p_rev with
-            | nil =>
-                have : p.length = 0 := by
-                  rw [← SimpleGraph.Walk.length_reverse p]
-                  rw [← h_rev]
-                  rw [p_rev.length_eq_zero_iff]
-                  simp_all
-                linarith [h_len_ge_1]
-            | cons h_adj_rev _ =>
-                exact ⟨_, h_adj_rev⟩
-          cases h_val : G.degree v with
-          | zero => linarith
-          | succ n =>
-            cases n with
-            | zero => exfalso; exact h_deg_v h_val
-            | succ m => linarith
-
-        obtain ⟨w, hw_adj, hw_not_next⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (p_rev.getVert 1)
-
-        let p_rev_ext := SimpleGraph.Walk.cons hw_adj.symm p_rev
-        have hw_not_in_p_rev : w ∉ p_rev.support := by
-          by_contra hw_in_p_rev
-          have h_acyclic := hTree.IsAcyclic
-          rw [SimpleGraph.isAcyclic_iff_path_unique] at h_acyclic
-          let p1 : G.Walk v w := SimpleGraph.Adj.toWalk hw_adj
-          have hp1_path : p1.IsPath := by
-            simp [SimpleGraph.Walk.IsPath.of_adj hw_adj, p1]
-          set p2 := p_rev.takeUntil w hw_in_p_rev with h_p2_def
-          have hp2_path : p2.IsPath := hp_rev_path.takeUntil hw_in_p_rev
-          have h_ne : p1 ≠ p2 := by
-            intro h_eq
-            have h_len : p1.length = p2.length := by rw [h_eq]
-            simp [p1] at h_len
-            have h1 : w = p_rev.getVert 1 := by
-              rw [h_len]
-              rw [h_p2_def]
-              rw [p_rev.getVert_length_takeUntil]
-            exact hw_not_next h1
-          have h_eq : p1 = p2 := by
-            have h_path_eq := h_acyclic ⟨p1, hp1_path⟩ ⟨p2, hp2_path⟩
-            exact congr_arg Subtype.val h_path_eq
-          exact h_ne h_eq
-
-        have h_rev_ext_path : p_rev_ext.IsPath := by
-          rw [SimpleGraph.Walk.cons_isPath_iff]
-          exact ⟨hp_rev_path, hw_not_in_p_rev⟩
-        have h_len : p_rev_ext.length = p.length + 1 := by
+            exact ⟨_, h_adj_rev⟩
+        match h_val : G.degree v with
+        | 0 => exact (Nat.not_lt_zero 0 (h_val ▸ h_pos)).elim
+        | 1 => exact (h_deg_v_not_1 h_val).elim
+        | n + 2 => exact Nat.le_add_left 2 n
+      obtain ⟨w, hw_adj, hw_not_next⟩ :=
+      exists_neighbor_ne_of_one_lt_degree h_ge_2 (p_rev.getVert 1)
+      let p_rev_ext := SimpleGraph.Walk.cons hw_adj.symm p_rev
+      letI : DecidableEq V := Classical.decEq V
+      have hw_not_in_p_rev : w ∉ p_rev.support := by
+        by_contra hw_in_p_rev
+        have h_acyclic := hTree.IsAcyclic
+        rw [SimpleGraph.isAcyclic_iff_path_unique] at h_acyclic
+        let p1 : G.Walk v w := SimpleGraph.Adj.toWalk hw_adj
+        have hp1_path : p1.IsPath := by
+          simp [SimpleGraph.Walk.IsPath.of_adj hw_adj, p1]
+        set p2 := p_rev.takeUntil w hw_in_p_rev with h_p2_def
+        have hp2_path : p2.IsPath := hp_rev_path.takeUntil hw_in_p_rev
+        have h_ne : p1 ≠ p2 := by
+          intro h_eq
+          have h_len : p1.length = p2.length := by rw [h_eq]
+          simp only [length_cons, length_nil, zero_add, p1] at h_len
+          have h1 : w = p_rev.getVert 1 := by
+            rw [h_len]
+            rw [h_p2_def]
+            rw [p_rev.getVert_length_takeUntil]
+          exact hw_not_next h1
+        have h_eq : p1 = p2 := by
+          have h_path_eq := h_acyclic ⟨p1, hp1_path⟩ ⟨p2, hp2_path⟩
+          exact congr_arg Subtype.val h_path_eq
+        exact h_ne h_eq
+      have h_rev_ext_path : p_rev_ext.IsPath := by
+        rw [SimpleGraph.Walk.cons_isPath_iff]
+        exact ⟨hp_isPath.reverse, hw_not_in_p_rev⟩
+      have h_len : p_rev_ext.length = p.length + 1 := by
           simp [p_rev_ext, p_rev, SimpleGraph.Walk.length_cons]
-        have h_le : p_rev_ext.length ≤ p.length := hp_max w u p_rev_ext h_rev_ext_path
-        linarith
-
+      have h_le : p_rev_ext.length ≤ p.length := hp_max w u p_rev_ext h_rev_ext_path
+      rw [h_len] at h_le
+      exact (Nat.not_succ_le_self p.length h_le).elim
 
 /-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
 lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
