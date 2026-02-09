@@ -240,8 +240,8 @@ theorem summable_condensed_iff_of_nonneg' {f : ℕ → ℝ} (h_nonneg : 0 ≤ᶠ
     (h_mono : ∃ k : ℕ, AntitoneOn f (Set.Ici k)) :
     (Summable fun k : ℕ => (2 : ℝ) ^ k * f (2 ^ k)) ↔ Summable f := by
   rw [Filter.EventuallyLE, Filter.eventually_atTop] at h_nonneg
-  rcases h_nonneg with ⟨n,hn⟩
-  rcases h_mono with ⟨m,hm⟩
+  rcases h_nonneg with ⟨n, hn⟩
+  rcases h_mono with ⟨m, hm⟩
   convert summable_condensed_iff_of_nonneg (f := fun k ↦ f (max k (n + m))) _ _ using 1
   · rw [summable_congr_atTop]
     have h_pow := tendsto_pow_atTop_atTop_of_one_lt (r := 2) (by simp)
