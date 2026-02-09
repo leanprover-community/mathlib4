@@ -10,7 +10,7 @@ public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.IntegralClosure.GoingDown
 public import Mathlib.RingTheory.Polynomial.IsIntegral
-public import Mathlib.RingTheory.QuasiFinite.Basic
+public import Mathlib.RingTheory.QuasiFinite.Polynomial
 
 /-!
 # Algebraic Zariski's Main Theorem
