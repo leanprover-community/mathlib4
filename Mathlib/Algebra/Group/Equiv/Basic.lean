@@ -3,10 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Tactic.Spread
 
 /-!
 # Multiplicative and additive equivs
@@ -18,16 +20,13 @@ This file contains basic results on `MulEquiv` and `AddEquiv`.
 Equiv, MulEquiv, AddEquiv
 -/
 
+@[expose] public section
+
 assert_not_exists Fintype
 
 open Function
 
 variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G H : Type*}
-
-namespace EmbeddingLike
-variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
-
-end EmbeddingLike
 
 variable [EquivLike F α β]
 
@@ -36,11 +35,18 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
+@[to_additive] theorem MulEquivClass.isDedekindFiniteMonoid_iff [MulOne α] [MulOne β]
+    [MulEquivClass F α β] [OneHomClass F α β] (f : F) :
+    IsDedekindFiniteMonoid α ↔ IsDedekindFiniteMonoid β where
+  mp _ := let e := MulEquivClass.toMulEquiv f
+    let g : β →* α := ⟨⟨e.symm, e.injective <| (e.right_inv ..).trans (map_one f).symm⟩, map_mul _⟩
+    .of_injective g e.symm.injective
+  mpr _ := let g : α →* β := ⟨⟨f, map_one f⟩, map_mul f⟩
+    .of_injective g (EquivLike.injective f)
+
 namespace MulEquiv
 section Mul
 variable [Mul M] [Mul N] [Mul P]
-
-section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive /-- The `AddEquiv` between two `AddMonoid`s with a unique element. -/]
@@ -54,7 +60,13 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
-end unique
+variable (α M) in
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/
+@[to_additive (attr := simps!)
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/]
+def funUnique [Unique α] : (α → M) ≃* M where
+  toEquiv := .funUnique ..
+  map_mul' := by simp
 
 end Mul
 

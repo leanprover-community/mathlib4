@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Monomorphisms in `Module R`
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 This file shows that an `R`-linear map is a monomorphism in the category of `R`-modules
 if and only if it is injective, and similarly an epimorphism if and only if it is surjective.
 -/
+
+@[expose] public section
 
 
 universe v u

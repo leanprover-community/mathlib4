@@ -3,9 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Gluing
-import Mathlib.Geometry.RingedSpace.OpenImmersion
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+module
+
+public import Mathlib.Topology.Gluing
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 
 /-!
 # Gluing structured spaces
@@ -53,6 +55,8 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -77,9 +81,9 @@ namespace PresheafedSpace
 2. A presheafed space `U i` for each `i : J`.
 3. A presheafed space `V i j` for each `i j : J`.
   (Note that this is `J × J → PresheafedSpace C` rather than `J → J → PresheafedSpace C` to
-  connect to the limits library easier.)
-4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
-5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+  connect to the limits library more easily.)
+4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
+5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -90,7 +94,7 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
-structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{u, v, v} C) where
+structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{v, u, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
 attribute [instance] GlueData.f_open
@@ -431,10 +435,10 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
       limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
   · rw [Category.comp_id]
-    apply (config := { allowSynthFailures := true }) mono_comp
+    apply +allowSynthFailures mono_comp
     change Mono ((_ ≫ D.f j i).c.app _)
     rw [comp_c_app]
-    apply (config := { allowSynthFailures := true }) mono_comp
+    apply +allowSynthFailures mono_comp
     · erw [D.ι_image_preimage_eq i j U]
       infer_instance
     · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
@@ -516,9 +520,9 @@ namespace SheafedSpace
 2. A sheafed space `U i` for each `i : J`.
 3. A sheafed space `V i j` for each `i j : J`.
   (Note that this is `J × J → SheafedSpace C` rather than `J → J → SheafedSpace C` to
-  connect to the limits library easier.)
-4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
-5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+  connect to the limits library more easily.)
+4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
+5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -554,15 +558,16 @@ abbrev isoPresheafedSpace :
   𝖣.gluedIso forgetToPresheafedSpace
 
 theorem ι_isoPresheafedSpace_inv (i : D.J) :
-    D.toPresheafedSpaceGlueData.toGlueData.ι i ≫ D.isoPresheafedSpace.inv = 𝖣.ι i :=
+    D.toPresheafedSpaceGlueData.toGlueData.ι i ≫ D.isoPresheafedSpace.inv = (𝖣.ι i).hom :=
   𝖣.ι_gluedIso_inv _ _
 
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+  dsimp [IsOpenImmersion]
   rw [← D.ι_isoPresheafedSpace_inv]
   have := D.toPresheafedSpaceGlueData.ιIsOpenImmersion i
   infer_instance
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
+theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).hom.base y = x :=
   𝖣.ι_jointly_surjective (SheafedSpace.forget _ ⋙ CategoryTheory.forget TopCat) x
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
@@ -587,9 +592,9 @@ namespace LocallyRingedSpace
 2. A locally ringed space `U i` for each `i : J`.
 3. A locally ringed space `V i j` for each `i j : J`.
   (Note that this is `J × J → LocallyRingedSpace` rather than `J → J → LocallyRingedSpace` to
-  connect to the limits library easier.)
-4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
-5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+  connect to the limits library more easily.)
+4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
+5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -620,14 +625,17 @@ abbrev toSheafedSpaceGlueData : SheafedSpace.GlueData CommRingCat :=
 abbrev isoSheafedSpace : 𝖣.glued.toSheafedSpace ≅ D.toSheafedSpaceGlueData.toGlueData.glued :=
   𝖣.gluedIso forgetToSheafedSpace
 
+@[reassoc]
 theorem ι_isoSheafedSpace_inv (i : D.J) :
-    D.toSheafedSpaceGlueData.toGlueData.ι i ≫ D.isoSheafedSpace.inv = (𝖣.ι i).1 :=
+    D.toSheafedSpaceGlueData.toGlueData.ι i ≫ D.isoSheafedSpace.inv =
+      (𝖣.ι i).toShHom :=
   𝖣.ι_gluedIso_inv forgetToSheafedSpace i
 
 instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
-  delta IsOpenImmersion; rw [← D.ι_isoSheafedSpace_inv]
-  apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
-  -- Porting note: this was automatic
+  dsimp [IsOpenImmersion]
+  rw [← D.ι_isoSheafedSpace_inv]
+  -- Porting note: the next lines were a single `apply_instance`
+  apply +allowSynthFailures PresheafedSpace.IsOpenImmersion.comp
   exact (D.toSheafedSpaceGlueData).ιIsOpenImmersion i
 
 instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=

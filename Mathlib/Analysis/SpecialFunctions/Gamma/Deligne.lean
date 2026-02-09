@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # Deligne's archimedean Gamma-factors
@@ -27,6 +28,8 @@ functions both take a complex variable as input.)
 This file defines these functions, and proves some elementary properties, including a reflection
 formula which is an important input in functional equations of (un-completed) Dirichlet L-functions.
 -/
+
+@[expose] public section
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex
@@ -58,7 +61,7 @@ lemma Gammaℝ_add_two {s : ℂ} (hs : s ≠ 0) : Gammaℝ (s + 2) = Gammaℝ s 
 lemma Gammaℂ_add_one {s : ℂ} (hs : s ≠ 0) : Gammaℂ (s + 1) = Gammaℂ s * s / 2 / π := by
   rw [Gammaℂ_def, Gammaℂ_def, Gamma_add_one _ hs, neg_add,
     cpow_add _ _ (mul_ne_zero two_ne_zero (ofReal_ne_zero.mpr pi_ne_zero)), cpow_neg_one]
-  field_simp
+  ring
 
 lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 := by
   apply mul_ne_zero
@@ -78,7 +81,7 @@ lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
 @[simp]
 lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
   rw [Gammaℂ_def, cpow_neg_one, Complex.Gamma_one]
-  field_simp
+  ring
 
 section analyticity
 
@@ -99,7 +102,7 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
     rw [(by simp : 𝓝 2 = 𝓝 (2 * (π : ℂ) ^ (-(0 : ℂ) / 2)))]
     refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
     exact continuousAt_const.mul ((continuousAt_const_cpow (ofReal_ne_zero.mpr pi_ne_zero)).comp
-      (continuousAt_id.neg.div_const _))
+      (by fun_prop))
   convert mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
   rw [Gammaℝ]
   ring_nf
@@ -193,7 +196,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
       Complex.cos_sub_pi_div_two]
   simp_rw [mul_div_assoc, mul_inv]
   generalize (Gammaℝ (s - 1))⁻¹ = A
-  field_simp
+  field
 
 end reflection
 

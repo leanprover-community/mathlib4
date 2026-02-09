@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.Tactic.TFAE
 /-!
 
 # Day's reflection theorem
@@ -26,11 +28,13 @@ apply Day's reflection theorem to prove that `C` is also closed monoidal.
 - The original paper is [day1972] *A reflection theorem for closed categories*, by Day, 1972.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Monoidal.Reflective
 
 open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 
@@ -60,7 +64,8 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
   simp only [id_obj, comp_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
-    simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, Category.id_comp, Category.comp_id]
+    simp only [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,
+      Category.comp_id]
   slice_lhs 2 4 =>
     rw [← adj.unit_naturality_assoc]
   simp
@@ -102,7 +107,7 @@ theorem isIso_tfae : List.TFAE
     -- and conclude.
     have : (adj.unit.app d) ⊗ₘ (adj.unit.app d') =
         (adj.unit.app d ▷ d') ≫ (((L ⋙ R).obj _) ◁ adj.unit.app d') := by
-      simp [← tensorHom_id, ← id_tensorHom, ← tensor_comp]
+      simp [← tensorHom_id, ← id_tensorHom, tensorHom_comp_tensorHom]
     rw [this, map_comp]
     infer_instance
   tfae_have 4 → 1
@@ -121,8 +126,8 @@ theorem isIso_tfae : List.TFAE
     have w₁ : (coyoneda.map (L.map (adj.unit.app d ▷ d')).op).app c = (adj.homEquiv _ _).symm ∘
         (coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c) ∘ adj.homEquiv _ _ := by ext; simp
     rw [w₁, isIso_iff_bijective]
-    simp only [comp_obj, coyoneda_obj_obj, id_obj, EquivLike.comp_bijective,
-      EquivLike.bijective_comp]
+    simp only [comp_obj, flip_obj_obj, yoneda_obj_obj, id_obj, op_tensorObj, unop_tensorObj,
+      EquivLike.comp_bijective, EquivLike.bijective_comp]
     -- We commute the tensor product using the auxiliary commutative square `w₂`.
     have w₂ : ((coyoneda.map (adj.unit.app d ▷ d').op).app (R.obj c)) =
         ((yoneda.obj (R.obj c)).mapIso (β_ _ _)).hom ∘
@@ -134,12 +139,11 @@ theorem isIso_tfae : List.TFAE
         ((ihom.adjunction d').homEquiv _ _).symm ∘
           ((coyoneda.map (adj.unit.app _).op).app _) ∘ (ihom.adjunction d').homEquiv _ _ := by
       ext
-      simp only [id_obj, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, comp_obj,
-        coyoneda_map_app, Quiver.Hom.unop_op, Function.comp_apply,
-        Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
+      simp only [id_obj, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, comp_obj,
+        flip_map_app, Function.comp_apply, Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
       simp
     rw [w₃, isIso_iff_bijective]
-    simp only [comp_obj, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, id_obj,
+    simp only [comp_obj, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, id_obj,
       yoneda_obj_obj, curriedTensor_obj_obj, EquivLike.comp_bijective, EquivLike.bijective_comp]
     have w₄ : (coyoneda.map (adj.unit.app d).op).app ((ihom d').obj (R.obj c)) ≫
         (coyoneda.obj ⟨d⟩).map (adj.unit.app ((ihom d').obj (R.obj c))) =
@@ -155,9 +159,9 @@ theorem isIso_tfae : List.TFAE
     -- We give the inverse of the bottom map in the stack of commutative squares:
     refine ⟨fun f ↦ R.map ((adj.homEquiv _ _).symm f), ?_, by ext; simp⟩
     ext f
-    simp only [comp_obj, coyoneda_obj_obj, id_obj, Adjunction.homEquiv_counit,
-      map_comp, types_comp_apply, coyoneda_map_app, Quiver.Hom.unop_op, Category.assoc,
-      types_id_apply]
+    simp only [comp_obj, flip_obj_obj, yoneda_obj_obj, id_obj, flip_map_app,
+      Adjunction.homEquiv_counit, map_comp, types_comp_apply, yoneda_obj_map, Quiver.Hom.unop_op,
+      Category.assoc]
     have : f = R.map (R.preimage f) := by simp
     rw [this]
     simp [← map_comp, -map_preimage]
@@ -179,8 +183,8 @@ theorem isIso_tfae : List.TFAE
       rw [← Function.comp_assoc, ((ihom.adjunction ((L ⋙ R).obj d)).homEquiv _ _).eq_comp_symm]
       ext
       simp only [id_obj, yoneda_obj_obj, comp_obj, Function.comp_apply,
-        yoneda_map_app, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, op_whiskerRight,
-        coyoneda_map_app, unop_whiskerRight, Quiver.Hom.unop_op]
+        yoneda_map_app, op_tensorObj, flip_obj_obj, yoneda_obj_obj, unop_tensorObj, op_whiskerRight,
+        flip_map_app]
       rw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
       simp
     rw [w₂, w₁, isIso_iff_bijective, isIso_iff_bijective]
@@ -204,7 +208,7 @@ instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d'))) 
 
 instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   revert c d
-  rw [((isIso_tfae adj).out 0 3:)]
+  rw [((isIso_tfae adj).out 0 3 :)]
   intro d d'
   infer_instance
 

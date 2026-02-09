@@ -3,13 +3,15 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Field.ProperSpace
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
-import Mathlib.RingTheory.Valuation.Archimedean
-import Mathlib.Topology.Algebra.Valued.NormedValued
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.ProperSpace
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+public import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field
@@ -22,6 +24,8 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 norm, nonarchimedean, rank one, compact, locally compact
 -/
+
+public section
 
 open NNReal
 
@@ -114,8 +118,7 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
     have : 𝓂[K] ^ (n + 1) ≤ 𝓂[K] ^ n := Ideal.pow_le_pow_right (by simp)
     replace ih := Finite.of_equiv _ (DoubleQuot.quotQuotEquivQuotOfLE this).symm.toEquiv
     suffices Finite (Ideal.map (Ideal.Quotient.mk (𝓂[K] ^ (n + 1))) (𝓂[K] ^ n)) from
-      Finite.of_finite_quot_finite_ideal
-        (I := Ideal.map (Ideal.Quotient.mk _) (𝓂[K] ^ n))
+      .of_ideal_quotient (.map (Ideal.Quotient.mk _) (𝓂[K] ^ n))
     exact @Finite.of_equiv _ _ h
       ((Ideal.quotEquivPowQuotPowSuccEquiv (IsPrincipalIdealRing.principal 𝓂[K])
         (IsDiscreteValuationRing.not_a_field _) n).trans
@@ -155,7 +158,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
       (toNormedField.norm_lt_one_iff.mpr hp')
     have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
     refine ⟨Quotient.out '' (Set.univ (α := 𝒪[K] ⧸ (𝓂[K] ^ n))), Set.toFinite _, ?_⟩
-    have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n)  := by
+    have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n) := by
       ext
       simp [← norm_pow]
     simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_setOf_le_v_coe_pow,
@@ -171,7 +174,7 @@ section CompactDVR
 open Valued
 
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
-    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
+    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
   constructor
@@ -185,9 +188,8 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       · exact Set.finite_empty
       · simp [hxy]
     · simp
-    wlog h : x ≤ 1 generalizing x y
-    · push_neg at h
-      specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
+    wlog! h : x ≤ 1 generalizing x y
+    · specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
       refine (this.inv).subset ?_
       rw [Set.inv_Icc]
       intro
@@ -224,7 +226,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · exact Valued.isOpen_closedball _ z0.ne'
+    · exact Valued.isOpen_closedBall _ z0.ne'
     · refine Valued.isOpen_sphere _ ?_
       push_neg at hw
       refine (hw.trans' ?_).ne'
@@ -272,41 +274,33 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   -- The strategy to show that we have a PIR is by contradiction,
   -- assuming that the range of the valuation is densely ordered.
   have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
-  have hc : IsCompact (X := K) 𝒪[K] := by
-    simpa [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ,
-      Subtype.range_coe_subtype] using hc
+  have hc : IsCompact (X := K) 𝒪[K] := isCompact_iff_compactSpace.mpr hc
   -- We can also construct that it has a locally finite order, by compactness
   -- which leads to a contradiction.
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   have hm := mulArchimedean_mrange_of_isCompact_integer hc
   -- The key result is that a valuation ring that maps into a `MulArchimedean` value group
   -- is a PIR iff the value group is not densely ordered.
-  rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
-  intro H
+  refine hi.isPrincipalIdealRing_iff_not_denselyOrdered_mrange.mpr fun _ ↦ ?_
   -- since we are densely ordered, we necessarily are nontrivial
-  replace H : DenselyOrdered (MonoidHom.mrange (v : Valuation K Γ₀)) := H
-  obtain ⟨x, hx, hx'⟩ := exists_between (α := (MonoidHom.mrange (v : Valuation K Γ₀))) zero_lt_one
-  lift x to (MonoidHom.mrange (v : Valuation K Γ₀))ˣ using IsUnit.mk0 _ hx.ne'
-  rw [← Units.val_one, Units.val_lt_val] at hx'
-  have : Nontrivial (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ := ⟨_, _, hx'.ne'⟩
-  rw [← denselyOrdered_units_iff] at H
-  exact not_lt_of_denselyOrdered_of_locallyFinite _ _ hx'
+  exact not_subsingleton (MonoidHom.mrange (v : Valuation K Γ₀))ˣ
+    (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)
+
+theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
+    v.IsNontrivial ↔ IsLocalRing.maximalIdeal v.integer ≠ ⊥ := by
+  simp_rw [ne_eq, eq_bot_iff, v.isNontrivial_iff_exists_lt_one, SetLike.le_def, Ideal.mem_bot,
+    not_forall, exists_prop, IsLocalRing.notMem_maximalIdeal.not_right,
+    Valuation.Integer.not_isUnit_iff_valuation_lt_one]
+  exact ⟨fun ⟨x, hx0, hx1⟩ ↦ ⟨⟨x, hx1.le⟩, by simp [Subtype.ext_iff, *]⟩,
+  fun ⟨x, hx1, hx0⟩ ↦ ⟨x, by simp [*]⟩⟩
 
 lemma isDiscreteValuationRing_of_compactSpace [hn : (Valued.v : Valuation K Γ₀).IsNontrivial]
-    [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] := by
+    [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] where
   -- To prove we have a DVR, we need to show it is
   -- a local ring (instance is directly inferred) and a PIR and not a field.
-  obtain ⟨x, hx, hx'⟩ := hn.exists_lt_one
-  have key : IsPrincipalIdealRing 𝒪[K] := isPrincipalIdealRing_of_compactSpace
-  exact {
-    not_a_field' := by
-      -- here is the other place where the nontriviality of the valuation comes in,
-      -- since if we had `v x = 0 ∨ v x = 1`, then the maximal ideal would be `⊥`.
-      simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-        Ideal.mem_bot, not_forall, Valuation.Integer.not_isUnit_iff_valuation_lt_one]
-      refine ⟨⟨x, hx'.le⟩, ?_⟩
-      simpa [Subtype.ext_iff, hx'] using hx
-  }
+  __ := isPrincipalIdealRing_of_compactSpace
+  not_a_field' := v.isNontrivial_iff_not_a_field.mp hn
 
 end CompactDVR
 

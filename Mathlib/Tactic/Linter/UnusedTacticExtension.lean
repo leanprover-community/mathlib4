@@ -4,14 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+module
+
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Exception
 
 /-!
 This file defines the environment extension to keep track of which tactics are allowed to leave
 the tactic state unchanged and not trigger the unused tactic linter.
 -/
+
+meta section
 
 open Lean Elab Command
 
@@ -21,7 +26,7 @@ namespace Mathlib.Linter.UnusedTactic
 Defines the `allowedUnusedTacticExt` extension for adding a `HashSet` of `allowedUnusedTactic`s
 to the environment.
 -/
-initialize allowedUnusedTacticExt :
+public initialize allowedUnusedTacticExt :
     SimplePersistentEnvExtension SyntaxNodeKind (Std.HashSet SyntaxNodeKind) ←
   registerSimplePersistentEnvExtension {
     addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
@@ -46,7 +51,7 @@ def addAllowedUnusedTactic {m : Type → Type} [Monad m] [MonadEnv m]
 /-- `Parser`s allowed to not change the tactic state.
 This can be increased dynamically, using `#allow_unused_tactic`.
 -/
-initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
+public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
     `Batteries.Tactic.«tacticOn_goal-_=>_»,
@@ -58,7 +63,6 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `Mathlib.Tactic.successIfFailWithMsg,
     `Mathlib.Tactic.failIfNoProgress,
     `Mathlib.Tactic.ExtractGoal.extractGoal,
-    `Mathlib.Tactic.Propose.propose',
     `Lean.Parser.Tactic.traceState,
     `Mathlib.Tactic.tacticMatch_target_,
     `change?,

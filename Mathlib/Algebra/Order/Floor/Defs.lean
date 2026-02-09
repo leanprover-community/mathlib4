@@ -3,9 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.HaveI
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Nat.Cast.Basic
+
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # Floor and ceil
@@ -24,7 +27,7 @@ We also provide `positivity` extensions to handle floor and ceil.
 * `Int.ceil a`: Least integer `z` such that `a ≤ z`.
 * `Int.fract a`: Fractional part of `a`, defined as `a - floor a`.
 
-## Notations
+## Notation
 
 * `⌊a⌋₊` is `Nat.floor a`.
 * `⌈a⌉₊` is `Nat.ceil a`.
@@ -43,6 +46,8 @@ many lemmas.
 
 rounding, floor, ceil
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -173,6 +178,38 @@ def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (c
     gc_coe_floor := fun a z => by rw [le_neg, gc_ceil_coe, Int.cast_neg, neg_le_neg_iff]
     gc_ceil_coe }
 
+open Classical in
+private noncomputable def floorAux {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] {x : α}
+    (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
+    {n : ℤ // n ≤ x ∧ ∀ m : ℤ, m ≤ x → m ≤ n} := by
+  let n := Classical.indefiniteDescription _ above
+  refine Int.greatestOfBdd (P := (· ≤ x)) n.1 (fun m hm ↦ ?_) below
+  rw [← Int.cast_le (R := α)]
+  exact hm.trans n.2
+
+/-- See `exists_floor` for a variant which instead assumes an `Archimedean` ring. -/
+theorem exists_floor' {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] (x : α)
+    (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
+    ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
+  refine ⟨_, fun n ↦ ⟨?_, (floorAux below above).2.2 _⟩⟩
+  rw [← Int.cast_le (R := α)]
+  exact le_trans' (floorAux below above).2.1
+
+/-- Construct a `FloorRing` instance noncomputably, from the hypothesis that every element is
+bounded above by a natural number. -/
+@[no_expose]
+noncomputable def FloorRing.ofBounded (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+    (bounded : ∀ x : α, ∃ n : ℕ, x ≤ n) : FloorRing α :=
+  have below (x : α) : ∃ n : ℤ, n ≤ x := by
+    obtain ⟨n, hn⟩ := bounded (-x)
+    use -n
+    simpa [neg_le]
+  have above (x : α) : ∃ n : ℤ, x ≤ n := by
+    obtain ⟨n, hn⟩ := bounded x
+    use n
+    exact_mod_cast hn
+  .ofFloor _ _ fun n x ↦ (Classical.choose_spec (exists_floor' x (below x) (above x)) n).symm
+
 namespace Int
 
 variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
@@ -267,7 +304,6 @@ section FloorRingToSemiring
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
-
 
 -- see Note [lower instance priority]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where

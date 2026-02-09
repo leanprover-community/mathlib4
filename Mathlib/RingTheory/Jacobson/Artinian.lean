@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Andrew Yang
 -/
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.Jacobson.Ring
+module
+
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Jacobson.Ring
 
 /-!
 # Artinian rings over Jacobson rings
@@ -15,15 +17,15 @@ then `A` is finite over `R` if and only if `A` is an Artinian ring.
 
 -/
 
+public section
+
 variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] [Algebra.FiniteType R A]
 
 attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] :
     Module.Finite R A :=
-  (Finite.equiv_iff <|
-    (AlgEquiv.ofRingEquiv (f := IsArtinianRing.equivPi A) fun _ ↦ rfl).toLinearEquiv).mpr <|
   have (I : MaximalSpectrum A) := finite_of_finite_type_of_isJacobsonRing R (A ⧸ I.asIdeal)
-  Finite.pi
+  .equiv ((IsArtinianRing.equivPi A).restrictScalars R).toLinearEquiv.symm
 
 /-- If `A` is a finite type algebra over `R`, then `A` is an Artinian ring and `R` is Jacobson
 implies `A` is finite over `R`. -/

@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill, Andrew Yang
 -/
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Topology.Algebra.Module.ModuleTopology
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # The category `TopModuleCat R` of topological modules
@@ -25,6 +27,8 @@ We also provide various adjunctions:
 ## Future projects
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -55,6 +59,7 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
 structure Hom (X Y : TopModuleCat.{v} R) where
@@ -63,11 +68,16 @@ structure Hom (X Y : TopModuleCat.{v} R) where
   /-- The underlying continuous linear map. Use `hom` instead. -/
   hom' : X →L[R] Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (TopModuleCat R) where
   Hom := Hom
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
   hom   := Hom.hom'
   ofHom := Hom.ofHom'
@@ -125,8 +135,8 @@ instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
   __ := Equiv.addCommGroup CategoryTheory.ConcreteCategory.homEquiv
 
 instance : Preadditive (TopModuleCat R) where
-  add_comp _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
-  comp_add _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
+  add_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
+  comp_add _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
 
 section
 
@@ -135,7 +145,7 @@ variable {M₁ M₂ : TopModuleCat R}
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
 @[simp] lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
 @[simp] lemma hom_add (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ + φ₂).hom = φ₁.hom + φ₂.hom := rfl
-@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (- φ).hom = - φ.hom := rfl
+@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (-φ).hom = -φ.hom := rfl
 @[simp] lemma hom_sub (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ - φ₂).hom = φ₁.hom - φ₂.hom := rfl
 @[simp] lemma hom_nsmul (n : ℕ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
 @[simp] lemma hom_zsmul (n : ℤ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
@@ -170,7 +180,7 @@ instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
 instance : HasForget₂ (TopModuleCat R) TopCat where
   forget₂ :=
   { obj M := .of M
-    map φ   := TopCat.ofHom ⟨φ, φ.1.2⟩ }
+    map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
 instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
@@ -210,7 +220,7 @@ def toCoinduced (i) : X i ⟶ coinduced f :=
 
 /-- The cocone of topological modules associated to a cocone over the underlying modules, where
 the cocone point is given the coinduced topology. This is colimiting when the given cocone is. -/
-def ofCocone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def ofCocone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     (c : Cocone (F ⋙ forget₂ _ (ModuleCat R))) : Cocone F where
   pt := coinduced c.ι.app
   ι :=
@@ -219,7 +229,7 @@ def ofCocone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
 
 /-- Given a colimit cocone over the underlying modules, equipping the cocone point with
 the coinduced topology gives a colimit cocone in `TopModuleCat R`. -/
-def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def isColimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     {c : Cocone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsColimit c) :
     IsColimit (ofCocone c) where
   desc s := ofHom (X := (ofCocone c).pt) ⟨(hc.desc ((forget₂ _ _).mapCocone s)).hom, by
@@ -238,11 +248,11 @@ def isColimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     ext y
     exact congr($(H j).hom y)
 
-instance {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     [HasColimit (F ⋙ forget₂ _ (ModuleCat R))] : HasColimit F :=
   ⟨_, isColimit (colimit.isColimit _)⟩
 
-instance {J : Type*} [Category J] [HasColimitsOfShape J (ModuleCat.{v} R)] :
+instance {J : Type*} [Category* J] [HasColimitsOfShape J (ModuleCat.{v} R)] :
     HasColimitsOfShape J (TopModuleCat.{v} R) where
 
 instance : HasColimits (TopModuleCat.{v} R) where
@@ -271,7 +281,7 @@ open Limits
 
 /-- The cone of topological modules associated to a cone over the underlying modules, where
 the cone point is given the induced topology. This is limiting when the given cone is. -/
-def ofCone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def ofCone {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     (c : Cone (F ⋙ forget₂ _ (ModuleCat R))) : Cone F where
   pt := induced c.π.app
   π :=
@@ -280,7 +290,7 @@ def ofCone {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
 
 /-- Given a limit cone over the underlying modules, equipping the cone point with
 the induced topology gives a limit cone in `TopModuleCat R`. -/
-def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
+def isLimit {J : Type*} [Category* J] {F : J ⥤ TopModuleCat R}
     {c : Cone (F ⋙ forget₂ _ (ModuleCat R))} (hc : IsLimit c) :
     IsLimit (ofCone c) where
   lift s := ofHom (Y := (ofCone c).pt) ⟨(hc.lift ((forget₂ _ _).mapCone s)).hom, by
@@ -298,27 +308,27 @@ def isLimit {J : Type*} [Category J] {F : J ⥤ TopModuleCat R}
     ext y
     exact congr($(H j).hom y)
 
-instance hasLimit_of_hasLimit_forget₂ {J : Type*} [Category J] {F : J ⥤ TopModuleCat.{v} R}
+instance hasLimit_of_hasLimit_forget₂ {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))] : HasLimit F :=
   ⟨_, isLimit (limit.isLimit _)⟩
 
-instance {J : Type*} [Category J] [HasLimitsOfShape J (ModuleCat.{v} R)] :
+instance {J : Type*} [Category* J] [HasLimitsOfShape J (ModuleCat.{v} R)] :
     HasLimitsOfShape J (TopModuleCat.{v} R) where
   has_limit _ := hasLimit_of_hasLimit_forget₂
 
 instance : HasLimits (TopModuleCat.{v} R) where
   has_limits_of_shape _ _ := ⟨fun _ ↦ hasLimit_of_hasLimit_forget₂⟩
 
-instance {J : Type*} [Category J] {F : J ⥤ TopModuleCat.{v} R}
+instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))]
     [PreservesLimit (F ⋙ forget₂ _ (ModuleCat.{v} R)) (forget _)] :
     PreservesLimit F (forget₂ _ TopCat) :=
   preservesLimit_of_preserves_limit_cone (isLimit (limit.isLimit _))
     (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat)
-      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1:)
+      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1 :)
       (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))
 
-instance {J : Type*} [Category J]
+instance {J : Type*} [Category* J]
     [HasLimitsOfShape J (ModuleCat.{v} R)]
     [PreservesLimitsOfShape J (forget (ModuleCat.{v} R))] :
     PreservesLimitsOfShape J (forget₂ (TopModuleCat.{v} R) TopCat) where
@@ -329,6 +339,8 @@ end Limit
 
 section Adjunction
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The functor equipping a module over a topological ring with the finest possible
 topology making it into a topological module. This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where

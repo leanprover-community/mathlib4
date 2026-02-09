@@ -3,11 +3,13 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Spread
 
 /-!
 # Instances and theorems on pi types
@@ -22,6 +24,8 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 `pi_instance`. See this Zulip discussion:
 [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
 -/
+
+@[expose] public section
 
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
 assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
@@ -104,11 +108,11 @@ instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group,
 
 @[to_additive] instance instIsLeftCancelMul [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] :
     IsLeftCancelMul (∀ i, f i) where
-  mul_left_cancel  _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
+  mul_left_cancel _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
 
 @[to_additive] instance instIsRightCancelMul [∀ i, Mul (f i)] [∀ i, IsRightCancelMul (f i)] :
     IsRightCancelMul (∀ i, f i) where
-  mul_right_cancel  _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
+  mul_right_cancel _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
 
 @[to_additive] instance instIsCancelMul [∀ i, Mul (f i)] [∀ i, IsCancelMul (f i)] :
     IsCancelMul (∀ i, f i) where

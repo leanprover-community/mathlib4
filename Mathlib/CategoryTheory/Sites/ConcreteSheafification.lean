@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Plus
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+module
+
+public import Mathlib.CategoryTheory.Sites.Plus
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
 
@@ -17,6 +19,8 @@ and reflects isomorphisms.
 We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -143,8 +147,8 @@ def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : ToType ((J.pl
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
   dsimp [mk, plusObj]
-  rw [← comp_apply (x := (Meq.equiv P S).symm x), ι_colimMap_assoc, colimit.ι_pre,
-    comp_apply (x := (Meq.equiv P S).symm x)]
+  rw [← CategoryTheory.comp_apply (x := (Meq.equiv P S).symm x), ι_colimMap_assoc, colimit.ι_pre,
+    CategoryTheory.comp_apply (x := (Meq.equiv P S).symm x)]
   apply congr_arg
   apply (Meq.equiv P _).injective
   dsimp only [Functor.op_obj, pullback_obj]
@@ -389,7 +393,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
   · intro x y h
     apply sep P S _ _
     intro I
-    apply_fun Meq.equiv _ _ at h
+    apply_fun Meq.equiv (J.plusObj P) S at h
     apply_fun fun e => e I at h
     dsimp only [ConcreteCategory.forget_map_eq_coe] at h
     convert h <;> erw [Meq.equiv_apply] <;>
@@ -584,7 +588,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         dsimp
         rw [Category.assoc] }
 
-instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint  :=
+instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint :=
   (plusPlusAdjunction J D).isRightAdjoint
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=

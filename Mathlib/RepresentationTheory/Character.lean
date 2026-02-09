@@ -3,9 +3,11 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.RepresentationTheory.FDRep
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import Mathlib.RepresentationTheory.FDRep
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Characters of representations
@@ -27,6 +29,8 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

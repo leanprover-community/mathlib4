@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.Condensed.Basic
-import Mathlib.Topology.Category.TopCat.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.Condensed.Basic
+public import Mathlib.Topology.Category.TopCat.Yoneda
 
 /-!
 
@@ -17,9 +19,11 @@ nice properties, like preserving pullbacks and finite coproducts, then this Yone
 satisfies the sheaf condition for the regular and extensive topologies respectively.
 
 We apply this API to `CompHaus` and define the functor
-`topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
+`topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u}`.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -64,7 +68,7 @@ theorem equalizerCondition_yonedaPresheaf
   apply EqualizerCondition.mk
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
-  · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, MapToEqualizer,
+  · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, mapToEqualizer,
       Set.mem_setOf_eq, Subtype.mk.injEq, comp, ContinuousMap.mk.injEq] at h
     simp only [yonedaPresheaf, unop_op]
     ext x
@@ -74,7 +78,7 @@ theorem equalizerCondition_yonedaPresheaf
   · simp only [yonedaPresheaf, comp, unop_op, Quiver.Hom.unop_op, Set.mem_setOf_eq,
       ContinuousMap.mk.injEq] at ha
     simp only [yonedaPresheaf, comp, unop_op, Quiver.Hom.unop_op, Set.coe_setOf,
-      MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
+      mapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
     congr 1
@@ -108,10 +112,10 @@ def TopCat.toSheafCompHausLike :
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
     refine ⟨inferInstance, ?_⟩
-    apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
+    apply +allowSynthFailures equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.continuous
+    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to
@@ -127,14 +131,14 @@ noncomputable def topCatToSheafCompHausLike :
 end
 
 /--
-Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
+Associate to a `(u + 1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
 noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u + 1}) : CondensedSet.{u} :=
-  toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  toSheafCompHausLike.{u + 1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
-`TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
+`TopCat.toCondensedSet` yields a functor from `TopCat.{u + 1}` to `CondensedSet.{u}`.
 -/
-noncomputable abbrev topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} :=
-  topCatToSheafCompHausLike.{u+1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+noncomputable abbrev topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u} :=
+  topCatToSheafCompHausLike.{u + 1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)

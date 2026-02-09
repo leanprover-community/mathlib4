@@ -3,9 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
-import Mathlib.Topology.Algebra.WithZeroTopology
-import Mathlib.Topology.Algebra.UniformField
+module
+
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology
+public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Valued fields and their completions
@@ -26,6 +29,8 @@ separated, so the map from `K` to `hat K` is injective.
 
 Then we extend the valuation given on `K` to a valuation on `hat K`.
 -/
+
+@[expose] public section
 
 
 open Filter Set
@@ -181,15 +186,7 @@ instance (priority := 100) completable : CompletableTopField K :=
             simp at x_in₀
           exact (Valuation.ne_zero_iff _).mp this
         · refine lt_of_lt_of_le H₁ ?_
-          rw [Units.min_val]
-          apply min_le_min _ x_in₀
-          rw [mul_assoc]
-          have : ((γ₀ * γ₀ : Γ₀ˣ) : Γ₀) ≤ v x * v x :=
-            calc
-              ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_left' x_in₀ ↑γ₀
-              _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
-          rw [Units.val_mul]
-          exact mul_le_mul_left' this γ }
+          grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, x_in₀] }
 
 open WithZeroTopology
 
@@ -257,7 +254,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
         simp only [mul_assoc, inv_mul_cancel₀ h, mul_one]
-      have c : Continuous fun x : hat K => x * x₀⁻¹ := continuous_id.mul continuous_const
+      have c : Continuous fun x : hat K => x * x₀⁻¹ := by fun_prop
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel₀ h] at V'_in
       exact c.continuousAt V'_in
