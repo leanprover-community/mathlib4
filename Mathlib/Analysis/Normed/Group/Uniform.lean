@@ -29,7 +29,7 @@ variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul_right : IsIsometricSMul Eᵐᵒᵖ E :=
-  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
+  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_inv_mul]⟩
 
 @[to_additive]
 theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
@@ -73,12 +73,12 @@ for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a 
 (semi)normed spaces is in `Mathlib/Analysis/Normed/Operator/Basic.lean`. -/]
 theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : LipschitzWith (Real.toNNReal C) f :=
-  LipschitzWith.of_dist_le' fun x y => by simpa only [dist_eq_norm_div, map_div] using h (x / y)
+  LipschitzWith.of_dist_le' fun x y => by simpa only [dist_eq_norm_inv_mul, map_div] using h (x / y)
 
 @[to_additive]
 theorem lipschitzOnWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
     LipschitzOnWith C f s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ‖f x / f y‖ ≤ C * ‖x / y‖ := by
-  simp only [lipschitzOnWith_iff_dist_le_mul, dist_eq_norm_div]
+  simp only [lipschitzOnWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
 
 alias ⟨LipschitzOnWith.norm_div_le, _⟩ := lipschitzOnWith_iff_norm_div_le
 
@@ -92,7 +92,7 @@ theorem LipschitzOnWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : Lipsc
 @[to_additive]
 theorem lipschitzWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
     LipschitzWith C f ↔ ∀ x y, ‖f x / f y‖ ≤ C * ‖x / y‖ := by
-  simp only [lipschitzWith_iff_dist_le_mul, dist_eq_norm_div]
+  simp only [lipschitzWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
 
 alias ⟨LipschitzWith.norm_div_le, _⟩ := lipschitzWith_iff_norm_div_le
 
@@ -119,7 +119,7 @@ theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕 E F] (f :
 @[to_additive]
 theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     Isometry f ↔ ∀ x, ‖f x‖ = ‖x‖ := by
-  simp only [isometry_iff_dist_eq, dist_eq_norm_div, ← map_div]
+  simp only [isometry_iff_dist_eq, dist_eq_norm_inv_mul, ← map_div]
   refine ⟨fun h x => ?_, fun h x y => h _⟩
   simpa using h x 1
 
@@ -138,7 +138,7 @@ theorem MonoidHomClass.lipschitz_of_bound_nnnorm [MonoidHomClass 𝓕 E F] (f : 
 theorem MonoidHomClass.antilipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
     (h : ∀ x, ‖x‖ ≤ K * ‖f x‖) : AntilipschitzWith K f :=
   AntilipschitzWith.of_le_mul_dist fun x y => by
-    simpa only [dist_eq_norm_div, map_div] using h (x / y)
+    simpa only [dist_eq_norm_inv_mul, map_div] using h (x / y)
 
 @[to_additive LipschitzWith.norm_le_mul]
 theorem LipschitzWith.norm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f) (hf : f 1 = 1)
@@ -195,7 +195,7 @@ variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : 
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul_left : IsIsometricSMul E E :=
-  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
+  ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_inv_mul]⟩
 
 @[to_additive (attr := simp)]
 theorem dist_self_mul_right (a b : E) : dist a (a * b) = ‖b‖ := by
@@ -350,7 +350,7 @@ theorem mul_div_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith 
 
 @[to_additive le_mul_norm_sub]
 theorem le_mul_norm_div {f : E → F} (hf : AntilipschitzWith K f) (x y : E) :
-    ‖x / y‖ ≤ K * ‖f x / f y‖ := by simp [← dist_eq_norm_div, hf.le_mul_dist x y]
+    ‖x / y‖ ≤ K * ‖f x / f y‖ := by simp [← dist_eq_norm_inv_mul, hf.le_mul_dist x y]
 
 end AntilipschitzWith
 end PseudoEMetricSpace
@@ -389,7 +389,7 @@ theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
 @[to_additive]
 instance : NormedCommGroup (SeparationQuotient E) where
   __ : CommGroup (SeparationQuotient E) := instCommGroup
-  dist_eq := Quotient.ind₂ dist_eq_norm_div
+  dist_eq := Quotient.ind₂ dist_eq_norm_inv_mul
 
 @[to_additive]
 theorem mk_eq_one_iff {p : E} : mk p = 1 ↔ ‖p‖ = 0 := by

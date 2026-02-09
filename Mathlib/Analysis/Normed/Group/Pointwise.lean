@@ -211,7 +211,7 @@ theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :
     s * closedBall (1 : E) δ = cthickening δ s := by
   rw [hs.cthickening_eq_biUnion_closedBall hδ]
   ext x
-  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall,
+  simp only [mem_mul, dist_eq_norm_inv_mul, exists_prop, mem_iUnion, mem_closedBall,
     ← eq_div_iff_mul_eq'', div_one, exists_eq_right]
 
 @[to_additive]

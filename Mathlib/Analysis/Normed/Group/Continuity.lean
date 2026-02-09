@@ -60,13 +60,13 @@ end ContinuousENorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
-    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
-  simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
+    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖) a (𝓝 0) := by
+  simp only [← dist_eq_norm_inv_mul, ← tendsto_iff_dist_tendsto_zero]
 
 @[to_additive]
 theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
     Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖) a (𝓝 0) :=
-  tendsto_iff_norm_div_tendsto_zero.trans <| by simp only [div_one]
+  tendsto_iff_norm_div_tendsto_zero.trans <| by simp
 
 @[to_additive (attr := simp 1100)]
 theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
@@ -96,12 +96,12 @@ theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h :
   squeeze_one_norm' <| Eventually.of_forall h
 
 @[to_additive]
-theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) (𝓝 0) := by
-  simpa [dist_eq_norm_div] using
+theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a⁻¹ * x‖) (𝓝 x) (𝓝 0) := by
+  simpa [dist_eq_norm_inv_mul] using
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝[≥] 0) :=
+theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a⁻¹ * x‖) (𝓝 x) (𝓝[≥] 0) :=
   tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
 
 @[to_additive tendsto_norm]
@@ -257,8 +257,8 @@ theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
 
 @[to_additive]
 theorem SeminormedCommGroup.mem_closure_iff :
-    a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
-  simp [Metric.mem_closure_iff, dist_eq_norm_div]
+    a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a⁻¹ * b‖ < ε := by
+  simp [Metric.mem_closure_iff, dist_eq_norm_inv_mul]
 
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
@@ -268,25 +268,25 @@ theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ
 @[to_additive]
 theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one {f : ι → κ → G}
     {l : Filter ι} {l' : Filter κ} :
-    UniformCauchySeqOnFilter f l l' ↔
-      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) l' := by
+    UniformCauchySeqOnFilter f l l' ↔ TendstoUniformlyOnFilter
+      (fun n : ι × ι => fun z => (f n.fst z)⁻¹ * f n.snd z) 1 (l ×ˢ l) l' := by
   refine ⟨fun hf u hu => ?_, fun hf u hu => ?_⟩
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
     refine
       (hf { p : G × G | dist p.fst p.snd < ε } <| dist_mem_uniformity hε).mono fun x hx =>
-        H 1 (f x.fst.fst x.snd / f x.fst.snd x.snd) ?_
-    simpa [dist_eq_norm_div, norm_div_rev] using hx
+        H 1 ((f x.fst.fst x.snd)⁻¹ * f x.fst.snd x.snd) ?_
+    simpa [dist_eq_norm_inv_mul, norm_div_rev] using hx
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
     refine
       (hf { p : G × G | dist p.fst p.snd < ε } <| dist_mem_uniformity hε).mono fun x hx =>
         H (f x.fst.fst x.snd) (f x.fst.snd x.snd) ?_
-    simpa [dist_eq_norm_div, norm_div_rev] using hx
+    simpa [dist_eq_norm_inv_mul, norm_div_rev] using hx
 
 @[to_additive]
 theorem SeminormedGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ}
     {l : Filter ι} :
     UniformCauchySeqOn f l s ↔
-      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) s := by
+      TendstoUniformlyOn (fun n : ι × ι => fun z => (f n.fst z)⁻¹ * f n.snd z) 1 (l ×ˢ l) s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter,
     uniformCauchySeqOn_iff_uniformCauchySeqOnFilter,
     SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one]
@@ -304,28 +304,31 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
     (b_pos : ∀ n, 0 < b n) :
     ∃ v : ℕ → E,
       Tendsto (fun n => ∏ i ∈ range (n + 1), v i) atTop (𝓝 a) ∧
-        (∀ n, v n ∈ s) ∧ ‖v 0 / a‖ < b 0 ∧ ∀ n, 0 < n → ‖v n‖ < b n := by
+        (∀ n, v n ∈ s) ∧ ‖(v 0)⁻¹ * a‖ < b 0 ∧ ∀ n, 0 < n → ‖v n‖ < b n := by
   obtain ⟨u : ℕ → E, u_in : ∀ n, u n ∈ s, lim_u : Tendsto u atTop (𝓝 a)⟩ :=
     mem_closure_iff_seq_limit.mp hg
-  obtain ⟨n₀, hn₀⟩ : ∃ n₀, ∀ n ≥ n₀, ‖u n / a‖ < b 0 :=
-    haveI : { x | ‖x / a‖ < b 0 } ∈ 𝓝 a := by
-      simp_rw [← dist_eq_norm_div]
+  obtain ⟨n₀, hn₀⟩ : ∃ n₀, ∀ n ≥ n₀, ‖(u n)⁻¹ * a‖ < b 0 :=
+    haveI : { x | ‖x⁻¹ * a‖ < b 0 } ∈ 𝓝 a := by
+      simp_rw [← dist_eq_norm_inv_mul]
       exact Metric.ball_mem_nhds _ (b_pos _)
     Filter.tendsto_atTop'.mp lim_u _ this
   set z : ℕ → E := fun n => u (n + n₀)
   have lim_z : Tendsto z atTop (𝓝 a) := lim_u.comp (tendsto_add_atTop_nat n₀)
-  have mem_𝓤 : ∀ n, { p : E × E | ‖p.1 / p.2‖ < b (n + 1) } ∈ 𝓤 E := fun n => by
-    simpa [← dist_eq_norm_div] using Metric.dist_mem_uniformity (b_pos <| n + 1)
-  obtain ⟨φ : ℕ → ℕ, φ_extr : StrictMono φ, hφ : ∀ n, ‖z (φ <| n + 1) / z (φ n)‖ < b (n + 1)⟩ :=
+  have mem_𝓤 : ∀ n, { p : E × E | ‖p.1⁻¹ * p.2‖ < b (n + 1) } ∈ 𝓤 E := fun n => by
+    simpa [← dist_eq_norm_inv_mul] using Metric.dist_mem_uniformity (b_pos <| n + 1)
+  obtain ⟨φ : ℕ → ℕ, φ_extr : StrictMono φ, hφ : ∀ n, ‖(z (φ (n + 1)))⁻¹ * z (φ n)‖ < b (n + 1)⟩ :=
     lim_z.cauchySeq.subseq_mem mem_𝓤
   set w : ℕ → E := z ∘ φ
   have hw : Tendsto w atTop (𝓝 a) := lim_z.comp φ_extr.tendsto_atTop
-  set v : ℕ → E := fun i => if i = 0 then w 0 else w i / w (i - 1)
-  refine ⟨v, Tendsto.congr (Finset.eq_prod_range_div' w) hw, ?_, hn₀ _ (n₀.le_add_left _), ?_⟩
+  set v : ℕ → E := fun i => if i = 0 then w 0 else (w i)⁻¹ * w (i - 1)
+  refine ⟨v, ?_, ?_, hn₀ _ (n₀.le_add_left _), ?_⟩
+  · apply hw.congr (fun n ↦ ?_)
+
+
   · rintro ⟨⟩
     · change w 0 ∈ s
       apply u_in
-    · apply s.div_mem <;> apply u_in
+    · exact s.mul_mem (s.inv_mem (u_in _)) (u_in _)
   · intro l hl
     obtain ⟨k, rfl⟩ : ∃ k, l = k + 1 := Nat.exists_eq_succ_of_ne_zero hl.ne'
     apply hφ
@@ -335,7 +338,7 @@ theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
     (hb : b ∈ closure (j.range : Set F)) {f : ℕ → ℝ} (b_pos : ∀ n, 0 < f n) :
     ∃ a : ℕ → E,
       Tendsto (fun n => ∏ i ∈ range (n + 1), j (a i)) atTop (𝓝 b) ∧
-        ‖j (a 0) / b‖ < f 0 ∧ ∀ n, 0 < n → ‖j (a n)‖ < f n := by
+        ‖(j (a 0))⁻¹ * b‖ < f 0 ∧ ∀ n, 0 < n → ‖j (a n)‖ < f n := by
   obtain ⟨v, sum_v, v_in, hv₀, hv_pos⟩ := controlled_prod_of_mem_closure hb b_pos
   choose g hg using v_in
   exact
@@ -354,7 +357,7 @@ lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsNE (a : E) : Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
+theorem tendsto_norm_div_self_nhdsNE (a : E) : Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) :=
   (tendsto_norm_div_self a).inf <|
     tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
 

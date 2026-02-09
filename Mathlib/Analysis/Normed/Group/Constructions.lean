@@ -135,7 +135,7 @@ instance Multiplicative.toNNNorm : NNNorm (Multiplicative E) := ‹NNNorm E›
 end NNNorm
 
 instance Additive.seminormedAddGroup [SeminormedGroup E] : SeminormedAddGroup (Additive E) where
-  dist_eq x y := dist_eq_norm_div x.toMul y.toMul
+  dist_eq x y := dist_eq_norm_inv_mul x.toMul y.toMul
 
 
 instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
@@ -250,7 +250,7 @@ variable [SeminormedGroup E] [SeminormedGroup F]
 @[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance Prod.seminormedGroup : SeminormedGroup (E × F) where
   dist_eq x y := by
-    simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
+    simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_inv_mul, Prod.fst_div, Prod.snd_div]
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
 Earlier, this name was used for the additive version. -/
