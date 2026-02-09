@@ -115,24 +115,17 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
   The keys are classes, and the values are the representative fvars. The `Bool` indicates whether
   the class key is exactly the type of the associated fvar. We use this for error reporting. -/
   let mut encounteredClasses : Std.HashMap Expr (Expr × Bool) := {}
-  for { fvar := fvar, className } in ← getLocalInstances do
-    trace[debug] "Inspecting {.ofConstName className} ({fvar})"
-    trace[debug] "encounteredClasses: {encounteredClasses.toList}"
-    unless overlaps.isEmpty do
-      trace[debug] "overlaps: {overlaps.toList}"
+  for { fvar := fvar, .. } in ← getLocalInstances do
     unless (← fvar.fvarId!.getBinderInfo).isInstImplicit do continue
     let projClasses ← forallTelescope (← inferType fvar) fun xs _ ↦ do
       (← getClassDataProjections (mkAppN fvar xs) |>.run' {}).mapM fun (parentIdx?, expr) =>
         return (parentIdx?, ← mkForallFVars xs expr)
-    trace[debug] "Got projections for `{fvar} : `{← inferType fvar}`:\
-      {indentD <| toMessageData projClasses}"
     for (parentIdxs, cls) in projClasses do
-      trace[debug] "• `{cls}` Parents: {parentIdxs}"
       if let some (fvar₀, clsIsTypeOfFVar₀) := encounteredClasses[cls]? then
         -- We have encountered a projection with this type already; we should now record an overlap,
         -- unless it is (or will be) redundant.
         -- Note that the actions in this branch are allowed to be "slow".
-        trace[debug] "{bombEmoji} `{cls}`: overlaps with `{fvar₀} : {← inferType fvar₀}`"
+
         /- Whether `fvar₀` yields the presciently-named class `parentClass` as a projection. This
         occurs iff either
         - `fvar₀` represents `parentClass` in `encounteredClasses`
@@ -148,7 +141,6 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
         unless hasAnyParentWhich isProjectionOfFVar₀ projClasses parentIdxs do
           overlaps := overlaps.pushOverlap (fvar₀, clsIsTypeOfFVar₀) cls (fvar, parentIdxs.isEmpty)
       else
-        trace[debug] "• `{cls}`: not found."
         -- `cls` has no representative yet, so insert the current fvar as the representative.
         encounteredClasses := encounteredClasses.insert cls (fvar, parentIdxs.isEmpty)
   return overlaps
@@ -246,10 +238,8 @@ def overlappingInstances : Linter where
     -- Note: we don't break on errors; we want to lint even on partial declarations
     for t in ← getInfoTrees do
       for (ctx, info) in t.getDeclBodyInfos do
-        trace[debug] "got body at {← info.format ctx}"
         let some (lctx, localInstances?, remainingType?) := info.getLCtxBefore?
           | continue
-        trace[debug] "got local context"
         -- TODO: better logging location
         let outerRef ← getRef
         ctx.runMetaMWithMessages lctx (localInstances := localInstances?) <|
@@ -257,9 +247,7 @@ def overlappingInstances : Linter where
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or return type for anything. -/
           remainingType?.elim id (forallTelescope · fun _ _ => ·) do
-            trace[debug] "about to get overlaps"
             let overlaps ← findOverlappingDataInstances
-            trace[debug] "overlaps: {overlaps.toList}"
             unless overlaps.isEmpty do
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
               logWarning <|← overlaps.toMsg <|← ctx.toDeclDescr
