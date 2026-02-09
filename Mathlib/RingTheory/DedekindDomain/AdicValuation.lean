@@ -585,6 +585,9 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       Int.natCast_natAbs]
     exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) (zero_le _)
 
+instance : FaithfulSMul (v.adicCompletionIntegers K) (v.adicCompletion K) :=
+  Subsemiring.faithfulSMul _
+
 theorem adicCompletionIntegers.integers :
     (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).Integers ↥(adicCompletionIntegers K v) where
   hom_inj := FaithfulSMul.algebraMap_injective _ _
