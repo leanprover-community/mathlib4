@@ -93,6 +93,7 @@ class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v} obj 
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
 attribute [trans, to_dual self (reorder := X Z, 6 7)] CategoryStruct.comp
+attribute [to_dual self (reorder := comp (X Z, 4 5))] CategoryStruct.mk
 
 initialize_simps_projections CategoryStruct (-toQuiver_Hom, -Hom)
 
@@ -205,6 +206,13 @@ attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
 attribute [simp, grind _=_] Category.assoc
 
 initialize_simps_projections Category (-Hom)
+
+@[to_dual existing mk]
+abbrev Category.mk' {obj : Type u} [CategoryStruct.{v} obj]
+    (id_comp : ∀ {X Y : obj} (f : Y ⟶ X), f ≫ 𝟙 X = f)
+    (comp_id : ∀ {X Y : obj} (f : Y ⟶ X), 𝟙 Y ≫ f = f)
+    (assoc : ∀ {W X Y Z : obj} (f : X ⟶ W) (g : Y ⟶ X) (h : Z ⟶ Y), h ≫ g ≫ f = (h ≫ g) ≫ f) :
+    Category.{v, u} obj where
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp

@@ -42,7 +42,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [Category.{v₃} E]
 
 /-- If `α : G ⟶ H` then `whiskerLeft F α : F ⋙ G ⟶ F ⋙ H` has components `α.app (F.obj X)`. -/
-@[simps]
+@[simps, to_dual self]
 def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
   app X := α.app (F.obj X)
@@ -54,7 +54,7 @@ lemma id_hcomp (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) : 𝟙 F ◫ α = wh
   simp
 
 /-- If `α : G ⟶ H` then `whiskerRight α F : G ⋙ F ⟶ H ⋙ F` has components `F.map (α.app X)`. -/
-@[simps]
+@[simps, to_dual self]
 def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
     G ⋙ F ⟶ H ⋙ F where
   app X := F.map (α.app X)
@@ -299,13 +299,13 @@ theorem isoWhiskerLeft_trans_isoWhiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α
 
 variable {B : Type u₄} [Category.{v₄} B]
 
-@[simp]
+@[simp, to_dual none]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) =
     (Functor.associator _ _ _).inv ≫ whiskerLeft (F ⋙ G) α ≫ (Functor.associator _ _ _).hom := by
   cat_disch
 
-@[simp]
+@[simp, to_dual none]
 theorem whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
     whiskerRight (whiskerRight α F) G =
     (Functor.associator _ _ _).hom ≫ whiskerRight α (F ⋙ G) ≫ (Functor.associator _ _ _).inv := by

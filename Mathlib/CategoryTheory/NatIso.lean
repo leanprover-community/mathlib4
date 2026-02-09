@@ -186,7 +186,7 @@ theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =), to_dual none]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
       F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by cat_disch) :
