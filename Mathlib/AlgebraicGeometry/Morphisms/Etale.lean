@@ -107,7 +107,7 @@ lemma iff_smoothOfRelativeDimension_zero : Etale f ↔ SmoothOfRelativeDimension
 instance [Etale f] : SmoothOfRelativeDimension 0 f := by
   rwa [← iff_smoothOfRelativeDimension_zero]
 
-instance [Etale f] : Smooth f :=
+instance (priority := low) [Etale f] : Smooth f :=
   SmoothOfRelativeDimension.smooth 0 f
 
 open RingHom in
