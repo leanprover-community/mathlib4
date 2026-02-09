@@ -374,13 +374,24 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [CompleteSpace E] [CompleteSpace F]
 
--- TODO: once mathlib has Fredholm operators, generalise the next two lemmas accordingly
+-- TODO: once mathlib has Fredholm operators, generalise the next four lemmas accordingly
 
 /-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
   ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitz⟩
+
+/-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
+(assuming `E` and `F` are Banach spaces). -/
+noncomputable def antilipschitzConstant_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ℝ≥0 :=
+  Classical.choose (f.antilipschitz_of_injective_of_isClosed_range hf hf')
+
+lemma antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) :
+    AntilipschitzWith (f.antilipschitzConstant_of_injective_of_isClosed_range hf hf') f :=
+  Classical.choose_spec (f.antilipschitz_of_injective_of_isClosed_range hf hf')
 
 /-- An injective bounded linear operator between Banach spaces has closed range
 iff it is anti-Lipschitz. -/
@@ -389,6 +400,23 @@ lemma isClosed_range_iff_antilipschitz_of_injective (f : E →L[𝕜] F)
   refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
   choose K hf' using h
   exact hf'.isClosed_range f.uniformContinuous
+
+/-- A choice of continuous left inverse of an injective continuous linear map with closed range:
+this is `LinearMap.leftInverse` as a continuous linear map;
+by injectivity, the junk value of `leftInverse` never matters, and continuity of the inverse
+follows form the closed range condition. -/
+noncomputable def leftInverse_of_injective_of_isClosed_range
+    (f : E →L[𝕜] F) (hf : Injective f) (hf' : IsClosed (range f)) : f.range →L[𝕜] E :=
+  letI K := f.antilipschitzConstant_of_injective_of_isClosed_range hf hf'
+  letI hfK := f.antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range hf hf'
+  LinearMap.mkContinuous f.rangeRestrict.leftInverse K (by
+    rintro ⟨y, x, rfl⟩
+    have aux := hfK.le_mul_dist x 0
+    simp only [dist_zero_right, map_zero] at aux
+    convert aux
+    exact f.rangeRestrict.leftInverse_apply_of_inj
+      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x
+  )
 
 end
 
