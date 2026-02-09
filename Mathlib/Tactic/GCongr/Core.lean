@@ -615,7 +615,7 @@ def tryGCongrLemma? (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarI
   gs.forM fun g ↦ do
     if !(← g.isAssigned) && !mainSubGoals.any (·.goal == g) then
       let mctx ← getMCtx
-      try sideGoalDischarger g
+      try sideGoalDischarger (← g.intros).2
       catch _ => setMCtx mctx; pushNewGoal g
   -- Return all unresolved subgoals, "main" or "side"
   return some mainSubGoals
