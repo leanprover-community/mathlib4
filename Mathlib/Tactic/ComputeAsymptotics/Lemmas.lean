@@ -64,6 +64,16 @@ theorem tendsto_nhdsNE_of_tendsto_atTop_nhds_of_eq [TopologicalSpace α] {a b : 
   apply tendsto_nhdsNE_of_tendsto_atTop _ _ h_neg
   convert h_pos
 
+theorem isBigOWith_of_tendsto_top {C : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atTop) (hC : 0 < C) :
+    IsBigOWith C l f g :=
+  Asymptotics.IsLittleO.forall_isBigOWith (.of_tendsto_div_atTop h) hC
+
+theorem isBigOWith_of_tendsto_bot {C : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atBot) (hC : 0 < C) :
+    IsBigOWith C l f g :=
+  Asymptotics.IsLittleO.forall_isBigOWith (.of_tendsto_div_atBot h) hC
+
 theorem isBigO_of_div_tendsto_atTop {f g : ℝ → ℝ} {l : Filter ℝ}
     (h : Tendsto (fun x ↦ g x / f x) l atTop) :
     f =O[l] g :=

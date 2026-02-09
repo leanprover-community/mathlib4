@@ -538,16 +538,26 @@ theorem IsLittleO.tendsto_zero_of_tendsto {u : α → E'} {v : α → 𝕜} {l :
     rwa [isLittleO_one_iff] at h
   exact huv.trans_isBigO (hv.isBigO_one 𝕜)
 
-theorem isBigO_of_div_tendsto_nhds_of_ne_zero {α : Type*} {l : Filter α} {f g : α → 𝕜}
-    {c : 𝕜} (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
+theorem isBigOWith_of_div_tendsto_nhds {C : ℝ} {a : 𝕜} {f g : α → 𝕜} {l : Filter α}
+    (h : Tendsto (fun x ↦ g x / f x) l (𝓝 a)) (hC : 0 < C) (ha : C⁻¹ < ‖a‖) :
+    IsBigOWith C l f g := by
+  simp only [IsBigOWith]
+  apply (((continuous_norm.tendsto _).comp h).eventually_const_le ha).mono
+  intro x hx
+  simp only [Function.comp_apply, norm_div] at hx
+  by_cases hf : f x = 0
+  · simp [hf] at hx
+    linarith
+  rw [le_div_iff₀ (by positivity)] at hx
+  field_simp at hx
+  exact hx
+
+theorem isBigO_of_div_tendsto_nhds_of_ne_zero {l : Filter α} {f g : α → 𝕜}
+    {a : 𝕜} (h : Tendsto (fun x ↦ g x / f x) l (𝓝 a)) (ha : a ≠ 0) :
     f =O[l] g := by
-  apply Asymptotics.isBigO_of_div_tendsto_nhds (c := c⁻¹)
-  · apply (h.eventually_ne hc).mono
-    intro x hx hg
-    simp [hg] at hx
-  · rw [← tendsto_inv_iff₀]
-    · convert h using 1 <;> simp
-    · simpa
+  obtain ⟨C, hC, ha⟩ : ∃ C, 0 < C ∧ C⁻¹ < ‖a‖ := ⟨‖a‖⁻¹ + 1, by positivity, by field_simp; simpa⟩
+  simp only [IsBigO]
+  exact ⟨C, isBigOWith_of_div_tendsto_nhds h hC ha⟩
 
 theorem isLittleO_pow_pow {m n : ℕ} (h : m < n) : (fun x : 𝕜 => x ^ n) =o[𝓝 0] fun x => x ^ m := by
   rcases lt_iff_exists_add.1 h with ⟨p, hp0 : 0 < p, rfl⟩
