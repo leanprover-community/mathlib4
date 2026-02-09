@@ -335,7 +335,7 @@ theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
       have hf'canon : f' = FreeGroup.lift (fun s' : S' ↦ (s' : G)) := by
         -- TODO prettify this.
         simp_all only [MonoidHom.ker_comp_mulEquiv, FreeGroup.freeGroupCongr_symm, Equiv.symm_symm,
-          MulEquiv.toMonoidHom_eq_coe, f, S', f', iso, e]
+         f, S', f', iso, e]
         ext a : 1
         simp_all only
         [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, FreeGroup.freeGroupCongr_apply,
