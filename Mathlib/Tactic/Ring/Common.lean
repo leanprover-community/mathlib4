@@ -5,11 +5,8 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Util.AtomM
-public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
-public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `ring` tactic
@@ -91,28 +88,22 @@ attribute [local instance] monadLiftOptionMetaM
 
 open Lean (MetaM Expr mkRawNatLit)
 
-/-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
-def instCommSemiringNat : CommSemiring ℕ := inferInstance
-
-/-- A shortcut instance for `CommSemiring ℤ` used by ring. -/
-def instCommSemiringInt : CommSemiring ℤ := inferInstance
-
 /--
 A typed expression of type `CommSemiring ℕ` used when we are working on
 ring subexpressions of type `ℕ`.
 -/
-def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
+def sℕ : Q(CommSemiring ℕ) := q(Nat.instCommSemiring)
 
 /--
 A typed expression of type `CommSemiring ℤ` used when we are working on
 ring subexpressions of type `ℤ`.
 -/
-def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
+def sℤ : Q(CommSemiring ℤ) := q(Int.instCommSemiring)
 
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
-inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+meta inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /--
   An atomic expression `e` with id `id`.
 
@@ -133,7 +124,7 @@ inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) �
 A monomial, which is a product of powers of `ExBase` expressions,
 terminated by a (nonzero) constant coefficient.
 -/
-inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+meta inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
   | const {sα} {e} (value : ℚ) (hyp : Option Expr := none) : ExProd sα e
@@ -144,7 +135,7 @@ inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) �
     ExBase sα x → ExProd sℕ e → ExProd sα b → ExProd sα q($x ^ $e * $b)
 
 /-- A polynomial expression, which is a sum of monomials. -/
-inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+meta inductive ExSum : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} : ExSum sα q(0 : $α)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
@@ -178,6 +169,10 @@ def ExSum.eq
   | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
   | _, _ => false
 end
+
+-- TODO: this should be somewhere else
+instance : Ord Rat where
+  compare a b := if a ≤ b then if b ≤ a then .eq else .lt else .gt
 
 mutual
 /--

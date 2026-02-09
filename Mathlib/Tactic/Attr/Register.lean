@@ -6,11 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Init
-public meta import Lean.Meta.Tactic.Simp.SimpTheorems
-public meta import Lean.Meta.Tactic.Simp.RegisterCommand
-public meta import Lean.LabelAttribute
-public import Lean.LabelAttribute
-public import Lean.Meta.Tactic.Simp
+public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be marked `meta`
 
 /-!
 # Attributes used in `Mathlib`
