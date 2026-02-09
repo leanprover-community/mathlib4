@@ -2212,8 +2212,7 @@ theorem affineOfBinary_doubleton_padded_end [Inhabited M] (op : BinaryConvexOp R
     -- Then doubleton_padded_end_algebra closes the goal.
     simp only [List.map_cons, List.cons_append, List.nil_append]
     rw [affineOfBinary_decompose]
-    -- We need hleft and hright; proving via sorry for now
-    -- and will replace with the detailed list plumbing
+    -- hleft and hright proved below via detailed list plumbing
     set rest : WeightedSeq R M :=
       (List.map (fun z => ((0 : R), z)) zs' ++ [(b, y)])
     -- Auxiliary: all weights in rest except last are 0, last is b
@@ -3113,14 +3112,6 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
         simp [List.getLast_cons hrest_ne]]
       exact List.dropLast_append_getLast (List.cons_ne_nil _ _)
 
-/-- Scaling a list preserves the swap structure:
-    `(ws₁ ++ [(a,x),(b,y)] ++ ws₂).scale c = ws₁.scale c ++ [(c*a,x),(c*b,y)] ++ ws₂.scale c` -/
-private theorem scale_append_swap (c : R) (ws₁ : WeightedSeq R M) (a b : R) (x y : M)
-    (ws₂ : WeightedSeq R M) :
-    WeightedSeq.scale c (ws₁ ++ [(a, x), (b, y)] ++ ws₂) =
-    WeightedSeq.scale c ws₁ ++ [(c * a, x), (c * b, y)] ++ WeightedSeq.scale c ws₂ := by
-  simp [WeightedSeq.scale, List.map_append]
-
 /-- Helper for cons_strip: zipWith of zero-padded and scaled tail recovers the original tail. -/
 private theorem zipWith_recover_tail (w : R) (tail : WeightedSeq R M)
     (h1w : (1 : R) - w ≠ 0) :
@@ -3193,78 +3184,6 @@ private theorem affineOfBinary_cons_strip [Inhabited M] (op : BinaryConvexOp R M
   · -- A(ws_B) = A((0,p) :: tail.scale c) = A(tail.scale c)
     simp only [hws_B_def]
     exact affineOfBinary_cons_zero_field op p _ hscale_tw hne_scale
-
-/-- Adjacent swap in a weighted sequence preserves affineOfBinary.
-    Uses the padding+linear technique from swap_triple, generalized to arbitrary context. -/
-private theorem affineOfBinary_swap_adj [Inhabited M] (op : BinaryConvexOp R M)
-    (ws₁ : WeightedSeq R M) (a b : R) (x y : M) (ws₂ : WeightedSeq R M)
-    (hvalid : (ws₁ ++ [(a, x), (b, y)] ++ ws₂).totalWeight = 1)
-    (hne : ws₁ ++ [(a, x), (b, y)] ++ ws₂ ≠ []) :
-    affineOfBinary op (ws₁ ++ [(a, x), (b, y)] ++ ws₂) =
-    affineOfBinary op (ws₁ ++ [(b, y), (a, x)] ++ ws₂) := by
-  -- By strong induction on total list length.
-  -- k = |ws₁| is the position of the swap.
-  -- k = 0: swap_zero. k ≥ 1: decompose, use IH on sub-sequences.
-  induction h : (ws₁ ++ [(a, x), (b, y)] ++ ws₂).length using Nat.strongRecOn
-      generalizing ws₁ a b x y ws₂ with
-  | _ n ih =>
-  match ws₁ with
-  | [] =>
-    -- k = 0: direct swap_zero
-    simp only [List.nil_append]
-    exact affineOfBinary_swap_zero op a b x y ws₂ hvalid
-  | (w₁, p₁) :: ws₁' =>
-    -- Swapped list has same totalWeight (swap doesn't affect sum)
-    have hvalid_swap : WeightedSeq.totalWeight
-        ((w₁, p₁) :: ws₁' ++ [(b, y), (a, x)] ++ ws₂) = 1 := by
-      simp only [WeightedSeq.totalWeight, List.map_cons, List.map_append, List.sum_cons,
-        List.sum_append] at hvalid ⊢
-      linarith
-    by_cases hw₁ : w₁ = 1
-    · sorry -- w₁ = 1 case: all other weights sum to 0
-    · -- Use cons_strip on both sides
-      -- Goal has ((w₁,p₁) :: ws₁') ++ ... ; rewrite to (w₁,p₁) :: (ws₁' ++ ...)
-      simp only [List.cons_append] at hvalid hvalid_swap ⊢
-      rw [affineOfBinary_cons_strip op w₁ p₁ _ hw₁ hvalid]
-      rw [affineOfBinary_cons_strip op w₁ p₁ _ hw₁ hvalid_swap]
-      congr 1
-      -- The scaled tails differ by swap at position |ws₁'|
-      rw [scale_append_swap ((1 - w₁)⁻¹) ws₁' a b x y ws₂]
-      rw [scale_append_swap ((1 - w₁)⁻¹) ws₁' b a y x ws₂]
-      -- Apply IH: length of scaled tail = n - 1 < n
-      have hlen : (ws₁' ++ [(a, x), (b, y)] ++ ws₂).length + 1 = n := by
-        simp only [List.length_cons, List.cons_append] at h; omega
-      have h1w : (1 : R) - w₁ ≠ 0 := sub_ne_zero.mpr (Ne.symm hw₁)
-      have scale_tw : ∀ (c : R) (ws : WeightedSeq R M),
-          WeightedSeq.totalWeight (WeightedSeq.scale c ws) =
-          c * WeightedSeq.totalWeight ws := by
-        intro c ws
-        simp only [WeightedSeq.totalWeight, WeightedSeq.scale, List.map_map,
-          Function.comp_def]
-        induction ws with
-        | nil => simp
-        | cons hd tl ih₂ => simp only [List.map_cons, List.sum_cons, mul_add]; rw [ih₂]
-      apply ih ((ws₁' ++ [(a, x), (b, y)] ++ ws₂).length) (by omega)
-        (WeightedSeq.scale ((1 - w₁)⁻¹) ws₁')
-        ((1 - w₁)⁻¹ * a) ((1 - w₁)⁻¹ * b) x y
-        (WeightedSeq.scale ((1 - w₁)⁻¹) ws₂)
-      · -- totalWeight of scaled list = 1
-        -- The scaled list = scale c (ws₁' ++ [(a,x),(b,y)] ++ ws₂) with c = (1-w₁)⁻¹
-        -- Its totalWeight = c * totalWeight(ws₁' ++ ...) = c * (1 - w₁) = 1
-        have htail_tw : WeightedSeq.totalWeight (ws₁' ++ [(a, x), (b, y)] ++ ws₂) =
-            1 - w₁ := by
-          simp only [WeightedSeq.totalWeight, List.map_cons, List.sum_cons,
-            List.map_append, List.sum_append] at hvalid ⊢
-          linarith
-        rw [show WeightedSeq.scale ((1 - w₁)⁻¹) ws₁' ++
-              [((1 - w₁)⁻¹ * a, x), ((1 - w₁)⁻¹ * b, y)] ++
-              WeightedSeq.scale ((1 - w₁)⁻¹) ws₂ =
-            WeightedSeq.scale ((1 - w₁)⁻¹) (ws₁' ++ [(a, x), (b, y)] ++ ws₂)
-            from (scale_append_swap _ _ _ _ _ _ _).symm]
-        rw [scale_tw, htail_tw, inv_mul_cancel₀ h1w]
-      · simp [WeightedSeq.scale]
-      · -- length equality
-        simp [WeightedSeq.scale, List.length_append, List.length_map]
 
 /-- Permutation preserves totalWeight. -/
 private theorem perm_totalWeight (ws₁ ws₂ : WeightedSeq R M) (h : ws₁.Perm ws₂) :
