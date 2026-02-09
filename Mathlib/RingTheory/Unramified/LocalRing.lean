@@ -169,7 +169,7 @@ lemma localRingHom_injective_of_primesOver_eq_singleton
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
   obtain ⟨a, haq, e⟩ : ∃ a ∉ q, a * (algebraMap R S) x = 0 := by
     simpa [Localization.localRingHom_mk', IsLocalization.mk'_eq_zero_iff] using hx
-  obtain ⟨r, hrp, t, e'⟩ := exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ haq
+  obtain ⟨r, hrp, t, e'⟩ := Ideal.exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ haq
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr
     ⟨⟨r, hrp⟩, FaithfulSMul.algebraMap_injective R S ?_⟩
   simp only [map_mul, e', map_zero]
@@ -185,7 +185,7 @@ lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
     ← top_le_iff]
   rintro x -
   obtain ⟨x, ⟨s, hsq⟩, rfl⟩ := IsLocalization.exists_mk'_eq q.primeCompl x
-  obtain ⟨r, hr, t, e'⟩ := exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ hsq
+  obtain ⟨r, hr, t, e'⟩ := Ideal.exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ hsq
   rw [← Submodule.smul_mem_iff_of_isUnit _ (IsLocalization.map_units (M := p.primeCompl) _ ⟨r, hr⟩),
     Algebra.smul_def, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply _ S, e',
       map_mul, mul_assoc, mul_left_comm, IsLocalization.mk'_spec'_mk, ← map_mul]
@@ -255,7 +255,7 @@ lemma exists_awayMap_bijective_of_localRingHom_bijective
       IsLocalization.mk'_eq_iff_eq_mul, exists_prop, ← map_mul,
       IsLocalization.eq_iff_exists q.primeCompl] at this
     obtain ⟨a, b, hbp, c, hcq, hc⟩ := this
-    obtain ⟨d, hd, e, he⟩ := exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ hcq
+    obtain ⟨d, hd, e, he⟩ := Ideal.exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ hcq
     exact ⟨d * a, d * b, ‹p.IsPrime›.mul_notMem hd hbp, by grind⟩
   choose a b hbp e using this
   obtain ⟨r, hrp, hr⟩ := Localization.exists_awayMap_injective_of_localRingHom_injective hRS H.1
