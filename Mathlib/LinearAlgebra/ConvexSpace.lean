@@ -1324,69 +1324,6 @@ theorem affineOfBinary_singleton_padded [Inhabited M] (op : BinaryConvexOp R M)
     rw [this]
     exact op.binCombo_zero x z
 
-/-- Adding a zero-weight point at the front doesn't change the affine combination.
-    This follows from binCombo_one (when left weight is 0, we get x₁) and entropic. -/
-theorem affineOfBinary_cons_zero [Inhabited M] (op : BinaryConvexOp R M)
-    (x : M) (ws : WeightedSeq R M) (hvalid : ws.totalWeight = 1) (hne : ws ≠ []) :
-    affineOfBinary op ((0, x) :: ws) = affineOfBinary op ws := by
-  induction h : ws.length using Nat.strongRecOn generalizing x ws with
-  | _ n ih =>
-  match ws, h with
-  | [], _ => exact absurd rfl hne
-  | [(w, y)], _ =>
-    simp only [affineOfBinary]
-    have hw : w = 1 := by simpa [WeightedSeq.totalWeight] using hvalid
-    subst hw
-    exact op.binCombo_one x y
-  | [(w₁, y₁), (w₂, y₂)], _ =>
-    simp only [affineOfBinary,
-      List.map_nil, List.dropLast, List.sum_nil,
-      List.getLast?_nil, List.replicate, List.nil_append,
-      List.zip_cons_cons, List.zip_nil_left, mul_zero, sub_zero,
-      List.length_nil]
-    rw [op.binCombo_one x y₁]
-    have h := op.binCombo_entropic
-      (1 - op.u) 0 (⅟(1 - op.u) * w₂) y₁ y₂
-    rw [op.binCombo_zero y₁ y₂] at h; rw [h]; congr 1
-    simp only [mul_zero, zero_add, ← mul_assoc,
-      mul_invOf_self, one_mul]
-  | (w₁, y₁) :: (w₂, y₂) :: r₁ :: rest', hlen =>
-    sorry
-
-/-- More generally, zeros anywhere in the sequence don't affect the result.
-    This allows extending to a common support by padding with zeros. -/
-theorem affineOfBinary_filter_nonzero [Inhabited M] [DecidableEq R] (op : BinaryConvexOp R M)
-    (ws : WeightedSeq R M) (hvalid : ws.totalWeight = 1) :
-    affineOfBinary op ws = affineOfBinary op (ws.filter (fun p => p.1 != 0)) := by
-  sorry
-
-/-- The total weight at each point in a weighted sequence. -/
-def WeightedSeq.toFinsupp (ws : WeightedSeq R M) : M →₀ R :=
-  ws.foldl (fun acc (w, x) => acc + Finsupp.single x w) 0
-
-/-- affineOfBinary only depends on the total weights, not the list structure.
-    This is the key invariance property needed for the assoc proof. -/
-theorem affineOfBinary_eq_of_same_finsupp [Inhabited M] (op : BinaryConvexOp R M)
-    (ws₁ ws₂ : WeightedSeq R M)
-    (hvalid₁ : ws₁.totalWeight = 1) (hvalid₂ : ws₂.totalWeight = 1)
-    (heq : ws₁.toFinsupp = ws₂.toFinsupp) :
-    affineOfBinary op ws₁ = affineOfBinary op ws₂ := by
-  -- This says: if two weighted sequences give the same total weight at each point,
-  -- then affineOfBinary produces the same result.
-  --
-  -- Proof sketch by strong induction on support size:
-  -- - size 0: impossible (totalWeight = 1)
-  -- - size 1: both reduce to single point
-  -- - size 2: use affineOfBinary_swap_two and binCombo_same for merging
-  -- - size ≥ 3: use zero-padding and permutation invariance
-  --
-  -- The full proof requires:
-  -- 1. affineOfBinary_filter_nonzero to remove zeros
-  -- 2. Permutation invariance for arbitrary list lengths
-  -- This is non-trivial and may require induction on the number of points.
-  sorry
-
-
 /-!
 ### The Linearity Lemma
 
