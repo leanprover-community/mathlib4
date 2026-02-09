@@ -220,11 +220,11 @@ theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
 /-- If `f : E →ₗ[R] F` has a left inverse `g`, then `range f = ker (f ∘ g - id)`.
 
 This is the dual version of `LinearMap.ker_eq_range_of_comp_eq_id`. -/
-lemma _root_.LinearMap.range_eq_ker_of_leftInverse {M P} [AddCommGroup M] [Module R M]
+lemma range_eq_ker_of_leftInverse {M P} [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M}
-    (h : LeftInverse g f) : range f = ker ((f.comp g) - LinearMap.id) :=
+    (h : LeftInverse g f) : Set.range f = ker ((f.comp g) - LinearMap.id) :=
   -- If `y = f x ∈ range f`, we have `(f ∘ g) y = f (g (f x)) = f x = y` by hypothesis `h`.
-    -- Conversely, f g z - z = 0 implies z = f (g z) ∈ range f.
+  -- Conversely, f g z - z = 0 implies z = f (g z) ∈ range f.
   le_antisymm (by rintro y ⟨x, rfl⟩; simp [h x]) (fun x hx ↦ ⟨g x, by simpa [sub_eq_zero] using hx⟩)
 
 end

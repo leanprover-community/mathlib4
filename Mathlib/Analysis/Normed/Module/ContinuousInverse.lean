@@ -69,7 +69,7 @@ variable {R : Type*} [Semiring R] {E E' F F' G : Type*}
 noncomputable section
 
 /-- A continuous linear map admits a left inverse which is a continuous linear map itself. -/
-@[expose] protected def ContinuousLinearMap.HasLeftLeftInverse (f : E →L[R] F) : Prop :=
+@[expose] protected def ContinuousLinearMap.HasLeftInverse (f : E →L[R] F) : Prop :=
   ∃ g : F →L[R] E, LeftInverse g f
 
 /-- A continuous linear map admits a right inverse which is a continuous linear map itself. -/
@@ -78,39 +78,39 @@ noncomputable section
 
 namespace ContinuousLinearMap
 
-namespace HasLeftLeftInverse
+namespace HasLeftInverse
 
 variable {f : E →L[R] F}
 
 /-- Choice of left inverse for `f` -/
-def leftInverse (h : f.HasLeftLeftInverse) : F →L[R] E := Classical.choose h
+def leftInverse (h : f.HasLeftInverse) : F →L[R] E := Classical.choose h
 
-lemma leftInverse_leftInverse (h : f.HasLeftLeftInverse) : LeftInverse h.leftInverse f :=
+lemma leftInverse_leftInverse (h : f.HasLeftInverse) : LeftInverse h.leftInverse f :=
   Classical.choose_spec h
 
-lemma injective (h : f.HasLeftLeftInverse) : Injective f :=
+lemma injective (h : f.HasLeftInverse) : Injective f :=
   h.leftInverse_leftInverse.injective
 
-example (h : f.HasLeftLeftInverse) (x : E) : h.leftInverse (f x) = x :=
+example (h : f.HasLeftInverse) (x : E) : h.leftInverse (f x) = x :=
   h.leftInverse_leftInverse x
 
-lemma congr {g : E →L[R] F} (hf : f.HasLeftLeftInverse) (hfg : g = f) :
-    g.HasLeftLeftInverse :=
+lemma congr {g : E →L[R] F} (hf : f.HasLeftInverse) (hfg : g = f) :
+    g.HasLeftInverse :=
   hfg ▸ hf
 
 /-- A continuous linear equivalence has a continuous left inverse. -/
 lemma _root_.ContinuousLinearEquiv.hasLeftInverse (f : E ≃L[R] F) :
-    f.toContinuousLinearMap.HasLeftLeftInverse :=
+    f.toContinuousLinearMap.HasLeftInverse :=
   ⟨f.symm, rightInverse_of_comp (by simp)⟩
 
 /-- An invertible continuous linear map has a continuous left inverse. -/
-lemma of_isInvertible (hf : IsInvertible f) : f.HasLeftLeftInverse := by
+lemma of_isInvertible (hf : IsInvertible f) : f.HasLeftInverse := by
   obtain ⟨e, rfl⟩ := hf
   exact e.hasLeftInverse
 
 /-- If `f` and `g` admit continuous left inverses, so does `f × g`. -/
-lemma prodMap {g : E' →L[R] F'} (hf : f.HasLeftLeftInverse) (hg : g.HasLeftLeftInverse) :
-    (f.prodMap g).HasLeftLeftInverse := by
+lemma prodMap {g : E' →L[R] F'} (hf : f.HasLeftInverse) (hg : g.HasLeftInverse) :
+    (f.prodMap g).HasLeftInverse := by
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   use finv.prodMap ginv
@@ -118,37 +118,37 @@ lemma prodMap {g : E' →L[R] F'} (hf : f.HasLeftLeftInverse) (hg : g.HasLeftLef
 
 variable [TopologicalSpace G] [AddCommMonoid G] [Module R G]
 
-lemma comp {g : F →L[R] G} (hg : g.HasLeftLeftInverse) (hf : f.HasLeftLeftInverse) :
-    (g.comp f).HasLeftLeftInverse := by
+lemma comp {g : F →L[R] G} (hg : g.HasLeftInverse) (hf : f.HasLeftInverse) :
+    (g.comp f).HasLeftInverse := by
   obtain ⟨finv, hfinv⟩ := hf
   obtain ⟨ginv, hginv⟩ := hg
   refine ⟨finv.comp ginv, fun x ↦ ?_⟩
   simp only [coe_comp', Function.comp_apply]
   rw [hginv, hfinv]
 
-lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasLeftLeftInverse) :
-    f.HasLeftLeftInverse := by
+lemma of_comp {g : F →L[R] G} (hfg : (g.comp f).HasLeftInverse) :
+    f.HasLeftInverse := by
   obtain ⟨fginv, hfginv⟩ := hfg
   refine ⟨fginv.comp g, fun y ↦ ?_⟩
   simp only [coe_comp', Function.comp_apply]
   exact hfginv y
 
-lemma comp_continuousLinearEquivalence {f₀ : F' ≃L[R] E} (hf : f.HasLeftLeftInverse) :
-    (f.comp f₀.toContinuousLinearMap).HasLeftLeftInverse :=
+lemma comp_continuousLinearEquivalence {f₀ : F' ≃L[R] E} (hf : f.HasLeftInverse) :
+    (f.comp f₀.toContinuousLinearMap).HasLeftInverse :=
   hf.comp f₀.hasLeftInverse
 
-lemma continuousLinearEquivalence_comp {g : F ≃L[R] F'} (hf : f.HasLeftLeftInverse) :
-    (g.toContinuousLinearMap.comp f).HasLeftLeftInverse :=
+lemma continuousLinearEquivalence_comp {g : F ≃L[R] F'} (hf : f.HasLeftInverse) :
+    (g.toContinuousLinearMap.comp f).HasLeftInverse :=
   g.hasLeftInverse.comp hf
 
 /-- `ContinuousLinearMap.inl` has a continuous left inverse. -/
-protected lemma inl : (ContinuousLinearMap.inl R F G).HasLeftLeftInverse := by
+protected lemma inl : (ContinuousLinearMap.inl R F G).HasLeftInverse := by
   use ContinuousLinearMap.fst _ _ _
   intro x
   simp
 
 /-- `ContinuousLinearMap.inr` has a continuous left inverse. -/
-protected lemma inr : (ContinuousLinearMap.inr R F G).HasLeftLeftInverse := by
+protected lemma inr : (ContinuousLinearMap.inr R F G).HasLeftInverse := by
   use ContinuousLinearMap.snd _ _ _
   intro x
   simp
@@ -164,7 +164,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
 `f` has a continuous left inverse. -/
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Injective f) :
-    f.HasLeftLeftInverse := by
+    f.HasLeftInverse := by
   -- A surjective linear map has a linear inverse. It is continuous because its domain is.
   obtain ⟨g, hg⟩ :=
     f.toLinearMap.exists_leftInverse_of_injective (f.ker_eq_bot_of_injective hf)
@@ -172,7 +172,7 @@ lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 
 
 end NontriviallyNormedField
 
-end HasLeftLeftInverse
+end HasLeftInverse
 
 /-! An equivalent characterisation of maps with a continuous left inverse -/
 section
@@ -184,7 +184,7 @@ variable {R E F : Type*} [Ring R]
 /-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
 its image has a closed complement. -/
 @[expose] protected def Splits (f : E →L[R] F) : Prop :=
-  Injective f ∧ IsClosed (Set.range f) ∧ Submodule.ClosedComplemented f.range
+  Injective f ∧ IsClosed (range f) ∧ Submodule.ClosedComplemented f.range
 
 namespace Splits
 
@@ -213,21 +213,7 @@ lemma isCompl_complement (h : f.Splits) : IsCompl f.range h.complement :=
 
 end Splits
 
--- TODO: move!
-omit [TopologicalSpace E] [TopologicalSpace F] in
-/-- If `f : E →ₗ[R] F` has a left inverse `g`, then `range f = ker (f ∘ g - id)`.
-
-This is the dual version of `LinearMap.ker_eq_range_of_comp_eq_id`. -/
-lemma _root_.LinearMap.range_eq_ker_of_leftInverse {f : E →ₗ[R] F} {g : F →ₗ[R] E}
-    (h : LeftInverse g f) : range f = ((f.comp g) - LinearMap.id).ker := by
-  apply subset_antisymm
-  · -- If `y = f x ∈ range f`, we have `(f ∘ g) y = f (g (f x)) = f x = y` by hypothesis `h`.
-    rintro y ⟨x, rfl⟩
-    simp [h x]
-  · exact fun x hx ↦ ⟨g x, by simpa [sub_eq_zero] using hx⟩
-
-namespace ContinuousLinearMap
-
+-- TODO: move to better place!
 lemma range_toLinearMap {f : E →L[R] F} : range f.toLinearMap = range f := by simp
 
 -- This definition needs stronger hypotheses.
@@ -237,24 +223,14 @@ variable {R E E' F F' G : Type*} [Ring R]
   [TopologicalSpace F] [AddCommGroup F] [Module R F]
   [TopologicalSpace F'] [AddCommMonoid F'] [Module R F'] [IsTopologicalAddGroup F] [T1Space F]
 
-lemma HasBoundedLeftInverse.isClosed_range {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) :
+lemma HasLeftInverse.isClosed_range {f : E →L[R] F} (hf : f.HasLeftInverse) :
     IsClosed (range f) := by
-  -- Proof sketch: assume z_n = f y_n is a sequence in range f converging to z.
-  -- Then z_n = f y_n = f g (f y_n) converges to f g z (by continuity of f and g),
-  -- hence (if in a T2 space, perhaps weaker) z = f (g z) ∈ range f also.
-  -- Not sure about the best way to formalise this, but it certainly works.
-  -- Better proof: `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
-  rw [← f.range_toLinearMap, LinearMap.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
+  -- `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
+  rw [← f.range_toLinearMap, ← f.coe_range,
+    f.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
   exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
 
-omit [IsTopologicalAddGroup F] [T1Space F] in
-theorem extracted' (q : Submodule R F) (p : F →L[R] F) (h : ∀ (x : F), p x ∈ q) (y : F) :
-    (p.codRestrict q h) y = ⟨p y, h y⟩ := by
-  -- how does this work? TODO understand!
-  ext
-  simp
-
-lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) : f.Splits := by
+lemma HasLeftInverse.splits {f : E →L[R] F} (hf : f.HasLeftInverse) : f.Splits := by
   refine ⟨hf.injective, hf.isClosed_range, ?_⟩
   -- Idea of proof: let g be a left inverse for f. Then ker g is a closed subspace of F,
   -- and a complement to range f.
@@ -268,38 +244,12 @@ lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInver
   simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply, p']
   rw [hf.leftInverse_leftInverse]
 
-section -- alternative proof; requiring stronger typeclass assumptions
-
-variable {R E F : Type*} [NontriviallyNormedField R]
-  [NormedAddCommGroup E] [NormedSpace R E]
-  [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
-
-lemma HasBoundedLeftInverse.splits' {f : E →L[R] F} (hf : f.HasBoundedLeftInverse) : f.Splits := by
-  refine ⟨hf.injective, hf.isClosed_range, ?_⟩
-  -- Idea of proof: let g be a left inverse for f.
-  -- Then ker g is a closed subspace of F and a complement to range f.
-  refine Submodule.ClosedComplemented.of_isCompl_isClosed ⟨?_, ?_⟩
-    hf.isClosed_range hf.leftInverse.isClosed_ker
-  · -- If y = f x ∈ ker g, we have x = g f x = g y = 0, so y = f 0 = 0 is trivial.
-    rw [Submodule.disjoint_def]
-    rintro y ⟨x, hx⟩ hker
-    have : x = 0 := by rw [← hf.leftInverse_leftInverse x]; erw [hx]; exact hker
-    simp [← hx, this]
-  · -- For any z ∈ F, observe that z = (z - f g z) + f g z; the latter lies in range f,
-    -- while the former is in ker g as we have g (f g z) = g z for any z.
-    rw [codisjoint_iff, Submodule.sup_eq_top_iff]
-    intro z
-    exact ⟨f (hf.leftInverse z), by simp,
-      z - (f (hf.leftInverse z)), by simp [hf.leftInverse_leftInverse (hf.leftInverse z)], by simp⟩
-
-end
-
 variable {R E F : Type*} [NontriviallyNormedField R]
   [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
   [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
 
 /-- A split linear map has a bounded left inverse. -/
-lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoundedLeftInverse := by
+lemma Splits.hasLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasLeftInverse := by
   have : (f.rangeRestrict).ker = ⊥ := by
     rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective
   -- We compose the continuous inverse of `f : E → range f` with the projection `p : F → range f`.
@@ -307,8 +257,6 @@ lemma Splits.hasBoundedLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasBoun
   let g := f.leftInverse_of_injective_of_isClosed_range hf.injective hf.isClosed_range
   refine ⟨g.comp p, fun x ↦ ?_⟩
   simpa [g, hp ⟨f x, by simp⟩] using f.rangeRestrict.leftInverse_apply_of_inj this x
-
-end ContinuousLinearMap
 
 end
 
