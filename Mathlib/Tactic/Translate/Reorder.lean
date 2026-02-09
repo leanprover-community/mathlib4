@@ -140,6 +140,8 @@ private partial def reorderMVars (mvars : Array Expr) (reorder : Reorder) : Meta
     let mvarId := mvars[arg]!.mvarId!
     let decl ← mvarId.getDecl
     let mvarId' ← mkFreshExprMVar (← reorderForall argReorder decl.type) (userName := decl.userName)
+    -- Note: we assign `mvarId` in terms of `mvarId'`, and to do this we need to reorder `mvarId'`
+    -- with the reverse reorder of `argReorder`.
     mvarId.assign (← reorderLambda argReorder.reverse mvarId')
     mvars := mvars.set! arg mvarId'
   return reorder.permute! mvars
