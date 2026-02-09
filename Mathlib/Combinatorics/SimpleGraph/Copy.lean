@@ -299,6 +299,35 @@ theorem isContained_iff_exists_iso_subgraph :
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
 
+variable (v : V) [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj] in
+theorem degree_le_of_copy (fcopy : Copy G H) :
+    G.degree v ≤ H.degree (fcopy v) := by
+  repeat rw [← card_neighborSet_eq_degree]
+  have h1 := Copy.mapNeighborSet fcopy v
+  exact (Fintype.card_le_of_injective h1.toFun h1.inj')
+
+variable (v : V) [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj] in
+theorem max_degree_le_of_contained :
+    G ⊑ H → G.maxDegree ≤ H.maxDegree := by
+  intro hcont
+  rw [IsContained] at hcont
+  cases hcont with | intro copy
+  if (IsEmpty V) then
+    have h : IsEmpty V := by assumption
+    apply (@maxDegree_of_isEmpty V G) at h
+    rw [h]
+    simp only [zero_le]
+  else
+    have h : ¬IsEmpty V := by assumption
+    rw [not_isEmpty_iff] at h
+    apply (@exists_maximal_degree_vertex V G) at h
+    cases h with | intro v h
+    have : G.degree v ≤ H.degree (copy v) := by
+      apply degree_le_of_copy
+    have : H.degree (copy v) ≤ H.maxDegree := by
+      apply (@degree_le_maxDegree W H)
+    omega
+
 end IsContained
 
 section Free
