@@ -536,7 +536,7 @@ variable [∀ i, Module R (α i)] [∀ i, Module R (β i)]
 variable (f : ∀ (i : ι), α i →ₗ[R] β i)
 
 /-- create a linear map from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
-def linearMap : (⨁ i, α i) →ₗ[R] ⨁ i, β i :=  DFinsupp.mapRange.linearMap f
+def linearMap : (⨁ i, α i) →ₗ[R] ⨁ i, β i := DFinsupp.mapRange.linearMap f
 
 variable [DecidableEq ι]
 

@@ -69,7 +69,7 @@ class GradedRing (𝒜 : ι → σ) extends SetLike.GradedMonoid 𝒜, DirectSum
 /-- The `GradedRing` version of `GradedAlgebra.ofAlgHom`. -/
 abbrev GradedRing.ofRingHom (𝒜 : ι → σ) [SetLike.GradedMonoid 𝒜] (decompose : A →+* ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeRingHom 𝒜).comp decompose = RingHom.id A)
-    (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
+    (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (𝒜 ·) i x) :
     GradedRing 𝒜 where
   decompose' := decompose
   left_inv := RingHom.congr_fun right_inv
@@ -369,7 +369,7 @@ variable {M : ι → σ} [SetLike.GradedMonoid M]
 
 /-- The canonical isomorphism of an internal direct sum with the ambient ring -/
 noncomputable def coeRingEquiv (hM : DirectSum.IsInternal M) :
-    (DirectSum ι fun i => ↥(M i)) ≃+* A := RingEquiv.ofBijective (DirectSum.coeRingHom M) hM
+    (DirectSum ι (M ·)) ≃+* A := RingEquiv.ofBijective (DirectSum.coeRingHom M) hM
 
 /-- Given an `R`-algebra `A` and a family `ι → σ` of submonoids parameterized by an additive monoid
  `ι` and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative), such that
