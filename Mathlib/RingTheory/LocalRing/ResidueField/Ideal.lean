@@ -147,8 +147,6 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
   Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
 
 instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
-  have : Algebra.FiniteType (Localization.AtPrime p) p.ResidueField :=
-    .of_surjective (Algebra.ofId _ _) IsLocalRing.residue_surjective
   .comp _ (Localization.AtPrime p) _
 
 instance [Algebra.EssFiniteType R A]

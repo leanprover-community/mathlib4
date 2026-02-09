@@ -159,24 +159,6 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {p : Ideal R} [p.
 
 include hq
 
-/-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
-a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
-lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
-    [Algebra.IsIntegral R S] (x : S) (hx : x ∉ q) : ∃ r ∉ p, x ∣ algebraMap _ _ r := by
-  simp only [dvd_def, eq_comm, mul_comm x]
-  by_contra!
-  obtain ⟨Q, hQ, hxQ, hQp⟩ := Ideal.exists_le_prime_disjoint (.span {x})
-    (Algebra.algebraMapSubmonoid _ p.primeCompl)
-    (by simpa [Set.disjoint_iff_forall_ne, Ideal.mem_span_singleton',
-      Algebra.algebraMapSubmonoid, @forall_comm S])
-  have hQp' : Q.under _ ≤ p := by
-    intro x hxQ
-    by_contra hxp
-    exact Set.subset_compl_iff_disjoint_right.mpr hQp hxQ ⟨x, hxp, rfl⟩
-  obtain ⟨Q', hQ'Q, hQ', hQ'p⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime _ _ hQp'
-  obtain rfl : Q' = q := hq.le ⟨hQ', ⟨hQ'p.symm⟩⟩
-  exact hx (hQ'Q (hxQ (Ideal.mem_span_singleton_self _)))
-
 namespace Localization
 
 lemma localRingHom_injective_of_primesOver_eq_singleton
