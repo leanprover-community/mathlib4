@@ -28,6 +28,10 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry.Scheme
 
+/-- Big étale site: the étale precoverage on the category of schemes. -/
+def etalePrecoverage : Precoverage Scheme.{u} :=
+  precoverage @IsEtale
+
 /-- Big étale site: the étale pretopology on the category of schemes. -/
 def etalePretopology : Pretopology Scheme.{u} :=
   pretopology @IsEtale
