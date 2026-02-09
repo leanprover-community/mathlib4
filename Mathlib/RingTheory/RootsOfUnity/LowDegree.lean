@@ -50,10 +50,7 @@ lemma quadratic_roots_of_minus_one_of_sq_eq {s : K} (hs : s * s = -1) :
     {z : K | z ^ 2 = -1} = {s, -s} := by
   simp only [Set.ext_iff, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
   intro z
-  constructor
-  · intro hz
-    sorry
-  · grind only
+  rw [← hs, ← pow_two, sq_eq_sq_iff_eq_or_eq_neg]
 
 omit [IsDomain K] in
 lemma quadratic_roots_of_minus_one_of_sq_ne (hs : ¬ IsSquare (-1 : K)) :
@@ -196,20 +193,6 @@ lemma quintic_roots_of_unity_of_sq [Invertible (4 : K)] {s t₁ t₂ : K} (hs : 
   simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq]
   grind only
 
-omit [IsDomain K] in
-lemma quintic_cyclotomic_polynomial_ne_zero_of_sq_ne {z : K} (h : ¬ IsSquare (-5 : K)) :
-    z ^ 4 + z ^ 3 + z ^ 2 + z + 1 ≠ 0 := by
-  sorry
-
-lemma quintic_roots_of_unity_of_sq_ne (h : ¬ IsSquare (-5 : K)) :
-    {z : K | z ^ 5 = 1} = {1} := by
-  rw [Set.eq_singleton_iff_unique_mem, Set.mem_setOf_eq]
-  constructor
-  · rw [one_pow]
-  · intro x
-    simp [Set.mem_setOf_eq, show x ^ 5  = (x - 1) * (x ^ 4 + x ^ 3 + x ^ 2 + x + 1) + 1 by ring_nf]
-    grind only [quintic_cyclotomic_polynomial_ne_zero_of_sq_ne h]
-
 lemma Complex.quintic_roots_of_unity : {z : ℂ | z ^ 5 = 1} = {1,
     (√5 -1)/4 + √2 * √(5 + √5)/4 * I,
     (√5 -1)/4 - √2 * √(5 + √5)/4 * I,
@@ -238,12 +221,5 @@ lemma Complex.quintic_roots_of_unity : {z : ℂ | z ^ 5 = 1} = {1,
   rw [quintic_roots_of_unity_of_sq hs ht₁ ht₂]
   norm_num
   ring_nf
-
-lemma Real.quintic_roots_of_unity : {z : ℝ | z ^ 5 = 1} = {1} := by
-  rw [quintic_roots_of_unity_of_sq_ne]
-  intro h
-  apply h.elim
-  intro a
-  grind only [sq_nonneg a]
 
 end
