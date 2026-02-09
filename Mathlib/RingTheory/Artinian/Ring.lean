@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
-import Mathlib.Algebra.Field.Equiv
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+module
+
+public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Artinian rings
@@ -20,16 +22,16 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 ## Main results
 
-* `IsArtinianRing.localization_surjective`: the canonical homomorphism from a commutative artinian
+* `IsArtinianRing.localization_surjective`: the canonical homomorphism from a commutative Artinian
   ring to any localization of itself is surjective.
 
-* `IsArtinianRing.isNilpotent_jacobson_bot`: the Jacobson radical of a commutative artinian ring
+* `IsArtinianRing.isNilpotent_jacobson_bot`: the Jacobson radical of a commutative Artinian ring
   is a nilpotent ideal.
 
 ## Implementation Details
 
 The predicate `IsArtinianRing` is defined in `Mathlib/RingTheory/Artinian/Ring.lean` instead,
-so that we can apply basic API on artinian modules to division rings without a heavy import.
+so that we can apply basic API on Artinian modules to division rings without a heavy import.
 
 ## References
 
@@ -41,6 +43,8 @@ so that we can apply basic API on artinian modules to division rings without a h
 Artinian, artinian, Artinian ring, artinian ring
 
 -/
+
+@[expose] public section
 
 open Set Submodule IsArtinian
 
@@ -61,40 +65,20 @@ theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
   exact isNilpotent_jacobson_bot
 
 variable (R) in
-/-- Commutative artinian reduced local ring is a field. -/
+/-- Commutative Artinian reduced local ring is a field. -/
 theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
-  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
-    _ (Ideal.Quotient.field _).toIsField
-
-section IsUnit
-
-open nonZeroDivisors
-
-/-- If an element of an artinian ring is not a zero divisor then it is a unit. -/
-theorem isUnit_of_mem_nonZeroDivisors {a : R} (ha : a ∈ R⁰) : IsUnit a :=
-  IsUnit.isUnit_iff_mulLeft_bijective.mpr <|
-    IsArtinian.bijective_of_injective_endomorphism (LinearMap.mulLeft R a)
-      fun _ _ ↦ (mul_cancel_left_mem_nonZeroDivisors ha).mp
-
-/-- In an artinian ring, an element is a unit iff it is a non-zero-divisor.
-See also `isUnit_iff_mem_nonZeroDivisors_of_finite`. -/
-theorem isUnit_iff_mem_nonZeroDivisors {a : R} : IsUnit a ↔ a ∈ R⁰ :=
-  ⟨IsUnit.mem_nonZeroDivisors, isUnit_of_mem_nonZeroDivisors⟩
-
-theorem isUnit_submonoid_eq : IsUnit.submonoid R = R⁰ := by
-  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
-
-end IsUnit
+  (IsArtinianRing.equivPi R).toRingEquiv.trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+    (Ideal.Quotient.field _).toIsField
 
 section Localization
 
 variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]
 include S
 
-/-- Localizing an artinian ring can only reduce the amount of elements. -/
+/-- Localizing an Artinian ring can only reduce the amount of elements. -/
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   intro r'
-  obtain ⟨r₁, s, rfl⟩ := IsLocalization.mk'_surjective S r'
+  obtain ⟨r₁, s, rfl⟩ := IsLocalization.exists_mk'_eq S r'
   rsuffices ⟨r₂, h⟩ : ∃ r : R, IsLocalization.mk' L 1 s = algebraMap R L r
   · exact ⟨r₁ * r₂, by rw [IsLocalization.mk'_eq_mul_mk'_one, map_mul, h]⟩
   obtain ⟨n, r, hr⟩ := IsArtinian.exists_pow_succ_smul_dvd (s : R) (1 : R)

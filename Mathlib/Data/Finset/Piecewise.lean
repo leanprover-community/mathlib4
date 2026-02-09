@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Functions defined piecewise on a finset
@@ -17,6 +19,8 @@ which is equal to `f` on `s` and `g` on the complement.
 
 Should we deduplicate this from `Set.piecewise`?
 -/
+
+@[expose] public section
 
 open Function
 
@@ -52,8 +56,6 @@ lemma piecewise_eq_of_mem {i : ι} (hi : i ∈ s) : s.piecewise f g i = f i := b
 lemma piecewise_eq_of_notMem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i := by
   simp [piecewise, hi]
 
-@[deprecated (since := "2025-05-23")] alias piecewise_eq_of_not_mem := piecewise_eq_of_notMem
-
 lemma piecewise_congr {f f' g g' : ∀ i, π i} (hf : ∀ i ∈ s, f i = f' i)
     (hg : ∀ i ∉ s, g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
   funext fun i => if_ctx_congr Iff.rfl (hf i) (hg i)
@@ -64,7 +66,7 @@ lemma piecewise_insert_of_ne [DecidableEq ι] {i j : ι} [∀ i, Decidable (i �
 
 lemma piecewise_insert [DecidableEq ι] (j : ι) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = update (s.piecewise f g) j (f j) := by
-  classical simp only [← piecewise_coe, coe_insert, ← Set.piecewise_insert]
+  classical simp only [← piecewise_coe, ← Set.piecewise_insert]
   ext
   congr
   simp
@@ -117,9 +119,6 @@ lemma update_piecewise_of_notMem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : �
   refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
   exact fun h => hi (h ▸ hj)
 
-@[deprecated (since := "2025-05-23")]
-alias update_piecewise_of_not_mem := update_piecewise_of_notMem
-
 lemma piecewise_same : s.piecewise f f = f := by
   ext i
   by_cases h : i ∈ s <;> simp [h]
@@ -161,7 +160,7 @@ lemma le_piecewise_of_le_of_le (hf : h ≤ f) (hg : h ≤ g) : h ≤ s.piecewise
   piecewise_cases s f g (fun y => h x ≤ y) (hf x) (hg x)
 
 lemma piecewise_le_piecewise' (hf : ∀ x ∈ s, f x ≤ f' x) (hg : ∀ x ∉ s, g x ≤ g' x) :
-    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [hx, *]
+    s.piecewise f g ≤ s.piecewise f' g' := fun x => by by_cases hx : x ∈ s <;> simp [*]
 
 lemma piecewise_le_piecewise (hf : f ≤ f') (hg : g ≤ g') : s.piecewise f g ≤ s.piecewise f' g' :=
   s.piecewise_le_piecewise' (fun x _ => hf x) fun x _ => hg x

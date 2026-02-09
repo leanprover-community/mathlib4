@@ -3,14 +3,18 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Unramified.Locus
-import Mathlib.RingTheory.LocalProperties.Basic
+module
+
+public import Mathlib.RingTheory.Unramified.Locus
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
 # The meta properties of unramified ring homomorphisms.
 
 -/
+
+@[expose] public section
 
 namespace RingHom
 
@@ -27,48 +31,47 @@ def FormallyUnramified (f : R →+* S) : Prop :=
 
 lemma formallyUnramified_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyUnramified ↔ Algebra.FormallyUnramified R S := by
-  delta FormallyUnramified
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FormallyUnramified, toAlgebra_algebraMap]
 
 namespace FormallyUnramified
 
+lemma of_surjective {f : R →+* S} (hf : Function.Surjective f) : f.FormallyUnramified := by
+  algebraize [f]
+  exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) hf
+
 lemma stableUnderComposition :
     StableUnderComposition FormallyUnramified := by
-  intros R S T _ _ _ f g _ _
+  intro R S T _ _ _ f g _ _
   algebraize [f, g, g.comp f]
   exact .comp R S T
 
 lemma respectsIso :
     RespectsIso FormallyUnramified := by
   refine stableUnderComposition.respectsIso ?_
-  intros R S _ _ e
-  letI := e.toRingHom.toAlgebra
-  exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) e.surjective
+  intro R S _ _ e
+  exact .of_surjective e.surjective
 
 lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
   refine .mk respectsIso ?_
-  intros R S T _ _ _ _ _ h
-  show (algebraMap _ _).FormallyUnramified
-  rw [formallyUnramified_algebraMap] at h ⊢
+  introv H
+  rw [formallyUnramified_algebraMap] at H ⊢
   infer_instance
 
 lemma holdsForLocalizationAway :
     HoldsForLocalizationAway FormallyUnramified := by
-  intros R S _ _ _ r _
+  intro R S _ _ _ r _
   rw [formallyUnramified_algebraMap]
   exact .of_isLocalization (.powers r)
 
 lemma ofLocalizationPrime :
     OfLocalizationPrime FormallyUnramified := by
-  intros R S _ _ f H
+  intro R S _ _ f H
   algebraize [f]
   rw [FormallyUnramified, ← Algebra.unramifiedLocus_eq_univ_iff, Set.eq_univ_iff_forall]
   intro x
   let Rₓ := Localization.AtPrime (x.asIdeal.comap f)
   let Sₓ := Localization.AtPrime x.asIdeal
-  have := Algebra.FormallyUnramified.of_isLocalization (Rₘ := Rₓ) (x.asIdeal.comap f).primeCompl
   letI : Algebra Rₓ Sₓ := (Localization.localRingHom _ _ _ rfl).toAlgebra
   have : IsScalarTower R Rₓ Sₓ := .of_algebraMap_eq
     fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
@@ -77,7 +80,7 @@ lemma ofLocalizationPrime :
 
 lemma ofLocalizationSpanTarget :
     OfLocalizationSpanTarget FormallyUnramified := by
-  intros R S _ _ f s hs H
+  intro R S _ _ f s hs H
   algebraize [f]
   rw [FormallyUnramified, ← Algebra.unramifiedLocus_eq_univ_iff, Set.eq_univ_iff_forall]
   intro x
@@ -93,14 +96,7 @@ lemma ofLocalizationSpanTarget :
 lemma propertyIsLocal :
     PropertyIsLocal FormallyUnramified := by
   constructor
-  · intro R S _ _ f r R' S' _ _ _ _ _ _ H
-    algebraize [f, (algebraMap S S').comp f, IsLocalization.Away.map R' S' f r]
-    have := Algebra.FormallyUnramified.of_isLocalization (Rₘ := S') (.powers (f r))
-    have := Algebra.FormallyUnramified.comp R S S'
-    have H : Submonoid.powers r ≤ (Submonoid.powers (f r)).comap f := by
-      rintro x ⟨n, rfl⟩; exact ⟨n, by simp⟩
-    have : IsScalarTower R R' S' := .of_algebraMap_eq' (IsLocalization.map_comp H).symm
-    exact Algebra.FormallyUnramified.of_comp R R' S'
+  · exact isStableUnderBaseChange.localizationPreserves.away
   · exact ofLocalizationSpanTarget
   · exact ofLocalizationSpanTarget.ofLocalizationSpan
       (stableUnderComposition.stableUnderCompositionWithLocalizationAway

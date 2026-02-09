@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Classes for s-finite measures
@@ -15,9 +17,12 @@ We introduce the following typeclasses for measures:
   where `μ` is finite.
 -/
 
+@[expose] public section
+
 namespace MeasureTheory
 
 open Set Filter Function Measure MeasurableSpace NNReal ENNReal
+open scoped Topology
 
 variable {α β ι : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν : Measure α}
   {s t : Set α} {a : α}
@@ -113,7 +118,7 @@ def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFinite μ] :
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other
   properties in `SigmaFinite`. -/
 def spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) : Set α :=
-  Accumulate μ.toFiniteSpanningSetsIn.set i
+  accumulate μ.toFiniteSpanningSetsIn.set i
 
 theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spanningSets μ) :=
   monotone_accumulate
@@ -196,15 +201,15 @@ all members of the countable family of finite measure spanning sets has zero mea
 theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Measure α}
     [SigmaFinite μ] (s : Set α) : (∀ n, μ (s ∩ spanningSets μ n) = 0) ↔ μ s = 0 := by
   nth_rw 2 [show s = ⋃ n, s ∩ spanningSets μ n by
-      rw [← inter_iUnion, iUnion_spanningSets, inter_univ] ]
+      rw [← inter_iUnion, iUnion_spanningSets, inter_univ]]
   rw [measure_iUnion_null_iff]
 
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
 some member of the countable family of finite measure spanning sets has positive measure. -/
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
-  rw [← not_iff_not]
-  simp only [not_exists, not_lt, nonpos_iff_eq_zero]
+  contrapose!
+  simp only [nonpos_iff_eq_zero]
   exact forall_measure_inter_spanningSets_eq_zero s
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
@@ -311,6 +316,50 @@ theorem countable_meas_level_set_pos {α β : Type*} {_ : MeasurableSpace α} {�
     [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : Measurable g) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } :=
   countable_meas_level_set_pos₀ g_mble.nullMeasurable
+
+private lemma exists_ae_subset_biUnion_countable_of_isFiniteMeasure [IsFiniteMeasure μ]
+    {C : Set (Set α)} (hC : ∀ s ∈ C, MeasurableSet s) :
+    ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ≤ᵐ[μ] (⋃₀ D) := by
+  let m := ⨆ D ∈ {D : Set (Set α) | D ⊆ C ∧ D.Countable}, μ (⋃₀ D)
+  obtain ⟨D, D_mem, hD⟩ : ∃ D ∈ {D : Set (Set α) | D ⊆ C ∧ D.Countable}, μ (⋃₀ D) = m := by
+    rcases eq_bot_or_bot_lt m with hm | hm
+    · exact ⟨∅, by simp, by simp [hm]⟩
+    obtain ⟨u, -, u_mem, u_lim⟩ :
+        ∃ u : ℕ → ℝ≥0∞, StrictMono u ∧ (∀ n, u n ∈ Ioo 0 m) ∧ Tendsto u atTop (𝓝 m) :=
+      exists_seq_strictMono_tendsto' hm
+    have A n : ∃ D ∈ {D : Set (Set α) | D ⊆ C ∧ D.Countable}, u n < μ (⋃₀ D) :=
+      lt_biSup_iff.1 (u_mem n).2
+    choose! D D_mem huD using A
+    have hD : ⋃ n, D n ∈ {D | D ⊆ C ∧ D.Countable} := by simp; grind
+    refine ⟨⋃ n, D n, hD, ?_⟩
+    apply le_antisymm (le_biSup (f := fun D ↦ μ (⋃₀ D)) hD)
+    apply le_of_tendsto' u_lim (fun n ↦ (huD n).le.trans ?_)
+    exact measure_mono (fun x hx ↦ by simp at hx ⊢; grind)
+  refine ⟨D, by grind, by grind, fun s hs ↦ union_ae_eq_right_iff_ae_subset.mp ?_⟩
+  symm
+  apply ae_eq_of_ae_subset_of_measure_ge subset_union_right.eventuallyLE
+  · rw [hD, show s ∪ ⋃₀ D = ⋃₀ (D ∪ {s}) by simp]
+    apply le_biSup (f := fun D ↦ μ (⋃₀ D))
+    simp [D_mem.2, insert_subset_iff, hs, D_mem.1]
+  · exact (MeasurableSet.sUnion D_mem.2 (by grind)).nullMeasurableSet
+  · simp
+
+variable (μ) in
+/-- Given a family of measurable sets, its measurable union is its union modulo sets of measure
+zero. It is well defined up to measure 0. For instance, the measurable union of all the singleton
+sets in `ℝ` is empty (while the usual union would be the whole space).
+This lemma shows the existence of a measurable union, writing it as the union of a countable
+subfamily. -/
+lemma exists_ae_subset_biUnion_countable [SFinite μ]
+    {C : Set (Set α)} (hC : ∀ s ∈ C, MeasurableSet s) :
+    ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ≤ᵐ[μ] (⋃₀ D) := by
+  have A n : ∃ D ⊆ C, D.Countable ∧ ∀ s ∈ C, s ≤ᵐ[sfiniteSeq μ n] (⋃₀ D) :=
+    exists_ae_subset_biUnion_countable_of_isFiniteMeasure hC
+  choose D DC D_count hD using A
+  refine ⟨⋃ n, D n, by simp [DC], by simp [D_count], fun s hs ↦ ?_⟩
+  rw [← sum_sfiniteSeq μ]
+  apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
+  exact HasSubset.Subset.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
 
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
 each `mₙ`, then its measurable superset `toMeasurable μ t` (which has the same measure as `t`)
@@ -541,10 +590,7 @@ lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
       exact ⟨⟨⟨fun n ↦ {f n}, by simp, by simpa [hf.forall] using hμ, by simp [hf.range_eq]⟩⟩⟩
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
-  refine
-    ⟨fun h => ⟨?_⟩, fun h => by
-      haveI := h
-      infer_instance⟩
+  refine ⟨fun h => ⟨?_⟩, fun h => by infer_instance⟩
   haveI : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ

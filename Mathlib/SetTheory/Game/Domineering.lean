@@ -3,7 +3,14 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.SetTheory.Game.State
+module -- shake: keep-all
+
+public import Mathlib.SetTheory.Game.State
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Specific.Domineering` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Domineering as a combinatorial game.
@@ -18,6 +25,8 @@ Most importantly, we need a general statement that allows us to discard irreleva
 Specifically to domineering, we need the fact that
 disjoint parts of the chessboard give sums of games.
 -/
+
+@[expose] public section
 
 namespace SetTheory
 
@@ -106,10 +115,10 @@ theorem moveRight_card {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
   exact tsub_add_cancel_of_le (card_of_mem_right h)
 
 theorem moveLeft_smaller {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) :
-    Finset.card (moveLeft b m) / 2 < Finset.card b / 2 := by simp [← moveLeft_card h, lt_add_one]
+    Finset.card (moveLeft b m) / 2 < Finset.card b / 2 := by simp [← moveLeft_card h]
 
 theorem moveRight_smaller {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
-    Finset.card (moveRight b m) / 2 < Finset.card b / 2 := by simp [← moveRight_card h, lt_add_one]
+    Finset.card (moveRight b m) / 2 < Finset.card b / 2 := by simp [← moveRight_card h]
 
 /-- The instance describing allowed moves on a Domineering board. -/
 instance state : State Board where

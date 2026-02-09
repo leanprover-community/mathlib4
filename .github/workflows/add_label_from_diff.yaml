@@ -22,12 +22,12 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
     - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
     - name: Configure Lean
-      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+      uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:
         auto-config: false
         use-github-cache: false
@@ -40,7 +40,7 @@ jobs:
         labels="$(lake exe autolabel)"
         printf '%s\n' "${labels}"
         # extract
-        label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^,]*\)\].*=\1=p')"
+        label="$(printf '%s' "${labels}" | sed -n 's=^::notice::.*#\[\([^,]*\)\].*=\1=p')"
         printf 'label: "%s"\n' "${label}"
         if [ -n "${label}" ]
         then

@@ -3,8 +3,10 @@ Copyright (c) 2025 Moisés Herradón Cueto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moisés Herradón Cueto
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.WithTerminal.Basic
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
 
 /-!
 # Relations between `Cone`, `WithTerminal` and `Over`
@@ -12,8 +14,10 @@ import Mathlib.CategoryTheory.WithTerminal.Basic
 Given categories `C` and `J`, an object `X : C` and a functor `K : J ⥤ Over X`,
 it has an obvious lift `liftFromOver K : WithTerminal J ⥤ C`, namely, send the terminal
 object to `X`. These two functors have equivalent categories of cones (`coneEquiv`).
-As a corollary, the limit of `K` is the limit of `liftFromOver K`, and viceversa.
+As a corollary, the limit of `K` is the limit of `liftFromOver K`, and vice-versa.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -39,7 +43,7 @@ def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) 
     hom.app a := (K.obj a).hom
   }
   map f := {
-    left := whiskerRight f (Over.forget X)
+    left := Functor.whiskerRight f (Over.forget X)
     right := 𝟙 X
   }
 
@@ -54,6 +58,8 @@ def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj
   hom.app | star | of a => 𝟙 _
   inv.app | star | of a => 𝟙 _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
 with morphisms. This same object is a cone of the extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C`. -/
@@ -72,10 +78,12 @@ private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
   map {t₁ t₂} f := {
     hom := f.hom.left
     w
-    | star => by aesop_cat
+    | star => by cat_disch
     | of a => by simp [← Comma.comp_left]
   }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cone of an extended functor
 `liftFromOver.obj K : WithTerminal J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cone of the original functor `K : J ⥤ Over X`. -/
@@ -94,6 +102,8 @@ private def coneBack : Cone (liftFromOver.obj K) ⥤ Cone K where
     hom := Over.homMk f.hom
   }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given a functor `K : J ⥤ Over X` and its extension `liftFromOver K : WithTerminal J ⥤ C`,
 there is an obvious equivalence between cones of these two functors.
 A cone of `K` is an object of `Over X`, so it has the form `t ⟶ X`.
@@ -122,6 +132,18 @@ def isLimitEquiv : IsLimit (coneEquiv.functor.obj t) ≃ IsLimit t := IsLimit.of
 
 end WithTerminal
 
+open WithTerminal in
+lemma Over.hasLimit_of_hasLimit_liftFromOver {X : C} (F : J ⥤ Over X)
+    [HasLimit (liftFromOver.obj F)] : HasLimit F :=
+  ⟨_, isLimitEquiv <| .ofIsoLimit
+    (limit.isLimit (liftFromOver.obj F)) (coneEquiv.counitIso.app _).symm⟩
+
+instance (X : C) [HasLimitsOfShape (WithTerminal J) C] :
+    HasLimitsOfShape J (Over X) where
+  has_limit _ := Over.hasLimit_of_hasLimit_liftFromOver ..
+
+instance (X : C) [HasLimitsOfSize.{w, w'} C] : HasLimitsOfSize.{w, w'} (Over X) where
+
 namespace WithInitial
 variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
 
@@ -140,7 +162,7 @@ def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)
   }
   map f := {
     left := 𝟙 X
-    right := whiskerRight f (Under.forget X)
+    right := Functor.whiskerRight f (Under.forget X)
   }
 
 /-- For any functor `K : J ⥤ Under X`, there is a canonical extension
@@ -154,6 +176,8 @@ def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder
   hom.app | star | of a => 𝟙 _
   inv.app | star | of a => 𝟙 _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A cocone of a functor `K : J ⥤ Under X` consists of an object of `Under X`, together
 with morphisms. This same object is a cocone of the extended functor
 `liftFromUnder.obj K : WithInitial J ⥤ C`. -/
@@ -172,10 +196,12 @@ private def coconeLift : Cocone K ⥤ Cocone (liftFromUnder.obj K) where
   map {t₁ t₂} f := {
     hom := f.hom.right
     w
-    | star => by aesop_cat
+    | star => by cat_disch
     | of a => by simp [← Comma.comp_right]
   }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cocone of an extended functor
 `liftFromUnder.obj K : WithInitial J ⥤ C` consists of an object of `C`, together
 with morphisms. This same object is a cocone of the original functor `K : J ⥤ Under X`. -/
@@ -194,6 +220,8 @@ private def coconeBack : Cocone (liftFromUnder.obj K) ⥤ Cocone K where
     hom := Under.homMk f.hom
   }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given a functor `K : J ⥤ Under X` and its extension `liftFromUnder K : WithInitial J ⥤ C`,
 there is an obvious equivalence between cocones of these two functors.
 A cocone of `K` is an object of `Under X`, so it has the form `X ⟶ t`.
@@ -213,7 +241,7 @@ lemma coconeEquiv_functor_obj_ι_app_star : (coconeEquiv.functor.obj t).ι.app s
 
 @[simp]
 lemma coconeEquiv_functor_obj_ι_app_of (Y : J) :
-   (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
+    (coconeEquiv.functor.obj t).ι.app (of Y) = (t.ι.app Y).right := rfl
 
 /-- A cocone `t` of `K : J ⥤ Under X` is a colimit if and only if the corresponding cocone
 `coconeLift t` of `liftFromUnder.obj K : WithInitial K ⥤ C` is a colimit. -/
@@ -222,3 +250,15 @@ def isColimitEquiv : IsColimit (coconeEquiv.functor.obj t) ≃ IsColimit t :=
   IsColimit.ofCoconeEquiv coconeEquiv
 
 end CategoryTheory.WithInitial
+
+open WithInitial in
+lemma Under.hasColimit_of_hasColimit_liftFromUnder {X : C} (F : J ⥤ Under X)
+    [HasColimit (liftFromUnder.obj F)] : HasColimit F :=
+  ⟨_, isColimitEquiv <| .ofIsoColimit
+    (colimit.isColimit (liftFromUnder.obj F)) (coconeEquiv.counitIso.app _).symm⟩
+
+instance (X : C) [HasColimitsOfShape (WithInitial J) C] :
+    HasColimitsOfShape J (Under X) where
+  has_colimit _ := Under.hasColimit_of_hasColimit_liftFromUnder ..
+
+instance (X : C) [HasColimitsOfSize.{w, w'} C] : HasColimitsOfSize.{w, w'} (Under X) where

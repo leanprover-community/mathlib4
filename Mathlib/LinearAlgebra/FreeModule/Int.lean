@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.Index
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.Index
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-! # Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).
 
@@ -15,10 +17,12 @@ index.
 
 -/
 
+public section
+
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
 
-namespace Basis.SmithNormalForm
+namespace Module.Basis.SmithNormalForm
 
 variable [Fintype ι]
 
@@ -32,7 +36,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
   classical
   rcases snf with ⟨bM, bN, f, a, snf⟩
   dsimp only
-  set N' : Submodule R (ι → R) := N.map bM.equivFun with hN'
+  set N' : Submodule R (ι → R) := N.map bM.equivFun.toLinearMap with hN'
   let bN' : Basis (Fin n) R N' := bN.map (bM.equivFun.submoduleMap N)
   have snf' : ∀ i, (bN' i : ι → R) = Pi.single (f i) (a i) := by
     intro i
@@ -79,11 +83,11 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte, Classical.choose_eq,
         Finset.sum_apply, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero]
       rw [eq_comm]
-      by_cases hj : ∃ j, f j = i
+      by_cases! hj : ∃ j, f j = i
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
               convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
-              · simp [hj]
+              · simp
               · rintro j - h
                 have hinj := f.injective.ne h
                 rw [hj.choose_spec] at hinj
@@ -99,9 +103,8 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               · exact hj.choose_spec.symm
               · simp [hj]
       · convert Finset.sum_const_zero with x
-        · rw [not_exists] at hj
-          specialize hj x
-          rw [eq_comm] at hj
+        · specialize hj x
+          rw [ne_comm] at hj
           simp [hj]
         · rw [← zero_dvd_iff]
           convert h i
@@ -171,7 +174,7 @@ lemma toAddSubgroup_index_ne_zero_iff {N : Submodule ℤ M} (snf : Basis.SmithNo
   simpa [Ideal.span_singleton_toAddSubgroup_eq_zmultiples, Int.index_zmultiples,
     Finset.prod_eq_zero_iff] using ha
 
-end Basis.SmithNormalForm
+end Module.Basis.SmithNormalForm
 
 namespace Int
 
@@ -179,7 +182,7 @@ variable [Finite ι]
 
 lemma submodule_toAddSubgroup_index_ne_zero_iff {N : Submodule ℤ (ι → ℤ)} :
     N.toAddSubgroup.index ≠ 0 ↔ Nonempty (N ≃ₗ[ℤ] (ι → ℤ)) := by
-  obtain ⟨n, snf⟩ := N.smithNormalForm <| Basis.ofEquivFun <| LinearEquiv.refl _ _
+  obtain ⟨n, snf⟩ := N.smithNormalForm <| .ofEquivFun <| .refl ..
   have := Fintype.ofFinite ι
   rw [snf.toAddSubgroup_index_ne_zero_iff]
   rcases snf with ⟨-, bN, -, -, -⟩

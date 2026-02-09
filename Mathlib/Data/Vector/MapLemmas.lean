@@ -3,12 +3,16 @@ Copyright (c) 2023 Alex Keizer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Keizer
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Vector.Snoc
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Data.Vector.Snoc
 
 /-!
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
+
+public section
 
 variable {α β γ ζ σ σ₁ σ₂ φ : Type*} {n : ℕ} {s : σ} {s₁ : σ₁} {s₂ : σ₂}
 
@@ -51,12 +55,12 @@ theorem map_map (f₁ : β → γ) (f₂ : α → β) :
     map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
   induction xs <;> simp_all
 
-theorem map_pmap {p : α → Prop} (f₁ : β → γ) (f₂ : (a : α) → p a → β) (H : ∀ x ∈ xs.toList, p x):
+theorem map_pmap {p : α → Prop} (f₁ : β → γ) (f₂ : (a : α) → p a → β) (H : ∀ x ∈ xs.toList, p x) :
     map f₁ (pmap f₂ xs H) = pmap (fun x hx => f₁ <| f₂ x hx) xs H := by
   induction xs <;> simp_all
 
 theorem pmap_map {p : β → Prop} (f₁ : (b : β) → p b → γ) (f₂ : α → β)
-    (H : ∀ x ∈ (xs.map f₂).toList, p x):
+    (H : ∀ x ∈ (xs.map f₂).toList, p x) :
     pmap f₁ (map f₂ xs) H = pmap (fun x hx => f₁ (f₂ x) hx) xs (by simpa using H) := by
   induction xs <;> simp_all
 
@@ -307,7 +311,6 @@ theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × �
     (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
   mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => by rw [h, h])
 
-
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
 pair, then we can simplify to just a single element of state.
 -/
@@ -392,11 +395,11 @@ variable (xs : Vector α n) (ys : Vector β n)
 
 theorem map₂_flip (f : α → β → γ) :
     map₂ f xs ys = map₂ (flip f) ys xs := by
-  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all [flip]
 
 theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
     mapAccumr₂ f xs ys s = mapAccumr₂ (flip f) ys xs s := by
-  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all [flip]
 
 end Flip
 

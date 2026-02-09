@@ -3,8 +3,10 @@ Copyright (c) 2024 Raghuram Sundararajan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raghuram Sundararajan
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Ext
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Ext
 
 /-!
 # Extensionality lemmas for rings and similar structures
@@ -26,6 +28,8 @@ sometimes we don't need them to prove extensionality.
 ## Tags
 semiring, ring, extensionality
 -/
+
+public section
 
 local macro:max "local_hAdd[" type:term ", " inst:term "]" : term =>
   `(term| (letI := $inst; HAdd.hAdd : $type → $type → $type))
@@ -105,8 +109,8 @@ TODO consider relocating these lemmas.
     congrArg One.mk h_one
   have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
     funext n; induction n with
-    | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
-                  exact congrArg (@Zero.zero R) h_zero'
+    | zero => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
+              exact congrArg (@Zero.zero R) h_zero'
     | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
                   exact congrArg₂ _ h h_one
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
@@ -137,8 +141,8 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
-                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
-    congrArg (@MulOneClass.toOne R) <| by ext : 1; exact h_mul
+                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
+    congr 2; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
@@ -222,7 +226,7 @@ TODO consider relocating these lemmas. -/
   injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
-    | ofNat n   => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | ofNat n => rewrite [Int.ofNat_eq_natCast, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr
@@ -253,7 +257,7 @@ namespace NonAssocRing
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂ | injection h₃
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -285,7 +289,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂ | injection h₃
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by

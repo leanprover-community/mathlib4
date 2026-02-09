@@ -3,177 +3,208 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.ExactFunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
-# The category of groups in a cartesian monoidal category
+# The category of groups in a Cartesian monoidal category
 
-We define group objects in cartesian monoidal categories.
+We define group objects in Cartesian monoidal categories.
 
-We show that the associativity diagram of a group object is always cartesian and deduce that
+We show that the associativity diagram of a group object is always Cartesian and deduce that
 morphisms of group objects commute with taking inverses.
 
 We show that a finite-product-preserving functor takes group objects to group objects.
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
-open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ Mon_Class
+open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon MonObj
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C]
 
-section
-
-/-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp_`. -/
-class Grp_Class (X : C) extends Mon_Class X where
+/-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp`. -/
+class GrpObj (X : C) extends MonObj X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
-  left_inv' : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
-  right_inv' : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
+  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by cat_disch
+  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by cat_disch
 
-namespace Mon_Class
+@[deprecated (since := "2025-09-13")] alias Grp_Class := GrpObj
 
-@[inherit_doc] scoped notation "ι" => Grp_Class.inv
-@[inherit_doc] scoped notation "ι["M"]" => Grp_Class.inv (X := M)
+namespace MonObj
 
-end Mon_Class
+@[inherit_doc] scoped notation "ι" => GrpObj.inv
+@[inherit_doc] scoped notation "ι[" G "]" => GrpObj.inv (X := G)
 
-namespace Grp_Class
+end MonObj
 
-@[reassoc (attr := simp)]
-theorem left_inv (X : C) [Grp_Class X] : lift ι (𝟙 X) ≫ μ = toUnit _ ≫ η := left_inv'
+namespace GrpObj
 
-@[reassoc (attr := simp)]
-theorem right_inv (X : C) [Grp_Class X] : lift (𝟙 X) ι ≫ μ = toUnit _ ≫ η := right_inv'
+attribute [reassoc (attr := simp)] left_inv right_inv
 
 @[simps inv]
-instance : Grp_Class (𝟙_ C) where
+instance : GrpObj (𝟙_ C) where
   inv := 𝟙 (𝟙_ C)
 
-end Grp_Class
-
-end
+end GrpObj
 
 variable (C) in
-/-- A group object in a cartesian monoidal category. -/
-structure Grp_ where
+/-- A group object in a Cartesian monoidal category. -/
+structure Grp where
   /-- The underlying object in the ambient monoidal category -/
   X : C
-  [grp : Grp_Class X]
+  [grp : GrpObj X]
 
-attribute [instance] Grp_.grp
+@[deprecated (since := "2025-10-13")] alias Grp_ := Grp
 
-namespace Grp_
+attribute [instance] Grp.grp
+
+namespace Grp
 
 /-- A group object is a monoid object. -/
-@[simps X]
-def toMon_ (A : Grp_ C) : Mon_ C := ⟨A.X⟩
+@[simps -isSimp X]
+abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
+
+@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial group object. -/
 @[simps!]
-def trivial : Grp_ C :=
-  { Mon_.trivial C with grp := inferInstanceAs (Grp_Class (𝟙_ C)) }
+def trivial : Grp C :=
+  { Mon.trivial C with grp := inferInstanceAs (GrpObj (𝟙_ C)) }
 
-instance : Inhabited (Grp_ C) where
+instance : Inhabited (Grp C) where
   default := trivial C
 
-/-- Make a group object from `Grp_Class`. -/
-@[simps X]
-def mk' (X : C) [Grp_Class X] : Grp_ C where
-  __ := Mon_.mk X
-  grp := { inv := Grp_Class.inv (X := X) }
-
-instance : Category (Grp_ C) :=
-  InducedCategory.category Grp_.toMon_
+instance : Category (Grp C) :=
+  inferInstanceAs (Category (InducedCategory _ Grp.toMon))
 
 @[simp]
-theorem id_hom (A : Grp_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
 @[simp]
-theorem comp_hom {R S T : Grp_ C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+theorem comp_hom_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
+    Mon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
+
+@[deprecated (since := "2025-12-18")] alias id_hom := id_hom_hom
+@[deprecated (since := "2025-12-18")] alias comp_hom := comp_hom_hom
 
 @[ext]
-theorem hom_ext {A B : Grp_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_.Hom.ext h
+theorem hom_ext {A B : Grp C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
+  InducedCategory.hom_ext (Mon.Hom.ext h)
+
+/-- Constructor for morphisms in `Grp C`. -/
+@[simps]
+def homMk' {A B : Grp C} (f : A.toMon ⟶ B.toMon) : A ⟶ B where
+  hom := f
+
+/-- Construct a morphism `A ⟶ B` of `Grp C` from a map `f : A.X ⟶ A.X` and a `IsMonHom f`
+instance. -/
+@[simps!]
+def homMk {A B : Grp C} (f : A.X ⟶ B.X) [IsMonHom f] : A ⟶ B :=
+  homMk' (.mk f)
+
+/-- Constructor for morphisms in `Grp_ C`. -/
+@[simps!]
+def homMk'' {A B : Grp C} (f : A.X ⟶ B.X)
+    (one_f : η ≫ f = η := by cat_disch)
+    (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch) : A ⟶ B :=
+  haveI : IsMonHom f := ⟨one_f, mul_f⟩
+  homMk f
 
 @[simp]
-lemma id' (A : Grp_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
+lemma id' (A : Grp C) :
+    (InducedCategory.Hom.hom (𝟙 A) : A.toMon ⟶ A.toMon) = 𝟙 (A.toMon) := rfl
 
 @[simp]
-lemma comp' {A₁ A₂ A₃ : Grp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+lemma comp' {A₁ A₂ A₃ : Grp C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+    (InducedCategory.Hom.hom (f ≫ g : A₁ ⟶ A₃) : A₁.toMon ⟶ A₃.toMon) =
+      f.hom ≫ g.hom := rfl
 
-end Grp_
+end Grp
 
-namespace Grp_Class
+namespace GrpObj
+variable {G X : C} [GrpObj G]
 
 variable {A : C} {B : C}
 
 @[reassoc (attr := simp)]
-theorem lift_comp_inv_right [Grp_Class B] (f : A ⟶ B) :
+theorem lift_comp_inv_right [GrpObj B] (f : A ⟶ B) :
     lift f (f ≫ ι) ≫ μ = toUnit _ ≫ η := by
   have := f ≫= right_inv B
   rwa [comp_lift_assoc, comp_id, reassoc_of% toUnit_unique (f ≫ toUnit B) (toUnit A)] at this
 
 @[reassoc]
-theorem lift_inv_comp_right [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] :
+theorem lift_inv_comp_right [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] :
     lift f (ι ≫ f) ≫ μ = toUnit _ ≫ η := by
   have := right_inv A =≫ f
-  rwa [assoc, IsMon_Hom.mul_hom, assoc, IsMon_Hom.one_hom, lift_map_assoc, id_comp] at this
+  rwa [assoc, IsMonHom.mul_hom, assoc, IsMonHom.one_hom, lift_map_assoc, id_comp] at this
 
 @[reassoc (attr := simp)]
-theorem lift_comp_inv_left [Grp_Class B] (f : A ⟶ B) :
+theorem lift_comp_inv_left [GrpObj B] (f : A ⟶ B) :
     lift (f ≫ ι) f ≫ μ = toUnit _ ≫ η := by
   have := f ≫= left_inv B
   rwa [comp_lift_assoc, comp_id, reassoc_of% toUnit_unique (f ≫ toUnit B) (toUnit A)] at this
 
 @[reassoc]
-theorem lift_inv_comp_left [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] :
+theorem lift_inv_comp_left [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] :
     lift (ι ≫ f) f ≫ μ = toUnit _ ≫ η := by
   have := left_inv A =≫ f
-  rwa [assoc, IsMon_Hom.mul_hom, assoc, IsMon_Hom.one_hom, lift_map_assoc, id_comp] at this
+  rwa [assoc, IsMonHom.mul_hom, assoc, IsMonHom.one_hom, lift_map_assoc, id_comp] at this
 
-theorem eq_lift_inv_left [Grp_Class B] (f g h : A ⟶ B) :
+theorem eq_lift_inv_left [GrpObj B] (f g h : A ⟶ B) :
     f = lift (g ≫ ι) h ≫ μ ↔ lift g f ≫ μ = h := by
   refine ⟨?_, ?_⟩ <;> (rintro rfl; simp [← lift_lift_assoc])
 
-theorem lift_inv_left_eq [Grp_Class B] (f g h : A ⟶ B) :
+theorem lift_inv_left_eq [GrpObj B] (f g h : A ⟶ B) :
     lift (f ≫ ι) g ≫ μ = h ↔ g = lift f h ≫ μ := by
   rw [eq_comm, eq_lift_inv_left, eq_comm]
 
-theorem eq_lift_inv_right [Grp_Class B] (f g h : A ⟶ B) :
+theorem eq_lift_inv_right [GrpObj B] (f g h : A ⟶ B) :
     f = lift g (h ≫ ι) ≫ μ ↔ lift f h ≫ μ = g := by
   refine ⟨?_, ?_⟩ <;> (rintro rfl; simp [lift_lift_assoc])
 
-theorem lift_inv_right_eq [Grp_Class B] (f g h : A ⟶ B) :
+theorem lift_inv_right_eq [GrpObj B] (f g h : A ⟶ B) :
     lift f (g ≫ ι) ≫ μ = h ↔ f = lift h g ≫ μ := by
   rw [eq_comm, eq_lift_inv_right, eq_comm]
 
-theorem lift_left_mul_ext [Grp_Class B] {f g : A ⟶ B} (i : A ⟶ B)
+theorem lift_left_mul_ext [GrpObj B] {f g : A ⟶ B} (i : A ⟶ B)
     (h : lift f i ≫ μ = lift g i ≫ μ) : f = g := by
   rwa [← eq_lift_inv_right, lift_lift_assoc, lift_comp_inv_right, lift_comp_one_right] at h
 
 @[reassoc (attr := simp)]
-theorem inv_comp_inv (A : C) [Grp_Class A] : ι ≫ ι = 𝟙 A := by
+theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
-instance (A : C) [Grp_Class A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
+/-- Transfer `GrpObj` along an isomorphism. -/
+-- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
+@[simps! -isSimp]
+abbrev ofIso (e : G ≅ X) : GrpObj X where
+  toMonObj := .ofIso e
+  inv := e.inv ≫ ι[G] ≫ e.hom
+  left_inv := by simp [MonObj.ofIso]
+  right_inv := by simp [MonObj.ofIso]
+
+instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
 /-- For `inv ≫ inv = 𝟙` see `inv_comp_inv`. -/
 @[simp]
-theorem inv_inv (A : C) [Grp_Class A] : CategoryTheory.inv ι = ι[A] := by
+theorem inv_inv (A : C) [GrpObj A] : CategoryTheory.inv ι = ι[A] := by
   rw [eq_comm, ← CategoryTheory.inv_comp_eq_id, IsIso.inv_inv, inv_comp_inv]
 
 @[reassoc]
-theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
-    μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ ι) ≫ μ := by
+theorem mul_inv [BraidedCategory C] (A : C) [GrpObj A] :
+    μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ₘ ι) ≫ μ := by
   apply lift_left_mul_ext μ
   nth_rw 2 [← Category.comp_id μ]
   rw [← comp_lift, Category.assoc, left_inv, ← Category.assoc (β_ A A).hom,
@@ -182,29 +213,33 @@ theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
   rw [← lift_fst_snd, ← lift_lift_assoc (fst A A ≫ _), lift_comp_inv_left, lift_comp_one_left,
     lift_comp_inv_left, comp_toUnit_assoc]
 
-@[reassoc (attr := simp)]
-theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [Grp_Class A] :
-    (ι[A] ⊗ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
+@[reassoc]
+theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [GrpObj A] :
+    (ι[A] ⊗ₘ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
+
+@[reassoc]
+lemma mul_inv_rev [BraidedCategory C] (G : C) [GrpObj G] :
+    μ ≫ ι = (ι[G] ⊗ₘ ι) ≫ (β_ _ _).hom ≫ μ := by simp [tensorHom_inv_inv_mul]
 
 /-- The map `(· * f)`. -/
 @[simps]
-def mulRight {A : C} [Grp_Class A] (f : 𝟙_ C ⟶ A) : A ≅ A where
+def mulRight {A : C} [GrpObj A] (f : 𝟙_ C ⟶ A) : A ≅ A where
   hom := lift (𝟙 _) (toUnit _ ≫ f) ≫ μ
   inv := lift (𝟙 _) (toUnit _ ≫ f ≫ ι) ≫ μ
   hom_inv_id := by simp [comp_lift_assoc, lift_lift_assoc, ← comp_lift]
   inv_hom_id := by simp [comp_lift_assoc, lift_lift_assoc, ← comp_lift]
 
 @[simp]
-lemma mulRight_one (A : C) [Grp_Class A] : mulRight η[A] = Iso.refl A := by
+lemma mulRight_one (A : C) [GrpObj A] : mulRight η[A] = Iso.refl A := by
   ext; simp
 
-/-- The associativity diagram of a group object is cartesian.
+/-- The associativity diagram of a group object is Cartesian.
 
-In fact, any monoid object whose associativity diagram is cartesian can be made into a group object
+In fact, any monoid object whose associativity diagram is Cartesian can be made into a group object
 (we do not prove this in this file), so we should expect that many properties of group objects
 follow from this result. -/
-theorem isPullback (A : C) [Grp_Class A] :
+theorem isPullback (A : C) [GrpObj A] :
     IsPullback (μ ▷ A) ((α_ A A A).hom ≫ (A ◁ μ)) μ μ where
   w := by simp
   isLimit' := Nonempty.intro <| PullbackCone.IsLimit.mk _
@@ -238,172 +273,352 @@ theorem isPullback (A : C) [Grp_Class A] :
 
 /-- Morphisms of group objects preserve inverses. -/
 @[reassoc (attr := simp)]
-theorem inv_hom [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] : ι ≫ f = f ≫ ι := by
+theorem inv_hom [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : ι ≫ f = f ≫ ι := by
   suffices lift (lift f (ι ≫ f)) f =
       lift (lift f (f ≫ ι)) f by simpa using (this =≫ fst _ _) =≫ snd _ _
   apply (isPullback B).hom_ext <;> apply CartesianMonoidalCategory.hom_ext <;>
     simp [lift_inv_comp_right, lift_inv_comp_left]
 
-lemma toMon_Class_injective {X : C} :
-    Function.Injective (@Grp_Class.toMon_Class C ‹_› ‹_› X) := by
+lemma toMonObj_injective {X : C} :
+    Function.Injective (@GrpObj.toMonObj C ‹_› ‹_› X) := by
   intro h₁ h₂ e
-  let X₁ : Grp_ C := @Grp_.mk' _ _ _ X h₁
-  let X₂ : Grp_ C := @Grp_.mk' _ _ _ X h₂
-  suffices ι[X₁.X] = ι[X₂.X] by cases h₁; cases h₂; subst e this; rfl
+  suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
-  rw [left_inv, show μ[X₁.X] = μ[X₂.X] from congr(($e).mul),
-    show η[X₁.X] = η[X₂.X] from congr(($e).one)]
-  exact (left_inv X₂.X).symm
+  rw [left_inv]
+  convert @left_inv _ _ _ _ h₁ using 2
+  exacts [congr(($e.symm).mul), congr(($e.symm).one)]
+
+@[deprecated (since := "2025-09-09")] alias toMon_Class_injective := toMonObj_injective
 
 @[ext]
-lemma _root_.Grp_Class.ext {X : C} (h₁ h₂ : Grp_Class X)
-    (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
-  Grp_Class.toMon_Class_injective H
+lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
+  GrpObj.toMonObj_injective H
 
-end Grp_Class
+namespace tensorObj
+variable [BraidedCategory C] {G H : C} [GrpObj G] [GrpObj H]
 
-namespace Grp_
+@[simps inv]
+instance : GrpObj (G ⊗ H) where
+  inv := ι ⊗ₘ ι
+
+end GrpObj.tensorObj
+
+namespace Grp
 
 section
 
 variable (C)
 
 /-- The forgetful functor from group objects to monoid objects. -/
-def forget₂Mon_ : Grp_ C ⥤ Mon_ C :=
-  inducedFunctor Grp_.toMon_
+@[simps! obj_X]
+def forget₂Mon : Grp C ⥤ Mon C :=
+  inducedFunctor Grp.toMon
+
+@[deprecated (since := "2025-09-15")] alias forget₂Mon_ := forget₂Mon
 
 /-- The forgetful functor from group objects to monoid objects is fully faithful. -/
-def fullyFaithfulForget₂Mon_ : (forget₂Mon_ C).FullyFaithful :=
+def fullyFaithfulForget₂Mon : (forget₂Mon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : (forget₂Mon_ C).Full := InducedCategory.full _
-instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
+@[deprecated (since := "2025-09-15")] alias fullyFaithfulForget₂Mon_ := fullyFaithfulForget₂Mon
+
+instance : (forget₂Mon C).Full := InducedCategory.full _
+instance : (forget₂Mon C).Faithful := InducedCategory.faithful _
 
 variable {C}
 
 @[simp]
-theorem forget₂Mon_obj_one (A : Grp_ C) : η[((forget₂Mon_ C).obj A).X] = η[A.X] :=
+theorem forget₂Mon_obj_one (A : Grp C) : η[((forget₂Mon C).obj A).X] = η[A.X] :=
   rfl
 
 @[simp]
-theorem forget₂Mon_obj_mul (A : Grp_ C) : μ[((forget₂Mon_ C).obj A).X] = μ[A.X] :=
+theorem forget₂Mon_obj_mul (A : Grp C) : μ[((forget₂Mon C).obj A).X] = μ[A.X] :=
   rfl
 
 @[simp]
-theorem forget₂Mon_map_hom {A B : Grp_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+theorem forget₂Mon_map_hom {A B : Grp C} (f : A ⟶ B) :
+    ((forget₂Mon C).map f).hom = f.hom.hom :=
   rfl
 
 variable (C)
 
 /-- The forgetful functor from group objects to the ambient category. -/
 @[simps!]
-def forget : Grp_ C ⥤ C :=
-  forget₂Mon_ C ⋙ Mon_.forget C
+def forget : Grp C ⥤ C :=
+  forget₂Mon C ⋙ Mon.forget C
 
 instance : (forget C).Faithful where
 
 @[simp]
-theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
+theorem forget₂Mon_comp_forget : forget₂Mon C ⋙ Mon.forget C = forget C := rfl
+
+instance {G H : Grp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
 
 end
 
-section
+/-- Construct an isomorphism of group objects by giving a monoid isomorphism between the underlying
+objects. -/
+@[simps!]
+def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [GrpObj H] [IsMonHom e.hom] : mk G ≅ mk H :=
+  (fullyFaithfulForget₂Mon C).preimageIso (Mon.mkIso' e)
 
-variable {M N : Grp_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat)
+/-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
+objects and checking compatibility with unit and multiplication only in the forward direction. -/
+@[simps!]
+abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
+  have : IsMonHom e.hom := ⟨one_f, mul_f⟩
+  mkIso' e
 
-/-- Constructor for isomorphisms in the category `Grp_ C`. -/
-def mkIso : M ≅ N :=
-  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso f one_f mul_f)
+@[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom
 
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
+instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
+  Equiv.unique (show _ ≃ (Mon.trivial C ⟶ A.toMon) from
+    InducedCategory.homEquiv)
 
-end
-
-instance uniqueHomFromTrivial (A : Grp_ C) : Unique (trivial C ⟶ A) :=
-  Mon_.uniqueHomFromTrivial A.toMon_
-
-instance : HasInitial (Grp_ C) :=
+instance : HasInitial (Grp C) :=
   hasInitial_of_unique (trivial C)
 
-end Grp_
+/-! ### `Grp C` is cartesian-monoidal -/
 
-namespace CategoryTheory
+variable [BraidedCategory C] {G H H₁ H₂ : Grp C}
+
+@[simps! tensorObj_X tensorHom_hom]
+instance instMonoidalCategoryStruct : MonoidalCategoryStruct (Grp C) where
+  tensorObj G H := ⟨G.X ⊗ H.X⟩
+  tensorHom f g := homMk' (tensorHom (C := Mon C) f.hom g.hom)
+  whiskerRight f G := homMk' (whiskerRight (C := Mon C) f.hom G.toMon)
+  whiskerLeft G _ _ f := homMk' (MonoidalCategoryStruct.whiskerLeft (C := Mon C) G.toMon f.hom)
+  tensorUnit := ⟨𝟙_ C⟩
+  associator X Y Z :=
+    (Grp.fullyFaithfulForget₂Mon C).preimageIso (associator X.toMon Y.toMon Z.toMon)
+  leftUnitor G := (Grp.fullyFaithfulForget₂Mon C).preimageIso (leftUnitor G.toMon)
+  rightUnitor G := (Grp.fullyFaithfulForget₂Mon C).preimageIso (rightUnitor G.toMon)
+
+@[simp] lemma tensorUnit_X : (𝟙_ (Grp C)).X = 𝟙_ C := rfl
+
+@[simp] lemma tensorUnit_one : η[(𝟙_ (Grp C)).X] = η[𝟙_ C] := rfl
+@[simp] lemma tensorUnit_mul : μ[(𝟙_ (Grp C)).X] = μ[𝟙_ C] := rfl
+
+@[simp] lemma tensorObj_one (G H : Grp C) : η[(G ⊗ H).X] = η[G.X ⊗ H.X] := rfl
+@[simp] lemma tensorObj_mul (G H : Grp C) : μ[(G ⊗ H).X] = μ[G.X ⊗ H.X] := rfl
+
+@[simp] lemma whiskerLeft_hom_hom {G H : Grp C} (f : G ⟶ H) (I : Grp C) :
+    (f ▷ I).hom.hom = f.hom.hom ▷ I.X := rfl
+
+@[simp] lemma whiskerRight_hom_hom (G : Grp C) {H I : Grp C} (f : H ⟶ I) :
+    (G ◁ f).hom.hom = G.X ◁ f.hom.hom := rfl
+
+
+@[simp] lemma leftUnitor_hom_hom_hom (G : Grp C) : (λ_ G).hom.hom.hom = (λ_ G.X).hom := rfl
+@[simp] lemma leftUnitor_inv_hom_hom (G : Grp C) : (λ_ G).inv.hom.hom = (λ_ G.X).inv := rfl
+@[simp] lemma rightUnitor_hom_hom_hom (G : Grp C) : (ρ_ G).hom.hom.hom = (ρ_ G.X).hom := rfl
+@[simp] lemma rightUnitor_inv_hom_hom (G : Grp C) : (ρ_ G).inv.hom.hom = (ρ_ G.X).inv := rfl
+@[simp] lemma associator_hom_hom_hom (G H I : Grp C) :
+    (α_ G H I).hom.hom.hom = (α_ G.X H.X I.X).hom := rfl
+@[simp] lemma associator_inv_hom_hom (G H I : Grp C) :
+    (α_ G H I).inv.hom.hom = (α_ G.X H.X I.X).inv := rfl
+
+@[deprecated (since := "2025-12-18")] alias whiskerLeft_hom := whiskerLeft_hom_hom
+@[deprecated (since := "2025-12-18")] alias whiskerRight_hom := whiskerRight_hom_hom
+@[deprecated (since := "2025-12-18")] alias leftUnitor_hom_hom := leftUnitor_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias leftUnitor_inv_hom := leftUnitor_inv_hom_hom
+@[deprecated (since := "2025-12-18")] alias rightUnitor_hom_hom := rightUnitor_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias rightUnitor_inv_hom := rightUnitor_inv_hom_hom
+@[deprecated (since := "2025-12-18")] alias associator_hom_hom := associator_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias associator_inv_hom := associator_inv_hom_hom
+
+instance instMonoidalCategory : MonoidalCategory (Grp C) where
+  tensorHom_def := by intros; ext; simp [tensorHom_def]
+  triangle _ _ := by ext; exact triangle _ _
+
+instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
+  isTerminalTensorUnit :=
+    .ofUniqueHom (fun G ↦ homMk' (toUnit G.toMon)) fun G f ↦ by ext; exact toUnit_unique ..
+  fst G H := homMk' (fst G.toMon H.toMon)
+  snd G H := homMk' (snd G.toMon H.toMon)
+  tensorProductIsBinaryProduct G H :=
+    BinaryFan.IsLimit.mk _ (fun {T} f g ↦ .mk (lift f.hom g.hom))
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  fst_def G H := by ext; apply fst_def
+  snd_def G H := by ext; apply snd_def
+
+@[simp] lemma lift_hom (f : G ⟶ H₁) (g : G ⟶ H₂) : (lift f g).hom = (lift f.hom g.hom) := rfl
+@[simp] lemma fst_hom_hom (G H : Grp C) : (fst G H).hom.hom = fst G.X H.X := rfl
+@[simp] lemma snd_hom_hom (G H : Grp C) : (snd G H).hom.hom = snd G.X H.X := rfl
+
+@[deprecated (since := "2025-12-18")] alias fst_hom := fst_hom_hom
+@[deprecated (since := "2025-12-18")] alias snd_hom := snd_hom_hom
+
+@[simps]
+instance : (forget₂Mon C).Monoidal where
+  ε := 𝟙 _
+  «μ» G H := 𝟙 _
+  «η» := 𝟙 _
+  δ G H := 𝟙 _
+
+attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
+instance instBraidedCategory : BraidedCategory (Grp C) :=
+  .ofFaithful (forget₂Mon C) fun G H ↦ Grp.mkIso (β_ G.X H.X)
+
+@[simp] lemma braiding_hom_hom_hom (G H : Grp C) : (β_ G H).hom.hom.hom = (β_ G.X H.X).hom := rfl
+@[simp] lemma braiding_inv_hom_hom (G H : Grp C) : (β_ G H).inv.hom.hom = (β_ G.X H.X).inv := rfl
+
+@[deprecated (since := "2025-12-18")] alias braiding_hom_hom := braiding_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias braiding_inv_hom := braiding_inv_hom_hom
+
+end Grp
+
 variable
   {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
   {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E]
 
 namespace Functor
-variable {F F' : C ⥤ D} [F.Monoidal] [F'.Monoidal] {G : D ⥤ E} [G.Monoidal]
+variable {F F' : C ⥤ D} {G : D ⥤ E}
+
+section Monoidal
+variable [F.Monoidal] [F'.Monoidal] [G.Monoidal]
+
+open scoped Obj
+
+/-- The image of a group object under a monoidal functor is a group object. -/
+abbrev grpObjObj {G : C} [GrpObj G] : GrpObj (F.obj G) where
+  inv := F.map ι
+  left_inv := by
+    simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
+      Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
+  right_inv := by
+    simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
+      Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
+
+scoped[CategoryTheory.Obj] attribute [instance] CategoryTheory.Functor.grpObjObj
+
+@[reassoc, simp] lemma obj.ι_def {G : C} [GrpObj G] : ι[F.obj G] = F.map ι := rfl
 
 open Monoidal
 
 variable (F) in
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
-noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
-  obj A :=
-    { F.mapMon.obj A.toMon_ with
-      grp :=
-      { inv := F.map ι[A.X]
-        left_inv' := by
-          simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
-            Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
-        right_inv' := by
-          simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
-            Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
-  map f := F.mapMon.map f
+def mapGrp : Grp C ⥤ Grp D where
+  obj A := .mk (F.obj A.X)
+  map f := Grp.homMk' (F.mapMon.map f.hom)
+
+protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
+  map_injective hfg :=
+    (Grp.forget₂Mon _).map_injective
+      (F.mapMon.map_injective ((Grp.forget₂Mon _).congr_map hfg))
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
+`GrpCat(F) : GrpCat C ⥤ GrpCat D` is fully faithful too. -/
+@[simps]
+protected def FullyFaithful.mapGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
+  preimage f := Grp.homMk' (hF.mapMon.preimage f.hom)
+
+protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full :=
+  ((FullyFaithful.ofFullyFaithful F).mapGrp).full
 
 @[simp]
-theorem mapGrp_id_one (A : Grp_ C) :
+theorem mapGrp_id_one (A : Grp C) :
     η[((𝟭 C).mapGrp.obj A).X] = 𝟙 _ ≫ η[A.X] :=
   rfl
 
 @[simp]
-theorem mapGrp_id_mul (A : Grp_ C) :
+theorem mapGrp_id_mul (A : Grp C) :
     μ[((𝟭 C).mapGrp.obj A).X] = 𝟙 _ ≫ μ[A.X] :=
   rfl
 
 @[simp]
-theorem comp_mapGrp_one (A : Grp_ C) :
+theorem comp_mapGrp_one (A : Grp C) :
     η[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.ε (F ⋙ G) ≫ (F ⋙ G).map η[A.X] :=
   rfl
 
 @[simp]
-theorem comp_mapGrp_mul (A : Grp_ C) :
+theorem comp_mapGrp_mul (A : Grp C) :
     μ[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
   rfl
 
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]
-noncomputable def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp C) :=
+  NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
 /-- The composition functor is also the composition on group objects. -/
 @[simps!]
-noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
+  NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]
-noncomputable def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
-  app X := .mk (f.app _)
+def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
+  app X := Grp.homMk' ((mapMonNatTrans f).app X.toMon)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[simps!]
-noncomputable def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
-  NatIso.ofComponents fun X ↦ Grp_.mkIso (e.app _)
+def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
+  NatIso.ofComponents fun X ↦ Grp.mkIso (e.app _)
 
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[simps]
-noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
+noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
   obj F := F.1.mapGrp
-  map {F G} α := { app A := { hom := α.app A.X } }
+  map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
+/-- Pullback a group object along a fully faithful monoidal functor. -/
+@[simps]
+abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
+    GrpObj X where
+  __ := hF.monObj X
+  inv := hF.preimage ι[F.obj X]
+  left_inv := hF.map_injective <| by
+    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+  right_inv := hF.map_injective <| by
+    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+
+@[deprecated (since := "2025-09-13")] alias FullyFaithful.grp_Class := FullyFaithful.grpObj
+
+attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
+/-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
+same on group objects as on objects. -/
+@[simp] lemma essImage_mapGrp [F.Full] [F.Faithful] {G : Grp D} :
+    F.mapGrp.essImage G ↔ F.essImage G.X where
+  mp := by rintro ⟨H, ⟨e⟩⟩; exact ⟨H.X, ⟨(Grp.forget _).mapIso e⟩⟩
+  mpr := by
+    rintro ⟨H, ⟨e⟩⟩
+    let : GrpObj (F.obj H) := .ofIso e.symm
+    let : GrpObj H := (FullyFaithful.ofFullyFaithful F).grpObj H
+    refine ⟨⟨H⟩, ⟨Grp.mkIso e ?_ ?_⟩⟩ <;> simp
+
+end Monoidal
+
+section Braided
+variable [BraidedCategory C] [BraidedCategory D] (F : C ⥤ D) [F.Braided]
+
+open Monoidal LaxMonoidal
+
+noncomputable instance mapGrp.instMonoidal : F.mapGrp.Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+  { εIso := (Grp.fullyFaithfulForget₂Mon _).preimageIso (εIso F.mapMon)
+    μIso X Y := (Grp.fullyFaithfulForget₂Mon _).preimageIso (μIso F.mapMon X.toMon Y.toMon)
+    μIso_hom_natural_left f Z :=
+      (Grp.forget₂Mon _).map_injective (μ_natural_left F.mapMon f.hom Z.toMon)
+    μIso_hom_natural_right Z f :=
+      (Grp.forget₂Mon _).map_injective (μ_natural_right F.mapMon Z.toMon f.hom)
+    associativity X Y Z :=
+      (Grp.forget₂Mon _).map_injective (associativity F.mapMon X.toMon Y.toMon Z.toMon)
+    left_unitality X :=
+      (Grp.forget₂Mon _).map_injective (left_unitality F.mapMon X.toMon)
+    right_unitality X :=
+      (Grp.forget₂Mon _).map_injective (right_unitality F.mapMon X.toMon) }
+
+noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
+  braided X Y :=
+    (Grp.forget₂Mon _).map_injective (Braided.braided X.toMon Y.toMon)
+
+end Braided
 end Functor
 
 open Functor
@@ -412,7 +627,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
-@[simps] noncomputable def mapGrp : F.mapGrp ⊣ G.mapGrp where
+@[simps] def mapGrp : F.mapGrp ⊣ G.mapGrp where
   unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
   counit := mapGrpCompIso.inv ≫ mapGrpNatTrans a.counit ≫ mapGrpIdIso.hom
 
@@ -422,7 +637,7 @@ namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
-@[simps] noncomputable def mapGrp : Grp_ C ≌ Grp_ D where
+@[simps] def mapGrp : Grp C ≌ Grp D where
   functor := e.functor.mapGrp
   inverse := e.inverse.mapGrp
   unitIso := mapGrpIdIso.symm ≪≫ mapGrpNatIso e.unitIso ≪≫ mapGrpCompIso

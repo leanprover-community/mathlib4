@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
+Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 import Mathlib.Data.Int.ModEq
+import Mathlib.Order.Antisymmetrization
 import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
@@ -19,9 +20,9 @@ set_option linter.unusedVariables false
 
 private axiom test_sorry : ∀ {α}, α
 
-variable {α : Type*} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d e : α)
-
 section inequalities
+
+variable {α : Type*} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d e : α)
 
 example (h₁ : a ≤ b) (h₂ : b ≤ c) : a + 5 ≤ c + 6 := by
   grw [h₁, h₂]
@@ -153,6 +154,14 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
 
 end modeq
 
+section dvd
+
+example {a b c : ℤ} (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
+  grw [h₁] at *
+  exact h₂
+
+end dvd
+
 section wildcard
 
 /-! Rewriting at a wildcard `*`, i.e. `grw [h] at *`, will sometimes include a rewrite at `h` itself
@@ -204,13 +213,9 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: tactic 'grewrite' failed, could not discharge x ≤ y using x ≥ y
-case a.h
-α : Type u_1
-inst✝² : CommRing α
-inst✝¹ : LinearOrder α
-inst✝ : IsStrictOrderedRing α
-a b✝ c d e : α
+error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
+
+case h₁.hbc
 x y b : ℚ
 h : x ≥ y
 ⊢ x ≤ y
@@ -228,7 +233,7 @@ end
 example {x y a b : ℤ} (h1 : |x| ≤ a) (h2 : |y| ≤ b) :
     |x ^ 2 + 2 * x * y| ≤ a ^ 2 + 2 * a * b := by
   have : 0 ≤ a := by grw [← h1]; positivity
-  grw [abs_add, abs_mul, abs_mul, abs_pow, h1, h2, abs_of_nonneg]
+  grw [abs_add_le, abs_mul, abs_mul, abs_pow, h1, h2, abs_of_nonneg]
   norm_num
 
 example {a b : ℚ} {P : Prop} (hP : P) (h : P → a < b) : False := by
@@ -250,22 +255,19 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
   exact test_sorry
 
 /--
-error: tactic 'grewrite' failed, could not discharge b ≤ a using a ≤ b
-case h₁.h
-α : Type u_1
-inst✝² : CommRing α
-inst✝¹ : LinearOrder α
-inst✝ : IsStrictOrderedRing α
-a b c d e : α
+error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
+
+case h₂.hbc
+a b c : ℚ
 h₁ : a ≤ b
 h₂ : 0 ≤ c
 ⊢ b ≤ a
 -/
 #guard_msgs in
-example (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
+example {a b c : ℚ} (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
   grw [h₁]
 
-example (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a + a := by
+example {a b c : ℚ} (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a + a := by
   nth_grw 2 3 [h₁]
   guard_target =ₛ a * c ≥ 100 + b + b
   exact test_sorry
@@ -294,3 +296,78 @@ example (h : p → q) (h' : q → r) : p → r := by
   exact h'
 
 end apply
+
+-- previously, `grw` failed to rewrite in expressions with syntheticOpaque metavariables
+example : ∃ n, n < 2 := by
+  refine ⟨?_, ?_⟩
+  on_goal 2 => grw [← one_lt_two]
+  exact 0
+  refine zero_lt_one
+
+section zmod
+
+variable {a b c d n : ℤ}
+
+example (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := by
+  grw [h]
+
+example (h₁ : a ∣ b) (h₂ : b ∣ a * d) : a ∣ b * d := by
+  grw [h₁] at h₂ ⊢
+  exact h₂
+
+end zmod
+
+namespace AntiSymmRelTest
+
+variable {α : Type u} [Preorder α] {a b : α}
+
+local infix:50 " ≈ " => AntisymmRel (· ≤ ·)
+
+axiom f : α → α
+
+@[gcongr]
+axiom f_congr' : a ≤ b → f a ≤ f b
+
+example (h : a ≈ b) : f a ≤ f b := by
+  grw [h]
+
+example (h : b ≈ a) : f a ≤ f b := by
+  grw [h]
+
+end AntiSymmRelTest
+
+-- Test that `grw` works even in the presence of metadata.
+example (a b : Nat) (h : Nat → no_index (a ≤ b)) : a ≤ b := by
+  grw [h]
+  exact 0
+
+example (a b : Nat) (h : Nat → no_index (a ≤ b)) : a ≤ b := by
+  grw [h 0]
+
+section erw
+
+example (h : 2 + 1 ≤ (3 : Int)) : 1 + 2 ≤ (4 : Int) := by
+  grw (transparency := default) [h]
+  guard_target = (3 : Int) ≤ 4
+  simp
+
+def double (x : Int) := x + x
+
+example (h : double (double 2) ≤ 10) : double 4 ≤ 20 := by
+  grw (transparency := default) [h]
+  guard_target = (10 : Int) ≤ 20
+  simp
+
+-- `rw`/`grw` index based on the head constant, so the following fails.
+/--
+error: Tactic `grewrite` failed: did not find instance of the pattern in the target expression
+  double 2
+
+h : double 2 ≤ 10
+⊢ 4 ≤ 20
+-/
+#guard_msgs in
+example (h : double 2 ≤ 10) : 4 ≤ 20 := by
+  grw (transparency := default) [h]
+
+end erw

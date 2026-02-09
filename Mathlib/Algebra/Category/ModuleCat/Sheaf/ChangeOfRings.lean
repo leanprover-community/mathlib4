@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # Change of sheaf of rings
@@ -15,6 +17,8 @@ In this file, we define the restriction of scalars functor
 attached to a morphism of sheaves of rings `α : R ⟶ R'`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -62,7 +66,5 @@ noncomputable def restrictHomEquivOfIsLocallySurjective
     erw [← (g.app _).hom.map_smul]
     rw [M₁.map_smul, ← hr]
     rfl)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end PresheafOfModules

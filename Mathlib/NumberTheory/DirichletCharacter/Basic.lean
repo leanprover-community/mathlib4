@@ -3,9 +3,11 @@ Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
-import Mathlib.Algebra.Group.EvenFunction
-import Mathlib.Data.ZMod.Units
-import Mathlib.NumberTheory.MulChar.Basic
+module
+
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Dirichlet Characters
@@ -26,6 +28,8 @@ Main definitions:
 dirichlet character, multiplicative character
 -/
 
+@[expose] public section
+
 /-!
 ### Definitions
 -/
@@ -42,8 +46,6 @@ namespace DirichletCharacter
 lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
 
 lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
-
-@[deprecated (since := "2024-12-29")] alias toUnitHom_eq_iff := toUnitHom_inj
 
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
@@ -142,13 +144,42 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
     simp_rw [changeLevel_toUnitHom, toUnitHom_eq, ofUnitHom_eq, Equiv.apply_symm_apply, hE,
       toUnitHom_eq]
 
+/--
+Let `χ` and `ψ` be Dirichlet characters of level `n` and `m` respectively. Assume that they agree
+at level `n * m`. Then `χ` factors through `gcd(n, m)`.
+-/
+theorem factorsThrough_gcd {m : ℕ} [NeZero n] (ψ : DirichletCharacter R m)
+    (h : χ.changeLevel (n.dvd_mul_right m) = ψ.changeLevel (m.dvd_mul_left n)) :
+    χ.FactorsThrough (n.gcd m) := by
+  refine (factorsThrough_iff_ker_unitsMap (n.gcd_dvd_left m)).mpr fun x hx ↦
+    MonoidHom.mem_ker.mpr ?_
+  rw [Units.ext_iff, MulChar.coe_toUnitHom, Units.val_one]
+  obtain ⟨z, hz₁, hz₂⟩ : ∃ z : ℕ, z = x.val ∧ (z : ZMod m) = 1 := by
+    suffices x.val.val ≡ 1 [MOD n.gcd m] by
+      obtain ⟨z, hz₁, hz₂⟩ := Nat.chineseRemainder' this
+      refine ⟨z, ?_, ?_⟩
+      · simpa [← ZMod.natCast_eq_natCast_iff] using hz₁
+      · rwa [← ZMod.natCast_eq_natCast_iff, Nat.cast_one] at hz₂
+    rwa [MonoidHom.mem_ker, Units.ext_iff, ZMod.unitsMap_val, ← ZMod.natCast_val,
+      Units.val_one, ← Nat.cast_one, ZMod.natCast_eq_natCast_iff] at hx
+  have hz₀ : z.gcd (n * m) = 1 := by
+    refine Nat.Coprime.mul_right ?_ ?_
+    · exact (ZMod.isUnit_iff_coprime _ _).mp <| hz₁ ▸ x.isUnit
+    · exact (ZMod.isUnit_iff_coprime _ _).mp <| hz₂ ▸ isUnit_one
+  have := changeLevel_eq_cast_of_dvd χ (n.dvd_mul_right m) (ZMod.unitOfCoprime z hz₀)
+  simp only [ZMod.coe_unitOfCoprime, dvd_mul_right, ZMod.cast_natCast] at this
+  rw [← hz₁, ← this, h]
+  have := changeLevel_eq_cast_of_dvd ψ (m.dvd_mul_left n) (ZMod.unitOfCoprime z hz₀)
+  simp only [ZMod.coe_unitOfCoprime, dvd_mul_left, ZMod.cast_natCast] at this
+  rw [this, hz₂, map_one]
+
 /-!
 ### Edge cases
 -/
 
 lemma level_one (χ : DirichletCharacter R 1) : χ = 1 := by
   ext
-  simp [units_eq_one]
+  simp [Units.eq_one]
 
 lemma level_one' (hn : n = 1) : χ = 1 := by
   subst hn
@@ -185,6 +216,9 @@ lemma mem_conductorSet_iff {x : ℕ} : x ∈ conductorSet χ ↔ FactorsThrough 
 lemma level_mem_conductorSet : n ∈ conductorSet χ := FactorsThrough.same_level χ
 
 lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := hx.dvd
+
+theorem zero_ne_mem_conductorSet (hn : n ≠ 0) : 0 ∉ χ.conductorSet :=
+  fun h ↦ hn <| Nat.eq_zero_of_zero_dvd <| FactorsThrough.dvd h
 
 /-- The minimum natural number level `n` through which `χ` factors. -/
 noncomputable def conductor : ℕ := sInf (conductorSet χ)
@@ -238,8 +272,10 @@ lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
   Nat.dvd_one.mp (conductor_dvd_level _)
 
-lemma isPritive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
+lemma isPrimitive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
   conductor_eq_zero_iff_level_eq_zero.mpr rfl
+
+@[deprecated (since := "2025-07-27")] alias isPritive_one_level_zero := isPrimitive_one_level_zero
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
@@ -248,6 +284,10 @@ lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n
 /-- The primitive character associated to a Dirichlet character. -/
 noncomputable def primitiveCharacter : DirichletCharacter R χ.conductor :=
   Classical.choose (factorsThrough_conductor χ).choose_spec
+
+theorem changeLevel_primitiveCharacter :
+    (changeLevel χ.conductor_dvd_level) χ.primitiveCharacter = χ :=
+  (factorsThrough_conductor χ).choose_spec.choose_spec.symm
 
 lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
   by_cases h : χ.conductor = 0
@@ -261,6 +301,29 @@ lemma primitiveCharacter_one (hn : n ≠ 0) :
   rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
       (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
       conductor_one hn]
+
+theorem conductor_dvd_of_mem_conductorSet {d : ℕ} (hn : n ≠ 0) (hd : d ∈ χ.conductorSet) :
+    χ.conductor ∣ d := by
+  have : NeZero d := ⟨by
+    contrapose! hd
+    exact hd ▸ zero_ne_mem_conductorSet χ hn⟩
+  suffices d.gcd χ.conductor ∈ χ.conductorSet by
+    have : χ.conductor ≤ d.gcd χ.conductor := Nat.sInf_le this
+    contrapose! this
+    refine Nat.lt_of_le_of_ne ?_ (Nat.gcd_eq_right_iff_dvd.not.mpr this)
+    exact Nat.gcd_le_right _ <| Nat.pos_of_ne_zero <| conductor_ne_zero χ hn
+  obtain ⟨hd, χ₀, hχ₀⟩ := hd
+  suffices (changeLevel (d.dvd_mul_right χ.conductor)) χ₀ =
+      (changeLevel (χ.conductor.dvd_mul_left d)) χ.primitiveCharacter by
+    obtain ⟨_, χ₁, hχ₁⟩ := factorsThrough_gcd χ₀ χ.primitiveCharacter this
+    refine ⟨Nat.dvd_trans (d.gcd_dvd_left χ.conductor) hd, χ₁, ?_⟩
+    rw [changeLevel_trans _ (d.gcd_dvd_left χ.conductor), ← hχ₁, hχ₀]
+  have : NeZero (d * χ.conductor * n) :=
+    ⟨Nat.mul_ne_zero (Nat.mul_ne_zero (NeZero.ne d) (conductor_ne_zero χ hn) ) hn⟩
+  apply changeLevel_injective <| Nat.dvd_mul_right (d * χ.conductor) n
+  rw [← changeLevel_trans, ← changeLevel_trans,
+    changeLevel_trans _ hd (n.dvd_mul_left (d * χ.conductor)), ← hχ₀,
+    changeLevel_trans χ.primitiveCharacter χ.conductor_dvd_level, changeLevel_primitiveCharacter]
 
 /-- Dirichlet character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
@@ -311,19 +374,19 @@ lemma Odd.not_even [NeZero (2 : S)] (hψ : Odd ψ) : ¬Even ψ :=
   not_and'.mp ψ.not_even_and_odd hψ
 
 lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
-lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
+lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (-x) = - ψ x := by
   rw [Odd] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]
 
-lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
+lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (-x) = ψ x := by
   rw [Even] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]

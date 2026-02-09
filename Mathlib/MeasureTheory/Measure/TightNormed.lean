@@ -3,9 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.MeasureTheory.Measure.Tight
-import Mathlib.Order.CompletePartialOrder
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Tight sets of measures in normed spaces
@@ -28,17 +31,18 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 
 -/
 
+public section
+
 open Filter
 
 open scoped Topology ENNReal InnerProductSpace
 
--- TODO: move
 /-- Let `u : ι → α → β` be a sequence of antitone functions `α → β` indexed by `ι`. Suppose that for
 all `i : ι`, `u i` tends to `c` at infinity, and that furthermore the limsup of `i ↦ u i r` along
 the cofinite filter tends to the same `c` as `r` tends to infinity.
 Then the supremum function `r ↦ ⨆ i, u i r` also tends to `c` at infinity. -/
-lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice α] {β : Type*}
-    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {ι : Type*}
+lemma tendsto_iSup_of_tendsto_limsup {α β ι : Type*} [ConditionallyCompleteLattice α]
+    [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {u : ι → α → β} {c : β}
     (h_all : ∀ i, Tendsto (u i) atTop (𝓝 c))
     (h_limsup : Tendsto (fun r : α ↦ limsup (fun i ↦ u i r) cofinite) atTop (𝓝 c))
@@ -47,36 +51,34 @@ lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice 
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨n0⟩⟩
   · simpa using h_limsup
-  refine tendsto_order.2 ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
-  · filter_upwards [] with r
-    have : c ≤ u n0 r := Antitone.le_of_tendsto (h_anti n0) (h_all n0) r
+  refine tendsto_order.mpr ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
+  · filter_upwards with r
+    have : c ≤ u n0 r := (h_anti n0).le_of_tendsto (h_all n0) r
     exact hb.trans_le (this.trans (le_iSup_iff.mpr fun b a ↦ a n0))
+  -- `⊢ ∀ᶠ (b_1 : α) in atTop, ⨆ i, u i b_1 < b` for `b > c`
   let b' := if h : (Set.Ioo c b).Nonempty then h.some else c
   have hb'b : b' < b := by
     simp only [b']
     split_ifs with h
     exacts [h.some_mem.2, hb]
-  have : ∀ᶠ r in atTop, limsup (fun n ↦ u n r) cofinite ≤ b' := by
+  have : ∀ᶠ r in atTop, limsup (u · r) cofinite ≤ b' := by
     simp only [b']
     split_ifs with h
-    · filter_upwards [(tendsto_order.1 h_limsup).2 _ h.some_mem.1] with r hr
-      exact hr.le
+    · filter_upwards [(tendsto_order.1 h_limsup).2 _ h.some_mem.1] with r hr using hr.le
     · filter_upwards [(tendsto_order.1 h_limsup).2 b hb] with r hr
       contrapose! h
-      exact ⟨limsup (fun n ↦ u n r) cofinite, h, hr⟩
-  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (fun n ↦ u n s) cofinite ≤ b' := by simpa using this
+      exact ⟨limsup (u · r) cofinite, h, hr⟩
+  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (u · s) cofinite ≤ b' := by simpa using this
   obtain ⟨b'', hb''b, hb''⟩ : ∃ b'' ∈ Set.Ico b' b, ∀ᶠ n in cofinite, u n r ≤ b'' := by
     rcases Set.eq_empty_or_nonempty (Set.Ioo b' b) with h | ⟨b'', hb'b'', hb''b⟩
     · refine ⟨b', ⟨le_rfl, hb'b⟩, ?_⟩
-      have := hr r le_rfl
-      rw [limsup_le_iff] at this
-      filter_upwards [this b hb'b] with n hn
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b)
+      filter_upwards [h_lt] with n hn
       contrapose! h
       exact ⟨u n r, h, hn⟩
     · refine ⟨b'', ⟨hb'b''.le, hb''b⟩ , ?_⟩
-      have := hr r le_rfl
-      rw [limsup_le_iff] at this
-      filter_upwards [this b'' hb'b''] with n hn using hn.le
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b'')
+      filter_upwards [h_lt] with n hn using hn.le
   have A (n) : ∃ r, ∀ s ≥ r, u n s ≤ b'' := by
     suffices ∀ᶠ r in atTop, u n r ≤ b' by
       simp only [eventually_atTop, ge_iff_le] at this
@@ -92,9 +94,9 @@ lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice 
   choose rs hrs using A
   simp only [eventually_atTop, ge_iff_le]
   refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
-  apply lt_of_le_of_lt _ hb''b.2
-  simp only [Set.mem_setOf_eq, iSup_exists, iSup_le_iff, forall_apply_eq_imp_iff]
-  intro n
+  -- `⊢ ⨆ i, u i v < b`
+  apply lt_of_le_of_lt (iSup_le fun n ↦ ?_) hb''b.2
+  -- `⊢ u n v ≤ b''` for `v` such that `r ⊔ (⨆ n, rs n) ≤ v`
   by_cases hn : b'' < u n r
   · refine hrs n v ?_
     calc rs n
@@ -103,31 +105,27 @@ lemma tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice 
       refine le_ciSup (f := fun (x : {n | b'' < u n r}) ↦ rs x) ?_
         (⟨n, by simp [hn]⟩ : {n | b'' < u n r})
       have : Finite {n | b'' < u n r} := by simpa using hb''
-      apply Finite.bddAbove_range _
+      exact Finite.bddAbove_range _
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_right
     _ ≤ v := hv
-  · simp at hn
-    refine (h_anti n ?_).trans hn
+  · refine (h_anti n ?_).trans (not_lt.mp hn)
     calc r
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
     _ ≤ v := hv
 
--- TODO: move
 /-- Let `u : ℕ → α → β` be a sequence of antitone functions `α → β` indexed by `ℕ`. Suppose that for
 all `n : ℕ`, `u n` tends to `c` at infinity, and that furthermore the limsup of `n ↦ u n r`
 tends to the same `c` as `r` tends to infinity.
 Then the supremum function `r ↦ ⨆ n, u n r` also tends to `c` at infinity. -/
-nonrec
-lemma Nat.tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice α] {β : Type*}
+lemma Nat.tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLattice α]
     [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {u : ℕ → α → β} {c : β}
     (h_all : ∀ n, Tendsto (u n) atTop (𝓝 c))
     (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) atTop) atTop (𝓝 c))
     (h_anti : ∀ n, Antitone (u n)) :
     Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 c) := by
-  refine tendsto_iSup_of_tendsto_limsup  h_all ?_ h_anti
-  convert h_limsup
-  exact cofinite_eq_atTop
+  rw [← cofinite_eq_atTop] at h_limsup
+  exact _root_.tendsto_iSup_of_tendsto_limsup h_all h_limsup h_anti
 
 namespace MeasureTheory
 
@@ -148,7 +146,7 @@ lemma tendsto_measure_compl_closedBall_of_isTightMeasureSet (hS : IsTightMeasure
 lemma isTightMeasureSet_of_tendsto_measure_compl_closedBall [ProperSpace E] {x : E}
     (h : Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ (Metric.closedBall x r)ᶜ) atTop (𝓝 0)) :
     IsTightMeasureSet S := by
-  refine IsTightMeasureSet_iff_exists_isCompact_measure_compl_le.mpr fun ε hε ↦ ?_
+  refine isTightMeasureSet_iff_exists_isCompact_measure_compl_le.mpr fun ε hε ↦ ?_
   rw [ENNReal.tendsto_atTop_zero] at h
   obtain ⟨r, h⟩ := h ε hε
   exact ⟨Metric.closedBall x r, isCompact_closedBall x r, by simpa using h r le_rfl⟩
@@ -195,7 +193,7 @@ variable [BorelSpace E] [ProperSpace E] {μ : ℕ → Measure E} [∀ i, IsFinit
 `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop` tends to 0 at infinity, then the set of measures
 in the sequence is tight.
 Compared to `isTightMeasureSet_of_tendsto_measure_norm_gt`, this lemma replaces a supremum over
-all measures by a limsup. -/
+all measures by a limsup. This is possible because the sequence is indexed by `ℕ`. -/
 lemma isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt
     (h : Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0)) :
     IsTightMeasureSet (Set.range μ) := by
@@ -212,13 +210,13 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt
 /-- For a sequence of measures indexed by `ℕ`, the set of measures in the sequence is tight if and
 only if the function `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop` tends to 0 at infinity.
 Compared to `isTightMeasureSet_iff_tendsto_measure_norm_gt`, this lemma replaces a supremum over
-all measures by a limsup. -/
+all measures by a limsup. This is possible because the sequence is indexed by `ℕ`. -/
 lemma isTightMeasureSet_range_iff_tendsto_limsup_measure_norm_gt :
     IsTightMeasureSet (Set.range μ)
       ↔ Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0) := by
   refine ⟨fun h ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt⟩
   have h_sup := tendsto_measure_norm_gt_of_isTightMeasureSet h
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le') ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le _) ?_
   intro r
   simp_rw [iSup_range]
   exact limsup_le_iSup
@@ -261,7 +259,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
       refine iSup_le fun μ ↦ (iSup_le fun hμS ↦ ?_)
       gcongr with i
       exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) hμS
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le') h_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _) h_le
   rw [← Finset.sum_const_zero]
   refine tendsto_finset_sum Finset.univ fun i _ ↦ (h i).comp ?_
   exact tendsto_id.atTop_div_const (by positivity)
@@ -284,13 +282,13 @@ lemma isTightMeasureSet_iff_inner_tendsto :
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h
   by_cases hy : y = 0
-  · simp only [hy, inner_zero_left, abs_zero]
+  · simp only [hy, inner_zero_left]
     refine (tendsto_congr' ?_).mpr tendsto_const_nhds
     filter_upwards [eventually_ge_atTop 0] with r hr
     simp [not_lt.mpr hr]
   have h' : Tendsto (fun r ↦ ⨆ μ ∈ S, μ {x | r * ‖y‖⁻¹ < ‖x‖}) atTop (𝓝 0) :=
     h.comp <| (tendsto_mul_const_atTop_of_pos (by positivity)).mpr tendsto_id
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le') ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le _) ?_
   intro r
   have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
@@ -329,7 +327,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_inner :
   refine ⟨fun h z ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_inner 𝕜⟩
   rw [isTightMeasureSet_iff_inner_tendsto 𝕜] at h
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (h z)
-    (fun _ ↦ zero_le') fun r ↦ ?_
+    (fun _ ↦ zero_le _) fun r ↦ ?_
   simp_rw [iSup_range]
   exact limsup_le_iSup
 
@@ -339,7 +337,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_range_of_tendsto_limsup_inner 𝕜 fun y ↦ ?_
   by_cases hy : y = 0
-  · simp only [hy, inner_zero_left, abs_zero]
+  · simp only [hy, inner_zero_left]
     refine (tendsto_congr' ?_).mpr tendsto_const_nhds
     filter_upwards [eventually_ge_atTop 0] with r hr
     simp [not_lt.mpr hr]
@@ -352,7 +350,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
   convert h' using 7 with r n x
   rw [inner_smul_left]
   simp only [map_inv₀, RCLike.conj_ofReal, norm_mul, norm_inv, norm_algebraMap', norm_norm]
-  rw [mul_lt_mul_left]
+  rw [mul_lt_mul_iff_right₀]
   positivity
 
 end InnerProductSpace
