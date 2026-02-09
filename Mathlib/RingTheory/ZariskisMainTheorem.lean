@@ -617,7 +617,7 @@ end FixedUniverse
 
 /--
 The algebraic version of **Zariski's Main Theorem**:
-Given a finite type `R`-algebra `S`that is quasi-finite at a prime `p`,
+Given a finite type `R`-algebra `S` that is quasi-finite at a prime `p`,
 there exists a `f ∉ p` such that `S[1/f]` is isomorphic to `R'[1/f]` where `R'` is the integral
 closure of `R` in `S`.
 -/
