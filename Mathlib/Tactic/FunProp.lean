@@ -5,12 +5,6 @@ Authors: Tomas Skrivan
 -/
 module
 
-public meta import Mathlib.Tactic.FunProp.Decl
-public meta import Mathlib.Tactic.FunProp.FunctionData
-public meta import Mathlib.Tactic.FunProp.Mor
-public meta import Mathlib.Tactic.FunProp.Theorems
-public meta import Mathlib.Tactic.FunProp.ToBatteries
-public meta import Mathlib.Tactic.FunProp.Types
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.FunProp.Core
 public import Mathlib.Tactic.FunProp.Decl

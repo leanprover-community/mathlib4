@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
 
 /-!
 # `subsingleton` tactic

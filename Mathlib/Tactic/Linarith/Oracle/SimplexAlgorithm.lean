@@ -5,7 +5,6 @@ Authors: Vasily Nesterov
 -/
 module
 
-public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
 

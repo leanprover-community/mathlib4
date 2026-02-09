@@ -5,7 +5,6 @@ Authors: Anne Baanen, Edward van de Meent
 -/
 module
 
-public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis

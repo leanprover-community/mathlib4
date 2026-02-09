@@ -12,7 +12,6 @@ public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
-public import Mathlib.Tactic.ToDual
 
 /-!
 # Free monoid over a given alphabet

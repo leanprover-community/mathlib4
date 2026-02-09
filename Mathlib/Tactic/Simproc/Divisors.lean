@@ -6,7 +6,6 @@ Authors: Paul Lezeau, Bhavik Mehta
 module
 
 public import Mathlib.NumberTheory.Divisors
-public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.Qq
 
 /-! # Divisor Simprocs

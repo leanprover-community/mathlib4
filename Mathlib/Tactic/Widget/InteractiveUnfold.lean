@@ -5,7 +5,6 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
 public import Lean.Server.Rpc.RequestHandling

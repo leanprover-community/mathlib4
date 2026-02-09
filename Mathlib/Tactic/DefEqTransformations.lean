@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Basic
 
 /-! # Tactics that transform types into definitionally equal types

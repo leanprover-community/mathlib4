@@ -8,7 +8,7 @@ module
 
 public meta import Lean.Elab.Tactic.Location
 public import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation

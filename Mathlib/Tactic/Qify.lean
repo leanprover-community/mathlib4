@@ -5,12 +5,11 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Int.Cast.Lemmas
-public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `qify` tactic

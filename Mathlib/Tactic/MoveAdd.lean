@@ -9,8 +9,6 @@ public meta import Mathlib.Lean.Meta
 public import Aesop
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Order.Defs.LinearOrder
-public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 

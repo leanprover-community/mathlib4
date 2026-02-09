@@ -7,7 +7,6 @@ module
 
 public import Aesop
 public import Mathlib.CategoryTheory.Category.Basic
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 The `check_compositions` tactic,

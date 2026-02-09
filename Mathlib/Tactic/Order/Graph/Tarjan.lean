@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Tactic.Order.Graph.Basic
 public import Mathlib.Tactic.Order.Graph.Basic
 
 /-!

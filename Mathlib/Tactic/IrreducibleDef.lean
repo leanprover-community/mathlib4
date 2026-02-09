@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Eqns
-public meta import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Util.TermReduce
 
 /-!

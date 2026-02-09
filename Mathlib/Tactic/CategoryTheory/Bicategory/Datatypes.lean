@@ -5,7 +5,6 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 

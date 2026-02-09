@@ -12,8 +12,6 @@ public meta import Lean.Elab.Deriving.Util
 public import Aesop
 public import Mathlib.Data.Countable.Defs
 public import Mathlib.Data.Nat.Pairing
-public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # `Countable` deriving handler

@@ -9,8 +9,8 @@ public meta import Mathlib.Util.AtomM
 public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
-public meta import Mathlib.Tactic.NormNum.Result
-public meta import Mathlib.Tactic.Ring.Common
+public import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Tactic.Ring.Common
 
 /-!
 # `ring` tactic

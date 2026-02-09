@@ -8,7 +8,7 @@ module
 public meta import ProofWidgets.Component.PenroseDiagram
 public meta import ProofWidgets.Component.Panel.Basic
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 public import ProofWidgets.Component.HtmlDisplay
 public import ProofWidgets.Component.Panel.Basic
