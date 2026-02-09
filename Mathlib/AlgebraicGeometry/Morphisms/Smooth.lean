@@ -230,7 +230,6 @@ instance : MorphismProperty.IsMultiplicative (@SmoothOfRelativeDimension 0) wher
 instance (priority := 100) [hf : Smooth f] : LocallyOfFinitePresentation f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFinitePresentation]
   rw [HasRingHomProperty.eq_affineLocally @Smooth] at hf
-  refine affineLocally_le (fun hf ↦ ?_) f hf
-  exact hf.finitePresentation
+  exact affineLocally_le (fun hf ↦ hf.finitePresentation) f hf
 
 end AlgebraicGeometry
