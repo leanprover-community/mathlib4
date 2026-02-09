@@ -38,8 +38,8 @@ public meta section
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
-namespace Mathlib.Tactic.Elementwise
 open CategoryTheory
+namespace Mathlib.Tactic.Elementwise
 
 section theorems
 
@@ -257,4 +257,4 @@ elab "elementwise_of% " t:term : term => do
   let (pf, _) ← elementwiseExpr .anonymous e (simpSides := false)
   return pf
 
-end Tactic.Elementwise
+end Mathlib.Tactic.Elementwise

@@ -83,3 +83,4 @@ macro_rules
 --     declNames := [`tactic.interactive.sliceLHS, `tactic.interactive.sliceRHS]
 --     tags := ["category theory"] }
 --
+end Mathlib.Tactic.Slice
