@@ -6,9 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Module.Pi
 
 /-!
 # The pointwise product on `Finsupp`.
@@ -96,25 +95,29 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
+section pointwiseModule
+
+variable {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+
+lemma pointwise_smul_support_finite (f : ι → R) (g : ι →₀ M) :
+    (fun x ↦ f x • g x).support.Finite := by
+  apply Set.Finite.subset g.finite_support
+  simp; grind [smul_zero]
+
 -- TODO can this be generalized in the direction of `Pi.smul'`
 -- (i.e. dependent functions and finsupps)
 -- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
-instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
-  smul f g :=
-    Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
-      apply Set.Finite.subset g.finite_support
-      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
-        Finsupp.fun_support_eq, Finset.mem_coe]
-      intro x hx h
-      apply hx
-      rw [h, smul_zero])
+instance pointwiseScalar : SMul (ι → R) (ι →₀ M) where
+  smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
 @[simp]
-theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=
+theorem coe_pointwise_smul (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := by
   rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
-  Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
+instance pointwiseModule : Module (ι → R) (ι →₀ M) :=
+  Function.Injective.module _ coeFnAddHom DFunLike.coe_injective (by intros; rfl)
+
+end pointwiseModule
 
 end Finsupp
