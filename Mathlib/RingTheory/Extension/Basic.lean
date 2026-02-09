@@ -439,7 +439,7 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
 
 lemma Cotangent.finite (hP : P.ker.FG) :
     Module.Finite S P.Cotangent := by
-  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  refine ⟨.of_restrictScalars (R := P.Ring) ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _

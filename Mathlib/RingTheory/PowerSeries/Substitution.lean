@@ -140,6 +140,16 @@ theorem HasSubst.smul_X (a : A) (t : τ) :
 theorem HasSubst.smul_X' (a : A) : HasSubst (a • X : R⟦X⟧) :=
   HasSubst.X'.smul' _
 
+lemma HasSubst.eventually_coeff_pow_eq_zero {f : A⟦X⟧} (hf : HasSubst f) (n : ℕ) :
+    ∀ᶠ m in .atTop, ∀ n' ≤ n, coeff n' (f ^ m) = 0 := by
+  obtain ⟨k, hk⟩ := id hf
+  refine Filter.eventually_of_mem (Filter.Ici_mem_atTop (k * (n + 1))) fun m hm n' hn' ↦
+    coeff_of_lt_order _ ?_
+  obtain ⟨m, rfl⟩ := le_iff_exists_add.mp (Set.mem_Ici.mp hm)
+  grw [pow_add, ← order_mul_ge, pow_mul, ← le_order_pow_of_constantCoeff_eq_zero _
+    (by rwa [map_pow]), ← _root_.le_add_right le_rfl, Nat.cast_lt]
+  lia
+
 variable {υ : Type*} {T : Type*} [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
 
 /-- Substitution of power series into a power series. -/

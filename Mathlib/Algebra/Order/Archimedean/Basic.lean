@@ -227,17 +227,14 @@ theorem exists_int_lt (x : R) : ∃ n : ℤ, (n : R) < x :=
   let ⟨n, h⟩ := exists_int_gt (-x)
   ⟨-n, by rw [Int.cast_neg]; exact neg_lt.1 h⟩
 
+/-- See `exists_floor'` for a more general version which only assumes the element is bounded by
+two integers. -/
 theorem exists_floor (x : R) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : R) ≤ x := by
-  classical
-  have : ∃ ub : ℤ, (ub : R) ≤ x ∧ ∀ z : ℤ, (z : R) ≤ x → z ≤ ub :=
-    Int.exists_greatest_of_bdd
-      (let ⟨n, hn⟩ := exists_int_gt x
-      ⟨n, fun z h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
-      (let ⟨n, hn⟩ := exists_int_lt x
-      ⟨n, le_of_lt hn⟩)
-  refine this.imp fun fl h z => ?_
-  obtain ⟨h₁, h₂⟩ := h
-  exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
+  apply exists_floor'
+  · obtain ⟨n, hn⟩ := exists_int_lt x
+    exact ⟨n, hn.le⟩
+  · obtain ⟨n, hn⟩ := exists_int_gt x
+    exact ⟨n, hn.le⟩
 
 end StrictOrderedRing
 
@@ -531,8 +528,7 @@ instance : MulArchimedean NNRat := Nonneg.instMulArchimedean
 cases we have a computable `floor` function. -/
 noncomputable def Archimedean.floorRing (R) [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
     [Archimedean R] : FloorRing R :=
-  .ofFloor R (fun a => Classical.choose (exists_floor a)) fun z a =>
-    (Classical.choose_spec (exists_floor a) z).symm
+  .ofBounded _ exists_nat_ge
 
 -- see Note [lower instance priority]
 /-- A linear ordered field that is a floor ring is archimedean. -/

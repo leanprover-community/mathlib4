@@ -58,6 +58,48 @@ end Notation
 
 namespace WithVal
 
+section Instances
+
+variable {P S : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+
+instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs (Ring R)
+
+instance [CommRing R] (v : Valuation R Γ₀) : CommRing (WithVal v) := inferInstanceAs (CommRing R)
+
+instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceAs (Field R)
+
+instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
+
+instance [CommSemiring S] [CommRing R] [Algebra S R] (v : Valuation R Γ₀) :
+    Algebra S (WithVal v) := inferInstanceAs (Algebra S R)
+
+instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
+    IsFractionRing S (WithVal v) := inferInstanceAs (IsFractionRing S R)
+
+instance [Ring R] [SMul S R] (v : Valuation R Γ₀) : SMul S (WithVal v) :=
+  inferInstanceAs (SMul S R)
+
+instance [Ring R] [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] (v : Valuation R Γ₀) :
+    IsScalarTower P S (WithVal v) :=
+  inferInstanceAs (IsScalarTower P S R)
+
+variable [CommRing R] (v : Valuation R Γ₀)
+
+instance {S : Type*} [Ring S] [Algebra R S] :
+    Algebra (WithVal v) S := inferInstanceAs (Algebra R S)
+
+instance {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) :
+    Algebra R (WithVal w) := inferInstanceAs (Algebra R S)
+
+instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
+    [Algebra R S] [IsScalarTower P R S] :
+    IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
+
+instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation R Γ₀} : Preorder (WithVal v) := v.toPreorder
+
+end Instances
+
 section Ring
 
 variable [Ring R] (v : Valuation R Γ₀)

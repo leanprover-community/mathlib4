@@ -18,15 +18,35 @@ instances on `α` to `Shrink.{u} α`.
 
 @[expose] public section
 
-universe u v
+universe u
 
-variable (α : Type v) [Small.{u} α]
+variable {α : Type*} [Small.{u} α]
 
-instance [Preorder α] : Preorder (Shrink.{u} α) :=
+section Bot
+variable [Bot α]
+
+@[to_dual]
+noncomputable instance : Bot (Shrink.{u} α) where
+  bot := equivShrink _ ⊥
+
+@[to_dual (attr := simp)]
+lemma equivShrink_bot : equivShrink.{u} α ⊥ = ⊥ := rfl
+
+@[to_dual (attr := simp)]
+lemma equivShrink_symm_bot : (equivShrink.{u} α).symm ⊥ = ⊥ :=
+  (equivShrink.{u} α).injective (by simp)
+
+end Bot
+
+section Preorder
+variable [Preorder α]
+
+instance : Preorder (Shrink.{u} α) :=
   Preorder.lift (equivShrink α).symm
 
+variable (α) in
 /-- The order isomorphism `α ≃o Shrink.{u} α`. -/
-noncomputable def orderIsoShrink [Preorder α] : α ≃o Shrink.{u} α where
+noncomputable def orderIsoShrink : α ≃o Shrink.{u} α where
   toEquiv := equivShrink α
   map_rel_iff' {a b} := by
     obtain ⟨a, rfl⟩ := (equivShrink.{u} α).symm.surjective a
@@ -34,37 +54,21 @@ noncomputable def orderIsoShrink [Preorder α] : α ≃o Shrink.{u} α where
     simp only [Equiv.apply_symm_apply]
     rfl
 
-variable {α}
-
 @[simp]
-lemma orderIsoShrink_apply [Preorder α] (a : α) :
+lemma orderIsoShrink_apply (a : α) :
     orderIsoShrink α a = equivShrink α a := rfl
 
 @[simp]
-lemma orderIsoShrink_symm_apply [Preorder α] (a : Shrink.{u} α) :
+lemma orderIsoShrink_symm_apply (a : Shrink.{u} α) :
     (orderIsoShrink α).symm a = (equivShrink α).symm a := rfl
 
-instance [PartialOrder α] : PartialOrder (Shrink.{u} α) where
-  le_antisymm _ _ h₁ h₂ := (equivShrink _).symm.injective (le_antisymm h₁ h₂)
+@[simp]
+theorem equivShrink_le_equivShrink {x y : α} : equivShrink α x ≤ equivShrink α y ↔ x ≤ y :=
+  (orderIsoShrink α).map_rel_iff
 
-noncomputable instance [LinearOrder α] : LinearOrder (Shrink.{u} α) where
-  le_total _ _ := le_total _ _
-  toDecidableLE _ _ := LinearOrder.toDecidableLE _ _
-
-@[to_dual]
-noncomputable instance [Bot α] : Bot (Shrink.{u} α) where
-  bot := equivShrink _ ⊥
-
-@[to_dual (attr := simp)]
-lemma equivShrink_bot [Bot α] : equivShrink.{u} α ⊥ = ⊥ := rfl
-
-@[to_dual (attr := simp)]
-lemma equivShrink_symm_bot [Bot α] : (equivShrink.{u} α).symm ⊥ = ⊥ :=
-  (equivShrink.{u} α).injective (by simp)
-
-section Preorder
-
-variable [Preorder α]
+@[simp]
+theorem equivShrink_lt_equivShrink {x y : α} : equivShrink α x < equivShrink α y ↔ x < y :=
+  (orderIsoShrink α).toRelIsoLT.map_rel_iff
 
 @[to_dual]
 noncomputable instance [OrderBot α] : OrderBot (Shrink.{u} α) where
@@ -82,3 +86,9 @@ instance [WellFoundedGT α] : WellFoundedGT (Shrink.{u} α) where
   wf := (orderIsoShrink.{u} α).symm.dual.toRelIsoLT.toRelEmbedding.isWellFounded.wf
 
 end Preorder
+
+instance [PartialOrder α] : PartialOrder (Shrink.{u} α) :=
+  (equivShrink _).symm.injective.partialOrder _ .rfl .rfl
+
+noncomputable instance [LinearOrder α] : LinearOrder (Shrink.{u} α) :=
+  .lift' _ (equivShrink _).symm.injective

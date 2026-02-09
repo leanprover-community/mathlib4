@@ -12,7 +12,8 @@ public import Qq
 public import Plausible
 
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
-public import ImportGraph.Imports
+public import ImportGraph.Tools
+public import ImportGraph.Lean.Environment
 
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic

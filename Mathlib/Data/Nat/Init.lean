@@ -419,6 +419,12 @@ lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
 
+theorem ext_div_mod {n a b : ℕ} (H0 : a / n = b / n) (H1 : a % n = b % n) : a = b := by
+  grind [div_add_mod]
+
+theorem ext_div_mod_iff (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a % n = b % n := by
+  grind [ext_div_mod]
+
 /-! ### Decidability of predicates -/
 
 instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
@@ -433,6 +439,9 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+instance (n : ℤ) [NeZero n] : NeZero n.natAbs where
+  out := n.natAbs_ne_zero.mpr (NeZero.ne n)
 
 /-! ### `Nat.AtLeastTwo` -/
 
