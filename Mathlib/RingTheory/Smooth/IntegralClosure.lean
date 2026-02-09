@@ -344,8 +344,8 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
     (φ := (AdjoinRoot.mkₐ 𝓟'.f).restrictScalars R) AdjoinRoot.mk_surjective 𝓟'.monic_f
     (by simp [𝓟', StandardEtalePresentation.baseChange, isIntegral_algebraMap]) Ideal.mk_ker hk
   simp only [AlgHom.coe_restrictScalars', AdjoinRoot.coe_mkₐ] at hy
-  -- Since `f' * gᵏ` is invertible in S,
-  -- to show that `a ∈ S ⊗ B'`, it suffices to show that `y ∈ S ⊗ B'`,
+  -- Since `f' * gᵏ` is invertible in S, to show that `a ∈ S ⊗ B'` (where `B'` is the
+  -- integral closure of `R` in `B`), it suffices to show that `y ∈ S ⊗ B'`,
   rw [← Subalgebra.mem_toSubmodule, ← Submodule.smul_mem_iff_of_isUnit _
     (𝓟.hasMap.isUnit_derivative_f.mul <| (𝓟.hasMap.2.pow k).mul (𝓟.hasMap.2.pow m))]
   convert_to eval₂ Algebra.TensorProduct.includeRight.toRingHom (𝓟.x ⊗ₜ[R] 1) y ∈ _ using 1
