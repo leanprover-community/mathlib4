@@ -36,6 +36,9 @@ instance [Abelian C] : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤
 
 instance : Abelian (Sheaf AddCommGrpCat X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
+instance [Abelian C] [HasSheafify (Opens.grothendieckTopology X) C] :
+    (Sheaf.forget C X).Additive where
+    
 instance : (Sheaf.forget AddCommGrpCat X).Additive where
 
 instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
