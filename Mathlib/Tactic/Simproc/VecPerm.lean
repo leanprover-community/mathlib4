@@ -31,19 +31,20 @@ partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
   | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
     return lastOut :: (← listOfVecQ prevVec)
   | ~q(0), ~q(Matrix.vecEmpty) => return []
+  | _, _ => throwError m!"Invalid inputs: {n} should represent a natural number litteral and {vec}
+a function built using the vector notation."
 
 /--
 Takes an expression representing a list of elements of type `α` and outputs the corresponding
 vector `Fin n → α`.
 -/
 def vecOfListQ {u : Level} {α : Q(Type u)}
-    (n : ℕ) (vec : List Q($α)) : MetaM Q(Fin $n → $α) := do
+    (n : ℕ) (vec : List Q($α)) : Option Q(Fin $n → $α) := do
   match n, vec with
   | n + 1, head :: rest =>
     return q(Matrix.vecCons $head $(← vecOfListQ n rest))
   | 0, [] => return q(Matrix.vecEmpty)
-  | _, _ =>
-    throwError s!"Invalid input: the list has length {vec.length} but is meant to have length {n}"
+  | _, _ => none
 
 /--
 Given a list `l` of elements of type `α` and a list `perm` of indices (as natural numbers), outputs
@@ -80,9 +81,12 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     catch _ =>
       return none
 
+theorem eq_etaExpand {α : Type*} {m : ℕ} (v : Fin m → α) : v = FinVec.etaExpand v :=
+  (FinVec.etaExpand_eq _).symm
+
 end
 
-@[expose] public section
+public section
 
 /--
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
@@ -95,14 +99,13 @@ example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
 simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let ⟨_, ~q(Fin $n → $α), ~q(($v) ∘ ($p : _ → Fin $n'))⟩ ← inferTypeQ' e | return .continue
   let .defEq _ ← isDefEqQ q($n) q($n') | return .continue
-  let some unpermList ← listOfVecQ (α := α) (n := n) v | return .continue
-  let some permAsList ← listOfVecFinQ n unpermList.length qp | return .continue
+  let unpermList ← listOfVecQ (α := α) (n := n) v
+  let some permAsList ← listOfVecFinQ n unpermList.length p | return .continue
   let outAsList := permList unpermList permAsList
-  let out ← vecOfListQ unpermList.length outAsList
-  let pf ← mkAppM ``FinVec.etaExpand_eq #[e]
-  let pf ← mkAppM ``Eq.symm #[pf]
+  let some out := vecOfListQ unpermList.length outAsList | return .continue
+  let pf ← mkAppM ``FinVec.eq_etaExpand #[e]
   return Step.continue <| some { expr := out, proof? := pf }
 
 end
 
-end FinVec
+end Mathlib.Tactic.FinVec

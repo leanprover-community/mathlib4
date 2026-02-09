@@ -2,7 +2,7 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
 import Mathlib.Tactic.Simproc.VecPerm
 
-open FinVec
+open Mathlib.Tactic.FinVec
 
 variable {α : Type*} (a b c d : α)
 
