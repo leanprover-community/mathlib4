@@ -207,24 +207,6 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
 
 section
 
-theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
-    (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
-  ext x; constructor <;> intro hx
-  · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
-    constructor
-    · simp [hx]
-    · intro y _
-      rw [IsOrtho, b]
-      change (B.domRestrict W) ⟨x, hx⟩ y = 0
-      rw [hker]
-      rfl
-  · simp_rw [Submodule.mem_map, LinearMap.mem_ker]
-    refine ⟨⟨x, hx.1⟩, ?_, rfl⟩
-    ext y
-    change B x y = 0
-    rw [b]
-    exact hx.2 _ Submodule.mem_top
-
 theorem toLin_restrict_ker_eq_inf_ker (B : BilinForm K V) (W : Subspace K V) :
     (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.ker : Subspace K V) := by
   ext x; constructor <;> intro hx
@@ -234,6 +216,11 @@ theorem toLin_restrict_ker_eq_inf_ker (B : BilinForm K V) (W : Subspace K V) :
     · simpa
   · simp_rw [Submodule.mem_map, LinearMap.mem_ker]
     exact ⟨⟨x, hx.1⟩, hx.right, rfl⟩
+
+theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K V) (b : B.IsRefl) :
+    (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
+  rw [orthogonal_top_eq_ker b]
+  exact toLin_restrict_ker_eq_inf_ker ..
 
 theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
     (W : Subspace K V) :
@@ -273,17 +260,6 @@ open Module Submodule
 
 variable {B : BilinForm K V}
 
-theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
-    finrank K W + finrank K (B.orthogonal W) =
-      finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
-  rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
-    toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, finrank_map_subtype_eq]
-  conv_rhs =>
-    rw [← @Subspace.finrank_add_finrank_dualCoannihilator_eq K V _ _ _ _
-        (LinearMap.range (B.domRestrict W)),
-      add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
-      LinearMap.finrank_range_add_finrank_ker]
-
 theorem finrank_add_finrank_orthogonal' (W : Submodule K V) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.ker : Subspace K V) := by
@@ -294,6 +270,12 @@ theorem finrank_add_finrank_orthogonal' (W : Submodule K V) :
         (LinearMap.range (B.domRestrict W)),
       add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
       LinearMap.finrank_range_add_finrank_ker]
+
+theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
+    finrank K W + finrank K (B.orthogonal W) =
+      finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
+  rw [orthogonal_top_eq_ker b₁]
+  exact finrank_add_finrank_orthogonal' _
 
 lemma finrank_orthogonal (hB : B.Nondegenerate) (W : Submodule K V) :
     finrank K (B.orthogonal W) = finrank K V - finrank K W := by
