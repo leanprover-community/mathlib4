@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Generator.Sheaf
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.Topology.Sheaves.Presheaf
+public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
 
@@ -86,3 +88,26 @@ lemma isGrothendieckAbelian_of_essentiallySmall
 end Sheaf
 
 end CategoryTheory
+
+namespace TopCat
+
+open CategoryTheory
+
+variable {X : TopCat.{u}} {A : Type v₁} [Category.{v₂} A]
+  [HasSheafify (Opens.grothendieckTopology X) A]
+
+noncomputable instance [Abelian A] : Abelian (Presheaf A X) := inferInstanceAs (Abelian (_ ⥤ _))
+
+namespace Sheaf
+
+instance [Abelian A] : Abelian (Sheaf A X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
+
+instance [Abelian A] : (Sheaf.forget A X).Additive where
+
+instance [Category.{u} A] [Abelian A] [IsGrothendieckAbelian.{u} A]
+    [HasSheafify (Opens.grothendieckTopology X) A] : IsGrothendieckAbelian.{u} (Sheaf A X) :=
+  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
+
+end Sheaf
+
+end TopCat

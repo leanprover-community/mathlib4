@@ -22,7 +22,7 @@ Results for sheaves of abelian groups on topological spaces, in preparation for 
 
 @[expose] public section
 
-universe u v w
+universe u
 
 noncomputable section
 
@@ -30,21 +30,7 @@ open TopologicalSpace Opposite CategoryTheory AlgebraicGeometry
 
 namespace TopCat
 
-variable {X : TopCat.{u}} {U V : Opens X} {C : Type v} [Category.{w} C]
-
-instance [Abelian C] : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
-
-instance : Abelian (Sheaf AddCommGrpCat X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
-
-instance [Abelian C] [HasSheafify (Opens.grothendieckTopology X) C] :
-    (Sheaf.forget C X).Additive where
-    
-instance : (Sheaf.forget AddCommGrpCat X).Additive where
-
-instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
-
-instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
-  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
+variable {X : TopCat.{u}} {U V : Opens X}
 
 instance : HasExt.{u} (Sheaf AddCommGrpCat.{u} X) :=
   hasExt_of_enoughInjectives (Sheaf AddCommGrpCat X)

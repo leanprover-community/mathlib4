@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.Biproducts
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
 /-!
 # AB axioms for the category of abelian groups
 
@@ -101,3 +101,5 @@ instance : HasSeparator AddCommGrpCat.{u} where
       AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, forall_eq', ULift.forall]
     (intro x; specialize h (AddCommGrpCat.ofHom
     (AddMonoidHom.mk' (fun y => y • x) fun y z => by simp only [add_smul])) 1; aesop)
+
+instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
