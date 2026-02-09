@@ -2836,11 +2836,10 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
       -- Goal: invU*a + slackL + (scaledMiddle.zip middlePoints).map fst .sum = 1
       -- (zip middlePoints).map fst = scaledMiddle (since lengths match)
       have hzip_fst : (scaledMiddle.zip middlePoints).map Prod.fst = scaledMiddle := by
-        rw [List.map_zip_fst (by simp [scaledMiddle, hmw_len, hmp_len] :
+        rw [List.map_fst_zip (by simp [scaledMiddle, hmw_len, hmp_len] :
           scaledMiddle.length ≤ middlePoints.length)]
       rw [hzip_fst]
       simp [slackL]
-      ring
     have hih : affineOfBinary op
         ((invU * a, x) :: (slackL, y) :: scaledMiddle.zip middlePoints) =
         affineOfBinary op
@@ -2889,21 +2888,18 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
         --     = (x₃ :: rest.map snd).dropLast.map (0, ·) ++ [(bLast, xₙ)]
         set pts := x₃ :: rest.map Prod.snd
         have hpts_ne : pts ≠ [] := List.cons_ne_nil _ _
-        -- Split zip as dropLast ++ [last]
+        -- Split pts as dropLast ++ [getLast] so zip_append can match
+        conv_lhs => rw [show pts = pts.dropLast ++ [pts.getLast hpts_ne] from
+          (List.dropLast_append_getLast hpts_ne).symm]
+        simp only [List.nil_append]
         rw [List.zip_append (by simp [pts])]
         congr 1
-        · -- replicate.zip(dropLast) = dropLast.map(0, ·)
-          rw [zip_replicate_zero_map (by simp [pts, hmw_len, hmp_len, middlePoints]; omega)]
-        · -- [bLast].zip [getLast] = [(bLast, xₙ)]
-          simp only [List.zip_cons_cons, List.zip_nil_left, List.cons.injEq, and_true,
-            Prod.mk.injEq, and_true]
-          exact (hmap_ne.symm ▸ (List.getLast_cons hmap_ne).symm ▸ rfl :
-            (x₃ :: rest.map Prod.snd).getLast hpts_ne = xₙ).symm ▸ rfl
+        · rw [zip_replicate_zero_map (by simp [pts, hmp_len, middlePoints])]
       -- Massage padR into doubleton_padded_end form
       have hpadR_eq : (padR : WeightedSeq R M) =
           [(1 - bLast, y)] ++ (x :: allMiddlePoints).map (fun z => ((0 : R), z)) ++
           [(bLast, xₙ)] := by
-        simp [padR]
+        simp [padR, show allMiddlePoints = middlePoints from rfl]
       rw [hright_eq, hpadR_eq,
           affineOfBinary_doubleton_padded_end op _ _ y xₙ allMiddlePoints hab,
           affineOfBinary_doubleton_padded_end op _ _ y xₙ (x :: allMiddlePoints) hab]
@@ -2917,19 +2913,11 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
     have hpts_eq : padL.samePoints padR := by
       simp only [WeightedSeq.samePoints, padL, padR]
       simp only [List.map_append, List.map_cons, List.map_singleton, List.singleton_append,
-        List.cons_append, List.map_map]
-      congr 1
-      · -- y = y: trivial
-        rfl
-      congr 1
-      · -- x = x: trivial
-        rfl
-      congr 1
-      · -- (scaledMiddle.zip middlePoints).map snd = middlePoints.map (fun p => p)
-        simp only [List.map_zip_snd (by rw [scaledMiddle]; simp [hmw_len, hmp_len] :
-          middlePoints.length ≤ scaledMiddle.length), List.map_id]
-      · -- [xₙ] = [xₙ]
-        rfl
+        List.cons_append, List.map_map, Function.comp_def, List.map_nil, List.nil_append,
+        List.map_snd_zip (show middlePoints.length ≤ scaledMiddle.length from by
+          simp only [show scaledMiddle = middleWeights.map (invU * ·) from rfl,
+            List.length_map, hmp_len, hmw_len]; omega),
+        List.map_id']
     rw [affineOfBinary_linear op (1 - op.u) padL padR hlen_eq hpts_eq]
     -- Step 8: Show combineWeights(1-u, padL, padR) = target
     suffices hcomb : WeightedSeq.combineWeights (1 - op.u) padL padR =
@@ -2972,6 +2960,7 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
         have hL_ne : L ≠ [] := List.cons_ne_nil _ _
         have hsₙ_eq : sₙ = L.getLast hL_ne := by
           simp only [sₙ, L]
+          have hrest_ne : rest ≠ [] := List.cons_ne_nil r₁ rest'
           have hmap_ne : rest.map Prod.fst ≠ [] := by simp [hrest_ne]
           rw [List.getLast_cons hmap_ne, List.getLast_map]
           simp [List.getLast?_eq_some_getLast hrest_ne]
