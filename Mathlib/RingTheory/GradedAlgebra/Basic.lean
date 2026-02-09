@@ -365,7 +365,7 @@ variable {M : ι → σ} [SetLike.GradedMonoid M]
 
 /-- The canonical isomorphism of an internal direct sum with the ambient ring -/
 noncomputable def coeRingEquiv (hM : DirectSum.IsInternal M) :
-    (DirectSum ι fun i => ↥(M i)) ≃+* A := RingEquiv.ofBijective (DirectSum.coeRingHom M) hM
+    (DirectSum ι (M ·)) ≃+* A := RingEquiv.ofBijective (DirectSum.coeRingHom M) hM
 
 /-- Given an `R`-algebra `A` and a family `ι → σ` of submonoids parameterized by an additive monoid
  `ι` and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative), such that
