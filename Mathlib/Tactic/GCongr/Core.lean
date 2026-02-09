@@ -438,7 +438,7 @@ either with such a hypothesis directly or by a limited palette of relational for
 these hypotheses. -/
 def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool :=
   withReducible do
-    let s ← saveState
+    let mctx ← getMCtx
     withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
     let tacs := (forwardExt.getState (← getEnv)).2
@@ -448,7 +448,7 @@ def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Bool
           withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
             tac.eval h g
         return true
-      catch _ => s.restore
+      catch _ => setMCtx mctx
     return false
 
 /--
@@ -594,10 +594,12 @@ structure GCongrSubgoal where
 In case of success, add any unsolved side goals to the `GCongrM` state. -/
 def tryGCongrLemma? (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarId → MetaM Unit) :
     GCongrM (Option (Array GCongrSubgoal)) := do
+  let mctx ← getMCtx
   let const ← mkConstWithFreshMVarLevels lem.declName
   let gs ← try
     withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
   catch _ =>
+    setMCtx mctx
     return none
   let some e ← getExprMVarAssignment? g | panic! "unassigned?"
   let args := e.getAppArgs
@@ -612,8 +614,9 @@ def tryGCongrLemma? (g : MVarId) (lem : GCongrLemma) (sideGoalDischarger : MVarI
   -- by the `apply`.
   gs.forM fun g ↦ do
     if !(← g.isAssigned) && !mainSubGoals.any (·.goal == g) then
-      try sideGoalDischarger (← g.intros).2
-      catch _ => pushNewGoal g
+      let mctx ← getMCtx
+      try sideGoalDischarger g
+      catch _ => setMCtx mctx; pushNewGoal g
   -- Return all unresolved subgoals, "main" or "side"
   return some mainSubGoals
 
