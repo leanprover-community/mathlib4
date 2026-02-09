@@ -23,7 +23,7 @@ The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 
 ## Detailed description
 
-`congr` equates pieces of the left-hand side of a goal to corresponding pieces of the right-hand
+`congr!` equates pieces of the left-hand side of a goal to corresponding pieces of the right-hand
 side by recursively applying congruence lemmas. For example, with `⊢ f as = g bs` we could get
 two goals `⊢ f = g` and `⊢ as = bs`.
 
@@ -38,7 +38,7 @@ Here, `n` is a natural number and `x`, `y`, `z` are `rintro` patterns (like `h`,
 `_`, `-`, `(h | h)`, etc.).
 
 The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
-to right-hand sides of goals. Here is a list of things it can try:
+to right-hand sides of goals. Here is an exhaustive list of things it can try:
 
 - If `R` in `⊢ R x y` is a reflexive relation, it will convert the goal to `⊢ x = y` if possible.
   The list of reflexive relations is maintained using the `@[refl]` attribute.
@@ -79,7 +79,6 @@ This overrides the default, which is to apply congruence lemmas at reducible tra
 
 The `congr!` tactic is aggressive with equating two sides of everything. There is a predefined
 configuration that uses a different strategy:
-Try
 ```lean
 congr! (config := .unfoldSameFun)
 ```
