@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Ring
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.Order
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Convex spaces
@@ -94,6 +95,23 @@ def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : St
   total := by
     classical
     rw [Finsupp.sum_add_index] <;> simp [h]
+
+/-- The support of a duple has at most 2 elements. -/
+theorem duple_support_card_le_two (x y : M)
+    {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) :
+    (duple x y hs ht h).weights.support.card ≤ 2 := by
+  classical
+  simp only [duple]
+  calc (Finsupp.single x s + Finsupp.single y t).support.card
+      _ ≤ ((Finsupp.single x s).support ∪ (Finsupp.single y t).support).card :=
+          Finset.card_le_card Finsupp.support_add
+      _ ≤ (Finsupp.single x s).support.card + (Finsupp.single y t).support.card :=
+          Finset.card_union_le _ _
+      _ ≤ ({x} : Finset M).card + ({y} : Finset M).card := by
+          apply Nat.add_le_add
+          · exact Finset.card_le_card Finsupp.support_single_subset
+          · exact Finset.card_le_card Finsupp.support_single_subset
+      _ = 2 := by simp [Finset.card_singleton]
 
 /--
 Map a function over the support of a standard simplex.
@@ -209,6 +227,66 @@ theorem eq_single_of_card_eq_one (f : StdSimplex R M) (h : f.weights.support.car
       exact hm
     rw [Finsupp.mem_support_iff, not_not] at hmem
     simp [hmem, hm]
+
+/-- Naturality of join: mapping a function after joining equals
+    joining after mapping the function over each inner simplex. -/
+theorem join_map {M : Type*} {N : Type*} (g : M → N) (f : StdSimplex R (StdSimplex R M)) :
+    (f.join).map g = (f.map (fun d => d.map g)).join := by
+  apply StdSimplex.ext
+  -- Prove the Finsupp equality via a helper on the raw Finsupp
+  have key : ∀ (w : (StdSimplex R M) →₀ R),
+      Finsupp.mapDomain g (w.sum fun d r => r • d.weights) =
+      (Finsupp.mapDomain (fun d => d.map g) w).sum fun d r => r • d.weights := by
+    intro w
+    change (Finsupp.mapDomain.addMonoidHom g) (w.sum fun d r => r • d.weights) =
+      (Finsupp.mapDomain (fun d => d.map g) w).sum fun d r => r • d.weights
+    rw [map_finsuppSum]
+    simp_rw [Finsupp.mapDomain.addMonoidHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+      Finsupp.mapDomain_smul, map]
+    rw [Finsupp.sum_mapDomain_index]
+    · intro d; exact zero_smul R _
+    · intro d r₁ r₂; exact add_smul r₁ r₂ _
+  exact key f.weights
+
+/-- Functoriality of map: composing two maps equals mapping the composition. -/
+theorem map_comp {M : Type*} {N : Type*} {P : Type*}
+    (g : M → N) (h : N → P) (f : StdSimplex R M) :
+    (f.map g).map h = f.map (h ∘ g) := by
+  ext p
+  simp only [map, Finsupp.mapDomain_comp]
+
+/-- Monad associativity: join after join equals join after mapping join. -/
+theorem join_join {M : Type*} (f : StdSimplex R (StdSimplex R (StdSimplex R M))) :
+    f.join.join = (f.map StdSimplex.join).join := by
+  apply StdSimplex.ext
+  -- The goal reduces to showing two Finsupp sums are equal.
+  -- LHS: (f.weights.sum (fun d r => r • d.weights)).sum (fun d' r' => r' • d'.weights)
+  -- RHS: (mapDomain join f.weights).sum (fun d r => r • d.weights)
+  -- Use a helper to avoid the extends coercion issues
+  have key : ∀ (w : (StdSimplex R (StdSimplex R M)) →₀ R),
+      (w.sum fun d r => r • d.weights).sum (fun d' r' => r' • d'.weights) =
+      (Finsupp.mapDomain join w).sum (fun d r => r • d.weights) := by
+    intro w
+    trans w.sum fun d r => (r • d.weights).sum (fun d' r' => r' • d'.weights)
+    · exact Finsupp.sum_sum_index
+        (fun d => zero_smul R d.weights) (fun d r₁ r₂ => add_smul r₁ r₂ d.weights)
+    · rw [Finsupp.sum_mapDomain_index
+        (fun d => zero_smul R d.weights) (fun d r₁ r₂ => add_smul r₁ r₂ d.weights)]
+      apply Finsupp.sum_congr
+      intro d _
+      simp only [join]
+      rw [Finsupp.sum_smul_index (fun d' => zero_smul R d'.weights)]
+      simp_rw [mul_smul]
+      exact Finsupp.smul_sum.symm
+  simp only [join, map]
+  exact key f.weights
+
+/-- Mapping over a duple distributes to each element. -/
+theorem map_duple {M : Type*} {N : Type*} (g : M → N) (x y : M)
+    {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) :
+    (duple x y hs ht h).map g = duple (g x) (g y) hs ht h := by
+  ext n
+  simp only [map, duple, Finsupp.mapDomain_add, Finsupp.mapDomain_single]
 
 end StdSimplex
 
@@ -1008,7 +1086,8 @@ theorem binCombo_swap (op : BinaryConvexOp R M) (p : R) (x y : M) :
   -- Hmm, this approach is getting complicated. Let's use a different approach.
   -- Consider binCombo(1/2, x, y) = binCombo(1/2, y, x) by mediality with p=1/2, q=1/2
   -- Actually mediality gives us:
-  -- binCombo(p, binCombo(q, a, b), binCombo(q, c, d)) = binCombo(q, binCombo(p, a, c), binCombo(p, b, d))
+  -- binCombo(p, binCombo(q, a, b), binCombo(q, c, d))
+  --   = binCombo(q, binCombo(p, a, c), binCombo(p, b, d))
   -- We can derive symmetry from this...
   --
   -- Actually, let's use that both expressions compute the same point in an affine sense.
@@ -1042,6 +1121,63 @@ theorem affineOfBinary_swap_two [Inhabited M] (op : BinaryConvexOp R M)
          _ = 1 - w₁ := by rw [add_comm, h]
   rw [hw₂_eq]
   exact binCombo_swap op w₁ x₁ x₂
+
+/-- For a duple of two distinct points, affineOfBinary returns binCombo.
+    This handles the non-deterministic ordering of Finset.toList. -/
+theorem affineOfBinary_duple [Inhabited M]
+    [PartialOrder R] [IsStrictOrderedRing R]
+    (op : BinaryConvexOp R M) (a b : M) (hab : a ≠ b)
+    {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (hst : s + t = 1)
+    (hs' : s ≠ 0) (ht' : t ≠ 0) :
+    affineOfBinary op (StdSimplex.duple a b hs ht hst).toWeightedSeq =
+      op.binCombo t a b := by
+  classical
+  simp only [StdSimplex.toWeightedSeq, StdSimplex.duple]
+  -- The support of single a s + single b t (with a ≠ b, s ≠ 0, t ≠ 0) is {a, b}
+  have hsupp : (Finsupp.single a s + Finsupp.single b t).support =
+      {a, b} := by
+    ext x
+    simp only [Finsupp.mem_support_iff, Finsupp.coe_add, Pi.add_apply,
+      Finset.mem_insert, Finset.mem_singleton]
+    constructor
+    · intro hx
+      by_contra h
+      push_neg at h
+      simp [h.1, h.2] at hx
+    · rintro (rfl | rfl)
+      · simp [hab, hs']
+      · simp [Ne.symm hab, ht']
+  rw [hsupp]
+  -- {a,b}.toList has 2 elements; case split on ordering
+  have hcard : ({a, b} : Finset M).card = 2 :=
+    Finset.card_pair hab
+  have hlen := Finset.length_toList ({a, b} : Finset M)
+  have hnodup := Finset.nodup_toList ({a, b} : Finset M)
+  -- toList has length 2
+  have hlen2 : ({a, b} : Finset M).toList.length = 2 := by
+    rw [hlen, hcard]
+  match hl : ({a, b} : Finset M).toList, hlen2 with
+  | [x, y], _ =>
+    have hx : x ∈ ({a, b} : Finset M) := by
+      rw [← Finset.mem_toList]; simp [hl]
+    have hy : y ∈ ({a, b} : Finset M) := by
+      rw [← Finset.mem_toList]; simp [hl]
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
+    have hxy : x ≠ y := by
+      rw [hl] at hnodup
+      exact fun heq => by subst heq; simp [List.nodup_cons] at hnodup
+    rcases hx with rfl | rfl <;> rcases hy with rfl | rfl
+    · exact absurd rfl hxy
+    · -- [a, b]
+      simp [List.map, affineOfBinary, hab]
+    · -- [b, a]: binCombo s x y = binCombo t y x by swap
+      simp only [List.map, Finsupp.coe_add, Pi.add_apply,
+        Finsupp.single_apply, Ne.symm hab, ite_false, ite_true,
+        add_zero, affineOfBinary]
+      -- s + t = 1 implies s = 1 - t
+      rw [show s = 1 - t from by rw [← hst]; ring]
+      exact binCombo_swap op t x y
+    · exact absurd rfl hxy
 
 /-- Special case: when both inner simplices are single points. -/
 theorem affineOfBinary_binary_join_single [Inhabited M]
@@ -1091,10 +1227,44 @@ theorem affineOfBinary_binary_join_single [Inhabited M]
           Finsupp.support_single_ne_zero _ one_ne_zero, Finset.toList_singleton, List.map_cons,
           List.map_nil, Finsupp.single_eq_same, affineOfBinary, op.binCombo_zero]
       · -- 0 < p < 1: support has 2 elements {x, y}
-        -- This case requires careful handling of Finset.toList ordering.
-        -- Both possible orderings [x,y] and [y,x] give the same result via binCombo_swap.
-        -- We defer this technical finset manipulation.
-        sorry
+        have hp1' : (1 : R) - p ≠ 0 := by
+          intro h; exact hp1 (sub_eq_zero.mp h).symm
+        have hsupp : (Finsupp.single x p + Finsupp.single y (1 - p)).support =
+            {x, y} := by
+          ext m
+          simp only [Finsupp.mem_support_iff, Finsupp.coe_add, Pi.add_apply,
+            Finset.mem_insert, Finset.mem_singleton]
+          constructor
+          · intro hm; by_contra h; push_neg at h
+            simp [h.1, h.2] at hm
+          · rintro (rfl | rfl)
+            · simp [hxy, hp0]
+            · simp [Ne.symm hxy, hp1']
+        rw [hsupp]
+        have hcard : ({x, y} : Finset M).card = 2 := Finset.card_pair hxy
+        have hnodup := Finset.nodup_toList ({x, y} : Finset M)
+        have hlen2 : ({x, y} : Finset M).toList.length = 2 := by
+          rw [Finset.length_toList, hcard]
+        match hl : ({x, y} : Finset M).toList, hlen2 with
+        | [a, b], _ =>
+          have ha : a ∈ ({x, y} : Finset M) := by
+            rw [← Finset.mem_toList]; simp [hl]
+          have hb : b ∈ ({x, y} : Finset M) := by
+            rw [← Finset.mem_toList]; simp [hl]
+          simp only [Finset.mem_insert, Finset.mem_singleton] at ha hb
+          have hab : a ≠ b := by
+            rw [hl] at hnodup
+            exact fun heq => by subst heq; simp [List.nodup_cons] at hnodup
+          rcases ha with rfl | rfl <;> rcases hb with rfl | rfl
+          · exact absurd rfl hab
+          · -- [x, y]
+            simp [List.map, affineOfBinary, hxy]
+          · -- [y, x]
+            simp only [List.map, Finsupp.coe_add, Pi.add_apply,
+              Finsupp.single_apply, Ne.symm hxy, ite_false, ite_true,
+              add_zero, affineOfBinary]
+            exact binCombo_swap op p b a
+          · exact absurd rfl hab
 
 /-- The binary outer case: C(1-p, A(d₁), A(d₂)) = A(join of duple(d₁, d₂, p, 1-p)).
 
@@ -1138,25 +1308,41 @@ theorem affineOfBinary_binary_join [Inhabited M]
   -- Since the supporting lemmas have sorries, we defer.
   sorry
 
+/-- Any simplex with support cardinality ≥ 2 can be expressed as the join of a duple
+    of two simplices, each with strictly smaller support cardinality. -/
+theorem StdSimplex.exists_duple_join [PartialOrder R] [IsStrictOrderedRing R]
+    {X : Type*} {s t : R} (hs : 0 < s) (ht : 0 < t) (hst : s + t = 1)
+    (f : StdSimplex R X) (hcard : 2 ≤ f.weights.support.card) :
+    ∃ (g₁ g₂ : StdSimplex R X)
+      (h₁ : g₁.weights.support.card < f.weights.support.card)
+      (h₂ : g₂.weights.support.card < f.weights.support.card),
+      f = (StdSimplex.duple g₁ g₂ (le_of_lt hs) (le_of_lt ht) hst).join := by
+  sorry
+
 /-- The flattening lemma: affine combination of affine combinations equals
     affine combination of joined weights.
 
-    This is the key lemma for the assoc proof. It says:
-      A([(wᵢ, A(dᵢ))]) = A(join)
-    where the LHS computes affineOfBinary on a list of (weight, inner_result) pairs,
-    and the RHS computes affineOfBinary on the joined simplex.
-
-    The proof uses affineOfBinary_binary_join for the binary case (card=2)
-    and induction on the outer support cardinality for larger cases. -/
+    The proof uses strong induction on outer support cardinality:
+    - Card 0: impossible (weights sum to 1)
+    - Card 1: direct (single simplex)
+    - Card 2: uses affineOfBinary_binary_join
+    - Card ≥ 3: monadic decomposition via exists_duple_join, reducing to IH -/
 theorem affineOfBinary_assoc_flattening [Inhabited M]
     [PartialOrder R] [IsStrictOrderedRing R]
-    (op : BinaryConvexOp R M) (f : StdSimplex R (StdSimplex R M)) :
+    (op : BinaryConvexOp R M) (hu : 0 < op.u) (h1u : 0 < 1 - op.u)
+    (f : StdSimplex R (StdSimplex R M)) :
     affineOfBinary op (f.map (convexCombinationOfBinary op)).toWeightedSeq =
     affineOfBinary op f.join.toWeightedSeq := by
-  -- The proof proceeds by strong induction on outer support cardinality.
-  match hcard : f.weights.support.card with
-  | 0 =>
-    -- Impossible: weights sum to 1
+  -- Strong induction on outer support cardinality.
+  suffices ∀ n (f : StdSimplex R (StdSimplex R M)), f.weights.support.card = n →
+      affineOfBinary op (f.map (convexCombinationOfBinary op)).toWeightedSeq =
+      affineOfBinary op f.join.toWeightedSeq from this _ f rfl
+  intro n
+  induction n using Nat.strongRecOn with
+  | _ n ih =>
+  intro f hcard
+  match n, hcard with
+  | 0, hcard =>
     exfalso
     have h : f.weights.sum (fun _ r => r) = 0 := by
       rw [Finsupp.sum]
@@ -1165,300 +1351,175 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
       exact absurd hx (Finset.card_eq_zero.mp hcard ▸ Finset.notMem_empty x)
     rw [f.total] at h
     exact one_ne_zero h
-  | 1 =>
-    -- Single inner simplex: f = single d for some d
+  | 1, hcard =>
     obtain ⟨d, hd⟩ := StdSimplex.eq_single_of_card_eq_one f hcard
     subst hd
-    -- LHS: (single d).map A = single (A d), so toWeightedSeq = [(1, A d)]
-    -- RHS: (single d).join = d, so toWeightedSeq = d.toWeightedSeq
     simp only [StdSimplex.map_single, StdSimplex.join_single]
-    -- LHS: affineOfBinary [(1, A d)] = A d
-    -- RHS: affineOfBinary (d.toWeightedSeq) = A d
     simp only [StdSimplex.toWeightedSeq, StdSimplex.single_weights,
       Finsupp.support_single_ne_zero _ one_ne_zero, Finset.toList_singleton,
       List.map_cons, List.map_nil, Finsupp.single_eq_same, affineOfBinary,
       convexCombinationOfBinary]
-  | n + 2 =>
-    -- Outer support has n+2 ≥ 2 elements.
-    -- Case split: n=0 (card=2) vs n>0 (card≥3)
-    match n with
-    | 0 =>
-      -- Card = 2: Use affineOfBinary_binary_join
-      -- We use classical logic for DecidableEq on StdSimplex
-      classical
-      -- Extract d₁, d₂ from f's support (which has exactly 2 elements)
-      have hcard2 : f.weights.support.card = 2 := hcard
-      obtain ⟨d₁, d₂, hne, hsupp⟩ := Finset.card_eq_two.mp hcard2
-      let w₁ := f.weights d₁
-      let w₂ := f.weights d₂
-      have hw₁_pos : 0 ≤ w₁ := f.nonneg d₁
-      have hw₂_pos : 0 ≤ w₂ := f.nonneg d₂
-      have hnotin : d₁ ∉ ({d₂} : Finset _) := Finset.notMem_singleton.mpr hne
-      have hsum : w₁ + w₂ = 1 := by
-        have htot := f.total
-        rw [Finsupp.sum, hsupp, Finset.sum_insert hnotin, Finset.sum_singleton] at htot
-        exact htot
-      have hw₂_eq : w₂ = 1 - w₁ := by rw [← hsum]; ring
-      -- Show f equals the duple with these weights
-      have hf_eq : f = StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos hsum := by
-        apply StdSimplex.ext
-        ext d
-        simp only [StdSimplex.duple]
-        by_cases hd₁ : d = d₁
-        · subst hd₁
-          simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same,
-            Finsupp.single_eq_of_ne hne, add_zero]
+  | 2, hcard =>
+    -- Card = 2: Use affineOfBinary_binary_join
+    classical
+    obtain ⟨d₁, d₂, hne, hsupp⟩ := Finset.card_eq_two.mp hcard
+    let w₁ := f.weights d₁
+    let w₂ := f.weights d₂
+    have hw₁_pos : 0 ≤ w₁ := f.nonneg d₁
+    have hw₂_pos : 0 ≤ w₂ := f.nonneg d₂
+    have hnotin : d₁ ∉ ({d₂} : Finset _) := Finset.notMem_singleton.mpr hne
+    have hsum : w₁ + w₂ = 1 := by
+      have htot := f.total
+      rw [Finsupp.sum, hsupp, Finset.sum_insert hnotin, Finset.sum_singleton] at htot
+      exact htot
+    have hw₂_eq : w₂ = 1 - w₁ := by rw [← hsum]; ring
+    have hf_eq : f = StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos hsum := by
+      apply StdSimplex.ext
+      ext d
+      simp only [StdSimplex.duple]
+      by_cases hd₁ : d = d₁
+      · subst hd₁
+        simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same,
+          Finsupp.single_eq_of_ne hne, add_zero]
+        rfl
+      · by_cases hd₂ : d = d₂
+        · subst hd₂
+          simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_of_ne (Ne.symm hne),
+            Finsupp.single_eq_same, zero_add]
           rfl
-        · by_cases hd₂ : d = d₂
-          · subst hd₂
-            simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_of_ne (Ne.symm hne),
-              Finsupp.single_eq_same, zero_add]
-            rfl
-          · -- d ∉ {d₁, d₂}, so f.weights d = 0
-            have hd_notin : d ∉ f.weights.support := by
-              rw [hsupp]
-              simp only [Finset.mem_insert, Finset.mem_singleton]
-              push_neg
-              exact ⟨hd₁, hd₂⟩
-            simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_of_ne hd₁,
-              Finsupp.single_eq_of_ne hd₂, add_zero]
-            exact Finsupp.notMem_support_iff.mp hd_notin
-      -- Now rewrite using this equality
-      rw [hf_eq]
-      -- The goal is now:
-      -- affineOfBinary op ((duple d₁ d₂ ...).map A).toWeightedSeq =
-      -- affineOfBinary op (duple d₁ d₂ ...).join.toWeightedSeq
-      --
-      -- Step 1: The RHS matches affineOfBinary_binary_join's RHS
-      -- Step 2: For the LHS, we need to show:
-      --   affineOfBinary op ((duple d₁ d₂).map A).toWeightedSeq = binCombo(w₂, A d₁, A d₂)
-      -- Step 3: Then use affineOfBinary_binary_join to equate to RHS
-      --
-      -- The goal follows from affineOfBinary_binary_join.
-      -- The key steps are:
-      -- 1. (duple d₁ d₂).map A has support on {A d₁, A d₂} with weights w₁, w₂
-      -- 2. affineOfBinary on this gives binCombo(w₂, A d₁, A d₂)
-      -- 3. affineOfBinary_binary_join says binCombo(w₂, A d₁, A d₂) = A((duple d₁ d₂).join)
-      -- 4. The RHS matches A((duple d₁ d₂).join) = affineOfBinary op (duple ...).join.toWeightedSeq
-      --
-      -- This uses affineOfBinary_binary_join (which has a sorry).
-      -- Key: binCombo(1-w₁, A d₁, A d₂) = affineOfBinary on join.toWeightedSeq
-      have hw₂_pos' : 0 ≤ 1 - w₁ := hw₂_eq ▸ hw₂_pos
-      have hsum' : w₁ + (1 - w₁) = 1 := by ring
-      have hbinary := affineOfBinary_binary_join op w₁ d₁ d₂ hw₁_pos hw₂_pos' hsum'
-      -- hbinary : binCombo(1-w₁, A d₁, A d₂) = affineOfBinary (duple d₁ d₂ ...).join.toWeightedSeq
-      -- Goal: affineOfBinary op ((duple d₁ d₂).map A).toWeightedSeq =
-      --       affineOfBinary op (duple d₁ d₂).join.toWeightedSeq
-      --
-      -- The duples in goal and hbinary have different proof terms (hw₂_pos vs hw₂_pos').
-      -- They are equal because the weights are the same: w₂ = 1 - w₁ (by hw₂_eq).
-      -- We first show the duples are equal, then use hbinary.
-      have hduple_eq : StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos hsum =
-          StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum' := by
-        apply StdSimplex.ext
-        ext d
-        simp only [StdSimplex.duple, Finsupp.coe_add, Pi.add_apply]
-        -- Both have same weights w₁ at d₁ and w₂ = 1-w₁ at d₂
-        congr 1
-        -- single d₂ w₂ = single d₂ (1-w₁)
-        rw [hw₂_eq]
-      rw [hduple_eq, ← hbinary]
-      -- Goal: affineOfBinary ((duple d₁ d₂).map A).toWeightedSeq = binCombo(1-w₁, A d₁, A d₂)
-      change affineOfBinary op ((StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
-        (convexCombinationOfBinary op)).toWeightedSeq = _
-      -- Goal: affineOfBinary ((duple d₁ d₂).map A).toWeightedSeq = binCombo(1-w₁, A d₁, A d₂)
-      -- where A d = affineOfBinary op d.toWeightedSeq = convexCombinationOfBinary op d
-      --
-      -- Case split: A d₁ = A d₂ or A d₁ ≠ A d₂
-      by_cases hAeq : affineOfBinary op d₁.toWeightedSeq = affineOfBinary op d₂.toWeightedSeq
-      · -- A d₁ = A d₂: Both sides reduce to the same value
-        -- RHS = binCombo(1-w₁, A d₁, A d₂) = binCombo(1-w₁, A d₁, A d₁) = A d₁
-        rw [hAeq, op.binCombo_same]
-        -- LHS: The map of duple collapses to single (A d₁) when A d₁ = A d₂
-        -- First convert hAeq to use convexCombinationOfBinary
-        have hAeq' : convexCombinationOfBinary op d₁ = convexCombinationOfBinary op d₂ := by
-          simp only [convexCombinationOfBinary]
-          exact hAeq
-        -- Show the map collapses to single (A d₁)
-        have hmap_eq : (StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
-            (convexCombinationOfBinary op) =
-            StdSimplex.single (convexCombinationOfBinary op d₁) := by
-          apply StdSimplex.ext
-          ext m
-          simp only [StdSimplex.map, StdSimplex.duple, StdSimplex.single_weights]
-          rw [Finsupp.mapDomain_add]
-          simp only [Finsupp.mapDomain_single]
-          -- Now: single (A d₁) w₁ + single (A d₂) (1-w₁) = single (A d₁) 1
-          rw [hAeq']
-          -- single (A d₁) w₁ + single (A d₁) (1-w₁) = single (A d₁) 1
-          rw [← Finsupp.single_add, hsum']
-        rw [hmap_eq]
-        -- Now: affineOfBinary op (single (A d₁)).toWeightedSeq = A d₂
-        simp only [StdSimplex.toWeightedSeq, StdSimplex.single_weights,
-          Finsupp.support_single_ne_zero _ one_ne_zero, Finset.toList_singleton,
-          List.map_cons, List.map_nil, Finsupp.single_eq_same, affineOfBinary,
-          convexCombinationOfBinary]
-        -- Goal: affineOfBinary d₁.toWeightedSeq = affineOfBinary d₂.toWeightedSeq
-        exact hAeq
-      · -- A d₁ ≠ A d₂: The map is a proper duple with 2 elements
-        -- Convert hAeq to use convexCombinationOfBinary
-        have hAne : convexCombinationOfBinary op d₁ ≠ convexCombinationOfBinary op d₂ := by
-          simp only [convexCombinationOfBinary]
-          exact hAeq
-        -- The map (duple d₁ d₂).map A has weights w₁ at (A d₁) and (1-w₁) at (A d₂)
-        have hmap_weights : (StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
-            (convexCombinationOfBinary op) =
-            StdSimplex.duple (convexCombinationOfBinary op d₁) (convexCombinationOfBinary op d₂)
-              hw₁_pos hw₂_pos' hsum' := by
-          apply StdSimplex.ext
-          ext m
-          simp only [StdSimplex.map, StdSimplex.duple]
-          rw [Finsupp.mapDomain_add]
-          simp only [Finsupp.mapDomain_single]
-        rw [hmap_weights]
-        -- Now the goal is:
-        -- affineOfBinary op (duple (A d₁) (A d₂) ...).toWeightedSeq = binCombo(1-w₁, A d₁, A d₂)
-        -- The support of the duple is {A d₁, A d₂} with card = 2 (since A d₁ ≠ A d₂)
-        -- toWeightedSeq produces a length-2 list
-        simp only [StdSimplex.toWeightedSeq, StdSimplex.duple]
-        -- Since d₁ and d₂ are in f.support, we have w₁ ≠ 0 and (1 - w₁) ≠ 0
-        have hw₁_ne_zero : w₁ ≠ 0 := by
-          have hd₁_mem : d₁ ∈ f.support := by rw [hsupp]; exact Finset.mem_insert_self _ _
-          rwa [Finsupp.mem_support_iff] at hd₁_mem
-        have hw₂_ne_zero : 1 - w₁ ≠ 0 := by
-          have hd₂_mem : d₂ ∈ f.support := by
-            rw [hsupp]; exact Finset.mem_insert_of_mem (Finset.mem_singleton_self _)
-          rw [Finsupp.mem_support_iff] at hd₂_mem
-          rw [← hw₂_eq]; exact hd₂_mem
-        -- Support of (single (A d₁) w₁ + single (A d₂) (1-w₁)) is {A d₁, A d₂}
-        have hsupp' : (Finsupp.single (convexCombinationOfBinary op d₁) w₁ +
-            Finsupp.single (convexCombinationOfBinary op d₂) (1 - w₁)).support =
-            {convexCombinationOfBinary op d₁, convexCombinationOfBinary op d₂} := by
-          rw [Finsupp.support_add_eq]
-          · simp only [Finsupp.support_single_ne_zero _ hw₁_ne_zero,
-              Finsupp.support_single_ne_zero _ hw₂_ne_zero, Finset.singleton_union]
-          · rw [Finsupp.support_single_ne_zero _ hw₁_ne_zero,
-              Finsupp.support_single_ne_zero _ hw₂_ne_zero]
-            simp only [Finset.disjoint_singleton]
-            exact hAne
-        -- The toList has length 2 and contains both A d₁ and A d₂
-        have hcard' : ({convexCombinationOfBinary op d₁, convexCombinationOfBinary op d₂} :
-            Finset M).card = 2 := Finset.card_pair hAne
-        have hlen : (Finsupp.single (convexCombinationOfBinary op d₁) w₁ +
-            Finsupp.single (convexCombinationOfBinary op d₂) (1 - w₁)).support.toList.length = 2 := by
-          rw [Finset.length_toList, hsupp', hcard']
-        -- The card=2 case requires showing the toList gives the right affineOfBinary result
-        -- regardless of the ordering. This is tedious finset manipulation that we defer.
-        sorry
-    | m + 1 =>
-      -- Card = m + 3 ≥ 3: Recursive case
-      --
-      -- Key insight: affineOfBinary computes the "true" weighted combination
-      -- ∑ᵢ wᵢ · xᵢ, which is independent of list ordering. Tracing through
-      -- the algorithm for length-3 shows:
-      --   affineOfBinary [(s₁,x₁), (s₂,x₂), (s₃,x₃)] = s₁·x₁ + s₂·x₂ + s₃·x₃
-      -- (where the splitting unit u cancels out algebraically).
-      --
-      -- The proof strategy:
-      -- LHS: (f.map A).toWeightedSeq has weights wᵢ at points A(dᵢ)
-      --      affineOfBinary computes ∑ᵢ wᵢ · A(dᵢ)
-      --
-      -- RHS: f.join.toWeightedSeq has flattened weights
-      --      affineOfBinary computes the weighted combination of underlying points
-      --
-      -- These are equal because:
-      -- ∑ᵢ wᵢ · A(dᵢ) = ∑ᵢ wᵢ · (∑ⱼ dᵢ.weights(mⱼ) · mⱼ)
-      --               = ∑ⱼ (∑ᵢ wᵢ · dᵢ.weights(mⱼ)) · mⱼ
-      --               = ∑ⱼ f.join.weights(mⱼ) · mⱼ    [by def of join]
-      --
-      -- This "distributivity" is exactly what the linearity lemma provides.
-      -- The formal proof requires:
-      -- 1. Extend all inner simplices dᵢ to a common support (via zero padding)
-      -- 2. Apply affineOfBinary_linear to combine the A(dᵢ) terms
-      -- 3. Use affineOfBinary_eq_of_same_finsupp to match with f.join
-      --
-      -- Since affineOfBinary_eq_of_same_finsupp is not yet proved, we defer.
-      sorry
-
-/-- Build a ConvexSpace from a binary convex operation.
-
-    The algorithm from convex_plan.md only uses ⅟u and ⅟(1-u) for division,
-    so this works over any ring with an invertible splitting unit. -/
-noncomputable def ConvexSpace.ofBinary [Inhabited M]
-    [PartialOrder R] [IsStrictOrderedRing R]
-    (op : BinaryConvexOp R M) : ConvexSpace R M where
-  convexCombination := convexCombinationOfBinary op
-  single := convexCombinationOfBinary_single op
-  assoc := by
-    intro f
-    -- Goal: convexCombinationOfBinary op (f.map (convexCombinationOfBinary op))
-    --     = convexCombinationOfBinary op f.join
-    --
-    -- Proof strategy: Induction on outer support size
-    -- - Base (card = 1): single inner simplex, both sides reduce to A(d)
-    -- - Step: use linearity of affineOfBinary
-    simp only [convexCombinationOfBinary]
-    -- LHS: affineOfBinary op (f.map A).toWeightedSeq
-    -- RHS: affineOfBinary op f.join.toWeightedSeq
-    --
-    -- The key insight: LHS computes affine combo of [A(d₁), A(d₂), ...]
-    -- while RHS computes affine combo of the joined weights.
-    -- These are equal by the linearity lemma (applied inductively).
-    match hcard : f.weights.support.card with
-    | 0 =>
-      -- Impossible: weights sum to 1, so support can't be empty
-      exfalso
-      have h : f.weights.sum (fun _ r => r) = 0 := by
-        rw [Finsupp.sum]
-        apply Finset.sum_eq_zero
-        intro x hx
-        exact absurd hx (Finset.card_eq_zero.mp hcard ▸ Finset.notMem_empty x)
-      rw [f.total] at h
-      exact one_ne_zero h
-    | 1 =>
-      -- Single inner simplex: f has exactly one element d with weight 1
-      -- Use eq_single_of_card_eq_one to get the unique element
-      obtain ⟨d, hd⟩ := StdSimplex.eq_single_of_card_eq_one f hcard
-      subst hd
-      -- Now f = single d
-      -- LHS: (single d).map A = single (A d) by map_single
-      -- RHS: (single d).join = d by join_single
-      simp only [StdSimplex.map_single, StdSimplex.join_single]
-      -- Goal: affineOfBinary op (single (A d)).toWeightedSeq = affineOfBinary op d.toWeightedSeq
-      -- where A d = convexCombinationOfBinary op d = affineOfBinary op d.toWeightedSeq
-      --
-      -- For the LHS: (single x).toWeightedSeq = [(1, x)]
-      -- and affineOfBinary [(1, x)] = x (by definition, single-element case)
-      -- So LHS = A d
-      --
-      -- RHS = A d by definition
-      -- Therefore LHS = RHS
+        · have hd_notin : d ∉ f.weights.support := by
+            rw [hsupp]
+            simp only [Finset.mem_insert, Finset.mem_singleton]
+            push_neg
+            exact ⟨hd₁, hd₂⟩
+          simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_of_ne hd₁,
+            Finsupp.single_eq_of_ne hd₂, add_zero]
+          exact Finsupp.notMem_support_iff.mp hd_notin
+    rw [hf_eq]
+    have hw₂_pos' : 0 ≤ 1 - w₁ := hw₂_eq ▸ hw₂_pos
+    have hsum' : w₁ + (1 - w₁) = 1 := by ring
+    have hbinary := affineOfBinary_binary_join op w₁ d₁ d₂ hw₁_pos hw₂_pos' hsum'
+    have hduple_eq : StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos hsum =
+        StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum' := by
+      apply StdSimplex.ext; ext d
+      simp only [StdSimplex.duple, Finsupp.coe_add, Pi.add_apply]
+      congr 1; rw [hw₂_eq]
+    rw [hduple_eq, ← hbinary]
+    change affineOfBinary op ((StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
+      (convexCombinationOfBinary op)).toWeightedSeq = _
+    by_cases hAeq : affineOfBinary op d₁.toWeightedSeq = affineOfBinary op d₂.toWeightedSeq
+    · rw [hAeq, op.binCombo_same]
+      have hAeq' : convexCombinationOfBinary op d₁ = convexCombinationOfBinary op d₂ := by
+        simp only [convexCombinationOfBinary]; exact hAeq
+      have hmap_eq : (StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
+          (convexCombinationOfBinary op) =
+          StdSimplex.single (convexCombinationOfBinary op d₁) := by
+        apply StdSimplex.ext; ext m
+        simp only [StdSimplex.map, StdSimplex.duple, StdSimplex.single_weights]
+        rw [Finsupp.mapDomain_add]; simp only [Finsupp.mapDomain_single]
+        rw [hAeq', ← Finsupp.single_add, hsum']
+      rw [hmap_eq]
       simp only [StdSimplex.toWeightedSeq, StdSimplex.single_weights,
         Finsupp.support_single_ne_zero _ one_ne_zero, Finset.toList_singleton,
         List.map_cons, List.map_nil, Finsupp.single_eq_same, affineOfBinary,
         convexCombinationOfBinary]
-    | n + 2 =>
-      -- Outer support has n+2 ≥ 2 elements.
-      --
-      -- The proof uses strong induction on outer support cardinality.
-      -- The key lemma is affineOfBinary_binary_join which handles the binary case.
-      --
-      -- LHS: affineOfBinary on (f.map A).toWeightedSeq
-      --      - a list of (wᵢ, A(dᵢ)) pairs where A(dᵢ) = affineOfBinary(dᵢ.toWeightedSeq)
-      -- RHS: affineOfBinary on f.join.toWeightedSeq
-      --      - a list of joined weights over points in M
-      --
-      -- The equality follows from the "flattening" property:
-      --   affineOfBinary [(wᵢ, A(dᵢ))] = affineOfBinary (join)
-      --
-      -- For n=0 (card=2): This is affineOfBinary_binary_join
-      -- For n≥1 (card≥3): Decompose using the recursive structure and apply IH
+      exact hAeq
+    · have hAne : convexCombinationOfBinary op d₁ ≠ convexCombinationOfBinary op d₂ := by
+        simp only [convexCombinationOfBinary]; exact hAeq
+      have hmap_weights : (StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
+          (convexCombinationOfBinary op) =
+          StdSimplex.duple (convexCombinationOfBinary op d₁) (convexCombinationOfBinary op d₂)
+            hw₁_pos hw₂_pos' hsum' := by
+        apply StdSimplex.ext; ext m
+        simp only [StdSimplex.map, StdSimplex.duple]
+        rw [Finsupp.mapDomain_add]; simp only [Finsupp.mapDomain_single]
+      rw [hmap_weights]
+      -- Both weights are nonzero since d₁, d₂ are in the support
+      have hw₁_ne : w₁ ≠ 0 := by
+        intro h
+        have : d₁ ∉ f.weights.support := Finsupp.notMem_support_iff.mpr h
+        rw [hsupp] at this
+        simp at this
+      have hw₂_ne : (1 : R) - w₁ ≠ 0 := by
+        intro h
+        have : w₂ = 0 := by rw [hw₂_eq]; exact h
+        have : d₂ ∉ f.weights.support := Finsupp.notMem_support_iff.mpr this
+        rw [hsupp] at this
+        simp at this
+      exact affineOfBinary_duple op _ _ hAne hw₁_pos hw₂_pos' hsum' hw₁_ne hw₂_ne
+  | n + 3, hcard =>
+    -- Card ≥ 3: Monadic decomposition.
+    -- Split f = (duple g₁ g₂).join where g₁, g₂ have smaller outer support card.
+    have hst : op.u + (1 - op.u) = 1 := by ring
+    have hs := le_of_lt hu
+    have ht := le_of_lt h1u
+    obtain ⟨g₁, g₂, hg₁, hg₂, hf⟩ :=
+      StdSimplex.exists_duple_join hu h1u hst f (by omega)
+    -- IH for g₁ and g₂ (they have strictly smaller card)
+    have ih₁ := ih g₁.weights.support.card (by omega) g₁ rfl
+    have ih₂ := ih g₂.weights.support.card (by omega) g₂ rfl
+    -- Rewrite using the splitting: f = (duple g₁ g₂).join
+    rw [hf]
+    -- LHS: rewrite using join_map + map_duple
+    conv_lhs =>
+      rw [StdSimplex.join_map (convexCombinationOfBinary op)
+            (StdSimplex.duple g₁ g₂ hs ht hst)]
+      rw [StdSimplex.map_duple
+            (fun d => d.map (convexCombinationOfBinary op)) g₁ g₂ hs ht hst]
+    -- RHS: rewrite using join_join + map_duple
+    conv_rhs =>
+      rw [StdSimplex.join_join (StdSimplex.duple g₁ g₂ hs ht hst)]
+      rw [StdSimplex.map_duple StdSimplex.join g₁ g₂ hs ht hst]
+    -- Goal: A(D₁.join.toWS) = A(D₂.join.toWS) where
+    -- D₁ = duple (g₁.map F) (g₂.map F), D₂ = duple g₁.join g₂.join
+    -- F = convexCombinationOfBinary op
+    -- Both D₁, D₂ have card ≤ 2 < n + 3.
+    -- Card bounds for D₁, D₂ (duple of two elements has support ≤ 2)
+    have hD₁_card :
+        (StdSimplex.duple (g₁.map (convexCombinationOfBinary op))
+          (g₂.map (convexCombinationOfBinary op)) hs ht hst
+        ).weights.support.card ≤ 2 :=
+      StdSimplex.duple_support_card_le_two _ _ hs ht hst
+    have hD₂_card :
+        (StdSimplex.duple g₁.join g₂.join hs ht hst
+        ).weights.support.card ≤ 2 :=
+      StdSimplex.duple_support_card_le_two _ _ hs ht hst
+    -- Apply IH to D₁ and D₂
+    have ihD₁ := ih _ (by omega)
+      (StdSimplex.duple (g₁.map (convexCombinationOfBinary op))
+        (g₂.map (convexCombinationOfBinary op)) hs ht hst) rfl
+    have ihD₂ := ih _ (by omega)
+      (StdSimplex.duple g₁.join g₂.join hs ht hst) rfl
+    -- Chain: A(D₁.join) ← ihD₁ → A(D₁.map F) = A(D₂.map F) ← ihD₂ → A(D₂.join)
+    rw [← ihD₁, ← ihD₂]
+    -- Goal: A(D₁.map F .toWS) = A(D₂.map F .toWS)
+    -- D₁.map F = D₂.map F because F(g₁.map F) = F(g₁.join) by ih₁
+    congr 1; congr 1
+    rw [StdSimplex.map_duple (convexCombinationOfBinary op)
+          (g₁.map (convexCombinationOfBinary op))
+          (g₂.map (convexCombinationOfBinary op)) hs ht hst,
+        StdSimplex.map_duple (convexCombinationOfBinary op)
+          g₁.join g₂.join hs ht hst,
+        show convexCombinationOfBinary op
+              (g₁.map (convexCombinationOfBinary op)) =
+            convexCombinationOfBinary op g₁.join from ih₁,
+        show convexCombinationOfBinary op
+              (g₂.map (convexCombinationOfBinary op)) =
+            convexCombinationOfBinary op g₂.join from ih₂]
 
-      -- We prove the flattening property by induction on the list structure.
-      -- The key is showing that affineOfBinary respects the monadic join.
+/-- Build a ConvexSpace from a binary convex operation.
 
-      -- For now, we state this as the main sorry: the flattening lemma.
-      -- The proof would use affineOfBinary_binary_join and strong induction.
-      exact affineOfBinary_assoc_flattening op f
+    The algorithm from convex_plan.md only uses ⅟u and ⅟(1-u) for division,
+    so this works over any ring with an invertible splitting unit.
+    Requires `0 < u` and `0 < 1 - u` for the associativity proof. -/
+noncomputable def ConvexSpace.ofBinary [Inhabited M]
+    [PartialOrder R] [IsStrictOrderedRing R]
+    (op : BinaryConvexOp R M) (hu : 0 < op.u) (h1u : 0 < 1 - op.u) :
+    ConvexSpace R M where
+  convexCombination := convexCombinationOfBinary op
+  single := convexCombinationOfBinary_single op
+  assoc f := by
+    simp only [convexCombinationOfBinary]
+    exact affineOfBinary_assoc_flattening op hu h1u f
 
 end OfBinary
