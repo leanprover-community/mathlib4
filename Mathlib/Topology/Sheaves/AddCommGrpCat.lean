@@ -34,11 +34,9 @@ variable {X : TopCat.{u}} {U V : Opens X} {C : Type v} [Category.{w} C]
 
 instance [Abelian C] : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
-instance [Abelian C] [HasSheafify (Opens.grothendieckTopology X) C] :
-    Abelian (Sheaf C X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
+instance : Abelian (Sheaf AddCommGrpCat X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
-instance [Abelian C] [HasSheafify (Opens.grothendieckTopology X) C] : 
-    (Sheaf.forget C X).Additive where
+instance : (Sheaf.forget AddCommGrpCat X).Additive where
 
 instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
 
@@ -75,10 +73,10 @@ lemma restrict_sum {F : Sheaf AddCommGrpCat X} (h : V ≤ U) (s t : F.val.obj (o
   cat_disch
 
 lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂.val.obj (op U))
-    (h : S.g.val.app (op U) s = 0) (hS : S.ShortExact) :
+    (h : S.g.val.app (op U) s = 0) (hS1 : S.Exact) (hS2 : Mono S.f) :
     ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
   have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
     (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
-  exact Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact h (this S ⟨hS.1, hS.2⟩).left
+  exact Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact h (this S ⟨hS1, hS2⟩).left
 
 end TopCat.Sheaf.AddCommGrpCat
