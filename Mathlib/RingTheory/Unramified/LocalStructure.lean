@@ -70,7 +70,7 @@ lemma HasStandardEtaleSurjectionOn.of_dvd
 lemma HasStandardEtaleSurjectionOn.isStandardEtale
     {f : S} (H : HasStandardEtaleSurjectionOn R f) [Algebra.Etale R (Localization.Away f)] :
     Algebra.IsStandardEtale R (Localization.Away f) :=
-  .of_surjective _ _ _ _ H.choose_spec.choose_spec
+  .of_surjective _ H.choose_spec.choose_spec
 
 namespace Algebra.IsUnramifiedAt
 
