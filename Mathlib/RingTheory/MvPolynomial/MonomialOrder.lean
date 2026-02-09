@@ -514,7 +514,7 @@ theorem degree_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (
 /-- Multiplicativity of leading coefficients -/
 @[simp] theorem leadingCoeff_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
-  wlog! +distrib h : f ≠ 0 ∧ g ≠ 0
+  by_cases! +distrib h : f = 0 ∨ g = 0
   · cases h <;> simp [*]
   obtain ⟨hf, hg⟩ := h
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
