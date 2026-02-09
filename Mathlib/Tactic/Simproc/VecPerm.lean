@@ -26,11 +26,11 @@ Takes an expression representing a vector `Fin n → α` and returns the corresp
 list `List α`. Fails if the vector is not constucted using `Matrix.vecCons` and `Matrix.vecEmpty`.
 -/
 partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
-    (vec : Q(Fin $n → $α)) : MetaM (Option <| List Q($α)) := do
+    (vec : Q(Fin $n → $α)) : MetaM (List Q($α)) := do
   match n, vec with
   | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
-    return (← listOfVecQ prevVec).map (lastOut :: ·)
-  | ~q(0), ~q(Matrix.vecEmpty) => return some []
+    return lastOut :: (← listOfVecQ prevVec)
+  | ~q(0), ~q(Matrix.vecEmpty) => return []
 
 /--
 Takes an expression representing a list of elements of type `α` and outputs the corresponding
@@ -93,17 +93,15 @@ example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
 ```
 -/
 simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
-  let ⟨_, ~q(Fin $n → $α), ~q($v ∘ $p)⟩ ← inferTypeQ' e | return .continue
-  let ⟨_, ~q(Fin $n → $α), ~q($v)⟩ ← inferTypeQ' v | return .continue
-  let some qp ← Qq.checkTypeQ p q(Fin $n → Fin $n) | return .continue
+  let ⟨_, ~q(Fin $n → $α), ~q(($v) ∘ ($p : _ → Fin $n'))⟩ ← inferTypeQ' e | return .continue
+  let .defEq _ ← isDefEqQ q($n) q($n') | return .continue
   let some unpermList ← listOfVecQ (α := α) (n := n) v | return .continue
   let some permAsList ← listOfVecFinQ n unpermList.length qp | return .continue
   let outAsList := permList unpermList permAsList
   let out ← vecOfListQ unpermList.length outAsList
   let pf ← mkAppM ``FinVec.etaExpand_eq #[e]
   let pf ← mkAppM ``Eq.symm #[pf]
-  let result : Result := {expr := out, proof? := some pf}
-  return Step.continue result
+  return Step.continue <| some { expr := out, proof? := pf }
 
 end
 
