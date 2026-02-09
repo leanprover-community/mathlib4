@@ -30,12 +30,13 @@ structure WithConv A where
   /-- Converts an element of `A` to `WithConv A`. -/ toConv ::
   /-- Converts an element of `WithConv A` back to `A`. -/ ofConv : A
 
+namespace WithConv
+
 open Lean.PrettyPrinter.Delaborator in
 /-- This prevents `toConv x` being printed as `{ ofConv := x }` by `delabStructureInstance`. -/
-@[app_delab WithConv.toConv]
-meta def WithConv.delabtoConv : Delab := delabApp
+@[app_delab toConv]
+meta def delabToConv : Delab := delabApp
 
-namespace WithConv
 variable {R A B C : Type*}
 
 lemma ofConv_toConv (x : A) : ofConv (toConv x) = x := rfl
