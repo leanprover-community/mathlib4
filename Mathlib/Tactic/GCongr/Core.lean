@@ -271,17 +271,28 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
   if numVarying = 0 then
     fail "LHS and RHS are the same"
   let mut mainSubgoals := #[]
+  let findPair (lhs rhs : FVarId) : Option Bool :=
+    pairs.findSome? fun pair =>
+      if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
   let mut i := 0
   -- iterate over antecedents `hyp` to the lemma
   for hyp in hyps do
-    mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
+    -- First, try matching the raw (un-whnf'd) hypothesis type as a relation.
+    -- This avoids unfolding `@[reducible]` class projections (like `HasSSubset.SSubset`)
+    -- that would destroy the relation structure.
+    let rawHypTy ← inferType hyp
+    if let some (_, lhs₁, rhs₁) := getRel rawHypTy then
+      if let .fvar lhs₁ := lhs₁.getAppFn then
+      if let .fvar rhs₁ := rhs₁.getAppFn then
+      if let some isContra := findPair lhs₁ rhs₁ then
+        mainSubgoals := mainSubgoals.push (i, 0, isContra)
+        i := i + 1
+        continue
+    mainSubgoals ← forallTelescopeReducing rawHypTy fun args hypTy => do
       -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
       -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
       -- `rel` above)
       let hypTy ← whnf hypTy
-      let findPair (lhs rhs : FVarId) : Option Bool :=
-        pairs.findSome? fun pair =>
-          if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
       if let some (_, lhs₁, rhs₁) := getRel hypTy then
         if let .fvar lhs₁ := lhs₁.getAppFn then
         if let .fvar rhs₁ := rhs₁.getAppFn then
@@ -580,7 +591,11 @@ partial def _root_.Lean.MVarId.gcongr
   let depth + 1 := depth | return (false, names, #[g]) -- we know that there is no mdata to remove
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
-  let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
+  -- If `whnf` destroyed the relation structure (e.g., by unfolding `@[reducible]` class
+  -- projections like `HasSSubset.SSubset`), fall back to the raw goal type.
+  let rel ← if (getRel rel).isSome then pure rel else g.getType
+  let some (relName, lhs, rhs) := getRel rel
+    | throwTacticEx `gcongr g m!"{← withReducible g.getType'} is not a relation"
   -- If there is a pattern annotation
   if let some mdataLhs := mdataLhs? then
     let mdataExpr := if mdataLhs then lhs else rhs
@@ -722,6 +737,9 @@ elab "gcongr" template:(ppSpace colGt term)?
   let g ← getMainGoal
   g.withContext do
   let type ← withReducible g.getType'
+  -- If `whnf` destroyed the relation structure (e.g., by unfolding `@[reducible]` class
+  -- projections like `HasSSubset.SSubset`), fall back to the raw goal type.
+  let type ← if (getRel type).isSome then pure type else g.getType
   let some (_rel, lhs, _rhs) := getRel type
     | throwError "gcongr failed, not a relation"
   -- Get the names from the `with x y z` list
@@ -779,7 +797,9 @@ elab_rules : tactic
     let g ← getMainGoal
     g.withContext do
     let hyps ← hyps.getElems.mapM (elabTerm · none)
-    let some (_rel, lhs, rhs) := getRel (← withReducible g.getType')
+    let relType ← withReducible g.getType'
+    let relType ← if (getRel relType).isSome then pure relType else g.getType
+    let some (_rel, lhs, rhs) := getRel relType
       | throwError "rel failed, goal not a relation"
     unless ← isDefEq (← inferType lhs) (← inferType rhs) do
       throwError "rel failed, goal not a relation"
