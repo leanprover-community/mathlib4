@@ -91,7 +91,7 @@ def elabCasesM (pats : Array Term) (recursive allowSplit : Bool) : TacticM Unit 
   liftMetaTactic (casesMatching (matchPatterns pats) recursive allowSplit)
 
 /--
-`casesm p` searches for a hypothesis `h : type` where `type` matches the term `p`, and splits the
+`casesm p` searches for the first hypothesis `h : type` where `type` matches the term `p`, and splits the
 main goal by cases on `h`. Use holes in `p` to indicate arbitrary subexpressions, for example
 `casesm _ ∧ _` will match any conjunction. `casesm p` fails if no hypothesis type matches `p`.
 
