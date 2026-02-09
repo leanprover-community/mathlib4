@@ -3,11 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.Analysis.Convex.Jensen
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Metric properties of convex sets in normed spaces
@@ -23,6 +26,8 @@ We prove the following facts:
 * `isBounded_convexHull` : convex hull of a set is bounded if and only if the original set
   is bounded.
 -/
+
+@[expose] public section
 
 -- TODO assert_not_exists Cardinal
 
@@ -55,11 +60,50 @@ theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dis
 theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
   convexOn_dist z convex_univ
 
-theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
+theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (ball a r) := by
   simpa only [Metric.ball, sep_univ] using (convexOn_univ_dist a).convex_lt r
+
+theorem convex_eball (a : E) (r : ENNReal) : Convex ℝ (eball a r) := by
+  cases r with
+  | top => simp [convex_univ]
+  | coe r => simp [eball_coe, convex_ball]
 
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
+
+theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) := by
+  cases r with
+  | top => simp [convex_univ]
+  | coe r => simp [closedEBall_coe, convex_closedBall]
+
+open Pointwise in
+theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
+    convexHull ℝ (sphere x r) = closedBall x r := by
+  suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
+    rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
+      this, vadd_closedBall_zero, vadd_eq_add, add_zero]
+  refine subset_antisymm (convexHull_min sphere_subset_closedBall (convex_closedBall 0 r))
+    (fun x h ↦ mem_convexHull_iff.mpr fun U hU_sub hU ↦ ?_)
+  have zero_mem : (0 : F) ∈ U := by
+    have _ : Invertible (2 : ℝ) := by use 2⁻¹ <;> grind
+    obtain ⟨z, hz⟩ := NormedSpace.sphere_nonempty (E := F).mpr hr
+    rw [← midpoint_self_neg (R := ℝ) (x := z)]
+    exact Convex.midpoint_mem hU (hU_sub hz) <| hU_sub (by simp_all)
+  by_cases hr₀ : r = 0
+  · simp_all
+  by_cases x_zero : x = 0
+  · rwa [x_zero]
+  set z := (r * ‖x‖⁻¹) • x with hz_def
+  have hr₁ : r⁻¹ * ‖x‖ ≤ 1 := by
+    simp only [mem_closedBall, dist_zero_right] at h
+    grw [h, inv_mul_le_one]
+  have hz : z ∈ U := by
+    apply hU_sub
+    simp_all [norm_smul]
+  have := StarConvex.smul_mem (hU.starConvex zero_mem) hz (by positivity) hr₁
+  rwa [hz_def, ← smul_assoc, smul_eq_mul, ← mul_assoc, mul_comm, mul_comm r⁻¹, mul_assoc _ r⁻¹,
+    inv_mul_cancel₀ hr₀, mul_one, inv_mul_cancel₀ (by simp_all), one_smul] at this
 
 /-- Given a point `x` in the convex hull of `s` and a point `y`, there exists a point
 of `s` at distance at least `dist x y` from `y`. -/
@@ -89,13 +133,13 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
 
 /-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
-theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
-  refine (EMetric.diam_le fun x hx y hy => ?_).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
+theorem convexHull_ediam (s : Set E) : ediam (convexHull ℝ s) = ediam s := by
+  refine (ediam_le fun x hx y hy => ?_).antisymm (ediam_mono <| subset_convexHull ℝ s)
   rcases convexHull_exists_dist_ge2 hx hy with ⟨x', hx', y', hy', H⟩
   rw [edist_dist]
   apply le_trans (ENNReal.ofReal_le_ofReal H)
   rw [← edist_dist]
-  exact EMetric.edist_le_diam_of_mem hx' hy'
+  exact edist_le_ediam_of_mem hx' hy'
 
 /-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
@@ -115,13 +159,13 @@ instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpa
 theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
-  exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn
+  exact isConnected_Ici.image _ (by fun_prop)
 
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
 theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
-  exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
+  exact isConnected_Ioi.image _ (by fun_prop)
 
 lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
     ‖y - x‖ ≤ ‖z - x‖ := by

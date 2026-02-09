@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.Perm.Basic
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 
 /-!
 # Exterior product of alternating maps
@@ -17,6 +19,8 @@ In this file we define `AlternatingMap.domCoprod`
 to be the exterior product of two alternating maps,
 taking values in the tensor product of the codomains of the original maps.
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -164,7 +168,7 @@ def domCoprod' :
       simp only [Quotient.liftOn'_mk'', coe_add, coe_smul, MultilinearMap.smul_apply,
         ← MultilinearMap.domCoprod'_apply]
       simp only [TensorProduct.add_tmul, ← TensorProduct.smul_tmul', TensorProduct.tmul_add,
-        TensorProduct.tmul_smul, LinearMap.map_add, LinearMap.map_smul]
+        TensorProduct.tmul_smul, map_add, map_smul]
       first | rw [← smul_add] | rw [smul_comm]
       rfl
 
@@ -211,7 +215,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   calc
     ∑ τ ∈ _, sign τ • domDomCongr τ (a.domCoprod b) =
         ∑ τ ∈ {τ | τ⁻¹ * σ ∈ f.range}, sign τ • domDomCongr τ (a.domCoprod b) := by
-      simp [QuotientGroup.leftRel_apply, f]
+      simp [QuotientGroup.leftRel_apply, f, Quotient.eq]
     _ = ∑ τ ∈ {τ | τ⁻¹ ∈ f.range}, sign (σ * τ) • domDomCongr (σ * τ) (a.domCoprod b) := by
       conv_lhs => rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
       simp [Function.comp_def, -MonoidHom.mem_range]

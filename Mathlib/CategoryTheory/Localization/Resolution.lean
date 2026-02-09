@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Resolutions for a morphism of localizers
@@ -11,7 +13,7 @@ import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 Given a morphism of localizers `Φ : LocalizerMorphism W₁ W₂` (i.e. `W₁` and `W₂` are
 morphism properties on categories `C₁` and `C₂`, and we have a functor
 `Φ.functor : C₁ ⥤ C₂` which sends morphisms in `W₁` to morphisms in `W₂`), we introduce
-the notion of right resolutions of objects in `C₂`: if `X₂ : C₂`.
+the notion of right resolutions of objects in `C₂`, for `X₂ : C₂`.
 A right resolution consists of an object `X₁ : C₁` and a morphism
 `w : X₂ ⟶ Φ.functor.obj X₁` that is in `W₂`. Then, the typeclass
 `Φ.HasRightResolutions` holds when any `X₂ : C₂` has a right resolution.
@@ -21,7 +23,7 @@ structure.
 
 Similar definitions are done for left resolutions.
 
-## Future works
+## Future work
 
 * show that if `C` is an abelian category with enough injectives, there is a derivability
   structure associated to the inclusion of the full subcategory of complexes of injective
@@ -33,13 +35,15 @@ Similar definitions are done for left resolutions.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ D₂ H : Type*} [Category C₁] [Category C₂] [Category D₂] [Category H]
+variable {C₁ C₂ D₂ H : Type*} [Category* C₁] [Category* C₂] [Category* D₂] [Category* H]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
@@ -77,7 +81,7 @@ lemma LeftResolution.mk_surjective (L : Φ.LeftResolution X₂) :
 /-- A localizer morphism has right resolutions when any object has a right resolution. -/
 abbrev HasRightResolutions := ∀ (X₂ : C₂), Nonempty (Φ.RightResolution X₂)
 
-/-- A localizer morphism has right resolutions when any object has a right resolution. -/
+/-- A localizer morphism has left resolutions when any object has a left resolution. -/
 abbrev HasLeftResolutions := ∀ (X₂ : C₂), Nonempty (Φ.LeftResolution X₂)
 
 namespace RightResolution
@@ -93,7 +97,7 @@ structure Hom (R R' : Φ.RightResolution X₂) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.RightResolution X₂`. -/
+/-- The identity of an object in `Φ.RightResolution X₂`. -/
 @[simps]
 def Hom.id (R : Φ.RightResolution X₂) : Hom R R where
   f := 𝟙 _
@@ -137,7 +141,7 @@ structure Hom (L L' : Φ.LeftResolution X₂) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.LeftResolution X₂`. -/
+/-- The identity of an object in `Φ.LeftResolution X₂`. -/
 @[simps]
 def Hom.id (L : Φ.LeftResolution X₂) : Hom L L where
   f := 𝟙 _

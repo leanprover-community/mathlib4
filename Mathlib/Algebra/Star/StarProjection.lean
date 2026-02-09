@@ -3,9 +3,11 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.Ring.Idempotent
+module
+
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Star projections
@@ -15,6 +17,8 @@ This file defines star projections, which are self-adjoint idempotents.
 In star-ordered rings, star projections are non-negative.
 (See `IsStarProjection.nonneg` in `Mathlib/Algebra/Order/Star/Basic.lean`.)
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 

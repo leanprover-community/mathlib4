@@ -3,10 +3,11 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.LinearCombination.Lemmas
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Ring.Compare
+module
+
+public import Mathlib.Tactic.LinearCombination.Lemmas
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring.Compare
 
 /-!
 # linear_combination Tactic
@@ -34,6 +35,8 @@ Lastly, calls a normalization tactic on this target.
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.LinearCombination
 open Lean

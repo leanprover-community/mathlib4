@@ -3,11 +3,13 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.FieldTheory.Differential.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+module
+
+public import Mathlib.Algebra.Algebra.Field
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.FieldTheory.Differential.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Liouville's theorem
@@ -27,6 +29,8 @@ literature, and we introduce it as part of the formalization of Liouville's theo
   (of a field with characteristic 0) are Liouville.
 
 -/
+
+@[expose] public section
 
 open Differential algebraMap IntermediateField Finset Polynomial
 
@@ -56,7 +60,7 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
     obtain ⟨ι₀, _, c₀, hc₀, u₀, v₀, h₀⟩ := inst2.isLiouville (a : K) ι
         ((↑) ∘ c)
-        (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, lift_map_eq_zero_iff, hc])
+        (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, coe_eq_zero_iff, hc])
         ((↑) ∘ u) v (by simpa only [Function.comp_apply, ← IsScalarTower.algebraMap_apply])
     have hc (x : ι₀) := mem_range_of_deriv_eq_zero F (hc₀ x)
     choose c₀ hc using hc

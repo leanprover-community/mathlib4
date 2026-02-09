@@ -3,8 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Probability.Moments.Variance
-import Mathlib.MeasureTheory.Function.UniformIntegrable
+module
+
+public import Mathlib.Probability.HasLaw
+public import Mathlib.Probability.Moments.Variance
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!
 # Identically distributed random variables
@@ -47,6 +50,8 @@ For instance, if `h : IdentDistrib f g μ ν`, then `h.sq` states that `f^2` and
 identically distributed, and `h.norm` states that `‖f‖` and `‖g‖` are identically distributed, and
 so on.
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Filter Finset
@@ -136,6 +141,13 @@ theorem ae_snd (h : IdentDistrib f g μ ν) {p : γ → Prop} (pmeas : Measurabl
 theorem ae_mem_snd (h : IdentDistrib f g μ ν) {t : Set γ} (tmeas : MeasurableSet t)
     (ht : ∀ᵐ x ∂μ, f x ∈ t) : ∀ᵐ x ∂ν, g x ∈ t :=
   h.ae_snd tmeas ht
+
+theorem _root_.ProbabilityTheory.HasLaw.identDistrib {κ : Measure γ} (h₀ : HasLaw f κ μ)
+    (h₁ : HasLaw g κ ν) : IdentDistrib f g μ ν :=
+  ⟨h₀.aemeasurable, h₁.aemeasurable, by simp [h₀.map_eq, h₁.map_eq]⟩
+
+theorem hasLaw {κ : Measure γ} (h₀ : IdentDistrib f g μ ν) (h₁ : HasLaw f κ μ) : HasLaw g κ ν :=
+  ⟨h₀.aemeasurable_snd, by simp [h₀.map_eq, ← h₁.map_eq]⟩
 
 /-- In a second countable topology, the first function in an identically distributed pair is a.e.
 strongly measurable. So is the second function, but use `h.symm.aestronglyMeasurable_fst` as
@@ -332,9 +344,9 @@ end UniformIntegrable
 then `X'` and `Y'` are independent. -/
 lemma indepFun_of_identDistrib_pair
     {μ : Measure γ} {μ' : Measure δ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
-    {X : γ → α} {X' : δ → α} {Y : γ → β} {Y' : δ → β} (h_indep : IndepFun X Y μ)
+    {X : γ → α} {X' : δ → α} {Y : γ → β} {Y' : δ → β} (h_indep : X ⟂ᵢ[μ] Y)
     (h_ident : IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω ↦ (X' ω, Y' ω)) μ μ') :
-    IndepFun X' Y' μ' := by
+    X' ⟂ᵢ[μ'] Y' := by
   rw [indepFun_iff_map_prod_eq_prod_map_map _ _, ← h_ident.map_eq,
     (indepFun_iff_map_prod_eq_prod_map_map _ _).1 h_indep]
   · exact congr (congrArg Measure.prod <| (h_ident.comp measurable_fst).map_eq)

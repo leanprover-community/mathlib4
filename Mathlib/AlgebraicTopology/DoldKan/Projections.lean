@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Faces
-import Mathlib.CategoryTheory.Idempotents.Basic
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Faces
+public import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 
@@ -27,6 +29,8 @@ in order to define `PInfty : K[X] ⟶ K[X]`.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject Opposite CategoryTheory.Idempotents
@@ -39,7 +43,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X : SimplicialObject C}
 
 /-- This is the inductive definition of the projections `P q : K[X] ⟶ K[X]`,
 with `P 0 := 𝟙 _` and `P (q+1) := P q ≫ (𝟙 _ + Hσ q)`. -/
@@ -48,7 +52,7 @@ noncomputable def P : ℕ → (K[X] ⟶ K[X])
   | q + 1 => P q ≫ (𝟙 _ + Hσ q)
 
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
-lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
+lemma P_succ (q : ℕ) : (P (q + 1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
 
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]
@@ -88,7 +92,7 @@ namespace HigherFacesVanish
 /-- This lemma expresses the vanishing of
 `(P q).f (n+1) ≫ X.δ k : X _⦋n+1⦌ ⟶ X _⦋n⦌` when `k≠0` and `k≥n-q+2` -/
 theorem of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _⦋n + 1⦌ ⟶ X _⦋n + 1⦌)
-  | 0 => fun n j hj₁ => by omega
+  | 0 => fun n j hj₁ => by lia
   | q + 1 => fun n => by
     simp only [P_succ]
     exact (of_P q n).induction
@@ -103,12 +107,12 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
   | succ q hq =>
     simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
       comp_id, ← assoc, hq v.of_succ, add_eq_left]
-    by_cases hqn : n < q
+    by_cases! hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
-    · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
-      have hnaq : n = a + q := by omega
+    · obtain ⟨a, ha⟩ := Nat.le.dest hqn
+      have hnaq : n = a + q := by lia
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
-      have eq := v ⟨a, by cutsat⟩ (by
+      have eq := v ⟨a, by lia⟩ (by
         simp only [hnaq, add_assoc]
         rfl)
       simp only [Fin.succ_mk] at eq
@@ -178,7 +182,7 @@ theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
 def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Q q
 
-theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_P {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((P q : K[X] ⟶ _).f n) = (P q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   induction q with
@@ -189,7 +193,7 @@ theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive
     simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
       comp_id, Functor.map_add, Functor.map_comp, hq, map_Hσ]
 
-theorem map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_Q {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((Q q : K[X] ⟶ _).f n) = (Q q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   rw [← add_right_inj (G.map ((P q : K[X] ⟶ _).f n)), ← G.map_add, map_P G X q n, P_add_Q_f,

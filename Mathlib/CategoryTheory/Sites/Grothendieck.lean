@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta, Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.Order.Copy
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.Order.Copy
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Grothendieck topologies
@@ -48,6 +50,8 @@ This is so that we can produce a bijective correspondence between Grothendieck t
 small category and Lawvere-Tierney topologies on its presheaf topos, as well as the equivalence
 between Grothendieck topoi and left exact reflective subcategories of presheaf toposes.
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁ v u
@@ -106,12 +110,12 @@ theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
 
 /-- Also known as the maximality axiom. -/
-@[simp]
+@[simp, grind .]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
   J.top_mem' X
 
 /-- Also known as the stability axiom. -/
-@[simp]
+@[simp, grind .]
 theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS
 
@@ -123,6 +127,7 @@ lemma pullback_mem_iff_of_isIso {i : X ⟶ Y} [IsIso i] {S : Sieve Y} :
   convert J.pullback_stable (inv i) H
   rw [← Sieve.pullback_comp, IsIso.inv_hom_id, Sieve.pullback_id]
 
+@[grind .]
 theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ J Y) :
     R ∈ J X :=
   J.transitive' hS R h

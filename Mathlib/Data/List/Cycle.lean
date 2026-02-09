@@ -3,8 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.List
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Fintype.List
+public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fin.Basic
 
 /-!
 # Cycles of a list
@@ -20,6 +23,8 @@ as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their interna
 is different.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -53,19 +58,21 @@ theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
   · exact if_neg h
 
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
-theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
-    (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' := by
+theorem nextOr_eq_nextOr_of_mem_dropLast (xs : List α) (x d d' : α) (x_mem : x ∈ xs.dropLast) :
+    nextOr xs x d = nextOr xs x d' := by
   induction xs with
   | nil => cases x_mem
   | cons y ys IH => ?_
   rcases ys with - | ⟨z, zs⟩
-  · simp at x_mem x_ne
-    contradiction
+  · simp at x_mem
   by_cases h : x = y
   · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
   · rw [nextOr, nextOr, IH]
-    · simpa [h] using x_mem
-    · simpa using x_ne
+    simpa [h] using x_mem
+
+@[deprecated "Use `grind [nextOr_eq_nextOr_of_mem_dropLast, dropLast_concat_getLast]` to get the \
+  original statement" (since := "2025-11-29")]
+alias nextOr_eq_nextOr_of_mem_of_ne := nextOr_eq_nextOr_of_mem_dropLast
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
   induction xs with
@@ -148,12 +155,15 @@ theorem next_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
 theorem next_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) : next (x :: z :: l) x h = z :=
   next_cons_cons_eq' l x x z h rfl
 
-theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
-    (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
-    next (y :: l) x h = next l x (by simpa [hy] using h) := by
-  rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
-  · assumption
-  · rwa [getLast_cons] at hx
+theorem next_cons_eq_next_of_mem_dropLast (h : x ∈ l.dropLast) (y : α) (hy : x ≠ y) :
+    next (y :: l) x (mem_cons_of_mem _ <| mem_of_mem_dropLast h) =
+      next l x (mem_of_mem_dropLast h) := by
+  rwa [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_dropLast]
+
+@[deprecated "Use \
+  `grind [next_cons_eq_next_of_mem_dropLast, dropLast_concat_getLast, ne_nil_of_mem]` to get the \
+  original statement" (since := "2025-11-29")]
+alias next_ne_head_ne_getLast := next_cons_eq_next_of_mem_dropLast
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
@@ -184,7 +194,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
         Nat.add_lt_add_iff_right] at hk ⊢
-      cutsat
+      lia
     simpa using hk
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
@@ -194,6 +204,11 @@ theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
 theorem prev_getLast_cons (h : x ∈ x :: l) :
     prev (x :: l) x h = getLast (x :: l) (cons_ne_nil _ _) :=
   prev_getLast_cons' l x x h rfl
+
+theorem prev_head_eq_getLast (hl : l ≠ []) : l.prev (l.head hl) (head_mem hl) = l.getLast hl := by
+  cases l with
+  | nil => contradiction
+  | cons head tail => apply prev_getLast_cons
 
 theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
     prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
@@ -235,86 +250,101 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_self
       · exact mem_cons_of_mem _ (hl _ _)
 
+theorem nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast)
+    (d : α) : l.nextOr a d = l[l.idxOf a + 1]? := by
+  match l with
+  | nil => simp at ha
+  | [head] => simp at ha
+  | x :: y :: tail =>
+    rw [getElem?_cons_succ, nextOr]
+    split_ifs with hx
+    · grind
+    rw [idxOf_cons_ne _ <| Ne.symm hx, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
+    grind
+
+theorem nextOr_eq_getElem_idxOf_succ_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast)
+    (d : α) : l.nextOr a d = l[l.idxOf a + 1]'(succ_idxOf_lt_length_of_mem_dropLast ha) :=
+  Option.some_injective _ <| nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast ha d ▸ getElem?_pos ..
+
+theorem nextOr_infix_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast) (d : α) :
+    [a, l.nextOr a d] <:+: l := by
+  refine infix_iff_getElem?.mpr ⟨l.idxOf a, ?_, fun i hi ↦ ?_⟩
+  · have ⟨_, _⟩ := l.dropLast_prefix
+    grind
+  by_cases hi₁ : i = 1
+  · grind [next, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
+  · grind [getElem?_idxOf, mem_of_mem_dropLast]
+
+theorem nextOr_getLast_of_notMem_dropLast {l : List α} (hl : l ≠ []) (h : l.getLast hl ∉ l.dropLast)
+    (d : α) : l.nextOr (l.getLast hl) d = d := by
+  match l with
+  | nil | [_] => simp
+  | x :: y :: tail =>
+    unfold nextOr
+    split_ifs with h'
+    · grind
+    apply nextOr_getLast_of_notMem_dropLast
+    grind
+
+theorem next_getLast_eq_head_of_notMem_dropLast {l : List α} (hl : l ≠ [])
+    (h : l.getLast hl ∉ l.dropLast) : l.next (l.getLast hl) (getLast_mem hl) = l.head hl :=
+  nextOr_getLast_of_notMem_dropLast hl h _ |>.trans <| by grind
+
+theorem next_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
+    l.next a ha = l[(l.idxOf a + 1) % l.length]'(Nat.mod_lt _ <| by grind) := by
+  have hl := ne_nil_of_mem ha
+  by_cases ha' : a ∈ l.dropLast
+  · simp [next, nextOr_eq_getElem_idxOf_succ_of_mem_dropLast ha',
+      Nat.mod_eq_of_lt <| succ_idxOf_lt_length_of_mem_dropLast ha']
+  grind [dropLast_append_getLast, next_getLast_eq_head_of_notMem_dropLast, Nat.mod_self]
+
 theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
-    next l l[i] (get_mem _ _) =
-      (l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi))) :=
-  match l, h, i, hi with
-  | [], _, i, hi => by simp at hi
-  | [_], _, _, _ => by simp
-  | x::y::l, _h, 0, h0 => by
-    have h₁ : (x :: y :: l)[0] = x := by simp
-    rw [next_cons_cons_eq' _ _ _ _ _ h₁]
+    l.next l[i] (get_mem ..) = l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi)) := by
+  grind [next_eq_getElem]
+
+theorem prev_eq_getElem?_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a ∈ l)
+    (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : l.prev a ha = l[l.idxOf a - 1]? := by
+  match l with
+  | nil | [_] => grind
+  | x :: y :: tail =>
+    have ih := (y :: tail).prev_eq_getElem?_idxOf_pred_of_ne_head (a := a)
+    grind [prev]
+
+theorem prev_eq_getElem_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a ∈ l)
+    (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) :
+    l.prev a ha = l[l.idxOf a - 1]'(by grind [idxOf_lt_length_of_mem]) :=
+  Option.some_injective _ <| prev_eq_getElem?_idxOf_pred_of_ne_head ha ha₀ ▸ getElem?_pos ..
+
+theorem prev_infix_of_mem_tail {l : List α} {a : α} (ha : a ∈ l)
+    (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : [l.prev a ha, a] <:+: l := by
+  have := cons_head_tail (ne_nil_of_mem ha) ▸ idxOf_cons_ne _ <| Ne.symm ha₀
+  refine infix_iff_getElem?.mpr ⟨l.idxOf a - 1, by grind, fun i hi ↦ ?_⟩
+  by_cases hi₁ : i = 1
+  · subst hi₁
+    grind
+  grind [prev_eq_getElem?_idxOf_pred_of_ne_head]
+
+theorem prev_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
+    l.prev a ha = l[(l.idxOf a + (l.length - 1)) % l.length]'(Nat.mod_lt _ <| by grind) := by
+  cases l with | nil => grind | cons head tail =>
+  by_cases ha₀ : a = head
+  · subst ha₀
     simp
-  | x::y::l, hn, i+1, hi => by
-    have hx' : (x :: y :: l)[i+1] ≠ x := by
-      intro H
-      suffices (i + 1 : ℕ) = 0 by simpa
-      rw [nodup_iff_injective_get] at hn
-      refine Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ ?_)
-      simpa using H
-    have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
-    rcases hi'.eq_or_lt with (hi' | hi')
-    · subst hi'
-      rw [next_getLast_cons]
-      · simp
-      · rw [getElem_cons_succ]; exact get_mem _ _
-      · exact hx'
-      · simp [getLast_eq_getElem]
-      · exact hn.of_cons
-    · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
-      · simp only [getElem_cons_succ]
-        rw [next_getElem (y::l), ← getElem_cons_succ (a := x)]
-        · congr
-          dsimp
-          rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
-            Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
-        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), hi']
-        · exact hn.of_cons
-      · rw [getLast_eq_getElem]
-        intro h
-        have := nodup_iff_injective_get.1 hn h
-        simp at this; simp [this] at hi'
-      · rw [getElem_cons_succ]; exact get_mem _ _
+    grind
+  rw [prev_eq_getElem_idxOf_pred_of_ne_head ha ha₀]
+  congr
+  rw [← Nat.add_sub_assoc, Nat.sub_add_comm, Nat.add_mod_right, Nat.mod_eq_of_lt]
+  all_goals grind
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
-    prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by cutsat))) :=
-  match l with
-  | [] => by simp at hi
-  | x::l => by
-    induction l generalizing i x with
-    | nil => simp
-    | cons y l hl =>
-      rcases i with (_ | _ | i)
-      · simp [getLast_eq_getElem]
-      · simp only [mem_cons, nodup_cons] at h
-        push_neg at h
-        simp only [zero_add, getElem_cons_succ, getElem_cons_zero,
-          List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, length, add_comm,
-          Nat.add_sub_cancel_left, Nat.mod_self]
-      · rw [prev_ne_cons_cons]
-        · convert hl i.succ y h.of_cons (Nat.le_of_succ_le_succ hi) using 1
-          have : ∀ k hk, (y :: l)[k] = (x :: y :: l)[k + 1]'(Nat.succ_lt_succ hk) := by
-            simp
-          rw [this]
-          congr
-          simp only [Nat.add_succ_sub_one, add_zero, length]
-          simp only [length, Nat.succ_lt_succ_iff] at hi
-          set k := l.length
-          rw [Nat.succ_add, ← Nat.add_succ, Nat.add_mod_right, Nat.succ_add, ← Nat.add_succ _ k,
-            Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.mod_eq_of_lt]
-          · exact Nat.lt_succ_of_lt hi
-          · exact Nat.succ_lt_succ (Nat.lt_succ_of_lt hi)
-        · intro H
-          suffices i.succ.succ = 0 by simpa
-          suffices Fin.mk _ hi = ⟨0, by omega⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at h
-          apply h; rw [← H]; simp
-        · intro H
-          suffices i.succ.succ = 1 by simpa
-          suffices Fin.mk _ hi = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at h
-          apply h; rw [← H]; simp
+    l.prev l[i] (get_mem ..) = l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia)) := by
+  grind [prev_eq_getElem]
+
+@[simp]
+theorem next_getLast_eq_head (l : List α) (h : l ≠ []) (hn : l.Nodup) :
+    l.next (l.getLast h) (getLast_mem h) = l.head h := by
+  have h1 : l.length - 1 + 1 = l.length := by grind [length_pos_iff]
+  simp [getLast_eq_getElem h, head_eq_getElem h, next_getElem l hn (l.length - 1) (by grind), h1]
 
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_getElem
@@ -355,7 +385,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
     prev l.reverse x (mem_reverse.mpr hx) = next l x hx := by
   obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
-  have key : l.length - 1 - k < l.length := by omega
+  have key : l.length - 1 - k < l.length := by lia
   rw [← getElem_pmap l.next (fun _ h => h) (by simpa using hk)]
   simp_rw [getElem_eq_getElem_reverse (l := l), pmap_next_eq_rotate_one _ h]
   rw [← getElem_pmap l.reverse.prev fun _ h => h]
@@ -467,8 +497,6 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
 @[simp]
 theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
@@ -889,7 +917,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact hs.2.2 b hb
     · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 
-theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
+theorem Chain.eq_nil_of_irrefl [IsTrans α r] [Std.Irrefl r] (h : Chain r s) : s = Cycle.nil := by
   induction s with
   | nil => rfl
   | cons a l h =>
@@ -899,7 +927,7 @@ theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : 
 theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = Cycle.nil :=
   Chain.eq_nil_of_irrefl <| h.imp fun _ _ => Relation.TransGen.single
 
-theorem forall_eq_of_chain [IsTrans α r] [IsAntisymm α r] (hs : Chain r s) {a b : α} (ha : a ∈ s)
+theorem forall_eq_of_chain [IsTrans α r] [Std.Antisymm r] (hs : Chain r s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : a = b := by
   rw [chain_iff_pairwise] at hs
   exact antisymm (hs a ha b hb) (hs b hb a ha)

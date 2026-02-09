@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.OfSequence
-import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
-import Mathlib.CategoryTheory.Sites.EpiMono
-import Mathlib.CategoryTheory.Sites.Subcanonical
+module
+
+public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.CategoryTheory.Sites.Subcanonical
 /-!
 
 # Limits of epimorphisms in coherent topoi
@@ -25,6 +27,8 @@ This is deduced from the corresponding statement about locally surjective morphi
 (see `coherentTopology.isLocallySurjective_π_app_zero_of_isLocallySurjective_map`).
 -/
 
+public section
+
 universe w v u
 
 open CategoryTheory Limits Opposite
@@ -32,8 +36,6 @@ open CategoryTheory Limits Opposite
 namespace CategoryTheory.coherentTopology
 
 variable {C : Type u} [Category.{v} C] [Preregular C] [FinitaryExtensive C]
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)} {c : Cone F}
     (hc : IsLimit c)
     (hF : ∀ n, Sheaf.IsLocallySurjective (F.map (homOfLE (Nat.le_succ n)).op))

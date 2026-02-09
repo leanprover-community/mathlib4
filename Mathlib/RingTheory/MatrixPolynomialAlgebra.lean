@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Composition
-import Mathlib.RingTheory.MatrixAlgebra
-import Mathlib.RingTheory.PolynomialAlgebra
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Composition
+public import Mathlib.RingTheory.MatrixAlgebra
+public import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
@@ -22,6 +24,8 @@ coeff (matPolyEquiv m) k i j = coeff (m i j) k
 
 We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -71,7 +75,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
     matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by
   simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_single]
   apply (polyEquivTensor R (Matrix n n R)).injective
-  simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
+  simp only [AlgEquiv.apply_symm_apply, Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
   simp only [one_pow,
     Algebra.TensorProduct.tmul_pow]
@@ -171,7 +175,7 @@ variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
 
 lemma evalRingHom_mapMatrix_comp_polyToMatrix :
     (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by
-  ext <;> simp [RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
+  ext <;> simp [RingHom.polyToMatrix, -AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
 
 lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
     (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =

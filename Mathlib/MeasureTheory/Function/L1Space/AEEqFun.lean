@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # `L¹` space
@@ -24,6 +26,8 @@ classes of integrable functions, already defined as a special case of `L^p` spac
 function space, l1
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

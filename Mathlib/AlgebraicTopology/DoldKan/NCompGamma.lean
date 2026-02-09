@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
-import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
+public import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
@@ -21,6 +23,8 @@ which reflects isomorphisms.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -31,7 +35,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
     (i : Δ' ⟶ ⦋n⦌) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
@@ -49,7 +53,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     have h₃ : 1 ≤ (j : ℕ) := by
       by_contra h
       exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using h)
-    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by cutsat)
+    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by lia)
   · simp only [← add_assoc] at hk
     clear h₂ hi
     subst hk
@@ -67,11 +71,11 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
       simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ j₂.succ_ne_zero, zero_comp]
       simp only [Fin.succ]
-      cutsat
+      lia
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
-      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; cutsat)
+      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; lia)
 
 @[reassoc]
 theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}

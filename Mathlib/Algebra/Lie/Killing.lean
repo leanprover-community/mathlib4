@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Semisimple.Basic
-import Mathlib.Algebra.Lie.TraceForm
+module
+
+public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.Lie.Semisimple.Basic
+public import Mathlib.Algebra.Lie.TraceForm
 
 /-!
 # Lie algebras with non-degenerate Killing forms.
@@ -38,6 +40,8 @@ This file contains basic definitions and results for such Lie algebras.
 
 -/
 
+@[expose] public section
+
 variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
 namespace LieAlgebra
@@ -62,7 +66,8 @@ variable [IsKilling R L]
 
 lemma killingForm_nondegenerate :
     (killingForm R L).Nondegenerate := by
-  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
+  refine (LieModule.traceForm_isSymm R L L).isRefl.nondegenerate_iff_separatingLeft.mpr ?_
+  simp [LinearMap.separatingLeft_iff_ker_eq_bot]
 
 variable {R L} in
 lemma ideal_eq_bot_of_isLieAbelian

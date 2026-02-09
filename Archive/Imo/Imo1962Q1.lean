@@ -53,31 +53,31 @@ Now we can eliminate possibilities for `(digits 10 c).length` until we get to th
 lemma case_0_digits {c n : ℕ} (hc : (digits 10 c).length = 0) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 0 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_1_digits {c n : ℕ} (hc : (digits 10 c).length = 1) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 1 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_2_digits {c n : ℕ} (hc : (digits 10 c).length = 2) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 2 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_3_digits {c n : ℕ} (hc : (digits 10 c).length = 3) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 3 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_4_digits {c n : ℕ} (hc : (digits 10 c).length = 4) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 4 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 /-- Putting this inline causes a deep recursion error, so we separate it out. -/
 private lemma helper_5_digits {c : ℤ} (hc : 6 * 10 ^ 5 + c = 4 * (10 * c + 6)) : c = 15384 := by
-  omega
+  lia
 
 lemma case_5_digits {c n : ℕ} (hc : (digits 10 c).length = 5) (hpp : ProblemPredicate' c n) :
     c = 15384 := by

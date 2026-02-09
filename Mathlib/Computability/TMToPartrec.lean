@@ -3,11 +3,13 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Halting
-import Mathlib.Computability.TuringMachine
-import Mathlib.Data.Num.Lemmas
-import Mathlib.Tactic.DeriveFintype
-import Mathlib.Computability.TMConfig
+module
+
+public import Mathlib.Computability.Halting
+public import Mathlib.Computability.TuringMachine
+public import Mathlib.Data.Num.Lemmas
+public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
+public import Mathlib.Computability.TMConfig
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -23,6 +25,8 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 
 -/
 
+@[expose] public section
+
 open List (Vector)
 
 open Function (update)
@@ -30,8 +34,6 @@ open Function (update)
 open Relation
 
 namespace Turing
-
-
 
 /-!
 ## Simulating sequentialized partial recursive functions in TM2
@@ -209,6 +211,7 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
+set_option backward.proofsInPublic true in
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
@@ -246,7 +249,7 @@ def peek' (k : K') : Stmt' → Stmt' :=
 /-- Push the value in the local store to the given stack. -/
 @[simp]
 def push' (k : K') : Stmt' → Stmt' :=
-  push k fun x => x.iget
+  push k fun x => x.getD default
 
 /-- Move everything from the `rev` stack to the `main` stack (reversed). -/
 def unrev :=
@@ -291,7 +294,7 @@ def tr : Λ' → Stmt'
       branch (fun s => s.elim true p) (goto fun _ => q)
         (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)
   | Λ'.push k f q =>
-    branch (fun s => (f s).isSome) ((push k fun s => (f s).iget) <| goto fun _ => q)
+    branch (fun s => (f s).isSome) ((push k fun s => (f s).getD default) <| goto fun _ => q)
       (goto fun _ => q)
   | Λ'.read q => goto q
   | Λ'.clear p k q =>
@@ -309,9 +312,9 @@ def tr : Λ' → Stmt'
     pop' main <|
       branch (fun s => s = some Γ'.bit0)
           ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
-        branch (fun s => natEnd s.iget) (goto fun _ => q₁)
+        branch (fun s => natEnd (s.getD default)) (goto fun _ => q₁)
           (peek' main <|
-            branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
+            branch (fun s => natEnd (s.getD default)) (goto fun _ => unrev q₂)
               ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))
   | Λ'.ret (Cont'.cons₁ fs k) =>
     goto fun _ =>
@@ -323,7 +326,8 @@ def tr : Λ' → Stmt'
   | Λ'.ret (Cont'.fix f k) =>
     pop' main <|
       goto fun s =>
-        cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
+        cond (natEnd (s.getD default)) (Λ'.ret k) <|
+          Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
   | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
 
 @[simp]
@@ -333,7 +337,7 @@ theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
 
 @[simp]
 theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
-    ((push k fun s => (f s).iget) <| goto fun _ => q) (goto fun _ => q) := rfl
+    ((push k fun s => (f s).getD default) <| goto fun _ => q) (goto fun _ => q) := rfl
 
 @[simp]
 theorem tr_read (q) : tr (Λ'.read q) = goto q := rfl
@@ -356,9 +360,9 @@ theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'
 @[simp]
 theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
     ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
-    branch (fun s => natEnd s.iget) (goto fun _ => q₁)
+    branch (fun s => natEnd (s.getD default)) (goto fun _ => q₁)
       (peek' main <|
-        branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
+        branch (fun s => natEnd (s.getD default)) (goto fun _ => unrev q₂)
           ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))) := rfl
 
 @[simp]
@@ -376,7 +380,8 @@ theorem tr_ret_comp (f k) : tr (Λ'.ret (Cont'.comp f k)) = goto fun _ => trNorm
 
 @[simp]
 theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s =>
-    cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
+    cond (natEnd (s.getD default)) (Λ'.ret k) <|
+      Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
 
 @[simp]
 theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
@@ -566,15 +571,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     swap
     · rw [Function.update_of_ne h₁.symm, List.reverseAux_nil]
     refine TransGen.head' rfl ?_
-    rw [tr]; simp only [pop', TM2.stepAux]
-    revert e; rcases S k₁ with - | ⟨a, Sk⟩ <;> intro e
-    · cases e
-      rfl
-    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
-    revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
-    simp only [e]
-    rfl
+    simp only [tr_move, pop', TM2.stepAux]
+    grind [splitAtPred.eq_def]
   | cons a L₁ IH =>
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', Option.elim, TM2.stepAux, push']
@@ -610,7 +608,8 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
     simp only [Function.update_of_ne h₁.2.2.symm, Function.update_of_ne h₁.2.1,
       Function.update_of_ne h₁.1.symm, List.reverseAux_eq, h₂, Function.update_self,
       List.append_nil, List.reverse_reverse]
-  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+  · simp only [Option.getD_some]
+    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_self,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
@@ -812,7 +811,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
       cases m <;> refine ⟨_, _, rfl, rfl⟩
     refine ⟨Γ'.bit0 :: l₁, _, some a, rfl, TransGen.single ?_⟩
     simp [trPosNum, PosNum.succ, e, h, show some Γ'.bit1 ≠ some Γ'.bit0 by decide,
-      Option.iget, -natEnd]
+      Option.getD, -natEnd]
     rfl
 
 theorem trNormal_respects (c k v s) :
@@ -850,6 +849,7 @@ theorem trNormal_respects (c k v s) :
       exact ⟨_, h₁, h.trans h₂⟩
   | fix f IH => apply IH
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem tr_ret_respects (k v s) : ∃ b₂,
     TrCfg (stepRet k v) b₂ ∧
       Reaches₁ (TM2.step tr)
@@ -880,9 +880,10 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
   | fix f k IH =>
     rw [stepRet]
     have :
-      if v.headI = 0 then natEnd (trList v).head?.iget = true ∧ (trList v).tail = trList v.tail
+      if v.headI = 0 then natEnd ((trList v).head?.getD default) = true ∧
+          (trList v).tail = trList v.tail
       else
-        natEnd (trList v).head?.iget = false ∧
+        natEnd ((trList v).head?.getD default) = false ∧
           (trList v).tail = (trNat v.headI).tail ++ Γ'.cons :: trList v.tail := by
       obtain - | n := v
       · exact ⟨rfl, rfl⟩
@@ -922,7 +923,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
   rw [reaches_eval h₂.to_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
-    simp [stepNormal_eval] at hc₂
+    simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff] at hc₂
     obtain ⟨v', hv, rfl⟩ := hc₂
     exact ⟨_, hv, hc₁.symm⟩
   · rintro ⟨v', hv, rfl⟩
@@ -943,6 +944,7 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.pred q₁ q₂) => insert Q <| trStmts₁ q₁ ∪ insert (unrev q₂) (trStmts₁ q₂)
   | Q@(Λ'.ret _) => {Q}
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
@@ -951,7 +953,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     simp +contextual only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
     repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
-  · simp
+  · simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, forall_exists_index]
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]
     exact Or.inr ⟨_, q_ih s h h'⟩
@@ -967,7 +969,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by
-  induction q <;> · first |apply Finset.mem_singleton_self|apply Finset.mem_insert_self
+  induction q <;> · first | apply Finset.mem_singleton_self | apply Finset.mem_insert_self
 
 /-- The (finite!) set of machine states visited during the course of evaluation of `c`,
 including the state `ret k` but not any states after that (that is, the states visited while
@@ -1134,10 +1136,12 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
   | fix =>
     rw [contSupp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
-    intro s; dsimp only; cases natEnd s.iget
+    intro s; dsimp only; cases natEnd (s.getD default)
     · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
+-- simp acts on multiple goals at the same time
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
   have W := fun {q} => trStmts₁_self q
@@ -1170,6 +1174,7 @@ theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStm
   simp only [Finset.union_subset_iff] at H₂
   exact supports_union.2 ⟨trStmts₁_supports H₁ H₂.1, H₃ H₂.2⟩
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
   induction c generalizing k with simp [Λ'.Supports, head]
   | zero' => exact Finset.union_subset_right Hk

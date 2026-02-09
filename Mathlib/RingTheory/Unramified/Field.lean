@@ -3,11 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.RingTheory.Artinian.Ring
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.RingTheory.Unramified.Finite
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.RingTheory.Artinian.Ring
+public import Mathlib.RingTheory.Unramified.Finite
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Unramified algebras over fields
@@ -28,6 +29,8 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+
+public section
 
 open Algebra Module Polynomial
 open scoped TensorProduct
@@ -197,7 +200,7 @@ theorem range_eq_top_of_isPurelyInseparable
 theorem isSeparable : Algebra.IsSeparable K L := by
   have := finite_of_free (R := K) (S := L)
   rw [← separableClosure.eq_top_iff]
-  have := of_comp K (separableClosure K L) L
+  have := of_restrictScalars K (separableClosure K L) L
   have := EssFiniteType.of_comp K (separableClosure K L) L
   ext
   change _ ↔ _ ∈ (⊤ : Subring _)
@@ -209,3 +212,33 @@ theorem iff_isSeparable (L : Type u) [Field L] [Algebra K L] [EssFiniteType K L]
   ⟨fun _ ↦ isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 
 end Algebra.FormallyUnramified
+
+variable {K A} in
+/-- If `A = K[X]/⟨p⟩` is unramified at some prime `Q`, then the minpoly of `X` in `κ(Q)`
+only divides `p` once. -/
+theorem Algebra.IsUnramifiedAt.not_minpoly_sq_dvd
+    (Q : Ideal A) [Q.IsPrime] [Algebra.IsUnramifiedAt K Q] (x : A) (p : K[X])
+    (hp₁ : Ideal.span {p} = RingHom.ker (aeval x).toRingHom)
+    (hp₂ : Function.Surjective (aeval (R := K) x)) :
+    ¬ minpoly K (algebraMap A Q.ResidueField x) ^ 2 ∣ p := by
+  have : Algebra.FiniteType K A := .of_surjective _ hp₂
+  have := Algebra.FormallyUnramified.finite_of_free K (Localization.AtPrime Q)
+  have : IsField (Localization.AtPrime Q) :=
+    have := IsArtinianRing.of_finite K (Localization.AtPrime Q)
+    have := Algebra.FormallyUnramified.isReduced_of_field K (Localization.AtPrime Q)
+    IsArtinianRing.isField_of_isReduced_of_isLocalRing _
+  letI := this.toField
+  set q := minpoly K (algebraMap A Q.ResidueField x)
+  have : algebraMap A (Localization.AtPrime Q) (aeval x q) = 0 := by
+    apply (algebraMap (Localization.AtPrime Q) Q.ResidueField).injective
+    rw [← IsScalarTower.algebraMap_apply, ← aeval_algebraMap_apply, minpoly.aeval, map_zero]
+  obtain ⟨⟨m, hm⟩, hm'⟩ := (IsLocalization.map_eq_zero_iff Q.primeCompl _ _).mp this
+  obtain ⟨m, rfl⟩ := hp₂ m
+  simp_rw [← map_mul, ← AlgHom.coe_toRingHom, ← AlgHom.toRingHom_eq_coe, ← RingHom.mem_ker,
+    ← hp₁, Ideal.mem_span_singleton] at hm'
+  rw [pow_two]
+  rintro H
+  have := (mul_dvd_mul_iff_right (minpoly.ne_zero (Algebra.IsIntegral.isIntegral _))).mp
+    (H.trans hm')
+  rw [minpoly.dvd_iff, aeval_algebraMap_apply, Q.algebraMap_residueField_eq_zero] at this
+  exact hm this

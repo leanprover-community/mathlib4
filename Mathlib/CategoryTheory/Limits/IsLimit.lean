@@ -3,9 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Limits.Cones
-import Batteries.Tactic.Congr
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Limits.Cones
+public import Batteries.Tactic.Congr
 
 /-!
 # Limits and colimits
@@ -30,6 +32,8 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -196,6 +200,10 @@ theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt}
     (w : ∀ j, f ≫ t.π.app j = f' ≫ t.π.app j) :
     f = f' := by
   rw [h.hom_lift f, h.hom_lift f']; congr; exact funext w
+
+lemma nonempty_isLimit_iff_isIso_lift {s t : Cone F} (hs : IsLimit s) :
+    Nonempty (IsLimit t) ↔ IsIso (hs.lift t) :=
+  ⟨fun ⟨ht⟩ ↦ ⟨ht.lift s, ht.hom_ext (by simp), hs.hom_ext (by simp)⟩, fun h ↦ ⟨hs.ofPointIso⟩⟩
 
 /-- Given a right adjoint functor between categories of cones,
 the image of a limit cone is a limit cone.
@@ -501,8 +509,6 @@ def ofRepresentableBy {X : C} (h : F.cones.RepresentableBy X) : IsLimit (limitCo
     rw [coneOfHom_fac]
     dsimp [Cone.extend]; cases s; congr with j; exact w j
 
-@[deprecated (since := "2025-05-09")] alias ofNatIso := ofRepresentableBy
-
 /-- Given a limit cone, `F.cones` is representable by the point of the cone. -/
 def representableBy (hc : IsLimit t) : F.cones.RepresentableBy t.pt where
   homEquiv := hc.homEquiv
@@ -668,6 +674,10 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
 theorem hom_ext (h : IsColimit t) {W : C} {f f' : t.pt ⟶ W}
     (w : ∀ j, t.ι.app j ≫ f = t.ι.app j ≫ f') : f = f' := by
   rw [h.hom_desc f, h.hom_desc f']; congr; exact funext w
+
+lemma nonempty_isColimit_iff_isIso_desc {s t : Cocone F} (hs : IsColimit s) :
+    Nonempty (IsColimit t) ↔ IsIso (hs.desc t) :=
+  ⟨fun ⟨ht⟩ ↦ ⟨ht.desc s, hs.hom_ext (by simp), ht.hom_ext (by simp)⟩, fun h ↦ ⟨hs.ofPointIso⟩⟩
 
 /-- Given a left adjoint functor between categories of cocones,
 the image of a colimit cocone is a colimit cocone.
@@ -935,9 +945,6 @@ theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s)
 theorem homOfCocone_coconeOfHom {Y : C} (f : X ⟶ Y) : homOfCocone h (coconeOfHom h f) = f := by
   simp [homOfCocone, coconeOfHom]
 
-@[deprecated (since := "2025-05-13")]
-alias homOfCocone_cooneOfHom := homOfCocone_coconeOfHom
-
 /-- If `F.cocones` is corepresented by `X`, the cocone corresponding to the identity morphism on `X`
 will be a colimit cocone. -/
 def colimitCocone : Cocone F :=
@@ -982,8 +989,6 @@ def ofCorepresentableBy {X : C} (h : F.cocones.CorepresentableBy X) :
     congr
     rw [coconeOfHom_fac]
     dsimp [Cocone.extend]; cases s; congr with j; exact w j
-
-@[deprecated (since := "2025-05-09")] alias ofNatIso := ofCorepresentableBy
 
 /-- Given a colimit cocone, `F.cocones` is corepresentable by the point of the cocone. -/
 def corepresentableBy (hc : IsColimit t) : F.cocones.CorepresentableBy t.pt where

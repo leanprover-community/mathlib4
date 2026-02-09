@@ -6,7 +6,7 @@ Authors: Manuel Candales
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
@@ -21,7 +21,7 @@ for all real numbers `x`,`y`, `z`, each different from 1, and satisfying `xyz = 
 (b) Prove that equality holds above for infinitely many triples of rational numbers `x`, `y`, `z`,
 each different from 1, and satisfying `xyz = 1`.
 
-# Solution
+## Solution
 (a) Since `xyz = 1`, we can apply the substitution `x = a/b`, `y = b/c`, `z = c/a`.
 Then we define `m = c-b`, `n = b-a` and rewrite the inequality as `LHS - 1 ≥ 0`
 using `c`, `m` and `n`. We factor `LHS - 1` as a square, which finishes the proof.
@@ -71,18 +71,18 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
     have h₂ : x ≠ 1 := by rw [hx_t]; simp [field]; linarith [key_gt_zero]
     have h₃ : y ≠ 1 := by rw [hy_t]; simp [field]; linarith [key_gt_zero]
     have h₄ : z ≠ 1 := by rw [hz_t]; linarith [key_gt_zero]
-    have h₅ : x * y * z = 1 := by rw [hx_t, hy_t, hz_t]; field_simp
+    have h₅ : x * y * z = 1 := by rw [hx_t, hy_t, hz_t]; field
     have h₆ : x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1 := by
       have hx1 : (x - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 / t ^ 4 := by
-        field_simp; rw [hx_t]; field_simp; ring
+        rw [hx_t]; field
       have hy1 : (y - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 / (t + 1) ^ 4 := by
-        field_simp; rw [hy_t]; field_simp; ring
+        rw [hy_t]; field
       have hz1 : (z - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 := by rw [hz_t]; ring
       calc
         x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 =
             (x ^ 2 * t ^ 4 + y ^ 2 * (t + 1) ^ 4 + z ^ 2) / (t ^ 2 + t + 1) ^ 2 := by
-          rw [hx1, hy1, hz1]; field_simp
-        _ = 1 := by rw [hx_t, hy_t, hz_t]; field_simp; ring
+          rw [hx1, hy1, hz1]; field
+        _ = 1 := by rw [hx_t, hy_t, hz_t]; field
     exact ⟨h₁, h₂, h₃, h₄, h₅, h₆⟩
   have hW_inf : Set.Infinite W := by
     let g : ℚ × ℚ × ℚ → ℚ := fun s => -s.2.2

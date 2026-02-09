@@ -3,15 +3,19 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Adhesive
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+module
+
+public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Adhesive.Basic
+public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
 # Left exactness of sheafification
 In this file we show that sheafification commutes with finite limits.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits Opposite
@@ -112,7 +116,8 @@ instance preservesLimits_diagramFunctor (X : C) [HasLimitsOfSize.{max t u v, max
   apply preservesLimitsOfShape_diagramFunctor.{max t u v}
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-variable [HasForget.{t} D]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory D FD]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 variable [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ]
 
@@ -291,6 +296,9 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
+
+instance : HasSheafify J (Type max u v) := by
+  infer_instance
 
 end
 

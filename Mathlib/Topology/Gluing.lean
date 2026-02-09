@@ -3,12 +3,14 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.GlueData
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Tactic.Generalize
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.GlueData
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Gluing Topological spaces
@@ -49,6 +51,8 @@ provided.
 * `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -113,9 +117,7 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
 
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => ⟨inv (D.f _ _) x.2, IsIso.inv_hom_id_apply (D.f x.fst x.fst) _,
-    -- Use `elementwise_of%` elaborator instead of `IsIso.inv_hom_id_apply` to work around
-    -- `ConcreteCategory`/`HasForget` mismatch:
-    by simp [elementwise_of% IsIso.inv_hom_id (D.f x.fst x.fst)]⟩, by
+    by simp [IsIso.inv_hom_id_apply (D.f x.fst x.fst)]⟩, by
     rintro a b ⟨x, e₁, e₂⟩
     exact ⟨D.t _ _ x, e₂, by rw [← e₁, D.t_inv_apply]⟩, by
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ ⟨x, e₁, e₂⟩
@@ -293,7 +295,7 @@ structure MkCore where
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
-    · convert Subtype.eq this
+    · convert Subtype.ext this
   rw [h.V_id]
   trivial
 

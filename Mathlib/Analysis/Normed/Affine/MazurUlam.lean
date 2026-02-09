@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Mazur-Ulam Theorem
@@ -25,6 +27,8 @@ The formalization is based on [Jussi Väisälä, *A Proof of the Mazur-Ulam Theo
 
 isometry, affine map, linear map
 -/
+
+@[expose] public section
 
 
 variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]

@@ -3,12 +3,14 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -40,6 +42,8 @@ to `Ideal.IsHomogeneous.iff_exists` as quickly as possible.
 
 graded algebra, homogeneous
 -/
+
+@[expose] public section
 
 
 open SetLike DirectSum Set
@@ -81,6 +85,8 @@ theorem HomogeneousIdeal.toIdeal_injective :
 
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
   HomogeneousSubmodule.setLike 𝒜 𝒜
+
+instance : PartialOrder (HomogeneousIdeal 𝒜) := .ofSetLike (HomogeneousIdeal 𝒜) A
 
 @[ext]
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
@@ -280,9 +286,6 @@ end Ideal.IsHomogeneous
 variable {𝒜}
 
 namespace HomogeneousIdeal
-
-instance : PartialOrder (HomogeneousIdeal 𝒜) :=
-  SetLike.instPartialOrder
 
 instance : Top (HomogeneousIdeal 𝒜) :=
   ⟨⟨⊤, Ideal.IsHomogeneous.top 𝒜⟩⟩
@@ -551,6 +554,8 @@ end GaloisConnection
 
 section IrrelevantIdeal
 
+namespace HomogeneousIdeal
+
 variable [Semiring A]
 variable [DecidableEq ι]
 variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
@@ -562,27 +567,64 @@ open GradedRing SetLike.GradedMonoid DirectSum
 refers to `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj`
 construction where `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as
 0-th coordinate.
-
-# Future work
-Here in the definition, `ι` is assumed to be `CanonicallyOrderedAddCommMonoid`. However, the notion
-of irrelevant ideal makes sense in a more general setting by defining it as the ideal of elements
-with `0` as i-th coordinate for all `i ≤ 0`, i.e. `{a | ∀ (i : ι), i ≤ 0 → aᵢ = 0}`.
 -/
-def HomogeneousIdeal.irrelevant : HomogeneousIdeal 𝒜 :=
+def irrelevant : HomogeneousIdeal 𝒜 :=
   ⟨RingHom.ker (GradedRing.projZeroRingHom 𝒜), fun i r (hr : (decompose 𝒜 r 0 : A) = 0) => by
     change (decompose 𝒜 (decompose 𝒜 r _ : A) 0 : A) = 0
     by_cases h : i = 0
     · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
+local notation 𝒜 "₊" => irrelevant 𝒜
+
 @[simp]
-theorem HomogeneousIdeal.mem_irrelevant_iff (a : A) :
-    a ∈ HomogeneousIdeal.irrelevant 𝒜 ↔ proj 𝒜 0 a = 0 :=
+theorem mem_irrelevant_iff (a : A) :
+    a ∈ 𝒜₊ ↔ proj 𝒜 0 a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem HomogeneousIdeal.toIdeal_irrelevant :
-    (HomogeneousIdeal.irrelevant 𝒜).toIdeal = RingHom.ker (GradedRing.projZeroRingHom 𝒜) :=
+theorem toIdeal_irrelevant :
+    𝒜₊.toIdeal = RingHom.ker (GradedRing.projZeroRingHom 𝒜) :=
   rfl
+
+lemma mem_irrelevant_of_mem {x : A} {i : ι} (hi : 0 < i) (hx : x ∈ 𝒜 i) : x ∈ 𝒜₊ := by
+  rw [mem_irrelevant_iff, GradedRing.proj_apply, DirectSum.decompose_of_mem _ hx,
+    DirectSum.of_eq_of_ne _ _ _ (by aesop), ZeroMemClass.coe_zero]
+
+/-- `irrelevant 𝒜 = ⨁_{i>0} 𝒜ᵢ` -/
+lemma irrelevant_eq_iSup : 𝒜₊.toAddSubmonoid = ⨆ i > 0, .ofClass (𝒜 i) := by
+  refine le_antisymm (fun x hx ↦ ?_) <| iSup₂_le fun i hi x hx ↦ mem_irrelevant_of_mem _ hi hx
+  classical rw [← DirectSum.sum_support_decompose 𝒜 x]
+  refine sum_mem fun j hj ↦ ?_
+  by_cases hj₀ : j = 0
+  · classical exact (DFinsupp.mem_support_iff.mp hj <| hj₀ ▸ (by simpa using hx)).elim
+  · exact AddSubmonoid.mem_iSup_of_mem j <| AddSubmonoid.mem_iSup_of_mem (pos_of_ne_zero hj₀) <|
+      Subtype.prop _
+
+open AddSubmonoid Set in
+lemma irrelevant_eq_closure : 𝒜₊.toAddSubmonoid = .closure (⋃ i > 0, 𝒜 i) := by
+  rw [irrelevant_eq_iSup]
+  exact le_antisymm (iSup_le fun i ↦ iSup_le fun hi _ hx ↦ subset_closure <| mem_biUnion hi hx) <|
+    closure_le.mpr <| iUnion_subset fun i ↦ iUnion_subset fun hi ↦ le_biSup (ofClass <| 𝒜 ·) hi
+
+open AddSubmonoid Set in
+lemma irrelevant_eq_span : 𝒜₊.toIdeal = .span (⋃ i > 0, 𝒜 i) :=
+  le_antisymm ((irrelevant_eq_closure 𝒜).trans_le <| closure_le.mpr Ideal.subset_span) <|
+    Ideal.span_le.mpr <| iUnion_subset fun _ ↦ iUnion_subset fun hi _ hx ↦
+    mem_irrelevant_of_mem _ hi hx
+
+lemma toAddSubmonoid_irrelevant_le {P : AddSubmonoid A} :
+    𝒜₊.toAddSubmonoid ≤ P ↔ ∀ i > 0, .ofClass (𝒜 i) ≤ P := by
+  rw [irrelevant_eq_iSup, iSup₂_le_iff]
+
+lemma toIdeal_irrelevant_le {I : Ideal A} :
+    𝒜₊.toIdeal ≤ I ↔ ∀ i > 0, .ofClass (𝒜 i) ≤ I.toAddSubmonoid :=
+  toAddSubmonoid_irrelevant_le _
+
+lemma irrelevant_le {P : HomogeneousIdeal 𝒜} :
+    𝒜₊ ≤ P ↔ ∀ i > 0, .ofClass (𝒜 i) ≤ P.toAddSubmonoid :=
+  toIdeal_irrelevant_le _
+
+end HomogeneousIdeal
 
 end IrrelevantIdeal

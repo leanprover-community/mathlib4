@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.LightProfinite.AsLimit
-import Mathlib.Topology.Category.Profinite.Extend
+module
+
+public import Mathlib.Topology.Category.LightProfinite.AsLimit
+public import Mathlib.Topology.Category.Profinite.Extend
 
 /-!
 
@@ -23,6 +25,8 @@ We apply this to define `LightProfinite.diagram'`, `LightProfinite.asLimitCone'`
 `Mathlib/Topology/Category/LightProfinite/AsLimit.lean`, in which the
 indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -81,15 +85,15 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 -/
 theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
-  have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence  :=
-    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
+  have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence :=
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   have : (functor c).rightOp.Final :=
     inferInstanceAs ((opOpEquivalence ℕ).inverse ⋙ (functor c).op).Final
   exact Functor.final_comp (functor c).rightOp _
 
 section Limit
 
-variable {C : Type*} [Category C] (G : LightProfinite ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
 
 /--
 Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
@@ -124,7 +128,7 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category C] (G : LightProfiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfiniteᵒᵖ ⥤ C)
 
 /--
 Given a functor `G` from `LightProfiniteᵒᵖ` and `S : LightProfinite`, we obtain a cocone on

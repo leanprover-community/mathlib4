@@ -3,11 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Algebraic.Defs
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -18,9 +20,11 @@ The main result in this file proves transitivity of algebraicity:
 a tower of algebraic field extensions is algebraic.
 -/
 
+@[expose] public section
+
 universe u v w
 
-open Polynomial nonZeroDivisors
+open Module Polynomial nonZeroDivisors
 
 section
 
@@ -470,34 +474,34 @@ end Field
 
 end Ring
 
-section NoZeroSMulDivisors
+section IsTorsionFree
 
 namespace Algebra.IsAlgebraic
 
-variable [CommRing K] [Field L] [Algebra K L]
+variable [CommRing K] [IsDomain K] [Field L] [Algebra K L]
 
-theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
+theorem algHom_bijective [IsTorsionFree K L] [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
   refine ⟨f.injective, fun b ↦ ?_⟩
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
   let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
   have : f'.Surjective := Finite.injective_iff_surjective.1
-    fun _ _ h ↦ Subtype.eq <| f.injective <| Subtype.ext_iff.1 h
+    fun _ _ h ↦ Subtype.ext <| f.injective <| Subtype.ext_iff.1 h
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 
-theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [DivisionRing R] [Algebra K R]
+theorem algHom_bijective₂ [IsTorsionFree K L] [DivisionRing R] [Algebra K R]
     [Algebra.IsAlgebraic K L] (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (algHom_bijective <| g.comp f).2).symm
 
-theorem bijective_of_isScalarTower [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L]
+theorem bijective_of_isScalarTower [IsTorsionFree K L] [Algebra.IsAlgebraic K L]
     [DivisionRing R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 
 theorem bijective_of_isScalarTower' [Field R] [Algebra K R]
-    [NoZeroSMulDivisors K R]
+    [IsTorsionFree K R]
     [Algebra.IsAlgebraic K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ f (IsScalarTower.toAlgHom K L R)).1
@@ -506,7 +510,7 @@ variable (K L)
 
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 @[simps]
-noncomputable def algEquivEquivAlgHom [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] :
+noncomputable def algEquivEquivAlgHom [IsTorsionFree K L] [Algebra.IsAlgebraic K L] :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (algHom_bijective ϕ)
@@ -514,7 +518,7 @@ noncomputable def algEquivEquivAlgHom [NoZeroSMulDivisors K L] [Algebra.IsAlgebr
 
 end Algebra.IsAlgebraic
 
-end NoZeroSMulDivisors
+end IsTorsionFree
 
 end
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Data.Nat.Factors
+module
+
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.Data.Nat.Factors
 
 /-!
 # `p`-adic Valuation
@@ -15,8 +17,11 @@ The `p`-adic valuation on `ℚ` is the difference of the multiplicities of `p` i
 denominator of `q`. This function obeys the standard properties of a valuation, with the appropriate
 assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that on `ℚ`.
 
-The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
+The valuation induces a norm on `ℚ`. This norm is defined in
+`Mathlib/NumberTheory/Padics/PadicNorm.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

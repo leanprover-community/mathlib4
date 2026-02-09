@@ -3,9 +3,10 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Topology.Algebra.InfiniteSum.Field
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms
@@ -14,6 +15,8 @@ We give conditions under which the logarithms of a summble sequence is summable.
 to relate summability of `f` to multipliability of `1 + f`.
 
 -/
+
+public section
 
 variable {ι : Type*}
 
@@ -28,9 +31,9 @@ lemma hasProd_of_hasSum_log (hfn : ∀ i, f i ≠ 0) (hf : HasSum (fun i ↦ log
 
 lemma multipliable_of_summable_log (hf : Summable fun i ↦ log (f i)) :
     Multipliable f := by
-  by_cases hfn : ∃ n, f n = 0
+  by_cases! hfn : ∃ n, f n = 0
   · exact multipliable_of_exists_eq_zero hfn
-  · exact ⟨_, hasProd_of_hasSum_log (not_exists.mp hfn) hf.hasSum⟩
+  · exact ⟨_, hasProd_of_hasSum_log hfn hf.hasSum⟩
 
 /-- The exponential of a convergent sum of complex logs is the corresponding infinite product. -/
 lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (f i)) :
@@ -104,7 +107,7 @@ lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipl
   rw [max_lt_iff] at hr₁
   have := hv.hasProd.eventually_le_const hr₁.2
   rw [unconditional, eventually_atTop] at this
-  refine ⟨r₁, hr₁.1, this⟩
+  exact ⟨r₁, hr₁.1, this⟩
 
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 
@@ -127,10 +130,7 @@ lemma Finset.norm_prod_one_add_sub_one_le (t : Finset ι) (f : ι → R) :
     generalize h : Real.exp (∑ i ∈ t, ‖f i‖) = A at ⊢ IH
     rw [sub_add_eq_add_sub, sub_le_sub_iff_right]
     transitivity A + ‖f x‖ * A
-    · gcongr
-      rw [← sub_add_cancel (∏ x ∈ t, (1 + f x)) 1]
-      refine (norm_add_le _ _).trans <| (add_le_add_right IH _).trans ?_
-      rw [norm_one, sub_add_cancel]
+    · grw [norm_le_norm_sub_add (∏ x ∈ t, (1 + f x)) 1, IH, norm_one, sub_add_cancel]
     rw [← one_add_mul, add_comm]
     exact mul_le_mul_of_nonneg_right (Real.add_one_le_exp _) (h ▸ Real.exp_nonneg _)
 
@@ -165,7 +165,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   refine ⟨Metric.ball (∏ i ∈ s, (1 + f i)) (ε / 2), ⟨s, fun b hb ↦ ?_⟩, ?_⟩
   · rw [← union_sdiff_of_subset hb, prod_union sdiff_disjoint.symm,
       Metric.mem_ball, dist_eq_norm_sub, ← mul_sub_one,
-      show ε / 2 = r₁ * (ε / (2 * r₁)) by field_simp]
+      show ε / 2 = r₁ * (ε / (2 * r₁)) by field]
     apply (norm_mul_le _ _).trans_lt
     refine lt_of_le_of_lt (b := r₁ * ‖∏ x ∈ b \ s, (1 + f x) - 1‖) ?_ ?_
     · refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
