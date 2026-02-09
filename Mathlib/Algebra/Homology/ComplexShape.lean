@@ -165,25 +165,25 @@ def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α w
 /-- The `ComplexShape` allowing differentials from `X (j+a)` to `X j`.
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/
-@[to_dual existing (attr := simps)]
+@[to_dual existing (attr := simps) up']
 def down' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := j + a = i
   next_eq hi hj := add_right_cancel (hi.trans hj.symm)
   prev_eq hi hj := hi.symm.trans hj
 
-@[to_dual (reorder := i j)]
+@[to_dual (reorder := i j) down'_mk]
 theorem up'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (h : i + a = j) :
     (up' a).Rel i j := h
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
-@[to_dual (attr := simps!)
+@[to_dual (attr := simps!) down
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/]
 def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
-@[to_dual (reorder := i j)]
+@[to_dual (reorder := i j) down_mk]
 theorem up_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : i + 1 = j) :
     (up α).Rel i j :=
   up'_mk (1 : α) i j h
@@ -196,12 +196,12 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
-@[to_dual]
-instance (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
+@[to_dual instDecidableRelRelDown']
+instance instDecidableRelRelUp' (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance
 
-@[to_dual]
-instance [One α] : DecidableRel (ComplexShape.up α).Rel := by
+@[to_dual instDecidableRelRelDown]
+instance instDecidableRelRelUp [One α] : DecidableRel (ComplexShape.up α).Rel := by
   dsimp [ComplexShape.up]; infer_instance
 
 end ComplexShape
