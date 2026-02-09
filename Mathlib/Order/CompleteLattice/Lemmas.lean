@@ -142,16 +142,16 @@ theorem iSup_inf_le_sSup_inf : ⨆ b ∈ s, b ⊓ a ≤ sSup s ⊓ a :=
   @sInf_sup_le_iInf_sup αᵒᵈ _ _ _
 
 theorem iInf_sup_le_iInf_sup (f : ι → α) (a : α) :
-    (⨅ i, f i) ⊔ a ≤  ⨅ i, (f i ⊔ a) :=
+    (⨅ i, f i) ⊔ a ≤ ⨅ i, (f i ⊔ a) :=
   le_iInf fun i ↦ sup_le_sup_right (iInf_le f i) a
 
 theorem sup_iInf_le_iInf_sup (f : ι → α) (a : α) :
-    a ⊔ (⨅ i, f i) ≤  ⨅ i, (a ⊔ f i) :=
+    a ⊔ (⨅ i, f i) ≤ ⨅ i, (a ⊔ f i) :=
   le_iInf fun i ↦ sup_le_sup_left (iInf_le f i) a
 
 theorem iSup_inf_le_iSup_inf (f : ι → α) (a : α) :
     ⨆ i, (f i ⊓ a) ≤ (⨆ i, f i) ⊓ a :=
-  @iInf_sup_le_iInf_sup   αᵒᵈ ι _ f a
+  @iInf_sup_le_iInf_sup αᵒᵈ ι _ f a
 
 theorem iSup_inf_le_inf_iSup (f : ι → α) (a : α) :
     ⨆ i, (a ⊓ f i) ≤ a ⊓ (⨆ i, f i) :=
