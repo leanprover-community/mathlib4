@@ -348,11 +348,10 @@ lemma HasBoundedLeftInverse.splits {f : E →L[R] F} (hf : f.HasBoundedLeftInver
   -- Mathlib's definition of closed complement takes a continuous projection to f.range instead
   -- of a complementary subspace: consider `f.comp g` instead, which is continuous as both maps are.
   -- and idempotent as a continuous left inverse.
-  let p' := f.comp hf.leftInverse
-  use p'.codRestrict f.range (by intro y; simp [p'])
+  use (f.comp hf.leftInverse).codRestrict f.range (by intro y; simp)
   rintro ⟨y, x, rfl⟩
   ext
-  simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply, p']
+  simp only [coe_coe, coe_codRestrict_apply, coe_comp', Function.comp_apply]
   rw [hf.leftInverse_leftInverse]
 
 section -- alternative proof; requiring stronger typeclass assumptions
