@@ -45,19 +45,22 @@ variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : ou
     [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
 
 /-- The forgetful functor from a concrete category to the category of types. -/
-def forget : C ⥤ Type w where
-  obj X := ToType X
-  map f := f
+def forget : C ⥤ TypeCat.{w} where
+  obj X := .of (ToType X)
+  map f := ConcreteCategory.ofHom f
 
 instance : (forget C).Faithful where
-  map_injective h := ConcreteCategory.coe_ext h
+  map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ ConcreteCategory.congr_hom h x
 
 variable {C}
 
 @[simp]
-theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) :
-    (forget C).map f = (f : _ → _) :=
+lemma coe_forget_map_eq_coe {X Y : C} (f : X ⟶ Y) :
+    ((forget C).map f : _ → _) = (f : _ → _) :=
   rfl
+
+@[deprecated (since := "2026-02-09")] alias ConcreteCategory.forget_map_eq_coe :=
+  coe_forget_map_eq_coe
 
 theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
@@ -141,26 +144,7 @@ lemma ConcreteCategory.forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
   rw [Functor.map_comp, CategoryTheory.comp_apply]
 
 instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    IsIso (C := Type _) ⇑(ConcreteCategory.hom f) :=
+    IsIso (C := TypeCat) (TypeCat.ofHom ⇑(ConcreteCategory.hom f)) :=
   ((forget C).mapIso (asIso f)).isIso_hom
-
-instance Types.instFunLike : ∀ X Y : Type u, FunLike (X ⟶ Y) X Y := by
-  intro X Y
-  exact {
-    coe f := f
-    coe_injective' := fun _ _ _ ↦ by assumption }
-
-instance Types.instConcreteCategory : ConcreteCategory (Type u) (fun X Y => X ⟶ Y) where
-  hom f := f
-  ofHom f := f
-
-@[simp]
-lemma Types.hom_eq_coe {X Y : Type u} (f : X ⟶ Y) : (ConcreteCategory.hom f) = f := rfl
-
-@[simp]
-lemma NatTrans.naturality_apply {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y)
-    (x : ToType (F.obj X)) :
-    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
-  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
 end CategoryTheory

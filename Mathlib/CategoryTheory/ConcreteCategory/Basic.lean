@@ -70,6 +70,7 @@ class ConcreteCategory (C : Type u) [Category.{v} C]
     hom (f ≫ g) x = hom g (hom f x) := by cat_disch)
 
 export ConcreteCategory (id_apply comp_apply)
+attribute [simp] ConcreteCategory.hom_ofHom ConcreteCategory.ofHom_hom
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
@@ -120,6 +121,9 @@ lemma hom_bijective {X Y : C} : Function.Bijective (hom : (X ⟶ Y) → ToHom X 
 
 lemma hom_injective {X Y : C} : Function.Injective (hom : (X ⟶ Y) → ToHom X Y) :=
   hom_bijective.injective
+
+lemma hom_surjective {X Y : C} : Function.Surjective (hom : (X ⟶ Y) → ToHom X Y) :=
+  hom_bijective.surjective
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext] lemma ext {X Y : C} {f g : X ⟶ Y} (h : hom f = hom g) : f = g :=
@@ -201,5 +205,16 @@ instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
   id_apply _ := ConcreteCategory.id_apply _
 
 end ConcreteCategory
+
+variable {C : Type u} [Category.{v} C]
+variable {D : Type*} [Category* D] {FD : outParam <| D → D → Type*}
+    {CD : outParam <| D → Type w}
+    [outParam <| ∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
+
+@[simp]
+lemma NatTrans.naturality_apply {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y)
+    (x : ToType (F.obj X)) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simp [← CategoryTheory.comp_apply]
 
 end CategoryTheory

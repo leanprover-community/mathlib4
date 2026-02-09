@@ -6,7 +6,7 @@ Authors: Kim Morrison, Kyle Miller
 module
 
 public meta import Mathlib.Util.AddRelatedDecl
-public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public meta import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -45,10 +45,10 @@ section theorems
 
 universe u
 
-theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
-    (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
+-- theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
+--     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
+-- theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
 theorem hom_elementwise {C : Type*} [Category* C]
     {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type*}
@@ -64,9 +64,9 @@ def elementwiseThms : List Name :=
     ``CategoryTheory.comp_apply, ``CategoryTheory.id_apply,
     ``CategoryTheory.hom_id, ``CategoryTheory.hom_comp, ``id_eq, ``Function.comp_apply,
     -- further simplifications if the category is `Type`
-    ``forget_hom_Type, ``forall_congr_forget_Type, ``types_comp_apply, ``types_id_apply,
+    -- ``forget_hom_Type, ``forall_congr_forget_Type, ``types_comp_apply, ``types_id_apply,
     -- further simplifications of `forget`
-    ``forget_obj, ``ConcreteCategory.forget_map_eq_coe,
+    -- ``forget_obj, ``ConcreteCategory.forget_map_eq_coe,
     -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
     -- easier to detect when this has occurred.
     ``implies_true]

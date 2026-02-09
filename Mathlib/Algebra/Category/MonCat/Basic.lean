@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Group.ULift
-public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
@@ -124,7 +124,7 @@ lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
-    (forget MonCat).map f = (f : _ → _) := rfl
+    ((forget MonCat).map f : _ → _) = (f : _ → _) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -177,7 +177,7 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
 
 @[to_additive]
 lemma inv_hom_apply {M N : MonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  simp
+  simp?
 
 @[to_additive]
 lemma hom_inv_apply {M N : MonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
@@ -311,8 +311,8 @@ lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X �
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
-    (forget CommMonCat).map f = (f : X → Y) :=
-  rfl
+    ((forget CommMonCat).map f : X → Y) = (f : X → Y) := by
+  dsimp
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -471,9 +471,9 @@ end CategoryTheory.Iso
 in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
-    X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
-  hom e := e.toMonCatIso
-  inv i := i.monCatIsoToMulEquiv
+    TypeCat.of (X ≃* Y) ≅ TypeCat.of (MonCat.of X ≅ MonCat.of Y) where
+  hom := TypeCat.ofHom fun e ↦ e.toMonCatIso
+  inv := TypeCat.ofHom fun i ↦ i.monCatIsoToMulEquiv
 
 /-- additive equivalences between `AddMonoid`s are the same
 as (isomorphic to) isomorphisms in `AddMonCat` -/
@@ -483,9 +483,9 @@ add_decl_doc addEquivIsoAddMonCatIso
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
-    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y where
-  hom e := e.toCommMonCatIso
-  inv i := i.commMonCatIsoToMulEquiv
+    TypeCat.of (X ≃* Y) ≅ TypeCat.of (CommMonCat.of X ≅ CommMonCat.of Y) where
+  hom := TypeCat.ofHom fun e ↦ e.toCommMonCatIso
+  inv := TypeCat.ofHom fun i ↦ i.commMonCatIsoToMulEquiv
 
 /-- additive equivalences between `AddCommMonoid`s are
 the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/

@@ -5,6 +5,7 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.ContinuousMap.Basic
 
@@ -145,8 +146,8 @@ equal function coercion for a continuous map `C(X, Y)`.
 -/
 @[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     {f : C(X, Y)} {x} :
-    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) HasForget.instFunLike
+    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) (ToType (TopCat.of X))
+      (fun _ ↦ ((CategoryTheory.forget TopCat).obj (TopCat.of Y)).carrier) HasForget.instFunLike
       (ofHom f) x =
     @DFunLike.coe C(X, Y) X
       (fun _ ↦ Y) _
@@ -157,15 +158,15 @@ instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
 /-- The discrete topology on any type. -/
-def discrete : Type u ⥤ TopCat.{u} where
+def discrete : TypeCat.{u} ⥤ TopCat.{u} where
   obj X := @of X ⊥
   map f := @ofHom _ _ ⊥ ⊥ <| @ContinuousMap.mk _ _ ⊥ ⊥ f continuous_bot
 
-instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
+instance {X : TypeCat.{u}} : DiscreteTopology (discrete.obj X) :=
   ⟨rfl⟩
 
 /-- The trivial topology on any type. -/
-def trivial : Type u ⥤ TopCat.{u} where
+def trivial : TypeCat.{u} ⥤ TopCat.{u} where
   obj X := @of X ⊤
   map f := @ofHom _ _ ⊤ ⊤ <| @ContinuousMap.mk _ _ ⊤ ⊤ f continuous_top
 

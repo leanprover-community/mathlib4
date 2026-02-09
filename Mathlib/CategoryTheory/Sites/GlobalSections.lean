@@ -181,10 +181,6 @@ noncomputable def Sheaf.natTransΓRes [HasGlobalSectionsFunctor J A] (U : Cᵒ�
   app F := ΓRes F U
   naturality _ _ f := ΓRes_naturality f U
 
--- this is currently needed to obtain the instance `HasSheafify J (Type max u v)`.
-attribute [local instance] CategoryTheory.Types.instConcreteCategory
-attribute [local instance] CategoryTheory.Types.instFunLike
-
 /-- Global sections of a sheaf of types correspond to sections of the underlying presheaf. -/
 noncomputable def Sheaf.ΓObjEquivSections [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) :
