@@ -131,7 +131,7 @@ noncomputable def laplacianWithin : E → F :=
   fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
 
 @[inherit_doc]
-scoped[InnerProductSpace] notation "Δ[" s "]" f:60 => laplacianWithin f s
+scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 
 variable (f) in
 /--

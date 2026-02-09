@@ -32,6 +32,7 @@ assert_not_exists NonUnitalAlgHom AlgEquiv
 noncomputable section
 
 open Finsupp hiding single
+open Module
 
 universe u₁ u₂ u₃ u₄
 
@@ -60,6 +61,10 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
 @[to_additive (dont_translate := R)]
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
   Finsupp.module G k
+
+@[to_additive (dont_translate := R)]
+instance instIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
+    Module.IsTorsionFree R (MonoidAlgebra k G) := Finsupp.moduleIsTorsionFree
 
 @[to_additive (dont_translate := R) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :

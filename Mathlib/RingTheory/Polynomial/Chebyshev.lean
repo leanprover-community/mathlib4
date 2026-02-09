@@ -54,9 +54,6 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 * Redefine and/or relate the definition of Chebyshev polynomials to `LinearRecurrence`.
 * Add explicit formula involving square roots for Chebyshev polynomials
-* Compute zeroes and extrema of Chebyshev polynomials.
-* Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
-* Prove minimax properties of Chebyshev polynomials.
 -/
 
 @[expose] public section
@@ -877,6 +874,116 @@ theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
     derivative_X_pow, derivative_intCast, C_eq_natCast, T_derivative_eq_U] at h
   rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
   linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
+    (1 - X ^ 2) * derivative^[k + 2] (T R n) =
+      (2 * k + 1 : R[X]) * X * derivative^[k + 1] (T R n) -
+      (n ^ 2 - k ^ 2 : R[X]) * derivative^[k] (T R n) := by
+  have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T
+    (R := R) n
+  norm_cast at h
+  rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
+    iterate_derivative_sub, mul_comm X, iterate_derivative_intCast_mul,
+    iterate_derivative_derivative_mul_X_sq, iterate_derivative_derivative_mul_X] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+  cases k <;> grind
+
+theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
+    (1 - X ^ 2) * derivative^[k + 2] (U R n) =
+      (2 * k + 3 : R[X]) * X * derivative^[k + 1] (U R n) -
+      ((n + 1) ^ 2 - (k + 1) ^ 2 : R[X]) * derivative^[k] (U R n) := by
+  have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U
+    (R := R) n
+  norm_cast at h
+  rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
+    iterate_derivative_sub, mul_assoc 3, ← Nat.cast_three, iterate_derivative_natCast_mul,
+    mul_comm X, iterate_derivative_intCast_mul, iterate_derivative_derivative_mul_X_sq,
+    iterate_derivative_derivative_mul_X] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+  cases k <;> grind
+
+theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
+    (1 - x ^ 2) * (derivative^[k + 2] (T R n)).eval x =
+      (2 * k + 1) * x * (derivative^[k + 1] (T R n)).eval x -
+      (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval x := by
+  have h := congr_arg (fun (p : R[X]) => p.eval x) <|
+    one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T n k
+  simp only [eval_mul, eval_sub, eval_one, eval_pow,
+    eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem one_sub_X_sq_mul_iterate_derivative_U_eval (n : ℤ) (k : ℕ) (x : R) :
+    (1 - x ^ 2) * (derivative^[k + 2] (U R n)).eval x =
+      (2 * k + 3) * x * (derivative^[k + 1] (U R n)).eval x -
+      ((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval x := by
+  have h := congr_arg (fun (p : R[X]) => p.eval x) <|
+    one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U n k
+  simp only [eval_mul, eval_sub, eval_one, eval_pow,
+    eval_X, eval_add, eval_ofNat, eval_natCast, eval_intCast] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem iterate_derivative_T_eval_one_recurrence (n : ℤ) (k : ℕ) :
+    (2 * k + 1) * (derivative^[k + 1] (T R n)).eval 1 =
+      (n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 1 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 1
+  rw [one_pow, sub_self, zero_mul, mul_one] at h
+  exact sub_eq_zero.mp h.symm
+
+theorem iterate_derivative_U_eval_one_recurrence (n : ℤ) (k : ℕ) :
+    (2 * k + 3) * (derivative^[k + 1] (U R n)).eval 1 =
+      ((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 1 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 1
+  rw [one_pow, sub_self, zero_mul, mul_one] at h
+  exact sub_eq_zero.mp h.symm
+
+theorem iterate_derivative_T_eval_zero_recurrence (n : ℤ) (k : ℕ) :
+    (derivative^[k + 2] (T R n)).eval 0 =
+      -(n ^ 2 - k ^ 2) * (derivative^[k] (T R n)).eval 0 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_T_eval (R := R) n k 0
+  rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem iterate_derivative_U_eval_zero_recurrence (n : ℤ) (k : ℕ) :
+    (derivative^[k + 2] (U R n)).eval 0 =
+      -((n + 1) ^ 2 - (k + 1) ^ 2) * (derivative^[k] (U R n)).eval 0 := by
+  have h := one_sub_X_sq_mul_iterate_derivative_U_eval (R := R) n k 0
+  rw [zero_pow two_ne_zero, sub_zero, one_mul, mul_zero, zero_mul, zero_sub] at h
+  linear_combination (norm := (push_cast; ring_nf)) h
+
+theorem iterate_derivative_T_eval_one (n : ℤ) (k : ℕ) :
+    (∏ l ∈ Finset.range k, (2 * l + 1)) * (derivative^[k] (T R n)).eval 1 =
+      ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
+  induction k
+  case zero => simp
+  case succ k ih =>
+    push_cast at ih ⊢
+    rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 1),
+      mul_assoc, iterate_derivative_T_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
+      mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self]
+
+theorem iterate_derivative_U_eval_one (n : ℤ) (k : ℕ) :
+    (∏ l ∈ Finset.range k, (2 * l + 3)) * (derivative^[k] (U R n)).eval 1 =
+      (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2 : ℤ)) * (n + 1) := by
+  induction k
+  case zero => simp
+  case succ k ih =>
+    push_cast at ih ⊢
+    rw [Finset.range_add_one, Finset.prod_insert Finset.notMem_range_self, mul_comm (2 * _ + 3),
+      mul_assoc, iterate_derivative_U_eval_one_recurrence, ← mul_assoc, mul_comm _ (_ ^ 2 - _ ^ 2),
+      mul_assoc, ih, Finset.prod_insert Finset.notMem_range_self, mul_assoc]
+
+theorem derivative_T_eval_one (n : ℤ) :
+    (derivative (T R n)).eval 1 = n ^ 2 := by
+  simp [T_derivative_eq_U, sq]
+
+theorem derivative_U_eval_one (n : ℤ) :
+    3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
+  have h := iterate_derivative_U_eval_one (R := R) n 1
+  simp only [Finset.range_one, Finset.prod_singleton, mul_zero, zero_add, Nat.cast_ofNat,
+    Function.iterate_one, CharP.cast_eq_zero, one_pow, Int.cast_sub, Int.cast_pow, Int.cast_add,
+    Int.cast_one] at h
+  rw [h]
+  grind
 
 variable (R)
 

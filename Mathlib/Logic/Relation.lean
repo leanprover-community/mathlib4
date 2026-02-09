@@ -60,6 +60,8 @@ variable {r : α → α → Prop}
 
 theorem Std.Refl.reflexive [Std.Refl r] : Reflexive r := fun x ↦ Std.Refl.refl x
 
+@[deprecated (since := "2026-01-09")] alias IsRefl.reflexive := Std.Refl.reflexive
+
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
 theorem Reflexive.rel_of_ne_imp (h : Reflexive r) {x y : α} (hr : x ≠ y → r x y) : r x y := by

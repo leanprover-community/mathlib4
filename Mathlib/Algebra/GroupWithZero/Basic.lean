@@ -140,6 +140,77 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 
 end
 
+section Nilpotent
+
+variable {R S : Type*} {x y : R}
+
+/-- An element is said to be nilpotent if some natural-number-power of it equals zero.
+
+Note that we require only the bare minimum assumptions for the definition to make sense. Even
+`MonoidWithZero` is too strong since nilpotency is important in the study of rings that are only
+power-associative. -/
+def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
+  ∃ n : ℕ, x ^ n = 0
+
+theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : IsNilpotent x :=
+  ⟨n, e⟩
+
+@[simp] lemma isNilpotent_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] : IsNilpotent x :=
+  ⟨0, Subsingleton.elim _ _⟩
+
+@[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
+  ⟨1, pow_one 0⟩
+
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
+
+lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) :=
+  have ⟨N, hN⟩ := hx
+  ⟨N, by rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]⟩
+
+theorem IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
+    (h : IsNilpotent (x ^ m)) : IsNilpotent x :=
+  have ⟨n, h⟩ := h
+  ⟨m * n, by rw [← h, pow_mul x m n]⟩
+
+lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
+  cases n with
+  | zero => contradiction
+  | succ => exact IsNilpotent.pow_succ _ hx
+
+@[simp]
+lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S} (hn : n ≠ 0) :
+    IsNilpotent (x ^ n) ↔ IsNilpotent x :=
+  ⟨of_pow, (pow_of_pos · hn)⟩
+
+/-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
+@[mk_iff]
+class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
+  /-- A reduced structure has no nonzero nilpotent elements. -/
+  eq_zero : ∀ x : R, IsNilpotent x → x = 0
+
+theorem eq_zero_of_pow_eq_zero [Zero R] [Pow R ℕ] [IsReduced R] {n : ℕ} (h : x ^ n = 0) :
+    x = 0 := IsReduced.eq_zero x ⟨n, h⟩
+
+instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
+    IsReduced R :=
+  ⟨fun _ _ => Subsingleton.elim ..⟩
+
+theorem IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent x) : x = 0 :=
+  IsReduced.eq_zero x h
+
+@[simp]
+theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
+  ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
+
+lemma exists_isNilpotent_of_not_isReduced {R : Type*} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
+    ∃ x : R, x ≠ 0 ∧ IsNilpotent x := by
+  simpa [isReduced_iff, not_forall, and_comm] using h
+
+end Nilpotent
+
 section MonoidWithZero
 variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
 
@@ -169,16 +240,19 @@ lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
   rw [show n = n - m + m by lia, pow_add, mul_assoc, h]
   simp
 
-variable [NoZeroDivisors M₀]
+instance (priority := 900) isReduced_of_noZeroDivisors [NoZeroDivisors M₀] :
+    IsReduced M₀ :=
+  ⟨fun a ⟨n, ha⟩ ↦ by
+    induction n with
+    | zero => simpa using congr_arg (a * ·) ha
+    | succ n ih => rw [pow_succ, mul_eq_zero] at ha; exact ha.elim ih id⟩
 
-lemma eq_zero_of_pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
-  | 0, ha => by simpa using congr_arg (a * ·) ha
-  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim eq_zero_of_pow_eq_zero id
+variable [IsReduced M₀]
 
 @[deprecated (since := "2025-10-14")] alias pow_eq_zero := eq_zero_of_pow_eq_zero
 
 @[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
-  ⟨eq_zero_of_pow_eq_zero, by rintro rfl; exact zero_pow hn⟩
+  ⟨eq_zero_of_pow_eq_zero, (·.symm ▸ zero_pow hn)⟩
 
 lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_iff hn).not
 
@@ -188,8 +262,15 @@ instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out�
 
 lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
 
+/-- A variant of `pow_eq_zero_iff` assuming `M₀` is not trivial. -/
 @[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
   obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero := eq_zero_of_pow_eq_zero
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff := pow_eq_zero_iff
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero_iff := pow_ne_zero_iff
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero := pow_ne_zero
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff' := pow_eq_zero_iff'
 
 theorem exists_right_inv_of_exists_left_inv {α} [MonoidWithZero α]
     (h : ∀ a : α, a ≠ 0 → ∃ b : α, b * a = 1) {a : α} (ha : a ≠ 0) : ∃ b : α, a * b = 1 := by

@@ -32,7 +32,7 @@ about `sl₂`.
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
-open LieModule Set
+open LieModule Module Set
 
 variable {L} in
 /-- An `sl₂` triple within a Lie ring `L` is a triple of elements `h`, `e`, `f` obeying relations
@@ -182,7 +182,7 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
 
 /-- The eigenvalue of a primitive vector must be a natural number if the representation is
 finite-dimensional. -/
-lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R] :
+lemma exists_nat [IsNoetherian R M] [IsTorsionFree R M] [IsDomain R] [CharZero R] :
     ∃ n : ℕ, μ = n := by
   suffices ∃ n : ℕ, (ψ n) = 0 by
     obtain ⟨n, hn₁, hn₂⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists P.ne_zero this
@@ -199,8 +199,7 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
     (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
       Module.End.hasEigenvector_iff])).finite
 
-lemma pow_toEnd_f_ne_zero_of_eq_nat
-    [CharZero R] [NoZeroSMulDivisors R M]
+lemma pow_toEnd_f_ne_zero_of_eq_nat [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {n : ℕ} (hn : μ = n) {i} (hi : i ≤ n) : (ψ i) ≠ 0 := by
   intro H
   induction i
@@ -214,8 +213,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
     simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
     exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_gt i.lt_succ_self
 
-lemma pow_toEnd_f_eq_zero_of_eq_nat
-    [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]
+lemma pow_toEnd_f_eq_zero_of_eq_nat [IsDomain R] [CharZero R] [IsNoetherian R M] [IsTorsionFree R M]
     {n : ℕ} (hn : μ = n) : (ψ (n + 1)) = 0 := by
   by_contra h
   have : t.HasPrimitiveVectorWith (ψ (n + 1)) (n - 2 * (n + 1) : R) :=

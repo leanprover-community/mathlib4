@@ -9,7 +9,6 @@ public import Mathlib.Tactic.FieldSimp
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
-
 /-!
 # Local subrings of fields
 
@@ -110,7 +109,7 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   intro x y e
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl x
   obtain ⟨y, t, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl y
-  have H (x : P.primeCompl) : x.1 ≠ 0 := by aesop
+  have H : ∀ x : P.primeCompl, x.1 ≠ 0 := by rintro ⟨x, hx⟩ rfl; aesop
   have : x.1 = y.1 * t.1.1⁻¹ * s.1.1 := by
     simpa [IsLocalization.lift_mk', Algebra.ofId_apply, H,
       Algebra.algebraMap_ofSubsemiring_apply, IsUnit.coe_liftRight] using congr($e * s.1.1)

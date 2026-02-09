@@ -75,6 +75,14 @@ lemma CoproductDisjoint.of_cofan {c : Cofan X} (hc : IsColimit c)
     rw [show d.inj i = c.inj i ≫ (hd.uniqueUpToIso hc).inv.hom by simp]
     infer_instance
 
+lemma CoproductDisjoint.of_hasCoproduct [HasCoproduct X] [∀ i, Mono (Sigma.ι X i)]
+    (s : ∀ {i j : ι} (_ : i ≠ j), PullbackCone (Sigma.ι X i) (Sigma.ι X j))
+    (hs : ∀ {i j : ι} (hij : i ≠ j), IsLimit (s hij))
+    (H : ∀ {i j : ι} (hij : i ≠ j), IsInitial (s hij).pt) :
+    CoproductDisjoint X :=
+  have (i : ι) : Mono ((Cofan.mk (∐ X) (Sigma.ι X)).inj i) := inferInstanceAs <| Mono (Sigma.ι X i)
+  .of_cofan (coproductIsCoproduct X) s hs H
+
 variable [CoproductDisjoint X]
 
 lemma _root_.CategoryTheory.Mono.of_coproductDisjoint {c : Cofan X} (hc : IsColimit c) (i : ι) :

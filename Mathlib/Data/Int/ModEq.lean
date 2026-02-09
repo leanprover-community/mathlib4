@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 
@@ -24,14 +25,39 @@ modeq, congruence, mod, MOD, modulo, integers
 @[expose] public section
 
 
-namespace Int
-
 /-- `a ≡ b [ZMOD n]` when `a % n = b % n`. -/
-def ModEq (n a b : ℤ) :=
+def Int.ModEq (n a b : ℤ) :=
   a % n = b % n
 
 @[inherit_doc]
-notation:50 a " ≡ " b " [ZMOD " n "]" => ModEq n a b
+notation:50 a " ≡ " b " [ZMOD " n "]" => Int.ModEq n a b
+
+namespace AddCommGroup
+
+@[simp]
+theorem modEq_iff_intModEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z] := by
+  rw [modEq_comm]
+  simp [modEq_iff_zsmul', dvd_iff_exists_eq_mul_left, Int.ModEq,
+    Int.emod_eq_emod_iff_emod_sub_eq_zero, ← Int.dvd_iff_emod_eq_zero]
+
+@[deprecated (since := "2026-01-13")]
+alias modEq_iff_int_modEq := modEq_iff_intModEq
+
+variable {G : Type*} [AddCommGroupWithOne G] [CharZero G]
+
+@[simp, norm_cast]
+theorem intCast_modEq_intCast {a b z : ℤ} : a ≡ b [PMOD (z : G)] ↔ a ≡ b [PMOD z] :=
+  map_modEq_iff (Int.castAddHom G) Int.cast_injective
+
+@[simp, norm_cast]
+lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : G)] ↔ a ≡ b [PMOD (n : ℤ)] := by
+  simpa using intCast_modEq_intCast (G := G) (z := n)
+
+alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
+
+end AddCommGroup
+
+namespace Int
 
 variable {m n a b c d : ℤ}
 

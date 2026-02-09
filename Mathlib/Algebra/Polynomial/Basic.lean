@@ -73,7 +73,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-open AddMonoidAlgebra Finset
+open AddMonoidAlgebra Finset Module
 open Finsupp hiding single
 open Function hiding Commute
 
@@ -313,6 +313,10 @@ instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [I
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
+
+instance {S : Type*} [Semiring S] [Module S R] [IsTorsionFree S R] : IsTorsionFree S R[X] where
+  isSMulRegular s hs := by
+    rintro ⟨f⟩ ⟨g⟩ hfg; congr; apply hs.isSMulRegular; simpa using congr(($hfg).toFinsupp)
 
 instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with

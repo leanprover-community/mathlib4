@@ -21,13 +21,13 @@ permissions:
   actions: read
 
 jobs:
-  check-lean4checker:
+  check-leanchecker:
     runs-on: lean4checker
     if: github.repository == 'leanprover-community/mathlib4'
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: [nightly] #[master, nightly]  # TODO: reactivate master when leanchecker has landed there (also below)
     steps:
       # Checkout repository, so that we can fetch tags to decide which branch we want.
       - name: Checkout branch or tag
@@ -65,44 +65,21 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
-      - name: Check environments using lean4checker # make sure this name is consistent with "Get job status and URLs" in the notify job
-        id: lean4checker
+      - name: Check environments using leanchecker # make sure this name is consistent with "Get job status and URLs" in the notify job
+        id: leanchecker
         run: |
-          git clone https://github.com/leanprover/lean4checker
-          cd lean4checker
-          # Read lean-toolchain file and checkout appropriate branch
-          TOOLCHAIN=$(cat ../lean-toolchain)
-          printf '%s\n' "${TOOLCHAIN}"
-          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
-            VERSION=${TOOLCHAIN#leanprover/lean4:}
-            git checkout "$VERSION"
-          elif [[ "$TOOLCHAIN" =~ ^leanprover/lean4:nightly-[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-            # Extract the date part from the toolchain string
-            DATE=${TOOLCHAIN#leanprover/lean4:}
-            # Try to checkout nightly-testing-YYYY-MM-DD, fallback to nightly-testing
-            git checkout "nightly-testing-${DATE}" 2>/dev/null || git checkout nightly-testing
-          else
-            git checkout master
-          fi
-          # Now that the git hash is embedded in each olean,
-          # we need to compile lean4checker on the same toolchain
-          cp ../lean-toolchain .
-          lake build
-          ./test.sh
-          cd ..
-          # After https://github.com/leanprover/lean4checker/pull/26
-          # lean4checker by default only runs on the current project
-          # so we explicitly check Batteries as well here.
-          lake env lean4checker/.lake/build/bin/lean4checker Batteries Mathlib
+          # `--fresh` is safe and in fact currently faster for projects with many modules
+          lake env leanchecker --fresh Mathlib
+          lake env leanchecker --fresh Batteries
 
-  notify-lean4checker:
+  notify-leanchecker:
     runs-on: ubuntu-latest
-    needs: check-lean4checker
+    needs: check-leanchecker
     if: github.repository == 'leanprover-community/mathlib4' && always()
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [master, nightly]
+        branch_type: [nightly]  # [master, nightly]
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -112,19 +89,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          JOB_NAME="check-lean4checker (${{ matrix.branch_type }})"
-          
+          JOB_NAME="check-leanchecker (${{ matrix.branch_type }})"
+
           # Get URL and conclusion for the specific job
           JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\")")
-          
-          LEAN4CHECKER_URL=$(echo "$JOB_DATA" | jq -r \
-            '(.url + (.steps[] | select(.name == "Check environments using lean4checker") 
+
+          LEANCHECKER_URL=$(echo "$JOB_DATA" | jq -r \
+            '(.url + (.steps[] | select(.name == "Check environments using leanchecker")
             | "#step:\(.number):1"))')
-          
+
           JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
-          
-          echo "lean4checker_url=${LEAN4CHECKER_URL}" | tee -a "$GITHUB_OUTPUT"
+
+          echo "leanchecker_url=${LEANCHECKER_URL}" | tee -a "$GITHUB_OUTPUT"
           echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Fetch latest tags (if nightly)
@@ -143,7 +120,7 @@ jobs:
             echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
           fi
 
-      - name: Post success message for lean4checker on Zulip
+      - name: Post success message for leanchecker on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
@@ -152,11 +129,11 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: 'lean4checker'
+          topic: 'leanchecker'
           content: |
-            ✅ lean4checker [succeeded](${{ steps.get-status.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ✅ leanchecker [succeeded](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
-      - name: Post failure / cancelled message for lean4checker on Zulip
+      - name: Post failure / cancelled message for leanchecker on Zulip
         if: steps.get-status.outputs.job_conclusion != 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
@@ -165,9 +142,9 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: 'lean4checker failure'
+          topic: 'leanchecker failure'
           content: |
-            ❌ lean4checker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
   check-mathlib_test_executable:
     runs-on: ubuntu-latest
@@ -236,17 +213,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           JOB_NAME="check-mathlib_test_executable (${{ matrix.branch_type }})"
-          
+
           # Get URL and conclusion for the specific job
           JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\")")
-          
+
           MATHLIB_TEST_EXECUTABLE_URL=$(echo "$JOB_DATA" | jq -r \
-            '(.url + (.steps[] | select(.name == "Run mathlib_test_executable") 
+            '(.url + (.steps[] | select(.name == "Run mathlib_test_executable")
             | "#step:\(.number):1"))')
-          
+
           JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
-          
+
           echo "mathlib_test_executable_url=${MATHLIB_TEST_EXECUTABLE_URL}" | tee -a "$GITHUB_OUTPUT"
           echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
 
@@ -407,7 +384,7 @@ jobs:
             ".jobs[] | select(.name == \"$JOB_NAME\")")
 
           NANODA_URL=$(echo "$JOB_DATA" | jq -r \
-            '(.url + (.steps[] | select(.name == "Check Mathlib using nanoda") 
+            '(.url + (.steps[] | select(.name == "Check Mathlib using nanoda")
             | "#step:\(.number):1"))')
 
           JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')

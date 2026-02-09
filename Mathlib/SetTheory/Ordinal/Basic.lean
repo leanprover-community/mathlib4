@@ -312,7 +312,7 @@ instance partialOrder : PartialOrder Ordinal where
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
 
 instance : LinearOrder Ordinal :=
-  {inferInstanceAs (PartialOrder Ordinal) with
+  { inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
     toDecidableLE := Classical.decRel _ }

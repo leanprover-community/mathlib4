@@ -1007,7 +1007,7 @@ variable (R) [SMulCommClass R A A]
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 
-When `A` is unital and associative, this is the same as `DistribMulAction.toLinearMap R A a` -/
+When `A` is unital and associative, this is the same as `DistribSMul.toLinearMap R A a` -/
 def mulLeft (a : A) : A →ₗ[R] A where
   __ := AddMonoidHom.mulLeft a
   map_smul' _ := mul_smul_comm _ _
@@ -1034,7 +1034,7 @@ variable (R) [IsScalarTower R A A]
 Note that this only assumes `IsScalarTower R A A`, so that it also works for `R := A`.
 
 When `A` is unital and associative, this is the same as
-`DistribMulAction.toLinearMap R A (MulOpposite.op b)`. -/
+`DistribSMul.toLinearMap R A (MulOpposite.op b)`. -/
 def mulRight (b : A) : A →ₗ[R] A where
   __ := AddMonoidHom.mulRight b
   map_smul' _ _ := smul_mul_assoc _ _ _

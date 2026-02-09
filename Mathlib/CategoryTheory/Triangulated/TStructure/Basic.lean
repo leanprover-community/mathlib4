@@ -16,7 +16,7 @@ This file introduces the notion of t-structure on (pre)triangulated categories.
 The first example of t-structure shall be the canonical t-structure on the
 derived category of an abelian category (TODO).
 
-Given a t-structure `t : TStructure C`, we define type classes `t.IsLE X n`
+Given a t-structure `t : TStructure C`, we define typeclasses `t.IsLE X n`
 and `t.IsGE X n` in order to say that an object `X : C` is `≤ n` or `≥ n` for `t`.
 
 ## Implementation notes

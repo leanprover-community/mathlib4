@@ -170,7 +170,7 @@ lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a �
 
 lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) :
     s₁.biUnion t₁ = s₂.biUnion t₂ := by
-  aesop
+  grind
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :
@@ -253,6 +253,11 @@ theorem biUnion_image [DecidableEq γ] {s : Finset α} {t : α → Finset β} {f
 theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α) :
     ((s.image g).biUnion fun a => s.filter fun c => g c = a) = s :=
   biUnion_filter_eq_of_maps_to fun _ => mem_image_of_mem g
+
+lemma union_biUnion [DecidableEq α] : (s₁ ∪ s₂).biUnion t = s₁.biUnion t ∪ s₂.biUnion t := by
+  grind
+
+lemma biUnion_union : s.biUnion (fun x ↦ t₁ x ∪ t₂ x) = s.biUnion t₁ ∪ s.biUnion t₂ := by grind
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
 

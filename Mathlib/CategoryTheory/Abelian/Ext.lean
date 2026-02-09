@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Linear.Yoneda
 /-!
 # Ext
 
-We define `Ext R C n : Cᵒᵖ ⥤ C ⥤ Module R` for any `R`-linear abelian category `C`
+We define `Ext R C n : Cᵒᵖ ⥤ C ⥤ ModuleCat R` for any `R`-linear abelian category `C`
 by (left) deriving in the first argument of the bifunctor `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`.
 
 ## Implementation
