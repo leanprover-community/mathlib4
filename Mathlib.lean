@@ -5839,6 +5839,7 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.ParallelComp
 public import Mathlib.Probability.Kernel.Composition.Prod
+public import Mathlib.Probability.Kernel.Composition.RadonNikodym
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.Condexp
 public import Mathlib.Probability.Kernel.Defs
