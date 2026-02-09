@@ -33,6 +33,8 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes is étale if it is smooth of relative dimension zero. -/
 abbrev Etale {X Y : Scheme.{u}} (f : X ⟶ Y) := SmoothOfRelativeDimension 0 f
 
+@[deprecated (since := "2026-02-09")] alias IsEtale := Etale
+
 namespace Etale
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)

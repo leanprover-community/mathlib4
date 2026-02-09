@@ -64,6 +64,8 @@ class Smooth : Prop where
   exists_isStandardSmooth : ∀ (x : X), ∃ (U : Y.affineOpens) (V : X.affineOpens) (_ : x ∈ V.1)
     (e : V.1 ≤ f ⁻¹ᵁ U.1), IsStandardSmooth (f.appLE U V e).hom
 
+@[deprecated (since := "2026-02-09")] alias IsSmooth := Smooth
+
 /-- The property of scheme morphisms `Smooth` is associated with the ring
 homomorphism property `Locally IsStandardSmooth`. -/
 instance : HasRingHomProperty @Smooth (Locally IsStandardSmooth) := by
@@ -89,6 +91,9 @@ lemma smooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange 
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmooth_respectsIso isStandardSmooth_isStableUnderBaseChange
 
+@[deprecated (since := "2026-02-09")]
+alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
+
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
@@ -101,11 +106,16 @@ class SmoothOfRelativeDimension : Prop where
     (V : X.affineOpens) (_ : x ∈ V.1) (e : V.1 ≤ f ⁻¹ᵁ U.1),
     IsStandardSmoothOfRelativeDimension n (f.appLE U V e).hom
 
+@[deprecated (since := "2026-02-09")] alias IsSmoothOfRelativeDimension := SmoothOfRelativeDimension
+
 /-- If `f` is smooth of any relative dimension, it is smooth. -/
 lemma SmoothOfRelativeDimension.smooth [SmoothOfRelativeDimension n f] : Smooth f where
   exists_isStandardSmooth x := by
     obtain ⟨U, V, hx, e, hf⟩ := exists_isStandardSmoothOfRelativeDimension (n := n) (f := f) x
     exact ⟨U, V, hx, e, hf.isStandardSmooth⟩
+
+@[deprecated (since := "2026-02-09")]
+alias IsSmoothOfRelativeDimension.isSmooth := SmoothOfRelativeDimension.smooth
 
 /-- The property of scheme morphisms `SmoothOfRelativeDimension n` is associated with the ring
 homomorphism property `Locally (IsStandardSmoothOfRelativeDimension n)`. -/
@@ -123,6 +133,10 @@ lemma smoothOfRelativeDimension_isStableUnderBaseChange :
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
     (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
+
+@[deprecated (since := "2026-02-09")]
+alias isSmoothOfRelativeDimension_isStableUnderBaseChange :=
+  smoothOfRelativeDimension_isStableUnderBaseChange
 
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
