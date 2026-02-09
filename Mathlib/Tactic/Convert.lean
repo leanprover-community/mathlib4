@@ -192,7 +192,7 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
