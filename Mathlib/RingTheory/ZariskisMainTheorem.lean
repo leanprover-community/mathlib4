@@ -638,7 +638,7 @@ lemma ZariskisMainProperty.of_finiteType.{u, v} {R : Type u} {S : Type v} [CommR
     using hm.map (Shrink.algEquiv R S).toAlgHom⟩
 
 lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
-    [Algebra.FiniteType R S] (p : Ideal S) [p.IsPrime] (H : ZariskisMainProperty R p) :
+    [Algebra.FiniteType R S] (p : Ideal S) (H : ZariskisMainProperty R p) :
     ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
       r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) := by
   obtain ⟨s, hs⟩ := Algebra.FiniteType.out (R := R) (A := S)
