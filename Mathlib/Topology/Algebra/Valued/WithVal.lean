@@ -181,26 +181,7 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
-/- theorem IsEquiv.uniformContinuous_equivWithVal
-    (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ) (h : v.IsEquiv w) :
-    /- (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
-      w.restrict r / w.restrict s = γ.1) -/ --(h : v.IsEquiv w) :
-    UniformContinuous (equivWithVal v w) := by
-  refine uniformContinuous_of_continuousAt_zero _ ?_
-  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
-    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
-  intro γ
-  obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw (Units.map (embedding (f := (instValued w).v)) γ)
-  use .mk0 (v.restrict r / v.restrict s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]),
-    fun x hx ↦ ?_
-  rw [← hr, Set.mem_setOf_eq]
-  sorry -/
- /-  ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
-    lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
-    ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
-    ← h.orderRingIso.lt_symm_apply] -/
-  --simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
-
+-- TODO: golf
 theorem IsEquiv.uniformContinuous_equivWithVal
     (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
       w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
@@ -213,24 +194,34 @@ theorem IsEquiv.uniformContinuous_equivWithVal
   use .mk0 (v.restrict r / v.restrict s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]),
     fun x hx ↦ ?_
   rw [← hr, Set.mem_setOf_eq]
-  simp only [equivWithVal_apply, restrict_def, restrict₀_apply, apply_symm_equiv]
-  rw [dif_neg hr₀.ne.symm, dif_neg hs₀.ne.symm]
-  split_ifs
-  · exact compareOfLessAndEq_eq_lt.mp rfl
-  · simp only [← WithZero.coe_div, WithZero.coe_lt_coe]
-    suffices Units.mk0 (w ((equiv v) x)) (by sorry) <
-        Units.mk0 (w r) (by sorry) / Units.mk0 (w s) (by sorry) by
-      sorry
-    rw [← Units.val_lt_val]
-    simp only [Units.val_mk0, Units.val_div_eq_div_val]
-    rw [← (equiv w).apply_symm_apply r,
-    lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul]
-    sorry
- /-  ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
-    lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
-    ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
-    ← h.orderRingIso.lt_symm_apply] -/
-  --simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
+  by_cases hx0 : Valued.v.restrict ((equivWithVal v w) x) = 0
+  · rw [hx0]
+    rw [← w.restrict_pos_iff] at hr₀ hs₀
+    exact div_pos hr₀ hs₀
+  suffices w ((equiv v) x) * w s < w r by
+    rwa [← map_mul, ← restrict_lt_iff, map_mul, ← lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
+      at this
+  simp only [restrict_def, Units.val_mk0, Set.mem_setOf_eq] at hx ⊢
+  rw [restrict₀_of_ne_zero (by
+    simpa [equivWithVal_apply, restrict_def, restrict₀_eq_zero_iff, apply_symm_equiv,
+      ← h.eq_zero] using hx0)] at hx
+  conv_rhs at hx =>  -- Needed to avoid decidability error
+    rw [restrict₀_of_ne_zero (by simp [h.eq_zero, ne_zero_of_lt hr₀]),
+      restrict₀_of_ne_zero (by simp [h.eq_zero, ne_zero_of_lt hs₀])]
+  rw [lt_div_iff₀ (by simp), ← WithZero.coe_mul, MulMemClass.mk_mul_mk, WithZero.coe_lt_coe,
+    Subtype.mk_lt_mk, ← Units.mk0_mul, ← Units.val_lt_val] at hx
+  · rw [Units.val_mk0, Units.val_mk0] at hx
+    rw [← (equiv w).apply_symm_apply r, ← (equiv w).apply_symm_apply s, ← map_mul]
+    erw [← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
+    ← h.orderRingIso.lt_symm_apply]
+    simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
+  · apply mul_ne_zero
+    · simp only [equivWithVal_apply, restrict_def, restrict₀_apply, apply_symm_equiv,
+        dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not] at hx0
+      erw [ne_eq, h.eq_zero]
+      simpa using hx0
+    rw [ne_eq, h.eq_zero]
+    exact ne_zero_of_lt hs₀
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/

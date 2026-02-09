@@ -635,6 +635,26 @@ section Complete
 
 open Filter WithZero PowerSeries
 
+-- TODO: move, rename
+variable (K) in
+lemma valuation_surjective' :
+    Function.Surjective (Valued.v (R := RatFunc K)) := by
+  intro n
+  by_cases hn0 : n = 0
+  · use 0; simp [hn0]
+  · use (RatFunc.X ^ (-WithZero.log n))
+    simp [exp_log hn0]
+
+variable (K) in
+lemma valuation_surjective :
+    Function.Surjective (Valued.v (R := K⸨X⸩)) := by
+  intro n
+  by_cases hn0 : n = 0
+  · use 0; simp [hn0]
+  · use ((HahnSeries.single (-WithZero.log n)) 1)
+    simp [LaurentSeries.valuation_single_zpow, exp_log hn0]
+
+--TODO: golf
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
 uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
@@ -642,9 +662,18 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
   let γ : (ℤᵐ⁰)ˣ := Units.mk0 (exp (-(d + 1))) coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
-  sorry/- refine ⟨(Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
+  refine ⟨?_, fun P hP ↦ ?_⟩
+  · obtain ⟨x, hx⟩ := valuation_surjective K γ
+    set u := Units.mk0 (Valued.v.restrict x) (by simp [hx]) with hu_def
+    rw [← hx]
+    rw [← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
+    simp_rw [ ← Valued.v.restrict_lt_iff_lt_embedding]
+    convert (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto)
+    swap
+    · exact u
+    · simp [hu_def]
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
-  exact mem_uniformity_of_eq hS rfl -/
+  exact mem_uniformity_of_eq hS rfl
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `K⸨X⸩` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
@@ -771,11 +800,12 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
     {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
   suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < embedding γ.1} by
-    sorry --apply this.mono fun _ hf ↦ hU₁ hf
+    simp_rw [← Valued.v.restrict_lt_iff_lt_embedding] at this
+    apply this.mono fun _ hf ↦ hU₁ hf
   set D := -(log (embedding γ.1) - 1) with hD₀
   have hD : exp (-D) < embedding γ.1 := by
-    sorry --rw [← lt_log_iff_exp_lt (by simp), hD₀]
-    --simp
+    rw [← lt_log_iff_exp_lt (by simp), hD₀]
+    simp
   apply coeff_eventually_equal (D := D) hℱ |>.mono
   intro _ hf
   apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD
@@ -900,25 +930,36 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
     use {P : RatFunc K | Valued.v P < embedding d.1}
     simp only [Valued.mem_nhds, sub_zero]
-    sorry/- refine ⟨⟨d, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
+    refine ⟨?_, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
+    · obtain ⟨x, hx⟩ := valuation_surjective' K (embedding d.1)
+      use Units.mk0 (Valued.v.restrict x) (by
+        rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff]; simp [hx])
+      simp [ -Valuation.restrict_def, v_def, Valuation.restrict_lt_iff, ← hx]
     apply hd
     simp only [sub_zero, Set.mem_setOf_eq]
-    rw [← map_sub, valuation_def, ← valuation_eq_LaurentSeries_valuation]
-    assumption -/
+    rw [← map_sub, Valuation.restrict_lt_iff_lt_embedding]
+    simp only [valuation_def]
+    rwa [← valuation_eq_LaurentSeries_valuation]
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
-    let X := {f : K⸨X⸩ | Valued.v f < embedding d.1}
+    set X := {f : K⸨X⸩ | Valued.v f < embedding d.1} with X_def
     refine ⟨(fun x : K⸨X⸩ × K⸨X⸩ ↦ x.snd - x.fst) ⁻¹' X, ⟨X, ?_⟩, ?_⟩
     · refine ⟨?_, Set.Subset.refl _⟩
       · simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_embedding]
-
-        sorry -- use d
+        obtain ⟨x, hx⟩ := restrict₀_surjective _ d.1
+        use Units.mk0 (Valued.v.restrict (x : K⸨X⸩)) (by
+          rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, valuation_def,
+            ← valuation_eq_LaurentSeries_valuation, ← v_def, ← restrict₀_eq_zero_iff]
+          simp [hx])
+        simp only [Units.val_mk0, ← Valuation.restrict_lt_iff_lt_embedding,
+          X_def, Set.setOf_subset_setOf, Valuation.restrict_lt_iff]
+        rw [← hx, embedding_restrict₀]
+        simp [v_def, valuation_coe_ratFunc]
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      sorry
-      /- rw [Set.mem_setOf_eq, sub_zero, v_def, valuation_eq_LaurentSeries_valuation,
-        map_sub]
-      assumption -/
+      rw [Set.mem_setOf_eq, sub_zero, Valuation.restrict_lt_iff_lt_embedding, v_def,
+        valuation_eq_LaurentSeries_valuation, map_sub]
+      assumption
 
 theorem continuous_coe : Continuous ((↑) : RatFunc K → K⸨X⸩) :=
   (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
@@ -1018,7 +1059,7 @@ theorem valuation_LaurentSeries_equal_extension :
   · intro x
     rw [v_def, valuation_eq_LaurentSeries_valuation K x]
     rfl
-  · sorry --exact Valued.continuous_valuation (K := K⸨X⸩)
+  · exact Valued.continuous_valuation_of_surjective (valuation_surjective K)
 
 theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     Tendsto (Valued.v : RatFunc K → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
@@ -1030,17 +1071,20 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     obtain ⟨γ, γ_ne_zero, γ_le⟩ := hS
     use {t | Valued.v t < γ}
     constructor
-    · sorry/- rw [ha, this]
-      use Units.mk0 γ γ_ne_zero
-      rw [Units.val_mk0] -/
+    · rw [ha, this]
+      obtain ⟨x, hx⟩ := valuedAdicCompletion_surjective (RatFunc K) (idealX K) γ
+      use Units.mk0 (Valued.v.restrict x) (by
+        rwa [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, hx])
+      simp  [-Valuation.restrict_def, Units.val_mk0, Valuation.restrict_lt_iff, hx]
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rwa [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha),
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
-    sorry/- use Units.mk0 (Valued.v a) (by simp [ha])
+    use Units.mk0 (Valued.v.restrict a) (by simp [ha])
     simp only [Units.val_mk0, v_def, Set.setOf_subset_setOf]
     rintro y val_y b rfl
-    simp [← Valuation.map_eq_of_sub_lt _ val_y] -/
+    rw [Valuation.restrict_lt_iff] at val_y
+    simp [← Valuation.map_eq_of_sub_lt _ val_y]
 
 /- The extension of the `X`-adic valuation from `RatFunc K` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
@@ -1048,11 +1092,21 @@ theorem valuation_compare (f : K⸨X⸩) :
     (Valued.v : (RatFuncAdicCompl K) → ℤᵐ⁰)
         (AbstractCompletion.compare (LaurentSeriesPkg K) ratfuncAdicComplPkg f) =
       Valued.v f := by
-  sorry
-  /- rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
-    (pkg := ratfuncAdicComplPkg) (cont_f := Valued.continuous_valuation)]
-  · rfl
-  exact (tendsto_valuation K) -/
+  letI : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
+      ratfuncAdicComplPkg.uniformStruct
+  rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
+    (pkg := ratfuncAdicComplPkg)
+    (cont_f := Valued.continuous_valuation_of_surjective (valuation_surjective' K))]
+  · exact Eq.symm (IsDenseInducing.extend_eq_of_tendsto (isDenseInducing ratfuncAdicComplPkg)
+      ((tendsto_valuation K) _))
+  · intro a
+    convert (tendsto_valuation K) a
+    apply IsDenseInducing.extend_unique (isDenseInducing ratfuncAdicComplPkg) ?_ ?_
+    · intro x
+      erw [valuedAdicCompletion_def, Valued.extensionValuation_apply_coe]; rfl
+    · exact Valued.continuous_valuation_of_surjective
+        (K := (adicCompletion (RatFunc K) (idealX K)) )
+        (valuedAdicCompletion_surjective (RatFunc K) (idealX K))
 
 section PowerSeries
 

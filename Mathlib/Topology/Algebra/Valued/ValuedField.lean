@@ -140,6 +140,26 @@ theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
     simp_rw [v.restrict_inj]
     apply Valued.loc_const (by simpa using v_ne)
 
+-- TODO: can we generalize further?
+theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
+    (hsurj : Function.Surjective hv.v) :
+    Continuous hv.v := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  rcases eq_or_ne x 0 with (rfl | h)
+  · rw [ContinuousAt, map_zero, WithZeroTopology.tendsto_zero]
+    intro γ hγ
+    rw [Filter.Eventually, Valued.mem_nhds_zero]
+    obtain ⟨x, hx⟩ := hsurj γ
+    let := Units.mk0 γ hγ;
+    have := restrict₀ hv.v x
+    use Units.mk0 (restrict₀ hv.v x) (by simp [hx, hγ])
+    simp only [Units.val_mk0, setOf_subset_setOf, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
+      imp_self, implies_true]
+  · have h0 : hv.v x ≠ 0 :=  (Valuation.ne_zero_iff _).mpr h
+    rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero h0]
+    apply Valued.loc_const (by simpa using h0)
+
 end
 
 end ValuationTopologicalDivisionRing
