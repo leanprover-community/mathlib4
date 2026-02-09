@@ -12,6 +12,15 @@ public import Mathlib.Order.WithBot
 
 import Mathlib.Data.Set.Lattice
 
+/-! # Basic results on conditionally complete partial orders
+
+This file contains some basic results on conditionally complete partial orders, and is intended
+to parallel the API for conditionally complete lattices where possible. For the reason, the
+theorems here are mostly protected within the `DirectedOn` namespace, unless such an assumption is
+unnecessary. Otherwise the names here share the same names as their counterparts in
+`Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
+
+-/
 @[expose] public section
 
 -- Guard against import creep
