@@ -80,6 +80,7 @@ lemma FormallyEtale.formallySmooth {f : R →+* S} (hf : f.FormallyEtale) :
   algebraize [f]; exact inferInstanceAs (Algebra.FormallySmooth _ _)
 
 end FormallyEtale
+
 section Etale
 
 /-- A ring hom `R →+* S` is étale, if `S` is an étale `R`-algebra. -/
