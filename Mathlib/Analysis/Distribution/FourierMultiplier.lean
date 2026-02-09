@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.Laplacian
+public import Mathlib.Analysis.Distribution.TemperedDistribution
 
 /-! # Fourier multiplier on Schwartz functions and tempered distributions -/
 
@@ -55,7 +55,7 @@ theorem fourierMultiplierCLM_sum {g : ι → E → 𝕜} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     fourierMultiplierCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, fourierMultiplierCLM F (g i) := by
   ext1 f
-  simpa [fourierMultiplierCLM_apply, smulLeftCLM_sum hg] using map_sum _ _ _
+  simp [fourierMultiplierCLM_apply, smulLeftCLM_sum hg]
 
 variable [CompleteSpace F]
 

@@ -179,6 +179,14 @@ def _root_.MemSobolev.toSobolev {f : 𝓢'(E, F)} (hf : MemSobolev s p f) : Sobo
   sobFn := hf.choose
   bessel_toDistr_eq_sobFn := hf.choose_spec
 
+def copy {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {s s' : ℝ} (hs : s = s') (f : Sobolev E F s p) :
+    Sobolev E F s' p where
+  toDistr := f.toDistr
+  sobFn := f.sobFn
+  bessel_toDistr_eq_sobFn := by
+    rw [← hs]
+    exact f.bessel_toDistr_eq_sobFn
+
 @[simp]
 theorem _root_.MemSobolev.toSobolev_toDistr {f : 𝓢'(E, F)} (hf : MemSobolev s p f) :
     hf.toSobolev.toDistr = f := rfl
@@ -360,6 +368,19 @@ theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁
   ext x
   rw [mul_comm]
   congr
+
+theorem MemSobolev.mono {s s' : ℝ} (h : s' ≤ s) {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
+    MemSobolev s' 2 f := by
+  have h' : (s' - s) / 2 ≤ 0 := by
+    rw [div_le_iff₀ (by norm_num)]
+    simp [h]
+  have hs : s' = (s' - s) + s := by ring
+  rw [hs, ← memSobolev_besselPotential_iff]
+  apply memSobolev_fourierMultiplierCLM_bounded (by fun_prop) _ hf
+  use 1
+  intro x
+  rw [Complex.norm_real, Real.norm_eq_abs, abs_eq_self.mpr (by positivity)]
+  exact Real.rpow_le_one_of_one_le_of_nonpos (by simp) h'
 
 section LineDeriv
 
