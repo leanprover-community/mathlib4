@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Batteries.Logic
-public import Batteries.Tactic.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Lemma
@@ -255,6 +254,12 @@ lemma div_lt_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣
 lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   emod_two_eq n
 
+theorem ext_ediv_emod {n a b : ℤ} (H0 : a / n = b / n) (H1 : a % n = b % n) : a = b :=
+  (mul_ediv_add_emod a n).symm.trans (H0 ▸ H1 ▸ mul_ediv_add_emod b n)
+
+theorem ext_ediv_emod_iff (n a b : ℤ) : a = b ↔ a / n = b / n ∧ a % n = b % n := by
+  grind [ext_ediv_emod]
+
 /-! ### dvd -/
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c :=
@@ -317,9 +322,6 @@ lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) 
   simp only [lt_toNat, Int.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
 lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by lia
-
-@[deprecated (since := "2025-05-24")]
-alias toNat_lt'' := toNat_lt_of_ne_zero
 
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat

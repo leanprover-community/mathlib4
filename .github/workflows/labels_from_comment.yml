@@ -9,6 +9,10 @@ name: Label PR based on Comment
 on:
   issue_comment:
     types: [created]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -25,7 +29,7 @@ jobs:
     steps:
     - name: Add / remove label based on comment
       run: |
-        labelArray=("awaiting-author" "WIP" "easy")
+        labelArray=("awaiting-author" "WIP" "easy" "brownian" "carleson" "CFT" "FLT" "sphere-packing" "toric" "t-algebra" "t-algebraic-geometry" "t-algebraic-topology" "t-analysis" "t-category-theory" "t-combinatorics" "t-computability" "t-condensed" "t-convex-geometry" "t-data" "t-differential-geometry" "t-dynamics" "t-euclidean-geometry" "t-geometric-group-theory" "t-group-theory" "t-linter" "t-logic" "t-measure-probability" "t-meta" "t-number-theory" "t-order" "t-ring-theory" "t-set-theory" "t-topology")
 
         # we strip `\r` since line endings from GitHub contain this character
         COMMENT="${COMMENT//$'\r'/}"

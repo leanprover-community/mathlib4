@@ -39,7 +39,7 @@ and the corresponding dual statements.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
@@ -313,6 +313,12 @@ abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q 
 lemma kernel.map_id {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
     (w : f ≫ q = 𝟙 _ ≫ f) : kernel.map f f (𝟙 _) q w = 𝟙 _ := by
   cat_disch
+
+instance {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
+    (w : f ≫ q = p ≫ f') [IsIso p] [Mono q] :
+    IsIso (kernel.map _ _ _ _ w) :=
+  ⟨kernel.lift _ (kernel.ι f' ≫ inv p) (by simp [← cancel_mono q, w]),
+    by cat_disch, by cat_disch⟩
 
 /-- Given a commutative diagram
 ```
@@ -801,6 +807,12 @@ abbrev cokernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X')
       simp only [← Category.assoc]
       apply congrArg (· ≫ π f') w
     simp [this])
+
+instance {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
+    (w : f ≫ q = p ≫ f') [Epi p] [IsIso q] :
+    IsIso (cokernel.map _ _ _ _ w) :=
+  ⟨cokernel.desc _ (inv q ≫ cokernel.π f) (by simp [← cancel_epi p, ← reassoc_of% w]),
+    by cat_disch, by cat_disch⟩
 
 @[simp]
 lemma cokernel.map_id {X Y : C} (f : X ⟶ Y) [HasCokernel f] (q : X ⟶ X)

@@ -42,6 +42,7 @@ theorem abs_re_le_norm (z : ℂ) : |z.re| ≤ ‖z‖ := by
 theorem re_le_norm (z : ℂ) : z.re ≤ ‖z‖ :=
   (abs_le.1 (abs_re_le_norm _)).2
 
+set_option backward.privateInPublic true in
 private theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
   (mul_self_le_mul_self_iff (norm_nonneg (z + w)) (add_nonneg (norm_nonneg z)
     (norm_nonneg w))).2 <| by
@@ -51,15 +52,20 @@ private theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
     gcongr
     exact re_le_norm (z * conj w)
 
+set_option backward.privateInPublic true in
 private theorem norm_eq_zero_iff {z : ℂ} : ‖z‖ = 0 ↔ z = 0 :=
   (Real.sqrt_eq_zero <| normSq_nonneg _).trans normSq_eq_zero
 
+set_option backward.privateInPublic true in
 private theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
   norm_eq_zero_iff.mpr rfl
 
+set_option backward.privateInPublic true in
 private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
   { toFun := norm

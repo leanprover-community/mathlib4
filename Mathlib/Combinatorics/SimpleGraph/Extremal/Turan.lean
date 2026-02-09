@@ -293,6 +293,36 @@ theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
     G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (card V) r) :=
   ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
 
+variable {α : Type*} [Fintype α] [Nontrivial α]
+
+lemma isExtremal_top_free_iff_isTuranMaximal :
+    G.IsExtremal (⊤ : SimpleGraph α).Free ↔ G.IsTuranMaximal (card α - 1) := by
+  simp_rw [IsTuranMaximal, IsExtremal,
+    Nat.sub_one_add_one Fintype.card_ne_zero, cliqueFree_iff_top_free]
+
+lemma isExtremal_top_free_turanGraph :
+    (turanGraph n (card α - 1)).IsExtremal (⊤ : SimpleGraph α).Free := by
+  rw [isExtremal_top_free_iff_isTuranMaximal]
+  exact isTuranMaximal_turanGraph (Nat.sub_pos_iff_lt.mpr Fintype.one_lt_card)
+
+/-- The extremal numbers of `⊤` are equal to the number of edges in `turanGraph`. -/
+theorem extremalNumber_top :
+    extremalNumber n (⊤ : SimpleGraph α) = #(turanGraph n (card α - 1)).edgeFinset := by
+  conv =>
+    enter [1, 1]
+    rw [← Fintype.card_fin n]
+  exact (card_edgeFinset_of_isExtremal_free isExtremal_top_free_turanGraph).symm
+
+/-- The `turanGraph` is, up to isomorphism, the unique extremal graph forbidding `⊤`.
+
+This is **Turán's theorem** restated in terms of the extremal numbers of `⊤`.
+See `SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph`. -/
+theorem card_edgeFinset_eq_extremalNumber_top_iff_nonempty_iso_turanGraph :
+    (⊤ : SimpleGraph α).Free G ∧ #G.edgeFinset = extremalNumber (card V) (⊤ : SimpleGraph α)
+      ↔ Nonempty (G ≃g turanGraph (card V) (card α - 1)) := by
+  rw [← isTuranMaximal_iff_nonempty_iso_turanGraph (Nat.sub_pos_iff_lt.mpr one_lt_card),
+    ← isExtremal_top_free_iff_isTuranMaximal, isExtremal_free_iff]
+
 /-! ### Number of edges in the Turán graph -/
 
 private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
@@ -368,7 +398,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [ring₂, ← add_assoc]; congr 1
       rw [← add_rotate, ← add_rotate _ _ (r.choose 2)]; congr 1
       rw [Nat.choose_two_right, Nat.div_mul_cancel rd, mul_add_one, add_mul, ← add_assoc,
-        ← add_rotate, add_comm _ (_ *_)]; congr 1
+        ← add_rotate, add_comm _ (_ * _)]; congr 1
       rw [← mul_rotate, ← add_mul, add_comm, mul_comm _ r, Nat.div_add_mod n' r]
 
 /-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in

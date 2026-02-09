@@ -25,7 +25,7 @@ For the prime case and involving `factorial` rather than `descFactorial`, see Wi
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

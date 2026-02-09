@@ -83,19 +83,17 @@ section max
 
 variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
 
-set_option backward.proofsInPublic true in
 /-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
 this is a choice of objects in `J` which is the target of a map from any of
 the objects `S k`. -/
 noncomputable def max : J :=
-  (cocone (Discrete.functor S) (by simpa using hS)).pt
+  (cocone (κ := κ) (Discrete.functor S) (by simpa using hS)).pt
 
-set_option backward.proofsInPublic true in
 /-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
 this is a choice of map `S k ⟶ max S hS` for any `k : K`. -/
 noncomputable def toMax (k : K) :
     S k ⟶ max S hS :=
-  (cocone (Discrete.functor S) (by simpa using hS)).ι.app ⟨k⟩
+  (cocone (κ := κ) (Discrete.functor S) (by simpa using hS)).ι.app ⟨k⟩
 
 end max
 
@@ -155,6 +153,11 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
 
 @[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
   isFiltered_of_isCardinalFiltered
+
+lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
+  have := isFiltered_of_isCardinalFiltered J κ
+  IsFiltered.nonempty
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 

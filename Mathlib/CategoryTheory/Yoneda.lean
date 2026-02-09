@@ -133,7 +133,7 @@ namespace ULiftYoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftYoneda.{w} (C := C)).FullyFaithful :=
   Yoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
@@ -186,8 +186,7 @@ def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
   fullyFaithful.preimageIso
     (NatIso.ofComponents (fun Z =>
       { hom := q
-        inv := p })
-    ) |>.unop
+        inv := p })) |>.unop
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
@@ -214,7 +213,7 @@ namespace ULiftCoyoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftCoyoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftCoyoneda.{w} (C := C)).FullyFaithful :=
   Coyoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
@@ -242,6 +241,11 @@ lemma RepresentableBy.comp_homEquiv_symm {F : Cᵒᵖ ⥤ Type v} {Y : C}
     (e : F.RepresentableBy Y) {X X' : C} (x : F.obj (op X')) (f : X ⟶ X') :
     f ≫ e.homEquiv.symm x = e.homEquiv.symm (F.map f.op x) :=
   e.homEquiv.injective (by simp [homEquiv_comp])
+
+lemma RepresentableBy.homEquiv_unop_comp {F : Cᵒᵖ ⥤ Type*} {Y : C}
+    (h : F.RepresentableBy Y) {X : Cᵒᵖ} {X' : C} (f : Opposite.op X' ⟶ X) (g : X' ⟶ Y) :
+    h.homEquiv (f.unop ≫ g) = F.map f (h.homEquiv g) :=
+  h.homEquiv_comp _ _
 
 /-- If `F ≅ F'`, and `F` is representable, then `F'` is representable. -/
 def RepresentableBy.ofIso {F F' : Cᵒᵖ ⥤ Type v} {Y : C} (e : F.RepresentableBy Y) (e' : F ≅ F') :
@@ -331,6 +335,15 @@ def representableByEquiv {F : Cᵒᵖ ⥤ Type v₁} {Y : C} :
     { homEquiv := (e.app _).toEquiv
       homEquiv_comp := fun {X X'} f g ↦ congr_fun (e.hom.naturality f.op) g }
 
+/-- `yoneda.obj X` is represented by `X`. -/
+protected def RepresentableBy.yoneda (X : C) : (yoneda.obj X).RepresentableBy X :=
+  Functor.representableByEquiv.symm (Iso.refl _)
+
+@[simp]
+lemma RepresentableBy.coyoneda_homEquiv (X Y : C) :
+    (RepresentableBy.yoneda X).homEquiv = Equiv.refl (Y ⟶ X) :=
+  rfl
+
 /-- The isomorphism `yoneda.obj Y ≅ F` induced by `e : F.RepresentableBy Y`. -/
 def RepresentableBy.toIso {F : Cᵒᵖ ⥤ Type v₁} {Y : C} (e : F.RepresentableBy Y) :
     yoneda.obj Y ≅ F :=
@@ -346,6 +359,16 @@ def corepresentableByEquiv {F : C ⥤ Type v₁} {X : C} :
   invFun e :=
     { homEquiv := (e.app _).toEquiv
       homEquiv_comp := fun {X X'} f g ↦ congr_fun (e.hom.naturality f) g }
+
+/-- `coyoneda.obj X` is represented by `X`. -/
+protected def CorepresentableBy.coyoneda (X : Cᵒᵖ) :
+    (coyoneda.obj X).CorepresentableBy X.unop :=
+  Functor.corepresentableByEquiv.symm (Iso.refl _)
+
+@[simp]
+lemma CorepresentableBy.coyoneda_homEquiv (X : Cᵒᵖ) (Y : C) :
+    (CorepresentableBy.coyoneda X).homEquiv = Equiv.refl (X.unop ⟶ Y) :=
+  rfl
 
 /-- The isomorphism `coyoneda.obj (op X) ≅ F` induced by `e : F.CorepresentableBy X`. -/
 def CorepresentableBy.toIso {F : C ⥤ Type v₁} {X : C} (e : F.CorepresentableBy X) :

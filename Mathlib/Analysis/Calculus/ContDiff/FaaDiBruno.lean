@@ -121,7 +121,7 @@ namespace OrderedFinpartition
 @[simps -fullyApplied]
 def atomic (n : ℕ) : OrderedFinpartition n where
   length := n
-  partSize _ :=  1
+  partSize _ := 1
   partSize_pos _ := _root_.zero_lt_one
   emb m _ := m
   emb_strictMono _ := Subsingleton.strictMono _
@@ -779,7 +779,7 @@ one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
 def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
-    E[×n]→L[𝕜] G where
+    E [×n]→L[𝕜] G where
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ f (c.applyOrderedFinpartition p v))
       (fun v i x y ↦ by
@@ -810,7 +810,7 @@ and multilinearly on `p`. -/
 @[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) where
+      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) where
   toFun f :=
     MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
       (fun p m q q' ↦ by
@@ -820,14 +820,14 @@ def compAlongOrderedFinpartitionₗ :
         ext v
         simp [applyOrderedFinpartition_update_left])
   map_add' _ _ := rfl
-  map_smul' _ _ :=  rfl
+  map_smul' _ _ := rfl
 
 variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
 and continuously multilinearly on `p`. -/
 noncomputable def compAlongOrderedFinpartitionL :
     (F [×c.length]→L[𝕜] G) →L[𝕜]
-      ContinuousMultilinearMap 𝕜 (fun i ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) := by
+      ContinuousMultilinearMap 𝕜 (fun i ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) := by
   refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 fun f p ↦ ?_
   simp only [one_mul, compAlongOrderedFinpartitionₗ_apply_apply]
   apply norm_compAlongOrderedFinpartition_le
@@ -1079,8 +1079,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       have J : HasFDerivWithinAt (fun x ↦ q x c.length) (q (f x) c.length.succ).curryLeft
         t (f x) := hg.fderivWithin c.length (cm.trans_lt hm) (f x) (h hx)
       have K : HasFDerivWithinAt f ((continuousMultilinearCurryFin1 𝕜 E F) (p x 1)) s x :=
-        hf.hasFDerivWithinAt (le_trans (mod_cast Nat.le_add_left 1 m)
-          (ENat.add_one_natCast_le_withTop_of_lt hm)) hx
+        hf.hasFDerivWithinAt hm.ne_bot hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
       simp only [B, Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]

@@ -20,7 +20,7 @@ TODO: update this to use `SummableUniformlyOn`.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Metric TopologicalSpace Function Filter
 

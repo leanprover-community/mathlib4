@@ -273,9 +273,6 @@ theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < mi
 theorem minimalPeriod_eq_zero_of_notMem_periodicPts (hx : x ∉ periodicPts f) :
     minimalPeriod f x = 0 := by simp only [minimalPeriod, dif_neg hx]
 
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_of_nmem_periodicPts := minimalPeriod_eq_zero_of_notMem_periodicPts
-
 theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     0 < minimalPeriod f x :=
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
@@ -287,9 +284,6 @@ theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ 
 theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
     minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
   rw [← minimalPeriod_pos_iff_mem_periodicPts, not_lt, nonpos_iff_eq_zero]
-
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_iff_nmem_periodicPts := minimalPeriod_eq_zero_iff_notMem_periodicPts
 
 theorem IsPeriodicPt.minimalPeriod_le (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     minimalPeriod f x ≤ n := by

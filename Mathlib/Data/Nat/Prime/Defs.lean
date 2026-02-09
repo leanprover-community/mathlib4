@@ -226,9 +226,12 @@ theorem minFac_two : minFac 2 = 2 := by
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 
+set_option backward.privateInPublic true in
 private def minFacProp (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
@@ -261,6 +264,8 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       exact absurd this (by contradiction)
   termination_by k => sqrt n + 2 - k
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
   · simp [n0, minFacProp]
