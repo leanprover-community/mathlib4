@@ -50,16 +50,6 @@ finitely presented group, finitely generated normal closure
 
 @[expose] public section
 
--- Start of suggested additions to #Subgroup
-
-/-- The normal closure of an empty set is the trivial subgroup. -/
-lemma normalClosure_empty {G : Type*} [Group G] :
-    Subgroup.normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
-  apply le_antisymm
-  · exact Subgroup.normalClosure_le_normal (N := (⊥ : Subgroup G)) (by simp)
-  · exact bot_le
--- end of suggested additions to #Subgroup
-
 -- Start of suggested additions to #Group.FG
 
 /-- A group if finitely generated if and only if there exists a surjective homomorphism from a
