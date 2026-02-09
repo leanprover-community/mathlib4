@@ -306,33 +306,18 @@ def downloadFile (repo : String) (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
-/-- Parse a hex digit character to its numeric value -/
-def hexDigitToNat (c : Char) : Option Nat :=
-  if '0' ≤ c && c ≤ '9' then some (c.toNat - '0'.toNat)
-  else if 'a' ≤ c && c ≤ 'f' then some (c.toNat - 'a'.toNat + 10)
-  else if 'A' ≤ c && c ≤ 'F' then some (c.toNat - 'A'.toNat + 10)
-  else none
-
-/-- Parse a hex string to a Nat -/
-def parseHexString (s : String) : Option Nat :=
-  s.foldl (init := some 0) fun acc c => do
-    let prev ← acc
-    let digit ← hexDigitToNat c
-    some (prev * 16 + digit)
-
 /-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345) -/
-def hashFromFileName (fn : String) : Option UInt64 := do
-  -- Get the filename without path
-  let some name := fn.splitOn "/" |>.getLast? | .none
-  -- Remove .ltar extension (or .ltar.part for partial files)
-  let stem := name.dropSuffix ".part"
-  let stem := stem.dropSuffix ".ltar"
-  -- Parse hex string as UInt64
-  parseHexString stem.toString |>.map UInt64.ofNat
+def hashFromFileName (path : FilePath) : Option UInt64 := do
+  -- Get the filename stem, handling .ltar.part files
+  let some stem := path.fileStem | .none
+  -- For .ltar.part files, fileStem gives "hash.ltar", so strip .ltar if present
+  let stem := stem.dropSuffix ".ltar" |>.toString
+  -- Parse the 16-character hex string to UInt64
+  stem.parseHexToUInt64?
 
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
-    (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : String)
+    (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : FilePath)
     : IO Unit := do
   if files.isEmpty then return
 
@@ -341,7 +326,7 @@ def decompressBatch (files : Array (FilePath × Lean.Name))
     if isMathlibRoot || !IO.isFromMathlib mod then
       .str path.toString
     else
-      .mkObj [("file", path.toString), ("base", mathlibDepPath)]
+      .mkObj [("file", path.toString), ("base", mathlibDepPath.toString)]
 
   -- Spawn leantar for this batch
   let args := (if force then #["-f"] else #[]) ++
@@ -370,7 +355,7 @@ structure DecompConfig where
   hashToMod : Std.HashMap UInt64 Lean.Name  -- filename hash → module name
   force : Bool
   isMathlibRoot : Bool
-  mathlibDepPath : String
+  mathlibDepPath : FilePath
 
 private structure TransferState where
   last : Nat
@@ -385,7 +370,8 @@ private structure TransferState where
   decompressed : Nat                               -- total files decompressed
   decompFailed : Nat                               -- total decompression failures
 
-/-- Harvest the result of a completed decompression task, updating counters -/
+/-- Harvest the result of a completed decompression task, updating counters.
+    Returns `(successful, failed)` counts. -/
 def harvestDecompTask (task : Task (Except IO.Error Unit)) (batchSize : Nat)
     (decompressed decompFailed : Nat) : Nat × Nat :=
   match task.get with
@@ -436,7 +422,7 @@ def monitorCurl (args : Array String) (size : Nat)
               IO.FS.rename fn finalPath
               -- Add to decompression queue if enabled
               if let some config := decompConfig then
-                match hashFromFileName fn with
+                match hashFromFileName ⟨fn⟩ with
                 | some hash =>
                   match config.hashToMod[hash]? with
                   | some mod =>
@@ -502,7 +488,7 @@ def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
     (decompress : Bool := false) (forceUnpack : Bool := false)
-    (isMathlibRoot : Bool) (mathlibDepPath : String): IO Unit := do
+    (isMathlibRoot : Bool) (mathlibDepPath : FilePath) : IO Unit := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
@@ -639,7 +625,7 @@ def getFiles
   unless isMathlibRoot do checkForToolchainMismatch
   getProofWidgets (← read).proofWidgetsBuildDir
 
-  let mathlibDepPath := (← read).mathlibDepPath.toString
+  let mathlibDepPath := (← read).mathlibDepPath
 
   if let some repo := repo? then
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
