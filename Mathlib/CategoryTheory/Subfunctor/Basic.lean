@@ -34,7 +34,7 @@ variable {C : Type u} [Category.{v} C]
 /-- A subfunctor of a functor consists of a subset of `F.obj U` for every `U`,
 compatible with the restriction maps `F.map i`. -/
 @[ext]
-structure Subfunctor (F : C ⥤ Type w) where
+structure Subfunctor (F : C ⥤ TypeCat.{w}) where
   /-- If `G` is a subfunctor of `F`, then the sections of `G` on `U` forms a subset of sections of
   `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
@@ -44,7 +44,7 @@ structure Subfunctor (F : C ⥤ Type w) where
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf := Subfunctor
 
-variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
+variable {F F' F'' : C ⥤ TypeCat.{w}} (G G' : Subfunctor F)
 
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
@@ -141,9 +141,9 @@ instance : Nonempty (Subfunctor F) :=
 
 /-- The subfunctor as a functor. -/
 @[simps!]
-def toFunctor : C ⥤ Type w where
-  obj U := G.obj U
-  map := @fun _ _ i x => ⟨F.map i x, G.map i x.prop⟩
+def toFunctor : C ⥤ TypeCat.{w} where
+  obj U := TypeCat.of (Subtype (G.obj U))
+  map := @fun _ _ i => TypeCat.ofHom fun x => ⟨F.map i x, G.map i x.prop⟩
   map_id X := by
     ext ⟨x, _⟩
     dsimp
