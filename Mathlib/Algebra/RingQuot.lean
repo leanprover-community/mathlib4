@@ -390,7 +390,7 @@ irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
     map_add' := by simp [add_quot] }
 
 theorem mkRingHom_eq_iff (r : R → R → Prop) (x y : R) :
-    mkRingHom r x = mkRingHom r y ↔ (Relation.EqvGen (Rel r)) x y := by
+    mkRingHom r x = mkRingHom r y ↔ Relation.EqvGen (Rel r) x y := by
   simp [mkRingHom_def, Quot.eq]
 
 theorem mkRingHom_eq_iff' (r : R → R → Prop) (x y : R) :
