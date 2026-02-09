@@ -240,12 +240,12 @@ def overlappingInstances : Linter where
       for (ctx, info) in t.getDeclBodyInfos do
         let some (lctx, localInstances?, remainingType?) := info.getLCtxBefore?
           | continue
+        trace[debug] "foo"
+        /-
         -- TODO: better logging location
         let outerRef ← getRef
         ctx.runMetaMWithMessages lctx (localInstances := localInstances?) <|
           withRef outerRef do
-            trace[debug] "foo"
-          /-
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or return type for anything. -/
           remainingType?.elim id (forallTelescope · fun _ _ => ·) do
