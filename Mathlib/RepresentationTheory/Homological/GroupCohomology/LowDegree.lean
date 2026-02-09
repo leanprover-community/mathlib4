@@ -904,7 +904,7 @@ variable [A.IsTrivial]
 def H0IsoOfIsTrivial :
     H0 A ≅ A.V := H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
 
-@[simp, elementwise]
+@[simp]
 theorem H0IsoOfIsTrivial_hom :
     (H0IsoOfIsTrivial A).hom = (H0Iso A).hom ≫ (shortComplexH0 A).f := rfl
 

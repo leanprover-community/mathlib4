@@ -7,8 +7,8 @@ module
 
 public meta import Lean.Elab.DefView
 public meta import Lean.Util.CollectAxioms
-public meta import ImportGraph.Imports
-public meta import ImportGraph.RequiredModules
+public meta import ImportGraph.Imports.Redundant
+public meta import ImportGraph.Imports.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep

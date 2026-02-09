@@ -475,7 +475,7 @@ theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     · exact smul_eq_zero_of_left h (t.hsum.coeff gh.2)
     · simp_all
 
-instance [AddCommMonoid R] [SMulWithZero R V] : SMul R⟦Γ⟧ (SummableFamily Γ' V β) where
+instance : SMul R⟦Γ⟧ (SummableFamily Γ' V β) where
   smul x t := Equiv (Equiv.punitProd β) <| smul (const Unit x) t
 
 theorem smul_eq {x : R⟦Γ⟧} {t : SummableFamily Γ' V β} :

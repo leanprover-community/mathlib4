@@ -43,6 +43,19 @@ def SameRay (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R
     {M : Type*} [AddCommMonoid M] [Module R M] (v₁ v₂ : M) : Prop :=
   v₁ = 0 ∨ v₂ = 0 ∨ ∃ r₁ r₂ : R, 0 < r₁ ∧ 0 < r₂ ∧ r₁ • v₁ = r₂ • v₂
 
+set_option linter.unusedVariables false in
+/-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
+`RayVector.Setoid` can be an instance. -/
+@[nolint unusedArguments]
+def RayVector (R M : Type*) [Zero M] :=
+  { v : M // v ≠ 0 }
+
+instance RayVector.coe {R M : Type*} [Zero M] : CoeOut (RayVector R M) M where
+  coe := Subtype.val
+
+instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
+  ⟨Classical.indefiniteDescription _ <| exists_ne (0 : M)⟩
+
 variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
@@ -188,19 +201,6 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
-set_option linter.unusedVariables false in
-/-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
-`RayVector.Setoid` can be an instance. -/
-@[nolint unusedArguments]
-def RayVector (R M : Type*) [Zero M] :=
-  { v : M // v ≠ 0 }
-
-instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
-  coe := Subtype.val
-
-instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
-  let ⟨x, hx⟩ := exists_ne (0 : M)
-  ⟨⟨x, hx⟩⟩
 variable (R M)
 
 /-- The setoid of the `SameRay` relation for the subtype of nonzero vectors. -/
