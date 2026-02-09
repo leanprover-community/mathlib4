@@ -111,7 +111,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β ι : Type*} [ConditionallyCompleteLa
       apply Finite.bddAbove_range _
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_right
     _ ≤ v := hv
-  · simp at hn
+  · simp only [not_lt] at hn
     refine (h_anti n ?_).trans hn
     calc r
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
@@ -223,7 +223,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_measure_norm_gt :
       ↔ Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0) := by
   refine ⟨fun h ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt⟩
   have h_sup := tendsto_measure_norm_gt_of_isTightMeasureSet h
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le') ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le _) ?_
   intro r
   simp_rw [iSup_range]
   exact limsup_le_iSup
@@ -334,7 +334,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_inner :
   refine ⟨fun h z ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_inner 𝕜⟩
   rw [isTightMeasureSet_iff_inner_tendsto 𝕜] at h
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (h z)
-    (fun _ ↦ zero_le') fun r ↦ ?_
+    (fun _ ↦ zero_le _) fun r ↦ ?_
   simp_rw [iSup_range]
   exact limsup_le_iSup
 
@@ -344,7 +344,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_range_of_tendsto_limsup_inner 𝕜 fun y ↦ ?_
   by_cases hy : y = 0
-  · simp only [hy, inner_zero_left, abs_zero]
+  · simp only [hy, inner_zero_left]
     refine (tendsto_congr' ?_).mpr tendsto_const_nhds
     filter_upwards [eventually_ge_atTop 0] with r hr
     simp [not_lt.mpr hr]
@@ -357,7 +357,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
   convert h' using 7 with r n x
   rw [inner_smul_left]
   simp only [map_inv₀, RCLike.conj_ofReal, norm_mul, norm_inv, norm_algebraMap', norm_norm]
-  rw [mul_lt_mul_left]
+  rw [mul_lt_mul_iff_right₀]
   positivity
 
 end InnerProductSpace
