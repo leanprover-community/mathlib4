@@ -178,11 +178,9 @@ variable {G k V : Type*} [Group G] [Field k] [Finite G] [NeZero (Nat.card G : k)
 
 open Representation
 
-theorem isSemisimpleRepresentation_of_card_neZero : IsSemisimpleRepresentation ρ := by
+instance : IsSemisimpleRepresentation ρ := by
   rw [isSemisimpleRepresentation_iff_isSemisimpleModule_asModule]
   infer_instance
-
-instance : IsSemisimpleRepresentation ρ := isSemisimpleRepresentation_of_card_neZero ρ
 
 end
 
