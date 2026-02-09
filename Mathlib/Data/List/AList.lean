@@ -3,7 +3,9 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.Sigma
+module
+
+public import Mathlib.Data.List.Sigma
 
 /-!
 # Association Lists
@@ -31,6 +33,8 @@ provides ways to access, modify, and combine `AList`s.
 * <https://en.wikipedia.org/wiki/Association_list>
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -108,8 +112,6 @@ instance : Inhabited (AList β) :=
 theorem notMem_empty (a : α) : a ∉ (∅ : AList β) :=
   not_mem_nil
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 @[simp]
 theorem empty_entries : (∅ : AList β).entries = [] :=
   rfl
@@ -160,7 +162,7 @@ theorem mem_lookup_iff {a : α} {b : β a} {s : AList β} :
 
 theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entries) :
     s₁.lookup a = s₂.lookup a :=
-  perm_dlookup _ s₁.nodupKeys s₂.nodupKeys p
+  perm_dlookup _ s₁.nodupKeys p
 
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome
@@ -254,13 +256,9 @@ theorem entries_insert {a} {b : β a} {s : AList β} :
 theorem entries_insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [entries_insert, kerase_of_notMem_keys h]
 
-@[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
-
 theorem insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.2⟩⟩ :=
   ext <| entries_insert_of_notMem h
-
-@[deprecated (since := "2025-05-23")] alias insert_of_not_mem := insert_of_notMem
 
 @[simp]
 theorem insert_empty (a) (b : β a) : insert a b ∅ = singleton a b :=

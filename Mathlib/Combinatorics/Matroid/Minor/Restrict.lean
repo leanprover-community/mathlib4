@@ -3,7 +3,9 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Dual
+module
+
+public import Mathlib.Combinatorics.Matroid.Dual
 
 /-!
 # Matroid Restriction
@@ -64,6 +66,8 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 reserved for the more mathematically important 'minor' order; see `Matroid.IsMinor`.
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Set
@@ -118,7 +122,7 @@ but it is convenient not to require this. The elements of `R \ M.E` become 'loop
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/
-scoped infixl:65  " ↾ " => Matroid.restrict
+scoped infixl:65 " ↾ " => Matroid.restrict
 
 @[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := Iff.rfl
 
@@ -218,18 +222,14 @@ variable {N : Matroid α}
 /-- `Restriction N M` means that `N = M ↾ R` for some subset `R` of `M.E` -/
 def IsRestriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
 
-@[deprecated (since := "2025-02-14")] alias Restriction := IsRestriction
-
 /-- `IsStrictRestriction N M` means that `N = M ↾ R` for some strict subset `R` of `M.E` -/
 def IsStrictRestriction (N M : Matroid α) : Prop := IsRestriction N M ∧ ¬ IsRestriction M N
 
-@[deprecated (since := "2025-02-14")] alias StrictRestriction := IsStrictRestriction
-
 /-- `N ≤r M` means that `N` is a `Restriction` of `M`. -/
-scoped infix:50  " ≤r " => IsRestriction
+scoped infix:50 " ≤r " => IsRestriction
 
 /-- `N <r M` means that `N` is a `IsStrictRestriction` of `M`. -/
-scoped infix:50  " <r " => IsStrictRestriction
+scoped infix:50 " <r " => IsStrictRestriction
 
 /-- A type synonym for matroids with the isRestriction order.
 (The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
@@ -241,8 +241,7 @@ instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
   coe := Matroidᵣ.toMatroid
 
 @[simp] theorem Matroidᵣ.coe_inj {M₁ M₂ : Matroidᵣ α} :
-    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := by
-  cases M₁; cases M₂; simp
+    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := Matroidᵣ.ext_iff.symm
 
 instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le := (· ≤r ·)
@@ -438,7 +437,7 @@ theorem IsBasis.isBase_of_isBase_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) 
 
 theorem IsBasis.exchange (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) (he : e ∈ I \ J) :
     ∃ f ∈ J \ I, M.IsBasis (insert f (I \ {e})) X := by
-  obtain ⟨y,hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
+  obtain ⟨y, hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
   exact ⟨y, hy, by rwa [isBase_restrict_iff] at h⟩
 
 theorem IsBasis.eq_exchange_of_diff_eq_singleton (hI : M.IsBasis I X) (hJ : M.IsBasis J X)

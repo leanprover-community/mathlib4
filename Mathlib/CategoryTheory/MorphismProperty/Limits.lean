@@ -3,11 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Filtered.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Relation of morphism properties with limits
@@ -24,6 +27,8 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 `IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -121,6 +126,20 @@ instance : P.pushouts.IsStableUnderCobaseChange where
     rintro _ _ _ _ _ _ _ _ h ⟨_, _, _, _, _, hp, hq⟩
     exact P.pushouts_mk (hq.paste_horiz h) hp
 
+/-- `P.HasPullbacksAlong f` states that for any morphism satisfying `P` with the same codomain
+as `f`, the pullback of that morphism along `f` exists. -/
+protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
+  hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
+
+/-- `P.IsStableUnderBaseChangeAlong f` states that for any morphism satisfying `P` with the same
+codomain as `f`, any pullback of that morphism along `f` also satisfies `P`. -/
+class IsStableUnderBaseChangeAlong {X Y : C} (f : X ⟶ Y) : Prop where
+  of_isPullback {Z W : C} {f' : W ⟶ Z} {g' : W ⟶ X} {g : Z ⟶ Y}
+    (pb : IsPullback f' g' g f) : P g → P g'
+
+instance [P.IsStableUnderBaseChange] {X Y : C} (f : X ⟶ Y) : P.IsStableUnderBaseChangeAlong f where
+  of_isPullback := IsStableUnderBaseChange.of_isPullback
+
 variable {P} in
 lemma of_isPullback [P.IsStableUnderBaseChange]
     {X Y Y' S : C} {f : X ⟶ S} {g : Y ⟶ S} {f' : Y' ⟶ Y} {g' : Y' ⟶ X}
@@ -181,40 +200,45 @@ instance (priority := 900) IsStableUnderBaseChange.respectsIso
   intro f g e
   exact of_isPullback (IsPullback.of_horiz_isIso (CommSq.mk e.inv.w))
 
-theorem pullback_fst [IsStableUnderBaseChange P]
-    {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P g) :
-    P (pullback.fst f g) :=
-  of_isPullback (IsPullback.of_hasPullback f g).flip H
+theorem pullback_fst {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g]
+    [P.IsStableUnderBaseChangeAlong f] (H : P g) : P (pullback.fst f g) :=
+  IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback f g).flip H
 
-theorem pullback_snd [IsStableUnderBaseChange P]
-    {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P f) :
-    P (pullback.snd f g) :=
-  of_isPullback (IsPullback.of_hasPullback f g) H
+theorem pullback_snd {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g]
+    [P.IsStableUnderBaseChangeAlong g] (H : P f) : P (pullback.snd f g) :=
+  IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback f g) H
 
-theorem baseChange_obj [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
+theorem baseChange_obj {S S' : C} (f : S' ⟶ S)
+    [HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
   pullback_snd X.hom f H
 
-theorem baseChange_map [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
-    (H : P g.left) : P ((Over.pullback f).map g).left := by
-  let e :=
-    pullbackRightPullbackFstIso Y.hom f g.left ≪≫
-      pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
-  have : e.inv ≫ (pullback.snd _ _) = ((Over.pullback f).map g).left := by
-    ext <;> dsimp [e] <;> simp
-  rw [← this, P.cancel_left_of_respectsIso]
-  exact pullback_snd _ _ H
+theorem baseChange_map' [IsStableUnderBaseChange P] {S S' X Y : C} (f : S' ⟶ S)
+    {v₁₂ : X ⟶ S} {v₂₂ : Y ⟶ S} {g : X ⟶ Y} (hv₁₂ : v₁₂ = g ≫ v₂₂) [HasPullback v₁₂ f]
+    [HasPullback v₂₂ f] (H : P g) : P (pullback.lift (f := v₂₂) (g := f) (pullback.fst v₁₂ f ≫ g)
+    (pullback.snd v₁₂ f) (by simp [pullback.condition, ← hv₁₂])) := by
+  subst hv₁₂
+  refine of_isPullback (f' := pullback.fst (g ≫ v₂₂) f)
+    (f := pullback.fst v₂₂ f) ?_ H
+  refine IsPullback.of_bot ?_ (by simp) (IsPullback.of_hasPullback v₂₂ f)
+  simpa using IsPullback.of_hasPullback (g ≫ v₂₂) f
 
-theorem pullback_map [HasPullbacks C]
+theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [HasPullbacksAlong f] {X Y : Over S} (g : X ⟶ Y) (H : P g.left) :
+    P ((Over.pullback f).map g).left := by
+  dsimp only [Over.pullback_obj_left, Over.pullback_map_left]
+  convert baseChange_map' f (g.w.symm) H <;> simp
+
+attribute [local instance] hasPullback_symmetry_of_hasPullbacksAlong in
+theorem pullback_map
     [IsStableUnderBaseChange P] [P.IsStableUnderComposition] {S X X' Y Y' : C} {f : X ⟶ S}
-    {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'} {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
+    [HasPullbacksAlong f] {g : Y ⟶ S} {f' : X' ⟶ S} {g' : Y' ⟶ S} {i₁ : X ⟶ X'}
+    [HasPullbacksAlong g'] {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
     (e₁ : f = i₁ ≫ f') (e₂ : g = i₂ ≫ g') :
     P (pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂)) := by
-  have :
-    pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
+  have : HasPullbacksAlong (Over.mk f).hom := by cat_disch
+  have : pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂) =
       ((pullbackSymmetry _ _).hom ≫
           ((Over.pullback _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
@@ -348,7 +372,7 @@ end
 
 section LimitsOfShape
 
-variable (W : MorphismProperty C) (J : Type*) [Category J]
+variable (W : MorphismProperty C) (J : Type*) [Category* J]
 
 /-- The class of morphisms in `C` that are limits of shape `J` of
 natural transformations involving morphisms in `W`. -/
@@ -366,7 +390,7 @@ lemma limitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X�
   exact ⟨_, _, _, _, h₁, _, _, hf⟩
 
 lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
-    (J : Type*) [Category J] :
+    (J : Type*) [Category* J] :
     W₁.limitsOfShape J ≤ W₂.limitsOfShape J := by
   rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
   exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
@@ -423,17 +447,11 @@ protected lemma limMap [W.IsStableUnderLimitsOfShape J] {X Y : J ⥤ C}
     W (limMap f) :=
   limitsOfShape_le _ (limitsOfShape_limMap _ hf)
 
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limitsOfShape_le :=
-  limitsOfShape_le
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limMap :=
-  MorphismProperty.limMap
-
 end LimitsOfShape
 
 section ColimitsOfShape
 
-variable (W : MorphismProperty C) (J : Type*) [Category J]
+variable (W : MorphismProperty C) (J : Type*) [Category* J]
 
 /-- The class of morphisms in `C` that are colimits of shape `J` of
 natural transformations involving morphisms in `W`. -/
@@ -451,13 +469,13 @@ lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Coc
   exact ⟨_, _, _, _, _, h₂, _, hf⟩
 
 lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
-    (J : Type*) [Category J] :
+    (J : Type*) [Category* J] :
     W₁.colimitsOfShape J ≤ W₂.colimitsOfShape J := by
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
 variable {J} in
-lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.Final] :
+lemma colimitsOfShape_le_of_final {J' : Type*} [Category* J'] (F : J ⥤ J') [F.Final] :
     W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
   intro _ _ _ ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
   have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
@@ -472,7 +490,7 @@ lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.F
   exact ⟨_, _, _, _, h₁', h₂', _, fun _ ↦ hf _⟩
 
 variable {J} in
-lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category J'] (e : J ≌ J') :
+lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category* J'] (e : J ≌ J') :
     W.colimitsOfShape J = W.colimitsOfShape J' :=
   le_antisymm (W.colimitsOfShape_le_of_final e.inverse)
     (W.colimitsOfShape_le_of_final e.functor)
@@ -483,8 +501,8 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     let e₁ := Arrow.leftFunc.mapIso e
     let e₂ := Arrow.rightFunc.mapIso e
     have fac : e₁.hom ≫ g = h₁.desc (Cocone.mk _ (f ≫ c₂.ι)) ≫ e₂.hom := e.hom.w
-    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom}
-    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom}
+    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom }
+    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom }
     have h₁' : IsColimit c₁' := IsColimit.ofIsoColimit h₁ (Cocones.ext e₁)
     have h₂' : IsColimit c₂' := IsColimit.ofIsoColimit h₂ (Cocones.ext e₂)
     obtain hg : h₁'.desc (Cocone.mk _ (f ≫ c₂'.ι)) = g :=
@@ -511,7 +529,7 @@ lemma colimitsOfShape.of_isColimit
       naturality _ _ _ := by
         dsimp
         rw [Category.id_comp, ← Functor.map_comp]
-        rfl} h _ (by simp)
+        rfl } h _ (by simp)
 
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
@@ -540,12 +558,6 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasColimit X] [HasColimit Y] (hf : W.functorCategory _ f) :
     W (colimMap f) :=
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimMap :=
-  MorphismProperty.colimMap
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimitsOfShape_le :=
-  colimitsOfShape_le
 
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
@@ -683,14 +695,6 @@ class IsStableUnderFiniteCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
 
 attribute [instance] IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderProductsOfShape_of_isStableUnderFiniteProducts :=
-  IsStableUnderFiniteProducts.isStableUnderProductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts :=
-  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
 
 /-- The condition that a property of morphisms is stable by coproducts. -/
 @[pp_with_univ]
@@ -842,6 +846,38 @@ lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X 
   exact H ..
 
 end Universally
+
+variable (P : MorphismProperty C)
+
+/-- `P` has pullbacks if for every `f` satisfying `P`, pullbacks of arbitrary morphisms along `f`
+exist. -/
+protected class HasPullbacks : Prop where
+  hasPullback {X Y S : C} {f : X ⟶ S} (g : Y ⟶ S) : P f → HasPullback f g := by infer_instance
+
+instance [HasPullbacks C] : P.HasPullbacks where
+
+alias hasPullback := HasPullbacks.hasPullback
+
+instance [P.HasPullbacks] {X Y : C} {f : X ⟶ Y} : P.HasPullbacksAlong f where
+  hasPullback _ := hasPullback _
+
+instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong g]
+    [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] : P.HasPullbacksAlong (f ≫ g) where
+  hasPullback h p :=
+    have : HasPullback h g := HasPullbacksAlong.hasPullback h p
+    have : HasPullback (pullback.snd h g) f := HasPullbacksAlong.hasPullback (pullback.snd h g)
+      (P.pullback_snd h g p)
+    IsPullback.hasPullback (IsPullback.paste_horiz (IsPullback.of_hasPullback
+      (pullback.snd h g) f) (IsPullback.of_hasPullback h g))
+
+instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong f]
+    [P.IsStableUnderBaseChangeAlong g] [P.HasPullbacksAlong g] :
+    P.IsStableUnderBaseChangeAlong (f ≫ g) where
+  of_isPullback {_ _ _ _ p} pb hp :=
+    have : HasPullback p g := HasPullbacksAlong.hasPullback p hp
+    have right := IsPullback.of_hasPullback p g
+    IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_right' pb right)
+      (IsStableUnderBaseChangeAlong.of_isPullback right hp)
 
 end MorphismProperty
 

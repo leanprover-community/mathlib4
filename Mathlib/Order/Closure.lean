@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Closure operators between preorders
@@ -43,6 +45,8 @@ place when using concrete closure operators such as `ConvexHull`.
 
 * https://en.wikipedia.org/wiki/Closure_operator#Closure_operators_on_partially_ordered_sets
 -/
+
+@[expose] public section
 
 open Set
 
@@ -277,6 +281,7 @@ end CompleteLattice
 
 end ClosureOperator
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Conjugating `ClosureOperators` on `α` and on `β` by a fixed isomorphism
 `e : α ≃o β` gives an equivalence `ClosureOperator α ≃ ClosureOperator β`. -/
 @[simps apply symm_apply]
@@ -453,8 +458,6 @@ theorem subset_closure (s : Set β) : s ⊆ l s :=
 
 theorem notMem_of_notMem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
   hP (subset_closure _ s h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
   l.gc s S

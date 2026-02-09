@@ -3,11 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Data.Fintype.Sets
-import Mathlib.Data.Multiset.Bind
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.Multiset.Bind
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Big operators
@@ -40,11 +43,12 @@ See the documentation of `to_additive.attr` for more information.
 
 -/
 
--- TODO
--- assert_not_exists AddCommMonoidWithOne
+@[expose] public section
+
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 variable {ι κ M N G α : Type*}
 
@@ -75,7 +79,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note "operator precedence of big operators"/--
+library_note «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -102,18 +106,19 @@ open Batteries.ExtendedBinder Lean Meta
 /-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
 where `pred` is a `binderPred` like `< 2`.
 Unlike `extBinder`, `x` is a term. -/
-syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
+syntax bigOpBinder := term:max((" : "term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
-syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
+syntax bigOpBinderParenthesized := " ("bigOpBinder")"
 /-- A list of parenthesized binders -/
 syntax bigOpBinderCollection := bigOpBinderParenthesized+
 /-- A single (unparenthesized) binder, or a list of parenthesized binders -/
 syntax bigOpBinders := bigOpBinderCollection <|> (ppSpace bigOpBinder)
 
 /-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
+
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
-def processBigOpBinder (processed : (Array (Term × Term)))
-    (binder : TSyntax ``bigOpBinder) : MacroM (Array (Term × Term)) :=
+meta def processBigOpBinder (processed : (Array (Term × Term))) (binder : TSyntax ``bigOpBinder) :
+    MacroM (Array (Term × Term)) :=
   set_option hygiene false in
   withRef binder do
     match binder with
@@ -133,25 +138,23 @@ def processBigOpBinder (processed : (Array (Term × Term)))
     | _ => Macro.throwUnsupported
 
 /-- Collects the binder/Finset pairs for the given `bigOpBinders`. -/
-def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
+meta def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
     MacroM (Array (Term × Term)) :=
   match binders with
   | `(bigOpBinders| $b:bigOpBinder) => processBigOpBinder #[] b
   | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
-/-- Collect the binderIdents into a `⟨...⟩` expression. -/
-def bigOpBindersPattern (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the binderIdents into a `⟨...⟩` expression. -/
+meta def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
   let ts := processed.map Prod.fst
   if h : ts.size = 1 then
     return ts[0]
   else
     `(⟨$ts,*⟩)
 
-/-- Collect the terms into a product of sets. -/
-def bigOpBindersProd (processed : (Array (Term × Term))) :
-    MacroM Term := do
+/-- Collects the terms into a product of sets. -/
+meta def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
   if h₀ : processed.size = 0 then
     `((Finset.univ : Finset Unit))
   else if h₁ : processed.size = 1 then
@@ -166,12 +169,14 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
 - `∑ x ∈ s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∑ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
+- `∑ x ∈ s with h : p x, f x h` is notation for `Finset.sum s fun x ↦ if h : p x then f x h else 0`.
 - `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
+Notation: `"∑" bigOpBinders* (" with" (ident ":")? term)? "," term` -/
+syntax (name := bigsum)
+  "∑ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -179,30 +184,41 @@ syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 - `∏ x ∈ s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
+- `∏ x ∈ s with h : p x, f x h` is notation for
+  `Finset.prod s fun x ↦ if h : p x then f x h else 1`.
 - `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
-syntax (name := bigprod) "∏ " bigOpBinders (" with " term)? ", " term:67 : term
+Notation: `"∏" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
+syntax (name := bigprod)
+  "∏ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
 macro_rules (kind := bigsum)
-  | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∑ $bs:bigOpBinders $[with $[$hx??:binderIdent :]? $p?:term]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.sum $s (fun $x ↦ $v))
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match hx??, p? with
+    | some (some hx), some p =>
+      `(Finset.sum $s fun $x ↦ if $hx : $p then $v else 0)
+    | _, some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | _, none => `(Finset.sum $s (fun $x ↦ $v))
 
 macro_rules (kind := bigprod)
-  | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∏ $bs:bigOpBinders $[with $[$hx??:binderIdent :]? $p?:term]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
-    match p? with
-    | some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
-    | none => `(Finset.prod $s (fun $x ↦ $v))
+    -- `a` is interpreted as the filtering proposition, unless `b` exists, in which case `a` is the
+    -- proof and `b` is the filtering proposition
+    match hx??, p? with
+    | some (some hx), some p =>
+      `(Finset.prod $s fun $x ↦ if $hx : $p then $v else 1)
+    | _, some p => `(Finset.prod (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
+    | _, none => `(Finset.prod $s (fun $x ↦ $v))
 
 open PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
@@ -221,7 +237,7 @@ private inductive FinsetResult where
 
 /-- Delaborates a finset indexing a big operator. In case it is a `Finset.filter`, `i` is used for
 the binder name. -/
-private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
+private meta def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
   let s ← getExpr
   if s.isAppOfArity ``Finset.univ 2 then
     return .univ
@@ -245,11 +261,11 @@ private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
 
 /-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
-@[app_delab Finset.prod] def delabFinsetProd : Delab :=
-  whenPPOption getPPNotation <| withOverApp 5 <| do
+@[app_delab Finset.prod] meta def delabFinsetProd : Delab :=
+  whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (⟨i⟩, ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -276,11 +292,11 @@ to show the domain type when the product is over `Finset.univ`. -/
 
 /-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
-@[app_delab Finset.sum] def delabFinsetSum : Delab :=
-  whenPPOption getPPNotation <| withOverApp 5 <| do
+@[app_delab Finset.sum] meta def delabFinsetSum : Delab :=
+  whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return ((⟨i⟩ : Ident), ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -373,9 +389,6 @@ section ToList
 @[to_additive (attr := simp, grind =)]
 theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
-
-@[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
-@[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :
@@ -499,7 +512,7 @@ lemma prod_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (
 /-- Specialization of `Finset.prod_nbij'` that automatically fills in most arguments.
 
 See `Fintype.prod_equiv` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
 
 See `Fintype.sum_equiv` for the version where `s` and `t` are `univ`. -/]
 lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
@@ -508,7 +521,7 @@ lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀
 /-- Specialization of `Finset.prod_bij` that automatically fills in most arguments.
 
 See `Fintype.prod_bijective` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_bij` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_bij` that automatically fills in most arguments.
 
 See `Fintype.sum_bijective` for the version where `s` and `t` are `univ`. -/]
 lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t)
@@ -609,22 +622,30 @@ theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) 
 
 end CommMonoid
 
-section Opposite
+section MulOpposite
+variable [AddCommMonoid M] (s : Finset ι)
 
 open MulOpposite
 
 /-- Moving to the opposite additive commutative monoid commutes with summing. -/
-@[simp]
-theorem op_sum [AddCommMonoid M] {s : Finset ι} (f : ι → M) :
-    op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ) _ _
+@[simp] lemma op_sum (f : ι → M) : op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) := map_sum opAddEquiv ..
 
-@[simp]
-theorem unop_sum [AddCommMonoid M] {s : Finset ι} (f : ι → Mᵐᵒᵖ) :
-    unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ).symm _ _
+@[simp] lemma unop_sum (f : ι → Mᵐᵒᵖ) : unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
+  map_sum opAddEquiv.symm ..
 
-end Opposite
+end MulOpposite
+
+section AddOpposite
+variable [CommMonoid M] (s : Finset ι)
+
+open AddOpposite
+
+@[simp] lemma op_prod (f : ι → M) : op (∏ i ∈ s, f i) = ∏ i ∈ s, op (f i) := map_prod opMulEquiv ..
+
+@[simp] lemma unop_prod (f : ι → Mᵐᵒᵖ) : unop (∏ i ∈ s, f i) = ∏ i ∈ s, unop (f i) :=
+  map_prod opMulEquiv.symm ..
+
+end AddOpposite
 
 section DivisionCommMonoid
 

@@ -3,12 +3,14 @@ Copyright (c) 2022 Antoine Labelle, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.Quiver.Cast
-import Mathlib.Combinatorics.Quiver.Symmetric
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Equiv.Sum
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Combinatorics.Quiver.Cast
+public import Mathlib.Combinatorics.Quiver.Symmetric
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Equiv.Sum
+public import Mathlib.Tactic.Common
 
 /-!
 # Covering
@@ -40,6 +42,8 @@ Clean up the namespaces by renaming `Prefunctor` to `Quiver.Prefunctor`.
 
 Cover, covering, quiver, path, lift
 -/
+
+@[expose] public section
 
 
 open Function Quiver

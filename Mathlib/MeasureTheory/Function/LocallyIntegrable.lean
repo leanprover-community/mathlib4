@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.IntegrableOn
+module
+
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Locally integrable functions
@@ -22,6 +24,8 @@ on compact sets.
   integrable on `s`.
 -/
 
+@[expose] public section
+
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 
 open scoped Topology Interval ENNReal
@@ -37,8 +41,12 @@ namespace MeasureTheory
 section LocallyIntegrableOn
 
 /-- A function `f : X → E` is *locally integrable on s*, for `s ⊆ X`, if for every `x ∈ s` there is
-a neighbourhood of `x` within `s` on which `f` is integrable. (Note this is, in general, strictly
-weaker than local integrability with respect to `μ.restrict s`.) -/
+a neighbourhood of `x` within `s` on which `f` is integrable.
+
+Note that this is, in general, strictly weaker than local integrability with respect to
+`μ.restrict s`. For example, `fun (x : ℝ) ↦ 1/x` is locally integrable on `Set.Ioo 0 1` with
+respect to the Lebesgue measure, but it is *not* locally integrable with respect to the
+Lebesgue measure restricted to `Set.Ioo 0 1`. -/
 def LocallyIntegrableOn (f : X → ε) (s : Set X) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, x ∈ s → IntegrableAtFilter f (𝓝[s] x) μ
 
@@ -120,7 +128,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   refine ⟨u, ?_, ?_, ?_⟩
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · rw [h]
       exact isOpen_empty
     · exact T_open _ h
@@ -131,7 +139,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
     exact mem_iUnion_of_mem _ h'v
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · simp only [h, empty_inter, integrableOn_empty]
     · exact hT _ h
 
@@ -159,7 +167,7 @@ protected theorem LocallyIntegrableOn.add [ContinuousAdd ε''] {f g : X → ε''
     (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f + g) s μ := fun x hx ↦ (hf x hx).add (hg x hx)
 
--- TODO: once mathlib has a ENormedAddCommSubMonoid, generalise this lemma also
+-- TODO: once mathlib has an ENormedAddCommSubMonoid, generalise this lemma also
 protected theorem LocallyIntegrableOn.sub
     {f g : X → E} (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f - g) s μ := fun x hx ↦ (hf x hx).sub (hg x hx)
@@ -278,9 +286,6 @@ theorem MemLp.locallyIntegrable [IsLocallyFiniteMeasure μ] {p : ℝ≥0∞}
   refine ⟨U, hU, ?_⟩
   rw [IntegrableOn, ← memLp_one_iff_integrable]
   apply (hf.restrict U).mono_exponent hp
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.locallyIntegrable := MemLp.locallyIntegrable
 
 theorem locallyIntegrable_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     LocallyIntegrable (fun _ => c) μ :=
@@ -477,19 +482,26 @@ theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
     (hK : MeasurableSet K) : LocallyIntegrableOn f K μ := fun _x hx =>
   hf.integrableAt_nhdsWithin hK hx
 
+/-- If `f` is continuous on a compact set `K`, then it is integrable on any measurable subset
+`s ⊆ K` of finite measure. -/
+theorem ContinuousOn.integrableOn_of_subset_isCompact (hf : ContinuousOn f K)
+    (hK : IsCompact K) (hs : MeasurableSet s) (h's : s ⊆ K) (mus : μ s ≠ ∞) :
+    IntegrableOn f s μ := by
+  refine ⟨hf.aestronglyMeasurable_of_subset_isCompact hK hs h's, ?_⟩
+  have : Fact (μ s < ∞) := ⟨mus.lt_top⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
+    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
+  apply HasFiniteIntegral.of_bounded (C := C)
+  filter_upwards [ae_restrict_mem hs] with a ha using hC _ (mem_image_of_mem f (h's ha))
+
 variable [IsFiniteMeasureOnCompacts μ]
 
 /-- A function `f` continuous on a compact set `K` is integrable on this set with respect to any
 locally finite measure. -/
 theorem ContinuousOn.integrableOn_compact'
     (hK : IsCompact K) (h'K : MeasurableSet K) (hf : ContinuousOn f K) :
-    IntegrableOn f K μ := by
-  refine ⟨ContinuousOn.aestronglyMeasurable_of_isCompact hf hK h'K, ?_⟩
-  have : Fact (μ K < ∞) := ⟨hK.measure_lt_top⟩
-  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
-    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
-  apply HasFiniteIntegral.of_bounded (C := C)
-  filter_upwards [ae_restrict_mem h'K] with x hx using hC _ (mem_image_of_mem f hx)
+    IntegrableOn f K μ :=
+  hf.integrableOn_of_subset_isCompact hK h'K Subset.rfl hK.measure_ne_top
 
 theorem ContinuousOn.integrableOn_compact [T2Space X]
     (hK : IsCompact K) (hf : ContinuousOn f K) : IntegrableOn f K μ :=
@@ -550,17 +562,11 @@ theorem MonotoneOn.memLp_top (hmono : MonotoneOn f s) {a b : X}
   apply ae_of_all _ fun y hy ↦ ?_
   exact (hC _ (mem_image_of_mem f hy)).trans (le_abs_self _)
 
-@[deprecated (since := "2025-02-21")]
-alias MonotoneOn.memℒp_top := MonotoneOn.memLp_top
-
 theorem MonotoneOn.memLp_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
     MemLp f p (μ.restrict s) :=
   (hmono.memLp_top ha hb h's).mono_exponent_of_measure_support_ne_top (s := univ)
     (by simp) (by simpa using hs) le_top
-
-@[deprecated (since := "2025-02-21")]
-alias MonotoneOn.memℒp_of_measure_ne_top := MonotoneOn.memLp_of_measure_ne_top
 
 theorem MonotoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hmono : MonotoneOn f s) : MemLp f p (μ.restrict s) := by
@@ -569,31 +575,19 @@ theorem MonotoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompac
   · exact hmono.memLp_of_measure_ne_top (hs.isLeast_sInf h) (hs.isGreatest_sSup h)
       hs.measure_lt_top.ne hs.measurableSet
 
-@[deprecated (since := "2025-02-21")]
-alias MonotoneOn.memℒp_isCompact := MonotoneOn.memLp_isCompact
-
 theorem AntitoneOn.memLp_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
     MemLp f ∞ (μ.restrict s) :=
   MonotoneOn.memLp_top (E := Eᵒᵈ) hanti ha hb h's
-
-@[deprecated (since := "2025-02-21")]
-alias AntitoneOn.memℒp_top := AntitoneOn.memLp_top
 
 theorem AntitoneOn.memLp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
     MemLp f p (μ.restrict s) :=
   MonotoneOn.memLp_of_measure_ne_top (E := Eᵒᵈ) hanti ha hb hs h's
 
-@[deprecated (since := "2025-02-21")]
-alias AntitoneOn.memℒp_of_measure_ne_top := AntitoneOn.memLp_of_measure_ne_top
-
 theorem AntitoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hanti : AntitoneOn f s) : MemLp f p (μ.restrict s) :=
   MonotoneOn.memLp_isCompact (E := Eᵒᵈ) hs hanti
-
-@[deprecated (since := "2025-02-21")]
-alias AntitoneOn.memℒp_isCompact := AntitoneOn.memLp_isCompact
 
 theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
@@ -643,15 +637,8 @@ theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' 
     (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
     IntegrableOn (fun x => g x * g' x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hg' with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hg ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_mul_le _ _).trans ?_
-    rw [mul_comm]
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hg (hg.aestronglyMeasurable.mul <| (hg'.mono hAK).aestronglyMeasurable hA) this
+  exact hg.mul_bdd ((hg'.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.mul_continuousOn [T2Space X] (hg : IntegrableOn g K μ)
     (hg' : ContinuousOn g' K) (hK : IsCompact K) : IntegrableOn (fun x => g x * g' x) K μ :=
@@ -661,14 +648,8 @@ theorem IntegrableOn.continuousOn_mul_of_subset (hg : ContinuousOn g K) (hg' : I
     (hK : IsCompact K) (hA : MeasurableSet A) (hAK : A ⊆ K) :
     IntegrableOn (fun x => g x * g' x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hg' ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g' x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_mul_le _ _).trans ?_
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hg' (((hg.mono hAK).aestronglyMeasurable hA).mul hg'.aestronglyMeasurable) this
+  exact hg'.bdd_mul ((hg.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.continuousOn_mul [T2Space X] (hg : ContinuousOn g K)
     (hg' : IntegrableOn g' K μ) (hK : IsCompact K) : IntegrableOn (fun x => g x * g' x) K μ :=
@@ -685,14 +666,8 @@ theorem IntegrableOn.continuousOn_smul_of_subset [SecondCountableTopologyEither 
     (hK : IsCompact K) (hA : MeasurableSet A) (hAK : A ⊆ K) :
     IntegrableOn (fun x => f x • g x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hf with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hg ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖f x • g x‖ ≤ C * ‖g x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_smul_le _ _).trans ?_
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hg (((hf.mono hAK).aestronglyMeasurable hA).smul hg.aestronglyMeasurable) this
+  exact hg.bdd_smul C ((hf.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
     (hg : IntegrableOn g K μ) {f : X → 𝕜} (hf : ContinuousOn f K) (hK : IsCompact K) :
@@ -704,15 +679,8 @@ theorem IntegrableOn.smul_continuousOn_of_subset [SecondCountableTopologyEither 
     (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
     IntegrableOn (fun x => f x • g x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hf ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖f x • g x‖ ≤ C * ‖f x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_smul_le _ _).trans ?_
-    rw [mul_comm]
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hf (hf.aestronglyMeasurable.smul <| (hg.mono hAK).aestronglyMeasurable hA) this
+  exact hf.smul_bdd C ((hg.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.smul_continuousOn [T2Space X] [SecondCountableTopologyEither X E] {f : X → 𝕜}
     (hf : IntegrableOn f K μ) {g : X → E} (hg : ContinuousOn g K) (hK : IsCompact K) :

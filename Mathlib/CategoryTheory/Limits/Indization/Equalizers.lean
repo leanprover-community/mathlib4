@@ -3,18 +3,22 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
+module
+
+public import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
+public import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 
 /-!
 # Equalizers of ind-objects
 
 We show that if a category `C` has equalizers, then ind-objects are closed under equalizers.
 
-# References
+## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 6.1
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -63,17 +67,21 @@ end
 
 This is Proposition 6.1.17(i) in [Kashiwara2006].
 -/
-theorem closedUnderLimitsOfShape_walkingParallelPair_isIndObject [HasEqualizers C] :
-    ClosedUnderLimitsOfShape WalkingParallelPair (IsIndObject (C := C)) := by
-  apply closedUnderLimitsOfShape_of_limit
-  intro F hF h
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (h WalkingParallelPair.zero)
-    (h WalkingParallelPair.one) (F.map WalkingParallelPairHom.left)
-    (F.map WalkingParallelPairHom.right)
-  exact IsIndObject.map
-    (HasLimit.isoOfNatIso (P.parallelPairIsoParallelPairCompYoneda.symm ≪≫
-      (diagramIsoParallelPair _).symm)).hom
-    (isIndObject_limit_comp_yoneda_comp_colim (parallelPair P.φ P.ψ)
-      (fun i => isIndObject_limit_comp_yoneda _))
+instance isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair [HasEqualizers C] :
+    ObjectProperty.IsClosedUnderLimitsOfShape (IsIndObject (C := C)) WalkingParallelPair :=
+  .mk' (by
+    rintro _ ⟨F, h⟩
+    obtain ⟨P⟩ := nonempty_indParallelPairPresentation (h WalkingParallelPair.zero)
+      (h WalkingParallelPair.one) (F.map WalkingParallelPairHom.left)
+      (F.map WalkingParallelPairHom.right)
+    exact IsIndObject.map
+      (HasLimit.isoOfNatIso (P.parallelPairIsoParallelPairCompYoneda.symm ≪≫
+        (diagramIsoParallelPair _).symm)).hom
+      (isIndObject_limit_comp_yoneda_comp_colim (parallelPair P.φ P.ψ)
+        (fun i => isIndObject_limit_comp_yoneda _)))
+
+@[deprecated (since := "2025-09-22")]
+alias closedUnderLimitsOfShape_walkingParallelPair_isIndObject :=
+  isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair
 
 end CategoryTheory.Limits

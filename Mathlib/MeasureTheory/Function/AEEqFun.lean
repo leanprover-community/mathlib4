@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl, Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+public import Mathlib.Order.Filter.Germ.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 
@@ -53,7 +55,7 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
                  is implemented as `f.toFun`.
                  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
                  characterizing, say, `(f op g : α → β)`.
-* `AEEqFun.mk`:  To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
+* `AEEqFun.mk`:  To construct an `L⁰` function `α →ₘ β` from an almost everywhere strongly
                  measurable function `f : α → β`, use `ae_eq_fun.mk`
 * `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
                  continuous. Use `compMeasurable` if `g` is only measurable (this requires the
@@ -67,6 +69,8 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists InnerProductSpace
@@ -174,7 +178,7 @@ theorem ext {f g : α →ₘ[μ] β} (h : f =ᵐ[μ] g) : f = g := by
   rwa [← f.mk_coeFn, ← g.mk_coeFn, mk_eq_mk]
 
 theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f := by
-  rw [← mk_eq_mk, mk_coeFn]
+  rw [← mk_eq_mk (hf := AEEqFun.aestronglyMeasurable ..) (hg := hf), mk_coeFn]
 
 @[elab_as_elim]
 theorem induction_on (f : α →ₘ[μ] β) {p : (α →ₘ[μ] β) → Prop} (H : ∀ f hf, p (mk f hf)) : p f :=
@@ -197,7 +201,7 @@ theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpac
 end
 
 /-!
-### Composition of an a.e. equal function with a (quasi) measure preserving function
+### Composition of an a.e. equal function with a (quasi-)measure-preserving function
 -/
 
 section compQuasiMeasurePreserving
@@ -206,7 +210,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 
 open MeasureTheory.Measure (QuasiMeasurePreserving)
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
@@ -237,7 +241,7 @@ section compMeasurePreserving
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β}
   {f : α → β} {g : β → γ}
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
 definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
@@ -428,7 +432,8 @@ def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
 theorem mk_toGerm (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β).toGerm = f :=
   rfl
 
-theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by rw [← mk_toGerm, mk_coeFn]
+theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by
+  rw [← mk_toGerm f f.aestronglyMeasurable, mk_coeFn]
 
 theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae μ) β) := fun f g H =>
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
@@ -483,7 +488,9 @@ theorem liftRel_mk_mk {r : β → γ → Prop} {f : α → β} {g : α → γ} {
   Iff.rfl
 
 theorem liftRel_iff_coeFn {r : β → γ → Prop} {f : α →ₘ[μ] β} {g : α →ₘ[μ] γ} :
-    LiftRel r f g ↔ ∀ᵐ a ∂μ, r (f a) (g a) := by rw [← liftRel_mk_mk, mk_coeFn, mk_coeFn]
+    LiftRel r f g ↔ ∀ᵐ a ∂μ, r (f a) (g a) := by
+  rw [← liftRel_mk_mk (hf := f.aestronglyMeasurable) (hg := g.aestronglyMeasurable),
+    mk_coeFn, mk_coeFn]
 
 section Order
 
@@ -832,7 +839,7 @@ theorem lintegral_mk (f : α → ℝ≥0∞) (hf) : (mk f hf : α →ₘ[μ] ℝ
   rfl
 
 theorem lintegral_coeFn (f : α →ₘ[μ] ℝ≥0∞) : ∫⁻ a, f a ∂μ = f.lintegral := by
-  rw [← lintegral_mk, mk_coeFn]
+  rw [← lintegral_mk (hf := f.aestronglyMeasurable), mk_coeFn]
 
 @[simp]
 nonrec theorem lintegral_zero : lintegral (0 : α →ₘ[μ] ℝ≥0∞) = 0 :=

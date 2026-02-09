@@ -62,8 +62,6 @@ theorem X_Y_Z_notMem_kIdeal : (X * Y * Z : MvPolynomial (Fin 3) (ZMod 2)) ∉ kI
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
   contradiction
 
-@[deprecated (since := "2025-05-23")] alias X_Y_Z_not_mem_kIdeal := X_Y_Z_notMem_kIdeal
-
 theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X * Y * Z * x ∈ kIdeal) : x * x ∈ kIdeal := by
   rw [mem_kIdeal_iff] at h
@@ -74,7 +72,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
       Function.Embedding.trans_apply, addLeftEmbedding_apply, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂, ← add_assoc, ←
       Fin.sum_univ_three fun i => Finsupp.single i 1, ← Finsupp.equivFunOnFinite_symm_eq_sum,
-      Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_toFun] at h
+      Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_apply] at h
     refine (h _ hm).imp fun i hi => ⟨Set.mem_univ _, ?_⟩
     rintro hmi
     rw [hmi] at hi
@@ -100,8 +98,7 @@ theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZM
   rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
-  rw [RingHom.map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe,
-    Set.mem_singleton_iff]
+  rw [map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe, Set.mem_singleton_iff]
 
 /-- `k` has characteristic 2. -/
 instance K.charP : CharP K 2 := by
@@ -237,7 +234,7 @@ theorem gen_mul_gen (i) : gen i * gen i = 1 := by
 /-- By virtue of the quotient, terms of this form are zero -/
 theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
-  simp_rw [← LinearMap.map_smul, ← LinearMap.map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
+  simp_rw [← map_smul, ← map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
     ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
@@ -262,7 +259,7 @@ theorem algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * 
 /-- Our final result: for the quadratic form `Q60596.Q`, the algebra map to the Clifford algebra
 is not injective, as it sends the non-zero `α * β * γ` to zero. -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
-  fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
+  fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, map_zero]
 
 /-- Bonus counterexample: `Q` is a quadratic form that has no bilinear form. -/
 theorem Q_not_in_range_toQuadraticForm : Q ∉ Set.range BilinMap.toQuadraticMap := by
@@ -293,7 +290,7 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
 
 open Q60596 in
 /-- The general bonus statement: not every quadratic form is the diagonal of a bilinear form. -/
-theorem BilinMap.not_forall_toQuadraticMap_surjective.{v} :
+theorem LinearMap.BilinMap.not_forall_toQuadraticMap_surjective.{v} :
     -- TODO: make `R` universe polymorphic
     ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M],
       Function.Surjective (BilinMap.toQuadraticMap : BilinForm R M → QuadraticForm R M) :=

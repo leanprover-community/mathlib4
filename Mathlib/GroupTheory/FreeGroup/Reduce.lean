@@ -3,10 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Finset.Dedup
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.List.Sublists
-import Mathlib.GroupTheory.FreeGroup.Basic
+module
+
+public import Mathlib.Data.Finset.Dedup
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.List.Sublists
+public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # The maximal reduction of a word in a free group
@@ -17,6 +19,8 @@ import Mathlib.GroupTheory.FreeGroup.Basic
 * `FreeGroup.norm`: the length of the maximal reduction of a word in a free group
 
 -/
+
+@[expose] public section
 
 
 namespace FreeGroup
@@ -95,9 +99,7 @@ theorem reduce.not {p : Prop} :
       dsimp; intro h
       exfalso
       have := congr_arg List.length h
-      simp? [List.length] at this says
-        simp only [List.length, zero_add, List.length_append] at this
-      omega
+      grind
     | cons hd tail =>
       obtain ⟨y, c⟩ := hd
       dsimp only
@@ -287,7 +289,7 @@ instance : DecidableEq (FreeGroup α) :=
 --    of equation lemmas.
 instance Red.decidableRel : DecidableRel (@Red α)
   | [], [] => isTrue Red.refl
-  | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion (Red.nil_iff.1 H)
+  | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion rfl (heq_of_eq (Red.nil_iff.1 H))
   | (x, b) :: tl, [] =>
     match Red.decidableRel tl [(x, not b)] with
     | isTrue H => isTrue <| Red.trans (Red.cons_cons H) <| (@Red.Step.not _ [] [] _ _).to_red
@@ -324,7 +326,7 @@ theorem IsReduced.reduce_eq (h : IsReduced L) : reduce L = L := by
 
 @[to_additive]
 theorem IsReduced.of_reduce_eq (h : reduce L = L) : IsReduced L := by
-  rw [IsReduced, List.chain'_iff_forall_rel_of_append_cons_cons]
+  rw [IsReduced, List.isChain_iff_forall_rel_of_append_cons_cons]
   rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl rfl
   rw [eq_comm, ← Bool.ne_not]
   rintro rfl

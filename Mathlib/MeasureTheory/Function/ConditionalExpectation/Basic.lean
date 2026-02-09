@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 
 /-! # Conditional expectation
 
@@ -50,7 +52,7 @@ Uniqueness of the conditional expectation
 * `ae_eq_condExp_of_forall_setIntegral_eq`: an a.e. `m`-measurable function which verifies the
   equality of integrals is a.e. equal to `condExp`.
 
-## Notations
+## Notation
 
 For a measure `μ` defined on a measurable space structure `m₀`, another measurable space structure
 `m` with `hm : m ≤ m₀` (a sub-σ-algebra) and a function `f`, we define the notation
@@ -67,6 +69,8 @@ expectation. This would generalise `MeasureTheory.condExp_mul_of_stronglyMeasura
 conditional expectation, conditional expected value
 
 -/
+
+@[expose] public section
 
 open TopologicalSpace MeasureTheory.Lp Filter
 open scoped ENNReal Topology MeasureTheory
@@ -102,7 +106,7 @@ scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
 
 /-- Unexpander for `μ[f|m]` notation. -/
 @[app_unexpander MeasureTheory.condExp]
-def condExpUnexpander : Lean.PrettyPrinter.Unexpander
+meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $m $μ $f) => `($μ[$f|$m])
   | _ => throw ()
 
@@ -180,6 +184,7 @@ theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f|m]) := by
   · exact aestronglyMeasurable_condExpL1.stronglyMeasurable_mk
   · exact stronglyMeasurable_zero
 
+@[gcongr]
 theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
   by_cases hm : m ≤ m₀
   swap; · simp_rw [condExp_of_not_le hm]; rfl
@@ -268,7 +273,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
 
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
-  rw [measureReal_univ_eq_one, inv_one, one_smul]
+  rw [probReal_univ, inv_one, one_smul]
 
 theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : MeasurableSpace α) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by
@@ -334,7 +339,36 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   rw [setIntegral_condExp (hm₁₂.trans hm₂) integrable_condExp hs]
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
 
+/-- Conditional expectation commutes with continuous linear maps. -/
+theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] [NormedSpace ℝ F] (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
+    T ∘ μ[f|m] =ᵐ[μ] μ[T ∘ f|m] := by
+  by_cases hm : m ≤ m₀
+  · by_cases hμ : SigmaFinite (μ.trim hm)
+    · refine ae_eq_condExp_of_forall_setIntegral_eq hm ?_ (fun s ms hs => ?_) (fun s ms hs => ?_) ?_
+      · exact T.integrable_comp hf_int
+      · exact (T.integrable_comp integrable_condExp).integrableOn
+      · calc
+          ∫ x in s, (T ∘ μ[f|m]) x ∂μ = T (∫ x in s, μ[f|m] x ∂μ) :=
+            T.integral_comp_comm integrable_condExp.restrict
+          _ = T (∫ x in s, f x ∂μ) := congrArg T (setIntegral_condExp hm hf_int ms)
+          _ = ∫ x in s, (T ∘ f) x ∂μ := (T.integral_comp_comm hf_int.restrict).symm
+      · exact T.cont.comp_aestronglyMeasurable stronglyMeasurable_condExp.aestronglyMeasurable
+    · simp [condExp_of_not_sigmaFinite hm hμ]
+  · simp [condExp_of_not_le hm]
+
+/-- Conditional expectation commutes with affine functions. Note that `IsFiniteMeasure μ` is a
+necessary assumption because we want constant functions to be integrable. -/
+theorem _root_.ContinuousLinearMap.comp_condExp_add_const_comm {F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] [NormedSpace ℝ F] [IsFiniteMeasure μ] (hm : m ≤ m₀) (hf_int : Integrable f μ)
+    (T : E →L[ℝ] F) (a : F) : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[fun y ↦ T (f y) + a|m] := by
+  have hp : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[T ∘ f|m] + μ[(fun y ↦ a)|m] := by
+    filter_upwards [T.comp_condExp_comm hf_int] with b hb
+    simpa [condExp_const hm a]
+  exact hp.trans (condExp_add (T.integrable_comp hf_int) (integrable_const a) m).symm
+
 section RCLike
+
 variable [InnerProductSpace 𝕜 E]
 
 lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : MemLp f 2 μ)
@@ -346,15 +380,9 @@ lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (
   refine setIntegral_congr_ae (hm _ hs) ?_
   filter_upwards [hf2.coeFn_toLp] with ω hω _ using hω
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.condExpL2_ae_eq_condExp' := MemLp.condExpL2_ae_eq_condExp'
-
 lemma MemLp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : MemLp f 2 μ) [IsFiniteMeasure μ] :
     condExpL2 E 𝕜 hm hf.toLp =ᵐ[μ] μ[f|m] :=
   hf.condExpL2_ae_eq_condExp' hm (memLp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.condExpL2_ae_eq_condExp := MemLp.condExpL2_ae_eq_condExp
 
 end RCLike
 
@@ -383,9 +411,6 @@ protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f|m]) 2 μ := by
   · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
       eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
   · simp [condExp_of_not_le hm]
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.condExp := MemLp.condExp
 
 end Real
 end NormedAddCommGroup
@@ -442,7 +467,7 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
       hgs_bound hgs
   exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (Eventually.of_forall hn_eq)
 
-variable [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E]
+variable [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 
 lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f|m] ≤ᵐ[μ] μ[g|m] := by

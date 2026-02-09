@@ -3,8 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.Core
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public meta import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Generating "proxy types"
@@ -38,6 +40,8 @@ for each `C i`. One seems to need to add, for example, an explicit `[∀ i, Fint
 instance given `∀ i, Fintype (C i)`.
 
 -/
+
+public meta section
 
 namespace Mathlib.ProxyType
 open Lean Elab Lean.Parser.Term

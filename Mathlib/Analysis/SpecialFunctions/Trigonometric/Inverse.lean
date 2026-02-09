@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.
@@ -14,6 +16,8 @@ See also `Analysis.SpecialFunctions.Trigonometric.Arctan` for the inverse tan fu
 
 Basic inequalities on trigonometric functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -235,9 +239,9 @@ theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
 theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := fun x h => by
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 
-/-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+/-- `Real.sin` as an `OpenPartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)
@@ -305,6 +309,8 @@ theorem arccos_pos {x : ℝ} : 0 < arccos x ↔ x < 1 := by simp [arccos]
 theorem cos_arccos {x : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) : cos (arccos x) = x := by
   rw [arccos, cos_pi_div_two_sub, sin_arcsin hx₁ hx₂]
 
+-- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
+set_option linter.flexible false in
 theorem arccos_cos {x : ℝ} (hx₁ : 0 ≤ x) (hx₂ : x ≤ π) : arccos (cos x) = x := by
   rw [arccos, ← sin_pi_div_two_sub, arcsin_sin] <;> simp [sub_eq_add_neg] <;> linarith
 
@@ -437,7 +443,7 @@ theorem arccos_nhdsLE (h : Tendsto f l (𝓝[≤] x)) : Tendsto (arccos <| f ·)
 theorem arccos_nhdsGE (h : Tendsto f l (𝓝[≥] x)) :
     Tendsto (arccos <| f ·) l (𝓝[≤] (arccos x)) := by
   refine ((continuous_arccos.tendsto _).inf <| MapsTo.tendsto fun y hy ↦ ?_).comp h
-  simp only [mem_Ici, mem_Iic] at hy ⊢
+  push _ ∈ _ at hy ⊢
   exact antitone_arccos hy
 
 end Filter.Tendsto

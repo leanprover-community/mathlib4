@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.MorphismProperty.Concrete
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.MorphismProperty.Concrete
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Epi and mono in concrete categories
@@ -20,6 +22,8 @@ functorial manner as a composition of a surjective morphism followed
 by an injective morphism.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 

@@ -3,13 +3,17 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Ordered instances on submonoids
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -21,7 +25,7 @@ variable {M S : Type*} [SetLike S M]
 @[to_additive /-- An `AddSubmonoid` of an ordered additive monoid is an ordered additive monoid. -/]
 instance (priority := 75) toIsOrderedMonoid [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
     [SubmonoidClass S M] (s : S) : IsOrderedMonoid s :=
-  Subtype.coe_injective.isOrderedMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of an ordered cancellative monoid is an ordered cancellative monoid. -/
@@ -31,7 +35,7 @@ instance (priority := 75) toIsOrderedMonoid [CommMonoid M] [PartialOrder M] [IsO
 instance (priority := 75) toIsOrderedCancelMonoid
     [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     [SubmonoidClass S M] (s : S) : IsOrderedCancelMonoid s :=
-  Subtype.coe_injective.isOrderedCancelMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedCancelMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 
 end SubmonoidClass
@@ -43,7 +47,7 @@ variable {M : Type*}
 @[to_additive /-- An `AddSubmonoid` of an ordered additive monoid is an ordered additive monoid. -/]
 instance toIsOrderedMonoid [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
     (S : Submonoid M) : IsOrderedMonoid S :=
-  Subtype.coe_injective.isOrderedMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 /-- A submonoid of an ordered cancellative monoid is an ordered cancellative monoid. -/
 @[to_additive AddSubmonoid.toIsOrderedCancelAddMonoid
@@ -51,7 +55,7 @@ instance toIsOrderedMonoid [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
       additive monoid. -/]
 instance toIsOrderedCancelMonoid [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     (S : Submonoid M) : IsOrderedCancelMonoid S :=
-  Subtype.coe_injective.isOrderedCancelMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedCancelMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 section Preorder
 variable (M)

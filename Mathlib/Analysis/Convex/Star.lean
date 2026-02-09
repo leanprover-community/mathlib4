@@ -3,17 +3,19 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Module.LinearMap.Prod
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Analysis.Convex.Segment
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Module.LinearMap.Prod
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Module
 
 /-!
 # Star-convex sets
 
-This files defines star-convex sets (aka star domains, star-shaped set, radially convex set).
+This file defines star-convex sets (aka star domains, star-shaped set, radially convex set).
 
 A set is star-convex at `x` if every segment from `x` to a point in the set is contained in the set.
 
@@ -45,6 +47,8 @@ Star-convex sets are contractible.
 
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -358,8 +362,8 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
-  {x y : E}
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
+  [IsStrictOrderedModule 𝕜 E] [PosSMulReflectLT 𝕜 E] {x y : E}
 
 /-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by

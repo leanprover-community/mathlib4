@@ -3,11 +3,13 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -56,6 +58,8 @@ order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous f
 See the Vitali-Carathéodory theorem,
 in the file `Mathlib/MeasureTheory/Integral/Bochner/VitaliCaratheodory.lean`.
 -/
+
+public section
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
@@ -183,9 +187,6 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   contrapose! hx
   exact interior_subset (f_support hx)
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_hasCompactSupport_eLpNorm_sub_le := MemLp.exists_hasCompactSupport_eLpNorm_sub_le
-
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
@@ -207,10 +208,6 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_hasCompactSupport_integral_rpow_sub_le :=
-  MemLp.exists_hasCompactSupport_integral_rpow_sub_le
 
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
@@ -285,9 +282,6 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
   exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_boundedContinuous_eLpNorm_sub_le := MemLp.exists_boundedContinuous_eLpNorm_sub_le
-
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `0 < p < ∞`,
 version in terms of `∫`. -/
 theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {p : ℝ} (hp : 0 < p)
@@ -304,10 +298,6 @@ theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_boundedContinuous_integral_rpow_sub_le :=
-  MemLp.exists_boundedContinuous_integral_rpow_sub_le
 
 /-- Any integrable function can be approximated by bounded continuous functions,
 version in terms of `∫⁻`. -/

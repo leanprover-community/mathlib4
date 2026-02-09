@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Basic
+module
+
+public import Mathlib.Analysis.Analytic.Basic
 
 /-!
 # Changing origin in a power series
@@ -33,6 +35,8 @@ series `p` as `p.changeOrigin y`. See `HasFPowerSeriesOnBall.changeOrigin`. It f
 that the set of points at which a given function is analytic is open, see `isOpen_analyticAt`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped NNReal ENNReal Topology
@@ -58,7 +62,7 @@ The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fu
 p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
-    E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
+    E [×l]→L[𝕜] E [×k]→L[𝕜] F :=
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
     (by rw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
   a (p (k + l))
@@ -93,7 +97,7 @@ Given a formal multilinear series `p` and a point `x` in its ball of convergence
 `p.changeOrigin x` is a formal multilinear series such that
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense. Its `k`-th term is the sum of
 the series `p.changeOriginSeries k`. -/
-def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E[×k]→L[𝕜] F) := fun l =>
+def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E [×k]→L[𝕜] F) := fun l =>
   ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
 
 theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
@@ -222,21 +226,20 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
 /-- `derivSeries p` is a power series for `fderiv 𝕜 f` if `p` is a power series for `f`,
 see `HasFPowerSeriesOnBall.fderiv`. -/
 def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
-  (continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
+  (continuousMultilinearCurryFin1 𝕜 E F : (E [×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
     |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
 
 theorem radius_le_radius_derivSeries : p.radius ≤ p.derivSeries.radius := by
   apply (p.le_changeOriginSeries_radius 1).trans (radius_le_of_le (fun n ↦ ?_))
   apply (ContinuousLinearMap.norm_compContinuousMultilinearMap_le _ _).trans
-  apply mul_le_of_le_one_left (norm_nonneg  _)
+  apply mul_le_of_le_one_left (norm_nonneg _)
   exact ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
 theorem derivSeries_eq_zero {n : ℕ} (hp : p (n + 1) = 0) : p.derivSeries n = 0 := by
   suffices p.changeOriginSeries 1 n = 0 by ext v; simp [derivSeries, this]
   apply Finset.sum_eq_zero (fun s hs ↦ ?_)
-  ext v
   have : p (1 + n) = 0 := p.congr_zero (by abel) hp
-  simp [changeOriginSeriesTerm, ContinuousMultilinearMap.zero_apply, this]
+  simp [changeOriginSeriesTerm, this]
 
 end
 
@@ -383,5 +386,12 @@ theorem AnalyticAt.exists_mem_nhds_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
 theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ AnalyticOnNhd 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
+
+/-- Sum of series is analytic on its ball of convergence. -/
+protected theorem FormalMultilinearSeries.analyticOnNhd :
+    AnalyticOnNhd 𝕜 p.sum (EMetric.ball 0 p.radius) := by
+  by_cases hr : p.radius = 0
+  · simp [hr]
+  exact (FormalMultilinearSeries.hasFPowerSeriesOnBall _ (pos_of_ne_zero hr)).analyticOnNhd
 
 end

@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis.Defs
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Direct sum of modules
@@ -22,6 +24,8 @@ elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s 
 in this file.
 
 -/
+
+@[expose] public section
 
 universe u v w u₁
 
@@ -374,9 +378,6 @@ theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A
   rw [DFinsupp.sumAddHom_apply]
   simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
 
-@[deprecated (since := "2025-04-06")]
-alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
-
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
@@ -430,30 +431,8 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
 @[simp]
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σ i, α i ↦ ↑(v a.1 a.2) := by
-  funext a
-  -- Porting note: was
-  -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
-  --   Basis.repr_symm_apply, DFinsupp.lsum_apply_apply, DFinsupp.mapRange.linearEquiv_apply,
-  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, linearCombination_single,
-  --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
-  --   sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
-  --   sigmaFinsuppLequivDFinsupp_apply]
-  -- convert DFinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
-  simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
-    LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_apply,
-    AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-    sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
-    LinearEquiv.ofBijective_apply]
-  rw [DFinsupp.mapRange.linearEquiv_symm]
-  -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
-  -- appears in the goal, but the lemma is expecting
-  -- `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), ↥(A i))`
-  erw [DFinsupp.mapRange.linearEquiv_apply]
-  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, linearCombination_single, one_smul,
-    toModule]
-  -- Similarly here.
-  erw [DFinsupp.lsum_single]
-  simp only [Submodule.coe_subtype]
+  simp [IsInternal.collectedBasis, coeLinearMap, DFinsupp.mapRange.linearEquiv,
+    toModule, DFinsupp.lsum]
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
@@ -608,5 +587,58 @@ lemma linearMap_eq_iff (x y : ⨁ i, α i) :
 end linearMap
 
 end mapRange
+section Congr
+
+variable {R : Type*} [Semiring R]
+    {ι : Type*}
+    {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
+    {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+
+/-- Direct sums of isomorphic additive groups are isomorphic. -/
+def congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
+    (⨁ i, N i) ≃+ ⨁ i, P i where
+  toAddHom := DirectSum.map fun i ↦ (u i).toAddMonoidHom
+  invFun := DirectSum.map fun i ↦ (u i).symm.toAddMonoidHom
+  left_inv x := by aesop
+  right_inv y := by aesop
+
+@[deprecated (since := "2025-12-01")] alias congr_addEquiv := congrAddEquiv
+
+theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
+    ⇑(congrAddEquiv u).toAddMonoidHom = ⇑(DirectSum.map fun i ↦ (u i).toAddMonoidHom) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")] alias coe_congr_addEquiv := coe_congrAddEquiv
+
+/-- Direct sums of isomorphic modules are isomorphic. -/
+def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
+  toAddEquiv := congrAddEquiv (fun i ↦ (u i).toAddEquiv)
+  map_smul' r x := by
+    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+
+@[deprecated (since := "2025-12-01")] alias congr_linearEquiv := congrLinearEquiv
+
+theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")] alias coe_congr_linearEquiv := coe_congrLinearEquiv
+
+theorem congrLinearEquiv_toAddEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congrLinearEquiv u).toAddEquiv = congrAddEquiv (fun i ↦ (u i).toAddEquiv) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")]
+alias congr_linearEquiv_toAddEquiv := congrLinearEquiv_toAddEquiv
+
+theorem congrLinearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congrLinearEquiv u).toLinearMap = DirectSum.lmap (fun i ↦ (u i).toLinearMap) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")]
+alias congr_linearEquiv_toLinearMap := congrLinearEquiv_toLinearMap
+
+end Congr
 
 end DirectSum

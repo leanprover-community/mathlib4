@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Iterated derivatives of compositions
@@ -29,6 +31,8 @@ We use
 Before starting to work on these TODOs, please contact Yury Kudryashov
 who may have partial progress towards some of them.
 -/
+
+public section
 
 open Function Set
 open scoped ContDiff
@@ -150,7 +154,7 @@ theorem iteratedDerivWithin_scomp_two
       derivWithin f s x ^ 2 • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 2 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_two hg hf ht hs hx hst]
-  simp [← derivWithin_fderivWithin, iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
+  simp [← toSpanSingleton_derivWithin, iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
 
 theorem iteratedDeriv_scomp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffAt 𝕜 2 f x) :
     iteratedDeriv 2 (g ∘ f) x
@@ -167,13 +171,8 @@ theorem iteratedDerivWithin_scomp_three
       3 • iteratedDerivWithin 2 f s x • derivWithin f s x • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 3 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_three hg hf ht hs hx hst]
-  simp? [← derivWithin_fderivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
-      iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod] says
-    simp only [iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod, Finset.prod_const,
-      Finset.card_univ, Fintype.card_fin, Fin.prod_univ_two, Fin.isValue, Matrix.cons_val_zero,
-      Matrix.cons_val_one, Matrix.cons_val_fin_one, mul_smul,
-      smul_comm (iteratedDerivWithin 2 f s x), ← derivWithin_fderivWithin,
-      ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, add_left_inj]
+  simp [← toSpanSingleton_derivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
+        iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
   abel
 
 theorem iteratedDeriv_scomp_three (hg : ContDiffAt 𝕜 3 g (f x)) (hf : ContDiffAt 𝕜 3 f x) :

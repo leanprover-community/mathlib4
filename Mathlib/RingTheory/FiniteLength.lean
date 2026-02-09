@@ -3,7 +3,9 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Modules of finite length
@@ -18,6 +20,8 @@ We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsA
 
 Finite length, Composition series
 -/
+
+@[expose] public section
 
 variable (R : Type*) [Ring R]
 
@@ -56,14 +60,15 @@ theorem isFiniteLength_of_exists_compositionSeries
     rw [← s_last]
     suffices ∀ i, IsFiniteLength R (s i) from this (Fin.last _)
     intro i
-    induction' i using Fin.induction with i ih
-    · change IsFiniteLength R s.head; rw [s_head]; exact .of_subsingleton
-    let cov := s.step i
-    have := (covBy_iff_quot_is_simple cov.le).mp cov
-    have := ((s i.castSucc).comap (s i.succ).subtype).equivMapOfInjective
-      _ (Submodule.injective_subtype _)
-    rw [Submodule.map_comap_subtype, inf_of_le_right cov.le] at this
-    exact .of_simple_quotient (this.symm.isFiniteLength ih)
+    induction i using Fin.induction with
+    | zero => change IsFiniteLength R s.head; rw [s_head]; exact .of_subsingleton
+    | succ i ih =>
+      let cov := s.step i
+      have := (covBy_iff_quot_is_simple cov.le).mp cov
+      have := ((s i.castSucc).comap (s i.succ).subtype).equivMapOfInjective
+        _ (Submodule.injective_subtype _)
+      rw [Submodule.map_comap_subtype, inf_of_le_right cov.le] at this
+      exact .of_simple_quotient (this.symm.isFiniteLength ih)
 
 theorem isFiniteLength_iff_isNoetherian_isArtinian :
     IsFiniteLength R M ↔ IsNoetherian R M ∧ IsArtinian R M :=

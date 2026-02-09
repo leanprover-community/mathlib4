@@ -3,16 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.Adjunctions
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.Square
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.Adjunction
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.Adjunctions
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.Square
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.Adjunction
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Mayer-Vietoris squares
@@ -35,7 +36,7 @@ the category of sheaves after the application of the
 functor `yoneda ⋙ presheafToSheaf J _`. Note that in the
 standard case of a covering by two open subsets, all
 the morphisms in the square would be monomorphisms,
-but this dissymetry allows the example of Nisnevich distinguished
+but this dissymmetry allows the example of Nisnevich distinguished
 squares in the case of the Nisnevich topology on schemes (in which case
 `f₂₄ : X₂ ⟶ X₄` shall be an open immersion and
 `f₃₄ : X₃ ⟶ X₄` an étale map that is an isomorphism over
@@ -50,6 +51,8 @@ that it is indeed satisfied by sheaves.
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/
+
+@[expose] public section
 universe v v' u u'
 
 namespace CategoryTheory
@@ -146,12 +149,12 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
 
 variable (S : J.MayerVietorisSquare)
 
-lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrp.{v}] :
-    (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+lemma isPushoutAddCommGrpFreeSheaf [HasWeakSheafify J AddCommGrpCat.{v}] :
+    (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).IsPushout :=
-  (S.isPushout.map (Sheaf.composeAndSheafify J AddCommGrp.free)).of_iso
+  (S.isPushout.map (Sheaf.composeAndSheafify J AddCommGrpCat.free)).of_iso
     ((Square.mapFunctor.mapIso
-      (presheafToSheafCompComposeAndSheafifyIso J AddCommGrp.free)).app
+      (presheafToSheafCompComposeAndSheafifyIso J AddCommGrpCat.free)).app
         (S.map yoneda))
 
 /-- The condition that a Mayer-Vietoris square becomes a pullback square
@@ -219,7 +222,7 @@ lemma sheafCondition_of_sheaf {A : Type u'} [Category.{v} A]
 
 end
 
-variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
+variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
   (S : J.MayerVietorisSquare)
 
 /-- The short complex of abelian sheaves
@@ -227,11 +230,11 @@ variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrp.{v}]
 where the left map is a difference and the right map a sum. -/
 @[simps]
 noncomputable def shortComplex :
-    ShortComplex (Sheaf J AddCommGrp.{v}) where
-  X₁ := (presheafToSheaf J _).obj (yoneda.obj S.X₁ ⋙ AddCommGrp.free)
-  X₂ := (presheafToSheaf J _).obj (yoneda.obj S.X₂ ⋙ AddCommGrp.free) ⊞
-    (presheafToSheaf J _).obj (yoneda.obj S.X₃ ⋙ AddCommGrp.free)
-  X₃ := (presheafToSheaf J _).obj (yoneda.obj S.X₄ ⋙ AddCommGrp.free)
+    ShortComplex (Sheaf J AddCommGrpCat.{v}) where
+  X₁ := (presheafToSheaf J _).obj (yoneda.obj S.X₁ ⋙ AddCommGrpCat.free)
+  X₂ := (presheafToSheaf J _).obj (yoneda.obj S.X₂ ⋙ AddCommGrpCat.free) ⊞
+    (presheafToSheaf J _).obj (yoneda.obj S.X₃ ⋙ AddCommGrpCat.free)
+  X₃ := (presheafToSheaf J _).obj (yoneda.obj S.X₄ ⋙ AddCommGrpCat.free)
   f :=
     biprod.lift
       ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₁₂) _))
@@ -240,7 +243,7 @@ noncomputable def shortComplex :
     biprod.desc
       ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₂₄) _))
       ((presheafToSheaf J _).map (Functor.whiskerRight (yoneda.map S.f₃₄) _))
-  zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrp.free ⋙
+  zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
 instance : Mono S.shortComplex.f := by

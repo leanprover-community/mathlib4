@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Michael Stoll
 -/
-import Mathlib.NumberTheory.LSeries.ZMod
-import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+module
+
+public import Mathlib.NumberTheory.LSeries.ZMod
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 
 /-!
 # Analytic continuation of Dirichlet L-functions
@@ -37,6 +39,8 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   showing that if `χ` is primitive modulo `N`, then
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
+
+@[expose] public section
 
 open HurwitzZeta Complex Finset ZMod Filter
 
@@ -125,7 +129,7 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
   have hpc : IsPreconnected ({1}ᶜ : Set ℂ) :=
     (isConnected_compl_singleton_of_one_lt_rank (rank_real_complex ▸ Nat.one_lt_ofNat) _)
       |>.isPreconnected
-  have hne : 2 ∈ ({1}ᶜ : Set ℂ) := by norm_num
+  have hne : 2 ∈ ({1}ᶜ : Set ℂ) := by simp
   refine AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq (𝕜 := ℂ)
     (g := fun s ↦ LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s))) ?_ ?_ hpc hne ?_ hs
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
@@ -136,7 +140,7 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
     have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
     fun_prop
   · refine eventually_of_mem ?_ (fun t (ht : 1 < t.re) ↦ ?_)
-    · exact (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by norm_num : 1 < (2 : ℂ).re)
+    · exact (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by simp : 1 < (2 : ℂ).re)
     · simpa [LFunction_eq_LSeries _ ht] using LSeries_changeLevel hMN χ ht
 
 /-- If `χ` is a Dirichlet character and its level `M` divides `N`, then we obtain the L function

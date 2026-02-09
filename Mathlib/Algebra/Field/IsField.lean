@@ -3,8 +3,10 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Tactic.Common
 
 /-!
 # `IsField` predicate
@@ -15,6 +17,8 @@ multiplicative inverse. In contrast to `Field`, which contains the data of a fun
 to an element of the field its multiplicative inverse, this predicate only assumes the existence
 and can therefore more easily be used to e.g. transfer along ring isomorphisms.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -78,7 +82,7 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
 
 /-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R where
-  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slow
+  __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slow
   __ := h.toSemifield
   qsmul := _
   qsmul_def := fun _ _ => rfl

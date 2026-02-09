@@ -3,9 +3,11 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
-import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-import Mathlib.Algebra.CharP.CharAndCard
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
+public import Mathlib.Algebra.CharP.CharAndCard
 
 /-!
 # Gauss sums
@@ -44,6 +46,8 @@ Quadratic Reciprocity.
 
 additive character, multiplicative character, Gauss sum
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -186,7 +190,7 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
   rfl
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
-is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
+is a unit in the source ring, the `p`th power of the Gauss sum of `χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
@@ -197,7 +201,7 @@ theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R 
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
-sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
+sum of `χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') :
     gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
@@ -228,7 +232,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
   have : gaussSum χ ψ ≠ 0 := by
     intro hf
     rw [hf, zero_pow two_ne_zero, eq_comm, mul_eq_zero] at hg
-    exact not_isUnit_prime_of_dvd_card p
+    exact not_isUnit_prime_of_dvd_card
         ((CharP.cast_eq_zero_iff R' p _).mp <| hg.resolve_left (isUnit_one.neg.map χ).ne_zero) hp
   rw [← hg]
   apply mul_right_cancel₀ this

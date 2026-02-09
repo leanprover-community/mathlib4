@@ -3,13 +3,15 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Data.Finsupp.MonomialOrder.DegLex
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.MvPolynomial.Groebner
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPolynomial.Groebner
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-! # Alon's Combinatorial Nullstellensatz
 
@@ -48,6 +50,8 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
   Nullstellensatz Lemma*][Rote_2023]
 
 -/
+
+public section
 
 open Finsupp
 
@@ -112,7 +116,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         simp only [coeff_zero]
         set n := (embDomain Function.Embedding.some m).update none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
-        rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]
+        rw [← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none]
         by_contra hm
         apply not_le.mpr hd
         rw [MvPolynomial.degreeOf_eq_sup]
@@ -129,7 +133,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       intro e he
       set n := (embDomain Function.Embedding.some e).update none m with hn
       rw [eq_option_embedding_update_none_iff] at hn
-      rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_coeff, ← ne_eq,
+      rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
       convert Finset.le_sup he
       rw [← hn.2, some_apply]
@@ -253,9 +257,8 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
-  by_contra Heval
+  by_contra! Heval
   apply ht
-  push_neg at Heval
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
     (fun i ↦ by rw [← Finset.card_pos]; exact Nat.zero_lt_of_lt (htS i)) f Heval
   rw [hf]
@@ -272,7 +275,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   rw [hg, ← degree_degLexDegree,
     degree_mul_of_isRegular_right hi (by simp only [(Alon.monic_P ..).leadingCoeff_eq_one,
       isRegular_one]),
-    Alon.degree_P, degree_add, degree_degLexDegree, degree_single, ht'] at this
+    Alon.degree_P, map_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq
@@ -281,9 +284,9 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   intro hq
   obtain ⟨e, hq', hq⟩ := Alon.of_mem_P_support _ _ _ hq
   apply coeff_eq_zero_of_totalDegree_lt
-  rw [← Finsupp.degree]
+  rw [← Finsupp.degree_apply]
   apply lt_of_add_lt_add_right (lt_of_le_of_lt this _)
-  rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_single]
+  rw [← hpq, map_add, add_lt_add_iff_left, hq, degree_single]
   apply lt_of_le_of_lt _ (htS i)
   simp [← hpq, hq]
 

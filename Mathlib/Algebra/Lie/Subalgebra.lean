@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Lie subalgebras
@@ -26,6 +28,8 @@ results.
 
 lie algebra, lie subalgebra
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -182,9 +186,7 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 
 theorem toSubmodule_mk (p : Submodule R L) (h) :
-    (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
-  cases p
-  rfl
+    (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := rfl
 
 theorem coe_injective : Function.Injective ((↑) : LieSubalgebra R L → Set L) :=
   SetLike.coe_injective
@@ -398,6 +400,9 @@ theorem bot_coe : ((⊥ : LieSubalgebra R L) : Set L) = {0} :=
 theorem bot_toSubmodule : ((⊥ : LieSubalgebra R L) : Submodule R L) = ⊥ :=
   rfl
 
+@[simp] lemma toSubmodule_eq_bot (K : LieSubalgebra R L) : K.toSubmodule = ⊥ ↔ K = ⊥ := by
+  simp [← toSubmodule_inj]
+
 @[simp]
 theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
   mem_singleton_iff
@@ -412,6 +417,9 @@ theorem top_coe : ((⊤ : LieSubalgebra R L) : Set L) = univ :=
 @[simp]
 theorem top_toSubmodule : ((⊤ : LieSubalgebra R L) : Submodule R L) = ⊤ :=
   rfl
+
+@[simp] lemma toSubmodule_eq_top (K : LieSubalgebra R L) : K.toSubmodule = ⊤ ↔ K = ⊤ := by
+  simp [← toSubmodule_inj]
 
 @[simp]
 theorem mem_top (x : L) : x ∈ (⊤ : LieSubalgebra R L) :=
@@ -492,10 +500,11 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   nsmul := nsmulRec
 
 instance : IsOrderedAddMonoid (LieSubalgebra R L) where
-  add_le_add_left _ _ := sup_le_sup_left
+  add_le_add_left _ _ := sup_le_sup_right
 
 instance : CanonicallyOrderedAdd (LieSubalgebra R L) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add _ _ := le_sup_left
 
 @[simp]

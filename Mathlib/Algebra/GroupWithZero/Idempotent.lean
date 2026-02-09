@@ -3,17 +3,20 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.GroupWithZero.Defs
+module
+
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
 # Idempotent elements of a group with zero
 -/
 
+@[expose] public section
+
 assert_not_exists Ring
 
-variable {M N S M₀ M₁ R G G₀ : Type*}
-variable [MulOneClass M₁] [CancelMonoidWithZero G₀]
+variable {M₀ : Type*}
 
 namespace IsIdempotentElem
 section MulZeroClass
@@ -28,7 +31,7 @@ instance : Zero { p : M₀ // IsIdempotentElem p } where zero := ⟨0, zero⟩
 end MulZeroClass
 
 section CancelMonoidWithZero
-variable [CancelMonoidWithZero M₀]
+variable {G₀ : Type*} [MonoidWithZero G₀] [IsLeftCancelMulZero G₀]
 
 @[simp]
 lemma iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 where

@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.LinearAlgebra.AffineSpace.Basis
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.LinearAlgebra.AffineSpace.Basis
 
 /-!
 # Convex combinations
@@ -22,6 +24,8 @@ We divide by the sum of the weights in the definition of `Finset.centerMass` bec
 mathematical arguments go: one doesn't change weights, but merely adds some. This also makes a few
 lemmas unconditional on the sum of the weights being `1`.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -63,7 +67,7 @@ theorem Finset.centerMass_insert [DecidableEq ι] (ha : i ∉ t) (hw : ∑ j ∈
 theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerMass w z = z i := by
   rw [centerMass, sum_singleton, sum_singleton]
   match_scalars
-  field_simp
+  field
 
 @[simp] lemma Finset.centerMass_neg_left : t.centerMass (-w) z = t.centerMass w z := by
   simp [centerMass, inv_neg]
@@ -127,7 +131,7 @@ theorem Finset.centerMass_filter_ne_zero [∀ i, Decidable (w i ≠ 0)] :
 
 namespace Finset
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [PosSMulMono R α]
+variable [LinearOrder R] [IsOrderedAddMonoid α] [PosSMulMono R α]
 
 theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
@@ -143,6 +147,34 @@ theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
 end Finset
 
 variable {z}
+
+lemma Finset.centerMass_const (hw : ∑ j ∈ t, w j ≠ 0) (c : E) :
+    t.centerMass w (Function.const _ c) = c := by
+  simp [centerMass, ← sum_smul, hw]
+
+lemma Finset.centerMass_congr [DecidableEq ι] {t' : Finset ι} {w' : ι → R} {z' : ι → E}
+    (h : ∀ i, (i ∈ t ∧ w i ≠ 0 ∨ i ∈ t' ∧ w' i ≠ 0) → i ∈ t ∩ t' ∧ w i = w' i ∧ z i = z' i) :
+    t.centerMass w z = t'.centerMass w' z' := by
+  classical
+  rw [← centerMass_filter_ne_zero, centerMass, ← centerMass_filter_ne_zero, centerMass]
+  congr 1
+  · congr 1
+    exact sum_congr (by grind) (by grind)
+  · exact sum_congr (by grind) (by grind)
+
+lemma Finset.centerMass_congr_finset [DecidableEq ι] {t' : Finset ι}
+    (h : ∀ i ∈ t ∪ t', w i ≠ 0 → i ∈ t ∩ t') : t.centerMass w z = t'.centerMass w z :=
+  centerMass_congr (by grind)
+
+lemma Finset.centerMass_congr_weights {w' : ι → R} (h : ∀ i ∈ t, w i = w' i) :
+    t.centerMass w z = t.centerMass w' z := by
+  classical
+  exact centerMass_congr (by grind)
+
+lemma Finset.centerMass_congr_fun {z' : ι → E} (h : ∀ i ∈ t, w i ≠ 0 → z i = z' i) :
+    t.centerMass w z = t.centerMass w z' := by
+  classical
+  exact centerMass_congr (by grind)
 
 lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
     (hw : ∑ i ∈ s, w i + ∑ i ∈ t, w i = 0) (hz : ∑ i ∈ s, w i • z i + ∑ i ∈ t, w i • z i = 0) :

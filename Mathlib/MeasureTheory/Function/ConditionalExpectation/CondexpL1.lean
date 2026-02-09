@@ -3,13 +3,15 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
-import Mathlib.MeasureTheory.Measure.Real
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+public import Mathlib.MeasureTheory.Measure.Real
 
 /-! # Conditional expectation in L1
 
 This file contains two more steps of the construction of the conditional expectation, which is
-completed in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a
+completed in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
 description of the full process.
 
 The conditional expectation of an `L²` function is defined in
@@ -26,6 +28,8 @@ The conditional expectation of an `L²` function is defined in
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -89,34 +93,22 @@ theorem condExpIndL1Fin_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : 
     condExpIndL1Fin hm hs hμs (x + y) =
     condExpIndL1Fin hm hs hμs x + condExpIndL1Fin hm hs hμs y := by
   ext1
-  refine (MemLp.coeFn_toLp q).trans ?_
-  refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
-  refine EventuallyEq.trans ?_
-    (EventuallyEq.add (MemLp.coeFn_toLp q).symm (MemLp.coeFn_toLp q).symm)
-  rw [condExpIndSMul_add]
-  refine (Lp.coeFn_add _ _).trans (Eventually.of_forall fun a => ?_)
-  rfl
+  unfold condExpIndL1Fin Integrable.toL1
+  grw [Lp.coeFn_add, MemLp.coeFn_toLp, MemLp.coeFn_toLp, MemLp.coeFn_toLp, condExpIndSMul_add,
+    Lp.coeFn_add]
 
 theorem condExpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : ℝ) (x : G) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
-  refine (MemLp.coeFn_toLp q).trans ?_
-  refine EventuallyEq.trans ?_ (Lp.coeFn_smul _ _).symm
-  rw [condExpIndSMul_smul hs hμs c x]
-  refine (Lp.coeFn_smul _ _).trans ?_
-  refine (condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x).mono fun y hy => ?_
-  simp only [Pi.smul_apply, hy]
+  grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
+    condExpIndSMul_smul, Lp.coeFn_smul]
 
 theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
-  refine (MemLp.coeFn_toLp q).trans ?_
-  refine EventuallyEq.trans ?_ (Lp.coeFn_smul _ _).symm
-  rw [condExpIndSMul_smul hs hμs c x]
-  refine (Lp.coeFn_smul _ _).trans ?_
-  refine (condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x).mono fun y hy => ?_
-  simp only [Pi.smul_apply, hy]
+  grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
+    condExpIndSMul_smul, Lp.coeFn_smul]
 
 theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     ‖condExpIndL1Fin hm hs hμs x‖ ≤ μ.real s * ‖x‖ := by
@@ -128,8 +120,7 @@ theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
   have h_eq :
     ∫⁻ a, ‖condExpIndL1Fin hm hs hμs x a‖ₑ ∂μ = ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖ₑ ∂μ := by
     refine lintegral_congr_ae ?_
-    refine (condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x).mono fun z hz => ?_
-    dsimp only
+    filter_upwards [condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x] with z hz
     rw [hz]
   rw [h_eq, ofReal_norm_eq_enorm]
   exact lintegral_nnnorm_condExpIndSMul_le hm hs hμs x
@@ -140,19 +131,15 @@ theorem condExpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
       (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne x =
     condExpIndL1Fin hm hs hμs x + condExpIndL1Fin hm ht hμt x := by
   ext1
-  have hμst := measure_union_ne_top hμs hμt
-  refine (condExpIndL1Fin_ae_eq_condExpIndSMul hm (hs.union ht) hμst x).trans ?_
-  refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
-  have hs_eq := condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x
-  have ht_eq := condExpIndL1Fin_ae_eq_condExpIndSMul hm ht hμt x
-  refine EventuallyEq.trans ?_ (EventuallyEq.add hs_eq.symm ht_eq.symm)
+  grw [Lp.coeFn_add, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
+    condExpIndL1Fin_ae_eq_condExpIndSMul]
   rw [condExpIndSMul]
   rw [indicatorConstLp_disjoint_union hs ht hμs hμt hst (1 : ℝ)]
-  rw [(condExpL2 ℝ ℝ hm).map_add]
+  rw [map_add]
   push_cast
-  rw [((toSpanSingleton ℝ x).compLpL 2 μ).map_add]
-  refine (Lp.coeFn_add _ _).trans ?_
-  filter_upwards with y using rfl
+  rw [map_add]
+  grw [Lp.coeFn_add]
+  rfl
 
 end CondexpIndL1Fin
 
@@ -248,7 +235,7 @@ variable {G}
 theorem condExpInd_ae_eq_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condExpInd G hm μ s x =ᵐ[μ] condExpIndSMul hm hs hμs x := by
-  refine EventuallyEq.trans ?_ (condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x)
+  grw [← condExpIndL1Fin_ae_eq_condExpIndSMul]
   simp [condExpInd, condExpIndL1, hs, hμs]
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
@@ -260,13 +247,9 @@ theorem aestronglyMeasurable_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ 
 
 @[simp]
 theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[μ] G) := by
-  ext1 x
-  ext1
-  refine (condExpInd_ae_eq_condExpIndSMul hm MeasurableSet.empty (by simp) x).trans ?_
-  rw [condExpIndSMul_empty]
-  refine (Lp.coeFn_zero G 2 μ).trans ?_
-  refine EventuallyEq.trans ?_ (Lp.coeFn_zero G 1 μ).symm
-  rfl
+  ext x
+  grw [condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_empty, zero_apply, Lp.coeFn_zero,
+    Lp.coeFn_zero]
 
 theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
     condExpInd F hm μ s (c • x) = c • condExpInd F hm μ s x :=
@@ -308,17 +291,14 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
   ext1
-  refine EventuallyEq.trans ?_ indicatorConstLp_coeFn.symm
-  refine (condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs c).trans ?_
-  refine (condExpIndSMul_ae_eq_smul hm (hm s hs) hμs c).trans ?_
+  grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_ae_eq_smul]
   rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
-  refine (@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)).mono fun x hx => ?_
-  dsimp only
+  filter_upwards [@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)] with x hx
   rw [hx]
   by_cases hx_mem : x ∈ s <;> simp [hx_mem]
 
 theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E]
-    [OrderedSMul ℝ E] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
+    [IsOrderedModule ℝ E] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     0 ≤ condExpInd E hm μ s x := by
   rw [← coeFn_le]
   refine EventuallyLE.trans_eq ?_ (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
@@ -523,9 +503,9 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
   exact hfm.congr hfi.coeFn_toL1.symm
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
-    [CompleteSpace E] [NormedSpace ℝ E]
-    [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
+    [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
+    [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
+    (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by
   rw [coeFn_le]
   have h_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x : E, 0 ≤ x → 0 ≤ condExpInd E hm μ s x :=

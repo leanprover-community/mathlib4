@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Basic results on bases
@@ -22,6 +24,8 @@ There are also various lemmas on bases on specific spaces (such as empty or sing
 * `Basis.mk`: construct a basis out of `v : ι → M` such that `LinearIndependent v` and
   `span (range v) = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Ordinal
 
@@ -167,6 +171,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       simp
     rwa [h_x_eq_y]
 
+@[simp]
 protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
   congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
 
@@ -244,29 +249,21 @@ instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
 
 end Empty
 
-section NoZeroSMulDivisors
+section Module.IsTorsionFree
 
 -- Can't be an instance because the basis can't be inferred.
-protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
-    NoZeroSMulDivisors R M :=
-  ⟨fun {c x} hcx => by
-    exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
-        ← map_zero (linearCombination R b)] at hcx
-      have := b.linearIndependent hcx
-      rw [smul_eq_zero] at this
-      exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
+protected lemma isTorsionFree (b : Basis ι R M) :
+    Module.IsTorsionFree R M := b.repr.injective.moduleIsTorsionFree _ (by simp)
 
-protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x : M} :
-    c • x = 0 ↔ c = 0 ∨ x = 0 :=
-  @smul_eq_zero _ _ _ _ _ b.noZeroSMulDivisors _ _
+protected theorem smul_eq_zero [IsDomain R] (b : Basis ι R M) {c : R} {x : M} :
+    c • x = 0 ↔ c = 0 ∨ x = 0 := by have := b.isTorsionFree; exact smul_eq_zero
 
-end NoZeroSMulDivisors
+end Module.IsTorsionFree
 
 section Singleton
 
-theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
+theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] (ι : Type*) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
