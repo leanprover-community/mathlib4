@@ -45,6 +45,8 @@ class Etale {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.etale_appLE := Etale.etale_appLE
 
+@[deprecated (since := "2026-02-09")] alias IsEtale := Etale
+
 namespace Etale
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
