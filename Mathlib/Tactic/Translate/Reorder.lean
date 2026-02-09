@@ -155,6 +155,7 @@ partial def reorderForall (reorder : Reorder) (e : Expr) : MetaM Expr := do
     throwError "the permutation (reorder := {reorder}) is out of bounds, \
       the type{indentExpr e}\nhas only {mvars.size} arguments"
   let bis := reorder.permute! bis |>.toList
+  -- Note that `mkForallFVars` also works with mvars.
   fixBinderInfos bis <$> mkForallFVars (← reorderMVars mvars reorder) e
 
 /-- Reorder the arguments of a function using the given `Reorder`. -/
@@ -166,6 +167,7 @@ partial def reorderLambda (reorder : Reorder) (e : Expr) : MetaM Expr := do
     throwError "the permutation (reorder := {reorder}) is out of bounds, \
       the function{indentExpr e}\nhas only {mvars.size} arguments"
   let bis := reorder.permute! (bis ++ bis') |>.toList
+  -- Note that `mkLambdaFVars` also works with mvars.
   fixBinderInfos bis <$> mkLambdaFVars (← reorderMVars mvars reorder) (mkAppN e mvars')
 
 end

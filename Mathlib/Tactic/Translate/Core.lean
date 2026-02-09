@@ -374,31 +374,29 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 partial def applyReplacementFun (t : TranslateData) (e : Expr)
     (dontTranslate : Array FVarId := #[]) : MetaM Expr := do
-  visit e |>.run {} |>.run {}
+  visit e |>.run {}
 where
   /-- The implementation of this function is based on `Meta.transform`.
   We can't use `Meta.transform`, because that would cause the types of free variables to be
   translated, which would create type-incorrect terms. Instead, we give the free variables
   their original type and the translated type is only used when constructing the final term. -/
-  visit (e : Expr) : ReaderT (Std.TreeMap FVarId Reorder (·.1.quickCmp ·.1))
-      (MonadCacheT ExprStructEq Expr MetaM) Expr :=
-    withTraceNode `translate_detail (fun res => return m!"{exceptEmoji res} replacing at {e}") do
+  visit (e : Expr) : MonadCacheT ExprStructEq Expr MetaM Expr :=
+    withTraceNode `translate_detail (fun res => return m!"{exceptEmoji res} translating {e}") do
     checkCache { val := e : ExprStructEq } fun _ => do
     let e ← match e with
       | .forallE .. => visitForall e
       | .lam ..     => visitLambda e
       | .letE ..    => visitLet e
-      | .mdata _ b  => e.updateMData! <$> visit b
-      | .app .. | .proj .. | .const .. | .fvar _ => visitApp e
+      | .mdata _ b  => return e.updateMData! (← visit b)
+      | .proj ..    => visitApp e
+      | .app ..     => visitApp e
+      | .const ..   => visitApp e
       | _           => pure e
     trace[translate_detail] "result: {e}"
     return e
   visitApp (e : Expr) := e.withApp fun f args ↦ do
     let env ← getEnv
     match f with
-    | .fvar fvarId =>
-      let some reorder := (← read)[fvarId]? | return mkAppN f (← args.mapM visit)
-      visitAppReorder e f args reorder
     | .proj n i b =>
       let some info := getStructureInfo? env n |
         return mkAppN (f.updateProj! (← visit b)) (← args.mapM visit) -- e.g. if `n` is `Exists`
@@ -429,22 +427,25 @@ where
           trace[translate_detail]
             "The application of {n₀} contains the fixed type {fixed} so it is not changed."
           return mkAppN f (← args.mapM visit)
-      let ls₁ := reorder.permuteUniv ls₀
-      trace[translate_detail]"changing {Expr.const n₀ ls₀} to {Expr.const n₁ ls₁}"
-      visitAppReorder e (.const n₁ ls₁) args reorder
-    | _ => return mkAppN (← visit f) (← args.mapM visit)
-  @[inline]
-  visitAppReorder (e f : Expr) (args : Array Expr) (reorder : Reorder) := do
       -- If the number of arguments is too small for `reorder`, we need to eta expand first
       if args.size < reorder.range then
         let e' ← etaExpandN (reorder.range - args.size) e
         trace[translate_detail] "eta expanded {e} to {e'}"
         return ← visit e'
+      let f' := Expr.const n₁ (reorder.permuteUniv ls₀)
+      trace[translate_detail]"changing {f} to {f'}"
       unless reorder.perm.isEmpty do
         trace[translate_detail]
-          "reordering the arguments of {f} using the cyclic permutations {reorder.perm}"
-      let args ← args.mapIdxM fun i ↦ (reorder.argReorder? i).elim visit visitLambdaReorder
-      return mkAppN f (reorder.permute! args)
+          "reordering the arguments of {f'} using the cyclic permutations {reorder.perm}"
+      let mut args := args
+      /- It would be possible to, instead of calling `reorderLambda`,
+      do the reordering of arguments as part of the main loop. This would be more efficient,
+      but since this is a rare case, this will likely not save a significant amount of time. -/
+      for (arg, argReorder) in reorder.argReorders do
+        args ← args.modifyM arg (reorderLambda argReorder ·)
+      args := reorder.permute! args
+      return mkAppN f' (← args.mapM visit)
+    | _ => return mkAppN (← visit f) (← args.mapM visit)
   /- In `visitLambda`, `visitForall` and `visitLet`,
   we use a fresh `tmpLCtx : LocalContext` to store the translated types of the free variables.
   This is because the local context in the `MetaM` monad stores their original types. -/
@@ -477,27 +478,6 @@ where
       let e ← visit (e.instantiateRev fvars)
       -- Note that `mkLambda` will make `let` expressions because it will see the `LocalDecl.ldecl`.
       return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
-  /-- A version of `visitLambda` that also reorders the lambda using the given reorder. -/
-  visitLambdaReorder (reorder : Reorder) (e : Expr) (fvars : Array Expr := #[])
-      (tmpLCtx : LocalContext := {}) := do
-    if let .lam n d b bi := e then
-      let d := d.instantiateRev fvars
-      let d' ← visit d
-      withLocalDecl n bi d fun x => do
-        if let some argReorder := reorder.argReorder? fvars.size then
-          withReader (Std.TreeMap.insert · x.fvarId! argReorder) do
-          let d' ← reorderForall argReorder d'
-          visitLambdaReorder reorder b (fvars.push x) (tmpLCtx.addDecl
-            ((← getFVarLocalDecl x).setType d'))
-        else
-          visitLambdaReorder reorder b (fvars.push x) (tmpLCtx.addDecl
-            ((← getFVarLocalDecl x).setType d'))
-    else
-      let e := e.instantiateRev fvars
-      if fvars.size < reorder.range then
-        visitLambdaReorder reorder (← etaExpandN (reorder.range - fvars.size) e) fvars tmpLCtx
-      else
-        return tmpLCtx.mkLambda (reorder.permute! fvars) (← visit e)
 
 /-- Rename binder names in pi type. -/
 def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
@@ -947,7 +927,8 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       throwError "invalid `(attr := ...)` after `self` or `none`, \
         as there is no other declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
-    trace[translate_detail] "attributes: {attrs}; reorder arguments: {reorder?.map (s!"{·}")}"
+    trace[translate_detail]
+      "attributes: {attrs}; reorder arguments: {reorder?.elim "none" (·.toString)}"
     let doc ← doc.mapM fun
       | `(str|$doc:str) => open Linter in do
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
