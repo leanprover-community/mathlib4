@@ -77,6 +77,21 @@ instance etale_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChang
 instance (priority := 900) [IsOpenImmersion f] : Etale f :=
   HasRingHomProperty.of_isOpenImmersion RingHom.Etale.containsIdentities
 
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale g] :
+    Etale (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale f] :
+    Etale (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [Etale f] : Etale (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [Etale f] :
+    Etale (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
+
 lemma eq_smoothOfRelativeDimension_zero : @Etale = @SmoothOfRelativeDimension 0 := by
   apply HasRingHomProperty.ext
   introv

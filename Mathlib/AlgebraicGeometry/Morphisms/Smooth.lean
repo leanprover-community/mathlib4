@@ -7,8 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-public import Mathlib.RingTheory.RingHom.Smooth
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
+public import Mathlib.RingTheory.Smooth.Flat
 
 /-!
 
@@ -42,7 +43,7 @@ June 2024.
 
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory Limits
 
 universe t w v u
 
@@ -106,12 +107,12 @@ instance smooth_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Smooth f] [Smooth g] :
     Smooth (f ≫ g) :=
   MorphismProperty.comp_mem _ f g ‹Smooth f› ‹Smooth g›
 
+instance (priority := low) [Smooth f] : Flat f where
+  flat_appLE {_} hU {_} hV e := (f.smooth_appLE hU hV e).flat
+
 /-- Smooth is stable under base change. -/
 instance smooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Smooth :=
   HasRingHomProperty.isStableUnderBaseChange Smooth.isStableUnderBaseChange
-
-@[deprecated (since := "2026-02-09")]
-alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
 
 @[deprecated (since := "2026-02-09")]
 alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
@@ -173,6 +174,21 @@ instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :
 /-- Open immersions are smooth. -/
 instance (priority := 900) [IsOpenImmersion f] : Smooth f :=
   SmoothOfRelativeDimension.smooth 0 f
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth g] :
+    Smooth (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Smooth f] :
+    Smooth (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [Smooth f] : Smooth (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [Smooth f] :
+    Smooth (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
 
 /-- If `f` is smooth of relative dimension `n` and `g` is smooth of relative dimension
 `m`, then `f ≫ g` is smooth of relative dimension `n + m`. -/
