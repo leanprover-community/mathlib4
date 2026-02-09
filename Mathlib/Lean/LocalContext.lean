@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public import Lean.LocalContext
+public import Batteries.Control.AlternativeMonad
 
 /-!
 # Additional methods about `LocalContext`
@@ -17,7 +18,7 @@ public section
 namespace Lean.LocalContext
 
 universe u v
-variable {m : Type u → Type v} [Monad m] [Alternative m]
+variable {m : Type u → Type v} [AlternativeMonad m]
 variable {β : Type u}
 
 -- `Monad` and `Alternative` overlap on `Applicative`.

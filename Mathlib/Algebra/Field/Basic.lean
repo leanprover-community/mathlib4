@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Order.Synonym
 
+import Mathlib.Tactic.Tauto
+
 /-!
 # Lemmas about division (semi)rings and (semi)fields
 
@@ -118,6 +120,14 @@ theorem inv_sub_inv' {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ =
 theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) :
     1 / a * (b - a) * (1 / b) = 1 / a - 1 / b := by
   simpa only [one_div] using (inv_sub_inv' ha hb).symm
+
+theorem inv_eq_self₀ {a : K} : a⁻¹ = a ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
+  obtain rfl | ha := eq_or_ne a 0; · simp
+  rw [← mul_eq_one_iff_inv_eq₀ ha, ← pow_two, sq_eq_one_iff]
+  tauto
+
+theorem self_eq_inv₀ {a : K} : a = a⁻¹ ↔ a = -1 ∨ a = 0 ∨ a = 1 := by
+  rw [eq_comm, inv_eq_self₀]
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
