@@ -6,6 +6,7 @@ Authors: Zhixuan Dai, Yiming Fu, Zhenyan Fu, Raphael Douglas Giles, Jiedong Jian
 import Mathlib.Algebra.RingQuot
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.GroupTheory.Congruence.BigOperators
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Homogeneous Relation
@@ -168,7 +169,7 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
     | symm _ _ _ h' => exact h'.symm
     | trans _ _ _ _ _ h' h'' => exact h'.trans h''
   · apply RingQuot.ringQuot_ext
-    apply RingEquiv.comp_inj (decomposeRingEquiv 𝒜).symm
+    apply RingEquiv.comp_injective (decomposeRingEquiv 𝒜).symm
     ext i x
     simp only [Function.comp_apply, RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
       AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, RingHom.coe_comp, RingHom.coe_coe,
@@ -187,16 +188,16 @@ section GradedAlgebra
 variable {R : Type*} [CommSemiring R] [Algebra R A]
 variable (𝒜 : ι → Submodule R A) [inst : GradedAlgebra 𝒜] (rel : A → A → Prop)
 
-instance : SetLike.GradedMonoid ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) where
+instance : SetLike.GradedMonoid ((Submodule.mapAlgHom (RingQuot.mkAlgHom R rel)) ∘ 𝒜) where
   one_mem := ⟨1, ⟨SetLike.GradedOne.one_mem, map_one (RingQuot.mkAlgHom R rel)⟩⟩
   mul_mem := fun x y gi gj ⟨a, ha1, ha2⟩ ⟨b, hb1, hb2⟩ ↦
-    ⟨(a * b), ⟨SetLike.GradedMul.mul_mem ha1 hb1, by rw [map_mul, ha2, hb2]⟩⟩
+    ⟨(a * b), ⟨SetLike.GradedMul.mul_mem ha1 hb1, by simp_all⟩⟩
 
 open DirectSum
 
 variable [IsHomogeneousRelation 𝒜 rel]
 
-instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) := by
+instance : GradedAlgebra ((Submodule.mapAlgHom (RingQuot.mkAlgHom R rel)) ∘ 𝒜) := by
   refine GradedAlgebra.ofAlgHom _
     (RingQuot.liftAlgHom R (s := rel) ⟨(toAlgebra R (fun i ↦ 𝒜 i)
       (fun i ↦ (lof R ι _ i).comp (RingQuot.mkAlgHom R rel |>.toLinearMap.submoduleMap (𝒜 i)))
