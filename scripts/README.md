@@ -118,8 +118,8 @@ to learn about it as well!
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
   `x scripts/auto_commit.sh <command>` enables a rebase workflow: during interactive rebase,
-  you can convert `pick abc x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
-  (by deleting the "pick abc " prefix), and git will re-run the command via exec.
+  you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
+  (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
   Example: `scripts/auto_commit.sh lake exe mk_all`
 - `verify_commits.sh` verifies special commits in a PR:
   - **Transient commits** (prefix `transient: `) must have zero net effect on the final tree
