@@ -283,7 +283,7 @@ theorem inclusion_inclusion [Preorder S] [IsConcreteLE S G]
 @[to_additive (attr := simp)]
 theorem coe_inclusion [LE S] [IsConcreteLE S G]
     {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
-  Set.coe_inclusion (SetLike.GCongr.coe_subset_coe h) a
+  Set.coe_inclusion (SetLike.coe_subset_coe.mpr h) a
 
 @[to_additive (attr := simp)]
 theorem subtype_comp_inclusion [LE S] [IsConcreteLE S G]
