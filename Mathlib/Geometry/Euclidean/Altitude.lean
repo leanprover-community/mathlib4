@@ -269,20 +269,27 @@ open scoped RealInnerProductSpace
 
 variable {n : ℕ} (s : Simplex ℝ P n)
 
+/-- Altitudes are perpendicular to the faces containing their foot. -/
+lemma inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero {i j : Fin (n + 1)} (h : i ≠ j) :
+    have : NeZero n := by grind [neZero_iff]
+    ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 := by
+  haveI : NeZero n := by grind [neZero_iff]
+  refine Submodule.inner_right_of_mem_orthogonal
+    (K := vectorSpan ℝ (s.points '' {i}ᶜ))
+    (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
+      (s.mem_affineSpan_image_iff.2 h.symm)
+      (Affine.Simplex.altitudeFoot_mem_affineSpan_image_compl _ _))
+    ?_
+  rw [← direction_affineSpan, ← Affine.Simplex.range_faceOpposite_points]
+  exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+
 /-- The inner product of an edge from `j` to `i` and the vector from the foot of `i` to `i`
 is the square of the height. -/
 lemma inner_vsub_vsub_altitudeFoot_eq_height_sq [NeZero n] {i j : Fin (n + 1)} (h : i ≠ j) :
     ⟪s.points i -ᵥ s.points j, s.points i -ᵥ s.altitudeFoot i⟫ = s.height i ^ 2 := by
   suffices ⟪s.points j -ᵥ s.altitudeFoot i, s.points i -ᵥ s.altitudeFoot i⟫ = 0 by
     rwa [height, inner_vsub_vsub_left_eq_dist_sq_right_iff, inner_vsub_left_eq_zero_symm]
-  refine Submodule.inner_right_of_mem_orthogonal
-      (K := vectorSpan ℝ (s.points '' {i}ᶜ))
-      (vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
-        (s.mem_affineSpan_image_iff.2 h.symm)
-        (altitudeFoot_mem_affineSpan_image_compl _ _))
-      ?_
-  rw [← direction_affineSpan, ← range_faceOpposite_points]
-  exact vsub_orthogonalProjection_mem_direction_orthogonal _ _
+  exact s.inner_vsub_altitudeFoot_vsub_altitudeFoot_eq_zero h
 
 variable [Nat.AtLeastTwo n]
 

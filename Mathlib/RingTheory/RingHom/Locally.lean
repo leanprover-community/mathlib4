@@ -238,11 +238,9 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
 /-- If `P` is stable under composition with localization away maps on the right,
 then so is `Locally P`. -/
 lemma locally_StableUnderCompositionWithLocalizationAwayTarget
-    (hP0 : RespectsIso P)
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) :
     StableUnderCompositionWithLocalizationAwayTarget (Locally P) := by
   intro R S T _ _ _ _ t _ f hf
-  simp only [locally_iff_isLocalization hP0 f] at hf
   obtain ⟨s, hsone, hs⟩ := hf
   refine ⟨algebraMap S T '' s, ?_, ?_⟩
   · rw [← Ideal.map_span, hsone, Ideal.map_top]
@@ -386,7 +384,7 @@ lemma locally_propertyIsLocal (hPl : LocalizationAwayPreserves P)
     (hPa : StableUnderCompositionWithLocalizationAway P) : PropertyIsLocal (Locally P) where
   localizationAwayPreserves := locally_localizationAwayPreserves hPl
   StableUnderCompositionWithLocalizationAwayTarget :=
-    locally_StableUnderCompositionWithLocalizationAwayTarget hPl.respectsIso hPa.right
+    locally_StableUnderCompositionWithLocalizationAwayTarget hPa.right
   ofLocalizationSpan := (locally_ofLocalizationSpanTarget hPl.respectsIso).ofLocalizationSpan
     (locally_StableUnderCompositionWithLocalizationAwaySource hPa.left)
   ofLocalizationSpanTarget := locally_ofLocalizationSpanTarget hPl.respectsIso

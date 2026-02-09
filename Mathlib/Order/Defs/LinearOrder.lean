@@ -83,12 +83,6 @@ attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
 
-@[to_dual existing toDecidableLT, inherit_doc toDecidableLT]
-def LinearOrder.toDecidableLT' : DecidableLT' α := fun a b => toDecidableLT b a
-
-@[to_dual existing toDecidableLE, inherit_doc toDecidableLE]
-def LinearOrder.toDecidableLE' : DecidableLE' α := fun a b => toDecidableLE b a
-
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
 
@@ -235,5 +229,28 @@ instance : Std.LawfulBCmp (compare (α := α)) where
   isLE_iff_le := by simp [← Ordering.ne_gt_iff_isLE, compare_le_iff_le]
 
 end Ord
+
+/-- The category of linear orders.
+
+This will get reused to define `OrderType`. -/
+structure LinOrd where
+  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying linearly ordered type. -/
+  (carrier : Type*)
+  [str : LinearOrder carrier]
+
+attribute [instance] LinOrd.str
+
+initialize_simps_projections LinOrd (carrier → coe, -str)
+
+namespace LinOrd
+
+instance : CoeSort LinOrd (Type _) :=
+  ⟨LinOrd.carrier⟩
+
+attribute [coe] LinOrd.carrier
+
+end LinOrd
 
 end LinearOrder
