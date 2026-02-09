@@ -84,7 +84,7 @@ noncomputable def Lifting₂.snd (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂)) :=
   Lifting₂.fst L₂ L₁ W₂ W₁ F.flip F'.flip X₂
 
-noncomputable instance Lifting₂.uncurry [Lifting₂ L₁ L₂ W₁ W₂ F F'] :
+noncomputable instance Lifting₂.uncurry :
     Lifting (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F) (uncurry.obj F') where
   iso := Functor.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
