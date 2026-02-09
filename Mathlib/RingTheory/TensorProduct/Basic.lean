@@ -294,7 +294,6 @@ lemma algebraMap_def [SMulCommClass R S A] :
 
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
-#synth Algebra R (A ⊗[R] B)
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
 instance instAlgebra : Algebra R (A ⊗[R] B) :=
