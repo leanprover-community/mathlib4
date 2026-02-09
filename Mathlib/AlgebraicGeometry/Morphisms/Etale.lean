@@ -15,8 +15,13 @@ public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 # Étale morphisms
 
-A morphism of schemes `f : X ⟶ Y` is étale if it is smooth of relative dimension zero. We
-also define the category of schemes étale over `X`.
+A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y`
+and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale.
+
+## Main results
+
+- `AlgebraicGeometry.Etale.iff_smoothOfRelativeDimension_zero`: Etale is equivalent to
+  smooth of relative dimension `0`.
 
 -/
 
@@ -30,33 +35,68 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry
 
-/-- A morphism of schemes is étale if it is smooth of relative dimension zero. -/
-abbrev Etale {X Y : Scheme.{u}} (f : X ⟶ Y) := SmoothOfRelativeDimension 0 f
+/-- A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y` and
+`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale. -/
+@[mk_iff]
+class Etale {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop where
+  etale_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
+      (f.appLE U V e).hom.Etale
+
+alias Scheme.Hom.etale_appLE := Etale.etale_appLE
 
 namespace Etale
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
+/-- The property of scheme morphisms `Etale` is associated with the ring
+homomorphism property `Etale`. -/
+instance : HasRingHomProperty @Etale RingHom.Etale where
+  isLocal_ringHomProperty := RingHom.Etale.propertyIsLocal
+  eq_affineLocally' := by
+    ext X Y f
+    rw [etale_iff, affineLocally_iff_forall_isAffineOpen]
+
+/-- Being étale is multiplicative. -/
+instance : MorphismProperty.IsMultiplicative @Etale :=
+  HasRingHomProperty.isMultiplicative RingHom.Etale.stableUnderComposition
+    RingHom.Etale.containsIdentities
+
+/-- The composition of étale morphisms is étale. -/
+instance etale_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Etale f] [Etale g] :
+    Etale (f ≫ g) :=
+  MorphismProperty.comp_mem _ f g ‹Etale f› ‹Etale g›
+
+/-- Etale is stable under base change. -/
+instance etale_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Etale :=
+  HasRingHomProperty.isStableUnderBaseChange RingHom.Etale.isStableUnderBaseChange
+
+/-- Open immersions are étale. -/
+instance (priority := 900) [IsOpenImmersion f] : Etale f :=
+  HasRingHomProperty.of_isOpenImmersion RingHom.Etale.containsIdentities
+
+lemma eq_smoothOfRelativeDimension_zero : @Etale = @SmoothOfRelativeDimension 0 := by
+  apply HasRingHomProperty.ext
+  introv
+  have : @RingHom.Etale = @RingHom.IsStandardSmoothOfRelativeDimension 0 := by
+    ext; apply RingHom.etale_iff_isStandardSmoothOfRelativeDimension_zero
+  rw [← this, RingHom.locally_iff_of_localizationSpanTarget]
+  · exact RingHom.Etale.respectsIso
+  · exact RingHom.Etale.ofLocalizationSpanTarget
+
+lemma iff_smoothOfRelativeDimension_zero : Etale f ↔ SmoothOfRelativeDimension 0 f := by
+  rw [eq_smoothOfRelativeDimension_zero]
+
+instance [Etale f] : SmoothOfRelativeDimension 0 f := by
+  rwa [← iff_smoothOfRelativeDimension_zero]
+
 instance [Etale f] : Smooth f :=
   SmoothOfRelativeDimension.smooth 0 f
 
-instance : IsStableUnderBaseChange @Etale :=
-  smoothOfRelativeDimension_isStableUnderBaseChange 0
-
 open RingHom in
 instance (priority := 900) [Etale f] : FormallyUnramified f where
-  formallyUnramified_appLE {U} hU {V} hV e := by
-    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE U V e).hom :=
-      HasRingHomProperty.appLE (P := @SmoothOfRelativeDimension 0) _
-        inferInstance ⟨U, hU⟩ ⟨V, hV⟩ _
-    have : Locally RingHom.FormallyUnramified (f.appLE U V e).hom := by
-      apply locally_of_locally _ this
-      intro R S _ _ f hf
-      algebraize [f]
-      rw [RingHom.FormallyUnramified]
-      infer_instance
-    rwa [← RingHom.locally_iff_of_localizationSpanTarget
-      FormallyUnramified.respectsIso FormallyUnramified.ofLocalizationSpanTarget]
+  formallyUnramified_appLE {_} hU {_} hV e :=
+    (f.etale_appLE hU hV e).formallyUnramified
 
 instance : MorphismProperty.HasOfPostcompProperty
     @Etale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
