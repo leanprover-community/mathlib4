@@ -37,7 +37,6 @@ open Filter
 
 open scoped Topology ENNReal InnerProductSpace
 
--- TODO: move
 /-- Let `u : ι → α → β` be a sequence of antitone functions `α → β` indexed by `ι`. Suppose that for
 all `i : ι`, `u i` tends to `c` at infinity, and that furthermore the limsup of `i ↦ u i r` along
 the cofinite filter tends to the same `c` as `r` tends to infinity.
@@ -54,7 +53,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β ι : Type*} [ConditionallyCompleteLa
   · simpa using h_limsup
   refine tendsto_order.mpr ⟨fun b hb ↦ ?_, fun b hb ↦ ?_⟩
   · filter_upwards with r
-    have : c ≤ u n0 r := Antitone.le_of_tendsto (h_anti n0) (h_all n0) r
+    have : c ≤ u n0 r := (h_anti n0).le_of_tendsto (h_all n0) r
     exact hb.trans_le (this.trans (le_iSup_iff.mpr fun b a ↦ a n0))
   -- `⊢ ∀ᶠ (b_1 : α) in atTop, ⨆ i, u i b_1 < b` for `b > c`
   let b' := if h : (Set.Ioo c b).Nonempty then h.some else c
@@ -62,27 +61,24 @@ lemma tendsto_iSup_of_tendsto_limsup {α β ι : Type*} [ConditionallyCompleteLa
     simp only [b']
     split_ifs with h
     exacts [h.some_mem.2, hb]
-  have : ∀ᶠ r in atTop, limsup (fun n ↦ u n r) cofinite ≤ b' := by
+  have : ∀ᶠ r in atTop, limsup (u · r) cofinite ≤ b' := by
     simp only [b']
     split_ifs with h
-    · filter_upwards [(tendsto_order.1 h_limsup).2 _ h.some_mem.1] with r hr
-      exact hr.le
+    · filter_upwards [(tendsto_order.1 h_limsup).2 _ h.some_mem.1] with r hr using hr.le
     · filter_upwards [(tendsto_order.1 h_limsup).2 b hb] with r hr
       contrapose! h
-      exact ⟨limsup (fun n ↦ u n r) cofinite, h, hr⟩
-  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (fun n ↦ u n s) cofinite ≤ b' := by simpa using this
+      exact ⟨limsup (u · r) cofinite, h, hr⟩
+  obtain ⟨r, hr⟩ : ∃ r, ∀ s ≥ r, limsup (u · s) cofinite ≤ b' := by simpa using this
   obtain ⟨b'', hb''b, hb''⟩ : ∃ b'' ∈ Set.Ico b' b, ∀ᶠ n in cofinite, u n r ≤ b'' := by
     rcases Set.eq_empty_or_nonempty (Set.Ioo b' b) with h | ⟨b'', hb'b'', hb''b⟩
     · refine ⟨b', ⟨le_rfl, hb'b⟩, ?_⟩
-      have := hr r le_rfl
-      rw [limsup_le_iff] at this
-      filter_upwards [this b hb'b] with n hn
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b)
+      filter_upwards [h_lt] with n hn
       contrapose! h
       exact ⟨u n r, h, hn⟩
     · refine ⟨b'', ⟨hb'b''.le, hb''b⟩ , ?_⟩
-      have := hr r le_rfl
-      rw [limsup_le_iff] at this
-      filter_upwards [this b'' hb'b''] with n hn using hn.le
+      have h_lt := eventually_lt_of_limsup_lt ((hr r le_rfl).trans_lt hb'b'')
+      filter_upwards [h_lt] with n hn using hn.le
   have A (n) : ∃ r, ∀ s ≥ r, u n s ≤ b'' := by
     suffices ∀ᶠ r in atTop, u n r ≤ b' by
       simp only [eventually_atTop, ge_iff_le] at this
@@ -98,8 +94,9 @@ lemma tendsto_iSup_of_tendsto_limsup {α β ι : Type*} [ConditionallyCompleteLa
   choose rs hrs using A
   simp only [eventually_atTop, ge_iff_le]
   refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
-  apply lt_of_le_of_lt _ hb''b.2
-  refine iSup_le fun n ↦ ?_
+  -- `⊢ ⨆ i, u i v < b`
+  apply lt_of_le_of_lt (iSup_le fun n ↦ ?_) hb''b.2
+  -- `⊢ u n v ≤ b''` for `v` such that `r ⊔ (⨆ n, rs n) ≤ v`
   by_cases hn : b'' < u n r
   · refine hrs n v ?_
     calc rs n
@@ -108,31 +105,27 @@ lemma tendsto_iSup_of_tendsto_limsup {α β ι : Type*} [ConditionallyCompleteLa
       refine le_ciSup (f := fun (x : {n | b'' < u n r}) ↦ rs x) ?_
         (⟨n, by simp [hn]⟩ : {n | b'' < u n r})
       have : Finite {n | b'' < u n r} := by simpa using hb''
-      apply Finite.bddAbove_range _
+      exact Finite.bddAbove_range _
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_right
     _ ≤ v := hv
-  · simp only [not_lt] at hn
-    refine (h_anti n ?_).trans hn
+  · refine (h_anti n ?_).trans (not_lt.mp hn)
     calc r
     _ ≤ r ⊔ ⨆ n : {n | b'' < u n r}, rs n := le_sup_left
     _ ≤ v := hv
 
--- TODO: move
 /-- Let `u : ℕ → α → β` be a sequence of antitone functions `α → β` indexed by `ℕ`. Suppose that for
 all `n : ℕ`, `u n` tends to `c` at infinity, and that furthermore the limsup of `n ↦ u n r`
 tends to the same `c` as `r` tends to infinity.
 Then the supremum function `r ↦ ⨆ n, u n r` also tends to `c` at infinity. -/
-nonrec
-lemma Nat.tendsto_iSup_of_tendsto_limsup {α : Type*} [ConditionallyCompleteLattice α] {β : Type*}
+lemma Nat.tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLattice α]
     [CompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {u : ℕ → α → β} {c : β}
     (h_all : ∀ n, Tendsto (u n) atTop (𝓝 c))
     (h_limsup : Tendsto (fun r : α ↦ limsup (fun n ↦ u n r) atTop) atTop (𝓝 c))
     (h_anti : ∀ n, Antitone (u n)) :
     Tendsto (fun r : α ↦ ⨆ n, u n r) atTop (𝓝 c) := by
-  refine tendsto_iSup_of_tendsto_limsup  h_all ?_ h_anti
-  convert h_limsup
-  exact cofinite_eq_atTop
+  rw [← cofinite_eq_atTop] at h_limsup
+  exact _root_.tendsto_iSup_of_tendsto_limsup h_all h_limsup h_anti
 
 namespace MeasureTheory
 
