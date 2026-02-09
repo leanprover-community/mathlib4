@@ -14,7 +14,7 @@ set -euo pipefail
 # --- Configuration ---
 TIMEOUT_SECONDS=600  # 10 minutes per command
 TRANSIENT_PREFIX="${TRANSIENT_PREFIX:-transient: }"
-# Support both "x: <cmd>" (legacy) and "x <cmd>" (rebase-friendly) formats
+# Support both "x <cmd>" and "x: <cmd>" (legacy) formats
 AUTO_PREFIX_COLON="${AUTO_PREFIX_COLON:-x: }"
 AUTO_PREFIX_SPACE="${AUTO_PREFIX_SPACE:-x }"
 

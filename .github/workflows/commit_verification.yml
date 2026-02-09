@@ -22,7 +22,7 @@ permissions:
 
 env:
   TRANSIENT_PREFIX: "transient: "
-  # Support both "x: " (legacy) and "x " (rebase-friendly) prefixes
+  # Support both "x " and "x: " (legacy) prefixes
   AUTO_PREFIX_COLON: "x: "
   AUTO_PREFIX_SPACE: "x "
 
@@ -48,7 +48,7 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
           # Check if any commits have transient or auto prefix
-          # Auto prefix can be "x: " (legacy) or "x " (rebase-friendly)
+          # Auto prefix can be "x " or "x: " (legacy)
           HAS_SPECIAL=$(git log --format="%s" "$BASE_SHA..$HEAD_SHA" | \
             grep -E "^(${TRANSIENT_PREFIX}|${AUTO_PREFIX_COLON}|${AUTO_PREFIX_SPACE})" || true)
 

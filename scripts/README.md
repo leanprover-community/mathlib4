@@ -123,9 +123,8 @@ to learn about it as well!
   Example: `scripts/auto_commit.sh lake exe mk_all`
 - `verify_commits.sh` verifies special commits in a PR:
   - **Transient commits** (prefix `transient: `) must have zero net effect on the final tree
-  - **Automated commits** (prefix `x: <command>` or `x <command>`)
+  - **Automated commits** (prefix `x <command>`; or legacy `x: <command>`)
     must match the effect of re-running the command.
-    The `x scripts/auto_commit.sh <command>` variant is rebase-friendly.
   Supports `--json` for machine-readable output and `--json-file PATH` to write JSON while
   displaying human-readable output.
 - `verify_commits_summary.sh` generates a markdown PR comment from `verify_commits.sh` JSON output.
