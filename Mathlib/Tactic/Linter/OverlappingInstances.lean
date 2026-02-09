@@ -145,10 +145,7 @@ partial def findOverlappingDataInstances : MetaM Overlaps := do
         then `fvar` and `fvar₀` overlap (or will overlap) on some parent of the current `cls`.
         We should (only) record overlaps on the maximal parent class(es); the current overlap is
         therefore redundant, and we skip it. -/
-        if hasAnyParentWhich isProjectionOfFVar₀ projClasses parentIdxs then
-          trace[debug] "  False alarm, parent will be recorded"
-        else
-          trace[debug] "  Recording overlap"
+        unless hasAnyParentWhich isProjectionOfFVar₀ projClasses parentIdxs do
           overlaps := overlaps.pushOverlap (fvar₀, clsIsTypeOfFVar₀) cls (fvar, parentIdxs.isEmpty)
       else
         trace[debug] "• `{cls}`: not found."
