@@ -588,7 +588,20 @@ theorem latin_rectangle_extends
     have h := row_entry_to_column_entry A x
     obtain ⟨f, hf⟩ := h
     have f_inj : Function.Injective f := by
-      sorry
+      -- TODO: This proof should be simplified
+      simp [Function.Injective]
+      intro a1 a2 h1
+      have h1' := h1.symm
+      have h1'' := h1
+      rw [<- hf] at h1
+      rw [<- hf] at h1'
+      rw [h1''] at h1'
+      rw [<-h1'] at h1
+      have hinj := A.distinct_col_entries
+      unfold distinct_col_entries at hinj
+      specialize hinj (f a2)
+      simp [Function.Injective, Matrix.col] at hinj
+      exact hinj h1
     set f' : k ↪ n := ⟨f, f_inj⟩ with hf'
     have h_Cs_card : Finset.card Cs = Fintype.card k := by
       unfold Cs
