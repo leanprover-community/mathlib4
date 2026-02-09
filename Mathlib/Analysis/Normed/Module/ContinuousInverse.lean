@@ -174,6 +174,47 @@ end NontriviallyNormedField
 
 end HasLeftLeftInverse
 
+/-! An equivalent characterisation of maps with a continuous left inverse -/
+section
+
+variable {R E F : Type*} [Ring R]
+  [TopologicalSpace E] [AddCommGroup E] [Module R E]
+  [TopologicalSpace F] [AddCommGroup F] [Module R F]
+
+/-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
+its image has a closed complement. -/
+@[expose] protected def Splits (f : E →L[R] F) : Prop :=
+  Injective f ∧ IsClosed (Set.range f) ∧ Submodule.ClosedComplemented f.range
+
+namespace Splits
+
+variable {f g : E →L[R] F}
+
+lemma injective (h : f.Splits) : Injective f := h.1
+
+lemma isClosed_range (h : f.Splits) : IsClosed (Set.range f) := h.2.1
+
+lemma closedComplemented (h : f.Splits) : Submodule.ClosedComplemented f.range :=
+  h.2.2
+
+lemma congr (hf : f.Splits) (hfg : g = f) : g.Splits := hfg ▸ hf
+
+variable [T1Space F]
+
+/-- Choice of a closed complement of `range f` -/
+def complement (h : f.Splits) : Submodule R F :=
+  h.closedComplemented.complement
+
+lemma isClosed_complement (h : f.Splits) : IsClosed (X := F) h.complement :=
+  h.closedComplemented.isClosed_complement
+
+lemma isCompl_complement (h : f.Splits) : IsCompl f.range h.complement :=
+  h.closedComplemented.isCompl_complement
+
+end Splits
+
+end
+
 namespace HasRightInverse
 
 variable {f : E →L[R] F}
