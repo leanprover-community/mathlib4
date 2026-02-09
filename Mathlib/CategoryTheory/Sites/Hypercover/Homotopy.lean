@@ -215,6 +215,19 @@ lemma exists_nonempty_homotopy (f g : E.Hom F) :
       Nonempty (PreOneHypercover.Homotopy (h.comp f) (h.comp g)) :=
   ⟨cylinder f g, PreOneHypercover.cylinderHom f g, ⟨PreOneHypercover.cylinderHomotopy f g⟩⟩
 
+variable {S : C} {E : OneHypercover.{w} J S} {F : OneHypercover.{w} J S}
+
+noncomputable
+def Homotopy.pullback₁ {T : C} (g : T ⟶ S) {u v : E ⟶ F} (H : Homotopy u v)
+    [∀ (i : E.I₀), HasPullback g (E.f i)] [∀ (i : F.I₀), HasPullback g (F.f i)]
+    [∀ (i j : E.I₀) (k : E.I₁ i j), HasPullback g (E.p₁ k ≫ E.f i)]
+    [∀ (i j : F.I₀) (k : F.I₁ i j), HasPullback g (F.p₁ k ≫ F.f i)] :
+    Homotopy (u.pullback₁ g) (v.pullback₁ g) where
+  H := H.H
+  a i := pullback.map _ _ _ _ (𝟙 T) (H.a i) (𝟙 S) (by simp) (by simp)
+  wl i := by apply pullback.hom_ext <;> simp
+  wr i := by apply pullback.hom_ext <;> simp
+
 end OneHypercover
 
 variable (J S)
