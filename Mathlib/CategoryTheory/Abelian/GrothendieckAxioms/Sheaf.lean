@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Generator.Sheaf
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
