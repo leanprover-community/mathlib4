@@ -153,7 +153,7 @@ lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
-    exact congr_fun (((evaluation _ _).obj X ⋙ forget _).congr_map h) x
+    exact congr_fun (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
 
 section
 

@@ -6,7 +6,7 @@ Authors: Kim Morrison, Kyle Miller
 module
 
 public meta import Mathlib.Util.AddRelatedDecl
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public meta import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -48,27 +48,25 @@ universe u
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
-
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise {C : Type*} [Category* C] [HasForget C]
-    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
+theorem hom_elementwise {C : Type*} [Category* C]
+    {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type*}
+    {_ : outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC]
+    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : CC X) : f x = g x := by rw [h]
 
 end theorems
 
 /-- List of simp lemmas to apply to the elementwise theorem. -/
 def elementwiseThms : List Name :=
-  [ -- HasForget lemmas
-    ``CategoryTheory.coe_id, ``CategoryTheory.coe_comp, ``CategoryTheory.comp_apply,
-    ``CategoryTheory.id_apply,
-    -- ConcreteCategory lemmas
+  [ -- ConcreteCategory lemmas
+    ``ConcreteCategory.coe_id, ``ConcreteCategory.coe_comp,
+    ``CategoryTheory.comp_apply, ``CategoryTheory.id_apply,
     ``CategoryTheory.hom_id, ``CategoryTheory.hom_comp, ``id_eq, ``Function.comp_apply,
     -- further simplifications if the category is `Type`
     ``forget_hom_Type, ``forall_congr_forget_Type, ``types_comp_apply, ``types_id_apply,
-    -- further simplifications to turn `HasForget` definitions into `ConcreteCategory` ones
-    -- (if available)
-    ``forget_obj, ``ConcreteCategory.forget_map_eq_coe, ``coe_toHasForget_instFunLike,
+    -- further simplifications of `forget`
+    ``forget_obj, ``ConcreteCategory.forget_map_eq_coe,
     -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
     -- easier to detect when this has occurred.
     ``implies_true]
@@ -76,11 +74,11 @@ def elementwiseThms : List Name :=
 /--
 Given an equation `f = g` between morphisms `X ⟶ Y` in a category `C`
 (possibly after a `∀` binder), produce the equation `∀ (x : X), f x = g x` or
-`∀ [HasForget C] (x : X), f x = g x` as needed (after the `∀` binder), but
+`∀ FC CC _ [ConreteCategory C FC] (x : X), f x = g x` as needed (after the `∀` binder), but
 with compositions fully right associated and identities removed.
 
 Returns the proof of the new theorem along with (optionally) a new level metavariable
-for the first universe parameter to `HasForget`.
+for the first universe parameter to `ConcreteCategory`.
 
 The `simpSides` option controls whether to simplify both sides of the equality, for simpNF
 purposes.
@@ -93,7 +91,7 @@ def elementwiseExpr (src : Name) (pf : Expr) (simpSides := true) :
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then
-        throwError "elementwise lemma for {src} is trivial after applying HasForget \
+        throwError "elementwise lemma for {src} is trivial after applying ConcreteCategory \
           lemmas, which can be caused by how applications are unfolded. \
           Using elementwise is unnecessary."
       if simpSides then
@@ -125,7 +123,7 @@ where
       MetaM α := do
     let (C, instC) ← try extractCatInstance eqTy catch _ =>
       throwError "elementwise expects equality of morphisms in a category"
-    -- First try being optimistic that there is already a HasForget instance.
+    -- First try being optimistic that there is already a `ConcreteCategory` instance.
     if let some eqPf' ← observing? (mkAppM ``hom_elementwise #[eqPf]) then
       k eqPf' none
     else
@@ -169,7 +167,7 @@ private partial def mkUnusedName (names : List Name) (baseName : Name) : Name :=
     loop 1
 
 /-- The `elementwise` attribute can be added to a lemma proving an equation of morphisms, and it
-creates a new lemma for a `HasForget` giving an equation with those morphisms applied
+creates a new lemma for a `ConcreteCategory` giving an equation with those morphisms applied
 to some value.
 
 Syntax examples:
@@ -191,16 +189,17 @@ produces
 ```lean
 lemma some_lemma_apply {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
-    [HasForget C] (x : X) : g (f x) = h x := ...
+    {CC : ...} {FC : ...} [...] [ConcreteCategory C FC] (x : ToType X) : g (f x) = h x := ...
 ```
 
-Here `X` is being coerced to a type via `CategoryTheory.HasForget.hasCoeToSort` and
-`f`, `g`, and `h` are being coerced to functions via `CategoryTheory.HasForget.hasCoeToFun`.
+Here `f`, `g`, and `h` are being coerced to functions via
+`CategoryTheory.ConcreteCategory.instCoeFunHomForallToType`.
 Further, we simplify the type using `CategoryTheory.coe_id : ((𝟙 X) : X → X) x = x` and
 `CategoryTheory.coe_comp : (f ≫ g) x = g (f x)`,
 replacing morphism composition with function composition.
 
-The `[HasForget C]` argument will be omitted if it is possible to synthesize an instance.
+The `[ConcreteCategory C FC]` and related arguments will be omitted if it is possible to synthesize
+an instance.
 
 The name of the produced lemma can be specified with `@[elementwise other_lemma_name]`.
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
@@ -243,8 +242,8 @@ example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g 
 ```
 In this case, `elementwise_of% w` generates the lemma `∀ (x : M), f (g x) = h x`.
 
-Like the `@[elementwise]` attribute, `elementwise_of%` inserts a `HasForget`
-instance argument if it can't synthesize a relevant `HasForget` instance.
+Like the `@[elementwise]` attribute, `elementwise_of%` inserts a `ConcreteCategory`
+instance argument if it can't synthesize a relevant `ConcreteCategory` instance.
 (Technical note: The forgetful functor's universe variable is instantiated with a
 fresh level metavariable in this case.)
 
