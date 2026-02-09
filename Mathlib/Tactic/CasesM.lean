@@ -141,7 +141,7 @@ Example:
 ```
 example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
   -- The following tactic destructs all conjunctions and disjunctions in the current context.
-  casesm* _∨_, _∧_
+  cases_type* Or And
   · clear ‹a› ‹b› ‹e› ‹f›; (fail_if_success clear ‹c›); trivial
   · clear ‹c› ‹d› ‹e› ‹f›; trivial
 ```
