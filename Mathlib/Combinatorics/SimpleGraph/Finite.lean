@@ -338,8 +338,8 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     Set.toFinset_singleton]
 
 -- The following theorem proves that if degree>=2 then there is a neighbor different from v.
-theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] [DecidableEq V]
-    {G : SimpleGraph V} [DecidableRel G.Adj] {u : V} (h_ge_2 : 2 ≤ G.degree u) (v : V) :
+theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] {G : SimpleGraph V}
+  [DecidableRel G.Adj] {u : V} (h_ge_2 : 2 ≤ G.degree u) (v : V) :
     ∃ (w : V), G.Adj u w ∧ w ≠ v := by
   have h_card : 2 ≤ (G.neighborFinset u).card := by
     rw [SimpleGraph.card_neighborFinset_eq_degree G u]
@@ -348,13 +348,15 @@ theorem exists_neighbor_ne_of_one_lt_degree {V : Type*} [Fintype V] [DecidableEq
   push_neg at h_all_v
   have h_subset : G.neighborFinset u ⊆ {v} := by
     intro x hx
-    simp at hx
+    simp only [mem_neighborFinset] at hx
     have h_eq := h_all_v x hx
-    simp
+    simp only [mem_singleton]
     exact h_eq
   have h_card_le_1 := Finset.card_le_card h_subset
   rw [Finset.card_singleton] at h_card_le_1
-  linarith
+  rw [← Nat.lt_add_one_iff] at h_card_le_1
+  simp only [card_neighborFinset_eq_degree, Nat.reduceAdd] at h_card_le_1
+  exact (Nat.not_le_of_gt h_card_le_1) h_card
 
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :

@@ -9,6 +9,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Tactic
 
 /-!
 
@@ -63,7 +64,7 @@ structure IsTree : Prop where
 
 variable {G G'}
 
-def SimpleGraph.isTree_leaf {G : SimpleGraph V}[Fintype V][DecidableRel G.Adj](v : V):Prop :=
+def isTree_leaf {G : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] (v : V):Prop :=
   (G.IsTree) ∧ (G.degree v = 1)
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
@@ -511,7 +512,7 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   exact h.minDegree_eq_one_of_nontrivial
 
 /-- A nontrivial tree there exists at least two leaves. -/
-theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGraph V}[Fintype V][DecidableEq V][DecidableRel G.Adj](hTree : G.IsTree)(hSize : 1 < Fintype.card V):
+theorem IsTree_exists_atleast_two_leaves {V : Type u_1} {G : SimpleGraph V} [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (hTree : G.IsTree) (hSize : 1 < Fintype.card V) :
   ∃ (v1 v2: V), v1 ≠ v2 ∧ G.isTree_leaf v1 ∧ G.isTree_leaf v2 := by
   have : Nonempty V := by
     rw [<- Fintype.card_pos_iff]
@@ -540,12 +541,9 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
         rw [SimpleGraph.Walk.isPath_def, SimpleGraph.Walk.support_cons, List.nodup_cons] at hp_isPath
         apply hp_isPath.1
         exact SimpleGraph.Walk.end_mem_support _
-
     rw [h_nil] at h_len_ge_1
     simp at h_len_ge_1
-
-  · -- Proof for leaf u
-    constructor
+  · constructor
     · refine ⟨hTree, ?_⟩
       by_contra h_deg_not_1
       have h_pos : 0 < G.degree u := by
@@ -553,7 +551,6 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
         cases p with
         | nil => linarith [h_len_ge_1, @SimpleGraph.Walk.length_nil V G u]
         | cons h_adj _ => exact ⟨_, h_adj⟩
-
       have h_ge_2 : 2 ≤ G.degree u := by
         cases h_val : G.degree u with
         | zero => linarith
@@ -561,7 +558,6 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
           cases n with
           | zero => exfalso; exact h_deg_not_1 h_val
           | succ m => linarith
-
       obtain ⟨w, hw_adj, hw_not_next⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (p.getVert 1)
       let p_ext := (SimpleGraph.Walk.cons' w u v hw_adj.symm p)
       have hw_not_in_p: w ∉ p.support := by
@@ -576,7 +572,7 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
         have h_ne : p1 ≠ p2 := by
           intro h_eq
           have h_len : p1.length = p2.length := by rw [h_eq]
-          simp [p1] at h_len
+          simp only [length_cons, length_nil, zero_add, p1] at h_len
           have h1 : w = p.getVert 1 := by
             rw [h_len]
             rw [h_p2_def]
@@ -589,19 +585,16 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
       have h_ext_path : p_ext.IsPath := by
         rw [SimpleGraph.Walk.cons_isPath_iff]
         exact ⟨hp_isPath, hw_not_in_p⟩
-
       have h_len : p_ext.length = p.length + 1 := by
         simp [p_ext, SimpleGraph.Walk.length_cons]
       have h_contr := hp_max w v p_ext h_ext_path
       linarith
-    · -- Proof for leaf v
-      constructor
+    · constructor
       · exact hTree
       · by_contra h_deg_v
         let p_rev := p.reverse
         have h_rev : p_rev = p.reverse := rfl
         have hp_rev_path : p_rev.IsPath := hp_isPath.reverse
-
         have h_ge_2 : 2 ≤ G.degree v := by
           have h_pos : 0 < G.degree v := by
             rw [SimpleGraph.degree_pos_iff_exists_adj]
@@ -621,9 +614,7 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
             cases n with
             | zero => exfalso; exact h_deg_v h_val
             | succ m => linarith
-
         obtain ⟨w, hw_adj, hw_not_next⟩ := exists_neighbor_ne_of_one_lt_degree h_ge_2 (p_rev.getVert 1)
-
         let p_rev_ext := SimpleGraph.Walk.cons hw_adj.symm p_rev
         have hw_not_in_p_rev : w ∉ p_rev.support := by
           by_contra hw_in_p_rev
@@ -637,7 +628,7 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
           have h_ne : p1 ≠ p2 := by
             intro h_eq
             have h_len : p1.length = p2.length := by rw [h_eq]
-            simp [p1] at h_len
+            simp only [length_cons, length_nil, zero_add, p1] at h_len
             have h1 : w = p_rev.getVert 1 := by
               rw [h_len]
               rw [h_p2_def]
@@ -647,7 +638,6 @@ theorem SimpleGraph.isTree_exists_atleast_two_leaves{V : Type u_1}{G: SimpleGrap
             have h_path_eq := h_acyclic ⟨p1, hp1_path⟩ ⟨p2, hp2_path⟩
             exact congr_arg Subtype.val h_path_eq
           exact h_ne h_eq
-
         have h_rev_ext_path : p_rev_ext.IsPath := by
           rw [SimpleGraph.Walk.cons_isPath_iff]
           exact ⟨hp_rev_path, hw_not_in_p_rev⟩
