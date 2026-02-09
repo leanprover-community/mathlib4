@@ -45,7 +45,7 @@ space `Y`.
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
-  map f g := ContinuousMap.comp g f.unop.hom
+  map f g := ContinuousMap.comp g (ConcreteCategory.hom f.unop)
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
 
