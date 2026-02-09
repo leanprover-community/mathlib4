@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
+public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Nat.EvenOddRec
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
@@ -34,12 +35,12 @@ As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0)
 and an *elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If
 `W` is an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be
 normalised such that `W(1) = 1`, in which case it can be characterised completely by
-* the *even relations* `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+* the *even relations* `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m) = W(m - 1)²W(m)W(m + 2) - W(m - 2)W(m)W(m + 1)²` for all `m ∈ ℤ`, and
-* the *odd relations* `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+* the *odd relations* `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m + 1) = W(m + 2)W(m)³ - W(m - 1)W(m + 1)³` for all `m ∈ ℤ`,
 with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = db` for some
-`b, c, d ∈ ℤ`. This will be called the *canonical example of a normalised EDS* in this file.
+`b, c, d ∈ R`. This will be called the *canonical example of a normalised EDS* in this file.
 
 Some examples of EDSs include
 * the identity sequence,
@@ -109,24 +110,28 @@ truncated integer division, and hence should only be used when `p` and `q` have 
 def atom (p q : ℤ) : R :=
   W ((p + q).tdiv 2) * W ((p - q).tdiv 2)
 
+example (m : ℤ) : (-m).tdiv 2 = -(m.tdiv 2) := by
+  exact Int.neg_tdiv m 2
+
 @[simp]
 lemma atom_same (p : ℤ) : atom W p p = W p * W 0 := by
   rw [atom, ← two_mul, Int.mul_tdiv_cancel_left _ two_ne_zero, sub_self, Int.zero_tdiv]
 
 variable {W} in
 @[simp]
-lemma neg_atom (odd : ∀ n : ℤ, W (-n) = -W n) (p q : ℤ) : -atom W p q = atom W q p := by
-  simp_rw [atom, add_comm, ← neg_sub p, Int.neg_tdiv, odd, mul_neg]
+lemma neg_atom (odd : W.Odd) (p q : ℤ) : -atom W p q = atom W q p := by
+  rw [atom, atom, add_comm, ← neg_sub p, Int.neg_tdiv, odd, mul_neg]
 
 variable {W} in
-lemma atom_mul_atom (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
+lemma atom_mul_atom (odd : W.Odd) (p q r s : ℤ) :
     atom W p q * atom W r s = atom W q p * atom W s r := by
   rw [← neg_atom odd p q, ← neg_atom odd r s, neg_mul_neg]
 
 variable {W} in
 @[simp]
-lemma atom_neg_left (odd : ∀ n : ℤ, W (-n) = -W n) (p q : ℤ) : atom W (-p) q = atom W p q := by
-  simp_rw [atom, neg_add_eq_sub, ← neg_sub p, ← neg_add', Int.neg_tdiv, odd, neg_mul_neg, mul_comm]
+lemma atom_neg_left (odd : W.Odd) (p q : ℤ) : atom W (-p) q = atom W p q := by
+  rw [atom, atom, neg_add_eq_sub, ← neg_sub p, ← neg_add', Int.neg_tdiv, odd, Int.neg_tdiv, odd,
+    neg_mul_neg, mul_comm]
 
 @[simp]
 lemma atom_neg_right (p q : ℤ) : atom W p (-q) = atom W p q := by
@@ -134,7 +139,7 @@ lemma atom_neg_right (p q : ℤ) : atom W p (-q) = atom W p q := by
 
 variable {W} in
 @[simp]
-lemma atom_abs_left (odd : ∀ n : ℤ, W (-n) = -W n) (p q : ℤ) : atom W |p| q = atom W p q := by
+lemma atom_abs_left (odd : W.Odd) (p q : ℤ) : atom W |p| q = atom W p q := by
   rcases abs_choice p with h | h <;> simp only [h, atom_neg_left odd]
 
 @[simp]
@@ -149,7 +154,7 @@ lemma atom_odd (p q : ℤ) : atom W (2 * p + 1) (2 * q + 1) = W (p + q + 1) * W 
     add_zero, ← mul_sub, Int.mul_tdiv_cancel_left _ two_ne_zero]
 
 @[simp]
-lemma map_atom (W : ℤ → R) (p q : ℤ) : f (atom W p q) = atom (f ∘ W) p q := by
+lemma map_atom (p q : ℤ) : f (atom W p q) = atom (f ∘ W) p q := by
   simp_rw [atom, map_mul, Function.comp]
 
 /-- The elliptic relator `ERₐ(p, q, r, s)` obtained by a cyclic permutation of variables in
@@ -164,15 +169,13 @@ lemma atomRel_same₁₂ (p q r : ℤ) : atomRel W p p q r = W p * W 0 * atom W 
 
 variable {W} in
 @[simp]
-lemma atomRel_same₁₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r : ℤ) :
-    atomRel W p q p r = W p * W 0 * atom W r q := by
+lemma atomRel_same₁₃ (odd : W.Odd) (p q r : ℤ) : atomRel W p q p r = W p * W 0 * atom W r q := by
   linear_combination (norm := (simp_rw [atomRel, atom_same]; ring1))
     W p * W 0 * neg_atom odd r q - atom W p r * neg_atom odd p q
 
 variable {W} in
 @[simp]
-lemma atomRel_same₁₄ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r : ℤ) :
-    atomRel W p q r p = W p * W 0 * atom W q r := by
+lemma atomRel_same₁₄ (odd : W.Odd) (p q r : ℤ) : atomRel W p q r p = W p * W 0 * atom W q r := by
   simp_rw [atomRel, atom_mul_atom odd p q, mul_comm <| atom W q p, sub_self, zero_add, atom_same]
 
 @[simp]
@@ -181,8 +184,7 @@ lemma atomRel_same₂₃ (p q r : ℤ) : atomRel W p q q r = W q * W 0 * atom W 
 
 variable {W} in
 @[simp]
-lemma atomRel_same₂₄ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r : ℤ) :
-    atomRel W p q r q = W q * W 0 * atom W r p := by
+lemma atomRel_same₂₄ (odd : W.Odd) (p q r : ℤ) : atomRel W p q r q = W q * W 0 * atom W r p := by
   linear_combination (norm := (simp_rw [atomRel, atom_same]; ring1))
     W q * W 0 * neg_atom odd p r - atom W p q * neg_atom odd q r
 
@@ -192,20 +194,17 @@ lemma atomRel_same₃₄ (p q r : ℤ) : atomRel W p q r r = W r * W 0 * atom W 
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₁ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
-    atomRel W (-p) q r s = atomRel W p q r s := by
+lemma atomRel_neg₁ (odd : W.Odd) (p q r s : ℤ) : atomRel W (-p) q r s = atomRel W p q r s := by
   simp_rw [atomRel, atom_neg_left odd]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₂ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
-    atomRel W p (-q) r s = atomRel W p q r s := by
+lemma atomRel_neg₂ (odd : W.Odd) (p q r s : ℤ) : atomRel W p (-q) r s = atomRel W p q r s := by
   simp_rw [atomRel, atom_neg_left odd, atom_neg_right]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
-    atomRel W p q (-r) s = atomRel W p q r s := by
+lemma atomRel_neg₃ (odd : W.Odd) (p q r s : ℤ) : atomRel W p q (-r) s = atomRel W p q r s := by
   simp_rw [atomRel, atom_neg_left odd, atom_neg_right]
 
 @[simp]
@@ -214,20 +213,17 @@ lemma atomRel_neg₄ (p q r s : ℤ) : atomRel W p q r (-s) = atomRel W p q r s 
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₁ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
-    atomRel W |p| q r s = atomRel W p q r s := by
+lemma atomRel_abs₁ (odd : W.Odd) (p q r s : ℤ) : atomRel W |p| q r s = atomRel W p q r s := by
   simp_rw [atomRel, atom_abs_left odd]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₂ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
-    atomRel W p |q| r s = atomRel W p q r s := by
+lemma atomRel_abs₂ (odd : W.Odd) (p q r s : ℤ) : atomRel W p |q| r s = atomRel W p q r s := by
   simp_rw [atomRel, atom_abs_left odd, atom_abs_right]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
-    atomRel W p q |r| s = atomRel W p q r s := by
+lemma atomRel_abs₃ (odd : W.Odd) (p q r s : ℤ) : atomRel W p q |r| s = atomRel W p q r s := by
   simp_rw [atomRel, atom_abs_left odd, atom_abs_right]
 
 @[simp]
@@ -244,7 +240,7 @@ lemma atomRel_avg_sub {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 
   ring_nf
 
 @[simp]
-lemma map_atomRel (W : ℤ → R) (p q r s : ℤ) : f (atomRel W p q r s) = atomRel (f ∘ W) p q r s := by
+lemma map_atomRel (p q r s : ℤ) : f (atomRel W p q r s) = atomRel (f ∘ W) p q r s := by
   simp_rw [atomRel, map_add, map_sub, map_mul, map_atom]
 
 /-- The elliptic relator `ER(p, q, r, s)` that defines an elliptic net. -/
@@ -268,8 +264,7 @@ lemma atomRel_eq {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 ∧ s
 
 variable {W} in
 @[simp]
-lemma rel_neg (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
-    rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
+lemma rel_neg (odd : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
   simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg₁ odd, atomRel_neg₂ odd, atomRel_neg₃ odd,
     atomRel_neg₄]
 
@@ -284,7 +279,7 @@ lemma rel_odd (m : ℤ) : rel W (m + 1) m 1 0 =
   ring_nf
 
 @[simp]
-lemma map_rel (W : ℤ → R) (p q r s : ℤ) : f (rel W p q r s) = rel (f ∘ W) p q r s := by
+lemma map_rel (p q r s : ℤ) : f (rel W p q r s) = rel (f ∘ W) p q r s := by
   simp_rw [rel, map_add, map_sub, map_mul, Function.comp]
 
 end IsEllipticNet
@@ -299,7 +294,7 @@ def IsEllSequence : Prop :=
 
 /-- The proposition that a sequence indexed by `ℤ` is a divisibility sequence. -/
 def IsDivSequence : Prop :=
-  ∀ m n : ℕ, m ∣ n → W m ∣ W n
+  ∀ m n : ℤ, m ∣ n → W m ∣ W n
 
 /-- The proposition that a sequence indexed by `ℤ` is an EDS. -/
 def IsEllDivSequence : Prop :=
@@ -334,7 +329,7 @@ lemma isEllSequence_id : IsEllSequence id :=
   isEllipticNet_id.isEllSequence
 
 lemma isDivSequence_id : IsDivSequence id :=
-  fun _ _ => Int.ofNat_dvd.mpr
+  fun _ _ => by simp_rw [id_eq, imp_self]
 
 /-- The identity sequence is an EDS. -/
 theorem isEllDivSequence_id : IsEllDivSequence id :=
