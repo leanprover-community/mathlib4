@@ -21,6 +21,8 @@ Tightness from convergence of characteristic functions.
 
 -/
 
+@[expose] public section
+
 open Filter
 open scoped Topology RealInnerProductSpace ENNReal
 
