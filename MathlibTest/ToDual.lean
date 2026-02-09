@@ -301,3 +301,27 @@ info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α
 -/
 #guard_msgs in
 #print Cov.Ioc_def
+
+-- Test that we can translate `LE` instances correctly
+inductive WithBot (α : Type u) where
+  | bot : WithBot α
+  | coe : α → WithBot α
+
+@[to_dual existing]
+inductive WithTop (α : Type u) where
+  | top : WithTop α
+  | coe : α → WithTop α
+
+inductive WithBot.LE : WithBot α → WithBot α → Prop where
+  | bot_le (x : WithBot α) : WithBot.LE .bot x
+  | coe_le_coe {a b : α} : a ≤ b → WithBot.LE (.coe a) (.coe b)
+
+@[to_dual existing (reorder := 3 4)]
+inductive WithTop.LE : WithTop α → WithTop α → Prop where
+  | le_top (x : WithTop α) : WithTop.LE x .top
+  | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
+
+@[to_dual]
+instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
+
+example (a : α) : WithTop.coe a ≤ .top := .le_top (WithTop.coe a)
