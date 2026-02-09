@@ -413,10 +413,8 @@ end NonUnitalAlgebra
 
 section NormedAlgebra
 
-variable {𝕜 : Type*} [NormedField 𝕜]
-variable [TopologicalSpace α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
+variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α]
 variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
-variable {f g : α →ᵇ γ} {x : α} {c : 𝕜}
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
 def C : 𝕜 →+* α →ᵇ γ where
@@ -444,8 +442,7 @@ variable (𝕜)
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
 as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
-protected def AlgHom.compLeftContinuousBounded
-    [NormedRing β] [NormedAlgebra 𝕜 β] [NormedRing γ] [NormedAlgebra 𝕜 γ]
+protected def AlgHom.compLeftContinuousBounded [NormedRing β] [NormedAlgebra 𝕜 β]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
     commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
@@ -463,7 +460,7 @@ def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
 @[simp]
 theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
 
-variable {𝕜}
+variable {𝕜} [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
 
 /-! ### Structure as normed module over scalar functions
 
