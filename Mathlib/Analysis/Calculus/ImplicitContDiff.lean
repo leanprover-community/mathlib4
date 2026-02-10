@@ -39,9 +39,9 @@ form of the implicit function theorem. -/
 theorem contDiffAt_implicitFunction {φ : ImplicitFunctionData 𝕜 E₁ E₂ F} {n : WithTop ℕ∞}
     (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : n ≠ 0) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
-  rw [implicitFunction, Function.uncurry_curry, toOpenPartialHomeomorph,
-    ← HasStrictFDerivAt.localInverse_def]
-  exact (hl.prodMk hr).to_localInverse (φ.hasStrictFDerivAt |>.hasFDerivAt) hn
+  rw [implicitFunction_def, Function.uncurry_curry, ← HasStrictFDerivAt.localInverse_def]
+  refine ContDiffAt.to_localInverse ?_ (φ.hasStrictFDerivAt.hasFDerivAt) hn
+  convert hl.prodMk hr <;> simp
 
 end ImplicitFunctionData
 
@@ -56,6 +56,11 @@ noncomputable def implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     E₁ → E₂ :=
   (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂
+
+theorem implicitFunction_def
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    cdf.implicitFunction pn if₂ = (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂ := by
+  rfl
 
 /-- At the base point `u.1`, the implicit function evaluates to `u.2`. -/
 theorem implicitFunction_apply_self
@@ -85,9 +90,11 @@ is also $C^n$ at `u₁`. -/
 theorem contDiffAt_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ContDiffAt 𝕜 n (cdf.implicitFunction pn if₂) u.1 := by
-  have := (cdf.hasStrictFDerivAt pn).implicitFunctionDataOfProdDomain if₂
-    |>.contDiffAt_implicitFunction cdf contDiffAt_fst pn
-  rw [implicitFunction, HasStrictFDerivAt.implicitFunctionOfProdDomain_def]
+  rw [ContDiffAt.implicitFunction_def, HasStrictFDerivAt.implicitFunctionOfProdDomain_def]
+  set φ := (cdf.hasStrictFDerivAt pn).implicitFunctionDataOfProdDomain if₂
+  have : ContDiffAt 𝕜 n φ.implicitFunction.uncurry (f u, u.1) := by
+    simpa [φ] using φ.contDiffAt_implicitFunction
+      (by simpa [φ] using cdf) (by simpa [φ] using contDiffAt_fst) pn
   fun_prop
 
 end ContDiffAt
@@ -106,6 +113,9 @@ namespace IsContDiffImplicitAt
 
 @[deprecated (since := "2026-01-27")]
 alias implicitFunction := ContDiffAt.implicitFunction
+
+@[deprecated (since := "2026-01-27")]
+alias implicitFunction_def := ContDiffAt.implicitFunction_def
 
 @[deprecated (since := "2026-01-27")]
 alias apply_implicitFunction := ContDiffAt.image_implicitFunction

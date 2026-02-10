@@ -64,6 +64,21 @@ def implicitFunctionDataOfProdDomain
       use v - (0, y), (0, y)
       aesop
 
+@[simp] theorem pt_implicitFunctionDataOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    (dfu.implicitFunctionDataOfProdDomain if₂).pt = u := by
+  rfl
+
+@[simp] theorem leftFun_implicitFunctionDataOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    (dfu.implicitFunctionDataOfProdDomain if₂).leftFun = f := by
+  rfl
+
+@[simp] theorem rightFun_implicitFunctionDataOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    (dfu.implicitFunctionDataOfProdDomain if₂).rightFun = Prod.fst := by
+  rfl
+
 /-- Implicit function `ψ : E₁ → E₂` associated with the (uncurried) bivariate function
 `f : E₁ × E₂ → F` at `u`. -/
 noncomputable def implicitFunctionOfProdDomain
@@ -77,6 +92,13 @@ theorem implicitFunctionOfProdDomain_def
       fun x => ((dfu.implicitFunctionDataOfProdDomain if₂).implicitFunction (f u) x).2 := by
   rfl
 
+theorem image_eq_iff_implicitFunctionOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    ∀ᶠ v in 𝓝 u, f v = f u ↔ dfu.implicitFunctionOfProdDomain if₂ v.1 = v.2 := by
+  let φ := dfu.implicitFunctionDataOfProdDomain if₂
+  filter_upwards [φ.leftFun_eq_iff_implicitFunction, φ.rightFun_implicitFunction_eq_rightFun]
+  exact fun v h _ => Iff.trans h ⟨congrArg _, by aesop⟩
+
 theorem hasStrictFDerivAt_implicitFunctionOfProdDomain
     (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     HasStrictFDerivAt (dfu.implicitFunctionOfProdDomain if₂)
@@ -87,13 +109,6 @@ theorem hasStrictFDerivAt_implicitFunctionOfProdDomain
     simp [map_neg, if₂]
   exact ((dfu.implicitFunctionDataOfProdDomain if₂).hasStrictFDerivAt_implicitFunction _
     (ContinuousLinearMap.fst_comp_prod _ _) this).snd
-
-theorem image_eq_iff_implicitFunctionOfProdDomain
-    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    ∀ᶠ v in 𝓝 u, f v = f u ↔ dfu.implicitFunctionOfProdDomain if₂ v.1 = v.2 := by
-  let φ := dfu.implicitFunctionDataOfProdDomain if₂
-  filter_upwards [φ.leftFun_eq_iff_implicitFunction, φ.rightFun_implicitFunction_eq_rightFun]
-  exact fun v h _ => Iff.trans h ⟨congrArg _, by aesop⟩
 
 theorem tendsto_implicitFunctionOfProdDomain
     (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
