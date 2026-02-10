@@ -726,11 +726,11 @@ theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel]
 
 @[to_additive (attr := simp)]
-lemma mul_inv_mul_cancel (a b c : G) : a * b * (b⁻¹ * c) = a * c := by
+lemma mul_mul_inv_mul_cancel (a b c : G) : a * b * (b⁻¹ * c) = a * c := by
   rw [mul_assoc, ← mul_assoc b, mul_inv_cancel, one_mul]
 
 @[to_additive (attr := simp)]
-lemma inv_mul_mul_cancel (a b c : G) : a * b⁻¹ * (b * c) = a * c := by
+lemma mul_inv_mul_mul_cancel (a b c : G) : a * b⁻¹ * (b * c) = a * c := by
   rw [mul_assoc, ← mul_assoc b⁻¹, inv_mul_cancel, one_mul]
 
 @[to_additive (attr := simp)]
