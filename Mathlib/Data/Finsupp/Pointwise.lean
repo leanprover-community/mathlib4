@@ -98,30 +98,32 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 
 section pointwiseModule
 
-variable {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-
-lemma pointwise_smul_support_finite (f : ι → R) (g : ι →₀ M) :
-    (fun x ↦ f x • g x).support.Finite := Set.Finite.subset g.finite_support (by aesop)
+lemma pointwise_smul_support_finite {ι R M : Type*} [Zero M] [SMulZeroClass R M] (f : ι → R)
+    (g : ι →₀ M) : (fun x ↦ f x • g x).support.Finite :=
+  Set.Finite.subset g.finite_support (by aesop)
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
 -- def rather than an instance.
 /-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
 -- see Note [reducible non-instances]
-abbrev pointwiseScalar : SMul (ι → R) (ι →₀ M) where
+abbrev pointwiseScalar {ι R M : Type*} [Zero M] [SMulZeroClass R M] : SMul (ι → R) (ι →₀ M) where
   smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
-instance pointwiseScalarSemiring : SMul (ι → R) (ι →₀ M) := pointwiseScalar
+instance pointwiseScalarSemiring {ι R M : Type*} [Zero M] [SMulZeroClass R M] :
+    SMul (ι → R) (ι →₀ M) := pointwiseScalar
 
 @[simp]
-theorem coe_pointwise_smul (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := by
-  rfl
+theorem coe_pointwise_smul {ι R M : Type*} [Zero M] [SMulZeroClass R M] (f : ι → R) (g : ι →₀ M) :
+    ⇑(f • g) = f • ⇑g := by rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseModule : Module (ι → R) (ι →₀ M) :=
+instance pointwiseModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+    Module (ι → R) (ι →₀ M) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective (by intros; rfl)
 
-instance : IsScalarTower R (ι → R) (ι →₀ M) where
+instance {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+    IsScalarTower R (ι → R) (ι →₀ M) where
   smul_assoc r f m := by ext; simp [smul_smul]
 
 end pointwiseModule
