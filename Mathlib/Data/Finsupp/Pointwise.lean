@@ -96,22 +96,22 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
+section pointwiseModule
+
+variable {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+
+lemma pointwise_smul_support_finite (f : ι → R) (g : ι →₀ M) :
+    (fun x ↦ f x • g x).support.Finite := Set.Finite.subset g.finite_support (by aesop)
+
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
 -- def rather than an instance.
 /-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
 -- see Note [reducible non-instances]
-abbrev pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
-  smul f g :=
-    Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
-      apply Set.Finite.subset g.finite_support
-      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
-        Finsupp.fun_support_eq, Finset.mem_coe]
-      intro x hx h
-      apply hx
-      rw [h, smul_zero])
+abbrev pointwiseScalar : SMul (ι → R) (ι →₀ M) where
+  smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
-instance pointwiseScalarSemiring [Semiring β] : SMul (α → β) (α →₀ β) := pointwiseScalar
+instance pointwiseScalarSemiring : SMul (ι → R) (ι →₀ M) := pointwiseScalar
 
 @[simp]
 theorem coe_pointwise_smul (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := by
