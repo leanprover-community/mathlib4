@@ -206,7 +206,7 @@ theorem card_vector [Fintype α] (n : ℕ) :
   rw [Fintype.ofEquiv_card]; simp
 
 /-- The number of strings of length `s` in any finite set is at most `D^s`. -/
-lemma card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : ℕ} :
+lemma Finset.card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : ℕ} :
     (T.filter (fun x => x.length = s)).card ≤ (Fintype.card α) ^ s := by
   classical
   calc

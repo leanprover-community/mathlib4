@@ -78,7 +78,7 @@ private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
     _   = (T.filter fun x => x.length = s).card * (1 / Fintype.card α) ^ s := by
             simp only [Finset.sum_const, nsmul_eq_mul]
   gcongr
-  exact_mod_cast card_filter_length_eq_le
+  exact_mod_cast Finset.card_filter_length_eq_le
 
 /-- Length of a concatenation of `r` codewords lies in `[r, r*sup length]`
 assuming `[] ∉ S`. -/
