@@ -5,15 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.LocalProperties.Exactness
-public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Smooth.Flat
-public import Mathlib.RingTheory.Localization.Integral
-public import Mathlib.RingTheory.Etale.StandardEtale
-public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.RingTheory.Smooth.Locus
-public import Mathlib.RingTheory.Unramified.LocalStructure
-
+public import Mathlib.RingTheory.Unramified.LocalStructur
 
 /-!
 # Smooth base change commutes with integral closure
