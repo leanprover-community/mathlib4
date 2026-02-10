@@ -3,7 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata, Jz Pan
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 
 /-!
 # Change of variables of Weierstrass curves
@@ -30,6 +32,8 @@ This file defines admissible linear change of variables of Weierstrass curves.
 
 elliptic curve, weierstrass equation, change of variables
 -/
+
+@[expose] public section
 
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
@@ -293,13 +297,13 @@ def mapHom : VariableChange R →* VariableChange A where
     ext <;> simp only [map_one, Units.val_one, map_zero]
   map_mul' C C' := by
     simp only [mul_def, map]
-    ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+    ext <;> map_simp <;> simp only [Units.coe_map, MonoidHom.coe_coe]
 
 end VariableChange
 
 lemma map_variableChange (C : VariableChange R) : (C.map φ) • (W.map φ) = (C • W).map φ := by
   simp only [map, variableChange_def, VariableChange.map]
-  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+  ext <;> map_simp <;> simp only [Units.coe_map_inv, MonoidHom.coe_coe]
 
 end BaseChange
 

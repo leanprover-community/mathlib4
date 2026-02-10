@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
 # Extension of a functor from `Set.Iic j` to `Set.Iic (Order.succ j)`
@@ -16,6 +17,8 @@ functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace CategoryTheory
@@ -24,7 +27,7 @@ open Category
 
 namespace SmallObject
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   {J : Type u} [LinearOrder J] [SuccOrder J] {j : J} (hj : ¬IsMax j)
   (F : Set.Iic j ⥤ C) {X : C} (τ : F.obj ⟨j, by simp⟩ ⟶ X)
 
@@ -34,6 +37,7 @@ namespace extendToSucc
 
 variable (X)
 
+set_option backward.privateInPublic true in
 /-- `extendToSucc`, on objects: it coincides with `F.obj` for `i ≤ j`, and
 it sends `Order.succ j` to the given object `X`. -/
 def obj (i : Set.Iic (Order.succ j)) : C :=
@@ -111,7 +115,7 @@ lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ �
       rw [map_eq hj F τ i₁ i₂ _ h₂]
       dsimp [map]
       rw [dif_neg h₁, dif_pos (h₁₂.trans h₂), dif_neg h₁, dif_pos h₂, assoc, assoc,
-        Iso.inv_hom_id_assoc,comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
+        Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
     · rw [map_id, comp_id]
 
 end extendToSucc

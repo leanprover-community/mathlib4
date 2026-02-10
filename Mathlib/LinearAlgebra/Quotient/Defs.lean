@@ -3,9 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Quotients by submodules
@@ -21,6 +24,8 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
 
 -/
+
+@[expose] public section
 
 -- For most of this file we work over a noncommutative ring
 section Ring
@@ -66,6 +71,10 @@ theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = m
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = mk x :=
   rfl
 
+theorem quotientAddGroupMk_eq_mk {p : Submodule R M} (x : M) :
+    (QuotientAddGroup.mk x : M ⧸ p) = mk x :=
+  rfl
+
 protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
@@ -103,11 +112,12 @@ theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x) :=
 theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
   rfl
 
-protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
+variable {p} in
+@[simp]
+theorem mk_out (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
+  Quotient.out_eq m
 
-theorem subsingleton_iff : Subsingleton (M ⧸ p) ↔ ∀ x : M, x ∈ p := by
-  rw [subsingleton_iff_forall_eq 0, Submodule.Quotient.forall]
-  simp_rw [Submodule.Quotient.mk_eq_zero]
+protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
 
 section SMul
 
@@ -160,7 +170,7 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
 
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) := fast_instance%
-  Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+  Function.Surjective.distribSMul { toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl }
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
@@ -168,7 +178,7 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
 
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) := fast_instance%
-  Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+  Function.Surjective.distribMulAction { toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl }
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
@@ -176,7 +186,7 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) := fast_instance%
-  Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
+  Function.Surjective.module _ { toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl }
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=
@@ -191,6 +201,11 @@ theorem induction_on {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (Submodu
 theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   rintro ⟨x⟩
   exact ⟨x, rfl⟩
+
+universe u in
+instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {N : Submodule R M} [Small.{u} M] :
+    Small.{u} (M ⧸ N) :=
+  small_of_surjective (Submodule.Quotient.mk_surjective _)
 
 end Quotient
 
@@ -223,7 +238,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 `submodule.mkQ` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext 1100] -- Porting note: increase priority so this applies before `LinearMap.ext`
+@[ext high] -- Increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
   LinearMap.ext fun x => Submodule.Quotient.induction_on _ x <| (LinearMap.congr_fun h :)
 

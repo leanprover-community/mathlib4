@@ -3,10 +3,13 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Canonical
-import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Order.Field.Canonical
+public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.Algebra.Order.Positive.Ring
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Semifield structure on the type of nonnegative elements
@@ -20,6 +23,8 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 * `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedSemifield` if `α` is a `LinearOrderedField`.
 -/
+
+@[expose] public section
 
 assert_not_exists abs_inv
 
@@ -39,6 +44,18 @@ lemma nnqsmul_nonneg (q : ℚ≥0) (ha : 0 ≤ a) : 0 ≤ q • a := by
 end NNRat
 
 namespace Nonneg
+
+/-- In an ordered field, the units of the nonnegative elements are the positive elements. -/
+@[simps]
+def unitsEquivPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
+    [IsStrictOrderedRing R] [PosMulReflectLT R] :
+    { r : R // 0 ≤ r }ˣ ≃* { r : R // 0 < r } where
+  toFun r := ⟨r, lt_of_le_of_ne r.1.2 (Subtype.val_injective.ne r.ne_zero.symm)⟩
+  invFun r := ⟨⟨r.1, r.2.le⟩, ⟨r.1⁻¹, inv_nonneg.mpr r.2.le⟩,
+    by ext; simp [r.2.ne'], by ext; simp [r.2.ne']⟩
+  left_inv r := by ext; rfl
+  right_inv r := by ext; rfl
+  map_mul' _ _ := rfl
 
 section LinearOrderedSemifield
 

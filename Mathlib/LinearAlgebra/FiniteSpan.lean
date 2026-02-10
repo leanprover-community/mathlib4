@@ -3,15 +3,19 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Algebra.Module.Equiv.Basic
+module
+
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 
 # Additional results about finite spanning sets in linear algebra
 
 -/
+
+public section
 
 open Set Function
 open Submodule (span)
@@ -30,7 +34,7 @@ lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
   have hm : m ∈ span R Φ := hΦ₂ ▸ Submodule.mem_top
   simp only [mul_left_iterate, mul_one, LinearEquiv.coe_one, id_eq]
   refine Submodule.span_induction (fun x hx ↦ ?_) (by simp)
-    (fun x y _ _ hx hy ↦ by simp [map_add, hx, hy]) (fun t x _ hx ↦ by simp [map_smul, hx]) hm
+    (fun x y _ _ hx hy ↦ by simp [map_add, hx, hy]) (fun t x _ hx ↦ by simp [hx]) hm
   rw [LinearEquiv.pow_apply, ← he.1.coe_iterate_restrict ⟨x, hx⟩ k]
   replace hk : (e') ^ k = 1 := by simpa [IsPeriodicPt, IsFixedPt] using hk
   replace hk := Equiv.congr_fun hk ⟨x, hx⟩

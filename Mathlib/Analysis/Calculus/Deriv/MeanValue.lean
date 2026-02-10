@@ -3,13 +3,15 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.AffineMap
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.RCLike.Basic
 /-!
 # Mean value theorem
 
@@ -60,6 +62,8 @@ is not differentiable on the right at that point, and similarly differentiabilit
   is increasing or its second derivative is nonnegative, then the original function is convex.
 
 -/
+
+public section
 
 open Set Function Filter
 open scoped Topology
@@ -172,7 +176,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
   case pos =>
     intro hdiff
     replace hdiff := hdiff.hasDerivWithinAt
-    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self notMem_Ioi_self] at hdiff
+    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self self_notMem_Ioi] at hdiff
     have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
       rw [(nhdsGT_basis a).eventually_iff]
@@ -190,7 +194,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
       have hdiff' : DifferentiableOn ℝ f (Ioc a b) := fun z hz => by
         refine DifferentiableWithinAt.mono (t := Ioi a) ?_ Ioc_subset_Ioi_self
         have : derivWithin f (Ioi a) z ≠ 0 := ne_of_gt <| by
-          simp_all only [mem_Ioo, and_imp, mem_Ioc, max_lt_iff]
+          simp_all only [and_imp, mem_Ioc, max_lt_iff]
         exact differentiableWithinAt_of_derivWithin_ne_zero this
       have hcont_Ioc : ∀ z ∈ Ioc a b, ContinuousWithinAt f (Icc a b) z := by
         intro z hz''
@@ -224,7 +228,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (f : ℝ → ℝ) 
     (hf : Tendsto (deriv f) (𝓝[>] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Ioi a) a := by
   intro h
   have hf' : Tendsto (deriv (-f)) (𝓝[>] a) atTop := by
-    rw [Pi.neg_def, deriv.neg']
+    rw [deriv.neg']
     exact tendsto_neg_atBot_atTop.comp hf
   exact not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (-f) hf' h.neg
 
@@ -266,7 +270,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Iio (f : ℝ → ℝ) 
     (hf : Tendsto (deriv f) (𝓝[<] a) atTop) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
   intro h
   have hf' : Tendsto (deriv (-f)) (𝓝[<] a) atBot := by
-    rw [Pi.neg_def, deriv.neg']
+    rw [deriv.neg']
     exact tendsto_neg_atTop_atBot.comp hf
   exact not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (-f) hf' h.neg
 
@@ -331,7 +335,7 @@ theorem Convex.image_sub_lt_mul_sub_of_deriv_lt {D : Set ℝ} (hD : Convex ℝ D
     (lt_hf' : ∀ x ∈ interior D, deriv f x < C) (x : ℝ) (hx : x ∈ D) (y : ℝ) (hy : y ∈ D)
     (hxy : x < y) : f y - f x < C * (y - x) :=
   have hf'_gt : ∀ x ∈ interior D, -C < deriv (fun y => -f y) x := fun x hx => by
-    rw [deriv.neg, neg_lt_neg_iff]
+    rw [deriv.fun_neg, neg_lt_neg_iff]
     exact lt_hf' x hx
   by linarith [hD.mul_sub_lt_image_sub_of_lt_deriv hf.neg hf'.neg hf'_gt x hx y hy hxy]
 
@@ -351,7 +355,7 @@ theorem Convex.image_sub_le_mul_sub_of_deriv_le {D : Set ℝ} (hD : Convex ℝ D
     (le_hf' : ∀ x ∈ interior D, deriv f x ≤ C) (x : ℝ) (hx : x ∈ D) (y : ℝ) (hy : y ∈ D)
     (hxy : x ≤ y) : f y - f x ≤ C * (y - x) :=
   have hf'_ge : ∀ x ∈ interior D, -C ≤ deriv (fun y => -f y) x := fun x hx => by
-    rw [deriv.neg, neg_le_neg_iff]
+    rw [deriv.fun_neg, neg_le_neg_iff]
     exact le_hf' x hx
   by linarith [hD.mul_sub_le_image_sub_of_le_deriv hf.neg hf'.neg hf'_ge x hx y hy hxy]
 
@@ -506,7 +510,7 @@ lemma antitone_of_hasDerivAt_nonpos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Lagrange's **Mean Value Theorem**, applied to convex domains. -/
-theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ] ℝ}
+theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → StrongDual ℝ E}
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ∃ z ∈ segment ℝ x y, f y - f x = f' z (y - x) := by
   -- Use `g = AffineMap.lineMap x y` to parametrize the segment
@@ -519,7 +523,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
     (hf _ (hmaps ht)).comp_hasDerivWithinAt t AffineMap.hasDerivWithinAt_lineMap hmaps
   -- apply 1-variable mean value theorem to pullback
   have hMVT : ∃ t ∈ Ioo (0 : ℝ) 1, f' (g t) (y - x) = (f (g 1) - f (g 0)) / (1 - 0) := by
-    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by norm_num) ?_ ?_
+    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by simp) ?_ ?_
     · exact fun t Ht => (hfg t Ht).continuousWithinAt
     · exact fun t Ht => (hfg t <| hsub Ht).hasDerivAt (Icc_mem_nhds Ht.1 Ht.2)
   -- reinterpret on domain

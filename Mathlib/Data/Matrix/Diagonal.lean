@@ -3,9 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Matrix.Defs
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices
@@ -19,7 +23,9 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra Star
+@[expose] public section
+
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -74,6 +80,9 @@ theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := b
   simp [diagonal]
 
 @[simp]
+theorem diagonal_zero' [Zero α] : (diagonal 0 : Matrix n n α) = 0 := diagonal_zero
+
+@[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
   ext i j
   by_cases h : i = j
@@ -106,6 +115,12 @@ theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
   ext i j
   by_cases h : i = j <;>
   simp [h]
+
+theorem diagonal_mem_matrix_iff [Zero α] {S : Set α} (hS : 0 ∈ S) {d : n → α} :
+    Matrix.diagonal d ∈ S.matrix ↔ ∀ i, d i ∈ S := by
+  simp only [Set.mem_matrix, diagonal, of_apply]
+  conv_lhs => intro _ _; rw [ite_mem]
+  simp [hS]
 
 instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
   natCast m := diagonal fun _ => m
@@ -150,8 +165,7 @@ protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
 
 theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
     (d : Matrix n n α) i j = if i = j then d else 0 := by
-  rw [Nat.cast_ite, Nat.cast_zero]
-  rfl
+  rw [Nat.cast_ite, Nat.cast_zero, ← diagonal_natCast, diagonal_apply]
 
 theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
@@ -161,6 +175,10 @@ protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
+
+theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Int.cast_ite, Int.cast_zero, ← diagonal_intCast, diagonal_apply]
 
 theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
     diagonal d = of fun _ _ => d default := by
@@ -186,6 +204,10 @@ instance one : One (Matrix n n α) :=
 
 @[simp]
 theorem diagonal_one : (diagonal fun _ => 1 : Matrix n n α) = 1 :=
+  rfl
+
+@[simp]
+theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
   rfl
 
 theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=

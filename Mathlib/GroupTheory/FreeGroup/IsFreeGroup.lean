@@ -3,7 +3,9 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Eric Wieser, Joachim Breitner
 -/
-import Mathlib.GroupTheory.FreeGroup.Basic
+module
+
+public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # Free groups structures on arbitrary types
@@ -37,6 +39,8 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -69,7 +73,7 @@ the generators. -/
 instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where
   coe b := fun i ↦ b.repr.symm (FreeGroup.of i)
   coe_injective' := by
-    rintro ⟨b⟩  ⟨b'⟩ hbb'
+    rintro ⟨b⟩ ⟨b'⟩ hbb'
     have H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) := by
       ext i; exact congr_fun hbb' i
     have : b.symm = b'.symm := by ext x; exact DFunLike.congr_fun H x
@@ -138,14 +142,14 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
   repr := MulEquiv.symm <| MonoidHom.toMulEquiv (FreeGroup.lift of) (lift FreeGroup.of)
       (by
         apply FreeGroup.ext_hom; intro x
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
-          lift_of])
+        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply,
+          FreeGroup.lift_apply_of, lift_of])
       (by
         let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a), lift.symm f a = f (of a) :=
           by intro H _ f a; simp [← lift_of (lift.symm f)]
         apply lift.symm.injective; ext x
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
-          lift_of, lift_symm_of])
+        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply,
+          FreeGroup.lift_apply_of, lift_of, lift_symm_of])
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it admits a free group basis based on this type. Here

@@ -3,8 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
 
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Category.Grp.Basic
 
 -/
 
+@[expose] public section
+
 universe u v
 
 open CategoryTheory
@@ -22,14 +26,14 @@ open CategoryTheory
 @[pp_with_univ]
 structure FiniteGrp where
   /-- A group that is finite -/
-  toGrp : Grp
+  toGrp : GrpCat
   [isFinite : Finite toGrp]
 
 /-- The category of finite additive groups. -/
 @[pp_with_univ]
 structure FiniteAddGrp where
-  /-- An add group that is finite -/
-  toAddGrp : AddGrp
+  /-- An additive group that is finite -/
+  toAddGrp : AddGrpCat
   [isFinite : Finite toAddGrp]
 
 attribute [to_additive] FiniteGrp
@@ -41,7 +45,8 @@ instance : CoeSort FiniteGrp.{u} (Type u) where
   coe G := G.toGrp
 
 @[to_additive]
-instance : Category FiniteGrp := InducedCategory.category FiniteGrp.toGrp
+instance : Category FiniteGrp :=
+  inferInstanceAs (Category (InducedCategory _ FiniteGrp.toGrp))
 
 @[to_additive]
 instance : ConcreteCategory FiniteGrp (· →* ·) := InducedCategory.concreteCategory FiniteGrp.toGrp
@@ -53,16 +58,17 @@ instance (G : FiniteGrp) : Group G := inferInstanceAs <| Group G.toGrp
 instance (G : FiniteGrp) : Finite G := G.isFinite
 
 /-- Construct a term of `FiniteGrp` from a type endowed with the structure of a finite group. -/
-@[to_additive "Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
-finite additive group."]
+@[to_additive /-- Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
+finite additive group. -/]
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
-  toGrp := Grp.of G
+  toGrp := GrpCat.of G
   isFinite := ‹_›
 
-/-- The morphism in `FiniteGrp`, induced from a morphism of the category `Grp`. -/
-@[to_additive "The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrp`"]
+/-- The morphism in `FiniteGrp`, induced from a morphism of the category `GrpCat`. -/
+@[to_additive
+/-- The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrpCat` -/]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
-  Grp.ofHom f
+  InducedCategory.homMk (GrpCat.ofHom f)
 
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) (x : X) :

@@ -3,12 +3,13 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Polynomials with degree strictly less than `n`
@@ -24,8 +25,8 @@ This file contains the properties of the submodule of polynomials of degree less
 * `degreeLT.basisProd R m n`: a basis for `R[X]_m × R[X]_n`, which is the sum of two instances of
   the basis given above.
 
-* `degreeLT.addLinearEquiv R m n`: an isomorphism between `R[X]_(m+n)` and `R[X]_m × R[X]_n`,
-  given by the fact that the bases are both indexed by `Fin (m+n)`. This is used for the Sylvester
+* `degreeLT.addLinearEquiv R m n`: an isomorphism between `R[X]_(m + n)` and `R[X]_m × R[X]_n`,
+  given by the fact that the bases are both indexed by `Fin (m + n)`. This is used for the Sylvester
   matrix, which is the matrix representing the Sylvester map between these two spaces, in a future
   file.
 
@@ -33,6 +34,10 @@ This file contains the properties of the submodule of polynomials of degree less
   `X + r` and preserves degrees.
 
 -/
+
+@[expose] public section
+
+open Module
 
 namespace Polynomial
 
@@ -75,26 +80,28 @@ noncomputable def basisProd : Basis (Fin (m + n)) R (R[X]_m × R[X]_n) :=
     Sum.elim_inr, LinearMap.coe_inr, Function.comp_apply]
 
 variable (R m n) in
-/-- An isomorphism between `R[X]_(m+n)` and `R[X]_m × R[X]_n` given by the fact that the bases are
-both indexed by `Fin (m+n)`. -/
+/-- An isomorphism between `R[X]_(m + n)` and `R[X]_m × R[X]_n` given by the fact that the bases are
+both indexed by `Fin (m + n)`. -/
 noncomputable def addLinearEquiv :
     R[X]_(m + n) ≃ₗ[R] R[X]_m × R[X]_n :=
   Basis.equiv (basis ..) (basisProd ..) (Equiv.refl _)
 
 lemma addLinearEquiv_castAdd (i : Fin m) :
-    addLinearEquiv R m n (basis R (m+n) (i.castAdd n)) = (basis R m i, 0) := by
+    addLinearEquiv R m n (basis R (m + n) (i.castAdd n)) = (basis R m i, 0) := by
   rw [addLinearEquiv, Basis.equiv_apply, Equiv.refl_apply, basisProd_castAdd]
 
 lemma addLinearEquiv_natAdd (i : Fin n) :
-    addLinearEquiv R m n (basis R (m+n) (i.natAdd m)) = (0, basis R n i) := by
+    addLinearEquiv R m n (basis R (m + n) (i.natAdd m)) = (0, basis R n i) := by
   rw [addLinearEquiv, Basis.equiv_apply, Equiv.refl_apply, basisProd_natAdd]
 
 lemma addLinearEquiv_symm_apply_inl_basis (i : Fin m) :
-    (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (basis R m i)) = basis R (m+n) (i.castAdd n) :=
+    (addLinearEquiv R m n).symm (LinearMap.inl R _ _ (basis R m i)) =
+      basis R (m + n) (i.castAdd n) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_castAdd i).symm
 
 lemma addLinearEquiv_symm_apply_inr_basis (j : Fin n) :
-    (addLinearEquiv R m n).symm (LinearMap.inr R _ _ (basis R n j)) = basis R (m+n) (j.natAdd m) :=
+    (addLinearEquiv R m n).symm (LinearMap.inr R _ _ (basis R n j)) =
+      basis R (m + n) (j.natAdd m) :=
   (LinearEquiv.symm_apply_eq _).2 (addLinearEquiv_natAdd j).symm
 
 lemma addLinearEquiv_symm_apply_inl (P : R[X]_m) :
@@ -150,12 +157,12 @@ variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 @[simp]
 lemma taylor_mem_degreeLT : taylor r f ∈ R[X]_n ↔ f ∈ R[X]_n := by simp [mem_degreeLT]
 
-lemma comap_taylorEquiv_degreeLT : (R[X]_n).comap (taylorEquiv r) = R[X]_n := by
+lemma comap_taylorEquiv_degreeLT : (R[X]_n).comap (taylorEquiv r : R[X] →ₗ[R] R[X]) = R[X]_n := by
   ext; simp [taylorEquiv]
 
-lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n := by
-  nth_rw 1 [← comap_taylorEquiv_degreeLT (r := r),
-    Submodule.map_comap_eq_of_surjective (taylorEquiv r).surjective]
+lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r : R[X] →ₗ[R] R[X]) = R[X]_n := by
+  nth_rw 1 [← comap_taylorEquiv_degreeLT (r := r), Submodule.map_comap_eq_of_surjective]
+  exact (taylorEquiv r).surjective
 
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
@@ -173,7 +180,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
   rw [← LinearMap.det_toMatrix (degreeLT.basis R n),
     Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
   · intro i
-    rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R:=R) (i:ℕ)]
+    rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R := R) (i : ℕ)]
     change (taylor r (degreeLT.basis R n i)).coeff _ = 1
     rw [degreeLT.basis_val, coeff_taylor_natDegree, leadingCoeff_X_pow]
   · intro i j hji

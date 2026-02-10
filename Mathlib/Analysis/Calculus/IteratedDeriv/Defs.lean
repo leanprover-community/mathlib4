@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # One-dimensional iterated derivatives
@@ -40,6 +42,8 @@ by translating the corresponding result `iteratedFDerivWithin_succ_apply_left` f
 iterated Fréchet derivative.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped Topology
@@ -59,9 +63,14 @@ def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F
 
 variable {n : ℕ} {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜}
 
+@[simp]
 theorem iteratedDerivWithin_univ : iteratedDerivWithin n f univ = iteratedDeriv n f := by
   ext x
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_univ]
+
+theorem iteratedDerivWithin_eq_iteratedDeriv (hs : UniqueDiffOn 𝕜 s) (h : ContDiffAt 𝕜 n f x)
+    (hx : x ∈ s) : iteratedDerivWithin n f s x = iteratedDeriv n f x := by
+  rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_eq_iteratedFDeriv hs h hx]
 
 /-! ### Properties of the iterated derivative within a set -/
 
@@ -102,8 +111,9 @@ theorem iteratedDerivWithin_zero : iteratedDerivWithin 0 f s = f := by
   simp [iteratedDerivWithin]
 
 @[simp]
-theorem iteratedDerivWithin_one {x : 𝕜} :
-    iteratedDerivWithin 1 f s x = derivWithin f s x := by
+theorem iteratedDerivWithin_one :
+    iteratedDerivWithin 1 f s = derivWithin f s := by
+  ext x
   by_cases hsx : AccPt x (𝓟 s)
   · simp only [iteratedDerivWithin, iteratedFDerivWithin_one_apply hsx.uniqueDiffWithinAt,
       derivWithin]
@@ -252,7 +262,7 @@ reformulated in terms of the one-dimensional derivative. -/
 theorem contDiff_nat_iff_iteratedDeriv {n : ℕ} : ContDiff 𝕜 n f ↔
     (∀ m : ℕ, m ≤ n → Continuous (iteratedDeriv m f)) ∧
       ∀ m : ℕ, m < n → Differentiable 𝕜 (iteratedDeriv m f) := by
-  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl, contDiff_iff_iteratedDeriv]
+  rw [← WithTop.coe_natCast, contDiff_iff_iteratedDeriv]
   simp
 
 /-- To check that a function is `n` times continuously differentiable, it suffices to check that its
@@ -298,10 +308,26 @@ theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
   convert iteratedDerivWithin_eq_iterate (F := F)
   simp [derivWithin_univ]
 
+theorem iteratedDerivWithin_of_isOpen (hs : IsOpen s) :
+    Set.EqOn (iteratedDerivWithin n f s) (iteratedDeriv n f) s := by
+  intro x hx
+  simp_rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_of_isOpen n hs hx]
+
+theorem iteratedDerivWithin_congr_right_of_isOpen (f : 𝕜 → F) (n : ℕ) {s t : Set 𝕜} (hs : IsOpen s)
+    (ht : IsOpen t) : (s ∩ t).EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n f t) := by
+  intro r hr
+  rw [iteratedDerivWithin_of_isOpen hs hr.1, iteratedDerivWithin_of_isOpen ht hr.2]
+
+theorem iteratedDerivWithin_of_isOpen_eq_iterate (hs : IsOpen s) :
+    EqOn (iteratedDerivWithin n f s) (deriv^[n] f) s := by
+  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen hs)
+  rw [iteratedDeriv_eq_iterate]
+  exact Set.eqOn_refl _ _
+
 /-- The `n+1`-th iterated derivative can be obtained by taking the `n`-th derivative of the
 derivative. -/
 theorem iteratedDeriv_succ' : iteratedDeriv (n + 1) f = iteratedDeriv n (deriv f) := by
-  rw [iteratedDeriv_eq_iterate, iteratedDeriv_eq_iterate]; rfl
+  rw [iteratedDeriv_eq_iterate, iteratedDeriv_eq_iterate, Function.iterate_succ_apply]
 
 lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [CharZero 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜} (h : AnalyticAt 𝕜 f x) :
@@ -319,4 +345,34 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   left
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
   norm_cast
-  exact Nat.factorial_ne_zero _
+  positivity
+
+theorem iteratedDeriv_const {n : ℕ} {c : F} {x : 𝕜} :
+    iteratedDeriv n (fun _ ↦ c) x = if n = 0 then c else 0 := by
+  induction n generalizing c with
+  | zero => simp
+  | succ n h => simp [iteratedDeriv_succ', h]
+
+theorem iteratedDerivWithin_const {n : ℕ} {c : F} {s : Set 𝕜} {x : 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ c) s x = if n = 0 then c else 0 := by
+  induction n generalizing c with
+  | zero => simp
+  | succ n h => simp [iteratedDerivWithin_succ', Pi.zero_def, h]
+
+@[simp]
+lemma iteratedDeriv_fun_const_zero : iteratedDeriv n (fun _ ↦ 0) x = (0 : F) := by
+  simpa using @iteratedDeriv_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) := by
+  simp [Pi.zero_def]
+
+@[simp]
+lemma iteratedDerivWithin_fun_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ 0) s x = (0 : F) := by
+  simpa using @iteratedDerivWithin_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDerivWithin_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (0 : 𝕜 → F) s x = (0 : F) := by
+  simp [Pi.zero_def]

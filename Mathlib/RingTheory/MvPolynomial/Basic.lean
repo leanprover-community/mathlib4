@@ -3,12 +3,14 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MvPolynomial.Degrees
-import Mathlib.Data.DFinsupp.Small
-import Mathlib.Data.Fintype.Pi
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Data.DFinsupp.Small
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Multivariate polynomials over commutative rings
@@ -35,10 +37,12 @@ that the monomials form a basis.
 Generalise to noncommutative (semi)rings
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Set LinearMap Module Submodule
 
 universe u v
 
@@ -65,6 +69,15 @@ instance [CharZero R] : CharZero (MvPolynomial σ R) where
 
 end CharZero
 
+section ExpChar
+
+variable [ExpChar R p]
+
+instance : ExpChar (MvPolynomial σ R) p := by
+  cases ‹ExpChar R p›; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+
+end ExpChar
+
 section Homomorphism
 
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
@@ -89,6 +102,62 @@ def basisRestrictSupport (s : Set (σ →₀ ℕ)) : Basis s R (restrictSupport 
 
 theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
     restrictSupport R s ≤ restrictSupport R t := Finsupp.supported_mono h
+
+lemma restrictSupport_eq_span (s : Set (σ →₀ ℕ)) :
+    restrictSupport R s = .span _ ((monomial · 1) '' s) := Finsupp.supported_eq_span_single ..
+
+lemma mem_restrictSupport_iff {s : Set (σ →₀ ℕ)} {r : MvPolynomial σ R} :
+    r ∈ restrictSupport R s ↔ ↑r.support ⊆ s := .rfl
+
+@[simp]
+lemma monomial_mem_restrictSupport {s : Set (σ →₀ ℕ)} {m} {r : R} :
+    monomial m r ∈ restrictSupport R s ↔ m ∈ s ∨ r = 0 := by
+  classical
+  by_cases r = 0 <;> simp [mem_restrictSupport_iff, support_monomial, *]
+
+open Pointwise in
+lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
+    restrictSupport R (s + t) = restrictSupport R s * restrictSupport R t := by
+  apply le_antisymm
+  · rw [restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff, Set.add_subset_iff]
+    intro x hx y hy
+    simp [show monomial (x + y) (1 : R) = monomial x 1 * monomial y 1 by simp, -monomial_mul,
+      *, Submodule.mul_mem_mul]
+  · rw [restrictSupport_eq_span, restrictSupport_eq_span, Submodule.span_mul_span,
+      Submodule.span_le, Set.mul_subset_iff]
+    simp +contextual [Set.add_mem_add]
+
+open Pointwise in
+@[simp] lemma restrictSupport_zero : restrictSupport R (0 : Set (σ →₀ ℕ)) = 1 := by
+  classical
+  apply le_antisymm
+  · rw [restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
+    simpa using ⟨1, by simp⟩
+  · rintro _ ⟨x, rfl⟩
+    simp [mem_restrictSupport_iff, Set.subset_def, coeff_one]
+
+@[simp]
+lemma restrictSupport_univ : restrictSupport R (.univ : Set (σ →₀ ℕ)) = ⊤ := by
+  ext; simp [mem_restrictSupport_iff]
+
+open Pointwise in
+lemma restrictSupport_nsmul (n : ℕ) (s : Set (σ →₀ ℕ)) :
+    restrictSupport R (n • s) = restrictSupport R s ^ n := by
+  induction n <;> simp [add_smul, restrictSupport_add, *, pow_succ]
+
+/-- The ideal defined by `restrictSupport R s` when `s` is an upper set. -/
+def restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) :
+    Ideal (MvPolynomial σ R) where
+  __ := restrictSupport R s
+  smul_mem' x y hy m (hm : m ∈ (x * y).support) := by
+    classical
+    simp only [mem_support_iff, coeff_mul, ne_eq] at hm
+    obtain ⟨⟨i, j⟩, hij, e⟩ := Finset.exists_ne_zero_of_sum_ne_zero hm
+    refine hs (by simp_all [eq_comm]) (hy (show j ∈ y.support by aesop))
+
+@[simp]
+lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :
+  (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s := by rfl
 
 variable (σ)
 

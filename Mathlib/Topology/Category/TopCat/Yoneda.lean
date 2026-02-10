@@ -3,11 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Topology.Category.TopCat.Limits.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.Topology.Category.TopCat.Limits.Products
 This file develops some API for "topologically concrete" categories, defining universe polymorphic
 "Yoneda presheaves" on such categories.
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -26,7 +30,7 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ TopCat.{w}) (Y : Type w') [Top
 namespace ContinuousMap
 
 /--
-A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a topoological space
+A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a topological space
 `Y`.
 -/
 @[simps]
@@ -35,13 +39,13 @@ def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
   map f g := ContinuousMap.comp g (F.map f.unop).hom
 
 /--
-A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topoological
+A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topological
 space `Y`.
 -/
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
-  map f g := ContinuousMap.comp g f.unop.hom
+  map f g := ContinuousMap.comp g (ConcreteCategory.hom f.unop)
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
 /-!
 # Smallness of Ext-groups from the existence of enough injectives
@@ -22,6 +24,8 @@ Then, we must be very selective regarding `HasExt` instances.
 Note: this file dualizes the results in `HasEnoughProjectives.lean`.
 
 -/
+
+public section
 
 universe w v u
 
@@ -93,12 +97,16 @@ open DerivedCategory
 lemma eq_zero_of_injective [HasExt.{w} C] {X I : C} {n : ℕ} [Injective I]
     (e : Ext X I (n + 1)) : e = 0 := by
   let K := (CochainComplex.singleFunctor C 0).obj X
-  have := K.isStrictlyGE_of_ge (-n) 0 (by omega)
+  have := K.isStrictlyGE_of_ge (-n) 0 (by lia)
   letI := HasDerivedCategory.standard C
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
-    (by omega)).hom.app _), zero_hom, Limits.zero_comp]
-  exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by omega)
+    (by lia)).hom.app _), zero_hom, Limits.zero_comp]
+  exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by lia)
+
+lemma subsingleton_of_injective [HasExt.{w} C]
+    (X I : C) [Injective I] (n : ℕ) : Subsingleton (Ext.{w} X I (n + 1)) :=
+  subsingleton_of_forall_eq 0 Ext.eq_zero_of_injective
 
 end Abelian.Ext
 
@@ -113,8 +121,7 @@ the universe `w`, and if we have two `HasExt.{w₁} C` and `HasExt.{w₂} C`
 instances, we would have to specify the universe explicitly almost
 everywhere, which would be an inconvenience. Then, we must be
 very selective regarding `HasExt` instances. -/
-lemma hasExt_of_enoughInjectives [LocallySmall.{w} C] [EnoughInjectives C] :
-  HasExt.{w} C := by
+lemma hasExt_of_enoughInjectives [LocallySmall.{w} C] [EnoughInjectives C] : HasExt.{w} C := by
     letI := HasDerivedCategory.standard C
     have := hasExt_of_hasDerivedCategory C
     rw [hasExt_iff_small_ext.{w}]

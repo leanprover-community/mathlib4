@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ring
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Jacobson.Ring
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 
@@ -14,6 +16,8 @@ We provide further API for zero-dimensional rings.
 Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 section CommSemiring
 
@@ -43,7 +47,7 @@ example [Subsingleton R] : Ring.KrullDimLE 0 R := inferInstance
 lemma Ring.KrullDimLE.isField_of_isDomain [IsDomain R] : IsField R := by
   by_contra h
   obtain ⟨p, hp, h⟩ := Ring.not_isField_iff_exists_prime.mp h
-  exact hp.symm (Ideal.bot_prime.isMaximal'.eq_of_le h.ne_top bot_le)
+  exact hp.symm (Ideal.isPrime_bot.isMaximal'.eq_of_le h.ne_top bot_le)
 
 omit [Ring.KrullDimLE 0 R] in
 lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
@@ -64,7 +68,7 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
       (nilradical R).IsMaximal ] := by
   tfae_have 1 → 3 := by
     intro ⟨h₁, h₂⟩ x
-    show x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
+    change x ∈ nilradical R ↔ x ∈ IsLocalRing.maximalIdeal R
     rw [nilradical, Ideal.radical_eq_sInf]
     simp [← Ideal.isMaximal_iff_isPrime, IsLocalRing.isMaximal_iff]
   tfae_have 3 → 4 := by
@@ -88,8 +92,6 @@ lemma le_isUnit_iff_zero_notMem [IsLocalRing R]
   have := ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 2 rfl rfl).mp ⟨‹_›, ‹_›⟩
   exact ⟨fun h₁ h₂ ↦ not_isUnit_zero (h₁ h₂),
     fun H x hx ↦ (this x).not_left.mp fun ⟨n, hn⟩ ↦ H (hn ▸ pow_mem hx n)⟩
-
-@[deprecated (since := "2025-05-23")] alias le_isUnit_iff_zero_not_mem := le_isUnit_iff_zero_notMem
 
 variable (R) in
 theorem Ring.KrullDimLE.existsUnique_isPrime [IsLocalRing R] :
@@ -170,57 +172,3 @@ instance (priority := 100) [Ring.KrullDimLE 0 R] : IsJacobsonRing R :=
   ⟨fun I hI ↦ by rw [I.jacobson_eq_radical, hI.radical]⟩
 
 end CommRing
-
-section Deprecated
-
-namespace Localization.AtPrime
-
-variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
-include hMin
-
-@[deprecated Ring.KrullDimLE.existsUnique_isPrime (since := "2024-12-20")]
-lemma _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring S] [Algebra R S]
-    [IsLocalization.AtPrime S I] {J K : Ideal S} [J.IsPrime] [K.IsPrime] : J = K :=
-  haveI := Ring.KrullDimLE.of_isLocalization I hMin S
-  haveI := IsLocalization.AtPrime.isLocalRing S I
-  (Ring.KrullDimLE.existsUnique_isPrime _).unique inferInstance inferInstance
-
-@[deprecated (since := "2024-12-20")]
-alias prime_unique_of_minimal := Ring.KrullDimLE.eq_maximalIdeal_of_isPrime
-
-@[deprecated (since := "2024-12-20")]
-alias nilpotent_iff_mem_maximal_of_minimal := Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal
-
-@[deprecated (since := "2024-12-20")]
-alias nilpotent_iff_not_unit_of_minimal := Ring.KrullDimLE.isNilpotent_iff_mem_nonunits
-
-end Localization.AtPrime
-
-@[deprecated "Use `PrimeSpectrum.unique_of_ringKrullDimLE_zero` with
-  `Ring.KrullDimLE.of_isLocalization`" (since := "2024-12-20")]
-alias PrimeSpectrum.primeSpectrum_unique_of_localization_at_minimal :=
-  PrimeSpectrum.unique_of_ringKrullDimLE_zero
-
-section Nilrad_max_localization
-
-open Ideal
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.of_nilradical_isMaximal := IsLocalRing.of_isMaximal_nilradical
-
-variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S] {M : Submonoid R}
-
-attribute [local instance]
-  IsLocalRing.of_isMaximal_nilradical Ring.KrullDimLE.of_isMaximal_nilradical in
-/--
-Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
-contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomorphism between
-`R` and `S`. -/
-@[deprecated IsLocalization.atUnits (since := "2024-12-20")]
-noncomputable def localizationEquivSelfOfNilradicalIsMaximal [h : (nilradical R).IsMaximal]
-    (h' : (0 : R) ∉ M) [IsLocalization M S] : R ≃ₐ[R] S :=
-  IsLocalization.atUnits _ _ (by simpa)
-
-end Nilrad_max_localization
-
-end Deprecated

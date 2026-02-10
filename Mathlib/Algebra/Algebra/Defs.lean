@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Algebras over commutative semirings
@@ -14,10 +16,10 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 * algebra equivalences `AlgEquiv` are defined in `Mathlib/Algebra/Algebra/Equiv.lean`;
 
-* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra.lean`;
+* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra/Basic.lean`;
 
 * The category `AlgCat R` of `R`-algebras is defined in the file
-  `Mathlib/Algebra/Category/Algebra/Basic.lean`.
+  `Mathlib/Algebra/Category/AlgCat/Basic.lean`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
@@ -80,6 +82,8 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 -/
 
+@[expose] public section
+
 assert_not_exists Field Finset Module.End
 
 universe u v w u₁ v₁
@@ -102,6 +106,10 @@ end Prio
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
+
+theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
+    [Subsingleton R] : Subsingleton A :=
+  (algebraMap R A).codomain_trivial
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
@@ -162,7 +170,11 @@ end CommRingRing
 end algebraMap
 
 /-- Creating an algebra from a morphism to the center of a semiring.
-See note [reducible non-instances]. -/
+See note [reducible non-instances].
+
+*Warning:* In general this should not be used if `S` already has a `SMul R S`
+instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
+this will likely create a diamond. -/
 abbrev RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
@@ -184,7 +196,11 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
   rfl
 
 /-- Creating an algebra from a morphism to a commutative semiring.
-See note [reducible non-instances]. -/
+See note [reducible non-instances].
+
+*Warning:* In general this should not be used if `S` already has a `SMul R S`
+instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
+this will likely create a diamond. -/
 abbrev RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 
@@ -246,8 +262,13 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
     funext r a
     rw [P.smul_def', Q.smul_def', h]
   rcases P with @⟨⟨P⟩⟩
-  rcases Q with @⟨⟨Q⟩⟩
   congr
+
+/-- An auxiliary lemma used to prove theorems of the form
+`RingHom.X (algebraMap R S) ↔ Algebra.X R S`. -/
+lemma _root_.toAlgebra_algebraMap [Algebra R S] :
+    (algebraMap R S).toAlgebra = ‹_› :=
+  algebra_ext _ _ fun _ ↦ rfl
 
 -- see Note [lower instance priority]
 instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
@@ -290,7 +311,8 @@ theorem right_comm (x : A) (r : R) (y : A) :
     x * algebraMap R A r * y = x * y * algebraMap R A r := by
   rw [mul_assoc, commutes, ← mul_assoc]
 
-instance _root_.IsScalarTower.right : IsScalarTower R A A :=
+/-- This has high priority because it is almost always the right instance when it applies. -/
+instance (priority := high) _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 
 @[simp]
@@ -355,6 +377,9 @@ packaged as an `R`-linear map.
 protected def linearMap : R →ₗ[R] A :=
   { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
 
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "η" => Algebra.linearMap _ _
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "η[" R "]" => Algebra.linearMap R _
+
 @[simp]
 theorem linearMap_apply (r : R) : Algebra.linearMap R A r = algebraMap R A r :=
   rfl
@@ -367,21 +392,27 @@ instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
-  toSMul := Mul.toSMul _
-  __ := ({RingHom.id R with toFun x := x}).toAlgebra
+  toSMul := instSMulOfMul
+  __ := ({ RingHom.id R with toFun x := x }).toAlgebra
+
+@[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
 
 variable {R A}
 
+@[simp] lemma algebraMap_self : algebraMap R R = .id _ := rfl
+lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
+
 namespace id
 
-@[simp]
+@[deprecated algebraMap_self (since := "2025-07-17")]
 theorem map_eq_id : algebraMap R R = RingHom.id _ :=
   rfl
 
+@[deprecated algebraMap_self_apply (since := "2025-07-17")]
 theorem map_eq_self (x : R) : algebraMap R R x = x :=
   rfl
 
-@[simp]
+@[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=
   rfl
 
@@ -391,9 +422,18 @@ end Semiring
 
 end Algebra
 
+section algebraMap
+
+variable {A B : Type*} (a : A) (b : B) (C : Type*)
+  [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
+
 @[norm_cast]
-theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
-    [SMul A C] [IsScalarTower A B C] (a : A) (b : B) : (a • b : B) = a • (b : C) := calc
-  ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
-  _ = a • (b • 1) := smul_assoc ..
-  _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
+theorem algebraMap.coe_smul [SMul A C] [IsScalarTower A B C] : (a • b : B) = a • (b : C) := by
+  simp [Algebra.algebraMap_eq_smul_one]
+
+@[norm_cast]
+theorem algebraMap.coe_smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
+    (a • b : B) = a • (b : C) := by
+  simp [Algebra.algebraMap_eq_smul_one, smul_distrib_smul]
+
+end algebraMap

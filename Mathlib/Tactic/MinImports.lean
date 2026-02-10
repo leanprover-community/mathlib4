@@ -3,13 +3,16 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.DefView
-import Lean.Util.CollectAxioms
-import ImportGraph.Imports
-import ImportGraph.RequiredModules
+module
+
+public meta import Lean.Elab.DefView
+public meta import Lean.Util.CollectAxioms
+public meta import ImportGraph.Imports.Redundant
+public meta import ImportGraph.Imports.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Elab.DeclModifiers
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -54,6 +57,8 @@ It may be more efficient (not necessarily in terms of speed, but of simplicity o
 to inspect the `InfoTrees` for each command and retrieve information from there.
 I have not looked into this yet.
 -/
+
+public meta section
 
 open Lean Elab Command
 
@@ -109,7 +114,7 @@ def getAttrNames (stx : Syntax) : NameSet :=
     | some stx => getIds stx
 
 /-- `getAttrs env stx` returns all attribute declaration names contained in `stx` and registered
-in the `Environment `env`. -/
+in the `Environment` `env`. -/
 def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
   Id.run do
   let mut new : NameSet := {}
@@ -126,14 +131,14 @@ by `_(n-1)`, unless `n ≤ 1`, in which case it simply removes the `_n` suffix.
 -/
 def previousInstName : Name → Name
   | nm@(.str init tail) =>
-    let last := tail.takeRightWhile (· != '_')
+    let last := tail.takeEndWhile (· != '_')
     let newTail := match last.toNat? with
                     | some (n + 2) => s!"_{n + 1}"
                     | _ => ""
-    let newTailPrefix := tail.dropRightWhile (· != '_')
+    let newTailPrefix := tail.dropEndWhile (· != '_')
     if newTailPrefix.isEmpty then nm else
     let newTail :=
-      (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
+      (if newTailPrefix.back == '_' then newTailPrefix.dropEnd 1 else newTailPrefix).copy ++ newTail
     .str init newTail
   | nm => nm
 
@@ -231,7 +236,7 @@ Assuming that `importNames` are module names,
 it returns the `NameSet` consisting of a minimal collection of module names whose transitive
 closure is enough to parse (and elaborate) `cmd`. -/
 def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet :=
-  importNames.diff (env.findRedundantImports importNames.toArray)
+  importNames \ (env.findRedundantImports importNames.toArray)
 
 /-- `minImpsCore stx id` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs

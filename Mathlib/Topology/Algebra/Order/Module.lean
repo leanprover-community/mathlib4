@@ -3,13 +3,17 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Algebra.MulAction
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.MulAction
 
 /-!
 # Continuous nonnegative scalar multiplication
 -/
+
+@[expose] public section
 
 variable {R α : Type*} [Semiring R] [PartialOrder R] [SMul R α] [TopologicalSpace α]
 

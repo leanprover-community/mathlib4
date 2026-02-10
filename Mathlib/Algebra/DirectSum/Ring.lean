@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.Ring.Associator
+module
+
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -72,6 +74,8 @@ can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_i
 graded ring, filtered ring, direct sum, add_submonoid
 -/
 
+@[expose] public section
+
 
 variable {ι : Type*} [DecidableEq ι]
 
@@ -129,7 +133,7 @@ class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   /-- On negative integers, the canonical map from ℤ to a graded ring is the negative extension of
   the canonical map from ℕ to the underlying graded semiring. -/
-  -- Porting note: -(n+1) -> Int.negSucc
+  -- Porting note: -(n + 1) -> Int.negSucc
   intCast_negSucc_ofNat : ∀ n : ℕ, intCast (Int.negSucc n) = -natCast (n + 1 : ℕ)
 
 /-- A graded version of `CommRing`. -/
@@ -188,10 +192,10 @@ instance instMul : Mul (⨁ i, A i) where
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
   { (inferInstance : AddCommMonoid _) with
     zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
-    mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_zero]
-    left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add]
+    mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero]
+    left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, map_add]
     right_distrib := fun _ _ _ => by
-      simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add, AddMonoidHom.add_apply] }
+      simp only [Mul.mul, HMul.hMul, map_add, AddMonoidHom.add_apply] }
 
 variable {A}
 
@@ -199,9 +203,7 @@ theorem mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
 
 theorem mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of A i a) (of A j b) = of A (i + j) (GradedMonoid.GMul.mul a b) := by
-  unfold mulHom
-  simp only [toAddMonoid_of, flip_apply, coe_comp, Function.comp_apply]
-  rfl
+  simp
 
 theorem of_mul_of {i j} (a : A i) (b : A j) :
     of A i a * of A j b = of _ (i + j) (GradedMonoid.GMul.mul a b) :=
@@ -215,6 +217,7 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
+set_option backward.privateInPublic true in
 private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
   suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
@@ -222,6 +225,7 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
   rw [mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
 
+set_option backward.privateInPublic true in
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi
@@ -229,6 +233,7 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   rw [flip_apply, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 
+set_option backward.privateInPublic true in
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
@@ -243,6 +248,8 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
 instance instNatCast : NatCast (⨁ i, A i) where
   natCast := fun n => of _ _ (GSemiring.natCast n)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The `Semiring` structure derived from `GSemiring A`. -/
 instance semiring : Semiring (⨁ i, A i) :=
   { (inferInstance : NonUnitalNonAssocSemiring _) with
@@ -291,12 +298,8 @@ theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' :
   apply congrArg _
   simp_rw [flip_apply]
   funext x
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [DFinsupp.sumAddHom_apply]
-  simp only [gMulHom, AddMonoidHom.dfinsuppSum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
-
-@[deprecated (since := "2025-04-06")] alias mul_eq_dfinsupp_sum := mul_eq_dfinsuppSum
+  simp [AddMonoidHom.dfinsuppSum_apply, DFinsupp.sumAddHom_apply, DirectSum.gMulHom,
+    DirectSum.toAddMonoid]
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
@@ -311,6 +314,7 @@ section CommSemiring
 
 variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 
+set_option backward.privateInPublic true in
 private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   suffices mulHom A = (mulHom A).flip by
     rw [← mulHom_apply, this, AddMonoidHom.flip_apply, mulHom_apply]
@@ -318,6 +322,8 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   rw [AddMonoidHom.flip_apply, mulHom_of_of, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (GCommSemiring.mul_comm ⟨ai, ax⟩ ⟨bi, bx⟩)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
 instance commSemiring : CommSemiring (⨁ i, A i) :=
   { DirectSum.semiring A with
@@ -348,7 +354,7 @@ instance ring : Ring (⨁ i, A i) :=
     toIntCast.intCast := fun z => of A 0 <| (GRing.intCast z)
     intCast_ofNat := fun _ => congrArg (of A 0) <| GRing.intCast_ofNat _
     intCast_negSucc := fun _ =>
-      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _}
+      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _ }
 
 end Ring
 
@@ -528,7 +534,7 @@ theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) 
 /-- A family of `AddMonoidHom`s preserving `DirectSum.One.one` and `DirectSum.Mul.mul`
 describes a `RingHom`s on `⨁ i, A i`. This is a stronger version of `DirectSum.toMonoid`.
 
-Of particular interest is the case when `A i` are bundled subojects, `f` is the family of
+Of particular interest is the case when `A i` are bundled subobjects, `f` is the family of
 coercions such as `AddSubmonoid.subtype (A i)`, and the `[GSemiring A]` structure originates from
 `DirectSum.gsemiring.ofAddSubmonoids`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/
@@ -546,7 +552,7 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       rw [(toAddMonoid f).map_mul_iff]
       refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
       refine DirectSum.addHom_ext' (fun yi ↦ AddMonoidHom.ext (fun yv ↦ ?_))
-      show
+      change
         toAddMonoid f (of A xi xv * of A yi yv) =
           toAddMonoid f (of A xi xv) * toAddMonoid f (of A yi yv)
       simp_rw [of_mul_of, toAddMonoid_of]
@@ -578,7 +584,7 @@ def liftRingHom :
       rw [← F.map_one]
       rfl,
       by
-      intros i j ai aj
+      intro i j ai aj
       simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_coe]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
@@ -587,8 +593,7 @@ def liftRingHom :
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
-    simp only [RingHom.coe_addMonoidHom_mk, DirectSum.toAddMonoid_of, AddMonoidHom.mk_coe,
-      AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
+    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
 
 end ToSemiring
 
