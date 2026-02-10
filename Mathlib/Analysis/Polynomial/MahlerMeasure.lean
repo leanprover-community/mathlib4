@@ -325,7 +325,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       congr
       exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
 
-theorem supNorm_le_choose_middle_mahlerMeasure (p : Polynomial ℂ) :
+theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial ℂ) :
     p.supNorm ≤ p.natDegree.choose (p.natDegree / 2) * p.mahlerMeasure := by
   obtain ⟨i, hi⟩ := p.exists_eq_supNorm
   calc p.supNorm = ‖p.coeff i‖ := hi
