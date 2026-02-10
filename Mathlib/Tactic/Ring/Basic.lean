@@ -79,11 +79,11 @@ open Lean (MetaM Expr mkRawNatLit)
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 @[reducible, inherit_doc Common.ExBase]
-def ExBase := Common.ExBase (RatCoeff) sα
+def ExBase := Common.ExBase RatCoeff sα
 @[reducible, inherit_doc Common.ExProd]
-def ExProd := Common.ExProd (RatCoeff) sα
+def ExProd := Common.ExProd RatCoeff sα
 @[reducible, inherit_doc Common.ExSum]
-def ExSum := Common.ExSum (RatCoeff) sα
+def ExSum := Common.ExSum RatCoeff sα
 
 section
 variable {R : Type*} [CommSemiring R] {a : R}
@@ -368,7 +368,7 @@ def RatCoeff.toResult {a : Q($α)} : RatCoeff a → NormNum.Result a
 | ⟨q, h⟩ => Result.ofRawRat q a h
 
 /-- Turn a NormNum.Result into coefficient data. -/
-def RatCoeff.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result (RatCoeff) a := do
+def RatCoeff.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result RatCoeff a := do
   let ⟨qc, hc⟩ ← res.toRatNZ
   let ⟨c, pc⟩ := res.toRawEq
   return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
@@ -379,7 +379,7 @@ mutual
 /-- Add two rational number expressions. If the result is zero, returns a proof of this fact. -/
 partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     {a b : Q($α)} (za : RatCoeff a) (zb : _root_.Mathlib.Tactic.Ring.RatCoeff b) :
-    MetaM (Result (RatCoeff) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
+    MetaM (Result RatCoeff q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
   let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
   | Result.isNat inst lit pf => do
@@ -395,7 +395,7 @@ partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 /-- Evaluate the product of two rational number expressions. -/
 partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     {a b : Q($α)} (za : RatCoeff a) (zb : _root_.Mathlib.Tactic.Ring.RatCoeff b) :
-    MetaM (Result (RatCoeff) q($a * $b)) := do
+    MetaM (Result RatCoeff q($a * $b)) := do
   let res ← za.toResult.mul zb.toResult
   return ← RatCoeff.ofResult res
 
@@ -403,7 +403,7 @@ partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cα : Common.Cache sα)
     (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (_smul : Q(SMul $β $α))
     (x : Q($β)) :
-    AtomM ((y : Q($α)) × Common.ExSum (RatCoeff) sα q($y) ×
+    AtomM ((y : Q($α)) × Common.ExSum RatCoeff sα q($y) ×
       Q(∀ (a : $α), $x • a = $y * a)) := do
   let cβ ← Common.mkCache sβ
   let ⟨x', vx, px⟩ ← Common.eval (ringCompute .nat) (ringCompute cβ) cβ x
@@ -429,7 +429,7 @@ partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (
 /-- Negate rational number expressions. -/
 partial def neg {u : Lean.Level} {α : Q(Type u)}
     {a : Q($α)} (_crα : Q(CommRing $α)) (za : RatCoeff a) :
-    MetaM (Result (RatCoeff) q(-$a)) := do
+    MetaM (Result RatCoeff q(-$a)) := do
   let res ← za.toResult.neg q(inferInstance)
   -- We have to unpack this result due to instance issues.
   let ⟨_, vc, pc⟩ ← RatCoeff.ofResult res
@@ -441,7 +441,7 @@ Fails if the exponent is not a literal. -/
 partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     {a : Q($α)} {b : Q(ℕ)} (za : RatCoeff a)
     (vb : Common.ExProdNat q($b)) :
-    OptionT MetaM (Result (RatCoeff) q($a ^ $b)) := do
+    OptionT MetaM (Result RatCoeff q($a ^ $b)) := do
   match vb with
   | .const _ =>
     have lit : Q(ℕ) := b.appArg!
@@ -458,7 +458,7 @@ partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 /-- Evaluate the inverse of a natural number expression. -/
 partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
     {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α)) (za : RatCoeff a) :
-    AtomM (Option (Result (RatCoeff) q($a⁻¹))) := do
+    AtomM (Option (Result RatCoeff q($a⁻¹))) := do
   match (← (Lean.observing? <| za.toResult.inv _ czα :)) with
   | some res =>
     let ⟨_, vc, pc⟩ ← RatCoeff.ofResult res
@@ -467,7 +467,7 @@ partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
 
 /-- Try to evaluate an expression as a rational constant using norm_num. -/
 partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (x : Q($α)) :
-    MetaM (Result (Common.ExSum (RatCoeff) sα) q($x)) := do
+    MetaM (Result (Common.ExSum RatCoeff sα) q($x)) := do
   let res ← NormNum.derive x
   let ⟨_, va, pa⟩ ← evalCast sα res
   return ⟨_, va, q($pa)⟩
@@ -492,7 +492,7 @@ partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type
 /-- The data used by the `ring` tactic to normalize the constant coefficients. -/
 partial def _root_.Mathlib.Tactic.Ring.ringCompute
     {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} (cα : Common.Cache sα) :
-    Common.RingCompute (RatCoeff) sα where
+    Common.RingCompute RatCoeff sα where
   add := add sα
   mul := mul sα
   cast := cast sα cα
