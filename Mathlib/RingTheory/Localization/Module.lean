@@ -303,7 +303,7 @@ def LocalizedModule.map :
 
 @[simp]
 lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
-    map S f (.mk x y) = LocalizedModule.mk (f x) y := by
+    map S f (x /ₒ y) = (f x) /ₒ y := by
   rw [IsLocalizedModule.mk_eq_mk', IsLocalizedModule.mk_eq_mk']
   exact IsLocalizedModule.map_mk' _ _ _ _ _ _
 

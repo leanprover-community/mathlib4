@@ -331,8 +331,7 @@ theorem toStalk_comp_stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
   rw [toStalk, Category.assoc, germ_comp_stalkToFiberLinearMap]; rfl
 
 theorem stalkToFiberLinearMap_toStalk (x : PrimeSpectrum.Top R) (m : M) :
-    (stalkToFiberLinearMap M x).hom (toStalk M x m) =
-    LocalizedModule.mk m 1 :=
+    (stalkToFiberLinearMap M x).hom (toStalk M x m) = m /ₒ 1 :=
   LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (toStalk_comp_stalkToFiberLinearMap M x)) _
 
 /--
@@ -343,7 +342,7 @@ in `U`), this is `m / r` seen as a section of `M^~` over `U`.
 def const (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, r ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
     (tildeInModuleCat M).obj (op U) :=
-  ⟨fun x => LocalizedModule.mk m ⟨r, hu x x.2⟩, fun x =>
+  ⟨fun x => m /ₒ ⟨r, hu x x.2⟩, fun x =>
     ⟨U, x.2, 𝟙 _, m, r, fun y => ⟨hu _ y.2, by
       simpa only [LocalizedModule.mkLinearMap_apply, LocalizedModule.smul'_mk,
         LocalizedModule.mk_eq] using ⟨1, by simp⟩⟩⟩⟩
@@ -351,7 +350,7 @@ def const (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
 @[simp]
 theorem const_apply (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, r ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) (x : U) :
-    (const M m r U hu).1 x = LocalizedModule.mk m ⟨r, hu x x.2⟩ :=
+    (const M m r U hu).1 x = m /ₒ ⟨r, hu x x.2⟩ :=
   rfl
 
 theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectrum.Top R)
@@ -360,8 +359,8 @@ theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectru
       const M f g V hg = (tildeInModuleCat M).map i.op s :=
   let ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
   ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1, Subtype.ext <| funext fun y => by
-    obtain ⟨h1, (h2 : g • s.1 ⟨y, _⟩ = LocalizedModule.mk f 1)⟩ := hfg y
-    exact show LocalizedModule.mk f ⟨g, by exact h1⟩ = s.1 (iVU y) by
+    obtain ⟨h1, (h2 : g • s.1 ⟨y, _⟩ = f /ₒ 1)⟩ := hfg y
+    exact show f /ₒ ⟨g, h1⟩ = s.1 (iVU y) by
       set x := s.1 (iVU y); change g • x = _ at h2; clear_value x
       induction x using LocalizedModule.induction_on with
       | h a b =>
@@ -376,7 +375,7 @@ theorem res_const (f : M) (g : R) (U hu V hv i) :
 
 @[simp]
 theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.primeCompl) :
-    (localizationToStalk M x).hom (LocalizedModule.mk f s) =
+    (localizationToStalk M x).hom (f /ₒ s) =
       (tildeInModuleCat M).germ (PrimeSpectrum.basicOpen (s : R)) x s.2
         (const M f s (PrimeSpectrum.basicOpen s) fun _ => id) :=
   (Module.End.isUnit_iff _ |>.1 (isUnit_toStalk M x s)).injective <| by
@@ -388,7 +387,7 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
     (F := M.tildeInModuleCat)
   · exact homOfLE le_top
   · exact 𝟙 _
-  refine Subtype.ext <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
+  refine Subtype.ext <| funext fun y => show f /ₒ 1 = _ from ?_
   dsimp
   simp only [CategoryTheory.Functor.map_id, hom_id, map_smul, LinearMap.id_coe, id_eq,
     smul_section_apply, isLocallyFraction_pred, Opens.val_apply, LocalizedModule.mkLinearMap_apply,

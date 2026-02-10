@@ -44,7 +44,7 @@ lemma LocalizedModule.map_exact (g : M₀ →ₗ[R] M₁) (h : M₁ →ₗ[R] M�
         obtain ⟨a, aS, ha⟩ := Subtype.exists.1 hy
         rw [smul_zero, mk_smul, ← map_smul, ex (a • m)] at ha
         rcases ha with ⟨x, hx⟩
-        use mk x (⟨a, aS⟩ * s)
+        use x /ₒ (⟨a, aS⟩ * s)
         rw [map_LocalizedModules, hx, ← mk_cancel_common_left ⟨a, aS⟩ s m, mk_smul])
       y)
     fun ⟨x, hx⟩ ↦ by
