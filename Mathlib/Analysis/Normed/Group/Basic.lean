@@ -752,6 +752,10 @@ alias dist_eq_norm := dist_eq_norm_sub
 alias dist_eq_norm' := dist_eq_norm_sub'
 
 @[to_additive]
+theorem norm_inv_mul (a b : E) : ‖a⁻¹ * b‖ = ‖a / b‖ := by
+  rw [← dist_eq_norm_inv_mul, dist_eq_norm_div]
+
+@[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
 
