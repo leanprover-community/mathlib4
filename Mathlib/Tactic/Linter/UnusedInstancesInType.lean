@@ -125,8 +125,8 @@ within proof terms.
 
 The indices start at 0, and do not count `let`s.
 -/
-def _root_.Lean.Expr.collectUnnecessaryInstanceBinderIdxs (p : Expr → Bool) (e : Expr) :
-    MetaM (Array Nat) := do
+partial def _root_.Lean.Expr.collectUnnecessaryInstanceBinderIdxsWhere (p : Expr → Bool)
+    (e : Expr) : MetaM (Array Nat) := do
   let (instances, fvarIdSet) ← go e 0 #[] |>.run {}
   return instances.filterMap fun i => if fvarIdSet.contains i.fvarId then none else some i.idx
 where
@@ -190,7 +190,7 @@ have loose bound variables.
 def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
     TermElabM Unit := do
-  let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxs p
+  let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" interactive case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
