@@ -126,6 +126,9 @@ theorem isUnit_iff {x : AdeleRing (𝓞 K) K} :
   rw [Prod.isUnit_iff, Pi.isUnit_iff, FiniteAdeleRing.isUnit_iff]
   simp_rw [isUnit_iff_ne_zero]
 
+-- TODO: define this for non-units; zero outside units.
+-- prove `Mutipliable` everwyhere.
+-- `mulSupport_finite` reduces to finprod in the unit case
 instance : Norm (AdeleRing (𝓞 K) K)ˣ where norm x := ‖x.1.1‖ * ‖(MulEquiv.prodUnits x).2‖
 
 theorem norm_def (x : (AdeleRing (𝓞 K) K)ˣ) : ‖x‖ = ‖x.1.1‖ * ‖(MulEquiv.prodUnits x).2‖ := rfl
