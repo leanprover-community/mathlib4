@@ -40,7 +40,7 @@ def eisensteinSeriesMF {k : ℤ} {N : ℕ} [NeZero N] (hk : 3 ≤ k) (a : Fin 2 
     rw [OnePoint.isBoundedAt_iff_forall_SL2Z hc]
     exact fun γ hγ ↦ isBoundedAtImInfty_eisensteinSeriesSIF a hk γ
 
-@[deprecated (since := "2026-02-10")] alias eisensteinSeries_MF := eisensteinSeriesMF
+@[deprecated (since := "2026-02-10")] noncomputable alias eisensteinSeries_MF := eisensteinSeriesMF
 
 /-- Normalised Eisenstein series of level 1 and weight `k`,
 here they have been scaled by `1/2` since we sum over coprime pairs. -/
