@@ -33,17 +33,19 @@ variable {R V P : Type*} [Ring R] [LinearOrder R] [FloorRing R]
 variable [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable {n : ℕ} [NeZero n]
 
+variable (R) in
 /-- The boundary parametrization on `R` formed by concatenating edges using `edgePath`. -/
 noncomputable def boundaryParam (poly : Polygon P n) (t : R) : P :=
   let i : Fin n := ⟨(Int.floor t).toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩
   let f : R := Int.fract t
-  poly.edgePath (R := R) i f
+  poly.edgePath R i f
 
+variable (R) in
 /-- A map from `AddCircle n` to the boundary points of the polygon lifted from `boundaryParam`. -/
 noncomputable def boundaryMap [IsStrictOrderedRing R] [Archimedean R]
     (poly : Polygon P n) : AddCircle (n : R) → P :=
   haveI : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
-  AddCircle.liftIco (p := (n : R)) (a := (0 : R)) (poly.boundaryParam (R := R))
+  AddCircle.liftIco (p := (n : R)) (a := (0 : R)) (poly.boundaryParam R)
 
 variable {R V P : Type*}
 variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
@@ -55,7 +57,7 @@ variable {poly : Polygon P n}
 private instance : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
 
 /-- The range of the `boundaryMap` is the `boundary`. -/
-theorem range_boundaryMap : Set.range (poly.boundaryMap (R := R)) = poly.boundary R := by
+theorem range_boundaryMap : Set.range (poly.boundaryMap R) = poly.boundary R := by
   ext p
   simp only [mem_range]
   constructor
@@ -106,7 +108,7 @@ theorem range_boundaryMap : Set.range (poly.boundaryMap (R := R)) = poly.boundar
 
 /-- A polygon is simple if and only if its `boundaryMap` is injective. -/
 theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R V]
-    (hn : 3 ≤ n) : poly.IsSimple R ↔ Function.Injective (poly.boundaryMap (R := R)) := by
+    (hn : 3 ≤ n) : poly.IsSimple R ↔ Function.Injective (poly.boundaryMap R) := by
   constructor
   · intro h x y heq
     obtain ⟨s, hs_mem, rfl⟩ := AddCircle.eq_coe_Ico x
@@ -163,7 +165,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
       simp only [zero_add]
       exact ⟨by exact_mod_cast k.val.zero_le, by exact_mod_cast k.isLt⟩
     have bnat (k : Fin n) :
-        poly.boundaryMap (R := R) ↑(↑(k : ℕ) : R) = poly k := by
+        poly.boundaryMap R ↑(↑(k : ℕ) : R) = poly k := by
       simp only [boundaryMap]; rw [AddCircle.liftIco_coe_apply (nmem k)]
       simp [boundaryParam, Int.floor_natCast, Int.toNat_natCast,
         Nat.mod_eq_of_lt k.isLt, Int.fract_natCast, edgePath, lineMap_apply_zero]
@@ -182,7 +184,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
       exact ⟨le_add_of_nonneg_right hw0,
         by simp only [add_lt_add_iff_left]; exact_mod_cast hw1⟩)
     have bfrac (k : Fin n) (w : R) (hw0 : 0 ≤ w) (hw1 : w < 1) :
-        poly.boundaryMap (R := R) ↑(↑(k : ℕ) + w : R) =
+        poly.boundaryMap R ↑(↑(k : ℕ) + w : R) =
           poly.edgePath R k w := by
       simp only [boundaryMap]; rw [AddCircle.liftIco_coe_apply (fmem k w hw0 hw1)]
       simp only [boundaryParam, floor_frac k w hw0 hw1, Int.toNat_natCast,
@@ -190,8 +192,8 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
         add_sub_cancel_left]
     have inj_eq (a b : R) (ha : a ∈ Ico (0 : R) (0 + ↑n))
         (hb : b ∈ Ico (0 : R) (0 + ↑n))
-        (hab : poly.boundaryMap (R := R) ↑a =
-          poly.boundaryMap (R := R) ↑b) : a = b :=
+        (hab : poly.boundaryMap R ↑a =
+          poly.boundaryMap R ↑b) : a = b :=
       (AddCircle.coe_eq_coe_iff_of_mem_Ico ha hb).mp (h hab)
     have hone : (1 : Fin n).val = 1 := Nat.mod_eq_of_lt (show 1 < n by omega)
     have fin_ne_succ (i : Fin n) : (i : ℕ) ≠ ((i + 1 : Fin n) : ℕ) := by
