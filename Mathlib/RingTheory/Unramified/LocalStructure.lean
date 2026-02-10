@@ -335,6 +335,7 @@ lemma exists_hasStandardEtaleSurjectionOn
 
 end IsUnramifiedAt
 
+@[stacks 00UE]
 lemma IsEtaleAt.exists_isStandardEtale
     (Q : Ideal S) [Q.IsPrime] [Algebra.FinitePresentation R S] [Algebra.IsEtaleAt R Q] :
     ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
