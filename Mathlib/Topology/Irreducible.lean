@@ -316,10 +316,9 @@ theorem sUnion_irreducibleComponents : ⋃₀ irreducibleComponents X = Set.univ
   Set.eq_univ_of_forall fun x ↦ Set.mem_sUnion_of_mem mem_irreducibleComponent
     (irreducibleComponent_mem_irreducibleComponents x)
 
-theorem not_subset_sUnion_irreducibleComponents (Z : Set X) (hZ : Z ∈ irreducibleComponents X)
-    (S : Set (Set X)) (hS : S.Finite) (hSα : S ⊆ irreducibleComponents X) (hZS : Z ∉ S) :
-    ¬ Z ⊆ ⋃₀ S := by
-  contrapose! hZS
+theorem mem_of_subset_sUnion_irreducibleComponents (Z : Set X) (hZ : Z ∈ irreducibleComponents X)
+    (S : Set (Set X)) (hS : S.Finite) (hSα : S ⊆ irreducibleComponents X) (hZS : Z ⊆ ⋃₀ S) :
+    Z ∈ S := by
   obtain ⟨W, hWS, hZW⟩ := isIrreducible_iff_sUnion_isClosed.mp hZ.1 hS.toFinset
     (fun W hW ↦ isClosed_of_mem_irreducibleComponents W (hSα (hS.mem_toFinset.mp hW)))
     (hS.coe_toFinset.symm ▸ hZS)
@@ -340,7 +339,7 @@ theorem closure_sUnion_irreducibleComponents_diff_singleton
     · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
       exact hX.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
     · rw [Set.inter_compl_nonempty_iff]
-      exact not_subset_sUnion_irreducibleComponents Z hZ _ hX.diff Set.diff_subset
+      exact mt (mem_of_subset_sUnion_irreducibleComponents Z hZ _ hX.diff Set.diff_subset)
         (Set.notMem_diff_of_mem (Set.mem_singleton Z))
 
 /-- If `∅ ≠ U ⊆ S ⊆ t` such that `U` is open and `t` is preirreducible, then `S` is irreducible. -/
