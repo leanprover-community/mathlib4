@@ -313,4 +313,36 @@ def overlappingInstances : Linter where
 
 initialize addLinter overlappingInstances
 
+open Batteries Tactic Lint
+
+namespace Environment
+
+/--
+Lints against data-carrying overlaps between instances in the local contexts of declarations.
+Only considers declarations which originate in modules with the given prefix.
+-/
+def overlappingInstancesInModsWithPrefix (modPrefix : Name) : Batteries.Tactic.Lint.Linter where
+  noErrorsFound :=
+    m!"No declarations in modules with prefix `{modPrefix}` have overlapping instance arguments"
+  errorsFound :=
+    m!"Some declarations in modules with prefix `{modPrefix}` have overlapping instance arguments"
+  test declName := do
+    if ← isAutoDecl declName then return none
+    let some s ← findModuleOf? declName | throwError "Could not find module for {declName}"
+    unless modPrefix.isPrefixOf s do return none
+    MetaM.run' do
+      forallTelescope (← getConstInfo declName).type fun _ _ => do
+        let overlaps ← findOverlappingDataInstances
+        if overlaps.isEmpty then return none else
+          some <$> overlaps.toMsg m!"declaration {.ofConstName declName}"
+
+/--
+Lints against data-carrying overlaps between instances in the local contexts of declarations.
+Only considers declarations which originate in Mathlib.
+-/
+@[env_linter]
+def overlappingInstancesInMathlib := overlappingInstancesInModsWithPrefix `Mathlib
+
+end Environment
+
 end Mathlib.Linter.OverlappingInstances
