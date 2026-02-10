@@ -466,20 +466,6 @@ lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
   rw [Scheme.toSpecΓ_appTop]
   exact Iso.inv_hom_id_apply (C := CommRingCat) _ _
 
--- -- Warning: this LHS of this lemma breaks the structure-sheaf abstraction.
--- @[reassoc (attr := simp)]
--- theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
---     CommRingCat.ofHom (algebraMap _ ((Spec.structureSheaf _).presheaf.obj _)) ≫ X.toSpecΓ.app U =
---       X.presheaf.map (homOfLE (le_top)).op := by
---   sorry
---   rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
---     NatTrans.naturality _ (homOfLE (le_top (a := U))).op]
---   change (ΓSpec.adjunction.counit.app (Scheme.Γ.rightOp.obj X)).unop ≫
---     (Scheme.Γ.rightOp.map (ΓSpec.adjunction.unit.app X)).unop ≫ _ = _
---   rw [← Category.assoc, ← unop_comp, ΓSpec.adjunction.left_triangle_components]
---   dsimp
---   exact Category.id_comp _
-
 lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = φ := by
   simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.Hom.comp_app]

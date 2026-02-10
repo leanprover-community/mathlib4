@@ -171,7 +171,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
   · apply ((TopCat.Sheaf.pushforward _ β.hom.base).obj X.sheaf).hom_ext _
       PrimeSpectrum.isBasis_basic_opens
     intro r
-    apply (StructureSheaf.to_basicOpen_epi r).1
+    apply (StructureSheaf.to_basicOpen_epi R r).1
     simpa using h r
 
 -- `simps!` generates some garbage lemmas, so choose manually,
@@ -367,7 +367,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
   clear_value s'; clear! U
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _
-      (StructureSheaf.IsLocalization.to_basicOpen <| algebraMap R S r) s'
+      (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) s'
   refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, ?_⟩
   rw [Submonoid.smul_def, Algebra.smul_def, algebraMap_pushforward_stalk, toPushforwardStalk,
     CommRingCat.comp_apply, CommRingCat.comp_apply]
@@ -405,7 +405,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     have : algebraMap S ((structureSheaf S).presheaf.obj _) x = 0 := e
     have :=
       (@IsLocalization.mk'_one _ _ _ _ _ _
-            (StructureSheaf.IsLocalization.to_basicOpen <| algebraMap R S r) x).trans
+            (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) x).trans
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this
     refine ⟨⟨r, hpr⟩ ^ n, ?_⟩

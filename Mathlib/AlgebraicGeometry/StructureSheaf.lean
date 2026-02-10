@@ -870,7 +870,8 @@ end Stalk
 
 @[expose] public section StructureSheaf
 
-variable (R) in
+variable (R)
+
 /-- The structure sheaf on $Spec R$, valued in `CommRingCat`.
 
 This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later.
@@ -923,7 +924,6 @@ instance to_basicOpen_epi (r : R) :
   ⟨fun _ _ h => CommRingCat.hom_ext (IsLocalization.ringHom_ext (Submonoid.powers r)
     (CommRingCat.hom_ext_iff.mp h))⟩
 
-variable (R) in
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
 @[simps! inv]
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
