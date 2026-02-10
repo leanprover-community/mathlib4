@@ -25,7 +25,7 @@ As a corollary, we also obtain results about the local structure of etale and sm
 ## Main definition and results
 - `HasStandardEtaleSurjectionOn`: The predicate
   "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
-- `Algebra.IsUnramified.exists_hasStandardEtaleSurjectionOn`:
+- `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`:
   If `S` is a finite type `R`-algebra that is unramified at a prime `p`, then
   there exists a standard etale algebra over `R` that surjects onto `S[1/f]` for some `f ∉ p`.
 - `Algebra.IsEtaleAt.exists_isStandardEtale`:
@@ -298,9 +298,24 @@ instance (priority := low)
     [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] : Algebra.QuasiFinite R S where
   finite_fiber _ _ := Algebra.FormallyUnramified.finite_of_free _ _
 
-lemma _root_.Algebra.Unramified.exists_hasStandardEtaleSurjectionOn
-    (Q : Ideal S) [Q.IsPrime] [Algebra.Unramified R S] :
+lemma exists_hasStandardEtaleSurjectionOn
+    (Q : Ideal S) [Q.IsPrime] [FiniteType R S] [IsUnramifiedAt R Q] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
+  wlog H : Algebra.Unramified R S
+  · obtain ⟨s, hsQ, hs⟩ := Algebra.exists_formallyUnramified_of_isUnramifiedAt (R := R) Q
+    have hQ : (Ideal.map (algebraMap S (Localization.Away s)) Q).IsPrime :=
+      IsLocalization.isPrime_of_isPrime_disjoint (.powers s) _ _ ‹_› (by simp [Set.disjoint_iff,
+        Set.ext_iff, Submonoid.mem_powers_iff, mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ])
+    have inst : Unramified R (Localization.Away s) := {}
+    obtain ⟨f, hf, H⟩ := this (R := R)
+      (Q.map (algebraMap _ (Localization.Away s))) inferInstance
+    obtain ⟨f, t, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) f
+    refine ⟨s * f, ?_, ?_⟩
+    · simpa [IsLocalization.mk'_mem_map_algebraMap_iff, Submonoid.mem_powers_iff,
+        Ideal.IsPrime.mul_mem_left_iff, hsQ, (mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ)] using hf
+    obtain ⟨P, φ, hφ⟩ : HasStandardEtaleSurjectionOn R (algebraMap S (Localization.Away s) f) :=
+      H.of_dvd ⟨algebraMap _ _ t.1, by simp⟩
+    exact .mk _ hφ
   obtain ⟨S', hS', r, hrQ, hr⟩ := ZariskisMainProperty.of_finiteType (R := R) Q
     |>.exists_fg_and_exists_notMem_and_awayMap_bijective
   have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
@@ -317,24 +332,6 @@ lemma _root_.Algebra.Unramified.exists_hasStandardEtaleSurjectionOn
   obtain ⟨P, φ, hφ⟩ := hf.of_dvd (g := r * f) (by simp)
   refine ⟨_, ‹Q.IsPrime›.mul_notMem hrQ hfQ,
     .mk (f := r.1 * f.1) (e.toAlgHom.comp φ) (e.surjective.comp hφ)⟩
-
-lemma exists_hasStandardEtaleSurjectionOn
-    (Q : Ideal S) [Q.IsPrime] [FiniteType R S] [IsUnramifiedAt R Q] :
-    ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
-  obtain ⟨s, hsQ, hs⟩ := Algebra.exists_formallyUnramified_of_isUnramifiedAt (R := R) Q
-  have : (Ideal.map (algebraMap S (Localization.Away s)) Q).IsPrime :=
-    IsLocalization.isPrime_of_isPrime_disjoint (.powers s) _ _ ‹_› (by simp [Set.disjoint_iff,
-      Set.ext_iff, Submonoid.mem_powers_iff, mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ])
-  have : Unramified R (Localization.Away s) := {}
-  obtain ⟨f, hf, H⟩ := Algebra.Unramified.exists_hasStandardEtaleSurjectionOn (R := R)
-    (Q.map (algebraMap _ (Localization.Away s)))
-  obtain ⟨f, t, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) f
-  refine ⟨s * f, ?_, ?_⟩
-  · simpa [IsLocalization.mk'_mem_map_algebraMap_iff, Submonoid.mem_powers_iff,
-      Ideal.IsPrime.mul_mem_left_iff, hsQ, (mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ)] using hf
-  obtain ⟨P, φ, hφ⟩ : HasStandardEtaleSurjectionOn R (algebraMap S (Localization.Away s) f) :=
-    H.of_dvd ⟨algebraMap _ _ t.1, by simp⟩
-  exact .mk _ hφ
 
 end IsUnramifiedAt
 
@@ -359,8 +356,7 @@ theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
   classical
   obtain ⟨f, hfp, H⟩ := Algebra.IsSmoothAt.exists_notMem_isStandardSmooth R p
   obtain ⟨n, φ, hgC, hg⟩ := RingHom.IsStandardSmooth.exists_etale_mvPolynomial
-    (f := algebraMap R (Localization.Away f))
-    (by delta RingHom.IsStandardSmooth; convert H; apply Algebra.algebra_ext; exact fun _ ↦ rfl)
+    (f := algebraMap R (Localization.Away f)) (by simpa [RingHom.isStandardSmooth_algebraMap])
   algebraize [φ]
   have := IsScalarTower.of_algebraMap_eq' hgC.symm
   have : (Ideal.map (algebraMap S (Localization.Away f)) p).IsPrime :=
