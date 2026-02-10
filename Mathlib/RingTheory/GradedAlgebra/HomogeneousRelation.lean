@@ -41,7 +41,7 @@ variable {A : Type*} [Semiring A]
 class IsHomogeneousRelation {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
   [GradedRing 𝒜] (r : A → A → Prop) : Prop where
   is_homogeneous' : ∀ {x y : A}, r x y →
-  ∀ i : ι, (Relation.EqvGen r) ((GradedRing.proj 𝒜 i) x) ((GradedRing.proj 𝒜 i) y)
+  ∀ i : ι, Relation.EqvGen r (GradedRing.proj 𝒜 i x) (GradedRing.proj 𝒜 i y)
 
 lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι]
     [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
