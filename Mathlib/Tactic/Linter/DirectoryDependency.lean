@@ -187,7 +187,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean, `Batteries.Data.Fin),
   (`Mathlib.Lean, `Batteries.Data.List),
   (`Mathlib.Lean, `Batteries.Lean),
-  (`Mathlib.Lean, `Batteries.Control.ForInStep),
+  (`Mathlib.Lean, `Batteries.Control),
   (`Mathlib.Lean, `Batteries.Tactic.Alias),
   (`Mathlib.Lean, `Batteries.Util.ProofWanted),
 
@@ -647,7 +647,7 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
-      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
+      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames, `Mathlib.Tactic.Linter.DeprecatedModule]
     let exclude := [
       `Init, `Std, `Lean,
       `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient
