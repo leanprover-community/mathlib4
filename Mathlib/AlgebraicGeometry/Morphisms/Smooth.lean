@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Smooth.Flat
 
 # Smooth morphisms
 
-In this file we define smooth morphisms (of relative dimension). The main definitions are:
+In this file we define smooth morphisms. The main definitions are:
 
 - `AlgebraicGeometry.Smooth`: A morphism of schemes `f : X ⟶ Y` is smooth if for each affine `U ⊆ Y`
   and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is smooth.
