@@ -200,7 +200,7 @@ theorem mulActionHom_compl_mulActionHom_compl :
   change a ∈ (mulActionHom_compl G α _).comp (mulActionHom_compl G α hm) s ↔ a ∈ s
   simp [MulActionHom.comp_apply, mem_mulActionHom_compl]
 
-theorem complEqui_bijective :
+theorem mulActionHom_compl_bijective :
     Function.Bijective (mulActionHom_compl G α hm) :=
   Function.bijective_iff_has_inverse.mpr ⟨mulActionHom_compl G α ((n.add_comm m).trans hm),
     DFunLike.ext_iff.mp (mulActionHom_compl_mulActionHom_compl G α hm),
@@ -268,7 +268,7 @@ theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) 
       grind
     by_cases hn' : n ≤ Nat.card α
     · apply IsPretransitive.of_surjective_map
-        (complEqui_bijective (alternatingGroup α) α _).surjective this
+        (mulActionHom_compl_bijective (alternatingGroup α) α _).surjective this
       aesop
     · suffices Subsingleton (powersetCard α n) by infer_instance
       rw [not_le] at hn'
