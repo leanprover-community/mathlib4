@@ -32,6 +32,64 @@ noncomputable section
 
 open Uniformity Topology Filter Pointwise
 
+namespace MulOpposite
+
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+@[to_additive] lemma comap_op_rightUniformSpace :
+    (IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ).comap MulOpposite.op =
+      IsTopologicalGroup.leftUniformSpace G := by
+  ext : 1
+  change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
+      (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.2 * p.1⁻¹) (𝓝 1))
+    = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
+  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
+    simp [Homeomorph.comap_nhds_eq]
+  simp_rw [comap_comap, this, comap_comap]
+  rfl
+
+@[to_additive] lemma comap_op_leftUniformSpace :
+    (IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ).comap MulOpposite.op =
+      IsTopologicalGroup.rightUniformSpace G := by
+  ext : 1
+  change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
+      (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.1⁻¹ * p.2) (𝓝 1))
+    = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
+  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
+    simp [Homeomorph.comap_nhds_eq]
+  simp_rw [comap_comap, this, comap_comap]
+  rfl
+
+/-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
+is equipped with the right uniformity and `Gᵐᵒᵖ` with the left uniformity. -/
+@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
+equivalence when `G` is equipped with the right uniformity and `Gᵐᵒᵖ` with the left uniformity. -/]
+def opUniformEquivRight
+    (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
+    @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.rightUniformSpace G)
+      (IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ) := by
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
+  letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ
+  refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
+  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace]
+  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace, ← UniformSpace.comap_comap]
+
+/-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
+is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/
+@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
+equivalence when `G` is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/]
+def opUniformEquivLeft
+    (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
+    @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.leftUniformSpace G)
+      (IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ) := by
+  letI : UniformSpace G := IsTopologicalGroup.leftUniformSpace G
+  letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ
+  refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
+  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace]
+  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace, ← UniformSpace.comap_comap]
+
+end MulOpposite
+
 section IsUniformGroup
 
 open Filter Set
@@ -270,14 +328,14 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   have hd : IsDiscrete (H : Set G) := isDiscrete_iff_discreteTopology.mpr ‹_›
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
     nhds_inter_eq_singleton_of_mem_discrete hd H.one_mem
-  have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
+  have : (fun p : G × G => p.2 * p.1⁻¹) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
   contrapose!
   simp only [Set.mem_preimage]
-  rintro (hyp : h' / h ∈ V)
-  have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
-  exact (eq_of_div_eq_one this).symm
+  rintro (hyp : h' * h⁻¹ ∈ V)
+  have : h' * h⁻¹ ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.mul_mem h'_in (H.inv_mem h_in))
+  exact (eq_of_mul_inv_eq_one this).symm
 
 @[to_additive]
 lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
@@ -301,23 +359,26 @@ variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
 @[to_additive]
 theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
     (hu : IsTopologicalGroup.rightUniformSpace G = u) :
-    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
     fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
 
 @[to_additive]
 theorem tendstoUniformlyOn_iff (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α)
     (hu : IsTopologicalGroup.rightUniformSpace G = u) :
-    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
     fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
 
 @[to_additive]
 theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
     (p : Filter ι) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformly F f p ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
+      ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
     Exists.imp (fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩)
       (h u hu x)⟩
 
@@ -325,8 +386,9 @@ theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) 
 theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
     (p : Filter ι) (s : Set α) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformlyOn F f p s ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
-  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
+      ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
     (Exists.imp fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩) ∘
       h u hu x⟩
 
@@ -488,7 +550,6 @@ universe u
 
 open TopologicalSpace
 
-open Classical in
 /-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
 is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
@@ -524,7 +585,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
       ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
-      simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
+      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
     simp only [mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
@@ -539,31 +600,32 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel]
   /- Inductively construct a subsequence `φ : ℕ → ℕ` using `key₀` so that if `a b : ℕ` exceed
     `φ (n + 1)`, then we may find lifts whose quotients lie within `u n`. -/
-  set φ : ℕ → ℕ := fun n => Nat.recOn n (choose <| key₀ 0 0) fun k yk => choose <| key₀ (k + 1) yk
+  set φ : ℕ → ℕ := fun n => Nat.recOn n
+    (Classical.choose <| key₀ 0 0) fun k yk => Classical.choose <| key₀ (k + 1) yk
   have hφ :
     ∀ n : ℕ,
       φ n < φ (n + 1) ∧
         ∀ a b : ℕ,
           φ (n + 1) ≤ a →
             φ (n + 1) ≤ b → ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u (n + 1) ∧ x a = g' :=
-    fun n => choose_spec (key₀ (n + 1) (φ n))
+    fun n => Classical.choose_spec (key₀ (n + 1) (φ n))
   /- Inductively construct a sequence `x' n : G` of lifts of `x (φ (n + 1))` such that quotients of
     successive terms lie in `x' n / x' (n + 1) ∈ u (n + 1)`. We actually need the proofs that each
     term is a lift to construct the next term, so we use a Σ-type. -/
   set x' : ∀ n, PSigma fun g : G => x (φ (n + 1)) = g := fun n =>
     Nat.recOn n
-      ⟨choose (QuotientGroup.mk_surjective (x (φ 1))),
-        (choose_spec (QuotientGroup.mk_surjective (x (φ 1)))).symm⟩
+      ⟨Classical.choose (QuotientGroup.mk_surjective (x (φ 1))),
+        (Classical.choose_spec (QuotientGroup.mk_surjective (x (φ 1)))).symm⟩
       fun k hk =>
-      ⟨choose <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd,
-        (choose_spec <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd).2⟩
+      ⟨Classical.choose <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd,
+        (Classical.choose_spec <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd).2⟩
   have hx' : ∀ n : ℕ, (x' n).fst / (x' (n + 1)).fst ∈ u (n + 1) := fun n =>
-    (choose_spec <| (hφ n).2 _ _ (hφ (n + 1)).1.le le_rfl (x' n).fst (x' n).snd).1
+    (Classical.choose_spec <| (hφ n).2 _ _ (hφ (n + 1)).1.le le_rfl (x' n).fst (x' n).snd).1
   /- The sequence `x'` is Cauchy. This is where we exploit the condition on `u`. The key idea
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
   have x'_cauchy : CauchySeq fun n => (x' n).fst := by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
-      simpa [uniformity_eq_comap_nhds_one'] using hu.toHasBasis.comap _
+      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
     simp only [mem_setOf_eq, forall_true_left]
     exact fun m =>
@@ -581,6 +643,8 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
         (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
   convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
+
+#check IsUniformGroup.rightUniformSpace_eq
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
 is itself complete. In contrast to `QuotientGroup.completeSpace'`, in this version `G` is
@@ -602,10 +666,15 @@ uniform structure, so it is still provided manually via `IsTopologicalAddGroup.r
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here. -/]
-instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [IsUniformGroup G]
+instance QuotientGroup.completeSpace (G : Type*)
+    [Group G] [us : UniformSpace G] [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
-  rw [← @IsUniformGroup.rightUniformSpace_eq _ us _ _] at hG
+  have : IsTopologicalGroup.rightUniformSpace G = us := by
+    ext : 1
+    rw [@IsRightUniformGroup.uniformity_eq (G := G) us _ _]
+    rfl
+  rw [← this] at hG
   infer_instance
 
 end CompleteQuotient

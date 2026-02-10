@@ -269,6 +269,10 @@ protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
     continuous_invFun := continuous_inv }
 
 @[to_additive (attr := simp)]
+lemma Homeomorph.symm_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
+    (Homeomorph.inv G).symm = Homeomorph.inv G := rfl
+
+@[to_additive (attr := simp)]
 lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
     ⇑(Homeomorph.inv G) = Inv.inv := rfl
 
