@@ -491,9 +491,9 @@ theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_ge h.1
 
 theorem notMem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_ge h.2
 
-@[deprecated (since := "2026-01-14")] alias notMem_Ioi_self := self_notMem_Ioi
+@[deprecated (since := "2026-02-10")] alias notMem_Ioi_self := self_notMem_Ioi
 
-@[deprecated (since := "2026-01-14")] alias notMem_Iio_self := self_notMem_Iio
+@[deprecated (since := "2026-02-10")] alias notMem_Iio_self := self_notMem_Iio
 
 theorem notMem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
