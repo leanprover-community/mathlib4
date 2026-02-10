@@ -204,11 +204,9 @@ lemma apply_sum_eq_of_lt {α β F : Type*} [AddCommGroup α] [FunLike F α R]
     {k : β} (hk : k ∈ s) (hmax : ∀ j ∈ s, j ≠ k → f (l j) < f (l k)) :
     f (∑ i ∈ s, l i) = f (l k) := by
   have : s.Nonempty := by use k
-  revert k
-  induction this using Nonempty.cons_induction with
+  induction this using Nonempty.cons_induction generalizing k with
   | singleton a => simp_all
   | cons a s _ hs _ =>
-    intro k hk hmax
     by_cases ha : k = a
     · rw [sum_cons, ha]
       apply add_eq_left_of_lt nonarch

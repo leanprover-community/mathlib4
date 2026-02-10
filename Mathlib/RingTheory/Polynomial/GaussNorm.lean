@@ -124,7 +124,6 @@ theorem gaussNorm_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
     PowerSeries.gaussNorm_eq_zero_iff h_eq_zero hc (by simpa only [coeff_coe] using aux_bdd v p),
     coe_eq_zero_iff]
 
-/-- If `v` is a nonnegative function, then the Gauss norm is
 /-- If `v` is a nonnegative function, then the Gauss norm is nonnegative. -/
 theorem gaussNorm_nonneg (hc : 0 ≤ c) [NonnegHomClass F R ℝ] : 0 ≤ p.gaussNorm v c := by
   by_cases hp : p.support.Nonempty <;>
@@ -137,7 +136,7 @@ lemma le_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (hc : 0 ≤ c
   simpa using aux_bdd v p
 
 @[simp]
-lemma gaussNorm_of_c_eq_zero [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] :
+lemma gaussNorm_zero_right [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] :
     p.gaussNorm v 0 = v (p.coeff 0) := by
   have : (fun i ↦ v (p.coeff i) * 0 ^ i) = fun i ↦ if i = 0 then v (p.coeff 0) else 0 := by
     aesop
@@ -189,7 +188,7 @@ theorem isNonarchimedean_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R �
 open Finset in
 /-- If `v` is a nonnegative nonarchimedean multiplicative function with `v 0 = 0` and `c` is
 nonnegative, then the Gauss norm is submultiplicative. -/
-theorem gaussNorm_mul_le_mul_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
+theorem gaussNorm_mul_le [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
     [MulHomClass F R ℝ] (hna : IsNonarchimedean v) (p q : R[X]) (hc : 0 ≤ c) :
     (p * q).gaussNorm v c ≤ p.gaussNorm v c * q.gaussNorm v c := by
   rcases eq_or_ne (p * q) 0 with hpq | hpq
@@ -220,9 +219,7 @@ variable {R : Type*} [Ring R] {v : AbsoluteValue R ℝ} (hna : IsNonarchimedean 
 
 open Finset in
 include hna hc in
-/-- If `v` is a nonarchimedean absolute value, then the Gauss norm of a product is at least the
-product of the Gauss norms. -/
-theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
+private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
     p.gaussNorm v c * q.gaussNorm v c ≤ (p * q).gaussNorm v c := by
   have hc0 : 0 ≤ c := le_of_lt hc
   obtain ⟨i, hi_p, hlt_p⟩ := p.exists_min_eq_gaussNorm v hc0
@@ -273,7 +270,7 @@ include hna hc in
 /-- If `v` is a nonarchimedean absolute value, then the Gauss norm is multiplicative. -/
 theorem gaussNorm_mul (p q : R[X]) :
     (p * q).gaussNorm v c = p.gaussNorm v c * q.gaussNorm v c :=
-  le_antisymm (gaussNorm_mul_le_mul_gaussNorm v hna p q (le_of_lt hc))
+  le_antisymm (gaussNorm_mul_le v hna p q (le_of_lt hc))
   <| mul_gaussNorm_le_gaussNorm_mul hna hc p q
 
 include hna hc in
