@@ -149,9 +149,8 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
 open scoped Pointwise in
 lemma Submodule.range_lsum_smul {R M N σ : Type*} [CommSemiring R] [AddCommMonoid M]
     [AddCommMonoid N] [Module R M] [Module R N] (φ : M →ₗ[R] N) (f : σ → R) :
-    (Finsupp.lsum (S := R) (f · • φ)).range = Set.range f • φ.range := by
-  simp_rw [LinearMap.range_eq_map, ← Finsupp.span_single_eq_top,
-    ← span_univ, map_span, set_smul_span]
+    (lsum (S := R) (f · • φ)).range = Set.range f • φ.range := by
+  simp_rw [range_eq_map, ← span_single_eq_top, ← span_univ, map_span, set_smul_span]
   congr 1
   aesop (add simp Set.mem_smul)
 
