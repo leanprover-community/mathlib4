@@ -206,13 +206,17 @@ theorem mem_trichotomous (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∈ y ∨ x =
   rw [eq_comm, ← subset_iff_eq_or_mem hy hx]
   exact mem_or_subset hx hy
 
-protected theorem isTrichotomous (h : x.IsOrdinal) : IsTrichotomous _ (Subrel (· ∈ ·) (· ∈ x)) :=
-  ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ by simpa using mem_trichotomous (h.mem ha) (h.mem hb)⟩
+protected theorem trichotomous (h : x.IsOrdinal) : Std.Trichotomous (Subrel (· ∈ ·) (· ∈ x)) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap <| by
+    intro ⟨a, ha⟩ ⟨b, hb⟩
+    simpa using mem_trichotomous (h.mem ha) (h.mem hb)
+
+@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := IsOrdinal.trichotomous
 
 /-- An ordinal is a transitive set, trichotomous under membership. -/
-theorem _root_.ZFSet.isOrdinal_iff_isTrichotomous :
-    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrichotomous _ (Subrel (· ∈ ·) (· ∈ x)) where
-  mp h := ⟨h.isTransitive, h.isTrichotomous⟩
+theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
+    x.IsOrdinal ↔ x.IsTransitive ∧ Std.Trichotomous (Subrel (· ∈ ·) (· ∈ x)) where
+  mp h := ⟨h.isTransitive, h.trichotomous⟩
   mpr := by
     rintro ⟨h₁, h₂⟩
     rw [isOrdinal_iff_isTrans]
@@ -222,10 +226,13 @@ theorem _root_.ZFSet.isOrdinal_iff_isTrichotomous :
     · cases asymm hyz hzw
     · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
 
+@[deprecated (since := "2026-01-24")]
+alias _root_.ZFSet.isOrdinal_iff_isTrichotomous := _root_.ZFSet.isOrdinal_iff_trichotomous
+
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
   trans := h.isTrans.1
-  trichotomous := h.isTrichotomous.1
+  trichotomous := h.trichotomous.1
 
 /-- An ordinal is a transitive set, well-ordered under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔

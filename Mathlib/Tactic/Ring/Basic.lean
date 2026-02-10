@@ -5,9 +5,8 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Util.AtomM
-public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-public meta import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Tactic.Ring.Common
 
 /-!
@@ -61,7 +60,7 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-@[expose] public meta section
+public meta section
 
 assert_not_exists IsOrderedMonoid
 
@@ -78,11 +77,11 @@ open Lean (MetaM Expr mkRawNatLit)
 
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
-@[reducible, inherit_doc Common.ExBase]
+@[expose, reducible, inherit_doc Common.ExBase]
 def ExBase := Common.ExBase RatCoeff sα
-@[reducible, inherit_doc Common.ExProd]
+@[expose, reducible, inherit_doc Common.ExProd]
 def ExProd := Common.ExProd RatCoeff sα
-@[reducible, inherit_doc Common.ExSum]
+@[expose, reducible, inherit_doc Common.ExSum]
 def ExSum := Common.ExSum RatCoeff sα
 
 section

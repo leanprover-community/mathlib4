@@ -274,6 +274,12 @@ protected theorem dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
   · simp [dist]
   · simp [dist, h]
 
+protected theorem dist_le_one (x y : ∀ n, E n) : dist x y ≤ 1 := by
+  rcases eq_or_ne x y with (rfl | h)
+  · simp [dist]
+  · simp only [dist, ne_eq, h, not_false_eq_true, ↓reduceIte, one_div, inv_pow]
+    bound
+
 theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y) (dist y z) := by
   rcases eq_or_ne x z with (rfl | hxz)
   · simp [PiNat.dist_self x, PiNat.dist_nonneg]
@@ -444,6 +450,11 @@ protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
   refine tendsto_const_nhds.congr' ?_
   filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
+
+protected theorem boundedSpace : BoundedSpace (∀ n, E n) := by
+  rw [Metric.boundedSpace_iff]
+  use 1
+  apply PiNat.dist_le_one
 
 /-!
 ### Retractions inside product spaces
