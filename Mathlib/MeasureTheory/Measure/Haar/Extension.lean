@@ -94,9 +94,8 @@ noncomputable def pushforward :
       apply hf
       contrapose! hx
       refine ⟨_, hx, ?_⟩
-      rw [map_mul, Function.rightInverse_invFun H.isOpenQuotientMap.surjective, mul_eq_left,
-        ← ψ.mem_ker, H.mulExact.monoidHom_ker_eq]
-      use a
+      rw [map_mul, Function.rightInverse_invFun H.isOpenQuotientMap.surjective,
+        H.mulExact.apply_apply_eq_one, mul_one]
     continuous_toFun := by
       rw [← H.isOpenQuotientMap.continuous_comp_iff, Function.comp_def]
       simp only [integral_pullback_invFun_apply]
@@ -118,21 +117,9 @@ noncomputable def pushforward :
       have hS : IsCompact S := H.isClosedEmbedding.isCompact_preimage (hU₀.inv.mul hK)
       have hS' : ∀ x ∈ U₀, ∀ y : A, f (x * φ y) ≠ 0 → y ∈ S := by
         intro x hx y h
-        contrapose! h
-        apply hf₀
-        contrapose! h
-        replace h := Set.mul_mem_mul (Set.inv_mem_inv.mpr hx) h
-        rwa [inv_mul_cancel_left] at h
-      set V₀ := μA S with hV₀
-      have hV₀' : V₀ < ⊤ := hS.measure_lt_top
-      have : ∃ v : ℝ, 0 < v ∧ v * ENNReal.toReal V₀ < ε := by
-        by_cases h : V₀ = 0
-        · exact ⟨1, one_pos, by simpa [h]⟩
-        · replace h := ENNReal.toReal_pos h hV₀'.ne
-          refine ⟨(ε / 2) / ENNReal.toReal (μA S), div_pos (div_pos hε two_pos) h, ?_⟩
-          rw [div_mul_cancel₀ _ h.ne']
-          exact half_lt_self hε
-      obtain ⟨v, hv0, hv⟩ := this
+        exact Set.mem_mul.mpr ⟨x⁻¹, Set.inv_mem_inv.mpr hx, x * φ y,
+          not_imp_comm.mp (hf₀ (x * φ y)) h, inv_mul_cancel_left x (φ y)⟩
+      obtain ⟨v, hv0, hv⟩ := exists_pos_mul_lt hε (ENNReal.toReal (μA S))
       simp only [dist_eq_norm_sub, ← MemLp.toLp_sub, MeasureTheory.Lp.norm_toLp]
       have ha := f.hasCompactSupport.uniformContinuous_of_continuous f.continuous
       rw [UniformContinuous, Filter.tendsto_iff_forall_eventually_mem] at ha
@@ -149,9 +136,9 @@ noncomputable def pushforward :
       rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm,
         ← MeasureTheory.setLIntegral_eq_of_support_subset (s := S)]
       · apply (MeasureTheory.lintegral_mono hd).trans_lt
-        rwa [lintegral_const, Measure.restrict_apply_univ, ← hV₀,
-          ← ENNReal.ofReal_toReal hV₀'.ne, ← ENNReal.ofReal_mul hv0.le,
-          ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity)]
+        rwa [lintegral_const, Measure.restrict_apply_univ,
+          ← ENNReal.ofReal_toReal hS.measure_ne_top, ← ENNReal.ofReal_mul hv0.le,
+          ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity), mul_comm]
       · intro x hx
         have : f (t * b * φ x) ≠ 0 ∨ f (b * φ x) ≠ 0 := by
           contrapose! hx
@@ -161,9 +148,7 @@ noncomputable def pushforward :
         · exact hS' b (mem_of_mem_nhds hb) x h }
   map_add' f g := by
     ext c
-    apply integral_add
-    · exact (pullback H f _).integrable
-    · exact (pullback H g _).integrable
+    exact integral_add (pullback H f _).integrable (pullback H g _).integrable
   map_smul' x f := by
     ext c
     apply integral_smul
@@ -232,10 +217,8 @@ theorem integral_inducedMeasure (f : CompactlySupportedContinuousMap B ℝ) :
 @[to_additive]
 instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC) where
   lt_top_of_isCompact K hK := by
-    let U : Set B := Set.univ
-    have hU : IsOpen U := isOpen_univ
-    have hKU : K ⊆ U := K.subset_univ
-    obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
+    obtain ⟨f, hf1, hf2, hf3, hf4⟩ :=
+      exists_continuousMap_one_of_isCompact_subset_isOpen hK isOpen_univ K.subset_univ
     exact lt_of_le_of_lt (RealRMK.rieszMeasure_le_of_eq_one (f := ⟨f, hf2⟩) _
       (fun x ↦ (hf4 x).1) hK (fun x hx ↦ hf1 hx)) ENNReal.ofReal_lt_top
   map_mul_left_eq_self b := by
