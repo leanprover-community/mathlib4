@@ -67,12 +67,10 @@ variable (𝒜 : ι → σ) [GradedRing 𝒜] (rel : A → A → Prop)
 
 open Relation GradedRing
 
-private noncomputable instance : (i : ι) → (x : ↥(𝒜 i)) → Decidable (x ≠ 0) :=
-    fun _ x ↦ Classical.propDecidable (x ≠ 0)
-
 theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
     (h : ∀ (i : ι), (RingConGen.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
     (RingConGen.Rel rel) ((proj 𝒜 n) (a * c)) ((proj 𝒜 n) (b * c)) := by
+  classical
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
   rw [coe_mul_sum_support_subset 𝒜 _ _ Finset.subset_union_left (Set.Subset.refl _),
@@ -83,6 +81,7 @@ theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
 theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
     (h : ∀ (i : ι), (RingConGen.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
     (RingConGen.Rel rel) ((proj 𝒜 n) (c * a)) ((proj 𝒜 n) (c * b)) := by
+  classical
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
   rw [coe_mul_sum_support_subset 𝒜 _ _ (Set.Subset.refl _) Finset.subset_union_left,

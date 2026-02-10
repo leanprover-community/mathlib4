@@ -538,13 +538,13 @@ variable (f : ∀ (i : ι), α i →ₗ[R] β i)
 /-- create a linear map from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
 def linearMap : (⨁ i, α i) →ₗ[R] ⨁ i, β i := DFinsupp.mapRange.linearMap f
 
-variable [DecidableEq ι]
-
-@[simp] lemma linearMap_of (i : ι) (x : α i) : (linearMap f) (of α i x) = of β i (f i x) := by
+@[simp] lemma linearMap_of [DecidableEq ι] (i : ι) (x : α i) :
+    (linearMap f) (of α i x) = of β i (f i x) := by
   change DFinsupp.mapRange.linearMap f (DFinsupp.single i x) = DFinsupp.single i (f i x)
   simp
 
 @[simp] lemma linearMap_apply (i : ι) (x : ⨁ i, α i) : (linearMap f) x i = f i (x i) := by
+  classical
   induction x using DirectSum.induction_on with
   | zero => simp
   | of j x =>
@@ -565,6 +565,7 @@ variable [DecidableEq ι]
 
 lemma linearMap_surjective (h : ∀ i, Function.Surjective (f i)) :
     Function.Surjective (linearMap f) := by
+  classical
   intro x
   induction x using DirectSum.induction_on with
   | zero => exact ⟨0, by simp⟩
