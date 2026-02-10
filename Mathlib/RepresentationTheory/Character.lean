@@ -137,3 +137,60 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
 end Orthogonality
 
 end FDRep
+
+namespace Representation
+
+section Monoid
+
+variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
+  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
+  (ρ : Representation k G V) (σ : Representation k G W)
+
+/-- The character of a representation `ρ : Representation k G V` is the function associating to
+`g : G` the trace of the linear map `ρ g`. -/
+def character (g : G) :=
+  LinearMap.trace k V (ρ g)
+
+omit [FiniteDimensional k V] in
+theorem char_mul_comm (g : G) (h : G) :
+    ρ.character (h * g) = ρ.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
+
+@[simp]
+theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k V := by
+  simp only [character, map_one, trace_one]
+
+/-- The character is multiplicative under the tensor product. -/
+@[simp]
+theorem char_tensor : (tprod ρ σ).character = ρ.character * σ.character := by
+  ext g; convert trace_tensorProduct' (ρ g) (σ g)
+
+end Monoid
+
+section Group
+
+variable {G k V : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
+  [FiniteDimensional k V] (ρ : Representation k G V)
+
+omit [FiniteDimensional k V] in
+/-- The character of a representation is constant on conjugacy classes. -/
+@[simp]
+theorem char_conj (g : G) (h : G) : ρ.character (h * g * h⁻¹) = ρ.character g := by
+  rw [char_mul_comm, inv_mul_cancel_left]
+
+@[simp]
+theorem char_dual (g : G) : ρ.dual.character g = ρ.character g⁻¹ :=
+  trace_transpose' (ρ g⁻¹)
+
+variable [Finite G] [Invertible (Nat.card G : k)]
+
+theorem average_char_eq_finrank_invariants :
+    let : Fintype G := Fintype.ofFinite G
+    (Nat.card G : k)⁻¹ • ∑ g : G, ρ.character g = finrank k (invariants ρ) := by
+  let : Fintype G := Fintype.ofFinite G
+  have : Invertible (Fintype.card G : k) := by rw [Fintype.card_eq_nat_card]; assumption
+  rw [← (isProj_averageMap ρ).trace]
+  simp [character, GroupAlgebra.average, _root_.map_sum]
+
+end Group
+
+end Representation
