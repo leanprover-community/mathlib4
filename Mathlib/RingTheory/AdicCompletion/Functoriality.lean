@@ -454,34 +454,33 @@ section finsupp_sum
 open Finsupp
 
 variable {σ : Type*}
-variable {R : Type*} [CommRing R] (I : Ideal R)
-variable {M : Type*} [AddCommGroup M] [Module R M]
 
-variable (σ M) in
-/-- The finitely supported function version of `AdicCompletion.sum`. -/
+variable (σ M I) in
+/-- The canonical map from the finitely supported functions of adic completions to
+the adic completion of finitely supported functions. This is an isomorphism if `σ` is finite. -/
 def finsupp_sum : (σ →₀ (AdicCompletion I M)) →ₗ[AdicCompletion I R] AdicCompletion I (σ →₀ M) :=
   lsum (AdicCompletion I R) (fun i ↦ map I (lsingle i))
 
 @[simp]
-theorem finsupp_sum_single_of (i : σ) (m : M) : finsupp_sum σ I M (single i (of I M m)) =
+theorem finsupp_sum_single_of (i : σ) (m : M) : finsupp_sum I M σ (single i (of I M m)) =
     of I (σ →₀ M) (single i m) := by
   ext; simp [finsupp_sum]
 
 theorem map_finsuppLEquivDirectSum_comp_finsupp_sum [DecidableEq σ] :
-    map I (finsuppLEquivDirectSum R M σ) ∘ₗ finsupp_sum σ I M = sum I (fun _ : σ ↦ M) ∘ₗ
+    map I (finsuppLEquivDirectSum R M σ) ∘ₗ finsupp_sum I M σ = sum I (fun _ : σ ↦ M) ∘ₗ
       (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) σ) := by
   ext; simp [finsupp_sum]
 
 variable [Fintype σ]
 
-variable (σ M) in
+variable (σ M I) in
 /-- If `σ` is finite, `AdicCompletion.finsupp_sumInv` is
 an inverse for `AdicCompletion.finsupp_sum`. -/
 def finsupp_sumInv : AdicCompletion I (σ →₀ M) →ₗ[AdicCompletion I R] (σ →₀ (AdicCompletion I M)) :=
   (linearEquivFunOnFinite (AdicCompletion I R) (AdicCompletion I M) σ).symm ∘ₗ
     LinearMap.pi (fun i ↦ map I (lapply i))
 
-theorem finsupp_sumInv_comp_sum : finsupp_sumInv σ I M ∘ₗ finsupp_sum σ I M = LinearMap.id := by
+theorem finsupp_sumInv_comp_sum : finsupp_sumInv I M σ ∘ₗ finsupp_sum I M σ = LinearMap.id := by
   classical
   ext
   -- simp [finsupp_sum, finsupp_sumInv, single_apply]
@@ -492,7 +491,7 @@ theorem finsupp_sumInv_comp_sum : finsupp_sumInv σ I M ∘ₗ finsupp_sum σ I 
     LinearMap.id_comp]
   split <;> simp
 
-theorem finsupp_sum_comp_sumInv : finsupp_sum σ I M ∘ₗ finsupp_sumInv σ I M = LinearMap.id := by
+theorem finsupp_sum_comp_sumInv : finsupp_sum I M σ ∘ₗ finsupp_sumInv I M σ = LinearMap.id := by
   refine LinearMap.ext fun _ ↦ ?_
   simp [finsupp_sum, finsupp_sumInv, sum_fintype, map_comp_apply]
   simp [← lmap_apply, ← LinearMap.sum_apply, ← map_sum, sum_coordinateProj]
@@ -500,7 +499,7 @@ theorem finsupp_sum_comp_sumInv : finsupp_sum σ I M ∘ₗ finsupp_sumInv σ I 
 
 @[simp]
 theorem finsupp_sumInv_single_of (i : σ) (m : M) :
-    finsupp_sumInv σ I M (of I (σ →₀ M) (single i m)) = single i (of I M m) := by
+    finsupp_sumInv I M σ (of I (σ →₀ M) (single i m)) = single i (of I M m) := by
   simp [← finsupp_sum_single_of, ← LinearMap.comp_apply, finsupp_sumInv_comp_sum]
 
 end finsupp_sum
