@@ -9,6 +9,10 @@ public import Mathlib.Geometry.Polygon.Basic
 
 /-!
 # Simple Polygons
+
+This file defines simple polygons based on a property characterizing a non-self-intersecting
+boundary. This property is equivalent to the existence of an injective map from `AddCircle n`
+to the boundary, see `Polygon.isSimple_iff_boundaryMap_injective`.
 -/
 
 @[expose] public section
@@ -21,7 +25,7 @@ namespace Polygon
 variable {poly : Polygon P n}
 
 variable (R) in
-/-- A polygon is simple if it has nondegenerate edges, non-adjacent edges are disjoint,
+/-- A polygon is simple if edges are nondegenerate, non-adjacent edges are disjoint,
 and adjacent edges meet only at their shared vertex. -/
 def IsSimple (poly : Polygon P n) : Prop :=
   poly.HasNondegenerateEdges ∧
