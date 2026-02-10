@@ -251,6 +251,3 @@ instance : GradedAlgebra ((Submodule.mapAlgHom (RingQuot.mkAlgHom R rel)) âˆ˜ ğ
 end GradedAlgebra
 
 end HomogeneousRelation
-
-
-#min_imports
