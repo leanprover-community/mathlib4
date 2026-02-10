@@ -270,6 +270,18 @@ theorem ratio_le_opNorm : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
 
 
+theorem isLUB_opNorm : IsLUB (Set.range fun x ↦ ‖f x‖ / ‖x‖) ‖f‖ := by
+  refine ⟨fun _ ↦ by grind [ratio_le_opNorm], fun M hb ↦ ?_⟩
+  simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hb
+  exact opNorm_le_bound' f (by simpa using hb 0) fun x _ ↦ (div_le_iff₀ (by positivity)).mp (hb x)
+
+theorem exists_norming_sequence : ∃ u : ℕ → E,
+    Tendsto (fun n ↦ ‖f (u n)‖ / ‖u n‖) atTop (𝓝 ‖f‖) := by
+  choose v _ _ ht hv using IsLUB.exists_seq_monotone_tendsto (isLUB_opNorm f) ⟨0, ⟨0, by simp⟩⟩
+  choose g hg using fun n ↦ mem_range.mp (hv n)
+  exact ⟨g, by simp [ht, hg]⟩
+
+
 /-- The image of the unit ball under a continuous linear map is bounded. -/
 theorem unit_le_opNorm : ‖x‖ ≤ 1 → ‖f x‖ ≤ ‖f‖ :=
   mul_one ‖f‖ ▸ f.le_opNorm_of_le
