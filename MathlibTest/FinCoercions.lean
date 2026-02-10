@@ -5,7 +5,7 @@
 
 import Mathlib
 
-set_option pp.mvars false
+set_option pp.mvars.anonymous false
 
 -- We first verify that there is no global coercion from `Nat` to `Fin n`.
 -- Such a coercion would frequently introduce unexpected modular arithmetic.
