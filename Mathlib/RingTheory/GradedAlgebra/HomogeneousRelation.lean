@@ -30,6 +30,8 @@ In this file, we define the property of an ideal being homogeneous.
 
 @[expose] public section
 
+open Relation GradedRing DirectSum
+
 variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
 variable {A : Type*} [Semiring A]
 
@@ -43,7 +45,7 @@ class IsHomogeneousRelation {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
 
 lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι]
     [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-    [(i : ι) → (x : ↥(A i)) → Decidable (x ≠ 0)] (r r' : DirectSum ι fun i ↦ ↥(A i))
+    [(i : ι) → (x : ↥(A i)) → Decidable (x ≠ 0)] (r r' : ⨁ i, A i)
     {S T : Finset ι} (hS : DFinsupp.support r ⊆ S) (hT : DFinsupp.support r' ⊆ T)
     (p : ι × ι → Prop) [DecidablePred p] :
     ∑ ij ∈ Finset.filter p (DFinsupp.support r ×ˢ DFinsupp.support r'), ((r ij.1) * (r' ij.2) : R) =
@@ -52,10 +54,7 @@ lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [Decidabl
   apply Finset.sum_subset (Finset.product_subset_product hS hT)
   intro x _ hx
   simp only [Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq, not_and, not_not] at hx
-  have : ((r x.1) * (r' x.2) : R) = 0 := by
-    by_cases h : r x.1 = 0
-    · simp [h]
-    · simp [hx h]
+  have : ((r x.1) * (r' x.2) : R) = 0 := by by_cases h : r x.1 = 0 <;> simp_all
   simp [this]
 
 namespace HomogeneousRelation
@@ -64,8 +63,6 @@ section RingCon
 
 variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
 variable (𝒜 : ι → σ) [GradedRing 𝒜] (rel : A → A → Prop)
-
-open Relation GradedRing
 
 theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
     (h : ∀ (i : ι), (RingConGen.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
