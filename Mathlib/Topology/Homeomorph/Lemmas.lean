@@ -432,6 +432,11 @@ noncomputable def toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
   Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
     IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
 
+@[simp]
+lemma toHomeomorph_symm_apply {f : X → Y} (hf : IsEmbedding f) (x : X) :
+    hf.toHomeomorph.symm ⟨f x, by simp⟩ = x :=
+  hf.toHomeomorph.injective (by ext; simp)
+
 /-- A surjective embedding is a homeomorphism. -/
 @[simps! apply]
 noncomputable def toHomeomorphOfSurjective {f : X → Y}
@@ -453,6 +458,18 @@ theorem homeomorphOfSubsetRange_apply_coe {f : X → Y} (hf : IsEmbedding f)
     ↑(hf.homeomorphOfSubsetRange hs x) = f ↑x := rfl
 
 end Topology.IsEmbedding
+
+lemma Topology.IsEmbedding.uliftMap {f : X → Y} (hf : IsEmbedding f) :
+    IsEmbedding (ULift.map f) :=
+  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf <| Homeomorph.ulift.isEmbedding)
+
+lemma Topology.IsOpenEmbedding.uliftMap {f : X → Y} (hf : IsOpenEmbedding f) :
+    IsOpenEmbedding (ULift.map f) :=
+  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf <| Homeomorph.ulift.isOpenEmbedding)
+
+lemma Topology.IsClosedEmbedding.uliftMap {f : X → Y} (hf : IsClosedEmbedding f) :
+    IsClosedEmbedding (ULift.map f) :=
+  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf <| Homeomorph.ulift.isClosedEmbedding)
 
 end
 
