@@ -197,15 +197,11 @@ all measures by a limsup. This is possible because the sequence is indexed by `�
 lemma isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt
     (h : Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0)) :
     IsTightMeasureSet (Set.range μ) := by
-  refine isTightMeasureSet_of_tendsto_measure_norm_gt ?_
-  simp_rw [iSup_range]
-  refine Nat.tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) h fun n u v huv ↦ ?_
-  · have h_tight : IsTightMeasureSet {μ n} := isTightMeasureSet_singleton
-    rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
-    simpa using h_tight
-  · refine measure_mono fun x hx ↦ ?_
-    simp only [Set.mem_setOf_eq] at hx ⊢
-    exact huv.trans_lt hx
+  simp_rw [isTightMeasureSet_iff_tendsto_measure_norm_gt, iSup_range]
+  refine Nat.tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) h (fun n u v huv ↦ by gcongr)
+  have h_tight : IsTightMeasureSet {μ n} := isTightMeasureSet_singleton
+  rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
+  simpa using h_tight
 
 /-- For a sequence of measures indexed by `ℕ`, the set of measures in the sequence is tight if and
 only if the function `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop` tends to 0 at infinity.
