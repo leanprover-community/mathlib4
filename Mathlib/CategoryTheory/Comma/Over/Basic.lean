@@ -286,6 +286,11 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 noncomputable def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
+-- We could make this defeq if we care.
+@[simp] lemma mkIdTerminal_from_left (Y : Over X) : (mkIdTerminal.from Y).left = Y.hom := by
+  rw [mkIdTerminal.hom_ext (mkIdTerminal.from Y) (homMk Y.hom)]
+  rfl
+
 instance forget_faithful : (forget X).Faithful where
 
 -- TODO: Show the converse holds if `T` has binary products.
@@ -779,6 +784,11 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 /-- The identity under `X` is initial. -/
 noncomputable def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
+
+-- We could make this defeq if we care.
+@[simp] lemma mkIdInitial_to_right (Y : Under X) : (mkIdInitial.to Y).right = Y.hom := by
+  rw [mkIdInitial.hom_ext (mkIdInitial.to Y) (homMk Y.hom)]
+  rfl
 
 instance forget_faithful : (forget X).Faithful where
 
