@@ -37,6 +37,7 @@ attribute [local instance] fieldOfSubtypeIsMaximal
 instance : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
 
 instance : DecompositionMonoid (Polynomial R) :=
-  MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
+  MulEquiv.decompositionMonoid <|
+    (Polynomial.mapEquiv <| (equivPi R).toRingEquiv).trans (Polynomial.piEquiv _)
 
 end IsArtinianRing

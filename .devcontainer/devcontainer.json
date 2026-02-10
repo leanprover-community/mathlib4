@@ -1,17 +1,20 @@
 {
   "name": "Mathlib4 dev container",
 
-  "image": "ghcr.io/leanprover-community/mathlib4/gitpod",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
 
   "onCreateCommand": "lake exe cache get!",
 
   "hostRequirements": {
-     "cpus": 4
+    "cpus": 4,
+    "memory": "8gb"
   },
 
   "customizations": {
-    "vscode" : {
-      "extensions" : [ "leanprover.lean4" ]
+    "vscode": {
+      "extensions": ["leanprover.lean4"]
     }
   }
 }

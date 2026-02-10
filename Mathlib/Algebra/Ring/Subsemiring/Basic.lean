@@ -274,7 +274,7 @@ abbrev center.commSemiring' : CommSemiring (center R) :=
 variable {R}
 
 /-- The center of isomorphic (not necessarily associative) semirings are isomorphic. -/
-@[simps!] def centerCongr [NonAssocSemiring S] (e : R ≃+* S) : center R ≃+* center S :=
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
   NonUnitalSubsemiring.centerCongr e
 
 /-- The center of a (not necessarily associative) semiring
@@ -694,7 +694,7 @@ end Subsemiring
 
 namespace RingHom
 
-variable [NonAssocSemiring T] {s : Subsemiring R}
+variable {s : Subsemiring R}
 variable {σR σS : Type*}
 variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
 
@@ -902,6 +902,14 @@ instance smulCommClass_left [SMul R' β] [SMul α β] [SMulCommClass R' α β] (
 instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] (S : Subsemiring R') :
     SMulCommClass α S β :=
   inferInstance
+
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass R (Subsemiring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass (Subsemiring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β]

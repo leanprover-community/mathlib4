@@ -3,7 +3,7 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Markus Himmel
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.SetTheory.Game.Birthday
 public import Mathlib.SetTheory.Game.Impartial
