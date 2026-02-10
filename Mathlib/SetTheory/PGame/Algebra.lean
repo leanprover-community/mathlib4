@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.SetTheory.PGame.Order

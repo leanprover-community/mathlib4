@@ -908,14 +908,18 @@ theorem preimage_range (f : α → β) : f ⁻¹' range f = univ :=
 
 /-- The range of a function from a `Unique` type contains just the
 function applied to its single value. -/
-theorem range_unique [h : Unique ι] : range f = {f default} := by
-  ext x
-  rw [mem_range]
-  constructor
-  · rintro ⟨i, hi⟩
-    rw [h.uniq i] at hi
-    grind
-  · grind
+theorem range_unique [Unique ι] : range f = {f default} := by
+  aesop (add simp [Unique.eq_default])
+
+@[simp]
+theorem range_singleton {x : α} (f : ({x} : Set α) → β) : range f = {f ⟨x, mem_singleton x⟩} :=
+  range_unique
+
+@[simp]
+theorem range_insert {x : α} {s : Set α} (f : ((insert x s) : Set α) → β) :
+    range f = insert (f ⟨x, mem_insert x s⟩)
+      (range fun y : s ↦ f ⟨y, mem_insert_of_mem _ y.2⟩) := by
+  aesop
 
 theorem range_diff_image_subset (f : α → β) (s : Set α) : range f \ f '' s ⊆ f '' sᶜ :=
   fun _ ⟨⟨x, h₁⟩, h₂⟩ => ⟨x, fun h => h₂ ⟨x, h, h₁⟩, h₁⟩

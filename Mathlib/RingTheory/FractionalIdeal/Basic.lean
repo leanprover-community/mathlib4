@@ -295,12 +295,10 @@ theorem coeIdeal_le_coeIdeal' [IsLocalization S P] (h : S ≤ nonZeroDivisors R)
     (I : FractionalIdeal S P) ≤ J ↔ I ≤ J :=
   coeSubmodule_le_coeSubmodule h
 
-@[simp]
+@[simp, gcongr]
 theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
     {I J : Ideal R} : (I : FractionalIdeal R⁰ K) ≤ J ↔ I ≤ J :=
   IsFractionRing.coeSubmodule_le_coeSubmodule
-
-@[gcongr] protected alias ⟨_, GCongr.coeIdeal_le_coeIdeal⟩ := coeIdeal_le_coeIdeal
 
 instance : Zero (FractionalIdeal S P) :=
   ⟨(0 : Ideal R)⟩
