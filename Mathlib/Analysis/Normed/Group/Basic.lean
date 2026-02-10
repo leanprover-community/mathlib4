@@ -292,8 +292,9 @@ lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (
   exact norm_mul_sub_norm_div_le_two_mul _ _
 
 -- Higher priority to fire before `mem_sphere`.
-@[to_additive (attr := simp high) mem_sphere_iff_norm]
-theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b⁻¹ * a‖ = r := by simp [dist_eq_norm_inv_mul]
+@[to_additive]
+theorem mem_sphere_iff_norm_inv_mul_eq : b ∈ sphere a r ↔ ‖b⁻¹ * a‖ = r := by
+  simp [dist_eq_norm_inv_mul]
 
 @[to_additive] -- `simp` can prove this
 theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp
@@ -865,6 +866,10 @@ theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r :
 theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
   rw [mem_closedBall', dist_eq_norm_div]
 
+-- Higher priority to fire before `mem_sphere`.
+@[to_additive (attr := simp high) mem_sphere_iff_norm]
+theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
+
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
   rw [mem_ball_iff_norm'']
@@ -891,7 +896,7 @@ theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
 @[to_additive (attr := simp)]
 theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = sphere (a / b) r := by
   ext c
-  simp only [Set.mem_preimage, mem_sphere_iff_norm', div_eq_mul_inv, mul_assoc, mul_inv, mul_comm]
+  simp only [Set.mem_preimage, mem_sphere_iff_norm', div_div_eq_mul_div, mul_comm]
 
 @[to_additive]
 theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
