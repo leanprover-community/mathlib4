@@ -219,8 +219,7 @@ lemma Finset.card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : �
               by simp,
               List.ext_get (by simp [hlen]) (by simp)⟩
     _ = Fintype.card α ^ s := by
-          simpa using Finset.card_image_of_injective Finset.univ List.ofFn_injective
-            (f := (List.ofFn : (Fin s → α) → List α))
+          simp [card_image_of_injective univ List.ofFn_injective]
 
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive /-- It is equivalent to sum a function over `fin n` or `finset.range n`. -/]
