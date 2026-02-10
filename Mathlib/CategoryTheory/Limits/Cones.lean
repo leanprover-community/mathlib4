@@ -300,9 +300,10 @@ run_meta
     { translation := `CategoryTheory.Limits.Cones }
 
 /-- To give an isomorphism between cones, it suffices to give an
-isomorphism between their vertices which commutes with the cone
-maps. -/
-@[to_dual (attr := simps) ext_inv, aesop apply safe (rule_sets := [CategoryTheory])]
+isomorphism between their vertices which commutes with the cone maps. -/
+@[to_dual (attr := simps) ext_inv
+/-- To give an isomorphism between cocones, it suffices to give an
+isomorphism between their vertices which commutes with the cone maps. -/]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -310,15 +311,16 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     { hom := φ.inv
       w := fun j => φ.inv_comp_eq.mpr (w j) }
 
+/-- To give an isomorphism between cones, it suffices to give an
+isomorphism between their vertices which commutes with the cone maps. -/
 @[to_dual (attr := simps!) ext
 /-- To give an isomorphism between cocones, it suffices to give an
-isomorphism between their vertices which commutes with the cocone
-maps. -/]
+isomorphism between their vertices which commutes with the cocone maps. -/]
 def ext_inv {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, φ.inv ≫ c.π.app j = c'.π.app j := by cat_disch) : c ≅ c' :=
   ext φ fun j ↦ (Iso.inv_comp_eq φ).mp (w j)
 
-attribute [aesop apply safe (rule_sets := [CategoryTheory])] Limits.Cocones.ext
+attribute [aesop apply safe (rule_sets := [CategoryTheory])] Limits.Cones.ext Limits.Cocones.ext
 
 /-- Eta rule for cones. -/
 @[to_dual (attr := simps!) /-- Eta rule for cocones. -/]
@@ -669,11 +671,13 @@ def Cone.unop (c : Cone F.op) : Cocone F where
 
 variable (F)
 
-/-- The category of cocones on `F`
-is equivalent to the opposite category of
+/-- The category of cocones on `F` is equivalent to the opposite category of
 the category of cones on the opposite of `F`.
 -/
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp)
+/-- The category of cones on `F` is equivalent to the opposite category of
+the category of cocones on the opposite of `F`.
+-/]
 def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   functor :=
     { obj := fun c => op (Cocone.op c)
