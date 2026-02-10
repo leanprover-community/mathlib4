@@ -400,8 +400,11 @@ def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ
     (by ext <;> simp) (by ext; simp)
 
 /-- The free commutative ring on the empty type is isomorphic to `ℤ`. -/
-def freeCommRingPemptyEquivInt : FreeCommRing PEmpty.{u + 1} ≃+* ℤ :=
+def freeCommRingPEmptyEquivInt : FreeCommRing PEmpty.{u + 1} ≃+* ℤ :=
   RingEquiv.trans (freeCommRingEquivMvPolynomialInt _) (MvPolynomial.isEmptyRingEquiv _ PEmpty)
+
+@[deprecated (since := "2026-02-08")]
+noncomputable alias freeCommRingPemptyEquivInt := freeCommRingPEmptyEquivInt
 
 /-- The free commutative ring on a type with one term is isomorphic to `ℤ[X]`. -/
 def freeCommRingPunitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X] :=
@@ -410,8 +413,11 @@ def freeCommRingPunitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X
 open FreeRing
 
 /-- The free ring on the empty type is isomorphic to `ℤ`. -/
-def freeRingPemptyEquivInt : FreeRing PEmpty.{u + 1} ≃+* ℤ :=
-  RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPemptyEquivInt
+def freeRingPEmptyEquivInt : FreeRing PEmpty.{u + 1} ≃+* ℤ :=
+  RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPEmptyEquivInt
+
+@[deprecated (since := "2026-02-08")]
+noncomputable alias freeRingPemptyEquivInt := freeRingPEmptyEquivInt
 
 /-- The free ring on a type with one term is isomorphic to `ℤ[X]`. -/
 def freeRingPunitEquivPolynomialInt : FreeRing PUnit.{u + 1} ≃+* ℤ[X] :=
