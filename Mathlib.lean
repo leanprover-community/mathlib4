@@ -5195,6 +5195,7 @@ public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Portmanteau
+public import Mathlib.MeasureTheory.Measure.PreVariation
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.MeasureTheory.Measure.Prokhorov
@@ -5206,6 +5207,7 @@ public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.MeasureTheory.Measure.SeparableMeasure
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.Measure.Sub
+public import Mathlib.MeasureTheory.Measure.SubFinite
 public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Tight
 public import Mathlib.MeasureTheory.Measure.TightNormed
@@ -5244,6 +5246,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.JordanSub
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 public import Mathlib.ModelTheory.Algebra.Field.Basic
 public import Mathlib.ModelTheory.Algebra.Field.CharP
@@ -6515,6 +6518,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Moebius
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
