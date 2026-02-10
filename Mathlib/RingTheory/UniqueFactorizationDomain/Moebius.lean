@@ -32,7 +32,8 @@ variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α] {a 
 /-- The Moebius function on a unique factorization monoid, defined to be
   `((-1) ^ (factors a).card)` if `a` is squarefree and `0` otherwise. -/
 noncomputable def moebius (a : α) : ℤ :=
-  ite (Squarefree a) (h := Classical.dec (Squarefree a)) ((-1) ^ (factors a).card) 0
+  open Classical in 
+  if Squarefree a then ((-1) ^ (factors a).card) else 0
 
 theorem _root_.Nat.moebius_eq (n : ℕ) : moebius n = ArithmeticFunction.moebius n := by
   rw [moebius]
