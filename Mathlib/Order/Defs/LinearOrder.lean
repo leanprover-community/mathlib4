@@ -79,6 +79,7 @@ attribute [to_dual existing] LinearOrder.toMax
 
 variable [LinearOrder α] {a b c : α}
 
+attribute [instance 1100] LinearOrder.toPartialOrder
 attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
