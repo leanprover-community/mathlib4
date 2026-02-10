@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
-public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.RingHom.StandardSmooth
 public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.RingTheory.QuasiFinite.Basic
+public import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!
 
@@ -20,16 +20,21 @@ In this file, we will prove that if `S` is a finite type `R`-algebra unramified 
 there exists `f ∉ Q` and a standard etale algebra `A` over `R` that surjects onto `S[1/f]`.
 Geometrically, this says that unramified morphisms locally are closed subsets of etale covers.
 
+As a corollary, we also obtain results about the local structure of etale and smooth algebras.
+
 ## Main definition and results
 - `HasStandardEtaleSurjectionOn`: The predicate
   "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
-- `Algebra.IsUnramified.exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top`:
-  The claim is true when `S` has the form `R[X]/I` and is finite over `R`.
-- `Algebra.IsUnramified.exist_HasStandardEtaleSurjectionOn_of_finite`:
-  The claim is true when `S` is finite over `R`.
-
-## TODO (@erdOne)
-- Extend the result to arbitrary finite-type algebras (needs Zariski's main theorem).
+- `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`:
+  If `S` is a finite type `R`-algebra that is unramified at a prime `p`, then
+  there exists a standard etale algebra over `R` that surjects onto `S[1/f]` for some `f ∉ p`.
+- `Algebra.IsEtaleAt.exists_isStandardEtale`:
+  If `S` is a finitely presented `R`-algebra that is etale at a prime `p`, then
+  `S[1/f]` is standard etale for some `f ∉ p`.
+- `Algebra.IsSmoothAt.exists_isStandardEtale_mvPolynomial`:
+  If `S` is a finitely presented `R`-algebra that is smooth at a prime `p`, then
+  there exists some `f ∉ p` such that `S[1/f]` is `R`-isomorphic to a standard etale algebra
+  over `R[x₁,...,xₙ]`.
 
 -/
 
@@ -118,7 +123,8 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
   · simp [← Algebra.TensorProduct.right_algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
 attribute [local simp] aeval_algebraMap_apply in
-lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
+-- Subsumed by `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`.
+private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
     [Module.Finite R S] (H : ∃ x : S, Algebra.adjoin R {x} = ⊤)
     (Q : Ideal S) [Q.IsPrime] [Algebra.IsUnramifiedAt R Q] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
@@ -261,7 +267,8 @@ lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
     rw [AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom, ← IsScalarTower.algebraMap_apply]
     rfl
 
-lemma exists_hasStandardEtaleSurjectionAt_of_finite
+-- Subsumed by `Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn`.
+private lemma exists_hasStandardEtaleSurjectionOn_of_finite
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsUnramifiedAt R Q] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
   obtain ⟨x, hQ', hQ'Q⟩ :=
@@ -286,4 +293,98 @@ lemma exists_hasStandardEtaleSurjectionAt_of_finite
     ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
     (by exact (H _ (by simp)).surjective.comp hP)⟩
 
-end Algebra.IsUnramifiedAt
+attribute [local instance high] Module.Free.of_divisionRing in
+instance (priority := low)
+    [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] : Algebra.QuasiFinite R S where
+  finite_fiber _ _ := Algebra.FormallyUnramified.finite_of_free _ _
+
+lemma exists_hasStandardEtaleSurjectionOn
+    (Q : Ideal S) [Q.IsPrime] [FiniteType R S] [IsUnramifiedAt R Q] :
+    ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
+  wlog H : Algebra.Unramified R S
+  · obtain ⟨s, hsQ, hs⟩ := Algebra.exists_formallyUnramified_of_isUnramifiedAt (R := R) Q
+    have hQ : (Ideal.map (algebraMap S (Localization.Away s)) Q).IsPrime :=
+      IsLocalization.isPrime_of_isPrime_disjoint (.powers s) _ _ ‹_› (by simp [Set.disjoint_iff,
+        Set.ext_iff, Submonoid.mem_powers_iff, mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ])
+    have inst : Unramified R (Localization.Away s) := {}
+    obtain ⟨f, hf, H⟩ := this (R := R)
+      (Q.map (algebraMap _ (Localization.Away s))) inferInstance
+    obtain ⟨f, t, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) f
+    refine ⟨s * f, ?_, ?_⟩
+    · simpa [IsLocalization.mk'_mem_map_algebraMap_iff, Submonoid.mem_powers_iff,
+        Ideal.IsPrime.mul_mem_left_iff, hsQ, (mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ)] using hf
+    obtain ⟨P, φ, hφ⟩ : HasStandardEtaleSurjectionOn R (algebraMap S (Localization.Away s) f) :=
+      H.of_dvd ⟨algebraMap _ _ t.1, by simp⟩
+    exact .mk _ hφ
+  obtain ⟨S', hS', r, hrQ, hr⟩ := ZariskisMainProperty.of_finiteType (R := R) Q
+    |>.exists_fg_and_exists_notMem_and_awayMap_bijective
+  have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
+  have : Algebra.FormallyUnramified R (Localization.Away r) :=
+    .of_equiv (AlgEquiv.ofBijective (Localization.awayMapₐ S'.val r) hr:).symm
+  have : IsUnramifiedAt R (Ideal.under (↥S') Q) := by
+    rw [← Algebra.basicOpen_subset_unramifiedLocus_iff] at this
+    exact @this ⟨Q.under S', inferInstance⟩ hrQ
+  obtain ⟨f, hfQ, hf⟩ :=
+    Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn_of_finite (R := R) (Q.under S')
+  let e : Localization.Away (r * f) ≃ₐ[R] Localization.Away (r.1 * f.1) :=
+    .ofBijective (Localization.awayMapₐ S'.val (r * f))
+      (Localization.awayMap_bijective_of_dvd _ (dvd_mul_right r f) hr)
+  obtain ⟨P, φ, hφ⟩ := hf.of_dvd (g := r * f) (by simp)
+  refine ⟨_, ‹Q.IsPrime›.mul_notMem hrQ hfQ,
+    .mk (f := r.1 * f.1) (e.toAlgHom.comp φ) (e.surjective.comp hφ)⟩
+
+end IsUnramifiedAt
+
+@[stacks 00UE]
+lemma IsEtaleAt.exists_isStandardEtale
+    (Q : Ideal S) [Q.IsPrime] [Algebra.FinitePresentation R S] [Algebra.IsEtaleAt R Q] :
+    ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
+  obtain ⟨f, hfQ, h⟩ := exists_etale_of_isEtaleAt (R := R) Q
+  obtain ⟨g, hgQ, hg⟩ := Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn (R := R) Q
+  have : Etale R (Localization.Away (f * g)) := by
+    rw [← basicOpen_subset_etaleLocus_iff_etale] at h ⊢
+    exact .trans (PrimeSpectrum.basicOpen_mul_le_left _ _) h
+  exact ⟨f * g, ‹Q.IsPrime›.mul_notMem hfQ hgQ, (hg.of_dvd (by simp)).isStandardEtale⟩
+
+/-- Given `S` a finitely presented `R`-algebra, and `p` a prime of `S`. If `S` is smooth over `R`
+at `p`, then there exists `f ∉ p` such that `R → S[1/f]` factors through some `R[X₁,...,Xₙ]`,
+and that `S[1/f]` is standard etale over `R[X₁,...,Xₙ]`. -/
+theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
+    {p : Ideal S} [p.IsPrime] [Algebra.FinitePresentation R S] [Algebra.IsSmoothAt R p] :
+    ∃ f ∉ p, ∃ (n : ℕ) (_ : Algebra (MvPolynomial (Fin n) R) (Localization.Away f)),
+      IsScalarTower R (MvPolynomial (Fin n) R) (Localization.Away f) ∧
+      Algebra.IsStandardEtale (MvPolynomial (Fin n) R) (Localization.Away f) := by
+  classical
+  obtain ⟨f, hfp, H⟩ := Algebra.IsSmoothAt.exists_notMem_isStandardSmooth R p
+  obtain ⟨n, φ, hgC, hg⟩ := RingHom.IsStandardSmooth.exists_etale_mvPolynomial
+    (f := algebraMap R (Localization.Away f)) (by simpa [RingHom.isStandardSmooth_algebraMap])
+  algebraize [φ]
+  have := IsScalarTower.of_algebraMap_eq' hgC.symm
+  have : (Ideal.map (algebraMap S (Localization.Away f)) p).IsPrime :=
+    IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_›
+      ((Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)).mpr hfp)
+  obtain ⟨g₀, hg, H⟩ := Algebra.IsEtaleAt.exists_isStandardEtale (R := (MvPolynomial (Fin n) R))
+    (S := (Localization.Away f)) (p.map (algebraMap _ _))
+  obtain ⟨g, ⟨_, m, rfl⟩, hg₀⟩ := IsLocalization.exists_mk'_eq (.powers f) g₀
+  replace hg : g ∉ p := by simpa [Submonoid.mem_powers_iff, Ideal.IsPrime.mul_mem_iff_mem_or_mem,
+    IsLocalization.mk'_mem_map_algebraMap_iff, mt (‹p.IsPrime›.mem_of_pow_mem _) hfp,
+    ← hg₀] using hg
+  have : IsLocalization.Away (f * g) (Localization.Away g₀) := by
+    suffices IsLocalization.Away (algebraMap _ (Localization.Away f) g) (Localization.Away g₀) from
+      .mul' (Localization.Away f) _ _ _
+    refine IsLocalization.Away.of_associated (r := g₀)
+      ⟨(IsLocalization.Away.algebraMap_pow_isUnit f m).unit, ?_⟩
+    simp only [← hg₀, IsUnit.unit_spec, ← map_pow, mul_comm, IsLocalization.mk'_spec'_mk]
+  let e : Localization.Away g₀ ≃ₐ[S] Localization.Away (f * g) :=
+    IsLocalization.algEquiv (.powers (f * g)) _ _
+  let : Algebra (MvPolynomial (Fin n) R) (Localization.Away (f * g)) :=
+    (e.toRingHom.comp (algebraMap (MvPolynomial (Fin n) R) _)).toAlgebra
+  have : IsScalarTower R (MvPolynomial (Fin n) R) (Localization.Away (f * g)) := by
+    refine .of_algebraMap_eq' ?_
+    simp only [RingHom.algebraMap_toAlgebra, RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq]
+    exact (e.toAlgHom.comp_algebraMap_of_tower (R := R)).symm
+  let e' : Localization.Away g₀ ≃ₐ[MvPolynomial (Fin n) R] Localization.Away (f * g) :=
+    { __ := e, commutes' r := rfl }
+  exact ⟨f * g, ‹p.IsPrime›.mul_notMem ‹_› ‹_›, n, ‹_›, ‹_›, .of_equiv e'⟩
+
+end Algebra
