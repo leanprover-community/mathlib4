@@ -10,6 +10,7 @@ public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
 
@@ -64,24 +65,6 @@ private lemma concatFn_injective_of_uniquelyDecodable {S : Finset (List α)}
     List.ofFn_injective (h _ _ (by simp) (by simp) hflat)
   funext i
   exact Subtype.ext (congrArg (fun f => f i) this)
-
-/-- The number of strings of length `s` in any set is at most `D^s`
-(the total number of such strings). -/
-private lemma card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : ℕ} :
-    (T.filter (fun x => x.length = s)).card ≤ (Fintype.card α) ^ s := by
-  classical
-  let univ := (Finset.univ : Finset (Fin s → α))
-  calc
-    _  ≤ (univ.image List.ofFn).card := by
-        refine Finset.card_le_card (fun a ha => ?_)
-        let h := Finset.mem_filter.mp ha
-        apply Finset.mem_image.mpr ⟨
-                fun j => a.get ⟨j.val, by simp [h]⟩,
-                Finset.mem_univ _,
-                List.ext_get (by simp [h]) (by simp)⟩
-    _ = Fintype.card α ^ s := by
-          simpa [univ] using Finset.card_image_of_injective
-            univ (H := List.ofFn_injective)
 
 private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
     {T : Finset (List α)} {s : ℕ} :
