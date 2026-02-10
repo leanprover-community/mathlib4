@@ -259,7 +259,7 @@ theorem intCast_add {R} [CommRing R] {b₁ b₂ : R} {a₁ a₂ : ℤ}
   subst_vars; simp
 
 
-mutual -- partial only to speed up compilation
+mutual
 
 variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
   (_ : v =QL 0) (_ : $β =Q ℤ) (_ : $sβ =Q inferInstance)
@@ -377,7 +377,7 @@ mutual
 
 /-- Add two rational number expressions. If the result is zero, returns a proof of this fact. -/
 partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {a b : Q($α)} (za : RatCoeff a) (zb : _root_.Mathlib.Tactic.Ring.RatCoeff b) :
+    {a b : Q($α)} (za : RatCoeff a) (zb : RatCoeff b) :
     MetaM (Result RatCoeff q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
   let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
@@ -393,7 +393,7 @@ partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 /-- Evaluate the product of two rational number expressions. -/
 partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {a b : Q($α)} (za : RatCoeff a) (zb : _root_.Mathlib.Tactic.Ring.RatCoeff b) :
+    {a b : Q($α)} (za : RatCoeff a) (zb : RatCoeff b) :
     MetaM (Result RatCoeff q($a * $b)) := do
   let res ← za.toResult.mul zb.toResult
   return ← RatCoeff.ofResult res
