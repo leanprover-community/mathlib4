@@ -143,7 +143,7 @@ attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.
   DivisionRing.instIsArtinianRing in
 /-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
 control on the primes in the integral closure. -/
-lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
+lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
     [Algebra.FiniteType R S]
@@ -197,7 +197,7 @@ lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     exact H (Ideal.mul_mem_left _ (s₂ ^ m) this)
   · rw [map_pow]; exact Ideal.notMem_of_isUnit _ (.pow _ (IsLocalization.Away.algebraMap_isUnit _))
 
-lemma exists_etale_isIdempotentElem_forall_liesOver_eq_aux
+lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
     ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
@@ -292,7 +292,7 @@ lemma exists_etale_isIdempotentElem_forall_liesOver_eq_aux
       (P''.over_def P)).comp_algebraMap, ← Polynomial.map_map, ← ha']
     simp
 
-lemma exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
+lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     {R S R' R'' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     [CommRing R'] [Algebra R R'] [CommRing R''] [Algebra R R''] [Algebra R'' S]
     [Algebra.IsIntegral R R''] [IsScalarTower R R'' S] (p : Ideal R) (q : Ideal S) (P : Ideal R')
@@ -375,7 +375,7 @@ and there exists a unique prime in `A` lying over `P`. This prime will also lie 
 The actual lemma is stated in terms of the idempotent element `e = (1, 0)`.
 -/
 @[stacks 00UJ]
-lemma exists_etale_isIdempotentElem_forall_liesOver_eq
+lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
     ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
