@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.Maps.Basic
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Conversion lemmas
