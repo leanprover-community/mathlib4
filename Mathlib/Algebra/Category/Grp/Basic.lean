@@ -196,7 +196,7 @@ instance hasForgetToMonCat : HasForget₂ GrpCat MonCat where
     (forget₂ GrpCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
 
 @[to_additive (attr := simp)] lemma forget₂_map {R S : GrpCat} (f : R ⟶ S) (x) :
-  (forget₂ GrpCat MonCat).map f x = f x := rfl
+    (forget₂ GrpCat MonCat).map f x = f x := rfl
 
 @[to_additive]
 instance : Coe GrpCat.{u} MonCat.{u} where coe := (forget₂ GrpCat MonCat).obj
