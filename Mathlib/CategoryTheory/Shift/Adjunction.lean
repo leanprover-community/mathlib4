@@ -508,8 +508,8 @@ instance [E.CommShift A] : NatTrans.CommShift E.unitIso.hom A :=
 instance [E.CommShift A] : NatTrans.CommShift E.counitIso.hom A :=
   inferInstanceAs (NatTrans.CommShift E.toAdjunction.counit A)
 
-instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
-instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
+instance : E.symm.inverse.CommShift A := inferInstanceAs (E.functor.CommShift A)
+instance : E.symm.functor.CommShift A := inferInstanceAs (E.inverse.CommShift A)
 
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :

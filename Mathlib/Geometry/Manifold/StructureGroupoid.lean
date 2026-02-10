@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Structure groupoids
@@ -358,8 +359,7 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
   le_top _ _ _ := ⟨trivial, trivial⟩
 
 instance : CompleteLattice (StructureGroupoid H) :=
-  { SetLike.instPartialOrder,
-    completeLatticeOfInf _ (by
+  { completeLatticeOfInf _ (by
       exact fun s =>
       ⟨fun S Ss F hF => mem_iInter₂.mp hF S Ss,
       fun T Tl F fT => mem_iInter₂.mpr (fun i his => Tl his fT)⟩) with

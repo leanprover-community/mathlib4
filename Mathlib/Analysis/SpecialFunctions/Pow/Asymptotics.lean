@@ -412,5 +412,5 @@ lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (�
   nth_rewrite 3 [← neg_zero]
   refine (h.comp (tendsto_abs_nhdsNE_zero.mono_left ?_)).neg
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
-  simp only [Set.mem_Iio] at hx
+  push _ ∈ _ at hx
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]

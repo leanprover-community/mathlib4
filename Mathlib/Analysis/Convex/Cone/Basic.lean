@@ -78,9 +78,11 @@ instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
   coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
 
+instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
+
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
-@[simp] lemma mem_toPointedCone : x ∈ C.toPointedCone ↔ x ∈ C := .rfl
+lemma mem_toPointedCone : x ∈ C.toPointedCone ↔ x ∈ C := .rfl
 
 lemma pointed_toConvexCone (C : ProperCone R E) : (C : ConvexCone R E).Pointed :=
   C.toPointedCone.pointed_toConvexCone
@@ -184,8 +186,7 @@ lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsCl
   have hfS : closure (f '' Set.Ioi 0) ⊆ C :=
     hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact C.smul_mem h hx
   -- `f` is continuous at `0` from the right
-  have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 :=
-    (continuous_id.smul continuous_const).continuousWithinAt
+  have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 := by fun_prop
   -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`
   simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
 

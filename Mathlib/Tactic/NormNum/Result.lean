@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Invertible
-public meta import Mathlib.Data.Sigma.Basic
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Int.Cast.Basic
-public meta import Qq.MetaM
+public import Qq.MetaM
+
+public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
 
 /-!
 ## The `Result` type for `norm_num`

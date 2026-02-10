@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
-import Mathlib.Algebra.Module.Torsion.Pi
 
 /-!
 
@@ -453,8 +452,7 @@ instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
   mul_assoc _ _ _ := by ext <;> simpa using by ring
   mul_comm _ _ := by ext <;> simpa using by ring
 
-instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
-    Algebra S (QuadraticAlgebra R a b) where
+instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp
@@ -482,10 +480,6 @@ theorem algebraMap_im : (algebraMap R (QuadraticAlgebra R a b) r).im = 0 := rfl
 instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
     Module.IsTorsionFree S (QuadraticAlgebra R a b) :=
   (linearEquivTuple ..).injective.moduleIsTorsionFree _ (by simp)
-
-instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
-    NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
-  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
 
 @[simp]
 theorem C_pow (n : ℕ) (r : R) : (.C (r ^ n : R) : QuadraticAlgebra R a b) = (.C r) ^ n :=

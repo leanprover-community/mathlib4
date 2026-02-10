@@ -341,7 +341,7 @@ theorem _root_.Function.Involutive.image_eq_preimage_symm {f : α → α} (hf : 
 
 theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : Set α} (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : b ∈ f '' s ↔ g b ∈ s := by
-  rw [image_eq_preimage_of_inverse h₁ h₂]; rfl
+  rw [image_eq_preimage_of_inverse h₁ h₂, mem_preimage]
 
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
   Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ← image_inter H]
@@ -908,14 +908,18 @@ theorem preimage_range (f : α → β) : f ⁻¹' range f = univ :=
 
 /-- The range of a function from a `Unique` type contains just the
 function applied to its single value. -/
-theorem range_unique [h : Unique ι] : range f = {f default} := by
-  ext x
-  rw [mem_range]
-  constructor
-  · rintro ⟨i, hi⟩
-    rw [h.uniq i] at hi
-    grind
-  · grind
+theorem range_unique [Unique ι] : range f = {f default} := by
+  aesop (add simp [Unique.eq_default])
+
+@[simp]
+theorem range_singleton {x : α} (f : ({x} : Set α) → β) : range f = {f ⟨x, mem_singleton x⟩} :=
+  range_unique
+
+@[simp]
+theorem range_insert {x : α} {s : Set α} (f : ((insert x s) : Set α) → β) :
+    range f = insert (f ⟨x, mem_insert x s⟩)
+      (range fun y : s ↦ f ⟨y, mem_insert_of_mem _ y.2⟩) := by
+  aesop
 
 theorem range_diff_image_subset (f : α → β) (s : Set α) : range f \ f '' s ⊆ f '' sᶜ :=
   fun _ ⟨⟨x, h₁⟩, h₂⟩ => ⟨x, fun h => h₂ ⟨x, h, h₁⟩, h₁⟩

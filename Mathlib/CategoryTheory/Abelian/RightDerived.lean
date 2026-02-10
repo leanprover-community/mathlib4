@@ -31,8 +31,8 @@ and show how to compute the components.
 ## Main results
 * `Functor.isZero_rightDerived_obj_injective_succ`: injective objects have no higher
   right derived functor.
-* `NatTrans.rightDerived`: the natural isomorphism between right derived functors
-  induced by natural transformation.
+* `NatTrans.rightDerived`: the natural transformation between right derived functors
+  induced by a natural transformation.
 * `Functor.toRightDerivedZero`: the natural transformation `F ⟶ F.rightDerived 0`,
   which is an isomorphism when `F` is left exact (i.e. preserves finite limits),
   see also `Functor.rightDerivedZeroIsoSelf`.
