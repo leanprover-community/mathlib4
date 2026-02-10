@@ -27,15 +27,13 @@ class MyRing (R : Type*) extends Add R, Mul R
 
 -- test name printing
 /--
-Failed to add declaration `dummyBar`:
-Application type mismatch: The argument
-  inst✝.toMul
-has type
+error: @[to_additive] failed. Nested error message:
+(kernel) application type mismatch
+  instHAdd
+argument has type
   Mul F
-but is expected to have type
-  Add F
-in the application
-  @instHAdd F inst✝.toMul
+but function has type
+  [Add F] → HAdd F F F
 ---
 trace: [translate] Added translation dummyFoo ↦ dummyBar
 -/

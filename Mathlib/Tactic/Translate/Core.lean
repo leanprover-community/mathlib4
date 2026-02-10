@@ -1233,11 +1233,12 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     throwError "`{t.attrName}` can only be used as a global attribute"
   withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
-  let dupe? := (← findPublicOrPrivate? tgt) |>.map (·.name)
+  let dupe? := (← findPublicOrPrivate? tgt).map (·.name)
   trace[translate_detail] "found {dupe?} in environment when searching for {tgt}"
   if cfg.existing != dupe?.isSome && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.translateExisting cfg.ref <|
       if dupe?.isSome then
+        -- `tgt` and `dupe` are the same modulo privateness, so we print their (shared) public name
         m!"The translated declaration `{.ofConstName <| privateToUserName tgt}` already exists. \
           Please specify this explicitly using `@[{t.attrName} existing]`."
       else
