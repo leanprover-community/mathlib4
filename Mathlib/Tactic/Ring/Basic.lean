@@ -5,11 +5,8 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Util.AtomM
-public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
-public import Mathlib.Tactic.NormNum.Result
 public import Mathlib.Tactic.Ring.Common
 
 /-!
@@ -36,7 +33,7 @@ The normalization procedure is implemented in `Mathlib.Tactic.Ring.Common`.
 ring, semiring, exponent, power
 -/
 
-@[expose] public meta section
+public meta section
 
 assert_not_exists IsOrderedMonoid
 
