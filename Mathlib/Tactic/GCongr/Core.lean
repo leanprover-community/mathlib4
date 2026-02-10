@@ -618,8 +618,14 @@ partial def _root_.Lean.MVarId.gcongr
         and is not closed by `rfl`"
     -- If there are more annotations, then continue on.
 
-  let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
-  let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
+  let lhs ← if relName == `_Implies then
+    -- If `whnfR` destroyed the structure (e.g., by unfolding `@[reducible]` class projections
+    -- like `HasSSubset.SSubset`), fall back to the un-whnf'd form.
+    let lhs' ← whnfR lhs; if (getCongrAppFnArgs lhs').isSome then pure lhs' else pure lhs
+  else pure lhs
+  let rhs ← if relName == `_Implies then
+    let rhs' ← whnfR rhs; if (getCongrAppFnArgs rhs').isSome then pure rhs' else pure rhs
+  else pure rhs
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs |
     if mdataLhs?.isNone then return (false, names, #[g])
     throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
