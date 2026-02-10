@@ -53,8 +53,4 @@ theorem ofClosedSubgroup {G : Type*} [Group G] [TopologicalSpace G] [IsTopologic
   isOpenQuotientMap := MulAction.isOpenQuotientMap_quotientMk
   mulExact := by simp [Function.MulExact]
 
-variable {A B C E : Type*} [Group A] [Group B] [Group C]
-  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
-  {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
-
 end TopologicalGroup.IsSES
