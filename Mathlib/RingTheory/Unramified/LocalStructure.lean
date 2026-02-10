@@ -8,8 +8,9 @@ module
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.Tactic.DepRewrite
+public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
 
@@ -24,9 +25,10 @@ Geometrically, this says that unramified morphisms locally are closed subsets of
   "there exists a standard etale algebra `A` over `R` that surjects onto `S[1/f]`".
 - `Algebra.IsUnramified.exist_HasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top`:
   The claim is true when `S` has the form `R[X]/I` and is finite over `R`.
+- `Algebra.IsUnramified.exist_HasStandardEtaleSurjectionOn_of_finite`:
+  The claim is true when `S` is finite over `R`.
 
 ## TODO (@erdOne)
-- Extend the result to arbitrary finite algebras.
 - Extend the result to arbitrary finite-type algebras (needs Zariski's main theorem).
 
 -/
@@ -68,7 +70,7 @@ lemma HasStandardEtaleSurjectionOn.of_dvd
 lemma HasStandardEtaleSurjectionOn.isStandardEtale
     {f : S} (H : HasStandardEtaleSurjectionOn R f) [Algebra.Etale R (Localization.Away f)] :
     Algebra.IsStandardEtale R (Localization.Away f) :=
-  .of_surjective _ _ _ _ H.choose_spec.choose_spec
+  .of_surjective _ H.choose_spec.choose_spec
 
 namespace Algebra.IsUnramifiedAt
 
@@ -178,13 +180,110 @@ lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
         ← isUnit_iff_dvd_one]
       exact hm.not_unit
   have hm' : derivative m ≠ 0 :=
-    have : Algebra.IsSeparable P.ResidueField Q.ResidueField :=
-      ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
     (separable_iff_derivative_ne_zero hm.irreducible).mp (Algebra.IsSeparable.isSeparable ..)
   suffices ¬m ∣ derivative (q.map (algebraMap R _)) by
     rwa [← Ideal.ker_algebraMap_residueField Q, RingHom.mem_ker, ← aeval_algebraMap_apply,
       ← aeval_map_algebraMap P.ResidueField, ← derivative_map, ← minpoly.dvd_iff]
   obtain ⟨c, hc⟩ := hmp₁
   simp_all [hm.dvd_mul, dvd_add_left, pow_two, mul_dvd_mul_iff_left, hm.ne_zero]
+
+lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
+    (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsUnramifiedAt R Q] :
+    ∃ t ∉ Q, (∀ Q' ∈ (Q.under R).primesOver S, Q' ≠ Q → t ∈ Q') ∧
+      adjoin (Ideal.under R Q).ResidueField {algebraMap _ Q.ResidueField t} = ⊤ := by
+  let p := Q.under R
+  classical
+  have : IsArtinianRing (p.Fiber S) := .of_finite p.ResidueField _
+  let α := PrimeSpectrum.primesOverOrderIsoFiber R S p
+  obtain ⟨x, hx0, hx⟩ : ∃ x : Q.ResidueField, x ≠ 0 ∧ Algebra.adjoin p.ResidueField {x} = ⊤ := by
+    obtain ⟨x, hx⟩ := Field.exists_primitive_element p.ResidueField Q.ResidueField
+    rw [IntermediateField.adjoin_eq_top_iff] at hx
+    by_cases hx0 : x = 0
+    · exact ⟨1, by simp, by simpa [p, hx0] using hx⟩
+    · exact ⟨x, hx0, hx⟩
+  obtain ⟨x, rfl⟩ := Ideal.Fiber.lift_residueField_surjective p _ x
+  set φ : p.Fiber S →ₐ[p.ResidueField] Q.ResidueField := Algebra.TensorProduct.lift
+      (Algebra.ofId _ _) (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
+  obtain ⟨r, hrQ, hrid, hr⟩ :=
+    IsArtinianRing.exists_not_mem_forall_mem_of_ne (α ⟨Q, ‹_›, ⟨rfl⟩⟩).asIdeal
+  obtain ⟨s, hsQ, t, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ (r * x)
+  have hrQ' : φ r ≠ 0 := hrQ
+  have hsQ' : algebraMap R Q.ResidueField s ≠ 0 := by
+    simpa [IsScalarTower.algebraMap_apply R S Q.ResidueField]
+  replace hrQ' : φ r = 1 := by
+    simpa [hrQ', sub_eq_zero, @eq_comm _ _ (φ r)] using (hrid.map φ).one_sub_mul_self
+  have e' : algebraMap _ _ s * φ x = algebraMap _ _ t := by
+    simpa [φ, Algebra.smul_def, mul_assoc, hrQ'] using congr(φ $e)
+  refine ⟨t, ?_, ?_, ?_⟩
+  · rw [← Ideal.algebraMap_residueField_eq_zero, ← e']
+    simpa [hx0, IsScalarTower.algebraMap_apply R S Q.ResidueField]
+  · rintro Q' ⟨_, _⟩ H
+    have hsQ'' : algebraMap R Q'.ResidueField s ≠ 0 := by
+      suffices s ∉ Q'.under _ by simpa [IsScalarTower.algebraMap_apply R S Q'.ResidueField]
+      rwa [← Q'.over_def p]
+    let φ' : p.Fiber S →ₐ[p.ResidueField] Q'.ResidueField := Algebra.TensorProduct.lift
+        (Algebra.ofId _ _) (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
+    have H : φ' r = 0 := (hr (α ⟨Q', ⟨‹_›, ‹_›⟩⟩).asIdeal inferInstance (by
+        rwa [ne_eq, ← PrimeSpectrum.ext_iff, EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]):)
+    rw [← Ideal.algebraMap_residueField_eq_zero]
+    trans φ' (1 ⊗ₜ t)
+    · simp [φ']
+    · simpa [Algebra.smul_def, H] using congr(φ' $e).symm
+  · have : φ x = (algebraMap _ p.ResidueField s)⁻¹ • algebraMap _ _ t := by
+      simpa [Algebra.smul_def, ← IsScalarTower.algebraMap_apply, eq_inv_mul_iff_mul_eq₀ hsQ']
+    rw [← top_le_iff, ← hx, this]
+    refine adjoin_singleton_le ?_
+    exact Subalgebra.smul_mem _ (self_mem_adjoin_singleton _ _) _
+
+attribute [-instance] Subalgebra.instSMulSubtypeMem
+  Subalgebra.toAlgebra Subalgebra.isScalarTower_left in
+/-- Let `S` be an finite `R`-algebra that is unramified at some prime `Q`. Then there exists some
+`x : S` such that `Q` is the unique prime lying over `P := Q ∩ R⟨x⟩` and `κ(P) = κ(Q)`. -/
+lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
+    (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsUnramifiedAt R Q] :
+    ∃ x : S, (Q.under (Algebra.adjoin R {x})).primesOver S = {Q} ∧
+      Function.Bijective (algebraMap (Q.under (Algebra.adjoin R {x})).ResidueField
+        Q.ResidueField) := by
+  obtain ⟨t, htQ, htQ', ht⟩ :=
+    Algebra.IsUnramifiedAt.exists_notMem_forall_ne_mem_and_adjoin_eq_top (R := R) Q
+  let p := Q.under R
+  classical
+  refine ⟨t, ?_, RingHom.injective _, ?_⟩
+  · refine Set.ext fun Q' ↦ ⟨fun ⟨_, _⟩ ↦ ?_, fun e ↦ by exact ⟨e ▸ inferInstance, ⟨e ▸ rfl⟩⟩⟩
+    by_contra! H
+    have : Q'.LiesOver p := .trans _ (Q.under (adjoin R {t})) _
+    exact htQ (SetLike.le_def.mp (Q'.over_def (Q.under (adjoin R {t}))).ge
+      (x := ⟨t, self_mem_adjoin_singleton _ _⟩) (htQ' Q' ⟨‹_›, ‹_›⟩ H))
+  · change Function.Surjective (IsScalarTower.toAlgHom p.ResidueField _ _)
+    rw [← AlgHom.range_eq_top, ← top_le_iff, ← ht]
+    refine adjoin_singleton_le ?_
+    use algebraMap (adjoin R {t}) _ ⟨t, self_mem_adjoin_singleton _ _⟩
+    rw [AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom, ← IsScalarTower.algebraMap_apply]
+    rfl
+
+lemma exists_hasStandardEtaleSurjectionAt_of_finite
+    (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsUnramifiedAt R Q] :
+    ∃ f ∉ Q, HasStandardEtaleSurjectionOn R f := by
+  obtain ⟨x, hQ', hQ'Q⟩ :=
+    exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective (R := R) Q
+  let S' := Algebra.adjoin R {x}
+  let Q' := Q.under S'
+  have : Module.Finite S' S := .of_restrictScalars_finite R _ _
+  have : IsUnramifiedAt S' Q := .of_restrictScalars R _
+  have hφ : Function.Bijective (Localization.localRingHom Q' Q S'.val rfl) :=
+    ⟨Localization.localRingHom_injective_of_primesOver_eq_singleton hQ',
+      Localization.localRingHom_surjective_of_primesOver_eq_singleton hQ' hQ'Q.2⟩
+  obtain ⟨r, hrQ', H⟩ := Localization.exists_awayMap_bijective_of_residueField_surjective hQ' hQ'Q.2
+  have : Module.Finite R S' := finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral _)
+  have : IsUnramifiedAt R Q' := .of_equiv <| .symm <| .ofBijective (IsScalarTower.toAlgHom _ _ _) hφ
+  obtain ⟨f, hfQ', hf⟩ :=
+    Algebra.IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
+    (R := R) (S := S') ⟨⟨x, Algebra.self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective
+      (f := S'.val) Subtype.val_injective (by simp [Subalgebra.range_val, S'])⟩ Q'
+  obtain ⟨P, φ, hP⟩ := hf.of_dvd (g := f * r) (by simp)
+  exact ⟨_, (inferInstanceAs Q'.IsPrime).mul_notMem hfQ' hrQ', .mk
+    (f := IsScalarTower.toAlgHom R S' S (f * r))
+    ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
+    (by exact (H _ (by simp)).surjective.comp hP)⟩
 
 end Algebra.IsUnramifiedAt

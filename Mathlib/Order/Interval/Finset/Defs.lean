@@ -1215,7 +1215,7 @@ so when alternative constructions are available they are preferred. -/
 
 variable {y : α}
 
-instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLE α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where
   finsetIoi a := Finset.Ioc a ⟨y, by rfl⟩
   finsetIci a := Finset.Icc a ⟨y, by rfl⟩
@@ -1226,7 +1226,7 @@ instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α
     simp only [Finset.mem_Ioc, and_iff_left_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x < y } where
   finsetIoi a := (Finset.Ioo ↑a y).subtype _
   finsetIci a := (Finset.Ico ↑a y).subtype _
@@ -1237,7 +1237,7 @@ instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α
     simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_left_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLE α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderBot { x : α // y ≤ x } where
   finsetIio a := Finset.Ico ⟨y, by rfl⟩ a
   finsetIic a := Finset.Icc ⟨y, by rfl⟩ a
@@ -1248,7 +1248,7 @@ instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α
     simp only [Finset.mem_Ico, and_iff_right_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderBot { x : α // y < x } where
   finsetIio a := (Finset.Ioo y ↑a).subtype _
   finsetIic a := (Finset.Ioc y ↑a).subtype _
@@ -1259,16 +1259,16 @@ instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α
     simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_right_iff_imp]
     exact fun _ => b.property
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
+instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
   simpa only [coe_Iic] using (Finset.Iic y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
+instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
   simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
+instance [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
   simpa only [coe_Ici] using (Finset.Ici y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
+instance [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
   simpa only [coe_Ioi] using (Finset.Ioi y).finite_toSet
 
 namespace Set

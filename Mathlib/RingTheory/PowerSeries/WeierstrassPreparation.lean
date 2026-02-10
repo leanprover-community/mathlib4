@@ -409,7 +409,8 @@ theorem mod_zero [IsAdicComplete I A] : H.mod 0 = 0 := by
 `A⟦X⟧ / (g) →ₗ[A] A[X]`. -/
 noncomputable def mod' [IsAdicComplete I A] : A⟦X⟧ ⧸ Ideal.span {g} →ₗ[A] A[X] where
   toFun := Quotient.lift (fun f ↦ H.mod f) fun f f' hf ↦ by
-    simp_rw [HasEquiv.Equiv, Submodule.quotientRel_def, Ideal.mem_span_singleton'] at hf
+    have hf := (Submodule.quotientRel_def (p := Ideal.span {g})).mp hf
+    rw [Ideal.mem_span_singleton'] at hf
     obtain ⟨a, ha⟩ := hf
     obtain ⟨hf1, hf2⟩ := H.isWeierstrassDivisionAt_div_mod f
     obtain ⟨hf'1, hf'2⟩ := H.isWeierstrassDivisionAt_div_mod f'

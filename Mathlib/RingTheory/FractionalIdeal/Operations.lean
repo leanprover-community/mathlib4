@@ -829,6 +829,14 @@ theorem num_le (I : FractionalIdeal S P) :
   rw [← Algebra.smul_def]
   exact Submodule.smul_mem _ _ h
 
+/-- If the numerator ideal of a fractional ideal is principal, then so is the fractional ideal. -/
+theorem isPrincipal_of_isPrincipal_num [IsDomain R]
+    (I : FractionalIdeal R⁰ (FractionRing R)) (hI : I.num.IsPrincipal) :
+    (I : Submodule R (FractionRing R)).IsPrincipal :=
+  Module.isPrincipal_submodule_iff.mp
+    <| (FractionalIdeal.equivNumOfIsLocalization I).isPrincipal_iff.mpr
+    <| Module.isPrincipal_submodule_iff.mpr hI
+
 end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
