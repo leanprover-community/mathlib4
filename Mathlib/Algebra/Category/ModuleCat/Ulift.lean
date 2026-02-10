@@ -62,7 +62,8 @@ instance : (uliftFunctor R).Additive where
 
 instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
   let : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R ⋙ forget _) := by
-    change Limits.PreservesLimitsOfSize.{v, v} (forget _ ⋙ CategoryTheory.uliftFunctor.{v'})
+    change Limits.PreservesLimitsOfSize.{v, v} (forget (ModuleCat R) ⋙
+      CategoryTheory.uliftFunctor.{v'})
     infer_instance
   Limits.preservesLimits_of_reflects_of_preserves (uliftFunctor.{v', v} R) (forget _)
 
