@@ -85,7 +85,7 @@ theorem empty_definable_iff :
   simp
 
 theorem definable_iff_empty_definable_with_params :
-    A.Definable L s ↔ (∅ : Set M).Definable (L[[A]]) s :=
+    A.Definable L s ↔ (∅ : Set M).Definable L[[A]] s :=
   empty_definable_iff.symm
 
 theorem Definable.mono (hAs : A.Definable L s) (hAB : A ⊆ B) : B.Definable L s := by
@@ -301,6 +301,8 @@ instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
+instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α) (α → M)
+
 instance instTop : Top (L.DefinableSet A α) :=
   ⟨⟨⊤, definable_univ⟩⟩
 
@@ -313,7 +315,7 @@ instance instSup : Max (L.DefinableSet A α) :=
 instance instInf : Min (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
 
-instance instHasCompl : HasCompl (L.DefinableSet A α) :=
+instance instCompl : Compl (L.DefinableSet A α) :=
   ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
 
 instance instSDiff : SDiff (L.DefinableSet A α) :=
@@ -432,7 +434,7 @@ theorem termDefinable_empty_iff :
   simp
 
 theorem termDefinable_empty_withConstants_iff :
-    (∅ : Set M).TermDefinable (L[[A]]) f ↔ A.TermDefinable L f :=
+    (∅ : Set M).TermDefinable L[[A]] f ↔ A.TermDefinable L f :=
   termDefinable_empty_iff
 
 @[fun_prop]

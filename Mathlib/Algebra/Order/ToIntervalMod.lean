@@ -5,12 +5,13 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.ModEq
+public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Circular
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.GroupTheory.QuotientGroup.ModEq
 
 /-!
 # Reducing to an interval modulo its length
@@ -670,8 +671,8 @@ open AddCommGroup
 
 /-- If `a` and `b` fall within the same cycle w.r.t. `c`, then they are congruent modulo `p`. -/
 @[simp]
-theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] :=
-  toIcoMod_eq_toIcoMod _
+theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] := by
+  rw [toIcoMod_eq_toIcoMod, AddCommGroup.modEq_iff_zsmul']
 
 alias ⟨_, AddCommGroup.ModEq.toIcoMod_eq_toIcoMod⟩ := toIcoMod_inj
 

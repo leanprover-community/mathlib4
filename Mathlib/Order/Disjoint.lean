@@ -144,7 +144,7 @@ theorem top_disjoint : Disjoint ⊤ a ↔ a = ⊥ :=
 
 @[to_dual]
 theorem Disjoint.ne_top_of_ne_bot (h : Disjoint a b) (ha : a ≠ ⊥) : b ≠ ⊤ := by
-  rintro rfl; exact ha <| by simpa using h
+  grind
 
 @[deprecated ne_bot_of_ne_top (since := "2025-11-07")]
 lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ :=

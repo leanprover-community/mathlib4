@@ -13,6 +13,8 @@ public meta import Lean.Elab.DeclarationRange
 public import Lean.Meta.Tactic.Simp
 public import Mathlib.Init
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # HigherOrder attribute
 

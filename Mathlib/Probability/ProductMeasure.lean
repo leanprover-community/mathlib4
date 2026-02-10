@@ -74,7 +74,7 @@ lemma isProjectiveMeasureFamily_pi :
 
 /-- Consider a family of probability measures. You can take their products for any finite
 subfamily. This gives an additive content on the measurable cylinders. -/
-noncomputable def piContent : AddContent (measurableCylinders X) :=
+noncomputable def piContent : AddContent ℝ≥0∞ (measurableCylinders X) :=
   projectiveFamilyContent (isProjectiveMeasureFamily_pi μ)
 
 lemma piContent_cylinder {I : Finset ι} {S : Set (Π i : I, X i)} (hS : MeasurableSet S) :

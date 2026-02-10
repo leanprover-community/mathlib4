@@ -162,8 +162,6 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
 
 end Measure
 
-open Measure
-
 end MeasureTheory
 
 open MeasureTheory.Measure

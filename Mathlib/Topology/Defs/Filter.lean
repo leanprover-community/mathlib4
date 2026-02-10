@@ -172,8 +172,6 @@ def nhdsSetWithin (s t : Set X) : Filter X := 𝓝ˢ s ⊓ 𝓟 t
 Alexandrov-discrete space, this is the smallest neighborhood of the set. -/
 def nhdsKer (s : Set X) : Set X := (𝓝ˢ s).ker
 
-@[deprecated (since := "2025-07-09")] alias exterior := nhdsKer
-
 /-- A function between topological spaces is continuous at a point `x₀`
 if `f x` tends to `f x₀` when `x` tends to `x₀`. -/
 @[fun_prop]

@@ -388,7 +388,7 @@ instance isTotal : IsTotal PartENat (· ≤ ·) where
 
 noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
-    le_total := IsTotal.total
+    le_total := isTotal.total
     toDecidableLE := Classical.decRel _
     max := (· ⊔ ·)
     max_def a b := congr_fun₂ (@sup_eq_maxDefault PartENat _ (_) _) _ _ }

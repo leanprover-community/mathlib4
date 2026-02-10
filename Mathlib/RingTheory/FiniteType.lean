@@ -71,9 +71,6 @@ variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 
-@[deprecated inferInstance (since := "2025-07-12")]
-theorem self : FiniteType R R := inferInstance
-
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
@@ -107,9 +104,6 @@ instance [FiniteType R S] : FiniteType R S[X] := by
   rw [Finset.coe_singleton]
   exact Polynomial.adjoin_X
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem polynomial : FiniteType R R[X] := inferInstance
-
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (MvPolynomial ι S) := by
   classical
   cases nonempty_fintype ι
@@ -117,20 +111,12 @@ instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (MvPolynomial 
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact MvPolynomial.adjoin_range_X
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) :=
-  inferInstance
-
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (FreeAlgebra S ι) := by
   classical
   cases nonempty_fintype ι
   refine .trans ‹_› ⟨Finset.univ.image (FreeAlgebra.ι _), ?_⟩
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact FreeAlgebra.adjoin_range_ι ..
-
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) :=
-  inferInstance
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/

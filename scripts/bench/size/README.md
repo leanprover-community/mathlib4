@@ -1,4 +1,4 @@
-## The `size` benchmark
+# The `size` benchmark
 
 This benchmark measures a few deterministic values.
 

@@ -316,8 +316,6 @@ def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) 
 theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i => ι R (x i)).prod :=
   rfl
 
-variable {R M}
-
 end TensorAlgebra
 
 namespace FreeAlgebra

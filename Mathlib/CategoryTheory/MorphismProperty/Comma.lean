@@ -501,6 +501,71 @@ lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
 
 end Under
 
+variable {C D : Type*} [Category C] [Category D]
+variable (P : MorphismProperty D) (Q : MorphismProperty C) [Q.IsMultiplicative] (F : C ⥤ D) (X : D)
+
+/-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
+subcategory of `CostructuredArrow F X` defined by `P` where morphisms satisfy `Q`. -/
+protected abbrev CostructuredArrow (P : MorphismProperty D) (Q : MorphismProperty C)
+    (F : C ⥤ D) (X : D) :=
+  P.Comma F (Functor.fromPUnit.{0} X) Q ⊤
+
+section CostructuredArrow
+
+variable {P F X} in
+/-- Construct an object of `P.CostructuredArrow Q F X` from a morphism `F.obj A ⟶ X`. -/
+@[simps left hom]
+protected def CostructuredArrow.mk {A : C} (f : F.obj A ⟶ X) (hf : P f) :
+    P.CostructuredArrow Q F X where
+  left := A
+  right := ⟨⟨⟩⟩
+  hom := f
+  prop := hf
+
+variable {P Q F X} in
+/-- Construct a morphism in `P.CostructuredArrow Q F X` by giving a morphism on the underlying
+objects of `C`. -/
+@[simps left]
+def CostructuredArrow.homMk {A B : P.CostructuredArrow Q F X} (f : A.left ⟶ B.left) (hf : Q f)
+    (w : F.map f ≫ B.hom = A.hom := by cat_disch) :
+    A ⟶ B where
+  left := f
+  right := eqToHom (Subsingleton.elim _ _)
+  prop_hom_left := hf
+  prop_hom_right := trivial
+
+variable {P Q F X} in
+@[ext]
+lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B}
+    (h : f.left = g.left) : f = g := by
+  ext <;> simp [h]
+
+/-- The forgetful functor from the subcategory `P.CostructuredArrow Q F X`. -/
+protected abbrev CostructuredArrow.forget :
+    P.CostructuredArrow Q F X ⥤ CostructuredArrow F X :=
+  Comma.forget _ _ _ _ _
+
+/-- Reinterpreting an `F`-costructured arrow `F.obj A ⟶ X` as an arrow over `X`. -/
+@[simps]
+protected def CostructuredArrow.toOver : P.CostructuredArrow ⊤ F X ⥤ P.Over ⊤ X where
+  obj A := Over.mk _ A.hom A.prop
+  map f := Over.homMk (F.map f.left) _
+
+instance [F.Faithful] : (CostructuredArrow.toOver P F X).Faithful := by
+  constructor
+  intro A B f g hfg
+  ext
+  exact F.map_injective congr($(hfg).left)
+
+instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
+  constructor
+  intro A B f
+  refine ⟨CostructuredArrow.homMk (F.preimage f.left) trivial ?_, ?_⟩
+  · simpa using f.w
+  · ext; simp
+
+end CostructuredArrow
+
 instance HasFactorization.over
     {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.HasFactorization W₂] (S : C) :

@@ -8,7 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Linter.Basic
-public import Lean.Message
+public meta import Lean.Elab.AssertExists
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -57,24 +57,6 @@ def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
 /-- Find a name in `ns` that starts with prefix `p`. -/
 def Lean.Name.prefixToName (p : Name) (ns : Array Name) : Option Name :=
   ns.find? p.isPrefixOf
-
-/-- Find the dependency chain, starting at a module that imports `imported`, and ends with the
-current module.
-
-The path only contains the intermediate steps: it excludes `imported` and the current module.
--/
-public
-def Lean.Environment.importPath (env : Environment) (imported : Name) : Array Name := Id.run do
-  let mut result := #[]
-  let modData := env.header.moduleData
-  let modNames := env.header.moduleNames
-  if let some idx := env.getModuleIdx? imported then
-    let mut target := imported
-    for i in [idx.toNat + 1 : modData.size] do
-      if modData[i]!.imports.any (·.module == target) then
-        target := modNames[i]!
-        result := result.push modNames[i]!
-  return result
 
 namespace Mathlib.Linter
 
@@ -205,7 +187,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean, `Batteries.Data.Fin),
   (`Mathlib.Lean, `Batteries.Data.List),
   (`Mathlib.Lean, `Batteries.Lean),
-  (`Mathlib.Lean, `Batteries.Control.ForInStep),
+  (`Mathlib.Lean, `Batteries.Control),
   (`Mathlib.Lean, `Batteries.Tactic.Alias),
   (`Mathlib.Lean, `Batteries.Util.ProofWanted),
 
@@ -616,8 +598,11 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.LinearAlgebra.Matrix, `Mathlib.Topology), -- For e.g. spectra.
   (`Mathlib.LinearAlgebra.QuadraticForm, `Mathlib.Topology), -- For real/complex quadratic forms.
   (`Mathlib.LinearAlgebra.SesquilinearForm, `Mathlib.Topology), -- for links with positive semidefinite matrices
+  (`Mathlib.ModelTheory.Topology, `Mathlib.Topology), -- For e.g. topology on complete types.
+  (`Mathlib.LinearAlgebra.RootSystem.IsValuedIn, `Mathlib.Topology),
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
-  (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold)
+  (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold),
+  (`Mathlib.Computability.AkraBazzi, `Mathlib.MeasureTheory) -- Akra-Bazzi uses calculus
 ]
 
 end DirectoryDependency
@@ -662,7 +647,7 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
     let initImports := (← findImports ("Mathlib" / "Init.lean")).append
-      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
+      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames, `Mathlib.Tactic.Linter.DeprecatedModule]
     let exclude := [
       `Init, `Std, `Lean,
       `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient

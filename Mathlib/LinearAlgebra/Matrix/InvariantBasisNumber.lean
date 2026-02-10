@@ -22,6 +22,10 @@ open Function Matrix LinearMap
 
 variable {R : Type*} [Semiring R]
 
+instance (priority := low) [OrzechProperty R] : IsStablyFiniteRing R :=
+  isStablyFiniteRing_iff_injective_of_surjective.mpr fun _ ↦
+    OrzechProperty.injective_of_surjective_endomorphism
+
 instance (priority := low) [IsStablyFiniteRing R] [Nontrivial R] : RankCondition R where
   le_of_fin_surjective {n m} f hf := by
     by_contra! lt

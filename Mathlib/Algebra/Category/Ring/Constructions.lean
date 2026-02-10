@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -286,9 +286,9 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
     have eq1 : (m ≫ (A.prodFan B).fst) x = (BinaryFan.fst s) x :=
-      congr_hom (h ⟨WalkingPair.left⟩) x
+      ConcreteCategory.congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 : (m ≫ (A.prodFan B).snd) x = (BinaryFan.snd s) x :=
-      congr_hom (h ⟨WalkingPair.right⟩) x
+      ConcreteCategory.congr_hom (h ⟨WalkingPair.right⟩) x
     rw [← eq1, ← eq2]
     simp [prodFan]
 

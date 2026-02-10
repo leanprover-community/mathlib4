@@ -132,9 +132,6 @@ theorem mem_cocycles₁_of_comp_eq_d₀₁
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
-@[deprecated (since := "2025-07-02")]
-alias mem_oneCocycles_of_comp_eq_dZero := mem_cocycles₁_of_comp_eq_d₀₁
-
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z : X₃ᴳ` and `y : X₂` be such that `g(y) = z`.
@@ -157,9 +154,6 @@ theorem mem_cocycles₂_of_comp_eq_d₁₂
   apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
-
-@[deprecated (since := "2025-07-02")]
-alias mem_twoCocycles_of_comp_eq_dOne := mem_cocycles₂_of_comp_eq_d₁₂
 
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.

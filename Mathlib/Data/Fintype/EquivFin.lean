@@ -164,6 +164,7 @@ In this section we prove that `α : Type*` is `Finite` if and only if `Fintype �
 protected theorem Fintype.finite {α : Type*} (_inst : Fintype α) : Finite α :=
   ⟨Fintype.equivFin α⟩
 
+set_option linter.unusedFintypeInType false in
 /-- For efficiency reasons, we want `Finite` instances to have higher
 priority than ones coming from `Fintype` instances. -/
 instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite α :=
