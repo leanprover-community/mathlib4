@@ -665,6 +665,10 @@ theorem exists_nhds_split_inv {s : Set G} (hs : s ∈ 𝓝 (1 : G)) :
 theorem nhds_translation_mul_inv (x : G) : comap (· * x⁻¹) (𝓝 1) = 𝓝 x :=
   ((Homeomorph.mulRight x⁻¹).comap_nhds_eq 1).trans <| show 𝓝 (1 * x⁻¹⁻¹) = 𝓝 x by simp
 
+@[to_additive]
+theorem nhds_translation_inv_mul (x : G) : comap (x⁻¹ * ·) (𝓝 1) = 𝓝 x :=
+  ((Homeomorph.mulLeft x⁻¹).comap_nhds_eq 1).trans <| show 𝓝 (x⁻¹⁻¹ * 1) = 𝓝 x by simp
+
 @[to_additive (attr := simp)]
 theorem map_mul_left_nhds (x y : G) : map (x * ·) (𝓝 y) = 𝓝 (x * y) :=
   (Homeomorph.mulLeft x).map_nhds_eq y

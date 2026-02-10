@@ -30,7 +30,6 @@ section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
   {a a₁ a₂ b c d : E} {r r₁ r₂ : ℝ}
 
-/-- TODO SG: rename and deprecate. -/
 @[to_additive]
 theorem dist_eq_norm_inv_mul (a b : E) : dist a b = ‖a⁻¹ * b‖ :=
   SeminormedGroup.dist_eq _ _
@@ -231,40 +230,40 @@ lemma norm_div_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = �
   rw [div_eq_mul_inv, norm_mul_eq_norm_left]
   rwa [norm_inv']
 
-@[to_additive ball_eq]
-theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x⁻¹ * y‖ < ε } :=
+@[to_additive]
+theorem ball_eq_norm_inv_mul_lt (y : E) (ε : ℝ) : ball y ε = { x | ‖x⁻¹ * y‖ < ε } :=
   Set.ext fun a => by simp [dist_eq_norm_inv_mul]
 
 @[to_additive]
 theorem ball_one_eq (r : ℝ) : ball (1 : E) r = { x | ‖x‖ < r } :=
   Set.ext fun a => by simp
 
-@[to_additive mem_ball_iff_norm]
-theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b⁻¹ * a‖ < r := by
+@[to_additive]
+theorem mem_ball_iff_norm_inv_mul_lt : b ∈ ball a r ↔ ‖b⁻¹ * a‖ < r := by
   rw [mem_ball, dist_eq_norm_inv_mul]
 
-@[to_additive mem_ball_iff_norm']
-theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a⁻¹ * b‖ < r := by
+@[to_additive]
+theorem mem_ball_iff_norm_inv_mul_lt' : b ∈ ball a r ↔ ‖a⁻¹ * b‖ < r := by
   rw [mem_ball', dist_eq_norm_inv_mul]
 
 @[to_additive]
 theorem mem_ball_one_iff : a ∈ ball (1 : E) r ↔ ‖a‖ < r := by rw [mem_ball, dist_one_right]
 
-@[to_additive mem_closedBall_iff_norm]
-theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b⁻¹ * a‖ ≤ r := by
+@[to_additive]
+theorem mem_closedBall_iff_norm_inv_mul_le : b ∈ closedBall a r ↔ ‖b⁻¹ * a‖ ≤ r := by
   rw [mem_closedBall, dist_eq_norm_inv_mul]
 
 @[to_additive]
 theorem mem_closedBall_one_iff : a ∈ closedBall (1 : E) r ↔ ‖a‖ ≤ r := by
   rw [mem_closedBall, dist_one_right]
 
-@[to_additive mem_closedBall_iff_norm']
-theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a⁻¹ * b‖ ≤ r := by
+@[to_additive]
+theorem mem_closedBall_iff_norm_inv_mul_le' : b ∈ closedBall a r ↔ ‖a⁻¹ * b‖ ≤ r := by
   rw [mem_closedBall', dist_eq_norm_inv_mul]
 
 @[to_additive norm_le_of_mem_closedBall]
 theorem norm_le_of_mem_closedBall' (h : b ∈ closedBall a r) : ‖b‖ ≤ ‖a‖ + r :=
-  (norm_le_norm_add_norm_inv_mul b a).trans (by simp [mem_closedBall_iff_norm''.1 h])
+  (norm_le_norm_add_norm_inv_mul b a).trans (by simp [mem_closedBall_iff_norm_inv_mul_le.1 h])
 
 @[to_additive norm_le_norm_add_const_of_dist_le]
 theorem norm_le_norm_add_const_of_dist_le' : dist a b ≤ r → ‖a‖ ≤ ‖b‖ + r :=
@@ -272,7 +271,7 @@ theorem norm_le_norm_add_const_of_dist_le' : dist a b ≤ r → ‖a‖ ≤ ‖b
 
 @[to_additive norm_lt_of_mem_ball]
 theorem norm_lt_of_mem_ball' (h : b ∈ ball a r) : ‖b‖ < ‖a‖ + r :=
-  (norm_le_norm_add_norm_inv_mul b a).trans_lt (by simp [mem_ball_iff_norm''.1 h])
+  (norm_le_norm_add_norm_inv_mul b a).trans_lt (by simp [mem_ball_iff_norm_inv_mul_lt.1 h])
 
 @[to_additive]
 theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w‖ ≤ ‖u / v‖ := by
@@ -337,7 +336,7 @@ theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
 @[to_additive]
 theorem NormedCommGroup.nhds_basis_norm_lt (x : E) :
     (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y⁻¹ * x‖ < ε } := by
-  simp_rw [← ball_eq']
+  simp_rw [← ball_eq_norm_inv_mul_lt]
   exact Metric.nhds_basis_ball
 
 @[to_additive]
@@ -845,6 +844,26 @@ theorem dist_prod_prod_le_of_le (s : Finset ι) {f a : ι → E} {d : ι → ℝ
 theorem dist_prod_prod_le (s : Finset ι) (f a : ι → E) :
     dist (∏ b ∈ s, f b) (∏ b ∈ s, a b) ≤ ∑ b ∈ s, dist (f b) (a b) :=
   dist_prod_prod_le_of_le s fun _ _ => le_rfl
+
+@[to_additive ball_eq]
+theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } := by
+  simp_rw [ball_eq_norm_inv_mul_lt, norm_inv_mul]
+
+@[to_additive mem_ball_iff_norm]
+theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by
+  rw [mem_ball, dist_eq_norm_div]
+
+@[to_additive mem_ball_iff_norm']
+theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by
+  rw [mem_ball', dist_eq_norm_div]
+
+@[to_additive mem_closedBall_iff_norm]
+theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
+  rw [mem_closedBall, dist_eq_norm_div]
+
+@[to_additive mem_closedBall_iff_norm']
+theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
+  rw [mem_closedBall', dist_eq_norm_div]
 
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
