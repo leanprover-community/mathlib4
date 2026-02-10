@@ -108,7 +108,7 @@ theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : T
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
     ContinuousWithinAt (fun x => f x • g x) s b :=
   Filter.Tendsto.smul hf hg
