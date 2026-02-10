@@ -274,7 +274,7 @@ abbrev center.commSemiring' : CommSemiring (center R) :=
 variable {R}
 
 /-- The center of isomorphic (not necessarily associative) semirings are isomorphic. -/
-@[simps!] def centerCongr [NonAssocSemiring S] (e : R ≃+* S) : center R ≃+* center S :=
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
   NonUnitalSubsemiring.centerCongr e
 
 /-- The center of a (not necessarily associative) semiring
@@ -694,7 +694,7 @@ end Subsemiring
 
 namespace RingHom
 
-variable [NonAssocSemiring T] {s : Subsemiring R}
+variable {s : Subsemiring R}
 variable {σR σS : Type*}
 variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
 
