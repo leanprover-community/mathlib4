@@ -3,13 +3,14 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
-import Mathlib.RingTheory.Valuation.ExtendToLocalization
-import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.Topology.Algebra.ValuedField
-import Mathlib.Algebra.Order.Group.TypeTags
+module
 
-#align_import ring_theory.dedekind_domain.adic_valuation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Data.Int.WithZero
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Valuation.ExtendToLocalization
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.Valued.WithVal
 
 /-!
 # Adic valuations on Dedekind domains
@@ -21,296 +22,384 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
 `v.adicCompletion`, and its ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
- - `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
- - `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
- - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
-    to its `v`-adic valuation.
- - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
-    `v.adicCompletion`.
+- `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
+- `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
+  to its `v`-adic valuation.
+- `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
+  `v.adicCompletion`.
+- `IsDedekindDomain.HeightOneSpectrum.adicAbv v` is the `v`-adic absolute value on `K` defined as
+  `b` raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
-- `IsDedekindDomain.HeightOneSpectrum.int_valuation_le_one` : The `v`-adic valuation on `R` is
+- `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
   bounded above by 1.
-- `IsDedekindDomain.HeightOneSpectrum.int_valuation_lt_one_iff_dvd` : The `v`-adic valuation of
+- `IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_dvd` : The `v`-adic valuation of
   `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`.
-- `IsDedekindDomain.HeightOneSpectrum.int_valuation_le_pow_iff_dvd` : The `v`-adic valuation of
-  `r ∈ R` is less than or equal to `Multiplicative.ofAdd (-n)` if and only if `vⁿ` divides the
+- `IsDedekindDomain.HeightOneSpectrum.intValuation_le_pow_iff_dvd` : The `v`-adic valuation of
+  `r ∈ R` is less than or equal to `WithZero.exp (-n)` if and only if `vⁿ` divides the
   ideal `(r)`.
-- `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
-  with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
-- IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
+- `IsDedekindDomain.HeightOneSpectrum.intValuation_exists_uniformizer` : There exists `π ∈ R`
+  with `v`-adic valuation `WithZero.exp (-1)`.
+- `IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer` : There exists `π ∈ K` with
-  `v`-adic valuation `Multiplicative.ofAdd (-1)`.
+  `v`-adic valuation `WithZero.exp (-1)`.
 
 ## Implementation notes
 We are only interested in Dedekind domains with Krull dimension 1.
 
 ## References
 * [G. J. Janusz, *Algebraic Number Fields*][janusz1996]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
 dedekind domain, dedekind ring, adic valuation
 -/
 
+@[expose] public section
 
 noncomputable section
 
-open scoped Classical DiscreteValuation
+open WithZero Multiplicative IsDedekindDomain
 
-open Multiplicative IsDedekindDomain
-
-variable {R : Type*} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type*} [Field K]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K S : Type*} [Field K] [CommSemiring S]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
 /-! ### Adic valuations on the Dedekind domain R -/
 
-
+open scoped Classical in
 /-- The additive `v`-adic valuation of `r ∈ R` is the exponent of `v` in the factorization of the
 ideal `(r)`, if `r` is nonzero, or infinity, if `r = 0`. `intValuationDef` is the corresponding
 multiplicative valuation. -/
-def intValuationDef (r : R) : ℤₘ₀ :=
+def intValuationDef (r : R) : ℤᵐ⁰ :=
   if r = 0 then 0
   else
-    ↑(Multiplicative.ofAdd
-      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
-#align is_dedekind_domain.height_one_spectrum.int_valuation_def IsDedekindDomain.HeightOneSpectrum.intValuationDef
+    exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   if_pos hr
-#align is_dedekind_domain.height_one_spectrum.int_valuation_def_if_pos IsDedekindDomain.HeightOneSpectrum.intValuationDef_if_pos
 
+@[simp]
+theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
+  if_pos rfl
+
+open scoped Classical in
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
-    v.intValuationDef r =
-      Multiplicative.ofAdd
+    v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   if_neg hr
-#align is_dedekind_domain.height_one_spectrum.int_valuation_def_if_neg IsDedekindDomain.HeightOneSpectrum.intValuationDef_if_neg
-
-/-- Nonzero elements have nonzero adic valuation. -/
-theorem int_valuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuationDef x ≠ 0 := by
-  rw [intValuationDef, if_neg hx]
-  exact WithZero.coe_ne_zero
-#align is_dedekind_domain.height_one_spectrum.int_valuation_ne_zero IsDedekindDomain.HeightOneSpectrum.int_valuation_ne_zero
-
-/-- Nonzero divisors have nonzero valuation. -/
-theorem int_valuation_ne_zero' (x : nonZeroDivisors R) : v.intValuationDef x ≠ 0 :=
-  v.int_valuation_ne_zero x (nonZeroDivisors.coe_ne_zero x)
-#align is_dedekind_domain.height_one_spectrum.int_valuation_ne_zero' IsDedekindDomain.HeightOneSpectrum.int_valuation_ne_zero'
-
-/-- Nonzero divisors have valuation greater than zero. -/
-theorem int_valuation_zero_le (x : nonZeroDivisors R) : 0 < v.intValuationDef x := by
-  rw [v.intValuationDef_if_neg (nonZeroDivisors.coe_ne_zero x)]
-  exact WithZero.zero_lt_coe _
-#align is_dedekind_domain.height_one_spectrum.int_valuation_zero_le IsDedekindDomain.HeightOneSpectrum.int_valuation_zero_le
-
-/-- The `v`-adic valuation on `R` is bounded above by 1. -/
-theorem int_valuation_le_one (x : R) : v.intValuationDef x ≤ 1 := by
-  rw [intValuationDef]
-  by_cases hx : x = 0
-  · rw [if_pos hx]; exact WithZero.zero_le 1
-  · rw [if_neg hx, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ofAdd_le,
-      Right.neg_nonpos_iff]
-    exact Int.coe_nat_nonneg _
-#align is_dedekind_domain.height_one_spectrum.int_valuation_le_one IsDedekindDomain.HeightOneSpectrum.int_valuation_le_one
-
-/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
-theorem int_valuation_lt_one_iff_dvd (r : R) :
-    v.intValuationDef r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
-  rw [intValuationDef]
-  split_ifs with hr
-  · simp [hr]
-  · rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_lt_coe, ofAdd_lt, neg_lt_zero, ←
-      Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
-    have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
-      rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
-      exact hr
-    apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
-#align is_dedekind_domain.height_one_spectrum.int_valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.int_valuation_lt_one_iff_dvd
-
-/-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
-`vⁿ` divides the ideal `(r)`. -/
-theorem int_valuation_le_pow_iff_dvd (r : R) (n : ℕ) :
-    v.intValuationDef r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
-  rw [intValuationDef]
-  split_ifs with hr
-  · simp_rw [hr, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
-  · rw [WithZero.coe_le_coe, ofAdd_le, neg_le_neg_iff, Int.ofNat_le, Ideal.dvd_span_singleton, ←
-      Associates.le_singleton_iff,
-      Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr)
-        (by apply v.associates_irreducible)]
-#align is_dedekind_domain.height_one_spectrum.int_valuation_le_pow_iff_dvd IsDedekindDomain.HeightOneSpectrum.int_valuation_le_pow_iff_dvd
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
-theorem IntValuation.map_zero' : v.intValuationDef 0 = 0 :=
-  v.intValuationDef_if_pos (Eq.refl 0)
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_zero' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_zero'
+theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
+  v.intValuationDef_if_pos rfl
 
 /-- The `v`-adic valuation of `1 : R` equals 1. -/
-theorem IntValuation.map_one' : v.intValuationDef 1 = 1 := by
-  rw [v.intValuationDef_if_neg (zero_ne_one.symm : (1 : R) ≠ 0), Ideal.span_singleton_one, ←
-    Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
-    Associates.count_zero (by apply v.associates_irreducible), Int.ofNat_zero, neg_zero, ofAdd_zero,
-    WithZero.coe_one]
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_one' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_one'
+theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by
+  classical
+  rw [v.intValuationDef_if_neg one_ne_zero, Ideal.span_singleton_one, ← Ideal.one_eq_top,
+    Associates.mk_one, Associates.factors_one, Associates.count_zero v.associates_irreducible,
+    Int.ofNat_zero, neg_zero, exp_zero]
 
 /-- The `v`-adic valuation of a product equals the product of the valuations. -/
-theorem IntValuation.map_mul' (x y : R) :
+theorem intValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
+  classical
   simp only [intValuationDef]
   by_cases hx : x = 0
-  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
+  · rw [hx, zero_mul, if_pos rfl, zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
-    · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj, ←
-        ofAdd_add, ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
-        Associates.count_mul (by apply Associates.mk_ne_zero'.mpr hx)
-          (by apply Associates.mk_ne_zero'.mpr hy) (by apply v.associates_irreducible)]
-      rfl
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_mul' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_mul'
+    · rw [hy, mul_zero, if_pos rfl, mul_zero]
+    · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← exp_add,
+        ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
+        Associates.count_mul (Associates.mk_ne_zero'.mpr hx) (Associates.mk_ne_zero'.mpr hy)
+          v.associates_irreducible,
+        Nat.cast_add]
 
-theorem IntValuation.le_max_iff_min_le {a b c : ℕ} :
+-- TODO: unused, this is general over any linear order
+theorem intValuation.le_max_iff_min_le {a b c : ℕ} :
     Multiplicative.ofAdd (-c : ℤ) ≤
-        max (Multiplicative.ofAdd (-a : ℤ)) (Multiplicative.ofAdd (-b : ℤ)) ↔
+      max (Multiplicative.ofAdd (-a : ℤ)) (Multiplicative.ofAdd (-b : ℤ)) ↔
       min a b ≤ c := by
   rw [le_max_iff, ofAdd_le, ofAdd_le, neg_le_neg_iff, neg_le_neg_iff, Int.ofNat_le, Int.ofNat_le,
     ← min_le_iff]
-#align is_dedekind_domain.height_one_spectrum.int_valuation.le_max_iff_min_le IsDedekindDomain.HeightOneSpectrum.IntValuation.le_max_iff_min_le
 
 /-- The `v`-adic valuation of a sum is bounded above by the maximum of the valuations. -/
-theorem IntValuation.map_add_le_max' (x y : R) :
+theorem intValuation.map_add_le_max' (x y : R) :
     v.intValuationDef (x + y) ≤ max (v.intValuationDef x) (v.intValuationDef y) := by
+  classical
   by_cases hx : x = 0
   · rw [hx, zero_add]
-    conv_rhs => rw [intValuationDef, if_pos (Eq.refl _)]
-    rw [max_eq_right (WithZero.zero_le (v.intValuationDef y))]
+    order
   · by_cases hy : y = 0
     · rw [hy, add_zero]
-      conv_rhs => rw [max_comm, intValuationDef, if_pos (Eq.refl _)]
-      rw [max_eq_right (WithZero.zero_le (v.intValuationDef x))]
+      order
     · by_cases hxy : x + y = 0
       · rw [intValuationDef, if_pos hxy]; exact zero_le'
-      · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx,
-          v.intValuationDef_if_neg hy, WithZero.le_max_iff, IntValuation.le_max_iff_min_le]
+      · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
+          le_max_iff]
+        simp only [exp_le_exp, neg_le_neg_iff, Nat.cast_le, ← min_le_iff]
         set nmin :=
           min ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {x})).factors)
             ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {y})).factors)
         have h_dvd_x : x ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff x nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hx) _]
-          exact min_le_left _ _
-          apply v.associates_irreducible
+          · exact min_le_left _ _
+          exact v.associates_irreducible
         have h_dvd_y : y ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff y nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hy) _]
-          exact min_le_right _ _
-          apply v.associates_irreducible
+          · exact min_le_right _ _
+          exact v.associates_irreducible
         have h_dvd_xy : Associates.mk v.asIdeal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) := by
           rw [Associates.le_singleton_iff]
           exact Ideal.add_mem (v.asIdeal ^ nmin) h_dvd_x h_dvd_y
         rw [Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hxy) _] at h_dvd_xy
-        exact h_dvd_xy
-        apply v.associates_irreducible
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_add_le_max' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_add_le_max'
+        · exact h_dvd_xy
+        exact v.associates_irreducible
 
 /-- The `v`-adic valuation on `R`. -/
-def intValuation : Valuation R ℤₘ₀ where
+def intValuation : Valuation R ℤᵐ⁰ where
   toFun := v.intValuationDef
-  map_zero' := IntValuation.map_zero' v
-  map_one' := IntValuation.map_one' v
-  map_mul' := IntValuation.map_mul' v
-  map_add_le_max' := IntValuation.map_add_le_max' v
-#align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
+  map_zero' := intValuation.map_zero' v
+  map_one' := intValuation.map_one' v
+  map_mul' := intValuation.map_mul' v
+  map_add_le_max' := intValuation.map_add_le_max' v
 
-/-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
-theorem int_valuation_exists_uniformizer :
-    ∃ π : R, v.intValuationDef π = Multiplicative.ofAdd (-1 : ℤ) := by
-  have hv : _root_.Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
+theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
+    intValuation v r = intValuationDef v r := rfl
+
+open scoped Classical in
+theorem intValuation_def {r : R} :
+    v.intValuation r = if r = 0 then 0 else
+    exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
+  rfl
+
+open scoped Classical in
+theorem intValuation_if_neg {r : R} (hr : r ≠ 0) :
+    v.intValuation r = exp
+        (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
+  intValuationDef_if_neg _ hr
+
+/-- Nonzero elements have nonzero adic valuation. -/
+theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuation x ≠ 0 := by
+  rw [v.intValuation_if_neg hx]
+  exact WithZero.coe_ne_zero
+
+/-- Nonzero divisors have nonzero valuation. -/
+theorem intValuation_ne_zero' (x : nonZeroDivisors R) : v.intValuation x ≠ 0 :=
+  v.intValuation_ne_zero x (nonZeroDivisors.coe_ne_zero x)
+
+/-- Nonzero divisors have valuation greater than zero. -/
+theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := by
+  rw [v.intValuation_if_neg (nonZeroDivisors.coe_ne_zero x)]
+  exact WithZero.zero_lt_coe _
+
+/-- The `v`-adic valuation on `R` is bounded above by 1. -/
+theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
+  by_cases hx : x = 0
+  · rw [hx, Valuation.map_zero]; exact WithZero.zero_le 1
+  · rw [v.intValuation_if_neg hx, ← exp_zero, exp_le_exp, Right.neg_nonpos_iff]
+    exact Int.natCast_nonneg _
+
+/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
+theorem intValuation_lt_one_iff_dvd (r : R) :
+    v.intValuation r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
+  classical
+  by_cases hr : r = 0
+  · simp [hr]
+  · rw [v.intValuation_if_neg hr, ← exp_zero, exp_lt_exp,
+      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
+    have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
+      rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+      exact hr
+    exact Associates.count_ne_zero_iff_dvd h v.irreducible
+
+/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `r ∈ v`. -/
+theorem intValuation_lt_one_iff_mem (r : R) :
+    v.intValuation r < 1 ↔ r ∈ v.asIdeal := by
+  rw [intValuation_lt_one_iff_dvd, Ideal.dvd_span_singleton]
+
+/-- The `v`-adic valuation of `r ∈ R` is less than `WithZero.exp (-n)` if and only if
+`vⁿ` divides the ideal `(r)`. -/
+theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
+    v.intValuation r ≤ exp (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
+  classical
+  by_cases hr : r = 0
+  · simp_rw [hr, Valuation.map_zero, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
+  · rw [v.intValuation_if_neg hr, exp_le_exp, neg_le_neg_iff, Int.ofNat_le,
+      Ideal.dvd_span_singleton, ← Associates.le_singleton_iff,
+      Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr) v.associates_irreducible]
+
+/-- The `v`-adic valuation of `r ∈ R` is less than `WithZero.exp (-n)` if and only if
+`r ∈ vⁿ`. -/
+theorem intValuation_le_pow_iff_mem (r : R) (n : ℕ) :
+    v.intValuation r ≤ exp (-(n : ℤ)) ↔ r ∈ v.asIdeal ^ n := by
+  rw [intValuation_le_pow_iff_dvd, Ideal.dvd_span_singleton]
+
+/-- There exists `π ∈ R` with `v`-adic valuation `WithZero.exp (-1)`. -/
+theorem intValuation_exists_uniformizer :
+    ∃ π : R, v.intValuation π = WithZero.exp (-1 : ℤ) := by
+  classical
+  have hv : Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
   have hlt : v.asIdeal ^ 2 < v.asIdeal := by
     rw [← Ideal.dvdNotUnit_iff_lt]
-    exact
-      ⟨v.ne_bot, v.asIdeal, (not_congr Ideal.isUnit_iff).mpr (Ideal.IsPrime.ne_top v.isPrime),
-        sq v.asIdeal⟩
-  obtain ⟨π, mem, nmem⟩ := SetLike.exists_of_lt hlt
+    exact ⟨v.ne_bot, v.asIdeal, Ideal.isUnit_iff.not.mpr v.isPrime.ne_top, sq v.asIdeal⟩
+  obtain ⟨π, mem, notMem⟩ := SetLike.exists_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h
-    rw [h] at nmem
-    exact nmem (Submodule.zero_mem (v.asIdeal ^ 2))
+    rw [h] at notMem
+    exact notMem (Submodule.zero_mem (v.asIdeal ^ 2))
   use π
-  rw [intValuationDef, if_neg (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
+  rw [intValuation_if_neg _ (Associates.mk_ne_zero'.mp hπ), exp_inj]
   apply congr_arg
-  rw [neg_inj, ← Int.ofNat_one, Int.coe_nat_inj']
-  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd_iff] at mem nmem
+  rw [← Int.ofNat_one, Int.natCast_inj]
+  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem notMem
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
-  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
-  exact Nat.eq_of_le_of_lt_succ mem nmem
-#align is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer
+  rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
+  exact Nat.eq_of_le_of_lt_succ mem notMem
+
+/-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
+theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
+    v.intValuation r = exp (-1 : ℤ) := by
+  classical
+  rw [v.intValuation_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one]
+  exact v.associates_irreducible
+
+@[simp]
+theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
+    v.intValuation x = 1 ↔ x ∉ v.asIdeal := by
+  refine ⟨fun h ↦ by simp [← (intValuation_lt_one_iff_mem _ _).not, h], fun h ↦ ?_⟩
+  exact le_antisymm (v.intValuation_le_one x) <| by
+    simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
-
+variable (K) in
 /-- The `v`-adic valuation of `x ∈ K` is the valuation of `r` divided by the valuation of `s`,
 where `r` and `s` are chosen so that `x = r/s`. -/
-def valuation (v : HeightOneSpectrum R) : Valuation K ℤₘ₀ :=
+def valuation (v : HeightOneSpectrum R) : Valuation K ℤᵐ⁰ :=
   v.intValuation.extendToLocalization
-    (fun r hr => Set.mem_compl <| v.int_valuation_ne_zero' ⟨r, hr⟩) K
-#align is_dedekind_domain.height_one_spectrum.valuation IsDedekindDomain.HeightOneSpectrum.valuation
+    (fun r hr => Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
 
 theorem valuation_def (x : K) :
-    v.valuation x =
+    v.valuation K x =
       v.intValuation.extendToLocalization
-        (fun r hr => Set.mem_compl (v.int_valuation_ne_zero' ⟨r, hr⟩)) K x :=
+        (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x :=
   rfl
-#align is_dedekind_domain.height_one_spectrum.valuation_def IsDedekindDomain.HeightOneSpectrum.valuation_def
 
 /-- The `v`-adic valuation of `r/s ∈ K` is the valuation of `r` divided by the valuation of `s`. -/
 theorem valuation_of_mk' {r : R} {s : nonZeroDivisors R} :
-    v.valuation (IsLocalization.mk' K r s) = v.intValuation r / v.intValuation s := by
-  erw [valuation_def, (IsLocalization.toLocalizationMap (nonZeroDivisors R) K).lift_mk',
-    div_eq_mul_inv, mul_eq_mul_left_iff]
-  left
-  rw [Units.val_inv_eq_inv_val, inv_inj]
-  rfl
-#align is_dedekind_domain.height_one_spectrum.valuation_of_mk' IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'
+    v.valuation K (IsLocalization.mk' K r s) = v.intValuation r / v.intValuation s := by
+  rw [valuation_def, Valuation.extendToLocalization_mk', div_eq_mul_inv]
 
+open scoped algebraMap in
 /-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
-theorem valuation_of_algebraMap (r : R) : v.valuation (algebraMap R K r) = v.intValuation r := by
+theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := by
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
-#align is_dedekind_domain.height_one_spectrum.valuation_of_algebra_map IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap
 
+open scoped algebraMap in
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
-theorem valuation_le_one (r : R) : v.valuation (algebraMap R K r) ≤ 1 := by
-  rw [valuation_of_algebraMap]; exact v.int_valuation_le_one r
-#align is_dedekind_domain.height_one_spectrum.valuation_le_one IsDedekindDomain.HeightOneSpectrum.valuation_le_one
+theorem valuation_le_one (r : R) : v.valuation K r ≤ 1 := by
+  rw [valuation_of_algebraMap]; exact v.intValuation_le_one r
 
+open scoped algebraMap in
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
 theorem valuation_lt_one_iff_dvd (r : R) :
-    v.valuation (algebraMap R K r) < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
-  rw [valuation_of_algebraMap]; exact v.int_valuation_lt_one_iff_dvd r
-#align is_dedekind_domain.height_one_spectrum.valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.valuation_lt_one_iff_dvd
+    v.valuation K r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
+  rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_dvd r
+
+open scoped algebraMap in
+/-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `r ∈ v`. -/
+theorem valuation_lt_one_iff_mem (r : R) :
+    v.valuation K r < 1 ↔ r ∈ v.asIdeal := by
+  rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_mem r
+
+variable (K) in
+open scoped algebraMap in
+/-- The `v` adic valuation of `a / b ∈ K` is `≤ 1` if and only if `b ∉ v`, provided that `a` and
+`b` are coprime at `v`. -/
+theorem valuation_div_le_one_iff (a : R) {b : R} (hb : b ≠ 0)
+    (h : b ∈ v.asIdeal → a ∉ v.asIdeal) :
+    v.valuation K (a / b) ≤ 1 ↔ b ∉ v.asIdeal := by
+  refine ⟨fun hv ↦ ?_, fun hb ↦ by
+    simp [valuation_of_algebraMap, intValuation_eq_one_iff.2 hb, intValuation_le_one]⟩
+  contrapose! hv
+  have ha₀ : a ≠ 0 := fun _ ↦ by simp_all
+  have hva : v.valuation K a ≠ 0 := (Valuation.ne_zero_iff _).2 (by simp [ha₀])
+  have hvb : v.valuation K b ≠ 0 := (Valuation.ne_zero_iff _).2 (by simp [hb])
+  rw [← WithZero.log_lt_log one_ne_zero ((Valuation.ne_zero_iff _).2 (by simp [ha₀, hb])),
+    map_div₀, WithZero.log_div hva hvb, WithZero.log_one, Int.sub_pos,
+    WithZero.log_lt_log hvb hva]
+  simpa [valuation_of_algebraMap, intValuation_eq_one_iff.2 <| h hv, intValuation_lt_one_iff_mem]
 
 variable (K)
 
-/-- There exists `π ∈ K` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
-theorem valuation_exists_uniformizer : ∃ π : K, v.valuation π = Multiplicative.ofAdd (-1 : ℤ) := by
-  obtain ⟨r, hr⟩ := v.int_valuation_exists_uniformizer
+/-- There exists `π ∈ K` with `v`-adic valuation `WithZero.exp (-1)`. -/
+theorem valuation_exists_uniformizer : ∃ π : K,
+    v.valuation K π = exp (-1 : ℤ) := by
+  obtain ⟨r, hr⟩ := v.intValuation_exists_uniformizer
   use algebraMap R K r
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
   exact hr
-#align is_dedekind_domain.height_one_spectrum.valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer
+
+instance : Valuation.IsNontrivial (v.valuation K) :=
+  have ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+  ⟨π, by aesop⟩
+
+lemma valuation_surjective :
+    Function.Surjective (v.valuation K) := by
+  intro x
+  rcases GroupWithZero.eq_zero_or_unit x with (rfl | ⟨x, rfl⟩)
+  · simp
+  · obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    refine ⟨π ^ (- log x.val), ?_⟩
+    simp [hπ, exp_log]
 
 /-- Uniformizers are nonzero. -/
 theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uniformizer K) ≠ 0 :=
   haveI hu := Classical.choose_spec (v.valuation_exists_uniformizer K)
   (Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hu WithZero.coe_ne_zero)
-#align is_dedekind_domain.height_one_spectrum.valuation_uniformizer_ne_zero IsDedekindDomain.HeightOneSpectrum.valuation_uniformizer_ne_zero
+
+theorem mem_integers_of_valuation_le_one (x : K)
+    (h : ∀ v : HeightOneSpectrum R, v.valuation K x ≤ 1) : x ∈ (algebraMap R K).range := by
+  obtain ⟨⟨n, d, hd⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors R) x
+  obtain rfl : x = IsLocalization.mk' K n ⟨d, hd⟩ := IsLocalization.eq_mk'_iff_mul_eq.mpr hx
+  obtain rfl | hn0 := eq_or_ne n 0
+  · simp
+  have hd0 := nonZeroDivisors.ne_zero hd
+  suffices Ideal.span {d} ∣ (Ideal.span {n} : Ideal R) by
+    obtain ⟨z, rfl⟩ := Ideal.span_singleton_le_span_singleton.1 (Ideal.le_of_dvd this)
+    use z
+    rw [map_mul, mul_comm, mul_eq_mul_left_iff] at hx
+    exact (hx.resolve_right fun h => by simp [hd0] at h).symm
+  classical
+  have ine {r : R} : r ≠ 0 → Ideal.span {r} ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp
+  rw [← Associates.mk_le_mk_iff_dvd, ← Associates.factors_le, Associates.factors_mk _ (ine hn0),
+    Associates.factors_mk _ (ine hd0), WithTop.coe_le_coe, Multiset.le_iff_count]
+  rintro ⟨v, hv⟩
+  obtain ⟨v, rfl⟩ := Associates.mk_surjective v
+  have hv' := hv
+  rw [Associates.irreducible_mk, irreducible_iff_prime] at hv
+  specialize h ⟨v, Ideal.isPrime_of_prime hv, hv.ne_zero⟩
+  simp_rw [valuation_of_mk', intValuation_if_neg _ hn0, intValuation_if_neg _ hd0, ← exp_sub,
+    ← exp_zero, exp_le_exp, Associates.factors_mk _ (ine hn0),
+    Associates.factors_mk _ (ine hd0), Associates.count_some hv'] at h
+  simpa using h
+
+variable {K}
+
+theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
+    (hpq : (valuation K p).IsEquiv (valuation K q)) : p = q := by
+  simp_all [Valuation.isEquiv_iff_val_lt_one, HeightOneSpectrum.ext_iff, Ideal.ext_iff,
+    ← valuation_lt_one_iff_mem (K := K)]
 
 /-! ### Completions with respect to adic valuations
 
@@ -319,56 +408,32 @@ the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCom
 ring of integers, denoted `v.adicCompletionIntegers`. -/
 
 
-variable {K}
-
 /-- `K` as a valued field with the `v`-adic valuation. -/
-def adicValued : Valued K ℤₘ₀ :=
-  Valued.mk' v.valuation
-#align is_dedekind_domain.height_one_spectrum.adic_valued IsDedekindDomain.HeightOneSpectrum.adicValued
+def adicValued : Valued K ℤᵐ⁰ :=
+  Valued.mk' (v.valuation K)
 
-theorem adicValued_apply {x : K} : (v.adicValued.v : _) x = v.valuation x :=
+theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
-#align is_dedekind_domain.height_one_spectrum.adic_valued_apply IsDedekindDomain.HeightOneSpectrum.adicValued_apply
+
+@[simp]
+theorem adicValued_apply' (x : WithVal (v.valuation K)) : v.adicValued.v x = v.valuation K x :=
+  rfl
 
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
-def adicCompletion :=
-  @UniformSpace.Completion K v.adicValued.toUniformSpace
-#align is_dedekind_domain.height_one_spectrum.adic_completion IsDedekindDomain.HeightOneSpectrum.adicCompletion
+abbrev adicCompletion := (v.valuation K).Completion
 
-instance : Field (v.adicCompletion K) :=
-  @UniformSpace.Completion.instField K _ v.adicValued.toUniformSpace _ _
-    v.adicValued.toUniformAddGroup
-
-instance : Inhabited (v.adicCompletion K) :=
-  ⟨0⟩
-
-instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ :=
-  @Valued.valuedCompletion _ _ _ _ v.adicValued
-#align is_dedekind_domain.height_one_spectrum.valued_adic_completion IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion
-
-theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
-    Valued.v x = @Valued.extension K _ _ _ (adicValued v) x :=
+theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
-#align is_dedekind_domain.height_one_spectrum.valued_adic_completion_def IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_def
 
-instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=
-  @UniformSpace.Completion.completeSpace K v.adicValued.toUniformSpace
-#align is_dedekind_domain.height_one_spectrum.adic_completion_complete_space IsDedekindDomain.HeightOneSpectrum.adicCompletion_completeSpace
-
--- Porting note: replaced by `Coe`
--- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
---   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
-#noalign is_dedekind_domain.height_one_spectrum.adic_completion.has_lift_t
-
-instance AdicCompletion.instCoe : Coe K (v.adicCompletion K) :=
-  (inferInstance : Coe K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
+lemma valuedAdicCompletion_surjective :
+    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
+  Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
-#align is_dedekind_domain.height_one_spectrum.adic_completion_integers IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers
 
 instance : Inhabited (adicCompletionIntegers K v) :=
   ⟨0⟩
@@ -376,117 +441,274 @@ instance : Inhabited (adicCompletionIntegers K v) :=
 variable (R)
 
 theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
-    x ∈ v.adicCompletionIntegers K ↔ (Valued.v x : ℤₘ₀) ≤ 1 :=
+    x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
   Iff.rfl
-#align is_dedekind_domain.height_one_spectrum.mem_adic_completion_integers IsDedekindDomain.HeightOneSpectrum.mem_adicCompletionIntegers
+
+theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
+    x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
+  rw [not_congr <| mem_adicCompletionIntegers R K v]
+  exact not_le
 
 section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
-    @UniformContinuousConstSMul R K v.adicValued.toUniformSpace _ :=
-  @uniformContinuousConstSMul_of_continuousConstSMul R K _ _ _ v.adicValued.toUniformSpace _ _
-#align is_dedekind_domain.height_one_spectrum.adic_valued.has_uniform_continuous_const_smul' IsDedekindDomain.HeightOneSpectrum.adicValued.has_uniform_continuous_const_smul'
+    UniformContinuousConstSMul R (WithVal <| v.valuation K) :=
+  uniformContinuousConstSMul_of_continuousConstSMul R (WithVal <| v.valuation K)
+
+section Algebra
+variable [Algebra S K]
 
 instance adicValued.uniformContinuousConstSMul :
-    @UniformContinuousConstSMul K K v.adicValued.toUniformSpace _ :=
-  @Ring.uniformContinuousConstSMul K _ v.adicValued.toUniformSpace _ _
-#align is_dedekind_domain.height_one_spectrum.adic_valued.has_uniform_continuous_const_smul IsDedekindDomain.HeightOneSpectrum.adicValued.uniformContinuousConstSMul
+    UniformContinuousConstSMul S (WithVal <| v.valuation K) := by
+  refine ⟨fun l ↦ ?_⟩
+  simp_rw [Algebra.smul_def]
+  exact (Ring.uniformContinuousConstSMul (WithVal <| v.valuation K)).uniformContinuous_const_smul _
 
-instance AdicCompletion.algebra' : Algebra R (v.adicCompletion K) :=
-  @UniformSpace.Completion.algebra K _ v.adicValued.toUniformSpace _ _ R _ _
-    (adicValued.has_uniform_continuous_const_smul' R K v)
-#align is_dedekind_domain.height_one_spectrum.adic_completion.algebra' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.algebra'
+open UniformSpace in
+instance : Algebra S (v.adicCompletion K) where
+  toSMul := Completion.instSMul _ _
+  algebraMap := Completion.coeRingHom.comp (algebraMap _ _)
+  commutes' r x := by
+    induction x using Completion.induction_on with
+    | hp =>
+      exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
+    | ih x =>
+      change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
+        = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
+      norm_cast
+      rw [Algebra.commutes]
+  smul_def' r x := by
+    induction x using Completion.induction_on with
+    | hp =>
+      exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
+    | ih x =>
+      change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
+      norm_cast
+      rw [← Algebra.smul_def]
 
-@[simp]
-theorem coe_smul_adicCompletion (r : R) (x : K) :
+theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
-  @UniformSpace.Completion.coe_smul R K v.adicValued.toUniformSpace _ _ r x
-#align is_dedekind_domain.height_one_spectrum.coe_smul_adic_completion IsDedekindDomain.HeightOneSpectrum.coe_smul_adicCompletion
+  UniformSpace.Completion.coe_smul r x
 
-instance : Algebra K (v.adicCompletion K) :=
-  @UniformSpace.Completion.algebra' K _ v.adicValued.toUniformSpace _ _
-
-theorem algebraMap_adicCompletion' :
-    ⇑(algebraMap R <| v.adicCompletion K) = (↑) ∘ algebraMap R K :=
+theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
-#align is_dedekind_domain.height_one_spectrum.algebra_map_adic_completion' IsDedekindDomain.HeightOneSpectrum.algebraMap_adicCompletion'
 
-theorem algebraMap_adicCompletion :
-    ⇑(algebraMap K <| v.adicCompletion K) = ((↑) : K → adicCompletion K v) :=
-  rfl
-#align is_dedekind_domain.height_one_spectrum.algebra_map_adic_completion IsDedekindDomain.HeightOneSpectrum.algebraMap_adicCompletion
+end Algebra
 
-instance : IsScalarTower R K (v.adicCompletion K) :=
-  @UniformSpace.Completion.instIsScalarTower R K K v.adicValued.toUniformSpace _ _ _
-    (adicValued.has_uniform_continuous_const_smul' R K v) _ _
+theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
+  rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
+  exact v.valuation_le_one _
 
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
-      have h :
-        (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
-      refine' ValuationSubring.mul_mem _ _ _ _ x.2
-      --Porting note: added instance
-      letI : Valued K ℤₘ₀ := adicValued v
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
-      exact v.valuation_le_one _⟩
-  toFun r :=
-    ⟨(algebraMap R K r : adicCompletion K v), by
-      -- Porting note: added instance
-      letI : Valued K ℤₘ₀ := adicValued v
-      --Porting note: rest of proof was `simpa only
-      --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
-      --   v.valuation_le_one _
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
-      exact v.valuation_le_one _⟩
-  map_one' := by simp only [map_one]; rfl
-  map_mul' x y := by
-    ext
-    --Porting note: added instance
-    letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
-  map_zero' := by simp only [map_zero]; rfl
-  map_add' x y := by
-    ext
-    --Porting note: added instance
-    letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
+      refine ValuationSubring.mul_mem _ _ _ ?_ x.2
+      rw [algebraMap_adicCompletion]
+      exact coe_algebraMap_mem _ _ v r⟩
+  algebraMap :=
+  { toFun r :=
+      ⟨(algebraMap R K r : adicCompletion K v), coe_algebraMap_mem _ _ v r⟩
+    map_one' := by ext; simp
+    map_mul' x y := by
+      ext
+      simp only [map_mul, UniformSpace.Completion.coe_mul, MulMemClass.mk_mul_mk]
+    map_zero' := by ext; simp
+    map_add' x y := by
+      ext
+      simp only [map_add, UniformSpace.Completion.coe_add, AddMemClass.mk_add_mk] }
   commutes' r x := by
-    -- Porting note: added `dsimp` line
-    dsimp
     rw [mul_comm]
   smul_def' r x := by
     ext
-    --Porting note: added `dsimp`
-    dsimp
-    --Porting note: added instance
-    letI : Valued K ℤₘ₀ := adicValued v
-    simp only [Subring.coe_mul, Algebra.smul_def]
+    simp only [Algebra.smul_def]
     rfl
+
+@[simp]
+lemma algebraMap_adicCompletionIntegers_apply (r : R) :
+    algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
+  rfl
+
+instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
+  rw [faithfulSMul_iff_algebraMap_injective]
+  intro x y
+  simp [Subtype.ext_iff, (FaithfulSMul.algebraMap_injective R K).eq_iff]
+
+variable {R K} in
+open scoped algebraMap in -- to make the coercions from `R` fire
+/-- The valuation on the completion agrees with the global valuation on elements of the
+integer ring. -/
+theorem valuedAdicCompletion_eq_valuation (r : R) :
+    Valued.v (r : v.adicCompletion K) = v.valuation K r := by
+  convert Valued.valuedCompletion_apply (r : K)
+
+variable {R K} in
+/-- The valuation on the completion agrees with the global valuation on elements of the field. -/
+theorem valuedAdicCompletion_eq_valuation' (k : K) :
+    Valued.v (k : v.adicCompletion K) = v.valuation K k := by
+  convert Valued.valuedCompletion_apply k
+
+variable {R K} in
+open scoped algebraMap in -- to make the coercion from `R` fire
+/-- A global integer is in the local integers. -/
+lemma coe_mem_adicCompletionIntegers (r : R) :
+    (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
+  rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation]
+  exact valuation_le_one v r
 
 @[simp]
 theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K) :
     (↑(r • x) : v.adicCompletion K) = r • (x : v.adicCompletion K) :=
   rfl
-#align is_dedekind_domain.height_one_spectrum.coe_smul_adic_completion_integers IsDedekindDomain.HeightOneSpectrum.coe_smul_adicCompletionIntegers
 
-instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
-    rw [Algebra.smul_def, mul_eq_zero] at hcx
-    refine' hcx.imp_left fun hc => _
-    letI : UniformSpace K := v.adicValued.toUniformSpace
-    rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
-    exact
-      IsFractionRing.injective R K (UniformSpace.Completion.coe_injective K (Subtype.ext_iff.mp hc))
+instance : Module.IsTorsionFree R (v.adicCompletionIntegers K) := .of_smul_eq_zero <| by simp
 
-instance AdicCompletion.instIsScalarTower' :
+instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
   smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc
-#align is_dedekind_domain.height_one_spectrum.adic_completion.is_scalar_tower' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.instIsScalarTower'
 
 end AlgebraInstances
 
+variable {R}
+
+open nonZeroDivisors algebraMap in
+variable {K} in
+lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOneSpectrum R)
+    (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
+  by_cases ha : a ∈ v.adicCompletionIntegers K
+  · use 1
+    simp [ha]
+  · rw [notMem_adicCompletionIntegers] at ha
+    -- let ϖ be a uniformiser
+    obtain ⟨ϖ, hϖ⟩ := intValuation_exists_uniformizer v
+    have : Valued.v (algebraMap R (v.adicCompletion K) ϖ) = (exp (1 : ℤ))⁻¹ := by
+      simp [valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, exp]
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp [exp_ne_zero.symm] at hϖ
+    refine ⟨ϖ^(log (Valued.v a)).natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
+    -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
+    simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
+      Int.natCast_natAbs]
+    exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) (zero_le _)
+
+theorem adicCompletionIntegers.integers :
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).Integers ↥(adicCompletionIntegers K v) where
+  hom_inj := FaithfulSMul.algebraMap_injective _ _
+  map_le_one := by simp [mem_adicCompletionIntegers]
+  exists_of_le_one := by simp [mem_adicCompletionIntegers]
+
+variable {K v}
+
+theorem adicCompletionIntegers.isUnit_iff_valued_eq_one {a : v.adicCompletionIntegers K} :
+    IsUnit a ↔ Valued.v a.1 = 1 := by
+  simp [Valuation.Integers.isUnit_iff_valuation_eq_one (integers K v)]
+
+theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletion K)ˣ} :
+    a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.1 = 1 :=
+  ⟨fun h ↦ isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).2,
+    fun h ↦ ⟨h.le, by simp [mem_adicCompletionIntegers, inv_le_one_iff₀, h.symm.le]⟩⟩
+
+section AbsoluteValue
+
+open WithZeroMulInt NNReal
+
+variable (v) {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
+
+/-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def intAdicAbvDef (r : R) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.intValuation r)
+
+lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := by
+  intro x y
+  simp only [intAdicAbvDef]
+  have h_mono := (toNNReal_strictMono hb).monotone
+  rw [← h_mono.map_max]
+  exact h_mono <| v.intValuation.map_add x y
+
+/-- The `v`-adic absolute value on `R` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def intAdicAbv : AbsoluteValue R ℝ where
+  toFun r := v.intAdicAbvDef hb r
+  map_mul' _ _ := by simp [intAdicAbvDef]
+  nonneg' _ := zero_le_coe
+  eq_zero' _ := by simp [intAdicAbvDef, intValuation_def]
+  add_le' _ _ := (isNonarchimedean_intAdicAbvDef v hb).add_le fun _ ↦ bot_le
+
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_intAdicAbv : IsNonarchimedean (v.intAdicAbv hb) :=
+  isNonarchimedean_intAdicAbvDef v hb
+
+theorem intAdicAbv_le_one : v.intAdicAbv hb r ≤ 1 := by
+  simpa [intAdicAbv, intAdicAbvDef, toNNReal_le_one_iff hb] using intValuation_le_one v r
+
+theorem intAdicAbv_lt_one_iff : v.intAdicAbv hb r < 1 ↔ r ∈ v.asIdeal := by
+  simpa [intAdicAbv, intAdicAbvDef, toNNReal_lt_one_iff hb] using intValuation_lt_one_iff_mem v r
+
+theorem intAdicAbv_eq_one_iff : v.intAdicAbv hb r = 1 ↔ r ∉ v.asIdeal := by
+  contrapose
+  rw [← v.intAdicAbv_lt_one_iff hb, ne_iff_lt_iff_le]
+  exact intAdicAbv_le_one v hb r
+
+/-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbvDef (x : K) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+
+lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb) := by
+  intro x y
+  simp only [adicAbvDef]
+  have h_mono := (toNNReal_strictMono hb).monotone
+  rw [← h_mono.map_max]
+  exact h_mono ((v.valuation _).map_add x y)
+
+/-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbv : AbsoluteValue K ℝ where
+  toFun x := v.adicAbvDef hb x
+  map_mul' _ _ := by simp [adicAbvDef]
+  nonneg' _ := zero_le_coe
+  eq_zero' _ := by simp [adicAbvDef]
+  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
+
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_adicAbv : IsNonarchimedean (α := K) (v.adicAbv hb) :=
+  isNonarchimedean_adicAbvDef v hb
+
+/-- The `v`-adic absolute value of `r/s ∈ K` is the absolute value of `r` divided by the absolute
+value of `s`. -/
+theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
+    v.adicAbv hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
+  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
+
+/-- The `v`-adic absolute value on `K` extends the `v`-adic absolute value on `R`. -/
+theorem adicAbv_of_algebraMap (r : R) : v.adicAbv hb (algebraMap R K r) = v.intAdicAbv hb r := by
+  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
+
+theorem adicAbv_coe_le_one : v.adicAbv hb (algebraMap R K r) ≤ 1 := by
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_le_one v hb r
+
+theorem adicAbv_coe_lt_one_iff : v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_lt_one_iff v hb r
+
+theorem adicAbv_coe_eq_one_iff : v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_eq_one_iff v hb r
+
+end AbsoluteValue
+
 end IsDedekindDomain.HeightOneSpectrum
+
+namespace Rat
+
+open IsDedekindDomain.HeightOneSpectrum
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+
+theorem valuation_le_one_iff_den {𝔭 : HeightOneSpectrum R} {x : ℚ} :
+    𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
+  have : CharZero R := ⟨.of_comp (f := algebraMap R ℚ) (by simpa using Nat.cast_injective)⟩
+  have : (x.den : R) ≠ 0 := by simp
+  simp [x.num_div_den, ← 𝔭.valuation_div_le_one_iff ℚ x.num this
+    (Ideal.IsPrime.notMem_of_isCoprime_of_mem (mod_cast x.isCoprime_num_den.symm.intCast))]
+
+end Rat

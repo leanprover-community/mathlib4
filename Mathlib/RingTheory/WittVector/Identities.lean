@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Frobenius
-import Mathlib.RingTheory.WittVector.Verschiebung
-import Mathlib.RingTheory.WittVector.MulP
+module
 
-#align_import ring_theory.witt_vector.identities from "leanprover-community/mathlib"@"0798037604b2d91748f9b43925fb7570a5f3256c"
+public import Mathlib.RingTheory.WittVector.Frobenius
+public import Mathlib.RingTheory.WittVector.Verschiebung
+public import Mathlib.RingTheory.WittVector.MulP
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -27,6 +27,8 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+public section
+
 
 namespace WittVector
 
@@ -37,7 +39,7 @@ local notation "𝕎" => WittVector p
 
 noncomputable section
 
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
   have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
@@ -45,63 +47,54 @@ theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p
   have : IsPoly p fun {R} [CommRing R] x ↦ x * p := mulN_isPoly p p
   ghost_calc x
   ghost_simp [mul_comm]
-#align witt_vector.frobenius_verschiebung WittVector.frobenius_verschiebung
 
 /-- Verschiebung is the same as multiplication by `p` on the ring of Witt vectors of `ZMod p`. -/
 theorem verschiebung_zmod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
   rw [← frobenius_verschiebung, frobenius_zmodp]
-#align witt_vector.verschiebung_zmod WittVector.verschiebung_zmod
 
 variable (p R)
 
 theorem coeff_p_pow [CharP R p] (i : ℕ) : ((p : 𝕎 R) ^ i).coeff i = 1 := by
-  induction' i with i h
-  · simp only [Nat.zero_eq, one_coeff_zero, Ne.def, pow_zero]
-  · rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_charP,
+  induction i with
+  | zero => simp only [one_coeff_zero, pow_zero]
+  | succ i h =>
+    rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP,
       verschiebung_coeff_succ, h, one_pow]
-#align witt_vector.coeff_p_pow WittVector.coeff_p_pow
 
 theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : ((p : 𝕎 R) ^ i).coeff j = 0 := by
-  induction' i with i hi generalizing j
-  · rw [Nat.zero_eq, pow_zero, one_coeff_eq_of_pos]
+  induction i generalizing j with
+  | zero =>
+    rw [pow_zero, one_coeff_eq_of_pos]
     exact Nat.pos_of_ne_zero hj
-  · rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_charP]
+  | succ i hi =>
+    rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP]
     cases j
-    · rw [verschiebung_coeff_zero, zero_pow]
-      exact Nat.Prime.pos hp.out
-    · rw [verschiebung_coeff_succ, hi, zero_pow]
-      · exact Nat.Prime.pos hp.out
-      · exact ne_of_apply_ne (fun j : ℕ => j.succ) hj
-#align witt_vector.coeff_p_pow_eq_zero WittVector.coeff_p_pow_eq_zero
+    · rw [verschiebung_coeff_zero, zero_pow hp.out.ne_zero]
+    · rw [verschiebung_coeff_succ, hi (ne_of_apply_ne _ hj), zero_pow hp.out.ne_zero]
 
 theorem coeff_p [CharP R p] (i : ℕ) : (p : 𝕎 R).coeff i = if i = 1 then 1 else 0 := by
   split_ifs with hi
   · simpa only [hi, pow_one] using coeff_p_pow p R 1
   · simpa only [pow_one] using coeff_p_pow_eq_zero p R hi
-#align witt_vector.coeff_p WittVector.coeff_p
 
 @[simp]
 theorem coeff_p_zero [CharP R p] : (p : 𝕎 R).coeff 0 = 0 := by
   rw [coeff_p, if_neg]
   exact zero_ne_one
-#align witt_vector.coeff_p_zero WittVector.coeff_p_zero
 
 @[simp]
 theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, if_pos rfl]
-#align witt_vector.coeff_p_one WittVector.coeff_p_one
 
 theorem p_nonzero [Nontrivial R] [CharP R p] : (p : 𝕎 R) ≠ 0 := by
   intro h
   simpa only [h, zero_coeff, zero_ne_one] using coeff_p_one p R
-#align witt_vector.p_nonzero WittVector.p_nonzero
 
 theorem FractionRing.p_nonzero [Nontrivial R] [CharP R p] : (p : FractionRing (𝕎 R)) ≠ 0 := by
   simpa using (IsFractionRing.injective (𝕎 R) (FractionRing (𝕎 R))).ne (WittVector.p_nonzero _ _)
-#align witt_vector.fraction_ring.p_nonzero WittVector.FractionRing.p_nonzero
 
 variable {p R}
 
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The “projection formula” for Frobenius and Verschiebung. -/
 theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
     verschiebung (x * frobenius y) = verschiebung x * y := by
@@ -112,28 +105,44 @@ theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
     IsPoly₂.comp (hh := mulIsPoly₂) (hf := verschiebung_isPoly) (hg := idIsPolyI' p)
   ghost_calc x y
   rintro ⟨⟩ <;> ghost_simp [mul_assoc]
-#align witt_vector.verschiebung_mul_frobenius WittVector.verschiebung_mul_frobenius
 
 theorem mul_charP_coeff_zero [CharP R p] (x : 𝕎 R) : (x * p).coeff 0 = 0 := by
-  rw [← frobenius_verschiebung, coeff_frobenius_charP, verschiebung_coeff_zero, zero_pow]
-  exact Nat.Prime.pos hp.out
-#align witt_vector.mul_char_p_coeff_zero WittVector.mul_charP_coeff_zero
+  rw [← frobenius_verschiebung, coeff_frobenius_charP, verschiebung_coeff_zero,
+    zero_pow hp.out.ne_zero]
 
 theorem mul_charP_coeff_succ [CharP R p] (x : 𝕎 R) (i : ℕ) :
     (x * p).coeff (i + 1) = x.coeff i ^ p := by
   rw [← frobenius_verschiebung, coeff_frobenius_charP, verschiebung_coeff_succ]
-#align witt_vector.mul_char_p_coeff_succ WittVector.mul_charP_coeff_succ
+
+theorem mul_pow_charP_coeff_zero [CharP R p] (x : 𝕎 R) {m n : ℕ} (h : m < n) :
+    (x * p ^ n).coeff m = 0 := by
+  induction n generalizing m with
+  | zero => contradiction
+  | succ n ih =>
+    rw [pow_succ, ← mul_assoc]
+    cases m with
+    | zero => exact mul_charP_coeff_zero _
+    | succ m' =>
+      rw [mul_charP_coeff_succ, ih, zero_pow hp.out.ne_zero]
+      simpa using h
+
+theorem mul_pow_charP_coeff_succ [CharP R p] (x : 𝕎 R) {m n : ℕ} :
+    (x * p ^ n).coeff (m + n) = x.coeff m ^ (p ^ n) := by
+  induction n generalizing m with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, ← mul_assoc, ← add_assoc, mul_charP_coeff_succ, pow_succ, pow_mul]
+    congr
+    exact ih
 
 theorem verschiebung_frobenius [CharP R p] (x : 𝕎 R) : verschiebung (frobenius x) = x * p := by
   ext ⟨i⟩
   · rw [mul_charP_coeff_zero, verschiebung_coeff_zero]
   · rw [mul_charP_coeff_succ, verschiebung_coeff_succ, coeff_frobenius_charP]
-#align witt_vector.verschiebung_frobenius WittVector.verschiebung_frobenius
 
 theorem verschiebung_frobenius_comm [CharP R p] :
     Function.Commute (verschiebung : 𝕎 R → 𝕎 R) frobenius := fun x => by
   rw [verschiebung_frobenius, frobenius_verschiebung]
-#align witt_vector.verschiebung_frobenius_comm WittVector.verschiebung_frobenius_comm
 
 /-!
 ## Iteration lemmas
@@ -142,20 +151,31 @@ theorem verschiebung_frobenius_comm [CharP R p] :
 
 open Function
 
+theorem iterate_verschiebung_coeff_eq_zero (x : 𝕎 R) {n : ℕ} {m : ℕ} (h : m < n) :
+    (verschiebung^[n] x).coeff m = 0 := by
+  induction n generalizing m with
+  | zero => contradiction
+  | succ n ih =>
+    rw [iterate_succ_apply']
+    cases m with
+    | zero => exact verschiebung_coeff_zero _
+    | succ m' =>
+      rw [verschiebung_coeff_succ, ih]
+      simpa using h
+
 theorem iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
     (verschiebung^[n] x).coeff (k + n) = x.coeff k := by
-  induction' n with k ih
-  · simp
-  · rw [iterate_succ_apply', Nat.add_succ, verschiebung_coeff_succ]
-    exact ih
-#align witt_vector.iterate_verschiebung_coeff WittVector.iterate_verschiebung_coeff
+  induction n with
+  | zero => simp
+  | succ k ih => rw [iterate_succ_apply', Nat.add_succ, verschiebung_coeff_succ]; exact ih
 
 theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
     verschiebung^[i] x * y = verschiebung^[i] (x * frobenius^[i] y) := by
-  induction' i with i ih generalizing y
-  · simp
-  · rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
-#align witt_vector.iterate_verschiebung_mul_left WittVector.iterate_verschiebung_mul_left
+  induction i generalizing y with
+  | zero => simp
+  | succ i ih =>
+    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply',
+      iterate_succ_apply]
 
 section CharP
 
@@ -177,16 +197,12 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
   · rw [iterate_verschiebung_mul_left]
   · rw [iterate_add_apply]
   · rw [mul_comm]
-#align witt_vector.iterate_verschiebung_mul WittVector.iterate_verschiebung_mul
 
--- Porting note: `ring_nf` doesn't handle powers yet; needed to add `Nat.pow_succ` rewrite
 theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
     (frobenius^[i] x).coeff k = x.coeff k ^ p ^ i := by
-  induction' i with i ih
-  · simp
-  · rw [iterate_succ_apply', coeff_frobenius_charP, ih, Nat.pow_succ]
-    ring_nf
-#align witt_vector.iterate_frobenius_coeff WittVector.iterate_frobenius_coeff
+  induction i with
+  | zero => simp
+  | succ i ih => rw [iterate_succ_apply', coeff_frobenius_charP, ih]; ring_nf
 
 /-- This is a slightly specialized form of [Hazewinkel, *Witt Vectors*][Haze09] 6.2 equation 5. -/
 theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
@@ -202,7 +218,15 @@ theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
     rw [zero_add]
   · apply mul_coeff_zero
   · simp only [iterate_frobenius_coeff]
-#align witt_vector.iterate_verschiebung_mul_coeff WittVector.iterate_verschiebung_mul_coeff
+
+theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
+    verschiebung^[n] (frobenius^[n] x) = x * (p ^ n) := by
+  rw [← comp_apply (f := verschiebung^[n]),
+      ← Function.Commute.comp_iterate verschiebung_frobenius_comm]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
 
 end CharP
 

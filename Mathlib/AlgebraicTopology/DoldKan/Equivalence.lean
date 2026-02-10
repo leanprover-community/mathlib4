@@ -3,10 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
-import Mathlib.AlgebraicTopology.DoldKan.Normalized
+module
 
-#align_import algebraic_topology.dold_kan.equivalence from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
+public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
+public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
 
@@ -64,12 +64,12 @@ we define the functor in the other direction
 extension of a functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C` which is
 defined similarly as in [*Simplicial Homotopy Theory* by Goerss-Jardine][goerss-jardine-2009].
 In `Degeneracies.lean`, we show that `PInfty` vanishes on the image of degeneracy
-operators, which is one of the key properties that makes it possible to contruct
+operators, which is one of the key properties that makes it possible to construct
 the isomorphism `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 The rest of the proof follows the strategy in the [original paper by Dold][dold1958]. We show
 that the functor `N₂` reflects isomorphisms in `NReflectsIso.lean`: this relies on a
-decomposition of the identity of `X _[n]` using `PInfty.f n` and degeneracies obtained in
+decomposition of the identity of `X _⦋n⦌` using `PInfty.f n` and degeneracies obtained in
 `Decomposition.lean`. Then, in `NCompGamma.lean`, we construct a natural transformation
 `Γ₂N₂.trans : N₂ ⋙ Γ₂ ⟶ 𝟭 (Karoubi (SimplicialObject C))`. It is shown that it is an
 isomorphism using the fact that `N₂` reflects isomorphisms, and because we can show
@@ -90,7 +90,7 @@ obtained by composing the previous equivalence with the equivalences
 `SimplicialObject C ≌ Karoubi (SimplicialObject C)` and
 `Karoubi (ChainComplex C ℕ) ≌ ChainComplex C ℕ`. Instead, we polish this construction
 in `Compatibility.lean` by ensuring good definitional properties of the equivalence (e.g.
-the inverse functor is definitionallly equal to
+the inverse functor is definitionally equal to
 `Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject C`) and
 showing compatibilities for the unit and counit isomorphisms.
 
@@ -121,12 +121,14 @@ what is the best way to do this. The exact design may be decided when it is need
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open CategoryTheory Category Idempotents
 
-variable {A : Type*} [Category A] [Abelian A]
+variable {A : Type*} [Category* A] [Abelian A]
 
 namespace CategoryTheory
 
@@ -139,13 +141,10 @@ open AlgebraicTopology.DoldKan
 /-- The functor `N` for the equivalence is `normalizedMooreComplex A` -/
 def N : SimplicialObject A ⥤ ChainComplex A ℕ :=
   AlgebraicTopology.normalizedMooreComplex A
-set_option linter.uppercaseLean3 false in
-#align category_theory.abelian.dold_kan.N CategoryTheory.Abelian.DoldKan.N
 
 /-- The functor `Γ` for the equivalence is the same as in the pseudoabelian case. -/
 def Γ : ChainComplex A ℕ ⥤ SimplicialObject A :=
   Idempotents.DoldKan.Γ
-#align category_theory.abelian.dold_kan.Γ CategoryTheory.Abelian.DoldKan.Γ
 
 /-- The comparison isomorphism between `normalizedMooreComplex A` and
 the functor `Idempotents.DoldKan.N` from the pseudoabelian case -/
@@ -154,27 +153,20 @@ def comparisonN : (N : SimplicialObject A ⥤ _) ≅ Idempotents.DoldKan.N :=
   calc
     N ≅ N ⋙ 𝟭 _ := Functor.leftUnitor N
     _ ≅ N ⋙ (toKaroubiEquivalence _).functor ⋙ (toKaroubiEquivalence _).inverse :=
-          isoWhiskerLeft _ (toKaroubiEquivalence _).unitIso
+          Functor.isoWhiskerLeft _ (toKaroubiEquivalence _).unitIso
     _ ≅ (N ⋙ (toKaroubiEquivalence _).functor) ⋙ (toKaroubiEquivalence _).inverse :=
           Iso.refl _
     _ ≅ N₁ ⋙ (toKaroubiEquivalence _).inverse :=
-          isoWhiskerRight (N₁_iso_normalizedMooreComplex_comp_toKaroubi A).symm _
+          Functor.isoWhiskerRight (N₁_iso_normalizedMooreComplex_comp_toKaroubi A).symm _
     _ ≅ Idempotents.DoldKan.N := Iso.refl _
-set_option linter.uppercaseLean3 false in
-#align category_theory.abelian.dold_kan.comparison_N CategoryTheory.Abelian.DoldKan.comparisonN
 
 /-- The Dold-Kan equivalence for abelian categories -/
 @[simps! functor]
-def equivalence : SimplicialObject A ≌ ChainComplex A ℕ := by
-  let F : SimplicialObject A ⥤ _ := Idempotents.DoldKan.N
-  let hF : IsEquivalence F := IsEquivalence.ofEquivalence Idempotents.DoldKan.equivalence
-  letI : IsEquivalence (N : SimplicialObject A ⥤ _) := IsEquivalence.ofIso comparisonN.symm hF
-  exact N.asEquivalence
-#align category_theory.abelian.dold_kan.equivalence CategoryTheory.Abelian.DoldKan.equivalence
+def equivalence : SimplicialObject A ≌ ChainComplex A ℕ :=
+  (Idempotents.DoldKan.equivalence (C := A)).changeFunctor comparisonN.symm
 
 theorem equivalence_inverse : (equivalence : SimplicialObject A ≌ _).inverse = Γ :=
   rfl
-#align category_theory.abelian.dold_kan.equivalence_inverse CategoryTheory.Abelian.DoldKan.equivalence_inverse
 
 end DoldKan
 

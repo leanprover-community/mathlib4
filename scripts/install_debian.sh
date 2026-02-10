@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
-set -exo pipefail
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
+set -x
 
 sudo apt install -y git curl
 
 # Note that we're using `-y` here,
 # unlike the standard `curl [...] -sSf | sh` installation method.
-wget https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh
+wget https://elan.lean-lang.org/elan-init.sh
 bash elan-init.sh -y
 rm elan-init.sh
 

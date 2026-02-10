@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Kyle Miller
+Authors: Kim Morrison, Kyle Miller
 -/
+module
 
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Util.AddRelatedDecl
-import Std.Tactic.Lint
+public meta import Mathlib.Util.AddRelatedDecl
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -24,15 +25,15 @@ For more details, see the documentation attached to the `syntax` declaration.
 
 - The `@[elementwise]` attribute.
 
-- The ``elementwise_of% h` term elaborator.
+- The `elementwise_of% h` term elaborator.
 
 ## Implementation
 
 This closely follows the implementation of the `@[reassoc]` attribute, due to Simon Hudon and
-reimplemented by Scott Morrison in Lean 4.
+reimplemented by Kim Morrison in Lean 4.
 -/
 
-set_option autoImplicit true
+public meta section
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
@@ -42,24 +43,30 @@ open CategoryTheory
 
 section theorems
 
+universe u
+
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
     (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
-
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise [Category C] [ConcreteCategory C]
-    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
+theorem hom_elementwise {C : Type*} [Category* C]
+    {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type*}
+    {_ : outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)} [ConcreteCategory C FC]
+    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : CC X) : f x = g x := by rw [h]
 
 end theorems
 
 /-- List of simp lemmas to apply to the elementwise theorem. -/
 def elementwiseThms : List Name :=
-  [``CategoryTheory.coe_id, ``CategoryTheory.coe_comp, ``CategoryTheory.comp_apply,
-    ``CategoryTheory.id_apply,
+  [ -- ConcreteCategory lemmas
+    ``ConcreteCategory.coe_id, ``ConcreteCategory.coe_comp,
+    ``CategoryTheory.comp_apply, ``CategoryTheory.id_apply,
+    ``CategoryTheory.hom_id, ``CategoryTheory.hom_comp, ``id_eq, ``Function.comp_apply,
     -- further simplifications if the category is `Type`
-    ``forget_hom_Type, ``forall_congr_forget_Type,
+    ``forget_hom_Type, ``forall_congr_forget_Type, ``types_comp_apply, ``types_id_apply,
+    -- further simplifications of `forget`
+    ``forget_obj, ``ConcreteCategory.forget_map_eq_coe,
     -- simp can itself simplify trivial equalities into `true`. Adding this lemma makes it
     -- easier to detect when this has occurred.
     ``implies_true]
@@ -67,7 +74,7 @@ def elementwiseThms : List Name :=
 /--
 Given an equation `f = g` between morphisms `X ⟶ Y` in a category `C`
 (possibly after a `∀` binder), produce the equation `∀ (x : X), f x = g x` or
-`∀ [ConcreteCategory C] (x : X), f x = g x` as needed (after the `∀` binder), but
+`∀ FC CC _ [ConreteCategory C FC] (x : X), f x = g x` as needed (after the `∀` binder), but
 with compositions fully right associated and identities removed.
 
 Returns the proof of the new theorem along with (optionally) a new level metavariable
@@ -76,9 +83,9 @@ for the first universe parameter to `ConcreteCategory`.
 The `simpSides` option controls whether to simplify both sides of the equality, for simpNF
 purposes.
 -/
-def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
-    MetaM (Expr × Option Level) := do
-  let type := (← instantiateMVars type).cleanupAnnotations
+def elementwiseExpr (src : Name) (pf : Expr) (simpSides := true) :
+    MetaM (Expr × Option (Level × Level)) := do
+  let type := (← instantiateMVars (← inferType pf)).cleanupAnnotations
   forallTelescope type fun fvars type' => do
     mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
       -- First simplify using elementwise-specific lemmas
@@ -88,18 +95,18 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
           lemmas, which can be caused by how applications are unfolded. \
           Using elementwise is unnecessary."
       if simpSides then
-        let ctx := { ← Simp.Context.mkDefault with config.decide := false }
+        let ctx ← Simp.Context.mkDefault
         let (ty', eqPf'') ← simpEq (fun e => return (← simp e ctx).1) (← inferType eqPf') eqPf'
         -- check that it's not a simp-trivial equality:
         forallTelescope ty' fun _ ty' => do
           if let some (_, lhs, rhs) := ty'.eq? then
-            if ← Std.Tactic.Lint.isSimpEq lhs rhs then
+            if ← Batteries.Tactic.Lint.isSimpEq lhs rhs then
               throwError "applying simp to both sides reduces elementwise lemma for {src} \
                 to the trivial equality {ty'}. \
                 Either add `nosimp` or remove the `elementwise` attribute."
         eqPf' ← mkExpectedTypeHint eqPf'' ty'
-      if let some (w, instConcr) := instConcr? then
-        return (← Meta.mkLambdaFVars (fvars.push instConcr) eqPf', w)
+      if let some (w, uF, insts) := instConcr? then
+        return (← Meta.mkLambdaFVars (fvars.append insts) eqPf', (w, uF))
       else
         return (← Meta.mkLambdaFVars fvars eqPf', none)
 where
@@ -111,23 +118,40 @@ where
     let (``CategoryTheory.CategoryStruct.toQuiver, #[_, instCS]) := instQuiv.getAppFnArgs | failure
     let (``CategoryTheory.Category.toCategoryStruct, #[C, instC]) := instCS.getAppFnArgs | failure
     return (C, instC)
-  mkHomElementwise {α} (eqTy eqPf : Expr) (k : Expr → Option (Level × Expr) → MetaM α) :
+  mkHomElementwise {α} [Inhabited α] (eqTy eqPf : Expr)
+      (k : Expr → Option (Level × Level × Array Expr) → MetaM α) :
       MetaM α := do
     let (C, instC) ← try extractCatInstance eqTy catch _ =>
       throwError "elementwise expects equality of morphisms in a category"
-    -- First try being optimistic that there is already a ConcreteCategory instance.
+    -- First try being optimistic that there is already a `ConcreteCategory` instance.
     if let some eqPf' ← observing? (mkAppM ``hom_elementwise #[eqPf]) then
       k eqPf' none
     else
       -- That failed, so we need to introduce the instance, which takes creating
       -- a fresh universe level for `ConcreteCategory`'s forgetful functor.
       let .app (.const ``Category [v, u]) _ ← inferType instC
-        | throwError "internal error in elementwise"
+        | throwError "internal error in elementwise: {← inferType instC}"
       let w ← mkFreshLevelMVar
-      let cty : Expr := mkApp2 (.const ``ConcreteCategory [w, v, u]) C instC
-      withLocalDecl `inst .instImplicit cty fun cfvar => do
-        let eqPf' ← mkAppM ``hom_elementwise #[eqPf]
-        k eqPf' (some (w, cfvar))
+      let uF ← mkFreshLevelMVar
+      -- Give a type to the `FunLike` instance on `F`
+      let fty (F carrier : Expr) : Expr :=
+        -- I *think* this is right, but it certainly doesn't feel like I'm doing it right.
+        .forallE `X C (.forallE `Y C (mkApp3
+          (.const ``FunLike [.succ uF, .succ w, .succ w])
+          (mkApp2 F (.bvar 1) (.bvar 0))
+          (mkApp carrier (.bvar 1)) (mkApp carrier (.bvar 0))) default) default
+      -- Give a type to the `ConcreteCategory` instance on `C`
+      let cty (F carrier instFunLike : Expr) : Expr :=
+        mkApp5 (.const ``ConcreteCategory [w, v, u, uF]) C instC F carrier instFunLike
+      withLocalDecls
+        #[(`F, .implicit, fun _ => pure <| .forallE `X C (.forallE `Y C
+            (.sort (.succ uF)) default) default),
+          (`carrier, .implicit, fun _ => pure <| .forallE `X C (.sort (.succ w)) default),
+          (`instFunLike, .implicit, fun decls => pure <| fty decls[0]! decls[1]!),
+          (`inst, .instImplicit, fun decls => pure <| cty decls[0]! decls[1]! decls[2]!)]
+        fun cfvars => do
+          let eqPf' ← mkAppM ``hom_elementwise #[eqPf]
+          k eqPf' (some (w, uF, cfvars))
 
 /-- Gives a name based on `baseName` that's not already in the list. -/
 private partial def mkUnusedName (names : List Name) (baseName : Name) : Name :=
@@ -156,47 +180,50 @@ Example application of `elementwise`:
 
 ```lean
 @[elementwise]
-lemma some_lemma {C : Type*} [Category C]
+lemma some_lemma {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...) : f ≫ g = h := ...
 ```
 
 produces
 
 ```lean
-lemma some_lemma_apply {C : Type*} [Category C]
+lemma some_lemma_apply {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
-    [ConcreteCategory C] (x : X) : g (f x) = h x := ...
+    {CC : ...} {FC : ...} [...] [ConcreteCategory C FC] (x : ToType X) : g (f x) = h x := ...
 ```
 
-Here `X` is being coerced to a type via `CategoryTheory.ConcreteCategory.hasCoeToSort` and
-`f`, `g`, and `h` are being coerced to functions via `CategoryTheory.ConcreteCategory.hasCoeToFun`.
+Here `f`, `g`, and `h` are being coerced to functions via
+`CategoryTheory.ConcreteCategory.instCoeFunHomForallToType`.
 Further, we simplify the type using `CategoryTheory.coe_id : ((𝟙 X) : X → X) x = x` and
 `CategoryTheory.coe_comp : (f ≫ g) x = g (f x)`,
 replacing morphism composition with function composition.
 
-The `[ConcreteCategory C]` argument will be omitted if it is possible to synthesize an instance.
+The `[ConcreteCategory C FC]` and related arguments will be omitted if it is possible to synthesize
+an instance.
 
 The name of the produced lemma can be specified with `@[elementwise other_lemma_name]`.
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
- -/
-syntax (name := elementwise) "elementwise"
-  " nosimp"? (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+-/
+syntax (name := elementwise) "elementwise" " nosimp"? optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| elementwise $[nosimp%$nosimp?]? $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "_apply" ref stx? fun type value levels => do
-      let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
-      let newLevels ← if let some level := level? then do
+    addRelatedDecl src (src.appendAfter "_apply") ref optAttr fun value levels => do
+      let (newValue, level?) ← elementwiseExpr src value (simpSides := nosimp?.isNone)
+      let newLevels ← if let some (levelW, levelUF) := level? then do
         let w := mkUnusedName levels `w
-        unless ← isLevelDefEq level (mkLevelParam w) do
-          throwError "Could not create level parameter for ConcreteCategory instance"
-        pure <| w :: levels
+        let uF := mkUnusedName levels `uF
+        unless ← isLevelDefEq levelW (mkLevelParam w) do
+          throwError "Could not create level parameter `w` for ConcreteCategory instance"
+        unless ← isLevelDefEq levelUF (mkLevelParam uF) do
+          throwError "Could not create level parameter `uF` for ConcreteCategory instance"
+        pure <| uF :: w :: levels
       else
         pure levels
       pure (newValue, newLevels)
@@ -226,11 +253,7 @@ normal form. `elementwise_of%` does not do this.
 -/
 elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
-  let (pf, _) ← elementwiseExpr .anonymous (← inferType e) e (simpSides := false)
+  let (pf, _) ← elementwiseExpr .anonymous e (simpSides := false)
   return pf
-
--- TODO: elementwise tactic
-syntax "elementwise" (ppSpace colGt ident)* : tactic
-syntax "elementwise!" (ppSpace colGt ident)* : tactic
 
 end Tactic.Elementwise

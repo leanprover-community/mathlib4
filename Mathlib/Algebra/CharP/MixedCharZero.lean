@@ -3,11 +3,10 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
-import Mathlib.Algebra.CharP.LocalRing
-import Mathlib.RingTheory.Ideal.Quotient
-import Mathlib.Tactic.FieldSimp
+module
 
-#align_import algebra.char_p.mixed_char_zero from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+public import Mathlib.Algebra.CharP.LocalRing
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # Equal and mixed characteristic
@@ -55,6 +54,8 @@ equivalent conditions.
 - Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.PAdics].
 -/
 
+@[expose] public section
+
 variable (R : Type*) [CommRing R]
 
 /-!
@@ -74,7 +75,6 @@ whether something is a `ℚ`-algebra or not (e.g. `ℚ[X]` would satisfy it but 
 class MixedCharZero (p : ℕ) : Prop where
   [toCharZero : CharZero R]
   charP_quotient : ∃ I : Ideal R, I ≠ ⊤ ∧ CharP (R ⧸ I) p
-#align mixed_char_zero MixedCharZero
 
 namespace MixedCharZero
 
@@ -92,9 +92,9 @@ theorem reduce_to_p_prime {P : Prop} :
     -- Krull's Thm: There exists a prime ideal `P` such that `I ≤ P`
     rcases Ideal.exists_le_maximal I hI_ne_top with ⟨M, hM_max, h_IM⟩
     let r := ringChar (R ⧸ M)
-    have r_pos : r ≠ 0
-    · have q_zero :=
-        congr_arg (Ideal.Quotient.factor I M h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
+    have r_pos : r ≠ 0 := by
+      have q_zero :=
+        congr_arg (Ideal.Quotient.factor h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
       simp only [map_natCast, map_zero] at q_zero
       apply ne_zero_of_dvd_ne_zero (ne_of_gt q_pos)
       exact (CharP.cast_eq_zero_iff (R ⧸ M) r q).mp q_zero
@@ -103,7 +103,6 @@ theorem reduce_to_p_prime {P : Prop} :
     apply h r r_prime
     have : CharZero R := q_mixedChar.toCharZero
     exact ⟨⟨M, hM_max.ne_top, ringChar.of_eq rfl⟩⟩
-#align mixed_char_zero.reduce_to_p_prime MixedCharZero.reduce_to_p_prime
 
 /--
 Reduction to `I` prime ideal: When proving statements about mixed characteristic rings,
@@ -121,20 +120,16 @@ theorem reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
     · exact hM_max
     · cases CharP.exists (R ⧸ M) with
       | intro r hr =>
-        -- Porting note: This is odd. Added `have hr := hr`.
-        -- Without this it seems that lean does not find `hr` as an instance.
-        have hr := hr
         convert hr
-        have r_dvd_p : r ∣ p
-        · rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
-          convert congr_arg (Ideal.Quotient.factor I M hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
+        have r_dvd_p : r ∣ p := by
+          rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
+          convert congr_arg (Ideal.Quotient.factor hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
         symm
         apply (Nat.Prime.eq_one_or_self_of_dvd hp r r_dvd_p).resolve_left
         exact CharP.char_ne_one (R ⧸ M) r
   · intro ⟨I, hI_max, h_charP⟩
     use I
     exact ⟨Ideal.IsMaximal.ne_top hI_max, h_charP⟩
-#align mixed_char_zero.reduce_to_maximal_ideal MixedCharZero.reduce_to_maximal_ideal
 
 end MixedCharZero
 
@@ -164,11 +159,9 @@ theorem of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero 
   intro a b h_ab
   contrapose! hI
   -- `↑a - ↑b` is a unit contained in `I`, which contradicts `I ≠ ⊤`.
-  refine' I.eq_top_of_isUnit_mem _ (IsUnit.map (algebraMap ℚ R) (IsUnit.mk0 (a - b : ℚ) _))
+  refine I.eq_top_of_isUnit_mem ?_ (IsUnit.map (algebraMap ℚ R) (IsUnit.mk0 (a - b : ℚ) ?_))
   · simpa only [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero, map_natCast]
-  simpa only [Ne.def, sub_eq_zero] using (@Nat.cast_injective ℚ _ _).ne hI
-set_option linter.uppercaseLean3 false in
-#align Q_algebra_to_equal_char_zero EqualCharZero.of_algebraRat
+  simpa only [Ne, sub_eq_zero] using (@Nat.cast_injective ℚ _ _).ne hI
 
 section ConstructionAlgebraRat
 
@@ -187,7 +180,6 @@ theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (
   -- But `n` generates the ideal, so its image is clearly zero.
   rw [← map_natCast (Ideal.Quotient.mk _), Nat.cast_zero, Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span (Set.mem_singleton _)
-#align equal_char_zero.pnat_coe_is_unit EqualCharZero.PNat.isUnit_natCast
 
 @[coe]
 noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=
@@ -197,7 +189,6 @@ noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
 noncomputable instance coePNatUnits
     [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : Coe ℕ+ Rˣ :=
   ⟨EqualCharZero.pnatCast⟩
-#align equal_char_zero.pnat_has_coe_units EqualCharZero.coePNatUnits
 
 /-- Internal: Not intended to be used outside this local construction. -/
 @[simp]
@@ -207,7 +198,6 @@ theorem pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] 
   change ((PNat.isUnit_natCast (R := R) 1).unit : R) = 1
   rw [IsUnit.unit_spec (PNat.isUnit_natCast 1)]
   rw [PNat.one_coe, Nat.cast_one]
-#align equal_char_zero.pnat_coe_units_eq_one EqualCharZero.pnatCast_one
 
 /-- Internal: Not intended to be used outside this local construction. -/
 @[simp]
@@ -215,7 +205,6 @@ theorem pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R �
     ((n : Rˣ) : R) = ↑n := by
   change ((PNat.isUnit_natCast (R := R) n).unit : R) = ↑n
   simp only [IsUnit.unit_spec]
-#align equal_char_zero.pnat_coe_units_coe_eq_coe EqualCharZero.pnatCast_eq_natCast
 
 /-- Equal characteristic implies `ℚ`-algebra. -/
 noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
@@ -227,22 +216,22 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
     map_one' := by simp
     map_mul' := by
       intro a b
-      field_simp
+      simp only [← divp_assoc, divp_mul_eq_mul_divp, divp_divp_eq_divp_mul, divp_eq_iff_mul_eq,
+        pnatCast_eq_natCast, Rat.coe_pnatDen, Units.val_mul]
       trans (↑((a * b).num * a.den * b.den) : R)
-      · simp_rw [Int.cast_mul, Int.cast_ofNat]
+      · simp_rw [Int.cast_mul, Int.cast_natCast]
         ring
       rw [Rat.mul_num_den' a b]
       simp
     map_add' := by
       intro a b
-      field_simp
+      simp only [Units.add_divp, pnatCast_eq_natCast, Rat.coe_pnatDen, divp_mul_eq_mul_divp,
+        Units.divp_add, divp_divp_eq_divp_mul, divp_eq_iff_mul_eq, Units.val_mul]
       trans (↑((a + b).num * a.den * b.den) : R)
-      · simp_rw [Int.cast_mul, Int.cast_ofNat]
+      · simp_rw [Int.cast_mul, Int.cast_natCast]
         ring
       rw [Rat.add_num_den' a b]
       simp }
-set_option linter.uppercaseLean3 false in
-#align equal_char_zero_to_Q_algebra EqualCharZero.algebraRat
 
 end ConstructionAlgebraRat
 
@@ -250,8 +239,7 @@ end ConstructionAlgebraRat
 theorem of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
     ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI_ne_top
-  suffices h_charP : CharP (R ⧸ I) 0
-  · apply CharP.charP_to_charZero
+  suffices CharP (R ⧸ I) 0 from CharP.charP_to_charZero _
   cases CharP.exists (R ⧸ I) with
   | intro p hp =>
     cases p with
@@ -259,7 +247,6 @@ theorem of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
     | succ p =>
       have h_mixed : MixedCharZero R p.succ := ⟨⟨I, ⟨hI_ne_top, hp⟩⟩⟩
       exact absurd h_mixed (h p.succ p.succ_pos)
-#align not_mixed_char_to_equal_char_zero EqualCharZero.of_not_mixedCharZero
 
 /-- Equal characteristic implies not mixed characteristic. -/
 theorem to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
@@ -269,7 +256,6 @@ theorem to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
   rcases hp_mixedChar.charP_quotient with ⟨I, hI_ne_top, hI_p⟩
   replace hI_zero : CharP (R ⧸ I) 0 := @CharP.ofCharZero _ _ (h I hI_ne_top)
   exact absurd (CharP.eq (R ⧸ I) hI_p hI_zero) (ne_of_gt p_pos)
-#align equal_char_zero_to_not_mixed_char EqualCharZero.to_not_mixedCharZero
 
 /--
 A ring of characteristic zero has equal characteristic iff it does not
@@ -278,7 +264,6 @@ have mixed characteristic for any `p`.
 theorem iff_not_mixedCharZero [CharZero R] :
     (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) ↔ ∀ p > 0, ¬MixedCharZero R p :=
   ⟨to_not_mixedCharZero R, of_not_mixedCharZero R⟩
-#align equal_char_zero_iff_not_mixed_char EqualCharZero.iff_not_mixedCharZero
 
 /-- A ring is a `ℚ`-algebra iff it has equal characteristic zero. -/
 theorem nonempty_algebraRat_iff :
@@ -290,8 +275,6 @@ theorem nonempty_algebraRat_iff :
   · intro h
     apply Nonempty.intro
     exact algebraRat h
-set_option linter.uppercaseLean3 false in
-#align Q_algebra_iff_equal_char_zero EqualCharZero.nonempty_algebraRat_iff
 
 end EqualCharZero
 
@@ -300,15 +283,12 @@ A ring of characteristic zero is not a `ℚ`-algebra iff it has mixed characteri
 -/
 theorem isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
     IsEmpty (Algebra ℚ R) ↔ ∃ p > 0, MixedCharZero R p := by
-  rw [← not_iff_not]
-  push_neg
-  rw [not_isEmpty_iff, ← EqualCharZero.iff_not_mixedCharZero]
+  contrapose!
+  rw [← EqualCharZero.iff_not_mixedCharZero]
   apply EqualCharZero.nonempty_algebraRat_iff
-set_option linter.uppercaseLean3 false in
-#align not_Q_algebra_iff_not_equal_char_zero isEmpty_algebraRat_iff_mixedCharZero
 
 /-!
-# Splitting statements into different characteristic
+### Splitting statements into different characteristic
 
 Statements to split a proof by characteristic. There are 3 theorems here that are very
 similar. They only differ in the assumptions we can make on the positive characteristic
@@ -331,7 +311,6 @@ theorem split_equalCharZero_mixedCharZero [CharZero R] (h_equal : Algebra ℚ R 
   · apply h_equal
     rw [← isEmpty_algebraRat_iff_mixedCharZero, not_isEmpty_iff] at h
     exact h.some
-#align split_equal_mixed_char split_equalCharZero_mixedCharZero
 
 example (n : ℕ) (h : n ≠ 0) : 0 < n :=
   zero_lt_iff.mpr h
@@ -351,7 +330,6 @@ theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → 
       haveI h0 : CharZero R := CharP.charP_to_charZero R
       exact split_equalCharZero_mixedCharZero R h_equal h_mixed
     · exact h_pos p h p_charP
-#align split_by_characteristic split_by_characteristic
 
 /--
 In an `IsDomain R`, split any `Prop` over `R` into the three cases:
@@ -365,21 +343,19 @@ theorem split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Pr
   intro p p_pos p_char
   have p_prime : Nat.Prime p := or_iff_not_imp_right.mp (CharP.char_is_prime_or_zero R p) p_pos
   exact h_pos p p_prime p_char
-#align split_by_characteristic_domain split_by_characteristic_domain
 
- /--
-In a `LocalRing R`, split any `Prop` over `R` into the three cases:
+/--
+In a local ring `R`, split any predicate over `R` into the three cases:
 - *prime power* characteristic.
 - equal characteristic zero.
 - mixed characteristic `(0, p)`.
 -/
-theorem split_by_characteristic_localRing [LocalRing R]
+theorem split_by_characteristic_localRing [IsLocalRing R]
     (h_pos : ∀ p : ℕ, IsPrimePow p → CharP R p → P) (h_equal : Algebra ℚ R → P)
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
-  refine' split_by_characteristic R _ h_equal h_mixed
+  refine split_by_characteristic R ?_ h_equal h_mixed
   intro p p_pos p_char
   have p_ppow : IsPrimePow (p : ℕ) := or_iff_not_imp_left.mp (charP_zero_or_prime_power R p) p_pos
   exact h_pos p p_ppow p_char
-#align split_by_characteristic_local_ring split_by_characteristic_localRing
 
 end MainStatements

@@ -1,315 +1,125 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.ProperSpace
+module
 
-#align_import topology.metric_space.basic from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
+public import Mathlib.Topology.MetricSpace.Pseudo.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+public import Mathlib.Topology.MetricSpace.Defs
 
 /-!
-# Metric spaces
+# Basic properties of metric spaces, and instances.
 
-This file defines metric spaces and shows some of their basic properties.
-
-Many definitions and theorems expected on metric spaces are already introduced on uniform spaces and
-topological spaces. This includes open and closed sets, compactness, completeness, continuity
-and uniform continuity.
-
-TODO (anyone): Add "Main results" section.
-
-## Implementation notes
-A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
-for `PseudoMetricSpace`s in `PseudoMetric.lean`.
-
-## Tags
-
-metric, pseudo_metric, dist
 -/
 
-open Set Filter Bornology
+@[expose] public section
+
+open Set Filter Bornology Topology
 open scoped NNReal Uniformity
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {X : Type*}
 variable [PseudoMetricSpace α]
-
-/-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
-class MetricSpace (α : Type u) extends PseudoMetricSpace α : Type u where
-  eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
-#align metric_space MetricSpace
-
-/-- Two metric space structures with the same distance coincide. -/
-@[ext]
-theorem MetricSpace.ext {α : Type*} {m m' : MetricSpace α} (h : m.toDist = m'.toDist) :
-    m = m' := by
-  cases m; cases m'; congr; ext1; assumption
-#align metric_space.ext MetricSpace.ext
-
-/-- Construct a metric space structure whose underlying topological space structure
-(definitionally) agrees which a pre-existing topology which is compatible with a given distance
-function. -/
-def MetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
-    (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
-    (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)
-    (H : ∀ s : Set α, IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ∀ y, dist x y < ε → y ∈ s)
-    (eq_of_dist_eq_zero : ∀ x y : α, dist x y = 0 → x = y) : MetricSpace α :=
-  { PseudoMetricSpace.ofDistTopology dist dist_self dist_comm dist_triangle H with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero _ _ }
-#align metric_space.of_dist_topology MetricSpace.ofDistTopology
-
 variable {γ : Type w} [MetricSpace γ]
-
-theorem eq_of_dist_eq_zero {x y : γ} : dist x y = 0 → x = y :=
-  MetricSpace.eq_of_dist_eq_zero
-#align eq_of_dist_eq_zero eq_of_dist_eq_zero
-
-@[simp]
-theorem dist_eq_zero {x y : γ} : dist x y = 0 ↔ x = y :=
-  Iff.intro eq_of_dist_eq_zero fun this => this ▸ dist_self _
-#align dist_eq_zero dist_eq_zero
-
-@[simp]
-theorem zero_eq_dist {x y : γ} : 0 = dist x y ↔ x = y := by rw [eq_comm, dist_eq_zero]
-#align zero_eq_dist zero_eq_dist
-
-theorem dist_ne_zero {x y : γ} : dist x y ≠ 0 ↔ x ≠ y := by
-  simpa only [not_iff_not] using dist_eq_zero
-#align dist_ne_zero dist_ne_zero
-
-@[simp]
-theorem dist_le_zero {x y : γ} : dist x y ≤ 0 ↔ x = y := by
-  simpa [le_antisymm_iff, dist_nonneg] using @dist_eq_zero _ _ x y
-#align dist_le_zero dist_le_zero
-
-@[simp]
-theorem dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
-  simpa only [not_le] using not_congr dist_le_zero
-#align dist_pos dist_pos
-
-theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
-  eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
-#align eq_of_forall_dist_le eq_of_forall_dist_le
-
-/-- Deduce the equality of points from the vanishing of the nonnegative distance-/
-theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
-  simp only [← NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
-#align eq_of_nndist_eq_zero eq_of_nndist_eq_zero
-
-/-- Characterize the equality of points as the vanishing of the nonnegative distance-/
-@[simp]
-theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
-  simp only [← NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
-#align nndist_eq_zero nndist_eq_zero
-
-@[simp]
-theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
-  simp only [← NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, zero_eq_dist]
-#align zero_eq_nndist zero_eq_nndist
 
 namespace Metric
 
 variable {x : γ} {s : Set γ}
 
-@[simp] theorem closedBall_zero : closedBall x 0 = {x} := Set.ext fun _ => dist_le_zero
-#align metric.closed_ball_zero Metric.closedBall_zero
-
-@[simp] theorem sphere_zero : sphere x 0 = {x} := Set.ext fun _ => dist_eq_zero
-#align metric.sphere_zero Metric.sphere_zero
-
-theorem subsingleton_closedBall (x : γ) {r : ℝ} (hr : r ≤ 0) : (closedBall x r).Subsingleton := by
-  rcases hr.lt_or_eq with (hr | rfl)
-  · rw [closedBall_eq_empty.2 hr]
-    exact subsingleton_empty
-  · rw [closedBall_zero]
-    exact subsingleton_singleton
-#align metric.subsingleton_closed_ball Metric.subsingleton_closedBall
-
-theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Subsingleton :=
-  (subsingleton_closedBall x hr).anti sphere_subset_closedBall
-#align metric.subsingleton_sphere Metric.subsingleton_sphere
-
 -- see Note [lower instance priority]
-instance (priority := 100) _root_.MetricSpace.to_separated : SeparatedSpace γ :=
-  separated_def.2 fun _ _ h =>
-    eq_of_forall_dist_le fun _ ε0 => le_of_lt (h _ (dist_mem_uniformity ε0))
-#align metric_space.to_separated MetricSpace.to_separated
+instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
+  t0 _ _ h := eq_of_dist_eq_zero <| Metric.inseparable_iff.1 h
 
 /-- A map between metric spaces is a uniform embedding if and only if the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
-theorem uniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
-    UniformEmbedding f ↔
+theorem isUniformEmbedding_iff' [PseudoMetricSpace β] {f : γ → β} :
+    IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, dist a b < δ → dist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, dist (f a) (f b) < ε → dist a b < δ := by
-  rw [uniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
-#align metric.uniform_embedding_iff' Metric.uniformEmbedding_iff'
+  rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
 /-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
-@[reducible]
-def _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
+abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
   eq_of_dist_eq_zero hdist := (Metric.inseparable_iff.2 hdist).eq
-#align metric_space.of_t0_pseudo_metric_space MetricSpace.ofT0PseudoMetricSpace
 
 -- see Note [lower instance priority]
 /-- A metric space induces an emetric space -/
 instance (priority := 100) _root_.MetricSpace.toEMetricSpace : EMetricSpace γ :=
   .ofT0PseudoEMetricSpace γ
-#align metric_space.to_emetric_space MetricSpace.toEMetricSpace
 
 theorem isClosed_of_pairwise_le_dist {s : Set γ} {ε : ℝ} (hε : 0 < ε)
     (hs : s.Pairwise fun x y => ε ≤ dist x y) : IsClosed s :=
   isClosed_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hs
-#align metric.is_closed_of_pairwise_le_dist Metric.isClosed_of_pairwise_le_dist
 
-theorem closedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+theorem isClosedEmbedding_of_pairwise_le_dist {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     {ε : ℝ} (hε : 0 < ε) {f : α → γ} (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
-    ClosedEmbedding f :=
-  closedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
-#align metric.closed_embedding_of_pairwise_le_dist Metric.closedEmbedding_of_pairwise_le_dist
+    IsClosedEmbedding f :=
+  isClosedEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 
 /-- If `f : β → α` sends any two distinct points to points at distance at least `ε > 0`, then
 `f` is a uniform embedding with respect to the discrete uniformity on `β`. -/
-theorem uniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 0 < ε) {f : β → α}
+theorem isUniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε : 0 < ε) {f : β → α}
     (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
-    @UniformEmbedding _ _ ⊥ (by infer_instance) f :=
-  uniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
-#align metric.uniform_embedding_bot_of_pairwise_le_dist Metric.uniformEmbedding_bot_of_pairwise_le_dist
+    @IsUniformEmbedding _ _ ⊥ (by infer_instance) f :=
+  isUniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
 
 end Metric
-
-/-- Build a new metric space from an old one where the bundled uniform structure is provably
-(but typically non-definitionaly) equal to some given uniform structure.
-See Note [forgetful inheritance].
--/
-def MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : MetricSpace γ where
-  toPseudoMetricSpace := PseudoMetricSpace.replaceUniformity m.toPseudoMetricSpace H
-  eq_of_dist_eq_zero := @eq_of_dist_eq_zero _ _
-#align metric_space.replace_uniformity MetricSpace.replaceUniformity
-
-theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricSpace γ)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : m.replaceUniformity H = m := by
-  ext; rfl
-#align metric_space.replace_uniformity_eq MetricSpace.replaceUniformity_eq
-
-/-- Build a new metric space from an old one where the bundled topological structure is provably
-(but typically non-definitionaly) equal to some given topological structure.
-See Note [forgetful inheritance].
--/
-@[reducible]
-def MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
-    (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
-  @MetricSpace.replaceUniformity γ (m.toUniformSpace.replaceTopology H) m rfl
-#align metric_space.replace_topology MetricSpace.replaceTopology
-
-theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
-    (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) :
-    m.replaceTopology H = m := by
-  ext; rfl
-#align metric_space.replace_topology_eq MetricSpace.replaceTopology_eq
 
 /-- One gets a metric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the metric space and the emetric space. In this definition, the distance
 is given separately, to be able to prescribe some expression which is not defeq to the push-forward
 of the edistance to reals. -/
-@[reducible]
-def EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
-    (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤) (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) :
+abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
+    (dist_nonneg : ∀ x y, 0 ≤ dist x y) (h : ∀ x y, edist x y = .ofReal (dist x y)) :
     MetricSpace α :=
-  @MetricSpace.ofT0PseudoMetricSpace _
-    (PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist edist_ne_top h) _
-#align emetric_space.to_metric_space_of_dist EMetricSpace.toMetricSpaceOfDist
+  letI := PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist dist_nonneg h
+  MetricSpace.ofT0PseudoMetricSpace _
 
 /-- One gets a metric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the metric space and the emetric space. -/
-def EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
+abbrev EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
     MetricSpace α :=
-  EMetricSpace.toMetricSpaceOfDist (fun x y => ENNReal.toReal (edist x y)) h fun _ _ => rfl
-#align emetric_space.to_metric_space EMetricSpace.toMetricSpace
-
-/-- Build a new metric space from an old one where the bundled bornology structure is provably
-(but typically non-definitionaly) equal to some given bornology structure.
-See Note [forgetful inheritance].
--/
-def MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
-    (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) : MetricSpace α :=
-  { PseudoMetricSpace.replaceBornology _ H, m with toBornology := B }
-#align metric_space.replace_bornology MetricSpace.replaceBornology
-
-theorem MetricSpace.replaceBornology_eq {α} [m : MetricSpace α] [B : Bornology α]
-    (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
-    MetricSpace.replaceBornology _ H = m := by
-  ext
-  rfl
-#align metric_space.replace_bornology_eq MetricSpace.replaceBornology_eq
+  EMetricSpace.toMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
-@[reducible]
-def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
+abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
     MetricSpace γ :=
   { PseudoMetricSpace.induced f m.toPseudoMetricSpace with
     eq_of_dist_eq_zero := fun h => hf (dist_eq_zero.1 h) }
-#align metric_space.induced MetricSpace.induced
 
 /-- Pull back a metric space structure by a uniform embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
-@[reducible]
-def UniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
-    (h : UniformEmbedding f) : MetricSpace α :=
-  .replaceUniformity (.induced f h.inj m) h.comap_uniformity.symm
-#align uniform_embedding.comap_metric_space UniformEmbedding.comapMetricSpace
+abbrev IsUniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
+    (h : IsUniformEmbedding f) : MetricSpace α :=
+  .replaceUniformity (.induced f h.injective m) h.comap_uniformity.symm
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-@[reducible]
-def Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
-    (h : Embedding f) : MetricSpace α :=
-  .replaceTopology (.induced f h.inj m) h.induced
-#align embedding.comap_metric_space Embedding.comapMetricSpace
+abbrev Topology.IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
+    (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
+  .replaceTopology (.induced f h.injective m) h.eq_induced
 
 instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=
   .induced Subtype.val Subtype.coe_injective ‹_›
-#align subtype.metric_space Subtype.metricSpace
 
 @[to_additive]
-instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
+instance MulOpposite.instMetricSpace {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
   MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
-
-instance : MetricSpace Empty where
-  dist _ _ := 0
-  dist_self _ := rfl
-  dist_comm _ _ := rfl
-  edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
-  eq_of_dist_eq_zero _ := Subsingleton.elim _ _
-  dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
-  toUniformSpace := inferInstance
-  uniformity_dist := Subsingleton.elim _ _
-
-instance : MetricSpace PUnit.{u + 1} where
-  dist _ _ := 0
-  dist_self _ := rfl
-  dist_comm _ _ := rfl
-  edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
-  eq_of_dist_eq_zero _ := Subsingleton.elim _ _
-  dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
-  toUniformSpace := inferInstance
-  uniformity_dist := by
-    simp (config := { contextual := true }) [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
 
 section Real
 
 /-- Instantiate the reals as a metric space. -/
 instance Real.metricSpace : MetricSpace ℝ := .ofT0PseudoMetricSpace ℝ
-#align real.metric_space Real.metricSpace
 
 end Real
 
@@ -318,6 +128,12 @@ section NNReal
 instance : MetricSpace ℝ≥0 :=
   Subtype.metricSpace
 
+theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
+  isUniformEmbedding_subtype_val
+
+theorem NNReal.isEmbedding_coe : Topology.IsEmbedding NNReal.toReal :=
+  isUniformEmbedding_coe.isEmbedding
+
 end NNReal
 
 instance [MetricSpace β] : MetricSpace (ULift β) :=
@@ -325,8 +141,8 @@ instance [MetricSpace β] : MetricSpace (ULift β) :=
 
 section Prod
 
-instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
-#align prod.metric_space_max Prod.metricSpaceMax
+instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) :=
+  .ofT0PseudoMetricSpace _
 
 end Prod
 
@@ -334,11 +150,10 @@ section Pi
 
 open Finset
 
-variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
+variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
-#align metric_space_pi metricSpacePi
+instance metricSpacePi : MetricSpace (∀ b, X b) := .ofT0PseudoMetricSpace _
 
 end Pi
 
@@ -348,10 +163,10 @@ section SecondCountable
 
 open TopologicalSpace
 
--- porting note: todo: use `Countable` instead of `Encodable`
+-- TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
-theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]
+theorem secondCountable_of_countable_discretization {α : Type u} [PseudoMetricSpace α]
     (H : ∀ ε > (0 : ℝ), ∃ (β : Type*) (_ : Encodable β) (F : α → β),
       ∀ x y, F x = F y → dist x y ≤ ε) :
     SecondCountableTopology α := by
@@ -362,7 +177,6 @@ theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace �
   let x' := Finv ⟨F x, mem_range_self _⟩
   have : F x' = F x := apply_rangeSplitting F _
   exact ⟨x', mem_range_self _, hF _ _ this.symm⟩
-#align metric.second_countable_of_countable_discretization Metric.secondCountable_of_countable_discretization
 
 end SecondCountable
 
@@ -370,116 +184,129 @@ end Metric
 
 section EqRel
 
-instance {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
-  dist p q := Quotient.liftOn₂' p q dist fun x y x' y' hx hy => by
-    rw [dist_edist, dist_edist, ← UniformSpace.SeparationQuotient.edist_mk x,
-      ← UniformSpace.SeparationQuotient.edist_mk x', Quot.sound hx, Quot.sound hy]
+-- TODO: add `dist_congr` similar to `edist_congr`?
+instance SeparationQuotient.instDist {α : Type u} [PseudoMetricSpace α] :
+    Dist (SeparationQuotient α) where
+  dist := lift₂ dist fun x y x' y' hx hy ↦ by rw [dist_edist, dist_edist, ← edist_mk x,
+    ← edist_mk x', mk_eq_mk.2 hx, mk_eq_mk.2 hy]
 
-theorem UniformSpace.SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : α) :
-    @dist (UniformSpace.SeparationQuotient α) _ (Quot.mk _ p) (Quot.mk _ q) = dist p q :=
+theorem SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : α) :
+    dist (mk p) (mk q) = dist p q :=
   rfl
-#align uniform_space.separation_quotient.dist_mk UniformSpace.SeparationQuotient.dist_mk
 
-instance {α : Type u} [PseudoMetricSpace α] : MetricSpace (UniformSpace.SeparationQuotient α) :=
-  EMetricSpace.toMetricSpaceOfDist dist (fun x y => Quotient.inductionOn₂' x y edist_ne_top)
-    fun x y => Quotient.inductionOn₂' x y dist_edist
+instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α] :
+    MetricSpace (SeparationQuotient α) :=
+  EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 fun _ _ ↦ dist_nonneg) <|
+    surjective_mk.forall₂.2 edist_dist
 
 end EqRel
 
-/-!
-### `Additive`, `Multiplicative`
+namespace PseudoEMetricSpace
 
-The distance on those type synonyms is inherited without change.
--/
+open ENNReal
 
+variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
 
-open Additive Multiplicative
+/-- Build new pseudoemetric space from an old one where the edistance is provably (but typically
+non-definitionally) equal to some given edistance. We also provide convenience versions for
+PseudoMetric, Emetric and Metric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceEDist : PseudoEMetricSpace X where
+  edist := d
+  edist_self := by simp [hd]
+  edist_comm := by simp [hd, edist_comm]
+  edist_triangle := by simp [hd, edist_triangle]
+  uniformity_edist := by simp [hd, uniformity_edist]
+  __ := m
 
-section
+lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
-variable [Dist X]
+-- Check uniformity is unchanged
+example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible dsimp [replaceEDist]
 
-instance : Dist (Additive X) := ‹Dist X›
-instance : Dist (Multiplicative X) := ‹Dist X›
+end PseudoEMetricSpace
 
-@[simp] theorem dist_ofMul (a b : X) : dist (ofMul a) (ofMul b) = dist a b := rfl
-#align dist_of_mul dist_ofMul
+namespace PseudoMetricSpace
+variable {X : Type*} (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist)
 
-@[simp] theorem dist_ofAdd (a b : X) : dist (ofAdd a) (ofAdd b) = dist a b := rfl
-#align dist_of_add dist_ofAdd
+/-- Build new pseudometric space from an old one where the distance is provably (but typically
+non-definitionally) equal to some given distance. We also provide convenience versions for
+PseudoEMetric, Emetric and Metric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceDist : PseudoMetricSpace X where
+  dist := d
+  dist_self := by simp [hd]
+  dist_comm := by simp [hd, dist_comm]
+  dist_triangle := by simp [hd, dist_triangle]
+  edist_dist := by simp [hd, edist_dist]
+  uniformity_dist := by simp [hd, uniformity_dist]
+  cobounded_sets := by simp [hd, cobounded_sets]
+  __ := m
 
-@[simp] theorem dist_toMul (a b : Additive X) : dist (toMul a) (toMul b) = dist a b := rfl
-#align dist_to_mul dist_toMul
+lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
-@[simp] theorem dist_toAdd (a b : Multiplicative X) : dist (toAdd a) (toAdd b) = dist a b := rfl
-#align dist_to_add dist_toAdd
+-- Check uniformity is unchanged
+example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible dsimp [replaceDist]
 
-end
+-- Check Bornology is unchanged
+example : (replaceDist m d hd).toBornology = m.toBornology := by
+  with_reducible dsimp [replaceDist]
 
-section
+end PseudoMetricSpace
 
-variable [PseudoMetricSpace X]
+namespace EMetricSpace
 
-instance : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
-instance : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
+open ENNReal
 
-@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
-#align nndist_of_mul nndist_ofMul
+variable {X : Type*} (m : EMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
 
-@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
-#align nndist_of_add nndist_ofAdd
+/-- Build new emetric space from an old one where the edistance is provably (but typically
+non-definitionally) equal to some given edistance. We also provide convenience versions for
+PseudoEMetric, PseudoMetric and Metric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceEDist : EMetricSpace X where
+  edist := d
+  edist_self := by simp [hd]
+  edist_comm := by simp [hd, edist_comm]
+  edist_triangle := by simp [hd, edist_triangle]
+  eq_of_edist_eq_zero := by simp [hd]
 
-@[simp] theorem nndist_toMul (a b : Additive X) : nndist (toMul a) (toMul b) = nndist a b := rfl
-#align nndist_to_mul nndist_toMul
+lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
-@[simp]
-theorem nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nndist a b := rfl
-#align nndist_to_add nndist_toAdd
+-- Check uniformity is unchanged
+example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible simp [replaceEDist_eq]
 
-end
+end EMetricSpace
 
-instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
-instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
+namespace MetricSpace
+variable {X : Type*} (m : MetricSpace X) (d : X → X → ℝ) (hd : d = dist)
 
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
+/-- Build new metric space from an old one where the distance is provably (but typically
+non-definitionally) equal to some given distance. We also provide convenience versions for
+PseudoEMetric, PseudoMatric and EMetric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceDist : MetricSpace X where
+  dist := d
+  dist_self := by simp [hd]
+  dist_comm := by simp [hd, dist_comm]
+  dist_triangle := by simp [hd, dist_triangle]
+  eq_of_dist_eq_zero := by simp [hd]
 
-/-!
-### Order dual
+lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
-The distance on this type synonym is inherited without change.
--/
+-- Check uniformity is unchanged
+example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible simp [replaceDist_eq]
 
-open OrderDual
+-- Check Bornology is unchanged
+example : (replaceDist m d hd).toBornology = m.toBornology := by
+  with_reducible simp [replaceDist_eq]
 
-section
-
-variable [Dist X]
-
-instance : Dist Xᵒᵈ := ‹Dist X›
-
-@[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
-#align dist_to_dual dist_toDual
-
-@[simp] theorem dist_ofDual (a b : Xᵒᵈ) : dist (ofDual a) (ofDual b) = dist a b := rfl
-#align dist_of_dual dist_ofDual
-
-end
-
-section
-
-variable [PseudoMetricSpace X]
-
-instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
-
-@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
-#align nndist_to_dual nndist_toDual
-
-@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
-#align nndist_of_dual nndist_ofDual
-
-end
-
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›
-
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›
+end MetricSpace

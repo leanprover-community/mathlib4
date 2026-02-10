@@ -1,15 +1,17 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Scott Morrison
+Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.MonoOver
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
 
-#align_import category_theory.subobject.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+public import Mathlib.CategoryTheory.Limits.Skeleton
+public import Mathlib.CategoryTheory.Subobject.MonoOver
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Subobjects
@@ -28,6 +30,7 @@ We provide
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
+
 and prove their basic properties and relationships.
 These are all easy consequences of the earlier development
 of the corresponding functors for `MonoOver`.
@@ -47,7 +50,7 @@ See also
 ## Notes
 
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
-and was ported to mathlib by Scott Morrison.
+and was ported to mathlib by Kim Morrison.
 
 ### Implementation note
 
@@ -69,8 +72,10 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 
 -/
 
+@[expose] public section
 
-universe v₁ v₂ u₁ u₂
+
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -79,7 +84,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-!
@@ -97,20 +101,17 @@ with morphisms becoming inequalities, and isomorphisms becoming equations.
 -/
 def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
-#align category_theory.subobject CategoryTheory.Subobject
 
-instance (X : C) : PartialOrder (Subobject X) := by
-  dsimp only [Subobject]
-  infer_instance
+instance (X : C) : PartialOrder (Subobject X) :=
+  inferInstanceAs <| PartialOrder (ThinSkeleton (MonoOver X))
 
 namespace Subobject
 
--- porting note: made it a def rather than an abbreviation
--- because Lean would make it too transparent
+lemma skeletal (X : C) : Skeletal (Subobject X) := ThinSkeleton.skeletal
+
 /-- Convenience constructor for a subobject. -/
 def mk {X A : C} (f : A ⟶ X) [Mono f] : Subobject X :=
-  (toThinSkeleton _).obj (MonoOver.mk' f)
-#align category_theory.subobject.mk CategoryTheory.Subobject.mk
+  (toThinSkeleton _).obj (MonoOver.mk f)
 
 section
 
@@ -121,7 +122,6 @@ protected theorem ind {X : C} (p : Subobject X → Prop)
   apply Quotient.inductionOn'
   intro a
   exact h a.arrow
-#align category_theory.subobject.ind CategoryTheory.Subobject.ind
 
 protected theorem ind₂ {X : C} (p : Subobject X → Subobject X → Prop)
     (h : ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g],
@@ -130,39 +130,37 @@ protected theorem ind₂ {X : C} (p : Subobject X → Subobject X → Prop)
   apply Quotient.inductionOn₂'
   intro a b
   exact h a.arrow b.arrow
-#align category_theory.subobject.ind₂ CategoryTheory.Subobject.ind₂
 
 end
 
 /-- Declare a function on subobjects of `X` by specifying a function on monomorphisms with
-    codomain `X`. -/
+codomain `X`. -/
 protected def lift {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α)
     (h :
       ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g] (i : A ≅ B),
         i.hom ≫ g = f → F f = F g) :
     Subobject X → α := fun P =>
   Quotient.liftOn' P (fun m => F m.arrow) fun m n ⟨i⟩ =>
-    h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom)
-#align category_theory.subobject.lift CategoryTheory.Subobject.lift
+    h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom.hom)
 
 @[simp]
 protected theorem lift_mk {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α) {h A}
     (f : A ⟶ X) [Mono f] : Subobject.lift F h (Subobject.mk f) = F f :=
   rfl
-#align category_theory.subobject.lift_mk CategoryTheory.Subobject.lift_mk
 
 /-- The category of subobjects is equivalent to the `MonoOver` category. It is more convenient to
 use the former due to the partial order instance, but oftentimes it is easier to define structures
 on the latter. -/
 noncomputable def equivMonoOver (X : C) : Subobject X ≌ MonoOver X :=
   ThinSkeleton.equivalence _
-#align category_theory.subobject.equiv_mono_over CategoryTheory.Subobject.equivMonoOver
 
 /-- Use choice to pick a representative `MonoOver X` for each `Subobject X`.
 -/
 noncomputable def representative {X : C} : Subobject X ⥤ MonoOver X :=
   (equivMonoOver X).functor
-#align category_theory.subobject.representative CategoryTheory.Subobject.representative
+
+instance : (representative (X := X)).IsEquivalence :=
+  (equivMonoOver X).isEquivalence_functor
 
 /-- Starting with `A : MonoOver X`, we can take its equivalence class in `Subobject X`
 then pick an arbitrary representative using `representative.obj`.
@@ -171,7 +169,6 @@ This is isomorphic (in `MonoOver X`) to the original `A`.
 noncomputable def representativeIso {X : C} (A : MonoOver X) :
     representative.obj ((toThinSkeleton _).obj A) ≅ A :=
   (equivMonoOver X).counitIso.app A
-#align category_theory.subobject.representative_iso CategoryTheory.Subobject.representativeIso
 
 /-- Use choice to pick a representative underlying object in `C` for any `Subobject X`.
 
@@ -179,68 +176,52 @@ Prefer to use the coercion `P : C` rather than explicitly writing `underlying.ob
 -/
 noncomputable def underlying {X : C} : Subobject X ⥤ C :=
   representative ⋙ MonoOver.forget _ ⋙ Over.forget _
-#align category_theory.subobject.underlying CategoryTheory.Subobject.underlying
 
 instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
-
--- porting note: removed as it has become a syntactic tautology
--- @[simp]
--- theorem underlying_as_coe {X : C} (P : Subobject X) : underlying.obj P = P :=
---   rfl
--- #align category_theory.subobject.underlying_as_coe CategoryTheory.Subobject.underlying_as_coe
 
 /-- If we construct a `Subobject Y` from an explicit `f : X ⟶ Y` with `[Mono f]`,
 then pick an arbitrary choice of underlying object `(Subobject.mk f : C)` back in `C`,
 it is isomorphic (in `C`) to the original `X`.
 -/
 noncomputable def underlyingIso {X Y : C} (f : X ⟶ Y) [Mono f] : (Subobject.mk f : C) ≅ X :=
-  (MonoOver.forget _ ⋙ Over.forget _).mapIso (representativeIso (MonoOver.mk' f))
-#align category_theory.subobject.underlying_iso CategoryTheory.Subobject.underlyingIso
+  (MonoOver.forget _ ⋙ Over.forget _).mapIso (representativeIso (MonoOver.mk f))
 
 /-- The morphism in `C` from the arbitrarily chosen underlying object to the ambient object.
 -/
 noncomputable def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
   (representative.obj Y).obj.hom
-#align category_theory.subobject.arrow CategoryTheory.Subobject.arrow
 
 instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
   (representative.obj Y).property
-#align category_theory.subobject.arrow_mono CategoryTheory.Subobject.arrow_mono
 
 @[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
     eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
   induction h
   simp
-#align category_theory.subobject.arrow_congr CategoryTheory.Subobject.arrow_congr
 
 @[simp]
 theorem representative_coe (Y : Subobject X) : (representative.obj Y : C) = (Y : C) :=
   rfl
-#align category_theory.subobject.representative_coe CategoryTheory.Subobject.representative_coe
 
 @[simp]
 theorem representative_arrow (Y : Subobject X) : (representative.obj Y).arrow = Y.arrow :=
   rfl
-#align category_theory.subobject.representative_arrow CategoryTheory.Subobject.representative_arrow
 
 @[reassoc (attr := simp)]
 theorem underlying_arrow {X : C} {Y Z : Subobject X} (f : Y ⟶ Z) :
     underlying.map f ≫ arrow Z = arrow Y :=
-  Over.w (representative.map f)
-#align category_theory.subobject.underlying_arrow CategoryTheory.Subobject.underlying_arrow
+  Over.w (representative.map f).hom
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem underlyingIso_arrow {X Y : C} (f : X ⟶ Y) [Mono f] :
     (underlyingIso f).inv ≫ (Subobject.mk f).arrow = f :=
   Over.w _
-#align category_theory.subobject.underlying_iso_arrow CategoryTheory.Subobject.underlyingIso_arrow
 
 @[reassoc (attr := simp)]
 theorem underlyingIso_hom_comp_eq_mk {X Y : C} (f : X ⟶ Y) [Mono f] :
     (underlyingIso f).hom ≫ f = (mk f).arrow :=
   (Iso.eq_inv_comp _).1 (underlyingIso_arrow f).symm
-#align category_theory.subobject.underlying_iso_hom_comp_eq_mk CategoryTheory.Subobject.underlyingIso_hom_comp_eq_mk
 
 /-- Two morphisms into a subobject are equal exactly if
 the morphisms into the ambient object are equal -/
@@ -248,66 +229,57 @@ the morphisms into the ambient object are equal -/
 theorem eq_of_comp_arrow_eq {X Y : C} {P : Subobject Y} {f g : X ⟶ P}
     (h : f ≫ P.arrow = g ≫ P.arrow) : f = g :=
   (cancel_mono P.arrow).mp h
-#align category_theory.subobject.eq_of_comp_arrow_eq CategoryTheory.Subobject.eq_of_comp_arrow_eq
 
 theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ B} [Mono f₁] [Mono f₂] (g : A₁ ⟶ A₂)
     (w : g ≫ f₂ = f₁) : mk f₁ ≤ mk f₂ :=
   ⟨MonoOver.homMk _ w⟩
-#align category_theory.subobject.mk_le_mk_of_comm CategoryTheory.Subobject.mk_le_mk_of_comm
 
 @[simp]
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
   Quotient.inductionOn' P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
-#align category_theory.subobject.mk_arrow CategoryTheory.Subobject.mk_arrow
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
     X ≤ Y := by
   convert mk_le_mk_of_comm _ w <;> simp
-#align category_theory.subobject.le_of_comm CategoryTheory.Subobject.le_of_comm
 
 theorem le_mk_of_comm {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (g : (X : C) ⟶ A)
     (w : g ≫ f = X.arrow) : X ≤ mk f :=
   le_of_comm (g ≫ (underlyingIso f).inv) <| by simp [w]
-#align category_theory.subobject.le_mk_of_comm CategoryTheory.Subobject.le_mk_of_comm
 
 theorem mk_le_of_comm {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (g : A ⟶ (X : C))
     (w : g ≫ X.arrow = f) : mk f ≤ X :=
   le_of_comm ((underlyingIso f).hom ≫ g) <| by simp [w]
-#align category_theory.subobject.mk_le_of_comm CategoryTheory.Subobject.mk_le_of_comm
 
 /-- To show that two subobjects are equal, it suffices to exhibit an isomorphism commuting with
-    the arrows. -/
-@[ext]
+the arrows. -/
+@[ext (iff := false)]
 theorem eq_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ≅ (Y : C))
     (w : f.hom ≫ Y.arrow = X.arrow) : X = Y :=
   le_antisymm (le_of_comm f.hom w) <| le_of_comm f.inv <| f.inv_comp_eq.2 w.symm
-#align category_theory.subobject.eq_of_comm CategoryTheory.Subobject.eq_of_comm
 
--- porting note: removed @[ext]
 /-- To show that two subobjects are equal, it suffices to exhibit an isomorphism commuting with
-    the arrows. -/
+the arrows. -/
 theorem eq_mk_of_comm {B A : C} {X : Subobject B} (f : A ⟶ B) [Mono f] (i : (X : C) ≅ A)
     (w : i.hom ≫ f = X.arrow) : X = mk f :=
   eq_of_comm (i.trans (underlyingIso f).symm) <| by simp [w]
-#align category_theory.subobject.eq_mk_of_comm CategoryTheory.Subobject.eq_mk_of_comm
 
--- porting note: removed @[ext]
 /-- To show that two subobjects are equal, it suffices to exhibit an isomorphism commuting with
-    the arrows. -/
+the arrows. -/
 theorem mk_eq_of_comm {B A : C} {X : Subobject B} (f : A ⟶ B) [Mono f] (i : A ≅ (X : C))
     (w : i.hom ≫ X.arrow = f) : mk f = X :=
   Eq.symm <| eq_mk_of_comm _ i.symm <| by rw [Iso.symm_hom, Iso.inv_comp_eq, w]
-#align category_theory.subobject.mk_eq_of_comm CategoryTheory.Subobject.mk_eq_of_comm
 
--- porting note: removed @[ext]
 /-- To show that two subobjects are equal, it suffices to exhibit an isomorphism commuting with
-    the arrows. -/
+the arrows. -/
 theorem mk_eq_mk_of_comm {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (i : A₁ ≅ A₂)
     (w : i.hom ≫ g = f) : mk f = mk g :=
   eq_mk_of_comm _ ((underlyingIso f).trans i) <| by simp [w]
-#align category_theory.subobject.mk_eq_mk_of_comm CategoryTheory.Subobject.mk_eq_mk_of_comm
+
+lemma mk_surjective {X : C} (S : Subobject X) :
+    ∃ (A : C) (i : A ⟶ X) (_ : Mono i), S = Subobject.mk i :=
+  ⟨_, S.arrow, inferInstance, by simp⟩
 
 -- We make `X` and `Y` explicit arguments here so that when `ofLE` appears in goal statements
 -- it is possible to see its source and target
@@ -315,12 +287,10 @@ theorem mk_eq_mk_of_comm {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mo
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
 def ofLE {B : C} (X Y : Subobject B) (h : X ≤ Y) : (X : C) ⟶ (Y : C) :=
   underlying.map <| h.hom
-#align category_theory.subobject.of_le CategoryTheory.Subobject.ofLE
 
 @[reassoc (attr := simp)]
 theorem ofLE_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLE X Y h ≫ Y.arrow = X.arrow :=
   underlying_arrow _
-#align category_theory.subobject.of_le_arrow CategoryTheory.Subobject.ofLE_arrow
 
 instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLE X Y h) := by
   fconstructor
@@ -334,12 +304,10 @@ theorem ofLE_mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂
     ofLE _ _ (mk_le_mk_of_comm g w) = (underlyingIso _).hom ≫ g ≫ (underlyingIso _).inv := by
   ext
   simp [w]
-#align category_theory.subobject.of_le_mk_le_mk_of_comm CategoryTheory.Subobject.ofLE_mk_le_mk_of_comm
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
 def ofLEMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) : (X : C) ⟶ A :=
   ofLE X (mk f) h ≫ (underlyingIso f).hom
-#align category_theory.subobject.of_le_mk CategoryTheory.Subobject.ofLEMk
 
 instance {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) :
     Mono (ofLEMk X f h) := by
@@ -349,12 +317,10 @@ instance {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) :
 @[simp]
 theorem ofLEMk_comp {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (h : X ≤ mk f) :
     ofLEMk X f h ≫ f = X.arrow := by simp [ofLEMk]
-#align category_theory.subobject.of_le_mk_comp CategoryTheory.Subobject.ofLEMk_comp
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
 def ofMkLE {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) : A ⟶ (X : C) :=
   (underlyingIso f).inv ≫ ofLE (mk f) X h
-#align category_theory.subobject.of_mk_le CategoryTheory.Subobject.ofMkLE
 
 instance {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) :
     Mono (ofMkLE f X h) := by
@@ -364,13 +330,11 @@ instance {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) :
 @[simp]
 theorem ofMkLE_arrow {B A : C} {f : A ⟶ B} [Mono f] {X : Subobject B} (h : mk f ≤ X) :
     ofMkLE f X h ≫ X.arrow = f := by simp [ofMkLE]
-#align category_theory.subobject.of_mk_le_arrow CategoryTheory.Subobject.ofMkLE_arrow
 
 /-- An inequality of subobjects is witnessed by some morphism between the corresponding objects. -/
 def ofMkLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
     A₁ ⟶ A₂ :=
   (underlyingIso f).inv ≫ ofLE (mk f) (mk g) h ≫ (underlyingIso g).hom
-#align category_theory.subobject.of_mk_le_mk CategoryTheory.Subobject.ofMkLEMk
 
 instance {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
     Mono (ofMkLEMk f g h) := by
@@ -380,45 +344,39 @@ instance {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (
 @[simp]
 theorem ofMkLEMk_comp {B A₁ A₂ : C} {f : A₁ ⟶ B} {g : A₂ ⟶ B} [Mono f] [Mono g] (h : mk f ≤ mk g) :
     ofMkLEMk f g h ≫ g = f := by simp [ofMkLEMk]
-#align category_theory.subobject.of_mk_le_mk_comp CategoryTheory.Subobject.ofMkLEMk_comp
 
 @[reassoc (attr := simp)]
 theorem ofLE_comp_ofLE {B : C} (X Y Z : Subobject B) (h₁ : X ≤ Y) (h₂ : Y ≤ Z) :
     ofLE X Y h₁ ≫ ofLE Y Z h₂ = ofLE X Z (h₁.trans h₂) := by
   simp only [ofLE, ← Functor.map_comp underlying]
   congr 1
-#align category_theory.subobject.of_le_comp_of_le CategoryTheory.Subobject.ofLE_comp_ofLE
 
 @[reassoc (attr := simp)]
 theorem ofLE_comp_ofLEMk {B A : C} (X Y : Subobject B) (f : A ⟶ B) [Mono f] (h₁ : X ≤ Y)
     (h₂ : Y ≤ mk f) : ofLE X Y h₁ ≫ ofLEMk Y f h₂ = ofLEMk X f (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ← Functor.map_comp_assoc underlying]
+  simp only [ofLEMk, ofLE, ← Functor.map_comp_assoc underlying]
   congr 1
-#align category_theory.subobject.of_le_comp_of_le_mk CategoryTheory.Subobject.ofLE_comp_ofLEMk
 
 @[reassoc (attr := simp)]
 theorem ofLEMk_comp_ofMkLE {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (Y : Subobject B)
     (h₁ : X ≤ mk f) (h₂ : mk f ≤ Y) : ofLEMk X f h₁ ≫ ofMkLE f Y h₂ = ofLE X Y (h₁.trans h₂) := by
   simp only [ofMkLE, ofLEMk, ofLE, ← Functor.map_comp underlying, assoc, Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_le_mk_comp_of_mk_le CategoryTheory.Subobject.ofLEMk_comp_ofMkLE
 
 @[reassoc (attr := simp)]
 theorem ofLEMk_comp_ofMkLEMk {B A₁ A₂ : C} (X : Subobject B) (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B)
     [Mono g] (h₁ : X ≤ mk f) (h₂ : mk f ≤ mk g) :
     ofLEMk X f h₁ ≫ ofMkLEMk f g h₂ = ofLEMk X g (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying,
+  simp only [ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying,
     assoc, Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_le_mk_comp_of_mk_le_mk CategoryTheory.Subobject.ofLEMk_comp_ofMkLEMk
 
 @[reassoc (attr := simp)]
 theorem ofMkLE_comp_ofLE {B A₁ : C} (f : A₁ ⟶ B) [Mono f] (X Y : Subobject B) (h₁ : mk f ≤ X)
     (h₂ : X ≤ Y) : ofMkLE f X h₁ ≫ ofLE X Y h₂ = ofMkLE f Y (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
+  simp only [ofMkLE, ofLE, ← Functor.map_comp underlying,
     assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_comp_of_le CategoryTheory.Subobject.ofMkLE_comp_ofLE
 
 @[reassoc (attr := simp)]
 theorem ofMkLE_comp_ofLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (X : Subobject B) (g : A₂ ⟶ B)
@@ -426,37 +384,32 @@ theorem ofMkLE_comp_ofLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (X : Subo
     ofMkLE f X h₁ ≫ ofLEMk X g h₂ = ofMkLEMk f g (h₁.trans h₂) := by
   simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_comp_of_le_mk CategoryTheory.Subobject.ofMkLE_comp_ofLEMk
 
 @[reassoc (attr := simp)]
 theorem ofMkLEMk_comp_ofMkLE {B A₁ A₂ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (X : Subobject B) (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ X) :
     ofMkLEMk f g h₁ ≫ ofMkLE g X h₂ = ofMkLE f X (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
+  simp only [ofMkLE, ofLE, ofMkLEMk, ← Functor.map_comp underlying,
     assoc, Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_mk_comp_of_mk_le CategoryTheory.Subobject.ofMkLEMk_comp_ofMkLE
 
 @[reassoc (attr := simp)]
 theorem ofMkLEMk_comp_ofMkLEMk {B A₁ A₂ A₃ : C} (f : A₁ ⟶ B) [Mono f] (g : A₂ ⟶ B) [Mono g]
     (h : A₃ ⟶ B) [Mono h] (h₁ : mk f ≤ mk g) (h₂ : mk g ≤ mk h) :
     ofMkLEMk f g h₁ ≫ ofMkLEMk g h h₂ = ofMkLEMk f h (h₁.trans h₂) := by
-  simp only [ofMkLE, ofLEMk, ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc,
+  simp only [ofLE, ofMkLEMk, ← Functor.map_comp_assoc underlying, assoc,
     Iso.hom_inv_id_assoc]
   congr 1
-#align category_theory.subobject.of_mk_le_mk_comp_of_mk_le_mk CategoryTheory.Subobject.ofMkLEMk_comp_ofMkLEMk
 
 @[simp]
 theorem ofLE_refl {B : C} (X : Subobject B) : ofLE X X le_rfl = 𝟙 _ := by
   apply (cancel_mono X.arrow).mp
   simp
-#align category_theory.subobject.of_le_refl CategoryTheory.Subobject.ofLE_refl
 
 @[simp]
 theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_rfl = 𝟙 _ := by
   apply (cancel_mono f).mp
   simp
-#align category_theory.subobject.of_mk_le_mk_refl CategoryTheory.Subobject.ofMkLEMk_refl
 
 -- As with `ofLE`, we have `X` and `Y` as explicit arguments for readability.
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
@@ -465,21 +418,18 @@ theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_r
 def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
   hom := ofLE _ _ h.le
   inv := ofLE _ _ h.ge
-#align category_theory.subobject.iso_of_eq CategoryTheory.Subobject.isoOfEq
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
 def isoOfEqMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X = mk f) : (X : C) ≅ A where
   hom := ofLEMk X f h.le
   inv := ofMkLE f X h.ge
-#align category_theory.subobject.iso_of_eq_mk CategoryTheory.Subobject.isoOfEqMk
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
 def isoOfMkEq {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f = X) : A ≅ (X : C) where
   hom := ofMkLE f X h.le
   inv := ofLEMk X f h.ge
-#align category_theory.subobject.iso_of_mk_eq CategoryTheory.Subobject.isoOfMkEq
 
 /-- An equality of subobjects gives an isomorphism of the corresponding objects. -/
 @[simps]
@@ -487,9 +437,48 @@ def isoOfMkEqMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mo
     A₁ ≅ A₂ where
   hom := ofMkLEMk f g h.le
   inv := ofMkLEMk g f h.ge
-#align category_theory.subobject.iso_of_mk_eq_mk CategoryTheory.Subobject.isoOfMkEqMk
+
+lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
+    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) (hf : ¬ IsIso f) :
+    Subobject.mk i₁ < Subobject.mk i₂ := by
+  obtain _ | h := (mk_le_mk_of_comm _ fac).lt_or_eq
+  · assumption
+  · exfalso
+    apply hf
+    convert (isoOfMkEqMk i₁ i₂ h).isIso_hom
+    rw [← cancel_mono i₂, isoOfMkEqMk_hom, ofMkLEMk_comp, fac]
+
+lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
+    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) :
+    Subobject.mk i₁ < Subobject.mk i₂ ↔ ¬ IsIso f :=
+  ⟨fun h hf ↦ by simp only [mk_eq_mk_of_comm i₁ i₂ (asIso f) fac, lt_self_iff_false] at h,
+    mk_lt_mk_of_comm f fac⟩
 
 end Subobject
+
+namespace MonoOver
+
+variable {P Q : MonoOver X} (f : P ⟶ Q)
+
+include f in
+lemma subobjectMk_le_mk_of_hom :
+    Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
+  Subobject.mk_le_mk_of_comm f.hom.left (by simp)
+
+lemma isIso_hom_left_iff_subobjectMk_eq :
+    IsIso f.hom.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
+  ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.hom.left) (by simp),
+    fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
+      by simp [← cancel_mono Q.1.hom]⟩⟩
+
+@[deprecated (since := "2025-12-18")]
+alias isIso_left_iff_subobjectMk_eq := isIso_hom_left_iff_subobjectMk_eq
+
+lemma isIso_iff_subobjectMk_eq :
+    IsIso f ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by
+  rw [isIso_iff_isIso_hom_left, isIso_hom_left_iff_subobjectMk_eq]
+
+end MonoOver
 
 open CategoryTheory.Limits
 
@@ -499,32 +488,35 @@ namespace Subobject
 `Subobject X ⥤ Subobject Y`, because `MonoOver Y` is thin. -/
 def lower {Y : D} (F : MonoOver X ⥤ MonoOver Y) : Subobject X ⥤ Subobject Y :=
   ThinSkeleton.map F
-#align category_theory.subobject.lower CategoryTheory.Subobject.lower
 
 /-- Isomorphic functors become equal when lowered to `Subobject`.
 (It's not as evil as usual to talk about equality between functors
 because the categories are thin and skeletal.) -/
 theorem lower_iso (F₁ F₂ : MonoOver X ⥤ MonoOver Y) (h : F₁ ≅ F₂) : lower F₁ = lower F₂ :=
   ThinSkeleton.map_iso_eq h
-#align category_theory.subobject.lower_iso CategoryTheory.Subobject.lower_iso
 
 /-- A ternary version of `Subobject.lower`. -/
 def lower₂ (F : MonoOver X ⥤ MonoOver Y ⥤ MonoOver Z) : Subobject X ⥤ Subobject Y ⥤ Subobject Z :=
   ThinSkeleton.map₂ F
-#align category_theory.subobject.lower₂ CategoryTheory.Subobject.lower₂
 
 @[simp]
 theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
     toThinSkeleton _ ⋙ lower F = F ⋙ toThinSkeleton _ :=
   rfl
-#align category_theory.subobject.lower_comm CategoryTheory.Subobject.lower_comm
+
+/--
+Applying `lower F` and then `representative` is isomorphic to first applying `representative`
+and then applying `F`.
+-/
+def lowerCompRepresentativeIso (F : MonoOver Y ⥤ MonoOver X) :
+    lower F ⋙ representative ≅ representative ⋙ F :=
+  ThinSkeleton.mapCompFromThinSkeletonIso _
 
 /-- An adjunction between `MonoOver A` and `MonoOver B` gives an adjunction
 between `Subobject A` and `Subobject B`. -/
 def lowerAdjunction {A : C} {B : D} {L : MonoOver A ⥤ MonoOver B} {R : MonoOver B ⥤ MonoOver A}
     (h : L ⊣ R) : lower L ⊣ lower R :=
   ThinSkeleton.lowerAdjunction _ _ h
-#align category_theory.subobject.lower_adjunction CategoryTheory.Subobject.lowerAdjunction
 
 /-- An equivalence between `MonoOver A` and `MonoOver B` gives an equivalence
 between `Subobject A` and `Subobject B`. -/
@@ -542,7 +534,32 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
     convert ThinSkeleton.map_iso_eq e.counitIso
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
-#align category_theory.subobject.lower_equivalence CategoryTheory.Subobject.lowerEquivalence
+
+section Limits
+
+variable {J : Type u₃} [Category.{v₃} J]
+
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (Subobject X) := by
+  apply hasLimitsOfShape_thinSkeleton
+
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (Subobject X) where
+  out _ _ _ := by infer_instance
+
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (Subobject X) where
+  has_limits_of_shape _ _ := by infer_instance
+
+end Limits
+
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{w, w'} (Subobject X) := by
+  apply hasColimitsOfSize_thinSkeleton
+
+end Colimits
 
 section Pullback
 
@@ -552,20 +569,64 @@ variable [HasPullbacks C]
 by pulling back a monomorphism along `f`. -/
 def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
-#align category_theory.subobject.pullback CategoryTheory.Subobject.pullback
 
 theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction x using Quotient.inductionOn' with | _ f
   exact Quotient.sound ⟨MonoOver.pullbackId.app f⟩
-#align category_theory.subobject.pullback_id CategoryTheory.Subobject.pullback_id
 
 theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction x using Quotient.inductionOn' with | _ t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
-#align category_theory.subobject.pullback_comp CategoryTheory.Subobject.pullback_comp
 
-instance (f : X ⟶ Y) : Faithful (pullback f) where
+theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
+    {j : B ⟶ Y} [Mono j] {f' : B ⟶ A}
+    (h : IsPullback f' j i f) :
+    (pullback f).obj (mk i) = mk j :=
+  ((equivMonoOver Y).inverse.mapIso
+    (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
+
+theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk (pullback.snd x.arrow f) := by
+  obtain ⟨Z, i, _, rfl⟩ := mk_surjective x
+  rw [pullback_obj_mk (IsPullback.of_hasPullback i f)]
+  exact mk_eq_mk_of_comm _ _ (asIso (pullback.map i f (mk i).arrow f
+    (underlyingIso i).inv (𝟙 _) (𝟙 _) (by simp) (by simp))) (by simp)
+
+instance (f : X ⟶ Y) : (pullback f).Faithful where
+
+lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
+    ∃ φ, IsPullback φ ((pullback f).obj y).arrow y.arrow f := by
+  obtain ⟨A, i, ⟨_, rfl⟩⟩ := mk_surjective y
+  rw [pullback_obj]
+  exists (underlyingIso (pullback.snd (mk i).arrow f)).hom ≫ pullback.fst (mk i).arrow f
+  exact IsPullback.of_iso (IsPullback.of_hasPullback (mk i).arrow f)
+        (underlyingIso (pullback.snd (mk i).arrow f)).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+        (by simp) (by simp) (by simp) (by simp)
+
+/-- For any morphism `f : X ⟶ Y` and subobject `y` of `Y`, `Subobject.pullbackπ f y` is the first
+    projection in the following pullback square:
+
+    ```
+    (Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
+             |                                            |
+    ((Subobject.pullback f).obj y).arrow               y.arrow
+             |                                            |
+             v                                            v
+             X ---------------------f-------------------> Y
+    ```
+
+    For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
+    elements of `X` that are in the preimage of `y ⊆ Y`.
+-/
+noncomputable def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
+    ((Subobject.pullback f).obj y : C) ⟶ (y : C) :=
+  (isPullback_aux f y).choose
+
+/-- This states that `pullbackπ f y` indeed forms a pullback square (see `Subobject.pullbackπ`). -/
+theorem isPullback (f : X ⟶ Y) (y : Subobject Y) :
+    IsPullback (pullbackπ f y) ((pullback f).obj y).arrow y.arrow f :=
+  (isPullback_aux f y).choose_spec
 
 end Pullback
 
@@ -576,29 +637,34 @@ by post-composition with a monomorphism `f : X ⟶ Y`.
 -/
 def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y :=
   lower (MonoOver.map f)
-#align category_theory.subobject.map CategoryTheory.Subobject.map
+
+lemma map_mk {A X Y : C} (i : A ⟶ X) [Mono i] (f : X ⟶ Y) [Mono f] :
+    (map f).obj (mk i) = mk (i ≫ f) :=
+  rfl
 
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction x using Quotient.inductionOn' with | _ f
   exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
-#align category_theory.subobject.map_id CategoryTheory.Subobject.map_id
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
     (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction x using Quotient.inductionOn' with | _ t
   exact Quotient.sound ⟨(MonoOver.mapComp _ _).app t⟩
-#align category_theory.subobject.map_comp CategoryTheory.Subobject.map_comp
+
+lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
+    Function.Injective (Subobject.map f).obj := fun X₁ X₂ h ↦ by
+  induction X₁ using Subobject.ind
+  induction X₂ using Subobject.ind
+  simp only [map_mk] at h
+  exact mk_eq_mk_of_comm _ _ (isoOfMkEqMk _ _ h) (by simp [← cancel_mono f])
 
 /-- Isomorphic objects have equivalent subobject lattices. -/
 def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
   lowerEquivalence (MonoOver.mapIso e)
-#align category_theory.subobject.map_iso CategoryTheory.Subobject.mapIso
 
--- Porting note: the note below doesn't seem true anymore
--- @[simps] here generates a lemma `map_iso_to_order_iso_to_equiv_symm_apply`
--- whose left hand side is not in simp normal form.
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
 which preserves the order. -/
+@[simps]
 def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
   toFun := (map e.hom).obj
   invFun := (map e.inv).obj
@@ -615,32 +681,17 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
       apply_fun (map e.hom).obj at h
       · exact h
       · apply Functor.monotone
-#align category_theory.subobject.map_iso_to_order_iso CategoryTheory.Subobject.mapIsoToOrderIso
-
-@[simp]
-theorem mapIsoToOrderIso_apply (e : X ≅ Y) (P : Subobject X) :
-    mapIsoToOrderIso e P = (map e.hom).obj P :=
-  rfl
-#align category_theory.subobject.map_iso_to_order_iso_apply CategoryTheory.Subobject.mapIsoToOrderIso_apply
-
-@[simp]
-theorem mapIsoToOrderIso_symm_apply (e : X ≅ Y) (Q : Subobject Y) :
-    (mapIsoToOrderIso e).symm Q = (map e.inv).obj Q :=
-  rfl
-#align category_theory.subobject.map_iso_to_order_iso_symm_apply CategoryTheory.Subobject.mapIsoToOrderIso_symm_apply
 
 /-- `map f : Subobject X ⥤ Subobject Y` is
 the left adjoint of `pullback f : Subobject Y ⥤ Subobject X`. -/
 def mapPullbackAdj [HasPullbacks C] (f : X ⟶ Y) [Mono f] : map f ⊣ pullback f :=
   lowerAdjunction (MonoOver.mapPullbackAdj f)
-#align category_theory.subobject.map_pullback_adj CategoryTheory.Subobject.mapPullbackAdj
 
 @[simp]
 theorem pullback_map_self [HasPullbacks C] (f : X ⟶ Y) [Mono f] (g : Subobject X) :
     (pullback f).obj ((map f).obj g) = g := by
   revert g
   exact Quotient.ind (fun g' => Quotient.sound ⟨(MonoOver.pullbackMapSelf f).app _⟩)
-#align category_theory.subobject.pullback_map_self CategoryTheory.Subobject.pullback_map_self
 
 theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} {h : Y ⟶ W} {k : Z ⟶ W}
     [Mono h] [Mono g] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk f g comm))
@@ -650,18 +701,16 @@ theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} 
   intro a
   apply Quotient.sound
   apply ThinSkeleton.equiv_of_both_ways
-  · refine' MonoOver.homMk (pullback.lift pullback.fst _ _) (pullback.lift_snd _ _ _)
-    change _ ≫ a.arrow ≫ h = (pullback.snd ≫ g) ≫ _
-    rw [assoc, ← comm, pullback.condition_assoc]
-  · refine' MonoOver.homMk (pullback.lift pullback.fst
-      (PullbackCone.IsLimit.lift t (pullback.fst ≫ a.arrow) pullback.snd _)
-      (PullbackCone.IsLimit.lift_fst _ _ _ _).symm) _
+  · refine MonoOver.homMk (pullback.lift (pullback.fst _ _) _ ?_) (pullback.lift_snd _ _ _)
+    simp [← comm, pullback.condition_assoc]
+  · refine MonoOver.homMk (pullback.lift (pullback.fst _ _)
+      (PullbackCone.IsLimit.lift t (pullback.fst _ _ ≫ a.arrow) (pullback.snd _ _) _)
+      (PullbackCone.IsLimit.lift_fst _ _ _ ?_).symm) ?_
     · rw [← pullback.condition, assoc]
       rfl
     · dsimp
       rw [pullback.lift_snd_assoc]
       apply PullbackCone.IsLimit.lift_snd
-#align category_theory.subobject.map_pullback CategoryTheory.Subobject.map_pullback
 
 end Map
 
@@ -679,20 +728,41 @@ provided both are defined, and generalises the `map f` functor, again provided i
 -/
 def «exists» (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
   lower (MonoOver.exists f)
-#align category_theory.subobject.exists CategoryTheory.Subobject.exists
 
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
 -/
 theorem exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
   lower_iso _ _ (MonoOver.existsIsoMap f)
-#align category_theory.subobject.exists_iso_map CategoryTheory.Subobject.exists_iso_map
 
 /-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
-#align category_theory.subobject.exists_pullback_adj CategoryTheory.Subobject.existsPullbackAdj
+
+/--
+Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`
+and then taking representatives.
+-/
+def existsCompRepresentativeIso (f : X ⟶ Y) :
+    «exists» f ⋙ representative ≅ representative ⋙ MonoOver.exists f :=
+  lowerCompRepresentativeIso _
+
+/-- `exists f` applied to a subobject `x` is isomorphic to the image of `x.arrow ≫ f`. -/
+def existsIsoImage (f : X ⟶ Y) (x : Subobject X) :
+    ((«exists» f).obj x : C) ≅ Limits.image (x.arrow ≫ f) :=
+  (MonoOver.forget Y ⋙ Over.forget Y).mapIso <| (existsCompRepresentativeIso f).app x
+
+/-- Given a subobject `x`, the `ImageFactorisation` of `x.arrow ≫ f` through `(exists f).obj x`. -/
+@[simps! F_I F_m]
+def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
+    ImageFactorisation (x.arrow ≫ f) :=
+  let :=
+    ImageFactorisation.ofIsoI
+      (Image.imageFactorisation (x.arrow ≫ f))
+      (existsIsoImage f x).symm
+  ImageFactorisation.copy this ((«exists» f).obj x).arrow this.F.e (by
+    simpa [this, -Over.w] using (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
 
 end Exists
 

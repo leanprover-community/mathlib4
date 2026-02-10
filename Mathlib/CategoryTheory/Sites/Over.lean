@@ -3,7 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.CoverLifting
+module
+
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-! Localization
 
@@ -17,6 +21,8 @@ is covering for `J`. As a result, the forgetful functor
 
 -/
 
+@[expose] public section
+
 universe v' v u' u
 
 namespace CategoryTheory
@@ -24,6 +30,13 @@ namespace CategoryTheory
 open Category
 
 variable {C : Type u} [Category.{v} C]
+
+@[simp]
+lemma Presieve.map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve Y.left) :
+    Presieve.map (Over.forget X) (.functorPullback (Over.forget X) R) = R := by
+  refine le_antisymm (map_functorPullback _) fun Z g hg ↦ ?_
+  let g' : Over.mk (g ≫ Y.hom) ⟶ Y := Over.homMk g
+  exact Presieve.map.of (u := g') hg
 
 namespace Sieve
 
@@ -65,6 +78,13 @@ lemma overEquiv_symm_top {X : C} (Y : Over X) :
     (overEquiv Y).symm ⊤ = ⊤ :=
   (overEquiv Y).injective (by simp)
 
+lemma overEquiv_le_overEquiv_iff {X : C} {Y : Over X} (R₁ R₂ : Sieve Y) :
+    R₁.overEquiv Y ≤ R₂.overEquiv Y ↔ R₁ ≤ R₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Sieve.functorPushforward_monotone _ _ h⟩
+  replace h : (overEquiv Y).symm (R₁.overEquiv Y) ≤ (overEquiv Y).symm (R₂.overEquiv Y) :=
+    Sieve.functorPullback_monotone _ _ h
+  simpa using h
+
 lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : Sieve Y₂) :
     overEquiv _ (S.pullback f) = (overEquiv _ S).pullback f.left := by
   ext Z g
@@ -74,11 +94,15 @@ lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : S
     exact ⟨W, a ≫ f, b, h, by simp⟩
   · rintro ⟨W, a, b, h, w⟩
     let T := Over.mk (b ≫ W.hom)
-    let c : T ⟶ Y₁ := Over.homMk g (by dsimp; rw [← Over.w a, ← reassoc_of% w, Over.w f])
+    let c : T ⟶ Y₁ := Over.homMk g (by dsimp [T]; rw [← Over.w a, ← reassoc_of% w, Over.w f])
     let d : T ⟶ W := Over.homMk b
-    refine' ⟨T, c, 𝟙 Z, _, by simp⟩
+    refine ⟨T, c, 𝟙 Z, ?_, by simp [T, c]⟩
     rw [show c ≫ f = d ≫ a by ext; exact w]
     exact S.downward_closed h _
+
+lemma overEquiv_symm_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : Sieve Y₂.left) :
+    (overEquiv Y₁).symm (pullback f.left S) = pullback f ((overEquiv Y₂).symm S) :=
+  functorPullback_pullback _ _ _
 
 @[simp]
 lemma overEquiv_symm_iff {X : C} {Y : Over X} (S : Sieve Y.left) {Z : Over X} (f : Z ⟶ Y) :
@@ -90,6 +114,28 @@ lemma overEquiv_iff {X : C} {Y : Over X} (S : Sieve Y) {Z : C} (f : Z ⟶ Y.left
   obtain ⟨S, rfl⟩ := (overEquiv Y).symm.surjective S
   simp
 
+lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
+    overEquiv Y (.generate R) = .generate (Presieve.functorPushforward (Over.forget X) R) := by
+  refine le_antisymm (fun Z g hg ↦ ?_) ?_
+  · rw [overEquiv_iff] at hg
+    obtain ⟨W, u, v, hv, huv⟩ := hg
+    exact ⟨W.left, u.left, v.left, ⟨W, v, 𝟙 _, hv, by simp⟩, congr($(huv).left)⟩
+  · rw [generate_le_iff]
+    rintro Z g ⟨W, u, v, hu, rfl⟩
+    exact (overEquiv_iff _ _).mpr ⟨W, Over.homMk v, u, hu, rfl⟩
+
+lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
+    (overEquiv Y).symm (.generate R) =
+      .generate (Presieve.functorPullback (Over.forget X) R) := by
+  refine le_antisymm (fun Z g hg ↦ ?_) ?_
+  · rw [overEquiv_symm_iff] at hg
+    obtain ⟨W, p, q, hq, hpq⟩ := hg
+    refine ⟨.mk (q ≫ Y.hom), Over.homMk p (by simp [reassoc_of% hpq]), Over.homMk q rfl, hq, ?_⟩
+    ext
+    exact hpq
+  · rw [generate_le_iff]
+    exact fun Z g hg ↦ le_generate _ _ hg
+
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
     Sieve.functorPushforward (Over.map f) ((Sieve.overEquiv Z).symm S) =
@@ -100,7 +146,7 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact S.downward_closed ha _
   · intro hg
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
-      Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by aesop_cat⟩
+      Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
 end Sieve
 
@@ -138,7 +184,7 @@ lemma over_forget_coverPreserving (X : C) :
 
 lemma over_forget_compatiblePreserving (X : C) :
     CompatiblePreserving J (Over.forget X) where
-  compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+  compatible {_ Z _ _ hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
     let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
@@ -167,17 +213,17 @@ lemma over_map_coverPreserving {X Y : C} (f : X ⟶ Y) :
 
 lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
     CompatiblePreserving (J.over Y) (Over.map f) where
-  compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+  compatible {F Z _ x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
     let W' : Over X := Over.mk (f₁.left ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁.left
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂.left
       (by simpa using (Over.forget _).congr_map h.symm =≫ Z.hom)
     let e : (Over.map f).obj W' ≅ W := Over.isoMk (Iso.refl _)
-      (by simpa using (Over.w f₁).symm)
+      (by simpa [W'] using (Over.w f₁).symm)
     convert congr_arg (F.val.map e.inv.op)
       (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
     all_goals
-      dsimp
+      dsimp [e, W', g₁', g₂']
       rw [← FunctorToTypes.map_comp_apply]
       apply congr_fun
       congr 1
@@ -191,12 +237,153 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over 
     (over_map_compatiblePreserving J f)
     (over_map_coverPreserving J f)
 
+section
+
+variable (A : Type u') [Category.{v'} A]
+
 /-- The pullback functor `Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A` induced
 by a morphism `f : X ⟶ Y`. -/
-abbrev overMapPullback (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y) :
+abbrev overMapPullback {X Y : C} (f : X ⟶ Y) :
     Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
   (Over.map f).sheafPushforwardContinuous _ _ _
 
+section
+
+variable {X Y : C} {f g : X ⟶ Y} (h : f = g)
+
+/-- Two identical morphisms give isomorphic `overMapPullback` functors on sheaves. -/
+@[simps!]
+def overMapPullbackCongr :
+    J.overMapPullback A f ≅ J.overMapPullback A g :=
+  Functor.sheafPushforwardContinuousIso (Over.mapCongr _ _ h) _ _ _
+
+lemma overMapPullbackCongr_eq_eqToIso :
+    J.overMapPullbackCongr A h = eqToIso (by subst h; rfl) := by
+  aesop
+
+end
+
+/-- Applying `overMapPullback` to the identity map gives the identity functor. -/
+@[simps!]
+def overMapPullbackId (X : C) :
+    J.overMapPullback A (𝟙 X) ≅ 𝟭 _ :=
+  Functor.sheafPushforwardContinuousId' (Over.mapId X) _ _
+
+/-- The composition of two `overMapPullback` functors identifies to
+`overMapPullback` for the composition. -/
+@[simps!]
+def overMapPullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    J.overMapPullback A g ⋙ J.overMapPullback A f ≅
+      J.overMapPullback A (f ≫ g) :=
+  Functor.sheafPushforwardContinuousComp' (Over.mapComp f g).symm _ _ _ _
+
+@[reassoc]
+lemma overMapPullback_comp_id {X Y : C} (f : X ⟶ Y) :
+    (J.overMapPullbackComp A f (𝟙 Y)).inv ≫
+      Functor.whiskerRight (J.overMapPullbackId A Y).hom _ ≫ (Functor.leftUnitor _).hom =
+    (overMapPullbackCongr _ _ (by simp)).hom := by
+  ext
+  dsimp
+  simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackId_hom_app_val_app, comp_id,
+    ← Functor.map_comp, ← op_comp]
+  congr
+  cat_disch
+
+@[reassoc]
+lemma overMapPullback_id_comp {X Y : C} (f : X ⟶ Y) :
+    (J.overMapPullbackComp A (𝟙 X) f).inv ≫
+      Functor.whiskerLeft _ (J.overMapPullbackId A X).hom ≫ (Functor.rightUnitor _).hom =
+    (overMapPullbackCongr _ _ (by simp)).hom := by
+  ext
+  dsimp
+  simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackId_hom_app_val_app,
+    Functor.sheafPushforwardContinuous_obj_val_map, Quiver.Hom.unop_op, comp_id,
+    ← Functor.map_comp, ← op_comp]
+  congr
+  cat_disch
+
+@[reassoc]
+lemma overMapPullback_assoc {X Y Z T : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ T) :
+    (J.overMapPullbackComp A f (g ≫ h)).inv ≫
+      Functor.whiskerRight (J.overMapPullbackComp A g h).inv _ ≫
+        (Functor.associator _ _ _).hom ≫
+          Functor.whiskerLeft _ (J.overMapPullbackComp A f g).hom ≫
+            (J.overMapPullbackComp A (f ≫ g) h).hom =
+    (overMapPullbackCongr _ _ (by simp)).hom := by
+  ext
+  dsimp
+  simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackComp_hom_app_val_app,
+    Functor.sheafPushforwardContinuous_obj_val_map, Quiver.Hom.unop_op, ← Functor.map_comp,
+    ← op_comp, id_comp, assoc]
+  congr
+  cat_disch
+
+end
+
 end GrothendieckTopology
+
+variable {J}
+
+/-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
+abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
+    Sheaf (J.over X) A := (J.overPullback A X).obj F
+
+section
+
+-- TODO: Generalize this section to arbitrary precoverages.
+
+variable (K : Precoverage C) [K.HasPullbacks] [K.IsStableUnderBaseChange]
+
+/-- The Grothendieck topology on `Over X`, obtained from localizing the topology generated
+by the precoverage `K`, is generated by the preimage of `K`. -/
+lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
+    K.toGrothendieck.over X = (K.comap (Over.forget X)).toGrothendieck := by
+  refine le_antisymm ?_ ?_
+  · intro ⟨Y, right, (s : Y ⟶ X)⟩ R hR
+    obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
+    simp only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
+      ← Precoverage.toGrothendieck_toCoverage] at hR
+    induction hR with
+    | of Z S hS =>
+      rw [Sieve.overEquiv_symm_generate]
+      exact .of _ _ (by simpa)
+    | top =>
+      rw [Sieve.overEquiv_symm_top]
+      simp
+    | transitive Y R S hR H ih ih' =>
+      refine GrothendieckTopology.transitive _ (ih s) _ fun Z g hg ↦ ?_
+      obtain rfl : right = Z.right := Subsingleton.elim _ _
+      rw [← Sieve.overEquiv_symm_pullback]
+      exact ih' hg Z.hom
+  · rw [Precoverage.toGrothendieck_le_iff_le_toPrecoverage]
+    intro Y R hR
+    rw [Precoverage.mem_comap_iff] at hR
+    rw [GrothendieckTopology.mem_toPrecoverage_iff, GrothendieckTopology.mem_over_iff,
+      Sieve.overEquiv, Equiv.coe_fn_mk, ← Sieve.generate_map_eq_functorPushforward]
+    exact Precoverage.Saturate.of _ _ hR
+
+end
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceEquiv.inverse.IsDenseSubsite (J.over _) ((J.over _).over _) where
+  functorPushforward_mem_iff := by
+    simp [GrothendieckTopology.mem_over_iff, Sieve.overEquiv,
+      ← Over.iteratedSliceBackward_forget_forget f, Sieve.functorPushforward_comp]
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceForward.IsContinuous ((J.over _).over _) (J.over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.functor.IsContinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceForward.IsCocontinuous ((J.over _).over _) (J.over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.functor.IsCocontinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceBackward.IsContinuous (J.over _) ((J.over _).over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsContinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsCocontinuous _ _)
 
 end CategoryTheory

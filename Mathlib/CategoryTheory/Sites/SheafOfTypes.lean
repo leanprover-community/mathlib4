@@ -3,10 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.IsSheafFor
+module
 
-#align_import category_theory.sites.sheaf_of_types from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
 # Sheaves of types on a Grothendieck topology
@@ -15,7 +15,7 @@ Defines the notion of a sheaf of types (usually called a sheaf of sets by mathem
 on a category equipped with a Grothendieck topology, as well as a range of equivalent
 conditions useful in different situations.
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular sieve. Given a Grothendieck topology `J`, `P` is a sheaf if it is a sheaf
 for every sieve in the topology. See `IsSheaf`.
 
@@ -48,8 +48,10 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 
 -/
 
+@[expose] public section
 
-universe w v u
+
+universe w w' v u
 
 namespace CategoryTheory
 
@@ -58,17 +60,13 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable {P : Cᵒᵖ ⥤ Type w}
-
 variable {X : C}
-
 variable (J J₂ : GrothendieckTopology C)
 
 /-- A presheaf is separated for a topology if it is separated for every sieve in the topology. -/
 def IsSeparated (P : Cᵒᵖ ⥤ Type w) : Prop :=
-  ∀ {X} (S : Sieve X), S ∈ J X → IsSeparatedFor P (S : Presieve X)
-#align category_theory.presieve.is_separated CategoryTheory.Presieve.IsSeparated
+  ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSeparatedFor P (S : Presieve X)
 
 /-- A presheaf is a sheaf for a topology if it is a sheaf for every sieve in the topology.
 
@@ -77,36 +75,74 @@ check the sheaf condition at presieves in the pretopology.
 -/
 def IsSheaf (P : Cᵒᵖ ⥤ Type w) : Prop :=
   ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSheafFor P (S : Presieve X)
-#align category_theory.presieve.is_sheaf CategoryTheory.Presieve.IsSheaf
 
 theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Presieve X)
     (hr : generate R ∈ J X) : IsSheafFor P R :=
   (isSheafFor_iff_generate R).2 <| hp _ hr
-#align category_theory.presieve.is_sheaf.is_sheaf_for CategoryTheory.Presieve.IsSheaf.isSheafFor
 
 theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
-#align category_theory.presieve.is_sheaf_of_le CategoryTheory.Presieve.isSheaf_of_le
 
-theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
-  fun S hS => (h S hS).isSeparatedFor
-#align category_theory.presieve.is_separated_of_is_sheaf CategoryTheory.Presieve.isSeparated_of_isSheaf
+theorem isSeparated_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
+    J₁ ≤ J₂ → IsSeparated J₂ P → IsSeparated J₁ P :=
+  fun h hP _ S hS ↦ hP S <| h _ hS
+
+variable {J} in
+theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
+  fun _ S hS => (h S hS).isSeparatedFor
+
+@[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
+
+variable {J} in
+/-- If `P` is separated and every compatible family of elements of `P` for a covering
+sieve has an amalgamation, `P` is a sheaf. -/
+theorem IsSeparated.isSheaf {P : Cᵒᵖ ⥤ Type w} (h : IsSeparated J P) (h' : ∀ X, ∀ S ∈ J X,
+      ∀ x : FamilyOfElements P S.arrows, x.Compatible → ∃ t, x.IsAmalgamation t) :
+    IsSheaf J P :=
+  fun _ S hS ↦ (h S hS).isSheafFor <| h' _ S hS
+
+section
+
+variable {J} {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
+  (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
+  (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
+    e (P₁.map f.op x) = P₂.map f.op (e x))
+
+include he in
+lemma isSheaf_of_nat_equiv (hP₁ : Presieve.IsSheaf J P₁) :
+    Presieve.IsSheaf J P₂ := fun _ R hR ↦
+  isSheafFor_of_nat_equiv e he (hP₁ R hR)
+
+include he in
+lemma isSheaf_iff_of_nat_equiv :
+    Presieve.IsSheaf J P₁ ↔ Presieve.IsSheaf J P₂ :=
+  ⟨fun hP₁ ↦ isSheaf_of_nat_equiv e he hP₁,
+    fun hP₂ ↦
+      isSheaf_of_nat_equiv (fun _ ↦ (@e _).symm) (fun X Y f x ↦ by
+        obtain ⟨y, rfl⟩ := e.surjective x
+        refine e.injective ?_
+        simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply, he]) hP₂⟩
+
+end
 
 /-- The property of being a sheaf is preserved by isomorphism. -/
 theorem isSheaf_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (h : IsSheaf J P) : IsSheaf J P' :=
   fun _ S hS => isSheafFor_iso i (h S hS)
-#align category_theory.presieve.is_sheaf_iso CategoryTheory.Presieve.isSheaf_iso
+
+/-- The property of being separated is preserved under isomorphisms. -/
+theorem isSeparated_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparated J P) :
+    IsSeparated J P' :=
+  fun _ S hS ↦ isSeparatedFor_iso i (hP S hS)
 
 theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
     (h : ∀ {X} (S : Sieve X), S ∈ J X → YonedaSheafCondition P S) : IsSheaf J P := fun _ _ hS =>
   isSheafFor_iff_yonedaSheafCondition.2 (h _ hS)
-#align category_theory.presieve.is_sheaf_of_yoneda CategoryTheory.Presieve.isSheaf_of_yoneda
 
 /-- For a topology generated by a basis, it suffices to check the sheaf condition on the basis
 presieves only.
 -/
 theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
-    IsSheaf (K.toGrothendieck C) P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
+    IsSheaf K.toGrothendieck P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
   constructor
   · intro PJ X R hR
     rw [isSheafFor_iff_generate]
@@ -114,17 +150,24 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
   · rintro PK X S ⟨R, hR, RS⟩
     have gRS : ⇑(generate R) ≤ S := by
       apply giGenerate.gc.monotone_u
-      rwa [sets_iff_generate]
+      rwa [generate_le_iff]
     apply isSheafFor_subsieve P gRS _
     intro Y f
     rw [← pullbackArrows_comm, ← isSheafFor_iff_generate]
     exact PK (pullbackArrows f R) (K.pullbacks f R hR)
-#align category_theory.presieve.is_sheaf_pretopology CategoryTheory.Presieve.isSheaf_pretopology
 
-/-- Any presheaf is a sheaf for the bottom (trivial) grothendieck topology. -/
+/-- Any presheaf is a sheaf for the bottom (trivial) Grothendieck topology. -/
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
-  simp [isSheafFor_top_sieve]
-#align category_theory.presieve.is_sheaf_bot CategoryTheory.Presieve.isSheaf_bot
+  simp [isSheafFor_top]
+
+/-- A presheaf is a sheaf after composiing with a universe lift if and only if it is a sheaf. -/
+@[simp]
+theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ IsSheaf J P :=
+  (isSheaf_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
+
+/-- The composition of a sheaf with a ULift functor is still a sheaf. -/
+theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) := by
+  rwa [isSheaf_comp_uliftFunctor_iff]
 
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
@@ -132,8 +175,7 @@ is the same as a co-cone over the sieve. Constructing a co-cone from a compatibl
 any presieve, as does constructing a family of elements from a co-cone. Showing compatibility of the
 family needs the sieve condition.
 Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
- -/
-
+-/
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
     (hx : FamilyOfElements.Compatible x) :
     Cocone (R.diagram) where
@@ -142,13 +184,14 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
     { app := fun f => x f.obj.hom f.property
       naturality := by
         intro g₁ g₂ F
-        simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
-          Functor.const_obj_obj, Functor.comp_map, fullSubcategoryInclusion.map, Over.forget_map,
-          Functor.const_obj_map, Category.comp_id]
+        simp only [Functor.id_obj, Functor.comp_obj, ObjectProperty.ι_obj, Over.forget_obj,
+          Functor.const_obj_obj, Functor.comp_map, ObjectProperty.ι_map, Over.forget_map,
+          Functor.const_obj_map, comp_id]
         rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
         apply hx
         simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
 
+/-- Construct a family of elements from a cocone. -/
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
     FamilyOfElements (yoneda.obj s.pt) R :=
   fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
@@ -159,7 +202,6 @@ namespace Sieve
 open Presieve
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
@@ -170,13 +212,13 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
   dsimp [yonedaFamilyOfElements_fromCocone]
   have hgf₁ : S.arrows (g₁ ≫ f₁) := by exact Sieve.downward_closed S hf₁ g₁
   have hgf₂ : S.arrows (g₂ ≫ f₂) := by exact Sieve.downward_closed S hf₂ g₂
-  let F : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk (g₂ ≫ f₂) : Over X) := (Over.homMk (𝟙 Z) )
-  let F₁ : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk f₁ : Over X) := (Over.homMk g₁)
-  let F₂ : (Over.mk (g₂ ≫ f₂) : Over X) ⟶ (Over.mk f₂ : Over X) := (Over.homMk g₂)
-  have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
-  have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
-  have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
-  aesop_cat
+  let F : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk (g₂ ≫ f₂) : Over X) := Over.homMk (𝟙 Z)
+  let F₁ : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk f₁ : Over X) := Over.homMk g₁
+  let F₂ : (Over.mk (g₂ ≫ f₂) : Over X) ⟶ (Over.mk f₂ : Over X) := Over.homMk g₂
+  have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ (ObjectProperty.homMk F)
+  have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ (ObjectProperty.homMk F₁)
+  have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ (ObjectProperty.homMk F₂)
+  cat_disch
 
 /--
 The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
@@ -196,7 +238,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
           (yonedaFamily_fromCocone_compatible S s)
         have ht := H.choose_spec.1 f.obj.hom f.property
-        aesop_cat
+        cat_disch
       uniq := by
         intro s Fs HFs
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
@@ -205,93 +247,12 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         exact fun _ f hf => HFs ⟨Over.mk f, hf⟩ }
   · intro H W x hx
     replace H := Classical.choice H
-    let s := compatibleYonedaFamily_toCocone S W x hx
+    let s := compatibleYonedaFamily_toCocone S.arrows W x hx
     use H.desc s
     constructor
     · exact fun _ f hf => (H.fac s) ⟨Over.mk f, hf⟩
     · exact fun g hg => H.uniq s g (fun ⟨⟨f, _, hom⟩, hf⟩ => hg hom hf)
 
 end Sieve
-
-variable {C : Type u} [Category.{v} C]
-
-variable (J : GrothendieckTopology C)
-
-/-- The category of sheaves on a grothendieck topology. -/
-structure SheafOfTypes (J : GrothendieckTopology C) : Type max u v (w + 1) where
-  /-- the underlying presheaf -/
-  val : Cᵒᵖ ⥤ Type w
-  /-- the condition that the presheaf is a sheaf -/
-  cond : Presieve.IsSheaf J val
-set_option linter.uppercaseLean3 false in
-#align category_theory.SheafOfTypes CategoryTheory.SheafOfTypes
-
-namespace SheafOfTypes
-
-variable {J}
-
-/-- Morphisms between sheaves of types are just morphisms between the underlying presheaves. -/
-@[ext]
-structure Hom (X Y : SheafOfTypes J) where
-  /-- a morphism between the underlying presheaves -/
-  val : X.val ⟶ Y.val
-set_option linter.uppercaseLean3 false in
-#align category_theory.SheafOfTypes.hom CategoryTheory.SheafOfTypes.Hom
-
-@[simps]
-instance : Category (SheafOfTypes J) where
-  Hom := Hom
-  id _ := ⟨𝟙 _⟩
-  comp f g := ⟨f.val ≫ g.val⟩
-  id_comp _ := Hom.ext _ _ <| id_comp _
-  comp_id _ := Hom.ext _ _ <| comp_id _
-  assoc _ _ _ := Hom.ext _ _ <| assoc _ _ _
-
--- Porting note: we need to restate the ext lemma in terms of the categorical morphism
--- not just the underlying structure.
--- It would be nice if this boilerplate weren't necessary.
-@[ext]
-theorem Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f = g :=
-  Hom.ext f g w
-
--- Let's make the inhabited linter happy...
-instance (X : SheafOfTypes J) : Inhabited (Hom X X) :=
-  ⟨𝟙 X⟩
-
-end SheafOfTypes
-
-/-- The inclusion functor from sheaves to presheaves. -/
-@[simps]
-def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
-  obj := SheafOfTypes.val
-  map f := f.val
-  map_id _ := rfl
-  map_comp _ _ := rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
-
-instance : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
-
-instance : Faithful (sheafOfTypesToPresheaf J) where
-
-/--
-The category of sheaves on the bottom (trivial) grothendieck topology is equivalent to the category
-of presheaves.
--/
-@[simps]
-def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒᵖ ⥤ Type w where
-  functor := sheafOfTypesToPresheaf _
-  inverse :=
-    { obj := fun P => ⟨P, Presieve.isSheaf_bot⟩
-      map := fun f => (sheafOfTypesToPresheaf _).preimage f }
-  unitIso :=
-    { hom := { app := fun _ => ⟨𝟙 _⟩ }
-      inv := { app := fun _ => ⟨𝟙 _⟩ } }
-  counitIso := Iso.refl _
-set_option linter.uppercaseLean3 false in
-#align category_theory.SheafOfTypes_bot_equiv CategoryTheory.sheafOfTypesBotEquiv
-
-instance : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) :=
-  ⟨sheafOfTypesBotEquiv.inverse.obj ((Functor.const _).obj PUnit)⟩
 
 end CategoryTheory

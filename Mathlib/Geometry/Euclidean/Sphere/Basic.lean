@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.StrictConvexBetween
-import Mathlib.Geometry.Euclidean.Basic
+module
 
-#align_import geometry.euclidean.sphere.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
+public import Mathlib.Analysis.Convex.StrictConvexBetween
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.Convex
+public import Mathlib.Geometry.Euclidean.Basic
 
 /-!
 # Spheres
@@ -18,6 +20,11 @@ Euclidean affine spaces.
 
 * `EuclideanGeometry.Sphere` bundles a `center` and a `radius`.
 
+* `EuclideanGeometry.Sphere.IsDiameter` is the property of two points being the two endpoints
+  of a diameter of a sphere.
+
+* `EuclideanGeometry.Sphere.ofDiameter` constructs the sphere on a given diameter.
+
 * `EuclideanGeometry.Cospherical` is the property of a set of points being equidistant from some
   point.
 
@@ -25,6 +32,8 @@ Euclidean affine spaces.
   coplanar.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -35,15 +44,16 @@ namespace EuclideanGeometry
 
 variable {V : Type*} (P : Type*)
 
-open FiniteDimensional
+open Module
 
 /-- A `Sphere P` bundles a `center` and `radius`. This definition does not require the radius to
 be positive; that should be given as a hypothesis to lemmas that require it. -/
 @[ext]
 structure Sphere [MetricSpace P] where
+  /-- center of this sphere -/
   center : P
+  /-- radius of the sphere; not required to be positive -/
   radius : ℝ
-#align euclidean_geometry.sphere EuclideanGeometry.Sphere
 
 variable {P}
 
@@ -58,35 +68,25 @@ instance : Coe (Sphere P) (Set P) :=
   ⟨fun s => Metric.sphere s.center s.radius⟩
 
 instance : Membership P (Sphere P) :=
-  ⟨fun p s => p ∈ (s : Set P)⟩
+  ⟨fun s p => p ∈ (s : Set P)⟩
 
 theorem Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
   rfl
-#align euclidean_geometry.sphere.mk_center EuclideanGeometry.Sphere.mk_center
 
 theorem Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r :=
   rfl
-#align euclidean_geometry.sphere.mk_radius EuclideanGeometry.Sphere.mk_radius
 
 @[simp]
 theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
   ext <;> rfl
-#align euclidean_geometry.sphere.mk_center_radius EuclideanGeometry.Sphere.mk_center_radius
-
-/- Porting note: is a syntactic tautology
-theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
-  rfl -/
-#noalign euclidean_geometry.sphere.coe_def
 
 @[simp]
 theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
   rfl
-#align euclidean_geometry.sphere.coe_mk EuclideanGeometry.Sphere.coe_mk
 
--- @[simp] -- Porting note: simp-normal form is `Sphere.mem_coe'`
+-- simp-normal form is `Sphere.mem_coe'`
 theorem Sphere.mem_coe {p : P} {s : Sphere P} : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
-#align euclidean_geometry.sphere.mem_coe EuclideanGeometry.Sphere.mem_coe
 
 @[simp]
 theorem Sphere.mem_coe' {p : P} {s : Sphere P} : dist p s.center = s.radius ↔ p ∈ s :=
@@ -94,99 +94,88 @@ theorem Sphere.mem_coe' {p : P} {s : Sphere P} : dist p s.center = s.radius ↔ 
 
 theorem mem_sphere {p : P} {s : Sphere P} : p ∈ s ↔ dist p s.center = s.radius :=
   Iff.rfl
-#align euclidean_geometry.mem_sphere EuclideanGeometry.mem_sphere
 
 theorem mem_sphere' {p : P} {s : Sphere P} : p ∈ s ↔ dist s.center p = s.radius :=
   Metric.mem_sphere'
-#align euclidean_geometry.mem_sphere' EuclideanGeometry.mem_sphere'
 
 theorem subset_sphere {ps : Set P} {s : Sphere P} : ps ⊆ s ↔ ∀ p ∈ ps, p ∈ s :=
   Iff.rfl
-#align euclidean_geometry.subset_sphere EuclideanGeometry.subset_sphere
 
 theorem dist_of_mem_subset_sphere {p : P} {ps : Set P} {s : Sphere P} (hp : p ∈ ps)
     (hps : ps ⊆ (s : Set P)) : dist p s.center = s.radius :=
   mem_sphere.1 (Sphere.mem_coe.1 (Set.mem_of_mem_of_subset hp hps))
-#align euclidean_geometry.dist_of_mem_subset_sphere EuclideanGeometry.dist_of_mem_subset_sphere
 
 theorem dist_of_mem_subset_mk_sphere {p c : P} {ps : Set P} {r : ℝ} (hp : p ∈ ps)
     (hps : ps ⊆ ↑(⟨c, r⟩ : Sphere P)) : dist p c = r :=
   dist_of_mem_subset_sphere hp hps
-#align euclidean_geometry.dist_of_mem_subset_mk_sphere EuclideanGeometry.dist_of_mem_subset_mk_sphere
 
 theorem Sphere.ne_iff {s₁ s₂ : Sphere P} :
     s₁ ≠ s₂ ↔ s₁.center ≠ s₂.center ∨ s₁.radius ≠ s₂.radius := by
   rw [← not_and_or, ← Sphere.ext_iff]
-#align euclidean_geometry.sphere.ne_iff EuclideanGeometry.Sphere.ne_iff
 
 theorem Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center = s₂.center ↔ s₁ = s₂ := by
-  refine' ⟨fun h => Sphere.ext _ _ h _, fun h => h ▸ rfl⟩
+  refine ⟨fun h => Sphere.ext h ?_, fun h => h ▸ rfl⟩
   rw [mem_sphere] at hs₁ hs₂
   rw [← hs₁, ← hs₂, h]
-#align euclidean_geometry.sphere.center_eq_iff_eq_of_mem EuclideanGeometry.Sphere.center_eq_iff_eq_of_mem
 
 theorem Sphere.center_ne_iff_ne_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center ≠ s₂.center ↔ s₁ ≠ s₂ :=
   (Sphere.center_eq_iff_eq_of_mem hs₁ hs₂).not
-#align euclidean_geometry.sphere.center_ne_iff_ne_of_mem EuclideanGeometry.Sphere.center_ne_iff_ne_of_mem
 
 theorem dist_center_eq_dist_center_of_mem_sphere {p₁ p₂ : P} {s : Sphere P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : dist p₁ s.center = dist p₂ s.center := by
   rw [mem_sphere.1 hp₁, mem_sphere.1 hp₂]
-#align euclidean_geometry.dist_center_eq_dist_center_of_mem_sphere EuclideanGeometry.dist_center_eq_dist_center_of_mem_sphere
 
 theorem dist_center_eq_dist_center_of_mem_sphere' {p₁ p₂ : P} {s : Sphere P} (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) : dist s.center p₁ = dist s.center p₂ := by
   rw [mem_sphere'.1 hp₁, mem_sphere'.1 hp₂]
-#align euclidean_geometry.dist_center_eq_dist_center_of_mem_sphere' EuclideanGeometry.dist_center_eq_dist_center_of_mem_sphere'
+
+lemma Sphere.radius_nonneg_of_mem {s : Sphere P} {p : P} (h : p ∈ s) : 0 ≤ s.radius :=
+  Metric.nonneg_of_mem_sphere h
+
+@[simp] lemma Sphere.center_mem_iff {s : Sphere P} : s.center ∈ s ↔ s.radius = 0 := by
+  simp [mem_sphere, eq_comm]
 
 /-- A set of points is cospherical if they are equidistant from some
 point. In two dimensions, this is the same thing as being
 concyclic. -/
 def Cospherical (ps : Set P) : Prop :=
   ∃ (center : P) (radius : ℝ), ∀ p ∈ ps, dist p center = radius
-#align euclidean_geometry.cospherical EuclideanGeometry.Cospherical
 
 /-- The definition of `Cospherical`. -/
 theorem cospherical_def (ps : Set P) :
     Cospherical ps ↔ ∃ (center : P) (radius : ℝ), ∀ p ∈ ps, dist p center = radius :=
   Iff.rfl
-#align euclidean_geometry.cospherical_def EuclideanGeometry.cospherical_def
 
 /-- A set of points is cospherical if and only if they lie in some sphere. -/
 theorem cospherical_iff_exists_sphere {ps : Set P} :
     Cospherical ps ↔ ∃ s : Sphere P, ps ⊆ (s : Set P) := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨c, r, h⟩
     exact ⟨⟨c, r⟩, h⟩
   · rcases h with ⟨s, h⟩
     exact ⟨s.center, s.radius, h⟩
-#align euclidean_geometry.cospherical_iff_exists_sphere EuclideanGeometry.cospherical_iff_exists_sphere
 
 /-- The set of points in a sphere is cospherical. -/
 theorem Sphere.cospherical (s : Sphere P) : Cospherical (s : Set P) :=
   cospherical_iff_exists_sphere.2 ⟨s, Set.Subset.rfl⟩
-#align euclidean_geometry.sphere.cospherical EuclideanGeometry.Sphere.cospherical
 
 /-- A subset of a cospherical set is cospherical. -/
 theorem Cospherical.subset {ps₁ ps₂ : Set P} (hs : ps₁ ⊆ ps₂) (hc : Cospherical ps₂) :
     Cospherical ps₁ := by
   rcases hc with ⟨c, r, hcr⟩
   exact ⟨c, r, fun p hp => hcr p (hs hp)⟩
-#align euclidean_geometry.cospherical.subset EuclideanGeometry.Cospherical.subset
 
 /-- The empty set is cospherical. -/
 theorem cospherical_empty [Nonempty P] : Cospherical (∅ : Set P) :=
   let ⟨p⟩ := ‹Nonempty P›
-  ⟨p, 0, fun p => False.elim⟩
-#align euclidean_geometry.cospherical_empty EuclideanGeometry.cospherical_empty
+  ⟨p, 0, fun _ => False.elim⟩
 
 /-- A single point is cospherical. -/
 theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
   use p
   simp
-#align euclidean_geometry.cospherical_singleton EuclideanGeometry.cospherical_singleton
 
 end MetricSpace
 
@@ -194,40 +183,139 @@ section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
+lemma Sphere.nonempty_iff [Nontrivial V] {s : Sphere P} : (s : Set P).Nonempty ↔ 0 ≤ s.radius := by
+  refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
+  obtain ⟨v, hv⟩ := (NormedSpace.sphere_nonempty (x := (0 : V)) (r := s.radius)).2 h
+  refine ⟨v +ᵥ s.center, ?_⟩
+  simpa [mem_sphere] using hv
+
+include V in
 /-- Two points are cospherical. -/
 theorem cospherical_pair (p₁ p₂ : P) : Cospherical ({p₁, p₂} : Set P) :=
   ⟨midpoint ℝ p₁ p₂, ‖(2 : ℝ)‖⁻¹ * dist p₁ p₂, by
     rintro p (rfl | rfl | _)
     · rw [dist_comm, dist_midpoint_left (𝕜 := ℝ)]
     · rw [dist_comm, dist_midpoint_right (𝕜 := ℝ)]⟩
-#align euclidean_geometry.cospherical_pair EuclideanGeometry.cospherical_pair
 
 /-- A set of points is concyclic if it is cospherical and coplanar. (Most results are stated
 directly in terms of `Cospherical` instead of using `Concyclic`.) -/
 structure Concyclic (ps : Set P) : Prop where
   Cospherical : Cospherical ps
   Coplanar : Coplanar ℝ ps
-#align euclidean_geometry.concyclic EuclideanGeometry.Concyclic
 
 /-- A subset of a concyclic set is concyclic. -/
 theorem Concyclic.subset {ps₁ ps₂ : Set P} (hs : ps₁ ⊆ ps₂) (h : Concyclic ps₂) : Concyclic ps₁ :=
   ⟨h.1.subset hs, h.2.subset hs⟩
-#align euclidean_geometry.concyclic.subset EuclideanGeometry.Concyclic.subset
 
 /-- The empty set is concyclic. -/
 theorem concyclic_empty : Concyclic (∅ : Set P) :=
   ⟨cospherical_empty, coplanar_empty ℝ P⟩
-#align euclidean_geometry.concyclic_empty EuclideanGeometry.concyclic_empty
 
 /-- A single point is concyclic. -/
 theorem concyclic_singleton (p : P) : Concyclic ({p} : Set P) :=
   ⟨cospherical_singleton p, coplanar_singleton ℝ p⟩
-#align euclidean_geometry.concyclic_singleton EuclideanGeometry.concyclic_singleton
 
 /-- Two points are concyclic. -/
 theorem concyclic_pair (p₁ p₂ : P) : Concyclic ({p₁, p₂} : Set P) :=
   ⟨cospherical_pair p₁ p₂, coplanar_pair ℝ p₁ p₂⟩
-#align euclidean_geometry.concyclic_pair EuclideanGeometry.concyclic_pair
+
+namespace Sphere
+
+/-- `s.IsDiameter p₁ p₂` says that `p₁` and `p₂` are the two endpoints of a diameter of `s`. -/
+structure IsDiameter (s : Sphere P) (p₁ p₂ : P) : Prop where
+  left_mem : p₁ ∈ s
+  midpoint_eq_center : midpoint ℝ p₁ p₂ = s.center
+
+variable {s : Sphere P} {p₁ p₂ p₃ : P}
+
+lemma IsDiameter.right_mem (h : s.IsDiameter p₁ p₂) : p₂ ∈ s := by
+  rw [mem_sphere, ← mem_sphere.1 h.left_mem, ← h.midpoint_eq_center,
+    dist_left_midpoint_eq_dist_right_midpoint]
+
+protected lemma IsDiameter.symm (h : s.IsDiameter p₁ p₂) : s.IsDiameter p₂ p₁ :=
+  ⟨h.right_mem, midpoint_comm (R := ℝ) p₁ p₂ ▸ h.midpoint_eq_center⟩
+
+lemma isDiameter_comm : s.IsDiameter p₁ p₂ ↔ s.IsDiameter p₂ p₁ :=
+  ⟨IsDiameter.symm, IsDiameter.symm⟩
+
+lemma isDiameter_iff_left_mem_and_midpoint_eq_center :
+    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ midpoint ℝ p₁ p₂ = s.center :=
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+
+lemma isDiameter_iff_right_mem_and_midpoint_eq_center :
+    s.IsDiameter p₁ p₂ ↔ p₂ ∈ s ∧ midpoint ℝ p₁ p₂ = s.center :=
+  ⟨fun h ↦ ⟨h.right_mem, h.2⟩, fun h ↦ IsDiameter.symm ⟨h.1, midpoint_comm (R := ℝ) p₁ p₂ ▸ h.2⟩⟩
+
+lemma IsDiameter.pointReflection_center_left (h : s.IsDiameter p₁ p₂) :
+    Equiv.pointReflection s.center p₁ = p₂ := by
+  rw [← h.midpoint_eq_center, Equiv.pointReflection_midpoint_left]
+
+lemma IsDiameter.pointReflection_center_right (h : s.IsDiameter p₁ p₂) :
+    Equiv.pointReflection s.center p₂ = p₁ := by
+  rw [← h.midpoint_eq_center, Equiv.pointReflection_midpoint_right]
+
+lemma isDiameter_iff_left_mem_and_pointReflection_center_left :
+    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ Equiv.pointReflection s.center p₁ = p₂ :=
+  ⟨fun h ↦ ⟨h.1, h.pointReflection_center_left⟩, fun h ↦ ⟨h.1, by simp [← h.2]⟩⟩
+
+lemma isDiameter_iff_right_mem_and_pointReflection_center_right :
+    s.IsDiameter p₁ p₂ ↔ p₂ ∈ s ∧ Equiv.pointReflection s.center p₂ = p₁ := by
+  rw [isDiameter_comm, isDiameter_iff_left_mem_and_pointReflection_center_left]
+
+lemma IsDiameter.right_eq_of_isDiameter (h₁₂ : s.IsDiameter p₁ p₂) (h₁₃ : s.IsDiameter p₁ p₃) :
+    p₂ = p₃ := by
+  rw [← h₁₂.pointReflection_center_left, ← h₁₃.pointReflection_center_left]
+
+lemma IsDiameter.left_eq_of_isDiameter (h₁₃ : s.IsDiameter p₁ p₃) (h₂₃ : s.IsDiameter p₂ p₃) :
+    p₁ = p₂ := by
+  rw [← h₁₃.pointReflection_center_right, ← h₂₃.pointReflection_center_right]
+
+lemma IsDiameter.dist_left_right (h : s.IsDiameter p₁ p₂) : dist p₁ p₂ = 2 * s.radius := by
+  rw [← mem_sphere.1 h.left_mem, ← h.midpoint_eq_center, dist_left_midpoint]
+  simp
+
+lemma IsDiameter.dist_left_right_div_two (h : s.IsDiameter p₁ p₂) :
+    (dist p₁ p₂) / 2 = s.radius := by
+  simp [h.dist_left_right]
+
+lemma IsDiameter.left_eq_right_iff (h : s.IsDiameter p₁ p₂) : p₁ = p₂ ↔ s.radius = 0 := by
+  rw [← dist_eq_zero, h.dist_left_right]
+  simp
+
+lemma IsDiameter.left_ne_right_iff_radius_ne_zero (h : s.IsDiameter p₁ p₂) :
+    p₁ ≠ p₂ ↔ s.radius ≠ 0 :=
+  h.left_eq_right_iff.not
+
+lemma IsDiameter.left_ne_right_iff_radius_pos (h : s.IsDiameter p₁ p₂) :
+    p₁ ≠ p₂ ↔ 0 < s.radius := by
+  rw [h.left_ne_right_iff_radius_ne_zero, lt_iff_le_and_ne]
+  simp [radius_nonneg_of_mem h.left_mem, eq_comm]
+
+protected lemma IsDiameter.wbtw (h : s.IsDiameter p₁ p₂) : Wbtw ℝ p₁ s.center p₂ := by
+  rw [← h.midpoint_eq_center]
+  exact wbtw_midpoint _ _ _
+
+protected lemma IsDiameter.sbtw (h : s.IsDiameter p₁ p₂) (hr : s.radius ≠ 0) :
+    Sbtw ℝ p₁ s.center p₂ := by
+  rw [← h.midpoint_eq_center]
+  exact sbtw_midpoint_of_ne _ (h.left_ne_right_iff_radius_ne_zero.2 hr)
+
+/-- Construct the sphere with the given diameter. -/
+protected def ofDiameter (p₁ p₂ : P) : Sphere P :=
+  ⟨midpoint ℝ p₁ p₂, (dist p₁ p₂) / 2⟩
+
+lemma isDiameter_ofDiameter (p₁ p₂ : P) : (Sphere.ofDiameter p₁ p₂).IsDiameter p₁ p₂ :=
+  ⟨by simp [Sphere.ofDiameter, mem_sphere, inv_mul_eq_div], rfl⟩
+
+lemma IsDiameter.ofDiameter_eq (h : s.IsDiameter p₁ p₂) : .ofDiameter p₁ p₂ = s := by
+  ext
+  · simp [Sphere.ofDiameter, h.midpoint_eq_center]
+  · simp [Sphere.ofDiameter, ← h.dist_left_right_div_two]
+
+lemma isDiameter_iff_ofDiameter_eq : s.IsDiameter p₁ p₂ ↔ .ofDiameter p₁ p₂ = s :=
+  ⟨IsDiameter.ofDiameter_eq, by rintro rfl; exact isDiameter_ofDiameter _ _⟩
+
+end Sphere
 
 end NormedSpace
 
@@ -242,7 +330,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
   intro hc
   rw [collinear_iff_of_mem (Set.mem_range_self (0 : Fin 3))] at hc
   rcases hc with ⟨v, hv⟩
-  rw [Set.forall_range_iff] at hv
+  rw [Set.forall_mem_range] at hv
   have hv0 : v ≠ 0 := by
     intro h
     have he : p 1 = p 0 := by simpa [h] using hv 1
@@ -271,17 +359,15 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
     simpa [hfn0, hi] using hsdi
   have hf12 : f 1 = f 2 := by rw [hfn0' 1 (by decide), hfn0' 2 (by decide)]
   exact (by decide : (1 : Fin 3) ≠ 2) (hfi hf12)
-#align euclidean_geometry.cospherical.affine_independent EuclideanGeometry.Cospherical.affineIndependent
 
 /-- Any three points in a cospherical set are affinely independent. -/
 theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical s) {p₁ p₂ p₃ : P}
     (h₁ : p₁ ∈ s) (h₂ : p₂ ∈ s) (h₃ : p₃ ∈ s) (h₁₂ : p₁ ≠ p₂) (h₁₃ : p₁ ≠ p₃) (h₂₃ : p₂ ≠ p₃) :
     AffineIndependent ℝ ![p₁, p₂, p₃] := by
-  refine' hs.affineIndependent _ _
+  refine hs.affineIndependent ?_ ?_
   · simp [h₁, h₂, h₃, Set.insert_subset_iff]
   · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
     simp [h₁₂, h₁₃, h₂₃, Function.Injective, eq_iff_true_of_subsingleton]
-#align euclidean_geometry.cospherical.affine_independent_of_mem_of_ne EuclideanGeometry.Cospherical.affineIndependent_of_mem_of_ne
 
 /-- The three points of a cospherical set are affinely independent. -/
 theorem Cospherical.affineIndependent_of_ne {p₁ p₂ p₃ : P} (hs : Cospherical ({p₁, p₂, p₃} : Set P))
@@ -289,7 +375,6 @@ theorem Cospherical.affineIndependent_of_ne {p₁ p₂ p₃ : P} (hs : Cospheric
   hs.affineIndependent_of_mem_of_ne (Set.mem_insert _ _)
     (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
     (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))) h₁₂ h₁₃ h₂₃
-#align euclidean_geometry.cospherical.affine_independent_of_ne EuclideanGeometry.Cospherical.affineIndependent_of_ne
 
 /-- Suppose that `p₁` and `p₂` lie in spheres `s₁` and `s₂`. Then the vector between the centers
 of those spheres is orthogonal to that between `p₁` and `p₂`; this is a version of
@@ -300,7 +385,6 @@ theorem inner_vsub_vsub_of_mem_sphere_of_mem_sphere {p₁ p₂ : P} {s₁ s₂ :
     ⟪s₂.center -ᵥ s₁.center, p₂ -ᵥ p₁⟫ = 0 :=
   inner_vsub_vsub_of_dist_eq_of_dist_eq (dist_center_eq_dist_center_of_mem_sphere hp₁s₁ hp₂s₁)
     (dist_center_eq_dist_center_of_mem_sphere hp₁s₂ hp₂s₂)
-#align euclidean_geometry.inner_vsub_vsub_of_mem_sphere_of_mem_sphere EuclideanGeometry.inner_vsub_vsub_of_mem_sphere_of_mem_sphere
 
 /-- Two spheres intersect in at most two points in a two-dimensional subspace containing their
 centers; this is a version of `eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two` for bundled
@@ -312,7 +396,6 @@ theorem eq_of_mem_sphere_of_mem_sphere_of_mem_of_finrank_eq_two {s : AffineSubsp
     (hp₁s₂ : p₁ ∈ s₂) (hp₂s₂ : p₂ ∈ s₂) (hps₂ : p ∈ s₂) : p = p₁ ∨ p = p₂ :=
   eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two hd hs₁ hs₂ hp₁s hp₂s hps
     ((Sphere.center_ne_iff_ne_of_mem hps₁ hps₂).2 hs) hp hp₁s₁ hp₂s₁ hps₁ hp₁s₂ hp₂s₂ hps₂
-#align euclidean_geometry.eq_of_mem_sphere_of_mem_sphere_of_mem_of_finrank_eq_two EuclideanGeometry.eq_of_mem_sphere_of_mem_sphere_of_mem_of_finrank_eq_two
 
 /-- Two spheres intersect in at most two points in two-dimensional space; this is a version of
 `eq_of_dist_eq_of_dist_eq_of_finrank_eq_two` for bundled spheres. -/
@@ -322,37 +405,35 @@ theorem eq_of_mem_sphere_of_mem_sphere_of_finrank_eq_two [FiniteDimensional ℝ 
     (hps₂ : p ∈ s₂) : p = p₁ ∨ p = p₂ :=
   eq_of_dist_eq_of_dist_eq_of_finrank_eq_two hd ((Sphere.center_ne_iff_ne_of_mem hps₁ hps₂).2 hs) hp
     hp₁s₁ hp₂s₁ hps₁ hp₁s₂ hp₂s₂ hps₂
-#align euclidean_geometry.eq_of_mem_sphere_of_mem_sphere_of_finrank_eq_two EuclideanGeometry.eq_of_mem_sphere_of_mem_sphere_of_finrank_eq_two
 
 /-- Given a point on a sphere and a point not outside it, the inner product between the
 difference of those points and the radius vector is positive unless the points are equal. -/
 theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s)
     (hp₂ : dist p₂ s.center ≤ s.radius) : 0 < ⟪p₁ -ᵥ p₂, p₁ -ᵥ s.center⟫ ∨ p₁ = p₂ := by
   by_cases h : p₁ = p₂; · exact Or.inr h
-  refine' Or.inl _
+  refine Or.inl ?_
   rw [mem_sphere] at hp₁
   rw [← vsub_sub_vsub_cancel_right p₁ p₂ s.center, inner_sub_left,
     real_inner_self_eq_norm_mul_norm, sub_pos]
-  refine'
-    lt_of_le_of_ne ((real_inner_le_norm _ _).trans (mul_le_mul_of_nonneg_right _ (norm_nonneg _))) _
+  refine lt_of_le_of_ne
+    ((real_inner_le_norm _ _).trans (mul_le_mul_of_nonneg_right ?_ (norm_nonneg _))) ?_
   · rwa [← dist_eq_norm_vsub, ← dist_eq_norm_vsub, hp₁]
   · rcases hp₂.lt_or_eq with (hp₂' | hp₂')
-    · refine' ((real_inner_le_norm _ _).trans_lt (mul_lt_mul_of_pos_right _ _)).ne
+    · refine ((real_inner_le_norm _ _).trans_lt (mul_lt_mul_of_pos_right ?_ ?_)).ne
       · rwa [← hp₁, @dist_eq_norm_vsub V, @dist_eq_norm_vsub V] at hp₂'
       · rw [norm_pos_iff, vsub_ne_zero]
         rintro rfl
         rw [← hp₁] at hp₂'
-        refine' (dist_nonneg.not_lt : ¬dist p₂ s.center < 0) _
+        refine (dist_nonneg.not_gt : ¬dist p₂ s.center < 0) ?_
         simpa using hp₂'
     · rw [← hp₁, @dist_eq_norm_vsub V, @dist_eq_norm_vsub V] at hp₂'
       nth_rw 1 [← hp₂']
-      rw [Ne.def, inner_eq_norm_mul_iff_real, hp₂', ← sub_eq_zero, ← smul_sub,
-        vsub_sub_vsub_cancel_right, ← Ne.def, smul_ne_zero_iff, vsub_ne_zero,
+      rw [Ne, inner_eq_norm_mul_iff_real, hp₂', ← sub_eq_zero, ← smul_sub,
+        vsub_sub_vsub_cancel_right, ← Ne, smul_ne_zero_iff, vsub_ne_zero,
         and_iff_left (Ne.symm h), norm_ne_zero_iff, vsub_ne_zero]
       rintro rfl
-      refine' h (Eq.symm _)
+      refine h (Eq.symm ?_)
       simpa using hp₂'
-#align euclidean_geometry.inner_pos_or_eq_of_dist_le_radius EuclideanGeometry.inner_pos_or_eq_of_dist_le_radius
 
 /-- Given a point on a sphere and a point not outside it, the inner product between the
 difference of those points and the radius vector is nonnegative. -/
@@ -361,7 +442,6 @@ theorem inner_nonneg_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p
   rcases inner_pos_or_eq_of_dist_le_radius hp₁ hp₂ with (h | rfl)
   · exact h.le
   · simp
-#align euclidean_geometry.inner_nonneg_of_dist_le_radius EuclideanGeometry.inner_nonneg_of_dist_le_radius
 
 /-- Given a point on a sphere and a point inside it, the inner product between the difference of
 those points and the radius vector is positive. -/
@@ -371,7 +451,6 @@ theorem inner_pos_of_dist_lt_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ : p₁
   · rw [h, mem_sphere] at hp₁
     exact False.elim (hp₂.ne hp₁)
   exact (inner_pos_or_eq_of_dist_le_radius hp₁ hp₂.le).resolve_right h
-#align euclidean_geometry.inner_pos_of_dist_lt_radius EuclideanGeometry.inner_pos_of_dist_lt_radius
 
 /-- Given three collinear points, two on a sphere and one not outside it, the one not outside it
 is weakly between the other two points. -/
@@ -379,7 +458,6 @@ theorem wbtw_of_collinear_of_dist_center_le_radius {s : Sphere P} {p₁ p₂ p�
     (h : Collinear ℝ ({p₁, p₂, p₃} : Set P)) (hp₁ : p₁ ∈ s) (hp₂ : dist p₂ s.center ≤ s.radius)
     (hp₃ : p₃ ∈ s) (hp₁p₃ : p₁ ≠ p₃) : Wbtw ℝ p₁ p₂ p₃ :=
   h.wbtw_of_dist_eq_of_dist_le hp₁ hp₂ hp₃ hp₁p₃
-#align euclidean_geometry.wbtw_of_collinear_of_dist_center_le_radius EuclideanGeometry.wbtw_of_collinear_of_dist_center_le_radius
 
 /-- Given three collinear points, two on a sphere and one inside it, the one inside it is
 strictly between the other two points. -/
@@ -387,7 +465,28 @@ theorem sbtw_of_collinear_of_dist_center_lt_radius {s : Sphere P} {p₁ p₂ p�
     (h : Collinear ℝ ({p₁, p₂, p₃} : Set P)) (hp₁ : p₁ ∈ s) (hp₂ : dist p₂ s.center < s.radius)
     (hp₃ : p₃ ∈ s) (hp₁p₃ : p₁ ≠ p₃) : Sbtw ℝ p₁ p₂ p₃ :=
   h.sbtw_of_dist_eq_of_dist_lt hp₁ hp₂ hp₃ hp₁p₃
-#align euclidean_geometry.sbtw_of_collinear_of_dist_center_lt_radius EuclideanGeometry.sbtw_of_collinear_of_dist_center_lt_radius
+
+namespace Sphere
+
+variable {s : Sphere P} {p₁ p₂ : P}
+
+lemma isDiameter_iff_mem_and_mem_and_dist :
+    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ dist p₁ p₂ = 2 * s.radius := by
+  refine ⟨fun h ↦ ⟨h.left_mem, h.right_mem, h.dist_left_right⟩, fun ⟨h₁, h₂, hr⟩ ↦ ⟨h₁, ?_⟩⟩
+  rw [midpoint_eq_iff, AffineEquiv.pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq]
+  apply eq_of_norm_eq_of_norm_add_eq
+  · simp_rw [← dist_eq_norm_vsub, mem_sphere'.1 h₁, mem_sphere.1 h₂]
+  · simp_rw [vsub_add_vsub_cancel, ← dist_eq_norm_vsub, mem_sphere'.1 h₁, mem_sphere.1 h₂]
+    rw [dist_comm, hr, two_mul]
+
+lemma isDiameter_iff_mem_and_mem_and_wbtw :
+    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ Wbtw ℝ p₁ s.center p₂ := by
+  refine ⟨fun h ↦ ⟨h.left_mem, h.right_mem, h.wbtw⟩, fun ⟨h₁, h₂, hr⟩ ↦ ?_⟩
+  have hd := hr.dist_add_dist
+  rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd
+  exact isDiameter_iff_mem_and_mem_and_dist.2 ⟨h₁, h₂, hd⟩
+
+end Sphere
 
 end EuclideanSpace
 

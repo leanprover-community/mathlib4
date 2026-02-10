@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2021 . All rights reserved.
+Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Fintype.Powerset
+module
 
-#align_import data.set_like.fintype from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Set-like fintype
@@ -14,6 +14,8 @@ import Mathlib.Data.Fintype.Powerset
 This file contains a fintype instance for set-like objects such as subgroups. If `SetLike A B`
 and `Fintype B` then `Fintype A`.
 -/
+
+@[expose] public section
 
 
 namespace SetLike

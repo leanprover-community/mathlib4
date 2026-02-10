@@ -1,0 +1,48 @@
+name: update nolints
+
+on:
+  schedule:
+    - cron: "0 0 * * 0" # At 00:00 UTC on Sunday.
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build, lint and update nolints and style exceptions
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      - name: update nolints.json
+        shell: bash
+        run: |
+          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --trace --update Mathlib
+
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_NOLINTS_PRIVATE_KEY }}
+
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          commit-message: "chore(scripts): update nolints.json"
+          branch: "nolints"
+          base: master
+          title: "chore(scripts): update nolints.json"
+          body: |
+            I am happy to remove some nolints for you!
+
+            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          labels: "auto-merge-after-CI"
