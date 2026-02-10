@@ -2321,380 +2321,230 @@ theorem affineOfBinary_cons_zero_field [Inhabited M] (op : BinaryConvexOp R M)
     simp only [mul_zero, zero_add, ← mul_assoc,
       mul_invOf_self, one_mul]
   | (w₁, y₁) :: (w₂, y₂) :: (w₃, y₃) :: rest', hlen =>
-    -- n ≥ 4 case: decompose both sides, apply IH to leftWS, use doubleton_padded_end for rightWS
-    match rest' with
-    | [] =>
-      -- n = 4: ws = [(w₁,y₁), (w₂,y₂), (w₃,y₃)]
-      -- Inline cons_zero_field_algebra: pad each inner binCombo to 3-element sequences
-      -- over (y₁,y₂,y₃), apply affineOfBinary_linear, show both sides equal A([(w₁,y₁),(w₂,y₂),(w₃,y₃)]).
-      -- Step 1: Decompose both sides
-      rw [affineOfBinary_decompose op 0 x w₁ y₁ w₂ y₂ [(w₃, y₃)]]
-      have hleftWS : leftWeightedSeq op ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: [(w₃, y₃)]) =
-          [(⅟op.u * 0, x), (1 - ⅟op.u * 0 - [⅟op.u * w₂].sum, y₁), (⅟op.u * w₂, y₂)] := by
-        simp [leftWeightedSeq]
-      have hrightWS : rightWeightedSeq op ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: [(w₃, y₃)]) =
-          [(1 - ⅟(1 - op.u) * w₃, y₁), (0, y₂), (⅟(1 - op.u) * w₃, y₃)] := by
-        simp [rightWeightedSeq]
-      rw [hleftWS, hrightWS]
-      simp only [List.sum_cons, List.sum_nil, add_zero, mul_zero, sub_zero]
-      -- Step 2: Apply IH to remove leading zero from leftWS
-      have hn : n = 3 := by simpa [List.length_cons, List.length_nil] using hlen.symm
-      have hleft_valid : WeightedSeq.totalWeight
-          [(1 - ⅟op.u * w₂, y₁), (⅟op.u * w₂, y₂)] = 1 := by
-        simp [WeightedSeq.totalWeight]
-      rw [ih 2 (by omega) x _ hleft_valid (List.cons_ne_nil _ _) rfl]
-      -- Step 3: Evaluate A on 2-element lists as binCombo
-      conv_lhs => rw [show affineOfBinary op [(1 - ⅟op.u * w₂, y₁), (⅟op.u * w₂, y₂)] =
-        op.binCombo (⅟op.u * w₂) y₁ y₂ from by simp [affineOfBinary]]
-      conv_lhs =>
-        rw [show [(1 - ⅟(1 - op.u) * w₃, y₁), ((0 : R), y₂), (⅟(1 - op.u) * w₃, y₃)] =
-          [(1 - ⅟(1 - op.u) * w₃, y₁)] ++ [y₂].map (fun z => ((0 : R), z)) ++
-            [(⅟(1 - op.u) * w₃, y₃)] from by simp]
-        rw [affineOfBinary_doubleton_padded_end op _ _ y₁ y₃ [y₂] (by ring)]
-      rw [affineOfBinary_decompose op w₁ y₁ w₂ y₂ w₃ y₃ []]
-      conv_rhs =>
-        rw [show leftWeightedSeq op ((w₁, y₁) :: (w₂, y₂) :: [(w₃, y₃)]) =
-          [(⅟op.u * w₁, y₁), (1 - ⅟op.u * w₁, y₂)] from by simp [leftWeightedSeq]]
-        rw [show rightWeightedSeq op ((w₁, y₁) :: (w₂, y₂) :: [(w₃, y₃)]) =
-          [(1 - ⅟(1 - op.u) * w₃, y₂), (⅟(1 - op.u) * w₃, y₃)] from by
-            simp [rightWeightedSeq]]
-        rw [show affineOfBinary op [(⅟op.u * w₁, y₁), (1 - ⅟op.u * w₁, y₂)] =
-          op.binCombo (1 - ⅟op.u * w₁) y₁ y₂ from by simp [affineOfBinary]]
-        rw [show affineOfBinary op [(1 - ⅟(1 - op.u) * w₃, y₂), (⅟(1 - op.u) * w₃, y₃)] =
-          op.binCombo (⅟(1 - op.u) * w₃) y₂ y₃ from by simp [affineOfBinary]]
-      -- Goal: C(1-u, C(⅟u*w₂,y₁,y₂), C(⅟(1-u)*w₃,y₁,y₃))
-      --     = C(1-u, C(1-⅟u*w₁,y₁,y₂), C(⅟(1-u)*w₃,y₂,y₃))
-      -- Inline cons_zero_field_algebra: pad each inner binCombo to 3-element sequences
-      -- over (y₁,y₂,y₃), apply affineOfBinary_linear, show both sides equal
-      -- A([(w₁,y₁),(w₂,y₂),(w₃,y₃)]).
-      have hsum : w₁ + w₂ + w₃ = 1 := by
-        have := hvalid; simp [WeightedSeq.totalWeight] at this; linarith
-      have halg : op.binCombo (1 - op.u)
-          (op.binCombo (⅟op.u * w₂) y₁ y₂)
-          (op.binCombo (⅟(1 - op.u) * w₃) y₁ y₃) =
-        op.binCombo (1 - op.u)
-          (op.binCombo (1 - ⅟op.u * w₁) y₁ y₂)
-          (op.binCombo (⅟(1 - op.u) * w₃) y₂ y₃) := by
-        set a := ⅟op.u * w₂ with ha_def
-        set b := ⅟(1 - op.u) * w₃ with hb_def
-        -- LHS inner terms as affineOfBinary:
-        have hL1 : op.binCombo a y₁ y₂ = affineOfBinary op [(1 - a, y₁), (a, y₂)] := by
-          simp [affineOfBinary]
-        have hL1_pad : affineOfBinary op [(1 - a, y₁), (a, y₂)] =
-            affineOfBinary op [(1 - a, y₁), (a, y₂), (0, y₃)] := by
-          rw [show [(1 - a, y₁), (a, y₂), (0, y₃)] =
-            [(1 - a, y₁), (a, y₂)] ++ [(0, y₃)] from rfl]
-          rw [affineOfBinary_append_zero op [(1 - a, y₁), (a, y₂)] y₃]
-          · simp [WeightedSeq.totalWeight]
-          · exact List.cons_ne_nil _ _
-        have hL2 : op.binCombo b y₁ y₃ = affineOfBinary op [(1 - b, y₁), (b, y₃)] := by
-          simp [affineOfBinary]
-        have hL2_pad : affineOfBinary op [(1 - b, y₁), (b, y₃)] =
-            affineOfBinary op [(1 - b, y₁), (0, y₂), (b, y₃)] := by
-          rw [show [(1 - b, y₁), (0, y₂), (b, y₃)] =
-            [(1 - b, y₁)] ++ [y₂].map (fun z => (0, z)) ++ [(b, y₃)] from by simp]
-          rw [affineOfBinary_doubleton_padded_end op (1 - b) b y₁ y₃ [y₂] (by ring)]
-          simp [affineOfBinary]
-        have hLHS : op.binCombo (1 - op.u)
-            (affineOfBinary op [(1 - a, y₁), (a, y₂), (0, y₃)])
-            (affineOfBinary op [(1 - b, y₁), (0, y₂), (b, y₃)]) =
-            affineOfBinary op (WeightedSeq.combineWeights (1 - op.u)
-              [(1 - a, y₁), (a, y₂), (0, y₃)] [(1 - b, y₁), (0, y₂), (b, y₃)]) :=
-          affineOfBinary_linear op (1 - op.u)
-            [(1 - a, y₁), (a, y₂), (0, y₃)] [(1 - b, y₁), (0, y₂), (b, y₃)]
-            (by simp) (by simp [WeightedSeq.samePoints])
-        -- RHS inner terms:
-        set c := 1 - ⅟op.u * w₁ with hc_def
-        have hR1 : op.binCombo c y₁ y₂ = affineOfBinary op [(1 - c, y₁), (c, y₂)] := by
-          simp [affineOfBinary]
-        have hR1_pad : affineOfBinary op [(1 - c, y₁), (c, y₂)] =
-            affineOfBinary op [(1 - c, y₁), (c, y₂), (0, y₃)] := by
-          rw [show [(1 - c, y₁), (c, y₂), (0, y₃)] =
-            [(1 - c, y₁), (c, y₂)] ++ [(0, y₃)] from rfl]
-          rw [affineOfBinary_append_zero op [(1 - c, y₁), (c, y₂)] y₃]
-          · simp [WeightedSeq.totalWeight]
-          · exact List.cons_ne_nil _ _
-        have hR2 : op.binCombo b y₂ y₃ = affineOfBinary op [(1 - b, y₂), (b, y₃)] := by
-          simp [affineOfBinary]
-        -- Key: use IH instead of affineOfBinary_cons_zero_field (breaks circularity)
-        have hR2_pad : affineOfBinary op [(1 - b, y₂), (b, y₃)] =
-            affineOfBinary op [(0, y₁), (1 - b, y₂), (b, y₃)] := by
-          rw [ih 2 (by omega) y₁ [(1 - b, y₂), (b, y₃)]
-            (by simp [WeightedSeq.totalWeight]) (List.cons_ne_nil _ _) rfl]
-        have hRHS : op.binCombo (1 - op.u)
-            (affineOfBinary op [(1 - c, y₁), (c, y₂), (0, y₃)])
-            (affineOfBinary op [(0, y₁), (1 - b, y₂), (b, y₃)]) =
-            affineOfBinary op (WeightedSeq.combineWeights (1 - op.u)
-              [(1 - c, y₁), (c, y₂), (0, y₃)] [(0, y₁), (1 - b, y₂), (b, y₃)]) :=
-          affineOfBinary_linear op (1 - op.u)
-            [(1 - c, y₁), (c, y₂), (0, y₃)] [(0, y₁), (1 - b, y₂), (b, y₃)]
-            (by simp) (by simp [WeightedSeq.samePoints])
-        -- Chain the rewrites
-        rw [hL1, hL1_pad, hL2, hL2_pad, hLHS]
-        rw [hR1, hR1_pad, hR2, hR2_pad, hRHS]
-        -- Show the two combineWeights results are equal
-        -- Both combineWeights equal [(w₁,y₁),(w₂,y₂),(w₃,y₃)]
-        have hua : op.u * a = w₂ := by rw [ha_def, ← mul_assoc, mul_invOf_self, one_mul]
-        have hub : (1 - op.u) * b = w₃ := by rw [hb_def, ← mul_assoc, mul_invOf_self, one_mul]
-        have huc : op.u * c = op.u - w₁ := by
-          rw [hc_def]; ring_nf; rw [mul_invOf_self]; ring
-        simp only [WeightedSeq.combineWeights, List.zipWith,
-          sub_sub_cancel, mul_zero, add_zero, zero_add, mul_sub, mul_one]
-        rw [hua, hub, huc]
-        congr 1
-        simp only [Prod.mk.injEq, List.cons.injEq, and_true]
-        constructor <;> linarith
-      exact halg
-    | r₂ :: rest₂ =>
-      -- n ≥ 5 case: ws = (w₁,y₁)::(w₂,y₂)::(w₃,y₃)::r₂::rest₂
-      -- Strategy: Compute leftWS and rightWS explicitly, apply IH on leftWS
-      -- (which has leading zero), pad the tail with (0,yₙ) via append_zero,
-      -- apply affineOfBinary_linear, show combineWeights = ws.
-      have hn : n = rest₂.length + 4 := by
-        simp only [List.length_cons] at hlen; omega
-      -- Define the concrete components
-      set rest := (w₃, y₃) :: r₂ :: rest₂
-      set mw := (w₂ :: rest.map Prod.fst).dropLast
-      set mp := (y₂ :: rest.map Prod.snd).dropLast
-      set sm := mw.map (⅟op.u * ·)
-      have hmw_mp : mw.length = mp.length := by simp [mw, mp]
-      have hsm_mp : sm.length = mp.length := by simp [sm, mw, mp]
-      -- leftTail is what remains after removing the leading (0,x) from leftWS
-      set leftTail : WeightedSeq R M := (1 - sm.sum, y₁) :: sm.zip mp
-      -- Step 1: Compute leftWS explicitly
-      have hleftWS : leftWeightedSeq op
-          ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest) =
-          (0, x) :: leftTail := by
-        simp only [leftWeightedSeq, mul_zero, sub_zero, leftTail, sm, mw, mp, rest]
-      -- Step 2: Decompose LHS
-      rw [affineOfBinary_decompose (op := op) (s₁ := 0) (x₁ := x)
-        (s₂ := w₁) (x₂ := y₁) (s₃ := w₂) (x₃ := y₂)
-        (rest := rest)]
-      rw [hleftWS]
-      -- Apply IH to remove leading zero
-      have hleft_valid : WeightedSeq.totalWeight leftTail = 1 := by
-        simp only [WeightedSeq.totalWeight, leftTail, List.map_cons, List.sum_cons, Prod.fst]
-        rw [List.map_fst_zip (le_of_eq hsm_mp)]
-        ring
-      have hleft_ne : leftTail ≠ [] := List.cons_ne_nil _ _
-      have hleft_lt : leftTail.length < n := by
-        simp only [leftTail, List.length_cons, List.length_zip, hsm_mp, Nat.min_self]
-        have hmp_len : mp.length = rest₂.length + 2 := by
-          simp only [mp, rest, List.length_dropLast, List.length_cons, List.length_map]; omega
-        rw [hmp_len]; omega
-      rw [ih leftTail.length hleft_lt x leftTail hleft_valid hleft_ne rfl]
-      -- Goal: C(1-u, A(leftTail), A(rightWS)) = A(ws)
-      -- Step 3: Pad leftTail with (0, yₙ)
-      set yₙ := (r₂ :: rest₂).getLast (List.cons_ne_nil _ _) |>.2
-      have hpad : affineOfBinary op leftTail =
-          affineOfBinary op (leftTail ++ [(0, yₙ)]) := by
-        rw [affineOfBinary_append_zero op leftTail yₙ hleft_valid hleft_ne]
-      rw [hpad]
-      -- Step 4: Compute rightWS explicitly
-      set wₙ := ((r₂ :: rest₂).getLast (List.cons_ne_nil _ _)).1
-      set bLast := ⅟(1 - op.u) * wₙ
-      set b₁ := 1 - bLast
-      have hrightWS : rightWeightedSeq op
-          ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest) =
-          (b₁, y₁) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
-            (y₂ :: rest.map Prod.snd) := by
-        simp only [rightWeightedSeq, rest]
-        congr 1 <;> simp [b₁, bLast, wₙ]
-      -- Step 5: Key fact: mp ++ [yₙ] = y₂ :: rest.map snd
-      -- mp = (y₂ :: rest.map snd).dropLast and yₙ is the last point
-      have hmp_yₙ : mp ++ [yₙ] = y₂ :: rest.map Prod.snd := by
-        -- mp = (y₂ :: rest.map snd).dropLast by definition
-        change (y₂ :: rest.map Prod.snd).dropLast ++ [yₙ] = _
-        -- yₙ = (y₂ :: rest.map snd).getLast _
-        have hne : (y₂ :: rest.map Prod.snd) ≠ [] := List.cons_ne_nil _ _
-        suffices h : yₙ = (y₂ :: rest.map Prod.snd).getLast hne by
-          rw [h, List.dropLast_append_getLast hne]
-        -- getLast commutes with map Prod.snd
-        simp only [yₙ, rest, List.map_cons]
-        conv_rhs => rw [List.getLast_cons (List.cons_ne_nil _ _),
-          List.getLast_cons (List.cons_ne_nil _ _)]
-        -- Now: ((r₂::rest₂).getLast _).2 = (r₂.snd :: map snd rest₂).getLast _
-        -- Prove by a local suffices to avoid capturing context in the IH
+    -- n ≥ 4 case: Compute leftWS and rightWS explicitly, apply IH on leftWS
+    -- (which has leading zero), pad the tail with (0,yₙ) via append_zero,
+    -- apply affineOfBinary_linear, show combineWeights = ws.
+    have hn : n = rest'.length + 3 := by
+      simp only [List.length_cons] at hlen; omega
+    -- Define the concrete components
+    set rest := (w₃, y₃) :: rest'
+    set mw := (w₂ :: rest.map Prod.fst).dropLast
+    set mp := (y₂ :: rest.map Prod.snd).dropLast
+    set sm := mw.map (⅟op.u * ·)
+    have hmw_mp : mw.length = mp.length := by simp [mw, mp]
+    have hsm_mp : sm.length = mp.length := by simp [sm, mw, mp]
+    -- leftTail is what remains after removing the leading (0,x) from leftWS
+    set leftTail : WeightedSeq R M := (1 - sm.sum, y₁) :: sm.zip mp
+    -- Step 1: Compute leftWS explicitly
+    have hleftWS : leftWeightedSeq op
+        ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest) =
+        (0, x) :: leftTail := by
+      simp only [leftWeightedSeq, mul_zero, sub_zero, leftTail, sm, mw, mp, rest]
+    -- Step 2: Decompose LHS
+    rw [affineOfBinary_decompose (op := op) (s₁ := 0) (x₁ := x)
+      (s₂ := w₁) (x₂ := y₁) (s₃ := w₂) (x₃ := y₂)
+      (rest := rest)]
+    rw [hleftWS]
+    -- Apply IH to remove leading zero
+    have hleft_valid : WeightedSeq.totalWeight leftTail = 1 := by
+      simp only [WeightedSeq.totalWeight, leftTail, List.map_cons, List.sum_cons, Prod.fst]
+      rw [List.map_fst_zip (le_of_eq hsm_mp)]
+      ring
+    have hleft_ne : leftTail ≠ [] := List.cons_ne_nil _ _
+    have hleft_lt : leftTail.length < n := by
+      simp only [leftTail, List.length_cons, List.length_zip, hsm_mp, Nat.min_self]
+      have hmp_len : mp.length = rest'.length + 1 := by
+        simp only [mp, rest, List.length_dropLast, List.length_cons, List.length_map]; omega
+      rw [hmp_len]; omega
+    rw [ih leftTail.length hleft_lt x leftTail hleft_valid hleft_ne rfl]
+    -- Goal: C(1-u, A(leftTail), A(rightWS)) = A(ws)
+    -- Step 3: Pad leftTail with (0, yₙ)
+    set yₙ := rest.getLast (List.cons_ne_nil _ _) |>.2
+    have hpad : affineOfBinary op leftTail =
+        affineOfBinary op (leftTail ++ [(0, yₙ)]) := by
+      rw [affineOfBinary_append_zero op leftTail yₙ hleft_valid hleft_ne]
+    rw [hpad]
+    -- Step 4: Compute rightWS explicitly
+    set wₙ := (rest.getLast (List.cons_ne_nil _ _)).1
+    set bLast := ⅟(1 - op.u) * wₙ
+    set b₁ := 1 - bLast
+    have hrightWS : rightWeightedSeq op
+        ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest) =
+        (b₁, y₁) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
+          (y₂ :: rest.map Prod.snd) := by
+      simp only [rightWeightedSeq, rest]
+      congr 1 <;> simp [b₁, bLast, wₙ]
+    -- Step 5: Key fact: mp ++ [yₙ] = y₂ :: rest.map snd
+    -- mp = (y₂ :: rest.map snd).dropLast and yₙ is the last point
+    have hmp_yₙ : mp ++ [yₙ] = y₂ :: rest.map Prod.snd := by
+      -- mp = (y₂ :: rest.map snd).dropLast by definition
+      change (y₂ :: rest.map Prod.snd).dropLast ++ [yₙ] = _
+      -- yₙ = (y₂ :: rest.map snd).getLast _
+      have hne : (y₂ :: rest.map Prod.snd) ≠ [] := List.cons_ne_nil _ _
+      suffices h : yₙ = (y₂ :: rest.map Prod.snd).getLast hne by
+        rw [h, List.dropLast_append_getLast hne]
+      -- getLast commutes with map Prod.snd
+      simp only [yₙ, rest, List.map_cons]
+      rw [List.getLast_cons (List.cons_ne_nil _ _)]
+      -- Now: ((w₃,y₃)::rest').getLast.2 = (y₃ :: map snd rest').getLast
+      suffices ∀ (a : R × M) (l : List (R × M)),
+          ((a :: l).getLast (List.cons_ne_nil _ _)).2 =
+          (a.2 :: l.map Prod.snd).getLast (List.cons_ne_nil _ _) from this (w₃, y₃) rest'
+      intro a l
+      induction l generalizing a with
+      | nil => simp
+      | cons b t ih =>
+        simp only [List.getLast_cons (List.cons_ne_nil _ _), List.map_cons]
+        exact ih b
+    -- Step 6: Compute padded left sequence
+    set leftPadded : WeightedSeq R M := leftTail ++ [(0, yₙ)]
+    have hleftPadded : leftPadded = (1 - sm.sum, y₁) :: (sm.zip mp ++ [(0, yₙ)]) := by
+      simp [leftPadded, leftTail]
+    -- Step 7: Show same length
+    have hrest_len : rest.length = rest'.length + 1 := by
+      simp [rest]
+    have hmp_len : mp.length = rest'.length + 1 := by
+      simp only [mp, rest, List.length_dropLast, List.length_cons, List.length_map]; omega
+    have hleftPadded_len : leftPadded.length = rest'.length + 3 := by
+      simp only [leftPadded, leftTail, List.length_append, List.length_cons,
+        List.length_zip, hsm_mp, Nat.min_self, List.length_singleton, List.length_nil,
+        hmp_len]
+    -- rightWS length
+    set rightWS := rightWeightedSeq op
+      ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest)
+    have hrightWS_len : rightWS.length = rest'.length + 3 := by
+      rw [show rightWS = (b₁, y₁) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
+          (y₂ :: rest.map Prod.snd) from hrightWS]
+      simp only [List.length_cons, List.length_zip, List.length_append,
+        List.length_replicate, List.length_singleton, List.length_map, hrest_len]
+      omega
+    have hlen_eq : leftPadded.length = rightWS.length := by
+      rw [hleftPadded_len, hrightWS_len]
+    -- Step 8: Show same points
+    have hpts : leftPadded.samePoints rightWS := by
+      simp only [WeightedSeq.samePoints, hleftPadded, hrightWS]
+      simp only [List.map_cons, Prod.snd]
+      congr 1
+      -- Both sides equal y₂ :: rest.map snd
+      -- LHS = map snd (sm.zip mp) ++ [yₙ] = mp ++ [yₙ] = y₂ :: rest.map snd
+      have lhs_eq : List.map Prod.snd (sm.zip mp ++ [(0, yₙ)]) =
+          y₂ :: List.map Prod.snd rest := by
+        rw [List.map_append, List.map_snd_zip (le_of_eq hsm_mp.symm)]
+        simpa using hmp_yₙ
+      -- RHS = y₂ :: rest.map snd (map snd of a zip with ≤ length condition)
+      have rhs_eq : List.map Prod.snd
+          ((List.replicate rest.length 0 ++ [bLast]).zip
+            (y₂ :: List.map Prod.snd rest)) =
+          y₂ :: List.map Prod.snd rest := by
+        apply List.map_snd_zip
+        simp [List.length_append, List.length_replicate]
+      rw [lhs_eq, rhs_eq]
+    -- Step 9: Apply affineOfBinary_linear
+    rw [affineOfBinary_linear op (1 - op.u) leftPadded rightWS hlen_eq hpts]
+    -- Step 10: Show combineWeights (1-u) leftPadded rightWS = ws
+    -- It suffices to show the lists are equal
+    congr 1
+    -- Step 10: Show combineWeights (1 - u) leftPadded rightWS = ws
+    -- Unfold definitions
+    simp only [hleftPadded, hrightWS, WeightedSeq.combineWeights, List.zipWith_cons_cons]
+    -- Head element: ((1-(1-u))*(1-sm.sum) + (1-u)*b₁, y₁) should = (w₁, y₁)
+    -- Arithmetic helpers
+    have hu_inv : op.u * ⅟op.u = 1 := mul_invOf_self op.u
+    have h1u_inv : (1 - op.u) * ⅟(1 - op.u) = 1 := mul_invOf_self (1 - op.u)
+    -- Prove the head weight = w₁
+    have hsm_eq : sm.sum = ⅟op.u * mw.sum := by
+      change (mw.map (⅟op.u * ·)).sum = ⅟op.u * mw.sum
+      induction mw with
+      | nil => simp
+      | cons a t ih =>
+        simp only [List.map_cons, List.sum_cons]
+        rw [ih, mul_add]
+    -- Key fact: mw ++ [wₙ] = w₂ :: rest.map fst
+    have hmw_wₙ_eq : mw ++ [wₙ] = w₂ :: List.map Prod.fst rest := by
+      have hwₙ_eq : wₙ = (w₂ :: List.map Prod.fst rest).getLast (List.cons_ne_nil _ _) := by
+        simp only [wₙ, rest, List.map_cons]
+        rw [List.getLast_cons (List.cons_ne_nil _ _)]
         suffices ∀ (a : R × M) (l : List (R × M)),
-            ((a :: l).getLast (List.cons_ne_nil _ _)).2 =
-            (a.2 :: l.map Prod.snd).getLast (List.cons_ne_nil _ _) from this r₂ rest₂
-        intro a l
-        induction l generalizing a with
+            ((a :: l).getLast (List.cons_ne_nil _ _)).1 =
+            (a.1 :: l.map Prod.fst).getLast (List.cons_ne_nil _ _) from this (w₃, y₃) rest'
+        intro a l; induction l generalizing a with
         | nil => simp
         | cons b t ih =>
-          simp only [List.getLast_cons (List.cons_ne_nil _ _), List.map_cons]
-          exact ih b
-      -- Step 6: Compute padded left sequence
-      set leftPadded : WeightedSeq R M := leftTail ++ [(0, yₙ)]
-      have hleftPadded : leftPadded = (1 - sm.sum, y₁) :: (sm.zip mp ++ [(0, yₙ)]) := by
-        simp [leftPadded, leftTail]
-      -- Step 7: Show same length
-      have hrest_len : rest.length = rest₂.length + 2 := by
-        simp [rest]
-      have hmp_len : mp.length = rest₂.length + 2 := by
-        simp only [mp, rest, List.length_dropLast, List.length_cons, List.length_map]; omega
-      have hleftPadded_len : leftPadded.length = rest₂.length + 4 := by
-        simp only [leftPadded, leftTail, List.length_append, List.length_cons,
-          List.length_zip, hsm_mp, Nat.min_self, List.length_singleton, List.length_nil,
-          hmp_len]
-      -- rightWS length
-      set rightWS := rightWeightedSeq op
-        ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest)
-      have hrightWS_len : rightWS.length = rest₂.length + 4 := by
-        rw [show rightWS = (b₁, y₁) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
-            (y₂ :: rest.map Prod.snd) from hrightWS]
-        simp only [List.length_cons, List.length_zip, List.length_append,
-          List.length_replicate, List.length_singleton, List.length_map, hrest_len]
-        omega
-      have hlen_eq : leftPadded.length = rightWS.length := by
-        rw [hleftPadded_len, hrightWS_len]
-      -- Step 8: Show same points
-      have hpts : leftPadded.samePoints rightWS := by
-        simp only [WeightedSeq.samePoints, hleftPadded, hrightWS]
-        simp only [List.map_cons, Prod.snd]
-        congr 1
-        -- Both sides equal y₂ :: rest.map snd
-        -- LHS = map snd (sm.zip mp) ++ [yₙ] = mp ++ [yₙ] = y₂ :: rest.map snd
-        have lhs_eq : List.map Prod.snd (sm.zip mp ++ [(0, yₙ)]) =
-            y₂ :: List.map Prod.snd rest := by
-          rw [List.map_append, List.map_snd_zip (le_of_eq hsm_mp.symm)]
-          simpa using hmp_yₙ
-        -- RHS = y₂ :: rest.map snd (map snd of a zip with ≤ length condition)
-        have rhs_eq : List.map Prod.snd
-            ((List.replicate rest.length 0 ++ [bLast]).zip
-              (y₂ :: List.map Prod.snd rest)) =
-            y₂ :: List.map Prod.snd rest := by
-          apply List.map_snd_zip
-          simp [List.length_append, List.length_replicate]
-        rw [lhs_eq, rhs_eq]
-      -- Step 9: Apply affineOfBinary_linear
-      rw [affineOfBinary_linear op (1 - op.u) leftPadded rightWS hlen_eq hpts]
-      -- Step 10: Show combineWeights (1-u) leftPadded rightWS = ws
-      -- It suffices to show the lists are equal
+          simp only [List.getLast_cons (List.cons_ne_nil _ _), List.map_cons]; exact ih b
+      simp only [mw, hwₙ_eq]
+      exact List.dropLast_append_getLast (List.cons_ne_nil _ _)
+    -- Key fact about mw.sum + wₙ
+    have hmw_wₙ_sum : mw.sum + wₙ + w₁ = 1 := by
+      have hfst_sum : (w₂ :: List.map Prod.fst rest).sum + w₁ = 1 := by
+        have := hvalid
+        simp only [WeightedSeq.totalWeight, List.map_cons, List.sum_cons] at this
+        simp only [List.sum_cons]; linarith
+      rw [show mw.sum + wₙ = (mw ++ [wₙ]).sum from by
+          rw [List.sum_append, List.sum_singleton]]
+      rw [hmw_wₙ_eq]; exact hfst_sum
+    -- Now prove the head pair and tail
+    congr 1
+    · -- Head pair: (u*(1-sm.sum) + (1-u)*b₁, y₁) = (w₁, y₁)
       congr 1
-      -- Step 10: Show combineWeights (1 - u) leftPadded rightWS = ws
-      -- Unfold definitions
-      simp only [hleftPadded, hrightWS, WeightedSeq.combineWeights, List.zipWith_cons_cons]
-      -- Head element: ((1-(1-u))*(1-sm.sum) + (1-u)*b₁, y₁) should = (w₁, y₁)
-      -- Arithmetic helpers
-      have hu_inv : op.u * ⅟op.u = 1 := mul_invOf_self op.u
-      have h1u_inv : (1 - op.u) * ⅟(1 - op.u) = 1 := mul_invOf_self (1 - op.u)
-      -- Prove the head weight = w₁
-      -- (1-(1-u))*(1-sm.sum) + (1-u)*(1-bLast)
-      -- = u*(1 - ⅟u * mw.sum) + (1-u)*(1 - ⅟(1-u)*wₙ)
-      -- = u - mw.sum + (1-u) - wₙ = 1 - mw.sum - wₙ
-      -- mw.sum + wₙ = (w₂::rest.map fst).sum = 1 - w₁
-      -- So head weight = 1 - (1-w₁) = w₁
-      have hsm_eq : sm.sum = ⅟op.u * mw.sum := by
-        change (mw.map (⅟op.u * ·)).sum = ⅟op.u * mw.sum
-        induction mw with
-        | nil => simp
-        | cons a t ih =>
-          simp only [List.map_cons, List.sum_cons]
-          rw [ih, mul_add]
-      -- Key fact: mw ++ [wₙ] = w₂ :: rest.map fst
-      have hmw_wₙ_eq : mw ++ [wₙ] = w₂ :: List.map Prod.fst rest := by
-        have hwₙ_eq : wₙ = (w₂ :: List.map Prod.fst rest).getLast (List.cons_ne_nil _ _) := by
-          simp only [wₙ, rest, List.map_cons]
-          rw [List.getLast_cons (List.cons_ne_nil _ _),
-            List.getLast_cons (List.cons_ne_nil _ _)]
-          suffices ∀ (a : R × M) (l : List (R × M)),
-              ((a :: l).getLast (List.cons_ne_nil _ _)).1 =
-              (a.1 :: l.map Prod.fst).getLast (List.cons_ne_nil _ _) from this r₂ rest₂
-          intro a l; induction l generalizing a with
-          | nil => simp
-          | cons b t ih =>
-            simp only [List.getLast_cons (List.cons_ne_nil _ _), List.map_cons]; exact ih b
-        simp only [mw, hwₙ_eq]
-        exact List.dropLast_append_getLast (List.cons_ne_nil _ _)
-      -- Key fact about mw.sum + wₙ
-      have hmw_wₙ_sum : mw.sum + wₙ + w₁ = 1 := by
-        have hfst_sum : (w₂ :: List.map Prod.fst rest).sum = 1 - w₁ := by
-          have := hvalid
-          simp only [WeightedSeq.totalWeight, List.map_cons, List.sum_cons] at this
-          simp only [List.sum_cons]
-          linarith
-        rw [show mw.sum + wₙ = (mw ++ [wₙ]).sum from by
-            rw [List.sum_append, List.sum_singleton]]
-        rw [hmw_wₙ_eq, hfst_sum]
-        linarith
-      -- Now prove the head pair and tail
-      congr 1
-      · -- Head pair: (u*(1-sm.sum) + (1-u)*b₁, y₁) = (w₁, y₁)
-        congr 1
-        -- The weight is (1-(1-u))*(1-sm.sum) + (1-u)*b₁
-        -- b₁ = 1 - ⅟(1-u)*wₙ, sm.sum = ⅟u * mw.sum
-        -- Expand and simplify using invOf cancellation
-        calc (1 - (1 - op.u)) * (1 - sm.sum) + (1 - op.u) * b₁
-            = op.u * (1 - sm.sum) + (1 - op.u) * (1 - ⅟(1 - op.u) * wₙ) := by
-              ring
-          _ = op.u - op.u * sm.sum + ((1 - op.u) - (1 - op.u) * (⅟(1 - op.u) * wₙ)) := by
-              ring
-          _ = op.u - op.u * (⅟op.u * mw.sum) +
-              ((1 - op.u) - (1 - op.u) * ⅟(1 - op.u) * wₙ) := by
-              rw [hsm_eq, mul_assoc]
-          _ = op.u - mw.sum + ((1 - op.u) - wₙ) := by
-              rw [← mul_assoc, hu_inv, one_mul, h1u_inv, one_mul]
-          _ = 1 - (mw.sum + wₙ) := by ring
-          _ = w₁ := by linarith [hmw_wₙ_sum]
-      · -- Tail: zipWith ... = (w₂, y₂) :: rest
-        -- Rewrite the right zip using hmp_yₙ
-        have hrest_mp_len : rest.length = mp.length := by
-          rw [hrest_len, hmp_len]
-        rw [show List.replicate rest.length (0 : R) = List.replicate mp.length (0 : R)
-          from by rw [hrest_mp_len]]
-        rw [← hmp_yₙ, List.zip_append (by simp)]
-        -- Split zipWith over append
-        rw [List.zipWith_append (by simp [hsm_mp])]
-        -- Simplify the singleton zipWith on the right
-        simp only [List.zip_cons_cons, List.zip_nil_right, List.zipWith_cons_cons,
-          List.zipWith_nil_left, List.append_nil]
-        -- Now: zipWith f (sm.zip mp) ((repl 0).zip mp) ++
-        --      [((1-(1-u))*0 + (1-u)*bLast, yₙ)] = (w₂,y₂)::rest
-        -- Simplify the last element weight
-        conv_lhs => rw [show (1 - (1 - op.u)) * (0 : R) + (1 - op.u) * bLast = wₙ from by
-          simp only [mul_zero, zero_add, bLast, ← mul_assoc, h1u_inv, one_mul]]
-        -- Now: zipWith f (sm.zip mp) ((repl 0).zip mp) ++ [(wₙ, yₙ)] = (w₂,y₂)::rest
-        -- Show the main zipWith = mw.zip mp
-        suffices hzw : List.zipWith
-            (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
-            (sm.zip mp) ((List.replicate mp.length (0 : R)).zip mp) =
-            mw.zip mp by
-          rw [hzw]
-          -- mw.zip mp ++ [(wₙ, yₙ)] = (w₂,y₂) :: rest
-          have := (List.zip_append hmw_mp (r₁ := [wₙ]) (r₂ := [yₙ])).symm
-          simp only [List.zip_cons_cons, List.zip_nil_right] at this
-          rw [this, hmw_wₙ_eq, hmp_yₙ]
-          simp only [List.zip_cons_cons, List.cons.injEq, true_and]
-          rw [← List.unzip_fst, ← List.unzip_snd, List.zip_unzip]
-        -- Prove zipWith f (sm.zip mp) ((repl 0).zip mp) = mw.zip mp
-        -- sm = mw.map (⅟u * ·), so proceed by induction on mw/mp
-        change List.zipWith
-            (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
-            ((mw.map (⅟op.u * ·)).zip mp)
-            ((List.replicate mp.length (0 : R)).zip mp) =
-            mw.zip mp
-        suffices ∀ (ws : List R) (ps : List M), ws.length = ps.length →
-            List.zipWith (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
-              ((ws.map (⅟op.u * ·)).zip ps) ((List.replicate ps.length (0 : R)).zip ps)
-            = ws.zip ps by
-          exact this mw mp hmw_mp
-        intro ws ps hlen
-        induction ws generalizing ps with
-        | nil => simp
-        | cons w wt ih =>
-          match ps, hlen with
-          | p :: pt, hlen => ?_
-          simp only [List.map_cons, List.zip_cons_cons, List.length_cons, List.replicate,
-            List.replicate_succ, List.zipWith_cons_cons, List.cons.injEq]
-          have hlen' : wt.length = pt.length := by
-            simp only [List.length_cons] at hlen; omega
-          refine ⟨?_, ih pt hlen'⟩
-          simp only [Prod.mk.injEq, and_true]
-          have : (1 - (1 - op.u)) * (⅟op.u * w) + (1 - op.u) * 0 = w := by
-            rw [mul_zero, add_zero, show (1 - (1 - op.u)) = op.u from by ring]
-            rw [← mul_assoc, mul_invOf_self, one_mul]
-          exact this
+      calc (1 - (1 - op.u)) * (1 - sm.sum) + (1 - op.u) * b₁
+          = op.u * (1 - sm.sum) + (1 - op.u) * (1 - ⅟(1 - op.u) * wₙ) := by
+            ring
+        _ = op.u - op.u * sm.sum + ((1 - op.u) - (1 - op.u) * (⅟(1 - op.u) * wₙ)) := by
+            ring
+        _ = op.u - op.u * (⅟op.u * mw.sum) +
+            ((1 - op.u) - (1 - op.u) * ⅟(1 - op.u) * wₙ) := by
+            rw [hsm_eq, mul_assoc]
+        _ = op.u - mw.sum + ((1 - op.u) - wₙ) := by
+            rw [← mul_assoc, hu_inv, one_mul, h1u_inv, one_mul]
+        _ = 1 - (mw.sum + wₙ) := by ring
+        _ = w₁ := by linarith [hmw_wₙ_sum]
+    · -- Tail: zipWith ... = (w₂, y₂) :: rest
+      have hrest_mp_len : rest.length = mp.length := by
+        rw [hrest_len, hmp_len]
+      rw [show List.replicate rest.length (0 : R) = List.replicate mp.length (0 : R)
+        from by rw [hrest_mp_len]]
+      rw [← hmp_yₙ, List.zip_append (by simp)]
+      rw [List.zipWith_append (by simp [hsm_mp])]
+      simp only [List.zip_cons_cons, List.zip_nil_right, List.zipWith_cons_cons,
+        List.zipWith_nil_left, List.append_nil]
+      conv_lhs => rw [show (1 - (1 - op.u)) * (0 : R) + (1 - op.u) * bLast = wₙ from by
+        simp only [mul_zero, zero_add, bLast, ← mul_assoc, h1u_inv, one_mul]]
+      suffices hzw : List.zipWith
+          (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
+          (sm.zip mp) ((List.replicate mp.length (0 : R)).zip mp) =
+          mw.zip mp by
+        rw [hzw]
+        have := (List.zip_append hmw_mp (r₁ := [wₙ]) (r₂ := [yₙ])).symm
+        simp only [List.zip_cons_cons, List.zip_nil_right] at this
+        rw [this, hmw_wₙ_eq, hmp_yₙ]
+        simp only [List.zip_cons_cons, List.cons.injEq, true_and]
+        rw [← List.unzip_fst, ← List.unzip_snd, List.zip_unzip]
+      change List.zipWith
+          (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
+          ((mw.map (⅟op.u * ·)).zip mp)
+          ((List.replicate mp.length (0 : R)).zip mp) =
+          mw.zip mp
+      suffices ∀ (ws : List R) (ps : List M), ws.length = ps.length →
+          List.zipWith (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
+            ((ws.map (⅟op.u * ·)).zip ps) ((List.replicate ps.length (0 : R)).zip ps)
+          = ws.zip ps by
+        exact this mw mp hmw_mp
+      intro ws ps hlen
+      induction ws generalizing ps with
+      | nil => simp
+      | cons w wt ih =>
+        match ps, hlen with
+        | p :: pt, hlen => ?_
+        simp only [List.map_cons, List.zip_cons_cons, List.length_cons, List.replicate,
+          List.replicate_succ, List.zipWith_cons_cons, List.cons.injEq]
+        have hlen' : wt.length = pt.length := by
+          simp only [List.length_cons] at hlen; omega
+        refine ⟨?_, ih pt hlen'⟩
+        simp only [Prod.mk.injEq, and_true]
+        have : (1 - (1 - op.u)) * (⅟op.u * w) + (1 - op.u) * 0 = w := by
+          rw [mul_zero, add_zero, show (1 - (1 - op.u)) = op.u from by ring]
+          rw [← mul_assoc, mul_invOf_self, one_mul]
+        exact this
 
 /-- Prepending multiple zero-weight points at the front doesn't change the affine combination. -/
 theorem affineOfBinary_cons_zero_many [Inhabited M] (op : BinaryConvexOp R M)
