@@ -66,7 +66,7 @@ namespace AlgebraicGeometry
 
 variable (R) in
 /-- The prime spectrum as an object of `TopCat`. -/
-@[expose] public def PrimeSpectrum.Top : TopCat := TopCat.of (PrimeSpectrum R)
+public def PrimeSpectrum.Top : TopCat := TopCat.of (PrimeSpectrum R)
 
 namespace StructureSheaf
 
@@ -202,7 +202,7 @@ lemma structureSheafInType.smul_apply {U : Opens (PrimeSpectrum.Top R)}
   (r • s).1 x = r • s.1 x := rfl
 
 variable (R M) in
-/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type`-valued
+/-- The structure presheaf, valued in `ModuleCat`, constructed by dressing up the `Type`-valued
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInModuleCat : Presheaf (ModuleCat R) (PrimeSpectrum.Top R) where
@@ -246,8 +246,7 @@ def moduleStructurePresheaf : PresheafOfModules (structurePresheafInCommRingCat 
 
 variable (R) in
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
-with the `Type`-valued structure presheaf.
--/
+with the `Type`-valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRingCat R ⋙ forget CommRingCat ≅ (structureSheafInType R R).1 :=
   NatIso.ofComponents fun _ => Iso.refl _
@@ -376,13 +375,13 @@ namespace StructureSheaf
 
 section basicOpen
 
-lemma isUnit_toBasicOpen (f : R) :
+lemma isUnit_basicOpen (f : R) :
     IsUnit ((algebraMap R Γ(R, basicOpen f)) f) :=
   isUnit_iff_exists_inv.mpr ⟨const 1 f _ le_rfl, const_mul_rev _ _ _ (by simp) _⟩
 
-lemma isUnit_toBasicOpen_end (f : R) :
+lemma isUnit_basicOpen_end (f : R) :
     IsUnit ((algebraMap R (Module.End R Γ(M, basicOpen f))) f) := by
-  have := (isUnit_toBasicOpen f).map
+  have := (isUnit_basicOpen f).map
     (algebraMap _ (Module.End Γ(R, basicOpen f) Γ(M, basicOpen f)))
   rw [Module.End.isUnit_iff] at this ⊢
   convert this
@@ -390,25 +389,21 @@ lemma isUnit_toBasicOpen_end (f : R) :
   simp
 
 variable (R M) in
-/-- The canonical ring homomorphism interpreting `s ∈ R_f` as a section of the structure sheaf
+/-- The canonical linear map interpreting `s ∈ M_f` as a section of the structure sheaf
 on the basic open defined by `f ∈ R`. -/
 def toBasicOpenₗ (f : R) :
     LocalizedModule (.powers f) M →ₗ[R] Γ(M, PrimeSpectrum.basicOpen f) :=
   IsLocalizedModule.lift (.powers f) (LocalizedModule.mkLinearMap ..) (toOpenₗ R M _) <| by
     simp only [Subtype.forall]
     exact Submonoid.powers_le (P := (IsUnit.submonoid _).comap (algebraMap R _)).mpr
-      (isUnit_toBasicOpen_end ..)
-
--- move me
-lemma PrimeSpectrum.le_basicOpen_pow (r : R) (n : ℕ) : basicOpen r ≤ basicOpen (r ^ n) := by
-  cases n <;> simp
+      (isUnit_basicOpen_end ..)
 
 @[simp]
 theorem toBasicOpenₗ_mk (s : R) (f : M) (g : Submonoid.powers s) :
     toBasicOpenₗ R M s (.mk f g) = const f g.1 (basicOpen s) (by
     have := PrimeSpectrum.le_basicOpen_pow s; aesop (add simp [Submonoid.mem_powers_iff])) := by
   obtain ⟨_, n, rfl⟩ := g
-  apply ((Module.End.isUnit_iff _).mp ((isUnit_toBasicOpen_end ..).pow n)).1 ?_
+  apply ((Module.End.isUnit_iff _).mp ((isUnit_basicOpen_end ..).pow n)).1 ?_
   rw [← map_pow]
   dsimp [toBasicOpenₗ]
   rw [← map_smul, LocalizedModule.smul'_mk, ← Submonoid.mk_smul (S := .powers s) _ ⟨n, rfl⟩,
@@ -509,7 +504,7 @@ public instance (f : R) : IsLocalizedModule (.powers f) (toOpenₗ R M (basicOpe
   ext x
   simp [toOpenₗ]
 
-instance isIso_toBasicOpen (f : R) :
+instance isIso_toBasicOpenₗ (f : R) :
     IsIso (ModuleCat.ofHom (toBasicOpenₗ R M f)) :=
   (ConcreteCategory.isIso_iff_bijective _).mpr ⟨toBasicOpenₗ_injective _, toBasicOpenₗ_surjective _⟩
 
@@ -632,7 +627,7 @@ theorem toOpenₗ_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top 
 
 theorem isUnit_toStalk (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOpen f) :
     IsUnit (toStalk R x f) := by
-  convert (isUnit_toBasicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
+  convert (isUnit_basicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
   exact ((structurePresheafInCommRingCat R).germ_res_apply (homOfLE (le_top : basicOpen f ≤ ⊤))
     x hf (algebraMap R Γ(R, ⊤) f)).symm
 
@@ -795,17 +790,6 @@ instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (toS
     Limits.colimit.isoColimitCocone_ι_hom (C := Ab) ..
   exact congr($this _)
 
--- move me
-public instance forget₂SemiRing_preservesFilteredColimits :
-    Limits.PreservesFilteredColimits (forget₂ RingCat AddCommGrpCat.{u}) where
-  preserves_filtered_colimits {J hJ1 _} :=
-    letI : Category J := hJ1
-    { preservesColimit := fun {F} =>
-        Limits.preservesColimit_of_preserves_colimit_cocone
-          (RingCat.FilteredColimits.colimitCoconeIsColimit.{u, u} F)
-          (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
-            (F ⋙ forget₂ RingCat AddCommGrpCat.{u})) }
-
 variable (R) in
 /-- The stalk of `Spec R` at `x` is isomorphic to the stalk of `R^~` at `x`. -/
 @[expose] public
@@ -877,8 +861,7 @@ variable (R)
 
 /-- The structure sheaf on $Spec R$, valued in `CommRingCat`.
 
-This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later.
--/
+This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later. -/
 def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R) :=
   ⟨structurePresheafInCommRingCat R,
     (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr (TopCat.Presheaf.isSheaf_of_iso
