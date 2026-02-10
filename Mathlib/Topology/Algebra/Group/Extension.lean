@@ -11,7 +11,7 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 /-!
 # Short exact sequences of topological groups
 
-In this file, we define a short exact sequence of topological groups to a closed embedding `φ`
+In this file, we define a short exact sequence of topological groups to be a closed embedding `φ`
 followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
 
 ## Main definitions
