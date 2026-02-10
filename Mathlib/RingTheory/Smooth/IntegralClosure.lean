@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.Etale.StandardEtale
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Smooth.Locus
+
 
 /-!
 # Smooth base change commutes with integral closure
@@ -17,7 +20,7 @@ public import Mathlib.RingTheory.Etale.StandardEtale
 In this file we aim to prove that smooth base change commutes with integral closure.
 We define the map
 `TensorProduct.toIntegralClosure : S ⊗[R] integralClosure R B →ₐ[S] integralClosure S (S ⊗[R] B)`
-and (TODO) show that it is bijective when `S` is `R`-smooth.
+and show that it is bijective when `S` is `R`-smooth.
 
 ## Main results
 - `TensorProduct.toIntegralClosure_injective_of_flat`:
@@ -377,3 +380,6 @@ theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale [Algebra.Is
   refine ⟨1 ⊗ₜ ⟨y, hy⟩, by simp⟩
 
 end IsStandardEtale
+
+theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S] :
+    Function.Bijective (toIntegralClosure R S B) := by sorry -- #35023

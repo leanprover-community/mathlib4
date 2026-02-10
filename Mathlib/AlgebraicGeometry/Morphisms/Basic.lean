@@ -183,6 +183,11 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
   simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
 
+lemma of_forall_exists_morphismRestrict (H : ∀ x, ∃ U : Y.Opens, x ∈ U ∧ P (f ∣_ U)) : P f := by
+  choose U hxU hU using H
+  refine IsZariskiLocalAtTarget.of_iSup_eq_top U (top_le_iff.mp fun x _ ↦ ?_) hU
+  simpa using ⟨x, hxU x⟩
+
 lemma of_forall_source_exists_preimage
     [P.RespectsRight IsOpenImmersion] [P.HasOfPostcompProperty IsOpenImmersion]
     (f : X ⟶ Y) (hX : ∀ x, ∃ (U : Y.Opens), f x ∈ U ∧ P ((f ⁻¹ᵁ U).ι ≫ f)) :
