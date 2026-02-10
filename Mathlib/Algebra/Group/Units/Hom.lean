@@ -73,8 +73,8 @@ variable {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
 @[to_additive /-- The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`. -/]
 def map (f : M →* N) : Mˣ →* Nˣ :=
-  MonoidHom.mk'
-    (fun u => ⟨f u.val, f u.inv, by simp [← map_mul], by simp [← map_mul]⟩) fun _ _ => ext (by simp)
+  MonoidHom.mk' (fun u => ⟨f u.val, f u.inv, by simp [← map_mul], by simp [← map_mul]⟩)
+    fun _ _ => ext <| by simp
 
 @[to_additive (attr := simp)]
 theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
@@ -83,7 +83,8 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-theorem map_mk (f : M →* N) (val inv : M) (val_inv inv_val) : map f (mk val inv val_inv inv_val) =
+theorem map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
+  map f (mk val inv val_inv inv_val) =
     mk (f val) (f inv) (by simp [← map_mul, val_inv]) (by simp [← map_mul, inv_val]) := rfl
 
 @[to_additive (attr := simp)]
