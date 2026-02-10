@@ -774,7 +774,10 @@ jobs:
           echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
           echo "Found label actor: $USERNAME"
 
-      - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+      - if: >- # bot usernames will cause this step to error with "Could not resolve to a User..."
+          contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
+          steps.get-label-actor.outputs.username != 'mathlib-nolints' &&
+          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies'
         name: check team membership
         uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
         id: actorTeams
@@ -784,11 +787,18 @@ jobs:
           username: ${{ steps.get-label-actor.outputs.username }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
-      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
-      - if: ${{ contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') && (contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') || contains(steps.actorTeams.outputs.teams, 'bot-users')) }}
+      - if: >-
+          contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
+          (
+            steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
+            steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
+            contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') ||
+            contains(steps.actorTeams.outputs.teams, 'bot-users')
+          )
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
+          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
           token: ${{ steps.auto-merge-app-token.outputs.token }}
           issue-number: ${{ steps.PR.outputs.number }}
           body: |
