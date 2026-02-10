@@ -28,143 +28,147 @@ open CategoryTheory LinearMap Opposite TopologicalSpace
 
 universe w₀ w u v
 
+namespace CategoryTheory.Limits
+
+open IsFiltered
+
+variable {C : Type*} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat) (M : C ⥤ Ab)
+    [∀ i, Module (R.obj i) (M.obj i)]
+    (H : ∀ {i j} (f : i ⟶ j) r m, M.map f (r • m) = R.map f r • M.map f m)
+
+/-- (Implementation). The scalar multiplication function on `ColimitType`. -/
+protected noncomputable
+def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).ColimitType) :
+    (M ⋙ forget _).ColimitType := by
+  refine Quot.liftOn₂ r m (fun Ua Vb ↦ Functor.ιColimitType _ (max Ua.1 Vb.1) <|
+    letI a : R.obj (max Ua.1 Vb.1) := R.map (leftToMax Ua.1 Vb.1) Ua.2
+    letI b : M.obj (max Ua.1 Vb.1) := M.map (rightToMax Ua.1 Vb.1) Vb.2
+    a • b) ?_ ?_
+  · rintro ⟨U, a⟩ ⟨V₁, b₁⟩ ⟨V₂, b₂⟩ ⟨f : V₁ ⟶ V₂, rfl : b₂ = M.map _ b₁⟩
+    obtain ⟨s, α, β, h₁, h₂⟩ :=
+      bowtie (leftToMax U V₁) (leftToMax U V₂)
+        (rightToMax U V₁) (f ≫ rightToMax U V₂)
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
+    simp [*, ← elementwise_of% R.map_comp, ← elementwise_of% M.map_comp, -Functor.map_comp]
+  · rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩ ⟨f : U₁ ⟶ U₂, rfl : a₂ = R.map _ a₁⟩
+    obtain ⟨s, α, β, h₁, h₂⟩ :=
+      bowtie (leftToMax U₁ V) (f ≫ leftToMax U₂ V)
+        (rightToMax U₁ V) (rightToMax U₂ V)
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
+    simp [*, ← elementwise_of% R.map_comp, ← elementwise_of% M.map_comp, -Functor.map_comp]
+
+/-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
+noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.colimit R)
+    (AddCommGrpCat.FilteredColimits.colimit M) where
+  smul := colimit.smul R M H
+  mul_smul r s m := Quot.induction_on₃ r s m <| by
+    rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩
+    obtain ⟨s, α, β, h₁, h₂, h₃⟩ := crown₃
+      (leftToMax U₁ U₂ ≫ leftToMax (max U₁ U₂) V) (leftToMax U₁ (max U₂ V))
+      (rightToMax U₁ U₂ ≫ leftToMax (max U₁ U₂) V) (leftToMax U₂ V ≫ rightToMax U₁ (max U₂ V))
+      (rightToMax (max U₁ U₂) V) (rightToMax U₂ V ≫ rightToMax U₁ (max U₂ V))
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
+    dsimp
+    simp only [map_mul, ← ConcreteCategory.comp_apply, ← Functor.map_comp, mul_smul, *]
+  one_smul m := Quot.induction_on m <| by
+    rintro ⟨V, b⟩
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (rightToMax _ _) ?_
+    dsimp
+    simp only [map_one, ← ConcreteCategory.comp_apply, ← Functor.map_comp, one_smul,
+      Category.comp_id]
+  smul_zero r := Quot.induction_on r <| by
+    rintro ⟨U, a⟩
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (rightToMax _ _) ?_
+    dsimp
+    simp only [map_zero, smul_zero]
+  smul_add r m n := Quot.induction_on₃ r m n <| by
+    rintro ⟨U, a⟩ ⟨V₁, b₁⟩ ⟨V₂, b₂⟩
+    obtain ⟨s, α, β, h₁, h₂, h₃, h₄⟩ := crown₄
+      (leftToMax U V₁ ≫ leftToMax (max U V₁) (max U V₂)) (leftToMax U (max V₁ V₂))
+      (leftToMax U V₂ ≫ rightToMax (max U V₁) (max U V₂)) (leftToMax U (max V₁ V₂))
+      (rightToMax U V₁ ≫ leftToMax (max U V₁) (max U V₂))
+      (leftToMax V₁ V₂ ≫ rightToMax U (max V₁ V₂))
+      (rightToMax U V₂ ≫ rightToMax (max U V₁) (max U V₂))
+      (rightToMax V₁ V₂ ≫ rightToMax U (max V₁ V₂))
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ β α ?_
+    dsimp
+    simp only [*, ← ConcreteCategory.comp_apply, ← Functor.map_comp, map_add, smul_add]
+  add_smul r s m := Quot.induction_on₃ r s m <| by
+    rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩
+    obtain ⟨s, α, β, h₁, h₂, h₃, h₄⟩ := crown₄
+      (rightToMax U₁ V ≫ leftToMax (max U₁ V) (max U₂ V)) (rightToMax (max U₁ U₂) V)
+      (rightToMax U₂ V ≫ rightToMax (max U₁ V) (max U₂ V)) (rightToMax (max U₁ U₂) V)
+      (leftToMax U₁ V ≫ leftToMax (max U₁ V) (max U₂ V))
+      (leftToMax U₁ U₂ ≫ leftToMax (max U₁ U₂) V)
+      (leftToMax U₂ V ≫ rightToMax (max U₁ V) (max U₂ V))
+      (rightToMax U₁ U₂ ≫ leftToMax (max U₁ U₂) V)
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ β α ?_
+    dsimp
+    simp only [add_smul, map_add, ← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
+  zero_smul m := Quot.induction_on m <| by
+    rintro ⟨V, b⟩
+    refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (𝟙 _) (leftToMax _ _) ?_
+    dsimp
+    simp only [map_zero, zero_smul, *]
+
+/-- Given a cofiltered diagram of rings `R`, and a module `M` over `R`,
+this is the `colim R`-module structure of `colim M`. -/
+noncomputable abbrev IsColimit.module {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
+    (hcM : IsColimit cM) : Module cR.pt cM.pt :=
+  letI := filteredColimitsModule R M H
+  letI : Module (RingCat.FilteredColimits.colimit R) cM.pt :=
+    AddEquiv.module (β := AddCommGrpCat.FilteredColimits.colimit M) _
+        (IsColimit.coconePointUniqueUpToIso hcM
+          (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit M)).addCommGroupIsoToAddEquiv
+  .compHom (R := RingCat.FilteredColimits.colimit R) _
+    (IsColimit.coconePointUniqueUpToIso hcR
+          (RingCat.FilteredColimits.colimitCoconeIsColimit R)).ringCatIsoToRingEquiv.toRingHom
+
+lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
+    (hcM : IsColimit cM) (i : C) (r : R.obj i) (m : M.obj i) :
+    letI := IsColimit.module R M H hcR hcM
+    cM.ι.app i (r • m) =
+      HSMul.hSMul (α := cR.pt) (β := cM.pt) (cR.ι.app i r) (cM.ι.app i m) := by
+  letI := filteredColimitsModule R M H
+  let α := IsColimit.coconePointUniqueUpToIso hcM
+    (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit M)
+  let β := IsColimit.coconePointUniqueUpToIso hcR
+    (RingCat.FilteredColimits.colimitCoconeIsColimit R)
+  apply α.addCommGroupIsoToAddEquiv.eq_symm_apply.mpr ?_
+  change (cM.ι.app i ≫ α.hom) _ = (HSMul.hSMul (α := RingCat.FilteredColimits.colimit R)
+    (β := AddCommGrpCat.FilteredColimits.colimit M)
+    ((cR.ι.app i ≫ β.hom) r) ((cM.ι.app i ≫ α.hom) m))
+  simp only [Functor.const_obj_obj, comp_coconePointUniqueUpToIso_hom, α, β]
+  obtain ⟨s, α, H⟩ :=  IsFilteredOrEmpty.cocone_maps (leftToMax i i) (rightToMax i i)
+  refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (leftToMax _ _ ≫ α) α ?_
+  dsimp
+  simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp, *]
+
+end CategoryTheory.Limits
+
 namespace PresheafOfModules
 
 variable {X : TopCat.{u}} {R : X.Presheaf RingCat.{u}} (M : PresheafOfModules.{u} R)
 
 variable (x : X)
 
-/-- (Implementation). The action of `Rₓ` on `Mₓ` of `M`, a presheaf of `R`-modules. -/
-protected noncomputable
-def smul (r : ((OpenNhds.inclusion x).op ⋙ R ⋙ forget _).ColimitType)
-    (m : ((OpenNhds.inclusion x).op ⋙ M.presheaf ⋙ forget _).ColimitType) :
-    ((OpenNhds.inclusion x).op ⋙ M.presheaf ⋙ forget _).ColimitType := by
-  refine Quot.liftOn₂ r m (fun Ua Vb ↦ Functor.ιColimitType _ (.op <| Ua.1.unop ⊓ Vb.1.unop) <|
-    letI a : R.obj (op <| Ua.1.unop.1 ⊓ Vb.1.unop.1) := R.map (homOfLE inf_le_left).op Ua.2
-    letI b : M.obj (op <| Ua.1.unop.1 ⊓ Vb.1.unop.1) := M.map (homOfLE inf_le_right).op Vb.2
-    a • b) ?_ ?_
-  · rintro ⟨U, a⟩ ⟨V₁, b₁⟩ ⟨V₂, b₂⟩ ⟨f : V₁ ⟶ V₂,
-      rfl : b₂ = M.presheaf.map (homOfLE f.unop.le).op b₁⟩
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr
-      (.rel _ _ ⟨(homOfLE (inf_le_inf_left _ f.unop.le)).op, ((M.map_smul ..).trans ?_).symm⟩)
-    dsimp only
-    congr 1
-    · exact congr($(R.map_comp _ _) _).symm
-    · change (M.presheaf.map _ ≫ M.presheaf.map _) _ = (M.presheaf.map _ ≫ M.presheaf.map _) _
-      simp_rw [← Functor.map_comp]; rfl
-  · rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩ ⟨f : U₁ ⟶ U₂, rfl : a₂ = R.map (homOfLE f.unop.le).op a₁⟩
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr
-      (.rel _ _ ⟨(homOfLE (inf_le_inf_right _ f.unop.le)).op, ((M.map_smul ..).trans ?_).symm⟩)
-    dsimp only
-    congr 1
-    · change (R.map _ ≫ R.map _) _ = (R.map _ ≫ R.map _) _
-      simp_rw [← Functor.map_comp]; rfl
-    · change (M.presheaf.map _ ≫ M.presheaf.map _) _ = M.presheaf.map _ _
-      simp_rw [← Functor.map_comp]; rfl
-
-noncomputable
-instance : Module (RingCat.FilteredColimits.colimit ((OpenNhds.inclusion x).op ⋙ R))
-    (AddCommGrpCat.FilteredColimits.colimit ((OpenNhds.inclusion x).op ⋙ M.presheaf)) where
-  smul := M.smul x
-  mul_smul r s m := Quot.induction_on₃ r s m <| by
-    rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩
-    change Functor.ιColimitType _ _ _ = Functor.ιColimitType _ _ _
-    dsimp [PresheafOfModules.smul]
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr (.symm _ _ <| .rel _ _ ⟨(homOfLE ?_).op, ?_⟩)
-    · simp only [le_inf_iff, inf_le_right, and_true]
-      exact ⟨by grw [(IsFiltered.leftToMax U₁ U₂).unop.le]; simp,
-        by grw [(IsFiltered.rightToMax U₁ U₂).unop.le]; simp⟩
-    · simp [(presheaf_map_apply_coe), OpenNhds.inclusion, ← elementwise_of% R.map_comp,
-        -Functor.map_comp, ← M.map_comp_apply, - map_comp, mul_smul]
-      rfl
-  one_smul m := Quot.induction_on m <| by
-    rintro ⟨V, b⟩
-    change Functor.ιColimitType _ _ _ = Functor.ιColimitType _ _ _
-    dsimp [PresheafOfModules.smul]
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr (.symm _ _ <| .rel _ _ ⟨(homOfLE ?_).op, ?_⟩)
-    · simp
-    · simp; rfl
-  smul_zero r := Quot.induction_on r <| by
-    rintro ⟨U, a⟩
-    change Functor.ιColimitType _ _ _ = Functor.ιColimitType _ _ _
-    dsimp [PresheafOfModules.smul]
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr (.symm _ _ <| .rel _ _ ⟨(homOfLE ?_).op, ?_⟩)
-    · simp
-    · simp
-  smul_add r m n := Quot.induction_on₃ r m n <| by
-    rintro ⟨U, a⟩ ⟨V₁, b₁⟩ ⟨V₂, b₂⟩
-    change Functor.ιColimitType _ _ _ = Functor.ιColimitType _ _ _
-    dsimp [PresheafOfModules.smul]
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr ?_
-    let W := (unop U ⊓ unop (IsFiltered.max V₁ V₂)) ⊓
-      (unop (IsFiltered.max (op (unop U ⊓ unop V₁)) (op (unop U ⊓ unop V₂))))
-    refine .trans _ _ _ (.rel _ (Sigma.mk (op W) ?_) ⟨(homOfLE inf_le_left).op, ?_⟩) ?_
-    swap; · dsimp only; rfl
-    refine (.symm _ _ <| .rel _ _ ⟨(homOfLE inf_le_right).op, ?_⟩)
-    simp [(presheaf_map_apply_coe), OpenNhds.inclusion, ← elementwise_of% R.map_comp,
-        -Functor.map_comp, ← M.map_comp_apply, - map_comp]
-    rfl
-  add_smul r s m := Quot.induction_on₃ r s m <| by
-    rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩
-    change Functor.ιColimitType _ _ _ = Functor.ιColimitType _ _ _
-    dsimp [PresheafOfModules.smul]
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr ?_
-    let W := (IsFiltered.max (op (unop U₁ ⊓ unop V)) (op (unop U₂ ⊓ unop V))).unop ⊓
-      (unop (IsFiltered.max U₁ U₂) ⊓ unop V)
-    refine .trans _ _ _ (.rel _ (Sigma.mk (op W) ?_) ⟨(homOfLE inf_le_right).op, ?_⟩) ?_
-    swap; · dsimp only; rfl
-    refine (.symm _ _ <| .rel _ _ ⟨(homOfLE inf_le_left).op, ?_⟩)
-    simp [(presheaf_map_apply_coe), OpenNhds.inclusion, ← elementwise_of% R.map_comp,
-        -Functor.map_comp, ← M.map_comp_apply, - map_comp, add_smul]
-    rfl
-  zero_smul m := Quot.induction_on m <| by
-    rintro ⟨V, b⟩
-    change Functor.ιColimitType _ _ _ = Functor.ιColimitType _ _ _
-    dsimp [PresheafOfModules.smul]
-    refine (Functor.ιColimitType_eq_iff _ _ _).mpr (.symm _ _ <| .rel _ _ ⟨(homOfLE ?_).op, ?_⟩)
-    · simp
-    dsimp
-    simp
-
 noncomputable
 instance : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
-  letI : Module (RingCat.FilteredColimits.colimit ((OpenNhds.inclusion x).op ⋙ R))
-      ↑(TopCat.Presheaf.stalk M.presheaf x) :=
-    AddEquiv.module (β := (AddCommGrpCat.FilteredColimits.colimit
-      ((OpenNhds.inclusion x).op ⋙ M.presheaf))) _ (Limits.colimit.isoColimitCocone
-        ⟨_, (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
-          ((OpenNhds.inclusion x).op ⋙ M.presheaf))⟩).addCommGroupIsoToAddEquiv
-  .compHom (R := (RingCat.FilteredColimits.colimit ((OpenNhds.inclusion x).op ⋙ R))) _
-    (Limits.colimit.isoColimitCocone
-        ⟨_, (RingCat.FilteredColimits.colimitCoconeIsColimit
-          ((OpenNhds.inclusion x).op ⋙ R))⟩).ringCatIsoToRingEquiv.toRingHom
+  letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R).obj i)
+      (((OpenNhds.inclusion x).op ⋙ M.presheaf).obj i) := by
+    dsimp; infer_instance
+  Limits.IsColimit.module ((OpenNhds.inclusion x).op ⋙ R) ((OpenNhds.inclusion x).op ⋙ M.presheaf)
+    (fun f r m ↦ M.map_smul _ _ _) (Limits.colimit.isColimit _) (Limits.colimit.isColimit _)
 
 lemma germ_ringCat_smul (U : Opens X) (hx : x ∈ U) (r : R.obj (op U)) (m : M.obj (op U)) :
     TopCat.Presheaf.germ M.presheaf U x hx (r • m) =
-      R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m := by
-  let α : R.stalk x ≅ RingCat.FilteredColimits.colimit ((OpenNhds.inclusion x).op ⋙ R) :=
-    Limits.colimit.isoColimitCocone ⟨_, (RingCat.FilteredColimits.colimitCoconeIsColimit
-      ((OpenNhds.inclusion x).op ⋙ R))⟩
-  have hα (a : _) : (R.germ U x hx ≫ α.hom) a =
-      ((OpenNhds.inclusion x).op ⋙ R ⋙ forget _).ιColimitType (.op ⟨U, hx⟩) a := by
-    simp only [TopCat.Presheaf.germ, Limits.colimit.isoColimitCocone_ι_hom, α]; rfl
-  let β : ↑(TopCat.Presheaf.stalk M.presheaf x) ≅
-    AddCommGrpCat.FilteredColimits.colimit ((OpenNhds.inclusion x).op ⋙ M.presheaf) :=
-    Limits.colimit.isoColimitCocone
-        ⟨_, (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
-          ((OpenNhds.inclusion x).op ⋙ M.presheaf))⟩
-  have hβ (a : _) : (TopCat.Presheaf.germ M.presheaf U x hx ≫ β.hom) a =
-      ((OpenNhds.inclusion x).op ⋙ M.presheaf ⋙ forget _).ιColimitType (.op ⟨U, hx⟩) a := by
-    simp only [TopCat.Presheaf.germ, Limits.colimit.isoColimitCocone_ι_hom, β]; rfl
-  change _ = β.inv (α.hom (R.germ U x hx r) • β.hom (TopCat.Presheaf.germ M.presheaf U x hx m))
-  refine β.addCommGroupIsoToAddEquiv.eq_symm_apply.mpr ?_
-  dsimp only [Iso.addCommGroupIsoToAddEquiv_apply, AddCommGrpCat.Hom.hom]
-  simp_rw [← ConcreteCategory.comp_apply, hα, hβ]
-  change Functor.ιColimitType _ _ _ = Functor.ιColimitType _ _ _
-  dsimp [PresheafOfModules.smul]
-  refine (Functor.ιColimitType_eq_iff _ _ _).mpr (.rel _ _ ⟨eqToHom (by simp), ?_⟩)
-  simp [(presheaf_map_apply_coe)]
-  rfl
+      R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m :=
+  letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R).obj i)
+      (((OpenNhds.inclusion x).op ⋙ M.presheaf).obj i) := by
+    dsimp; infer_instance
+  Limits.IsColimit.ι_smul ((OpenNhds.inclusion x).op ⋙ R) ((OpenNhds.inclusion x).op ⋙ M.presheaf)
+    (fun f r m ↦ M.map_smul _ _ _)
+      (Limits.colimit.isColimit _) (Limits.colimit.isColimit _) ⟨_, _⟩ _ _
 
 section CommRingCat
 
@@ -173,24 +177,25 @@ variable {X : TopCat.{u}} {R : X.Presheaf CommRingCat.{u}}
 
 noncomputable
 instance (x : X) : Module (R.stalk x) ↑(TopCat.Presheaf.stalk M.presheaf x) :=
-  .compHom _ (R := ↑(TopCat.Presheaf.stalk (R ⋙ forget₂ _ RingCat) x)) <|
-    (Limits.colimit.isoColimitCocone ⟨_, Limits.isColimitOfPreserves (forget₂ CommRingCat RingCat)
-    (Limits.colimit.isColimit
-      ((OpenNhds.inclusion x).op ⋙ R))⟩).ringCatIsoToRingEquiv.symm.toRingHom
+  letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R ⋙ forget₂ _ RingCat).obj i)
+      (((OpenNhds.inclusion x).op ⋙ M.presheaf).obj i) := by
+    dsimp; infer_instance
+  Limits.IsColimit.module ((OpenNhds.inclusion x).op ⋙ R ⋙ forget₂ _ _)
+    ((OpenNhds.inclusion x).op ⋙ M.presheaf)
+    (fun f r m ↦ M.map_smul _ _ _) (Limits.isColimitOfPreserves (forget₂ _ _)
+      (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙ R))) (Limits.colimit.isColimit _)
 
 lemma germ_smul (x : X) (U : Opens X) (hx : x ∈ U) (r : R.obj (op U)) (m : M.obj (op U)) :
     TopCat.Presheaf.germ M.presheaf U x hx (r • m) =
-      R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m := by
-  let α : (TopCat.Presheaf.stalk (R ⋙ forget₂ _ RingCat) x) ≅
-      (forget₂ _ _).obj (R.stalk x) :=
-    Limits.colimit.isoColimitCocone ⟨_, Limits.isColimitOfPreserves (forget₂ CommRingCat RingCat)
-    (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙ R))⟩
-  change _ = ((forget₂ CommRingCat RingCat).map (R.germ U x hx) ≫ α.inv) r •
-    TopCat.Presheaf.germ M.presheaf U x hx m
-  refine (germ_ringCat_smul M x U hx r m).trans ?_
-  congr 3
-  rw [Iso.eq_comp_inv]
-  simp [α, TopCat.Presheaf.germ]
+      R.germ U x hx r • TopCat.Presheaf.germ M.presheaf U x hx m :=
+  letI (i : (OpenNhds x)ᵒᵖ) : Module (((OpenNhds.inclusion x).op ⋙ R ⋙ forget₂ _ RingCat).obj i)
+      (((OpenNhds.inclusion x).op ⋙ M.presheaf).obj i) := by
+    dsimp; infer_instance
+  Limits.IsColimit.ι_smul ((OpenNhds.inclusion x).op ⋙ R ⋙ forget₂ _ _)
+    ((OpenNhds.inclusion x).op ⋙ M.presheaf)
+    (fun f r m ↦ M.map_smul _ _ _) (Limits.isColimitOfPreserves (forget₂ _ _)
+      (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙ R))) (Limits.colimit.isColimit _)
+      ⟨_, _⟩ _ _
 
 end CommRingCat
 
