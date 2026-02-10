@@ -16,6 +16,8 @@ expectation of the Radon-Nikodym derivative of the original measures.
 
 ## Main statements
 
+In all statements, `μ` and `ν` are measures with `μ ≪ ν`.
+
 * `toReal_rnDeriv_map`: the Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of
   measures by a function `g : α → β` evaluated at `g x` is a.e.-equal to the conditional expectation
   of `∂μ/∂ν` with respect to the comap by `g` of the sigma-algebra on `β`.
