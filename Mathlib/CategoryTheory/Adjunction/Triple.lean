@@ -40,8 +40,8 @@ bundle the adjunctions in a structure `Triple F G H`.
 * `mono_leftToRight_app_iff_mono_adj₂_unit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
   `adj₂.unit` is monic at `F.obj X`.
 * `mono_leftToRight_app_iff_mono_adj₁_counit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
-  `adj₁.unit` is monic at `H.obj X`.
-* `mono_leftToRight_app_iff`: `leftToRight : H ⟶ F` is componentwise monic iff
+  `adj₁.counit` is monic at `H.obj X`.
+* `mono_leftToRight_app_iff`: `leftToRight : F ⟶ H` is componentwise monic iff
   `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` is.
 -/
 

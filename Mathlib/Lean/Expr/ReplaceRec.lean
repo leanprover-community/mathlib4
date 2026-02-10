@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, Edward Ayers
 -/
-module
+module -- shake: keep-all
 
 public import Lean.Expr
 public import Mathlib.Util.MemoFix

@@ -50,49 +50,37 @@ This definition is only to define the Fourier transform, use `FourierTransform.f
 -/
 def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
   refine mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_
-  · intro f g x
-    simp only [fourier_eq, add_apply, smul_add]
-    rw [integral_add]
-    · exact (fourierIntegral_convergent_iff _).2 f.integrable
-    · exact (fourierIntegral_convergent_iff _).2 g.integrable
-  · intro c f x
-    simp only [fourier_eq, smul_apply, smul_comm _ c, integral_smul, RingHom.id_apply]
-  · intro f
-    exact Real.contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
+  · intro f g
+    simp [fourier_eq, integral_add ((fourierIntegral_convergent_iff _).mpr f.integrable)
+      ((fourierIntegral_convergent_iff _).mpr g.integrable)]
+  · simp [fourier_eq, smul_comm, integral_smul]
+  · exact fun f ↦ contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
   · rintro ⟨k, n⟩
     refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
-       (2 * π) ^ n * (2 * ↑n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card
-         * 2 ^ integrablePower (volume : Measure V) *
-         (∫ (x : V), (1 + ‖x‖) ^ (- (integrablePower (volume : Measure V) : ℝ))) * 2,
-       ⟨by positivity, fun f x ↦ ?_⟩⟩
+      (2 * π) ^ n * (2 * n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card *
+        2 ^ integrablePower (volume : Measure V) *
+        (∫ x : V, (1 + ‖x‖) ^ (- integrablePower (volume : Measure V) : ℝ)) * 2, by positivity,
+      fun f x ↦ ?_⟩
     apply (pow_mul_norm_iteratedFDeriv_fourier_le (f.smooth ⊤)
       (fun k n _hk _hn ↦ integrable_pow_mul_iteratedFDeriv _ f k n) le_top le_top x).trans
     simp only [mul_assoc]
     gcongr
     calc
-    ∑ p ∈ Finset.range (n + 1) ×ˢ Finset.range (k + 1),
-        ∫ (v : V), ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 (⇑f) v‖
-      ≤ ∑ p ∈ Finset.range (n + 1) ×ˢ Finset.range (k + 1),
+    _ ≤ ∑ _ ∈ Finset.range (n + 1) ×ˢ Finset.range (k + 1),
         2 ^ integrablePower (volume : Measure V) *
-        (∫ (x : V), (1 + ‖x‖) ^ (- (integrablePower (volume : Measure V) : ℝ))) * 2 *
-        ((Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)).sup
-          (schwartzSeminormFamily 𝕜 V E)) f := by
-      gcongr with p hp
-      simp only [Finset.mem_product, Finset.mem_range] at hp
-      apply (f.integral_pow_mul_iteratedFDeriv_le 𝕜 _ _ _).trans
-      simp only [mul_assoc]
-      rw [two_mul]
+          (∫ x : V, (1 + ‖x‖) ^ (- integrablePower (volume : Measure V) : ℝ)) * 2 *
+          (Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)).sup
+          (schwartzSeminormFamily 𝕜 V E) f := by
+      gcongr with p
+      apply (f.integral_pow_mul_iteratedFDeriv_le 𝕜 ..).trans
+      simp only [mul_assoc, two_mul]
       gcongr
-      · apply Seminorm.le_def.1
-        have : (0, p.2) ∈ (Finset.range (n + integrablePower (volume : Measure V) + 1)
-            ×ˢ Finset.range (k + 1)) := by simp [hp.2]
-        apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
-      · apply Seminorm.le_def.1
-        have : (p.1 + integrablePower (volume : Measure V), p.2) ∈ (Finset.range
-            (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)) := by
-          simp [hp.2]
-          lia
-        apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
+      · have : (0, p.2) ∈ Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ
+            Finset.range (k + 1) := by simp_all
+        apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
+      · have : (p.1 + integrablePower (volume : Measure V), p.2) ∈ Finset.range
+            (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1) := by simp_all
+        apply Seminorm.le_def.mp (Finset.le_sup (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2) this)
     _ = _ := by simp [mul_assoc]
 
 instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
@@ -127,8 +115,7 @@ instance instFourierInvSMul : FourierInvSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
 instance instContinuousFourierInv : ContinuousFourierInv 𝓢(V, E) 𝓢(V, E) where
   continuous_fourierInv := ContinuousLinearMap.continuous _
 
-lemma fourierInv_coe (f : 𝓢(V, E)) :
-    𝓕⁻ f = 𝓕⁻ (f : V → E) := by
+lemma fourierInv_coe (f : 𝓢(V, E)) : 𝓕⁻ f = 𝓕⁻ (f : V → E) := by
   ext x
   exact (fourierInv_eq_fourier_neg f x).symm
 
@@ -190,10 +177,10 @@ with `-(2 * π * Complex.I) • innerSL ℝ`. -/
 theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
     fderivCLM 𝕜 V E (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f) := by
   ext1 x
+  change fderiv ℝ (𝓕 ⇑f) x = _
   calc
-    _ = fderiv ℝ (𝓕 (f : V → E)) x := by simp [fourier_coe]
-    _ = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) (f : V → E)) x := by
-      rw [Real.fderiv_fourier f.integrable]
+    _ = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) f) x := by
+      rw [fderiv_fourier f.integrable]
       simpa using f.integrable_pow_mul volume 1
 
 /-- The Fourier transform of the derivative is given by multiplication of
@@ -201,8 +188,8 @@ theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
 theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
     𝓕 (fderivCLM 𝕜 V E f) = (2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) (𝓕 f) := by
   ext x m
-  change 𝓕 (fderiv ℝ (f : V → E)) x m = _
-  simp [Real.fourier_fderiv f.integrable f.differentiable (fderivCLM ℝ V E f).integrable,
+  change 𝓕 (fderiv ℝ ⇑f) x m = _
+  simp [fourier_fderiv f.integrable f.differentiable (fderivCLM ℝ V E f).integrable,
     innerSL_apply_apply ℝ, fourier_coe]
 
 open LineDeriv
@@ -210,37 +197,27 @@ open LineDeriv
 /- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
 of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
-    ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := calc
-  _ = SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E (𝓕 f)) := rfl
-  _ = SchwartzMap.evalCLM ℝ V E m (𝓕 (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f)) := by
-    rw [fderivCLM_fourier_eq]
-  _ = 𝓕 (SchwartzMap.evalCLM ℝ V E m (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f)) := by
-    rw [fourier_evalCLM_eq ℝ (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f) m]
-  _ = _ := by
-    congr
-    ext x
-    have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
-    simp [this, innerSL_apply_apply ℝ]
+    ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := by
+  change SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E (𝓕 f)) = _
+  rw [fderivCLM_fourier_eq, ← fourier_evalCLM_eq]
+  congr
+  ext
+  have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
+  simp [this, innerSL_apply_apply ℝ]
 
 /- The Fourier transform of line derivative in direction `m` is given by multiplication of
 `(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
 theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
-    𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕 f) := calc
-  _ = 𝓕 (SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E f)) := rfl
-  _ = SchwartzMap.evalCLM ℝ V E m (𝓕 (fderivCLM ℝ V E f)) := by
-    rw [fourier_evalCLM_eq ℝ]
-  _ = SchwartzMap.evalCLM ℝ V E m ((2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) (𝓕 f)) := by
-    rw [fourier_fderivCLM_eq]
-  _ = _ := by
-    ext x
-    have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
-    simp [this, innerSL_apply_apply ℝ]
+    𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕 f) := by
+  change 𝓕 (SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E f)) = _
+  ext
+  have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
+  simp [fourier_evalCLM_eq ℝ, fourier_fderivCLM_eq, this, innerSL_apply_apply ℝ]
 
 /- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
 Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourierInv_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := by
-  have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
   simp [fourierInv_apply_eq, lineDerivOp_compCLMOfContinuousLinearEquiv, lineDerivOp_fourier_eq]
 
 /- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
@@ -275,12 +252,12 @@ alias integral_bilin_fourierIntegral_eq := integral_bilin_fourier_eq
 /-- The Fourier transform satisfies `∫ 𝓕 f • g = ∫ f • 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕 f ξ • g ξ = ∫ x, f x • 𝓕 g x :=
-  integral_bilin_fourier_eq f g (ContinuousLinearMap.lsmul ℂ ℂ)
+  integral_bilin_fourier_eq f g (.lsmul ℂ ℂ)
 
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕 f ξ * g ξ = ∫ x, f x * 𝓕 g x :=
-  integral_bilin_fourier_eq f g (ContinuousLinearMap.mul ℂ ℂ)
+  integral_bilin_fourier_eq f g (.mul ℂ ℂ)
 
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint.
 
@@ -294,12 +271,12 @@ theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f • g = ∫ f • 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
     ∫ ξ, 𝓕⁻ f ξ • g ξ = ∫ x, f x • 𝓕⁻ g x :=
-  integral_bilin_fourierInv_eq f g (ContinuousLinearMap.lsmul ℂ ℂ)
+  integral_bilin_fourierInv_eq f g (.lsmul ℂ ℂ)
 
 /-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint. -/
 theorem integral_fourierInv_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕⁻ f ξ * g ξ = ∫ x, f x * 𝓕⁻ g x :=
-  integral_bilin_fourierInv_eq f g (ContinuousLinearMap.mul ℂ ℂ)
+  integral_bilin_fourierInv_eq f g (.mul ℂ ℂ)
 
 theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by

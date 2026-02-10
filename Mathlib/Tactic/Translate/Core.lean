@@ -19,6 +19,7 @@ public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.UnfoldBoundary
 public meta import Mathlib.Util.MemoFix
 
 /-!
@@ -179,6 +180,11 @@ structure TranslateData : Type where
     translated thanks to this, you generally have to specify the translated name manually.
   -/
   doTranslateAttr : NameMapExtension Bool
+  /-- The `insert_cast`/`insert_cast_fun` attributes create an abstraction boundary for the tagged
+  constant when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
+  morally self-dual, but their definition is not self-dual. So, in order to allow these constants
+  to be self-dual, we need to not unfold their definition in the proof term that we translate. -/
+  unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaryExt := none
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension TranslationInfo
@@ -194,7 +200,7 @@ attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
 
 /-- Get the translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option TranslationInfo :=
-  (t.translations.getState env).find?
+  t.translations.find? env
 
 /-- Get the translation name for the given name. -/
 def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
@@ -202,18 +208,24 @@ def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Op
 
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
-This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
-def findPrefixTranslation? (env : Environment) (n : Name) (t : TranslateData) :
-    Option TranslationInfo :=
-  findTranslation? env t n <|> do
-    let .str n postFix := n | failure
-    let info ← go n [postFix]
-    guard (env.contains info.translation || isReservedName env info.translation)
+This allows translating automatically generated declarations such as `IsRegular.casesOn`.
+We make sure that the new constant is realized. -/
+def findPrefixTranslation? (n : Name) (t : TranslateData) : CoreM (Option TranslationInfo) := do
+  let env ← getEnv
+  if let some info := findTranslation? env t n then
     return info
+  let .str n postFix := n | return none
+  let some info := go env n [postFix] | return none
+  if env.contains (skipRealize := false) info.translation then
+    return info
+  if isReservedName env info.translation then
+    executeReservedNameAction info.translation
+    return info
+  return none
 where
   /-- Loop through the prefixes of `n` to try to find a translation.
   In such a case, we inherit the `relevantArg` option from the translation. -/
-  go (n : Name) (postFixes : List String) : Option TranslationInfo := Id.run do
+  go (env : Environment) (n : Name) (postFixes : List String) : Option TranslationInfo := Id.run do
   if let some info := findTranslation? env t n then
     return some {
       translation := postFixes.foldl .str info.translation
@@ -224,7 +236,7 @@ where
         translation := postFixes.foldl .str (mkPrivateName env info.translation)
         relevantArg := info.relevantArg }
   let .str n postFix := n | return none
-  return go n (postFix :: postFixes)
+  return go env n (postFix :: postFixes)
 
 /-- Add a translation to the translations map. If the translation attribute is dual,
 also add the reverse translation. -/
@@ -240,7 +252,7 @@ def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
 where
   /-- Insert only one direction of a translation. -/
   insertTranslationAux (src : Name) (t : TranslateData) (info : TranslationInfo) : CoreM Unit := do
-    if let some info' := (t.translations.getState (← getEnv)).find? src then
+    if let some info' := findTranslation? (← getEnv) t src then
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
       if info.translation != info'.translation then
@@ -380,12 +392,7 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 partial def applyReplacementFun (t : TranslateData) (e : Expr)
     (dontTranslate : Array FVarId := #[]) : MetaM Expr := do
-  let e' ← visit e |>.run {}
-  -- Make sure any new reserved names in the expr are realized
-  e'.getUsedConstants.forM fun n => do
-    if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
-      executeReservedNameAction n
-  return e'
+  visit e |>.run {}
 where
   /-- The implementation of this function is based on `Meta.transform`.
   We can't use `Meta.transform`, because that would cause the types of free variables to be
@@ -428,11 +435,11 @@ where
                 expression. However, we will still recurse into all the non-numeral arguments."
             let args := args.modify 1 changeNumeral
             return mkAppN f (← args.mapM visit)
-      let some { translation := n₁, reorder, relevantArg } := findPrefixTranslation? env n₀ t |
+      let some { translation := n₁, reorder, relevantArg } ← findPrefixTranslation? n₀ t |
         return mkAppN f (← args.mapM visit)
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
-        if let some fixed := shouldTranslate env t args[relevantArg] dontTranslate then
+        if let some fixed := shouldTranslate (← getEnv) t args[relevantArg] dontTranslate then
           trace[translate_detail]
             "The application of {n₀} contains the fixed type {fixed} so it is not changed."
           return mkAppN f (← args.mapM visit)
@@ -560,11 +567,21 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
-    renameBinderNames t decl.type
-  if let some v := decl.value? (allowOpaque := true) then
-    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
-  return decl
+  let mut value := decl.value! (allowOpaque := true)
+  if let some b := t.unfoldBoundaries? then
+    value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+  trace[translate] "Value before translation:{indentExpr value}"
+  value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
+  if let some b := t.unfoldBoundaries? then
+    value ← b.unfoldInsertions value
+  decl := decl.updateValue value
+  let mut type := decl.type
+  if let some b := t.unfoldBoundaries? then
+    type ← b.insertBoundaries decl.type t.attrName
+  type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
+  if let some b := t.unfoldBoundaries? then
+    type ← b.unfoldInsertions type
+  return decl.updateType type
 
 /--
 Find the argument of `nm` that appears in the first translatable (type-class) argument.
@@ -590,20 +607,18 @@ def findRelevantArg (t : TranslateData) (nm : Name) : CoreM Nat := MetaM.run' do
     trace[translate_detail] "findRelevantArg: {arg}"
     return arg.getD 0
 
-/-- Unfold `simp` auxlemmas in the type and value.
+/-- Unfold `simp` and `gcongr` auxlemmas in the type and value.
 The reason why we can't just translate them is that they are generated by the `@[simp]` attribute,
 so it would require a change in the implementation of `@[simp]` to add these translateions.
 Additionally, these lemmas have very short proofs, so unfolding them is not costly. -/
 def declUnfoldSimpAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let unfold (e : Expr) := deltaExpand e fun
-    | .str _ s => "_simp_".isPrefixOf s
+    | .str _ s => "_simp_".isPrefixOf s || "_gcongr_".isPrefixOf s
     | _ => false
   let mut decl := decl
   decl := decl.updateType <| ← unfold decl.type
   if let some v := decl.value? (allowOpaque := true) then
-    trace[translate] "value before unfold:{indentExpr v}"
     decl := decl.updateValue <| ← unfold v
-    trace[translate] "value after unfold:{indentExpr decl.value!}"
   return decl
 
 /-- Find the target name of `src`, which is assumed to have been selected by `findAuxDecls`. -/
@@ -693,6 +708,20 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       of theorem `{.ofConstName src}`. Please remove the attribute."
   let value := trgDecl.value! (allowOpaque := true)
   trace[translate] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
+  try
+    -- set `Elab.async` to `false` in order to be able to catch kernel errors
+    withOptions (Elab.async.set · false) do
+      addDecl trgDecl.toDeclaration!
+  catch ex =>
+    -- Try to emit a better error message if the kernel throws an error.
+    try
+      withoutExporting <| MetaM.run' <| check value
+    catch ex =>
+      throwError "@[{t.attrName}] failed. \
+        The translated value is not type correct. For help, see the docstring \
+        of `to_additive`, section `Troubleshooting`. \
+        Failed to add declaration\n{tgt}:\n{ex.toMessageData}"
+    throwError "@[{t.attrName}] failed. Nested error message:\n{ex.toMessageData}"
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
   has executable code.
@@ -705,24 +734,13 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
   errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
   (which is inaccessible here), so we cannot test for `noncomputable section` directly. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
-  try
-    -- set `Elab.async` to `false` in order to be able to catch kernel errors
-    withOptions (Elab.async.set · false) do
-    if isNoncomputable env src then
-      addDecl trgDecl.toDeclaration!
-      setEnv <| addNoncomputable (← getEnv) tgt
-    else
-      addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
-  catch ex =>
-    -- Try to emit a better error message if the kernel throws an error.
-    try
-      withoutExporting <| MetaM.run' <| check value
-      throwError "@[{t.attrName}] failed.\n{ex.toMessageData}"
-    catch ex =>
-      throwError "@[{t.attrName}] failed. \
-        The translated value is not type correct. For help, see the docstring \
-        of `to_additive`, section `Troubleshooting`. \
-        Failed to add declaration\n{tgt}:\n{ex.toMessageData}"
+  if isNoncomputable (← getEnv) src then
+    modifyEnv (addNoncomputable · tgt)
+  else
+    if isMarkedMeta (← getEnv) src then
+      -- We need to mark `tgt` as `meta` before running `compileDecl`
+      modifyEnv (markMeta · tgt)
+    compileDecl trgDecl.toDeclaration! (logErrors := (IR.findEnvDecl (← getEnv) src).isSome)
   if let .defnInfo { hints := .abbrev, .. } := trgDecl then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
@@ -733,7 +751,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   -- generated for those. We could change that.
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   if isProtected (← getEnv) src then
-    setEnv <| addProtected (← getEnv) tgt
+    modifyEnv (addProtected · tgt)
   if defeqAttr.hasTag (← getEnv) src then
     defeqAttr.setTag tgt
   if let some matcherInfo ← getMatcherInfo? src then
@@ -898,7 +916,10 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
-  let srcType ← applyReplacementForall t cfg.dontTranslate srcDecl.type
+  let mut srcType := srcDecl.type
+  if let some b := t.unfoldBoundaries? then
+    srcType ← b.insertBoundaries srcType t.attrName
+  srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←
@@ -920,12 +941,14 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       Please remove the attribute, or provide an explicit `(reorder := ...)` argument.\n\
       If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
       use `{t.attrName}_do_translate` instead"
-  let srcType ← reorderForall reorder srcType
+  srcType ← reorderForall reorder srcType
+  if let some b := t.unfoldBoundaries? then
+    srcType ← b.unfoldInsertions srcType
   if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   -- instantiate both types with the same universes. `instantiateLevelParams` does some
   -- normalization, so we apply it to both types.
-  let srcType := srcType.instantiateLevelParams
+  srcType := srcType.instantiateLevelParams
     srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
@@ -1087,7 +1110,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
 mutual
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) (reorder : Reorder)
-    (relevantArg : Nat) : TermElabM (Array Name) := withoutExporting do
+    (relevantArg : Nat) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
   -- Warn users if the original declaration has an attributee

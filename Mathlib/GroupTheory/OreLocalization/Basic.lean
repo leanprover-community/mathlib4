@@ -552,7 +552,7 @@ at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/
 @[to_additive (attr := nolint unusedArguments)]
-instance [SMul R X] [SMul R M] [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
+instance [IsScalarTower R M X] [IsScalarTower R M M] : SMul R (X[S⁻¹]) where
   smul := OreLocalization.hsmul
 
 @[to_additive]

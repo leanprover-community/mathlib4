@@ -109,6 +109,8 @@ instance instLieRing : LieRing (A ⊗[R] L) where
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L L
 
+instance instBaseLieAlgebra : LieAlgebra R (A ⊗[R] L) where lie_smul := by simp [bracket_def]
+
 instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 
 set_option backward.privateInPublic true in

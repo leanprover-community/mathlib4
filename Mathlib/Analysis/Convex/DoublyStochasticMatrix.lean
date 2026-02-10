@@ -118,7 +118,7 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
     ← permMatrix_mem_rowStochastic, ← permMatrix_mem_colStochastic]
 
 /-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
-lemma transpose_mem_doublyStochastif_iff :
+lemma transpose_mem_doublyStochastic_iff :
     M.transpose ∈ doublyStochastic R n ↔ M ∈ doublyStochastic R n := by
   grind only [= doublyStochastic_eq_rowStochastic_inf_colStochastic, = Submonoid.mem_inf,
     = transpose_mem_rowStochastic_iff_mem_colStochastic, = mem_rowStochastic,
