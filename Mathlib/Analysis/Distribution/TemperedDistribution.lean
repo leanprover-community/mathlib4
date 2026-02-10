@@ -53,7 +53,7 @@ abbrev TemperedDistribution := 𝓢(E, ℂ) →Lₚₜ[ℂ] F
 /- Since mathlib is missing quite a few results that show that continuity of linear maps and
 convergence of sequences can be checked for strong duals of Fréchet-Montel spaces pointwise, we
 use the pointwise topology for now and not the strong topology. The pointwise topology is
-conventially used in PDE texts, but has the downside that it is not barrelled, hence the uniform
+conventionally used in PDE texts, but has the downside that it is not barrelled, hence the uniform
 boundedness principle does not hold. -/
 
 @[inherit_doc]

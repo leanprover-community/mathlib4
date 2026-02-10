@@ -78,12 +78,9 @@ noncomputable instance [OrderBot α] : OrderBot (Shrink.{u} α) where
 noncomputable instance [SuccOrder α] : SuccOrder (Shrink.{u} α) :=
   SuccOrder.ofOrderIso (orderIsoShrink.{u} α)
 
+@[to_dual]
 instance [WellFoundedLT α] : WellFoundedLT (Shrink.{u} α) where
   wf := (orderIsoShrink.{u} α).symm.toRelIsoLT.toRelEmbedding.isWellFounded.wf
-
-@[to_dual existing]
-instance [WellFoundedGT α] : WellFoundedGT (Shrink.{u} α) where
-  wf := (orderIsoShrink.{u} α).symm.dual.toRelIsoLT.toRelEmbedding.isWellFounded.wf
 
 end Preorder
 
