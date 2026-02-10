@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 module
 
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
@@ -72,6 +77,8 @@ end BijectiveResidueField
 
 section
 
+open Polynomial
+
 universe u v
 
 variable {R : Type u} {S : Type v} {T : Type*}
@@ -132,7 +139,6 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     refine RingHom.finiteType_algebraMap.mpr ?_
     exact .of_restrictScalars_finiteType R _ _
 
-open Polynomial in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.right
   DivisionRing.instIsArtinianRing in
 /-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
@@ -190,11 +196,6 @@ lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     replace this : s₃ ∈ q' := by simpa [← Ideal.mem_comap, ← q's.over_def q'] using this
     exact H (Ideal.mul_mem_left _ (s₂ ^ m) this)
   · rw [map_pow]; exact Ideal.notMem_of_isUnit _ (.pow _ (IsLocalization.Away.algebraMap_isUnit _))
-
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (s : S) [Algebra.Etale R S] :
-    Algebra.Etale R (Localization.Away s) where
-
-open Polynomial
 
 lemma exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
