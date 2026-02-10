@@ -89,24 +89,9 @@ def Hom.Simps.hom (A B : CommAlgCat.{v} R) (f : Hom A B) := f.hom
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
 
-/- Provided for rewriting. -/
-lemma id_apply (A : CommAlgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
-
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by simp
-
-@[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
-
-@[simp] lemma hom_ofHom (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
-@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
 @[simp] lemma ofHom_id : ofHom (.id R X) = 𝟙 (of R X) := rfl
 
@@ -114,9 +99,6 @@ lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := 
 lemma ofHom_comp (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) : ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
 lemma ofHom_apply (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
-
-lemma inv_hom_apply (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by simp
-lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp
 
 instance : Inhabited (CommAlgCat R) := ⟨of R R⟩
 

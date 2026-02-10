@@ -88,50 +88,12 @@ def Hom.Simps.hom (X Y : FinBddDistLat.{u}) (f : Hom X Y) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[simp]
-lemma coe_id {X : FinBddDistLat} : (𝟙 X : X → X) = id := rfl
-
-@[simp]
-lemma coe_comp {X Y Z : FinBddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[simp]
-lemma forget_map {X Y : FinBddDistLat} (f : X ⟶ Y) :
-    (forget FinBddDistLat).map f = (f : _ → _) := rfl
-
-@[ext]
-lemma ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 @[simp]
 lemma hom_id {X : FinBddDistLat} : (𝟙 X : X ⟶ X).hom = BoundedLatticeHom.id _ := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (X : FinBddDistLat) (x : X) :
-    (𝟙 X : X ⟶ X) x = x := by simp
 
 @[simp]
 lemma hom_comp {X Y Z : FinBddDistLat} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {X Y Z : FinBddDistLat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[ext]
-lemma hom_ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
-    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {X Y : FinBddDistLat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] :
@@ -148,12 +110,6 @@ lemma ofHom_apply {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X]
     [BoundedOrder Y] [Fintype Y]
     (f : BoundedLatticeHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
-
-lemma inv_hom_apply {X Y : FinBddDistLat} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {X Y : FinBddDistLat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  simp
 
 instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩

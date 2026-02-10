@@ -93,20 +93,8 @@ def Hom.Simps.hom (A B : CommBialgCat.{v} R) (f : Hom A B) := f.hom
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
-lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by simp
-
-@[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
-
-@[simp] lemma hom_ofHom (f : X →ₐc[R] Y) : (ofHom f).hom = f := rfl
-@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
 @[simp] lemma ofHom_id : ofHom (.id R X) = 𝟙 (of R X) := rfl
 
@@ -115,14 +103,7 @@ lemma ofHom_comp (f : X →ₐc[R] Y) (g : Y →ₐc[R] Z) : ofHom (g.comp f) = 
 
 lemma ofHom_apply (f : X →ₐc[R] Y) (x : X) : ofHom f x = f x := rfl
 
-lemma inv_hom_apply (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by simp
-lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp
-
 instance : Inhabited (CommBialgCat R) := ⟨of R R⟩
-
-lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A := rfl
-
-lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| CommRing A
 

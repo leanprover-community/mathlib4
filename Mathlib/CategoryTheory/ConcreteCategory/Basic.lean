@@ -69,7 +69,7 @@ class ConcreteCategory (C : Type u) [Category.{v} C]
   (comp_apply : ∀ {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) (x : CC X),
     hom (f ≫ g) x = hom g (hom f x) := by cat_disch)
 
-export ConcreteCategory (id_apply comp_apply)
+attribute [simp] ConcreteCategory.hom_ofHom ConcreteCategory.ofHom_hom
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]

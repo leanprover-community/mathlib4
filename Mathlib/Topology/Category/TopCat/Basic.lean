@@ -82,44 +82,12 @@ def Hom.Simps.hom (X Y : TopCat) (f : Hom X Y) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {X : TopCat.{u}} : (𝟙 X : X ⟶ X).hom = ContinuousMap.id X := rfl
 
 @[simp]
-theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
-
-@[simp] theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
-
-@[simp]
 lemma hom_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-@[simp]
-theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g : X → Z) x = g (f x) := rfl
-
-@[simp] theorem coe_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[ext]
-lemma hom_ext {X Y : TopCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[ext]
-lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
-    (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [TopologicalSpace X] : ofHom (ContinuousMap.id X) = 𝟙 (of X) := rfl
@@ -132,12 +100,6 @@ lemma ofHom_comp {X Y Z : Type u} [TopologicalSpace X] [TopologicalSpace Y] [Top
 
 lemma ofHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) (x : X) :
     (ofHom f) x = f x := rfl
-
-lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
-  simp
-
-lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
-  simp
 
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally

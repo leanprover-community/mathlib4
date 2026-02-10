@@ -118,51 +118,12 @@ def Hom.Simps.hom (A B : SemimoduleCat.{v} R) (f : Hom A B) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {M : SemimoduleCat.{v} R} : (𝟙 M : M ⟶ M).hom = LinearMap.id := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (M : SemimoduleCat.{v} R) (x : M) :
-    (𝟙 M : M ⟶ M) x = x := by simp
 
 @[simp]
 lemma hom_comp {M N O : SemimoduleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {M N O : SemimoduleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[ext]
-lemma hom_ext {M N : SemimoduleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-lemma hom_bijective {M N : SemimoduleCat.{v} R} :
-    Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
-  right f := ⟨⟨f⟩, rfl⟩
-
-/-- Convenience shortcut for `SemimoduleCat.hom_bijective.injective`. -/
-lemma hom_injective {M N : SemimoduleCat.{v} R} :
-    Function.Injective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
-  hom_bijective.injective
-
-/-- Convenience shortcut for `SemimoduleCat.hom_bijective.surjective`. -/
-lemma hom_surjective {M N : SemimoduleCat.{v} R} :
-    Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
-  hom_bijective.surjective
-
-@[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y]
-    [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {M : Type v} [AddCommMonoid M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
@@ -177,27 +138,12 @@ lemma ofHom_comp {M N O : Type v} [AddCommMonoid M] [AddCommMonoid N] [AddCommMo
 lemma ofHom_apply {M N : Type v} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
 
-lemma inv_hom_apply {M N : SemimoduleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {M N : SemimoduleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by
-  simp
-
 /-- `SemimoduleCat.Hom.hom` bundled as an `Equiv`. -/
 def homEquiv {M N : SemimoduleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
 
 end
-
-/- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
-definitional equality issues. -/
-lemma forget_obj {M : SemimoduleCat.{v} R} : (forget (SemimoduleCat.{v} R)).obj M = M := rfl
-
-@[simp]
-lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
-  rfl
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
@@ -302,7 +248,8 @@ instance : SMul ℕ (M ⟶ N) where
 alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
-  Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Function.Injective.addCommMonoid Hom.hom ConcreteCategory.hom_injective rfl
+    (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
@@ -355,7 +302,7 @@ variable {M N : SemimoduleCat.{v} R} {S : Type*} [Semiring S] [Module S N] [SMul
 instance Hom.instModule : Module S (M ⟶ N) :=
   Function.Injective.module S
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
-    hom_injective
+    ConcreteCategory.hom_injective
     (fun _ _ => rfl)
 
 /-- `SemimoduleCat.Hom.hom` bundled as a linear equivalence. -/

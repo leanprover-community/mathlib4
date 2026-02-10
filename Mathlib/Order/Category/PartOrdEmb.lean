@@ -79,40 +79,14 @@ def Hom.Simps.hom (X Y : PartOrdEmb.{u}) (f : Hom X Y) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[simp]
-lemma coe_id {X : PartOrdEmb} : (𝟙 X : X → X) = id := rfl
-
-@[simp]
-lemma coe_comp {X Y Z : PartOrdEmb} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[simp]
-lemma forget_map {X Y : PartOrdEmb} (f : X ⟶ Y) :
-    (forget PartOrdEmb).map f = (f : _ → _) := rfl
-
-@[ext]
-lemma ext {X Y : PartOrdEmb} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [PartialOrder X] : (PartOrdEmb.of X : Type u) = X := rfl
 
 lemma hom_id {X : PartOrdEmb} : (𝟙 X : X ⟶ X).hom = RelEmbedding.refl _ := rfl
 
-/- Provided for rewriting. -/
-lemma id_apply (X : PartOrdEmb) (x : X) :
-    (𝟙 X : X ⟶ X) x = x := by simp
-
 @[simp]
 lemma hom_comp {X Y Z : PartOrdEmb} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom.trans g.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {X Y Z : PartOrdEmb} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g) x = g (f x) := by simp
 
 lemma Hom.injective {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) : Function.Injective f :=
   f.hom'.injective
@@ -120,18 +94,6 @@ lemma Hom.injective {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) : Function.Injective f 
 lemma Hom.le_iff_le {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) (x₁ x₂ : X) :
     f x₁ ≤ f x₂ ↔ x₁ ≤ x₂ :=
   f.hom'.le_iff_le
-
-@[ext]
-lemma hom_ext {X Y : PartOrdEmb} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X ↪o Y) :
-    (ofHom f).hom = f :=
-  rfl
-
-@[simp]
-lemma ofHom_hom {X Y : PartOrdEmb} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] : ofHom (RelEmbedding.refl _) = 𝟙 (of X) := rfl
@@ -144,12 +106,6 @@ lemma ofHom_comp {X Y Z : Type u} [PartialOrder X] [PartialOrder Y] [PartialOrde
 
 lemma ofHom_apply {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X ↪o Y) (x : X) :
     (ofHom f) x = f x := rfl
-
-lemma inv_hom_apply {X Y : PartOrdEmb} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {X Y : PartOrdEmb} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  simp
 
 instance hasForgetToPartOrd : HasForget₂ PartOrdEmb PartOrd where
   forget₂.obj X := .of X

@@ -88,35 +88,12 @@ def Hom.Simps.hom (R S : SemiRingCat) (f : Hom R S) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {R : SemiRingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (R : SemiRingCat) (r : R) :
-    (𝟙 R : R ⟶ R) r = r := by simp
 
 @[simp]
 lemma hom_comp {R S T : SemiRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {R S T : SemiRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
-    (f ≫ g) r = g (f r) := by simp
-
-@[ext]
-lemma hom_ext {R S : SemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {R S : SemiRingCat} (f : R ⟶ S) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {R : Type u} [Semiring R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
@@ -130,12 +107,6 @@ lemma ofHom_comp {R S T : Type u} [Semiring R] [Semiring S] [Semiring T]
 lemma ofHom_apply {R S : Type u} [Semiring R] [Semiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-lemma inv_hom_apply {R S : SemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  simp
-
-lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  simp
-
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
@@ -143,12 +114,6 @@ instance : Inhabited SemiRingCat :=
 unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
   (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R'
-
-lemma forget_obj {R : SemiRingCat} : (forget SemiRingCat).obj R = R := rfl
-
-lemma forget_map {R S : SemiRingCat} (f : R ⟶ S) :
-    (forget SemiRingCat).map f = f :=
-  rfl
 
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
   (inferInstance : Semiring R.carrier)
@@ -240,35 +205,12 @@ def Hom.Simps.hom (R S : RingCat) (f : Hom R S) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {R : RingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (R : RingCat) (r : R) :
-    (𝟙 R : R ⟶ R) r = r := by simp
 
 @[simp]
 lemma hom_comp {R S T : RingCat} (f : R ⟶ S) (g : S ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {R S T : RingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
-    (f ≫ g) r = g (f r) := by simp
-
-@[ext]
-lemma hom_ext {R S : RingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {R S : RingCat} (f : R ⟶ S) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {R : Type u} [Ring R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
@@ -282,12 +224,6 @@ lemma ofHom_comp {R S T : Type u} [Ring R] [Ring S] [Ring T]
 lemma ofHom_apply {R S : Type u} [Ring R] [Ring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-lemma inv_hom_apply {R S : RingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  simp
-
-lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  simp
-
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
 
@@ -299,12 +235,6 @@ An example where this is needed is in applying
 unif_hint forget_obj_eq_coe (R R' : RingCat) where
   R ≟ R' ⊢
   (forget RingCat).obj R ≟ RingCat.carrier R'
-
-lemma forget_obj {R : RingCat} : (forget RingCat).obj R = R := rfl
-
-lemma forget_map {R S : RingCat} (f : R ⟶ S) :
-    (forget RingCat).map f = f :=
-  rfl
 
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
   (inferInstance : Ring R.carrier)
@@ -404,36 +334,12 @@ def Hom.Simps.hom (R S : CommSemiRingCat) (f : Hom R S) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {R : CommSemiRingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (R : CommSemiRingCat) (r : R) :
-    (𝟙 R : R ⟶ R) r = r := by simp
 
 @[simp]
 lemma hom_comp {R S T : CommSemiRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {R S T : CommSemiRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
-    (f ≫ g) r = g (f r) := by simp
-
-@[ext]
-lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-    (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {R S : CommSemiRingCat} (f : R ⟶ S) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {R : Type u} [CommSemiring R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
@@ -447,12 +353,6 @@ lemma ofHom_comp {R S T : Type u} [CommSemiring R] [CommSemiring S] [CommSemirin
 lemma ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
-lemma inv_hom_apply {R S : CommSemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  simp
-
-lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  simp
-
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
 
@@ -460,12 +360,6 @@ instance : Inhabited CommSemiRingCat :=
 unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
   (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
-
-lemma forget_obj {R : CommSemiRingCat} : (forget CommSemiRingCat).obj R = R := rfl
-
-lemma forget_map {R S : CommSemiRingCat} (f : R ⟶ S) :
-    (forget CommSemiRingCat).map f = f :=
-  rfl
 
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
   (inferInstance : CommSemiring R.carrier)
@@ -569,35 +463,12 @@ def Hom.Simps.hom (R S : CommRingCat) (f : Hom R S) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {R : CommRingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (R : CommRingCat) (r : R) :
-    (𝟙 R : R ⟶ R) r = r := by simp
 
 @[simp]
 lemma hom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
-    (f ≫ g) r = g (f r) := by simp
-
-@[ext]
-lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {R S : CommRingCat} (f : R ⟶ S) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {R : Type u} [CommRing R] : ofHom (RingHom.id R) = 𝟙 (of R) := rfl
@@ -610,12 +481,6 @@ lemma ofHom_comp {R S T : Type u} [CommRing R] [CommRing S] [CommRing T]
 
 lemma ofHom_apply {R S : Type u} [CommRing R] [CommRing S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
-
-lemma inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  simp
-
-lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  simp
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩

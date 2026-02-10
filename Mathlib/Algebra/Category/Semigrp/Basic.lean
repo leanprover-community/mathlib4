@@ -118,24 +118,6 @@ def Hom.Simps.hom (X Y : MagmaCat.{u}) (f : Hom X Y) :=
 initialize_simps_projections Hom (hom' → hom)
 initialize_simps_projections AddMagmaCat.Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[to_additive (attr := simp)]
-lemma coe_id {X : MagmaCat} : (𝟙 X : X → X) = id := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : MagmaCat} (f : X ⟶ Y) :
-    (forget MagmaCat).map f = (f : _ → _) := rfl
-
-@[to_additive (attr := ext)]
-lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 @[to_additive]
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (M : Type u) [Mul M] : (MagmaCat.of M : Type u) = M := rfl
@@ -143,30 +125,9 @@ theorem coe_of (M : Type u) [Mul M] : (MagmaCat.of M : Type u) = M := rfl
 @[to_additive (attr := simp)]
 lemma hom_id {M : MagmaCat} : (𝟙 M : M ⟶ M).hom = MulHom.id M := rfl
 
-/- Provided for rewriting. -/
-@[to_additive]
-lemma id_apply (M : MagmaCat) (x : M) :
-    (𝟙 M : M ⟶ M) x = x := by simp
-
 @[to_additive (attr := simp)]
 lemma hom_comp {M N T : MagmaCat} (f : M ⟶ N) (g : N ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma comp_apply {M N T : MagmaCat} (f : M ⟶ N) (g : N ⟶ T) (x : M) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[to_additive (attr := ext)]
-lemma hom_ext {M N : MagmaCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Mul M] [Mul N] (f : M →ₙ* N) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {M N : MagmaCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {M : Type u} [Mul M] : ofHom (MulHom.id M) = 𝟙 (of M) := rfl
@@ -180,14 +141,6 @@ lemma ofHom_comp {M N P : Type u} [Mul M] [Mul N] [Mul P]
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) :
     (ofHom f) x = f x := rfl
-
-@[to_additive]
-lemma inv_hom_apply {M N : MagmaCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  simp
-
-@[to_additive]
-lemma hom_inv_apply {M N : MagmaCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  simp
 
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
@@ -282,22 +235,6 @@ def Hom.Simps.hom (X Y : Semigrp.{u}) (f : Hom X Y) :=
 initialize_simps_projections Hom (hom' → hom)
 initialize_simps_projections AddSemigrp.Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[to_additive (attr := simp)]
-lemma coe_id {X : Semigrp} : (𝟙 X : X → X) = id := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[simp] lemma forget_map {X Y : Semigrp} (f : X ⟶ Y) : (forget Semigrp).map f = (f : X → Y) := rfl
-
-@[to_additive (attr := ext)]
-lemma ext {X Y : Semigrp} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 @[to_additive]
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (R : Type u) [Semigroup R] : ↑(Semigrp.of R) = R :=
@@ -306,30 +243,9 @@ theorem coe_of (R : Type u) [Semigroup R] : ↑(Semigrp.of R) = R :=
 @[to_additive (attr := simp)]
 lemma hom_id {X : Semigrp} : (𝟙 X : X ⟶ X).hom = MulHom.id X := rfl
 
-/- Provided for rewriting. -/
-@[to_additive]
-lemma id_apply (X : Semigrp) (x : X) :
-    (𝟙 X : X ⟶ X) x = x := by simp
-
 @[to_additive (attr := simp)]
 lemma hom_comp {X Y T : Semigrp} (f : X ⟶ Y) (g : Y ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma comp_apply {X Y T : Semigrp} (f : X ⟶ Y) (g : Y ⟶ T) (x : X) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[to_additive (attr := ext)]
-lemma hom_ext {X Y : Semigrp} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {X Y : Semigrp} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {X : Type u} [Semigroup X] : ofHom (MulHom.id X) = 𝟙 (of X) := rfl
@@ -343,14 +259,6 @@ lemma ofHom_comp {X Y Z : Type u} [Semigroup X] [Semigroup Y] [Semigroup Z]
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
     (ofHom f) x = f x := rfl
-
-@[to_additive]
-lemma inv_hom_apply {X Y : Semigrp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
-@[to_additive]
-lemma hom_inv_apply {X Y : Semigrp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  simp
 
 @[to_additive (attr := simp)]
 lemma mulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) :

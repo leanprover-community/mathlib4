@@ -125,51 +125,12 @@ def Hom.Simps.hom (A B : ModuleCat.{v} R) (f : Hom A B) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {M : ModuleCat.{v} R} : (𝟙 M : M ⟶ M).hom = LinearMap.id := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (M : ModuleCat.{v} R) (x : M) :
-    (𝟙 M : M ⟶ M) x = x := by simp
 
 @[simp]
 lemma hom_comp {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[ext]
-lemma hom_ext {M N : ModuleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-lemma hom_bijective {M N : ModuleCat.{v} R} :
-    Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
-  right f := ⟨⟨f⟩, rfl⟩
-
-/-- Convenience shortcut for `ModuleCat.hom_bijective.injective`. -/
-lemma hom_injective {M N : ModuleCat.{v} R} :
-    Function.Injective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
-  hom_bijective.injective
-
-/-- Convenience shortcut for `ModuleCat.hom_bijective.surjective`. -/
-lemma hom_surjective {M N : ModuleCat.{v} R} :
-    Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
-  hom_bijective.surjective
-
-@[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
-    [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {M : Type v} [AddCommGroup M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
@@ -183,12 +144,6 @@ lemma ofHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGrou
 /- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
 lemma ofHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
-
-lemma inv_hom_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by
-  simp
 
 /-- `ModuleCat.Hom.hom` bundled as an `Equiv`. -/
 def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
@@ -353,7 +308,7 @@ instance : SMul ℤ (M ⟶ N) where
 @[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommGroup (M ⟶ N) :=
-  Function.Injective.addCommGroup (Hom.hom) hom_injective
+  Function.Injective.addCommGroup (Hom.hom) ConcreteCategory.hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
@@ -407,7 +362,7 @@ variable {M N : ModuleCat.{v} R} {S : Type*} [Semiring S] [Module S N] [SMulComm
 instance Hom.instModule : Module S (M ⟶ N) :=
   Function.Injective.module S
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
-    hom_injective
+    ConcreteCategory.hom_injective
     (fun _ _ => rfl)
 
 /-- `ModuleCat.Hom.hom` bundled as a linear equivalence. -/
@@ -489,10 +444,10 @@ def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrpCat).obj M) where
     { toFun := fun (m : M) => r • m
       map_zero' := by rw [smul_zero]
       map_add' := fun x y => by rw [smul_add] }
-  map_one' := AddCommGrpCat.ext (fun x => by simp)
-  map_zero' := AddCommGrpCat.ext (fun x => by simp)
-  map_mul' r s := AddCommGrpCat.ext (fun (x : M) => (smul_smul r s x).symm)
-  map_add' r s := AddCommGrpCat.ext (fun (x : M) => add_smul r s x)
+  map_one' := ConcreteCategory.hom_ext _ _ (fun _ ↦ by simp)
+  map_zero' := ConcreteCategory.hom_ext _ _ (fun _ ↦ by simp)
+  map_mul' r s := ConcreteCategory.hom_ext _ _ (fun (x : M) => (smul_smul r s x).symm)
+  map_add' r s := ConcreteCategory.hom_ext _ _ (fun (x : M) => add_smul r s x)
 
 lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
     (forget₂ (ModuleCat R) AddCommGrpCat).map f ≫ N.smul r =

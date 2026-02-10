@@ -110,54 +110,12 @@ def Hom.Simps.hom (X Y : GrpCat.{u}) (f : Hom X Y) :=
 initialize_simps_projections Hom (hom' → hom)
 initialize_simps_projections AddGrpCat.Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[to_additive (attr := simp)]
-lemma coe_id {X : GrpCat} : (𝟙 X : X → X) = id := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : GrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[simp] lemma forget_map {X Y : GrpCat} (f : X ⟶ Y) : (forget GrpCat).map f = (f : X → Y) := rfl
-
-@[to_additive (attr := ext)]
-lemma ext {X Y : GrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
-@[to_additive]
--- This is not `simp` to avoid rewriting in types of terms.
-theorem coe_of (R : Type u) [Group R] : ↑(GrpCat.of R) = R :=
-  rfl
-
 @[to_additive (attr := simp)]
 lemma hom_id {X : GrpCat} : (𝟙 X : X ⟶ X).hom = MonoidHom.id X := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma id_apply (X : GrpCat) (x : X) :
-    (𝟙 X : X ⟶ X) x = x := by simp
 
 @[to_additive (attr := simp)]
 lemma hom_comp {X Y T : GrpCat} (f : X ⟶ Y) (g : Y ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma comp_apply {X Y T : GrpCat} (f : X ⟶ Y) (g : Y ⟶ T) (x : X) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[to_additive (attr := ext)]
-lemma hom_ext {X Y : GrpCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {R S : Type u} [Group R] [Group S] (f : R →* S) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {X Y : GrpCat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {X : Type u} [Group X] : ofHom (MonoidHom.id X) = 𝟙 (of X) := rfl
@@ -171,16 +129,6 @@ lemma ofHom_comp {X Y Z : Type u} [Group X] [Group Y] [Group Z]
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
-
--- This is essentially an alias for `Iso.hom_inv_id_apply`; consider deprecation?
-@[to_additive]
-lemma inv_hom_apply {X Y : GrpCat} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
--- This is essentially an alias for `Iso.inv_hom_id_apply`; consider deprecation?
-@[to_additive]
-lemma hom_inv_apply {X Y : GrpCat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  simp
 
 @[to_additive]
 instance : Inhabited GrpCat :=
@@ -324,25 +272,6 @@ def Hom.Simps.hom (X Y : CommGrpCat.{u}) (f : Hom X Y) :=
 initialize_simps_projections Hom (hom' → hom)
 initialize_simps_projections AddCommGrpCat.Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[to_additive (attr := simp)]
-lemma coe_id {X : CommGrpCat} : (𝟙 X : X → X) = id := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : CommGrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : CommGrpCat} (f : X ⟶ Y) :
-    (forget CommGrpCat).map f = (f : X → Y) :=
-  rfl
-
-@[to_additive (attr := ext)]
-lemma ext {X Y : CommGrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 @[to_additive]
 instance : Inhabited CommGrpCat :=
   ⟨CommGrpCat.of PUnit⟩
@@ -355,30 +284,9 @@ theorem coe_of (R : Type u) [CommGroup R] : ↑(CommGrpCat.of R) = R :=
 @[to_additive (attr := simp)]
 lemma hom_id {X : CommGrpCat} : (𝟙 X : X ⟶ X).hom = MonoidHom.id X := rfl
 
-/- Provided for rewriting. -/
-@[to_additive]
-lemma id_apply (X : CommGrpCat) (x : X) :
-    (𝟙 X : X ⟶ X) x = x := by simp
-
 @[to_additive (attr := simp)]
 lemma hom_comp {X Y T : CommGrpCat} (f : X ⟶ Y) (g : Y ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma comp_apply {X Y T : CommGrpCat} (f : X ⟶ Y) (g : Y ⟶ T) (x : X) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[to_additive (attr := ext)]
-lemma hom_ext {X Y : CommGrpCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {X Y : CommGrpCat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {X : Type u} [CommGroup X] : ofHom (MonoidHom.id X) = 𝟙 (of X) := rfl
@@ -388,20 +296,6 @@ lemma ofHom_comp {X Y Z : Type u} [CommGroup X] [CommGroup Y] [CommGroup Z]
     (f : X →* Y) (g : Y →* Z) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
-
-@[to_additive]
-lemma ofHom_apply {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
-    (ofHom f) x = f x := rfl
-
--- This is essentially an alias for `Iso.hom_inv_id_apply`; consider deprecation?
-@[to_additive]
-lemma inv_hom_apply {X Y : CommGrpCat} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
--- This is essentially an alias for `Iso.inv_hom_id_apply`; consider deprecation?
-@[to_additive]
-lemma hom_inv_apply {X Y : CommGrpCat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  simp
 
 @[to_additive]
 instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
@@ -485,7 +379,7 @@ theorem asHom_injective {G : AddCommGrpCat.{0}} : Function.Injective (@asHom G) 
 @[ext]
 theorem int_hom_ext {G : AddCommGrpCat.{0}} (f g : AddCommGrpCat.of ℤ ⟶ G)
     (w : f (1 : ℤ) = g (1 : ℤ)) : f = g :=
-  hom_ext (AddMonoidHom.ext_int w)
+  ConcreteCategory.ext (AddMonoidHom.ext_int w)
 
 -- TODO: this argument should be generalised to the situation where
 -- the forgetful functor is representable.
