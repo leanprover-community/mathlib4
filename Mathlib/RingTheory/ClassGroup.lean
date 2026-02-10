@@ -300,6 +300,17 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
         (IsFractionRing.injective R (FractionRing R)).eq_iff] at hx
     · exact (FractionalIdeal.mk'_mul_coeIdeal_eq_coeIdeal _ hy').mpr h
 
+/-- A fractional ideal is a unit iff its integral numerator `num` is a unit. -/
+theorem FractionalIdeal.isUnit_num {I : FractionalIdeal R⁰ (FractionRing R)} :
+    IsUnit (I.num : FractionalIdeal R⁰ (FractionRing R)) ↔ IsUnit I := by
+  have hden0 : algebraMap R (FractionRing R) I.den ≠ 0 :=
+    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors I.den.prop
+  let u : (FractionRing R)ˣ := Units.mk0 (algebraMap R (FractionRing R) I.den) hden0
+  have hdenUnit : IsUnit (spanSingleton R⁰ (algebraMap R (FractionRing R) I.den)) :=
+    ⟨toPrincipalIdeal R (FractionRing R) u, by simp [u]⟩
+  obtain ⟨c, hc⟩ := hdenUnit
+  rw [← den_mul_self_eq_num', ← hc, Units.isUnit_units_mul]
+
 /-- Maps a nonzero fractional ideal to an integral representative in the class group. -/
 noncomputable def ClassGroup.integralRep (I : FractionalIdeal R⁰ (FractionRing R)) :
     Ideal R := I.num
@@ -342,6 +353,26 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
   refine ⟨Units.mk0 x ?_, ?_⟩
   · intro x_eq; apply Units.ne_zero I; simp [hx', x_eq]
   · simp [hx']
+
+/-- If the class group is trivial, any unit fractional ideal is principal. -/
+theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup R)]
+    (I : FractionalIdeal R⁰ K) (hI : IsUnit I) :
+    (I : Submodule R K).IsPrincipal := by
+  rcases hI with ⟨I, rfl⟩
+  have hmk : ClassGroup.mk I = 1 := by
+    simpa using (Subsingleton.elim (ClassGroup.mk I) 1)
+  exact (ClassGroup.mk_eq_one_iff).1 hmk
+
+/-- If the class group is trivial, any integral ideal that is a unit as a fractional ideal
+is principal. -/
+theorem ClassGroup.isPrincipal_of_isUnit_coeIdeal [Subsingleton (ClassGroup R)]
+    (I : Ideal R) (hI : IsUnit (I : FractionalIdeal R⁰ K)) :
+    I.IsPrincipal := by
+  have hsub :
+      ((I : FractionalIdeal R⁰ K) : Submodule R K).IsPrincipal :=
+    ClassGroup.isPrincipal_coeSubmodule_of_isUnit (I := (I : FractionalIdeal R⁰ K)) hI
+  exact (IsFractionRing.coeSubmodule_isPrincipal (R := R) (K := K) (I := I)).1
+    (by simpa using hsub)
 
 theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈ (Ideal R)⁰) :
     ClassGroup.mk0 ⟨I, hI⟩ = 1 ↔ I.IsPrincipal :=

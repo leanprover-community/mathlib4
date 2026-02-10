@@ -1,6 +1,10 @@
-import Mathlib.Order.Defs.PartialOrder
-import Mathlib.Order.Notation
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.Order.Defs.PartialOrder
+public import Mathlib.Order.Notation
+public import Mathlib.Tactic.ToAdditive
+
+@[expose] public section
 
 variable {α : Type} [PartialOrder α] (a b c : α)
 
@@ -243,7 +247,7 @@ info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α
           forall_congr fun {b} =>
             forall_congr fun {x} =>
               congr (congrArg Iff (congrArg (And (x ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬x < c)) (CovBy._to_dual_cast_4 x b)))
-                (Eq.trans (Cov.Ico._to_dual_cast_3 a b x)
+                (Eq.trans (Cov.Ico._to_dual_cast_4 a b x)
                   (congr (congrArg And (WCovBy._to_dual_cast_4 a x)) (CovBy._to_dual_cast_4 x b)))))
   (@Eq.mp
     (∀ {α : Type} [inst : PartialOrder α] {a b x : α},
@@ -262,3 +266,11 @@ info: theorem Cov.Ioc_def : ∀ {α : Type} [inst : PartialOrder α] {a b x : α
 -/
 #guard_msgs in
 #print Cov.Ioc_def
+
+/-! Test that translated autoparams are marked with `meta`. -/
+
+@[to_dual]
+def Top.autoParamTest {a b : α} (h : a ≤ b := by grind) : a ≤ b := h
+
+open Lean
+run_meta guard <| isDeclMeta (← getEnv) ``Bot.autoParamTest._auto_1

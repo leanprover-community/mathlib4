@@ -195,6 +195,9 @@ instance hasForgetToMonCat : HasForget₂ GrpCat MonCat where
     (f : X →* Y) :
     (forget₂ GrpCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
 
+@[to_additive (attr := simp)] lemma forget₂_map {R S : GrpCat} (f : R ⟶ S) (x) :
+    (forget₂ GrpCat MonCat).map f x = f x := rfl
+
 @[to_additive]
 instance : Coe GrpCat.{u} MonCat.{u} where coe := (forget₂ GrpCat MonCat).obj
 
@@ -411,6 +414,9 @@ instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
 @[to_additive (attr := simp)] lemma forget₂_grp_map_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y]
     (f : X →* Y) :
     (forget₂ CommGrpCat GrpCat).map (ofHom f) = GrpCat.ofHom f := rfl
+
+@[to_additive (attr := simp)] lemma forget₂_map {R S : CommGrpCat} (f : R ⟶ S) (x) :
+    (forget₂ CommGrpCat GrpCat).map f x = f x := rfl
 
 @[to_additive]
 instance : Coe CommGrpCat.{u} GrpCat.{u} where coe := (forget₂ CommGrpCat GrpCat).obj
