@@ -27,7 +27,8 @@ universe w₁ w₂ w₃ v₁ v₂ u₁ u₂
 variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
 
 /-- The type of morphisms of a disjoint union of categories: for `X : C i` and `Y : C j`, a morphism
-`(i, X) ⟶ (j, Y)` if `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` there are no such morphisms.
+`(i, X) ⟶ (j, Y)` when `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` then there are no such
+morphisms.
 -/
 inductive SigmaHom : (Σ i, C i) → (Σ i, C i) → Type max w₁ v₁ u₁
   | mk : ∀ {i : I} {X Y : C i}, (X ⟶ Y) → SigmaHom ⟨i, X⟩ ⟨i, Y⟩

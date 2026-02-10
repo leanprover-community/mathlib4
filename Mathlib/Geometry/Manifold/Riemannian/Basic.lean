@@ -25,7 +25,7 @@ satisfies the predicate `IsRiemannianManifold 𝓘(ℝ, E) E`.
 
 In a general manifold with a Riemannian metric, we define the associated extended distance in the
 manifold, and show that it defines the same topology as the pre-existing one. Therefore, one
-may endow the manifold with an emetric space structure, see `EmetricSpace.ofRiemannianMetric`.
+may endow the manifold with an emetric space structure, see `EMetricSpace.ofRiemannianMetric`.
 By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
@@ -39,7 +39,7 @@ variable
   [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
   [IsRiemannianManifold I M]
 ```
-To register a `C^n` manifold for a general `n`, one should replace `[IsManifold ∞ I M]` with
+To register a `C^n` manifold for a general `n`, one should replace `[IsManifold I ∞ M]` with
 `[IsManifold I n M] [IsManifold I 1 M]`, where the second one is needed to ensure that the
 tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 as there are
 automatic instances for these cases). One can require whatever regularity one wants in the
@@ -77,7 +77,7 @@ the tangent spaces.
 This is a `Prop`-valued typeclass, on top of existing data.
 
 If you need to *construct* a distance using a Riemannian structure,
-see `EmetricSpace.ofRiemannianMetric`. -/
+see `EMetricSpace.ofRiemannianMetric`. -/
 class IsRiemannianManifold : Prop where
   out (x y : M) : edist x y = riemannianEDist I x y
 
@@ -102,7 +102,7 @@ product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
   inner x := (innerSL ℝ (E := F) : F →L[ℝ] F →L[ℝ] ℝ)
-  symm x v w := real_inner_comm  _ _
+  symm x v w := real_inner_comm _ _
   pos x v hv := real_inner_self_pos.2 hv
   isVonNBounded x := by
     change IsVonNBounded ℝ {v : F | ⟪v, v⟫ < 1}
@@ -110,7 +110,7 @@ noncomputable def riemannianMetricVectorSpace :
       ext v
       simp only [Metric.mem_ball, dist_zero_right, norm_eq_sqrt_re_inner (𝕜 := ℝ),
         RCLike.re_to_real, Set.mem_setOf_eq]
-      conv_lhs => rw [show (1 : ℝ) = √ 1 by simp]
+      conv_lhs => rw [show (1 : ℝ) = √1 by simp]
       rw [Real.sqrt_lt_sqrt_iff]
       exact real_inner_self_nonneg
     rw [← this]
@@ -187,7 +187,7 @@ section
 
 Let `M` be a real manifold with a Riemannian structure. We construct the associated distance and
 show that the associated topology coincides with the pre-existing topology. Therefore, one may
-endow `M` with an emetric space structure, called `EmetricSpace.ofRiemannianMetric`.
+endow `M` with an emetric space structure, called `EMetricSpace.ofRiemannianMetric`.
 Moreover, we show that in this case the resulting emetric space satisfies the predicate
 `IsRiemannianManifold I M`.
 
@@ -367,13 +367,13 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
 lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
     ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
   rcases eventually_riemannianEDist_le_edist_extChartAt I x with ⟨C, C_pos, hC⟩
-  have : (extChartAt I x) ⁻¹' (EMetric.ball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
+  have : (extChartAt I x) ⁻¹' (Metric.eball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
     apply (continuousAt_extChartAt x).preimage_mem_nhds
-    exact EMetric.ball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
+    exact Metric.eball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
   filter_upwards [this, hC] with y hy h'y
   apply h'y.trans_lt
   have : edist (extChartAt I x x) (extChartAt I x y) < c / C := by
-    simpa only [mem_preimage, EMetric.mem_ball'] using hy
+    simpa only [mem_preimage, Metric.mem_eball'] using hy
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
@@ -487,7 +487,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
-    rw [← Metric.emetric_ball_nnreal, EMetric.mem_ball, edist_eq_enorm_sub]
+    rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
     convert this
     simp [γ', hγx]
   convert mem_preimage.1 this
@@ -514,8 +514,8 @@ so that the topology is defeq to the original one.
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
-@[reducible] def PseudoEmetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
-  PseudoEmetricSpace.ofEdistOfTopology (riemannianEDist I (M := M))
+@[reducible] def PseudoEMetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
+  PseudoEMetricSpace.ofEDistOfTopology (riemannianEDist I (M := M))
     (fun _ ↦ riemannianEDist_self)
     (fun _ _ ↦ riemannianEDist_comm)
     (fun _ _ _ ↦ riemannianEDist_triangle)
@@ -523,13 +523,16 @@ additionally the predicate `IsRiemannianManifold I M`. -/
       (fun _ hs ↦ setOf_riemannianEDist_lt_subset_nhds' I hs)
       (fun _ hc ↦ eventually_riemannianEDist_lt I x hc))
 
+@[deprecated (since := "2026-01-08")]
+noncomputable alias PseudoEmetricSpace.ofRiemannianMetric := PseudoEMetricSpace.ofRiemannianMetric
+
 /-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
 by definition the distance is the infimum of the length of paths between the points, i.e., the
 manifold satisfies the `IsRiemannianManifold I M` predicate. -/
 instance [RegularSpace M] :
-    letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
+    letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
     IsRiemannianManifold I M := by
-  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
+  letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
   exact ⟨fun x y ↦ rfl⟩
 
 variable (M) in
@@ -539,8 +542,11 @@ so that the topology is defeq to the original one.
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
-@[reducible] def EmetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
-  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
+@[reducible] def EMetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
+  letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
   EMetricSpace.ofT0PseudoEMetricSpace M
+
+@[deprecated (since := "2026-01-08")]
+noncomputable alias EmetricSpace.ofRiemannianMetric := EMetricSpace.ofRiemannianMetric
 
 end

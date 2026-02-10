@@ -5,13 +5,16 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Control.Basic
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
 public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
+public import Batteries.Data.List
+public import Batteries.Tactic.Lint.Simp
+public import Batteries.Tactic.SeqFocus
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Basic properties of lists
@@ -276,7 +279,7 @@ theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
-  simp only [concat_eq_append, reverse_cons, reverse_reverse]
+  grind
 
 theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
@@ -931,7 +934,7 @@ local notation a " ⋆ " b => op a b
 -- Setting `priority := high` means that Lean will prefer this notation to the identical one
 -- for `Seq.seq`
 /-- Notation for `foldl op a l`. -/
-local notation l " <*> " a => foldl op a l
+local notation (priority := high) l " <*> " a => foldl op a l
 
 theorem foldl_op_eq_op_foldr_assoc :
     ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂

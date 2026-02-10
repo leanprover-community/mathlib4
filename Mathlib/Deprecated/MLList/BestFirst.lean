@@ -106,19 +106,19 @@ variable {ω α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder
 /-- Calculate the current best lower bound for the priority of a node. -/
 def BestFirstNode.estimate (n : BestFirstNode prio ε) : ω := bound (prio n.key) n.estimator
 
-instance [Ord ω] [Ord α] : Ord (BestFirstNode prio ε) where
+instance [Ord α] : Ord (BestFirstNode prio ε) where
   compare :=
     compareLex
       (compareOn BestFirstNode.estimate)
       (compareOn BestFirstNode.key)
 
 set_option linter.unusedVariables false in
-variable (prio ε m β) [Ord ω] [Ord α] in
+variable (prio ε m β) [Ord α] in
 /-- A queue of `MLList m β`s, lazily prioritized by lower bounds. -/
 @[nolint unusedArguments]
 def BestFirstQueue (maxSize : Option Nat) := TreeMap (BestFirstNode prio ε) (MLList m β) compare
 
-variable [Ord ω] [Ord α] {maxSize : Option Nat}
+variable [Ord α] {maxSize : Option Nat}
 
 namespace BestFirstQueue
 
@@ -234,7 +234,7 @@ end BestFirstQueue
 
 open MLList
 
-variable {m : Type → Type} [Monad m] [Alternative m] [∀ a, Bot (ε a)] (prio ε)
+variable {m : Type → Type} [AlternativeMonad m] [∀ a, Bot (ε a)] (prio ε)
 
 /--
 Core implementation of `bestFirstSearch`, that works by iteratively updating an internal state,
@@ -311,7 +311,7 @@ def bestFirstSearchCore (f : α → MLList m α) (a : α)
 
 end
 
-variable {m : Type → Type} {α : Type} [Monad m] [Alternative m] [LinearOrder α]
+variable {m : Type → Type} {α : Type} [AlternativeMonad m] [LinearOrder α]
 
 /-- A local instance that enables using "the actual value" as a priority estimator,
 for simple use cases. -/

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Manuel Candales, Benjamin Davidson
+Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
 module
 
@@ -240,7 +240,7 @@ theorem isTangentAt_iff_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s)
                  ← vsub_add_vsub_cancel p t s.center] at h_dist_eq
       exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero _ _).mp (by linarith)
     refine ⟨ht, right_mem_affineSpan_pair ℝ p t, fun x hx ↦ ?_⟩
-    rw [SetLike.mem_coe, mem_orthRadius_iff_inner_left]
+    rw [mem_orthRadius_iff_inner_left]
     obtain ⟨r, hr⟩ := (vadd_right_mem_affineSpan_pair (k := ℝ)).mp (vsub_vadd x t ▸ hx)
     rw [← hr, inner_smul_left, h_orth, mul_zero]⟩
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
@@ -130,8 +131,8 @@ instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →�
 variable {α M}
 
 @[simp]
-theorem support_smul_eq [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {b : R}
-    (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
+theorem support_smul_eq [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+    [Module.IsTorsionFree R M] {b : R} (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
   Finset.ext fun a => by simp [Finsupp.smul_apply, hb]
 
 section
@@ -188,10 +189,9 @@ theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddCommMonoid N] [SMulZero
     ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
   sum_mapRange_index fun i => (h i).map_zero
 
-instance noZeroSMulDivisors [Zero R] [Zero M] [SMulZeroClass R M] {ι : Type*}
-    [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
-  ⟨fun h => or_iff_not_imp_left.mpr fun hc => Finsupp.ext fun i =>
-    (eq_zero_or_eq_zero_of_smul_eq_zero (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
+instance moduleIsTorsionFree [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
+    [Module.IsTorsionFree R M] : Module.IsTorsionFree R (ι →₀ M) where
+  isSMulRegular r hr f g hfg := by ext i; exact hr.isSMulRegular congr($hfg i)
 
 section DistribMulActionSemiHom
 variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribMulAction R N]

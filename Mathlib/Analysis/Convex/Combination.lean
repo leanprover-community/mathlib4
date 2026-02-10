@@ -439,6 +439,12 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
       · exact fun i hi => Finset.mem_coe.2 (Finset.mem_image_of_mem _ hi)
   · exact iUnion_subset fun i => iUnion_subset convexHull_mono
 
+/-- The `vectorSpan` of a segment is the span of the difference of its endpoints. -/
+theorem vectorSpan_segment {p₁ p₂ : E} :
+    vectorSpan R (segment R p₁ p₂) = R ∙ (p₂ -ᵥ p₁) := by
+  rw [← convexHull_pair, ← direction_affineSpan, affineSpan_convexHull,
+      direction_affineSpan, vectorSpan_pair_rev, vsub_eq_sub]
+
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
     (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) := by
   rw [mem_convexHull_iff_exists_fintype] at hx hy ⊢

@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.SurjectiveOnStalks
 
@@ -46,6 +46,14 @@ lemma Ideal.ResidueField.map_algebraMap (I : Ideal R) [I.IsPrime] (J : Ideal S) 
   rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime I)]
   simp [IsLocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
   rfl
+
+lemma RingHom.SurjectiveOnStalks.residueFieldMap_bijective
+    {f : R →+* S} (H : f.SurjectiveOnStalks)
+    (I : Ideal R) [I.IsPrime] (J : Ideal S) [J.IsPrime] (hf : I = J.comap f) :
+    Function.Bijective (Ideal.ResidueField.map I J f hf) := by
+  subst hf
+  exact ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
+    (Ideal.Quotient.mk_surjective.comp (H J ‹_›))⟩
 
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
@@ -137,6 +145,15 @@ lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
 instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
   Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
+
+instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
+  .comp _ (Localization.AtPrime p) _
+
+instance [Algebra.EssFiniteType R A]
+    (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
+    Algebra.EssFiniteType p.ResidueField q.ResidueField := by
+  have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
+  refine .of_comp R _ _
 
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable def Ideal.ResidueField.lift
