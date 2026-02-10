@@ -104,8 +104,8 @@ instance (r : α → α → Prop) [IsTrans α r] (p : α → Prop) : IsTrans _ (
 instance (r : α → α → Prop) [Std.Irrefl r] (p : α → Prop) : Std.Irrefl (Subrel r p) :=
   ⟨fun x => Std.Irrefl.irrefl (r := r) x⟩
 
-instance (r : α → α → Prop) [IsTrichotomous α r] (p : α → Prop) : IsTrichotomous _ (Subrel r p) :=
-  ⟨fun x y => by rw [Subtype.ext_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
+instance (r : α → α → Prop) [Std.Trichotomous r] (p : α → Prop) : Std.Trichotomous (Subrel r p) :=
+  ⟨fun x y => by rw [Subtype.ext_iff]; exact @Std.Trichotomous.trichotomous α r _ x y⟩
 
 instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
   (Subrel.relEmbedding r p).isWellFounded

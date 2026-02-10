@@ -132,7 +132,7 @@ def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)
 This is the `DFinsupp` version of `Finsupp.curryLinearEquiv`. -/
 @[simps! apply symm_apply]
 def sigmaCurryLEquiv {α : ι → Type*} {M : (i : ι) → α i → Type*}
-    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] [DecidableEq ι] :
+    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] :
     (Π₀ (i : (x : ι) × α x), M i.fst i.snd) ≃ₗ[R] Π₀ (i : ι) (j : α i), M i j where
   __ := DFinsupp.sigmaCurryEquiv
   map_add' _ _ := by ext; rfl
