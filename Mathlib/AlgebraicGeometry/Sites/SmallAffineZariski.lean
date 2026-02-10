@@ -220,8 +220,8 @@ category instance on the indices. -/
       ((iSup_affineOpens_eq_top X).ge (Set.mem_univ x))
     exact ⟨U, ⟨x, hxU⟩, rfl⟩
 
-noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
-  trans f := X.homOfLE (((Scheme.AffineZariskiSite.toOpensFunctor _).map f).le)
+noncomputable instance : (directedCover X).LocallyDirected where
+  trans f := X.homOfLE (((toOpensFunctor _).map f).le)
   directed {U V} x := by
     let a := (pullback.fst _ _ ≫ U.1.ι) x
     have haU : a ∈ U.1 := (pullback.fst U.1.ι V.1.ι x).2
@@ -234,6 +234,9 @@ noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirec
     change (pullback.lift _ _ _ ≫ pullback.fst _ _ ≫ U.1.ι) _ = _
     simp only [pullback.lift_fst_assoc, homOfLE_ι, Opens.ι_apply]
     rfl
+
+@[simp] lemma directedCover_trans {i j : (directedCover X).I₀} (f : i ⟶ j) :
+    (directedCover X).trans f = X.homOfLE (((toOpensFunctor _).map f).le) := rfl
 
 section PreservesLocalization
 
@@ -296,6 +299,13 @@ def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
   natTrans := Functor.whiskerRight α.rightOp Scheme.Spec ≫ (restrictIsoSpec X).inv
   equifibered := (H.rightOp.whiskerRight _).comp (.of_isIso _)
 
+instance {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
+    {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F}
+    (H : α.Coequifibered) : ((relativeGluingData H).functor ⋙ forget).IsLocallyDirected :=
+  -- Why doesn't typeclass synthesis work here?
+  -- It does fire if one adds `(C := no_index(_))` to the composition in the instance.
+  Cover.RelativeGluingData.instIsLocallyDirectedI₀CompFunctorForgetOfIsThin ..
+
 @[deprecated "By `inferInstance`." (since := "2026-02-01")]
 lemma PreservesLocalization.isLocallyDirected (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
@@ -340,10 +350,6 @@ variable (X) in
 noncomputable def isColimitCocone : IsColimit (cocone X) :=
   letI D := relativeGluingData (X := X) (.of_isIso (𝟙 _))
   letI F := D.functor
-  -- Why doesn't typeclass synthesis work here?
-  -- It does fire if one adds `(C := no_index(_))` to the composition in the instance.
-  haveI : (D.functor ⋙ forget).IsLocallyDirected :=
-    Cover.RelativeGluingData.instIsLocallyDirectedI₀CompFunctorForgetOfIsThin ..
   haveI : IsIso ((colimit.isColimit F).desc (cocone X:)) := by
     refine (IsZariskiLocalAtTarget.iff_of_openCover (P := .isomorphisms _)
       (X.openCoverOfIsOpenCover _ (iSup_affineOpens_eq_top X))).mpr fun U ↦ ?_
