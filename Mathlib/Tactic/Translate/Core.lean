@@ -1106,7 +1106,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
 mutual
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) (reorder : Reorder)
-    (relevantArg : Nat) : TermElabM (Array Name) := withoutExporting do
+    (relevantArg : Nat) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
   -- Warn users if the original declaration has an attributee
