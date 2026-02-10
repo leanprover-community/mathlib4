@@ -368,12 +368,6 @@ The key axioms are:
   (distributivity for combining two combinations of the same points)
 -/
 structure BinaryConvexOp (R : Type u) (M : Type v) [CommRing R] where
-  /-- The splitting unit used for recursive construction. -/
-  u : R
-  /-- The splitting unit is invertible. -/
-  [u_inv : Invertible u]
-  /-- The complement of the splitting unit is invertible. -/
-  [one_sub_u_inv : Invertible (1 - u)]
   /-- The binary combination: `binCombo t x y` computes `(1-t)x + ty`. -/
   binCombo : R → M → M → M
   /-- Endpoint: weight 0 on second point gives first point. -/
@@ -399,18 +393,20 @@ structure BinaryConvexOp (R : Type u) (M : Type v) [CommRing R] where
   binCombo_assoc : ∀ p q r : R, ∀ x y z : M,
     p * (1 - q) = (1 - p * q) * r →
     binCombo p x (binCombo q y z) = binCombo (p * q) (binCombo r x y) z
-
-attribute [instance] BinaryConvexOp.u_inv BinaryConvexOp.one_sub_u_inv
+  /-- Inner swap for triples: swapping positions 1 and 2 in a triple preserves the
+      combination. At the `affineOfBinary` level, this says
+      `A([(a,x),(b,y),(c,z)]) = A([(a,x),(c,z),(b,y)])`.
+      In a module, both sides equal `(1-a)x + by + cz`. Over CommRing, this cannot be derived
+      from conditional associativity alone. -/
+  binCombo_swap_inner : ∀ (u : R) [Invertible u] [Invertible (1 - u)]
+    (a b c : R) (x y z : M), a + b + c = 1 →
+    binCombo (1 - u) (binCombo (1 - ⅟u * a) x y) (binCombo (⅟(1 - u) * c) y z) =
+    binCombo (1 - u) (binCombo (1 - ⅟u * a) x z) (binCombo (⅟(1 - u) * b) z y)
 
 namespace BinaryConvexOp
 
 variable (op : BinaryConvexOp R M)
-
-/-- Convenient access to the inverse of the splitting unit. -/
-noncomputable def invU : R := ⅟op.u
-
-/-- Convenient access to the inverse of (1 - u). -/
-noncomputable def invOneSubU : R := ⅟(1 - op.u)
+variable {u : R} [Invertible u] [Invertible (1 - u)]
 
 /-- Exchange property: `C(p, y, x) = C(1-p, x, y)`.
     Derived from entropic with s=1, r=0. -/
@@ -453,18 +449,18 @@ theorem binCombo_mediality_common_right (p q : R) (a b c : M) :
 /-- Combining with a point on the right: `C(1-u, C(c, x, y), y) = C(u*c + (1-u), x, y)`.
     From entropic with s=c, r=1. -/
 theorem binCombo_collapse_right (c : R) (x y : M) :
-    op.binCombo (1 - op.u) (op.binCombo c x y) y =
-      op.binCombo (op.u * c + (1 - op.u)) x y := by
-  have h := op.binCombo_entropic (1 - op.u) c 1 x y
+    op.binCombo (1 - u) (op.binCombo c x y) y =
+      op.binCombo (u * c + (1 - u)) x y := by
+  have h := op.binCombo_entropic (1 - u) c 1 x y
   rw [op.binCombo_one x y] at h
   rw [h]; congr 1; ring
 
 /-- Combining with a point on the left: `C(1-u, x, C(c, x, y)) = C((1-u)*c, x, y)`.
     From entropic with s=0, r=c. -/
 theorem binCombo_collapse_left (c : R) (x y : M) :
-    op.binCombo (1 - op.u) x (op.binCombo c x y) =
-      op.binCombo ((1 - op.u) * c) x y := by
-  have h := op.binCombo_entropic (1 - op.u) 0 c x y
+    op.binCombo (1 - u) x (op.binCombo c x y) =
+      op.binCombo ((1 - u) * c) x y := by
+  have h := op.binCombo_entropic (1 - u) 0 c x y
   rw [op.binCombo_zero x y] at h
   rw [h]; congr 1; ring
 
@@ -492,6 +488,7 @@ The algorithm only divides by `u` and `(1-u)`, never by arbitrary sums.
 -/
 
 variable {R : Type u} {M : Type v} [CommRing R]
+variable (u : R) [Invertible u] [Invertible (1 - u)]
 
 /-- A weighted sequence: list of (weight, point) pairs. -/
 abbrev WeightedSeq (R : Type*) (M : Type*) := List (R × M)
@@ -538,13 +535,13 @@ theorem WeightedSeq.scale_length (c : R) (ws : WeightedSeq R M) :
 /-- Extract the left weighted sequence for the recursive step in affineOfBinary.
     For input of length n ≥ 3, returns a sequence of length n-1 containing
     points x₁, x₂, ..., x_{n-1} with weights scaled by ⅟u and slack at position 2. -/
-noncomputable def leftWeightedSeq (op : BinaryConvexOp R M) :
+noncomputable def leftWeightedSeq :
     WeightedSeq R M → WeightedSeq R M
   | [] => []
   | [_] => []
   | [_, _] => []
   | (s₁, x₁) :: (_, x₂) :: (s₃, x₃) :: rest =>
-    let invU := ⅟op.u
+    let invU := ⅟u
     let a₁ := invU * s₁
     -- All weights except first two and last: s₃, s₄, ..., s_{n-1}
     let middleWeights := (s₃ :: rest.map Prod.fst).dropLast
@@ -557,14 +554,14 @@ noncomputable def leftWeightedSeq (op : BinaryConvexOp R M) :
 /-- Extract the right weighted sequence for the recursive step in affineOfBinary.
     For input of length n ≥ 3, returns a sequence of length n-1 containing
     points x₂, x₃, ..., xₙ with weight ⅟(1-u)·sₙ on xₙ, zeros in middle, and slack at x₂. -/
-noncomputable def rightWeightedSeq (op : BinaryConvexOp R M) :
+noncomputable def rightWeightedSeq :
     WeightedSeq R M → WeightedSeq R M
   | [] => []
   | [_] => []
   | [_, _] => []
   | (_, _) :: (_, x₂) :: (s₃, x₃) :: rest =>
     let restPoints := rest.map Prod.snd
-    let invOneSubU := ⅟(1 - op.u)
+    let invOneSubU := ⅟(1 - u)
     let sₙ := match rest.getLast? with
       | some (w, _) => w
       | none => s₃
@@ -634,14 +631,12 @@ end ListHelpers
 -- Key lemmas about the helper functions
 section WeightedSeqLemmas
 
-variable [CommRing R]
-
 /-- The left weighted sequence has the same points for inputs with the same points. -/
 theorem leftWeightedSeq_samePoints (op : BinaryConvexOp R M)
     {ws₁ ws₂ : WeightedSeq R M}
     (hlen : ws₁.length = ws₂.length)
     (hpts : ws₁.samePoints ws₂) :
-    (leftWeightedSeq op ws₁).samePoints (leftWeightedSeq op ws₂) := by
+    (leftWeightedSeq u ws₁).samePoints (leftWeightedSeq u ws₂) := by
   match ws₁, ws₂ with
   | [], [] => rfl
   | [_], [_] => rfl
@@ -670,7 +665,7 @@ theorem rightWeightedSeq_samePoints (op : BinaryConvexOp R M)
     {ws₁ ws₂ : WeightedSeq R M}
     (hlen : ws₁.length = ws₂.length)
     (hpts : ws₁.samePoints ws₂) :
-    (rightWeightedSeq op ws₁).samePoints (rightWeightedSeq op ws₂) := by
+    (rightWeightedSeq u ws₁).samePoints (rightWeightedSeq u ws₂) := by
   match ws₁, ws₂ with
   | [], [] => rfl
   | [_], [_] => rfl
@@ -696,7 +691,7 @@ theorem rightWeightedSeq_samePoints (op : BinaryConvexOp R M)
 /-- The left weighted sequence has length n-1 for input of length n ≥ 3. -/
 theorem leftWeightedSeq_length (op : BinaryConvexOp R M)
     (ws : WeightedSeq R M) (h : 3 ≤ ws.length) :
-    (leftWeightedSeq op ws).length = ws.length - 1 := by
+    (leftWeightedSeq u ws).length = ws.length - 1 := by
   match ws with
   | (s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest =>
     simp only [leftWeightedSeq, List.length_cons, List.length_zip, List.length_map,
@@ -706,7 +701,7 @@ theorem leftWeightedSeq_length (op : BinaryConvexOp R M)
 /-- The right weighted sequence has length n-1 for input of length n ≥ 3. -/
 theorem rightWeightedSeq_length (op : BinaryConvexOp R M)
     (ws : WeightedSeq R M) (h : 3 ≤ ws.length) :
-    (rightWeightedSeq op ws).length = ws.length - 1 := by
+    (rightWeightedSeq u ws).length = ws.length - 1 := by
   match ws with
   | (s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest =>
     simp only [rightWeightedSeq, List.length_cons, List.length_zip, List.length_append,
@@ -719,8 +714,8 @@ theorem leftWeightedSeq_combineWeights (op : BinaryConvexOp R M)
     (p : R) (ws₁ ws₂ : WeightedSeq R M)
     (hlen : ws₁.length = ws₂.length)
     (hpts : ws₁.samePoints ws₂) :
-    (leftWeightedSeq op ws₁).combineWeights p (leftWeightedSeq op ws₂) =
-      leftWeightedSeq op (ws₁.combineWeights p ws₂) := by
+    (leftWeightedSeq u ws₁).combineWeights p (leftWeightedSeq u ws₂) =
+      leftWeightedSeq u (ws₁.combineWeights p ws₂) := by
   match ws₁, ws₂ with
   | [], [] => rfl
   | [_], [_] => rfl
@@ -865,9 +860,9 @@ theorem leftWeightedSeq_combineWeights (op : BinaryConvexOp R M)
       have combine_scaled_zip : ∀ (W₁ W₂ : List R) (P : List M),
           W₁.length = W₂.length → W₁.length = P.length →
           List.zipWith (fun x x_1 => ((1 - p) * x.1 + p * x_1.1, x.2))
-            ((W₁.map (⅟op.u * ·)).zip P) ((W₂.map (⅟op.u * ·)).zip P) =
+            ((W₁.map (⅟u * ·)).zip P) ((W₂.map (⅟u * ·)).zip P) =
           ((List.zipWith (fun a b => (1 - p) * a + p * b) W₁ W₂).map
-            (⅟op.u * ·)).zip P := by
+            (⅟u * ·)).zip P := by
         intro W₁; induction W₁ with
         | nil =>
           intro W₂ P hlen₁ _
@@ -942,8 +937,8 @@ theorem rightWeightedSeq_combineWeights (op : BinaryConvexOp R M)
     (p : R) (ws₁ ws₂ : WeightedSeq R M)
     (hlen : ws₁.length = ws₂.length)
     (hpts : ws₁.samePoints ws₂) :
-    (rightWeightedSeq op ws₁).combineWeights p (rightWeightedSeq op ws₂) =
-      rightWeightedSeq op (ws₁.combineWeights p ws₂) := by
+    (rightWeightedSeq u ws₁).combineWeights p (rightWeightedSeq u ws₂) =
+      rightWeightedSeq u (ws₁.combineWeights p ws₂) := by
   match ws₁, ws₂ with
   | [], [] => rfl
   | [_], [_] => rfl
@@ -1049,8 +1044,8 @@ theorem rightWeightedSeq_combineWeights (op : BinaryConvexOp R M)
               · simp only [Prod.mk.injEq]; exact ⟨by ring, trivial⟩
               · exact ih v₁ v₂ qs (by omega)
         convert combine_replicate_zip (h₁ :: t₁).length
-          (⅟(1 - op.u) * ((h₁ :: t₁).getLast (List.cons_ne_nil _ _)).1)
-          (⅟(1 - op.u) * ((h₂ :: t₂).getLast (List.cons_ne_nil _ _)).1)
+          (⅟(1 - u) * ((h₁ :: t₁).getLast (List.cons_ne_nil _ _)).1)
+          (⅟(1 - u) * ((h₂ :: t₂).getLast (List.cons_ne_nil _ _)).1)
           (x₃ :: (h₁ :: t₁).map Prod.snd)
           (by simp [List.length_cons, List.length_map]) using 1
         congr 1; congr 1; congr 1; ring
@@ -1068,7 +1063,6 @@ noncomputable def affineOfBinary [Inhabited M] (op : BinaryConvexOp R M) : Weigh
     -- Points: x₁, x₂, x₃, ...rest
     -- Weights: s₁, s₂, s₃, ...restWeights
     let restPoints := rest.map Prod.snd
-    let u := op.u
     let invU := ⅟u
     let invOneSubU := ⅟(1 - u)
     -- Left group: [x₁, x₂, ..., x_{n-1}] (drop last point)
@@ -1120,10 +1114,10 @@ termination_by ws => ws.length
     where L and R are the affine combinations of leftWeightedSeq and rightWeightedSeq. -/
 theorem affineOfBinary_decompose [Inhabited M] (op : BinaryConvexOp R M)
     (s₁ : R) (x₁ : M) (s₂ : R) (x₂ : M) (s₃ : R) (x₃ : M) (rest : List (R × M)) :
-    affineOfBinary op ((s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest) =
-      op.binCombo (1 - op.u)
-        (affineOfBinary op (leftWeightedSeq op ((s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest)))
-        (affineOfBinary op (rightWeightedSeq op ((s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest))) := by
+    affineOfBinary u op ((s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest) =
+      op.binCombo (1 - u)
+        (affineOfBinary u op (leftWeightedSeq u ((s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest)))
+        (affineOfBinary u op (rightWeightedSeq u ((s₁, x₁) :: (s₂, x₂) :: (s₃, x₃) :: rest))) := by
   simp only [affineOfBinary, leftWeightedSeq, rightWeightedSeq]
 
 /-!
@@ -1168,7 +1162,7 @@ private theorem dropLast_replicate_succ (n : Nat) (c : R) :
     by taking `b = 0` and using `binCombo_zero`. -/
 theorem affineOfBinary_doubleton_padded [Inhabited M] (op : BinaryConvexOp R M)
     (a b : R) (x y : M) (zs : List M) (hab : a + b = 1) :
-    affineOfBinary op ([(a, x), (b, y)] ++ zs.map fun z => (0, z)) =
+    affineOfBinary u op ([(a, x), (b, y)] ++ zs.map fun z => (0, z)) =
       op.binCombo b x y := by
   induction h : zs.length using Nat.strongRecOn generalizing a b x y zs with
   | _ n ih =>
@@ -1187,7 +1181,7 @@ theorem affineOfBinary_doubleton_padded [Inhabited M] (op : BinaryConvexOp R M)
     rw [op.binCombo_collapse_right]
     congr 1
     -- Goal: u * (1 - ⅟u * a) + (1 - u) = b
-    have hinv : op.u * (⅟op.u * a) = a := by rw [← mul_assoc, mul_invOf_self, one_mul]
+    have hinv : u * (⅟u * a) = a := by rw [← mul_assoc, mul_invOf_self, one_mul]
     have hb : b = 1 - a := by rw [← hab]; ring
     rw [hb, mul_sub, mul_one, hinv]; ring
   | z₁ :: z₂ :: zs', hlen =>
@@ -1235,11 +1229,11 @@ theorem affineOfBinary_doubleton_padded [Inhabited M] (op : BinaryConvexOp R M)
         List.replicate (zs'.length + 2) (0 : R) from by simp [List.replicate_succ]]
       exact dropLast_replicate_succ (zs'.length + 1) 0
     have hscaled_middle :
-        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)) =
+        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟u * ·)) =
         List.replicate (zs'.length + 1) (0 : R) := by
       rw [hmiddle_weights, List.map_replicate, mul_zero]
     have hscaled_sum :
-        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)).sum = 0 := by
+        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟u * ·)).sum = 0 := by
       rw [hscaled_middle, sum_replicate_zero]
     -- For rightWeightedSeq: last weight is 0
     have hrest_getLast :
@@ -1251,9 +1245,9 @@ theorem affineOfBinary_doubleton_padded [Inhabited M] (op : BinaryConvexOp R M)
       have hne : rest ≠ [] := List.cons_ne_nil _ _
       rw [List.getLast?_eq_getLast hne]
       exact hall _ (List.getLast_mem hne)
-    have hleft : affineOfBinary op
-        (leftWeightedSeq op ((a, x) :: (b, y) :: (0, z₁) :: rest)) =
-        op.binCombo (1 - ⅟op.u * a) x y := by
+    have hleft : affineOfBinary u op
+        (leftWeightedSeq u ((a, x) :: (b, y) :: (0, z₁) :: rest)) =
+        op.binCombo (1 - ⅟u * a) x y := by
       simp only [leftWeightedSeq]
       rw [hscaled_sum, sub_zero]
       -- leftWS = (⅟u*a, x) :: (1-⅟u*a, y) :: scaledMiddle.zip middlePoints
@@ -1273,8 +1267,8 @@ theorem affineOfBinary_doubleton_padded [Inhabited M] (op : BinaryConvexOp R M)
           omega
         omega
       exact ih middlePoints.length hlt _ _ _ _ middlePoints (by ring) rfl
-    have hright : affineOfBinary op
-        (rightWeightedSeq op ((a, x) :: (b, y) :: (0, z₁) :: rest)) =
+    have hright : affineOfBinary u op
+        (rightWeightedSeq u ((a, x) :: (b, y) :: (0, z₁) :: rest)) =
         y := by
       simp only [rightWeightedSeq]
       rw [hrest_getLast, mul_zero, sub_zero]
@@ -1302,7 +1296,7 @@ theorem affineOfBinary_doubleton_padded [Inhabited M] (op : BinaryConvexOp R M)
     rw [hleft, hright]
     rw [op.binCombo_collapse_right]
     congr 1
-    have hinv : op.u * (⅟op.u * a) = a := by
+    have hinv : u * (⅟u * a) = a := by
       rw [← mul_assoc, mul_invOf_self, one_mul]
     have hb : b = 1 - a := by rw [← hab]; ring
     rw [hb, mul_sub, mul_one, hinv]; ring
@@ -1311,7 +1305,7 @@ theorem affineOfBinary_doubleton_padded [Inhabited M] (op : BinaryConvexOp R M)
     `A([(1,x), (0,z₁), ..., (0,zₖ)]) = x`. -/
 theorem affineOfBinary_singleton_padded [Inhabited M] (op : BinaryConvexOp R M)
     (x : M) (zs : List M) :
-    affineOfBinary op ([(1, x)] ++ zs.map fun z => (0, z)) = x := by
+    affineOfBinary u op ([(1, x)] ++ zs.map fun z => (0, z)) = x := by
   match zs with
   | [] => simp [affineOfBinary]
   | z :: zs' =>
@@ -1319,7 +1313,7 @@ theorem affineOfBinary_singleton_padded [Inhabited M] (op : BinaryConvexOp R M)
     -- Goal: A((1,x) :: (0,z) :: map ...) = x
     -- This is doubleton_padded with a=1, b=0
     have h : (1 : R) + 0 = 1 := by ring
-    have := affineOfBinary_doubleton_padded op 1 0 x z zs' h
+    have := affineOfBinary_doubleton_padded u op 1 0 x z zs' h
     simp only [List.map_cons, List.cons_append, List.nil_append] at this
     rw [this]
     exact op.binCombo_zero x z
@@ -1356,12 +1350,12 @@ end AlgebraicLemmas
     - n=2: Reduces to binCombo_entropic
     - n≥3: Expand both sides, use mediality to swap, apply IH, verify weight arithmetic
 -/
-theorem affineOfBinary_linear [CommRing R] [Inhabited M] (op : BinaryConvexOp R M)
+theorem affineOfBinary_linear [Inhabited M] (op : BinaryConvexOp R M)
     (p : R) (ws₁ ws₂ : WeightedSeq R M)
     (hlen : ws₁.length = ws₂.length)
     (hpts : ws₁.samePoints ws₂) :
-    op.binCombo p (affineOfBinary op ws₁) (affineOfBinary op ws₂) =
-      affineOfBinary op (ws₁.combineWeights p ws₂) := by
+    op.binCombo p (affineOfBinary u op ws₁) (affineOfBinary u op ws₂) =
+      affineOfBinary u op (ws₁.combineWeights p ws₂) := by
   -- Use strong induction on length
   induction h : ws₁.length using Nat.strongRecOn generalizing ws₁ ws₂ with
   | _ n ih =>
@@ -1406,75 +1400,75 @@ theorem affineOfBinary_linear [CommRing R] [Inhabited M] (op : BinaryConvexOp R 
       -- 4. = A(combine ws)                              [by decompose + combineWeights lemmas]
 
       -- Step 1: Expand LHS using decomposition
-      have hdecomp₁ : affineOfBinary op ws₁' =
-          op.binCombo (1 - op.u)
-            (affineOfBinary op (leftWeightedSeq op ws₁'))
-            (affineOfBinary op (rightWeightedSeq op ws₁')) :=
-        affineOfBinary_decompose op s₁ x₁ s₂ x₂ s₃ x₃ rest₁
-      have hdecomp₂ : affineOfBinary op ws₂' =
-          op.binCombo (1 - op.u)
-            (affineOfBinary op (leftWeightedSeq op ws₂'))
-            (affineOfBinary op (rightWeightedSeq op ws₂')) :=
-        affineOfBinary_decompose op r₁ x₁ r₂ x₂ r₃ x₃ rest₂
+      have hdecomp₁ : affineOfBinary u op ws₁' =
+          op.binCombo (1 - u)
+            (affineOfBinary u op (leftWeightedSeq u ws₁'))
+            (affineOfBinary u op (rightWeightedSeq u ws₁')) :=
+        affineOfBinary_decompose u op s₁ x₁ s₂ x₂ s₃ x₃ rest₁
+      have hdecomp₂ : affineOfBinary u op ws₂' =
+          op.binCombo (1 - u)
+            (affineOfBinary u op (leftWeightedSeq u ws₂'))
+            (affineOfBinary u op (rightWeightedSeq u ws₂')) :=
+        affineOfBinary_decompose u op r₁ x₁ r₂ x₂ r₃ x₃ rest₂
       -- Prepare IH applications
-      have hlen_left : (leftWeightedSeq op ws₁').length = (leftWeightedSeq op ws₂').length := by
-        rw [leftWeightedSeq_length op ws₁' (by simp [ws₁']),
-            leftWeightedSeq_length op ws₂' (by simp [ws₂'])]
+      have hlen_left : (leftWeightedSeq u ws₁').length = (leftWeightedSeq u ws₂').length := by
+        rw [leftWeightedSeq_length u op ws₁' (by simp [ws₁']),
+            leftWeightedSeq_length u op ws₂' (by simp [ws₂'])]
         simp [ws₁', ws₂', hrest_len]
-      have hlen_right : (rightWeightedSeq op ws₁').length = (rightWeightedSeq op ws₂').length := by
-        rw [rightWeightedSeq_length op ws₁' (by simp [ws₁']),
-            rightWeightedSeq_length op ws₂' (by simp [ws₂'])]
+      have hlen_right : (rightWeightedSeq u ws₁').length = (rightWeightedSeq u ws₂').length := by
+        rw [rightWeightedSeq_length u op ws₁' (by simp [ws₁']),
+            rightWeightedSeq_length u op ws₂' (by simp [ws₂'])]
         simp [ws₁', ws₂', hrest_len]
-      have hpts_left : (leftWeightedSeq op ws₁').samePoints (leftWeightedSeq op ws₂') :=
-        leftWeightedSeq_samePoints op hlen' hpts'
-      have hpts_right : (rightWeightedSeq op ws₁').samePoints (rightWeightedSeq op ws₂') :=
-        rightWeightedSeq_samePoints op hlen' hpts'
-      have h_left_len : (leftWeightedSeq op ws₁').length < n := by
-        rw [leftWeightedSeq_length op ws₁' (by simp [ws₁'])]
+      have hpts_left : (leftWeightedSeq u ws₁').samePoints (leftWeightedSeq u ws₂') :=
+        leftWeightedSeq_samePoints u op hlen' hpts'
+      have hpts_right : (rightWeightedSeq u ws₁').samePoints (rightWeightedSeq u ws₂') :=
+        rightWeightedSeq_samePoints u op hlen' hpts'
+      have h_left_len : (leftWeightedSeq u ws₁').length < n := by
+        rw [leftWeightedSeq_length u op ws₁' (by simp [ws₁'])]
         simp only [ws₁', List.length_cons] at h ⊢
         omega
-      have h_right_len : (rightWeightedSeq op ws₁').length < n := by
-        rw [rightWeightedSeq_length op ws₁' (by simp [ws₁'])]
+      have h_right_len : (rightWeightedSeq u ws₁').length < n := by
+        rw [rightWeightedSeq_length u op ws₁' (by simp [ws₁'])]
         simp only [ws₁', List.length_cons] at h ⊢
         omega
       -- Rewrite using decompositions
-      calc op.binCombo p (affineOfBinary op ws₁') (affineOfBinary op ws₂')
+      calc op.binCombo p (affineOfBinary u op ws₁') (affineOfBinary u op ws₂')
           -- Step 1: Expand using decomposition
           _ = op.binCombo p
-                (op.binCombo (1 - op.u)
-                  (affineOfBinary op (leftWeightedSeq op ws₁'))
-                  (affineOfBinary op (rightWeightedSeq op ws₁')))
-                (op.binCombo (1 - op.u)
-                  (affineOfBinary op (leftWeightedSeq op ws₂'))
-                  (affineOfBinary op (rightWeightedSeq op ws₂'))) := by
+                (op.binCombo (1 - u)
+                  (affineOfBinary u op (leftWeightedSeq u ws₁'))
+                  (affineOfBinary u op (rightWeightedSeq u ws₁')))
+                (op.binCombo (1 - u)
+                  (affineOfBinary u op (leftWeightedSeq u ws₂'))
+                  (affineOfBinary u op (rightWeightedSeq u ws₂'))) := by
             rw [hdecomp₁, hdecomp₂]
           -- Step 2: Apply mediality to swap the order
-          _ = op.binCombo (1 - op.u)
+          _ = op.binCombo (1 - u)
                 (op.binCombo p
-                  (affineOfBinary op (leftWeightedSeq op ws₁'))
-                  (affineOfBinary op (leftWeightedSeq op ws₂')))
+                  (affineOfBinary u op (leftWeightedSeq u ws₁'))
+                  (affineOfBinary u op (leftWeightedSeq u ws₂')))
                 (op.binCombo p
-                  (affineOfBinary op (rightWeightedSeq op ws₁'))
-                  (affineOfBinary op (rightWeightedSeq op ws₂'))) := by
-            exact op.binCombo_mediality p (1 - op.u) _ _ _ _
+                  (affineOfBinary u op (rightWeightedSeq u ws₁'))
+                  (affineOfBinary u op (rightWeightedSeq u ws₂'))) := by
+            exact op.binCombo_mediality p (1 - u) _ _ _ _
           -- Step 3: Apply IH to the inner combinations
-          _ = op.binCombo (1 - op.u)
-                (affineOfBinary op (WeightedSeq.combineWeights p
-                  (leftWeightedSeq op ws₁') (leftWeightedSeq op ws₂')))
-                (affineOfBinary op (WeightedSeq.combineWeights p
-                  (rightWeightedSeq op ws₁') (rightWeightedSeq op ws₂'))) := by
+          _ = op.binCombo (1 - u)
+                (affineOfBinary u op (WeightedSeq.combineWeights p
+                  (leftWeightedSeq u ws₁') (leftWeightedSeq u ws₂')))
+                (affineOfBinary u op (WeightedSeq.combineWeights p
+                  (rightWeightedSeq u ws₁') (rightWeightedSeq u ws₂'))) := by
             rw [ih _ h_left_len _ _ hlen_left hpts_left rfl,
                 ih _ h_right_len _ _ hlen_right hpts_right rfl]
           -- Step 4: Use combineWeights lemmas to simplify
-          _ = op.binCombo (1 - op.u)
-                (affineOfBinary op
-                  (leftWeightedSeq op (WeightedSeq.combineWeights p ws₁' ws₂')))
-                (affineOfBinary op
-                  (rightWeightedSeq op (WeightedSeq.combineWeights p ws₁' ws₂'))) := by
-            rw [leftWeightedSeq_combineWeights op p ws₁' ws₂' hlen' hpts',
-                rightWeightedSeq_combineWeights op p ws₁' ws₂' hlen' hpts']
+          _ = op.binCombo (1 - u)
+                (affineOfBinary u op
+                  (leftWeightedSeq u (WeightedSeq.combineWeights p ws₁' ws₂')))
+                (affineOfBinary u op
+                  (rightWeightedSeq u (WeightedSeq.combineWeights p ws₁' ws₂'))) := by
+            rw [leftWeightedSeq_combineWeights u op p ws₁' ws₂' hlen' hpts',
+                rightWeightedSeq_combineWeights u op p ws₁' ws₂' hlen' hpts']
           -- Step 5: Collapse back using decomposition (in reverse)
-          _ = affineOfBinary op (WeightedSeq.combineWeights p ws₁' ws₂') := by
+          _ = affineOfBinary u op (WeightedSeq.combineWeights p ws₁' ws₂') := by
             -- The combined sequence has the form needed for decomposition
             simp only [ws₁', ws₂', WeightedSeq.combineWeights, List.zipWith]
             rw [← affineOfBinary_decompose]
@@ -1492,7 +1486,7 @@ theorem affineOfBinary_linear [CommRing R] [Inhabited M] (op : BinaryConvexOp R 
     This follows from binCombo_zero (when right weight is 0, we get previous result). -/
 theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
     (ws : WeightedSeq R M) (x : M) (hvalid : ws.totalWeight = 1) (hne : ws ≠ []) :
-    affineOfBinary op (ws ++ [(0, x)]) = affineOfBinary op ws := by
+    affineOfBinary u op (ws ++ [(0, x)]) = affineOfBinary u op ws := by
   match ws with
   | [] => exact absurd rfl hne
   | [(w, y)] =>
@@ -1510,20 +1504,20 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
         List.length_nil]
       rw [op.binCombo_zero y₂ x]
       have h := op.binCombo_entropic
-        (1 - op.u) (1 - ⅟op.u * w₁) 1 y₁ y₂
+        (1 - u) (1 - ⅟u * w₁) 1 y₁ y₂
       rw [op.binCombo_one y₁ y₂] at h; rw [h]; congr 1
       have hw : w₁ + w₂ = 1 := by
         simpa [WeightedSeq.totalWeight] using hvalid
-      have hinv : op.u * (⅟op.u * w₁) = w₁ := by
+      have hinv : u * (⅟u * w₁) = w₁ := by
         rw [← mul_assoc, mul_invOf_self, one_mul]
       have hw₂ : w₂ = 1 - w₁ := by rw [← hw]; ring
-      have : (1 - (1 - op.u)) = op.u := by ring
+      have : (1 - (1 - u)) = u := by ring
       rw [this, mul_sub, mul_one, hinv, mul_one, hw₂]; ring
     | (w₃, y₃) :: rest' =>
       simp only [List.cons_append]
       rw [affineOfBinary_decompose]
-      have hright_eq : affineOfBinary op
-          (rightWeightedSeq op
+      have hright_eq : affineOfBinary u op
+          (rightWeightedSeq u
             ((w₁, y₁) :: (w₂, y₂) :: (w₃, y₃) :: (rest' ++ [(0, x)]))) = y₂ := by
         simp only [rightWeightedSeq]
         have hLast : (match (rest' ++ [(0, x)]).getLast? with
@@ -1541,15 +1535,15 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
             List.replicate_append_replicate]
         rw [hrep]
         rw [zip_replicate_zero_map hlen_pts.symm]
-        exact affineOfBinary_singleton_padded op y₂ pts
+        exact affineOfBinary_singleton_padded u op y₂ pts
       rw [hright_eq]
       set mw := w₃ :: rest'.map Prod.fst
       set mp := y₃ :: rest'.map Prod.snd
-      set sm := mw.map (⅟op.u * ·) with sm_def
+      set sm := mw.map (⅟u * ·) with sm_def
       have hmw_len : mw.length = mp.length := by simp [mw, mp]
-      have hleft : leftWeightedSeq op
+      have hleft : leftWeightedSeq u
           ((w₁, y₁) :: (w₂, y₂) :: (w₃, y₃) :: (rest' ++ [(0, x)])) =
-          (⅟op.u * w₁, y₁) :: (1 - ⅟op.u * w₁ - sm.sum, y₂) ::
+          (⅟u * w₁, y₁) :: (1 - ⅟u * w₁ - sm.sum, y₂) ::
             sm.zip mp := by
         simp only [leftWeightedSeq]
         have : (w₃ :: (rest' ++ [(0, x)]).map Prod.fst).dropLast =
@@ -1572,17 +1566,17 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
       rw [hleft]
       -- Goal: C(1-u, A(leftWS), y₂) = A(ws)
       set leftWS : WeightedSeq R M :=
-        (⅟op.u * w₁, y₁) :: (1 - ⅟op.u * w₁ - sm.sum, y₂) :: sm.zip mp
+        (⅟u * w₁, y₁) :: (1 - ⅟u * w₁ - sm.sum, y₂) :: sm.zip mp
       set padY₂ : WeightedSeq R M :=
         ((0 : R), y₁) :: ((1 : R), y₂) :: mp.map (fun z => ((0 : R), z))
       have hsm_len : sm.length = mp.length := by simp [sm, mw, mp]
-      have hy₂_pad : y₂ = affineOfBinary op padY₂ := by
-        change y₂ = affineOfBinary op
+      have hy₂_pad : y₂ = affineOfBinary u op padY₂ := by
+        change y₂ = affineOfBinary u op
           ([(0, y₁), (1, y₂)] ++ mp.map (fun z => ((0 : R), z)))
-        rw [affineOfBinary_doubleton_padded op 0 1 y₁ y₂ mp (by ring)]
+        rw [affineOfBinary_doubleton_padded u op 0 1 y₁ y₂ mp (by ring)]
         exact (op.binCombo_one y₁ y₂).symm
       -- Only rewrite y₂ in the third argument of binCombo, not inside leftWS
-      conv_lhs => rw [show y₂ = affineOfBinary op padY₂ from hy₂_pad]
+      conv_lhs => rw [show y₂ = affineOfBinary u op padY₂ from hy₂_pad]
       -- Goal: C(1-u, A(leftWS), A(padY₂)) = A(ws)
       have hlen : leftWS.length = padY₂.length := by
         simp [leftWS, padY₂, List.length_zip, hsm_len]
@@ -1592,7 +1586,7 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
         congr 1; congr 1
         rw [List.map_snd_zip (le_of_eq hsm_len.symm)]
         simp [List.map_map, Function.comp_def]
-      rw [affineOfBinary_linear op (1 - op.u) leftWS padY₂ hlen hpts]
+      rw [affineOfBinary_linear u op (1 - u) leftWS padY₂ hlen hpts]
       -- Goal: A(combineWeights (1-u) leftWS padY₂) = A(ws)
       -- It suffices to show the lists are equal
       congr 1
@@ -1600,9 +1594,9 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
       simp only [WeightedSeq.combineWeights, leftWS, padY₂,
         List.zipWith_cons_cons]
       -- Goal has three parts: head (w₁,y₁), second (w₂,y₂), tail
-      have hu_inv : op.u * ⅟op.u = 1 := mul_invOf_self op.u
-      have h1u : (1 : R) - (1 - op.u) = op.u := by ring
-      have hinv_mul (a : R) : op.u * (⅟op.u * a) = a := by
+      have hu_inv : u * ⅟u = 1 := mul_invOf_self u
+      have h1u : (1 : R) - (1 - u) = u := by ring
+      have hinv_mul (a : R) : u * (⅟u * a) = a := by
         rw [← mul_assoc, hu_inv, one_mul]
       -- Head: (1-(1-u))*(⅟u*w₁) + (1-u)*0 = w₁
       congr 1
@@ -1614,14 +1608,14 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
         -- u*(1-⅟u*w₁-sm.sum) + (1-u)*1 = w₂
         rw [h1u, mul_one]
         -- u*(1-⅟u*w₁-sm.sum) + (1-u) = w₂
-        have hsm_sum : sm.sum = ⅟op.u * mw.sum := by
+        have hsm_sum : sm.sum = ⅟u * mw.sum := by
           simp only [sm]
           induction mw with
           | nil => simp
           | cons h t ih => simp [List.sum_cons, ih, mul_add]
         rw [hsm_sum]
-        have hmul_expand : op.u * (1 - ⅟op.u * w₁ - ⅟op.u * mw.sum) =
-            op.u - w₁ - mw.sum := by
+        have hmul_expand : u * (1 - ⅟u * w₁ - ⅟u * mw.sum) =
+            u - w₁ - mw.sum := by
           rw [mul_sub, mul_sub, mul_one, hinv_mul, hinv_mul]
         rw [hmul_expand]
         -- Goal: u - w₁ - mw.sum + (1 - u) = w₂
@@ -1645,7 +1639,7 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
         -- Now: goal = u - w₁ - mw.sum + (1 - u) which ring-equals 1 - w₁ - mw.sum
         -- And htw says w₁ + w₂ + mw.sum = 1, so w₂ = 1 - w₁ - mw.sum
         -- Use omega-style: rewrite goal using htw
-        have : op.u - w₁ - mw.sum + (1 - op.u) = 1 - w₁ - mw.sum := by ring
+        have : u - w₁ - mw.sum + (1 - u) = 1 - w₁ - mw.sum := by ring
         rw [this]
         -- Now goal: 1 - w₁ - mw.sum = w₂, which is: w₂ + w₁ + mw.sum = 1
         symm
@@ -1667,12 +1661,12 @@ theorem affineOfBinary_append_zero [Inhabited M] (op : BinaryConvexOp R M)
       -- Need: for any lists ws ps of same length, zipWith comb ((ws.map(⅟u*·)).zip ps) (ps.map(0,·))
       --   = ws.zip ps when each element simplifies via u*⅟u = 1
       suffices ∀ (ws : List R) (ps : List M), ws.length = ps.length →
-          List.zipWith (fun x x_1 => ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
-            ((ws.map (⅟op.u * ·)).zip ps) (ps.map (fun z => ((0 : R), z))) =
+          List.zipWith (fun x x_1 => ((1 - (1 - u)) * x.1 + (1 - u) * x_1.1, x.2))
+            ((ws.map (⅟u * ·)).zip ps) (ps.map (fun z => ((0 : R), z))) =
           ws.zip ps by
         simp only [sm, mw, mp]
-        rw [show (w₃ :: rest'.map Prod.fst).map (⅟op.u * ·) =
-          ((w₃ :: rest'.map Prod.fst).map (⅟op.u * ·)) from rfl]
+        rw [show (w₃ :: rest'.map Prod.fst).map (⅟u * ·) =
+          ((w₃ :: rest'.map Prod.fst).map (⅟u * ·)) from rfl]
         rw [this (w₃ :: rest'.map Prod.fst) (y₃ :: rest'.map Prod.snd) hmw_len]
         -- Goal: (w₃::rest'.map fst).zip(y₃::rest'.map snd) = (w₃,y₃)::rest'
         simp only [List.zip_cons_cons]
@@ -1710,13 +1704,13 @@ noncomputable def StdSimplex.toWeightedSeqOn [PartialOrder R] [IsStrictOrderedRi
 noncomputable def convexCombinationOfBinary [Inhabited M]
     [PartialOrder R] [IsStrictOrderedRing R]
     (op : BinaryConvexOp R M) (f : StdSimplex R M) : M :=
-  affineOfBinary op f.toWeightedSeq
+  affineOfBinary u op f.toWeightedSeq
 
 /-- The combination of a single-point simplex returns that point. -/
 theorem convexCombinationOfBinary_single [Inhabited M]
     [PartialOrder R] [IsStrictOrderedRing R]
     (op : BinaryConvexOp R M) (x : M) :
-    convexCombinationOfBinary op (.single x) = x := by
+    convexCombinationOfBinary u op (.single x) = x := by
   simp only [convexCombinationOfBinary, StdSimplex.toWeightedSeq, StdSimplex.single,
     Finsupp.support_single_ne_zero _ one_ne_zero, Finset.toList_singleton, List.map_cons,
     List.map_nil, Finsupp.single_eq_same, affineOfBinary]
@@ -1733,13 +1727,13 @@ theorem affineOfBinary_binary_join_single_same [Inhabited M]
     (op : BinaryConvexOp R M) (p : R) (x : M)
     (hp : 0 ≤ p) (hp' : 0 ≤ 1 - p) (hsum : p + (1 - p) = 1) :
     op.binCombo (1 - p) x x =
-    affineOfBinary op
+    affineOfBinary u op
       (StdSimplex.duple (.single x) (.single x) hp hp' hsum).join.toWeightedSeq := by
   -- LHS = x by binCombo_same
   rw [op.binCombo_same]
   -- RHS: join of duple(single x, single x) = single x (weights add to 1)
   -- Then A(single x) = x
-  -- Need to show: x = affineOfBinary op (join.toWeightedSeq)
+  -- Need to show: x = affineOfBinary u op (join.toWeightedSeq)
   -- where join.weights = p • (single x 1) + (1-p) • (single x 1) = single x 1
   have hjoin_eq : (StdSimplex.duple (.single x) (.single x) hp hp' hsum).join =
       StdSimplex.single x := by
@@ -1760,7 +1754,7 @@ theorem affineOfBinary_binary_join_single_same [Inhabited M]
 /-- For length-2 weighted sequences, affineOfBinary produces binCombo on the weights. -/
 theorem affineOfBinary_length_two [Inhabited M] (op : BinaryConvexOp R M)
     (w₁ w₂ : R) (x y : M) :
-    affineOfBinary op [(w₁, x), (w₂, y)] = op.binCombo w₂ x y := by
+    affineOfBinary u op [(w₁, x), (w₂, y)] = op.binCombo w₂ x y := by
   simp only [affineOfBinary]
 
 /-- Key symmetry: binCombo(1-p, x, y) = binCombo(p, y, x) when p + (1-p) = 1.
@@ -1797,7 +1791,7 @@ theorem binCombo_swap (op : BinaryConvexOp R M) (p : R) (x y : M) :
     This follows from binCombo_swap. -/
 theorem affineOfBinary_swap_two [Inhabited M] (op : BinaryConvexOp R M)
     (w₁ w₂ : R) (x₁ x₂ : M) (hsum : w₁ + w₂ = 1) :
-    affineOfBinary op [(w₁, x₁), (w₂, x₂)] = affineOfBinary op [(w₂, x₂), (w₁, x₁)] := by
+    affineOfBinary u op [(w₁, x₁), (w₂, x₂)] = affineOfBinary u op [(w₂, x₂), (w₁, x₁)] := by
   -- affineOfBinary [(w₁, x₁), (w₂, x₂)] = binCombo(w₂, x₁, x₂)
   -- affineOfBinary [(w₂, x₂), (w₁, x₁)] = binCombo(w₁, x₂, x₁)
   simp only [affineOfBinary]
@@ -1822,7 +1816,7 @@ theorem affineOfBinary_duple [Inhabited M]
     (op : BinaryConvexOp R M) (a b : M) (hab : a ≠ b)
     {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (hst : s + t = 1)
     (hs' : s ≠ 0) (ht' : t ≠ 0) :
-    affineOfBinary op (StdSimplex.duple a b hs ht hst).toWeightedSeq =
+    affineOfBinary u op (StdSimplex.duple a b hs ht hst).toWeightedSeq =
       op.binCombo t a b := by
   classical
   simp only [StdSimplex.toWeightedSeq, StdSimplex.duple]
@@ -1878,12 +1872,12 @@ theorem affineOfBinary_binary_join_single [Inhabited M]
     (op : BinaryConvexOp R M) (p : R) (x y : M)
     (hp : 0 ≤ p) (hp' : 0 ≤ 1 - p) (hsum : p + (1 - p) = 1) :
     op.binCombo (1 - p) x y =
-    affineOfBinary op
+    affineOfBinary u op
       (StdSimplex.duple (.single x) (.single y) hp hp' hsum).join.toWeightedSeq := by
   -- Case split: x = y or x ≠ y
   by_cases hxy : x = y
   · subst hxy
-    exact affineOfBinary_binary_join_single_same op p x hp hp' hsum
+    exact affineOfBinary_binary_join_single_same u op p x hp hp' hsum
   · -- x ≠ y case
     -- The join has support {x, y} with weights p at x and (1-p) at y.
     -- First, get the join's weights using our helper lemma.
@@ -2032,7 +2026,7 @@ private theorem combineWeights_scale_zero_append
 /-- Appending multiple zero-weight points at the end doesn't change the affine combination. -/
 theorem affineOfBinary_append_zero_many [Inhabited M] (op : BinaryConvexOp R M)
     (ws : WeightedSeq R M) (xs : List M) (hvalid : ws.totalWeight = 1) (hne : ws ≠ []) :
-    affineOfBinary op (ws ++ xs.map fun x => (0, x)) = affineOfBinary op ws := by
+    affineOfBinary u op (ws ++ xs.map fun x => (0, x)) = affineOfBinary u op ws := by
   induction xs generalizing ws with
   | nil => simp
   | cons x xs ih =>
@@ -2045,14 +2039,14 @@ theorem affineOfBinary_append_zero_many [Inhabited M] (op : BinaryConvexOp R M)
         List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero]
       exact hvalid
     have hne' : ws ++ [(0, x)] ≠ [] := by simp
-    rw [ih (ws ++ [(0, x)]) hvalid' hne', affineOfBinary_append_zero op ws x hvalid hne]
+    rw [ih (ws ++ [(0, x)]) hvalid' hne', affineOfBinary_append_zero u op ws x hvalid hne]
 
 /-- Adding a zero-weight point at the front doesn't change the affine combination.
     This is the key zero-insertion invariance lemma. -/
 theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
     [Inhabited M] (op : BinaryConvexOp R M)
     (x : M) (ws : WeightedSeq R M) (hvalid : ws.totalWeight = 1) (hne : ws ≠ []) :
-    affineOfBinary op ((0, x) :: ws) = affineOfBinary op ws := by
+    affineOfBinary u op ((0, x) :: ws) = affineOfBinary u op ws := by
   induction h : ws.length using Nat.strongRecOn generalizing x ws with
   | _ n ih =>
   match ws, h with
@@ -2070,7 +2064,7 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
       List.length_nil]
     rw [op.binCombo_one x y₁]
     have h := op.binCombo_entropic
-      (1 - op.u) 0 (⅟(1 - op.u) * w₂) y₁ y₂
+      (1 - u) 0 (⅟(1 - u) * w₂) y₁ y₂
     rw [op.binCombo_zero y₁ y₂] at h; rw [h]; congr 1
     simp only [mul_zero, zero_add, ← mul_assoc,
       mul_invOf_self, one_mul]
@@ -2084,18 +2078,18 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
     set rest := (w₃, y₃) :: rest'
     set mw := (w₂ :: rest.map Prod.fst).dropLast
     set mp := (y₂ :: rest.map Prod.snd).dropLast
-    set sm := mw.map (⅟op.u * ·)
+    set sm := mw.map (⅟u * ·)
     have hmw_mp : mw.length = mp.length := by simp [mw, mp]
     have hsm_mp : sm.length = mp.length := by simp [sm, mw, mp]
     -- leftTail is what remains after removing the leading (0,x) from leftWS
     set leftTail : WeightedSeq R M := (1 - sm.sum, y₁) :: sm.zip mp
     -- Step 1: Compute leftWS explicitly
-    have hleftWS : leftWeightedSeq op
+    have hleftWS : leftWeightedSeq u
         ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest) =
         (0, x) :: leftTail := by
       simp only [leftWeightedSeq, mul_zero, sub_zero, leftTail, sm, mw, mp, rest]
     -- Step 2: Decompose LHS
-    rw [affineOfBinary_decompose (op := op) (s₁ := 0) (x₁ := x)
+    rw [affineOfBinary_decompose u (op := op) (s₁ := 0) (x₁ := x)
       (s₂ := w₁) (x₂ := y₁) (s₃ := w₂) (x₃ := y₂)
       (rest := rest)]
     rw [hleftWS]
@@ -2114,15 +2108,15 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
     -- Goal: C(1-u, A(leftTail), A(rightWS)) = A(ws)
     -- Step 3: Pad leftTail with (0, yₙ)
     set yₙ := rest.getLast (List.cons_ne_nil _ _) |>.2
-    have hpad : affineOfBinary op leftTail =
-        affineOfBinary op (leftTail ++ [(0, yₙ)]) := by
-      rw [affineOfBinary_append_zero op leftTail yₙ hleft_valid hleft_ne]
+    have hpad : affineOfBinary u op leftTail =
+        affineOfBinary u op (leftTail ++ [(0, yₙ)]) := by
+      rw [affineOfBinary_append_zero u op leftTail yₙ hleft_valid hleft_ne]
     rw [hpad]
     -- Step 4: Compute rightWS explicitly
     set wₙ := (rest.getLast (List.cons_ne_nil _ _)).1
-    set bLast := ⅟(1 - op.u) * wₙ
+    set bLast := ⅟(1 - u) * wₙ
     set b₁ := 1 - bLast
-    have hrightWS : rightWeightedSeq op
+    have hrightWS : rightWeightedSeq u
         ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest) =
         (b₁, y₁) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
           (y₂ :: rest.map Prod.snd) := by
@@ -2164,7 +2158,7 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
         List.length_zip, hsm_mp, Nat.min_self, List.length_singleton, List.length_nil,
         hmp_len]
     -- rightWS length
-    set rightWS := rightWeightedSeq op
+    set rightWS := rightWeightedSeq u
       ((0, x) :: (w₁, y₁) :: (w₂, y₂) :: rest)
     have hrightWS_len : rightWS.length = rest'.length + 3 := by
       rw [show rightWS = (b₁, y₁) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
@@ -2194,7 +2188,7 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
         simp [List.length_append, List.length_replicate]
       rw [lhs_eq, rhs_eq]
     -- Step 9: Apply affineOfBinary_linear
-    rw [affineOfBinary_linear op (1 - op.u) leftPadded rightWS hlen_eq hpts]
+    rw [affineOfBinary_linear u op (1 - u) leftPadded rightWS hlen_eq hpts]
     -- Step 10: Show combineWeights (1-u) leftPadded rightWS = ws
     -- It suffices to show the lists are equal
     congr 1
@@ -2203,11 +2197,11 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
     simp only [hleftPadded, hrightWS, WeightedSeq.combineWeights, List.zipWith_cons_cons]
     -- Head element: ((1-(1-u))*(1-sm.sum) + (1-u)*b₁, y₁) should = (w₁, y₁)
     -- Arithmetic helpers
-    have hu_inv : op.u * ⅟op.u = 1 := mul_invOf_self op.u
-    have h1u_inv : (1 - op.u) * ⅟(1 - op.u) = 1 := mul_invOf_self (1 - op.u)
+    have hu_inv : u * ⅟u = 1 := mul_invOf_self u
+    have h1u_inv : (1 - u) * ⅟(1 - u) = 1 := mul_invOf_self (1 - u)
     -- Prove the head weight = w₁
-    have hsm_eq : sm.sum = ⅟op.u * mw.sum := by
-      change (mw.map (⅟op.u * ·)).sum = ⅟op.u * mw.sum
+    have hsm_eq : sm.sum = ⅟u * mw.sum := by
+      change (mw.map (⅟u * ·)).sum = ⅟u * mw.sum
       induction mw with
       | nil => simp
       | cons a t ih =>
@@ -2240,15 +2234,15 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
     congr 1
     · -- Head pair: (u*(1-sm.sum) + (1-u)*b₁, y₁) = (w₁, y₁)
       congr 1
-      calc (1 - (1 - op.u)) * (1 - sm.sum) + (1 - op.u) * b₁
-          = op.u * (1 - sm.sum) + (1 - op.u) * (1 - ⅟(1 - op.u) * wₙ) := by
+      calc (1 - (1 - u)) * (1 - sm.sum) + (1 - u) * b₁
+          = u * (1 - sm.sum) + (1 - u) * (1 - ⅟(1 - u) * wₙ) := by
             ring
-        _ = op.u - op.u * sm.sum + ((1 - op.u) - (1 - op.u) * (⅟(1 - op.u) * wₙ)) := by
+        _ = u - u * sm.sum + ((1 - u) - (1 - u) * (⅟(1 - u) * wₙ)) := by
             ring
-        _ = op.u - op.u * (⅟op.u * mw.sum) +
-            ((1 - op.u) - (1 - op.u) * ⅟(1 - op.u) * wₙ) := by
+        _ = u - u * (⅟u * mw.sum) +
+            ((1 - u) - (1 - u) * ⅟(1 - u) * wₙ) := by
             rw [hsm_eq, mul_assoc]
-        _ = op.u - mw.sum + ((1 - op.u) - wₙ) := by
+        _ = u - mw.sum + ((1 - u) - wₙ) := by
             rw [← mul_assoc, hu_inv, one_mul, h1u_inv, one_mul]
         _ = 1 - (mw.sum + wₙ) := by ring
         _ = w₁ := by linarith [hmw_wₙ_sum]
@@ -2261,10 +2255,10 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
       rw [List.zipWith_append (by simp [hsm_mp])]
       simp only [List.zip_cons_cons, List.zip_nil_right, List.zipWith_cons_cons,
         List.zipWith_nil_left, List.append_nil]
-      conv_lhs => rw [show (1 - (1 - op.u)) * (0 : R) + (1 - op.u) * bLast = wₙ from by
+      conv_lhs => rw [show (1 - (1 - u)) * (0 : R) + (1 - u) * bLast = wₙ from by
         simp only [mul_zero, zero_add, bLast, ← mul_assoc, h1u_inv, one_mul]]
       suffices hzw : List.zipWith
-          (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
+          (fun x x_1 ↦ ((1 - (1 - u)) * x.1 + (1 - u) * x_1.1, x.2))
           (sm.zip mp) ((List.replicate mp.length (0 : R)).zip mp) =
           mw.zip mp by
         rw [hzw]
@@ -2274,13 +2268,13 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
         simp only [List.zip_cons_cons, List.cons.injEq, true_and]
         rw [← List.unzip_fst, ← List.unzip_snd, List.zip_unzip]
       change List.zipWith
-          (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
-          ((mw.map (⅟op.u * ·)).zip mp)
+          (fun x x_1 ↦ ((1 - (1 - u)) * x.1 + (1 - u) * x_1.1, x.2))
+          ((mw.map (⅟u * ·)).zip mp)
           ((List.replicate mp.length (0 : R)).zip mp) =
           mw.zip mp
       suffices ∀ (ws : List R) (ps : List M), ws.length = ps.length →
-          List.zipWith (fun x x_1 ↦ ((1 - (1 - op.u)) * x.1 + (1 - op.u) * x_1.1, x.2))
-            ((ws.map (⅟op.u * ·)).zip ps) ((List.replicate ps.length (0 : R)).zip ps)
+          List.zipWith (fun x x_1 ↦ ((1 - (1 - u)) * x.1 + (1 - u) * x_1.1, x.2))
+            ((ws.map (⅟u * ·)).zip ps) ((List.replicate ps.length (0 : R)).zip ps)
           = ws.zip ps by
         exact this mw mp hmw_mp
       intro ws ps hlen
@@ -2295,8 +2289,8 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
           simp only [List.length_cons] at hlen; omega
         refine ⟨?_, ih pt hlen'⟩
         simp only [Prod.mk.injEq, and_true]
-        have : (1 - (1 - op.u)) * (⅟op.u * w) + (1 - op.u) * 0 = w := by
-          rw [mul_zero, add_zero, show (1 - (1 - op.u)) = op.u from by ring]
+        have : (1 - (1 - u)) * (⅟u * w) + (1 - u) * 0 = w := by
+          rw [mul_zero, add_zero, show (1 - (1 - u)) = u from by ring]
           rw [← mul_assoc, mul_invOf_self, one_mul]
         exact this
 
@@ -2304,7 +2298,7 @@ theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
 theorem affineOfBinary_cons_zero_many [LinearOrder R] [IsStrictOrderedRing R]
     [Inhabited M] (op : BinaryConvexOp R M)
     (xs : List M) (ws : WeightedSeq R M) (hvalid : ws.totalWeight = 1) (hne : ws ≠ []) :
-    affineOfBinary op (xs.map (fun x => ((0 : R), x)) ++ ws) = affineOfBinary op ws := by
+    affineOfBinary u op (xs.map (fun x => ((0 : R), x)) ++ ws) = affineOfBinary u op ws := by
   induction xs generalizing ws with
   | nil => simp
   | cons x xs ih =>
@@ -2320,8 +2314,130 @@ theorem affineOfBinary_cons_zero_many [LinearOrder R] [IsStrictOrderedRing R]
       rw [this, zero_add, hvalid]
     have hne' : xs.map (fun x => ((0 : R), x)) ++ ws ≠ [] :=
       List.append_ne_nil_of_right_ne_nil _ hne
-    rw [affineOfBinary_cons_zero op x _ hvalid' hne',
+    rw [affineOfBinary_cons_zero u op x _ hvalid' hne',
       ih ws hvalid hne]
+
+/-- Algebraic core for doubleton_padded_end:
+    `C(1-u, C(1-⅟u*a, x, z), C(⅟(1-u)*b, z, y)) = C(b, x, y)` when `a + b = 1`.
+    Derived from `binCombo_swap_inner` with `c = 0`: the LHS of swap_inner simplifies
+    to `C(b, x, y)` via `collapse_right`, and the RHS is exactly our target. -/
+private theorem doubleton_padded_end_algebra (op : BinaryConvexOp R M)
+    (a b : R) (x z y : M) (hab : a + b = 1) :
+    op.binCombo (1 - u) (op.binCombo (1 - ⅟u * a) x z)
+      (op.binCombo (⅟(1 - u) * b) z y) =
+    op.binCombo b x y := by
+  -- Use swap_inner with c = 0 and a + b + 0 = 1.
+  have habc : a + b + 0 = 1 := by rw [add_zero]; exact hab
+  have h := op.binCombo_swap_inner u a b 0 x y z habc
+  -- LHS of swap_inner: C(1-u, C(1-⅟u*a, x, y), C(⅟(1-u)*0, y, z))
+  -- ⅟(1-u)*0 = 0, C(0, y, z) = y, so LHS = C(1-u, C(1-⅟u*a, x, y), y)
+  simp only [mul_zero, op.binCombo_zero] at h
+  -- By collapse_right: C(1-u, C(c, x, y), y) = C(u*c + (1-u), x, y)
+  rw [op.binCombo_collapse_right (1 - ⅟u * a) x y] at h
+  -- u*(1-⅟u*a) + (1-u) = u - a + 1 - u = 1 - a = b
+  have hcoeff : u * (1 - ⅟u * a) + (1 - u) = b := by
+    have h1 : u * (⅟u * a) = a := by rw [← mul_assoc, mul_invOf_self, one_mul]
+    have h2 : u * (1 - ⅟u * a) = u - a := by rw [mul_sub, mul_one, h1]
+    rw [h2, ← hab]; ring
+  rw [hcoeff] at h
+  exact h.symm
+
+/-- A doubleton with zeros in between:
+    `A([(a,x), (0,z₁), ..., (0,zₖ), (b,y)]) = C(b, x, y)` when `a + b = 1`.
+
+    This is the "reversed" version of `affineOfBinary_doubleton_padded`:
+    zeros are between the two nonzero weights rather than after them.
+    Proved by strong induction on k (the number of zeros). -/
+theorem affineOfBinary_doubleton_padded_end [Inhabited M] (op : BinaryConvexOp R M)
+    (a b : R) (x y : M) (zs : List M) (hab : a + b = 1) :
+    affineOfBinary u op ([(a, x)] ++ zs.map (fun z => (0, z)) ++ [(b, y)]) =
+      op.binCombo b x y := by
+  induction h : zs.length using Nat.strongRecOn generalizing a b x y zs with
+  | _ n ih =>
+  match zs, h with
+  | [], _ =>
+    -- Base case: A([(a,x),(b,y)]) = C(b,x,y)
+    simp [affineOfBinary]
+  | [z₁], _ =>
+    -- One zero: A([(a,x),(0,z₁),(b,y)])
+    simp only [List.map_cons, List.map_nil, List.nil_append, List.cons_append,
+      List.singleton_append, affineOfBinary,
+      List.map, List.dropLast, List.sum_nil, List.getLast?_nil,
+      List.replicate, List.zip_cons_cons, List.zip_nil_left,
+      mul_zero, sub_zero, List.length_nil]
+    exact doubleton_padded_end_algebra u op a b x z₁ y hab
+  | z₁ :: z₂ :: zs', hlen =>
+    -- Two+ zeros: A([(a,x),(0,z₁),(0,z₂),...,(0,zₖ),(b,y)])
+    simp only [List.map_cons, List.cons_append, List.nil_append]
+    rw [affineOfBinary_decompose]
+    set rest : WeightedSeq R M :=
+      (List.map (fun z => ((0 : R), z)) zs' ++ [(b, y)])
+    have hrest_ne : rest ≠ [] := by simp [rest]
+    have hrest_map_fst : rest.map Prod.fst =
+        List.replicate zs'.length (0 : R) ++ [b] := by
+      simp only [rest, List.map_append, List.map_map, Function.comp]
+      congr 1
+      exact list_map_const (0 : R) zs'
+    have hrest_map_snd : rest.map Prod.snd = zs' ++ [y] := by
+      simp only [rest, List.map_append, List.map_map, Function.comp]
+      congr 1
+      simp
+    have hmiddle_weights :
+        ((0 : R) :: rest.map Prod.fst).dropLast =
+        List.replicate (zs'.length + 1) (0 : R) := by
+      rw [hrest_map_fst, show (0 : R) :: (List.replicate zs'.length 0 ++ [b]) =
+        ((0 : R) :: List.replicate zs'.length 0) ++ [b] from by rw [List.cons_append],
+        List.dropLast_concat, List.replicate_succ]
+    have hscaled_middle :
+        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟u * ·)) =
+        List.replicate (zs'.length + 1) (0 : R) := by
+      rw [hmiddle_weights, List.map_replicate, mul_zero]
+    have hscaled_sum :
+        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟u * ·)).sum = 0 := by
+      rw [hscaled_middle, sum_replicate_zero]
+    have hmiddle_points :
+        (z₂ :: rest.map Prod.snd).dropLast = z₂ :: zs' := by
+      rw [hrest_map_snd, show z₂ :: (zs' ++ [y]) =
+        (z₂ :: zs') ++ [y] from by rw [List.cons_append],
+        List.dropLast_concat]
+    have hleft : affineOfBinary u op
+        (leftWeightedSeq u
+          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
+        op.binCombo (1 - ⅟u * a) x z₁ := by
+      simp only [leftWeightedSeq]
+      rw [hscaled_sum, sub_zero]
+      rw [hscaled_middle]
+      rw [hmiddle_points]
+      set middlePoints := z₂ :: zs'
+      have hmid_len : middlePoints.length = zs'.length + 1 := by simp [middlePoints]
+      rw [zip_replicate_zero_map hmid_len.symm]
+      exact affineOfBinary_doubleton_padded u op _ _ x z₁ middlePoints (by ring)
+    have hrest_getLast :
+        (match rest.getLast? with | some (w, _) => w | none => (0 : R)) = b := by
+      have : rest.getLast? = some (b, y) := by
+        simp only [rest]
+        exact List.getLast?_append_of_ne_nil _ (List.cons_ne_nil _ _)
+      rw [this]
+    have hrest_len : rest.length = zs'.length + 1 := by simp [rest]
+    have hright : affineOfBinary u op
+        (rightWeightedSeq u
+          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
+        op.binCombo (⅟(1 - u) * b) z₁ y := by
+      simp only [rightWeightedSeq]
+      rw [hrest_getLast]
+      rw [hrest_map_snd]
+      rw [hrest_len]
+      conv_lhs => rw [show z₂ :: (zs' ++ [y]) =
+        (z₂ :: zs') ++ [y] from by rw [List.cons_append]]
+      rw [List.zip_append (by simp)]
+      rw [zip_replicate_zero_map (by simp)]
+      simp only [List.map_cons, List.cons_append]
+      have hlt : (z₂ :: zs').length < n := by
+        simp only [List.length_cons] at hlen ⊢
+        omega
+      exact ih (z₂ :: zs').length hlt _ _ _ _ (z₂ :: zs') (by ring) rfl
+    rw [hleft, hright]
+    exact doubleton_padded_end_algebra u op a b x z₁ y hab
 
 end OfBinary
 
@@ -2412,230 +2528,85 @@ theorem StdSimplex.exists_duple_join {R : Type*} [Field R] [LinearOrder R]
     rw [smul_smul, mul_inv_cancel₀ ht_ne, one_smul]
     rw [add_comm, Finsupp.erase_add_single]
 
-section OfBinaryField
+section OfBinarySwap
 
-variable {R : Type u} {M : Type v} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-
-/-- Algebraic core for doubleton_padded_end:
-    `C(1-u, C(1-⅟u*a, x, z), C(⅟(1-u)*b, z, y)) = C(b, x, y)` when `a + b = 1`. -/
-private theorem doubleton_padded_end_algebra (op : BinaryConvexOp R M)
-    (a b : R) (x z y : M) (hab : a + b = 1) :
-    op.binCombo (1 - op.u) (op.binCombo (1 - ⅟op.u * a) x z)
-      (op.binCombo (⅟(1 - op.u) * b) z y) =
-    op.binCombo b x y := by
-  by_cases ha : a = 0
-  · have hb : b = 1 := by linarith
-    subst ha; subst hb
-    simp only [mul_zero, mul_one, sub_zero]
-    rw [op.binCombo_one x z]
-    rw [op.binCombo_absorb_left (1 - op.u) (⅟(1 - op.u)) z y]
-    rw [mul_invOf_self]
-    rw [op.binCombo_one z y, op.binCombo_one x y]
-  · set p := (1 : R) - op.u
-    set q := ⅟(1 - op.u) * b
-    have h1mu_ne : (1 : R) - op.u ≠ 0 := Invertible.ne_zero (1 - op.u)
-    have hpq : p * q = b := by
-      simp [p, q, ← mul_assoc, mul_invOf_self, one_mul]
-    set r := (a - op.u) / a
-    have hassoc_cond : p * (1 - q) = (1 - p * q) * r := by
-      rw [hpq]
-      simp only [p, q, r, invOf_eq_inv]
-      rw [show (1 : R) - b = a from by linarith]
-      field_simp [ha, h1mu_ne]
-      linarith
-    rw [op.binCombo_assoc p q r
-      (op.binCombo (1 - ⅟op.u * a) x z) z y hassoc_cond]
-    rw [hpq]
-    rw [op.binCombo_absorb_right r (1 - ⅟op.u * a) x z]
-    have hu_ne : op.u ≠ 0 := Invertible.ne_zero op.u
-    have hcollapse : 1 - (1 - r) * (1 - (1 - ⅟op.u * a)) = 0 := by
-      simp only [r, invOf_eq_inv]
-      field_simp [ha, hu_ne]
-      ring
-    rw [hcollapse, op.binCombo_zero x z]
-
-/-- A doubleton with zeros in between:
-    `A([(a,x), (0,z₁), ..., (0,zₖ), (b,y)]) = C(b, x, y)` when `a + b = 1`.
-
-    This is the "reversed" version of `affineOfBinary_doubleton_padded`:
-    zeros are between the two nonzero weights rather than after them.
-    Proved by strong induction on k (the number of zeros). -/
-theorem affineOfBinary_doubleton_padded_end [Inhabited M] (op : BinaryConvexOp R M)
-    (a b : R) (x y : M) (zs : List M) (hab : a + b = 1) :
-    affineOfBinary op ([(a, x)] ++ zs.map (fun z => (0, z)) ++ [(b, y)]) =
-      op.binCombo b x y := by
-  induction h : zs.length using Nat.strongRecOn generalizing a b x y zs with
-  | _ n ih =>
-  match zs, h with
-  | [], _ =>
-    -- Base case: A([(a,x),(b,y)]) = C(b,x,y)
-    simp [affineOfBinary]
-  | [z₁], _ =>
-    -- One zero: A([(a,x),(0,z₁),(b,y)])
-    -- Decomposition: C(1-u, C(1-⅟u*a, x, z₁), C(⅟(1-u)*b, z₁, y))
-    simp only [List.map_cons, List.map_nil, List.nil_append, List.cons_append,
-      List.singleton_append, affineOfBinary,
-      List.map, List.dropLast, List.sum_nil, List.getLast?_nil,
-      List.replicate, List.zip_cons_cons, List.zip_nil_left,
-      mul_zero, sub_zero, List.length_nil]
-    exact doubleton_padded_end_algebra op a b x z₁ y hab
-  | z₁ :: z₂ :: zs', hlen =>
-    -- Two+ zeros: A([(a,x),(0,z₁),(0,z₂),...,(0,zₖ),(b,y)])
-    -- The proof follows the same pattern as [z₁]:
-    -- After decompose, leftWS is doubleton_padded → C(1-⅟u*a, x, z₁)
-    -- rightWS is doubleton_padded_end with fewer zeros → C(⅟(1-u)*b, z₁, y)
-    -- Then doubleton_padded_end_algebra closes the goal.
-    simp only [List.map_cons, List.cons_append, List.nil_append]
-    rw [affineOfBinary_decompose]
-    -- hleft and hright proved below via detailed list plumbing
-    set rest : WeightedSeq R M :=
-      (List.map (fun z => ((0 : R), z)) zs' ++ [(b, y)])
-    -- Auxiliary: all weights in rest except last are 0, last is b
-    have hrest_ne : rest ≠ [] := by simp [rest]
-    have hrest_map_fst : rest.map Prod.fst =
-        List.replicate zs'.length (0 : R) ++ [b] := by
-      simp only [rest, List.map_append, List.map_map, Function.comp]
-      congr 1
-      exact list_map_const (0 : R) zs'
-    have hrest_map_snd : rest.map Prod.snd = zs' ++ [y] := by
-      simp only [rest, List.map_append, List.map_map, Function.comp]
-      congr 1
-      simp
-    -- Middle weights are all zero (same pattern as doubleton_padded)
-    have hmiddle_weights :
-        ((0 : R) :: rest.map Prod.fst).dropLast =
-        List.replicate (zs'.length + 1) (0 : R) := by
-      rw [hrest_map_fst, show (0 : R) :: (List.replicate zs'.length 0 ++ [b]) =
-        ((0 : R) :: List.replicate zs'.length 0) ++ [b] from by rw [List.cons_append],
-        List.dropLast_concat, List.replicate_succ]
-    have hscaled_middle :
-        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)) =
-        List.replicate (zs'.length + 1) (0 : R) := by
-      rw [hmiddle_weights, List.map_replicate, mul_zero]
-    have hscaled_sum :
-        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)).sum = 0 := by
-      rw [hscaled_middle, sum_replicate_zero]
-    -- Middle points after dropLast
-    have hmiddle_points :
-        (z₂ :: rest.map Prod.snd).dropLast = z₂ :: zs' := by
-      rw [hrest_map_snd, show z₂ :: (zs' ++ [y]) =
-        (z₂ :: zs') ++ [y] from by rw [List.cons_append],
-        List.dropLast_concat]
-    have hleft : affineOfBinary op
-        (leftWeightedSeq op
-          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
-        op.binCombo (1 - ⅟op.u * a) x z₁ := by
-      simp only [leftWeightedSeq]
-      rw [hscaled_sum, sub_zero]
-      rw [hscaled_middle]
-      rw [hmiddle_points]
-      set middlePoints := z₂ :: zs'
-      have hmid_len : middlePoints.length = zs'.length + 1 := by simp [middlePoints]
-      rw [zip_replicate_zero_map hmid_len.symm]
-      -- Now: A([(⅟u*a, x), (1-⅟u*a, z₁)] ++ middlePoints.map (0,·)) = C(1-⅟u*a, x, z₁)
-      exact affineOfBinary_doubleton_padded op _ _ x z₁ middlePoints (by ring)
-    -- For rightWeightedSeq: last weight is b
-    have hrest_getLast :
-        (match rest.getLast? with | some (w, _) => w | none => (0 : R)) = b := by
-      have : rest.getLast? = some (b, y) := by
-        simp only [rest]
-        exact List.getLast?_append_of_ne_nil _ (List.cons_ne_nil _ _)
-      rw [this]
-    have hrest_len : rest.length = zs'.length + 1 := by simp [rest]
-    have hright : affineOfBinary op
-        (rightWeightedSeq op
-          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
-        op.binCombo (⅟(1 - op.u) * b) z₁ y := by
-      simp only [rightWeightedSeq]
-      rw [hrest_getLast]
-      rw [hrest_map_snd]
-      rw [hrest_len]
-      -- Goal now involves:
-      -- (1 - ⅟(1-u)*b, z₁) :: (replicate (zs'.length+1) 0 ++ [⅟(1-u)*b]).zip (z₂ :: zs' ++ [y])
-      -- Split the zip using zip_append
-      conv_lhs => rw [show z₂ :: (zs' ++ [y]) =
-        (z₂ :: zs') ++ [y] from by rw [List.cons_append]]
-      rw [List.zip_append (by simp)]
-      -- Now: (1-⅟(1-u)*b, z₁) :: zeros.zip(z₂::zs') ++ [(⅟(1-u)*b, y)]
-      rw [zip_replicate_zero_map (by simp)]
-      -- Now: (1-⅟(1-u)*b, z₁) :: (z₂::zs').map(0,·) ++ [(⅟(1-u)*b, y)]
-      -- This is affineOfBinary_doubleton_padded_end with zs = z₂::zs'
-      -- Transform to the right form for the IH
-      simp only [List.map_cons, List.cons_append]
-      -- IH: fewer zeros (z₂::zs' has length zs'.length+1, original zs had length zs'.length+2)
-      have hlt : (z₂ :: zs').length < n := by
-        simp only [List.length_cons] at hlen ⊢
-        omega
-      exact ih (z₂ :: zs').length hlt _ _ _ _ (z₂ :: zs') (by ring) rfl
-    rw [hleft, hright]
-    exact doubleton_padded_end_algebra op a b x z₁ y hab
+variable {R : Type u} {M : Type v} [CommRing R]
+variable (u : R) [Invertible u] [Invertible (1 - u)]
 
 /-- Position-0 swap for a triple: A([(a,x),(b,y),(c,z)]) = A([(b,y),(a,x),(c,z)]).
     Proof: decompose both sides, pad to common ordering, apply linear.
     Both sides equal A([(b,y),(a,x),(c,z)]) via the padding+linear technique. -/
 private theorem affineOfBinary_swap_triple [Inhabited M] (op : BinaryConvexOp R M)
     (a b c : R) (x y z : M) (hvalid : a + b + c = 1) :
-    affineOfBinary op [(a, x), (b, y), (c, z)] =
-    affineOfBinary op [(b, y), (a, x), (c, z)] := by
+    affineOfBinary u op [(a, x), (b, y), (c, z)] =
+    affineOfBinary u op [(b, y), (a, x), (c, z)] := by
   -- Decompose LHS, pad sub-sequences to common ordering [(b,y),(a,x),(c,z)], apply linear.
   -- The RHS is already [(b,y),(a,x),(c,z)] by definition.
-  set invU := ⅟op.u
-  set inv1mU := ⅟(1 - op.u)
-  have hu_ne : op.u ≠ 0 := Invertible.ne_zero op.u
-  have h1mu_ne : (1 : R) - op.u ≠ 0 := Invertible.ne_zero (1 - op.u)
+  set invU := ⅟u
+  set inv1mU := ⅟(1 - u)
   set target : WeightedSeq R M := [(b, y), (a, x), (c, z)]
   set padL : WeightedSeq R M := [(1 - invU * a, y), (invU * a, x), (0, z)]
   set padR : WeightedSeq R M := [(1 - inv1mU * c, y), (0, x), (inv1mU * c, z)]
-  have hmulU : op.u * a + op.u * b + op.u * c = op.u := by
-    have := congr_arg (op.u * ·) hvalid
-    simp only [mul_add, mul_one] at this; linarith
-  have hmul1mU : (1 - op.u) * a + (1 - op.u) * b + (1 - op.u) * c = 1 - op.u := by
-    have := congr_arg ((1 - op.u) * ·) hvalid
-    simp only [mul_add, mul_one] at this; linarith
-  have hcombL : padL.combineWeights (1 - op.u) padR = target := by
+  have hcombL : padL.combineWeights (1 - u) padR = target := by
     simp only [padL, padR, target, WeightedSeq.combineWeights, List.zipWith]
     refine List.cons_eq_cons.mpr ⟨Prod.ext ?_ rfl,
       List.cons_eq_cons.mpr ⟨Prod.ext ?_ rfl,
         List.cons_eq_cons.mpr ⟨Prod.ext ?_ rfl, rfl⟩⟩⟩
     · -- Position 0: u*(1 - ⅟u*a) + (1-u)*(1 - ⅟(1-u)*c) = b
       simp only [invU, inv1mU]
-      have h1 : op.u * (⅟op.u * a) = a := by rw [← mul_assoc, mul_invOf_self, one_mul]
-      have h2 : (1 - op.u) * (⅟(1 - op.u) * c) = c := by
+      have h1 : u * (⅟u * a) = a := by rw [← mul_assoc, mul_invOf_self, one_mul]
+      have h2 : (1 - u) * (⅟(1 - u) * c) = c := by
         rw [← mul_assoc, mul_invOf_self, one_mul]
-      nlinarith
+      rw [show (1 : R) - (1 - u) = u from by ring]
+      have e1 : u * (1 - ⅟u * a) = u - a := by rw [mul_sub, mul_one, h1]
+      have e2 : (1 - u) * (1 - ⅟(1 - u) * c) = (1 - u) - c := by
+        rw [mul_sub, mul_one, h2]
+      rw [e1, e2, show b = 1 - a - c from by rw [← hvalid]; ring]; ring
     · -- Position 1: (1-(1-u))*(⅟u*a) + (1-u)*0 = a
-      rw [show (1 : R) - (1 - op.u) = op.u from by ring]
+      rw [show (1 : R) - (1 - u) = u from by ring]
       simp only [mul_zero, add_zero, invU, ← mul_assoc, mul_invOf_self, one_mul]
     · -- Position 2: (1-(1-u))*0 + (1-u)*(⅟(1-u)*c) = c
-      rw [show (1 : R) - (1 - op.u) = op.u from by ring]
+      rw [show (1 : R) - (1 - u) = u from by ring]
       simp only [mul_zero, zero_add, inv1mU, ← mul_assoc, mul_invOf_self, one_mul]
   -- Show LHS = A(target) via decompose → pad → linear → hcombL
-  suffices affineOfBinary op [(a, x), (b, y), (c, z)] = affineOfBinary op target by rw [this]
-  rw [affineOfBinary_decompose op a x b y c z []]
+  suffices affineOfBinary u op [(a, x), (b, y), (c, z)] = affineOfBinary u op target by rw [this]
+  rw [affineOfBinary_decompose u op a x b y c z []]
   simp only [leftWeightedSeq, rightWeightedSeq,
     List.map, List.dropLast, List.sum_nil, List.getLast?_nil,
     List.zip, List.replicate, List.length_nil,
     List.nil_append, sub_zero, List.zipWith]
-  simp only [show ⅟op.u = invU from rfl, show ⅟(1 - op.u) = inv1mU from rfl]
+  simp only [show ⅟u = invU from rfl, show ⅟(1 - u) = inv1mU from rfl]
   conv_lhs =>
-    rw [show affineOfBinary op [(invU * a, x), (1 - invU * a, y)] =
+    rw [show affineOfBinary u op [(invU * a, x), (1 - invU * a, y)] =
         op.binCombo (1 - invU * a) x y from by simp [affineOfBinary]]
-    rw [show affineOfBinary op [(1 - inv1mU * c, y), (inv1mU * c, z)] =
+    rw [show affineOfBinary u op [(1 - inv1mU * c, y), (inv1mU * c, z)] =
         op.binCombo (inv1mU * c) y z from by simp [affineOfBinary]]
-  have hpadL : op.binCombo (1 - invU * a) x y = affineOfBinary op padL := by
+  have hpadL : op.binCombo (1 - invU * a) x y = affineOfBinary u op padL := by
     rw [show op.binCombo (1 - invU * a) x y =
-        affineOfBinary op [(invU * a, x), (1 - invU * a, y)] from by simp [affineOfBinary]]
-    rw [affineOfBinary_swap_two op (invU * a) (1 - invU * a) x y (by ring)]
-    rw [← affineOfBinary_append_zero op [(1 - invU * a, y), (invU * a, x)] z
+        affineOfBinary u op [(invU * a, x), (1 - invU * a, y)] from by simp [affineOfBinary]]
+    rw [affineOfBinary_swap_two u op (invU * a) (1 - invU * a) x y (by ring)]
+    rw [← affineOfBinary_append_zero u op [(1 - invU * a, y), (invU * a, x)] z
         (by simp [WeightedSeq.totalWeight]) (by simp)]
     simp only [padL, List.cons_append, List.nil_append]
-  have hpadR : op.binCombo (inv1mU * c) y z = affineOfBinary op padR := by
-    rw [← affineOfBinary_doubleton_padded_end op (1 - inv1mU * c) (inv1mU * c) y z [x] (by ring)]
+  have hpadR : op.binCombo (inv1mU * c) y z = affineOfBinary u op padR := by
+    rw [← affineOfBinary_doubleton_padded_end u op (1 - inv1mU * c) (inv1mU * c) y z [x] (by ring)]
     simp only [padR, List.map_cons, List.map_nil, List.cons_append, List.nil_append]
   rw [hpadL, hpadR]
-  rw [affineOfBinary_linear op (1 - op.u) padL padR
+  rw [affineOfBinary_linear u op (1 - u) padL padR
       (by simp [padL, padR]) (by simp [padL, padR, WeightedSeq.samePoints])]
   rw [hcombL]
+
+/-- Position-1,2 swap for a triple: A([(a,x),(b,y),(c,z)]) = A([(a,x),(c,z),(b,y)]).
+    This is a direct consequence of the `binCombo_swap_inner` axiom. -/
+private theorem affineOfBinary_swap_inner_triple [Inhabited M] (op : BinaryConvexOp R M)
+    (a b c : R) (x y z : M) (hvalid : a + b + c = 1) :
+    affineOfBinary u op [(a, x), (b, y), (c, z)] =
+    affineOfBinary u op [(a, x), (c, z), (b, y)] := by
+  simp only [affineOfBinary, leftWeightedSeq, rightWeightedSeq,
+    List.map, List.dropLast, List.sum_nil, List.getLast?_nil,
+    List.replicate, List.zip_cons_cons, List.zip_nil_left,
+    List.nil_append, sub_zero, List.zipWith, mul_zero, List.length_nil]
+  exact op.binCombo_swap_inner u a b c x y z hvalid
 
 /-- Position-0 swap for a weighted sequence of any length ≥ 2.
     `A([(a,x),(b,y)] ++ ws) = A([(b,y),(a,x)] ++ ws)`.
@@ -2647,32 +2618,31 @@ private theorem affineOfBinary_swap_triple [Inhabited M] (op : BinaryConvexOp R 
 private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
     (a b : R) (x y : M) (ws : WeightedSeq R M)
     (hvalid : WeightedSeq.totalWeight ((a, x) :: (b, y) :: ws) = 1) :
-    affineOfBinary op ((a, x) :: (b, y) :: ws) =
-    affineOfBinary op ((b, y) :: (a, x) :: ws) := by
+    affineOfBinary u op ((a, x) :: (b, y) :: ws) =
+    affineOfBinary u op ((b, y) :: (a, x) :: ws) := by
   induction h : ws.length using Nat.strongRecOn generalizing a b x y ws with
   | _ n ih =>
   match ws, h with
   | [], _ =>
     -- n = 2: use swap_two
     have hab : a + b = 1 := by simpa [WeightedSeq.totalWeight] using hvalid
-    exact affineOfBinary_swap_two op a b x y hab
+    exact affineOfBinary_swap_two u op a b x y hab
   | [(c, z)], _ =>
     -- n = 3: use swap_triple
     have habc : a + b + c = 1 := by
-      have := hvalid; simp [WeightedSeq.totalWeight] at this; linarith
-    exact affineOfBinary_swap_triple op a b c x y z habc
+      have := hvalid; simp [WeightedSeq.totalWeight] at this
+      rw [← this]; ring
+    exact affineOfBinary_swap_triple u op a b c x y z habc
   | (s₃, x₃) :: r₁ :: rest', hlen =>
     -- n ≥ 4: use padding+linear technique.
     -- Decompose LHS, pad leftWS (swap via IH, append zero) and rightWS
     -- (insert zero via doubleton_padded_end) to n elements in target ordering
     -- [(b,y),(a,x),(s₃,x₃),...], then apply linear.
     set rest := r₁ :: rest'
-    set invU := ⅟op.u
-    set inv1mU := ⅟(1 - op.u)
-    have hu_ne : op.u ≠ 0 := Invertible.ne_zero op.u
-    have h1mu_ne : (1 : R) - op.u ≠ 0 := Invertible.ne_zero (1 - op.u)
+    set invU := ⅟u
+    set inv1mU := ⅟(1 - u)
     -- Step 1: Decompose LHS
-    rw [affineOfBinary_decompose op a x b y s₃ x₃ rest]
+    rw [affineOfBinary_decompose u op a x b y s₃ x₃ rest]
     -- Step 2: Compute leftWS and rightWS explicitly
     set middleWeights := (s₃ :: rest.map Prod.fst).dropLast
     set scaledMiddle := middleWeights.map (invU * ·)
@@ -2684,10 +2654,10 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
       | none => s₃
     set bLast := inv1mU * sₙ
     -- Show leftWS and rightWS
-    have hleftWS : leftWeightedSeq op ((a, x) :: (b, y) :: (s₃, x₃) :: rest) =
+    have hleftWS : leftWeightedSeq u ((a, x) :: (b, y) :: (s₃, x₃) :: rest) =
         (invU * a, x) :: (slackL, y) :: scaledMiddle.zip middlePoints := by
       simp [leftWeightedSeq, invU, slackL, middleWeights, scaledMiddle, middlePoints]
-    have hrightWS : rightWeightedSeq op ((a, x) :: (b, y) :: (s₃, x₃) :: rest) =
+    have hrightWS : rightWeightedSeq u ((a, x) :: (b, y) :: (s₃, x₃) :: rest) =
         (1 - bLast, y) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
           (x₃ :: rest.map Prod.snd) := by
       simp [rightWeightedSeq, inv1mU, bLast, sₙ]
@@ -2714,9 +2684,9 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
           scaledMiddle.length ≤ middlePoints.length)]
       rw [hzip_fst]
       simp [slackL]
-    have hih : affineOfBinary op
+    have hih : affineOfBinary u op
         ((invU * a, x) :: (slackL, y) :: scaledMiddle.zip middlePoints) =
-        affineOfBinary op
+        affineOfBinary u op
         ((slackL, y) :: (invU * a, x) :: scaledMiddle.zip middlePoints) := by
       apply ih (scaledMiddle.zip middlePoints).length
       · rw [hleftWS_len]; simp only [List.length_cons] at hlen; omega
@@ -2733,22 +2703,22 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
     set padR : WeightedSeq R M :=
       [(1 - bLast, y)] ++ ((x :: middlePoints).map fun p => ((0 : R), p)) ++ [(bLast, xₙ)]
     -- Step 5: Show A(swapped leftWS) = A(padL) via append_zero
-    have hpadL : affineOfBinary op
+    have hpadL : affineOfBinary u op
         ((slackL, y) :: (invU * a, x) :: scaledMiddle.zip middlePoints) =
-        affineOfBinary op padL := by
+        affineOfBinary u op padL := by
       symm
       rw [show padL = ((slackL, y) :: (invU * a, x) :: scaledMiddle.zip middlePoints) ++
           [(0, xₙ)] from rfl]
       have hswap_valid : WeightedSeq.totalWeight
           ((slackL, y) :: (invU * a, x) :: scaledMiddle.zip middlePoints) = 1 := by
         simp only [WeightedSeq.totalWeight, List.map_cons, List.sum_cons] at hleftWS_valid ⊢
-        linarith
-      exact affineOfBinary_append_zero op _ xₙ hswap_valid (by simp)
+        rw [← hleftWS_valid]; ring
+      exact affineOfBinary_append_zero u op _ xₙ hswap_valid (by simp)
     -- Step 6: Show A(rightWS) = A(padR) via doubleton_padded_end
-    have hpadR : affineOfBinary op
+    have hpadR : affineOfBinary u op
         ((1 - bLast, y) :: (List.replicate rest.length (0 : R) ++ [bLast]).zip
           (x₃ :: rest.map Prod.snd)) =
-        affineOfBinary op padR := by
+        affineOfBinary u op padR := by
       -- Both sides equal C(bLast, y, xₙ) via doubleton_padded_end
       have hab : (1 - bLast) + bLast = 1 := by ring
       -- Massage rightWS into doubleton_padded_end form
@@ -2775,8 +2745,8 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
           [(bLast, xₙ)] := by
         simp [padR, show allMiddlePoints = middlePoints from rfl]
       rw [hright_eq, hpadR_eq,
-          affineOfBinary_doubleton_padded_end op _ _ y xₙ allMiddlePoints hab,
-          affineOfBinary_doubleton_padded_end op _ _ y xₙ (x :: allMiddlePoints) hab]
+          affineOfBinary_doubleton_padded_end u op _ _ y xₙ allMiddlePoints hab,
+          affineOfBinary_doubleton_padded_end u op _ _ y xₙ (x :: allMiddlePoints) hab]
     rw [hpadL, hpadR]
     -- Step 7: Apply affineOfBinary_linear
     have hlen_eq : padL.length = padR.length := by
@@ -2792,9 +2762,9 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
           simp only [show scaledMiddle = middleWeights.map (invU * ·) from rfl,
             List.length_map, hmp_len, hmw_len]; omega),
         List.map_id']
-    rw [affineOfBinary_linear op (1 - op.u) padL padR hlen_eq hpts_eq]
+    rw [affineOfBinary_linear u op (1 - u) padL padR hlen_eq hpts_eq]
     -- Step 8: Show combineWeights(1-u, padL, padR) = target
-    suffices hcomb : WeightedSeq.combineWeights (1 - op.u) padL padR =
+    suffices hcomb : WeightedSeq.combineWeights (1 - u) padL padR =
         (b, y) :: (a, x) :: (s₃, x₃) :: rest by
       rw [hcomb]
     -- Unfold combineWeights and padL, padR
@@ -2841,36 +2811,48 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
         rw [hsₙ_eq, show middleWeights = L.dropLast from rfl,
             dropLast_sum_getLast L hL_ne]
         simp [L, List.sum_cons]
-      have hmulU_scaled : op.u * scaledMiddle.sum = middleWeights.sum := by
+      have hmulU_scaled : u * scaledMiddle.sum = middleWeights.sum := by
         rw [hscaled_sum, ← mul_assoc]
         simp [invU, mul_invOf_self]
-      have hmul1mU_sn : (1 - op.u) * (inv1mU * sₙ) = sₙ := by
-        rw [show inv1mU = ⅟(1 - op.u) from rfl, ← mul_assoc, mul_invOf_self, one_mul]
+      have hmul1mU_sn : (1 - u) * (inv1mU * sₙ) = sₙ := by
+        rw [show inv1mU = ⅟(1 - u) from rfl, ← mul_assoc, mul_invOf_self, one_mul]
       -- The goal is (1-(1-u))*(1-invU*a-scaledMiddle.sum)+(1-u)*(1-inv1mU*sₙ)=b
       -- = u - u*invU*a - u*scaledMiddle.sum + (1-u) - (1-u)*inv1mU*sₙ
       -- = u - a - middleWeights.sum + (1-u) - sₙ
       -- = 1 - a - middleWeights.sum - sₙ
       -- = 1 - a - (s₃ + rest.map fst .sum)  [by hmiddle_plus_last]
       -- = b  [by htw]
-      have hmulU_invU_a : op.u * (invU * a) = a := by
-        rw [show invU = ⅟op.u from rfl, ← mul_assoc, mul_invOf_self, one_mul]
+      have hmulU_invU_a : u * (invU * a) = a := by
+        rw [show invU = ⅟u from rfl, ← mul_assoc, mul_invOf_self, one_mul]
       simp only [slackL, bLast]
+      rw [show (1 : R) - (1 - u) = u from by ring]
+      have e1 : u * (1 - invU * a - scaledMiddle.sum) =
+          u - a - middleWeights.sum := by
+        rw [mul_sub, mul_sub, mul_one, hmulU_invU_a, hmulU_scaled]
+      have e2 : (1 - u) * (1 - inv1mU * sₙ) = (1 - u) - sₙ := by
+        rw [mul_sub, mul_one, hmul1mU_sn]
+      rw [e1, e2]
+      -- Goal: u - a - middleWeights.sum + ((1-u) - sₙ) = b
+      -- Suffices: 1 - a - middleWeights.sum - sₙ = b
       have htw := hvalid; simp [WeightedSeq.totalWeight] at htw
-      nlinarith [hmulU_scaled, hmul1mU_sn, hmiddle_plus_last, hmulU_invU_a]
+      suffices h : 1 - a - middleWeights.sum - sₙ = b by rw [← h]; ring
+      have : 1 - a - (s₃ + (rest.map Prod.fst).sum) = b := by rw [← htw]; ring
+      rw [← hmiddle_plus_last] at this
+      rw [← this]; ring
     · -- Weight at position 1: (1-(1-u))*(invU*a) + (1-u)*0 = a
-      rw [show (1 : R) - (1 - op.u) = op.u from by ring]
-      simp only [mul_zero, add_zero, show invU = ⅟op.u from rfl, ← mul_assoc,
+      rw [show (1 : R) - (1 - u) = u from by ring]
+      simp only [mul_zero, add_zero, show invU = ⅟u from rfl, ← mul_assoc,
         mul_invOf_self, one_mul]
     · -- Remaining positions: zipWith on middle ++ last = (s₃,x₃)::rest
       -- Use combineWeights_scale_zero_append to simplify
-      have hmulU_inv : op.u * invU = 1 := by
-        rw [show invU = ⅟op.u from rfl]; exact mul_invOf_self op.u
-      have hmul1mU_inv : (1 - op.u) * inv1mU = 1 := by
-        rw [show inv1mU = ⅟(1 - op.u) from rfl]; exact mul_invOf_self (1 - op.u)
+      have hmulU_inv : u * invU = 1 := by
+        rw [show invU = ⅟u from rfl]; exact mul_invOf_self u
+      have hmul1mU_inv : (1 - u) * inv1mU = 1 := by
+        rw [show inv1mU = ⅟(1 - u) from rfl]; exact mul_invOf_self (1 - u)
       rw [show scaledMiddle = middleWeights.map (invU * ·) from rfl]
       rw [show bLast = inv1mU * sₙ from rfl]
       simp only [List.append_eq]
-      rw [combineWeights_scale_zero_append op.u invU inv1mU hmulU_inv hmul1mU_inv
+      rw [combineWeights_scale_zero_append u invU inv1mU hmulU_inv hmul1mU_inv
           middleWeights middlePoints (by rw [hmw_len, hmp_len]) sₙ xₙ]
       -- Goal: middleWeights.zip middlePoints ++ [(sₙ, xₙ)] = (s₃,x₃)::rest
       -- Key: zip(map fst L, map snd L) = L, and dropLast ++ [getLast] = L
@@ -2913,6 +2895,13 @@ private theorem affineOfBinary_swap_zero [Inhabited M] (op : BinaryConvexOp R M)
         simp [List.getLast_cons hrest_ne]]
       exact List.dropLast_append_getLast (List.cons_ne_nil _ _)
 
+end OfBinarySwap
+
+section OfBinaryField
+
+variable {R : Type u} {M : Type v} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+variable (u : R) [Invertible u] [Invertible (1 - u)]
+
 /-- Helper for cons_strip: zipWith of zero-padded and scaled tail recovers the original tail. -/
 private theorem zipWith_recover_tail (w : R) (tail : WeightedSeq R M)
     (h1w : (1 : R) - w ≠ 0) :
@@ -2935,8 +2924,8 @@ private theorem affineOfBinary_cons_strip [Inhabited M] (op : BinaryConvexOp R M
     (w : R) (p : M) (tail : WeightedSeq R M)
     (hw : w ≠ 1)
     (hvalid : WeightedSeq.totalWeight ((w, p) :: tail) = 1) :
-    affineOfBinary op ((w, p) :: tail) =
-      op.binCombo (1 - w) p (affineOfBinary op (WeightedSeq.scale ((1 - w)⁻¹) tail)) := by
+    affineOfBinary u op ((w, p) :: tail) =
+      op.binCombo (1 - w) p (affineOfBinary u op (WeightedSeq.scale ((1 - w)⁻¹) tail)) := by
   have h1w : (1 : R) - w ≠ 0 := sub_ne_zero.mpr (Ne.symm hw)
   have htail_tw : WeightedSeq.totalWeight tail = 1 - w := by
     simp only [WeightedSeq.totalWeight, List.map_cons, List.sum_cons] at hvalid ⊢; linarith
@@ -2971,7 +2960,7 @@ private theorem affineOfBinary_cons_strip [Inhabited M] (op : BinaryConvexOp R M
     · exact zipWith_recover_tail w tail h1w
   -- Apply linear
   rw [show (w, p) :: tail = ws_A.combineWeights (1 - w) ws_B from hcomb.symm]
-  rw [← affineOfBinary_linear op (1 - w) ws_A ws_B hlen hpts]
+  rw [← affineOfBinary_linear u op (1 - w) ws_A ws_B hlen hpts]
   congr 1
   · -- A(ws_A) = A([(1,p)]) = p
     simp only [hws_A_def]
@@ -2979,12 +2968,12 @@ private theorem affineOfBinary_cons_strip [Inhabited M] (op : BinaryConvexOp R M
         [(1, p)] ++ (tail.map Prod.snd).map (fun x => ((0 : R), x)) := by
       simp [List.map_map, Function.comp_def]
     rw [hws_A_form]
-    rw [affineOfBinary_append_zero_many op [(1, p)] (tail.map Prod.snd)
+    rw [affineOfBinary_append_zero_many u op [(1, p)] (tail.map Prod.snd)
       (by simp [WeightedSeq.totalWeight]) (by simp)]
     simp [affineOfBinary]
   · -- A(ws_B) = A((0,p) :: tail.scale c) = A(tail.scale c)
     simp only [hws_B_def]
-    exact affineOfBinary_cons_zero op p _ hscale_tw hne_scale
+    exact affineOfBinary_cons_zero u op p _ hscale_tw hne_scale
 
 /-- Generalized permutation invariance: for any scaling factor c such that
     c * totalWeight = 1, A(scale c ws₁) = A(scale c ws₂).
@@ -2993,8 +2982,8 @@ private theorem affineOfBinary_perm_scaled [Inhabited M] (op : BinaryConvexOp R 
     (ws₁ ws₂ : WeightedSeq R M) (hperm : ws₁.Perm ws₂)
     (c : R) (hc : c ≠ 0) (hctw : c * ws₁.totalWeight = 1)
     (hnn : ∀ e ∈ ws₁, 0 ≤ e.1) :
-    affineOfBinary op (WeightedSeq.scale c ws₁) =
-    affineOfBinary op (WeightedSeq.scale c ws₂) := by
+    affineOfBinary u op (WeightedSeq.scale c ws₁) =
+    affineOfBinary u op (WeightedSeq.scale c ws₂) := by
   induction hperm generalizing c with
   | nil => rfl
   | cons x hperm ih =>
@@ -3041,8 +3030,8 @@ private theorem affineOfBinary_perm_scaled [Inhabited M] (op : BinaryConvexOp R 
         apply List.map_congr_left; intro e he
         simp [hall_zero₂ e he]
       -- Both sides: A((1, p) :: zeros) = p
-      change affineOfBinary op ((c * w, p) :: WeightedSeq.scale c l₁) =
-             affineOfBinary op ((c * w, p) :: WeightedSeq.scale c l₂)
+      change affineOfBinary u op ((c * w, p) :: WeightedSeq.scale c l₁) =
+             affineOfBinary u op ((c * w, p) :: WeightedSeq.scale c l₂)
       rw [hcw, hscale_zero₁, hscale_zero₂]
       -- Now both sides are A((1, p) :: zeros_with_points_from_lᵢ)
       -- Rewrite as [(1, p)] ++ zeros, then use cons_zero_many
@@ -3054,14 +3043,14 @@ private theorem affineOfBinary_perm_scaled [Inhabited M] (op : BinaryConvexOp R 
           [(1, p)] ++ (l₂.map Prod.snd).map (fun x => ((0 : R), x)) := by
         simp [List.map_map, Function.comp_def]
       rw [hmap_eq₁, hmap_eq₂,
-        affineOfBinary_append_zero_many op [(1, p)] (l₁.map Prod.snd)
+        affineOfBinary_append_zero_many u op [(1, p)] (l₁.map Prod.snd)
           (by simp [WeightedSeq.totalWeight]) (by simp),
-        affineOfBinary_append_zero_many op [(1, p)] (l₂.map Prod.snd)
+        affineOfBinary_append_zero_many u op [(1, p)] (l₂.map Prod.snd)
           (by simp [WeightedSeq.totalWeight]) (by simp)]
     · have h1cw : (1 : R) - c * w ≠ 0 := sub_ne_zero.mpr (Ne.symm hcw)
       -- Unfold scale for the goal only
-      show affineOfBinary op ((c * w, p) :: WeightedSeq.scale c l₁) =
-           affineOfBinary op ((c * w, p) :: WeightedSeq.scale c l₂)
+      show affineOfBinary u op ((c * w, p) :: WeightedSeq.scale c l₁) =
+           affineOfBinary u op ((c * w, p) :: WeightedSeq.scale c l₂)
       have hvalid₁ : WeightedSeq.totalWeight
           ((c * w, p) :: WeightedSeq.scale c l₁) = 1 := by
         have : WeightedSeq.totalWeight ((c * w, p) :: WeightedSeq.scale c l₁) =
@@ -3074,8 +3063,8 @@ private theorem affineOfBinary_perm_scaled [Inhabited M] (op : BinaryConvexOp R 
             c * w + WeightedSeq.totalWeight (WeightedSeq.scale c l₂) := by
           simp [WeightedSeq.totalWeight]
         rw [this, scale_tw, ← perm_totalWeight l₁ l₂ hperm, htail_tw]; ring
-      rw [affineOfBinary_cons_strip op (c * w) p _ hcw hvalid₁]
-      rw [affineOfBinary_cons_strip op (c * w) p _ hcw hvalid₂]
+      rw [affineOfBinary_cons_strip u op (c * w) p _ hcw hvalid₁]
+      rw [affineOfBinary_cons_strip u op (c * w) p _ hcw hvalid₂]
       congr 1
       rw [scale_scale, scale_scale]
       exact ih ((1 - c * w)⁻¹ * c)
@@ -3086,8 +3075,8 @@ private theorem affineOfBinary_perm_scaled [Inhabited M] (op : BinaryConvexOp R 
     rename_i l
     obtain ⟨a, px⟩ := x
     obtain ⟨b, py⟩ := y
-    show affineOfBinary op ((c * b, py) :: (c * a, px) :: WeightedSeq.scale c l) =
-         affineOfBinary op ((c * a, px) :: (c * b, py) :: WeightedSeq.scale c l)
+    show affineOfBinary u op ((c * b, py) :: (c * a, px) :: WeightedSeq.scale c l) =
+         affineOfBinary u op ((c * a, px) :: (c * b, py) :: WeightedSeq.scale c l)
     have scale_tw : ∀ (c' : R) (ws : WeightedSeq R M),
         WeightedSeq.totalWeight (WeightedSeq.scale c' ws) =
         c' * WeightedSeq.totalWeight ws := by
@@ -3106,7 +3095,7 @@ private theorem affineOfBinary_perm_scaled [Inhabited M] (op : BinaryConvexOp R 
           b + (a + WeightedSeq.totalWeight l) := by simp [WeightedSeq.totalWeight]
       rw [this] at hctw; linarith [mul_add c b (a + WeightedSeq.totalWeight l),
         mul_add c a (WeightedSeq.totalWeight l)]
-    exact affineOfBinary_swap_zero op (c * b) (c * a) py px
+    exact affineOfBinary_swap_zero u op (c * b) (c * a) py px
       (WeightedSeq.scale c l) hvalid_swap
   | trans h₁₂ h₂₃ ih₁₂ ih₂₃ =>
     rename_i l₁ l₂ l₃
@@ -3119,8 +3108,8 @@ private theorem affineOfBinary_perm [Inhabited M] (op : BinaryConvexOp R M)
     (ws₁ ws₂ : WeightedSeq R M) (hperm : ws₁.Perm ws₂)
     (hvalid : ws₁.totalWeight = 1)
     (hnn : ∀ e ∈ ws₁, 0 ≤ e.1) :
-    affineOfBinary op ws₁ = affineOfBinary op ws₂ := by
-  have h := affineOfBinary_perm_scaled op ws₁ ws₂ hperm 1 one_ne_zero (by simp [hvalid]) hnn
+    affineOfBinary u op ws₁ = affineOfBinary u op ws₂ := by
+  have h := affineOfBinary_perm_scaled u op ws₁ ws₂ hperm 1 one_ne_zero (by simp [hvalid]) hnn
   simp only [WeightedSeq.scale, one_mul, List.map_id'] at h
   exact h
 
@@ -3129,12 +3118,12 @@ private theorem affineOfBinary_perm [Inhabited M] (op : BinaryConvexOp R M)
 theorem affineOfBinary_toWeightedSeqOn [Inhabited M] (op : BinaryConvexOp R M)
     (d : StdSimplex R M) (S : List M)
     (hS : ∀ m ∈ d.weights.support, m ∈ S) (hnodup : S.Nodup) :
-    affineOfBinary op (d.toWeightedSeqOn S) = affineOfBinary op d.toWeightedSeq := by
+    affineOfBinary u op (d.toWeightedSeqOn S) = affineOfBinary u op d.toWeightedSeq := by
   -- Strategy: reorder S to put non-support (zero weight) elements first,
   -- strip them with cons_zero_many, then permute remaining to match support.toList.
   classical
   set f := fun x => (d.weights x, x)
-  change affineOfBinary op (S.map f) = affineOfBinary op (d.weights.support.toList.map f)
+  change affineOfBinary u op (S.map f) = affineOfBinary u op (d.weights.support.toList.map f)
   set p := fun x => x ∈ d.weights.support
   set S_in := S.filter (fun x => decide (p x))
   set S_out := S.filter (fun x => !decide (p x))
@@ -3205,7 +3194,7 @@ theorem affineOfBinary_toWeightedSeqOn [Inhabited M] (op : BinaryConvexOp R M)
     intro e he
     obtain ⟨m, _, rfl⟩ := List.mem_map.mp he
     exact d.nonneg m
-  rw [affineOfBinary_perm op _ _ hperm_full htw_S hnn_S]
+  rw [affineOfBinary_perm u op _ _ hperm_full htw_S hnn_S]
   -- Step 10: Strip the zero-weight prefix using cons_zero_many
   have htw_supp : WeightedSeq.totalWeight (d.weights.support.toList.map f) = 1 := by
     unfold WeightedSeq.totalWeight
@@ -3215,7 +3204,7 @@ theorem affineOfBinary_toWeightedSeqOn [Inhabited M] (op : BinaryConvexOp R M)
   have hne_supp : d.weights.support.toList.map f ≠ [] := by
     intro h; simp at h
     have := d.total; rw [Finsupp.sum, h] at this; simp at this
-  exact affineOfBinary_cons_zero_many op S_out (d.weights.support.toList.map f) htw_supp hne_supp
+  exact affineOfBinary_cons_zero_many u op S_out (d.weights.support.toList.map f) htw_supp hne_supp
 
 /-- The binary outer case: C(1-p, A(d₁), A(d₂)) = A(join of duple(d₁, d₂, p, 1-p)).
 
@@ -3225,14 +3214,14 @@ theorem affineOfBinary_binary_join [Inhabited M]
     (op : BinaryConvexOp R M) (p : R) (d₁ d₂ : StdSimplex R M)
     (hp : 0 ≤ p) (hp' : 0 ≤ 1 - p) (hsum : p + (1 - p) = 1) :
     op.binCombo (1 - p)
-      (affineOfBinary op d₁.toWeightedSeq)
-      (affineOfBinary op d₂.toWeightedSeq) =
-    affineOfBinary op (StdSimplex.duple d₁ d₂ hp hp' hsum).join.toWeightedSeq := by
+      (affineOfBinary u op d₁.toWeightedSeq)
+      (affineOfBinary u op d₂.toWeightedSeq) =
+    affineOfBinary u op (StdSimplex.duple d₁ d₂ hp hp' hsum).join.toWeightedSeq := by
   by_cases hsupp : d₁.weights.support = d₂.weights.support
   · -- Same support case: use affineOfBinary_linear directly
     have hlen := toWeightedSeq_length_of_support_eq hsupp
     have hpts := toWeightedSeq_samePoints_of_support_eq hsupp
-    rw [affineOfBinary_linear op (1 - p) d₁.toWeightedSeq d₂.toWeightedSeq hlen hpts]
+    rw [affineOfBinary_linear u op (1 - p) d₁.toWeightedSeq d₂.toWeightedSeq hlen hpts]
     have hjw := StdSimplex.join_duple_weights d₁ d₂ hp hp' hsum
     have hjoin_supp : (StdSimplex.duple d₁ d₂ hp hp' hsum).join.weights.support =
         d₁.weights.support := by
@@ -3328,19 +3317,19 @@ theorem affineOfBinary_binary_join [Inhabited M]
       linarith [mul_nonneg (le_of_lt hp_pos) hd₁m,
                 mul_pos hp'_pos (lt_of_le_of_ne this (Ne.symm hd₂m))]
     -- Rewrite using toWeightedSeqOn
-    rw [show affineOfBinary op d₁.toWeightedSeq =
-          affineOfBinary op (d₁.toWeightedSeqOn S) from
-        (affineOfBinary_toWeightedSeqOn op d₁ S hd₁_sub hS_nodup).symm]
-    rw [show affineOfBinary op d₂.toWeightedSeq =
-          affineOfBinary op (d₂.toWeightedSeqOn S) from
-        (affineOfBinary_toWeightedSeqOn op d₂ S hd₂_sub hS_nodup).symm]
+    rw [show affineOfBinary u op d₁.toWeightedSeq =
+          affineOfBinary u op (d₁.toWeightedSeqOn S) from
+        (affineOfBinary_toWeightedSeqOn u op d₁ S hd₁_sub hS_nodup).symm]
+    rw [show affineOfBinary u op d₂.toWeightedSeq =
+          affineOfBinary u op (d₂.toWeightedSeqOn S) from
+        (affineOfBinary_toWeightedSeqOn u op d₂ S hd₂_sub hS_nodup).symm]
     -- Both extended sequences have same points (S) and same length
     have hlen : (d₁.toWeightedSeqOn S).length = (d₂.toWeightedSeqOn S).length := by
       simp [StdSimplex.toWeightedSeqOn]
     have hpts : (d₁.toWeightedSeqOn S).samePoints (d₂.toWeightedSeqOn S) := by
       simp [WeightedSeq.samePoints, StdSimplex.toWeightedSeqOn, List.map_map, Function.comp]
     -- Apply linearity
-    rw [affineOfBinary_linear op (1 - p) (d₁.toWeightedSeqOn S) (d₂.toWeightedSeqOn S)
+    rw [affineOfBinary_linear u op (1 - p) (d₁.toWeightedSeqOn S) (d₂.toWeightedSeqOn S)
           hlen hpts]
     -- Show combineWeights gives join.toWS
     congr 1
@@ -3362,12 +3351,12 @@ theorem affineOfBinary_binary_join [Inhabited M]
 theorem affineOfBinary_assoc_flattening [Inhabited M]
     (op : BinaryConvexOp R M)
     (f : StdSimplex R (StdSimplex R M)) :
-    affineOfBinary op (f.map (convexCombinationOfBinary op)).toWeightedSeq =
-    affineOfBinary op f.join.toWeightedSeq := by
+    affineOfBinary u op (f.map (convexCombinationOfBinary u op)).toWeightedSeq =
+    affineOfBinary u op f.join.toWeightedSeq := by
   -- Strong induction on outer support cardinality.
   suffices ∀ n (f : StdSimplex R (StdSimplex R M)), f.weights.support.card = n →
-      affineOfBinary op (f.map (convexCombinationOfBinary op)).toWeightedSeq =
-      affineOfBinary op f.join.toWeightedSeq from this _ f rfl
+      affineOfBinary u op (f.map (convexCombinationOfBinary u op)).toWeightedSeq =
+      affineOfBinary u op f.join.toWeightedSeq from this _ f rfl
   intro n
   induction n using Nat.strongRecOn with
   | _ n ih =>
@@ -3429,22 +3418,22 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
     rw [hf_eq]
     have hw₂_pos' : 0 ≤ 1 - w₁ := hw₂_eq ▸ hw₂_pos
     have hsum' : w₁ + (1 - w₁) = 1 := by ring
-    have hbinary := affineOfBinary_binary_join op w₁ d₁ d₂ hw₁_pos hw₂_pos' hsum'
+    have hbinary := affineOfBinary_binary_join u op w₁ d₁ d₂ hw₁_pos hw₂_pos' hsum'
     have hduple_eq : StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos hsum =
         StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum' := by
       apply StdSimplex.ext; ext d
       simp only [StdSimplex.duple, Finsupp.coe_add, Pi.add_apply]
       congr 1; rw [hw₂_eq]
     rw [hduple_eq, ← hbinary]
-    change affineOfBinary op ((StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
-      (convexCombinationOfBinary op)).toWeightedSeq = _
-    by_cases hAeq : affineOfBinary op d₁.toWeightedSeq = affineOfBinary op d₂.toWeightedSeq
+    change affineOfBinary u op ((StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
+      (convexCombinationOfBinary u op)).toWeightedSeq = _
+    by_cases hAeq : affineOfBinary u op d₁.toWeightedSeq = affineOfBinary u op d₂.toWeightedSeq
     · rw [hAeq, op.binCombo_same]
-      have hAeq' : convexCombinationOfBinary op d₁ = convexCombinationOfBinary op d₂ := by
+      have hAeq' : convexCombinationOfBinary u op d₁ = convexCombinationOfBinary u op d₂ := by
         simp only [convexCombinationOfBinary]; exact hAeq
       have hmap_eq : (StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
-          (convexCombinationOfBinary op) =
-          StdSimplex.single (convexCombinationOfBinary op d₁) := by
+          (convexCombinationOfBinary u op) =
+          StdSimplex.single (convexCombinationOfBinary u op d₁) := by
         apply StdSimplex.ext; ext m
         simp only [StdSimplex.map, StdSimplex.duple, StdSimplex.single_weights]
         rw [Finsupp.mapDomain_add]; simp only [Finsupp.mapDomain_single]
@@ -3455,11 +3444,11 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
         List.map_cons, List.map_nil, Finsupp.single_eq_same, affineOfBinary,
         convexCombinationOfBinary]
       exact hAeq
-    · have hAne : convexCombinationOfBinary op d₁ ≠ convexCombinationOfBinary op d₂ := by
+    · have hAne : convexCombinationOfBinary u op d₁ ≠ convexCombinationOfBinary u op d₂ := by
         simp only [convexCombinationOfBinary]; exact hAeq
       have hmap_weights : (StdSimplex.duple d₁ d₂ hw₁_pos hw₂_pos' hsum').map
-          (convexCombinationOfBinary op) =
-          StdSimplex.duple (convexCombinationOfBinary op d₁) (convexCombinationOfBinary op d₂)
+          (convexCombinationOfBinary u op) =
+          StdSimplex.duple (convexCombinationOfBinary u op d₁) (convexCombinationOfBinary u op d₂)
             hw₁_pos hw₂_pos' hsum' := by
         apply StdSimplex.ext; ext m
         simp only [StdSimplex.map, StdSimplex.duple]
@@ -3477,7 +3466,7 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
         have : d₂ ∉ f.weights.support := Finsupp.notMem_support_iff.mpr this
         rw [hsupp] at this
         simp at this
-      exact affineOfBinary_duple op _ _ hAne hw₁_pos hw₂_pos' hsum' hw₁_ne hw₂_ne
+      exact affineOfBinary_duple u op _ _ hAne hw₁_pos hw₂_pos' hsum' hw₁_ne hw₂_ne
   | n + 3, hcard =>
     -- Card ≥ 3: Monadic decomposition.
     -- Split f = (duple g₁ g₂).join where g₁, g₂ have smaller outer support card.
@@ -3492,22 +3481,22 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
     rw [hf]
     -- LHS: rewrite using join_map + map_duple
     conv_lhs =>
-      rw [StdSimplex.join_map (convexCombinationOfBinary op)
+      rw [StdSimplex.join_map (convexCombinationOfBinary u op)
             (StdSimplex.duple g₁ g₂ hs' ht' hst)]
       rw [StdSimplex.map_duple
-            (fun d => d.map (convexCombinationOfBinary op)) g₁ g₂ hs' ht' hst]
+            (fun d => d.map (convexCombinationOfBinary u op)) g₁ g₂ hs' ht' hst]
     -- RHS: rewrite using join_join + map_duple
     conv_rhs =>
       rw [StdSimplex.join_join (StdSimplex.duple g₁ g₂ hs' ht' hst)]
       rw [StdSimplex.map_duple StdSimplex.join g₁ g₂ hs' ht' hst]
     -- Goal: A(D₁.join.toWS) = A(D₂.join.toWS) where
     -- D₁ = duple (g₁.map F) (g₂.map F), D₂ = duple g₁.join g₂.join
-    -- F = convexCombinationOfBinary op
+    -- F = convexCombinationOfBinary u op
     -- Both D₁, D₂ have card ≤ 2 < n + 3.
     -- Card bounds for D₁, D₂ (duple of two elements has support ≤ 2)
     have hD₁_card :
-        (StdSimplex.duple (g₁.map (convexCombinationOfBinary op))
-          (g₂.map (convexCombinationOfBinary op)) hs' ht' hst
+        (StdSimplex.duple (g₁.map (convexCombinationOfBinary u op))
+          (g₂.map (convexCombinationOfBinary u op)) hs' ht' hst
         ).weights.support.card ≤ 2 :=
       StdSimplex.duple_support_card_le_two _ _ hs' ht' hst
     have hD₂_card :
@@ -3516,8 +3505,8 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
       StdSimplex.duple_support_card_le_two _ _ hs' ht' hst
     -- Apply IH to D₁ and D₂
     have ihD₁ := ih _ (by omega)
-      (StdSimplex.duple (g₁.map (convexCombinationOfBinary op))
-        (g₂.map (convexCombinationOfBinary op)) hs' ht' hst) rfl
+      (StdSimplex.duple (g₁.map (convexCombinationOfBinary u op))
+        (g₂.map (convexCombinationOfBinary u op)) hs' ht' hst) rfl
     have ihD₂ := ih _ (by omega)
       (StdSimplex.duple g₁.join g₂.join hs' ht' hst) rfl
     -- Chain: A(D₁.join) ← ihD₁ → A(D₁.map F) = A(D₂.map F) ← ihD₂ → A(D₂.join)
@@ -3525,17 +3514,17 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
     -- Goal: A(D₁.map F .toWS) = A(D₂.map F .toWS)
     -- D₁.map F = D₂.map F because F(g₁.map F) = F(g₁.join) by ih₁
     congr 1; congr 1
-    rw [StdSimplex.map_duple (convexCombinationOfBinary op)
-          (g₁.map (convexCombinationOfBinary op))
-          (g₂.map (convexCombinationOfBinary op)) hs' ht' hst,
-        StdSimplex.map_duple (convexCombinationOfBinary op)
+    rw [StdSimplex.map_duple (convexCombinationOfBinary u op)
+          (g₁.map (convexCombinationOfBinary u op))
+          (g₂.map (convexCombinationOfBinary u op)) hs' ht' hst,
+        StdSimplex.map_duple (convexCombinationOfBinary u op)
           g₁.join g₂.join hs' ht' hst,
-        show convexCombinationOfBinary op
-              (g₁.map (convexCombinationOfBinary op)) =
-            convexCombinationOfBinary op g₁.join from ih₁,
-        show convexCombinationOfBinary op
-              (g₂.map (convexCombinationOfBinary op)) =
-            convexCombinationOfBinary op g₂.join from ih₂]
+        show convexCombinationOfBinary u op
+              (g₁.map (convexCombinationOfBinary u op)) =
+            convexCombinationOfBinary u op g₁.join from ih₁,
+        show convexCombinationOfBinary u op
+              (g₂.map (convexCombinationOfBinary u op)) =
+            convexCombinationOfBinary u op g₂.join from ih₂]
 
 /-- Build a ConvexSpace from a binary convex operation.
 
@@ -3544,10 +3533,21 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
 noncomputable def ConvexSpace.ofBinary [Inhabited M]
     (op : BinaryConvexOp R M) :
     ConvexSpace R M where
-  convexCombination := convexCombinationOfBinary op
-  single := convexCombinationOfBinary_single op
+  convexCombination := convexCombinationOfBinary u op
+  single := convexCombinationOfBinary_single u op
   assoc f := by
     simp only [convexCombinationOfBinary]
-    exact affineOfBinary_assoc_flattening op f
+    exact affineOfBinary_assoc_flattening u op f
 
 end OfBinaryField
+
+/-- Over an ordered field where `2 ≠ 0`, any `BinaryConvexOp` gives a `ConvexSpace`
+    using `u = ⅟2` as the splitting unit. -/
+noncomputable def ConvexSpace.ofBinaryCharNeTwo
+    {R : Type*} {M : Type*}
+    [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Inhabited M]
+    (op : BinaryConvexOp R M) (h2 : (2 : R) ≠ 0) :
+    ConvexSpace R M :=
+  letI : Invertible (2 : R) := invertibleOfNonzero h2
+  haveI : Invertible (1 - ⅟(2 : R)) := by rw [one_sub_invOf_two]; infer_instance
+  ConvexSpace.ofBinary (⅟(2 : R)) op
