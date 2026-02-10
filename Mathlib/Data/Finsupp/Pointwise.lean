@@ -101,9 +101,7 @@ section pointwiseModule
 variable {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 lemma pointwise_smul_support_finite (f : ι → R) (g : ι →₀ M) :
-    (fun x ↦ f x • g x).support.Finite := by
-  apply Set.Finite.subset g.finite_support
-  simp; grind [smul_zero]
+    (fun x ↦ f x • g x).support.Finite := Set.Finite.subset g.finite_support (by aesop)
 
 -- TODO can this be generalized in the direction of `Pi.smul'`
 -- (i.e. dependent functions and finsupps)
