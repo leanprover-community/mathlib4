@@ -875,7 +875,7 @@ variable (R) in
 
 This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later.
 -/
-def Spec.structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R) :=
+def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R) :=
   ⟨structurePresheafInCommRingCat R,
     (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr (TopCat.Presheaf.isSheaf_of_iso
       (structurePresheafCompForget R).symm (structureSheafInType R R).cond)⟩
