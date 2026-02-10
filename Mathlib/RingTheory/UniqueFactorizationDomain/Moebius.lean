@@ -35,7 +35,7 @@ noncomputable def moebius (a : α) : ℤ :=
   open Classical in
   if Squarefree a then ((-1) ^ (factors a).card) else 0
 
--- todo: prove `Int.mobius_eq` as well.
+-- Todo: prove `Int.moebius_eq` as well.
 theorem _root_.Nat.moebius_eq (n : ℕ) : moebius n = ArithmeticFunction.moebius n := by
   rw [moebius]
   congr
