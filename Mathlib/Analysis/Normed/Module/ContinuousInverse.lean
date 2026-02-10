@@ -82,7 +82,7 @@ namespace HasLeftInverse
 
 variable {f : E →L[R] F}
 
-/-- Choice of left inverse for `f` -/
+/-- Choice of left inverse for `f : F →L[R] E`, given that such an inverse exists. -/
 def leftInverse (h : f.HasLeftInverse) : F →L[R] E := Classical.choose h
 
 lemma leftInverse_leftInverse (h : f.HasLeftInverse) : LeftInverse h.leftInverse f :=
