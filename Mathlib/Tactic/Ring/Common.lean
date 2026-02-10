@@ -102,9 +102,9 @@ def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 /--
 The data used by `ring` to represent coefficients. `e` is a raw rat cast.
 
-We include `e` as a parameter even though it is unused in this definition because it lets use Qq
-type annotations in the `RingCompute` structure, and so that it can be used with the `Result` type
-defined below.
+We include `e` as a parameter even though it is unused in this definition because it lets us use
+`Qq` type annotations in the `RingCompute` structure, and so that it can be used with the `Result`
+type defined below.
 -/
 structure _root_.Mathlib.Tactic.Ring.RatCoeff {u : Lean.Level} {α : Q(Type u)} (e : Q($α)) where
   /-- The value represented by `e`. Should not be zero. -/
@@ -201,6 +201,12 @@ inductive ExSumNat : (e : Q(ℕ)) → Type
 end
 
 
+/-!
+The `BaseType` parameter is used to specify how constant coefficients are stored. In the ring
+tactic we need only to store coefficients as normalizations to rational numbers, but in a future
+algebra tactic the base type may itself be a normalized ring expression.
+-/
+
 mutual
 
 /-- `ExBase BaseType sα e` stores the structure of a normalized expression `e`, which appears
@@ -292,9 +298,9 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
     MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
   /-- Evaluate the product of two coefficents. -/
   mul {x y : Q($α)} : BaseType x → BaseType y → MetaM (Result BaseType q($x * $y))
-  /-- Given a ring `β` with a scalar multiplication action on `α` and a `x : β`, cast `x` to `α`
-  such that the scalar multiplication turns into normal multiplication. Typically one can think of
-  `α` as being an algebra over `β`, but this file does not know about `Algebra`s. -/
+  /-- Given a commutative ring `β` with a scalar multiplication action on `α` and a `x : β`, cast
+  `x` to `α` such that the scalar multiplication turns into normal multiplication. Typically one
+  can think of `α` as being an algebra over `β`, but this file does not know about `Algebra`s. -/
   cast (v : Lean.Level) (β : Q(Type v)) (_ : Q(CommSemiring $β))
       (_ : Q(SMul $β $α)) (x : Q($β)) :
     AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
@@ -338,16 +344,16 @@ instance (u : Lean.Level) (α : Q(Type u)) (BaseType : Q($α) → Type) [∀ e, 
     default
 }⟩
 
-instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
-instance : Inhabited (Σ e, (ExSumNat) e) := ⟨_, .zero⟩
-instance : Inhabited (Σ e, (ExProdNat) e) := ⟨default, .const default⟩
+instance : Inhabited (Σ e, ExBaseNat e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, ExSumNat e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, ExProdNat e) := ⟨default, .const default⟩
 
 variable {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)}
    [∀ e, Inhabited (bt e)]
 
-instance : Inhabited (Σ e, (ExBase bt sα) e) := ⟨default, .atom 0⟩
-instance : Inhabited (Σ e, (ExSum bt sα) e) := ⟨_, .zero⟩
-instance : Inhabited (Σ e, (ExProd bt sα) e) := ⟨default, .const default⟩
+instance : Inhabited (Σ e, ExBase bt sα e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, ExSum bt sα e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, ExProd bt sα e) := ⟨default, .const default⟩
 
 variable (rc : RingCompute bt sα) (rcℕ : RingCompute btℕ sℕ)
 
@@ -396,9 +402,8 @@ def ExBase.toProd
     {a : Q($α)} {b : Q(ℕ)}
     (va : ExBase bt sα a) (vb : ExProdNat b) :
     Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
-      let ⟨_, one, pf⟩ := rc.one
-      ⟨_, .mul va vb (.const  (one)),
-        (q(by rw [← $pf])) ⟩
+  let ⟨_, one, pf⟩ := rc.one
+  ⟨_, .mul va vb (.const  (one)), q(by rw [← $pf])⟩
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
