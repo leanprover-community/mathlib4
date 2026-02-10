@@ -59,6 +59,7 @@ instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @Etale)) (i : 𝒰.I₀) 
 
 /-- A separably closed field `Ω` defines a point on the étale topology by the fiber
 functor `X ↦ Hom(Spec Ω, X)`. -/
+noncomputable
 def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Point where
   fiber := coyoneda.obj ⟨Spec (.of Ω)⟩
   jointly_surjective {S} R hR (f : Spec (.of Ω) ⟶ S) := by
