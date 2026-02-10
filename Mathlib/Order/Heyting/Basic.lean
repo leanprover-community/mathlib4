@@ -67,7 +67,7 @@ instance Prod.instHNot [HNot α] [HNot β] : HNot (α × β) :=
 instance Prod.instSDiff [SDiff α] [SDiff β] : SDiff (α × β) :=
   ⟨fun a b => (a.1 \ b.1, a.2 \ b.2)⟩
 
-instance Prod.instHasCompl [HasCompl α] [HasCompl β] : HasCompl (α × β) :=
+instance Prod.instCompl [Compl α] [Compl β] : Compl (α × β) :=
   ⟨fun a => (a.1ᶜ, a.2ᶜ)⟩
 
 end
@@ -97,11 +97,11 @@ theorem snd_sdiff [SDiff α] [SDiff β] (a b : α × β) : (a \ b).2 = a.2 \ b.2
   rfl
 
 @[simp]
-theorem fst_compl [HasCompl α] [HasCompl β] (a : α × β) : aᶜ.1 = a.1ᶜ :=
+theorem fst_compl [Compl α] [Compl β] (a : α × β) : aᶜ.1 = a.1ᶜ :=
   rfl
 
 @[simp]
-theorem snd_compl [HasCompl α] [HasCompl β] (a : α × β) : aᶜ.2 = a.2ᶜ :=
+theorem snd_compl [Compl α] [Compl β] (a : α × β) : aᶜ.2 = a.2ᶜ :=
   rfl
 
 namespace Pi
@@ -150,7 +150,7 @@ class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, 
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
 implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`. -/
-class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot α, HasCompl α where
+class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot α, Compl α where
   /-- `aᶜ` is defined as `a ⇨ ⊥` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
@@ -318,6 +318,7 @@ theorem himp_le_himp_left (h : a ≤ b) : c ⇨ a ≤ c ⇨ b :=
 theorem himp_le_himp_right (h : a ≤ b) : b ⇨ c ≤ a ⇨ c :=
   le_himp_iff.2 <| (inf_le_inf_left _ h).trans himp_inf_le
 
+@[gcongr]
 theorem himp_le_himp (hab : a ≤ b) (hcd : c ≤ d) : b ⇨ c ≤ a ⇨ d :=
   (himp_le_himp_right hab).trans <| himp_le_himp_left hcd
 
@@ -861,6 +862,7 @@ theorem hnot_hnot_le : ￢￢a ≤ a :=
 
 theorem hnot_anti : Antitone (hnot : α → α) := fun _ _ h => hnot_le_comm.1 <| hnot_hnot_le.trans h
 
+@[gcongr]
 theorem hnot_le_hnot (h : a ≤ b) : ￢b ≤ ￢a :=
   hnot_anti h
 
@@ -1025,13 +1027,13 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Max α] [Min α
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
 protected abbrev Function.Injective.heytingAlgebra [Max α] [Min α] [Top α] [Bot α]
-    [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
+    [Compl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : HeytingAlgebra α :=
   { __ := hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp
     __ := ‹Bot α›
-    __ := ‹HasCompl α›
+    __ := ‹Compl α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1057,7 +1059,7 @@ protected abbrev Function.Injective.coheytingAlgebra [Max α] [Min α] [Top α] 
 -- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/
 protected abbrev Function.Injective.biheytingAlgebra [Max α] [Min α] [Top α] [Bot α]
-    [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
+    [Compl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
     (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
     (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_hnot : ∀ a, f (￢a) = ￢f a)

@@ -94,6 +94,16 @@ lemma quotientKerEquivOfSurjective_apply_mk {f : R →+* S} (hf : Function.Surje
     f.quotientKerEquivOfSurjective hf (Ideal.Quotient.mk _ x) = f x :=
   rfl
 
+@[simp]
+lemma quotientKerEquivOfSurjective_symm_apply {f : R →+* S} (hf : Function.Surjective f) (x : R) :
+    (RingHom.quotientKerEquivOfSurjective hf).symm (f x) = Ideal.Quotient.mk _ x := by
+  apply (RingHom.quotientKerEquivOfSurjective hf).injective
+  simp
+
+lemma quotientKerEquivOfSurjective_symm_comp {f : R →+* S} (hf : Function.Surjective f) :
+    (RingHom.quotientKerEquivOfSurjective hf).symm.toRingHom.comp f = Ideal.Quotient.mk _ := by
+  ext; simp
+
 /-- The **first isomorphism theorem** for commutative rings (`RingHom.rangeS` version). -/
 noncomputable def quotientKerEquivRangeS (f : R →+* S) : R ⧸ ker f ≃+* f.rangeS :=
   (Ideal.quotEquivOfEq f.ker_rangeSRestrict.symm).trans <|
@@ -456,8 +466,8 @@ variable [Semiring B] [Algebra R₁ B]
 /-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     A ⧸ I →ₐ[R₁] B :=
-  {-- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
-      -- imports this file.
+  { -- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
+    -- imports this file.
       Ideal.Quotient.lift
       I (f : A →+* B) hI with
     commutes' := fun r => by

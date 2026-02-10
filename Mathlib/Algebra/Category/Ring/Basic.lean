@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.PUnit
-public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -164,6 +163,12 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
     { obj := fun R ↦ AddCommMonCat.of R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
+@[simp] lemma forget₂_monCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat MonCat).map f x = f x := rfl
+
+@[simp] lemma forget₂_addCommMonCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat AddCommMonCat).map f x = f x := rfl
+
 /-- Ring equivalences are isomorphisms in category of semirings -/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
@@ -314,6 +319,9 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
+
+@[simp] lemma forget₂_map {R S : RingCat} (f : R ⟶ S) (x) :
+    (forget₂ RingCat SemiRingCat).map f x = f x := rfl
 
 /-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToSemiRingCat :
@@ -664,7 +672,7 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
     { obj := fun R ↦ CommSemiRingCat.of R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
 
-@[simps]
+@[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl

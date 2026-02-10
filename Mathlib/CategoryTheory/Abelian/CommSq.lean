@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.Refinements
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.Algebra.Homology.CommSq
 
 /-!
@@ -15,13 +15,16 @@ public import Mathlib.Algebra.Homology.CommSq
 Consider a pushout square in an abelian category:
 
 ```
-X₁ ⟶ X₂
-|    |
-v    v
-X₃ ⟶ X₄
+    t
+ X₁ ⟶ X₂
+l|    |r
+ v    v
+ X₃ ⟶ X₄
+    b
 ```
 
 We study the associated exact sequence `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0`.
+We also show that the induced morphism `kernel t ⟶ kernel b` is an epimorphism.
 
 -/
 
@@ -33,8 +36,19 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] [Abelian C] {X₁ X₂ X₃ X₄ : C}
-  {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+namespace Abelian
+
+instance : (MorphismProperty.monomorphisms C).IsStableUnderCobaseChange :=
+  .mk' (fun _ _ _ _ _ _ (_ : Mono _) ↦ inferInstanceAs (Mono _))
+
+instance : (MorphismProperty.epimorphisms C).IsStableUnderBaseChange :=
+  .mk' (fun _ _ _ _ _ _ (_ : Epi _) ↦ inferInstanceAs (Epi _))
+
+end Abelian
+
+variable {X₁ X₂ X₃ X₄ : C} {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
 
 namespace IsPushout
 
@@ -114,5 +128,36 @@ statement to `IsPushout.hom_eq_add_up_to_refinements`.
 
 end IsPullback
 
+namespace Abelian
+
+variable {X₁ X₂ X₃ X₄ : C} {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
+
+lemma mono_cokernel_map_of_isPullback (sq : IsPullback t l r b) :
+    Mono (cokernel.map _ _ _ _ sq.w) := by
+  rw [Preadditive.mono_iff_cancel_zero]
+  intro A₀ z hz
+  obtain ⟨A₁, π₁, _, x₂, hx₂⟩ :=
+    surjective_up_to_refinements_of_epi (cokernel.π t) z
+  have : (ShortComplex.mk _ _ (cokernel.condition b)).Exact :=
+    ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel b)
+  obtain ⟨A₂, π₂, _, x₃, hx₃⟩ := this.exact_up_to_refinements (x₂ ≫ r) (by
+    simpa [hz] using hx₂.symm =≫ cokernel.map _ _ _ _ sq.w)
+  obtain ⟨x₁, hx₁, rfl⟩ := sq.exists_lift (π₂ ≫ x₂) x₃ (by simpa)
+  simp [← cancel_epi π₁, ← cancel_epi π₂, hx₂, ← reassoc_of% hx₁]
+
+lemma epi_kernel_map_of_isPushout (sq : IsPushout t l r b) :
+    Epi (kernel.map _ _ _ _ sq.w) := by
+  rw [epi_iff_surjective_up_to_refinements]
+  intro A₀ z
+  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := ((ShortComplex.mk _ _
+    sq.cokernelCofork.condition).exact_of_g_is_cokernel
+      sq.isColimitCokernelCofork).exact_up_to_refinements
+        (z ≫ kernel.ι _ ≫ biprod.inr) (by simp)
+  refine ⟨A₁, π₁, inferInstance, -kernel.lift _ x₁ ?_, ?_⟩
+  · simpa using hx₁.symm =≫ biprod.fst
+  · ext
+    simpa using hx₁ =≫ biprod.snd
+
+end Abelian
 
 end CategoryTheory

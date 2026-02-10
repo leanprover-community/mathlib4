@@ -31,10 +31,10 @@ open Set
 open scoped NNReal
 
 namespace Metric
-variable {X : Type*}
+variable {X Y : Type*}
 
 section PseudoEMetricSpace
-variable [PseudoEMetricSpace X] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
+variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
 
 instance : SetRel.IsRefl {(x, y) : X × X | edist x y ≤ ε} where refl := by simp
 instance : SetRel.IsSymm {(x, y) : X × X | edist x y ≤ ε} where symm := by simp [edist_comm]
@@ -64,13 +64,29 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
-lemma IsCover.singleton_of_ediam_le (hA : EMetric.diam s ≤ ε) (hx : x ∈ s) :
-    IsCover ε s ({x} : Set X) :=
-  fun _ h_mem ↦ ⟨x, by simp, (EMetric.edist_le_diam_of_mem h_mem hx).trans hA⟩
+lemma IsCover.image_lipschitz {f : X → Y} {s : Set X} {N : Set X} {ε K₂ : ℝ≥0}
+    (hs : IsCover ε s N) (hf : LipschitzWith K₂ f) : IsCover (K₂ * ε) (f '' s) (f '' N) := by
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨x₀, hx₀, hcover⟩ := hs hx
+  dsimp at *
+  exact ⟨f x₀, ⟨x₀, hx₀, by grind⟩, by grw [hf x x₀, hcover]⟩
 
-lemma isCover_iff_subset_iUnion_emetricClosedBall :
-    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by
+lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X} {ε K₂ : ℝ≥0}
+    (hs : IsCover ε (s.preimage f) N) (hf : LipschitzWith K₂ f) (hf_surj : f.Surjective) :
+    IsCover (K₂ * ε) s (f '' N) := by
+  have : IsCover (K₂ * ε) (f '' s.preimage f) (f '' N) := IsCover.image_lipschitz hs hf
+  simp_all only [image_preimage_eq]
+
+lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
+    IsCover ε s ({x} : Set X) :=
+  fun _ h_mem ↦ ⟨x, by simp, (edist_le_ediam_of_mem h_mem hx).trans hA⟩
+
+lemma isCover_iff_subset_iUnion_closedEBall :
+    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, Metric.closedEBall y ε := by
   simp [IsCover, SetRel.IsCover, subset_def]
+
+alias isCover_iff_subset_iUnion_emetricClosedBall :=
+  isCover_iff_subset_iUnion_closedEBall
 
 /-- A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
 
@@ -83,11 +99,11 @@ nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧
 lemma exists_finite_isCover_of_totallyBounded (hε : ε ≠ 0) (hs : TotallyBounded s) :
     ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
   rw [EMetric.totallyBounded_iff'] at hs
-  obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (mod_cast hε.bot_lt)
-  simp only [isCover_iff_subset_iUnion_emetricClosedBall]
+  obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (by positivity)
+  simp only [isCover_iff_subset_iUnion_closedEBall]
   refine ⟨N, by simpa, by simpa, ?_⟩
   · refine hN.trans fun x hx ↦ ?_
-    simp only [Set.mem_iUnion, EMetric.mem_ball, exists_prop, EMetric.mem_closedBall] at hx ⊢
+    simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
     obtain ⟨y, hyN, hy⟩ := hx
     exact ⟨y, hyN, hy.le⟩
 
@@ -135,7 +151,7 @@ section EMetricSpace
 variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 
 @[simp] lemma isCover_zero : IsCover 0 s N ↔ s ⊆ N := by
-  simp [isCover_iff_subset_iUnion_emetricClosedBall]
+  simp [isCover_iff_subset_iUnion_closedEBall]
 
 end EMetricSpace
 

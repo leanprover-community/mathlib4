@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Topology.Algebra.Valued.WithVal
 
 /-!
 # Rank one valuations
@@ -108,7 +109,7 @@ theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne, ← Units.val_inj, Units.val_one]
   exact ((nontrivial v).choose_spec).2
 
-instance [RankOne v] : IsNontrivial v where
+instance : IsNontrivial v where
   exists_val_nontrivial := RankOne.nontrivial v
 
 end RankOne

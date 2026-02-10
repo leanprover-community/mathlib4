@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 /-!
 # Monomorphisms are stable under cobase change
 
-In an abelian category `C`, the class of morphism
+In an abelian category `C`, the class of morphisms
 `monomorphisms C` is stable under cobase change and
 `epimorphisms C` is stable under base change.
 

@@ -14,11 +14,11 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 # 1-hypercovers
 
 Given a Grothendieck topology `J` on a category `C`, we define the type of
-`1`-hypercovers of an object `S : C`. They consists of a covering family
+`1`-hypercovers of an object `S : C`. They consist of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` and, for each tuple `(i₁, i₂)`
 of elements of `I₀`, a "covering `Y j` of the fibre product of `X i₁` and
 `X i₂` over `S`", a condition which is phrased here without assuming that
-the fibre product actually exist.
+the fibre product actually exists.
 
 The definition `OneHypercover.isLimitMultifork` shows that if `E` is a
 `1`-hypercover of `S`, and `F` is a sheaf, then `F.obj (op S)`
@@ -573,6 +573,42 @@ def isoMk {E F : J.OneHypercover S} (f : E.toPreOneHypercover ≅ F.toPreOneHype
 
 end Category
 
+section
+
+open Opposite
+variable {C : Type*} [Category* C] {K : GrothendieckTopology C} {P : Cᵒᵖ ⥤ Type*}
+   {S : C} (E : K.OneHypercover S)
+
+lemma isSheafFor_presieve₀ (h : Presieve.IsSheaf K P) : E.presieve₀.IsSheafFor P := by
+  rw [Presieve.isSheafFor_iff_generate]
+  exact h _ E.mem₀
+
+lemma arrowsCompatible (h : Presieve.IsSeparated K P) (x : ∀ i, P.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
+    Presieve.Arrows.Compatible _ E.f x := by
+  rintro i₁ i₂ Z g₁ g₂ heq
+  refine (h _ (E.mem₁ _ _ _ _ heq)).ext fun W f ⟨T, u, h₁, h₂⟩ ↦ ?_
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₁]
+  conv_rhs => rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₂]
+  simp [hc]
+
+/-- Glue sections of a `Type`-valued sheaf over a `1`-hypercover. -/
+noncomputable def amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
+    P.obj (op S) :=
+  (E.isSheafFor_presieve₀ h).amalgamate _
+    ((E.arrowsCompatible h.isSeparated x hc).familyOfElements_compatible)
+
+@[simp]
+lemma map_amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
+    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j))
+    (i : E.I₀) :
+    P.map (E.f i).op (E.amalgamate h x hc) = x i := by
+  rw [amalgamate, Presieve.IsSheafFor.valid_glue _ _ _ ⟨i⟩]
+  simp
+
+end
+
 end OneHypercover
 
 namespace Cover
@@ -621,5 +657,47 @@ def oneHypercover : J.OneHypercover X where
 end Cover
 
 end GrothendieckTopology
+
+lemma PreZeroHypercover.ext_of_isSeparatedFor {P : Cᵒᵖ ⥤ Type*} {S : C} (E : PreZeroHypercover S)
+    (h : E.presieve₀.IsSeparatedFor P) {x y : P.obj (.op S)}
+    (hi : ∀ i, P.map (E.f i).op x = P.map (E.f i).op y) :
+    x = y :=
+  h.ext fun _ _ ⟨i⟩ ↦ hi i
+
+/-- If the pairwise pullbacks exist, this is the pre-`1`-hypercover where the covers
+by the pullbacks are given by the pullbacks themselves. -/
+@[simps toPreZeroHypercover I₁ Y p₁ p₂]
+noncomputable def PreZeroHypercover.toPreOneHypercover {S : C} (E : PreZeroHypercover S)
+    [E.HasPullbacks] :
+    PreOneHypercover S where
+  __ := E
+  I₁ _ _ := PUnit
+  Y i j _ := pullback (E.f i) (E.f j)
+  p₁ _ _ _ := pullback.fst _ _
+  p₂ _ _ _ := pullback.snd _ _
+  w _ _ _ := pullback.condition
+
+instance {S : C} (E : PreZeroHypercover S) [E.HasPullbacks] :
+    E.toPreOneHypercover.HasPullbacks := by
+  dsimp
+  infer_instance
+
+@[simp]
+lemma sieve₁'_toPreOneHypercover_eq_top {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
+    (i j : E.I₀) :
+    E.toPreOneHypercover.sieve₁' i j = ⊤ := by
+  rw [eq_top_iff]
+  intro Y f _
+  refine ⟨pullback (E.f i) (E.f j), f, 𝟙 _, ?_, by simp⟩
+  refine Presieve.ofArrows.mk' ⟨⟩ rfl ?_
+  apply pullback.hom_ext <;> simp [PreOneHypercover.toPullback]
+
+/-- If the pairwise pullbacks exist, this is the pre-`1`-hypercover where the covers
+by the pullbacks are given by the pullbacks themselves. -/
+@[simps! toPreOneHypercover]
+noncomputable def Precoverage.ZeroHypercover.toOneHypercover {J : Precoverage C}
+    {S : C} (E : J.ZeroHypercover S) [E.HasPullbacks] :
+    (J.toGrothendieck).OneHypercover S :=
+  .mk' E.toPreZeroHypercover.toPreOneHypercover (J.generate_mem_toGrothendieck E.mem₀) (by simp)
 
 end CategoryTheory

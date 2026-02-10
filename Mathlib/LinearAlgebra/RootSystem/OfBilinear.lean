@@ -47,7 +47,7 @@ namespace IsReflective
 
 lemma of_dvd_two [IsCancelMulZero R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
     IsReflective B x where
-  regular := isRegular_of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
+  regular := .of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
   dvd_two_mul y := hx.mul_right (B x y)
 
 variable (hx : IsReflective B x)

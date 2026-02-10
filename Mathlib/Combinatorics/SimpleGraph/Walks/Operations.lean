@@ -159,6 +159,9 @@ theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = con
   rfl
 
 @[simp]
+theorem reverse_toWalk {u v : V} (h : G.Adj u v) : h.toWalk.reverse = h.symm.toWalk := rfl
+
+@[simp]
 theorem cons_reverseAux {u v w x : V} (p : G.Walk u v) (q : G.Walk w x) (h : G.Adj w u) :
     (cons h p).reverseAux q = p.reverseAux (cons (G.symm h) q) := rfl
 
@@ -510,12 +513,40 @@ lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n 
 lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
   induction p generalizing n <;> cases n <;> simp [*, drop, add_right_comm]
 
+lemma drop_add_heq (p : G.Walk u v) (n m : ℕ) : p.drop (n + m) ≍ (p.drop n).drop m := by
+  rw [add_comm]
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
+lemma drop_add_eq (p : G.Walk u v) (n m : ℕ) :
+    p.drop (n + m) = ((p.drop n).drop m).copy (drop_getVert ..) rfl :=
+  eq_of_heq <| drop_add_heq .. |>.trans <| by simp [Walk.copy]
+
+lemma nil_drop_iff (p : G.Walk u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ n := by
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
+lemma drop_cons_eq (h : G.Adj u v) (p : G.Walk v w) (n : ℕ) (hn : n ≠ 0) :
+    (cons h p).drop n = (p.drop (n - 1)).copy (p.getVert_cons h hn).symm rfl := by
+  apply ext_support
+  obtain ⟨_, rfl⟩ := Nat.exists_add_one_eq.mpr (Nat.ne_zero_iff_zero_lt.mp hn)
+  conv_lhs => unfold drop
+  simp
+
+lemma darts_drop (p : G.Walk u v) (n : ℕ) : (p.drop n).darts = p.darts.drop n := by
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
+lemma edges_drop (p : G.Walk u v) (n : ℕ) : (p.drop n).edges = p.edges.drop n := by
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
 /-- The walk obtained by taking the first `n` darts of a walk. -/
 def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   match p, n with
   | .nil, _ => .nil
   | p, 0 => nil.copy rfl (getVert_zero p).symm
   | .cons h q, (n + 1) => .cons h (q.take n)
+
+@[simp]
+lemma take_zero (p : G.Walk u v) : p.take 0 = nil.copy rfl p.getVert_zero.symm := by
+  cases p <;> simp [take]
 
 @[simp]
 lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
@@ -525,8 +556,42 @@ lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.lengt
 lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVert (n ⊓ m) := by
   induction p generalizing n m <;> cases n <;> cases m <;> simp [*, take]
 
+lemma take_add_heq (p : G.Walk u v) (n m : ℕ) :
+    p.take (n + m) ≍ (p.take n).append ((p.drop n).take m) := by
+  rw [add_comm]
+  induction p generalizing n <;> cases n <;> simp [take, drop]
+  grind [drop_getVert]
+
+lemma take_add_eq (p : G.Walk u v) (n m : ℕ) :
+    p.take (n + m) = ((p.take n).append ((p.drop n).take m)).copy rfl (drop_getVert ..) :=
+  eq_of_heq <| take_add_heq .. |>.trans <| by simp [Walk.copy]
+
+lemma nil_take_iff (p : G.Walk u v) (n : ℕ) : (p.take n).Nil ↔ p.Nil ∨ n = 0 := by
+  cases p <;> cases n <;> simp [take]
+
 lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
+  induction p generalizing n <;> cases n <;> simp [*, take]
+
+lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [take] at h ⊢
+  | succ n ih =>
+    cases p
+    · simp [take]
+    rw [length_cons, Nat.add_le_add_iff_right] at h
+    simp [take, ih h]
+
+lemma take_cons_eq (h : G.Adj u v) (p : G.Walk v w) (n : ℕ) (hn : n ≠ 0) :
+    (cons h p).take n = cons h ((p.take <| n - 1).copy rfl (p.getVert_cons h hn).symm) := by
+  apply ext_support
+  grind [support_copy, take_support_eq_support_take_succ]
+
+lemma darts_take (p : G.Walk u v) (n : ℕ) : (p.take n).darts = p.darts.take n := by
+  induction p generalizing n <;> cases n <;> simp [*, take]
+
+lemma edges_take (p : G.Walk u v) (n : ℕ) : (p.take n).edges = p.edges.take n := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
 @[simp]
@@ -544,9 +609,14 @@ lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 
+@[simp]
 lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
+
+lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    (p.drop n).Nil := by
+  rw [nil_iff_length_eq, drop_length, Nat.sub_eq_zero_of_le h]
 
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
@@ -631,6 +701,16 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     (p.copy hu hv).Nil = p.Nil := by
   subst_vars
   rfl
+
+lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) :
+    p = Walk.nil.copy rfl h.eq := by
+  have := h.eq
+  subst this
+  simp [nil_iff_eq_nil.mp h]
+
+lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
+  (nil_drop_of_length_le h).eq_copy_nil
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by

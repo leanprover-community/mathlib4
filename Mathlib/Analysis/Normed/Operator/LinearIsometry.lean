@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.Basic  -- shake: keep (used in `notation` only)
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Group.Uniform
@@ -108,11 +108,11 @@ protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (
   (SemilinearIsometryClass.isometry f).antilipschitz
 
 theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
-    EMetric.diam (f '' s) = EMetric.diam s :=
+    Metric.ediam (f '' s) = Metric.ediam s :=
   (SemilinearIsometryClass.isometry f).ediam_image s
 
 theorem ediam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
-    EMetric.diam (range f) = EMetric.diam (univ : Set E) :=
+    Metric.ediam (range f) = Metric.ediam (univ : Set E) :=
   (SemilinearIsometryClass.isometry f).ediam_range
 
 theorem diam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
@@ -272,10 +272,10 @@ theorem preimage_closedBall (x : E) (r : ℝ) :
     f ⁻¹' Metric.closedBall (f x) r = Metric.closedBall x r :=
   f.isometry.preimage_closedBall x r
 
-theorem ediam_image (s : Set E) : EMetric.diam (f '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set E) : Metric.ediam (f '' s) = Metric.ediam s :=
   f.isometry.ediam_image s
 
-theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set E) :=
+theorem ediam_range : Metric.ediam (range f) = Metric.ediam (univ : Set E) :=
   f.isometry.ediam_range
 
 theorem diam_image (s : Set E) : Metric.diam (f '' s) = Metric.diam s :=
@@ -902,7 +902,7 @@ theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s
 
 @[simp]
-theorem ediam_image (s : Set E) : EMetric.diam (e '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set E) : Metric.ediam (e '' s) = Metric.ediam s :=
   e.isometry.ediam_image s
 
 @[simp]

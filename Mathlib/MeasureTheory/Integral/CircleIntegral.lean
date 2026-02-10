@@ -70,7 +70,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
 
-open scoped Real NNReal Interval Pointwise Topology BigOperators
+open scoped Real NNReal Interval Pointwise Topology
 
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
 

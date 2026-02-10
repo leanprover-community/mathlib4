@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Finsupp.SMulWithZero
-public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Tactic.Bound
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.Order
@@ -65,14 +64,24 @@ grind_pattern StdSimplex.total => self.weights
 
 namespace StdSimplex
 
-variable {R : Type u} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
+variable {R : Type u} [PartialOrder R] [Semiring R]
   {M : Type v}
+
+@[ext]
+theorem ext {f g : StdSimplex R M} (h : f.weights = g.weights) : f = g := by
+  cases f; cases g; simp_all
+
+variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
 def single (x : M) : StdSimplex R M where
   weights := Finsupp.single x 1
   nonneg := by simp
   total := by simp
+
+@[simp]
+theorem mk_single (x : M) {nonneg total} :
+    (StdSimplex.mk (Finsupp.single x (1 : R)) nonneg total) = single x := rfl
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R M where
@@ -119,6 +128,8 @@ class ConvexSpace (R : Type u) (M : Type v)
   /-- A convex combination of a single point is that point. -/
   single (x : M) : convexCombination (.single x) = x
 
+attribute [simp] ConvexSpace.single
+
 open ConvexSpace
 
 variable {R M} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] [ConvexSpace R M]
@@ -128,13 +139,18 @@ def convexComboPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y
   convexCombination (.duple x y hs ht h)
 
 /-- A binary convex combination with weight 0 on the first point returns the second point. -/
-proof_wanted convexComboPair_zero {x y : M} :
-  convexComboPair (0 : R) 1 (by simp) (by simp) (by simp) x y = y
+theorem convexComboPair_zero {x y : M} :
+    convexComboPair (0 : R) 1 (by simp) (by simp) (by simp) x y = y := by
+  simp [convexComboPair, StdSimplex.duple]
 
 /-- A binary convex combination with weight 1 on the first point returns the first point. -/
-proof_wanted convexComboPair_one {x y : M} :
-  convexComboPair (1 : R) 0 (by simp) (by simp) (by simp) x y = x
+theorem convexComboPair_one {x y : M} :
+    convexComboPair (1 : R) 0 (by simp) (by simp) (by simp) x y = x := by
+  simp [convexComboPair, StdSimplex.duple]
 
 /-- A convex combination of a point with itself is that point. -/
-proof_wanted convexComboPair_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
-  convexComboPair s t hs ht h x x = x
+theorem convexComboPair_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
+    convexComboPair s t hs ht h x x = x := by
+  unfold convexComboPair
+  convert ConvexSpace.single x
+  simp only [StdSimplex.duple, StdSimplex.single, ← Finsupp.single_add, h]
