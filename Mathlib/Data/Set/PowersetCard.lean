@@ -84,6 +84,7 @@ section map
 
 variable (n) {β : Type*}
 
+/-- The map `powersetCard α n → powersetCard β n` induced by embedding `f : α ↪ β`. -/
 def map (f : α ↪ β) (s : powersetCard α n) : powersetCard β n :=
     ⟨Finset.map f s, by rw [mem_iff, card_map, s.prop]⟩
 
@@ -104,6 +105,7 @@ end map
 
 section of
 
+/-- The map sending `a : α` to `{a} : powersetCard α 1`. -/
 def ofSingleton (a : α) : powersetCard α 1 := ⟨{a}, Finset.card_singleton a⟩
 
 lemma ofSingleton_bijective : Bijective (ofSingleton (α := α)) := by
@@ -111,6 +113,7 @@ lemma ofSingleton_bijective : Bijective (ofSingleton (α := α)) := by
   obtain ⟨a, rfl⟩ := Finset.card_eq_one.mp hs
   exact ⟨a, rfl⟩
 
+/-- An equivalence version of `ofSingleton`. -/
 noncomputable def singletonEquiv : α ≃ powersetCard α 1 where
   toFun := ofSingleton
   invFun s := (Finset.card_eq_one.mp s.prop).choose
@@ -123,6 +126,7 @@ lemma singletonEquiv_apply (a : α) : singletonEquiv a = ofSingleton a := rfl
 
 variable (n) (β : Type*)
 
+/-- The image of an embedding `f : Fin n ↪ β` as an element of `powersetCard β n`. -/
 def ofFinEmb (f : Fin n ↪ β) : powersetCard β n :=
   map n f ⟨Finset.univ, by rw [mem_iff, Finset.card_univ, Fintype.card_fin]⟩
 
@@ -198,7 +202,7 @@ lemma exist_mem_powersetCard_of_inf (h : 0 < n) [Infinite α] (a : α) :
   use ↑s
   exact ⟨mem_iff.mp s_card, by simpa using a_mem⟩
 
-instance instInfinite (h : 0 < n) [Infinite α] : Infinite (powersetCard α n) := by
+instance instInfinite [NeZero n] [Infinite α] : Infinite (powersetCard α n) := by
   rw [← not_finite_iff_infinite]
   by_contra finite
   suffices ⋃₀ (SetLike.coe '' powersetCard α n) = Set.univ by
@@ -208,7 +212,7 @@ instance instInfinite (h : 0 < n) [Infinite α] : Infinite (powersetCard α n) :
     aesop
   rw [sUnion_eq_univ_iff]
   intro a
-  obtain ⟨s, s_mem, mem_s⟩ := exist_mem_powersetCard_of_inf α n h a
+  obtain ⟨s, s_mem, mem_s⟩ := exist_mem_powersetCard_of_inf α n (Nat.pos_of_neZero n) a
   exact ⟨↑s, mem_image_of_mem SetLike.coe s_mem, mem_coe.mpr mem_s⟩
 
 protected theorem card :
@@ -219,7 +223,6 @@ protected theorem card :
   · rcases n with _ | n
     · simp [powersetCard]
     · rw [Nat.card_eq_zero_of_infinite (α := α), Nat.choose_zero_succ]
-      have : Infinite (powersetCard α (n+1)) := instInfinite _ _ (Nat.zero_lt_succ n)
       exact Nat.card_eq_zero_of_infinite
 
 variable {α n}
@@ -239,7 +242,7 @@ theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
       exact (lt_self_iff_false n).mp (lt_trans h2 h)
     · rw [Nat.choose_eq_one_iff] at h
       aesop
-  · have : Infinite (powersetCard α n) := instInfinite _ _ h1
+  · have : NeZero n := NeZero.of_pos h1
     infer_instance
 
 /-- A variant of `Set.powersetCard.nontrivial` that uses `Nat.card`. -/
