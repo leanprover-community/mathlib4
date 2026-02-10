@@ -35,7 +35,7 @@ In this file we define the multiseries and its main properties: sortedness and a
 
 @[expose] public section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 open Filter Asymptotics Topology Stream'
 
@@ -125,20 +125,20 @@ def corec {β : Type*} {basis_hd} {basis_tl}
 /-- An operation on multiseries called a "friend" if any `n`-prefix of its output depends only on
 the `n`-prefix of the input. Such operations can be used in the tail of (non-primitive) corecursive
 definitions. -/
-def FriendOperation {basis_hd basis_tl}
+def FriendlyOperation {basis_hd basis_tl}
     (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop :=
-  Stream'.Seq.FriendOperation op
+  Seq.FriendlyOperation op
 
 /-- A family of friendly operations on multiseries indexed by a type `γ`. -/
-class FriendOperationClass {basis_hd basis_tl} {γ : Type*}
+class FriendlyOperationClass {basis_hd basis_tl} {γ : Type*}
     (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop
-    extends Stream'.Seq.FriendOperationClass op
+    extends Seq.FriendlyOperationClass op
 
-theorem FriendOperationClass.mk' {basis_hd basis_tl} {γ : Type*}
+theorem FriendlyOperationClass.mk' {basis_hd basis_tl} {γ : Type*}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    (h : ∀ c, FriendOperation (op c)) :
-    FriendOperationClass op := by
-  suffices Stream'.Seq.FriendOperationClass op by constructor
+    (h : ∀ c, FriendlyOperation (op c)) :
+    FriendlyOperationClass op := by
+  suffices Seq.FriendlyOperationClass op by constructor
   exact ⟨h⟩
 
 private lemma destruct_eq_destruct_map {basis_hd basis_tl}
@@ -148,16 +148,16 @@ private lemma destruct_eq_destruct_map {basis_hd basis_tl}
   simp only [destruct, Option.map_map]
   exact Option.map_id_apply.symm
 
-theorem FriendOperation.coind_comp_friend_left {basis_hd basis_tl}
+theorem FriendlyOperation.coind_comp_friend_left {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive op)
     (h_step : ∀ op, motive op → ∃ T : Option (ℝ × MultiseriesExpansion basis_tl) →
-        Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendOperation × Subtype motive),
+        Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendlyOperation × Subtype motive),
       ∀ s, (op s).destruct =
         (T s.head).map (fun (exp, coef, opf, op') => (exp, coef, opf.val <| op'.val (s.tail)))) :
-    FriendOperation op := by
-  apply Stream'.Seq.FriendOperation.coind_comp_friend_left motive h_base
+    FriendlyOperation op := by
+  apply Seq.FriendlyOperation.coind_comp_friend_left motive h_base
   intro op h_op
   specialize h_step op h_op
   obtain ⟨T, hT⟩ := h_step
@@ -168,16 +168,16 @@ theorem FriendOperation.coind_comp_friend_left {basis_hd basis_tl}
   simp [head]
   rfl
 
-theorem FriendOperation.coind_comp_friend_right {basis_hd basis_tl}
+theorem FriendlyOperation.coind_comp_friend_right {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     (motive : (Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive op)
     (h_step : ∀ op, motive op → ∃ T : Option (ℝ × MultiseriesExpansion basis_tl) →
-        Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendOperation × Subtype motive),
+        Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendlyOperation × Subtype motive),
       ∀ s, (op s).destruct =
         (T s.head).map (fun (exp, coef, opf, op') => (exp, coef, op'.val <| opf.val (s.tail)))) :
-    FriendOperation op := by
-  apply Stream'.Seq.FriendOperation.coind_comp_friend_right motive h_base
+    FriendlyOperation op := by
+  apply Seq.FriendlyOperation.coind_comp_friend_right motive h_base
   intro op h_op
   specialize h_step op h_op
   obtain ⟨T, hT⟩ := h_step
@@ -193,10 +193,10 @@ operation in the tail of the corecursive definition. -/
 noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
     (F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β))
     (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
-    [FriendOperationClass op]
+    [FriendlyOperationClass op]
     (b : β) :
     Multiseries basis_hd basis_tl :=
-  Stream'.Seq.gcorec (fun a => (F a).map (fun (exp, coef, c, next) => ((exp, coef), c, next))) op b
+  Seq.gcorec (fun a => (F a).map (fun (exp, coef, c, next) => ((exp, coef), c, next))) op b
 
 
 instance (basis_hd basis_tl) : Inhabited (Multiseries basis_hd basis_tl) where
@@ -223,21 +223,21 @@ theorem eq_of_bisim_strong {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       x = cons exp coef x' ∧ y = cons exp coef y' ∧ motive x' y') :
     x = y := Seq.eq_of_bisim_strong motive base (by grind [nil, cons])
 
-theorem FriendOperationClass.FriendOperation {basis_hd basis_tl} {γ : Type*}
+theorem FriendlyOperationClass.FriendlyOperation {basis_hd basis_tl} {γ : Type*}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    [h : FriendOperationClass op]
+    [h : FriendlyOperationClass op]
     (c : γ) :
-    FriendOperation (op c) :=
+    FriendlyOperation (op c) :=
   h.friend c
 
-theorem FriendOperation.destruct {basis_hd basis_tl}
+theorem FriendlyOperation.destruct {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    (h : FriendOperation op) :
+    (h : FriendlyOperation op) :
     ∃ T : Option (ℝ × MultiseriesExpansion basis_tl) →
-      Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendOperation),
+      Option (ℝ × MultiseriesExpansion basis_tl × Subtype FriendlyOperation),
       ∀ ms, destruct (op ms) = (T ms.head).map
         (fun (exp, coef, op') ↦ (exp, coef, op'.val ms.tail)) := by
-  have h' := Stream'.Seq.FriendOperation.destruct h
+  have h' := Seq.FriendlyOperation.destruct h
   obtain ⟨T, hT⟩ := h'
   use fun hd? ↦ (T hd?).map (fun ((exp, coef), op') ↦ (exp, coef, op'))
   intro ms
@@ -247,55 +247,56 @@ theorem FriendOperation.destruct {basis_hd basis_tl}
   simp [head, tail]
   cases T (Seq.head ms) <;> simp
 
-theorem FriendOperation.head_eq_head {basis_hd basis_tl}
+theorem FriendlyOperation.head_eq_head {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    (h : FriendOperation op) {x y : Multiseries basis_hd basis_tl}
+    (h : FriendlyOperation op) {x y : Multiseries basis_hd basis_tl}
     (h_head : x.head = y.head) : (op x).head = (op y).head :=
-  Stream'.Seq.FriendOperation.head_eq_head h h_head
+  Seq.FriendlyOperation.op_head_eq h h_head
 
-theorem FriendOperation.id {basis_hd basis_tl} :
-    FriendOperation (id : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) :=
-  Stream'.Seq.FriendOperation.id
+theorem FriendlyOperation.id {basis_hd basis_tl} :
+    FriendlyOperation (id : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) :=
+  Seq.FriendlyOperation.id
 
-theorem FriendOperation.comp {basis_hd basis_tl}
+theorem FriendlyOperation.comp {basis_hd basis_tl}
     {op₁ op₂ : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂) :
-    FriendOperation (op₁ ∘ op₂) :=
-  Stream'.Seq.FriendOperation.comp h₁ h₂
+    (h₁ : FriendlyOperation op₁) (h₂ : FriendlyOperation op₂) :
+    FriendlyOperation (op₁ ∘ op₂) :=
+  Seq.FriendlyOperation.comp h₁ h₂
 
-theorem FriendOperation.const {basis_hd basis_tl} {s : Multiseries basis_hd basis_tl} :
-    FriendOperation (fun _ ↦ s) :=
-  Stream'.Seq.FriendOperation.const
+theorem FriendlyOperation.const {basis_hd basis_tl} {s : Multiseries basis_hd basis_tl} :
+    FriendlyOperation (fun _ ↦ s) :=
+  Seq.FriendlyOperation.const
 
-theorem FriendOperation.ite {basis_hd basis_tl}
+theorem FriendlyOperation.ite {basis_hd basis_tl}
     {op₁ op₂ : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂)
+    (h₁ : FriendlyOperation op₁) (h₂ : FriendlyOperation op₂)
     {P : Option (ℝ × MultiseriesExpansion basis_tl) → Prop} [DecidablePred P] :
-    FriendOperation (fun ms ↦ if P ms.head then op₁ ms else op₂ ms) :=
-  Stream'.Seq.FriendOperation.ite h₁ h₂
+    FriendlyOperation (fun ms ↦ if P ms.head then op₁ ms else op₂ ms) :=
+  Seq.FriendlyOperation.ite h₁ h₂
 
-theorem FriendOperation.cons {basis_hd basis_tl} (exp : ℝ) (coef : MultiseriesExpansion basis_tl) :
-    FriendOperation (cons (basis_hd := basis_hd) exp coef) :=
-  Stream'.Seq.FriendOperation.cons _
+theorem FriendlyOperation.cons {basis_hd basis_tl} (exp : ℝ)
+    (coef : MultiseriesExpansion basis_tl) :
+    FriendlyOperation (cons (basis_hd := basis_hd) exp coef) :=
+  Seq.FriendlyOperation.cons _
 
-theorem FriendOperation.cons_tail {basis_hd basis_tl}
+theorem FriendlyOperation.cons_tail {basis_hd basis_tl}
     {op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
     {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
-    (h : FriendOperation op) :
-    FriendOperation (fun ms ↦ (op (.cons exp coef ms)).tail) :=
-  Stream'.Seq.FriendOperation.cons_tail h
+    (h : FriendlyOperation op) :
+    FriendlyOperation (fun ms ↦ (op (.cons exp coef ms)).tail) :=
+  Seq.FriendlyOperation.cons_tail h
 
-theorem FriendOperationClass.comp {basis_hd basis_tl} {γ γ' : Type*}
+theorem FriendlyOperationClass.comp {basis_hd basis_tl} {γ γ' : Type*}
     {g : γ' → γ}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    [h : FriendOperationClass op] : FriendOperationClass (fun c ↦ op (g c)) := by
-  have : Stream'.Seq.FriendOperationClass (fun c ↦ op (g c)) := by
-    apply Stream'.Seq.FriendOperationClass.comp
+    [h : FriendlyOperationClass op] : FriendlyOperationClass (fun c ↦ op (g c)) := by
+  have : Seq.FriendlyOperationClass (fun c ↦ op (g c)) := by
+    apply Seq.FriendlyOperationClass.comp
   constructor
 
 theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    [FriendOperationClass op]
+    [FriendlyOperationClass op]
     {x y : Multiseries basis_hd basis_tl}
     (motive : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl → Prop)
     (base : motive x y)
@@ -303,7 +304,7 @@ theorem eq_of_bisim_friend {γ : Type*} {basis_hd : ℝ → ℝ} {basis_tl : Bas
       ∃ (c : γ) (x' y' : Multiseries basis_hd basis_tl),
       x = cons exp coef (op c x') ∧ y = cons exp coef (op c y') ∧ motive x' y') :
     x = y := by
-  apply Stream'.Seq.FriendOperationClass.eq_of_bisim (op := op) motive base
+  apply Seq.FriendlyOperationClass.eq_of_bisim (op := op) motive base
   peel step with x y ih h
   obtain h | ⟨exp, coef, c, x', y', rfl, rfl, h_next⟩ := h
   · simp [h]
@@ -354,23 +355,23 @@ theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ}
 theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl}
     {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    [FriendOperationClass op] {b : β}
+    [FriendlyOperationClass op] {b : β}
     (h : F b = none) :
     gcorec F op b = nil := by
   unfold gcorec
-  rw [Stream'.Seq.gcorec_nil]
+  rw [Seq.gcorec_nil]
   · simp [nil]
   · simpa
 
 theorem gcorec_some {β γ : Type*} {basis_hd} {basis_tl}
     {F : β → Option (ℝ × MultiseriesExpansion basis_tl × γ × β)}
     {op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl}
-    [FriendOperationClass op] {b : β}
+    [FriendlyOperationClass op] {b : β}
     {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {c : γ} {next : β}
     (h : F b = some (exp, coef, c, next)) :
     gcorec F op b = cons exp coef (op c (gcorec F op next)) := by
   unfold gcorec
-  rw [Stream'.Seq.gcorec_some]
+  rw [Seq.gcorec_some]
   · simp [cons]
     rfl
   · simpa
@@ -766,15 +767,15 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
         tl.leadingExp < exp ∧
         ∃ (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
         (x : Multiseries basis_hd basis_tl), tl = op x ∧
-        FriendOperation op ∧ PreservesSorted op ∧ motive x) :
+        FriendlyOperation op ∧ PreservesSorted op ∧ motive x) :
     ms.Sorted := by
   let motive' (ms : Multiseries basis_hd basis_tl) : Prop :=
     ∃ (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
-      (x : Multiseries basis_hd basis_tl), ms = op x ∧ FriendOperation op ∧
+      (x : Multiseries basis_hd basis_tl), ms = op x ∧ FriendlyOperation op ∧
       PreservesSorted op ∧ motive x
   apply Sorted.coind motive'
   · use id, ms
-    simp [h_base, FriendOperation.id, PreservesSorted]
+    simp [h_base, FriendlyOperation.id, PreservesSorted]
   intro exp coef tl ⟨op, x, h_eq, h_friend, h_preserves, hx⟩
   cases x with
   | nil =>
@@ -783,7 +784,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
       apply h_preserves
       apply Sorted.nil
     obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
-    exact ⟨h_coef_wo, h_comp, fun _ ↦ tl, .nil, rfl, FriendOperation.const,
+    exact ⟨h_coef_wo, h_comp, fun _ ↦ tl, .nil, rfl, FriendlyOperation.const,
       fun _ _ ↦ h_tl, hx⟩
   | cons x_exp x_coef x_tl =>
   obtain ⟨hx_coef, hx_comp, op', y, hx_tl, h_friend', h_preserves', hy⟩ :=
@@ -814,7 +815,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
           apply Sorted.cons_nil
           grind
         apply h_preserves' at this
-        obtain ⟨T, hT⟩ := FriendOperation.destruct h_friend'
+        obtain ⟨T, hT⟩ := FriendlyOperation.destruct h_friend'
         have h1 := hT (.cons y_exp y_coef .nil)
         have h2 := hT (.cons y_exp y_coef y_tl)
         simp only [tail_cons, head_cons] at h1 h2
@@ -831,7 +832,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
         obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
         assumption
   apply h_preserves at this
-  obtain ⟨T, hT⟩ := FriendOperation.destruct h_friend
+  obtain ⟨T, hT⟩ := FriendlyOperation.destruct h_friend
   have h1 := hT (.cons x_exp x_coef x_tl')
   have h2 := hT (.cons x_exp x_coef x_tl)
   simp only [tail_cons, head_cons] at h1 h2
@@ -846,21 +847,21 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
   rw [h1] at this
   obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
   refine ⟨h_coef_wo, ?_, ?_⟩
-  · simpa [h_tl_eq, leadingExp, FriendOperation.head_eq_head h_friend'' hx_tl_head] using h_comp
+  · simpa [h_tl_eq, leadingExp, FriendlyOperation.head_eq_head h_friend'' hx_tl_head] using h_comp
   simp only [motive']
   use (fun z ↦ if (op' z).leadingExp < x_exp then
     (op (.cons x_exp x_coef (op' z))).tail else .nil), y
   constructorm* _ ∧ _
   · simp [← hx_tl, ← h_eq, hx_comp]
-  · change FriendOperation ((fun z ↦ if z.leadingExp < (x_exp : WithBot ℝ) then
+  · change FriendlyOperation ((fun z ↦ if z.leadingExp < (x_exp : WithBot ℝ) then
       (op (.cons x_exp x_coef z)).tail else .nil) ∘ op')
-    apply FriendOperation.comp _ h_friend'
+    apply FriendlyOperation.comp _ h_friend'
     simp only [leadingExp]
     let P (hd : Option (ℝ × MultiseriesExpansion basis_tl)) : Prop :=
       (match hd with | none => ⊥ | some (exp, _) => exp) < (x_exp : WithBot ℝ)
-    apply FriendOperation.ite (P := P)
-    · apply FriendOperation.cons_tail h_friend
-    · apply FriendOperation.const
+    apply FriendlyOperation.ite (P := P)
+    · apply FriendlyOperation.cons_tail h_friend
+    · apply FriendlyOperation.const
   · intro z hz
     dsimp
     split_ifs with h_if
@@ -872,7 +873,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
 
 theorem Sorted.coind_friend' {ms : Multiseries basis_hd basis_tl}
     {γ : Type*} (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
-    [FriendOperationClass op]
+    [FriendlyOperationClass op]
     (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
     (C : γ → Prop)
     (h_op : ∀ c x, C c → x.Sorted → (op c x).Sorted)
@@ -886,7 +887,7 @@ theorem Sorted.coind_friend' {ms : Multiseries basis_hd basis_tl}
   intro exp coef tl ih
   specialize h_step exp coef tl ih
   obtain ⟨h_coef_wo, h_comp, c, x, h_tl, h_C, hx⟩ := h_step
-  refine ⟨h_coef_wo, h_comp, op c, x, h_tl, FriendOperationClass.FriendOperation _,
+  refine ⟨h_coef_wo, h_comp, op c, x, h_tl, FriendlyOperationClass.FriendlyOperation _,
     by grind, hx⟩
 
 end Multiseries
@@ -1205,4 +1206,4 @@ end Approximates
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

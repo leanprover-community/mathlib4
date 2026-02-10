@@ -17,7 +17,7 @@ open Filter Topology Asymptotics Stream'.Seq
 
 open Lean Elab Meta Tactic Qq
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 /-- State of the `BasisM` monad. -/
 structure BasisState where
@@ -73,4 +73,4 @@ def BasisM.monomialRpow {k : Q(ℕ)} (n : Q(Fin $k)) (r : Q(ℝ)) : BasisM MS :=
   return MS.monomialRpow (← get).basis (← get).logBasis n r (← get).h_basis
     (← get).h_logBasis
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

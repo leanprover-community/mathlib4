@@ -16,7 +16,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Basic
 
 @[expose] public section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -606,13 +606,13 @@ theorem sub_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
   apply neg_Approximates hY_approx
 
 instance {basis_hd basis_tl} :
-    Multiseries.FriendOperationClass
+    Multiseries.FriendlyOperationClass
       (Multiseries.add (basis_hd := basis_hd) (basis_tl := basis_tl)) := by
-  apply Multiseries.FriendOperationClass.mk'
+  apply Multiseries.FriendlyOperationClass.mk'
   intro c
   let motive (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop :=
     ∃ (c : Multiseries basis_hd basis_tl), op = Multiseries.add c
-  apply Multiseries.FriendOperation.coind_comp_friend_right motive
+  apply Multiseries.FriendlyOperation.coind_comp_friend_right motive
   · use c
   rintro _ ⟨c, rfl⟩
   simp only [← Multiseries.add_def]
@@ -621,22 +621,23 @@ instance {basis_hd basis_tl} :
     use fun hd? ↦ match hd? with
     | none => none
     | some (exp, coef) =>
-      some (exp, coef, ⟨id, Multiseries.FriendOperation.id⟩, ⟨fun x ↦ .nil + x, _, rfl⟩)
+      some (exp, coef, ⟨id, Multiseries.FriendlyOperation.id⟩, ⟨fun x ↦ .nil + x, _, rfl⟩)
     intro x
     cases x <;> simp
   | cons c_exp c_coef c_tl =>
     use fun hd? ↦ match hd? with
-    | none => some (c_exp, c_coef, ⟨fun _ ↦ c_tl, Multiseries.FriendOperation.const⟩,
+    | none => some (c_exp, c_coef, ⟨fun _ ↦ c_tl, Multiseries.FriendlyOperation.const⟩,
       ⟨fun x ↦ .nil + x, _, rfl⟩)
     | some (exp, coef) =>
       if exp < c_exp then
-        some (c_exp, c_coef, ⟨.cons exp coef, Multiseries.FriendOperation.cons _ _⟩,
+        some (c_exp, c_coef, ⟨.cons exp coef, Multiseries.FriendlyOperation.cons _ _⟩,
           ⟨fun x ↦ c_tl + x, _, rfl⟩)
       else if c_exp < exp then
-        some (exp, coef, ⟨id, Multiseries.FriendOperation.id⟩,
+        some (exp, coef, ⟨id, Multiseries.FriendlyOperation.id⟩,
           ⟨fun x ↦ (.cons c_exp c_coef c_tl) + x, _, rfl⟩)
       else
-        some (exp, c_coef + coef, ⟨id, Multiseries.FriendOperation.id⟩, ⟨fun x ↦ c_tl + x, _, rfl⟩)
+        some (exp, c_coef + coef, ⟨id, Multiseries.FriendlyOperation.id⟩,
+          ⟨fun x ↦ c_tl + x, _, rfl⟩)
     intro x
     cases x with
     | nil => simp
@@ -849,4 +850,4 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

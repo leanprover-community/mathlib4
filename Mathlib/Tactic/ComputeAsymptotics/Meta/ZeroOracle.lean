@@ -26,7 +26,7 @@ open Filter
 
 open Lean Elab Meta Tactic Qq
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 /-- Proves that `f` is eventually zero. -/
 def proveFunEqZero (f : Q(ℝ → ℝ)) : TacticM <| Q($f =ᶠ[atTop] 0) := do
@@ -37,4 +37,4 @@ def proveFunEqZero (f : Q(ℝ → ℝ)) : TacticM <| Q($f =ᶠ[atTop] 0) := do
   throwError f!"Cannot prove that {← ppExpr f} =ᶠ[atTop] 0. You can use a `have` " ++
     "statement to provide the sign of the expression."
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

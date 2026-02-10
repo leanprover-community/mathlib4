@@ -19,11 +19,11 @@ TODO: write about what is trimming and why it is needed
 
 public meta section
 
-open Filter Asymptotics Stream' Seq ComputeAsymptotics Normalization
+namespace Tactic.ComputeAsymptotics
+
+open Filter Asymptotics Stream' Seq Normalization
 
 open Lean Elab Meta Tactic Qq
-
-namespace ComputeAsymptotics
 
 section Trimming
 
@@ -239,4 +239,4 @@ def trimPartialMS (ms : MS) :
 
 end Trimming
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

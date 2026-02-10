@@ -15,7 +15,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Add
 
 @[expose] public section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -883,17 +883,17 @@ mutual
 end
 
 instance {basis_hd basis_tl} :
-    Multiseries.FriendOperationClass (@Multiseries.mul basis_hd basis_tl) := by
-  apply Multiseries.FriendOperationClass.mk'
+    Multiseries.FriendlyOperationClass (@Multiseries.mul basis_hd basis_tl) := by
+  apply Multiseries.FriendlyOperationClass.mk'
   intro c
   cases c with
   | nil =>
-    convert Multiseries.FriendOperation.const (s := .nil)
+    convert Multiseries.FriendlyOperation.const (s := .nil)
     simp
   | cons c_exp c_coef c_tl =>
   let motive (op : Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl) : Prop :=
     op = Multiseries.mul (.cons c_exp c_coef c_tl)
-  apply Multiseries.FriendOperation.coind_comp_friend_left motive
+  apply Multiseries.FriendlyOperation.coind_comp_friend_left motive
   · rfl
   rintro _ ⟨rfl⟩
   use fun hd? ↦ match hd? with
@@ -901,7 +901,7 @@ instance {basis_hd basis_tl} :
   | some (exp, coef) =>
     some (c_exp + exp, c_coef.mul coef,
       ⟨Multiseries.add (Multiseries.mulMonomial c_tl coef exp),
-        Multiseries.FriendOperationClass.FriendOperation _⟩,
+        Multiseries.FriendlyOperationClass.FriendlyOperation _⟩,
       ⟨Multiseries.mul (.cons c_exp c_coef c_tl), rfl⟩)
   intro x
   cases x with
@@ -996,4 +996,4 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

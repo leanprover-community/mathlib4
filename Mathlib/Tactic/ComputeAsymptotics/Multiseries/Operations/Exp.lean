@@ -17,7 +17,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
 
 open Filter Asymptotics Topology
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -210,4 +210,4 @@ theorem pow_eq_exp_toFun
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

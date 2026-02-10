@@ -14,9 +14,9 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations
 
 @[expose] public section
 
-open Filter Asymptotics ComputeAsymptotics Stream' Seq
+open Filter Asymptotics Stream' Seq
 
-namespace ComputeAsymptotics.MultiseriesExpansion
+namespace Tactic.ComputeAsymptotics.MultiseriesExpansion
 
 section Const
 
@@ -109,4 +109,4 @@ theorem exp_const (x : MultiseriesExpansion []) :
 
 end Const
 
-end ComputeAsymptotics.MultiseriesExpansion
+end Tactic.ComputeAsymptotics.MultiseriesExpansion

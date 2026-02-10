@@ -18,7 +18,7 @@ open Filter Topology Asymptotics Stream'.Seq
 
 open Lean Elab Meta Tactic Qq
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 section BasisUpdate
 
@@ -441,4 +441,4 @@ partial def createExpMS (ms : MS) (h_trimmed? : Option Q(MultiseriesExpansion.Tr
     BasisM MS := do
   return (← createExpMSImp ms h_trimmed?).fst
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

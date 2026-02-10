@@ -16,7 +16,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 open Asymptotics Filter Topology
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 /-- Approximations of logarithm of all but last basis functions. -/
 inductive LogBasis : Basis → Type
@@ -263,4 +263,4 @@ theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end LogBasis
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

@@ -26,7 +26,7 @@ In this file we implement the procedure of comparing real numbers.
 
 public meta section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 open Qq Lean Elab Meta Tactic
 
@@ -128,4 +128,4 @@ end CompareReal
 
 export CompareReal (normalizeReal compareReal checkLtZero compareTwoReals)
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

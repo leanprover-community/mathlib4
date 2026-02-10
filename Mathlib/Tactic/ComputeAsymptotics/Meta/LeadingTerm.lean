@@ -16,7 +16,7 @@ public meta section
 
 open Lean Meta Elab Tactic Qq
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 /-- Given a trimmed multiseries `ms`, computes its leading term. -/
 partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $basis)) :
@@ -118,4 +118,4 @@ def getFirstIsPos (x : Q(List ℝ)) : TacticM (FirstIsPosResult x) := do
   | .neg pf => return .wrong q(Term.not_FirstIsPos_of_FirstIsNeg $pf)
   | .zero pf => return .wrong q(Term.not_FirstIsPos_of_AllZero $pf)
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

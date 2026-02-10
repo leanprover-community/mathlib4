@@ -21,7 +21,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 open Filter Asymptotics Topology Stream'
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -451,4 +451,4 @@ end Zeros
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

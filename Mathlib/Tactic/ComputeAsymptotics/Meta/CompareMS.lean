@@ -24,7 +24,7 @@ as lists using lexigraphic order. In this file we implement this procedure.
 
 public meta section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MS
 
@@ -207,4 +207,4 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     ext t
     simp
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

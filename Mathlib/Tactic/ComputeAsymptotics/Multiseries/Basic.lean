@@ -14,7 +14,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 
 @[expose] public section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -574,4 +574,4 @@ end BasisOperations
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

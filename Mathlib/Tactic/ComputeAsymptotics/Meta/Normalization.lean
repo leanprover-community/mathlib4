@@ -19,13 +19,14 @@ in the normal form (`nil` or `cons`). The function `normalizeLS` does the same f
 
 public meta section
 
-open Filter Asymptotics ComputeAsymptotics Stream' MultiseriesExpansion
-
-open Lean Elab Meta Tactic Qq
-
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace Normalization
+
+
+open Filter Asymptotics Stream' MultiseriesExpansion
+
+open Lean Elab Meta Tactic Qq
 
 /-- Result of the normalization of a `LazySeries`. -/
 inductive ResultLS (s : Q(LazySeries))
@@ -772,4 +773,4 @@ def normalizeMultiseriesExpansion {basis : Q(Basis)}
 
 end Normalization
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

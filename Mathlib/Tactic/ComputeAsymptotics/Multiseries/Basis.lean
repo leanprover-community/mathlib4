@@ -22,7 +22,7 @@ function `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 open Asymptotics Filter
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 /-- `WellFormedBasis basis` means that all function from `basis` tend to `atTop`, and
 `basis` is sorted such that if
@@ -331,4 +331,4 @@ theorem insertLastLog_WellFormedBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis
     apply h_basis.right
     simp
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

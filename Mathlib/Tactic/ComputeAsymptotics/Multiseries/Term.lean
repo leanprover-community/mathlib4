@@ -17,7 +17,7 @@ where `[b1, b2, ...]` is well-formed basis and `coef` is real constant.
 
 @[expose] public section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter Topology
 
@@ -668,4 +668,4 @@ theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : 
 
 end Term
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

@@ -17,7 +17,7 @@ term.
 
 open Filter Asymptotics Topology
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -852,4 +852,4 @@ theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : MultiseriesExpansion bas
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

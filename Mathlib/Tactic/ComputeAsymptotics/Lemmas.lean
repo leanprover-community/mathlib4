@@ -20,7 +20,7 @@ universe u v
 
 open Filter Topology Asymptotics
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 variable {α : Type v} {𝕜 : Type u} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   {l : Filter α} (f : 𝕜 → α)
@@ -216,4 +216,4 @@ theorem isTheta_of_tendsto_nhds {c : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
   ext
   simp
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

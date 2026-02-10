@@ -19,7 +19,7 @@ open Filter Topology Asymptotics Stream'.Seq
 
 open Lean Elab Meta Tactic Qq
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 lemma proveLastExpZero_aux {x y : ℝ} {z : Option ℝ} (hx : z = .some x) (hy : z = .some y)
     (hy0 : y = 0) : x = 0 := by
@@ -70,4 +70,4 @@ def createLogMS (arg : Q(ℝ)) (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Tri
     }
     return MS.log ms q($h_trimmed) q($h_pos') q(last_exp_zero_aux $h_leading $h_last)
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

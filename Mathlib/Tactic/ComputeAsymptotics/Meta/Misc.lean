@@ -14,7 +14,7 @@ public import Qq
 
 public meta section
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 open Lean Elab Meta Qq
 
@@ -205,4 +205,4 @@ partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
     reduceLogBasis logBasis'
   | _ => panic! "Unexpected logBasis in reduceLogBasis"
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics

@@ -20,7 +20,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 open Filter Asymptotics Topology
 
-namespace ComputeAsymptotics
+namespace Tactic.ComputeAsymptotics
 
 namespace MultiseriesExpansion
 
@@ -505,4 +505,4 @@ theorem sqrt_of_pow_toFun {basis : Basis} {ms : MultiseriesExpansion basis} {f :
 
 end MultiseriesExpansion
 
-end ComputeAsymptotics
+end Tactic.ComputeAsymptotics
