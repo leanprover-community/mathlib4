@@ -89,6 +89,9 @@ noncomputable instance : Algebra (R ⧸ I) I.ResidueField :=
 instance (I : Ideal A) [I.IsPrime] : IsScalarTower R (A ⧸ I) I.ResidueField :=
   .of_algebraMap_eq' rfl
 
+instance (I : Ideal R) [I.IsPrime] : (⊥ : Ideal I.ResidueField).LiesOver I :=
+  ⟨I.ker_algebraMap_residueField.symm⟩
+
 @[simp]
 lemma Ideal.algebraMap_quotient_residueField_mk (x) :
     algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
