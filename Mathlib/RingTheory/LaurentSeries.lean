@@ -116,9 +116,10 @@ section HasseDeriv
 /-- The Hasse derivative of Laurent series, as a linear map. -/
 def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
     V⸨X⸩ →ₗ[R] V⸨X⸩ where
-  toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
-    (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ)
-    (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
+  toFun f := HahnSeries.ofSuppBddBelow (fun n ↦ Ring.choose (n + k) k • f.coeff (n + k)) <| by
+    refine ⟨f.order - k, fun x h ↦ ?_⟩
+    contrapose! h
+    rw [Function.notMem_support, coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h, smul_zero]
   map_add' f g := by
     ext
     simp only [ofSuppBddBelow, coeff_add', Pi.add_apply, smul_add]
@@ -414,6 +415,7 @@ open scoped WithZero
 variable (K : Type*) [Field K]
 namespace PowerSeries
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The prime ideal `(X)` of `K⟦X⟧`, when `K` is a field, as a term of the `HeightOneSpectrum`. -/
 def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   asIdeal := Ideal.span {X}

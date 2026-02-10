@@ -64,10 +64,6 @@ import sys
 import subprocess
 import re
 import json
-import os
-import pty
-import errno
-import select
 from typing import Dict, Any
 from enum import Enum, auto
 
@@ -337,80 +333,18 @@ def main():
 
     processor = BuildOutputProcessor()
 
-    def iter_lines_from_fd(process, fd):
-        def read_chunk():
-            try:
-                return os.read(fd, 4096)
-            except OSError as exc:
-                if exc.errno == errno.EIO:
-                    # PTY master returns EIO on EOF once the slave is closed.
-                    return b""
-                raise
-
-        def feed_buffer(buf, data):
-            # Decode and yield complete lines; keep any partial line in the buffer.
-            buf += data.decode('utf-8', errors='replace')
-            while '\n' in buf:
-                line, buf = buf.split('\n', 1)
-                yield line + '\n', buf
-            yield None, buf
-
-        os.set_blocking(fd, False)
-        # Use select to avoid blocking reads on the PTY master.
-        buffer = ""
-        while True:
-            rlist, _, _ = select.select([fd], [], [], 0.1)
-            if rlist:
-                data = read_chunk()
-                if data:
-                    for line, buffer in feed_buffer(buffer, data):
-                        if line is not None:
-                            yield line
-            if process.poll() is not None:
-                # Drain remaining data after the child exits.
-                while True:
-                    data = read_chunk()
-                    if not data:
-                        break
-                    for line, buffer in feed_buffer(buffer, data):
-                        if line is not None:
-                            yield line
-                if buffer:
-                    yield buffer
-                break
-
-    # Run the command and process output line by line.
-    # Use a PTY on POSIX so the child treats stdout as a terminal and line-buffers.
-    use_pty = os.name == "posix"
-    if use_pty:
-        master_fd, slave_fd = pty.openpty()
-        process = subprocess.Popen(
-            sys.argv[2:],
-            stdout=slave_fd,
-            stderr=slave_fd,
-            close_fds=True
-        )
-        os.close(slave_fd)
-        stdout_stream = None
-    else:
-        process = subprocess.Popen(
-            sys.argv[2:],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1
-        )
-        stdout_stream = process.stdout
+    # Run the command and process output line by line
+    process = subprocess.Popen(
+        sys.argv[2:],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1
+    )
 
     try:
-        if use_pty:
-            try:
-                for line in iter_lines_from_fd(process, master_fd):
-                    processor.process_line(line)
-            finally:
-                os.close(master_fd)
-        elif stdout_stream is not None:
-            for line in stdout_stream:
+        if process.stdout is not None:
+            for line in process.stdout:
                 processor.process_line(line)
         else:
             print("Process did not produce any stdout or an error occurred.")

@@ -75,6 +75,8 @@ instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
+instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
+
 @[simp]
 theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c ∈ μ :=
   Iff.rfl
@@ -211,7 +213,7 @@ theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose �
 -- This is effectively both directions of `transpose_le_iff` below.
 protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose ≤ ν) :
     μ ≤ ν.transpose := fun c hc => by
-  simp only [mem_cells, mem_transpose]
+  simp only [mem_transpose]
   apply h_le
   simpa
 
@@ -417,7 +419,7 @@ def ofRowLens (w : List ℕ) (hw : w.SortedGE) : YoungDiagram where
     refine ⟨hi.trans_lt h1, ?_⟩
     calc
       j1 ≤ j2 := hj
-      _ < w[i2]  := h2
+      _ < w[i2] := h2
       _ ≤ w[i1] := by
         obtain rfl | h := eq_or_lt_of_le hi
         · rfl

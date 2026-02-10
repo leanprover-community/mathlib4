@@ -20,7 +20,7 @@ This file contains results about smoothness of affine maps.
 
 -/
 
-@[expose] public section
+public section
 namespace ContinuousAffineMap
 
 variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]

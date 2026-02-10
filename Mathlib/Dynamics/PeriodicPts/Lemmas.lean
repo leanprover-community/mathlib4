@@ -19,7 +19,7 @@ public import Mathlib.Dynamics.PeriodicPts.Defs
 # Extra lemmas about periodic points
 -/
 
-@[expose] public section
+public section
 
 open Nat Set
 

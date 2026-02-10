@@ -15,7 +15,7 @@ This file proves lemmas relating to bisecting angles.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace EuclideanGeometry
@@ -316,24 +316,24 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
     rw [← orthogonalProjection_sup_of_orthogonalProjection_eq ho] at hp
     rw [← hp, eq_comm, orthogonalProjection_eq_self_iff, hsup]
     exact AffineSubspace.mem_top ℝ V p
-  have hp := oangle_eq_of_dist_orthogonalProjection_eq
-    (left_mem_affineSpan_pair _ _ _) (left_mem_affineSpan_pair _ _ _) ho h
-  have h₂₁ : p₂ ≠ p₁ := ha.injective.ne (by decide : (1 : Fin 3) ≠ 0)
-  have h₃₁ : p₃ ≠ p₁ := ha.injective.ne (by decide : (2 : Fin 3) ≠ 0)
-  have hp₁ : orthogonalProjection line[ℝ, p₁, p₂] p ≠ p₁ := by
-    intro hp
-    rw [hp, eq_comm, dist_orthogonalProjection_eq_dist_iff_eq_of_mem
-      (left_mem_affineSpan_pair ℝ _ p₃)] at h
-    grind
-  have hp₂ : orthogonalProjection line[ℝ, p₁, p₃] p ≠ p₁ := by
-    intro hp
-    rw [hp, dist_orthogonalProjection_eq_dist_iff_eq_of_mem
-        (left_mem_affineSpan_pair ℝ _ p₂)] at h
-    grind
-  rw [← (collinear_insert_of_mem_affineSpan_pair
-           (orthogonalProjection_mem p)).two_zsmul_oangle_eq_left hp₁ h₂₁,
-      ← (collinear_insert_of_mem_affineSpan_pair
-           (orthogonalProjection_mem p)).two_zsmul_oangle_eq_right hp₂ h₃₁, hp]
+  · have hp := oangle_eq_of_dist_orthogonalProjection_eq
+      (left_mem_affineSpan_pair _ _ _) (left_mem_affineSpan_pair _ _ _) ho h
+    have h₂₁ : p₂ ≠ p₁ := ha.injective.ne (by decide : (1 : Fin 3) ≠ 0)
+    have h₃₁ : p₃ ≠ p₁ := ha.injective.ne (by decide : (2 : Fin 3) ≠ 0)
+    have hp₁ : orthogonalProjection line[ℝ, p₁, p₂] p ≠ p₁ := by
+      intro hp
+      rw [hp, eq_comm, dist_orthogonalProjection_eq_dist_iff_eq_of_mem
+        (left_mem_affineSpan_pair ℝ _ p₃)] at h
+      grind
+    have hp₂ : orthogonalProjection line[ℝ, p₁, p₃] p ≠ p₁ := by
+      intro hp
+      rw [hp, dist_orthogonalProjection_eq_dist_iff_eq_of_mem
+          (left_mem_affineSpan_pair ℝ _ p₂)] at h
+      grind
+    rw [← (collinear_insert_of_mem_affineSpan_pair
+             (orthogonalProjection_mem p)).two_zsmul_oangle_eq_left hp₁ h₂₁,
+        ← (collinear_insert_of_mem_affineSpan_pair
+             (orthogonalProjection_mem p)).two_zsmul_oangle_eq_right hp₂ h₃₁, hp]
 
 /-- A point `p` is equidistant to two different lines `p₁ p₂` and `p₁ p₃` if and only if the
 oriented angles at `p₁` are equal modulo `π`. -/

@@ -75,7 +75,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
 
-theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [IsIrrefl ι r] {x y : Π₀ i, α i} :
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [Std.Irrefl r] {x y : Π₀ i, α i} :
     DFinsupp.Lex r (fun _ ↦ (· < ·)) x y ↔ x default < y default :=
   Pi.lex_iff_of_unique
 
@@ -145,11 +145,11 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
     · exact h_gt ⟨wit, fun j hj ↦
         notMem_neLocus.mp (Finset.notMem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
-instance Lex.isTotal_le : IsTotal (Lex (Π₀ i, α i)) (· ≤ ·) where
+instance Lex.total_le : @Std.Total (Lex (Π₀ i, α i)) (· ≤ ·) where
   total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
 
-instance Colex.isTotal_le : IsTotal (Colex (Π₀ i, α i)) (· ≤ ·) :=
-  Lex.isTotal_le (ι := ιᵒᵈ)
+instance Colex.total_le : @Std.Total (Colex (Π₀ i, α i)) (· ≤ ·) :=
+  Lex.total_le (ι := ιᵒᵈ)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

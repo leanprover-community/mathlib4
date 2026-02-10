@@ -14,7 +14,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 -/
 
-@[expose] public section
+public section
 
 open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
 

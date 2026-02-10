@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
@@ -32,7 +32,7 @@ Before starting to work on these TODOs, please contact Yury Kudryashov
 who may have partial progress towards some of them.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 open scoped ContDiff

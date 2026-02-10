@@ -6,9 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
-public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Algebra.CharZero.Defs
 
 /-!
 # Congruences modulo a natural number
@@ -30,14 +32,41 @@ ModEq, congruence, mod, MOD, modulo
 
 assert_not_exists IsOrderedMonoid Function.support
 
-namespace Nat
-
 /-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. -/
-def ModEq (n a b : ℕ) :=
+def Nat.ModEq (n a b : ℕ) :=
   a % n = b % n
 
 @[inherit_doc]
-notation:50 a " ≡ " b " [MOD " n "]" => ModEq n a b
+notation:50 a " ≡ " b " [MOD " n "]" => Nat.ModEq n a b
+
+namespace AddCommGroup
+
+@[simp]
+theorem modEq_iff_natModEq {a b n : ℕ} : a ≡ b [PMOD n] ↔ a ≡ b [MOD n] := by
+  constructor
+  · rw [modEq_iff_nsmul, Nat.ModEq]
+    rintro ⟨k, l, h⟩
+    simpa using congr($h % n)
+  · rw [Nat.ModEq]
+    intro h
+    rw [← Nat.div_add_mod' a n, ← Nat.div_add_mod' b n, ← Nat.nsmul_eq_mul, ← Nat.nsmul_eq_mul, h]
+    exact nsmul_add_modEq _ |>.trans (nsmul_add_modEq _).symm
+
+variable {M : Type*} [AddCommMonoidWithOne M]
+
+theorem ModEq.natCast {a b n : ℕ} (h : a ≡ b [MOD n]) : a ≡ b [PMOD (n : M)] := by
+  rw [← modEq_iff_natModEq] at h
+  exact h.map (Nat.castAddMonoidHom M)
+
+@[simp, norm_cast]
+theorem natCast_modEq_natCast [CharZero M] {a b n : ℕ} : a ≡ b [PMOD (n : M)] ↔ a ≡ b [MOD n] := by
+  simpa using map_modEq_iff (Nat.castAddMonoidHom M) Nat.cast_injective
+
+alias ⟨_root_.Nat.ModEq.of_natCast, _⟩ := natCast_modEq_natCast
+
+end AddCommGroup
+
+namespace Nat
 
 variable {m n a b c d : ℕ}
 
@@ -52,7 +81,7 @@ protected theorem refl (a : ℕ) : a ≡ a [MOD n] := rfl
 protected theorem rfl : a ≡ a [MOD n] :=
   ModEq.refl _
 
-instance : IsRefl _ (ModEq n) :=
+instance : Std.Refl (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]
@@ -561,5 +590,14 @@ theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=
   Eq.trans h (mod_eq_of_lt hb)
+
+theorem ext_div_modEq {n a b : ℕ} (h0 : a / n = b / n) (h1 : a ≡ b [MOD n]) : a = b :=
+    ext_div_mod h0 h1
+
+theorem ext_div_modEq_iff (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a ≡ b [MOD n] :=
+  ext_div_mod_iff _ _ _
+
+theorem modEq_iff_eq_of_div_eq {n a b : ℕ} (h : a / n = b / n) :
+    a ≡ b [MOD n] ↔ a = b := by grind [ext_div_modEq_iff]
 
 end Nat

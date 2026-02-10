@@ -31,65 +31,67 @@ open CategoryTheory MorphismProperty Limits
 namespace AlgebraicGeometry
 
 /-- A morphism of schemes is étale if it is smooth of relative dimension zero. -/
-abbrev IsEtale {X Y : Scheme.{u}} (f : X ⟶ Y) := IsSmoothOfRelativeDimension 0 f
+abbrev Etale {X Y : Scheme.{u}} (f : X ⟶ Y) := SmoothOfRelativeDimension 0 f
 
-namespace IsEtale
+@[deprecated (since := "2026-02-09")] alias IsEtale := Etale
+
+namespace Etale
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-instance [IsEtale f] : IsSmooth f :=
-  IsSmoothOfRelativeDimension.isSmooth 0 f
+instance [Etale f] : Smooth f :=
+  SmoothOfRelativeDimension.smooth 0 f
 
-instance : IsStableUnderBaseChange @IsEtale :=
-  isSmoothOfRelativeDimension_isStableUnderBaseChange 0
+instance : IsStableUnderBaseChange @Etale :=
+  smoothOfRelativeDimension_isStableUnderBaseChange 0
 
 open RingHom in
-instance (priority := 900) [IsEtale f] : FormallyUnramified f where
-  formallyUnramified_of_affine_subset U V e := by
-    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE (↑U) (↑V) e).hom :=
-      HasRingHomProperty.appLE (P := @IsSmoothOfRelativeDimension 0) _ inferInstance ..
+instance (priority := 900) [Etale f] : FormallyUnramified f where
+  formallyUnramified_appLE {U} hU {V} hV e := by
+    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE U V e).hom :=
+      HasRingHomProperty.appLE (P := @SmoothOfRelativeDimension 0) _
+        inferInstance ⟨U, hU⟩ ⟨V, hV⟩ _
     have : Locally RingHom.FormallyUnramified (f.appLE U V e).hom := by
       apply locally_of_locally _ this
       intro R S _ _ f hf
       algebraize [f]
       rw [RingHom.FormallyUnramified]
-      have : Algebra.IsStandardSmoothOfRelativeDimension 0 R S := hf
       infer_instance
     rwa [← RingHom.locally_iff_of_localizationSpanTarget
       FormallyUnramified.respectsIso FormallyUnramified.ofLocalizationSpanTarget]
 
 instance : MorphismProperty.HasOfPostcompProperty
-    @IsEtale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
+    @Etale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
   rw [MorphismProperty.hasOfPostcompProperty_iff_le_diagonal]
   intro X Y f ⟨hft, hfu⟩
-  exact inferInstanceAs <| IsEtale (pullback.diagonal f)
+  exact inferInstanceAs <| Etale (pullback.diagonal f)
 
 /-- If `f ≫ g` is étale and `g` unramified, then `f` is étale. -/
-lemma of_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsEtale (f ≫ g)] [LocallyOfFiniteType g]
-    [FormallyUnramified g] : IsEtale f :=
+lemma of_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Etale (f ≫ g)] [LocallyOfFiniteType g]
+    [FormallyUnramified g] : Etale f :=
   of_postcomp _ (W' := @LocallyOfFiniteType ⊓ @FormallyUnramified) f g ⟨‹_›, ‹_›⟩ ‹_›
 
-instance : MorphismProperty.HasOfPostcompProperty @IsEtale @IsEtale := by
-  apply MorphismProperty.HasOfPostcompProperty.of_le (W := @IsEtale)
+instance : MorphismProperty.HasOfPostcompProperty @Etale @Etale := by
+  apply MorphismProperty.HasOfPostcompProperty.of_le (W := @Etale)
     (Q := (@LocallyOfFiniteType ⊓ @FormallyUnramified))
   intro X Y f hf
   constructor <;> infer_instance
 
-end IsEtale
+end Etale
 
 namespace Scheme
 
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
-def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @IsEtale ⊤ X
+protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
 
 variable (X : Scheme.{u})
 
 instance : Category X.Etale :=
-  inferInstanceAs <| Category (MorphismProperty.Over @IsEtale ⊤ X)
+  inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
-  MorphismProperty.Over.forget @IsEtale ⊤ X
+  MorphismProperty.Over.forget @Etale ⊤ X
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
@@ -101,7 +103,7 @@ instance : (Etale.forget X).Faithful :=
   inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
 
 instance : HasPullbacks X.Etale := by
-  unfold Etale
+  unfold Scheme.Etale
   infer_instance
 
 end Scheme
