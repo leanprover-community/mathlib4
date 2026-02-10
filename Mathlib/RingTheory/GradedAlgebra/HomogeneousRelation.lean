@@ -45,7 +45,7 @@ class IsHomogeneousRelation {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
 
 lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι]
     [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
-    [(i : ι) → (x : ↥(A i)) → Decidable (x ≠ 0)] (r r' : ⨁ i, A i)
+    [(i : ι) → (x : A i) → Decidable (x ≠ 0)] (r r' : ⨁ i, A i)
     {S T : Finset ι} (hS : DFinsupp.support r ⊆ S) (hT : DFinsupp.support r' ⊆ T)
     (p : ι × ι → Prop) [DecidablePred p] :
     ∑ ij ∈ Finset.filter p (DFinsupp.support r ×ˢ DFinsupp.support r'), ((r ij.1) * (r' ij.2) : R) =
@@ -65,8 +65,8 @@ variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
 variable (𝒜 : ι → σ) [GradedRing 𝒜] (rel : A → A → Prop)
 
 theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
-    (h : ∀ (i : ι), (RingConGen.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
-    (RingConGen.Rel rel) ((proj 𝒜 n) (a * c)) ((proj 𝒜 n) (b * c)) := by
+    (h : ∀ (i : ι), (RingConGen.Rel rel) (proj 𝒜 i a) (proj 𝒜 i b)) :
+    (RingConGen.Rel rel) (proj 𝒜 n (a * c)) (proj 𝒜 n (b * c)) := by
   classical
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
@@ -76,8 +76,8 @@ theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
   exact RingConGen.Rel.mul (h i.1) (RingConGen.Rel.refl _)
 
 theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
-    (h : ∀ (i : ι), (RingConGen.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
-    (RingConGen.Rel rel) ((proj 𝒜 n) (c * a)) ((proj 𝒜 n) (c * b)) := by
+    (h : ∀ (i : ι), (RingConGen.Rel rel) (proj 𝒜 i a) (proj 𝒜 i b)) :
+    (RingConGen.Rel rel) (proj 𝒜 n (c * a)) (proj 𝒜 n (c * b)) := by
   classical
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
@@ -114,9 +114,9 @@ instance : IsHomogeneousRelation 𝒜 (Relation.EqvGen rel) := by
   | refl =>
     exact fun i ↦ Quot.eqvGen_exact rfl
   | symm x y _ h1 =>
-    exact fun i ↦ EqvGen.symm ((proj 𝒜 i) x) ((proj 𝒜 i) y) (h1 i)
-  | trans j k l _ _ h2 h3 =>
-    exact (fun i ↦ EqvGen.trans ((proj 𝒜 i) j) ((proj 𝒜 i) k) ((proj 𝒜 i) l) (h2 i) (h3 i))
+    exact fun i ↦ EqvGen.symm (proj 𝒜 i x) (proj 𝒜 i y) (h1 i)
+  | trans x y z _ _ h2 h3 =>
+    exact fun i ↦ EqvGen.trans (proj 𝒜 i x) (proj 𝒜 i y) (proj 𝒜 i z) (h2 i) (h3 i)
   | rel _ _ h4 =>
     exact fun i ↦ IsHomogeneousRelation.is_homogeneous' h4 i
 
@@ -132,7 +132,7 @@ variable (𝒜 : ι → AddSubmonoid A) [inst : GradedRing 𝒜] (rel : A → A 
 instance : SetLike.GradedMonoid ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
   one_mem := ⟨1, ⟨SetLike.GradedOne.one_mem, map_one (RingQuot.mkRingHom rel)⟩⟩
   mul_mem := fun x y gi gj ⟨a, ha1, ha2⟩ ⟨b, hb1, hb2⟩ ↦
-    ⟨(a * b), ⟨SetLike.GradedMul.mul_mem ha1 hb1, by rw [map_mul, ha2, hb2]⟩⟩
+    ⟨a * b, ⟨SetLike.GradedMul.mul_mem ha1 hb1, by rw [map_mul, ha2, hb2]⟩⟩
 
 open DirectSum
 
@@ -158,8 +158,7 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
       RingHom.coe_coe, decomposeRingEquiv_apply, toSemiring_apply, SetLike.coe_eq_coe]
     rw [← map_eq_toAddMonoid]
     apply Subtype.ext
-    change (RingQuot.mkRingHom rel) (GradedRing.proj 𝒜 j x) =
-      (RingQuot.mkRingHom rel) (GradedRing.proj 𝒜 j y)
+    change (RingQuot.mkRingHom rel) (proj 𝒜 j x) = (RingQuot.mkRingHom rel) (proj 𝒜 j y)
     have := ‹IsHomogeneousRelation 𝒜 rel›.is_homogeneous' h j
     suffices h : ∀ u v : A, Relation.EqvGen rel u v →
       RingQuot.mkRingHom rel u = RingQuot.mkRingHom rel v from h _ _ this
@@ -216,7 +215,7 @@ instance : GradedAlgebra ((Submodule.mapAlgHom (RingQuot.mkAlgHom R rel)) ∘ �
     ext j
     simp only [Function.comp_apply, AlgHom.coe_comp, AlgHom.coe_coe, decomposeAlgEquiv_apply,
       toAlgebra_apply, LinearMap.coe_addMonoidHom_comp, lof_toAddMonoidHom_eq_of, toSemiring_apply,
-      ← map_eq_toAddMonoid, map_apply, LinearMap.toAddMonoidHom_coe, SetLike.coe_eq_coe]
+      ← map_eq_toAddMonoid, SetLike.coe_eq_coe]
     apply Subtype.ext
     change (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j x) =
       (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j y)
