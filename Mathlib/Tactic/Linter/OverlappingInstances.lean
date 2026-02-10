@@ -36,6 +36,7 @@ but they are still duplicated in the local context while editing the body.
 ## TODO
 
 - Improve performance. Currently running this linter in CI is prohibitively expensive.
+- Expand to declarations without bodies (`structure`s/`class`es/`inductive`s etc.)
 - The logging location for this linter could be improved.
 - Currently it is possible to obtain a message which includes something of the following form:
   ```
