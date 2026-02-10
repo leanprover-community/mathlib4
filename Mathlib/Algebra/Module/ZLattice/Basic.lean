@@ -95,37 +95,46 @@ def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 theorem mem_fundamentalDomain_iff_repr_mem {m : E} :
     m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
 
-@[simp]
-theorem mem_neg_fundamentalDomain [AddLeftMono K] {m : E} :
-    m ∈ -fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ioc (-1 : K) 0 := by
-  simp only [fundamentalDomain, Set.mem_Ico, Set.neg_setOf, map_neg,
-    Finsupp.coe_neg, Pi.neg_apply, Set.mem_setOf_eq, Set.mem_Ioc]
-  refine forall_congr' fun i ↦ ?_
-  rw [neg_nonneg, neg_lt, and_comm]
-
 open scoped Pointwise in
 @[simp]
-theorem mem_vadd_fundamentalDomain {m : E} {z : E} :
+theorem mem_vadd_fundamentalDomain [AddLeftMono K] {m : E} {z : E} :
     m ∈ z +ᵥ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (b.repr z i) (b.repr z i + 1) := by
-  simp only [fundamentalDomain, Set.mem_Ico]
-  --refine forall_congr' fun i ↦ ?_
+  simp_rw [Set.mem_vadd_set, mem_fundamentalDomain_iff_repr_mem, b.ext_elem_iff,
+    ← forall_and, vadd_eq_add, map_add, Finsupp.coe_add, Pi.add_apply, Set.mem_Ico]
+  constructor <;> intro h
+  · grind
+  · use m - z
+    simp only [map_sub, Finsupp.coe_sub, Pi.sub_apply, sub_nonneg, add_sub_cancel, and_true]
+    intro i
+    grind
 
-  --rw [neg_nonneg, neg_lt, and_comm]
-  sorry
+@[simp]
+theorem mem_neg_fundamentalDomain [IsOrderedAddMonoid K] {m : E} :
+    m ∈ -fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ioc (-1 : K) 0 := by
+  simp only [Set.mem_neg, fundamentalDomain, Set.mem_setOf]
+  refine forall_congr' fun i ↦ ?_
+  simp only [map_neg, Finsupp.coe_neg, Pi.neg_apply, ← Set.mem_neg,
+    Set.neg_Ico (0 : K) 1, neg_zero]
 
 open scoped Pointwise in
 @[simp]
-theorem mem_vadd_neg_fundamentalDomain {m : E} {z : E} :
+theorem mem_vadd_neg_fundamentalDomain [IsOrderedAddMonoid K] {m : E} {z : E} :
     m ∈ z +ᵥ -fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ioc (b.repr z i - 1) (b.repr z i) := by
-  simp only [fundamentalDomain, Set.mem_Ico, Set.neg_setOf]
-  --simpa [fundamentalDomain, Set.mem_Ico] using mem_vadd_fundamentalDomain b (m := -m) (z := z)
-  sorry
+  simp_rw [Set.mem_vadd_set, mem_neg_fundamentalDomain, b.ext_elem_iff,
+    ← forall_and, vadd_eq_add, map_add, Finsupp.coe_add, Pi.add_apply, Set.mem_Ioc]
+  constructor <;> intro h
+  · grind
+  · use m - z
+    simp only [map_sub, Finsupp.coe_sub, Pi.sub_apply, sub_nonpos, add_sub_cancel, and_true]
+    intro i
+    grind
 
 theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
     f '' (fundamentalDomain b) = fundamentalDomain (b.map f) := by
   ext x
-  rw [mem_fundamentalDomain_iff_repr_mem, Basis.map_repr, LinearEquiv.trans_apply, ← mem_fundamentalDomain_iff_repr_mem,
-    show f.symm x = f.toEquiv.symm x by rfl, ← Set.mem_image_equiv]
+  rw [mem_fundamentalDomain_iff_repr_mem, Basis.map_repr, LinearEquiv.trans_apply,
+    ← mem_fundamentalDomain_iff_repr_mem, show f.symm x = f.toEquiv.symm x by rfl,
+    ← Set.mem_image_equiv]
   rfl
 
 @[simp]
