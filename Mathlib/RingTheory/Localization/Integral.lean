@@ -285,6 +285,34 @@ lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
   exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using
     RingHom.isIntegralElem_leadingCoeff_mul (algebraMap R S) (C m * p) x (by simpa)⟩
 
+/-- If `t` is `R`-integral in `S[1/r]` where `r : S` is integral over `R`,
+then `r ^ n • t` is integral in `S` for some `n`. -/
+lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap
+    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    [Algebra R Sₘ] [IsScalarTower R S Sₘ] {r : S} (hr : IsIntegral R r)
+    [IsLocalization.Away r Sₘ] {x : S}
+    (hx : IsIntegral R (algebraMap S Sₘ x)) : ∃ n, IsIntegral R (r ^ n * x) := by
+  nontriviality S
+  obtain ⟨p, hpm, hp⟩ := hx
+  simp only [IsScalarTower.algebraMap_eq R S Sₘ, ← hom_eval₂,
+    IsLocalization.map_eq_zero_iff (.powers r), Subtype.exists, Submonoid.mem_powers_iff,
+    exists_prop, exists_exists_eq_and] at hp
+  obtain ⟨m, hm⟩ := hp
+  have := isIntegral_trans (R := R) _ (isIntegral_leadingCoeff_smul (R := integralClosure R S)
+    (C ⟨r, hr⟩ ^ m * p.map (algebraMap _ _)) x (by simpa [← aeval_def] using hm))
+  rw [← map_pow, (hpm.map _).leadingCoeff_C_mul] at this
+  exact ⟨m, this⟩
+
+lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
+    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    [Algebra R Sₘ] [IsScalarTower R S Sₘ] {r : S} (hr : IsIntegral R r)
+    [IsLocalization.Away r Sₘ] {x : S} {a : Submonoid.powers r}
+    (hx : IsIntegral R (IsLocalization.mk' Sₘ x a)) : ∃ n, IsIntegral R (r ^ n * x) := by
+  refine IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap (Sₘ := Sₘ) hr ?_
+  obtain ⟨_, ⟨n, rfl⟩⟩ := a
+  convert (hr.pow n).algebraMap.mul hx
+  exact (mk'_spec'_mk ..).symm
+
 /-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
 lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     (t s : S) (hst : s * t = 1) (ht : IsIntegral (Algebra.adjoin R {s}) t) :

@@ -240,7 +240,7 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
-  · simp [hμ, iteratedDeriv_succ]
+  · simp [hμ]
   rw [iteratedDeriv_two_cgf h]
   calc (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ - 2 * (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (cgf X μ) v

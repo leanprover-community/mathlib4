@@ -114,6 +114,11 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
 
+/-- Families with at most a single point are always similar. -/
+@[nontriviality, simp]
+lemma of_subsingleton_index [Subsingleton ι] : v₁ ∼ v₂ :=
+  Congruent.of_subsingleton_index.similar
+
 /-! Similarity is preserved under dilations. -/
 
 section Dilation

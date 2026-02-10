@@ -40,17 +40,17 @@ public lemma isTopologicalBasis_range_typesWith :
     rw [typesWith_inf, ht₁, ht₂]
     exact ⟨hx, fun _ ↦ id⟩
   sUnion_eq := by
-    rw [←Set.univ_subset_iff]
+    rw [← Set.univ_subset_iff]
     exact Set.subset_sUnion_of_mem ⟨_, typesWith_top⟩
   eq_generateFrom := rfl
 
-public lemma isOpen_typesWith (φ : (L[[α]]).Sentence) : IsOpen (typesWith (T := T) φ) :=
+public lemma isOpen_typesWith (φ : L[[α]].Sentence) : IsOpen (typesWith (T := T) φ) :=
   isOpen_generateFrom_of_mem ⟨φ, rfl⟩
 
-public lemma isClosed_typesWith (φ : (L[[α]]).Sentence) : IsClosed (typesWith (T := T) φ) where
-  isOpen_compl := by rw [←typesWith_not]; exact isOpen_typesWith _
+public lemma isClosed_typesWith (φ : L[[α]].Sentence) : IsClosed (typesWith (T := T) φ) where
+  isOpen_compl := by rw [← typesWith_not]; exact isOpen_typesWith _
 
-public lemma isClopen_typesWith (φ : (L[[α]]).Sentence) : IsClopen (typesWith (T := T) φ) where
+public lemma isClopen_typesWith (φ : L[[α]].Sentence) : IsClopen (typesWith (T := T) φ) where
   left := isClosed_typesWith _
   right := isOpen_typesWith _
 
@@ -59,14 +59,13 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
   intro p q hpq
   simp only [ne_eq, SetLike.ext_iff, not_forall, not_iff] at hpq
   obtain ⟨φ, hφ⟩ := hpq
-  exact (mem_or_not_mem p φ).elim
-    (fun h ↦ ⟨
-      typesWith φ, isClopen_typesWith _, h,
-      by rwa [mem_compl_iff, mem_typesWith_iff, ← hφ, not_not]⟩)
-    (fun h ↦ ⟨
-        typesWith ∼φ,
-        isClopen_typesWith _, h,
-        by rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ←not_mem_iff]⟩)
+  cases mem_or_not_mem p φ with
+  | inl h =>
+    refine ⟨typesWith φ, isClopen_typesWith _, h, ?_⟩
+    rwa [mem_compl_iff, mem_typesWith_iff, ← hφ, not_not]
+  | inr h =>
+    refine ⟨typesWith ∼φ, isClopen_typesWith _, h, ?_⟩
+    rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ←not_mem_iff]
 
 
 end CompleteType

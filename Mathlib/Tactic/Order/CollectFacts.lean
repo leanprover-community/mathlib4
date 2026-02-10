@@ -8,7 +8,7 @@ module
 public meta import Qq
 public import Mathlib.Order.BoundedOrder.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Order.Lattice  -- shake: keep (Qq dependency)
-public meta import Aesop
+public import Aesop
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Util.AtomM
 
