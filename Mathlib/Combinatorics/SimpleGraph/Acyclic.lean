@@ -63,6 +63,7 @@ structure IsTree : Prop where
 
 variable {G G'}
 
+/-- A vertex in a simple graph is a tree leaf if the graph is a tree and the vertex has degree 1. -/
 def isTree_leaf {G : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] (v : V):Prop :=
   (G.IsTree) ∧ (G.degree v = 1)
 
@@ -511,6 +512,7 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   exact h.minDegree_eq_one_of_nontrivial
 
 /-- A nontrivial tree there exists at least two leaves. -/
+@[nolint unusedArguments]
 theorem IsTree_exists_atleast_two_leaves [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
 (hTree : G.IsTree) (hSize : 1 < Fintype.card V) :
 ∃ (v1 v2: V), v1 ≠ v2 ∧ G.isTree_leaf v1 ∧ G.isTree_leaf v2 := by
