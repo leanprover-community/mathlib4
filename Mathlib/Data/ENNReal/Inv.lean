@@ -784,8 +784,7 @@ lemma isUnit_iff : IsUnit a ↔ a ≠ 0 ∧ a ≠ ∞ := by
   obtain ⟨u, rfl⟩ := ha
   rintro hu
   have := congr($hu * u⁻¹)
-  norm_cast at this
-  simp [mul_inv_cancel] at this
+  simp at this
 
 /-- Left multiplication by a nonzero finite `a` as an order isomorphism. -/
 @[simps! toEquiv apply symm_apply]

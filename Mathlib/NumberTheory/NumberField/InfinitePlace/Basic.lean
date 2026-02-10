@@ -47,31 +47,44 @@ number field, infinite places
 
 open scoped Finset Topology
 
-open NumberField Fintype Module
+namespace NumberField
 
-variable {k : Type*} [Field k] (K : Type*) [Field K] {F : Type*} [Field F]
+open Fintype Module
+
+variable (K : Type*) [Field K]
 
 /-- An infinite place of a number field `K` is a place associated to a complex embedding. -/
-def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
+def InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 
-instance [Nonempty (K →+* ℂ)] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
+instance [Nonempty (K →+* ℂ)] : Nonempty (InfinitePlace K) := Set.instNonemptyRange _
 
 variable {K}
 
 /-- Return the infinite place defined by a complex embedding `φ`. -/
-noncomputable def NumberField.InfinitePlace.mk (φ : K →+* ℂ) : NumberField.InfinitePlace K :=
+noncomputable def InfinitePlace.mk (φ : K →+* ℂ) : InfinitePlace K :=
   ⟨place φ, ⟨φ, rfl⟩⟩
 
-namespace NumberField.InfinitePlace
+/-- A predicate singling out infinite places among the absolute values on a number field `K`. -/
+def IsInfinitePlace (w : AbsoluteValue K ℝ) : Prop :=
+  ∃ φ : K →+* ℂ, place φ = w
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
+lemma InfinitePlace.isInfinitePlace (v : InfinitePlace K) : IsInfinitePlace v.val := by
+  simp [IsInfinitePlace, v.prop]
+
+lemma isInfinitePlace_iff (v : AbsoluteValue K ℝ) :
+    IsInfinitePlace v ↔ ∃ w : InfinitePlace K, w.val = v :=
+  ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isInfinitePlace⟩
+
+namespace InfinitePlace
+
+instance : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
-lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
+lemma coe_apply (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
 @[ext]
-lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
+lemma ext (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
   Subtype.ext <| AbsoluteValue.ext h
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where

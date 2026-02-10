@@ -5,8 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.AlgebraicGeometry.Pullbacks
+public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.Local
 public import Mathlib.Data.List.TFAE
 
@@ -196,6 +195,19 @@ lemma of_forall_source_exists_preimage
   · intro x
     exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
 
+lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f) (hg : P g) :
+    P (coprod.map f g) := by
+  refine IsZariskiLocalAtTarget.of_openCover (coprodOpenCover.{_, 0} _ _) ?_
+  rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
+    convert hf
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
+    convert hg
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
+
 end IsZariskiLocalAtTarget
 
 /-- A property is Zariski-local at source if it is local at source in the Zariski topology. -/
@@ -307,7 +319,7 @@ lemma iff_exists_resLE [IsZariskiLocalAtTarget P]
     exact MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance _ (hf x)
   · rw [eq_top_iff]
     rintro x -
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     use x, hxU x
 
 end IsZariskiLocalAtSourceAndTarget

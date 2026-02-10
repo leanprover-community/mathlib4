@@ -31,7 +31,7 @@ relating the measure of some sets to integrals of characteristic functions.
 
 -/
 
-@[expose] public section
+public section
 
 open RealInnerProductSpace Real Complex NormedSpace
 

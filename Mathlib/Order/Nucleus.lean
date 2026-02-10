@@ -55,7 +55,7 @@ variable [SemilatticeInf X] {n m : Nucleus X} {x y : X}
 
 instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
-  coe_injective' f g h := by  obtain ⟨⟨_, _⟩, _⟩ := f; congr!
+  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (n : Nucleus X) : X → X := n
@@ -93,13 +93,10 @@ instance : PartialOrder (Nucleus X) := .lift (⇑) DFunLike.coe_injective
 @[simp, norm_cast] lemma coe_le_coe : ⇑m ≤ n ↔ m ≤ n := .rfl
 @[simp, norm_cast] lemma coe_lt_coe : ⇑m < n ↔ m < n := .rfl
 
-@[simp] lemma mk_le_mk (toInfHom₁ toInfHom₂ : InfHom X X)
+@[simp, gcongr] lemma mk_le_mk (toInfHom₁ toInfHom₂ : InfHom X X)
     (le_apply₁ le_apply₂ idempotent₁ idempotent₂) :
     mk toInfHom₁ le_apply₁ idempotent₁ ≤ mk toInfHom₂ le_apply₂ idempotent₂ ↔
       toInfHom₁ ≤ toInfHom₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Nucleus.mk_le_mk⟩ := mk_le_mk
 
 instance : Min (Nucleus X) where
   min m n := {

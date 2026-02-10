@@ -155,8 +155,6 @@ structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Mul α] [M
 /-- Infix notation for `OrderMonoidIso`. -/
 infixr:25 " ≃*o " => OrderMonoidIso
 
-variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
-
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `MulEquivClass F α β`
 into an actual `OrderMonoidIso`. This is declared as the default coercion from `F` to `α ≃*o β`. -/
 @[to_additive (attr := coe)
