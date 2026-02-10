@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
@@ -13,17 +13,62 @@ public import Mathlib.Data.Seq.Basic
 /-!
 # Non-primitive corecursion for sequences
 
-https://arxiv.org/pdf/1501.05425
+Primitive corecursive definition of the form
+```
+def foo (x : X) := hd x :: foo (tlArg x)
+```
+(where hd and tlArg are arbitrary functions) can be encoded via the corecursor `Seq.corec`.
+
+It is not enough, however, to define multiplication and `powser` operation for multiseries.
+
+This file implements a more general form of corecursion in the spirit of [blanchette2015].
+This is a bare minimum that needed for the tactic, it justifies a weaker class of
+corecursive definitions than [blanchette2015] does, and only works for `Seq`.
+
+A function `f : Seq α → Seq α` is called *friendly* if for all `n : ℕ` the `n`-prefix of its result
+`f s` depends only on the `n`-prefix of its input `s`.
+
+In this file we develop a theory that justifies corecursive definitions of the form
+```
+def foo (x : X) := hd x :: f (foo (tlArg x))
+```
+where f is friendly.
+
+## Main definitions
+
+* `FriendlyOperation f` means that `f` is friendly.
+* `FriendlyOperationClass` is a typeclass meaning that some indexed family of operations
+  are friendly.
+* `gcorec`: a generalization of `Seq.corec` that allows a corecursive call to be guarded by
+  a friendly function.
+* `FriendlyOperation.coind`, `FriendlyOperation.coind_comp_friend_left`,
+  `FriendlyOperation.coind_comp_friend_right`: coinduction principles for proving that an operation
+  is friendly.
+* `FriendlyOperation.eq_of_bisim`: a generalisation of `Seq.eq_of_bisim'` for that allows using a
+  friendly operation in the tail of the sequences.
+
+## Implementation details
+
+To prove that the definition of the form
+```
+def foo (x : X) := hd x :: f (foo (tlArg x))
+```
+is correct we prove that there exists a function satisfying this equation. For that we employ a
+Banach fixed point theorem. We treat `Seq α` as a metric space here with the metric
+`d(s, t) := 2 ^ (-n)` where `n` is the minimal index where `s` and `t` differ.
+
+Then `f` is friendly iff it is `1`-Lipschitz.
 -/
 
 @[expose] public section
 
-namespace Stream'.Seq
+namespace Tactic.ComputeAsymptotics.Seq
+
+open Stream' Seq
 
 open scoped UniformConvergence
 
 variable {α β γ γ' : Type*}
-
 
 /-- Metric space structure on `Stream' α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Stream' α) :=
@@ -57,15 +102,10 @@ theorem Stream'.dist_le_one (s t : Stream' α) : dist s t ≤ 1 := by
   bound
 
 @[simp]
-theorem dist_le_one (s t : Seq α) : dist s t ≤ 1 := by
-  rw [Subtype.dist_eq]
-  apply Stream'.dist_le_one
+theorem dist_le_one (s t : Seq α) : dist s t ≤ 1 := PiNat.dist_le_one _ _
 
--- TODO: upstream to PiNat
-local instance instBoundedSpaceStream' : BoundedSpace (Stream' α) := by
-  rw [Metric.boundedSpace_iff]
-  use 1
-  apply Stream'.dist_le_one
+local instance : BoundedSpace (Stream' α) :=
+  @PiNat.boundedSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
 local instance : BoundedSpace (Seq α) :=
   instBoundedSpaceSubtype
@@ -123,45 +163,45 @@ theorem dist_nil_cons (x : α) (s : Seq α) : dist nil (cons x s) = 1 := by
   rw [dist_comm]
   simp
 
-/-- A function on sequences called a "friend" if any `n`-prefix of its output depends only on
+/-- A function on sequences is called a "friend" if any `n`-prefix of its output depends only on
 the `n`-prefix of the input. Such functions can be used in the tail of (non-primitive) corecursive
 definitions. -/
-def FriendOperation (op : Seq α → Seq α) : Prop := LipschitzWith 1 op
+def FriendlyOperation (op : Seq α → Seq α) : Prop := LipschitzWith 1 op
 
-/-- A family of friend operations on sequences indexed by a type `γ`. -/
-class FriendOperationClass (F : γ → Seq α → Seq α) : Prop where
-  friend : ∀ c : γ, FriendOperation (F c)
+/-- A family of friendly operations on sequences indexed by a type `γ`. -/
+class FriendlyOperationClass (F : γ → Seq α → Seq α) : Prop where
+  friend : ∀ c : γ, FriendlyOperation (F c)
 
-theorem FriendOperation.id : FriendOperation (id : Seq α → Seq α) :=
+theorem FriendlyOperation.id : FriendlyOperation (id : Seq α → Seq α) :=
   LipschitzWith.id
 
-theorem FriendOperation.comp {op op' : Seq α → Seq α}
-    (h : FriendOperation op) (h' : FriendOperation op') :
-    FriendOperation (op ∘ op') := by
-  rw [FriendOperation] at h h' ⊢
+theorem FriendlyOperation.comp {op op' : Seq α → Seq α}
+    (h : FriendlyOperation op) (h' : FriendlyOperation op') :
+    FriendlyOperation (op ∘ op') := by
+  rw [FriendlyOperation] at h h' ⊢
   convert h.comp h'
   simp
 
-theorem FriendOperation.const {s : Seq α} : FriendOperation (fun _ ↦ s) := by
-  simp [FriendOperation, lipschitzWith_iff_dist_le_mul]
+theorem FriendlyOperation.const {s : Seq α} : FriendlyOperation (fun _ ↦ s) := by
+  simp [FriendlyOperation, lipschitzWith_iff_dist_le_mul]
 
-theorem FriendOperationClass.comp (F : γ → Seq α → Seq α) (g : γ' → γ)
-    [h : FriendOperationClass F] : FriendOperationClass (fun c ↦ F (g c)) := by
-  grind [FriendOperationClass]
+theorem FriendlyOperationClass.comp (F : γ → Seq α → Seq α) (g : γ' → γ)
+    [h : FriendlyOperationClass F] : FriendlyOperationClass (fun c ↦ F (g c)) := by
+  grind [FriendlyOperationClass]
 
-theorem FriendOperation.ite {op₁ op₂ : Seq α → Seq α}
-    (h₁ : FriendOperation op₁) (h₂ : FriendOperation op₂)
+theorem FriendlyOperation.ite {op₁ op₂ : Seq α → Seq α}
+    (h₁ : FriendlyOperation op₁) (h₂ : FriendlyOperation op₂)
     {P : Option α → Prop} [DecidablePred P] :
-    FriendOperation (fun s ↦ if P s.head then op₁ s else op₂ s) := by
-  rw [FriendOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one] at h₁ h₂ ⊢
+    FriendlyOperation (fun s ↦ if P s.head then op₁ s else op₂ s) := by
+  rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one] at h₁ h₂ ⊢
   intro s t
   by_cases! h_head : s.head ≠ t.head
   · simp [dist_eq_one_of_head h_head]
   grind
 
-theorem FriendOperation.dist_le {op : Seq α → Seq α} (h : FriendOperation op)
+theorem FriendlyOperation.dist_le {op : Seq α → Seq α} (h : FriendlyOperation op)
     {s t : Seq α} : dist (op s) (op t) ≤ dist s t := by
-  rw [FriendOperation, lipschitzWith_iff_dist_le_mul] at h
+  rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul] at h
   simpa using h s t
 
 theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →ᵤ Seq α))
@@ -175,8 +215,10 @@ theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →�
   use f
   exact hF.fixedPoint_isFixedPt
 
-theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
-    [h : FriendOperationClass op] :
+/-- Main theorem of this file. It shows that there exists a funcion satisfying the corecursive
+definition of the form `def foo (x : X) := hd x :: op (foo (tlArg x))` where `f` is friendly. -/
+theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
+    [h : FriendlyOperationClass op] :
     ∃ f : β → Seq α, ∀ b : β,
     match F b with
     | none => f b = nil
@@ -200,7 +242,7 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
       calc
         _ ≤ dist (f b') (g b') := by
           have := h.friend c
-          rw [FriendOperation, lipschitzWith_iff_dist_le_mul] at this
+          rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul] at this
           specialize this (f b') (g b')
           simpa using this
         _ ≤ _ := by
@@ -228,65 +270,38 @@ theorem FriendOperation.exists_fixed_point (F : β → Option (α × γ × β)) 
     change f b' = T f b'
     rw [hf]
 
-/-- Non-primitive corecursor for `Seq α` allowing to use a friendly operation in the tail of the
-corecursive definition. -/
+/-- (General) non-primitive corecursor for `Seq α` that allows using a friendly operation in the
+tail of the corecursive definition. -/
 noncomputable def gcorec (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
-    [FriendOperationClass op] :
-  β → Seq α := (FriendOperation.exists_fixed_point F op).choose
+    [FriendlyOperationClass op] :
+  β → Seq α := (FriendlyOperation.exists_fixed_point F op).choose
 
 theorem gcorec_nil {F : β → Option (α × γ × β)} {op : γ → Seq α → Seq α}
-    [FriendOperationClass op] {b : β}
+    [FriendlyOperationClass op] {b : β}
     (h : F b = none) :
     gcorec F op b = nil := by
-  have := (FriendOperation.exists_fixed_point F op).choose_spec b
+  have := (FriendlyOperation.exists_fixed_point F op).choose_spec b
   simpa [h] using this
 
 theorem gcorec_some {F : β → Option (α × γ × β)} {op : γ → Seq α → Seq α}
-    [FriendOperationClass op] {b : β}
+    [FriendlyOperationClass op] {b : β}
     {a : α} {c : γ} {b' : β}
     (h : F b = some (a, c, b')) :
     gcorec F op b = Seq.cons a (op c (gcorec F op b')) := by
-  have := (FriendOperation.exists_fixed_point F op).choose_spec b
+  have := (FriendlyOperation.exists_fixed_point F op).choose_spec b
   simpa [h] using this
 
-@[local simp]
-lemma inv_two_pow_succ_lt_one (n : ℕ) : ¬ 1 ≤ (2⁻¹ : ℝ) ^ (n + 1) := by
-  simp only [not_le]
-  rw [pow_succ]
-  refine mul_lt_one_of_nonneg_of_lt_one_right (pow_le_one₀ ?_ ?_) ?_ ?_
-  all_goals norm_num
-
-theorem FriendOperation.head_eq {op : Seq α → Seq α} (h : FriendOperation op) {a : α}
-    {s t : Seq α} : head (op <| .cons a s) = head (op <| .cons a t) := by
-  rw [FriendOperation, lipschitzWith_iff_dist_le_mul] at h
-  specialize h (.cons a s) (.cons a t)
-  simp only [NNReal.coe_one, dist_cons_cons, one_mul] at h
-  replace h : dist (op (.cons a s)) (op (.cons a t)) ≤ 2⁻¹ := by
-    apply h.trans
-    simp
-  cases hs : op (.cons a s) with
-  | nil =>
-    cases ht : op (.cons a t) with
-    | nil => simp
-    | cons t_hd t_tl => norm_num [hs, ht] at h
-  | cons s_hd s_tl =>
-    cases ht : op (.cons a t) with
-    | nil => norm_num [hs, ht] at h
-    | cons t_hd t_tl =>
-      simp only [head_cons, Option.some.injEq]
-      by_contra! h_hd
-      rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
-      norm_num at h
-
-theorem FriendOperation.cons (hd : α) : FriendOperation (cons hd) := by
-  rw [FriendOperation, lipschitzWith_iff_dist_le_mul]
-  simp only [dist_cons_cons, NNReal.coe_one, one_mul]
+/-- The operation `cons hd ·` is friendly. -/
+theorem FriendlyOperation.cons (hd : α) : FriendlyOperation (cons hd) := by
+  simp only [FriendlyOperation, lipschitzWith_iff_dist_le_mul, dist_cons_cons, NNReal.coe_one,
+    one_mul]
   intro x y
   linarith [dist_nonneg (x := x) (y := y)]
 
-theorem FriendOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : FriendOperation op) :
-    FriendOperation (fun s ↦ (op (.cons hd s)).tail) := by
-  simp_rw [FriendOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one, one_mul] at h ⊢
+/-- The operation `(op (.cons hd ·)).tail` is friendly if `op` is friendly. -/
+theorem FriendlyOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : FriendlyOperation op) :
+    FriendlyOperation (fun s ↦ (op (.cons hd s)).tail) := by
+  simp_rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul, NNReal.coe_one, one_mul] at h ⊢
   intro x y
   specialize h (.cons hd x) (.cons hd y)
   simp only [dist_cons_cons] at h
@@ -311,8 +326,36 @@ theorem FriendOperation.cons_tail {op : Seq α → Seq α} {hd : α} (h : Friend
         norm_num
       simpa [hx, hy, h_hd] using h
 
-theorem FriendOperation.destruct {op : Seq α → Seq α} (h : FriendOperation op) :
-    ∃ T : Option α → Option (α × Subtype FriendOperation),
+/-- The first element of `op (a :: s)` depends only on `a`. -/
+theorem FriendlyOperation.op_cons_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {a : α}
+    {s t : Seq α} : (op <| .cons a s).head = (op <| .cons a t).head := by
+  rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul] at h
+  specialize h (.cons a s) (.cons a t)
+  simp only [NNReal.coe_one, dist_cons_cons, one_mul] at h
+  replace h : dist (op (.cons a s)) (op (.cons a t)) ≤ 2⁻¹ := by
+    apply h.trans
+    simp
+  cases hs : op (.cons a s) with
+  | nil =>
+    cases ht : op (.cons a t) with
+    | nil => simp
+    | cons t_hd t_tl => norm_num [hs, ht] at h
+  | cons s_hd s_tl =>
+    cases ht : op (.cons a t) with
+    | nil => norm_num [hs, ht] at h
+    | cons t_hd t_tl =>
+      simp only [Seq.head_cons, Option.some.injEq]
+      by_contra! h_hd
+      rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
+      norm_num at h
+
+/-- If the operation `op` is friendly, then there exists a function
+`T : Option α → Option (α × Subtype FriendlyOperation)` such that for all `s`,
+if `T s.head = none`, then `op s = nil`, and if `T s.head = some (hd, op')`,
+then `op s = cons hd (op' s.tail)`. One can see this as a coinductive definition
+of `FriendlyOperation`. For coinductive principle see `FriendlyOperation.coind`. -/
+theorem FriendlyOperation.destruct {op : Seq α → Seq α} (h : FriendlyOperation op) :
+    ∃ T : Option α → Option (α × Subtype FriendlyOperation),
       ∀ s, destruct (op s) = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail)) := by
   use fun hd? ↦
     match hd? with
@@ -321,25 +364,25 @@ theorem FriendOperation.destruct {op : Seq α → Seq α} (h : FriendOperation o
       match t.destruct with
       | none => none
       | some (t_hd, t_tl) =>
-        some (t_hd, ⟨fun _ ↦ t_tl, FriendOperation.const⟩)
+        some (t_hd, ⟨fun _ ↦ t_tl, FriendlyOperation.const⟩)
     | some s_hd =>
       let s := .cons s_hd nil
       let t := op s
       match t.destruct with
       | none => none
       | some (t_hd, t_tl) =>
-        some (t_hd, ⟨fun s_tl ↦ (op (.cons s_hd s_tl)).tail, FriendOperation.cons_tail h⟩)
+        some (t_hd, ⟨fun s_tl ↦ (op (.cons s_hd s_tl)).tail, FriendlyOperation.cons_tail h⟩)
   intro s
   cases s with
   | nil =>
     generalize op nil = t
     cases t <;> simp
   | cons s_hd s_tl =>
-    simp only [tail_cons, head_cons]
+    simp only [Seq.tail_cons, Seq.head_cons]
     generalize ht0 : op (.cons s_hd nil) = t0 at *
     generalize ht : op (.cons s_hd s_tl) = t at *
     have : t0.head = t.head := by
-      rw [← ht0, ← ht, FriendOperation.head_eq h]
+      rw [← ht0, ← ht, FriendlyOperation.op_cons_head_eq h]
     cases t0 with
     | nil =>
       cases t with
@@ -350,23 +393,24 @@ theorem FriendOperation.destruct {op : Seq α → Seq α} (h : FriendOperation o
       | nil => simp at this
       | cons => simp_all
 
-theorem FriendOperation.head_eq_head {op : Seq α → Seq α} (h : FriendOperation op) {s t : Seq α}
+/-- If `op` is friendly, then `op s` and `op t` have the same head if `s` and `t`
+have the same head. -/
+theorem FriendlyOperation.op_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {s t : Seq α}
     (h_head : s.head = t.head) : (op s).head = (op t).head := by
-  obtain ⟨T, hT⟩ := FriendOperation.destruct h
-  have hs := hT s
-  have ht := hT t
-  simp [Stream'.Seq.head_eq_destruct, hs, ht] at h_head ⊢
+  obtain ⟨T, hT⟩ := FriendlyOperation.destruct h
+  simp [Stream'.Seq.head_eq_destruct, hT s, hT t] at h_head ⊢
   simp [h_head]
   rfl
 
 attribute [-simp] inv_pow in
-theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
+/-- Coinduction principle for proving that an operation is friendly. -/
+theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     {op : Seq α → Seq α}
     (h_base : motive op)
     (h_step : ∀ op, motive op → ∃ T : Option α → Option (α × Subtype motive),
       ∀ s, (op s).destruct = (T s.head).map (fun (hd, op') => (hd, op'.val s.tail))) :
-    FriendOperation op := by
-  rw [FriendOperation, lipschitzWith_iff_dist_le_mul]
+    FriendlyOperation op := by
+  rw [FriendlyOperation, lipschitzWith_iff_dist_le_mul]
   intro s t
   simp only [NNReal.coe_one, one_mul]
   suffices ∀ n, dist s t ≤ (2⁻¹ : ℝ) ^ n → dist (op s) (op t) ≤ (2⁻¹ : ℝ) ^ n by
@@ -394,7 +438,7 @@ theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
     simp only [hT_head, Option.map_none, ← h_head] at hs ht
     apply Stream'.Seq.destruct_eq_none at hs
     apply Stream'.Seq.destruct_eq_none at ht
-    simp [hs, ht]
+    simp [hs,destruct_eq_none, ht]
   | some v =>
     obtain ⟨hd, op', h_next⟩ := v
     simp only [hT_head, Option.map_some, ← h_head] at hs ht
@@ -405,29 +449,31 @@ theorem FriendOperation.coind (motive : (Seq α → Seq α) → Prop)
     apply ih h_next
     simpa [dist_eq_half_of_head h_head, pow_succ'] using hn
 
-theorem FriendOperation.coind_comp_friend_left {op : Seq α → Seq α}
+/-- A generalisation of `FriendlyOperation.coind` for that allows using `opf ∘ op'` in the tail
+of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
+theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
     (motive : (Seq α → Seq α) → Prop)
     (h_base : motive op)
     (h_step : ∀ op, motive op →
-      ∃ T : Option α → Option (α × Subtype FriendOperation × Subtype motive),
+      ∃ T : Option α → Option (α × Subtype FriendlyOperation × Subtype motive),
       ∀ s, (op s).destruct = (T s.head).map fun (hd, opf, op') => (hd, opf.val <| op'.val s.tail)) :
-    FriendOperation op := by
+    FriendlyOperation op := by
   let motive' (op : Seq α → Seq α) : Prop :=
-    ∃ opf op', op = opf ∘ op' ∧ FriendOperation opf ∧ motive op'
-  apply FriendOperation.coind motive'
-  · exact ⟨_root_.id, op, rfl, FriendOperation.id, h_base⟩
+    ∃ opf op', op = opf ∘ op' ∧ FriendlyOperation opf ∧ motive op'
+  apply FriendlyOperation.coind motive'
+  · exact ⟨_root_.id, op, rfl, FriendlyOperation.id, h_base⟩
   clear h_base op
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
   specialize h_step _ h_op
   obtain ⟨T, hT⟩ := h_step
-  obtain ⟨F, hF⟩ := FriendOperation.destruct h_opf
+  obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
   use fun hd? ↦
     match (T hd?) with
     | none => (F none).map fun (hd, opf') =>
-      (hd, ⟨_, fun _ ↦ opf'.val nil, op, rfl, FriendOperation.const, h_op⟩)
+      (hd, ⟨_, fun _ ↦ opf'.val nil, op, rfl, FriendlyOperation.const, h_op⟩)
     | some (hd, opf', op') => (F (some hd)).map fun (hd', opf'') =>
       (hd', ⟨_, opf''.val ∘ opf'.val, op'.val, rfl,
-        FriendOperation.comp opf''.prop opf'.prop, op'.prop⟩)
+        FriendlyOperation.comp opf''.prop opf'.prop, op'.prop⟩)
   intro s
   specialize hT s
   simp only [Function.comp_apply]
@@ -442,7 +488,7 @@ theorem FriendOperation.coind_comp_friend_left {op : Seq α → Seq α}
   | cons s_hd s_tl =>
   simp only [destruct_cons] at hT
   specialize hF (.cons s_hd s_tl)
-  simp only [hF, tail_cons, head_cons]
+  simp only [hF, Seq.tail_cons, Seq.head_cons]
   generalize T s.head = t? at *
   cases t? with
   | none => simp at hT
@@ -452,29 +498,31 @@ theorem FriendOperation.coind_comp_friend_left {op : Seq α → Seq α}
   simp [hT]
   rfl
 
-theorem FriendOperation.coind_comp_friend_right {op : Seq α → Seq α}
+/-- A generalisation of `FriendlyOperation.coind` for that allows using `op' ∘ opf` in the head
+of `op s` where `opf` is friendly and `op'` is a function satisfying `motive`. -/
+theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
     (motive : (Seq α → Seq α) → Prop)
     (h_base : motive op)
     (h_step : ∀ op, motive op →
-      ∃ T : Option α → Option (α × Subtype FriendOperation × Subtype motive),
+      ∃ T : Option α → Option (α × Subtype FriendlyOperation × Subtype motive),
       ∀ s, (op s).destruct = (T s.head).map fun (hd, opf, op') => (hd, op'.val <| opf.val s.tail)) :
-    FriendOperation op := by
+    FriendlyOperation op := by
   let motive' (op : Seq α → Seq α) : Prop :=
-    ∃ opf op', op = op' ∘ opf ∧ FriendOperation opf ∧ motive op'
-  apply FriendOperation.coind motive'
-  · exact ⟨_root_.id, op, rfl, FriendOperation.id, h_base⟩
+    ∃ opf op', op = op' ∘ opf ∧ FriendlyOperation opf ∧ motive op'
+  apply FriendlyOperation.coind motive'
+  · exact ⟨_root_.id, op, rfl, FriendlyOperation.id, h_base⟩
   clear h_base op
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
   specialize h_step _ h_op
   obtain ⟨T, hT⟩ := h_step
-  obtain ⟨F, hF⟩ := FriendOperation.destruct h_opf
+  obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
   use fun hd? ↦
     match (F hd?) with
     | none => (T none).map fun (hd, opf', op') =>
-      (hd, ⟨_, fun _ ↦ opf'.val nil, op', rfl, FriendOperation.const, op'.prop⟩)
+      (hd, ⟨_, fun _ ↦ opf'.val nil, op', rfl, FriendlyOperation.const, op'.prop⟩)
     | some (hd, opf') => (T (some hd)).map fun (hd', opf'', op') =>
       (hd', ⟨_, opf''.val ∘ opf'.val, op'.val, rfl,
-        FriendOperation.comp opf''.prop opf'.prop, op'.prop⟩)
+        FriendlyOperation.comp opf''.prop opf'.prop, op'.prop⟩)
   intro s
   simp only [Function.comp_apply]
   specialize hF s
@@ -500,9 +548,10 @@ theorem FriendOperation.coind_comp_friend_right {op : Seq α → Seq α}
   rw [hT]
   rfl
 
--- TODO: prove using eq_of_bisim
-theorem FriendOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α}
-    [FriendOperationClass op]
+/-- A generalisation of `Seq.eq_of_bisim'` for that allows using a friendly operation in the tail
+of the sequences. -/
+theorem FriendlyOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α → Seq α}
+    [FriendlyOperationClass op]
     (motive : Seq α → Seq α → Prop)
     (base : motive s t)
     (step : ∀ s t, motive s t → (s = t) ∨
@@ -528,9 +577,9 @@ theorem FriendOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α → 
     calc
       _ ≤ 2⁻¹ * dist s' t' := by
         gcongr
-        apply FriendOperation.dist_le
-        apply FriendOperationClass.friend
+        apply FriendlyOperation.dist_le
+        apply FriendlyOperationClass.friend
       _ ≤ _ := by
         grw [ih, pow_succ']
 
-end Stream'.Seq
+end Tactic.ComputeAsymptotics.Seq
