@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.RingTheory.Valuation.Discrete.Basic -- TODO: move to dependency
 
 /-!
 # Finite places of number fields
@@ -40,6 +41,129 @@ number field, places, finite places
 -/
 
 @[expose] public section
+
+
+-- TODO: move to appropriate files and PR as prerequisites
+section Prelim
+
+/-- The isomorphism between `Multiplicative ℤ` and the infinite cyclic group `G` sending
+`Multiplicative.ofAdd 1` to the generator `g : G`. -/
+@[simps!]
+noncomputable def mulIntCyclicMulEquiv {G : Type*} [CommGroup G] [Infinite G] {g : G}
+    (hg : Subgroup.zpowers g = ⊤) : Multiplicative ℤ ≃* G := by
+  refine MulEquiv.ofBijective (zpowersHom G g) ?_
+  refine ⟨?_, MonoidHom.range_eq_top.mp hg⟩
+  apply (MonoidHom.ker_eq_bot_iff ((zpowersHom G) g)).mp
+  simp only [zpowersHom_ker_eq, Subgroup.zpowers_eq_bot, ofAdd_eq_one, Int.natCast_eq_zero,
+      orderOf_eq_zero_iff]
+  rw [← infinite_zpowers, hg]
+  exact Set.infinite_univ
+
+lemma mulIntCyclicMulEquiv_strictMono {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+    [Nontrivial G] {g : G} (hg : Subgroup.zpowers g = ⊤) (hg1 : 1 < g) :
+    StrictMono (mulIntCyclicMulEquiv hg) := by
+  intro x y hxy
+  simp only [mulIntCyclicMulEquiv, MulEquiv.ofBijective_apply, zpowersHom_apply]
+  exact zpow_lt_zpow_right hg1 hxy
+
+lemma mulIntCyclicMulEquiv_symm_apply_zpow {G : Type*} [CommGroup G] [Infinite G] {g : G}
+    (hg : Subgroup.zpowers g = ⊤) (k : ℤ) :
+    (mulIntCyclicMulEquiv hg).symm (g ^ k) = Multiplicative.ofAdd k := by
+  rw [← (MulEquiv.injective (mulIntCyclicMulEquiv hg)).eq_iff, MulEquiv.apply_symm_apply,
+    mulIntCyclicMulEquiv_apply, toAdd_ofAdd]
+
+open scoped WithZero
+
+open MonoidWithZeroHom NNReal WithZeroMulInt
+
+/-- An order-preserving isomorphism between the `ValueGroup₀` of a discrete valuation and `ℤᵐ⁰`. -/
+@[simps!]
+noncomputable def valueGroup₀_equiv_withZeroMulInt {R Γ : Type*} [CommRing R]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation R Γ) [hv : v.IsRankOneDiscrete] :
+    (ValueGroup₀ v) ≃* ℤᵐ⁰ :=
+  MulEquiv.withZero (mulIntCyclicMulEquiv
+    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)).symm
+
+-- Delete?
+lemma valueGroup₀_equiv_withZeroMulInt_apply_zero {R Γ : Type*} [CommRing R]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation R Γ) [hv : v.IsRankOneDiscrete] :
+    valueGroup₀_equiv_withZeroMulInt v 0 = 0 := by simp
+
+lemma valueGroup₀_equiv_withZeroMulInt_apply_zpow {R Γ : Type*} [CommRing R]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation R Γ) [hv : v.IsRankOneDiscrete] (k : ℤ) :
+    valueGroup₀_equiv_withZeroMulInt v (hv.generator' ^ k) = WithZero.exp (- k) := by
+  simp only [map_zpow₀, valueGroup₀_equiv_withZeroMulInt_apply, WithZero.map'_coe,
+    MonoidHom.coe_coe]
+  rw [← WithZero.coe_zpow, WithZero.exp, WithZero.coe_inj, ← map_zpow]
+  simp [← mulIntCyclicMulEquiv_symm_apply_zpow
+    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)]
+
+lemma valueGroup₀_equiv_withZeroMulInt_strictMono {R Γ : Type*} [CommRing R]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation R Γ) [hv : v.IsRankOneDiscrete] :
+    StrictMono (valueGroup₀_equiv_withZeroMulInt v) := by
+  intro x y hxy
+  simp only [valueGroup₀_equiv_withZeroMulInt, MulEquiv.withZero_apply_apply]
+  rw [(WithZero.map'_strictMono (MulEquiv.strictMono_symm (mulIntCyclicMulEquiv_strictMono
+    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)
+    (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
+  exact hxy
+
+open WithZero
+
+lemma generator_eq_neg_exp_one_of_surjective {K : Type*} [Field K]
+    {v : Valuation K ℤᵐ⁰} [hv : v.IsRankOneDiscrete] (hsurj : Function.Surjective v) :
+    hv.generator = Units.mk0 (WithZero.exp (-1 : ℤ) : ℤᵐ⁰) (by simp) := by
+  rw [← Valuation.IsRankOneDiscrete.valueGroup_genLTOne_eq_generator, eq_comm]
+  refine LinearOrderedCommGroup.Subgroup.genLTOne_unique (valueGroup v) ?_ ?_
+  · rw [← Units.val_lt_val, Units.val_one,← WithZero.exp_zero, Units.val_mk0]
+    exact compareOfLessAndEq_eq_lt.mp rfl
+  · ext n
+    simp only [Int.reduceNeg, exp_neg, Subgroup.mem_zpowers_iff, mem_valueGroup_iff_of_comm,
+      ne_eq, map_eq_zero]
+    refine ⟨fun _ ↦ ⟨1, one_ne_zero, ?_⟩ , fun _ ↦ ?_⟩
+    · obtain ⟨x, hx⟩ := hsurj n
+      exact ⟨x, by simp [hx]⟩
+    · have hn0 : (n : ℤᵐ⁰) ≠ 0 := by simp only [ne_eq, Units.ne_zero, not_false_eq_true]
+      use -WithZero.log n
+      ext
+      simp [zpow_neg, Units.val_inv_eq_inv_val, Units.val_zpow_eq_zpow_val, Units.val_mk0,
+        inv_zpow', inv_inv]
+
+lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective {K : Type*} [Field K]
+    {v : Valuation K ℤᵐ⁰} [hv : v.IsRankOneDiscrete] (hsurj : Function.Surjective v) (x : K) :
+    (valueGroup₀_equiv_withZeroMulInt v) (v.restrict x) = v x := by
+  simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,
+    valueGroup₀_equiv_withZeroMulInt_apply]
+  split_ifs with h0
+  · simp [h0]
+  · simp only [WithZero.map'_coe, MonoidHom.coe_coe]
+    conv_rhs => rw [← coe_unzero h0]
+    rw [WithZero.coe_inj, ← (MulEquiv.injective (mulIntCyclicMulEquiv
+      (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff,
+      MulEquiv.apply_symm_apply]
+    ext
+    simp only [Units.val_mk0, mulIntCyclicMulEquiv_apply, inv_zpow',
+      Valuation.IsRankOneDiscrete.generator',  SubgroupClass.coe_zpow]
+    have hg : hv.generator = Units.mk0 (WithZero.exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
+      generator_eq_neg_exp_one_of_surjective hsurj
+    rw [hg]
+    conv_lhs => rw [← coe_unzero h0]
+    simp only [coe_unzero, Int.reduceNeg, exp_neg, zpow_neg, Units.val_inv_eq_inv_val,
+      Units.val_zpow_eq_zpow_val, Units.val_mk0, inv_zpow', ← exp_zsmul, Int.zsmul_eq_mul, mul_one,
+      inv_inv]
+    simp [WithZero.exp]
+
+/-- A discrete valuation has rank one. -/
+noncomputable def Valuation.IsRankOneDiscrete.rankOne {K Γ : Type*} [Field K]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) [hv : v.IsRankOneDiscrete]
+    {e : ℝ≥0} (he : 1 < e) : v.RankOne where
+  hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp (valueGroup₀_equiv_withZeroMulInt v)
+  strictMono' := (toNNReal_strictMono he).comp (valueGroup₀_equiv_withZeroMulInt_strictMono v)
+  exists_val_nontrivial := by
+    obtain ⟨x, hx⟩ := v.exists_isUniformizer_of_isCyclic_of_nontrivial
+    exact ⟨x, hx.val_ne_zero, ne_of_lt hx.val_lt_one⟩
+
+end Prelim
 
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt WithZero
 
@@ -135,9 +259,18 @@ noncomputable def FinitePlace.embedding : WithVal (v.valuation K) →+* adicComp
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
+noncomputable instance : ((Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)).IsRankOneDiscrete where
+  exists_generator_lt_one' := by
+    have h : (v.valuation K).IsRankOneDiscrete := Valuation.IsRankOneDiscrete.mk' (valuation K v)
+    exact ⟨h.generator, by rw [h.generator_zpowers_eq_valueGroup, adicCompletion_valueGroup_eq],
+      h.generator_lt_one⟩
+
+-- TODO: Use IsRankOneDiscrete.rankOne
 noncomputable instance : (v.valuation K).RankOne where
-  hom' := sorry --toNNReal (absNorm_ne_zero v)
-  strictMono' := sorry --toNNReal_strictMono (one_lt_absNorm_nnreal v)
+  hom' := (toNNReal (absNorm_ne_zero v)).comp
+    (valueGroup₀_equiv_withZeroMulInt (v.valuation K))
+  strictMono' := (toNNReal_strictMono (one_lt_absNorm_nnreal v)).comp
+    (valueGroup₀_equiv_withZeroMulInt_strictMono _)
   exists_val_nontrivial := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use x
@@ -146,8 +279,10 @@ noncomputable instance : (v.valuation K).RankOne where
 
 noncomputable instance instRankOneValuedAdicCompletion :
     Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
-  hom' := sorry --toNNReal (absNorm_ne_zero v)
-  strictMono' := sorry --toNNReal_strictMono (one_lt_absNorm_nnreal v)
+  hom' := (toNNReal (absNorm_ne_zero v)).comp
+    (valueGroup₀_equiv_withZeroMulInt (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰))
+  strictMono' := (toNNReal_strictMono (one_lt_absNorm_nnreal v)).comp
+    (valueGroup₀_equiv_withZeroMulInt_strictMono Valued.v)
   exists_val_nontrivial := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use x
@@ -184,9 +319,19 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by
-  simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
-    Valuation.RankOne.hom, embedding_apply, ← toNNReal_valued_eq_adicAbv]
-  sorry
+  simp only [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
+    Valued.norm, Valuation.RankOne.hom, embedding_apply, adicValued_apply',
+    ← toNNReal_valued_eq_adicAbv, NNReal.coe_inj]
+  simp only [Valuation.RankLeOne.hom', MonoidWithZeroHom.coe_comp, MonoidWithZeroHom.coe_coe,
+    Function.comp_apply]
+  congr
+  by_cases hx : x = 0
+  · simp [hx]
+  · have : Valued.v (x : UniformSpace.Completion (WithVal (valuation K v))) =
+      valuation K v x := by simp only [Valued.valuedCompletion_apply]; rfl
+    rw [← this]
+    exact valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
+      (valuedAdicCompletion_surjective K v) _
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/

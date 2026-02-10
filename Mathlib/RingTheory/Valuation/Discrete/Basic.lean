@@ -87,8 +87,8 @@ variable [IsRankOneDiscrete v]
 lemma exists_generator_lt_one : ∃ (γ : Γˣ), zpowers γ = valueGroup v ∧ γ < 1 :=
   exists_generator_lt_one'
 
-/-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is a generator of
-the value group that is `< 1`. -/
+/-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is an element of `Γ`
+which is a generator of the value group that is `< 1`. -/
 noncomputable def generator : Γˣ := (exists_generator_lt_one v).choose
 
 lemma generator_zpowers_eq_valueGroup :
@@ -117,6 +117,24 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsRankOneD
   exact ⟨generator w, by simp⟩
 
 lemma generator_ne_zero : (generator v : Γ) ≠ 0 := by simp
+
+/-- Given a discrete valuation `v`, `Valuation.IsRankOneDiscrete.generator` is a generator of
+the value group that is `< 1`, as an element of `valueGroup v`. -/
+noncomputable def generator' : valueGroup v :=
+   ⟨generator v, generator_mem_valueGroup v⟩
+
+lemma generator'_zpowers_eq_top :
+    (zpowers (generator' v)) = ⊤ := by
+  rw [Subgroup.eq_top_iff', Subtype.forall]
+  intro a ha
+  rw [← generator_zpowers_eq_valueGroup v, Subgroup.mem_zpowers_iff] at ha
+  obtain ⟨k, hk⟩ := ha
+  use k
+  ext
+  simp [generator', hk]
+
+lemma generator'_lt_one : generator' v < 1 :=
+  (exists_generator_lt_one v).choose_spec.2
 
 instance : IsCyclic <| valueGroup v := by
   rw [← generator_zpowers_eq_valueGroup]

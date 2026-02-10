@@ -431,6 +431,17 @@ lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
   Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
+lemma adicCompletion_valueGroup_eq :
+    MonoidWithZeroHom.valueGroup (Valued.v (R := adicCompletion K v)) =
+      MonoidWithZeroHom.valueGroup (valuation K v) := by
+  ext n
+  simp only [MonoidWithZeroHom.mem_valueGroup_iff_of_comm, ne_eq, map_eq_zero]
+  refine ⟨fun ⟨a, ha0, x, hx⟩ ↦ ?_, fun ⟨a, ha0, x, hx⟩  ↦ ⟨a, by simp [ha0], x, by simp [hx]⟩⟩
+  obtain ⟨b, hb⟩ := valuation_surjective K v (Valued.v a)
+  obtain ⟨y, hy⟩ := valuation_surjective K v (Valued.v x)
+  refine ⟨b, ?_, y, by simp [hb, hy, hx]⟩
+  rwa [← ne_eq, ← (valuation K v).ne_zero_iff, hb, Valuation.ne_zero_iff]
+
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
