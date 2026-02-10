@@ -137,7 +137,7 @@ theorem isTrivialBlock_of_card_le_two
 
 variable [Group G] [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition) -/
@@ -228,7 +228,7 @@ section Stabilizer
 
 variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
 the set of blocks containing a given element is a simple order -/

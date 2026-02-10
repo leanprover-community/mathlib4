@@ -20,7 +20,7 @@ Fourier series if `f` is continuous and the sequence of its Fourier coefficients
 
 noncomputable section
 
-open scoped BigOperators ComplexConjugate ENNReal
+open scoped ComplexConjugate ENNReal
 
 open Set Algebra Submodule MeasureTheory
 

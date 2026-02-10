@@ -18,7 +18,7 @@ Likewise, `M` is *column-stochastic* if all its entries are non-negative and `1 
 file defines these concepts and provides basic API for them.
 
 Note that *doubly stochastic* matrices (i.e. matrices that are both row- and column-stochastic)
-are defined in `Analysis.Convex.DoublyStochasticMatrix`.
+are defined in `Mathlib/Analysis/Convex/DoublyStochasticMatrix.lean`.
 
 ## Main definitions
 
@@ -48,7 +48,7 @@ def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1  }
   mul_mem' {M N} hM hN := by
     refine ⟨fun i j => sum_nonneg fun i _ => mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_⟩
-    next => rw [← mulVec_mulVec, hN.2, hM.2]
+    rw [← mulVec_mulVec, hN.2, hM.2]
   one_mem' := by
     simp [zero_le_one_elem]
 
