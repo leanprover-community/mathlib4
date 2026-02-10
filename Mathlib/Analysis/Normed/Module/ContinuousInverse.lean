@@ -52,7 +52,6 @@ This concept is used to give an equivalent definition of immersions and submersi
   If `f` is injective, it has a continuout left inverse.
 * `f` has a continuous left inverse if and only if it is injective, has closed range,
   and its range admits a closed complement
-* Are "split monomorphism/split injection" resp. "split epimorphism/split surjection" better terms?
 
 -/
 
@@ -82,7 +81,7 @@ namespace HasLeftInverse
 
 variable {f : E →L[R] F}
 
-/-- Choice of left inverse for `f : F →L[R] E`, given that such an inverse exists. -/
+/-- Choice of continuous left inverse for `f : F →L[R] E`, given that such an inverse exists. -/
 def leftInverse (h : f.HasLeftInverse) : F →L[R] E := Classical.choose h
 
 lemma leftInverse_leftInverse (h : f.HasLeftInverse) : LeftInverse h.leftInverse f :=
@@ -102,6 +101,13 @@ lemma congr {g : E →L[R] F} (hf : f.HasLeftInverse) (hfg : g = f) :
 lemma _root_.ContinuousLinearEquiv.hasLeftInverse (f : E ≃L[R] F) :
     f.toContinuousLinearMap.HasLeftInverse :=
   ⟨f.symm, rightInverse_of_comp (by simp)⟩
+
+@[simp] lemma _root_.ContinuousLinearEquiv.leftInverse_hasLeftInverse (f : E ≃L[R] F) :
+    f.hasLeftInverse.leftInverse = f.symm := by
+  ext y
+  calc f.hasLeftInverse.leftInverse y
+   _ = f.hasLeftInverse.leftInverse (f (f.symm y)) := by simp
+    _ = f.symm y := f.hasLeftInverse.leftInverse_leftInverse (f.symm y)
 
 /-- An invertible continuous linear map has a continuous left inverse. -/
 lemma of_isInvertible (hf : IsInvertible f) : f.HasLeftInverse := by
@@ -165,7 +171,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Injective f) :
     f.HasLeftInverse := by
-  -- A surjective linear map has a linear inverse. It is continuous because its domain is.
+  -- An injective linear map has a linear inverse; this inverse is automatically continuous
+  -- because its domain is finite-dimensional.
   obtain ⟨g, hg⟩ :=
     f.toLinearMap.exists_leftInverse_of_injective (f.ker_eq_bot_of_injective hf)
   exact ⟨⟨g, LinearMap.continuous_of_finiteDimensional _⟩, fun x ↦ congr($hg x)⟩
@@ -178,7 +185,7 @@ namespace HasRightInverse
 
 variable {f : E →L[R] F}
 
-/-- Choice of right inverse for `f` -/
+/-- Choice of continuous right inverse for `f : F →L[R] E`, given that such an inverse exists. -/
 def rightInverse (h : f.HasRightInverse) : F →L[R] E := Classical.choose h
 
 lemma rightInverse_rightInverse (h : f.HasRightInverse) : RightInverse h.rightInverse f :=
@@ -186,9 +193,6 @@ lemma rightInverse_rightInverse (h : f.HasRightInverse) : RightInverse h.rightIn
 
 lemma surjective (h : f.HasRightInverse) : Surjective f :=
   h.rightInverse_rightInverse.surjective
-
-example (h : f.HasRightInverse) (x : F) : f (h.rightInverse x) = x :=
-  h.rightInverse_rightInverse x
 
 lemma congr {g : E →L[R] F} (hf : f.HasRightInverse) (hfg : g = f) :
     g.HasRightInverse :=
@@ -198,6 +202,11 @@ lemma congr {g : E →L[R] F} (hf : f.HasRightInverse) (hfg : g = f) :
 lemma _root_.ContinuousLinearEquiv.hasRightInverse (f : E ≃L[R] F) :
     f.toContinuousLinearMap.HasRightInverse :=
   ⟨f.symm, rightInverse_of_comp (by simp)⟩
+
+@[simp] lemma _root_.ContinuousLinearEquiv.rightInverse_hasRightInverse (f : E ≃L[R] F) :
+    f.hasRightInverse.rightInverse = f.symm := by
+  ext y
+  exact f.injective <| by simpa using f.hasRightInverse.rightInverse_rightInverse y
 
 /-- An invertible continuous linear map splits. -/
 lemma of_isInvertible (hf : IsInvertible f) : f.HasRightInverse := by
@@ -259,7 +268,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
 lemma of_surjective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Surjective f) :
     f.HasRightInverse := by
-  -- A surjective linear map has a linear inverse. It is continuous because its domain is.
+  -- A surjective linear map has a linear inverse, which is automatically continuous
+  -- because its domain is finite-dimensional.
   obtain ⟨g, hg⟩ :=
     f.toLinearMap.exists_rightInverse_of_surjective (f.range_eq_top_of_surjective hf)
   exact ⟨⟨g, g.continuous_of_finiteDimensional⟩, fun x ↦ congr($hg x)⟩
