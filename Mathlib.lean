@@ -2121,6 +2121,7 @@ public import Mathlib.Analysis.Polynomial.Basic
 public import Mathlib.Analysis.Polynomial.CauchyBound
 public import Mathlib.Analysis.Polynomial.Factorization
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
+public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.Quaternion
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.RCLike.BoundedContinuous
@@ -6517,6 +6518,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Moebius
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
