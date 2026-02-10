@@ -312,6 +312,36 @@ theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : I
     hS _ (closure (S ∩ U))ᶜ hU isClosed_closure.isOpen_compl h (inter_compl_nonempty_iff.mpr h')
   exact h₃ (subset_closure ⟨h₁, h₂⟩)
 
+theorem sUnion_irreducibleComponents : ⋃₀ irreducibleComponents X = Set.univ :=
+  Set.eq_univ_of_forall fun x ↦ Set.mem_sUnion_of_mem mem_irreducibleComponent
+    (irreducibleComponent_mem_irreducibleComponents x)
+
+theorem mem_of_subset_sUnion_irreducibleComponents (Z : Set X) (hZ : Z ∈ irreducibleComponents X)
+    (S : Set (Set X)) (hS : S.Finite) (hSα : S ⊆ irreducibleComponents X) (hZS : Z ⊆ ⋃₀ S) :
+    Z ∈ S := by
+  obtain ⟨W, hWS, hZW⟩ := isIrreducible_iff_sUnion_isClosed.mp hZ.1 hS.toFinset
+    (fun W hW ↦ isClosed_of_mem_irreducibleComponents W (hSα (hS.mem_toFinset.mp hW)))
+    (hS.coe_toFinset.symm ▸ hZS)
+  rw [hS.mem_toFinset] at hWS
+  rwa [Set.Subset.antisymm hZW (hZ.2 (hSα hWS).1 hZW)]
+
+theorem closure_sUnion_irreducibleComponents_diff_singleton
+    (hX : (irreducibleComponents X).Finite) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) :
+    closure (⋃₀ (irreducibleComponents X \ {Z}))ᶜ = Z := by
+  have h : (⋃₀ (irreducibleComponents X \ {Z}))ᶜ ⊆ Z := by
+    rw [Set.compl_subset_iff_union, ← Set.sUnion_singleton Z, ← Set.sUnion_union,
+      Set.sUnion_singleton, Set.diff_union_of_subset, sUnion_irreducibleComponents]
+    rwa [Set.singleton_subset_iff]
+  apply Set.Subset.antisymm
+  · rwa [(isClosed_of_mem_irreducibleComponents Z hZ).closure_subset_iff]
+  · rw [← Set.inter_eq_right.mpr h]
+    apply subset_closure_inter_of_isPreirreducible_of_isOpen hZ.1.2
+    · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
+      exact hX.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+    · rw [Set.inter_compl_nonempty_iff]
+      exact mt (mem_of_subset_sUnion_irreducibleComponents Z hZ _ hX.diff Set.diff_subset)
+        (Set.notMem_diff_of_mem (Set.mem_singleton Z))
+
 /-- If `∅ ≠ U ⊆ S ⊆ t` such that `U` is open and `t` is preirreducible, then `S` is irreducible. -/
 theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible t)
     (hU : U.Nonempty) (hU' : IsOpen U) (h₁ : U ⊆ S) (h₂ : S ⊆ t) : IsIrreducible S := by
