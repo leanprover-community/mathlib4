@@ -8,9 +8,8 @@ set_option linter.unusedFintypeInType true
 section unused
 
 /--
-warning: `foo` has the hypothesis:
+warning: `foo` does not use the following hypothesis in its type:
   • [Fintype α] (#2)
-which is not used in the remainder of the type.
 
 Consider replacing this hypothesis with the corresponding instance of `Finite` and using `Fintype.ofFinite` in the proof, or removing it entirely.
 
@@ -25,10 +24,9 @@ def Foo (α) [Fintype α] := Unit
 theorem bar {α} [Fintype α] (s : Foo α) : s = s := rfl
 
 /--
-warning: `foo₂` has the hypotheses:
+warning: `foo₂` does not use the following hypotheses in its type:
   • [(α : Type) → Fintype α] (#2)
   • [Fintype a] (#4)
-which are not used in the remainder of the type.
 
 Consider replacing these hypotheses with the corresponding instances of `Finite` and using `Fintype.ofFinite` in the proof, or removing them entirely.
 
@@ -39,10 +37,9 @@ theorem foo₂ (a : Type) [∀ α : Type, Fintype α] (_ : Unit) [Fintype a] : T
   trivial
 
 /--
-warning: `foo₃` has the hypotheses:
+warning: `foo₃` does not use the following hypotheses in its type:
   • [(α : Type) → Fintype α] (#2)
   • [Fintype β] (#3)
-which are not used in the remainder of the type.
 
 Consider replacing these hypotheses with the corresponding instances of `Finite` and using `Fintype.ofFinite` in the proof, or removing them entirely.
 
@@ -53,9 +50,8 @@ theorem foo₃ {β} [∀ α : Type, Fintype α] [Fintype β] : True := trivial
 
 -- See through `let`, don't count it as an index
 /--
-warning: `foo₄` has the hypothesis:
+warning: `foo₄` does not use the following hypothesis in its type:
   • [Fintype β] (#2)
-which is not used in the remainder of the type.
 
 Consider replacing this hypothesis with the corresponding instance of `Finite` and using `Fintype.ofFinite` in the proof, or removing it entirely.
 
@@ -77,16 +73,15 @@ section used
 /- The linter either should not fire on these declarations because the instance hypotheses are used
 in the type, or not fire on *every* instance in these declarations. -/
 
-theorem fooUsing [Fintype (Nat → Nat)] : Uses (Fintype (Nat → Nat)) := trivial
+theorem fooUsing [Fintype (Nat → Nat)] : UsesInstanceOf (Fintype (Nat → Nat)) := trivial
 
-theorem fooUsing₁ [Fintype (Nat → Nat)] : Uses (Fintype (Nat → Nat)) → True :=
+theorem fooUsing₁ [Fintype (Nat → Nat)] : UsesInstanceOf (Fintype (Nat → Nat)) → True :=
   fun _ => trivial
 
 -- Should fire on parameter #1 but not parameter #2
 /--
-warning: `fooUsing₂` has the hypothesis:
+warning: `fooUsing₂` does not use the following hypothesis in its type:
   • [Fintype Bool] (#1)
-which is not used in the remainder of the type.
 
 Consider replacing this hypothesis with the corresponding instance of `Finite` and using `Fintype.ofFinite` in the proof, or removing it entirely.
 
@@ -94,17 +89,17 @@ Note: This linter can be disabled with `set_option linter.unusedFintypeInType fa
 -/
 #guard_msgs in
 theorem fooUsing₂ [Fintype Bool] [Fintype (Nat → Nat)] :
-    Uses (Fintype (Nat → Nat)) → True :=
+    UsesInstanceOf (Fintype (Nat → Nat)) → True :=
   fun _ => trivial
 
 -- Note `optParam` test
 theorem fooUsing₃ [Fintype Bool] [Fintype (Nat → Nat)]
-    (_ : Uses (Fintype Bool) := trivial) : Uses (Fintype (Nat → Nat)) → True :=
+    (_ : UsesInstanceOf (Fintype Bool) := trivial) : UsesInstanceOf (Fintype (Nat → Nat)) → True :=
   fun _ => trivial
 
 set_option linter.unusedFintypeInType false in
 theorem fooUsing₂' [Fintype Bool] [Fintype (Nat → Nat)] :
-    Uses (Fintype (Nat → Nat)) → True :=
+    UsesInstanceOf (Fintype (Nat → Nat)) → True :=
   fun _ => trivial
 
 end used

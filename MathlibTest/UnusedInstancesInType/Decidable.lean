@@ -71,16 +71,10 @@ section used
 /- The linter either should not fire on these declarations because the instance hypotheses are used
 in the type, or not fire on *every* instance in these declarations. -/
 
-def UsesInstanceOf (α : Sort u) (_ : α := by infer_instance) : Prop := True
-
 theorem fooUsing [DecidableEq (Nat → Nat)] : UsesInstanceOf (DecidableEq (Nat → Nat)) := trivial
 
 theorem fooUsing₁ [DecidableEq (Nat → Nat)] : UsesInstanceOf (DecidableEq (Nat → Nat)) → True :=
   fun _ => trivial
-
-def Uses {α} (_ : α) : Prop := True
-
-theorem UsesInProof (α : Sort u) (_ : α := by infer_instance) : True := trivial
 
 /--
 warning: `fooUsing₁'` does not use the following hypothesis in its type outside of proofs:
@@ -92,7 +86,7 @@ Note: This linter can be disabled with `set_option linter.unusedDecidableInType 
 -/
 #guard_msgs in
 theorem fooUsing₁' [DecidableEq (Nat → Nat)] :
-    Uses (UsesInProof (DecidableEq (Nat → Nat)) (by infer_instance)) → True :=
+    Uses (UsesInstanceInProof (DecidableEq (Nat → Nat))) → True :=
   fun _ => trivial
 
 /--
@@ -105,7 +99,8 @@ Note: This linter can be disabled with `set_option linter.unusedDecidableInType 
 -/
 #guard_msgs in
 theorem fooUsing₁'' [DecidableEq (Nat → Nat)]
-    (_ : True := UsesInProof (DecidableEq (Nat → Nat)) (by infer_instance)) : True := trivial
+    (_ : True := UsesInstanceInProof (DecidableEq (Nat → Nat)) (by infer_instance)) : True :=
+  trivial
 
 -- Should fire on parameter #1 but not parameter #2
 /--
@@ -135,7 +130,7 @@ section setOptionIn
 
 set_option linter.unusedDecidableInType false in
 theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
-    Uses (DecidableEq (Nat → Nat)) → True :=
+    UsesInstanceOf (DecidableEq (Nat → Nat)) → True :=
   fun _ => trivial
 
 set_option linter.unusedDecidableInType false
@@ -155,5 +150,3 @@ theorem fooUsing₂'' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
   fun _ => trivial
 
 end setOptionIn
-
-end decidable
