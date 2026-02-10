@@ -125,7 +125,7 @@ theorem gaussNorm_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
     coe_eq_zero_iff]
 
 /-- If `v` is a nonnegative function, then the Gauss norm is
-nonnegative. -/
+/-- If `v` is a nonnegative function, then the Gauss norm is nonnegative. -/
 theorem gaussNorm_nonneg (hc : 0 ≤ c) [NonnegHomClass F R ℝ] : 0 ≤ p.gaussNorm v c := by
   by_cases hp : p.support.Nonempty <;>
   simp_all [gaussNorm, sup'_nonneg_of_ne_zero, -Finset.le_sup'_iff]
@@ -279,12 +279,12 @@ theorem gaussNorm_mul (p q : R[X]) :
 include hna hc in
 /-- If `v` is a nonarchimedean absolute value, then the Gauss norm is an absolute value. -/
 theorem gaussNorm_isAbsoluteValue :
-    IsAbsoluteValue (gaussNorm v c) := {
+    IsAbsoluteValue (gaussNorm v c) where
   abv_nonneg' p := p.gaussNorm_nonneg v <| le_of_lt hc
   abv_eq_zero' := gaussNorm_eq_zero_iff v _ (fun _ hx ↦ (AbsoluteValue.eq_zero v).mp hx) hc
   abv_add' p q := by
     grind [isNonarchimedean_gaussNorm v hna (le_of_lt hc) p q, gaussNorm_nonneg]
-  abv_mul' p q := gaussNorm_mul hna hc p q}
+  abv_mul' p q := gaussNorm_mul hna hc p q
 
 end AbsoluteValue
 
