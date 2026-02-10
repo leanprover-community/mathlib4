@@ -393,6 +393,15 @@ theorem FriendlyOperation.destruct {op : Seq α → Seq α} (h : FriendlyOperati
       | nil => simp at this
       | cons => simp_all
 
+/-- If `op` is friendly, then `op s` and `op t` have the same head if `s` and `t`
+have the same head. -/
+theorem FriendlyOperation.op_head_eq {op : Seq α → Seq α} (h : FriendlyOperation op) {s t : Seq α}
+    (h_head : s.head = t.head) : (op s).head = (op t).head := by
+  obtain ⟨T, hT⟩ := FriendlyOperation.destruct h
+  simp [Stream'.Seq.head_eq_destruct, hT s, hT t] at h_head ⊢
+  simp [h_head]
+  rfl
+
 attribute [-simp] inv_pow in
 /-- Coinduction principle for proving that an operation is friendly. -/
 theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
