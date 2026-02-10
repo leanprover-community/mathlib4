@@ -123,8 +123,8 @@ theorem span_singleton_eq_bot {x} : span ({x} : Set α) = ⊥ ↔ x = 0 :=
   Submodule.span_singleton_eq_bot
 
 @[simp]
-theorem span_singleton_zero : span ({0} : Set α) = ⊥ := by
-  rw [span_singleton_eq_bot]
+theorem span_singleton_zero : span ({0} : Set α) = ⊥ :=
+  Submodule.span_zero_singleton _
 
 theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
     Ideal.span ({x} : Set α) ≠ ⊤ :=
@@ -134,9 +134,6 @@ theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬Is
 
 @[simp]
 theorem span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, span_singleton_eq_bot]
-
-@[simp]
-lemma span_singleton_zero : span {(0 : α)} = ⊥ := Submodule.span_zero_singleton _
 
 @[simp]
 theorem span_insert_zero {s : Set α} : span (insert (0 : α) s) = span s :=
@@ -176,10 +173,6 @@ theorem span_pair_comm {x y : α} : (span {x, y} : Ideal α) = span {y, x} := by
 
 theorem mem_span_pair {x y z : α} : z ∈ span ({x, y} : Set α) ↔ ∃ a b, a * x + b * y = z :=
   Submodule.mem_span_pair
-
-@[simp]
-theorem span_insert_zero (s : Set α) : span (insert 0 s) = span s :=
-  Submodule.span_insert_zero
 
 @[simp]
 theorem span_pair_zero (x : α) : span {x, 0} = span {x} := by
@@ -233,8 +226,6 @@ lemma mem_iff_of_associated {x y : α} (h : Associated x y) : x ∈ I ↔ y ∈ 
 end CommSemiring
 
 section Ring
-
-namespace Ideal
 
 variable [Ring α] (x y : α) (s : Set α)
 
@@ -295,13 +286,9 @@ theorem span_insert_abs [LinearOrder α] : span (insert |x| s) = span (insert x 
 theorem span_pair_abs [LinearOrder α] : span {x, |y|} = span {x, y} := by
   rw [span_pair_comm, span_insert_abs, span_pair_comm]
 
-end Ideal
-
 end Ring
 
 section CommRing
-
-namespace Ideal
 
 variable [CommRing α] (x y z : α)
 
@@ -356,9 +343,9 @@ theorem span_pair_sub_mul_right : span {x - z * y, y} = span {x, y} := by
 theorem span_pair_sub_mul_left : span {x, y - z * x} = span {x, y} := by
   rw [mul_comm, span_pair_sub_left_mul]
 
-end Ideal
-
 end CommRing
+
+end Ideal
 
 namespace IsIdempotentElem
 
