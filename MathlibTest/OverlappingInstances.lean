@@ -7,6 +7,8 @@ set_option linter.overlappingInstances true
 
 namespace Lean
 
+public section
+
 class SubBar (α : Type) where
   a' : α
 
@@ -42,14 +44,17 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 
 /--
+@ +3:17...+4:12
 warning: The declaration `foo₁` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[Bar Nat]` is provided by both `[FooBarBaz Nat]` and `[FooBarBaq Nat]`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₁`.
 -/
-#guard_msgs in
-def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := by
+#guard_msgs (positions := true) in
+set_option linter.overlappingInstances true in
+/-- A docstring! -/
+@[expose] public def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := by
   exact true
 
 /--

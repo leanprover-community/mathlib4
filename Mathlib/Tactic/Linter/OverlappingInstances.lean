@@ -232,6 +232,18 @@ def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM Messa
     at a time. Consider choosing different instance hypotheses for the {declDescr}."
   addMessageContextFull msg
 
+/-- This is a cheap way of getting a usefully better logging location: descend into `in`, and
+remove decl modifiers. This is still not ideal (e.g. it does not take care of `mutual`, and extends
+across the whole command), but prevents us from logging on e.g. the top of the docstring in most
+cases. -/
+private partial def stripInAndModifiers (cmd : Syntax) : Syntax :=
+  if cmd.isOfKind ``Parser.Command.in then
+    stripInAndModifiers cmd[2]
+  else if cmd[0].isOfKind ``Parser.Command.declModifiers then
+    cmd[1]
+  else
+    cmd
+
 open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
@@ -250,7 +262,7 @@ def overlappingInstances : Linter where
         let some (lctx, localInstances?, remainingType?) := info.getLCtxBefore?
           | continue
         -- TODO: better logging location
-        let outerRef ← getRef
+        let outerRef := stripInAndModifiers cmd
         ctx.runMetaMWithMessages lctx (localInstances := localInstances?) <|
           withRef outerRef do
           /- If there's a remaining expected type, then telescope into it in case it contains more
