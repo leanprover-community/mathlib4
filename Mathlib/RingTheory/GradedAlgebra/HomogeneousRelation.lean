@@ -3,10 +3,13 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhixuan Dai, Yiming Fu, Zhenyan Fu, Raphael Douglas Giles, Jiedong Jiang, Jingting Wang
 -/
-import Mathlib.Algebra.RingQuot
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.GroupTheory.Congruence.BigOperators
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.GroupTheory.Congruence.BigOperators
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.Ideal.Operations
+
 
 /-!
 # Homogeneous Relation
@@ -24,6 +27,8 @@ In this file, we define the property of an ideal being homogeneous.
 * We proved that taking `RingQuot` of a graded ring (or graded algebra) by a homogeneous relation
   gives a graded strucutre on the quotient ring.
 -/
+
+@[expose] public section
 
 variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
 variable {A : Type*} [Semiring A]
@@ -213,7 +218,9 @@ instance : GradedAlgebra ((Submodule.mapAlgHom (RingQuot.mkAlgHom R rel)) ∘ �
     exact Subtype.ext <| map_mul (RingQuot.mkAlgHom R rel) _ _
   · intro x y h
     ext j
-    simp [LinearMap.coe_addMonoidHom_comp, ← map_eq_toAddMonoid]
+    simp only [Function.comp_apply, AlgHom.coe_comp, AlgHom.coe_coe, decomposeAlgEquiv_apply,
+      toAlgebra_apply, LinearMap.coe_addMonoidHom_comp, lof_toAddMonoidHom_eq_of, toSemiring_apply,
+      ← map_eq_toAddMonoid, map_apply, LinearMap.toAddMonoidHom_coe, SetLike.coe_eq_coe]
     apply Subtype.ext
     change (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j x) =
       (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j y)
@@ -244,3 +251,6 @@ instance : GradedAlgebra ((Submodule.mapAlgHom (RingQuot.mkAlgHom R rel)) ∘ �
 end GradedAlgebra
 
 end HomogeneousRelation
+
+
+#min_imports
