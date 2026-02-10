@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Analysis.Normed.Group.InfiniteSum
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+public import Mathlib.Topology.ContinuousMap.Star
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
 # Continuous functions on a compact space
@@ -23,6 +25,8 @@ If you need a lemma which is proved about `α →ᵇ β` but not for `C(α, β)`
 you should restate it here. You can also use
 `ContinuousMap.equivBoundedOfCompact` to move functions back and forth.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -69,7 +73,8 @@ additively equivalent to `C(α, 𝕜)`.
 -/
 @[simps! -fullyApplied apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
-  ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
+  ({ toContinuousMapAddMonoidHom α β, (equivBoundedOfCompact α β).symm with } :
+    (α →ᵇ β) ≃+ C(α, β)).symm
 
 instance instPseudoMetricSpace : PseudoMetricSpace C(α, β) :=
   (isUniformEmbedding_equivBoundedOfCompact α β).comapPseudoMetricSpace _
@@ -127,6 +132,18 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
   simp only [mkOfCompact_apply]
 
+theorem dist_eq_iSup : dist f g = ⨆ x, dist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g,
+    BoundedContinuousFunction.dist_eq_iSup]
+
+theorem nndist_eq_iSup : nndist f g = ⨆ x, nndist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.nndist_eq f g,
+    BoundedContinuousFunction.nndist_eq_iSup]
+
+theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.edist_eq f g,
+    BoundedContinuousFunction.edist_eq_iSup]
+
 instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
     IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
@@ -171,7 +188,7 @@ section
 variable (f : C(α, E))
 
 -- The corresponding lemmas for `BoundedContinuousFunction` are stated with `{f}`,
--- and so can not be used in dot notation.
+-- and so cannot be used in dot notation.
 theorem norm_coe_le_norm (x : α) : ‖f x‖ ≤ ‖f‖ :=
   (mkOfCompact f).norm_coe_le_norm x
 
@@ -209,6 +226,9 @@ theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
+
+theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
+  (mkOfCompact f).enorm_eq_iSup_enorm
 
 -- A version with better keys
 instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
@@ -368,18 +388,6 @@ theorem dist_lt_of_dist_lt_modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) {a b 
 end UniformContinuity
 
 end ContinuousMap
-
-section CompLeft
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact :=
-  ContinuousLinearMap.compLeftContinuous
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact_apply :=
-  ContinuousLinearMap.compLeftContinuous_apply
-
-end CompLeft
 
 namespace ContinuousMap
 

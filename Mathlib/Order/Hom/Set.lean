@@ -3,15 +3,19 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.MinImports
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.MinImports
 
 /-!
 # Order homomorphisms and sets
 -/
+
+@[expose] public section
 
 
 open OrderDual Set
@@ -48,8 +52,8 @@ theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' (e '' s) = s 
 theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' (e.symm '' s) = s :=
   e.toEquiv.image_symm_image s
 
-theorem image_eq_preimage (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
@@ -74,6 +78,7 @@ open Set
 variable [Preorder α]
 
 /-- Order isomorphism between two equal sets. -/
+@[simps! apply symm_apply]
 def setCongr (s t : Set α) (h : s = t) :
     s ≃o t where
   toEquiv := Equiv.setCongr h
@@ -211,8 +216,8 @@ variable (α) [BooleanAlgebra α]
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps!]
 def OrderIso.compl : α ≃o αᵒᵈ where
-  toFun := OrderDual.toDual ∘ HasCompl.compl
-  invFun := HasCompl.compl ∘ OrderDual.ofDual
+  toFun := OrderDual.toDual ∘ Compl.compl
+  invFun := Compl.compl ∘ OrderDual.ofDual
   left_inv := compl_compl
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le

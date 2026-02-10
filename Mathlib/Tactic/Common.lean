@@ -5,113 +5,122 @@ Authors: Kim Morrison
 -/
 
 -- First import Aesop, Qq, and Plausible
-import Aesop
-import Qq
-import Plausible
+module  -- shake: keep-all, shake: keep-downstream
+
+public import Aesop
+public import Qq
+public import Plausible
 
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
-import ImportGraph.Imports
+public import ImportGraph.Tools
+public import ImportGraph.Lean.Environment
 
 -- Import common Batteries tactics and commands
-import Batteries.Tactic.Basic
-import Batteries.Tactic.HelpCmd
+public import Batteries.Tactic.Basic
+public import Batteries.Tactic.Case
+public import Batteries.Tactic.HelpCmd
+public import Batteries.Tactic.Alias
+public import Batteries.Tactic.GeneralizeProofs
+
+-- Import Batteries code actions
+public import Batteries.CodeAction
 
 -- Import syntax for leansearch
-import LeanSearchClient
+public import LeanSearchClient
 
 -- Import Mathlib-specific linters.
-import Mathlib.Tactic.Linter.Lint
+public import Mathlib.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
-import Mathlib.Tactic.ApplyCongr
+public import Mathlib.Tactic.ApplyCongr
 -- ApplyFun imports `Mathlib/Order/Monotone/Basic.lean`
 -- import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.ApplyAt
-import Mathlib.Tactic.ApplyWith
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Check
-import Mathlib.Tactic.Choose
-import Mathlib.Tactic.ClearExclamation
-import Mathlib.Tactic.ClearExcept
-import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.CongrExclamation
-import Mathlib.Tactic.CongrM
-import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Tactic.DeprecateTo
-import Mathlib.Tactic.ErwQuestion
-import Mathlib.Tactic.Eqns
-import Mathlib.Tactic.ExistsI
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Tactic.Find
--- `gcongr` currently imports `Algebra.Order.Field.Power` and thence `Algebra.CharZero.Lemmas`
--- Hopefully this can be rearranged.
--- import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.GuardGoalNums
-import Mathlib.Tactic.GuardHypNums
-import Mathlib.Tactic.HigherOrder
-import Mathlib.Tactic.Hint
-import Mathlib.Tactic.InferParam
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Linter
-import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.ApplyAt
+public import Mathlib.Tactic.ApplyWith
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.ByCases
+public import Mathlib.Tactic.ByContra
+public import Mathlib.Tactic.CasesM
+public import Mathlib.Tactic.Check
+public import Mathlib.Tactic.Choose
+public import Mathlib.Tactic.ClearExclamation
+public import Mathlib.Tactic.ClearExcept
+public import Mathlib.Tactic.Clear_
+public import Mathlib.Tactic.Coe
+public import Mathlib.Tactic.CongrExclamation
+public import Mathlib.Tactic.CongrM
+public import Mathlib.Tactic.Constructor
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.DefEqTransformations
+public import Mathlib.Tactic.DeprecateTo
+public import Mathlib.Tactic.ErwQuestion
+public import Mathlib.Tactic.Eqns
+public import Mathlib.Tactic.ExistsI
+public import Mathlib.Tactic.ExtractGoal
+public import Mathlib.Tactic.FailIfNoProgress
+public import Mathlib.Tactic.Find
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.GuardGoalNums
+public import Mathlib.Tactic.GuardHypNums
+public import Mathlib.Tactic.HigherOrder
+public import Mathlib.Tactic.Hint
+public import Mathlib.Tactic.InferParam
+public import Mathlib.Tactic.Inhabit
+public import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Linter
+public import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.Observe
-import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.NthRewrite
+public import Mathlib.Tactic.Observe
+public import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Propose
-import Mathlib.Tactic.Push
-import Mathlib.Tactic.RSuffices
-import Mathlib.Tactic.Recover
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Rename
-import Mathlib.Tactic.RenameBVar
-import Mathlib.Tactic.Says
-import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.Set
-import Mathlib.Tactic.SimpIntro
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.Spread
-import Mathlib.Tactic.Subsingleton
-import Mathlib.Tactic.Substs
-import Mathlib.Tactic.SuccessIfFailWithMsg
-import Mathlib.Tactic.SudoSetOption
-import Mathlib.Tactic.SwapVar
-import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.TermCongr
+public import Mathlib.Tactic.Push
+public import Mathlib.Tactic.RSuffices
+public import Mathlib.Tactic.Recover
+public import Mathlib.Tactic.Relation.Rfl
+public import Mathlib.Tactic.Rename
+public import Mathlib.Tactic.RenameBVar
+public import Mathlib.Tactic.Says
+public import Mathlib.Tactic.ScopedNS
+public import Mathlib.Tactic.Set
+public import Mathlib.Tactic.SimpIntro
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Subsingleton
+public import Mathlib.Tactic.Substs
+public import Mathlib.Tactic.SuccessIfFailWithMsg
+public import Mathlib.Tactic.SudoSetOption
+public import Mathlib.Tactic.SwapVar
+public import Mathlib.Tactic.Tauto
+public import Mathlib.Tactic.ToFun
+public import Mathlib.Tactic.TermCongr
 -- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
-import Mathlib.Tactic.ToExpr
-import Mathlib.Tactic.ToLevel
-import Mathlib.Tactic.Trace
-import Mathlib.Tactic.TypeCheck
-import Mathlib.Tactic.UnsetOption
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.Variable
-import Mathlib.Tactic.Widget.Calc
-import Mathlib.Tactic.Widget.CongrM
-import Mathlib.Tactic.Widget.Conv
-import Mathlib.Tactic.WLOG
-import Mathlib.Util.AssertExists
-import Mathlib.Util.CountHeartbeats
-import Mathlib.Util.TransImports
-import Mathlib.Util.WhatsNew
+public import Mathlib.Tactic.ToExpr
+public import Mathlib.Tactic.ToLevel
+public import Mathlib.Tactic.Trace
+public import Mathlib.Tactic.TypeCheck
+public import Mathlib.Tactic.UnsetOption
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.Variable
+public import Mathlib.Tactic.Widget.Calc
+public import Mathlib.Tactic.Widget.CongrM
+public import Mathlib.Tactic.Widget.Conv
+public import Mathlib.Tactic.Widget.LibraryRewrite
+public import Mathlib.Tactic.WLOG
+public import Mathlib.Util.CountHeartbeats
+public import Mathlib.Util.PrintSorries
+public import Mathlib.Util.TransImports
+public import Mathlib.Util.WhatsNew
 
 /-!
 This file imports all tactics which do not have significant theory imports,
@@ -125,20 +134,36 @@ We also import theory-free linters, commands, and utilities which are useful to 
 import hierarchy.
 -/
 
+public meta section
+
 /-!
-# Register tactics with `hint`. Tactics are tried in reverse registration order.
+# Register tactics with `hint`. Tactics with larger priority run first.
 -/
 
 section Hint
 
-register_hint trivial
-register_hint tauto
-register_hint split
-register_hint intro
-register_hint aesop
-register_hint simp_all?
-register_hint exact?
-register_hint decide
-register_hint omega
+register_hint 200 grind
+register_hint 1000 trivial
+register_hint 500 tauto
+register_hint 1000 split
+register_hint 1000 intro
+register_hint 80 aesop
+register_hint 800 simp_all?
+register_hint 600 exact?
+register_hint 1000 decide
+register_hint 200 omega
+register_hint 200 fun_prop
 
 end Hint
+
+/-!
+# Register tactics with `try?`. Tactics with larger priority run first.
+-/
+
+section Try
+
+register_try?_tactic (priority := 500) tauto
+register_try?_tactic (priority := 80) aesop
+register_try?_tactic (priority := 200) fun_prop
+
+end Try

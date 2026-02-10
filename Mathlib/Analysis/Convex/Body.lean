@@ -3,9 +3,11 @@ Copyright (c) 2022 Paul A. Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Convex bodies
@@ -21,13 +23,15 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 - define positive convex bodies, requiring the interior to be nonempty
 - introduce support sets
-- Characterise the interaction of the distance with algebraic operations, eg
+- Characterise the interaction of the distance with algebraic operations, e.g.
   `dist (a • K) (a • L) = ‖a‖ * dist K L`, `dist (a +ᵥ K) (a +ᵥ L) = dist K L`
 
 ## Tags
 
 convex, convex body
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise Topology NNReal
@@ -60,6 +64,8 @@ instance : SetLike (ConvexBody V) V where
     cases L
     congr
 
+instance : PartialOrder (ConvexBody V) := .ofSetLike (ConvexBody V) V
+
 protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
 
@@ -83,7 +89,7 @@ theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s 
 /-- A convex body that is symmetric contains `0`. -/
 theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, -x ∈ K) : 0 ∈ K := by
   obtain ⟨x, hx⟩ := K.nonempty
-  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by field_simp]
+  rw [show 0 = (1 / 2 : ℝ) • x + (1 / 2 : ℝ) • (-x) by simp]
   apply convex_iff_forall_pos.mp K.convex hx (h_symm x hx)
   all_goals linarith
 
@@ -92,7 +98,7 @@ section ContinuousAdd
 instance : Zero (ConvexBody V) where
   zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 
@@ -109,7 +115,7 @@ instance : Add (ConvexBody V) where
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
--- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
@@ -117,7 +123,7 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
 noncomputable instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 
@@ -131,7 +137,7 @@ variable [ContinuousSMul ℝ V]
 instance : SMul ℝ (ConvexBody V) where
   smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
@@ -140,7 +146,7 @@ variable [ContinuousAdd V]
 noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
   SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
@@ -171,9 +177,12 @@ variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
 protected theorem isBounded : Bornology.IsBounded (K : Set V) :=
   K.isCompact.isBounded
 
-theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K : Set V) L ≠ ⊤ := by
-  apply_rules [Metric.hausdorffEdist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
+theorem hausdorffEDist_ne_top {K L : ConvexBody V} : Metric.hausdorffEDist (K : Set V) L ≠ ⊤ := by
+  apply_rules [Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
+
+@[deprecated (since := "2026-01-08")]
+alias hausdorffEdist_ne_top := hausdorffEDist_ne_top
 
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
@@ -181,16 +190,19 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
-  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
+  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEDist_ne_top
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
   rfl
 
 @[simp, norm_cast]
-theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
+theorem hausdorffEDist_coe : Metric.hausdorffEDist (K : Set V) L = edist K L := by
   rw [edist_dist]
-  exact (ENNReal.ofReal_toReal hausdorffEdist_ne_top).symm
+  exact (ENNReal.ofReal_toReal hausdorffEDist_ne_top).symm
+
+@[deprecated (since := "2026-01-08")]
+alias hausdorffEdist_coe := hausdorffEDist_coe
 
 open Filter
 
@@ -227,7 +239,7 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 /-- Convex bodies in a fixed normed space `V` form a metric space under the Hausdorff metric. -/
 noncomputable instance : MetricSpace (ConvexBody V) where
   eq_of_dist_eq_zero {K L} hd := ConvexBody.ext <|
-    (K.isClosed.hausdorffDist_zero_iff_eq L.isClosed hausdorffEdist_ne_top).1 hd
+    (K.isClosed.hausdorffDist_zero_iff_eq L.isClosed hausdorffEDist_ne_top).1 hd
 
 end NormedAddCommGroup
 

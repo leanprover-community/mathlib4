@@ -3,11 +3,13 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Num.Lemmas
-import Mathlib.Data.Option.Basic
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Num.Lemmas
+public import Mathlib.Data.Option.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Encodings
@@ -23,6 +25,8 @@ It also contains several examples:
 - `unaryFinEncodingNat` : a unary encoding of ℕ
 - `finEncodingBoolBool` : an encoding of bool.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -79,16 +83,12 @@ def sectionΓ'Bool : Γ' → Bool
 theorem sectionΓ'Bool_inclusionBoolΓ' {b} : sectionΓ'Bool (inclusionBoolΓ' b) = b := by
   cases b <;> rfl
 
-@[deprecated sectionΓ'Bool_inclusionBoolΓ' (since := "2025-01-21")]
-theorem leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
-  fun x => Bool.casesOn x rfl rfl
-
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
   Function.HasLeftInverse.injective ⟨_, (fun _ => sectionΓ'Bool_inclusionBoolΓ')⟩
 
 /-- An encoding function of the positive binary numbers in bool. -/
 def encodePosNum : PosNum → List Bool
-  | PosNum.one    => [true]
+  | PosNum.one => [true]
   | PosNum.bit0 n => false :: encodePosNum n
   | PosNum.bit1 n => true :: encodePosNum n
 
@@ -105,7 +105,7 @@ def encodeNat (n : ℕ) : List Bool :=
 def decodePosNum : List Bool → PosNum
   | false :: l => PosNum.bit0 (decodePosNum l)
   | true  :: l => ite (l = []) PosNum.one (PosNum.bit1 (decodePosNum l))
-  | _          => PosNum.one
+  | _ => PosNum.one
 
 /-- A decoding function from `List Bool` to the binary numbers. -/
 def decodeNum : List Bool → Num := fun l => ite (l = []) Num.zero <| decodePosNum l
@@ -117,7 +117,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
     List.cons_ne_nil _ _
 
-@[simp] theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := fun n ↦ by
+@[simp] theorem decode_encodePosNum (n) : decodePosNum (encodePosNum n) = n := by
   induction n with unfold encodePosNum decodePosNum
   | one => rfl
   | bit1 m hm =>
@@ -125,16 +125,14 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
     exact if_neg (encodePosNum_nonempty m)
   | bit0 m hm => exact congr_arg PosNum.bit0 hm
 
-@[simp] theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
-  intro n
+@[simp] theorem decode_encodeNum (n) : decodeNum (encodeNum n) = n := by
   obtain - | n := n <;> unfold encodeNum decodeNum
   · rfl
   rw [decode_encodePosNum n]
   rw [PosNum.cast_to_num]
   exact if_neg (encodePosNum_nonempty n)
 
-@[simp] theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
-  intro n
+@[simp] theorem decode_encodeNat (n) : decodeNat (encodeNat n) = n := by
   conv_rhs => rw [← Num.to_of_nat n]
   exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
 

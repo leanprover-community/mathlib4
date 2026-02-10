@@ -3,7 +3,9 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Preservation of injective objects
@@ -14,6 +16,8 @@ We restate the existing result that if `F ⊣ G` is an adjunction and `F` preser
 then `G` preserves injective objects. We show that the converse is true if the codomain of `F` has
 enough injectives.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -57,7 +61,6 @@ theorem Functor.preservesMonomorphisms_of_adjunction_of_preservesInjectiveObject
     F.PreservesMonomorphisms where
   preserves {X Y} f _ := by
     suffices ∃ h, F.map f ≫ h = Injective.ι (F.obj X) from mono_of_mono_fac this.choose_spec
-    have : Injective (G.obj (Injective.under (F.obj X))) := G.injective_obj _
     exact ⟨F.map (Injective.factorThru (adj.unit.app X ≫ G.map (Injective.ι _)) f) ≫
       adj.counit.app (Injective.under (F.obj X)), by simp [← Functor.map_comp_assoc]⟩
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 
 /-!
 # Big operators on a multiset in ordered groups with zeros
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups with zeros.
 -/
+
+public section
 
 namespace Multiset
 
@@ -45,7 +49,7 @@ variable [PosMulStrictMono R] [NeZero (1 : R)]
 
 lemma prod_pos {s : Multiset R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
   cases s using Quotient.ind
-  simp only [quot_mk_to_coe, mem_coe, map_coe, prod_coe] at *
+  simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
   apply List.prod_pos h
 
 theorem prod_map_lt_prod_map {ι : Type*} {s : Multiset ι} (hs : s ≠ 0)

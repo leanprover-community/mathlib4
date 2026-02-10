@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.HasseDeriv
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.HasseDeriv
 
 /-!
 # Taylor expansions of polynomials
@@ -20,6 +22,8 @@ import Mathlib.Algebra.Polynomial.HasseDeriv
   the identity principle: a polynomial is 0 iff all its Hasse derivatives are zero
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -64,9 +68,8 @@ theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X +
 theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r :=
   show (lcoeff R n).comp (taylor r) f = (leval r).comp (hasseDeriv n) f by
     congr 1; clear! f; ext i
-    simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, coeff_C_mul,
-      hasseDeriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i,
-      map_sum]
+    simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, map_sum,
+      hasseDeriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i]
     simp only [lcoeff_apply, ← C_eq_natCast, mul_assoc, ← C_pow, ← C_mul, coeff_mul_C,
       (Nat.cast_commute _ _).eq, coeff_X_pow, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
     split_ifs with h; · rfl
@@ -83,7 +86,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 @[simp]
 theorem coeff_taylor_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
   by_cases hf : f = 0
-  · rw [hf, map_zero]; rfl
+  · rw [hf, map_zero, coeff_natDegree]
   · rw [taylor_coeff, hasseDeriv_natDegree_eq_C, eval_C]
 
 @[simp]
@@ -113,6 +116,10 @@ theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
   rw [← taylor_eq_zero r]
   ext k
   rw [taylor_coeff, h, coeff_zero]
+
+@[simp] lemma map_taylor {R S : Type*} [Semiring R] [Semiring S] (p : R[X]) (r : R) (f : R →+* S) :
+    (p.taylor r).map f = (p.map f).taylor (f r) := by
+  simp [taylor_apply, Polynomial.map_comp]
 
 end Semiring
 
@@ -148,7 +155,7 @@ theorem taylor_pow (n : ℕ) : taylor r (f ^ n) = taylor r f ^ n :=
   rfl
 
 theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r + s) f := by
-  simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, C_add, add_assoc]
+  simp only [taylor_apply, comp_assoc, map_add, add_comp, X_comp, C_comp, add_assoc]
 
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
@@ -160,12 +167,18 @@ theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
     Finset.sum_range_succ', Finset.sum_range_succ']
   simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
 
+theorem aeval_add_of_sq_eq_zero {S : Type*} [CommRing S] [Algebra R S]
+    (p : R[X]) (x y : S) (hy : y ^ 2 = 0) :
+    p.aeval (x + y) = p.aeval x + p.derivative.aeval x * y := by
+  simp only [← eval_map_algebraMap, Polynomial.eval_add_of_sq_eq_zero _ _ _ hy, derivative_map]
+
 end CommSemiring
 
 section CommRing
 
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   invFun      := taylorAlgHom (-r)
@@ -173,8 +186,9 @@ noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   right_inv P := by simp [taylor, comp_assoc]
   __ := taylorAlgHom r
 
-@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylorAlgHom r :=
-  rfl
+@[simp, norm_cast] lemma toAlgHom_taylorEquiv : taylorEquiv r = taylorAlgHom r := rfl
+
+@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylor r := rfl
 
 @[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
   AlgEquiv.ext fun _ ↦ rfl

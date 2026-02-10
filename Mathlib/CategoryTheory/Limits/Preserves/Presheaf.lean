@@ -3,8 +3,10 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.Elements
+module
+
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 # Finite-limit-preserving presheaves
@@ -39,7 +41,9 @@ is small, we leave this as a TODO.
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Proposition 6.1.2
 -/
 
-open CategoryTheory Limits
+@[expose] public section
+
+open CategoryTheory Limits Functor
 
 universe v u
 
@@ -50,7 +54,7 @@ section LargeCategory
 variable {C : Type u} [Category.{v} C] [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type v)
 
 /-- If `C` is a finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u` is a presheaf that preserves
-finite limites, then `CostructuredArrow yoneda A` is filtered.
+finite limits, then `CostructuredArrow yoneda A` is filtered.
 
 One direction of Proposition 3.3.13 of [Kashiwara2006].
 -/

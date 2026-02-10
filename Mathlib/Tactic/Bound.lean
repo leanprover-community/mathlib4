@@ -3,12 +3,14 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
+module
 
-import Aesop
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.NormNum.Core
+public import Aesop
+public meta import Mathlib.Tactic.Bound.Attribute
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 ## The `bound` tactic
@@ -86,6 +88,8 @@ Currently the two types of guessing rules are
 We close numerical goals with `norm_num` and `linarith`.
 -/
 
+public meta section
+
 open Lean Elab Meta Term Mathlib.Tactic Syntax
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
@@ -98,14 +102,6 @@ Once Aesop can do general terms directly, we can remove these:
 
   https://github.com/leanprover-community/aesop/issues/107
 -/
-
-lemma mul_lt_mul_left_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] [Preorder α]
-    [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) : b < c → a * b < a * c :=
-  (mul_lt_mul_left a0).mpr
-
-lemma mul_lt_mul_right_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] [Preorder α]
-    [MulPosStrictMono α] [MulPosReflectLT α] (c0 : 0 < c) : a < b → a * c < b * c :=
-  (mul_lt_mul_right c0).mpr
 
 lemma Nat.cast_pos_of_pos {R : Type} [Semiring R] [PartialOrder R] [IsOrderedRing R] [Nontrivial R]
     {n : ℕ} : 0 < n → 0 < (n : R) :=
@@ -141,7 +137,7 @@ attribute [bound] le_abs_self neg_abs_le neg_le_neg tsub_le_tsub_right mul_le_mu
 
 -- <
 attribute [bound] Nat.cast_pos_of_pos neg_lt_neg sub_lt_sub_left sub_lt_sub_right add_lt_add_left
-  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt
+  add_lt_add_right mul_lt_mul_of_pos_left mul_lt_mul_of_pos_right
 
 -- min and max
 attribute [bound] min_le_right min_le_left le_max_left le_max_right le_min max_le lt_min max_lt
@@ -184,7 +180,7 @@ end Guessing
 /-!
 ### Closing tactics
 
-TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `omega` as well.
+TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as well.
 -/
 
 /-- Close numerical goals with `norm_num` -/
@@ -209,7 +205,8 @@ attribute [aesop unsafe 5% tactic (rule_sets := [Bound])] boundLinarith
 
 /-- Aesop configuration for `bound` -/
 def boundConfig : Aesop.Options := {
-  enableSimp := false
+  enableSimp := false,
+  terminal := true
 }
 
 end Mathlib.Tactic.Bound
@@ -244,7 +241,7 @@ by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_rig
 contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.  Conversely, `gcongr` can prove
 inequalities for more types of relations, supports all `positivity` functionality, and is likely
 faster since it is more specialized (not built atop `aesop`). -/
-syntax "bound " (" [" term,* "]")? : tactic
+syntax "bound" (" [" term,* "]")? : tactic
 
 -- Plain `bound` elaboration, with no hypotheses
 elab_rules : tactic
@@ -262,4 +259,5 @@ macro_rules
 We register `bound` with the `hint` tactic.
 -/
 
-register_hint bound
+register_hint 70 bound
+register_try?_tactic (priority := 70) bound

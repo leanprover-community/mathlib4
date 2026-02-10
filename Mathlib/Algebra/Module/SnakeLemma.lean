@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
+module
+
+public import Mathlib.Algebra.Exact
 
 /-!
 
@@ -18,6 +20,8 @@ categories, but for definitional equality and universe issues we reprove them he
 - `SnakeLemma.exact_δ_right`: The connecting homomorphism is exact on the left.
 
 -/
+
+@[expose] public section
 
 open LinearMap hiding id
 open Function
@@ -185,7 +189,6 @@ such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is in
 -/
 lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
     Exact (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) G := by
-  haveI H₁ : ∀ x, f₂ (σ x) = x := congr_fun hσ
   haveI H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
   intro x
   constructor
@@ -196,7 +199,7 @@ lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π
       g₂.comp_apply, hy, hg.apply_apply_eq_zero])
     exact ⟨z, δ_eq i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁ _ _ hz.symm _ hy.symm⟩
   · rintro ⟨x, rfl⟩
-    simp only [δ, id_eq, coe_mk, AddHom.coe_mk]
+    simp only [δ, coe_mk, AddHom.coe_mk]
     rw [← G.comp_apply, hF, π₂.comp_apply, H₂, hπ₂.apply_apply_eq_zero]
 
 /--

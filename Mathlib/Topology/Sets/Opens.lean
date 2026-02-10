@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Order.CompactlyGenerated.Basic
-import Mathlib.Order.Copy
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.Copy
 
 /-!
 # Open sets
@@ -45,6 +47,8 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 - Port the `auto_cases` tactic version (as a plugin if the ported `auto_cases` will allow plugins).
 -/
 
+@[expose] public section
+
 
 open Filter Function Order Set
 
@@ -67,6 +71,8 @@ namespace Opens
 instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
+
+instance : PartialOrder (Opens α) := .ofSetLike (Opens α) α
 
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
@@ -125,7 +131,7 @@ theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _r
 theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
-/-- The galois coinsertion between sets and opens. -/
+/-- The Galois coinsertion between sets and opens. -/
 def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc
@@ -167,6 +173,10 @@ lemma mem_inf {s t : Opens α} {x : α} : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t 
 theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
 
+@[simp]
+theorem mem_sup {s t : Opens α} {x : α} : x ∈ (s ⊔ t) ↔ x ∈ s ∨ x ∈ t :=
+  .rfl
+
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
@@ -204,6 +214,10 @@ theorem coe_finset_sup (f : ι → Opens α) (s : Finset ι) : (↑(s.sup f) : S
 @[simp, norm_cast]
 theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Opens α) (Set α)) _ _
+
+@[simp, norm_cast]
+lemma coe_disjoint {s t : Opens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  simp [disjoint_iff, ← SetLike.coe_set_eq]
 
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
@@ -258,13 +272,13 @@ theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
-theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α) : U = ⊥ ∨ U = ⊤ := by
-  subst h; letI : TopologicalSpace α := ⊤
-  rw [← coe_eq_empty, ← coe_eq_univ, ← isOpen_top_iff]
+theorem eq_bot_or_top [IndiscreteTopology α] (U : Opens α) :
+    U = ⊥ ∨ U = ⊤ := by
+  rw [← coe_eq_empty, ← coe_eq_univ, ← IndiscreteTopology.isOpen_iff]
   exact U.2
 
-instance [Nonempty α] [Subsingleton α] : IsSimpleOrder (Opens α) where
-  eq_bot_or_eq_top := eq_bot_or_top <| Subsingleton.elim _ _
+instance [Nonempty α] [IndiscreteTopology α] : IsSimpleOrder (Opens α) where
+  eq_bot_or_eq_top := eq_bot_or_top
 
 /-- A set of `opens α` is a basis if the set of corresponding sets is a topological basis. -/
 def IsBasis (B : Set (Opens α)) : Prop :=
@@ -308,16 +322,31 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
-  · convert (config := {transparency := .default}) hb
+  · convert (config := { transparency := .default }) hb
     ext
     simp
   · exact hb'
+
+lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {U : Opens α}
+    (hU : IsCompact U.1) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
+  classical
+  obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.2) (by simp [hsup])
+  refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
+  exact le_antisymm (subset_trans ht (by simp)) (le_trans (sSup_le_sSup (by simp)) hsup.ge)
 
 lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
     {Us : Set (Opens α)} (hUs : @IsBasis α t₂ Us) :
     t₁ ≤ t₂ ↔ ∀ U ∈ Us, IsOpen[t₁] U := by
   conv_lhs => rw [hUs.eq_generateFrom]
   simp [Set.subset_def, le_generateFrom_iff_subset_isOpen]
+
+lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
+    {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
+    IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
+  convert TopologicalSpace.IsTopologicalBasis.sigma hB
+  simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
+  simp
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
@@ -327,8 +356,8 @@ lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β}
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
-    CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
-  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
+    IsCompactElement s ↔ IsCompact (s : Set α) := by
+  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup]
   refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
@@ -339,7 +368,7 @@ theorem isCompactElement_iff (s : Opens α) :
       H (fun i => U i) (fun i => (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
     refine ⟨t, Set.Subset.trans ht ?_⟩
     simp only [Set.iUnion_subset_iff]
-    show ∀ i ∈ t, U i ≤ t.sup U
+    change ∀ i ∈ t, U i ≤ t.sup U
     exact fun i => Finset.le_sup
 
 /-- The preimage of an open set, as an open set. -/
@@ -413,6 +442,8 @@ theorem toOpens_injective : Injective (toOpens : OpenNhdsOf x → Opens α)
 instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective' := SetLike.coe_injective.comp toOpens_injective
+
+instance : PartialOrder (OpenNhdsOf x) := .ofSetLike (OpenNhdsOf x) α
 
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩

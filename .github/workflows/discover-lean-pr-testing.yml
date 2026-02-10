@@ -10,22 +10,31 @@ on:
 jobs:
   discover-lean-pr-testing:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
 
     steps:
-    - name: Checkout mathlib4 repository
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - name: Generate app token
+      id: app-token
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
       with:
-        repository: leanprover-community/mathlib4
+        app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+    - name: Checkout mathlib4 repository
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches
+        token: ${{ steps.app-token.outputs.token }}
 
     - name: Set up Git
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+        git config --global user.name "mathlib-nightly-testing[bot]"
+        git config --global user.email "mathlib-nightly-testing[bot]@users.noreply.github.com"
 
     - name: Configure Lean
-      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+      uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:
         auto-config: false
         use-github-cache: false
@@ -71,16 +80,39 @@ jobs:
         # Fetch the $OLD tag
         git fetch --depth=1 origin tag "$OLD" --no-tags
         # Fetch the $NEW tag.
-        # This will only fetch commits newer than previously fetched commits (ie $OLD)
+        # This will only fetch commits newer than previously fetched commits (i.e. $OLD)
         git fetch origin tag "$NEW" --no-tags
 
-        # Find all commits to lean4 between the $OLD and $NEW toolchains
-        # and extract the github PR numbers
-        # (drop anything that doesn't look like a PR number from the final result)
-        PRS=$(git log --oneline "$OLD..$NEW" | sed 's/.*(#\([0-9]\+\))$/\1/' | grep -E '^[0-9]+$')
+        # Get all commit SHAs between the $OLD and $NEW toolchains
+        COMMIT_SHAS=$(git log --format="%H" "$OLD..$NEW")
+
+        # Initialize an empty string to collect PR numbers
+        PRS=""
+
+        # For each commit, query the GitHub API to get associated PRs
+        for commit_sha in $COMMIT_SHAS; do
+          echo "Checking commit $commit_sha for associated PRs..."
+
+          # Query GitHub API for PRs associated with this commit
+          # Using jq to extract PR numbers from the response
+          pr_numbers=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/leanprover/lean4/commits/$commit_sha/pulls" | \
+            jq -r '.[] | select(.merged_at != null) | .number | tostring' 2>/dev/null || echo "")
+
+          # Add each PR number to our list (duplicates will be handled later)
+          for pr_num in $pr_numbers; do
+            if [[ "$pr_num" =~ ^[0-9]+$ ]]; then
+              PRS="$PRS $pr_num"
+              echo "Found PR #$pr_num associated with commit $commit_sha"
+            fi
+          done
+        done
+
+        # Remove duplicates and trim whitespace
+        PRS=$(echo "$PRS" | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs)
 
         # Output the PRs
-        echo "$PRS"
+        echo "Found PRs: $PRS"
         printf "prs<<EOF\n%s\nEOF" "$PRS" >> "$GITHUB_OUTPUT"
 
     - name: Use merged PRs information
@@ -90,6 +122,17 @@ jobs:
         PRS="${{ steps.get-prs.outputs.prs }}"
         echo "=== PRS ========================="
         echo "$PRS"
+
+        # CRITICAL: If no PRs were found, skip branch matching entirely.
+        # An empty prs.txt causes `grep -f prs.txt` to match ALL lines,
+        # which would incorrectly select every lean-pr-testing branch!
+        if [ -z "$PRS" ]; then
+          echo "No PRs found between old and new nightlies. Skipping branch discovery."
+          echo "branches_exist=false" >> "$GITHUB_ENV"
+          printf "branches<<EOF\n\nEOF" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
         echo "$PRS" | tr ' ' '\n' > prs.txt
         echo "=== prs.txt ====================="
         cat prs.txt
@@ -177,7 +220,7 @@ jobs:
             COMPARE_BASE="$LATEST_TAG"
           fi
 
-          GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/$COMPARE_BASE...lean-pr-testing-$PR_NUMBER"
+          GITHUB_DIFF="https://github.com/${{ github.repository }}/compare/$COMPARE_BASE...lean-pr-testing-$PR_NUMBER"
 
           echo "Attempting to merge branch: $BRANCH (PR #$PR_NUMBER)"
           echo "Using diff URL: $GITHUB_DIFF (comparing with $COMPARE_BASE)"
@@ -217,7 +260,7 @@ jobs:
         if [ -n "$SUCCESSFUL_MERGES" ]; then
           MESSAGE+=$'### ✅ Successfully merged branches into \'nightly-testing\':\n\n'
           for MERGE_INFO in $SUCCESSFUL_MERGES; do
-            IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
             MESSAGE+=$(printf -- '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
           done
           MESSAGE+=$'\n'
@@ -229,7 +272,7 @@ jobs:
         if [ -n "$FAILED_MERGES" ]; then
           MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually into \'nightly-testing\':\n\n'
           for MERGE_INFO in $FAILED_MERGES; do
-            IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
             MESSAGE+=$(printf '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
             MESSAGE+=$'```bash\n'
             MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s' "$PR_NUMBER")$'\n'

@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompactlyGenerated
+module
+
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompactlyGenerated
 /-!
 
 # The adjunction between condensed sets and topological spaces
@@ -17,17 +19,22 @@ The counit is an isomorphism for compactly generated spaces, and we conclude tha
 `topCatToCondensedSet` is fully faithful when restricted to compactly generated spaces.
 -/
 
+@[expose] public section
+
 universe u
 
 open Condensed CondensedSet CategoryTheory CompHaus
 
 variable (X : CondensedSet.{u})
 
+set_option backward.privateInPublic true in
 /-- Auxiliary definition to define the topology on `X(*)` for a condensed set `X`. -/
 private def CondensedSet.coinducingCoprod :
     (Σ (i : (S : CompHaus.{u}) × X.val.obj ⟨S⟩), i.fst) → X.val.obj ⟨of PUnit⟩ :=
   fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u + 1}).const s).op i
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Let `X` be a condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from compact Hausdorff `S` spaces to `X(*)`, corresponding to elements of `X(S)`.
 In other words, the topology coinduced by the map `CondensedSet.coinducingCoprod` above. -/
@@ -39,6 +46,8 @@ abbrev CondensedSet.toTopCat : TopCat.{u + 1} := TopCat.of (X.val.obj ⟨of PUni
 
 namespace CondensedSet
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma continuous_coinducingCoprod {S : CompHaus.{u}} (x : X.val.obj ⟨S⟩) :
     Continuous fun a ↦ (X.coinducingCoprod ⟨⟨S, x⟩, a⟩) := by
   suffices ∀ (i : (T : CompHaus.{u}) × X.val.obj ⟨T⟩),
@@ -48,7 +57,6 @@ lemma continuous_coinducingCoprod {S : CompHaus.{u}} (x : X.val.obj ⟨S⟩) :
 
 variable {X} {Y : CondensedSet} (f : X ⟶ Y)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The map part of the functor `CondensedSet ⥤ TopCat` -/
 @[simps!]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
@@ -97,8 +105,6 @@ noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u + 1}) :
     X.toCondensedSet.toTopCat ≃ X where
   toFun := topCatAdjunctionCounit X
   invFun x := ContinuousMap.const _ x
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
@@ -152,7 +158,7 @@ instance (X : CondensedSet.{u}) :
 /-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
 def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u + 1} where
   obj X := CompactlyGenerated.of (condensedSetToTopCat.obj X)
-  map f := toTopCatMap f
+  map f := InducedCategory.homMk (toTopCatMap f)
 
 /--
 The functor from topological spaces to condensed sets restricted to compactly generated spaces.
@@ -180,7 +186,6 @@ noncomputable def compactlyGeneratedAdjunctionCounitHomeo
     (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
-  continuous_toFun := (topCatAdjunctionCounit X).hom.continuous
   continuous_invFun := by
     apply continuous_from_uCompactlyGeneratedSpace
     exact fun _ _ ↦ continuous_coinducingCoprod X.toCondensedSet _

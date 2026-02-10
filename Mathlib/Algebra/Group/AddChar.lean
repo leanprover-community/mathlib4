@@ -3,10 +3,13 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.Equiv.TransferInstance
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -26,7 +29,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
 see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
-# Implementation notes
+## Implementation notes
 
 Due to their role as the dual of an additive group, additive characters must themselves be an
 additive group. This contrasts to their pointwise operations which make them a multiplicative group.
@@ -39,6 +42,8 @@ https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Additive.20ch
 
 additive character
 -/
+
+@[expose] public section
 
 /-!
 ### Definitions related to and results on additive characters
@@ -91,6 +96,8 @@ instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
   coe_injective' φ ψ h := by cases φ; cases ψ; congr
 
+initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
+
 @[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   DFunLike.ext f g h
 
@@ -114,7 +121,7 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 -- this instance was a bad idea and conflicted with `instFunLike` above
 
 @[simp] lemma toMonoidHom_apply (ψ : AddChar A M) (a : Multiplicative A) :
-  ψ.toMonoidHom a = ψ a.toAdd :=
+    ψ.toMonoidHom a = ψ a.toAdd :=
   rfl
 
 /-- An additive character maps multiples by natural numbers to powers. -/
@@ -129,8 +136,6 @@ def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
   { toFun := f.toFun
     map_zero_eq_one' := f.map_one'
     map_add_eq_mul' := f.map_mul' }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast] lemma coe_toMonoidHomEquiv (ψ : AddChar A M) :
     ⇑(toMonoidHomEquiv ψ) = ψ ∘ Multiplicative.toAdd := rfl
@@ -163,8 +168,6 @@ def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
   { toFun := f.toFun
     map_zero_eq_one' := f.map_zero'
     map_add_eq_mul' := f.map_add' }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast]
 lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
@@ -177,7 +180,7 @@ lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
     toAddMonoidHomEquiv ψ a = Additive.ofMul (ψ a) := rfl
 
 @[simp] lemma toAddMonoidHomEquiv_symm_apply (ψ : A →+ Additive M) (a : A) :
-    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul  := rfl
+    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul := rfl
 
 /-- The trivial additive character (sending everything to `1`). -/
 instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
@@ -353,7 +356,7 @@ inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below).
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
-    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
+    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul] }
 
 /-- The additive characters on a commutative additive group form a commutative group. -/
 instance : AddCommGroup (AddChar A M) := Additive.addCommGroup
@@ -477,9 +480,7 @@ lemma mulShift_unit_eq_one_iff (ψ : AddChar R M) {u : R} (hu : IsUnit u) :
   · ext1 y
     rw [show y = u * (hu.unit⁻¹ * y) by rw [← mul_assoc, IsUnit.mul_val_inv, one_mul]]
     simpa only [mulShift_apply] using DFunLike.ext_iff.mp h (hu.unit⁻¹ * y)
-  · rintro rfl
-    ext1 y
-    rw [mulShift_apply, one_apply, one_apply]
+  · solve_by_elim
 
 end Ring
 

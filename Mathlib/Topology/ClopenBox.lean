@@ -3,15 +3,17 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Separation.Profinite
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
-# Clopen subsets in cartesian products
+# Clopen subsets in Cartesian products
 
-In general, a clopen subset in a cartesian product of topological spaces
+In general, a clopen subset in a Cartesian product of topological spaces
 cannot be written as a union of "clopen boxes",
 i.e. products of clopen subsets of the components (see [buzyakovaClopenBox] for counterexamples).
 
@@ -21,7 +23,7 @@ follows the one given in [buzyakovaClopenBox].
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
 and use that to prove that the property of having countably many clopens is preserved by taking
-cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
+Cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
 
 ## References
 
@@ -29,6 +31,8 @@ cartesian products of compact spaces (this is relevant to the theory of light pr
 - [engelking1989]: *General Topology*, 1989.
 
 -/
+
+@[expose] public section
 
 open Function Set Filter TopologicalSpace
 open scoped Topology
@@ -82,10 +86,10 @@ lemma countable_iff_secondCountable [T2Space X]
     [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
   refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
-    exact (injective_of_le_imp_le f fun a ↦ a).countable
+    exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
   · apply IsTopologicalBasis.eq_generateFrom
     exact loc_compact_Haus_tot_disc_of_zero_dim
-  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = t.toSet.sUnion :=
+  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=
       fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
         (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2
     let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s).choose
@@ -94,8 +98,5 @@ lemma countable_iff_secondCountable [T2Space X]
       ext1; change s.carrier = t.carrier
       rw [(this s).choose_spec, (this t).choose_spec, h]
     exact hf.countable
-
-@[deprecated (since := "2024-11-12")]
-alias countable_iff_second_countable := countable_iff_secondCountable
 
 end TopologicalSpace.Clopens

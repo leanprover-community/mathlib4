@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.SymmDiff
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.SymmDiff
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Subsets of finite types
@@ -18,6 +20,8 @@ In a `Fintype`, all `Set`s are automatically `Finset`s, and there are only finit
 * `Finset.fintypeCoeSort`: `((s : Finset α) : Type*)` is a finite type
 * `Fintype.finsetEquivSet`: `Finset α` and `Set α` are equivalent if `α` is a `Fintype`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -43,7 +47,7 @@ def toFinset (s : Set α) [Fintype s] : Finset α :=
 theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
     toFinset s = toFinset t := by subst h; congr!
 
-@[simp]
+@[simp, grind =]
 theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a ∈ s := by
   simp [toFinset]
 
@@ -99,7 +103,10 @@ theorem toFinset_ssubset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊂ t.toF
 theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆ t := by
   rw [← Finset.coe_subset, coe_toFinset]
 
+@[gcongr]
 alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
+
+@[deprecated (since := "2025-10-25")] alias toFinset_subset_toFinset_of_subset := toFinset_mono
 
 alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 
@@ -110,6 +117,9 @@ theorem disjoint_toFinset [Fintype s] [Fintype t] :
 @[simp]
 theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
   rw [Finset.Nontrivial, coe_toFinset]
+
+theorem subsingleton_toFinset_iff [Fintype s] : Subsingleton s.toFinset ↔ s.Subsingleton := by
+  simp
 
 section DecidableEq
 
@@ -202,8 +212,7 @@ theorem toFinset_insert [DecidableEq α] {a : α} {s : Set α} [Fintype (insert 
 theorem filter_mem_univ_eq_toFinset [Fintype α] (s : Set α) [Fintype s] [DecidablePred (· ∈ s)] :
     Finset.univ.filter (· ∈ s) = s.toFinset := by
   ext
-  simp only [Finset.mem_univ, decide_eq_true_eq, forall_true_left, mem_filter,
-    true_and, mem_toFinset]
+  rw [mem_filter_univ, mem_toFinset]
 
 end Set
 
@@ -227,7 +236,6 @@ end Finset
 
 theorem Fintype.coe_image_univ [Fintype α] [DecidableEq β] {f : α → β} :
     ↑(Finset.image f Finset.univ) = Set.range f := by
-  ext x
   simp
 
 instance List.Subtype.fintype [DecidableEq α] (l : List α) : Fintype { x // x ∈ l } :=
@@ -246,7 +254,7 @@ theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
 
 instance Prop.fintype : Fintype Prop :=
-  ⟨⟨{True, False}, by simp [true_ne_false]⟩, by simpa using em⟩
+  ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
 @[simp]
 theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
@@ -317,6 +325,6 @@ elab (name := finsetStx) "finset% " t:term : term => do
 
 open Lean.Elab.Term.Quotation in
 /-- `quot_precheck` for the `finset%` syntax. -/
-@[quot_precheck finsetStx] def precheckFinsetStx : Precheck
+@[quot_precheck finsetStx] meta def precheckFinsetStx : Precheck
   | `(finset% $t) => precheck t
   | _ => Elab.throwUnsupportedSyntax

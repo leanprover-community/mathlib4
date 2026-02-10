@@ -3,8 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Paul Lezeau
 -/
-import Mathlib.CategoryTheory.FiberedCategory.Fiber
-import Mathlib.CategoryTheory.FiberedCategory.Fibered
+module
+
+public import Mathlib.CategoryTheory.FiberedCategory.Fiber
+public import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 /-!
 
@@ -12,12 +14,12 @@ import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ 𝒮`, consisting of:
 - A collection of categories `Fib S` for every `S` in `𝒮` (the fiber categories)
-- Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S
+- Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S`
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
 
 We also provide a canonical `HasFibers` instance, which uses the standard fibers `Fiber p S`
-(see Fiber.lean). This makes it so that any result proven about `HasFibers` can be used for the
-standard fibers as well.
+(see `Mathlib/CategoryTheory/FiberedCategory/Fiber.lean`). This makes it so that any result proven
+about `HasFibers` can be used for the standard fibers as well.
 
 The reason for introducing this typeclass is that in practice, when working with (pre)fibered
 categories one often already has a collection of categories `Fib S` for every `S` that are
@@ -36,17 +38,19 @@ The following API is developed so that the fibers from a `HasFibers` instance ca
 analogously to the standard fibers.
 
 - `Fib.homMk φ` is a lift of a morphism `φ : (ι S).obj a ⟶ (ι S).obj b` in `𝒳`, which lies over
-`𝟙 S`, to a morphism in the fiber over `S`.
+  `𝟙 S`, to a morphism in the fiber over `S`.
 - `Fib.mk` gives an object in the fiber over `S` which is isomorphic to a given `a : 𝒳` that
-satisfies `p(a) = S`. The isomorphism is given by `Fib.mkIsoSelf`.
+  satisfies `p(a) = S`. The isomorphism is given by `Fib.mkIsoSelf`.
 - `HasFibers.mkPullback` is a version of `IsPreFibered.mkPullback` which ensures that the object
-lies in a given fiber. The corresponding cartesian morphism is given by `HasFibers.pullbackMap`.
+  lies in a given fiber. The corresponding Cartesian morphism is given by `HasFibers.pullbackMap`.
 - `HasFibers.inducedMap` is a version of `IsCartesian.inducedMap` which gives the corresponding
-morphism in the fiber category.
+  morphism in the fiber category.
 - `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
-some fiber followed by a pullback.
+  some fiber followed by a pullback.
 
 -/
+
+@[expose] public section
 
 universe v₃ u₃ v₂ u₂ v₁ u₁
 
@@ -69,7 +73,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The composition with the functor `p` is *equal* to the constant functor mapping to `S`. -/
   comp_const (S : 𝒮) : ι S ⋙ p = (const (Fib S)).obj S
   /-- The induced functor from `Fib S` to the fiber of `𝒳 ⥤ 𝒮` over `S` is an equivalence. -/
-  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S))
+  equiv (S : 𝒮) : Functor.IsEquivalence (inducedFunctor (comp_const S)) := by infer_instance
 
 namespace HasFibers
 
@@ -100,7 +104,7 @@ lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ fiberInclusion :=
 
 instance : Functor.IsEquivalence (inducedFunctor p S) := equiv S
 
-instance : Functor.Faithful (ι (p:=p) S) :=
+instance : Functor.Faithful (ι (p := p) S) :=
   Functor.Faithful.of_iso (inducedFunctor.natIso p S).symm
 
 end
@@ -166,12 +170,12 @@ section
 
 variable [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (f : R ⟶ S) (ha : p.obj a = S)
 
-/-- The domain, taken in `Fib p R`, of some cartesian morphism lifting a given
+/-- The domain, taken in `Fib p R`, of some Cartesian morphism lifting a given
 `f : R ⟶ S` in `𝒮` -/
 noncomputable def mkPullback : Fib p R :=
   Fib.mk (domain_eq p f (IsPreFibered.pullbackMap ha f))
 
-/-- A cartesian morphism lifting `f : R ⟶ S` with domain in the image of `Fib p R` -/
+/-- A Cartesian morphism lifting `f : R ⟶ S` with domain in the image of `Fib p R` -/
 noncomputable def pullbackMap : (ι R).obj (mkPullback f ha) ⟶ a :=
   (Fib.mkIsoSelf (domain_eq p f (IsPreFibered.pullbackMap ha f))).hom ≫
     (IsPreFibered.pullbackMap ha f)
@@ -225,7 +229,7 @@ It can be factorized as
   v        v        v
   R ====== R --f--> S
 ```
-with `ψ` cartesian over `f` and `τ` a map in `Fib p R`. -/
+with `ψ` Cartesian over `f` and `τ` a map in `Fib p R`. -/
 lemma fiber_factorization (ha : p.obj a = S) {b : Fib p R} (f : R ⟶ S) (φ : (ι R).obj b ⟶ a)
     [IsHomLift p f φ] : ∃ (b' : Fib p R) (τ : b ⟶ b') (ψ : (ι R).obj b' ⟶ a),
       IsStronglyCartesian p f ψ ∧ (((ι R).map τ) ≫ ψ = φ) :=

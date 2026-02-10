@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.HomEquiv
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.CategoryTheory.Localization.HomEquiv
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # Shrinking morphisms in localized categories
@@ -19,6 +21,8 @@ functor `L : C ⥤ D` for `W`, we provide a bijection
 with the composition of morphisms.
 
 -/
+
+@[expose] public section
 
 universe w'' w w' v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -50,7 +54,6 @@ lemma hasSmallLocalizedHom_iff :
     HasSmallLocalizedHom.{w} W X Y ↔ Small.{w} (L.obj X ⟶ L.obj Y) := by
   constructor
   · intro h
-    have := h.small
     exact small_map (homEquiv W W.Q L).symm
   · intro h
     exact ⟨small_map (homEquiv W W.Q L)⟩
@@ -71,13 +74,18 @@ lemma hasSmallLocalizedHom_iff_of_isos {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y'
   simp only [hasSmallLocalizedHom_iff W W.Q]
   exact small_congr (Iso.homCongr (W.Q.mapIso e) (W.Q.mapIso e'))
 
+lemma hasSmallLocalizedHom_of_isos {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y')
+    [HasSmallLocalizedHom.{w} W X Y] :
+    HasSmallLocalizedHom.{w} W X' Y' := by
+  rwa [← hasSmallLocalizedHom_iff_of_isos _ e e']
+
 variable (X) in
-lemma hasSmallLocalizedHom_iff_target {Y Y' : C} (f : Y ⟶  Y') (hf : W f):
+lemma hasSmallLocalizedHom_iff_target {Y Y' : C} (f : Y ⟶ Y') (hf : W f) :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X Y' := by
   simp only [hasSmallLocalizedHom_iff W W.Q]
   exact small_congr (Iso.homCongr (Iso.refl _) (Localization.isoOfHom W.Q W f hf))
 
-lemma hasSmallLocalizedHom_iff_source {X' : C} (f : X ⟶  X') (hf : W f) (Y : C) :
+lemma hasSmallLocalizedHom_iff_source {X' : C} (f : X ⟶ X') (hf : W f) (Y : C) :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X' Y := by
   simp only [hasSmallLocalizedHom_iff W W.Q]
   exact small_congr (Iso.homCongr (Localization.isoOfHom W.Q W f hf) (Iso.refl _))
@@ -153,7 +161,6 @@ lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocaliz
   obtain ⟨β, rfl⟩ := (equivShrink _).surjective β
   dsimp [equiv, comp]
   rw [Equiv.symm_apply_apply]
-  erw [(equivShrink _).symm_apply_apply, (equivShrink _).symm_apply_apply]
   simp only [homEquiv_refl, homEquiv_comp]
 
 section
@@ -167,7 +174,7 @@ lemma mk_comp_mk [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y 
 
 @[simp]
 lemma comp_mk_id [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y Y]
-    (α : SmallHom.{w} W X Y)  :
+    (α : SmallHom.{w} W X Y) :
     α.comp (mk W (𝟙 Y)) = α :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 
@@ -264,24 +271,32 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
     SmallHom.equiv_equiv_symm W₂ W₂.Q L₂ E₂ α₂]
   change α₂.inv.app _ ≫ E₂.map (β.hom.app X ≫ G'.map g ≫ β.inv.app Y) ≫ _ = _
   let γ : G' ⋙ E₂ ≅ E₁ ⋙ G := liftNatIso W₁.Q W₁ (W₁.Q ⋙ G' ⋙ E₂) (W₁.Q ⋙ E₁ ⋙ G) _ _
-    ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight β.symm E₂ ≪≫
-      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ α₂ ≪≫ e ≪≫
-      isoWhiskerRight α₁.symm G ≪≫ Functor.associator _ _ _)
+    ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight β.symm E₂ ≪≫
+      Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ α₂ ≪≫ e ≪≫
+      Functor.isoWhiskerRight α₁.symm G ≪≫ Functor.associator _ _ _)
   have hγ : ∀ (X : C₁), γ.hom.app (W₁.Q.obj X) =
       E₂.map (β.inv.app X) ≫ α₂.hom.app (Φ.functor.obj X) ≫
         e.hom.app X ≫ G.map (α₁.inv.app X) := fun X ↦ by
     simp [γ, id_comp, comp_id]
-  simp only [Functor.map_comp, assoc]
-  erw [← NatIso.naturality_1 γ]
-  simp only [Functor.comp_map, ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
+  simp only [Functor.map_comp, ← NatIso.naturality_1 γ, ← Functor.comp_map,
+    ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
     ← cancel_epi (γ.hom.app (W₁.Q.obj X)), assoc, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp,
     Iso.hom_inv_id_app_assoc]
   simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
     Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
-    Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
+    Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
+
+@[simp]
+lemma smallHomMap_mk (f : X ⟶ Y) :
+    Φ.smallHomMap (SmallHom.mk _ f) =
+      SmallHom.mk _ (Φ.functor.map f) := by
+  apply (SmallHom.equiv W₂ W₂.Q).injective
+  simp [Φ.equiv_smallHomMap W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q) (CatCommSq.iso _ _ _ _)]
 
 end
+
+section
 
 variable {X Y Z : C₁}
 
@@ -296,6 +311,67 @@ lemma smallHomMap_comp (f : SmallHom.{w} W₁ X Y) (g : SmallHom.{w} W₁ Y Z) :
   apply (SmallHom.equiv W₂ W₂.Q).injective
   simp [Φ.equiv_smallHomMap W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q) (CatCommSq.iso _ _ _ _),
     SmallHom.equiv_comp]
+
+end
+
+section
+
+variable {X Y : C₁} [HasSmallLocalizedHom.{w} W₁ X Y] {X' Y' : C₂}
+  [HasSmallLocalizedHom.{w'} W₂ X' X']
+  [HasSmallLocalizedHom.{w'} W₂ X' Y']
+  [HasSmallLocalizedHom.{w'} W₂ Y' Y']
+  (eX : Φ.functor.obj X ≅ X') (eY : Φ.functor.obj Y ≅ Y')
+
+/-- The action of a localizer morphism `Φ` on `SmallHom`. In this version, we allow
+the replacement of objects `Φ.functor.obj` by isomorphic objects. -/
+noncomputable def smallHomMap' (f : SmallHom.{w} W₁ X Y) :
+    SmallHom.{w'} W₂ X' Y' :=
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eX.symm eY.symm
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eX.symm (Iso.refl Y')
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eY.symm (Iso.refl Y')
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ (Iso.refl X') eX.symm
+  (SmallHom.mk _ eX.inv).comp ((Φ.smallHomMap f).comp (SmallHom.mk _ eY.hom))
+
+lemma equiv_smallHomMap' (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
+    (f : SmallHom.{w} W₁ X Y) :
+    SmallHom.equiv W₂ L₂ (Φ.smallHomMap' eX eY f) =
+      L₂.map eX.inv ≫ e.hom.app X ≫ G.map (SmallHom.equiv W₁ L₁ f) ≫
+        e.inv.app Y ≫ L₂.map eY.hom := by
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eY.symm (Iso.refl Y')
+  simp [smallHomMap', SmallHom.equiv_comp, Φ.equiv_smallHomMap L₁ L₂ G e]
+
+@[simp]
+lemma smallHomMap'_mk (f : X ⟶ Y) :
+    Φ.smallHomMap' eX eY (SmallHom.mk _ f) =
+      SmallHom.mk _ (eX.inv ≫ Φ.functor.map f ≫ eY.hom) := by
+  simp [smallHomMap', SmallHom.mk_comp_mk]
+
+end
+
+section
+
+variable {X Y Z : C₁} [HasSmallLocalizedHom.{w} W₁ X Y] [HasSmallLocalizedHom.{w} W₁ Y Z]
+  [HasSmallLocalizedHom.{w} W₁ X Z] {X' Y' Z' : C₂}
+  [HasSmallLocalizedHom.{w'} W₂ X' X'] [HasSmallLocalizedHom.{w'} W₂ Y' Y']
+  [HasSmallLocalizedHom.{w'} W₂ Z' Z'] [HasSmallLocalizedHom.{w'} W₂ X' Y']
+  [HasSmallLocalizedHom.{w'} W₂ Y' Z'] [HasSmallLocalizedHom.{w'} W₂ X' Z']
+  (eX : Φ.functor.obj X ≅ X') (eY : Φ.functor.obj Y ≅ Y') (eZ : Φ.functor.obj Z ≅ Z')
+
+lemma smallHomMap'_comp (f : SmallHom.{w} W₁ X Y) (g : SmallHom.{w} W₁ Y Z) :
+    Φ.smallHomMap' eX eZ (f.comp g) =
+      (Φ.smallHomMap' eX eY f).comp (Φ.smallHomMap' eY eZ g) := by
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eX.symm eY.symm
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eY.symm (Iso.refl Y')
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eX.symm (Iso.refl Z')
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eY.symm eZ.symm
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eY.symm (Iso.refl Z')
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ (Iso.refl Y') eY.symm
+  have := hasSmallLocalizedHom_of_isos.{w'} W₂ eY.symm eY.symm
+  simp only [smallHomMap', smallHomMap_comp, SmallHom.comp_assoc]
+  congr 2
+  rw [← SmallHom.comp_assoc, SmallHom.mk_comp_mk, eY.hom_inv_id, SmallHom.mk_id_comp]
+
+end
 
 end LocalizerMorphism
 

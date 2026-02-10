@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
-import Mathlib.Topology.Sheaves.PUnit
-import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.Sheaves.Functors
+module
+
+public import Mathlib.Topology.Sheaves.PUnit
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Skyscraper (pre)sheaves
@@ -30,6 +32,8 @@ of `p₀`, i.e. if `p₀ ⤳ x` then `𝓕ₓ ≅ A` and if `¬ p₀ ⤳ x` then
 
 TODO: generalize universe level when calculating stalks, after generalizing universe level of stalk.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -93,14 +97,14 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
 theorem SkyscraperPresheafFunctor.map'_id {a : C} :
     SkyscraperPresheafFunctor.map' p₀ (𝟙 a) = 𝟙 _ := by
   ext U
-  simp only [SkyscraperPresheafFunctor.map'_app, NatTrans.id_app]; split_ifs <;> aesop_cat
+  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> cat_disch
 
 theorem SkyscraperPresheafFunctor.map'_comp {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
     SkyscraperPresheafFunctor.map' p₀ (f ≫ g) =
       SkyscraperPresheafFunctor.map' p₀ f ≫ SkyscraperPresheafFunctor.map' p₀ g := by
   ext U
-  simp only [SkyscraperPresheafFunctor.map'_app, NatTrans.comp_app]
-  split_ifs with h <;> aesop_cat
+  simp only [SkyscraperPresheafFunctor.map'_app]
+  split_ifs with h <;> cat_disch
 
 /-- Taking skyscraper presheaf at a point is functorial: `c ↦ skyscraper p₀ c` defines a functor by
 sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U) = f : a ⟶ b` if
@@ -148,8 +152,8 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dif_pos]
-    · simp only [skyscraperPresheafCoconeOfSpecializes_ι_app, eqToHom_trans_assoc,
-        eqToHom_refl, Category.id_comp, unop_op, op_unop]
+    · simp only [eqToHom_trans_assoc,
+        eqToHom_refl, Category.id_comp, op_unop]
     · exact h.mem_open U.unop.1.2 U.unop.2
   uniq c f h := by
     dsimp
@@ -223,7 +227,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           · exact terminalIsTerminal
           · #adaptation_note /-- 2024-03-24
             Previously the universe annotation was not needed here. -/
-            exact Set.notMem_empty PUnit.unit.{u+1})))
+            exact Set.notMem_empty PUnit.unit.{u + 1})))
 
 /--
 The skyscraper presheaf supported at `p₀` with value `A` is the sheaf that assigns `A` to all opens
@@ -339,7 +343,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     dsimp [Presheaf.stalkFunctor, toSkyscraperPresheaf]
     ext
     simp only [Functor.comp_obj, Functor.op_obj, ι_colimMap_assoc, skyscraperPresheaf_obj,
-      whiskerLeft_app, Category.comp_id]
+      Functor.whiskerLeft_app, Category.comp_id]
     split_ifs with h
     · simp [skyscraperPresheafStalkOfSpecializes]
       rfl
@@ -360,7 +364,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     · simp
       rfl
 
-instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
 instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
@@ -383,7 +387,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
-instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
 end

@@ -3,13 +3,16 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Category.Semigrp.Basic
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.WithOne.Basic
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Category.Semigrp.Basic
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.WithOne.Basic
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -23,6 +26,8 @@ from monoids to semigroups.
 * adjunctions related to commutative monoids
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -31,12 +36,13 @@ open CategoryTheory
 namespace MonCat
 
 /-- The functor of adjoining a neutral element `one` to a semigroup. -/
-@[to_additive (attr := simps) "The functor of adjoining a neutral element `zero` to a semigroup"]
+@[to_additive (attr := simps)
+/-- The functor of adjoining a neutral element `zero` to a semigroup -/]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
-  map f := ofHom (WithOne.map f.hom)
-  map_id _ := MonCat.hom_ext WithOne.map_id
-  map_comp _ _ := MonCat.hom_ext (WithOne.map_comp _ _)
+  map f := ofHom (WithOne.mapMulHom f.hom)
+  map_id _ := MonCat.hom_ext WithOne.mapMulHom_id
+  map_comp _ _ := MonCat.hom_ext (WithOne.mapMulHom_comp _ _)
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
@@ -45,7 +51,7 @@ instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
       map f := Semigrp.ofHom f.hom.toMulHom }
 
 /-- The `adjoinOne`-forgetful adjunction from `Semigrp` to `MonCat`. -/
-@[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat`"]
+@[to_additive /-- The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat` -/]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y :=
@@ -53,10 +59,11 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
           (ConcreteCategory.homEquiv (X := X) (Y := (forget₂ _ _).obj Y)).symm)
       homEquiv_naturality_left_symm := by
         intros
-        ext ⟨_|_⟩ <;> simp <;> rfl }
+        ext ⟨_ | _⟩ <;> simp <;> rfl }
 
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
-@[to_additive "The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free monoid on `X`."]
+@[to_additive
+/-- The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free additive monoid on `X`. -/]
 def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
   map f := ofHom (FreeMonoid.map f)
@@ -64,7 +71,7 @@ def free : Type u ⥤ MonCat.{u} where
   map_comp _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
 
 /-- The free-forgetful adjunction for monoids. -/
-@[to_additive "The free-forgetful adjunction for additive monoids."]
+@[to_additive /-- The free-forgetful adjunction for additive monoids. -/]
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.

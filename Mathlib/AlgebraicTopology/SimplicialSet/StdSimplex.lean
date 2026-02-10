@@ -3,21 +3,27 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
-import Mathlib.CategoryTheory.Subpresheaf.OfSection
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Order.Fin.SuccAboveOrderIso
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Fin.Finset
+public import Mathlib.Order.Fin.SuccAboveOrderIso
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # The standard simplex
 
 We define the standard simplices `Δ[n]` as simplicial sets.
 See files `SimplicialSet.Boundary` and `SimplicialSet.Horn`
-for their boundaries`∂Δ[n]` and horns `Λ[n, i]`.
+for their boundaries `∂Δ[n]` and horns `Λ[n, i]`.
 (The notations are available via `open Simplicial`.)
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -25,13 +31,10 @@ open CategoryTheory Limits Simplicial Opposite
 
 namespace SSet
 
-/-- The functor `SimplexCategory ⥤ SSet` which sends `SimplexCategory.mk n` to
-the standard simplex `Δ[n]` is a cosimplicial object in the category of simplicial sets.
-(This functor is essentially given by the Yoneda embedding). -/
-def stdSimplex : CosimplicialObject SSet.{u} :=
-  yoneda ⋙ uliftFunctor
-
-@[deprecated (since := "2025-01-23")] alias standardSimplex := stdSimplex
+/-- The functor `SimplexCategory ⥤ SSet` which sends `⦋n⦌` to the standard simplex `Δ[n]` is a
+cosimplicial object in the category of simplicial sets. (This functor is essentially given by the
+Yoneda embedding). -/
+def stdSimplex : CosimplicialObject SSet.{u} := uliftYoneda
 
 @[inherit_doc SSet.stdSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
@@ -56,10 +59,18 @@ def objEquiv {n : SimplexCategory} {m : SimplexCategoryᵒᵖ} :
     (stdSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
   Equiv.ulift.{u, 0}
 
+instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
+    DecidableEq ((stdSimplex.{u}.obj n).obj m) :=
+  fun a b ↦ decidable_of_iff (stdSimplex.objEquiv a = stdSimplex.objEquiv b) (by simp)
+
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
-instance (n i : ℕ) : DFunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (fun _ ↦ Fin (n + 1)) where
+instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
   coe_injective' _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
+
+lemma monotone_apply {n i : ℕ} (x : Δ[n] _⦋i⦌) :
+    Monotone (fun (j : Fin (i + 1)) ↦ x j) :=
+  (objEquiv x).toOrderHom.monotone
 
 @[ext]
 lemma ext {n d : ℕ} (x y : Δ[n] _⦋d⦌) (h : ∀ (i : Fin (d + 1)), x i = y i) : x = y :=
@@ -67,7 +78,7 @@ lemma ext {n d : ℕ} (x y : Δ[n] _⦋d⦌) (h : ∀ (i : Fin (d + 1)), x i = y
 
 @[simp]
 lemma objEquiv_toOrderHom_apply {n i : ℕ}
-    (x : (stdSimplex.{u} ^⦋n⦌).obj (op (.mk i))) (j : Fin (i + 1)) :
+    (x : (stdSimplex.{u} ^⦋n⦌).obj (op ⦋i⦌)) (j : Fin (i + 1)) :
     DFunLike.coe (F := Fin (i + 1) →o Fin (n + 1))
       ((DFunLike.coe (F := Δ[n].obj (op ⦋i⦌) ≃ (⦋i⦌ ⟶ ⦋n⦌))
         objEquiv x)).toOrderHom j = x j :=
@@ -79,8 +90,7 @@ lemma objEquiv_symm_comp {n n' : SimplexCategory} {m : SimplexCategoryᵒᵖ}
       (stdSimplex.map g).app _ (objEquiv.{u}.symm f) := rfl
 
 @[simp]
-lemma objEquiv_symm_apply {n m : ℕ}
-    (f : SimplexCategory.mk m ⟶ SimplexCategory.mk n) (i : Fin (m + 1)) :
+lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)) :
     (objEquiv.{u}.symm f : Δ[n] _⦋m⦌) i = f.toOrderHom i := rfl
 
 /-- Constructor for simplices of the standard simplex which takes a `OrderHom` as an input. -/
@@ -91,7 +101,7 @@ abbrev objMk {n : SimplexCategory} {m : SimplexCategoryᵒᵖ}
 
 @[simp]
 lemma objMk_apply {n m : ℕ} (f : Fin (m + 1) →o Fin (n + 1)) (i : Fin (m + 1)) :
-    objMk.{u} (n := .mk n) (m := op (.mk m)) f i = f i :=
+    objMk.{u} (n := ⦋n⦌) (m := op ⦋m⦌) f i = f i :=
   rfl
 
 /-- The `m`-simplices of the `n`-th standard simplex are
@@ -107,7 +117,11 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 /-- The canonical bijection `(stdSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
 def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
     (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
-  yonedaCompUliftFunctorEquiv X n
+  uliftYonedaEquiv
+
+instance (X : SSet.{u}) (n : SimplexCategory) [DecidableEq (X.obj (op n))] :
+    DecidableEq (stdSimplex.obj n ⟶ X) :=
+  fun a b ↦ decidable_of_iff (yonedaEquiv a = yonedaEquiv b) (by simp)
 
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
@@ -115,10 +129,10 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
-  objMk (OrderHom.const _ k )
+  objMk (OrderHom.const _ k)
 
 @[simp]
-lemma const_down_toOrderHom (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) :
+lemma const_down_toOrderHom (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) :
     (const n k m).down.toOrderHom = OrderHom.const _ k :=
   rfl
 
@@ -128,7 +142,6 @@ def obj₀Equiv {n : ℕ} : Δ[n] _⦋0⦌ ≃ Fin (n + 1) where
   toFun x := x 0
   invFun i := const _ i _
   left_inv x := by ext i : 1; fin_cases i; rfl
-  right_inv _ := rfl
 
 /-- The edge of the standard simplex with endpoints `a` and `b`. -/
 def edge (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by
@@ -137,7 +150,7 @@ def edge (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by
   simp only [unop_op, len_mk, Fin.forall_fin_one]
   apply Fin.mk_le_mk.mpr hab
 
-lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
+lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) :
     ↑(edge n a b hab).down.toOrderHom = ![a, b] :=
   rfl
 
@@ -147,9 +160,9 @@ def triangle {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) : �
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_two]
   dsimp
-  simp only [*, Matrix.tail_cons, Matrix.head_cons, true_and]
+  simp only [*, true_and]
 
-lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) :
+lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) :
     ↑(triangle a b c hab hbc).down.toOrderHom = ![a, b, c] :=
   rfl
 
@@ -183,30 +196,30 @@ namespace Subcomplex
 
 variable {X : SSet.{u}}
 
-/-- The subcomplex of a simplicial set that is generated by a simplex. -/
-abbrev ofSimplex {n : ℕ} (x : X _⦋n⦌) : X.Subcomplex := Subpresheaf.ofSection x
-
 lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
-    Subpresheaf.range f = ofSimplex (yonedaEquiv f) :=
-  Subpresheaf.range_eq_ofSection' _
-
-lemma mem_ofSimplex_obj {n : ℕ} (x : X _⦋n⦌) :
-    x ∈ (ofSimplex x).obj _ :=
-  Subpresheaf.mem_ofSection_obj x
-
-lemma ofSimplex_le_iff {n : ℕ} (x : X _⦋n⦌) (A : X.Subcomplex) :
-     ofSimplex x ≤ A ↔ x ∈ A.obj _ :=
-  Subpresheaf.ofSection_le_iff _ _
+    range f = ofSimplex (yonedaEquiv f) :=
+  Subfunctor.range_eq_ofSection' _
 
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
     (f : stdSimplex.obj n ⟶ A) :
-    (DFunLike.coe (F := ((stdSimplex.obj n ⟶ Subpresheaf.toPresheaf A) ≃ A.obj (op n)))
+    (DFunLike.coe (F := ((stdSimplex.obj n ⟶ Subfunctor.toFunctor A) ≃ A.obj (op n)))
       yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
   rfl
 
 end Subcomplex
 
 namespace stdSimplex
+
+lemma obj₀Equiv_symm_mem_face_iff
+    {n : ℕ} (S : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    (obj₀Equiv.symm i) ∈ (face.{u} S).obj (op (.mk 0)) ↔ i ∈ S :=
+  ⟨fun h ↦ by simpa using h, by aesop⟩
+
+lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
+    face.{u} S₁ ≤ face S₂ ↔ S₁ ≤ S₂ := by
+  refine ⟨fun h i hi ↦ ?_, fun h d a ha ↦ ha.trans h⟩
+  simp only [← obj₀Equiv_symm_mem_face_iff.{u}] at hi ⊢
+  exact h _ hi
 
 lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin (m + 1) ≃o S) :
     face.{u} S =
@@ -215,26 +228,25 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
           e.toOrderEmbedding.toOrderHom)) := by
   apply le_antisymm
   · rintro ⟨k⟩ x hx
-    induction' k using SimplexCategory.rec with k
+    induction k using SimplexCategory.rec with | _ k
     rw [mem_face_iff] at hx
     let φ : Fin (k + 1) →o S :=
       { toFun i := ⟨x i, hx i⟩
         monotone' := (objEquiv x).toOrderHom.monotone }
     refine ⟨Quiver.Hom.op
       (SimplexCategory.Hom.mk ((e.symm.toOrderEmbedding.toOrderHom.comp φ))), ?_⟩
-    obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
     ext j : 1
     simpa only [Subtype.ext_iff] using e.apply_symm_apply ⟨_, hx j⟩
-  · simp [Subcomplex.ofSimplex_le_iff]
+  · simp
 
 /-- If `S : Finset (Fin (n + 1))` is order isomorphic to `Fin (m + 1)`,
 then the face `face S` of `Δ[n]` is representable by `m`,
 i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -/
 def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     (m : ℕ) (e : Fin (m + 1) ≃o S) :
-    (face S : SSet.{u}).RepresentableBy (.mk m) where
+    (face S : SSet.{u}).RepresentableBy ⦋m⦌ where
   homEquiv {j} :=
-    { toFun f := ⟨objMk ((OrderHom.Subtype.val S.toSet).comp
+    { toFun f := ⟨objMk ((OrderHom.Subtype.val (SetLike.coe S)).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
         { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩
@@ -245,21 +257,19 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
         ext i : 3
         apply e.symm_apply_apply
       right_inv := fun ⟨x, hx⟩ ↦ by
-        induction' j using SimplexCategory.rec with j
+        induction j using SimplexCategory.rec with | _ j
         dsimp
         ext i : 2
         exact congr_arg Subtype.val
           (e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩) }
   homEquiv_comp f g := by aesop
 
-/-- If a simplicial set `X` is representable by `SimplexCategory.mk m` for some `m : ℕ`,
-then this is the corresponding isomorphism `Δ[m] ≅ X`. -/
-def isoOfRepresentableBy {X : SSet.{u}} {m : ℕ} (h : X.RepresentableBy (.mk m)) :
+/-- If a simplicial set `X` is representable by `⦋m⦌` for some `m : ℕ`, then this is the
+corresponding isomorphism `Δ[m] ≅ X`. -/
+def isoOfRepresentableBy {X : SSet.{u}} {m : ℕ} (h : X.RepresentableBy ⦋m⦌) :
     Δ[m] ≅ X :=
-  NatIso.ofComponents (fun n ↦ Equiv.toIso (objEquiv.trans h.homEquiv)) (by
-    intros
-    ext
-    apply h.homEquiv_comp)
+  NatIso.ofComponents (fun n ↦ Equiv.toIso (objEquiv.trans h.homEquiv))
+    (fun _ ↦ by ext; apply h.homEquiv_comp)
 
 lemma ofSimplex_yonedaEquiv_δ {n : ℕ} (i : Fin (n + 2)) :
     Subcomplex.ofSimplex (yonedaEquiv (stdSimplex.δ i)) = face.{u} {i}ᶜ :=
@@ -267,9 +277,137 @@ lemma ofSimplex_yonedaEquiv_δ {n : ℕ} (i : Fin (n + 2)) :
 
 @[simp]
 lemma range_δ {n : ℕ} (i : Fin (n + 2)) :
-    Subpresheaf.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
+    Subcomplex.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
   rw [Subcomplex.range_eq_ofSimplex]
   exact ofSimplex_yonedaEquiv_δ i
+
+/-- The standard simplex identifies to the nerve to the preordered type
+`ULift (Fin (n + 1))`. -/
+@[pp_with_univ]
+def isoNerve (n : ℕ) :
+    (Δ[n] : SSet.{u}) ≅ nerve (ULift.{u} (Fin (n + 1))) :=
+  NatIso.ofComponents (fun d ↦ Equiv.toIso (objEquiv.trans
+    { toFun f := (ULift.orderIso.symm.monotone.comp f.toOrderHom.monotone).functor
+      invFun f :=
+        SimplexCategory.Hom.mk
+          (ULift.orderIso.toOrderEmbedding.toOrderHom.comp f.toOrderHom)
+      left_inv _ := by aesop }))
+
+@[simp]
+lemma isoNerve_hom_app_apply {n d : ℕ}
+    (s : (Δ[n] _⦋d⦌)) (i : Fin (d + 1)) :
+    ((isoNerve.{u} n).hom.app _ s).obj i = ULift.up (s i) := rfl
+
+@[simp]
+lemma isoNerve_inv_app_apply {n d : ℕ}
+    (F : (nerve (ULift.{u} (Fin (n + 1)))) _⦋d⦌) (i : Fin (d + 1)) :
+    (isoNerve.{u} n).inv.app _ F i = (F.obj i).down := rfl
+
+lemma mem_nonDegenerate_iff_strictMono {n d : ℕ} (s : (Δ[n] : SSet.{u}) _⦋d⦌) :
+    s ∈ Δ[n].nonDegenerate d ↔ StrictMono s := by
+  rw [← nonDegenerate_iff_of_mono (isoNerve n).hom,
+    PartialOrder.mem_nerve_nonDegenerate_iff_strictMono]
+  rfl
+
+lemma mem_nonDegenerate_iff_mono {n d : ℕ} (s : (Δ[n] : SSet.{u}) _⦋d⦌) :
+    s ∈ Δ[n].nonDegenerate d ↔ Mono (objEquiv s) := by
+  rw [mem_nonDegenerate_iff_strictMono,
+    SimplexCategory.mono_iff_injective]
+  refine ⟨fun h ↦ h.injective, fun h ↦ ?_⟩
+  rw [Fin.strictMono_iff_lt_succ]
+  intro i
+  obtain h' | h' := (stdSimplex.monotone_apply s i.castSucc_le_succ).lt_or_eq
+  · exact h'
+  · simpa [Fin.ext_iff] using h h'
+
+lemma objEquiv_symm_mem_nonDegenerate_iff_mono {n d : ℕ} (f : ⦋d⦌ ⟶ ⦋n⦌) :
+    (objEquiv.{u} (m := (op ⦋d⦌))).symm f ∈ Δ[n].nonDegenerate d ↔ Mono f := by
+  simp [mem_nonDegenerate_iff_mono]
+
+/-- Nondegenerate `d`-dimensional simplices of the standard simplex `Δ[n]`
+identify to order embeddings `Fin (d + 1) ↪o Fin (n + 1)`. -/
+@[simps! apply_apply symm_apply_coe]
+def nonDegenerateEquiv {n d : ℕ} :
+    (Δ[n] : SSet.{u}).nonDegenerate d ≃ (Fin (d + 1) ↪o Fin (n + 1)) where
+  toFun s := OrderEmbedding.ofStrictMono _ ((mem_nonDegenerate_iff_strictMono _).1 s.2)
+  invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
+    simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
+  left_inv _ := by aesop
+
+instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
+  degenerate_eq_top i hi := by
+    ext x
+    simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
+    by_contra hx
+    have : Mono (objEquiv x) := by rwa [← mem_nonDegenerate_iff_mono]
+    have := SimplexCategory.len_le_of_mono (objEquiv x)
+    dsimp at this
+    lia
+
+/-- If `i : Fin (n + 2)`, this is the order isomorphism between `Fin (n +1)`
+and the complement of `{i}` as a finset. -/
+def finSuccAboveOrderIsoFinset {n : ℕ} (i : Fin (n + 2)) :
+    Fin (n + 1) ≃o ({i}ᶜ : Finset _) where
+  toEquiv := (finSuccAboveEquiv (p := i)).trans
+    { toFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
+      invFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩ }
+  map_rel_iff' := (Fin.succAboveOrderEmb i).map_rel_iff
+
+lemma face_singleton_compl {n : ℕ} (i : Fin (n + 2)) :
+    face.{u} {i}ᶜ =
+      Subcomplex.ofSimplex (objEquiv.symm (SimplexCategory.δ i)) :=
+  face_eq_ofSimplex _ _ (finSuccAboveOrderIsoFinset i)
+
+/-- In `Δ[n + 1]`, the face corresponding to the complement of `{i}`
+for `i : Fin (n + 2)` is isomorphic to `Δ[n]`. -/
+def faceSingletonComplIso {n : ℕ} (i : Fin (n + 2)) :
+    Δ[n] ≅ (face {i}ᶜ : SSet.{u}) :=
+  isoOfRepresentableBy (faceRepresentableBy _ _ (finSuccAboveOrderIsoFinset i))
+
+@[reassoc (attr := simp)]
+lemma faceSingletonComplIso_hom_ι {n : ℕ} (i : Fin (n + 2)) :
+    (faceSingletonComplIso.{u} i).hom ≫ (face {i}ᶜ).ι =
+      stdSimplex.δ i := rfl
+
+/-- Given `i : Fin (n + 1)`, this is the isomorphism from `Δ[0]` to the face
+of `Δ[n]` corresponding to `{i}`. -/
+noncomputable def faceSingletonIso {n : ℕ} (i : Fin (n + 1)) :
+    Δ[0] ≅ (face {i} : SSet.{u}) :=
+  stdSimplex.isoOfRepresentableBy
+    (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoSingleton i))
+
+@[reassoc]
+lemma faceSingletonIso_zero_hom_comp_ι_eq_δ :
+    (faceSingletonIso.{u} (0 : Fin 2)).hom ≫ (face {0}).ι = stdSimplex.δ 1 := by
+  decide
+
+@[reassoc]
+lemma faceSingletonIso_one_hom_comp_ι_eq_δ :
+    (faceSingletonIso.{u} (1 : Fin 2)).hom ≫ (face {1}).ι = stdSimplex.δ 0 := by
+  decide
+
+/-- Given `i` and `j` in `Fin (n + 1)` such that `i < j`,
+this is the isomorphism from `Δ[1]` to the face
+of `Δ[n]` corresponding to `{i, j}`. -/
+noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
+    Δ[1] ≅ (face {i, j} : SSet.{u}) :=
+  stdSimplex.isoOfRepresentableBy
+    (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoPair i j hij))
+
+instance (n : SimplexCategory) (d : SimplexCategoryᵒᵖ) :
+    Finite ((stdSimplex.{u}.obj n).obj d) := by
+  rw [objEquiv.finite_iff]
+  infer_instance
+
+instance (n : SimplexCategory) : (stdSimplex.{u}.obj n).Finite := by
+  induction n using SimplexCategory.rec with | _ n
+  exact finite_of_hasDimensionLT _ (n + 1) inferInstance
+
+instance {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
+    SSet.Finite (Subcomplex.ofSimplex x) := by
+  obtain ⟨f, rfl⟩ := yonedaEquiv.surjective x
+  rw [← Subcomplex.range_eq_ofSimplex]
+  infer_instance
 
 end stdSimplex
 
@@ -299,7 +437,5 @@ noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
       right := terminal.from _ }
 
 end Augmented
-
-@[deprecated (since := "2025-01-26")] alias asOrderHom := stdSimplex.asOrderHom
 
 end SSet
