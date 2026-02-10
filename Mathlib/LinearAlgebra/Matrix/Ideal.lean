@@ -315,8 +315,7 @@ Given an ideal $I ≤ R$, we send it to $Mₙ(I)$.
 Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
 -/
 @[simps]
-def equivMatrix [Nonempty n] [DecidableEq n] :
-    TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
+def equivMatrix : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
   toFun I := I.matrix n
   invFun J := { ringCon := J.ringCon.ofMatrix }
   right_inv _ := ringCon_injective <| RingCon.matrix_ofMatrix _

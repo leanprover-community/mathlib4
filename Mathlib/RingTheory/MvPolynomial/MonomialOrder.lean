@@ -512,8 +512,11 @@ theorem degree_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (
   tauto
 
 /-- Multiplicativity of leading coefficients -/
-theorem leadingCoeff_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
+@[simp] theorem leadingCoeff_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  by_cases! +distrib h : f = 0 ∨ g = 0
+  · cases h <;> simp [*]
+  obtain ⟨hf, hg⟩ := h
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
 /-- Monomial degree of powers -/
@@ -949,7 +952,7 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
   have hm2 := (monomial_eq_zero (s := d₂)).not.mpr hc2
   simp_rw [m.degree_mul hm1 hp1, m.degree_mul hm2 hp2,
     mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul,
-    m.leadingCoeff_mul hm1 hp1, m.leadingCoeff_mul hm2 hp2, m.leadingCoeff_monomial,
+    m.leadingCoeff_mul, m.leadingCoeff_monomial,
     degree_monomial, hc1, hc2, reduceIte, mul_right_comm, mul_comm c₂ c₁]
   rw [tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
     tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
