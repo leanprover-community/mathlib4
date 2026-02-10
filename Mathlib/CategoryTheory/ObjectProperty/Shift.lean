@@ -136,7 +136,7 @@ instance : (P.shiftClosure A).IsStableUnderShift A where
 lemma isStableUnderShift_iff_shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] :
     IsStableUnderShift P A ↔ shiftClosure P A = P :=
   ⟨fun _ ↦ shiftClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
-  
+
 
 variable [P.IsStableUnderShift A]
 
