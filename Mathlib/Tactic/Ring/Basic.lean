@@ -79,11 +79,11 @@ open Lean (MetaM Expr mkRawNatLit)
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 @[reducible, inherit_doc Common.ExBase]
-def ExBase := Common.ExBase (BaseType sα) sα
+def ExBase := Common.ExBase (RatCoeff) sα
 @[reducible, inherit_doc Common.ExProd]
-def ExProd := Common.ExProd (BaseType sα) sα
+def ExProd := Common.ExProd (RatCoeff) sα
 @[reducible, inherit_doc Common.ExSum]
-def ExSum := Common.ExSum (BaseType sα) sα
+def ExSum := Common.ExSum (RatCoeff) sα
 
 section
 variable {R : Type*} [CommSemiring R] {a : R}
@@ -364,11 +364,11 @@ theorem Int.smul_eq_mul {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' 
   simp only [zsmul_eq_mul]
 
 /-- Turn coefficient data into a NormNum.Result. -/
-def BaseType.toResult {a : Q($α)} : BaseType sα a → NormNum.Result a
+def RatCoeff.toResult {a : Q($α)} : RatCoeff a → NormNum.Result a
 | ⟨q, h⟩ => Result.ofRawRat q a h
 
 /-- Turn a NormNum.Result into coefficient data. -/
-def BaseType.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result (BaseType sα) a := do
+def RatCoeff.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result (RatCoeff) a := do
   let ⟨qc, hc⟩ ← res.toRatNZ
   let ⟨c, pc⟩ := res.toRawEq
   return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
@@ -378,8 +378,8 @@ mutual
 
 /-- Add two rational number expressions. If the result is zero, returns a proof of this fact. -/
 partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {a b : Q($α)} (za : BaseType sα a) (zb : BaseType sα b) :
-    MetaM (Result (BaseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
+    {a b : Q($α)} (za : RatCoeff a) (zb : _root_.Mathlib.Tactic.Ring.RatCoeff b) :
+    MetaM (Result (RatCoeff) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
   let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
   | Result.isNat inst lit pf => do
@@ -389,21 +389,21 @@ partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     else
       pure none
   | _ => pure none
-  let r ← BaseType.ofResult sα res
+  let r ← RatCoeff.ofResult res
   return ⟨r, isZero⟩
 
 /-- Evaluate the product of two rational number expressions. -/
 partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {a b : Q($α)} (za : BaseType sα a) (zb : BaseType sα b) :
-    MetaM (Result (BaseType sα) q($a * $b)) := do
+    {a b : Q($α)} (za : RatCoeff a) (zb : _root_.Mathlib.Tactic.Ring.RatCoeff b) :
+    MetaM (Result (RatCoeff) q($a * $b)) := do
   let res ← za.toResult.mul zb.toResult
-  return ← BaseType.ofResult sα res
+  return ← RatCoeff.ofResult res
 
 /-- Cast ℕ and ℤ normalized expressions ExSums into `α`, used to evaluate scalar multiplications. -/
 partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cα : Common.Cache sα)
     (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (_smul : Q(SMul $β $α))
     (x : Q($β)) :
-    AtomM ((y : Q($α)) × Common.ExSum (BaseType sα) sα q($y) ×
+    AtomM ((y : Q($α)) × Common.ExSum (RatCoeff) sα q($y) ×
       Q(∀ (a : $α), $x • a = $y * a)) := do
   let cβ ← Common.mkCache sβ
   let ⟨x', vx, px⟩ ← Common.eval (ringCompute .nat) (ringCompute cβ) cβ x
@@ -427,21 +427,21 @@ partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (
   | _ => failure
 
 /-- Negate rational number expressions. -/
-partial def neg {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {a : Q($α)} (_crα : Q(CommRing $α)) (za : BaseType sα a) :
-    MetaM (Result (BaseType sα) q(-$a)) := do
+partial def neg {u : Lean.Level} {α : Q(Type u)}
+    {a : Q($α)} (_crα : Q(CommRing $α)) (za : RatCoeff a) :
+    MetaM (Result (RatCoeff) q(-$a)) := do
   let res ← za.toResult.neg q(inferInstance)
   -- We have to unpack this result due to instance issues.
-  let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
+  let ⟨_, vc, pc⟩ ← RatCoeff.ofResult res
   return ⟨_, vc, q($pc)⟩
 
 /-- Raise a rational number expression to the power of a natural number.
 
 Fails if the exponent is not a literal. -/
 partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {a : Q($α)} {b : Q(ℕ)} (za : BaseType sα a)
+    {a : Q($α)} {b : Q(ℕ)} (za : RatCoeff a)
     (vb : Common.ExProdNat q($b)) :
-    OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
+    OptionT MetaM (Result (RatCoeff) q($a ^ $b)) := do
   match vb with
   | .const _ =>
     have lit : Q(ℕ) := b.appArg!
@@ -451,30 +451,30 @@ partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | none => OptionT.fail
     | some res =>
       have : $b =Q $lit := ⟨⟩
-      let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
+      let ⟨_, vc, pc⟩ ← RatCoeff.ofResult res
       return ⟨_, vc, q($pc)⟩
   | _ => OptionT.fail
 
 /-- Evaluate the inverse of a natural number expression. -/
-partial def inv {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α)) (za : BaseType sα a) :
-    AtomM (Option (Result (BaseType sα) q($a⁻¹))) := do
+partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
+    {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α)) (za : RatCoeff a) :
+    AtomM (Option (Result (RatCoeff) q($a⁻¹))) := do
   match (← (Lean.observing? <| za.toResult.inv _ czα :)) with
   | some res =>
-    let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
+    let ⟨_, vc, pc⟩ ← RatCoeff.ofResult res
     return some ⟨_, vc, q($pc)⟩
   | none => return none
 
 /-- Try to evaluate an expression as a rational constant using norm_num. -/
 partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (x : Q($α)) :
-    MetaM (Result (Common.ExSum (BaseType sα) sα) q($x)) := do
+    MetaM (Result (Common.ExSum (RatCoeff) sα) q($x)) := do
   let res ← NormNum.derive x
   let ⟨_, va, pa⟩ ← evalCast sα res
   return ⟨_, va, q($pa)⟩
 
 /-- Decide if `x` is 1 and provide a proof if so. -/
 partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
+    {x : Q($α)} (zx : RatCoeff x) : Option Q(IsNat $x 1) := do
   let ⟨qx, _hx⟩ := zx
   if qx == 1 then
     have : $x =Q Nat.rawCast 1 := ⟨⟩
@@ -485,24 +485,24 @@ partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 /-- The comarisons on the basetype used to compare normalized ring expressions. -/
 partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type u)}
-    (sα : Q(CommSemiring $α)) : Common.RingCompare (BaseType sα) where
+    : Common.RingCompare (α := α) RatCoeff where
   eq zx zy := zx.value == zy.value
   compare zx zy := compare zx.value zy.value
 
 /-- The data used by the `ring` tactic to normalize the constant coefficients. -/
 partial def _root_.Mathlib.Tactic.Ring.ringCompute
     {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} (cα : Common.Cache sα) :
-    Common.RingCompute (BaseType sα) sα where
+    Common.RingCompute (RatCoeff) sα where
   add := add sα
   mul := mul sα
   cast := cast sα cα
-  neg := neg sα
+  neg := neg
   pow := pow sα
   inv := inv sα
   derive := derive sα
   isOne := isOne sα
   one := ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
-  toRingCompare := ringCompare sα
+  toRingCompare := ringCompare
 
 end
 end RingCompute

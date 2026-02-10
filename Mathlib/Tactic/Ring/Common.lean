@@ -101,9 +101,12 @@ def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
 /--
 The data used by `ring` to represent coefficients. `e` is a raw rat cast.
+
+We include `e` as a parameter even though it is unused in this definition because it lets use Qq
+type annotations in the `RingCompute` structure, and so that it can be used with the `Result` type
+defined below.
 -/
-structure _root_.Mathlib.Tactic.Ring.BaseType {u : Lean.Level} {α : Q(Type u)}
-    (sα : Q(CommSemiring $α)) (e : Q($α)) where
+structure _root_.Mathlib.Tactic.Ring.RatCoeff {u : Lean.Level} {α : Q(Type u)} (e : Q($α)) where
   /-- The value represented by `e`. Should not be zero. -/
   value : ℚ
   /-- If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
@@ -111,7 +114,7 @@ structure _root_.Mathlib.Tactic.Ring.BaseType {u : Lean.Level} {α : Q(Type u)}
 deriving Inhabited
 
 /-- The data used to represent coefficients in exponents. This is the same data that `ring` uses. -/
-abbrev btℕ (e : Q(ℕ)) : Type := Ring.BaseType sℕ q($e)
+abbrev btℕ (e : Q(ℕ)) : Type := _root_.Mathlib.Tactic.Ring.RatCoeff q($e)
 
 instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
 
