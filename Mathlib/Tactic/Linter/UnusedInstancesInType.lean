@@ -326,20 +326,19 @@ def unusedDecidableInType : Linter where
   run := withSetBoolOptionIn fun cmd => do
     unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
-    profileitM Exception "unusedInstancesInType" (← getOptions) do
-      cmd.logUnusedInstancesInTheoremsWhere
-        /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
-        on decidable instances without using them in the type. -/
-        (declFilter := (!(`Decidable).isPrefixOf ·.name))
-        isDecidableVariant
-        fun _ thm unusedParams => do
-          logLint linter.unusedDecidableInType (← getRef) m!"\
-            {thm.name.unusedInstancesMsg unusedParams}\n\n\
-            Consider removing \
-            {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
-            and using `classical` in the proof instead. \
-            For terms, consider using `open scoped Classical in` at the term level (not the \
-            command level)."
+    cmd.logUnusedInstancesInTheoremsWhere
+      /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
+      on decidable instances without using them in the type. -/
+      (declFilter := (!(`Decidable).isPrefixOf ·.name))
+      isDecidableVariant
+      fun _ thm unusedParams => do
+        logLint linter.unusedDecidableInType (← getRef) m!"\
+          {thm.name.unusedInstancesMsg unusedParams}\n\n\
+          Consider removing \
+          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
+          and using `classical` in the proof instead. \
+          For terms, consider using `open scoped Classical in` at the term level (not the \
+          command level)."
 
 initialize addLinter unusedDecidableInType
 
