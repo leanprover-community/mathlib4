@@ -5,7 +5,9 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Set.Card
 
 /-! # Combinations
 

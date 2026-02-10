@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Set.PowersetCard
+public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
 
 /-! # Combinations
 
@@ -193,7 +194,8 @@ theorem mem_mulActionHom_compl {s : powersetCard α n} {a : α} :
   Finset.mem_compl
 
 theorem mulActionHom_compl_mulActionHom_compl :
-    (mulActionHom_compl G α <| (n.add_comm m).trans hm).comp (mulActionHom_compl G α hm) = .id G := by
+    (mulActionHom_compl G α <| (n.add_comm m).trans hm).comp
+    (mulActionHom_compl G α hm) = .id G := by
   ext s a
   change a ∈ (mulActionHom_compl G α _).comp (mulActionHom_compl G α hm) s ↔ a ∈ s
   simp [MulActionHom.comp_apply, mem_mulActionHom_compl]
