@@ -80,7 +80,6 @@ instance [AddMonoid A] : AddMonoid (WithConv A) := (WithConv.equiv A).addMonoid
 instance [AddCommMonoid A] : AddCommMonoid (WithConv A) := (WithConv.equiv A).addCommMonoid
 instance [AddGroup A] : AddGroup (WithConv A) := (WithConv.equiv A).addGroup
 instance [AddCommGroup A] : AddCommGroup (WithConv A) := (WithConv.equiv A).addCommGroup
-@[to_additive] instance [SMul R A] : SMul R (WithConv A) := (WithConv.equiv A).smul R
 @[to_additive] instance [Monoid R] [MulAction R A] : MulAction R (WithConv A) :=
   fast_instance% (WithConv.equiv A).mulAction R
 instance [Monoid R] [AddCommMonoid A] [DistribMulAction R A] : DistribMulAction R (WithConv A) :=
@@ -98,8 +97,10 @@ variable [AddGroup A]
 
 end AddGroup
 
-@[simp] lemma ofConv_smul [SMul R A] (c : R) (x : WithConv A) : ofConv (c • x) = c • ofConv x := rfl
-@[simp] lemma toConv_smul [SMul R A] (c : R) (x : A) : toConv (c • x) = c • toConv x := rfl
+@[simp] lemma ofConv_smul [Monoid R] [MulAction R A] (c : R) (x : WithConv A) :
+    ofConv (c • x) = c • ofConv x := rfl
+@[simp] lemma toConv_smul [Monoid R] [MulAction R A] (c : R) (x : A) :
+    toConv (c • x) = c • toConv x := rfl
 
 section
 variable [AddMonoid A]
