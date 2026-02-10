@@ -304,15 +304,14 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_of_inner_tendsto 𝕜 fun z ↦ ?_
   simp_rw [iSup_range]
-  refine Nat.tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) (h z) fun n u v huv ↦ ?_
-  · have h_tight : IsTightMeasureSet {(μ n).map (fun x ↦ ⟪z, x⟫_𝕜)} := isTightMeasureSet_singleton
-    rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
-    have h_map r : (μ n).map (fun x ↦ ⟪z, x⟫_𝕜) {x | r < ‖x‖} = μ n {x | r < ‖⟪z, x⟫_𝕜‖} := by
-      rw [Measure.map_apply (by fun_prop)]
-      · simp
-      · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
-    simpa [h_map] using h_tight
-  · exact measure_mono fun x hx ↦ huv.trans_lt hx
+  refine Nat.tendsto_iSup_of_tendsto_limsup (fun n ↦ ?_) (h z) (fun n u v huv ↦ by gcongr)
+  have h_tight : IsTightMeasureSet {(μ n).map (fun x ↦ ⟪z, x⟫_𝕜)} := isTightMeasureSet_singleton
+  rw [isTightMeasureSet_iff_tendsto_measure_norm_gt] at h_tight
+  have h_map r : (μ n).map (fun x ↦ ⟪z, x⟫_𝕜) {x | r < ‖x‖} = μ n {x | r < ‖⟪z, x⟫_𝕜‖} := by
+    rw [Measure.map_apply (by fun_prop)]
+    · simp
+    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+  simpa [h_map] using h_tight
 
 /-- In a finite-dimensional inner product space, the range of a sequence of measures
 `μ : ℕ → Measure E` is tight if and only if the function
