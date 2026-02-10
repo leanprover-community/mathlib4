@@ -82,8 +82,8 @@ instance range_isMulCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] 
   range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
 
 @[to_additive (attr := simp)]
-theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
-  simp_rw [SetLike.ext_iff, mem_range, mem_map, restrict_apply, SetLike.exists,
+theorem domRestrict_range (f : G →* N) : (f.domRestrict K).range = K.map f := by
+  simp_rw [SetLike.ext_iff, mem_range, mem_map, domRestrict_apply, SetLike.exists,
     exists_prop, forall_const]
 
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
@@ -271,7 +271,7 @@ theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem ker_restrict (f : G →* M) : (f.restrict K).ker = f.ker.subgroupOf K :=
+theorem ker_domRestrict (f : G →* M) : (f.domRestrict K).ker = f.ker.subgroupOf K :=
   rfl
 
 @[to_additive (attr := simp)]

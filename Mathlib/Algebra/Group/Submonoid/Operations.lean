@@ -435,7 +435,7 @@ variable {M : Type*} [MulOneClass M] (S : Submonoid M)
 
 /-- The top `Submonoid` is isomorphic to the `Monoid`. -/
 @[to_additive (attr := simps)
-/-- The top `AddSubmonoid` is isomorphic to the `AddMMonoid`. -/]
+/-- The top `AddSubmonoid` is isomorphic to the `AddMonoid`. -/]
 def topEquiv : (⊤ : Submonoid M) ≃* M where
   toFun x := x
   invFun x := ⟨x, mem_top x⟩

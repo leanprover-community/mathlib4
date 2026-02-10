@@ -474,12 +474,12 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
         ring)
 
 theorem mul_add_inv_left {g : R →+* P} (h : ∀ y : M, IsUnit (g y)) (y : M) (w z₁ z₂ : P) :
-    w * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) h y)⁻¹ + z₁ =
+    w * ↑(IsUnit.liftRight (g.toMonoidHom.domRestrict M) h y)⁻¹ + z₁ =
     z₂ ↔ w + g y * z₁ = g y * z₂ := by
-  rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.restrict M) h y),
+  rw [mul_comm, ← one_mul z₁, ← Units.inv_mul (IsUnit.liftRight (g.toMonoidHom.domRestrict M) h y),
     mul_assoc, ← mul_add, Units.inv_mul_eq_iff_eq_mul, Units.inv_mul_cancel_left,
     IsUnit.coe_liftRight]
-  simp [RingHom.toMonoidHom_eq_coe, MonoidHom.restrict_apply]
+  simp [RingHom.toMonoidHom_eq_coe, MonoidHom.domRestrict_apply]
 
 theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w' v) :
     ((toLocalizationMap M S).lift hg) z * w + w' = v ↔
@@ -514,7 +514,7 @@ variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 `g : R →* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` maps `f x * (f y)⁻¹` to `g x * (g y)⁻¹` for all `x : R, y ∈ M`. -/
 theorem lift_mk' (x y) :
-    lift hg (mk' S x y) = g x * ↑(IsUnit.liftRight (g.toMonoidHom.restrict M) hg y)⁻¹ :=
+    lift hg (mk' S x y) = g x * ↑(IsUnit.liftRight (g.toMonoidHom.domRestrict M) hg y)⁻¹ :=
   (toLocalizationMap M S).lift_mk' _ _ _
 
 theorem lift_mk'_spec (x v) (y : M) : lift hg (mk' S x y) = v ↔ g x = g y * v :=
