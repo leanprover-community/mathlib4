@@ -30,6 +30,7 @@ always guaranteed, and thus holds for all measurable spaces `𝓧` and `𝓨`, w
 ## Main statements
 
 * `klDiv_compProd_eq_add`: `klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + klDiv (μ ⊗ₘ κ) (μ ⊗ₘ η)`
+* `klDiv_compProd_left`: `klDiv (μ ⊗ₘ κ) (ν ⊗ₘ κ) = klDiv μ ν`
 
 ## Proof
 
@@ -189,6 +190,28 @@ lemma integral_llr_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [Is
     simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
     rfl
 
+variable (μ ν κ) in
+@[simp]
+lemma klDiv_compProd_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ] :
+    klDiv (μ ⊗ₘ κ) (ν ⊗ₘ κ) = klDiv μ ν := by
+  -- first, if we don't have absolute continuity, both sides are `∞`
+  by_cases h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ κ
+  swap
+  · rw [klDiv_of_not_ac h_ac, klDiv_of_not_ac]
+    rwa [Measure.absolutelyContinuous_compProd_left_iff] at h_ac
+  -- we can now express the KL divergences with an integral of a log-likelihood ratio
+  rw [klDiv_eq_lintegral_klFun, if_pos h_ac, klDiv_eq_lintegral_klFun,
+    if_pos (Measure.absolutelyContinuous_compProd_left_iff.mp h_ac)]
+  rw [Measure.absolutelyContinuous_compProd_left_iff] at h_ac
+  have h_ae_eq := rnDeriv_measure_compProd_left_of_ac h_ac κ
+  calc ∫⁻ p, ENNReal.ofReal (klFun ((∂μ ⊗ₘ κ/∂ν ⊗ₘ κ) p).toReal) ∂(ν ⊗ₘ κ)
+  _ = ∫⁻ p, ENNReal.ofReal (klFun ((∂μ/∂ν) p.1).toReal) ∂(ν ⊗ₘ κ) := by
+    refine lintegral_congr_ae ?_
+    filter_upwards [h_ae_eq] with p hp using by simp_rw [hp]
+  _ = ∫⁻ x, ENNReal.ofReal (klFun ((∂μ/∂ν) x).toReal) ∂ν := by
+    rw [Measure.lintegral_compProd (by fun_prop)]
+    simp
+
 variable (μ ν κ η) in
 /-- **Chain rule** for the Kullback-Leibler divergence, with conditional KL expressed using
 composition-products.
@@ -196,13 +219,11 @@ This version holds without any assumption on the measurable spaces. -/
 theorem klDiv_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ]
     [IsMarkovKernel η] :
     klDiv (μ ⊗ₘ κ) (ν ⊗ₘ η) = klDiv μ ν + klDiv (μ ⊗ₘ κ) (μ ⊗ₘ η) := by
-  have h_ac_iff : μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ μ ⊗ₘ κ ≪ μ ⊗ₘ η :=
-    Measure.absolutelyContinuous_compProd_iff
   -- first, if we don't have absolute continuity, both sides are `∞`
   by_cases h_ac : μ ⊗ₘ κ ≪ ν ⊗ₘ η
   swap
   · rw [klDiv_of_not_ac h_ac]
-    rw [h_ac_iff] at h_ac
+    rw [Measure.absolutelyContinuous_compProd_iff] at h_ac
     simp only [not_and_or] at h_ac
     cases h_ac with
     | inl h => simp [h]
@@ -217,7 +238,7 @@ theorem klDiv_compProd_eq_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarko
     | inl h => simp [h]
     | inr h => simp [h]
   -- now we can use express the KL divergences with an integral of a log-likelihood ratio
-  have ⟨h_ac_μν, h_ac_κη⟩ := h_ac_iff.mp h_ac
+  have ⟨h_ac_μν, h_ac_κη⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   have ⟨h_int_μν, h_int_κη⟩ := (integrable_llr_compProd_iff h_ac).mp h_int
   rw [klDiv_of_ac_of_integrable h_ac h_int, klDiv_of_ac_of_integrable h_ac_μν h_int_μν,
     klDiv_of_ac_of_integrable h_ac_κη h_int_κη]
