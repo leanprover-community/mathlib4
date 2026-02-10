@@ -122,6 +122,9 @@ theorem rpow_zero (x : ℝ) : x ^ (0 : ℝ) = 1 := by simp [rpow_def]
 theorem rpow_zero_pos (x : ℝ) : 0 < x ^ (0 : ℝ) := by simp
 
 @[simp]
+theorem pi_rpow_zero {α : Type*} (f : α → ℝ) : f ^ (0 : ℝ) = 1 := by ext; simp
+
+@[simp]
 theorem zero_rpow {x : ℝ} (h : x ≠ 0) : (0 : ℝ) ^ x = 0 := by simp [rpow_def, *]
 
 theorem zero_rpow_eq_iff {x : ℝ} {a : ℝ} : 0 ^ x = a ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
@@ -262,9 +265,6 @@ theorem rpow_sub' {x : ℝ} (hx : 0 ≤ x) {y z : ℝ} (h : y - z ≠ 0) : x ^ (
 protected theorem _root_.HasCompactSupport.rpow_const {α : Type*} [TopologicalSpace α] {f : α → ℝ}
     (hf : HasCompactSupport f) {r : ℝ} (hr : r ≠ 0) : HasCompactSupport (fun x ↦ f x ^ r) :=
   hf.comp_left (g := (· ^ r)) (Real.zero_rpow hr)
-
-@[simp]
-theorem pi_rpow_zero {α : Type*} (f : α → ℝ) : f ^ (0 : ℝ) = 1 := by ext; simp
 
 end Real
 
