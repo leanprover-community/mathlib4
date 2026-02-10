@@ -168,7 +168,7 @@ lemma le_egauge_of_forall_ne_zero [(𝓝[≠] (0 : 𝕜)).NeBot] {r : ℝ≥0∞
   apply le_of_forall_gt
   intro b hb
   rcases Filter.nonempty_of_mem <|
-    inter_mem_nhdsWithin {(0 : 𝕜)}ᶜ (EMetric.ball_mem_nhds 0 (by simpa using hb))
+    inter_mem_nhdsWithin {(0 : 𝕜)}ᶜ (Metric.eball_mem_nhds 0 (by simpa using hb))
     with ⟨c, hc₀, hcb⟩
   exact (h c (by simpa using hc₀) ⟨_, hs₀, by simp⟩).trans_lt (by simpa using hcb)
 

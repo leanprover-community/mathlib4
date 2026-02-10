@@ -194,7 +194,7 @@ open Nat' (γ) in
 #guard_msgs in #check testsub(ᵧ ₙ)
 
 /- The delaborator should reject metavariables. -/
-set_option pp.mvars false in
+set_option pp.mvars.anonymous false in
 /-- info: checkSubscript ?_ : Unit -/
 #guard_msgs in #check checkSubscript ?_
 

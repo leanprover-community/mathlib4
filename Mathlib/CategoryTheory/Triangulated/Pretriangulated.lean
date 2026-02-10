@@ -690,7 +690,7 @@ when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e�
 def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₃ : T₁.obj₃ ≅ T₂.obj₃)
     (comm : T₁.mor₃ ≫ (shiftFunctor C 1).map e₁.hom = e₃.hom ≫ T₂.mor₃) :
-      T₁ ≅ T₂ := by
+    T₁ ≅ T₂ := by
   have h := exists_iso_of_arrow_iso _ _ (inv_rot_of_distTriang _ hT₁)
     (inv_rot_of_distTriang _ hT₂)
     (Arrow.isoMk ((shiftFunctor C (-1)).mapIso e₃) e₁ (by

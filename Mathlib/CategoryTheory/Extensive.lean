@@ -541,9 +541,9 @@ lemma FinitaryPreExtensive.isIso_sigmaDesc_fst [FinitaryPreExtensive C] {α : Ty
     {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X) {Y : C} (f : Y ⟶ X) (hπ : IsIso (Sigma.desc π)) :
     IsIso (Sigma.desc ((fun _ ↦ pullback.fst _ _) : (a : α) → pullback f (π a) ⟶ _)) := by
   let c := (Cofan.mk _ ((fun _ ↦ pullback.fst _ _) : (a : α) → pullback f (π a) ⟶ _))
-  apply c.isColimit_iff_isIso_sigmaDesc.mpr
+  apply c.nonempty_isColimit_iff_isIso_sigmaDesc.mp
   have hau : IsUniversalColimit (Cofan.mk X π) := FinitaryPreExtensive.isUniversal_finiteCoproducts
-    ((Cofan.isColimit_iff_isIso_sigmaDesc _).mp hπ).some
+    ((Cofan.nonempty_isColimit_iff_isIso_sigmaDesc _).mpr hπ).some
   refine hau.nonempty_isColimit_of_pullbackCone_left _ (𝟙 _) _ _ (fun i ↦ ?_)
     (PullbackCone.mk (𝟙 _) f (by simp)) (IsPullback.id_horiz f).isLimit _ (Iso.refl _)
     (by simp) (by simp [c]) (by simp [pullback.condition, c])
@@ -561,7 +561,7 @@ instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreE
   let c : Cofan _ := Cofan.mk _ <| fun (p : ι × ι') ↦
       pullback.map (f p.1) (g p.2) (Sigma.desc f) (Sigma.desc g) (Sigma.ι _ p.1)
         (Sigma.ι _ p.2) (𝟙 S) (by simp) (by simp)
-  apply c.isColimit_iff_isIso_sigmaDesc.mpr
+  apply c.nonempty_isColimit_iff_isIso_sigmaDesc.mp
   refine IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone
       (a := Cofan.mk _ <| fun i ↦ Sigma.ι _ i) (b := Cofan.mk _ <| fun i ↦ Sigma.ι _ i)
       ?_ ?_ f g (Sigma.desc f) (Sigma.desc g) (fun i j ↦ (pullback.cone (f i) (g j)))

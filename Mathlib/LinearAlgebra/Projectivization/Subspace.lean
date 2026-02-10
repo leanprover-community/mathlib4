@@ -60,6 +60,8 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     cases B
     simp
 
+instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V) (ℙ K V)
+
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
   Iff.refl _
