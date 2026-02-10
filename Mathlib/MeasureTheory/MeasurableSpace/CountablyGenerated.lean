@@ -169,6 +169,21 @@ theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoint
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
 
+theorem _root_.eq_const_of_measurable_bot [MeasurableSpace β] [Nonempty β]
+    [SeparatesPoints β] {f : α → β} (hf : Measurable[⊥] f) :
+    ∃ c, f = fun _ ↦ c := by
+  have h (a₁ : α) (a₂ : α) : f a₁ = f a₂ := by
+    by_contra! h
+    obtain ⟨s, hs, hx, hy⟩ := exists_measurableSet_of_ne h
+    obtain h' | h' := MeasurableSpace.measurableSet_bot_iff.mp (hf hs)
+    · absurd hx
+      simp [← mem_preimage, h']
+    · absurd hy
+      simp [← mem_preimage, h']
+  obtain h' | h' := isEmpty_or_nonempty α
+  · use (Classical.ofNonempty : β), funext (by simp)
+  · use f (Classical.ofNonempty : α), funext (fun x ↦ h _ _)
+
 /-- We say that a measurable space is countably separated if there is a
 countable sequence of measurable sets separating points. -/
 class CountablySeparated (α : Type*) [MeasurableSpace α] : Prop where
