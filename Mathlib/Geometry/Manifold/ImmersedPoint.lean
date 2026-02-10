@@ -103,7 +103,6 @@ variable (I I' f x) in
 -- This is similar to re-inventing mfderiv, but avoids having to speak about the tangent spaces.
 -- Should we relax the definition of `Splits` to not require a norm?
 def IsImmersedPoint (f : M → M') (x : M) : Prop :=
-  --fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x) |>.Splits
   mfderiv I I' f x |>.HasLeftInverse
 
 lemma isImmersedPoint_iff : IsImmersedPoint I I' f x ↔ (mfderiv I I' f x).HasLeftInverse := by rfl
@@ -145,20 +144,17 @@ lemma congr (hf : IsImmersedPoint I I' f x) (hfg : g =ᶠ[𝓝 x] f) : IsImmerse
 
 lemma prodMap {y : N} (hf : IsImmersedPoint I I' f x) {g : N → N'} (hg : IsImmersedPoint J J' g y) :
     IsImmersedPoint (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
-  sorry -- proof was the following!
-  /- have hf' := hf.mdifferentiableAt
+  have hf' := hf.mdifferentiableAt
   have hg' := hg.mdifferentiableAt
-  unfold MSplitsAt at hf hg ⊢
-  rw [mfderiv_prodMk ?_ sorry]
-  swap
-  · have : (fun x ↦ (Prod.map f g x).1) = (fun x ↦ f x.1) := sorry
-    rw [this]
-    have (x : M × N) : MDifferentiableAt (I.prod J) I (fun x : M × N ↦ x.1) x := sorry
-    sorry --apply MDifferentiableAt.comp x.1 this hf
+  unfold IsImmersedPoint at hf hg ⊢
+  rw [mfderiv_prodMk ?_ ?_]
+  rotate_left -- FIXME: why does `exact` not work below?
+  · convert hf'.comp (x, y) mdifferentiableAt_fst
+  · convert hg'.comp (x, y) mdifferentiableAt_snd
   convert hf.prodMap hg
   simp only [Prod.map_apply, Prod.map_fst, Prod.map_snd]
   -- missing simp lemma!
-  sorry -/
+  sorry
 
 section
 
@@ -221,13 +217,12 @@ lemma of_isInvertible (hf : (mfderiv I I' f x).IsInvertible) : IsImmersedPoint I
   rw [isImmersedPoint_iff]
   exact ContinuousLinearMap.HasLeftInverse.of_isInvertible hf
 
-lemma _root_.IsLocalDiffeomorphAt.msplitsAt
+lemma _root_.IsLocalDiffeomorphAt.isImmersedPoint
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : n ≠ 0) : IsImmersedPoint I I' f x :=
   of_isInvertible (hf.isInvertible_mfderiv hn)
 
 /-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
-lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) (hf : IsImmersedPoint I I' f x) :
+lemma comp {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) (hf : IsImmersedPoint I I' f x) :
     IsImmersedPoint I J (g ∘ f) x := by
   have hf' := hf.mdifferentiableAt
   have hg' := hg.mdifferentiableAt
@@ -235,23 +230,18 @@ lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
   rw [mfderiv_comp x hg' hf']
   exact hg.comp hf
 
-lemma of_comp {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) (hfg : IsImmersedPoint I J (g ∘ f) x) :
-    IsImmersedPoint I I' f x := by
-  sorry -- reduce to Splits.of_comp and some local computation
+lemma of_comp {g : M' → N} (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I' J g (f x))
+    (hfg : IsImmersedPoint I J (g ∘ f) x) : IsImmersedPoint I I' f x := by
+  rw [isImmersedPoint_iff, mfderiv_comp x hg hf] at hfg
+  exact ContinuousLinearMap.HasLeftInverse.of_comp hfg
 
-lemma of_comp_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) :
-    IsImmersedPoint I J (g ∘ f) x ↔ IsImmersedPoint I I' f x :=
-  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
-
-lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (hf : IsImmersedPoint I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
-    (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
-    IsImmersedPoint J I' (f ∘ f₀) y :=
-  (hxy ▸ hf).comp (hf₀.msplitsAt hn)
-
-lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+lemma comp_isLocalDiffeomorphAt_left (hf : IsImmersedPoint I I' f x)
     {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
+    IsImmersedPoint J I' (f ∘ f₀) y :=
+  (hxy ▸ hf).comp (hf₀.isImmersedPoint hn)
+
+lemma comp_isLocalDiffeomorphAt_left_iff {f₀ : N → M} {y : N} (hxy : f₀ y = x)
+    (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
     IsImmersedPoint I I' f x ↔ IsImmersedPoint J I' (f ∘ f₀) y := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn,
     fun h ↦ ?_⟩
@@ -263,14 +253,13 @@ lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [C
   apply this.congr
   exact (hxy ▸ hf₀.localInverse_eventuallyEq_right.symm).fun_comp f
 
-lemma comp_isLocalDiffeomorphAt_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (hf : IsImmersedPoint I I' f x) {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
+lemma comp_isLocalDiffeomorphAt_right (hf : IsImmersedPoint I I' f x)
+    {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
     IsImmersedPoint I J (g ∘ f) x :=
-  (hg.msplitsAt hn).comp hf
+  (hg.isImmersedPoint hn).comp hf
 
 -- TODO: fix the last sorry, is a small mathematical question
-lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSpace E']
-    [IsManifold I 1 M] [IsManifold J 1 N]
+lemma comp_isLocalDiffeomorphAt_right_iff --[IsManifold I 1 M] [IsManifold J 1 N]
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
     IsImmersedPoint I I' f x ↔  IsImmersedPoint I J (g ∘ f) x := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_right hg hn,
@@ -293,8 +282,16 @@ lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace E] [CompleteSpace F] [C
     sorry
   exact Filter.eventuallyEq_of_mem (hf this) (by intro; simp)
 
+/-- If `mfderiv I J f x` is injective and `N` is finite-dimensional,
+`x` is an immersed point of `f`. -/
+lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E']
+    (hf' : Injective (mfderiv I I' f x)) : IsImmersedPoint I I' f x := by
+  have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := inferInstanceAs (FiniteDimensional 𝕜 E')
+  exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
+
 end IsImmersedPoint
 
+#exit
 -- do we want these?
 variable (I I') in
 /-- If `f : M → M` is differentiable, we say `f` splits iff it splits at every `x`,
