@@ -90,7 +90,7 @@ lemma range_lmapDomain {β : Type*} (u : α → β) :
     exact ⟨Finsupp.single i 1, by simp⟩
 
 lemma span_single_eq_top {M σ R : Type*} [CommSemiring R] [AddCommMonoid M]
-    [Module R M] : span R {Finsupp.single i x | (i : σ) (x : M)} = ⊤ := by
+    [Module R M] : span R {single i x | (i : σ) (x : M)} = ⊤ := by
   refine eq_top_iff'.mpr fun x ↦ ?_
   induction x using Finsupp.induction_linear with
   | zero => exact Submodule.zero_mem ..
@@ -110,7 +110,7 @@ lemma lsingle_comp_lapply_same {α M R : Type*} [Semiring R] [AddCommMonoid M] [
   (a : α) : lsingle a ∘ₗ (lapply a) = coordinateProj (R := R) (M := M) a := by rfl
 
 theorem sum_coordinateProj {α M R : Type*} [Fintype α] [Semiring R] [AddCommMonoid M]
-    [Module R M] : ∑ a : α, coordinateProj a = (.id : (α →₀M) →ₗ[R] (α →₀ M)) := by
+    [Module R M] : ∑ a : α, coordinateProj a = (.id : (α →₀ M) →ₗ[R] (α →₀ M)) := by
   classical
   ext; simp [single_apply, coordinateProj]
 
