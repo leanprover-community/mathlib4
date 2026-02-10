@@ -146,7 +146,10 @@ so we cannot tolerate this universe bump.
 mutual
 
 
-/-- The base `e` of a normalized exponent expression in ℕ.
+/-- `ExBaseNat e` stores the structure of a normalized expression `e : Q(ℕ)`, which appears
+as the base of an exponent expression `e^n`. The `sum` constructor is only used when the exponent
+`n` is not a constant.
+
 Used to represent normalized natural number expressions in exponents.
 
 `ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
@@ -166,8 +169,10 @@ inductive ExBaseNat : (e : Q(ℕ)) → Type
   /-- A sum of monomials. -/
   | sum {e} (_ : ExSumNat e) : ExBaseNat e
 
-/-- A monomial, which is a product of powers of `ExBaseNat` expressions in ℕ,
-terminated by a (nonzero) constant coefficient.
+/-- `ExProdNat e` stores the structure of a normalized monomial expression `e : Q(ℕ)`.
+A monomial here is a product of powers of `ExBaseNat` expressions, terminated by a (nonzero)
+constant coefficient.
+
 Used to represent normalized natural number expressions in exponents.
 
 `ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two.
@@ -182,10 +187,12 @@ inductive ExProdNat : (e : Q(ℕ)) → Type
   | mul {x : Q(ℕ)} {e : Q(ℕ)} {b : Q(ℕ)} :
     ExBaseNat x → ExProdNat e → ExProdNat b → ExProdNat q($x ^ $e * $b)
 
-/-- A polynomial expression, which is a sum of monomials.
+/-- `ExSumNat e` stores the structure of a normalized polynomial expression `e : Q(ℕ)`, which is
+a sum of monomials.
+
 Used to represent normalized natural number expressions in exponents.
 
-`ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two. -/
+`ExSumNat q($e)` is equivalent to `ExSum btℕ sℕ q($e)`, and one can cast between the two. -/
 inductive ExSumNat : (e : Q(ℕ)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero : ExSumNat q(0)
@@ -196,7 +203,9 @@ end
 
 mutual
 
-/-- The base `e` of a normalized exponent expression. -/
+/-- `ExBase BaseType sα e` stores the structure of a normalized expression `e`, which appears
+as the base of an exponent expression `e^n`. The `sum` constructor is only used when the exponent
+`n` is not a constant. -/
 inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /--
@@ -215,10 +224,9 @@ inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   | sum {e} (_ : ExSum BaseType sα e) : ExBase BaseType sα e
 
 
-/--
-A monomial, which is a product of powers of `ExBase` expressions,
-terminated by a (nonzero) constant coefficient.
--/
+/-- `ExProd BaseType sα e` stores the structure of a normalized monomial expression `e`.
+A monomial here is a product of powers of `ExBase` expressions, terminated by a (nonzero) constant
+coefficient. The data of the constant coefficient is stored in the `BaseType`. -/
 inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
@@ -231,7 +239,8 @@ inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   | mul {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
     ExBase BaseType sα x → ExProdNat e → ExProd BaseType sα b → ExProd BaseType sα q($x ^ $e * $b)
 
-/-- A polynomial expression, which is a sum of monomials. -/
+/-- `ExSum BaseType sα e` stores the structure of a normalized polynomial expression `e`, which is
+a sum of monomials. -/
 inductive ExSum {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
