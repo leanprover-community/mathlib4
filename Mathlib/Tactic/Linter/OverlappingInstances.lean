@@ -306,7 +306,12 @@ def overlappingInstances : Linter where
             let overlaps ← findOverlappingDataInstances
             unless overlaps.isEmpty do
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
-              logWarning <|← overlaps.toMsg <|← ctx.toDeclDescr
+              let mut msg ← overlaps.toMsg <|← ctx.toDeclDescr
+              if ← linter.overlappingInstances.onlyInServer.getM then
+                msg := msg ++ .note "This linter is only run interactively by default for \
+                  performance reasons. To run it noninteractively, use \
+                  `set_option linter.overlappingInstances.onlyInServer false`."
+              logWarning msg
 
 initialize addLinter overlappingInstances
 
