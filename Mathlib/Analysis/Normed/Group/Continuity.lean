@@ -59,14 +59,14 @@ lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s
 end ContinuousENorm
 
 @[to_additive]
-theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+theorem tendsto_iff_norm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖) a (𝓝 0) := by
   simp only [← dist_eq_norm_inv_mul, ← tendsto_iff_dist_tendsto_zero]
 
 @[to_additive]
 theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
     Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖) a (𝓝 0) :=
-  tendsto_iff_norm_div_tendsto_zero.trans <| by simp
+  tendsto_iff_norm_inv_mul_tendsto_zero.trans <| by simp
 
 @[to_additive (attr := simp 1100)]
 theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
@@ -96,13 +96,13 @@ theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h :
   squeeze_one_norm' <| Eventually.of_forall h
 
 @[to_additive]
-theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a⁻¹ * x‖) (𝓝 x) (𝓝 0) := by
+theorem tendsto_norm_inv_mul_self (x : E) : Tendsto (fun a => ‖a⁻¹ * x‖) (𝓝 x) (𝓝 0) := by
   simpa [dist_eq_norm_inv_mul] using
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a⁻¹ * x‖) (𝓝 x) (𝓝[≥] 0) :=
-  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
+theorem tendsto_norm_inv_mul_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a⁻¹ * x‖) (𝓝 x) (𝓝[≥] 0) :=
+  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_inv_mul_self x, by simp⟩
 
 @[to_additive tendsto_norm]
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
@@ -111,7 +111,7 @@ theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x�
 /-- See `tendsto_norm_one` for a version with pointed neighborhoods. -/
 @[to_additive /-- See `tendsto_norm_zero` for a version with pointed neighborhoods. -/]
 theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := by
-  simpa using tendsto_norm_div_self (1 : E)
+  simpa using tendsto_norm_inv_mul_self (1 : E)
 
 @[to_additive (attr := continuity, fun_prop) continuous_norm]
 theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
@@ -256,7 +256,7 @@ theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
   (h.eventually_ne_atTop _).mono fun _x => ne_of_apply_ne norm
 
 @[to_additive]
-theorem SeminormedCommGroup.mem_closure_iff :
+theorem SeminormedGroup.mem_closure_iff :
     a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a⁻¹ * b‖ < ε := by
   simp [Metric.mem_closure_iff, dist_eq_norm_inv_mul]
 
@@ -296,6 +296,26 @@ end SeminormedGroup
 section SeminormedCommGroup
 
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+
+@[to_additive]
+theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
+  simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
+
+@[to_additive]
+theorem SeminormedCommGroup.mem_closure_iff {s : Set E} :
+    a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
+  simp [Metric.mem_closure_iff, dist_eq_norm_div]
+
+
+@[to_additive]
+theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) (𝓝 0) := by
+  simpa [dist_eq_norm_div] using
+    tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
+
+@[to_additive]
+theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝[≥] 0) :=
+  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
 
 open Finset
 
@@ -364,9 +384,9 @@ lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsNE (a : E) :
+theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
     Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) := by
-  apply (tendsto_norm_div_self a).inf
+  apply (tendsto_norm_inv_mul_self a).inf
   apply tendsto_principal_principal.2 (fun _x hx => norm_pos_iff'.2 ?_)
   simpa [inv_mul_eq_one] using hx
 
@@ -376,5 +396,11 @@ variable (E)
 @[to_additive comap_norm_nhdsGT_zero]
 lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
+
+@[to_additive]
+theorem tendsto_norm_div_self_nhdsNE {E : Type*} [NormedCommGroup E] (a : E) :
+    Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) := by
+  simp_rw [← norm_inv_mul]
+  exact tendsto_norm_inv_mul_self_nhdsNE a
 
 end NormedGroup

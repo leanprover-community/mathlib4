@@ -37,8 +37,10 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
   exact norm_mul_le_of_le' (hRs x hx) (hRt y hy)
 
 @[to_additive]
-theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t :=
-  AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_right x).antilipschitz) hst
+theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
+  symm
+  exact AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_left x).antilipschitz)
+    (by rwa [image2_swap])
 
 @[to_additive]
 theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
@@ -211,7 +213,7 @@ theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :
     s * closedBall (1 : E) δ = cthickening δ s := by
   rw [hs.cthickening_eq_biUnion_closedBall hδ]
   ext x
-  simp only [mem_mul, dist_eq_norm_inv_mul, exists_prop, mem_iUnion, mem_closedBall,
+  simp only [mem_mul, dist_eq_norm_div, exists_prop, mem_iUnion, mem_closedBall,
     ← eq_div_iff_mul_eq'', div_one, exists_eq_right]
 
 @[to_additive]

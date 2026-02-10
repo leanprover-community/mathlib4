@@ -160,21 +160,21 @@ theorem norm_div_le_of_le {r₁ r₂ : ℝ} (H₁ : ‖a₁‖ ≤ r₁) (H₂ :
 theorem dist_le_norm_add_norm' (a b : E) : dist a b ≤ ‖a‖ + ‖b‖ := by
   simpa [dist_eq_norm_inv_mul] using norm_mul_le' a⁻¹ b
 
-@[to_additive abs_norm_sub_norm_le]
-theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a⁻¹ * b‖ := by
+@[to_additive]
+theorem abs_norm_sub_norm_le_norm_inv_mul (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a⁻¹ * b‖ := by
   simpa [dist_eq_norm_inv_mul] using abs_dist_sub_le a b 1
 
-@[to_additive norm_sub_norm_le]
-theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a⁻¹ * b‖ :=
-  (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
+@[to_additive]
+theorem norm_sub_norm_le_norm_inv_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a⁻¹ * b‖ :=
+  (le_abs_self _).trans (abs_norm_sub_norm_le_norm_inv_mul a b)
 
 @[to_additive (attr := bound)]
 theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
   simpa using norm_mul_le' (a * b) (b⁻¹)
 
-@[to_additive dist_norm_norm_le]
-theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a⁻¹ * b‖ :=
-  abs_norm_sub_norm_le' a b
+@[to_additive]
+theorem dist_norm_norm_le_norm_inv_mul (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a⁻¹ * b‖ :=
+  abs_norm_sub_norm_le_norm_inv_mul a b
 
 @[to_additive]
 theorem norm_le_norm_add_norm_div' (u v : E) : ‖u‖ ≤ ‖v‖ + ‖u / v‖ := by
@@ -468,9 +468,9 @@ theorem nnnorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 lemma enorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
   simpa [enorm, ← ENNReal.coe_add] using nnnorm_div_le a b
 
-@[to_additive nndist_nnnorm_nnnorm_le]
-theorem nndist_nnnorm_nnnorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a⁻¹ * b‖₊ :=
-  NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
+@[to_additive]
+theorem nndist_nnnorm_nnnorm_le_nnnorm_inv_mul (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a⁻¹ * b‖₊ :=
+  NNReal.coe_le_coe.1 <| dist_norm_norm_le_norm_inv_mul a b
 
 @[to_additive]
 theorem nnnorm_le_nnnorm_add_nnnorm_div (a b : E) : ‖b‖₊ ≤ ‖a‖₊ + ‖a / b‖₊ :=
@@ -617,8 +617,8 @@ theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
 theorem edist_one_eq_enorm (x : E) : edist 1 x = ‖x‖ₑ := by simp [edist_eq_enorm_inv_mul]
 
 @[to_additive]
-lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a ⁻¹ * b‖ₑ = ‖b⁻¹ * a‖ₑ := by
-  rw [← edist_eq_enorm_inv_mul, edist_comm, edist_eq_enorm_inv_mul]
+lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
+  rw [← enorm_inv', inv_div]
 
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
@@ -754,6 +754,22 @@ alias dist_eq_norm' := dist_eq_norm_sub'
 @[to_additive]
 theorem norm_inv_mul (a b : E) : ‖a⁻¹ * b‖ = ‖a / b‖ := by
   rw [← dist_eq_norm_inv_mul, dist_eq_norm_div]
+
+@[to_additive abs_norm_sub_norm_le]
+theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
+  (abs_norm_sub_norm_le_norm_inv_mul a b).trans_eq (norm_inv_mul a b)
+
+@[to_additive norm_sub_norm_le]
+theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
+  (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
+
+@[to_additive dist_norm_norm_le]
+theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
+  abs_norm_sub_norm_le' a b
+
+@[to_additive nndist_nnnorm_nnnorm_le]
+theorem nndist_nnnorm_nnnorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
+  NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
 
 @[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=

@@ -291,9 +291,7 @@ theorem isCauSeq_norm {f : ℕ → ℂ} (hf : IsCauSeq (‖·‖) f) :
     IsCauSeq abs ((‖·‖) ∘ f) := by
   intro ε ε0
   let ⟨i, hi⟩ := hf ε ε0
-  refine ⟨i, fun j hj ↦ lt_of_le_of_lt (abs_norm_sub_norm_le _ _) ?_⟩
-  rw [← dist_eq_norm_neg_add, dist_eq_norm]
-  exact hi j hj
+  exact ⟨i, fun j hj ↦ lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 /-- The limit of a Cauchy sequence of complex numbers. -/
 noncomputable def limAux (f : CauSeq ℂ (‖·‖)) : ℂ :=
@@ -353,9 +351,7 @@ noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
 theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ := by
   apply lim_eq_of_equiv_const (fun ε ε0 ↦ ?_)
   let ⟨i, hi⟩ := equiv_lim f ε ε0
-  refine ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) ?_⟩
-  rw [← dist_eq_norm_neg_add, dist_eq_norm]
-  exact hi j hj
+  exact ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 lemma ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : s ≠ 0 :=
   fun h ↦ (zero_re ▸ h ▸ hs).false
