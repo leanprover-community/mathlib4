@@ -422,9 +422,7 @@ theorem toHomeomorphOfContinuousClosed_symm_apply
     ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂).symm = e.symm := rfl
 
 /-- Any bijection between discrete spaces is a homeomorphism. -/
-def toHomeomorphOfDiscrete
-    [TopologicalSpace X] [DiscreteTopology X]
-    [TopologicalSpace Y] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
+def toHomeomorphOfDiscrete [DiscreteTopology X] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
   e.toHomeomorph (by simp)
 
 end Equiv

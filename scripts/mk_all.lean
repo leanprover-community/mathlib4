@@ -91,8 +91,8 @@ open Cli in
 def mkAll : Cmd := `[Cli|
   mk_all VIA mkAllCLI; ["0.0.1"]
   "Generate a file importing all the files of a Lean folder. \
-   By default, it generates the files for the Lean libraries of the package.\
-   In the case of `Mathlib`, it removes the libraries `Cache` and `MathlibTest`\
+   By default, it generates the files for the Lean libraries of the package. \
+   In the case of `Mathlib`, it removes the libraries `Cache` and `MathlibTest` \
    and it adds `Mathlib/Tactic`. \
    If you are working in a project downstream of mathlib, use `lake exe mk_all --lib MyProject`."
 
