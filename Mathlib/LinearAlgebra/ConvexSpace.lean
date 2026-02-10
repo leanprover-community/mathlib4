@@ -2047,256 +2047,10 @@ theorem affineOfBinary_append_zero_many [Inhabited M] (op : BinaryConvexOp R M)
     have hne' : ws ++ [(0, x)] ≠ [] := by simp
     rw [ih (ws ++ [(0, x)]) hvalid' hne', affineOfBinary_append_zero op ws x hvalid hne]
 
-end OfBinary
-
-/-- Any simplex with support cardinality ≥ 2 can be expressed as the join of a duple
-    of two simplices, each with strictly smaller support cardinality.
-
-    The splitting weights s, t are chosen based on f (s = weight of an arbitrary support element). -/
-theorem StdSimplex.exists_duple_join {R : Type*} [Field R] [LinearOrder R]
-    [IsStrictOrderedRing R] {X : Type*}
-    (f : StdSimplex R X) (hcard : 2 ≤ f.weights.support.card) :
-    ∃ (s t : R) (hs : 0 < s) (ht : 0 < t) (hst : s + t = 1)
-      (g₁ g₂ : StdSimplex R X)
-      (h₁ : g₁.weights.support.card < f.weights.support.card)
-      (h₂ : g₂.weights.support.card < f.weights.support.card),
-      f = (StdSimplex.duple g₁ g₂ (le_of_lt hs) (le_of_lt ht) hst).join := by
-  classical
-  -- Pick any element from the support
-  obtain ⟨a, ha⟩ := Finset.card_pos.mp (by omega : 0 < f.weights.support.card)
-  have hwa_ne : f.weights a ≠ 0 := Finsupp.mem_support_iff.mp ha
-  have hwa_pos : 0 < f.weights a := lt_of_le_of_ne (f.nonneg a) (Ne.symm hwa_ne)
-  have hwa_lt_one : f.weights a < 1 := by
-    obtain ⟨b, hb, c, hc, hbc⟩ := Finset.one_lt_card.mp (by omega : 1 < f.weights.support.card)
-    obtain ⟨d, hd, hda⟩ : ∃ d ∈ f.weights.support, d ≠ a := by
-      by_cases hba : b = a
-      · exact ⟨c, hc, fun hca => hbc (hba ▸ hca ▸ rfl)⟩
-      · exact ⟨b, hb, hba⟩
-    have hwd_pos : 0 < f.weights d :=
-      lt_of_le_of_ne (f.nonneg d) (Ne.symm (Finsupp.mem_support_iff.mp hd))
-    have htotal := f.total
-    rw [Finsupp.sum] at htotal
-    have hd_in_erase : d ∈ f.weights.support.erase a :=
-      Finset.mem_erase.mpr ⟨hda, hd⟩
-    have hd_le : f.weights d ≤ ∑ x ∈ f.weights.support.erase a, f.weights x :=
-      Finset.single_le_sum (fun i _ => f.nonneg i) hd_in_erase
-    have hsplit : f.weights a + ∑ x ∈ f.weights.support.erase a, f.weights x = 1 :=
-      (Finset.add_sum_erase f.weights.support f.weights ha).trans htotal
-    linarith
-  -- Set s = f(a), t = 1 - f(a)
-  set s := f.weights a
-  set t := 1 - s with ht_def
-  have ht_pos : 0 < t := sub_pos.mpr hwa_lt_one
-  have hst : s + t = 1 := by ring
-  -- g₁ = single a (support card = 1 < card(f))
-  -- g₂ = t⁻¹ • (f.weights.erase a)
-  have ht_ne : t ≠ 0 := ne_of_gt ht_pos
-  have ht_inv_nonneg : 0 ≤ t⁻¹ := inv_nonneg.mpr (le_of_lt ht_pos)
-  have herase_nonneg : 0 ≤ f.weights.erase a := by
-    intro x
-    simp only [Finsupp.erase_apply]
-    split <;> [exact le_refl 0; exact f.nonneg x]
-  have herase_sum : (f.weights.erase a).sum (fun _ r => r) = t := by
-    have h1 := f.total
-    rw [Finsupp.sum] at h1 ⊢
-    rw [Finsupp.support_erase]
-    have h2 : ∀ x ∈ f.weights.support.erase a,
-        (f.weights.erase a) x = f.weights x := fun x hx =>
-      Finsupp.erase_ne (Finset.mem_erase.mp hx).1
-    rw [Finset.sum_congr rfl h2]
-    have h3 : f.weights a + ∑ x ∈ f.weights.support.erase a, f.weights x = 1 :=
-      (Finset.add_sum_erase f.weights.support f.weights ha).trans h1
-    linarith
-  set g₂ : StdSimplex R X := ⟨t⁻¹ • f.weights.erase a,
-    smul_nonneg ht_inv_nonneg herase_nonneg,
-    by
-      have h := Finsupp.sum_smul_index (h0 := fun _ => rfl)
-        (b := t⁻¹) (g := f.weights.erase a) (h := fun _ r => r)
-      rw [h]
-      simp only [← Finsupp.mul_sum, herase_sum, inv_mul_cancel₀ ht_ne]⟩
-  refine ⟨s, t, hwa_pos, ht_pos, hst, .single a, g₂, ?_, ?_, ?_⟩
-  -- Goal 1: (single a).support.card < f.support.card
-  · rw [single_support_card]; omega
-  -- Goal 2: g₂.support.card < f.support.card
-  · calc g₂.weights.support.card
-        ≤ (f.weights.erase a).support.card := by
-            apply Finset.card_le_card
-            exact Finsupp.support_smul
-      _ = (f.weights.support.erase a).card := by
-            rw [Finsupp.support_erase]
-      _ < f.weights.support.card := Finset.card_erase_lt_of_mem ha
-  -- Goal 3: f = (duple (single a) g₂ ...).join
-  · apply StdSimplex.ext
-    simp only [StdSimplex.join, StdSimplex.duple]
-    rw [Finsupp.sum_add_index (by simp) (by simp [add_smul])]
-    rw [Finsupp.sum_single_index (by simp : (0 : R) • (single a).weights = 0)]
-    rw [Finsupp.sum_single_index (by simp : (0 : R) • g₂.weights = 0)]
-    simp only [StdSimplex.single_weights, Finsupp.smul_single, smul_eq_mul, mul_one]
-    rw [show g₂.weights = t⁻¹ • f.weights.erase a from rfl]
-    rw [smul_smul, mul_inv_cancel₀ ht_ne, one_smul]
-    rw [add_comm, Finsupp.erase_add_single]
-
-section OfBinaryField
-
-variable {R : Type u} {M : Type v} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-
-/-- Algebraic core for doubleton_padded_end:
-    `C(1-u, C(1-⅟u*a, x, z), C(⅟(1-u)*b, z, y)) = C(b, x, y)` when `a + b = 1`. -/
-private theorem doubleton_padded_end_algebra (op : BinaryConvexOp R M)
-    (a b : R) (x z y : M) (hab : a + b = 1) :
-    op.binCombo (1 - op.u) (op.binCombo (1 - ⅟op.u * a) x z)
-      (op.binCombo (⅟(1 - op.u) * b) z y) =
-    op.binCombo b x y := by
-  by_cases ha : a = 0
-  · have hb : b = 1 := by linarith
-    subst ha; subst hb
-    simp only [mul_zero, mul_one, sub_zero]
-    rw [op.binCombo_one x z]
-    rw [op.binCombo_absorb_left (1 - op.u) (⅟(1 - op.u)) z y]
-    rw [mul_invOf_self]
-    rw [op.binCombo_one z y, op.binCombo_one x y]
-  · set p := (1 : R) - op.u
-    set q := ⅟(1 - op.u) * b
-    have h1mu_ne : (1 : R) - op.u ≠ 0 := Invertible.ne_zero (1 - op.u)
-    have hpq : p * q = b := by
-      simp [p, q, ← mul_assoc, mul_invOf_self, one_mul]
-    set r := (a - op.u) / a
-    have hassoc_cond : p * (1 - q) = (1 - p * q) * r := by
-      rw [hpq]
-      simp only [p, q, r, invOf_eq_inv]
-      rw [show (1 : R) - b = a from by linarith]
-      field_simp [ha, h1mu_ne]
-      linarith
-    rw [op.binCombo_assoc p q r
-      (op.binCombo (1 - ⅟op.u * a) x z) z y hassoc_cond]
-    rw [hpq]
-    rw [op.binCombo_absorb_right r (1 - ⅟op.u * a) x z]
-    have hu_ne : op.u ≠ 0 := Invertible.ne_zero op.u
-    have hcollapse : 1 - (1 - r) * (1 - (1 - ⅟op.u * a)) = 0 := by
-      simp only [r, invOf_eq_inv]
-      field_simp [ha, hu_ne]
-      ring
-    rw [hcollapse, op.binCombo_zero x z]
-
-/-- A doubleton with zeros in between:
-    `A([(a,x), (0,z₁), ..., (0,zₖ), (b,y)]) = C(b, x, y)` when `a + b = 1`.
-
-    This is the "reversed" version of `affineOfBinary_doubleton_padded`:
-    zeros are between the two nonzero weights rather than after them.
-    Proved by strong induction on k (the number of zeros). -/
-theorem affineOfBinary_doubleton_padded_end [Inhabited M] (op : BinaryConvexOp R M)
-    (a b : R) (x y : M) (zs : List M) (hab : a + b = 1) :
-    affineOfBinary op ([(a, x)] ++ zs.map (fun z => (0, z)) ++ [(b, y)]) =
-      op.binCombo b x y := by
-  induction h : zs.length using Nat.strongRecOn generalizing a b x y zs with
-  | _ n ih =>
-  match zs, h with
-  | [], _ =>
-    -- Base case: A([(a,x),(b,y)]) = C(b,x,y)
-    simp [affineOfBinary]
-  | [z₁], _ =>
-    -- One zero: A([(a,x),(0,z₁),(b,y)])
-    -- Decomposition: C(1-u, C(1-⅟u*a, x, z₁), C(⅟(1-u)*b, z₁, y))
-    simp only [List.map_cons, List.map_nil, List.nil_append, List.cons_append,
-      List.singleton_append, affineOfBinary,
-      List.map, List.dropLast, List.sum_nil, List.getLast?_nil,
-      List.replicate, List.zip_cons_cons, List.zip_nil_left,
-      mul_zero, sub_zero, List.length_nil]
-    exact doubleton_padded_end_algebra op a b x z₁ y hab
-  | z₁ :: z₂ :: zs', hlen =>
-    -- Two+ zeros: A([(a,x),(0,z₁),(0,z₂),...,(0,zₖ),(b,y)])
-    -- The proof follows the same pattern as [z₁]:
-    -- After decompose, leftWS is doubleton_padded → C(1-⅟u*a, x, z₁)
-    -- rightWS is doubleton_padded_end with fewer zeros → C(⅟(1-u)*b, z₁, y)
-    -- Then doubleton_padded_end_algebra closes the goal.
-    simp only [List.map_cons, List.cons_append, List.nil_append]
-    rw [affineOfBinary_decompose]
-    -- hleft and hright proved below via detailed list plumbing
-    set rest : WeightedSeq R M :=
-      (List.map (fun z => ((0 : R), z)) zs' ++ [(b, y)])
-    -- Auxiliary: all weights in rest except last are 0, last is b
-    have hrest_ne : rest ≠ [] := by simp [rest]
-    have hrest_map_fst : rest.map Prod.fst =
-        List.replicate zs'.length (0 : R) ++ [b] := by
-      simp only [rest, List.map_append, List.map_map, Function.comp]
-      congr 1
-      exact list_map_const (0 : R) zs'
-    have hrest_map_snd : rest.map Prod.snd = zs' ++ [y] := by
-      simp only [rest, List.map_append, List.map_map, Function.comp]
-      congr 1
-      simp
-    -- Middle weights are all zero (same pattern as doubleton_padded)
-    have hmiddle_weights :
-        ((0 : R) :: rest.map Prod.fst).dropLast =
-        List.replicate (zs'.length + 1) (0 : R) := by
-      rw [hrest_map_fst, show (0 : R) :: (List.replicate zs'.length 0 ++ [b]) =
-        ((0 : R) :: List.replicate zs'.length 0) ++ [b] from by rw [List.cons_append],
-        List.dropLast_concat, List.replicate_succ]
-    have hscaled_middle :
-        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)) =
-        List.replicate (zs'.length + 1) (0 : R) := by
-      rw [hmiddle_weights, List.map_replicate, mul_zero]
-    have hscaled_sum :
-        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)).sum = 0 := by
-      rw [hscaled_middle, sum_replicate_zero]
-    -- Middle points after dropLast
-    have hmiddle_points :
-        (z₂ :: rest.map Prod.snd).dropLast = z₂ :: zs' := by
-      rw [hrest_map_snd, show z₂ :: (zs' ++ [y]) =
-        (z₂ :: zs') ++ [y] from by rw [List.cons_append],
-        List.dropLast_concat]
-    have hleft : affineOfBinary op
-        (leftWeightedSeq op
-          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
-        op.binCombo (1 - ⅟op.u * a) x z₁ := by
-      simp only [leftWeightedSeq]
-      rw [hscaled_sum, sub_zero]
-      rw [hscaled_middle]
-      rw [hmiddle_points]
-      set middlePoints := z₂ :: zs'
-      have hmid_len : middlePoints.length = zs'.length + 1 := by simp [middlePoints]
-      rw [zip_replicate_zero_map hmid_len.symm]
-      -- Now: A([(⅟u*a, x), (1-⅟u*a, z₁)] ++ middlePoints.map (0,·)) = C(1-⅟u*a, x, z₁)
-      exact affineOfBinary_doubleton_padded op _ _ x z₁ middlePoints (by ring)
-    -- For rightWeightedSeq: last weight is b
-    have hrest_getLast :
-        (match rest.getLast? with | some (w, _) => w | none => (0 : R)) = b := by
-      have : rest.getLast? = some (b, y) := by
-        simp only [rest]
-        exact List.getLast?_append_of_ne_nil _ (List.cons_ne_nil _ _)
-      rw [this]
-    have hrest_len : rest.length = zs'.length + 1 := by simp [rest]
-    have hright : affineOfBinary op
-        (rightWeightedSeq op
-          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
-        op.binCombo (⅟(1 - op.u) * b) z₁ y := by
-      simp only [rightWeightedSeq]
-      rw [hrest_getLast]
-      rw [hrest_map_snd]
-      rw [hrest_len]
-      -- Goal now involves:
-      -- (1 - ⅟(1-u)*b, z₁) :: (replicate (zs'.length+1) 0 ++ [⅟(1-u)*b]).zip (z₂ :: zs' ++ [y])
-      -- Split the zip using zip_append
-      conv_lhs => rw [show z₂ :: (zs' ++ [y]) =
-        (z₂ :: zs') ++ [y] from by rw [List.cons_append]]
-      rw [List.zip_append (by simp)]
-      -- Now: (1-⅟(1-u)*b, z₁) :: zeros.zip(z₂::zs') ++ [(⅟(1-u)*b, y)]
-      rw [zip_replicate_zero_map (by simp)]
-      -- Now: (1-⅟(1-u)*b, z₁) :: (z₂::zs').map(0,·) ++ [(⅟(1-u)*b, y)]
-      -- This is affineOfBinary_doubleton_padded_end with zs = z₂::zs'
-      -- Transform to the right form for the IH
-      simp only [List.map_cons, List.cons_append]
-      -- IH: fewer zeros (z₂::zs' has length zs'.length+1, original zs had length zs'.length+2)
-      have hlt : (z₂ :: zs').length < n := by
-        simp only [List.length_cons] at hlen ⊢
-        omega
-      exact ih (z₂ :: zs').length hlt _ _ _ _ (z₂ :: zs') (by ring) rfl
-    rw [hleft, hright]
-    exact doubleton_padded_end_algebra op a b x z₁ y hab
-
-/-- Adding a zero-weight point at the front doesn't change the affine combination (Field version).
+/-- Adding a zero-weight point at the front doesn't change the affine combination.
     This is the key zero-insertion invariance lemma. -/
-theorem affineOfBinary_cons_zero_field [Inhabited M] (op : BinaryConvexOp R M)
+theorem affineOfBinary_cons_zero [LinearOrder R] [IsStrictOrderedRing R]
+    [Inhabited M] (op : BinaryConvexOp R M)
     (x : M) (ws : WeightedSeq R M) (hvalid : ws.totalWeight = 1) (hne : ws ≠ []) :
     affineOfBinary op ((0, x) :: ws) = affineOfBinary op ws := by
   induction h : ws.length using Nat.strongRecOn generalizing x ws with
@@ -2547,7 +2301,8 @@ theorem affineOfBinary_cons_zero_field [Inhabited M] (op : BinaryConvexOp R M)
         exact this
 
 /-- Prepending multiple zero-weight points at the front doesn't change the affine combination. -/
-theorem affineOfBinary_cons_zero_many [Inhabited M] (op : BinaryConvexOp R M)
+theorem affineOfBinary_cons_zero_many [LinearOrder R] [IsStrictOrderedRing R]
+    [Inhabited M] (op : BinaryConvexOp R M)
     (xs : List M) (ws : WeightedSeq R M) (hvalid : ws.totalWeight = 1) (hne : ws ≠ []) :
     affineOfBinary op (xs.map (fun x => ((0 : R), x)) ++ ws) = affineOfBinary op ws := by
   induction xs generalizing ws with
@@ -2565,8 +2320,255 @@ theorem affineOfBinary_cons_zero_many [Inhabited M] (op : BinaryConvexOp R M)
       rw [this, zero_add, hvalid]
     have hne' : xs.map (fun x => ((0 : R), x)) ++ ws ≠ [] :=
       List.append_ne_nil_of_right_ne_nil _ hne
-    rw [affineOfBinary_cons_zero_field op x _ hvalid' hne',
+    rw [affineOfBinary_cons_zero op x _ hvalid' hne',
       ih ws hvalid hne]
+
+end OfBinary
+
+/-- Any simplex with support cardinality ≥ 2 can be expressed as the join of a duple
+    of two simplices, each with strictly smaller support cardinality.
+
+    The splitting weights s, t are chosen based on f (s = weight of an arbitrary support element). -/
+theorem StdSimplex.exists_duple_join {R : Type*} [Field R] [LinearOrder R]
+    [IsStrictOrderedRing R] {X : Type*}
+    (f : StdSimplex R X) (hcard : 2 ≤ f.weights.support.card) :
+    ∃ (s t : R) (hs : 0 < s) (ht : 0 < t) (hst : s + t = 1)
+      (g₁ g₂ : StdSimplex R X)
+      (h₁ : g₁.weights.support.card < f.weights.support.card)
+      (h₂ : g₂.weights.support.card < f.weights.support.card),
+      f = (StdSimplex.duple g₁ g₂ (le_of_lt hs) (le_of_lt ht) hst).join := by
+  classical
+  -- Pick any element from the support
+  obtain ⟨a, ha⟩ := Finset.card_pos.mp (by omega : 0 < f.weights.support.card)
+  have hwa_ne : f.weights a ≠ 0 := Finsupp.mem_support_iff.mp ha
+  have hwa_pos : 0 < f.weights a := lt_of_le_of_ne (f.nonneg a) (Ne.symm hwa_ne)
+  have hwa_lt_one : f.weights a < 1 := by
+    obtain ⟨b, hb, c, hc, hbc⟩ := Finset.one_lt_card.mp (by omega : 1 < f.weights.support.card)
+    obtain ⟨d, hd, hda⟩ : ∃ d ∈ f.weights.support, d ≠ a := by
+      by_cases hba : b = a
+      · exact ⟨c, hc, fun hca => hbc (hba ▸ hca ▸ rfl)⟩
+      · exact ⟨b, hb, hba⟩
+    have hwd_pos : 0 < f.weights d :=
+      lt_of_le_of_ne (f.nonneg d) (Ne.symm (Finsupp.mem_support_iff.mp hd))
+    have htotal := f.total
+    rw [Finsupp.sum] at htotal
+    have hd_in_erase : d ∈ f.weights.support.erase a :=
+      Finset.mem_erase.mpr ⟨hda, hd⟩
+    have hd_le : f.weights d ≤ ∑ x ∈ f.weights.support.erase a, f.weights x :=
+      Finset.single_le_sum (fun i _ => f.nonneg i) hd_in_erase
+    have hsplit : f.weights a + ∑ x ∈ f.weights.support.erase a, f.weights x = 1 :=
+      (Finset.add_sum_erase f.weights.support f.weights ha).trans htotal
+    linarith
+  -- Set s = f(a), t = 1 - f(a)
+  set s := f.weights a
+  set t := 1 - s with ht_def
+  have ht_pos : 0 < t := sub_pos.mpr hwa_lt_one
+  have hst : s + t = 1 := by ring
+  -- g₁ = single a (support card = 1 < card(f))
+  -- g₂ = t⁻¹ • (f.weights.erase a)
+  have ht_ne : t ≠ 0 := ne_of_gt ht_pos
+  have ht_inv_nonneg : 0 ≤ t⁻¹ := inv_nonneg.mpr (le_of_lt ht_pos)
+  have herase_nonneg : 0 ≤ f.weights.erase a := by
+    intro x
+    simp only [Finsupp.erase_apply]
+    split <;> [exact le_refl 0; exact f.nonneg x]
+  have herase_sum : (f.weights.erase a).sum (fun _ r => r) = t := by
+    have h1 := f.total
+    rw [Finsupp.sum] at h1 ⊢
+    rw [Finsupp.support_erase]
+    have h2 : ∀ x ∈ f.weights.support.erase a,
+        (f.weights.erase a) x = f.weights x := fun x hx =>
+      Finsupp.erase_ne (Finset.mem_erase.mp hx).1
+    rw [Finset.sum_congr rfl h2]
+    have h3 : f.weights a + ∑ x ∈ f.weights.support.erase a, f.weights x = 1 :=
+      (Finset.add_sum_erase f.weights.support f.weights ha).trans h1
+    linarith
+  set g₂ : StdSimplex R X := ⟨t⁻¹ • f.weights.erase a,
+    smul_nonneg ht_inv_nonneg herase_nonneg,
+    by
+      have h := Finsupp.sum_smul_index (h0 := fun _ => rfl)
+        (b := t⁻¹) (g := f.weights.erase a) (h := fun _ r => r)
+      rw [h]
+      simp only [← Finsupp.mul_sum, herase_sum, inv_mul_cancel₀ ht_ne]⟩
+  refine ⟨s, t, hwa_pos, ht_pos, hst, .single a, g₂, ?_, ?_, ?_⟩
+  -- Goal 1: (single a).support.card < f.support.card
+  · rw [single_support_card]; omega
+  -- Goal 2: g₂.support.card < f.support.card
+  · calc g₂.weights.support.card
+        ≤ (f.weights.erase a).support.card := by
+            apply Finset.card_le_card
+            exact Finsupp.support_smul
+      _ = (f.weights.support.erase a).card := by
+            rw [Finsupp.support_erase]
+      _ < f.weights.support.card := Finset.card_erase_lt_of_mem ha
+  -- Goal 3: f = (duple (single a) g₂ ...).join
+  · apply StdSimplex.ext
+    simp only [StdSimplex.join, StdSimplex.duple]
+    rw [Finsupp.sum_add_index (by simp) (by simp [add_smul])]
+    rw [Finsupp.sum_single_index (by simp : (0 : R) • (single a).weights = 0)]
+    rw [Finsupp.sum_single_index (by simp : (0 : R) • g₂.weights = 0)]
+    simp only [StdSimplex.single_weights, Finsupp.smul_single, smul_eq_mul, mul_one]
+    rw [show g₂.weights = t⁻¹ • f.weights.erase a from rfl]
+    rw [smul_smul, mul_inv_cancel₀ ht_ne, one_smul]
+    rw [add_comm, Finsupp.erase_add_single]
+
+section OfBinaryField
+
+variable {R : Type u} {M : Type v} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+
+/-- Algebraic core for doubleton_padded_end:
+    `C(1-u, C(1-⅟u*a, x, z), C(⅟(1-u)*b, z, y)) = C(b, x, y)` when `a + b = 1`. -/
+private theorem doubleton_padded_end_algebra (op : BinaryConvexOp R M)
+    (a b : R) (x z y : M) (hab : a + b = 1) :
+    op.binCombo (1 - op.u) (op.binCombo (1 - ⅟op.u * a) x z)
+      (op.binCombo (⅟(1 - op.u) * b) z y) =
+    op.binCombo b x y := by
+  by_cases ha : a = 0
+  · have hb : b = 1 := by linarith
+    subst ha; subst hb
+    simp only [mul_zero, mul_one, sub_zero]
+    rw [op.binCombo_one x z]
+    rw [op.binCombo_absorb_left (1 - op.u) (⅟(1 - op.u)) z y]
+    rw [mul_invOf_self]
+    rw [op.binCombo_one z y, op.binCombo_one x y]
+  · set p := (1 : R) - op.u
+    set q := ⅟(1 - op.u) * b
+    have h1mu_ne : (1 : R) - op.u ≠ 0 := Invertible.ne_zero (1 - op.u)
+    have hpq : p * q = b := by
+      simp [p, q, ← mul_assoc, mul_invOf_self, one_mul]
+    set r := (a - op.u) / a
+    have hassoc_cond : p * (1 - q) = (1 - p * q) * r := by
+      rw [hpq]
+      simp only [p, q, r, invOf_eq_inv]
+      rw [show (1 : R) - b = a from by linarith]
+      field_simp [ha, h1mu_ne]
+      linarith
+    rw [op.binCombo_assoc p q r
+      (op.binCombo (1 - ⅟op.u * a) x z) z y hassoc_cond]
+    rw [hpq]
+    rw [op.binCombo_absorb_right r (1 - ⅟op.u * a) x z]
+    have hu_ne : op.u ≠ 0 := Invertible.ne_zero op.u
+    have hcollapse : 1 - (1 - r) * (1 - (1 - ⅟op.u * a)) = 0 := by
+      simp only [r, invOf_eq_inv]
+      field_simp [ha, hu_ne]
+      ring
+    rw [hcollapse, op.binCombo_zero x z]
+
+/-- A doubleton with zeros in between:
+    `A([(a,x), (0,z₁), ..., (0,zₖ), (b,y)]) = C(b, x, y)` when `a + b = 1`.
+
+    This is the "reversed" version of `affineOfBinary_doubleton_padded`:
+    zeros are between the two nonzero weights rather than after them.
+    Proved by strong induction on k (the number of zeros). -/
+theorem affineOfBinary_doubleton_padded_end [Inhabited M] (op : BinaryConvexOp R M)
+    (a b : R) (x y : M) (zs : List M) (hab : a + b = 1) :
+    affineOfBinary op ([(a, x)] ++ zs.map (fun z => (0, z)) ++ [(b, y)]) =
+      op.binCombo b x y := by
+  induction h : zs.length using Nat.strongRecOn generalizing a b x y zs with
+  | _ n ih =>
+  match zs, h with
+  | [], _ =>
+    -- Base case: A([(a,x),(b,y)]) = C(b,x,y)
+    simp [affineOfBinary]
+  | [z₁], _ =>
+    -- One zero: A([(a,x),(0,z₁),(b,y)])
+    -- Decomposition: C(1-u, C(1-⅟u*a, x, z₁), C(⅟(1-u)*b, z₁, y))
+    simp only [List.map_cons, List.map_nil, List.nil_append, List.cons_append,
+      List.singleton_append, affineOfBinary,
+      List.map, List.dropLast, List.sum_nil, List.getLast?_nil,
+      List.replicate, List.zip_cons_cons, List.zip_nil_left,
+      mul_zero, sub_zero, List.length_nil]
+    exact doubleton_padded_end_algebra op a b x z₁ y hab
+  | z₁ :: z₂ :: zs', hlen =>
+    -- Two+ zeros: A([(a,x),(0,z₁),(0,z₂),...,(0,zₖ),(b,y)])
+    -- The proof follows the same pattern as [z₁]:
+    -- After decompose, leftWS is doubleton_padded → C(1-⅟u*a, x, z₁)
+    -- rightWS is doubleton_padded_end with fewer zeros → C(⅟(1-u)*b, z₁, y)
+    -- Then doubleton_padded_end_algebra closes the goal.
+    simp only [List.map_cons, List.cons_append, List.nil_append]
+    rw [affineOfBinary_decompose]
+    -- hleft and hright proved below via detailed list plumbing
+    set rest : WeightedSeq R M :=
+      (List.map (fun z => ((0 : R), z)) zs' ++ [(b, y)])
+    -- Auxiliary: all weights in rest except last are 0, last is b
+    have hrest_ne : rest ≠ [] := by simp [rest]
+    have hrest_map_fst : rest.map Prod.fst =
+        List.replicate zs'.length (0 : R) ++ [b] := by
+      simp only [rest, List.map_append, List.map_map, Function.comp]
+      congr 1
+      exact list_map_const (0 : R) zs'
+    have hrest_map_snd : rest.map Prod.snd = zs' ++ [y] := by
+      simp only [rest, List.map_append, List.map_map, Function.comp]
+      congr 1
+      simp
+    -- Middle weights are all zero (same pattern as doubleton_padded)
+    have hmiddle_weights :
+        ((0 : R) :: rest.map Prod.fst).dropLast =
+        List.replicate (zs'.length + 1) (0 : R) := by
+      rw [hrest_map_fst, show (0 : R) :: (List.replicate zs'.length 0 ++ [b]) =
+        ((0 : R) :: List.replicate zs'.length 0) ++ [b] from by rw [List.cons_append],
+        List.dropLast_concat, List.replicate_succ]
+    have hscaled_middle :
+        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)) =
+        List.replicate (zs'.length + 1) (0 : R) := by
+      rw [hmiddle_weights, List.map_replicate, mul_zero]
+    have hscaled_sum :
+        (((0 : R) :: rest.map Prod.fst).dropLast.map (⅟op.u * ·)).sum = 0 := by
+      rw [hscaled_middle, sum_replicate_zero]
+    -- Middle points after dropLast
+    have hmiddle_points :
+        (z₂ :: rest.map Prod.snd).dropLast = z₂ :: zs' := by
+      rw [hrest_map_snd, show z₂ :: (zs' ++ [y]) =
+        (z₂ :: zs') ++ [y] from by rw [List.cons_append],
+        List.dropLast_concat]
+    have hleft : affineOfBinary op
+        (leftWeightedSeq op
+          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
+        op.binCombo (1 - ⅟op.u * a) x z₁ := by
+      simp only [leftWeightedSeq]
+      rw [hscaled_sum, sub_zero]
+      rw [hscaled_middle]
+      rw [hmiddle_points]
+      set middlePoints := z₂ :: zs'
+      have hmid_len : middlePoints.length = zs'.length + 1 := by simp [middlePoints]
+      rw [zip_replicate_zero_map hmid_len.symm]
+      -- Now: A([(⅟u*a, x), (1-⅟u*a, z₁)] ++ middlePoints.map (0,·)) = C(1-⅟u*a, x, z₁)
+      exact affineOfBinary_doubleton_padded op _ _ x z₁ middlePoints (by ring)
+    -- For rightWeightedSeq: last weight is b
+    have hrest_getLast :
+        (match rest.getLast? with | some (w, _) => w | none => (0 : R)) = b := by
+      have : rest.getLast? = some (b, y) := by
+        simp only [rest]
+        exact List.getLast?_append_of_ne_nil _ (List.cons_ne_nil _ _)
+      rw [this]
+    have hrest_len : rest.length = zs'.length + 1 := by simp [rest]
+    have hright : affineOfBinary op
+        (rightWeightedSeq op
+          ((a, x) :: (0, z₁) :: (0, z₂) :: rest)) =
+        op.binCombo (⅟(1 - op.u) * b) z₁ y := by
+      simp only [rightWeightedSeq]
+      rw [hrest_getLast]
+      rw [hrest_map_snd]
+      rw [hrest_len]
+      -- Goal now involves:
+      -- (1 - ⅟(1-u)*b, z₁) :: (replicate (zs'.length+1) 0 ++ [⅟(1-u)*b]).zip (z₂ :: zs' ++ [y])
+      -- Split the zip using zip_append
+      conv_lhs => rw [show z₂ :: (zs' ++ [y]) =
+        (z₂ :: zs') ++ [y] from by rw [List.cons_append]]
+      rw [List.zip_append (by simp)]
+      -- Now: (1-⅟(1-u)*b, z₁) :: zeros.zip(z₂::zs') ++ [(⅟(1-u)*b, y)]
+      rw [zip_replicate_zero_map (by simp)]
+      -- Now: (1-⅟(1-u)*b, z₁) :: (z₂::zs').map(0,·) ++ [(⅟(1-u)*b, y)]
+      -- This is affineOfBinary_doubleton_padded_end with zs = z₂::zs'
+      -- Transform to the right form for the IH
+      simp only [List.map_cons, List.cons_append]
+      -- IH: fewer zeros (z₂::zs' has length zs'.length+1, original zs had length zs'.length+2)
+      have hlt : (z₂ :: zs').length < n := by
+        simp only [List.length_cons] at hlen ⊢
+        omega
+      exact ih (z₂ :: zs').length hlt _ _ _ _ (z₂ :: zs') (by ring) rfl
+    rw [hleft, hright]
+    exact doubleton_padded_end_algebra op a b x z₁ y hab
 
 /-- Position-0 swap for a triple: A([(a,x),(b,y),(c,z)]) = A([(b,y),(a,x),(c,z)]).
     Proof: decompose both sides, pad to common ordering, apply linear.
@@ -2982,7 +2984,7 @@ private theorem affineOfBinary_cons_strip [Inhabited M] (op : BinaryConvexOp R M
     simp [affineOfBinary]
   · -- A(ws_B) = A((0,p) :: tail.scale c) = A(tail.scale c)
     simp only [hws_B_def]
-    exact affineOfBinary_cons_zero_field op p _ hscale_tw hne_scale
+    exact affineOfBinary_cons_zero op p _ hscale_tw hne_scale
 
 /-- Generalized permutation invariance: for any scaling factor c such that
     c * totalWeight = 1, A(scale c ws₁) = A(scale c ws₂).
