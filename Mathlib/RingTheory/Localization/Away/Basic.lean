@@ -188,6 +188,30 @@ noncomputable def map (f : R →+* P) (r : R) [IsLocalization.Away r S]
       use n
       simp)
 
+lemma map_injective_iff {S : Type*} [CommRing S] [Algebra R S]
+    (f : R →+* P) (r : R) [IsLocalization.Away r S]
+    [IsLocalization.Away (f r) Q] :
+    Function.Injective (map S Q f r) ↔ ∀ a, f a = 0 → ∃ n, r ^ n * a = 0 := by
+  rw [injective_iff_map_eq_zero]
+  trans ∀ a n, f r ^ n * f a = 0 → ∃ m, r ^ m * a = 0
+  · simp [(IsLocalization.mk'_surjective (.powers r)).forall, Submonoid.mem_powers_iff,
+      IsLocalization.Away.map, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff]
+  · refine ⟨fun H x hx ↦ H x 0 (by simpa), fun H a n ha ↦ ?_⟩
+    obtain ⟨m, hm⟩ := H (r ^ n * a) (by simpa)
+    exact ⟨m + n, by simp [pow_add, mul_assoc, *]⟩
+
+lemma map_surjective_iff (f : R →+* P) (r : R) [IsLocalization.Away r S]
+    [IsLocalization.Away (f r) Q] :
+    Function.Surjective (map S Q f r) ↔ ∀ a, ∃ b m, f b = f r ^ m * a := by
+  trans ∀ a n, ∃ b m k, f (r ^ (k + n) * b) = f r ^ (k + m) * a
+  · simp [Function.Surjective, (IsLocalization.mk'_surjective (.powers (f r))).forall, ← map_pow,
+      (IsLocalization.mk'_surjective (.powers r)).exists, Submonoid.mem_powers_iff, pow_add,
+      IsLocalization.Away.map, IsLocalization.map_mk', ← mul_assoc,
+      IsLocalization.mk'_eq_iff_eq, ← map_mul, IsLocalization.eq_iff_exists (.powers (f r))]
+  · refine ⟨fun H x ↦ ⟨_, _, (H x 0).choose_spec.choose_spec.choose_spec⟩, fun H a n ↦ ?_⟩
+    obtain ⟨b, m, e⟩ := H a
+    exact ⟨b, n + m, 0, by simp [e, pow_add]; ring_nf⟩
+
 section Algebra
 
 variable {A : Type*} [CommSemiring A] [Algebra R A]
@@ -319,6 +343,25 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [Co
       rintro rfl
       exact ⟨1, rfl⟩ }
 
+variable {R S}
+
+lemma Away.mul_of_isUnit (x y : R) [IsLocalization.Away x S] (h : IsUnit (algebraMap R S y)) :
+    IsLocalization.Away (x * y) S :=
+  have : Away (algebraMap R S y) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  .mul' S _ _ _
+
+lemma Away.mul_of_isUnit' (x y : R) [IsLocalization.Away y S] (h : IsUnit (algebraMap R S x)) :
+    IsLocalization.Away (x * y) S :=
+  have : Away (algebraMap R S x) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  .mul S _ _ _
+
+lemma Away.mul_of_associated (x z : R) (y : S) [IsLocalization.Away x S]
+    {T : Type*} [CommRing T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    [IsLocalization.Away y T]
+    (h : Associated (algebraMap R S z) y) : IsLocalization.Away (x * z) T := by
+  have : Away (algebraMap R S z) T := by rwa [iff_of_associated h]
+  exact .mul' S _ _ _
+
 end AtUnits
 
 section Prod
@@ -425,6 +468,39 @@ lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :
     Localization.Away r →+* Localization.Away (f r) :=
   IsLocalization.Away.map _ _ f r
+
+lemma awayMap_injective_iff {R : Type*} [CommRing R] {f : R →+* S} {r : R} :
+    Function.Injective (Localization.awayMap f r) ↔ ∀ a, f a = 0 → ∃ n, r ^ n * a = 0 :=
+  IsLocalization.Away.map_injective_iff _ _ _
+
+omit [Algebra R S] in
+lemma awayMap_surjective_iff {f : R →+* S} {r : R} :
+    Function.Surjective (Localization.awayMap f r) ↔ ∀ a, ∃ b m, f b = f r ^ m * a :=
+  IsLocalization.Away.map_surjective_iff _ _ _ _
+
+lemma awayMap_injective_of_dvd {R : Type*} [CommRing R] (f : R →+* S)
+    {a b : R} (h : a ∣ b) (H : Function.Injective (awayMap f a)) :
+    Function.Injective (awayMap f b) := by
+  simp only [awayMap_injective_iff] at H ⊢
+  obtain ⟨b, rfl⟩ := h
+  refine fun x hx ↦ ?_
+  obtain ⟨n, hn⟩ := H x hx
+  exact ⟨n, by simp [mul_pow, mul_assoc, mul_left_comm (a ^ n), hn]⟩
+
+omit [Algebra R S] in
+lemma awayMap_surjective_of_dvd (f : R →+* S)
+    {a b : R} (h : a ∣ b) (H : Function.Surjective (awayMap f a)) :
+    Function.Surjective (awayMap f b) := by
+  simp only [awayMap_surjective_iff] at H ⊢
+  obtain ⟨b, rfl⟩ := h
+  refine fun x ↦ ?_
+  obtain ⟨c, m, e⟩ := H x
+  exact ⟨b ^ m * c, m, by simp [mul_pow, e, mul_assoc, mul_left_comm]⟩
+
+lemma awayMap_bijective_of_dvd {R : Type*} [CommRing R] (f : R →+* S)
+    {a b : R} (h : a ∣ b) (H : Function.Bijective (awayMap f a)) :
+    Function.Bijective (awayMap f b) :=
+  ⟨awayMap_injective_of_dvd f h H.1, awayMap_surjective_of_dvd f h H.2⟩
 
 variable {A : Type*} [CommSemiring A] [Algebra R A]
 variable {B : Type*} [CommSemiring B] [Algebra R B]

@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.84" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.86" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -67,7 +67,6 @@ lean_lib Mathlib where
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
 lean_lib Cache
-lean_lib LongestPole
 
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
@@ -123,33 +122,6 @@ lean_exe «lint-style» where
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
   srcDir := "scripts"
-
-/--
-`lake exe pole` queries radar for build times for the current commit,
-and then calculates the longest pole
-(i.e. the sequence of files you would be waiting for during a infinite parallelism build).
--/
-lean_exe pole where
-  root := `LongestPole.Main
-  supportInterpreter := true
-  -- Executables which import `Lake` must set `-lLake`.
-  weakLinkArgs := #["-lLake"]
-
-/--
-`lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.
-The script expects the sequence to be in "reverse order", i.e. files imported later in `Mathlib` should
-come earlier in the sequence.
-
-Outputs a markdown file (called  `unused.md` by default) and a number of `lake exe graph` commands
-highlighting particular ranges of transitively unused imports.
-
-Typically this should be run via `scripts/unused_in_pole.sh`.
--/
-lean_exe unused where
-  root := `LongestPole.Unused
-  supportInterpreter := true
-  -- Executables which import `Lake` must set `-lLake`.
-  weakLinkArgs := #["-lLake"]
 
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable

@@ -57,8 +57,8 @@ instance (priority := 100) {α : Sort*} {r : α → α → Prop} [Trans r r r] :
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`. -/
-class IsTotal (α : Sort*) (r : α → α → Prop) : Prop where
-  total : ∀ a b, r a b ∨ r b a
+@[deprecated Std.Total (since := "2026-01-09")]
+abbrev IsTotal (α : Sort*) (r : α → α → Prop) : Prop := Std.Total r
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
@@ -69,8 +69,8 @@ class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends Std.Refl r
 class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, Std.Antisymm r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
-`IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, IsTotal α r
+`IsPartialOrder X r` and `Std.Total r`. -/
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, Std.Total r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `Std.Symm r`. -/
@@ -87,13 +87,13 @@ class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) : Prop extends Is
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
 either `lt a b` or `a = b` or `lt b a` for any `a` and `b`. -/
-class IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop where
-  trichotomous : ∀ a b, lt a b ∨ a = b ∨ lt b a
+@[deprecated Std.Trichotomous (since := "2026-01-24")]
+abbrev IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop := Std.Trichotomous lt
 
 /-- `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order,
-that is, `IsTrichotomous X lt` and `IsStrictOrder X lt`. -/
+that is, `Std.Trichotomous lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
-    extends IsTrichotomous α lt, IsStrictOrder α lt
+    extends Std.Trichotomous lt, IsStrictOrder α lt
 
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
@@ -121,8 +121,8 @@ lemma symm [Std.Symm r] : a ≺ b → b ≺ a := Std.Symm.symm _ _
 lemma antisymm [Std.Antisymm r] : a ≺ b → b ≺ a → a = b := Std.Antisymm.antisymm _ _
 lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 
-lemma trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
-  IsTrichotomous.trichotomous
+lemma trichotomous [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
+  fun _ _ ↦ Std.Trichotomous.rel_or_eq_or_rel_swap
 
 instance (priority := 90) asymm_of_isTrans_of_irrefl [IsTrans α r] [Std.Irrefl r] : Std.Asymm r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
@@ -151,13 +151,13 @@ instance Std.Asymm.decide [DecidableRel r] [Std.Asymm r] :
     Std.Asymm (fun a b => decide (r a b) = true) where
   asymm := fun a b => by simpa using asymm a b
 
-instance IsTotal.decide [DecidableRel r] [IsTotal α r] :
-    IsTotal α (fun a b => decide (r a b) = true) where
+instance Std.Total.decide [DecidableRel r] [Std.Total r] :
+    Std.Total (fun a b => decide (r a b) = true) where
   total := fun a b => by simpa using total a b
 
-instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
-    IsTrichotomous α (fun a b => decide (r a b) = true) where
-  trichotomous := fun a b => by simpa using trichotomous a b
+instance Std.Trichotomous.decide [DecidableRel r] [Std.Trichotomous r] :
+    Std.Trichotomous (fun a b => decide (r a b) = true) where
+  trichotomous a b := by simpa using trichotomous a b
 
 variable (r)
 
@@ -168,10 +168,10 @@ variable (r)
 @[elab_without_expected_type] lemma asymm_of [Std.Asymm r] : a ≺ b → ¬b ≺ a := asymm
 
 @[elab_without_expected_type]
-lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total _ _
+lemma total_of [Std.Total r] (a b : α) : a ≺ b ∨ b ≺ a := Std.Total.total _ _
 
 @[elab_without_expected_type]
-lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
+lemma trichotomous_of [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
 
 section
 
@@ -188,9 +188,10 @@ def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 def Irreflexive := ∀ x, ¬x ≺ x
 
 /-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Antisymm (since := "2026-02-09")]
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
-/-- `IsTotal` as a definition, suitable for use in proofs. -/
+/-- `Std.Total` as a definition, suitable for use in proofs. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
 theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
@@ -343,19 +344,23 @@ theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b
 protected theorem Std.Asymm.antisymm (r : α → α → Prop) [Std.Asymm r] : Std.Antisymm r :=
   inferInstance
 
+@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isAntisymm := Std.Asymm.antisymm
 @[deprecated (since := "2026-01-06")] protected alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
 
 protected theorem Std.Asymm.irrefl [Std.Asymm r] : Std.Irrefl r :=
   inferInstance
 
+@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isIrrefl := Std.Asymm.irrefl
 @[deprecated (since := "2026-01-07")] protected alias Std.Asymm.isIrrefl := Std.Asymm.irrefl
 
-protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
-  ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
+protected theorem Std.Total.trichotomous (r : α → α → Prop) [Std.Total r] : Std.Trichotomous r :=
+  inferInstance
+
+@[deprecated (since := "2026-01-24")] alias Std.Total.isTrichotomous := Std.Total.trichotomous
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_refl (r) [IsTotal α r] : Std.Refl r :=
-  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
+instance (priority := 100) Std.Total.to_refl (r : α → α → Prop) [Std.Total r] : Std.Refl r :=
+  inferInstance
 
 theorem ne_of_irrefl {r} [Std.Irrefl r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
@@ -386,14 +391,14 @@ theorem rel_congr [Std.Symm r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h�
     r a c ↔ r b d := by
   rw [rel_congr_left h₁, rel_congr_right h₂]
 
-theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+theorem trans_trichotomous_left [IsTrans α r] [Std.Trichotomous r] {a b c : α}
     (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
   rcases trichotomous_of r a b with (h₃ | rfl | h₃)
   · exact _root_.trans h₃ h₂
   · exact h₂
   · exact absurd h₃ h₁
 
-theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α}
     (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   · exact _root_.trans h₁ h₃
@@ -403,7 +408,7 @@ theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : �
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
-theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [Std.Irrefl r]
+theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [Std.Trichotomous r] [Std.Irrefl r]
     {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
   ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
     <| irrefl b

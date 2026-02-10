@@ -96,8 +96,8 @@ def inr_ : D ⥤ C ⊕ D where
 
 variable {C D}
 
-/-- An induction principle for morphisms in a sum of category: a morphism is either of the form
-`(inl_ _ _).map _` or of the form `(inr_ _ _).map _)`. -/
+/-- An induction principle for morphisms in a sum of categories: a morphism is either of the form
+`(inl_ _ _).map _` or of the form `(inr_ _ _).map _`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def homInduction {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))

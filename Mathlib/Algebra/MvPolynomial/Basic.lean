@@ -249,15 +249,14 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
   Infinite.of_injective ((fun s : σ →₀ ℕ => monomial s 1) ∘ Finsupp.single (Classical.arbitrary σ))
     <| (monomial_left_injective one_ne_zero).comp (Finsupp.single_injective _)
 
-instance [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) :=
+instance [NoZeroDivisors R] : NoZeroDivisors (MvPolynomial σ R) :=
   inferInstanceAs (NoZeroDivisors (AddMonoidAlgebra ..))
 
-instance [CommSemiring R] [IsCancelAdd R] [IsCancelMulZero R] :
-    IsCancelMulZero (MvPolynomial σ R) :=
+instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero (MvPolynomial σ R) :=
   inferInstanceAs (IsCancelMulZero (AddMonoidAlgebra ..))
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance [CommSemiring R] [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where
+instance [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where
 
 theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
   induction n <;> simp [*]
@@ -707,8 +706,9 @@ theorem support_X_mul (s : σ) (p : MvPolynomial σ R) :
   AddMonoidAlgebra.support_single_mul p _ (by simp) _
 
 @[simp]
-theorem support_smul_eq {S₁ : Type*} [Semiring S₁] [Module S₁ R] [NoZeroSMulDivisors S₁ R] {a : S₁}
-    (h : a ≠ 0) (p : MvPolynomial σ R) : (a • p).support = p.support :=
+theorem support_smul_eq {S : Type*} [Semiring S] [IsDomain S] [Module S R]
+    [Module.IsTorsionFree S R] {a : S} (h : a ≠ 0) (p : MvPolynomial σ R) :
+    (a • p).support = p.support :=
   Finsupp.support_smul_eq h
 
 theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :

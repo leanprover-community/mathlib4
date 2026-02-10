@@ -29,7 +29,7 @@ This file defines lemmas and theorems about the power series for large and small
 
 @[expose] public section
 
-open Finset BigOperators Nat
+open Finset Nat
 
 namespace PowerSeries
 
@@ -59,8 +59,8 @@ lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
   simp_all only [lt_self_iff_false]
 
 lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
-  coeff n (X * largeSchroderSeries ^ 2) =
-    ∑ i ∈ range n, largeSchroder i * largeSchroder (n - 1 - i) := by
+    coeff n (X * largeSchroderSeries ^ 2) =
+      ∑ i ∈ range n, largeSchroder i * largeSchroder (n - 1 - i) := by
   rw [pow_two, ← mul_assoc, coeff_mul]
   rw [Nat.sum_antidiagonal_eq_sum_range_succ
     (fun x y => (coeff x) (X * largeSchroderSeries) * (coeff y) largeSchroderSeries) n,
@@ -85,20 +85,14 @@ lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     ∑ x ∈ Ico 1 n, largeSchroder (x - 1) * largeSchroder (n - x) := by
     apply sum_congr rfl
     intros x hx
-    simp at hx
-    have hx' : 0 < x := by omega
+    have hx' : 0 < x := by grind
     rw [if_pos hx']
   rw [this, sum_Ico_eq_sum_range, show n = n - 1 + 1 by omega,
-    sum_range_succ, show n - 1 + 1 = n by omega]
-  simp only [add_tsub_cancel_left, tsub_self, largeSchroder_zero, mul_one, Nat.add_right_cancel_iff]
-  apply sum_congr rfl
-  intros x hx
-  simp at hx
-  rw [show n - 1 - x = n - (1 + x) by omega]
+    sum_range_succ]
+  grind [largeSchroder_zero]
 
 theorem largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_largeSchroderSeries_sq :
-  largeSchroderSeries = 1 + X * largeSchroderSeries +
-    X * largeSchroderSeries ^ 2 := by
+    largeSchroderSeries = 1 + X * largeSchroderSeries + X * largeSchroderSeries ^ 2 := by
   ext n
   by_cases hn : n = 0
   · aesop
@@ -106,9 +100,7 @@ theorem largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_large
     simp only [coeff_largeSchroderSeries, map_add, coeff_one, hn, ↓reduceIte, zero_add]
     rw [coeff_X_mul_largeSchroderSeriesSeries_sq _ hn', coeff_X_mul_largeSchroderSeries _ hn',
       show n = n - 1 + 1 by omega, largeSchroder_succ (n - 1)]
-    simp_all only [add_tsub_cancel_right, Nat.add_left_cancel_iff]
-    rw [Iic_eq_Icc, Nat.bot_eq_zero]
-    have hI : Icc 0 (n - 1) = range (n - 1 + 1) := by exact Eq.symm (range_succ_eq_Icc_zero (n - 1))
-    rw [hI]
+    simp only [add_tsub_cancel_right, Nat.add_left_cancel_iff]
+    rw [Iic_eq_Icc, Nat.bot_eq_zero, ← range_succ_eq_Icc_zero]
 
 end PowerSeries

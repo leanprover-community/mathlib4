@@ -3,7 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.CharP.Two
 public import Mathlib.SetTheory.Nimber.Basic
@@ -229,7 +229,6 @@ instance : CommRing Nimber where
   __ : AddCommGroupWithOne Nimber := inferInstance
 
 instance : IsDomain Nimber where
-instance : CancelMonoidWithZero Nimber where
 
 /-! ### Nimber division -/
 

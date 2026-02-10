@@ -7,10 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.MonoidAlgebra.Lift
-public import Mathlib.LinearAlgebra.Span.Defs
-
-import Mathlib.LinearAlgebra.Finsupp.Supported
-public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Module structure on monoid algebras
@@ -32,6 +29,7 @@ assert_not_exists NonUnitalAlgHom AlgEquiv
 noncomputable section
 
 open Finsupp hiding single
+open Module
 
 universe u₁ u₂ u₃ u₄
 
@@ -47,11 +45,6 @@ section SMul
 
 variable {S : Type*}
 
-@[to_additive (dont_translate := R) noZeroSMulDivisors]
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R k[G] :=
-  Finsupp.noZeroSMulDivisors
-
 @[to_additive (dont_translate := R) distribMulAction]
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R k[G] :=
@@ -61,10 +54,24 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
   Finsupp.module G k
 
+@[to_additive (dont_translate := R)]
+instance instIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
+    Module.IsTorsionFree R (MonoidAlgebra k G) := Finsupp.moduleIsTorsionFree
+
 @[to_additive (dont_translate := R) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R k[G] :=
   Finsupp.faithfulSMul
+
+/-- The standard basis for a monoid algebra. -/
+@[to_additive /-- The standard basis for an additive monoid algebra. -/]
+def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
+  repr := LinearEquiv.refl k (R →₀ k)
+
+@[to_additive (dont_translate := k) (attr := simp)]
+lemma basis_apply (k) [Semiring k] (r : R) :
+    MonoidAlgebra.basis R k r = MonoidAlgebra.single r 1 :=
+  rfl
 
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
 
