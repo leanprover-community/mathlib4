@@ -292,7 +292,8 @@ theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
 end
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable
+  [AddCommMonoid A] [Module R A] [Coalgebra R A]
   [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
 
 /-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.

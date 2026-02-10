@@ -238,8 +238,7 @@ def withLowerHomeomorph : WithLower α ≃ₜ α :=
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 
-instance _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLower α] :
-    IsUpper αᵒᵈ where
+instance _root_.OrderDual.instIsUpper : IsUpper αᵒᵈ where
   topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
 
 /-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
@@ -399,8 +398,7 @@ def withUpperHomeomorph : WithUpper α ≃ₜ α :=
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 
-instance _root_.OrderDual.instIsLower [Preorder α] [TopologicalSpace α] [IsUpper α] :
-    IsLower αᵒᵈ where
+instance _root_.OrderDual.instIsLower : IsLower αᵒᵈ where
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
 /-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/

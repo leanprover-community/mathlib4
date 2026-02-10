@@ -489,6 +489,23 @@ lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
   · simpa
   · simpa [IsScalarTower.algebraMap_apply R S q'.ResidueField, ← Ideal.mem_comap, ← q'.over_def p]
 
+lemma _root_.Ideal.Fiber.lift_residueField_surjective [Algebra.FiniteType R S]
+    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
+    Function.Surjective (Algebra.TensorProduct.lift (Algebra.ofId _ _)
+      (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _ :
+      p.Fiber S →ₐ[p.ResidueField] q.ResidueField) := by
+  let q' : Ideal (p.Fiber S) := (PrimeSpectrum.primesOverOrderIsoFiber R S p ⟨q, ‹_›, ‹_›⟩).asIdeal
+  have hq' : q = q'.comap Algebra.TensorProduct.includeRight.toRingHom :=
+    congr($((PrimeSpectrum.primesOverOrderIsoFiber R S p).symm_apply_apply ⟨q, ‹_›, ‹_›⟩).1).symm
+  have : Algebra.QuasiFiniteAt p.ResidueField q' := .baseChange q _ hq'
+  have : q'.IsMaximal := (PrimeSpectrum.isClosed_singleton_iff_isMaximal _).mp
+    (QuasiFiniteAt.isClopen_singleton (R := p.ResidueField) _).isClosed
+  refine .of_comp_left ?_
+    (p.surjectiveOnStalks_residueField.baseChange'.residueFieldMap_bijective q q' hq').1
+  rw [← AlgHom.coe_toRingHom, ← RingHom.coe_comp]
+  convert q'.algebraMap_residueField_surjective
+  ext <;> simp [IsScalarTower.algebraMap_apply R S q.ResidueField]
+
 end QuasiFiniteAt
 
 end Algebra
