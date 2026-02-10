@@ -263,6 +263,9 @@ protected theorem _root_.HasCompactSupport.rpow_const {α : Type*} [TopologicalS
     (hf : HasCompactSupport f) {r : ℝ} (hr : r ≠ 0) : HasCompactSupport (fun x ↦ f x ^ r) :=
   hf.comp_left (g := (· ^ r)) (Real.zero_rpow hr)
 
+@[simp]
+theorem pi_rpow_zero {α : Type*} (f : α → ℝ) : f ^ (0 : ℝ) = 1 := by ext; simp
+
 end Real
 
 /-!
