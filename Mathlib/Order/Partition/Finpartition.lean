@@ -467,10 +467,7 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
     have : Disjoint (x ⊓ b) (y ⊓ b) := (P.disjoint hx.1 hy.1 hne).mono inf_le_left inf_le_left
     grind
   have heq : (P.parts.image (· ⊓ b)).erase ⊥ = (P.parts.filter (· ⊓ b ≠ ⊥)).image (· ⊓ b) := by
-    ext p; simp only [Finset.mem_erase, ne_eq, Finset.mem_image, Finset.mem_filter]
-    constructor
-    · rintro ⟨hp, q, hq, rfl⟩; exact ⟨q, ⟨hq, hp⟩, rfl⟩
-    · rintro ⟨q, ⟨hq, hp⟩, rfl⟩; exact ⟨hp, q, hq, rfl⟩
+    grind
   have hz : ∑ x ∈ P.parts.filter (¬ · ⊓ b ≠ ⊥), f (x ⊓ b) = 0 := Finset.sum_eq_zero fun x hx => by
     simp only [ne_eq, Decidable.not_not, Finset.mem_filter] at hx
     rw [hx.2, hf]
