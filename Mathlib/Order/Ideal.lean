@@ -156,6 +156,9 @@ theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈
 theorem mem_toIdeal {I : Set P} (h : IsIdeal I) {a : P} : a ∈ h.toIdeal ↔ a ∈ I :=
   Iff.rfl
 
+theorem coe_toIdeal {I : Set P} (h : IsIdeal I) : (h.toIdeal : Set P) = I :=
+  rfl
+
 theorem toIdeal_le {I : Set P} (h : IsIdeal I) {J : Ideal P} : h.toIdeal ≤ J ↔ I ⊆ J :=
   Iff.rfl
 
