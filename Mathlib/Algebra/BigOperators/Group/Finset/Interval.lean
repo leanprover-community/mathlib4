@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Zify
 
 /-!
 # Sums/products over integer intervals
@@ -17,7 +16,7 @@ This file contains some lemmas about sums and products over integer intervals `I
 
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 

@@ -23,7 +23,7 @@ a restricted measure.
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

@@ -150,7 +150,6 @@ theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
 @[simp]
 theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T]
     (x : S × T) : trace R (S × T) x = trace R S x.fst + trace R T x.snd := by
-  nontriviality R
   let f := (lmul R S).toLinearMap.prodMap (lmul R T).toLinearMap
   have : (lmul R (S × T)).toLinearMap = (prodMapLinear R S T S T R).comp f :=
     LinearMap.ext₂ Prod.mul_def

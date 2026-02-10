@@ -15,7 +15,7 @@ This file contains some basic results about the `Fintype` instance for `Fin`,
 especially properties of `Finset.univ : Finset (Fin n)`.
 -/
 
-@[expose] public section
+public section
 
 open List (Vector)
 

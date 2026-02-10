@@ -1,6 +1,8 @@
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Sum
 
 set_option autoImplicit true
 namespace tests

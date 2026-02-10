@@ -12,12 +12,12 @@ public import Mathlib.Order.Filter.Bases.Finite
 /-!
 # (Co)product of a family of filters
 
-In this file we define two filters on `Π i, α i` and prove some basic properties of these filters.
+In this file we prove some basic properties of two filters on `Π i, α i`.
 
 * `Filter.pi (f : Π i, Filter (α i))` to be the maximal filter on `Π i, α i` such that
   `∀ i, Filter.Tendsto (Function.eval i) (Filter.pi f) (f i)`. It is defined as
-  `Π i, Filter.comap (Function.eval i) (f i)`. This is a generalization of `Filter.prod` to indexed
-  products.
+  `Π i, Filter.comap (Function.eval i) (f i)`. This is a generalization of binary products to
+  indexed products.
 
 * `Filter.coprodᵢ (f : Π i, Filter (α i))`: a generalization of `Filter.coprod`; it is the supremum
   of `comap (eval i) (f i)`.

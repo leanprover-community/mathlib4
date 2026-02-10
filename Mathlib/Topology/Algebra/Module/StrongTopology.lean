@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
@@ -581,13 +582,32 @@ lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
 end BoundedSets
 
 section BilinearMaps
+variable {R 𝕜 𝕜₂ 𝕜₃ : Type*}
+variable {E F G : Type*}
 
-variable {𝕜 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] {E F G : Type*}
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+/-!
+We prove some computation rules for continuous (semi-)bilinear maps in their first argument.
+If `f` is a continuous bilinear map, to use the corresponding rules for the second argument, use
+`(f _).map_add` and similar.
+-/
+
+section AddCommMonoid
+variable
+  [Semiring R] [NormedField 𝕜₂] [NormedField 𝕜₃]
+  [AddCommMonoid E] [Module R E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
   [AddCommGroup G] [Module 𝕜₃ G]
   [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-  {σ₁₃ : 𝕜 →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
+  {σ₁₃ : R →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
+
+theorem map_add₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x x' : E) (y : F) :
+    f (x + x') y = f x y + f x' y := by rw [f.map_add, add_apply]
+
+theorem map_zero₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (y : F) : f 0 y = 0 := by
+  rw [f.map_zero, zero_apply]
+
+theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x : E) (y : F) :
+    f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
 
 /-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
 def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
@@ -608,6 +628,43 @@ lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) 
 
 @[deprecated (since := "2025-07-28")] alias toLinearMap₂_apply := toLinearMap₁₂_apply
 
+end AddCommMonoid
+
+section Nonsemilinear
+variable
+  [NormedField 𝕜₂] [NormedField 𝕜₃]
+  [AddCommMonoid E] [Module 𝕜₃ E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
+  [AddCommGroup G] [Module 𝕜₃ G]
+  [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+  {σ₂₃ : 𝕜₂ →+* 𝕜₃}
+
+theorem map_smul₂ (f : E →L[𝕜₃] F →SL[σ₂₃] G) (c : 𝕜₃) (x : E) (y : F) :
+    f (c • x) y = c • f x y := by
+  rw [f.map_smul, smul_apply]
+
+end Nonsemilinear
+
+section AddCommGroup
+variable
+  [Semiring R] [NormedField 𝕜₂] [NormedField 𝕜₃]
+  [AddCommGroup E] [Module R E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
+  [AddCommGroup G] [Module 𝕜₃ G]
+  [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+  {σ₁₃ : R →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
+
+theorem map_sub₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x x' : E) (y : F) :
+    f (x - x') y = f x y - f x' y := by rw [map_sub, sub_apply]
+
+theorem map_neg₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) : f (-x) y = -f x y := by
+  rw [map_neg, neg_apply]
+
+end AddCommGroup
+
+section BilinForm
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+
 /-- Send a continuous bilinear form to an abstract bilinear form (forgetting continuity). -/
 def toBilinForm (L : E →L[𝕜] E →L[𝕜] 𝕜) : LinearMap.BilinForm 𝕜 E := L.toLinearMap₁₂
 
@@ -620,6 +677,8 @@ lemma toBilinForm_injective : (toBilinForm (𝕜 := 𝕜) (E := E)).Injective :=
 lemma toBilinForm_inj (L₁ L₂ : E →L[𝕜] E →L[𝕜] 𝕜) :
     L₁.toBilinForm = L₂.toBilinForm ↔ L₁ = L₂ :=
   toBilinForm_injective.eq_iff
+
+end BilinForm
 
 end BilinearMaps
 
@@ -732,7 +791,7 @@ def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
     intro s hsb U hU
     rcases mem_nhds_prod_iff.mp <| continuous_smul.tendsto' (0 : 𝕜 × E) 0 (by simp) hU
       with ⟨V, hV, W, hW, hVW⟩
-    rcases (eventually_cobounded_mapsTo <|hsb hV).and (eventually_ne_cobounded 0) |>.exists
+    rcases (eventually_cobounded_mapsTo <| hsb hV).and (eventually_ne_cobounded 0) |>.exists
       with ⟨c, hc, hc₀⟩
     filter_upwards [(set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hW]
     rintro _ ⟨a, ha, rfl⟩ x hx
@@ -800,6 +859,32 @@ def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H
 
 @[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
     (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
+
+/-- A continuous linear equivalence of two spaces induces a continuous equivalence of algebras of
+their endomorphisms. -/
+def conjContinuousAlgEquiv (e : G ≃L[𝕜] H) : (G →L[𝕜] G) ≃A[𝕜] (H →L[𝕜] H) :=
+  { e.arrowCongr e with
+    map_mul' _ _ := by ext; simp
+    commutes' _ := by ext; simp }
+
+@[simp] theorem conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) (x : H) :
+    e.conjContinuousAlgEquiv f x = e (f (e.symm x)) := rfl
+
+theorem symm_conjContinuousAlgEquiv_apply_apply (e : G ≃L[𝕜] H) (f : H →L[𝕜] H) (x : G) :
+    e.conjContinuousAlgEquiv.symm f x = e.symm (f (e x)) := rfl
+
+theorem conjContinuousAlgEquiv_apply (e : G ≃L[𝕜] H) (f : G →L[𝕜] G) :
+    e.conjContinuousAlgEquiv f = e ∘L f ∘L e.symm := rfl
+
+@[simp] theorem symm_conjContinuousAlgEquiv (e : G ≃L[𝕜] H) :
+    e.conjContinuousAlgEquiv.symm = e.symm.conjContinuousAlgEquiv := rfl
+
+@[simp] theorem conjContinuousAlgEquiv_refl : conjContinuousAlgEquiv (.refl 𝕜 G) = .refl 𝕜 _ := rfl
+
+theorem conjContinuousAlgEquiv_trans [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+    (e : E ≃L[𝕜] G) (f : G ≃L[𝕜] H) :
+    (e.trans f).conjContinuousAlgEquiv = e.conjContinuousAlgEquiv.trans f.conjContinuousAlgEquiv :=
+  rfl
 
 end Linear
 

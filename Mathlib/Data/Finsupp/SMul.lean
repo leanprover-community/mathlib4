@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
@@ -187,6 +188,10 @@ theorem sum_smul_index_addMonoidHom [AddZeroClass M] [AddCommMonoid N] [SMulZero
     {g : α →₀ M} {b : R} {h : α → M →+ N} :
     ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
   sum_mapRange_index fun i => (h i).map_zero
+
+instance moduleIsTorsionFree [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
+    [Module.IsTorsionFree R M] : Module.IsTorsionFree R (ι →₀ M) where
+  isSMulRegular r hr f g hfg := by ext i; exact hr.isSMulRegular congr($hfg i)
 
 instance noZeroSMulDivisors [Zero R] [Zero M] [SMulZeroClass R M] {ι : Type*}
     [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=

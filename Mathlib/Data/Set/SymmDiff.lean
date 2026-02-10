@@ -10,7 +10,7 @@ public import Mathlib.Order.SymmDiff
 
 /-! # Symmetric differences of sets -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

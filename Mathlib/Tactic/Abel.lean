@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.TryThis
-public meta import Mathlib.Util.AtLocation
 public meta import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.TryThis
+public import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -273,10 +273,10 @@ def evalSMul (k : Expr × ℤ) : NormalExpr → M (NormalExpr × Expr)
     return (← term' (n'.expr, k.2 * n.2) x a',
       ← iapp ``term_smul #[k.1, n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
-theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term]
+theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term, one_nsmul]
 theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp [termg]
 theorem term_atom_pf {α} [AddCommMonoid α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
-  simp [term, h]
+  simp [term, h, one_nsmul]
 theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
   simp [termg, h]
 

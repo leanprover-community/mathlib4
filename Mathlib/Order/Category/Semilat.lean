@@ -142,7 +142,7 @@ namespace SemilatInfCat
 @[simps]
 def Iso.mk {α β : SemilatInfCat.{u}} (e : α ≃o β) : α ≅ β where
   hom := (e : InfTopHom _ _)
-  inv := (e.symm :  InfTopHom _ _)
+  inv := (e.symm : InfTopHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 

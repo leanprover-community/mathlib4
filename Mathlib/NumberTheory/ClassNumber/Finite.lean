@@ -163,8 +163,6 @@ noncomputable def finsetApprox : Finset R :=
 theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
   Finset.notMem_erase _ _
 
-@[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
-
 @[simp]
 theorem mem_finsetApprox {x : R} :
     x ∈ finsetApprox bS adm ↔ ∃ i j, i ≠ j ∧ distinctElems bS adm i - distinctElems bS adm j =

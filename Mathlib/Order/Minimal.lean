@@ -363,9 +363,6 @@ theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x �
 theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
   fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
 
-@[deprecated (since := "2025-05-23")]
-alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_singleton
-
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
   ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.notMem_of_prop_diff_singleton hP hx⟩,
@@ -628,7 +625,7 @@ def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :
       toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal x).2⟩
       invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMinimal x).2⟩
-      __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMinimal
+      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal
 
 /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/
 def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
@@ -636,7 +633,7 @@ def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
   toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal x).2⟩
   invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMaximal x).2⟩
-  __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMaximal
+  __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal
 
 end OrderIso
 

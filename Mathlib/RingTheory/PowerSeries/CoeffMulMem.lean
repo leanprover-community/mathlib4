@@ -35,7 +35,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace PowerSeries
 

@@ -37,6 +37,10 @@ assert_not_exists Ring
 
 open Function
 
+lemma Irreducible.coe_ne_zero {M₀ S : Type*} [MonoidWithZero M₀] [SetLike S M₀]
+    [SubmonoidClass S M₀] {s : S} {x : s} (hx : Irreducible x) : (x : M₀) ≠ 0 :=
+  fun h ↦ hx.1 <| by simpa using hx.2 (a := x) (b := x) (by ext; simp [h])
+
 section
 variable (M₀ : Type*) [MonoidWithZero M₀] {x : M₀}
 
@@ -54,9 +58,6 @@ lemma notMem_nonZeroDivisorsLeft_iff :
     x ∉ nonZeroDivisorsLeft M₀ ↔ {y | x * y = 0 ∧ y ≠ 0}.Nonempty := by
   simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
 
-@[deprecated (since := "2025-05-24")]
-alias nmem_nonZeroDivisorsLeft_iff := notMem_nonZeroDivisorsLeft_iff
-
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
 def nonZeroDivisorsRight : Submonoid M₀ where
@@ -70,9 +71,6 @@ lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, 
 lemma notMem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
   simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
-
-@[deprecated (since := "2025-05-24")]
-alias nmem_nonZeroDivisorsRight_iff := notMem_nonZeroDivisorsRight_iff
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -131,11 +129,12 @@ alias nonZeroDivisorsRight_eq_nonZeroSMulDivisors := nonZeroDivisorsLeft_eq_nonZ
 theorem mem_nonZeroDivisors_iff :
     r ∈ M₀⁰ ↔ (∀ x, r * x = 0 → x = 0) ∧ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 
+theorem mem_nonZeroDivisors_iff' :
+    r ∈ M₀⁰ ↔ r ∈ nonZeroDivisorsLeft M₀ ∧ r ∈ nonZeroDivisorsRight M₀ := Iff.rfl
+
 lemma notMem_nonZeroDivisors_iff :
     r ∉ M₀⁰ ↔ {s | r * s = 0 ∧ s ≠ 0}.Nonempty ∨ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
   simp [-not_and, not_and_or, mem_nonZeroDivisors_iff, Set.nonempty_def]
-
-@[deprecated (since := "2025-05-24")] alias nmem_nonZeroDivisors_iff := notMem_nonZeroDivisors_iff
 
 theorem mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff (hr : r ∈ nonZeroDivisorsLeft M₀) :
     r * x = 0 ↔ x = 0 :=
@@ -158,6 +157,20 @@ lemma IsUnit.mem_nonZeroDivisors (hx : IsUnit x) : x ∈ M₀⁰ :=
 variable (M₀) in
 lemma isUnit_le_nonZeroDivisors : IsUnit.submonoid M₀ ≤ M₀⁰ := fun _ ↦ (·.mem_nonZeroDivisors)
 
+@[deprecated "Use `Submonoid.mul_mem _ hx hy` instead." (since := "2026-01-07")]
+lemma mul_mem_nonZeroDivisorsLeft_of_mem_nonZeroDivisorsLeft (hx : x ∈ nonZeroDivisorsLeft M₀)
+    (hy : y ∈ nonZeroDivisorsLeft M₀) :
+    x * y ∈ nonZeroDivisorsLeft M₀ := Submonoid.mul_mem _ hx hy
+
+@[deprecated "Use `Submonoid.mul_mem _ hx hy` instead." (since := "2026-01-07")]
+lemma mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight (hx : x ∈ nonZeroDivisorsRight M₀)
+    (hy : y ∈ nonZeroDivisorsRight M₀) :
+    x * y ∈ nonZeroDivisorsRight M₀ := Submonoid.mul_mem _ hx hy
+
+lemma mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors (hx : x ∈ M₀⁰) (hy : y ∈ M₀⁰) :
+    x * y ∈ M₀⁰ :=
+  mem_nonZeroDivisors_iff'.mpr ⟨Submonoid.mul_mem _ hx.1 hy.1, Submonoid.mul_mem _ hx.2 hy.2⟩
+
 section Nontrivial
 variable [Nontrivial M₀]
 
@@ -169,27 +182,20 @@ theorem zero_notMem_nonZeroDivisorsRight : 0 ∉ nonZeroDivisorsRight M₀ :=
 
 theorem zero_notMem_nonZeroDivisors : 0 ∉ M₀⁰ := fun h ↦ zero_notMem_nonZeroDivisorsLeft h.1
 
-@[deprecated (since := "2025-05-23")]
-alias zero_not_mem_nonZeroDivisors := zero_notMem_nonZeroDivisors
-
 theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
   ne_of_mem_of_not_mem hx zero_notMem_nonZeroDivisors
 
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
 
-set_option backward.proofsInPublic true in
-instance [IsLeftCancelMulZero M₀] :
-    LeftCancelMonoid M₀⁰ where
-  mul_left_cancel _ _ _ h :=  Subtype.ext <|
-    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+instance [IsLeftCancelMulZero M₀] : LeftCancelMonoid M₀⁰ where
+  mul_left_cancel z _ _ h := Subtype.ext <|
+    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero z) (by
       simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
-set_option backward.proofsInPublic true in
-instance [IsRightCancelMulZero M₀] :
-    RightCancelMonoid M₀⁰ where
-  mul_right_cancel _ _ _ h := Subtype.ext <|
-    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+instance [IsRightCancelMulZero M₀] : RightCancelMonoid M₀⁰ where
+  mul_right_cancel z _ _ h := Subtype.ext <|
+    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero z) (by
       simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
 end Nontrivial

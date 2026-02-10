@@ -16,7 +16,7 @@ This file provides lemmas about Cauchy sequences in terms of infinite sums and i
 in the reals.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset NNReal Topology
 

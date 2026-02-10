@@ -8,10 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Homogeneous polynomials
@@ -367,7 +366,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
   have aux : ∀ i ∈ Finset.range n, constantCoeff ((finSuccEquiv R N F).coeff i) = 0 := by
     intro i hi
     rw [Finset.mem_range] at hi
-    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by lia)).coeff_eq_zero
+    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n - i) (by lia)).coeff_eq_zero
     simp only [map_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm

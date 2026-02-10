@@ -35,7 +35,7 @@ In this file we prove the following lemmas.
 Polynomial, continuity
 -/
 
-@[expose] public section
+public section
 
 
 open IsAbsoluteValue Filter

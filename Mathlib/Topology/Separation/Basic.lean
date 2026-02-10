@@ -229,9 +229,6 @@ theorem t0Space_iff_or_notMem_closure (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Pairwise fun a b : X => a ∉ closure ({b} : Set X) ∨ b ∉ closure ({a} : Set X) := by
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 
-@[deprecated (since := "2025-05-23")]
-alias t0Space_iff_or_not_mem_closure := t0Space_iff_or_notMem_closure
-
 instance Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
@@ -837,10 +834,7 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
   obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hs hx
   obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
-  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
-  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
-  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
-    exact ⟨ht_x, hx⟩
+  grind
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that

@@ -63,6 +63,7 @@ def iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F
 
 variable {n : ℕ} {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜}
 
+@[simp]
 theorem iteratedDerivWithin_univ : iteratedDerivWithin n f univ = iteratedDeriv n f := by
   ext x
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_univ]
@@ -310,7 +311,7 @@ theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
 theorem iteratedDerivWithin_of_isOpen (hs : IsOpen s) :
     Set.EqOn (iteratedDerivWithin n f s) (iteratedDeriv n f) s := by
   intro x hx
-  simp_rw [iteratedDerivWithin, iteratedDeriv,iteratedFDerivWithin_of_isOpen n hs hx]
+  simp_rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_of_isOpen n hs hx]
 
 theorem iteratedDerivWithin_congr_right_of_isOpen (f : 𝕜 → F) (n : ℕ) {s t : Set 𝕜} (hs : IsOpen s)
     (ht : IsOpen t) : (s ∩ t).EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n f t) := by

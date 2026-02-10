@@ -150,8 +150,6 @@ theorem uniformity_eq_comap_nhds_one_swapped :
   rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
   simp
 
-variable {Gₗ Gᵣ}
-
 end LeftRight
 
 section IsUniformGroup
@@ -357,8 +355,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
             (x.1 * a, x.2 * a) := by simp [Filter.map_map, Function.comp_def]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
-        Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
-      )
+        Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const))
 
 namespace MulOpposite
 
@@ -412,8 +409,6 @@ theorem IsUniformGroup.uniformity_countably_generated [(𝓝 (1 : α)).IsCountab
     (𝓤 α).IsCountablyGenerated := by
   rw [uniformity_eq_comap_nhds_one]
   exact Filter.comap.isCountablyGenerated _ _
-
-open MulOpposite
 
 end
 
@@ -643,7 +638,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-open Set
 
 end
 

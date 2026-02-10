@@ -72,7 +72,7 @@ theorem Continuous.mul (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => f x * g x :=
   continuous_mul.comp₂ hf hg
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.mul (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (fun x => f x * g x) s x :=
   Filter.Tendsto.mul hf hg

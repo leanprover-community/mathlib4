@@ -432,7 +432,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
       simp only [coe_image, dite_eq_ite]
     have : s.pi t
       = ⋂ s' : Finset s,
-        (Subtype.val '' (s': Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
+        (Subtype.val '' (s' : Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
       rw [← Set.pi_iUnion_eq_iInter_pi, Set.iUnion_finset_eq_set]
       grind
     rw [this]

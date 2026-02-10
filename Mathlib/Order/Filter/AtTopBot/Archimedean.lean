@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields
@@ -40,6 +41,9 @@ theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing
     [Archimedean R] :
     Tendsto ((↑) : ℕ → R) atTop atTop :=
   Nat.mono_cast.tendsto_atTop_atTop exists_nat_ge
+
+lemma tendsto_PNat_val_atTop_atTop : Tendsto PNat.val atTop atTop :=
+  tendsto_atTop_atTop_of_monotone (fun _ _ h ↦ h) fun a ↦ ⟨Nat.succPNat a, Nat.le_succ a⟩
 
 theorem Filter.Eventually.natCast_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] {p : R → Prop}

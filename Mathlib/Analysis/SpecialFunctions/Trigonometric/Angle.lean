@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Normed.Group.AddCircle
 public import Mathlib.Algebra.CharZero.Quotient
 public import Mathlib.Topology.Instances.Sign
+import Mathlib.Algebra.Order.Ring.Interval
 
 /-!
 # The type of angles
@@ -177,7 +178,7 @@ theorem neg_ne_self_iff {θ : Angle} : -θ ≠ θ ↔ θ ≠ 0 ∧ θ ≠ π := 
   rw [← not_or, ← neg_eq_self_iff.not]
 
 theorem two_nsmul_eq_pi_iff {θ : Angle} : (2 : ℕ) • θ = π ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
-  have h : (π : Angle) = ((2 : ℕ) • (π / 2 : ℝ):) := by rw [two_nsmul, add_halves]
+  have h : (π : Angle) = ((2 : ℕ) • (π / 2 : ℝ) :) := by rw [two_nsmul, add_halves]
   nth_rw 1 [h]
   rw [coe_nsmul, two_nsmul_eq_iff]
   apply iff_of_eq -- `congr` only works on `Eq`, so rewrite from `Iff` to `Eq`.
@@ -505,6 +506,11 @@ lemma toReal_neg_eq_neg_toReal_iff {θ : Angle} : (-θ).toReal = -(θ.toReal) �
     have h' : θ.toReal ≠ π := by simp [h]
     exact ⟨(toReal_le_pi θ).lt_of_ne h', by linarith [neg_pi_lt_toReal θ]⟩
 
+@[simp] lemma abs_toReal_neg (θ : Angle) : |(-θ).toReal| = |θ.toReal| := by
+  rcases eq_or_ne θ π with rfl | h
+  · simp
+  · simp [toReal_neg_eq_neg_toReal_iff.2 h]
+
 theorem pi_ne_zero : (π : Angle) ≠ 0 := by
   rw [← toReal_injective.ne_iff, toReal_pi, toReal_zero]
   exact Real.pi_ne_zero
@@ -770,6 +776,13 @@ theorem sign_toReal {θ : Angle} (h : θ ≠ π) : SignType.sign θ.toReal = θ.
       sign_pos
         (sin_pos_of_pos_of_lt_pi ht ((toReal_le_pi θ).lt_of_ne (toReal_eq_pi_iff.not.2 h)))]
 
+lemma toReal_mem_Ioo_iff_sign_pos {θ : Angle} :
+    θ.toReal ∈ Set.Ioo 0 π ↔ θ.sign = 1 := by
+  rcases eq_or_ne θ π with rfl | h
+  · simp
+  · simp only [Set.mem_Ioo, ← sign_toReal h, sign_eq_one_iff, and_iff_left_iff_imp]
+    exact fun _ ↦ (toReal_le_pi θ).lt_of_ne (toReal_eq_pi_iff.not.2 h)
+
 theorem coe_abs_toReal_of_sign_nonneg {θ : Angle} (h : 0 ≤ θ.sign) : ↑|θ.toReal| = θ := by
   rw [abs_eq_self.2 (toReal_nonneg_iff_sign_nonneg.2 h), coe_toReal]
 
@@ -782,7 +795,6 @@ theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -�
 
 theorem eq_iff_sign_eq_and_abs_toReal_eq {θ ψ : Angle} :
     θ = ψ ↔ θ.sign = ψ.sign ∧ |θ.toReal| = |ψ.toReal| := by
-  refine ⟨fun h ↦ by constructor <;> congr, fun h_eq => ?_⟩
   grind [toReal_neg_iff_sign_neg]
 
 theorem eq_iff_abs_toReal_eq_of_sign_eq {θ ψ : Angle} (h : θ.sign = ψ.sign) :
@@ -818,18 +830,26 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_sign_iff]
 
+lemma sign_two_nsmul_eq_neg_sign_iff {θ : Angle} :
+    ((2 : ℕ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
+  simpa [← cos_pos_iff_abs_toReal_lt_pi_div_two, ← cos_neg_iff_pi_div_two_lt_abs_toReal]
+    using sign_two_nsmul_eq_sign_iff (θ := θ + π)
+
+lemma sign_two_zsmul_eq_neg_sign_iff {θ : Angle} :
+    ((2 : ℤ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
+  rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_neg_sign_iff]
+
 theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : (2 : ℤ) • a = (2 : ℤ) • b)
-  (h_sign : a.sign = -b.sign) (h_ne : b.sign ≠ 0) : a = b + π := by
-  have h1:= Real.Angle.two_zsmul_eq_iff.mp h
-  rcases h1 with h2 | h3
-  · rw [h2] at h_sign
-    simp only [SignType.self_eq_neg_iff] at h_sign
-    rw [h_sign] at h_ne
-    contradiction
-  · rw [h3]
+    (h_sign : a.sign = -b.sign) (h_ne : b.sign ≠ 0) : a = b + π := by
+  have h1 := Real.Angle.two_zsmul_eq_iff.mp h
+  refine h1.resolve_left ?_
+  rintro rfl
+  simp only [SignType.self_eq_neg_iff] at h_sign
+  rw [h_sign] at h_ne
+  contradiction
 
 theorem sub_ne_pi_of_sign_eq_of_sign_ne_zero (a b : Real.Angle) (h_sign : a.sign = b.sign)
-  (h_ne : b.sign ≠ 0) : a - b ≠ π := by
+    (h_ne : b.sign ≠ 0) : a - b ≠ π := by
   intro h
   have h' : a = b + π := by
     simp [← h]
@@ -839,7 +859,7 @@ theorem sub_ne_pi_of_sign_eq_of_sign_ne_zero (a b : Real.Angle) (h_sign : a.sign
   contradiction
 
 theorem two_zsmul_eq_iff_eq {a b : Real.Angle} (ha : a.sign ≠ 0) (h : a.sign = b.sign) :
-    (2 : ℤ) • a = (2 : ℤ) • b ↔ a = b:= by
+    (2 : ℤ) • a = (2 : ℤ) • b ↔ a = b := by
   rw [Real.Angle.two_zsmul_eq_iff]
   constructor
   · intro h
@@ -862,26 +882,66 @@ lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ
   rw [abs_eq pi_nonneg]
   rcases angle_eq_iff_two_pi_dvd_sub.mp h with ⟨k, hk⟩
   rw [sub_eq_iff_eq_add] at hk
-  have hu : θ.toReal + ψ.toReal ≤ 2 * π := by linarith [toReal_le_pi θ, toReal_le_pi ψ]
-  have hn : -2 * π < θ.toReal + ψ.toReal := by linarith [neg_pi_lt_toReal θ, neg_pi_lt_toReal ψ]
-  rw [hk] at hu hn
-  have hk0 : k ≤ 0 := by
-    by_contra hk1
-    grw [← show 1 ≤ k by lia] at hu
-    simp only [Int.cast_one] at hu
-    linarith [pi_pos]
-  have hkn1 : -1 ≤ k := by
-    by_contra hkn2
-    grw [show k ≤ -2 by lia] at hn
-    simp only [Int.cast_neg, Int.cast_ofNat] at hn
-    linarith [pi_pos]
-  obtain rfl | rfl : k = -1 ∨ k = 0 := (by lia) <;> grind
+  have : k ∈ Finset.Icc (-1) 0 :=
+    IsStrictOrderedRing.int_mem_Icc_of_mul_mem_Ioo two_pi_pos <| by grind [toReal_mem_Ioc]
+  fin_cases this
+  all_goals simp at hk; grind
 
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℤ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
     |θ.toReal| + |ψ.toReal| = π := by
   rw [two_zsmul, ← two_nsmul] at h
   exact abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq h hs h0
+
+lemma toReal_add_of_sign_pos_sign_neg {θ ψ : Angle}
+    (hθ : θ.sign = 1) (hψ : ψ.sign = -1) : (θ + ψ).toReal = θ.toReal + ψ.toReal := by
+  suffices ((θ.toReal + ψ.toReal : ℝ) : Angle).toReal = θ.toReal + ψ.toReal by simpa using this
+  rw [toReal_coe_eq_self_iff]
+  grind [toReal_mem_Ioc, toReal_neg_iff_sign_neg, toReal_mem_Ioo_iff_sign_pos]
+
+lemma toReal_add_of_sign_eq_neg_sign {θ ψ : Angle} (hψ : θ ≠ π ∨ ψ ≠ π)
+    (hs : θ.sign = -ψ.sign) : (θ + ψ).toReal = θ.toReal + ψ.toReal := by
+  obtain (h | h | h) := ψ.sign.trichotomy
+  all_goals
+    simp [h] at hs
+    grind [add_comm, toReal_add_of_sign_pos_sign_neg, sign_eq_zero_iff]
+
+lemma toReal_add_eq_toReal_add_toReal {θ ψ : Angle} (hθ : θ ≠ π) (hψ : ψ ≠ π)
+    (hs : θ.sign ≠ ψ.sign ∨ θ.sign = (θ + ψ).sign) : (θ + ψ).toReal = θ.toReal + ψ.toReal := by
+  obtain (hs | hs) := hs
+  · obtain (h | h | h) := ψ.sign.trichotomy <;> obtain (h | h | h) := θ.sign.trichotomy
+    all_goals grind [add_comm, toReal_add_of_sign_pos_sign_neg, sign_eq_zero_iff]
+  · rw [← neg_neg θ.sign, ← sign_neg] at hs
+    have := toReal_add_of_sign_eq_neg_sign (.inr <| by simpa [neg_eq_iff_eq_neg]) hs.symm
+    simpa [toReal_neg_eq_neg_toReal_iff.mpr, hθ, ← sub_eq_add_neg, eq_sub_iff_add_eq', eq_comm]
+
+private lemma abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux {θ ψ : Angle}
+    (hθs : θ.sign = 1) (hψs : ψ.sign = 1)
+    (hsa : (θ + ψ).sign ≠ 1) : |(θ + ψ).toReal| = 2 * π - (|θ.toReal| + |ψ.toReal|) := by
+  rw [← toReal_mem_Ioo_iff_sign_pos] at hθs hψs
+  have : ((θ + ψ).toReal : Angle) = ↑(θ.toReal + ψ.toReal) := by simp
+  obtain ⟨k, hk⟩ := angle_eq_iff_two_pi_dvd_sub.mp this
+  obtain (h | h) : (θ + ψ).toReal ≤ 0 ∨ θ + ψ = π := by
+    have := (θ + ψ).sign.trichotomy
+    grind [sign_eq_zero_iff, toReal_eq_zero_iff, toReal_neg_iff_sign_neg]
+  · obtain rfl : k = -1 := IsStrictOrderedRing.int_eq_of_mul_mem_Ioo two_pi_pos <| by
+      grind [toReal_mem_Ioc]
+    grind [abs_of_nonpos]
+  · simp_all only [sign_coe_pi, ne_eq, zero_ne_one, not_false_eq_true, toReal_pi, coe_add,
+      coe_toReal, pi_pos, abs_of_pos]
+    obtain rfl : k = 0 := IsStrictOrderedRing.int_eq_of_mul_mem_Ioo two_pi_pos (by grind)
+    grind
+
+lemma abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal {θ ψ : Angle} (hs : θ.sign = ψ.sign)
+    (hsa : θ.sign ≠ (θ + ψ).sign) : |(θ + ψ).toReal| = 2 * π - (|θ.toReal| + |ψ.toReal|) := by
+  obtain h | h | h := θ.sign.trichotomy
+  · obtain ⟨hθ', hψ'⟩ : (-θ).sign = 1 ∧ (-ψ).sign = 1 := by grind [sign_neg, neg_neg]
+    have hsa' : (-θ + -ψ).sign ≠ 1 := by
+      rwa [← hθ', ne_comm, ← neg_add, sign_neg, sign_neg, neg_injective.ne_iff]
+    convert abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux hθ' hψ' hsa' using 1
+    all_goals simp [-neg_add_rev, ← neg_add, abs_toReal_neg]
+  · grind [sign_eq_zero_iff, coe_pi_add_coe_pi]
+  · exact abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux h (hs ▸ h) (h ▸ hsa.symm)
 
 theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : ContinuousAt sign θ :=
   (continuousAt_sign_of_ne_zero (sin_ne_zero_iff.2 ⟨h0, hpi⟩)).comp continuous_sin.continuousAt

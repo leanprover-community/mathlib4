@@ -15,7 +15,7 @@ This file contains some theorems relating `Prime` and products of `List`s.
 
 -/
 
-@[expose] public section
+public section
 
 
 open List

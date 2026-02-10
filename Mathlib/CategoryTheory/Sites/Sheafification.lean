@@ -80,7 +80,7 @@ instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
-instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
   inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end

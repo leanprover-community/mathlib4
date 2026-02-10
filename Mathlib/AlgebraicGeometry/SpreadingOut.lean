@@ -166,8 +166,8 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
 instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).IsGermInjective by
     refine @Scheme.IsGermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
-    have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i)
-    infer_instance
+    exact isLocallyNoetherian_Spec.mp
+      (isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i))
   refine fun R hR ↦ Scheme.IsGermInjective.Spec fun I hI ↦ ?_
   let J := RingHom.ker <| algebraMap R (Localization.AtPrime I)
   have hJ (x) : x ∈ J ↔ ∃ y : I.primeCompl, y * x = 0 :=
@@ -356,7 +356,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
 
 /--
-Given `S`-schemes `X Y`, a point `x : X`, and a `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
+Given `S`-schemes `X Y`, a point `x : X`, and an `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
 we may spread it out to an `S`-morphism `f : U ⟶ Y`
 provided that `Y` is locally of finite type over `S` and
 `X` is "germ-injective" at `x` (e.g. when it's integral or locally Noetherian).

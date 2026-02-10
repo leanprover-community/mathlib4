@@ -116,7 +116,7 @@ def descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveRes
 lemma comp_descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) :
     I.cocomplex.d 0 1 ≫ descHomotopyZeroZero f comm = f.f 0 :=
-  I.exact₀.comp_descToInjective  _ _
+  I.exact₀.comp_descToInjective _ _
 
 /-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroOne {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -150,9 +150,9 @@ lemma comp_descHomotopyZeroSucc {Y Z : C} {I : InjectiveResolution Y} {J : Injec
     (f : I.cocomplex ⟶ J.cocomplex) (n : ℕ) (g : I.cocomplex.X (n + 1) ⟶ J.cocomplex.X n)
     (g' : I.cocomplex.X (n + 2) ⟶ J.cocomplex.X (n + 1))
     (w : f.f (n + 1) = I.cocomplex.d (n + 1) (n + 2) ≫ g' + g ≫ J.cocomplex.d n (n + 1)) :
-    I.cocomplex.d (n+2) (n+3) ≫ descHomotopyZeroSucc f n g g' w =
+    I.cocomplex.d (n + 2) (n + 3) ≫ descHomotopyZeroSucc f n g g' w =
       f.f (n + 2) - g' ≫ J.cocomplex.d _ _ :=
-  (I.exact_succ (n + 1)).comp_descToInjective  _ _
+  (I.exact_succ (n + 1)).comp_descToInjective _ _
 
 /-- Any descent of the zero morphism is homotopic to zero. -/
 def descHomotopyZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -266,7 +266,7 @@ theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
   let α : ShortComplex.mk f (cokernel.π f) (by simp) ⟶ ShortComplex.mk f (d f) (by simp) :=
     { τ₁ := 𝟙 _
       τ₂ := 𝟙 _
-      τ₃ := Injective.ι _  }
+      τ₃ := Injective.ι _ }
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
   apply ShortComplex.exact_of_g_is_cokernel
   apply cokernelIsCokernel

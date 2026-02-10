@@ -28,7 +28,7 @@ matrix
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {m n p R : Type*}

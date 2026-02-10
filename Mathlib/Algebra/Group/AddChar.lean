@@ -181,7 +181,7 @@ lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
     toAddMonoidHomEquiv ψ a = Additive.ofMul (ψ a) := rfl
 
 @[simp] lemma toAddMonoidHomEquiv_symm_apply (ψ : A →+ Additive M) (a : A) :
-    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul  := rfl
+    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul := rfl
 
 /-- The trivial additive character (sending everything to `1`). -/
 instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
@@ -357,7 +357,7 @@ inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below).
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
-    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
+    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul] }
 
 /-- The additive characters on a commutative additive group form a commutative group. -/
 instance : AddCommGroup (AddChar A M) := Additive.addCommGroup

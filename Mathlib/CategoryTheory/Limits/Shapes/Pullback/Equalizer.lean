@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 
 /-!
 # Equalizers as pullbacks of products
@@ -14,7 +14,7 @@ Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar resul
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

@@ -18,7 +18,7 @@ as the organizational structure within Mathlib.
 @[expose] public section
 
 
-library_note2 «continuous functional calculus» /--
+library_note «continuous functional calculus» /--
 # The continuous functional calculus
 
 In Mathlib, there are two classes --- `NonUnitalContinuousFunctionalCalculus` and

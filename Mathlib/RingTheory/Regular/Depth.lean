@@ -28,7 +28,7 @@ This is the case if `Depth[I](M) = 0`.
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing LinearMap Module
 

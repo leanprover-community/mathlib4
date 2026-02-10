@@ -30,7 +30,7 @@ from the other possible lemmas, but we will want there to be a single set of lem
 situations.
 -/
 
-@[expose] public section
+public section
 
 open Bornology Function Metric Set
 open scoped Pointwise

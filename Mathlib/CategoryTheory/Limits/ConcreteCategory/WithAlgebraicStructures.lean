@@ -33,7 +33,7 @@ In the future they might be generalized by assuming a `HasForget₂ C (ModuleCat
 plus assertions that the module structures induced by `HasForget₂` coincide.
 -/
 
-@[expose] public section
+public section
 
 universe t w v u r
 
@@ -58,7 +58,7 @@ end zero
 section module
 
 /--
-if `r` has no zero smul divisors for all small-enough sections, then `r` has no zero smul divisors
+If `r` has no zero smul divisors for all small-enough sections, then `r` has no zero smul divisors
 in the colimit.
 -/
 lemma colimit_no_zero_smul_divisor

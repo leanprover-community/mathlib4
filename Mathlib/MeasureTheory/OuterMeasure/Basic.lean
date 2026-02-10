@@ -32,7 +32,7 @@ Note that we do not need `α` to be measurable to define an outer measure.
 outer measure
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

@@ -112,6 +112,13 @@ theorem isReduced_of_isAffine_isReduced [IsAffine X] [_root_.IsReduced Γ(X, ⊤
     IsReduced X :=
   isReduced_of_isOpenImmersion X.isoSpec.hom
 
+theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)] : IsReduced X := by
+  have (x : X) : _root_.IsReduced (X.presheaf.stalk x) := by
+    obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+    exact isReduced_of_injective _
+      (asIso <| (𝒰.f i).stalkMap x).commRingCatIsoToRingEquiv.injective
+  exact isReduced_of_isReduced_stalk _
+
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
 2. For an open immersion `f : X ⟶ Y`, if `P` holds for the entire space of `X`, then `P` holds for

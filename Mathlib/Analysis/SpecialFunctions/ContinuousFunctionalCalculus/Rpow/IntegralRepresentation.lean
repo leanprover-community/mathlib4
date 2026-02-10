@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Integral representations of `rpow`
@@ -115,14 +115,14 @@ lemma rpowIntegrand₀₁_apply_mul (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 
     simp [hx_zero, Real.zero_rpow (by linarith : p - 1 ≠ 0)]
 
 lemma rpowIntegrand₀₁_apply_mul' (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 ≤ x) :
-    rpowIntegrand₀₁ p (x * t) x * x  = (rpowIntegrand₀₁ p t 1) * x ^ p := by
+    rpowIntegrand₀₁ p (x * t) x * x = (rpowIntegrand₀₁ p t 1) * x ^ p := by
   simp only [rpowIntegrand₀₁_apply_mul hp ht hx, mul_assoc]
   congr
   simpa using Eq.symm <| Real.rpow_add' hx (by aesop : (p - 1) + 1 ≠ 0)
 
 lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     (Ici 0).EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
-      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
+      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
@@ -298,7 +298,7 @@ lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
           simp only [mem_Ioo] at hp
           exact integrableOn_Ioi_rpow_of_lt (by linarith) zero_lt_one
         · exact integrableOn_rpowIntegrand₀₁_Ioi_one hp zero_le_one
-        · exact fun t ht =>  rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
+        · exact fun t ht => rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
   _ ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := by
         refine setIntegral_mono_set (integrableOn_rpowIntegrand₀₁_Ioi hp zero_le_one) ?_ ?_
         · refine ae_restrict_of_forall_mem measurableSet_Ioi fun t ht => ?_
@@ -316,7 +316,7 @@ lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) :
 /-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
 lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     x ^ p = (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrand₀₁ p t x := by
-  rcases eq_or_lt_of_le' hx with hx_zero|_
+  rcases eq_or_lt_of_le' hx with hx_zero | _
   case inl =>
     simp only [mem_Ioo] at hp
     simp [hx_zero, Real.zero_rpow (by linarith)]

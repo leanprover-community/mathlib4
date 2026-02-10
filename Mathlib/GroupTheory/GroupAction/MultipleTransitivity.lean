@@ -361,9 +361,9 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
   refine ⟨fun hn ↦ ⟨fun x y ↦ ?_⟩, fun hn ↦ ⟨fun x y ↦ ?_⟩⟩
   · obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
     have hg : g ∈ stabilizer G a := by
-      rw [mem_stabilizer_iff]
       rw [DFunLike.ext_iff] at hgxy
-      convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
+      convert hgxy (last n)
+      simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
     simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
@@ -743,3 +743,16 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end alternatingGroup
+
+namespace AlternatingGroup
+
+@[deprecated (since := "2025-12-16")]
+alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
+@[deprecated (since := "2025-12-16")]
+alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
+@[deprecated (since := "2025-12-16")]
+alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
+@[deprecated (since := "2025-12-16")]
+alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
+
+end AlternatingGroup

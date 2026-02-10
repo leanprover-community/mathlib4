@@ -26,7 +26,7 @@ We state several lemmas about the trace and norm maps for finite fields.
 finite field, trace, norm
 -/
 
-@[expose] public section
+public section
 
 
 namespace FiniteField

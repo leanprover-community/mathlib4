@@ -16,7 +16,7 @@ a sequence of (almost everywhere) measurable functions can be swapped if the fun
 pointwise dominated by a fixed function. This file provides a few variants of the result.
 -/
 
-@[expose] public section
+public section
 
 open Filter ENNReal Topology
 

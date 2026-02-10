@@ -499,6 +499,7 @@ lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
 lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
   _         = z.re                       := by

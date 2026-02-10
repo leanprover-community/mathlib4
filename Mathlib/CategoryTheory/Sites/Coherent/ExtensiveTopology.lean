@@ -20,7 +20,7 @@ This file characterises the covering sieves of the extensive topology.
   exhibiting the target as a coproduct of the sources.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

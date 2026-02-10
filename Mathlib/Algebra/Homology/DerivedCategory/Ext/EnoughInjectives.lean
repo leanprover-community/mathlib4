@@ -25,7 +25,7 @@ Note: this file dualizes the results in `HasEnoughProjectives.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

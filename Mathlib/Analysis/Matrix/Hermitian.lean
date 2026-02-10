@@ -19,7 +19,7 @@ linear map is self-adjoint.
 self-adjoint matrix, hermitian matrix
 -/
 
-@[expose] public section
+public section
 
 -- TODO:
 -- assert_not_exists MonoidAlgebra

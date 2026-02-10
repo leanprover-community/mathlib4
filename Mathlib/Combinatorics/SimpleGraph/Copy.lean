@@ -352,6 +352,9 @@ protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
 /-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toCopy⟩
+
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
   ⟨{ toFun := (↑)
@@ -486,12 +489,15 @@ to get a graph `H'` that doesn't contain `G`.
 than `G`.
 -/
 
+set_option backward.privateInPublic true in
 private lemma aux (hH : H ≠ ⊥) {G' : G.Subgraph} :
     Nonempty (H ≃g G'.coe) → G'.edgeSet.Nonempty := by
   obtain ⟨e, he⟩ := edgeSet_nonempty.2 hH
   rw [← Subgraph.image_coe_edgeSet_coe]
   exact fun ⟨f⟩ ↦ Set.Nonempty.image _ ⟨_, f.map_mem_edgeSet_iff.2 he⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `G.killCopies H` is a subgraph of `G` where an *arbitrary* edge was removed from each copy of
 `H` in `G`. By construction, it doesn't contain `H` (unless `H` had no edges) and has at most the
 number of copies of `H` edges less than `G`. See `free_killCopies` and
