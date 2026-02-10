@@ -27,10 +27,8 @@ both in `G` and adjacent in `G`, or they are both in `H` and adjacent in `H`.
 
 @[expose] public section
 
-variable {V W U γ : Type*}
-
 namespace SimpleGraph
-variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph U}
+variable {V W U γ : Type*} {G : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph U}
   {v v' : V} {w w' : W}
 
 /-- Disjoint sum of `G` and `H`. -/
