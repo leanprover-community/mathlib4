@@ -99,6 +99,9 @@ instance (x : PrimeSpectrum.Top R) :
     IsLocalizedModule x.asIdeal.primeCompl (toStalk M x).hom :=
   inferInstanceAs (IsLocalizedModule x.asIdeal.primeCompl (StructureSheaf.toStalkₗ ..))
 
+instance (f : R) : IsLocalizedModule (.powers f) (toOpen M (PrimeSpectrum.basicOpen f)).hom :=
+  inferInstanceAs (IsLocalizedModule (.powers f) (StructureSheaf.toOpenₗ ..))
+
 end Tilde
 
 end ModuleCat

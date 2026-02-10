@@ -1001,7 +1001,7 @@ theorem isLocallyFraction_comapFun (U : Opens (PrimeSpectrum.Top R))
   obtain ⟨hs, H⟩ := h_frac ⟨PrimeSpectrum.comap σ q, hqW⟩
   refine ⟨hs, ?_⟩
   dsimp [comapFun] at H ⊢
-  erw [H]
+  rw [H]
   simp
 
 /-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and

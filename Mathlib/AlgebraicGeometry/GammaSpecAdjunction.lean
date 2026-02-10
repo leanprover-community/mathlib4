@@ -165,7 +165,9 @@ def toΓSpecCBasicOpens :
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
     simp only [← Category.assoc]
-    erw [X.toΓSpecCApp_spec r.unop]
+    rw [show algebraMap (Γ.obj (op X)) ((structureSheaf (Γ.obj (op X))).val.obj _) = algebraMap _
+      ((structureSheafInType (Γ.obj (op X)) (Γ.obj (op X))).val.obj _) from rfl,
+      X.toΓSpecCApp_spec r.unop]
     convert X.toΓSpecCApp_spec s.unop
     symm
     apply X.presheaf.map_comp
