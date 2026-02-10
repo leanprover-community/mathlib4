@@ -35,6 +35,14 @@ We provide many ways to build finpartitions:
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
+* `Finpartition.extend`: Extends a finpartition of `a` to a finpartition of `a ⊔ b` by adding `b`
+  as a new part.
+* `Finpartition.extendOfLE`: Extends a finpartition of `a` to a finpartition of `b` when `a ≤ b`,
+  by adding `b \ a` as a new part (if nonempty).
+* `Finpartition.restrict`: Restricts a finpartition of `a` to `b` where `b ≤ a` by intersecting
+  each part with `b`.
+* `Finpartition.combine`: Combines a family of partitions of pairwise disjoint elements into a
+  partition of their sup.
 * `Finpartition.ofExistsUnique`: Builds a finpartition from a collection of parts such that each
   element is in exactly one part.
 * `Finpartition.ofSetoid`: With `Fintype α`, constructs the finpartition of `univ : Finset α`
@@ -201,6 +209,11 @@ instance : Unique (Finpartition (⊥ : α)) :=
     uniq := fun P ↦ by
       ext a
       exact iff_of_false (fun h ↦ P.ne_bot h <| le_bot_iff.1 <| P.le h) (notMem_empty a) }
+
+instance instNonempty : Nonempty (Finpartition a) := by
+  by_cases h : a = ⊥
+  · rw [h]; exact ⟨Finpartition.empty α⟩
+  · exact ⟨Finpartition.indiscrete h⟩
 
 -- See note [reducible non-instances]
 /-- There's a unique partition of an atom. -/
@@ -427,6 +440,69 @@ theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disj
     {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
   card_insert_of_notMem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
 
+/-- Restrict a partition of `a` to `b` where `b ≤ a` by intersecting each part with `b`. -/
+def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
+  parts := (P.parts.image (· ⊓ b)).erase ⊥
+  supIndep := supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
+    simp only [coe_erase, coe_image, Set.mem_diff, Set.mem_image, Set.mem_singleton_iff] at hx hy
+    obtain ⟨⟨px, hpx, rfl⟩, _⟩ := hx
+    obtain ⟨⟨py, hpy, rfl⟩, _⟩ := hy
+    simpa [Function.onFun, id_eq]
+      using (P.disjoint hpx hpy fun h => hxy (h ▸ rfl)).mono inf_le_left inf_le_left
+  sup_parts := by
+    simp only [sup_erase_bot, sup_image, Function.id_comp, (sup_inf_distrib_right ..).symm]
+    have : P.parts.sup (fun x => x) = a := P.sup_parts
+    rw [this, inf_eq_right.mpr hb]
+  bot_notMem := notMem_erase _ _
+
+/-- The sum of a set-valued function over restricted partition parts equals the sum over original
+parts with `f (· ⊓ b)`, provided `f ⊥ = 0` (so bottom terms don't contribute). -/
+lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoid M]
+    (f : α → M) (hf : f ⊥ = 0) :
+    ∑ p ∈ (P.restrict hb).parts, f p = ∑ q ∈ P.parts, f (q ⊓ b) := by
+  have hinj : ∀ x ∈ P.parts.filter (· ⊓ b ≠ ⊥), ∀ y ∈ P.parts.filter (· ⊓ b ≠ ⊥),
+      x ⊓ b = y ⊓ b → x = y := fun x hx y hy hxy => by
+    by_contra hne
+    simp only [Finset.mem_filter] at hx hy
+    have : Disjoint (x ⊓ b) (y ⊓ b) := (P.disjoint hx.1 hy.1 hne).mono inf_le_left inf_le_left
+    grind
+  have heq : (P.parts.image (· ⊓ b)).erase ⊥ = (P.parts.filter (· ⊓ b ≠ ⊥)).image (· ⊓ b) := by
+    grind
+  have hz : ∑ x ∈ P.parts.filter (¬ · ⊓ b ≠ ⊥), f (x ⊓ b) = 0 := Finset.sum_eq_zero fun x hx => by
+    simp only [ne_eq, Decidable.not_not, Finset.mem_filter] at hx
+    rw [hx.2, hf]
+  simp only [restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
+    Finset.sum_image hinj, add_zero]
+
+/-- Combine a family of partitions of pairwise disjoint elements into a partition of their sup. -/
+def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
+    (ha : Set.PairwiseDisjoint (I : Set ι) a) : Finpartition (I.sup a) where
+  parts := I.biUnion fun i => (P i).parts
+  supIndep := supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
+    simp only [coe_biUnion, Set.mem_iUnion, mem_coe] at hx hy
+    obtain ⟨i, hi, hxi⟩ := hx
+    obtain ⟨j, hj, hyj⟩ := hy
+    by_cases hij : i = j
+    · subst hij; exact (P i).disjoint hxi hyj fun h => hxy (h ▸ rfl)
+    · exact (ha hi hj hij).mono ((P i).le hxi) ((P j).le hyj)
+  sup_parts := by
+    rw [sup_biUnion]
+    exact sup_congr rfl fun i _ => (P i).sup_parts
+  bot_notMem := by
+    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
+
+/-- The sum of a set-valued function over a combined partition equals the sum of sums over component
+partitions. -/
+lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpartition (s i))
+    (ha : Set.PairwiseDisjoint (I : Set ι) s) {M : Type*} [AddCommMonoid M] (f : α → M) :
+    ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
+  simp_rw [combine]
+  refine Finset.sum_biUnion fun i hi j hj hij => ?_
+  rw [Function.onFun, Finset.disjoint_left]
+  intro p hpi hpj
+  have hp_disj : Disjoint p p := (ha hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
+  exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
+
 end DistribLattice
 
 section GeneralizedBooleanAlgebra
@@ -448,6 +524,24 @@ theorem mem_avoid : c ∈ (P.avoid b).parts ↔ ∃ d ∈ P.parts, ¬d ≤ b ∧
   refine exists_congr fun d ↦ and_congr_right' <| and_congr_left ?_
   rintro rfl
   rw [sdiff_eq_bot_iff]
+
+/-- Extend a partition of `a` to a partition of `b` when `a ≤ b`, by adding `b \ a` as a `part`. -/
+def extendOfLE (hab : a ≤ b) : Finpartition b :=
+  if hr : b \ a = ⊥ then (le_antisymm (sdiff_eq_bot_iff.mp hr) hab) ▸ P
+    else P.extend hr disjoint_sdiff_self_right (sup_sdiff_cancel_right hab)
+
+lemma parts_extendOfLE_of_eq (hab : a = b) : (P.extendOfLE hab.le).parts = P.parts := by
+  subst hab; simp [extendOfLE]
+
+lemma parts_extendOfLE_of_lt (hab : a < b) :
+    (P.extendOfLE (le_of_lt hab)).parts = insert (b \ a) P.parts := by
+  simp [extendOfLE, sdiff_eq_bot_iff.not.mpr (not_le_of_gt hab)]
+
+lemma parts_subset_extendOfLE (hab : a ≤ b) : P.parts ⊆ (P.extendOfLE hab).parts := by
+  unfold extendOfLE
+  split_ifs with hr
+  · cases le_antisymm (sdiff_eq_bot_iff.mp hr) hab; rfl
+  · exact Finset.subset_insert _ _
 
 end GeneralizedBooleanAlgebra
 
