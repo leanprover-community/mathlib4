@@ -385,6 +385,6 @@ theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
     exact (e.toAlgHom.comp_algebraMap_of_tower (R := R)).symm
   let e' : Localization.Away g₀ ≃ₐ[MvPolynomial (Fin n) R] Localization.Away (f * g) :=
     { __ := e, commutes' r := rfl }
-  refine ⟨f * g, ‹p.IsPrime›.mul_notMem ‹_› ‹_›, n, ‹_›, ‹_›, .of_equiv e'⟩
+  exact ⟨f * g, ‹p.IsPrime›.mul_notMem ‹_› ‹_›, n, ‹_›, ‹_›, .of_equiv e'⟩
 
 end Algebra
