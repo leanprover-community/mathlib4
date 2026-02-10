@@ -159,3 +159,23 @@ There should only be a single instance of these data-carrying typeclasses in the
 def needsInstantiateMVars [Repr α] : Bool := true
 
 end instantiateMVars
+
+section setOptionIn
+
+set_option linter.overlappingInstances false in
+def fooNothing [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := true
+
+set_option linter.overlappingInstances false
+
+/--
+warning: The declaration `fooSomething` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+
+There are 4 instances of `[Add Nat]`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `fooSomething`.
+-/
+#guard_msgs in
+set_option linter.overlappingInstances true in
+def fooSomething [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := true
+
+end setOptionIn
