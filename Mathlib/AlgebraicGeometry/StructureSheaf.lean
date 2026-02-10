@@ -14,10 +14,10 @@ public import Mathlib.Topology.Sheaves.LocalPredicate
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
 
-We define the structure sheaf on `TopCat.of (PrimeSpectrum R)`, for a commutative ring `R` and prove
+We define the structure sheaf on `TopCat.of (PrimeSpectrum R)`, for an `R`-module `M` and prove
 basic properties about it. We define this as a subsheaf of the sheaf of dependent functions into the
-localizations, cut out by the condition that the function must be locally equal to a ratio of
-elements of `R`.
+localizations, cut out by the condition that the function must be locally equal to a quotient of
+an element of `M` by an element of `R`.
 
 Because the condition "is equal to a fraction" passes to smaller open subsets,
 the subset of functions satisfying this condition is automatically a subpresheaf.
@@ -29,14 +29,16 @@ where we show that dependent functions into any type family form a sheaf,
 and also `Mathlib/Topology/Sheaves/LocalPredicate.lean`, where we characterise the predicates
 which pick out sub-presheaves and sub-sheaves of these sheaves.)
 
-We also set up the ring structure, obtaining
+When `M = R`, the structure sheaf is furthermore a sheaf of commutative rings, which we bundle as
 `structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R)`.
 
-We then construct two basic isomorphisms, relating the structure sheaf to the underlying ring `R`.
-First, `StructureSheaf.stalkIso` gives an isomorphism between the stalk of the structure sheaf
-at a point `p` and the localization of `R` at the prime ideal `p`. Second,
-`StructureSheaf.basicOpenIso` gives an isomorphism between the structure sheaf on `basicOpen f`
-and the localization of `R` at the submonoid of powers of `f`.
+We then obtain two key descriptions of the structure sheaf. We show that the stalks `Mₓ` is the
+localization of `M` at the prime corresponding to `x`, and we show that the sections `Γ(M, D(f))`
+is the localization of `M` away from `f`.
+
+Note that the results of this file are packaged into schemes and sheaf of modules in later files,
+and one usually should not directly use the results in this file to respect the abstraction
+boundaries.
 
 ## References
 
@@ -223,17 +225,18 @@ def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) 
       map_one' := rfl
       map_zero' := rfl }
 
-instance (U : _) :
+instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((structureSheafInType R R).val.obj U) ((structureSheafInType R M).val.obj U) :=
   inferInstanceAs (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))
 
-instance (U : _) :
+instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     IsScalarTower R ((structureSheafInType R R).val.obj U) ((structureSheafInType R M).val.obj U) :=
   .of_algebraMap_smul fun r m ↦ Subtype.ext <| funext fun x ↦
     IsScalarTower.algebraMap_smul (Localizations R x.1) r (m.1 x)
 
 variable (R M) in
-/-- The structure sheaf of a module as a presheaf of modules on `Spec R`. -/
+/-- The structure sheaf of a module as a presheaf of modules on `Spec R`.
+We will later package this into a `Scheme.Modules` in `Tilde.lean`. -/
 def moduleStructurePresheaf : PresheafOfModules (structurePresheafInCommRingCat R ⋙ forget₂ _ _) :=
   letI (X : (Opens ↑(PrimeSpectrum.Top R))ᵒᵖ) :
     Module ↑((structurePresheafInCommRingCat R ⋙ forget₂ CommRingCat RingCat).obj X)
