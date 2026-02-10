@@ -307,26 +307,14 @@ theorem degree_le_of_copy (fcopy : Copy G H) :
   exact (Fintype.card_le_of_injective h1.toFun h1.inj')
 
 variable (v : V) [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj] in
-theorem max_degree_le_of_contained :
-    G ⊑ H → G.maxDegree ≤ H.maxDegree := by
-  intro hcont
-  rw [IsContained] at hcont
-  cases hcont with | intro copy
-  if (IsEmpty V) then
-    have h : IsEmpty V := by assumption
-    apply (@maxDegree_of_isEmpty V G) at h
-    rw [h]
-    simp only [zero_le]
-  else
-    have h : ¬IsEmpty V := by assumption
-    rw [not_isEmpty_iff] at h
-    apply (@exists_maximal_degree_vertex V G) at h
-    cases h with | intro v h
-    have : G.degree v ≤ H.degree (copy v) := by
-      apply degree_le_of_copy
-    have : H.degree (copy v) ≤ H.maxDegree := by
-      apply (@degree_le_maxDegree W H)
-    omega
+theorem max_degree_le_of_contained
+    (hcont : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
+  obtain ⟨copy⟩ := hcont
+  by_cases! IsEmpty V
+  · simp
+  · obtain ⟨v, h⟩ := exists_maximal_degree_vertex (V := V) G
+    have : H.degree (copy v) ≤ H.maxDegree := (@degree_le_maxDegree W H) _
+    grind [degree_le_of_copy]
 
 end IsContained
 
