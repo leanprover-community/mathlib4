@@ -121,7 +121,7 @@ theorem restrictScalars_ofPowSmul_range_eq_eval_ker {n : ℕ} :
   use liftOfValZero I hx; simp
 
 lemma map_lsum_smul_comp_finsuppSum {ι : Type*} (f : ι → R) :
-    map I (lsum R fun i ↦ f i • .id) ∘ₗ (finsupp_sum ι I M) =
+    map I (lsum R fun i ↦ f i • .id) ∘ₗ (finsupp_sum I M ι) =
       (lsum (AdicCompletion I R)) fun i ↦ ((of I R) (f i) • .id :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M) := by
   ext
