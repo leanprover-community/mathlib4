@@ -496,7 +496,7 @@ partitions. -/
 lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpartition (s i))
     (ha : Set.PairwiseDisjoint (I : Set ι) s) {M : Type*} [AddCommMonoid M] (f : α → M) :
     ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
-  change ∑ p ∈ I.biUnion (fun i => (P i).parts), f p = _
+  simp_rw [combine]
   refine Finset.sum_biUnion fun i hi j hj hij => ?_
   rw [Function.onFun, Finset.disjoint_left]
   intro p hpi hpj
