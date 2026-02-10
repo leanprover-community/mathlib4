@@ -733,6 +733,16 @@ lemma stalkMap (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S
     (hf : P f) (x : X) : Q (f.stalkMap x).hom :=
   stalkMap_of_respectsIso (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso hQ hf x
 
+lemma ext {P' : MorphismProperty Scheme.{u}}
+    {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    [HasRingHomProperty P' Q']
+    (h : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S), Q f ↔ Q' f) :
+    P = P' := by
+  ext f
+  rw [HasRingHomProperty.eq_affineLocally (P := P), HasRingHomProperty.eq_affineLocally (P := P'),
+    affineLocally_iff_affineOpens_le, affineLocally_iff_affineOpens_le]
+  simp only [h]
+
 end HasRingHomProperty
 
 end AlgebraicGeometry
