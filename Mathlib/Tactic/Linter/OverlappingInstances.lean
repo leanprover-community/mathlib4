@@ -280,8 +280,6 @@ where
 open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
-
-Note: currently does not respect `set_option`.
 -/
 def overlappingInstances : Linter where
   run := withSetBoolOptionIn fun cmd => do
