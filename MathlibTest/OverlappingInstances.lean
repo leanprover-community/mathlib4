@@ -4,6 +4,7 @@ import Mathlib.Tactic.Linter.OverlappingInstances
 import Mathlib.Tactic.TypeStar
 
 set_option linter.overlappingInstances true
+set_option linter.overlappingInstances.onlyInServer false
 
 namespace Lean
 
