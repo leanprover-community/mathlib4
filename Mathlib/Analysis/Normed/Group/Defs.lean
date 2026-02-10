@@ -21,7 +21,7 @@ In this file we define 10 classes:
   (notation: `‖x‖`) and `nnnorm : α → ℝ≥0` (notation: `‖x‖₊`), respectively;
 * `Seminormed...Group`: A seminormed (additive) (commutative) group is an (additive) (commutative)
   group with a norm and a compatible pseudometric space structure:
-  `∀ x y, dist x y = ‖x ⁻¹ * y‖` or `∀ x y, dist x y = ‖-x + y‖`, depending on the group operation.
+  `∀ x y, dist x y = ‖x⁻¹ * y‖` or `∀ x y, dist x y = ‖-x + y‖`, depending on the group operation.
 * `Normed...Group`: A normed (additive) (commutative) group is an (additive) (commutative) group
   with a norm and a compatible metric space structure.
 
@@ -179,7 +179,7 @@ pseudometric space structure. -/
 class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E where
   dist := fun x y => ‖x⁻¹ * y‖
   /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x ⁻¹ * y‖ := by aesop
+  dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖` defines
 a metric space structure. -/
@@ -194,7 +194,7 @@ space structure. -/
 class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   dist := fun x y => ‖x⁻¹ * y‖
   /-- The distance function is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = ‖x ⁻¹ * y‖ := by aesop
+  dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/
