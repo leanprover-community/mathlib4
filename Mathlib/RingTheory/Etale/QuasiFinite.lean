@@ -295,11 +295,10 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     {R S R' R'' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     [CommRing R'] [Algebra R R'] [CommRing R''] [Algebra R R''] [Algebra R'' S]
-    [Algebra.IsIntegral R R''] [IsScalarTower R R'' S] (p : Ideal R) (q : Ideal S) (P : Ideal R')
-    [p.IsPrime] [q.IsPrime] [q.LiesOver p] [P.IsPrime] [P.LiesOver p]
+    [Algebra.IsIntegral R R''] [IsScalarTower R R'' S] (q : Ideal S) (P : Ideal R') [P.IsPrime]
     (e : R' ⊗[R] S) (e₀ : R' ⊗[R] R'') (he₀ : IsIdempotentElem e₀)
     (he₀e : Algebra.TensorProduct.map (.id R' R') (IsScalarTower.toAlgHom R R'' S) e₀ = e)
-    (P' : Ideal (R' ⊗[R] S)) [P'.IsPrime] [P'.LiesOver P]
+    (P' : Ideal (R' ⊗[R] S))
     (hP'q : P'.comap Algebra.TensorProduct.includeRight.toRingHom = q)
     (H : ∀ P'' : Ideal (R' ⊗[R] R''), P''.IsPrime → P''.LiesOver P → e₀ ∉ P'' → P'' =
       P'.comap (Algebra.TensorProduct.map (.id R' R') (IsScalarTower.toAlgHom R R'' S)).toRingHom)
@@ -388,7 +387,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
   obtain ⟨R', _, _, _, P, _, _, e, he, e₀, he₀, he₀e, P', _, _, hP'q, heP', hpP, H', H⟩ :=
     exists_etale_isIdempotentElem_forall_liesOver_eq_aux p q
   obtain ⟨g, hgq, hg⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
-  obtain ⟨f, hfP, hf⟩ := exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂ p q P e e₀ he₀
+  obtain ⟨f, hfP, hf⟩ := exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂ q P e e₀ he₀
     he₀e P' hP'q H' g hgq hg.2
   let Pf := P.map (algebraMap _ (Localization.Away f))
   have : Pf.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_› (by
