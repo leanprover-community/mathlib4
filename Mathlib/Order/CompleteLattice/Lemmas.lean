@@ -155,7 +155,7 @@ theorem iSup_inf_le_iSup_inf (f : ι → α) (a : α) :
 
 theorem iSup_inf_le_inf_iSup (f : ι → α) (a : α) :
     ⨆ i, (a ⊓ f i) ≤ a ⊓ (⨆ i, f i) :=
-  @sup_iInf_le_iInf_sup   αᵒᵈ ι _ f a
+  @sup_iInf_le_iInf_sup αᵒᵈ ι _ f a
 
 lemma biInf_sup_le_biInf_sup (f : β → α) (s : Set β) (a : α) :
     (⨅ i ∈ s, f i) ⊔ a ≤ ⨅ i ∈ s, f i ⊔ a :=
