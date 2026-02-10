@@ -3,10 +3,13 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
 
 /-!
 # The "docPrime" linter
@@ -18,7 +21,9 @@ to an unprimed version of that declaration, or an explanation as to why no bette
 is possible.
 -/
 
-open Lean Elab
+meta section
+
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -29,7 +34,7 @@ name ends with a `'`.
 The file `scripts/nolints_prime_decls.txt` contains a list of temporary exceptions to this linter.
 This list should not be appended to, and become emptied over time.
 -/
-register_option linter.docPrime : Bool := {
+public register_option linter.docPrime : Bool := {
   defValue := false
   descr := "enable the docPrime linter"
 }
@@ -38,7 +43,7 @@ namespace DocPrime
 
 @[inherit_doc Mathlib.Linter.linter.docPrime]
 def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.docPrime (← getOptions) do
+  unless getLinterValue linter.docPrime (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return

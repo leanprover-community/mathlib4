@@ -3,21 +3,19 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve, Elan Roth
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Computability.RecursiveIn
+public import Mathlib.Order.Antisymmetrization
 
 /-!
-# Oracle Computability and Turing Degrees
+# Turing degrees
 
-This file defines a model of oracle computability using partial recursive functions.
-This file introduces Turing reducibility and equivalence, prove that Turing equivalence is an
-equivalence relation, and define Turing degrees as the quotient under this relation.
+This file defines Turing reducibility and equivalence, proves that Turing equivalence is an
+equivalence relation, and defines Turing degrees as the quotient under this relation.
 
-## Main Definitions
+## Main definitions
 
-- `RecursiveIn O f`:
-  An inductive definition representing that a partial function `f` is partial recursive given access
-  to a set of oracles O.
 - `TuringReducible`: A relation defining Turing reducibility between partial functions.
 - `TuringEquivalent`: An equivalence relation defining Turing equivalence between partial functions.
 - `TuringDegree`: The type of Turing degrees, defined as the quotient of partial functions under
@@ -27,12 +25,6 @@ equivalence relation, and define Turing degrees as the quotient under this relat
 
 - `f ≤ᵀ g` : `f` is Turing reducible to `g`.
 - `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
-
-## Implementation Notes
-
-The type of partial functions recursive in a set of oracle `O` is the smallest type containing
-the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
-and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
@@ -45,34 +37,12 @@ and is closed under pairing, composition, primitive recursion, and μ-recursion.
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
 
+@[expose] public section
+
 open Primrec Nat.Partrec Part
 
 variable {f g h : ℕ →. ℕ}
 
-/--
-The type of partial functions recursive in a set of oracles `O` is the smallest type containing
-the constant zero, the successor, left and right projections, each oracle `g ∈ O`,
-and is closed under pairing, composition, primitive recursion, and μ-recursion.
--/
-inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Prop
-  | zero : RecursiveIn O fun _ => 0
-  | succ : RecursiveIn O Nat.succ
-  | left : RecursiveIn O fun n => (Nat.unpair n).1
-  | right : RecursiveIn O fun n => (Nat.unpair n).2
-  | oracle : ∀ g ∈ O, RecursiveIn O g
-  | pair {f h : ℕ →. ℕ} (hf : RecursiveIn O f) (hh : RecursiveIn O h) :
-      RecursiveIn O fun n => (Nat.pair <$> f n <*> h n)
-  | comp {f h : ℕ →. ℕ} (hf : RecursiveIn O f) (hh : RecursiveIn O h) :
-      RecursiveIn O fun n => h n >>= f
-  | prec {f h : ℕ →. ℕ} (hf : RecursiveIn O f) (hh : RecursiveIn O h) :
-      RecursiveIn O fun p =>
-        let (a, n) := Nat.unpair p
-        n.rec (f a) fun y IH => do
-          let i ← IH
-          h (Nat.pair a (Nat.pair y i))
-  | rfind {f : ℕ →. ℕ} (hf : RecursiveIn O f) :
-      RecursiveIn O fun a =>
-        Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a n)
 /--
 `f` is Turing reducible to `g` if `f` is partial recursive given access to the oracle `g`
 -/
@@ -94,27 +64,20 @@ open scoped Computability
 If a function is partial recursive, then it is recursive in every partial function.
 -/
 lemma Nat.Partrec.turingReducible (pF : Nat.Partrec f) : f ≤ᵀ g := by
-  induction' pF with f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' _ ih
-  repeat {constructor}
-  · case pair =>
-    apply RecursiveIn.pair ih₁ ih₂
-  · case comp =>
-    apply RecursiveIn.comp ih₁ ih₂
-  · case prec =>
-    apply RecursiveIn.prec ih₁ ih₂
-  · case rfind =>
-    apply RecursiveIn.rfind ih
+  induction pF with repeat {constructor}
+  | pair _ _ ih₁ ih₂ => exact RecursiveIn.pair ih₁ ih₂
+  | comp _ _ ih₁ ih₂ => exact RecursiveIn.comp ih₁ ih₂
+  | prec _ _ ih₁ ih₂ => exact RecursiveIn.prec ih₁ ih₂
+  | rfind _ ih => exact RecursiveIn.rfind ih
 
 /--
 If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
 lemma TuringReducible.partrec_of_zero (fRecInZero : f ≤ᵀ fun _ => Part.some 0) : Nat.Partrec f := by
-  induction' fRecInZero with g hg g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g _ ih
-  repeat {constructor}
-  · rw [Set.mem_singleton_iff] at hg; rw [hg];
-    exact Nat.Partrec.zero
-  repeat {constructor; assumption; try assumption}
+  induction fRecInZero with repeat {constructor}
+  | oracle _ hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact Nat.Partrec.zero
+  | pair | comp | prec | rfind => repeat {constructor; assumption; try assumption}
 
 /--
 A partial function `f` is partial recursive if and only if it is recursive in
@@ -126,26 +89,17 @@ theorem partrec_iff_forall_turingReducible : Nat.Partrec f ↔ ∀ g, f ≤ᵀ g
 protected theorem TuringReducible.refl (f : ℕ →. ℕ) : f ≤ᵀ f := .oracle _ <| by simp
 protected theorem TuringReducible.rfl : f ≤ᵀ f := .refl _
 
-instance : IsRefl (ℕ →. ℕ) TuringReducible where refl _ := .rfl
-
 theorem TuringReducible.trans (hg : f ≤ᵀ g) (hh : g ≤ᵀ h) : f ≤ᵀ h := by
-  induction' hg with g' hg g' h' _ _ ih₁ ih₂ g' h' _ _ ih₁ ih₂ g' h' _ _ ih₁ ih₂ g' _ ih
-  repeat {constructor}
-  · rw [Set.mem_singleton_iff] at hg; rw [hg]; exact hh
-  · case pair =>
-    apply RecursiveIn.pair ih₁ ih₂
-  · case comp =>
-    apply RecursiveIn.comp ih₁ ih₂
-  · case prec =>
-    apply RecursiveIn.prec ih₁ ih₂
-  · case rfind =>
-    apply RecursiveIn.rfind ih
-
-instance : IsTrans (ℕ →. ℕ) TuringReducible :=
-  ⟨@TuringReducible.trans⟩
+  induction hg with repeat {constructor}
+  | oracle _ hg => rw [Set.mem_singleton_iff] at hg; rw [hg]; exact hh
+  | pair _ _ ih₁ ih₂ => exact RecursiveIn.pair ih₁ ih₂
+  | comp _ _ ih₁ ih₂ => exact RecursiveIn.comp ih₁ ih₂
+  | prec _ _ ih₁ ih₂ => exact RecursiveIn.prec ih₁ ih₂
+  | rfind _ ih => exact RecursiveIn.rfind ih
 
 instance : IsPreorder (ℕ →. ℕ) TuringReducible where
-  refl := .refl
+  refl _ := .rfl
+  trans := @TuringReducible.trans
 
 theorem TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
@@ -163,18 +117,12 @@ theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h₁ : f ≡ᵀ g) (h₂ 
   Equivalence.trans equivalence h₁ h₂
 
 /--
-Instance declaring that `RecursiveIn` is a preorder.
--/
-instance : IsPreorder (ℕ →. ℕ) TuringReducible where
-  refl := TuringReducible.refl
-  trans := @TuringReducible.trans
-
-/--
 Turing degrees are the equivalence classes of partial functions under Turing equivalence.
 -/
 abbrev TuringDegree :=
   Antisymmetrization _ TuringReducible
 
+set_option backward.privateInPublic true in
 private instance : Preorder (ℕ →. ℕ) where
   le := TuringReducible
   le_refl := .refl
@@ -182,21 +130,3 @@ private instance : Preorder (ℕ →. ℕ) where
 
 instance TuringDegree.instPartialOrder : PartialOrder TuringDegree :=
   instPartialOrderAntisymmetrization
-
-@[simp] lemma recursiveIn_empty_iff_partrec : RecursiveIn {} f ↔ Nat.Partrec f  where
-  mp fRecInNone := by
-    induction' fRecInNone with g hg g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g h _ _ ih₁ ih₂ g _ ih
-    repeat {constructor}
-    · simp at hg
-    repeat {constructor; assumption; try assumption}
-  mpr pF := by
-    induction' pF with f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' g' _ _ ih₁ ih₂ f' _ ih
-    repeat {constructor}
-    · case pair =>
-      apply RecursiveIn.pair ih₁ ih₂
-    · case comp =>
-      apply RecursiveIn.comp ih₁ ih₂
-    · case prec =>
-      apply RecursiveIn.prec ih₁ ih₂
-    · case rfind =>
-      apply RecursiveIn.rfind ih

@@ -3,12 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Init
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.OfNat
+module
+
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.OfNat
 
 /-!
 # Basic operations on the integers
@@ -17,6 +20,8 @@ This file builds on `Data.Int.Init` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
 
+@[expose] public section
+
 open Nat
 
 namespace Int
@@ -24,6 +29,8 @@ variable {a b c d m n : ℤ}
 
 -- TODO: Tag in Lean
 attribute [simp] natAbs_pos
+
+attribute [gcongr] ofNat_le
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
@@ -40,8 +47,8 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
     (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
   apply cast_eq_iff_heq.mpr
   lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by omega]
-  have : b + zb = z := by omega
+  rw [show z + 1 - b = zb + 1 by lia]
+  have : b + zb = z := by lia
   subst this
   convert cast_heq _ _
   rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
@@ -78,19 +85,6 @@ lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injectiv
 
 /-! ### dvd -/
 
-@[norm_cast] lemma natCast_dvd_natCast {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n where
-  mp := by
-    rintro ⟨a, h⟩
-    obtain rfl | hm := m.eq_zero_or_pos
-    · simpa using h
-    have ha : 0 ≤ a := Int.not_lt.1 fun ha ↦ by
-      simpa [← h, Int.not_lt.2 (Int.natCast_nonneg _)]
-        using Int.mul_neg_of_pos_of_neg (natCast_pos.2 hm) ha
-    lift a to ℕ using ha
-    norm_cast at h
-    exact ⟨a, h⟩
-  mpr := by rintro ⟨a, rfl⟩; simp [Int.dvd_mul_right]
-
 @[norm_cast] theorem ofNat_dvd_natCast {x y : ℕ} : (ofNat(x) : ℤ) ∣ (y : ℤ) ↔ OfNat.ofNat x ∣ y :=
   natCast_dvd_natCast
 
@@ -113,5 +107,8 @@ lemma eq_of_mod_eq_of_natAbs_sub_lt_natAbs {a b c : ℤ} (h1 : a % b = c)
 
 lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ natAbs n :=
   not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
+
+theorem gcd_emod (m n : ℤ) : (m % n).gcd n = m.gcd n := by
+  conv_rhs => rw [← m.emod_add_mul_ediv n, gcd_add_mul_left_left]
 
 end Int

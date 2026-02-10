@@ -21,7 +21,7 @@ open Lean System.FilePath
 open Lake in
 /-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
 on which the current project depends.
-If the current project is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and
+If the current project is `mathlib`, then it excludes the libraries `Cache` and `MathlibTest` and
 it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
@@ -30,8 +30,8 @@ def getLeanLibs : IO (Array String) := do
     | throw <| IO.userError "failed to load Lake workspace"
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
-  return if package.name == `mathlib then
-    libs.erase "Cache" |>.erase "LongestPole" |>.erase "MathlibTest"
+  return if package.baseName == `mathlib then
+    libs.erase "Cache" |>.erase "MathlibTest"
       |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else
     libs
@@ -44,21 +44,26 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether we only verify the files, or update them in-place.
   let check := (args.flag? "check").isSome
+  let useModule := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
-  -- If the package is `mathlib`, then it removes the libraries `Cache` and `LongestPole` and it
+  -- If the package is `mathlib`, then it removes the libraries `Cache` and `MathlibTest` and it
   -- adds `Mathlib/Tactic`.
   let libs := ← match args.flag? "lib" with
               | some lib => return #[lib.as! String]
               | none => getLeanLibs
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
+    let useModule := useModule || d.startsWith "Mathlib"
     let fileName := addExtension d "lean"
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
-    let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
+    let fileContent := (if useModule then "module  -- shake: keep-all\n\n" else "") ++
+      ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
+      (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
+      "\n"
     if !(← pathExists fileName) then
       if check then
         IO.println s!"File '{fileName}' does not exist"
@@ -69,7 +74,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     else if (← IO.FS.readFile fileName) != fileContent then
       if check then
         IO.println s!"The file '{fileName}' is out of date: \
-          run `lake exe mk_all{if git then " --git" else ""}` to update it"
+          run `lake exe mk_all{if git then " --git" else ""}{if useModule then " --module" else ""}` \
+          to update it"
       else
         IO.println s!"Updating '{fileName}'"
         IO.FS.writeFile fileName fileContent
@@ -86,7 +92,7 @@ def mkAll : Cmd := `[Cli|
   mk_all VIA mkAllCLI; ["0.0.1"]
   "Generate a file importing all the files of a Lean folder. \
    By default, it generates the files for the Lean libraries of the package.\
-   In the case of `Mathlib`, it removes the libraries `Cache` and `LongestPole`\
+   In the case of `Mathlib`, it removes the libraries `Cache` and `MathlibTest`\
    and it adds `Mathlib/Tactic`. \
    If you are working in a project downstream of mathlib, use `lake exe mk_all --lib MyProject`."
 
@@ -94,6 +100,7 @@ def mkAll : Cmd := `[Cli|
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
     check;        "Only check if the files are up-to-date; print an error if not"
+    module;       "Generate `module` files with `public` imports."
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/

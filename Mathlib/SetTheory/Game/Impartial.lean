@@ -3,9 +3,15 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.SetTheory.Game.Basic
-import Mathlib.Tactic.NthRewrite
+module -- shake: keep-all
+
+public import Mathlib.SetTheory.Game.Basic
+public import Mathlib.Tactic.NthRewrite
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Impartial.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Basic definitions about impartial (pre-)games
@@ -16,6 +22,8 @@ no matter what moves are played. This allows for games such as poker-nim to be c
 impartial.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -25,10 +33,13 @@ open scoped PGame
 
 namespace PGame
 
+set_option backward.privateInPublic true in
 private def ImpartialAux (G : PGame) : Prop :=
   (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
 termination_by G
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- An impartial game is one that's equivalent to its negative, such that each left and right move
 is also impartial.
 

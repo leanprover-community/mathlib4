@@ -23,7 +23,7 @@ open Complex Filter Bornology
 error: failed to synthesize
   AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 3000 in
@@ -40,7 +40,7 @@ section
 
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12227
 
-/-- info: NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring -/
+/-- info: Ring.toNonAssocRing.toNonUnitalNonAssocSemiring -/
 #guard_msgs in
 variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
   [CStarRing A] [StarModule ℂ A] (x : A) in
@@ -100,7 +100,7 @@ set_option synthInstance.maxHeartbeats 1000 in
 error: failed to synthesize
   I.IsPrime
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 #synth I.IsPrime

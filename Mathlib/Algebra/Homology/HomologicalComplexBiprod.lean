@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.Algebra.Homology.Additive
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.Additive
 
 /-! Binary biproducts of homological complexes
 
@@ -14,11 +16,13 @@ a preadditive category are such that for all `i : ι`, the binary biproduct
 `biprodXIso K L i : (K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`.
 
 -/
+
+@[expose] public section
 open CategoryTheory Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) [∀ i, HasBinaryBiproduct (K.X i) (L.X i)]
 
 instance (i : ι) : HasBinaryBiproduct ((eval C c i).obj K) ((eval C c i).obj L) := by

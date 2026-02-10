@@ -3,13 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.SingleObj
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Conj
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -17,17 +20,19 @@ import Mathlib.CategoryTheory.SingleObj
 The prototypical example is `V = ModuleCat R`,
 where `Action (ModuleCat R) G` is the category of `R`-linear representations of `G`.
 
-We check `Action V G ≌ (CategoryTheory.singleObj G ⥤ V)`,
+We check `Action V G ≌ (CategoryTheory.SingleObj G ⥤ V)`,
 and construct the restriction functors
 `res {G H} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G`.
 -/
+
+@[expose] public section
 
 
 universe u v
 
 open CategoryTheory Limits
 
-variable (V : Type*) [Category V]
+variable (V : Type*) [Category* V]
 
 -- Note: this is _not_ a categorical action of `G` on `V`.
 /-- An `Action V G` represents a bundled action of
@@ -63,16 +68,15 @@ variable (G : Type*) [Monoid G]
 
 section
 
+/-- The action defined by sending every monoid element to the identity. -/
+@[simps]
+def trivial (X : V) : Action V G := { V := X, ρ := 1 }
+
 instance inhabited' : Inhabited (Action (Type*) G) :=
   ⟨⟨PUnit, 1⟩⟩
 
-/-- The trivial representation of a group. -/
-def trivial : Action AddCommGrp G where
-  V := AddCommGrp.of PUnit
-  ρ := 1
-
-instance : Inhabited (Action AddCommGrp G) :=
-  ⟨trivial G⟩
+instance : Inhabited (Action AddCommGrpCat G) :=
+  ⟨trivial G <| AddCommGrpCat.of PUnit⟩
 
 end
 
@@ -85,7 +89,7 @@ commuting with the action of `G`.
 structure Hom (M N : Action V G) where
   /-- The morphism between the underlying objects of this action -/
   hom : M.V ⟶ N.V
-  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
+  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by cat_disch
 
 namespace Hom
 
@@ -112,6 +116,9 @@ instance : Category (Action V G) where
   id M := Hom.id M
   comp f g := Hom.comp f g
 
+lemma hom_injective {M N : Action V G} : Function.Injective (Hom.hom : (M ⟶ N) → (M.V ⟶ N.V)) :=
+  fun _ _ ↦ Hom.ext
+
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Hom.ext h
@@ -120,17 +127,17 @@ lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.
 theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem hom_inv_hom {M N : Action V G} (f : M ≅ N) :
     f.hom.hom ≫ f.inv.hom = 𝟙 M.V := by
   rw [← comp_hom, Iso.hom_inv_id, id_hom]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inv_hom_hom {M N : Action V G} (f : M ≅ N) :
     f.inv.hom ≫ f.hom.hom = 𝟙 N.V := by
   rw [← comp_hom, Iso.inv_hom_id, id_hom]
@@ -140,7 +147,7 @@ from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
-    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by aesop_cat) : M ≅ N where
+    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by cat_disch) : M ≅ N where
   hom :=
     { hom := f.hom
       comm := comm }
@@ -207,7 +214,7 @@ open FunctorCategoryEquivalence
 variable (V G)
 
 /-- The category of actions of `G` in the category `V`
-is equivalent to the functor category `singleObj G ⥤ V`.
+is equivalent to the functor category `SingleObj G ⥤ V`.
 -/
 @[simps]
 def functorCategoryEquivalence : Action V G ≌ SingleObj G ⥤ V where
@@ -230,7 +237,7 @@ variable (V G)
 
 /-- (implementation) The forgetful functor from bundled actions to the underlying objects.
 
-Use the `CategoryTheory.forget` API provided by the `HasForget` instance below,
+Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
 rather than using this directly.
 -/
 @[simps]
@@ -239,9 +246,6 @@ def forget : Action V G ⥤ V where
   map f := f.hom
 
 instance : (forget V G).Faithful where map_injective w := Hom.ext w
-
-instance [HasForget V] : HasForget (Action V G) where
-  forget := forget V G ⋙ HasForget.forget
 
 /-- The type of `V`-morphisms that can be lifted back to morphisms in the category `Action`. -/
 abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
@@ -267,7 +271,8 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
   id_apply := ConcreteCategory.id_apply (C := V)
   comp_apply _ _ := ConcreteCategory.comp_apply (C := V) _ _
 
-instance hasForgetToV [HasForget V] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance hasForgetToV {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] : HasForget₂ (Action V G) V where forget₂ := forget V G
 
 /-- The forgetful functor is intertwined by `functorCategoryEquivalence` with
 evaluation at `PUnit.star`. -/
@@ -290,7 +295,7 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
-/-- Actions/representations of the trivial group are just objects in the ambient category. -/
+/-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
 def actionPunitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
   inverse :=
@@ -298,14 +303,14 @@ def actionPunitEquivalence : Action V PUnit ≌ V where
       map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
-      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, id_eq, Functor.comp_obj,
+      simp only [Functor.id_obj, MonoidHom.one_apply, End.one_def, Functor.comp_obj,
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 variable (V)
 
-/-- The "restriction" functor along a monoid homomorphism `f : G ⟶ H`,
+/-- The "restriction" functor along a monoid homomorphism `f : G →* H`,
 taking actions of `H` to actions of `G`.
 
 (This makes sense for any homomorphism, but the name is natural when `f` is a monomorphism.)
@@ -355,14 +360,15 @@ def resEquiv {G H : Type*} [Monoid G] [Monoid H] (f : G ≃* H) :
 
 variable {G H : Type*} [Monoid G] [Monoid H] (f : G →* H)
 
-/-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is faithful. -/
+/-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
+`f : G →* H` is faithful. -/
 instance : (res V f).Faithful where
   map_injective {X} {Y} g₁ g₂ h := by
     ext
     rw [← res_map_hom _ f g₁, ← res_map_hom _ f g₂, h]
 
-/-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is full
-if `f` is surjective. -/
+/-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
+`f : G →* H` is full if `f` is surjective. -/
 lemma full_res (f_surj : Function.Surjective f) : (res V f).Full where
   map_surjective {X} {Y} g := by
     use ⟨g.hom, fun h ↦ ?_⟩
@@ -377,7 +383,7 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {V} {W : Type*} [Category W]
+variable {V} {W : Type*} [Category* W]
 
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/
@@ -397,11 +403,30 @@ def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G w
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
 
+instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] : (F.mapAction G).Faithful where
+  map_injective eq := by
+    ext
+    apply_fun (fun f ↦ f.hom) at eq
+    exact F.map_injective eq
+
+/--
+A fully faithful functor between categories induces a fully faithful functor between
+the categories of `G`-actions within those categories. -/
+def FullyFaithful.mapAction {F : V ⥤ W} (h : F.FullyFaithful) (G : Type*) [Monoid G] :
+    (F.mapAction G).FullyFaithful where
+  preimage f := by
+    refine ⟨h.preimage f.hom, fun _ ↦ h.map_injective ?_⟩
+    simp only [map_comp, map_preimage]
+    exact f.comm _
+
+instance (F : V ⥤ W) (G : Type*) [Monoid G] [F.Faithful] [F.Full] : (F.mapAction G).Full :=
+  ((Functor.FullyFaithful.ofFullyFaithful F).mapAction G).full
+
 variable (G : Type*) [Monoid G]
 
 /-- `Functor.mapAction` is functorial in the functor. -/
 @[simps! hom inv]
-def mapActionComp {T : Type*} [Category T] (F : V ⥤ W) (F' : W ⥤ T) :
+def mapActionComp {T : Type*} [Category* T] (F : V ⥤ W) (F' : W ⥤ T) :
     (F ⋙ F').mapAction G ≅ F.mapAction G ⋙ F'.mapAction G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
@@ -416,11 +441,11 @@ end Functor
 /-- An equivalence of categories induces an equivalence of
 the categories of `G`-actions within those categories. -/
 @[simps functor inverse]
-def Equivalence.mapAction {V W : Type*} [Category V] [Category W] (G : Type*) [Monoid G]
+def Equivalence.mapAction {V W : Type*} [Category* V] [Category* W] (G : Type*) [Monoid G]
     (E : V ≌ W) : Action V G ≌ Action W G where
   functor := E.functor.mapAction G
   inverse := E.inverse.mapAction G
-  unitIso := Functor.mapActionCongr G E.unitIso  ≪≫ Functor.mapActionComp G _ _
+  unitIso := Functor.mapActionCongr G E.unitIso ≪≫ Functor.mapActionComp G _ _
   counitIso := (Functor.mapActionComp G _ _).symm ≪≫ Functor.mapActionCongr G E.counitIso
   functor_unitIso_comp X := by ext; simp
 

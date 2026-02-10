@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # The complete lattice structure on `UpperSet`/`LowerSet`
@@ -18,6 +20,8 @@ pulled back across the canonical injection (`UpperSet.carrier`, `LowerSet.carrie
 Upper sets are ordered by **reverse** inclusion. This convention is motivated by the fact that this
 makes them order-isomorphic to lower sets and antichains, and matches the convention on `Filter`.
 -/
+
+@[expose] public section
 
 open OrderDual Set
 
@@ -167,7 +171,7 @@ theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
     (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp
 
 @[simp]
-theorem not_mem_top : a ∉ (⊤ : UpperSet α) :=
+theorem notMem_top : a ∉ (⊤ : UpperSet α) :=
   id
 
 @[simp]
@@ -245,6 +249,9 @@ instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
 
+instance : IsConcreteLE (LowerSet α) α :=
+  ⟨.rfl⟩
+
 @[norm_cast] lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
 
 @[norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t := Iff.rfl
@@ -303,7 +310,7 @@ theorem mem_top : a ∈ (⊤ : LowerSet α) :=
   trivial
 
 @[simp]
-theorem not_mem_bot : a ∉ (⊥ : LowerSet α) :=
+theorem notMem_bot : a ∉ (⊥ : LowerSet α) :=
   id
 
 @[simp]
@@ -482,9 +489,9 @@ end LE
 section LinearOrder
 variable [LinearOrder α]
 
-instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+instance UpperSet.total_le : @Std.Total (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
 
-instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+instance LowerSet.total_le : @Std.Total (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
 
 noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
   classical exact Lattice.toLinearOrder _
@@ -517,8 +524,8 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+ ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by
@@ -556,8 +563,8 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+  ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map {f : α ≃o β} {b : β} : b ∈ map f s ↔ f.symm b ∈ s := by

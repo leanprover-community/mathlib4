@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Data.SetLike.Fintype
-import Mathlib.GroupTheory.PGroup
-import Mathlib.GroupTheory.NoncommPiCoprod
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Data.SetLike.Fintype
+public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.NoncommPiCoprod
 
 /-!
 # Sylow theorems
@@ -38,6 +40,8 @@ The Sylow theorems are the following results for every finite group `G` and ever
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`.
 -/
 
+@[expose] public section
+
 
 open MulAction Subgroup
 
@@ -66,6 +70,8 @@ instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
 
+instance : PartialOrder (Sylow p G) := .ofSetLike (Sylow p G) G
+
 instance : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _
   one_mem _ := Subgroup.one_mem _
@@ -81,9 +87,9 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
       have : P.FiniteIndex := ⟨fun h ↦ hP2 (h ▸ (dvd_zero p))⟩
       obtain ⟨k, hk⟩ := (hQ.to_quotient (P.normalCore.subgroupOf Q)).exists_card_eq
       have h := hk ▸ Nat.Prime.coprime_pow_of_not_dvd (m := k) Fact.out hP2
-      exact le_antisymm (Subgroup.relindex_eq_one.mp
-        (Nat.eq_one_of_dvd_coprimes h (Subgroup.relindex_dvd_index_of_le hPQ)
-        (Subgroup.relindex_dvd_of_le_left Q P.normalCore_le))) hPQ }
+      exact le_antisymm (Subgroup.relIndex_eq_one.mp
+        (Nat.eq_one_of_dvd_coprimes h (Subgroup.relIndex_dvd_index_of_le hPQ)
+        (Subgroup.relIndex_dvd_of_le_left Q P.normalCore_le))) hPQ }
 
 @[simp] theorem _root_.IsPGroup.toSylow_coe [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : (hP1.toSylow hP2) = P :=
@@ -169,7 +175,7 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
 namespace Sylow
 
 instance nonempty : Nonempty (Sylow p G) :=
-  nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
+  IsPGroup.of_bot.exists_le_sylow.nonempty
 
 noncomputable instance inhabited : Inhabited (Sylow p G) :=
   Classical.inhabited_of_nonempty nonempty
@@ -385,23 +391,14 @@ theorem card_eq_card_quotient_normalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Nat.card (Sylow p G) = Nat.card (G ⧸ P.normalizer) :=
   Nat.card_congr P.equivQuotientNormalizer
 
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_eq_card_quotient_normalizer := card_eq_card_quotient_normalizer
-
 theorem card_eq_index_normalizer [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Nat.card (Sylow p G) = P.normalizer.index :=
   P.card_eq_card_quotient_normalizer
-
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_eq_index_normalizer := card_eq_index_normalizer
 
 theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     Nat.card (Sylow p G) ∣ P.index :=
   ((congr_arg _ P.card_eq_index_normalizer).mp dvd_rfl).trans
     (index_dvd_of_le le_normalizer)
-
-@[deprecated (since := "2024-11-07")]
-alias _root_.card_sylow_dvd_index := card_dvd_index
 
 /-- Auxiliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
 private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
@@ -423,24 +420,18 @@ private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
 
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
 theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (hP : P.relindex P.normalizer ≠ 0) : ¬ p ∣ P.index := by
-  rw [← relindex_mul_index le_normalizer, ← card_eq_index_normalizer]
+    (hP : P.relIndex P.normalizer ≠ 0) : ¬ p ∣ P.index := by
+  rw [← relIndex_mul_index le_normalizer, ← card_eq_index_normalizer]
   haveI : (P.subtype le_normalizer).Normal :=
     Subgroup.normal_in_normalizer
   haveI : (P.subtype le_normalizer).FiniteIndex := ⟨hP⟩
   replace hP := not_dvd_index_aux (P.subtype le_normalizer)
   exact hp.1.not_dvd_mul hP (not_dvd_card_sylow p G)
 
-@[deprecated (since := "2024-11-03")]
-alias _root_.not_dvd_index_sylow := not_dvd_index'
-
 /-- A Sylow p-subgroup has index indivisible by `p`. -/
 theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.FiniteIndex] :
     ¬ p ∣ P.index :=
   P.not_dvd_index' Nat.card_pos.ne'
-
-@[deprecated (since := "2024-11-03")]
-alias _root_.not_dvd_index_sylow' := not_dvd_index
 
 section mapSurjective
 
@@ -621,7 +612,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     exact Nat.card_congr
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
-    simp only [exists_prop, Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
+    simp only [Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
@@ -637,7 +628,6 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
     (lt_or_eq_of_le hnm).elim
       (fun hnm : n < m =>
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
-        have _wf : m - 1 < m := Nat.sub_lt h0m zero_lt_one
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
         let ⟨K, hK⟩ :=
           @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _
@@ -727,20 +717,20 @@ noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
   rw [smul_eq_of_normal] at h1 h2
   rw [← h1, ← h2]
 
-section Pointwise
+instance characteristic_of_subsingleton {p : ℕ} [Subsingleton (Sylow p G)] (P : Sylow p G) :
+    P.Characteristic := by
+  refine Subgroup.characteristic_iff_map_eq.mpr fun ϕ ↦ ?_
+  have h := Subgroup.pointwise_smul_def (a := ϕ) (P : Subgroup G)
+  rwa [← pointwise_smul_def, Subsingleton.elim (ϕ • P) P, eq_comm] at h
 
-open Pointwise
+theorem normal_of_subsingleton {p : ℕ} [Subsingleton (Sylow p G)] (P : Sylow p G) :
+    P.Normal :=
+  Subgroup.normal_of_characteristic _
 
 theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : P.Characteristic := by
-  haveI := unique_of_normal P h
-  rw [characteristic_iff_map_eq]
-  intro Φ
-  show (Φ • P).toSubgroup = P.toSubgroup
-  congr
-  simp [eq_iff_true_of_subsingleton]
-
-end Pointwise
+  have _ := unique_of_normal P h
+  exact characteristic_of_subsingleton _
 
 theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hn : P.normalizer.Normal) : P.Normal := by

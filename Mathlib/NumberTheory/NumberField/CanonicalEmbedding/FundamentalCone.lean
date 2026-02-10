@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.Ideal.IsPrincipal
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-import Mathlib.RingTheory.ClassGroup
+module
+
+public import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+public import Mathlib.RingTheory.ClassGroup
 
 /-!
 # Fundamental Cone
@@ -17,9 +19,9 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on the mixed space defined, for
-`u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
+  `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
-* `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
+* `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, i.e. a subset stable
   by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
   domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
   `torsion_unit_smul_mem_of_mem`.
@@ -36,6 +38,8 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 
 number field, canonical embedding, units, principal ideals
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 
@@ -121,10 +125,12 @@ theorem logMap_mul (hx : mixedEmbedding.norm x ≠ 0) (hy : mixedEmbedding.norm 
   · exact mixedEmbedding.norm_ne_zero_iff.mp hx w
   · exact mixedEmbedding.norm_ne_zero_iff.mp hy w
 
-theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)
+theorem logMap_apply_of_norm_eq_one (hx : mixedEmbedding.norm x = 1)
     (w : {w : InfinitePlace K // w ≠ w₀}) :
     logMap x w = mult w.val * Real.log (normAtPlace w x) := by
   rw [logMap_apply, hx, Real.log_one, zero_mul, sub_zero]
+
+@[deprecated (since := "2025-11-15")] alias logMap_apply_of_norm_one := logMap_apply_of_norm_eq_one
 
 @[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
@@ -170,11 +176,11 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem
 variable [NumberField K]
 
 open Classical in
-/-- The fundamental cone is a cone in the mixed space, ie. a subset fixed by multiplication by
+/-- The fundamental cone is a cone in the mixed space, i.e. a subset fixed by multiplication by
 a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
-  logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
+  logMap ⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
 
 theorem measurableSet_fundamentalCone :
@@ -229,7 +235,7 @@ theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
   rsuffices ⟨⟨_, ⟨u, _, rfl⟩⟩, hu⟩ : ∃ e : unitLattice K, e + logMap x ∈ ZSpan.fundamentalDomain B
   · exact ⟨u, by rwa [Set.mem_preimage, logMap_unit_smul u hx], by simp [hx]⟩
   · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
-    exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
+    exact ⟨⟨e, by rwa [← Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
 
 theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     ζ • x ∈ fundamentalCone K := by
@@ -247,7 +253,7 @@ theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 
   let B := (basisUnitLattice K).ofZLatticeBasis ℝ
   refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
     (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
-  · rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
+  · rw [Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
     exact ⟨u, trivial, rfl⟩
   · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unit_smul _ hx.2]
     exact h.1
@@ -271,9 +277,6 @@ theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ i
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha
   refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
-
-@[deprecated (since := "2024-12-17")]
-alias exists_unique_preimage_of_mem_integerSet := existsUnique_preimage_of_mem_integerSet
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
   by_contra!
@@ -321,7 +324,7 @@ theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (h�
 
 /-- The action of `torsion K` on `integerSet K`. -/
 @[simps]
-instance integerSetTorsionSMul: SMul (torsion K) (integerSet K) where
+instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
 instance : MulAction (torsion K) (integerSet K) where
@@ -338,7 +341,7 @@ def intNorm (a : integerSet K) : ℕ := (Algebra.norm ℤ (preimageOfMemIntegerS
 @[simp]
 theorem intNorm_coe (a : integerSet K) :
     (intNorm a : ℝ) = mixedEmbedding.norm (a : mixedSpace K) := by
-  rw [intNorm, Int.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
+  rw [intNorm, Nat.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
     ← norm_eq_norm, mixedEmbedding_preimageOfMemIntegerSet]
 
 /-- The norm `intNorm` lifts to a function on `integerSet K` modulo `torsion K`. -/
@@ -394,11 +397,10 @@ def integerSetQuotEquivAssociates :
   Equiv.ofBijective
     (Quotient.lift (integerSetToAssociates K)
       fun _ _ h ↦ ((integerSetToAssociates_eq_iff _ _).mpr h).symm)
-    ⟨by convert Setoid.ker_lift_injective (integerSetToAssociates K)
-        all_goals
-        · ext a b
-          rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
-            MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
+    ⟨Setoid.lift_injective_iff_ker_eq_of_le _ |>.mpr <| by
+        ext a b
+        rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
+          MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
         (Quot.surjective_lift _).mpr (integerSetToAssociates_surjective K)⟩
 
 @[simp]
@@ -449,7 +451,7 @@ def integerSetEquivNorm (n : ℕ) :
           torsion K := Equiv.prodSubtypeFstEquivSubtypeProd
       (p := fun I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1} ↦ absNorm (I : Ideal (𝓞 K)) = n)
     _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal (I : Ideal (𝓞 K)) ∧
-          absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) :=  Equiv.prodCongrLeft fun _ ↦
+          absNorm (I : Ideal (𝓞 K)) = n} × (torsion K) := Equiv.prodCongrLeft fun _ ↦
       (Equiv.subtypeSubtypeEquivSubtypeInter
         (fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1) (fun I ↦ absNorm I.1 = n))
 
@@ -458,7 +460,7 @@ theorem integerSetEquivNorm_apply_fst {n : ℕ}
     (a : {a : integerSet K // mixedEmbedding.norm (a : mixedSpace K) = n}) :
     ((integerSetEquivNorm K n a).1 : Ideal (𝓞 K)) =
       span {(preimageOfMemIntegerSet a.val : 𝓞 K)} := by
-  simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
+  simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.trans_def,
     Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
     Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
 
@@ -511,8 +513,8 @@ def idealSetEquiv : idealSet K J ≃
     {a : integerSet K | (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K))} :=
   Equiv.ofBijective (fun a ↦ ⟨idealSetMap K J a, preimage_of_IdealSetMap K J a⟩)
     ⟨fun _ _ h ↦ (by
-        simp_rw [Subtype.ext_iff_val, idealSetMap_apply] at h
-        rwa [Subtype.ext_iff_val]),
+        simp_rw [Subtype.ext_iff, idealSetMap_apply] at h
+        rwa [Subtype.ext_iff]),
     fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val, mem_idealSet.mpr ⟨a.prop.1,
         ⟨preimageOfMemIntegerSet a, ha₂, mixedEmbedding_preimageOfMemIntegerSet a⟩⟩⟩, rfl⟩⟩
 
@@ -584,21 +586,21 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
     simp_rw [Subtype.mk.injEq]
     calc _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // _ ∧ _ ∧ _} // absNorm I.1.1 = i} × torsion K :=
         Equiv.prodSubtypeFstEquivSubtypeProd
-      _    ≃ {I : (Ideal (𝓞 K))⁰ // (_ ∧ _ ∧ absNorm I.1 ≤ ⌊s⌋₊) ∧ absNorm I.1 = i}
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // (_ ∧ _ ∧ absNorm I.1 ≤ ⌊s⌋₊) ∧ absNorm I.1 = i}
             × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
         (p := fun I : (Ideal (𝓞 K))⁰ ↦ J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 ≤ ⌊s⌋₊)
         (q := fun I ↦ absNorm I.1 = i))
-      _   ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = i}
-            × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by aesop
-      _   ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) = i} :=
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = i}
+            × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by grind
+      _ ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) = i} :=
             (idealSetEquivNorm K J i).symm
-      _   ≃ {a : idealSet K J // intNorm (idealSetEquiv K J a).1 = i} := by
+      _ ≃ {a : idealSet K J // intNorm (idealSetEquiv K J a).1 = i} := by
         simp_rw [← intNorm_idealSetEquiv_apply, Nat.cast_inj]
         rfl
-      _   ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).1 ≤ ⌊s⌋₊} //
+      _ ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).1 ≤ ⌊s⌋₊} //
             intNorm (idealSetEquiv K J b).1 = i} :=
         (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
-  · simp_rw [lt_iff_not_le.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_le.mp
+  · simp_rw [lt_iff_not_ge.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_ge.mp
       (lt_of_lt_of_le hs (mixedEmbedding.norm_nonneg _)), and_false, Nat.card_of_isEmpty,
       zero_mul]
 

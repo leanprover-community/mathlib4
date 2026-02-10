@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.ComposableArrows
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-! The triangulated structure on the homotopy category of complexes
 
@@ -14,11 +16,17 @@ the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is trian
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
-variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C]
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
+
+universe v
+
+variable {C : Type*} [Category.{v} C] [Preadditive C] [HasBinaryBiproducts C]
   {X₁ X₂ X₃ : CochainComplex C ℤ} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
 
 namespace CochainComplex
@@ -62,18 +70,18 @@ lemma mappingConeCompTriangle_mor₃_naturality {Y₁ Y₂ Y₃ : CochainComplex
 namespace MappingConeCompHomotopyEquiv
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
-is the canonical morphism (which is an homotopy equivalence) from `mappingCone g` to
+is the canonical morphism (which is a homotopy equivalence) from `mappingCone g` to
 the mapping cone of the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def hom :
     mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
-  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
+  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by simp))
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_cancel 1)) (by
       ext p _ rfl
       dsimp [mappingConeCompTriangle, map]
-      simp [ext_from_iff _ _ _ rfl, inl_v_d_assoc _ (p+1) p (p+2) (by omega) (by omega)])
+      simp [ext_from_iff _ _ _ rfl, inl_v_d_assoc _ (p + 1) p (p + 2) (by lia) (by lia)])
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
-is the canonical morphism (which is an homotopy equivalence) from the mapping cone of
+is the canonical morphism (which is a homotopy equivalence) from the mapping cone of
 the morphism `mappingCone f ⟶ mappingCone (f ≫ g)` to `mappingCone g`. -/
 noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ mappingCone g :=
   desc _ ((snd f).comp (inl g) (zero_add (-1)))
@@ -81,15 +89,12 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
       ext p
       rw [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl]
       simp [map, δ_zero_cochain_comp,
-        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by omega) (by omega)])
+        Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p (by lia) (by lia)])
 @[reassoc (attr := simp)]
 lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
-  simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl, ext_from_iff _ (n + 1) _ rfl]
+  simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
-set_option linter.style.maxHeartbeats false in
--- no reason was present for this heartbeat bump at the time of the creation of the linter
-set_option maxHeartbeats 400000 in
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes,
 this is the `homotopyInvHomId` field of the homotopy equivalence
 `mappingConeCompHomotopyEquiv f g` between `mappingCone g` and the mapping cone of
@@ -108,14 +113,14 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
         Cochain.neg_comp, neg_neg]
       ext n
       rw [ext_from_iff _ (n + 1) n rfl, ext_from_iff _ (n + 1) n rfl,
-        ext_from_iff _ (n + 2) (n + 1) (by omega)]
+        ext_from_iff _ (n + 2) (n + 1) (by lia)]
       dsimp [hom, inv]
       simp [ext_to_iff _ n (n + 1) rfl, map, Cochain.comp_v _ _
-          (add_neg_cancel 1) n (n + 1) n (by omega) (by omega),
+          (add_neg_cancel 1) n (n + 1) n (by lia) (by lia),
         Cochain.comp_v _ _ (show 1 + -2 = -1 by decide) (n + 1) (n + 2) n
-          (by omega) (by omega),
+          (by lia) (by lia),
         Cochain.comp_v _ _ (show (-1) + -1 = -2 by decide) (n + 2) (n + 1) n
-          (by omega) (by omega)]⟩
+          (by lia) (by lia)]⟩
 
 end MappingConeCompHomotopyEquiv
 
@@ -149,7 +154,7 @@ lemma mappingConeCompHomotopyEquiv_comm₂ :
       (mappingConeCompTriangle f g).mor₃ := by
   ext n
   simp [map, mappingConeCompHomotopyEquiv, MappingConeCompHomotopyEquiv.hom,
-    lift_f _ _ _ _ _ (n+1) rfl, ext_from_iff _ (n+1) _ rfl]
+    lift_f _ _ _ _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
 @[reassoc (attr := simp)]
 lemma mappingConeCompTriangleh_comm₁ :
@@ -177,7 +182,7 @@ lemma mappingConeCompTriangleh_distinguished :
       distTriang (HomotopyCategory C (ComplexShape.up ℤ)) := by
   refine ⟨_, _, (mappingConeCompTriangle f g).mor₁, ⟨?_⟩⟩
   refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
-    (mappingConeCompHomotopyEquiv f g)) (by aesop_cat) (by simp) ?_
+    (mappingConeCompHomotopyEquiv f g)) (by cat_disch) (by simp) ?_
   dsimp [mappingConeCompTriangleh]
   rw [CategoryTheory.Functor.map_id, comp_id, ← Functor.map_comp_assoc]
   congr 2

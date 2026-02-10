@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.FinMeasAdditive
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+module
+
+public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
+public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -15,9 +17,9 @@ with finite measure, then to integrable functions, which are limits of integrabl
 
 The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`.
 This extension process is used to define the Bochner integral
-in the `Mathlib.MeasureTheory.Integral.Bochner.Basic` file
+in the `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` file
 and the conditional expectation of an integrable function
-in `Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
+in `Mathlib/MeasureTheory/Function/ConditionalExpectation/CondexpL1.lean`.
 
 ## Main definitions
 
@@ -57,6 +59,8 @@ If the space is also an ordered additive group with an order closed topology and
 - `setToFun_mono (hfg : f ≤ᵐ[μ] g) : setToFun μ T hT f ≤ setToFun μ T hT g`
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -89,9 +93,7 @@ theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
   · intro x _
     by_cases hx0 : x = 0
     · rw [hx0]; simp
-    · exact
-        ENNReal.mul_ne_top ENNReal.coe_ne_top
-          (SimpleFunc.measure_preimage_lt_top_of_integrable _ (SimpleFunc.integrable f) hx0).ne
+    · finiteness [SimpleFunc.measure_preimage_lt_top_of_integrable _ (SimpleFunc.integrable f) hx0]
 
 section SetToL1S
 
@@ -391,49 +393,70 @@ variable (𝕜) [NormedRing 𝕜] [Module 𝕜 E] [Module 𝕜 F] [IsBoundedSMul
 /-- Extend `Set α → (E →L[ℝ] F)` to `(α →₁[μ] E) →L[𝕜] F`. -/
 def setToL1' (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) : (α →₁[μ] E) →L[𝕜] F :=
-  (setToL1SCLM' α E 𝕜 μ hT h_smul).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
-    simpleFunc.isUniformInducing
+  (setToL1SCLM' α E 𝕜 μ hT h_smul).extend (coeToLp α E 𝕜)
+
+theorem setToL1'_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C)
+    (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (f : α →₁ₛ[μ] E) :
+    setToL1' 𝕜 hT h_smul f = setToL1SCLM α E μ hT f := by
+  apply ContinuousLinearMap.extend_eq _ _ simpleFunc.isUniformInducing
+  · exact simpleFunc.denseRange one_ne_top
+
+@[simp]
+theorem setToL1'_apply_coeToLp (hT : DominatedFinMeasAdditive μ T C)
+    (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (f : α →₁ₛ[μ] E) :
+    setToL1' 𝕜 hT h_smul (coeToLp α E ℝ f) = setToL1SCLM α E μ hT f :=
+  setToL1'_eq_setToL1SCLM 𝕜 hT h_smul f
 
 variable {𝕜}
 
 /-- Extend `Set α → E →L[ℝ] F` to `(α →₁[μ] E) →L[ℝ] F`. -/
 def setToL1 (hT : DominatedFinMeasAdditive μ T C) : (α →₁[μ] E) →L[ℝ] F :=
-  (setToL1SCLM α E μ hT).extend (coeToLp α E ℝ) (simpleFunc.denseRange one_ne_top)
-    simpleFunc.isUniformInducing
+  (setToL1SCLM α E μ hT).extend (coeToLp α E ℝ)
 
 theorem setToL1_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
     setToL1 hT f = setToL1SCLM α E μ hT f :=
-  uniformly_extend_of_ind simpleFunc.isUniformInducing (simpleFunc.denseRange one_ne_top)
-    (setToL1SCLM α E μ hT).uniformContinuous _
+  setToL1'_eq_setToL1SCLM ℝ hT (by simp) _
+
+@[simp]
+theorem setToL1_apply_coeToLp (hT : DominatedFinMeasAdditive μ T C) (f : α →₁ₛ[μ] E) :
+    setToL1 hT (coeToLp α E ℝ f) = setToL1SCLM α E μ hT f :=
+  setToL1_eq_setToL1SCLM hT f
+
+theorem setToL1_unique (hT : DominatedFinMeasAdditive μ T C) {A : (α →₁[μ] E) →L[ℝ] F}
+    (hA : ∀ f : α →₁ₛ[μ] E, setToL1SCLM α E μ hT f = A f) (f : α →₁[μ] E) :
+    setToL1 hT f = A f := by
+  suffices setToL1 hT = A by rw [this]
+  apply ContinuousLinearMap.extend_unique
+  · exact (simpleFunc.denseRange one_ne_top)
+  · exact simpleFunc.isUniformInducing
+  ext f
+  rw [hA f]
+  rfl
 
 theorem setToL1_eq_setToL1' (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (f : α →₁[μ] E) :
-    setToL1 hT f = setToL1' 𝕜 hT h_smul f :=
-  rfl
+    setToL1 hT f = setToL1' 𝕜 hT h_smul f := by
+  have h₁ : Dense (Set.range (coeToLp α E ℝ)) := simpleFunc.denseRange (μ := μ) one_ne_top
+  apply Dense.induction (P := fun f : α →₁[μ] E ↦ (setToL1 hT) f = (setToL1' 𝕜 hT h_smul) f) h₁
+  · intro f ⟨f', hf⟩
+    simp [← hf]
+  · exact isClosed_eq (setToL1 hT).continuous (setToL1' 𝕜 hT h_smul).continuous
 
 @[simp]
 theorem setToL1_zero_left (hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C)
-    (f : α →₁[μ] E) : setToL1 hT f = 0 := by
-  suffices setToL1 hT = 0 by rw [this]; simp
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT) _ _ _ _ ?_
-  ext1 f
-  rw [setToL1SCLM_zero_left hT f, ContinuousLinearMap.zero_comp, ContinuousLinearMap.zero_apply]
+    (f : α →₁[μ] E) : setToL1 hT f = 0 :=
+  setToL1_unique hT (A := 0) (by simp) f
 
 theorem setToL1_zero_left' (hT : DominatedFinMeasAdditive μ T C)
-    (h_zero : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0) (f : α →₁[μ] E) : setToL1 hT f = 0 := by
-  suffices setToL1 hT = 0 by rw [this]; simp
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT) _ _ _ _ ?_
-  ext1 f
-  rw [setToL1SCLM_zero_left' hT h_zero f, ContinuousLinearMap.zero_comp,
-    ContinuousLinearMap.zero_apply]
+    (h_zero : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0) (f : α →₁[μ] E) : setToL1 hT f = 0 :=
+  setToL1_unique hT (A := 0) (by simp [setToL1SCLM_zero_left' hT h_zero]) f
 
 theorem setToL1_congr_left (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T')
     (f : α →₁[μ] E) : setToL1 hT f = setToL1 hT' f := by
-  suffices setToL1 hT = setToL1 hT' by rw [this]
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT) _ _ _ _ ?_
-  ext1 f
-  suffices setToL1 hT' f = setToL1SCLM α E μ hT f by rw [← this]; simp [coeToLp]
+  apply setToL1_unique hT (A := setToL1 hT') _ f
+  intro f
+  suffices setToL1 hT' f = setToL1SCLM α E μ hT f by rw [← this]
   rw [setToL1_eq_setToL1SCLM]
   exact setToL1SCLM_congr_left hT' hT h.symm f
 
@@ -441,58 +464,42 @@ theorem setToL1_congr_left' (T T' : Set α → E →L[ℝ] F) {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (h : ∀ s, MeasurableSet s → μ s < ∞ → T s = T' s) (f : α →₁[μ] E) :
     setToL1 hT f = setToL1 hT' f := by
-  suffices setToL1 hT = setToL1 hT' by rw [this]
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT) _ _ _ _ ?_
-  ext1 f
-  suffices setToL1 hT' f = setToL1SCLM α E μ hT f by rw [← this]; simp [coeToLp]
+  apply setToL1_unique hT (A := setToL1 hT') _ f
+  intro f
+  suffices setToL1 hT' f = setToL1SCLM α E μ hT f by rw [← this]
   rw [setToL1_eq_setToL1SCLM]
   exact (setToL1SCLM_congr_left' hT hT' h f).symm
 
 theorem setToL1_add_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (f : α →₁[μ] E) :
     setToL1 (hT.add hT') f = setToL1 hT f + setToL1 hT' f := by
-  suffices setToL1 (hT.add hT') = setToL1 hT + setToL1 hT' by
-    rw [this, ContinuousLinearMap.add_apply]
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ (hT.add hT')) _ _ _ _ ?_
-  ext1 f
-  suffices setToL1 hT f + setToL1 hT' f = setToL1SCLM α E μ (hT.add hT') f by
-    rw [← this]; simp [coeToLp]
-  rw [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM, setToL1SCLM_add_left hT hT']
+  apply setToL1_unique (hT.add hT') (A := setToL1 hT + setToL1 hT') _ f
+  simp [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM, setToL1SCLM_add_left hT hT']
 
 theorem setToL1_add_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (hT'' : DominatedFinMeasAdditive μ T'' C'')
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) (f : α →₁[μ] E) :
     setToL1 hT'' f = setToL1 hT f + setToL1 hT' f := by
-  suffices setToL1 hT'' = setToL1 hT + setToL1 hT' by rw [this, ContinuousLinearMap.add_apply]
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT'') _ _ _ _ ?_
-  ext1 f
-  suffices setToL1 hT f + setToL1 hT' f = setToL1SCLM α E μ hT'' f by rw [← this]; simp [coeToLp]
-  rw [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM,
-    setToL1SCLM_add_left' hT hT' hT'' h_add]
+  apply setToL1_unique hT'' (A := setToL1 hT + setToL1 hT') _ f
+  simp [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM, setToL1SCLM_add_left' hT hT' hT'' h_add]
 
 theorem setToL1_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : α →₁[μ] E) :
     setToL1 (hT.smul c) f = c • setToL1 hT f := by
-  suffices setToL1 (hT.smul c) = c • setToL1 hT by rw [this, ContinuousLinearMap.smul_apply]
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ (hT.smul c)) _ _ _ _ ?_
-  ext1 f
-  suffices c • setToL1 hT f = setToL1SCLM α E μ (hT.smul c) f by rw [← this]; simp [coeToLp]
-  rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left c hT]
+  apply setToL1_unique (hT.smul c) (A := c • setToL1 hT) _ f
+  simp [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left c hT]
 
 theorem setToL1_smul_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (c : ℝ)
     (h_smul : ∀ s, MeasurableSet s → μ s < ∞ → T' s = c • T s) (f : α →₁[μ] E) :
     setToL1 hT' f = c • setToL1 hT f := by
-  suffices setToL1 hT' = c • setToL1 hT by rw [this, ContinuousLinearMap.smul_apply]
-  refine ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT') _ _ _ _ ?_
-  ext1 f
-  suffices c • setToL1 hT f = setToL1SCLM α E μ hT' f by rw [← this]; simp [coeToLp]
-  rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left' c hT hT' h_smul]
+  apply setToL1_unique hT' (A := c • setToL1 hT) _ f
+  simp [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left' c hT hT' h_smul]
 
 theorem setToL1_smul (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜) (f : α →₁[μ] E) :
     setToL1 hT (c • f) = c • setToL1 hT f := by
   rw [setToL1_eq_setToL1' hT h_smul, setToL1_eq_setToL1' hT h_smul]
-  exact ContinuousLinearMap.map_smul _ _ _
+  exact map_smul _ _ _
 
 theorem setToL1_simpleFunc_indicatorConst (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s < ∞) (x : E) :
@@ -513,11 +520,11 @@ theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [PartialOrder G''] [OrderClosedTopology G''] [IsOrderedAddMonoid G'']
+  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
   [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
-theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+theorem setToL1_mono_left' [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →₁[μ] E) :
     setToL1 hT f ≤ setToL1 hT' f := by
@@ -530,12 +537,13 @@ theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     exact add_le_add hf_le hg_le
   | isClosed => exact isClosed_le (setToL1 hT).continuous (setToL1 hT').continuous
 
-theorem setToL1_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+theorem setToL1_mono_left [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →₁[μ] E) : setToL1 hT f ≤ setToL1 hT' f :=
   setToL1_mono_left' hT hT' (fun s _ _ x => hTT' s x) f
 
-theorem setToL1_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+theorem setToL1_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''} {C : ℝ}
+    (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁[μ] G'}
     (hf : 0 ≤ f) : 0 ≤ setToL1 hT f := by
   suffices ∀ f : { g : α →₁[μ] G' // 0 ≤ g }, 0 ≤ setToL1 hT f from
@@ -544,13 +552,13 @@ theorem setToL1_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Dominat
     @isClosed_property { g : α →₁ₛ[μ] G' // 0 ≤ g } { g : α →₁[μ] G' // 0 ≤ g } _ _
       (fun g => 0 ≤ setToL1 hT g)
       (denseRange_coeSimpleFuncNonnegToLpNonneg 1 μ G' one_ne_top) ?_ ?_ g
-  · exact isClosed_le continuous_zero ((setToL1 hT).continuous.comp continuous_induced_dom)
+  · exact (isClosed_Ici (a := 0)).preimage ((setToL1 hT).continuous.comp continuous_induced_dom)
   · intro g
     have : (coeSimpleFuncNonnegToLpNonneg 1 μ G' g : α →₁[μ] G') = (g : α →₁ₛ[μ] G') := rfl
     rw [this, setToL1_eq_setToL1SCLM]
     exact setToL1S_nonneg (fun s => hT.eq_zero_of_measure_zero) hT.1 hT_nonneg g.2
 
-theorem setToL1_mono [IsOrderedAddMonoid G']
+theorem setToL1_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']
     {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α →₁[μ] G'}
     (hfg : f ≤ g) : setToL1 hT f ≤ setToL1 hT g := by
@@ -565,7 +573,7 @@ theorem norm_setToL1_le_norm_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) 
   calc
     ‖setToL1 hT‖ ≤ (1 : ℝ≥0) * ‖setToL1SCLM α E μ hT‖ := by
       refine
-        ContinuousLinearMap.opNorm_extend_le (setToL1SCLM α E μ hT) (coeToLp α E ℝ)
+        ContinuousLinearMap.opNorm_extend_le (setToL1SCLM α E μ hT)
           (simpleFunc.denseRange one_ne_top) fun x => le_of_eq ?_
       rw [NNReal.coe_one, one_mul]
       simp [coeToLp]
@@ -635,9 +643,6 @@ theorem setToFun_non_aestronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
 
-@[deprecated (since := "2025-04-09")]
-alias setToFun_non_aEStronglyMeasurable := setToFun_non_aestronglyMeasurable
-
 theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :
     setToFun μ T hT f = setToFun μ T' hT' f := by
@@ -685,7 +690,7 @@ theorem setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
 theorem setToFun_zero (hT : DominatedFinMeasAdditive μ T C) : setToFun μ T hT (0 : α → E) = 0 := by
   rw [Pi.zero_def, setToFun_eq hT (integrable_zero _ _ _)]
   simp only [← Pi.zero_def]
-  rw [Integrable.toL1_zero, ContinuousLinearMap.map_zero]
+  rw [Integrable.toL1_zero, map_zero]
 
 @[simp]
 theorem setToFun_zero_left {hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C} :
@@ -742,8 +747,8 @@ theorem setToFun_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass �
     (hT : DominatedFinMeasAdditive μ T C) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α → E) : setToFun μ T hT (c • f) = c • setToFun μ T hT f := by
   by_cases hf : Integrable f μ
-  · rw [setToFun_eq hT hf, setToFun_eq hT, Integrable.toL1_smul',
-      L1.setToL1_smul hT h_smul c _]
+  · rw [setToFun_eq hT hf, setToFun_eq hT (hf.smul c), Integrable.toL1_smul' f hf,
+      L1.setToL1_smul hT h_smul c]
   · by_cases hr : c = 0
     · rw [hr]; simp
     · have hf' : ¬Integrable (c • f) μ := by rwa [integrable_smul_iff hr f]
@@ -786,11 +791,11 @@ theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T 
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [PartialOrder G''] [OrderClosedTopology G''] [IsOrderedAddMonoid G'']
+  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
   [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
-theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+theorem setToFun_mono_left' [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α → E) :
     setToFun μ T hT f ≤ setToFun μ T' hT' f := by
@@ -798,12 +803,13 @@ theorem setToFun_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
   · simp_rw [setToFun_eq _ hf]; exact L1.setToL1_mono_left' hT hT' hTT' _
   · simp_rw [setToFun_undef _ hf, le_rfl]
 
-theorem setToFun_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
+theorem setToFun_mono_left [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →₁[μ] E) : setToFun μ T hT f ≤ setToFun μ T' hT' f :=
   setToFun_mono_left' hT hT' (fun s _ _ x => hTT' s x) f
 
-theorem setToFun_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
+theorem setToFun_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''} {C : ℝ}
+    (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α → G'}
     (hf : 0 ≤ᵐ[μ] f) : 0 ≤ setToFun μ T hT f := by
   by_cases hfi : Integrable f μ
@@ -817,7 +823,7 @@ theorem setToFun_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : Domina
     exact hfa
   · simp_rw [setToFun_undef _ hfi, le_rfl]
 
-theorem setToFun_mono [IsOrderedAddMonoid G']
+theorem setToFun_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']
     {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f g : α → G'}
     (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
@@ -972,14 +978,13 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
     setToFun (μ + μ') T hT_add f = setToFun μ' T hT f := by
   refine setToFun_congr_measure_of_integrable 1 one_ne_top ?_ hT_add hT f hf
   rw [one_smul]
-  nth_rw 1 [← zero_add μ']
-  exact add_le_add_right bot_le μ'
+  exact Measure.le_add_left le_rfl
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
+  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top,
     top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
   simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
 

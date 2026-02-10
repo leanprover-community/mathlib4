@@ -3,17 +3,19 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Measure.WithDensity
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
 
 This file contains some further development of strongly measurable and finitely strongly measurable
-functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
+functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.lean`.
 
 ## References
 
@@ -21,6 +23,8 @@ functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+
+public section
 
 open MeasureTheory Filter Set ENNReal NNReal
 
@@ -67,7 +71,7 @@ theorem StronglyMeasurable.apply_continuousLinearMap
     StronglyMeasurable fun a => φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_stronglyMeasurable hφ
 
-@[measurability]
+@[fun_prop]
 theorem MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E}
     (hφ : AEStronglyMeasurable φ μ) (v : F) :
     AEStronglyMeasurable (fun a => φ a v) μ :=

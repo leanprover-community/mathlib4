@@ -3,11 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Tape
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Computability.Tape
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Turing machines
@@ -32,7 +35,7 @@ computation. These are the parameters for the language:
 
 All of these variables denote "essentially finite" types, but for technical reasons it is
 convenient to allow them to be infinite anyway. When using an infinite type, we will be interested
-to prove that only finitely many values of the type are ever interacted with.
+in proving that only finitely many values of the type are ever interacted with.
 
 Given these parameters, there are a few common structures for the model that arise:
 
@@ -57,6 +60,8 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -226,7 +231,7 @@ theorem tr_reaches_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (
     rcases ReflTransGen.cases_head ce with (rfl | ⟨d', cd', de⟩)
     · have := H ee
       revert this
-      rcases eg : f₁ e₁ with - | g₁ <;> simp only [Respects, and_imp, exists_imp]
+      rcases eg : f₁ e₁ with - | g₁ <;> simp only [and_imp, exists_imp]
       · intro c0
         cases cd.symm.trans c0
       · intro g₂ gg cg
@@ -279,7 +284,7 @@ theorem frespects_eq {σ₁ σ₂} {f₂ : σ₂ → Option σ₂} {tr : σ₁ �
 theorem fun_respects {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂} :
     (Respects f₁ f₂ fun a b ↦ tr a = b) ↔ ∀ ⦃a₁⦄, FRespects f₂ tr (tr a₁) (f₁ a₁) :=
   forall_congr' fun a₁ ↦ by
-    cases f₁ a₁ <;> simp only [FRespects, Respects, exists_eq_left', forall_eq']
+    cases f₁ a₁ <;> simp only [FRespects, exists_eq_left', forall_eq']
 
 theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ → Option σ₂) (tr : σ₁ → σ₂)
     (H : Respects f₁ f₂ fun a b ↦ tr a = b) (a₁) : eval f₂ (tr a₁) = tr <$> eval f₁ a₁ :=
@@ -378,7 +383,7 @@ def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
     | Stmt.write a => T.write a⟩
 
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
-  starting from `s₁` after a finite number of steps from `s₂`. -/
+  starting from `s₁` after a finite number of steps. -/
 def Reaches (M : Machine Γ Λ) : Cfg Γ Λ → Cfg Γ Λ → Prop := ReflTransGen fun a b ↦ b ∈ step M a
 
 /-- The initial configuration. -/
@@ -446,9 +451,9 @@ theorem Machine.map_step {S : Set Λ} (f₂₁ : Function.RightInverse f₁ f₂
     unfold step Machine.map Cfg.map
     simp only [Turing.Tape.map_fst, g₂₁ q h, f₂₁ _]
     rcases M q T.1 with (_ | ⟨q', d | a⟩); · rfl
-    · simp only [step, Cfg.map, Option.map_some, Tape.map_move f₁]
+    · simp only [Option.map_some, Tape.map_move f₁]
       rfl
-    · simp only [step, Cfg.map, Option.map_some, Tape.map_write]
+    · simp only [Option.map_some, Tape.map_write]
       rfl
 
 theorem map_init (g₁ : PointedMap Λ Λ') (l : List Γ) : (init l).map f₁ g₁ = init (l.map f₁) :=
@@ -598,14 +603,14 @@ theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → 
     rcases h₁₂ with (rfl | h₁₂ | h₁₂)
     · unfold stmts₁ at h₀₁
       exact h₀₁
-    · exact Finset.mem_insert_of_mem (Finset.mem_union_left _ <| IH₁ h₁₂)
-    · exact Finset.mem_insert_of_mem (Finset.mem_union_right _ <| IH₂ h₁₂)
+    · grind
+    · grind
   | goto l => subst h₁₂; exact h₀₁
   | halt => subst h₁₂; exact h₀₁
   | _ _ q IH =>
     rcases h₁₂ with rfl | h₁₂
     · exact h₀₁
-    · exact Finset.mem_insert_of_mem (IH h₁₂)
+    · grind
 
 theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt Γ Λ σ} (h : q₁ ∈ stmts₁ q₂)
     (hs : SupportsStmt S q₂) : SupportsStmt S q₁ := by
@@ -825,9 +830,9 @@ Because our construction in the previous section reducing `TM1` to `TM0` doesn't
 alphabet, we can do the alphabet reduction on `TM1` instead of `TM0` directly.
 
 The basic idea is to use a bijection between `Γ` and a subset of `Vector Bool n`, where `n` is a
-fixed constant. Each tape element is represented as a block of `n` bools. Whenever the machine
+fixed constant. Each tape element is represented as a block of `n` `Bool`s. Whenever the machine
 wants to read a symbol from the tape, it traverses over the block, performing `n` `branch`
-instructions to each any of the `2^n` results.
+instructions to reach any of the `2^n` results.
 
 For the `write` instruction, we have to use a `goto` because we need to follow a different code
 path depending on the local state, which is not available in the TM1 model, so instead we jump to
@@ -891,7 +896,7 @@ then return to the original position with `n` moves to the left. -/
 def read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) : Stmt Bool (Λ' Γ Λ σ) σ :=
   readAux n fun v ↦ move n Dir.left <| f (dec v)
 
-/-- Write a list of bools on the tape. -/
+/-- Write a list of `Bool`s on the tape. -/
 def write : List Bool → Stmt Bool (Λ' Γ Λ σ) σ → Stmt Bool (Λ' Γ Λ σ) σ
   | [], q => q
   | a :: l, q => (Stmt.write fun _ _ ↦ a) <| Stmt.move Dir.right <| write l q
@@ -910,10 +915,13 @@ def trNormal : Stmt Γ Λ σ → Stmt Bool (Λ' Γ Λ σ) σ
 theorem stepAux_move (d : Dir) (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (T : Tape Bool) :
     stepAux (move n d q) v T = stepAux q v ((Tape.move d)^[n] T) := by
   suffices ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T) from this n
-  intro i; induction' i with i IH generalizing T; · rfl
-  rw [iterate_succ', iterate_succ]
-  simp only [stepAux, Function.comp_apply]
-  rw [IH]
+  intro i
+  induction i generalizing T with
+  | zero => rfl
+  | succ i IH =>
+    rw [iterate_succ', iterate_succ]
+    simp only [stepAux, Function.comp_apply]
+    rw [IH]
 
 theorem supportsStmt_move {S : Finset (Λ' Γ Λ σ)} {d : Dir} {q : Stmt Bool (Λ' Γ Λ σ) σ} :
     SupportsStmt S (move n d q) = SupportsStmt S q := by
@@ -922,7 +930,7 @@ theorem supportsStmt_move {S : Finset (Λ' Γ Λ σ)} {d : Dir} {q : Stmt Bool (
 
 theorem supportsStmt_write {S : Finset (Λ' Γ Λ σ)} {l : List Bool} {q : Stmt Bool (Λ' Γ Λ σ) σ} :
     SupportsStmt S (write l q) = SupportsStmt S q := by
-  induction' l with _ l IH <;> simp only [write, SupportsStmt, *]
+  induction l <;> simp only [write, SupportsStmt, *]
 
 theorem supportsStmt_read {S : Finset (Λ' Γ Λ σ)} :
     ∀ {f : Γ → Stmt Bool (Λ' Γ Λ σ) σ}, (∀ a, SupportsStmt S (f a)) →
@@ -932,8 +940,9 @@ theorem supportsStmt_read {S : Finset (Λ' Γ Λ σ)} :
       (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
     from fun hf ↦ this n _ (by intro; simp only [supportsStmt_move, hf])
   fun i f hf ↦ by
-  induction' i with i IH; · exact hf _
-  constructor <;> apply IH <;> intro <;> apply hf
+  induction i with
+  | zero => exact hf _
+  | succ i IH => constructor <;> apply IH <;> intro <;> apply hf
 
 variable (M : Λ → TM1.Stmt Γ Λ σ)
 
@@ -949,7 +958,7 @@ def trTape' (L R : ListBlank Γ) : Tape Bool := by
       Tape.mk' (L.flatMap (fun x ↦ (enc x).toList.reverse) ⟨n, ?_⟩)
         (R.flatMap (fun x ↦ (enc x).toList) ⟨n, ?_⟩) <;>
     simp only [enc0, List.Vector.replicate, List.reverse_replicate, Bool.default_bool,
-      Vector.toList_mk]
+      List.Vector.toList_mk]
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape (T : Tape Γ) : Tape Bool :=
@@ -975,18 +984,18 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
     (Tape.move Dir.left)^[n] (trTape' enc0 L R) = trTape' enc0 L.tail (R.cons L.head) := by
   obtain ⟨a, L, rfl⟩ := L.exists_cons
   simp only [trTape', ListBlank.cons_flatMap, ListBlank.head_cons, ListBlank.tail_cons]
-  suffices ∀ {L' R' l₁ l₂} (_ : Vector.toList (enc a) = List.reverseAux l₁ l₂),
+  suffices ∀ {L' R' l₁ l₂} (_ : List.Vector.toList (enc a) = List.reverseAux l₁ l₂),
       (Tape.move Dir.left)^[l₁.length]
       (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
-      Tape.mk' L' (ListBlank.append (Vector.toList (enc a)) R') by
+      Tape.mk' L' (ListBlank.append (List.Vector.toList (enc a)) R') by
     simpa only [List.length_reverse, Vector.toList_length] using this (List.reverse_reverse _).symm
   intro _ _ l₁ l₂ e
-  induction' l₁ with b l₁ IH generalizing l₂
-  · cases e
-    rfl
-  simp only [List.length, List.cons_append, iterate_succ_apply]
-  convert IH e
-  simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
+  induction l₁ generalizing l₂ with
+  | nil => cases e; rfl
+  | cons b l₁ IH =>
+    simp only [List.length, iterate_succ_apply]
+    convert IH e
+    simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
 
 theorem trTape'_move_right (L R : ListBlank Γ) :
     (Tape.move Dir.right)^[n] (trTape' enc0 L R) = trTape' enc0 (L.cons R.head) R.tail := by
@@ -995,9 +1004,9 @@ theorem trTape'_move_right (L R : ListBlank Γ) :
     simp only [trTape'_move_left, ListBlank.cons_head_tail, ListBlank.head_cons,
       ListBlank.tail_cons]
   intro i _
-  induction' i with i IH
-  · rfl
-  rw [iterate_succ_apply, iterate_succ_apply', Tape.move_left_right, IH]
+  induction i with
+  | zero => rfl
+  | succ i IH => rw [iterate_succ_apply, iterate_succ_apply', Tape.move_left_right, IH]
 
 theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
     stepAux (write (enc a).toList q) v (trTape' enc0 L (ListBlank.cons b R)) =
@@ -1009,13 +1018,13 @@ theorem stepAux_write (q : Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (a b : Γ) (L R
     exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
-  induction' l₂ with a l₂ IH generalizing l₁ l₂'
-  · cases List.length_eq_zero_iff.1 e
-    rfl
-  rcases l₂' with - | ⟨b, l₂'⟩ <;>
-    simp only [List.length_nil, List.length_cons, Nat.succ_inj, reduceCtorEq] at e
-  rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
-  simp [stepAux, ListBlank.append, write]
+  induction l₂ generalizing l₁ l₂' with
+  | nil => cases List.length_eq_zero_iff.1 e; rfl
+  | cons a l₂ IH =>
+    rcases l₂' with - | ⟨b, l₂'⟩ <;>
+      simp only [List.length_nil, List.length_cons, Nat.succ_inj, reduceCtorEq] at e
+    rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
+    simp [stepAux, ListBlank.append, write]
 
 variable (encdec : ∀ a, dec (enc a) = a)
 include encdec
@@ -1027,8 +1036,7 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
     rw [read, this, stepAux_move, encdec, trTape'_move_left enc0]
     simp only [ListBlank.head_cons, ListBlank.cons_head_tail, ListBlank.tail_cons]
   obtain ⟨a, R, rfl⟩ := R.exists_cons
-  simp only [ListBlank.head_cons, ListBlank.tail_cons, trTape', ListBlank.cons_flatMap,
-    ListBlank.append_assoc]
+  simp only [ListBlank.head_cons, ListBlank.tail_cons, trTape', ListBlank.cons_flatMap]
   suffices ∀ i f L' R' l₁ l₂ h,
       stepAux (readAux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R') by
@@ -1038,16 +1046,16 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
   clear f L a R
   intro i f L' R' l₁ l₂ _
   subst i
-  induction' l₂ with a l₂ IH generalizing l₁
-  · rfl
-  trans
-    stepAux (readAux l₂.length fun v ↦ f (a ::ᵥ v)) v
-      (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))
-  · dsimp [readAux, stepAux]
-    simp only [ListBlank.head_cons, Tape.move_right_mk', ListBlank.tail_cons]
-    cases a <;> rfl
-  rw [← ListBlank.append, IH]
-  rfl
+  induction l₂ generalizing l₁ with
+  | nil => rfl
+  | cons a l₂ IH =>
+    trans stepAux (readAux l₂.length fun v ↦ f (a ::ᵥ v)) v
+        (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))
+    · dsimp [readAux, stepAux]
+      simp only [ListBlank.head_cons, Tape.move_right_mk', ListBlank.tail_cons]
+      cases a <;> rfl
+    · rw [← ListBlank.append, IH]
+      rfl
 
 variable {enc0} in
 theorem tr_respects :
@@ -1066,8 +1074,8 @@ theorem tr_respects :
     induction q generalizing v L R with
     | move d q IH =>
       cases d <;>
-          simp only [trNormal, iterate, stepAux_move, stepAux, ListBlank.head_cons,
-            Tape.move_left_mk', ListBlank.cons_head_tail, ListBlank.tail_cons,
+          simp only [trNormal, stepAux_move, stepAux,
+            Tape.move_left_mk',
             trTape'_move_left enc0, trTape'_move_right enc0] <;>
         apply IH
     | write f q IH =>
@@ -1075,20 +1083,20 @@ theorem tr_respects :
       refine ReflTransGen.head rfl ?_
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
-        trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
-      apply IH
+        trTape'_move_left enc0]
+      simpa using IH ..
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH
     | branch p q₁ q₂ IH₁ IH₂ =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, Tape.mk'_head]
-      cases p R.head v <;> [apply IH₂; apply IH₁]
+      grind
     | goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
       apply ReflTransGen.refl
     | halt =>
-      simp only [trNormal, stepAux, trCfg, stepAux_move, trTape'_move_left enc0,
-        trTape'_move_right enc0, trTape_mk']
+      simp only [trNormal, stepAux, trCfg,
+        trTape_mk']
       apply ReflTransGen.refl
 
 end
@@ -1129,10 +1137,10 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
     | move d q IH =>
       unfold writes at hw ⊢
       replace IH := IH hs hw; refine ⟨?_, IH.2⟩
-      cases d <;> simp only [trNormal, iterate, supportsStmt_move, IH]
+      cases d <;> simp only [trNormal, supportsStmt_move, IH]
     | write f q IH =>
       unfold writes at hw ⊢
-      simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, exists_prop, true_and]
+      simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, true_and]
         at hw ⊢
       replace IH := IH hs fun q hq ↦ hw q (Or.inr hq)
       refine ⟨supportsStmt_read _ fun a _ s ↦ hw _ (Or.inl ⟨_, rfl⟩), fun q' hq ↦ ?_⟩
@@ -1150,12 +1158,12 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
       replace IH₂ := IH₂ hs.2 fun q hq ↦ hw q (Or.inr hq)
       exact ⟨supportsStmt_read _ fun _ ↦ ⟨IH₁.1, IH₂.1⟩, fun q ↦ Or.rec (IH₁.2 _) (IH₂.2 _)⟩
     | goto l =>
-      simp only [writes, Finset.not_mem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
+      simp only [writes, Finset.notMem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
       refine supportsStmt_read _ fun a _ s ↦ ?_
       exact Finset.mem_biUnion.2 ⟨_, hs _ _, Finset.mem_insert_self _ _⟩
     | halt =>
-      simp only [writes, Finset.not_mem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
-      simp only [SupportsStmt, supportsStmt_move, trNormal]⟩
+      simp only [writes, Finset.notMem_empty]; refine ⟨?_, fun _ ↦ False.elim⟩
+      simp only [SupportsStmt, trNormal]⟩
 
 end TM1to1
 
@@ -1164,7 +1172,7 @@ end TM1to1
 
 To establish that TM0 and TM1 are equivalent computational models, we must also have a TM0 emulator
 in TM1. The main complication here is that TM0 allows an action to depend on the value at the head
-and local state, while TM1 doesn't (in order to have more programming language-like semantics).
+and local state, while TM1 does not (in order to have more programming language-like semantics).
 So we use a computed `goto` to go to a state that performs the desired action and then returns to
 normal execution.
 

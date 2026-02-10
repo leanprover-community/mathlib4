@@ -3,9 +3,11 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Independence.Basic
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 
@@ -20,6 +22,8 @@ the main conditional expectation file.
   `m₁`-measurable function, then `𝔼[f | m₂] = 𝔼[f]` almost everywhere.
 
 -/
+
+public section
 
 
 open TopologicalSpace Filter
@@ -36,11 +40,11 @@ variable {Ω E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpac
 /-- If `m₁, m₂` are independent σ-algebras and `f` is `m₁`-measurable, then `𝔼[f | m₂] = 𝔼[f]`
 almost everywhere. -/
 theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinite (μ.trim hle₂)]
-    (hf : StronglyMeasurable[m₁] f) (hindp : Indep m₁ m₂ μ) : μ[f|m₂] =ᵐ[μ] fun _ => μ[f] := by
+    (hf : StronglyMeasurable[m₁] f) (hindp : Indep m₁ m₂ μ) : μ[f | m₂] =ᵐ[μ] fun _ => μ[f] := by
   by_cases hfint : Integrable f μ
   swap; · rw [condExp_of_not_integrable hfint, integral_undef hfint]; rfl
   refine (ae_eq_condExp_of_forall_setIntegral_eq hle₂ hfint
-    (fun s _ hs => integrableOn_const.2 (Or.inr hs)) (fun s hms hs => ?_)
+    (fun s _ hs ↦ integrableOn_const hs.ne) (fun s hms hs => ?_)
       stronglyMeasurable_const.aestronglyMeasurable).symm
   rw [setIntegral_const]
   rw [← memLp_one_iff_integrable] at hfint
@@ -74,7 +78,5 @@ theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
     rwa [← integral_congr_ae huv, ←
       (setIntegral_congr_ae (hle₂ _ hms) _ : ∫ x in s, u x ∂μ = ∫ x in s, v x ∂μ)]
     filter_upwards [huv] with x hx _ using hx
-
-@[deprecated (since := "2025-01-21")] alias condexp_indep_eq := condExp_indep_eq
 
 end MeasureTheory

@@ -3,11 +3,13 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Shrink
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Finite.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Shrink
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem
@@ -63,6 +65,8 @@ combinatorial line, Ramsey theory, arithmetic progression
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
 
 -/
+
+@[expose] public section
 
 open Function
 open scoped Finset
@@ -140,7 +144,7 @@ variable {η' α' ι' : Type*}
 def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') : Subspace η' α' ι' where
   idxFun i := (l.idxFun <| eι.symm i).map eα eη
   proper e := (eι.exists_congr fun i ↦ by cases h : idxFun l i <;>
-    simp [*, funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
+    simp [*, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
 
 @[simp] lemma reindex_apply (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') (x i) :
     l.reindex eη eα eι x i = eα (l (eα.symm ∘ x ∘ eη) <| eι.symm i) := by
@@ -192,7 +196,7 @@ lemma coe_injective [Nontrivial α] : Injective ((⇑) : Line α ι → α → �
   rintro l m hlm
   ext i a
   obtain ⟨b, hba⟩ := exists_ne a
-  simp only [Option.mem_def, funext_iff] at hlm ⊢
+  simp only [funext_iff] at hlm ⊢
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · cases hi : idxFun m i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
   · cases hi : idxFun l i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
@@ -225,7 +229,7 @@ def toSubspace (l : Line (η → α) ι) : Subspace η α (ι × η) where
   cases h : l.idxFun ie.1 <;> simp [toSubspace, h, coe_apply, Subspace.coe_apply]
 
 @[simp] lemma toSubspace_isMono {l : Line (η → α) ι} {C : (ι × η → α) → κ} :
-    l.toSubspace.IsMono C ↔ l.IsMono fun x : ι → η → α  ↦ C fun (i, e) ↦ x i e := by
+    l.toSubspace.IsMono C ↔ l.IsMono fun x : ι → η → α ↦ C fun (i, e) ↦ x i e := by
   simp [Subspace.IsMono, IsMono, funext (toSubspace_apply _ _)]
 
 protected alias ⟨_, IsMono.toSubspace⟩ := toSubspace_isMono
@@ -272,7 +276,7 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
   refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
-  simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
+  simp only [Multiset.notMem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
@@ -300,7 +304,7 @@ theorem apply_def (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x
 theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
   simp only [Option.getD_none, h, l.apply_def]
 
-lemma apply_some (h : l.idxFun i = some a) : l x i = a := by simp [l.apply_def, h]
+lemma apply_some (h : l.idxFun i = some a) : l x i = a := by simp [h]
 
 @[simp]
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
@@ -433,7 +437,7 @@ private theorem exists_mono_in_high_dimension' :
       · simp only [prod_apply, s.is_focused q hq]
     -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).
     · rw [Multiset.map_cons, Multiset.map_map, Multiset.nodup_cons, Multiset.mem_map]
-      exact ⟨fun ⟨q, hq, he⟩ => h ⟨q, hq, he⟩, s.distinct_colors⟩
+      exact ⟨h, s.distinct_colors⟩
     -- Finally, we really do have `r+1` lines!
     · rw [Multiset.card_cons, Multiset.card_map, sr])
 
@@ -442,7 +446,7 @@ such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochr
 line. -/
 theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
-  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
+  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u, v} α (ULift.{u, v} κ)
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩

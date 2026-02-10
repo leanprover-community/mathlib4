@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Lemmas on cluster and accumulation points
@@ -16,12 +18,17 @@ clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map 
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
 
+public section
+
 open Set Filter Topology
 
 universe u v w
 
 variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : Type*}
   {x : X} {s s₁ s₂ t : Set X}
+
+@[simp]
+protected lemma ClusterPt.top : ClusterPt x ⊤ := by simp [ClusterPt]
 
 theorem clusterPt_sup {F G : Filter X} : ClusterPt x (F ⊔ G) ↔ ClusterPt x F ∨ ClusterPt x G := by
   simp only [ClusterPt, inf_sup_left, sup_neBot]
@@ -46,12 +53,21 @@ theorem ClusterPt.frequently {F : Filter X} {p : X → Prop} (hx : ClusterPt x F
     (hp : ∀ᶠ y in 𝓝 x, p y) : ∃ᶠ y in F, p y :=
   clusterPt_iff_frequently.mp hx {y | p y} hp
 
+theorem Filter.HasBasis.clusterPt_iff_frequently' {ι} {p : ι → Prop} {s : ι → Set X} {F : Filter X}
+    (hx : F.HasBasis p s) : ClusterPt x F ↔ ∀ i, p i → ∃ᶠ x in 𝓝 x, x ∈ s i := by
+  simp only [(𝓝 x).basis_sets.clusterPt_iff hx, Filter.frequently_iff]
+  exact ⟨fun h a b c d ↦ h d b, fun h a b c d ↦ h c d b⟩
+
+theorem clusterPt_iff_frequently' {F : Filter X} : ClusterPt x F ↔ ∀ s ∈ F, ∃ᶠ y in 𝓝 x, y ∈ s :=
+  F.basis_sets.clusterPt_iff_frequently'
+
+theorem ClusterPt.frequently' {F : Filter X} {p : X → Prop} (hx : ClusterPt x F)
+    (hp : ∀ᶠ y in F, p y) : ∃ᶠ y in 𝓝 x, p y :=
+  clusterPt_iff_frequently'.mp hx {y | p y} hp
+
 theorem clusterPt_iff_nonempty {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
-
-@[deprecated (since := "2025-03-16")]
-alias clusterPt_iff := clusterPt_iff_nonempty
 
 theorem clusterPt_iff_not_disjoint {F : Filter X} :
     ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
@@ -77,7 +93,7 @@ theorem clusterPt_principal_iff :
 
 theorem clusterPt_principal_iff_frequently :
     ClusterPt x (𝓟 s) ↔ ∃ᶠ y in 𝓝 x, y ∈ s := by
-  simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, exists_prop, mem_inter_iff]
+  simp only [clusterPt_principal_iff, frequently_iff, Set.Nonempty, mem_inter_iff]
 
 theorem ClusterPt.of_le_nhds {f : Filter X} (H : f ≤ 𝓝 x) [NeBot f] : ClusterPt x f := by
   rwa [ClusterPt, inf_eq_right.mpr H]
@@ -124,9 +140,18 @@ theorem MapClusterPt.tendsto_comp [TopologicalSpace Y] {f : X → Y} {y : Y}
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hu : MapClusterPt x F u) : MapClusterPt y F (f ∘ u) :=
   hu.tendsto_comp' (hf.mono_left inf_le_left)
 
+theorem mapClusterPt_id_iff [TopologicalSpace α] {a : α} : MapClusterPt a F id ↔ ClusterPt a F := by
+  rw [MapClusterPt, map_id]
+
+alias ⟨_, ClusterPt.mapClusterPt_id⟩ := mapClusterPt_id_iff
+
 theorem MapClusterPt.continuousAt_comp [TopologicalSpace Y] {f : X → Y} (hf : ContinuousAt f x)
     (hu : MapClusterPt x F u) : MapClusterPt (f x) F (f ∘ u) :=
   hu.tendsto_comp hf
+
+theorem ContinuousAt.mapClusterPt [TopologicalSpace α] {a : α} (hf : ContinuousAt u a)
+    (hu : ClusterPt a F) : MapClusterPt (u a) F u :=
+  hu.mapClusterPt_id.continuousAt_comp hf
 
 theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Prop} {s : ι → Set X}
     (hx : (𝓝 x).HasBasis p s) : MapClusterPt x F u ↔ ∀ i, p i → ∃ᶠ a in F, u a ∈ s i := by
@@ -134,9 +159,6 @@ theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Pro
 
 theorem mapClusterPt_iff_frequently : MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s :=
   (𝓝 x).basis_sets.mapClusterPt_iff_frequently
-
-@[deprecated (since := "2025-03-16")]
-alias mapClusterPt_iff := mapClusterPt_iff_frequently
 
 theorem MapClusterPt.frequently (h : MapClusterPt x F u) {p : X → Prop} (hp : ∀ᶠ y in 𝓝 x, p y) :
     ∃ᶠ a in F, p (u a) :=
@@ -152,6 +174,10 @@ theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p 
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
 
+theorem IsClosed.mem_of_mapClusterPt {l : X} {s : Set X} {f : α → X} {b : Filter α}
+    (hs : IsClosed s) (hf : MapClusterPt l b f) (h : ∀ᶠ (x : α) in b, f x ∈ s) : l ∈ s :=
+  (hf.frequently' h).mem_of_closed hs
+
 end MapClusterPt
 
 theorem accPt_sup {x : X} {F G : Filter X} :
@@ -161,27 +187,33 @@ theorem accPt_sup {x : X} {F G : Filter X} :
 theorem accPt_iff_clusterPt {x : X} {F : Filter X} : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 
-@[deprecated (since := "2025-04-20")]
-alias acc_iff_cluster := accPt_iff_clusterPt
-
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem accPt_principal_iff_clusterPt {x : X} {C : Set X} :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ { x })) := by
   rw [accPt_iff_clusterPt, inf_principal, inter_comm, diff_eq]
 
-@[deprecated (since := "2025-04-20")]
-alias acc_principal_iff_cluster := accPt_principal_iff_clusterPt
-
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/
 theorem accPt_iff_nhds {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
-  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty, exists_prop,
-    and_assoc, @and_comm (¬_ = x)]
+  simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff, Set.Nonempty,
+    and_assoc]
 
 /-- `x` is an accumulation point of a set `C` iff
 there are points near `x` in `C` and different from `x`. -/
 theorem accPt_iff_frequently {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
   simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff_frequently, and_comm]
+
+/--
+Variant of `accPt_iff_frequently`: A point `x` is an accumulation point of a set `C` iff points in
+punctured neighborhoods are frequently contained in `C`.
+-/
+theorem accPt_iff_frequently_nhdsNE {X : Type*} [TopologicalSpace X] {x : X} {C : Set X} :
+    AccPt x (𝓟 C) ↔ ∃ᶠ (y : X) in 𝓝[≠] x, y ∈ C := by
+  have : (∃ᶠ z in 𝓝[≠] x, z ∈ C) ↔ ∃ᶠ z in 𝓝 x, z ∈ C ∧ z ∈ ({x} : Set X)ᶜ :=
+    frequently_inf_principal.trans <| by simp only [and_comm]
+  rw [accPt_iff_frequently, this]
+  congr! 2
+  tauto
 
 theorem accPt_principal_iff_nhdsWithin : AccPt x (𝓟 s) ↔ (𝓝[s \ {x}] x).NeBot := by
   rw [accPt_principal_iff_clusterPt, ClusterPt, nhdsWithin]
@@ -222,8 +254,11 @@ theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ 
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 
-lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
+lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
+
+theorem mem_interior_iff_not_clusterPt_compl : x ∈ interior s ↔ ¬ClusterPt x (𝓟 sᶜ) := by
+  rw [← mem_closure_iff_clusterPt, closure_compl, mem_compl_iff, not_not]
 
 /-- If `x` is not an isolated point of a topological space, then `{x}ᶜ` is dense in the whole
 space. -/
@@ -263,12 +298,12 @@ theorem mem_closure_iff_comap_neBot :
 theorem mem_closure_iff_nhds_basis' {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → (s i ∩ t).Nonempty :=
   mem_closure_iff_clusterPt.trans <|
-    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [exists_prop, forall_const]
+    (h.clusterPt_iff (hasBasis_principal _)).trans <| by simp only [forall_const]
 
 theorem mem_closure_iff_nhds_basis {p : ι → Prop} {s : ι → Set X} (h : (𝓝 x).HasBasis p s) :
     x ∈ closure t ↔ ∀ i, p i → ∃ y ∈ t, y ∈ s i :=
   (mem_closure_iff_nhds_basis' h).trans <| by
-    simp only [Set.Nonempty, mem_inter_iff, exists_prop, and_comm]
+    simp only [Set.Nonempty, mem_inter_iff, and_comm]
 
 theorem clusterPt_iff_lift'_closure {F : Filter X} :
     ClusterPt x F ↔ pure x ≤ (F.lift' closure) := by

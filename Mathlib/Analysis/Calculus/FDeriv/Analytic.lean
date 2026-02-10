@@ -3,19 +3,21 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.CPolynomial
-import Mathlib.Analysis.Analytic.Inverse
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Analytic.CPolynomial
+public import Mathlib.Analysis.Analytic.Inverse
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
-# Frechet derivatives of analytic functions.
+# Fréchet derivatives of analytic functions.
 
-A function expressible as a power series at a point has a Frechet derivative there.
+A function expressible as a power series at a point has a Fréchet derivative there.
 Also the special case in terms of `deriv` when the domain is 1-dimensional.
 
 As an application, we show that continuous multilinear maps are smooth. We also compute their
@@ -30,7 +32,7 @@ iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
   open set `s`, so is its derivative.
 * `AnalyticOn.fderivWithin` : if a function is analytic on a set of unique differentiability,
   so is its derivative within this set.
-* `PartialHomeomorph.analyticAt_symm` : if a partial homeomorphism `f` is analytic at a
+* `OpenPartialHomeomorph.analyticAt_symm` : if an open partial homeomorphism `f` is analytic at a
   point `f.symm a`, with invertible derivative, then its inverse is analytic at `a`.
 
 ## Comments on completeness
@@ -60,6 +62,8 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 `AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
 
 -/
+
+public section
 
 open Filter Asymptotics Set
 
@@ -140,9 +144,13 @@ theorem AnalyticAt.hasStrictFDerivAt (h : AnalyticAt 𝕜 f x) :
   rw [hp.fderiv_eq]
   exact hp.hasStrictFDerivAt
 
+lemma AnalyticAt.hasStrictDerivAt {f : 𝕜 → F} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
+    HasStrictDerivAt f (deriv f x) x := by
+  simpa [hasStrictDerivAt_iff_hasStrictFDerivAt, toSpanSingleton_deriv] using hf.hasStrictFDerivAt
+
 theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) :
-    DifferentiableOn 𝕜 f (insert x s ∩ EMetric.ball x r) := by
+    DifferentiableOn 𝕜 f (insert x s ∩ Metric.eball x r) := by
   intro y hy
   have Z := (h.analyticWithinAt_of_mem hy).differentiableWithinAt
   rcases eq_or_ne y x with rfl | hy
@@ -153,8 +161,14 @@ theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
     exact self_mem_nhdsWithin
 
 theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
-    (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy =>
+    (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (Metric.eball x r) := fun _ hy =>
   (h.analyticAt_of_mem hy).differentiableWithinAt
+
+theorem HasFPowerSeriesAt.eventually_differentiableAt
+    [CompleteSpace F] (hp : HasFPowerSeriesAt f p x) :
+    ∀ᶠ z in 𝓝 x, DifferentiableAt 𝕜 f z := by
+  obtain ⟨r, hp⟩ := hp
+  exact hp.differentiableOn.eventually_differentiableAt (Metric.eball_mem_nhds _ hp.r_pos)
 
 theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s :=
   fun y hy ↦ (h y hy).differentiableWithinAt.mono (by simp)
@@ -205,7 +219,7 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
-  simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz
+  simpa only [edist_eq_enorm_sub, Metric.mem_eball] using hz
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
@@ -220,7 +234,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   · dsimp only
     rw [← h.fderivWithin_eq _ _ hu, add_sub_cancel]
-    · simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz.2
+    · simpa only [edist_eq_enorm_sub, Metric.mem_eball] using hz.2
     · simpa using hz.1
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. For a
@@ -256,7 +270,7 @@ protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn
   induction n with
   | zero =>
     rw [iteratedFDeriv_zero_eq_comp]
-    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_analyticOnNhd h
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E [×0]→L[𝕜] F).comp_analyticOnNhd h
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
     -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
@@ -316,13 +330,11 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   rw [this] at Z
   convert Z with n
   ext v
-  simp only [FormalMultilinearSeries.derivSeries,
+  simp only [FormalMultilinearSeries.derivSeries, ContinuousLinearMap.coe_sum', Finset.sum_apply,
     ContinuousLinearMap.compFormalMultilinearSeries_apply,
     FormalMultilinearSeries.changeOriginSeries,
     ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
-    ContinuousLinearMap.coe_sum', Finset.sum_apply,
-    Matrix.zero_empty]
+    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum]
   rfl
 
 /-- If a function has a power series within a set on a ball, then so does its derivative. Version
@@ -355,7 +367,7 @@ protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
   induction n with
   | zero =>
     rw [iteratedFDerivWithin_zero_eq_comp]
-    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F)
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E [×0]→L[𝕜] F)
       |>.comp_analyticOn h
   | succ n IH =>
     rw [iteratedFDerivWithin_succ_eq_comp_left]
@@ -387,18 +399,18 @@ theorem AnalyticOnNhd.iteratedFDeriv_of_isOpen (h : AnalyticOnNhd 𝕜 f s) (hs 
   exact (h.iteratedFDerivWithin hs.uniqueDiffOn n).congr
     (fun x hx ↦ (iteratedFDerivWithin_of_isOpen n hs hx).symm)
 
-/-- If a partial homeomorphism `f` is analytic at a point `a`, with invertible derivative, then
-its inverse is analytic at `f a`. -/
-theorem PartialHomeomorph.analyticAt_symm' (f : PartialHomeomorph E F) {a : E}
+/-- If an open partial homeomorphism `f` is analytic at a point `a`, with invertible derivative,
+then its inverse is analytic at `f a`. -/
+theorem OpenPartialHomeomorph.analyticAt_symm' (f : OpenPartialHomeomorph E F) {a : E}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) (h : AnalyticAt 𝕜 f a) (h' : fderiv 𝕜 f a = i) :
     AnalyticAt 𝕜 f.symm (f a) := by
   rcases h with ⟨p, hp⟩
   have : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i := by simp [← h', hp.fderiv_eq]
   exact (f.hasFPowerSeriesAt_symm h0 hp this).analyticAt
 
-/-- If a partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible derivative,
-then its inverse is analytic at `a`. -/
-theorem PartialHomeomorph.analyticAt_symm (f : PartialHomeomorph E F) {a : F}
+/-- If an open partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible
+derivative, then its inverse is analytic at `a`. -/
+theorem OpenPartialHomeomorph.analyticAt_symm (f : OpenPartialHomeomorph E F) {a : F}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.target) (h : AnalyticAt 𝕜 f (f.symm a))
     (h' : fderiv 𝕜 f (f.symm a) = i) :
     AnalyticAt 𝕜 f.symm a := by
@@ -442,12 +454,12 @@ theorem AnalyticOnNhd.iterated_deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
-protected theorem AnalyticAt.deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
+@[fun_prop] protected theorem AnalyticAt.deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     AnalyticAt 𝕜 (deriv f) x := by
   obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
   exact h.deriv x (by simp [hr])
 
-theorem AnalyticAt.iterated_deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) (n : ℕ) :
+@[fun_prop] theorem AnalyticAt.iterated_deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) (n : ℕ) :
     AnalyticAt 𝕜 (deriv^[n] f) x := by
   induction n with
   | zero => exact h
@@ -463,13 +475,18 @@ variable {f : E → F} {x : E} {s : Set E}
 results as for analytic functions, but without the assumptions that `F` is complete. -/
 
 theorem HasFiniteFPowerSeriesOnBall.differentiableOn
-    (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (EMetric.ball x r) :=
+    (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (Metric.eball x r) :=
   fun _ hy ↦ (h.cpolynomialAt_of_mem hy).analyticAt.differentiableWithinAt
+
+theorem HasFiniteFPowerSeriesOnBall.hasStrictFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
+    {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
+    HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
+  (h.changeOrigin hy).toHasFPowerSeriesOnBall.hasFPowerSeriesAt.hasStrictFDerivAt
 
 theorem HasFiniteFPowerSeriesOnBall.hasFDerivAt (h : HasFiniteFPowerSeriesOnBall f p x n r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
-  (h.changeOrigin hy).toHasFPowerSeriesOnBall.hasFPowerSeriesAt.hasFDerivAt
+  (h.hasStrictFDerivAt hy).hasFDerivAt
 
 theorem HasFiniteFPowerSeriesOnBall.fderiv_eq (h : HasFiniteFPowerSeriesOnBall f p x n r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
@@ -488,7 +505,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
       ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
-  simpa only [edist_eq_enorm_sub, EMetric.mem_ball] using hz
+  simpa only [edist_eq_enorm_sub, Metric.mem_eball] using hz
 
 /-- If a function has a finite power series on a ball, then so does its derivative.
 This is a variant of `HasFiniteFPowerSeriesOnBall.fderiv` where the degree of `f` is `< n`
@@ -500,8 +517,8 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p
     refine HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (fun y hy ↦ ?_) h.r_pos fun n ↦ ?_
     · rw [Filter.EventuallyEq.fderiv_eq (f := fun _ ↦ 0)]
       · simp
-      · exact Filter.eventuallyEq_iff_exists_mem.mpr ⟨EMetric.ball x r,
-          EMetric.isOpen_ball.mem_nhds hy, fun z hz ↦ by rw [h.eq_zero_of_bound_zero z hz]⟩
+      · exact Filter.eventuallyEq_iff_exists_mem.mpr ⟨Metric.eball x r,
+          Metric.isOpen_eball.mem_nhds hy, fun z hz ↦ by rw [h.eq_zero_of_bound_zero z hz]⟩
     · apply ContinuousMultilinearMap.ext; intro a
       change (continuousMultilinearCurryFin1 𝕜 E F) (p.changeOriginSeries 1 n a) = 0
       rw [p.changeOriginSeries_finite_of_finite h.finite 1 (Nat.zero_le _)]
@@ -522,7 +539,7 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
   induction n with
   | zero =>
     rw [iteratedFDeriv_zero_eq_comp]
-    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_cpolynomialOn h
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E [×0]→L[𝕜] F).comp_cpolynomialOn h
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
     convert ContinuousLinearMap.comp_cpolynomialOn ?g IH.fderiv
@@ -572,7 +589,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
       changeOrigin, FormalMultilinearSeries.sum]
   cases isEmpty_or_nonempty ι
-  · have (l) : 1 + l ≠ Fintype.card ι := by
+  · have (l : _) : 1 + l ≠ Fintype.card ι := by
       rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
     simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
   rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
@@ -594,15 +611,76 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
-  congr; ext j
-  obtain rfl | hj := eq_or_ne j i
-  · rw [Function.update_self, if_pos rfl]
-  · rw [Function.update_of_ne hj, if_neg hj]
+  congr
+  grind
 
-protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
+protected theorem hasStrictFDerivAt [DecidableEq ι] : HasStrictFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
-  convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
+  convert f.hasFiniteFPowerSeriesOnBall.hasStrictFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
+
+protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x :=
+  (f.hasStrictFDerivAt _).hasFDerivAt
+
+protected theorem hasStrictFDerivAt_uncurry [DecidableEq ι]
+    (fa : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i) :
+    HasStrictFDerivAt (fun fx : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i ↦ fx.1 fx.2)
+      (apply 𝕜 E F fa.2 ∘L .fst _ _ _ + fa.1.linearDeriv fa.2 ∘L .snd _ _ _) fa := by
+  let f := ContinuousLinearMap.id 𝕜 (ContinuousMultilinearMap 𝕜 E F)
+    |>.continuousMultilinearMapOption
+  have Hf := (f.hasStrictFDerivAt (fun _ ↦ fa)).comp (f := fun fx _ ↦ fx) fa
+    (hasStrictFDerivAt_pi.2 fun _ ↦ hasStrictFDerivAt_id _)
+  convert Hf using 1
+  ext g
+  · suffices ∑ i, fa.1 (Function.update fa.2 i 0) =
+        ∑ i, fa.1 fun j ↦ (Function.update (fun _ ↦ fa) (some i) (g, 0) (some j)).2 j by
+      simpa [f, ContinuousLinearMap.continuousMultilinearMapOption]
+    congr with i
+    congr with j
+    rcases eq_or_ne j i with rfl | hij <;> simp [*]
+  · suffices ∑ i, fa.1 (Function.update fa.2 i (g i)) =
+        ∑ x, fa.1 fun i ↦ (Function.update (fun x ↦ fa) (some x) (0, g) (some i)).2 i by
+      simpa [f, ContinuousLinearMap.continuousMultilinearMapOption]
+    congr with i
+    congr with j
+    rcases eq_or_ne j i with rfl | hij <;> simp [*]
+
+theorem _root_.HasStrictFDerivAt.continuousMultilinearMap_apply {G : Type*}
+    [NormedAddCommGroup G] [NormedSpace 𝕜 G] [DecidableEq ι] {x : G}
+    {f : G → ContinuousMultilinearMap 𝕜 E F} {g : ∀ i, G → E i}
+    {f' : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F} {g' : ∀ i, G →L[𝕜] E i}
+    (hf : HasStrictFDerivAt f f' x) (hg : ∀ i, HasStrictFDerivAt (g i) (g' i) x) :
+    HasStrictFDerivAt (fun x ↦ f x (g · x))
+      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘L f' +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i) x := by
+  convert ContinuousMultilinearMap.hasStrictFDerivAt_uncurry (f x, (g · x))
+    |>.comp x (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
+  ext
+  simp
+
+theorem _root_.HasFDerivWithinAt.continuousMultilinearMap_apply {G : Type*}
+    [NormedAddCommGroup G] [NormedSpace 𝕜 G] [DecidableEq ι] {s : Set G} {x : G}
+    {f : G → ContinuousMultilinearMap 𝕜 E F} {g : ∀ i, G → E i}
+    {f' : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F} {g' : ∀ i, G →L[𝕜] E i}
+    (hf : HasFDerivWithinAt f f' s x) (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
+    HasFDerivWithinAt (fun x ↦ f x (g · x))
+      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘L f' +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i) s x := by
+  convert ContinuousMultilinearMap.hasStrictFDerivAt_uncurry (f x, (g · x))
+    |>.hasFDerivAt.comp_hasFDerivWithinAt x (hf.prodMk (hasFDerivWithinAt_pi.2 hg))
+  ext
+  simp
+
+theorem _root_.HasFDerivAt.continuousMultilinearMap_apply {G : Type*}
+    [NormedAddCommGroup G] [NormedSpace 𝕜 G] [DecidableEq ι] {x : G}
+    {f : G → ContinuousMultilinearMap 𝕜 E F} {g : ∀ i, G → E i}
+    {f' : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F} {g' : ∀ i, G →L[𝕜] E i}
+    (hf : HasFDerivAt f f' x) (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
+    HasFDerivAt (fun x ↦ f x (g · x))
+      (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘L f' +
+        ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i) x := by
+  simp only [← hasFDerivWithinAt_univ] at *
+  exact hf.continuousMultilinearMap_apply hg
 
 /-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
 to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. Version inside a set. -/
@@ -612,9 +690,7 @@ theorem _root_.HasFDerivWithinAt.multilinear_comp
     (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (fun x ↦ f (fun i ↦ g i x))
       ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) s x := by
-  convert (f.hasFDerivAt (fun j ↦ g j x)).comp_hasFDerivWithinAt x (hasFDerivWithinAt_pi.2 hg)
-  ext v
-  simp [linearDeriv]
+  simpa using (hasFDerivWithinAt_const f x s).continuousMultilinearMap_apply hg
 
 /-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
 to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. -/
@@ -624,14 +700,12 @@ theorem _root_.HasFDerivAt.multilinear_comp
     (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
       ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) x := by
-  convert (f.hasFDerivAt (fun j ↦ g j x)).comp x (hasFDerivAt_pi.2 hg)
-  ext v
-  simp [linearDeriv]
+  simpa using (hasFDerivAt_const f x).continuousMultilinearMap_apply hg
 
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
 over embedding of `Fin k` and `Fin (k + 1)`. -/
 private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
-    {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
+    {n : ℕ} (e : Fin (n + 1) ↪ ι) {k : ι}
     (h'k : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1) (hk : k ∈ Set.range e) :
     Fin.succ ((Equiv.embeddingFinSucc n ι e).1.toEquivRange.symm ⟨k, h'k⟩)
       = e.toEquivRange.symm ⟨k, hk⟩ := by
@@ -658,7 +732,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       have A : HasFDerivAt (f.iteratedFDeriv n) (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 _ Subtype.val x))
             ∘L (Pi.compRightL 𝕜 _ Subtype.val)) x := by
-        apply HasFDerivAt.sum (fun s _hs ↦ ?_)
+        apply HasFDerivAt.fun_sum (fun s _hs ↦ ?_)
         exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
       rwa [← H] at A
     ext v m
@@ -691,7 +765,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_of_ne]
       contrapose! hke
-      rw [show k = _ from Subtype.ext_iff_val.1 hke, Equiv.embeddingFinSucc_snd e]
+      rw [show k = _ from Subtype.ext_iff.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
   · rintro n -
     apply continuous_finset_sum _ (fun e _ ↦ ?_)
@@ -706,9 +780,6 @@ theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
       ≤ Nat.descFactorial (Fintype.card ι) n * ‖f‖ * ‖x‖ ^ (Fintype.card ι - n) := by
   rw [f.iteratedFDeriv_eq]
   exact f.norm_iteratedFDeriv_le' n x
-
-@[deprecated (since := "2025-02-15")] alias cPolynomialAt := cpolynomialAt
-@[deprecated (since := "2025-02-15")] alias cPolynomialOn := cpolynomialOn
 
 end ContinuousMultilinearMap
 
@@ -745,10 +816,7 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {f : E → F} {x : E} {r : ℝ�
 include h in
 theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
   ext
-  convert (h.hasSum <| EMetric.mem_ball_self h.r_pos).tsum_eq.symm
-  · rw [iteratedFDeriv_zero_apply, add_zero]
-  · rw [tsum_eq_single 0 fun n hn ↦ by haveI := NeZero.mk hn; exact (p n).map_zero]
-    exact congr(p 0 $(Subsingleton.elim _ _))
+  simpa using (coeff_zero h _).symm
 
 open ContinuousLinearMap
 
@@ -777,7 +845,7 @@ theorem factorial_smul (n : ℕ) :
       ← ContinuousLinearMap.smul_apply, factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
-theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :
+theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ Metric.eball 0 r) :
     HasSum (fun n ↦ (n ! : 𝕜)⁻¹ • iteratedFDeriv 𝕜 n f x fun _ ↦ y) (f (x + y)) := by
   convert h.hasSum hy with n
   rw [← h.factorial_smul y n, smul_comm, ← smul_assoc, nsmul_eq_mul,
@@ -799,30 +867,9 @@ theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
     (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) (v : E × Π i, G i) :
     HasFDerivAt (fun (p : E × Π i, G i) ↦ f p.1 p.2)
       ((f.flipMultilinear v.2) ∘L (.fst _ _ _) +
-        ∑ i : ι, ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _)) v := by
-  convert HasFDerivAt.multilinear_comp (f.continuousMultilinearMapOption)
-    (g := fun (_ : Option ι) p ↦ p) (g' := fun _ ↦ ContinuousLinearMap.id _ _) (x := v)
-    (fun _ ↦ hasFDerivAt_id _)
-  have I : f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) none =
-      (f.flipMultilinear v.2) ∘L (.fst _ _ _) := by
-    simp [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption]
-    apply ContinuousLinearMap.ext (fun w ↦ ?_)
-    simp
-  have J : ∀ (i : ι), f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) (some i)
-      = ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _) := by
-    intro i
-    apply ContinuousLinearMap.ext (fun w ↦ ?_)
-    simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption,
-      coe_mk', MultilinearMap.toLinearMap_apply, ContinuousMultilinearMap.coe_coe,
-      MultilinearMap.coe_mkContinuous, MultilinearMap.coe_mk, ne_eq, reduceCtorEq,
-      not_false_eq_true, Function.update_of_ne, coe_comp', coe_snd', Function.comp_apply,
-      proj_apply]
-    congr
-    ext j
-    rcases eq_or_ne j i with rfl | hij
-    · simp
-    · simp [hij]
-  simp [I, J]
+        ∑ i : ι, ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _)) v :=
+  (f ∘L .fst 𝕜 E (∀ i, G i)).hasFDerivAt.continuousMultilinearMap_apply
+    (hasFDerivAt_pi'.mp (hasFDerivAt_snd (E := E) (F := ∀ i, G i)))
 
 /-- Given `f` a linear map into multilinear maps, then the derivative
 of `x ↦ f (a x) (b₁ x, ..., bₙ x)` at `x` applied to a vector `v` is given by
@@ -834,11 +881,8 @@ theorem _root_.HasFDerivWithinAt.linear_multilinear_comp
     (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
     HasFDerivWithinAt (fun y ↦ f (a y) (fun i ↦ b i y))
       ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
-        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) s x := by
-  convert (hasFDerivAt_uncurry_of_multilinear f (a x, fun i ↦ b i x)).comp_hasFDerivWithinAt x
-    (ha.prodMk (hasFDerivWithinAt_pi.mpr hb))
-  ext v
-  simp
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) s x :=
+  (f.hasFDerivAt.comp_hasFDerivWithinAt x ha).continuousMultilinearMap_apply hb
 
 /-- Given `f` a linear map into multilinear maps, then the derivative
 of `x ↦ f (a x) (b₁ x, ..., bₙ x)` at `x` applied to a vector `v` is given by
@@ -849,8 +893,7 @@ theorem _root_.HasFDerivAt.linear_multilinear_comp [DecidableEq ι] {a : H → E
     (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
     HasFDerivAt (fun y ↦ f (a y) (fun i ↦ b i y))
       ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
-        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) x := by
-  simp_rw [← hasFDerivWithinAt_univ] at ha hb ⊢
-  exact HasFDerivWithinAt.linear_multilinear_comp ha hb f
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) x :=
+  (f.hasFDerivAt.comp x ha).continuousMultilinearMap_apply hb
 
 end ContinuousLinearMap

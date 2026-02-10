@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Normed division rings and fields
@@ -20,6 +22,8 @@ Methods for constructing a normed field instance from a given real absolute valu
 given in:
 * AbsoluteValue.toNormedField
 -/
+
+@[expose] public section
 
 -- Guard against import creep.
 assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
@@ -115,9 +119,8 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
   · have : IsOpen {(0 : 𝕜)} := isOpen_discrete {0}
     simp_rw [Metric.isOpen_singleton_iff, dist_eq_norm, sub_zero] at this
     obtain ⟨ε, εpos, h'⟩ := this
-    wlog h : ‖x‖ < 1 generalizing 𝕜 with H
-    · push_neg at h
-      rcases h.eq_or_lt with h|h
+    wlog! h : ‖x‖ < 1 generalizing 𝕜 with H
+    · rcases h.eq_or_lt with h | h
       · rw [h]
       replace h := norm_inv x ▸ inv_lt_one_of_one_lt₀ h
       rw [← inv_inj, inv_one, ← norm_inv]
@@ -130,16 +133,13 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
 @[simp]
 lemma norm_le_one_of_discrete
     (x : 𝕜) : ‖x‖ ≤ 1 := by
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
 lemma unitClosedBall_eq_univ_of_discrete : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
   ext
   simp
-
-@[deprecated (since := "2024-12-01")]
-alias discreteTopology_unit_closedBall_eq_univ := unitClosedBall_eq_univ_of_discrete
 
 end Discrete
 
@@ -162,7 +162,7 @@ class NontriviallyNormedField (α : Type*) extends NormedField α where
   non_trivial : ∃ x : α, 1 < ‖x‖
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
-which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
+which means it is also nontrivially normed. However, not all nontrivially normed fields are densely
 normed; in particular, the `Padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type*) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
@@ -246,9 +246,6 @@ theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
   refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_eq_left).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 
-@[deprecated (since := "2025-03-02")]
-alias punctured_nhds_neBot := nhdsNE_neBot
-
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
   simpa only [isUnit_iff_ne_zero] using nhdsNE_neBot (0 : α)
@@ -288,14 +285,14 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
   toNormedField := h'
   non_trivial := by
     rcases h with ⟨x, hx, hx1⟩
-    rcases hx1.lt_or_lt with hlt | hlt
+    rcases hx1.lt_or_gt with hlt | hlt
     · use x⁻¹
       rw [norm_inv]
       exact (one_lt_inv₀ (norm_pos_iff.2 hx)).2 hlt
     · exact ⟨x, hlt⟩
 
 noncomputable instance Real.normedField : NormedField ℝ :=
-  { Real.normedAddCommGroup, Real.field with
+  { Real.normedAddCommGroup, Real.instField with
     norm_mul := abs_mul }
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where

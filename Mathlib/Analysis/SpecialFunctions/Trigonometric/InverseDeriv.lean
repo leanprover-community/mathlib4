@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # derivatives of the inverse trigonometric functions
 
 Derivatives of `arcsin` and `arccos`.
 -/
+
+public section
 
 noncomputable section
 
@@ -23,14 +27,14 @@ section Arcsin
 
 theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasStrictDerivAt arcsin (1 / √(1 - x ^ 2)) x ∧ ContDiffAt ℝ ω arcsin x := by
-  rcases h₁.lt_or_lt with h₁ | h₁
+  rcases h₁.lt_or_gt with h₁ | h₁
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₁]
     rw [sqrt_eq_zero'.2 this.le, div_zero]
     have : arcsin =ᶠ[𝓝 x] fun _ => -(π / 2) :=
       (gt_mem_nhds h₁).mono fun y hy => arcsin_of_le_neg_one hy.le
     exact ⟨(hasStrictDerivAt_const x _).congr_of_eventuallyEq this.symm,
       contDiffAt_const.congr_of_eventuallyEq this⟩
-  rcases h₂.lt_or_lt with h₂ | h₂
+  rcases h₂.lt_or_gt with h₂ | h₂
   · have : 0 < √(1 - x ^ 2) := sqrt_pos.2 (by nlinarith [h₁, h₂])
     simp only [← cos_arcsin, one_div] at this ⊢
     exact ⟨sinPartialHomeomorph.hasStrictDerivAt_symm ⟨h₁, h₂⟩ this.ne' (hasStrictDerivAt_sin _),
@@ -75,13 +79,13 @@ theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
   have : sin ∘ arcsin =ᶠ[𝓝[≥] (-1 : ℝ)] id := by
     filter_upwards [Icc_mem_nhdsGE (neg_lt_self zero_lt_one)] with x using sin_arcsin'
   have := h.hasDerivWithinAt.sin.congr_of_eventuallyEq this.symm (by simp)
-  simpa using (uniqueDiffOn_Ici _ _ left_mem_Ici).eq_deriv _ this (hasDerivWithinAt_id _ _)
+  simpa using (uniqueDiffOn_Ici _ _ self_mem_Ici).eq_deriv _ this (hasDerivWithinAt_id _ _)
 
 theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by
   refine ⟨fun h => ?_, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
   rw [← neg_neg x, ← image_neg_Ici] at h
-  have := (h.comp (-x) differentiableWithinAt_id.neg (mapsTo_image _ _)).neg
+  have := (h.comp (-x) differentiableWithinAt_id.fun_neg (mapsTo_image _ _)).fun_neg
   simpa [(· ∘ ·), differentiableWithinAt_arcsin_Ici] using this
 
 theorem differentiableAt_arcsin {x : ℝ} : DifferentiableAt ℝ arcsin x ↔ x ≠ -1 ∧ x ≠ 1 :=
@@ -107,8 +111,7 @@ theorem contDiffOn_arcsin {n : WithTop ℕ∞} : ContDiffOn ℝ n arcsin {-1, 1}
 
 theorem contDiffAt_arcsin_iff {x : ℝ} {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arcsin x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 :=
-  ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt <|
-      ENat.one_le_iff_ne_zero_withTop.mpr hn,
+  ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt hn,
     fun h => h.elim (fun hn => hn.symm ▸ (contDiff_zero.2 continuous_arcsin).contDiffAt) fun hx =>
       contDiffAt_arcsin hx.1 hx.2⟩
 

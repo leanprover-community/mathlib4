@@ -3,30 +3,28 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Analysis.Convex.Star
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.NoncommRing
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Tactic.Field
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+public import Mathlib.Tactic.NoncommRing
 
 /-!
-# Convex sets and functions in vector spaces
+# Convex sets
 
-In a 𝕜-vector space, we define the following objects and properties.
+In a 𝕜-vector space, we define the following property:
 * `Convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
-* `stdSimplex 𝕜 ι`: The standard simplex in `ι → 𝕜` (currently requires `Fintype ι`). It is the
-  intersection of the positive quadrant with the hyperplane `s.sum = 1`.
 
-We also provide various equivalent versions of the definitions above, prove that some specific sets
-are convex.
+We provide various equivalent versions, and prove that some specific sets are convex.
 
 ## TODO
 
 Generalize all this file to affine spaces.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 E F β : Type*}
@@ -124,6 +122,9 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
 
+theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+  by_cases hP : P <;> simp [hP, hs, convex_univ]
+
 end SMul
 
 section Module
@@ -168,6 +169,8 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
+/-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+  linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
   exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
@@ -176,17 +179,13 @@ theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinear
     Convex 𝕜 (f '' s) :=
   hs.linear_image <| hf.mk' f
 
-theorem Convex.linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
-    [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) (f : E →ₗ[𝕜₁] F) :
-    Convex 𝕜 (f ⁻¹' s) := fun x hx y hy a b ha hb hab => by
-  rw [mem_preimage, f.map_add, LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower]
-  exact hs hx hy ha hb hab
+theorem Convex.linear_preimage {s : Set F} (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f ⁻¹' s) :=
+  fun x hx y hy a b ha hb hab => by
+    rw [mem_preimage, f.map_add, LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower]
+    exact hs hx hy ha hb hab
 
-theorem Convex.is_linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
-  [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) {f : E → F}
-  (hf : IsLinearMap 𝕜₁ f) :
-    Convex 𝕜 (f ⁻¹' s) :=
-  hs.linear_preimage <| hf.mk' f
+theorem Convex.is_linear_preimage {s : Set F} (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
+    Convex 𝕜 (f ⁻¹' s) := hs.linear_preimage <| hf.mk' f
 
 theorem Convex.add {t : Set E} (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s + t) := by
   rw [← add_image_prod]
@@ -241,7 +240,7 @@ theorem Convex.translate_preimage_left (hs : Convex 𝕜 s) (z : E) :
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
 
 theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab =>
   calc
@@ -257,12 +256,8 @@ theorem convex_Icc (r s : β) : Convex 𝕜 (Icc r s) :=
 
 theorem convex_halfSpace_le {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w ≤ r } :=
   (convex_Iic r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_le := convex_halfSpace_le
-
 theorem convex_halfSpace_ge {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r ≤ f w } :=
   (convex_Ici r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_ge := convex_halfSpace_ge
-
 theorem convex_hyperplane {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w = r } := by
   simp_rw [le_antisymm_iff]
   exact (convex_halfSpace_le h r).inter (convex_halfSpace_ge h r)
@@ -272,7 +267,7 @@ end OrderedAddCommMonoid
 section OrderedCancelAddCommMonoid
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
-  [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
   intro x hx y hy a b ha hb hab
@@ -299,17 +294,13 @@ theorem convex_Ioc (r s : β) : Convex 𝕜 (Ioc r s) :=
 
 theorem convex_halfSpace_lt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w < r } :=
   (convex_Iio r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_lt := convex_halfSpace_lt
-
 theorem convex_halfSpace_gt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r < f w } :=
   (convex_Ioi r).is_linear_preimage h
-@[deprecated (since := "2024-11-12")] alias convex_halfspace_gt := convex_halfSpace_gt
-
 end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
 
 theorem convex_uIcc (r s : β) : Convex 𝕜 (uIcc r s) :=
   convex_Icc _ _
@@ -318,12 +309,27 @@ end LinearOrderedAddCommMonoid
 
 end Module
 
+section IsScalarTower
+
+variable [ZeroLEOneClass 𝕜] [Module 𝕜 E]
+variable (R : Type*) [Semiring R] [PartialOrder R] [Module R E]
+variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
+
+/-- Lift the convexity of a set up through a scalar tower. -/
+theorem Convex.lift [SMulPosMono R 𝕜] {s : Set E} (hs : Convex 𝕜 s) : Convex R s := by
+  intro x hx y hy a b ha hb hab
+  suffices (a • (1 : 𝕜)) • x + (b • (1 : 𝕜)) • y ∈ s by simpa using this
+  refine hs hx hy ?_ ?_ (by simpa [add_smul] using congr($(hab) • (1 : 𝕜)))
+  all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
+
+end IsScalarTower
+
 end AddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
 variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
-  [PartialOrder β] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+  [PartialOrder β] [Module 𝕜 E] [PosSMulMono 𝕜 E]
   {s : Set E} {f : E → β}
 
 theorem MonotoneOn.convex_le (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
@@ -361,7 +367,7 @@ theorem AntitoneOn.convex_ge (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β)
 
 theorem AntitoneOn.convex_gt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (β := βᵒᵈ)  hf hs r
+  MonotoneOn.convex_lt (β := βᵒᵈ) hf hs r
 
 theorem Monotone.convex_le (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
@@ -452,7 +458,7 @@ theorem Convex.affine_image (f : E →ᵃ[𝕜] F) (hs : Convex 𝕜 s) : Convex
   exact (hs hx).affine_image _
 
 theorem Convex.neg (hs : Convex 𝕜 s) : Convex 𝕜 (-s) :=
-  hs.is_linear_preimage IsLinearMap.isLinearMap_neg (𝕜₁ := 𝕜)
+  hs.is_linear_preimage IsLinearMap.isLinearMap_neg
 
 theorem Convex.sub (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s - t) := by
   rw [sub_eq_add_neg]
@@ -472,7 +478,7 @@ theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 
 
 theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
     MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
-  simpa only [mapsTo', segment_eq_image_lineMap] using h.segment_subset hx hy
+  simpa only [mapsTo_iff_image_subset, segment_eq_image_lineMap] using h.segment_subset hx hy
 
 theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
     (ht : t ∈ Icc 0 1) : AffineMap.lineMap x y t ∈ s :=
@@ -487,9 +493,29 @@ end AddCommGroup
 
 end OrderedRing
 
-section LinearOrderedSemiring
+section LinearOrder
 
-variable [Semiring 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [AddCommMonoid E]
+section SemilinearMap
+
+variable [PartialOrder 𝕜]
+variable {𝕜' : Type*} [Semiring 𝕜'] [PartialOrder 𝕜']
+variable {σ : 𝕜 →+* 𝕜'} [RingHomSurjective σ]
+variable {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F'] [Module 𝕜 E]
+
+theorem Convex.semilinear_image {s : Set E} (hs : Convex 𝕜 s) (hσ : ∀ {s t}, σ s ≤ σ t ↔ s ≤ t)
+    (f : E →ₛₗ[σ] F') : Convex 𝕜' (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  obtain ⟨r, rfl⟩ : ∃ r : 𝕜, σ r = a := RingHomSurjective.is_surjective ..
+  obtain ⟨t, rfl⟩ : ∃ t : 𝕜, σ t = b := RingHomSurjective.is_surjective ..
+  refine ⟨r • x + t • y, hs hx hy (by simp_all [(@hσ 0 r).mp]) (by simp_all [(@hσ 0 t).mp])
+    ?_, by simp⟩
+  apply_fun σ using Function.Injective.of_eq_imp_le (hσ.mp ·.le)
+  simpa
+
+end SemilinearMap
+
+variable [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (x + y) ≤ (f x) + (f y))
     (hf2 : ∀ ⦃c⦄ x, 0 ≤ c → f (c • x) ≤ c * f x) (B : 𝕜) :
@@ -501,7 +527,7 @@ theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (
     _ ≤ a • B + b • B := by gcongr <;> assumption
     _ ≤ B := by rw [← add_smul, hs, one_smul]
 
-end LinearOrderedSemiring
+end LinearOrder
 
 theorem Convex.midpoint_mem [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [Invertible (2 : 𝕜)] {s : Set E} {x y : E}
@@ -536,9 +562,9 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
   · replace hpq : 0 < p + q :=
       (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff_of_nonneg hp hq).1 hpq)
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
-    match_scalars <;> field_simp
+    match_scalars <;> field
 
-theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
+protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     (p + q) • s = p • s + q • s := (add_smul_subset _ _ _).antisymm <| by
   rintro _ ⟨_, ⟨v₁, h₁, rfl⟩, _, ⟨v₂, h₂, rfl⟩, rfl⟩
   exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
@@ -555,18 +581,18 @@ Relates `Convex` and `OrdConnected`.
 
 section
 
-theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-    [OrderedSMul 𝕜 E] {s : Set E} (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
+theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+    [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E}
+    (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
   refine convex_iff_segment_subset.mpr fun x hx y hy => ?_
   obtain hxy | hyx := h.total hx hy
   · exact (segment_subset_Icc hxy).trans (hs.out hx hy)
   · rw [segment_symm]
     exact (segment_subset_Icc hyx).trans (hs.out hy hx)
 
-theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-    [OrderedSMul 𝕜 E] {s : Set E} (hs : s.OrdConnected) : Convex 𝕜 s :=
+theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [LinearOrder E]
+    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E} (hs : s.OrdConnected) :
+    Convex 𝕜 s :=
   hs.convex_of_chain <| isChain_of_trichotomous s
 
 theorem convex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} :
@@ -591,95 +617,30 @@ protected theorem convex (K : Submodule 𝕜 E) : Convex 𝕜 (↑K : Set E) := 
 protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K :=
   K.convex K.zero_mem
 
+theorem Convex.semilinear_range {𝕜' : Type*} [Semiring 𝕜'] {σ : 𝕜' →+* 𝕜}
+    [RingHomSurjective σ] {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F']
+    (f : F' →ₛₗ[σ] E) : Convex 𝕜 (LinearMap.range f : Set E) := Submodule.convex ..
+
 end Submodule
 
-/-! ### Simplex -/
+section CommSemiring
 
+variable {R : Type*} [CommSemiring R]
+variable (A : Type*) [Semiring A] [Algebra R A]
+variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [PartialOrder R] [PartialOrder A]
 
-section Simplex
+lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
+    (halg : Set.Ici 0 ⊆ algebraMap R A '' Set.Ici 0) (hs : Convex R s) :
+    Convex A s := by
+  simp only [Convex, StarConvex] at hs ⊢
+  intro u hu v hv a b ha hb hab
+  obtain ⟨c, hc1, hc2⟩ := halg ha
+  obtain ⟨d, hd1, hd2⟩ := halg hb
+  convert hs hu hv hc1 hd1 _ using 2
+  · rw [← hc2, algebraMap_smul]
+  · rw [← hd2, algebraMap_smul]
+  rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab
+  exact (FaithfulSMul.algebraMap_eq_one_iff R A).mp hab
 
-section OrderedSemiring
-
-variable (𝕜) (ι : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [Fintype ι]
-
-/-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
-coordinates with total sum `1`. This is the free object in the category of convex spaces. -/
-def stdSimplex : Set (ι → 𝕜) :=
-  { f | (∀ x, 0 ≤ f x) ∧ ∑ x, f x = 1 }
-
-theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | ∑ x, f x = 1 } := by
-  ext f
-  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq]
-
-theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι) := by
-  refine fun f hf g hg a b ha hb hab => ⟨fun x => ?_, ?_⟩
-  · apply_rules [add_nonneg, mul_nonneg, hf.1, hg.1]
-  · simp_rw [Pi.add_apply, Pi.smul_apply]
-    rwa [Finset.sum_add_distrib, ← Finset.smul_sum, ← Finset.smul_sum, hf.2, hg.2, smul_eq_mul,
-      smul_eq_mul, mul_one, mul_one]
-
-@[nontriviality] lemma stdSimplex_of_subsingleton [Subsingleton 𝕜] : stdSimplex 𝕜 ι = univ :=
-  eq_univ_of_forall fun _ ↦ ⟨fun _ ↦ (Subsingleton.elim _ _).le, Subsingleton.elim _ _⟩
-
-/-- The standard simplex in the zero-dimensional space is empty. -/
-lemma stdSimplex_of_isEmpty_index [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex 𝕜 ι = ∅ :=
-  eq_empty_of_forall_not_mem <| by rintro f ⟨-, hf⟩; simp at hf
-
-lemma stdSimplex_unique [ZeroLEOneClass 𝕜] [Nonempty ι] [Subsingleton ι] :
-    stdSimplex 𝕜 ι = {fun _ ↦ 1} := by
-  cases nonempty_unique ι
-  refine eq_singleton_iff_unique_mem.2 ⟨⟨fun _ ↦ zero_le_one, Fintype.sum_unique _⟩, ?_⟩
-  rintro f ⟨-, hf⟩
-  rw [Fintype.sum_unique] at hf
-  exact funext (Unique.forall_iff.2 hf)
-
-variable {ι} [DecidableEq ι] [ZeroLEOneClass 𝕜]
-
-theorem single_mem_stdSimplex (i : ι) : Pi.single i 1 ∈ stdSimplex 𝕜 ι :=
-  ⟨le_update_iff.2 ⟨zero_le_one, fun _ _ ↦ le_rfl⟩, by simp⟩
-
-theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ stdSimplex 𝕜 ι := by
-  simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
-
-variable [IsOrderedRing 𝕜]
-
-#adaptation_note /-- nightly-2024-03-11
-we need a type annotation on the segment in the following two lemmas. -/
-
-/-- The edges are contained in the simplex. -/
-lemma segment_single_subset_stdSimplex (i j : ι) :
-    ([Pi.single i 1 -[𝕜] Pi.single j 1] : Set (ι → 𝕜)) ⊆ stdSimplex 𝕜 ι :=
-  (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
-
-lemma stdSimplex_fin_two :
-    stdSimplex 𝕜 (Fin 2) = ([Pi.single 0 1 -[𝕜] Pi.single 1 1] : Set (Fin 2 → 𝕜)) := by
-  refine Subset.antisymm ?_ (segment_single_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
-  rintro f ⟨hf₀, hf₁⟩
-  rw [Fin.sum_univ_two] at hf₁
-  refine ⟨f 0, f 1, hf₀ 0, hf₀ 1, hf₁, funext <| Fin.forall_fin_two.2 ?_⟩
-  simp
-
-end OrderedSemiring
-
-section OrderedRing
-
-variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-
-/-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
-@[simps -fullyApplied]
-def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
-  toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
-    Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
-  invFun x := ⟨![x, 1 - x], Fin.forall_fin_two.2 ⟨x.2.1, sub_nonneg.2 x.2.2⟩,
-    calc
-      ∑ i : Fin 2, ![(x : 𝕜), 1 - x] i = x + (1 - x) := Fin.sum_univ_two _
-      _ = 1 := add_sub_cancel _ _⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| .intro rfl <|
-      calc
-        (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
-        _ = f.1 1 := add_sub_cancel_left _ _
-  right_inv _ := Subtype.eq rfl
-
-end OrderedRing
-
-end Simplex
+end CommSemiring

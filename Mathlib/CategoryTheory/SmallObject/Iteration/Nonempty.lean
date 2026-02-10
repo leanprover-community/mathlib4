@@ -3,18 +3,22 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
-import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
-import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
+public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 
 /-!
 # Existence of the iteration of a successor structure
 
 Given `Φ : SuccStruct C`, we show by transfinite induction
-that for any element `j` in a well ordered set `J`,
+that for any element `j` in a well-ordered set `J`,
 the type `Φ.Iteration j` is nonempty.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -26,7 +30,7 @@ namespace SuccStruct
 
 open Category Limits
 
-variable {C : Type*} [Category C] (Φ : SuccStruct C)
+variable {C : Type*} [Category* C] (Φ : SuccStruct C)
   {J : Type u} [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
   [HasIterationOfShape J C]
 
@@ -38,7 +42,7 @@ def mkOfBot : Φ.Iteration (⊥ : J) where
   F := (Functor.const _).obj Φ.X₀
   obj_bot := rfl
   arrowSucc_eq _ h := by simp at h
-  arrowMap_limit  _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
+  arrowMap_limit _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
 
 variable {Φ}
 
@@ -65,6 +69,7 @@ noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
     rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
     dsimp
     rw [← arrowMap, ← arrowMap, arrowMap_extendToSucc]
+    rfl
 
 namespace mkOfLimit
 
@@ -128,6 +133,7 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
       dsimp
+      generalize_proofs
       rw [← arrowMap, ← arrowMap, arrowMap_functor hj iter l₁ l₂ _ (hl₂.trans hij),
         arrow_mk_mapObj]
       apply congr_arrowMap
@@ -136,6 +142,7 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
       dsimp
+      generalize_proofs
       rw [← arrowMap, arrow_mk_mapObj, arrowMap_functor _ _ _ _ _ hl₂, arrow_mk_mapObj]
 
 variable (Φ)

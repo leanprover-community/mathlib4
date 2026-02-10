@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.RingTheory.Coalgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # The category of coalgebras over a commutative ring
@@ -12,9 +14,11 @@ import Mathlib.RingTheory.Coalgebra.Equiv
 We introduce the bundled category `CoalgCat` of coalgebras over a fixed commutative ring `R`
 along with the forgetful functor to `ModuleCat`.
 
-This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
+This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

@@ -3,11 +3,13 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Lean.Elab.Command
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Message
 
 /-!
 # The `oldObtain` linter, against stream-of-consciousness `obtain`
@@ -49,7 +51,9 @@ case... but by now, the "old" syntax is not clearly better.)
 In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
 could also be used, as was in fact clearer. -/
 
-open Lean Elab
+meta section
+
+open Lean Elab Linter
 
 namespace Mathlib.Linter.Style
 
@@ -60,20 +64,16 @@ def isObtainWithoutProof : Syntax → Bool
   | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
   | _ => false
 
-/-- Deprecated alias for `Mathlib.Linter.Style.isObtainWithoutProof`. -/
-@[deprecated isObtainWithoutProof (since := "2024-12-07")]
-def is_obtain_without_proof := @isObtainWithoutProof
-
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
-register_option linter.oldObtain : Bool := {
+public register_option linter.oldObtain : Bool := {
   defValue := false
   descr := "enable the `oldObtain` linter"
 }
 
 /-- The `oldObtain` linter: see docstring above -/
 def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.oldObtain (← getOptions) do
+    unless getLinterValue linter.oldObtain (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return

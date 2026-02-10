@@ -3,9 +3,13 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.Perm.ViaEmbedding
-import Mathlib.GroupTheory.Subgroup.Simple
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Solvable Groups
@@ -21,6 +25,7 @@ the derived series of a group.
 * `IsSolvable G` : the group `G` is solvable
 -/
 
+@[expose] public section
 
 open Subgroup
 
@@ -53,6 +58,14 @@ theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
 @[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
+
+theorem derivedSeries_antitone : Antitone (derivedSeries G) :=
+  antitone_nat_of_succ_le fun n => (derivedSeries G n).commutator_le_self
+
+instance derivedSeries_characteristic (n : ℕ) : (derivedSeries G n).Characteristic := by
+  induction n with
+  | zero => exact Subgroup.topCharacteristic
+  | succ n _ => exact Subgroup.commutator_characteristic _ _
 
 end derivedSeries
 
@@ -116,10 +129,11 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
   obtain ⟨m, hm⟩ := id hG'
   refine ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ ?_)⟩⟩
   clear hm
-  induction' m with m hm
-  · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
+  induction m with
+  | zero =>
+    exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
       (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
-  · exact commutator_le_map_commutator hm hm
+  | succ m hm => exact commutator_le_map_commutator hm hm
 
 theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
@@ -147,9 +161,9 @@ theorem IsSolvable.commutator_lt_top_of_nontrivial [hG : IsSolvable G] [Nontrivi
   obtain ⟨n, hn⟩ := hG
   contrapose! hn
   refine ne_of_eq_of_ne ?_ top_ne_bot
-  induction' n with n h
-  · exact derivedSeries_zero G
-  · rwa [derivedSeries_succ, h]
+  induction n with
+  | zero => exact derivedSeries_zero G
+  | succ n h => rwa [derivedSeries_succ, h]
 
 theorem IsSolvable.commutator_lt_of_ne_bot [IsSolvable G] {H : Subgroup G} (hH : H ≠ ⊥) :
     ⁅H, H⁆ < H := by
@@ -162,7 +176,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
   refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
   suffices h : IsSolvable (⊤ : Subgroup G) from
     solvable_of_surjective (MonoidHom.range_eq_top.mp (range_subtype ⊤))
-  refine WellFoundedLT.induction (C := fun (H : Subgroup G) ↦ IsSolvable H) ⊤ fun H hH ↦ ?_
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
   rcases eq_or_ne H ⊥ with rfl | h'
   · infer_instance
   · obtain ⟨n, hn⟩ := hH ⁅H, H⁆ (h H h')
@@ -170,10 +184,11 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     rw [← (map_injective (subtype_injective _)).eq_iff, Subgroup.map_bot] at hn ⊢
     rw [← hn]
     clear hn
-    induction' n with n ih
-    · rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
+    induction n with
+    | zero =>
+      rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
         ← MonoidHom.range_eq_map, ← MonoidHom.range_eq_map, range_subtype, range_subtype]
-    · rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
+    | succ n ih => rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
 
 end Solvable
 

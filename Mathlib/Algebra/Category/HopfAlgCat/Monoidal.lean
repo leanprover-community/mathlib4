@@ -3,9 +3,11 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Monoidal
-import Mathlib.Algebra.Category.HopfAlgCat.Basic
-import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+module
+
+public import Mathlib.Algebra.Category.BialgCat.Monoidal
+public import Mathlib.Algebra.Category.HopfAlgCat.Basic
+public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 
 /-!
 # The monoidal structure on the category of Hopf algebras
@@ -16,6 +18,8 @@ define a Hopf `R`-algebra instance on `A ⊗[R] B`.
 Here, we use this to declare a `MonoidalCategory` instance on the category of Hopf algebras, via
 the existing monoidal structure on `BialgCat`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -31,9 +35,9 @@ variable (R : Type u) [CommRing R]
   whiskerRight f X := ofHom (f.1.rTensor X)
   tensorHom f g := ofHom (Bialgebra.TensorProduct.map f.1 g.1)
   tensorUnit := of R R
-  associator X Y Z := (Bialgebra.TensorProduct.assoc R X Y Z).toHopfAlgIso
+  associator X Y Z := (Bialgebra.TensorProduct.assoc R R X Y Z).toHopfAlgIso
   leftUnitor X := (Bialgebra.TensorProduct.lid R X).toHopfAlgIso
-  rightUnitor X := (Bialgebra.TensorProduct.rid R X).toHopfAlgIso
+  rightUnitor X := (Bialgebra.TensorProduct.rid R R X).toHopfAlgIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `HopfAlgCat.instMonoidalCategoryStruct` and the forgetful functor to bialgebras. -/

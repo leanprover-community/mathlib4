@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preserving (co)kernels
@@ -15,6 +17,8 @@ to concrete (co)forks.
 In particular, we show that `kernel_comparison f g G` is an isomorphism iff `G` preserves
 the limit of the parallel pair `f,0`, as well as the dual result.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -51,7 +55,7 @@ def isLimitMapConeEquiv :
     IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
   refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
   refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+  exact Cones.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
 preserves the corresponding limit. -/
@@ -178,7 +182,7 @@ def isColimitMapCoconeEquiv :
     IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
   refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
   refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+  exact Cocones.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/

@@ -3,8 +3,10 @@ Copyright (c) 2023 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-! # Pullbacks of `C^n` vector bundles
 
@@ -16,6 +18,8 @@ This file defines pullbacks of `C^n` vector bundles over a manifold.
   map `f : B' → B`, the pullback vector bundle `f *ᵖ E` is a `C^n` vector bundle.
 
 -/
+
+@[expose] public section
 
 open Bundle Set
 open scoped Manifold
@@ -37,6 +41,6 @@ instance ContMDiffVectorBundle.pullback : ContMDiffVectorBundle n F (f *ᵖ E) I
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
     refine ((contMDiffOn_coordChangeL e e').comp f.contMDiff.contMDiffOn fun b hb => hb).congr ?_
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
-    show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
+    change ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]

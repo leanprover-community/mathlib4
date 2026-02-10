@@ -3,8 +3,11 @@ Copyright (c) 2015 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Prod.Basic
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Lists in product and sigma types
@@ -13,6 +16,8 @@ This file proves basic properties of `List.product` and `List.sigma`, which are 
 living in `Prod` and `Sigma` types respectively. Their definitions can be found in
 [`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
+
+public section
 
 
 variable {α β : Type*}
@@ -39,14 +44,14 @@ theorem product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
 @[simp]
 theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
     (a, b) ∈ l₁ ×ˢ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
-  simp_all [SProd.sprod, product, mem_flatMap, mem_map, Prod.ext_iff, exists_prop, and_left_comm,
-    exists_and_left, exists_eq_left, exists_eq_right]
+  simp_all [SProd.sprod, product, mem_flatMap, mem_map, Prod.ext_iff, and_left_comm]
 
 theorem length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
-  induction' l₁ with x l₁ IH
-  · exact (Nat.zero_mul _).symm
-  · simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
+  induction l₁ with
+  | nil => exact (Nat.zero_mul _).symm
+  | cons x l₁ IH =>
+    simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
       Nat.add_comm]
 
 /-! ### sigma -/
@@ -71,17 +76,14 @@ theorem sigma_nil : ∀ l : List α, (l.sigma fun a => @nil (σ a)) = []
 @[simp]
 theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ a} :
     Sigma.mk a b ∈ l₁.sigma l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ a := by
-  simp [List.sigma, mem_flatMap, mem_map, exists_prop, exists_and_left, and_left_comm,
-    exists_eq_left, heq_iff_eq, exists_eq_right]
+  simp [List.sigma, mem_flatMap, mem_map, exists_and_left, and_left_comm,
+    exists_eq_left, exists_eq_right]
 
 /-! ### Miscellaneous lemmas -/
 
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
-  induction' xs with x xs xs_ih
-  · simp only [not_mem_nil, map_nil]
-  · obtain ⟨a, b⟩ := x
-    simp only [mem_cons, Prod.mk_inj, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
+  simp
 
 end List

@@ -3,9 +3,11 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgCat.Basic
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.RingTheory.Bialgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.CoalgCat.Basic
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
 # The category of bialgebras over a commutative ring
@@ -13,9 +15,11 @@ import Mathlib.RingTheory.Bialgebra.Equiv
 We introduce the bundled category `BialgCat` of bialgebras over a fixed commutative ring `R`
 along with the forgetful functors to `CoalgCat` and `AlgCat`.
 
-This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
+This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -99,13 +103,6 @@ lemma hom_ext {X Y : BialgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBia
 @[simp] theorem toBialgHom_id {M : BialgCat.{v} R} :
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
-
-instance hasForget : HasForget.{v} (BialgCat.{v} R) where
-  forget :=
-    { obj := fun M => M
-      map := fun f => f.toBialgHom }
-  forget_faithful :=
-    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=

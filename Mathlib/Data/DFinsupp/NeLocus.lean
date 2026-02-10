@@ -3,7 +3,9 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
-import Mathlib.Data.DFinsupp.Defs
+module
+
+public import Mathlib.Data.DFinsupp.Defs
 
 /-!
 # Locus of unequal values of finitely supported dependent functions
@@ -17,6 +19,8 @@ Let `N : α → Type*` be a type family, assume that `N a` has a `0` for all `a 
   In the case in which `N a` is an additive group for all `a`, `DFinsupp.neLocus f g` coincides with
   `DFinsupp.support (f - g)`.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*} {N : α → Type*}
@@ -39,7 +43,7 @@ theorem mem_neLocus {f g : Π₀ a, N a} {a : α} : a ∈ f.neLocus g ↔ f a �
   simpa only [neLocus, Finset.mem_filter, Finset.mem_union, mem_support_iff,
     and_iff_right_iff_imp] using Ne.ne_or_ne _
 
-theorem not_mem_neLocus {f g : Π₀ a, N a} {a : α} : a ∉ f.neLocus g ↔ f a = g a :=
+theorem notMem_neLocus {f g : Π₀ a, N a} {a : α} : a ∉ f.neLocus g ↔ f a = g a :=
   mem_neLocus.not.trans not_ne_iff
 
 @[simp]
@@ -49,8 +53,8 @@ theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } :=
 @[simp]
 theorem neLocus_eq_empty {f g : Π₀ a, N a} : f.neLocus g = ∅ ↔ f = g :=
   ⟨fun h ↦
-    ext fun a ↦ not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_not_mem.mp h a)),
-    fun h ↦ h ▸ by simp only [neLocus, Ne, eq_self_iff_true, not_true, Finset.filter_False]⟩
+    ext fun a ↦ not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_notMem.mp h a)),
+    fun h ↦ h ▸ by simp only [neLocus, Ne, not_true, Finset.filter_false]⟩
 
 @[simp]
 theorem nonempty_neLocus_iff {f g : Π₀ a, N a} : (f.neLocus g).Nonempty ↔ f ≠ g :=

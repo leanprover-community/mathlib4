@@ -62,7 +62,7 @@ instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
-(ie. the image of zero). -/
+(i.e. the image of zero). -/
 def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
 
 namespace Q
@@ -199,20 +199,22 @@ variable {n : ℕ}
 
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
-  induction' n with n IH
-  · simp [Subsingleton.elim (α := Q 0) p q, ε, e]
-  · dsimp [ε, e]
+  induction n with
+  | zero => simp [Subsingleton.elim (α := Q 0) p q, ε, e]
+  | succ n IH =>
+    dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
       simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
-        LinearMap.comp_apply, IH, V]
+        LinearMap.comp_apply, IH]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
-  induction' n with n ih
-  · dsimp [ε] at h; exact h fun _ => true
-  · obtain ⟨v₁, v₂⟩ := v
+  induction n with
+  | zero => dsimp [ε] at h; exact h fun _ => true
+  | succ n ih =>
+    obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
       let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
@@ -246,7 +248,7 @@ theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
 
 open Classical in
 instance : FiniteDimensional ℝ (V n) :=
-  FiniteDimensional.of_fintype_basis (dualBases_e_ε _).basis
+  (dualBases_e_ε _).basis.finiteDimensional_of_finite
 
 theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
   have := @dim_V n
@@ -284,21 +286,21 @@ using only the addition of `V`. -/
 
 theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
   induction n with
-  | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
+  | zero => simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
   | succ n IH =>
-    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
+    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc]; abel
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
 
 open Classical in
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
-  induction' n with n IH
-  · intro p q
+theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
+  induction n with
+  | zero =>
     dsimp [f]
     simp [Q.not_adjacent_zero]
     rfl
-  · intro p q
+  | succ n IH =>
     have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
     all_goals
@@ -309,7 +311,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
 noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
-  LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
+  LinearMap.prod (f m + √(m + 1) • LinearMap.id) LinearMap.id
 
 /-! In the following lemmas, `m` will denote a natural number. -/
 
@@ -319,8 +321,8 @@ variable {m : ℕ}
 /-! Again we unpack what are the values of `g`. -/
 
 
-theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
-  delta g; intro v; simp [V]
+theorem g_apply : ∀ v, g m v = (f m v + √(m + 1) • v, v) := by
+  delta g; intro v; simp
 
 theorem g_injective : Injective (g m) := by
   rw [g]
@@ -328,11 +330,11 @@ theorem g_injective : Injective (g m) := by
   simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
-theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
+theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √ (m + 1) * √ (m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
+  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
   rw [f_succ_apply, g_apply]
-  simp [this, f_squared, smul_add, add_smul, smul_smul, V]
+  simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
 
 /-!
@@ -405,7 +407,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
 open Classical in
 /-- **Huang sensitivity theorem** also known as the **Huang degree theorem** -/
 theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ q, q ∈ H ∧ √ (m + 1) ≤ Card H ∩ q.adjacent := by
+    ∃ q, q ∈ H ∧ √(m + 1) ≤ Card H ∩ q.adjacent := by
   rcases exists_eigenvalue H hH with ⟨y, ⟨⟨y_mem_H, y_mem_g⟩, y_ne⟩⟩
   have coeffs_support : ((dualBases_e_ε m.succ).coeffs y).support ⊆ H.toFinset := by
     intro p p_in
@@ -418,8 +420,8 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), ?_⟩
-  let s := √ (m + 1)
-  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
+  let s := √(m + 1)
+  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_iff_left₀ H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc
     s * |ε q y| = |ε q (s • y)| := by
@@ -443,7 +445,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ = #((coeffs y).support ∩ q.adjacent.toFinset) * |coeffs y q| := by
       congr with x; simp; rfl
     _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
-      refine (mul_le_mul_right H_q_pos).2 ?_
+      refine (mul_le_mul_iff_left₀ H_q_pos).2 ?_
       norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]

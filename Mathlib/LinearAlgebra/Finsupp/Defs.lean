@@ -3,15 +3,18 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Properties of the module `α →₀ M`
 
 Given an `R`-module `M`, the `R`-module structure on `α →₀ M` is defined in
-`Data.Finsupp.Basic`.
+`Mathlib/Data/Finsupp/SMul.lean`.
 
 In this file we define `LinearMap` versions of various maps:
 
@@ -26,6 +29,8 @@ In this file we define `LinearMap` versions of various maps:
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 assert_not_exists Submodule
 
@@ -73,6 +78,10 @@ theorem linearEquivFunOnFinite_symm_single [DecidableEq α] (x : α) (m : M) :
 theorem linearEquivFunOnFinite_symm_coe (f : α →₀ M) : (linearEquivFunOnFinite R M α).symm f = f :=
   (linearEquivFunOnFinite R M α).symm_apply_apply f
 
+@[simp]
+theorem linearEquivFunOnFinite_symm_apply (f : α → M) : (linearEquivFunOnFinite R M α).symm f = f :=
+  rfl
+
 end LinearEquivFunOnFinite
 
 /-- Interpret `Finsupp.single a` as a linear map. -/
@@ -88,7 +97,7 @@ theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a b,
 We formulate this fact using equality of linear maps `φ.comp (lsingle a)` and `ψ.comp (lsingle a)`
 so that the `ext` tactic can apply a type-specific extensionality lemma to prove equality of these
 maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single a 1)`. -/
--- Porting note: The priority should be higher than `LinearMap.ext`.
+-- The priority should be higher than `LinearMap.ext`.
 @[ext high]
 theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
     φ = ψ :=
@@ -147,6 +156,9 @@ theorem lmapDomain_apply (f : α → α') (l : α →₀ M) :
     (lmapDomain M R f : (α →₀ M) →ₗ[R] α' →₀ M) l = mapDomain f l :=
   rfl
 
+lemma coe_lmapDomain (f : α → α') : ⇑(lmapDomain M R f) = Finsupp.mapDomain f :=
+  rfl
+
 @[simp]
 theorem lmapDomain_id : (lmapDomain M R _root_.id : (α →₀ M) →ₗ[R] α →₀ M) = LinearMap.id :=
   LinearMap.ext fun _ => mapDomain_id
@@ -154,6 +166,24 @@ theorem lmapDomain_id : (lmapDomain M R _root_.id : (α →₀ M) →ₗ[R] α �
 theorem lmapDomain_comp (f : α → α') (g : α' → α'') :
     lmapDomain M R (g ∘ f) = (lmapDomain M R g).comp (lmapDomain M R f) :=
   LinearMap.ext fun _ => mapDomain_comp
+
+/-- `Finsupp.mapDomain` as a `LinearEquiv`. -/
+def mapDomain.linearEquiv (f : α ≃ α') : (α →₀ M) ≃ₗ[R] (α' →₀ M) where
+  __ := lmapDomain M R f.toFun
+  invFun := mapDomain f.symm
+  left_inv _ := by
+    simp [← mapDomain_comp]
+  right_inv _ := by
+    simp [← mapDomain_comp]
+
+@[simp] theorem mapDomain.coe_linearEquiv (f : α ≃ α') :
+    ⇑(linearEquiv M R f) = mapDomain f := rfl
+
+@[simp] theorem mapDomain.toLinearMap_linearEquiv (f : α ≃ α') :
+    (linearEquiv M R f : _ →ₗ[R] _) = lmapDomain M R f := rfl
+
+@[simp] theorem mapDomain.linearEquiv_symm (f : α ≃ α') :
+    (linearEquiv M R f).symm = linearEquiv M R f.symm := rfl
 
 end LMapDomain
 
@@ -230,8 +260,7 @@ theorem mapRange.linearEquiv_symm (f : M ≃ₛₗ[σ₁₂] N) :
     ((mapRange.linearEquiv f).symm : (α →₀ _) ≃ₛₗ[σ₂₁] _) = mapRange.linearEquiv f.symm :=
   LinearEquiv.ext fun _x => rfl
 
--- Porting note: This priority should be higher than `LinearEquiv.coe_toAddEquiv`.
-@[simp 1500]
+@[simp]
 theorem mapRange.linearEquiv_toAddEquiv (f : M ≃ₛₗ[σ₁₂] N) :
     (mapRange.linearEquiv f).toAddEquiv = (mapRange.addEquiv f.toAddEquiv : (α →₀ M) ≃+ _) :=
   AddEquiv.ext fun _ => rfl
@@ -246,21 +275,25 @@ end Equiv
 
 section Prod
 
-variable {α β R M : Type*} [DecidableEq α] [Semiring R] [AddCommMonoid M] [Module R M]
+variable {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (R) in
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
 
-This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
+This is the `LinearEquiv` version of `Finsupp.curryEquiv`. -/
 @[simps +simpRhs]
-noncomputable def finsuppProdLEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
-  { finsuppProdEquiv with
-    map_add' f g := by ext; simp
-    map_smul' c f := by ext; simp }
+noncomputable def curryLinearEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M where
+  toAddEquiv := curryAddEquiv
+  map_smul' c f := by ext; simp
 
-theorem finsuppProdLEquiv_symm_apply_apply (f : α →₀ β →₀ M) (xy) :
-    (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 :=
+@[deprecated (since := "2026-01-03")] alias finsuppProdLEquiv := curryLinearEquiv
+
+theorem curryLinearEquiv_symm_apply_apply (f : α →₀ β →₀ M) (xy) :
+    (curryLinearEquiv R).symm f xy = f xy.1 xy.2 :=
   rfl
+
+@[deprecated (since := "2026-01-03")]
+alias finsuppProdLEquiv_symm_apply_apply := curryLinearEquiv_symm_apply_apply
 
 end Prod
 
@@ -289,3 +322,58 @@ def Module.subsingletonEquiv (R M ι : Type*) [Semiring R] [Subsingleton R] [Add
   map_smul' r _ := (smul_zero r).symm
 
 end
+
+namespace Module.End
+
+variable (ι : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+
+/-- If `M` is an `R`-module and `ι` is a type, then an additive endomorphism of `M` that
+commutes with all `R`-endomorphisms of `M` gives rise to an additive endomorphism of `ι →₀ M`
+that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
+@[simps] noncomputable def ringHomEndFinsupp :
+    End (End R M) M →+* End (End R (ι →₀ M)) (ι →₀ M) where
+  toFun f :=
+  { toFun := Finsupp.mapRange.addMonoidHom f
+    map_add' := map_add _
+    map_smul' g x := x.induction_linear (by simp)
+      (fun _ _ h h' ↦ by rw [smul_add, map_add, h, h', map_add, smul_add]) fun i m ↦ by
+        ext j
+        change f (Finsupp.lapply j ∘ₗ g ∘ₗ Finsupp.lsingle i • m) = _
+        rw [map_smul]
+        simp }
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+  map_zero' := by ext; simp
+  map_add' _ _ := by ext; simp
+
+variable {ι}
+
+/-- If `M` is an `R`-module and `ι` is a nonempty type, then every additive endomorphism
+of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
+endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
+See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
+@[simps!] noncomputable def ringEquivEndFinsupp (i : ι) :
+    End (End R M) M ≃+* End (End R (ι →₀ M)) (ι →₀ M) where
+  __ := ringHomEndFinsupp ι
+  invFun f :=
+  { toFun m := f (Finsupp.single i m) i
+    map_add' _ _ := by simp
+    map_smul' g m := let g := Finsupp.mapRange.linearMap g
+      show _ = g _ i by rw [← End.smul_def g, ← map_smul]; simp [g] }
+  left_inv _ := by ext; simp
+  right_inv f := by
+    ext x j
+    change f (Finsupp.lsingle (R := R) (M := M) i ∘ₗ Finsupp.lapply j • x) i = _
+    rw [map_smul]
+    simp
+
+variable (R M ι)
+
+theorem ringHomEndFinsupp_surjective :
+    Function.Surjective (ringHomEndFinsupp (R := R) (M := M) ι) := by
+  intro f
+  obtain _ | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
+  · exact ⟨0, Subsingleton.elim ..⟩
+  · exact ⟨_, (ringEquivEndFinsupp i).right_inv f⟩
+
+end Module.End

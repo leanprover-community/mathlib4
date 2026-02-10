@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.GradedObject
-import Mathlib.Algebra.Homology.ShortComplex.Basic
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.CategoryTheory.GradedObject
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-!
 # Homological complexes.
@@ -34,6 +36,8 @@ Defined in terms of these we have `C.dFrom i : C.X i ⟶ C.xNext i` and
 `C.dTo j : C.xPrev j ⟶ C.X j`, which are either defined as `C.d i j`, or zero, as needed.
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -55,8 +59,8 @@ The composite of any two differentials `d i j ≫ d j k` must be zero.
 structure HomologicalComplex (c : ComplexShape ι) where
   X : ι → V
   d : ∀ i j, X i ⟶ X j
-  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by aesop_cat
-  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by aesop_cat
+  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by cat_disch
+  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by cat_disch
 
 namespace HomologicalComplex
 
@@ -214,7 +218,7 @@ commuting with the differentials.
 @[ext]
 structure Hom (A B : HomologicalComplex V c) where
   f : ∀ i, A.X i ⟶ B.X i
-  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by aesop_cat
+  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by cat_disch
 
 @[reassoc (attr := simp)]
 theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
@@ -269,7 +273,7 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
-    Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
+    Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun _ => 0}⟩
@@ -359,19 +363,19 @@ lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n
 lemma XIsoOfEq_inv_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
     φ.f n' ≫ (L.XIsoOfEq h).inv = (K.XIsoOfEq h).inv ≫ φ.f n := by subst h; simp
 
--- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i j'` are both allowed, then we must have `j = j'`,
 and so the differentials only differ by an `eqToHom`.
 -/
+@[simp]
 theorem d_comp_eqToHom {i j j' : ι} (rij : c.Rel i j) (rij' : c.Rel i j') :
     C.d i j' ≫ eqToHom (congr_arg C.X (c.next_eq rij' rij)) = C.d i j := by
   obtain rfl := c.next_eq rij rij'
   simp only [eqToHom_refl, comp_id]
 
--- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i' j` are both allowed, then we must have `i = i'`,
 and so the differentials only differ by an `eqToHom`.
 -/
+@[simp]
 theorem eqToHom_comp_d {i i' j : ι} (rij : c.Rel i j) (rij' : c.Rel i' j) :
     eqToHom (congr_arg C.X (c.prev_eq rij rij')) ≫ C.d i' j = C.d i j := by
   obtain rfl := c.prev_eq rij rij'
@@ -496,7 +500,7 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 which commute with the differentials. -/
 @[simps]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
-    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by aesop_cat) :
+    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
   hom :=
     { f := fun i => (f i).hom
@@ -613,7 +617,6 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
   { X := X
     d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg (Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
       dsimp at hij hjk
@@ -706,7 +709,45 @@ theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
   rw [if_pos rfl, Category.id_comp]
 
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
+lemma mk_congr_succ_X₃ {S S' : ShortComplex V} (h : S = S') :
+    (succ S).1 = (succ S').1 := by rw [h]
+
+lemma mk_congr_succ_d₂ {S S' : ShortComplex V} (h : S = S') :
+    (succ S).2.1 = eqToHom (by subst h; rfl) ≫ (succ S').2.1 ≫ eqToHom (by subst h; rfl) := by
+  subst h
+  simp
+
+lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
+    mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
+      ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
+  change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
+  dsimp [mk, of, mkAux]
+  congr
+  · rw [if_pos (by rfl), id_comp]
+  · simp
+
+/-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
+the inductive construction. -/
+def mkXIso (n : ℕ) :
+    (mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3) ≅
+      (succ (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n))).1 :=
+  eqToIso (by
+    rw [← mk_congr_succ_X₃ succ
+      (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)]
+    rfl)
+
+lemma mk_d (n : ℕ) :
+    (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n + 3) (n + 2) =
+      (mkXIso X₀ X₁ X₂ d₀ d₁ s succ n).hom ≫ (succ
+        (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n))).2.1 := by
+  have eq := mk_congr_succ_d₂ succ
+    (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)
+  rw [eqToHom_refl, comp_id] at eq
+  refine Eq.trans ?_ eq
+  dsimp only [mk, of]
+  rw [dif_pos (by rfl), eqToHom_refl, id_comp]
+  rfl
+
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first differential,
@@ -734,25 +775,30 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
   rw [if_pos rfl, Category.id_comp]
 
-/- Porting note:
-Downstream constructions using `mk'` (e.g. in `CategoryTheory.Abelian.Projective`)
-have very slow proofs, because of bad simp lemmas.
-It would be better to write good lemmas here if possible, such as
+/-- The isomorphism from `(mk' X₀ X₁ d₀ succ').X (n + 2)` that is given by
+the inductive construction. -/
+def mk'XIso (n : ℕ) :
+    (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
+  obtain _ | n := n
+  · apply eqToIso
+    dsimp [mk', mk, of, mkAux]
+    rw [id_comp]
+  · exact mkXIso _ _ _ _ _ (succ' d₀).2.2 (fun S => succ' S.f) n
 
-```
-theorem mk'_X_succ (j : ℕ) :
-    (mk' X₀ X₁ d₀ succ').X (j + 2) = (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).1 := by
-  sorry
+lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
+    (succ' f).2.1 = eqToHom (by rw [h]) ≫ (succ' g).2.1 := by
+  subst h
+  simp
 
-theorem mk'_d_succ {i j : ℕ} :
-    (mk' X₀ X₁ d₀ succ').d (j + 2) (j + 1) =
-      eqToHom (mk'_X_succ X₀ X₁ d₀ succ' j) ≫
-      (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).2.1 :=
-  sorry
-```
-
-These are already tricky, and it may be better to write analogous lemmas for `mk` first.
--/
+lemma mk'_d (n : ℕ) :
+    (mk' X₀ X₁ d₀ succ').d (n + 2) (n + 1) = (mk'XIso X₀ X₁ d₀ succ' n).hom ≫
+      (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).2.1 := by
+  obtain _ | n := n
+  · dsimp [mk'XIso, mk']
+    rw [mk_d_2_1]
+    apply mk'_congr_succ'_d
+    rw [mk_d_1_0]
+  · apply mk_d
 
 end Mk
 
@@ -831,7 +877,6 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
   { X := X
     d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg]
       exact w
     d_comp_d' := fun i j k => by
@@ -934,7 +979,7 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    -- (succ' : ∀ : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    -- (succ' : ∀ : Σ X₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
     CochainComplex V ℕ :=
   mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)

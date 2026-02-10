@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.AdicCompletion.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
 # Henselian rings
@@ -41,7 +43,7 @@ https://stacks.math.columbia.edu/tag/04GE
 
 ## TODO
 
-After a good API for etale ring homomorphisms has been developed,
+After a good API for étale ring homomorphisms has been developed,
 we can give more equivalent characterization of Henselian rings.
 
 In particular, this can give a proof that factorizations into coprime polynomials can be lifted
@@ -52,12 +54,14 @@ https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 universe u v
 
-open Polynomial IsLocalRing Polynomial Function List
+open Polynomial IsLocalRing Function List
 
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
@@ -75,7 +79,7 @@ theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   rw [← (Ideal.Quotient.mk _).map_mul, ← (Ideal.Quotient.mk _).map_one, Ideal.Quotient.eq,
     Ideal.mem_jacobson_bot] at h1 h2
   specialize h1 1
-  simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
+  have h1 : IsUnit a ∧ IsUnit y := by simpa using h1
   exact h1.1
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
@@ -132,7 +136,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
     refine ⟨a, ha₁, ?_⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
-    rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
+    rwa [← sub_eq_zero, ← map_sub] at ha₂
   tfae_have 1 → 3
   | hR, K, _K, φ, hφ, f, hf, a₀, h₁, h₂ => by
     obtain ⟨a₀, rfl⟩ := hφ a₀
@@ -175,15 +179,16 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       let c : ℕ → R := fun n => Nat.recOn n a₀ fun _ b => b - f.eval b * Ring.inverse (f'.eval b)
       have hc : ∀ n, c (n + 1) = c n - f.eval (c n) * Ring.inverse (f'.eval (c n)) := by
         intro n
-        simp only [c, Nat.rec_add_one]
+        simp only [c]
       -- we now spend some time determining properties of the sequence `c : ℕ → R`
       -- `hc_mod`: for every `n`, we have `c n ≡ a₀ [SMOD I]`
       -- `hf'c`  : for every `n`, `f'.eval (c n)` is a unit
       -- `hfcI`  : for every `n`, `f.eval (c n)` is contained in `I ^ (n+1)`
       have hc_mod : ∀ n, c n ≡ a₀ [SMOD I] := by
         intro n
-        induction' n with n ih
-        · rfl
+        induction n with
+        | zero => rfl
+        | succ n ih => ?_
         rw [hc, sub_eq_add_neg, ← add_zero a₀]
         refine ih.add ?_
         rw [SModEq.zero, Ideal.neg_mem_iff]
@@ -198,8 +203,9 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact SModEq.def.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
-        induction' n with n ih
-        · simpa only [Nat.rec_zero, zero_add, pow_one] using h₁
+        induction n with
+        | zero => simpa only [Nat.rec_zero, zero_add, pow_one] using h₁
+        | succ n ih => ?_
         rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←
@@ -225,8 +231,9 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one]
         obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
         clear hmn
-        induction' k with k ih
-        · rw [add_zero]
+        induction k with
+        | zero => rw [add_zero]
+        | succ k ih => ?_
         rw [← add_assoc, hc, ← add_zero (c m), sub_eq_add_neg]
         refine ih.add ?_
         symm

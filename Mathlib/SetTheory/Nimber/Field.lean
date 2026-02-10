@@ -3,9 +3,16 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Abel
+module -- shake: keep-all
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimber multiplication and division
@@ -23,6 +30,8 @@ uses mutual induction and mimics the definition for the surreal inverse. This de
 
 - Show the nimbers are algebraically closed.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -76,8 +85,8 @@ private theorem mul_nonempty (a b : Nimber.{u}) :
 
 theorem exists_of_lt_mul (h : c < a * b) : ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = c := by
   rw [mul_def] at h
-  have := not_mem_of_lt_csInf' h
-  rwa [Set.not_mem_compl_iff] at this
+  have := notMem_of_lt_csInf' h
+  rwa [Set.notMem_compl_iff] at this
 
 theorem mul_le_of_forall_ne (h : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * b' ≠ c) :
     a * b ≤ c := by
@@ -187,10 +196,10 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
 termination_by (a, b, c)
 
 instance : IsCancelMulZero Nimber where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.mul_add, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_left ha)
-  mul_right_cancel_of_ne_zero ha h := by
+  mul_right_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.add_mul, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_right ha)
 
@@ -220,7 +229,6 @@ instance : CommRing Nimber where
   __ : AddCommGroupWithOne Nimber := inferInstance
 
 instance : IsDomain Nimber where
-instance : CancelMonoidWithZero Nimber where
 
 /-! ### Nimber division -/
 
@@ -263,17 +271,17 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
 /-- An enumeration of elements in `invSet` by a type in the same universe. -/
-private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
+private def List.toNimber {a : Nimber} : List a.toOrdinal.ToType → Nimber
   | [] => 0
   | x :: l =>
-    let a' := ∗((Ordinal.enumIsoToType a.toOrdinal).symm x)
+    let a' := ∗(x)
     invAux a' * (1 + (a + a') * toNimber l)
 
 instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   refine @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@List.toNimber a))
   refine fun x hx ↦ invSet_recOn a ⟨[], rfl⟩ ?_ x hx
   rintro a' ha _ _ ⟨l, rfl⟩
-  use Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩ :: l
+  use .mk ⟨toOrdinal a', ha⟩ :: l
   rw [List.toNimber]
   simp
 
@@ -288,10 +296,10 @@ theorem invAux_ne_zero (a : Nimber) : invAux a ≠ 0 := by
 
 theorem mem_invSet_of_lt_invAux (h : b < invAux a) : b ∈ invSet a := by
   rw [invAux] at h
-  have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
-  rwa [Set.not_mem_compl_iff] at this
+  have := notMem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
+  rwa [Set.notMem_compl_iff] at this
 
-theorem invAux_not_mem_invSet (a : Nimber) : invAux a ∉ invSet a := by
+theorem invAux_notMem_invSet (a : Nimber) : invAux a ∉ invSet a := by
   rw [invAux]
   exact csInf_mem (invSet_nonempty a)
 
@@ -322,7 +330,7 @@ private theorem mul_inv_cancel_aux (a : Nimber) :
       exact H₁ _ hb H
     · rw [← mul_right_inj' (invAux_ne_zero a'), ← mul_assoc, mul_comm _ a',
         (mul_inv_cancel_aux a').2 ha', one_mul] at H
-      exact invAux_not_mem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
+      exact invAux_notMem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
   · rw [one_le_iff_ne_zero, mul_ne_zero_iff]
     exact ⟨ha₀, invAux_ne_zero a⟩
 termination_by a

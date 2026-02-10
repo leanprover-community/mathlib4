@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Constructions.SumProd
+module
+
+public import Mathlib.Topology.Constructions.SumProd
 
 /-!
 # Maps equivariantly-homeomorphic to projection in a product
@@ -16,6 +18,8 @@ is occasionally convenient in showing that a map is open, a quotient map, etc.
 This material was formerly linked to the main definition of fiber bundles, but after a series of
 refactors, there is no longer a direct connection.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -56,9 +60,6 @@ protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) :
 protected theorem isQuotientMap_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
     IsQuotientMap proj :=
   h.isOpenMap_proj.isQuotientMap h.continuous_proj h.surjective_proj
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_proj := IsHomeomorphicTrivialFiberBundle.isQuotientMap_proj
 
 end IsHomeomorphicTrivialFiberBundle
 

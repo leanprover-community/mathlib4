@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
 # Open immersions of structured spaces
@@ -24,7 +26,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict`: The source of an
   open immersion is isomorphic to the restriction of the target onto the image.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift`: Any morphism whose range is
-  contained in an open immersion factors though the open immersion.
+  contained in an open immersion factors through the open immersion.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toSheafedSpace`: If `f : X ⟶ Y` is an
   open immersion of presheafed spaces, and `Y` is a sheafed space, then `X` is also a sheafed
   space. The morphism as morphisms of sheafed spaces is given by `toSheafedSpaceHom`.
@@ -46,10 +48,12 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
   immersion, then the pullback `(f, g)` exists (and the forgetful functor to `TopCat` preserves it).
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft`: Open immersions
   are stable under pullbacks.
-* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso` An (topological) open embedding
+* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso`: A (topological) open embedding
   between two sheafed spaces is an open immersion if all the stalk maps are isomorphisms.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace CategoryTheory Opposite Topology
@@ -67,7 +71,7 @@ spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U
 -/
 class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : Prop where
   /-- the underlying continuous map of underlying spaces from the source to an open subset of the
-    target. -/
+  target. -/
   base_open : IsOpenEmbedding f.base
   /-- the underlying sheaf morphism is an isomorphism on each open subset -/
   c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.isOpenMap.functor.obj U)))
@@ -76,13 +80,19 @@ class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : 
 of PresheafedSpaces
 -/
 abbrev SheafedSpace.IsOpenImmersion {X Y : SheafedSpace C} (f : X ⟶ Y) : Prop :=
-  PresheafedSpace.IsOpenImmersion f
+  PresheafedSpace.IsOpenImmersion f.hom
+
+lemma SheafedSpace.isOpenImmersion_iff_hom {X Y : SheafedSpace C} (f : X ⟶ Y) :
+    SheafedSpace.IsOpenImmersion f ↔ PresheafedSpace.IsOpenImmersion f.hom := Iff.rfl
 
 /-- A morphism of LocallyRingedSpaces is an open immersion if it is an open immersion as a morphism
 of SheafedSpaces
 -/
 abbrev LocallyRingedSpace.IsOpenImmersion {X Y : LocallyRingedSpace} (f : X ⟶ Y) : Prop :=
-  SheafedSpace.IsOpenImmersion f.1
+  SheafedSpace.IsOpenImmersion f.toShHom
+
+instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) [LocallyRingedSpace.IsOpenImmersion f] :
+    PresheafedSpace.IsOpenImmersion f.toHom := by assumption
 
 namespace PresheafedSpace.IsOpenImmersion
 
@@ -125,8 +135,8 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ rfl <| NatTrans.ext <| funext fun x => ?_
-  simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
-    ofRestrict_c_app, Category.assoc, whiskerRight_id']
+  simp only [eqToHom_refl,
+    Functor.whiskerRight_id']
   erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
   trans f.c.app x ≫ X.presheaf.map (𝟙 _)
   · congr 1
@@ -210,13 +220,16 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
             (le_antisymm (Set.image_preimage_subset f.base U.1) <|
               (Set.image_preimage_eq_inter_range (f := f.base) (t := U.1)).symm ▸
                 Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op := by
-  erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
+  simp only [TopCat.Presheaf.pushforward_obj_obj, app_invApp, Opens.carrier_eq_coe,
+    homOfLE_leOfHom, eqToHom_op]
+  tauto
 
 /-- An isomorphism is an open immersion. -/
 instance ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom where
   base_open := (TopCat.homeoOfIso ((forget C).mapIso H)).isOpenEmbedding
   -- Porting note: `inferInstance` will fail if Lean is not told that `H.hom.c` is iso
-  c_iso _ := letI : IsIso H.hom.c := c_isIso_of_iso H.hom; inferInstance
+  c_iso _ := letI : IsIso H.hom.c := inferInstance;
+    inferInstance
 
 instance (priority := 100) ofIsIso {X Y : PresheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     IsOpenImmersion f :=
@@ -235,14 +248,14 @@ instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     · -- Porting note: was `apply Subsingleton.helim; rw [this]`
       -- See https://github.com/leanprover/lean4/issues/2273
       congr
-      · simp only [unop_op]
+      · simp only
         congr
       apply Subsingleton.helim
       rw [this]
     · infer_instance
 
 @[elementwise, simp]
-theorem ofRestrict_invApp {C : Type*} [Category C] (X : PresheafedSpace C) {Y : TopCat}
+theorem ofRestrict_invApp {C : Type*} [Category* C] (X : PresheafedSpace C) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : IsOpenEmbedding f) (U : Opens (X.restrict h).carrier) :
     (PresheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ := by
   delta invApp
@@ -261,16 +274,12 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
     convert H.c_iso (Opens.map f.base |>.obj <| unop U)
-
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
-
-  apply (config := { allowSynthFailures := true }) isIso_of_components
+  apply +allowSynthFailures isIso_of_components
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
       invFun := fun x =>
-        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
-      left_inv := fun ⟨_, _⟩ => rfl
-      right_inv := fun _ => rfl }
+        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩ }
   exact (TopCat.isoOfHomeo t).isIso_hom
 
 instance stalk_iso [HasColimits C] (x : X) : IsIso (f.stalkMap x) := by
@@ -295,33 +304,24 @@ def pullbackConeOfLeftFst :
             Y.presheaf.map
               (eqToHom
                 (by
-                  simp only [IsOpenMap.functor, Subtype.mk_eq_mk, unop_op, op_inj_iff, Opens.map,
-                    Subtype.coe_mk, Functor.op_obj]
+                  simp only [IsOpenMap.functor, op_inj_iff, Opens.map,
+                    Functor.op_obj]
                   apply LE.le.antisymm
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
-                    -- Porting note: need a slight hand holding
-                    -- used to be `simpa using h₁` before https://github.com/leanprover-community/mathlib4/pull/13170
-                    change _ ∈ _ ⁻¹' _ ∧ _
-                    simp only [TopCat.coe_of, restrict_carrier, Set.preimage_id', Set.mem_preimage,
-                      SetLike.mem_coe]
-                    constructor
-                    · change _ ∈ U.unop at h₁
-                      convert h₁
-                      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
-                    · rw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
+                    simpa [(TopCat.pullbackIsoProdSubtype_inv_fst_apply),
+                      (TopCat.pullbackIsoProdSubtype_inv_snd_apply)]
                   · rintro _ ⟨x, h₁, rfl⟩
                     exact ⟨_, h₁, CategoryTheory.congr_fun pullback.condition x⟩))
       naturality := by
         intro U V i
         induction U
         induction V
-        -- Note: this doesn't fire in `simp` because of reduction of the term via structure eta
-        -- before discrimination tree key generation
-        rw [inv_naturality_assoc]
-        dsimp
-        simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_map,
-          Quiver.Hom.unop_op, ← Functor.map_comp, Category.assoc]
+        simp only [(inv_naturality_assoc), restrict_carrier, restrict_presheaf,
+          TopCat.Presheaf.pushforward_obj_obj, Functor.comp_obj, Functor.op_obj,
+          TopCat.Presheaf.pushforward_obj_map, Functor.comp_map, Functor.op_map, Quiver.Hom.unop_op,
+          NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_map, Quiver.Hom.unop_op,
+          ← Functor.map_comp, Category.assoc]
         rfl }
 
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
@@ -329,14 +329,13 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun U => ?_
   · simpa using pullback.condition
   · induction U
-    -- Porting note: `NatTrans.comp_app` is not picked up by `dsimp`
-    -- Perhaps see : https://github.com/leanprover-community/mathlib4/issues/5026
-    rw [NatTrans.comp_app]
-    dsimp only [comp_c_app, unop_op, whiskerRight_app, pullbackConeOfLeftFst]
-    -- simp only [ofRestrict_c_app, NatTrans.comp_app]
-    simp only [app_invApp_assoc,
-      eqToHom_app, Category.assoc, NatTrans.naturality_assoc]
-    erw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
+    simp only [(NatTrans.comp_app), comp_c_app, unop_op, Functor.whiskerRight_app,
+      pullbackConeOfLeftFst, app_invApp_assoc, eqToHom_app, Category.assoc,
+      NatTrans.naturality_assoc, restrict_carrier, comp_base, ofRestrict_base, restrict_presheaf,
+      Functor.comp_obj, Functor.op_obj, Opens.map_comp_obj, TopCat.Presheaf.pushforward_obj_obj,
+      Opens.carrier_eq_coe, homOfLE_leOfHom, TopCat.Presheaf.pushforward_obj_map, Functor.comp_map,
+      Functor.op_map, eqToHom_unop, ofRestrict_c_app, Functor.id_obj]
+    rw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
     congr 1
 
 /-- We construct the pullback along an open immersion via restricting along the pullback of the
@@ -362,10 +361,8 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
               (by
                 dsimp only [Opens.map, IsOpenMap.functor, Functor.op]
                 congr 2
-                let s' : PullbackCone f.base g.base := PullbackCone.mk s.fst.base s.snd.base
-                  -- Porting note: in mathlib3, this is just an underscore
-                  (congr_arg Hom.base s.condition)
-
+                let s' : PullbackCone f.base g.base :=
+                  PullbackCone.mk s.fst.base s.snd.base (congr_arg Hom.base s.condition)
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   rw [← this]
@@ -461,8 +458,11 @@ instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
       simp_rw [Category.id_comp]
       rintro (_ | _ | _) <;> symm
-      · erw [Category.comp_id]
-        exact limit.w (cospan f.base g.base) WalkingCospan.Hom.inl
+      · simp only [limit.cone_x, Functor.const_obj_obj, cospan_one, Functor.comp_obj, forget_obj,
+          Functor.mapCone_pt, Functor.mapCone_π_app, PullbackCone.condition_one, forget_map,
+          comp_base, cospan_left, cospan_right, Functor.comp_map, cospan_map_inl, cospan_map_inr,
+          diagramIsoCospan_hom_app, PullbackCone.fst_limit_cone]
+        tauto
       · exact Category.comp_id _
       · exact Category.comp_id _)
 
@@ -490,7 +490,8 @@ def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
 
 @[simp, reassoc]
 theorem lift_fac (H : Set.range g.base ⊆ Set.range f.base) : lift f g H ≫ f = g := by
-  erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
+  simp [AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift,
+    CategoryTheory.Limits.pullback.condition]
 
 theorem lift_uniq (H : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H := by rw [← cancel_mono f, hl, lift_fac]
@@ -529,22 +530,26 @@ theorem toSheafedSpace_toPresheafedSpace : (toSheafedSpace Y f).toPresheafedSpac
 upgrade it into a morphism of SheafedSpaces.
 -/
 def toSheafedSpaceHom : toSheafedSpace Y f ⟶ Y :=
-  f
+  InducedCategory.homMk f
 
 @[simp]
-theorem toSheafedSpaceHom_base : (toSheafedSpaceHom Y f).base = f.base :=
+theorem toSheafedSpaceHom_hom_base : (toSheafedSpaceHom Y f).hom.base = f.base :=
   rfl
 
 @[simp]
-theorem toSheafedSpaceHom_c : (toSheafedSpaceHom Y f).c = f.c :=
+theorem toSheafedSpaceHom_hom_c : (toSheafedSpaceHom Y f).hom.c = f.c :=
   rfl
+
+@[deprecated (since := "2025-12-18")] alias toSheafedSpaceHom_base := toSheafedSpaceHom_hom_base
+@[deprecated (since := "2025-12-18")] alias toSheafedSpaceHom_c := toSheafedSpaceHom_hom_c
 
 instance toSheafedSpace_isOpenImmersion : SheafedSpace.IsOpenImmersion (toSheafedSpaceHom Y f) :=
   H
 
 @[simp]
-theorem sheafedSpace_toSheafedSpace {X Y : SheafedSpace C} (f : X ⟶ Y) [IsOpenImmersion f] :
-    toSheafedSpace Y f = X := by cases X; rfl
+theorem sheafedSpace_toSheafedSpace {X Y : SheafedSpace C} (f : X ⟶ Y)
+    [SheafedSpace.IsOpenImmersion f] :
+    toSheafedSpace Y f.hom = X := by cases X; rfl
 
 end ToSheafedSpace
 
@@ -572,7 +577,8 @@ def toLocallyRingedSpaceHom : toLocallyRingedSpace Y f ⟶ Y :=
   ⟨f, fun _ => inferInstance⟩
 
 @[simp]
-theorem toLocallyRingedSpaceHom_val : (toLocallyRingedSpaceHom Y f).toShHom = f :=
+theorem toLocallyRingedSpaceHom_val :
+    (toLocallyRingedSpaceHom Y f).toShHom = InducedCategory.homMk f :=
   rfl
 
 instance toLocallyRingedSpace_isOpenImmersion :
@@ -581,8 +587,8 @@ instance toLocallyRingedSpace_isOpenImmersion :
 
 @[simp]
 theorem locallyRingedSpace_toLocallyRingedSpace {X Y : LocallyRingedSpace} (f : X ⟶ Y)
-    [LocallyRingedSpace.IsOpenImmersion f] : toLocallyRingedSpace Y f.1 = X := by
-    cases X; delta toLocallyRingedSpace; simp
+    [LocallyRingedSpace.IsOpenImmersion f] : toLocallyRingedSpace Y f.toHom = X :=
+  rfl
 
 end ToLocallyRingedSpace
 
@@ -600,26 +606,25 @@ namespace SheafedSpace.IsOpenImmersion
 
 instance (priority := 100) of_isIso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     SheafedSpace.IsOpenImmersion f :=
-  @PresheafedSpace.IsOpenImmersion.ofIsIso _ _ _ _ f
+  @PresheafedSpace.IsOpenImmersion.ofIsIso _ _ _ _ f.hom
     (SheafedSpace.forgetToPresheafedSpace.map_isIso _)
 
 instance comp {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) [SheafedSpace.IsOpenImmersion f]
     [SheafedSpace.IsOpenImmersion g] : SheafedSpace.IsOpenImmersion (f ≫ g) :=
-  PresheafedSpace.IsOpenImmersion.comp f g
+  PresheafedSpace.IsOpenImmersion.comp f.hom g.hom
 
 noncomputable section Pullback
 
 variable {X Y Z : SheafedSpace C} (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [H : SheafedSpace.IsOpenImmersion f]
 
--- Porting note: in mathlib3, this local notation is often followed by a space to avoid confusion
--- with the forgetful functor, now it is often wrapped in a parenthesis
+/-- This is often wrapped in parentheses to distinguish with the forgetful functor. -/
 local notation "forget" => SheafedSpace.forgetToPresheafedSpace
 
 open CategoryTheory.Limits.WalkingCospan
 
 instance : Mono f :=
-  (forget).mono_of_mono_map (show @Mono (PresheafedSpace C) _ _ _ f by infer_instance)
+  (forget).mono_of_mono_map (show @Mono (PresheafedSpace C) _ _ _ f.hom by infer_instance)
 
 instance forgetMapIsOpenImmersion : PresheafedSpace.IsOpenImmersion ((forget).map f) :=
   ⟨H.base_open, H.c_iso⟩
@@ -649,14 +654,14 @@ instance hasLimit_cospan_forget_of_right' :
 instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toSheafedSpace Y
-      (@pullback.snd (PresheafedSpace C) _ _ _ _ f g _))
+      (@pullback.snd (PresheafedSpace C) _ _ _ _ f.hom g.hom _))
     (eqToIso (show pullback _ _ = pullback _ _ by congr) ≪≫
       HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
 instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toSheafedSpace Y
-      (@pullback.fst (PresheafedSpace C) _ _ _ _ g f _))
+      (@pullback.fst (PresheafedSpace C) _ _ _ _ g.hom f.hom _))
     (eqToIso (show pullback _ _ = pullback _ _ by congr) ≪≫
       HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
@@ -684,24 +689,24 @@ instance sheafedSpace_hasPullback_of_right : HasPullback g f :=
 /-- Open immersions are stable under base-change. -/
 instance sheafedSpace_pullback_snd_of_left :
     SheafedSpace.IsOpenImmersion (pullback.snd f g) := by
-  delta pullback.snd
-  have : _ = limit.π (cospan f g) right := preservesLimitIso_hom_π forget (cospan f g) right
+  rw [SheafedSpace.isOpenImmersion_iff_hom]
+  have : _ = (pullback.snd f g).hom := preservesLimitIso_hom_π forget (cospan f g) right
   rw [← this]
   have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan f g ⋙ forget)) right
-  erw [Category.comp_id] at this
+  dsimp at this
+  rw [Category.comp_id] at this
   rw [← this]
-  dsimp
   infer_instance
 
 instance sheafedSpace_pullback_fst_of_right :
     SheafedSpace.IsOpenImmersion (pullback.fst g f) := by
-  delta pullback.fst
-  have : _ = limit.π (cospan g f) left := preservesLimitIso_hom_π forget (cospan g f) left
+  rw [SheafedSpace.isOpenImmersion_iff_hom]
+  have : _ = (pullback.fst g f).hom := preservesLimitIso_hom_π forget (cospan g f) left
   rw [← this]
   have := HasLimit.isoOfNatIso_hom_π (diagramIsoCospan (cospan g f ⋙ forget)) left
-  erw [Category.comp_id] at this
+  dsimp at this
+  rw [Category.comp_id] at this
   rw [← this]
-  dsimp
   infer_instance
 
 instance sheafedSpace_pullback_to_base_isOpenImmersion [SheafedSpace.IsOpenImmersion g] :
@@ -726,13 +731,12 @@ whose forgetful functor reflects isomorphisms, preserves limits and filtered col
 Then a morphism `X ⟶ Y` that is a topological open embedding
 is an open immersion iff every stalk map is an iso.
 -/
-theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding f.base)
-    [H : ∀ x : X.1, IsIso (f.stalkMap x)] : SheafedSpace.IsOpenImmersion f :=
+theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding f.hom.base)
+    [H : ∀ x : X.1, IsIso (f.hom.stalkMap x)] : SheafedSpace.IsOpenImmersion f :=
   { base_open := hf
     c_iso := fun U => by
-      apply (config := {allowSynthFailures := true})
-        TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
-          (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.base).obj X.sheaf from ⟨f.c⟩)
+      apply +allowSynthFailures TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
+          (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.hom.base).obj X.sheaf from ⟨f.hom.c⟩)
       rintro ⟨_, y, hy, rfl⟩
       specialize H y
       delta PresheafedSpace.Hom.stalkMap at H
@@ -752,94 +756,96 @@ abbrev opensFunctor : Opens X ⥤ Opens Y :=
   H.base_open.isOpenMap.functor
 
 /-- An open immersion `f : X ⟶ Y` induces an isomorphism `X ≅ Y|_{f(X)}`. -/
-@[simps! hom_c_app]
+@[simps! hom_hom_c_app]
 noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
-  SheafedSpace.isoMk <| PresheafedSpace.IsOpenImmersion.isoRestrict f
+  SheafedSpace.isoMk <| PresheafedSpace.IsOpenImmersion.isoRestrict f.hom
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f :=
-  PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict f
+  InducedCategory.hom_ext
+    (PresheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict f.hom)
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : (isoRestrict f).inv ≫ f = Y.ofRestrict _ :=
-  PresheafedSpace.IsOpenImmersion.isoRestrict_inv_ofRestrict f
+  InducedCategory.hom_ext
+    (PresheafedSpace.IsOpenImmersion.isoRestrict_inv_ofRestrict f.hom)
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
 noncomputable def invApp (U : Opens X) :
     X.presheaf.obj (op U) ⟶ Y.presheaf.obj (op (opensFunctor f |>.obj U)) :=
-  PresheafedSpace.IsOpenImmersion.invApp f U
+  PresheafedSpace.IsOpenImmersion.invApp f.hom U
 
 @[reassoc (attr := simp)]
 theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
     X.presheaf.map i ≫ H.invApp _ (unop V) =
       H.invApp _ (unop U) ≫ Y.presheaf.map (opensFunctor f |>.op.map i) :=
-  PresheafedSpace.IsOpenImmersion.inv_naturality f i
+  PresheafedSpace.IsOpenImmersion.inv_naturality f.hom i
 
 instance (U : Opens X) : IsIso (H.invApp _ U) := by delta invApp; infer_instance
 
 theorem inv_invApp (U : Opens X) :
     inv (H.invApp _ U) =
-      f.c.app (op (opensFunctor f |>.obj U)) ≫ X.presheaf.map
+      f.hom.c.app (op (opensFunctor f |>.obj U)) ≫ X.presheaf.map
         (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
-  PresheafedSpace.IsOpenImmersion.inv_invApp f U
+  PresheafedSpace.IsOpenImmersion.inv_invApp f.hom U
 
 @[reassoc (attr := simp)]
 theorem invApp_app (U : Opens X) :
-    H.invApp _ U ≫ f.c.app (op (opensFunctor f |>.obj U)) = X.presheaf.map
+    H.invApp _ U ≫ f.hom.c.app (op (opensFunctor f |>.obj U)) = X.presheaf.map
       (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
-  PresheafedSpace.IsOpenImmersion.invApp_app f U
+  PresheafedSpace.IsOpenImmersion.invApp_app f.hom U
 
 attribute [elementwise] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
-    f.c.app (op U) ≫ H.invApp _ ((Opens.map f.base).obj U) =
+    f.hom.c.app (op U) ≫ H.invApp _ ((Opens.map f.hom.base).obj U) =
       Y.presheaf.map
-        ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
-          op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) :=
-  PresheafedSpace.IsOpenImmersion.app_invApp f U
+        ((homOfLE (Set.image_preimage_subset f.hom.base U.1)).op :
+          op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.hom.base).obj U))) :=
+  PresheafedSpace.IsOpenImmersion.app_invApp f.hom U
 
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
 @[reassoc]
-theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
-    f.c.app (op U) ≫ invApp f ((Opens.map f.base).obj U) =
+theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.hom.base) :
+    f.hom.c.app (op U) ≫ invApp f ((Opens.map f.hom.base).obj U) =
       Y.presheaf.map
         (eqToHom <|
-            le_antisymm (Set.image_preimage_subset f.base U.1) <|
-              (Set.image_preimage_eq_inter_range (f := f.base) (t := U.1)).symm ▸
+            le_antisymm (Set.image_preimage_subset f.hom.base U.1) <|
+              (Set.image_preimage_eq_inter_range (f := f.hom.base) (t := U.1)).symm ▸
                 Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩).op :=
-  PresheafedSpace.IsOpenImmersion.app_invApp f U
+  PresheafedSpace.IsOpenImmersion.app_invApp f.hom U
 
 instance ofRestrict {X : TopCat} (Y : SheafedSpace C) {f : X ⟶ Y.carrier}
     (hf : IsOpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) :=
   PresheafedSpace.IsOpenImmersion.ofRestrict _ hf
 
 @[elementwise, simp]
-theorem ofRestrict_invApp {C : Type*} [Category C] (X : SheafedSpace C) {Y : TopCat}
+theorem ofRestrict_invApp {C : Type*} [Category* C] (X : SheafedSpace C) {Y : TopCat}
     {f : Y ⟶ TopCat.of X.carrier} (h : IsOpenEmbedding f) (U : Opens (X.restrict h).carrier) :
     (SheafedSpace.IsOpenImmersion.ofRestrict X h).invApp _ U = 𝟙 _ :=
   PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ h U
 
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
-theorem to_iso [h' : Epi f.base] : IsIso f := by
-  haveI : IsIso (forgetToPresheafedSpace.map f) := PresheafedSpace.IsOpenImmersion.to_iso f
+theorem to_iso [h' : Epi f.hom.base] : IsIso f := by
+  haveI : IsIso (forgetToPresheafedSpace.map f) := PresheafedSpace.IsOpenImmersion.to_iso f.hom
   apply isIso_of_reflects_iso _ (SheafedSpace.forgetToPresheafedSpace)
 
 instance stalk_iso [HasColimits C] (x : X) :
-    IsIso (f.stalkMap x) :=
-  PresheafedSpace.IsOpenImmersion.stalk_iso f x
+    IsIso (f.hom.stalkMap x) :=
+  PresheafedSpace.IsOpenImmersion.stalk_iso f.hom x
 
 end
 
 section Prod
 
--- Porting note: here `ι` should have same universe level as morphism of `C`, so needs explicit
--- universe level now
+-- here `ι` should have same universe level as morphism of `C`, so needs explicit universe level
 variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F]
   (i : Discrete ι)
 
-theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
-  rw [← show _ = (colimit.ι F i).base from ι_preservesColimitIso_inv (SheafedSpace.forget C) F i]
+theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).hom.base := by
+  rw [← show _ = (colimit.ι F i).hom.base from
+    ι_preservesColimitIso_inv (SheafedSpace.forget C) F i]
   have : _ = _ ≫ colimit.ι (Discrete.functor ((F ⋙ SheafedSpace.forget C).obj ∘ Discrete.mk)) i :=
     HasColimit.isoOfNatIso_ι_hom Discrete.natIsoFunctor i
   rw [← Iso.eq_comp_inv] at this
@@ -849,11 +855,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   rw [← Iso.eq_comp_inv] at this
   cases i
   rw [this, ← Category.assoc]
-  -- Porting note: `simp_rw` can't use `TopCat.isOpenEmbedding_iff_comp_isIso` and
-  -- `TopCat.isOpenEmbedding_iff_isIso_comp`.
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  rw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
-    TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
+  simp_rw [TopCat.isOpenEmbedding_iff_comp_isIso, (TopCat.isOpenEmbedding_iff_isIso_comp)]
   exact .sigmaMk
 
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
@@ -869,50 +871,51 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   simp_rw [CategoryTheory.Iso.trans_hom, ← TopCat.comp_app, ← PresheafedSpace.comp_base] at eq
   rw [ι_preservesColimitIso_inv] at eq
   change
-    ((SheafedSpace.forget C).map (colimit.ι F i) ≫ _) y =
-      ((SheafedSpace.forget C).map (colimit.ι F j) ≫ _) x at eq
+    ((SheafedSpace.forget C).map (colimit.ι F i) ≫ (preservesColimitIso (forget C) F).hom ≫
+          (HasColimit.isoOfNatIso Discrete.natIsoFunctor).hom ≫
+            (TopCat.sigmaIsoSigma ((F ⋙ forget C).obj ∘ Discrete.mk)).hom) y =
+      ((SheafedSpace.forget C).map (colimit.ι F j) ≫ (preservesColimitIso (forget C) F).hom ≫
+          (HasColimit.isoOfNatIso Discrete.natIsoFunctor).hom ≫
+            (TopCat.sigmaIsoSigma ((F ⋙ forget C).obj ∘ Discrete.mk)).hom) x at eq
   cases i; cases j
   rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
-  exact h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
+  convert h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 
 instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     SheafedSpace.IsOpenImmersion (colimit.ι F i) where
   base_open := sigma_ι_isOpenEmbedding F i
   c_iso U := by
-    have e : colimit.ι F i = _ :=
-      (ι_preservesColimitIso_inv SheafedSpace.forgetToPresheafedSpace F i).symm
+    have h₁ := ι_preservesColimitIso_inv SheafedSpace.forgetToPresheafedSpace F i
+    have h₂ : colimit.ι F i =
+      { hom := (colimit.ι (F ⋙ forgetToPresheafedSpace) i ≫
+        (preservesColimitIso _ F).inv) } :=
+      InducedCategory.hom_ext h₁.symm
     have H :
       IsOpenEmbedding
         (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
-            (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).base :=
-      e ▸ sigma_ι_isOpenEmbedding F i
+            (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).base := by
+      have := h₁.symm
+      convert sigma_ι_isOpenEmbedding F i
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): just `convert` is very slow, so helps it a bit
-      convert this using 2 <;> congr
+      convert this
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
     -- Porting note: this instance created manually to make the `inferInstance` below work
-    have inst1 : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c :=
-      PresheafedSpace.c_isIso_of_iso _
-    rsuffices : IsIso
-        (limit.π
-          (PresheafedSpace.componentwiseDiagram (F ⋙ SheafedSpace.forgetToPresheafedSpace)
-            ((Opens.map
-                  (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
-              (unop <| op <| H.isOpenMap.functor.obj U)))
-          (op i))
-    · infer_instance
+    have : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c := inferInstance
+    suffices IsIso (limit.π (PresheafedSpace.componentwiseDiagram
+      (F ⋙ SheafedSpace.forgetToPresheafedSpace) ((Opens.map
+        (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj
+          (H.isOpenMap.functor.obj U))) (op i)) from inferInstance
     apply limit_π_isIso_of_is_strict_terminal
-    intro j hj
-    induction j with | op j => ?_
+    rintro ⟨j⟩ hj
     dsimp
     convert (F.obj j).sheaf.isTerminalOfEmpty using 3
     convert image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6
-    exact (congr_arg PresheafedSpace.Hom.base e).symm
+    exact congr_arg PresheafedSpace.Hom.base h₁
 
 instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
     (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F] (i : Discrete ι)
@@ -941,11 +944,8 @@ noncomputable section Pullback
 variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [H : LocallyRingedSpace.IsOpenImmersion f]
 
-instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersion g :=
-  @PresheafedSpace.IsOpenImmersion.ofIsIso _ _ _ _ g.1
-    ⟨⟨(inv g).1, by
-        erw [← LocallyRingedSpace.comp_toShHom]; rw [IsIso.hom_inv_id]
-        erw [← LocallyRingedSpace.comp_toShHom]; rw [IsIso.inv_hom_id]; constructor <;> rfl⟩⟩
+instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersion g := by
+  infer_instance
 
 instance comp (g : Z ⟶ Y) [LocallyRingedSpace.IsOpenImmersion g] :
     LocallyRingedSpace.IsOpenImmersion (f ≫ g) :=
@@ -980,7 +980,7 @@ instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
-        f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.toShHom s.condition))) ?_,
+        f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.toHom s.condition))) ?_,
       LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst f.1 g.1 _),
       LocallyRingedSpace.Hom.ext'
@@ -990,7 +990,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
         PresheafedSpace.stalkMap.congr_hom _ _
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1
             (PullbackCone.mk s.fst.1 s.snd.1
-              (congr_arg LocallyRingedSpace.Hom.toShHom s.condition)))
+              (congr_arg LocallyRingedSpace.Hom.toHom s.condition)))
           x
       change _ = _ ≫ s.snd.1.stalkMap x at this
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this
@@ -1001,7 +1001,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       exact h₂.trans <| LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 <|
           PullbackCone.mk s.fst.1 s.snd.1 <| congr_arg
-            LocallyRingedSpace.Hom.toShHom s.condition).symm
+            LocallyRingedSpace.Hom.toHom s.condition).symm
 
 instance hasPullback_of_left : HasPullback f g :=
   ⟨⟨⟨_, pullbackConeOfLeftIsLimit f g⟩⟩⟩
@@ -1052,18 +1052,12 @@ instance forgetToTop_preservesPullback_of_left :
   change PreservesLimit _ <|
     (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) ⋙
     PresheafedSpace.forget _
-  -- Porting note: was `apply (config := { instances := False }) ...`
-  -- See https://github.com/leanprover/lean4/issues/2273
-  have : PreservesLimit
-      (cospan ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
-        WalkingCospan.Hom.inl)
-      ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
-        WalkingCospan.Hom.inr)) (PresheafedSpace.forget CommRingCat) := by
-    dsimp; infer_instance
-  have : PreservesLimit (cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
-      (PresheafedSpace.forget CommRingCat) := by
-    apply preservesLimit_of_iso_diagram _ (diagramIsoCospan _).symm
-  apply Limits.comp_preservesLimit
+  apply +allowSynthFailures Limits.comp_preservesLimit
+  dsimp
+  apply +allowSynthFailures preservesLimit_of_iso_diagram
+  · exact (diagramIsoCospan _).symm
+  dsimp
+  infer_instance
 
 instance forget_reflectsPullback_of_left :
     ReflectsLimit (cospan f g) LocallyRingedSpace.forgetToSheafedSpace :=
@@ -1094,9 +1088,9 @@ instance forgetToPresheafedSpace_reflectsPullback_of_right :
 
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
-  apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
+  apply +allowSynthFailures Functor.ReflectsIsomorphisms.reflects
     (F := LocallyRingedSpace.forgetToSheafedSpace)
-  apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
+  apply +allowSynthFailures Functor.ReflectsIsomorphisms.reflects
     (F := SheafedSpace.forgetToPresheafedSpace)
   erw [← PreservesPullback.iso_hom_snd
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) f g]
@@ -1115,7 +1109,7 @@ def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
 
 @[simp, reassoc]
 theorem lift_fac (H' : Set.range g.base ⊆ Set.range f.base) : lift f g H' ≫ f = g := by
-  erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
+  simp [lift, pullback.condition]
 
 theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H' := by rw [← cancel_mono f, hl, lift_fac]
@@ -1145,8 +1139,8 @@ noncomputable def isoRestrict {X Y : LocallyRingedSpace} (f : X ⟶ Y)
     [H : LocallyRingedSpace.IsOpenImmersion f] :
     X ≅ Y.restrict H.base_open :=
   LocallyRingedSpace.isoOfSheafedSpaceIso <|
-    SheafedSpace.forgetToPresheafedSpace.preimageIso <|
-      PresheafedSpace.IsOpenImmersion.isoRestrict f.1
+    SheafedSpace.fullyFaithfulForgetToPresheafedSpace.preimageIso
+      (PresheafedSpace.IsOpenImmersion.isoRestrict f.1)
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor {X Y : LocallyRingedSpace} (f : X ⟶ Y)
@@ -1173,11 +1167,8 @@ variable {X Y : LocallyRingedSpace} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by
-  ext1
-  dsimp [isoRestrict, isoOfSheafedSpaceIso]
-  apply SheafedSpace.forgetToPresheafedSpace.map_injective
-  rw [Functor.map_comp, SheafedSpace.forgetToPresheafedSpace.map_preimage]
-  exact SheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict f.1
+  apply LocallyRingedSpace.forgetToSheafedSpace.map_injective
+  exact SheafedSpace.IsOpenImmersion.isoRestrict_hom_ofRestrict f.toShHom
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : (isoRestrict f).inv ≫ f = Y.ofRestrict _ := by
@@ -1198,13 +1189,19 @@ instance (U : Opens X) : IsIso (H.invApp _ U) := by delta invApp; infer_instance
 theorem inv_invApp (U : Opens X) :
     inv (H.invApp _ U) =
       f.c.app (op (opensFunctor f |>.obj U)) ≫ X.presheaf.map
-        (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
+        (eqToHom (by
+          have := Set.preimage_image_eq U.1 H.base_open.injective
+          dsimp at this
+          simp [Opens.map, this])) :=
   PresheafedSpace.IsOpenImmersion.inv_invApp f.1 U
 
 @[reassoc (attr := simp)]
 theorem invApp_app (U : Opens X) :
     H.invApp _ U ≫ f.c.app (op (opensFunctor f |>.obj U)) = X.presheaf.map
-      (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
+      (eqToHom (by
+        have := Set.preimage_image_eq U.1 H.base_open.injective
+        dsimp at this
+        simp [Opens.map, this])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f.1 U
 
 attribute [elementwise nosimp] invApp_app
@@ -1241,10 +1238,10 @@ theorem ofRestrict_invApp (X : LocallyRingedSpace) {Y : TopCat}
 instance stalk_iso (x : X) : IsIso (f.stalkMap x) :=
   PresheafedSpace.IsOpenImmersion.stalk_iso f.1 x
 
-theorem to_iso [h' : Epi f.base] : IsIso f := by
-  suffices IsIso (LocallyRingedSpace.forgetToSheafedSpace.map f) from
-    isIso_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace
-  exact SheafedSpace.IsOpenImmersion.to_iso f.1
+theorem to_iso [Epi f.base] : IsIso f := by
+  rw [← isIso_iff_of_reflects_iso _ LocallyRingedSpace.forgetToSheafedSpace]
+  have : Epi (forgetToSheafedSpace.map f).hom.base := by assumption
+  apply SheafedSpace.IsOpenImmersion.to_iso
 
 end
 

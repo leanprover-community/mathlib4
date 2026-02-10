@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Polynomial.Laurent
-import Mathlib.RingTheory.Coalgebra.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.RingTheory.Coalgebra.Basic
 
 /-!
 # The coalgebra structure on monoid algebras
@@ -21,7 +23,11 @@ corresponding structure on its coefficients, defined in `Mathlib/RingTheory/Coal
   `A[T;T⁻¹]` when `A` is an `R`-coalgebra.
 -/
 
-suppress_compilation
+@[expose] public section
+
+noncomputable section
+
+open Coalgebra
 
 namespace MonoidAlgebra
 
@@ -29,14 +35,18 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
   {X : Type*} [Module R A] [Coalgebra R A]
 
 variable (R A X) in
-instance instCoalgebra : Coalgebra R (MonoidAlgebra A X) := Finsupp.instCoalgebra R X A
+@[to_additive (relevant_arg := X)]
+instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
 
-@[simp]
+@[to_additive (relevant_arg := X)]
+instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := Finsupp.instIsCocomm R X A
+
+@[to_additive (relevant_arg := X) (attr := simp)]
 lemma counit_single (x : X) (a : A) :
     Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
   Finsupp.counit_single _ _ _ _ _
 
-@[simp]
+@[to_additive (relevant_arg := X) (attr := simp)]
 lemma comul_single (x : X) (a : A) :
     Coalgebra.comul (R := R) (single x a) =
       TensorProduct.map (lsingle x) (lsingle x) (Coalgebra.comul a) :=
@@ -44,36 +54,15 @@ lemma comul_single (x : X) (a : A) :
 
 end MonoidAlgebra
 
-namespace AddMonoidAlgebra
-
-variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
-  {X : Type*} [Module R A] [Coalgebra R A]
-
-variable (R A X) in
-instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
-
-@[simp]
-lemma counit_single (x : X) (a : A) :
-    Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
-  Finsupp.counit_single _ _ _ _ _
-
-@[simp]
-lemma comul_single (x : X) (a : A) :
-    Coalgebra.comul (R := R) (single x a) =
-      TensorProduct.map (lsingle x) (lsingle x) (Coalgebra.comul a) :=
-  Finsupp.comul_single _ _ _ _ _
-
-end AddMonoidAlgebra
-
 namespace LaurentPolynomial
 
 open AddMonoidAlgebra
 
 variable (R A : Type*) [CommSemiring R] [Semiring A] [Module R A] [Coalgebra R A]
 
-instance instCoalgebra :
-    Coalgebra R A[T;T⁻¹] :=
-  inferInstanceAs (Coalgebra R <| A[ℤ])
+instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstanceAs <| Coalgebra R A[ℤ]
+
+instance instIsCocomm [IsCocomm R A] : IsCocomm R A[T;T⁻¹] := inferInstanceAs <| IsCocomm R A[ℤ]
 
 variable {R A}
 
