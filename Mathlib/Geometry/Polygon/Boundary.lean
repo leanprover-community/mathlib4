@@ -156,7 +156,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
               ← hp_in_both, ← heq]
           exact absurd (lineMap_injective R (h.hasNondegenerateEdges tindex) heq')
             (ne_of_lt (Int.fract_lt_one t))
-        · have hdisj := h.nonadjacent_disjoint hindex hadj' hadj
+        · have hdisj := h.nonadjacent_disjoint _ _ hindex hadj' hadj
           exact (Set.disjoint_iff.mp hdisj hp_in_both).elim
   · intro h
     have nmem (k : Fin n) : (↑(k : ℕ) : R) ∈ Ico (0 : R) (0 + ↑n) := by
@@ -207,7 +207,6 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
         exact_mod_cast inj_eq _ _ (nmem i) (nmem (i + 1))
           (by rw [bnat i, bnat (i + 1), heq]))
       exact fin_ne_succ i
-    constructor
     · intro i j hij hij1 hji1
       rw [Set.disjoint_left]
       intro p hp_i hp_j
