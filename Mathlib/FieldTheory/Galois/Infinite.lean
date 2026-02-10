@@ -226,9 +226,8 @@ then `Gal(fixedField H / k)` is isomorphic to `Gal(K / k) ⧸ H`. -/
 noncomputable def normalAutEquivQuotient [IsGalois k K]
     (H : ClosedSubgroup Gal(K/k)) [H.Normal] :
     Gal(K/k) ⧸ H.1 ≃* Gal(fixedField H.1/k) :=
-  (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-    (fixedField H.1).restrictNormalHom_ker.symm)).trans <|
-      QuotientGroup.quotientKerEquivOfSurjective _ <| restrictNormalHom_surjective K
+  QuotientGroup.liftEquiv _ (restrictNormalHom_surjective K)
+    ((fixingSubgroup_fixedField H).symm.trans (fixedField H.1).restrictNormalHom_ker.symm)
 
 open IntermediateField in
 lemma normalAutEquivQuotient_apply [IsGalois k K]
