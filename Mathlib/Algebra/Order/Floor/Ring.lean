@@ -148,15 +148,15 @@ theorem floor_eq_iff : ⌊a⌋ = z ↔ ↑z ≤ a ∧ a < z + 1 := by
 @[simp]
 theorem floor_eq_zero_iff : ⌊a⌋ = 0 ↔ a ∈ Ico (0 : R) 1 := by simp [floor_eq_iff]
 
-theorem floor_eq_on_Ico (n : ℤ) : ∀ a ∈ Set.Ico (n : R) (n + 1), ⌊a⌋ = n := fun _ ⟨h₀, h₁⟩ =>
-  floor_eq_iff.mpr ⟨h₀, h₁⟩
+theorem floor_eq_on_Ico (n : ℤ) (a : R) (ha : a ∈ Set.Ico (n : R) (n + 1)) : ⌊a⌋ = n :=
+  floor_eq_iff.mpr ⟨ha.1, ha.2⟩
 
-theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : R) (n + 1), (⌊a⌋ : R) = n := fun a ha =>
-  congr_arg _ <| floor_eq_on_Ico n a ha
+theorem floor_eq_on_Ico' (n : ℤ) (a : R) (ha : a ∈ Set.Ico (n : R) (n + 1)) : (⌊a⌋ : R) = n :=
+  congrArg _ <| floor_eq_on_Ico n a ha
 
 @[simp]
 theorem preimage_floor_singleton (m : ℤ) : (floor : R → ℤ) ⁻¹' {m} = Ico (m : R) (m + 1) :=
-  ext fun _ => floor_eq_iff
+  ext fun _ ↦ floor_eq_iff
 
 variable [IsStrictOrderedRing R]
 
@@ -166,11 +166,11 @@ theorem sub_one_lt_floor (a : R) : a - 1 < ⌊a⌋ :=
 
 @[simp]
 theorem floor_intCast (z : ℤ) : ⌊(z : R)⌋ = z :=
-  eq_of_forall_le_iff fun a => by rw [le_floor, Int.cast_le]
+  eq_of_forall_le_iff fun a ↦ by rw [le_floor, Int.cast_le]
 
 @[simp]
 theorem floor_natCast (n : ℕ) : ⌊(n : R)⌋ = n :=
-  eq_of_forall_le_iff fun a => by rw [le_floor, ← cast_natCast, cast_le]
+  eq_of_forall_le_iff fun a ↦ by rw [le_floor, ← cast_natCast, cast_le]
 
 @[simp]
 theorem floor_zero : ⌊(0 : R)⌋ = 0 := by rw [← cast_zero, floor_intCast]
@@ -183,7 +183,7 @@ theorem floor_one : ⌊(1 : R)⌋ = 1 := by rw [← cast_one, floor_intCast]
 
 @[simp]
 theorem floor_add_intCast (a : R) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
-  eq_of_forall_le_iff fun a => by
+  eq_of_forall_le_iff fun a ↦ by
     rw [le_floor, ← sub_le_iff_le_add, ← sub_le_iff_le_add, le_floor, Int.cast_sub]
 
 @[simp]
@@ -338,10 +338,12 @@ variable [IsStrictOrderedRing R]
 theorem fract_add_intCast (a : R) (m : ℤ) : fract (a + m) = fract a := by
   rw [fract]
   simp
+
 @[simp]
 theorem fract_add_natCast (a : R) (m : ℕ) : fract (a + m) = fract a := by
   rw [fract]
   simp
+
 @[simp]
 theorem fract_add_one (a : R) : fract (a + 1) = fract a := mod_cast fract_add_natCast a 1
 
@@ -353,9 +355,11 @@ theorem fract_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
 @[simp]
 theorem fract_intCast_add (m : ℤ) (a : R) : fract (↑m + a) = fract a := by
   rw [add_comm, fract_add_intCast]
+
 @[simp]
 theorem fract_natCast_add (n : ℕ) (a : R) : fract (↑n + a) = fract a := by
   rw [add_comm, fract_add_natCast]
+
 @[simp]
 theorem fract_one_add (a : R) : fract (1 + a) = fract a := mod_cast fract_natCast_add 1 a
 
@@ -368,10 +372,12 @@ theorem fract_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : R) :
 theorem fract_sub_intCast (a : R) (m : ℤ) : fract (a - m) = fract a := by
   rw [fract]
   simp
+
 @[simp]
 theorem fract_sub_natCast (a : R) (n : ℕ) : fract (a - n) = fract a := by
   rw [fract]
   simp
+
 @[simp]
 theorem fract_sub_one (a : R) : fract (a - 1) = fract a := mod_cast fract_sub_natCast a 1
 
@@ -436,7 +442,7 @@ theorem floor_fract (a : R) : ⌊fract a⌋ = 0 := by
   rw [floor_eq_iff, Int.cast_zero, zero_add]; exact ⟨fract_nonneg _, fract_lt_one _⟩
 
 theorem fract_eq_iff {a b : R} : fract a = b ↔ 0 ≤ b ∧ b < 1 ∧ ∃ z : ℤ, a - b = z :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
     exact ⟨fract_nonneg _, fract_lt_one _, ⟨⌊a⌋, sub_sub_cancel _ _⟩⟩,
    by
@@ -612,8 +618,11 @@ theorem ceil_eq_iff : ⌈a⌉ = z ↔ ↑z - 1 < a ∧ a ≤ z := by
 @[simp]
 theorem ceil_eq_zero_iff : ⌈a⌉ = 0 ↔ a ∈ Ioc (-1 : R) 0 := by simp [ceil_eq_iff]
 
-theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : R) z, ⌈a⌉ = z := fun _ ⟨h₀, h₁⟩ =>
-  ceil_eq_iff.mpr ⟨h₀, h₁⟩
+theorem ceil_eq_on_Ioc (z : ℤ) (a : R) (ha : a ∈ Set.Ioc (z - 1 : R) z) : ⌈a⌉ = z :=
+  ceil_eq_iff.mpr ⟨ha.1, ha.2⟩
+
+theorem ceil_eq_on_Ioc' (z : ℤ) (a : R) (ha : a ∈ Set.Ioc (z - 1 : R) z) : (⌈a⌉ : R) = z :=
+  congrArg _ <| ceil_eq_on_Ioc z a ha
 
 @[simp]
 theorem preimage_ceil_singleton (m : ℤ) : (ceil : R → ℤ) ⁻¹' {m} = Ioc ((m : R) - 1) m :=
@@ -712,9 +721,6 @@ theorem ceil_zero : ⌈(0 : R)⌉ = 0 := by rw [← cast_zero, ceil_intCast]
 
 @[simp]
 theorem ceil_one : ⌈(1 : R)⌉ = 1 := by rw [← cast_one, ceil_intCast]
-
-theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : R) z, (⌈a⌉ : R) = z := fun a ha =>
-  mod_cast ceil_eq_on_Ioc z a ha
 
 lemma ceil_eq_self_iff_mem (a : R) : ⌈a⌉ = a ↔ a ∈ Set.range Int.cast := by
   aesop
