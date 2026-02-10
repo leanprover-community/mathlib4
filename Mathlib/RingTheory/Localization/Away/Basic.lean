@@ -478,6 +478,30 @@ lemma awayMap_surjective_iff {f : R →+* S} {r : R} :
     Function.Surjective (Localization.awayMap f r) ↔ ∀ a, ∃ b m, f b = f r ^ m * a :=
   IsLocalization.Away.map_surjective_iff _ _ _ _
 
+lemma awayMap_injective_of_dvd {R : Type*} [CommRing R] (f : R →+* S)
+    {a b : R} (h : a ∣ b) (H : Function.Injective (awayMap f a)) :
+    Function.Injective (awayMap f b) := by
+  simp only [awayMap_injective_iff] at H ⊢
+  obtain ⟨b, rfl⟩ := h
+  refine fun x hx ↦ ?_
+  obtain ⟨n, hn⟩ := H x hx
+  exact ⟨n, by simp [mul_pow, mul_assoc, mul_left_comm (a ^ n), hn]⟩
+
+omit [Algebra R S] in
+lemma awayMap_surjective_of_dvd (f : R →+* S)
+    {a b : R} (h : a ∣ b) (H : Function.Surjective (awayMap f a)) :
+    Function.Surjective (awayMap f b) := by
+  simp only [awayMap_surjective_iff] at H ⊢
+  obtain ⟨b, rfl⟩ := h
+  refine fun x ↦ ?_
+  obtain ⟨c, m, e⟩ := H x
+  exact ⟨b ^ m * c, m, by simp [mul_pow, e, mul_assoc, mul_left_comm]⟩
+
+lemma awayMap_bijective_of_dvd {R : Type*} [CommRing R] (f : R →+* S)
+    {a b : R} (h : a ∣ b) (H : Function.Bijective (awayMap f a)) :
+    Function.Bijective (awayMap f b) :=
+  ⟨awayMap_injective_of_dvd f h H.1, awayMap_surjective_of_dvd f h H.2⟩
+
 variable {A : Type*} [CommSemiring A] [Algebra R A]
 variable {B : Type*} [CommSemiring B] [Algebra R B]
 
