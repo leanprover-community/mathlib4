@@ -121,7 +121,7 @@ def colimitCocone : Cocone F where
             (F ⋙ forget₂ SemiRingCat.{max v u} MonCat)).ι.app j).hom,
             ((AddCommMonCat.FilteredColimits.colimitCocone
               (F ⋙ forget₂ SemiRingCat.{max v u} AddCommMonCat)).ι.app j).hom with }
-      naturality := fun {_ _} f => hom_ext <|
+      naturality := fun {_ _} f => ConcreteCategory.ext <|
         RingHom.coe_inj ((Types.TypeMax.colimitCocone (F ⋙ forget SemiRingCat)).ι.naturality f) }
 
 namespace colimitCoconeIsColimit
@@ -219,7 +219,7 @@ def colimitCocone : Cocone F where
   ι :=
     { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).ι.app X).hom
-      naturality := fun _ _ f ↦ hom_ext <|
+      naturality := fun _ _ f ↦ ConcreteCategory.ext <|
         RingHom.coe_inj ((Types.TypeMax.colimitCocone
           (F ⋙ forget CommSemiRingCat)).ι.naturality f) }
 
@@ -277,7 +277,7 @@ def colimitCocone : Cocone F where
   ι :=
     { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).ι.app X).hom
-      naturality := fun _ _ f ↦ hom_ext <|
+      naturality := fun _ _ f ↦ ConcreteCategory.ext <|
         RingHom.coe_inj ((Types.TypeMax.colimitCocone (F ⋙ forget RingCat)).ι.naturality f) }
 
 /-- The proposed colimit cocone is a colimit in `Ring`. -/
@@ -331,7 +331,7 @@ def colimitCocone : Cocone F where
   ι :=
     { app := fun X ↦ ofHom <| ((RingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommRingCat RingCat.{max v u})).ι.app X).hom
-      naturality := fun _ _ f ↦ hom_ext <|
+      naturality := fun _ _ f ↦ ConcreteCategory.ext <|
         RingHom.coe_inj ((Types.TypeMax.colimitCocone (F ⋙ forget CommRingCat)).ι.naturality f) }
 
 /-- The proposed colimit cocone is a colimit in `CommRingCat`. -/

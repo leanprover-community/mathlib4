@@ -94,7 +94,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
+      simp [Vs, dif_pos he, ← Set.preimage_comp, ← ConcreteCategory.coe_comp]
 
 end CofilteredLimit
 

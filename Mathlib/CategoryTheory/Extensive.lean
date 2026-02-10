@@ -317,9 +317,9 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
             (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, ConcreteCategory.hom_ext _ _ fun a => (hl a).symm,
         TopCat.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => TopCat.ext fun x =>
+        fun {l'} h₁ _ => ConcreteCategory.hom_ext _ _ fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.hom.2 using 1
@@ -335,10 +335,10 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, ConcreteCategory.hom_ext _ _ fun a => (hl a).symm,
         TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
-          TopCat.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
+          ConcreteCategory.hom_ext _ _ fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.hom.2 using 1
       exact (funext hl).symm

@@ -205,14 +205,16 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
     (Quot.desc F c) h).symm.toAddMonoidHom)
   fac s j := by
     ext x
-    dsimp
+    simp only [Functor.const_obj_obj, AddEquiv.toAddMonoidHom_eq_coe, hom_comp,
+      ConcreteCategory.hom_ofHom, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply]
     conv_lhs => erw [← Quot.ι_desc F c j x]
     rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
     simp only [Quot.ι_desc, Functor.const_obj_obj]
   uniq s m hm := by
     ext x
     obtain ⟨x, rfl⟩ := h.2 x
-    dsimp
+    simp only [AddEquiv.toAddMonoidHom_eq_coe, ConcreteCategory.hom_ofHom, AddMonoidHom.coe_comp,
+      AddMonoidHom.coe_coe, Function.comp_apply]
     rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
     suffices eq : m.hom.comp (AddEquiv.ofBijective (Quot.desc F c) h) = Quot.desc F s by
       rw [← eq]; rfl
@@ -226,12 +228,7 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
   pt := AddCommGrpCat.of (Shrink (Quot F))
   ι :=
     { app j :=
-        AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
-      naturality _ _ _ := by
-        ext
-        dsimp
-        change Shrink.addEquiv.symm _ = _
-        rw [Quot.map_ι] }
+        AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j)) }
 
 @[simp]
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrpCat.{w}) [Small.{w} (Quot F)] :
@@ -292,14 +289,5 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     QuotientAddGroup.lift _ (cokernel.π f).hom <| by
       rintro _ ⟨x, rfl⟩
       exact cokernel.condition_apply f x
-  hom_inv_id := by
-    refine coequalizer.hom_ext ?_
-    simp only [coequalizer_as_cokernel, cokernel.π_desc_assoc, Category.comp_id]
-    rfl
-  inv_hom_id := by
-    ext x
-    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk',
-      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, lift_mk, hom_id, AddMonoidHom.coe_id]
-    exact QuotientAddGroup.induction_on (α := H) x <| cokernel.π_desc_apply f _ _
 
 end AddCommGrpCat

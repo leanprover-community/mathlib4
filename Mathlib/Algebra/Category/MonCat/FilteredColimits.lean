@@ -130,7 +130,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   obtain ⟨j₁, y⟩ := y; obtain ⟨j₂, x⟩ := x; obtain ⟨j₃, y'⟩ := y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
-  simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
+  simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.forget_map_eq_coe] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.rightToMax j₂ j₁) (IsFiltered.leftToMax j₂ j₁)
       (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g
@@ -223,7 +223,7 @@ noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
 @[to_additive (attr := simp)]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
-  MonCat.ext fun x =>
+  ConcreteCategory.hom_ext _ _ fun x =>
     congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
 
 /-- The cocone over the proposed colimit monoid. -/
@@ -261,7 +261,7 @@ noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
 noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
   fac t j := rfl
-  uniq t m h := MonCat.ext fun y ↦ by
+  uniq t m h := ConcreteCategory.hom_ext _ _ fun y ↦ by
     obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
     exact ConcreteCategory.congr_hom (h j) y
 
@@ -320,7 +320,7 @@ noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι.app j := ofHom ((MonCat.FilteredColimits.colimitCocone.{v, u}
     (F ⋙ forget₂ CommMonCat MonCat.{max v u})).ι.app j).hom
-  ι.naturality _ _ f := hom_ext <| congr_arg (MonCat.Hom.hom)
+  ι.naturality _ _ f := ConcreteCategory.ext <| congr_arg (MonCat.Hom.hom)
     ((MonCat.FilteredColimits.colimitCocone.{v, u}
       (F ⋙ forget₂ CommMonCat MonCat.{max v u})).ι.naturality f)
 

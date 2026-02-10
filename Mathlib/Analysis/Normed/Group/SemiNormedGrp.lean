@@ -71,12 +71,39 @@ def Hom.Simps.hom (M N : SemiNormedGrp.{u}) (f : Hom M N) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
+@[ext]
+lemma ext {M N : SemiNormedGrp} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
+  ConcreteCategory.ext_apply h
+
 @[simp]
 lemma hom_id {M : SemiNormedGrp} : (𝟙 M : M ⟶ M).hom = NormedAddGroupHom.id M := rfl
+
+/- Provided for rewriting. -/
+lemma id_apply (M : SemiNormedGrp) (r : M) :
+    (𝟙 M : M ⟶ M) r = r := by simp
 
 @[simp]
 lemma hom_comp {M N O : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ O) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {M N O : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ O) (r : M) :
+    (f ≫ g) r = g (f r) := by simp
+
+@[ext]
+lemma hom_ext {M N : SemiNormedGrp} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext hf
+
+@[simp]
+lemma hom_ofHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) : (ofHom f).hom = f := rfl
+
+@[simp]
+lemma ofHom_hom {M N : SemiNormedGrp} (f : M ⟶ N) :
+    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {M : Type u} [SeminormedAddCommGroup M] :
@@ -91,7 +118,20 @@ lemma ofHom_comp {M N O : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommG
 lemma ofHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (r : M) : ofHom f r = f r := rfl
 
+lemma inv_hom_apply {M N : SemiNormedGrp} (e : M ≅ N) (r : M) : e.inv (e.hom r) = r := by
+  simp
+
+lemma hom_inv_apply {M N : SemiNormedGrp} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
+  simp
+
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp.of V : Type u) = V :=
+  rfl
+
+theorem coe_id (V : SemiNormedGrp) : (𝟙 V : V → V) = id :=
+  rfl
+
+theorem coe_comp {M N K : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ K) :
+    (f ≫ g : M → K) = g ∘ f :=
   rfl
 
 instance : Inhabited SemiNormedGrp :=
@@ -235,12 +275,39 @@ theorem mkHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddComm
     mkHom f i x = f x :=
   rfl
 
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
+@[ext]
+lemma ext {M N : SemiNormedGrp₁} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
+  ConcreteCategory.ext_apply h
+
 @[simp]
 lemma hom_id {M : SemiNormedGrp₁} : (𝟙 M : M ⟶ M).hom = NormedAddGroupHom.id M := rfl
+
+/- Provided for rewriting. -/
+lemma id_apply (M : SemiNormedGrp₁) (r : M) :
+    (𝟙 M : M ⟶ M) r = r := by simp
 
 @[simp]
 lemma hom_comp {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) :
     (f ≫ g).hom.1 = g.hom.1.comp f.hom.1 := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) (r : M) :
+    (f ≫ g) r = g (f r) := by simp
+
+@[ext]
+lemma hom_ext {M N : SemiNormedGrp₁} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext (congr_arg Subtype.val hf)
+
+@[simp]
+lemma hom_mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+    (f : NormedAddGroupHom M N) (hf : f.NormNoninc) : (mkHom f hf).hom = f := rfl
+
+@[simp]
+lemma mkHom_hom {M N : SemiNormedGrp₁} (f : M ⟶ N) :
+    mkHom (Hom.hom f) f.normNoninc = f := rfl
 
 @[simp]
 lemma mkHom_id {M : Type u} [SeminormedAddCommGroup M] :
@@ -253,8 +320,15 @@ lemma mkHom_comp {M N O : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommG
     mkHom (g.comp f) hgf = mkHom f hf ≫ mkHom g hg :=
   rfl
 
-@[deprecated (since := "2026-02-10")] alias inv_hom_apply := Iso.hom_inv_id_apply
-@[deprecated (since := "2026-02-10")] alias hom_inv_apply := Iso.inv_hom_id_apply
+@[simp]
+lemma inv_hom_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (r : M) : e.inv (e.hom r) = r := by
+  rw [← comp_apply]
+  simp
+
+@[simp]
+lemma hom_inv_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
+  rw [← comp_apply]
+  simp
 
 instance (M : SemiNormedGrp₁) : SeminormedAddCommGroup M :=
   M.str
@@ -307,7 +381,7 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := congrArg _ (Iso.hom_inv_id_apply i v).symm
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [← comp_apply, Iso.hom_inv_id, id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 
 end SemiNormedGrp₁

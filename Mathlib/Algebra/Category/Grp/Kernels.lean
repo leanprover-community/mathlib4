@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 namespace AddCommGrpCat
 
-open AddMonoidHom CategoryTheory Limits QuotientAddGroup
+open AddMonoidHom CategoryTheory Limits QuotientAddGroup ConcreteCategory
 
 universe u
 
@@ -25,7 +25,7 @@ variable {G H : AddCommGrpCat.{u}} (f : G ⟶ H)
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
-  KernelFork.ofι (Z := of f.hom.ker) (ofHom f.hom.ker.subtype) <| ext fun x =>
+  KernelFork.ofι (Z := of f.hom.ker) (ofHom f.hom.ker.subtype) <| hom_ext _ _ fun x =>
     x.casesOn fun _ hx => hx
 
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
@@ -34,12 +34,12 @@ def kernelIsLimit : IsLimit <| kernelCone f :=
     (fun s => ofHom <| s.ι.hom.codRestrict _ fun c => mem_ker.mpr <|
       ConcreteCategory.congr_hom s.condition c)
     (fun _ => by rfl)
-    (fun _ _ h => ext fun x => Subtype.ext_iff.mpr <| ConcreteCategory.congr_hom h x)
+    (fun _ _ h => hom_ext _ _ fun x => Subtype.ext_iff.mpr <| ConcreteCategory.congr_hom h x)
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
-  CokernelCofork.ofπ (Z := of <| H ⧸ f.hom.range) (ofHom (mk' f.hom.range)) <| ext fun x =>
-    (eq_zero_iff _).mpr ⟨x, rfl⟩
+  CokernelCofork.ofπ (Z := of <| H ⧸ f.hom.range) (ofHom (mk' f.hom.range)) <| hom_ext _ _ fun x =>
+    (eq_zero_iff _).mpr (by exact ⟨x, rfl⟩)
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=

@@ -41,8 +41,6 @@ namespace MonCat
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
   map f := ofHom (WithOne.mapMulHom f.hom)
-  map_id _ := MonCat.hom_ext WithOne.mapMulHom_id
-  map_comp _ _ := MonCat.hom_ext (WithOne.mapMulHom_comp _ _)
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
@@ -67,8 +65,6 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
 def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
   map f := ofHom (FreeMonoid.map f)
-  map_id _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
-  map_comp _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
 
 /-- The free-forgetful adjunction for monoids. -/
 @[to_additive /-- The free-forgetful adjunction for additive monoids. -/]
@@ -76,7 +72,9 @@ def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.
     { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans FreeMonoid.lift.symm
-      homEquiv_naturality_left_symm _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl) }
+      homEquiv_naturality_left_symm _ _ := by
+        ext1
+        exact FreeMonoid.hom_eq fun _ ↦ rfl }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩

@@ -271,7 +271,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
-  uniq s m w := hom_ext <| RingHom.ext fun x => by
+  uniq s m w := ConcreteCategory.ext <| RingHom.ext fun x => by
     refine Quot.inductionOn x ?_
     intro x
     induction x with
@@ -571,7 +571,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc := fun s ↦ descMorphism F s
-  uniq := fun s m w ↦ hom_ext <| RingHom.ext fun x => by
+  uniq := fun s m w ↦ ConcreteCategory.ext <| RingHom.ext fun x => by
     refine Quot.inductionOn x ?_
     intro x
     induction x with

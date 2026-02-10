@@ -232,8 +232,6 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
         change φ.unop ≫ lift f₁ f₂ ≫ μ = lift (φ.unop ≫ f₁) (φ.unop ≫ f₂) ≫ μ
         rw [← Category.assoc]
         cat_disch }
-  map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
-  map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
@@ -252,7 +250,7 @@ def yonedaMonObjIsoOfRepresentableBy
         simp only [α.homEquiv_comp, Equiv.apply_symm_apply,
           Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]
         simp only [← Functor.comp_map, ← ConcreteCategory.forget_map_eq_coe, ← α.homEquiv_comp]
-        simp }) (fun φ ↦ MonCat.hom_ext (MonoidHom.ext (α.homEquiv_comp φ.unop)))
+        simp }) (fun φ ↦ ConcreteCategory.ext (MonoidHom.ext (α.homEquiv_comp φ.unop)))
 
 /-- The yoneda embedding of `Mon_C` into presheaves of monoids. -/
 @[simps]
@@ -262,11 +260,7 @@ def yonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   { app Y := MonCat.ofHom
       { toFun := (· ≫ ψ.hom)
         map_one' := by simp [Hom.one_def, Hom.one_def]
-        map_mul' φ₁ φ₂ := by simp [Hom.mul_def] }
-    naturality {M N} φ := MonCat.hom_ext <| MonoidHom.ext fun f ↦ Category.assoc φ.unop f ψ.hom }
-  map_id M := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| MonoidHom.ext Category.comp_id
-  map_comp _ _ :=
-    NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| MonoidHom.ext (.symm <| Category.assoc · _ _)
+        map_mul' φ₁ φ₂ := by simp [Hom.mul_def] } }
 
 @[reassoc]
 lemma yonedaMon_naturality (α : yonedaMonObj M ⟶ yonedaMonObj N) (f : X ⟶ Y) (g : Y ⟶ M) :
@@ -310,7 +304,7 @@ def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
           ← yonedaMon_naturality, Category.comp_id] }
   map_preimage {M N} α := by
     ext Y f
-    dsimp only [yonedaMon_obj, yonedaMon_map_app, MonCat.hom_ofHom]
+    simp only [yonedaMon_obj, yonedaMon_map_app, ConcreteCategory.hom_ofHom]
     simp_rw [← yonedaMon_naturality]
     simp
   preimage_map φ := Mon.Hom.ext (Category.id_comp φ.hom)

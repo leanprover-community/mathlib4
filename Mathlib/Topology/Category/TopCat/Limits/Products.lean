@@ -109,7 +109,7 @@ theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCat.{max v u}) 
 
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i :) x := by
-  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
+  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_apply, ← comp_apply, Iso.hom_inv_id,
     Category.comp_id]
 
 section Prod
@@ -212,8 +212,9 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
 theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsInducing f)
     (hg : IsInducing g) : IsInducing (Limits.prod.map f g) := by
   constructor
-  simp_rw [prod_topology, induced_inf, induced_compose, ← coe_comp,
-    prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
+  simp_rw [prod_topology, induced_inf, induced_compose, ← ConcreteCategory.coe_comp,
+    prod.map_fst, prod.map_snd, ConcreteCategory.coe_comp, ← induced_compose (g := f),
+    ← induced_compose (g := g)]
   rw [← hf.eq_induced, ← hg.eq_induced]
 
 theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
@@ -305,17 +306,16 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             exact h₂.isOpen_range
       · intro T f g
         ext x
-        dsimp
-        rw [dif_pos ⟨x, rfl⟩]
-        conv_lhs => rw [Equiv.ofInjective_symm_apply]
+        simp
       · intro T f g
         ext x
-        dsimp
-        rw [dif_neg]
-        · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
-        · rintro ⟨y, e⟩
-          have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
-          rwa [disjoint_iff.mp h₃.1] at this
+        simp only [pair_obj_right, Functor.const_obj_obj, pair_obj_left, mem_range, hom_comp,
+          ConcreteCategory.hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
+          Equiv.ofInjective_symm_apply, dite_eq_right_iff, forall_exists_index]
+        intro y e
+        have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
+        rw [disjoint_iff.mp h₃.1] at this
+        simp at this
       · rintro T _ _ m rfl rfl
         ext x
         change m x = dite _ _ _

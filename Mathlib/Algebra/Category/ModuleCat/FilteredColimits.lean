@@ -152,7 +152,7 @@ def colimitCocone : Cocone F where
   ι :=
     { app := coconeMorphism F
       naturality := fun _ _' f =>
-        hom_ext <| LinearMap.coe_injective
+        ConcreteCategory.ext <| LinearMap.coe_injective
           ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
 
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.

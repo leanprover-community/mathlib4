@@ -231,7 +231,7 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
           | none => rfl
           | some none => rfl
           | some (some _) => rfl
-      homEquiv_naturality_right := fun _ _ => Lat.ext fun _ => rfl }
+      homEquiv_naturality_right := fun _ _ => ConcreteCategory.hom_ext _ _ fun _ => rfl }
 
 /-- `latToBddLat` and `OrderDual` commute. -/
 def latToBddLatCompDualIsoDualCompLatToBddLat :

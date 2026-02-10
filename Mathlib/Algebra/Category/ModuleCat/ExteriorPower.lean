@@ -117,7 +117,7 @@ lemma iso₀_hom_apply {M : ModuleCat.{u} R} (f : Fin 0 → M) :
 @[reassoc (attr := simp)]
 lemma iso₀_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 0 ≫ (iso₀ N).hom = (iso₀ M).hom :=
-  ModuleCat.hom_ext (exteriorPower.zeroEquiv_naturality f.hom)
+  ConcreteCategory.ext (exteriorPower.zeroEquiv_naturality f.hom)
 
 /-- The isomorphism `M.exteriorPower 1 ≅ M`. -/
 noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
@@ -131,7 +131,7 @@ lemma iso₁_hom_apply {M : ModuleCat.{u} R} (f : Fin 1 → M) :
 @[reassoc (attr := simp)]
 lemma iso₁_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 1 ≫ (iso₁ N).hom = (iso₁ M).hom ≫ f :=
-  ModuleCat.hom_ext (exteriorPower.oneEquiv_naturality f.hom)
+  ConcreteCategory.ext (exteriorPower.oneEquiv_naturality f.hom)
 
 variable (R)
 

@@ -100,10 +100,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
       apply MvPolynomial.ringHom_ext
       · simpa using fun x ↦ congr($(hg i).hom x)
       · intro i
-        simp only [CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
-          Functor.const_obj_obj, CommRingCat.hom_ofHom, MvPolynomial.coe_eval₂Hom,
-          MvPolynomial.eval₂_X]
-        exact (congr($(c.w (hi i)).hom (x i)).trans (h i)).symm
+        simpa [-NatTrans.naturality] using (congr($(c.w (hi i)).hom (x i)).trans (h i)).symm
     · ext x
       simp [P, iP]
   have : ∀ r : s, ∃ (i' : J) (hi' : i ⟶ i'), F.map hi' (g' r) = 0 := by

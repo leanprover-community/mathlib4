@@ -110,7 +110,7 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     { toFun := Continuous.connectedComponentsLift g.hom.hom.2
       continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.hom.2 }
   left_inv f :=
-    InducedCategory.hom_ext (TopCat.ext (fun y ↦ by
+    InducedCategory.hom_ext (ConcreteCategory.hom_ext _ _ (fun y ↦ by
       obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
       rfl))
 

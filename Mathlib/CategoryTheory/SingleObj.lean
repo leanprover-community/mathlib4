@@ -246,6 +246,6 @@ instance toCat_full : toCat.Full where
     ⟨ofHom x, Cat.Hom.ext h⟩
 
 instance toCat_faithful : toCat.Faithful where
-  map_injective h := MonCat.hom_ext <| by simpa [toCat] using congr(($h).toFunctor)
+  map_injective h := ConcreteCategory.ext <| by simpa [toCat] using congr(($h).toFunctor)
 
 end MonCat

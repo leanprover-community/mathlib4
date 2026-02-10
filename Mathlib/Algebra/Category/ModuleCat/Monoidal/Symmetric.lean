@@ -94,8 +94,9 @@ theorem braiding_inv_apply {M N : SemimoduleCat.{u} R} (m : M) (n : N) :
   rfl
 
 theorem tensorμ_eq_tensorTensorTensorComm {A B C D : SemimoduleCat R} :
-    tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
-  SemimoduleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
+    tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap := by
+  ext1
+  exact TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
     TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
 
 @[simp]
@@ -130,8 +131,9 @@ theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
   rfl
 
 theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
-    tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
-  ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
+    tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap := by
+  ext1
+  exact TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
     TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
 
 @[simp]

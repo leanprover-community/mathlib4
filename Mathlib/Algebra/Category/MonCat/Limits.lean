@@ -47,9 +47,8 @@ def sectionsSubmonoid : Submonoid (∀ j, F.obj j) where
   carrier := (F ⋙ forget MonCat).sections
   one_mem' {j} {j'} f := by simp
   mul_mem' {a} {b} ah bh {j} {j'} f := by
-    simp only [Functor.comp_map, Pi.mul_apply]
-    dsimp [Functor.sections] at ah bh
-    rw [← ah f, ← bh f, forget_map, map_mul]
+    simp [← ah f, ← bh f]
+
 
 @[to_additive]
 instance sectionsMonoid : Monoid (F ⋙ forget MonCat.{u}).sections :=
@@ -88,7 +87,7 @@ noncomputable def limitCone : Cone F :=
   { pt := MonCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
     { app j := ofHom (limitπMonoidHom F j)
-      naturality := fun _ _ f => MonCat.ext fun x =>
+      naturality := fun _ _ f => ConcreteCategory.hom_ext _ _ fun x =>
         ConcreteCategory.congr_hom ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x } }
 
 /-- Witness that the limit cone in `MonCat` is a limit cone.
@@ -98,11 +97,10 @@ noncomputable def limitCone : Cone F :=
 noncomputable def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget MonCat) (Types.Small.limitConeIsLimit.{v, u} _)
     (fun s => ofHom { toFun := _, map_one' := ?_, map_mul' := ?_ }) (fun s => rfl)
-  · simp only [Functor.mapCone_π_app, forget_map, map_one]
+  · simp
     rfl
   · intro x y
-    simp only [EquivLike.coe_apply, Functor.mapCone_π_app, forget_map, map_mul]
-    rw [← equivShrink_mul]
+    simp [← equivShrink_mul]
     rfl
 
 /-- If `(F ⋙ forget MonCat).sections` is `u`-small, `F` has a limit. -/
@@ -175,8 +173,8 @@ noncomputable instance forget_createsLimit :
       { toFun := (Types.Small.limitConeIsLimit.{v, u} _).lift ((forget MonCat).mapCone _),
         map_one' := by simp; rfl, map_mul' := ?_ }
     · intro x y
-      simp only [Types.Small.limitConeIsLimit_lift, Functor.comp_obj, Functor.mapCone_pt,
-          Functor.mapCone_π_app, forget_map, map_mul]
+      simp only [Types.Small.limitCone_pt, Functor.comp_obj, Types.Small.limitConeIsLimit_lift,
+        Functor.mapCone_pt, Functor.mapCone_π_app, ConcreteCategory.forget_map_eq_coe, map_mul]
       congr
       simp only [Functor.comp_obj, Equiv.symm_apply_apply]
       rfl
@@ -237,8 +235,8 @@ noncomputable instance forget₂CreatesLimit : CreatesLimit F (forget₂ CommMon
         { pt := CommMonCat.of (Types.Small.limitCone (F ⋙ forget CommMonCat)).pt
           π :=
             { app j := ofHom (MonCat.limitπMonoidHom (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}) j)
-              naturality _ _ j := ext <| fun x => ConcreteCategory.congr_hom
-                ((MonCat.HasLimits.limitCone
+              naturality _ _ j := ConcreteCategory.hom_ext _ _ <| fun x =>
+                ConcreteCategory.congr_hom ((MonCat.HasLimits.limitCone
                   (F ⋙ forget₂ CommMonCat MonCat.{u})).π.naturality j) x } }
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit _) t
       makesLimit :=

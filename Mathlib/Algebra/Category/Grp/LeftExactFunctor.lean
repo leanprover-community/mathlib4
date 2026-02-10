@@ -84,7 +84,7 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
   refine CommGrp.mkIso Multiplicative.toAdd.toIso (by
     erw [Functor.mapCommGrp_obj_grp_one]
     cat_disch) ?_
-  dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe, -forget_map]
+  dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_coe]
   have : F.Additive := Functor.additive_of_preserves_binary_products _
   simp only [Category.id_comp]
   erw [Functor.mapCommGrp_obj_grp_mul]

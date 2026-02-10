@@ -45,13 +45,16 @@ instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
     one_mul := fun x => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x)
+      convert LinearMap.congr_fun ((ConcreteCategory.ext_iff
+        (C := ModuleCat.{u} R)).mp (one_mul A)) ((1 : R) ⊗ₜ x)
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_one := fun x => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R))
+      convert LinearMap.congr_fun ((ConcreteCategory.ext_iff
+        (C := ModuleCat.{u} R)).mp (mul_one A)) (x ⊗ₜ (1 : R))
       rw [MonoidalCategory.rightUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
+      convert LinearMap.congr_fun ((ConcreteCategory.ext_iff
+        (C := ModuleCat.{u} R)).mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
     left_distrib := fun x y z => by
       convert μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
@@ -71,15 +74,19 @@ instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
     map_zero' := η[A].hom.map_zero
     map_one' := rfl
     map_mul' := fun x y => by
-      have h := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A).symm) (x ⊗ₜ η[A] y)
+      have h := LinearMap.congr_fun ((ConcreteCategory.ext_iff
+        (C := ModuleCat.{u} R)).mp (one_mul A).symm) (x ⊗ₜ η[A] y)
       rwa [MonoidalCategory.leftUnitor_hom_apply, ← η[A].hom.map_smul] at h }
   commutes' := fun r a => by
     dsimp
-    have h₁ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a)
-    have h₂ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (a ⊗ₜ r)
+    have h₁ := LinearMap.congr_fun ((ConcreteCategory.ext_iff
+      (C := ModuleCat.{u} R)).mp (one_mul A)) (r ⊗ₜ a)
+    have h₂ := LinearMap.congr_fun ((ConcreteCategory.ext_iff
+      (C := ModuleCat.{u} R)).mp (mul_one A)) (a ⊗ₜ r)
     exact h₁.trans h₂.symm
   smul_def' := fun r a =>
-    (LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a)).symm
+    (LinearMap.congr_fun ((ConcreteCategory.ext_iff
+      (C := ModuleCat.{u} R)).mp (one_mul A)) (r ⊗ₜ a)).symm
 
 @[simp]
 theorem algebraMap (A : ModuleCat.{u} R) [MonObj A] (r : R) : algebraMap R A r = η[A] r :=
@@ -93,11 +100,14 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
   map {_ _} f := AlgCat.ofHom
     { f.hom.hom.toAddMonoidHom with
       toFun := f.hom
-      map_one' := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) (1 : R)
+      map_one' := LinearMap.congr_fun ((ConcreteCategory.ext_iff
+        (C := ModuleCat.{u} R)).mp (IsMonHom.one_hom f.hom)) (1 : R)
       map_mul' := fun x y =>
-        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.mul_hom f.hom)) (x ⊗ₜ y)
+        LinearMap.congr_fun ((ConcreteCategory.ext_iff
+          (C := ModuleCat.{u} R)).mp (IsMonHom.mul_hom f.hom)) (x ⊗ₜ y)
       commutes' := fun r =>
-        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) r }
+        LinearMap.congr_fun ((ConcreteCategory.ext_iff
+          (C := ModuleCat.{u} R)).mp (IsMonHom.one_hom f.hom)) r }
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
@@ -109,14 +119,14 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
-    rw [compr₂ₛₗ_apply, compr₂ₛₗ_apply, hom_comp, LinearMap.comp_apply]
+    -- rw [compr₂ₛₗ_apply, compr₂ₛₗ_apply, hom_comp, LinearMap.comp_apply]
     -- Porting note: this `dsimp` does nothing
     -- dsimp [AlgCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --    LinearMap.compr₂_apply, Function.comp_apply, RingHom.map_one,
     --    ModuleCat.MonoidalCategory.tensorHom_tmul, AlgCat.hom_comp,
     --    ModuleCat.MonoidalCategory.leftUnitor_hom_apply]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
-    dsimp
+    simp only [hom_comp, ConcreteCategory.hom_ofHom, compr₂ₛₗ_apply, coe_comp, Function.comp_apply]
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
     dsimp
   mul_one := by
@@ -129,7 +139,7 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     --   AlgCat.coe_comp]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂ₛₗ_apply]
-    simp only [hom_comp, hom_ofHom, id_coe, id_eq, LinearMap.comp_apply]
+    simp only [hom_comp, ConcreteCategory.hom_ofHom, id_coe, id_eq, coe_comp, Function.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     dsimp
@@ -138,9 +148,8 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
-    dsimp only [compr₂ₛₗ_apply, TensorProduct.mk_apply]
-    rw [hom_comp, LinearMap.comp_apply, hom_comp, LinearMap.comp_apply, hom_comp,
-        LinearMap.comp_apply]
+    simp only [hom_comp, ConcreteCategory.hom_ofHom, compr₂ₛₗ_apply, TensorProduct.mk_apply,
+      coe_comp, Function.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
     dsimp only [id_coe, id_eq]
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
@@ -155,8 +164,9 @@ def inverse : AlgCat.{u} R ⥤ Mon (ModuleCat.{u} R) where
   obj A := { X := ModuleCat.of R A, mon := inverseObj A }
   map f :=
     { hom := ofHom <| f.hom.toLinearMap
-      isMonHom_hom.one_hom := hom_ext <| LinearMap.ext f.hom.commutes
-      isMonHom_hom.mul_hom := hom_ext <| TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom }
+      isMonHom_hom.one_hom := ConcreteCategory.ext <| LinearMap.ext f.hom.commutes
+      isMonHom_hom.mul_hom := ConcreteCategory.ext <|
+        TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom }
 
 end MonModuleEquivalenceAlgebra
 

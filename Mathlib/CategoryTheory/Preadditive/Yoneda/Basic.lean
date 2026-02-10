@@ -60,8 +60,7 @@ def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrpCat.{v} where
     { app := fun _ => AddCommGrpCat.ofHom
         { toFun := fun g => g ≫ f
           map_zero' := Limits.zero_comp
-          map_add' := fun _ _ => add_comp _ _ _ _ _ _ }
-      naturality := fun _ _ _ => AddCommGrpCat.ext fun _ => Category.assoc _ _ _ }
+          map_add' := fun _ _ => add_comp _ _ _ _ _ _ } }
 
 /-- The Yoneda embedding for preadditive categories sends an object `X` to the copresheaf sending an
 object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
@@ -85,9 +84,7 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{v} where
     { app := fun _ => AddCommGrpCat.ofHom
         { toFun := fun g => f.unop ≫ g
           map_zero' := Limits.comp_zero
-          map_add' := fun _ _ => comp_add _ _ _ _ _ _ }
-      naturality := fun _ _ _ =>
-        AddCommGrpCat.ext fun _ => Eq.symm <| Category.assoc _ _ _ }
+          map_add' := fun _ _ => comp_add _ _ _ _ _ _ } }
 
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where
 

@@ -33,7 +33,7 @@ theorem injective_module_of_injective_object
   out X Y _ _ _ _ f hf g := by
     have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
     obtain ⟨l, h⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
-    obtain rfl := ModuleCat.hom_ext_iff.mp h
+    obtain rfl := ConcreteCategory.ext_iff.mp h
     exact ⟨l.hom, fun _ => rfl⟩
 
 theorem injective_iff_injective_object :

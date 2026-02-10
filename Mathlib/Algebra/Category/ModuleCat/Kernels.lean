@@ -38,22 +38,21 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker
       LinearMap.codRestrict (LinearMap.ker f.hom) (Fork.ι s).hom fun c =>
         LinearMap.mem_ker.2 <| by simp [← ConcreteCategory.comp_apply])
-    (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
-      hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
+    (fun _ => ConcreteCategory.ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
+      ConcreteCategory.ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
-  CokernelCofork.ofπ (ofHom (LinearMap.range f.hom).mkQ) <| hom_ext <| LinearMap.range_mkQ_comp _
+  CokernelCofork.ofπ (ofHom (LinearMap.range f.hom).mkQ) <| ConcreteCategory.ext <|
+    LinearMap.range_mkQ_comp _
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit (cokernelCocone f) :=
   Cofork.IsColimit.mk _
     (fun s => ofHom <| (LinearMap.range f.hom).liftQ (Cofork.π s).hom <|
-      LinearMap.range_le_ker_iff.2 <| ModuleCat.hom_ext_iff.mp <| CokernelCofork.condition s)
-    (fun s => hom_ext <| (LinearMap.range f.hom).liftQ_mkQ (Cofork.π s).hom _) fun s m h => by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation
-    haveI : Epi (ofHom (LinearMap.range f.hom).mkQ) :=
-      (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
+      LinearMap.range_le_ker_iff.2 <| ConcreteCategory.ext_iff.mp <| CokernelCofork.condition s)
+    (fun s => ConcreteCategory.ext <|
+      (LinearMap.range f.hom).liftQ_mkQ (Cofork.π s).hom _) fun s m h => by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation
     apply (cancel_epi (ofHom (LinearMap.range f.hom).mkQ)).1
     exact h

@@ -56,7 +56,7 @@ provided.
 
 noncomputable section
 
-open CategoryTheory TopologicalSpace Topology
+open CategoryTheory TopologicalSpace Topology ConcreteCategory
 
 universe v u
 
@@ -160,7 +160,7 @@ theorem eqvGen_of_π_eq
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
-    (congr_arg
+    (ConcreteCategory.congr_arg
         (colim.map (diagramIsoParallelPair diagram).hom ≫
           (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
         this :
@@ -300,7 +300,7 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
   trivial
 
 instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
-  use h.t j i; constructor <;> ext1; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
+  use h.t j i; constructor <;> ext; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
 
 /-- (Implementation) the restricted transition map to be fed into `TopCat.GlueData`. -/
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
@@ -338,8 +338,8 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     rw [Iso.comp_inv_eq]
     simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
     rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
-    ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
-    dsimp only [Opens.coe_inclusion', hom_comp, hom_ofHom, ContinuousMap.comp_assoc,
+    ext ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩ : 2
+    simp only [Opens.coe_inclusion', hom_comp, hom_ofHom, ContinuousMap.comp_assoc,
       ContinuousMap.comp_apply, ContinuousMap.coe_mk, hom_id, ContinuousMap.id_apply]
     rw [Subtype.mk_eq_mk, Prod.mk_inj, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3

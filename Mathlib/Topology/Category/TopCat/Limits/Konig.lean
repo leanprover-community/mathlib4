@@ -79,7 +79,7 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
     else (h _).some
   rintro ⟨X, Y, hX, hY, f⟩ hf
   dsimp only
-  rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
+  rwa [dif_pos hX, dif_pos hY, ← comp_apply, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

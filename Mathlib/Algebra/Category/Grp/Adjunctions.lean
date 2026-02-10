@@ -52,8 +52,6 @@ free abelian group with generators `x : X`.
 def free : Type u ⥤ AddCommGrpCat where
   obj α := of (FreeAbelianGroup α)
   map f := ofHom (FreeAbelianGroup.map f)
-  map_id _ := AddCommGrpCat.ext FreeAbelianGroup.map_id_apply
-  map_comp _ _ := AddCommGrpCat.ext FreeAbelianGroup.map_comp_apply
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
@@ -172,8 +170,6 @@ end GrpCat
 def MonCat.units : MonCat.{u} ⥤ GrpCat.{u} where
   obj R := GrpCat.of Rˣ
   map f := GrpCat.ofHom <| Units.map f.hom
-  map_id _ := GrpCat.ext fun _ => Units.ext rfl
-  map_comp _ _ := GrpCat.ext fun _ => Units.ext rfl
 
 /-- The forgetful-units adjunction between `GrpCat` and `MonCat`. -/
 def GrpCat.forget₂MonAdj : forget₂ GrpCat MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
@@ -181,11 +177,9 @@ def GrpCat.forget₂MonAdj : forget₂ GrpCat MonCat ⊣ MonCat.units.{u} := Adj
     { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
       invFun f := MonCat.ofHom ((Units.coeHom Y).comp f.hom) }
   unit :=
-    { app X := ofHom (@toUnits X _)
-      naturality _ _ _ := GrpCat.ext fun _ => Units.ext rfl }
+    { app X := ofHom (@toUnits X _) }
   counit :=
-    { app X := MonCat.ofHom (Units.coeHom X)
-      naturality _ _ _ := MonCat.ext fun _ => rfl } }
+    { app X := MonCat.ofHom (Units.coeHom X) } }
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨GrpCat.forget₂MonAdj⟩⟩
@@ -195,8 +189,6 @@ instance : MonCat.units.{u}.IsRightAdjoint :=
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
   obj R := CommGrpCat.of Rˣ
   map f := CommGrpCat.ofHom <| Units.map f.hom
-  map_id _ := CommGrpCat.ext fun _ => Units.ext rfl
-  map_comp _ _ := CommGrpCat.ext fun _ => Units.ext rfl
 
 /-- The forgetful-units adjunction between `CommGrpCat` and `CommMonCat`. -/
 def CommGrpCat.forget₂CommMonAdj : forget₂ CommGrpCat CommMonCat ⊣ CommMonCat.units.{u} :=
@@ -205,15 +197,7 @@ def CommGrpCat.forget₂CommMonAdj : forget₂ CommGrpCat CommMonCat ⊣ CommMon
       { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
         invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom) }
     unit.app X := ofHom toUnits.toMonoidHom
-    -- `aesop` can find the following proof but it takes `0.5`s.
-    unit.naturality _ _ _ := CommGrpCat.ext fun _ => Units.ext rfl
-    counit.app X := CommMonCat.ofHom (Units.coeHom X)
-    -- `aesop` can find the following proof but it takes `0.5`s.
-    counit.naturality _ _ _ := CommMonCat.ext fun _ => rfl
-    -- `aesop` can find the following proof but it takes `0.2`s.
-    homEquiv_unit := by intros; rfl
-    -- `aesop` can find the following proof but it takes `0.2`s.
-    homEquiv_counit := by intros; rfl }
+    counit.app X := CommMonCat.ofHom (Units.coeHom X) }
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrpCat.forget₂CommMonAdj⟩⟩

@@ -273,11 +273,10 @@ theorem agree : f.hom.range = { x | h x = g x } := by
 
 theorem comp_eq : (f ≫ ofHom g) = f ≫ ofHom h := by
   ext a
-  simp only [hom_comp, hom_ofHom, MonoidHom.coe_comp, Function.comp_apply]
   have : f a ∈ { b | h b = g b } := by
     rw [← agree]
     use a
-  rw [this]
+  simp_all
 
 theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
   intro r
