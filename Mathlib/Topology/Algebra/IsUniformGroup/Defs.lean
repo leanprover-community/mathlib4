@@ -656,17 +656,11 @@ def IsTopologicalGroup.leftUniformSpace : UniformSpace G where
   nhds_eq_comap_uniformity _ := by
     simp only [comap_comap, Function.comp_def, nhds_translation_inv_mul]
 
-#exit
-
-@[deprecated (since := "2025-09-26")]
-alias IsTopologicalAddGroup.toUniformSpace := IsTopologicalAddGroup.rightUniformSpace
-@[to_additive existing, deprecated (since := "2025-09-26")]
-alias IsTopologicalGroup.toUniformSpace := IsTopologicalGroup.rightUniformSpace
-
-attribute [local instance] IsTopologicalGroup.rightUniformSpace
+attribute [local instance] IsTopologicalGroup.leftUniformSpace
 
 @[to_additive]
-theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) :=
+theorem uniformity_eq_comap_nhds_one_left :
+    𝓤 G = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 (1 : G)) :=
   rfl
 
 end IsTopologicalGroup
