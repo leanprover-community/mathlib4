@@ -967,9 +967,9 @@ theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMa
 
 @[simp]
 theorem realize_antisymmetric :
-    M ⊨ r.antisymmetric ↔ AntiSymmetric fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ Iff.rfl)
+    M ⊨ r.antisymmetric ↔ Std.Antisymm fun x y : M => RelMap r ![x, y] := by
+  refine .trans ?_ ⟨Std.Antisymm.mk, (·.antisymm)⟩
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
 theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => RelMap r ![x, y] :=

@@ -327,7 +327,7 @@ instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
     relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     model_preorder, and_true]
-  exact fun _ _ => le_antisymm
+  infer_instance
 
 section LinearOrder
 
@@ -382,8 +382,8 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
 /-- Any model of a theory of partial orders is a partial order. -/
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
-  le_antisymm := Relations.realize_antisymmetric.1 ((Theory.model_iff _).1 h _
-    (by simp only [partialOrderTheory, Set.mem_insert_iff, true_or]))
+  le_antisymm := (Relations.realize_antisymmetric.mp <|
+    Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
