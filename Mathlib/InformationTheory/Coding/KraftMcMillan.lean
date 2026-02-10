@@ -61,9 +61,8 @@ private lemma concatFn_injective_of_uniquelyDecodable {S : Finset (List α)}
     (h : UniquelyDecodable (S : Set (List α))) (r : ℕ) :
     Function.Injective (concatFn (S := S) (r := r)) := by
   intro w₁ w₂ hflat
-  have : (fun i => (w₁ i).val) = fun i => (w₂ i).val :=
-    List.ofFn_injective (h _ _ (by simp) (by simp) hflat)
   funext i
+  have := List.ofFn_injective (h _ _ (by simp) (by simp) hflat)
   exact Subtype.ext (congrArg (fun f => f i) this)
 
 private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
@@ -71,10 +70,8 @@ private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
     (∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ x.length)
       ≤ ((Fintype.card α) ^ s) * (1 / Fintype.card α) ^ s := by
   calc
-    _  = ∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ s := by
-            apply Finset.sum_congr rfl
-            intros x hx
-            simp [Finset.mem_filter.mp hx]
+    _  = ∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ s :=
+            Finset.sum_congr rfl fun x hx ↦ by simp [Finset.mem_filter.mp hx]
     _   = (T.filter fun x => x.length = s).card * (1 / Fintype.card α) ^ s := by
             simp only [Finset.sum_const, nsmul_eq_mul]
   gcongr
@@ -88,10 +85,8 @@ private lemma concatFn_length_mem_Icc {S : Finset (List α)}
   rw [concatFn_length, Finset.mem_Icc]
   constructor
   · -- lower bound
-    have hpos (i : Fin r) : 1 ≤ (w i).val.length := Nat.succ_le_iff.mpr
-        (Nat.pos_of_ne_zero (fun hz => h0 (w i) (List.length_eq_zero_iff.mp hz)))
     have : ∑ _, 1 ≤ ∑ i, (w i).val.length :=
-      Finset.sum_le_sum (fun i _ => hpos i)
+      Finset.sum_le_sum (fun i _ => by grind)
     simpa using this
   · -- upper bound
     exact (Finset.sum_le_sum (fun i _ => Finset.le_sup (w i).prop)).trans_eq (by simp)
@@ -111,8 +106,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   -- Let `T` be the set of all concatenations of `r` codewords from `S`.
   let T : Finset (List α) := Finset.image concatFn (Finset.univ : Finset (Fin r → S))
   -- Any `x ∈ T` is a concatenation of `r` nonempty codewords, hence `r ≤ |x| ≤ r*maxLen`.
-  have hlen_maps : ∀ x ∈ T, x.length ∈ Finset.Icc r (r * maxLen) := by
-    intro x hx
+  have hlen_maps (x : List α) (hx : x ∈ T) : x.length ∈ Finset.Icc r (r * maxLen) := by
     rcases Finset.mem_image.mp hx with ⟨_, _, rfl⟩
     exact concatFn_length_mem_Icc
       (fun c hnil => h.epsilon_not_mem (by simpa [hnil] using c.prop))
@@ -139,8 +133,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
             (Finset.sum_fiberwise_of_maps_to hlen_maps _).symm
   -- For each length `s`, the `s`-fiber contributes at most `D^s * (1/D)^s`:
   -- there are ≤ `D^s` words of length `s`, and each has weight `(1/D)^s`.
-  apply le_trans (Finset.sum_le_sum
-      (fun _ _ => sum_pow_length_filter_eq_le_card_mul))
+  apply le_trans (Finset.sum_le_sum (fun _ _ => sum_pow_length_filter_eq_le_card_mul))
   -- Summing these bounds over the interval s ∈ [r, r * maxLen] multiplies the term
   -- by the number of lengths. Since r ≥ 1, this count is at most r * maxLen.
   rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen) <;> norm_num at *
