@@ -258,7 +258,7 @@ variable {R E F : Type*} [NontriviallyNormedField R]
   [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
   [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
 
-/-- A split linear map has a bounded left inverse. -/
+/-- A split linear map has a continuous left inverse. -/
 lemma Splits.hasLeftInverse {f : E →L[R] F} (hf : f.Splits) : f.HasLeftInverse := by
   have : (f.rangeRestrict).ker = ⊥ := by
     rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf.injective
