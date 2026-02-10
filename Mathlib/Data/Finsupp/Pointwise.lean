@@ -110,12 +110,12 @@ lemma pointwise_smul_support_finite {ι R M : Type*} [Zero M] [SMulZeroClass R M
 abbrev pointwiseScalar {ι R M : Type*} [Zero M] [SMulZeroClass R M] : SMul (ι → R) (ι →₀ M) where
   smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
-instance pointwiseScalarSemiring {ι R M : Type*} [Zero M] [SMulZeroClass R M] :
+instance pointwiseScalarModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     SMul (ι → R) (ι →₀ M) := pointwiseScalar
 
 @[simp]
-theorem coe_pointwise_smul {ι R M : Type*} [Zero M] [SMulZeroClass R M] (f : ι → R) (g : ι →₀ M) :
-    ⇑(f • g) = f • ⇑g := by rfl
+theorem coe_pointwise_smul {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := by rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
