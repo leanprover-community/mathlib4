@@ -233,13 +233,14 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
   (Complex.hasStrictDerivAt_cpow_const h0).hasDerivAt.comp_hasDerivWithinAt x hf
 
 theorem Complex.deriv_const_cpow (hf : Differentiable ℂ f) (c : ℂ) :
-    deriv (fun x ↦ c ^ f x) = fun x ↦ c ^ f x * log c * deriv f x := by
+    deriv (fun x ↦ c ^ f x) = fun x ↦ log c * deriv f x * c ^ f x := by
   ext x
   by_cases hc : c = 0
-  · simp only [hc, log_zero, mul_zero, zero_mul]
+  · simp only [hc, log_zero, zero_mul]
     apply deriv_zero_of_frequently_mem {0, 1} (mt Set.Infinite.of_accPt (by simp))
     simp [zero_cpow_eq_iff, em', NormedField.nhdsNE_neBot]
-  · exact ((hf x).hasDerivAt.const_cpow (Or.inl hc)).deriv
+  · rw [mul_comm, ← mul_assoc]
+    exact ((hf x).hasDerivAt.const_cpow (Or.inl hc)).deriv
 
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect.
