@@ -50,8 +50,7 @@ theorem coe_coe {s : powersetCard α n} :
 
 theorem mem_coe_iff {s : Set.powersetCard α n} {a : α} : a ∈ (s : Finset α) ↔ a ∈ s := .rfl
 
-theorem card_eq (s : Set.powersetCard α n) : (s : Finset α).card = n :=
-  s.prop
+theorem card_eq (s : Set.powersetCard α n) : (s : Finset α).card = n := s.prop
 
 theorem ncard_eq (s : Set.powersetCard α n) : (s : Set α).ncard = n := by
   rw [← coe_coe, Set.ncard_coe_finset, s.prop]
@@ -120,22 +119,29 @@ lemma coe_singletonEquiv : ⇑(singletonEquiv (α := α)) = ofSingleton := rfl
 
 lemma singletonEquiv_apply (a : α) : singletonEquiv a = ofSingleton a := rfl
 
-variable {β : Type*}
+variable (n) (β : Type*)
 
 def ofFinEmb (f : Fin n ↪ β) : powersetCard β n :=
   map n f ⟨Finset.univ, by rw [mem_iff, Finset.card_univ, Fintype.card_fin]⟩
 
 lemma mem_ofFinEmb_iff_mem_range (f : Fin n ↪ β) (b : β) :
-    b ∈ ofFinEmb f ↔ b ∈ Set.range f := by
+    b ∈ ofFinEmb n β f ↔ b ∈ Set.range f := by
   simp [ofFinEmb, mem_map_iff_mem_range]
 
-lemma coe_ofFinEmb (f : Fin n ↪ β) : SetLike.coe (ofFinEmb f) = Set.range f := by
+lemma coe_ofFinEmb (f : Fin n ↪ β) : SetLike.coe (ofFinEmb n β f) = Set.range f := by
   ext
   simp [mem_ofFinEmb_iff_mem_range]
 
-lemma val_ofFinEmb [DecidableEq β] (f : Fin n ↪ β) :
-    Subtype.val (ofFinEmb f) = Finset.univ.image f := by
+lemma val_ofFinEmb (f : Fin n ↪ β) :
+    Subtype.val (ofFinEmb n β f) = Finset.univ.map f := by
   simp [← coe_inj, coe_ofFinEmb]
+
+theorem ofFinEmb_surjective :
+    Function.Surjective (ofFinEmb n β) := by
+  intro ⟨s, hs⟩
+  obtain ⟨f : Fin n ↪ β, hf⟩ :=
+    Function.Embedding.exists_of_card_eq_finset (by rw [hs, Fintype.card_fin])
+  exact ⟨f, Subtype.ext hf⟩
 
 end of
 
@@ -146,7 +152,7 @@ variable (α)
 variable [DecidableEq α] [Fintype α] {m : ℕ} (hm : m + n = Fintype.card α)
 include hm
 
-/-- The complement of a combination, as an equivariant map. -/
+/-- The complement of a combination. -/
 def compl (s : powersetCard α n) : powersetCard α m :=
     ⟨(sᶜ : Finset α), by rw [mem_iff, Finset.card_compl]; have := mem_iff.mp s.2; omega⟩
 

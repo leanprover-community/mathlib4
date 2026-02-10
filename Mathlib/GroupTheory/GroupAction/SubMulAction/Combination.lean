@@ -139,11 +139,10 @@ variable (n) in
 @[to_additive /-- The equivariant map from embeddings of `Fin n`
   (aka arrangements) to combinations. -/]
 def mulActionHom_of_embedding : (Fin n ↪ α) →[G] powersetCard α n where
-  toFun f := ⟨Finset.univ.map f, by rw [mem_iff, Finset.card_map, Finset.card_fin]⟩
+  toFun := ofFinEmb n α
   map_smul' g f := by
-    rw [← Subtype.coe_inj, Subtype.coe_mk, coe_smul,
-      f.smul_def, Finset.smul_finset_def,
-      ← Finset.map_map, Finset.map_eq_image]
+    rw [← Subtype.coe_inj, coe_smul, f.smul_def, val_ofFinEmb, val_ofFinEmb,
+      Finset.smul_finset_def, ← Finset.map_map, Finset.map_eq_image]
     simp [toPerm]
 
 @[to_additive]
@@ -179,34 +178,31 @@ variable [Fintype α] {m : ℕ} (hm : m + n = Fintype.card α)
 include hm
 
 /-- The complement of a combination, as an equivariant map. -/
-def complEqui : powersetCard α n →[G] powersetCard α m where
-  toFun s := ⟨(sᶜ : Finset α), by
-      rw [mem_iff, Finset.card_compl]
-      have := mem_iff.mp s.2
-      omega⟩
-  map_smul' g s := by ext; simp [← Finset.inv_smul_mem_iff]
+def mulActionHom_compl : powersetCard α n →[G] powersetCard α m where
+  toFun := compl α hm
+  map_smul' g s := by ext; simp [← Finset.inv_smul_mem_iff, coe_compl]
 
 variable {hm} in
-theorem coe_complEqui {s : powersetCard α n} :
-    (complEqui G α hm s : Finset α) = (s : Finset α)ᶜ :=
+theorem coe_mulActionHom_compl {s : powersetCard α n} :
+    (mulActionHom_compl G α hm s : Finset α) = (s : Finset α)ᶜ :=
   rfl
 
 variable {hm} in
-theorem mem_complEqui {s : powersetCard α n} {a : α} :
-    a ∈ complEqui G α hm s ↔ a ∉ s :=
+theorem mem_mulActionHom_compl {s : powersetCard α n} {a : α} :
+    a ∈ mulActionHom_compl G α hm s ↔ a ∉ s :=
   Finset.mem_compl
 
-theorem complEqui_complEqui :
-    (complEqui G α <| (n.add_comm m).trans hm).comp (complEqui G α hm) = .id G := by
+theorem mulActionHom_compl_mulActionHom_compl :
+    (mulActionHom_compl G α <| (n.add_comm m).trans hm).comp (mulActionHom_compl G α hm) = .id G := by
   ext s a
-  change a ∈ (complEqui G α _).comp (complEqui G α hm) s ↔ a ∈ s
-  simp [MulActionHom.comp_apply, mem_complEqui]
+  change a ∈ (mulActionHom_compl G α _).comp (mulActionHom_compl G α hm) s ↔ a ∈ s
+  simp [MulActionHom.comp_apply, mem_mulActionHom_compl]
 
 theorem complEqui_bijective :
-    Function.Bijective (complEqui G α hm) :=
-  Function.bijective_iff_has_inverse.mpr ⟨complEqui G α ((n.add_comm m).trans hm),
-    DFunLike.ext_iff.mp (complEqui_complEqui G α hm),
-    DFunLike.ext_iff.mp (complEqui_complEqui G α _)⟩
+    Function.Bijective (mulActionHom_compl G α hm) :=
+  Function.bijective_iff_has_inverse.mpr ⟨mulActionHom_compl G α ((n.add_comm m).trans hm),
+    DFunLike.ext_iff.mp (mulActionHom_compl_mulActionHom_compl G α hm),
+    DFunLike.ext_iff.mp (mulActionHom_compl_mulActionHom_compl G α _)⟩
 
 end compl
 
@@ -215,7 +211,7 @@ variable (α)
 /-- The obvious map from a type to its 1-combinations, as an equivariant map. -/
 @[to_additive /-- The obvious map from a type to its 1-combinations, as an equivariant map. -/]
 def mulActionHom_singleton : α →[G] powersetCard α 1 where
-  toFun x := ⟨{x}, Finset.card_singleton x⟩
+  toFun := ofSingleton
   map_smul' _ _ := rfl
 
 @[to_additive]
