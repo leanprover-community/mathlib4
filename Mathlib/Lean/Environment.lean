@@ -54,7 +54,7 @@ def findTheoremConstVal? (env : Environment) (decl : Name)
   env.findConstValOfKind? (· matches .thm) decl skipRealize
 
 /--
-Checks whether the environment contains `decl` publicly or privately.
+Checks whether the environment contains `decl` publicly, or privately in the current module.
 Returns the `ConstantInfo` with that name.
 Note: `env` must be obtained wrapped inside `withoutExporting` for it to be able to see
 private declarations.
@@ -65,7 +65,7 @@ def findPublicOrPrivate? (env : Environment) (decl : Name) : Option ConstantInfo
 
 
 /--
-Checks whether the environment contains `decl` publicly or privately.
+Checks whether the environment contains `decl` publicly, or privately in the current module.
 Note: `env` must be obtained wrapped inside `withoutExporting` for it to be able to see
 private declarations.
 -/

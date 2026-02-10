@@ -57,13 +57,13 @@ end Lean.MVarId
 namespace Lean
 
 /--
-Find the `ConstantInfo` for `decl` publicly or privately.
+Find the `ConstantInfo` for `decl` publicly, or privately in the current module.
 -/
 def findPublicOrPrivate? (decl : Name) : CoreM (Option ConstantInfo) := withoutExporting <| do
   return (← getEnv).findPublicOrPrivate? decl
 
 /--
-Checks whether the current environment contains `decl` publicly or privately.
+Checks whether the current environment contains `decl` publicly, or privately in the current module.
 -/
 def existsPublicOrPrivate (decl : Name) : CoreM Bool := withoutExporting <| do
   return (← getEnv).containsPublicOrPrivate decl
