@@ -274,6 +274,14 @@ theorem span_pair_sub_left : span {x, y - x} = span {x, y} := by
   rw [← span_pair_add_left, sub_add_cancel]
 
 @[simp]
+theorem span_pair_sub_right' : span {x, x - y} = span {x, y} := by
+  rw [← span_pair_sub_left, sub_sub_cancel_left, span_pair_neg]
+
+@[simp]
+theorem span_pair_sub_left' : span {y - x, y} = span {x, y} := by
+  rw [← span_pair_sub_right, sub_sub_cancel_left, span_insert_neg]
+
+@[simp]
 theorem span_singleton_abs [LinearOrder α] : span {|x|} = span {x} := by
   obtain h | h := abs_choice x <;>
   simp [h]
