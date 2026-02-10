@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
