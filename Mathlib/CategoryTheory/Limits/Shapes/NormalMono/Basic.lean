@@ -177,7 +177,7 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
   g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
   isColimit := isColimitOfReflects F <|
-    IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F).symm) <|
+    IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F)) <|
       (IsColimit.ofIsoColimit
         (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
           (Cofork.ext (Iso.refl _) (by simp [compNatIso, Cofork.π])))
