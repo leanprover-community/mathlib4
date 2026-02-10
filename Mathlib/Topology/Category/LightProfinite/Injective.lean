@@ -68,7 +68,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
   -- `T` is finite because it admits a surjection from a finite set
   have : Finite T := Finite.of_surjective f' f'_surj
   -- define the closed partition `Z` so `Z i` is the image under `f` of the fiber of `g` at `i`
-  let Z : S → Set Y := fun i ↦ f '' (g⁻¹' {i})
+  let Z : S → Set Y := fun i ↦ f '' (g ⁻¹' {i})
   have Z_closed (i) : IsClosed (Z i) :=
     (IsClosedEmbedding.isClosed_iff_image_isClosed (Continuous.isClosedEmbedding hf f_inj)).mp
     (IsClosed.preimage hg isClosed_singleton)
@@ -78,7 +78,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
     rintro _ _ _ _ ⟨_, rfl, ⟨_, rfl, hy⟩⟩
     rw [f_inj hy]
   -- define `D i` to be the fiber of `g'` at `f' i`
-  let D : S → Set Y := fun i ↦ g' ⁻¹' ( {f' i})
+  let D : S → Set Y := fun i ↦ g' ⁻¹' ({f' i})
   -- each `D i` is clopen
   have D_clopen i : IsClopen (D i) := IsClopen.preimage (isClopen_discrete {f' i}) hg'
   -- each `Z i` is contained in `D i`
@@ -165,27 +165,27 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] :
       - `h_comm n : g' (n+1) ≫ p n = f ≫ k n`, which can be obtained from h_down n. -/
     have h_comm (n : ℕ) (k : Y ⟶ lightToProfinite.obj (S.component n)) (h_down :
         f ≫ k = g ≫ lightToProfinite.map (S.proj n)) : f ≫ k =
-          g ≫ lightToProfinite.map (S.proj (n+1)) ≫ lightToProfinite.map (S.transitionMap n) := by
+          g ≫ lightToProfinite.map (S.proj (n + 1)) ≫ lightToProfinite.map (S.transitionMap n) := by
       rw [h_down, ← Functor.map_comp, ← S.proj_comp_transitionMap n]
     have h_step (n : ℕ) (k : Y ⟶ lightToProfinite.obj (S.component n))
         (h_down : f ≫ k = g ≫ lightToProfinite.map (S.proj n)) :
-        ∃ k' : Y ⟶ lightToProfinite.obj (S.component (n+1)), k' ≫
+        ∃ k' : Y ⟶ lightToProfinite.obj (S.component (n + 1)), k' ≫
           lightToProfinite.map (S.transitionMap n) = k ∧ f ≫ k' = g ≫
-            lightToProfinite.map (S.proj (n+1)) :=
+            lightToProfinite.map (S.proj (n + 1)) :=
       exists_lift_of_finite_of_mono_of_epi f (lightToProfinite.map (S.transitionMap n))
-        (g ≫ lightToProfinite.map (S.proj (n+1))) k (h_comm _ _ h_down)
+        (g ≫ lightToProfinite.map (S.proj (n + 1))) k (h_comm _ _ h_down)
     let lifts (n : ℕ) := { k : Y ⟶ lightToProfinite.obj (S.component n) //
       f ≫ k = g ≫ lightToProfinite.map (S.proj n) }
-    let next (n : ℕ) : lifts n → lifts (n+1) :=
+    let next (n : ℕ) : lifts n → lifts (n + 1) :=
       fun k ↦ ⟨(h_step n k.val k.property).choose, (h_step n k.val k.property).choose_spec.2⟩
     -- now define a sequence of lifts using induction
     let k_seq (n : Nat) : lifts n := Nat.rec ⟨k0, h_down0⟩ next n
     -- `h_up` and `h_down` are the required commutativity properties
     have h_down (n : ℕ) : f ≫ (k_seq n).val = g ≫ lightToProfinite.map (S.proj n) :=
       (k_seq n).prop
-    have h_up : ∀ n, (k_seq (n+1)).val ≫ lightToProfinite.map (S.transitionMap n) = (k_seq n).val
+    have h_up : ∀ n, (k_seq (n + 1)).val ≫ lightToProfinite.map (S.transitionMap n) = (k_seq n).val
     | 0 => (h_step 0 k0 h_down0).choose_spec.1
-    | n + 1 => (h_step (n+1) (k_seq (n+1)).val (k_seq (n+1)).prop).choose_spec.1
+    | n + 1 => (h_step (n + 1) (k_seq (n + 1)).val (k_seq (n + 1)).prop).choose_spec.1
     let k_cone : Cone (S.diagram ⋙ lightToProfinite) :=
       { pt := Y, π := NatTrans.ofOpSequence (fun n ↦ (k_seq n).val) (fun n ↦ (h_up n).symm) }
     -- now the induced map `Y ⟶ S = limₙ Sₙ` is the desired map

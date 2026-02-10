@@ -68,9 +68,7 @@ variable [TopologicalSpace G] [Group G] [ContinuousMul G]
 /-- Multiplication from the left in a topological group as a homeomorphism. -/
 @[to_additive /-- Addition from the left in a topological additive group as a homeomorphism. -/]
 protected def Homeomorph.mulLeft (a : G) : G ≃ₜ G :=
-  { Equiv.mulLeft a with
-    continuous_toFun := continuous_const.mul continuous_id
-    continuous_invFun := continuous_const.mul continuous_id }
+  { Equiv.mulLeft a with }
 
 @[to_additive (attr := simp)]
 theorem Homeomorph.coe_mulLeft (a : G) : ⇑(Homeomorph.mulLeft a) = (a * ·) :=
@@ -104,9 +102,7 @@ theorem Filter.map_mul_left_nhdsNE {c a : G} :
 /-- Multiplication from the right in a topological group as a homeomorphism. -/
 @[to_additive /-- Addition from the right in a topological additive group as a homeomorphism. -/]
 protected def Homeomorph.mulRight (a : G) : G ≃ₜ G :=
-  { Equiv.mulRight a with
-    continuous_toFun := continuous_id.mul continuous_const
-    continuous_invFun := continuous_id.mul continuous_const }
+  { Equiv.mulRight a with }
 
 @[to_additive (attr := simp)]
 lemma Homeomorph.coe_mulRight (a : G) : ⇑(Homeomorph.mulRight a) = (· * a) := rfl
@@ -973,10 +969,10 @@ lemma Filter.tendsto_sub_const_iff {G : Type*}
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
 @[to_additive (attr := continuity) continuous_sub_left]
-lemma continuous_div_left' (a : G) : Continuous (a / ·) := continuous_const.div' continuous_id
+lemma continuous_div_left' (a : G) : Continuous (a / ·) := by fun_prop
 
 @[to_additive (attr := continuity) continuous_sub_right]
-lemma continuous_div_right' (a : G) : Continuous (· / a) := continuous_id.div' continuous_const
+lemma continuous_div_right' (a : G) : Continuous (· / a) := by fun_prop
 
 end ContinuousDiv
 
@@ -988,9 +984,7 @@ variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. -/]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
-  { Equiv.divLeft x with
-    continuous_toFun := continuous_const.div' continuous_id
-    continuous_invFun := continuous_inv.mul continuous_const }
+  { Equiv.divLeft x with }
 
 @[to_additive]
 theorem isOpenMap_div_left (a : G) : IsOpenMap (a / ·) :=
@@ -1004,9 +998,7 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. -/]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
-  { Equiv.divRight x with
-    continuous_toFun := continuous_id.div' continuous_const
-    continuous_invFun := continuous_id.mul continuous_const }
+  { Equiv.divRight x with }
 
 @[to_additive]
 lemma isOpenMap_div_right (a : G) : IsOpenMap (· / a) := (Homeomorph.divRight a).isOpenMap
@@ -1156,8 +1148,8 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
       hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) ?_
     obtain ⟨g₀, hg₀⟩ := hV
     refine fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, ?_⟩
-    refine preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) ?_
-    rwa [mem_preimage, Function.id_def, inv_mul_cancel_right]
+    refine preimage_interior_subset_interior_preimage (by fun_prop) ?_
+    rwa [mem_preimage, inv_mul_cancel_right]
   exact ⟨t, Subset.trans ht <| iUnion₂_mono fun g _ => interior_subset⟩
 
 /-- Every weakly locally compact separable topological group is σ-compact.

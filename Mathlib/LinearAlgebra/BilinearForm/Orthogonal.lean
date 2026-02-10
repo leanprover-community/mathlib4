@@ -357,7 +357,7 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
     (b₂ : B.IsRefl) {x : V} (hx : ¬B.IsOrtho x x) :
     Nondegenerate <| B.restrict <| B.orthogonal (K ∙ x) := by
   have (n : V) : n ∈ K ∙ x ⊔ B.orthogonal (K ∙ x) :=
-      (span_singleton_sup_orthogonal_eq_top hx).symm ▸ Submodule.mem_top
+    (span_singleton_sup_orthogonal_eq_top hx).symm ▸ Submodule.mem_top
   refine ⟨fun m hm => Submodule.coe_eq_zero.1 (b₁.1 m fun n ↦ ?_),
     fun m hm => Submodule.coe_eq_zero.1 (b₁.2 m fun n ↦ ?_)⟩ <;>
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.1 <| this n

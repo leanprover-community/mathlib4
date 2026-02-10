@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.NoetherianDescent
+public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.RingHom.Smooth
 
 /-!
 # Smooth algebras are flat
@@ -60,3 +62,8 @@ instance Smooth.flat [Smooth R A] : Module.Flat R A := by
   exact .of_linearEquiv e.toLinearEquiv
 
 end Algebra
+
+lemma RingHom.Smooth.flat {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S} (hf : f.Smooth) :
+    f.Flat := by
+  algebraize [f]
+  exact Algebra.Smooth.flat R S

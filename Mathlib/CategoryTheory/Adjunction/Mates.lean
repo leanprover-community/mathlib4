@@ -31,11 +31,11 @@ other side is as well). This demonstrates that adjoints to a given functor are u
 isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
 Another example arises from considering the square representing that a functor `H` preserves
-products, in particular the morphism `HA ⨯ H- ⟶ H(A ⨯ -)`. Then provided `(A ⨯ -)` and `HA ⨯ -`
+products, in particular the morphism `H A ⨯ H- ⟶ H (A ⨯ -)`. Then provided `(A ⨯ -)` and `H A ⨯ -`
 have left adjoints (for instance if the relevant categories are Cartesian closed), the transferred
-natural transformation is the exponential comparison morphism: `H(A ^ -) ⟶ HA ^ H-`.
+natural transformation is the exponential comparison morphism: `H (A ^ -) ⟶ H A ^ H-`.
 Furthermore if `H` has a left adjoint `L`, this morphism is an isomorphism iff its mate
-`L(HA ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
+`L (H A ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
 https://ncatlab.org/nlab/show/Frobenius+reciprocity#InCategoryTheory.
 This also relates to Grothendieck's yoga of six operations, though this is not spelled out in
 mathlib: https://ncatlab.org/nlab/show/six+operations.
@@ -387,7 +387,7 @@ instance conjugateEquiv_symm_iso (α : R₁ ⟶ R₂) [IsIso α] :
       ⟨conjugateEquiv_symm_comm _ _ (by simp), conjugateEquiv_symm_comm _ _ (by simp)⟩⟩⟩
 
 /-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation
-is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
+is an isomorphism, then `α` is an isomorphism. The converse is given in `conjugateEquiv_iso`.
 -/
 theorem conjugateEquiv_of_iso (α : L₂ ⟶ L₁) [IsIso (conjugateEquiv adj₁ adj₂ α)] :
     IsIso α := by
