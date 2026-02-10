@@ -1083,6 +1083,22 @@ theorem DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate (a : Fin n)
     hV.collectedOrthonormalBasis_mem hV' (fun i => stdOrthonormalBasis 𝕜 (V i))
       ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a)
 
+private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
+    (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
+    {a : Fin n // hV.subordinateOrthonormalBasisIndex hn a hV' = i} ≃ Fin (finrank 𝕜 (V i)) where
+  toFun a := Fin.cast (by rw [← subordinateOrthonormalBasisIndex_def, a.property])
+    ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).snd
+  invFun b := ⟨hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, b⟩,
+    by simp [subordinateOrthonormalBasisIndex_def]⟩
+  left_inv := by grind [subordinateOrthonormalBasisIndex_def, Fin.cast_eq_self]
+  right_inv := by grind
+
+theorem DirectSum.IsInternal.card_filter_subordinateOrthonormalBasisIndex_eq
+    (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
+    Finset.card {a | hV.subordinateOrthonormalBasisIndex hn a hV' = i} = finrank 𝕜 (V i) := by
+  apply Finset.card_eq_of_equiv_fin
+  simpa using hV.subordinateOrthonormalBasisIndexFiberEquiv hn hV' i
+
 end SubordinateOrthonormalBasis
 
 end FiniteDimensional
