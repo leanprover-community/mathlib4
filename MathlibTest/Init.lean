@@ -16,8 +16,13 @@ import Mathlib.Init
 #guard_msgs (substring := true) in
 #help attr grind
 
-/-- info: -- Found 0 errors -/
-#guard_msgs (substring := true) in
+/--
+info: -- Found 0 errors in 0 declarations (plus 0 automatically generated ones) in the current file with 16 linters
+
+
+-- All linting checks passed!
+-/
+#guard_msgs in
 #lint
 
 -- `#min_imports` and `#min_imports in` are defined in different places, we check them both
