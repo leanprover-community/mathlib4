@@ -15,6 +15,9 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 
 # Formal (multivariate) power series - Truncation
 
+* `MvPowerSeries.suppRestrict s p` restricts the support of a multivariate power series `p`
+  to a finite set of monomials and obtain a multivariate polynomial.
+
 * `MvPowerSeries.trunc n φ` truncates a formal multivariate power series
   to the multivariate polynomial that has the same coefficients as `φ`,
   for all `m < n`, and `0` otherwise.
@@ -46,10 +49,6 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 
 * `MvPowerSeries.trunc'_map` : image of a truncation under a change of rings
 
-## TODO
-
-* Unify both versions using a general purpose API
-
 -/
 
 @[expose] public section
@@ -65,18 +64,60 @@ open Finsupp
 
 variable {σ R S : Type*}
 
+section suppRestrict
+
+variable [CommSemiring R] (s : Finset (σ →₀ ℕ))
+
+variable (R) in
+/-- Restrict the support of a multivariate power series to a finite set of monomials and
+obtain a multivariate polynomial. -/
+def suppRestrict : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
+  toFun p := ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x)
+  map_add' _ _ := by simp [Finset.sum_add_distrib]
+  map_smul' _ _ := by
+    classical
+    ext; simp [MvPolynomial.coeff_sum]
+
+theorem suppRestrict_apply (p : MvPowerSeries σ R) :
+    suppRestrict R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := by rfl
+
+theorem suppRestrict_coeff {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
+    (suppRestrict R s p).coeff x = p.coeff x := by
+  classical
+  simp [suppRestrict_apply, MvPolynomial.coeff_sum]
+  aesop
+
+theorem suppRestrict_coeff_eq_zero {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∉ s) :
+    (suppRestrict R s p).coeff x = 0 := by
+  classical
+  simp [suppRestrict_apply, MvPolynomial.coeff_sum]
+  aesop
+
+theorem suppRestrict_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
+    suppRestrict R s (monomial x r) = MvPolynomial.monomial x r := by
+  classical
+  ext y; by_cases hy : y ∈ s
+  · rw [suppRestrict_coeff _ _ hy, coeff_monomial, MvPolynomial.coeff_monomial]
+    simp [eq_comm]
+  rw [suppRestrict_coeff_eq_zero _ _ hy, MvPolynomial.coeff_monomial, if_neg (by aesop)]
+
+theorem suppRestrict_monomial_eq_zero {x : σ →₀ ℕ} (r : R) (h : x ∉ s) :
+    suppRestrict R s (monomial x r) = 0 := by
+  classical
+  ext; simp [suppRestrict, MvPolynomial.coeff_sum, coeff_monomial]
+  aesop
+
+theorem suppRestrict_C (h : 0 ∈ s) (r : R) : suppRestrict R s (C r) = MvPolynomial.C r :=
+  suppRestrict_monomial s r h
+
+theorem suppRestrict_one (h : 0 ∈ s) : suppRestrict R s (1 : MvPowerSeries σ R) = 1 :=
+  suppRestrict_C s h 1
+
+end suppRestrict
+
 section TruncLT
 
 variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
-
-/-- Auxiliary definition for the truncation function. -/
-def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
-  ∑ m ∈ Finset.Iio n, MvPolynomial.monomial m (coeff m φ)
-
-theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (truncFun n φ).coeff m = if m < n then coeff m φ else 0 := by
-  classical
-  simp [truncFun, MvPolynomial.coeff_sum]
 
 variable (R) in
 /-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial
@@ -85,47 +126,21 @@ If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) fu
 to the naturals, then `trunc' R n f` is the multivariable power series obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
 and `a i < n i` for some `i`. -/
-def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
-  toFun := truncFun n
-  map_zero' := by
-    classical
-    ext
-    simp [coeff_truncFun]
-  map_add' := by
-    classical
-    intro x y
-    ext m
-    simp only [coeff_truncFun, MvPolynomial.coeff_add, ite_add_ite, ← map_add, add_zero]
+def trunc : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := suppRestrict R (Finset.Iio n)
 
 theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff m φ else 0 := by
-  classical simp [trunc, coeff_truncFun]
+  classical split
+  · exact suppRestrict_coeff (Finset.Iio n) φ (by aesop)
+  exact suppRestrict_coeff_eq_zero (Finset.Iio n) φ (by aesop)
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
-  MvPolynomial.ext _ _ fun m ↦ by
-    classical
-    rw [coeff_trunc, coeff_one]
-    split_ifs with H H'
-    · subst m
-      simp
-    · symm
-      rw [MvPolynomial.coeff_one]
-      exact if_neg (Ne.symm H')
-    · symm
-      rw [MvPolynomial.coeff_one]
-      refine if_neg ?_
-      rintro rfl
-      apply H
-      exact Ne.bot_lt hnn
+  suppRestrict_one (Finset.Iio n) (by simpa using pos_of_ne_zero hnn)
 
 @[simp]
 theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C a) = MvPolynomial.C a :=
-  MvPolynomial.ext _ _ fun m ↦ by
-    classical
-    rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
-    split_ifs with H <;> first | rfl | try simp_all only [ne_eq, not_true_eq_false]
-    exfalso; apply H; subst m; exact Ne.bot_lt hnn
+  suppRestrict_C (Finset.Iio n) (by simpa using pos_of_ne_zero hnn) a
 
 @[simp]
 theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
@@ -143,37 +158,21 @@ section TruncLE
 
 variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
 
-/-- Auxiliary definition for the truncation function. -/
-def truncFun' (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
-  ∑ m ∈ Finset.Iic n, MvPolynomial.monomial m (coeff m φ)
-
-/-- Coefficients of the truncated function. -/
-theorem coeff_truncFun' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (truncFun' n φ).coeff m = if m ≤ n then coeff m φ else 0 := by
-  classical
-  simp [truncFun', MvPolynomial.coeff_sum]
-
 variable (R) in
 /--
 The `n`th truncation of a multivariate formal power series to a multivariate polynomial.
 
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
-to the naturals, then `trunc' R n f` is the multivariable power series obtained from `f`
+to the naturals, then `trunc' R n f` is the multivariable polynomial obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`. -/
-def trunc' : MvPowerSeries σ R →+ MvPolynomial σ R where
-  toFun := truncFun' n
-  map_zero' := by
-    ext
-    simp only [coeff_truncFun', map_zero, ite_self, MvPolynomial.coeff_zero]
-  map_add' x y := by
-    ext m
-    simp only [coeff_truncFun', MvPolynomial.coeff_add]
-    rw [ite_add_ite, ← map_add, zero_add]
+def trunc' : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := suppRestrict R (Finset.Iic n)
 
 /-- Coefficients of the truncation of a multivariate power series. -/
 theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 :=
-  coeff_truncFun' n m φ
+    (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 := by
+  classical split
+  · exact suppRestrict_coeff (Finset.Iic n) φ (by aesop)
+  exact suppRestrict_coeff_eq_zero (Finset.Iic n) φ (by aesop)
 
 theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ R) :
     trunc' R n (trunc' R m φ) = trunc' R n φ := by
@@ -188,25 +187,11 @@ theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ
 
 /-- Truncation of the multivariate power series `1` -/
 @[simp]
-theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
-  MvPolynomial.ext _ _ fun m ↦ by
-    classical
-    rw [coeff_trunc', coeff_one]
-    split_ifs with H H'
-    · subst m; simp only [MvPolynomial.coeff_zero_one]
-    · rw [MvPolynomial.coeff_one, if_neg (Ne.symm H')]
-    · rw [MvPolynomial.coeff_one, if_neg ?_]
-      rintro rfl
-      exact H (zero_le n)
+theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 := suppRestrict_one (Finset.Iic n) (by simp)
 
 @[simp]
-theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
-    trunc' R n (C a) = MvPolynomial.C a :=
-  MvPolynomial.ext _ _ fun m ↦ by
-    classical
-    rw [coeff_trunc', coeff_C, MvPolynomial.coeff_C]
-    split_ifs with H <;> first | rfl | try simp_all
-    exfalso; apply H; subst m; exact zero_le n
+theorem trunc'_C (n : σ →₀ ℕ) (a : R) : trunc' R n (C a) = MvPolynomial.C a :=
+  suppRestrict_C (Finset.Iic n) (by simp) a
 
 /-- Coefficients of the truncation of a product of two multivariate power series -/
 theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
