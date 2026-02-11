@@ -92,14 +92,14 @@ for the proof that it is a fundamental domain. -/
 def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 
 @[simp]
-theorem mem_fundamentalDomain_iff_repr_mem {m : E} :
+theorem mem_fundamentalDomain {m : E} :
     m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
 
 open scoped Pointwise in
 @[simp]
 theorem mem_vadd_fundamentalDomain [AddLeftMono K] {m : E} {z : E} :
     m ∈ z +ᵥ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (b.repr z i) (b.repr z i + 1) := by
-  simp_rw [Set.mem_vadd_set, mem_fundamentalDomain_iff_repr_mem, b.ext_elem_iff,
+  simp_rw [Set.mem_vadd_set, mem_fundamentalDomain, b.ext_elem_iff,
     ← forall_and, vadd_eq_add, map_add, Finsupp.coe_add, Pi.add_apply, Set.mem_Ico]
   constructor <;> intro h
   · grind
@@ -132,8 +132,8 @@ theorem mem_vadd_neg_fundamentalDomain [IsOrderedAddMonoid K] {m : E} {z : E} :
 theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
     f '' (fundamentalDomain b) = fundamentalDomain (b.map f) := by
   ext x
-  rw [mem_fundamentalDomain_iff_repr_mem, Basis.map_repr, LinearEquiv.trans_apply,
-    ← mem_fundamentalDomain_iff_repr_mem, show f.symm x = f.toEquiv.symm x by rfl,
+  rw [mem_fundamentalDomain, Basis.map_repr, LinearEquiv.trans_apply,
+    ← mem_fundamentalDomain, show f.symm x = f.toEquiv.symm x by rfl,
     ← Set.mem_image_equiv]
   rfl
 
@@ -349,7 +349,7 @@ theorem fract_floor (m : E) : fract b (floor b m) = 0 :=
 variable {b} in
 theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
   classical simp only [b.ext_elem_iff, repr_fract_apply, Int.fract_eq_self,
-    mem_fundamentalDomain_iff_repr_mem, Set.mem_Ico]
+    mem_fundamentalDomain, Set.mem_Ico]
 
 @[simp]
 theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
@@ -364,7 +364,7 @@ theorem floor_fract (m : E) : (floor b (fract b m) : E) = 0 := by
 
 theorem fract_eq_iff {m m' : E} :
     fract b m = m' ↔ m' ∈ fundamentalDomain b ∧ m - m' ∈ span ℤ (Set.range b) := by
-  simp only [mem_fundamentalDomain_iff_repr_mem, Basis.mem_span_iff_repr_mem, b.ext_elem_iff,
+  simp only [mem_fundamentalDomain, Basis.mem_span_iff_repr_mem, b.ext_elem_iff,
     ← forall_and, repr_fract_apply, Set.mem_Ico, algebraMap_int_eq, Int.coe_castRingHom, map_sub,
     Finsupp.coe_sub, Pi.sub_apply, Set.mem_range]
   refine forall_congr' fun i ↦ ?_
@@ -613,7 +613,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
   simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_diff, Set.mem_setOf_eq,
-    mem_fundamentalDomain_iff_repr_mem, Set.mem_Ico, not_forall, not_and, not_lt] at hx
+    mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
   obtain ⟨i, hi⟩ := hx.2
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
   rw [← b.sum_repr x, ← Finset.sum_erase_add _ _ (Finset.mem_univ i), this, one_smul, ← vadd_eq_add]
