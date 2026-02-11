@@ -6,8 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Disjoint
-
-import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Lemmas about insertion, singleton, and pairs
