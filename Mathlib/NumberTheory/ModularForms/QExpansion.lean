@@ -451,7 +451,7 @@ lemma qExpansion_add {G : Type*} [FunLike G ℍ ℂ] [Γ.HasDetPlusMinusOne] [Di
     (hΓ : h ∈ Γ.strictPeriods) : qExpansion h (f + g) = qExpansion h f + qExpansion h g := by
   ext
   grind [qExpansion, cuspFunction_add (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
-    (analyticAt_cuspFunction_zero g hh hΓ).continuousAt, PowerSeries.coeff_mk, 
+    (analyticAt_cuspFunction_zero g hh hΓ).continuousAt, PowerSeries.coeff_mk,
     iteratedDeriv_add (analyticAt_cuspFunction_zero f hh hΓ).contDiffAt
       (analyticAt_cuspFunction_zero g hh hΓ).contDiffAt]
 
@@ -488,10 +488,10 @@ def qExpansionAddHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
 
 lemma qExpansion_one [Γ.HasDetPlusMinusOne] : qExpansion h (1 : ModularForm Γ 0) = 1 := by
   ext m
-  have h1 : cuspFunction h 1 = 1 := by 
+  have h1 : cuspFunction h 1 = 1 := by
     ext q
     rcases eq_or_ne q 0 with rfl | hq
-    · simpa [cuspFunction, Periodic.cuspFunction] using tendsto_const_nhds.limUnder_eq 
+    · simpa [cuspFunction, Periodic.cuspFunction] using tendsto_const_nhds.limUnder_eq
     · simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero h _ hq]
   have h2 : iteratedDeriv m (1 : ℂ → ℂ) 0 = if m = 0 then 1 else 0 := by
     simpa [ite_apply] using iteratedDeriv_const
@@ -501,7 +501,7 @@ open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
 def qExpansionRingHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : (⨁ i, ModularForm Γ i) →+* (PowerSeries ℂ) :=
-  DirectSum.toSemiring (qExpansionAddHom hh hΓ) qExpansion_one 
+  DirectSum.toSemiring (qExpansionAddHom hh hΓ) qExpansion_one
     (qExpansion_modularForm_mul hh hΓ)
 
 @[simp]
