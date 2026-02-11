@@ -142,7 +142,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   exact mt (fun ha ↦ ha ▸ map_zero f) h
 
 /-- A polynomial that lifts can be lifted to a polynomial of the same support. -/
-theorem mem_lifts_and_support_eq {p : S[X]} (hlifts : p ∈ lifts f) :
+theorem exists_support_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
     ∃ q : R[X], map f q = p ∧ q.support = p.support := by
   rw [lifts_iff_coeff_lifts] at hlifts
   let g : ℕ → R := fun k ↦ (hlifts k).choose
@@ -155,11 +155,14 @@ theorem mem_lifts_and_support_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     exact fun k h ↦ by rw [← hg, h, map_zero]
   exact ⟨q, hq, hq'⟩
 
-/-- A polynomial that lifts can be lifted to a polynomial of the same degree. -/
-theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
+/-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
+theorem exists_degree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
     ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
-  obtain ⟨q, hq, hq'⟩ := mem_lifts_and_support_eq hlifts
+  obtain ⟨q, hq, hq'⟩ := exists_support_eq_of_mem_lifts hlifts
   exact ⟨q, hq, congrArg Finset.max hq'⟩
+
+@[deprecated (since := "2026-02-11")]
+alias mem_lifts_and_degree_eq := exists_degree_eq_of_mem_lifts
 
 end LiftDeg
 
