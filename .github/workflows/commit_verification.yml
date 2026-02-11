@@ -3,7 +3,7 @@
 #
 # - Transient commits (prefix: "transient: ") must have zero net effect
 # - Automated commits (prefix: "x: <command>") must match command output
-# - Posts a summary comment categorizing commits for reviewers
+# - Uploads a workflow artifact with verification status and a comment to be posted on the PR
 
 name: Commit Verification
 
@@ -18,7 +18,6 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
 
 env:
   TRANSIENT_PREFIX: "transient: "
@@ -100,26 +99,24 @@ jobs:
           # Save to file (GitHub Actions has issues with multiline outputs)
           echo "$COMMENT" > comment_body.md
 
-      - name: Find existing comment
+      - name: Prepare bridge outputs
         if: steps.check.outputs.has_special == 'true'
-        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4
-        id: find-comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Commit Verification Summary'
-
-      - name: Post or update comment
-        if: steps.check.outputs.has_special == 'true'
-        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body-path: comment_body.md
-          edit-mode: replace
-
-      - name: Set job status
-        if: steps.check.outputs.has_special == 'true' && steps.verify.outputs.success == 'false'
         run: |
-          echo "::error::Commit verification failed. See PR comment for details."
-          exit 1
+          jq -n \
+            --arg has_special "${{ steps.check.outputs.has_special }}" \
+            --arg success "${{ steps.verify.outputs.success }}" \
+            '{
+              has_special: $has_special,
+              success: $success,
+            }' > bridge-outputs.json
+
+      - name: Emit bridge artifact
+        if: steps.check.outputs.has_special == 'true'
+        uses: leanprover-community/privilege-escalation-bridge/emit@v1
+        with:
+          artifact: workflow-data
+          outputs_file: bridge-outputs.json
+          include_event: minimal
+          files: |
+            comment_body.md
+          retention_days: 5

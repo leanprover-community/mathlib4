@@ -1,0 +1,67 @@
+# Commit Verification CI (workflow run)
+# Verifies transient and automated commits in PRs
+#
+# - Downloads the workflow artifact uploaded by commit_verification.yml
+# - Posts a summary comment categorizing commits for reviewers
+
+name: Commit Verification (workflow_run)
+
+on:
+  workflow_run:
+    workflows: ["Commit Verification"]
+    types:
+      - completed
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: commit-verification-${{ github.event.workflow_run.pull_requests[0].number }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  verify:
+    name: Verify Transient and Automated Commits
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Consume bridge artifact
+        id: bridge
+        uses: leanprover-community/privilege-escalation-bridge/consume@v1
+        with:
+          artifact: workflow-data
+          source_workflow: Commit Verification
+          expected_head_sha: ${{ github.event.workflow_run.head_sha }}
+          require_event: pull_request
+          fail_on_missing: false
+          extract: |
+            pr_number=meta.pr_number
+            has_special=outputs.has_special
+            success=outputs.success
+
+      - name: Find existing comment
+        if: steps.bridge.outputs.has_special == 'true'
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4
+        id: find-comment
+        with:
+          issue-number: ${{ steps.bridge.outputs.pr_number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Commit Verification Summary'
+
+      - name: Post or update comment
+        if: steps.bridge.outputs.has_special == 'true'
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ steps.bridge.outputs.pr_number }}
+          body-path: .bridge/comment_body.md
+          edit-mode: replace
+
+      - name: Set job status
+        if: steps.bridge.outputs.has_special == 'true' && steps.bridge.outputs.success == 'false'
+        run: |
+          echo "::error::Commit verification failed. See PR comment for details."
+          exit 1
