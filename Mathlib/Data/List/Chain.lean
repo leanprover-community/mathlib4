@@ -274,10 +274,6 @@ protected theorem IsChain.rel_cons [Trans R R R] (hl : (a :: l).IsChain R) (hb :
 @[deprecated (since := "2025-09-19")]
 alias Chain.rel := IsChain.rel_cons
 
-theorem IsChain.of_cons {x} : ∀ {l : List α}, IsChain R (x :: l) → IsChain R l
-  | [] => fun _ => IsChain.nil
-  | _ :: _ => fun | .cons_cons _ h => h
-
 theorem IsChain.tail {l : List α} (h : IsChain R l) : IsChain R l.tail := by
   grind +splitIndPred
 
