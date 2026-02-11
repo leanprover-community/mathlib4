@@ -1223,14 +1223,22 @@ end
 
 open OrderDual
 
-instance : PseudoMetricSpace αᵒᵈ := ‹_›
+instance : PseudoMetricSpace αᵒᵈ where
+  dist x y := dist (ofDual x) (ofDual y)
+  dist_self x := dist_self (ofDual x)
+  dist_comm x y := dist_comm (ofDual x) (ofDual y)
+  dist_triangle x y z := dist_triangle (ofDual x) (ofDual y) (ofDual z)
+  edist x y := edist (ofDual x) (ofDual y)
+  edist_dist x y := edist_dist (ofDual x) (ofDual y)
 
 section
 
 variable [PseudoMetricSpace X]
 
-@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
+@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b :=
+  Subtype.ext rfl
 
-@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
+@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b :=
+  Subtype.ext rfl
 
 end
