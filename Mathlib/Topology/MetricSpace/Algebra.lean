@@ -276,8 +276,11 @@ instance [AddMonoid α] [LipschitzAdd α] : LipschitzMul (Multiplicative α) :=
   ⟨@LipschitzAdd.lipschitz_add α _ _ _⟩
 
 @[to_additive]
-instance [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ :=
-  ‹LipschitzMul α›
+instance [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ where
+  lipschitz_mul := by
+    obtain ⟨C, hC⟩ := LipschitzMul.lipschitz_mul (β := α)
+    exact ⟨C, fun p q => hC (p.map OrderDual.ofDual OrderDual.ofDual)
+      (q.map OrderDual.ofDual OrderDual.ofDual)⟩
 
 variable {ι : Type*} [Fintype ι]
 

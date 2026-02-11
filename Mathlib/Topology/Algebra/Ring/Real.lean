@@ -62,7 +62,7 @@ instance : IsTopologicalDivisionRing ℝ := inferInstance
 
 namespace EReal
 
-instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
+instance : ContinuousNeg EReal := ⟨continuous_ofDual.comp negOrderIso.continuous⟩
 
 end EReal
 
@@ -124,6 +124,6 @@ instance : ContinuousAdd ℝ≥0∞ := by
   simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff,
     Function.comp_def, tendsto_coe, tendsto_add]
 
-instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
+instance : ContinuousInv ℝ≥0∞ := ⟨continuous_ofDual.comp OrderIso.invENNReal.continuous⟩
 
 end ENNReal
