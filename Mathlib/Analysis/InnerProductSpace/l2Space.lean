@@ -84,7 +84,7 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 @[expose] public section
 
 open RCLike Submodule Filter
-open scoped NNReal ENNReal ComplexConjugate Topology
+open scoped NNReal ENNReal ComplexConjugate Topology lp
 
 noncomputable section
 
