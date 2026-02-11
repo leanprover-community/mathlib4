@@ -106,7 +106,7 @@ lemma _root_.ContinuousLinearEquiv.hasLeftInverse (f : E ≃L[R] F) :
     f.hasLeftInverse.leftInverse = f.symm := by
   ext y
   calc f.hasLeftInverse.leftInverse y
-   _ = f.hasLeftInverse.leftInverse (f (f.symm y)) := by simp
+    _ = f.hasLeftInverse.leftInverse (f (f.symm y)) := by simp
     _ = f.symm y := f.hasLeftInverse.leftInverse_leftInverse (f.symm y)
 
 /-- An invertible continuous linear map has a continuous left inverse. -/
