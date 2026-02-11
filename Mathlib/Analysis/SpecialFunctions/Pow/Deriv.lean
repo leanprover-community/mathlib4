@@ -245,7 +245,7 @@ theorem Complex.derivWithin_const_cpow (hf : DifferentiableWithinAt ℂ f s x) (
   apply derivWithin_zero_of_frequently_mem {0, 1} (mt Set.Infinite.of_accPt (by simp))
   simpa [zero_cpow_eq_iff, em']
 
-theorem Complex.deriv_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
+theorem Complex.deriv_fun_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
     deriv (fun x ↦ c ^ f x) x = log c * deriv f x * c ^ f x := by
   rw [← derivWithin_univ, derivWithin_const_cpow, derivWithin_univ]
   rwa [differentiableWithinAt_univ]
