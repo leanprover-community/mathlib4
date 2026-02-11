@@ -342,19 +342,13 @@ open scoped Topology
 lemma periodic_tendsto_nhds_zero {f : ℂ → ℂ} (hcts : ContinuousAt (Periodic.cuspFunction h f) 0) :
     Tendsto (fun x ↦ f (Periodic.invQParam h x)) (𝓝[≠] 0) (𝓝 (Periodic.cuspFunction h f 0)) := by
   apply (tendsto_nhdsWithin_of_tendsto_nhds hcts.tendsto).congr'
-  rw [eventuallyEq_nhdsWithin_iff, eventually_iff_exists_mem]
-  refine ⟨ball 0 1, Metric.ball_mem_nhds _ Real.zero_lt_one , ?_⟩
-  intro y hy hy0
-  apply Function.Periodic.cuspFunction_eq_of_nonzero
-  simpa only [ne_eq, mem_compl_iff, mem_singleton_iff] using hy0
+  filter_upwards [self_mem_nhdsWithin] with a using Periodic.cuspFunction_eq_of_nonzero h f
 
 theorem cuspFunction_mul_zero {f g : ℂ → ℂ} (hfcts : ContinuousAt (Periodic.cuspFunction h f) 0)
     (hgcts : ContinuousAt (Periodic.cuspFunction h g) 0) : Periodic.cuspFunction h (f * g) 0 =
     Periodic.cuspFunction h f 0 * Periodic.cuspFunction h g 0 := by
   rw [Periodic.cuspFunction, update_self]
-  apply Filter.Tendsto.limUnder_eq
-  exact Filter.Tendsto.mul (periodic_tendsto_nhds_zero hfcts)
-    (periodic_tendsto_nhds_zero hgcts)
+  exact (periodic_tendsto_nhds_zero hfcts).mul (periodic_tendsto_nhds_zero hgcts) |>.limUnder_eq
 
 lemma qExpansion_mul_coeff_zero {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
     (hgcts : ContinuousAt (cuspFunction h g) 0) :
@@ -366,9 +360,7 @@ lemma cuspFunction_mul {f g : ℍ → ℂ}
     cuspFunction h (f * g) = cuspFunction h f * cuspFunction h g := by
   ext z
   by_cases H : z = 0
-  · rw [H]
-    simp only [Pi.mul_apply]
-    apply cuspFunction_mul_zero hfcts hgcts
+  · simpa [H] using cuspFunction_mul_zero hfcts hgcts
   · simp [cuspFunction, Periodic.cuspFunction, H]
 
 lemma cuspFunction_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
@@ -383,10 +375,10 @@ lemma cuspFunction_smul {f : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h 
   ext y
   obtain rfl | hy := eq_or_ne y 0; swap
   · simp [hy]
-  · simpa using Filter.Tendsto.limUnder_eq (Filter.Tendsto.const_mul _ (by simpa using hfcts))
+  · simpa using (Tendsto.const_mul _ (by simpa using hfcts)).limUnder_eq
 
 lemma cuspFunction_neg {f : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
-    cuspFunction h (-f) = - cuspFunction h f := by
+    cuspFunction h (-f) = -cuspFunction h f := by
   simpa using cuspFunction_smul hfcts (-1)
 
 lemma cuspFunction_add {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
@@ -394,16 +386,16 @@ lemma cuspFunction_add {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h
     cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
   simp only [cuspFunction, Periodic.cuspFunction]
   ext y
-  obtain rfl | hy := eq_or_ne y 0; swap
+  obtain hy | rfl := ne_or_eq y 0
   · simp [hy]
-  · have : ((f + g) ∘ ↑ofComplex) ∘ Periodic.invQParam h =
-      (f ∘ ↑ofComplex) ∘ Periodic.invQParam h + (g ∘ ↑ofComplex) ∘ Periodic.invQParam h := by
+  · have : ((f + g) ∘ ofComplex) ∘ Periodic.invQParam h =
+        (f ∘ ofComplex) ∘ Periodic.invQParam h + (g ∘ ofComplex) ∘ Periodic.invQParam h := by
       ext y
       simp
-    simp only [Pi.add_apply, update_self] at *
+    simp only [Pi.add_apply, update_self]
     rw [this, Filter.Tendsto.limUnder_eq]
-    exact Tendsto.add (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendsto_nhds_zero hfcts)))
-      (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendsto_nhds_zero hgcts)))
+    exact (tendsto_nhds_limUnder ⟨_, periodic_tendsto_nhds_zero hfcts⟩).add
+      (tendsto_nhds_limUnder ⟨_, periodic_tendsto_nhds_zero hgcts⟩)
 
 lemma cuspFunction_sub {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
     (hgcts : ContinuousAt (cuspFunction h g) 0) :
@@ -445,7 +437,7 @@ lemma qExpansion_mul {f g : ℍ → ℂ} {s : Set ℂ} (hsO : IsOpen s) (hs : 0 
     apply Finset.sum_congr rfl (fun x hx ↦ ?_)
     grind [Nat.cast_choose ℂ (b := m + 1) (a := x) (by grind)]
 
-lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (a b : ℤ)
+lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     qExpansion h (f.mul g) = qExpansion h f * qExpansion h g := by
   apply qExpansion_mul (s := Metric.ball 0 1) (isOpen_ball) (by simp)
@@ -457,49 +449,33 @@ lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (
 lemma qExpansion_add {G : Type*} [FunLike G ℍ ℂ] [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G) [ModularFormClass G Γ b] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : qExpansion h (f + g) = qExpansion h f + qExpansion h g := by
-  ext m
-  have := cuspFunction_add (f := f) (g := g) (h := h)
-   (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
-   (analyticAt_cuspFunction_zero g hh hΓ).continuousAt
-  · simp only [qExpansion, this, PowerSeries.coeff_mk, map_add]
-    rw [iteratedDeriv_add]
-    · ring
-    · apply ContDiffOn.contDiffAt  (s := Metric.ball 0 1) ?_ (ball_mem_nhds 0 (by simp))
-      refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
-      exact (differentiableAt_cuspFunction f hh hΓ (by simpa using hy)).differentiableWithinAt
-    · apply ContDiffOn.contDiffAt  (s := Metric.ball 0 1) ?_ (ball_mem_nhds 0 (by simp))
-      refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
-      exact (differentiableAt_cuspFunction g hh hΓ (by simpa using hy)).differentiableWithinAt
+  ext
+  grind [qExpansion, cuspFunction_add (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
+    (analyticAt_cuspFunction_zero g hh hΓ).continuousAt, PowerSeries.coeff_mk, 
+    iteratedDeriv_add (analyticAt_cuspFunction_zero f hh hΓ).contDiffAt
+      (analyticAt_cuspFunction_zero g hh hΓ).contDiffAt]
 
 lemma qExpansion_smul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ) (f : F) [ModularFormClass F Γ k] :
     (qExpansion h (a • f)) = (a • qExpansion h f) := by
-  ext m
-  simp_rw [_root_.map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
+  ext
+  grind [map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
     (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_const_smul_field]
-  grind [Pi.smul_apply, smul_eq_mul]
 
 lemma qExpansion_neg [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k] :
-    qExpansion h (-f) = - (qExpansion h f) := by
+    qExpansion h (-f) = -qExpansion h f := by
   simpa using (qExpansion_smul hh hΓ (-1 : ℂ) f)
 
-lemma qExpansion_zero (hh : 0 < h) : qExpansion h 0 = 0 := by
-  ext m
-  have := cuspFunction_smul (f := 0) (h := h) ?_ 0
-  · simp only [smul_zero, zero_smul, qExpansion, PowerSeries.coeff_mk, map_zero, mul_eq_zero,
-      inv_eq_zero, Nat.cast_eq_zero] at *
-    rw [this]
-    by_cases hm : m = 0
-    · simp only [hm, Nat.factorial_zero, one_ne_zero, iteratedDeriv_zero, Pi.zero_apply, or_true]
-    · simp
-  apply (Function.Periodic.differentiableAt_cuspFunction_zero hh (by simp) (by simp) _).continuousAt
-  simpa using ZeroAtFilter.boundedAtFilter (zero_zeroAtFilter I∞)
+lemma qExpansion_zero (h) : qExpansion h 0 = 0 := by
+  suffices cuspFunction h 0 = 0 by ext; simp [qExpansion_coeff, this]
+  simpa [cuspFunction, Periodic.cuspFunction]
+    using (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).limUnder_eq
 
 lemma qExpansion_injective [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (i : ℤ) (f : ModularForm Γ i) :
     qExpansion h f = 0 ↔ f = 0 := by
-  refine ⟨fun H ↦ ?_, fun H ↦ (by simp [H, qExpansion_zero hh])⟩
+  refine ⟨fun H ↦ ?_,  (· ▸ qExpansion_zero h)⟩
   ext z
   simp [← (hasSum_qExpansion f hh hΓ z).tsum_eq, H]
 
@@ -507,49 +483,38 @@ lemma qExpansion_injective [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
 def qExpansionAddHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (i : ℤ) : ModularForm Γ i →+ PowerSeries ℂ where
   toFun f := qExpansion h f
-  map_zero' := by rw [qExpansion_injective hh hΓ]
+  map_zero' := qExpansion_zero h
   map_add' f g := qExpansion_add f g hh hΓ
 
 lemma qExpansion_one [Γ.HasDetPlusMinusOne] : qExpansion h (1 : ModularForm Γ 0) = 1 := by
   ext m
-  rw [qExpansion_coeff]
-  by_cases hm : m = 0
-  · simpa [hm, cuspFunction, Periodic.cuspFunction] using
-      Filter.Tendsto.limUnder_eq tendsto_const_nhds
-  · simp only [cuspFunction, Periodic.cuspFunction, one_coe_eq_one, Pi.one_comp,
-    PowerSeries.coeff_one, hm, ↓reduceIte, mul_eq_zero, inv_eq_zero, Nat.cast_eq_zero,
-    Nat.factorial_ne_zero, false_or]
-    have := iteratedDeriv_const (𝕜 := ℂ) (F := ℂ) (x := 0) (c := 1) (n := m)
-    simp only [hm] at this
-    convert this
-    next z =>
-      by_cases hz : z = 0
-      · rw [hz]
-        simpa [update_self] using Filter.Tendsto.limUnder_eq tendsto_const_nhds
-      · simp [hz]
+  have h1 : cuspFunction h 1 = 1 := by 
+    ext q
+    rcases eq_or_ne q 0 with rfl | hq
+    · simpa [cuspFunction, Periodic.cuspFunction] using tendsto_const_nhds.limUnder_eq 
+    · simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero h _ hq]
+  have h2 : iteratedDeriv m (1 : ℂ → ℂ) 0 = if m = 0 then 1 else 0 := by
+    simpa [ite_apply] using iteratedDeriv_const
+  simp +contextual [qExpansion_coeff, h1, h2]
 
 open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
 def qExpansionRingHom [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) : (⨁ i, ModularForm Γ i) →+* (PowerSeries ℂ) := by
-  apply DirectSum.toSemiring (qExpansionAddHom hh hΓ)
-  · simpa [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk] using qExpansion_one
-  · intro a b f g
-    simpa [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-      using qExpansion_modularForm_mul a b f g hh hΓ
+    (hΓ : h ∈ Γ.strictPeriods) : (⨁ i, ModularForm Γ i) →+* (PowerSeries ℂ) :=
+  DirectSum.toSemiring (qExpansionAddHom hh hΓ) qExpansion_one 
+    (qExpansion_modularForm_mul hh hΓ)
 
 @[simp]
 lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (i : ℤ) (f : ModularForm Γ i) :
-    qExpansionRingHom hh hΓ (DirectSum.of _ i f) = qExpansion h f := by
-  simp [qExpansionRingHom, qExpansionAddHom]
+    qExpansionRingHom hh hΓ (DirectSum.of _ i f) = qExpansion h f :=
+  DirectSum.toSemiring_of ..
 
 lemma qExpansion_of_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (a b : ℤ) (f : ModularForm Γ a) (g : ModularForm Γ b) :
-    qExpansion h ((((DirectSum.of _ a f)) * (DirectSum.of _ b g)) (a + b)) =
-    (qExpansion h f) * (qExpansion h g) := by
-  have := (qExpansionRingHom hh hΓ).map_mul (DirectSum.of _ a f) (DirectSum.of _ b g)
-  simpa [DirectSum.of_mul_of]
+    qExpansion h ((DirectSum.of _ a f * DirectSum.of _ b g) (a + b)) =
+    qExpansion h f * qExpansion h g := by
+  simpa [DirectSum.of_mul_of] using qExpansion_modularForm_mul f g hh hΓ
 
 lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
