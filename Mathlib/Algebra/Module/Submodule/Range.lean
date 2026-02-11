@@ -208,7 +208,6 @@ theorem comap_injective {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤) : 
 
 -- TODO (?): generalize the next two lemmas to semilinear maps with `f ∘ₗ g` bijective.
 
-
 theorem ker_eq_range_of_comp_eq_id {M P} [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] {f : M →ₗ[R] P} {g : P →ₗ[R] M} (h : f ∘ₗ g = .id) :
     ker f = range (LinearMap.id - g ∘ₗ f) :=
