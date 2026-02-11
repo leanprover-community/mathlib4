@@ -1342,7 +1342,7 @@ lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → 
         · exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
         · exact hM ⟨i, rfl⟩
 
-theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι)) (s : Set α) (K : ℝ≥0) :
+theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι, ℝ)) (s : Set α) (K : ℝ≥0) :
     LipschitzOnWith K f s ↔ ∀ i : ι, LipschitzOnWith K (fun a : α ↦ f a i) s := by
   simp_rw [lipschitzOnWith_iff_dist_le_mul]
   constructor
@@ -1356,7 +1356,7 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
     intro i
     apply hgl i x hx y hy
 
-theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι)} (K : ℝ≥0) :
+theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι, ℝ)} (K : ℝ≥0) :
     LipschitzWith K f ↔ ∀ i : ι, LipschitzWith K (fun a : α ↦ f a i) := by
   simp_rw [← lipschitzOnWith_univ]
   apply LipschitzOnWith.coordinate
