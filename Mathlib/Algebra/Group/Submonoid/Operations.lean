@@ -787,6 +787,8 @@ theorem domRestrict_mker (f : M →* N) :
     mker (f.domRestrict S) = (MonoidHom.mker f).comap S.subtype :=
   rfl
 
+@[deprecated (since := "2026-02-10")]
+alias restrict_mker := domRestrict_mker
 @[to_additive]
 theorem mrangeRestrict_mker (f : M →* N) : mker (mrangeRestrict f) = mker f := by
   ext x

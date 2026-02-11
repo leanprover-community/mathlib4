@@ -34,7 +34,7 @@ of `•` belong elsewhere.
 @[expose] public section
 
 
-universe u v w
+universe u v
 
 open Function Module
 open scoped Pointwise
