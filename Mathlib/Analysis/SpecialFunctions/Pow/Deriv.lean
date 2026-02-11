@@ -234,16 +234,16 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
 
 theorem Complex.derivWithin_const_cpow (hf : DifferentiableWithinAt ℂ f s x) (c : ℂ) :
     derivWithin (fun x ↦ c ^ f x) s x = log c * derivWithin f s x * c ^ f x := by
-  by_cases h : UniqueDiffWithinAt ℂ s x
-  · by_cases hc : c = 0
-    · rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin] at h
-      simp only [hc, log_zero, zero_mul]
-      apply derivWithin_zero_of_frequently_mem {0, 1} (mt Set.Infinite.of_accPt (by simp))
-      simpa [zero_cpow_eq_iff, em']
-    · rw [mul_comm, ← mul_assoc]
-      exact (hf.hasDerivWithinAt.const_cpow (Or.inl hc)).derivWithin h
-  · rw [derivWithin_zero_of_not_uniqueDiffWithinAt h, derivWithin_zero_of_not_uniqueDiffWithinAt h,
-      mul_zero, zero_mul]
+  by_cases h : UniqueDiffWithinAt ℂ s x; swap
+  · rw [derivWithin_zero_of_not_uniqueDiffWithinAt h,
+      derivWithin_zero_of_not_uniqueDiffWithinAt h, mul_zero, zero_mul]
+  by_cases hc : c = 0; swap
+  · rw [mul_comm, ← mul_assoc]
+    exact (hf.hasDerivWithinAt.const_cpow (Or.inl hc)).derivWithin h
+  rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin] at h
+  simp only [hc, log_zero, zero_mul]
+  apply derivWithin_zero_of_frequently_mem {0, 1} (mt Set.Infinite.of_accPt (by simp))
+  simpa [zero_cpow_eq_iff, em']
 
 theorem Complex.deriv_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
     deriv (fun x ↦ c ^ f x) x = log c * deriv f x * c ^ f x := by
