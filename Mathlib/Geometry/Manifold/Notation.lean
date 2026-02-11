@@ -213,13 +213,16 @@ codomain are reducibly definitionally equal. If so, we return the coefficient fi
 the codomain of the continuous linear maps (otherwise none). -/
 def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
   match_expr e with
-    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
+    | ContinuousLinearMap k S _ _ σ E _ _ F _ _ _ _ =>
       trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
-      if ← withReducible <| isDefEq k S then
-        -- TODO: check if σ is actually the identity!
-        return some (k, E, F)
-      else
-        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+      match_expr σ with
+      | RingHom.id _ _  =>
+        if ← withReducible <| isDefEq k S then
+          return some (k, E, F)
+        else
+          throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+      | _ => throwError "`{e}` is a space of continuous (semi-)linear maps over `{σ}`, \
+        which is not the identity"
     | _ => return none
 
 /--
