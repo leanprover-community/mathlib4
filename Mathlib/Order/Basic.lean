@@ -20,10 +20,6 @@ public import Mathlib.Tactic.GCongr.Core
 This file proves basic results about orders, provides extensive dot notation, defines useful order
 classes and allows to transfer order instances.
 
-## Type synonyms
-
-* `OrderDual α` : A type synonym reversing the meaning of all inequalities, with notation `αᵒᵈ`.
-
 ### Transferring orders
 
 - `Order.Preimage`, `Preorder.lift`: Transfers a (pre)order on `β` to an order on `α`
