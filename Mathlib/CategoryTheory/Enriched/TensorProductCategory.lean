@@ -55,8 +55,7 @@ instance enrichedTensorProduct : EnrichedCategory V (C × D) where
     slice_lhs 2 3 => rw [← this]
     simp only [tensorIso_inv, Category.assoc, Iso.inv_hom_id_assoc]
     rw [tensorHom_comp_tensorHom, tensorHom_comp_tensorHom, EnrichedCategory.id_comp,
-      EnrichedCategory.id_comp]
-    exact id_tensorHom_id (EnrichedCategory.Hom c c') (EnrichedCategory.Hom d d')
+      EnrichedCategory.id_comp, id_tensorHom_id]
   comp_id := fun ⟨c, d⟩ ⟨c', d'⟩ => by
     simp only [MonoidalCategory.whiskerLeft_comp_assoc, tensorμ_natural_right_assoc]
     have := tensor_right_unitality (EnrichedCategory.Hom c c' : V) (EnrichedCategory.Hom d d')
@@ -66,8 +65,7 @@ instance enrichedTensorProduct : EnrichedCategory V (C × D) where
     slice_lhs 2 3 => rw [← this]
     simp only [tensorIso_inv, Category.assoc, Iso.inv_hom_id_assoc]
     rw [tensorHom_comp_tensorHom, tensorHom_comp_tensorHom, EnrichedCategory.comp_id,
-      EnrichedCategory.comp_id]
-    exact id_tensorHom_id (EnrichedCategory.Hom c c') (EnrichedCategory.Hom d d')
+      EnrichedCategory.comp_id, id_tensorHom_id]
   assoc := fun ⟨c₁, d₁⟩ ⟨c₂, d₂⟩ ⟨c₃, d₃⟩ ⟨c₄, d₄⟩ => by
     simp only [comp_whiskerRight_assoc, MonoidalCategory.whiskerLeft_comp_assoc,
       tensorμ_natural_left_assoc, tensorμ_natural_right_assoc]
@@ -200,10 +198,7 @@ def enrichedBifunctorEquiv.from (F : EnrichedFunctor V (C × D) E) : EnrichedBif
     rw [e_comp_id, Category.comp_id, ← Category.comp_id (eComp V d d' d''),
       ← tensorHom_comp_tensorHom_assoc, Category.comp_id, tensorHom_def'_assoc (ρ_ _).hom, tensorμ,
       tensorHom_def_assoc]
-    simp only [leftUnitor_inv_whiskerRight, tensor_whiskerLeft, id_whiskerLeft, Category.assoc,
-      braiding_tensorUnit_right, comp_whiskerRight, whiskerLeft_comp, Iso.hom_inv_id_assoc,
-      Iso.inv_hom_id_assoc, triangle_assoc_comp_right_assoc, Iso.hom_inv_id, Category.comp_id,
-      tensorHom_id, whiskerLeft_inv_hom_assoc]
+    simp
   left_right_naturality c c' d d' := by
     repeat rw [← tensorHom_comp_tensorHom_assoc]
     rw [BraidedCategory.braiding_inv_naturality_assoc]
