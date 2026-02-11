@@ -49,10 +49,20 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ TypeCat.{v₁} where
   map f :=
     { app _ := postcomp _ f }
 
--- unif_hint yoneda_obj_obj_eq_hom (X X' : C) (Y Y' : Cᵒᵖ) where
---   X ≟ X'
---   Y ≟ Y' ⊢
---   (yoneda.obj X).obj Y ≟ unop Y' ⟶ X'
+unif_hint yoneda_obj_obj_eq_homSet (X X' Y Y' : C) where
+  X ≟ X'
+  Y ≟ Y' ⊢
+  (yoneda.obj X).obj (op Y) ≟ homSet Y' X'
+
+unif_hint yoneda_obj_obj_eq_hom (X X' Y Y' : C) where
+  X ≟ X'
+  Y ≟ Y' ⊢
+  (yoneda.obj X).obj (op Y) ≟ Y' ⟶ X'
+
+unif_hint yoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
+  X ≟ X'
+  Y ≟ Y' ⊢
+  (yoneda.obj X).obj Y ≟ unop Y' ⟶ X'
 
 -- @[simp]
 -- lemma yoneda_obj_map_apply (X : C) {X_1 Y : Cᵒᵖ} (f : X_1 ⟶ Y) (g : unop X_1 ⟶ X) :
@@ -111,7 +121,7 @@ def fullyFaithful : (yoneda (C := C)).FullyFaithful where
     intro Z W f
     ext X x
     simp only [yoneda_obj_obj, yoneda_map_app, postcomp, ConcreteCategory.hom_ofHom]
-    erw [naturality]
+    rw [naturality]
     simp
     rfl
 
