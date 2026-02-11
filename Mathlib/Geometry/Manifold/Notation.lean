@@ -680,8 +680,8 @@ This implementation is not maximally robust yet.
 
 -- This function calls itself, which is why it is partial for now.
 -- This should not be an issue in practice.
--- TODO: can I prove this terminates w.r.t. a suitable measure?
--- I'm only recursing into subexpressions (at least, after match_expr), right?
+-- FIXME: can one prove this terminates w.r.t. a suitable measure? This is only recursing into
+-- subexpressions (at least, after match_expr), right?
 partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
   if let some { model .. } ← go e baseInfo then
@@ -693,7 +693,7 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
     throwError "Could not find a model with corners for `{e}`.{hint}"
 where
   go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do
-    -- At first, try finding a model on the space itself.
+    -- At first, try finding a model with corners on the space itself.
     if let some m ← findModelInner e baseInfo then return some m
     -- Otherwise, we recurse into the expression,
     -- depending whether we have an open subset of a space, a product, or a direct sum of spaces.
@@ -711,7 +711,7 @@ where
               trace[Elab.DiffGeo.MDiff] "complicated arm hit! \
                 Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
               -- (In practice, `M` is not an `Opens`,
-              -- as `Opens X` is (currently?) not a topological space.
+              -- as `Opens X` is (currently?) not a topological space.)
               go M baseInfo
             | _ => return none
           | _ => return none
