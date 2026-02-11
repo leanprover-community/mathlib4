@@ -17,7 +17,7 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
 
-public section
+@[expose] public section
 
 universe u v
 
