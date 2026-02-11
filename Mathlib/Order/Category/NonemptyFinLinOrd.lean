@@ -126,7 +126,7 @@ def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
   functor := dual
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| (OrderIso.dualDual X).symm
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by

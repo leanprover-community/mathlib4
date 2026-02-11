@@ -98,7 +98,7 @@ theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : �
 
 theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
     ¬ StrictMono f :=
-  not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
+  not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) (OrderDual.toDual ∘ f)
 
 namespace Nat
 
