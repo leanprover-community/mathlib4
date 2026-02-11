@@ -26,8 +26,8 @@ import Mathlib.Init
 #min_imports in
 #min_imports
 
-/-- info: [Init.Prelude] -/
-#guard_msgs in
+/-- Init.Prelude -/
+#guard_msgs (substring := true) in
 #find_home Nat
 
 /-- info: Loogle Usage -/
