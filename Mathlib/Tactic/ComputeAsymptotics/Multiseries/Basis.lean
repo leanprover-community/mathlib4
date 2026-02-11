@@ -54,42 +54,61 @@ theorem of_append_right {left right : Basis} (h : WellFormedBasis (left ++ right
     WellFormedBasis right :=
   h.of_sublist (by simp)
 
+theorem compare_left_aux {basis : Basis} {f : ℝ → ℝ} (h : WellFormedBasis basis)
+    (h_comp : ∀ g, basis.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) :
+    ∀ g ∈ basis, (Real.log ∘ f) =o[atTop] (Real.log ∘ g) := by
+  intro g hg
+  rcases basis.eq_nil_or_concat with rfl | ⟨basis_begin, basis_end, rfl⟩
+  · simp at hg
+  simp only [List.concat_eq_append, List.mem_append, List.mem_cons, List.not_mem_nil, or_false,
+    List.getLast?_append, List.getLast?_singleton, Option.some_or, Option.some.injEq,
+    forall_eq'] at hg h_comp
+  rcases hg with hg | hg
+  · simp only [WellFormedBasis, List.concat_eq_append, List.mem_append, List.mem_cons,
+      List.not_mem_nil, or_false] at h
+    exact h_comp.trans (by grind)
+  · grind
+
+theorem compare_right_aux {basis : Basis} {f : ℝ → ℝ} (h : WellFormedBasis basis)
+    (h_comp : ∀ g, basis.head? = .some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+    ∀ g ∈ basis, (Real.log ∘ g) =o[atTop] (Real.log ∘ f) := by
+  intro g hg
+  cases basis with
+  | nil => simp at hg
+  | cons basis_hd basis_tl =>
+    specialize h_comp basis_hd (by simp)
+    simp only [List.mem_cons] at hg
+    rcases hg with hg | hg
+    · simpa [hg]
+    · simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h
+      exact .trans (by grind) h_comp
+
+theorem append {left right : Basis}
+    (h_left : WellFormedBasis left) (h_right : WellFormedBasis right)
+    (h : ∀ f ∈ left, ∀ g ∈ right, (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+    WellFormedBasis (left ++ right) := by
+  simp only [WellFormedBasis] at *
+  constructor
+  · simpa [List.pairwise_append, h_left, h_right] using h
+  · grind
+
+theorem cons {basis : Basis} {f : ℝ → ℝ} (h_basis : WellFormedBasis basis)
+    (hf_tendsto : Tendsto f atTop atTop)
+    (hf : ∀ g ∈ basis, (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+    WellFormedBasis (f :: basis) := by
+  change WellFormedBasis ([f] ++ basis)
+  exact append (by simpa [WellFormedBasis]) h_basis (by simpa)
+
 theorem insert {left right : Basis} {f : ℝ → ℝ}
     (h : WellFormedBasis (left ++ right)) (hf_tendsto : Tendsto f atTop atTop)
     (hf_comp_left : ∀ g, left.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g))
     (hf_comp_right : ∀ g, right.head? = .some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
     WellFormedBasis (left ++ f :: right) := by
-  simp only [WellFormedBasis, List.mem_append, List.mem_cons] at h ⊢
-  constructor
-  · rw [List.pairwise_append]
-    constructorm* _ ∧ _
-    · exact h.left.sublist (List.sublist_append_left _ _)
-    · rw [List.pairwise_cons]
-      refine ⟨?_, h.left.sublist (List.sublist_append_right _ _)⟩
-      intro g hg
-      cases right with
-      | nil => simp at hg
-      | cons right_hd right_tl =>
-        specialize hf_comp_right right_hd (by simp)
-        rcases hg with hg | hg
-        · gcongr
-        · rw [List.pairwise_append, List.pairwise_cons] at h
-          exact .trans (by tauto) hf_comp_right
-    · intro g hg k hk
-      rcases List.mem_cons.mp hk with rfl | hk
-      · rcases left.eq_nil_or_concat with h_left | ⟨left_begin, left_end, rfl⟩
-        · simp [h_left] at hg
-        · rw [List.concat_eq_append, List.getLast?_append] at hf_comp_left
-          rw [List.concat_eq_append, List.mem_append, List.mem_singleton] at hg
-          rcases hg with hg | rfl
-          · grind [(hf_comp_left _ rfl).trans]
-          · exact hf_comp_left g rfl
-      · rw [List.pairwise_append] at h
-        grind
-  · rintro g (hg | hg | hg)
-    · exact h.right _ (.inl hg)
-    · convert hf_tendsto
-    · exact h.right _ (.inr hg)
+  have : WellFormedBasis (f :: right) := cons (h.of_sublist (by simp)) hf_tendsto
+    (compare_right_aux (h.of_sublist (by simp)) hf_comp_right)
+  apply compare_left_aux (h.of_sublist (by simp)) at hf_comp_left
+  apply append (h.of_sublist (by simp)) this
+  exact fun g hg ↦ compare_right_aux this (by grind)
 
 theorem push {basis : Basis} {f : ℝ → ℝ} (h : WellFormedBasis basis)
     (hf_tendsto : Tendsto f atTop atTop)
@@ -118,13 +137,13 @@ theorem head_eventually_pos {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   (forall_eventually_of_eventually_forall h.eventually_pos basis_hd).mono (by grind)
 
 /-- All functions in the tail of a well-formed basis are little-o of the basis' head. -/
-theorem tail_IsLittleO_head {hd : ℝ → ℝ} {tl : Basis}
+theorem tail_isLittleO_head {hd : ℝ → ℝ} {tl : Basis}
     (h : WellFormedBasis (hd :: tl)) {f : ℝ → ℝ} (hf : f ∈ tl) :
     (Real.log ∘ f) =o[atTop] (Real.log ∘ hd) := by
   rw [WellFormedBasis, List.pairwise_cons] at h
   exact h.left.left _ hf
 
-theorem pushLogLast {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem push_log_last {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     WellFormedBasis ((basis_hd :: basis_tl) ++
       [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) := by
@@ -138,8 +157,12 @@ end WellFormedBasis
 
 /-! ### Basis extensions -/
 
-/-- Basis extension. It is a `Type`-version of `List.Sublist`.
-Using `getBasis` one can construct any `basis'` from `basis` if `basis <+ basis'`. -/
+/-- The type of extensions of a given basis, defined as an inductive type.
+Given a `basis : Basis`
+and `ex : BasisExtension basis` of it, one can use `getBasis` to produce a basis `basis'` for which
+`basis <+ basis'`. Moreover, all such bases for which `basis` is a sublist can be
+obtained in this
+manner. In this sense `BasisExtension` is a `Type`-valued analogue of `List.Sublist`. -/
 inductive BasisExtension : Basis → Type
 | nil : BasisExtension []
 | keep (basis_hd : ℝ → ℝ) {basis_tl : Basis} (ex : BasisExtension basis_tl) :
@@ -155,7 +178,7 @@ def getBasis {basis : Basis} (ex : BasisExtension basis) : Basis :=
   | keep basis_hd ex => basis_hd :: ex.getBasis
   | insert f ex => f :: ex.getBasis
 
-theorem getBasis_Sublist {basis : Basis} {ex : BasisExtension basis} :
+theorem sublist_getBasis {basis : Basis} {ex : BasisExtension basis} :
     List.Sublist basis ex.getBasis := by
   induction ex with
   | nil => simp
