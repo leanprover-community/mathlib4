@@ -15,7 +15,8 @@ We introduce these relations:
 * `IsBigOWith c l f g` : "f is big O of g along l with constant c";
 * `f =O[l] g` : "f is big O of g along l";
 * `f =Θ[l] g` : "f is big O of g along l and vice versa";
-* `f =o[l] g` : "f is little o of g along l".
+* `f =o[l] g` : "f is little o of g along l";
+* `f ~[l] g` : `f` and `g` are equivalent, i.e., `f - g =o[l] g`.
 
 Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
 of `f` and `g` do not need to be the same; all that is needed is that there is a norm associated
@@ -207,6 +208,14 @@ theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
 
 theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
   simpa using h.def zero_lt_one
+
+/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
+  when `u x - v x = o(v x)` as `x` converges along `l`. -/
+def IsEquivalent (l : Filter α) (u v : α → E') :=
+  (u - v) =o[l] v
+
+@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 end Defs
 

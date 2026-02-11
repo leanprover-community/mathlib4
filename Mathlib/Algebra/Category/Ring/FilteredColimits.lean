@@ -136,7 +136,7 @@ def descAddMonoidHom : R F →+ t.1 :=
 
 lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
     descAddMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
+  congr_fun ((forget AddCommMonCat).congr_map
     ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat)).fac
         ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
@@ -148,7 +148,7 @@ def descMonoidHom : R F →* t.1 :=
 
 lemma descMonoidHom_quotMk {j : J} (x : F.obj j) :
     descMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
+  congr_fun ((forget MonCat).congr_map
     ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
       (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) x
 
@@ -172,7 +172,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   fac t j := by ext x; exact descAddMonoidHom_quotMk t x
   uniq t m hm := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (hm j)) x).trans
+    exact (congr_fun ((forget SemiRingCat).congr_map (hm j)) x).trans
       (descAddMonoidHom_quotMk t x).symm
 
 instance forget₂Mon_preservesFilteredColimits :
@@ -294,6 +294,14 @@ instance forget₂SemiRing_preservesFilteredColimits :
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ RingCat SemiRingCat.{u})) }
+
+instance : Limits.PreservesFilteredColimits (forget₂ RingCat AddCommGrpCat.{u}) where
+  preserves_filtered_colimits _ :=
+    { preservesColimit := fun {F} =>
+        Limits.preservesColimit_of_preserves_colimit_cocone
+          (RingCat.FilteredColimits.colimitCoconeIsColimit.{u, u} F)
+          (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
+            (F ⋙ forget₂ RingCat AddCommGrpCat.{u})) }
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget RingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ RingCat SemiRingCat) (forget SemiRingCat.{u})
