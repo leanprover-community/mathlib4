@@ -121,6 +121,18 @@ theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i �
   rintro - ⟨s, rfl⟩
   exact hf s
 
+theorem memℓp_gen_iff' {f : (i : α) → E i} (hp : 0 < p.toReal) :
+    Memℓp f p ↔ ∀ (s : Finset α), ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ ∑' i, ‖f i‖ ^ p.toReal := by
+  refine ⟨fun hf ↦ ?_, memℓp_gen'⟩
+  obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
+  simp only [Memℓp, hp₁.ne', ↓reduceIte, hp₂.ne] at hf
+  simpa [upperBounds] using isLUB_hasSum (by intro; positivity) hf.hasSum |>.1
+
+theorem memℓp_gen_iff'' {f : (i : α) → E i} (hp : 0 < p.toReal) :
+    Memℓp f p ↔ ∃ C, 0 ≤ C ∧ ∀ (s : Finset α), ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C := by
+  refine ⟨fun hf ↦ ?_, fun ⟨C, _, hC⟩ ↦ memℓp_gen' hC⟩
+  exact ⟨_, tsum_nonneg fun i ↦ (by positivity), memℓp_gen_iff' hp |>.mp hf⟩
+
 theorem zero_memℓp : Memℓp (0 : ∀ i, E i) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
@@ -134,7 +146,31 @@ theorem zero_memℓp : Memℓp (0 : ∀ i, E i) p := by
 theorem zero_mem_ℓp' : Memℓp (fun i : α => (0 : E i)) p :=
   zero_memℓp
 
+theorem memℓp_norm_iff {f : (i : α) → E i} :
+    Memℓp (‖f ·‖) p ↔ Memℓp f p := by
+  obtain (rfl | rfl | hp) := p.trichotomy
+  · simp [memℓp_zero_iff]
+  · simp [memℓp_infty_iff]
+  · simp [memℓp_gen_iff hp]
+
+alias ⟨Memℓp.of_norm, Memℓp.norm⟩ := memℓp_norm_iff
 namespace Memℓp
+
+
+theorem mono {f : (i : α) → E i} {g : α → ℝ}
+    (hg : Memℓp g p) (hfg : ∀ i, ‖f i‖ ≤ g i) :
+    Memℓp f p := by
+  replace hfg (i) : ‖f i‖ ≤ ‖g i‖ := (hfg i).trans (Real.le_norm_self _)
+  obtain (rfl | rfl | hp) := p.trichotomy
+  · simp_rw [memℓp_zero_iff, ← norm_pos_iff] at hg ⊢
+    refine hg.subset fun i hi ↦ hi.trans_le <| hfg i
+  · rw [memℓp_infty_iff] at hg ⊢
+    exact hg.range_mono _ hfg
+  · rw [memℓp_gen_iff hp] at hg ⊢
+    apply hg.of_norm_bounded fun i ↦ ?_
+    rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)]
+    gcongr
+    exact hfg i
 
 theorem finite_dsupport {f : ∀ i, E i} (hf : Memℓp f 0) : Set.Finite { i | f i ≠ 0 } :=
   memℓp_zero_iff.1 hf
@@ -145,6 +181,10 @@ theorem bddAbove {f : ∀ i, E i} (hf : Memℓp f ∞) : BddAbove (Set.range fun
 theorem summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
     Summable fun i => ‖f i‖ ^ p.toReal :=
   (memℓp_gen_iff hp).1 hf
+
+lemma summable_of_one {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+    {x : α → E} (hx : Memℓp x 1) : Summable x :=
+  .of_norm <| by simpa using hx.summable
 
 theorem neg {f : ∀ i, E i} (hf : Memℓp f p) : Memℓp (-f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -293,16 +333,22 @@ instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
 instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
   Pi.uniqueOfIsEmpty E
 
-/-- lp space
-The `p=∞` case has notation `ℓ^∞(ι, E)` resp. `ℓ^∞(ι)` (for `E = ℝ`) in the `lp` namespace. -/
+/-- **The (little) ℓᵖ space**: The additive subgroup of a type synonym of `Π i, E i`, which consists
+of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
+
+The non-dependent version comes equipped with the notation `ℓ^p(ι, E)` in the `lp` namespace. When
+`p` takes the values `0`, `1` or `2`, the notation `ℓ⁰(ι, E)`, `ℓ¹(ι, E)`, `ℓ²(ι, E)` is also
+available. -/
 def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
   add_mem' := Memℓp.add
   neg_mem' := Memℓp.neg
 
-@[inherit_doc] scoped[lp] notation "ℓ^∞(" ι ", " E ")" => lp (fun i : ι => E) ∞
-@[inherit_doc] scoped[lp] notation "ℓ^∞(" ι ")" => lp (fun i : ι => ℝ) ∞
+@[inherit_doc] scoped[lp] notation "ℓ^" p "(" ι ", " E ")" => lp (fun _ : ι ↦ E) p
+@[inherit_doc] scoped[lp] notation "ℓ⁰(" ι ", " E ")" => lp (fun _ : ι ↦ E) 0
+@[inherit_doc] scoped[lp] notation "ℓ¹(" ι ", " E ")" => lp (fun _ : ι ↦ E) 1
+@[inherit_doc] scoped[lp] notation "ℓ²(" ι ", " E ")" => lp (fun _ : ι ↦ E) 2
 
 namespace lp
 
@@ -395,6 +441,18 @@ theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
     HasSum (fun i => ‖f i‖ ^ p.toReal) (‖f‖ ^ p.toReal) := by
   rw [norm_rpow_eq_tsum hp]
   exact ((lp.memℓp f).summable hp).hasSum
+
+/-- The sequence of norms of `x : lp E p` as a term of `ℓ^p(α, ℝ)`. -/
+@[simps]
+def toNorm {p : ℝ≥0∞} (x : lp E p) : ℓ^p(α, ℝ) :=
+  ⟨fun i ↦ ‖x i‖, lp.memℓp x |>.norm⟩
+
+lemma norm_toNorm {p : ℝ≥0∞} {x : lp E p} :
+    ‖toNorm x‖ = ‖x‖ := by
+  obtain (rfl | rfl | hp) := p.trichotomy
+  · simp [norm_eq_card_dsupport]
+  · simp [norm_eq_ciSup]
+  · simp [norm_eq_tsum_rpow hp]
 
 theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -520,6 +578,12 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
   rw [← Real.rpow_le_rpow_iff (norm_nonneg _) (norm_nonneg' _) hp'']
   convert le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
 
+lemma lipschitzWith_one_eval (p : ℝ≥0∞) [Fact (1 ≤ p)] (i : α) :
+    LipschitzWith 1 (fun x : lp E p ↦ x i) :=
+  .mk_one fun _ _ ↦ by
+    simp_rw [dist_eq_norm, ← Pi.sub_apply, ← lp.coeFn_sub]
+    exact norm_apply_le_norm (zero_lt_one.trans_le Fact.out).ne' ..
+
 theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
     ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
   rw [lp.norm_rpow_eq_tsum hp f]
@@ -547,6 +611,17 @@ theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp 
 theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
     (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
   norm_le_of_tsum_le hp hC (((lp.memℓp f).summable hp).tsum_le_of_sum_le hf)
+
+lemma norm_mono {F : α → Type*} [∀ i, NormedAddCommGroup (F i)]
+    {p : ℝ≥0∞} (hp : p ≠ 0) {x : lp E p} {y : lp F p} (h : ∀ i, ‖x i‖ ≤ ‖y i‖) :
+    ‖x‖ ≤ ‖y‖ := by
+  obtain (rfl | rfl | hp) := p.trichotomy
+  · exact hp rfl |>.elim
+  · exact norm_le_of_forall_le (by positivity) fun i ↦(h i).trans <| norm_apply_le_norm hp y i
+  · exact norm_le_of_forall_sum_le hp (norm_nonneg' _) fun s ↦ calc
+      ∑ i ∈ s, ‖x i‖ ^ p.toReal
+      _ ≤ ∑ i ∈ s, ‖y i‖ ^ p.toReal := by gcongr with i _; exact h i
+      _ ≤ ‖y‖ ^ p.toReal := sum_rpow_le_norm_rpow hp y s
 
 end ComparePointwise
 
@@ -605,16 +680,10 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
   · exact absurd rfl hp
   · cases isEmpty_or_nonempty α
     · simp [lp.eq_zero' f]
-    have hcf := lp.isLUB_norm (c • f)
     have hfc := (lp.isLUB_norm f).mul_left (norm_nonneg c)
     simp_rw [← Set.range_comp, Function.comp_def] at hfc
-    -- TODO: some `IsLUB` API should make it a one-liner from here.
-    refine hcf.right ?_
-    have := hfc.left
-    simp_rw [mem_upperBounds, Set.mem_range,
-      forall_exists_index, forall_apply_eq_imp_iff] at this ⊢
-    intro a
-    exact (norm_smul_le _ _).trans (this a)
+    exact norm_le_of_forall_le (by positivity)
+      fun i ↦ norm_smul_le c (f i) |>.trans <| hfc.1 ⟨i, rfl⟩
   · letI inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
     have coe_nnnorm : ∀ f : lp E p, ↑‖f‖₊ = ‖f‖ := fun _ => rfl
     suffices ‖c • f‖₊ ^ p.toReal ≤ (‖c‖₊ * ‖f‖₊) ^ p.toReal by
@@ -946,6 +1015,20 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
   __ := singleAddMonoidHom p i
   map_smul' := lp.single_smul p i
 
+/-- The basis for `ℓ⁰(α, 𝕜)` given by `lp.single`. -/
+@[simps]
+noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
+  repr :=
+    { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
+      invFun x := ⟨⇑x, memℓp_zero_iff.mpr x.finite_support⟩
+      map_add' _ _ := Finsupp.ext fun _ ↦ rfl
+      map_smul' _ _ := Finsupp.ext fun _ ↦ rfl
+      left_inv _ := rfl
+      right_inv _ := Finsupp.ext fun _ ↦ rfl }
+
+lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
+  ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]
+
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
     ‖∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
   refine (hasSum_norm hp (∑ i ∈ s, lp.single p i (f i))).unique ?_
@@ -1083,6 +1166,55 @@ theorem ext_continuousLinearMap
     ext_continuousAddMonoidHom hp fun i => ContinuousLinearMap.toContinuousAddMonoidHom_inj.2 (h i)
 
 end Single
+
+section OfLE
+
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+
+variable (𝕜 E) in
+/-- The `AddSubgroup.inclusion` between `lp` spaces, as a linear map. -/
+def linearMapOfLE (h : p ≤ q) : lp E p →ₗ[𝕜] lp E q where
+  toFun f := ⟨f, lp.memℓp f |>.of_exponent_ge h⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+lemma coe_linearMapOfLE_apply (h : p ≤ q) (f : lp E p) :
+    ⇑(linearMapOfLE 𝕜 E h f) = f :=
+  funext fun _ ↦ rfl
+
+@[simp]
+lemma toAddMonoidHom_linearMapOfLE (h : p ≤ q) :
+    (linearMapOfLE 𝕜 E h).toAddMonoidHom = AddSubgroup.inclusion (lp.monotone h) :=
+  rfl
+
+lemma linearMapOfLE_comp (hpq : p ≤ q) (hqr : q ≤ r) :
+   (linearMapOfLE 𝕜 E hqr).comp (linearMapOfLE 𝕜 E hpq) =
+     linearMapOfLE 𝕜 E (hpq.trans hqr) := by
+  ext; rfl
+
+end OfLE
+
+section Eval
+
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+
+variable (E p) in
+/-- Evaluation at a single coordinate, as a linear map on `lp E p`. -/
+@[simps]
+def evalₗ (i : α) : lp E p →ₗ[𝕜] E i where
+  toFun f := f i
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+variable (𝕜 E p) in
+/-- Evaluation at a single coordinate, as a continuous linear map on `lp E p`. -/
+def evalCLM [Fact (1 ≤ p)] (i : α) : lp E p →L[𝕜] E i :=
+  (evalₗ E p i).mkContinuous 1 fun x ↦ by
+    have hp : p ≠ 0 := zero_lt_one.trans_le Fact.out |>.ne'
+    simpa only [evalₗ_apply, one_mul, ge_iff_le] using norm_apply_le_norm hp x i
+
+end Eval
 
 section Topology
 
