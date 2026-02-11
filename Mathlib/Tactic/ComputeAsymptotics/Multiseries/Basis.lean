@@ -29,7 +29,10 @@ abbrev Basis := List (ℝ → ℝ)
 
 /-- `WellFormedBasis basis` means that all functions from `basis` tend to `atTop`, and
 `basis` is sorted such that if
-`g` goes after `f` in `basis`, then `log f =o[atTop] log g`. -/
+`g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
+
+We use two types `Basis` and `WellFormedBasis` instead of a single bundled one because it
+it lets us to use the `List` API for `Basis`. -/
 def WellFormedBasis (basis : Basis) : Prop :=
   basis.Pairwise (fun x y => (Real.log ∘ y) =o[atTop] (Real.log ∘ x)) ∧
   ∀ f ∈ basis, Tendsto f atTop atTop
