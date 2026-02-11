@@ -96,8 +96,11 @@ an assignment on objects `C → D → E` which is `V`-functorial in each variabl
 action on morphisms satisfies an additional "naturality" condition. -/
 @[ext]
 structure EnrichedBifunctor where
+  /-- The asignment on pairs of objects. -/
   obj : C → D → E
+  /-- The `V`-functoriality morphism in the `C` variable. -/
   map_left : (c c' : C) → (d : D) → (c ⟶[V] c') ⟶ EnrichedCategory.Hom (obj c d) (obj c' d)
+  /-- The `V`-functoriality morphism in the `D` variable. -/
   map_right : (c : C) → (d d' : D) → (d ⟶[V] d') ⟶ EnrichedCategory.Hom (obj c d) (obj c d')
   id_left : (c : C) → (d : D) → eId V c ≫ map_left c c d = eId V _
   id_right : (c : C) → (d : D) → eId V d ≫ map_right c d d = eId V _
