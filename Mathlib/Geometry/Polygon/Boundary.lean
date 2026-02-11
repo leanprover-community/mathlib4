@@ -13,8 +13,8 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 /-!
 # Polygon Boundary Map
 
-This file defines the boundary parametrization of a polygon and its lift as a map
-from `AddCircle n`.
+This file defines a map from `AddCircle n` to the boundary points of a polygon, and proves
+basic properties of that map
 
 ## Main results
 
@@ -37,18 +37,13 @@ variable {n : ℕ} [NeZero n]
 local instance : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
 
 variable (R) in
-/-- The boundary parametrization on `R` formed by concatenating edges using `edgePath`. -/
-def boundaryParam (poly : Polygon P n) (t : R) : P :=
-  let i : Fin n := ⟨(Int.floor t).toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩
-  let f : R := Int.fract t
-  poly.edgePath R i f
-
-variable (R) in
-/-- A map from `AddCircle n` to the boundary points of the polygon lifted from `boundaryParam`. -/
-noncomputable def boundaryMap
-    (poly : Polygon P n) : AddCircle (n : R) → P :=
-  AddCircle.liftIco (n : R) (0 : R) (poly.boundaryParam R)
-
+/-- A map from `AddCircle n` to the boundary points of the polygon. -/
+noncomputable def boundaryMap (poly : Polygon P n) : AddCircle (n : R) → P :=
+  let boundaryParam : R → P := fun t =>
+    let i : Fin n := ⟨(Int.floor t).toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩
+    let f : R := Int.fract t
+    poly.edgePath R i f
+  AddCircle.liftIco (n : R) (0 : R) boundaryParam
 
 variable {poly : Polygon P n}
 
@@ -61,7 +56,6 @@ theorem range_boundaryMap : Set.range (poly.boundaryMap R) = poly.boundary R := 
     obtain ⟨t, htmem, rfl⟩ := AddCircle.eq_coe_Ico q
     simp only [boundaryMap, boundary, mem_iUnion]
     rw [AddCircle.liftIco_coe_apply (by simpa [zero_add])]
-    simp only [boundaryParam]
     let i : Fin n := ⟨(Int.floor t).toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩
     use i
     rw [edgeSet_eq_image_edgePath]
@@ -87,7 +81,7 @@ theorem range_boundaryMap : Set.range (poly.boundaryMap R) = poly.boundary R := 
         simp [h, Int.toNat_natCast, Nat.mod_eq_of_lt i.isLt]
       have hfrac : Int.fract t = u := by
         simp [Int.fract, h, t, Int.cast_natCast]
-      simp only [boundaryParam, hfloor, hfrac]
+      simp only [hfloor, hfrac]
     · push_neg at hu1
       simp only [le_antisymm hu.2 hu1, edgePath, AffineMap.lineMap_apply_one]
       let t : R := ((i + 1 : Fin n) : ℕ)
@@ -98,7 +92,7 @@ theorem range_boundaryMap : Set.range (poly.boundaryMap R) = poly.boundary R := 
       use t
       simp only [boundaryMap]
       rw [AddCircle.liftIco_coe_apply (by simpa [zero_add])]
-      simp only [boundaryParam, Int.floor_natCast, Int.toNat_natCast,
+      simp only [Int.floor_natCast, Int.toNat_natCast,
         Nat.mod_eq_of_lt (i+1 : Fin n).isLt, t, edgePath, Fin.eta,
         Int.fract_natCast, lineMap_apply_zero]
 
@@ -114,8 +108,6 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
     simp only [boundaryMap] at heq
     rw [AddCircle.liftIco_coe_apply (by simpa [zero_add]),
         AddCircle.liftIco_coe_apply (by simpa [zero_add])] at heq
-    unfold boundaryParam at heq
-    simp only at heq
     let sindex : Fin n := ⟨(Int.floor s).toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩
     let tindex : Fin n := ⟨(Int.floor t).toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩
     by_cases hindex : sindex = tindex
@@ -163,7 +155,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
     have bnat (k : Fin n) :
         poly.boundaryMap R ↑(↑(k : ℕ) : R) = poly k := by
       simp only [boundaryMap]; rw [AddCircle.liftIco_coe_apply (nmem k)]
-      simp [boundaryParam, Int.floor_natCast, Int.toNat_natCast,
+      simp [Int.floor_natCast, Int.toNat_natCast,
         Nat.mod_eq_of_lt k.isLt, Int.fract_natCast, edgePath, lineMap_apply_zero]
     have eone (k : Fin n) : poly.edgePath R k 1 = poly (k + 1) := by
       simp [edgePath]
@@ -183,7 +175,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
         poly.boundaryMap R ↑(↑(k : ℕ) + w : R) =
           poly.edgePath R k w := by
       simp only [boundaryMap]; rw [AddCircle.liftIco_coe_apply (fmem k w hw0 hw1)]
-      simp only [boundaryParam, floor_frac k w hw0 hw1, Int.toNat_natCast,
+      simp only [floor_frac k w hw0 hw1, Int.toNat_natCast,
         Nat.mod_eq_of_lt k.isLt, Fin.eta, Int.fract, Int.cast_natCast,
         add_sub_cancel_left]
     have inj_eq (a b : R) (ha : a ∈ Ico (0 : R) (0 + ↑n))
