@@ -226,7 +226,7 @@ theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s =
     rw [← f0]
     exact (Stream'.eta f).symm
 
-@[simp, grind =]
+@[simp]
 theorem head_nil : head (nil : Seq α) = none :=
   rfl
 
@@ -252,7 +252,10 @@ theorem head_eq_none {s : Seq α} (h : s.head = none) : s = nil :=
 
 @[simp]
 theorem head_eq_none_iff {s : Seq α} : s.head = none ↔ s = nil := by
-  grind [head_eq_none]
+  constructor
+  · apply head_eq_none
+  · intro h
+    simp [h]
 
 /-!
 ### Recursion and corecursion principles
