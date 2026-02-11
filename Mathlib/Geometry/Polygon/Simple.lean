@@ -11,8 +11,8 @@ public import Mathlib.Geometry.Polygon.Basic
 # Simple Polygons
 
 This file defines simple polygons based on a property characterizing a non-self-intersecting
-boundary. This property is equivalent to the existence of an injective map from `AddCircle n`
-to the boundary, see `Polygon.isSimple_iff_boundaryMap_injective`.
+boundary.
+
 -/
 
 @[expose] public section
