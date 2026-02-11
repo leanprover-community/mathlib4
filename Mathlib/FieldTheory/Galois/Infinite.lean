@@ -193,30 +193,34 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
 /-- The Galois correspondence from intermediate fields to closed subgroups. -/
 def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     IntermediateField k K ≃o (ClosedSubgroup Gal(K/k))ᵒᵈ where
-  toFun L := ⟨L.fixingSubgroup, fixingSubgroup_isClosed L⟩
-  invFun H := IntermediateField.fixedField H.1
+  toFun L := .toDual ⟨L.fixingSubgroup, fixingSubgroup_isClosed L⟩
+  invFun H := IntermediateField.fixedField H.ofDual.1
   left_inv L := fixedField_fixingSubgroup L
   right_inv H := by
-    simp_rw [fixingSubgroup_fixedField H]
-    rfl
+    simp only
+    congr 1
+    ext x
+    change x ∈ (IntermediateField.fixedField ↑H.ofDual).fixingSubgroup ↔ x ∈ H.ofDual.1
+    rw [fixingSubgroup_fixedField H.ofDual]
   map_rel_iff' {K L} := by
+    change OrderDual.toDual _ ≤ OrderDual.toDual _ ↔ _
+    rw [OrderDual.toDual_le_toDual]
+    change L.fixingSubgroup ≤ K.fixingSubgroup ↔ K ≤ L
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
-    rfl
 
 /-- The Galois correspondence as a `GaloisInsertion` -/
 def GaloisInsertionIntermediateFieldClosedSubgroup [IsGalois k K] :
-    GaloisInsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
-      (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup Gal(K/k)))
-      ((fun (H : ClosedSubgroup Gal(K/k)) ↦ IntermediateField.fixedField H) ∘
-        OrderDual.toDual) :=
+    GaloisInsertion
+      (IntermediateFieldEquivClosedSubgroup (k := k) (K := K))
+      IntermediateFieldEquivClosedSubgroup.symm :=
   OrderIso.toGaloisInsertion IntermediateFieldEquivClosedSubgroup
 
 /-- The Galois correspondence as a `GaloisCoinsertion` -/
 def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
     GaloisCoinsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦ E.fixingSubgroup)
-      ((fun (H : Subgroup Gal(K/k)) ↦ IntermediateField.fixedField H) ∘ OrderDual.toDual) where
-  choice H _ := IntermediateField.fixedField H
-  gc E H := (IntermediateField.le_iff_le H E).symm
+      ((fun (H : Subgroup Gal(K/k)) ↦ IntermediateField.fixedField H) ∘ OrderDual.ofDual) where
+  choice H _ := IntermediateField.fixedField H.ofDual
+  gc E H := (IntermediateField.le_iff_le H.ofDual E).symm
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
 
@@ -238,8 +242,8 @@ open IntermediateField in
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen L.fixingSubgroup.carrier ↔ FiniteDimensional k L := by
   refine ⟨fun h ↦ ?_, fun h ↦ IntermediateField.fixingSubgroup_isOpen L⟩
-  have : (IntermediateFieldEquivClosedSubgroup.toFun L).carrier ∈ nhds 1 :=
-    IsOpen.mem_nhds h (congrFun rfl)
+  have : L.fixingSubgroup.carrier ∈ nhds 1 :=
+    IsOpen.mem_nhds h L.fixingSubgroup.one_mem
   rw [GroupFilterBasis.nhds_one_eq] at this
   rcases this with ⟨S, ⟨gp, ⟨M, hM, eq'⟩, eq⟩, sub⟩
   rw [← eq, ← eq'] at sub

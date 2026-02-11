@@ -31,8 +31,19 @@ instance (priority := low) {α : Type*}
 
 instance (priority := low) {α : Type*}
     [TopologicalSpace α] [LinearOrder α] [Topology.IsLowerSet α] :
-    CompletelyNormalSpace α :=
-  inferInstanceAs (CompletelyNormalSpace αᵒᵈ)
+    CompletelyNormalSpace α where
+  completely_normal s t hcst hsct := by
+    obtain (rfl | ⟨a, ha⟩) := s.eq_empty_or_nonempty
+    case inl => simp
+    obtain (rfl | ⟨b, hb⟩) := t.eq_empty_or_nonempty
+    case inl => simp
+    exfalso
+    grewrite [← singleton_subset_iff.mpr ha, ← singleton_subset_iff.mpr hb] at hcst hsct
+    open Topology.IsLowerSet in
+    conv at hcst => equals b < a => simp
+    open Topology.IsLowerSet in
+    conv at hsct => equals a < b => simp
+    exact lt_asymm hsct hcst
 
 instance : CompletelyNormalSpace Prop :=
   inferInstance
