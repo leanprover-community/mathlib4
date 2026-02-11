@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.IntegralClosure.GoingDown
 public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.QuasiFinite.Polynomial
+public import Mathlib.Algebra.Algebra.Shrink
 
 /-!
 # Algebraic Zariski's Main Theorem
@@ -42,9 +43,19 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
   The second result applied to `S/√𝔣` together with the first result implies that
   `p` does not contain `𝔣`.
   The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
-3. TODO (@erdOne): Induct on the number of `{ xᵢ }` such that `S` is finite over `R⟨xᵢ⟩` to get the
-  general statement.
+3. `Algebra.ZariskisMainProperty.of_algHom_mvPolynomial`:
+  The case where `S` is finite over `R⟨x₁,...,xₙ⟩`. This is proved using induction on `n`.
 
+## Main definiton and results
+- `Algebra.ZariskisMainProperty`:
+  We say that an `R` algebra `S` satisfies the Zariski's main property at a prime `p` of `S`
+  if there exists `r ∉ p` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`.
+- `Algebra.ZariskisMainProperty.of_finiteType`:
+  If `S` is finite type over `R` and quasi-finite at `p`, then `ZariskisMainProperty` holds.
+- `Algebra.QuasiFiniteAt.exists_fg_and_exists_notMem_and_awayMap_bijective`:
+  If `S` is finite type over `R` and quasi-finite at `p`,
+  then there exists a subalgebra `S'` of `R` that is finitely generated as an `R`-module,
+  and some `r ∈ S'` such that `r ∉ p` and `S'[1/r] = S[1/r]`.
 -/
 
 @[expose] public section
@@ -434,7 +445,8 @@ universe u
 
 variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
-lemma ZariskisMainProperty.of_adjoin_eq_top
+-- Subsumed by `ZariskisMainProperty.of_finiteType`.
+private lemma ZariskisMainProperty.of_adjoin_eq_top
     (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p]
     (x : S) (hx : Algebra.adjoin R {x} = ⊤) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
@@ -477,7 +489,8 @@ lemma ZariskisMainProperty.of_adjoin_eq_top
     refine Algebra.adjoin_singleton_le ⟨_, ⟨1, rfl⟩, ?_⟩
     simpa [Algebra.smul_def] using isIntegral_leadingCoeff_smul f x hf
 
-lemma ZariskisMainProperty.of_algHom_polynomial
+-- Subsumed by `ZariskisMainProperty.of_finiteType`.
+private lemma ZariskisMainProperty.of_algHom_polynomial
     (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p]
     (f : R[X] →ₐ[R] S) (hf : f.Finite) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
@@ -521,6 +534,150 @@ lemma ZariskisMainProperty.of_algHom_polynomial
   · refine ⟨⟨x, by simpa using hx 1⟩, hxp, top_le_iff.mp fun s _ ↦ ⟨_, ⟨1, rfl⟩, ?_⟩⟩
     simpa [Algebra.mem_bot] using hx s
 
+open scoped Pointwise in
+-- Subsumed by `ZariskisMainProperty.of_finiteType`.
+private lemma ZariskisMainProperty.of_algHom_mvPolynomial
+    (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] {n : ℕ}
+    (f : MvPolynomial (Fin n) R →ₐ[R] S) (hf : f.Finite) : ZariskisMainProperty R p := by
+  classical
+  induction n generalizing R S with
+  | zero =>
+    have : Module.Finite R S := by
+      rw [← RingHom.finite_algebraMap]
+      convert RingHom.Finite.comp hf (RingHom.Finite.of_surjective _ (MvPolynomial.C_surjective _))
+      exact f.comp_algebraMap.symm
+    exact .of_isIntegral _
+  | succ n IH =>
+    let f' := f.comp (MvPolynomial.finSuccEquiv _ _).symm.toAlgHom
+    let := (f'.toRingHom.comp C).toAlgebra
+    have : IsScalarTower R (MvPolynomial (Fin n) R) S := .of_algebraMap_eq fun r ↦
+      (f.commutes r).symm.trans congr(f ($(MvPolynomial.finSuccEquiv_comp_C_eq_C n) r)).symm
+    let f'' : (MvPolynomial (Fin n) R)[X] →ₐ[MvPolynomial (Fin n) R] S :=
+      ⟨f'.toRingHom, fun _ ↦ rfl⟩
+    have : Algebra.QuasiFiniteAt (MvPolynomial (Fin n) R) p := by
+      exact .of_restrictScalars R _ _
+    have := ZariskisMainProperty.of_algHom_polynomial p f''
+      (RingHom.Finite.comp hf (MvPolynomial.finSuccEquiv R n).symm.toRingEquiv.finite)
+    choose r hrp hr m hm using zariskisMainProperty_iff.mp this
+    obtain ⟨⟨s, hs⟩⟩ : Algebra.FiniteType R S := by
+      rw [← RingHom.finiteType_algebraMap, ← f.comp_algebraMap]
+      exact RingHom.FiniteType.comp hf.finiteType (RingHom.finiteType_algebraMap.mpr inferInstance)
+    let R' : Subalgebra R S :=
+      Algebra.adjoin R ↑(Finset.univ.image (f ∘ .X ∘ Fin.succ) ∪ r ^ (s.sup m) • s ∪ {r})
+    have hrR' : r ∈ R' := Algebra.subset_adjoin (by simp)
+    have : Algebra.QuasiFiniteAt R (p.under R') := by
+      let e : Localization.AtPrime (p.under R') ≃ₐ[R] Localization.AtPrime p :=
+        .ofBijective (IsScalarTower.toAlgHom _ _ _) <| by
+          refine Localization.localRingHom_bijective_of_saturated_inf_eq_top _ ?_ _
+          rw [← top_le_iff, ← hs, Algebra.adjoin_le_iff]
+          intro x hx
+          refine ⟨r ^ (s.sup m), pow_mem (by exact ⟨hrp, hrR'⟩) _, Algebra.subset_adjoin ?_⟩
+          simp [Set.smul_mem_smul_set hx, ← smul_eq_mul]
+      exact .of_surjective_algHom e.symm.toAlgHom e.symm.surjective
+    let φ : MvPolynomial (Fin n) R →ₐ[R] R' :=
+      MvPolynomial.aeval fun i ↦ ⟨f (.X i.succ), Algebra.subset_adjoin (by simp)⟩
+    have := IH (R := R) (S := R') (p.under R') φ <| by
+      refine RingHom.finite_iff_isIntegral_and_finiteType.mpr ⟨?_, ?_⟩
+      · letI := φ.toAlgebra
+        have : IsScalarTower (MvPolynomial (Fin n) R) R' S := .of_algebraMap_eq' <| by
+          ext <;> simp [φ, (f'.toRingHom.comp C).algebraMap_toAlgebra, φ.algebraMap_toAlgebra, f',
+            MvPolynomial.finSuccEquiv, MvPolynomial.optionEquivLeft]
+        refine algebraMap_isIntegral_iff.mpr (integralClosure_eq_top_iff.mp ?_)
+        apply Subalgebra.restrictScalars_injective R
+        rw [← (Subalgebra.map_injective (f := R'.val) Subtype.val_injective).eq_iff]
+        simp only [Subalgebra.restrictScalars_top, Algebra.map_top]
+        refine le_antisymm (Set.image_subset_range _ _) ?_
+        suffices (∀ (a : Fin n), IsIntegral (MvPolynomial (Fin n) R) (f (MvPolynomial.X a.succ))) ∧
+            ∀ a ∈ s, IsIntegral (MvPolynomial (Fin n) R) (r ^ s.sup m * a) by
+          simp +contextual only [Subalgebra.range_val, Algebra.adjoin_le_iff, Subalgebra.coe_map,
+            Subalgebra.coe_val, Set.subset_def, SetLike.mem_coe, Algebra.mem_adjoin_of_mem,
+            Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right, R']
+          simpa [R', mem_integralClosure_iff,
+            ← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective R' S),
+            forall_and, hr, or_imp, Finset.mem_smul_finset]
+        refine ⟨fun i ↦ ?_, fun a has ↦ ?_⟩
+        · convert isIntegral_algebraMap (x := MvPolynomial.X i)
+          simp [RingHom.algebraMap_toAlgebra, f', MvPolynomial.finSuccEquiv,
+            MvPolynomial.optionEquivLeft]
+        · rw [← Nat.sub_add_cancel (s.le_sup has), pow_add, mul_assoc]
+          exact (hr.pow _).mul (hm _)
+      · refine .of_comp_finiteType (f := algebraMap R _) ?_
+        rw [AlgHom.toRingHom_eq_coe, φ.comp_algebraMap, RingHom.finiteType_algebraMap]
+        exact ⟨(Subalgebra.fg_top _).mpr ⟨_, rfl⟩⟩
+    refine this.trans _ ⟨⟨r, hrR'⟩, hrp, ?_⟩
+    suffices ⊤ ≤ R'.saturation (.powers r) (by simpa [Submonoid.powers_le]) by
+      simpa [SetLike.le_def, Subalgebra.smul_def, Submonoid.mem_powers_iff,
+        SetLike.ext_iff, Algebra.mem_bot] using this
+    rw [← hs, Algebra.adjoin_le_iff]
+    intro x hx
+    refine ⟨_, ⟨s.sup m, rfl⟩, Algebra.subset_adjoin ?_⟩
+    simp [Set.smul_mem_smul_set hx, ← smul_eq_mul]
+
 end FixedUniverse
+
+/--
+The algebraic version of **Zariski's Main Theorem**:
+Given a finite type `R`-algebra `S` that is quasi-finite at a prime `p`,
+there exists a `f ∉ p` such that `S[1/f]` is isomorphic to `R'[1/f]` where `R'` is the integral
+closure of `R` in `S`.
+-/
+@[stacks 00Q9]
+lemma ZariskisMainProperty.of_finiteType.{u, v} {R : Type u} {S : Type v} [CommRing R]
+    [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] : ZariskisMainProperty R p := by
+  obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp ‹_›
+  have : Small.{u} S := small_of_surjective hf
+  have := ZariskisMainProperty.of_algHom_mvPolynomial (p.comap (Shrink.algEquiv R S).toRingHom)
+    ((Shrink.algEquiv R S).symm.toAlgHom.comp f)
+    (.of_surjective _ <| (Shrink.algEquiv R S).symm.surjective.comp hf)
+  rw [zariskisMainProperty_iff'] at this ⊢
+  obtain ⟨r, hr, H⟩ := this
+  refine ⟨Shrink.algEquiv R S r, hr, fun x ↦ ?_⟩
+  obtain ⟨m, hm⟩ := H ((Shrink.algEquiv R S).symm x)
+  exact ⟨m, by simpa [-Shrink.algEquiv_apply, -Shrink.algEquiv_symm_apply]
+    using hm.map (Shrink.algEquiv R S).toAlgHom⟩
+
+lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
+    [Algebra.FiniteType R S] (p : Ideal S) (H : ZariskisMainProperty R p) :
+    ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
+      r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) := by
+  obtain ⟨s, hs⟩ := Algebra.FiniteType.out (R := R) (A := S)
+  choose r hrp hr m hm using zariskisMainProperty_iff.mp H
+  let t := insert r { r ^ m x * x | x ∈ s }
+  let r' : Algebra.adjoin R t := ⟨r, Algebra.subset_adjoin (by simp [t])⟩
+  refine ⟨Algebra.adjoin R t, fg_adjoin_of_finite ?_ ?_, ?_⟩
+  · simp only [t, Set.finite_insert]
+    exact s.finite_toSet.image (fun x ↦ r ^ m x * x)
+  · rintro a (rfl | ⟨x, hx, rfl⟩); exacts [hr, hm _]
+  refine ⟨r', hrp,
+    IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective, ?_⟩
+  have : (IsScalarTower.toAlgHom R S _).range ≤
+      (Localization.awayMapₐ (Algebra.adjoin R t).val r').range := by
+    rw [← Algebra.map_top, ← hs, Subalgebra.map_le, Algebra.adjoin_le_iff]
+    intro x hx
+    suffices ∃ a ∈ Algebra.adjoin R t, ∃ n, r ^ n ∈ Algebra.adjoin R t ∧
+        ∃ k, r ^ k * a = r ^ k * (x * r ^ n) by
+      simpa [(IsLocalization.mk'_surjective (.powers r')).exists,
+        (IsLocalization.mk'_surjective (.powers r)).forall, Localization.awayMapₐ,
+        IsLocalization.Away.map, IsLocalization.map_mk', Submonoid.mem_powers_iff,
+        Subtype.ext_iff, IsLocalization.mk'_eq_iff_eq_mul, ← map_mul, ← map_pow,
+        IsLocalization.eq_iff_exists (.powers r), Subalgebra.val]
+    exact ⟨_, Algebra.subset_adjoin (Set.mem_insert_of_mem _ ⟨x, hx, mul_comm _ _⟩),
+      m x, pow_mem r'.2 _, 1, rfl⟩
+  intro x
+  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
+    (.powers ((Algebra.adjoin R t).val.toRingHom r')) x
+  obtain ⟨y, hy : Localization.awayMap _ _ _ = _⟩ := this ⟨x, rfl⟩
+  refine ⟨y * Localization.Away.invSelf _ ^ n, ?_⟩
+  simp only [map_mul, map_pow, hy]
+  simp [Localization.Away.invSelf, Localization.awayMap, ← Algebra.smul_def,
+    IsLocalization.Away.map, IsLocalization.map_mk', Localization.mk_eq_mk',
+    ← IsLocalization.mk'_pow]
+
+lemma QuasiFiniteAt.exists_fg_and_exists_notMem_and_awayMap_bijective
+    [Algebra.FiniteType R S] (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p] :
+    ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
+      r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) :=
+  ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective _ (.of_finiteType _)
 
 end Algebra
