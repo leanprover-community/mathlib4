@@ -21,7 +21,7 @@ namespace Matrix
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [Nontrivial R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [CommRing R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.discr = 0
@@ -115,10 +115,9 @@ lemma isParabolic_iff_exists [NeZero (2 : K)] :
 
 end Field
 
-section LinearOrderedRing
+section Preorder
 
-variable {R : Type*} [CommRing R] [Nontrivial R] [Preorder R]
-  (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [CommRing R] [Preorder R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
 def IsHyperbolic : Prop := 0 < m.discr
@@ -140,7 +139,33 @@ lemma isElliptic_conj_iff : (g.val * m * g.val⁻¹).IsElliptic ↔ m.IsElliptic
 lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsElliptic := by
   simpa using isElliptic_conj_iff g⁻¹
 
-end LinearOrderedRing
+@[simp]
+theorem isHyperbolic_neg_iff : (-m).IsHyperbolic ↔ m.IsHyperbolic := by
+  simp [IsHyperbolic, discr_fin_two, det_neg]
+
+@[simp]
+theorem isElliptic_neg_iff : (-m).IsElliptic ↔ m.IsElliptic := by
+  simp [IsElliptic, discr_fin_two, det_neg]
+
+end Preorder
+
+section LinearOrder
+
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsOrderedRing R] {m : Matrix (Fin 2) (Fin 2) R}
+
+theorem IsElliptic.bc_ne_zero (hm : m.IsElliptic) : m 0 1 * m 1 0 ≠ 0 := by
+  intro hc
+  rw [IsElliptic, discr_fin_two, trace_fin_two, det_fin_two, hc] at hm
+  refine hm.not_ge ?_
+  linear_combination sq_nonneg (m 0 0 - m 1 1)
+
+theorem IsElliptic.b_ne_zero (hm : m.IsElliptic) : m 0 1 ≠ 0 :=
+  left_ne_zero_of_mul hm.bc_ne_zero
+
+theorem IsElliptic.c_ne_zero (hm : m.IsElliptic) : m 1 0 ≠ 0 :=
+  right_ne_zero_of_mul hm.bc_ne_zero
+
+end LinearOrder
 
 namespace GeneralLinearGroup
 

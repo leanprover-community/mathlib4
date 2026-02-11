@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 
 /-!
 # Group action on the upper half-plane
@@ -77,6 +78,7 @@ theorem denom_ne_zero_of_im (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) : d
   refine linear_ne_zero_of_im hz fun H ↦ g.det.ne_zero ?_
   simp [Matrix.det_fin_two, H]
 
+@[simp]
 theorem denom_ne_zero (g : GL (Fin 2) ℝ) (z : ℍ) : denom g z ≠ 0 :=
   denom_ne_zero_of_im g z.im_ne_zero
 
@@ -131,6 +133,9 @@ lemma σ_neg (g : GL (Fin 2) ℝ) : σ (-g) = σ g := by
 lemma σ_sq (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ g z) = z := by
   simp only [σ]
   split_ifs <;> simp
+
+theorem σ_bijective (g : GL (Fin 2) ℝ) : Function.Bijective (σ g) :=
+  Function.Involutive.bijective (σ_sq g)
 
 lemma σ_im_ne_zero {g z} : (σ g z).im ≠ 0 ↔ z.im ≠ 0 := by
   simp only [σ]
@@ -224,6 +229,7 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     g • z = ⟨num g z / denom g z, coe_smul_of_det_pos hg z ▸ (g • z).im_pos⟩ := by
   ext; simp [coe_smul_of_det_pos hg]
 
+section GLAction
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
 theorem re_smul : (g • z).re = (num g z / denom g z).re := by
@@ -253,8 +259,48 @@ theorem neg_smul : -g • z = g • z := by
   ext1
   simp [coe_smul]
 
+@[simp]
+lemma num_one : num 1 z = z := by simp [num]
+
+@[simp]
 lemma denom_one : denom 1 z = 1 := by
   simp [denom]
+
+@[simp]
+theorem num_scalar (u : ℝˣ) (z : ℍ) : num (.scalar (Fin 2) u) z = u * z := by
+  simp [num]
+
+@[simp]
+theorem denom_scalar (u : ℝˣ) (z : ℍ) : denom (.scalar (Fin 2) u) z = u := by
+  simp [denom]
+
+@[simp]
+theorem glScalar_smul (u : ℝˣ) (z : ℍ) :
+    GeneralLinearGroup.scalar (Fin 2) u • z = z := by
+  rw [glPos_smul_def]
+  · simp
+  · simp [sq_pos_iff]
+
+instance : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ where
+  exists_smul_eq z w := by
+    set m : Matrix (Fin 2) (Fin 2) ℝ := !![w.im, z.im * w.re - w.im * z.re; 0, z.im]
+    refine ⟨.mkOfDetNeZero m <| by simp [m, im_ne_zero], ?_⟩
+    ext
+    simp [coe_smul_of_det_pos, im_pos, num, denom, m, Complex.ext_iff, im_ne_zero]
+
+end GLAction
+
+section PGLAction
+
+instance : MulAction PGL(2, ℝ) ℍ :=
+  Matrix.ProjGenLinGroup.mulActionOfGL glScalar_smul
+
+@[simp]
+theorem pglMk_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
+    ProjGenLinGroup.mk g • z = g • z :=
+  ProjGenLinGroup.mk_smul ..
+
+end PGLAction
 
 section SLAction
 

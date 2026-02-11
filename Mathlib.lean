@@ -1740,6 +1740,7 @@ public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.Complex.UnitDisc.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Complex.UpperHalfPlane.FixedPoints
 public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
