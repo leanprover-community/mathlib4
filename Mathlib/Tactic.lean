@@ -54,6 +54,7 @@ public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.Clear_
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeDegree
