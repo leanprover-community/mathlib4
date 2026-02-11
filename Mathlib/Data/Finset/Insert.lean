@@ -546,7 +546,7 @@ def prodPiInsert (f : α → Type*) {a : α} (x : f a × Π i ∈ s, f i) : (Π 
     if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_insert_of_ne hi h)
 
 /-- The equivalence between pi types on insert and the product. -/
-def insertPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+def insertPiProdEquiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ insert a s, f i) ≃ f a × Π i ∈ s, f i where
   toFun := insertPiProd f
   invFun := prodPiInsert f

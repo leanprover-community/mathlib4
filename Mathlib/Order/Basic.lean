@@ -898,31 +898,23 @@ abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
 
 namespace Subtype
 
-@[simp, to_dual self]
+@[simp, gcongr, to_dual self]
 theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) ≤ ⟨y, hy⟩ ↔ x ≤ y :=
   Iff.rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
-
-@[simp, to_dual self]
+@[simp, gcongr, to_dual self]
 theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
-
-@[simp, norm_cast, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
-
-@[simp, norm_cast, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
-
-@[gcongr, to_dual self] alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
@@ -930,11 +922,9 @@ instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-@[to_dual decidableLE']
 instance decidableLE [Preorder α] [h : DecidableLE α] {p : α → Prop} :
     DecidableLE (Subtype p) := fun a b ↦ h a b
 
-@[to_dual decidableLT']
 instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
     DecidableLT (Subtype p) := fun a b ↦ h a b
 
@@ -997,22 +987,19 @@ theorem swap_lt_swap : x.swap < y.swap ↔ x < y :=
 @[to_dual (attr := simp) mk_lt_swap]
 lemma swap_lt_mk : x.swap < (b, a) ↔ x < (a, b) := by rw [← swap_lt_swap]; simp
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ :=
   and_iff_left le_rfl
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_le_mk_iff_right : (a, b₁) ≤ (a, b₂) ↔ b₁ ≤ b₂ :=
   and_iff_right le_rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk_left⟩ := mk_le_mk_iff_left
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk_right⟩ := mk_le_mk_iff_right
-
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_lt_mk_iff_left : (a₁, b) < (a₂, b) ↔ a₁ < a₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_left mk_le_mk_iff_left
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_right mk_le_mk_iff_right
 

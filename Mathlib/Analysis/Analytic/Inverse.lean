@@ -575,10 +575,10 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
   rcases hf with ⟨r0, h0⟩
   rcases q.comp_summable_nnreal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
   let r : ℝ≥0∞ := min r0 r1
-  have : EMetric.ball (0 : E) r ∈ 𝓝 0 :=
-    EMetric.ball_mem_nhds 0 (lt_min h0.r_pos (by exact_mod_cast r1_pos))
+  have : Metric.eball (0 : E) r ∈ 𝓝 0 :=
+    Metric.eball_mem_nhds 0 (lt_min h0.r_pos (by exact_mod_cast r1_pos))
   filter_upwards [this] with y hy
-  have hy0 : y ∈ EMetric.ball 0 r0 := EMetric.ball_subset_ball (min_le_left _ _) hy
+  have hy0 : y ∈ Metric.eball 0 r0 := Metric.eball_subset_eball (min_le_left _ _) hy
   have A : HasSum (fun i : Σ n, Composition n => q.compAlongComposition p i.2 fun _j => y)
       (f (x + y)) := by
     have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
@@ -594,7 +594,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
-          rw [EMetric.mem_ball, edist_zero_eq_enorm] at hy
+          rw [Metric.mem_eball, edist_zero_eq_enorm] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
@@ -618,12 +618,12 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x)
     (hq : 0 < q.radius) :
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => q n fun _ : Fin n => (f (x + y) - f x)) (g (f (x + y))) := by
-  have : ∀ᶠ y in 𝓝 (0 : E), f (x + y) - f x ∈ EMetric.ball 0 q.radius := by
+  have : ∀ᶠ y in 𝓝 (0 : E), f (x + y) - f x ∈ Metric.eball 0 q.radius := by
     have A : ContinuousAt (fun y ↦ f (x + y) - f x) 0 := by
       apply ContinuousAt.sub _ continuousAt_const
       exact hf.continuousAt.comp_of_eq (by fun_prop) (by simp)
-    have B : EMetric.ball 0 q.radius ∈ 𝓝 (f (x + 0) - f x) := by
-      simpa using EMetric.ball_mem_nhds _ hq
+    have B : Metric.eball 0 q.radius ∈ 𝓝 (f (x + 0) - f x) := by
+      simpa using Metric.eball_mem_nhds _ hq
     exact A.preimage_mem_nhds B
   filter_upwards [hgf.tendsto_partialSum_prod_of_comp hq (hf.radius_pos),
     hf.tendsto_partialSum, this] with y hy h'y h''y
@@ -687,8 +687,8 @@ theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph 
   rcases EMetric.mem_nhds_iff.1 F with ⟨r, r_pos, hr⟩
   refine ⟨min r (p.leftInv i a).radius, min_le_right _ _,
     lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
-  have : y + f a ∈ EMetric.ball (f a) r := by
-    simp only [EMetric.mem_ball, edist_eq_enorm_sub, sub_zero, lt_min_iff,
+  have : y + f a ∈ Metric.eball (f a) r := by
+    simp only [Metric.mem_eball, edist_eq_enorm_sub, sub_zero, lt_min_iff,
       add_sub_cancel_right] at hy ⊢
     exact hy.1
   simpa [add_comm] using hr this
