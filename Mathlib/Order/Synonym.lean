@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Order.Basic
+public import Mathlib.Order.OrderDual
 
 /-!
 # Type synonyms
