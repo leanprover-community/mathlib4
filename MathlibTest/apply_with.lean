@@ -29,3 +29,28 @@ example : Nat := by
   fail_if_success apply -allowSynthFailures takeImplicit
   apply +allowSynthFailures takeImplicit
   apply foo
+
+section
+
+/-! Making sure we have useful error reporting. -/
+
+def MyProp (n : Nat) : Prop := n = n
+
+theorem MyProp.mk (n : Nat) : MyProp n := by rw [MyProp]
+
+/--
+error: Application type mismatch: The argument
+  "foo"
+has type
+  String
+but is expected to have type
+  Nat
+in the application
+  MyProp.mk "foo"
+-/
+#guard_msgs in
+example : MyProp 1337 := by
+  apply MyProp.mk "foo"
+  exact "qed"
+
+end
