@@ -98,7 +98,7 @@ variable {R' : Type*} [CommRing R']
 
 theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'}
     (hx : eval₂ g x p = 0) : eval₂ (g.comp (algebraMap R S)) x (integerNormalization M p) = 0 :=
-  let ⟨b, hb⟩ := integerNormalization_spec M p
+  let ⟨b, hb, _⟩ := integerNormalization_spec M p
   _root_.trans (eval₂_map (algebraMap R S) g x).symm
     (by rw [hb, ← IsScalarTower.algebraMap_smul S (b : R) p, eval₂_smul, hx, mul_zero])
 
@@ -119,7 +119,7 @@ variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  let ⟨_, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
+  let ⟨_, hb, _⟩ := integerNormalization_spec (nonZeroDivisors A) p
   rw [← _root_.map_eq_zero_iff (mapRingHom _)
     (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb]
   simp
