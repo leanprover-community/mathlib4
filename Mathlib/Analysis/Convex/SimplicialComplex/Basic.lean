@@ -26,8 +26,6 @@ underlying set of a simplex.
 
 ## Notation
 
-`s ∈ K` means that `s` is a face of `K`.
-
 `K ≤ L` means that the faces of `K` are faces of `L`.
 
 ## Implementation notes
