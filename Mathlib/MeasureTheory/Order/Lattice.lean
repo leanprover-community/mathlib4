@@ -90,16 +90,18 @@ instance (priority := 100) OrderDual.instMeasurableInf [Max M] [MeasurableSup M]
 
 instance (priority := 100) OrderDual.instMeasurableSup₂ [Min M] [MeasurableInf₂ M] :
     MeasurableSup₂ Mᵒᵈ where
-  measurable_sup :=
-    measurable_toDual.comp (measurable_inf.comp
-      ((measurable_ofDual.comp measurable_fst).prod
+  measurable_sup := by
+    change Measurable fun p : Mᵒᵈ × Mᵒᵈ => toDual (ofDual p.1 ⊓ ofDual p.2)
+    exact measurable_toDual.comp (measurable_inf.comp
+      (Measurable.prodMk (measurable_ofDual.comp measurable_fst)
         (measurable_ofDual.comp measurable_snd)))
 
 instance (priority := 100) OrderDual.instMeasurableInf₂ [Max M] [MeasurableSup₂ M] :
     MeasurableInf₂ Mᵒᵈ where
-  measurable_inf :=
-    measurable_toDual.comp (measurable_sup.comp
-      ((measurable_ofDual.comp measurable_fst).prod
+  measurable_inf := by
+    change Measurable fun p : Mᵒᵈ × Mᵒᵈ => toDual (ofDual p.1 ⊔ ofDual p.2)
+    exact measurable_toDual.comp (measurable_sup.comp
+      (Measurable.prodMk (measurable_ofDual.comp measurable_fst)
         (measurable_ofDual.comp measurable_snd)))
 
 end OrderDual

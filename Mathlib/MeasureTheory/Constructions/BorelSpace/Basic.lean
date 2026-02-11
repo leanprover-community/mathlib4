@@ -176,14 +176,21 @@ instance (priority := 100) OrderDual.opensMeasurableSpace {α : Type*} [Topologi
     [MeasurableSpace α] [h : OpensMeasurableSpace α] : OpensMeasurableSpace αᵒᵈ where
   borel_le := by
     intro s hs
-    -- MeasurableSet on αᵒᵈ is the same predicate as on α (via toDual ⁻¹')
-    exact h.borel_le hs
+    change @MeasurableSet α _ (OrderDual.toDual ⁻¹' s)
+    exact @OpensMeasurableSpace.borel_le α _ _ h _ (continuous_toDual.borel_measurable hs)
 
 instance (priority := 100) OrderDual.borelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [h : BorelSpace α] : BorelSpace αᵒᵈ where
   measurable_eq := by
-    ext s
-    exact Iff.rfl.trans (by rw [h.measurable_eq])
+    apply le_antisymm
+    · -- instMeasurableSpaceOrderDual ≤ borel αᵒᵈ
+      intro s hs
+      show @MeasurableSet αᵒᵈ (borel αᵒᵈ) s
+      rw [borel_comap, measurableSet_comap]
+      exact ⟨OrderDual.toDual ⁻¹' s, h.measurable_eq ▸ hs, by
+        ext b; simp [Set.mem_preimage, OrderDual.toDual_ofDual]⟩
+    · -- borel αᵒᵈ ≤ instMeasurableSpaceOrderDual
+      exact (OrderDual.opensMeasurableSpace (h := ⟨ge_of_eq h.measurable_eq⟩)).borel_le
 
 /-- In a `BorelSpace` all open sets are measurable. -/
 instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalSpace α]

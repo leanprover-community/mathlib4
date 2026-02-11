@@ -298,9 +298,6 @@ namespace OrderDual
 
 instance instRatCast [RatCast K] : RatCast Kᵒᵈ where ratCast q := toDual (q : K)
 instance instNNRatCast [NNRatCast K] : NNRatCast Kᵒᵈ where nnratCast q := toDual (q : K)
-theorem ofDual_injective : Function.Injective (ofDual : Kᵒᵈ → K) :=
-  fun _ _ h => OrderDual.ext h
-
 instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ :=
   ofDual_injective.divisionSemiring ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)

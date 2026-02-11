@@ -89,6 +89,18 @@ theorem lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual 
 @[to_dual self] alias ⟨_, _root_.LE.le.ofDual⟩ := ofDual_le_ofDual
 @[to_dual self] alias ⟨_, _root_.LT.lt.ofDual⟩ := ofDual_lt_ofDual
 
+theorem ofDual_injective : Function.Injective (ofDual : αᵒᵈ → α) :=
+  fun _ _ h => ext h
+
+theorem toDual_injective : Function.Injective (toDual : α → αᵒᵈ) :=
+  fun _ _ h => congrArg ofDual h
+
+theorem ofDual_surjective : Function.Surjective (ofDual : αᵒᵈ → α) :=
+  fun a => ⟨toDual a, rfl⟩
+
+theorem toDual_surjective : Function.Surjective (toDual : α → αᵒᵈ) :=
+  fun a => ⟨ofDual a, toDual_ofDual a⟩
+
 end OrderDual
 
 /-! ### Lexicographic order -/

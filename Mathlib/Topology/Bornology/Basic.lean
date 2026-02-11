@@ -311,9 +311,7 @@ variable [Bornology α]
 instance instBornology : Bornology αᵒᵈ where
   cobounded := Filter.map toDual (Bornology.cobounded α)
   le_cofinite := by
-    have hinj : Function.Injective (toDual : α → αᵒᵈ) :=
-      fun _ _ h => toDual_inj.mp h
-    rw [Filter.map_le_iff_le_comap, hinj.comap_cofinite_eq]
+    rw [Filter.map_le_iff_le_comap, toDual_injective.comap_cofinite_eq]
     exact Bornology.le_cofinite α
 
 @[simp] lemma isCobounded_preimage_ofDual {s : Set α} :

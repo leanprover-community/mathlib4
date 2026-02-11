@@ -165,7 +165,7 @@ theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
 
 /-- The orthogonal complement satisfies `Kᗮᗮᗮ = Kᗮ`. -/
 theorem triorthogonal_eq_orthogonal : Kᗮᗮᗮ = Kᗮ :=
-  (orthogonal_gc 𝕜 E).u_l_u_eq_u K
+  (orthogonal_gc 𝕜 E).u_l_u_eq_u (OrderDual.toDual K)
 
 /-- The closure of `K` is the full space iff `Kᗮ` is trivial. -/
 theorem topologicalClosure_eq_top_iff [CompleteSpace E] :

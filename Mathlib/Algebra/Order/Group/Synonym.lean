@@ -24,9 +24,7 @@ variable {α β : Type*}
 
 /-! ### `OrderDual` -/
 
-@[to_additive self]
-theorem ofDual_injective : Function.Injective (ofDual : αᵒᵈ → α) :=
-  fun _ _ h => OrderDual.ext h
+attribute [to_additive self] OrderDual.ofDual_injective
 
 @[to_additive]
 instance [One α] : One αᵒᵈ where one := toDual 1
