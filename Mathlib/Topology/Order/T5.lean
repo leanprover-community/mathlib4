@@ -65,10 +65,18 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (
 
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a := by
-  have hd' : Disjoint (ofDual ⁻¹' s) (closure <| ofDual ⁻¹' t) := hd
+  have hd' : Disjoint (ofDual ⁻¹' s) (closure <| ofDual ⁻¹' t) := by
+    rw [← isOpenMap_ofDual.preimage_closure_eq_closure_preimage continuous_ofDual]
+    exact hd.preimage ofDual
   have ha' : toDual a ∈ ofDual ⁻¹' s := ha
-  simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using
-    compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd' ha'
+  have h := compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd' ha'
+  rw [dual_ordSeparatingSet, dual_ordConnectedSection] at h
+  -- h : (ofDual ⁻¹' ordConnectedSection (ordSeparatingSet s t))ᶜ ∈ 𝓝[≥] (toDual a)
+  rw [show ((ordConnectedSection (ordSeparatingSet s t))ᶜ ∈ 𝓝[≤] a) ↔
+    ((ofDual ⁻¹' ordConnectedSection (ordSeparatingSet s t))ᶜ ∈ 𝓝[≥] (toDual a)) from by
+      simp only [nhdsWithin, nhds_toDual, ← Filter.map_inf_principal_preimage]
+      rfl]
+  exact h
 
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a := by
