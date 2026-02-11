@@ -97,9 +97,9 @@ theorem truncFinset_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
     truncFinset R s (monomial x r) = MvPolynomial.monomial x r := by
   classical
   ext y; by_cases hy : y ∈ s
-  · rw [truncFinset_coeff _ _ hy, coeff_monomial, MvPolynomial.coeff_monomial]
+  · rw [coeff_truncFinset _ _ hy, coeff_monomial, MvPolynomial.coeff_monomial]
     simp [eq_comm]
-  rw [truncFinset_coeff_eq_zero _ _ hy, MvPolynomial.coeff_monomial, if_neg (by aesop)]
+  rw [coeff_truncFinset_eq_zero _ _ hy, MvPolynomial.coeff_monomial, if_neg (by aesop)]
 
 theorem truncFinset_monomial_eq_zero {x : σ →₀ ℕ} (r : R) (h : x ∉ s) :
     truncFinset R s (monomial x r) = 0 := by
@@ -131,8 +131,8 @@ def trunc : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Fin
 theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff m φ else 0 := by
   classical split
-  · exact truncFinset_coeff (Finset.Iio n) φ (by aesop)
-  exact truncFinset_coeff_eq_zero (Finset.Iio n) φ (by aesop)
+  · exact coeff_truncFinset (Finset.Iio n) φ (by aesop)
+  exact coeff_truncFinset_eq_zero (Finset.Iio n) φ (by aesop)
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
@@ -171,8 +171,8 @@ def trunc' : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Fi
 theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 := by
   classical split
-  · exact truncFinset_coeff (Finset.Iic n) φ (by aesop)
-  exact truncFinset_coeff_eq_zero (Finset.Iic n) φ (by aesop)
+  · exact coeff_truncFinset (Finset.Iic n) φ (by aesop)
+  exact coeff_truncFinset_eq_zero (Finset.Iic n) φ (by aesop)
 
 theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ R) :
     trunc' R n (trunc' R m φ) = trunc' R n φ := by
