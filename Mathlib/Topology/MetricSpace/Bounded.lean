@@ -640,7 +640,12 @@ This is a convenient combination of `Continuous.exists_forall_ge'` and
 `Metric.isCompact_of_isClosed_isBounded`. -/
 theorem exists_forall_ge_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
     (h : Bornology.IsBounded {x : β | f x₀ ≤ f x}) :
-    ∃ x, ∀ y, f y ≤ f x :=
-  hf.exists_forall_le_of_isBounded (α := αᵒᵈ) x₀ h
+    ∃ x, ∀ y, f y ≤ f x := by
+  refine hf.exists_forall_ge' (x₀ := x₀) ?_
+  have hU : {x : β | f x < f x₀} ∈ Filter.cocompact β := by
+    refine Filter.mem_cocompact'.mpr ⟨_, ?_, fun ⦃_⦄ a ↦ a⟩
+    simp only [Set.compl_setOf, not_lt]
+    exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
+  filter_upwards [hU] with x hx using hx.le
 
 end Continuous
