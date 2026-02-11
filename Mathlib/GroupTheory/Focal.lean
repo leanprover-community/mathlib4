@@ -191,9 +191,9 @@ lemma inf_ker_transferFocal_eq_focalSubgroup :
     rw [transfer_focal_eq_pow P ⟨x, hxP⟩] at hx_ker
     have h_mem : (⟨x, hxP⟩ : P.toSubgroup) ∈ F := by
       rw [hker, MonoidHom.mem_ker]
-      have h1 : (hQ.powEquiv hn) (QuotientGroup.mk' _ ⟨x, hxP⟩) = 1 := by
-        rw [hQ.powEquiv_apply, hx_ker]
-      exact (hQ.powEquiv hn).injective (h1.trans (by rw [hQ.powEquiv_apply, one_pow]))
+      apply (hQ.powEquiv hn).injective
+      rw [hQ.powEquiv_apply, hx_ker]
+      simp
     simpa using h_mem
   · intro x hx
     have hxP := focalSubgroup_le P.toSubgroup hx
