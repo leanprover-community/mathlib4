@@ -6,6 +6,10 @@ on:
     types:
       - completed
 
+permissions:
+  actions: read
+  contents: read
+
 
 jobs:
   add_ready_to_merge_label:

@@ -7,6 +7,10 @@ on:
     types:
       - completed
 
+permissions:
+  actions: read
+  contents: read
+
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
