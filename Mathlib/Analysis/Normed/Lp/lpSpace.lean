@@ -346,9 +346,16 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
   neg_mem' := Memℓp.neg
 
 @[inherit_doc] scoped[lp] notation "ℓ^" p "(" ι ", " E ")" => lp (fun _ : ι ↦ E) p
-@[inherit_doc] scoped[lp] notation "ℓ⁰(" ι ", " E ")" => lp (fun _ : ι ↦ E) 0
-@[inherit_doc] scoped[lp] notation "ℓ¹(" ι ", " E ")" => lp (fun _ : ι ↦ E) 1
-@[inherit_doc] scoped[lp] notation "ℓ²(" ι ", " E ")" => lp (fun _ : ι ↦ E) 2
+/-- `ℓ⁰(ι, E)` is the space of finitely supported functions `ι → E`. In general, this should not
+be used outside of the context of `ℓ^p(ι, E)` spaces, and one should instead prefer `Finsupp`
+in other situations. -/
+scoped[lp] notation "ℓ⁰(" ι ", " E ")" => lp (fun _ : ι ↦ E) 0
+/-- `ℓ¹(ι, E)` is the space of summable functions `ι → E`. To be more precise, it is the space
+of functions whose *norms* are summable, but when `E` is complete these coincide. -/
+scoped[lp] notation "ℓ¹(" ι ", " E ")" => lp (fun _ : ι ↦ E) 1
+/-- `ℓ²(ι, E)` is the space of square-summable functions `ι → E`. When `E := 𝕜`, with `RCLike 𝕜`,
+this is a Hilbert space. -/
+scoped[lp] notation "ℓ²(" ι ", " E ")" => lp (fun _ : ι ↦ E) 2
 
 namespace lp
 

@@ -94,10 +94,6 @@ variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProdu
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-/-- `ℓ²(ι, 𝕜)` is the Hilbert space of square-summable functions `ι → 𝕜`, herein implemented
-as `lp (fun i : ι => 𝕜) 2`. -/
-notation "ℓ²(" ι ", " 𝕜 ")" => lp (fun i : ι => 𝕜) 2
-
 /-! ### Inner product space structure on `lp G 2` -/
 
 
