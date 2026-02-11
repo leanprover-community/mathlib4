@@ -222,6 +222,10 @@ instance orderBot : OrderBot (Pretopology C) where
 theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot
 
+@[gcongr]
+lemma toGrothendieck_mono {J K : Pretopology C} (h : J ≤ K) : J.toGrothendieck ≤ K.toGrothendieck :=
+  fun _ _ ⟨R, hR, hle⟩ ↦ ⟨R, h _ hR, hle⟩
+
 instance : InfSet (Pretopology C) where
   sInf T := {
     coverings := sInf ((fun J ↦ J.coverings) '' T)

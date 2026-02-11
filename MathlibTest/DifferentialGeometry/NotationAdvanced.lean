@@ -39,6 +39,32 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
 
+section ErrorMetavars -- Test for error messages when the goal still has metavariables.
+
+-- The argument k is deliberately implicit; it should be explicit in a mathlib definition.
+def proj : TangentBundle 𝓘(𝕜, 𝕜) 𝕜 → 𝕜 := fun x ↦ x.2
+
+open ContDiff
+
+-- TODO: the error message could be more helpful, by saying "the goal has metavariables; maybe there is an implicit argument missing"
+/--
+error: Could not find a model with corners for `TangentBundle 𝓘(?_, ?_) ?_`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+set_option pp.mvars.anonymous false in
+lemma contMDiff_proj : CMDiff ∞ (proj) := by
+  unfold proj
+  exact contMDiff_snd_tangentBundle_modelSpace 𝕜 𝓘(𝕜)
+
+-- Adding the implicit argument k works.
+example : CMDiff ∞ (proj (𝕜 := 𝕜)) := by
+  unfold proj
+  exact contMDiff_snd_tangentBundle_modelSpace 𝕜 𝓘(𝕜)
+
+end ErrorMetavars
+
 /-! Additional tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
