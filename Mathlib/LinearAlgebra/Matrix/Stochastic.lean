@@ -234,12 +234,8 @@ lemma transpose_mem_colStochastic_iff_mem_rowStochastic :
 /-- Reindexing a matrix preserves row-stochasticity. -/
 @[aesop safe apply]
 lemma reindex_mem_rowStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
-    {e₁ e₂ : n ≃ m} (hM : M ∈ rowStochastic R n) : M.reindex e₁ e₂ ∈ rowStochastic R m := by
-  refine ⟨?_, ?_⟩
-  · intro i j
-    simp only [reindex_apply, submatrix_apply]
-    exact nonneg_of_mem_rowStochastic hM
-  · simp [submatrix_mulVec_equiv, hM.2]
+    {e₁ e₂ : n ≃ m} (hM : M ∈ rowStochastic R n) : M.reindex e₁ e₂ ∈ rowStochastic R m :=
+  ⟨fun _ _ ↦ by simpa using nonneg_of_mem_rowStochastic hM, by simp [submatrix_mulVec_equiv, hM.2]⟩
 
 /-- Reindexing a matrix preserves row-stochasticity. -/
 @[grind =]
@@ -251,28 +247,15 @@ lemma reindex_mem_rowStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M :
   exact reindex_mem_rowStochastic h
 
 /-- Reindexing a matrix preserves column-stochasticity. -/
-@[aesop safe apply]
-lemma reindex_mem_colStochastic {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
-    {e₁ e₂ : n ≃ m} (hM : M ∈ colStochastic R n) : M.reindex e₁ e₂ ∈ colStochastic R m := by
-  refine ⟨?_, ?_⟩
-  · intro i j
-    simp only [reindex_apply, submatrix_apply]
-    exact nonneg_of_mem_colStochastic hM
-  · simp only [reindex_apply, one_vecMul]
-    ext j
-    simp only [Finset.sum_apply, submatrix_apply, Pi.one_apply]
-    have : ∑ x, M (e₁.symm x) (e₂.symm j) = ∑ x, M x (e₂.symm j) :=
-      Finset.sum_equiv e₁.symm (by simp) (fun i _ => rfl)
-    rw [this]
-    exact sum_col_of_mem_colStochastic hM (e₂.symm j)
-
-/-- Reindexing a matrix preserves column-stochasticity. -/
 @[grind =]
 lemma reindex_mem_colStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M : Matrix n n R}
     {e₁ e₂ : n ≃ m} : M.reindex e₁ e₂ ∈ colStochastic R m ↔ M ∈ colStochastic R n := by
-  refine ⟨fun h => ?_, reindex_mem_colStochastic⟩
-  have : M = (M.reindex e₁ e₂).reindex e₁.symm e₂.symm := by simp
-  rw [this]
-  exact reindex_mem_colStochastic h
+  rw [← transpose_transpose (reindex e₁ e₂ M), transpose_reindex,
+    transpose_mem_colStochastic_iff_mem_rowStochastic, reindex_mem_rowStochastic_iff,
+    ← transpose_mem_colStochastic_iff_mem_rowStochastic, transpose_transpose]
+
+/-- Reindexing a matrix preserves column-stochasticity. -/
+@[aesop safe apply]
+alias ⟨_, reindex_mem_colStochastic⟩ := reindex_mem_colStochastic_iff
 
 end Matrix
