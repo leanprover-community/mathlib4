@@ -78,6 +78,7 @@ lemma sum_le' {s : Set X} (hs : MeasurableSet s)
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
   simp only [preVariationFun, hs, ↓reduceDIte]
   sorry
+-- define a `Finpartition` in a subtype
 --  apply le_trans _ (le_iSup f P)
 
 open Classical in
