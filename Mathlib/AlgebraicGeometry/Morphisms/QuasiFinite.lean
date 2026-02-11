@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.RingTheory.RingHom.QuasiFinite
 
@@ -288,6 +289,13 @@ lemma locallyQuasiFinite_iff_finite_preimage_singleton
     {f : X ⟶ Y} [LocallyOfFiniteType f] [QuasiCompact f] :
     LocallyQuasiFinite f ↔ ∀ x, (f ⁻¹' {x}).Finite :=
   ⟨fun _ ↦ f.finite_preimage_singleton, .of_finite_preimage_singleton f⟩
+
+lemma LocallyQuasiFinite.of_injective {f : X ⟶ Y} [LocallyOfFiniteType f]
+    (hf : Function.Injective f) : LocallyQuasiFinite f :=
+  .of_finite_preimage_singleton _ fun _ ↦ (Set.subsingleton_singleton.preimage hf).finite
+
+instance (priority := low) {f : X ⟶ Y} [LocallyOfFiniteType f]
+    [UniversallyInjective f] : LocallyQuasiFinite f := .of_injective f.injective
 
 /-- A morphism `f : X ⟶ Y` is quasi-finite at `x : X`
 if the stalk map `𝒪_{X, x} ⟶ 𝒪_{Y, f x}` is quasi-finite. -/

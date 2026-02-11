@@ -115,15 +115,6 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
 
 variable {X Y S : Scheme.{u}} (f : X ⟶ Y)
 
-/-- The coercion from open sets to sets as a `FrameHom`. -/
-@[simps]
-def _root_.TopologicalSpace.Opens.frameHom {X : Type*} [TopologicalSpace X] :
-    FrameHom (TopologicalSpace.Opens X) (Set X) where
-  toFun := (·)
-  map_inf' _ _ := rfl
-  map_top' := rfl
-  map_sSup' _ := by simp
-
 lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f]
     (x : X) (hx : f.QuasiFiniteAt x) :
@@ -341,6 +332,7 @@ lemma IsFinite.of_isProper_of_locallyQuasiFinite
   rw [← f.toNormalization_fromNormalization]
   infer_instance
 
+@[stacks 02LS "(1) <=> (3)"]
 lemma IsFinite.iff_isProper_and_locallyQuasiFinite :
     IsFinite f ↔ IsProper f ∧ LocallyQuasiFinite f := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩,
@@ -350,5 +342,17 @@ lemma IsFinite.eq_proper_inf_locallyQuasiFinite :
     @IsFinite = (@IsProper ⊓ @LocallyQuasiFinite : MorphismProperty Scheme) := by
   ext
   exact IsFinite.iff_isProper_and_locallyQuasiFinite ..
+
+@[stacks 04XV "(1) <=> (2)"]
+lemma IsClosedImmersion.iff_isProper_and_mono :
+    IsClosedImmersion f ↔ IsProper f ∧ Mono f := by
+  have (_ : Mono f) (_ : IsProper f) : LocallyQuasiFinite f := inferInstance
+  rw [IsClosedImmersion.iff_isFinite_and_mono, IsFinite.iff_isProper_and_locallyQuasiFinite]
+  aesop
+
+lemma IsClosedImmersion.eq_proper_inf_monomorphisms :
+    @IsClosedImmersion = ↑@IsProper ⊓ MorphismProperty.monomorphisms Scheme := by
+  ext
+  exact IsClosedImmersion.iff_isProper_and_mono ..
 
 end AlgebraicGeometry
