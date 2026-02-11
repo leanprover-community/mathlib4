@@ -491,8 +491,6 @@ lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 
 
 end
 
-#check PseudoEMetricSpace.ofSeminormedSpaceCore
-
 /-- In a topological vector space, if the unit ball of a continuous inner product is von Neumann
 bounded, then the inner product defines the same topology as the original one. -/
 lemma topology_eq

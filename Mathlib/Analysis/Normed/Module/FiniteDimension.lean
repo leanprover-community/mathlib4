@@ -389,7 +389,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     rwa [this] at hC
   choose n hn using this
   set Φ := fun φ : E →L[𝕜] F => v.constrL <| u ∘ n φ
-  change ∀ z, dist z (Φ z) ≤ ε / 2 at hn
+  simp_rw [← dist_eq_norm] at hn
   use n
   intro x y hxy
   calc
