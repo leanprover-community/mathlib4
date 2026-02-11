@@ -159,6 +159,229 @@ lemma isDenseSubsite_of_isOneHypercoverDense [F.IsLocallyFull J] [F.IsLocallyFai
 
 end
 
+variable [IsDenseSubsite J₀ J F]
+
+namespace OneHypercoverDenseData
+
+variable {F J₀ J}
+
+section
+
+variable {X : C} (data : OneHypercoverDenseData.{w} F J₀ J X)
+
+lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
+    (w : p₁ ≫ data.f i₁ = p₂ ≫ data.f i₂) : data.toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W := by
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  let S := Sieve.bind (Sieve.coverByImage F W).arrows
+    (fun Y f hf ↦ ((F.imageSieve (hf.some.map ≫ p₁) ⊓
+        F.imageSieve (hf.some.map ≫ p₂)).functorPushforward F).pullback hf.some.lift)
+  let T := Sieve.bind S.arrows (fun Z g hg ↦ by
+    letI str := Presieve.getFunctorPushforwardStructure hg.bindStruct.hg
+    exact Sieve.pullback str.lift
+      (Sieve.functorPushforward F (data.sieve₁₀ str.cover.1.choose str.cover.2.choose)))
+  have hS : S ∈ J W := by
+    apply J.bind_covering
+    · apply is_cover_of_isCoverDense
+    · intro Y f hf
+      apply J.pullback_stable
+      rw [Functor.functorPushforward_mem_iff J₀]
+      apply J₀.intersection_covering
+      all_goals apply IsDenseSubsite.imageSieve_mem J₀ J
+  have hT : T ∈ J W := J.bind_covering hS (fun Z g hg ↦ by
+    apply J.pullback_stable
+    rw [Functor.functorPushforward_mem_iff J₀]
+    let str := Presieve.getFunctorPushforwardStructure hg.bindStruct.hg
+    apply data.mem₁₀
+    simp only [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])
+  refine J.superset_covering ?_ hT
+  rintro U f ⟨V, a, b, hb, h, _, rfl⟩
+  let str := Presieve.getFunctorPushforwardStructure hb.bindStruct.hg
+  obtain ⟨W₀, c : _ ⟶ _, d, ⟨j, e, h₁, h₂⟩, fac⟩ := h
+  dsimp
+  refine ⟨j, d ≫ F.map e, ?_, ?_⟩
+  · rw [assoc, assoc, ← F.map_comp, ← h₁, F.map_comp, ← reassoc_of% fac,
+      str.cover.1.choose_spec, ← reassoc_of% str.fac,
+      Presieve.CoverByImageStructure.fac_assoc,
+      Presieve.BindStruct.fac_assoc]
+  · rw [assoc, assoc, ← F.map_comp, ← h₂, F.map_comp, ← reassoc_of% fac,
+      str.cover.2.choose_spec, ← reassoc_of% str.fac,
+      Presieve.CoverByImageStructure.fac_assoc,
+      Presieve.BindStruct.fac_assoc]
+
+/-- The `1`-hypercover associated to a `OneHypercoverDenseData` structure. -/
+@[simps toPreOneHypercover]
+def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :
+    J.OneHypercover X where
+  toPreOneHypercover := data.toPreOneHypercover
+  mem₀ := data.mem₀
+  mem₁ := data.mem₁
+
+variable {X : C} (data : OneHypercoverDenseData.{w} F J₀ J X) {X₀ : C₀} (f : F.obj X₀ ⟶ X)
+
+/-- Auxiliary structure for the definition `OneHypercoverDenseData.sieve`. -/
+structure SieveStruct {Y₀ : C₀} (g : Y₀ ⟶ X₀) where
+  /-- the index of the intermediate object -/
+  i₀ : data.I₀
+  /-- the morphism that is part of the factorization `fac`. -/
+  q : F.obj Y₀ ⟶ F.obj (data.X i₀)
+  fac : q ≫ data.f i₀ = F.map g ≫ f := by simp
+
+attribute [reassoc (attr := simp)] SieveStruct.fac
+
+/-- Given `data : OneHypercoverDenseData F J₀ J X` and a morphism `f : F.obj X₀ ⟶ X`,
+this is the sieve of `X₀` consisting of morphisms `g : Y₀ ⟶ X₀` such that there
+exists `i₀ : data.I₀`, `q : F.obj Y₀ ⟶ F.obj (data.X i₀)` such that
+we have a factorization `q ≫ data.f i₀ = F.map g ≫ f`. -/
+@[simps]
+def sieve : Sieve X₀ where
+  arrows Y₀ g := Nonempty (SieveStruct data f g)
+  downward_closed := by
+    rintro Y₀ Z₀ g ⟨h⟩ p
+    exact ⟨{ i₀ := h.i₀, q := F.map p ≫ h.q, fac := by rw [assoc, h.fac, map_comp_assoc]}⟩
+
+lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  have := IsDenseSubsite.isLocallyFull J₀ J F
+  rw [← functorPushforward_mem_iff J₀ J F]
+  let R : ⦃W : C⦄ → ⦃p : W ⟶ F.obj X₀⦄ →
+    (Sieve.pullback f data.toOneHypercover.sieve₀).arrows p → Sieve W := fun W p hp ↦
+      Sieve.bind (Sieve.coverByImage F W).arrows (fun U π hπ ↦
+        Sieve.pullback hπ.some.lift
+          (Sieve.functorPushforward F (F.imageSieve (hπ.some.map ≫ p))))
+  refine J.superset_covering ?_
+    (J.bind_covering (J.pullback_stable f (data.toOneHypercover.mem₀)) (R := R)
+    (fun W p hp ↦ J.bind_covering (F.is_cover_of_isCoverDense J W) ?_))
+  · rintro W' _ ⟨W, _, p, hp, ⟨Y₀, a, b, hb, ⟨U, c, d, ⟨x₁, w₁⟩, fac⟩, rfl⟩, rfl⟩
+    have hp' := Sieve.ofArrows.fac hp
+    dsimp at hp'
+    refine ⟨U, x₁, d, ⟨Sieve.ofArrows.i hp,
+      F.map c ≫ (Nonempty.some hb).map ≫ Sieve.ofArrows.h hp, ?_⟩, ?_⟩
+    · rw [w₁, assoc, assoc, assoc, assoc, hp']
+    · rw [w₁, assoc, ← reassoc_of% fac, hb.some.fac_assoc]
+  · intro U π hπ
+    apply J.pullback_stable
+    apply functorPushforward_imageSieve_mem
+
+end
+
+section
+
+namespace isSheaf_iff
+
+variable {data : ∀ X, F.OneHypercoverDenseData J₀ J X} {G : Cᵒᵖ ⥤ A}
+  (hG₀ : Presheaf.IsSheaf J₀ (F.op ⋙ G))
+  (hG : ∀ (X : C), IsLimit ((data X).toOneHypercover.multifork G))
+  {X : C} (S : J.Cover X)
+
+section
+
+variable {S} (s : Multifork (S.index G))
+
+/-- Auxiliary definition for `lift`. -/
+noncomputable def liftAux (i : (data X).I₀) : s.pt ⟶ G.obj (op (F.obj ((data X).X i))) :=
+  hG₀.amalgamate ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩
+    (fun ⟨W₀, a, ha⟩ ↦ s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩) (by
+      rintro ⟨W₀, a, ha⟩ ⟨Z₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
+      exact s.condition
+        { fst := ⟨_, _, ha⟩
+          snd := ⟨_, _, hb⟩
+          r := ⟨_, F.map p₁, F.map p₂, by
+              simp only [← Functor.map_comp_assoc, fac]⟩ })
+
+lemma liftAux_fac {i : (data X).I₀} {W₀ : C₀} (a : W₀ ⟶ (data X).X i)
+    (ha : S (F.map a ≫ (data X).f i)) :
+    liftAux hG₀ s i ≫ G.map (F.map a).op = s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩ :=
+  hG₀.amalgamate_map _ _ _ ⟨W₀, a, ha⟩
+
+/-- Auxiliary definition for the lemma `OneHypercoverDenseData.isSheaf_iff`. -/
+noncomputable def lift : s.pt ⟶ G.obj (op X) :=
+  Multifork.IsLimit.lift (hG X) (fun i ↦ liftAux hG₀ s i) (by
+    rintro ⟨⟨i₁, i₂⟩, j⟩
+    dsimp at i₁ i₂ j ⊢
+    refine Presheaf.IsSheaf.hom_ext
+      hG₀ ⟨_, cover_lift F J₀ _
+        (J.pullback_stable (F.map ((data X).p₁ j) ≫ (data X).f i₁) S.2)⟩ _ _ ?_
+    rintro ⟨W₀, a, ha⟩
+    dsimp
+    simp only [assoc, ← Functor.map_comp, ← op_comp]
+    have ha₁ : S (F.map (a ≫ (data X).p₁ j) ≫ (data X).f i₁) := by simpa using ha
+    have ha₂ : S (F.map (a ≫ (data X).p₂ j) ≫ (data X).f i₂) := by
+      rwa [Functor.map_comp_assoc, ← (data X).w j]
+    rw [liftAux_fac _ _ _ ha₁, liftAux_fac _ _ _ ha₂]
+    congr 2
+    rw [map_comp_assoc, map_comp_assoc, (data X).w j])
+
+@[reassoc]
+lemma lift_map (i : (data X).I₀) :
+    lift hG₀ hG s ≫ G.map ((data X).f i).op = liftAux hG₀ s i :=
+  Multifork.IsLimit.fac _ _ _ _
+
+@[reassoc]
+lemma fac (a : S.Arrow) :
+    lift hG₀ hG s ≫ G.map a.f.op = s.ι a :=
+  Multifork.IsLimit.hom_ext (hG _) (fun i ↦
+    Presheaf.IsSheaf.hom_ext hG₀
+      ⟨_, cover_lift F J₀ _
+        (J.pullback_stable ((data a.Y).f i ≫ a.f) (data X).mem₀)⟩ _ _ (by
+        rintro ⟨X₀, b, ⟨_, c, _, h, fac₁⟩⟩
+        obtain ⟨j⟩ := h
+        refine Presheaf.IsSheaf.hom_ext hG₀
+          ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F c⟩ _ _ ?_
+        rintro ⟨Y₀, d, e, fac₂⟩
+        dsimp at i j c fac₁ ⊢
+        have he : S (F.map e ≫ (data X).f j) := by
+          rw [fac₂, assoc, fac₁]
+          simpa only [assoc] using S.1.downward_closed a.hf (F.map d ≫ F.map b ≫ (data a.Y).f i)
+        simp only [assoc, ← Functor.map_comp, ← op_comp, ← fac₁]
+        conv_lhs => simp only [op_comp, Functor.map_comp, assoc, lift_map_assoc]
+        rw [← Functor.map_comp, ← op_comp, ← fac₂, liftAux_fac _ _ _ he]
+        simpa using s.condition
+          { fst := { hf := he, .. }
+            snd := a
+            r := ⟨_, 𝟙 _, F.map d ≫ F.map b ≫ (data a.Y).f i, by
+              simp only [fac₁, fac₂, assoc, id_comp]⟩ }))
+
+variable {s} in
+include hG hG₀ in
+lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
+    (h : ∀ (a : S.Arrow), f₁ ≫ G.map a.f.op = f₂ ≫ G.map a.f.op) : f₁ = f₂ :=
+  Multifork.IsLimit.hom_ext (hG X) (fun i ↦ by
+    refine Presheaf.IsSheaf.hom_ext hG₀
+      ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩ _ _ ?_
+    rintro ⟨X₀, a, ha⟩
+    dsimp
+    simp only [assoc, ← Functor.map_comp, ← op_comp]
+    exact h ⟨_, _, ha⟩)
+
+end
+
+/-- Auxiliary definition for the lemma `OneHypercoverDenseData.isSheaf_iff`. -/
+noncomputable def isLimit : IsLimit (S.multifork G) :=
+  Multifork.IsLimit.mk _
+    (lift hG₀ hG ) (fac hG₀ hG) (fun s _ hm ↦
+      hom_ext hG₀ hG (fun a ↦ (hm a).trans (fac hG₀ hG s a).symm))
+
+end isSheaf_iff
+
+/-- Let `F : C₀ ⥤ C` be a dense subsite, and assume we have a family of structures
+`data : ∀ X, F.OneHypercoverDenseData J₀ J X`.
+This lemma shows that `G : Cᵒᵖ ⥤ A` is a sheaf iff `F.op F.op ⋙ G : C₀ᵒᵖ ⥤ A`
+is a sheaf and for any `X : C`, the multifork for `G` and the `1`-hypercover
+given by `data X` is a limit. -/
+lemma isSheaf_iff (data : ∀ X, F.OneHypercoverDenseData J₀ J X) (G : Cᵒᵖ ⥤ A) :
+    Presheaf.IsSheaf J G ↔
+      Presheaf.IsSheaf J₀ (F.op ⋙ G) ∧
+        ∀ (X : C), Nonempty (IsLimit ((data X).toOneHypercover.multifork G)) := by
+  refine ⟨fun hG ↦ ⟨op_comp_isSheaf F J₀ J ⟨_, hG⟩,
+    fun X ↦ ⟨(data X).toOneHypercover.isLimitMultifork ⟨G, hG⟩⟩⟩, fun ⟨hG₀, hG⟩ ↦ ?_⟩
+  rw [Presheaf.isSheaf_iff_multifork]
+  replace hG := fun X ↦ (hG X).some
+  exact fun X S ↦ ⟨isSheaf_iff.isLimit hG₀ hG S⟩
+
+end
+
+end OneHypercoverDenseData
+
 end Functor
 
 end CategoryTheory
