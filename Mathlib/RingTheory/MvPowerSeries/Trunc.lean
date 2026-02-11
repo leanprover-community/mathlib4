@@ -81,13 +81,13 @@ def truncFinset : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
 theorem truncFinset_apply (p : MvPowerSeries σ R) :
     truncFinset R s p = ∑ x ∈ s, MvPolynomial.monomial x (p.coeff x) := by rfl
 
-theorem truncFinset_coeff {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
+theorem coeff_truncFinset {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∈ s) :
     (truncFinset R s p).coeff x = p.coeff x := by
   classical
   simp [truncFinset_apply, MvPolynomial.coeff_sum]
   aesop
 
-theorem truncFinset_coeff_eq_zero {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∉ s) :
+theorem coeff_truncFinset_eq_zero {x : σ →₀ ℕ} (p : MvPowerSeries σ R) (h : x ∉ s) :
     (truncFinset R s p).coeff x = 0 := by
   classical
   simp [truncFinset_apply, MvPolynomial.coeff_sum]
