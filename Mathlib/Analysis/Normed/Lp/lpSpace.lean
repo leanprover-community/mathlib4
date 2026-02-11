@@ -1100,7 +1100,8 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     NormedAddCommGroup.uniformity_basis_dist]
   intro ε hε
   refine ⟨ε, hε, ?_⟩
-  rintro f g (hfg : ‖f - g‖ < ε)
+  rintro f g (hfg : ‖-f + g‖ < ε)
+  simp only [norm_neg_add] at hfg ⊢
   have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
   exact this.trans_lt hfg
 
@@ -1169,6 +1170,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
     NormedAddCommGroup.uniformity_basis_dist.mem_of_mem hε
   refine (hF.eventually_eventually hε').mono ?_
   rintro n (hn : ∀ᶠ l in atTop, ‖(fun f => F n - f) (F l)‖ < ε)
+  rw [mem_closedBall_iff_norm]
   refine norm_le_of_tendsto (hn.mono fun k hk => hk.le) ?_
   rw [tendsto_pi_nhds]
   intro a

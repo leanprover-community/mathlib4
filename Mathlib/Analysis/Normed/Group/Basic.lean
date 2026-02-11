@@ -325,29 +325,29 @@ theorem coe_normGroupSeminorm : ⇑(normGroupSeminorm E) = norm :=
 variable {E}
 
 @[to_additive]
-theorem NormedCommGroup.tendsto_nhds_one {f : α → E} {l : Filter α} :
+theorem NormedGroup.tendsto_nhds_one {f : α → E} {l : Filter α} :
     Tendsto f l (𝓝 1) ↔ ∀ ε > 0, ∀ᶠ x in l, ‖f x‖ < ε :=
   Metric.tendsto_nhds.trans <| by simp only [dist_one_right]
 
 @[to_additive]
-theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
+theorem NormedGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
     Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x'⁻¹ * x‖ < δ → ‖(f x')⁻¹ * y‖ < ε := by
   simp_rw [Metric.tendsto_nhds_nhds, dist_eq_norm_inv_mul]
 
 @[to_additive]
-theorem NormedCommGroup.nhds_basis_norm_lt (x : E) :
+theorem NormedGroup.nhds_basis_norm_lt (x : E) :
     (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y⁻¹ * x‖ < ε } := by
   simp_rw [← ball_eq_norm_inv_mul_lt]
   exact Metric.nhds_basis_ball
 
 @[to_additive]
-theorem NormedCommGroup.nhds_one_basis_norm_lt :
+theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert NormedCommGroup.nhds_basis_norm_lt (1 : E) using 1
+  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[to_additive]
-theorem NormedCommGroup.uniformity_basis_dist :
+theorem NormedGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst⁻¹ * p.snd‖ < ε } := by
   convert Metric.uniformity_basis_dist (α := E) using 1
   simp [dist_eq_norm_inv_mul]
@@ -676,7 +676,7 @@ open Set in
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
     Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y⁻¹ * x‖ := by
-  simp [NormedCommGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
+  simp [NormedGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
 
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds_one (f : Filter E) :
@@ -950,6 +950,21 @@ theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖�
 theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
+
+@[to_additive]
+theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
+    Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x' / x‖ < δ → ‖f x' / y‖ < ε := by
+  simpa [norm_inv_mul] using NormedGroup.tendsto_nhds_nhds (f := f) (x := x) (y := y)
+
+@[to_additive]
+theorem NormedCommGroup.nhds_basis_norm_lt (x : E) :
+    (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y / x‖ < ε } := by
+  simpa [norm_inv_mul] using NormedGroup.nhds_basis_norm_lt x
+
+@[to_additive]
+theorem NormedCommGroup.uniformity_basis_dist :
+    (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst / p.snd‖ < ε } := by
+  simpa [norm_inv_mul] using NormedGroup.uniformity_basis_dist (E := E)
 
 end SeminormedCommGroup
 
