@@ -30,7 +30,6 @@ jobs:
         with:
           artifact: workflow-data
           source_workflow: Add "ready-to-merge" and "delegated" label
-          expected_head_sha: ${{ github.event.workflow_run.head_sha }}
           require_event: issue_comment,pull_request_review,pull_request_review_comment
           fail_on_missing: false
           extract: |

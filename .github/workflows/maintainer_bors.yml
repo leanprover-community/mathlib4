@@ -63,11 +63,9 @@ jobs:
           then
             printf $'bot=true\n'
             printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
-            BOT='true'
           else
             printf $'bot=false\n'
             printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
-            BOT='false'
           fi
 
       - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
