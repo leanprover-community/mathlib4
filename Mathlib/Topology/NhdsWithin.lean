@@ -352,7 +352,8 @@ instance Pi.instNeBotNhdsWithinIio [Nonempty ι] [∀ i, Preorder (X i)] {x : �
 
 instance Pi.instNeBotNhdsWithinIoi [Nonempty ι] [∀ i, Preorder (X i)] {x : ∀ i, X i}
     [∀ i, (𝓝[>] x i).NeBot] : (𝓝[>] x).NeBot :=
-  Pi.instNeBotNhdsWithinIio (X := fun i ↦ (X i)ᵒᵈ) (x := fun i ↦ OrderDual.toDual (x i))
+  have : (𝓝[pi univ fun i ↦ Ioi (x i)] x).NeBot := inferInstance
+  this.mono <| nhdsWithin_mono _ fun _y hy ↦ lt_of_strongLT fun i ↦ hy i trivial
 
 end Pi
 

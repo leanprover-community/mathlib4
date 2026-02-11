@@ -81,7 +81,9 @@ variable [IsLocalization M S]
 include M in
 theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
   rw [isNoetherianRing_iff, isNoetherian_iff] at h ⊢
-  exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
+  have : WellFoundedLT (Ideal R)ᵒᵈ := ⟨InvImage.wf OrderDual.ofDual h⟩
+  exact InvImage.wf OrderDual.toDual
+    ((IsLocalization.orderEmbedding M S).dual.wellFoundedLT).wf
 
 instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
     IsNoetherianRing (Localization S) :=
