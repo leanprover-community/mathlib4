@@ -20,8 +20,6 @@ This file provides two type synonyms for order theory:
 
 ## Notation
 
-`αᵒᵈ` is notation for `OrderDual α`.
-
 The general rule for notation of `Lex` types is to append `ₗ` to the usual notation.
 
 ## Implementation notes
@@ -29,7 +27,6 @@ The general rule for notation of `Lex` types is to append `ₗ` to the usual not
 One should not abuse definitional equality between `α` and `αᵒᵈ`/`Lex α`. Instead, explicit
 coercions should be inserted:
 
-* `OrderDual`: `OrderDual.toDual : α → αᵒᵈ` and `OrderDual.ofDual : αᵒᵈ → α`
 * `Lex`: `toLex : α → Lex α` and `ofLex : Lex α → α`.
 * `Colex`: `toColex : α → Colex α` and `ofColex : Colex α → α`.
 
