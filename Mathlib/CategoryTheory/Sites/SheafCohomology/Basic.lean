@@ -94,7 +94,7 @@ variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{
 
 theorem H.eq_zero_of_injective (F : Sheaf J AddCommGrpCat.{w}) (n : ℕ) (x : H F (n + 1))
     [Injective F] : x = 0 :=
-    Ext.eq_zero_of_injective x
+  Ext.eq_zero_of_injective x
 
 variable {S : ShortComplex (Sheaf J AddCommGrpCat.{w})} (hS : S.ShortExact) (n₀ n₁ : ℕ)
     (h : n₀ + 1 = n₁)
