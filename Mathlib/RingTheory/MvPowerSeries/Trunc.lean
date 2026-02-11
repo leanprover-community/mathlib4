@@ -113,6 +113,19 @@ theorem truncFinset_C (h : 0 ∈ s) (r : R) : truncFinset R s (C r) = MvPolynomi
 theorem truncFinset_one (h : 0 ∈ s) : truncFinset R s (1 : MvPowerSeries σ R) = 1 :=
   truncFinset_C s h 1
 
+theorem truncFinset_truncFinset {t : Finset (σ →₀ ℕ)} (h : s ⊆ t) (p : MvPowerSeries σ R) :
+    truncFinset R s (truncFinset R t p) = truncFinset R s p := by
+  ext x; by_cases hx : x ∈ s
+  · rw [coeff_truncFinset _ _ hx, coeff_truncFinset _ _ hx, MvPolynomial.coeff_coe,
+      coeff_truncFinset _ _ (h hx)]
+  rw [coeff_truncFinset_eq_zero _ _ hx, coeff_truncFinset_eq_zero _ _ hx]
+
+theorem truncFinset_map [CommSemiring S] (f : R →+* S) (p : MvPowerSeries σ R) :
+    truncFinset S s (map f p) = MvPolynomial.map f (truncFinset R s p) := by
+  ext x; by_cases hx : x ∈ s
+  · simp [coeff_map, MvPolynomial.coeff_map, coeff_truncFinset _ _ hx]
+  simp [MvPolynomial.coeff_map, coeff_truncFinset_eq_zero _ _ hx]
+
 end truncFinset
 
 section TruncLT
@@ -149,8 +162,7 @@ theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
 
 @[simp]
 theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
-    trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := by
-  ext m; simp [coeff_trunc, MvPolynomial.coeff_map, apply_ite f]
+    trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := truncFinset_map (Finset.Iio n) f p
 
 end TruncLT
 
@@ -175,15 +187,8 @@ theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
   exact coeff_truncFinset_eq_zero (Finset.Iic n) φ (by aesop)
 
 theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ R) :
-    trunc' R n (trunc' R m φ) = trunc' R n φ := by
-  ext d
-  by_cases hd : d ≤ n
-  · symm
-    simp only [coeff_trunc', if_pos hd, MvPolynomial.coeff_coe, left_eq_ite_iff]
-    intro h'
-    have : d ≤ m := .trans hd h
-    contradiction
-  · simp [coeff_trunc', if_neg hd]
+    trunc' R n (trunc' R m φ) = trunc' R n φ :=
+  truncFinset_truncFinset (Finset.Iic n) (Finset.Iic_subset_Iic.mpr h) φ
 
 /-- Truncation of the multivariate power series `1` -/
 @[simp]
@@ -230,8 +235,7 @@ theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
 
 @[simp]
 theorem trunc'_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
-    trunc' S n (map f p) = MvPolynomial.map f (trunc' R n p) := by
-  ext m; simp [coeff_trunc', MvPolynomial.coeff_map, apply_ite f]
+    trunc' S n (map f p) = MvPolynomial.map f (trunc' R n p) := truncFinset_map (Finset.Iic n) f p
 
 section
 
