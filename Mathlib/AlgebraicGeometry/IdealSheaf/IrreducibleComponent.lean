@@ -32,8 +32,6 @@ localization away from the union of the other minimal prime ideals.
 
 @[expose] public section
 
-universe u
-
 namespace AlgebraicGeometry.Scheme
 
 variable (X : Scheme) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) [IsNoetherian X]
