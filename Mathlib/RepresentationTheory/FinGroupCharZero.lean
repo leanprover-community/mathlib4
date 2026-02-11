@@ -130,17 +130,17 @@ lemma simple_iff_char_is_norm_one [CharZero k] [Fintype G] (V : FDRep k G) :
       using char_orthonormal V V
     apply_fun (· * (Fintype.card G : k)) at this
     rwa [mul_comm, ← smul_eq_mul, smul_smul, Fintype.card_eq_nat_card, mul_invOf_self, smul_eq_mul,
-    one_mul, one_mul] at this
+      one_mul, one_mul] at this
   mpr h := by
     have : NeZero (Nat.card G : k) := by
-      rw [← @ Fintype.card_eq_nat_card G (by assumption)]
+      rw [← @Fintype.card_eq_nat_card G (by assumption)]
       exact NeZero.charZero
     have := invertibleOfNonzero (NeZero.ne (Fintype.card G : k))
     have := invertibleOfNonzero (NeZero.ne (Nat.card G : k))
     have eq := FDRep.scalar_product_char_eq_finrank_equivariant V V
     rw [h] at eq
     simp only [invOf_eq_inv, smul_eq_mul, inv_mul_cancel_of_invertible, Fintype.card_eq_nat_card]
-    at eq
+      at eq
     rw [simple_iff_end_is_rank_one, ← Nat.cast_inj (R := k), ← eq, Nat.cast_one]
 
 end FDRep
