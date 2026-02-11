@@ -181,11 +181,11 @@ theorem similar_of_oangle_oangle_neg (h_not_col : ¬ Collinear ℝ {a, b, c})
   · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₁₂_of_not_collinear h_not_col)
       (ne₂₃_of_not_collinear h_not_col).symm, EuclideanGeometry.angle_eq_abs_oangle_toReal
       (ne₁₂_of_not_collinear h_not_col2) (ne₂₃_of_not_collinear h_not_col2).symm, ← h₁]
-    simp only [Real.Angle.abs_toReal_neg]
+    simp
   · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₂₃_of_not_collinear h_not_col)
       (ne₁₃_of_not_collinear h_not_col), EuclideanGeometry.angle_eq_abs_oangle_toReal
       (ne₂₃_of_not_collinear h_not_col2) (ne₁₃_of_not_collinear h_not_col2), ← h₂]
-    simp only [Real.Angle.abs_toReal_neg]
+    simp
 
 /-- If two triangles have proportional adjacent sides and an equal included oangle, then the
 triangles are similar. -/
