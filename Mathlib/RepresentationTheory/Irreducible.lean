@@ -40,6 +40,9 @@ theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Mo
   rw [isSimpleModule_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.submoduleSubrepresentationOrderIso
 
+@[deprecated (since := "2026-02-09")]
+alias is_simple_module_iff_irreducible_ofModule := isSimpleModule_iff_irreducible_ofModule
+
 namespace IsIrreducible
 
 variable {ρ σ} (f : IntertwiningMap ρ σ) [IsIrreducible ρ]
