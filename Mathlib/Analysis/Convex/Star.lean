@@ -378,8 +378,17 @@ lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
       gcongr
 
 /-- If `x < y`, then `(Set.Ici y)ᶜ` is star convex at `x`. -/
-lemma starConvex_compl_Ici (h : x < y) : StarConvex 𝕜 x (Ici y)ᶜ :=
-  starConvex_compl_Iic (E := Eᵒᵈ) h
+lemma starConvex_compl_Ici (h : x < y) : StarConvex 𝕜 x (Ici y)ᶜ := by
+  refine (starConvex_iff_forall_pos <| by simp [h.not_ge]).mpr fun z hz a b ha hb hab ↦ ?_
+  rw [mem_compl_iff, mem_Ici] at hz ⊢
+  contrapose! hz
+  refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
+  calc
+    b • y = (1 - a) • y := by rw [← hab, add_sub_cancel_left]
+    _ = y - a • y := by rw [sub_smul, one_smul]
+    _ < y - a • x := by gcongr
+    _ ≤ a • x + b • z - a • x := sub_le_sub_right hz _
+    _ = b • z := by abel
 
 end OrderedAddCommGroup
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Data.Nat.Cast.Synonym
 
 /-!
 # Ring structure on the order type synonyms
@@ -23,10 +24,6 @@ open OrderDual
 variable {R : Type*}
 
 /-! ### Order dual -/
-
-instance [NatCast R] : NatCast Rᵒᵈ where natCast n := toDual n
-
-instance [IntCast R] : IntCast Rᵒᵈ where intCast n := toDual n
 
 instance [Distrib R] : Distrib Rᵒᵈ :=
   ofDual_injective.distrib ofDual (fun _ _ => rfl) (fun _ _ => rfl)

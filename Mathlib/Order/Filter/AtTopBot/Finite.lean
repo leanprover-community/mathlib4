@@ -33,8 +33,12 @@ theorem eventually_forall_ge_atTop [Preorder α] {p : α → Prop} :
   exact hS fun z hz ↦ le_trans (hx ⟨z, hz⟩) hy
 
 theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
-    (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
-  eventually_forall_ge_atTop (α := αᵒᵈ)
+    (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x := by
+  refine ⟨fun h ↦ h.mono fun x hx ↦ hx x le_rfl, fun h ↦ ?_⟩
+  rcases (hasBasis_iInf_principal_finite _).eventually_iff.1 h with ⟨S, hSf, hS⟩
+  refine mem_iInf_of_iInter hSf (V := fun x ↦ Iic x.1) (fun _ ↦ Subset.rfl) fun x hx y hy ↦ ?_
+  simp only [mem_iInter] at hS hx
+  exact hS fun z hz ↦ le_trans hy (hx ⟨z, hz⟩)
 
 theorem Tendsto.eventually_forall_ge_atTop [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
@@ -79,8 +83,25 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
 then after any point, it reaches a value strictly smaller than all previous values.
 -/
 theorem low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β} (hu : Tendsto u atTop atBot) :
-    ∀ N, ∃ n ≥ N, ∀ k < n, u n < u k :=
-  @high_scores βᵒᵈ _ _ _ hu
+    ∀ N, ∃ n ≥ N, ∀ k < n, u n < u k := by
+  intro N
+  obtain ⟨k : ℕ, - : k ≤ N, hku : ∀ l ≤ N, u k ≤ u l⟩ : ∃ k ≤ N, ∀ l ≤ N, u k ≤ u l :=
+    exists_min_image _ u (finite_le_nat N) ⟨N, le_refl N⟩
+  have ex : ∃ n ≥ N, u n < u k := exists_lt_of_tendsto_atBot hu _ _
+  obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u n < u k, hn_min : ∀ m, m < n → N ≤ m → u k ≤ u m⟩ :
+      ∃ n ≥ N, u n < u k ∧ ∀ m, m < n → N ≤ m → u k ≤ u m := by
+    rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
+    push_neg at hn_min
+    exact ⟨n, hnN, hnk, hn_min⟩
+  use n, hnN
+  rintro (l : ℕ) (hl : l < n)
+  have hlk : u k ≤ u l := by
+    rcases (le_total l N : l ≤ N ∨ N ≤ l) with H | H
+    · exact hku l H
+    · exact hn_min l hl H
+  calc
+    u n < u k := hnk
+    _ ≤ u l := hlk
 
 /-- If `u` is a sequence which is unbounded above,
 then it `Frequently` reaches a value strictly greater than all previous values.
@@ -93,8 +114,8 @@ theorem frequently_high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
 then it `Frequently` reaches a value strictly smaller than all previous values.
 -/
 theorem frequently_low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β}
-    (hu : Tendsto u atTop atBot) : ∃ᶠ n in atTop, ∀ k < n, u n < u k :=
-  @frequently_high_scores βᵒᵈ _ _ _ hu
+    (hu : Tendsto u atTop atBot) : ∃ᶠ n in atTop, ∀ k < n, u n < u k := by
+  simpa [frequently_atTop] using low_scores hu
 
 theorem strictMono_subseq_of_tendsto_atTop [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=

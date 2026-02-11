@@ -183,7 +183,7 @@ theorem WellFoundedOn.union (hs : s.WellFoundedOn r) (ht : t.WellFoundedOn r) :
   rw [wellFoundedOn_iff_no_descending_seq] at *
   rintro f hf
   rcases Nat.exists_subseq_of_forall_mem_union f hf with ⟨g, hg | hg⟩
-  exacts [hs (g.dual.ltEmbedding.trans f) hg, ht (g.dual.ltEmbedding.trans f) hg]
+  exacts [hs (g.gtEmbedding.trans f) hg, ht (g.gtEmbedding.trans f) hg]
 
 @[simp]
 theorem wellFoundedOn_union : (s ∪ t).WellFoundedOn r ↔ s.WellFoundedOn r ∧ t.WellFoundedOn r :=
@@ -729,8 +729,13 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := 
     ⟨ha <| hf _,
       antitone_iff_forall_lt.2 (fun a b hab => (f.map_rel_iff.2 hab).le) <| Nat.zero_le _⟩
 
-theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) :=
-  fun h => h.dual.wellFoundedOn_lt
+theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) := by
+  rw [wellFoundedOn_iff_no_descending_seq]
+  rintro ⟨a, ha⟩ f hf
+  refine infinite_range_of_injective f.injective ?_
+  exact (finite_Icc (f 0) a).subset <| range_subset_iff.2 <| fun n =>
+    ⟨monotone_iff_forall_lt.2 (fun _ _ hab => (f.map_rel_iff.2 hab).le) <| Nat.zero_le _,
+      ha <| hf _⟩
 
 theorem BddBelow.isWF : BddBelow s → IsWF s :=
   BddBelow.wellFoundedOn_lt

@@ -95,7 +95,7 @@ lemma isArtinianObject_iff_isEventuallyConstant :
       (orderDualEquivalence _).inverse).monotone⟩
     refine ⟨n, fun m hm ↦ ?_⟩
     rw [← isIso_unop_iff, MonoOver.isIso_iff_subobjectMk_eq]
-    exact (hn m (leOfHom hm)).symm
+    exact (congrArg OrderDual.ofDual (hn m (leOfHom hm))).symm
   · obtain ⟨n, hn⟩ := h (F.monotone.functor ⋙ (orderDualEquivalence _).functor ⋙
       Subobject.representative.op)
     refine ⟨n, fun m hm ↦ Eq.symm ?_⟩
@@ -125,9 +125,10 @@ lemma isArtinianObject_of_mono (i : X ⟶ Y) [Mono i] [IsArtinianObject Y] :
   rw [isArtinianObject_iff_antitone_chain_condition]
   intro f
   obtain ⟨n, hn⟩ := antitone_chain_condition_of_isArtinianObject
-    ⟨fun n ↦ (Subobject.map i).obj (f n),
+    ⟨fun n ↦ OrderDual.toDual ((Subobject.map i).obj (OrderDual.ofDual (f n))),
       fun _ _ h ↦ (Subobject.map i).monotone (f.2 h)⟩
-  exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
+  exact ⟨n, fun m hm ↦ OrderDual.ofDual_inj.mp
+    (Subobject.map_obj_injective i (OrderDual.toDual_inj.mp (hn m hm)))⟩
 
 instance : (isArtinianObject (C := C)).IsClosedUnderSubobjects where
   prop_of_mono f _ hY := by

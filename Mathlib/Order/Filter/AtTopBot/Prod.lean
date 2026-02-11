@@ -40,16 +40,20 @@ lemma tendsto_finset_prod_atTop :
     exact Finset.subset_product
 
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
-    (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
-  @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _
+    (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) := by
+  cases isEmpty_or_nonempty α
+  · subsingleton
+  cases isEmpty_or_nonempty β
+  · subsingleton
+  simpa [atBot, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 
 theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ˢ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by
   rw [prod_map_map_eq, prod_atTop_atTop_eq, Prod.map_def]
 
 theorem prod_map_atBot_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
-    (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atBot ×ˢ map u₂ atBot = map (Prod.map u₁ u₂) atBot :=
-  @prod_map_atTop_eq _ _ β₁ᵒᵈ β₂ᵒᵈ _ _ _ _
+    (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atBot ×ˢ map u₂ atBot = map (Prod.map u₁ u₂) atBot := by
+  rw [prod_map_map_eq, prod_atBot_atBot_eq, Prod.map_def]
 
 theorem tendsto_atBot_diagonal [Preorder α] : Tendsto (fun a : α => (a, a)) atBot atBot := by
   rw [← prod_atBot_atBot_eq]
@@ -88,8 +92,8 @@ theorem eventually_atBot_prod_self [Nonempty α] [Preorder α] [IsCodirectedOrde
   simp [← prod_atBot_atBot_eq, (@atBot_basis α _ _).prod_self.eventually_iff]
 
 theorem eventually_atTop_prod_self [Nonempty α] [Preorder α] [IsDirectedOrder α]
-    {p : α × α → Prop} : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k l, a ≤ k → a ≤ l → p (k, l) :=
-  eventually_atBot_prod_self (α := αᵒᵈ)
+    {p : α × α → Prop} : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k l, a ≤ k → a ≤ l → p (k, l) := by
+  simp [← prod_atTop_atTop_eq, (@atTop_basis α _ _).prod_self.eventually_iff]
 
 theorem eventually_atBot_prod_self' [Nonempty α] [Preorder α] [IsCodirectedOrder α]
     {p : α × α → Prop} : (∀ᶠ x in atBot, p x) ↔ ∃ a, ∀ k ≤ a, ∀ l ≤ a, p (k, l) := by
@@ -105,7 +109,8 @@ theorem eventually_atTop_curry [Preorder α] [Preorder β] {p : α × β → Pro
   exact hp.curry
 
 theorem eventually_atBot_curry [Preorder α] [Preorder β] {p : α × β → Prop}
-    (hp : ∀ᶠ x : α × β in Filter.atBot, p x) : ∀ᶠ k in atBot, ∀ᶠ l in atBot, p (k, l) :=
-  @eventually_atTop_curry αᵒᵈ βᵒᵈ _ _ _ hp
+    (hp : ∀ᶠ x : α × β in Filter.atBot, p x) : ∀ᶠ k in atBot, ∀ᶠ l in atBot, p (k, l) := by
+  rw [← prod_atBot_atBot_eq] at hp
+  exact hp.curry
 
 end Filter
