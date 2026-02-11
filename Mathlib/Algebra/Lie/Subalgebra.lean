@@ -66,6 +66,8 @@ instance : SetLike (LieSubalgebra R L) L where
     congr
     exact SetLike.coe_injective' h
 
+instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
+
 instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'

@@ -516,7 +516,7 @@ def truncatedFundamentalDomain (y : ℝ) : Set ℍ := { τ | τ ∈ 𝒟 ∧ τ.
 /-- Explicit description of the truncated fundamental domain as a subset of `ℂ`, given by
 obviously closed conditions. -/
 lemma coe_truncatedFundamentalDomain (y : ℝ) :
-    Subtype.val '' truncatedFundamentalDomain y =
+    UpperHalfPlane.coe '' truncatedFundamentalDomain y =
     {z | 0 ≤ z.im ∧ z.im ≤ y ∧ |z.re| ≤ 1 / 2 ∧ 1 ≤ ‖z‖} := by
   ext z
   constructor
@@ -533,7 +533,8 @@ lemma coe_truncatedFundamentalDomain (y : ℝ) :
 /-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
 lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     IsCompact (truncatedFundamentalDomain y) := by
-  rw [Subtype.isCompact_iff, coe_truncatedFundamentalDomain, Metric.isCompact_iff_isClosed_bounded]
+  rw [isEmbedding_coe.isCompact_iff, coe_truncatedFundamentalDomain,
+    Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
     apply (isClosed_le continuous_const Complex.continuous_im).inter

@@ -47,7 +47,7 @@ assert_not_exists CompleteLattice
 
 open Set OrderDual
 
-variable {ι α : Type*}
+variable {ι α β : Type*}
 
 section LE
 variable [LE α] {f : ι → α} {i j : ι}
@@ -180,7 +180,7 @@ end LE
 
 section Preorder
 
-variable [Preorder α] {Q : ι → Prop} {f : ι → α} {i j : ι}
+variable [Preorder α] [Preorder β] {Q : ι → Prop} {f : ι → α} {g : α → β} {i j : ι}
 
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
   simp [Minimal, lt_iff_le_not_ge, imp.swap]
@@ -239,6 +239,46 @@ theorem not_maximal_iff_exists_gt (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y �
   not_minimal_iff_exists_lt (α := αᵒᵈ) hx
 
 alias ⟨exists_gt_of_not_maximal, _⟩ := not_maximal_iff_exists_gt
+
+theorem MinimalFor.of_strictMonoOn_comp (hg : StrictMonoOn g (f '' setOf Q))
+    (h : MinimalFor Q (g ∘ f) i) : MinimalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_lt hj <| hg ⟨j, hj, rfl⟩ ⟨i, h.prop, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MaximalFor.of_strictMonoOn_comp (hg : StrictMonoOn g (f '' setOf Q))
+    (h : MaximalFor Q (g ∘ f) i) : MaximalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_gt hj <| hg ⟨i, h.prop, rfl⟩ ⟨j, hj, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MinimalFor.minimal_of_strictMonoOn (hg : StrictMonoOn g (setOf P)) (h : MinimalFor P g x) :
+    Minimal P x :=
+  minimalFor_id.mp <| .of_strictMonoOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MaximalFor.maximal_of_strictMonoOn (hg : StrictMonoOn g (setOf P)) (h : MaximalFor P g x) :
+    Maximal P x :=
+  maximalFor_id.mp <| .of_strictMonoOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MinimalFor.maximalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' setOf Q))
+    (h : MinimalFor Q (g ∘ f) i) : MaximalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_lt hj <| hg ⟨i, h.prop, rfl⟩ ⟨j, hj, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MaximalFor.minimalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' setOf Q))
+    (h : MaximalFor Q (g ∘ f) i) : MinimalFor Q f i := by
+  refine ⟨h.prop, fun j hj hle ↦ ?_⟩
+  by_contra
+  exact h.not_gt hj <| hg ⟨j, hj, rfl⟩ ⟨i, h.prop, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MinimalFor.maximal_of_strictAntiOn (hg : StrictAntiOn g (setOf P)) (h : MinimalFor P g x) :
+    Maximal P x :=
+  maximalFor_id.mp <| MinimalFor.maximalFor_of_strictAntiOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MaximalFor.minimal_of_strictAntiOn (hg : StrictAntiOn g (setOf P)) (h : MaximalFor P g x) :
+    Minimal P x :=
+  minimalFor_id.mp <| MaximalFor.minimalFor_of_strictAntiOn_comp (Set.image_id _ ▸ hg) h
 
 section WellFoundedLT
 variable [WellFoundedLT α]
@@ -476,7 +516,7 @@ end Set
 
 section Image
 
-variable [Preorder α] {β : Type*} [Preorder β] {s : Set α} {t : Set β}
+variable [Preorder α] [Preorder β] {s : Set α} {t : Set β}
 section Function
 
 variable {f : α → β}

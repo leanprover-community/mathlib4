@@ -372,4 +372,30 @@ lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
 
 end
 
+/-! ### Barycenter of a Standard Simplex -/
+
+section Barycenter
+
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Nonempty X]
+
+/-- The barycenter of a standard simplex is the center of mass of
+the set of vertices (equally weighted). -/
+def barycenter : stdSimplex 𝕜 X :=
+  ⟨fun i => (Fintype.card X : 𝕜)⁻¹, by simp [stdSimplex]⟩
+
+/-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
+@[simp]
+theorem barycenter_apply (x : X) :
+    (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
+
+/-- The barycenter equals the (equal weight) center of mass of vertices (`Finset.centerMass`). -/
+theorem barycenter_eq_centerMass [DecidableEq X] :
+    (barycenter : stdSimplex 𝕜 X).val =
+      Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by
+  simp only [Finset.centerMass, Finset.sum_const, Finset.card_univ]
+  ext x
+  simp [barycenter, Pi.smul_apply, Finset.sum_apply, Pi.single_apply]
+
+end Barycenter
+
 end stdSimplex
