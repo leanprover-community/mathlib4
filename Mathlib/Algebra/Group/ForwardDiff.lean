@@ -289,3 +289,50 @@ theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
     ← Pi.smul_def, fwdDiff_iter_const_smul, ← sum_fn]
   exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
     <| mem_range.mp hi
+
+
+
+/--
+According to the difference property, an anti-Pascal triangle is defined.
+-/
+def anti_pascal_triangle_get : List ℤ → List (ℤ × List ℤ)
+| [] => []
+| x :: xs => (x, xs) :: (anti_pascal_triangle_get xs).map (fun y => y)
+
+
+
+def anti_pascal_triangle_first (l : List ℤ) : List ℤ :=
+match l with
+| [] => []
+| x :: xs =>
+  (
+    List.dropLast (
+      (anti_pascal_triangle_get (x :: xs)).map (fun ⟨x, xs⟩ => abs (x - xs.headD 0))
+    )
+  )
+
+
+def anti_pascal_triangle_aux (l : List ℤ) : List <| List ℤ :=
+match l with
+| [] => []
+| x :: xs =>
+  let l' := anti_pascal_triangle_first (x :: xs)
+  l' :: (anti_pascal_triangle_aux l')
+termination_by l.length
+decreasing_by
+  clear l'
+  simp only [anti_pascal_triangle_first, List.headD_eq_head?_getD, List.length_dropLast,
+    List.length_map, List.length_cons]
+  unfold anti_pascal_triangle_get
+  simp only [List.map_id_fun', id_eq, List.length_cons, add_tsub_cancel_right]
+  induction xs
+  · simp [anti_pascal_triangle_get]
+  · simp only [List.length_cons]
+    simp only [anti_pascal_triangle_get, List.map_id_fun', id_eq, List.length_cons,
+      add_lt_add_iff_right]
+    assumption
+
+
+
+def anti_pascal_triangle (l : List ℤ) : List <| List ℤ :=
+  l :: List.dropLast (anti_pascal_triangle_aux l)
