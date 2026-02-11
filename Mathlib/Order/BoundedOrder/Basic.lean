@@ -227,18 +227,20 @@ variable (α)
 
 @[to_dual]
 instance instTop [Bot α] : Top αᵒᵈ :=
-  ⟨(⊥ : α)⟩
+  ⟨toDual (⊥ : α)⟩
 
 @[to_dual]
 instance instOrderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
   __ := inferInstanceAs (Top αᵒᵈ)
-  le_top := @bot_le α _ _
+  le_top _ := bot_le
 
 @[to_dual (attr := simp)] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
 @[to_dual (attr := simp)] lemma toDual_top [Top α] : toDual (⊤ : α) = ⊥ := rfl
 
-@[to_dual (attr := simp)] lemma ofDual_eq_top [Top α] {a : αᵒᵈ} : ofDual a = ⊤ ↔ a = ⊥ := .rfl
-@[to_dual (attr := simp)] lemma toDual_eq_top [Bot α] {a : α} : toDual a = ⊤ ↔ a = ⊥ := .rfl
+@[to_dual (attr := simp)] lemma ofDual_eq_top [Top α] {a : αᵒᵈ} : ofDual a = ⊤ ↔ a = ⊥ :=
+  ofDual_inj
+@[to_dual (attr := simp)] lemma toDual_eq_top [Bot α] {a : α} : toDual a = ⊤ ↔ a = ⊥ :=
+  toDual_inj
 
 end OrderDual
 

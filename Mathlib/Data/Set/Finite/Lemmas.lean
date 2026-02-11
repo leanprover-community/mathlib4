@@ -93,6 +93,6 @@ theorem exists_lower_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
 
 theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f : α → β)
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f b ≤ f a :=
-  exists_lower_bound_image (β := βᵒᵈ) s f h
+  exists_lower_bound_image s (OrderDual.toDual ∘ f) h
 
 end Set

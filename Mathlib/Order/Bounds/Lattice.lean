@@ -32,13 +32,15 @@ theorem gc_upperBounds_lowerBounds : GaloisConnection
 
 @[simp]
 theorem upperBounds_iUnion :
-    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i) :=
-  gc_upperBounds_lowerBounds.l_iSup
+    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i) := by
+  ext x; simp only [mem_upperBounds, Set.mem_iUnion, Set.mem_iInter]
+  exact ⟨fun h i y hy => h y ⟨i, hy⟩, fun h y ⟨i, hy⟩ => h i y hy⟩
 
 @[simp]
 theorem lowerBounds_iUnion :
-    lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) :=
-  gc_upperBounds_lowerBounds.u_iInf
+    lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) := by
+  ext x; simp only [mem_lowerBounds, Set.mem_iUnion, Set.mem_iInter]
+  exact ⟨fun h i y hy => h y ⟨i, hy⟩, fun h y ⟨i, hy⟩ => h i y hy⟩
 
 theorem isLUB_iUnion_iff_of_isLUB {u : ι → α} (hs : ∀ i, IsLUB (s i) (u i)) (c : α) :
     IsLUB (Set.range u) c ↔ IsLUB (⋃ i, s i) c := by

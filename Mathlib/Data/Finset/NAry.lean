@@ -549,28 +549,28 @@ lemma le_inf'_image₂ {g : γ → δ} {a : δ} (h : (image₂ f s t).Nonempty) 
 
 lemma inf'_image₂_left (g : γ → δ) (h : (image₂ f s t).Nonempty) :
     inf' (image₂ f s t) h g =
-      inf' s h.of_image₂_left fun x ↦ inf' t h.of_image₂_right (g <| f x ·) :=
-  sup'_image₂_left (δ := δᵒᵈ) g h
+      inf' s h.of_image₂_left fun x ↦ inf' t h.of_image₂_right (g <| f x ·) := by
+  simp only [image₂, inf'_image, inf'_product_left]; rfl
 
 lemma inf'_image₂_right (g : γ → δ) (h : (image₂ f s t).Nonempty) :
     inf' (image₂ f s t) h g =
-      inf' t h.of_image₂_right fun y ↦ inf' s h.of_image₂_left (g <| f · y) :=
-  sup'_image₂_right (δ := δᵒᵈ) g h
+      inf' t h.of_image₂_right fun y ↦ inf' s h.of_image₂_left (g <| f · y) := by
+  simp only [image₂, inf'_image, inf'_product_right]; rfl
 
 variable [OrderTop δ]
 
 @[simp (default + 1)] -- otherwise `simp` doesn't use `forall_mem_image₂`
 lemma le_inf_image₂ {g : γ → δ} {a : δ} :
-    a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) :=
-  sup_image₂_le (δ := δᵒᵈ)
+    a ≤ inf (image₂ f s t) g ↔ ∀ x ∈ s, ∀ y ∈ t, a ≤ g (f x y) := by
+  rw [Finset.le_inf_iff, forall_mem_image₂]
 
 variable (s t)
 
-lemma inf_image₂_left (g : γ → δ) : inf (image₂ f s t) g = inf s fun x ↦ inf t (g ∘ f x) :=
-  sup_image₂_left (δ := δᵒᵈ) ..
+lemma inf_image₂_left (g : γ → δ) : inf (image₂ f s t) g = inf s fun x ↦ inf t (g ∘ f x) := by
+  simp only [image₂, inf_image, inf_product_left]; rfl
 
-lemma inf_image₂_right (g : γ → δ) : inf (image₂ f s t) g = inf t fun y ↦ inf s (g <| f · y) :=
-  sup_image₂_right (δ := δᵒᵈ) ..
+lemma inf_image₂_right (g : γ → δ) : inf (image₂ f s t) g = inf t fun y ↦ inf s (g <| f · y) := by
+  simp only [image₂, inf_image, inf_product_right]; rfl
 
 end SemilatticeInf
 

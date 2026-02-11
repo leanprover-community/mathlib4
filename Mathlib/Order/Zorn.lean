@@ -150,13 +150,33 @@ theorem zorn_subset_nonempty (S : Set (Set α))
   zorn_le_nonempty₀ _ (fun _ cS hc y yc => H _ cS hc ⟨y, yc⟩) _ hx
 
 theorem zorn_superset (S : Set (Set α))
-    (h : ∀ c ⊆ S, IsChain (· ⊆ ·) c → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) : ∃ m, Minimal (· ∈ S) m :=
-  (@zorn_le₀ (Set α)ᵒᵈ _ S) fun c cS hc => h c cS hc.symm
+    (h : ∀ c ⊆ S, IsChain (· ⊆ ·) c → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) :
+    ∃ m, Minimal (· ∈ S) m := by
+  obtain ⟨m, hm⟩ := @zorn_le₀ (Set α)ᵒᵈ _ (OrderDual.ofDual ⁻¹' S) fun c cS hc => by
+    obtain ⟨lb, hlbS, hlb⟩ := h (OrderDual.ofDual '' c)
+      (fun _ ⟨y, hy, heq⟩ => heq ▸ cS hy)
+      (by intro a ⟨a', ha', ha_eq⟩ b ⟨b', hb', hb_eq⟩ hab
+          subst ha_eq; subst hb_eq
+          exact (hc ha' hb' fun h => hab (congrArg OrderDual.ofDual h)).symm)
+    exact ⟨OrderDual.toDual lb, hlbS, fun z hz => hlb _ ⟨z, hz, rfl⟩⟩
+  exact ⟨OrderDual.ofDual m, hm.1, fun a haS hle =>
+    @hm.2 (OrderDual.toDual a) haS hle⟩
 
 theorem zorn_superset_nonempty (S : Set (Set α))
     (H : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty → ∃ lb ∈ S, ∀ s ∈ c, lb ⊆ s) (x) (hx : x ∈ S) :
-    ∃ m, m ⊆ x ∧ Minimal (· ∈ S) m :=
-  @zorn_le_nonempty₀ (Set α)ᵒᵈ _ S (fun _ cS hc y yc => H _ cS hc.symm ⟨y, yc⟩) _ hx
+    ∃ m, m ⊆ x ∧ Minimal (· ∈ S) m := by
+  obtain ⟨m, hxm, hm⟩ := @zorn_le_nonempty₀ (Set α)ᵒᵈ _ (OrderDual.ofDual ⁻¹' S)
+    (fun c cS hc y yc => by
+      obtain ⟨lb, hlbS, hlb⟩ := H (OrderDual.ofDual '' c)
+        (fun _ ⟨y, hy, heq⟩ => heq ▸ cS hy)
+        (by intro a ⟨a', ha', ha_eq⟩ b ⟨b', hb', hb_eq⟩ hab
+            subst ha_eq; subst hb_eq
+            exact (hc ha' hb' fun h => hab (congrArg OrderDual.ofDual h)).symm)
+        ⟨OrderDual.ofDual y, ⟨y, yc, rfl⟩⟩
+      exact ⟨OrderDual.toDual lb, hlbS, fun z hz => hlb _ ⟨z, hz, rfl⟩⟩)
+    (OrderDual.toDual x) hx
+  exact ⟨OrderDual.ofDual m, hxm, hm.1, fun a haS hle =>
+    @hm.2 (OrderDual.toDual a) haS hle⟩
 
 /-- Every chain is contained in a maximal chain. This generalizes Hausdorff's maximality principle.
 -/

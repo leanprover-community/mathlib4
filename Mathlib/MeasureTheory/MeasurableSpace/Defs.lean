@@ -58,7 +58,12 @@ variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
   `MeasurableSet.iUnion` instead. -/
   measurableSet_iUnion : ∀ f : ℕ → Set α, (∀ i, MeasurableSet' (f i)) → MeasurableSet' (⋃ i, f i)
 
-instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
+instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ where
+  MeasurableSet' s := h.MeasurableSet' (OrderDual.toDual ⁻¹' s)
+  measurableSet_empty := h.measurableSet_empty
+  measurableSet_compl s hs := h.measurableSet_compl _ hs
+  measurableSet_iUnion f hf := by
+    rw [Set.preimage_iUnion]; exact h.measurableSet_iUnion _ hf
 
 /-- `MeasurableSet s` means that `s` is measurable (in the ambient measure space on `α`) -/
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=

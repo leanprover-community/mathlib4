@@ -340,11 +340,12 @@ lemma unbotD_zero_mul (a b : WithBot α) : (a * b).unbotD 0 = a.unbotD 0 * b.unb
   cases b; · rw [mul_bot ha, unbotD_bot, mul_zero]
   rw [← coe_mul, unbotD_coe, unbotD_coe, unbotD_coe]
 
-theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ :=
-  WithTop.mul_ne_top (α := αᵒᵈ) ha hb
+theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ := by
+  simp [mul_eq_bot_iff, *]
 
 theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
-  WithTop.mul_lt_top (α := αᵒᵈ) ha hb
+  WithBot.bot_lt_iff_ne_bot.mpr (mul_ne_bot (WithBot.bot_lt_iff_ne_bot.mp ha)
+    (WithBot.bot_lt_iff_ne_bot.mp hb))
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
   WithTop.instNoZeroDivisors

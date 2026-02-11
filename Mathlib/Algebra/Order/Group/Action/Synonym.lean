@@ -21,39 +21,50 @@ This PR transfers group action instances from a type `α` to `αᵒᵈ` and `Lex
 
 @[expose] public section
 
+open OrderDual
+
 variable {M N α : Type*}
 
 namespace OrderDual
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α := ‹MulAction M α›
+instance instMulAction [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α where
+  one_smul := one_smul M
+  mul_smul x y := mul_smul (ofDual x) (ofDual y)
 
 @[to_additive]
-instance instMulAction' [Monoid M] [MulAction M α] : MulAction M αᵒᵈ := ‹MulAction M α›
+instance instMulAction' [Monoid M] [MulAction M α] : MulAction M αᵒᵈ :=
+  ofDual_injective.mulAction ofDual (fun _ _ => rfl)
 
 @[to_additive]
-instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
-  ‹SMulCommClass M N α›
+instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
+    SMulCommClass Mᵒᵈ N α where
+  smul_comm m := smul_comm (ofDual m)
 
 @[to_additive]
-instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M Nᵒᵈ α :=
-  ‹SMulCommClass M N α›
+instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] :
+    SMulCommClass M Nᵒᵈ α where
+  smul_comm m n := smul_comm m (ofDual n)
 
 @[to_additive]
-instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵒᵈ :=
-  ‹SMulCommClass M N α›
+instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] :
+    SMulCommClass M N αᵒᵈ where
+  smul_comm m n a := ext (smul_comm m n (ofDual a))
 
 @[to_additive]
 instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower Mᵒᵈ N α := ‹IsScalarTower M N α›
+    IsScalarTower Mᵒᵈ N α where
+  smul_assoc x y := smul_assoc (ofDual x) y
 
 @[to_additive]
 instance instIsScalarTower' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M Nᵒᵈ α := ‹IsScalarTower M N α›
+    IsScalarTower M Nᵒᵈ α where
+  smul_assoc x y := smul_assoc x (ofDual y)
 
 @[to_additive]
 instance instIsScalarTower'' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M N αᵒᵈ := ‹IsScalarTower M N α›
+    IsScalarTower M N αᵒᵈ where
+  smul_assoc x y z := ext (smul_assoc x y (ofDual z))
 
 end OrderDual
 

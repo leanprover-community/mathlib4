@@ -326,23 +326,32 @@ theorem le_maximum_of_mem' (ha : a ∈ l) : (a : WithBot α) ≤ maximum l :=
 theorem minimum_le_of_mem' (ha : a ∈ l) : minimum l ≤ (a : WithTop α) :=
   le_of_not_gt <| not_lt_minimum_of_mem' ha
 
-theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimum l) a :=
-  @maximum_concat αᵒᵈ _ _ _
+theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimum l) a := by
+  simp only [minimum, argmin_concat, id]
+  cases argmin id l
+  · exact (min_eq_right le_top).symm
+  · rename_i c
+    simp only [WithTop.some_eq_coe]
+    rw [min_comm]
+    simp [min_def_lt, WithTop.coe_lt_coe]
 
 theorem maximum_cons (a : α) (l : List α) : maximum (a :: l) = max ↑a (maximum l) :=
   List.reverseRecOn l (by simp) fun tl hd ih => by
     rw [← cons_append, maximum_concat, ih, maximum_concat, max_assoc]
 
 theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min ↑a (minimum l) :=
-  @maximum_cons αᵒᵈ _ _ _
+  List.reverseRecOn l (by simp) fun tl hd ih => by
+    rw [← cons_append, minimum_concat, ih, minimum_concat, min_assoc]
 
 lemma maximum_append (l₁ l₂ : List α) : (l₁ ++ l₂).maximum = max l₁.maximum l₂.maximum := by
   induction l₁ with
   | nil => simp
   | cons _ _ ih => rw [maximum_cons, cons_append, maximum_cons, ih, ← max_assoc]
 
-lemma minimum_append (l₁ l₂ : List α) : (l₁ ++ l₂).minimum = min l₁.minimum l₂.minimum :=
-  @maximum_append αᵒᵈ _ _ _
+lemma minimum_append (l₁ l₂ : List α) : (l₁ ++ l₂).minimum = min l₁.minimum l₂.minimum := by
+  induction l₁ with
+  | nil => simp
+  | cons _ _ ih => rw [minimum_cons, cons_append, minimum_cons, ih, ← min_assoc]
 
 theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.maximum ≤ b := by
   induction l with
@@ -362,7 +371,7 @@ theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum �
   maximum_le_of_forall_le fun _ ↦ (le_maximum_of_mem' <| h ·)
 
 theorem minimum_anti {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₂.minimum ≤ l₁.minimum :=
-  @maximum_mono αᵒᵈ _ _ _ h
+  le_minimum_of_forall_le fun _ ↦ (minimum_le_of_mem' <| h ·)
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
@@ -370,8 +379,11 @@ theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m 
   intro _ h a hal hma
   rw [_root_.le_antisymm hma (h a hal)]
 
-theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
-  @maximum_eq_coe_iff αᵒᵈ _ _ _
+theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a := by
+  rw [minimum, ← WithTop.some_eq_coe, argmin_eq_some_iff]
+  simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
+  intro _ h a hal hma
+  rw [_root_.le_antisymm hma (h a hal)]
 
 theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
   induction l <;> simp [maximum_cons, *]
@@ -383,13 +395,13 @@ theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
 
 theorem minimum_ne_top_of_ne_nil (h : l ≠ []) : l.minimum ≠ ⊤ :=
-  @maximum_ne_bot_of_ne_nil αᵒᵈ _ _ h
+  match l, h with | _ :: _, _ => by simp [minimum_cons]
 
 theorem maximum_ne_bot_of_length_pos (h : 0 < l.length) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
 
 theorem minimum_ne_top_of_length_pos (h : 0 < l.length) : l.minimum ≠ ⊤ :=
-  maximum_ne_bot_of_length_pos (α := αᵒᵈ) h
+  match l, h with | _ :: _, _ => by simp [minimum_cons]
 
 /-- The maximum value in a non-empty `List`. -/
 def maximum_of_length_pos (h : 0 < l.length) : α :=
@@ -397,7 +409,7 @@ def maximum_of_length_pos (h : 0 < l.length) : α :=
 
 /-- The minimum value in a non-empty `List`. -/
 def minimum_of_length_pos (h : 0 < l.length) : α :=
-  maximum_of_length_pos (α := αᵒᵈ) h
+  WithTop.untop l.minimum (minimum_ne_top_of_length_pos h)
 
 @[simp]
 lemma coe_maximum_of_length_pos (h : 0 < l.length) :
@@ -407,7 +419,7 @@ lemma coe_maximum_of_length_pos (h : 0 < l.length) :
 @[simp]
 lemma coe_minimum_of_length_pos (h : 0 < l.length) :
     (l.minimum_of_length_pos h : α) = l.minimum :=
-  WithTop.coe_untop _ _
+  WithTop.coe_untop _ (minimum_ne_top_of_length_pos h)
 
 @[simp]
 theorem le_maximum_of_length_pos_iff {b : α} (h : 0 < l.length) :
@@ -417,7 +429,7 @@ theorem le_maximum_of_length_pos_iff {b : α} (h : 0 < l.length) :
 @[simp]
 theorem minimum_of_length_pos_le_iff {b : α} (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
-  WithTop.untop_le_iff _
+  WithTop.untop_le_iff (minimum_ne_top_of_length_pos h)
 
 theorem maximum_of_length_pos_mem (h : 0 < l.length) :
     maximum_of_length_pos h ∈ l := by
@@ -425,8 +437,9 @@ theorem maximum_of_length_pos_mem (h : 0 < l.length) :
   simp only [coe_maximum_of_length_pos]
 
 theorem minimum_of_length_pos_mem (h : 0 < l.length) :
-    minimum_of_length_pos h ∈ l :=
-  maximum_of_length_pos_mem (α := αᵒᵈ) h
+    minimum_of_length_pos h ∈ l := by
+  apply minimum_mem
+  simp only [coe_minimum_of_length_pos]
 
 theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
     a ≤ l.maximum_of_length_pos w := by
@@ -434,8 +447,9 @@ theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
   exact le_maximum_of_mem' h
 
 theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
-    l.minimum_of_length_pos w ≤ a :=
-  le_maximum_of_length_pos_of_mem (α := αᵒᵈ) h w
+    l.minimum_of_length_pos w ≤ a := by
+  simp only [minimum_of_length_pos_le_iff]
+  exact minimum_le_of_mem' h
 
 theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l[i] ≤ l.maximum_of_length_pos h := by
@@ -443,8 +457,9 @@ theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat
   exact getElem_mem _
 
 theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
-    l.minimum_of_length_pos h ≤ l[i] :=
-  getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
+    l.minimum_of_length_pos h ≤ l[i] := by
+  apply minimum_of_length_pos_le_of_mem
+  exact getElem_mem _
 
 #adaptation_note
 /-- 2025-08-14: We should stop using `max?_eq_some_iff_legacy` below, by connecting up Mathlib's
@@ -465,8 +480,18 @@ lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.max
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
       all_goals simp [le_total]
 
-lemma getD_min?_eq_untopD_minimum (l : List α) (d : α) : l.min?.getD d = l.minimum.untopD d :=
-  getD_max?_eq_unbotD_maximum (α := αᵒᵈ) _ _
+lemma getD_min?_eq_untopD_minimum (l : List α) (d : α) : l.min?.getD d = l.minimum.untopD d := by
+  cases hy : l.minimum with
+  | top => simp [List.minimum_eq_top.mp hy]
+  | coe y =>
+    rw [List.minimum_eq_coe_iff] at hy
+    simp only [WithTop.untopD_coe]
+    cases hz : l.min? with
+    | none => simp [List.min?_eq_none_iff.mp hz] at hy
+    | some z =>
+      rw [List.min?_eq_some_iff] at hz
+      · rw [Option.getD_some]
+        exact _root_.le_antisymm (hz.right _ hy.left) (hy.right _ hz.left)
 
 end LinearOrder
 
@@ -511,14 +536,28 @@ section OrderTop
 variable [OrderTop α] {l : List α}
 
 @[simp]
-theorem foldr_min_of_ne_nil (h : l ≠ []) : ↑(l.foldr min ⊤) = l.minimum :=
-  @foldr_max_of_ne_nil αᵒᵈ _ _ _ h
+theorem foldr_min_of_ne_nil (h : l ≠ []) : ↑(l.foldr min ⊤) = l.minimum := by
+  induction l with
+  | nil => contradiction
+  | cons hd tl IH =>
+    rw [minimum_cons, foldr, WithTop.coe_min]
+    by_cases h : tl = []
+    · simp [h]
+    · simp [IH h]
 
-theorem le_min_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, a ≤ x) : a ≤ l.foldr min ⊤ :=
-  @max_le_of_forall_le αᵒᵈ _ _ _ _ h
+theorem le_min_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, a ≤ x) : a ≤ l.foldr min ⊤ := by
+  induction l with
+  | nil => simp
+  | cons y l IH => simpa [h y mem_cons_self] using IH fun x hx => h x <| mem_cons_of_mem _ hx
 
-theorem min_le_of_le (l : List α) (a : α) {x : α} (hx : x ∈ l) (h : x ≤ a) : l.foldr min ⊤ ≤ a :=
-  @le_max_of_le αᵒᵈ _ _ _ _ _ hx h
+theorem min_le_of_le (l : List α) (a : α) {x : α} (hx : x ∈ l) (h : x ≤ a) : l.foldr min ⊤ ≤ a := by
+  induction l with
+  | nil => exact absurd hx not_mem_nil
+  | cons y l IH =>
+    obtain hl | hl := hx
+    · simp only [foldr]
+      exact min_le_of_left_le h
+    · exact min_le_of_right_le (IH (by assumption))
 
 end OrderTop
 
@@ -533,8 +572,15 @@ theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a �
     · exact le_max_of_le_left h
     · exact le_max_of_le_right (IH hl)
 
-theorem min_le_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : x ≤ a) : l.foldr min b ≤ a :=
-  @le_max_of_le' αᵒᵈ _ _ _ _ _ hx h
+theorem min_le_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : x ≤ a) :
+    l.foldr min b ≤ a := by
+  induction l with
+  | nil => exact absurd hx List.not_mem_nil
+  | cons y l IH =>
+    simp only [List.foldr]
+    obtain rfl | hl := mem_cons.mp hx
+    · exact min_le_of_left_le h
+    · exact min_le_of_right_le (IH hl)
 
 end Fold
 

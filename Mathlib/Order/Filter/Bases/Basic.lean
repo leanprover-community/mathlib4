@@ -741,7 +741,9 @@ theorem HasBasis.prod_same_index_anti {ι : Type*} [LinearOrder ι] {p : ι → 
     {sb : ι → Set β} (hla : la.HasBasis p sa) (hlb : lb.HasBasis p sb)
     (hsa : AntitoneOn sa { i | p i }) (hsb : AntitoneOn sb { i | p i }) :
     (la ×ˢ lb).HasBasis p fun i => sa i ×ˢ sb i :=
-  @HasBasis.prod_same_index_mono _ _ _ _ ιᵒᵈ _ _ _ _ hla hlb hsa.dual_left hsb.dual_left
+  hla.prod_same_index hlb fun {i j} hi hj =>
+    have : p (max i j) := max_rec' _ hi hj
+    ⟨max i j, this, hsa hi this <| le_max_left _ _, hsb hj this <| le_max_right _ _⟩
 
 theorem HasBasis.prod_self (hl : la.HasBasis pa sa) :
     (la ×ˢ la).HasBasis pa fun i => sa i ×ˢ sa i :=

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
-public import Mathlib.Order.Synonym
+public import Mathlib.Data.Nat.Cast.Synonym
 
 import Mathlib.Tactic.Tauto
 
@@ -296,17 +296,38 @@ end Function.Injective
 
 namespace OrderDual
 
-instance instRatCast [RatCast K] : RatCast Kᵒᵈ := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ := ‹_›
-instance instSemifield [Semifield K] : Semifield Kᵒᵈ := ‹_›
-instance instField [Field K] : Field Kᵒᵈ := ‹_›
+instance instRatCast [RatCast K] : RatCast Kᵒᵈ where ratCast q := toDual (q : K)
+instance instNNRatCast [NNRatCast K] : NNRatCast Kᵒᵈ where nnratCast q := toDual (q : K)
+theorem ofDual_injective : Function.Injective (ofDual : Kᵒᵈ → K) :=
+  fun _ _ h => OrderDual.ext h
+
+instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ :=
+  ofDual_injective.divisionSemiring ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ :=
+  ofDual_injective.divisionRing ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+instance instSemifield [Semifield K] : Semifield Kᵒᵈ :=
+  ofDual_injective.semifield ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+instance instField [Field K] : Field Kᵒᵈ :=
+  ofDual_injective.field ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 end OrderDual
 
-@[simp] lemma toDual_ratCast [RatCast K] (n : ℚ) : toDual (n : K) = n := rfl
+@[simp] lemma toDual_ratCast [RatCast K] (n : ℚ) : toDual (n : K) = (n : Kᵒᵈ) := rfl
 
-@[simp] lemma ofDual_ratCast [RatCast K] (n : ℚ) : (ofDual n : K) = n := rfl
+@[simp] lemma ofDual_ratCast [RatCast K] (n : ℚ) : ofDual (n : Kᵒᵈ) = (n : K) := rfl
 
 /-! ### Lexicographic order -/
 

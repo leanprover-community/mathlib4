@@ -88,16 +88,34 @@ variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   [Module α β] [PosSMulMono α β] {s : Set β}
   {a : α}
 
-@[simp] lemma lowerBounds_smul_of_neg (ha : a < 0) : lowerBounds (a • s) = a • upperBounds s :=
-  (OrderIso.smulRightDual β ha).upperBounds_image
+@[simp] lemma lowerBounds_smul_of_neg (ha : a < 0) : lowerBounds (a • s) = a • upperBounds s := by
+  ext x
+  constructor
+  · intro hx
+    refine ⟨a⁻¹ • x, fun b hb => ?_, smul_inv_smul₀ ha.ne x⟩
+    have := smul_le_smul_of_nonpos_left (hx (Set.smul_mem_smul_set hb)) (inv_nonpos.mpr ha.le)
+    rwa [inv_smul_smul₀ ha.ne] at this
+  · rintro ⟨y, hy, rfl⟩ z hz
+    obtain ⟨w, hw, rfl⟩ := hz
+    exact smul_le_smul_of_nonpos_left (hy hw) ha.le
 
-@[simp] lemma upperBounds_smul_of_neg (ha : a < 0) : upperBounds (a • s) = a • lowerBounds s :=
-  (OrderIso.smulRightDual β ha).lowerBounds_image
+@[simp] lemma upperBounds_smul_of_neg (ha : a < 0) : upperBounds (a • s) = a • lowerBounds s := by
+  ext x
+  constructor
+  · intro hx
+    refine ⟨a⁻¹ • x, fun b hb => ?_, smul_inv_smul₀ ha.ne x⟩
+    have := smul_le_smul_of_nonpos_left (hx (Set.smul_mem_smul_set hb)) (inv_nonpos.mpr ha.le)
+    rwa [inv_smul_smul₀ ha.ne] at this
+  · rintro ⟨y, hy, rfl⟩ z hz
+    obtain ⟨w, hw, rfl⟩ := hz
+    exact smul_le_smul_of_nonpos_left (hy hw) ha.le
 
-@[simp] lemma bddBelow_smul_iff_of_neg (ha : a < 0) : BddBelow (a • s) ↔ BddAbove s :=
-  (OrderIso.smulRightDual β ha).bddAbove_image
+@[simp] lemma bddBelow_smul_iff_of_neg (ha : a < 0) : BddBelow (a • s) ↔ BddAbove s := by
+  simp only [BddBelow, BddAbove, lowerBounds_smul_of_neg ha]
+  exact ⟨fun ⟨_, y, hy, rfl⟩ => ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨a • y, y, hy, rfl⟩⟩
 
-@[simp] lemma bddAbove_smul_iff_of_neg (ha : a < 0) : BddAbove (a • s) ↔ BddBelow s :=
-  (OrderIso.smulRightDual β ha).bddBelow_image
+@[simp] lemma bddAbove_smul_iff_of_neg (ha : a < 0) : BddAbove (a • s) ↔ BddBelow s := by
+  simp only [BddAbove, BddBelow, upperBounds_smul_of_neg ha]
+  exact ⟨fun ⟨_, y, hy, rfl⟩ => ⟨y, hy⟩, fun ⟨y, hy⟩ => ⟨a • y, y, hy, rfl⟩⟩
 
 end LinearOrderedField

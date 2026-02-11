@@ -673,34 +673,74 @@ end CompleteLatticeHom
 
 /-! ### Dual homs -/
 
+private theorem toDual_comp_image_preimage {f : α → β} {s : Set αᵒᵈ} :
+    f '' (toDual ⁻¹' s) = toDual ⁻¹' ((toDual ∘ f ∘ ofDual) '' s) := by
+  ext b; simp only [Set.mem_image, Set.mem_preimage, Function.comp_def]
+  constructor
+  · rintro ⟨a, ha, rfl⟩; exact ⟨toDual a, ha, rfl⟩
+  · rintro ⟨a, ha, h⟩
+    exact ⟨ofDual a, by simpa [toDual_ofDual] using ha,
+      by simpa using congrArg ofDual h⟩
+
+private theorem ofDual_comp_image_preimage {f : αᵒᵈ → βᵒᵈ} {s : Set α} :
+    toDual ⁻¹' (f '' (ofDual ⁻¹' s)) = (ofDual ∘ f ∘ toDual) '' s := by
+  ext b; simp only [Set.mem_preimage, Set.mem_image, Function.comp_def]
+  constructor
+  · rintro ⟨a, ha, h⟩
+    exact ⟨ofDual a, by simpa [toDual_ofDual] using ha,
+      by simpa using congrArg ofDual h⟩
+  · rintro ⟨a, ha, rfl⟩
+    exact ⟨toDual a, ha, by simp [toDual_ofDual]⟩
+
+private theorem ofDual_comp_image_preimage' {f : αᵒᵈ → βᵒᵈ} {s : Set α} :
+    f '' (ofDual ⁻¹' s) = ofDual ⁻¹' ((ofDual ∘ f ∘ toDual) '' s) := by
+  ext ⟨b⟩; simp only [Set.mem_image, Set.mem_preimage, Function.comp_def]
+  constructor
+  · rintro ⟨a, ha, h⟩
+    exact ⟨ofDual a, by simpa [toDual_ofDual] using ha,
+      by simpa using congrArg ofDual h⟩
+  · rintro ⟨a, ha, rfl⟩
+    exact ⟨toDual a, ha, by simp [toDual_ofDual]⟩
 
 namespace sSupHom
 
 variable [SupSet α] [SupSet β] [SupSet γ]
 
 /-- Reinterpret a `⨆`-homomorphism as an `⨅`-homomorphism between the dual orders. -/
-@[simps]
+@[simps!]
 protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨toDual ∘ f ∘ ofDual, f.map_sSup'⟩
-  invFun f := ⟨ofDual ∘ f ∘ toDual, f.map_sInf'⟩
+  toFun f :=
+    { toFun := toDual ∘ f ∘ ofDual
+      map_sInf' := fun s => by
+        change toDual (f (sSup (toDual ⁻¹' s))) =
+          toDual (sSup (toDual ⁻¹' ((toDual ∘ f ∘ ofDual) '' s)))
+        rw [map_sSup, toDual_comp_image_preimage] }
+  invFun f :=
+    { toFun := ofDual ∘ f ∘ toDual
+      map_sSup' := fun s => by
+        change ofDual (f (sInf (ofDual ⁻¹' s))) =
+          ofDual (sInf (ofDual ⁻¹' ((ofDual ∘ f ∘ toDual) '' s)))
+        rw [map_sInf, ofDual_comp_image_preimage'] }
+  left_inv _ := sSupHom.ext fun _ => rfl
+  right_inv _ := sInfHom.ext fun ⟨_⟩ => rfl
 
 @[simp]
-theorem dual_id : sSupHom.dual (sSupHom.id α) = sInfHom.id _ :=
-  rfl
+theorem dual_id : sSupHom.dual (sSupHom.id α) = sInfHom.id _ := by
+  ext x; simp [sSupHom.dual]
 
 @[simp]
 theorem dual_comp (g : sSupHom β γ) (f : sSupHom α β) :
-    sSupHom.dual (g.comp f) = (sSupHom.dual g).comp (sSupHom.dual f) :=
-  rfl
+    sSupHom.dual (g.comp f) = (sSupHom.dual g).comp (sSupHom.dual f) := by
+  ext; rfl
 
 @[simp]
-theorem symm_dual_id : sSupHom.dual.symm (sInfHom.id _) = sSupHom.id α :=
-  rfl
+theorem symm_dual_id : sSupHom.dual.symm (sInfHom.id _) = sSupHom.id α := by
+  ext x; simp [sSupHom.dual]
 
 @[simp]
 theorem symm_dual_comp (g : sInfHom βᵒᵈ γᵒᵈ) (f : sInfHom αᵒᵈ βᵒᵈ) :
-    sSupHom.dual.symm (g.comp f) = (sSupHom.dual.symm g).comp (sSupHom.dual.symm f) :=
-  rfl
+    sSupHom.dual.symm (g.comp f) = (sSupHom.dual.symm g).comp (sSupHom.dual.symm f) := by
+  ext; rfl
 
 end sSupHom
 
@@ -709,32 +749,40 @@ namespace sInfHom
 variable [InfSet α] [InfSet β] [InfSet γ]
 
 /-- Reinterpret an `⨅`-homomorphism as a `⨆`-homomorphism between the dual orders. -/
-@[simps]
+@[simps!]
 protected def dual : sInfHom α β ≃ sSupHom αᵒᵈ βᵒᵈ where
   toFun f :=
     { toFun := toDual ∘ f ∘ ofDual
-      map_sSup' := fun _ => congr_arg toDual (map_sInf f _) }
+      map_sSup' := fun s => by
+        change toDual (f (sInf (toDual ⁻¹' s))) =
+          toDual (sInf (toDual ⁻¹' ((toDual ∘ f ∘ ofDual) '' s)))
+        rw [map_sInf, toDual_comp_image_preimage] }
   invFun f :=
     { toFun := ofDual ∘ f ∘ toDual
-      map_sInf' := fun _ => congr_arg ofDual (map_sSup f _) }
+      map_sInf' := fun s => by
+        change ofDual (f (sSup (ofDual ⁻¹' s))) =
+          ofDual (sSup (ofDual ⁻¹' ((ofDual ∘ f ∘ toDual) '' s)))
+        rw [map_sSup, ofDual_comp_image_preimage'] }
+  left_inv _ := sInfHom.ext fun _ => rfl
+  right_inv _ := sSupHom.ext fun ⟨_⟩ => rfl
 
 @[simp]
-theorem dual_id : sInfHom.dual (sInfHom.id α) = sSupHom.id _ :=
-  rfl
+theorem dual_id : sInfHom.dual (sInfHom.id α) = sSupHom.id _ := by
+  ext x; simp [sInfHom.dual]
 
 @[simp]
 theorem dual_comp (g : sInfHom β γ) (f : sInfHom α β) :
-    sInfHom.dual (g.comp f) = (sInfHom.dual g).comp (sInfHom.dual f) :=
-  rfl
+    sInfHom.dual (g.comp f) = (sInfHom.dual g).comp (sInfHom.dual f) := by
+  ext; rfl
 
 @[simp]
-theorem symm_dual_id : sInfHom.dual.symm (sSupHom.id _) = sInfHom.id α :=
-  rfl
+theorem symm_dual_id : sInfHom.dual.symm (sSupHom.id _) = sInfHom.id α := by
+  ext x; simp [sInfHom.dual]
 
 @[simp]
 theorem symm_dual_comp (g : sSupHom βᵒᵈ γᵒᵈ) (f : sSupHom αᵒᵈ βᵒᵈ) :
-    sInfHom.dual.symm (g.comp f) = (sInfHom.dual.symm g).comp (sInfHom.dual.symm f) :=
-  rfl
+    sInfHom.dual.symm (g.comp f) = (sInfHom.dual.symm g).comp (sInfHom.dual.symm f) := by
+  ext; rfl
 
 end sInfHom
 
@@ -746,29 +794,46 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ]
 lattices. -/
 @[simps!]
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
-  invFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
+  toFun f :=
+    { tosInfHom := sSupHom.dual f.tosSupHom
+      map_sSup' := fun s => by
+        change toDual (f (sInf (toDual ⁻¹' s))) =
+          toDual (sInf (toDual ⁻¹' ((toDual ∘ f ∘ ofDual) '' s)))
+        rw [map_sInf, toDual_comp_image_preimage] }
+  invFun f :=
+    { tosInfHom :=
+        { toFun := ofDual ∘ f ∘ toDual
+          map_sInf' := fun s => by
+            change ofDual (f (sSup (ofDual ⁻¹' s))) = sInf ((ofDual ∘ f ∘ toDual) '' s)
+            rw [map_sSup]
+            exact congr_arg sInf ofDual_comp_image_preimage }
+      map_sSup' := fun s => by
+        change ofDual (f (sInf (ofDual ⁻¹' s))) = sSup ((ofDual ∘ f ∘ toDual) '' s)
+        rw [map_sInf]
+        exact congr_arg sSup ofDual_comp_image_preimage }
+  left_inv _ := CompleteLatticeHom.ext fun _ => rfl
+  right_inv _ := CompleteLatticeHom.ext fun ⟨_⟩ => rfl
 
 @[simp]
-theorem dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ :=
-  rfl
+theorem dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ := by
+  ext x; simp [CompleteLatticeHom.dual, sSupHom.dual]
 
 @[simp]
 theorem dual_comp (g : CompleteLatticeHom β γ) (f : CompleteLatticeHom α β) :
     CompleteLatticeHom.dual (g.comp f) =
-      (CompleteLatticeHom.dual g).comp (CompleteLatticeHom.dual f) :=
-  rfl
+      (CompleteLatticeHom.dual g).comp (CompleteLatticeHom.dual f) := by
+  ext; rfl
 
 @[simp]
 theorem symm_dual_id :
-    CompleteLatticeHom.dual.symm (CompleteLatticeHom.id _) = CompleteLatticeHom.id α :=
-  rfl
+    CompleteLatticeHom.dual.symm (CompleteLatticeHom.id _) = CompleteLatticeHom.id α := by
+  ext x; simp [CompleteLatticeHom.dual]
 
 @[simp]
 theorem symm_dual_comp (g : CompleteLatticeHom βᵒᵈ γᵒᵈ) (f : CompleteLatticeHom αᵒᵈ βᵒᵈ) :
     CompleteLatticeHom.dual.symm (g.comp f) =
-      (CompleteLatticeHom.dual.symm g).comp (CompleteLatticeHom.dual.symm f) :=
-  rfl
+      (CompleteLatticeHom.dual.symm g).comp (CompleteLatticeHom.dual.symm f) := by
+  ext; rfl
 
 end CompleteLatticeHom
 

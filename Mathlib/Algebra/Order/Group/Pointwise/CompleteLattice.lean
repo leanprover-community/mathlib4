@@ -43,13 +43,17 @@ variable [Group M] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive]
 lemma csSup_inv (hs₀ : s.Nonempty) (hs₁ : BddBelow s) : sSup s⁻¹ = (sInf s)⁻¹ := by
-  rw [← image_inv_eq_inv]
-  exact ((OrderIso.inv _).map_csInf' hs₀ hs₁).symm
+  refine le_antisymm (csSup_le hs₀.inv fun x hx => ?_) ?_
+  · exact le_inv'.mpr (csInf_le hs₁ (mem_inv.mp hx))
+  · rw [inv_le']
+    exact le_csInf hs₀ fun x hx => inv_le'.mpr (le_csSup hs₁.inv (inv_mem_inv.mpr hx))
 
 @[to_additive]
 lemma csInf_inv (hs₀ : s.Nonempty) (hs₁ : BddAbove s) : sInf s⁻¹ = (sSup s)⁻¹ := by
-  rw [← image_inv_eq_inv]
-  exact ((OrderIso.inv _).map_csSup' hs₀ hs₁).symm
+  refine le_antisymm ?_ (le_csInf hs₀.inv fun x hx => ?_)
+  · rw [le_inv']
+    exact csSup_le hs₀ fun x hx => le_inv'.mpr (csInf_le hs₁.inv (inv_mem_inv.mpr hx))
+  · exact inv_le'.mpr (le_csSup hs₁ (mem_inv.mp hx))
 
 @[to_additive]
 lemma csSup_mul (hs₀ : s.Nonempty) (hs₁ : BddAbove s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) :
@@ -93,13 +97,17 @@ variable [Group M] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive]
 lemma sSup_inv (s : Set M) : sSup s⁻¹ = (sInf s)⁻¹ := by
-  rw [← image_inv_eq_inv, sSup_image]
-  exact ((OrderIso.inv M).map_sInf _).symm
+  refine le_antisymm (sSup_le fun x hx => ?_) ?_
+  · exact le_inv'.mpr (sInf_le (mem_inv.mp hx))
+  · rw [inv_le']
+    exact le_sInf fun x hx => inv_le'.mpr (le_sSup (show x⁻¹ ∈ s⁻¹ from inv_mem_inv.mpr hx))
 
 @[to_additive]
 lemma sInf_inv (s : Set M) : sInf s⁻¹ = (sSup s)⁻¹ := by
-  rw [← image_inv_eq_inv, sInf_image]
-  exact ((OrderIso.inv M).map_sSup _).symm
+  refine le_antisymm ?_ (le_sInf fun x hx => ?_)
+  · rw [le_inv']
+    exact sSup_le fun x hx => le_inv'.mpr (sInf_le (show x⁻¹ ∈ s⁻¹ from inv_mem_inv.mpr hx))
+  · exact inv_le'.mpr (le_sSup (mem_inv.mp hx))
 
 @[to_additive]
 lemma sSup_mul : sSup (s * t) = sSup s * sSup t :=

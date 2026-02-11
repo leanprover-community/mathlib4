@@ -51,5 +51,16 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
 /-- If a function is antitone and is bounded on a set `s`, then it admits an antitone extension to
 the whole space. -/
 theorem AntitoneOn.exists_antitone_extension (h : AntitoneOn f s) (hl : BddBelow (f '' s))
-    (hu : BddAbove (f '' s)) : ∃ g : α → β, Antitone g ∧ EqOn f g s :=
-  h.dual_right.exists_monotone_extension hu hl
+    (hu : BddAbove (f '' s)) : ∃ g : α → β, Antitone g ∧ EqOn f g s := by
+  open OrderDual in
+  have hbl : BddBelow ((toDual ∘ f) '' s) :=
+    ⟨toDual (hu.some), fun _ ⟨x, hx, hfx⟩ =>
+      hfx ▸ toDual_le_toDual.mpr (hu.some_mem (Set.mem_image_of_mem f hx))⟩
+  open OrderDual in
+  have hbu : BddAbove ((toDual ∘ f) '' s) :=
+    ⟨toDual (hl.some), fun _ ⟨x, hx, hfx⟩ =>
+      hfx ▸ toDual_le_toDual.mpr (hl.some_mem (Set.mem_image_of_mem f hx))⟩
+  obtain ⟨g, hg, hgf⟩ := h.dual_right.exists_monotone_extension hbl hbu
+  exact ⟨OrderDual.ofDual ∘ g,
+    fun _ _ hab => OrderDual.ofDual_le_ofDual.mpr (hg hab),
+    fun x hx => by simp only [Function.comp_apply, ← hgf hx, OrderDual.ofDual_toDual]⟩

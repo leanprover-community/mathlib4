@@ -76,13 +76,15 @@ instance nonempty_lt [LT α] [NoMinOrder α] (a : α) : Nonempty { x // x < a } 
 @[to_dual]
 instance IsEmpty.toNoMinOrder [LT α] [IsEmpty α] : NoMinOrder α := ⟨isEmptyElim⟩
 
+open OrderDual in
 @[to_dual]
 instance OrderDual.noBotOrder [LE α] [NoTopOrder α] : NoBotOrder αᵒᵈ :=
-  ⟨fun a => exists_not_le (α := α) a⟩
+  ⟨fun a => let ⟨b, hb⟩ := exists_not_le (ofDual a); ⟨toDual b, hb⟩⟩
 
+open OrderDual in
 @[to_dual]
 instance OrderDual.noMinOrder [LT α] [NoMaxOrder α] : NoMinOrder αᵒᵈ :=
-  ⟨fun a => exists_gt (α := α) a⟩
+  ⟨fun a => let ⟨b, hb⟩ := exists_gt (ofDual a); ⟨toDual b, hb⟩⟩
 
 -- See note [lower instance priority]
 @[to_dual]
@@ -162,19 +164,19 @@ theorem IsBot.isMin_iff {α} [PartialOrder α] {i j : α} (h : IsBot i) : IsMin 
 
 @[to_dual (attr := simp)]
 theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=
-  Iff.rfl
+  ⟨fun h b => h (toDual b), fun h b => h (ofDual b)⟩
 
 @[to_dual (attr := simp)]
 theorem isMin_toDual_iff : IsMin (toDual a) ↔ IsMax a :=
-  Iff.rfl
+  ⟨fun h b hab => @h (toDual b) hab, fun h b hab => @h (ofDual b) hab⟩
 
 @[to_dual (attr := simp)]
 theorem isBot_ofDual_iff {a : αᵒᵈ} : IsBot (ofDual a) ↔ IsTop a :=
-  Iff.rfl
+  ⟨fun h b => h (ofDual b), fun h b => h (toDual b)⟩
 
 @[to_dual (attr := simp)]
 theorem isMin_ofDual_iff {a : αᵒᵈ} : IsMin (ofDual a) ↔ IsMax a :=
-  Iff.rfl
+  ⟨fun h b hab => @h (ofDual b) hab, fun h b hab => @h (toDual b) hab⟩
 
 @[to_dual]
 alias ⟨_, IsTop.toDual⟩ := isBot_toDual_iff

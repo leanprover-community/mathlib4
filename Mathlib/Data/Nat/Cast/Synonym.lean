@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Order.Synonym
 
@@ -24,31 +26,29 @@ variable {α : Type*}
 
 open OrderDual
 
-instance [h : NatCast α] : NatCast αᵒᵈ :=
-  h
+instance [h : NatCast α] : NatCast αᵒᵈ where
+  natCast n := toDual n
 
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ :=
-  h
+instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ where
+  __ := inferInstanceAs (AddMonoid αᵒᵈ)
+  __ := inferInstanceAs (One αᵒᵈ)
+  __ := inferInstanceAs (NatCast αᵒᵈ)
+  natCast_zero := congrArg toDual (Nat.cast_zero)
+  natCast_succ n := congrArg toDual (Nat.cast_succ n)
 
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
-  h
+instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ where
+  __ := inferInstanceAs (AddMonoidWithOne αᵒᵈ)
+  __ := inferInstanceAs (AddCommMonoid αᵒᵈ)
+
+instance [h : IntCast α] : IntCast αᵒᵈ where
+  intCast n := toDual (n : α)
 
 @[simp]
-theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
+theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = (n : αᵒᵈ) :=
   rfl
 
 @[simp]
-theorem toDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (toDual (ofNat(n) : α)) = ofNat(n) :=
-  rfl
-
-@[simp]
-theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
-  rfl
-
-@[simp]
-theorem ofDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (ofDual (ofNat(n) : αᵒᵈ)) = ofNat(n) :=
+theorem ofDual_natCast [NatCast α] (n : ℕ) : ofDual (n : αᵒᵈ) = (n : α) :=
   rfl
 
 /-! ### Lexicographic order -/

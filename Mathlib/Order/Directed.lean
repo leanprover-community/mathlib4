@@ -124,7 +124,7 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
 /-- A set stable by infimum is `≥`-directed. -/
 theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
-  directedOn_of_sup_mem (α := αᵒᵈ) H
+  fun _ hx _ hy => ⟨_ ⊓ _, H hx hy, inf_le_left, inf_le_right⟩
 
 theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i j =>
   Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
@@ -181,8 +181,10 @@ theorem exists_ge_ge [LE α] [IsDirectedOrder α] (a b : α) : ∃ c, a ≤ c �
   directed_of (· ≤ ·) a b
 
 @[to_dual isDirected_le]
-instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrder αᵒᵈ := by
-  assumption
+instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrder αᵒᵈ where
+  directed a b := by
+    obtain ⟨c, hac, hbc⟩ := exists_ge_ge (ofDual a) (ofDual b)
+    exact ⟨toDual c, hac, hbc⟩
 
 -- `to_dual` cannot yet reorder arguments of arguments
 /-- A monotone function on an upwards-directed type is directed. -/
@@ -200,7 +202,7 @@ theorem Monotone.directed_le [Preorder α] [IsDirectedOrder α] [Preorder β] {f
 @[to_dual none]
 theorem directed_of_isDirected_ge [LE α] [IsCodirectedOrder α] {r : β → β → Prop} {f : α → β}
     (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
-  directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
+  directed_id.mono_comp _ (fun _ _ h => hf _ _ h)
 
 @[to_dual directed_ge]
 theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}

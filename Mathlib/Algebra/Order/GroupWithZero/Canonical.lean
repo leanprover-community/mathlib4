@@ -199,20 +199,22 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) where
   zero := .ofAdd <| .toDual ⊤
-  zero_mul := @top_add _ (_)
-  mul_zero := @add_top _ (_)
-  zero_le _ := (le_top : _ ≤ ⊤)
+  zero_mul a := congrArg Multiplicative.ofAdd (OrderDual.ext (top_add _))
+  mul_zero a := congrArg Multiplicative.ofAdd (OrderDual.ext (add_top _))
+  zero_le _ := bot_le
   mul_lt_mul_of_pos_left := by
-    simpa [← ofAdd_add, ← toDual_add]
-      using fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using ha.ne') hbc
+    intro a ha b c hbc
+    exact add_right_strictMono_of_ne_top (ne_top_of_lt ha) hbc
 
 @[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
+    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ :=
+  OrderDual.toDual_eq_bot α
 
 @[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
+    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 :=
+  OrderDual.ofDual_eq_top α
 
 @[deprecated bot_eq_zero'' (since := "2025-11-17")]
 theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
@@ -224,8 +226,12 @@ theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) where
-  inv_zero := LinearOrderedAddCommGroupWithTop.neg_top (α := α)
-  mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel_of_ne_top (α := α)
+  div_eq_mul_inv a b := congrArg Multiplicative.ofAdd (OrderDual.ext (sub_eq_add_neg _ _))
+  inv_zero := congrArg Multiplicative.ofAdd
+    (OrderDual.ext (LinearOrderedAddCommGroupWithTop.neg_top (α := α)))
+  mul_inv_cancel a ha := congrArg Multiplicative.ofAdd
+    (OrderDual.ext (LinearOrderedAddCommGroupWithTop.add_neg_cancel_of_ne_top
+      (fun h => ha (OrderDual.ext h))))
 
 namespace WithZero
 

@@ -106,13 +106,58 @@ instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
 instance completeLattice : CompleteLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completeLattice _ (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
+  letI : PartialOrder (UpperSet α) :=
+    { le := fun s t => (t : Set α) ⊆ s
+      lt := fun s t => (t : Set α) ⊂ s
+      le_refl := fun _ => Subset.rfl
+      le_trans := fun _ _ _ h₁ h₂ => h₂.trans h₁
+      le_antisymm := fun _ _ h₁ h₂ => SetLike.coe_injective (h₂.antisymm h₁) }
+  { sup := max
+    le_sup_left := fun _ _ => Set.inter_subset_left
+    le_sup_right := fun _ _ => Set.inter_subset_right
+    sup_le := fun _ _ _ h₁ h₂ => Set.subset_inter h₁ h₂
+    inf := min
+    inf_le_left := fun _ _ => Set.subset_union_left
+    inf_le_right := fun _ _ => Set.subset_union_right
+    le_inf := fun _ _ _ h₁ h₂ => Set.union_subset h₁ h₂
+    le_sSup := fun _ _ ha => Set.iInter₂_subset _ ha
+    sSup_le := fun _ _ h => Set.subset_iInter₂ h
+    sInf_le := fun _ _ ha => Set.subset_biUnion_of_mem ha
+    le_sInf := fun _ _ h => Set.iUnion₂_subset h
+    le_top := fun _ => Set.empty_subset _
+    bot_le := fun _ => Set.subset_univ _ }
 
 instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
-  .ofMinimalAxioms <|
-    (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
+  .ofMinimalAxioms
+    { toCompleteLattice := completeLattice
+      iInf_iSup_eq := fun {ι κ} f => by
+        apply le_antisymm <;> intro x hx
+        · -- Convert hx from raw form to logical statement
+          have hx' : ∀ g : ∀ a, κ a, ∃ a, x ∈ (f a (g a) : Set α) := by
+            intro g
+            have h1 := Set.mem_iInter₂.mp hx (⨅ a, f a (g a)) ⟨g, rfl⟩
+            obtain ⟨_, ⟨a, rfl⟩, ha⟩ := Set.mem_iUnion₂.mp h1
+            exact ⟨a, ha⟩
+          refine Set.mem_iUnion₂.mpr ?_
+          by_contra hc; push_neg at hc
+          have hc' : ∀ a, ∃ b, x ∉ (f a b : Set α) := by
+            intro a
+            specialize hc (⨆ b, f a b) ⟨a, rfl⟩
+            -- hc : x ∉ ↑(⨆ b, f a b)
+            by_contra h; push_neg at h
+            apply hc
+            exact Set.mem_iInter₂.mpr fun s hs => by
+              obtain ⟨b, rfl⟩ := hs; exact h b
+          choose g hg using hc'
+          exact hg _ (hx' g).choose_spec
+        · -- Easy direction
+          have hx' : ∃ a, ∀ b, x ∈ (f a b : Set α) := by
+            obtain ⟨_, ⟨a, rfl⟩, ha⟩ := Set.mem_iUnion₂.mp hx
+            exact ⟨a, fun b => Set.mem_iInter₂.mp ha _ ⟨b, rfl⟩⟩
+          refine Set.mem_iInter₂.mpr fun s hs => ?_
+          obtain ⟨g, rfl⟩ := hs
+          obtain ⟨a, ha⟩ := hx'
+          exact Set.mem_iUnion₂.mpr ⟨_, ⟨a, rfl⟩, ha (g a)⟩ }
 
 instance : Inhabited (UpperSet α) :=
   ⟨⊥⟩

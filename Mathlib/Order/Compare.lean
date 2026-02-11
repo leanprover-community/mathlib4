@@ -111,13 +111,13 @@ open Ordering OrderDual
 theorem toDual_compares_toDual [LT α] {a b : α} {o : Ordering} :
     Compares o (toDual a) (toDual b) ↔ Compares o b a := by
   cases o
-  exacts [Iff.rfl, eq_comm, Iff.rfl]
+  exacts [Iff.rfl, toDual_inj.trans eq_comm, Iff.rfl]
 
 @[simp]
 theorem ofDual_compares_ofDual [LT α] {a b : αᵒᵈ} {o : Ordering} :
     Compares o (ofDual a) (ofDual b) ↔ Compares o b a := by
   cases o
-  exacts [Iff.rfl, eq_comm, Iff.rfl]
+  exacts [Iff.rfl, ofDual_inj.trans eq_comm, Iff.rfl]
 
 theorem cmp_compares [LinearOrder α] (a b : α) : (cmp a b).Compares a b := by
   obtain h | h | h := lt_trichotomy a b <;> simp [cmp, cmpUsing, h, h.not_gt]

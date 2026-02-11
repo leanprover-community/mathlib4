@@ -1265,8 +1265,10 @@ lemma nonempty_iInter_Iic_iff [Preorder α] {f : ι → α} :
   simp [this, BddBelow]
 
 lemma nonempty_iInter_Ici_iff [Preorder α] {f : ι → α} :
-    (⋂ i, Ici (f i)).Nonempty ↔ BddAbove (range f) :=
-  nonempty_iInter_Iic_iff (α := αᵒᵈ)
+    (⋂ i, Ici (f i)).Nonempty ↔ BddAbove (range f) := by
+  have : (⋂ (i : ι), Ici (f i)) = upperBounds (range f) := by
+    ext c; simp [upperBounds]
+  simp [this, BddAbove]
 
 variable [CompleteLattice α]
 
@@ -1390,8 +1392,9 @@ theorem iSup_iUnion (s : ι → Set α) (f : α → β) : ⨆ a ∈ ⋃ i, s i, 
   rw [iSup_comm]
   simp_rw [mem_iUnion, iSup_exists]
 
-theorem iInf_iUnion (s : ι → Set α) (f : α → β) : ⨅ a ∈ ⋃ i, s i, f a = ⨅ (i) (a ∈ s i), f a :=
-  iSup_iUnion (β := βᵒᵈ) s f
+theorem iInf_iUnion (s : ι → Set α) (f : α → β) : ⨅ a ∈ ⋃ i, s i, f a = ⨅ (i) (a ∈ s i), f a := by
+  rw [iInf_comm]
+  simp_rw [mem_iUnion, iInf_exists]
 
 theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
   simp_rw [sSup_eq_iSup, iSup_iUnion]
@@ -1399,8 +1402,8 @@ theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) 
 theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t := by
   simp only [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
 
-theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t :=
-  sSup_sUnion (β := βᵒᵈ) s
+theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t := by
+  simp only [sUnion_eq_biUnion, sInf_eq_iInf, iInf_iUnion]
 
 lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :
     (⨆ x ∈ ⋃₀ S, f x) = ⨆ (s ∈ S) (x ∈ s), f x := by

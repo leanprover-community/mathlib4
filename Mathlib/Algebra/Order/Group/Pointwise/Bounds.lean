@@ -39,11 +39,12 @@ lemma subset_upperBounds_mul (s t : Set M) : upperBounds s * upperBounds t ⊆ u
 
 @[to_additive]
 lemma mul_mem_lowerBounds_mul (ha : a ∈ lowerBounds s) (hb : b ∈ lowerBounds t) :
-    a * b ∈ lowerBounds (s * t) := mul_mem_upperBounds_mul (M := Mᵒᵈ) ha hb
+    a * b ∈ lowerBounds (s * t) :=
+  forall_mem_image2.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
 
 @[to_additive]
 lemma subset_lowerBounds_mul (s t : Set M) : lowerBounds s * lowerBounds t ⊆ lowerBounds (s * t) :=
-  subset_upperBounds_mul (M := Mᵒᵈ) _ _
+  image2_subset_iff.2 fun _ hx _ hy => mul_mem_lowerBounds_mul hx hy
 
 @[to_additive]
 lemma BddAbove.mul (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
@@ -63,7 +64,9 @@ lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
 
 @[to_additive]
 lemma BddBelow.range_mul (hf : BddBelow (range f)) (hg : BddBelow (range g)) :
-    BddBelow (range fun i ↦ f i * g i) := BddAbove.range_mul (M := Mᵒᵈ) hf hg
+    BddBelow (range fun i ↦ f i * g i) :=
+  .range_comp (f := fun i ↦ (f i, g i)) (bddBelow_range_prod.2 ⟨hf, hg⟩)
+    (monotone_fst.mul' monotone_snd)
 
 end Mul
 
@@ -73,11 +76,13 @@ variable [Group G] [Preorder G] [MulLeftMono G]
 
 @[to_additive (attr := simp)]
 theorem bddAbove_inv : BddAbove s⁻¹ ↔ BddBelow s :=
-  (OrderIso.inv G).bddAbove_preimage
+  ⟨fun ⟨a, ha⟩ => ⟨a⁻¹, fun _x hx => inv_le_of_inv_le' (ha (Set.inv_mem_inv.2 hx))⟩,
+    fun ⟨a, ha⟩ => ⟨a⁻¹, fun _x hx => le_inv_of_le_inv (ha (Set.mem_inv.1 hx))⟩⟩
 
 @[to_additive (attr := simp)]
 theorem bddBelow_inv : BddBelow s⁻¹ ↔ BddAbove s :=
-  (OrderIso.inv G).bddBelow_preimage
+  ⟨fun ⟨a, ha⟩ => ⟨a⁻¹, fun _x hx => le_inv'.1 (ha (Set.inv_mem_inv.2 hx))⟩,
+    fun ⟨a, ha⟩ => ⟨a⁻¹, fun _x hx => inv_le'.1 (ha (Set.mem_inv.1 hx))⟩⟩
 
 @[to_additive]
 theorem BddAbove.inv (h : BddAbove s) : BddBelow s⁻¹ :=
@@ -88,24 +93,34 @@ theorem BddBelow.inv (h : BddBelow s) : BddAbove s⁻¹ :=
   bddAbove_inv.2 h
 
 @[to_additive (attr := simp)]
-theorem isLUB_inv : IsLUB s⁻¹ a ↔ IsGLB s a⁻¹ :=
-  (OrderIso.inv G).isLUB_preimage
+theorem isLUB_inv : IsLUB s⁻¹ a ↔ IsGLB s a⁻¹ := by
+  refine ⟨fun h => ⟨?_, ?_⟩, fun h => ⟨?_, ?_⟩⟩
+  · exact fun x hx => inv_le_of_inv_le' (h.1 (Set.inv_mem_inv.2 hx))
+  · intro b hb
+    have : b⁻¹ ∈ upperBounds s⁻¹ := fun x hx => le_inv'.2 (hb (Set.mem_inv.1 hx))
+    exact le_inv'.1 (h.2 this)
+  · exact fun x hx => inv_le_inv_iff.1 (h.1 (Set.mem_inv.1 hx))
+  · intro b hb
+    have : b⁻¹ ∈ lowerBounds s := fun x hx => inv_le_of_inv_le' (hb (Set.inv_mem_inv.2 hx))
+    exact inv_le_inv_iff.1 (h.2 this)
 
 @[to_additive]
-theorem isLUB_inv' : IsLUB s⁻¹ a⁻¹ ↔ IsGLB s a :=
-  (OrderIso.inv G).isLUB_preimage'
+theorem isLUB_inv' : IsLUB s⁻¹ a⁻¹ ↔ IsGLB s a := by
+  simp [isLUB_inv]
 
 @[to_additive]
 theorem IsGLB.inv (h : IsGLB s a) : IsLUB s⁻¹ a⁻¹ :=
   isLUB_inv'.2 h
 
 @[to_additive (attr := simp)]
-theorem isGLB_inv : IsGLB s⁻¹ a ↔ IsLUB s a⁻¹ :=
-  (OrderIso.inv G).isGLB_preimage
+theorem isGLB_inv : IsGLB s⁻¹ a ↔ IsLUB s a⁻¹ := by
+  have h := isLUB_inv (s := s⁻¹) (a := a⁻¹)
+  simp only [inv_inv, inv_inv] at h
+  exact h.symm
 
 @[to_additive]
-theorem isGLB_inv' : IsGLB s⁻¹ a⁻¹ ↔ IsLUB s a :=
-  (OrderIso.inv G).isGLB_preimage'
+theorem isGLB_inv' : IsGLB s⁻¹ a⁻¹ ↔ IsLUB s a := by
+  simp [isGLB_inv]
 
 @[to_additive]
 theorem IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
@@ -113,13 +128,15 @@ theorem IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
 
 @[to_additive]
 lemma BddBelow.range_inv {α : Type*} {f : α → G} (hf : BddBelow (range f)) :
-    BddAbove (range (fun x => (f x)⁻¹)) :=
-  hf.range_comp (OrderIso.inv G).monotone
+    BddAbove (range (fun x => (f x)⁻¹)) := by
+  rw [← Set.inv_range]
+  exact bddAbove_inv.2 hf
 
 @[to_additive]
 lemma BddAbove.range_inv {α : Type*} {f : α → G} (hf : BddAbove (range f)) :
-    BddBelow (range (fun x => (f x)⁻¹)) :=
-  BddBelow.range_inv (G := Gᵒᵈ) hf
+    BddBelow (range (fun x => (f x)⁻¹)) := by
+  rw [← Set.inv_range]
+  exact bddBelow_inv.2 hf
 
 @[to_additive]
 lemma IsLUB.mul (hs : IsLUB s a) (ht : IsLUB t b) :
@@ -130,7 +147,8 @@ lemma IsLUB.mul (hs : IsLUB s a) (ht : IsLUB t b) :
 @[to_additive]
 lemma IsGLB.mul (hs : IsGLB s a) (ht : IsGLB t b) :
     IsGLB (s * t) (a * b) :=
-  IsLUB.mul (G := Gᵒᵈ) hs ht
+  isGLB_image2_of_isGLB_isGLB (fun _ => (OrderIso.mulRight _).symm.to_galoisConnection)
+    (fun _ => (OrderIso.mulLeft _).symm.to_galoisConnection) hs ht
 
 @[to_additive]
 lemma IsLUB.div (hs : IsLUB s a) (ht : IsGLB t b) :
@@ -140,7 +158,8 @@ lemma IsLUB.div (hs : IsLUB s a) (ht : IsGLB t b) :
 
 @[to_additive]
 lemma IsGLB.div (hs : IsGLB s a) (ht : IsLUB t b) :
-    IsGLB (s / t) (a / b) :=
-  IsLUB.div (G := Gᵒᵈ) hs ht
+    IsGLB (s / t) (a / b) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  exact hs.mul ht.inv
 
 end Group

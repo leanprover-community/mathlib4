@@ -135,7 +135,8 @@ def giUpperClosureCoe :
   choice s hs := toDual (⟨s, fun a _b hab ha => hs ⟨a, ha, hab⟩⟩ : UpperSet α)
   gc := gc_upperClosure_coe
   le_l_u _ := subset_upperClosure
-  choice_eq _s hs := ofDual.injective <| SetLike.coe_injective <| subset_upperClosure.antisymm hs
+  choice_eq _s hs :=
+    OrderDual.ext <| SetLike.coe_injective <| subset_upperClosure.antisymm hs
 
 /-- `lowerClosure` forms a Galois insertion with the coercion from lower sets to sets. -/
 def giLowerClosureCoe : GaloisInsertion (lowerClosure : Set α → LowerSet α) (↑) where
@@ -151,8 +152,9 @@ theorem lowerClosure_mono : Monotone (lowerClosure : Set α → LowerSet α) :=
   gc_lowerClosure_coe.monotone_l
 
 @[simp]
-theorem upperClosure_empty : upperClosure (∅ : Set α) = ⊤ :=
-  (@gc_upperClosure_coe α).l_bot
+theorem upperClosure_empty : upperClosure (∅ : Set α) = ⊤ := by
+  rw [← OrderDual.toDual_inj, OrderDual.toDual_top]
+  exact (@gc_upperClosure_coe α).l_bot
 
 @[simp]
 theorem lowerClosure_empty : lowerClosure (∅ : Set α) = ⊥ :=
@@ -177,16 +179,18 @@ theorem lowerClosure_univ : lowerClosure (univ : Set α) = ⊤ :=
   top_unique subset_lowerClosure
 
 @[simp]
-theorem upperClosure_eq_top_iff : upperClosure s = ⊤ ↔ s = ∅ :=
-  (@gc_upperClosure_coe α _).l_eq_bot.trans subset_empty_iff
+theorem upperClosure_eq_top_iff : upperClosure s = ⊤ ↔ s = ∅ := by
+  rw [← OrderDual.toDual_inj, OrderDual.toDual_top]
+  exact (@gc_upperClosure_coe α _).l_eq_bot.trans subset_empty_iff
 
 @[simp]
 theorem lowerClosure_eq_bot_iff : lowerClosure s = ⊥ ↔ s = ∅ :=
   (@gc_lowerClosure_coe α _).l_eq_bot.trans subset_empty_iff
 
 @[simp]
-theorem upperClosure_union (s t : Set α) : upperClosure (s ∪ t) = upperClosure s ⊓ upperClosure t :=
-  (@gc_upperClosure_coe α _).l_sup
+theorem upperClosure_union (s t : Set α) :
+    upperClosure (s ∪ t) = upperClosure s ⊓ upperClosure t :=
+  OrderDual.toDual_inj.mp <| (@gc_upperClosure_coe α _).l_sup
 
 @[simp]
 theorem lowerClosure_union (s t : Set α) : lowerClosure (s ∪ t) = lowerClosure s ⊔ lowerClosure t :=
@@ -194,7 +198,7 @@ theorem lowerClosure_union (s t : Set α) : lowerClosure (s ∪ t) = lowerClosur
 
 @[simp]
 theorem upperClosure_iUnion (f : ι → Set α) : upperClosure (⋃ i, f i) = ⨅ i, upperClosure (f i) :=
-  (@gc_upperClosure_coe α _).l_iSup
+  OrderDual.toDual_inj.mp <| by rw [toDual_iInf]; exact (@gc_upperClosure_coe α _).l_iSup
 
 @[simp]
 theorem lowerClosure_iUnion (f : ι → Set α) : lowerClosure (⋃ i, f i) = ⨆ i, lowerClosure (f i) :=
@@ -252,10 +256,14 @@ protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelo
   simpa only [disjoint_comm] using hs.disjoint_upperClosure_left
 
 @[simp] lemma IsUpperSet.disjoint_lowerClosure_left (ht : IsUpperSet t) :
-    Disjoint ↑(lowerClosure s) t ↔ Disjoint s t := ht.toDual.disjoint_upperClosure_left
+    Disjoint ↑(lowerClosure s) t ↔ Disjoint s t := by
+  refine ⟨Disjoint.mono_left subset_lowerClosure, ?_⟩
+  simp only [disjoint_left, SetLike.mem_coe, mem_lowerClosure, forall_exists_index, and_imp]
+  exact fun h a b hb hab ha ↦ h hb <| ht hab ha
 
 @[simp] lemma IsUpperSet.disjoint_lowerClosure_right (hs : IsUpperSet s) :
-    Disjoint s (lowerClosure t) ↔ Disjoint s t := hs.toDual.disjoint_upperClosure_right
+    Disjoint s (lowerClosure t) ↔ Disjoint s t := by
+  simpa only [disjoint_comm] using hs.disjoint_lowerClosure_left
 
 @[simp] lemma upperClosure_eq :
     ↑(upperClosure s) = s ↔ IsUpperSet s :=
@@ -263,7 +271,7 @@ protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelo
 
 @[simp] lemma lowerClosure_eq :
     ↑(lowerClosure s) = s ↔ IsLowerSet s :=
-  @upperClosure_eq αᵒᵈ _ _
+  ⟨(· ▸ LowerSet.lower _), IsLowerSet.lowerClosure⟩
 
 end Preorder
 
@@ -279,8 +287,12 @@ lemma IsAntichain.minimal_mem_upperClosure_iff_mem (hs : IsAntichain (· ≤ ·)
   rwa [← hs.eq has h (hab.trans hbx)]
 
 lemma IsAntichain.maximal_mem_lowerClosure_iff_mem (hs : IsAntichain (· ≤ ·) s) :
-    Maximal (· ∈ lowerClosure s) x ↔ x ∈ s :=
-  hs.to_dual.minimal_mem_upperClosure_iff_mem
+    Maximal (· ∈ lowerClosure s) x ↔ x ∈ s := by
+  simp only [lowerClosure, LowerSet.mem_mk, mem_setOf_eq]
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨x, h, rfl.le⟩, fun b ⟨a, has, hba⟩ hxb ↦ ?_⟩⟩
+  · obtain ⟨a, has, hxa⟩ := h.prop
+    rwa [h.eq_of_le ⟨a, has, rfl.le⟩ hxa]
+  · exact (hs.eq h has (hxb.trans hba)).symm ▸ hba
 
 end PartialOrder
 
@@ -295,7 +307,7 @@ lemma upperClosure_eq_bot_iff [NoMinOrder α] {s : Set α} : upperClosure s = �
   ⟨fun h₁ h₂ ↦ by simpa [h₁] using bddBelow_upperClosure.mpr h₂, upperClosure_eq_bot⟩
 
 lemma lowerClosure_eq_top {s : Set α} (hs : ¬ BddAbove s) : lowerClosure s = ⊤ :=
-  SetLike.coe_injective congr($(upperClosure_eq_bot (α := αᵒᵈ) hs).1)
+  top_le_iff.mp fun x _ ↦ ⟨_, (not_bddAbove_iff.mp hs x).choose_spec.imp id le_of_lt⟩
 
 lemma lowerClosure_eq_top_iff [NoMaxOrder α] {s : Set α} : lowerClosure s = ⊤ ↔ ¬ BddAbove s :=
   ⟨fun h₁ h₂ ↦ by simpa [h₁] using bddAbove_lowerClosure.mpr h₂, lowerClosure_eq_top⟩

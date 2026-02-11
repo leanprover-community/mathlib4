@@ -116,9 +116,17 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
 
 /-- **Rearrangement Inequality**: Pointwise scalar multiplication of `f` and `g` is minimized when
 `f` and `g` antivary together on `s`. Stated by permuting the entries of `g`. -/
+private theorem ofDual_sum' {β : Type*} [AddCommMonoid β] {ι : Type*} {s : Finset ι}
+    {f : ι → βᵒᵈ} : ofDual (∑ i ∈ s, f i) = ∑ i ∈ s, ofDual (f i) :=
+  map_sum (⟨⟨ofDual, rfl⟩, fun _ _ => rfl⟩ : βᵒᵈ →+ β) _ _
+
 theorem AntivaryOn.sum_smul_le_sum_smul_comp_perm (hfg : AntivaryOn f g s)
-    (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g i ≤ ∑ i ∈ s, f i • g (σ i) :=
-  hfg.dual_right.sum_smul_comp_perm_le_sum_smul hσ
+    (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g i ≤ ∑ i ∈ s, f i • g (σ i) := by
+  have h := hfg.dual_right.sum_smul_comp_perm_le_sum_smul hσ
+  have h' : ofDual (∑ i ∈ s, f i • (toDual ∘ g) i) ≤
+      ofDual (∑ i ∈ s, f i • (toDual ∘ g) (σ i)) := h
+  simp only [ofDual_sum', Function.comp_apply, ofDual_smul] at h'
+  exact h'
 
 /-- **Rearrangement Inequality**: Pointwise scalar multiplication of `f` and `g` is maximized when
 `f` and `g` monovary together on `s`. Stated by permuting the entries of `f`. -/
@@ -131,8 +139,12 @@ theorem MonovaryOn.sum_comp_perm_smul_le_sum_smul (hfg : MonovaryOn f g s)
 /-- **Rearrangement Inequality**: Pointwise scalar multiplication of `f` and `g` is minimized when
 `f` and `g` antivary together on `s`. Stated by permuting the entries of `f`. -/
 theorem AntivaryOn.sum_smul_le_sum_comp_perm_smul (hfg : AntivaryOn f g s)
-    (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g i ≤ ∑ i ∈ s, f (σ i) • g i :=
-  hfg.dual_right.sum_comp_perm_smul_le_sum_smul hσ
+    (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f i • g i ≤ ∑ i ∈ s, f (σ i) • g i := by
+  have h := hfg.dual_right.sum_comp_perm_smul_le_sum_smul hσ
+  have h' : ofDual (∑ i ∈ s, f i • (toDual ∘ g) i) ≤
+      ofDual (∑ i ∈ s, f (σ i) • (toDual ∘ g) i) := h
+  simp only [ofDual_sum', Function.comp_apply, ofDual_smul] at h'
+  exact h'
 
 variable [Fintype ι]
 
@@ -199,8 +211,18 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
 antivary together on `s`. Stated by permuting the entries of `g`. -/
 theorem AntivaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : AntivaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) :
-    ∑ i ∈ s, f i • g (σ i) = ∑ i ∈ s, f i • g i ↔ AntivaryOn f (g ∘ σ) s :=
-  (hfg.dual_right.sum_smul_comp_perm_eq_sum_smul_iff hσ).trans monovaryOn_toDual_right
+    ∑ i ∈ s, f i • g (σ i) = ∑ i ∈ s, f i • g i ↔ AntivaryOn f (g ∘ σ) s := by
+  have h := (hfg.dual_right.sum_smul_comp_perm_eq_sum_smul_iff hσ).trans monovaryOn_toDual_right
+  rw [show (∑ i ∈ s, f i • (toDual ∘ g) (σ i) = ∑ i ∈ s, f i • (toDual ∘ g) i) ↔
+      (∑ i ∈ s, f i • g (σ i) = ∑ i ∈ s, f i • g i) from by
+    constructor <;> intro heq
+    · have := congr_arg ofDual heq
+      simp only [ofDual_sum', Function.comp_apply, ofDual_smul] at this
+      exact this
+    · apply ofDual_inj.mp
+      simp only [ofDual_sum', Function.comp_apply, ofDual_smul]
+      exact heq] at h
+  exact h
 
 /-- **Equality case of the Rearrangement Inequality**: Pointwise scalar multiplication of `f` and
 `g`, which monovary together on `s`, is unchanged by a permutation if and only if `f ∘ σ` and `g`
@@ -227,8 +249,18 @@ theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
 antivary together on `s`. Stated by permuting the entries of `f`. -/
 theorem AntivaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : AntivaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) :
-    ∑ i ∈ s, f (σ i) • g i = ∑ i ∈ s, f i • g i ↔ AntivaryOn (f ∘ σ) g s :=
-  (hfg.dual_right.sum_comp_perm_smul_eq_sum_smul_iff hσ).trans monovaryOn_toDual_right
+    ∑ i ∈ s, f (σ i) • g i = ∑ i ∈ s, f i • g i ↔ AntivaryOn (f ∘ σ) g s := by
+  have h := (hfg.dual_right.sum_comp_perm_smul_eq_sum_smul_iff hσ).trans monovaryOn_toDual_right
+  rw [show (∑ i ∈ s, f (σ i) • (toDual ∘ g) i = ∑ i ∈ s, f i • (toDual ∘ g) i) ↔
+      (∑ i ∈ s, f (σ i) • g i = ∑ i ∈ s, f i • g i) from by
+    constructor <;> intro heq
+    · have := congr_arg ofDual heq
+      simp only [ofDual_sum', Function.comp_apply, ofDual_smul] at this
+      exact this
+    · apply ofDual_inj.mp
+      simp only [ofDual_sum', Function.comp_apply, ofDual_smul]
+      exact heq] at h
+  exact h
 
 variable [Fintype ι]
 

@@ -209,13 +209,19 @@ theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
 variable [iamhc : AddMonoidHomClass F α β]
 
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 :=
-  monotone_toDual_comp_iff.symm.trans <| monotone_iff_map_nonneg (β := βᵒᵈ) (iamhc := iamhc) _
+  ⟨fun h a => by rw [← map_zero f]; apply h, fun h a b hl => by
+    have := h (b - a) (sub_nonneg.2 hl)
+    rwa [map_sub f, sub_nonpos] at this⟩
 
 theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a ≤ 0 :=
-  antitone_comp_ofDual_iff.symm.trans <| antitone_iff_map_nonpos (α := αᵒᵈ) (iamhc := iamhc) _
+  ⟨fun h a => by rw [← map_zero f]; apply h, fun h a b hl => by
+    have := h (a - b) (sub_nonpos.2 hl)
+    rwa [map_sub f, sub_nonpos] at this⟩
 
 theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a :=
-  monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg (α := αᵒᵈ) (iamhc := iamhc) _
+  ⟨fun h a => by rw [← map_zero f]; apply h, fun h a b hl => by
+    have := h (a - b) (sub_nonpos.2 hl)
+    rwa [map_sub f, sub_nonneg] at this⟩
 
 theorem strictMono_iff_map_pos :
     StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
@@ -226,13 +232,19 @@ theorem strictMono_iff_map_pos :
     exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)
 
 theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
-  strictMono_toDual_comp_iff.symm.trans <| strictMono_iff_map_pos (β := βᵒᵈ) (iamhc := iamhc) _
+  ⟨fun h a => by rw [← map_zero f]; apply h, fun h a b hl => by
+    have := h (b - a) (sub_pos.2 hl)
+    rwa [map_sub f, sub_neg] at this⟩
 
 theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
-  strictAnti_comp_ofDual_iff.symm.trans <| strictAnti_iff_map_neg (α := αᵒᵈ) (iamhc := iamhc) _
+  ⟨fun h a => by rw [← map_zero f]; apply h, fun h a b hl => by
+    have := h (a - b) (sub_neg.2 hl)
+    rwa [map_sub f, sub_neg] at this⟩
 
 theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
-  strictMono_comp_ofDual_iff.symm.trans <| strictMono_iff_map_pos (α := αᵒᵈ) (iamhc := iamhc) _
+  ⟨fun h a => by rw [← map_zero f]; apply h, fun h a b hl => by
+    have := h (a - b) (sub_neg.2 hl)
+    rwa [map_sub f, sub_pos] at this⟩
 
 end OrderedAddCommGroup
 

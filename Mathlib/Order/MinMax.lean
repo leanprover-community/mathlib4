@@ -134,14 +134,14 @@ theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
 or `max a b = b` and `a < b`.
 Use cases on this lemma to automate linarith in inequalities -/
-theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b :=
-  @min_cases αᵒᵈ _ a b
+theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b := by
+  grind
 
 theorem min_eq_iff : min a b = c ↔ a = c ∧ a ≤ b ∨ b = c ∧ b ≤ a := by
   grind
 
-theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
-  @min_eq_iff αᵒᵈ _ a b c
+theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b := by
+  grind
 
 theorem min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
   grind
@@ -189,30 +189,36 @@ theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
     simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 
 theorem MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
-    min (f a) (f b) := hf.dual.map_max ha hb
+    min (f a) (f b) := by
+  rcases le_total a b with h | h <;>
+    simp only [min_eq_left, min_eq_right, hf ha hb, hf hb ha, h]
 
 theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
-    min (f a) (f b) := hf.dual_right.map_max ha hb
+    min (f a) (f b) := by
+  rcases le_total a b with h | h <;>
+    simp only [max_eq_right, max_eq_left, min_eq_right, min_eq_left, hf ha hb, hf hb ha, h]
 
 theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
-    max (f a) (f b) := hf.dual.map_max ha hb
+    max (f a) (f b) := by
+  rcases le_total a b with h | h <;>
+    simp only [min_eq_left, min_eq_right, max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
   rcases le_total a b with h | h <;> simp [h, hf h]
 
-theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
-  hf.dual.map_max
+theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) := by
+  rcases le_total a b with h | h <;> simp [h, hf h]
 
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
   rcases le_total a b with h | h <;> simp [h, hf h]
 
-theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
-  hf.dual.map_max
+theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) := by
+  rcases le_total a b with h | h <;> simp [h, hf h]
 
 theorem min_choice (a b : α) : min a b = a ∨ min a b = b := by cases le_total a b <;> simp [*]
 
-theorem max_choice (a b : α) : max a b = a ∨ max a b = b :=
-  @min_choice αᵒᵈ _ a b
+theorem max_choice (a b : α) : max a b = a ∨ max a b = b := by
+  cases le_total a b <;> simp [*]
 
 theorem le_of_max_le_left {a b c : α} (h : max a b ≤ c) : a ≤ c :=
   le_trans (le_max_left _ _) h

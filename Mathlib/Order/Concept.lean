@@ -95,8 +95,10 @@ theorem lowerPolar_union (t₁ t₂ : Set β) :
 
 @[simp]
 theorem upperPolar_iUnion (f : ι → Set α) :
-    upperPolar r (⋃ i, f i) = ⋂ i, upperPolar r (f i) :=
-  (gc_upperPolar_lowerPolar r).l_iSup
+    upperPolar r (⋃ i, f i) = ⋂ i, upperPolar r (f i) := by
+  have := congrArg ofDual ((gc_upperPolar_lowerPolar r).l_iSup (f := f))
+  simp only [Function.comp, ofDual_toDual, ofDual_iSup] at this
+  exact this
 
 @[simp]
 theorem lowerPolar_iUnion (f : ι → Set β) :
@@ -104,8 +106,8 @@ theorem lowerPolar_iUnion (f : ι → Set β) :
   upperPolar_iUnion ..
 
 theorem upperPolar_iUnion₂ (f : ∀ i, κ i → Set α) :
-    upperPolar r (⋃ (i) (j), f i j) = ⋂ (i) (j), upperPolar r (f i j) :=
-  (gc_upperPolar_lowerPolar r).l_iSup₂
+    upperPolar r (⋃ (i) (j), f i j) = ⋂ (i) (j), upperPolar r (f i j) := by
+  simp_rw [upperPolar_iUnion]
 
 theorem lowerPolar_iUnion₂ (f : ∀ i, κ i → Set β) :
     lowerPolar r (⋃ (i) (j), f i j) = ⋂ (i) (j), lowerPolar r (f i j) :=
@@ -121,8 +123,10 @@ theorem subset_upperPolar_lowerPolar (t : Set β) :
 
 @[simp]
 theorem upperPolar_lowerPolar_upperPolar (s : Set α) :
-    upperPolar r (lowerPolar r <| upperPolar r s) = upperPolar r s :=
-  (gc_upperPolar_lowerPolar r).l_u_l_eq_l _
+    upperPolar r (lowerPolar r <| upperPolar r s) = upperPolar r s := by
+  have := congrArg ofDual ((gc_upperPolar_lowerPolar r).l_u_l_eq_l (b := s))
+  simp only [Function.comp, ofDual_toDual] at this
+  exact this
 
 @[simp]
 theorem lowerPolar_upperPolar_lowerPolar (t : Set β) :
@@ -391,8 +395,8 @@ theorem swap_lt_swap_iff : c.swap < d.swap ↔ d < c :=
 def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r) where
   toFun := swap ∘ ofDual
   invFun := toDual ∘ swap
-  left_inv := swap_swap
-  right_inv := swap_swap
+  left_inv c := by simp [Function.comp, swap_swap, toDual_ofDual]
+  right_inv c := by simp [Function.comp, swap_swap]
   map_rel_iff' := swap_le_swap_iff
 
 end Concept

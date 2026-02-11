@@ -80,8 +80,8 @@ lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := 
 @[simp] lemma strictAnti_vecCons : StrictAnti (vecCons a f) ↔ f 0 < a ∧ StrictAnti f :=
   liftFun_vecCons (· > ·)
 
-@[simp] lemma antitone_vecCons : Antitone (vecCons a f) ↔ f 0 ≤ a ∧ Antitone f :=
-  monotone_vecCons (α := αᵒᵈ)
+@[simp] lemma antitone_vecCons : Antitone (vecCons a f) ↔ f 0 ≤ a ∧ Antitone f := by
+  simpa only [antitone_iff_forall_lt] using @liftFun_vecCons α n (· ≥ ·) _ f a
 
 @[simp] lemma antitone_vecEmpty : Antitone (vecCons a vecEmpty)
   | ⟨0, _⟩, ⟨0, _⟩, _ => le_rfl

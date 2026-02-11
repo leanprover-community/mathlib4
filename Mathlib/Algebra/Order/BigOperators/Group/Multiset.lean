@@ -69,8 +69,9 @@ lemma prod_map_le_prod [MulLeftMono α] (f : α → α) (h : ∀ x, x ∈ s → 
 
 @[to_additive]
 lemma prod_le_prod_map [MulLeftMono α] (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) :
-    s.prod ≤ (s.map f).prod :=
-  prod_map_le_prod (α := αᵒᵈ) f h
+    s.prod ≤ (s.map f).prod := by
+  conv_lhs => rw [← Multiset.map_id s]
+  exact prod_map_le_prod_map id f h
 
 @[to_additive card_nsmul_le_sum]
 lemma pow_card_le_prod [MulLeftMono α] (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
@@ -179,8 +180,9 @@ lemma apply_prod_le_sum_map (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a * 
   | h l => simp [l.apply_prod_le_sum_map _ h_one h_mul]
 
 lemma sum_map_le_apply_prod (h_one : 0 ≤ f 1) (h_mul : ∀ (a b : α), f a + f b ≤ f (a * b)) :
-    (m.map f).sum ≤ f m.prod :=
-  m.apply_prod_le_sum_map (β := βᵒᵈ) f h_one h_mul
+    (m.map f).sum ≤ f m.prod := by
+  induction m using Quotient.inductionOn with
+  | h l => simp [l.sum_map_le_apply_prod _ h_one h_mul]
 
 end ProdSum
 

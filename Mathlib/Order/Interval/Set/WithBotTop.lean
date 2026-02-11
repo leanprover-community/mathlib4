@@ -133,7 +133,7 @@ namespace WithBot
 
 @[simp]
 theorem preimage_coe_bot : (some : α → WithBot α) ⁻¹' {⊥} = (∅ : Set α) :=
-  @WithTop.preimage_coe_top αᵒᵈ
+  WithTop.preimage_coe_top
 
 variable [Preorder α] {a b : α}
 

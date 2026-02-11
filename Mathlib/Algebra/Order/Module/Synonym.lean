@@ -29,12 +29,12 @@ variable {α β : Type*}
 namespace OrderDual
 
 instance instModule [Semiring α] [AddCommMonoid β] [Module α β] : Module αᵒᵈ β where
-  add_smul := add_smul (R := α)
-  zero_smul := zero_smul _
+  add_smul r s := add_smul (ofDual r) (ofDual s)
+  zero_smul := zero_smul α
 
-instance instModule' [Semiring α] [AddCommMonoid β] [Module α β] : Module α βᵒᵈ where
-  add_smul := add_smul (M := β)
-  zero_smul := zero_smul _
+instance instModule' [Semiring α] [AddCommMonoid β] [Module α β] : Module α βᵒᵈ :=
+  Function.Injective.module _
+    (⟨⟨ofDual, rfl⟩, fun _ _ => rfl⟩ : βᵒᵈ →+ β) ofDual_injective (fun _ _ => rfl)
 
 end OrderDual
 

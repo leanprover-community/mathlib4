@@ -250,7 +250,7 @@ of `X`. -/
 @[simps]
 def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
-    Subobject.lift (fun _ f _ => Subobject.mk (cokernel.π f).op)
+    OrderDual.toDual ∘ Subobject.lift (fun _ f _ => Subobject.mk (cokernel.π f).op)
       (by
         rintro A B f g hf hg i rfl
         refine Subobject.mk_eq_mk_of_comm _ _ (Iso.op ?_) (Quiver.Hom.unop_inj ?_)
@@ -262,7 +262,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
   monotone' :=
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
-      dsimp only [Subobject.lift_mk]
+      simp only [Function.comp, Subobject.lift_mk, OrderDual.toDual_le_toDual]
       refine Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) ?_).op ?_
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
@@ -281,12 +281,15 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
               (isKernelCompMono (limit.isLimit (parallelPair g.unop 0)) i.unop.hom rfl)
         · dsimp
           simp only [← Iso.eq_inv_comp, limit.conePointUniqueUpToIso_inv_comp,
-            Fork.ofι_π_app])
-  monotone' :=
-    Subobject.ind₂ _ <| by
+            Fork.ofι_π_app]) ∘ OrderDual.ofDual
+  monotone' := by
+    apply Antitone.dual_left
+    show Antitone (Subobject.lift (fun _ f (_ : Mono f) =>
+      Subobject.mk (kernel.ι f.unop)) _ : Subobject (op X) → Subobject X)
+    exact Subobject.ind₂ _ <| by
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
-      refine Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) ?_) ?_
+      refine Subobject.mk_le_mk_of_comm (kernel.lift f.unop (kernel.ι g.unop) ?_) ?_
       · rw [← Subobject.ofMkLEMk_comp h, unop_comp, kernel.condition_assoc, zero_comp]
       · exact Quiver.Hom.op_inj (by simp)
 

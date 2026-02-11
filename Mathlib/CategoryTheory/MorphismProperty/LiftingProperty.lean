@@ -112,17 +112,17 @@ lemma le_llp_rlp : T ≤ T.rlp.llp := by
 
 @[simp]
 lemma rlp_llp_rlp : T.rlp.llp.rlp = T.rlp :=
-  gc_llp_rlp.u_l_u_eq_u T
+  gc_llp_rlp.u_l_u_eq_u (OrderDual.toDual T)
 
 @[simp]
 lemma llp_rlp_llp : T.llp.rlp.llp = T.llp :=
-  gc_llp_rlp.l_u_l_eq_l T
+  OrderDual.toDual_inj.mp (gc_llp_rlp.l_u_l_eq_l T)
 
 lemma antitone_rlp : Antitone (rlp : MorphismProperty C → _) :=
-  fun _ _ h ↦ gc_llp_rlp.monotone_u h
+  monotone_comp_ofDual_iff.mp gc_llp_rlp.monotone_u
 
 lemma antitone_llp : Antitone (llp : MorphismProperty C → _) :=
-  fun _ _ h ↦ gc_llp_rlp.monotone_l h
+  monotone_toDual_comp_iff.mp gc_llp_rlp.monotone_l
 
 lemma pushouts_le_llp_rlp : T.pushouts ≤ T.rlp.llp := by
   intro A B i hi

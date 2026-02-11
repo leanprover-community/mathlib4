@@ -27,7 +27,11 @@ theorem upperBounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds
     f.monotone.image_upperBounds_subset_upperBounds_image
 
 theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds s :=
-  @upperBounds_image αᵒᵈ βᵒᵈ _ _ f.dual _
+  Subset.antisymm
+    (fun x hx =>
+      ⟨f.symm x, fun _ hy => f.symm_apply_le.2 (hx <| mem_image_of_mem _ hy),
+        f.apply_symm_apply x⟩)
+    f.monotone.image_lowerBounds_subset_lowerBounds_image
 
 @[simp]
 theorem isLUB_image {s : Set α} {x : β} : IsLUB (f '' s) x ↔ IsLUB s (f.symm x) :=
@@ -39,10 +43,11 @@ theorem isLUB_image' {s : Set α} {x : α} : IsLUB (f '' s) (f x) ↔ IsLUB s x 
 
 @[simp]
 theorem isGLB_image {s : Set α} {x : β} : IsGLB (f '' s) x ↔ IsGLB s (f.symm x) :=
-  f.dual.isLUB_image
+  ⟨fun h => IsGLB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>
+    (IsGLB.of_image (by simp)) <| (f.symm_image_image s).symm ▸ h⟩
 
-theorem isGLB_image' {s : Set α} {x : α} : IsGLB (f '' s) (f x) ↔ IsGLB s x :=
-  f.dual.isLUB_image'
+theorem isGLB_image' {s : Set α} {x : α} : IsGLB (f '' s) (f x) ↔ IsGLB s x := by
+  rw [isGLB_image, f.symm_apply_apply]
 
 @[simp]
 theorem isLUB_preimage {s : Set β} {x : α} : IsLUB (f ⁻¹' s) x ↔ IsLUB s (f x) := by
@@ -52,10 +57,10 @@ theorem isLUB_preimage' {s : Set β} {x : β} : IsLUB (f ⁻¹' s) (f.symm x) �
   rw [isLUB_preimage, f.apply_symm_apply]
 
 @[simp]
-theorem isGLB_preimage {s : Set β} {x : α} : IsGLB (f ⁻¹' s) x ↔ IsGLB s (f x) :=
-  f.dual.isLUB_preimage
+theorem isGLB_preimage {s : Set β} {x : α} : IsGLB (f ⁻¹' s) x ↔ IsGLB s (f x) := by
+  rw [← f.symm_symm, ← image_eq_preimage_symm, isGLB_image]
 
-theorem isGLB_preimage' {s : Set β} {x : β} : IsGLB (f ⁻¹' s) (f.symm x) ↔ IsGLB s x :=
-  f.dual.isLUB_preimage'
+theorem isGLB_preimage' {s : Set β} {x : β} : IsGLB (f ⁻¹' s) (f.symm x) ↔ IsGLB s x := by
+  rw [isGLB_preimage, f.apply_symm_apply]
 
 end OrderIso

@@ -58,8 +58,24 @@ protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
 variable {α}
 
 protected theorem rightOrdContinuous_dual :
-    LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
-  id
+    LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) := by
+  intro hf s x hglb
+  have hlub : IsLUB (ofDual '' s) (ofDual x) := by
+    constructor
+    · rintro _ ⟨a, ha, rfl⟩
+      exact ofDual_le_ofDual.mp (hglb.1 ha)
+    · intro b hb
+      exact ofDual_le_ofDual.mp (hglb.2 fun a ha => ofDual_le_ofDual.mpr (hb ⟨a, ha, rfl⟩))
+  have := hf hlub
+  constructor
+  · rintro _ ⟨a, ha, rfl⟩
+    simp only [Function.comp]
+    exact toDual_le_toDual.mpr (this.1 ⟨ofDual a, ⟨a, ha, rfl⟩, rfl⟩)
+  · intro b hb
+    simp only [Function.comp]
+    apply toDual_le_toDual.mpr
+    exact this.2 fun _ ⟨_, ⟨c, hc, rfl⟩, he⟩ =>
+      he ▸ toDual_le_toDual.mp (hb ⟨c, hc, rfl⟩)
 
 theorem map_isGreatest (hf : LeftOrdContinuous f) {s : Set α} {x : α} (h : IsGreatest s x) :
     IsGreatest (f '' s) (f x) :=
@@ -152,22 +168,42 @@ protected theorem id : RightOrdContinuous (id : α → α) := fun s x h => by
 
 variable {α}
 
-protected theorem orderDual : RightOrdContinuous f → LeftOrdContinuous (toDual ∘ f ∘ ofDual) :=
-  id
+protected theorem orderDual : RightOrdContinuous f → LeftOrdContinuous (toDual ∘ f ∘ ofDual) := by
+  intro hf s x hlub
+  have hglb : IsGLB (ofDual '' s) (ofDual x) := by
+    constructor
+    · rintro _ ⟨a, ha, rfl⟩
+      exact ofDual_le_ofDual.mp (hlub.1 ha)
+    · intro b hb
+      exact ofDual_le_ofDual.mp (hlub.2 fun a ha => ofDual_le_ofDual.mpr (hb ⟨a, ha, rfl⟩))
+  have := hf hglb
+  constructor
+  · rintro _ ⟨a, ha, rfl⟩
+    simp only [Function.comp]
+    exact toDual_le_toDual.mpr (this.1 ⟨ofDual a, ⟨a, ha, rfl⟩, rfl⟩)
+  · intro b hb
+    simp only [Function.comp]
+    apply toDual_le_toDual.mpr
+    exact this.2 fun _ ⟨_, ⟨c, hc, rfl⟩, he⟩ =>
+      he ▸ toDual_le_toDual.mp (hb ⟨c, hc, rfl⟩)
 
 theorem map_isLeast (hf : RightOrdContinuous f) {s : Set α} {x : α} (h : IsLeast s x) :
     IsLeast (f '' s) (f x) :=
-  hf.orderDual.map_isGreatest h
+  ⟨mem_image_of_mem f h.1, (hf h.isGLB).1⟩
 
-theorem mono (hf : RightOrdContinuous f) : Monotone f :=
-  hf.orderDual.mono.dual
+theorem mono (hf : RightOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
+  have : IsLeast {a₁, a₂} a₁ := ⟨Or.inl rfl, by simp [*]⟩
+  (hf.map_isLeast this).2 <| mem_image_of_mem _ (Or.inr rfl)
 
-theorem comp (hg : RightOrdContinuous g) (hf : RightOrdContinuous f) : RightOrdContinuous (g ∘ f) :=
-  hg.orderDual.comp hf.orderDual
+theorem comp (hg : RightOrdContinuous g) (hf : RightOrdContinuous f) :
+    RightOrdContinuous (g ∘ f) :=
+  fun s x h => by simpa only [image_image] using hg (hf h)
 
 protected theorem iterate {f : α → α} (hf : RightOrdContinuous f) (n : ℕ) :
     RightOrdContinuous f^[n] :=
-  hf.orderDual.iterate n
+  match n with
+  | 0 => RightOrdContinuous.id α
+  | (n + 1) => (RightOrdContinuous.iterate hf n).comp hf
 
 end Preorder
 
@@ -176,13 +212,13 @@ section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
 
 theorem map_inf (hf : RightOrdContinuous f) (x y : α) : f (x ⊓ y) = f x ⊓ f y :=
-  hf.orderDual.map_sup x y
+  (hf isGLB_pair).unique <| by simp only [image_pair, isGLB_pair]
 
-theorem le_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y ↔ x ≤ y :=
-  hf.orderDual.le_iff h
+theorem le_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y ↔ x ≤ y := by
+  simp only [← inf_eq_left, ← hf.map_inf, h.eq_iff]
 
-theorem lt_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x < f y ↔ x < y :=
-  hf.orderDual.lt_iff h
+theorem lt_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x < f y ↔ x < y := by
+  simp only [lt_iff_le_not_ge, hf.le_iff h]
 
 variable (f)
 
@@ -204,13 +240,14 @@ section CompleteLattice
 variable [CompleteLattice α] [CompleteLattice β] {f : α → β}
 
 theorem map_sInf' (hf : RightOrdContinuous f) (s : Set α) : f (sInf s) = sInf (f '' s) :=
-  hf.orderDual.map_sSup' s
+  (hf <| isGLB_sInf s).sInf_eq.symm
 
-theorem map_sInf (hf : RightOrdContinuous f) (s : Set α) : f (sInf s) = ⨅ x ∈ s, f x :=
-  hf.orderDual.map_sSup s
+theorem map_sInf (hf : RightOrdContinuous f) (s : Set α) : f (sInf s) = ⨅ x ∈ s, f x := by
+  rw [hf.map_sInf', sInf_image]
 
-theorem map_iInf (hf : RightOrdContinuous f) (g : ι → α) : f (⨅ i, g i) = ⨅ i, f (g i) :=
-  hf.orderDual.map_iSup g
+theorem map_iInf (hf : RightOrdContinuous f) (g : ι → α) : f (⨅ i, g i) = ⨅ i, f (g i) := by
+  simp only [iInf, hf.map_sInf', ← range_comp]
+  rfl
 
 end CompleteLattice
 
@@ -220,11 +257,12 @@ variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [No
 
 theorem map_csInf (hf : RightOrdContinuous f) {s : Set α} (sne : s.Nonempty) (sbdd : BddBelow s) :
     f (sInf s) = sInf (f '' s) :=
-  hf.orderDual.map_csSup sne sbdd
+  ((hf <| isGLB_csInf sne sbdd).csInf_eq <| sne.image f).symm
 
 theorem map_ciInf (hf : RightOrdContinuous f) {g : ι → α} (hg : BddBelow (range g)) :
-    f (⨅ i, g i) = ⨅ i, f (g i) :=
-  hf.orderDual.map_ciSup hg
+    f (⨅ i, g i) = ⨅ i, f (g i) := by
+  simp only [iInf, hf.map_csInf (range_nonempty _) hg, ← range_comp]
+  rfl
 
 end ConditionallyCompleteLattice
 

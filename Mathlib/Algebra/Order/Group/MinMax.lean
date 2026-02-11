@@ -38,13 +38,11 @@ variable {α : Type*} [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive min_neg_neg]
 theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ :=
-  Eq.symm <| (@Monotone.map_max α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-    inv_le_inv_iff.mpr
+  (Antitone.map_max fun _ _ h => inv_le_inv_iff.mpr h).symm
 
 @[to_additive max_neg_neg]
 theorem max_inv_inv' (a b : α) : max a⁻¹ b⁻¹ = (min a b)⁻¹ :=
-  Eq.symm <| (@Monotone.map_min α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
-    inv_le_inv_iff.mpr
+  (Antitone.map_min fun _ _ h => inv_le_inv_iff.mpr h).symm
 
 @[to_additive min_sub_sub_right]
 theorem min_div_div_right' (a b c : α) : min (a / c) (b / c) = min a b / c := by

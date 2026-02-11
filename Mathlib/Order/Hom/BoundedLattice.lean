@@ -677,8 +677,10 @@ variable [Max α] [Bot α] [Max β] [Bot β] [Max γ] [Bot γ]
 /-- Reinterpret a finitary supremum homomorphism as a finitary infimum homomorphism between the dual
 lattices. -/
 def dual : SupBotHom α β ≃ InfTopHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨SupHom.dual f.toSupHom, f.map_bot'⟩
-  invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_top'⟩
+  toFun f := ⟨SupHom.dual f.toSupHom, by simp [SupHom.dual]⟩
+  invFun f := ⟨SupHom.dual.symm f.toInfHom, by simp [SupHom.dual]⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; cases x; rfl
 
 @[simp] theorem dual_id : SupBotHom.dual (SupBotHom.id α) = InfTopHom.id _ := rfl
 
@@ -707,8 +709,10 @@ variable [Min α] [Top α] [Min β] [Top β] [Min γ] [Top γ]
 lattices. -/
 @[simps!]
 protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨InfHom.dual f.toInfHom, f.map_top'⟩
-  invFun f := ⟨InfHom.dual.symm f.toSupHom, f.map_bot'⟩
+  toFun f := ⟨InfHom.dual f.toInfHom, by simp [InfHom.dual]⟩
+  invFun f := ⟨InfHom.dual.symm f.toSupHom, by simp [InfHom.dual]⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; cases x; rfl
 
 @[simp]
 theorem dual_id : InfTopHom.dual (InfTopHom.id α) = SupBotHom.id _ :=
@@ -739,28 +743,34 @@ variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [Lattice 
 bounded lattices. -/
 @[simps!]
 protected def dual : BoundedLatticeHom α β ≃ BoundedLatticeHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨LatticeHom.dual f.toLatticeHom, f.map_bot', f.map_top'⟩
-  invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, f.map_bot', f.map_top'⟩
+  toFun f := ⟨LatticeHom.dual f.toLatticeHom, by
+    simp [LatticeHom.dual], by
+    simp [LatticeHom.dual]⟩
+  invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, by
+    simp [LatticeHom.dual], by
+    simp [LatticeHom.dual]⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; cases x; rfl
 
 @[simp]
-theorem dual_id : BoundedLatticeHom.dual (BoundedLatticeHom.id α) = BoundedLatticeHom.id _ :=
-  rfl
+theorem dual_id : BoundedLatticeHom.dual (BoundedLatticeHom.id α) = BoundedLatticeHom.id _ := by
+  ext x; simp
 
 @[simp]
 theorem dual_comp (g : BoundedLatticeHom β γ) (f : BoundedLatticeHom α β) :
     BoundedLatticeHom.dual (g.comp f) =
-      (BoundedLatticeHom.dual g).comp (BoundedLatticeHom.dual f) :=
-  rfl
+      (BoundedLatticeHom.dual g).comp (BoundedLatticeHom.dual f) := by
+  ext; rfl
 
 @[simp]
 theorem symm_dual_id :
-    BoundedLatticeHom.dual.symm (BoundedLatticeHom.id _) = BoundedLatticeHom.id α :=
-  rfl
+    BoundedLatticeHom.dual.symm (BoundedLatticeHom.id _) = BoundedLatticeHom.id α := by
+  ext x; simp
 
 @[simp]
 theorem symm_dual_comp (g : BoundedLatticeHom βᵒᵈ γᵒᵈ) (f : BoundedLatticeHom αᵒᵈ βᵒᵈ) :
     BoundedLatticeHom.dual.symm (g.comp f) =
-      (BoundedLatticeHom.dual.symm g).comp (BoundedLatticeHom.dual.symm f) :=
-  rfl
+      (BoundedLatticeHom.dual.symm g).comp (BoundedLatticeHom.dual.symm f) := by
+  ext; rfl
 
 end BoundedLatticeHom

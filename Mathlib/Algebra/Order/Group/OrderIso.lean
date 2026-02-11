@@ -37,7 +37,7 @@ variable (α)
 /-- `x ↦ x⁻¹` as an order-reversing equivalence. -/
 @[to_additive (attr := simps!) /-- `x ↦ -x` as an order-reversing equivalence. -/]
 def OrderIso.inv : α ≃o αᵒᵈ where
-  toEquiv := (Equiv.inv α).trans OrderDual.toDual
+  toEquiv := (Equiv.inv α).trans (OrderDual.equiv α).symm
   map_rel_iff' {_ _} := inv_le_inv_iff (α := α)
 
 end
@@ -57,7 +57,7 @@ theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
 /-- `x ↦ a / x` as an order-reversing equivalence. -/
 @[to_additive (attr := simps!) /-- `x ↦ a - x` as an order-reversing equivalence. -/]
 def OrderIso.divLeft (a : α) : α ≃o αᵒᵈ where
-  toEquiv := (Equiv.divLeft a).trans OrderDual.toDual
+  toEquiv := (Equiv.divLeft a).trans (OrderDual.equiv α).symm
   map_rel_iff' {_ _} := div_le_div_iff_left (α := α) _
 
 end TypeclassesLeftRightLE

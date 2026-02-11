@@ -101,28 +101,39 @@ theorem le_gfp {a : α} (h : a ≤ f a) : a ≤ f.gfp :=
 theorem gfp_le {a : α} (h : ∀ b, b ≤ f b → b ≤ a) : f.gfp ≤ a :=
   sSup_le h
 
-theorem isFixedPt_gfp : IsFixedPt f f.gfp :=
-  f.dual.isFixedPt_lfp
+theorem gfp_le_fixed {a : α} (h : f a = a) : a ≤ f.gfp :=
+  f.le_gfp h.ge
+
+theorem gfp_le_map {a : α} (ha : f.gfp ≤ a) : f.gfp ≤ f a :=
+  f.gfp_le fun _ hb => hb.trans (f.mono ((f.le_gfp hb).trans ha))
 
 @[simp]
 theorem map_gfp : f f.gfp = f.gfp :=
-  f.dual.map_lfp
+  have h : f.gfp ≤ f f.gfp := f.gfp_le fun _ hb => hb.trans (f.mono (f.le_gfp hb))
+  (f.le_gfp <| f.mono h).antisymm h
+
+theorem isFixedPt_gfp : IsFixedPt f f.gfp :=
+  f.map_gfp
 
 theorem map_le_gfp {a : α} (ha : a ≤ f.gfp) : f a ≤ f.gfp :=
-  f.dual.lfp_le_map ha
-
-theorem gfp_le_map {a : α} (ha : f.gfp ≤ a) : f.gfp ≤ f a :=
-  f.dual.map_le_lfp ha
+  calc
+    f a ≤ f f.gfp := f.mono ha
+    _ = f.gfp := f.map_gfp
 
 theorem isGreatest_gfp_le : IsGreatest { a | a ≤ f a } f.gfp :=
-  f.dual.isLeast_lfp_le
+  ⟨f.map_gfp.ge, fun _ => f.le_gfp⟩
 
 theorem isGreatest_gfp : IsGreatest (fixedPoints f) f.gfp :=
-  f.dual.isLeast_lfp
+  ⟨f.isFixedPt_gfp, fun _ => f.gfp_le_fixed⟩
 
 theorem gfp_induction {p : α → Prop} (step : ∀ a, p a → f.gfp ≤ a → p (f a))
-    (hInf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : p f.gfp :=
-  f.dual.lfp_induction step hInf
+    (hInf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : p f.gfp := by
+  set s := { a | f.gfp ≤ a ∧ p a }
+  specialize hInf s fun a => And.right
+  suffices sInf s = f.gfp from this ▸ hInf
+  have h : f.gfp ≤ sInf s := le_sInf fun b => And.left
+  have hmem : f (sInf s) ∈ s := ⟨f.gfp_le_map h, step _ hInf h⟩
+  exact (f.le_gfp <| sInf_le hmem).antisymm h
 
 theorem lfp_le_gfp : f.lfp ≤ f.gfp :=
   f.lfp_le_fixed f.isFixedPt_gfp
@@ -139,7 +150,8 @@ theorem map_lfp_comp : f (g.comp f).lfp = (f.comp g).lfp :=
     lfp_le _ (congr_arg f (g.comp f).map_lfp).le
 
 theorem map_gfp_comp : f (g.comp f).gfp = (f.comp g).gfp :=
-  f.dual.map_lfp_comp g.dual
+  le_antisymm (le_gfp _ (congr_arg f (g.comp f).map_gfp).ge) <|
+    (f.comp g).map_gfp ▸ f.mono (gfp_le_fixed _ <| congr_arg g (f.comp g).map_gfp)
 
 -- Diagonal rule
 theorem lfp_lfp (h : α →o α →o α) : (lfp.comp h).lfp = h.onDiag.lfp := by
@@ -152,8 +164,17 @@ theorem lfp_lfp (h : α →o α →o α) : (lfp.comp h).lfp = h.onDiag.lfp := by
     _ = (h a).lfp := (h a).map_lfp
     _ = a := ha
 
-theorem gfp_gfp (h : α →o α →o α) : (gfp.comp h).gfp = h.onDiag.gfp :=
-  @lfp_lfp αᵒᵈ _ <| (OrderHom.dualIso αᵒᵈ αᵒᵈ).symm.toOrderEmbedding.toOrderHom.comp h.dual
+theorem gfp_gfp (h : α →o α →o α) : (gfp.comp h).gfp = h.onDiag.gfp := by
+  let a := (gfp.comp h).gfp
+  refine (le_gfp h.onDiag (Eq.ge ?_)).antisymm (le_gfp (gfp.comp h) ?_)
+  · change h a a = a
+    have ha : (gfp ∘ h) a = a := (gfp.comp h).map_gfp
+    calc
+      h a a = h a (h a).gfp := congr_arg (h a) ha.symm
+      _ = (h a).gfp := (h a).map_gfp
+      _ = a := ha
+  · change h.onDiag.gfp ≤ (gfp ∘ h) h.onDiag.gfp
+    exact le_gfp _ h.onDiag.map_gfp.ge
 
 end Eqn
 
@@ -163,6 +184,9 @@ variable [CompleteLattice α] (f : α →o α)
 
 theorem gfp_const_inf_le (x : α) : (const α x ⊓ f).gfp ≤ x :=
   (gfp_le _) fun _ hb => hb.trans inf_le_left
+
+theorem le_lfp_const_sup (x : α) : x ≤ (const α x ⊔ f).lfp :=
+  (le_lfp _) fun _ hb => le_trans le_sup_left hb
 
 /-- Previous fixed point of a monotone map. If `f` is a monotone self-map of a complete lattice and
 `x` is a point such that `f x ≤ x`, then `f.prevFixed x hx` is the greatest fixed point of `f`
@@ -179,13 +203,18 @@ def prevFixed (x : α) (hx : f x ≤ x) : fixedPoints f :=
 `x` is a point such that `x ≤ f x`, then `f.nextFixed x hx` is the least fixed point of `f`
 that is greater than or equal to `x`. -/
 def nextFixed (x : α) (hx : x ≤ f x) : fixedPoints f :=
-  { f.dual.prevFixed x hx with val := (const α x ⊔ f).lfp }
+  ⟨(const α x ⊔ f).lfp,
+    calc
+      f (const α x ⊔ f).lfp = x ⊔ f (const α x ⊔ f).lfp :=
+        Eq.symm <| sup_of_le_right <| hx.trans (f.mono <| f.le_lfp_const_sup x)
+      _ = (const α x ⊔ f).lfp := (const α x ⊔ f).map_lfp
+    ⟩
 
 theorem prevFixed_le {x : α} (hx : f x ≤ x) : ↑(f.prevFixed x hx) ≤ x :=
   f.gfp_const_inf_le x
 
 theorem le_nextFixed {x : α} (hx : x ≤ f x) : x ≤ f.nextFixed x hx :=
-  f.dual.prevFixed_le hx
+  f.le_lfp_const_sup x
 
 theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y) :
     f.nextFixed x hx ≤ y :=
@@ -199,7 +228,8 @@ theorem nextFixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
 @[simp]
 theorem le_prevFixed_iff {x : α} (hx : f x ≤ x) {y : fixedPoints f} :
     y ≤ f.prevFixed x hx ↔ ↑y ≤ x :=
-  f.dual.nextFixed_le_iff hx
+  ⟨fun h => (Subtype.coe_le_coe.2 h).trans (f.prevFixed_le hx),
+   fun h => Subtype.coe_le_coe.1 <| le_gfp _ <| le_inf h y.2.symm.le⟩
 
 theorem le_prevFixed {x : α} (hx : f x ≤ x) {y : fixedPoints f} (h : ↑y ≤ x) :
     y ≤ f.prevFixed x hx :=
@@ -211,8 +241,10 @@ theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x �
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 
 -- Porting note: `x ⊓ y` without the `.val`s fails to synthesize `Inf` instance
-theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
-  f.dual.le_map_sup_fixedPoints x y
+theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x.val ⊓ y.val) ≤ x.val ⊓ y.val :=
+  calc
+    f (x.val ⊓ y.val) ≤ f x.val ⊓ f y.val := f.mono.map_inf_le x.val y.val
+    _ = x.val ⊓ y.val := congr_arg₂ (· ⊓ ·) x.2 y.2
 
 theorem le_map_sSup_subset_fixedPoints (A : Set α) (hA : A ⊆ fixedPoints f) :
     sSup A ≤ f (sSup A) :=
@@ -245,8 +277,10 @@ instance : SemilatticeSup (fixedPoints f) where
   sup_le _ _ _ hxz hyz := f.nextFixed_le _ <| sup_le hxz hyz
 
 instance : SemilatticeInf (fixedPoints f) where
-  inf x y := f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y)
-  __ := OrderDual.instSemilatticeInf (fixedPoints f.dual)
+  inf x y := f.prevFixed (x.val ⊓ y.val) (f.map_inf_fixedPoints_le x y)
+  inf_le_left _ _ := Subtype.coe_le_coe.1 <| (f.prevFixed_le _).trans inf_le_left
+  inf_le_right _ _ := Subtype.coe_le_coe.1 <| (f.prevFixed_le _).trans inf_le_right
+  le_inf _ _ _ hxz hyz := f.le_prevFixed _ <| le_inf hxz hyz
 
 /-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
 instance completeLattice : CompleteLattice (fixedPoints f) where
@@ -279,7 +313,47 @@ theorem lfp_eq_sSup_iterate (h : ωScottContinuous f) :
     exact ωSup_iterate_le_prefixedPoint ⟨f, h.map_ωSup_of_orderHom⟩ ⊥ bot_le h_a bot_le
 
 theorem gfp_eq_sInf_iterate (h : ωScottContinuous f.dual) :
-    f.gfp = ⨅ n, f^[n] ⊤ :=
-  lfp_eq_sSup_iterate f.dual h
+    f.gfp = ⨅ n, f^[n] ⊤ := by
+  apply le_antisymm
+  · apply gfp_le
+    intro a h_a
+    apply le_iInf
+    intro n
+    induction n with
+    | zero => exact le_top
+    | succ n ih =>
+      rw [Function.iterate_succ_apply']
+      exact h_a.trans (f.mono ih)
+  · -- Show ⨅ n, f^[n] ⊤ is a fixed point of f, hence ≤ gfp
+    apply gfp_le_fixed
+    -- Need: f (⨅ n, f^[n] ⊤) = ⨅ n, f^[n] ⊤
+    -- Use the dual version of Kleene's theorem
+    have hfp := ωSup_iterate_mem_fixedPoint ⟨f.dual, h.map_ωSup_of_orderHom⟩ (⊥ : αᵒᵈ) bot_le
+    rw [Function.mem_fixedPoints, IsFixedPt] at hfp
+    -- hfp : f.dual (ωSup (iterateChain f.dual ⊥ bot_le)) = ωSup (iterateChain f.dual ⊥ bot_le)
+    -- ωSup in αᵒᵈ (complete lattice) = ⨆_αᵒᵈ, which is ⨅ in α
+    -- Convert: ofDual of both sides
+    -- The dual iterate chain relates to f^[n] ⊤ via ofDual
+    have hiter : ∀ n, OrderDual.ofDual ((⇑f.dual)^[n] ⊥) = f^[n] ⊤ := by
+      intro n; induction n with
+      | zero => rfl
+      | succ n ih =>
+        simp only [Function.iterate_succ_apply']
+        change OrderDual.ofDual (OrderDual.toDual (f (OrderDual.ofDual ((⇑f.dual)^[n] ⊥)))) =
+          f (f^[n] ⊤)
+        simp [ih]
+    -- ωSup in αᵒᵈ (complete lattice) = iSup, and ofDual converts iSup to iInf
+    have hconv : OrderDual.ofDual (ωSup (iterateChain f.dual ⊥ bot_le)) = ⨅ n, f^[n] ⊤ := by
+      change OrderDual.ofDual (⨆ n, (iterateChain f.dual ⊥ bot_le) n) = ⨅ n, f^[n] ⊤
+      rw [ofDual_iSup]
+      congr 1; ext n
+      exact hiter n
+    -- The fixed point property converts too
+    have key : f (⨅ n, f^[n] ⊤) = ⨅ n, f^[n] ⊤ := by
+      rw [← hconv]
+      have := congr_arg OrderDual.ofDual hfp
+      simp only [OrderHom.dual] at this
+      exact this
+    exact key
 
 end fixedPoints

@@ -55,7 +55,10 @@ lemma mulSupport_iSup [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι →
 
 @[to_additive]
 lemma mulSupport_iInf [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
-    mulSupport (fun x ↦ ⨅ i, f i x) ⊆ ⋃ i, mulSupport (f i) := mulSupport_iSup (M := Mᵒᵈ) f
+    mulSupport (fun x ↦ ⨅ i, f i x) ⊆ ⋃ i, mulSupport (f i) := by
+  simp only [mulSupport_subset_iff', mem_iUnion, not_exists, notMem_mulSupport]
+  intro x hx
+  simp only [hx, ciInf_const]
 
 end Function
 
@@ -77,7 +80,10 @@ lemma mulIndicator_le' (hfg : ∀ a ∈ s, f a ≤ g a) (hg : ∀ a, a ∉ s →
 
 @[to_additive]
 lemma le_mulIndicator_apply (hfg : a ∈ s → y ≤ g a) (hf : a ∉ s → y ≤ 1) :
-    y ≤ mulIndicator s g a := mulIndicator_apply_le' (M := Mᵒᵈ) hfg hf
+    y ≤ mulIndicator s g a := by
+  by_cases ha : a ∈ s
+  · simpa [ha] using hfg ha
+  · simpa [ha] using hf ha
 
 @[to_additive]
 lemma le_mulIndicator (hfg : ∀ a ∈ s, f a ≤ g a) (hf : ∀ a ∉ s, f a ≤ 1) :
@@ -147,8 +153,15 @@ lemma indicator_le_indicator_nonneg (s : Set α) (f : α → M) :
   exacts [le_rfl, (not_le.1 ‹_›).le, ‹_›, le_rfl]
 
 lemma indicator_nonpos_le_indicator (s : Set α) (f : α → M) :
-    {a | f a ≤ 0}.indicator f ≤ s.indicator f :=
-  indicator_le_indicator_nonneg (M := Mᵒᵈ) _ _
+    {a | f a ≤ 0}.indicator f ≤ s.indicator f := by
+  intro a
+  classical
+  simp_rw [indicator_apply]
+  split_ifs with h₁ h₂ h₂
+  · exact le_rfl
+  · exact h₁
+  · exact (not_le.1 h₁).le
+  · exact le_rfl
 
 end LinearOrder
 

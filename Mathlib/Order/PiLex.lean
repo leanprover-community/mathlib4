@@ -121,8 +121,16 @@ instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
       ⟨N₂, fun j hj => (lt_N₁ _ (hj.trans H)).trans (lt_N₂ _ hj), (lt_N₁ _ H).symm ▸ b_lt_c⟩]
 
 instance Colex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
-    IsStrictOrder (Colex (∀ i, β i)) (· < ·) :=
-  Lex.isStrictOrder (ι := ιᵒᵈ)
+    IsStrictOrder (Colex (∀ i, β i)) (· < ·) where
+  irrefl := fun a ⟨k, _, hk₂⟩ => lt_irrefl (a k) hk₂
+  trans := by
+    rintro a b c ⟨N₁, lt_N₁, a_lt_b⟩ ⟨N₂, lt_N₂, b_lt_c⟩
+    rcases lt_trichotomy N₁ N₂ with (H | rfl | H)
+    exacts [⟨N₂, fun j hj => (lt_N₁ _ (H.trans hj)).trans (lt_N₂ _ hj),
+              (lt_N₁ _ H).symm ▸ b_lt_c⟩,
+      ⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ hj), a_lt_b.trans b_lt_c⟩,
+      ⟨N₁, fun j hj => (lt_N₁ _ hj).trans (lt_N₂ _ (H.trans hj)),
+              (lt_N₂ _ H) ▸ a_lt_b⟩]
 
 instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ i, β i)) :=
   partialOrderOfSO (· < ·)
@@ -139,7 +147,9 @@ noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
 /-- `Colex (∀ i, α i)` is a linear order if the original order has well-founded `>`. -/
 noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Colex (∀ i, β i)) :=
-  Lex.linearOrder (ι := ιᵒᵈ)
+  haveI : WellFounded ((· > ·) : ι → ι → Prop) := IsWellFounded.wf
+  @linearOrderOfSTO (Colex (∀ i, β i)) (· < ·)
+    { trichotomous := (trichotomous_lex (· > ·) (· < ·) this).1 } (Classical.decRel _)
 
 theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
     {x y : Lex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
@@ -209,27 +219,50 @@ end Lex
 section Colex
 variable [WellFoundedGT ι]
 
-theorem toColex_monotone : Monotone (@toColex (∀ i, β i)) :=
-  toLex_monotone (ι := ιᵒᵈ)
+theorem toColex_monotone : Monotone (@toColex (∀ i, β i)) := fun a b h =>
+  or_iff_not_imp_left.2 fun hne =>
+    let ⟨i, hi, hl⟩ := (IsWellFounded.wf (r := (· > · : ι → ι → Prop))).has_min
+      { i | a i ≠ b i } (Function.ne_iff.1 hne)
+    ⟨i, fun j hj => by
+      contrapose! hl
+      exact ⟨j, hl, hj⟩, (h i).lt_of_ne hi⟩
 
-theorem toColex_strictMono : StrictMono (@toColex (∀ i, β i)) :=
-  toLex_strictMono (ι := ιᵒᵈ)
-
-@[simp]
-theorem lt_toColex_update_self_iff : toColex x < toColex (update x i a) ↔ x i < a :=
-  lt_toLex_update_self_iff (ι := ιᵒᵈ)
-
-@[simp]
-theorem toColex_update_lt_self_iff : toColex (update x i a) < toColex x ↔ a < x i :=
-  toLex_update_lt_self_iff (ι := ιᵒᵈ)
-
-@[simp]
-theorem le_toColex_update_self_iff : toColex x ≤ toColex (update x i a) ↔ x i ≤ a :=
-  le_toLex_update_self_iff (ι := ιᵒᵈ)
+theorem toColex_strictMono : StrictMono (@toColex (∀ i, β i)) := fun a b h =>
+  let ⟨i, hi, hl⟩ := (IsWellFounded.wf (r := (· > · : ι → ι → Prop))).has_min
+    { i | a i ≠ b i } (Function.ne_iff.1 h.ne)
+  ⟨i, fun j hj => by
+    contrapose! hl
+    exact ⟨j, hl, hj⟩, (h.le i).lt_of_ne hi⟩
 
 @[simp]
-theorem toColex_update_le_self_iff : toColex (update x i a) ≤ toColex x ↔ a ≤ x i :=
-  toLex_update_le_self_iff (ι := ιᵒᵈ)
+theorem lt_toColex_update_self_iff : toColex x < toColex (update x i a) ↔ x i < a := by
+  refine ⟨?_, fun h => toColex_strictMono <| lt_update_self_iff.2 h⟩
+  rintro ⟨j, hj, h⟩
+  dsimp at h
+  obtain rfl : j = i := by
+    by_contra H
+    rw [update_of_ne H] at h
+    exact h.false
+  rwa [update_self] at h
+
+@[simp]
+theorem toColex_update_lt_self_iff : toColex (update x i a) < toColex x ↔ a < x i := by
+  refine ⟨?_, fun h => toColex_strictMono <| update_lt_self_iff.2 h⟩
+  rintro ⟨j, hj, h⟩
+  dsimp at h
+  obtain rfl : j = i := by
+    by_contra H
+    rw [update_of_ne H] at h
+    exact h.false
+  rwa [update_self] at h
+
+@[simp]
+theorem le_toColex_update_self_iff : toColex x ≤ toColex (update x i a) ↔ x i ≤ a := by
+  simp_rw [le_iff_lt_or_eq, lt_toColex_update_self_iff, toColex_inj, eq_update_self_iff]
+
+@[simp]
+theorem toColex_update_le_self_iff : toColex (update x i a) ≤ toColex x ↔ a ≤ x i := by
+  simp_rw [le_iff_lt_or_eq, toColex_update_lt_self_iff, toColex_inj, update_eq_self_iff]
 
 end Colex
 
@@ -302,7 +335,17 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
 
 instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     DenselyOrdered (Colex (∀ i, β i)) :=
-  inferInstanceAs (DenselyOrdered (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
+  ⟨by
+    rintro _ a₂ ⟨i, h, hi⟩
+    obtain ⟨a, ha₁, ha₂⟩ := exists_between hi
+    classical
+      refine ⟨Function.update a₂ _ a, ⟨i, fun j hj => ?_, ?_⟩, i, fun j hj => ?_, ?_⟩
+      · rw [h j hj]
+        dsimp only at hj
+        rw [Function.update_of_ne hj.ne' a]
+      · rwa [Function.update_self i a]
+      · rw [Function.update_of_ne hj.ne' a]
+      · rwa [Function.update_self i a]⟩
 
 theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Lex (∀ i, β i)) :=
@@ -314,7 +357,11 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
 
 theorem Colex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Colex (∀ i, β i)) :=
-  Lex.noMaxOrder' (ι := ιᵒᵈ) i
+  ⟨fun a => by
+    let ⟨b, hb⟩ := exists_gt (a i)
+    classical
+    exact ⟨Function.update a i b, i, fun j hj =>
+      (Function.update_of_ne hj.ne' b a).symm, by rwa [Function.update_self i b]⟩⟩
 
 instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=
@@ -324,7 +371,9 @@ instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder 
 
 instance [LinearOrder ι] [WellFoundedGT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Colex (∀ i, β i)) :=
-  inferInstanceAs (NoMaxOrder (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
+  ⟨fun a =>
+    let ⟨_, hb⟩ := exists_gt (ofColex a)
+    ⟨_, toColex_strictMono hb⟩⟩
 
 instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
@@ -334,7 +383,9 @@ instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder 
 
 instance [LinearOrder ι] [WellFoundedGT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Colex (∀ i, β i)) :=
-  inferInstanceAs (NoMinOrder (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
+  ⟨fun a =>
+    let ⟨_, hb⟩ := exists_lt (ofColex a)
+    ⟨_, toColex_strictMono hb⟩⟩
 
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically
 smaller than the original function. -/
@@ -346,8 +397,9 @@ theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [LT α] {f : ι → α} {i 
 /-- If we swap two strictly increasing values in a function, then the result is colexicographically
 smaller than the original function. -/
 theorem colex_asc {α} [Preorder ι] [DecidableEq ι] [LT α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
-    (h₂ : f i < f j) : toColex (f ∘ Equiv.swap i j) < toColex f := by
-  rw [Equiv.swap_comm]
-  exact lex_desc (ι := ιᵒᵈ) h₁ h₂
+    (h₂ : f i < f j) : toColex (f ∘ Equiv.swap i j) < toColex f :=
+  ⟨j, fun k (hkj : k > j) => congr_arg f
+    (Equiv.swap_apply_of_ne_of_ne (h₁.trans_lt hkj).ne' hkj.ne'), by
+    simpa only [Pi.toColex_apply, Function.comp_apply, Equiv.swap_apply_right] using h₂⟩
 
 end Pi

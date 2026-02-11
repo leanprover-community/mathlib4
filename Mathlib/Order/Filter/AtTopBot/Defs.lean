@@ -85,7 +85,7 @@ theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = �
   (iInf_le _ _).antisymm <| le_iInf fun b ↦ principal_mono.2 <| Ici_subset_Ici.2 <| ha b
 
 theorem _root_.IsBot.atBot_eq [Preorder α] {a : α} (ha : IsBot a) : atBot = 𝓟 (Iic a) :=
-  ha.toDual.atTop_eq
+  (iInf_le _ _).antisymm <| le_iInf fun b ↦ principal_mono.2 <| Iic_subset_Iic.2 <| ha b
 
 theorem atTop_eq_generate_Ici [Preorder α] : atTop = generate (range (Ici (α := α))) := by
   simp only [generate_eq_biInf, atTop, iInf_range]
@@ -97,8 +97,10 @@ theorem Frequently.forall_exists_of_atTop [Preorder α] {p : α → Prop}
   exact (eventually_ge_atTop a).mono h
 
 theorem Frequently.forall_exists_of_atBot [Preorder α] {p : α → Prop}
-    (h : ∃ᶠ x in atBot, p x) (a : α) : ∃ b ≤ a, p b :=
-  Frequently.forall_exists_of_atTop (α := αᵒᵈ) h _
+    (h : ∃ᶠ x in atBot, p x) (a : α) : ∃ b ≤ a, p b := by
+  rw [Filter.Frequently] at h
+  contrapose! h
+  exact (eventually_le_atBot a).mono h
 
 lemma atTop_eq_generate_of_forall_exists_le [Preorder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
     (atTop : Filter α) = generate (Ici '' s) := by
