@@ -157,7 +157,6 @@ irreducible_def IsSubmersionAt (I : ModelWithCorners 𝕜 E H) (J : ModelWithCor
 variable {f g : M → N} {x : M}
 namespace IsSubmersionAtOfComplement
 
-#check IsImmersionAt
 lemma mk_of_charts (equiv : E ≃L[𝕜] (E'' × F)) (domChart : OpenPartialHomeomorph M H)
     (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
