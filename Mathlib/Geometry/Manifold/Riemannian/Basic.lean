@@ -25,7 +25,7 @@ satisfies the predicate `IsRiemannianManifold 𝓘(ℝ, E) E`.
 
 In a general manifold with a Riemannian metric, we define the associated extended distance in the
 manifold, and show that it defines the same topology as the pre-existing one. Therefore, one
-may endow the manifold with an emetric space structure, see `EmetricSpace.ofRiemannianMetric`.
+may endow the manifold with an emetric space structure, see `EMetricSpace.ofRiemannianMetric`.
 By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
@@ -367,13 +367,13 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
 lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
     ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
   rcases eventually_riemannianEDist_le_edist_extChartAt I x with ⟨C, C_pos, hC⟩
-  have : (extChartAt I x) ⁻¹' (EMetric.ball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
+  have : (extChartAt I x) ⁻¹' (Metric.eball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
     apply (continuousAt_extChartAt x).preimage_mem_nhds
-    exact EMetric.ball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
+    exact Metric.eball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
   filter_upwards [this, hC] with y hy h'y
   apply h'y.trans_lt
   have : edist (extChartAt I x x) (extChartAt I x y) < c / C := by
-    simpa only [mem_preimage, EMetric.mem_ball'] using hy
+    simpa only [mem_preimage, Metric.mem_eball'] using hy
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
@@ -487,7 +487,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
-    rw [← Metric.emetric_ball_nnreal, EMetric.mem_ball, edist_eq_enorm_sub]
+    rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
     convert this
     simp [γ', hγx]
   convert mem_preimage.1 this

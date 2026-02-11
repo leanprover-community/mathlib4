@@ -316,7 +316,7 @@ theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
   rw [TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
   exact ⟨index n x, mem_admissibleIndex_of_mem_box n hB hx, rfl⟩
 
-open Submodule Pointwise BigOperators
+open Submodule Pointwise
 
 open scoped Pointwise
 

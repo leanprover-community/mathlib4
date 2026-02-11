@@ -542,8 +542,20 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
     ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
   refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
   simp_rw [sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
-    mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul, ← Real.sqrt_mul
-      (hT.toLinearMap.nonneg_eigenvalues rfl _), Real.sqrt_mul_self
-      (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜), ← smul_eq_mul, smul_assoc,
-    ← hT.isSymmetric.apply_eigenvectorBasis, ← map_smul, ← map_sum,
+    mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul,
+    ← Real.sqrt_mul (hT.toLinearMap.nonneg_eigenvalues rfl _),
+    Real.sqrt_mul_self (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜),
+    ← smul_eq_mul, smul_assoc, ← hT.isSymmetric.apply_eigenvectorBasis, ← map_smul, ← map_sum,
     ← OrthonormalBasis.repr_apply_apply, OrthonormalBasis.sum_repr, coe_coe]
+
+open scoped ComplexOrder in
+theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Finite n] {M : Matrix n n 𝕜} :
+    M.PosSemidef ↔ ∃ (m : ℕ) (v : Fin m → (n → 𝕜)), M = ∑ i, vecMulVec (v i) (star (v i)) := by
+  classical
+  have := Fintype.ofFinite n
+  rw [← isPositive_toEuclideanLin_iff, ← isPositive_toContinuousLinearMap_iff,
+    isPositive_iff_eq_sum_rankOne]
+  simp_rw [eq_comm, ← LinearEquiv.symm_apply_eq, coe_toContinuousLinearMap_symm,
+    ContinuousLinearMap.coe_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
+  exact ⟨fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ (u i).ofLp, hu⟩,
+    fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ WithLp.toLp 2 (u i), hu⟩⟩

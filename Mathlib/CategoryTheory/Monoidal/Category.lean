@@ -219,7 +219,53 @@ attribute [reassoc (attr := simp)] MonoidalCategory.triangle
 
 namespace MonoidalCategory
 
-variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
+/--
+A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
+`whiskerRight`.
+-/
+abbrev ofTensorHom {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
+    (id_tensorHom_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
+      cat_disch)
+    (id_tensorHom : ∀ (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂), tensorHom (𝟙 X) f = whiskerLeft X f := by
+      cat_disch)
+    (tensorHom_id : ∀ {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C), tensorHom f (𝟙 Y) = whiskerRight f Y := by
+      cat_disch)
+    (tensorHom_comp_tensorHom :
+      ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
+        (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
+          cat_disch)
+    (associator_naturality :
+      ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
+        tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
+          (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
+            cat_disch)
+    (leftUnitor_naturality :
+      ∀ {X Y : C} (f : X ⟶ Y),
+        tensorHom (𝟙 (𝟙_ C)) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
+          cat_disch)
+    (rightUnitor_naturality :
+      ∀ {X Y : C} (f : X ⟶ Y),
+        tensorHom f (𝟙 (𝟙_ C)) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
+          cat_disch)
+    (pentagon :
+      ∀ W X Y Z : C,
+        tensorHom (associator W X Y).hom (𝟙 Z) ≫
+            (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
+          (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
+            cat_disch)
+    (triangle :
+      ∀ X Y : C,
+        (associator X (𝟙_ C) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
+          tensorHom (rightUnitor X).hom (𝟙 Y) := by
+            cat_disch) :
+      MonoidalCategory C where
+  tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom]
+  whiskerLeft_id := by intros; simp [← id_tensorHom, ← id_tensorHom_id]
+  id_whiskerRight := by intros; simp [← tensorHom_id, id_tensorHom_id]
+  pentagon := by intros; simp [← id_tensorHom, ← tensorHom_id, pentagon]
+  triangle := by intros; simp [← id_tensorHom, ← tensorHom_id, triangle]
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 @[simp]
 theorem id_tensorHom (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
@@ -704,52 +750,6 @@ theorem tensor_hom_inv_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y)
 @[reassoc]
 theorem tensor_inv_hom_id' {V W X Y Z : C} (f : V ⟶ W) [IsIso f] (g : X ⟶ Y) (h : Y ⟶ Z) :
     (g ⊗ₘ inv f) ≫ (h ⊗ₘ f) = (g ⊗ₘ 𝟙 W) ≫ (h ⊗ₘ 𝟙 W) := by simp
-
-/--
-A constructor for monoidal categories that requires `tensorHom` instead of `whiskerLeft` and
-`whiskerRight`.
--/
-abbrev ofTensorHom [MonoidalCategoryStruct C]
-    (id_tensorHom_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by
-      cat_disch)
-    (id_tensorHom : ∀ (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂), tensorHom (𝟙 X) f = whiskerLeft X f := by
-      cat_disch)
-    (tensorHom_id : ∀ {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C), tensorHom f (𝟙 Y) = whiskerRight f Y := by
-      cat_disch)
-    (tensorHom_comp_tensorHom :
-      ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
-        (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
-          cat_disch)
-    (associator_naturality :
-      ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
-        tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
-          (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
-            cat_disch)
-    (leftUnitor_naturality :
-      ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom (𝟙 (𝟙_ C)) f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
-          cat_disch)
-    (rightUnitor_naturality :
-      ∀ {X Y : C} (f : X ⟶ Y),
-        tensorHom f (𝟙 (𝟙_ C)) ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
-          cat_disch)
-    (pentagon :
-      ∀ W X Y Z : C,
-        tensorHom (associator W X Y).hom (𝟙 Z) ≫
-            (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
-          (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
-            cat_disch)
-    (triangle :
-      ∀ X Y : C,
-        (associator X (𝟙_ C) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
-          tensorHom (rightUnitor X).hom (𝟙 Y) := by
-            cat_disch) :
-      MonoidalCategory C where
-  tensorHom_def := by intros; simp [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom]
-  whiskerLeft_id := by intros; simp [← id_tensorHom, ← id_tensorHom_id]
-  id_whiskerRight := by intros; simp [← tensorHom_id, id_tensorHom_id]
-  pentagon := by intros; simp [← id_tensorHom, ← tensorHom_id, pentagon]
-  triangle := by intros; simp [← id_tensorHom, ← tensorHom_id, triangle]
 
 @[reassoc]
 theorem comp_tensor_id (f : W ⟶ X) (g : X ⟶ Y) : f ≫ g ⊗ₘ 𝟙 Z = (f ⊗ₘ 𝟙 Z) ≫ (g ⊗ₘ 𝟙 Z) := by

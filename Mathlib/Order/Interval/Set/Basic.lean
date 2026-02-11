@@ -53,21 +53,22 @@ section Preorder
 
 variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
+@[to_dual]
+instance decidableMemIio [Decidable (x < b)] : Decidable (x ∈ Iio b) := by assumption
+
+@[to_dual]
+instance decidableMemIic [Decidable (x ≤ b)] : Decidable (x ∈ Iic b) := by assumption
+
 instance decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
 
 instance decidableMemIco [Decidable (a ≤ x ∧ x < b)] : Decidable (x ∈ Ico a b) := by assumption
 
-instance decidableMemIio [Decidable (x < b)] : Decidable (x ∈ Iio b) := by assumption
-
 instance decidableMemIcc [Decidable (a ≤ x ∧ x ≤ b)] : Decidable (x ∈ Icc a b) := by assumption
-
-instance decidableMemIic [Decidable (x ≤ b)] : Decidable (x ∈ Iic b) := by assumption
 
 instance decidableMemIoc [Decidable (a < x ∧ x ≤ b)] : Decidable (x ∈ Ioc a b) := by assumption
 
-instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by assumption
-
-instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
+@[to_dual] theorem self_notMem_Iio : a ∉ Iio a := by simp
+@[to_dual] theorem self_mem_Iic : a ∈ Iic a := by simp
 
 theorem left_notMem_Ioo (a b : α) : a ∉ Ioo a b := by simp
 theorem left_notMem_Ioc (a b : α) : a ∉ Ioc a b := by simp
@@ -80,9 +81,6 @@ theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
 
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp
-
-theorem self_notMem_Ioi : a ∉ Ioi a := by simp
-theorem self_mem_Ici : a ∈ Ici a := by simp
 
 @[deprecated (since := "2025-12-26")]
 alias left_mem_Ici := self_mem_Ici
@@ -99,26 +97,16 @@ theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp
 
-theorem self_notMem_Iio : a ∉ Iio a := by simp
-theorem self_mem_Iic : a ∈ Iic a := by simp
 
 @[deprecated (since := "2025-12-26")]
 alias right_mem_Iic := self_mem_Iic
 
-@[simp]
-theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
-  rfl
-
-@[simp]
-theorem Iic_toDual : Iic (toDual a) = ofDual ⁻¹' Ici a :=
-  rfl
-
-@[simp]
-theorem Ioi_toDual : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
+  rfl
+
+@[to_dual (attr := simp)]
+theorem Iic_toDual : Iic (toDual a) = ofDual ⁻¹' Ici a :=
   rfl
 
 @[simp]
@@ -137,20 +125,12 @@ theorem Ico_toDual : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
 theorem Ioo_toDual : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
   Set.ext fun _ => and_comm
 
-@[simp]
-theorem Ici_ofDual {x : αᵒᵈ} : Ici (ofDual x) = toDual ⁻¹' Iic x :=
-  rfl
-
-@[simp]
-theorem Iic_ofDual {x : αᵒᵈ} : Iic (ofDual x) = toDual ⁻¹' Ici x :=
-  rfl
-
-@[simp]
-theorem Ioi_ofDual {x : αᵒᵈ} : Ioi (ofDual x) = toDual ⁻¹' Iio x :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_ofDual {x : αᵒᵈ} : Iio (ofDual x) = toDual ⁻¹' Ioi x :=
+  rfl
+
+@[to_dual (attr := simp)]
+theorem Iic_ofDual {x : αᵒᵈ} : Iic (ofDual x) = toDual ⁻¹' Ici x :=
   rfl
 
 @[simp]
@@ -169,6 +149,14 @@ theorem Ioc_ofDual {x y : αᵒᵈ} : Ioc (ofDual y) (ofDual x) = toDual ⁻¹' 
 theorem Ioo_ofDual {x y : αᵒᵈ} : Ioo (ofDual y) (ofDual x) = toDual ⁻¹' Ioo x y :=
   Set.ext fun _ => and_comm
 
+@[to_dual (attr := simp)]
+theorem nonempty_Iio [NoMinOrder α] : (Iio a).Nonempty :=
+  exists_lt a
+
+@[to_dual (attr := simp)]
+theorem nonempty_Iic : (Iic a).Nonempty :=
+  ⟨a, self_mem_Iic⟩
+
 @[simp]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b :=
   ⟨fun ⟨_, hx⟩ => hx.1.trans hx.2, fun h => ⟨a, left_mem_Icc.2 h⟩⟩
@@ -181,17 +169,19 @@ theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b :=
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, hx⟩ => hx.1.trans_le hx.2, fun h => ⟨b, right_mem_Ioc.2 h⟩⟩
 
-@[to_dual (attr := simp)]
-theorem nonempty_Ici : (Ici a).Nonempty :=
-  ⟨a, self_mem_Ici⟩
-
 @[simp]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, ha, hb⟩ => ha.trans hb, exists_between⟩
 
-@[to_dual (attr := simp)]
-theorem nonempty_Ioi [NoMaxOrder α] : (Ioi a).Nonempty :=
-  exists_gt a
+/-- In an order without minimal elements, the intervals `Iio` are nonempty. -/
+@[to_dual /-- In an order without maximal elements, the intervals `Ioi` are nonempty. -/]
+instance nonempty_Iio_subtype [NoMinOrder α] : Nonempty (Iio a) :=
+  Nonempty.to_subtype nonempty_Iio
+
+/-- An interval `Iic a` is nonempty. -/
+@[to_dual /-- An interval `Ici a` is nonempty. -/]
+instance nonempty_Iic_subtype : Nonempty (Iic a) :=
+  Nonempty.to_subtype nonempty_Iic
 
 theorem nonempty_Icc_subtype (h : a ≤ b) : Nonempty (Icc a b) :=
   Nonempty.to_subtype (nonempty_Icc.mpr h)
@@ -202,40 +192,20 @@ theorem nonempty_Ico_subtype (h : a < b) : Nonempty (Ico a b) :=
 theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
   Nonempty.to_subtype (nonempty_Ioc.mpr h)
 
-/-- An interval `Ici a` is nonempty. -/
-instance nonempty_Ici_subtype : Nonempty (Ici a) :=
-  Nonempty.to_subtype nonempty_Ici
-
-/-- An interval `Iic a` is nonempty. -/
-instance nonempty_Iic_subtype : Nonempty (Iic a) :=
-  Nonempty.to_subtype nonempty_Iic
-
 theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b) :=
   Nonempty.to_subtype (nonempty_Ioo.mpr h)
 
-/-- In an order without maximal elements, the intervals `Ioi` are nonempty. -/
-instance nonempty_Ioi_subtype [NoMaxOrder α] : Nonempty (Ioi a) :=
-  Nonempty.to_subtype nonempty_Ioi
-
-/-- In an order without minimal elements, the intervals `Iio` are nonempty. -/
-instance nonempty_Iio_subtype [NoMinOrder α] : Nonempty (Iio a) :=
-  Nonempty.to_subtype nonempty_Iio
-
+@[to_dual]
 instance [NoMinOrder α] : NoMinOrder (Iio a) :=
   ⟨fun a =>
     let ⟨b, hb⟩ := exists_lt (a : α)
     ⟨⟨b, lt_trans hb a.2⟩, hb⟩⟩
 
+@[to_dual]
 instance [NoMinOrder α] : NoMinOrder (Iic a) :=
   ⟨fun a =>
     let ⟨b, hb⟩ := exists_lt (a : α)
     ⟨⟨b, hb.le.trans a.2⟩, hb⟩⟩
-
-instance [NoMaxOrder α] : NoMaxOrder (Ioi a) :=
-  OrderDual.noMaxOrder (α := Iio (toDual a))
-
-instance [NoMaxOrder α] : NoMaxOrder (Ici a) :=
-  OrderDual.noMaxOrder (α := Iic (toDual a))
 
 @[simp]
 theorem Icc_eq_empty (h : ¬a ≤ b) : Icc a b = ∅ :=
@@ -278,39 +248,19 @@ theorem Ioc_self (a : α) : Ioc a a = ∅ :=
 theorem Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
-@[simp]
-theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
-  ⟨fun h => h self_mem_Ici, fun h _ => h.trans⟩
+@[to_dual (attr := simp, gcongr)]
+theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
+  ⟨fun h => h self_mem_Ici, fun h _ hx ↦ hx.trans h⟩
 
-@[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
-
-@[simp]
-theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
+@[to_dual (attr := simp, gcongr)]
+theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b where
   mp h := by
     obtain ⟨ab, c, cb, ac⟩ := ssubset_iff_exists.mp h
-    exact lt_of_le_not_ge (Ici_subset_Ici.mp ab) (fun h' ↦ ac (h'.trans cb))
-  mpr h := (ssubset_iff_of_subset (Ici_subset_Ici.mpr h.le)).mpr
+    exact lt_of_le_not_ge (Iic_subset_Iic.mp ab) (fun h' ↦ ac (cb.trans h'))
+  mpr h := (ssubset_iff_of_subset (Iic_subset_Iic.mpr h.le)).mpr
     ⟨b, self_mem_Iic, fun h' => h.not_ge h'⟩
 
-@[gcongr] alias ⟨_, _root_.GCongr.Ici_ssubset_Ici_of_le⟩ := Ici_ssubset_Ici
-
-@[simp]
-theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
-  @Ici_subset_Ici αᵒᵈ _ _ _
-
-@[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
-
-@[simp]
-theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b :=
-  @Ici_ssubset_Ici αᵒᵈ _ _ _
-
-@[gcongr] alias ⟨_, _root_.GCongr.Iic_ssubset_Iic_of_le⟩ := Iic_ssubset_Iic
-
-@[simp]
-theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
-  ⟨fun h => h self_mem_Ici, fun h _ => h.trans_le⟩
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h self_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
@@ -391,13 +341,14 @@ theorem Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := fun _ => And.left
 
 theorem Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := fun _ => And.left
 
-@[to_dual] theorem Ioi_subset_Ici_self : Ioi a ⊆ Ici a := fun _ hx => le_of_lt hx
+@[to_dual]
+theorem Iio_subset_Iic_self : Iio a ⊆ Iic a := fun _ hx => le_of_lt hx
 
 theorem Ico_subset_Ici_self : Ico a b ⊆ Ici a := fun _ => And.left
 
 @[to_dual]
-theorem Ioi_ssubset_Ici_self : Ioi a ⊂ Ici a :=
-  ⟨Ioi_subset_Ici_self, fun h => lt_irrefl a (h le_rfl)⟩
+theorem Iio_ssubset_Iic_self : Iio a ⊂ Iic a :=
+  ⟨Iio_subset_Iic_self, fun h => lt_irrefl a (h le_rfl)⟩
 
 theorem Icc_subset_Icc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Icc a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h => ⟨(h ⟨le_rfl, h₁⟩).1, (h ⟨h₁, le_rfl⟩).2⟩, fun ⟨h, h'⟩ _ ⟨hx, hx'⟩ =>
@@ -436,35 +387,26 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
   (ssubset_iff_of_subset (Icc_subset_Icc ha (le_of_lt hb))).mpr
     ⟨b₂, right_mem_Icc.mpr hI, fun f => lt_irrefl b₁ (hb.trans_le f.2)⟩
 
-/-- If `a ≤ b`, then `(b, +∞) ⊆ (a, +∞)`. In preorders, this is just an implication. If you need
-the equivalence in linear orders, use `Ioi_subset_Ioi_iff`. -/
-@[gcongr]
-theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := fun _ hx => h.trans_lt hx
-
-/-- If `a < b`, then `(b, +∞) ⊂ (a, +∞)`. In preorders, this is just an implication. If you need
-the equivalence in linear orders, use `Ioi_ssubset_Ioi_iff`. -/
-@[gcongr]
-theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a :=
-  (ssubset_iff_of_subset (Ioi_subset_Ioi h.le)).mpr ⟨b, h, lt_irrefl b⟩
-
-/-- If `a ≤ b`, then `(b, +∞) ⊆ [a, +∞)`. In preorders, this is just an implication. If you need
-the equivalence in dense linear orders, use `Ioi_subset_Ici_iff`. -/
-theorem Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
-  Subset.trans (Ioi_subset_Ioi h) Ioi_subset_Ici_self
-
 /-- If `a ≤ b`, then `(-∞, a) ⊆ (-∞, b)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Iio_subset_Iio_iff`. -/
-@[gcongr]
+@[to_dual (attr := gcongr)
+/-- If `a ≤ b`, then `(b, +∞) ⊆ (a, +∞)`. In preorders, this is just an implication. If you need
+the equivalence in linear orders, use `Ioi_subset_Ioi_iff`. -/]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := fun _ hx => lt_of_lt_of_le hx h
 
 /-- If `a < b`, then `(-∞, a) ⊂ (-∞, b)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Iio_ssubset_Iio_iff`. -/
-@[gcongr]
+@[to_dual (attr := gcongr)
+/-- If `a < b`, then `(b, +∞) ⊂ (a, +∞)`. In preorders, this is just an implication. If you need
+the equivalence in linear orders, use `Ioi_ssubset_Ioi_iff`. -/]
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b :=
   (ssubset_iff_of_subset (Iio_subset_Iio h.le)).mpr ⟨a, h, lt_irrefl a⟩
 
 /-- If `a ≤ b`, then `(-∞, a) ⊆ (-∞, b]`. In preorders, this is just an implication. If you need
 the equivalence in dense linear orders, use `Iio_subset_Iic_iff`. -/
+@[to_dual
+/-- If `a ≤ b`, then `(b, +∞) ⊆ [a, +∞)`. In preorders, this is just an implication. If you need
+the equivalence in dense linear orders, use `Ioi_subset_Ici_iff`. -/]
 theorem Iio_subset_Iic (h : a ≤ b) : Iio a ⊆ Iic b :=
   Subset.trans (Iio_subset_Iio h) Iio_subset_Iic_self
 
@@ -525,22 +467,18 @@ theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
 theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← not_nonempty_iff_eq_empty, not_iff_not, nonempty_Ioo]
 
+@[to_dual]
 theorem _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
   eq_univ_of_forall h
 
-theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
-  eq_univ_of_forall h
+@[to_dual (attr := simp)]
+theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := by
+  simp only [isMin_iff_forall_not_lt, eq_empty_iff_forall_notMem, mem_Iio]
 
-@[simp] theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
-  simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_notMem, mem_Ioi]
+@[to_dual (attr := simp)] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
 
-@[simp] theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
-
-@[simp] alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
-@[simp] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
-
-@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
-@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [nonempty_iff_ne_empty]
+@[to_dual (attr := simp)]
+lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
 
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
@@ -553,9 +491,9 @@ theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_ge h.1
 
 theorem notMem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_ge h.2
 
-theorem notMem_Ioi_self : a ∉ Ioi a := lt_irrefl _
+@[deprecated (since := "2026-02-10")] alias notMem_Ioi_self := self_notMem_Ioi
 
-theorem notMem_Iio_self : b ∉ Iio b := lt_irrefl _
+@[deprecated (since := "2026-02-10")] alias notMem_Iio_self := self_notMem_Iio
 
 theorem notMem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
@@ -667,11 +605,7 @@ theorem Ioc_diff_right : Ioc a b \ {b} = Ioo a b :=
 theorem Icc_diff_both : Icc a b \ {a, b} = Ioo a b := by
   rw [insert_eq, ← diff_diff, Icc_diff_left, Ioc_diff_right]
 
-@[simp]
-theorem Ici_diff_left : Ici a \ {a} = Ioi a :=
-  ext fun x => by simp [lt_iff_le_and_ne, eq_comm]
-
-@[simp]
+@[to_dual (attr := simp) Ici_diff_left]
 theorem Iic_diff_right : Iic a \ {a} = Iio a :=
   ext fun x => by simp [lt_iff_le_and_ne]
 
@@ -696,17 +630,11 @@ theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
   rw [← Icc_diff_both, diff_diff_cancel_left]
   simp [insert_subset_iff, h]
 
-@[simp]
-theorem Ici_diff_Ioi_same : Ici a \ Ioi a = {a} := by
-  rw [← Ici_diff_left, diff_diff_cancel_left (singleton_subset_iff.2 self_mem_Ici)]
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_diff_Iio_same : Iic a \ Iio a = {a} := by
   rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 self_mem_Iic)]
 
-theorem Ioi_union_left : Ioi a ∪ {a} = Ici a :=
-  ext fun x => by simp [eq_comm, le_iff_eq_or_lt]
-
+@[to_dual Ioi_union_left]
 theorem Iio_union_right : Iio a ∪ {a} = Iic a :=
   ext fun _ => le_iff_lt_or_eq.symm
 
@@ -746,25 +674,18 @@ theorem Ioo_insert_left (h : a < b) : insert a (Ioo a b) = Ico a b := by
 theorem Ioo_insert_right (h : a < b) : insert b (Ioo a b) = Ioc a b := by
   rw [insert_eq, union_comm, Ioo_union_right h]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_insert : insert a (Iio a) = Iic a :=
   ext fun _ => le_iff_eq_or_lt.symm
 
-@[simp]
-theorem Ioi_insert : insert a (Ioi a) = Ici a :=
-  ext fun _ => (or_congr_left eq_comm).trans le_iff_eq_or_lt.symm
-
-theorem mem_Ici_Ioi_of_subset_of_subset {s : Set α} (ho : Ioi a ⊆ s) (hc : s ⊆ Ici a) :
-    s ∈ ({Ici a, Ioi a} : Set (Set α)) :=
-  by_cases
-    (fun h : a ∈ s =>
-      Or.inl <| Subset.antisymm hc <| by rw [← Ioi_union_left, union_subset_iff]; simp [*])
-    fun h =>
-    Or.inr <| Subset.antisymm (fun _ hx => lt_of_le_of_ne (hc hx) fun heq => h <| heq.symm ▸ hx) ho
-
+@[to_dual]
 theorem mem_Iic_Iio_of_subset_of_subset {s : Set α} (ho : Iio a ⊆ s) (hc : s ⊆ Iic a) :
     s ∈ ({Iic a, Iio a} : Set (Set α)) :=
-  @mem_Ici_Ioi_of_subset_of_subset αᵒᵈ _ a s ho hc
+  by_cases
+    (fun h : a ∈ s =>
+      Or.inl <| Subset.antisymm hc <| by rw [← Iio_union_right, union_subset_iff]; simp [*])
+    fun h =>
+    Or.inr <| Subset.antisymm (fun _ hx => lt_of_le_of_ne (hc hx) fun heq => h <| heq.symm ▸ hx) ho
 
 theorem mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset {s : Set α} (ho : Ioo a b ⊆ s) (hc : s ⊆ Icc a b) :
     s ∈ ({Icc a b, Ico a b, Ioc a b, Ioo a b} : Set (Set α)) := by
@@ -795,21 +716,15 @@ theorem eq_endpoints_or_mem_Ioo_of_mem_Icc {x : α} (hmem : x ∈ Icc a b) :
     x = a ∨ x = b ∨ x ∈ Ioo a b :=
   hmem.1.eq_or_lt'.imp_right fun h => eq_right_or_mem_Ioo_of_mem_Ioc ⟨h, hmem.2⟩
 
-theorem _root_.IsMax.Ici_eq (h : IsMax a) : Ici a = {a} :=
-  eq_singleton_iff_unique_mem.2 ⟨self_mem_Ici, fun _ => h.eq_of_ge⟩
-
+@[to_dual]
 theorem _root_.IsMin.Iic_eq (h : IsMin a) : Iic a = {a} :=
-  h.toDual.Ici_eq
+  eq_singleton_iff_unique_mem.2 ⟨self_mem_Ici, fun _ => h.eq_of_le⟩
 
-theorem Ici_injective : Injective (Ici : α → Set α) := fun _ _ =>
-  eq_of_forall_ge_iff ∘ Set.ext_iff.1
-
+@[to_dual]
 theorem Iic_injective : Injective (Iic : α → Set α) := fun _ _ =>
   eq_of_forall_le_iff ∘ Set.ext_iff.1
 
-theorem Ici_inj : Ici a = Ici b ↔ a = b :=
-  Ici_injective.eq_iff
-
+@[to_dual]
 theorem Iic_inj : Iic a = Iic b ↔ a = b :=
   Iic_injective.eq_iff
 
@@ -834,19 +749,21 @@ end PartialOrder
 
 section OrderTop
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Ici_top [PartialOrder α] [OrderTop α] : Ici (⊤ : α) = {⊤} :=
   isMax_top.Ici_eq
 
+@[to_dual]
 theorem Iio_top [PartialOrder α] [OrderTop α] : Iio (⊤ : α) = {⊤}ᶜ :=
   ext fun _ ↦ lt_top_iff_ne_top
 
 variable [Preorder α] [OrderTop α] {a : α}
 
+@[to_dual]
 theorem Ioi_top : Ioi (⊤ : α) = ∅ :=
   isMax_top.Ioi_eq
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_top : Iic (⊤ : α) = univ :=
   isTop_top.Iic_eq
 
@@ -860,21 +777,7 @@ end OrderTop
 
 section OrderBot
 
-@[simp]
-theorem Iic_bot [PartialOrder α] [OrderBot α] : Iic (⊥ : α) = {⊥} :=
-  isMin_bot.Iic_eq
-
-theorem Ioi_bot [PartialOrder α] [OrderBot α] : Ioi (⊥ : α) = {⊥}ᶜ :=
-  ext fun _ ↦ bot_lt_iff_ne_bot
-
 variable [Preorder α] [OrderBot α] {a : α}
-
-theorem Iio_bot : Iio (⊥ : α) = ∅ :=
-  isMin_bot.Iio_eq
-
-@[simp]
-theorem Ici_bot : Ici (⊥ : α) = univ :=
-  isBot_bot.Ici_eq
 
 @[simp]
 theorem Icc_bot : Icc ⊥ a = Iic a := by simp [← Ici_inter_Iic]
@@ -892,7 +795,7 @@ section Inf
 
 variable [SemilatticeInf α]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_inter_Iic {a b : α} : Iic a ∩ Iic b = Iic (a ⊓ b) := by
   ext x
   simp [Iic]
@@ -906,11 +809,6 @@ end Inf
 section Sup
 
 variable [SemilatticeSup α]
-
-@[simp]
-theorem Ici_inter_Ici {a b : α} : Ici a ∩ Ici b = Ici (a ⊔ b) := by
-  ext x
-  simp [Ici]
 
 @[simp]
 theorem Ico_inter_Ici (a b c : α) : Ico a b ∩ Ici c = Ico (a ⊔ c) b := by
@@ -935,17 +833,11 @@ section Prod
 
 variable {β : Type*} [Preorder α] [Preorder β]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iic_prod_Iic (a : α) (b : β) : Iic a ×ˢ Iic b = Iic (a, b) :=
   rfl
 
-@[simp]
-theorem Ici_prod_Ici (a : α) (b : β) : Ici a ×ˢ Ici b = Ici (a, b) :=
-  rfl
-
-theorem Ici_prod_eq (a : α × β) : Ici a = Ici a.1 ×ˢ Ici a.2 :=
-  rfl
-
+@[to_dual]
 theorem Iic_prod_eq (a : α × β) : Iic a = Iic a.1 ×ˢ Iic a.2 :=
   rfl
 
