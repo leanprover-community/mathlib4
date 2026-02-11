@@ -38,7 +38,7 @@ tensor product, finitely generated
 
 -/
 
-@[expose] public section
+public section
 
 open scoped TensorProduct
 

@@ -5,7 +5,8 @@ Authors: Kim Morrison, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Pullbacks in the category of types
@@ -235,6 +236,7 @@ lemma isPullback_iff :
       grind [Function.Bijective, Function.Injective, Function.Surjective]
     exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
       (PullbackCone.ext (asIso φ)).symm⟩⟩
+
 end
 
 end CategoryTheory.Limits.Types

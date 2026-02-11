@@ -11,7 +11,6 @@ public import Mathlib.Data.Nat.Choose.Central
 
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Data.Tree.Basic
 import Mathlib.Tactic.Field
 
 /-!

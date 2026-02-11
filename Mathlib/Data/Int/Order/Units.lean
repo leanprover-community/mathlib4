@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Order.Ring.Abs
 # Lemmas about units in `ℤ`, which interact with the order structure.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Int

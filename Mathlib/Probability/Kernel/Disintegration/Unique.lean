@@ -23,7 +23,7 @@ We prove that the conditional kernels `ProbabilityTheory.Kernel.condKernel` and
   everywhere equal to the measure `condKernel`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set Filter MeasurableSpace
 

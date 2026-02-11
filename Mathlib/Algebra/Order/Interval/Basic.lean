@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Interval arithmetic
@@ -539,10 +538,10 @@ instance subtractionCommMonoid {α : Type u}
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
     sub_eq_add_neg := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (sub_eq_add_neg _ _)
-    neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (neg_neg _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
+    neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
     neg_add_rev := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (neg_add_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
     neg_eq_of_add := by
       rintro (_ | s) (_ | t) h <;>
         first
@@ -555,10 +554,10 @@ instance subtractionCommMonoid {α : Type u}
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
   { Interval.commMonoid with
     div_eq_mul_inv := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (div_eq_mul_inv _ _)
-    inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (inv_inv _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
+    inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
     mul_inv_rev := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (mul_inv_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
     inv_eq_of_mul := by
       rintro (_ | s) (_ | t) h <;>
         first

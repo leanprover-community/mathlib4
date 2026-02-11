@@ -131,12 +131,6 @@ theorem mem_closure_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ closure s 
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubmonoid.not_mem_of_not_mem_closure := AddSubmonoid.notMem_of_notMem_closure
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 variable {S}
 
 open Set
@@ -235,7 +229,7 @@ lemma closure_eq_one_union (s : Set M) :
     | mem x hx => exact Or.inr <| Subsemigroup.subset_closure hx
     | one => exact Or.inl <| by simp
     | mul x hx y hy hx hy =>
-      simp only [singleton_union, mem_insert_iff, SetLike.mem_coe] at hx hy
+      push _ ∈ _ at hx hy
       obtain ⟨(rfl | hx), (rfl | hy)⟩ := And.intro hx hy
       all_goals simp_all
       exact Or.inr <| mul_mem hx hy

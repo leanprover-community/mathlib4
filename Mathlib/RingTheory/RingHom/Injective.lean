@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.RingHomProperties
 
 /-! # Meta properties of injective ring homomorphisms -/
 
-@[expose] public section
+public section
 
 lemma _root_.RingHom.injective_stableUnderComposition :
     RingHom.StableUnderComposition (fun f ↦ Function.Injective f) := by

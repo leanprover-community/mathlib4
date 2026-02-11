@@ -98,7 +98,7 @@ noncomputable instance Forget₂.createsLimit :
           { pt := GrpCat.of (Types.Small.limitCone (F ⋙ forget GrpCat)).pt
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom (F ⋙ forget₂ GrpCat MonCat) j
-                naturality i j h:= hom_ext <| congr_arg MonCat.Hom.hom <|
+                naturality i j h := hom_ext <| congr_arg MonCat.Hom.hom <|
                   (MonCat.HasLimits.limitCone
                         (F ⋙ forget₂ GrpCat MonCat.{u})).π.naturality h } }
         validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t

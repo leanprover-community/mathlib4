@@ -17,7 +17,7 @@ We gather some results about the uniform convergence of infinite products, in pa
 the form `∏' i, (1 + f i x)` for a sequence `f` of complex-valued functions.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Complex Finset Topology
 

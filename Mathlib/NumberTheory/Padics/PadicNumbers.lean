@@ -78,7 +78,7 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   map_add_le_max' := by
     intros
     split_ifs
-    any_goals simp_all [- exp_neg]
+    any_goals simp_all [-exp_neg]
     rw [← min_le_iff]
     exact padicValRat.min_le_padicValRat_add ‹_›
 
@@ -321,12 +321,13 @@ end Valuation
 
 end PadicSeq
 
+-- Porting note: Commented out `padic_index_simp` tactic
+
+/-
 section
 
 open PadicSeq
 
--- Porting note: Commented out `padic_index_simp` tactic
-/-
 private unsafe def index_simp_core (hh hf hg : expr)
     (at_ : Interactive.Loc := Interactive.Loc.ns [none]) : tactic Unit := do
   let [v1, v2, v3] ← [hh, hf, hg].mapM fun n => tactic.mk_app `` stationary_point [n] <|> return n
@@ -344,9 +345,9 @@ unsafe def tactic.interactive.padic_index_simp (l : interactive.parse interactiv
     (at_ : interactive.parse interactive.types.location) : tactic Unit := do
   let [h, f, g] ← l.mapM tactic.i_to_expr
   index_simp_core h f g at_
--/
 
 end
+-/
 
 namespace PadicSeq
 

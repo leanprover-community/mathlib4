@@ -19,7 +19,7 @@ This file is very similar to `Mathlib/Data/Finset/NAry.lean`, `Mathlib/Order/Fil
 `Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -52,10 +52,10 @@ theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
   forall_mem_image.2 fun _ => mem_image2_of_mem ha
 
 lemma forall_mem_image2 {p : γ → Prop} :
-    (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by aesop
+    (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by grind
 
 lemma exists_mem_image2 {p : γ → Prop} :
-    (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by aesop
+    (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by grind
 
 @[simp]
 theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=

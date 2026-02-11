@@ -114,8 +114,14 @@ def ιColimitType (j : J) (x : F.obj j) : F.ColimitType :=
 
 lemma ιColimitType_eq_iff {j j' : J} (x : F.obj j) (y : F.obj j') :
     F.ιColimitType j x = F.ιColimitType j' y ↔
-      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨ j', y⟩ :=
+      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨j', y⟩ :=
   Quot.eq
+
+lemma ιColimitType_eq_of_map_eq_map {j j' : J} (x : F.obj j) (y : F.obj j')
+    {k : J} (f : j ⟶ k) (f' : j' ⟶ k) (H : F.map f x = F.map f' y) :
+    F.ιColimitType j x = F.ιColimitType j' y :=
+  (ιColimitType_eq_iff ..).mpr (.trans _ _ _ (.rel _ ⟨k, F.map f x⟩ ⟨f, rfl⟩)
+    (.symm _ _ (.rel _ _ ⟨f', H⟩)))
 
 lemma ιColimitType_jointly_surjective (t : F.ColimitType) :
     ∃ j x, F.ιColimitType j x = t := by
@@ -134,7 +140,7 @@ def coconeTypes : F.CoconeTypes where
   ι j := F.ιColimitType j
 
 /-- A heterogeneous universe version of the universal property of the colimit is
-satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
+satisfied by `F.ColimitType` together with the maps `F.ιColimitType j`. -/
 def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
   Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)
 
@@ -173,7 +179,7 @@ variable {c} (hc : c.IsColimit)
 
 include hc
 
-/-- Given `F : J ⥤ Type w₀`, and `c : F.CoconeTypes` a cocone that is colimit,
+/-- Given `F : J ⥤ Type w₀`, and `c : F.CoconeTypes` a cocone that is a colimit,
 this is the equivalence `F.ColimitType ≃ c.pt`. -/
 @[simps! apply]
 noncomputable def equiv : F.ColimitType ≃ c.pt :=

@@ -169,7 +169,8 @@ theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = co
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
 -- simp normal form is `fourier_add'`
-theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
+theorem fourier_add {m n : ℤ} {x : AddCircle T} :
+    fourier (m + n) x = fourier m x * fourier n x := by
   simp_rw [fourier_apply, add_zsmul, toCircle_add, Circle.coe_mul]
 
 @[simp]
@@ -290,7 +291,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/

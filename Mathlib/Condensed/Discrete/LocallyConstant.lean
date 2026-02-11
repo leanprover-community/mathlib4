@@ -190,8 +190,8 @@ noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
       convert map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by
-      exact Continuous.subtype_mk (g.hom.hom.continuous.comp continuous_subtype_val) _ }
       -- term mode gives "unknown free variable" error.
+      exact Continuous.subtype_mk (by fun_prop) _ }
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u + 1}))))
@@ -371,7 +371,6 @@ abbrev functor : Type (u + 1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u + 1} (P := fun _ ↦ True)
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
 (by uniqueness of adjoints).
@@ -387,10 +386,8 @@ noncomputable instance : functor.Faithful := functorFullyFaithful.faithful
 
 noncomputable instance : functor.Full := functorFullyFaithful.full
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (discrete (Type _)).Faithful := Functor.Faithful.of_iso iso
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 noncomputable instance : (discrete (Type _)).Full := Functor.Full.of_iso iso
 
 end CondensedSet.LocallyConstant
@@ -408,7 +405,6 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
   ⟨⟨(inferInstance : TotallyDisconnectedSpace (Subtype p)),
     (inferInstance : SecondCountableTopology {s | p s})⟩⟩
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /--
 `LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
 (by uniqueness of adjoints).
@@ -424,10 +420,8 @@ instance : functor.{u}.Faithful := functorFullyFaithful.faithful
 
 instance : LightCondSet.LocallyConstant.functor.Full := functorFullyFaithful.full
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.discrete (Type u)).Faithful := Functor.Faithful.of_iso iso.{u}
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.discrete (Type u)).Full := Functor.Full.of_iso iso.{u}
 
 end LightCondSet.LocallyConstant

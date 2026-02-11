@@ -15,7 +15,7 @@ public import Mathlib.NumberTheory.ModularForms.Cusps
 Collection of useful identities of modular forms.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -43,5 +43,10 @@ theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Ga
     f (((ModularGroup.T ^ (N * n))) • z) = f z := by
   rw [modular_T_zpow_smul z (N * n)]
   simpa only [Int.cast_mul, Int.cast_natCast] using vAdd_width_periodic N k n f z
+
+lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
+    (f ∣[k] ModularGroup.S) z = f (.mk _ z.im_inv_neg_coe_pos) * z ^ (-k) := by
+  rw [SL_slash_apply, modular_S_smul]
+  simp [ModularGroup.S, denom]
 
 end SlashInvariantForm

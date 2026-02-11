@@ -314,7 +314,7 @@ abbrev compatibleRingOfRingStructure : CompatibleRing R :=
       rfl
     funMap_one := by
       simp only [Fin.forall_fin_zero_pi]
-      rfl  }
+      rfl }
 
 end Ring
 

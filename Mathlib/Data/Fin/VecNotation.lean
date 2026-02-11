@@ -6,6 +6,7 @@ Authors: Anne Baanen, Eric Wieser
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
+public import Aesop
 
 /-!
 # Matrix and vector notation

@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 In this file we define `MeasurableSpace.invariants (f : α → α)`
 to be the σ-algebra of sets `s : Set α` such that
 - `s` is measurable w.r.t. the canonical σ-algebra on `α`;
-- and `f ⁻ˢ' s = s`.
+- and `f ⁻¹' s = s`.
 -/
 
 @[expose] public section

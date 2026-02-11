@@ -13,10 +13,9 @@ public import Mathlib.Algebra.Module.Submodule.Bilinear
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 

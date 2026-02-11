@@ -46,6 +46,8 @@ instance : SetLike (Compacts α) α where
   coe := Compacts.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (Compacts α) := .ofSetLike (Compacts α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
 
@@ -129,6 +131,14 @@ theorem coe_top [CompactSpace α] : (↑(⊤ : Compacts α) : Set α) = univ :=
 @[simp]
 theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
   rfl
+
+@[simp, norm_cast]
+theorem coe_eq_empty {s : Compacts α} : (s : Set α) = ∅ ↔ s = ⊥ :=
+  SetLike.coe_injective.eq_iff' rfl
+
+@[simp]
+theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
+  nonempty_iff_ne_empty.trans coe_eq_empty.not
 
 @[simp]
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
@@ -281,6 +291,8 @@ instance : SetLike (NonemptyCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : PartialOrder (NonemptyCompacts α) := .ofSetLike (NonemptyCompacts α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
 
@@ -331,6 +343,14 @@ theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
 
 theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
   .of_comp (f := SetLike.coe) SetLike.coe_injective
+
+@[simp]
+theorem range_toCompacts : range (toCompacts (α := α)) = {⊥}ᶜ := by
+  ext K
+  rw [mem_compl_singleton_iff, ← Compacts.coe_nonempty]
+  refine ⟨?_, fun h => ⟨⟨K, h⟩, rfl⟩⟩
+  rintro ⟨K, rfl⟩
+  exact K.nonempty
 
 instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
@@ -500,6 +520,8 @@ instance : SetLike (PositiveCompacts α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : PartialOrder (PositiveCompacts α) := .ofSetLike (PositiveCompacts α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
 
@@ -635,6 +657,8 @@ instance : SetLike (CompactOpens α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : PartialOrder (CompactOpens α) := .ofSetLike (CompactOpens α) α
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
 
@@ -723,7 +747,7 @@ instance instBoundedOrder : BoundedOrder (CompactOpens α) :=
 section Compl
 variable [T2Space α]
 
-instance instHasCompl : HasCompl (CompactOpens α) where
+instance instCompl : Compl (CompactOpens α) where
   compl s := ⟨⟨sᶜ, s.isOpen.isClosed_compl.isCompact⟩, s.isCompact.isClosed.isOpen_compl⟩
 
 instance instHImp : HImp (CompactOpens α) where

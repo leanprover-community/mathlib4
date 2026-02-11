@@ -15,7 +15,7 @@ In this file we provide the usual (algebraic) version of Chevalley's theorem.
 For the proof see `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 

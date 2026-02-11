@@ -27,7 +27,7 @@ section Category
 
 variable {C : Type u} [Category.{v} C]
 
-/-- An object `X` is isomorphic to an object `Y`, if `X ≅ Y` is not empty. -/
+/-- An object `X` is isomorphic to an object `Y` if `X ≅ Y` is nonempty. -/
 def IsIsomorphic : C → C → Prop := fun X Y => Nonempty (X ≅ Y)
 
 variable (C)

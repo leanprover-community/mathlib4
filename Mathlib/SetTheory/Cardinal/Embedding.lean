@@ -33,7 +33,7 @@ Let `s : Set α` be a finite set.
   map from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.
 -/
 
-@[expose] public section
+public section
 
 open Set Fin Function Function.Embedding
 

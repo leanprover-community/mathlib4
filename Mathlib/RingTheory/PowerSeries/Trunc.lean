@@ -80,7 +80,7 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
   rw [trunc_apply, Ico_zero_eq_range, sum_range_succ, trunc_apply, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
-  simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc, Nat.lt_add_one_iff]
+  simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc]
 
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 

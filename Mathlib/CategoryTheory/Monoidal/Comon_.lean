@@ -52,9 +52,9 @@ class ComonObj (X : C) where
 namespace ComonObj
 
 @[inherit_doc] scoped notation "Δ" => ComonObj.comul
-@[inherit_doc] scoped notation "Δ["M"]" => ComonObj.comul (X := M)
+@[inherit_doc] scoped notation "Δ[" M "]" => ComonObj.comul (X := M)
 @[inherit_doc] scoped notation "ε" => ComonObj.counit
-@[inherit_doc] scoped notation "ε["M"]" => ComonObj.counit (X := M)
+@[inherit_doc] scoped notation "ε[" M "]" => ComonObj.counit (X := M)
 
 attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 

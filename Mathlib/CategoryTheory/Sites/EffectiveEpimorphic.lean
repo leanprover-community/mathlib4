@@ -223,7 +223,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
       ι := {
         app := fun ⟨_,hT⟩ => hT.choose_spec.choose ≫ e hT.choose
         naturality := by
-          rintro ⟨A,a,(g₁ : A.left ⟶ _),ha⟩ ⟨B,b,(g₂ : B.left ⟶ _),hb⟩ ⟨q : A ⟶ B⟩
+          rintro ⟨A, a, (g₁ : A.left ⟶ _), ha⟩ ⟨B, b, (g₂ : B.left ⟶ _), hb⟩ ⟨q : A ⟶ B⟩
           dsimp; rw [Category.comp_id, ← Category.assoc]
           apply h; rw [Category.assoc]
           generalize_proofs h1 h2 h3 h4

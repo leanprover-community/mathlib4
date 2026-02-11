@@ -152,38 +152,6 @@ protected abbrev Function.Surjective.commMonoidWithZero [Zero M₀'] [Mul M₀']
 
 end MonoidWithZero
 
-section CancelMonoidWithZero
-
-variable [CancelMonoidWithZero M₀]
-
-/-- Pull back a `CancelMonoidWithZero` along an injective function.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.cancelMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
-    (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CancelMonoidWithZero M₀' :=
-  { hf.monoid f one mul npow, hf.mulZeroClass f zero mul with
-    mul_left_cancel_of_ne_zero hx _ _ H :=
-      hf <| mul_left_cancel₀ ((hf.ne_iff' zero).2 hx) <| by dsimp only at H; rw [← mul, ← mul, H],
-    mul_right_cancel_of_ne_zero hx _ _ H :=
-      hf <| mul_right_cancel₀ ((hf.ne_iff' zero).2 hx) <| by dsimp only at H; rw [← mul, ← mul, H] }
-
-end CancelMonoidWithZero
-
-section CancelCommMonoidWithZero
-
-variable [CancelCommMonoidWithZero M₀]
-
-/-- Pull back a `CancelCommMonoidWithZero` along an injective function.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.cancelCommMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀']
-    [Pow M₀' ℕ] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CancelCommMonoidWithZero M₀' :=
-  { hf.commMonoidWithZero f zero one mul npow, hf.cancelMonoidWithZero f zero one mul npow with }
-
-end CancelCommMonoidWithZero
-
 section GroupWithZero
 
 variable [GroupWithZero G₀]

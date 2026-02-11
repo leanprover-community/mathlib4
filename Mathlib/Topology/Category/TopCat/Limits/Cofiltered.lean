@@ -16,7 +16,7 @@ which contain `Set.univ` and are closed under intersections, the induced *naive*
 of sets in the limit is, in fact, a topological basis.
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Topology

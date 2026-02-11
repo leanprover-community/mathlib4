@@ -23,7 +23,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, power
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 𝔸 : Type*}
 
