@@ -68,8 +68,13 @@ theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
 other is antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
-    #s • ∑ i ∈ s, f i • g i ≤ (∑ i ∈ s, f i) • ∑ i ∈ s, g i :=
-  hfg.dual_right.sum_smul_sum_le_card_smul_sum
+    #s • ∑ i ∈ s, f i • g i ≤ (∑ i ∈ s, f i) • ∑ i ∈ s, g i := by
+  have h := hfg.dual_right.sum_smul_sum_le_card_smul_sum
+  rw [show (∑ i ∈ s, (toDual ∘ g) i) = toDual (∑ i ∈ s, g i) from
+    (map_sum (⟨⟨toDual, rfl⟩, fun _ _ => rfl⟩ : β →+ βᵒᵈ) _ _).symm,
+    show (∑ i ∈ s, f i • (toDual ∘ g) i) = toDual (∑ i ∈ s, f i • g i) from
+    (map_sum (⟨⟨toDual, rfl⟩, fun _ _ => rfl⟩ : β →+ βᵒᵈ) _ _).symm] at h
+  exact h
 
 variable [Fintype ι]
 
@@ -85,7 +90,7 @@ other is antitone), the scalar product of their sum is less than the size of the
 scalar product. -/
 theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
     Fintype.card ι • ∑ i, f i • g i ≤ (∑ i, f i) • ∑ i, g i :=
-  (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
+  (hfg.antivaryOn _).card_smul_sum_le_sum_smul_sum
 
 end SMul
 

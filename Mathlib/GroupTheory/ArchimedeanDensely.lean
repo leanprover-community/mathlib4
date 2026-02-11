@@ -89,16 +89,27 @@ instance : Unique (ℤ ≃+o ℤ) where
 
 open OrderDual in
 instance : Unique (ℤ ≃+o ℤᵒᵈ) where
-  default := ⟨AddEquiv.neg ℤ |>.trans ⟨toDual, toDual_add⟩, by simp⟩
+  default := ⟨AddEquiv.neg ℤ |>.trans ⟨(OrderDual.equiv ℤ).symm, toDual_add⟩, by
+    intro a b
+    show toDual (-a) ≤ toDual (-b) ↔ a ≤ b
+    simp [toDual_le_toDual, neg_le_neg_iff]⟩
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <| by
     simp only [OrderAddMonoidIso.toAddEquiv_eq_coe]
-    refine Int.addEquiv_eq_refl_or_neg ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨toDual, toDual_add⟩)
-        |>.resolve_left fun H => by
-      replace H : e 1 = 1 := congr($H 1)
-      have h1 : 0 < e 1 := by
+    have key := Int.addEquiv_eq_refl_or_neg
+      ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨OrderDual.equiv ℤ, ofDual_add⟩)
+    rcases key with h | h
+    · exfalso
+      have H1 : ofDual (e 1) = 1 := congr($h 1)
+      have h1 : (0 : ℤᵒᵈ) < e 1 := by
         rw [← map_zero e, map_lt_map_iff]
         simp
-      simp [H, ← ofDual_lt_ofDual] at h1
+      rw [show (0 : ℤᵒᵈ) = toDual 0 from rfl, toDual_lt_toDual] at h1
+      omega
+    · have hfun : (e : ℤ ≃+ ℤᵒᵈ).trans ⟨OrderDual.equiv ℤ, ofDual_add⟩ = AddEquiv.neg ℤ := h
+      ext
+      -- Goal: ofDual (e 1) = ofDual (neg.trans toDual 1)
+      have h1 : ofDual (e 1) = -1 := congr($(hfun) 1)
+      simp [h1, OrderDual.equiv]
 
 set_option backward.proofsInPublic true in
 open Subgroup in

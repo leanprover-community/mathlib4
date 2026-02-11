@@ -55,22 +55,29 @@ theorem Ideal.minimalPrimes_isPrime {p : Ideal R} (h : p ∈ I.minimalPrimes) : 
   h.1.1
 
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
-  set S := { p : (Ideal R)ᵒᵈ | Ideal.IsPrime p ∧ I ≤ OrderDual.ofDual p }
+  set S := { p : (Ideal R)ᵒᵈ | Ideal.IsPrime (OrderDual.ofDual p) ∧ I ≤ OrderDual.ofDual p }
   suffices h : ∃ m, OrderDual.toDual J ≤ m ∧ Maximal (· ∈ S) m by
     obtain ⟨p, hJp, hp⟩ := h
-    exact ⟨p, ⟨hp.prop, fun q hq hle ↦ hp.le_of_ge hq hle⟩, hJp⟩
+    refine ⟨OrderDual.ofDual p, ⟨hp.prop, fun q hq hle ↦ ?_⟩,
+      show OrderDual.ofDual p ≤ J from hJp⟩
+    exact hp.le_of_ge (y := OrderDual.toDual q) hq hle
   apply zorn_le_nonempty₀
   swap
-  · refine ⟨show J.IsPrime by infer_instance, e⟩
-  rintro (c : Set (Ideal R)) hc hc' J' hJ'
+  · exact ⟨show J.IsPrime by infer_instance, e⟩
+  rintro c hc hc' J' hJ'
   refine
-    ⟨OrderDual.toDual (sInf c),
-      ⟨Ideal.sInf_isPrime_of_isChain ⟨J', hJ'⟩ hc'.symm fun x hx => (hc hx).1, ?_⟩, ?_⟩
+    ⟨OrderDual.toDual (sInf (OrderDual.ofDual '' c)),
+      ⟨Ideal.sInf_isPrime_of_isChain ⟨OrderDual.ofDual J', ⟨J', hJ', rfl⟩⟩
+        (hc'.symm.image _ (· ≤ ·) OrderDual.ofDual fun _ _ h => h)
+        fun x hx => by obtain ⟨y, hy, rfl⟩ := hx; exact (hc hy).1,
+        ?_⟩, ?_⟩
   · rw [OrderDual.ofDual_toDual, le_sInf_iff]
-    exact fun _ hx => (hc hx).2
+    intro b ⟨y, hy, hb⟩
+    rw [← hb]
+    exact (hc hy).2
   · rintro z hz
     rw [OrderDual.le_toDual]
-    exact sInf_le hz
+    exact sInf_le ⟨z, hz, rfl⟩
 
 theorem Ideal.nonempty_minimalPrimes (h : I ≠ ⊤) : Nonempty I.minimalPrimes := by
   obtain ⟨m, hm, hle⟩ := Ideal.exists_le_maximal I h
