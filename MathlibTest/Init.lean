@@ -8,6 +8,10 @@ import Mathlib.Init
 #guard_msgs in
 #help tactic exact
 
+/-- error: no command declarations start with #help -/
+#guard_msgs in
+#help command "#help"
+
 /-- info: [grind]: The `[grind]` attribute -/
 #guard_msgs (substring := true) in
 #help attr grind
