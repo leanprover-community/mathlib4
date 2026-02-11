@@ -80,14 +80,6 @@ to learn about it as well!
 
   Other subcommands to automate git-related actions may be added in the future.
 
-**Analyzing Mathlib's import structure**
-- `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
-  calls `lake exe pole --loc --to <target>` to compute the longest
-  pole to a given target module, and then feeds this into
-  `lake exe unused` to analyze transitively unused imports.
-  Generates `unused.md` containing a markdown table showing the unused imports,
-  and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
-
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
@@ -108,9 +100,6 @@ to learn about it as well!
 - `lean-pr-testing-comments.sh`
   Generate comments and labels on a Lean or Batteries PR after CI has finished on a
   `*-pr-testing-NNNN` branch.
-- `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
-  This script downloads a .json file with proposed assignments and makes the
-  corresponding github API calls.
 - `declarations_diff.sh`
   Attempts to find which declarations have been removed and which have been added in the current PR
   with respect to `master`, and posts a comment on github with the result.

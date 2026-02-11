@@ -298,8 +298,9 @@ theorem parallelPairHom_app_one {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') 
 its components. -/
 @[simps!]
 def parallelPair.ext {F G : WalkingParallelPair ⥤ C} (zero : F.obj zero ≅ G.obj zero)
-    (one : F.obj one ≅ G.obj one) (left : F.map left ≫ one.hom = zero.hom ≫ G.map left)
-    (right : F.map right ≫ one.hom = zero.hom ≫ G.map right) : F ≅ G :=
+    (one : F.obj one ≅ G.obj one)
+    (left : F.map left ≫ one.hom = zero.hom ≫ G.map left := by cat_disch)
+    (right : F.map right ≫ one.hom = zero.hom ≫ G.map right := by cat_disch) : F ≅ G :=
   NatIso.ofComponents
     (by
       rintro ⟨j⟩

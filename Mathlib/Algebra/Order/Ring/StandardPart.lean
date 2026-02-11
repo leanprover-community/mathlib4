@@ -128,6 +128,13 @@ instance : RatCast (FiniteElement K) where
 
 @[simp] theorem mk_ratCast (q : ℚ) : FiniteElement.mk (q : K) (mk_ratCast_nonneg q) = q := rfl
 
+@[no_expose]
+noncomputable instance : FloorRing (FiniteElement K) :=
+  .ofBounded _ fun x ↦ by
+    obtain ⟨n, hn⟩ := x.2
+    refine ⟨n, (le_abs_self x).trans ?_⟩
+    simpa using hn
+
 end FiniteElement
 
 variable (K) in
