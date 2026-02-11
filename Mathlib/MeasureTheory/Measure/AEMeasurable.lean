@@ -292,6 +292,7 @@ theorem aemeasurable_map_equiv_iff (e : α ≃ᵐ β) {f : β → γ} :
 
 end
 
+@[fun_prop]
 theorem AEMeasurable.restrict (hfm : AEMeasurable f μ) {s} : AEMeasurable f (μ.restrict s) :=
   ⟨AEMeasurable.mk f hfm, hfm.measurable_mk, ae_restrict_of_ae hfm.ae_eq_mk⟩
 

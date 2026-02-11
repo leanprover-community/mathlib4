@@ -74,6 +74,8 @@ instance Sentence.instSetLike : SetLike (T.CompleteType α) L[[α]].Sentence :=
     cases q
     congr ⟩
 
+instance : PartialOrder (T.CompleteType α) := .ofSetLike (T.CompleteType α) (L[[α]].Sentence)
+
 theorem isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
   p.isMaximal'
 
@@ -198,11 +200,11 @@ lemma typesWith_inf (φ ψ : L[[α]].Sentence) :
   exact forall₃_congr fun _ _ _ ↦ BoundedFormula.realize_inf
 
 lemma typesWith_eq_univ_of_mem_onTheory_lhomWithConstants {φ}
-  (hφ : φ ∈ (L.lhomWithConstants α).onTheory T) : typesWith (T := T) φ = Set.univ
-  := univ_subset_iff.mp fun p _ ↦ p.subset hφ
+    (hφ : φ ∈ (L.lhomWithConstants α).onTheory T) : typesWith (T := T) φ = Set.univ :=
+  univ_subset_iff.mp fun p _ ↦ p.subset hφ
 
-lemma typesWith_top : typesWith (T := T) (α := α) ⊤ = Set.univ
-  := univ_subset_iff.mp fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun _ _ _ a ↦ a)
+lemma typesWith_top : typesWith (T := T) (α := α) ⊤ = Set.univ :=
+  univ_subset_iff.mp fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun _ _ _ a ↦ a)
 
 lemma typesWith_not (φ : L[[α]].Sentence) : typesWith ∼φ = (typesWith (T := T) φ)ᶜ := by
   simp [typesWith]

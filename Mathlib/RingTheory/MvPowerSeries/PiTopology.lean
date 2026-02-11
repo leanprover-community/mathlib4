@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Instances.ENat

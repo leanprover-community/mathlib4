@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.CountableInter
-public import Mathlib.Topology.Closure
 public import Mathlib.Topology.Defs.Induced
 public import Mathlib.Data.Set.Notation
 import Mathlib.Topology.Constructions

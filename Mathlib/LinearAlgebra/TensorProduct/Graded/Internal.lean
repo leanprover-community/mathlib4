@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Graded tensor products over graded algebras

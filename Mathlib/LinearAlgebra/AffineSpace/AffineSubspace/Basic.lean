@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
-import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Affine spaces

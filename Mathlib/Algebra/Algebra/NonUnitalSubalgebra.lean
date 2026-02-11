@@ -90,6 +90,8 @@ lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodu
 lemma toSubmodule_inj {s t : NonUnitalSubalgebra R A} : s.toSubmodule = t.toSubmodule ↔ s = t :=
   toSubmodule_injective.eq_iff
 
+instance : PartialOrder (NonUnitalSubalgebra R A) := .ofSetLike (NonUnitalSubalgebra R A) A
+
 /-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `SMulMemClass`. -/
 @[simps]
@@ -905,14 +907,14 @@ theorem mem_prod {S : NonUnitalSubalgebra R A} {S₁ : NonUnitalSubalgebra R B} 
     x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ :=
   Set.mem_prod
 
+theorem prod_mono {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
+    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
+  Set.prod_mono
+
 variable [IsScalarTower R A A] [SMulCommClass R A A] [IsScalarTower R B B] [SMulCommClass R B B]
 
 @[simp]
 theorem prod_top : (prod ⊤ ⊤ : NonUnitalSubalgebra R (A × B)) = ⊤ := by ext; simp
-
-theorem prod_mono {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
-    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
-  Set.prod_mono
 
 @[simp]
 theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSubalgebra R B} :
@@ -920,16 +922,6 @@ theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSuba
   SetLike.coe_injective Set.prod_inter_prod
 
 end Prod
-
-variable [IsScalarTower R A A] [SMulCommClass R A A]
-
-instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
-    Subsingleton (A →ₙₐ[R] B) :=
-  ⟨fun f g =>
-    NonUnitalAlgHom.ext fun a =>
-      have : a ∈ (⊥ : NonUnitalSubalgebra R A) :=
-        Subsingleton.elim (⊤ : NonUnitalSubalgebra R A) ⊥ ▸ mem_top
-      (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
 
 
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
@@ -968,6 +960,16 @@ theorem inclusion_inclusion {S T U : NonUnitalSubalgebra R A} (hst : S ≤ T) (h
 theorem coe_inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) (s : S) :
     (inclusion h s : A) = s :=
   rfl
+
+variable [IsScalarTower R A A] [SMulCommClass R A A]
+
+instance _root_.NonUnitalAlgHom.subsingleton [Subsingleton (NonUnitalSubalgebra R A)] :
+    Subsingleton (A →ₙₐ[R] B) :=
+  ⟨fun f g =>
+    NonUnitalAlgHom.ext fun a =>
+      have : a ∈ (⊥ : NonUnitalSubalgebra R A) :=
+        Subsingleton.elim (⊤ : NonUnitalSubalgebra R A) ⊥ ▸ mem_top
+      (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
 
 section SuprLift
 
