@@ -739,7 +739,6 @@ instance QuotientGroup.completeSpace_left' (G : Type u) [Group G] [TopologicalSp
   rw [← IsTopologicalGroup.completeSpace_rightUniformSpace_iff_leftUniformSpace] at hG ⊢
   infer_instance
 
-
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
 is itself complete. In contrast to `QuotientGroup.completeSpace_left'`, in this version `G` is
 already equipped with a uniform structure.
