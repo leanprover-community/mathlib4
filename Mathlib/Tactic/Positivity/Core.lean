@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 module
 
 public meta import Mathlib.Control.Basic
-public meta import Qq
 public import Mathlib.Algebra.Order.Invertible
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Tactic.HaveI

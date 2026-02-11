@@ -5,10 +5,9 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-public meta import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Tactic.TryThis
-public import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -25,12 +24,25 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
-public meta section
+public section
 
 -- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
 assert_not_exists IsOrderedMonoid TopologicalSpace PseudoMetricSpace
 
 namespace Mathlib.Tactic.Abel
+
+/-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative monoid. -/
+@[expose] def term {α} [AddCommMonoid α] (n : ℕ) (x a : α) : α := n • x + a
+/-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
+@[expose] def termg {α} [AddCommGroup α] (n : ℤ) (x a : α) : α := n • x + a
+
+/-- A synonym for `•`, used internally in `abel`. -/
+@[expose] def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
+/-- A synonym for `•`, used internally in `abel`. -/
+@[expose] def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
+
+meta section
+
 open Lean Elab Meta Tactic Qq
 
 initialize registerTraceClass `abel
@@ -123,11 +135,6 @@ Will use the `AddComm{Monoid,Group}` instance that has been cached in the contex
 def iapp (n : Name) (xs : Array Expr) : M Expr := do
   let c ← read
   return c.app (if c.isGroup then addG n else n) c.inst xs
-
-/-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative monoid. -/
-@[expose] def term {α} [AddCommMonoid α] (n : ℕ) (x a : α) : α := n • x + a
-/-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-@[expose] def termg {α} [AddCommGroup α] (n : ℤ) (x a : α) : α := n • x + a
 
 /-- Evaluate a term with coefficient `n`, atom `x` and successor terms `a`. -/
 def mkTerm (n x a : Expr) : M Expr := iapp ``term #[n, x, a]
@@ -238,11 +245,6 @@ def evalNeg : NormalExpr → M (NormalExpr × Expr)
     let (a', h₂) ← evalNeg a
     return (← term' (n'.expr, -n.2) x a',
       (← read).app ``term_neg (← read).inst #[n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
-
-/-- A synonym for `•`, used internally in `abel`. -/
-@[expose] def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
-/-- A synonym for `•`, used internally in `abel`. -/
-@[expose] def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
 
 theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
@@ -540,6 +542,8 @@ macro (name := abelConv) "abel" : conv =>
 
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
+
+end
 
 end Mathlib.Tactic.Abel
 

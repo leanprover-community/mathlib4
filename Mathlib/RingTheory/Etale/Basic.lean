@@ -216,6 +216,8 @@ namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
 
+instance [Etale R A] : Smooth R A where
+
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
   formallyEtale := FormallyEtale.of_equiv e
@@ -239,6 +241,8 @@ end Comp
 theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A where
   formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
+
+instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) where
 
 @[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
 
