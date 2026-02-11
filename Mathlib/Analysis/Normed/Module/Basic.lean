@@ -563,34 +563,27 @@ structure SeminormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [Ad
   norm_smul (c : 𝕜) (x : E) : ‖c • x‖ = ‖c‖ * ‖x‖
   norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖
 
-lemma SeminormedSpace.Core.dist_eq {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E]
-    [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) {x y : E} :
-    ‖x - y‖ = ‖-x + y‖ := by
-  have : x - y = (-1 : 𝕜) • (-x + y) := by simp [sub_eq_add_neg]
-  rw [this, core.norm_smul]
-  simp
-
 /-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new uniformity and
 topology on the type. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E]
     [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) :
     PseudoMetricSpace E where
-  dist x y := ‖x - y‖
+  dist x y := ‖-x + y‖
   dist_self x := by
-    show ‖x - x‖ = 0
-    simp only [sub_self]
+    show ‖-x + x‖ = 0
+    simp only [add_comm, ← sub_eq_add_neg, sub_self]
     have : (0 : E) = (0 : 𝕜) • (0 : E) := by simp
     rw [this, core.norm_smul]
     simp
   dist_comm x y := by
-    show ‖x - y‖ = ‖y - x‖
-    have : y - x = (-1 : 𝕜) • (x - y) := by simp
+    show ‖-x + y‖ = ‖-y + x‖
+    have : -y + x = (-1 : 𝕜) • (-x + y) := by simp; abel
     rw [this, core.norm_smul]
     simp
   dist_triangle x y z := by
-    show ‖x - z‖ ≤ ‖x - y‖ + ‖y - z‖
-    have : x - z = (x - y) + (y - z) := by abel
+    show ‖-x + z‖ ≤ ‖-x + y‖ + ‖-y + z‖
+    have : -x + z = (-x + y) + (-y + z) := by abel
     rw [this]
     exact core.norm_triangle _ _
   edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
@@ -646,8 +639,7 @@ norm.  it must therefore not be used on a type with a preexisting distance measu
 See note [reducible non-instances]. -/
 abbrev SeminormedAddCommGroup.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E]
     [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) : SeminormedAddCommGroup E :=
-  { PseudoMetricSpace.ofSeminormedSpaceCore core with
-    dist_eq _ _ := core.dist_eq }
+  { PseudoMetricSpace.ofSeminormedSpaceCore core with }
 
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core` on a type
 that already has an existing uniform space structure. This requires a proof that the uniformity
@@ -658,8 +650,7 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceUniformity {𝕜 : Type*} {E : Type*}
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
       (self := PseudoEMetricSpace.ofSeminormedSpaceCore core)]) :
     SeminormedAddCommGroup E :=
-  { PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity core H with
-    dist_eq _ _ := core.dist_eq }
+  { PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity core H with }
 
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core` on a type
 that already has an existing topology. This requires a proof that the uniformity
@@ -670,8 +661,7 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceTopology {𝕜 : Type*} {E : Type*} [
     (H : T = (PseudoEMetricSpace.ofSeminormedSpaceCore
       core).toUniformSpace.toTopologicalSpace) :
     SeminormedAddCommGroup E :=
-  { PseudoMetricSpace.ofSeminormedSpaceCoreReplaceTopology core H with
-    dist_eq _ _ := core.dist_eq }
+  { PseudoMetricSpace.ofSeminormedSpaceCoreReplaceTopology core H with }
 
 open Bornology in
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core` on a type
@@ -686,8 +676,7 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [Norme
     (HB : ∀ s : Set E, @IsBounded _ B s
       ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedSpaceCore core).toBornology s) :
     SeminormedAddCommGroup E :=
-  { PseudoMetricSpace.ofSeminormedSpaceCoreReplaceAll core HU HB with
-    dist_eq _ _ := core.dist_eq }
+  { PseudoMetricSpace.ofSeminormedSpaceCoreReplaceAll core HU HB with }
 
 /-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
 in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
@@ -706,8 +695,9 @@ See note [reducible non-instances]. -/
 abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCore core.toCore with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -719,8 +709,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : N
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceUniformity core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -733,8 +724,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceTopology core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 open Bornology in
@@ -751,8 +743,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceAll core.toCore HU HB with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used
