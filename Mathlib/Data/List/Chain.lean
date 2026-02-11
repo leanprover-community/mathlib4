@@ -371,7 +371,7 @@ theorem IsChain.take (h : IsChain R l) (n : ℕ) : IsChain R (take n l) :=
 
 theorem IsChain.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : IsChain R (x :: l)) :
     IsChain R (y :: l) :=
-  IsChain.cons_of_imp_of_cons @h hl
+  IsChain.cons_of_imp @h hl
 
 @[deprecated (since := "2025-09-24")] alias Chain'.getElem := IsChain.getElem
 
