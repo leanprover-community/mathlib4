@@ -29,32 +29,28 @@ namespace Polygon
 
 open Set AffineMap
 
-variable {R V P : Type*} [Ring R] [LinearOrder R] [FloorRing R]
+variable {R V P : Type*}
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] [Archimedean R]
 variable [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable {n : ℕ} [NeZero n]
 
+local instance : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
+
 variable (R) in
 /-- The boundary parametrization on `R` formed by concatenating edges using `edgePath`. -/
-noncomputable def boundaryParam (poly : Polygon P n) (t : R) : P :=
+def boundaryParam (poly : Polygon P n) (t : R) : P :=
   let i : Fin n := ⟨(Int.floor t).toNat % n, Nat.mod_lt _ (Nat.pos_of_neZero n)⟩
   let f : R := Int.fract t
   poly.edgePath R i f
 
 variable (R) in
 /-- A map from `AddCircle n` to the boundary points of the polygon lifted from `boundaryParam`. -/
-noncomputable def boundaryMap [IsStrictOrderedRing R] [Archimedean R]
+noncomputable def boundaryMap
     (poly : Polygon P n) : AddCircle (n : R) → P :=
-  haveI : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
-  AddCircle.liftIco (p := (n : R)) (a := (0 : R)) (poly.boundaryParam R)
+  AddCircle.liftIco (n : R) (0 : R) (poly.boundaryParam R)
 
-variable {R V P : Type*}
-variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-variable [Archimedean R]
-variable [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable {n : ℕ} [NeZero n]
+
 variable {poly : Polygon P n}
-
-private instance : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
 
 /-- The range of the `boundaryMap` is the `boundary`. -/
 theorem range_boundaryMap : Set.range (poly.boundaryMap R) = poly.boundary R := by
