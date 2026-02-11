@@ -141,7 +141,9 @@ variable [Semiring R] [NoZeroDivisors R]
 
 instance : NoZeroDivisors (MvPowerSeries σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
-    letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
+    letI lo := WellOrderingRel.isWellOrder.linearOrder (α := σ)
+    letI : LinearOrder σ :=
+      LinearOrder.lift' (OrderDual.toDual (α := σ)) (fun _ _ h => OrderDual.toDual_inj.mp h)
     letI : WellFoundedGT σ := by
       change IsWellFounded σ fun x y ↦ WellOrderingRel x y
       exact IsWellOrder.toIsWellFounded
