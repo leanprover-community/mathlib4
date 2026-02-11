@@ -847,11 +847,30 @@ section Monoid
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
-  coe v := v.toMonoidWithZeroHom.toFun
-  coe_injective' f g := by cases f; cases g; simp +contextual
+  coe v := fun r => (Multiplicative.toAdd (v.toMonoidWithZeroHom r)).ofDual
+  coe_injective' f g h := by
+    have hinj : ∀ r, f.toMonoidWithZeroHom r = g.toMonoidWithZeroHom r := by
+      intro r
+      have := congr_fun h r
+      simp only [OrderDual.ofDual_inj, EmbeddingLike.apply_eq_iff_eq] at this
+      exact this
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
+    congr 1
+    exact MonoidWithZeroHom.ext hinj
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
+
+/-- The coercion of `AddValuation` to a function `R → Γ₀` is obtained from the underlying
+`Valuation R (Multiplicative Γ₀ᵒᵈ)` by unwrapping `Multiplicative` and `OrderDual`. -/
+theorem coe_val_apply (r : R) :
+    v r = (Multiplicative.toAdd (v.toMonoidWithZeroHom r)).ofDual := rfl
+
+/-- Relate the underlying `Valuation` coercion to the `AddValuation` coercion. -/
+theorem val_toMonoidWithZeroHom_apply (r : R) :
+    v.toMonoidWithZeroHom r = Multiplicative.ofAdd (OrderDual.toDual (v r)) := by
+  simp [coe_val_apply]
 
 section
 
@@ -860,16 +879,29 @@ variable (hadd : ∀ x y, min (f x) (f y) ≤ f (x + y)) (hmul : ∀ x y, f (x *
 
 /-- An alternate constructor of `AddValuation`, that doesn't reference `Multiplicative Γ₀ᵒᵈ` -/
 def of : AddValuation R Γ₀ where
-  toFun := f
-  map_one' := h1
-  map_zero' := h0
-  map_add_le_max' := hadd
-  map_mul' := hmul
+  toFun := fun r => Multiplicative.ofAdd (OrderDual.toDual (f r))
+  map_one' := by
+    change Multiplicative.ofAdd (OrderDual.toDual (f 1)) = 1
+    simp [h1]
+  map_zero' := by
+    change Multiplicative.ofAdd (OrderDual.toDual (f 0)) = 0
+    rw [h0]; rfl
+  map_add_le_max' := fun x y => by
+    change OrderDual.toDual (f (x + y)) ≤ max (OrderDual.toDual (f x)) (OrderDual.toDual (f y))
+    rw [← toDual_min]
+    exact OrderDual.toDual_le_toDual.mpr (hadd x y)
+  map_mul' := fun x y => by
+    change Multiplicative.ofAdd (OrderDual.toDual (f (x * y))) =
+      Multiplicative.ofAdd (OrderDual.toDual (f x)) *
+      Multiplicative.ofAdd (OrderDual.toDual (f y))
+    simp [hmul]
 
 variable {h0} {h1} {hadd} {hmul} {r : R}
 
 @[simp]
-theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
+theorem of_apply : (of f h0 h1 hadd hmul) r = f r := by
+  change (Multiplicative.toAdd (Multiplicative.ofAdd (OrderDual.toDual (f r)))).ofDual = f r
+  simp
 
 /-- The `Valuation` associated to an `AddValuation` (useful if the latter is constructed using
 `AddValuation.of`). -/
@@ -896,23 +928,26 @@ lemma toValuation_ofValuation (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) :
 
 @[simp]
 theorem toValuation_apply (r : R) :
-    toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
-  rfl
+    toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) := by
+  change v.toMonoidWithZeroHom r = Multiplicative.ofAdd (OrderDual.toDual (v r))
+  rw [val_toMonoidWithZeroHom_apply]
 
 @[simp]
 theorem ofValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R) :
-    ofValuation v r = OrderDual.ofDual (Multiplicative.toAdd (v r)) :=
-  rfl
+    ofValuation v r = OrderDual.ofDual (Multiplicative.toAdd (v r)) := by
+  rfl -- the FunLike coe for AddValuation already does this conversion
 
 end
 
 @[simp]
-theorem map_zero : v 0 = (⊤ : Γ₀) :=
-  Valuation.map_zero v
+theorem map_zero : v 0 = (⊤ : Γ₀) := by
+  change (Multiplicative.toAdd (v.toMonoidWithZeroHom 0)).ofDual = ⊤
+  simp
 
 @[simp]
-theorem map_one : v 1 = (0 : Γ₀) :=
-  Valuation.map_one v
+theorem map_one : v 1 = (0 : Γ₀) := by
+  change (Multiplicative.toAdd (v.toMonoidWithZeroHom 1)).ofDual = 0
+  simp
 
 /-- A helper function for Lean to inferring types correctly.
 
@@ -921,12 +956,18 @@ Deprecated since it is unused.
 @[deprecated "Use `⇑v` instead" (since := "2025-09-04")] def asFun : R → Γ₀ := v
 
 @[simp]
-theorem map_mul : ∀ (x y : R), v (x * y) = v x + v y :=
-  Valuation.map_mul v
+theorem map_mul : ∀ (x y : R), v (x * y) = v x + v y := by
+  intro x y
+  change (Multiplicative.toAdd (v.toMonoidWithZeroHom (x * y))).ofDual =
+    (Multiplicative.toAdd (v.toMonoidWithZeroHom x)).ofDual +
+    (Multiplicative.toAdd (v.toMonoidWithZeroHom y)).ofDual
+  simp [_root_.map_mul]
 
 -- `simp`-normal form is `map_add'`
-theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
-  Valuation.map_add v
+theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) := by
+  intro x y
+  simp only [coe_val_apply, ← ofDual_max, OrderDual.ofDual_le_ofDual]
+  exact v.map_add_le_max' x y
 
 @[simp]
 theorem map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
@@ -935,30 +976,44 @@ theorem map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
   apply map_add
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
-  Valuation.map_add_le v hx hy
+  le_trans (le_min hx hy) (v.map_add x y)
 
 theorem map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (x + y) :=
-  Valuation.map_add_lt v hx hy
+  lt_of_lt_of_le (lt_min hx hy) (v.map_add x y)
 
 theorem map_le_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, g ≤ v (f i)) :
-    g ≤ v (∑ i ∈ s, f i) :=
-  v.map_sum_le hf
+    g ≤ v (∑ i ∈ s, f i) := by
+  classical
+  refine Finset.induction_on s (fun _ => v.map_zero ▸ le_top) (fun a s has ih hf => ?_) hf
+  rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
+  exact v.map_le_add hf.1 (ih hf.2)
 
 theorem map_lt_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ ⊤)
-    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i ∈ s, f i) :=
-  v.map_sum_lt hg hf
+    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i ∈ s, f i) := by
+  classical
+  refine Finset.induction_on s (fun _ => v.map_zero ▸ (lt_top_iff_ne_top.2 hg))
+    (fun a s has ih hf => ?_) hf
+  rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
+  exact v.map_lt_add hf.1 (ih hf.2)
 
 theorem map_lt_sum' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g < ⊤)
     (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i ∈ s, f i) :=
-  v.map_sum_lt' hg hf
+  v.map_lt_sum (ne_of_lt hg) hf
 
 @[simp]
-theorem map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) :=
-  Valuation.map_pow v
+theorem map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) := by
+  intro x n
+  change (Multiplicative.toAdd (v.toMonoidWithZeroHom (x ^ n))).ofDual =
+    n • (Multiplicative.toAdd (v.toMonoidWithZeroHom x)).ofDual
+  simp [_root_.map_pow]
 
 @[ext]
-theorem ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
-  Valuation.ext h
+theorem ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ := by
+  apply Valuation.ext
+  intro r
+  have := h r
+  simp only [coe_val_apply, OrderDual.ofDual_inj, EmbeddingLike.apply_eq_iff_eq] at this
+  exact this
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.
@@ -968,11 +1023,20 @@ def toPreorder : Preorder R :=
 
 /-- If `v` is an additive valuation on a division ring then `v(x) = ⊤` iff `x = 0`. -/
 @[simp]
-theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = (⊤ : Γ₀) ↔ x = 0 :=
-  v.zero_iff
+theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = (⊤ : Γ₀) ↔ x = 0 := by
+  constructor
+  · intro h
+    have hmwzh : v.toMonoidWithZeroHom x = 0 := by
+      show v.toMonoidWithZeroHom x = 0
+      rw [val_toMonoidWithZeroHom_apply, h]
+      rfl
+    exact (Valuation.zero_iff v).mp hmwzh
+  · intro h
+    rw [h, AddValuation.map_zero]
 
-theorem ne_top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x ≠ (⊤ : Γ₀) ↔ x ≠ 0 :=
-  v.ne_zero_iff
+theorem ne_top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} :
+    v x ≠ (⊤ : Γ₀) ↔ x ≠ 0 :=
+  (top_iff v).ne
 
 /-- A ring homomorphism `S → R` induces a map `AddValuation R Γ₀ → AddValuation S Γ₀`. -/
 def comap {S : Type*} [Ring S] (f : S →+* R) (v : AddValuation R Γ₀) : AddValuation S Γ₀ :=
@@ -992,14 +1056,17 @@ theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S�
 def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) :
     AddValuation R Γ'₀ :=
   @Valuation.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _
-    { toFun := f
-      map_mul' := f.map_add
-      map_one' := f.map_zero
-      map_zero' := ht } (fun _ _ h => hf h) v
+    { toFun := fun x => Multiplicative.ofAdd (OrderDual.toDual (f (OrderDual.ofDual
+        (Multiplicative.toAdd x))))
+      map_mul' := fun x y => by simp [f.map_add]
+      map_one' := by simp [f.map_zero]
+      map_zero' := by change Multiplicative.ofAdd (OrderDual.toDual (f ⊤)) = 0; rw [ht]; rfl
+    } (fun _ _ h => by simpa using hf (by simpa using h)) v
 
 @[simp]
 lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) (r : R) :
-    v.map f ht hf r = f (v r) := rfl
+    v.map f ht hf r = f (v r) := by
+  simp [map, Valuation.map, coe_val_apply]
 
 /-- Two additive valuations on `R` are defined to be equivalent if they induce the same
   preorder on `R`. -/
@@ -1007,22 +1074,39 @@ def IsEquiv (v₁ : AddValuation R Γ₀) (v₂ : AddValuation R Γ'₀) : Prop 
   Valuation.IsEquiv v₁ v₂
 
 @[simp]
-theorem map_neg (x : R) : v (-x) = v x :=
-  Valuation.map_neg v x
+theorem map_neg (x : R) : v (-x) = v x := by
+  change (Multiplicative.toAdd (v.toMonoidWithZeroHom (-x))).ofDual =
+    (Multiplicative.toAdd (v.toMonoidWithZeroHom x)).ofDual
+  congr 1
+  exact Valuation.map_neg v x
 
-theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
-  Valuation.map_sub_swap v x y
+theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) := by
+  change (Multiplicative.toAdd (v.toMonoidWithZeroHom (x - y))).ofDual =
+    (Multiplicative.toAdd (v.toMonoidWithZeroHom (y - x))).ofDual
+  congr 1
+  exact Valuation.map_sub_swap v x y
 
-theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
-  Valuation.map_sub v x y
+theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) := by
+  calc min (v x) (v y) ≤ v (x + -y) := by rw [← map_neg v y]; exact v.map_add x (-y)
+    _ = v (x - y) := by rw [sub_eq_add_neg]
 
-theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) :=
-  Valuation.map_sub_le v hx hy
+theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) := by
+  rw [sub_eq_add_neg]
+  exact v.map_le_add hx (v.map_neg y ▸ hy)
 
 variable {x y : R}
 
-theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
-  Valuation.map_add_of_distinct_val v h
+theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) := by
+  have hval : v.toMonoidWithZeroHom x ≠ v.toMonoidWithZeroHom y := by
+    intro heq; apply h; simp only [coe_val_apply, heq]
+  have hv := Valuation.map_add_of_distinct_val v hval
+  -- hv : v.toMWZH (x + y) = max (v.toMWZH x) (v.toMWZH y) in Multiplicative Γ₀ᵒᵈ
+  suffices ∀ a b c : Multiplicative Γ₀ᵒᵈ, a = max b c →
+      (Multiplicative.toAdd a).ofDual =
+      min (Multiplicative.toAdd b).ofDual (Multiplicative.toAdd c).ofDual from
+    this _ _ _ hv
+  intro a b c hab
+  rw [hab, ← ofDual_max]; rfl
 
 theorem map_add_eq_of_lt_left {x y : R} (h : v x < v y) :
     v (x + y) = v x := by
@@ -1040,8 +1124,10 @@ theorem map_sub_eq_of_lt_left {x y : R} (hx : v x < v y) :
 theorem map_sub_eq_of_lt_right {x y : R} (hx : v y < v x) :
     v (x - y) = v y := map_sub_swap v x y ▸ map_sub_eq_of_lt_left v hx
 
-theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
-  Valuation.map_eq_of_sub_lt v h
+theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x := by
+  have : v (y - x + x) = v x := by
+    exact map_add_eq_of_lt_right v h
+  rwa [sub_add_cancel] at this
 
 end Monoid
 
@@ -1050,12 +1136,17 @@ section Group
 variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = -(v x) :=
-  map_inv₀ (toValuation v) x
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = -(v x) := by
+  change (Multiplicative.toAdd (v.toMonoidWithZeroHom x⁻¹)).ofDual =
+    -((Multiplicative.toAdd (v.toMonoidWithZeroHom x)).ofDual)
+  have hinv : v.toMonoidWithZeroHom x⁻¹ = (v.toMonoidWithZeroHom x)⁻¹ :=
+    map_inv₀ v.toMonoidWithZeroHom x
+  rw [hinv]
+  rfl
 
 @[simp]
-theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
-  map_div₀ (toValuation v) x y
+theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y := by
+  rw [div_eq_mul_inv, v.map_mul, v.map_inv, sub_eq_add_neg]
 
 end Group
 
@@ -1085,23 +1176,56 @@ theorem of_eq {v' : AddValuation R Γ₀} (h : v = v') : v.IsEquiv v' :=
   Valuation.IsEquiv.of_eq h
 
 theorem map {v' : AddValuation R Γ₀} (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f)
-    (inf : Injective f) (h : v.IsEquiv v') : (v.map f ht hf).IsEquiv (v'.map f ht hf) :=
-  @Valuation.IsEquiv.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _ _ _
-    { toFun := f
-      map_mul' := f.map_add
-      map_one' := f.map_zero
-      map_zero' := ht } (fun _x _y h => hf h) inf h
+    (inf : Injective f) (h : v.IsEquiv v') : (v.map f ht hf).IsEquiv (v'.map f ht hf) := by
+  -- The underlying MonoidWithZeroHom used in `AddValuation.map`
+  let fmwzh : Multiplicative Γ₀ᵒᵈ →*₀ Multiplicative Γ'₀ᵒᵈ :=
+    { toFun := fun x => Multiplicative.ofAdd (OrderDual.toDual (f (OrderDual.ofDual
+        (Multiplicative.toAdd x))))
+      map_mul' := fun x y => by simp [f.map_add]
+      map_one' := by simp [f.map_zero]
+      map_zero' := by change Multiplicative.ofAdd (OrderDual.toDual (f ⊤)) = 0; rw [ht]; rfl }
+  have hmono : Monotone fmwzh := fun _ _ h => by simpa using hf (by simpa using h)
+  have hinj : Injective fmwzh := by
+    intro a b hab
+    -- fmwzh a = fmwzh b means
+    -- ofAdd (toDual (f (ofDual (toAdd a)))) = ofAdd (toDual (f (ofDual (toAdd b))))
+    -- Unwrap: f (ofDual (toAdd a)) = f (ofDual (toAdd b))
+    -- By inf: ofDual (toAdd a) = ofDual (toAdd b)
+    -- Rewrap: a = b
+    have h1 : f (OrderDual.ofDual (Multiplicative.toAdd a)) =
+        f (OrderDual.ofDual (Multiplicative.toAdd b)) :=
+      OrderDual.toDual_inj.mp (Multiplicative.ofAdd.injective hab)
+    have h2 : OrderDual.ofDual (Multiplicative.toAdd a) =
+        OrderDual.ofDual (Multiplicative.toAdd b) := inf h1
+    exact Multiplicative.toAdd.injective (OrderDual.ofDual_inj.mp h2)
+  exact Valuation.IsEquiv.map fmwzh hmono hinj h
 
 /-- `comap` preserves equivalence. -/
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) :=
   Valuation.IsEquiv.comap f h
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
-  Valuation.IsEquiv.val_eq h
+theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
+  constructor
+  · intro heq
+    have h1 : v₁.toMonoidWithZeroHom r = v₁.toMonoidWithZeroHom s := by
+      rw [val_toMonoidWithZeroHom_apply, val_toMonoidWithZeroHom_apply, heq]
+    have h2 : v₂.toMonoidWithZeroHom r = v₂.toMonoidWithZeroHom s :=
+      le_antisymm ((h r s).mp h1.le) ((h s r).mp h1.ge)
+    simp only [coe_val_apply, h2]
+  · intro heq
+    have h1 : v₂.toMonoidWithZeroHom r = v₂.toMonoidWithZeroHom s := by
+      rw [val_toMonoidWithZeroHom_apply, val_toMonoidWithZeroHom_apply, heq]
+    have h2 : v₁.toMonoidWithZeroHom r = v₁.toMonoidWithZeroHom s :=
+      le_antisymm ((h r s).mpr h1.le) ((h s r).mpr h1.ge)
+    simp only [coe_val_apply, h2]
 
-theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
-  (Valuation.IsEquiv.eq_zero h).ne
+theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) := by
+  constructor
+  · intro hne heq
+    exact hne (by rw [← AddValuation.map_zero v₁, h.val_eq, AddValuation.map_zero, heq])
+  · intro hne heq
+    exact hne (by rw [← AddValuation.map_zero v₂, ← h.val_eq, AddValuation.map_zero, heq])
 
 end IsEquiv
 
@@ -1114,11 +1238,25 @@ def supp : Ideal R :=
   Valuation.supp v
 
 @[simp]
-theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = (⊤ : Γ₀) :=
-  Valuation.mem_supp_iff v x
+theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = (⊤ : Γ₀) := by
+  change v.toMonoidWithZeroHom x = 0 ↔ v x = ⊤
+  constructor
+  · intro h
+    change (Multiplicative.toAdd (v.toMonoidWithZeroHom x)).ofDual = ⊤
+    rw [h]; rfl
+  · intro h
+    change v.toMonoidWithZeroHom x = 0
+    rw [val_toMonoidWithZeroHom_apply, h]; rfl
 
-theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a :=
-  Valuation.map_add_supp v a h
+theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
+  have hs : v s = ⊤ := (mem_supp_iff v s).mp h
+  have hle : v a ≤ v (a + s) := by
+    have := v.map_add a s
+    rwa [hs, min_top_right] at this
+  have hge : v (a + s) ≤ v a := by
+    have := v.map_add (a + s) (-s)
+    rwa [add_neg_cancel_right, map_neg, hs, min_top_right] at this
+  exact le_antisymm hge hle
 
 end Supp
 
