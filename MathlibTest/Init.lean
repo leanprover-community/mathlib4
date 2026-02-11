@@ -2,7 +2,7 @@ module
 
 import Mathlib.Init
 
-/-! Checks that some utilities are available when importing `Mathlib.Init` alone -/
+/-! Checks that some utilities are available already when importing `Mathlib.Init`. -/
 
 /-- error: no tactic declarations start with exact -/
 #guard_msgs in
