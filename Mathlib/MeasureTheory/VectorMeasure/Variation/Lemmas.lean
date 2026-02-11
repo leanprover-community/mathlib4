@@ -28,15 +28,32 @@ open Classical Finset in
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
   -- switch the assumption to `FinPartition`
     (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : ∀ t ∈ P, MeasurableSet t)
-    (hP₃ : (P :Set (Set X)).PairwiseDisjoint id) : ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
+    (hP₃ : (P : Set (Set X)).PairwiseDisjoint id) : ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
   let Q := Finpartition.ofPairwiseDisjoint P hP₃
   calc
-    ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ := sorry
-    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q (Finset.sup_le hP₁)).parts, ‖μ p‖ₑ := sorry
+    ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ (Finpartition.ofPairwiseDisjoint P hP₃).parts, ‖μ p‖ₑ := by
+      by_cases hbot : ⊥ ∈ P
+      · simp only [Finpartition.ofPairwiseDisjoint]
+        rw [← erase_union_eq ⊥ P hbot, Finset.union_comm,
+          Finset.sum_union_eq_right (by intro _ _ _; simp_all)]
+        simp
+      · have : P = (Finpartition.ofPairwiseDisjoint P hP₃).parts := by
+          rw [Finpartition.ofPairwiseDisjoint]
+          ext p
+          simp_all only [Set.bot_eq_empty, mem_erase, ne_eq, iff_and_self]
+          exact fun hp => ne_of_mem_of_not_mem hp hbot
+        simp_rw [this]
+    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q (Finset.sup_le hP₁)).parts, ‖μ p‖ₑ := by
+        apply Finset.sum_le_sum_of_subset
+        apply Finpartition.parts_subset_extendOfLE
     _ ≤ μ.variation s := by
-      simp only [variation]
+      simp only [variation, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply]
+      apply preVariation.sum_le' (fun p => ‖μ p‖ₑ) hs
+      intro p hp
+      have : p ∈ Q.parts ∨ p = s \ (P.sup id) := by
+        apply Finpartition.mem_parts_or_mem_sdiff Q _ _ hp
       sorry
-  --    apply preVariation.sum_le
+
   -- have h : ∑ p ∈ P, ‖μ p‖ₑ = ∑ q ∈ Q.parts, ‖μ q‖ₑ := by
   --   sorry
   -- define an operation for `FinPartition`, say, `ofPairwiseDisjoint`

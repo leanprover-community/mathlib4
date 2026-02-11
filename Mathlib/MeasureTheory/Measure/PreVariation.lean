@@ -73,6 +73,13 @@ lemma sum_le {s : Set X} (hs : MeasurableSet s)
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
   simpa [preVariationFun, hs, le_iSup_iff] using fun _ a ↦ a P
 
+lemma sum_le' {s : Set X} (hs : MeasurableSet s)
+    (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
+    ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
+  simp only [preVariationFun, hs, ↓reduceDIte]
+  sorry
+--  apply le_trans _ (le_iSup f P)
+
 open Classical in
 /-- If `P` is a partition of `s₁` and `s₁ ⊆ s₂` then
 `∑ p ∈ P.parts, f p ≤ preVariationFun f s₂`. -/
