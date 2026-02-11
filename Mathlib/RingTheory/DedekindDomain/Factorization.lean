@@ -188,7 +188,6 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
   rw [not_le] at h_not_dvd
   apply Nat.eq_of_le_of_lt_succ h_dvd h_not_dvd
 
-open Classical in
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
