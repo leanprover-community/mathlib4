@@ -115,6 +115,18 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
     sup_parts := sup_parts
     bot_notMem := fun h ↦ P.bot_notMem (subset h) }
 
+-- open Classical in
+-- @[simps]
+-- def ofPairwiseDisjoint {a : α} (P : Finset α)
+--     (hsubset : ∀ b ∈ P, b ≤ a) (hdisjoint : (P : Set α).PairwiseDisjoint id) :
+--     Finpartition (P.sup id)  :=
+--   { parts := P.filter (· ≠ ⊥)
+--     supIndep := P.supIndep.subset subset
+--     sup_parts := by exact?
+-- --    sup_congr rfl (fun _ _ ↦ rfl)
+--     bot_notMem := fun h ↦ P.bot_notMem (subset h) }
+
+
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
 def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
