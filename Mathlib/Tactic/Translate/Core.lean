@@ -706,7 +706,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
   trace[translate] "translating\n\
-    {srcDecl.kind} {.ofConstName src} : {srcDecl.type} :=\n  {srcDecl.value!}"
+    {.ofConstName src} : {srcDecl.type} :=\n  {srcDecl.value!}"
   -- now transform the source declaration
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
   if src == pre && srcDecl.isThm && trgDecl.type == srcDecl.type then
