@@ -404,47 +404,21 @@ lemma cuspFunction_sub {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h
   apply cuspFunction_add hfcts (by simp [cuspFunction_neg hgcts, hgcts])
 
 open Nat in
-lemma qExpansion_mul {f g : ℍ → ℂ} {s : Set ℂ} (hsO : IsOpen s) (hs : 0 ∈ s)
-    (hf : ContDiffOn ℂ ⊤ (cuspFunction h f) s) (hg : ContDiffOn ℂ ⊤ (cuspFunction h g) s) :
+lemma qExpansion_mul {f g : ℍ → ℂ}
+    (hf : AnalyticAt ℂ (cuspFunction h f) 0) (hg : AnalyticAt ℂ (cuspFunction h g) 0) :
     qExpansion h (f * g) = qExpansion h f * qExpansion h g := by
-  ext m
-  induction m with
-  | zero =>
-    simpa using qExpansion_mul_coeff_zero
-      (hf.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
-      (hg.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
-  | succ m hm =>
-    have H := cuspFunction_mul (hf.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
-      (hg.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
-    have := iteratedDerivWithin_mul hs hsO.uniqueDiffOn (n := m + 1)
-      (((hf.contDiffWithinAt hs).of_le le_top)) (((hg.contDiffWithinAt hs).of_le le_top))
-    simp_rw [iteratedDerivWithin_of_isOpen (n := m + 1) hsO hs] at this
-    conv at this =>
-      enter [2,2,n]
-      rw [iteratedDerivWithin_of_isOpen hsO hs, iteratedDerivWithin_of_isOpen hsO hs]
-    simp only [qExpansion_coeff, H, PowerSeries.coeff_mul, this]
-    have h0 : ((m + 1)! : ℂ) ≠ 0 := by
-      simp [Nat.factorial_ne_zero (m + 1)]
-    rw [inv_mul_eq_iff_eq_mul₀ h0, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
-      Finset.mul_sum, Nat.succ_eq_add_one]
-    have ht (x : ℕ) : ↑(m + 1)! *
-      ((↑x !)⁻¹ * iteratedDeriv x (cuspFunction h f) 0 *
-        ((↑(m + 1 - x)!)⁻¹ * iteratedDeriv (m + 1 - x) (cuspFunction h g) 0)) =
-        (↑(m + 1)! *
-      ((↑x !)⁻¹ * ((↑(m + 1 - x)!)⁻¹) * iteratedDeriv x (cuspFunction h f) 0 *
-        iteratedDeriv (m + 1 - x) (cuspFunction h g) 0)) := by ring
-    simp_rw [ht]
-    apply Finset.sum_congr rfl (fun x hx ↦ ?_)
-    grind [Nat.cast_choose ℂ (b := m + 1) (a := x) (by grind)]
+  ext
+  simp only [qExpansion_coeff, cuspFunction_mul hf.continuousAt hg.continuousAt,
+    iteratedDeriv_mul hf.contDiffAt hg.contDiffAt, Finset.mul_sum, PowerSeries.coeff_mul,
+    Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk, Nat.succ_eq_add_one]
+  refine Finset.sum_congr rfl fun i hi ↦ ?_
+  rw [Nat.cast_choose _ (by grind)]
+  field_simp [Nat.factorial_ne_zero]
 
-lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
-    (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
-    qExpansion h (f.mul g) = qExpansion h f * qExpansion h g := by
-  apply qExpansion_mul (s := Metric.ball 0 1) (isOpen_ball) (by simp)
-  · refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
-    exact (differentiableAt_cuspFunction f hh hΓ (by simpa using hy)).differentiableWithinAt
-  · refine DifferentiableOn.contDiffOn (fun y hy ↦ ?_) (isOpen_ball)
-    exact (differentiableAt_cuspFunction g hh hΓ (by simpa using hy)).differentiableWithinAt
+lemma qExpansion_modularForm_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
+    qExpansion h (f.mul g) = qExpansion h f * qExpansion h g :=
+  qExpansion_mul (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
 
 lemma qExpansion_add {G : Type*} [FunLike G ℍ ℂ] [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G) [ModularFormClass G Γ b] (hh : 0 < h)
@@ -514,7 +488,7 @@ lemma qExpansion_of_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < 
     (hΓ : h ∈ Γ.strictPeriods) (a b : ℤ) (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h ((DirectSum.of _ a f * DirectSum.of _ b g) (a + b)) =
     qExpansion h f * qExpansion h g := by
-  simpa [DirectSum.of_mul_of] using qExpansion_modularForm_mul f g hh hΓ
+  simpa [DirectSum.of_mul_of] using qExpansion_modularForm_mul hh hΓ f g
 
 lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
