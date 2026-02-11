@@ -77,7 +77,7 @@ lemma IsStronglyTranscendental.of_isLocalization_left [Algebra S T] (M : Submono
     {x : T} (h : IsStronglyTranscendental R x) :
     IsStronglyTranscendental S x := by
   intro t p hp
-  obtain ⟨a, ha⟩ := IsLocalization.integerNormalization_spec M p
+  obtain ⟨a, ha, _⟩ := IsLocalization.integerNormalization_spec M p
   have H : aeval x (IsLocalization.integerNormalization M p) = a.1 • aeval x p := by
     simpa [AlgHom.map_smul_of_tower] using congr(aeval x $ha)
   have := h t (IsLocalization.integerNormalization M p) (by simp [H, hp])

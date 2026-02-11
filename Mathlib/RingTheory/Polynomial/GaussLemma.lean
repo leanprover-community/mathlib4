@@ -220,7 +220,7 @@ variable [IsDomain R]
 theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCDMonoid R]
     {p : K[X]} (h0 : p ≠ 0) (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
-  obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_spec R⁰ p
+  obtain ⟨⟨c, c0⟩, hc, _⟩ := integerNormalization_spec R⁰ p
   rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hc
   apply isUnit_of_mul_isUnit_right
   rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← map_mul, isUnit_iff]
@@ -242,8 +242,8 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
   refine
     ⟨fun hi => ⟨fun h => hi.not_isUnit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
       hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective _ _)⟩
-  obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_spec R⁰ a
-  obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_spec R⁰ b
+  obtain ⟨⟨c, c0⟩, hc, _⟩ := integerNormalization_spec R⁰ a
+  obtain ⟨⟨d, d0⟩, hd, _⟩ := integerNormalization_spec R⁰ b
   rw [Algebra.smul_def, algebraMap_apply, Subtype.coe_mk] at hc hd
   rw [mem_nonZeroDivisors_iff_ne_zero] at c0 d0
   have hcd0 : c * d ≠ 0 := mul_ne_zero c0 d0
@@ -281,7 +281,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
 theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.IsPrimitive)
     (hq : q.IsPrimitive) (h_dvd : p.map (algebraMap R K) ∣ q.map (algebraMap R K)) : p ∣ q := by
   rcases h_dvd with ⟨r, hr⟩
-  obtain ⟨⟨s, s0⟩, hs⟩ := integerNormalization_spec R⁰ r
+  obtain ⟨⟨s, s0⟩, hs, _⟩ := integerNormalization_spec R⁰ r
   rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hs
   have h : p ∣ q * C s := by
     use integerNormalization R⁰ r
