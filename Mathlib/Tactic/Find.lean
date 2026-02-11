@@ -3,7 +3,13 @@ Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
-import Std.Util.Cache
+module
+
+public import Mathlib.Init
+public meta import Batteries.Util.Cache
+public meta import Lean.HeadIndex
+public meta import Lean.Elab.Command
+public import Batteries.Util.Cache
 
 /-!
 # The `#find` command and tactic.
@@ -20,11 +26,13 @@ or the `find` tactic which looks for lemmas which are `apply`able against the cu
 
 -/
 
-open Lean
+public meta section
+
+open Lean Std
 open Lean.Meta
 open Lean.Elab
-open Lean.Elab
-open Std.Tactic
+
+open Batteries.Tactic
 
 namespace Mathlib.Tactic.Find
 
@@ -48,7 +56,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isRec declName
   <||> isMatcher declName
 
-initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
+initialize findDeclsPerHead : DeclCache (Std.HashMap HeadIndex (Array Name)) ←
   DeclCache.mk "#find: init cache" failure {} fun _ c headMap ↦ do
     if (← isBlackListed c.name) then
       return headMap
@@ -56,7 +64,7 @@ initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) �
     -- to avoid leaking metavariables.
     let (_, _, ty) ← forallMetaTelescopeReducing c.type
     let head := ty.toHeadIndex
-    pure <| headMap.insert head (headMap.findD head #[] |>.push c.name)
+    pure <| headMap.insert head (headMap.getD head #[] |>.push c.name)
 
 def findType (t : Expr) : TermElabM Unit := withReducible do
   let t ← instantiateMVars t
@@ -65,7 +73,7 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
 
   let env ← getEnv
   let mut numFound := 0
-  for n in (← findDeclsPerHead.get).findD head #[] do
+  for n in (← findDeclsPerHead.get).getD head #[] do
     let c := env.find? n |>.get!
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     let found ← forallTelescopeReducing cTy fun cParams cTy' ↦ do
@@ -82,7 +90,7 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
       logInfo m!"{n}: {cTy}"
 
 open Lean.Elab.Command in
-/-
+/--
 The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
 ```lean
 #find _ + _ = _ + _
@@ -97,12 +105,12 @@ lemmas which are `apply`able against the current goal.
 elab "#find " t:term : command =>
   liftTermElabM do
     let t ← Term.elabTerm t none
-    Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+    Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
     findType t
 
 /- (Note that you'll get an error trying to run these here:
-   ``cannot evaluate `[init]` declaration 'findDeclsPerHead' in the same module``
-   but they will work fine in a new file!) -/
+``cannot evaluate `[init]` declaration 'findDeclsPerHead' in the same module``
+but they will work fine in a new file!) -/
 -- #find _ + _ = _ + _
 -- #find _ + _ = _ + _
 -- #find ?n + _ = _ + ?n
@@ -111,7 +119,7 @@ elab "#find " t:term : command =>
 -- #find ?n ≤ ?m → ?n + _ ≤ ?m + _
 
 open Lean.Elab.Tactic
-/-
+/--
 Display theorems (and definitions) whose result type matches the current goal,
 i.e. which should be `apply`able.
 ```lean
@@ -124,11 +132,21 @@ see `#find`, which is also available as a tactic.
 elab "find" : tactic => do
   findType (← getMainTarget)
 
-/-
-Tactic version of the `#find` command.
-See also the `find` tactic to search for theorems matching the current goal.
+/--
+The `#find` tactic finds definitions & lemmas using pattern matching on the type. For instance:
+```lean
+#find _ + _ = _ + _
+#find ?n + _ = _ + ?n
+#find (_ : Nat) + _ = _ + _
+#find Nat → Nat
+```
+This is the tactic equivalent to the `#find` command.
+There is also the `find` tactic which looks for
+lemmas which are `apply`able against the current goal.
 -/
 elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none
-  Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+  Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
   findType t
+
+end Mathlib.Tactic.Find

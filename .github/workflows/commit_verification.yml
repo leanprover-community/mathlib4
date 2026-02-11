@@ -1,0 +1,114 @@
+# Commit Verification CI
+# Verifies transient and automated commits in PRs
+#
+# - Transient commits (prefix: "transient: ") must have zero net effect
+# - Automated commits (prefix: "x: <command>") must match command output
+# - Posts a summary comment categorizing commits for reviewers
+
+name: Commit Verification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: commit-verification-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  TRANSIENT_PREFIX: "transient: "
+  AUTO_PREFIX: "x: "
+
+jobs:
+  verify:
+    name: Verify Transient and Automated Commits
+    runs-on: ubuntu-latest
+    # Only run if there are commits with special prefixes
+    # This is a quick check to avoid unnecessary runs
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Checkout the actual PR head, not the merge commit GitHub creates
+          ref: ${{ github.event.pull_request.head.sha }}
+          # Fetch full history to access all PR commits
+          fetch-depth: 0
+
+      - name: Check for special commits
+        id: check
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          # Check if any commits have transient or auto prefix
+          HAS_SPECIAL=$(git log --format="%s" "$BASE_SHA..$HEAD_SHA" | \
+            grep -E "^(${TRANSIENT_PREFIX}|${AUTO_PREFIX})" || true)
+
+          if [[ -n "$HAS_SPECIAL" ]]; then
+            echo "has_special=true" >> "$GITHUB_OUTPUT"
+            echo "Found commits requiring verification:"
+            echo "$HAS_SPECIAL"
+          else
+            echo "has_special=false" >> "$GITHUB_OUTPUT"
+            echo "No transient or automated commits found"
+          fi
+
+      - name: Verify commits
+        id: verify
+        if: steps.check.outputs.has_special == 'true'
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+
+          # Run verification (human-readable to stdout, JSON to file)
+          set +e
+          ./scripts/verify_commits.sh "$BASE_SHA" --json-file verification_result.json
+          EXIT_CODE=$?
+          set -e
+
+          # Set outputs
+          if [[ $EXIT_CODE -eq 0 ]]; then
+            echo "success=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "success=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate PR comment
+        if: steps.check.outputs.has_special == 'true'
+        id: comment
+        run: |
+          REPO="${{ github.repository }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          COMMENT=$(cat verification_result.json | ./scripts/verify_commits_summary.sh "$REPO" "$PR_NUMBER")
+
+          # Save to file (GitHub Actions has issues with multiline outputs)
+          echo "$COMMENT" > comment_body.md
+
+      - name: Find existing comment
+        if: steps.check.outputs.has_special == 'true'
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Commit Verification Summary'
+
+      - name: Post or update comment
+        if: steps.check.outputs.has_special == 'true'
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: comment_body.md
+          edit-mode: replace
+
+      - name: Set job status
+        if: steps.check.outputs.has_special == 'true' && steps.verify.outputs.success == 'false'
+        run: |
+          echo "::error::Commit verification failed. See PR comment for details."
+          exit 1

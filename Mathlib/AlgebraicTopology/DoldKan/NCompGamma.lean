@@ -3,10 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
-import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
+module
 
-#align_import algebraic_topology.dold_kan.n_comp_gamma from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
+public import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
+public import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
@@ -23,6 +23,8 @@ which reflects isomorphisms.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -33,17 +35,17 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : SimplexCategory}
-    (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
+    (i : Δ' ⟶ ⦋n⦌) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
     PInfty.f n ≫ X.map i.op = 0 := by
-  induction' Δ' using SimplexCategory.rec with m
+  induction Δ' using SimplexCategory.rec with | _ m
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
   simp only [len_mk] at hk
-  rcases k with _|k
+  rcases k with _ | k
   · change n = m + 1 at hk
     subst hk
     obtain ⟨j, rfl⟩ := eq_δ_of_mono i
@@ -51,41 +53,37 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     have h₃ : 1 ≤ (j : ℕ) := by
       by_contra h
       exact h₂ (by simpa only [Fin.ext_iff, not_le, Nat.lt_one_iff] using h)
-    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by linarith)
-  · simp only [Nat.succ_eq_add_one, ← add_assoc] at hk
+    exact (HigherFacesVanish.of_P (m + 1) m).comp_δ_eq_zero j h₂ (by lia)
+  · simp only [← add_assoc] at hk
     clear h₂ hi
     subst hk
     obtain ⟨j₁ : Fin (_ + 1), i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
-        have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
-        dsimp at h'
-        linarith
+        rw [← SimplexCategory.epi_iff_surjective] at h
+        grind [→ le_of_epi]
     obtain ⟨j₂, i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
-        have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
-        dsimp at h'
-        linarith
+        rw [← SimplexCategory.epi_iff_surjective] at h
+        grind [→ le_of_epi]
     by_cases hj₁ : j₁ = 0
     · subst hj₁
       rw [assoc, ← SimplexCategory.δ_comp_δ'' (Fin.zero_le _)]
       simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ j₂.succ_ne_zero, zero_comp]
-      simp only [Nat.succ_eq_add_one, Nat.add, Fin.succ]
-      linarith
+      simp only [Fin.succ]
+      lia
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
-      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; linarith)
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.P_infty_comp_map_mono_eq_zero AlgebraicTopology.DoldKan.PInfty_comp_map_mono_eq_zero
+      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; lia)
 
 @[reassoc]
 theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}
     (i : Δ ⟶ Δ') [Mono i] :
     Γ₀.Obj.Termwise.mapMono (AlternatingFaceMapComplex.obj X) i ≫ PInfty.f Δ.len =
       PInfty.f Δ'.len ≫ X.map i.op := by
-  induction' Δ using SimplexCategory.rec with n
-  induction' Δ' using SimplexCategory.rec with n'
+  induction Δ using SimplexCategory.rec with | _ n
+  induction Δ' using SimplexCategory.rec with | _ n'
   dsimp
   -- We start with the case `i` is an identity
   by_cases h : n = n'
@@ -100,12 +98,12 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
     simp only [Γ₀.Obj.Termwise.mapMono_δ₀' _ i hi]
     dsimp
     rw [← PInfty.comm _ n, AlternatingFaceMapComplex.obj_d_eq]
-    simp only [eq_self_iff_true, id_comp, if_true, Preadditive.comp_sum]
+    simp only [Preadditive.comp_sum]
     rw [Finset.sum_eq_single (0 : Fin (n + 2))]
     rotate_left
     · intro b _ hb
-      rw [Preadditive.comp_zsmul]
-      erw [PInfty_comp_map_mono_eq_zero X (SimplexCategory.δ b) h
+      rw [Preadditive.comp_zsmul, SimplicialObject.δ,
+        PInfty_comp_map_mono_eq_zero X (SimplexCategory.δ b) h
           (by
             rw [Isδ₀.iff]
             exact hb),
@@ -120,10 +118,7 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
       exact h (congr_arg SimplexCategory.len h'.symm)
     rw [PInfty_comp_map_mono_eq_zero]
     · exact h
-    · by_contra h'
-      exact hi h'
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Γ₀_obj_termwise_map_mono_comp_P_infty AlgebraicTopology.DoldKan.Γ₀_obj_termwise_mapMono_comp_PInfty
+    · assumption
 
 variable [HasFiniteCoproducts C]
 
@@ -145,7 +140,7 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
             dsimp only [toKaroubi]
             simp only [← X.map_comp]
             congr 2
-            simp only [eqToHom_refl, id_comp, comp_id, ← op_comp]
+            simp only [← op_comp]
             exact Quiver.Hom.unop_inj (A.fac_pull θ) }
       comm := by
         apply (Γ₀.splitting K[X]).hom_ext
@@ -159,57 +154,29 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
     intro n
     dsimp [N₁, toKaroubi]
     simp only [← Splitting.cofan_inj_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
-      PInfty_f_idem_assoc, Karoubi.comp_f, NatTrans.comp_app, Γ₂_map_f_app,
-      HomologicalComplex.comp_f, AlternatingFaceMapComplex.map_f, PInfty_f_naturality_assoc,
+      PInfty_f_idem_assoc, PInfty_f_naturality_assoc,
       NatTrans.naturality, Splitting.IndexSet.id_fst, unop_op, len_mk]
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Γ₂N₁.nat_trans AlgebraicTopology.DoldKan.Γ₂N₁.natTrans
-
--- Porting note: added to speed up elaboration
-attribute [irreducible] natTrans
 
 end Γ₂N₁
 
--- porting note: removed @[simps] attribute because it was creating timeouts
 /-- The compatibility isomorphism relating `N₂ ⋙ Γ₂` and `N₁ ⋙ Γ₂`. -/
+@[simps! hom_app inv_app]
 def Γ₂N₂ToKaroubiIso : toKaroubi (SimplicialObject C) ⋙ N₂ ⋙ Γ₂ ≅ N₁ ⋙ Γ₂ :=
-  (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.compatibility_Γ₂N₁_Γ₂N₂ AlgebraicTopology.DoldKan.Γ₂N₂ToKaroubiIso
-
-@[simp]
-lemma Γ₂N₂ToKaroubiIso_hom_app (X : SimplicialObject C) :
-    Γ₂N₂ToKaroubiIso.hom.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.hom.app X) := by
-  simp [Γ₂N₂ToKaroubiIso]
-
-@[simp]
-lemma Γ₂N₂ToKaroubiIso_inv_app (X : SimplicialObject C) :
-    Γ₂N₂ToKaroubiIso.inv.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.inv.app X) := by
-  simp [Γ₂N₂ToKaroubiIso]
-
--- Porting note: added to speed up elaboration
-attribute [irreducible] Γ₂N₂ToKaroubiIso
+  (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight toKaroubiCompN₂IsoN₁ Γ₂
 
 namespace Γ₂N₂
 
 /-- The natural transformation `N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`. -/
 def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ :=
-  ((whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
+  ((Functor.whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
     (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans)
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Γ₂N₂.nat_trans AlgebraicTopology.DoldKan.Γ₂N₂.natTrans
 
 theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
     Γ₂N₂.natTrans.app P =
       (N₂ ⋙ Γ₂).map P.decompId_i ≫
         (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
   dsimp only [natTrans]
-  simp only [whiskeringLeft_obj_preimage_app, Functor.id_map, assoc]
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Γ₂N₂.nat_trans_app_f_app AlgebraicTopology.DoldKan.Γ₂N₂.natTrans_app_f_app
-
--- Porting note: added to speed up elaboration
-attribute [irreducible] natTrans
+  simp only [whiskeringLeft_obj_preimage_app, Functor.id_map]
 
 end Γ₂N₂
 
@@ -229,28 +196,21 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫
     N₂.map (Γ₂N₂.natTrans.app P) = 𝟙 (N₂.obj P) := by
   ext n
-  have eq₁ : (N₂Γ₂.inv.app (N₂.obj P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) ≫
-      ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
+  have eq₁ : (N₂Γ₂.inv.app (N₂.obj P)).f.f n = PInfty.f n ≫ P.p.app (op ⦋n⦌) ≫
+      ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
     simp only [N₂Γ₂_inv_app_f_f, N₂_obj_p_f, assoc]
-  have eq₂ : ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op [n])) ≫
-      (N₂.map (Γ₂N₂.natTrans.app P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) := by
+  have eq₂ : ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) ≫
+      (N₂.map (Γ₂N₂.natTrans.app P)).f.f n = PInfty.f n ≫ P.p.app (op ⦋n⦌) := by
     dsimp
     rw [PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Γ₂N₂.natTrans_app_f_app]
     dsimp
     rw [Γ₂N₂ToKaroubiIso_hom_app, assoc, Splitting.ι_desc_assoc, assoc, assoc]
     dsimp [toKaroubi]
     rw [Splitting.ι_desc_assoc]
-    dsimp
-    simp only [assoc, Splitting.ι_desc_assoc, unop_op, Splitting.IndexSet.id_fst,
-      len_mk, NatTrans.naturality, PInfty_f_idem_assoc,
-      PInfty_f_naturality_assoc, app_idem_assoc]
-    erw [P.X.map_id, comp_id]
-  simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_eq, N₂_obj_p_f, assoc,
+    simp [Splitting.IndexSet.e]
+  simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_f, N₂_obj_p_f, assoc,
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.identity_N₂_objectwise AlgebraicTopology.DoldKan.identity_N₂_objectwise
 
--- porting note: `Functor.associator` was added to the statement in order to prevent a timeout
 theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
@@ -258,15 +218,14 @@ theorem identity_N₂ :
   dsimp only [NatTrans.comp_app, NatTrans.hcomp_app, Functor.comp_map, Functor.associator,
     NatTrans.id_app, Functor.comp_obj]
   rw [Γ₂.map_id, N₂.map_id, comp_id, id_comp, id_comp, identity_N₂_objectwise P]
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.identity_N₂ AlgebraicTopology.DoldKan.identity_N₂
 
 instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ _ ⟶ _) := by
   have : ∀ P : Karoubi (SimplicialObject C), IsIso (Γ₂N₂.natTrans.app P) := by
     intro P
     have : IsIso (N₂.map (Γ₂N₂.natTrans.app P)) := by
       have h := identity_N₂_objectwise P
-      erw [hom_comp_eq_id] at h
+      dsimp only [Functor.id_obj, Functor.comp_obj] at h
+      rw [hom_comp_eq_id] at h
       rw [h]
       infer_instance
     exact isIso_of_reflects_iso _ N₂
@@ -283,15 +242,11 @@ instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ �
 @[simps! inv]
 def Γ₂N₂ : 𝟭 _ ≅ (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ :=
   (asIso Γ₂N₂.natTrans).symm
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Γ₂N₂ AlgebraicTopology.DoldKan.Γ₂N₂
 
 /-- The natural isomorphism `toKaroubi (SimplicialObject C) ≅ N₁ ⋙ Γ₂`. -/
 @[simps! inv]
 def Γ₂N₁ : toKaroubi _ ≅ (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ :=
   (asIso Γ₂N₁.natTrans).symm
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.Γ₂N₁ AlgebraicTopology.DoldKan.Γ₂N₁
 
 end DoldKan
 

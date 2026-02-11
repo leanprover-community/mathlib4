@@ -3,11 +3,11 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Endofunctor.Algebra
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
 
-#align_import category_theory.preadditive.endo_functor from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Endofunctor.Algebra
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Preadditive structure on algebras over a monad
@@ -15,6 +15,8 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 If `C` is a preadditive category and `F` is an additive endofunctor on `C` then `Algebra F` is
 also preadditive. Dually, the category `Coalgebra F` is also preadditive.
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁
@@ -80,17 +82,16 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
       zsmul_succ' := by
         intros
         apply Algebra.Hom.ext
-        dsimp
-        simp only [coe_nat_zsmul, succ_nsmul]
+        simp only [natCast_zsmul, succ_nsmul]
         rfl
       zsmul_neg' := by
         intros
         apply Algebra.Hom.ext
-        simp only [negSucc_zsmul, neg_inj, nsmul_eq_smul_cast ℤ]
-      add_left_neg := by
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
+      neg_add_cancel := by
         intros
         apply Algebra.Hom.ext
-        apply add_left_neg
+        apply neg_add_cancel
       add_comm := by
         intros
         apply Algebra.Hom.ext
@@ -103,10 +104,8 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
     intros
     apply Algebra.Hom.ext
     apply comp_add
-#align category_theory.endofunctor.algebra_preadditive CategoryTheory.Endofunctor.algebraPreadditive
 
 instance Algebra.forget_additive : (Endofunctor.Algebra.forget F).Additive where
-#align category_theory.algebra.forget_additive CategoryTheory.Algebra.forget_additive
 
 @[simps]
 instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F) where
@@ -160,17 +159,16 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
       zsmul_succ' := by
         intros
         apply Coalgebra.Hom.ext
-        dsimp
-        simp only [coe_nat_zsmul, succ_nsmul]
+        simp only [natCast_zsmul, succ_nsmul]
         rfl
       zsmul_neg' := by
         intros
         apply Coalgebra.Hom.ext
-        simp only [negSucc_zsmul, neg_inj, nsmul_eq_smul_cast ℤ]
-      add_left_neg := by
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
+      neg_add_cancel := by
         intros
         apply Coalgebra.Hom.ext
-        apply add_left_neg
+        apply neg_add_cancel
       add_comm := by
         intros
         apply Coalgebra.Hom.ext
@@ -183,9 +181,7 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
     intros
     apply Coalgebra.Hom.ext
     apply comp_add
-#align category_theory.endofunctor.coalgebra_preadditive CategoryTheory.Endofunctor.coalgebraPreadditive
 
 instance Coalgebra.forget_additive : (Endofunctor.Coalgebra.forget F).Additive where
-#align category_theory.coalgebra.forget_additive CategoryTheory.Coalgebra.forget_additive
 
 end CategoryTheory

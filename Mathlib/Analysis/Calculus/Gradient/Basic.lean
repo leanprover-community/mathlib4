@@ -3,16 +3,18 @@ Copyright (c) 2023 Ziyu Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ziyu Wang, Chenyi Li, Sébastien Gouëzel, Penghao Yu, Zhipeng Cao
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Calculus.FDeriv.Basic
-import Mathlib.Analysis.Calculus.Deriv.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Gradient
 
 ## Main Definitions
 
-Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`) , `x` be a point in `F`
+Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`), `x` be a point in `F`
 and `f'` be a vector in F. Then
 
   `HasGradientWithinAt f f' s x`
@@ -24,36 +26,39 @@ is restricted to `s`. We also have
 
 ## Main results
 
-This file contains the following parts of gradient.
-* the definition of gradient.
-* the theorems translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
+This file develops the following aspects of the theory of gradients:
+* definitions of gradients, both within a set and on the whole space.
+* translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
   `HasGradientWithinAt` and `HasFDerivWithinAt`, `HasGradientAt` and `HasFDerivAt`,
-  `Gradient` and `fderiv`.
-* theorems the Uniqueness of Gradient.
-* the theorems translating between  `HasGradientAtFilter` and `HasDerivAtFilter`,
-  `HasGradientAt` and `HasDerivAt`, `Gradient` and `deriv` when `F = 𝕜`.
-* the theorems about the congruence of the gradient.
-* the theorems about the gradient of constant function.
-* the theorems about the continuity of a function admitting a gradient.
+  `gradient` and `fderiv`.
+* uniqueness of gradients.
+* translating between `HasGradientAtFilter` and `HasDerivAtFilter`,
+  `HasGradientAt` and `HasDerivAt`, `gradient` and `deriv` when `F = 𝕜`.
+* the theorems about the inner product of the gradient.
+* the congruence of the gradient.
+* the gradient of constant functions.
+* the continuity of a function admitting a gradient.
 -/
 
-open Topology InnerProductSpace Set
+@[expose] public section
+
+@[expose] public section
+
+open ComplexConjugate Topology InnerProductSpace Function Set
 
 noncomputable section
 
-variable {𝕜 F : Type*} [IsROrC 𝕜]
-
+variable {𝕜 F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
-
-variable {f : F → 𝕜} {f' x : F}
+variable {f : F → 𝕜} {f' x y : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`.-/
+  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
 def HasGradientAtFilter (f : F → 𝕜) (f' x : F) (L : Filter F) :=
   HasFDerivAtFilter f (toDual 𝕜 F f') x L
 
 /-- `f` has the gradient `f'` at the point `x` within the subset `s` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`.-/
+  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
 def HasGradientWithinAt (f : F → 𝕜) (f' : F) (s : Set F) (x : F) :=
   HasGradientAtFilter f f' x (𝓝[s] x)
 
@@ -70,6 +75,7 @@ def gradientWithin (f : F → 𝕜) (s : Set F) (x : F) : F :=
   (toDual 𝕜 F).symm (fderivWithin 𝕜 f s x)
 
 /-- Gradient of `f` at the point `x`, if it exists.  Zero otherwise.
+Denoted as `∇` within the Gradient namespace.
 
 If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
@@ -79,7 +85,7 @@ def gradient (f : F → 𝕜) (x : F) : F :=
 @[inherit_doc]
 scoped[Gradient] notation "∇" => gradient
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped Gradient
 
@@ -89,7 +95,7 @@ theorem hasGradientWithinAt_iff_hasFDerivWithinAt {s : Set F} :
     HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toDual 𝕜 F f') s x :=
   Iff.rfl
 
-theorem hasFDerivWithinAt_iff_hasGradientWithinAt {frechet : F →L[𝕜] 𝕜} {s : Set F} :
+theorem hasFDerivWithinAt_iff_hasGradientWithinAt {frechet : StrongDual 𝕜 F} {s : Set F} :
     HasFDerivWithinAt f frechet s x ↔ HasGradientWithinAt f ((toDual 𝕜 F).symm frechet) s x := by
   rw [hasGradientWithinAt_iff_hasFDerivWithinAt, (toDual 𝕜 F).apply_symm_apply frechet]
 
@@ -97,7 +103,7 @@ theorem hasGradientAt_iff_hasFDerivAt :
     HasGradientAt f f' x ↔ HasFDerivAt f (toDual 𝕜 F f') x :=
   Iff.rfl
 
-theorem hasFDerivAt_iff_hasGradientAt {frechet : F →L[𝕜] 𝕜} :
+theorem hasFDerivAt_iff_hasGradientAt {frechet : StrongDual 𝕜 F} :
     HasFDerivAt f frechet x ↔ HasGradientAt f ((toDual 𝕜 F).symm frechet) x := by
   rw [hasGradientAt_iff_hasFDerivAt, (toDual 𝕜 F).apply_symm_apply frechet]
 
@@ -156,30 +162,26 @@ section OneDimension
 variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
-    HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g'
-  · ext; simp
-  rwa [HasDerivAtFilter, this]
+    HasDerivAtFilter g (conj g') u L' := by
+  tauto
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
-    HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g')
-  · ext; simp
+    HasGradientAtFilter g (conj g') u L' := by
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (conj g') := by
+    ext; simp
   rwa [HasGradientAtFilter, ← this]
 
-theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
-    HasDerivAt g (starRingEnd 𝕜 g') u := by
+theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) : HasDerivAt g (conj g') u := by
   rw [hasGradientAt_iff_hasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
   simpa using h
 
-theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
-    HasGradientAt g (starRingEnd 𝕜 g') u := by
+theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) : HasGradientAt g (conj g') u := by
   rw [hasGradientAt_iff_hasFDerivAt, hasFDerivAt_iff_hasDerivAt]
   simpa
 
-theorem gradient_eq_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
+theorem gradient_eq_deriv : ∇ g u = conj (deriv g u) := by
   by_cases h : DifferentiableAt 𝕜 g u
-  · rw [h.hasGradientAt.hasDerivAt.deriv, IsROrC.conj_conj]
+  · rw [h.hasGradientAt.hasDerivAt.deriv, RCLike.conj_conj]
   · rw [gradient_eq_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h, map_zero]
 
 end OneDimension
@@ -250,11 +252,39 @@ theorem hasGradientAt_iff_isLittleO_nhds_zero : HasGradientAt f f' x ↔
 
 end GradientProperties
 
+section Inner
+
+lemma HasGradientWithinAt.fderivWithin_apply
+    (h : HasGradientWithinAt f f' s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 f s x y = ⟪f', y⟫ := by
+  rw [h.hasFDerivWithinAt.fderivWithin hs, toDual_apply_apply]
+
+lemma HasGradientAt.fderiv_apply (h : HasGradientAt f f' x) : fderiv 𝕜 f x y = ⟪f', y⟫ := by
+  rw [h.hasFDerivAt.fderiv, toDual_apply_apply]
+
+lemma inner_gradientWithin_left
+    (h : DifferentiableWithinAt 𝕜 f s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    ⟪gradientWithin f s x, y⟫ = fderivWithin 𝕜 f s x y := by
+  rw [h.hasGradientWithinAt.fderivWithin_apply hs]
+
+lemma inner_gradient_left (h : DifferentiableAt 𝕜 f x) : ⟪∇ f x, y⟫ = fderiv 𝕜 f x y := by
+  rw [h.hasGradientAt.fderiv_apply]
+
+lemma inner_gradientWithin_right
+    (h : DifferentiableWithinAt 𝕜 f s y) (hs : UniqueDiffWithinAt 𝕜 s y) :
+    ⟪x, gradientWithin f s y⟫ = conj (fderivWithin 𝕜 f s y x) := by
+  rw [← inner_conj_symm, inner_gradientWithin_left h hs]
+
+lemma inner_gradient_right (h : DifferentiableAt 𝕜 f y) : ⟪x, ∇ f y⟫ = conj (fderiv 𝕜 f y x) := by
+  rw [← inner_conj_symm, h.hasGradientAt.fderiv_apply]
+
+end Inner
+
 section congr
 
 /-! ### Congruence properties of the Gradient -/
 
-variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {x₀ x₁ : F} {s₀ s₁ t : Set F} {L₀ L₁ : Filter F}
+variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {t : Set F}
 
 theorem Filter.EventuallyEq.hasGradientAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
     (h₁ : f₀' = f₁') : HasGradientAtFilter f₀ f₀' x L ↔ HasGradientAtFilter f₁ f₁' x L :=
@@ -286,7 +316,7 @@ theorem HasGradientWithinAt.congr_of_eventuallyEq_of_mem (h : HasGradientWithinA
 
 theorem HasGradientAt.congr_of_eventuallyEq (h : HasGradientAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasGradientAt f₁ f' x :=
-  HasGradientAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ : _)
+  HasGradientAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ :)
 
 theorem Filter.EventuallyEq.gradient_eq (hL : f₁ =ᶠ[𝓝 x] f) : ∇ f₁ x = ∇ f x := by
   unfold gradient
@@ -312,12 +342,16 @@ theorem hasGradientWithinAt_const : HasGradientWithinAt (fun _ => c) 0 s x :=
 theorem hasGradientAt_const : HasGradientAt (fun _ => c) 0 x :=
   hasGradientAtFilter_const _ _ _
 
-theorem gradient_const : ∇ (fun _ => c) x = 0 := by
-  rw [gradient, fderiv_const, Pi.zero_apply, map_zero]
+theorem gradient_fun_const : ∇ (fun _ => c) x = 0 := by simp [gradient]
+
+theorem gradient_const : ∇ (const F c) x = 0 := gradient_fun_const x c
 
 @[simp]
-theorem gradient_const' : (∇ fun _ : 𝕜 => c) = fun _ => 0 :=
+theorem gradient_fun_const' : (∇ fun _ : F => c) = fun _ => 0 :=
   funext fun x => gradient_const x c
+
+@[simp]
+theorem gradient_const' : ∇ (const F c) = 0 := gradient_fun_const' c
 
 end Const
 

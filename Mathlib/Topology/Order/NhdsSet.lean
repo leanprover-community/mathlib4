@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Set neighborhoods of intervals
@@ -17,6 +19,8 @@ Then we prove lemmas about `s ∈ 𝓝ˢ t`, where both `s` and `t` are interval
 Finally, we prove a few lemmas about filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`.
 -/
 
+public section
+
 
 open Set Filter OrderDual
 open scoped Topology
@@ -26,7 +30,7 @@ section OrderClosedTopology
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
 
 /-!
-# Formulae for `𝓝ˢ` of intervals
+### Formulae for `𝓝ˢ` of intervals
 -/
 
 @[simp] theorem nhdsSet_Ioi : 𝓝ˢ (Ioi a) = 𝓟 (Ioi a) := isOpen_Ioi.nhdsSet_eq
@@ -75,7 +79,7 @@ theorem Iic_mem_nhdsSet_Iic (h : a < b) : Iic b ∈ 𝓝ˢ (Iic a) :=
   Ici_mem_nhdsSet_Ici (α := αᵒᵈ) h
 
 /-!
-### Lemmas about `Ixx _ _? ∈ 𝓝ˢ (Set.Icc _ _)`
+### Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Icc _ _)`
 -/
 
 theorem Ioi_mem_nhdsSet_Icc (h : a < b) : Ioi a ∈ 𝓝ˢ (Icc b c) :=
@@ -103,7 +107,7 @@ theorem Icc_mem_nhdsSet_Icc (h : a < b) (h' : c < d) : Icc a d ∈ 𝓝ˢ (Icc b
   inter_mem (Ici_mem_nhdsSet_Icc h) (Iic_mem_nhdsSet_Icc h')
 
 /-!
-### Lemmas about `Ixx _ _? ∈ 𝓝ˢ (Set.Ico _ _)`
+### Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Ico _ _)`
 -/
 
 theorem Ici_mem_nhdsSet_Ico (h : a < b) : Ici a ∈ 𝓝ˢ (Ico b c) :=
@@ -131,7 +135,7 @@ theorem Ico_mem_nhdsSet_Ico (h : a < b) (h' : c ≤ d) : Ico a d ∈ 𝓝ˢ (Ico
   inter_mem (Ici_mem_nhdsSet_Ico h) (Iio_mem_nhdsSet_Ico h')
 
 /-!
-### Lemmas about `Ixx _ _? ∈ 𝓝ˢ (Set.Ioc _ _)`
+### Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Ioc _ _)`
 -/
 
 theorem Ioi_mem_nhdsSet_Ioc (h : a ≤ b) : Ioi a ∈ 𝓝ˢ (Ioc b c) :=
@@ -179,7 +183,7 @@ theorem hasBasis_nhdsSet_Iic_Iic (a : α) [NeBot (𝓝[>] a)] :
     (Filter.nonempty_of_mem (self_mem_nhdsWithin : Ioi a ∈ 𝓝[>] a)).to_subtype
   refine (hasBasis_nhdsSet_Iic_Iio _).to_hasBasis
     (fun c hc ↦ ?_) (fun _ h ↦ ⟨_, h, Iio_subset_Iic_self⟩)
-  simpa only [Iic_subset_Iio] using (Filter.nonempty_of_mem <| Ioo_mem_nhdsWithin_Ioi' hc)
+  simpa only [Iic_subset_Iio] using Filter.nonempty_of_mem (Ioo_mem_nhdsGT hc)
 
 @[simp]
 theorem Iic_mem_nhdsSet_Iic_iff {a b : α} [NeBot (𝓝[>] b)] : Iic a ∈ 𝓝ˢ (Iic b) ↔ b < a :=

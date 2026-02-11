@@ -3,17 +3,20 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Analysis.Asymptotics.Asymptotics
+module
 
-#align_import analysis.asymptotics.specific_asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developped in `Analysis.Asymptotics.Asymptotics`.
+theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
+`Mathlib/Analysis/Asymptotics/Lemmas.lean`.
 -/
+
+public section
 
 
 open Filter Asymptotics
@@ -27,56 +30,51 @@ section NormedField
 theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedField 𝕜] [Norm E] {a : 𝕜}
     {f : 𝕜 → E} (h : IsBoundedUnder (· ≤ ·) (𝓝[≠] a) (norm ∘ f)) :
     f =o[𝓝[≠] a] fun x => (x - a)⁻¹ := by
-  refine' (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr _)
-  simp only [(· ∘ ·), norm_inv]
-  exact (tendsto_norm_sub_self_punctured_nhds a).inv_tendsto_zero
-#align filter.is_bounded_under.is_o_sub_self_inv Filter.IsBoundedUnder.isLittleO_sub_self_inv
+  refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
+  simp only [Function.comp_def, norm_inv]
+  exact (tendsto_norm_sub_self_nhdsNE a).inv_tendsto_nhdsGT_zero
 
 end NormedField
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x => x ^ ((p : ℤ) - q) := by
   apply (eventually_gt_atTop (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne']
-#align pow_div_pow_eventually_eq_at_top pow_div_pow_eventuallyEq_atTop
 
 theorem pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atBot] fun x => x ^ ((p : ℤ) - q) := by
   apply (eventually_lt_atBot (0 : 𝕜)).mono fun x hx => _
   intro x hx
   simp [zpow_sub₀ hx.ne]
-#align pow_div_pow_eventually_eq_at_bot pow_div_pow_eventuallyEq_atBot
 
 theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_atTop
-  linarith
-#align tendsto_pow_div_pow_at_top_at_top tendsto_pow_div_pow_atTop_atTop
+  lia
 
 theorem tendsto_pow_div_pow_atTop_zero [TopologicalSpace 𝕜] [OrderTopology 𝕜] {p q : ℕ}
     (hpq : p < q) : Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop (𝓝 0) := by
   rw [tendsto_congr' pow_div_pow_eventuallyEq_atTop]
   apply tendsto_zpow_atTop_zero
-  linarith
-#align tendsto_pow_div_pow_at_top_zero tendsto_pow_div_pow_atTop_zero
+  lia
 
 end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜]
+variable {𝕜 : Type*} [NormedField 𝕜]
 
-theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
+theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt
+    [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
-  refine' (isLittleO_iff_tendsto' _).mpr (tendsto_pow_div_pow_atTop_zero hpq)
+  refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
-#align asymptotics.is_o_pow_pow_at_top_of_lt Asymptotics.isLittleO_pow_pow_atTop_of_lt
 
 theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → 𝕜} {l : Filter α}
     (huv : u =O[l] v) (hu : Tendsto (fun x => ‖u x‖) l atTop) :
@@ -84,79 +82,110 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
   rw [IsBigOWith] at hcuv
   convert Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
-  rw [mul_div_cancel_left _ hc.ne.symm]
-set_option linter.uppercaseLean3 false in
-#align asymptotics.is_O.trans_tendsto_norm_at_top Asymptotics.IsBigO.trans_tendsto_norm_atTop
+  rw [mul_div_cancel_left₀ _ hc.ne.symm]
 
 end NormedLinearOrderedField
 
 section Real
 
-open BigOperators
+theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filter α}
+    (hv : 0 ≤ v) (h : u ~[l] v) {r : ℝ} :
+    u ^ r ~[l] v ^ r := by
+  obtain ⟨φ, hφ, huφv⟩ := IsEquivalent.exists_eq_mul h
+  rw [isEquivalent_iff_exists_eq_mul]
+  have hφr : Tendsto ((fun x ↦ x ^ r) ∘ φ) l (𝓝 1) := by
+    rw [← Real.one_rpow r]
+    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
+  use (· ^ r) ∘ φ, hφr
+  conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
+  filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
+  simp [← Real.mul_rpow (le_of_lt hφ_pos) (hv x), huv']
+
+theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → ℝ} (hfg : f ~[l] g)
+    (g_tendsto : Tendsto g l atTop) :
+    (fun n ↦ Real.log (f n)) ~[l] (fun n ↦ Real.log (g n)) := by
+  have hg := g_tendsto.eventually_ne_atTop 0
+  have hf := hfg.symm.tendsto_atTop g_tendsto |>.eventually_ne_atTop 0
+  rw [isEquivalent_iff_tendsto_one hg] at hfg
+  have := hfg.log (by norm_num) |>.congr' <| by
+    filter_upwards [hf, hg] with n hf hg using Real.log_div hf hg
+  exact IsLittleO.isEquivalent <| calc
+    (fun n ↦ Real.log (f n) - Real.log (g n)) =o[l] fun _ ↦ (1 : ℝ) := by simpa
+    _ =o[l] fun n ↦ Real.log (g n) := isLittleO_one_left_iff ℝ |>.mpr <|
+      tendsto_norm_atTop_atTop.comp <| Real.tendsto_log_atTop.comp g_tendsto
 
 open Finset
 
 theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
-    (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n => ∑ i in range n, g i) atTop atTop) :
-    (fun n => ∑ i in range n, f i) =o[atTop] fun n => ∑ i in range n, g i := by
+    (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n => ∑ i ∈ range n, g i) atTop atTop) :
+    (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
   have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
-  have B : ∀ n, ‖∑ i in range n, g i‖ = ∑ i in range n, g i := fun n => by
+  have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n => by
     rwa [Real.norm_eq_abs, abs_sum_of_nonneg']
   apply isLittleO_iff.2 fun ε εpos => _
   intro ε εpos
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b : ℕ, N ≤ b → ‖f b‖ ≤ ε / 2 * g b := by
     simpa only [A, eventually_atTop] using isLittleO_iff.mp h (half_pos εpos)
-  have : (fun _ : ℕ => ∑ i in range N, f i) =o[atTop] fun n : ℕ => ∑ i in range n, g i := by
+  have : (fun _ : ℕ => ∑ i ∈ range N, f i) =o[atTop] fun n : ℕ => ∑ i ∈ range n, g i := by
     apply isLittleO_const_left.2
     exact Or.inr (h'g.congr fun n => (B n).symm)
   filter_upwards [isLittleO_iff.1 this (half_pos εpos), Ici_mem_atTop N] with n hn Nn
   calc
-    ‖∑ i in range n, f i‖ = ‖(∑ i in range N, f i) + ∑ i in Ico N n, f i‖ := by
+    ‖∑ i ∈ range n, f i‖ = ‖(∑ i ∈ range N, f i) + ∑ i ∈ Ico N n, f i‖ := by
       rw [sum_range_add_sum_Ico _ Nn]
-    _ ≤ ‖∑ i in range N, f i‖ + ‖∑ i in Ico N n, f i‖ := (norm_add_le _ _)
-    _ ≤ ‖∑ i in range N, f i‖ + ∑ i in Ico N n, ε / 2 * g i :=
+    _ ≤ ‖∑ i ∈ range N, f i‖ + ‖∑ i ∈ Ico N n, f i‖ := norm_add_le _ _
+    _ ≤ ‖∑ i ∈ range N, f i‖ + ∑ i ∈ Ico N n, ε / 2 * g i :=
       (add_le_add le_rfl (norm_sum_le_of_le _ fun i hi => hN _ (mem_Ico.1 hi).1))
-    _ ≤ ‖∑ i in range N, f i‖ + ∑ i in range n, ε / 2 * g i := by
+    _ ≤ ‖∑ i ∈ range N, f i‖ + ∑ i ∈ range n, ε / 2 * g i := by
       gcongr
-      apply sum_le_sum_of_subset_of_nonneg
+      · exact fun i _ _ ↦ mul_nonneg (half_pos εpos).le (hg i)
       · rw [range_eq_Ico]
         exact Ico_subset_Ico (zero_le _) le_rfl
-      · intro i _ _
-        exact mul_nonneg (half_pos εpos).le (hg i)
-    _ ≤ ε / 2 * ‖∑ i in range n, g i‖ + ε / 2 * ∑ i in range n, g i := by rw [← mul_sum]; gcongr
-    _ = ε * ‖∑ i in range n, g i‖ := by
+    _ ≤ ε / 2 * ‖∑ i ∈ range n, g i‖ + ε / 2 * ∑ i ∈ range n, g i := by rw [← mul_sum]; gcongr
+    _ = ε * ‖∑ i ∈ range n, g i‖ := by
       simp only [B]
       ring
-#align asymptotics.is_o.sum_range Asymptotics.IsLittleO.sum_range
 
 theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
-    (fun n => ∑ i in range n, f i) =o[atTop] fun n => (n : ℝ) := by
+    (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => (n : ℝ) := by
   have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
-  simp only [sum_const, card_range, Nat.smul_one_eq_coe] at this
-  exact this tendsto_nat_cast_atTop_atTop
-#align asymptotics.is_o_sum_range_of_tendsto_zero Asymptotics.isLittleO_sum_range_of_tendsto_zero
+  simp only [sum_const, card_range, Nat.smul_one_eq_cast] at this
+  exact this tendsto_natCast_atTop_atTop
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
 theorem Filter.Tendsto.cesaro_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {u : ℕ → E}
     {l : E} (h : Tendsto u atTop (𝓝 l)) :
-    Tendsto (fun n : ℕ => (n⁻¹ : ℝ) • ∑ i in range n, u i) atTop (𝓝 l) := by
+    Tendsto (fun n : ℕ => (n⁻¹ : ℝ) • ∑ i ∈ range n, u i) atTop (𝓝 l) := by
   rw [← tendsto_sub_nhds_zero_iff, ← isLittleO_one_iff ℝ]
   have := Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 h)
   apply ((isBigO_refl (fun n : ℕ => (n : ℝ)⁻¹) atTop).smul_isLittleO this).congr' _ _
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
     simp only [smul_sub, sum_sub_distrib, sum_const, card_range, sub_right_inj]
-    rw [nsmul_eq_smul_cast ℝ, smul_smul, inv_mul_cancel nposℝ.ne', one_smul]
+    rw [← Nat.cast_smul_eq_nsmul ℝ, smul_smul, inv_mul_cancel₀ nposℝ.ne', one_smul]
   · filter_upwards [Ici_mem_atTop 1] with n npos
     have nposℝ : (0 : ℝ) < n := Nat.cast_pos.2 npos
-    rw [Algebra.id.smul_eq_mul, inv_mul_cancel nposℝ.ne']
-#align filter.tendsto.cesaro_smul Filter.Tendsto.cesaro_smul
+    rw [smul_eq_mul, inv_mul_cancel₀ nposℝ.ne']
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
 theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (𝓝 l)) :
-    Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i in range n, u i) atTop (𝓝 l) :=
+    Tendsto (fun n : ℕ => (n⁻¹ : ℝ) * ∑ i ∈ range n, u i) atTop (𝓝 l) :=
   h.cesaro_smul
-#align filter.tendsto.cesaro Filter.Tendsto.cesaro
 
 end Real
+
+section NormedLinearOrderedField
+
+variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
+  [OrderTopology R] [FloorRing R]
+
+theorem Asymptotics.isEquivalent_nat_floor :
+    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) :=
+  isEquivalent_of_tendsto_one tendsto_nat_floor_div_atTop
+
+theorem Asymptotics.isEquivalent_nat_ceil :
+    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) :=
+  isEquivalent_of_tendsto_one tendsto_nat_ceil_div_atTop
+
+end NormedLinearOrderedField

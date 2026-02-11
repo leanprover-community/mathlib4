@@ -3,10 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.PartitionOfUnity
-import Mathlib.Analysis.Convex.Combination
+module
 
-#align_import analysis.convex.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+public import Mathlib.Topology.PartitionOfUnity
+public import Mathlib.Analysis.Convex.Combination
 
 /-!
 # Partition of unity and convex sets
@@ -26,10 +26,12 @@ assumes that local functions `g` are constants.
 partition of unity
 -/
 
+public section
+
 
 open Set Function
 
-open BigOperators Topology
+open Topology
 
 variable {ι X E : Type*} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
 
@@ -37,7 +39,6 @@ theorem PartitionOfUnity.finsum_smul_mem_convex {s : Set X} (f : PartitionOfUnit
     {g : ι → X → E} {t : Set E} {x : X} (hx : x ∈ s) (hg : ∀ i, f i x ≠ 0 → g i x ∈ t)
     (ht : Convex ℝ t) : (∑ᶠ i, f i x • g i x) ∈ t :=
   ht.finsum_mem (fun _ => f.nonneg _ _) (f.sum_eq_one hx) hg
-#align partition_of_unity.finsum_smul_mem_convex PartitionOfUnity.finsum_smul_mem_convex
 
 variable [NormalSpace X] [ParacompactSpace X] [TopologicalSpace E] [ContinuousAdd E]
   [ContinuousSMul ℝ E] {t : X → Set E}
@@ -54,11 +55,10 @@ theorem exists_continuous_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t 
   choose U hU g hgc hgt using H
   obtain ⟨f, hf⟩ := PartitionOfUnity.exists_isSubordinate isClosed_univ (fun x => interior (U x))
     (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
-  refine' ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
+  refine ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
     hf.continuous_finsum_smul (fun i => isOpen_interior) fun i => (hgc i).mono interior_subset⟩,
-    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ _) (ht _)⟩
+    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ ?_) (ht _)⟩
   exact interior_subset (hf _ <| subset_closure hi)
-#align exists_continuous_forall_mem_convex_of_local exists_continuous_forall_mem_convex_of_local
 
 /-- Let `X` be a normal paracompact topological space (e.g., any extended metric space). Let `E` be
 a topological real vector space. Let `t : X → Set E` be a family of convex sets. Suppose that for
@@ -70,4 +70,3 @@ theorem exists_continuous_forall_mem_convex_of_local_const (ht : ∀ x, Convex �
   exists_continuous_forall_mem_convex_of_local ht fun x =>
     let ⟨c, hc⟩ := H x
     ⟨_, hc, fun _ => c, continuousOn_const, fun _ => id⟩
-#align exists_continuous_forall_mem_convex_of_local_const exists_continuous_forall_mem_convex_of_local_const

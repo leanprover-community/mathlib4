@@ -1,20 +1,19 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Products
+module
 
-#align_import topology.category.Top.limits.pullbacks from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 # Pullbacks and pushouts in the category of topological spaces
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
-set_option linter.uppercaseLean3 false
+@[expose] public section
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open CategoryTheory
 
@@ -26,7 +25,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 section Pullback
 
@@ -34,17 +33,15 @@ variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
-  ⟨Prod.fst ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
-#align Top.pullback_fst TopCat.pullbackFst
+  ofHom ⟨Prod.fst ∘ Subtype.val, by fun_prop⟩
 
-@[simp] lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
+lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
-  ⟨Prod.snd ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
-#align Top.pullback_snd TopCat.pullbackSnd
+  ofHom ⟨Prod.snd ∘ Subtype.val, by fun_prop⟩
 
-@[simp] lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
+lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl
 
 /-- The explicit pullback cone of `X, Y` given by `{ p : X × Y // f p.1 = g p.2 }`. -/
 def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
@@ -52,12 +49,7 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
     (by
       dsimp [pullbackFst, pullbackSnd, Function.comp_def]
       ext ⟨x, h⟩
-      -- Next 2 lines were
-      -- `rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]`
-      -- `exact h` before leanprover/lean4#2644
-      rw [comp_apply, comp_apply]
-      congr!)
-#align Top.pullback_cone TopCat.pullbackCone
+      simpa)
 
 /-- The constructed cone is a limit. -/
 def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g) :=
@@ -65,397 +57,349 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
     (by
       intro S
       constructor; swap
-      exact
-        { toFun := fun x =>
-            ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
-          continuous_toFun := by
-            apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
-            · exact (PullbackCone.fst S)|>.continuous_toFun
-            · exact (PullbackCone.snd S)|>.continuous_toFun
-        }
-      refine' ⟨_, _, _⟩
+      · exact ofHom
+          { toFun := fun x =>
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
+            continuous_toFun := by fun_prop }
+      refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [comp_apply, ContinuousMap.coe_mk]
+        dsimp
       · delta pullbackCone
         ext a
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [comp_apply, ContinuousMap.coe_mk]
+        dsimp
       · intro m h₁ h₂
-        -- Porting note: used to be ext x
-        apply ContinuousMap.ext; intro x
+        ext x
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`.
         apply Subtype.ext
         apply Prod.ext
         · simpa using ConcreteCategory.congr_hom h₁ x
         · simpa using ConcreteCategory.congr_hom h₂ x)
-#align Top.pullback_cone_is_limit TopCat.pullbackConeIsLimit
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
 def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :
     pullback f g ≅ TopCat.of { p : X × Y // f p.1 = g p.2 } :=
   (limit.isLimit _).conePointUniqueUpToIso (pullbackConeIsLimit f g)
-#align Top.pullback_iso_prod_subtype TopCat.pullbackIsoProdSubtype
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoProdSubtype_inv_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (pullbackIsoProdSubtype f g).inv ≫ pullback.fst = pullbackFst f g := by
+    (pullbackIsoProdSubtype f g).inv ≫ pullback.fst _ _ = pullbackFst f g := by
   simp [pullbackCone, pullbackIsoProdSubtype]
-#align Top.pullback_iso_prod_subtype_inv_fst TopCat.pullbackIsoProdSubtype_inv_fst
 
-@[simp]
 theorem pullbackIsoProdSubtype_inv_fst_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
-    (pullback.fst : pullback f g ⟶ _) ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
+    pullback.fst f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).fst :=
   ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_fst f g) x
-#align Top.pullback_iso_prod_subtype_inv_fst_apply TopCat.pullbackIsoProdSubtype_inv_fst_apply
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoProdSubtype_inv_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (pullbackIsoProdSubtype f g).inv ≫ pullback.snd = pullbackSnd f g := by
+    (pullbackIsoProdSubtype f g).inv ≫ pullback.snd _ _ = pullbackSnd f g := by
   simp [pullbackCone, pullbackIsoProdSubtype]
-#align Top.pullback_iso_prod_subtype_inv_snd TopCat.pullbackIsoProdSubtype_inv_snd
 
-@[simp]
 theorem pullbackIsoProdSubtype_inv_snd_apply (f : X ⟶ Z) (g : Y ⟶ Z)
     (x : { p : X × Y // f p.1 = g p.2 }) :
-    (pullback.snd : pullback f g ⟶ _) ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).snd :=
+    pullback.snd f g ((pullbackIsoProdSubtype f g).inv x) = (x : X × Y).snd :=
   ConcreteCategory.congr_hom (pullbackIsoProdSubtype_inv_snd f g) x
-#align Top.pullback_iso_prod_subtype_inv_snd_apply TopCat.pullbackIsoProdSubtype_inv_snd_apply
 
 theorem pullbackIsoProdSubtype_hom_fst (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (pullbackIsoProdSubtype f g).hom ≫ pullbackFst f g = pullback.fst := by
+    (pullbackIsoProdSubtype f g).hom ≫ pullbackFst f g = pullback.fst _ _ := by
   rw [← Iso.eq_inv_comp, pullbackIsoProdSubtype_inv_fst]
-#align Top.pullback_iso_prod_subtype_hom_fst TopCat.pullbackIsoProdSubtype_hom_fst
 
 theorem pullbackIsoProdSubtype_hom_snd (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (pullbackIsoProdSubtype f g).hom ≫ pullbackSnd f g = pullback.snd := by
+    (pullbackIsoProdSubtype f g).hom ≫ pullbackSnd f g = pullback.snd _ _ := by
   rw [← Iso.eq_inv_comp, pullbackIsoProdSubtype_inv_snd]
-#align Top.pullback_iso_prod_subtype_hom_snd TopCat.pullbackIsoProdSubtype_hom_snd
 
--- Porting note: why do I need to tell Lean to coerce pullback to a type
-@[simp]
 theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
-    (x : ConcreteCategory.forget.obj (pullback f g)) :
+    (x : ↑(pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
-      ⟨⟨(pullback.fst : pullback f g ⟶ _) x, (pullback.snd : pullback f g ⟶ _) x⟩, by
-        simpa using ConcreteCategory.congr_hom pullback.condition x⟩ := by
-  apply Subtype.ext; apply Prod.ext
-  exacts [ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
-    ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
-#align Top.pullback_iso_prod_subtype_hom_apply TopCat.pullbackIsoProdSubtype_hom_apply
+      ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
+        simpa using CategoryTheory.congr_fun pullback.condition x⟩ := rfl
 
 theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).str =
-      induced (pullback.fst : pullback f g ⟶ _) X.str ⊓
-        induced (pullback.snd : pullback f g ⟶ _) Y.str := by
+      induced (pullback.fst f g) X.str ⊓
+        induced (pullback.snd f g) Y.str := by
   let homeo := homeoOfIso (pullbackIsoProdSubtype f g)
-  refine' homeo.inducing.induced.trans _
-  change induced homeo (induced _ ( (induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
+  refine homeo.isInducing.eq_induced.trans ?_
+  change induced homeo (induced _ ((induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
   simp only [induced_compose, induced_inf]
-  congr
-#align Top.pullback_topology TopCat.pullback_topology
+  rfl
 
 theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
-    Set.range (prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) =
+    Set.range (prod.lift (pullback.fst f g) (pullback.snd f g)) =
       { x | (Limits.prod.fst ≫ f) x = (Limits.prod.snd ≫ g) x } := by
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [← comp_apply, Set.mem_setOf_eq]
-    congr 1
+    simp only [← ConcreteCategory.comp_apply, Set.mem_setOf_eq]
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    rw [← comp_apply, ← comp_apply, limit.lift_π] <;>
-    -- This used to be `simp` before leanprover/lean4#2644
-    aesop_cat
-#align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
+      rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, limit.lift_π] <;>
+      -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
+      cat_disch
 
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
 noncomputable
 def pullbackHomeoPreimage
     {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : Embedding g) :
+    (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : IsEmbedding g) :
     { p : X × Y // f p.1 = g p.2 } ≃ₜ f ⁻¹' Set.range g where
   toFun := fun x ↦ ⟨x.1.1, _, x.2.symm⟩
   invFun := fun x ↦ ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
   left_inv := by
     intro x
     ext <;> dsimp
-    apply hg.inj
+    apply hg.injective
     convert x.prop
     exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
-  right_inv := fun x ↦ rfl
-  continuous_toFun := by
-    apply Continuous.subtype_mk
-    exact continuous_fst.comp continuous_subtype_val
+  continuous_toFun := by fun_prop
   continuous_invFun := by
     apply Continuous.subtype_mk
-    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr ?_⟩
+    refine continuous_subtype_val.prodMk <| hg.isInducing.continuous_iff.mpr ?_
     convert hf.comp continuous_subtype_val
     ext x
     exact Exists.choose_spec x.2
 
-theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
-    Inducing <| ⇑(prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) :=
+theorem isInducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
+    IsInducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
-#align Top.inducing_pullback_to_prod TopCat.inducing_pullback_to_prod
 
-theorem embedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
-    Embedding <| ⇑(prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) :=
-  ⟨inducing_pullback_to_prod f g, (TopCat.mono_iff_injective _).mp inferInstance⟩
-#align Top.embedding_pullback_to_prod TopCat.embedding_pullback_to_prod
+theorem isEmbedding_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
+    IsEmbedding <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
+  ⟨isInducing_pullback_to_prod f g, (TopCat.mono_iff_injective _).mp inferInstance⟩
 
 /-- If the map `S ⟶ T` is mono, then there is a description of the image of `W ×ₛ X ⟶ Y ×ₜ Z`. -/
 theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶ S) (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
     (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
     Set.range (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) =
-      (pullback.fst : pullback g₁ g₂ ⟶ _) ⁻¹' Set.range i₁ ∩
-        (pullback.snd : pullback g₁ g₂ ⟶ _) ⁻¹' Set.range i₂ := by
+      (pullback.fst g₁ g₂) ⁻¹' Set.range i₁ ∩ (pullback.snd g₁ g₂) ⁻¹' Set.range i₂ := by
   ext
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range, ← comp_apply, limit.lift_π,
-      PullbackCone.mk_pt, PullbackCone.mk_π_app]
-    simp only [comp_apply, exists_apply_eq_apply, and_self]
+    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
+    rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
+    simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+    exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
     apply (TopCat.mono_iff_injective _).mp H₃
-    simp only [← comp_apply, eq₁, eq₂]
-    simp only [comp_apply, hx₁, hx₂]
-    simp only [← comp_apply, pullback.condition]
+    rw [← ConcreteCategory.comp_apply, eq₁, ← ConcreteCategory.comp_apply, eq₂,
+      ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, hx₁, hx₂,
+      ← ConcreteCategory.comp_apply, pullback.condition, ConcreteCategory.comp_apply]
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
-  simp only [← comp_apply, Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
-  · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply,
-      pullbackFst_apply, hx₁]
-    rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
+  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
+  · simp [hx₁, ← limit.w _ WalkingCospan.Hom.inl]
   · simp [hx₁]
   · simp [hx₂]
-#align Top.range_pullback_map TopCat.range_pullback_map
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
-    Set.range (pullback.fst : pullback f g ⟶ _) = { x : X | ∃ y : Y, f x = g y } := by
+    Set.range (pullback.fst f g) = { x : X | ∃ y : Y, f x = g y } := by
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    use (pullback.snd : pullback f g ⟶ _) y
-    exact ConcreteCategory.congr_hom pullback.condition y
+    use pullback.snd f g y
+    exact CategoryTheory.congr_fun pullback.condition y
   · rintro ⟨y, eq⟩
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
-    simp
-#align Top.pullback_fst_range TopCat.pullback_fst_range
+    rw [pullbackIsoProdSubtype_inv_fst_apply]
 
 theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
-    Set.range (pullback.snd : pullback f g ⟶ _) = { y : Y | ∃ x : X, f x = g y } := by
+    Set.range (pullback.snd f g) = { y : Y | ∃ x : X, f x = g y } := by
   ext y
   constructor
   · rintro ⟨x, rfl⟩
-    use (pullback.fst : pullback f g ⟶ _) x
-    exact ConcreteCategory.congr_hom pullback.condition x
+    use pullback.fst f g x
+    exact CategoryTheory.congr_fun pullback.condition x
   · rintro ⟨x, eq⟩
     use (TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨x, y⟩, eq⟩
-    simp
-#align Top.pullback_snd_range TopCat.pullback_snd_range
+    rw [pullbackIsoProdSubtype_inv_snd_apply]
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are embeddings,
 then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an embedding.
 
-  W ⟶ Y
-    ↘      ↘
-      S ⟶ T
-    ↗      ↗
-  X ⟶ Z
+```
+W ⟶ Y
+ ↘   ↘
+  S ⟶ T
+ ↗   ↗
+X ⟶ Z
+```
 -/
-theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X ⟶ S)
-    (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : Embedding i₁) (H₂ : Embedding i₂)
-    (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
-    Embedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
-  refine'
-    embedding_of_embedding_compose (ContinuousMap.continuous_toFun _)
-      (show Continuous (prod.lift pullback.fst pullback.snd : pullback g₁ g₂ ⟶ Y ⨯ Z) from
+theorem pullback_map_isEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X ⟶ S)
+    (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : IsEmbedding i₁)
+    (H₂ : IsEmbedding i₂) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) :
+    IsEmbedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
+  refine .of_comp (ContinuousMap.continuous_toFun _)
+    (show Continuous (prod.lift (pullback.fst g₁ g₂) (pullback.snd g₁ g₂)) from
         ContinuousMap.continuous_toFun _)
-      _
+      ?_
   suffices
-    Embedding (prod.lift pullback.fst pullback.snd ≫ Limits.prod.map i₁ i₂ : pullback f₁ f₂ ⟶ _) by
+    IsEmbedding (prod.lift (pullback.fst f₁ f₂) (pullback.snd f₁ f₂) ≫ Limits.prod.map i₁ i₂) by
     simpa [← coe_comp] using this
   rw [coe_comp]
-  refine Embedding.comp (embedding_prod_map H₁ H₂) (embedding_pullback_to_prod _ _)
-#align Top.pullback_map_embedding_of_embeddings TopCat.pullback_map_embedding_of_embeddings
+  exact (isEmbedding_prodMap H₁ H₂).comp (isEmbedding_pullback_to_prod _ _)
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are open embeddings, and `S ⟶ T`
 is mono, then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an open embedding.
-  W ⟶ Y
-    ↘      ↘
-      S ⟶ T
-    ↗       ↗
-  X ⟶ Z
+
+```
+W ⟶ Y
+ ↘   ↘
+  S ⟶ T
+ ↗   ↗
+X ⟶ Z
+```
 -/
-theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
-    (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : OpenEmbedding i₁)
-    (H₂ : OpenEmbedding i₂) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
-    (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : OpenEmbedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
+theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
+    (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : IsOpenEmbedding i₁)
+    (H₂ : IsOpenEmbedding i₂) (i₃ : S ⟶ T) [H₃ : Mono i₃] (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁)
+    (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : IsOpenEmbedding (pullback.map f₁ f₂ g₁ g₂ i₁ i₂ i₃ eq₁ eq₂) := by
   constructor
   · apply
-      pullback_map_embedding_of_embeddings f₁ f₂ g₁ g₂ H₁.toEmbedding H₂.toEmbedding i₃ eq₁ eq₂
+      pullback_map_isEmbedding f₁ f₂ g₁ g₂ H₁.isEmbedding H₂.isEmbedding i₃ eq₁ eq₂
   · rw [range_pullback_map]
     apply IsOpen.inter <;> apply Continuous.isOpen_preimage
     · apply ContinuousMap.continuous_toFun
-    · exact H₁.open_range
+    · exact H₁.isOpen_range
     · apply ContinuousMap.continuous_toFun
-    · exact H₂.open_range
-#align Top.pullback_map_open_embedding_of_open_embeddings TopCat.pullback_map_openEmbedding_of_open_embeddings
+    · exact H₂.isOpen_range
 
-theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embedding f) (g : Y ⟶ S) :
-    Embedding <| ⇑(pullback.snd : pullback f g ⟶ Y) := by
-  convert (homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶ _))).embedding.comp
-      (pullback_map_embedding_of_embeddings (i₂ := 𝟙 Y)
-        f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).embedding (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
-#align Top.snd_embedding_of_left_embedding TopCat.snd_embedding_of_left_embedding
 
-theorem fst_embedding_of_right_embedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
-    (H : Embedding g) : Embedding <| ⇑(pullback.fst : pullback f g ⟶ X) := by
-  convert (homeoOfIso (asIso (pullback.fst : pullback f (𝟙 S) ⟶ _))).embedding.comp
-      (pullback_map_embedding_of_embeddings (i₁ := 𝟙 X)
-        f g f (𝟙 _) (homeoOfIso (Iso.refl _)).embedding H (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
-#align Top.fst_embedding_of_right_embedding TopCat.fst_embedding_of_right_embedding
+lemma snd_isEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsEmbedding f) (g : Y ⟶ S) :
+    IsEmbedding <| ⇑(pullback.snd f g) := by
+  convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isEmbedding.comp
+      (pullback_map_isEmbedding (i₂ := 𝟙 Y)
+        f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).isEmbedding (𝟙 _) rfl (by simp))
+  simp [homeoOfIso, ← coe_comp]
 
-theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S} (H₁ : Embedding f)
-    (H₂ : Embedding g) : Embedding (limit.π (cospan f g) WalkingCospan.one) := by
-  convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
-  erw [← coe_comp]
-  congr
-  rw [← limit.w _ WalkingCospan.Hom.inr]
+theorem fst_isEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
+    (H : IsEmbedding g) : IsEmbedding <| ⇑(pullback.fst f g) := by
+  convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isEmbedding.comp
+      (pullback_map_isEmbedding (i₁ := 𝟙 X)
+        f g f (𝟙 _) (homeoOfIso (Iso.refl _)).isEmbedding H (𝟙 _) rfl (by simp))
+  simp [homeoOfIso, ← coe_comp]
+
+theorem isEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S} (H₁ : IsEmbedding f)
+    (H₂ : IsEmbedding g) : IsEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
+  convert H₂.comp (snd_isEmbedding_of_left H₁ g)
+  rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
-#align Top.embedding_of_pullback_embeddings TopCat.embedding_of_pullback_embeddings
 
-theorem snd_openEmbedding_of_left_openEmbedding {X Y S : TopCat} {f : X ⟶ S} (H : OpenEmbedding f)
-    (g : Y ⟶ S) : OpenEmbedding <| ⇑(pullback.snd : pullback f g ⟶ Y) := by
-  convert (homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶ _))).openEmbedding.comp
-      (pullback_map_openEmbedding_of_open_embeddings (i₂ := 𝟙 Y) f g (𝟙 _) g H
-        (homeoOfIso (Iso.refl _)).openEmbedding (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
-#align Top.snd_open_embedding_of_left_open_embedding TopCat.snd_openEmbedding_of_left_openEmbedding
+theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEmbedding f)
+    (g : Y ⟶ S) : IsOpenEmbedding <| ⇑(pullback.snd f g) := by
+  convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isOpenEmbedding.comp
+      (pullback_map_isOpenEmbedding (i₂ := 𝟙 Y) f g (𝟙 _) g H
+        (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
+  simp [homeoOfIso, ← coe_comp]
 
-theorem fst_openEmbedding_of_right_openEmbedding {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
-    (H : OpenEmbedding g) : OpenEmbedding <| ⇑(pullback.fst : pullback f g ⟶ X) := by
-  convert (homeoOfIso (asIso (pullback.fst : pullback f (𝟙 S) ⟶ _))).openEmbedding.comp
-      (pullback_map_openEmbedding_of_open_embeddings (i₁ := 𝟙 X) f g f (𝟙 _)
-        (homeoOfIso (Iso.refl _)).openEmbedding H (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
-#align Top.fst_open_embedding_of_right_open_embedding TopCat.fst_openEmbedding_of_right_openEmbedding
+theorem fst_isOpenEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
+    (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
+  convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
+      (pullback_map_isOpenEmbedding (i₁ := 𝟙 X) f g f (𝟙 _)
+        (homeoOfIso (Iso.refl _)).isOpenEmbedding H (𝟙 _) rfl (by simp))
+  simp [homeoOfIso, ← coe_comp]
 
 /-- If `X ⟶ S`, `Y ⟶ S` are open embeddings, then so is `X ×ₛ Y ⟶ S`. -/
-theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
-    (H₁ : OpenEmbedding f) (H₂ : OpenEmbedding g) :
-    OpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
-  convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
-  erw [← coe_comp]
-  congr
-  rw [← limit.w _ WalkingCospan.Hom.inr]
+theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
+    (H₁ : IsOpenEmbedding f) (H₂ : IsOpenEmbedding g) :
+    IsOpenEmbedding (limit.π (cospan f g) WalkingCospan.one) := by
+  convert H₂.comp (snd_isOpenEmbedding_of_left H₁ g)
+  rw [← coe_comp, ← limit.w _ WalkingCospan.Hom.inr]
   rfl
-#align Top.open_embedding_of_pullback_open_embeddings TopCat.openEmbedding_of_pullback_open_embeddings
 
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
-    (hg : Embedding g) (H : Set.range f ⊆ Set.range g) :
-    IsIso (pullback.fst : pullback f g ⟶ X) := by
+    (hg : IsEmbedding g) (H : Set.range f ⊆ Set.range g) :
+    IsIso (pullback.fst f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ X :=
-    (Homeomorph.ofEmbedding _ (fst_embedding_of_right_embedding f hg)).trans
+    (fst_isEmbedding_of_right f hg).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
             rw [pullback_fst_range]
-            exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩
-        left_inv := fun ⟨_, _⟩ => rfl
-        right_inv := fun x => rfl }
-  convert IsIso.of_iso (isoOfHomeo esto)
-#align Top.fst_iso_of_right_embedding_range_subset TopCat.fst_iso_of_right_embedding_range_subset
+            exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩ }
+  convert (isoOfHomeo esto).isIso_hom
 
-theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : Embedding f)
-    (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd : pullback f g ⟶ Y) := by
+theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : IsEmbedding f)
+    (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ Y :=
-    (Homeomorph.ofEmbedding _ (snd_embedding_of_left_embedding hf g)).trans
+    (snd_isEmbedding_of_left hf g).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
             rw [pullback_snd_range]
-            exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩
-        left_inv := fun ⟨_, _⟩ => rfl
-        right_inv := fun x => rfl }
-  convert IsIso.of_iso (isoOfHomeo esto)
-#align Top.snd_iso_of_left_embedding_range_subset TopCat.snd_iso_of_left_embedding_range_subset
+            exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩ }
+  convert (isoOfHomeo esto).isIso_hom
 
 theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :
-    (pullback.snd : pullback f g ⟶ _) '' ((pullback.fst : pullback f g ⟶ _) ⁻¹' U) =
+    (pullback.snd f g) '' ((pullback.fst f g) ⁻¹' U) =
       g ⁻¹' (f '' U) := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact
-      ⟨(pullback.fst : pullback f g ⟶ _) y, hy, ConcreteCategory.congr_hom pullback.condition y⟩
+      ⟨(pullback.fst f g) y, hy, CategoryTheory.congr_fun pullback.condition y⟩
   · rintro ⟨y, hy, eq⟩
-    exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩
-#align Top.pullback_snd_image_fst_preimage TopCat.pullback_snd_image_fst_preimage
+  -- next 5 lines were
+  -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩` before https://github.com/leanprover-community/mathlib4/pull/13170
+    refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, ?_, ?_⟩
+    · simp only [coe_of, Set.mem_preimage]
+      convert hy
+      rw [pullbackIsoProdSubtype_inv_fst_apply]
+    · rw [pullbackIsoProdSubtype_inv_snd_apply]
 
 theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
-    (pullback.fst : pullback f g ⟶ _) '' ((pullback.snd : pullback f g ⟶ _) ⁻¹' U) =
+    (pullback.fst f g) '' ((pullback.snd f g) ⁻¹' U) =
       f ⁻¹' (g '' U) := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact
-      ⟨(pullback.snd : pullback f g ⟶ _) y, hy,
-        (ConcreteCategory.congr_hom pullback.condition y).symm⟩
+      ⟨(pullback.snd f g) y, hy,
+        (CategoryTheory.congr_fun pullback.condition y).symm⟩
   · rintro ⟨y, hy, eq⟩
-    exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, by simpa, by simp⟩
-#align Top.pullback_fst_image_snd_preimage TopCat.pullback_fst_image_snd_preimage
+    -- next 5 lines were
+    -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, by simpa, by simp⟩`
+    -- before https://github.com/leanprover-community/mathlib4/pull/13170
+    refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, ?_, ?_⟩
+    · simp only [coe_of, Set.mem_preimage]
+      convert hy
+      rw [pullbackIsoProdSubtype_inv_snd_apply]
+    · rw [pullbackIsoProdSubtype_inv_fst_apply]
 
 end Pullback
 
---TODO: Add analogous constructions for `pushout`.
-theorem coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc : IsColimit c) :
-    c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
-  let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
-  ext
-  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_iSup_iff.symm)
-  exact isOpen_iSup_iff
-#align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
+section
 
-theorem colimit_topology (F : J ⥤ TopCatMax.{v, u}) :
-    (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
-  coinduced_of_isColimit _ (colimit.isColimit F)
-#align Top.colimit_topology TopCat.colimit_topology
+variable {X Y : TopCat.{u}} {f g : X ⟶ Y}
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCatMax.{v, u}) (U : Set ((colimit F : _) : Type max v u)) :
-    IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
-  dsimp [topologicalSpace_coe]
-  conv_lhs => rw [colimit_topology F]
-  exact isOpen_iSup_iff
-#align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff
-
-theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
-    (U : Set ((colimit F : _) : Type u)) :
-    IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
-  rw [colimit_isOpen_iff]
+lemma isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Set c.pt) :
+    IsOpen U ↔ IsOpen (c.π ⁻¹' U) := by
+  rw [isOpen_iff_of_isColimit _ hc]
   constructor
-  · intro H
-    exact H _
-  · intro H j
-    cases j
-    · rw [← colimit.w F WalkingParallelPairHom.left]
-      exact (F.map WalkingParallelPairHom.left).continuous_toFun.isOpen_preimage _ H
-    · exact H
-#align Top.coequalizer_is_open_iff TopCat.coequalizer_isOpen_iff
+  · intro h
+    exact h .one
+  · rintro h (_ | _)
+    · rw [← c.w .left]
+      exact Continuous.isOpen_preimage f.hom.continuous (c.π ⁻¹' U) h
+    · exact h
+
+lemma isQuotientMap_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) :
+    IsQuotientMap c.π := by
+  rw [isQuotientMap_iff]
+  constructor
+  · simpa only [← epi_iff_surjective] using epi_of_isColimit_cofork hc
+  · exact isOpen_iff_of_isColimit_cofork c hc
+
+theorem coequalizer_isOpen_iff (U : Set ((coequalizer f g :) : Type u)) :
+    IsOpen U ↔ IsOpen (coequalizer.π f g ⁻¹' U) :=
+  isOpen_iff_of_isColimit_cofork _ (coequalizerIsCoequalizer f g) _
+
+end
 
 end TopCat

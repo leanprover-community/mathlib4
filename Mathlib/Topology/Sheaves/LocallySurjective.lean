@@ -3,11 +3,12 @@ Copyright (c) 2022 Sam van Gool and Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sam van Gool, Jake Levinson
 -/
-import Mathlib.Topology.Sheaves.Presheaf
-import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.CategoryTheory.Sites.Surjective
+module
 
-#align_import topology.sheaves.locally_surjective from "leanprover-community/mathlib"@"fb7698eb37544cbb66292b68b40e54d001f8d1a9"
+public import Mathlib.Topology.Sheaves.Presheaf
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 
@@ -27,6 +28,8 @@ We prove that these are equivalent.
 
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -44,8 +47,8 @@ section LocallySurjective
 
 open scoped AlgebraicGeometry
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {X : TopCat.{v}}
-
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X : TopCat.{v}}
 variable {ℱ 𝒢 : X.Presheaf C}
 
 /-- A map of presheaves `T : ℱ ⟶ 𝒢` is **locally surjective** if for any open set `U`,
@@ -55,16 +58,12 @@ such that `$T_*(s_V) = t|_V$`.
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
-  CategoryTheory.IsLocallySurjective (Opens.grothendieckTopology X) T
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
+  CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
-      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
-  Iff.rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
+      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, (T.app _) s = t |_ₕ ι) ∧ x ∈ V :=
+  ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
 
 section SurjectiveOnStalks
 
@@ -86,34 +85,30 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     obtain ⟨U, hxU, t, rfl⟩ := 𝒢.germ_exist x g
     -- By local surjectivity, pass to a smaller open set V
     -- on which there exists s ∈ Γ_ ℱ V mapping to t |_ V.
-    rcases hT U t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
+    rcases hT.imageSieve_mem t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
     -- Then the germ of s maps to g.
-    use ℱ.germ ⟨x, hxV⟩ s
-    -- Porting note: `convert` went too deep and swapped LHS and RHS of the remaining goal relative
-    -- to lean 3.
-    convert stalkFunctor_map_germ_apply V ⟨x, hxV⟩ T s using 1
-    simpa [h_eq] using (germ_res_apply 𝒢 ι ⟨x, hxV⟩ t).symm
+    use ℱ.germ _ x hxV s
+    simp [h_eq, germ_res_apply]
   · /- human proof:
         Let U be an open set, t ∈ Γ ℱ U a section, x ∈ U a point.
         By surjectivity on stalks, the germ of t is the image of
         some germ f ∈ Γₛₜ ℱ x. Represent f on some open set V ⊆ X as ⟨s, V⟩.
         Then there is some possibly smaller open set x ∈ W ⊆ V ∩ U on which
         we have T(s) |_ W = t |_ W. -/
+    constructor
     intro U t x hxU
-    set t_x := 𝒢.germ ⟨x, hxU⟩ t with ht_x
+    set t_x := 𝒢.germ _ x hxU t with ht_x
     obtain ⟨s_x, hs_x : ((stalkFunctor C x).map T) s_x = t_x⟩ := hT x t_x
     obtain ⟨V, hxV, s, rfl⟩ := ℱ.germ_exist x s_x
     -- rfl : ℱ.germ x s = s_x
     have key_W := 𝒢.germ_eq x hxV hxU (T.app _ s) t <| by
       convert hs_x using 1
       symm
-      convert stalkFunctor_map_germ_apply _ _ _ s
+      convert stalkFunctor_map_germ_apply _ _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
-    refine' ⟨W, hWU, ⟨ℱ.map hWV.op s, _⟩, hxW⟩
+    refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
     convert h_eq using 1
-    simp only [← comp_apply, T.naturality]
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.locally_surjective_iff_surjective_on_stalks TopCat.Presheaf.locally_surjective_iff_surjective_on_stalks
+    simp only [← ConcreteCategory.comp_apply, T.naturality]
 
 end SurjectiveOnStalks
 

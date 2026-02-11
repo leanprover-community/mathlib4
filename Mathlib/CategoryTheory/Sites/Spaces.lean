@@ -3,12 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Limits.Lattice
-import Mathlib.Topology.Sets.Opens
+module
 
-#align_import category_theory.sites.spaces from "leanprover-community/mathlib"@"b6fa3beb29f035598cf0434d919694c5e98091eb"
+public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Limits.Lattice
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Grothendieck topology on a topological space
@@ -33,6 +33,8 @@ We define the two separately, rather than defining the Grothendieck topology as 
 by the pretopology for the purpose of having nice definitional properties for the sieves.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -43,42 +45,38 @@ variable (T : Type u) [TopologicalSpace T]
 open CategoryTheory TopologicalSpace CategoryTheory.Limits
 
 /-- The Grothendieck topology associated to a topological space. -/
-def grothendieckTopology : GrothendieckTopology (Opens T)
-    where
+def grothendieckTopology : GrothendieckTopology (Opens T) where
   sieves X S := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), S f ∧ x ∈ U
-  top_mem' X x hx := ⟨_, 𝟙 _, trivial, hx⟩
+  top_mem' _ _ hx := ⟨_, 𝟙 _, trivial, hx⟩
   pullback_stable' X Y S f hf y hy := by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
-    refine' ⟨U ⊓ Y, homOfLE inf_le_right, _, hU, hy⟩
+    refine ⟨U ⊓ Y, homOfLE inf_le_right, ?_, hU, hy⟩
     apply S.downward_closed hg (homOfLE inf_le_left)
   transitive' X S hS R hR x hx := by
     rcases hS x hx with ⟨U, f, hf, hU⟩
     rcases hR hf _ hU with ⟨V, g, hg, hV⟩
     exact ⟨_, g ≫ f, hg, hV⟩
-#align opens.grothendieck_topology Opens.grothendieckTopology
 
 /-- The Grothendieck pretopology associated to a topological space. -/
-def pretopology : Pretopology (Opens T)
-    where
+def pretopology : Pretopology (Opens T) where
   coverings X R := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U
-  has_isos X Y f i x hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
+  has_isos _ _ f _ _ hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
-    refine' ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, _⟩
-    have : U ⊓ Y ≤ pullback g f
-    refine' leOfHom (pullback.lift (homOfLE inf_le_left) (homOfLE inf_le_right) rfl)
+    refine ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, ?_⟩
+    have : U ⊓ Y ≤ pullback g f :=
+      leOfHom (pullback.lift (homOfLE inf_le_left) (homOfLE inf_le_right) rfl)
     apply this ⟨hU, hx⟩
-  Transitive X S Ti hS hTi x hx := by
+  transitive X S Ti hS hTi x hx := by
     rcases hS x hx with ⟨U, f, hf, hU⟩
     rcases hTi f hf x hU with ⟨V, g, hg, hV⟩
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
-#align opens.pretopology Opens.pretopology
 
 /-- The pretopology associated to a space is the largest pretopology that
-    generates the Grothendieck topology associated to the space. -/
+generates the Grothendieck topology associated to the space. -/
 @[simp]
-theorem pretopology_ofGrothendieck :
-    Pretopology.ofGrothendieck _ (Opens.grothendieckTopology T) = Opens.pretopology T := by
+theorem toPretopology_grothendieckTopology :
+    (Opens.grothendieckTopology T).toPretopology = Opens.pretopology T := by
   apply le_antisymm
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, ⟨V, g₁, g₂, hg₂, _⟩, hU⟩
@@ -86,15 +84,16 @@ theorem pretopology_ofGrothendieck :
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, hf, hU⟩
     exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
-#align opens.pretopology_of_grothendieck Opens.pretopology_ofGrothendieck
+
+@[deprecated (since := "2025-09-19")]
+alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
 
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/
 @[simp]
 theorem pretopology_toGrothendieck :
-    Pretopology.toGrothendieck _ (Opens.pretopology T) = Opens.grothendieckTopology T := by
-  rw [← pretopology_ofGrothendieck]
+    (Opens.pretopology T).toGrothendieck = Opens.grothendieckTopology T := by
+  rw [← toPretopology_grothendieckTopology]
   apply (Pretopology.gi (Opens T)).l_u_eq
-#align opens.pretopology_to_grothendieck Opens.pretopology_toGrothendieck
 
 end Opens

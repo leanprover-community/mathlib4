@@ -1,13 +1,12 @@
 /-
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Scott Morrison, Joël Riou
+Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.InjectiveResolution
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.Homology
+module
 
-#align_import category_theory.abelian.right_derived from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
 # Right-derived functors
@@ -32,12 +31,24 @@ and show how to compute the components.
 ## Main results
 * `Functor.isZero_rightDerived_obj_injective_succ`: injective objects have no higher
   right derived functor.
-* `NatTrans.rightDerived`: the natural isomorphism between right derived functors
-  induced by natural transformation.
+* `NatTrans.rightDerived`: the natural transformation between right derived functors
+  induced by a natural transformation.
 * `Functor.toRightDerivedZero`: the natural transformation `F ⟶ F.rightDerived 0`,
   which is an isomorphism when `F` is left exact (i.e. preserves finite limits),
   see also `Functor.rightDerivedZeroIsoSelf`.
+
+## TODO
+
+* refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
+  Eventually, we shall get a right derived functor
+  `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
+  and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
+
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -45,7 +56,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
   [Abelian C] [HasInjectiveResolutions C] [Abelian D]
 
 /-- When `F : C ⥤ D` is an additive functor, this is
@@ -95,7 +106,6 @@ lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_inv_naturality
 /-- The right derived functors of an additive functor. -/
 noncomputable def Functor.rightDerived (F : C ⥤ D) [F.Additive] (n : ℕ) : C ⥤ D :=
   F.rightDerivedToHomotopyCategory ⋙ HomotopyCategory.homologyFunctor D _ n
-#align category_theory.functor.right_derived CategoryTheory.Functor.rightDerived
 
 /-- We can compute a right derived functor using a chosen injective resolution. -/
 noncomputable def InjectiveResolution.isoRightDerivedObj {X : C} (I : InjectiveResolution X)
@@ -137,7 +147,7 @@ lemma InjectiveResolution.isoRightDerivedObj_inv_naturality
 /-- The higher derived functors vanish on injective objects. -/
 lemma Functor.isZero_rightDerived_obj_injective_succ
     (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Injective X] :
-    IsZero ((F.rightDerived (n+1)).obj X) := by
+    IsZero ((F.rightDerived (n + 1)).obj X) := by
   refine IsZero.of_iso ?_ ((InjectiveResolution.self X).isoRightDerivedObj F (n + 1))
   erw [← HomologicalComplex.exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (F.map_isZero (by apply isZero_zero))
@@ -157,7 +167,6 @@ theorem Functor.rightDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : 
     assoc, assoc, Iso.inv_hom_id, comp_id]
   rw [← HomologicalComplex.comp_f, w, HomologicalComplex.comp_f,
     CochainComplex.single₀_map_f_zero]
-#align category_theory.functor.right_derived_map_eq CategoryTheory.Functor.rightDerived_map_eq
 
 /-- The natural transformation
 `F.rightDerivedToHomotopyCategory ⟶ G.rightDerivedToHomotopyCategory` induced by
@@ -165,7 +174,7 @@ a natural transformation `F ⟶ G` between additive functors. -/
 noncomputable def NatTrans.rightDerivedToHomotopyCategory
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) :
     F.rightDerivedToHomotopyCategory ⟶ G.rightDerivedToHomotopyCategory :=
-  whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.up ℕ))
+  Functor.whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.up ℕ))
 
 lemma InjectiveResolution.rightDerivedToHomotopyCategory_app_eq
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) {X : C} (P : InjectiveResolution X) :
@@ -197,27 +206,25 @@ lemma NatTrans.rightDerivedToHomotopyCategory_comp {F G H : C ⥤ D} (α : F ⟶
       NatTrans.rightDerivedToHomotopyCategory α ≫
         NatTrans.rightDerivedToHomotopyCategory β := rfl
 
-/-- The natural transformation between right-derived functors induced by a natural transformation.-/
+/-- The natural transformation between right-derived functors
+induced by a natural transformation. -/
 noncomputable def NatTrans.rightDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.rightDerived n ⟶ G.rightDerived n :=
-  whiskerRight (NatTrans.rightDerivedToHomotopyCategory α) _
-#align category_theory.nat_trans.right_derived CategoryTheory.NatTrans.rightDerived
+  Functor.whiskerRight (NatTrans.rightDerivedToHomotopyCategory α) _
 
 @[simp]
 theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
     NatTrans.rightDerived (𝟙 F) n = 𝟙 (F.rightDerived n) := by
   dsimp only [rightDerived]
-  simp only [rightDerivedToHomotopyCategory_id, whiskerRight_id']
+  simp only [rightDerivedToHomotopyCategory_id, Functor.whiskerRight_id']
   rfl
-#align category_theory.nat_trans.right_derived_id CategoryTheory.NatTrans.rightDerived_id
 
 @[simp, reassoc]
 theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
     (α : F ⟶ G) (β : G ⟶ H) (n : ℕ) :
     NatTrans.rightDerived (α ≫ β) n = NatTrans.rightDerived α n ≫ NatTrans.rightDerived β n := by
   simp [NatTrans.rightDerived]
-#align category_theory.nat_trans.right_derived_comp CategoryTheory.NatTrans.rightDerived_comp
 
 namespace InjectiveResolution
 
@@ -249,14 +256,14 @@ noncomputable def toRightDerivedZero' {X : C}
       zero_comp, F.map_zero])
 
 @[reassoc (attr := simp)]
-lemma toRightDerivedZero'_comp_iCycles {X : C}
+lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
     (P : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     P.toRightDerivedZero' F ≫
       HomologicalComplex.iCycles _ _ = F.map (P.ι.f 0) := by
   simp [toRightDerivedZero']
 
 @[reassoc]
-lemma toRightDerivedZero'_naturality {X Y : C} (f : X ⟶ Y)
+lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f : X ⟶ Y)
     (P : InjectiveResolution X) (Q : InjectiveResolution Y)
     (φ : P.cocomplex ⟶ Q.cocomplex) (comm : P.ι.f 0 ≫ φ.f 0 = f ≫ Q.ι.f 0)
     (F : C ⥤ D) [F.Additive] :
@@ -273,7 +280,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso ((InjectiveResolution.self X).toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
   rw [CochainComplex.isIso_liftCycles_iff]
-  refine' ⟨ShortComplex.Splitting.exact _, inferInstance⟩
+  refine ⟨ShortComplex.Splitting.exact ?_, inferInstance⟩
   exact
     { r := 𝟙 _
       s := 0
