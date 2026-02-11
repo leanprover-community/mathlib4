@@ -25,7 +25,7 @@ duplication, we provide an ad hoc axiomatisation of the properties we need.
 
 @[expose] public section
 
-open Filter TopologicalSpace
+open Filter OrderDual TopologicalSpace
 open scoped Topology
 
 universe u v
@@ -67,7 +67,10 @@ theorem Filter.Tendsto.isCoboundedUnder_ge [NeBot f] (h : Tendsto u f (𝓝 a)) 
     f.IsCoboundedUnder (· ≥ ·) u :=
   h.isBoundedUnder_le.isCobounded_flip
 
-instance : BoundedGENhdsClass αᵒᵈ := ⟨@isBounded_le_nhds α _ _ _⟩
+instance : BoundedGENhdsClass αᵒᵈ :=
+  ⟨fun a => by
+    obtain ⟨b, hb⟩ := isBounded_le_nhds (ofDual a)
+    exact ⟨toDual b, by rwa [nhds_toDual, eventually_map]⟩⟩
 
 instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
   refine ⟨fun x ↦ ?_⟩
@@ -109,14 +112,24 @@ theorem Filter.Tendsto.isCoboundedUnder_le [NeBot f] (h : Tendsto u f (𝓝 a)) 
     f.IsCoboundedUnder (· ≤ ·) u :=
   h.isBoundedUnder_ge.isCobounded_flip
 
-instance : BoundedLENhdsClass αᵒᵈ := ⟨@isBounded_ge_nhds α _ _ _⟩
+instance : BoundedLENhdsClass αᵒᵈ :=
+  ⟨fun a => by
+    obtain ⟨b, hb⟩ := isBounded_ge_nhds (ofDual a)
+    exact ⟨toDual b, by rwa [nhds_toDual, eventually_map]⟩⟩
 
-instance Prod.instBoundedGENhdsClass : BoundedGENhdsClass (α × β) :=
-  ⟨(Prod.instBoundedLENhdsClass (α := αᵒᵈ) (β := βᵒᵈ)).isBounded_le_nhds⟩
+instance Prod.instBoundedGENhdsClass : BoundedGENhdsClass (α × β) := by
+  refine ⟨fun x ↦ ?_⟩
+  obtain ⟨a, ha⟩ := isBounded_ge_nhds x.1
+  obtain ⟨b, hb⟩ := isBounded_ge_nhds x.2
+  rw [← @Prod.mk.eta _ _ x, nhds_prod_eq]
+  exact ⟨(a, b), ha.prod_mk hb⟩
 
 instance Pi.instBoundedGENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
-    [∀ i, BoundedGENhdsClass (π i)] : BoundedGENhdsClass (∀ i, π i) :=
-  ⟨(Pi.instBoundedLENhdsClass (π := fun i ↦ (π i)ᵒᵈ)).isBounded_le_nhds⟩
+    [∀ i, BoundedGENhdsClass (π i)] : BoundedGENhdsClass (∀ i, π i) := by
+  refine ⟨fun x ↦ ?_⟩
+  rw [nhds_pi]
+  choose f hf using fun i ↦ isBounded_ge_nhds (x i)
+  exact ⟨f, eventually_pi hf⟩
 
 end BoundedGENhdsClass
 
@@ -139,7 +152,8 @@ instance (priority := 100) BoundedLENhdsClass.of_closedIciTopology [LinearOrder 
 -- See note [lower instance priority]
 instance (priority := 100) BoundedGENhdsClass.of_closedIicTopology [LinearOrder α]
     [TopologicalSpace α] [ClosedIicTopology α] : BoundedGENhdsClass α :=
-  inferInstanceAs <| BoundedGENhdsClass αᵒᵈᵒᵈ
+  ⟨fun a ↦ ((isBot_or_exists_lt a).elim fun h ↦ ⟨a, Eventually.of_forall h⟩) <|
+    Exists.imp fun _b ↦ eventually_ge_nhds⟩
 
 section LiminfLimsup
 
@@ -164,7 +178,13 @@ theorem limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
       | Or.inr ⟨_, h⟩ => ⟨a, (𝓝 a).sets_of_superset (gt_mem_nhds hba) h, hba⟩
 
 theorem limsInf_nhds (a : α) : limsInf (𝓝 a) = a :=
-  limsSup_nhds (α := αᵒᵈ) a
+  csSup_eq_of_forall_le_of_forall_lt_exists_gt (isBounded_ge_nhds a)
+    (fun a' (h : { n : α | a' ≤ n } ∈ 𝓝 a) ↦ show a' ≤ a from @mem_of_mem_nhds _ _ a _ h)
+    fun b (hba : b < a) ↦
+    show ∃ c, { n : α | c ≤ n } ∈ 𝓝 a ∧ b < c from
+      match dense_or_discrete b a with
+      | Or.inl ⟨c, hbc, hca⟩ => ⟨c, le_mem_nhds hca, hbc⟩
+      | Or.inr ⟨h, _⟩ => ⟨a, (𝓝 a).sets_of_superset (lt_mem_nhds hba) h, hba⟩
 
 /-- If a filter is converging, its limsup coincides with its limit. -/
 theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsInf = a :=
@@ -181,7 +201,16 @@ theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝
 
 /-- If a filter is converging, its liminf coincides with its limit. -/
 theorem limsSup_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsSup = a :=
-  limsInf_eq_of_le_nhds (α := αᵒᵈ) h
+  have hb_ge : IsBounded (· ≥ ·) f := (isBounded_ge_nhds a).mono h
+  have hb_le : IsBounded (· ≤ ·) f := (isBounded_le_nhds a).mono h
+  le_antisymm
+    (calc
+      f.limsSup ≤ (𝓝 a).limsSup := limsSup_le_limsSup_of_le h hb_ge.isCobounded_flip (isBounded_le_nhds a)
+      _ = a := limsSup_nhds a)
+    (calc
+      a = (𝓝 a).limsInf := (limsInf_nhds a).symm
+      _ ≤ f.limsInf := limsInf_le_limsInf_of_le h (isBounded_ge_nhds a) hb_le.isCobounded_flip
+      _ ≤ f.limsSup := limsInf_le_limsSup hb_le hb_ge)
 
 /-- If a function has a limit, then its limsup coincides with its limit. -/
 theorem Filter.Tendsto.limsup_eq {f : Filter β} {u : β → α} {a : α} [NeBot f]
@@ -254,8 +283,22 @@ theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBounde
     exact hx hy
 
 theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBoundedDefault) :
-    ∀ᶠ b in f, f.liminf u ≤ u b :=
-  eventually_le_limsup (α := αᵒᵈ) hf
+    ∀ᶠ b in f, f.liminf u ≤ u b := by
+  obtain ha | ha := isBot_or_exists_lt (f.liminf u)
+  · exact Eventually.of_forall fun _ => ha _
+  by_cases H : IsLUB (Set.Iio (f.liminf u)) (f.liminf u)
+  · obtain ⟨v, -, -, hva, hv⟩ := H.exists_seq_monotone_tendsto ha
+    have := fun n => eventually_lt_of_lt_liminf (hv n) hf
+    exact
+      (eventually_countable_forall.2 this).mono fun b hb =>
+        le_of_tendsto hva <| Eventually.of_forall fun n => (hb _).le
+  · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, b < f.liminf u → b ≤ x) ∧ x < f.liminf u := by
+      simp only [IsLUB, IsLeast, upperBounds, lowerBounds, Set.mem_Iio, Set.mem_setOf_eq,
+        not_and, not_forall, not_le, exists_prop] at H
+      exact H fun x => le_of_lt
+    filter_upwards [eventually_lt_of_lt_liminf xa hf] with y hy
+    contrapose! hy
+    exact hx hy
 
 end ConditionallyCompleteLinearOrder
 
@@ -275,7 +318,12 @@ theorem limsup_eq_bot : f.limsup u = ⊥ ↔ u =ᶠ[f] ⊥ :=
 
 @[simp]
 theorem liminf_eq_top : f.liminf u = ⊤ ↔ u =ᶠ[f] ⊤ :=
-  limsup_eq_bot (α := αᵒᵈ)
+  ⟨fun h =>
+    (EventuallyLE.trans (Eventually.of_forall fun _ => h.ge) eventually_liminf_le).mono fun _ hx =>
+      le_antisymm le_top hx,
+    fun h => by
+    rw [liminf_congr h]
+    exact liminf_const_top⟩
 
 end CompleteLinearOrder
 
@@ -353,8 +401,44 @@ theorem Antitone.map_limsup_of_continuousAt {f : R → S} (f_decr : Antitone f) 
 theorem Antitone.map_limsInf_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
     (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf)
     (cobdd : F.IsCobounded (· ≥ ·) := by isBoundedDefault)
-    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.limsup f :=
-  Antitone.map_limsSup_of_continuousAt (R := Rᵒᵈ) (S := Sᵒᵈ) f_decr.dual f_cont bdd_below cobdd
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.limsup f := by
+  apply le_antisymm
+  · by_cases! h' : ∃ c, F.limsInf < c ∧ Set.Ioo F.limsInf c = ∅
+    · rcases h' with ⟨c, c_lt, hc⟩
+      have B : ∃ᶠ n in F, n ≤ F.limsInf := by
+        apply (frequently_lt_of_limsInf_lt cobdd c_lt).mono
+        intro x hx
+        by_contra!
+        have : (Set.Ioo F.limsInf c).Nonempty := ⟨x, ⟨this, hx⟩⟩
+        simp only [hc, Set.not_nonempty_empty] at this
+      apply le_limsup_of_frequently_le _ (bdd_below.isBoundedUnder (fun _ _ h => f_decr h))
+      exact B.mono fun x hx ↦ f_decr hx
+    by_contra! H
+    have not_top : ¬ IsTop F.limsInf := fun maybe_top ↦
+      lt_irrefl (F.limsup f) <| lt_of_lt_of_le H
+        (le_limsup_of_frequently_le (Frequently.of_forall (fun r ↦ f_decr (maybe_top r)))
+          (bdd_below.isBoundedUnder (fun _ _ h => f_decr h)))
+    obtain ⟨l, l_lt, h'l⟩ :
+        ∃ l, F.limsInf < l ∧ Set.Ico F.limsInf l ⊆ { x : R | F.limsup f < f x } := by
+      apply exists_Ico_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).1 _ H)
+      simpa [IsTop] using not_top
+    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo F.limsInf l).Nonempty := by
+      contrapose! h'
+      exact ⟨l, l_lt, h'⟩
+    have B : f m ≤ F.limsup f := by
+      apply le_limsup_of_frequently_le _ _
+      · apply (frequently_lt_of_limsInf_lt cobdd l_m).mono
+        exact fun x hx ↦ f_decr hx.le
+      · exact bdd_below.isBoundedUnder (fun _ _ h => f_decr h)
+    have I : F.limsup f < f m := h'l ⟨l_m.le, m_lt⟩
+    exact lt_irrefl _ (I.trans_le B)
+  · rw [limsInf, f_decr.map_csSup_of_continuousAt f_cont bdd_below cobdd]
+    apply le_csInf (bdd_below.recOn fun x hx ↦ ⟨f x, Set.mem_image_of_mem f hx⟩)
+    rintro _ ⟨a, ha, rfl⟩
+    exact csInf_le
+      (by simpa only [BddBelow, lowerBounds]
+        using Antitone.isCoboundedUnder_le_of_isCobounded f_decr cobdd)
+      (F.sets_of_superset ha fun x hx ↦ f_decr hx)
 
 /-- A continuous antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.liminf` to the `Filter.limsup` of the images (if the filter is bounded from below and
@@ -372,8 +456,44 @@ theorem Antitone.map_liminf_of_continuousAt {f : R → S} (f_decr : Antitone f) 
 theorem Monotone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
     (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup)
     (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
-    (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) : f F.limsSup = F.limsup f :=
-  Antitone.map_limsSup_of_continuousAt (S := Sᵒᵈ) f_incr f_cont bdd_above cobdd
+    (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) : f F.limsSup = F.limsup f := by
+  apply le_antisymm
+  · by_cases! h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
+    · rcases h' with ⟨c, c_lt, hc⟩
+      have B : ∃ᶠ n in F, F.limsSup ≤ n := by
+        apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
+        intro x hx
+        by_contra!
+        have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
+        simp only [hc, Set.not_nonempty_empty] at this
+      apply le_limsup_of_frequently_le _ (bdd_above.isBoundedUnder f_incr)
+      exact B.mono fun x hx ↦ f_incr hx
+    by_contra! H
+    have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
+      lt_irrefl (f F.limsSup) <| lt_of_le_of_lt
+        (le_limsup_of_frequently_le (Frequently.of_forall (fun r ↦ f_incr (maybe_bot r)))
+          (bdd_above.isBoundedUnder f_incr)) H
+    obtain ⟨l, l_lt, h'l⟩ :
+        ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | F.limsup f < f x } := by
+      apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).1 _ H)
+      simpa [IsBot] using not_bot
+    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
+      contrapose! h'
+      exact ⟨l, l_lt, h'⟩
+    have B : f m ≤ F.limsup f := by
+      apply le_limsup_of_frequently_le _ _
+      · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
+        exact fun x hx ↦ f_incr hx.le
+      · exact bdd_above.isBoundedUnder f_incr
+    have I : F.limsup f < f m := h'l ⟨l_m, m_lt.le⟩
+    exact lt_irrefl _ (I.trans_le B)
+  · rw [limsSup, f_incr.map_csInf_of_continuousAt f_cont bdd_above cobdd]
+    apply le_csInf (bdd_above.recOn fun x hx ↦ ⟨f x, Set.mem_image_of_mem f hx⟩)
+    rintro _ ⟨a, ha, rfl⟩
+    exact csInf_le
+      (by simpa only [BddBelow, lowerBounds]
+        using Monotone.isCoboundedUnder_le_of_isCobounded f_incr cobdd)
+      (F.sets_of_superset ha fun x hx ↦ f_incr hx)
 
 /-- A continuous monotone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsup` to the `Filter.limsup` of the images (if the filter is bounded from above and
@@ -391,8 +511,44 @@ theorem Monotone.map_limsup_of_continuousAt {f : R → S} (f_incr : Monotone f) 
 theorem Monotone.map_limsInf_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
     (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf)
     (cobdd : F.IsCobounded (· ≥ ·) := by isBoundedDefault)
-    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.liminf f :=
-  Antitone.map_limsSup_of_continuousAt (R := Rᵒᵈ) f_incr.dual f_cont bdd_below cobdd
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.liminf f := by
+  apply le_antisymm
+  · rw [limsInf, f_incr.map_csSup_of_continuousAt f_cont bdd_below cobdd]
+    apply csSup_le (bdd_below.recOn fun x hx ↦ ⟨f x, Set.mem_image_of_mem f hx⟩)
+    rintro _ ⟨a, ha, rfl⟩
+    exact le_csSup
+      (by simpa only [BddAbove, upperBounds]
+        using Monotone.isCoboundedUnder_ge_of_isCobounded f_incr cobdd)
+      (F.sets_of_superset ha fun x hx ↦ f_incr hx)
+  · by_cases! h' : ∃ c, F.limsInf < c ∧ Set.Ioo F.limsInf c = ∅
+    · rcases h' with ⟨c, c_lt, hc⟩
+      have B : ∃ᶠ n in F, n ≤ F.limsInf := by
+        apply (frequently_lt_of_limsInf_lt cobdd c_lt).mono
+        intro x hx
+        by_contra!
+        have : (Set.Ioo F.limsInf c).Nonempty := ⟨x, ⟨this, hx⟩⟩
+        simp only [hc, Set.not_nonempty_empty] at this
+      apply liminf_le_of_frequently_le _ (bdd_below.isBoundedUnder (fun _ _ h => f_incr h))
+      exact B.mono fun x hx ↦ f_incr hx
+    by_contra! H
+    have not_top : ¬ IsTop F.limsInf := fun maybe_top ↦
+      lt_irrefl (F.liminf f) <| lt_of_le_of_lt
+        (liminf_le_of_frequently_le (Frequently.of_forall (fun r ↦ f_incr (maybe_top r)))
+          (bdd_below.isBoundedUnder (fun _ _ h => f_incr h))) H
+    obtain ⟨l, l_lt, h'l⟩ :
+        ∃ l, F.limsInf < l ∧ Set.Ico F.limsInf l ⊆ { x : R | f x < F.liminf f } := by
+      apply exists_Ico_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
+      simpa [IsTop] using not_top
+    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo F.limsInf l).Nonempty := by
+      contrapose! h'
+      exact ⟨l, l_lt, h'⟩
+    have B : F.liminf f ≤ f m := by
+      apply liminf_le_of_frequently_le _ _
+      · apply (frequently_lt_of_limsInf_lt cobdd l_m).mono
+        exact fun x hx ↦ f_incr hx.le
+      · exact bdd_below.isBoundedUnder (fun _ _ h => f_incr h)
+    have I : f m < F.liminf f := h'l ⟨l_m.le, m_lt⟩
+    exact lt_irrefl _ (B.trans_lt I)
 
 /-- A continuous monotone function between (conditionally) complete linear ordered spaces sends a
 `Filter.liminf` to the `Filter.liminf` of the images (if the filter is bounded from below and

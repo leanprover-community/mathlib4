@@ -451,12 +451,13 @@ lemma spec_le_iff (R : CommRingCat) (p q : Spec R) : p ≤ q ↔ q.asIdeal ≤ p
   aesop (add simp PrimeSpectrum.le_iff_specializes)
 
 /--
-One should bear this equality in mind when breaking the `Spec R/ PrimeSpectrum R` abstraction
-boundary, since these instances are not definitionally equal.
+One should bear this in mind when breaking the `Spec R/ PrimeSpectrum R` abstraction
+boundary: the preorder on `Spec R` (specialization order) is the dual of the preorder on
+`PrimeSpectrum R` (ideal inclusion order).
 -/
-example (R : CommRingCat) :
-    inferInstance (α := Preorder (Spec R)) = inferInstance (α := Preorder (PrimeSpectrum R)ᵒᵈ) := by
-  aesop (add simp spec_le_iff)
+example (R : CommRingCat) (p q : Spec R) :
+    p ≤ q ↔ (OrderDual.toDual p : (PrimeSpectrum ↑R)ᵒᵈ) ≤ OrderDual.toDual q := by
+  simp [spec_le_iff, PrimeSpectrum.asIdeal_le_asIdeal]
 
 end instances
 

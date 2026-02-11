@@ -1230,6 +1230,10 @@ instance : PseudoMetricSpace αᵒᵈ where
   dist_triangle x y z := dist_triangle (ofDual x) (ofDual y) (ofDual z)
   edist x y := edist (ofDual x) (ofDual y)
   edist_dist x y := edist_dist (ofDual x) (ofDual y)
+  toUniformSpace := UniformSpace.comap ofDual ‹PseudoMetricSpace α›.toUniformSpace
+  uniformity_dist := by
+    rw [uniformity_comap ofDual]
+    exact (uniformity_basis_dist.comap _).eq_biInf
 
 section
 

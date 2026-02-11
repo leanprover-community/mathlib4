@@ -146,4 +146,13 @@ end ProperSpace
 
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ where
+  isCompact_closedBall x r := by
+    have hind : Topology.IsInducing (OrderDual.ofDual : Xᵒᵈ → X) := ⟨rfl⟩
+    rw [hind.isCompact_iff]
+    convert isCompact_closedBall (OrderDual.ofDual x) r using 1
+    ext z
+    simp only [Set.mem_image, Metric.mem_closedBall, OrderDual.exists]
+    constructor
+    · rintro ⟨a, ha, rfl⟩; exact ha
+    · intro h; exact ⟨z, h, rfl⟩

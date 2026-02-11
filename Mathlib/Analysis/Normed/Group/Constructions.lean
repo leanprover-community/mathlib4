@@ -181,7 +181,7 @@ open OrderDual
 section Norm
 variable [Norm E]
 
-instance OrderDual.toNorm : Norm Eᵒᵈ := ‹Norm E›
+instance OrderDual.toNorm : Norm Eᵒᵈ where norm x := ‖ofDual x‖
 
 @[simp] lemma norm_toDual (x : E) : ‖toDual x‖ = ‖x‖ := rfl
 
@@ -192,7 +192,7 @@ end Norm
 section NNNorm
 variable [NNNorm E]
 
-instance OrderDual.toNNNorm : NNNorm Eᵒᵈ := ‹NNNorm E›
+instance OrderDual.toNNNorm : NNNorm Eᵒᵈ where nnnorm x := ‖ofDual x‖₊
 
 @[simp] lemma nnnorm_toDual (x : E) : ‖toDual x‖₊ = ‖x‖₊ := rfl
 
@@ -204,22 +204,28 @@ namespace OrderDual
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) seminormedGroup [SeminormedGroup E] : SeminormedGroup Eᵒᵈ :=
-  ‹SeminormedGroup E›
+instance (priority := 100) seminormedGroup [SeminormedGroup E] : SeminormedGroup Eᵒᵈ where
+  dist_eq x y := dist_eq_norm_div (ofDual x) (ofDual y)
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup Eᵒᵈ :=
-  ‹SeminormedCommGroup E›
+instance (priority := 100) seminormedCommGroup [SeminormedCommGroup E] :
+    SeminormedCommGroup Eᵒᵈ :=
+  { OrderDual.seminormedGroup with
+    mul_comm := mul_comm }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ := ‹NormedGroup E›
+instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ :=
+  { OrderDual.seminormedGroup with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) normedCommGroup [NormedCommGroup E] : NormedCommGroup Eᵒᵈ :=
-  ‹NormedCommGroup E›
+  { OrderDual.seminormedGroup with
+    mul_comm := mul_comm
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end OrderDual
 end OrderDual
