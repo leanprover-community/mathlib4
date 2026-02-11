@@ -878,6 +878,14 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 
 end Sum
 
+@[deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead,
+or MulEquiv.ofUnique (FreeGroup Empty) Unit for the multiplicative version"
+(since := "2026-02-11")]
+def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
+  toFun _ := ()
+  invFun _ := 1
+  left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
+
 -- TODO: find a good way to fix the linter
 -- simp applies to two goals at once, with different simp sets
 set_option linter.flexible false in
