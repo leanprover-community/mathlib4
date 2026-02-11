@@ -52,6 +52,7 @@ def irreducibleComponentIdeal : X.IdealSheafData where
 noncomputable def irreducibleComponent : Scheme :=
   (X.irreducibleComponentIdeal Z hZ).subscheme
 
+/-- The inclusion from an irreducible component of a Noetherian scheme. -/
 noncomputable def irreducibleComponentι : X.irreducibleComponent Z hZ ⟶ X :=
   (X.irreducibleComponentIdeal Z hZ).subschemeι
 
