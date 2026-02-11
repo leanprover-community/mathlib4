@@ -44,15 +44,22 @@ theorem exists_integer_polynomial_multiple (p : S[X]) :
   rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
   exact h
 
+theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
+    ∃ (b : M) (q : R[X]), q.map (algebraMap R S) = (b : R) • p ∧ q.support ⊆ p.support := by
+  obtain ⟨b, hq⟩ := exists_integer_polynomial_multiple M p
+  obtain ⟨q', h₁, h₂⟩ := mem_lifts_and_support_eq (f := (algebraMap R S)) hq
+  exact ⟨b, q', h₁, h₂ ▸ support_smul b p⟩
+
 /-- `integerNormalization p` normalizes `p` to have integer coefficients
 by clearing the denominators -/
 noncomputable def integerNormalization (p : S[X]) : R[X] :=
-  (exists_integer_polynomial_multiple M p).choose_spec.choose
+  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.choose
 
 theorem integerNormalization_spec (p : S[X]) :
-    ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
-  ⟨(exists_integer_polynomial_multiple M p).choose,
-  (exists_integer_polynomial_multiple M p).choose_spec.choose_spec⟩
+    ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p ∧
+      (integerNormalization M p).support ⊆ p.support :=
+  ⟨(exists_integer_polynomial_multiple_and_support_subset M p).choose,
+  (exists_integer_polynomial_multiple_and_support_subset M p).choose_spec.choose_spec⟩
 
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/
@@ -61,18 +68,14 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
   (integerNormalization M p).coeff i
 
 set_option linter.deprecated false in
-@[deprecated "deprecated without replacement" (since := "2026-02-05")]
+@[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
-  obtain ⟨b, hb⟩ := integerNormalization_spec M p
-  have := congr($(hb).coeff i)
-  simp [h] at this
-  exact?
-  sorry
-
+  obtain ⟨b, _, hb⟩ := integerNormalization_spec M p
+  exact notMem_support_iff.mp <| Finset.not_mem_subset hb <| notMem_support_iff.mpr h
 
 set_option linter.deprecated false in
-@[deprecated "deprecated without replacement" (since := "2026-02-05")]
+@[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
@@ -80,13 +83,16 @@ theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
   exact coeffIntegerNormalization_of_coeff_zero M p i h
 
 set_option linter.deprecated false in
-@[deprecated "deprecated without replacement" (since := "2026-02-05")]
+@[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
   rfl
 
-@[deprecated (since := "2026-02-05")]
-alias integerNormalization_map_to_map := integerNormalization_spec
+@[deprecated integerNormalization_spec (since := "2026-02-05")]
+theorem integerNormalization_map_to_map (p : S[X]) :
+    ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
+  obtain ⟨b, hb, _⟩ := integerNormalization_spec M p
+  exact ⟨b, hb⟩
 
 variable {R' : Type*} [CommRing R']
 
