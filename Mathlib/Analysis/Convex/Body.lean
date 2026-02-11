@@ -159,16 +159,7 @@ noncomputable instance : Module ℝ≥0 (ConvexBody V) where
 
 set_option backward.isDefEq.respectTransparency false in
 theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
-    a • K ≤ b • K := by
-  rw [← SetLike.coe_subset_coe, coe_smul', coe_smul']
-  obtain rfl | ha := eq_zero_or_pos a
-  · rw [Set.zero_smul_set K.nonempty, Set.zero_subset]
-    exact Set.mem_smul_set.mpr ⟨0, h_zero, smul_zero _⟩
-  · intro x hx
-    obtain ⟨y, hy, rfl⟩ := Set.mem_smul_set.mp hx
-    rw [← Set.mem_inv_smul_set_iff₀ ha.ne', smul_smul]
-    refine Convex.mem_smul_of_zero_mem K.convex h_zero hy (?_ : 1 ≤ a⁻¹ * b)
-    rwa [le_inv_mul_iff₀ ha, mul_one]
+    a • K ≤ b • K := K.convex.smul_mono_of_zero_mem h_zero (by simp) h
 
 end TVS
 
