@@ -173,7 +173,7 @@ def dualEquiv : PartOrdEmb ≌ PartOrdEmb where
   functor := dual
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| (OrderIso.dualDual X).symm
 
 end PartOrdEmb
 

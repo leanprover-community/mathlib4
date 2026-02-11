@@ -293,7 +293,11 @@ theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Antitone f ↔ AntitoneOn f (Icc l (l + a)) :=
-  monotone_iff_Icc (H := Hᵒᵈ) ha l
+  ⟨(Antitone.antitoneOn · _), fun hf ↦ antitone_iff_forall_lt.2 <|
+    haveI : CovariantClass H H (fun x y ↦ y + x) (· ≥ ·) :=
+      ⟨fun c _ _ h ↦ add_le_add_right h c⟩
+    AddConstMapClass.rel_map_of_Icc (R := (· ≥ ·)) ha
+      fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
 theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
@@ -305,7 +309,10 @@ theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid 
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictAnti f ↔ StrictAntiOn f (Icc l (l + a)) :=
-  strictMono_iff_Icc (H := Hᵒᵈ) ha l
+  ⟨(StrictAnti.strictAntiOn · _),
+    haveI : CovariantClass H H (fun x y ↦ y + x) (· > ·) :=
+      ⟨fun c _ _ h ↦ add_lt_add_right h c⟩
+    AddConstMapClass.rel_map_of_Icc (R := (· > ·)) ha⟩
 
 end AddConstMapClass
 

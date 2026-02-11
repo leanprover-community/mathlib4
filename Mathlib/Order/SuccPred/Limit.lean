@@ -426,8 +426,9 @@ section IsPredArchimedean
 
 variable [IsPredArchimedean α] [NoMinOrder α]
 
-theorem IsPredPrelimit.isMax_of_noMin (h : IsPredPrelimit a) : IsMax a :=
-  h.dual.isMin_of_noMax
+theorem IsPredPrelimit.isMax_of_noMin (h : IsPredPrelimit a) : IsMax a := by
+  intro b hab
+  exact h.dual.isMin_of_noMax (show toDual b ≤ toDual a from hab)
 
 @[simp]
 theorem isPredPrelimit_iff_of_noMin : IsPredPrelimit a ↔ IsMax a :=
@@ -453,8 +454,9 @@ section IsPredArchimedean
 
 variable [IsPredArchimedean α]
 
-protected theorem IsPredPrelimit.isMax (h : IsPredPrelimit a) : IsMax a :=
-  h.dual.isMin
+protected theorem IsPredPrelimit.isMax (h : IsPredPrelimit a) : IsMax a := by
+  intro b hab
+  exact h.dual.isMin (show toDual b ≤ toDual a from hab)
 
 @[simp]
 theorem isPredPrelimit_iff : IsPredPrelimit a ↔ IsMax a :=
@@ -475,24 +477,31 @@ section LinearOrder
 variable [LinearOrder α]
 
 @[to_dual existing]
-theorem IsPredPrelimit.le_iff_forall_le (h : IsPredPrelimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
-  h.dual.le_iff_forall_le
+theorem IsPredPrelimit.le_iff_forall_le (h : IsPredPrelimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c := by
+  use fun ha c hc ↦ ha.trans hc.le
+  intro H
+  by_contra! ha
+  exact h b ⟨ha, fun c hac hcb ↦ not_lt.mpr (H hac) hcb⟩
 
 @[to_dual existing]
 theorem IsPredLimit.le_iff_forall_le (h : IsPredLimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
-  h.dual.le_iff_forall_le
+  h.isPredPrelimit.le_iff_forall_le
 
 @[to_dual existing]
-theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
-  h.dual.lt_iff_exists_lt
+theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a := by
+  rw [← not_iff_not]
+  simp [h.le_iff_forall_le]
 
 @[to_dual existing]
 theorem IsPredLimit.lt_iff_exists_lt (h : IsPredLimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
-  h.dual.lt_iff_exists_lt
+  h.isPredPrelimit.lt_iff_exists_lt
 
 lemma _root_.IsGLB.isPredPrelimit_of_notMem {s : Set α} (hs : IsGLB s a) (ha : a ∉ s) :
     IsPredPrelimit a := by
-  simpa using (IsGLB.dual hs).isSuccPrelimit_of_notMem ha
+  intro b hb
+  obtain ⟨c, hc, hac, hcb⟩ := hs.exists_between hb.lt
+  obtain rfl := hac.antisymm (not_lt.mp fun hac' => hb.2 hac' hcb)
+  contradiction
 
 lemma _root_.IsGLB.mem_of_not_isPredPrelimit {s : Set α} (hs : IsGLB s a) (ha : ¬IsPredPrelimit a) :
     a ∈ s :=
@@ -500,20 +509,30 @@ lemma _root_.IsGLB.mem_of_not_isPredPrelimit {s : Set α} (hs : IsGLB s a) (ha :
 
 lemma _root_.IsGLB.isPredLimit_of_notMem {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : a ∉ s) : IsPredLimit a := by
-  simpa using (IsGLB.dual hs).isSuccLimit_of_notMem hs' ha
+  refine ⟨?_, hs.isPredPrelimit_of_notMem ha⟩
+  obtain ⟨b, hb⟩ := hs'
+  obtain rfl | hb := (hs.1 hb).eq_or_lt
+  · contradiction
+  · exact hb.not_isMax
 
 lemma _root_.IsGLB.mem_of_not_isPredLimit {s : Set α} (hs : IsGLB s a) (hs' : s.Nonempty)
     (ha : ¬IsPredLimit a) : a ∈ s :=
   ha.imp_symm <| hs.isPredLimit_of_notMem hs'
 
-theorem IsPredPrelimit.isGLB_Ioi (ha : IsPredPrelimit a) : IsGLB (Ioi a) a :=
-  ha.dual.isLUB_Iio
+theorem IsPredPrelimit.isGLB_Ioi (ha : IsPredPrelimit a) : IsGLB (Ioi a) a := by
+  refine ⟨fun _ ↦ le_of_lt, fun b hb ↦ ?_⟩
+  by_contra! hab
+  obtain ⟨c, hac, hcb⟩ := ha.lt_iff_exists_lt.1 hab
+  exact not_le.mpr hcb (hb hac)
 
 theorem IsPredLimit.isGLB_Ioi (ha : IsPredLimit a) : IsGLB (Ioi a) a :=
-  ha.dual.isLUB_Iio
+  ha.isPredPrelimit.isGLB_Ioi
 
 theorem isGLB_Ioi_iff_isPredPrelimit : IsGLB (Ioi a) a ↔ IsPredPrelimit a := by
-  simpa using isLUB_Iio_iff_isSuccPrelimit (a := toDual a)
+  refine ⟨fun ha b hb ↦ ?_, IsPredPrelimit.isGLB_Ioi⟩
+  rw [hb.Ioi_eq] at ha
+  have : a = b := le_antisymm (ha.1 le_rfl) (ha.2 fun _ hx ↦ hx)
+  exact absurd this hb.lt.ne
 
 end LinearOrder
 

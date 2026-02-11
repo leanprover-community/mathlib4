@@ -53,8 +53,12 @@ def IsPFilter [Preorder P] (F : Set P) : Prop :=
 
 theorem IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
     (directed : DirectedOn (· ≥ ·) F) (mem_of_le : ∀ {x y : P}, x ≤ y → x ∈ F → y ∈ F) :
-    IsPFilter F :=
-  ⟨fun _ _ _ _ => mem_of_le ‹_› ‹_›, nonempty, directed⟩
+    IsPFilter F := by
+  refine ⟨fun x y h hb => mem_of_le h hb, ?_, fun a ha b hb => ?_⟩
+  · obtain ⟨a, ha⟩ := nonempty
+    exact ⟨toDual a, ha⟩
+  · obtain ⟨c, hc, hca, hcb⟩ := directed (ofDual a) ha (ofDual b) hb
+    exact ⟨toDual c, hc, hca, hcb⟩
 
 /-- Create an element of type `Order.PFilter` from a set satisfying the predicate
 `Order.IsPFilter`. -/
@@ -72,17 +76,41 @@ instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
 /-- A filter on `P` is a subset of `P`. -/
 instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
-  coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
+  coe_injective' := by
+    intro ⟨d₁⟩ ⟨d₂⟩ h
+    congr 1; apply Ideal.ext; ext x
+    change x ∈ d₁.carrier ↔ x ∈ d₂.carrier
+    have := Set.ext_iff.mp h (ofDual x)
+    simp only [Set.mem_preimage, toDual_ofDual] at this
+    exact this
 
 instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P) P
 
-theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
+@[simp] theorem mem_dual {F : PFilter P} {x : P} : toDual x ∈ F.dual ↔ x ∈ F := by
+  cases F; exact Iff.rfl
 
-protected theorem nonempty : (F : Set P).Nonempty := F.dual.nonempty
+theorem isPFilter : IsPFilter (F : Set P) := by
+  have h := F.dual.isIdeal
+  refine ⟨fun x y hxy hy => ?_, ?_, fun a ha b hb => ?_⟩
+  · exact h.1 hxy hy
+  · obtain ⟨a, ha⟩ := h.2.1
+    exact ⟨a, ha⟩
+  · obtain ⟨c, hc, hca, hcb⟩ := h.2.2 a ha b hb
+    exact ⟨c, hc, hca, hcb⟩
 
-theorem directed : DirectedOn (· ≥ ·) (F : Set P) := F.dual.directed
+protected theorem nonempty : (F : Set P).Nonempty := by
+  obtain ⟨a, ha⟩ := F.dual.nonempty
+  exact ⟨ofDual a, ha⟩
 
-theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h => F.dual.lower h
+theorem directed : DirectedOn (· ≥ ·) (F : Set P) := by
+  intro a ha b hb
+  have hd := F.dual.directed
+  obtain ⟨c, hc, hca, hcb⟩ := hd (toDual a) ha (toDual b) hb
+  exact ⟨ofDual c, hc, hca, hcb⟩
+
+theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h hx => by
+  rw [← mem_dual] at hx ⊢
+  exact F.dual.lower h hx
 
 /-- Two filters are equal when their underlying sets are equal. -/
 @[ext]
@@ -101,10 +129,13 @@ theorem mem_mk (x : P) (I : Ideal Pᵒᵈ) : x ∈ (⟨I⟩ : PFilter P) ↔ toD
   Iff.rfl
 
 @[simp]
-theorem principal_le_iff {F : PFilter P} : principal x ≤ F ↔ x ∈ F :=
-  Ideal.principal_le_iff (x := toDual x)
+theorem principal_le_iff {F : PFilter P} : principal x ≤ F ↔ x ∈ F := by
+  constructor
+  · intro h; exact h (mem_principal.mpr le_rfl)
+  · intro hx y hy; exact mem_of_le (mem_principal.mp hy) hx
 
-@[simp] theorem mem_principal : x ∈ principal y ↔ y ≤ x := Iff.rfl
+@[simp] theorem mem_principal : x ∈ principal y ↔ y ≤ x :=
+  Ideal.mem_principal
 
 theorem principal_le_principal_iff {p q : P} : principal q ≤ principal p ↔ p ≤ q := by simp
 
@@ -119,31 +150,39 @@ section OrderTop
 variable [Preorder P] [OrderTop P] {F : PFilter P}
 
 /-- A specific witness of `pfilter.nonempty` when `P` has a top element. -/
-@[simp] theorem top_mem : ⊤ ∈ F := Ideal.bot_mem _
+@[simp] theorem top_mem : ⊤ ∈ F := by
+  rw [← mem_dual]
+  exact Ideal.bot_mem _
 
 /-- There is a bottom filter when `P` has a top element. -/
 instance : OrderBot (PFilter P) where
   bot := ⟨⊥⟩
-  bot_le F := (bot_le : ⊥ ≤ F.dual)
+  bot_le F x hx := by
+    rw [← mem_dual] at hx ⊢
+    exact bot_le hx
 
 end OrderTop
 
 /-- There is a top filter when `P` has a bottom element. -/
 instance {P} [Preorder P] [OrderBot P] : OrderTop (PFilter P) where
   top := ⟨⊤⟩
-  le_top F := (le_top : F.dual ≤ ⊤)
+  le_top F x hx := by
+    rw [← mem_dual] at hx ⊢
+    exact le_top hx
 
 section SemilatticeInf
 
 variable [SemilatticeInf P] {x y : P} {F : PFilter P}
 
 /-- A specific witness of `pfilter.directed` when `P` has meets. -/
-theorem inf_mem (hx : x ∈ F) (hy : y ∈ F) : x ⊓ y ∈ F :=
-  Ideal.sup_mem hx hy
+theorem inf_mem (hx : x ∈ F) (hy : y ∈ F) : x ⊓ y ∈ F := by
+  rw [← mem_dual] at hx hy ⊢
+  exact Ideal.sup_mem hx hy
 
 @[simp]
-theorem inf_mem_iff : x ⊓ y ∈ F ↔ x ∈ F ∧ y ∈ F :=
-  Ideal.sup_mem_iff
+theorem inf_mem_iff : x ⊓ y ∈ F ↔ x ∈ F ∧ y ∈ F := by
+  simp only [← mem_dual]
+  exact Ideal.sup_mem_iff
 
 end SemilatticeInf
 

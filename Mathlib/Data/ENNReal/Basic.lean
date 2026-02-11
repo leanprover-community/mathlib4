@@ -437,11 +437,10 @@ theorem iInf_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
     ⨅ (x) (_ : x ≠ ∞), f x = ⨅ x : ℝ≥0, f x := by rw [iInf_subtype', cinfi_ne_top]
 
 theorem csupr_ne_top [SupSet α] (f : ℝ≥0∞ → α) : ⨆ x : { x // x ≠ ∞ }, f x = ⨆ x : ℝ≥0, f x :=
-  @cinfi_ne_top αᵒᵈ _ _
+  Eq.symm <| neTopEquivNNReal.symm.surjective.iSup_congr _ fun _ => rfl
 
 theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
-    ⨆ (x) (_ : x ≠ ∞), f x = ⨆ x : ℝ≥0, f x :=
-  @iInf_ne_top αᵒᵈ _ _
+    ⨆ (x) (_ : x ≠ ∞), f x = ⨆ x : ℝ≥0, f x := by rw [iSup_subtype', csupr_ne_top]
 
 theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
@@ -449,7 +448,7 @@ theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
 
 theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
-  @iInf_ennreal αᵒᵈ _ _
+  (iSup_option f).trans (sup_comm _ _)
 
 /-- Coercion `ℝ≥0 → ℝ≥0∞` as a `RingHom`. -/
 def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where

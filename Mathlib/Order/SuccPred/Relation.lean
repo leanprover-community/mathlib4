@@ -90,26 +90,37 @@ variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
 /-- For `m ≤ n`, `(n, m)` is in the reflexive-transitive closure of `~` if `i ~ pred i`
   for all `i` between `n` and `m`. -/
 theorem reflTransGen_of_pred_of_ge (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ioc m n, r i (pred i))
-    (hnm : m ≤ n) : ReflTransGen r n m :=
-  reflTransGen_of_succ_of_le (α := αᵒᵈ) r (fun x hx => h x ⟨hx.2, hx.1⟩) hnm
+    (hnm : m ≤ n) : ReflTransGen r n m := by
+  revert h; refine Pred.rec ?_ ?_ hnm
+  · intro _
+    exact ReflTransGen.refl
+  · intro k hkn ih h
+    have : ReflTransGen r n k :=
+      ih fun i hi => h i ⟨(pred_le k).trans_lt hi.1, hi.2⟩
+    rcases (pred_le k).eq_or_lt with hk | hk
+    · rwa [hk]
+    exact this.tail (h k ⟨hk, hkn⟩)
 
 /-- For `n ≤ m`, `(n, m)` is in the reflexive-transitive closure of `~` if `pred i ~ i`
   for all `i` between `n` and `m`. -/
 theorem reflTransGen_of_pred_of_le (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ioc n m, r (pred i) i)
-    (hmn : n ≤ m) : ReflTransGen r n m :=
-  reflTransGen_of_succ_of_ge (α := αᵒᵈ) r (fun x hx => h x ⟨hx.2, hx.1⟩) hmn
+    (hmn : n ≤ m) : ReflTransGen r n m := by
+  rw [← reflTransGen_swap]
+  exact reflTransGen_of_pred_of_ge (swap r) h hmn
 
 /-- For `m < n`, `(n, m)` is in the transitive closure of a relation `~` for `n ≠ m` if `i ~ pred i`
   for all `i` between `n` and `m`. -/
 theorem transGen_of_pred_of_gt (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ioc m n, r i (pred i))
     (hnm : m < n) : TransGen r n m :=
-  transGen_of_succ_of_lt (α := αᵒᵈ) r (fun x hx => h x ⟨hx.2, hx.1⟩) hnm
+  (reflTransGen_iff_eq_or_transGen.mp <| reflTransGen_of_pred_of_ge r h hnm.le).resolve_left
+    hnm.ne
 
 /-- For `n < m`, `(n, m)` is in the transitive closure of a relation `~` for `n ≠ m` if `pred i ~ i`
   for all `i` between `n` and `m`. -/
 theorem transGen_of_pred_of_lt (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ioc n m, r (pred i) i)
     (hmn : n < m) : TransGen r n m :=
-  transGen_of_succ_of_gt (α := αᵒᵈ) r (fun x hx => h x ⟨hx.2, hx.1⟩) hmn
+  (reflTransGen_iff_eq_or_transGen.mp <| reflTransGen_of_pred_of_le r h hmn.le).resolve_left
+    hmn.ne'
 
 end PartialPred
 
@@ -121,21 +132,19 @@ variable {α : Type*} [LinearOrder α] [PredOrder α] [IsPredArchimedean α]
   for all `i` between `n` and `m`. -/
 theorem reflTransGen_of_pred (r : α → α → Prop) {n m : α} (h1 : ∀ i ∈ Ioc m n, r i (pred i))
     (h2 : ∀ i ∈ Ioc n m, r (pred i) i) : ReflTransGen r n m :=
-  reflTransGen_of_succ (α := αᵒᵈ) r (fun x hx => h1 x ⟨hx.2, hx.1⟩) fun x hx =>
-    h2 x ⟨hx.2, hx.1⟩
+  (le_total n m).elim (reflTransGen_of_pred_of_le r h2) <| reflTransGen_of_pred_of_ge r h1
 
 /-- For `n ≠ m`, `(n, m)` is in the transitive closure of a relation `~` if `i ~ pred i` and
   `pred i ~ i` for all `i` between `n` and `m`. -/
 theorem transGen_of_pred_of_ne (r : α → α → Prop) {n m : α} (h1 : ∀ i ∈ Ioc m n, r i (pred i))
     (h2 : ∀ i ∈ Ioc n m, r (pred i) i) (hnm : n ≠ m) : TransGen r n m :=
-  transGen_of_succ_of_ne (α := αᵒᵈ) r (fun x hx => h1 x ⟨hx.2, hx.1⟩)
-    (fun x hx => h2 x ⟨hx.2, hx.1⟩) hnm
+  (reflTransGen_iff_eq_or_transGen.mp (reflTransGen_of_pred r h1 h2)).resolve_left hnm.symm
 
 /-- `(n, m)` is in the transitive closure of a reflexive relation `~` if `i ~ pred i` and
   `pred i ~ i` for all `i` between `n` and `m`. -/
 theorem transGen_of_pred_of_reflexive (r : α → α → Prop) {n m : α} (hr : Reflexive r)
-    (h1 : ∀ i ∈ Ioc m n, r i (pred i)) (h2 : ∀ i ∈ Ioc n m, r (pred i) i) : TransGen r n m :=
-  transGen_of_succ_of_reflexive (α := αᵒᵈ) r hr (fun x hx => h1 x ⟨hx.2, hx.1⟩) fun x hx =>
-    h2 x ⟨hx.2, hx.1⟩
+    (h1 : ∀ i ∈ Ioc m n, r i (pred i)) (h2 : ∀ i ∈ Ioc n m, r (pred i) i) : TransGen r n m := by
+  rcases eq_or_ne m n with (rfl | hmn); · exact TransGen.single (hr m)
+  exact transGen_of_pred_of_ne r h1 h2 hmn.symm
 
 end LinearPred

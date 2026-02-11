@@ -91,7 +91,7 @@ instance instIsTransLT [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt w
   trans _ _ _ hab hbc := T.trans _ _ _ hbc hab
 
 instance [LT α] [T : @Std.Trichotomous α LT.lt] : @Std.Trichotomous αᵒᵈ LT.lt where
-  trichotomous a b := by rw [eq_comm]; exact T.trichotomous b a
+  trichotomous a b h1 h2 := ext (T.trichotomous (ofDual a) (ofDual b) h2 h1)
 
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl x := le_refl (ofDual x)

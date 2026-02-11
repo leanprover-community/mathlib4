@@ -33,16 +33,16 @@ theorem comap_atTop (e : α ≃o β) : comap e atTop = atTop := by
   simp [atTop, ← e.surjective.iInf_comp]
 
 @[simp]
-theorem comap_atBot (e : α ≃o β) : comap e atBot = atBot :=
-  e.dual.comap_atTop
+theorem comap_atBot (e : α ≃o β) : comap e atBot = atBot := by
+  simp [atBot, ← e.surjective.iInf_comp]
 
 @[simp]
 theorem map_atTop (e : α ≃o β) : map (e : α → β) atTop = atTop := by
   rw [← e.comap_atTop, map_comap_of_surjective e.surjective]
 
 @[simp]
-theorem map_atBot (e : α ≃o β) : map (e : α → β) atBot = atBot :=
-  e.dual.map_atTop
+theorem map_atBot (e : α ≃o β) : map (e : α → β) atBot = atBot := by
+  rw [← e.comap_atBot, map_comap_of_surjective e.surjective]
 
 theorem tendsto_atTop (e : α ≃o β) : Tendsto e atTop atTop :=
   e.map_atTop.le
@@ -57,7 +57,7 @@ theorem tendsto_atTop_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
 
 @[simp]
 theorem tendsto_atBot_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
-    Tendsto (fun x => e (f x)) l atBot ↔ Tendsto f l atBot :=
-  e.dual.tendsto_atTop_iff
+    Tendsto (fun x => e (f x)) l atBot ↔ Tendsto f l atBot := by
+  rw [← e.comap_atBot, tendsto_comap_iff, Function.comp_def]
 
 end OrderIso
