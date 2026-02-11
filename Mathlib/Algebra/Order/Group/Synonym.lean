@@ -24,6 +24,7 @@ variable {α β : Type*}
 
 /-! ### `OrderDual` -/
 
+set_option linter.translateRedundant false in
 attribute [to_additive self] OrderDual.ofDual_injective
 
 @[to_additive]
@@ -164,16 +165,12 @@ theorem toDual_div [Div α] (a b : α) : toDual (a / b) = toDual a / toDual b :=
 @[to_additive (attr := simp)]
 theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDual b := rfl
 
-@[simp]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 
-@[simp]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 
-@[simp]
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 
-@[simp]
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 
 @[simp]
@@ -192,6 +189,7 @@ attribute [to_additive existing toDual_smul] toDual_pow
 attribute [to_additive existing ofDual_smul] ofDual_pow
 attribute [to_additive existing toDual_smul'] pow_toDual
 attribute [to_additive existing ofDual_smul'] pow_ofDual
+attribute [simp] toDual_pow ofDual_pow pow_toDual pow_ofDual
 
 section Monoid
 variable [Monoid α]

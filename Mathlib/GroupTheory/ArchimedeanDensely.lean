@@ -91,7 +91,7 @@ open OrderDual in
 instance : Unique (ℤ ≃+o ℤᵒᵈ) where
   default := ⟨AddEquiv.neg ℤ |>.trans ⟨(OrderDual.equiv ℤ).symm, toDual_add⟩, by
     intro a b
-    show toDual (-a) ≤ toDual (-b) ↔ a ≤ b
+    change toDual (-a) ≤ toDual (-b) ↔ a ≤ b
     simp [toDual_le_toDual, neg_le_neg_iff]⟩
   uniq e := OrderAddMonoidIso.toAddEquiv_injective <| by
     simp only [OrderAddMonoidIso.toAddEquiv_eq_coe]

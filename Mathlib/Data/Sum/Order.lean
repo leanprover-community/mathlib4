@@ -676,8 +676,10 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
 def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
-  { toFun := fun x => match ofLex (ofDual x) with | inl a => toLex (inr (toDual a)) | inr b => toLex (inl (toDual b))
-    invFun := fun x => toDual (toLex (match ofLex x with | inl b => inr (ofDual b) | inr a => inl (ofDual a)))
+  { toFun := fun x => match ofLex (ofDual x) with
+      | inl a => toLex (inr (toDual a)) | inr b => toLex (inl (toDual b))
+    invFun := fun x => toDual (toLex (match ofLex x with
+      | inl b => inr (ofDual b) | inr a => inl (ofDual a)))
     left_inv := fun x => by rcases x with ⟨a | b⟩ <;> rfl
     right_inv := fun x => by rcases x with (a | b) <;> rfl
     map_rel_iff' := fun {a b} => by

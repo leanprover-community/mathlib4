@@ -205,7 +205,8 @@ theorem limsSup_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝
   have hb_le : IsBounded (· ≤ ·) f := (isBounded_le_nhds a).mono h
   le_antisymm
     (calc
-      f.limsSup ≤ (𝓝 a).limsSup := limsSup_le_limsSup_of_le h hb_ge.isCobounded_flip (isBounded_le_nhds a)
+      f.limsSup ≤ (𝓝 a).limsSup :=
+        limsSup_le_limsSup_of_le h hb_ge.isCobounded_flip (isBounded_le_nhds a)
       _ = a := limsSup_nhds a)
     (calc
       a = (𝓝 a).limsInf := (limsInf_nhds a).symm

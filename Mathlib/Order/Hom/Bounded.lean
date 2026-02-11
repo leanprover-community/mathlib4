@@ -720,11 +720,15 @@ protected def dual :
       BoundedOrderHom αᵒᵈ
         βᵒᵈ where
   toFun f := ⟨f.toOrderHom.dual, by
-      simp [OrderHom.dual]; exact f.map_bot', by
-      simp [OrderHom.dual]; exact f.map_top'⟩
+      simp only [OrderHom.dual, Equiv.coe_fn_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, ofDual_top, toDual_eq_top]; exact f.map_bot', by
+      simp only [OrderHom.dual, Equiv.coe_fn_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, ofDual_bot, toDual_eq_bot]; exact f.map_top'⟩
   invFun f := ⟨OrderHom.dual.symm f.toOrderHom, by
-      simp [OrderHom.dual]; exact f.map_bot', by
-      simp [OrderHom.dual]; exact f.map_top'⟩
+      simp only [OrderHom.dual, Equiv.coe_fn_symm_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, toDual_top, ofDual_eq_top]; exact f.map_bot', by
+      simp only [OrderHom.dual, Equiv.coe_fn_symm_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, toDual_bot, ofDual_eq_bot]; exact f.map_top'⟩
   left_inv f := by ext; rfl
   right_inv f := by ext x; cases x; rfl
 

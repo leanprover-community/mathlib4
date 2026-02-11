@@ -67,7 +67,7 @@ theorem IsBoundedUnder.mono_le [Preorder β] {l : Filter α} {u v : α → β}
 
 theorem IsBoundedUnder.mono_ge [Preorder β] {l : Filter α} {u v : α → β}
     (hu : IsBoundedUnder (· ≥ ·) l u) (hv : u ≤ᶠ[l] v) : IsBoundedUnder (· ≥ ·) l v :=
-  hu.imp fun b hb => eventually_map.2 <| (eventually_map.1 hb).mp <| hv.mono fun _ h1 h2 =>
+  hu.imp fun _ hb => eventually_map.2 <| (eventually_map.1 hb).mp <| hv.mono fun _ h1 h2 =>
     le_trans h2 h1
 
 theorem isBoundedUnder_const [Std.Refl r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
@@ -504,18 +504,18 @@ theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) 
 theorem isBoundedUnder_le_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≤ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≥ ·) l u :=
-  ⟨fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun x h =>
+  ⟨fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun _ h =>
       inv_le'.1 h⟩,
-   fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun x h =>
+   fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun _ h =>
       inv_le_inv_iff.2 h⟩⟩
 
 @[to_additive (attr := simp)]
 theorem isBoundedUnder_ge_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
-  ⟨fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun x h =>
+  ⟨fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun _ h =>
       le_inv'.1 h⟩,
-   fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun x h =>
+   fun ⟨b, hb⟩ => ⟨b⁻¹, eventually_map.2 <| (eventually_map.1 hb).mono fun _ h =>
       inv_le_inv_iff.2 h⟩⟩
 
 theorem IsBoundedUnder.sup [SemilatticeSup α] {f : Filter β} {u v : β → α} :

@@ -129,15 +129,9 @@ def ordConnectedSection (s : Set α) : Set α :=
 
 -- Note: With OrderDual as a structure, ordConnectedProj uses Classical.choose on different
 -- types (αᵒᵈ vs α), so the section representatives are not directly related by ofDual.
--- This theorem needs ordConnectedProj/ordConnectedSection to be redefined canonically,
--- or the T5 proof (the only downstream user) to be changed.
-theorem dual_ordConnectedSection (s : Set α) :
-    ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
-  simp only [ordConnectedSection]
-  simp +unfoldPartialApp only [ordConnectedProj]
-  ext x
-  simp only [mem_range, Subtype.exists, mem_preimage, OrderDual.exists, dual_ordConnectedComponent]
-  exact sorry
+-- The T5 proof has been rewritten to avoid this theorem.
+-- theorem dual_ordConnectedSection (s : Set α) :
+--     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s
 
 theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
   range_subset_iff.2 fun _ => ordConnectedComponent_subset <| Nonempty.some_mem _

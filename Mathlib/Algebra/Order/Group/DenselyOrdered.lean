@@ -38,7 +38,7 @@ theorem le_of_forall_one_lt_div_le (h : ∀ ε : α, 1 < ε → a / ε ≤ b) : 
 
 @[to_additive]
 theorem le_iff_forall_lt_one_mul_le : a ≤ b ↔ ∀ ε < 1, a * ε ≤ b :=
-  ⟨fun h ε hε => (mul_le_of_le_of_le_one h hε.le).trans (le_refl _),
+  ⟨fun h _ hε => (mul_le_of_le_of_le_one h hε.le).trans (le_refl _),
    le_of_forall_lt_one_mul_le⟩
 
 end DenselyOrdered

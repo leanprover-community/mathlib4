@@ -36,12 +36,12 @@ instance : LT (Lex (NonemptyInterval α)) where
 theorem toLex_le_toLex {x y : NonemptyInterval α} :
     toLex x ≤ toLex y ↔ y.fst < x.fst ∨ x.fst = y.fst ∧ x.snd ≤ y.snd := by
   change Prod.Lex (· < ·) (· ≤ ·) x.toDualProd y.toDualProd ↔ _
-  simp [Prod.lex_def, toDualProd, OrderDual.toDual_lt_toDual, OrderDual.toDual_inj]
+  simp only [toDualProd, Prod.lex_def, OrderDual.toDual_lt_toDual, OrderDual.toDual.injEq]
 
 theorem toLex_lt_toLex {x y : NonemptyInterval α} :
     toLex x < toLex y ↔ y.fst < x.fst ∨ x.fst = y.fst ∧ x.snd < y.snd := by
   change Prod.Lex (· < ·) (· < ·) x.toDualProd y.toDualProd ↔ _
-  simp [Prod.lex_def, toDualProd, OrderDual.toDual_lt_toDual, OrderDual.toDual_inj]
+  simp only [toDualProd, Prod.lex_def, OrderDual.toDual_lt_toDual, OrderDual.toDual.injEq]
 
 instance [DecidableEq α] [DecidableLT α] [DecidableLE α] : DecidableLE (Lex (NonemptyInterval α)) :=
   fun _ _ => decidable_of_iff' _ toLex_le_toLex

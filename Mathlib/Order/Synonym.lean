@@ -79,10 +79,10 @@ theorem le_toDual [LE α] {a : αᵒᵈ} {b : α} : a ≤ toDual b ↔ b ≤ ofD
 theorem lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual a := .rfl
 
 @[simp] protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
-  ⟨fun h a => h _, fun h ⟨a⟩ => h a⟩
+  ⟨fun h _ => h _, fun h ⟨a⟩ => h a⟩
 
 @[simp] protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
-  ⟨fun ⟨⟨a⟩, h⟩ => ⟨a, h⟩, fun ⟨a, h⟩ => ⟨_, h⟩⟩
+  ⟨fun ⟨⟨a⟩, h⟩ => ⟨a, h⟩, fun ⟨_, h⟩ => ⟨_, h⟩⟩
 
 @[to_dual self] alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
 @[to_dual self] alias ⟨_, _root_.LT.lt.dual⟩ := toDual_lt_toDual

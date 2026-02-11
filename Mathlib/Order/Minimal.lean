@@ -758,14 +758,14 @@ def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :
       have step2 : x.1 ≤ (f.symm (toDual ⟨y, hy⟩)).1 :=
         x.2.le_of_le (f.symm (toDual ⟨y, hy⟩)).2 step1
       have h : f ⟨x.1, x.2.1⟩ ≤ f (f.symm (toDual ⟨y, hy⟩)) := f.le_iff_le.mpr step2
-      simp at h; exact h⟩
+      simp only [mem_setOf_eq, apply_symm_apply] at h; exact h⟩
   invFun x := by
     refine ⟨(f.symm (toDual ⟨ofDual x.1, x.2.1⟩)).1, ?_⟩
     exact ⟨(f.symm (toDual ⟨ofDual x.1, x.2.1⟩)).2, fun y hy hle ↦ by
       have step1 : (ofDual x.1) ≤ (f ⟨y, hy⟩).ofDual.1 := by
         have h : f ⟨y, hy⟩ ≤ f (f.symm (toDual ⟨ofDual x.1, x.2.1⟩)) := f.le_iff_le.mpr hle
         have : (f (f.symm (toDual ⟨ofDual x.1, x.2.1⟩))).ofDual ≤ (f ⟨y, hy⟩).ofDual := h
-        simp at this; exact this
+        simp only [mem_setOf_eq, apply_symm_apply, ofDual_toDual] at this; exact this
       have step2 : (f ⟨y, hy⟩).ofDual.1 ≤ (ofDual x.1) :=
         x.2.le_of_ge (f ⟨y, hy⟩).ofDual.2 step1
       have h : toDual ⟨ofDual x.1, x.2.1⟩ ≤ f ⟨y, hy⟩ := step2
@@ -797,14 +797,14 @@ def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
       have step2 : (f.symm (toDual ⟨y, hy⟩)).1 ≤ x.1 :=
         x.2.le_of_ge (f.symm (toDual ⟨y, hy⟩)).2 step1
       have h : f (f.symm (toDual ⟨y, hy⟩)) ≤ f ⟨x.1, x.2.1⟩ := f.le_iff_le.mpr step2
-      simp at h; exact h⟩
+      simp only [apply_symm_apply, mem_setOf_eq] at h; exact h⟩
   invFun x := by
     refine ⟨(f.symm (toDual ⟨ofDual x.1, x.2.1⟩)).1, ?_⟩
     exact ⟨(f.symm (toDual ⟨ofDual x.1, x.2.1⟩)).2, fun y hy hle ↦ by
       have step1 : (f ⟨y, hy⟩).ofDual.1 ≤ (ofDual x.1) := by
         have h : f (f.symm (toDual ⟨ofDual x.1, x.2.1⟩)) ≤ f ⟨y, hy⟩ := f.le_iff_le.mpr hle
         have : (f ⟨y, hy⟩).ofDual ≤ (f (f.symm (toDual ⟨ofDual x.1, x.2.1⟩))).ofDual := h
-        simp at this; exact this
+        simp only [mem_setOf_eq, apply_symm_apply, ofDual_toDual] at this; exact this
       have step2 : (ofDual x.1) ≤ (f ⟨y, hy⟩).ofDual.1 :=
         x.2.le_of_le (f ⟨y, hy⟩).ofDual.2 step1
       have h : f ⟨y, hy⟩ ≤ toDual ⟨ofDual x.1, x.2.1⟩ := step2

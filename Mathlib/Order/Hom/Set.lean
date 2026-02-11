@@ -169,7 +169,7 @@ instance subsingleton_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] [Preo
   have h := Subsingleton.elim f.dual g.dual
   ext x
   have := DFunLike.congr_fun h (OrderDual.toDual x)
-  simp at this
+  simp only [dual_apply, toDual.injEq] at this
   exact this
 
 instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Preorder α] :
@@ -178,7 +178,7 @@ instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Pre
   have h := Subsingleton.elim f.dual g.dual
   ext x
   have := DFunLike.congr_fun h (OrderDual.toDual x)
-  simp at this
+  simp only [dual_apply, toDual.injEq] at this
   exact this
 
 instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _

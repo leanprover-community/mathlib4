@@ -38,7 +38,7 @@ protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ 
 @[simp]
 theorem toDualBotEquiv_coe [LE α] (a : α) :
     WithTop.toDualBotEquiv ↑(toDual a) = toDual (a : WithBot α) := by
-  show toDual (WithTop.ofDual ↑(toDual a)) = toDual (a : WithBot α)
+  change toDual (WithTop.ofDual ↑(toDual a)) = toDual (a : WithBot α)
   rfl
 
 @[simp]
@@ -49,7 +49,7 @@ theorem toDualBotEquiv_symm_coe [LE α] (a : α) :
 
 @[simp]
 theorem toDualBotEquiv_top [LE α] : WithTop.toDualBotEquiv (⊤ : WithTop αᵒᵈ) = ⊤ := by
-  show toDual (WithTop.ofDual (⊤ : WithTop αᵒᵈ)) = ⊤
+  change toDual (WithTop.ofDual (⊤ : WithTop αᵒᵈ)) = ⊤
   rfl
 
 @[simp]
@@ -118,7 +118,7 @@ protected def toDualTopEquiv [LE α] : WithBot αᵒᵈ ≃o (WithTop α)ᵒᵈ 
 @[simp]
 theorem toDualTopEquiv_coe [LE α] (a : α) :
     WithBot.toDualTopEquiv ↑(toDual a) = toDual (a : WithTop α) := by
-  show toDual (WithBot.ofDual ↑(toDual a)) = toDual (a : WithTop α)
+  change toDual (WithBot.ofDual ↑(toDual a)) = toDual (a : WithTop α)
   rfl
 
 @[simp]
@@ -129,7 +129,7 @@ theorem toDualTopEquiv_symm_coe [LE α] (a : α) :
 
 @[simp]
 theorem toDualTopEquiv_bot [LE α] : WithBot.toDualTopEquiv (⊥ : WithBot αᵒᵈ) = ⊥ := by
-  show toDual (WithBot.ofDual (⊥ : WithBot αᵒᵈ)) = ⊥
+  change toDual (WithBot.ofDual (⊥ : WithBot αᵒᵈ)) = ⊥
   rfl
 
 @[simp]
