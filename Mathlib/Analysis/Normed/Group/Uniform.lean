@@ -72,32 +72,32 @@ theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (
     simpa only [dist_eq_norm_inv_mul, map_mul, map_inv] using h (x⁻¹ * y)
 
 @[to_additive]
-theorem lipschitzOnWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
+theorem lipschitzOnWith_iff_norm_inv_mul_le {f : E → F} {C : ℝ≥0} :
     LipschitzOnWith C f s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ‖(f x)⁻¹ * f y‖ ≤ C * ‖x⁻¹ * y‖ := by
   simp only [lipschitzOnWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
 
-alias ⟨LipschitzOnWith.norm_div_le, _⟩ := lipschitzOnWith_iff_norm_div_le
+alias ⟨LipschitzOnWith.norm_inv_mul_le, _⟩ := lipschitzOnWith_iff_norm_inv_mul_le
 
-attribute [to_additive] LipschitzOnWith.norm_div_le
+attribute [to_additive] LipschitzOnWith.norm_inv_mul_le
 
 @[to_additive]
-theorem LipschitzOnWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : LipschitzOnWith C f s)
+theorem LipschitzOnWith.norm_inv_mul_le_of_le {f : E → F} {C : ℝ≥0} (h : LipschitzOnWith C f s)
     (ha : a ∈ s) (hb : b ∈ s) (hr : ‖a⁻¹ * b‖ ≤ r) : ‖(f a)⁻¹ * f b‖ ≤ C * r :=
-  (h.norm_div_le ha hb).trans <| by gcongr
+  (h.norm_inv_mul_le ha hb).trans <| by gcongr
 
 @[to_additive]
-theorem lipschitzWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
+theorem lipschitzWith_iff_norm_inv_mul_le {f : E → F} {C : ℝ≥0} :
     LipschitzWith C f ↔ ∀ x y, ‖(f x)⁻¹ * f y‖ ≤ C * ‖x⁻¹ * y‖ := by
   simp only [lipschitzWith_iff_dist_le_mul, dist_eq_norm_inv_mul]
 
-alias ⟨LipschitzWith.norm_div_le, _⟩ := lipschitzWith_iff_norm_div_le
+alias ⟨LipschitzWith.norm_inv_mul_le, _⟩ := lipschitzWith_iff_norm_inv_mul_le
 
-attribute [to_additive] LipschitzWith.norm_div_le
+attribute [to_additive] LipschitzWith.norm_inv_mul_le
 
 @[to_additive]
-theorem LipschitzWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : LipschitzWith C f)
+theorem LipschitzWith.norm_inv_mul_le_of_le {f : E → F} {C : ℝ≥0} (h : LipschitzWith C f)
     (hr : ‖a⁻¹ * b‖ ≤ r) : ‖(f a)⁻¹ * f b‖ ≤ C * r :=
-  (h.norm_div_le _ _).trans <| by gcongr
+  (h.norm_inv_mul_le _ _).trans <| by gcongr
 
 /-- A homomorphism `f` of seminormed groups is continuous, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. -/
@@ -431,5 +431,34 @@ lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G
     simp [(hC _ _).le]
   rw [bddAbove_def]
   exact ⟨C + ‖u 0‖, by simpa using this⟩
+
+@[to_additive]
+theorem lipschitzOnWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} {s : Set E} :
+    LipschitzOnWith C f s ↔ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ‖f x / f y‖ ≤ C * ‖x / y‖ := by
+  simpa [← norm_inv_mul] using lipschitzOnWith_iff_norm_inv_mul_le
+
+alias ⟨LipschitzOnWith.norm_div_le, _⟩ := lipschitzOnWith_iff_norm_div_le
+
+attribute [to_additive] LipschitzOnWith.norm_div_le
+
+@[to_additive]
+theorem LipschitzOnWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} {s : Set E} {a b : E} {r : ℝ}
+    (h : LipschitzOnWith C f s) (ha : a ∈ s) (hb : b ∈ s) (hr : ‖a / b‖ ≤ r) :
+    ‖f a / f b‖ ≤ C * r :=
+  (h.norm_div_le ha hb).trans <| by gcongr
+
+@[to_additive]
+theorem lipschitzWith_iff_norm_div_le {f : E → F} {C : ℝ≥0} :
+    LipschitzWith C f ↔ ∀ x y, ‖f x / f y‖ ≤ C * ‖x / y‖ := by
+  simp only [lipschitzWith_iff_dist_le_mul, dist_eq_norm_div]
+
+alias ⟨LipschitzWith.norm_div_le, _⟩ := lipschitzWith_iff_norm_div_le
+
+attribute [to_additive] LipschitzWith.norm_div_le
+
+@[to_additive]
+theorem LipschitzWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} {a b : E} {r : ℝ}
+    (h : LipschitzWith C f) (hr : ‖a / b‖ ≤ r) : ‖f a / f b‖ ≤ C * r :=
+  (h.norm_div_le _ _).trans <| by gcongr
 
 end SeminormedCommGroup
