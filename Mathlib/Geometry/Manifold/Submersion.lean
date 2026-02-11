@@ -3,7 +3,9 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Immersion
+module
+
+public import Mathlib.Geometry.Manifold.Immersion
 
 /-! # Smooth submersions
 
@@ -71,7 +73,7 @@ The results in this file follow from abstract results about such local propertie
 This will be the topic of Samantha Naranjo's master's thesis, and it's nice to coordinate.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open scoped Topology ContDiff
 
