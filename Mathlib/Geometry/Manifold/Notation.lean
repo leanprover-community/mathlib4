@@ -695,11 +695,8 @@ where
   go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do
     -- At first, try finding a model on the space itself.
     if let some m ← findModelInner e baseInfo then return some m
-    -- let f := (← instantiateMVars e).cleanupAnnotations
-    -- dbg_trace "`go` is recursing; expression e is `{f}`..."
     -- Otherwise, we recurse into the expression,
-    -- depending whether we have an open subset of a space,
-    -- a product, or a direct sum of spaces.
+    -- depending whether we have an open subset of a space, a product, or a direct sum of spaces.
     match_expr e with
     | Subtype _M p =>
       match (← instantiateMVars p).cleanupAnnotations with
@@ -713,15 +710,13 @@ where
             | TopologicalSpace.Opens M _ =>
               trace[Elab.DiffGeo.MDiff] "complicated arm hit! \
                 Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
-              return none
+              -- (In practice, `M` is not an `Opens`,
+              -- as `Opens X` is (currently?) not a topological space.
+              go M baseInfo
             | _ => return none
           | _ => return none
         | _ => return none
       | _ => return none
-    | TopologicalSpace.Opens M _ =>
-      trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
-      -- (In practice, `M` is not an `Opens`, as `Opens X` is (currently?) not a topological space.
-      go M baseInfo
     | Prod E F =>
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
       let some { model := srcE, normedSpaceInfo? := normedSpaceE } ← go E baseInfo
