@@ -65,6 +65,9 @@ variable (f : Set X → ℝ≥0∞)
 /-- `preVariationFun` of the empty set is equal to zero. -/
 lemma empty : preVariationFun f ∅ = 0 := by simp [preVariationFun]
 
+@[simp]
+lemma zero : preVariationFun (0 : Set X → ℝ≥0∞) = 0 := by ext; simp [preVariationFun]
+
 lemma sum_le {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
@@ -183,6 +186,8 @@ def IsSigmaSubadditiveSetFun (f : Set X → ℝ≥0∞) : Prop :=
   ∀ (s : ℕ → {t : Set X // MeasurableSet t}), Pairwise (Disjoint on (Subtype.val ∘ s)) →
     f (⋃ i, (s i).val) ≤ ∑' i, f (s i)
 
+lemma isSigmaSubadditiveSetFun_zero : IsSigmaSubadditiveSetFun (0 : Set X → ℝ≥0∞) := by intro; simp
+
 namespace preVariation
 
 variable {f : Set X → ℝ≥0∞}
@@ -237,8 +242,30 @@ noncomputable def ennrealPreVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f
   not_measurable' _ h := by simp [preVariationFun, h]
   m_iUnion' := preVariation.iUnion hf hf'
 
+@[simp]
+lemma ennrealPreVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
+  ennrealPreVariation f hf hf' s = preVariationFun f s := rfl
+
+@[simp]
+lemma ennrealPreVariation_zero :
+  ennrealPreVariation (0 : Set X → ℝ≥0∞) (isSigmaSubadditiveSetFun_zero) (by simp) = 0 := by
+  ext; simp
+
 /-- The `Measure X` built from a σ-subadditive function. -/
 noncomputable def preVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) : Measure X :=
   (ennrealPreVariation f hf hf').ennrealToMeasure
+
+@[simp]
+theorem MeasureTheory.VectorMeasure.ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
+    MeasureTheory.VectorMeasure.ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
+  simp [VectorMeasure.ennrealToMeasure]
+  sorry
+  -- need to show that `ofMeasurable 0 = 0`
+
+
+@[simp]
+lemma preVariation_zero_eq_zero :
+    preVariation (0 : Set X → ℝ≥0∞) (isSigmaSubadditiveSetFun_zero) (by simp) = 0 := by
+  simp [preVariation]
 
 end MeasureTheory

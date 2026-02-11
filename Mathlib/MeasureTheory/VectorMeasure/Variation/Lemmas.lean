@@ -47,24 +47,26 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
   simpa [variation] using le_var_aux (fun s ↦ ‖μ s‖ₑ) hs hQ
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
-  wlog hE' : E ≠ ∅
-  · simp [not_ne_iff.mp hE']
   wlog hE : MeasurableSet E
-  · simp [hE, μ.not_measurable' hE]
-  -- define a `FinPartition` with single element
-  have h : {E} ∈ {P | IsInnerPart E P} := by simpa using isInnerPart_self hE hE'
-  have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
-  simp_all [variation, var_aux]
+  · simp [μ.not_measurable' hE]
+  wlog hE' : (⟨E, hE⟩ : Subtype MeasurableSet) ≠ ⊥
+  · simp only [ne_eq, not_not, ] at hE'
+    rw [← MeasurableSet.subtype_bot_eq, Subtype.ext_iff] at hE'
+    have : E = ∅ := by exact Set.subset_eq_empty (fun ⦃a⦄ a_1 ↦ a_1) hE'
+    rw [this]
+    simp
+  rw [variation, preVariation, ennrealToMeasure_apply hE]
+  simp only [ennrealPreVariation_apply]
+  calc
+    ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
+    _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
 
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
--- add lemmea for the case where `f = 0` in `preVariation`
-  ext _ _
-  simp [variation, var_aux_zero]
+  simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
+  exact preVariation_zero_eq_zero
 
-lemma variation_neg
--- generalize?
-    (μ : MeasureTheory.ComplexMeasure X) : (-μ).variation = μ.variation := by
-  simp [variation]
+lemma variation_neg {W : Type*} [NormedAddCommGroup W] (μ : MeasureTheory.VectorMeasure X W) :
+    (-μ).variation = μ.variation := by simp [variation]
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by
   intro s hs
