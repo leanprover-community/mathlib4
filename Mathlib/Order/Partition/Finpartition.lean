@@ -115,17 +115,17 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
     sup_parts := sup_parts
     bot_notMem := fun h ↦ P.bot_notMem (subset h) }
 
--- open Classical in
--- @[simps]
--- def ofPairwiseDisjoint {a : α} (P : Finset α)
---     (hsubset : ∀ b ∈ P, b ≤ a) (hdisjoint : (P : Set α).PairwiseDisjoint id) :
---     Finpartition (P.sup id)  :=
---   { parts := P.filter (· ≠ ⊥)
---     supIndep := P.supIndep.subset subset
---     sup_parts := by exact?
--- --    sup_congr rfl (fun _ _ ↦ rfl)
---     bot_notMem := fun h ↦ P.bot_notMem (subset h) }
-
+/-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
+elements. Any `⊥` elements in `parts` are erased. -/
+@[simps]
+def ofPairwiseDisjoint {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
+    (parts : Finset α) (hdisjoint : (parts : Set α).PairwiseDisjoint id) :
+    Finpartition (parts.sup id) where
+  parts := parts.erase ⊥
+  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun _ ha _ hb hab =>
+    hdisjoint (Finset.erase_subset _ _ ha) (Finset.erase_subset _ _ hb) hab
+  sup_parts := Finset.sup_erase_bot parts
+  bot_notMem := Finset.notMem_erase _ _
 
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
