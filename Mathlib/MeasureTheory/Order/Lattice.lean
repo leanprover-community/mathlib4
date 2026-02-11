@@ -68,21 +68,39 @@ variable {M : Type*} [MeasurableSpace M]
 
 section OrderDual
 
+private theorem measurable_toDual : Measurable (OrderDual.toDual : M → Mᵒᵈ) :=
+  fun _ hs => hs
+
+private theorem measurable_ofDual : Measurable (OrderDual.ofDual : Mᵒᵈ → M) :=
+  fun _ hs => hs
+
 instance (priority := 100) OrderDual.instMeasurableSup [Min M] [MeasurableInf M] :
-    MeasurableSup Mᵒᵈ :=
-  ⟨@measurable_const_inf M _ _ _, @measurable_inf_const M _ _ _⟩
+    MeasurableSup Mᵒᵈ where
+  measurable_const_sup c :=
+    measurable_toDual.comp ((measurable_const_inf (OrderDual.ofDual c)).comp measurable_ofDual)
+  measurable_sup_const c :=
+    measurable_toDual.comp ((measurable_inf_const (OrderDual.ofDual c)).comp measurable_ofDual)
 
 instance (priority := 100) OrderDual.instMeasurableInf [Max M] [MeasurableSup M] :
-    MeasurableInf Mᵒᵈ :=
-  ⟨@measurable_const_sup M _ _ _, @measurable_sup_const M _ _ _⟩
+    MeasurableInf Mᵒᵈ where
+  measurable_const_inf c :=
+    measurable_toDual.comp ((measurable_const_sup (OrderDual.ofDual c)).comp measurable_ofDual)
+  measurable_inf_const c :=
+    measurable_toDual.comp ((measurable_sup_const (OrderDual.ofDual c)).comp measurable_ofDual)
 
 instance (priority := 100) OrderDual.instMeasurableSup₂ [Min M] [MeasurableInf₂ M] :
-    MeasurableSup₂ Mᵒᵈ :=
-  ⟨@measurable_inf M _ _ _⟩
+    MeasurableSup₂ Mᵒᵈ where
+  measurable_sup :=
+    measurable_toDual.comp (measurable_inf.comp
+      ((measurable_ofDual.comp measurable_fst).prod
+        (measurable_ofDual.comp measurable_snd)))
 
 instance (priority := 100) OrderDual.instMeasurableInf₂ [Max M] [MeasurableSup₂ M] :
-    MeasurableInf₂ Mᵒᵈ :=
-  ⟨@measurable_sup M _ _ _⟩
+    MeasurableInf₂ Mᵒᵈ where
+  measurable_inf :=
+    measurable_toDual.comp (measurable_sup.comp
+      ((measurable_ofDual.comp measurable_fst).prod
+        (measurable_ofDual.comp measurable_snd)))
 
 end OrderDual
 

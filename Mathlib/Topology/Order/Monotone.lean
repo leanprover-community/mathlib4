@@ -172,13 +172,8 @@ within a set is at most countable. -/
 theorem _root_.AntitoneOn.countable_not_continuousWithinAt
     {s : Set α} (hf : AntitoneOn f s) :
     Set.Countable {x ∈ s | ¬ContinuousWithinAt f s x} := by
-  have h := hf.dual_right.countable_not_continuousWithinAt
-  refine h.mono fun x hx => ?_
-  refine ⟨hx.1, fun hc => hx.2 ?_⟩
-  have : ContinuousWithinAt (ofDual ∘ (toDual ∘ f)) s x :=
-    continuous_ofDual.continuousAt.comp_continuousWithinAt hc
-  simp only [Function.comp_def] at this
-  exact this
+  exact hf.dual_right.countable_not_continuousWithinAt |>.mono fun x hx =>
+    ⟨hx.1, fun hc => hx.2 (continuous_toDual.continuousAt.comp_continuousWithinAt hc)⟩
 
 /-- In a second countable space, the set of points where an antitone function is not continuous
 is at most countable. -/

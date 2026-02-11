@@ -475,7 +475,7 @@ open OrderDual
 theorem comp_ofDual (f : α → E) (s : Set α) :
     eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s := by
   convert comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
-  simp only [Equiv.image_preimage]
+  exact ((OrderDual.equiv α).image_preimage s).symm
 
 end Monotone
 

@@ -174,11 +174,16 @@ end Mathlib.Tactic.Borelize
 
 instance (priority := 100) OrderDual.opensMeasurableSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [h : OpensMeasurableSpace α] : OpensMeasurableSpace αᵒᵈ where
-  borel_le := h.borel_le
+  borel_le := by
+    intro s hs
+    -- MeasurableSet on αᵒᵈ is the same predicate as on α (via toDual ⁻¹')
+    exact h.borel_le hs
 
 instance (priority := 100) OrderDual.borelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [h : BorelSpace α] : BorelSpace αᵒᵈ where
-  measurable_eq := h.measurable_eq
+  measurable_eq := by
+    ext s
+    exact Iff.rfl.trans (by rw [h.measurable_eq])
 
 /-- In a `BorelSpace` all open sets are measurable. -/
 instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalSpace α]

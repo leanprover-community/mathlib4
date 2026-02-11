@@ -251,11 +251,13 @@ section LimInfSup
 
 variable {α : Type*} {f : Filter α} {u v : α → EReal}
 
-lemma liminf_neg : liminf (-v) f = -limsup v f :=
-  EReal.negOrderIso.limsup_apply.symm
+lemma liminf_neg : liminf (-v) f = -limsup v f := by
+  have h := EReal.negOrderIso.limsup_apply (f := f) (u := v)
+  exact congrArg OrderDual.ofDual h |>.symm
 
-lemma limsup_neg : limsup (-v) f = -liminf v f :=
-  EReal.negOrderIso.liminf_apply.symm
+lemma limsup_neg : limsup (-v) f = -liminf v f := by
+  have h := EReal.negOrderIso.liminf_apply (f := f) (u := v)
+  exact congrArg OrderDual.ofDual h |>.symm
 
 lemma le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
   refine add_le_of_forall_lt fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_

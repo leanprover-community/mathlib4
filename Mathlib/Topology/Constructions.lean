@@ -151,12 +151,12 @@ open OrderDual
 instance OrderDual.instTopologicalSpace : TopologicalSpace Xᵒᵈ :=
   TopologicalSpace.induced ofDual ‹TopologicalSpace X›
 
-private theorem OrderDual.isInducing_ofDual : Topology.IsInducing (ofDual : Xᵒᵈ → X) := ⟨rfl⟩
+theorem OrderDual.isInducing_ofDual : Topology.IsInducing (ofDual : Xᵒᵈ → X) := ⟨rfl⟩
 
-private theorem OrderDual.isEmbedding_ofDual : Topology.IsEmbedding (ofDual : Xᵒᵈ → X) :=
+theorem OrderDual.isEmbedding_ofDual : Topology.IsEmbedding (ofDual : Xᵒᵈ → X) :=
   ⟨isInducing_ofDual, fun _ _ h => ofDual_inj.mp h⟩
 
-private noncomputable def OrderDual.homeomorph : Xᵒᵈ ≃ₜ X :=
+noncomputable def OrderDual.homeomorph : Xᵒᵈ ≃ₜ X :=
   (OrderDual.equiv X).toHomeomorphOfIsInducing isInducing_ofDual
 
 instance OrderDual.instDiscreteTopology [DiscreteTopology X] : DiscreteTopology Xᵒᵈ :=

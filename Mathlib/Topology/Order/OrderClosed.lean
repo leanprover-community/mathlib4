@@ -86,14 +86,12 @@ class OrderClosedTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Pro
   /-- The set `{ (x, y) | x ≤ y }` is a closed set. -/
   isClosed_le' : IsClosed { p : α × α | p.1 ≤ p.2 }
 
-private theorem isInducing_ofDual' [TopologicalSpace α] :
-    Topology.IsInducing (ofDual : αᵒᵈ → α) := ⟨rfl⟩
 instance [TopologicalSpace α] [FirstCountableTopology α] : FirstCountableTopology αᵒᵈ :=
-  isInducing_ofDual'.firstCountableTopology
+  OrderDual.isInducing_ofDual.firstCountableTopology
 instance [TopologicalSpace α] [SecondCountableTopology α] : SecondCountableTopology αᵒᵈ :=
-  isInducing_ofDual'.secondCountableTopology
+  OrderDual.isInducing_ofDual.secondCountableTopology
 instance [TopologicalSpace α] [SeparableSpace α] : SeparableSpace αᵒᵈ :=
-  isOpenMap_ofDual.separableSpace_of_isInducing isInducing_ofDual'
+  isOpenMap_ofDual.separableSpace_of_isInducing OrderDual.isInducing_ofDual
 
 theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=

@@ -63,20 +63,19 @@ def QuasilinearOn : Prop :=
 variable {𝕜 s f}
 
 theorem QuasiconvexOn.dual : QuasiconvexOn 𝕜 s f → QuasiconcaveOn 𝕜 s (toDual ∘ f) :=
-  id
+  fun hf r => by simp_rw [Function.comp_apply, le_toDual]; exact hf (ofDual r)
 
 theorem QuasiconcaveOn.dual : QuasiconcaveOn 𝕜 s f → QuasiconvexOn 𝕜 s (toDual ∘ f) :=
-  id
+  fun hf r => by simp_rw [Function.comp_apply, toDual_le]; exact hf (ofDual r)
 
 theorem QuasilinearOn.dual : QuasilinearOn 𝕜 s f → QuasilinearOn 𝕜 s (toDual ∘ f) :=
-  And.symm
+  fun ⟨hcx, hcv⟩ => ⟨hcv.dual, hcx.dual⟩
 
 theorem Convex.quasiconvexOn_of_convex_le (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | f x ≤ r }) :
     QuasiconvexOn 𝕜 s f := fun r => hs.inter (h r)
 
 theorem Convex.quasiconcaveOn_of_convex_ge (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | r ≤ f x }) :
-    QuasiconcaveOn 𝕜 s f :=
-  Convex.quasiconvexOn_of_convex_le (β := βᵒᵈ) hs h
+    QuasiconcaveOn 𝕜 s f := fun r => hs.inter (h r)
 
 theorem QuasiconvexOn.convex [IsDirectedOrder β] (hf : QuasiconvexOn 𝕜 s f) : Convex 𝕜 s :=
   fun x hx y hy _ _ ha hb hab =>
@@ -107,16 +106,37 @@ theorem QuasiconvexOn.monotone_comp
   exact ⟨hf.1, le_trans (hg hf.2) hy.2⟩
 
 theorem QuasiconvexOn.antitone_comp (hg : Antitone g) (hf : QuasiconvexOn 𝕜 s f) :
-    QuasiconcaveOn 𝕜 s (g ∘ f) :=
-  hf.monotone_comp (γ := γᵒᵈ) hg
+    QuasiconcaveOn 𝕜 s (g ∘ f) := fun c x hx y hy ↦ by
+  simp only [Function.comp_apply, mem_setOf_eq] at hx hy
+  intro a b ha hb hab
+  simp only [Function.comp_apply, mem_setOf_eq]
+  wlog h : f x ≤ f y
+  · grind
+  specialize hf (f y) ⟨hx.1, h⟩ ⟨hy.1, le_rfl⟩ ha hb hab
+  simp only [mem_setOf_eq] at hf
+  exact ⟨hf.1, le_trans hy.2 (hg hf.2)⟩
 
 theorem QuasiconcaveOn.monotone_comp (hg : Monotone g) (hf : QuasiconcaveOn 𝕜 s f) :
-    QuasiconcaveOn 𝕜 s (g ∘ f) :=
-  QuasiconvexOn.monotone_comp hg.dual hf
+    QuasiconcaveOn 𝕜 s (g ∘ f) := fun c x hx y hy ↦ by
+  simp only [Function.comp_apply, mem_setOf_eq] at hx hy
+  intro a b ha hb hab
+  simp only [Function.comp_apply, mem_setOf_eq]
+  wlog h : f y ≤ f x
+  · grind
+  specialize hf (f y) ⟨hx.1, h⟩ ⟨hy.1, le_rfl⟩ ha hb hab
+  simp only [mem_setOf_eq] at hf
+  exact ⟨hf.1, le_trans hy.2 (hg hf.2)⟩
 
 theorem QuasiconcaveOn.antitone_comp (hg : Antitone g) (hf : QuasiconcaveOn 𝕜 s f) :
-    QuasiconvexOn 𝕜 s (g ∘ f) :=
-  QuasiconvexOn.monotone_comp (β := βᵒᵈ) hg.dual hf
+    QuasiconvexOn 𝕜 s (g ∘ f) := fun c x hx y hy ↦ by
+  simp only [Function.comp_apply, mem_setOf_eq] at hx hy
+  intro a b ha hb hab
+  simp only [Function.comp_apply, mem_setOf_eq]
+  wlog h : f y ≤ f x
+  · grind
+  specialize hf (f y) ⟨hx.1, h⟩ ⟨hy.1, le_rfl⟩ ha hb hab
+  simp only [mem_setOf_eq] at hf
+  exact ⟨hf.1, le_trans (hg hf.2) hy.2⟩
 
 theorem QuasilinearOn.monotone_comp (hg : Monotone g) (hf : QuasilinearOn 𝕜 s f) :
     QuasilinearOn 𝕜 s (g ∘ f) :=
@@ -170,8 +190,11 @@ theorem QuasiconcaveOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
 /-- If `f` is quasiconcave, then its under-levels are connected. -/
 theorem QuasiconvexOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
     (hfc : QuasiconvexOn ℝ s f) :
-    IsPreconnected (s ↓∩ (f ⁻¹' Iic t)) :=
-  QuasiconcaveOn.isPreconnected_preimage_subtype (β := βᵒᵈ) hfc
+    IsPreconnected (s ↓∩ (f ⁻¹' Iic t)) := by
+  rw [← Topology.IsInducing.subtypeVal.isPreconnected_image,
+    image_preimage_eq_inter_range,
+    Subtype.range_coe, inter_comm]
+  exact (hfc t).isPreconnected
 
 theorem QuasilinearOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
     (hfc : QuasilinearOn ℝ s f) :
@@ -191,8 +214,10 @@ theorem QuasiconvexOn.sup [SemilatticeSup β] (hf : QuasiconvexOn 𝕜 s f)
   exact (hf r).inter (hg r)
 
 theorem QuasiconcaveOn.inf [SemilatticeInf β] (hf : QuasiconcaveOn 𝕜 s f)
-    (hg : QuasiconcaveOn 𝕜 s g) : QuasiconcaveOn 𝕜 s (f ⊓ g) :=
-  hf.dual.sup hg
+    (hg : QuasiconcaveOn 𝕜 s g) : QuasiconcaveOn 𝕜 s (f ⊓ g) := by
+  intro r
+  simp_rw [Pi.inf_def, le_inf_iff, Set.sep_and]
+  exact (hf r).inter (hg r)
 
 end Semilattice_β
 
@@ -210,7 +235,11 @@ theorem quasiconvexOn_iff_le_max : QuasiconvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ 
 
 theorem quasiconcaveOn_iff_min_le : QuasiconcaveOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
     y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → min (f x) (f y) ≤ f (a • x + b • y) :=
-  quasiconvexOn_iff_le_max (β := βᵒᵈ)
+  ⟨fun hf =>
+    ⟨hf.convex, fun _ hx _ hy _ _ ha hb hab =>
+      (hf _ ⟨hx, min_le_left _ _⟩ ⟨hy, min_le_right _ _⟩ ha hb hab).2⟩,
+    fun hf _ _ hx _ hy _ _ ha hb hab =>
+    ⟨hf.1 hx.1 hy.1 ha hb hab, (le_min hx.2 hy.2).trans (hf.2 hx.1 hy.1 ha hb hab)⟩⟩
 
 theorem quasilinearOn_iff_mem_uIcc : QuasilinearOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
     y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ∈ uIcc (f x) (f y) := by
@@ -226,8 +255,10 @@ theorem QuasiconvexOn.convex_lt (hf : QuasiconvexOn 𝕜 s f) (r : β) :
   exact ⟨h.1, h.2.trans_lt <| max_lt hx.2 hy.2⟩
 
 theorem QuasiconcaveOn.convex_gt (hf : QuasiconcaveOn 𝕜 s f) (r : β) :
-    Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  hf.dual.convex_lt r
+    Convex 𝕜 ({ x ∈ s | r < f x }) := by
+  refine fun x hx y hy a b ha hb hab => ?_
+  have h := hf _ ⟨hx.1, min_le_left _ _⟩ ⟨hy.1, min_le_right _ _⟩ ha hb hab
+  exact ⟨h.1, (lt_min hx.2 hy.2).trans_le h.2⟩
 
 end LinearOrder_β
 

@@ -438,9 +438,6 @@ end maps
 
 end IsLowerSet
 
-private theorem ofDual_injective : Function.Injective (OrderDual.ofDual : αᵒᵈ → α) :=
-  fun _ _ h => OrderDual.ext h
-
 private theorem isOpen_of_isOpen_ofDual_preimage {t : TopologicalSpace α} {s : Set α}
     (h : @IsOpen αᵒᵈ (TopologicalSpace.induced OrderDual.ofDual t)
       (OrderDual.ofDual ⁻¹' s)) : @IsOpen α t s := by

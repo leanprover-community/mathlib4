@@ -94,7 +94,30 @@ This is implication a) ⇒ b) in
 See the module docstring for a discussion of the assumptions on `E`. -/
 theorem exists_countable_lowerSemicontinuous_isLUB {s : X → E} {𝓕 : Set (X → E)}
     (h𝓕_cont : ∀ f ∈ 𝓕, LowerSemicontinuous f) (h𝓕 : IsLUB 𝓕 s) :
-    ∃ 𝓕' ⊆ 𝓕, 𝓕'.Countable ∧ IsLUB 𝓕' s :=
-  exists_countable_upperSemicontinuous_isGLB (E := Eᵒᵈ) h𝓕_cont h𝓕
+    ∃ 𝓕' ⊆ 𝓕, 𝓕'.Countable ∧ IsLUB 𝓕' s := by
+  simp_rw [isLUB_pi] at *
+  rcases exists_countable_dense E with ⟨D, D_count, D_dense⟩
+  let U (f : X → E) (d : E) : Set X := {x | d < f x}
+  have U_open {f} (hf : f ∈ 𝓕) (d : E) : IsOpen (U f d) := h𝓕_cont f hf |>.isOpen_preimage d
+  have (d : E) : {x | d < s x} = ⋃ f : 𝓕, U f d := by
+    ext x
+    simp [U, lt_isLUB_iff (h𝓕 x)]
+  have (d : E) : ∃ A ⊆ 𝓕, A.Countable ∧ {x | d < s x} = ⋃ f ∈ A, U f d := by
+    simp_rw [this d]
+    rcases eq_open_union_countable (fun f : 𝓕 ↦ U f d) (fun f ↦ U_open f.2 d) with ⟨t, t_count, ht⟩
+    use (↑) '' t, image_val_subset, t_count.image _
+    rw [← ht, biUnion_image]
+  choose A A_sub A_count hA using this
+  set 𝓕' := ⋃ d ∈ D, A d
+  have 𝓕'_sub : 𝓕' ⊆ 𝓕 := iUnion₂_subset fun d _ ↦ A_sub d
+  use 𝓕', 𝓕'_sub, D_count.biUnion fun d _ ↦ A_count d
+  refine fun x ↦ ⟨upperBounds_mono_set (image_mono 𝓕'_sub) (h𝓕 x).1, fun e he ↦ ?_⟩
+  by_contra! H
+  rcases D_dense.exists_between H with ⟨d, d_mem, hd⟩
+  obtain ⟨f, f_mem, hf⟩ : ∃ f ∈ A d, d < f x := by
+    have : x ∈ {y | d < s y} := hd.2
+    simpa only [hA d, mem_iUnion₂, exists_prop, U, mem_setOf_eq] using this
+  suffices e < e by simpa
+  exact hd.1.trans hf |>.trans_le (he (mem_image_of_mem _ (mem_iUnion₂_of_mem d_mem f_mem)))
 
 end
