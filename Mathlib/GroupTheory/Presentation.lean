@@ -169,7 +169,7 @@ noncomputable def equivPresentedGroup {G : Type*} [Group G] {ι : Type*}
 /-!
 Any two presentations of the same group present isomorphic groups.
 -/
--- better name for this?
+-- maybe better name for this?
 noncomputable def equivPresentedGroupOfSameGroup {G : Type*} [Group G]
     {ι κ : Type*} (P : Presentation G ι) (Q : Presentation G κ) :
     P.presentedGroup ≃* Q.presentedGroup :=
