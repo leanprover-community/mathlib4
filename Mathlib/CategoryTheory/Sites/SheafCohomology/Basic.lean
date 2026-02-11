@@ -112,9 +112,8 @@ theorem H.longSequence.exact (h : n₀ + 1 = n₁ := by lia) : (H.longSequence h
 
 instance : (Functor.const Cᵒᵖ : AddCommGrpCat ⥤ Cᵒᵖ ⥤ AddCommGrpCat).Additive where
 
-instance : (constantSheaf J AddCommGrpCat).Additive := by
-  delta constantSheaf
-  infer_instance
+instance : (constantSheaf J AddCommGrpCat).Additive :=
+  inferInstanceAs (Functor.const _ ⋙ presheafToSheaf _ _).Additive
 
 variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
 
