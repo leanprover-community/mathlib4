@@ -5,11 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.LocalProperties.Exactness
-public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Smooth.Flat
-public import Mathlib.RingTheory.Localization.Integral
-public import Mathlib.RingTheory.Etale.StandardEtale
+public import Mathlib.RingTheory.Unramified.LocalStructure
 
 /-!
 # Smooth base change commutes with integral closure
@@ -17,7 +14,7 @@ public import Mathlib.RingTheory.Etale.StandardEtale
 In this file we aim to prove that smooth base change commutes with integral closure.
 We define the map
 `TensorProduct.toIntegralClosure : S ⊗[R] integralClosure R B →ₐ[S] integralClosure S (S ⊗[R] B)`
-and (TODO) show that it is bijective when `S` is `R`-smooth.
+and show that it is bijective when `S` is `R`-smooth.
 
 ## Main results
 - `TensorProduct.toIntegralClosure_injective_of_flat`:
@@ -26,11 +23,8 @@ and (TODO) show that it is bijective when `S` is `R`-smooth.
   If `S = MvPolynomial σ R`, then `TensorProduct.toIntegralClosure` is bijective.
 - `TensorProduct.toIntegralClosure_bijective_of_isLocalization`:
   If `S = Localization M`, then `TensorProduct.toIntegralClosure` is bijective.
-- `TensorProduct.toIntegralClosure_bijective_of_isStandardEtale`:
-  If `S` is `R`-standard etale, then `TensorProduct.toIntegralClosure` is bijective.
-
-## TODO (@erdOne)
-Show that `TensorProduct.toIntegralClosure` is bijective when `S` is `R`-smooth.
+- `TensorProduct.toIntegralClosure_bijective_of_smooth`:
+  If `S` is `R`-smooth, then `TensorProduct.toIntegralClosure` is bijective.
 -/
 
 @[expose] public section
@@ -366,9 +360,9 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   exact sum_mem fun i hi ↦ Subalgebra.mul_mem _ (Algebra.subset_adjoin ⟨_, hRy _, rfl⟩)
     (pow_mem (Subalgebra.algebraMap_mem _ _) _)
 
--- This should be private once we know this for arbitrary smooth algebra.
-theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale [Algebra.IsStandardEtale R S] :
-    Function.Bijective (toIntegralClosure R S B) := by
+-- Subsumed by `TensorProduct.toIntegralClosure_bijective_of_smooth`
+private theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale
+    [Algebra.IsStandardEtale R S] : Function.Bijective (toIntegralClosure R S B) := by
   refine ⟨toIntegralClosure_injective_of_flat, ?_⟩
   intro ⟨x, hx⟩
   simp only [toIntegralClosure, Subtype.ext_iff, AlgHom.coe_codRestrict, ← AlgHom.mem_range]
@@ -377,3 +371,18 @@ theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale [Algebra.Is
   refine ⟨1 ⊗ₜ ⟨y, hy⟩, by simp⟩
 
 end IsStandardEtale
+
+theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S] :
+    Function.Bijective (toIntegralClosure R S B) := by
+  have (m : PrimeSpectrum S) : ∃ f ∉ m.asIdeal,
+      Function.Bijective (toIntegralClosure R (Localization.Away f) B) := by
+    obtain ⟨f, hfm, n, _, _, _⟩ :=
+      Algebra.IsSmoothAt.exists_isStandardEtale_mvPolynomial (R := R) (p := m.asIdeal)
+    exact ⟨f, hfm, toIntegralClosure_bijective_of_tower (S := MvPolynomial (Fin n) R)
+      toIntegralClosure_mvPolynomial_bijective toIntegralClosure_bijective_of_isStandardEtale⟩
+  choose f hfm hf using this
+  refine TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway (R := R)
+    (s := Set.range f) (B := B) ?_ (Localization.Away ·.1) (Set.forall_subtype_range_iff.mpr hf)
+  by_contra H
+  obtain ⟨m, hm, e⟩ := Ideal.exists_le_maximal _ H
+  exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)):)
