@@ -108,6 +108,40 @@ scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
 instance {X Y : Scheme.{u}} : CoeFun (X ⟶ Y) (fun _ ↦ X → Y) where
   coe f := f.base
 
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for coercing morphisms between schemes to functions. -/
+@[app_delab DFunLike.coe]
+meta def delabCoeFunNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``DFunLike.coe 5
+  withNaryArg 4 do
+  guard <| (← getExpr).isAppOfArity ``CategoryTheory.ConcreteCategory.hom 9
+  withNaryArg 8 do
+  guard <| (← getExpr).isAppOfArity ``PresheafedSpace.Hom.base 5
+  withNaryArg 4 do
+  guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.Hom.toHom 3
+  withNaryArg 2 do
+  guard <| (← getExpr).isAppOfArity ``Scheme.Hom.toLRSHom' 3
+  withNaryArg 2 do
+  `(⇑$(← delab))
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for applying morphisms of schemes to set-theoretic points. -/
+@[app_delab DFunLike.coe]
+meta def delabCoeFunAppNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``DFunLike.coe 6
+  let func ← do
+    withNaryArg 4 do
+    guard <| (← getExpr).isAppOfArity ``CategoryTheory.ConcreteCategory.hom 9
+    withNaryArg 8 do
+    guard <| (← getExpr).isAppOfArity ``PresheafedSpace.Hom.base 5
+    withNaryArg 4 do
+    guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.Hom.toHom 3
+    withNaryArg 2 do
+    guard <| (← getExpr).isAppOfArity ``Scheme.Hom.toLRSHom' 3
+    withNaryArg 2 do
+    delab
+  `($func $(← withNaryArg 5 do delab))
+
 instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
