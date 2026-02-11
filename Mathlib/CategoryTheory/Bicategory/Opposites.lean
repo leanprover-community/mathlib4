@@ -20,9 +20,9 @@ We construct the 1-cell opposite of a bicategory `B`, called `Bᵒᵖ`. It is de
 ## Remarks
 There are multiple notions of opposite categories for bicategories.
 - There is 1-cell dual `Bᵒᵖ` as defined above.
-- There is the 2-cell dual, `Cᶜᵒ` where only the natural transformations are reversed
-- There is the bi-dual `Cᶜᵒᵒᵖ` where the directions of both the morphisms and the natural
-  transformations are reversed.
+- There is the 2-cell dual, `Cᶜᵒ` where only the 2-morphisms are reversed
+- There is the bi-dual `Cᶜᵒᵒᵖ` where the directions of both the 1-morphisms and the 2-morphisms
+  are reversed.
 
 ## TODO
 
