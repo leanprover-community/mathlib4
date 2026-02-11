@@ -41,7 +41,7 @@ def Cat :=
 namespace Cat
 
 instance : Inhabited Cat :=
-  ⟨⟨Type u, CategoryTheory.types⟩⟩
+  ⟨⟨TypeCat.{u}, CategoryTheory.types⟩⟩
 
 -- TODO: maybe this coercion should be defined to be `objects.obj`?
 instance : CoeSort Cat (Type u) :=
@@ -359,9 +359,9 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
-def objects : Cat.{v, u} ⥤ Type u where
-  obj C := C
-  map F := F.toFunctor.obj
+def objects : Cat.{v, u} ⥤ TypeCat.{u} where
+  obj C := .of C
+  map F := TypeCat.ofHom F.toFunctor.obj
 
 /-- See through the defeq `objects.obj X = X`. -/
 instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs <| Category X
@@ -401,7 +401,7 @@ end Cat
 This ought to be modelled as a 2-functor!
 -/
 @[simps]
-def typeToCat : Type u ⥤ Cat where
+def typeToCat : TypeCat.{u} ⥤ Cat where
   obj X := Cat.of (Discrete X)
   map f := (Discrete.functor (Discrete.mk ∘ f)).toCatHom
   map_id X := by
@@ -423,10 +423,11 @@ def typeToCat : Type u ⥤ Cat where
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
-    funext (fun x => congrArg (Discrete.as) (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩))
+    ConcreteCategory.ext <|
+      funext (fun x => congrArg (Discrete.as) (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩))
 
 instance : Functor.Full typeToCat.{u} where
-  map_surjective F := ⟨Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk, by
+  map_surjective F := ⟨TypeCat.ofHom (Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
     ext
     apply Functor.ext
     · intro x y f

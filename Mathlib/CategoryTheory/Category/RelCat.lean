@@ -34,12 +34,14 @@ universe u
 /-- A type synonym for `Type u`, which carries the category instance for which
 morphisms are binary relations. -/
 def RelCat :=
-  Type u
+  TypeCat.{u}
 
 namespace RelCat
 variable {X Y Z : RelCat.{u}}
 
 instance inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
+
+instance : CoeSort RelCat.{u} (Type u) where coe X := X.carrier
 
 /-- The morphisms in the relation category are relations. -/
 structure Hom (X Y : RelCat.{u}) : Type u where
@@ -73,12 +75,12 @@ end Hom
 /-- The essentially surjective faithful embedding
 from the category of types and functions into the category of types and relations. -/
 @[simps obj map_rel]
-def graphFunctor : Type u ⥤ RelCat.{u} where
+def graphFunctor : TypeCat.{u} ⥤ RelCat.{u} where
   obj X := X
-  map f := .ofRel f.graph
+  map f := .ofRel f.hom.graph
 
 instance graphFunctor_faithful : graphFunctor.Faithful where
-  map_injective h := Function.graph_injective congr(($h).rel)
+  map_injective h := ConcreteCategory.ext (Function.graph_injective congr(($h).rel))
 
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
@@ -86,7 +88,7 @@ instance graphFunctor_essSurj : graphFunctor.EssSurj :=
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
 `Type u`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
-    IsIso (C := RelCat) r ↔ ∃ f : Iso (C := Type u) X Y, graphFunctor.map f.hom = r := by
+    IsIso (C := RelCat) r ↔ ∃ f : Iso (C := TypeCat.{u}) X Y, graphFunctor.map f.hom = r := by
   constructor
   · intro h
     have h1 := congr_fun₂ congr((· ~[($h.hom_inv_id).rel] ·))
@@ -94,11 +96,11 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
     obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
     obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
-    suffices hif : IsIso (C := Type u) f by
-      use asIso f
+    suffices hif : IsIso (C := TypeCat.{u}) (TypeCat.ofHom f) by
+      use asIso (TypeCat.ofHom f)
       ext ⟨x, y⟩
       exact ⟨by aesop, fun hxy ↦ (h2 (f x) y).1 ⟨x, (hf x).2, hxy⟩⟩
-    use g
+    use TypeCat.ofHom g
     constructor
     · ext x
       apply (h1 _ _).mp

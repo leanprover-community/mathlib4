@@ -256,12 +256,14 @@ end
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
 to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
-def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂) where
-  obj x := .mk <| m x.of
+def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
+    Core TypeCat.{u₁} ⥤ Core TypeCat.{u₂} where
+  obj x := .mk <| .of <| m x.of
   map f := .mk <| (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
   map_id α := by ext x; exact congr_fun (EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext
-    simp [EquivFunctor.map_trans', Function.comp]
+    simp [Equiv.toIso, EquivFunctor.map_trans']
+    rfl
 
 end CategoryTheory

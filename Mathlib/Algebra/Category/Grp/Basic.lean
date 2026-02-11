@@ -120,7 +120,7 @@ lemma coe_id {X : GrpCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : GrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp] lemma forget_map {X Y : GrpCat} (f : X ⟶ Y) : (forget GrpCat).map f = (f : X → Y) := rfl
+@[deprecated (since := "2026-02-10")] alias forget_map := CategoryTheory.coe_forget_map_eq_coe
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : GrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -334,10 +334,7 @@ lemma coe_id {X : CommGrpCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : CommGrpCat} (f : X ⟶ Y) :
-    (forget CommGrpCat).map f = (f : X → Y) :=
-  rfl
+@[deprecated (since := "2026-02-10")] alias forget_map := CategoryTheory.coe_forget_map_eq_coe
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommGrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -540,9 +537,9 @@ end CategoryTheory.Iso
 /-- multiplicative equivalences between `Group`s are the same as (isomorphic to) isomorphisms
 in `GrpCat` -/
 @[to_additive]
-def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : X ≃* Y ≅ X ≅ Y where
-  hom e := e.toGrpIso
-  inv i := i.groupIsoToMulEquiv
+def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : TypeCat.of (X ≃* Y) ≅ TypeCat.of (X ≅ Y) where
+  hom := TypeCat.ofHom fun e ↦ e.toGrpIso
+  inv := TypeCat.ofHom fun i ↦ i.groupIsoToMulEquiv
 
 /-- Additive equivalences between `AddGroup`s are the same
 as (isomorphic to) isomorphisms in `AddGrpCat`. -/
@@ -551,9 +548,9 @@ add_decl_doc addEquivIsoAddGroupIso
 /-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
 in `CommGrpCat`. -/
 @[to_additive]
-def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : X ≃* Y ≅ X ≅ Y where
-  hom e := e.toCommGrpIso
-  inv i := i.commGroupIsoToMulEquiv
+def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : TypeCat.of (X ≃* Y) ≅ TypeCat.of (X ≅ Y) where
+  hom := TypeCat.ofHom fun e ↦ e.toCommGrpIso
+  inv := TypeCat.ofHom fun i ↦ i.commGroupIsoToMulEquiv
 
 /-- Additive equivalences between `AddCommGroup`s are
 the same as (isomorphic to) isomorphisms in `AddCommGrpCat`. -/
@@ -563,7 +560,7 @@ namespace CategoryTheory.Aut
 
 /-- The (bundled) group of automorphisms of a type is isomorphic to the (bundled) group
 of permutations. -/
-def isoPerm {α : Type u} : GrpCat.of (Aut α) ≅ GrpCat.of (Equiv.Perm α) where
+def isoPerm {α : Type u} : GrpCat.of (Aut (TypeCat.of α)) ≅ GrpCat.of (Equiv.Perm α) where
   hom := GrpCat.ofHom
     { toFun := fun g => g.toEquiv
       map_one' := by aesop
@@ -575,7 +572,7 @@ def isoPerm {α : Type u} : GrpCat.of (Aut α) ≅ GrpCat.of (Equiv.Perm α) whe
 
 /-- The (unbundled) group of automorphisms of a type is `MulEquiv` to the (unbundled) group
 of permutations. -/
-def mulEquivPerm {α : Type u} : Aut α ≃* Equiv.Perm α :=
+def mulEquivPerm {α : Type u} : Aut (TypeCat.of α) ≃* Equiv.Perm α :=
   isoPerm.groupIsoToMulEquiv
 
 end CategoryTheory.Aut
@@ -584,14 +581,14 @@ end CategoryTheory.Aut
 instance GrpCat.forget_reflects_isos : (forget GrpCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget GrpCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact e.toGrpIso.isIso_hom
 
 @[to_additive]
 instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGrpCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact e.toCommGrpIso.isIso_hom
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`

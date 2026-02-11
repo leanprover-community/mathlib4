@@ -122,12 +122,12 @@ def functorialSurjectiveInjectiveFactorizationData :
     { obj := fun f => TypeCat.of (Subtype (Set.range f.hom.hom))
       map := fun φ => TypeCat.ofHom fun y => ⟨φ.right y.1, by
         obtain ⟨_, x, rfl⟩ := y
-        exact ⟨φ.left x, congr_fun φ.w x⟩ ⟩ }
+        exact ⟨φ.left x, congr_hom φ.w x⟩ ⟩ }
   i :=
     { app := fun f => TypeCat.ofHom fun x => ⟨f.hom x, ⟨x, rfl⟩⟩
       naturality := fun f g φ => by
         ext x
-        exact congr_fun φ.w x }
+        exact congr_hom φ.w x }
   p :=
     { app := fun _ => TypeCat.ofHom fun y => y.1
       naturality := by intros; rfl; }

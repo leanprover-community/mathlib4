@@ -59,6 +59,8 @@ set_option backward.privateInPublic.warn false in
 /-- The object in the category of types associated to a type. -/
 abbrev of (X : Type u) : TypeCat.{u} := ⟨X⟩
 
+instance : Inhabited TypeCat.{u} := ⟨of <| PUnit⟩
+
 lemma coe_of (X : Type u) : (of X : Type u) = X :=
   rfl
 
@@ -115,52 +117,19 @@ initialize_simps_projections Hom (hom' → hom)
 example (X : Type u) : CategoryTheory.ToType (of X) = X := by with_reducible rfl
 example (X : TypeCat.{u}) : CategoryTheory.ToType X = X.carrier := by with_reducible rfl
 
-/-!
-Some results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-lemma hom_id {X : TypeCat.{u}} : ConcreteCategory.hom (𝟙 X : X ⟶ X) = id := rfl
-
-lemma id_apply (X : TypeCat.{u}) (x : X) :
-    (𝟙 X : X ⟶ X).hom x = x := rfl
-
-lemma hom_comp {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g : _ → _) = (g : _ → _) ∘ (f : _ → _) := rfl
-
-lemma comp_apply {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g) x = g (f x) := rfl
-
-@[ext]
-lemma hom_ext {X Y : TypeCat.{u}} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-lemma hom_bijective {X Y : TypeCat.{u}} :
-    Function.Bijective (Hom.hom : (X ⟶ Y) → (X → Y)) :=
-  ConcreteCategory.hom_bijective (C := TypeCat)
-
-/-- Convenience shortcut for `TypeCat.hom_bijective.injective`. -/
-lemma hom_injective {X Y : TypeCat.{u}} :
-    Function.Injective (Hom.hom : (X ⟶ Y) → (X → Y)) :=
-  hom_bijective.injective
-
-/-- Convenience shortcut for `TypeCat.hom_bijective.surjective`. -/
-lemma hom_surjective {X Y : TypeCat.{u}} :
-    Function.Surjective (Hom.hom : (X ⟶ Y) → (X → Y)) :=
-  hom_bijective.surjective
+@[simp]
+lemma ofHom_comp {X Y Z : Type u} (f : X → Y) (g : Y → Z) : ofHom (g ∘ f) = ofHom f ≫ ofHom g := rfl
 
 @[simp]
-lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) : ofHom f x = f x := rfl
+lemma ofHom_id (X : Type u) : ofHom (id (α := X)) = 𝟙 (TypeCat.of X) := rfl
 
-lemma inv_hom_apply {X Y : TypeCat.{u}} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {X Y : TypeCat.{u}} (e : X ≅ Y) (x : Y) : e.hom (e.inv x) = x := by
-  simp
+@[simp]
+lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
+    ConcreteCategory.ofHom (C := TypeCat) f x = f x :=
+  rfl
 
 /-- `TypeCat.Hom.hom` bundled as an `Equiv`. -/
-def homEquiv {X Y : TypeCat.{u}} : (X ⟶ Y) ≃ (X → Y) where
-  toFun := Hom.hom
-  invFun := ofHom
+def homEquiv {X Y : TypeCat.{u}} : (X ⟶ Y) ≃ (X → Y) := ConcreteCategory.homEquiv (C := TypeCat)
 
 end TypeCat
 
@@ -261,7 +230,7 @@ attribute [elementwise] Iso.hom_inv_id_app Iso.inv_hom_id_app
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_app_apply := Iso.inv_hom_id_app_apply
 
 -- TODO: spell the assumptions as `{F G : C ⥤ TypeCat.{*}`}
-lemma naturality_symm {F : C ⥤ TypeCat.{u}} {G : C ⥤ TypeCat.{u'}} (e : ∀ j, F.obj j ≃ G.obj j)
+lemma naturality_symm {F : C ⥤ TypeCat.{w}} {G : C ⥤ TypeCat.{u'}} (e : ∀ j, F.obj j ≃ G.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ F.map f = G.map f ∘ e j) {j j' : C}
     (f : j ⟶ j') :
     (e j').symm ∘ G.map f = F.map f ∘ (e j).symm := by
@@ -474,3 +443,49 @@ theorem equivEquivIso_hom {X Y : Type u} (e : X ≃ Y) : equivEquivIso e = e.toI
 @[simp]
 theorem equivEquivIso_inv {X Y : TypeCat.{u}} (e : X ≅ Y) : equivEquivIso.symm e = e.toEquiv :=
   rfl
+
+namespace TypeCat
+
+variable {C : Type u} [Category.{v} C]
+
+def homSet (X Y : C) : TypeCat.{v} := TypeCat.of (X ⟶ Y)
+
+def precomp {X Y : C} (Z : C) (f : X ⟶ Y) : homSet Y Z ⟶ homSet X Z := ofHom fun g ↦ f ≫ g
+
+@[simp]
+lemma precomp_id (X Y : C) : precomp Y (𝟙 X) = 𝟙 _ := by
+  simp [precomp]
+  rfl
+
+@[simp]
+lemma precomp_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    precomp W (f ≫ g) = precomp W g ≫ precomp W f := by
+  ext
+  simp [precomp, ← TypeCat.ofHom_comp]
+
+@[simp]
+lemma precomp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : precomp _ f g = f ≫ g := rfl
+
+def postcomp (X : C) {Y Z : C} (g : Y ⟶ Z) : homSet X Y ⟶ homSet X Z := ofHom fun f ↦ f ≫ g
+
+@[simp]
+lemma postcomp_id (X Y : C) : postcomp Y (𝟙 X) = 𝟙 _ := by
+  simp [postcomp]
+  rfl
+
+@[simp]
+lemma postcomp_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    postcomp W (f ≫ g) = postcomp W f ≫ postcomp W g := by
+  ext
+  simp [postcomp, ← TypeCat.ofHom_comp]
+
+@[simp]
+lemma postcomp_apply {Y Z X : C} (g : Y ⟶ Z) (f : X ⟶ Y) : postcomp _ g f = f ≫ g := rfl
+
+@[simp]
+lemma precomp_postcomp {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) :
+    precomp Z f ≫ postcomp X g = postcomp Y g ≫ precomp W f := by
+  ext
+  simp [precomp, postcomp, ← TypeCat.ofHom_comp]
+
+end TypeCat

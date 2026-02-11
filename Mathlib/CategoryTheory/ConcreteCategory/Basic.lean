@@ -69,7 +69,6 @@ class ConcreteCategory (C : Type u) [Category.{v} C]
   (comp_apply : ∀ {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) (x : CC X),
     hom (f ≫ g) x = hom g (hom f x) := by cat_disch)
 
-export ConcreteCategory (id_apply comp_apply)
 attribute [simp] ConcreteCategory.hom_ofHom ConcreteCategory.ofHom_hom
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
@@ -137,9 +136,8 @@ lemma ext_apply {X Y : C} {f g : X ⟶ Y} (h : ∀ x, f x = g x) : f = g :=
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext low]
-theorem hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : ToType X, f x = g x) : f = g := by
-  apply ConcreteCategory.ext_apply
-  exact w
+theorem hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x, f x = g x) : f = g :=
+  ext (DFunLike.ext _ _ w)
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
