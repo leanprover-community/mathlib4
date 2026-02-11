@@ -4,10 +4,9 @@ module  -- shake: keep-all, shake: keep-downstream
 public import Batteries.Tactic.HelpCmd
 -- This import makes the `proof_wanted` command available globally.
 public import Batteries.Util.ProofWanted
--- This import makes the `#find_home` command available globally.
-public import ImportGraph.Tools.FindHome
--- This import makes the `#min_imports` command available globally.
-public import ImportGraph.Tools.MinImports
+-- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
+-- available globally.
+public import ImportGraph.Tools
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 -- This import makes the `#loogle` command available globally.

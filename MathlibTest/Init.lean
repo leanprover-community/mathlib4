@@ -25,6 +25,13 @@ info: -- Found 0 errors in 0 declarations (plus 0 automatically generated ones) 
 #guard_msgs in
 #lint
 
+/--
+info: Found the following transitively redundant imports:
+Init
+-/
+#guard_msgs in
+#redundant_imports
+
 -- `#min_imports` and `#min_imports in` are defined in different places, we check them both
 /-- info: import ImportGraph.Tools.MinImports -/
 #guard_msgs (substring := true) in
@@ -34,6 +41,10 @@ info: -- Found 0 errors in 0 declarations (plus 0 automatically generated ones) 
 /-- Init.Prelude -/
 #guard_msgs (substring := true) in
 #find_home Nat
+
+/-- info: Found 0 additional imports: -/
+#guard_msgs in
+#import_diff
 
 /-- info: Loogle Usage -/
 #guard_msgs (substring := true) in
