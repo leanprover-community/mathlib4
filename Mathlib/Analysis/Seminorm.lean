@@ -1189,7 +1189,7 @@ lemma uniformity_eq_of_hasBasis
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     𝓤 E = ⨅ r > 0, 𝓟 {x | p (x.1 - x.2) < r} := by
   rw [uniformSpace_eq_of_hasBasis p hb h₁ h₂]
-  simp only [← p.map_neg_add]
+  simp only [sub_eq_add_neg, ← map_neg_add p]
   rfl
 
 end Continuity

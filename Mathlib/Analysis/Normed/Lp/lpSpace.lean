@@ -1100,8 +1100,7 @@ theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
     NormedAddCommGroup.uniformity_basis_dist]
   intro ε hε
   refine ⟨ε, hε, ?_⟩
-  rintro f g (hfg : ‖-f + g‖ < ε)
-  simp only [norm_neg_add] at hfg ⊢
+  rintro f g (hfg : ‖f - g‖ < ε)
   have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
   exact this.trans_lt hfg
 
@@ -1218,9 +1217,12 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
   constructor
   · intro hfl i x hx y hy
     calc
-      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := by
+        simp only [dist_eq_norm]
+        exact lp.norm_apply_le_norm top_ne_zero (f x - f y) i
       _ ≤ K * dist x y := hfl x hx y hy
   · intro hgl x hx y hy
+    rw [dist_eq_norm]
     apply lp.norm_le_of_forall_le
     · positivity
     intro i
