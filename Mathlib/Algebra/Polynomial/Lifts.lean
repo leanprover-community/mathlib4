@@ -141,7 +141,7 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
   rw [degree_monomial, degree_monomial n h]
   exact mt (fun ha ↦ ha ▸ map_zero f) h
 
-/-- A polynomial lifts if and only if it can be lifted to a polynomial of the same support. -/
+/-- A polynomial that lifts can be lifted to a polynomial of the same support. -/
 theorem mem_lifts_and_support_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     ∃ q : R[X], map f q = p ∧ q.support = p.support := by
   rw [lifts_iff_coeff_lifts] at hlifts
@@ -155,7 +155,7 @@ theorem mem_lifts_and_support_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     exact fun k h ↦ by rw [← hg, h, map_zero]
   exact ⟨q, hq, hq'⟩
 
-/-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
+/-- A polynomial that lifts can be lifted to a polynomial of the same degree. -/
 theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
   obtain ⟨q, hq, hq'⟩ := mem_lifts_and_support_eq hlifts
