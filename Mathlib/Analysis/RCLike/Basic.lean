@@ -1167,6 +1167,15 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
 
 @[simp] theorem map_from_real : map ℝ K = ofRealCLM := by ext; simp
 
+open scoped ComplexOrder in
+lemma instOrderClosedTopology : OrderClosedTopology K where
+  isClosed_le' := by
+    conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
+    simp_rw [Set.setOf_and]
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+
+scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
+
 end LinearMaps
 
 /-!
