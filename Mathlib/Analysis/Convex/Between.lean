@@ -1007,6 +1007,38 @@ theorem Sbtw.trans_right_left {w x y z : P} (h₁ : Sbtw R w x z) (h₂ : Sbtw R
     Sbtw R w x y :=
   ⟨h₁.wbtw.trans_right_left h₂.wbtw, h₁.ne_left, h₂.left_ne⟩
 
+theorem Wbtw.trans_expand_left {w x y z : P} (h₁ : Wbtw R w x y) (h₂ : Wbtw R x y z)
+    (h_ne : x ≠ y) : Wbtw R w x z := by
+  rcases h₁ with ⟨t₁, ht₁, hx⟩
+  rcases h₂ with ⟨t₂, ht₂, hy⟩
+  refine ⟨t₁ * t₂ / (1 - t₁ + t₁ * t₂), ?_, ?_⟩
+  · constructor
+    · apply div_nonneg (mul_nonneg ht₁.1 ht₂.1)
+      nlinarith [ht₁.1, ht₁.2, ht₂.1, ht₂.2]
+    · apply div_le_one_of_le₀
+      · grind
+      · nlinarith [ht₁.1, ht₁.2, ht₂.1, ht₂.2]
+  have h_denom : 1 - t₁ + t₁ * t₂ ≠ 0 := by
+    contrapose h_ne
+    have h1 : t₁ = 1 := by nlinarith [ht₁.1, ht₁.2, ht₂.1, ht₂.2]
+    rw [← hx, h1, lineMap_apply_one]
+  rw [← hy, lineMap_apply, lineMap_apply, eq_comm, eq_vadd_iff_vsub_eq] at hx
+  rw [lineMap_apply, eq_comm, eq_vadd_iff_vsub_eq, div_eq_mul_inv, mul_comm, mul_smul,
+    eq_inv_smul_iff₀ h_denom, add_smul, sub_smul, one_smul]
+  nth_rw 1 [hx]
+  rw [← smul_sub, mul_smul, mul_smul, vsub_sub_vsub_cancel_right, vadd_vsub, ← smul_assoc,
+    ← smul_assoc, ← smul_assoc, ← smul_add, vsub_add_vsub_cancel]
+
+theorem Wbtw.trans_expand_right {w x y z : P} (h₁ : Wbtw R w x y) (h₂ : Wbtw R x y z)
+    (h_ne : x ≠ y) : Wbtw R w y z := Wbtw.trans_right (h₁.trans_expand_left h₂ h_ne) h₂
+
+theorem Sbtw.trans_expand_left {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw R x y z) :
+    Sbtw R w x z :=
+  ⟨Wbtw.trans_expand_left h₁.wbtw h₂.wbtw h₂.left_ne, h₁.left_ne.symm, h₂.left_ne_right⟩
+
+theorem Sbtw.trans_expand_right {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw R x y z) :
+    Sbtw R w y z := Sbtw.trans_right (h₁.trans_expand_left h₂) h₂
+
 omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]

@@ -188,7 +188,7 @@ noncomputable def fixpointPolynomial (g : GL (Fin 2) R) : R[X] :=
 
 /-- The fixed-point polynomial is identically zero iff `g` is scalar. -/
 lemma fixpointPolynomial_eq_zero_iff {g : GL (Fin 2) R} :
-    g.fixpointPolynomial = 0 ↔ g.val ∈ Set.range (scalar _) := by
+    g.fixpointPolynomial = 0 ↔ g.val ∈ Set.range (Matrix.scalar _) := by
   rw [fixpointPolynomial]
   constructor
   · refine fun hP ↦ ⟨g 0 0, ?_⟩
