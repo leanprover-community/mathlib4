@@ -58,20 +58,11 @@ Checks whether the environment contains `decl` publicly, or privately in the cur
 Returns the `ConstantInfo` with that name.
 Note: `env` must be obtained wrapped inside `withoutExporting` for it to be able to see
 private declarations.
+Similar to `Lean.Elab.checkNotAlreadyDeclared`.
 -/
 def findPublicOrPrivate? (env : Environment) (decl : Name) : Option ConstantInfo :=
   env.find? decl <|>
   env.find? (if isPrivateName decl then privateToUserName decl else mkPrivateName env decl)
-
-
-/--
-Checks whether the environment contains `decl` publicly, or privately in the current module.
-Note: `env` must be obtained wrapped inside `withoutExporting` for it to be able to see
-private declarations.
--/
-def containsPublicOrPrivate (env : Environment) (decl : Name) : Bool :=
-  env.findPublicOrPrivate? decl |>.isSome
-
 
 end Lean.Environment
 

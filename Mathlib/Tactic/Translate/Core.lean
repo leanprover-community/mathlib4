@@ -725,7 +725,8 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     Linter.logLintIf linter.translateRedundant ref m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
   let value := trgDecl.value! (allowOpaque := true)
-  trace[translate] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
+  trace[translate] "generating\n\
+    {trgDecl.kind} {privateToUserName tgt} : {trgDecl.type} :=\n  {value}"
   try
     -- set `Elab.async` to `false` in order to be able to catch kernel errors
     withOptions (Elab.async.set · false) do
@@ -738,7 +739,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       throwError "@[{t.attrName}] failed. \
         The translated value is not type correct. For help, see the docstring \
         of `to_additive`, section `Troubleshooting`. \
-        Failed to add declaration\n{tgt}:\n{ex.toMessageData}"
+        Failed to add declaration `{.ofConstName tgt}`:\n{ex.toMessageData}"
     throwError "@[{t.attrName}] failed. Nested error message:\n{ex.toMessageData}"
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
@@ -1237,15 +1238,13 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   let dupe? := (← findPublicOrPrivate? tgt).map (·.name)
   trace[translate_detail] "found {dupe?} in environment when searching for {tgt}"
   if cfg.existing != dupe?.isSome && !(← isInductive src) && !cfg.self then
-    Linter.logLintIf linter.translateExisting cfg.ref <|
-      if dupe?.isSome then
-        -- `tgt` and `dupe` are the same modulo privateness, so we print their (shared) public name
-        m!"The translated declaration `{.ofConstName <| privateToUserName tgt}` already exists. \
-          Please specify this explicitly using `@[{t.attrName} existing]`."
-      else
-        -- not using `.ofConstName` since `tgt` doesn't exist
-        "The translated declaration `{privateToUserName tgt}` doesn't exist. \
-        Please remove the option `existing`."
+    if dupe?.isSome then
+      -- `tgt` and `dupe` are the same modulo privateness, so we print their (shared) public name
+      Linter.logLintIf linter.translateExisting cfg.ref m!"The translated declaration \
+        `{.ofConstName <| privateToUserName tgt}` already exists. \
+        Please specify this explicitly using `@[{t.attrName} existing]`."
+    else
+      throwUnknownConstantAt cfg.ref tgt
   let reorder ←
     if let some dupe := dupe? then
       MetaM.run' <| checkExistingType t src dupe cfg

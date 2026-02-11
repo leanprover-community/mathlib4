@@ -58,31 +58,19 @@ namespace Lean
 
 /--
 Find the `ConstantInfo` for `decl` publicly, or privately in the current module.
+Similar to `Lean.Elab.checkNotAlreadyDeclared`.
 -/
 def findPublicOrPrivate? (decl : Name) : CoreM (Option ConstantInfo) := withoutExporting <| do
   return (← getEnv).findPublicOrPrivate? decl
 
 /--
-Checks whether the current environment contains `decl` publicly, or privately in the current module.
--/
-def existsPublicOrPrivate (decl : Name) : CoreM Bool := withoutExporting <| do
-  return (← getEnv).containsPublicOrPrivate decl
-
-/--
 Adds a declaration, and (unlike `addDecl`) display a friendly error message if the
 declaration already exists.
+Adds a hover of the existing declaration if the declaration already exists.
 -/
 def addDeclSafe (decl : Declaration) (forceExpose := false) : CoreM Unit := do
-  let env ← withoutExporting getEnv
   for nm in decl.getNames do
-    if env.containsPublicOrPrivate nm then
-      if decl.getNames.length == 1 then
-        throwError "Cannot add declaration {privateToUserName decl.getNames[0]!} \
-          to the environment, a declaration already exists with that name."
-      else
-        throwError "Cannot add declarations {decl.getNames.map privateToUserName} \
-          to the environment.\n\
-          Declaration {privateToUserName nm} already exists."
+    Elab.checkNotAlreadyDeclared nm
   addDecl decl forceExpose
 
 end Lean
