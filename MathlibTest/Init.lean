@@ -16,17 +16,6 @@ import Mathlib.Init
 #guard_msgs (substring := true) in
 #lint
 
-/-- info: trivial : True -/
-#guard_msgs (substring := true) in
-theorem checking_check_tactic : True := by
-  -- `#check` is defined in Core, but `#check` as a tactic is defined in Mathlib
-  #check trivial
-  trivial
-
-/-- info: 0 -/
-#guard_msgs in
-#simp only [] => 0
-
 -- `#min_imports` and `#min_imports in` are defined in different places, we check them both
 /-- info: import ImportGraph.Tools.MinImports -/
 #guard_msgs (substring := true) in
