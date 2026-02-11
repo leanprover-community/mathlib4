@@ -721,14 +721,18 @@ theorem sub_mem_closedBall (p : Seminorm 𝕜 E) (x₁ x₂ y : E) (r : ℝ) :
   simp_rw [mem_closedBall, sub_sub]
 
 /-- The image of a ball under addition with a singleton is another ball. -/
-theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r :=
+theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  Metric.vadd_ball x y r
+  have A (a : E) (r : ℝ) : Metric.ball a r = p.ball a r := by
+    ext; simp only [mem_ball_iff_norm]; rfl
+  simpa [A] using Metric.vadd_ball x y r
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
-theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r :=
+theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  Metric.vadd_closedBall x y r
+  have A (a : E) (r : ℝ) : Metric.closedBall a r = p.closedBall a r := by
+    ext; simp only [mem_closedBall_iff_norm]; rfl
+  simpa [A] using Metric.vadd_closedBall x y r
 
 end SMul
 
@@ -1184,7 +1188,9 @@ lemma uniformity_eq_of_hasBasis
     {p' : ι → Prop} {s : ι → Set E} (p : Seminorm 𝕜 E) (hb : (𝓝 0 : Filter E).HasBasis p' s)
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     𝓤 E = ⨅ r > 0, 𝓟 {x | p (x.1 - x.2) < r} := by
-  rw [uniformSpace_eq_of_hasBasis p hb h₁ h₂]; rfl
+  rw [uniformSpace_eq_of_hasBasis p hb h₁ h₂]
+  simp only [← p.map_neg_add]
+  rfl
 
 end Continuity
 

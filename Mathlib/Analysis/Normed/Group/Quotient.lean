@@ -431,7 +431,7 @@ instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
   QuotientAddGroup.instNormedAddCommGroup S.toAddSubgroup (hS := hS)
 
 instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
-  QuotientAddGroup.completeSpace M S.toAddSubgroup
+  QuotientAddGroup.completeSpace_left M S.toAddSubgroup
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
@@ -493,7 +493,7 @@ nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} 
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ := norm_mk_le_norm
 
 instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
-  dist_eq := dist_eq_norm
+  dist_eq := dist_eq_norm_neg_add
   mul_comm := _root_.mul_comm
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
