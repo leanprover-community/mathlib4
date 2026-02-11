@@ -122,7 +122,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     TendstoUniformlyOnFilter (fun (n : ι × ι) (z : E) => f n.1 z - f n.2 z - (f n.1 x - f n.2 x)) 0
         (l ×ˢ l) (𝓝 x) ∧
       TendstoUniformlyOnFilter (fun (n : ι × ι) (_ : E) => f n.1 x - f n.2 x) 0 (l ×ˢ l) (𝓝 x) by
-    have := this.1.add this.2
+    have := this.1.neg.add this.2.neg
     rw [add_zero] at this
     exact this.congr (by simp)
   constructor

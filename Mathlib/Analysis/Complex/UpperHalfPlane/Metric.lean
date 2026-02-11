@@ -219,7 +219,7 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
       simp_rw [dist_eq]
       dsimp only [coe_mk, mk_im]
       gcongr
-      simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_norm (z - w)
+      simpa [sqrt_sq_eq_abs, ← dist_eq_norm] using Complex.abs_im_le_norm (z - w)
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
   rw [← div_le_iff₀' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
