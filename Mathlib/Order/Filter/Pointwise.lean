@@ -245,8 +245,16 @@ end InvolutiveInv
 
 @[to_additive (attr := simp)]
 lemma inv_atTop {G : Type*} [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] :
-    (atTop : Filter G)⁻¹ = atBot :=
-  (OrderIso.inv G).map_atTop
+    (atTop : Filter G)⁻¹ = atBot := by
+  -- Show (atTop)⁻¹ ≤ atBot: suffices ∀ a, Iic a ∈ (atTop)⁻¹
+  have h1 : (atTop : Filter G)⁻¹ ≤ atBot := le_iInf fun a =>
+    le_principal_iff.mpr <| Filter.mem_inv.mpr <| mem_of_superset (Ici_mem_atTop a⁻¹)
+      fun b (hb : a⁻¹ ≤ b) => show b⁻¹ ≤ a from inv_le'.mp hb
+  -- Show atBot ≤ (atTop)⁻¹: from (atBot)⁻¹ ≤ atTop and monotonicity of ⁻¹
+  have h2 : (atBot : Filter G)⁻¹ ≤ atTop := le_iInf fun a =>
+    le_principal_iff.mpr <| Filter.mem_inv.mpr <| mem_of_superset (Iic_mem_atBot a⁻¹)
+      fun b (hb : b ≤ a⁻¹) => show a ≤ b⁻¹ from le_inv'.mp hb
+  exact h1.antisymm (inv_inv (atBot : Filter G) ▸ Filter.inv_le_inv h2)
 
 /-! ### Filter addition/multiplication -/
 

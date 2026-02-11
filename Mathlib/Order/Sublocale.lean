@@ -223,17 +223,21 @@ def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
   map_rel_iff' := by simp
 
-lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSublocale X _ := rfl
+open OrderDual in
+lemma nucleusIsoSublocale.eq_toSublocale :
+    Nucleus.toSublocale = (@nucleusIsoSublocale X _) ∘ toDual := rfl
+open OrderDual in
 lemma nucleusIsoSublocale.symm_eq_toNucleus :
-  Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
+    toDual ∘ Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
 
 instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
-  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
-    nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
-    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
+  iInf_sup_le_sup_sInf a s := by
+    simp only [← nucleusIsoSublocale.symm.le_iff_le, nucleusIsoSublocale.symm.map_sup,
+      nucleusIsoSublocale.symm.map_sInf, nucleusIsoSublocale.symm.map_iInf, sup_iInf_eq,
+      le_refl]
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
