@@ -370,12 +370,7 @@ the tensor product of the comultiplications followed by the tensor strength
 @[simp]
 theorem tensorObj_comul (A B : C) [ComonObj A] [ComonObj B] :
     Δ[A ⊗ B] = (Δ[A] ⊗ₘ Δ[B]) ≫ tensorμ A A B B := by
-  rw [tensorObj_comul']
-  congr
-  simp only [tensorμ, unop_tensorObj, unop_op]
-  apply Quiver.Hom.unop_inj
-  dsimp [op_tensorObj, op_associator]
-  rw [Category.assoc, Category.assoc, Category.assoc]
+  simp [tensorObj_comul']
 
 /-- The forgetful functor from `Comon C` to `C` is monoidal when `C` is monoidal. -/
 instance : (forget C).Monoidal :=
