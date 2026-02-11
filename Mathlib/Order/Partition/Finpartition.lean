@@ -398,35 +398,6 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
   simp only [restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
     Finset.sum_image hinj, add_zero]
 
-/-- Combine a family of partitions of pairwise disjoint elements into a partition of their sup. -/
-def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
-    (ha : Set.PairwiseDisjoint (I : Set ι) a) : Finpartition (I.sup a) where
-  parts := I.biUnion fun i => (P i).parts
-  supIndep := supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
-    simp only [coe_biUnion, Set.mem_iUnion, mem_coe] at hx hy
-    obtain ⟨i, hi, hxi⟩ := hx
-    obtain ⟨j, hj, hyj⟩ := hy
-    by_cases hij : i = j
-    · subst hij; exact (P i).disjoint hxi hyj fun h => hxy (h ▸ rfl)
-    · exact (ha hi hj hij).mono ((P i).le hxi) ((P j).le hyj)
-  sup_parts := by
-    rw [sup_biUnion]
-    exact sup_congr rfl fun i _ => (P i).sup_parts
-  bot_notMem := by
-    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
-
-/-- The sum of a set-valued function over a combined partition equals the sum of sums over component
-partitions. -/
-lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpartition (s i))
-    (ha : Set.PairwiseDisjoint (I : Set ι) s) {M : Type*} [AddCommMonoid M] (f : α → M) :
-    ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
-  simp_rw [combine]
-  refine Finset.sum_biUnion fun i hi j hj hij => ?_
-  rw [Function.onFun, Finset.disjoint_left]
-  intro p hpi hpj
-  have hp_disj : Disjoint p p := (ha hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
-  exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
-
 end DistribLattice
 
 section IsModularLattice
@@ -493,6 +464,30 @@ def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a �
 theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disjoint a b}
     {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
   card_insert_of_notMem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
+
+/-- Combine a family of partitions of pairwise disjoint elements into a partition of their sup. -/
+def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
+    (ha : I.SupIndep a) : Finpartition (I.sup a) where
+  parts := I.biUnion fun i => (P i).parts
+  supIndep :=
+    .biUnion (by simpa only [sup_parts]) (fun i _ ↦ (P i).supIndep)
+  sup_parts := by
+    rw [sup_biUnion]
+    exact sup_congr rfl fun i _ => (P i).sup_parts
+  bot_notMem := by
+    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
+
+/-- The sum of a set-valued function over a combined partition equals the sum of sums over component
+partitions. -/
+lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpartition (s i))
+    (ha : I.SupIndep s) {M : Type*} [AddCommMonoid M] (f : α → M) :
+    ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
+  simp_rw [combine]
+  refine Finset.sum_biUnion fun i hi j hj hij => ?_
+  rw [Function.onFun, Finset.disjoint_left]
+  intro p hpi hpj
+  have hp_disj : Disjoint p p := (ha.pairwiseDisjoint hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
+  exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
 
 end IsModularLattice
 
