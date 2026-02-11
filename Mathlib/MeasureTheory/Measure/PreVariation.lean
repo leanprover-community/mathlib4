@@ -256,12 +256,11 @@ noncomputable def preVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 
   (ennrealPreVariation f hf hf').ennrealToMeasure
 
 @[simp]
-theorem MeasureTheory.VectorMeasure.ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
+theorem VectorMeasure.ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
     MeasureTheory.VectorMeasure.ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
-  simp [VectorMeasure.ennrealToMeasure]
-  sorry
-  -- need to show that `ofMeasurable 0 = 0`
-
+  simp only [VectorMeasure.ennrealToMeasure]
+  ext s
+  exact ofMeasurable_zero s
 
 @[simp]
 lemma preVariation_zero_eq_zero :
