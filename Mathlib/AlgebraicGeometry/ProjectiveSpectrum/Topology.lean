@@ -123,26 +123,30 @@ variable (𝒜)
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_ideal :
     @GaloisConnection (Ideal A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
-  fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
+      (OrderDual.toDual ∘ fun I => zeroLocus 𝒜 (I : Set A))
+      (fun t => (vanishingIdeal (OrderDual.ofDual t)).toIdeal) :=
+  fun I t => subset_zeroLocus_iff_le_vanishingIdeal (OrderDual.ofDual t) I
 
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
+      (OrderDual.toDual ∘ zeroLocus 𝒜)
+      (fun t => vanishingIdeal (OrderDual.ofDual t)) := by
   have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi A _).gc
-  simpa [zeroLocus_span, Function.comp_def] using GaloisConnection.compose ideal_gc (gc_ideal 𝒜)
+  simpa [zeroLocus_span, Function.comp_def] using ideal_gc.compose (gc_ideal 𝒜)
 
 theorem gc_homogeneousIdeal :
     @GaloisConnection (HomogeneousIdeal 𝒜) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun I => zeroLocus 𝒜 I) fun t => vanishingIdeal t :=
+      (OrderDual.toDual ∘ fun I => zeroLocus 𝒜 (I : Set A))
+      (fun t => vanishingIdeal (OrderDual.ofDual t)) :=
   fun I t => by
-  simpa [show I.toIdeal ≤ (vanishingIdeal t).toIdeal ↔ I ≤ vanishingIdeal t from Iff.rfl] using
-    subset_zeroLocus_iff_le_vanishingIdeal t I.toIdeal
+  simpa [show I.toIdeal ≤ (vanishingIdeal (OrderDual.ofDual t)).toIdeal ↔
+    I ≤ vanishingIdeal (OrderDual.ofDual t) from Iff.rfl] using
+    subset_zeroLocus_iff_le_vanishingIdeal (OrderDual.ofDual t) I.toIdeal
 
 theorem subset_zeroLocus_iff_subset_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) (s : Set A) :
     t ⊆ zeroLocus 𝒜 s ↔ s ⊆ vanishingIdeal t :=
-  (gc_set _) s t
+  OrderDual.toDual_le_toDual.symm.trans ((gc_set _) s (OrderDual.toDual t))
 
 theorem subset_vanishingIdeal_zeroLocus (s : Set A) : s ⊆ vanishingIdeal (zeroLocus 𝒜 s) :=
   (gc_set _).le_u_l s
@@ -157,7 +161,7 @@ theorem homogeneousIdeal_le_vanishingIdeal_zeroLocus (I : HomogeneousIdeal 𝒜)
 
 theorem subset_zeroLocus_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) :
     t ⊆ zeroLocus 𝒜 (vanishingIdeal t) :=
-  (gc_ideal _).l_u_le t
+  OrderDual.toDual_le_toDual.mp ((gc_ideal _).l_u_le (OrderDual.toDual t))
 
 theorem zeroLocus_anti_mono {s t : Set A} (h : s ⊆ t) : zeroLocus 𝒜 t ⊆ zeroLocus 𝒜 s :=
   (gc_set _).monotone_l h
@@ -175,7 +179,7 @@ theorem vanishingIdeal_anti_mono {s t : Set (ProjectiveSpectrum 𝒜)} (h : s �
   (gc_ideal _).monotone_u h
 
 theorem zeroLocus_bot : zeroLocus 𝒜 ((⊥ : Ideal A) : Set A) = Set.univ :=
-  (gc_ideal 𝒜).l_bot
+  congrArg OrderDual.ofDual (gc_ideal 𝒜).l_bot
 
 @[simp]
 theorem zeroLocus_singleton_zero : zeroLocus 𝒜 ({0} : Set A) = Set.univ :=
@@ -183,7 +187,7 @@ theorem zeroLocus_singleton_zero : zeroLocus 𝒜 ({0} : Set A) = Set.univ :=
 
 @[simp]
 theorem zeroLocus_empty : zeroLocus 𝒜 (∅ : Set A) = Set.univ :=
-  (gc_set 𝒜).l_bot
+  congrArg OrderDual.ofDual (gc_set 𝒜).l_bot
 
 @[simp]
 theorem vanishingIdeal_univ : vanishingIdeal (∅ : Set (ProjectiveSpectrum 𝒜)) = ⊤ := by
@@ -204,30 +208,41 @@ theorem zeroLocus_univ : zeroLocus 𝒜 (Set.univ : Set A) = ∅ :=
 
 theorem zeroLocus_sup_ideal (I J : Ideal A) :
     zeroLocus 𝒜 ((I ⊔ J : Ideal A) : Set A) = zeroLocus _ I ∩ zeroLocus _ J :=
-  (gc_ideal 𝒜).l_sup
+  congrArg OrderDual.ofDual (gc_ideal 𝒜).l_sup
 
 theorem zeroLocus_sup_homogeneousIdeal (I J : HomogeneousIdeal 𝒜) :
     zeroLocus 𝒜 ((I ⊔ J : HomogeneousIdeal 𝒜) : Set A) = zeroLocus _ I ∩ zeroLocus _ J :=
-  (gc_homogeneousIdeal 𝒜).l_sup
+  congrArg OrderDual.ofDual (gc_homogeneousIdeal 𝒜).l_sup
 
 theorem zeroLocus_union (s s' : Set A) : zeroLocus 𝒜 (s ∪ s') = zeroLocus _ s ∩ zeroLocus _ s' :=
-  (gc_set 𝒜).l_sup
+  congrArg OrderDual.ofDual (gc_set 𝒜).l_sup
 
 theorem vanishingIdeal_union (t t' : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (t ∪ t') = vanishingIdeal t ⊓ vanishingIdeal t' := by
-  ext1; exact (gc_ideal 𝒜).u_inf
+  ext1
+  have := (gc_ideal 𝒜).u_inf (b₁ := OrderDual.toDual t) (b₂ := OrderDual.toDual t')
+  simpa using this
 
 theorem zeroLocus_iSup_ideal {γ : Sort*} (I : γ → Ideal A) :
-    zeroLocus _ ((⨆ i, I i : Ideal A) : Set A) = ⋂ i, zeroLocus 𝒜 (I i) :=
-  (gc_ideal 𝒜).l_iSup
+    zeroLocus _ ((⨆ i, I i : Ideal A) : Set A) = ⋂ i, zeroLocus 𝒜 (I i) := by
+  have h := congrArg (α := (Set (ProjectiveSpectrum 𝒜))ᵒᵈ) OrderDual.ofDual
+    ((gc_ideal 𝒜).l_iSup (f := I))
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual, ofDual_iSup] at h
+  exact h
 
 theorem zeroLocus_iSup_homogeneousIdeal {γ : Sort*} (I : γ → HomogeneousIdeal 𝒜) :
-    zeroLocus _ ((⨆ i, I i : HomogeneousIdeal 𝒜) : Set A) = ⋂ i, zeroLocus 𝒜 (I i) :=
-  (gc_homogeneousIdeal 𝒜).l_iSup
+    zeroLocus _ ((⨆ i, I i : HomogeneousIdeal 𝒜) : Set A) = ⋂ i, zeroLocus 𝒜 (I i) := by
+  have h := congrArg (α := (Set (ProjectiveSpectrum 𝒜))ᵒᵈ) OrderDual.ofDual
+    ((gc_homogeneousIdeal 𝒜).l_iSup (f := I))
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual, ofDual_iSup] at h
+  exact h
 
 theorem zeroLocus_iUnion {γ : Sort*} (s : γ → Set A) :
-    zeroLocus 𝒜 (⋃ i, s i) = ⋂ i, zeroLocus 𝒜 (s i) :=
-  (gc_set 𝒜).l_iSup
+    zeroLocus 𝒜 (⋃ i, s i) = ⋂ i, zeroLocus 𝒜 (s i) := by
+  have h := congrArg (α := (Set (ProjectiveSpectrum 𝒜))ᵒᵈ) OrderDual.ofDual
+    ((gc_set 𝒜).l_iSup (f := s))
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual, ofDual_iSup] at h
+  exact h
 
 theorem zeroLocus_bUnion (s : Set (Set A)) :
     zeroLocus 𝒜 (⋃ s' ∈ s, s' : Set A) = ⋂ s' ∈ s, zeroLocus 𝒜 s' := by
@@ -236,7 +251,8 @@ theorem zeroLocus_bUnion (s : Set (Set A)) :
 theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
   HomogeneousIdeal.toIdeal_injective <| by
-    convert (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
+    have := (gc_ideal 𝒜).u_iInf (f := fun i => OrderDual.toDual (t i))
+    simpa using this
 
 theorem zeroLocus_inf (I J : Ideal A) :
     zeroLocus 𝒜 ((I ⊓ J : Ideal A) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
@@ -320,7 +336,10 @@ theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (ProjectiveSpectrum 𝒜)) 
 
 theorem vanishingIdeal_closure (t : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (closure t) = vanishingIdeal t := by
-  have : (vanishingIdeal (zeroLocus 𝒜 (vanishingIdeal t))).toIdeal = _ := (gc_ideal 𝒜).u_l_u_eq_u t
+  have : (vanishingIdeal (zeroLocus 𝒜 (vanishingIdeal t))).toIdeal =
+      (vanishingIdeal t).toIdeal := by
+    have := (gc_ideal 𝒜).u_l_u_eq_u (OrderDual.toDual t)
+    simpa [Function.comp_apply] using this
   ext1
   rw [zeroLocus_vanishingIdeal_eq_closure 𝒜 t] at this
   exact this
