@@ -556,6 +556,14 @@ lemma logHeight₁_sum_le {α : Type*} (s : Finset α) (x : α → K) :
   pull (disch := first | assumption | positivity) log
   exact (log_le_log <| by positivity) <| mulHeight₁_sum_le hs x
 
+/-- The multiplicative height of `-x` is the same as that of `x`. -/
+lemma mulHeight₁_neg (x : K) : mulHeight₁ (-x) = mulHeight₁ x := by
+  simp [mulHeight₁_eq]
+
+/-- The logarithmic height of `-x` is the same as that of `x`. -/
+lemma logHeight₁_neg (x : K) : logHeight₁ (-x) = logHeight₁ x := by
+  simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_neg]
+
 /-- The multiplicative height of `x + y` is at most `2 ^ totalWeight K`
 times the product of the multiplicative heights of `x` and `y`. -/
 lemma mulHeight₁_add_le (x y : K) :
@@ -571,5 +579,19 @@ lemma logHeight₁_add_le (x y : K) :
   simp only [logHeight₁_eq_log_mulHeight₁]
   pull (disch := positivity) log
   exact (log_le_log <| by positivity) <| mulHeight₁_add_le ..
+
+/-- The multiplicative height of `x - y` is at most `2 ^ totalWeight K`
+times the product of the multiplicative heights of `x` and `y`. -/
+lemma mulHeight₁_sub_le (x y : K) :
+    mulHeight₁ (x - y) ≤ 2 ^ totalWeight K * mulHeight₁ x * mulHeight₁ y := by
+  rw [sub_eq_add_neg, ← mulHeight₁_neg y]
+  exact mulHeight₁_add_le x (-y)
+
+/-- The logarithmic height of `x - y` is at most `totalWeight K * log 2`
+plus the sum of the logarithmic heights of `x` and `y`. -/
+lemma logHeight₁_sub_le (x y : K) :
+    logHeight₁ (x - y) ≤ totalWeight K * log 2 + logHeight₁ x + logHeight₁ y := by
+  rw [sub_eq_add_neg, ← logHeight₁_neg y]
+  exact logHeight₁_add_le x (-y)
 
 end Height
