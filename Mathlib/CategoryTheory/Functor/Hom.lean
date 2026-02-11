@@ -25,12 +25,11 @@ namespace CategoryTheory.Functor
 
 variable (C : Type u) [Category.{v} C]
 
-attribute [local simp ←] TypeCat.ofHom_comp in
 /-- `Functor.hom` is the hom-pairing, sending `(X, Y)` to `X ⟶ Y`, contravariant in `X` and
 covariant in `Y`. -/
 @[simps]
 def hom : Cᵒᵖ × C ⥤ TypeCat.{v} where
   obj p := TypeCat.of (unop p.1 ⟶ p.2)
-  map f := ConcreteCategory.ofHom fun h => f.1.unop ≫ h ≫ f.2
+  map f := ConcreteCategory.ofHom ⟨fun h => f.1.unop ≫ h ≫ f.2⟩
 
 end CategoryTheory.Functor
