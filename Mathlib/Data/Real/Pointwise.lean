@@ -70,8 +70,6 @@ end MulActionWithZero
 
 section Module
 
-open OrderDual
-
 variable [Module α ℝ] [IsOrderedModule α ℝ] {a : α}
 
 theorem Real.sInf_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : sInf (a • s) = a • sSup s := by
@@ -81,12 +79,10 @@ theorem Real.sInf_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : sInf (a • s) =
   · rw [zero_smul_set hs, zero_smul]
     exact csInf_singleton 0
   by_cases h : BddAbove s
-  · have := congrArg ofDual ((OrderIso.smulRightDual ℝ ha').map_csSup' hs h)
-    simp only [OrderIso.smulRightDual, RelIso.coe_fn_mk, Equiv.coe_fn_mk, Equiv.trans_apply,
-      OrderDual.equiv, ofDual_toDual, Equiv.smulRight_apply] at this
-    rw [ofDual_sSup] at this
-    convert this.symm using 1
-    ext x; simp [Set.mem_preimage, Set.mem_image, smul_set]
+  · have hna : (0 : α) < -a := neg_pos.mpr ha'
+    have heq : a • s = -((-a) • s) := by
+      simp only [← image_smul, ← image_neg_eq_neg, image_image, neg_smul, neg_neg]
+    rw [heq, Real.sInf_neg, Real.sSup_smul_of_nonneg hna.le, neg_smul, neg_neg]
   · rw [Real.sInf_of_not_bddBelow (mt (bddBelow_smul_iff_of_neg ha').1 h),
         Real.sSup_of_not_bddAbove h, smul_zero]
 
@@ -100,12 +96,10 @@ theorem Real.sSup_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : sSup (a • s) =
   · rw [zero_smul_set hs, zero_smul]
     exact csSup_singleton 0
   by_cases h : BddBelow s
-  · have := congrArg ofDual ((OrderIso.smulRightDual ℝ ha').map_csInf' hs h)
-    simp only [OrderIso.smulRightDual, RelIso.coe_fn_mk, Equiv.coe_fn_mk, Equiv.trans_apply,
-      OrderDual.equiv, ofDual_toDual, Equiv.smulRight_apply] at this
-    rw [ofDual_sInf] at this
-    convert this.symm using 1
-    ext x; simp [Set.mem_preimage, Set.mem_image, smul_set]
+  · have hna : (0 : α) < -a := neg_pos.mpr ha'
+    have heq : a • s = -((-a) • s) := by
+      simp only [← image_smul, ← image_neg_eq_neg, image_image, neg_smul, neg_neg]
+    rw [heq, Real.sSup_neg, Real.sInf_smul_of_nonneg hna.le, neg_smul, neg_neg]
   · rw [Real.sSup_of_not_bddAbove (mt (bddAbove_smul_iff_of_neg ha').1 h),
         Real.sInf_of_not_bddBelow h, smul_zero]
 

@@ -92,7 +92,9 @@ theorem sup_support_add_le :
   exact (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
 
 theorem le_inf_support_add : f.support.inf degt ⊓ g.support.inf degt ≤ (f + g).support.inf degt :=
-  sup_support_add_le (fun a : A => OrderDual.toDual (degt a)) f g
+  OrderDual.toDual_le_toDual.mp <| by
+    simp only [Finset.toDual_inf, toDual_inf]
+    exact sup_support_add_le (OrderDual.toDual ∘ degt) f g
 
 end ExplicitDegrees
 
@@ -112,7 +114,9 @@ theorem sup_support_mul_le {degb : A → B} (degbm : ∀ a b, degb (a + b) ≤ d
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
-  sup_support_mul_le (B := Tᵒᵈ) degtm f g
+  OrderDual.toDual_le_toDual.mp <| by
+    simp only [Finset.toDual_inf, toDual_add]
+    exact sup_support_mul_le (B := Tᵒᵈ) degtm f g
 
 end AddOnly
 
@@ -136,12 +140,14 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
     (l.map fun f : R[A] => f.support.inf degt).sum ≤ l.prod.support.inf degt := by
-  refine OrderDual.ofDual_le_ofDual.mpr ?_
-  refine sup_support_list_prod_le ?_ ?_ l
-  · refine (OrderDual.ofDual_le_ofDual.mp ?_)
-    exact degt0
-  · refine (fun a b => OrderDual.ofDual_le_ofDual.mp ?_)
-    exact degtm a b
+  induction l with
+  | nil =>
+    rw [List.map_nil, List.prod_nil, List.sum_nil]
+    exact Finset.le_inf fun a ha =>
+      by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
+  | cons f fs ih =>
+    rw [List.prod_cons, List.map_cons, List.sum_cons]
+    exact (add_le_add (le_refl _) ih).trans (le_inf_support_mul degtm f fs.prod)
 
 theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (n : ℕ) (f : R[A]) : (f ^ n).support.sup degb ≤ n • f.support.sup degb := by
@@ -151,10 +157,9 @@ theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b)
 
 theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (n : ℕ) (f : R[A]) : n • f.support.inf degt ≤ (f ^ n).support.inf degt := by
-  refine OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (OrderDual.ofDual_le_ofDual.mp ?_)
-      (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) n f
-  · exact degt0
-  · exact degtm _ _
+  have h1 := le_inf_support_list_prod degt0 degtm (List.replicate n f)
+  rw [List.map_replicate, List.sum_replicate, List.prod_replicate] at h1
+  exact h1
 
 end AddMonoids
 
@@ -176,11 +181,9 @@ theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
 theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (m : Multiset R[A]) :
     (m.map fun f : R[A] => f.support.inf degt).sum ≤ m.prod.support.inf degt := by
-  refine OrderDual.ofDual_le_ofDual.mpr <|
-    sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp ?_)
-      (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) m
-  · exact degt0
-  · exact degtm _ _
+  induction m using Quot.inductionOn
+  rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.sum_coe, Multiset.prod_coe]
+  exact le_inf_support_list_prod degt0 degtm _
 
 theorem sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (s : Finset ι) (f : ι → R[A]) :

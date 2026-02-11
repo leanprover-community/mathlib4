@@ -19,7 +19,7 @@ statement.
 public section
 
 
-open Set
+open Set OrderDual
 
 /-- **Zorn's lemma**: A partial order is coatomic if every nonempty chain `c`, `⊤ ∉ c`, has an upper
 bound not equal to `⊤`. -/
@@ -41,4 +41,17 @@ theorem IsAtomic.of_isChain_bounded {α : Type*} [PartialOrder α] [OrderBot α]
       ∀ c : Set α,
         IsChain (· ≤ ·) c → c.Nonempty → ⊥ ∉ c → ∃ x ≠ ⊥, x ∈ lowerBounds c) :
     IsAtomic α :=
-  isCoatomic_dual_iff_isAtomic.mp <| IsCoatomic.of_isChain_bounded fun c hc => h c hc.symm
+  isCoatomic_dual_iff_isAtomic.mp <| IsCoatomic.of_isChain_bounded fun c hc hne htop => by
+    -- c is a chain in αᵒᵈ; convert to a chain in α
+    let c' : Set α := ofDual '' c
+    have hc' : IsChain (· ≤ ·) c' := by
+      intro a ⟨x, hx, hxa⟩ b ⟨y, hy, hyb⟩ hab
+      subst hxa; subst hyb
+      exact (hc.total hx hy).symm
+    have hne' : c'.Nonempty := hne.image _
+    have hbot' : ⊥ ∉ c' := by
+      rintro ⟨x, hx, hxeq⟩
+      have : x = ⊤ := by ext; exact hxeq
+      exact htop (this ▸ hx)
+    obtain ⟨x, hx, hxlb⟩ := h c' hc' hne' hbot'
+    exact ⟨toDual x, by rwa [Ne, toDual_inj], fun y hy => hxlb (Set.mem_image_of_mem ofDual hy)⟩

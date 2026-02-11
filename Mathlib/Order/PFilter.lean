@@ -92,11 +92,12 @@ instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P) P
 theorem isPFilter : IsPFilter (F : Set P) := by
   have h := F.dual.isIdeal
   refine ⟨fun x y hxy hy => ?_, ?_, fun a ha b hb => ?_⟩
-  · exact h.1 hxy hy
-  · obtain ⟨a, ha⟩ := h.2.1
-    exact ⟨a, ha⟩
-  · obtain ⟨c, hc, hca, hcb⟩ := h.2.2 a ha b hb
-    exact ⟨c, hc, hca, hcb⟩
+  · simp only [Set.mem_preimage] at hy ⊢
+    exact h.IsLowerSet hxy hy
+  · obtain ⟨a, ha⟩ := h.Nonempty
+    exact ⟨a, by simp only [Set.mem_preimage]; exact ha⟩
+  · simp only [Set.mem_preimage] at ha hb ⊢
+    exact h.Directed a ha b hb
 
 protected theorem nonempty : (F : Set P).Nonempty := by
   obtain ⟨a, ha⟩ := F.dual.nonempty
@@ -128,14 +129,15 @@ def principal (p : P) : PFilter P :=
 theorem mem_mk (x : P) (I : Ideal Pᵒᵈ) : x ∈ (⟨I⟩ : PFilter P) ↔ toDual x ∈ I :=
   Iff.rfl
 
+@[simp] theorem mem_principal : x ∈ principal y ↔ y ≤ x :=
+  Ideal.mem_principal
+
 @[simp]
 theorem principal_le_iff {F : PFilter P} : principal x ≤ F ↔ x ∈ F := by
+  simp only [SetLike.le_def]
   constructor
   · intro h; exact h (mem_principal.mpr le_rfl)
   · intro hx y hy; exact mem_of_le (mem_principal.mp hy) hx
-
-@[simp] theorem mem_principal : x ∈ principal y ↔ y ≤ x :=
-  Ideal.mem_principal
 
 theorem principal_le_principal_iff {p q : P} : principal q ≤ principal p ↔ p ≤ q := by simp
 
@@ -159,7 +161,7 @@ instance : OrderBot (PFilter P) where
   bot := ⟨⊥⟩
   bot_le F x hx := by
     rw [← mem_dual] at hx ⊢
-    exact bot_le hx
+    exact (bot_le : (⊥ : Ideal Pᵒᵈ) ≤ F.dual) hx
 
 end OrderTop
 
@@ -168,7 +170,7 @@ instance {P} [Preorder P] [OrderBot P] : OrderTop (PFilter P) where
   top := ⟨⊤⟩
   le_top F x hx := by
     rw [← mem_dual] at hx ⊢
-    exact le_top hx
+    exact (le_top : F.dual ≤ (⊤ : Ideal Pᵒᵈ)) hx
 
 section SemilatticeInf
 
