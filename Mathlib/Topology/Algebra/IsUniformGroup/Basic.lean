@@ -32,64 +32,6 @@ noncomputable section
 
 open Uniformity Topology Filter Pointwise
 
-namespace MulOpposite
-
-variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
-
-@[to_additive] lemma comap_op_rightUniformSpace :
-    (IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ).comap MulOpposite.op =
-      IsTopologicalGroup.leftUniformSpace G := by
-  ext : 1
-  change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
-      (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.2 * p.1⁻¹) (𝓝 1))
-    = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
-  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
-    simp [Homeomorph.comap_nhds_eq]
-  simp_rw [comap_comap, this, comap_comap]
-  rfl
-
-@[to_additive] lemma comap_op_leftUniformSpace :
-    (IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ).comap MulOpposite.op =
-      IsTopologicalGroup.rightUniformSpace G := by
-  ext : 1
-  change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
-      (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.1⁻¹ * p.2) (𝓝 1))
-    = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
-  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
-    simp [Homeomorph.comap_nhds_eq]
-  simp_rw [comap_comap, this, comap_comap]
-  rfl
-
-/-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
-is equipped with the right uniformity and `Gᵐᵒᵖ` with the left uniformity. -/
-@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
-equivalence when `G` is equipped with the right uniformity and `Gᵐᵒᵖ` with the left uniformity. -/]
-def opUniformEquivRight
-    (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
-    @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.rightUniformSpace G)
-      (IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ) := by
-  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
-  letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ
-  refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
-  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace]
-  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace, ← UniformSpace.comap_comap]
-
-/-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
-is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/
-@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
-equivalence when `G` is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/]
-def opUniformEquivLeft
-    (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
-    @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.leftUniformSpace G)
-      (IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ) := by
-  letI : UniformSpace G := IsTopologicalGroup.leftUniformSpace G
-  letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ
-  refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
-  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace]
-  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace, ← UniformSpace.comap_comap]
-
-end MulOpposite
-
 section IsUniformGroup
 
 open Filter Set
@@ -352,6 +294,107 @@ lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group 
 
 end IsTopologicalGroup
 
+namespace MulOpposite
+
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+@[to_additive] lemma comap_op_rightUniformSpace :
+    (IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ).comap MulOpposite.op =
+      IsTopologicalGroup.leftUniformSpace G := by
+  ext : 1
+  change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
+      (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.2 * p.1⁻¹) (𝓝 1))
+    = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
+  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
+    simp [Homeomorph.comap_nhds_eq]
+  simp_rw [comap_comap, this, comap_comap]
+  rfl
+
+@[to_additive] lemma comap_op_leftUniformSpace :
+    (IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ).comap MulOpposite.op =
+      IsTopologicalGroup.rightUniformSpace G := by
+  ext : 1
+  change comap (fun (x : G × G) ↦ (MulOpposite.op x.1, MulOpposite.op x.2))
+      (comap (fun p : Gᵐᵒᵖ × Gᵐᵒᵖ => p.1⁻¹ * p.2) (𝓝 1))
+    = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
+  have : 𝓝 (1 : G) = comap (MulOpposite.opHomeomorph) (𝓝 (1 : Gᵐᵒᵖ)) := by
+    simp [Homeomorph.comap_nhds_eq]
+  simp_rw [comap_comap, this, comap_comap]
+  rfl
+
+/-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
+is equipped with the right uniformity and `Gᵐᵒᵖ` with the left uniformity. -/
+@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
+equivalence when `G` is equipped with the right uniformity and `Gᵐᵒᵖ` with the left uniformity. -/]
+def opUniformEquivRight
+    (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
+    @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.rightUniformSpace G)
+      (IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ) := by
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
+  letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.leftUniformSpace Gᵐᵒᵖ
+  refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
+  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace]
+  · simp [uniformContinuous_iff, ← comap_op_leftUniformSpace, ← UniformSpace.comap_comap]
+
+/-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
+is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/
+@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
+equivalence when `G` is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/]
+def opUniformEquivLeft
+    (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
+    @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.leftUniformSpace G)
+      (IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ) := by
+  letI : UniformSpace G := IsTopologicalGroup.leftUniformSpace G
+  letI : UniformSpace Gᵐᵒᵖ := IsTopologicalGroup.rightUniformSpace Gᵐᵒᵖ
+  refine ⟨MulOpposite.opEquiv, ?_, ?_⟩
+  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace]
+  · simp [uniformContinuous_iff, ← comap_op_rightUniformSpace, ← UniformSpace.comap_comap]
+
+end MulOpposite
+
+section Inv
+
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+@[to_additive]
+lemma comap_inv_leftUniformSpace : (IsTopologicalGroup.leftUniformSpace G).comap (Equiv.inv G)
+    = IsTopologicalGroup.rightUniformSpace G := by
+  ext : 1
+  change comap (fun (x : G × G) ↦ (Equiv.inv G x.1, Equiv.inv G x.2))
+      (comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)) =
+    comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
+  have : 𝓝 (1 : G) = comap (Homeomorph.inv G) (𝓝 1) := by rw [Homeomorph.comap_nhds_eq]; simp
+  nth_rewrite 1 [this]
+  rw [comap_comap, comap_comap]
+  simp [Function.comp_def]
+
+/-- Inversion on a topological group, as a uniform equivalence between the right uniformity and
+the left uniformity. -/
+@[to_additive /-- Negation on an additive topological group, as a uniform equivalence between the
+right uniformity and the left uniformity. -/]
+def UniformEquiv.inv : @UniformEquiv G G (IsTopologicalGroup.rightUniformSpace G)
+    (IsTopologicalGroup.leftUniformSpace G) := by
+  have A : @UniformContinuous G G (IsTopologicalGroup.rightUniformSpace G)
+      (IsTopologicalGroup.leftUniformSpace G) (Equiv.inv G) := by
+    apply uniformContinuous_iff.2
+    rw [← comap_inv_leftUniformSpace]
+  have B : @UniformContinuous G G (IsTopologicalGroup.leftUniformSpace G)
+      (IsTopologicalGroup.rightUniformSpace G) (Equiv.inv G) := by
+    apply uniformContinuous_iff.2
+    rw [← comap_inv_leftUniformSpace, ← UniformSpace.comap_comap]
+    simp
+  exact @UniformEquiv.mk G G (IsTopologicalGroup.rightUniformSpace G)
+    (IsTopologicalGroup.leftUniformSpace G) (Equiv.inv G) A B
+
+@[to_additive]
+lemma IsTopologicalGroup.completeSpace_rightUniformSpace_iff_leftUniformSpace :
+    @CompleteSpace G (IsTopologicalGroup.rightUniformSpace G) ↔
+    @CompleteSpace G (IsTopologicalGroup.leftUniformSpace G) :=
+  @UniformEquiv.completeSpace_iff G G (IsTopologicalGroup.rightUniformSpace G)
+    (IsTopologicalGroup.leftUniformSpace G) (UniformEquiv.inv G)
+
+end Inv
+
 namespace IsTopologicalGroup
 
 variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
@@ -554,17 +597,17 @@ open TopologicalSpace
 is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Because a topological group is not equipped with a `UniformSpace` instance by default, we must
-explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace` for a
-version in which `G` is already equipped with a uniform structure. -/
+explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace_right` for
+a version in which `G` is already equipped with a uniform structure. -/
 @[to_additive /-- The quotient `G ⧸ N` of a complete first countable topological additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Because an additive topological group is not equipped with a `UniformSpace` instance by default,
 we must explicitly provide it in order to consider completeness. See
-`QuotientAddGroup.completeSpace` for a version in which `G` is already equipped with a uniform
+`QuotientAddGroup.completeSpace_right` for a version in which `G` is already equipped with a uniform
 structure. -/]
-instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G]
+instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
     [@CompleteSpace G (IsTopologicalGroup.rightUniformSpace G)] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
@@ -644,10 +687,8 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 
-#check IsUniformGroup.rightUniformSpace_eq
-
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
-is itself complete. In contrast to `QuotientGroup.completeSpace'`, in this version `G` is
+is itself complete. In contrast to `QuotientGroup.completeSpace_right'`, in this version `G` is
 already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
@@ -657,7 +698,7 @@ In the most common use cases, this coincides (definitionally) with the uniform s
 quotient obtained via other means. -/
 @[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version
+subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_right'`, in this version
 `G` is already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
@@ -666,13 +707,66 @@ uniform structure, so it is still provided manually via `IsTopologicalAddGroup.r
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here. -/]
-instance QuotientGroup.completeSpace (G : Type*)
+instance QuotientGroup.completeSpace_right (G : Type*)
     [Group G] [us : UniformSpace G] [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
   have : IsTopologicalGroup.rightUniformSpace G = us := by
     ext : 1
     rw [@IsRightUniformGroup.uniformity_eq (G := G) us _ _]
+    rfl
+  rw [← this] at hG
+  infer_instance
+
+/-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
+is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+
+Because a topological group is not equipped with a `UniformSpace` instance by default, we must
+explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace_left` for
+a version in which `G` is already equipped with a uniform structure. -/
+@[to_additive /-- The quotient `G ⧸ N` of a complete first countable topological additive group
+`G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
+subspaces are complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+
+Because an additive topological group is not equipped with a `UniformSpace` instance by default,
+we must explicitly provide it in order to consider completeness. See
+`QuotientAddGroup.completeSpace_left` for a version in which `G` is already equipped with a uniform
+structure. -/]
+instance QuotientGroup.completeSpace_left' (G : Type u) [Group G] [TopologicalSpace G]
+    [IsTopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
+    [hG : @CompleteSpace G (IsTopologicalGroup.leftUniformSpace G)] :
+    @CompleteSpace (G ⧸ N) (IsTopologicalGroup.leftUniformSpace (G ⧸ N)) := by
+  rw [← IsTopologicalGroup.completeSpace_rightUniformSpace_iff_leftUniformSpace] at hG ⊢
+  infer_instance
+
+
+/-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
+is itself complete. In contrast to `QuotientGroup.completeSpace_left'`, in this version `G` is
+already equipped with a uniform structure.
+[N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+
+Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
+uniform structure, so it is still provided manually via `IsTopologicalGroup.leftUniformSpace`.
+In the most common use cases, this coincides (definitionally) with the uniform structure on the
+quotient obtained via other means. -/
+@[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
+`G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
+subspaces are complete. In contrast to `QuotientAddGroup.completeSpace_left'`, in this version
+`G` is already equipped with a uniform structure.
+[N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
+
+Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
+uniform structure, so it is still provided manually via `IsTopologicalAddGroup.leftUniformSpace`.
+In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
+significant care was taken so that the uniform structure inherent in that setting coincides
+(definitionally) with the uniform structure provided here. -/]
+instance QuotientGroup.completeSpace_left (G : Type*)
+    [Group G] [us : UniformSpace G] [IsLeftUniformGroup G]
+    [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
+    @CompleteSpace (G ⧸ N) (IsTopologicalGroup.leftUniformSpace (G ⧸ N)) := by
+  have : IsTopologicalGroup.leftUniformSpace G = us := by
+    ext : 1
+    rw [@IsLeftUniformGroup.uniformity_eq (G := G) us _ _]
     rfl
   rw [← this] at hG
   infer_instance
