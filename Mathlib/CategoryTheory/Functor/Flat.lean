@@ -364,15 +364,13 @@ section
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E)
 
-instance (X : E) [RepresentablyFlat F] : (StructuredArrow.pre X F G).Final := by
-  refine ⟨fun d ↦ ?_⟩
-  have := (RepresentablyFlat.cofiltered (F := F) d.right).isConnected
-  apply isConnected_of_equivalent (StructuredArrow.preEquivalence _ _).symm
+attribute [local instance] IsCofiltered.isConnected IsFiltered.isConnected
 
-instance (X : E) [RepresentablyCoflat F] : (CostructuredArrow.pre F G X).Initial := by
-  refine ⟨fun d ↦ ?_⟩
-  have := (RepresentablyCoflat.filtered (F := F) d.left).isConnected
-  apply isConnected_of_equivalent (CostructuredArrow.preEquivalence _ _).symm
+instance (X : E) [RepresentablyFlat F] : (StructuredArrow.pre X F G).Final :=
+  ⟨fun _ ↦ isConnected_of_equivalent (StructuredArrow.preEquivalence _ _).symm⟩
+
+instance (X : E) [RepresentablyCoflat F] : (CostructuredArrow.pre F G X).Initial :=
+  ⟨fun _ ↦ isConnected_of_equivalent (CostructuredArrow.preEquivalence _ _).symm⟩
 
 instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
     IsCofiltered (StructuredArrow X (F ⋙ G)) := by
