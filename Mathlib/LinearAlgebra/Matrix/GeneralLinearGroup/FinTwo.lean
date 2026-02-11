@@ -21,7 +21,7 @@ namespace Matrix
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [Nontrivial R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [CommRing R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.discr = 0
@@ -115,10 +115,9 @@ lemma isParabolic_iff_exists [NeZero (2 : K)] :
 
 end Field
 
-section LinearOrderedRing
+section Preorder
 
-variable {R : Type*} [CommRing R] [Nontrivial R] [Preorder R]
-  (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
+variable {R : Type*} [CommRing R] [Preorder R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
 def IsHyperbolic : Prop := 0 < m.discr
@@ -140,7 +139,7 @@ lemma isElliptic_conj_iff : (g.val * m * g.val⁻¹).IsElliptic ↔ m.IsElliptic
 lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsElliptic := by
   simpa using isElliptic_conj_iff g⁻¹
 
-end LinearOrderedRing
+end Preorder
 
 namespace GeneralLinearGroup
 
