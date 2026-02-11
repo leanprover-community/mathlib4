@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Order.Synonym
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Common
 
