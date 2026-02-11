@@ -32,9 +32,13 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
   let Q := Finpartition.ofPairwiseDisjoint P hP₃
   calc
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ Q.parts, ‖μ p‖ₑ := sorry
-    _ ≤ μ.variation s := by sorry
-  have h : ∑ p ∈ P, ‖μ p‖ₑ = ∑ q ∈ Q.parts, ‖μ q‖ₑ := by
-    sorry
+    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q (Finset.sup_le hP₁)).parts, ‖μ p‖ₑ := sorry
+    _ ≤ μ.variation s := by
+      simp only [variation]
+      sorry
+  --    apply preVariation.sum_le
+  -- have h : ∑ p ∈ P, ‖μ p‖ₑ = ∑ q ∈ Q.parts, ‖μ q‖ₑ := by
+  --   sorry
   -- define an operation for `FinPartition`, say, `ofPairwiseDisjoint`
   -- have hQ : IsInnerPart s Q := by
   --   refine ⟨fun p hp ↦ ?_, fun p hp ↦ ?_, fun p hp q hq hpq  ↦ ?_, fun p hp ↦ ?_⟩
@@ -42,9 +46,9 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
   --   · exact hP₂ p (mem_filter.mp hp).1
   --   · exact hP₃ (mem_filter.mp hp).1 (mem_filter.mp hq).1 hpq
   --   · exact (mem_filter.mp hp).2
-  refine le_of_eq_of_le h ?_
-  -- use `preVariation.sum_le`
-  simpa [variation] using preVariation.sum_le (fun s ↦ ‖μ s‖ₑ) hs Q
+  -- refine le_of_eq_of_le h ?_
+  -- -- use `preVariation.sum_le`
+  -- simpa [variation] using preVariation.sum_le (fun s ↦ ‖μ s‖ₑ) hs Q
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
   wlog hE : MeasurableSet E

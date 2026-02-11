@@ -115,18 +115,6 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
     sup_parts := sup_parts
     bot_notMem := fun h ↦ P.bot_notMem (subset h) }
 
-/-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
-elements. Any `⊥` elements in `parts` are erased. -/
-@[simps]
-def ofPairwiseDisjoint {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
-    (parts : Finset α) (hdisjoint : (parts : Set α).PairwiseDisjoint id) :
-    Finpartition (parts.sup id) where
-  parts := parts.erase ⊥
-  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun _ ha _ hb hab =>
-    hdisjoint (Finset.erase_subset _ _ ha) (Finset.erase_subset _ _ hb) hab
-  sup_parts := Finset.sup_erase_bot parts
-  bot_notMem := Finset.notMem_erase _ _
-
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
 def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
@@ -514,6 +502,17 @@ lemma sum_combine {ι : Type*} {I : Finset ι} {s : ι → α} (P : ∀ i, Finpa
   intro p hpi hpj
   have hp_disj : Disjoint p p := (ha hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
   exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
+
+/-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
+elements. Any `⊥` elements in `parts` are erased. -/
+@[simps]
+def ofPairwiseDisjoint (parts : Finset α) (hdisjoint : (parts : Set α).PairwiseDisjoint id) :
+    Finpartition (parts.sup id) where
+  parts := parts.erase ⊥
+  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun _ ha _ hb hab =>
+    hdisjoint (Finset.erase_subset _ _ ha) (Finset.erase_subset _ _ hb) hab
+  sup_parts := Finset.sup_erase_bot parts
+  bot_notMem := Finset.notMem_erase _ _
 
 end DistribLattice
 
