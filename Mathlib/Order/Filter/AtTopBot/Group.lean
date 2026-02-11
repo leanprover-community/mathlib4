@@ -122,14 +122,12 @@ theorem tendsto_inv_atBot_iff : Tendsto (fun x => (f x)⁻¹) l atBot ↔ Tendst
 @[to_additive (attr := simp)]
 theorem tendsto_comp_inv_atTop_iff {f : G → α} :
     Tendsto (fun x ↦ f (x⁻¹)) atTop l ↔ Tendsto f atBot l := by
-  change Tendsto (f ∘ Inv.inv) atTop l ↔ Tendsto f atBot l
-  simp [Tendsto, ← map_map, map_inv_atTop]
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atTop]
 
 @[to_additive (attr := simp)]
 theorem tendsto_comp_inv_atBot_iff {f : G → α} :
     Tendsto (fun x ↦ f (x⁻¹)) atBot l ↔ Tendsto f atTop l := by
-  change Tendsto (f ∘ Inv.inv) atBot l ↔ Tendsto f atTop l
-  simp [Tendsto, ← map_map, map_inv_atBot]
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atBot]
 
 end OrderedCommGroup
 

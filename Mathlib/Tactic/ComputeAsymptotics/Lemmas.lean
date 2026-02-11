@@ -41,8 +41,7 @@ variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 
 
 theorem tendsto_nhdsGT_of_tendsto_atTop (h : Tendsto (fun x ↦ f (c + x⁻¹)) atTop l) :
     Tendsto f (𝓝[>] c) l := by
-  change Tendsto (f ∘ (fun x ↦ c + x) ∘ Inv.inv) atTop l at h
-  simpa [Tendsto, ← Filter.map_map] using h
+  simpa [← Function.comp_def, Tendsto, ← Filter.map_map] using h
 
 theorem tendsto_nhdsLT_of_tendsto_atTop (h : Tendsto (fun x ↦ f (c - x⁻¹)) atTop l) :
     Tendsto f (𝓝[<] c) l := by
