@@ -34,7 +34,6 @@ jobs:
         with:
           artifact: workflow-data
           source_workflow: Commit Verification
-          expected_head_sha: ${{ github.event.workflow_run.head_sha }}
           require_event: pull_request
           fail_on_missing: false
           extract: |
