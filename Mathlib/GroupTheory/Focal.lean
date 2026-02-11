@@ -8,6 +8,7 @@ module
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Sylow
 public import Mathlib.GroupTheory.Transfer
+public import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # Focal Subgroup Theorem
@@ -28,13 +29,13 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 
 noncomputable section
 
-open Function Subgroup Sylow
+open Function Sylow
+
+namespace Subgroup
 
 section Definitions
 
 variable {G : Type*} [Group G] (H : Subgroup G)
-
-namespace Subgroup
 
 /--
 The **Focal Subgroup** of a subgroup `H` (denoted `H*` or `foc(H)`).
@@ -50,20 +51,24 @@ Note that `focalSubgroup H` is always contained in `H`.
 def focalSubgroupOf : Subgroup H :=
   (focalSubgroup H).subgroupOf H
 
-end Subgroup
+theorem focalSubgroup_def :
+    focalSubgroup H = closure { g | g ∈ H ∧ ∃ x ∈ H, ∃ u : G, g = ⁅x, u⁆ } := rfl
+
+theorem focalSubgroupOf_def :
+    focalSubgroupOf H = (focalSubgroup H).subgroupOf H := rfl
+
 
 /-- Lemma: The focal subgroup is indeed a subgroup of H. -/
-lemma focalSubgroup_le_h : focalSubgroup H ≤ H := by
-  rw [focalSubgroup, closure_le]
-  rintro g ⟨h, -, -, -, -⟩;
+lemma focalSubgroup_le : focalSubgroup H ≤ H := by
+  rw [focalSubgroup_def, closure_le]
+  rintro g ⟨h, -, -, -, -⟩
   exact h
 
 /-- Lemma: H* is a normal subgroup of H. -/
 instance : Normal (focalSubgroupOf H) := by
-  unfold focalSubgroupOf
-  rw [normal_subgroupOf_iff (focalSubgroup_le_h H)]
+  change Normal ((focalSubgroup H).subgroupOf H)
+  rw [normal_subgroupOf_iff (focalSubgroup_le H)]
   intro n g hn hg
-  unfold focalSubgroup at hn ⊢
   induction hn using closure_induction with
   | mem z hz =>
     obtain ⟨hzH, x, hxP, u, rfl⟩ := hz
@@ -74,11 +79,10 @@ instance : Normal (focalSubgroupOf H) := by
   | inv _ _ IH => simpa [mul_assoc] using inv_mem IH
 
 /-- Lemma: The focal subgroup is contained in the commutator subgroup G'. -/
-lemma focalSubgroup_le_commutator : focalSubgroup H ≤ commutator G := by
-  rw [focalSubgroup,closure_le]
-  rintro g ⟨_, x, _, u, hg_eq⟩
-  rw [hg_eq, commutator_eq_closure]
-  exact mem_closure.mpr fun K a ↦ a (commutator_mem_commutatorSet x u)
+lemma focalSubgroup_le_commutator : focalSubgroup H ≤ _root_.commutator G := by
+  rw [focalSubgroup_def, closure_le]
+  rintro g ⟨_, x, _, u, rfl⟩
+  exact commutator_mem_commutator (mem_top x) (mem_top u)
 
 /--
 In the quotient `H / H*`, conjugation by any element of `G` preserves equivalence classes.
@@ -93,21 +97,24 @@ lemma focalSubgroupOf_mk'_conj_eq {h : G} (hh : h ∈ H) (g : G)
   simp only [Subgroup.coe_mul, Subgroup.coe_inv]
   exact ⟨H.mul_mem (H.inv_mem hconj) hh, _, H.inv_mem hconj, g, by group⟩
 
-lemma commutator_le_focalSubgroupOf : commutator H ≤ focalSubgroupOf H := by
-  have h_comm_in_focal : ∀ (a b : H),
-      ⁅(a : G), (b : G)⁆ ∈ focalSubgroup H := fun a b =>
-    subset_closure ⟨H.mul_mem (H.mul_mem (H.mul_mem a.2 b.2) (H.inv_mem a.2)) (H.inv_mem b.2),
-      a, a.2, b, rfl⟩
-  rw [commutator_eq_closure, closure_le]
-  rintro _ ⟨a, b, rfl⟩
-  simpa using h_comm_in_focal a b
+theorem focalSubgroupOf_eq_closure :
+    focalSubgroupOf H = closure { g : H | ∃ x ∈ H, ∃ u : G, g = ⁅x, u⁆ } := by
+  rw [← (map_injective H.subtype_injective).eq_iff, focalSubgroupOf_def,
+    map_subgroupOf_eq_of_le (focalSubgroup_le H), MonoidHom.map_closure, focalSubgroup_def]
+  congr
+  simp
+  grind
+
+lemma commutator_le_focalSubgroupOf : _root_.commutator H ≤ focalSubgroupOf H := by
+  rw [focalSubgroupOf_eq_closure]
+  apply closure_mono
+  rintro - ⟨a, -, b, -, -, rfl⟩
+  exact ⟨a, a.2, b, rfl⟩
 
 instance focalSubgroup_quotient_commGroup : CommGroup (H ⧸ focalSubgroupOf H) :=
   @CommGroup.ofIsMulCommutative _ _
     ⟨⟨(Normal.quotient_commutative_iff_commutator_le.mpr
       (commutator_le_focalSubgroupOf (H := H))).comm⟩⟩
-
-namespace Sylow
 
 /--
 The Transfer homomorphism `V : G → H/H*`.
@@ -117,8 +124,6 @@ def transferFocal [H.FiniteIndex] :
     G →* H ⧸ focalSubgroupOf H :=
   MonoidHom.transfer (QuotientGroup.mk' (focalSubgroupOf H))
 
-end Sylow
-
 end Definitions
 
 section TransferLemmas
@@ -126,44 +131,20 @@ section TransferLemmas
 variable {G : Type*} [Group G] (H : Subgroup G)
 
 /--
-The sum of minimal periods over all orbits equals the index `[G:H]`.
-This follows from the orbit-counting formula.
--/
-lemma sum_minimalPeriod_eq_index (x : H) [Finite (G ⧸ H)]
-    [Fintype (Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H)))] :
-    ∑ q : Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H)),
-      minimalPeriod ((x : G) • ·) q.out = H.index := by
-  haveI : Fintype (G ⧸ H) := Fintype.ofFinite _
-  haveI : ∀ q : Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H)),
-      Fintype (MulAction.orbit (zpowers (x : G)) q.out) := fun q => Fintype.ofFinite _
-  simp only [MulAction.minimalPeriod_eq_card, index_eq_card, Nat.card_eq_fintype_card]
-  rw [← Fintype.card_sigma]
-  exact Fintype.card_congr (MulAction.selfEquivSigmaOrbits (zpowers (x : G)) (G ⧸ H)).symm
-
-/--
-Key Lemma: The restriction of the Transfer map to `H` acts like the power map `x ↦ x^n` mod `H*`,
+The restriction of the Transfer map to `H` acts like the power map `x ↦ x^n` mod `H*`,
 where `n = [G:H]`.
 -/
-theorem transfer_restricted_to_p_eq_pow [Finite G] (x : H) :
-    MonoidHom.transfer (QuotientGroup.mk' (focalSubgroupOf H)) x =
+theorem transfer_focal_eq_pow [Finite G] (x : H) :
+    transferFocal H x =
     (QuotientGroup.mk' (focalSubgroupOf H) x) ^ H.index := by
   let φ := QuotientGroup.mk' (focalSubgroupOf H)
   haveI : Fintype (Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H))) :=
     Fintype.ofFinite _
-  calc MonoidHom.transfer φ x
-      = ∏ q : Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H)),
-          φ ⟨q.out.out⁻¹ * (x : G) ^ minimalPeriod ((x : G) • ·) q.out * q.out.out,
-            QuotientGroup.out_conj_pow_minimalPeriod_mem H (x : G) q.out⟩ :=
-        MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot φ x
-    _ = ∏ q : Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H)),
-          φ ⟨(x : G) ^ minimalPeriod ((x : G) • ·) q.out, H.pow_mem x.2 _⟩ :=
-        Finset.prod_congr rfl fun q _ =>
-          focalSubgroupOf_mk'_conj_eq H (H.pow_mem x.2 _) q.out.out _
-    _ = φ x ^ ∑ q : Quotient (MulAction.orbitRel (zpowers (x : G)) (G ⧸ H)),
-          minimalPeriod ((x : G) • ·) q.out := by
-        rw [← Finset.prod_pow_eq_pow_sum]
-        exact Finset.prod_congr rfl fun _ _ => rfl
-    _ = φ x ^ H.index := by rw [sum_minimalPeriod_eq_index H x]
+  rw [transferFocal, index_eq_sum_minimalPeriod H x, ← Finset.prod_pow_eq_pow_sum,
+    MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot]
+  apply Finset.prod_congr rfl
+  intros
+  apply focalSubgroupOf_mk'_conj_eq H
 
 end TransferLemmas
 
@@ -171,7 +152,7 @@ section FocalSubgroupTheorem
 
 variable {G : Type*} [Group G] [Finite G] {p : ℕ} [Fact (Nat.Prime p)] (P : Sylow p G)
 
-/-- Lemma: The power map `y ↦ y^n` is surjective on `P/P*` because `gcd(n, p) = 1`. -/
+/-- The power map `y ↦ y^n` is surjective on `P/P*` because `gcd(n, p) = 1`. -/
 lemma pow_n_surjective_on_p_quotient :
     Surjective (fun (y : P.toSubgroup ⧸ focalSubgroupOf P.toSubgroup) =>
     y ^ (index P.toSubgroup)) := by
@@ -181,13 +162,13 @@ lemma pow_n_surjective_on_p_quotient :
     IsPGroup.to_quotient P.2 (focalSubgroupOf P.toSubgroup)
   exact fun g => ⟨(hQ.powEquiv hn).symm g, (hQ.powEquiv hn).apply_symm_apply g⟩
 
-/-- Lemma: The Transfer homomorphism is surjective from `G` to `P/P*`. -/
+/-- The Transfer homomorphism is surjective from `G` to `P/P*`. -/
 lemma transfer_restrict_surjective :
     Surjective (transferFocal P.toSubgroup) := by
   intro z
   obtain ⟨y, hy⟩ := pow_n_surjective_on_p_quotient P z
   obtain ⟨x, hx⟩ := QuotientGroup.mk'_surjective _ y
-  exact ⟨x, by simp only [transferFocal, transfer_restricted_to_p_eq_pow, ← hy, ← hx]⟩
+  exact ⟨x, by rw [transfer_focal_eq_pow, hx]; exact hy⟩
 
 /-- Isomorphism theorem: `G / ker(V) ≅ P / P*`. -/
 def quotientKerIsoQuotientFocal :
@@ -206,25 +187,23 @@ lemma inf_ker_transferFocal_eq_focalSubgroup :
   have hker : F = (QuotientGroup.mk' F).ker := (QuotientGroup.ker_mk' F).symm
   apply le_antisymm
   · intro x ⟨hxP, hx_ker⟩
-    simp only [mem_toSubmonoid, SetLike.mem_coe, MonoidHom.mem_ker,
-      transferFocal, transfer_restricted_to_p_eq_pow P ⟨x, hxP⟩] at hx_ker
+    simp only [mem_toSubmonoid, SetLike.mem_coe, MonoidHom.mem_ker] at hx_ker
+    rw [transfer_focal_eq_pow P ⟨x, hxP⟩] at hx_ker
     have h_mem : (⟨x, hxP⟩ : P.toSubgroup) ∈ F := by
       rw [hker, MonoidHom.mem_ker]
       have h1 : (hQ.powEquiv hn) (QuotientGroup.mk' _ ⟨x, hxP⟩) = 1 := by
         rw [hQ.powEquiv_apply, hx_ker]
-      have h2 : (hQ.powEquiv hn) 1 = 1 := by simp [hQ.powEquiv_apply]
-      exact (hQ.powEquiv hn).injective (h1.trans h2.symm)
+      exact (hQ.powEquiv hn).injective (h1.trans (by rw [hQ.powEquiv_apply, one_pow]))
     simpa using h_mem
   · intro x hx
-    have hxP := focalSubgroup_le_h P.toSubgroup hx
+    have hxP := focalSubgroup_le P.toSubgroup hx
     refine ⟨hxP, ?_⟩
-    simp only [mem_toSubmonoid, SetLike.mem_coe, MonoidHom.mem_ker, transferFocal]
-    rw [transfer_restricted_to_p_eq_pow P ⟨x, hxP⟩]
-    have h_mem : (⟨x, hxP⟩ : P.toSubgroup) ∈ F := by
-      unfold F focalSubgroupOf
-      simp [mem_subgroupOf, hx]
-    rw [hker, MonoidHom.mem_ker] at h_mem
-    simp [F, h_mem]
+    simp only [mem_toSubmonoid, SetLike.mem_coe, MonoidHom.mem_ker]
+    rw [transfer_focal_eq_pow P ⟨x, hxP⟩]
+    have h_mem : (QuotientGroup.mk' F) ⟨x, hxP⟩ = 1 := by
+      rw [← MonoidHom.mem_ker, ← hker]
+      exact mem_subgroupOf.mpr hx
+    rw [h_mem, one_pow]
 
 /--
 **The Focal Subgroup Theorem**
@@ -233,13 +212,16 @@ For a Sylow p-subgroup P of a finite group G, `P ∩ G' = P*`,
 where `P*` is the focal subgroup of `P`.
 -/
 theorem inf_commutator_eq_focalSubgroup :
-    P.toSubgroup ⊓ commutator G = focalSubgroup P := by
+    P.toSubgroup ⊓ _root_.commutator G = focalSubgroup P := by
   have h_le :
-      P.toSubgroup ⊓ commutator G ≤ P.toSubgroup ⊓ (transferFocal P.toSubgroup).ker :=
+      P.toSubgroup ⊓ _root_.commutator G ≤ P.toSubgroup ⊓ (transferFocal P.toSubgroup).ker :=
     inf_le_inf_left _ (Abelianization.commutator_subset_ker (f := transferFocal P.toSubgroup))
   have h_eq := inf_ker_transferFocal_eq_focalSubgroup P
-  have h_ge := le_inf (focalSubgroup_le_h P.toSubgroup) (focalSubgroup_le_commutator P.toSubgroup)
+  have h_ge := le_inf (focalSubgroup_le P.toSubgroup) (focalSubgroup_le_commutator P.toSubgroup)
   exact le_antisymm (h_le.trans_eq h_eq) h_ge
 
 end FocalSubgroupTheorem
+
+end Subgroup
+
 end
