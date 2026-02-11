@@ -44,7 +44,7 @@ namespace MeasureTheory
 /-! ### Some results about the Lebesgue integral involving a normed group -/
 
 lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
-    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_eq_enorm]
+    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_right]
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by

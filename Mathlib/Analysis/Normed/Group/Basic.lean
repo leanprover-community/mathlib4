@@ -398,12 +398,16 @@ theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ �
 theorem nndist_eq_nnnorm_inv_mul (a b : E) : nndist a b = ‖a⁻¹ * b‖₊ :=
   NNReal.eq <| dist_eq_norm_inv_mul _ _
 
+@[to_additive (attr := simp) nnnorm_neg]
+theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
+  NNReal.eq <| norm_inv' a
+
 @[to_additive (attr := simp)]
-theorem nndist_one_right (a : E) : nndist 1 a = ‖a‖₊ := by
+theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by
   simp [nndist_eq_nnnorm_inv_mul]
 
 @[to_additive (attr := simp)]
-lemma edist_one_right (a : E) : edist 1 a = ‖a‖ₑ := by simp [edist_nndist, nndist_one_right, enorm]
+lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nndist, nndist_one_right, enorm]
 
 @[to_additive (attr := simp) nnnorm_zero]
 theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
@@ -426,10 +430,6 @@ lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
 @[to_additive nnnorm_nsmul_le]
 lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
   simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using norm_pow_le_mul_norm
-
-@[to_additive (attr := simp) nnnorm_neg]
-theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
-  NNReal.eq <| norm_inv' a
 
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
@@ -614,7 +614,7 @@ theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm_eq_enorm']
 
 @[to_additive]
-theorem edist_one_eq_enorm (x : E) : edist 1 x = ‖x‖ₑ := by simp [edist_eq_enorm_inv_mul]
+theorem edist_one_eq_enorm (x : E) : edist x 1 = ‖x‖ₑ := by simp [edist_eq_enorm_inv_mul]
 
 @[to_additive]
 lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
@@ -622,7 +622,7 @@ lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ =
 
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
-  rw [Metric.mem_eball', edist_one_eq_enorm]
+  rw [Metric.mem_eball, edist_one_eq_enorm]
 
 @[deprecated (since := "2026-01-24")]
 alias mem_emetric_ball_zero_iff := mem_eball_zero_iff
