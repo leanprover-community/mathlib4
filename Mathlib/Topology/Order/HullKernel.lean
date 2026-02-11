@@ -176,7 +176,7 @@ theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
 
 lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
-  rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq]
+  simp only [Set.preimage_preimage, Set.preimage_id']
 
 variable (T)
 
@@ -193,15 +193,18 @@ def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (OrderDual.toDual ∘ kernel)
     (hull T ∘ OrderDual.ofDual) :=
   gc.toGaloisInsertion fun a ↦ by
-    obtain ⟨S, rfl⟩ := hG a
-    rw [OrderDual.le_toDual, kernel, kernel]
+    obtain ⟨S, hS⟩ := hG (OrderDual.ofDual a)
+    change a ≤ (OrderDual.toDual ∘ kernel) ((hull T ∘ OrderDual.ofDual) a)
+    simp only [Function.comp, OrderDual.le_toDual]
+    rw [hS]
     exact sInf_le_sInf <| image_val_mono fun c hcS => by
-      rw [hull, mem_preimage, mem_Ici]
+      simp only [hull, mem_preimage, mem_Ici]
       exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS)
 
 lemma kernel_hull (hG : OrderGenerates T) (a : α) : kernel (hull T a) = a := by
-  conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
-  rfl
+  have h := (gi hG).l_u_eq (OrderDual.toDual a)
+  simp only [Function.comp] at h
+  exact OrderDual.toDual_inj.mp h
 
 lemma hull_kernel_of_isClosed [TopologicalSpace α] [IsLower α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerates T) {C : Set T} (h : IsClosed C) :

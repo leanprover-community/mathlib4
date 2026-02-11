@@ -174,10 +174,14 @@ The Upper Set topology is homeomorphic to the Lower Set topology on the dual ord
 def WithUpperSet.toDualHomeomorph [Preorder α] : WithUpperSet α ≃ₜ WithLowerSet αᵒᵈ where
   toFun := OrderDual.toDual
   invFun := OrderDual.ofDual
-  left_inv := OrderDual.toDual_ofDual
-  right_inv := OrderDual.ofDual_toDual
-  continuous_toFun := continuous_coinduced_rng
-  continuous_invFun := continuous_coinduced_rng
+  left_inv := OrderDual.ofDual_toDual
+  right_inv := OrderDual.toDual_ofDual
+  continuous_toFun := continuous_def.mpr fun s (hs : IsLowerSet s) =>
+    show IsUpperSet (OrderDual.toDual ⁻¹' s) from
+      fun _a _b hab ha => @hs _ _ hab ha
+  continuous_invFun := continuous_def.mpr fun s (hs : IsUpperSet s) =>
+    show IsLowerSet (OrderDual.ofDual ⁻¹' s) from
+      fun _a _b hba ha => @hs _ _ hba ha
 
 /-- Prop-valued mixin for an ordered topological space to be
 The upper set topology is the topology where the open sets are the upper sets. In general the upper
@@ -221,7 +225,18 @@ lemma topology_eq : ‹_› = upperSet α := topology_eq_upperSetTopology
 variable {α}
 
 instance _root_.OrderDual.instIsLowerSet : Topology.IsLowerSet αᵒᵈ where
-  topology_eq_lowerSetTopology := by ext; rw [IsUpperSet.topology_eq α]
+  topology_eq_lowerSetTopology := by
+    rw [OrderDual.instTopologicalSpace, IsUpperSet.topology_eq α]
+    ext s
+    change (∃ u, IsUpperSet u ∧ OrderDual.ofDual ⁻¹' u = s) ↔ IsLowerSet s
+    constructor
+    · rintro ⟨u, hu, rfl⟩
+      exact fun _a _b hba ha => @hu _ _ hba ha
+    · intro hs
+      refine ⟨OrderDual.ofDual '' s, ?_, Set.preimage_image_eq s fun _ _ h => OrderDual.ext h⟩
+      intro a b hab ha
+      obtain ⟨a', ha', rfl⟩ := ha
+      exact ⟨OrderDual.toDual b, @hs _ _ hab ha', OrderDual.ofDual_toDual b⟩
 
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
 `WithUpperSet α`. -/
@@ -326,7 +341,18 @@ lemma topology_eq : ‹_› = lowerSet α := topology_eq_lowerSetTopology
 variable {α}
 
 instance _root_.OrderDual.instIsUpperSet : Topology.IsUpperSet αᵒᵈ where
-  topology_eq_upperSetTopology := by ext; rw [IsLowerSet.topology_eq α]
+  topology_eq_upperSetTopology := by
+    rw [OrderDual.instTopologicalSpace, IsLowerSet.topology_eq α]
+    ext s
+    change (∃ u, IsLowerSet u ∧ OrderDual.ofDual ⁻¹' u = s) ↔ IsUpperSet s
+    constructor
+    · rintro ⟨u, hu, rfl⟩
+      exact fun _a _b hab ha => @hu _ _ hab ha
+    · intro hs
+      refine ⟨OrderDual.ofDual '' s, ?_, Set.preimage_image_eq s fun _ _ h => OrderDual.ext h⟩
+      intro a b hba ha
+      obtain ⟨a', ha', rfl⟩ := ha
+      exact ⟨OrderDual.toDual b, @hs _ _ hba ha', OrderDual.ofDual_toDual b⟩
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/
 def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
@@ -334,13 +360,18 @@ def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α]; rfl
 
-instance toAlexandrovDiscrete : AlexandrovDiscrete α := IsUpperSet.toAlexandrovDiscrete (α := αᵒᵈ)
+instance toAlexandrovDiscrete : AlexandrovDiscrete α where
+  isOpen_sInter S := by simpa only [isOpen_iff_isLowerSet] using isLowerSet_sInter (α := α)
 
 lemma isClosed_iff_isUpper : IsClosed s ↔ IsUpperSet s := by
   rw [← isOpen_compl_iff, isOpen_iff_isLowerSet, isUpperSet_compl.symm, compl_compl]
 
-lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
-  IsUpperSet.closure_eq_lowerClosure (α := αᵒᵈ)
+lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s := by
+  rw [subset_antisymm_iff]
+  refine ⟨?_, upperClosure_min subset_closure (isClosed_iff_isUpper.1 isClosed_closure)⟩
+  · apply closure_minimal subset_upperClosure _
+    rw [isClosed_iff_isUpper]
+    exact UpperSet.upper (upperClosure s)
 
 /--
 The closure of a singleton `{a}` in the lower set topology is the right-closed left-infinite
@@ -381,13 +412,22 @@ open OrderDual
 
 protected lemma monotone_iff_continuous [TopologicalSpace α] [TopologicalSpace β]
     [Topology.IsLowerSet α] [Topology.IsLowerSet β] {f : α → β} : Monotone f ↔ Continuous f := by
-  rw [← monotone_dual_iff]
-  exact IsUpperSet.monotone_iff_continuous (α := αᵒᵈ) (β := βᵒᵈ)
-    (f := (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ))
+  constructor
+  · intro hf
+    simp_rw [continuous_def, isOpen_iff_isLowerSet]
+    exact fun _ hs ↦ IsLowerSet.preimage hs hf
+  · intro hf a b hab
+    rw [← mem_Ici, ← closure_singleton] at hab ⊢
+    apply Continuous.closure_preimage_subset hf {f a}
+    apply mem_of_mem_of_subset hab
+    apply closure_mono
+    rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
 
 lemma monotone_to_lowerTopology_continuous [TopologicalSpace α] [TopologicalSpace β]
-    [Topology.IsLowerSet α] [IsLower β] {f : α → β} (hf : Monotone f) : Continuous f :=
-  IsUpperSet.monotone_to_upperTopology_continuous (α := αᵒᵈ) (β := βᵒᵈ) hf.dual
+    [Topology.IsLowerSet α] [IsLower β] {f : α → β} (hf : Monotone f) : Continuous f := by
+  simp_rw [continuous_def, isOpen_iff_isLowerSet]
+  intro s hs
+  exact (IsLower.isLowerSet_of_isOpen hs).preimage hf
 
 lemma lowerSet_le_lower {t₁ t₂ : TopologicalSpace α} [@Topology.IsLowerSet α t₁ _]
     [@IsLower α t₂ _] : t₁ ≤ t₂ := fun s hs => by
@@ -398,14 +438,66 @@ end maps
 
 end IsLowerSet
 
+private theorem ofDual_injective : Function.Injective (OrderDual.ofDual : αᵒᵈ → α) :=
+  fun _ _ h => OrderDual.ext h
+
+private theorem isOpen_of_isOpen_ofDual_preimage {t : TopologicalSpace α} {s : Set α}
+    (h : @IsOpen αᵒᵈ (TopologicalSpace.induced OrderDual.ofDual t)
+      (OrderDual.ofDual ⁻¹' s)) : @IsOpen α t s := by
+  obtain ⟨u, hu, e⟩ := h
+  have : s = u := Set.ext fun a => by
+    constructor
+    · intro ha
+      have : OrderDual.toDual a ∈ OrderDual.ofDual ⁻¹' s := ha
+      rw [← e] at this
+      exact this
+    · intro ha
+      have : OrderDual.toDual a ∈ OrderDual.ofDual ⁻¹' u := ha
+      rw [e] at this
+      exact this
+  rwa [this]
+
 lemma isUpperSet_orderDual [Preorder α] [TopologicalSpace α] :
     Topology.IsUpperSet αᵒᵈ ↔ Topology.IsLowerSet α := by
   constructor
-  · apply OrderDual.instIsLowerSet
-  · apply OrderDual.instIsUpperSet
+  · intro h
+    have heq := h.topology_eq_upperSetTopology
+    rw [OrderDual.instTopologicalSpace] at heq
+    constructor; ext s; constructor
+    · intro hs
+      have : @IsOpen αᵒᵈ (TopologicalSpace.induced OrderDual.ofDual _) (OrderDual.ofDual ⁻¹' s) :=
+        ⟨s, hs, rfl⟩
+      rw [heq] at this
+      -- this : IsUpperSet (ofDual ⁻¹' s) = ∀ ⦃a b⦄, a ≤ b → a ∈ ... → b ∈ ...
+      -- goal: IsLowerSet s = ∀ ⦃a b⦄, b ≤ a → a ∈ s → b ∈ s
+      exact fun _a _b hba ha => @this _ _ hba ha
+    · intro hs
+      apply isOpen_of_isOpen_ofDual_preimage
+      rw [heq]
+      -- goal: IsUpperSet (ofDual ⁻¹' s) = ∀ ⦃a b⦄, a ≤ b → a ∈ ... → b ∈ ...
+      -- hs : IsLowerSet s = ∀ ⦃a b⦄, b ≤ a → a ∈ s → b ∈ s
+      exact fun _a _b hab ha => @hs _ _ hab ha
+  · intro h
+    exact @OrderDual.instIsUpperSet α _ _ h
 
 lemma isLowerSet_orderDual [Preorder α] [TopologicalSpace α] :
-    Topology.IsLowerSet αᵒᵈ ↔ Topology.IsUpperSet α := isUpperSet_orderDual.symm
+    Topology.IsLowerSet αᵒᵈ ↔ Topology.IsUpperSet α := by
+  constructor
+  · intro h
+    have heq := h.topology_eq_lowerSetTopology
+    rw [OrderDual.instTopologicalSpace] at heq
+    constructor; ext s; constructor
+    · intro hs
+      have : @IsOpen αᵒᵈ (TopologicalSpace.induced OrderDual.ofDual _) (OrderDual.ofDual ⁻¹' s) :=
+        ⟨s, hs, rfl⟩
+      rw [heq] at this
+      exact fun _a _b hab ha => @this _ _ hab ha
+    · intro hs
+      apply isOpen_of_isOpen_ofDual_preimage
+      rw [heq]
+      exact fun _a _b hba ha => @hs _ _ hba ha
+  · intro h
+    exact @OrderDual.instIsLowerSet α _ _ h
 
 namespace WithUpperSet
 variable [Preorder α] [Preorder β] [Preorder γ]
