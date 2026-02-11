@@ -139,6 +139,7 @@ def multifork (F : Cᵒᵖ ⥤ A) :
     dsimp
     simp only [← F.map_comp, ← op_comp, E.w])
 
+@[simp]
 lemma multifork_ι (F : Cᵒᵖ ⥤ A) (i : E.I₀) : (E.multifork F).ι i = F.map (E.f i).op := rfl
 
 /-- The fork associated to a pre-`0`-hypercover induced by taking the coproduct of the
@@ -187,7 +188,7 @@ noncomputable def isLimitMultiforkEquivIsLimitFork
     simp [c', d', ← F.map_comp, ← op_comp]
   · refine Fan.IsLimit.hom_ext hc' _ _ fun i ↦ ?_
     simp
-    simp [c', multifork_ι]
+    simp [c']
 
 /-- The single object pre-`1`-hypercover obtained from taking coproducts of the components. -/
 @[simps toPreZeroHypercover Y]
