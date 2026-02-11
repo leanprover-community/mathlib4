@@ -123,6 +123,18 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 irreducible_def IsSubmersionAtOfComplement (f : M → N) (x : M) : Prop :=
   LiftSourceTargetPropertyAt I J n f x (SubmersionAtProp F I J M N)
 
+/-- `f : M → N` is a `C^k` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+around `x` and `f x`, respectively such that in these charts, `f` looks like `(u, v) ↦ u`.
+Additionally, we demand that `f` map `φ.source` into `ψ.source`.
+
+NB. We don't know the particular atlasses used for `M` and `N`, so asking for `φ` and `ψ` to be
+in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
+
+Implicit in this definition is an abstract choice `F` of a complement of `E''` in `E`: being
+a submersion at `x` includes a choice of linear isomorphism between `E` and `E'' × F`, which is
+where the choice of `F` enters.
+If you need stronger control over the complement `F`, use `IsImmersionAtOfComplement` instead.
+-/
 irreducible_def IsSubmersionAt (I : ModelWithCorners 𝕜 E H) (J : ModelWithCorners 𝕜 E'' G)
     (n : WithTop ℕ∞) (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
@@ -131,6 +143,7 @@ irreducible_def IsSubmersionAt (I : ModelWithCorners 𝕜 E H) (J : ModelWithCor
 variable {f g : M → N} {x : M}
 namespace IsSubmersionAtOfComplement
 
+#check IsImmersionAt
 lemma mk_of_charts (equiv : E ≃L[𝕜] (E'' × F)) (domChart : OpenPartialHomeomorph M H)
     (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
@@ -155,10 +168,20 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     isLocalSourceTargetProperty_submmersionAtProp
     _ _ hx hfx hdomChart hcodChart ⟨equiv, hwrittenInExtend⟩
 
+/-- A choice of chart on the domain `M` of a submersion `f` at `x`:
+w.r.t. this chart and the data `h.codChart` and `h.equiv`,
+`f` will look like a projection `(u,v) ↦ u` in these extended charts.
+The particular chart is arbitrary, but this choice matches the witnesses given by
+`h.codChart` and `h.codChart`. -/
 def domChart (h : IsSubmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph M H := by
   rw [IsSubmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.domChart h
 
+/-- A choice of chart on the codomain `N` of a submersion `f` at `x`:
+w.r.t. this chart and the data `h.domChart` and `h.equiv`,
+`f` will look like a projection `(u, v) ↦ u` in these extended charts.
+The particular chart is arbitrary, but this choice matches the witnesses given by
+`h.equiv` and `h.domChart`. -/
 def codChart (h : IsSubmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph N G := by
   rw [IsSubmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.codChart h
@@ -187,6 +210,9 @@ lemma source_subset_preimage_source (h : IsSubmersionAtOfComplement F I J n f x)
   rw [IsSubmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.source_subset_preimage_source h
 
+/-- A linear equivalence `E ≃L[𝕜] E'' × F` which belongs to the data of a submersion `f` at `x`:
+the particular equivalence is arbitrary, but this choice matches the witnesses given by
+`h.domChart` and `h.codChart`. -/
 def equiv (h : IsSubmersionAtOfComplement F I J n f x) : E ≃L[𝕜] (E'' × F) := by
   rw [IsSubmersionAtOfComplement_def] at h
   exact Classical.choose <| LiftSourceTargetPropertyAt.property h
