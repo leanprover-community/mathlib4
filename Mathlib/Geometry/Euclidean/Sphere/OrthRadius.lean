@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 
 /-!
 # Spaces orthogonal to the radius vector in spheres.
@@ -148,6 +149,42 @@ lemma right_mem_lineOrOrthRadius : q ∈ s.lineOrOrthRadius p q := by
 
 lemma lineOrOrthRadius_comm : s.lineOrOrthRadius p q = s.lineOrOrthRadius q p := by
   by_cases h : p = q <;> simp [lineOrOrthRadius, h, Ne.symm, affineSpan_pair_comm]
+
+/-- A point on the sphere, distinct from both endpoints,
+    cannot lie on the lineOrOrthRadius between them. -/
+lemma not_mem_lineOrOrthRadius_of_mem_sphere {A B C : P}
+    (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s) (hBA : B ≠ A) (hBC : B ≠ C) :
+    B ∉ s.lineOrOrthRadius A C := by
+  by_cases hAC : A = C
+  · subst hAC
+    simp only [lineOrOrthRadius_of_eq, mem_orthRadius_iff_inner_left]
+    intro h
+    have := inner_pos_or_eq_of_dist_le_radius hA (mem_sphere.mp hB).le
+    rw [← neg_vsub_eq_vsub_rev, inner_neg_left, h, neg_zero, lt_self_iff_false, false_or] at this
+    exact hBA this.symm
+  · simp only [lineOrOrthRadius_of_ne hAC]
+    intro hB_mem
+    have hB_eq := (s.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair hA hB_mem).mpr hB
+    have hC_eq := (s.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair hA
+      (right_mem_affineSpan_pair ℝ A C)).mpr hC
+    rcases hB_eq, hC_eq with ⟨rfl | hB', rfl | hC'⟩
+    · exact hBA rfl
+    · exact hBA rfl
+    · exact hAC rfl
+    · exact hBC (hB'.trans hC'.symm)
+
+/-- The intersection of lineOrOrthRadius with the sphere is exactly the endpoints. -/
+lemma mem_lineOrOrthRadius_inter_sphere_iff {A B C : P}
+    (hA : A ∈ s) (hC : C ∈ s) (hB : B ∈ s) :
+    B ∈ s.lineOrOrthRadius A C ↔ B = A ∨ B = C := by
+  constructor
+  · intro h
+    by_contra hne
+    push_neg at hne
+    exact not_mem_lineOrOrthRadius_of_mem_sphere hA hB hC hne.1 hne.2 h
+  · rintro (rfl | rfl)
+    · exact left_mem_lineOrOrthRadius
+    · exact right_mem_lineOrOrthRadius
 
 end Sphere
 

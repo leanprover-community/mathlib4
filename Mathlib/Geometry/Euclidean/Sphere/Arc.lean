@@ -14,9 +14,16 @@ public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 /-!
 # Arcs on Spheres
 
-This file defines arcs on spheres (circles in 2D, great circle arcs in higher dimensions)
-and proves basic properties.
+This file defines arcs on spheres and proves basic properties.
 
+## Main definitions
+
+* `EuclideanGeometry.Sphere.Arc`: An arc on a sphere, defined by a left endpoint and a midpoint.
+* `EuclideanGeometry.Sphere.Arc.opposite`: The opposite arc sharing the same endpoints.
+* `EuclideanGeometry.Sphere.Arc.minor`: The minor arc between two non-diametrically-opposite points.
+* `EuclideanGeometry.Sphere.Arc.major`: The major arc between two non-diametrically-opposite points.
+* `EuclideanGeometry.Sphere.Arc.through`: The arc from `A` to `C` passing through `B`.
+* `EuclideanGeometry.Sphere.Arc.avoiding`: The arc from `A` to `C` not passing through `B`.
 -/
 
 @[expose] public section
@@ -33,7 +40,7 @@ variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [Norme
 noncomputable section
 
 /-- An arc on a sphere, defined by a left endpoint and a midpoint on the sphere.
-The right endpoint is computed as the reflection of the left endpoint across theline through the
+The right endpoint is computed as the reflection of the left endpoint across the line through the
 center and midpoint. -/
 structure Arc (s : Sphere P) where
   /-- The left endpoint of the arc. -/
@@ -54,17 +61,18 @@ across the line through the center and midpoint. -/
 def right (a : Arc s) : P :=
   reflection (line[ℝ, s.center, a.midpoint]) a.left
 
-lemma right_def (a : Arc s) : a.right = reflection (line[ℝ, s.center, a.midpoint]) a.left := rfl
+lemma right_eq_reflection (a : Arc s) :
+  a.right = reflection (line[ℝ, s.center, a.midpoint]) a.left := rfl
 
 lemma right_mem (a : Arc s) : a.right ∈ s := by
-  rw [mem_sphere, right_def]
+  rw [mem_sphere, right_eq_reflection]
   have h_center_mem : s.center ∈ line[ℝ, s.center, a.midpoint] :=
     left_mem_affineSpan_pair ℝ s.center a.midpoint
   rw [dist_comm, dist_reflection_eq_of_mem _ h_center_mem, ← a.left_mem, dist_comm]
 
 lemma left_eq_right_iff_mem_line (a : Arc s) :
     a.left = a.right ↔ a.left ∈ line[ℝ, s.center, a.midpoint] := by
-  rw [right_def, eq_comm]
+  rw [right_eq_reflection, eq_comm]
   haveI : Nonempty (line[ℝ, s.center, a.midpoint]) :=
     ⟨⟨s.center, left_mem_affineSpan_pair ℝ s.center a.midpoint⟩⟩
   exact reflection_eq_self_iff a.left
@@ -105,7 +113,7 @@ lemma right_mem_arc (a : Arc s) : a.right ∈ a := by
   · exact a.right_mem
   · exact AffineSubspace.wSameSide_of_right_mem a.midpoint right_mem_lineOrOrthRadius
 
-lemma pointReflection_center_mem_sphere {m : P} (hm : m ∈ s) :
+lemma Sphere.pointReflection_center_mem_sphere {m : P} (hm : m ∈ s) :
     AffineEquiv.pointReflection ℝ s.center m ∈ s := by
   rw [mem_sphere] at hm ⊢
   rw [AffineEquiv.pointReflection_apply, dist_vadd_left, ← dist_eq_norm_vsub', ← hm]
@@ -116,9 +124,9 @@ def opposite (a : Arc s) : Arc s where
   left := a.left
   midpoint := AffineEquiv.pointReflection ℝ s.center a.midpoint
   left_mem := a.left_mem
-  midpoint_mem := pointReflection_center_mem_sphere a.midpoint_mem
+  midpoint_mem := Sphere.pointReflection_center_mem_sphere a.midpoint_mem
 
-lemma line_center_opposite_midpoint_eq (a : Arc s) :
+lemma line_center_opposite_midpoint_eq_line_center_midpoint (a : Arc s) :
     line[ℝ, s.center, a.opposite.midpoint] = line[ℝ, s.center, a.midpoint] := by
   simp only [opposite]
   apply AffineSubspace.ext_of_direction_eq
@@ -135,7 +143,8 @@ lemma opposite_left (a : Arc s) : a.opposite.left = a.left := rfl
 @[simp]
 lemma opposite_right (a : Arc s) : a.opposite.right = a.right := by
   simp only [right, opposite]
-  exact eq_reflection_of_eq_subspace (line_center_opposite_midpoint_eq a) a.left
+  exact eq_reflection_of_eq_subspace
+    (line_center_opposite_midpoint_eq_line_center_midpoint a) a.left
 
 @[simp]
 lemma opposite_opposite (a : Arc s) : a.opposite.opposite = a := by
@@ -143,7 +152,7 @@ lemma opposite_opposite (a : Arc s) : a.opposite.opposite = a := by
   congr 1
   exact AffineEquiv.pointReflection_involutive ℝ s.center a.midpoint
 
-/-- Bundled equivalence showing that `opposite` is an involution. -/
+/-- The equivalence given by `opposite`, which is an involution on arcs. -/
 def oppositeEquiv : Arc s ≃ Arc s where
   toFun := opposite
   invFun := opposite
@@ -167,7 +176,7 @@ def minorMidpoint (s : Sphere P) (A C : P) : P :=
   let v := (A -ᵥ s.center) + (C -ᵥ s.center)
   (s.radius / ‖v‖) • v +ᵥ s.center
 
-/-- The minor midpoint lies on the sphere. -/
+/-- The `minorMidpoint` lies on the sphere. -/
 lemma minorMidpoint_mem {A C : P} (hA : A ∈ s) (hC : C ∈ s)
     (hNotDiam : ¬s.IsDiameter A C) : minorMidpoint s A C ∈ s := by
   have hv : ‖(A -ᵥ s.center) + (C -ᵥ s.center)‖ ≠ 0 :=
@@ -176,8 +185,9 @@ lemma minorMidpoint_mem {A C : P} (hA : A ∈ s) (hC : C ∈ s)
   rw [mem_sphere, minorMidpoint, dist_vadd_left, norm_smul,
     Real.norm_of_nonneg (div_nonneg hradius (norm_nonneg _)), div_mul_cancel₀ _ hv]
 
-/-- The minor arc from A to C. The midpoint is chosen on the shorter arc.
-    Requires AC is not a diameter (but A = C is allowed, giving a single-point arc). -/
+/-- The minor arc from `A` to `C`. The midpoint is chosen on the shorter arc.
+Requires `A` and `C` are not diametrically opposite (but `A = C` is allowed,
+giving a single-point arc). -/
 def minor {A C : P} (hA : A ∈ s) (hC : C ∈ s) (hNotDiam : ¬s.IsDiameter A C) : Arc s where
   left := A
   midpoint := minorMidpoint s A C
@@ -272,112 +282,107 @@ lemma major_opposite_eq_minor {A C : P} (hA : A ∈ s) (hC : C ∈ s) (hNotDiam 
   simp only [major, opposite_opposite]
 
 open Classical in
-/-- The midpoint for an arc from A to C that contains B.
-    Chooses minorMidpoint if B is on the same side, otherwise the antipodal point. -/
-def throughMidpoint (s : Sphere P) (A B C : P) : P :=
-  let m := minorMidpoint s A C
-  if (s.lineOrOrthRadius A C).WSameSide m B then m
-  else AffineEquiv.pointReflection ℝ s.center m
+/-- The component of `B -ᵥ A` perpendicular to `s.lineOrOrthRadius A C`.
+When `A ≠ C`, this is the rejection of `B -ᵥ A` from the chord direction `C -ᵥ A`.
+When `A = C`, this is the projection of `B -ᵥ A` onto the radius direction
+`A -ᵥ s.center`. -/
+noncomputable def perpToLineOrOrthRadius (s : Sphere P) (A B C : P) : V :=
+  if A = C then
+    let a := A -ᵥ s.center
+    (⟪B -ᵥ A, a⟫ / ⟪a, a⟫) • a
+  else
+    let d := C -ᵥ A
+    (B -ᵥ A) - (⟪B -ᵥ A, d⟫ / ⟪d, d⟫) • d
 
-/-- The through midpoint lies on the sphere. -/
-lemma throughMidpoint_mem (A B C : P) (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (throughMidpoint (s := s) (A := A) (B := B) (C := C)) ∈ s := by
-  simp only [throughMidpoint]
-  split_ifs
-  · exact minorMidpoint_mem hA hC hNotDiam
-  · exact pointReflection_center_mem_sphere (minorMidpoint_mem hA hC hNotDiam)
+/-- The midpoint of the arc from `A` to `C` passing through `B`, constructed by
+normalizing `perpToLineOrOrthRadius s A B C` to have norm `s.radius`. -/
+noncomputable def throughMidpoint (s : Sphere P) (A B C : P) : P :=
+  let w := perpToLineOrOrthRadius s A B C
+  (s.radius / ‖w‖) • w +ᵥ s.center
 
-/-- Arc from A to C passing through B. -/
-def through {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) : Arc s where
+/-- The perpendicular component `perpToLineOrOrthRadius s A B C` is nonzero when `B`
+is distinct from both `A` and `C` and all three lie on the sphere `s`. -/
+lemma perpToLineOrOrthRadius_ne_zero {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+   perpToLineOrOrthRadius s A B C ≠ 0 := by
+  have hB_not_mem := not_mem_lineOrOrthRadius_of_mem_sphere hA hB hC hBA hBC
+  intro heq
+  apply hB_not_mem
+  simp only [perpToLineOrOrthRadius] at heq
+  split_ifs at heq with hAC
+  · subst hAC
+    simp only [lineOrOrthRadius_of_eq, mem_orthRadius_iff_inner_left]
+    by_cases ha : A -ᵥ s.center = 0
+    · have : A = s.center := vsub_eq_zero_iff_eq.mp ha
+      have : s.radius = 0 := by rw [← mem_sphere.mp hA, this, dist_self]
+      have : B = s.center := by rw [← dist_eq_zero]; linarith [mem_sphere.mp hB]
+      exact absurd (‹B = s.center› ▸ ‹A = s.center› ▸ rfl : B = A) hBA
+    · rwa [smul_eq_zero, div_eq_zero_iff, inner_self_eq_zero, or_iff_left ha,
+           or_iff_left ha] at heq
+  · simp only [lineOrOrthRadius_of_ne hAC]
+    have : B -ᵥ A = (⟪B -ᵥ A, C -ᵥ A⟫ / ⟪C -ᵥ A, C -ᵥ A⟫) • (C -ᵥ A) := by
+      rwa [sub_eq_zero] at heq
+    rw [show B = (⟪B -ᵥ A, C -ᵥ A⟫ / ⟪C -ᵥ A, C -ᵥ A⟫) • (C -ᵥ A) +ᵥ A from
+      by rw [← this, vsub_vadd]]
+    exact smul_vsub_vadd_mem_affineSpan_pair _ A C
+
+open Classical in
+/-- The `throughMidpoint` lies on the sphere. -/
+lemma throughMidpoint_mem {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    throughMidpoint s A B C ∈ s := by
+  have hw := perpToLineOrOrthRadius_ne_zero hA hB hC hBA hBC
+  simp only [mem_sphere, throughMidpoint]
+  rw [dist_vadd_left, norm_smul,
+    Real.norm_of_nonneg (div_nonneg (Sphere.radius_nonneg_of_mem hA) (norm_nonneg _)),
+    div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hw)]
+
+/-- The arc on `s` from `A` to `C` passing through `B`. -/
+noncomputable def through {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) : Arc s where
   left := A
   midpoint := throughMidpoint s A B C
   left_mem := hA
-  midpoint_mem := throughMidpoint_mem A B C hA hC hNotDiam
-
-/-- Arc from A to C not passing through B. -/
-def avoiding {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) : Arc s :=
-  (through (B := B) hA hC hNotDiam).opposite
+  midpoint_mem := throughMidpoint_mem hA hB hC hBA hBC
 
 @[simp]
-lemma through_left {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (through (B := B) hA hC hNotDiam).left = A := rfl
+lemma through_left {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    (through hA hB hC hBA hBC).left = A := rfl
 
-lemma through_midpoint {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (through (B := B) hA hC hNotDiam).midpoint = throughMidpoint s A B C := rfl
+lemma through_midpoint {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    (through hA hB hC hBA hBC).midpoint = throughMidpoint s A B C := rfl
 
-/-- The right endpoint of `through A B C` equals C. -/
-@[simp]
-lemma through_right {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (through (B := B) hA hC hNotDiam).right = C := by
-  classical
-  have hminor : (minor hA hC hNotDiam).right = C := minor_right hA hC hNotDiam
-  have hmajor : (major hA hC hNotDiam).right = C := major_right hA hC hNotDiam
-  simp only [through, right, throughMidpoint, minor, major, opposite] at *
-  split_ifs with h <;> assumption
+/-- The arc on `s` from `A` to `C` not passing through `B`. -/
+noncomputable def avoiding {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) : Arc s :=
+  (through hA hB hC hBA hBC).opposite
 
 @[simp]
-lemma avoiding_left {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (avoiding (B := B) hA hC hNotDiam).left = A := by
-  simp only [avoiding, opposite_left, through_left]
+lemma avoiding_left {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    (avoiding hA hB hC hBA hBC).left = A := rfl
+
+lemma avoiding_midpoint {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    (avoiding hA hB hC hBA hBC).midpoint =
+      AffineEquiv.pointReflection ℝ s.center (throughMidpoint s A B C) := rfl
 
 @[simp]
-lemma avoiding_right {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (avoiding (B := B) hA hC hNotDiam).right = C := by
-  simp only [avoiding, opposite_right, through_right]
-
-lemma avoiding_eq_through_opposite {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    avoiding (B := B) hA hC hNotDiam =
-      (through (B := B) hA hC hNotDiam).opposite := rfl
-
-lemma through_eq_minor_of_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C)
-    (h : (s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    through (B := B) hA hC hNotDiam = minor hA hC hNotDiam := by
-  classical
-  simp only [through, minor, throughMidpoint, if_pos h]
-
-lemma through_eq_major_of_not_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C)
-    (h : ¬(s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    through (B := B) hA hC hNotDiam = major hA hC hNotDiam := by
-  classical
-  simp only [through, major, opposite, minor, throughMidpoint, if_neg h]
-
-lemma avoiding_eq_major_of_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C)
-    (h : (s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    avoiding (B := B) hA hC hNotDiam = major hA hC hNotDiam := by
-  simp only [avoiding, through_eq_minor_of_wSameSide hA hC hNotDiam h,
-             minor_opposite_eq_major]
-
-lemma avoiding_eq_minor_of_not_wSameSide {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C)
-    (h : ¬(s.lineOrOrthRadius A C).WSameSide (minorMidpoint s A C) B) :
-    avoiding (B := B) hA hC hNotDiam = minor hA hC hNotDiam := by
-  simp only [avoiding, through_eq_major_of_not_wSameSide hA hC hNotDiam h,
-             major_opposite_eq_minor]
+lemma through_opposite {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    (through hA hB hC hBA hBC).opposite = avoiding hA hB hC hBA hBC := rfl
 
 @[simp]
-lemma through_opposite {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (through (B := B) hA hC hNotDiam).opposite =
-      avoiding (B := B) hA hC hNotDiam := rfl
-
-@[simp]
-lemma avoiding_opposite {A B C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) :
-    (avoiding (B := B) hA hC hNotDiam).opposite =
-      through (B := B) hA hC hNotDiam := by
+lemma avoiding_opposite {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    (avoiding hA hB hC hBA hBC).opposite = through hA hB hC hBA hBC := by
   simp only [avoiding, opposite_opposite]
+
+lemma avoiding_eq_through_opposite {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    avoiding hA hB hC hBA hBC = (through hA hB hC hBA hBC).opposite := rfl
 
 end Arc
 
