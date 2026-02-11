@@ -19,7 +19,7 @@ This file will be expanded as the linters gain functionality.
 def UsesInstanceOf (α : Sort u) (_ : α := by infer_instance) : Prop := True
 
 /-- Uses an arbitrary value of any type. -/
-def Uses {α} : α → Prop := fun _ => True
+def UsesExactly {α} : α → Prop := fun _ => True
 
 /-- Uses an instance of the given type in a proof, returning a proof of true. Can be nested in
 `Uses`.-/

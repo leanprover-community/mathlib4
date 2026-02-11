@@ -86,7 +86,7 @@ Note: This linter can be disabled with `set_option linter.unusedDecidableInType 
 -/
 #guard_msgs in
 theorem fooUsing₁' [DecidableEq (Nat → Nat)] :
-    Uses (UsesInstanceInProof (DecidableEq (Nat → Nat))) → True :=
+    UsesExactly (UsesInstanceInProof (DecidableEq (Nat → Nat))) → True :=
   fun _ => trivial
 
 /--
