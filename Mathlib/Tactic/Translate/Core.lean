@@ -552,11 +552,13 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   withOptions (Elab.async.set · false) do
   let decl ←
     if let some unfoldBoundaries := t.unfoldBoundaries? then
+      let env ← getEnv
       try
         let decl ← updateDecl t tgt srcDecl reorder dont none
         addDecl decl.toDeclaration!
         return decl -- early return
       catch _ =>
+        setEnv env
         updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState (← getEnv))
     else
       updateDecl t tgt srcDecl reorder dont none
