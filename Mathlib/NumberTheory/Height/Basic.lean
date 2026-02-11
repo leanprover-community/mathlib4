@@ -557,10 +557,12 @@ lemma logHeight₁_sum_le {α : Type*} (s : Finset α) (x : α → K) :
   exact (log_le_log <| by positivity) <| mulHeight₁_sum_le hs x
 
 /-- The multiplicative height of `-x` is the same as that of `x`. -/
+@[simp]
 lemma mulHeight₁_neg (x : K) : mulHeight₁ (-x) = mulHeight₁ x := by
   simp [mulHeight₁_eq]
 
 /-- The logarithmic height of `-x` is the same as that of `x`. -/
+@[simp]
 lemma logHeight₁_neg (x : K) : logHeight₁ (-x) = logHeight₁ x := by
   simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_neg]
 
