@@ -34,6 +34,7 @@ public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
+-- This import makes the `#min_imports in` command available globally.
 public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 -- This is a redundant import, but it is needed so that
