@@ -25,7 +25,7 @@ namespace Tactic.ComputeAsymptotics
 
 open Topology Filter Asymptotics
 
-/-- `Majorized f g exp` for real functions `f` and `g` means that for any `exp' < exp`,
+/-- `Majorized f g exp` for real functions `f` and `g` means that for any `exp' > exp`,
 `f =o[atTop] g ^ exp'`. This is used to define the `MultiseriesExpansion.Approximates` predicate.
 The naming `Majorized` is non-standard because this notion is invented for the purposes of
 this tactic, and does not exists in literature. -/
