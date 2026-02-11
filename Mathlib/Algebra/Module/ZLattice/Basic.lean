@@ -61,6 +61,7 @@ noncomputable section
 namespace ZSpan
 
 open MeasureTheory MeasurableSet Module Submodule Bornology
+open scoped Pointwise
 
 variable {E ι : Type*}
 
@@ -78,7 +79,6 @@ theorem map {F : Type*} [AddCommGroup F] [Module K F] (f : E ≃ₗ[K] F) :
   simp_rw [Submodule.map_span, LinearEquiv.coe_coe, LinearEquiv.restrictScalars_apply,
     Basis.coe_map, Set.range_comp]
 
-open scoped Pointwise in
 theorem smul {c : K} (hc : c ≠ 0) :
     c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ hc.isUnit))) := by
   rw [smul_span, Set.smul_set_range]
@@ -95,8 +95,6 @@ def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 theorem mem_fundamentalDomain {m : E} :
     m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
 
-open scoped Pointwise in
-@[simp]
 theorem mem_vadd_fundamentalDomain [AddLeftMono K] {m : E} {z : E} :
     m ∈ z +ᵥ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (b.repr z i) (b.repr z i + 1) := by
   simp_rw [Set.mem_vadd_set, mem_fundamentalDomain, b.ext_elem_iff,
@@ -108,33 +106,22 @@ theorem mem_vadd_fundamentalDomain [AddLeftMono K] {m : E} {z : E} :
     intro i
     grind
 
-@[simp]
 theorem mem_neg_fundamentalDomain [IsOrderedAddMonoid K] {m : E} :
     m ∈ -fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ioc (-1 : K) 0 := by
-  simp only [Set.mem_neg, fundamentalDomain, Set.mem_setOf]
-  refine forall_congr' fun i ↦ ?_
-  simp only [map_neg, Finsupp.coe_neg, Pi.neg_apply, ← Set.mem_neg,
-    Set.neg_Ico (0 : K) 1, neg_zero]
+  simp only [Set.mem_neg, mem_fundamentalDomain, map_neg,
+    Finsupp.coe_neg, Pi.neg_apply]
+  refine forall_congr' fun i ↦ by grind
 
-open scoped Pointwise in
-@[simp]
 theorem mem_vadd_neg_fundamentalDomain [IsOrderedAddMonoid K] {m : E} {z : E} :
     m ∈ z +ᵥ -fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ioc (b.repr z i - 1) (b.repr z i) := by
-  simp_rw [Set.mem_vadd_set, mem_neg_fundamentalDomain, b.ext_elem_iff,
-    ← forall_and, vadd_eq_add, map_add, Finsupp.coe_add, Pi.add_apply, Set.mem_Ioc]
-  constructor <;> intro h
-  · grind
-  · use m - z
-    simp only [map_sub, Finsupp.coe_sub, Pi.sub_apply, sub_nonpos, add_sub_cancel, and_true]
-    intro i
-    grind
+  simp only [Set.mem_vadd_set_neg, mem_vadd_fundamentalDomain]
+  exact forall_congr' fun i ↦ by grind
 
 theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
     f '' (fundamentalDomain b) = fundamentalDomain (b.map f) := by
   ext x
-  rw [mem_fundamentalDomain, Basis.map_repr, LinearEquiv.trans_apply,
-    ← mem_fundamentalDomain, show f.symm x = f.toEquiv.symm x by rfl,
-    ← Set.mem_image_equiv]
+  rw [mem_fundamentalDomain, Basis.map_repr, LinearEquiv.trans_apply, ← mem_fundamentalDomain,
+    show f.symm x = f.toEquiv.symm x by rfl, ← Set.mem_image_equiv]
   rfl
 
 @[simp]
@@ -167,7 +154,6 @@ theorem repr_floor_apply (m : E) (i : ι) : b.repr (floor b m) i = ⌊b.repr m i
     Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
     Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
 
-open scoped Pointwise in
 theorem floor_eq_iff (m z : E) (hz : z ∈ span ℤ (Set.range b)) :
     floor b m = z ↔ m ∈ z +ᵥ fundamentalDomain b := by
   simp_rw [b.ext_elem_iff, repr_floor_apply, mem_vadd_fundamentalDomain]
@@ -179,12 +165,10 @@ theorem floor_eq_iff (m z : E) (hz : z ∈ span ℤ (Set.range b)) :
 theorem floor_eq_zero_iff {m : E} : (floor b m : E) = 0 ↔ m ∈ fundamentalDomain b := by
   simpa using floor_eq_iff b m 0 (by simp)
 
-open scoped Pointwise in
 theorem floor_eq_on_vadd_fundamentalDomain (m z : E) (hz : z ∈ span ℤ (Set.range b))
     (hm : m ∈ z +ᵥ fundamentalDomain b) : floor b m = z :=
   (floor_eq_iff b _ _ hz).mpr hm
 
-open scoped Pointwise in
 @[simp]
 theorem preimage_floor_singleton (m : E) (hm : m ∈ span ℤ (Set.range b)) :
     (floor b : E → span ℤ (Set.range b)) ⁻¹' {⟨m, hm⟩} = m +ᵥ fundamentalDomain b := by
@@ -233,7 +217,6 @@ theorem repr_ceil_apply (m : E) (i : ι) : b.repr (ceil b m) i = ⌈b.repr m i�
     Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
     Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
 
-open scoped Pointwise in
 theorem ceil_eq_iff (m z : E) (hz : z ∈ span ℤ (Set.range b)) :
     ceil b m = z ↔ m ∈ z +ᵥ -fundamentalDomain b := by
   simp_rw [b.ext_elem_iff, repr_ceil_apply, mem_vadd_neg_fundamentalDomain]
@@ -243,14 +226,12 @@ theorem ceil_eq_iff (m z : E) (hz : z ∈ span ℤ (Set.range b)) :
   simp [Int.ceil_eq_iff]
 
 theorem ceil_eq_zero_iff {m : E} : (ceil b m : E) = 0 ↔ m ∈ -fundamentalDomain b := by
-  simpa [neg_lt_iff_pos_add'] using ceil_eq_iff b m 0 (by simp)
+  simpa using ceil_eq_iff b m 0 (by simp)
 
-open scoped Pointwise in
 theorem ceil_eq_on_vadd_fundamentalDomain (m z : E) (hz : z ∈ span ℤ (Set.range b))
     (hm : m ∈ z +ᵥ -fundamentalDomain b) : ceil b m = z :=
   (ceil_eq_iff b _ _ hz).mpr hm
 
-open scoped Pointwise in
 @[simp]
 theorem preimage_ceil_singleton (m : E) (hm : m ∈ span ℤ (Set.range b)) :
     (ceil b : E → span ℤ (Set.range b)) ⁻¹' {⟨m, hm⟩} = m +ᵥ -fundamentalDomain b := by
