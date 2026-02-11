@@ -66,4 +66,21 @@ instance : IsClosedImmersion (X.irreducibleComponentι Z hZ) :=
 instance : IrreducibleSpace (X.irreducibleComponent Z hZ) :=
   Subtype.irreducibleSpace hZ.1
 
+instance [IrreducibleSpace X] : CategoryTheory.IsIso (X.irreducibleComponentι Z hZ) := by
+  suffices X.irreducibleComponentIdeal Z hZ = ⊥ by
+    rw [irreducibleComponentι]
+    convert inferInstanceAs (CategoryTheory.IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X))
+    rw [irreducibleComponent, this]
+  suffices CategoryTheory.IsIso (Opens.ι ⟨(⋃₀ (irreducibleComponents ↥X \ {Z}))ᶜ, _⟩) by
+    ext1
+    simp only [irreducibleComponentIdeal]
+    rw [Hom.ker_eq_bot_of_isIso]
+  let U : Opens X := ?_
+  change CategoryTheory.IsIso U.ι
+  suffices U = ⊤ by
+    rw [this]
+    exact X.topIso.isIso_hom
+  rw [irreducibleComponents_eq_singleton, Set.mem_singleton_iff] at hZ
+  simp [U, irreducibleComponents_eq_singleton, hZ]
+
 end AlgebraicGeometry.Scheme
