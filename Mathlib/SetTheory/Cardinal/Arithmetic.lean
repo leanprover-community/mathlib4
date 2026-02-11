@@ -476,7 +476,7 @@ lemma add_lt_add_iff_of_right_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
 
 lemma add_lt_add_iff_of_left_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
     c + a < c + b ↔ a < b := by
-  simpa [add_comm] using add_lt_add_iff_of_right_lt_aleph0 (a:=a) (b:=b) hc
+  simpa [add_comm] using add_lt_add_iff_of_right_lt_aleph0 (a := a) (b := b) hc
 
 protected lemma add_lt_add {κ₁ κ₂ μ₁ μ₂ : Cardinal}
     (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
