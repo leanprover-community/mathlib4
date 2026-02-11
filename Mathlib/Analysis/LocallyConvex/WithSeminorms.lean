@@ -843,7 +843,7 @@ controlled image by `q`. The control of `q` at the original element follows by r
 lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
     (hq : Continuous q) : ∃ C, 0 < C ∧ (∀ x : F, q x ≤ C * ‖x‖) := by
   have hq' : Tendsto q (𝓝 0) (𝓝 0) := map_zero q ▸ hq.tendsto 0
-  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' <| Iio_mem_nhds one_pos)
+  rcases NormedAddGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' <| Iio_mem_nhds one_pos)
     with ⟨ε, ε_pos, hε⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < ‖c‖ / ε := by positivity

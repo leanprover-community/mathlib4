@@ -1179,7 +1179,7 @@ lemma uniformSpace_eq_of_hasBasis
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
     rcases h₁ with ⟨r, hr⟩
     exact p.continuous' hr
-  · rw [(@NormedAddCommGroup.nhds_zero_basis_norm_lt E
+  · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
     simpa only [subset_def, mem_ball_zero] using h₂
 

@@ -79,7 +79,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
   rcases (zero_le n).eq_or_lt with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
-    rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+    rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
     convert exp_bound hx.out.le hn using 1
     simp [field]
