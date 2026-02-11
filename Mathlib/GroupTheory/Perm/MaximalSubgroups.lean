@@ -375,7 +375,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     apply hB.eq_univ_of_card_lt
     have : sᶜ.ncard ≤ B.ncard := ncard_le_ncard this
     rw [← Set.ncard_add_ncard_compl s]
-    linarith
+    lia
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `Nat.card s < Nat.card sᶜ`.

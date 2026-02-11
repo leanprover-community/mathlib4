@@ -218,6 +218,12 @@ theorem leftComm_symm_tmul (m : M) (n : N) (p : P) :
     (leftComm R M N P).symm (n ⊗ₜ (m ⊗ₜ p)) = m ⊗ₜ (n ⊗ₜ p) :=
   rfl
 
+attribute [local ext high] TensorProduct.ext in
+lemma leftComm_def : leftComm R M N P =
+    (TensorProduct.assoc R _ _ _).symm ≪≫ₗ congr (TensorProduct.comm _ _ _) (.refl _ _) ≪≫ₗ
+      (TensorProduct.assoc R _ _ _) := by
+  apply LinearEquiv.toLinearMap_injective; ext; rfl
+
 variable (M N P) in
 attribute [local ext high] ext in
 /-- A tensor product analogue of `mul_right_comm`. -/
@@ -234,6 +240,12 @@ theorem rightComm_tmul (m : M) (n : N) (p : P) :
 
 @[simp]
 theorem rightComm_symm : (rightComm R M N P).symm = rightComm R M P N := rfl
+
+attribute [local ext high] TensorProduct.ext in
+lemma rightComm_def : rightComm R M N P =
+    TensorProduct.assoc R _ _ _ ≪≫ₗ congr (.refl _ _) (TensorProduct.comm _ _ _) ≪≫ₗ
+      (TensorProduct.assoc R _ _ _).symm := by
+  apply LinearEquiv.toLinearMap_injective; ext; rfl
 
 variable (M N P Q)
 

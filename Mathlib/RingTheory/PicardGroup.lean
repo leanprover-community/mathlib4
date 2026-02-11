@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.UniqueFactorizationDomain.ClassGroup
 
 /-!
 # The Picard group of a commutative ring
@@ -50,7 +51,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
-- All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
@@ -853,6 +853,12 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (Submodule.unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
 
+/-- The Picard group of a domain with normalizable gcd is trivial.
+This includes unique factorization domains. -/
+@[stacks 0BCH]
+instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
+  Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
+
 end PicardGroup
 
 open CommRing Pic
@@ -895,8 +901,7 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
       IsRegular.mem_nonZeroDivisors <| isRightRegular_iff_isRegular.mp <| by
     rw [IsRightRegular]
     convert Subtype.val_injective.comp e.injective using 2
-    rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one]
-    rfl
+    rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
   exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]
 

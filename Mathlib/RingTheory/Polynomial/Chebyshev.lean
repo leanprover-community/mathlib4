@@ -250,6 +250,9 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
     · simp
   | neg n ih => simp [ih]
 
+theorem T_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] : T R n ≠ 0 :=
+  (T R n).degree_ne_bot.mp (by simp [degree_T R n])
+
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 noncomputable def U : ℤ → R[X]
   | 0 => 1
@@ -444,6 +447,13 @@ theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow *
         Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
       simp; ring
     · simp
+
+theorem U_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] (hn : n ≠ -1) : U R n ≠ 0 :=
+  (U R n).degree_ne_bot.mp (by simp [degree_U_of_ne_neg_one R n hn])
+
+theorem U_eq_zero_iff (n : ℤ) [IsDomain R] [NeZero (2 : R)] :
+    U R n = 0 ↔ n = -1 :=
+  ⟨fun h => by contrapose! h; exact U_ne_zero R n h, fun h => by simp [h]⟩
 
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -882,7 +892,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
   have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T
     (R := R) n
   norm_cast at h
-  rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
+  rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_comm X, iterate_derivative_intCast_mul,
     iterate_derivative_derivative_mul_X_sq, iterate_derivative_derivative_mul_X] at h
   linear_combination (norm := (push_cast; ring_nf)) h
@@ -895,7 +905,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
   have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U
     (R := R) n
   norm_cast at h
-  rw [sub_mul, iterate_derivative_sub, one_mul, ←Function.iterate_add_apply, mul_comm (X ^ 2),
+  rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_assoc 3, ← Nat.cast_three, iterate_derivative_natCast_mul,
     mul_comm X, iterate_derivative_intCast_mul, iterate_derivative_derivative_mul_X_sq,
     iterate_derivative_derivative_mul_X] at h

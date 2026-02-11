@@ -108,7 +108,7 @@ theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : T
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
     ContinuousWithinAt (fun x => f x • g x) s b :=
   Filter.Tendsto.smul hf hg
@@ -242,8 +242,9 @@ theorem Set.univ_smul_nhds_zero {s : Set X} (hs : s ∈ 𝓝 0) : (univ : Set G�
     zero_smul G₀ x ▸ tendsto_id.smul tendsto_const_nhds
   rcases Filter.nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs)
     with ⟨c, hc₀, hc⟩
-  refine ⟨c⁻¹, trivial, c • x, hc, ?_⟩
-  simp_all
+  simp only [mem_compl_iff, mem_singleton_iff] at hc₀
+  simp only [mem_smul, mem_univ, true_and]
+  exact ⟨c⁻¹, c • x, hc, inv_smul_smul₀ hc₀ _⟩
 
 @[simp]
 theorem Filter.top_smul_nhds_zero : (⊤ : Filter G₀) • 𝓝 (0 : X) = ⊤ := by
