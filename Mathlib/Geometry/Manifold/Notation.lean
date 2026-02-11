@@ -701,24 +701,23 @@ where
     -- depending whether we have an open subset of a space,
     -- a product, or a direct sum of spaces.
     match_expr e with
-    | Subtype M p =>
-      dbg_trace "found a subtype on `{M}`"
-      match_expr p with
-      -- TODO: this match arm is not being hit
-      | Expr.lam _x _y body _ =>
-        -- TODO: check that y is `.const M []`
-        dbg_trace "p was a lambda with body `{body}`"
+    | Subtype _M p =>
+      match (← instantiateMVars p).cleanupAnnotations with
+      | .lam _x _ body _ =>
         match_expr body with
-        | Membership.mem _x' op _ =>
-          -- TODO: check if x and x' are defeq!
-          match_expr op with
-          | TopologicalSpace.Opens M _ =>
-            trace[Elab.DiffGeo.MDiff] "complicated arm hit! \
-              Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
-            return none
+        | Membership.mem _ sType inst _ b =>
+          unless b matches .bvar 0 do return none
+          match_expr inst with
+          | SetLike.instMembership _ _ _ =>
+            match_expr sType with
+            | TopologicalSpace.Opens M _ =>
+              trace[Elab.DiffGeo.MDiff] "complicated arm hit! \
+                Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
+              return none
+            | _ => return none
           | _ => return none
         | _ => return none
-      | _ => dbg_trace "condition did not match; is `{p}`"; return none
+      | _ => return none
     | TopologicalSpace.Opens M _ =>
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
       -- (In practice, `M` is not an `Opens`, as `Opens X` is (currently?) not a topological space.
@@ -742,7 +741,7 @@ where
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
         We assume the models match, and only look into the first summand"
       go E baseInfo
-    | _ => dbg_trace "none arm hit"; return none
+    | _ => return none
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
