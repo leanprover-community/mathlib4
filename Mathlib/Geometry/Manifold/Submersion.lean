@@ -1,23 +1,23 @@
 /-
 Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang
+Authors: Michael Rothgang, Samantha Naranjo Guevara
 -/
-import Mathlib.Geometry.Manifold.Immersion
+module
+
+public import Mathlib.Geometry.Manifold.Immersion
 
 /-! # Smooth submersions
 
 In this file, we define `C^n` submersions between `C^n` manifolds.
 As in the case of immersions, the correct definition in the infinite-dimensional setting differs
 from the classical finite-dimensional one (which is usually phrased in terms of surjectivity of the
-`mfderiv`).
+`mfderiv`). Future work will prove that our definition implies the latter, and that both are
+equivalent for finite-dimensional manifolds.
 
-Our definition was formulated in terms of local normal forms; i.e.,
-a map `f` is a submersion at `x` if there exist charts near `x` and `f x` in which `f`
-has the standard projection `(u, v) ↦ u`, after identifying the model space of the domain with
-a product `E ≃L[𝕜] (E'' × F)`.
-
-The results in this file follow from abstract results about such local properties.
+Our definition is formulated in terms of local normal forms; i.e., a map `f` is a submersion at `x`
+if there exist charts near `x` and `f x` in which `f` looks like the standard projection
+`(u, v) ↦ u`. The results in this file follow from abstract results about such local properties.
 
 ## Main definitions
 
@@ -66,12 +66,26 @@ The results in this file follow from abstract results about such local propertie
 ## TODO
 * `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is a `C^n` map at `x`.
 * `IsSubmersion.contMDiff`: if f is a submersion, it is `C^n` map.
+* If `f` is a submersion at `x`, its differential `mfderiv I J f x` admits a continuous right
+  inverse, in particular is surjective.
+* If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` having a continuous right
+  inverse implies `f` is a submersion at `x`. (This requires the inverse function theorem.)
+* `IsSubmersionAt.comp`: if `f : M → N` and `g: N → N'` are maps between Banach manifolds such that
+  `f` is a submersion at `x : M` and `g` is a submersion at `f x`, then `g ∘ f` is a submersion
+  at `x`.
+* `IsSubmersion.comp`: the composition of submersions is a submersion
+* If `f : M → N` is a map between finite-dimensional manifolds, `mfderiv I J f x` being surjective
+  implies `f` is a submersion at `x`.
+* `IsLocalDiffeomorphAt.isSubmersionAt` and `IsLocalDiffeomorph.isSubmersion`:
+  a local diffeomorphism (at `x`) is a submersion (at `x`)
+* `Diffeomorph.isSubmersion`: in particular, a diffeomorphism is a submersion
 
 **Please do not work** on this file without prior discussion with Michael Rothgang.
 This will be the topic of Samantha Naranjo's master's thesis, and it's nice to coordinate.
+
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open scoped Topology ContDiff
 
@@ -307,31 +321,14 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     (hf : IsSubmersionAtOfComplement F I J n f x)
     (hg : IsSubmersionAtOfComplement F' I' J' n g x') :
     IsSubmersionAtOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
-  let P := SubmersionAtProp F I J M N
-  let Q := SubmersionAtProp F' I' J' M' N'
-  let R := SubmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
-  -- This is the key proof: submersions are stable under products.
-  have key : ∀ {f : M → N}, ∀ {φ₁ : OpenPartialHomeomorph M H}, ∀ {ψ₁ : OpenPartialHomeomorph N G},
-      ∀ {g : M' → N'}, ∀ {φ₂ : OpenPartialHomeomorph M' H'}, ∀ {ψ₂ : OpenPartialHomeomorph N' G'},
-      P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂) := by
-    rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
-    use (equiv₁.prodCongr equiv₂).trans (ContinuousLinearEquiv.prodProdProdComm 𝕜 E'' F E''' F')
-    rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
-    set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
-      Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
-    have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
-        ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
-      ext x <;> simp [C]
-    set Φ := Prod.fst ∘ ((equiv₁.prodCongr equiv₂).trans
-      (ContinuousLinearEquiv.prodProdProdComm 𝕜 E'' F E''' F'))
-    have hΦ: Φ = Prod.map (Prod.fst ∘ equiv₁) (Prod.fst ∘ equiv₂) := by ext x <;> simp [Φ]
-    rw [hC, hΦ]
-    exact hfprop.prodMap hgprop
   rw [IsSubmersionAtOfComplement_def]
-  exact LiftSourceTargetPropertyAt.prodMap hf.property hg.property key
+  apply LiftSourceTargetPropertyAt.prodMap hf.property hg.property
+  rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
+  use (equiv₁.prodCongr equiv₂).trans (ContinuousLinearEquiv.prodProdProdComm 𝕜 E'' F E''' F')
+  rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target, eqOn_prod_iff]
+  exact ⟨fun x ⟨hx, hx'⟩ ↦ by simpa using hfprop hx, fun x ⟨hx, hx'⟩ ↦ by simpa using hgprop hx'⟩
 
-/-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
--/
+/-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`. -/
 lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
   rw [IsSubmersionAt_def]
