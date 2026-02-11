@@ -712,6 +712,34 @@ instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
 
 end IsBoundedSMul
 
+section Sum
+
+variable {E : Type*} [NormedAddCommGroup E]
+
+lemma norm_tsum_le (f : ℓ¹(α, E)) :
+    ‖∑' i, f i‖ ≤ ‖f‖ := calc
+  ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.2.summable))
+  _ = ‖f‖ := by simp [norm_eq_tsum_rpow]
+
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
+
+variable (α 𝕜 E) in
+/-- Summation (i.e., `tsum`) in `ℓ¹(α, E)` as a continuous linear map. -/
+@[simps!]
+noncomputable def tsumCLM : ℓ¹(α, E) →L[𝕜] E :=
+  LinearMap.mkContinuous
+    { toFun f := ∑' i, f i
+      map_add' f g := by
+        simp only [AddSubgroup.coe_add, Pi.add_apply]
+        rw [← Summable.tsum_add]
+        exacts [.of_norm (by simpa using f.2.summable), .of_norm (by simpa using g.2.summable)]
+      map_smul' c f := by
+        simp only [coeFn_smul, Pi.smul_apply, RingHom.id_apply]
+        exact Summable.tsum_const_smul _ (.of_norm (by simpa using f.2.summable))  }
+    1 (fun f ↦ by simpa using norm_tsum_le f)
+
+end Sum
+
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
