@@ -388,7 +388,7 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
     add_sub_cancel_left, hy, and_true] at h'y ⊢
   exact h'y.2
 
-lemma hasFPowerSeriesWithinAt_nhds_iff (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) {U : Set E}
+lemma hasFPowerSeriesWithinAt_iff_of_nhds (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) {U : Set E}
     (hU : U ∈ 𝓝 x) :
     HasFPowerSeriesWithinAt f p U x ↔ HasFPowerSeriesAt f p x := by
   rw [← hasFPowerSeriesWithinAt_univ]
