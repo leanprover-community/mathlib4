@@ -375,7 +375,6 @@ instance (X : E) [RepresentablyCoflat F] : (CostructuredArrow.pre F G X).Initial
 instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
     IsCofiltered (StructuredArrow X (F ⋙ G)) := by
   let T := StructuredArrow.pre X F G
-  have := RepresentablyFlat.cofiltered (F := F)
   obtain ⟨Y⟩ := IsCofiltered.nonempty (C := StructuredArrow X G)
   obtain ⟨A⟩ := IsCofiltered.nonempty (C := StructuredArrow Y.right F)
   have : Nonempty (StructuredArrow X (F ⋙ G)) := ⟨.mk (Y.hom ≫ G.map A.hom)⟩
