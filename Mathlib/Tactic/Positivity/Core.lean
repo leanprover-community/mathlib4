@@ -203,10 +203,9 @@ def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictnes
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
-def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
-    (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
+def throwNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) := do
   match ← t with
-  | .none => failure
+  | .none => throwError "Strictness result was `{.ofConstName ``Strictness.none}`."
   | r => pure r
 
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/

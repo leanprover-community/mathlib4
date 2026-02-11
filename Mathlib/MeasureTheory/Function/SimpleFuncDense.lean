@@ -35,7 +35,7 @@ by a sequence of simple functions.
 
 @[expose] public section
 
-open Set Function Filter TopologicalSpace EMetric MeasureTheory
+open Set Function Filter TopologicalSpace Metric MeasureTheory
 open scoped Topology ENNReal
 
 variable {α β : Type*}

@@ -339,8 +339,8 @@ theorem HasFDerivWithinAt.of_local_left_inverse {g : F → E} {f' : E ≃L[𝕜]
   refine ((hf.isLittleO.comp_tendsto hg).symm.congr' (hfg.mono ?_) .rfl).trans_isBigO ?_
   · intro p hp
     simp [hp, hfg.self_of_nhdsWithin ha]
-  · refine ((hf.isBigO_sub_rev f'.antilipschitz).comp_tendsto hg).congr'
-      (Eventually.of_forall fun _ => rfl) (hfg.mono ?_)
+  · refine ((hf.isTheta_sub f'.toHomeomorph.isInducing).isBigO_symm.comp_tendsto hg).congr'
+      .rfl (hfg.mono ?_)
     rintro p hp
     simp only [(· ∘ ·), hp, hfg.self_of_nhdsWithin ha]
 
@@ -366,7 +366,7 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
     (hfg.mono ?_) (Eventually.of_forall fun _ => rfl)).trans_isBigO ?_
   · rintro p ⟨hp1, hp2⟩
     simp [hp1, hp2]
-  · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (Eventually.of_forall fun _ => rfl)
+  · refine hf.isTheta_sub f'.toHomeomorph.isInducing |>.isBigO_symm.comp_tendsto hg |>.congr' .rfl
       (hfg.mono ?_)
     rintro p ⟨hp1, hp2⟩
     simp only [(· ∘ ·), hp1, hp2, Prod.map]

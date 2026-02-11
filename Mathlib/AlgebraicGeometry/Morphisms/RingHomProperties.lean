@@ -445,6 +445,20 @@ lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarge
 @[deprecated (since := "2025-10-07")]
 alias of_isLocalAtSource_of_isLocalAtTarget := of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget
 
+lemma inf {P P' : MorphismProperty Scheme.{u}}
+    {Q Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    [HasRingHomProperty P Q] [HasRingHomProperty P' Q'] :
+    HasRingHomProperty (P ⊓ P') (fun f ↦ Q f ∧ Q' f) where
+  isLocal_ringHomProperty :=
+    .and (HasRingHomProperty.isLocal_ringHomProperty P)
+      (HasRingHomProperty.isLocal_ringHomProperty P')
+  eq_affineLocally' := by
+    rw [HasRingHomProperty.eq_affineLocally P, HasRingHomProperty.eq_affineLocally P']
+    ext
+    change _ ∧ _ ↔ _
+    simp_rw [affineLocally_iff_affineOpens_le]
+    grind
+
 lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
     HasRingHomProperty (stalkwise P) fun {_ S _ _} φ ↦
       ∀ (p : Ideal S) (_ : p.IsPrime), P (Localization.localRingHom _ p φ rfl) := by

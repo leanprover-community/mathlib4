@@ -1000,7 +1000,7 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
     exact hf₂ x
   rw [← V.prop.self_le_iSup_basicOpen_iff]
   intro x hx
-  rw [iSup_range', SetLike.mem_coe, Opens.mem_iSup]
+  rw [iSup_range', Opens.mem_iSup]
   exact ⟨_, hf₁ ⟨x, hx⟩⟩
 
 /-- If `φ` is a monomorphism in `CommRingCat`, it is not in general true that `Spec φ` is epi.

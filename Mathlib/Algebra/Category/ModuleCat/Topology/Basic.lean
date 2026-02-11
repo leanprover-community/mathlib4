@@ -160,7 +160,7 @@ instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
   __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
 
-instance [CommRing S] : Linear S (TopModuleCat S) where
+instance : Linear S (TopModuleCat S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 
