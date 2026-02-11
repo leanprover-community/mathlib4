@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Order.OrderDual
 public import Mathlib.Order.Synonym
 
 /-!
