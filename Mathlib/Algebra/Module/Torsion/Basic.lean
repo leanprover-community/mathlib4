@@ -375,7 +375,7 @@ theorem torsionBySet_torsionBySet_eq_top : torsionBySet R (torsionBySet R M s) s
 variable (R M)
 
 theorem torsion_gc :
-    @GaloisConnection (Submodule R M) (Ideal R)ᵒᵈ _ _ annihilator fun I =>
+    @GaloisConnection (Submodule R M) (Ideal R)ᵒᵈ _ _ (OrderDual.toDual ∘ annihilator) fun I =>
       torsionBySet R M ↑(OrderDual.ofDual I) :=
   fun _ _ =>
   ⟨fun h x hx => (mem_torsionBySet_iff _ _).mpr fun ⟨_, ha⟩ => mem_annihilator.mp (h ha) x hx,

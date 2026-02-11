@@ -148,29 +148,57 @@ variable [TopologicalSpace X]
 
 open OrderDual
 
-instance OrderDual.instTopologicalSpace : TopologicalSpace Xᵒᵈ := ‹_›
-instance OrderDual.instDiscreteTopology [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹_›
+instance OrderDual.instTopologicalSpace : TopologicalSpace Xᵒᵈ :=
+  TopologicalSpace.induced ofDual ‹TopologicalSpace X›
 
-theorem continuous_toDual : Continuous (toDual : X → Xᵒᵈ) := continuous_id
+private theorem OrderDual.isInducing_ofDual : Topology.IsInducing (ofDual : Xᵒᵈ → X) := ⟨rfl⟩
 
-theorem continuous_ofDual : Continuous (ofDual : Xᵒᵈ → X) := continuous_id
+private theorem OrderDual.isEmbedding_ofDual : Topology.IsEmbedding (ofDual : Xᵒᵈ → X) :=
+  ⟨isInducing_ofDual, fun _ _ h => ofDual_inj.mp h⟩
 
-theorem isOpenMap_toDual : IsOpenMap (toDual : X → Xᵒᵈ) := IsOpenMap.id
+private noncomputable def OrderDual.homeomorph : Xᵒᵈ ≃ₜ X :=
+  (OrderDual.equiv X).toHomeomorphOfIsInducing isInducing_ofDual
 
-theorem isOpenMap_ofDual : IsOpenMap (ofDual : Xᵒᵈ → X) := IsOpenMap.id
+instance OrderDual.instDiscreteTopology [DiscreteTopology X] : DiscreteTopology Xᵒᵈ :=
+  isEmbedding_ofDual.discreteTopology
 
-theorem isClosedMap_toDual : IsClosedMap (toDual : X → Xᵒᵈ) := IsClosedMap.id
+theorem continuous_toDual : Continuous (toDual : X → Xᵒᵈ) :=
+  continuous_induced_rng.mpr continuous_id
 
-theorem isClosedMap_ofDual : IsClosedMap (ofDual : Xᵒᵈ → X) := IsClosedMap.id
+theorem continuous_ofDual : Continuous (ofDual : Xᵒᵈ → X) :=
+  continuous_induced_dom
 
-theorem nhds_toDual (x : X) : 𝓝 (toDual x) = map toDual (𝓝 x) := rfl
+theorem isOpenMap_toDual : IsOpenMap (toDual : X → Xᵒᵈ) :=
+  OrderDual.homeomorph.symm.isOpenMap
 
-theorem nhds_ofDual (x : X) : 𝓝 (ofDual x) = map ofDual (𝓝 x) := rfl
+theorem isOpenMap_ofDual : IsOpenMap (ofDual : Xᵒᵈ → X) :=
+  OrderDual.homeomorph.isOpenMap
+
+theorem isClosedMap_toDual : IsClosedMap (toDual : X → Xᵒᵈ) :=
+  OrderDual.homeomorph.symm.isClosedMap
+
+theorem isClosedMap_ofDual : IsClosedMap (ofDual : Xᵒᵈ → X) :=
+  OrderDual.homeomorph.isClosedMap
+
+theorem nhds_toDual (x : X) : 𝓝 (toDual x) = map toDual (𝓝 x) := by
+  rw [OrderDual.isInducing_ofDual.nhds_eq_comap, ofDual_toDual]
+  exact (map_eq_comap_of_inverse (funext toDual_ofDual) (funext ofDual_toDual)).symm
+
+theorem nhds_ofDual (x : Xᵒᵈ) : 𝓝 (ofDual x) = map ofDual (𝓝 x) :=
+  (map_nhds_induced_of_surjective (fun y => ⟨toDual y, ofDual_toDual y⟩) x).symm
 
 variable [Preorder X] {x : X}
 
-instance OrderDual.instNeBotNhdsWithinIoi [(𝓝[<] x).NeBot] : (𝓝[>] toDual x).NeBot := ‹_›
-instance OrderDual.instNeBotNhdsWithinIio [(𝓝[>] x).NeBot] : (𝓝[<] toDual x).NeBot := ‹_›
+instance OrderDual.instNeBotNhdsWithinIoi [(𝓝[<] x).NeBot] : (𝓝[>] toDual x).NeBot := by
+  have : 𝓝[>] toDual x = map toDual (𝓝[<] x) := by
+    rw [nhdsWithin, nhds_toDual, ← Filter.map_inf_principal_preimage]; congr 1
+  rw [this]
+  exact Filter.NeBot.map ‹_› _
+instance OrderDual.instNeBotNhdsWithinIio [(𝓝[>] x).NeBot] : (𝓝[<] toDual x).NeBot := by
+  have : 𝓝[<] toDual x = map toDual (𝓝[>] x) := by
+    rw [nhdsWithin, nhds_toDual, ← Filter.map_inf_principal_preimage]; congr 1
+  rw [this]
+  exact Filter.NeBot.map ‹_› _
 
 end
 

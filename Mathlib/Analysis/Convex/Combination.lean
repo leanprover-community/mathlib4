@@ -141,8 +141,9 @@ theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
 
 theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
-    s.inf' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f ≤ s.centerMass w f :=
-  centerMass_le_sup (α := αᵒᵈ) hw₀ hw₁
+    s.inf' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f ≤ s.centerMass w f := by
+  rw [centerMass, le_inv_smul_iff_of_pos hw₁, sum_smul]
+  exact sum_le_sum fun i hi => smul_le_smul_of_nonneg_left (inf'_le _ hi) <| hw₀ i hi
 
 end Finset
 

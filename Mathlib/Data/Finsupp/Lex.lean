@@ -84,7 +84,7 @@ alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
 
 theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
     x < y ↔ x default < y default :=
-  Lex.lt_iff_of_unique (α := αᵒᵈ)
+  lex_iff_of_unique
 
 variable [LinearOrder α]
 
@@ -92,8 +92,9 @@ instance Lex.isStrictOrder [PartialOrder N] : IsStrictOrder (Lex (α →₀ N)) 
   irrefl _ := lt_irrefl (α := Lex (α → N)) _
   trans _ _ _ := lt_trans (α := Lex (α → N))
 
-instance Colex.isStrictOrder [PartialOrder N] : IsStrictOrder (Colex (α →₀ N)) (· < ·) :=
-  Lex.isStrictOrder (α := αᵒᵈ)
+instance Colex.isStrictOrder [PartialOrder N] : IsStrictOrder (Colex (α →₀ N)) (· < ·) where
+  irrefl _ := lt_irrefl (α := Colex (α → N)) _
+  trans _ _ _ := lt_trans (α := Colex (α → N))
 
 /-- The partial order on `Finsupp`s obtained by the lexicographic ordering.
 See `Finsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
@@ -131,7 +132,7 @@ alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 theorem Colex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
-  Lex.le_iff_of_unique (α := αᵒᵈ)
+  Pi.colex_le_iff_of_unique
 
 theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) := by
   intro a b h
@@ -143,8 +144,15 @@ theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) :
     simp only [Finsupp.single_eq_of_ne hd.ne, Finsupp.single_eq_of_ne (hd.trans h).ne]
   · simp [h.ne']
 
-theorem Colex.single_strictMono : StrictMono fun (a : α) ↦ toColex (single a 1) :=
-  fun _ _ h ↦ Lex.single_strictAnti (α := αᵒᵈ) h
+theorem Colex.single_strictMono : StrictMono fun (a : α) ↦ toColex (single a 1) := by
+  intro a b h
+  simp only [LT.lt, Finsupp.lex_def]
+  simp only [ofColex_toColex, Nat.lt_eq]
+  use b
+  constructor
+  · intro d hd
+    simp only [Finsupp.single_eq_of_ne hd.ne', Finsupp.single_eq_of_ne (h.trans hd).ne']
+  · simp [h.ne]
 
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
   Lex.single_strictAnti.lt_iff_gt
@@ -168,7 +176,7 @@ theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
   fun a b h ↦ DFinsupp.toLex_monotone (id h : ∀ i, (toDFinsupp a) i ≤ (toDFinsupp b) i)
 
 theorem toColex_monotone : Monotone (@toColex (α →₀ N)) :=
-  toLex_monotone (α := αᵒᵈ)
+  fun a b h ↦ DFinsupp.toColex_monotone (id h : ∀ i, (toDFinsupp a) i ≤ (toDFinsupp b) i)
 
 @[deprecated Lex.lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
@@ -197,7 +205,7 @@ instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_right ha _⟩⟩
 
 instance Colex.addLeftStrictMono : AddLeftStrictMono (Colex (α →₀ N)) :=
-  Lex.addLeftStrictMono (α := αᵒᵈ)
+  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_right ha _⟩⟩
 
 instance Lex.addLeftMono : AddLeftMono (Lex (α →₀ N)) :=
   addLeftMono_of_addLeftStrictMono _
@@ -215,7 +223,7 @@ instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr($(lta j ja) + f j), add_lt_add_left ha _⟩⟩
 
 instance Colex.addRightStrictMono : AddRightStrictMono (Colex (α →₀ N)) :=
-  Lex.addRightStrictMono (α := αᵒᵈ)
+  ⟨fun f _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr($(lta j ja) + f j), add_lt_add_left ha _⟩⟩
 
 instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
   addRightMono_of_addRightStrictMono _
@@ -249,8 +257,26 @@ instance Lex.isOrderedCancelAddMonoid
 
 instance Colex.isOrderedCancelAddMonoid
     [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
-    IsOrderedCancelAddMonoid (Colex (α →₀ N)) :=
-  Lex.isOrderedCancelAddMonoid (α := αᵒᵈ)
+    IsOrderedCancelAddMonoid (Colex (α →₀ N)) where
+  add_le_add_left x y hxy z :=
+    hxy.elim
+      (fun hxyz => (show x = y from
+        DFunLike.coe_injective (F := Finsupp α N) hxyz) ▸ le_rfl)
+      fun ⟨i, hi⟩ => Or.inr ⟨i, fun j hji => by
+          change (ofColex (x + z)) j = (ofColex (y + z)) j
+          change ofColex x j + ofColex z j = ofColex y j + ofColex z j
+          rw [hi.1 j hji],
+        by change ofColex x i + ofColex z i < ofColex y i + ofColex z i
+           rw [add_comm (ofColex x i), add_comm (ofColex y i)]; exact add_lt_add_right hi.2 _⟩
+  le_of_add_le_add_left z x y hxyz :=
+    hxyz.elim (fun h => Or.inl <| show ⇑(ofColex x) = ⇑(ofColex y) from
+        funext fun i ↦ add_left_cancel (show ofColex z i + ofColex x i =
+          ofColex z i + ofColex y i from congr_fun h i))
+    fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hj => add_left_cancel (show ofColex z j + ofColex x j =
+        ofColex z j + ofColex y j from hi.1 j hj),
+        by exact lt_of_add_lt_add_left (show ofColex z i + ofColex x i <
+          ofColex z i + ofColex y i from hi.2)⟩
 
 end OrderedAddMonoid
 

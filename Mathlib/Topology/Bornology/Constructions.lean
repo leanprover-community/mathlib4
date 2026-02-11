@@ -190,8 +190,10 @@ The bornology on this type synonym is inherited without change.
 -/
 
 
-instance : Bornology αᵒᵈ :=
-  ‹Bornology α›
+instance : Bornology αᵒᵈ := OrderDual.instBornology
 
-instance [BoundedSpace α] : BoundedSpace αᵒᵈ :=
-  ‹BoundedSpace α›
+instance [BoundedSpace α] : BoundedSpace αᵒᵈ := by
+  rw [← cobounded_eq_bot_iff]
+  change Filter.map OrderDual.toDual (Bornology.cobounded α) = ⊥
+  rw [Filter.map_eq_bot_iff]
+  exact cobounded_eq_bot_iff.mpr ‹_›
