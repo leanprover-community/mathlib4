@@ -295,31 +295,14 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     (hf : IsSubmersionAtOfComplement F I J n f x)
     (hg : IsSubmersionAtOfComplement F' I' J' n g x') :
     IsSubmersionAtOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
-  let P := SubmersionAtProp F I J M N
-  let Q := SubmersionAtProp F' I' J' M' N'
-  let R := SubmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
-  -- This is the key proof: submersions are stable under products.
-  have key : ∀ {f : M → N}, ∀ {φ₁ : OpenPartialHomeomorph M H}, ∀ {ψ₁ : OpenPartialHomeomorph N G},
-      ∀ {g : M' → N'}, ∀ {φ₂ : OpenPartialHomeomorph M' H'}, ∀ {ψ₂ : OpenPartialHomeomorph N' G'},
-      P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂) := by
-    rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
-    use (equiv₁.prodCongr equiv₂).trans (ContinuousLinearEquiv.prodProdProdComm 𝕜 E'' F E''' F')
-    rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
-    set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
-      Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
-    have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
-        ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
-      ext x <;> simp [C]
-    set Φ := Prod.fst ∘ ((equiv₁.prodCongr equiv₂).trans
-      (ContinuousLinearEquiv.prodProdProdComm 𝕜 E'' F E''' F'))
-    have hΦ: Φ = Prod.map (Prod.fst ∘ equiv₁) (Prod.fst ∘ equiv₂) := by ext x <;> simp [Φ]
-    rw [hC, hΦ]
-    exact hfprop.prodMap hgprop
   rw [IsSubmersionAtOfComplement_def]
-  exact LiftSourceTargetPropertyAt.prodMap hf.property hg.property key
+  apply LiftSourceTargetPropertyAt.prodMap hf.property hg.property
+  rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
+  use (equiv₁.prodCongr equiv₂).trans (ContinuousLinearEquiv.prodProdProdComm 𝕜 E'' F E''' F')
+  rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target, eqOn_prod_iff]
+  exact ⟨fun x ⟨hx, hx'⟩ ↦ by simpa using hfprop hx, fun x ⟨hx, hx'⟩ ↦ by simpa using hgprop hx'⟩
 
-/-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
--/
+/-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`. -/
 lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
   rw [IsSubmersionAt_def]
