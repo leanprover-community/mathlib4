@@ -109,7 +109,7 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
   commutes' _ := rfl
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
-  dist_eq := dist_eq_norm
+  dist_eq := dist_eq_norm_neg_add
   norm_mul_le x y := by
     simp_rw [unitization_norm_def, add_mul, mul_add, unitization_mul, fst_mul, snd_mul]
     rw [add_assoc, add_assoc]

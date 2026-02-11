@@ -720,19 +720,29 @@ theorem sub_mem_closedBall (p : Seminorm 𝕜 E) (x₁ x₂ y : E) (r : ℝ) :
     x₁ - x₂ ∈ p.closedBall y r ↔ x₁ ∈ p.closedBall (x₂ + y) r := by
   simp_rw [mem_closedBall, sub_sub]
 
+lemma ball_eq_metric :
+    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    p.ball x r = Metric.ball x r := by
+  ext
+  simp only [mem_ball_iff_norm]
+  rfl
+
+lemma closedBall_eq_metric :
+    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    p.closedBall x r = Metric.closedBall x r := by
+  ext
+  simp only [mem_closedBall_iff_norm]
+  rfl
+
 /-- The image of a ball under addition with a singleton is another ball. -/
 theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  have A (a : E) (r : ℝ) : Metric.ball a r = p.ball a r := by
-    ext; simp only [mem_ball_iff_norm]; rfl
-  simpa [A] using Metric.vadd_ball x y r
+  simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
 theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  have A (a : E) (r : ℝ) : Metric.closedBall a r = p.closedBall a r := by
-    ext; simp only [mem_closedBall_iff_norm]; rfl
-  simpa [A] using Metric.vadd_closedBall x y r
+  simp [closedBall_eq_metric]
 
 end SMul
 
