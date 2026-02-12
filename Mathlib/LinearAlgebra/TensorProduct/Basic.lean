@@ -168,8 +168,6 @@ to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) 
 
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/
--- TODO: use this to implement `lift` and `SMul.aux`. For now we do not do this as it causes
--- performance issues elsewhere.
 def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
     M ⊗[R] N →+ P :=
@@ -196,6 +194,12 @@ theorem liftAddHom_tmul (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) (m : M) (n : N) :
     liftAddHom f hf (m ⊗ₜ n) = f m n :=
   rfl
+
+unif_hint (f : M →+ N →+ P)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) (m : M) (n : N)  where
+  ⊢ liftAddHom f hf (m ⊗ₜ n) =?= f m n
+
+seal liftAddHom
 
 variable (M) in
 @[simp]
