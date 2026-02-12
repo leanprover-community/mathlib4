@@ -166,7 +166,7 @@ noncomputable def equivPresentedGroup {G : Type*} [Group G] {ι : Type*}
     (QuotientGroup.quotientKerEquivOfSurjective (FreeGroup.lift P.val)
       P.toGeneratingSet.lift_surjective)
 
-/-!
+/--
 Any two presentations of the same group present isomorphic groups.
 -/
 noncomputable def equivPresentedGroupOfSameGroup {G : Type*} [Group G]
