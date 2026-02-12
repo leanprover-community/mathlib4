@@ -105,8 +105,8 @@ noncomputable def hom' : R.cochainComplex ⟶ R'.cochainComplex :=
 lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     φ.hom'.f n =
     (R.cochainComplexXIso n m h).hom ≫ φ.hom.f m ≫ (R'.cochainComplexXIso n m h).inv := by
-  simp [hom', HomologicalComplex.extendMap_f _
-    ComplexShape.embeddingUpNat (i := m) (i' := n) (by simpa),
+  simp [hom',
+    HomologicalComplex.extendMap_f _ ComplexShape.embeddingUpNat (i := m) (i' := n) (by simpa),
     cochainComplexXIso]
 
 @[reassoc (attr := simp)]

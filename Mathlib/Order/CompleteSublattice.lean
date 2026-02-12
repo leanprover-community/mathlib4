@@ -64,6 +64,8 @@ instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α) α
+
 theorem top_mem : ⊤ ∈ L := by simpa using L.sInfClosed' <| empty_subset _
 
 theorem bot_mem : ⊥ ∈ L := by simpa using L.sSupClosed' <| empty_subset _

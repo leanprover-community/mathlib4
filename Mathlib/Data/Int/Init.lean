@@ -254,6 +254,12 @@ lemma div_lt_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣
 lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   emod_two_eq n
 
+theorem ext_ediv_emod {n a b : ℤ} (H0 : a / n = b / n) (H1 : a % n = b % n) : a = b :=
+  (mul_ediv_add_emod a n).symm.trans (H0 ▸ H1 ▸ mul_ediv_add_emod b n)
+
+theorem ext_ediv_emod_iff (n a b : ℤ) : a = b ↔ a / n = b / n ∧ a % n = b % n := by
+  grind [ext_ediv_emod]
+
 /-! ### dvd -/
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c :=

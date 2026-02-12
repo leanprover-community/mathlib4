@@ -184,7 +184,7 @@ lemma iIndepFun.hasGaussianLaw (hX1 : ∀ i, HasGaussianLaw (X i) P) (hX2 : iInd
     congr with i
     rw [(hX1 i).isGaussian_map.charFunDual_eq, integral_complex_ofReal, integral_comp_id_comm,
       covarianceBilinDual_self_eq_variance]
-    · rfl
+    · simp
     · exact (hX1 i).isGaussian_map.memLp_two_id
     · exact (hX1 i).isGaussian_map.integrable_id
 
@@ -298,12 +298,12 @@ lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω �
     congr
     · rw [hX.isGaussian_map.charFunDual_eq, integral_complex_ofReal, integral_comp_id_comm,
         covarianceBilinDual_self_eq_variance]
-      · rfl
+      · simp
       · exact hX.isGaussian_map.memLp_two_id
       · exact hX.isGaussian_map.integrable_id
     · rw [hY.isGaussian_map.charFunDual_eq, integral_complex_ofReal, integral_comp_id_comm,
         covarianceBilinDual_self_eq_variance]
-      · rfl
+      · simp
       · exact hY.isGaussian_map.memLp_two_id
       · exact hY.isGaussian_map.integrable_id
 
@@ -316,11 +316,11 @@ lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [Norm
   rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
   have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
-    ext; simp [- coe_comp', ← comp_inl_add_comp_inr]
+    ext; simp [-coe_comp', ← comp_inl_add_comp_inr]
   rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
     variance_add, h, mul_zero, add_zero]
-  · rfl
+  · simp
   · exact (hXY.fst.map _).memLp_two
   · exact (hXY.snd.map _).memLp_two
   · exact (hXY.fst.map _).integrable

@@ -67,7 +67,7 @@ relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/Double
 @[expose] public section
 
 
-open BigOperators Finset Fintype
+open Finset Fintype
 
 namespace SimpleGraph
 
