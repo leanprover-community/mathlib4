@@ -8,7 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Functor.Flat
 
 /-!
 # Points of a site
@@ -309,6 +311,26 @@ noncomputable def sheafFiberCompIso [J.HasSheafCompose F] :
     sheafCompose J F ⋙ Φ.sheafFiber ≅ Φ.sheafFiber ⋙ F :=
   Functor.isoWhiskerLeft (sheafToPresheaf J A) (Φ.presheafFiberCompIso F) ≪≫
     (Functor.associator _ _ _).symm
+
+section Comap
+
+variable {C D : Type*} [Category* C] [Category* D]
+  {J : GrothendieckTopology C} {K : GrothendieckTopology D}
+
+/-- If `F : C ⥤ D` is a representably flat and cover preserving functor between sites, then
+any point on `D` induces a point on `C` by precomposing the fiber functor with `F`. -/
+@[simps]
+def comap (F : C ⥤ D) [RepresentablyFlat F] (H : CoverPreserving J K F) (Φ : Point.{w} K)
+    [InitiallySmall (F ⋙ Φ.fiber).Elements] :
+    Point.{w} J where
+  fiber := F ⋙ Φ.fiber
+  jointly_surjective {X} {R} hR x := by
+    obtain ⟨Y, f, ⟨W, g, h, hg, rfl⟩, y, rfl⟩ :=
+      Φ.jointly_surjective (Sieve.functorPushforward F R) (H.1 hR) x
+    use W, g, hg, Φ.fiber.map h y
+    simp
+
+end Comap
 
 end Point
 
