@@ -124,6 +124,7 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
+/-- Mapping a presentation under an isomorphism. -/
 @[simps]
 noncomputable def Presentation.of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) : N.Presentation where
