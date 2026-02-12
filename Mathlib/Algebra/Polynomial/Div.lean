@@ -500,6 +500,16 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
     let _ : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := Classical.decPred _
     Nat.find (finiteMultiplicity_X_sub_C a h0)
 
+theorem rootMultiplicity_eq_natFind_of_ne_zero {p : R[X]} (p0 : p ≠ 0) {a : R}
+    [DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p] :
+    rootMultiplicity a p = Nat.find (finiteMultiplicity_X_sub_C a p0) := by
+  dsimp [rootMultiplicity]
+  rw [dif_neg p0]
+  congr
+
+@[deprecated (since := "2026-02-12")]
+alias rootMultiplicity_eq_nat_find_of_nonzero := rootMultiplicity_eq_natFind_of_ne_zero
+
 theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
@@ -511,13 +521,6 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
   simp only [finiteMultiplicity_X_sub_C a h, ↓reduceDIte]
   rw [← ENat.some_eq_coe, WithTop.untopD_coe]
   congr
-
-@[deprecated rootMultiplicity_eq_multiplicity (since := "2026-02-07")]
-theorem rootMultiplicity_eq_nat_find_of_nonzero {p : R[X]} (p0 : p ≠ 0) {a : R} :
-    letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := Classical.decPred _
-    rootMultiplicity a p = Nat.find (finiteMultiplicity_X_sub_C a p0) := by
-  dsimp [rootMultiplicity]
-  rw [dif_neg p0]
 
 @[simp]
 theorem rootMultiplicity_zero {x : R} : rootMultiplicity x 0 = 0 :=
