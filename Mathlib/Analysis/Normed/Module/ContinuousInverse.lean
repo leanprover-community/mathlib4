@@ -61,8 +61,6 @@ This concept is used to give an equivalent definition of immersions and submersi
 * Suppose `E` and `F` are Banach and `f : E → F` is Fredholm.
   If `f` is surjective, it has a continuous right inverse.
   If `f` is injective, it has a continuout left inverse.
-* `f` has a continuous left inverse if and only if it is injective, has closed range,
-  and its range admits a closed complement
 
 -/
 
@@ -230,9 +228,6 @@ lemma isCompl_complement (h : f.Splits) : IsCompl f.range h.complement :=
   h.closedComplemented.isCompl_complement
 
 end Splits
-
--- TODO: move to better place!
-lemma range_toLinearMap {f : E →L[R] F} : range f.toLinearMap = range f := by simp
 
 -- This definition needs stronger hypotheses.
 variable {R E E' F F' G : Type*} [Ring R]
