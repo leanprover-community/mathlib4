@@ -916,13 +916,13 @@ theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ bal
 
 @[to_additive]
 theorem mul_mem_closedBall_mul_iff {c : E} : a * c ∈ closedBall (b * c) r ↔ a ∈ closedBall b r := by
-  have : (a * c)⁻¹ * (b * c) = a⁻¹ * b := by simp [mul_assoc, mul_comm]
-  simp only [mem_closedBall, dist_eq_norm_inv_mul, this]
+  simp only [mem_closedBall, dist_eq_norm_inv_mul, mul_comm _ (b * c), mul_comm a⁻¹ b]
+  simp
 
 @[to_additive]
 theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b r := by
-  have : (a * c)⁻¹ * (b * c) = a⁻¹ * b := by simp [mul_assoc, mul_comm]
-  simp only [mem_ball, dist_eq_norm_inv_mul, this]
+  simp only [mem_ball, dist_eq_norm_inv_mul, mul_comm _ (b * c), mul_comm a⁻¹ b]
+  simp
 
 @[to_additive]
 theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by

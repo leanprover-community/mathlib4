@@ -307,7 +307,6 @@ theorem SeminormedCommGroup.mem_closure_iff {s : Set E} :
     a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
   simp [Metric.mem_closure_iff, dist_eq_norm_div]
 
-
 @[to_additive]
 theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) (𝓝 0) := by
   simpa [dist_eq_norm_div] using
