@@ -13,7 +13,31 @@ public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 The `@[to_dual]` attribute is used to translate declarations to their dual equivalent.
 See the docstrings of `to_dual` and `to_additive` for more information.
 
-Known limitations:
+## How it works
+
+`@[to_dual]` translates a declaration by:
+1. Dualizing the proof term (reversing the order of inequalities, swapping `⊔`/`⊓`, `⊤`/`⊥`, etc.)
+2. Guessing the dual declaration's name using `nameDict` and `abbreviationDict` below
+3. Registering the translation so future `@[to_dual]` calls can use it
+
+The name is guessed by splitting into camelCase components and looking each up (case-insensitively)
+in `nameDict`. For example, `isLUB_pair` splits into `is` + `LUB` + `pair`; `LUB` matches the
+dictionary entry `("lub", ["GLB"])`, producing `isGLB_pair`.
+
+## Deploying `@[to_dual]` to existing code
+
+When adding `@[to_dual]` to a theorem that already has a hand-written dual:
+
+- The dual is generated at the point of the `@[to_dual]` annotation.
+  If theorem B's proof references theorem A, then A (or its dual) must have a
+  `@[to_dual]` annotation before B in the file.
+
+- **Conjunct reordering**: `@[to_dual]` may produce `∃ c ∈ s, c < b ∧ a ≤ c`
+  when the hand-written dual has `∃ c ∈ s, a ≤ c ∧ c < b`. In this case,
+  tag both versions of the theorem with `to_dual none`, so that downstream code
+  that uses these theorems can still be translated by `to_dual`.
+
+## Known limitations
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
@@ -76,9 +100,12 @@ autogenerate the `(reorder := ...)` argument, so it is usually not necessary to 
 Use the `to_dual existing` syntax to use an existing dual declaration,
 instead of automatically generating it.
 
-Use the `(attr := ...)` syntax to apply attributes to both the original and the dual version:
+Use the `(attr := ...)` syntax to apply attributes to both the original and the dual version.
+Note: attributes like `@[simp]` are NOT automatically copied; you must use `(attr := simp)`.
+When combining `(attr := ...)` with a docstring, the `(attr := ...)` must come first:
 ```
-@[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
+@[to_dual (attr := simp)] lemma upperBounds_empty ...
+@[to_dual (attr := simp) /-- Dual doc. -/] lemma upperBounds_empty ...
 ```
 
 The `reassoc` attribute in category theory interacts with `to_dual` in a unique way, because it
