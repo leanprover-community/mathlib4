@@ -498,8 +498,9 @@ theorem MonotoneOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : Monotone
   exact (hu.integrableOn_isCompact isCompact_uIcc).mono_set Ioc_subset_Icc_self
 
 theorem AntitoneOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : AntitoneOn u (uIcc a b)) :
-    IntervalIntegrable u μ a b :=
-  hu.dual_right.intervalIntegrable
+    IntervalIntegrable u μ a b := by
+  rw [intervalIntegrable_iff]
+  exact (hu.integrableOn_isCompact isCompact_uIcc).mono_set Ioc_subset_Icc_self
 
 theorem Monotone.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : Monotone u) :
     IntervalIntegrable u μ a b :=
