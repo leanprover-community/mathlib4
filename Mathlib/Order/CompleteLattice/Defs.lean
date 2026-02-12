@@ -316,6 +316,7 @@ theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
         let ⟨_, ha, h⟩ := h _ h'
         (h.trans_le <| le_sSup ha).false⟩
 
+-- TODO: `to_dual existing` fails here: invalid projection on OrderTop→OrderBot instance chain
 theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
   @sSup_eq_top αᵒᵈ _ _
 
