@@ -370,7 +370,7 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
         ms] at h_tendsto_zero ⊢
       set g := (f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) * coef.toFun⁻¹
       have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t :=
-        basis_head_eventually_pos h_basis
+        h_basis.head_eventually_pos
       have hC_pos : ∀ᶠ t in atTop, 0 < coef.toFun t := by
         have hC_equiv : coef.toFun ~[atTop] f / (fun t ↦ (basis_hd t)^exp) := by
           have hF_equiv := IsEquivalent_coef h_approx h_wo h_coef_trimmed h_coef_ne_zero h_basis

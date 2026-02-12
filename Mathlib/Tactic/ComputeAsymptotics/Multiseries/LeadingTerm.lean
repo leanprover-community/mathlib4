@@ -201,7 +201,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : MultiseriesExpansio
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       let coef_ih := coef.leadingTerm_eventually_ne_zero h_coef_trimmed h_coef_ne_zero
         (h_basis.tail)
-      apply (coef_ih.and (basis_head_eventually_pos h_basis)).mono
+      apply (coef_ih.and (h_basis.head_eventually_pos)).mono
       rintro t ⟨coef_ih, h_basis_hd_pos⟩
       simp only [Term.toFun, leadingTerm, cons_realCoef, exps_eq_Seq_exps, mk_seq,
         Multiseries.cons_exps, List.zip_cons_cons, List.foldl_cons, ne_eq]
@@ -255,7 +255,7 @@ mutual
         apply (isLittleO_iff_tendsto' _).mp
         · have : (fun t ↦ basis_hd t ^ exp / basis_hd t ^ exp') =ᶠ[atTop]
               fun t ↦ (basis_hd t)^(exp - exp') := by
-            apply (basis_head_eventually_pos h_basis).mono
+            apply (h_basis.head_eventually_pos).mono
             intro t h
             simp only
             rw [← Real.rpow_sub h]
@@ -268,7 +268,7 @@ mutual
           · exact h_basis
           · simp only [exp']
             linarith
-        · apply (basis_head_eventually_pos h_basis).mono
+        · apply (h_basis.head_eventually_pos).mono
           intro t h1 h2
           absurd h2
           apply div_ne_zero <;> exact (Real.rpow_pos_of_pos h1 _).ne.symm
@@ -281,7 +281,7 @@ mutual
             h_coef_trimmed h_coef_ne_zero ((h_basis.tail)))).mono
           rintro t ⟨h_φ_pos, h⟩
           exact mul_ne_zero h_φ_pos.ne.symm h
-        apply (h_C_ne_zero.and (basis_head_eventually_pos h_basis)).mono
+        apply (h_C_ne_zero.and (h_basis.head_eventually_pos)).mono
         rintro t ⟨h_C_ne_zero, h_basis_pos⟩
         intro h
         absurd h
@@ -788,7 +788,7 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : MultiseriesExpansio
       Multiseries.cons_exps, Term.mk.injEq] at h_eq
     simp only [← h_eq.right, Term.FirstIsNeg] at h_exps
     obtain h_neg | h_zero := h_exps
-    · exact Majorated_tendsto_zero_of_neg h_neg h_maj
+    · exact Majorized.tendsto_zero_of_neg h_neg h_maj
     have hC : Tendsto coef.toFun atTop (𝓝 0) := by
       apply tendsto_zero_of_FirstIsNeg_aux (t_coef := t_coef) h_coef_wo h_coef_approx _ h_zero.right
       rw [← h_eq.left]

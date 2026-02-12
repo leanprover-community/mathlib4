@@ -804,20 +804,20 @@ mutual
     simp only [mulMonomial_toFun, mk_toFun] at hf_eq
     constructorm* _ ∧ _
     · apply mul_Approximates (h_basis.tail) h_coef_approx hM_approx
-    · apply Majorated_of_EventuallyEq hf_eq
+    · apply Majorized.of_eventuallyEq hf_eq
       rw [show B_exp + M_exp = B_exp + M_exp + 0 by simp]
-      apply mul_Majorated
-      · apply mul_Majorated
+      apply Majorized.mul
+      · apply Majorized.mul
         · exact h_maj
-        · apply Majorated_self
-          apply basis_tendsto_top h_basis
+        · apply Majorized.self
+          apply h_basis.tendsto_atTop
           simp
-        · exact basis_head_eventually_pos h_basis
-      · exact Approximates_coef_Majorated_head hM_approx h_basis
-      · exact basis_head_eventually_pos h_basis
+        · exact h_basis.head_eventually_pos
+      · exact Approximates_coef_Majorized_head hM_approx h_basis
+      · exact h_basis.head_eventually_pos
     use mk B_tl (fB - basis_hd ^ B_exp * B_coef.toFun)
     simp only [mk_seq, mk_toFun, true_and, h_tl_approx, hM_approx, and_self, and_true]
-    apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
+    apply (hf_eq.and (h_basis.head_eventually_pos)).mono
     intro t ⟨hf_eq, h_pos⟩
     simp [hf_eq, Real.rpow_add h_pos]
     ring_nf
@@ -864,9 +864,9 @@ mutual
       constructorm* _ ∧ _
       · simp
       · exact mul_Approximates (h_basis.tail) hX_coef_approx hY_coef_approx
-      · apply Majorated_of_EventuallyEq hf_eq
-        apply mul_Majorated hX_maj hY_maj
-        apply basis_head_eventually_pos h_basis
+      · apply Majorized.of_eventuallyEq hf_eq
+        apply hX_maj.mul hY_maj
+        apply h_basis.head_eventually_pos
       · apply mulMonomial_Approximates h_basis hX_tl_approx hY_coef_approx
       simp only [equiv_def, mul_seq, mk_seq, mul_toFun, mk_toFun, mulMonomial_toFun, motive]
       use mk Y_tl (fY - basis_hd ^ Y_exp * Y_coef.toFun)
@@ -874,7 +874,7 @@ mutual
       · simp
       · simp only [mk_toFun]
         grw [hf_eq]
-        apply (basis_head_eventually_pos h_basis).mono
+        apply (h_basis.head_eventually_pos).mono
         intro t h
         simp [Real.rpow_add h]
         ring_nf
@@ -934,7 +934,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         motive ms →
         ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0 ∨
         ∃ exp coef tl,
-          ms.seq = .cons exp coef tl ∧ coef.Approximates ∧ Majorated ms.toFun basis_hd exp ∧
+          ms.seq = .cons exp coef tl ∧ coef.Approximates ∧ Majorized ms.toFun basis_hd exp ∧
           ∃ (A B : MultiseriesExpansion (basis_hd :: basis_tl)),
             tl = (A.mul B).seq ∧
             ms.toFun =ᶠ[atTop] (basis_hd ^ exp * coef.toFun + A.toFun * B.toFun) ∧
@@ -974,9 +974,9 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   simp only [mulMonomial_seq, mk_seq, mulMonomial_toFun, mk_toFun, true_and]
   constructorm* _ ∧ _
   · apply mul_Approximates (h_basis.tail) hA_coef hB_coef
-  · apply Majorated_of_EventuallyEq hf_eq
-    apply mul_Majorated hA_maj hB_maj
-    apply basis_head_eventually_pos h_basis
+  · apply Majorized.of_eventuallyEq hf_eq
+    apply hA_maj.mul hB_maj
+    apply h_basis.head_eventually_pos
   · apply mulMonomial_Approximates h_basis hA_tl hB_coef
   simp only [equiv_def, mul_seq, mul_toFun, Sorted_iff_Seq_Sorted, mk_seq, mk_toFun,
     motive']
@@ -985,7 +985,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · simp only [mul_seq, mk_seq]
     rw [Multiseries.mul_assoc' (by simpa using hY_wo)]
   · grw [hf_eq, hfB]
-    apply (basis_head_eventually_pos h_basis).mono
+    apply (h_basis.head_eventually_pos).mono
     intro t ht
     simp only [Pi.sub_apply, Pi.mul_apply, Pi.add_apply, Pi.pow_apply, mul_toFun, mk_toFun]
     rw [Real.rpow_add ht]

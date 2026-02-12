@@ -95,7 +95,7 @@ theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basi
     (mul t1 t2).toFun basis =ᶠ[atTop] fun x ↦ t1.toFun basis x * t2.toFun basis x := by
   obtain ⟨coef1, exps1⟩ := t1
   obtain ⟨coef2, exps2⟩ := t2
-  apply (basis_eventually_pos h_basis).mono
+  apply (h_basis.eventually_pos ).mono
   intro x h_pos
   simp only [toFun, mul]
   simp only at h_length
@@ -143,7 +143,7 @@ theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
       unfold EventuallyEq
       specialize ih (h_basis.tail)
       unfold EventuallyEq at ih
-      apply ((basis_head_eventually_pos h_basis).and ih).mono
+      apply ((h_basis.head_eventually_pos).and ih).mono
       rintro x ⟨h_pos, ih⟩
       simp only at ih
       simp only [List.zip_cons_cons, List.foldl_cons, List.map_cons]
@@ -164,7 +164,7 @@ theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
 theorem toFun_pos {t : Term} {basis : Basis}
     (h_basis : WellFormedBasis basis) (h_coef : 0 < t.coef) :
     ∀ᶠ x in atTop, 0 < t.toFun basis x := by
-  apply (basis_eventually_pos h_basis).mono
+  apply (h_basis.eventually_pos ).mono
   intro x hx
   have hx' : ∀ hd ∈ t.exps.zip basis, 0 < hd.2 x := by
     intro hd h_hd
@@ -209,7 +209,7 @@ theorem toFun_log {t : Term} {basis : Basis}
     have h_pos : ∀ hd ∈ t.exps.zip basis, ∀ᶠ x in atTop, 0 < hd.2 x := by
       have h' : ∀ hd ∈ t.exps.zip basis, Tendsto hd.2 atTop atTop := by
         intro hd h_hd
-        apply basis_tendsto_top h_basis
+        apply h_basis.tendsto_atTop
         exact (List.of_mem_zip h_hd).right
       intro hd h_hd
       exact Tendsto.eventually (h' hd h_hd) <| eventually_gt_atTop 0
@@ -299,11 +299,11 @@ theorem log_IsEquivalent_of_nonzero_head {coef exp : ℝ} {tl : List ℝ} {basis
     conv_lhs => ext; simp
     have h_little : ∀ hd ∈ tl.zip basis_tl, (Real.log ∘ hd.2) =o[atTop] (Real.log ∘ basis_hd) := by
       intro hd h_hd
-      apply basis_IsLittleO_of_head h_basis
+      apply h_basis.tail_isLittleO_head
       exact (List.of_mem_zip h_hd).right
     have h_tendsto : ∀ hd ∈ tl.zip basis_tl, Tendsto hd.2 atTop atTop := by
       intro hd h_hd
-      apply basis_tendsto_top h_basis
+      apply h_basis.tendsto_atTop
       simp only [List.mem_cons]
       right
       exact (List.of_mem_zip h_hd).right
@@ -359,7 +359,7 @@ theorem tendsto_top {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
   apply Filter.Tendsto.const_mul_atTop h_exp
   rw [← Function.comp_def]
   apply Tendsto.comp Real.tendsto_log_atTop
-  apply basis_tendsto_top h_basis
+  apply h_basis.tendsto_atTop
   cases basis
   · simp at h_length
   · simp
@@ -401,7 +401,7 @@ lemma tendsto_zero_pos_coef {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
   apply Filter.Tendsto.const_mul_atTop (by linarith)
   rw [← Function.comp_def]
   apply Tendsto.comp Real.tendsto_log_atTop
-  apply basis_tendsto_top h_basis
+  apply h_basis.tendsto_atTop
   cases basis
   · simp at h_length
   · simp
@@ -656,7 +656,7 @@ theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : 
 
       have aux : (fun x ↦ (basis_hd x)^exp) =ᶠ[atTop]
           fun x ↦ (basis_hd x)^(exp / 2) * (basis_hd x)^(exp / 2) := by
-        apply (basis_head_eventually_pos h_basis).mono
+        apply (WellFormedBasis.head_eventually_pos h_basis).mono
         intro x h
         simp only
         rw [← Real.rpow_add h]

@@ -273,14 +273,14 @@ theorem log_Approximates {basis : Basis}
             · exact h_coef_last
           · apply mulConst_Approximates
             exact h_log_hd_approx
-        · apply add_Majorated' _ _ (by rfl) (by rfl)
+        · apply Majorized.add _ _ (by rfl) (by rfl)
           · have := log_Approximates (ms := coef) h_basis.tail
               h_logBasis_tl h_coef_wo h_coef h_coef_trimmed h_pos h_coef_last
             rw [← log_toFun (logBasis := logBasis_tl)]
-            apply MultiseriesExpansion.Approximates_coef_Majorated_head this h_basis
-          · apply smul_Majorated
+            apply MultiseriesExpansion.Approximates_coef_Majorized_head this h_basis
+          · apply Majorized.smul
             rw [h_log_hd_fun]
-            simp only [Majorated]
+            simp only [Majorized]
             intro exp' h_exp'
             change (Real.log ∘ basis_hd) =o[atTop] ((fun t ↦ t ^ exp') ∘ basis_hd)
             apply Asymptotics.IsLittleO.comp_tendsto (l := atTop)
@@ -316,7 +316,7 @@ theorem log_Approximates {basis : Basis}
     grw [h_tendsto_zero]
     have h_coef_pos : ∀ᶠ t in atTop, 0 < coef.toFun t :=
       eventually_pos_of_coef_pos (by simpa using h_pos) h_coef_wo h_coef h_coef_trimmed h_basis.tail
-    have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t := basis_head_eventually_pos h_basis
+    have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t := h_basis.head_eventually_pos
     apply (h_f_pos.and (h_coef_pos.and (h_basis_hd_pos.and hg_gt))).mono
     intro t ⟨h_f_pos, h_coef_pos, h_basis_hd_pos, hg_gt⟩
     simp only [Pi.add_apply, Function.comp_apply, Pi.smul_apply, smul_eq_mul]

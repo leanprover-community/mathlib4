@@ -205,7 +205,7 @@ Hausdorff space and `g` has a limit along `f`.
 
 section lim
 
-/-- If a filter `f` is majorated by some `𝓝 x`, then it is majorated by `𝓝 (Filter.lim f)`. We
+/-- If a filter `f` is Majorized by some `𝓝 x`, then it is Majorized by `𝓝 (Filter.lim f)`. We
 formulate this lemma with a `[Nonempty X]` argument of `lim` derived from `h` to make it useful for
 types without a `[Nonempty X]` instance. Because of the built-in proof irrelevance, Lean will unify
 this instance with any other instance. -/

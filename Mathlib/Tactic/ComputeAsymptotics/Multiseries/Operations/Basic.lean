@@ -224,7 +224,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} 
       right
       simp only [mulConst_seq, mk_seq, Multiseries.mulConst_cons, Multiseries.cons_eq_cons,
         mulConst_toFun, mk_toFun, ↓existsAndEq, and_true, mulConst_Approximates hX_coef,
-        Algebra.mul_smul_comm, true_and, exists_eq_left', smul_Majorated hX_maj]
+        Algebra.mul_smul_comm, true_and, exists_eq_left', hX_maj.smul]
       refine ⟨_, ?_, hX_tl⟩
       simp only [mk_eq_mk_iff_iff, mulConst_seq, mk_seq, mulConst_toFun, mk_toFun, true_and]
       ext t

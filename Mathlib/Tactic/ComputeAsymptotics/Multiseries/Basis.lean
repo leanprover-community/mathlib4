@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
@@ -8,146 +8,152 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Analysis.Complex.Exponential
 
 /-!
-# Lemmas about well ordered basises
+# Well-formed bases
 
 ## Main definitions
 
-* `WellFormedBasis basis` is a predicate meaning that all function from `basis` tend to `atTop`,
+* `WellFormedBasis basis`: a predicate meaning that all functions from `basis` tend to `atTop`,
 and `basis` is sorted such that if
-function `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
+`g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 -/
 
 @[expose] public section
 
-open Asymptotics Filter
-
 namespace Tactic.ComputeAsymptotics
 
-/-- `WellFormedBasis basis` means that all function from `basis` tend to `atTop`, and
+open Asymptotics Filter
+
+/-- `WellFormedBasis basis` means that all functions from `basis` tend to `atTop`, and
 `basis` is sorted such that if
-function `g` goes after `f` in `basis`, then `log f =o[atTop] log g`. -/
+`g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
+
+We use two types `Basis` and `WellFormedBasis` instead of a single bundled one because it
+it lets us to use the `List` API for `Basis`. -/
 def WellFormedBasis (basis : Basis) : Prop :=
   basis.Pairwise (fun x y => (Real.log ∘ y) =o[atTop] (Real.log ∘ x)) ∧
   ∀ f ∈ basis, Tendsto f atTop atTop
 
-theorem WellFormedBasis.nil : WellFormedBasis [] := by simp [WellFormedBasis]
+namespace WellFormedBasis
 
-theorem WellFormedBasis.single (f : ℝ → ℝ) (hf : Tendsto f atTop atTop) : WellFormedBasis [f] := by
+theorem nil : WellFormedBasis [] := by simp [WellFormedBasis]
+
+theorem single (f : ℝ → ℝ) (hf : Tendsto f atTop atTop) : WellFormedBasis [f] := by
   simpa [WellFormedBasis]
 
-theorem WellFormedBasis.of_sublist {basis basis' : Basis} (h : List.Sublist basis basis')
-    (h_basis : WellFormedBasis basis') : WellFormedBasis basis := by
-  simp only [WellFormedBasis] at h_basis ⊢
-  constructor
-  · exact h_basis.left.sublist h
-  · intro f hf
-    exact h_basis.right _ (h.subset hf)
+theorem of_sublist {basis basis' : Basis} (h : List.Sublist basis basis')
+    (h_basis : WellFormedBasis basis') : WellFormedBasis basis :=
+  ⟨h_basis.left.sublist h, fun _ hf ↦ h_basis.right _ (h.subset hf)⟩
 
-/-- Tail of well-formed basis is well-ordered. -/
-theorem WellFormedBasis.tail {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+/-- The tail of a well-formed basis is well-formed. -/
+theorem tail {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h : WellFormedBasis (basis_hd :: basis_tl)) : WellFormedBasis basis_tl :=
-  WellFormedBasis.of_sublist (by simp) h
+  h.of_sublist (by simp)
 
-theorem WellFormedBasis.of_append_right {left right : Basis} (h : WellFormedBasis (left ++ right)) :
+theorem of_append_right {left right : Basis} (h : WellFormedBasis (left ++ right)) :
     WellFormedBasis right :=
-  WellFormedBasis.of_sublist (by simp) h
+  h.of_sublist (by simp)
 
-theorem WellFormedBasis.insert {left right : Basis} {f : ℝ → ℝ}
-    (h : WellFormedBasis (left ++ right))
+theorem compare_left_aux {basis : Basis} {f : ℝ → ℝ} (h : WellFormedBasis basis)
+    (h_comp : ∀ g, basis.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) :
+    ∀ g ∈ basis, (Real.log ∘ f) =o[atTop] (Real.log ∘ g) := by
+  intro g hg
+  rcases basis.eq_nil_or_concat with rfl | ⟨basis_begin, basis_end, rfl⟩
+  · simp at hg
+  simp only [List.concat_eq_append, List.mem_append, List.mem_cons, List.not_mem_nil, or_false,
+    List.getLast?_append, List.getLast?_singleton, Option.some_or, Option.some.injEq,
+    forall_eq'] at hg h_comp
+  rcases hg with hg | hg
+  · simp only [WellFormedBasis, List.concat_eq_append, List.mem_append, List.mem_cons,
+      List.not_mem_nil, or_false] at h
+    exact h_comp.trans (by grind)
+  · grind
+
+theorem compare_right_aux {basis : Basis} {f : ℝ → ℝ} (h : WellFormedBasis basis)
+    (h_comp : ∀ g, basis.head? = .some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+    ∀ g ∈ basis, (Real.log ∘ g) =o[atTop] (Real.log ∘ f) := by
+  intro g hg
+  cases basis with
+  | nil => simp at hg
+  | cons basis_hd basis_tl =>
+    specialize h_comp basis_hd (by simp)
+    simp only [List.mem_cons] at hg
+    rcases hg with hg | hg
+    · simpa [hg]
+    · simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h
+      exact .trans (by grind) h_comp
+
+theorem append {left right : Basis}
+    (h_left : WellFormedBasis left) (h_right : WellFormedBasis right)
+    (h : ∀ f ∈ left, ∀ g ∈ right, (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+    WellFormedBasis (left ++ right) := by
+  simp only [WellFormedBasis] at *
+  constructor
+  · simpa [List.pairwise_append, h_left, h_right] using h
+  · grind
+
+theorem cons {basis : Basis} {f : ℝ → ℝ} (h_basis : WellFormedBasis basis)
     (hf_tendsto : Tendsto f atTop atTop)
+    (hf : ∀ g ∈ basis, (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
+    WellFormedBasis (f :: basis) := by
+  change WellFormedBasis ([f] ++ basis)
+  exact append (by simpa [WellFormedBasis]) h_basis (by simpa)
+
+theorem insert {left right : Basis} {f : ℝ → ℝ}
+    (h : WellFormedBasis (left ++ right)) (hf_tendsto : Tendsto f atTop atTop)
     (hf_comp_left : ∀ g, left.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g))
     (hf_comp_right : ∀ g, right.head? = .some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ f)) :
     WellFormedBasis (left ++ f :: right) := by
-  simp only [WellFormedBasis, List.mem_append, List.mem_cons] at h ⊢
-  constructor
-  · rw [List.pairwise_append]
-    constructorm* _ ∧ _
-    · exact h.left.sublist (List.sublist_append_left _ _)
-    · rw [List.pairwise_cons]
-      constructor
-      · intro g hg
-        cases right with
-        | nil => simp at hg
-        | cons right_hd right_tl =>
-          specialize hf_comp_right right_hd (by simp)
-          simp only [List.mem_cons] at hg
-          rcases hg with hg | hg
-          · rwa [hg]
-          apply IsLittleO.trans _ hf_comp_right
-          apply And.left at h
-          rw [List.pairwise_append] at h
-          replace h := h.right.left
-          simp only [List.pairwise_cons] at h
-          apply h.left _ hg
-      · apply h.left.sublist (List.sublist_append_right _ _)
-    · intro g hg k hk
-      simp only [List.mem_cons] at hk
-      rcases hk with hk | hk
-      · subst hk
-        rcases left.eq_nil_or_concat with h_left | ⟨left_begin, left_end, rfl⟩
-        · simp [h_left] at hg
-        simp only [List.concat_eq_append, List.getLast?_append,
-          List.getLast?_singleton] at hf_comp_left
-        simp only [List.concat_eq_append, List.mem_append, List.mem_singleton] at hg
-        rcases hg with hg | rfl
-        · apply (hf_comp_left _ rfl).trans
-          apply And.left at h
-          rw [List.pairwise_append] at h
-          apply And.left at h
-          simp only [List.concat_eq_append, List.pairwise_append, List.pairwise_cons,
-            List.not_mem_nil, IsEmpty.forall_iff, implies_true, List.Pairwise.nil, and_self,
-            List.mem_singleton, forall_eq, true_and] at h
-          tauto
-        · exact hf_comp_left g rfl
-      · apply And.left at h
-        simp only [List.pairwise_append] at h
-        tauto
-  · rintro g (hg | hg | hg)
-    · exact h.right _ (.inl hg)
-    · convert hf_tendsto
-    · exact h.right _ (.inr hg)
+  have : WellFormedBasis (f :: right) := cons (h.of_sublist (by simp)) hf_tendsto
+    (compare_right_aux (h.of_sublist (by simp)) hf_comp_right)
+  apply compare_left_aux (h.of_sublist (by simp)) at hf_comp_left
+  apply append (h.of_sublist (by simp)) this
+  exact fun g hg ↦ compare_right_aux this (by grind)
 
-theorem WellFormedBasis.push {basis : Basis} {f : ℝ → ℝ}
-    (h : WellFormedBasis basis)
+theorem push {basis : Basis} {f : ℝ → ℝ} (h : WellFormedBasis basis)
     (hf_tendsto : Tendsto f atTop atTop)
     (hf_comp : ∀ g, basis.getLast? = .some g → (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) :
     WellFormedBasis (basis ++ [f]) :=
-  WellFormedBasis.insert (right := []) (by simp [h]) hf_tendsto hf_comp (by simp)
+  insert (by simp [h]) hf_tendsto hf_comp (by simp)
 
-/-- All functions from well-formed basis tends to `atTop`. -/
-theorem basis_tendsto_top {basis : Basis} (h : WellFormedBasis basis) {f : ℝ → ℝ} (hf : f ∈ basis) :
-    Tendsto f atTop atTop := by
-  simp only [WellFormedBasis] at h
-  exact h.right _ hf
+/-- All functions from a well-formed basis tend to `atTop`. -/
+theorem tendsto_atTop {basis : Basis} (h : WellFormedBasis basis) {f : ℝ → ℝ}
+    (hf : f ∈ basis) :
+    Tendsto f atTop atTop := h.right f hf
 
-/-- Eventually all functions from well-formed basis are positive. -/
-theorem basis_eventually_pos {basis : Basis} (h : WellFormedBasis basis) :
+/-- Eventually all functions from a well-formed basis are positive. -/
+theorem eventually_pos {basis : Basis} (h : WellFormedBasis basis) :
     ∀ᶠ x in atTop, ∀ f ∈ basis, 0 < f x := by
   induction basis with
   | nil => simp
   | cons hd tl ih =>
     simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h
     simp only [List.mem_cons, forall_eq_or_imp]
-    apply Filter.Eventually.and
-    · exact Tendsto.eventually h.right.left <| eventually_gt_atTop 0
-    · apply ih
-      simp only [WellFormedBasis]
-      tauto
+    exact (h.right.left.eventually <| eventually_gt_atTop 0).and (ih (by tauto))
 
-/-- First function from well-formed basis is eventually positive. -/
-theorem basis_head_eventually_pos {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (h : WellFormedBasis (basis_hd :: basis_tl)) : ∀ᶠ x in atTop, 0 < basis_hd x := by
-  apply ((forall_eventually_of_eventually_forall (basis_eventually_pos h)) basis_hd).mono
-  intro x h
-  apply h
-  simp
+/-- The first function in a well-formed basis is eventually positive. -/
+theorem head_eventually_pos {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (h : WellFormedBasis (basis_hd :: basis_tl)) : ∀ᶠ x in atTop, 0 < basis_hd x :=
+  (forall_eventually_of_eventually_forall h.eventually_pos basis_hd).mono (by grind)
 
-/-- All functions of well-formed basis' tail are o-little of basis' head. -/
-theorem basis_IsLittleO_of_head {hd : ℝ → ℝ} {tl : Basis} (h : WellFormedBasis (hd :: tl)) :
-    ∀ f ∈ tl, (Real.log ∘ f) =o[atTop] (Real.log ∘ hd) := by
-  simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h
-  exact h.left.left
+/-- All functions in the tail of a well-formed basis are little-o of the basis' head. -/
+theorem tail_isLittleO_head {hd : ℝ → ℝ} {tl : Basis}
+    (h : WellFormedBasis (hd :: tl)) {f : ℝ → ℝ} (hf : f ∈ tl) :
+    (Real.log ∘ f) =o[atTop] (Real.log ∘ hd) := by
+  rw [WellFormedBasis, List.pairwise_cons] at h
+  exact h.left.left _ hf
+
+theorem push_log_last {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
+    WellFormedBasis ((basis_hd :: basis_tl) ++
+      [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) := by
+  apply h_basis.push
+  · simp [Real.tendsto_log_atTop.comp, h_basis.right]
+  · intro g hg
+    simpa [List.getLast_of_getLast?_eq_some hg] using Real.isLittleO_log_id_atTop.comp_tendsto <|
+      Real.tendsto_log_atTop.comp <| h_basis.tendsto_atTop <| List.mem_of_getLast? hg
+
+end WellFormedBasis
 
 /-- Auxillary lemma. If function `f` is eventually positive, `g` tends to `atTop`, and
 `log f =o[atTop] log g` then for any `a` and `b > 0`, then `f^a =o[atTop] g^b`. -/
@@ -190,51 +196,51 @@ theorem basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0
       apply Tendsto.sub_const h1
     · exact Tendsto.comp Real.tendsto_log_atTop hg
 
-/-- Any power of function from well-formed basis' tail is Majorated by
+/-- Any power of function from well-formed basis' tail is Majorized by
 basis' head with zero exponent. -/
-theorem basis_tail_pow_Majorated_head {hd f : ℝ → ℝ} {tl : Basis}
+theorem basis_tail_pow_Majorized_head {hd f : ℝ → ℝ} {tl : Basis}
     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
-    MultiseriesExpansion.Majorated (fun x ↦ (f x)^r) hd 0 := by
-  simp only [MultiseriesExpansion.Majorated]
+    Majorized (fun x ↦ (f x)^r) hd 0 := by
+  simp only [Majorized]
   intro exp h_exp
   apply basis_compare
-  · apply (basis_eventually_pos h_basis.tail).mono
+  · apply h_basis.tail.eventually_pos.mono
     intro x h
     apply h
     exact hf
-  · apply basis_tendsto_top h_basis
+  · apply h_basis.tendsto_atTop
     simp
   · simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h_basis
     tauto
   · exact h_exp
 
 /-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
-`ms : MultiseriesExpansion basis_tl`, then `fC` can be Majorated by `basis_hd` with zero
+`ms : MultiseriesExpansion basis_tl`, then `fC` can be Majorized by `basis_hd` with zero
 exponent. -/
-theorem MultiseriesExpansion.Approximates_coef_Majorated_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem MultiseriesExpansion.Approximates_coef_Majorized_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : MultiseriesExpansion basis_tl} (h_approx : ms.Approximates)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
-    Majorated ms.toFun basis_hd 0 := by
+    Majorized ms.toFun basis_hd 0 := by
   cases basis_tl with
   | nil =>
     simp only [const_toFun]
-    apply const_Majorated
-    apply basis_tendsto_top h_basis
+    apply Majorized.const
+    apply h_basis.tendsto_atTop
     simp
   | cons basis_tl_hd basis_tl_tl =>
     cases ms with
     | nil f =>
       simp only [Approximates_nil_iff, mk_toFun] at h_approx ⊢
-      apply Majorated_of_EventuallyEq h_approx
-      apply zero_Majorated
+      apply Majorized.of_eventuallyEq h_approx
+      apply Majorized.zero
     | cons exp coef tl f =>
       obtain ⟨_, h_maj, _⟩ := Approximates_cons h_approx
       simp only [mk_toFun]
       intro exp' h_exp
       apply Asymptotics.IsLittleO.trans <| h_maj (exp + 1) (by linarith)
       apply basis_compare
-      · apply basis_head_eventually_pos (h_basis.tail)
-      · apply basis_tendsto_top h_basis
+      · apply h_basis.tail.head_eventually_pos
+      · apply h_basis.tendsto_atTop
         simp only [List.mem_cons, true_or]
       · simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h_basis
         exact h_basis.left.left.left

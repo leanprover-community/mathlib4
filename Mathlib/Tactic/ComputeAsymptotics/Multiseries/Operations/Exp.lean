@@ -174,7 +174,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   subst h_exp
   clear h_if
   obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
-  obtain ⟨h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
+  obtain ⟨h_coef, h_majorized, h_tl⟩ := Approximates_cons h_approx
   let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).powser expSeries).mulMonomial coef.exp 0
   have h : ms.Approximates := by
     simp only [pow_zero, one_mul, ms]

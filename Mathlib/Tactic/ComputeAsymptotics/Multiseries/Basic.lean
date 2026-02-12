@@ -184,8 +184,8 @@ theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis 
     have ih : (const basis_tl c).Approximates := by
       apply const_Approximates h_basis.tail
     apply Approximates.cons ih
-    · apply const_Majorated
-      apply basis_tendsto_top h_basis
+    · apply Majorized.const
+      apply h_basis.tendsto_atTop
       simp
     · simp
 
@@ -253,15 +253,15 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
         List.getElem_cons_zero]
       apply Approximates.cons
       · exact one_Approximates h_basis.tail
-      · apply MultiseriesExpansion.Majorated_self
-        apply basis_tendsto_top h_basis
+      · apply Majorized.self
+        apply h_basis.tendsto_atTop
         simp
       · simp
     | succ m =>
       simp only [Fin.val_succ, Multiseries.monomialRpow, List.getElem_cons_succ]
       apply Approximates.cons
       · exact monomialRpow_Approximates h_basis.tail
-      · apply basis_tail_pow_Majorated_head h_basis
+      · apply basis_tail_pow_Majorized_head h_basis
         simp
       · simp
 
@@ -465,7 +465,7 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis}
     · apply updateBasis_Approximates _ h_approx
       exact BasisExtension.insert_WellFormedBasis_tail h_basis
     · simp only [BasisExtension.getBasis] at h_basis
-      apply MultiseriesExpansion.Approximates_coef_Majorated_head h_approx
+      apply MultiseriesExpansion.Approximates_coef_Majorized_head h_approx
       apply WellFormedBasis.of_sublist _ h_basis
       simp only [List.cons_sublist_cons]
       apply BasisExtension.getBasis_Sublist
@@ -502,7 +502,7 @@ theorem extendBasisMiddle_Approximates {left right : Basis} {b : ℝ → ℝ}
   | nil =>
     simp only [List.nil_append, extendBasisMiddle]
     apply Approximates.cons h_approx
-    · exact MultiseriesExpansion.Approximates_coef_Majorated_head h_approx h_basis
+    · exact MultiseriesExpansion.Approximates_coef_Majorized_head h_approx h_basis
     · apply Approximates.nil
       simp
   | cons left_hd left_tl =>

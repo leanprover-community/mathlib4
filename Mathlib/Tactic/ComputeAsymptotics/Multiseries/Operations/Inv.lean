@@ -210,7 +210,7 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
   have := IsEquivalent_coef h_approx h_wo h_coef_trimmed h_coef_ne_zero h_basis
   obtain ⟨φ, hφ, hf⟩ := this.exists_eq_mul
   simp only [mulMonomial_toFun, mk_toFun, inv_toFun]
-  have h_basis_hd_pos := basis_head_eventually_pos h_basis
+  have h_basis_hd_pos := h_basis.head_eventually_pos
   have h_coef_ne_zero : ∀ᶠ t in atTop, coef.toFun t ≠ 0 :=
     eventually_ne_zero_of_not_zero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed h_basis.tail
   apply Filter.Tendsto.congr' (f₁ := φ - 1)
@@ -246,7 +246,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
         eventually_ne_zero_of_not_zero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
           (h_basis.tail)
       have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t :=
-        basis_head_eventually_pos h_basis
+        h_basis.head_eventually_pos
       simp only [inv, mk_seq, Multiseries.inv, Multiseries.destruct_cons, mk_toFun]
       let ms : MultiseriesExpansion (basis_hd :: basis_tl) :=
         (((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial

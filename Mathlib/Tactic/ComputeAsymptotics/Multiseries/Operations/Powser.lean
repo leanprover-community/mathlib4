@@ -246,15 +246,15 @@ theorem toFun_IsBigO_one {s : LazySeries} (h_convergent : s.Convergent) {f : ℝ
     apply Tendsto.comp _ hF
     apply toFun_tendsto_head h_convergent
 
-theorem toFun_Majorated_zero {s : LazySeries} (h_convergent : s.Convergent) {f basis_hd : ℝ → ℝ}
+theorem toFun_Majorized_zero {s : LazySeries} (h_convergent : s.Convergent) {f basis_hd : ℝ → ℝ}
     (hf : Tendsto f atTop (𝓝 0)) (h_basis : Tendsto basis_hd atTop atTop) :
-    Majorated ((toFun s) ∘ f) basis_hd 0 := by
+    Majorized ((toFun s) ∘ f) basis_hd 0 := by
   intro exp h_pos
   apply IsBigO.trans_isLittleO (toFun_IsBigO_one h_convergent hf)
   eta_expand
   simp only [Pi.one_apply, isLittleO_one_left_iff, Real.norm_eq_abs]
   apply Tendsto.comp Filter.tendsto_abs_atTop_atTop
-  exact Tendsto.comp (tendsto_rpow_atTop h_pos) h_basis
+  convert Tendsto.comp (tendsto_rpow_atTop h_pos) h_basis
 
 theorem convergent_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s.Convergent := by
   simp only [Convergent]
@@ -381,9 +381,9 @@ theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basi
   simp only [powser_seq, const_Approximates h_basis.tail, powser_toFun, h_approx,
     Multiseries.powser_Sorted (by simpa using h_wo) h_neg, true_and]
   constructorm* _ ∧ _
-  · apply Majorated_of_EventuallyEq hf_eq
-    apply LazySeries.toFun_Majorated_zero h_convergent hf_tendsto_zero
-    apply basis_tendsto_top h_basis
+  · apply Majorized.of_eventuallyEq hf_eq
+    apply LazySeries.toFun_Majorized_zero h_convergent hf_tendsto_zero
+    apply h_basis.tendsto_atTop
     simp
   · grw [hf_eq, this]
     apply EventuallyEq.of_eq
