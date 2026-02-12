@@ -748,6 +748,7 @@ theorem IsLUB.exists_between' (h : IsLUB s a) (h' : a ∉ s) (hb : b < a) : ∃ 
   let ⟨c, hcs, hbc, hca⟩ := h.exists_between hb
   ⟨c, hcs, hbc, hca.lt_of_ne fun hac => h' <| hac ▸ hcs⟩
 
+-- These are not `@[to_dual]` because the `And` conjuncts would be in the wrong order.
 theorem IsGLB.exists_between (h : IsGLB s a) (hb : a < b) : ∃ c ∈ s, a ≤ c ∧ c < b :=
   let ⟨c, hcs, hbc⟩ := (isGLB_lt_iff h).1 hb
   ⟨c, hcs, h.1 hcs, hbc⟩
