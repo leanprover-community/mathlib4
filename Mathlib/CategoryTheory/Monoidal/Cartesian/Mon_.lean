@@ -385,4 +385,15 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 
 end Hom
+
+/-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
+lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
+    IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
+  refine ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨?_⟩⟩
+  apply yoneda.map_injective
+  ext ⟨X⟩ f
+  dsimp
+  rw [← lift_comp_fst_snd f, ← Hom.mul_def, mul_comm, Hom.mul_def, ← lift_comp_fst_snd f,
+    CartesianMonoidalCategory.lift_braiding_hom_assoc]
+
 end CategoryTheory

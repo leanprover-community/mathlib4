@@ -184,6 +184,42 @@ lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.c
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
+/-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,
+see `CategoryTheory.GrpObj.lift_commutator_eq_mul_mul_inv_inv`.
+This morphism is constant with value `1` if and only if `G` is commutative
+(see `CategoryTheory.isCommMonObj_iff_commutator_eq_toUnit_η`). -/
+def GrpObj.commutator (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
+  -- (x, y) ↦ (x, y, x⁻¹, y⁻¹)
+  lift (fst _ _) (lift (snd _ _) (ι ⊗ₘ ι)) ≫
+    -- (a, b, c, d) ↦ a * b * c * d
+    (G ◁ (G ◁ μ)) ≫ (G ◁ μ) ≫ μ
+
+@[reassoc (attr := simp)]
+lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :
+    lift f₁ f₂ ≫ commutator G = f₁ * f₂ * f₁⁻¹ * f₂⁻¹ := by
+  simp_rw [_root_.mul_assoc]
+  simp only [commutator, lift_whiskerLeft, Hom.inv_def, Hom.mul_def, ← Category.assoc]
+  congr 1
+  ext
+  · simp
+  · simp only [comp_lift, lift_fst, lift_snd, ← Category.assoc]
+    congr 1
+    ext <;> simp
+
+@[reassoc (attr := simp)]
+lemma GrpObj.η_rhd_commutator : η ▷ G ≫ commutator G = toUnit _ ≫ η := by
+  apply yoneda.map_injective
+  ext X f
+  rw [← lift_comp_fst_snd f]
+  simp [toUnit_unique (fst (𝟙_ C) G) (toUnit _), ← Hom.one_def]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.η_lhd_commutator : G ◁ η ≫ commutator G = toUnit _ ≫ η := by
+  apply yoneda.map_injective
+  ext X f
+  rw [← lift_comp_fst_snd f]
+  simp [toUnit_unique (snd G (𝟙_ C)) (toUnit _), ← Hom.one_def]
+
 variable [BraidedCategory C]
 
 instance [IsCommMonObj G] : IsMonHom ι[G] where
@@ -244,5 +280,25 @@ end Grp
 abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+
+section
+
+/-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
+is constant. -/
+lemma isCommMonObj_iff_commutator_eq_toUnit_η :
+    IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
+  rw [isCommMonObj_iff_isMulCommutative, ← yoneda.map_injective.eq_iff]
+  refine ⟨fun h ↦ ?_, fun heq X ↦ ⟨⟨fun f g ↦ ?_⟩⟩⟩
+  · ext X f
+    dsimp
+    rw [← lift_comp_fst_snd f, GrpObj.lift_commutator_eq_mul_mul_inv_inv]
+    simp [Hom.one_def]
+  · rw [← mul_inv_eq_one, mul_inv_rev g f, ← _root_.mul_assoc]
+    have := congr($(heq).app _ (lift f g))
+    simp only [yoneda_obj_obj, yoneda_map_app, GrpObj.lift_commutator_eq_mul_mul_inv_inv,
+      Functor.map_comp, FunctorToTypes.comp, comp_toUnit] at this
+    rwa [← Hom.one_def] at this
+
+end
 
 end CategoryTheory
