@@ -23,6 +23,14 @@ namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
+@[simp]
+lemma variation_apply (μ : VectorMeasure X V) {s : Set X} :
+    μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
+
+@[simp]
+lemma ennrealVariation_apply (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
+    μ.ennrealVariation s = μ.variation s := Measure.toENNRealVectorMeasure_apply_measurable hs
+
 open Classical Finset in
 /-- Measure version of `le_var_aux` which was for subadditive functions. -/
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
@@ -37,20 +45,19 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
           Finset.sum_union_eq_right (by intro _ _ _; simp_all)]
         simp
       · have : P = (Finpartition.ofPairwiseDisjoint P hP₃).parts := by
-          rw [Finpartition.ofPairwiseDisjoint]
           ext p
-          simp_all only [Set.bot_eq_empty, mem_erase, ne_eq, iff_and_self]
-          exact fun hp => ne_of_mem_of_not_mem hp hbot
+          simpa [Finpartition.ofPairwiseDisjoint] using (fun hp => ne_of_mem_of_not_mem hp hbot)
         simp_rw [this]
-    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q (Finset.sup_le hP₁)).parts, ‖μ p‖ₑ := by
-        apply Finset.sum_le_sum_of_subset
-        apply Finpartition.parts_subset_extendOfLE
+    _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q (Finset.sup_le hP₁)).parts, ‖μ p‖ₑ :=
+        Finset.sum_le_sum_of_subset
+          (Finpartition.parts_subset_extendOfLE (Finpartition.ofPairwiseDisjoint P hP₃)
+          (Finset.sup_le hP₁))
     _ ≤ μ.variation s := by
       simp only [variation, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply]
       apply preVariation.sum_le' (fun p => ‖μ p‖ₑ) hs
       intro p hp
       have : p ∈ Q.parts ∨ p = s \ (P.sup id) := by
-        apply Finpartition.mem_parts_or_mem_sdiff Q _ _ hp
+        apply Finpartition.mem_parts_or_mem_sdiff_of_mem_extendOfLE Q _ _ hp
       rcases this with h | h
       · rw [hQ, Finpartition.ofPairwiseDisjoint] at h
         simp only [Set.bot_eq_empty, mem_erase, ne_eq] at h
@@ -68,8 +75,8 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
     have : E = ∅ := by exact Set.subset_eq_empty (fun ⦃a⦄ a_1 ↦ a_1) hE'
     rw [this]
     simp
-  rw [variation, preVariation, ennrealToMeasure_apply hE]
-  simp only [ennrealPreVariation_apply]
+  rw [variation]
+  simp only [preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
   calc
     ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
     _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
@@ -89,12 +96,7 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
     calc
       0 < ‖μ s‖ₑ := enorm_pos.mpr hc
       _ ≤ μ.variation s := norm_measure_le_variation μ s
-      _ = 0 := by
-        rw [variation, preVariation, ennrealToMeasure_apply hsm]
-        exact
-          Eq.symm
-            ((fun {x y} ↦ EReal.coe_ennreal_eq_coe_ennreal_iff.mp)
-              (congrArg toEReal (id (Eq.symm hs))))
+      _ = 0 := by simpa [ennrealVariation_apply _ hsm] using hs
   · exact μ.not_measurable' hsm
 
 end MeasureTheory.VectorMeasure
