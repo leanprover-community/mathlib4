@@ -11,6 +11,8 @@ public import Lean.Elab.Tactic.Basic
 public import Lean.Meta.Tactic.Assert
 public import Lean.Meta.Tactic.Clear
 
+import Mathlib.Lean.Environment
+
 /-! ## Additional utilities in `Lean.MVarId` -/
 
 public section
@@ -51,6 +53,27 @@ where
       pure (acc, g)
 
 end Lean.MVarId
+
+namespace Lean
+
+/--
+Find the `ConstantInfo` for `decl` publicly, or privately in the current module.
+Similar to `Lean.Elab.checkNotAlreadyDeclared`.
+-/
+def findPublicOrPrivate? (decl : Name) : CoreM (Option ConstantInfo) := withoutExporting <| do
+  return (← getEnv).findPublicOrPrivate? decl
+
+/--
+Adds a declaration, and (unlike `addDecl`) display a friendly error message if the
+declaration already exists.
+Adds a hover of the existing declaration if the declaration already exists.
+-/
+def addDeclSafe (decl : Declaration) (forceExpose := false) : CoreM Unit := do
+  for nm in decl.getNames do
+    Elab.checkNotAlreadyDeclared nm
+  addDecl decl forceExpose
+
+end Lean
 
 namespace Lean.Meta
 

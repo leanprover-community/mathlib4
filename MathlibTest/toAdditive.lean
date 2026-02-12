@@ -33,7 +33,7 @@ attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
 /--
 error: `to_additive` validation failed: expected
   {α : Type u} → {β : Type v} → [self : my_has_scalar β α] → α → β → α
-but 'Test.my_has_scalar.smul' has type
+but 'my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
@@ -41,7 +41,7 @@ attribute [to_additive existing] my_has_pow.pow
 /--
 error: `to_additive` validation failed: expected
   {β : Type u} → {α : Type v} → [self : my_has_scalar β α] → α → β → α
-but 'Test.my_has_scalar.smul' has type
+but 'my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
