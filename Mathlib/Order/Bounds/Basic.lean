@@ -631,15 +631,11 @@ protected theorem BddBelow.insert [IsCodirectedOrder α] {s : Set α} (a : α) :
     BddBelow s → BddBelow (insert a s) :=
   bddBelow_insert.2
 
+@[to_dual]
 protected theorem IsLUB.insert [SemilatticeSup γ] (a) {b} {s : Set γ} (hs : IsLUB s b) :
     IsLUB (insert a s) (a ⊔ b) := by
   rw [insert_eq]
   exact isLUB_singleton.union hs
-
-protected theorem IsGLB.insert [SemilatticeInf γ] (a) {b} {s : Set γ} (hs : IsGLB s b) :
-    IsGLB (insert a s) (a ⊓ b) := by
-  rw [insert_eq]
-  exact isGLB_singleton.union hs
 
 protected theorem IsGreatest.insert [LinearOrder γ] (a) {b} {s : Set γ} (hs : IsGreatest s b) :
     IsGreatest (insert a s) (max a b) := by
@@ -685,11 +681,9 @@ macro "bddDefault" : tactic =>
 -/
 
 
+@[to_dual]
 theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
   isLUB_singleton.insert _
-
-theorem isGLB_pair [SemilatticeInf γ] {a b : γ} : IsGLB {a, b} (a ⊓ b) :=
-  isGLB_singleton.insert _
 
 theorem isLeast_pair [LinearOrder γ] {a b : γ} : IsLeast {a, b} (min a b) :=
   isLeast_singleton.insert _
@@ -794,23 +788,17 @@ section PartialOrder
 
 variable [PartialOrder α] {s : Set α} {a b : α}
 
+@[to_dual]
 theorem IsLeast.unique (Ha : IsLeast s a) (Hb : IsLeast s b) : a = b :=
   le_antisymm (Ha.right Hb.left) (Hb.right Ha.left)
 
+@[to_dual]
 theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
   Iff.intro Ha.unique fun h => h ▸ Ha
 
-theorem IsGreatest.unique (Ha : IsGreatest s a) (Hb : IsGreatest s b) : a = b :=
-  le_antisymm (Hb.right Ha.left) (Ha.right Hb.left)
-
-theorem IsGreatest.isGreatest_iff_eq (Ha : IsGreatest s a) : IsGreatest s b ↔ a = b :=
-  Iff.intro Ha.unique fun h => h ▸ Ha
-
+@[to_dual]
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb
-
-theorem IsGLB.unique (Ha : IsGLB s a) (Hb : IsGLB s b) : a = b :=
-  IsGreatest.unique Ha Hb
 
 theorem Set.subsingleton_of_isLUB_le_isGLB (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
     s.Subsingleton := fun _ hx _ hy =>

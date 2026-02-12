@@ -69,7 +69,7 @@ theorem sInf_le_sInf_of_isCoinitialFor (h : IsCoinitialFor s t) : sInf t ≤ sIn
   IsGreatest.mono (isGLB_sInf t) (isGLB_sInf s) <| lowerBounds_mono_of_isCoinitialFor h
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
-@[simp]
+@[to_dual existing, simp]
 theorem sInf_singleton {a : α} : sInf {a} = a :=
   isGLB_singleton.sInf_eq
 
@@ -96,7 +96,7 @@ theorem sSup_inter_le {s t : Set α} : sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
 theorem sSup_empty : sSup ∅ = (⊥ : α) :=
   (@isLUB_empty α _ _).sSup_eq
 
-@[simp]
+@[to_dual existing, simp]
 theorem sInf_empty : sInf ∅ = (⊤ : α) :=
   (@isGLB_empty α _ _).sInf_eq
 
@@ -104,47 +104,34 @@ theorem sInf_empty : sInf ∅ = (⊤ : α) :=
 theorem sSup_univ : sSup univ = (⊤ : α) :=
   (@isLUB_univ α _ _).sSup_eq
 
-@[simp]
+@[to_dual existing, simp]
 theorem sInf_univ : sInf univ = (⊥ : α) :=
   (@isGLB_univ α _ _).sInf_eq
 
 -- TODO(Jeremy): get this automatically
-@[simp]
+@[to_dual (attr := simp)]
 theorem sSup_insert {a : α} {s : Set α} : sSup (insert a s) = a ⊔ sSup s :=
   ((isLUB_sSup s).insert a).sSup_eq
 
-@[simp]
-theorem sInf_insert {a : α} {s : Set α} : sInf (insert a s) = a ⊓ sInf s :=
-  ((isGLB_sInf s).insert a).sInf_eq
-
+@[to_dual]
 theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ sSup t :=
   (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 
-theorem sInf_le_sInf_of_subset_insert_top (h : s ⊆ insert ⊤ t) : sInf t ≤ sInf s :=
-  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _))
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
   (sSup_le_sSup diff_subset).antisymm <|
     sSup_le_sSup_of_subset_insert_bot <| subset_insert_diff_singleton _ _
 
-@[simp]
-theorem sInf_diff_singleton_top (s : Set α) : sInf (s \ {⊤}) = sInf s :=
-  (sInf_le_sInf_of_subset_insert_top <| subset_insert_diff_singleton _ _).antisymm <|
-    sInf_le_sInf diff_subset
-
+@[to_dual]
 theorem sSup_pair {a b : α} : sSup {a, b} = a ⊔ b :=
   (@isLUB_pair α _ a b).sSup_eq
-
-theorem sInf_pair {a b : α} : sInf {a, b} = a ⊓ b :=
-  (@isGLB_pair α _ a b).sInf_eq
 
 @[simp]
 theorem sSup_eq_bot : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
   ⟨fun h _ ha => bot_unique <| h ▸ le_sSup ha, fun h =>
     bot_unique <| sSup_le fun a ha => le_bot_iff.2 <| h a ha⟩
 
-@[simp]
+@[to_dual existing, simp]
 theorem sInf_eq_top : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   ⟨fun h _ ha => top_unique <| h ▸ sInf_le ha, fun h =>
     top_unique <| le_sInf fun a ha => ge_of_eq <| h a ha⟩
@@ -152,37 +139,27 @@ theorem sInf_eq_top : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
 lemma sSup_eq_bot' {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
   rw [sSup_eq_bot, ← subset_singleton_iff_eq, subset_singleton_iff]
 
+@[to_dual]
 theorem eq_singleton_bot_of_sSup_eq_bot_of_nonempty {s : Set α} (h_sup : sSup s = ⊥)
     (hne : s.Nonempty) : s = {⊥} := by
   rw [Set.eq_singleton_iff_nonempty_unique_mem]
   rw [sSup_eq_bot] at h_sup
   exact ⟨hne, h_sup⟩
 
-theorem eq_singleton_top_of_sInf_eq_top_of_nonempty (h_inf : sInf s = ⊤)
-    (hne : s.Nonempty) : s = {⊤} := by
-  rw [Set.eq_singleton_iff_nonempty_unique_mem]
-  rw [sInf_eq_top] at h_inf
-  exact ⟨hne, h_inf⟩
-
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w < b`.
 See `csSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in conditionally complete
 lattices. -/
+@[to_dual sInf_eq_of_forall_ge_of_forall_gt_exists_lt
+  /-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
+  is smaller than all elements of `s`, and that this is not the case of any `w > b`.
+  See `csInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in conditionally complete
+  lattices. -/]
 theorem sSup_eq_of_forall_le_of_forall_lt_exists_gt (h₁ : ∀ a ∈ s, a ≤ b)
     (h₂ : ∀ w, w < b → ∃ a ∈ s, w < a) : sSup s = b :=
   (sSup_le h₁).eq_of_not_lt fun h =>
     let ⟨_, ha, ha'⟩ := h₂ _ h
     ((le_sSup ha).trans_lt ha').false
-
-/-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
-is smaller than all elements of `s`, and that this is not the case of any `w > b`.
-See `csInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in conditionally complete
-lattices. -/
-theorem sInf_eq_of_forall_ge_of_forall_gt_exists_lt (h₁ : ∀ a ∈ s, b ≤ a)
-    (h₂ : ∀ w, b < w → ∃ a ∈ s, a < w) : sInf s = b :=
-  ((le_sInf h₁).eq_of_not_lt fun h =>
-    let ⟨_, ha, ha'⟩ := h₂ _ h
-    ((sInf_le ha).trans_lt ha').false).symm
 
 end
 
@@ -193,14 +170,18 @@ section SupSet
 
 variable [SupSet α] {f g : ι → α}
 
+@[to_dual]
 theorem sSup_range : sSup (range f) = iSup f :=
   rfl
 
+@[to_dual]
 theorem sSup_eq_iSup' (s : Set α) : sSup s = ⨆ a : s, (a : α) := by rw [iSup, Subtype.range_coe]
 
+@[to_dual]
 theorem iSup_congr (h : ∀ i, f i = g i) : ⨆ i, f i = ⨆ i, g i :=
   congr_arg _ <| funext h
 
+@[to_dual]
 theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
     ⨆ (i) (_ : p i), f i = ⨆ (i) (_ : p i), g i :=
   iSup_congr fun i ↦ iSup_congr (h i)
@@ -210,40 +191,48 @@ theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     ⨆ i, ⨆ (hi : p i), f i hi = ⨆ i, ⨆ (hi : p i), g i hi := by
   grind
 
+@[to_dual]
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
   simp only [iSup.eq_1]
   congr
   exact hf.range_comp g
 
+@[to_dual]
 theorem Equiv.iSup_comp {g : ι' → α} (e : ι ≃ ι') : ⨆ x, g (e x) = ⨆ y, g y :=
   e.surjective.iSup_comp _
 
+@[to_dual]
 protected theorem Function.Surjective.iSup_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : ⨆ x, f x = ⨆ y, g y := by
   convert h1.iSup_comp g
   exact (h2 _).symm
 
+@[to_dual]
 protected theorem Equiv.iSup_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x, g (e x) = f x) :
     ⨆ x, f x = ⨆ y, g y :=
   e.surjective.iSup_congr _ h
 
-@[congr]
+@[to_dual (attr := congr)]
 theorem iSup_congr_Prop {p q : Prop} {f₁ : p → α} {f₂ : q → α} (pq : p ↔ q)
     (f : ∀ x, f₁ (pq.mpr x) = f₂ x) : iSup f₁ = iSup f₂ := by
   obtain rfl := propext pq
   congr with x
   apply f
 
+@[to_dual]
 theorem iSup_plift_up (f : PLift ι → α) : ⨆ i, f (PLift.up i) = ⨆ i, f i :=
   (PLift.up_surjective.iSup_congr _) fun _ => rfl
 
+@[to_dual]
 theorem iSup_plift_down (f : ι → α) : ⨆ i, f (PLift.down i) = ⨆ i, f i :=
   (PLift.down_surjective.iSup_congr _) fun _ => rfl
 
+@[to_dual]
 theorem iSup_range' (g : β → α) (f : ι → β) : ⨆ b : range f, g b = ⨆ i, g (f i) := by
   rw [iSup, iSup, ← image_eq_range, ← range_comp']
 
+@[to_dual]
 theorem sSup_image' {s : Set β} {f : β → α} : sSup (f '' s) = ⨆ a : s, f a := by
   rw [iSup, image_eq_range]
 
@@ -253,59 +242,15 @@ section InfSet
 
 variable [InfSet α] {f g : ι → α}
 
-theorem sInf_range : sInf (range f) = iInf f :=
-  rfl
-
-theorem sInf_eq_iInf' (s : Set α) : sInf s = ⨅ a : s, (a : α) := by rw [iInf, Subtype.range_coe]
-
-theorem iInf_congr (h : ∀ i, f i = g i) : ⨅ i, f i = ⨅ i, g i :=
-  congr_arg _ <| funext h
-
-theorem biInf_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
-    ⨅ (i) (_ : p i), f i = ⨅ (i) (_ : p i), g i :=
-  iInf_congr fun i ↦ iInf_congr (h i)
+-- biInf_congr, Function.Surjective.iInf_comp, Equiv.iInf_comp,
+-- Function.Surjective.iInf_congr, Equiv.iInf_congr, iInf_congr_Prop,
+-- iInf_plift_up, iInf_plift_down, iInf_range', sInf_image'
+-- auto-generated by @[to_dual]
 
 theorem biInf_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     (h : ∀ i (hi : p i), f i hi = g i hi) :
     ⨅ i, ⨅ (hi : p i), f i hi = ⨅ i, ⨅ (hi : p i), g i hi := by
   grind
-
-theorem Function.Surjective.iInf_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
-    ⨅ x, g (f x) = ⨅ y, g y := by
-  simp only [iInf.eq_1]
-  congr
-  exact hf.range_comp g
-
-theorem Equiv.iInf_comp {g : ι' → α} (e : ι ≃ ι') : ⨅ x, g (e x) = ⨅ y, g y :=
-  e.surjective.iInf_comp _
-
-protected theorem Function.Surjective.iInf_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
-    (h2 : ∀ x, g (h x) = f x) : ⨅ x, f x = ⨅ y, g y := by
-  convert h1.iInf_comp g
-  exact (h2 _).symm
-
-protected theorem Equiv.iInf_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x, g (e x) = f x) :
-    ⨅ x, f x = ⨅ y, g y :=
-  e.surjective.iInf_congr _ h
-
-@[congr]
-theorem iInf_congr_Prop {p q : Prop} {f₁ : p → α} {f₂ : q → α} (pq : p ↔ q)
-    (f : ∀ x, f₁ (pq.mpr x) = f₂ x) : iInf f₁ = iInf f₂ := by
-  obtain rfl := propext pq
-  congr with x
-  apply f
-
-theorem iInf_plift_up (f : PLift ι → α) : ⨅ i, f (PLift.up i) = ⨅ i, f i :=
-  (PLift.up_surjective.iInf_congr _) fun _ => rfl
-
-theorem iInf_plift_down (f : ι → α) : ⨅ i, f (PLift.down i) = ⨅ i, f i :=
-  (PLift.down_surjective.iInf_congr _) fun _ => rfl
-
-theorem iInf_range' (g : β → α) (f : ι → β) : ⨅ b : range f, g b = ⨅ i, g (f i) := by
-  rw [iInf, iInf, ← image_eq_range, ← range_comp']
-
-theorem sInf_image' {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a : s, f a := by
-  rw [iInf, image_eq_range]
 
 end InfSet
 
@@ -493,101 +438,68 @@ theorem iSup_const_le : ⨆ _ : ι, a ≤ a :=
   iSup_le fun _ => le_rfl
 
 -- We generalize this to conditionally complete lattices in `ciSup_const` and `ciInf_const`.
+@[to_dual]
 theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by rw [iSup, range_const, sSup_singleton]
 
-theorem iInf_const [Nonempty ι] : ⨅ _ : ι, a = a := by rw [iInf, range_const, sInf_singleton]
-
+@[to_dual]
 lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
   simp only [congr_arg f (Unique.eq_default _), iSup_const]
 
-lemma iInf_unique [Unique ι] (f : ι → α) : ⨅ i, f i = f default := by
-  simp only [congr_arg f (Unique.eq_default _), iInf_const]
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem iSup_bot : (⨆ _ : ι, ⊥ : α) = ⊥ :=
   bot_unique iSup_const_le
 
-@[simp]
-theorem iInf_top : (⨅ _ : ι, ⊤ : α) = ⊤ :=
-  top_unique le_iInf_const
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem iSup_eq_bot : iSup s = ⊥ ↔ ∀ i, s i = ⊥ :=
   sSup_eq_bot.trans forall_mem_range
 
-@[simp]
-theorem iInf_eq_top : iInf s = ⊤ ↔ ∀ i, s i = ⊤ :=
-  sInf_eq_top.trans forall_mem_range
+@[to_dual (attr := simp) iInf_lt_top]
+lemma bot_lt_iSup : ⊥ < ⨆ i, s i ↔ ∃ i, ⊥ < s i := by simp [bot_lt_iff_ne_bot]
 
-@[simp] lemma bot_lt_iSup : ⊥ < ⨆ i, s i ↔ ∃ i, ⊥ < s i := by simp [bot_lt_iff_ne_bot]
-@[simp] lemma iInf_lt_top : ⨅ i, s i < ⊤ ↔ ∃ i, s i < ⊤ := by simp [lt_top_iff_ne_top]
-
+@[to_dual iInf₂_eq_top]
 theorem iSup₂_eq_bot {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j = ⊥ ↔ ∀ i j, f i j = ⊥ := by
   simp
 
-theorem iInf₂_eq_top {f : ∀ i, κ i → α} : ⨅ (i) (j), f i j = ⊤ ↔ ∀ i j, f i j = ⊤ := by
-  simp
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem iSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
   le_antisymm (iSup_le fun _ => le_rfl) (le_iSup _ _)
 
-@[simp]
-theorem iInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
-  le_antisymm (iInf_le _ _) (le_iInf fun _ => le_rfl)
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem iSup_neg {p : Prop} {f : p → α} (hp : ¬p) : ⨆ h : p, f h = ⊥ :=
   le_antisymm (iSup_le fun h => (hp h).elim) bot_le
-
-@[simp]
-theorem iInf_neg {p : Prop} {f : p → α} (hp : ¬p) : ⨅ h : p, f h = ⊤ :=
-  le_antisymm le_top <| le_iInf fun h => (hp h).elim
 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `ciSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in conditionally complete
 lattices. -/
+@[to_dual iInf_eq_of_forall_ge_of_forall_gt_exists_lt
+  /-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
+  is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
+  See `ciInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in conditionally complete
+  lattices. -/]
 theorem iSup_eq_of_forall_le_of_forall_lt_exists_gt {f : ι → α} (h₁ : ∀ i, f i ≤ b)
     (h₂ : ∀ w, w < b → ∃ i, w < f i) : ⨆ i : ι, f i = b :=
   sSup_eq_of_forall_le_of_forall_lt_exists_gt (forall_mem_range.mpr h₁) fun w hw =>
     exists_range_iff.mpr <| h₂ w hw
 
-/-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
-is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
-See `ciInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in conditionally complete
-lattices. -/
-theorem iInf_eq_of_forall_ge_of_forall_gt_exists_lt (h₁ : ∀ i, b ≤ f i)
-    (h₂ : ∀ w, b < w → ∃ i, f i < w) : ⨅ i, f i = b :=
-  sInf_eq_of_forall_ge_of_forall_gt_exists_lt (forall_mem_range.mpr h₁) fun w hw =>
-    exists_range_iff.mpr <| h₂ w hw
-
+@[to_dual]
 theorem iSup_eq_dif {p : Prop} [Decidable p] (a : p → α) :
     ⨆ h : p, a h = if h : p then a h else ⊥ := by by_cases h : p <;> simp [h]
 
+@[to_dual]
 theorem iSup_eq_if {p : Prop} [Decidable p] (a : α) : ⨆ _ : p, a = if p then a else ⊥ :=
   iSup_eq_dif fun _ => a
-
-theorem iInf_eq_dif {p : Prop} [Decidable p] (a : p → α) :
-    ⨅ h : p, a h = if h : p then a h else ⊤ := by by_cases h : p <;> simp [h]
-
-theorem iInf_eq_if {p : Prop} [Decidable p] (a : α) : ⨅ _ : p, a = if p then a else ⊤ :=
-  iInf_eq_dif fun _ => a
 
 @[to_dual]
 theorem iSup_comm {f : ι → ι' → α} : ⨆ (i) (j), f i j = ⨆ (j) (i), f i j :=
   le_antisymm (iSup_le fun i => iSup_mono fun j => le_iSup (fun i => f i j) i)
     (iSup_le fun _ => iSup_mono fun _ => le_iSup _ _)
 
+@[to_dual iInf₂_comm]
 theorem iSup₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     (f : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → α) :
     ⨆ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨆ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
   simp only [@iSup_comm _ (κ₁ _), @iSup_comm _ ι₁]
-
-theorem iInf₂_comm {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
-    (f : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → α) :
-    ⨅ (i₁) (j₁) (i₂) (j₂), f i₁ j₁ i₂ j₂ = ⨅ (i₂) (j₂) (i₁) (j₁), f i₁ j₁ i₂ j₂ := by
-  simp only [@iInf_comm _ (κ₁ _), @iInf_comm _ ι₁]
 
 /- TODO: this is strange. In the proof below, we get exactly the desired among the equalities,
 but close does not get it.
@@ -600,7 +512,7 @@ begin
     end
 end
 -/
-@[simp]
+@[to_dual (attr := simp)]
 theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h : x = b, f x h = f b rfl :=
   (@le_iSup₂ _ _ _ _ f b rfl).antisymm'
     (iSup_le fun c =>
@@ -608,25 +520,10 @@ theorem iSup_iSup_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨆ x, ⨆ h
         rintro rfl
         rfl)
 
-@[simp]
-theorem iInf_iInf_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨅ x, ⨅ h : x = b, f x h = f b rfl :=
-  (@iInf₂_le _ _ _ _ f b rfl).antisymm
-    (le_iInf fun c =>
-      le_iInf <| by
-        rintro rfl
-        rfl)
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
   (le_iSup₂ b rfl).antisymm'
     (iSup₂_le fun c => by
-      rintro rfl
-      rfl)
-
-@[simp]
-theorem iInf_iInf_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨅ x, ⨅ h : b = x, f x h = f b rfl :=
-  (iInf₂_le b rfl).antisymm
-    (le_iInf₂ fun c => by
       rintro rfl
       rfl)
 
@@ -644,30 +541,22 @@ theorem iSup_subtype' {p : ι → Prop} {f : ∀ i, p i → α} :
 theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
   iSup_subtype
 
+@[to_dual]
 theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
   haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
-
-theorem biInf_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨅ i ∈ s, a = a := by
-  haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
-  rw [← iInf_subtype'', iInf_const]
 
 @[to_dual]
 theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
   le_antisymm (iSup_le fun _ => sup_le_sup (le_iSup _ _) <| le_iSup _ _)
     (sup_le (iSup_mono fun _ => le_sup_left) <| iSup_mono fun _ => le_sup_right)
 
+@[to_dual]
 lemma Equiv.biSup_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
     ⨆ i ∈ e.symm '' s, g (e i) = ⨆ i ∈ s, g i := by
   simpa only [iSup_subtype'] using (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
 
-lemma Equiv.biInf_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
-    ⨅ i ∈ e.symm '' s, g (e i) = ⨅ i ∈ s, g i := by
-  simpa only [iInf_subtype'] using (image e.symm s).symm.iInf_comp (g := g ∘ (↑))
-
-lemma biInf_le {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : ⨅ i ∈ s, f i ≤ f i :=
-  iInf₂_le i hi
-
+@[to_dual biInf_le]
 lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : f i ≤ ⨆ i ∈ s, f i :=
   le_iSup₂_of_le i hi le_rfl
 
@@ -682,18 +571,15 @@ begin
   safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch end
 end
 -/
+@[to_dual]
 theorem iSup_sup [Nonempty ι] {f : ι → α} {a : α} : (⨆ x, f x) ⊔ a = ⨆ x, f x ⊔ a := by
   rw [iSup_sup_eq, iSup_const]
 
-theorem iInf_inf [Nonempty ι] {f : ι → α} {a : α} : (⨅ x, f x) ⊓ a = ⨅ x, f x ⊓ a := by
-  rw [iInf_inf_eq, iInf_const]
-
+@[to_dual]
 theorem sup_iSup [Nonempty ι] {f : ι → α} {a : α} : (a ⊔ ⨆ x, f x) = ⨆ x, a ⊔ f x := by
   rw [iSup_sup_eq, iSup_const]
 
-theorem inf_iInf [Nonempty ι] {f : ι → α} {a : α} : (a ⊓ ⨅ x, f x) = ⨅ x, a ⊓ f x := by
-  rw [iInf_inf_eq, iInf_const]
-
+@[to_dual]
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
   haveI : Nonempty { i // p i } :=
@@ -701,20 +587,10 @@ theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
     ⟨⟨i, hi⟩⟩
   rw [iSup_subtype', iSup_subtype', iSup_sup]
 
+@[to_dual]
 theorem sup_biSup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (a ⊔ ⨆ (i) (h : p i), f i h) = ⨆ (i) (h : p i), a ⊔ f i h := by
   simpa only [sup_comm] using @biSup_sup α _ _ p _ _ h
-
-theorem biInf_inf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
-    (⨅ (i) (h : p i), f i h) ⊓ a = ⨅ (i) (h : p i), f i h ⊓ a := by
-  haveI : Nonempty { i // p i } :=
-    let ⟨i, hi⟩ := h
-    ⟨⟨i, hi⟩⟩
-  rw [iInf_subtype', iInf_subtype', iInf_inf]
-
-theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
-    (a ⊓ ⨅ (i) (h : p i), f i h) = ⨅ (i) (h : p i), a ⊓ f i h := by
-  simpa only [inf_comm] using @biInf_inf α _ _ p _ _ h
 
 lemma biSup_lt_eq_iSup {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
     ⨆ (i) (j < i), f j = ⨆ i, f i := by
@@ -724,12 +600,6 @@ lemma biSup_lt_eq_iSup {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
     obtain ⟨i, jlt⟩ := exists_gt j
     exact le_iSup_of_le i (le_iSup₂_of_le j jlt le_rfl)
 
-lemma biSup_le_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
-    ⨆ (i) (j ≤ i), f j = ⨆ i, f i := by
-  apply le_antisymm
-  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
-  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
-
 lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
     ⨅ (i) (j < i), f j = ⨅ i, f i := by
   apply le_antisymm
@@ -737,6 +607,12 @@ lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
     obtain ⟨i, jlt⟩ := exists_gt j
     exact iInf_le_of_le i (iInf₂_le_of_le j jlt le_rfl)
   · exact le_iInf fun _ ↦ le_iInf₂ fun _ _ ↦ iInf_le _ _
+
+lemma biSup_le_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
+    ⨆ (i) (j ≤ i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
 
 lemma biInf_le_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≤ i), f j = ⨅ i, f i := by
   apply le_antisymm
@@ -751,11 +627,6 @@ lemma biSup_gt_eq_iSup {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
     obtain ⟨i, jlt⟩ := exists_lt j
     exact le_iSup_of_le i (le_iSup₂_of_le j jlt le_rfl)
 
-lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} : ⨆ (i) (j ≥ i), f j = ⨆ i, f i := by
-  apply le_antisymm
-  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
-  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
-
 lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
     ⨅ (i) (j > i), f j = ⨅ i, f i := by
   apply le_antisymm
@@ -763,6 +634,11 @@ lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
     obtain ⟨i, jlt⟩ := exists_lt j
     exact iInf_le_of_le i (iInf₂_le_of_le j jlt le_rfl)
   · exact le_iInf fun _ ↦ le_iInf₂ fun _ _ ↦ iInf_le _ _
+
+lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} : ⨆ (i) (j ≥ i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
 
 lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i := by
   apply le_antisymm
@@ -791,15 +667,12 @@ lemma biInf_ge_eq_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b
 
 /-! ### `iSup` and `iInf` under `Prop` -/
 
+@[to_dual]
 theorem iSup_false {s : False → α} : iSup s = ⊥ := by simp
 
-theorem iInf_false {s : False → α} : iInf s = ⊤ := by simp
-
+@[to_dual]
 theorem iSup_true {s : True → α} : iSup s = s trivial :=
   iSup_pos trivial
-
-theorem iInf_true {s : True → α} : iInf s = s trivial :=
-  iInf_pos trivial
 
 @[to_dual (attr := simp)]
 theorem iSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ x, f x = ⨆ (i) (h), f ⟨i, h⟩ :=
@@ -811,7 +684,8 @@ theorem iSup_and {p q : Prop} {s : p ∧ q → α} : iSup s = ⨆ (h₁) (h₂),
   le_antisymm (iSup_le fun ⟨i, h⟩ => @le_iSup₂ _ _ _ _ (fun _ _ => _) i h)
     (iSup₂_le fun _ _ => le_iSup _ _)
 
-@[to_dual /-- The symmetric case of `iSup_and`, useful for rewriting into a supremum over a conjunction -/]
+@[to_dual /-- The symmetric case of `iSup_and`,
+useful for rewriting into a supremum over a conjunction -/]
 theorem iSup_and' {p q : Prop} {s : p → q → α} :
     ⨆ (h₁ : p) (h₂ : q), s h₁ h₂ = ⨆ h : p ∧ q, s h.1 h.2 :=
   Eq.symm iSup_and
@@ -830,6 +704,7 @@ section
 
 variable (p : ι → Prop) [DecidablePred p]
 
+@[to_dual]
 theorem iSup_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
     ⨆ i, (if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i),
     g i h := by
@@ -837,34 +712,20 @@ theorem iSup_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
   congr 1 with i
   split_ifs with h <;> simp [h]
 
-theorem iInf_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
-    ⨅ i, (if h : p i then f i h else g i h) =
-      (⨅ (i) (h : p i), f i h) ⊓ ⨅ (i) (h : ¬p i), g i h := by
-  rw [← iInf_inf_eq]
-  congr 1 with i
-  split_ifs with h <;> simp [h]
-
+@[to_dual]
 theorem iSup_ite (f g : ι → α) :
     ⨆ i, (if p i then f i else g i) = (⨆ (i) (_ : p i), f i) ⊔ ⨆ (i) (_ : ¬p i), g i :=
   iSup_dite _ _ _
 
-theorem iInf_ite (f g : ι → α) :
-    ⨅ i, (if p i then f i else g i) = (⨅ (i) (_ : p i), f i) ⊓ ⨅ (i) (_ : ¬p i), g i :=
-  iInf_dite _ _ _
-
 end
 
+@[to_dual]
 theorem iSup_range {g : β → α} {f : ι → β} : ⨆ b ∈ range f, g b = ⨆ i, g (f i) := by
   rw [← iSup_subtype'', iSup_range']
 
-theorem iInf_range {g : β → α} {f : ι → β} : ⨅ b ∈ range f, g b = ⨅ i, g (f i) := by
-  rw [← iInf_subtype'', iInf_range']
-
+@[to_dual]
 theorem sSup_image {s : Set β} {f : β → α} : sSup (f '' s) = ⨆ a ∈ s, f a := by
   rw [← iSup_subtype'', sSup_image']
-
-theorem sInf_image {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a ∈ s, f a := by
-  rw [← iInf_subtype'', sInf_image']
 
 theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sSup s) = sSup (f.symm ⁻¹' s) := by
@@ -877,36 +738,25 @@ theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃
 /-
 ### iSup and iInf under set constructions
 -/
+@[to_dual]
 theorem iSup_emptyset {f : β → α} : ⨆ x ∈ (∅ : Set β), f x = ⊥ := by simp
 
-theorem iInf_emptyset {f : β → α} : ⨅ x ∈ (∅ : Set β), f x = ⊤ := by simp
-
+@[to_dual]
 theorem iSup_univ {f : β → α} : ⨆ x ∈ (univ : Set β), f x = ⨆ x, f x := by simp
 
-theorem iInf_univ {f : β → α} : ⨅ x ∈ (univ : Set β), f x = ⨅ x, f x := by simp
-
+@[to_dual]
 theorem iSup_union {f : β → α} {s t : Set β} :
     ⨆ x ∈ s ∪ t, f x = (⨆ x ∈ s, f x) ⊔ ⨆ x ∈ t, f x := by
   simp_rw [mem_union, iSup_or, iSup_sup_eq]
 
-theorem iInf_union {f : β → α} {s t : Set β} :
-    ⨅ x ∈ s ∪ t, f x = (⨅ x ∈ s, f x) ⊓ ⨅ x ∈ t, f x := by
-  simp_rw [mem_union, iInf_or, iInf_inf_eq]
-
+@[to_dual]
 theorem iSup_split (f : β → α) (p : β → Prop) :
     ⨆ i, f i = (⨆ (i) (_ : p i), f i) ⊔ ⨆ (i) (_ : ¬p i), f i := by
   simpa [Classical.em] using @iSup_union _ _ _ f { i | p i } { i | ¬p i }
 
-theorem iInf_split (f : β → α) (p : β → Prop) :
-    ⨅ i, f i = (⨅ (i) (_ : p i), f i) ⊓ ⨅ (i) (_ : ¬p i), f i := by
-  simpa [Classical.em] using @iInf_union _ _ _ f { i | p i } { i | ¬p i }
-
+@[to_dual]
 theorem iSup_split_single (f : β → α) (i₀ : β) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
   convert iSup_split f (fun i => i = i₀)
-  simp
-
-theorem iInf_split_single (f : β → α) (i₀ : β) : ⨅ i, f i = f i₀ ⊓ ⨅ (i) (_ : i ≠ i₀), f i := by
-  convert iInf_split f (fun i => i = i₀)
   simp
 
 theorem iSup_le_iSup_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨆ x ∈ s, f x ≤ ⨆ x ∈ t, f x :=
@@ -915,57 +765,38 @@ theorem iSup_le_iSup_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨆ 
 theorem iInf_le_iInf_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨅ x ∈ t, f x ≤ ⨅ x ∈ s, f x :=
   biInf_mono
 
+@[to_dual]
 theorem iSup_insert {f : β → α} {s : Set β} {b : β} :
     ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x :=
   Eq.trans iSup_union <| congr_arg (fun x => x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
 
-theorem iInf_insert {f : β → α} {s : Set β} {b : β} :
-    ⨅ x ∈ insert b s, f x = f b ⊓ ⨅ x ∈ s, f x :=
-  Eq.trans iInf_union <| congr_arg (fun x => x ⊓ ⨅ x ∈ s, f x) iInf_iInf_eq_left
-
+@[to_dual]
 theorem iSup_singleton {f : β → α} {b : β} : ⨆ x ∈ (singleton b : Set β), f x = f b := by simp
 
-theorem iInf_singleton {f : β → α} {b : β} : ⨅ x ∈ (singleton b : Set β), f x = f b := by simp
-
+@[to_dual]
 theorem iSup_pair {f : β → α} {a b : β} : ⨆ x ∈ ({a, b} : Set β), f x = f a ⊔ f b := by
   rw [iSup_insert, iSup_singleton]
 
-theorem iInf_pair {f : β → α} {a b : β} : ⨅ x ∈ ({a, b} : Set β), f x = f a ⊓ f b := by
-  rw [iInf_insert, iInf_singleton]
-
+@[to_dual]
 theorem iSup_image {γ} {f : β → γ} {g : γ → α} {t : Set β} :
     ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by
   rw [← sSup_image, ← sSup_image, ← image_comp, comp_def]
 
-theorem iInf_image {γ} {f : β → γ} {g : γ → α} {t : Set β} :
-    ⨅ c ∈ f '' t, g c = ⨅ b ∈ t, g (f b) := by
-  rw [← sInf_image, ← sInf_image, ← image_comp, comp_def]
-
+@[to_dual]
 theorem iSup_extend_bot {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨆ j, extend e f ⊥ j = ⨆ i, f i := by
   rw [iSup_split _ fun j => ∃ i, e i = j]
   simp +contextual [he.extend_apply, extend_apply', @iSup_comm _ β ι]
 
-theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
-    ⨅ j, extend e f ⊤ j = iInf f := by
-  rw [iInf_split _ fun j => ∃ i, e i = j]
-  simp +contextual [he.extend_apply, extend_apply', @iInf_comm _ β ι]
-
+@[to_dual]
 theorem Set.BijOn.iSup_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
     (hf : Set.BijOn f s t) : ⨆ x ∈ s, g (f x) = ⨆ y ∈ t, g y := by
   rw [← hf.image_eq, iSup_image]
 
-theorem Set.BijOn.iInf_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
-    (hf : Set.BijOn f s t) : ⨅ x ∈ s, g (f x) = ⨅ y ∈ t, g y := by
-  rw [← hf.image_eq, iInf_image]
-
+@[to_dual]
 theorem Set.BijOn.iSup_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
     (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨆ x ∈ s, f x = ⨆ y ∈ t, g y := by
   simpa only [h2] using h1.iSup_comp g
-
-theorem Set.BijOn.iInf_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
-    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨅ x ∈ s, f x = ⨅ y ∈ t, g y := by
-  simpa only [h2] using h1.iInf_comp g
 
 section le
 
@@ -1001,110 +832,76 @@ end le
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 
+@[to_dual existing iSup_of_empty']
 theorem iInf_of_isEmpty {α ι} [InfSet α] [IsEmpty ι] (f : ι → α) : iInf f = sInf (∅ : Set α) :=
   congr_arg sInf (range_eq_empty f)
 
+@[to_dual]
 theorem iSup_of_empty [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
   (iSup_of_empty' f).trans sSup_empty
 
-theorem iInf_of_empty [IsEmpty ι] (f : ι → α) : iInf f = ⊤ :=
-  (iInf_of_isEmpty f).trans sInf_empty
-
-theorem isGLB_biInf {s : Set β} {f : β → α} : IsGLB (f '' s) (⨅ x ∈ s, f x) := by
-  simpa only [range_comp, Subtype.range_coe, iInf_subtype'] using
-    @isGLB_iInf α s _ (f ∘ fun x => (x : β))
-
+@[to_dual]
 theorem isLUB_biSup {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
   simpa only [range_comp, Subtype.range_coe, iSup_subtype'] using
     @isLUB_iSup α s _ (f ∘ fun x => (x : β))
 
+@[to_dual]
 theorem iSup_sigma {p : β → Type*} {f : Sigma p → α} : ⨆ x, f x = ⨆ (i) (j), f ⟨i, j⟩ :=
   eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Sigma.forall]
 
-theorem iInf_sigma {p : β → Type*} {f : Sigma p → α} : ⨅ x, f x = ⨅ (i) (j), f ⟨i, j⟩ :=
-  eq_of_forall_le_iff fun c => by simp only [le_iInf_iff, Sigma.forall]
-
+@[to_dual]
 lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
     (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 := (iSup_sigma (f := fun x ↦ f x.1 x.2)).symm
 
-lemma iInf_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
-    (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 := (iInf_sigma (f := fun x ↦ f x.1 x.2)).symm
-
+@[to_dual]
 lemma iSup_psigma {ι : Sort*} {κ : ι → Sort*} (f : (Σ' i, κ i) → α) :
     ⨆ ij, f ij = ⨆ i, ⨆ j, f ⟨i, j⟩ :=
   eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, PSigma.forall]
 
-lemma iInf_psigma {ι : Sort*} {κ : ι → Sort*} (f : (Σ' i, κ i) → α) :
-    ⨅ ij, f ij = ⨅ i, ⨅ j, f ⟨i, j⟩ :=
-  eq_of_forall_le_iff fun c ↦ by simp only [le_iInf_iff, PSigma.forall]
-
+@[to_dual]
 lemma iSup_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
     (⨆ i, ⨆ j, f i j) = ⨆ ij : Σ' i, κ i, f ij.1 ij.2 := (iSup_psigma fun x ↦ f x.1 x.2).symm
 
-lemma iInf_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
-    (⨅ i, ⨅ j, f i j) = ⨅ ij : Σ' i, κ i, f ij.1 ij.2 := (iInf_psigma fun x ↦ f x.1 x.2).symm
-
+@[to_dual]
 theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
   eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Prod.forall]
 
-theorem iInf_prod {f : β × γ → α} : ⨅ x, f x = ⨅ (i) (j), f (i, j) :=
-  eq_of_forall_le_iff fun c => by simp only [le_iInf_iff, Prod.forall]
-
+@[to_dual]
 lemma iSup_prod' (f : β → γ → α) : (⨆ i, ⨆ j, f i j) = ⨆ x : β × γ, f x.1 x.2 :=
 (iSup_prod (f := fun x ↦ f x.1 x.2)).symm
 
-lemma iInf_prod' (f : β → γ → α) : (⨅ i, ⨅ j, f i j) = ⨅ x : β × γ, f x.1 x.2 :=
-(iInf_prod (f := fun x ↦ f x.1 x.2)).symm
-
+@[to_dual]
 theorem biSup_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨆ x ∈ s ×ˢ t, f x = ⨆ (a ∈ s) (b ∈ t), f (a, b) := by
   simp_rw [iSup_prod, mem_prod, iSup_and]
   exact iSup_congr fun _ => iSup_comm
 
+@[to_dual]
 theorem biSup_prod' {f : β → γ → α} {s : Set β} {t : Set γ} :
     ⨆ x ∈ s ×ˢ t, f x.1 x.2 = ⨆ (a ∈ s) (b ∈ t), f a b :=
   biSup_prod
 
-theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
-    ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) := by
-  simp_rw [iInf_prod, mem_prod, iInf_and]
-  exact iInf_congr fun _ => iInf_comm
-
-theorem biInf_prod' {f : β → γ → α} {s : Set β} {t : Set γ} :
-    ⨅ x ∈ s ×ˢ t, f x.1 x.2 = ⨅ (a ∈ s) (b ∈ t), f a b :=
-  biInf_prod
-
+@[to_dual]
 theorem iSup_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
     ⨆ d ∈ image2 f s t, g d = ⨆ b ∈ s, ⨆ c ∈ t, g (f b c) := by
   rw [← image_prod, iSup_image, biSup_prod]
 
-theorem iInf_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g : δ → α) :
-    ⨅ d ∈ image2 f s t, g d = ⨅ b ∈ s, ⨅ c ∈ t, g (f b c) := by
-  rw [← image_prod, iInf_image, biInf_prod]
-
+@[to_dual]
 theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
   eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]
 
-theorem iInf_sum {f : β ⊕ γ → α} : ⨅ x, f x = (⨅ i, f (Sum.inl i)) ⊓ ⨅ j, f (Sum.inr j) :=
-  eq_of_forall_le_iff fun c => by simp only [le_inf_iff, le_iInf_iff, Sum.forall]
-
+@[to_dual]
 theorem iSup_option (f : Option β → α) : ⨆ o, f o = f none ⊔ ⨆ b, f (Option.some b) :=
   eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, sup_le_iff, Option.forall]
 
-theorem iInf_option (f : Option β → α) : ⨅ o, f o = f none ⊓ ⨅ b, f (Option.some b) :=
-  eq_of_forall_le_iff fun c => by simp only [le_inf_iff, le_iInf_iff, Option.forall]
-
-/-- A version of `iSup_option` useful for rewriting right-to-left. -/
+@[to_dual /-- A version of `iSup_option` useful for rewriting right-to-left. -/]
 theorem iSup_option_elim (a : α) (f : β → α) : ⨆ o : Option β, o.elim a f = a ⊔ ⨆ b, f b := by
   simp [iSup_option]
 
-/-- A version of `iInf_option` useful for rewriting right-to-left. -/
-theorem iInf_option_elim (a : α) (f : β → α) : ⨅ o : Option β, o.elim a f = a ⊓ ⨅ b, f b := by
-  simp [iInf_option]
-
 /-- When taking the supremum of `f : ι → α`, the elements of `ι` on which `f` gives `⊥` can be
 dropped, without changing the result. -/
-@[simp]
+@[to_dual /-- When taking the infimum of `f : ι → α`, the elements of `ι` on which `f` gives `⊤`
+can be dropped, without changing the result. -/, simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
   by_cases! htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]
@@ -1115,23 +912,9 @@ theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i 
     exact ⟨⟨i₀, hi₀⟩, bot_le⟩
   · exact ⟨⟨i, hi⟩, rfl.le⟩
 
-/-- When taking the infimum of `f : ι → α`, the elements of `ι` on which `f` gives `⊤` can be
-dropped, without changing the result. -/
-theorem iInf_ne_top_subtype (f : ι → α) : ⨅ i : { i // f i ≠ ⊤ }, f i = ⨅ i, f i := by
-  by_cases! htriv : ∀ i, f i = ⊤
-  · simp only [iInf_top, (funext htriv : f = _)]
-  refine (iInf_mono' fun i => ?_).antisymm (le_iInf_comp f _)
-  by_cases hi : f i = ⊤
-  · rw [hi]
-    obtain ⟨i₀, hi₀⟩ := htriv
-    exact ⟨⟨i₀, hi₀⟩, le_top⟩
-  · exact ⟨⟨i, hi⟩, rfl.le⟩
-
+@[to_dual]
 theorem sSup_image2 {f : β → γ → α} {s : Set β} {t : Set γ} :
     sSup (image2 f s t) = ⨆ (a ∈ s) (b ∈ t), f a b := by rw [← image_prod, sSup_image, biSup_prod]
-
-theorem sInf_image2 {f : β → γ → α} {s : Set β} {t : Set γ} :
-    sInf (image2 f s t) = ⨅ (a ∈ s) (b ∈ t), f a b := by rw [← image_prod, sInf_image, biInf_prod]
 
 end
 

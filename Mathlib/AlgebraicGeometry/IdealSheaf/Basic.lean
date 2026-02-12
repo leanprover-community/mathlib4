@@ -572,7 +572,7 @@ lemma vanishingIdeal_support {I : IdealSheafData X} :
 
 @[simp] lemma vanishingIdeal_sup (Z Z' : TopologicalSpace.Closeds X) :
     vanishingIdeal (Z ⊔ Z') = vanishingIdeal Z ⊓ vanishingIdeal Z' := by
-  have h := gc.u_inf (b₁ := OrderDual.toDual Z) (b₂ := OrderDual.toDual Z')
+  have h := gc.u_inf (a₁ := OrderDual.toDual Z) (a₂ := OrderDual.toDual Z')
   simpa using h
 
 @[simp] lemma support_sup (I J : X.IdealSheafData) :

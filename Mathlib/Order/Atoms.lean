@@ -155,6 +155,15 @@ variable [Preorder α]
 def IsCoatom [OrderTop α] (a : α) : Prop :=
   a ≠ ⊤ ∧ ∀ b, a < b → b = ⊤
 
+attribute [to_dual existing] IsAtom
+to_dual_insert_cast IsAtom := by grind
+to_dual_insert_cast IsCoatom := by grind
+
+attribute [to_dual] IsAtom.ne_bot
+attribute [to_dual] IsAtom.lt_iff
+attribute [to_dual] IsAtom.bot_lt
+alias IsCoatom.lt_top := IsCoatom.top_lt
+
 @[simp]
 theorem isCoatom_dual_iff_isAtom [OrderBot α] {a : α} :
     IsCoatom (OrderDual.toDual a) ↔ IsAtom a := by
@@ -183,35 +192,25 @@ theorem isCoatom_iff_ge_of_le : IsCoatom a ↔ a ≠ ⊤ ∧ ∀ b ≠ ⊤, a �
     forall_congr' fun b => by
       simp only [Ne, @not_imp_comm (b = ⊤), Classical.not_imp, lt_iff_le_not_ge]
 
-lemma IsCoatom.ne_top (ha : IsCoatom a) : a ≠ ⊤ := ha.1
-
 end Preorder
 
 section PartialOrder
 
 variable [PartialOrder α] [OrderTop α] {a b x : α}
 
-theorem IsCoatom.lt_iff (h : IsCoatom a) : a < x ↔ x = ⊤ :=
-  ⟨h.2 x, fun hx => hx.symm ▸ h.1.lt_top⟩
-
 theorem IsCoatom.le_iff (h : IsCoatom a) : a ≤ x ↔ x = ⊤ ∨ x = a := by
   rw [le_iff_lt_or_eq, h.lt_iff, or_congr_right eq_comm]
-
-lemma IsCoatom.lt_top (h : IsCoatom a) : a < ⊤ :=
-  h.lt_iff.mpr rfl
-
-lemma IsCoatom.le_iff_eq (ha : IsCoatom a) (hb : b ≠ ⊤) : a ≤ b ↔ b = a :=
-  ha.le_iff.trans <| or_iff_right hb
 
 lemma IsCoatom.ne_iff_eq_top (ha : IsCoatom a) (hab : a ≤ b) : b ≠ a ↔ b = ⊤ where
   mp := (ha.le_iff.1 hab).resolve_right
   mpr := by rintro rfl; exact ha.ne_top.symm
 
-lemma IsCoatom.ne_top_iff_eq (ha : IsCoatom a) (hab : a ≤ b) : b ≠ ⊤ ↔ b = a :=
-  (ha.ne_iff_eq_top hab).not_right.symm
-
-theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
-  Set.ext fun _ => h.le_iff
+-- Register dual pairs for tactic-proof theorems, then auto-generate their dependents
+attribute [to_dual existing] IsAtom.le_iff
+attribute [to_dual existing] IsAtom.ne_iff_eq_bot
+attribute [to_dual] IsAtom.le_iff_eq
+attribute [to_dual] IsAtom.ne_bot_iff_eq
+attribute [to_dual] IsAtom.Iic_eq
 
 @[simp]
 theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a := by

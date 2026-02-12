@@ -101,13 +101,9 @@ theorem Iio_disjoint_Ioi_same : Disjoint (Iio a) (Ioi a) :=
 theorem Iio_disjoint_Ioi_iff [DenselyOrdered α] : Disjoint (Iio a) (Ioi b) ↔ ¬b < a :=
   disjoint_comm.trans Ioi_disjoint_Iio_iff
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
   iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Iic⟩
-
-@[simp]
-theorem iUnion_Ici : ⋃ a : α, Ici a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Ici⟩
 
 @[simp]
 theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by

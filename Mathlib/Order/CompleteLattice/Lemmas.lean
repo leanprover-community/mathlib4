@@ -50,17 +50,13 @@ variable [CompleteLattice α] {f g s : ι → α} {a b : α}
 ### `iSup` and `iInf` under `Type`
 -/
 
+@[to_dual]
 theorem iSup_bool_eq {f : Bool → α} : ⨆ b : Bool, f b = f true ⊔ f false := by
   rw [iSup, Bool.range_eq, sSup_pair, sup_comm]
 
-theorem iInf_bool_eq {f : Bool → α} : ⨅ b : Bool, f b = f true ⊓ f false := by
-  rw [iInf, Bool.range_eq, sInf_pair, inf_comm]
-
+@[to_dual]
 theorem sup_eq_iSup (x y : α) : x ⊔ y = ⨆ b : Bool, cond b x y := by
   rw [iSup_bool_eq, Bool.cond_true, Bool.cond_false]
-
-theorem inf_eq_iInf (x y : α) : x ⊓ y = ⨅ b : Bool, cond b x y := by
-  rw [iInf_bool_eq, Bool.cond_true, Bool.cond_false]
 
 /-!
 ### `iSup` and `iInf` under `ℕ`
@@ -116,10 +112,7 @@ theorem inf_iInf_nat_succ (u : ℕ → α) : (u 0 ⊓ ⨅ i, u (i + 1)) = ⨅ i,
       { rw [iInf_union, iInf_singleton, iInf_range] }
     _ = ⨅ i, u i := by rw [Nat.zero_union_range_succ, iInf_univ]
 
-theorem iInf_nat_gt_zero_eq (f : ℕ → α) : ⨅ i > 0, f i = ⨅ i, f (i + 1) := by
-  rw [← iInf_range, Nat.range_succ]
-  simp
-
+@[to_dual]
 theorem iSup_nat_gt_zero_eq (f : ℕ → α) : ⨆ i > 0, f i = ⨆ i, f (i + 1) := by
   rw [← iSup_range, Nat.range_succ]
   simp
@@ -134,59 +127,37 @@ section CompleteLattice
 
 variable [CompleteLattice α] {a : α} {s : Set α}
 
-/-- This is a weaker version of `sup_sInf_eq` -/
+@[to_dual iSup_inf_le_inf_sSup /-- This is a weaker version of `sup_sInf_eq` -/]
 theorem sup_sInf_le_iInf_sup : a ⊔ sInf s ≤ ⨅ b ∈ s, a ⊔ b :=
   le_iInf₂ fun _ h => sup_le_sup_left (sInf_le h) _
 
-/-- This is a weaker version of `inf_sSup_eq` -/
-theorem iSup_inf_le_inf_sSup : ⨆ b ∈ s, a ⊓ b ≤ a ⊓ sSup s :=
-  iSup₂_le fun _ h => inf_le_inf_left _ (le_sSup h)
-
-/-- This is a weaker version of `sInf_sup_eq` -/
+@[to_dual iSup_inf_le_sSup_inf /-- This is a weaker version of `sInf_sup_eq` -/]
 theorem sInf_sup_le_iInf_sup : sInf s ⊔ a ≤ ⨅ b ∈ s, b ⊔ a :=
   le_iInf₂ fun _ h => sup_le_sup_right (sInf_le h) _
 
-/-- This is a weaker version of `sSup_inf_eq` -/
-theorem iSup_inf_le_sSup_inf : ⨆ b ∈ s, b ⊓ a ≤ sSup s ⊓ a :=
-  iSup₂_le fun _ h => inf_le_inf_right _ (le_sSup h)
-
+@[to_dual]
 theorem iInf_sup_le_iInf_sup (f : ι → α) (a : α) :
     (⨅ i, f i) ⊔ a ≤ ⨅ i, (f i ⊔ a) :=
   le_iInf fun i ↦ sup_le_sup_right (iInf_le f i) a
 
+@[to_dual iSup_inf_le_inf_iSup]
 theorem sup_iInf_le_iInf_sup (f : ι → α) (a : α) :
     a ⊔ (⨅ i, f i) ≤ ⨅ i, (a ⊔ f i) :=
   le_iInf fun i ↦ sup_le_sup_left (iInf_le f i) a
 
-theorem iSup_inf_le_iSup_inf (f : ι → α) (a : α) :
-    ⨆ i, (f i ⊓ a) ≤ (⨆ i, f i) ⊓ a :=
-  iSup_le fun i => inf_le_inf_right a (le_iSup f i)
-
-theorem iSup_inf_le_inf_iSup (f : ι → α) (a : α) :
-    ⨆ i, (a ⊓ f i) ≤ a ⊓ (⨆ i, f i) :=
-  iSup_le fun i => inf_le_inf_left a (le_iSup f i)
-
+@[to_dual]
 lemma biInf_sup_le_biInf_sup (f : β → α) (s : Set β) (a : α) :
     (⨅ i ∈ s, f i) ⊔ a ≤ ⨅ i ∈ s, f i ⊔ a :=
   le_iInf₂ fun _ hi ↦ sup_le_sup_right (biInf_le f hi) a
 
+@[to_dual biSup_inf_le_inf_biSup]
 lemma sup_biInf_le_biInf_sup (f : β → α) (s : Set β) (a : α) :
     a ⊔ (⨅ i ∈ s, f i) ≤ ⨅ i ∈ s, a ⊔ f i :=
   le_iInf₂ fun _ hi ↦ sup_le_sup_left (biInf_le f hi) a
 
-lemma biSup_inf_le_biSup_inf (f : β → α) (s : Set β) (a : α) :
-    ⨆ i ∈ s, (f i ⊓ a) ≤ (⨆ i ∈ s, f i) ⊓ a :=
-  iSup₂_le fun _ hi => inf_le_inf_right a (le_biSup f hi)
-
-lemma biSup_inf_le_inf_biSup (f : β → α) (s : Set β) (a : α) :
-    ⨆ i ∈ s, (a ⊓ f i) ≤ a ⊓ (⨆ i ∈ s, f i) :=
-  iSup₂_le fun _ hi => inf_le_inf_left a (le_biSup f hi)
-
+@[to_dual iInf_sup_iInf_le]
 theorem le_iSup_inf_iSup (f g : ι → α) : ⨆ i, f i ⊓ g i ≤ (⨆ i, f i) ⊓ ⨆ i, g i :=
   le_inf (iSup_mono fun _ => inf_le_left) (iSup_mono fun _ => inf_le_right)
-
-theorem iInf_sup_iInf_le (f g : ι → α) : (⨅ i, f i) ⊔ ⨅ i, g i ≤ ⨅ i, f i ⊔ g i :=
-  le_iInf fun _ => sup_le_sup (iInf_le _ _) (iInf_le _ _)
 
 theorem disjoint_sSup_left {a : Set α} {b : α} (d : Disjoint (sSup a) b) {i} (hi : i ∈ a) :
     Disjoint i b :=

@@ -220,7 +220,7 @@ theorem zeroLocus_union (s s' : Set A) : zeroLocus 𝒜 (s ∪ s') = zeroLocus _
 theorem vanishingIdeal_union (t t' : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (t ∪ t') = vanishingIdeal t ⊓ vanishingIdeal t' := by
   ext1
-  have := (gc_ideal 𝒜).u_inf (b₁ := OrderDual.toDual t) (b₂ := OrderDual.toDual t')
+  have := (gc_ideal 𝒜).u_inf (a₁ := OrderDual.toDual t) (a₂ := OrderDual.toDual t')
   simpa using this
 
 theorem zeroLocus_iSup_ideal {γ : Sort*} (I : γ → Ideal A) :
