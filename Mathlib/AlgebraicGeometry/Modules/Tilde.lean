@@ -310,8 +310,7 @@ def tilde.fullyFaithfulFunctor : (tilde.functor R).FullyFaithful where
 instance : (tilde.functor (R := R)).Full := tilde.fullyFaithfulFunctor.full
 instance : (tilde.functor (R := R)).Faithful :=
   tilde.fullyFaithfulFunctor.faithful
-instance : Limits.PreservesColimits (tilde.functor (R := R)) :=
-  tilde.adjunction.leftAdjoint_preservesColimits
+instance : (tilde.functor (R := R)).IsLeftAdjoint := tilde.adjunction.isLeftAdjoint
 
 end AlgebraicGeometry
 
