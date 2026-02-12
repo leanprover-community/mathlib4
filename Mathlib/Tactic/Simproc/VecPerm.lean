@@ -5,8 +5,8 @@ Authors: Paul Lezeau
 -/
 module
 
-public meta import Mathlib.Data.List.Monad
-public meta import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.Data.List.Monad
+public import Mathlib.Data.Fin.Tuple.Reflection
 public meta import Mathlib.Util.Qq
 
 /-! # The vecPerm simproc
@@ -48,19 +48,18 @@ def vecOfListQ {u : Level} {α : Q(Type u)}
 
 /--
 Given a list `l` of elements of type `α` and a list `perm` of indices (as natural numbers), outputs
-the list whose `i`th entry is `l[perm[i]]`. If `perm[i]` is out of bounds, we simply move
-to the next `i`.
+the list whose `i`th entry is `l[perm[i]]`.
 In the case where `perm ~ [0, ..., l.length-1]`, this is just computing the permutation of `l`
 represented by `perm`.
 -/
-private def permList {α : Type*} (vec : List α) (perm : List Nat) : List α :=
+private def permList {α : Type*} [Inhabited α] (vec : List α) (perm : List Nat) : List α :=
   perm.foldr (init := []) fun head current ↦
     match vec[head]? with
     | some entry => entry :: current
     | none => current
 
 /-- Given an expression representing a vector `perm : Fin n → Fin n`, computes the corresponding
-list of term of type `Fin n`. This is meant to be used when `perm corresponds to a permutation
+list of term of type `Fin n`. This is meant to be used when `perm` corresponds to a permutation
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
 def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     MetaM (Option <| List Nat) :=
@@ -72,7 +71,7 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
         let idxQ := mkNatLitQ idx
         let idxQ : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
         let outIdxQ : Q(Nat) := q(($perm $idxQ : Nat))
-        let outIdxExpr : Q(Nat) ← whnf outIdxQ
+        let outIdxExpr ← whnf outIdxQ
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
       return out
