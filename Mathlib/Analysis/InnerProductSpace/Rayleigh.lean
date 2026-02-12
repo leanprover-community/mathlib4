@@ -47,7 +47,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 open scoped NNReal
 
-open Module.End Metric
+open Module.End Metric RCLike
 
 namespace ContinuousLinearMap
 
@@ -94,6 +94,15 @@ theorem iInf_rayleigh_eq_iInf_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
   show ⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sInf_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
+
+theorem rayleighQuotient_le_norm (x : E) : |T.rayleighQuotient x| ≤ ‖T‖ := by
+  grw [rayleighQuotient, reApplyInnerSelf_apply, abs_div, abs_sq, abs_re_le_norm,
+    norm_inner_le_norm, le_opNorm, mul_assoc, ← sq, mul_div_assoc]
+  exact mul_le_of_le_one_right T.opNorm_nonneg (div_self_le_one (‖x‖ ^ 2))
+
+-- TODO: Prove `⨆ x, |T.rayleighQuotient x| = ‖T‖`.
+theorem bddAbove_rayleighQuotient : BddAbove (Set.range fun x ↦ |T.rayleighQuotient x|) :=
+  ⟨‖T‖, fun _ ⟨y, h⟩ ↦ h ▸ T.rayleighQuotient_le_norm y⟩
 
 end ContinuousLinearMap
 
