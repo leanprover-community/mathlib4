@@ -143,13 +143,13 @@ lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, Measurable
   have hs_disj : Set.PairwiseDisjoint (Finset.range n : Set ℕ) s' := fun i _ j _ hij => by
     simp only [Function.onFun, disjoint_iff, Subtype.ext_iff]
     exact Set.disjoint_iff_inter_eq_empty.mp (hs' hij)
-  let Q := Finpartition.combine P hs_disj
+  let Q := Finpartition.combine P hs_disj.supIndep
   have hQ_le : (Finset.range n).sup s' ≤ ⟨⋃ i, s i, MeasurableSet.iUnion hs⟩ := by
     rw [← Subtype.coe_le_coe, Finset.sup_measurableSetSubtype_eq_biUnion s']
     exact Set.iUnion₂_subset fun i _ => Set.subset_iUnion s i
   let R := Q.extendOfLE hQ_le
   calc ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p
-    _ = ∑ p ∈ Q.parts, f p := (Finpartition.sum_combine P hs_disj (fun p => f p)).symm
+    _ = ∑ p ∈ Q.parts, f p := (Finpartition.sum_combine P hs_disj.supIndep (fun p => f p)).symm
     _ ≤ ∑ p ∈ R.parts, f p := Finset.sum_le_sum_of_subset (Q.parts_subset_extendOfLE hQ_le)
     _ ≤ preVariationFun f (⋃ i, s i) := sum_le f (MeasurableSet.iUnion hs) R
 
