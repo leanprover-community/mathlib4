@@ -114,10 +114,18 @@ instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂�
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.
 
 This is not an instance, as for equivalences that are involutions, a better instance
-would be `RingHomInvPair e e`. Indeed, this declaration is not currently used in mathlib.
+would be `RingHomInvPair e e`.
 -/
 theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
+
+/-- Construct a `RingHomInvPair` from both directions of a ring equiv.
+
+This is not an instance, as for equivalences that are involutions, a better instance
+would be `RingHomInvPair e e`.
+-/
+theorem of_ringEquiv_symm (e : R₁ ≃+* R₂) : RingHomInvPair (↑e.symm : R₂ →+* R₁) ↑e :=
+  of_ringEquiv e.symm
 
 /--
 Swap the direction of a `RingHomInvPair`. This is not an instance as it would loop, and better

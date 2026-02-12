@@ -108,7 +108,7 @@ def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
   { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
 
 instance [Nonempty α] [FaithfulSMul R M] : FaithfulSMul R (α →₀ M) :=
-  .of_injective (Finsupp.lsingle <| Classical.arbitrary _) (Finsupp.single_injective _)
+  .of_injective (Finsupp.lsingle (R := R) <| Classical.arbitrary _) (Finsupp.single_injective _)
 
 section LSubtypeDomain
 

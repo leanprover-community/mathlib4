@@ -132,10 +132,10 @@ theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R
 instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
   Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
+attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
+lemma of_ringEquiv {R R' M M' : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [Semiring R'] [AddCommMonoid M'] [Module R' M']
-    (e₁ : R ≃+* R') (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] M') [Module.Free R M] :
+    (e₁ : R ≃+* R') (e₂ : M ≃ₛₗ[(e₁ : R →+* R')] M') [Module.Free R M] :
     Module.Free R' M' := by
   let I := Module.Free.ChooseBasisIndex R M
   obtain ⟨e₃ : M ≃ₗ[R] I →₀ R⟩ := Module.Free.chooseBasis R M
@@ -146,7 +146,7 @@ lemma of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
     { __ := e, map_smul' := fun m x ↦ Finsupp.ext fun i ↦ by simp [he, map_smulₛₗ] }
   exact of_basis (.ofRepr e')
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
 lemma iff_of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
     [Semiring R'] [AddCommMonoid M'] [Module R' M']
     (e₁ : R ≃+* R') (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] M') :

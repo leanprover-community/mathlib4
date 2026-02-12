@@ -155,6 +155,9 @@ noncomputable def ModuleCon.quotientKerEquivOfSurjective [Semiring S] [AddCommMo
     [AddCommMonoid N] [Module S M] [Module S N] (f : M →ₗ[S] N) (hf : Function.Surjective f) :
     (ker f.toDistribMulActionHom).Quotient ≃ₗ[S] N where
   __ := AddCon.quotientKerEquivOfSurjective f.toAddMonoidHom hf
-  map_smul' s := by rintro ⟨⟩; apply map_smul f
+  map_smul' s := by
+    rintro ⟨⟩
+    letI : MulActionHomClass (M →ₗ[S] N) S M N := by infer_instance -- why is this needed?
+    apply map_smul f
 
 end ker

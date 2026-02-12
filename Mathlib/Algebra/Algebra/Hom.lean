@@ -308,7 +308,9 @@ theorem comp_toLinearMap (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
 theorem toLinearMap_id : toLinearMap (AlgHom.id R A) = LinearMap.id :=
   rfl
 
-@[simp] lemma linearMapMk_toAddHom (f : A →ₐ[R] B) : LinearMap.mk f (map_smul f) = f.toLinearMap :=
+@[simp] lemma linearMapMk_toAddHom (f : A →ₐ[R] B) :
+    letI : MulActionHomClass (A →ₐ[R] B) R A B := by infer_instance
+    LinearMap.mk f (map_smul f) = f.toLinearMap :=
   rfl
 
 /-- Promote a `LinearMap` to an `AlgHom` by supplying proofs about the behavior on `1` and `*`. -/

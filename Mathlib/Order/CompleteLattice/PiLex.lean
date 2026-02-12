@@ -18,7 +18,7 @@ dependent functions `Πₗ i, α i` is itself a complete linear order.
 
 @[expose] public section
 
-variable {ι : Type*} {α : ι → Type*} [LinearOrder ι] [∀ i, CompleteLinearOrder (α i)]
+variable {ι : Type*} {α : ι → Type*} [LinearOrder ι] [hCL : ∀ i, CompleteLinearOrder (α i)]
 
 namespace Pi
 
@@ -118,14 +118,17 @@ instance : InfSet (Colex ((i : ι) → α i)) where
 
 theorem sInf_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j > i, e j = sInf s j}, e.1 i :=
+  letI : ∀ (i : ιᵒᵈ), CompleteLinearOrder (α i) := hCL
   Lex.sInf_apply (ι := ιᵒᵈ) s i
 
 theorem sInf_apply_le {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex ((i : ι) → α i)}
     (he : e ∈ s) (h : ∀ j > i, e j = sInf s j) : sInf s i ≤ e i :=
+  letI : ∀ (i : ιᵒᵈ), CompleteLinearOrder (α i) := hCL
   Lex.sInf_apply_le (ι := ιᵒᵈ) he h
 
 theorem le_sInf_apply {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex ((i : ι) → α i)}
     (h : ∀ f ∈ s, (∀ j > i, f j = sInf s j) → e i ≤ f i) : e i ≤ sInf s i :=
+  letI : ∀ (i : ιᵒᵈ), CompleteLinearOrder (α i) := hCL
   Lex.le_sInf_apply (ι := ιᵒᵈ) h
 
 -- TODO: figure out how to use `to_dual` here
@@ -136,21 +139,26 @@ instance : SupSet (Colex ((i : ι) → α i)) where
 
 theorem sSup_apply (s : Set (Colex ((i : ι) → α i))) (i : ι) :
     sSup s i = ⨆ e : {e ∈ s | ∀ j > i, e j = sSup s j}, e.1 i :=
+  letI : ∀ (i : ιᵒᵈ), CompleteLinearOrder (α i) := hCL
   Lex.sSup_apply (ι := ιᵒᵈ) s i
 
 theorem le_sSup_apply {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex ((i : ι) → α i)}
     (he : e ∈ s) (h : ∀ j > i, e j = sSup s j) : e i ≤ sSup s i :=
+  letI : ∀ (i : ιᵒᵈ), CompleteLinearOrder (α i) := hCL
   Lex.le_sSup_apply (ι := ιᵒᵈ) he h
 
 theorem sSup_apply_le {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex ((i : ι) → α i)}
     (h : ∀ f ∈ s, (∀ j > i, f j = sSup s j) → f i ≤ e i) : sSup s i ≤ e i :=
+  letI : ∀ (i : ιᵒᵈ), CompleteLinearOrder (α i) := hCL
   Lex.sSup_apply_le (ι := ιᵒᵈ) h
 
-noncomputable instance completeLattice : CompleteLattice (Colex ((i : ι) → α i)) where
-  sInf_le _ _ := by exact Lex.sInf_le (ι := ιᵒᵈ)
-  le_sInf _ _ := by exact Lex.le_sInf (ι := ιᵒᵈ)
-  le_sSup _ _ := by exact Lex.le_sSup (ι := ιᵒᵈ)
-  sSup_le _ _ := by exact Lex.sSup_le (ι := ιᵒᵈ)
+noncomputable instance completeLattice : CompleteLattice (Colex ((i : ι) → α i)) := by
+  letI : ∀ (i : ιᵒᵈ), CompleteLinearOrder (α i) := hCL
+  exact
+  { sInf_le _ _ := by exact Lex.sInf_le (ι := ιᵒᵈ)
+    le_sInf _ _ := by exact Lex.le_sInf (ι := ιᵒᵈ)
+    le_sSup _ _ := by exact Lex.le_sSup (ι := ιᵒᵈ)
+    sSup_le _ _ := by exact Lex.sSup_le (ι := ιᵒᵈ) }
 
 noncomputable instance : CompleteLinearOrder (Colex ((i : ι) → α i)) where
   __ := linearOrder

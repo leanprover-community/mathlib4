@@ -502,18 +502,19 @@ lemma sum_Icc_mu_left (a b : α) : ∑ x ∈ Icc a b, mu 𝕜 x b = if a = b the
 end MuEqMu'
 
 section OrderDual
-variable (𝕜) [Ring 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
+variable (𝕜) [Ring 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [h : DecidableEq α]
 
 @[simp]
-lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
+lemma mu_toDual (a b : α) :
+    @mu 𝕜 αᵒᵈ _ _ _ _ h (toDual a) (toDual b) = mu 𝕜 b a := by
   letI : DecidableLE α := Classical.decRel _
   let mud : IncidenceAlgebra 𝕜 αᵒᵈ :=
     { toFun := fun a b ↦ mu 𝕜 (ofDual b) (ofDual a)
       eq_zero_of_not_le' := fun a b hab ↦ apply_eq_zero_of_not_le (by exact hab) _ }
-  suffices mu 𝕜 = mud by simp_rw [this, mud, coe_mk, ofDual_toDual]
+  suffices @mu 𝕜 αᵒᵈ _ _ _ _ h = mud by simp_rw [this, mud, coe_mk, ofDual_toDual]
   suffices mud * zeta 𝕜 = 1 by
     rw [← mu_mul_zeta] at this
-    apply_fun (· * mu 𝕜) at this
+    apply_fun (· * @mu 𝕜 αᵒᵈ _ _ _ _ h) at this
     symm
     simpa [mul_assoc, zeta_mul_mu] using this
   clear a b
@@ -526,10 +527,12 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
     _ = if ofDual b = ofDual a then 1 else 0 := sum_Icc_mu_left ..
     _ = if a = b then 1 else 0 := by simp [eq_comm]
 
-@[simp] lemma mu_ofDual (a b : αᵒᵈ) : mu 𝕜 (ofDual a) (ofDual b) = mu 𝕜 b a := (mu_toDual ..).symm
+@[simp] lemma mu_ofDual (a b : αᵒᵈ) :
+    mu 𝕜 (ofDual a) (ofDual b) = @mu 𝕜 αᵒᵈ _ _ _ _ h b a := (mu_toDual ..).symm
 
 @[simp]
-lemma eulerChar_orderDual [BoundedOrder α] : eulerChar 𝕜 αᵒᵈ = eulerChar 𝕜 α := by
+lemma eulerChar_orderDual [BoundedOrder α] :
+    @eulerChar 𝕜 αᵒᵈ _ _ _ _ h _ = eulerChar 𝕜 α := by
   simp [eulerChar, ← mu_toDual 𝕜 (α := α)]
 
 end OrderDual
@@ -577,7 +580,7 @@ O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :
     f x = ∑ y ∈ Iic x, mu 𝕜 y x * g y := by
   convert moebius_inversion_top (α := αᵒᵈ) f g h x using 3
-  rw [← mu_toDual]; rfl
+  · rw [← mu_toDual]; rfl
 
 end InversionBot
 

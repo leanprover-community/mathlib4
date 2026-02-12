@@ -1106,7 +1106,7 @@ lemma coheight_le_of_krullDim_preimage_le (x : α) :
     Order.coheight x ≤ (m + 1) * Order.coheight (f x) + m := by
   rw [Order.coheight, Order.coheight]
   apply height_le_of_krullDim_preimage_le (f := f.dual)
-  exact fun x ↦ le_of_eq_of_le (krullDim_orderDual (α := f ⁻¹' {x})) (h x)
+  exact fun x ↦ le_of_eq_of_le (krullDim_orderDual (α := f ⁻¹' {OrderDual.ofDual x})) (h x)
 
 include f h in
 lemma krullDim_le_of_krullDim_preimage_le :

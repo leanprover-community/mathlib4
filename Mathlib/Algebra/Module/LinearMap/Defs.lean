@@ -124,7 +124,7 @@ abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
     [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 
-instance (F R M M₂ : Type*)
+instance (F : Type*) (R M M₂ : outParam Type*)
     [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
     [FunLike F M M₂] [h : LinearMapClass F R M M₂] : MulActionHomClass F R M M₂ :=
   h.toMulActionSemiHomClass
@@ -155,6 +155,10 @@ instance (priority := 100) distribMulActionSemiHomClass
     DistribMulActionSemiHomClass F σ M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }
+
+instance (priority := 100) distribMulActionHomClass
+    [FunLike F M M₂] [LinearMapClass F R M M₂] :
+    DistribMulActionHomClass F R M M₂ := distribMulActionSemiHomClass F
 
 variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
 

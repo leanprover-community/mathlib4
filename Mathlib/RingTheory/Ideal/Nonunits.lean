@@ -93,7 +93,10 @@ section GroupWithZero
 variable [GroupWithZero α] [SubmonoidClass C α] {S : C} {a : S}
 
 theorem isUnit_iff_and : IsUnit a ↔ (a : α) ≠ 0 ∧ (a : α)⁻¹ ∈ S where
-  mp h := ⟨(h.map <| subtype <| ofClass S).ne_zero, inv_mem_of_isUnit h⟩
+  mp h := by
+    let : FunLike (↥(ofClass S) →* α) ↥S α := MonoidHom.instFunLike -- tech debt
+    let : MonoidHomClass (↥(ofClass S) →* α) (↥S) α := MonoidHom.instMonoidHomClass -- tech debt
+    exact ⟨(h.map <| subtype <| ofClass S).ne_zero, inv_mem_of_isUnit h⟩
   mpr h :=
     ⟨⟨a, ⟨_, h.2⟩, Subtype.ext (mul_inv_cancel₀ h.1), Subtype.ext (inv_mul_cancel₀ h.1)⟩, rfl⟩
 

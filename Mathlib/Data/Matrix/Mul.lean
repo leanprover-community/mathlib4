@@ -600,8 +600,8 @@ theorem RingEquiv.isStablyFiniteRing_iff [EquivLike F R S] [RingEquivClass F R S
   mpr _ := .of_injective f (EquivLike.injective f)
 
 instance (priority := low) [SetLike F R] [SubsemiringClass F R] (S : F) [IsStablyFiniteRing R] :
-    IsStablyFiniteRing S :=
-  .of_injective _ (Subsemiring.subtype_injective <| .ofClass S)
+    IsStablyFiniteRing S := by
+  apply IsStablyFiniteRing.of_injective _ (Subsemiring.subtype_injective <| .ofClass S)
 
 end IsStablyFiniteRing
 

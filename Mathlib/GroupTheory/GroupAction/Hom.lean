@@ -594,6 +594,11 @@ abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
     [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
     DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
+instance (F : Type*) (M A B : outParam Type*) [Monoid M] [AddMonoid A] [AddMonoid B]
+    [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B]
+    [h : DistribMulActionHomClass F M A B] : MulActionHomClass F M A B :=
+  h.toMulActionSemiHomClass
+
 namespace DistribMulActionHom
 
 instance : FunLike (A →ₑ+[φ] B) A B where

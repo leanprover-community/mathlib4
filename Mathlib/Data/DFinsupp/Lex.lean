@@ -25,7 +25,7 @@ namespace DFinsupp
 
 section Zero
 
-variable [∀ i, Zero (α i)]
+variable [hZ : ∀ i, Zero (α i)]
 
 /-- `DFinsupp.Lex r s` is the lexicographic relation on `Π₀ i, α i`, where `ι` is ordered by `r`,
 and `α i` is ordered by `s i`.
@@ -97,8 +97,10 @@ instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
   irrefl _ := lt_irrefl (α := Lex (∀ i, α i)) _
   trans _ _ _ := lt_trans (α := Lex (∀ i, α i))
 
-instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
+instance Colex.isStrictOrder [h : ∀ i, PartialOrder (α i)] :
     IsStrictOrder (Colex (Π₀ i, α i)) (· < ·) :=
+  letI : ∀ (i : ιᵒᵈ), Zero (α i) := hZ
+  let : ∀ (i : ιᵒᵈ), PartialOrder (α i) := h
   Lex.isStrictOrder (ι := ιᵒᵈ)
 
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
@@ -122,13 +124,15 @@ theorem Lex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex
 @[deprecated (since := "2025-11-29")]
 alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
-theorem Colex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Colex (Π₀ i, α i)} :
+theorem Colex.le_iff_of_unique [Unique ι] [h : ∀ i, PartialOrder (α i)] {x y : Colex (Π₀ i, α i)} :
     x ≤ y ↔ x default ≤ y default :=
+  letI : ∀ (i : ιᵒᵈ), Zero (α i) := hZ
+  let : ∀ (i : ιᵒᵈ), PartialOrder (α i) := h
   Lex.le_iff_of_unique (ι := ιᵒᵈ)
 
 section LinearOrder
 
-variable [∀ i, LinearOrder (α i)]
+variable [hL : ∀ i, LinearOrder (α i)]
 
 set_option backward.privateInPublic true in
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
@@ -149,6 +153,8 @@ instance Lex.total_le : @Std.Total (Lex (Π₀ i, α i)) (· ≤ ·) where
   total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
 
 instance Colex.total_le : @Std.Total (Colex (Π₀ i, α i)) (· ≤ ·) :=
+  letI : ∀ (i : ιᵒᵈ), Zero (α i) := hZ
+  letI : ∀ (i : ιᵒᵈ), LinearOrder (α i) := hL
   Lex.total_le (ι := ιᵒᵈ)
 
 set_option backward.privateInPublic true in
@@ -161,6 +167,8 @@ instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
 
 /-- The less-or-equal relation for the colexicographic ordering is decidable. -/
 instance Colex.decidableLE : DecidableLE (Colex (Π₀ i, α i)) :=
+  letI : ∀ (i : ιᵒᵈ), Zero (α i) := hZ
+  letI : ∀ (i : ιᵒᵈ), LinearOrder (α i) := hL
   Lex.decidableLE (ι := ιᵒᵈ)
 
 set_option backward.privateInPublic true in
@@ -171,6 +179,8 @@ instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
 
 /-- The less-than relation for the colexicographic ordering is decidable. -/
 instance Colex.decidableLT : DecidableLT (Colex (Π₀ i, α i)) :=
+  letI : ∀ (i : ιᵒᵈ), Zero (α i) := hZ
+  letI : ∀ (i : ιᵒᵈ), LinearOrder (α i) := hL
   Lex.decidableLT (ι := ιᵒᵈ)
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
@@ -189,7 +199,7 @@ instance Colex.linearOrder : LinearOrder (Colex (Π₀ i, α i)) where
 
 end LinearOrder
 
-variable [∀ i, PartialOrder (α i)]
+variable [hP : ∀ i, PartialOrder (α i)]
 
 theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
   intro a b h
@@ -200,6 +210,8 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
     (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 
 theorem toColex_monotone : Monotone (@toColex (Π₀ i, α i)) :=
+  letI : ∀ (i : ιᵒᵈ), Zero (α i) := hZ
+  letI : ∀ (i : ιᵒᵈ), PartialOrder (α i) := hP
   toLex_monotone (ι := ιᵒᵈ)
 
 @[deprecated Lex.lt_iff (since := "2025-10-12")]
@@ -211,7 +223,7 @@ end Zero
 
 section Covariants
 
-variable [LinearOrder ι] [∀ i, AddMonoid (α i)] [∀ i, LinearOrder (α i)]
+variable [LinearOrder ι] [hAM : ∀ i, AddMonoid (α i)] [hL : ∀ i, LinearOrder (α i)]
 
 /-!  We are about to sneak in a hypothesis that might appear to be too strong.
 We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when proving the one
@@ -220,38 +232,44 @@ to be monotone, when it is "just" monotone on `α i`. -/
 
 section Left
 
-variable [∀ i, AddLeftStrictMono (α i)]
+variable [hAL : ∀ i, AddLeftStrictMono (α i)]
 
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), by dsimp; gcongr⟩⟩
 
 instance Colex.addLeftStrictMono : AddLeftStrictMono (Colex (Π₀ i, α i)) :=
+  letI : ∀ (i : ιᵒᵈ), AddMonoid (α i) := hAM
+  letI : ∀ (i : ιᵒᵈ), LinearOrder (α i) := hL
+  letI : ∀ (i : ιᵒᵈ), AddLeftStrictMono (α i) := hAL
   Lex.addLeftStrictMono (ι := ιᵒᵈ)
 
 instance Lex.addLeftMono : AddLeftMono (Lex (Π₀ i, α i)) :=
   addLeftMono_of_addLeftStrictMono _
 
 instance Colex.addLeftMono : AddLeftMono (Colex (Π₀ i, α i)) :=
-  Lex.addLeftMono (ι := ιᵒᵈ)
+  addLeftMono_of_addLeftStrictMono _
 
 end Left
 
 section Right
 
-variable [∀ i, AddRightStrictMono (α i)]
+variable [hAR : ∀ i, AddRightStrictMono (α i)]
 
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), by dsimp; gcongr⟩⟩
 
 instance Colex.addRightStrictMono : AddRightStrictMono (Colex (Π₀ i, α i)) :=
+  letI : ∀ (i : ιᵒᵈ), AddMonoid (α i) := hAM
+  letI : ∀ (i : ιᵒᵈ), LinearOrder (α i) := hL
+  letI : ∀ (i : ιᵒᵈ), AddRightStrictMono (α i) := hAR
   Lex.addRightStrictMono (ι := ιᵒᵈ)
 
 instance Lex.addRightMono : AddRightMono (Lex (Π₀ i, α i)) :=
   addRightMono_of_addRightStrictMono _
 
 instance Colex.addRightMono : AddRightMono (Colex (Π₀ i, α i)) :=
-  Lex.addRightMono (ι := ιᵒᵈ)
+  addRightMono_of_addRightStrictMono _
 
 end Right
 
@@ -279,9 +297,12 @@ instance Lex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, Part
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
-instance Colex.isOrderedCancelAddMonoid [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
-    [∀ i, IsOrderedCancelAddMonoid (α i)] :
+instance Colex.isOrderedCancelAddMonoid [h : ∀ i, AddCommMonoid (α i)]
+    [h' : ∀ i, PartialOrder (α i)] [h'' : ∀ i, IsOrderedCancelAddMonoid (α i)] :
     IsOrderedCancelAddMonoid (Colex (Π₀ i, α i)) :=
+  letI : ∀ (i : ιᵒᵈ), AddCommMonoid (α i) := h
+  letI : ∀ (i : ιᵒᵈ), PartialOrder (α i) := h'
+  letI : ∀ (i : ιᵒᵈ), IsOrderedCancelAddMonoid (α i) := h''
   Lex.isOrderedCancelAddMonoid (ι := ιᵒᵈ)
 
 instance Lex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
@@ -291,8 +312,8 @@ instance Lex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrde
 
 instance Colex.isOrderedAddMonoid [∀ i, AddCommGroup (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedAddMonoid (α i)] :
-    IsOrderedAddMonoid (Colex (Π₀ i, α i)) :=
-  Lex.isOrderedAddMonoid (ι := ιᵒᵈ)
+    IsOrderedAddMonoid (Colex (Π₀ i, α i)) where
+  add_le_add_left _ _ := add_le_add_left
 
 end OrderedAddMonoid
 

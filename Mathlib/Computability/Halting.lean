@@ -223,8 +223,8 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
   simp only [Bool.cond_decide] at e
   by_cases H : eval c ∈ C
   · simp only [H, if_true] at e
-    change (fun b => g b) ∈ C
-    rwa [← e]
+    have : g = (fun b ↦ g b) := rfl
+    rwa [this, ← e]
   · simp only [H, if_false] at e
     rw [e] at H
     contradiction

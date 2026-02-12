@@ -571,7 +571,7 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
 
 theorem lt_wf : @WellFounded Ordinal (· < ·) :=
   wellFounded_iff_wellFounded_subrel.mpr (·.induction_on fun ⟨_, _, wo⟩ ↦
-    RelHomClass.wellFounded (enum _) wo.wf)
+    by apply RelHomClass.wellFounded (enum _) wo.wf)
 
 instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩

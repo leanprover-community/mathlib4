@@ -32,7 +32,7 @@ public section
 
 open Function
 
-variable {ι : Type*} {α : ι → Type*} [Finite ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
+variable {ι : Type*} {α : ι → Type*} [Finite ι] [DecidableEq ι] [h : ∀ i, DecidableEq (α i)]
 
 namespace Finset
 
@@ -107,6 +107,7 @@ theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),
         (∀ y ∈ g i, x < y) → p g → p (update g i (insert x (g i)))) :
     p f :=
+  letI : ∀ i, DecidableEq (α i)ᵒᵈ := h
   induction_on_pi_max (α := fun i ↦ (α i)ᵒᵈ) _ h0 step
 
 end Finset
