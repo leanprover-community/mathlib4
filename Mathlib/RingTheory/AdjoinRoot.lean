@@ -1091,8 +1091,7 @@ variable [CommRing R] [CommRing K] [Algebra R K] {p : R[X]}
 
 attribute [local instance] algebra
 
-/-- If `f : R → K` is the canonical map from a domain `R` to its fraction ring `K`, and `p` is a
-non-zero prime polynomial over `R`, then `K[X] / f(p)` is an algebra over `R[X] / p`. -/
+/-- If `f : R → K` is an algebra map, then `K[X] / f(p)` is an algebra over `R[X] / p`. -/
 instance AdjoinRoot.algebra : Algebra (AdjoinRoot p) <| AdjoinRoot <| p.map <| algebraMap R K :=
   Quotient.algebraQuotientOfLEComap <| le_comap_of_map_le <| by simp [map_span]
 
