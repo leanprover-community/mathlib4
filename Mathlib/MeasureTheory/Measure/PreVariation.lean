@@ -73,13 +73,82 @@ lemma sum_le {s : Set X} (hs : MeasurableSet s)
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
   simpa [preVariationFun, hs, le_iSup_iff] using fun _ a ↦ a P
 
+open Classical in
+noncomputable def _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartition s) (hs : MeasurableSet s)
+    (hP : ∀ p ∈ P.parts, MeasurableSet p) : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
+  letI : Fintype (Subtype (P.parts : Set (Set X))) :=
+    Fintype.subtype P.parts (by intro; exact Iff.of_eq rfl)
+  { parts := Finset.image
+      (fun p : (Subtype (P.parts : Set (Set X))) =>
+        (⟨p.val, hP p.val p.property⟩ : Subtype MeasurableSet))
+      Finset.univ
+    supIndep := by
+      refine Finset.supIndep_iff_pairwiseDisjoint.mpr ?_
+      have hPd := P.supIndep
+      rw [Finset.supIndep_iff_pairwiseDisjoint] at hPd
+      intro u hu v hv h
+      simp_all only [Finset.coe_image, Finset.coe_univ, Set.image_univ, Set.mem_range,
+        Subtype.exists, ne_eq]
+      obtain ⟨a, hap, ha⟩ := hu
+      obtain ⟨b, hbp, hb⟩ := hv
+      have hab := hPd hap hbp
+        (by rw [← ha] at h
+            rw [← hb] at h
+            simp only [Subtype.mk.injEq] at h
+            exact Ne.symm fun a_1 ↦ h (id (Eq.symm a_1)))
+      apply disjoint_iff.mpr
+      simp_rw [disjoint_iff] at hab
+      rw [← ha, ← hb, id_eq]
+      exact Eq.symm (Subtype.ext (id (Eq.symm hab)))
+    sup_parts := by
+      refine Eq.symm (Subtype.ext ?_)
+      ext x
+      rw [Finset.sup_coe]
+      · simp only [id_eq, Finset.sup_image, Finset.sup_set_eq_biUnion, Finset.mem_univ, comp_apply,
+          Set.iUnion_true, Set.mem_iUnion, Subtype.exists, exists_prop]
+        constructor
+        · intro h
+          rw [← P.sup_parts] at h
+          simp only [Finset.sup_set_eq_biUnion, id_eq, Set.mem_iUnion, exists_prop] at h
+          obtain ⟨p, hp⟩ := h
+          exact ⟨p, hp⟩
+        · intro h
+          rw [← P.sup_parts]
+          simp only [Finset.sup_set_eq_biUnion, id_eq, Set.mem_iUnion, exists_prop]
+          obtain ⟨p, hp⟩ := h
+          exact ⟨p, ⟨Finset.mem_coe.mp hp.1, hp.2⟩⟩
+      simp only [Set.sup_eq_union]
+      exact fun _ _ hx hy ↦ MeasurableSet.union hx hy
+    bot_notMem := by
+      simp only [Finset.mem_image, Finset.mem_univ, true_and]
+      intro ⟨p ,hp⟩
+      rw [Subtype.mk_eq_bot_iff (by simp)] at hp
+      have pmem := p.property
+      rw [hp] at pmem
+      exact P.bot_notMem pmem
+     }
+
 lemma sum_le' {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by
   simp only [preVariationFun, hs, ↓reduceDIte]
-  sorry
+  calc
+    ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toMeasurableSet P hs hP).parts, f p := by
+      apply Finset.sum_bij (fun p hpP => ⟨p, hP p hpP⟩)
+      · intro t ht
+        simpa [_root_.Finpartition.toMeasurableSet] using ht
+      · intro u hu v hv h
+        simp only [Subtype.mk.injEq] at h
+        exact h
+      · intro p hp
+        simpa [_root_.Finpartition.toMeasurableSet] using hp
+      · intro t ht
+        exact EReal.coe_ennreal_eq_coe_ennreal_iff.mp rfl
+    _ ≤ ⨆ (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ Q.parts, f p := by
+      apply le_iSup (fun (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) => ∑ p ∈ Q.parts, f p)
+        (Finpartition.toMeasurableSet P hs hP)
+
 -- define a `Finpartition` in a subtype
---  apply le_trans _ (le_iSup f P)
 
 open Classical in
 /-- If `P` is a partition of `s₁` and `s₁ ⊆ s₂` then
