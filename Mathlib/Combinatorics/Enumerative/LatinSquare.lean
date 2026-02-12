@@ -531,28 +531,21 @@ lemma latin_rect_hall_property
 --     simp at h_col
 --     exact h_col
 
--- lemma col_card
---     {k n : Nat} [NeZero k] [NeZero n]
---     (A : LatinRectangle k n α)
---     (h : k < n := by omega) :
---     ∀ j, (Finset.image (col_map A j) Finset.univ).card = k := by 
---     intro j
---     have h_inj := col_injective A h j
---     simp [Finset.card_image_of_injective Finset.univ h_inj]
-    
+lemma col_card
+    (A : LatinRectangle k n α) :
+    ∀ j, (Finset.image (col A j) Finset.univ).card = Fintype.card k := by 
+    intro j
+    have h_inj := A.distinct_col_entries
+    unfold distinct_col_entries at h_inj
+    exact Finset.card_image_of_injective Finset.univ (h_inj j)
 
 lemma card_symbols_not_in
-    (A : LatinRectangle k n α)
-    (h : Fintype.card k < Fintype.card n := by omega) :
+    (A : LatinRectangle k n α) :
   ∀ j, Finset.card (symbols_not_in A j) = Fintype.card n - Fintype.card k := by
-    sorry
-    -- simp [symbols_not_in,
-    --       Finset.card_sdiff, 
-    --       A.exactly_n_symbols,
-    --       col_map_in_symbols,
-    --       col_card A]
+    simp [symbols_not_in,
+          Finset.card_sdiff, 
+          A.exactly_n_symbols, col_card A]
 
-#check Set.range_restrict
 lemma row_entry_to_column_entry
     (A : LatinRectangle k n α)
     (x : α)
@@ -579,7 +572,7 @@ theorem latin_rectangle_extends
     ∃ (A' : LatinRectangle k' n α), is_subrect A A' ι := by
   let B := symbols_not_in A
   have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) := 
-    card_symbols_not_in A h j
+    card_symbols_not_in A j
   
   have exactly_n_minus_k_cols_without_x : ∀ x, 
     (Finset.card {j | x ∈ B j}) = Fintype.card n - Fintype.card k := by 
