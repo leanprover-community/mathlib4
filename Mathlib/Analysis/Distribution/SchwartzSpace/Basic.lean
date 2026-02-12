@@ -161,6 +161,13 @@ theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
 
 end IsBigO
 
+open Filter Topology in
+theorem tendsto_cocompact (f : 𝓢(E, F)) [ProperSpace E] :
+    Tendsto f (cocompact E) (𝓝 0) := by
+  apply Asymptotics.IsBigO.trans_tendsto (isBigO_cocompact_rpow f (-1))
+  simp_rw [Real.rpow_neg_one]
+  exact tendsto_norm_cocompact_atTop.inv_tendsto_atTop
+
 section Aux
 
 theorem bounds_nonempty (k n : ℕ) (f : 𝓢(E, F)) :
