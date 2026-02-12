@@ -325,6 +325,9 @@ lemma coe_support_eq_eq_iInter_zeroLocus :
     (I.support : Set X) = ⋂ U, X.zeroLocus (U := U.1) (I.ideal U) :=
   I.supportSet_eq_iInter_zeroLocus
 
+@[simp] lemma mem_supportSet_iff_mem_support {I : IdealSheafData X} {x} :
+    x ∈ I.supportSet ↔ x ∈ I.support := .rfl
+
 lemma mem_support_iff {I : IdealSheafData X} {x} :
     x ∈ I.support ↔ ∀ U, x ∈ X.zeroLocus (U := U.1) (I.ideal U) :=
   (Set.ext_iff.mp I.supportSet_eq_iInter_zeroLocus _).trans Set.mem_iInter
@@ -388,6 +391,65 @@ lemma support_eq_bot_iff : support I = ⊥ ↔ I = ⊤ := by
 
 end support
 
+section Semiring
+
+variable (I J K : X.IdealSheafData)
+
+instance : Zero X.IdealSheafData where zero := ⊥
+instance : One X.IdealSheafData where one := ⊤
+instance : Add X.IdealSheafData where add := (· ⊔ ·)
+
+instance : Mul X.IdealSheafData where
+  mul I J := mkOfMemSupportIff (I.ideal * J.ideal) (by simp [Ideal.map_mul, map_ideal_basicOpen])
+    (I.supportSet ∪ J.supportSet) fun U x hxU ↦ by
+    simp [-mem_zeroLocus_iff, zeroLocus_mul, mem_support_iff_of_mem hxU]
+
+instance : Pow X.IdealSheafData ℕ where
+  pow I n := mkOfMemSupportIff (I.ideal ^ n) (by simp [Ideal.map_pow, map_ideal_basicOpen])
+    (if n = 0 then ∅ else I.supportSet) fun U x hxU ↦ .symm <| by
+    induction n <;> simp_all [-mem_zeroLocus_iff, zeroLocus_mul,
+      pow_succ, mem_support_iff_of_mem hxU]
+
+@[simp] lemma ideal_mul : (I * J).ideal = I.ideal * J.ideal := rfl
+@[simp] lemma support_mul : (I * J).support = I.support ⊔ J.support := rfl
+@[simp] lemma ideal_pow (n : ℕ) : (I ^ n).ideal = I.ideal ^ n := rfl
+@[simp] lemma support_pow_succ (n : ℕ) : (I ^ (n + 1)).support = I.support := rfl
+lemma support_pow (n : ℕ) (hn : n ≠ 0) : (I ^ n).support = I.support := by cases n <;> simp_all
+
+@[simp] lemma top_mul : ⊤ * I = I := by ext; simp
+@[simp] lemma mul_top : I * ⊤ = I := by ext; simp
+@[simp] lemma bot_mul : ⊥ * I = ⊥ := by ext; simp
+@[simp] lemma mul_bot : I * ⊥ = ⊥ := by ext; simp
+lemma mul_inf : I * (J ⊔ K) = I * J ⊔ I * K := by ext U : 2; exact mul_add _ _ _
+lemma inf_mul : (I ⊔ J) * K = I * K ⊔ J * K := by ext U : 2; exact add_mul _ _ _
+
+instance : IdemCommSemiring X.IdealSheafData where
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
+  mul_assoc _ _ _ := IdealSheafData.ext (mul_assoc _ _ _)
+  mul_comm _ _ := IdealSheafData.ext (mul_comm _ _)
+  zero_mul := bot_mul
+  mul_zero := mul_bot
+  one_mul := top_mul
+  mul_one := mul_top
+  nsmul := nsmulRec
+  left_distrib := mul_inf
+  right_distrib := inf_mul
+  npow_zero _ := by ext; rfl
+  npow_succ _ _ := by ext; rfl
+  bot_le _ := bot_le
+
+instance : IsOrderedRing X.IdealSheafData where
+
+/-! We follow `Ideal` and set the simp normal form to be `⊥` and `⊤` and `⊔`. -/
+@[simp] lemma zero_eq_bot : (0 : X.IdealSheafData) = ⊥ := rfl
+@[simp] lemma one_eq_top : (1 : X.IdealSheafData) = ⊤ := rfl
+@[simp] lemma add_eq_sup : I + J = I ⊔ J := rfl
+
+end Semiring
+
 section IsAffine
 
 /-- The ideal sheaf induced by an ideal of the global sections. -/
@@ -413,13 +475,22 @@ lemma ext_of_isAffine [IsAffine X] {I J : IdealSheafData X}
   (le_of_isAffine H.le).antisymm (le_of_isAffine H.ge)
 
 /-- Over affine schemes, ideal sheaves are in bijection with ideals of the global sections. -/
-@[simps]
-def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃o Ideal Γ(X, ⊤) where
+def equivOfIsAffine [IsAffine X] : IdealSheafData X ≃+*o Ideal Γ(X, ⊤) where
   toFun := (ideal · ⟨⊤, isAffineOpen_top X⟩)
   invFun := ofIdealTop
   left_inv I := ext_of_isAffine (by simp)
   right_inv I := by simp
-  map_rel_iff' {I J} := ⟨le_of_isAffine, (· _)⟩
+  map_mul' := by simp
+  map_add' := by simp
+  map_le_map_iff' := ⟨le_of_isAffine, (· _)⟩
+
+@[simp]
+lemma equivOfIsAffine_apply [IsAffine X] (I : IdealSheafData X) :
+    equivOfIsAffine I = I.ideal ⟨⊤, isAffineOpen_top X⟩ := rfl
+
+@[simp]
+lemma equivOfIsAffine_symm_apply [IsAffine X] (I : Ideal Γ(X, ⊤)) :
+    equivOfIsAffine.symm I = ofIdealTop I := rfl
 
 end IsAffine
 
@@ -470,9 +541,15 @@ lemma radical_sup {I J : IdealSheafData X} :
 
 @[simp]
 lemma radical_inf {I J : IdealSheafData X} :
-    radical (I ⊓ J) = (radical I ⊓ radical J) := by
+    radical (I ⊓ J) = radical I ⊓ radical J := by
   ext U : 2
   simp only [radical_ideal, ideal_inf, Pi.inf_apply, Ideal.radical_inf]
+
+@[simp]
+lemma radical_mul {I J : IdealSheafData X} :
+    radical (I * J) = radical I ⊓ radical J := by
+  ext U : 2
+  simp only [radical_ideal, ideal_mul, Pi.mul_apply, Ideal.radical_mul, ideal_inf, Pi.inf_apply]
 
 /-- The vanishing ideal sheaf of a closed set,
 which is the largest ideal sheaf whose support is equal to it.

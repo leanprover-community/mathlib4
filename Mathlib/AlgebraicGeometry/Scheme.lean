@@ -803,6 +803,18 @@ lemma zeroLocus_span {U : X.Opens} (s : Set Γ(X, U)) :
   · exact fun a b _ _ ha hb H ↦ (X.basicOpen_add_le a b H).elim ha hb
   · simp +contextual
 
+open scoped Pointwise in
+lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
+    X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
+  simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
+  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+
+open scoped Pointwise in
+lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) ↑(I * J) = X.zeroLocus (U := U) I ∪ X.zeroLocus (U := U) J := by
+  rw [← X.zeroLocus_setMul, ← X.zeroLocus_span (U := U) (↑I * ↑J), ← Ideal.span_mul_span]
+  simp
+
 lemma zeroLocus_map {U V : X.Opens} (i : U ≤ V) (s : Set Γ(X, V)) :
     X.zeroLocus ((X.presheaf.map (homOfLE i).op).hom '' s) = X.zeroLocus s ∪ Uᶜ := by
   ext x
