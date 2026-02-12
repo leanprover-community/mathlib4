@@ -147,8 +147,8 @@ end of
 section compl
 
 variable [DecidableEq α] [Fintype α] {m : ℕ} (hm : m + n = Fintype.card α)
-include hm
 
+/-- Complement of `Finset`s as an equivalence on `Set.powersetCard`. -/
 def compl : powersetCard α n ≃ powersetCard α m where
   toFun s := ⟨(sᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp s.2]; omega⟩
   invFun t := ⟨(tᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp t.2]; omega⟩
@@ -243,7 +243,6 @@ theorem eq_empty_iff [Finite α] :
     powersetCard α n = ∅ ↔ Nat.card α < n := by
   rw [← Set.ncard_eq_zero, ← _root_.Nat.card_coe_set_eq, powersetCard.card, Nat.choose_eq_zero_iff]
 
-@[simp]
 theorem nontrivial_iff [Finite α] :
     Nontrivial (powersetCard α n) ↔ 0 < n ∧ n < Nat.card α := by
   rw [← Finite.one_lt_card_iff_nontrivial, powersetCard.card, Nat.one_lt_iff_ne_zero_and_ne_one,
