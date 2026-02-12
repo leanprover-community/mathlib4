@@ -137,6 +137,10 @@ theorem coeff_mul_eq_coeff_truncFinset_mul_truncFinset (hs : IsLowerSet (SetLike
   rw [coeff_truncFinset _ _ (hs (show i ≤ x by simp [← hij]) hx),
     coeff_truncFinset _ _ (hs (show j ≤ x by simp [← hij]) hx)]
 
+theorem support_truncFinset_subset (p : MvPowerSeries σ R) : (truncFinset R s p).support ⊆ s := by
+  intro; contrapose!
+  simpa using coeff_truncFinset_eq_zero s p
+
 end TruncFinset
 
 section TruncLT
@@ -243,15 +247,10 @@ section
 
 theorem totalDegree_trunc' {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
     (trunc' R n φ).totalDegree ≤ n.degree := by
-  have supp_aux : (trunc' R n φ).support ⊆ (Set.Icc 0 n).toFinset := fun d hd => by
-    simp only [Set.toFinset_Icc, Finset.mem_Icc, zero_le, true_and]
-    by_contra hc
-    simp [coeff_trunc', if_neg hc] at hd
-  have : Finsupp.degree n = (Set.Icc 0 n).toFinset.sup fun s ↦ s.sum fun x e ↦ e := by
-    refine eq_of_le_of_ge (Finset.le_sup (by simp)) ?_
-    · simp only [Set.toFinset_Icc, Finset.sup_le_iff, Finset.mem_Icc, zero_le, true_and]
-      intro b hb
-      simp only [Finsupp.degree, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Finsupp.sum]
+  have supp_aux : (trunc' R n φ).support ⊆ Finset.Iic n := support_truncFinset_subset ..
+  have : n.degree = (Finset.Iic n).sup fun s ↦ s.sum fun x e ↦ e := by
+    refine le_antisymm (Finset.le_sup (by simp)) (Finset.sup_le_iff.mpr fun b hb ↦ ?_)
+    · rw [Finset.mem_Iic] at hb
       exact .trans (Finset.sum_le_sum_of_subset (b.support_mono hb))
         (Finset.sum_le_sum fun i _ => hb i)
   rw [MvPolynomial.totalDegree, this]
