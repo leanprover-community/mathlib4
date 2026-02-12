@@ -254,8 +254,7 @@ noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp
-      rw [map_mul, t.w_apply, t.w_apply]
-      rfl }
+      rw [map_mul, t.w_apply, t.w_apply] }
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddMonCat`. -/]

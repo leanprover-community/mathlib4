@@ -23,8 +23,6 @@ variable {α β : Type*}
 
 namespace Equiv
 
-variable (e : α ≃ β) [NormedCommGroup β]
-
 /-- Transfer a `SeminormedRing` across an `Equiv` -/
 protected abbrev seminormedRing [SeminormedRing β] (e : α ≃ β) :
     SeminormedRing α :=
