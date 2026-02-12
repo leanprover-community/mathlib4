@@ -84,7 +84,7 @@ theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ}
     rw [integral_symm, ← intervalIntegral.integral_neg]
     simp
   _ = ∫ θ in (arccos 1)..(arccos (-1)), f (cos θ) := by
-    rw [← integral_comp_mul_deriv''' (f' := fun x => -(1 / √ (1 - x ^ 2))) (by fun_prop)
+    rw [← integral_comp_mul_deriv''' (f' := fun x => -(1 / √(1 - x ^ 2))) (by fun_prop)
       (fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop)).hasDerivWithinAt)]
     · simp_rw [Function.comp_apply]
       exact integral_congr <| fun x hx => by simp [cos_arccos (x := x) (by aesop) (by aesop)]

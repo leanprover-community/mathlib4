@@ -133,6 +133,26 @@ instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | C v = c })
 
+instance [Nonempty <| G.Coloring α] [Nontrivial α] [Nonempty V] : Nontrivial <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  have ⟨c, hc⟩ := nontrivial_iff_exists_ne (C v) |>.mp inferInstance
+  refine ⟨(Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C, C, fun h ↦ hc ?_⟩
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [Iso.completeGraph] at this
+  grind
+
+instance [Nonempty <| G.Coloring α] [Infinite α] [Nonempty V] : Infinite <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  let f c := (Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C
+  refine Infinite.of_injective f fun a b h ↦ ?_
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [f, Iso.completeGraph] at this
+  grind
+
 variable (G) in
 /-- Whether a graph can be colored by at most `n` colors. -/
 def Colorable (n : ℕ) : Prop := Nonempty (G.Coloring (Fin n))
@@ -536,6 +556,10 @@ theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype 
 theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber :=
   le_chromaticNumber_of_pairwise_adj (by simp) (Subtype.val : s → V) <| by simpa [Pairwise] using h
+
+theorem cliqueNum_le_chromaticNumber : G.cliqueNum ≤ G.chromaticNumber := by
+  have ⟨s, hs⟩ := G.exists_isNClique_cliqueNum
+  exact hs.card_eq ▸ hs.isClique.card_le_chromaticNumber
 
 protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n < m) :
     G.CliqueFree m := by

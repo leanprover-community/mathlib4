@@ -23,8 +23,6 @@ variable {α β : Type*}
 
 namespace Equiv
 
-variable (e : α ≃ β) [NormedCommGroup β]
-
 /-- Transfer a `NormedField` across an `Equiv` -/
 protected abbrev normedField [NormedField β] (e : α ≃ β) : NormedField α :=
   letI := e.field
