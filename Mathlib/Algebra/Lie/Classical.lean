@@ -222,11 +222,13 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
       rcases ij with ⟨⟨i, j⟩, hij⟩
       let a : { p : n × n // p.1 ≠ p.2 } := ⟨(i, j), hij⟩
       have hsum_off' :
-          (∑ x : { p : n × n // p.1 ≠ p.2 }, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g (Sum.inl a) := by
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g
+              (Sum.inl a) := by
         classical
         simpa [a] using
           (Fintype.sum_eq_single
-            (f := fun x : { p : n × n // p.1 ≠ p.2 } => (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j)
+            (f := fun x : { p : n × n // p.1 ≠ p.2 } =>
+                (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j)
             (a := a)
             (fun b hb => by
               have : ¬(b.1.1 = i ∧ b.1.2 = j) := by
@@ -234,19 +236,24 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
                 exact hb (Subtype.ext (Prod.ext h.1 h.2))
               simp [this]))
       have hsum_off :
-          ((∑ x : { p : n × n // p.1 ≠ p.2 }, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g (Sum.inl a) := by
+          ((∑ x : { p : n × n // p.1 ≠ p.2 }, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g
+              (Sum.inl a) := by
         let A : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (g (Sum.inl x))
-        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i :=
+        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) = ∑ x : { p : n × n // p.1 ≠ p.2 },
+            (A x) i :=
           (Fintype.sum_apply (g := A) (a := i))
-        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) j = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) j :=
+        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) j = (∑ x : { p : n × n // p.1 ≠
+            p.2 }, (A x) i) j :=
           congrArg (fun f : n → R => f j) hrow
-        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) j = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i j :=
+        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) j = ∑ x : { p : n × n // p.1 ≠ p.2
+            }, (A x) i j :=
           (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (A x) i) (a := j))
         have hsum_off'' : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i j) = g (Sum.inl a) := by
           simpa [A] using hsum_off'
         calc
-          (∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i j = ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) j := rfl
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i j
+            = ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) j := rfl
           _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) j := hrow'
           _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i j := hcol
           _ = g (Sum.inl a) := hsum_off''
@@ -294,7 +301,8 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
       rcases ii with ⟨i, hi⟩
       let a : { k : n // k ≠ i0 } := ⟨i, hi⟩
       have hsum_off' :
-          (∑ x : { p : n × n // p.1 ≠ p.2 }, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0 := by
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0
+              := by
         classical
         refine Fintype.sum_eq_zero (f := fun x : { p : n × n // p.1 ≠ p.2 } =>
           (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) ?_
@@ -304,19 +312,24 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
           exact x.2 (h.1.trans h.2.symm)
         simp [this]
       have hsum_off :
-          ((∑ x : { p : n × n // p.1 ≠ p.2 }, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0 := by
+          ((∑ x : { p : n × n // p.1 ≠ p.2 }, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0
+              := by
         let A : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (g (Sum.inl x))
-        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i :=
+        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) = ∑ x : { p : n × n // p.1 ≠ p.2 },
+            (A x) i :=
           (Fintype.sum_apply (g := A) (a := i))
-        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) i = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) i :=
+        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) i = (∑ x : { p : n × n // p.1 ≠
+            p.2 }, (A x) i) i :=
           congrArg (fun f : n → R => f i) hrow
-        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) i = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i i :=
+        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) i = ∑ x : { p : n × n // p.1 ≠ p.2
+            }, (A x) i i :=
           (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (A x) i) (a := i))
         have hsum_off'' : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i i) = 0 := by
           simpa [A] using hsum_off'
         calc
-          (∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i i = ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) i := rfl
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i i
+            = ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) i := rfl
           _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) i := hrow'
           _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i i := hcol
           _ = 0 := hsum_off''
@@ -389,11 +402,14 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
         let f : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)
         have hoff : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii) = 0 := by
-          have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii :=
+          have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2
+              }, (f x) ii :=
             (Fintype.sum_apply (g := f) (a := ii))
-          have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii :=
+          have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii = (∑ x : { p : n × n // p.1
+              ≠ p.2 }, (f x) ii) ii :=
             congrArg (fun g : n → R => g ii) hrow
-          have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii :=
+          have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii = ∑ x : { p : n × n // p.1 ≠
+              p.2 }, (f x) ii ii :=
             (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii) (a := ii))
           have hsum : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii) = 0 := by
             refine Fintype.sum_eq_zero (f := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii ii) ?_
@@ -403,7 +419,8 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
               exact x.2 (h.1.trans h.2.symm)
             simp [f, this]
           calc
-            (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii := rfl
+            (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii
+              = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii := rfl
             _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii := hrow'
             _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii := hcol
             _ = 0 := hsum
@@ -466,11 +483,14 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
         let f : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)
         have hoff : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii) = 0 := by
-          have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii :=
+          have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2
+              }, (f x) ii :=
             (Fintype.sum_apply (g := f) (a := ii))
-          have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii :=
+          have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii = (∑ x : { p : n × n // p.1
+              ≠ p.2 }, (f x) ii) ii :=
             congrArg (fun g : n → R => g ii) hrow
-          have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii :=
+          have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii = ∑ x : { p : n × n // p.1 ≠
+              p.2 }, (f x) ii ii :=
             (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii) (a := ii))
           have hsum : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii) = 0 := by
             refine Fintype.sum_eq_zero (f := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii ii) ?_
@@ -480,7 +500,8 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
               exact x.2 (h.1.trans h.2.symm)
             simp [f, this]
           calc
-            (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii := rfl
+            (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii
+              = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii := rfl
             _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii := hrow'
             _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii := hcol
             _ = 0 := hsum
@@ -545,11 +566,14 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
       let f : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
         fun x => Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)
       have hoff : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii jj) = A.val ii jj := by
-        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii :=
+        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2
+            }, (f x) ii :=
           (Fintype.sum_apply (g := f) (a := ii))
-        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) jj = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) jj :=
+        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) jj = (∑ x : { p : n × n // p.1 ≠
+            p.2 }, (f x) ii) jj :=
           congrArg (fun g : n → R => g jj) hrow
-        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) jj = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii jj :=
+        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) jj = ∑ x : { p : n × n // p.1 ≠
+            p.2 }, (f x) ii jj :=
           (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii) (a := jj))
         have hsum : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii jj) = A.val ii jj := by
           simpa [a, f] using
@@ -562,7 +586,8 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
                   exact hb (Subtype.ext (Prod.ext h.1 h.2))
                 simp [f, this]))
         calc
-          (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii jj = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) jj := rfl
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii jj
+            = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) jj := rfl
           _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) jj := hrow'
           _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii jj := hcol
           _ = A.val ii jj := hsum
