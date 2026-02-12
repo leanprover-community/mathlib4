@@ -400,8 +400,8 @@ def getTracePath (mod : Name) : CacheM FilePath := do
 /-- Read the `depHash` from a trace file, if it exists and is valid.
     Returns the hash as a UInt64. -/
 def readTraceHash (tracePath : FilePath) : IO (Option UInt64) := do
-  let some contents ← try (some <$> IO.FS.readFile tracePath)
-                       catch _ => pure none | return none
+  let contents ← try IO.FS.readFile tracePath
+                  catch _ => return none
   -- Try to parse as JSON and extract depHash
   let some json := Lean.Json.parse contents |>.toOption | return none
   let some depHashStr := json.getObjValAs? String "depHash" |>.toOption | return none
