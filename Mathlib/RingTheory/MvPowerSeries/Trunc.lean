@@ -127,7 +127,7 @@ theorem truncFinset_map [CommSemiring S] (f : R →+* S) (p : MvPowerSeries σ R
   simp [MvPolynomial.coeff_map, coeff_truncFinset_eq_zero _ _ hx]
 
 theorem coeff_mul_eq_coeff_truncFinset_mul_truncFinset (hs : IsLowerSet (SetLike.coe s))
-    (x : σ →₀ ℕ) (f g : MvPowerSeries σ R) (hx : x ∈ s) : coeff x (f * g) =
+    {x : σ →₀ ℕ} (f g : MvPowerSeries σ R) (hx : x ∈ s) : coeff x (f * g) =
       (truncFinset R s f * truncFinset R s g).coeff x := by
   classical
   simp only [MvPowerSeries.coeff_mul, MvPolynomial.coeff_mul]
@@ -213,7 +213,7 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) : trunc' R n (C a) = MvPolynomial.C
 theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
     (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h : m ≤ n) :
     coeff m (f * g) = (trunc' R n f * trunc' R n g).coeff m :=
-  coeff_mul_eq_coeff_truncFinset_mul_truncFinset (Finset.Iic n) (by intro; grind) m f g (by simpa)
+  coeff_mul_eq_coeff_truncFinset_mul_truncFinset (Finset.Iic n) (by intro; grind) f g (by simpa)
 
 theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
     trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) := by
