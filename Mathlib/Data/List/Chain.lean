@@ -279,9 +279,7 @@ theorem IsChain.of_cons {x} : ∀ {l : List α}, IsChain R (x :: l) → IsChain 
   | _ :: _ => fun | .cons_cons _ h => h
 
 theorem IsChain.tail {l : List α} (h : IsChain R l) : IsChain R l.tail := by
-  cases l
-  · exact IsChain.nil
-  · exact h.of_cons
+  grind +splitIndPred
 
 @[deprecated (since := "2025-09-24")] alias Chain'.tail := IsChain.tail
 
@@ -306,9 +304,7 @@ theorem IsChain.cons {x} : ∀ {l : List α}, IsChain R l → (∀ y ∈ l.head?
 
 lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
     (hl : IsChain R l) (h : R x (l.head l_ne_nil)) : IsChain R (x :: l) := by
-  refine hl.cons fun y hy ↦ ?_
-  convert h
-  simpa [l.head?_eq_some_head l_ne_nil] using hy.symm
+  grind +splitIndPred
 
 @[deprecated (since := "2025-09-24")] alias Chain'.cons_of_ne_nil := IsChain.cons_of_ne_nil
 
@@ -442,18 +438,7 @@ lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
 theorem isChain_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     {r : {a // p a} → {a // p a} → Prop} :
     (l.attachWith p h).IsChain r ↔ l.IsChain fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
-  induction l with
-  | nil => grind
-  | cons a l IH =>
-    rw [attachWith_cons, isChain_cons, isChain_cons, IH, and_congr_left]
-    simp_rw [head?_attachWith]
-    intros
-    constructor <;>
-    intro hc b (hb : _ = _)
-    · simp_rw [hb, Option.pbind_some] at hc
-      have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
-      exact ⟨h a mem_cons_self, hb', hc ⟨b, hb'⟩ rfl⟩
-    · cases l <;> aesop
+  induction l with grind +splitIndPred
 
 @[deprecated (since := "2025-09-24")] alias chain'_attachWith := isChain_attachWith
 

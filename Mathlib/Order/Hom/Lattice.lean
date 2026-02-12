@@ -308,7 +308,7 @@ instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_sup (f g : SupHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
+theorem coe_sup (f g : SupHom α β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
 @[simp]
@@ -331,11 +331,8 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
-@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
+@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
     mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.SupHom.mk_le_mk⟩ := mk_le_mk
 
 /-- `Subtype.val` as a `SupHom`. -/
 def subtypeVal {P : β → Prop}
@@ -490,7 +487,7 @@ instance [BoundedOrder β] : BoundedOrder (InfHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_inf (f g : InfHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
+theorem coe_inf (f g : InfHom α β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
 @[simp]
@@ -513,11 +510,8 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : InfHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : InfHom α β) a = ⊤ :=
   rfl
 
-@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
+@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
     mk toFun₁ map_inf₁ ≤ mk toFun₂ map_inf₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.InfHom.mk_le_mk⟩ := mk_le_mk
 
 /-- `Subtype.val` as an `InfHom`. -/
 def subtypeVal {P : β → Prop}

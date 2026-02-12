@@ -84,9 +84,9 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     let c' : LimitCone F := ⟨_, (IsLimit.postcomposeInvEquiv (asIso e) _).symm
       (isLimitOfPreserves Scheme.Spec (limit.isLimit (F ⋙ Scheme.Γ.rightOp)))⟩
     have : Nonempty c'.1.pt := by
-      apply (config := { allowSynthFailures := true }) PrimeSpectrum.instNonemptyOfNontrivial
+      apply +allowSynthFailures PrimeSpectrum.instNonemptyOfNontrivial
       have (i' : _) : Nontrivial ((F ⋙ Scheme.Γ.rightOp).leftOp.obj i') := by
-        apply (config := { allowSynthFailures := true }) Scheme.component_nontrivial
+        apply +allowSynthFailures Scheme.component_nontrivial
         simp
       exact CommRingCat.FilteredColimits.nontrivial
         (isColimitCoconeLeftOpOfCone _ (limit.isLimit (F ⋙ Scheme.Γ.rightOp)))

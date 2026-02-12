@@ -445,8 +445,10 @@ theorem sInf_eq_iInf {s : Set α} : sInf s = ⨅ a ∈ s, a :=
 lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
   (isLUB_sSup _).unique (isGLB_sInf _).isLUB
 
-lemma sInf_upperBounds_eq_csSup (s : Set α) : sInf (upperBounds s) = sSup s :=
+lemma sInf_upperBounds_eq_sSup (s : Set α) : sInf (upperBounds s) = sSup s :=
   (isGLB_sInf _).unique (isLUB_sSup _).isGLB
+
+@[deprecated (since := "2026-02-01")] alias sInf_upperBounds_eq_csSup := sInf_upperBounds_eq_sSup
 
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
@@ -988,6 +990,22 @@ theorem iSup_extend_bot {e : ι → β} (he : Injective e) (f : ι → α) :
 theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨅ j, extend e f ⊤ j = iInf f :=
   @iSup_extend_bot αᵒᵈ _ _ _ _ he _
+
+theorem Set.BijOn.iSup_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
+    (hf : Set.BijOn f s t) : ⨆ x ∈ s, g (f x) = ⨆ y ∈ t, g y := by
+  rw [← hf.image_eq, iSup_image]
+
+theorem Set.BijOn.iInf_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
+    (hf : Set.BijOn f s t) : ⨅ x ∈ s, g (f x) = ⨅ y ∈ t, g y := by
+  rw [← hf.image_eq, iInf_image]
+
+theorem Set.BijOn.iSup_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨆ x ∈ s, f x = ⨆ y ∈ t, g y := by
+  simpa only [h2] using h1.iSup_comp g
+
+theorem Set.BijOn.iInf_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨅ x ∈ s, f x = ⨅ y ∈ t, g y := by
+  simpa only [h2] using h1.iInf_comp g
 
 section le
 

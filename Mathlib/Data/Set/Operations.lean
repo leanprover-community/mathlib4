@@ -6,12 +6,14 @@ Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
 module
 
-public import Aesop
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Data.SProd
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Push.Attr
+
+import Aesop
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic definitions about sets

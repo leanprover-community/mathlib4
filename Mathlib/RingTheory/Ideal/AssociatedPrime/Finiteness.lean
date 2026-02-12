@@ -54,7 +54,7 @@ def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
 open LinearMap in
 theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
     N₁.IsQuotientEquivQuotientPrime N₂ ↔
-      ∃ x, Ideal.IsPrime (ker (toSpanSingleton A _ (N₁.mkQ x))) ∧ N₂ = N₁ ⊔ span A {x} := by
+      ∃ x, Ideal.IsPrime ((⊥ : Submodule A (M ⧸ N₁)).colon {N₁.mkQ x}) ∧ N₂ = N₁ ⊔ span A {x} := by
   let f := mapQ (N₁.submoduleOf N₂) N₁ N₂.subtype le_rfl
   have hf₁ : ker f = ⊥ := ker_liftQ_eq_bot _ _ _ (by simp [ker_comp, submoduleOf])
   have hf₂ : range f = N₂.map N₁.mkQ := by simp [f, mapQ, range_liftQ, range_comp]
@@ -194,7 +194,8 @@ theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0 fun _ h _ _ ↦ h.1).1 <|
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
   exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
-    simpa only [smul_eq_mul, mul_comm x] using hP, fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
+    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
+      fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
 
 theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :
     ((I : Set A) ∩ nonZeroDivisors A).Nonempty := by
