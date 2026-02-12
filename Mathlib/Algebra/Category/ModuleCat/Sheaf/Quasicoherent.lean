@@ -238,7 +238,7 @@ morphism between coproducts of copies of the sheaf of rings. -/
 class IsQuasicoherent (M : SheafOfModules.{u} R) : Prop where
   nonempty_quasicoherentData : Nonempty (QuasicoherentData.{u₁} M) := by infer_instance
 
-lemma QuasicoherentData.IsQuasicoherent {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) :
+lemma QuasicoherentData.isQuasicoherent {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) :
     M.IsQuasicoherent := ⟨⟨q.shrink⟩⟩
 
 variable (R) in
@@ -326,7 +326,7 @@ noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
   I := Σ i, (D i).I
   X ij := ((D ij.1).X ij.2).left
   coversTop Y := J.transitive (hX Y) _ fun Z f ⟨i, ⟨g⟩⟩ ↦
-      J.superset_covering ((Sieve.functorPushforward_ofObjects _ _ _).trans
+      J.superset_covering ((Sieve.functorPushforward_ofObjects_le _ _ _).trans
       (Sieve.ofObjects_mono fun i' ↦ by aesop)) ((D i).coversTop (.mk g))
   presentation i :=
     letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
@@ -341,7 +341,7 @@ lemma IsQuasicoherent.of_coversTop {R : Sheaf J RingCat.{u}}
     (X : I → C) (hX : J.CoversTop X) [∀ i, IsQuasicoherent (M.over (X i))] :
     IsQuasicoherent M :=
   (QuasicoherentData.bind M X hX fun _ ↦
-    IsQuasicoherent.nonempty_quasicoherentData.some).IsQuasicoherent
+    IsQuasicoherent.nonempty_quasicoherentData.some).isQuasicoherent
 
 end bind
 

@@ -1105,7 +1105,7 @@ lemma mem_functorPushforward_iff_of_full_of_faithful [F.Full] [F.Faithful]
   refine ⟨fun ⟨g, hcomp, hg⟩ ↦ ?_, fun hf ↦ ⟨f, rfl, hf⟩⟩
   rwa [← F.map_injective hcomp]
 
-lemma functorPushforward_ofObjects
+lemma functorPushforward_ofObjects_le
     {I : Type*} (X : I → C) (Y : C) :
     (ofObjects X Y).functorPushforward F ≤ ofObjects (F.obj ∘ X) (F.obj Y) := by
   rintro Z f ⟨W, g₁, g₂, ⟨i, ⟨g₃⟩⟩, hf⟩
