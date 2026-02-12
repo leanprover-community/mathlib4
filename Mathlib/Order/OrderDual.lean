@@ -47,9 +47,9 @@ namespace OrderDual
 theorem ext {a b : αᵒᵈ} (h : ofDual a = ofDual b) : a = b := by
   cases a; cases b; exact congrArg toDual h
 
-@[simp] theorem ofDual_toDual (a : α) : ofDual (toDual a) = a := rfl
+theorem ofDual_toDual (a : α) : ofDual (toDual a) = a := rfl
 @[simp] theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a := by cases a; rfl
-@[simp] theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by
+theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by
   constructor
   · intro h; exact congrArg ofDual h
   · intro h; exact congrArg toDual h

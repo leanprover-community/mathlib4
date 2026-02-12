@@ -707,7 +707,7 @@ namespace sSupHom
 variable [SupSet α] [SupSet β] [SupSet γ]
 
 /-- Reinterpret a `⨆`-homomorphism as an `⨅`-homomorphism between the dual orders. -/
-@[simps!]
+@[simps]
 protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ where
   toFun f :=
     { toFun := toDual ∘ f ∘ ofDual
@@ -792,7 +792,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ]
 
 /-- Reinterpret a complete lattice homomorphism as a complete lattice homomorphism between the dual
 lattices. -/
-@[simps!]
+@[simps]
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ where
   toFun f :=
     { tosInfHom := sSupHom.dual f.tosSupHom

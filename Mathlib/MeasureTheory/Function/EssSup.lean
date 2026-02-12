@@ -200,7 +200,7 @@ theorem OrderIso.essSup_apply {m : MeasurableSpace α} {γ} [CompleteLattice γ]
 
 theorem OrderIso.essInf_apply {_ : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
     (μ : Measure α) (g : β ≃o γ) : g (essInf f μ) = essInf (fun x => g (f x)) μ := by
-  refine OrderIso.liminf_apply g ?_ ?_ ?_ ?_
+  refine OrderIso.liminf_apply g ?_ ?_
   all_goals isBoundedDefault
 
 theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν ≤ essSup f μ := by

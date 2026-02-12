@@ -1268,9 +1268,7 @@ theorem OrderIso.limsup_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
 theorem OrderIso.liminf_apply {γ} [ConditionallyCompleteLattice β] [ConditionallyCompleteLattice γ]
     {f : Filter α} {u : α → β} (g : β ≃o γ)
     (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
-    (hu_co : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
-    (_hgu : f.IsBoundedUnder (· ≥ ·) fun x => g (u x) := by isBoundedDefault)
-    (_hgu_co : f.IsCoboundedUnder (· ≥ ·) fun x => g (u x) := by isBoundedDefault) :
+    (hu_co : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault) :
     g (liminf u f) = liminf (fun x => g (u x)) f := by
   simp only [liminf_eq]
   have hne : Set.Nonempty {a | ∀ᶠ n in f, a ≤ u n} := hu

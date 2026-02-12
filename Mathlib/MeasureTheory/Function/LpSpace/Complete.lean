@@ -47,7 +47,7 @@ theorem eLpNorm'_lim_le_liminf_eLpNorm' {f : ℕ → α → E} {p : ℝ}
       = atTop.liminf fun n ↦ eLpNorm' (f n) p μ ^ p := by
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos hp_pos
     have h_rpow_surj := (ENNReal.rpow_left_bijective hp_pos.ne.symm).2
-    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ?_ ?_
+    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_
     all_goals isBoundedDefault
   rw [h_pow_liminf]
   simp_rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div,
@@ -244,7 +244,7 @@ private theorem lintegral_rpow_tsum_coe_enorm_sub_le_tsum {f : ℕ → α → E}
     refine lintegral_congr fun x => ?_
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos (zero_lt_one.trans_le hp1)
     have h_rpow_surj := (ENNReal.rpow_left_bijective hp_pos.ne.symm).2
-    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ?_ ?_
+    refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_
     all_goals isBoundedDefault
   rw [h_liminf_pow]
   refine (lintegral_liminf_le' fun n ↦ ?_).trans <| liminf_le_of_frequently_le' <| .of_forall h

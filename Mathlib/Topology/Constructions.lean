@@ -156,6 +156,7 @@ theorem OrderDual.isInducing_ofDual : Topology.IsInducing (ofDual : Xᵒᵈ → 
 theorem OrderDual.isEmbedding_ofDual : Topology.IsEmbedding (ofDual : Xᵒᵈ → X) :=
   ⟨isInducing_ofDual, fun _ _ h => ofDual_inj.mp h⟩
 
+/-- The homeomorphism between `αᵒᵈ` and `α`, given that they carry the same topology. -/
 noncomputable def OrderDual.homeomorph : Xᵒᵈ ≃ₜ X :=
   (OrderDual.equiv X).toHomeomorphOfIsInducing isInducing_ofDual
 
