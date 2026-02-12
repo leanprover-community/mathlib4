@@ -52,8 +52,10 @@ theorem coe_coe {s : powersetCard α n} :
 
 theorem mem_coe_iff {s : Set.powersetCard α n} {a : α} : a ∈ (s : Finset α) ↔ a ∈ s := .rfl
 
+@[simp]
 theorem card_eq (s : Set.powersetCard α n) : (s : Finset α).card = n := s.prop
 
+@[simp]
 theorem ncard_eq (s : Set.powersetCard α n) : (s : Set α).ncard = n := by
   rw [← coe_coe, Set.ncard_coe_finset, s.prop]
 
@@ -105,24 +107,12 @@ end map
 
 section of
 
-/-- The map sending `a : α` to `{a} : powersetCard α 1`. -/
-def ofSingleton (a : α) : powersetCard α 1 := ⟨{a}, Finset.card_singleton a⟩
-
-lemma ofSingleton_bijective : Bijective (ofSingleton (α := α)) := by
-  refine ⟨fun a b h ↦ Finset.singleton_injective congr($h.1), fun ⟨s, hs⟩ ↦ ?_⟩
-  obtain ⟨a, rfl⟩ := Finset.card_eq_one.mp hs
-  exact ⟨a, rfl⟩
-
-/-- An equivalence version of `ofSingleton`. -/
-noncomputable def singletonEquiv : α ≃ powersetCard α 1 where
-  toFun := ofSingleton
+/-- The equivalence sending `a : α` to the singleton `{a}`. -/
+noncomputable def ofSingleton : α ≃ powersetCard α 1 where
+  toFun a := ⟨{a}, Finset.card_singleton a⟩
   invFun s := (Finset.card_eq_one.mp s.prop).choose
-  left_inv a := by simp [ofSingleton]
-  right_inv s := by rw [ofSingleton, ← Subtype.val_inj, (Finset.card_eq_one.mp s.prop).choose_spec]
-
-lemma coe_singletonEquiv : ⇑(singletonEquiv (α := α)) = ofSingleton := rfl
-
-lemma singletonEquiv_apply (a : α) : singletonEquiv a = ofSingleton a := rfl
+  left_inv a := by simp
+  right_inv s := by rw [← Subtype.val_inj, (Finset.card_eq_one.mp s.prop).choose_spec]
 
 variable (n) (β : Type*)
 
@@ -130,14 +120,17 @@ variable (n) (β : Type*)
 def ofFinEmb (f : Fin n ↪ β) : powersetCard β n :=
   map n f ⟨Finset.univ, by rw [mem_iff, Finset.card_univ, Fintype.card_fin]⟩
 
+@[simp]
 lemma mem_ofFinEmb_iff_mem_range (f : Fin n ↪ β) (b : β) :
     b ∈ ofFinEmb n β f ↔ b ∈ Set.range f := by
   simp [ofFinEmb, mem_map_iff_mem_range]
 
+@[simp]
 lemma coe_ofFinEmb (f : Fin n ↪ β) : SetLike.coe (ofFinEmb n β f) = Set.range f := by
   ext
   simp [mem_ofFinEmb_iff_mem_range]
 
+@[simp]
 lemma val_ofFinEmb (f : Fin n ↪ β) :
     Subtype.val (ofFinEmb n β f) = Finset.univ.map f := by
   simp [← coe_inj, coe_ofFinEmb]
@@ -153,35 +146,28 @@ end of
 
 section compl
 
-variable (α)
-
 variable [DecidableEq α] [Fintype α] {m : ℕ} (hm : m + n = Fintype.card α)
 include hm
 
-/-- The complement of a combination. -/
-def compl (s : powersetCard α n) : powersetCard α m :=
-    ⟨(sᶜ : Finset α), by rw [mem_iff, Finset.card_compl]; have := mem_iff.mp s.2; omega⟩
+def compl : powersetCard α n ≃ powersetCard α m where
+  toFun s := ⟨(sᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp s.2]; omega⟩
+  invFun t := ⟨(tᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp t.2]; omega⟩
+  left_inv s := by simp
+  right_inv t := by simp
 
-variable {hm} in
+variable {hm}
+
+@[simp]
 theorem coe_compl {s : powersetCard α n} :
-    (compl α hm s : Finset α) = (s : Finset α)ᶜ :=
+    (compl hm s : Finset α) = (s : Finset α)ᶜ :=
   rfl
 
-variable {hm} in
+@[simp]
 theorem mem_compl {s : powersetCard α n} {a : α} :
-    a ∈ compl α hm s ↔ a ∉ s :=
+    a ∈ compl hm s ↔ a ∉ s :=
   Finset.mem_compl
 
-theorem compl_compl :
-    (compl α <| (n.add_comm m).trans hm).comp (compl α hm) = id := by
-  ext s a
-  change a ∈ (compl α _).comp (compl α hm) s ↔ a ∈ s
-  simp [mem_compl]
-
-theorem compl_bijective :
-    Function.Bijective (compl α hm) :=
-  Function.bijective_iff_has_inverse.mpr ⟨compl α ((n.add_comm m).trans hm),
-    leftInverse_iff_comp.mpr (compl_compl α hm), rightInverse_iff_comp.mpr (compl_compl α _)⟩
+theorem compl_symm : (compl hm).symm = compl ((n.add_comm m).trans hm) := rfl
 
 end compl
 
@@ -252,10 +238,12 @@ theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
   apply nontrivial h1
   simp [ENat.card_eq_coe_natCard α, h2]
 
+@[simp]
 theorem eq_empty_iff [Finite α] :
     powersetCard α n = ∅ ↔ Nat.card α < n := by
   rw [← Set.ncard_eq_zero, ← _root_.Nat.card_coe_set_eq, powersetCard.card, Nat.choose_eq_zero_iff]
 
+@[simp]
 theorem nontrivial_iff [Finite α] :
     Nontrivial (powersetCard α n) ↔ 0 < n ∧ n < Nat.card α := by
   rw [← Finite.one_lt_card_iff_nontrivial, powersetCard.card, Nat.one_lt_iff_ne_zero_and_ne_one,

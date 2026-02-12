@@ -180,8 +180,8 @@ include hm
 
 /-- The complement of a combination, as an equivariant map. -/
 def mulActionHom_compl : powersetCard α n →[G] powersetCard α m where
-  toFun := compl α hm
-  map_smul' g s := by ext; simp [← Finset.inv_smul_mem_iff, coe_compl]
+  toFun := compl hm
+  map_smul' g s := by ext; simp [← Finset.inv_smul_mem_iff]
 
 variable {hm} in
 theorem coe_mulActionHom_compl {s : powersetCard α n} :
@@ -212,7 +212,7 @@ variable (α)
 
 /-- The obvious map from a type to its 1-combinations, as an equivariant map. -/
 @[to_additive /-- The obvious map from a type to its 1-combinations, as an equivariant map. -/]
-def mulActionHom_singleton : α →[G] powersetCard α 1 where
+noncomputable def mulActionHom_singleton : α →[G] powersetCard α 1 where
   toFun := ofSingleton
   map_smul' _ _ := rfl
 
