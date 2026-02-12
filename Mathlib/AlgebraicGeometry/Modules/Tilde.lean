@@ -166,6 +166,7 @@ instance isIso_toOpen_top {M : ModuleCat R} : IsIso (toOpen M ⊤) := by
   exact StructureSheaf.toOpenₗ_top_bijective
 
 /-- The isomorphism between the global sections of `M^~` and `M`. -/
+@[simps! hom]
 noncomputable def isoTop (M : ModuleCat R) :
     M ≅ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op ⊤) :=
   asIso (toOpen M ⊤)
@@ -299,16 +300,8 @@ instance : IsIso (tilde.adjunction (R := R)).unit := by
 
 /-- The tilde functor is fully faithful. We will later show that the essential image is
 exactly quasi-coherent modules. -/
-noncomputable
-def tilde.fullyFaithfulFunctor : (tilde.functor R).FullyFaithful where
-  preimage {_ Y} f := tilde.adjunction.homEquiv _
-    ((tilde.functor R).obj Y) f ≫ toTildeΓNatIso.inv.app Y
-  map_preimage {M N} f := by
-    have : IsIso (tilde.adjunction (R := R)).unit := by dsimp [tilde.adjunction]; infer_instance
-    convert tilde.adjunction (R := R).fullyFaithfulLOfIsIsoUnit.map_preimage f
-  preimage_map {M N} f := by
-    have : IsIso (tilde.adjunction (R := R)).unit := by dsimp [tilde.adjunction]; infer_instance
-    convert tilde.adjunction (R := R).fullyFaithfulLOfIsIsoUnit.preimage_map f
+def tilde.fullyFaithfulFunctor : (tilde.functor R).FullyFaithful :=
+  tilde.adjunction.fullyFaithfulLOfIsIsoUnit
 
 instance : (tilde.functor (R := R)).Full := tilde.fullyFaithfulFunctor.full
 instance : (tilde.functor (R := R)).Faithful :=
