@@ -1,13 +1,18 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Kyle Miller
+Authors: Kim Morrison, Kyle Miller
 -/
-import Mathlib.Tactic.CongrExclamation
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.CongrExclamation
 
 /-!
 # The `convert` tactic.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 
@@ -46,7 +51,8 @@ def Lean.MVarId.convertLocalDecl (g : MVarId) (fvarId : FVarId) (typeNew : Expr)
     (patterns : List (TSyntax `rcasesPat) := []) :
     MetaM (MVarId × List MVarId) := g.withContext do
   let typeOld ← fvarId.getType
-  let v ← mkFreshExprMVar (← mkAppM ``Eq (if symm then #[typeNew, typeOld] else #[typeOld, typeNew]))
+  let v ← mkFreshExprMVar (← mkAppM ``Eq
+    (if symm then #[typeNew, typeOld] else #[typeOld, typeNew]))
   let pf ← if symm then mkEqSymm v else pure v
   let res ← g.replaceLocalDecl fvarId typeNew pf
   let gs ← v.mvarId!.congrN! depth config patterns
@@ -125,7 +131,8 @@ Returns stuck metavariables as additional goals.
 -/
 def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
     TacticM (Expr × List MVarId) := do
-  withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+  withCollectingNewGoalsFrom (parentTag := ← getMainTag) (tagSuffix := `convert)
+      (allowNaturalHoles := true) do
     -- Allow typeclass inference failures since these will be inferred by unification
     -- or else become new goals
     withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do

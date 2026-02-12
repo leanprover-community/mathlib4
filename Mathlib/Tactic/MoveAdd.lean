@@ -3,12 +3,18 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Init.Order.LinearOrder
+module
+
+public meta import Mathlib.Lean.Meta
+public import Aesop
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 
-#  `move_add` a tactic for moving summands in expressions
+# `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
 
@@ -26,7 +32,7 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   * `move_add [← a]` changes the goal to `a + b + c` (effectively, `a` moved to the left).
   * `move_add [a]` changes the goal to `b + c + a` (effectively, `a` moved to the right);
 
-  The tactic reorders *all* sub-expressions of the target at the same same.
+  The tactic reorders *all* sub-expressions of the target at the same time.
   For instance, if `⊢ 0 < if b + a < b + a + c then a + b else b + a` is the goal, then
   * `move_add [a]` changes the goal to `0 < if b + a < b + c + a then b + a else b + a`
     (`a` moved to the right in three sums);
@@ -85,7 +91,7 @@ Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`
 
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
 
-See `test/MoveAdd.lean` for sample usage of `move_oper`.
+See `MathlibTest/MoveAdd.lean` for sample usage of `move_oper`.
 
 ## Implementation notes
 
@@ -98,6 +104,8 @@ Once that is done, it tries to replace the initial goal with the permuted one by
 Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruction of the goal.
 This will be the content of a later PR.
 -/
+
+public meta section
 
 open Lean Expr
 
@@ -113,8 +121,8 @@ def Lean.Expr.getExprInputs : Expr → Array Expr
   | _ => #[]
 
 /-- `size e` returns the number of subexpressions of `e`. -/
-partial
-def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
+@[deprecated Lean.Expr.sizeWithoutSharing (since := "2025-09-04")]
+partial def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
 
 namespace Mathlib.MoveAdd
 
@@ -124,7 +132,7 @@ section reorder
 variable {α : Type*} [BEq α]
 
 /-!
-##  Reordering the variables
+## Reordering the variables
 
 This section produces the permutations of the variables for `move_add`.
 
@@ -149,8 +157,6 @@ def uniquify : List α → List (α × ℕ)
     let lms := uniquify ms
     (m, 0) :: (lms.map fun (x, n) => if x == m then (x, n + 1) else (x, n))
 
-variable [Inhabited α]
-
 /-- Return a sorting key so that all `(a, true)`s are in the list's order
 and sorted before all `(a, false)`s, which are also in the list's order.
 Although `weight` does not require this, we use `weight` in the case where the list obtained
@@ -171,7 +177,7 @@ similarly for the pairs with second coordinate equal to `false`.
 def weight (L : List (α × Bool)) (a : α) : ℤ :=
   let l := L.length
   match L.find? (Prod.fst · == a) with
-    | some (_, b) => if b then - l + (L.indexOf (a, b) : ℤ) else (L.indexOf (a, b) + 1 : ℤ)
+    | some (_, b) => if b then - l + (L.idxOf (a, b) : ℤ) else (L.idxOf (a, b) + 1 : ℤ)
     | none => 0
 
 /-- `reorderUsing toReorder instructions` produces a reordering of `toReorder : List α`,
@@ -197,7 +203,8 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
   let uToReorder := (uniquify toReorder).toArray
   let reorder := uToReorder.qsort fun x y =>
     match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
-      | none, none => (uToReorder.getIdx? x).get! ≤ (uToReorder.getIdx? y).get!
+      | none, none =>
+        (uToReorder.idxOf? x).get! ≤ (uToReorder.idxOf? y).get!
       | _, _ => weight uInstructions x ≤ weight uInstructions y
   (reorder.map Prod.fst).toList
 
@@ -268,7 +275,7 @@ partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
 /-- `rankSums op tgt instructions` takes as input
 * the name `op` of a binary operation,
 * an `Expr`ession `tgt`,
-* a list `instructions` of pair `(expression, boolean)`.
+* a list `instructions` of pair `(expression, Boolean)`.
 
 It extracts the maximal subexpressions of `tgt` whose head symbol is `op`
 (i.e. the maximal subexpressions that consist only of applications of the binary operation `op`),
@@ -286,7 +293,7 @@ def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Ex
     let resummed := sumList (prepareOp sum) left_assoc? reord
     if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
-    (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
+    (fun x y : Expr × Expr ↦ (y.1.sizeWithoutSharing  ≤ x.1.sizeWithoutSharing))).toList
 
 /-- `permuteExpr op tgt instructions` takes the same input as `rankSums` and returns the
 expression obtained from `tgt` by replacing all `old_sum`s by the corresponding `new_sum`.
@@ -337,7 +344,7 @@ def pairUp : List (Expr × Bool × Syntax) → List Expr →
 To support a new binary operation, extend the list in this definition, so that it contains
 enough lemmas to allow `simp` to close a generic permutation goal for the new binary operation.
 -/
-def move_oper_simpCtx : MetaM Simp.Context := do
+def moveOperSimpCtx : MetaM Simp.Context := do
   let simpNames := Elab.Tactic.simpOnlyBuiltins ++ [
     ``add_comm, ``add_assoc, ``add_left_comm,  -- for `HAdd.hAdd`
     ``mul_comm, ``mul_assoc, ``mul_left_comm,  -- for `HMul.hMul`
@@ -347,7 +354,7 @@ def move_oper_simpCtx : MetaM Simp.Context := do
     ``min_comm, ``min_assoc, ``min_left_comm   -- for `min`
     ]
   let simpThms ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
-  return { simpTheorems := #[simpThms] }
+  Simp.mkContext {} (simpTheorems := #[simpThms])
 
 /-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
 operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
@@ -369,7 +376,7 @@ def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
     throwError m!"There should only be 2 goals, instead of {twoGoals.length}"
   -- `permGoal` is the single goal `mv_permuted`, possibly more operations will be permuted later on
   let permGoal ← twoGoals.filterM fun v => return !(← v.isAssigned)
-  match ← (simpGoal (permGoal[1]!) (← move_oper_simpCtx)) with
+  match ← (simpGoal (permGoal[1]!) (← moveOperSimpCtx)) with
     | (some x, _) => throwError m!"'move_oper' could not solve {indentD x.2}"
     | (none, _) => return permGoal
 
@@ -448,14 +455,18 @@ elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMa
   -- move around the operands
   replaceMainGoal (← reorderAndSimp op (← getMainGoal) instr)
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
   let hadd := mkIdent ``HAdd.hAdd
   evalTactic (← `(tactic| move_oper $hadd $rws))
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_mul" rws:rwRuleSeq : tactic => do
   let hmul := mkIdent ``HMul.hMul
   evalTactic (← `(tactic| move_oper $hmul $rws))
 
 end parsing
+
+end MoveAdd
+
+end Mathlib

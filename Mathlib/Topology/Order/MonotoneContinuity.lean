@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Heather Macbeth
+Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Continuity of monotone functions
@@ -19,6 +21,8 @@ We also prove that an `OrderIso` is continuous.
 
 continuous, monotone
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -40,14 +44,13 @@ function `f : ℝ → ℝ` given by `f x = if x ≤ 0 then x else x + 1` would b
 theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
-  have ha : a ∈ Ici a := left_mem_Ici
-  have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
+  have has : a ∈ s := mem_of_mem_nhdsWithin self_mem_Ici hs
   refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       ((h_mono.le_iff_le has hxs).2 hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
     rw [h_mono.lt_iff_lt has hcs] at hac
-    filter_upwards [hs, Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 hac)]
+    filter_upwards [hs, Ico_mem_nhdsGE hac]
     rintro x hx ⟨_, hxc⟩
     exact ((h_mono.lt_iff_lt hx hcs).2 hxc).trans_le hcb
 
@@ -60,14 +63,13 @@ because otherwise the function `ceil : ℝ → ℤ` would be a counter-example a
 theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioo (f a) b) :
     ContinuousWithinAt f (Ici a) a := by
-  have ha : a ∈ Ici a := left_mem_Ici
-  have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
+  have has : a ∈ s := mem_of_mem_nhdsWithin self_mem_Ici hs
   refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       (h_mono has hxs hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
-    have : a < c := not_le.1 fun h => hac.not_le <| h_mono hcs has h
-    filter_upwards [hs, Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 this)]
+    have : a < c := not_le.1 fun h => hac.not_ge <| h_mono hcs has h
+    filter_upwards [hs, Ico_mem_nhdsGE this]
     rintro x hx ⟨_, hxc⟩
     exact (h_mono hx hcs hxc.le).trans_lt hcb
 
@@ -78,7 +80,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [
     {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
     (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a := by
   refine continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => ?_
-  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
+  rcases (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
   rcases exists_between hab' with ⟨c', hc'⟩
   rcases mem_closure_iff.1 (hb' ⟨hc'.1.le, hc'.2⟩) (Ioo (f a) b') isOpen_Ioo hc' with
     ⟨_, hc, ⟨c, hcs, rfl⟩⟩
@@ -253,7 +255,7 @@ theorem continuousAt_of_monotoneOn_of_image_mem_nhds [DenselyOrdered β] {f : α
 theorem Monotone.continuous_of_denseRange [DenselyOrdered β] {f : α → β} (h_mono : Monotone f)
     (h_dense : DenseRange f) : Continuous f :=
   continuous_iff_continuousAt.mpr fun a =>
-    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun x _ y _ hxy => h_mono hxy)
+    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun _ _ _ _ hxy => h_mono hxy)
         univ_mem <|
       by simp only [image_univ, h_dense.closure_eq, univ_mem]
 
@@ -274,7 +276,7 @@ this for an `OrderIso` between to partial orders with order topology.
 
 namespace OrderIso
 
-variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
   [OrderTopology α] [OrderTopology β]
 
 protected theorem continuous (e : α ≃o β) : Continuous e := by
@@ -285,15 +287,16 @@ protected theorem continuous (e : α ≃o β) : Continuous e := by
   · rw [e.preimage_Iio]
     apply isOpen_gt'
 
-/-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
-def toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
-  { e with
-    continuous_toFun := e.continuous
-    continuous_invFun := e.symm.continuous }
+instance : HomeomorphClass (α ≃o β) α β where
+  map_continuous := OrderIso.continuous
+  inv_continuous e := e.symm.continuous
 
-@[simp]
+/-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
+abbrev toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
+  HomeomorphClass.toHomeomorph e
+
 theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
-  rfl
+  rfl --Simp can prove this too
 
 @[simp]
 theorem coe_toHomeomorph_symm (e : α ≃o β) : ⇑e.toHomeomorph.symm = e.symm :=

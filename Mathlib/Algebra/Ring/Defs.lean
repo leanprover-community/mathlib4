@@ -3,17 +3,19 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Tactic.Spread
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
 
-This file defines semirings, rings and domains. This is analogous to `Algebra.Group.Defs` and
-`Algebra.Group.Basic`, the difference being that the former is about `+` and `*` separately, while
+This file defines semirings, rings and domains. This is analogous to
+`Mathlib/Algebra/Group/Defs.lean` and `Mathlib/Algebra/Group/Basic.lean`, the difference being that
+those are about `+` and `*` separately, while the present file is about their interaction.
 the present file is about their interaction.
 
 ## Main definitions
@@ -24,15 +26,31 @@ the present file is about their interaction.
   addition, for example `Units`.
 * `(NonUnital)(NonAssoc)(Semi)Ring`: Typeclasses for possibly non-unital or non-associative
   rings and semirings. Some combinations are not defined yet because they haven't found use.
+  For Lie Rings, there is a type synonym `CommutatorRing` defined in
+  `Mathlib/Algebra/Algebra/NonUnitalHom.lean` turning the bracket into a multiplication so that the
+  instance `instNonUnitalNonAssocSemiringCommutatorRing` can be defined.
 
 ## Tags
 
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
 
-universe u v w x
+@[expose] public section
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+
+/-!
+Previously an import dependency on `Mathlib/Algebra/Group/Basic.lean` had crept in.
+In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
+files, without importing `.Basic` theory development.
+
+These `assert_not_exists` statements guard against this returning.
+-/
+assert_not_exists DivisionMonoid.toDivInvOneMonoid mul_rotate
+
+
+universe u v
+
+variable {α : Type u} {R : Type v}
 
 open Function
 
@@ -91,13 +109,15 @@ as this is a path which is followed all the time in linear algebra where the def
 `σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
 definition depends on the `Semiring` structure.
 
-It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
+It is not currently possible to adjust priorities by hand (see https://github.com/leanprover/lean4/issues/2115). Instead, the last
 declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
 that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
-TODO: clean this once lean4#2115 is fixed
+TODO: clean this once https://github.com/leanprover/lean4/issues/2115 is fixed
 -/
 
-/-- A not-necessarily-unital, not-necessarily-associative semiring. -/
+/-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatorRing` and the
+  documentation thereof in case you need a `NonUnitalNonAssocSemiring` instance on a Lie ring
+  or a Lie algebra. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 
 /-- An associative but not-necessarily unital semiring. -/
@@ -151,43 +171,18 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
--- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
 theorem two_mul (n : α) : 2 * n = n + n :=
   (congrArg₂ _ one_add_one_eq_two.symm rfl).trans <| (right_distrib 1 1 n).trans (by rw [one_mul])
 
--- Porting note: was [has_add α] [mul_one_class α] [left_distrib_class α]
 theorem mul_two (n : α) : n * 2 = n + n :=
   (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 
+@[simp] lemma nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
+
 end NonAssocSemiring
-
-@[to_additive]
-theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
-
-@[to_additive]
-theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
-
--- We make `mul_ite` and `ite_mul` simp lemmas,
--- but not `add_ite` or `ite_add`.
--- The problem we're trying to avoid is dealing with
--- summations of the form `∑ x ∈ s, (f x + ite P 1 0)`,
--- in which `add_ite` followed by `sum_ite` would needlessly slice up
--- the `f x` terms according to whether `P` holds at `x`.
--- There doesn't appear to be a corresponding difficulty so far with
--- `mul_ite` and `ite_mul`.
-attribute [simp] mul_ite ite_mul
-
-theorem ite_sub_ite {α} [Sub α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) - if P then c else d) = if P then a - c else b - d := by
-  split
-  repeat rfl
-
-theorem ite_add_ite {α} [Add α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) + if P then c else d) = if P then a + c else b + d := by
-  split
-  repeat rfl
 
 section MulZeroClass
 variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
@@ -201,16 +196,16 @@ lemma ite_zero_mul_ite_zero : ite P a 0 * ite Q b 0 = ite (P ∧ Q) (a * b) 0 :=
 
 end MulZeroClass
 
--- Porting note: no @[simp] because simp proves it
 theorem mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (a * if P then 1 else 0) = if P then a else 0 := by simp
 
--- Porting note: no @[simp] because simp proves it
 theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 
 /-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
 class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
+
+attribute [instance 100] NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
 
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
@@ -218,8 +213,24 @@ In other words, it is a type with the following structures: additive commutative
 multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 
+/-- A non-associative commutative semiring is a `NonAssocSemiring` with commutative
+multiplication. -/
+class NonAssocCommSemiring (α : Type u)
+  extends NonAssocSemiring α, NonUnitalNonAssocCommSemiring α
+
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
+
+attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
+attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
+
+-- see Note [lower instance priority]
+instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
+    [NonUnitalCommSemiring α] : NonUnitalNonAssocCommSemiring α where
+
+-- see Note [lower instance priority]
+instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α] :
+    NonAssocCommSemiring α where
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
@@ -233,7 +244,7 @@ instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
 
 section CommSemiring
 
-variable [CommSemiring α] {a b c : α}
+variable [CommSemiring α]
 
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
@@ -321,10 +332,9 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing α]
 
 instance (priority := 100) NonUnitalNonAssocRing.toHasDistribNeg : HasDistribNeg α where
-  neg := Neg.neg
   neg_neg := neg_neg
-  neg_mul a b := eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, add_left_neg, zero_mul]
-  mul_neg a b := eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, add_left_neg, mul_zero]
+  neg_mul a b := eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, neg_add_cancel, zero_mul]
+  mul_neg a b := eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, neg_add_cancel, mul_zero]
 
 theorem mul_sub_left_distrib (a b c : α) : a * (b - c) = a * b - a * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_mul_neg] using mul_add a b (-c)
@@ -354,7 +364,7 @@ end NonAssocRing
 
 section Ring
 
-variable [Ring α] {a b c d e : α}
+variable [Ring α]
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
@@ -364,13 +374,6 @@ instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
-  { ‹Ring α› with }
-
-/-- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
-definitions are given in terms of semirings, but many applications use rings or fields. We increase
-a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
-more specific instances are tried first. -/
-instance (priority := 200) : Semiring α :=
   { ‹Ring α› with }
 
 end Ring
@@ -383,6 +386,14 @@ class NonUnitalNonAssocCommRing (α : Type u)
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 
+/-- A non-associative commutative ring is a `NonAssocRing` with commutative multiplication. -/
+class NonAssocCommRing (α : Type u)
+  extends NonAssocRing α, NonUnitalNonAssocCommRing α, NonAssocCommSemiring α
+
+attribute [instance 100] NonAssocCommRing.toNonAssocRing
+attribute [instance 100] NonAssocCommRing.toNonUnitalNonAssocCommRing
+attribute [instance 100] NonAssocCommRing.toNonAssocCommSemiring
+
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
     NonUnitalCommSemiring α :=
@@ -390,6 +401,8 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 
 /-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
+
+instance (priority := 100) CommRing.toNonAssocCommRing [CommRing α] : NonAssocCommRing α where
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }
@@ -403,21 +416,12 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
-/-- A domain is a nontrivial semiring such that multiplication by a non zero element
+/-- A domain is a nontrivial semiring such that multiplication by a nonzero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
 `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
 `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
-class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
-
-/-!
-Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
-In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
-files, without importing `.Basic` theory development.
-
-These `assert_not_exists` statements guard against this returning.
--/
-assert_not_exists DivisionMonoid.toDivInvOneMonoid
-assert_not_exists mul_rotate
+@[stacks 09FE]
+class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, Nontrivial α

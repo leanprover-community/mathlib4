@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
 /-!
 # Legendre symbol
@@ -32,6 +34,8 @@ are squares:
 
 quadratic residue, quadratic nonresidue, Legendre symbol
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -63,13 +67,13 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
   · rintro ⟨y, rfl⟩
     have hy : y ≠ 0 := by
       rintro rfl
-      simp [zero_pow, mul_zero, ne_eq, not_true] at ha
+      simp [mul_zero, ne_eq] at ha
     refine ⟨Units.mk0 y hy, ?_⟩; simp
 
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
-  cases' Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 hp_odd
+  rcases Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 | hp_odd
   · subst p; revert a ha; intro a; fin_cases a
     · tauto
     · simp
@@ -146,7 +150,7 @@ theorem at_one : legendreSym p 1 = 1 := by rw [legendreSym, Int.cast_one, MulCha
 
 /-- The Legendre symbol is multiplicative in `a` for `p` fixed. -/
 protected theorem mul (a b : ℤ) : legendreSym p (a * b) = legendreSym p a * legendreSym p b := by
-  simp [legendreSym, Int.cast_mul, map_mul, quadraticCharFun_mul]
+  simp [legendreSym, Int.cast_mul, map_mul]
 
 /-- The Legendre symbol is a homomorphism of monoids with zero. -/
 @[simps]
@@ -176,9 +180,9 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
 
 theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
     legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by
-      rw [eq_one_iff]
-      · norm_cast
-      · exact mod_cast ha0
+  rw [eq_one_iff]
+  · norm_cast
+  · exact mod_cast ha0
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
 theorem eq_neg_one_iff {a : ℤ} : legendreSym p a = -1 ↔ ¬IsSquare (a : ZMod p) :=
@@ -212,7 +216,7 @@ theorem eq_one_of_sq_sub_mul_sq_eq_zero {p : ℕ} [Fact p.Prime] {a : ℤ} (ha :
   apply_fun (· * y⁻¹ ^ 2) at hxy
   simp only [zero_mul] at hxy
   rw [(by ring : (x ^ 2 - ↑a * y ^ 2) * y⁻¹ ^ 2 = (x * y⁻¹) ^ 2 - a * (y * y⁻¹) ^ 2),
-    mul_inv_cancel hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
+    mul_inv_cancel₀ hy, one_pow, mul_one, sub_eq_zero, pow_two] at hxy
   exact (eq_one_iff p ha).mpr ⟨x * y⁻¹, hxy.symm⟩
 
 /-- The Legendre symbol `legendreSym p a = 1` if there is a solution in `ℤ/pℤ`
@@ -234,10 +238,10 @@ theorem eq_zero_mod_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : legend
     rw [(eq_zero_iff p a).mpr hf] at h
     simp at h
   by_contra hf
-  cases' imp_iff_or_not.mp (not_and'.mp hf) with hx hy
-  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, eq_neg_self_iff] at h
+  rcases imp_iff_or_not.mp (not_and'.mp hf) with hx | hy
+  · rw [eq_one_of_sq_sub_mul_sq_eq_zero' ha hx hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
-  · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, eq_neg_self_iff] at h
+  · rw [eq_one_of_sq_sub_mul_sq_eq_zero ha hy hxy, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
 
 /-- If `legendreSym p a = -1` and `p` divides `x^2 - a*y^2`, then `p` must divide `x` and `y`. -/

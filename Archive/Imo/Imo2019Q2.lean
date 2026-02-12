@@ -34,7 +34,7 @@ as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
 
-library_note "IMO geometry formalization conventions"/--
+library_note «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
 that the points are coplanar (whether or not that in fact follows from the other conditions).
@@ -57,7 +57,7 @@ rather than more literally with `affineSegment`.
 -/
 
 
-open Affine Affine.Simplex EuclideanGeometry FiniteDimensional
+open Affine Affine.Simplex EuclideanGeometry Module
 
 open scoped Affine EuclideanGeometry Real
 
@@ -66,7 +66,7 @@ attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable (V : Type*) (Pt : Type*)
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
-variable [NormedAddTorsor V Pt] [hd2 : Fact (finrank ℝ V = 2)]
+variable [NormedAddTorsor V Pt]
 
 namespace Imo2019Q2
 
@@ -96,7 +96,7 @@ structure Imo2019q2Cfg where
   C_ne_Q₁ : C ≠ Q₁
 
 /-- A default choice of orientation, for lemmas that need to pick one. -/
-def someOrientation : Module.Oriented ℝ V (Fin 2) :=
+def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
   ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 
 variable {V Pt}
@@ -117,11 +117,7 @@ def symm : Imo2019q2Cfg V Pt where
   Q := cfg.P
   P₁ := cfg.Q₁
   Q₁ := cfg.P₁
-  affineIndependent_ABC := by
-    rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
-    convert cfg.affineIndependent_ABC using 1
-    ext x
-    fin_cases x <;> rfl
+  affineIndependent_ABC := cfg.affineIndependent_ABC.comm_left
   wbtw_B_A₁_C := cfg.wbtw_A_B₁_C
   wbtw_A_B₁_C := cfg.wbtw_B_A₁_C
   wbtw_A_P_A₁ := cfg.wbtw_B_Q_B₁
@@ -216,7 +212,7 @@ theorem A₁_ne_C : cfg.A₁ ≠ cfg.C := by
 theorem B₁_ne_C : cfg.B₁ ≠ cfg.C :=
   cfg.symm.A₁_ne_C
 
-theorem Q_not_mem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
+theorem Q_notMem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
   intro hQ
   have hQA₁ : line[ℝ, cfg.Q, cfg.A₁] ≤ line[ℝ, cfg.C, cfg.B] :=
     affineSpan_pair_le_of_mem_of_mem hQ cfg.wbtw_B_A₁_C.symm.mem_affineSpan
@@ -235,12 +231,12 @@ theorem Q_not_mem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
 
 theorem Q_ne_B : cfg.Q ≠ cfg.B := by
   intro h
-  have h' := cfg.Q_not_mem_CB
+  have h' := cfg.Q_notMem_CB
   rw [h] at h'
   exact h' (right_mem_affineSpan_pair _ _ _)
 
 theorem sOppSide_CB_Q_Q₁ : line[ℝ, cfg.C, cfg.B].SOppSide cfg.Q cfg.Q₁ :=
-  cfg.sbtw_Q_A₁_Q₁.sOppSide_of_not_mem_of_mem cfg.Q_not_mem_CB cfg.wbtw_B_A₁_C.symm.mem_affineSpan
+  cfg.sbtw_Q_A₁_Q₁.sOppSide_of_notMem_of_mem cfg.Q_notMem_CB cfg.wbtw_B_A₁_C.symm.mem_affineSpan
 
 /-! ### Relate the orientations of different angles in the configuration -/
 
@@ -249,7 +245,7 @@ section Oriented
 
 variable [Module.Oriented ℝ V (Fin 2)]
 
-theorem oangle_CQ₁Q_sign_eq_oangle_CBA_sign :
+theorem oangle_CQ₁Q_sign_eq_oangle_CBA_sign [Fact (finrank ℝ V = 2)] :
     (∡ cfg.C cfg.Q₁ cfg.Q).sign = (∡ cfg.C cfg.B cfg.A).sign := by
   rw [← cfg.sbtw_Q_A₁_Q₁.symm.oangle_eq_right,
     cfg.sOppSide_CB_Q_Q₁.oangle_sign_eq_neg (left_mem_affineSpan_pair ℝ cfg.C cfg.B)
@@ -259,7 +255,8 @@ theorem oangle_CQ₁Q_sign_eq_oangle_CBA_sign :
     cfg.wbtw_B_Q_B₁.oangle_eq_right cfg.Q_ne_B,
     cfg.wbtw_A_B₁_C.symm.oangle_sign_eq_of_ne_left cfg.B cfg.B₁_ne_C.symm]
 
-theorem oangle_CQ₁Q_eq_oangle_CBA : ∡ cfg.C cfg.Q₁ cfg.Q = ∡ cfg.C cfg.B cfg.A :=
+theorem oangle_CQ₁Q_eq_oangle_CBA [Fact (finrank ℝ V = 2)] :
+    ∡ cfg.C cfg.Q₁ cfg.Q = ∡ cfg.C cfg.B cfg.A :=
   oangle_eq_of_angle_eq_of_sign_eq cfg.angle_CQ₁Q_eq_angle_CBA
     cfg.oangle_CQ₁Q_sign_eq_oangle_CBA_sign
 
@@ -267,6 +264,9 @@ end Oriented
 
 /-! ### More obvious configuration properties -/
 
+section
+
+variable [hd2 : Fact (finrank ℝ V = 2)]
 
 theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
   intro h
@@ -343,7 +343,8 @@ theorem A₂_ne_C : cfg.A₂ ≠ cfg.C := by
   have hc : Collinear ℝ ({cfg.A, cfg.B, cfg.C, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.left_mem_affineSpan
-  refine hc.subset (Set.insert_subset_insert (Set.insert_subset_insert ?_))
+  refine hc.subset ?_
+  gcongr
   rw [Set.singleton_subset_iff]
   exact Set.mem_insert _ _
 
@@ -475,13 +476,13 @@ theorem symm_ω : cfg.symm.ω = cfg.ω := by
   rw [symm_ω_eq_trianglePQB₂_circumsphere, ω]
   refine circumsphere_eq_of_cospherical hd2.out cfg.cospherical_QPB₂A₂ ?_ ?_
   · simp only [trianglePQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
-      insert_emptyc_eq]
+      insert_empty_eq]
     rw [Set.insert_comm]
-    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
+    gcongr
     simp
   · simp only [triangleQPA₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
-      insert_emptyc_eq]
-    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
+      insert_empty_eq]
+    gcongr
     simp
 
 /-! ### The second angle chase in the solution -/
@@ -568,6 +569,8 @@ theorem result : Concyclic ({cfg.P, cfg.Q, cfg.P₁, cfg.Q₁} : Set Pt) := by
   simp only [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨cfg.P_mem_ω, cfg.Q_mem_ω, cfg.P₁_mem_ω, cfg.Q₁_mem_ω⟩
 
+end
+
 end Imo2019q2Cfg
 
 end
@@ -576,7 +579,7 @@ end Imo2019Q2
 
 open Imo2019Q2
 
-theorem imo2019_q2 (A B C A₁ B₁ P Q P₁ Q₁ : Pt)
+theorem imo2019_q2 [Fact (finrank ℝ V = 2)] (A B C A₁ B₁ P Q P₁ Q₁ : Pt)
     (affine_independent_ABC : AffineIndependent ℝ ![A, B, C]) (wbtw_B_A₁_C : Wbtw ℝ B A₁ C)
     (wbtw_A_B₁_C : Wbtw ℝ A B₁ C) (wbtw_A_P_A₁ : Wbtw ℝ A P A₁) (wbtw_B_Q_B₁ : Wbtw ℝ B Q B₁)
     (PQ_parallel_AB : line[ℝ, P, Q] ∥ line[ℝ, A, B]) (P_ne_Q : P ≠ Q)

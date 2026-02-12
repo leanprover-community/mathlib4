@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # Limits and colimits in the category of short complexes
@@ -14,15 +16,15 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 In this file, it is shown if a category `C` with zero morphisms has limits
 of a certain shape `J`, then it is also the case of the category `ShortComplex C`.
 
-TODO (@rioujoel): Do the same for colimits.
-
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
-variable {J C : Type*} [Category J] [Category C] [HasZeroMorphisms C]
+variable {J C : Type*} [Category* J] [Category* C] [HasZeroMorphisms C]
   {F : J ⥤ ShortComplex C}
 
 namespace ShortComplex
@@ -66,26 +68,23 @@ variable [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π�
 of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
   Cone.mk (ShortComplex.mk (limMap (whiskerLeft F π₁Toπ₂)) (limMap (whiskerLeft F π₂Toπ₃))
-      (by aesop_cat))
+      (by cat_disch))
     { app := fun j => Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
-        (by aesop_cat) (by aesop_cat)
+        (by simp) (by simp)
       naturality := fun _ _ f => by
-        ext
-        all_goals
-          dsimp
-          erw [id_comp, limit.w] }
+        ext <;> simp [← limit.w _ f] }
 
 /-- `limitCone F` becomes limit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₁MapConeLimitCone : IsLimit (π₁.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` becomes limit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₂MapConeLimitCone : IsLimit (π₂.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` becomes limit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₃MapConeLimitCone : IsLimit (π₃.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by aesop_cat)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` is limit. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
@@ -95,13 +94,13 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
 instance hasLimit_of_hasLimitπ : HasLimit F := ⟨⟨⟨_, isLimitLimitCone _⟩⟩⟩
 
 noncomputable instance : PreservesLimit F π₁ :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
 
 noncomputable instance : PreservesLimit F π₂ :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
 
 noncomputable instance : PreservesLimit F π₃ :=
-  preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
+  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
 
 end
 
@@ -199,29 +198,29 @@ variable [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F �
 of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=
   Cocone.mk (ShortComplex.mk (colimMap (whiskerLeft F π₁Toπ₂)) (colimMap (whiskerLeft F π₂Toπ₃))
-      (by aesop_cat))
+      (by cat_disch))
     { app := fun j => Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
-        (colimit.ι (F ⋙ π₃) _) (by aesop_cat) (by aesop_cat)
+        (colimit.ι (F ⋙ π₃) _) (by simp) (by simp)
       naturality := fun _ _ f => by
         ext
-        · dsimp; erw [comp_id, colimit.w (F ⋙ π₁)]
-        · dsimp; erw [comp_id, colimit.w (F ⋙ π₂)]
-        · dsimp; erw [comp_id, colimit.w (F ⋙ π₃)] }
+        · simp [← colimit.w (F ⋙ π₁) f]
+        · simp [← colimit.w (F ⋙ π₂) f]
+        · simp [← colimit.w (F ⋙ π₃) f] }
 
 /-- `colimitCocone F` becomes colimit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₁MapCoconeColimitCocone :
     IsColimit (π₁.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` becomes colimit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₂MapCoconeColimitCocone :
     IsColimit (π₂.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` becomes colimit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₃MapCoconeColimitCocone :
     IsColimit (π₃.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by aesop_cat)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` is colimit. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
@@ -231,15 +230,15 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
 instance hasColimit_of_hasColimitπ : HasColimit F := ⟨⟨⟨_, isColimitColimitCocone _⟩⟩⟩
 
 noncomputable instance : PreservesColimit F π₁ :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (isColimitπ₁MapCoconeColimitCocone F)
 
 noncomputable instance : PreservesColimit F π₂ :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (isColimitπ₂MapCoconeColimitCocone F)
 
 noncomputable instance : PreservesColimit F π₃ :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (isColimitπ₃MapCoconeColimitCocone F)
 
 end

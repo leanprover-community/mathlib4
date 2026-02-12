@@ -3,8 +3,11 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.NormedSpace.ConformalLinearMap
-import Mathlib.Analysis.Calculus.FDeriv.Add
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Normed.Operator.Conformal
 
 /-!
 # Conformal Maps
@@ -39,6 +42,8 @@ The definition of conformality in this file does NOT require the maps to be orie
 Maps such as the complex conjugate are considered to be conformal.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -54,7 +59,7 @@ def ConformalAt (f : X → Y) (x : X) :=
   ∃ f' : X →L[ℝ] Y, HasFDerivAt f f' x ∧ IsConformalMap f'
 
 theorem conformalAt_id (x : X) : ConformalAt _root_.id x :=
-  ⟨id ℝ X, hasFDerivAt_id _, isConformalMap_id⟩
+  ⟨.id ℝ X, hasFDerivAt_id _, isConformalMap_id⟩
 
 theorem conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fun x' : X => c • x') x :=
   ⟨c • ContinuousLinearMap.id ℝ X, (hasFDerivAt_id x).const_smul c, isConformalMap_const_smul h⟩
@@ -63,7 +68,7 @@ theorem conformalAt_const_smul {c : ℝ} (h : c ≠ 0) (x : X) : ConformalAt (fu
 theorem Subsingleton.conformalAt [Subsingleton X] (f : X → Y) (x : X) : ConformalAt f x :=
   ⟨0, hasFDerivAt_of_subsingleton _ _, isConformalMap_of_subsingleton _⟩
 
-/-- A function is a conformal map if and only if its differential is a conformal linear map-/
+/-- A function is a conformal map if and only if its differential is a conformal linear map -/
 theorem conformalAt_iff_isConformalMap_fderiv {f : X → Y} {x : X} :
     ConformalAt f x ↔ IsConformalMap (fderiv ℝ f x) := by
   constructor

@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2020 Yury Kudriashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudriashov, Yaël Dillies
+Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Order.Closure
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Order.Closure
 
 /-!
 # Convex hull
@@ -19,6 +21,8 @@ while the impact on writing code is minimal as `convexHull 𝕜 s` is automatica
 `(convexHull 𝕜) s`.
 -/
 
+@[expose] public section
+
 
 open Set
 
@@ -30,7 +34,7 @@ section convexHull
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -78,7 +82,7 @@ theorem convexHull_empty : convexHull 𝕜 (∅ : Set E) = ∅ :=
   convex_empty.convexHull_eq
 
 @[simp]
-theorem convexHull_empty_iff : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
+theorem convexHull_eq_empty : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
   · intro h
     rw [← Set.subset_empty_iff, ← h]
@@ -86,10 +90,12 @@ theorem convexHull_empty_iff : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
   · rintro rfl
     exact convexHull_empty
 
+@[deprecated (since := "2025-08-09")] alias convexHull_empty_iff := convexHull_eq_empty
+
 @[simp]
 theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
-  exact not_congr convexHull_empty_iff
+  exact not_congr convexHull_eq_empty
 
 protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
 
@@ -100,12 +106,22 @@ theorem segment_subset_convexHull (hx : x ∈ s) (hy : y ∈ s) : segment 𝕜 x
 theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
   (convex_singleton x).convexHull_eq
 
+@[simp] lemma convexHull_eq_singleton : convexHull 𝕜 s = {x} ↔ s = {x} where
+  mp hs := by
+    rw [← Set.Nonempty.subset_singleton_iff, ← hs]
+    · exact subset_convexHull ..
+    · by_contra! hs
+      simp_all [eq_comm (a := ∅)]
+  mpr hs := by simp [hs]
+
 @[simp]
 theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
   convexHull_singleton 0
 
+@[simp] lemma convexHull_eq_zero : convexHull 𝕜 s = 0 ↔ s = 0 := convexHull_eq_singleton
+
 @[simp]
-theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
+theorem convexHull_pair [IsOrderedRing 𝕜] (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
   rw [insert_subset_iff, singleton_subset_iff]
@@ -119,7 +135,7 @@ theorem convexHull_convexHull_union_right (s t : Set E) :
     convexHull 𝕜 (s ∪ convexHull 𝕜 t) = convexHull 𝕜 (s ∪ t) :=
   ClosureOperator.closure_sup_closure_right _ _ _
 
-theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
+theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Convex 𝕜 s) (x : E) :
     Convex 𝕜 (s \ {x}) ↔ x ∉ convexHull 𝕜 (s \ {x}) := by
   constructor
   · rintro hsx hx
@@ -141,29 +157,34 @@ theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s 
     (image_subset_iff.2 <|
       convexHull_min (image_subset_iff.1 <| subset_convexHull 𝕜 _)
         ((convex_convexHull 𝕜 _).is_linear_preimage hf))
-    (convexHull_min (image_subset _ (subset_convexHull 𝕜 s)) <|
+    (convexHull_min (image_mono (subset_convexHull 𝕜 s)) <|
       (convex_convexHull 𝕜 s).is_linear_image hf)
 
 theorem LinearMap.image_convexHull (f : E →ₗ[𝕜] F) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
   f.isLinear.image_convexHull s
 
+theorem convexHull_add_subset {s t : Set E} :
+    convexHull 𝕜 (s + t) ⊆ convexHull 𝕜 s + convexHull 𝕜 t :=
+  convexHull_min (add_subset_add (subset_convexHull _ _) (subset_convexHull _ _))
+    (Convex.add (convex_convexHull 𝕜 s) (convex_convexHull 𝕜 t))
+
 end AddCommMonoid
 
 end OrderedSemiring
 
-section OrderedCommSemiring
+section CommSemiring
 
-variable [OrderedCommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
 theorem convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
   (LinearMap.lsmul _ _ a).image_convexHull _ |>.symm
 
-end OrderedCommSemiring
+end CommSemiring
 
 section OrderedRing
 
-variable [OrderedRing 𝕜]
+variable [Ring 𝕜] [PartialOrder 𝕜]
 
 section AddCommGroup
 
@@ -176,7 +197,7 @@ theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) (s : Set E) :
     refine convexHull_min ?_ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
     rw [← Set.image_subset_iff]
     exact subset_convexHull 𝕜 (f '' s)
-  · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
+  · exact convexHull_min (Set.image_mono (subset_convexHull 𝕜 s))
       ((convex_convexHull 𝕜 s).affine_image f)
 
 theorem convexHull_subset_affineSpan (s : Set E) : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s : Set E) :=
@@ -189,7 +210,7 @@ theorem affineSpan_convexHull (s : Set E) : affineSpan 𝕜 (convexHull 𝕜 s) 
   exact convexHull_subset_affineSpan s
 
 theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
-  simp_rw [← image_neg]
+  simp_rw [← image_neg_eq_neg]
   exact AffineMap.image_convexHull (-1) _ |>.symm
 
 lemma convexHull_vadd (x : E) (s : Set E) : convexHull 𝕜 (x +ᵥ s) = x +ᵥ convexHull 𝕜 s :=

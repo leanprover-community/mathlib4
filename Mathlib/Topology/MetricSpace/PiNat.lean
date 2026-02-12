@@ -3,7 +3,13 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -45,17 +51,19 @@ in general), and `ι` is countable.
     `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
 * `PiCountable.metricSpace` is the corresponding metric space structure, adjusted so that
   the uniformity is definitionally the product uniformity. Not registered as an instance.
+* `PiNatEmbed` gives an equivalence between a space and itself in a sequence of spaces
+* `Metric.PiNatEmbed.metricSpace` proves that a topological `X` separated by countably many
+  continuous functions to metric spaces, can be embedded inside their product.
+
 -/
 
+@[expose] public section
 
 noncomputable section
 
-open scoped Classical
-open Topology Filter
+open Topology TopologicalSpace Set Metric Filter Function
 
-open TopologicalSpace Set Metric Filter Function
-
-attribute [local simp] pow_le_pow_iff_right one_lt_two inv_le_inv zero_le_two zero_lt_two
+attribute [local simp] pow_le_pow_iff_right₀ one_lt_two inv_le_inv₀ zero_le_two zero_lt_two
 
 variable {E : ℕ → Type*}
 
@@ -63,6 +71,7 @@ namespace PiNat
 
 /-! ### The firstDiff function -/
 
+open Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
@@ -71,6 +80,7 @@ irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
     x (firstDiff x y) ≠ y (firstDiff x y) := by
   rw [firstDiff_def, dif_pos h]
+  classical
   exact Nat.find_spec (ne_iff.1 h)
 
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
@@ -81,6 +91,7 @@ theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDif
   · exact (not_lt_zero' hn).elim
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
+  classical
   simp only [firstDiff_def, ne_comm]
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
@@ -134,7 +145,7 @@ theorem mem_cylinder_iff_eq {x y : ∀ n, E n} {n : ℕ} :
     exact self_mem_cylinder _ _
 
 theorem mem_cylinder_comm (x y : ∀ n, E n) (n : ℕ) : y ∈ cylinder x n ↔ x ∈ cylinder y n := by
-  simp [mem_cylinder_iff_eq, eq_comm]
+  simp [eq_comm]
 
 theorem mem_cylinder_iff_le_firstDiff {x y : ∀ n, E n} (hne : x ≠ y) (i : ℕ) :
     x ∈ cylinder y i ↔ i ≤ firstDiff x y := by
@@ -198,18 +209,23 @@ theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induc
 /-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`. -/
 theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
-  constructor <;> intro h <;> induction' n with n ih; · simp
-  · intro m hm
-    rw [Nat.lt_succ_iff_lt_or_eq] at hm
-    simp only [res_succ, cons.injEq] at h
-    cases' hm with hm hm
-    · exact ih h.2 hm
-    rw [hm]
-    exact h.1
-  · simp
-  simp only [res_succ, cons.injEq]
-  refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
-  exact h (hm.trans (Nat.lt_succ_self _))
+  constructor <;> intro h
+  · induction n with
+    | zero => simp
+    | succ n ih =>
+      intro m hm
+      rw [Nat.lt_succ_iff_lt_or_eq] at hm
+      simp only [res_succ, cons.injEq] at h
+      rcases hm with hm | hm
+      · exact ih h.2 hm
+      rw [hm]
+      exact h.1
+  · induction n with
+    | zero => simp
+    | succ n ih =>
+      simp only [res_succ, cons.injEq]
+      refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
+      exact h (hm.trans (Nat.lt_succ_self _))
 
 theorem res_injective : Injective (@res α) := by
   intro x y h
@@ -236,6 +252,7 @@ a `MetricSpace` instance, as other distances may be used on these spaces, but we
 local instances in this section.
 -/
 
+open Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
 protected def dist : Dist (∀ n, E n) :=
@@ -249,12 +266,13 @@ theorem dist_eq_of_ne {x y : ∀ n, E n} (h : x ≠ y) : dist x y = (1 / 2 : ℝ
 protected theorem dist_self (x : ∀ n, E n) : dist x x = 0 := by simp [dist]
 
 protected theorem dist_comm (x y : ∀ n, E n) : dist x y = dist y x := by
+  classical
   simp [dist, @eq_comm _ x y, firstDiff_comm]
 
 protected theorem dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
   rcases eq_or_ne x y with (rfl | h)
   · simp [dist]
-  · simp [dist, h, zero_le_two]
+  · simp [dist, h]
 
 theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y) (dist y z) := by
   rcases eq_or_ne x z with (rfl | hxz)
@@ -263,8 +281,8 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   · simp
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
-  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne,
-    not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
+  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv₀, one_div, inv_pow, zero_lt_two, Ne,
+    not_false_iff, le_max_iff, pow_le_pow_iff_right₀, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 
 protected theorem dist_triangle (x y z : ∀ n, E n) : dist x z ≤ dist x y + dist y z :=
@@ -293,7 +311,7 @@ theorem apply_eq_of_dist_lt {x y : ∀ n, E n} {n : ℕ} (h : dist x y < (1 / 2)
   rcases eq_or_ne x y with (rfl | hne)
   · rfl
   have : n < firstDiff x y := by
-    simpa [dist_eq_of_ne hne, inv_lt_inv, pow_lt_pow_iff_right, one_lt_two] using h
+    simpa [dist_eq_of_ne hne, inv_lt_inv₀, pow_lt_pow_iff_right₀, one_lt_two] using h
   exact apply_eq_of_lt_firstDiff (hi.trans_lt this)
 
 /-- A function to a pseudo-metric-space is `1`-Lipschitz if and only if points in the same cylinder
@@ -380,7 +398,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
-    (h : ∀ n, uniformity (E n) = 𝓟 idRel) : MetricSpace (∀ n, E n) :=
+    (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
   { dist_triangle := PiNat.dist_triangle
     dist_comm := PiNat.dist_comm
@@ -388,8 +406,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
     eq_of_dist_eq_zero := PiNat.eq_of_dist_eq_zero _ _
     toUniformSpace := Pi.uniformSpace _
     uniformity_dist := by
-      simp [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_setOf_eq, comap_principal,
-        PseudoMetricSpace.uniformity_dist, h, idRel]
+      simp only [Pi.uniformity, h, SetRel.id, comap_principal, preimage_setOf_eq]
       apply le_antisymm
       · simp only [le_iInf_iff, le_principal_iff]
         intro ε εpos
@@ -442,7 +459,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
     (hx : x ∉ s) : ∃ n, Disjoint s (cylinder x n) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · exact ⟨0, by simp⟩
-  have A : 0 < infDist x s := (hs.not_mem_iff_infDist_pos hne).1 hx
+  have A : 0 < infDist x s := (hs.notMem_iff_infDist_pos hne).1 hx
   obtain ⟨n, hn⟩ : ∃ n, (1 / 2 : ℝ) ^ n < infDist x s := exists_pow_lt_of_lt_one A one_half_lt_one
   refine ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
   apply lt_irrefl (infDist x s)
@@ -453,6 +470,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
       exact mem_cylinder_iff_dist_le.1 hy
     _ < infDist x s := hn
 
+open Classical in
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
@@ -463,6 +481,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
     (hx : x ∉ s) (hy : y ∈ s) : firstDiff x y < shortestPrefixDiff x s := by
   have A := exists_disjoint_cylinder hs hx
   rw [shortestPrefixDiff, dif_pos A]
+  classical
   have B := Nat.find_spec A
   contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
@@ -495,6 +514,7 @@ theorem inter_cylinder_longestPrefix_nonempty {s : Set (∀ n, E n)} (hs : IsClo
   have B : longestPrefix x s < shortestPrefixDiff x s :=
     Nat.pred_lt (shortestPrefixDiff_pos hs hne hx).ne'
   rw [longestPrefix, shortestPrefixDiff, dif_pos A] at B ⊢
+  classical
   obtain ⟨y, ys, hy⟩ : ∃ y : ∀ n : ℕ, E n, y ∈ s ∧ x ∈ cylinder y (Nat.find A - 1) := by
     simpa only [not_disjoint_iff, mem_cylinder_comm] using Nat.find_min A B
   refine ⟨y, ys, ?_⟩
@@ -553,6 +573,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     length is `< n`, then it is also the longest prefix of `y`, and we get `f x = f y = z_w`.
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
+  classical
   set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
   have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
   refine ⟨f, fs, ?_, ?_⟩
@@ -571,7 +592,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     rcases eq_or_ne x y with (rfl | hxy)
     · simp
     rcases eq_or_ne (f x) (f y) with (h' | hfxfy)
-    · simp [h', dist_nonneg]
+    · simp [h']
     have I2 : cylinder x (firstDiff x y) = cylinder y (firstDiff x y) := by
       rw [← mem_cylinder_iff_eq]
       apply mem_cylinder_firstDiff
@@ -614,9 +635,9 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
         have fy : f y = Ay.some := by simp_rw [f, if_neg ys]
         -- case where the common prefix to `x` and `s`, or `y` and `s`, is shorter than the
         -- common part to `x` and `y` -- then `f x = f y`.
-        by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
+        by_cases! H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
         · have : cylinder x (longestPrefix x s) = cylinder y (longestPrefix y s) := by
-            cases' H with H H
+            rcases H with H | H
             · exact cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff hs hne H xs ys
             · symm
               rw [firstDiff_comm] at H
@@ -626,8 +647,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           congr
         -- case where the common prefix to `x` and `s` is long, as well as the common prefix to
         -- `y` and `s`. Then all points remain in the same cylinders.
-        · push_neg at H
-          have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
+        · have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
             rw [← mem_cylinder_iff_eq]
             exact cylinder_anti x H.1 Ax.some_mem.2
           have I3 : cylinder y (firstDiff x y) = cylinder Ay.some (firstDiff x y) := by
@@ -651,7 +671,7 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
   obtain ⟨f, fs, rfl, f_cont⟩ :
     ∃ f : (∀ n, E n) → ∀ n, E n, (∀ x ∈ s, f x = x) ∧ range f = s ∧ Continuous f :=
     exists_retraction_of_isClosed hs hne
-  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.eq <| fs x x.2
+  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.ext <| fs x x.2
   exact ⟨rangeFactorization f, A, fun x => ⟨x, A x⟩, f_cont.subtype_mk _⟩
 
 end PiNat
@@ -671,13 +691,13 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     and we define `f x` there to be the unique point in the intersection.
     This function is continuous and surjective by design. -/
   letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
-  have I0 : (0 : ℝ) < 1 / 2 := by norm_num
+  have I0 : (0 : ℝ) < 1 / 2 := by simp
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
   let g : s → α := fun x => x.2.some
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
-    (mem_iInter.1 x.2.some_mem n : _)
+    (mem_iInter.1 x.2.some_mem n :)
   have g_cont : Continuous g := by
     refine continuous_iff_continuousAt.2 fun y => ?_
     refine continuousAt_of_locally_lipschitz zero_lt_one 4 fun x hxy => ?_
@@ -728,7 +748,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       rw [mul_zero] at this
       exact
         squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
-    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
+    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_closedBall)
       (fun n => isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
@@ -747,127 +767,392 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     simpa only [nonempty_coe_sort] using g_surj.nonempty
   exact ⟨g ∘ f, g_cont.comp f_cont, g_surj.comp f_surj⟩
 
+open Encodable ENNReal
 namespace PiCountable
 
 /-!
 ### Products of (possibly non-discrete) metric spaces
 -/
 
+variable {ι : Type*} [Encodable ι] {F : ι → Type*}
 
-variable {ι : Type*} [Encodable ι] {F : ι → Type*} [∀ i, MetricSpace (F i)]
+section EDist
+variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι} {r : ℝ≥0∞}
 
-open Encodable
+/-- Given a countable family of extended metric spaces,
+one may put an extended distance on their product `Π i, E i`.
 
-/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
-protected def dist : Dist (∀ i, F i) :=
-  ⟨fun x y => ∑' i : ι, min ((1 / 2) ^ encode i) (dist (x i) (y i))⟩
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def edist : EDist (∀ i, F i) where
+  edist x y := ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i))
 
-attribute [local instance] PiCountable.dist
+attribute [scoped instance] PiCountable.edist
 
-theorem dist_eq_tsum (x y : ∀ i, F i) :
-    dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) :=
-  rfl
+lemma edist_eq_tsum (x y : ∀ i, F i) :
+    edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
 
-theorem dist_summable (x y : ∀ i, F i) :
-    Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
-  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
-    summable_geometric_two_encode
-  exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
+lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
+    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := ENNReal.le_tsum _
 
-theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
-    min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) ≤ dist x y :=
-  le_tsum (dist_summable x y) i fun j _ => le_min (by simp) dist_nonneg
+lemma edist_le_two : edist x y ≤ 2 :=
+  (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
+    rw [edist_eq_tsum]; gcongr; exact min_le_left ..
 
-theorem dist_le_dist_pi_of_dist_lt {x y : ∀ i, F i} {i : ι} (h : dist x y < (1 / 2) ^ encode i) :
-    dist (x i) (y i) ≤ dist x y := by
-  simpa only [not_le.2 h, false_or_iff] using min_le_iff.1 (min_dist_le_dist_pi x y i)
+lemma edist_lt_top : edist x y < ∞ := edist_le_two.trans_lt (by simp)
 
-open Topology Filter NNReal
+lemma edist_le_edist_pi_of_edist_lt (h : edist x y < 2⁻¹ ^ encode i) :
+    edist (x i) (y i) ≤ edist x y := by
+  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_edist_le_edist_pi x y i)
 
-variable (E)
+end EDist
 
-/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`,
-defining the right topology and uniform structure. It is highly non-canonical, though, and therefore
-not registered as a global instance.
-The distance we use here is `dist x y = ∑' n, min (1/2)^(encode i) (dist (x n) (y n))`. -/
-protected def metricSpace : MetricSpace (∀ i, F i) where
-  dist_self x := by simp [dist_eq_tsum]
-  dist_comm x y := by simp [dist_eq_tsum, dist_comm]
-  dist_triangle x y z :=
-    have I : ∀ i, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (z i)) ≤
-        min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) := fun i =>
-      calc
-        min ((1 / 2) ^ encode i : ℝ) (dist (x i) (z i)) ≤
-            min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i) + dist (y i) (z i)) :=
-          min_le_min le_rfl (dist_triangle _ _ _)
-        _ = min ((1 / 2) ^ encode i : ℝ) (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-              min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) := by
-          convert congr_arg ((↑) : ℝ≥0 → ℝ)
-            (min_add_distrib ((1 / 2 : ℝ≥0) ^ encode i) (nndist (x i) (y i))
-              (nndist (y i) (z i)))
-        _ ≤ min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-              min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
-          min_le_right _ _
-    calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
-        tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
-      _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
-  eq_of_dist_eq_zero hxy := by
-    ext1 n
-    rw [← dist_le_zero, ← hxy]
-    apply dist_le_dist_pi_of_dist_lt
-    rw [hxy]
-    simp
+attribute [scoped instance] PiCountable.edist
+
+section PseudoEMetricSpace
+variable [∀ i, PseudoEMetricSpace (F i)]
+
+/-- Given a countable family of extended pseudometric spaces,
+one may put an extended distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
+  edist_self x := by simp [edist_eq_tsum]
+  edist_comm x y := by simp [edist_eq_tsum, edist_comm]
+  edist_triangle x y z := calc
+        ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (z i))
+    _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
+         min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
+      gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
+    _ = _ := ENNReal.tsum_add ..
   toUniformSpace := Pi.uniformSpace _
-  uniformity_dist := by
+  uniformity_edist := by
     simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_setOf_eq, comap_principal,
-      PseudoMetricSpace.uniformity_dist]
-    apply le_antisymm
-    · simp only [le_iInf_iff, le_principal_iff]
-      intro ε εpos
-      obtain ⟨K, hK⟩ :
-        ∃ K : Finset ι, (∑' i : { j // j ∉ K }, (1 / 2 : ℝ) ^ encode (i : ι)) < ε / 2 :=
-        ((tendsto_order.1 (tendsto_tsum_compl_atTop_zero fun i : ι => (1 / 2 : ℝ) ^ encode i)).2 _
-            (half_pos εpos)).exists
-      obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ, 0 < δ ∧ (K.card : ℝ) * δ < ε / 2 :=
-        exists_pos_mul_lt (half_pos εpos) _
+      PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
+    constructor
+    · intro ε hε
+      classical
+      obtain ⟨K, hK⟩ : ∃ K : Finset ι, ∑' i : {j // j ∉ K}, 2⁻¹ ^ encode (i : ι) < ε / 2 :=
+        ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
+          (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
+            <| by simpa using hε.ne').exists
+      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * K.card < ε / 2 :=
+        ENNReal.exists_pos_mul_lt (by simp) (by simpa using hε.ne')
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
-          { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
+          {p : (∀ i : ι, F i) × ∀ i : ι, F i | edist (p.fst i) (p.snd i) < δ}
       · rintro ⟨i, hi⟩
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
-        simp only [Prod.forall, imp_self, mem_principal, Subset.rfl]
+        simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
-        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_range, Finset.mem_coe] at hxy
+        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_coe] at hxy
         calc
-          dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
-          _ = (∑ i ∈ K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
-                ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
-            (sum_add_tsum_compl (dist_summable _ _)).symm
-          _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
-                ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
-            refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
-            refine tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
-            · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
-            · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
-          _ < (∑ _i ∈ K, δ) + ε / 2 := by
-            apply add_lt_add_of_le_of_lt _ hK
-            refine Finset.sum_le_sum fun i hi => (hxy i ?_).le
-            simpa using hi
-          _ ≤ ε / 2 + ε / 2 :=
-            (add_le_add_right (by simpa only [Finset.sum_const, nsmul_eq_mul] using hδ.le) _)
-          _ = ε := add_halves _
-    · simp only [le_iInf_iff, le_principal_iff]
-      intro i ε εpos
-      refine mem_iInf_of_mem (min ((1 / 2) ^ encode i : ℝ) ε) ?_
-      have : 0 < min ((1 / 2) ^ encode i : ℝ) ε := lt_min (by simp) εpos
-      refine mem_iInf_of_mem this ?_
+          edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
+          _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
+                ∑' i : ↑(K : Set ι)ᶜ, min (2⁻¹ ^ encode (i : ι)) (edist (x i) (y i)) :=
+            (ENNReal.sum_add_tsum_compl ..).symm
+          _ ≤ ∑ i ∈ K, edist (x i) (y i) + ∑' i : ↑(K : Set ι)ᶜ, 2⁻¹ ^ encode (i : ι) := by
+            gcongr
+            · apply min_le_right
+            · apply min_le_left
+          _ < ∑ _i ∈ K, δ + ε / 2 := by
+            refine ENNReal.add_lt_add_of_le_of_lt (by simpa using fun i hi ↦ (hxy i hi).ne_top) ?_
+              hK
+            gcongr with i hi
+            exact (hxy i hi).le
+          _ ≤ ε / 2 + ε / 2 := by gcongr; simpa [mul_comm] using hδ.le
+          _ = ε := ENNReal.add_halves _
+    · intro i ε hε₀
+      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by norm_num) _
+      refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
       simp only [and_imp, Prod.forall, setOf_subset_setOf, lt_min_iff, mem_principal]
-      intro x y hn hε
-      calc
-        dist (x i) (y i) ≤ dist x y := dist_le_dist_pi_of_dist_lt hn
-        _ < ε := hε
+      intro x y hn
+      exact (edist_le_edist_pi_of_edist_lt hn).trans_lt
 
+end PseudoEMetricSpace
+
+attribute [scoped instance] PiCountable.pseudoEMetricSpace
+
+section EMetricSpace
+variable [∀ i, EMetricSpace (F i)]
+
+/-- Given a countable family of extended metric spaces,
+one may put an extended distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def emetricSpace : EMetricSpace (∀ i, F i) where
+  eq_of_edist_eq_zero := by simp [edist_eq_tsum, funext_iff]
+
+end EMetricSpace
+
+attribute [scoped instance] PiCountable.emetricSpace
+
+section PseudoMetricSpace
+variable [∀ i, PseudoMetricSpace (F i)] {x y : ∀ i, F i} {i : ι}
+
+
+/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+protected def dist : Dist (∀ i, F i) where
+  dist x y := ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i))
+
+attribute [scoped instance] PiCountable.dist
+
+lemma dist_eq_tsum (x y : ∀ i, F i) : dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i)) :=
+  rfl
+
+lemma dist_summable (x y : ∀ i, F i) :
+    Summable fun i ↦ min (2⁻¹ ^ encode i) (dist (x i) (y i)) := by
+  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _) <| by
+    simpa [one_div] using summable_geometric_two_encode
+  exact le_min (by positivity) dist_nonneg
+
+lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
+    min (2⁻¹ ^ encode i) (dist (x i) (y i)) ≤ dist x y :=
+  (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
+
+lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
+  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
+
+-- TODO: fix two non-terminal simps below; second one uses a long lemma list
+set_option linter.flexible false in
+/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
+    (fun x y ↦ by simp [dist_eq_tsum]; positivity) fun x y ↦ by
+      rw [edist_eq_tsum, dist_eq_tsum,
+        ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (dist_summable ..)]
+      simp [edist, ENNReal.inv_pow]
+      congr! with a
+      exact PseudoMetricSpace.edist_dist (x a) (y a)
+
+end PseudoMetricSpace
+
+attribute [scoped instance] PiCountable.pseudoMetricSpace
+
+section MetricSpace
+variable [∀ i, MetricSpace (F i)]
+/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+
+It is highly non-canonical, though, and therefore not registered as a global instance.
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+protected def metricSpace : MetricSpace (∀ i, F i) :=
+  EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
+
+end MetricSpace
 end PiCountable
+
+/-! ### Embedding a countably separated space inside a space of sequences -/
+
+namespace Metric
+
+open scoped PiCountable
+
+variable {ι X : Type*} {Y : ι → Type*} {f : ∀ i, X → Y i}
+
+include f in
+variable (X Y f) in
+/-- Given a type `X` and a sequence `Y` of metric spaces and a sequence `f : : ∀ i, X → Y i` of
+separating functions, `PiNatEmbed X Y f` is a type synonym for `X` seen as a subset of `∀ i, Y i`.
+-/
+structure PiNatEmbed (X : Type*) (Y : ι → Type*) (f : ∀ i, X → Y i) where
+  /-- The map from `X` to the subset of `∀ i, Y i`. -/
+  toPiNat ::
+  /-- The map from the subset of `∀ i, Y i` to `X`. -/
+  ofPiNat : X
+
+namespace PiNatEmbed
+
+@[ext] lemma ext {x y : PiNatEmbed X Y f} (hxy : x.ofPiNat = y.ofPiNat) : x = y := by
+  cases x; congr!
+
+variable (X Y f) in
+/-- Equivalence between `X` and its embedding into `∀ i, Y i`. -/
+@[simps]
+def toPiNatEquiv : X ≃ PiNatEmbed X Y f where
+  toFun := toPiNat
+  invFun := ofPiNat
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp] lemma ofPiNat_inj {x y : PiNatEmbed X Y f} : x.ofPiNat = y.ofPiNat ↔ x = y :=
+  (toPiNatEquiv X Y f).symm.injective.eq_iff
+
+@[simp] lemma «forall» {P : PiNatEmbed X Y f → Prop} : (∀ x, P x) ↔ ∀ x, P (toPiNat x) :=
+  (toPiNatEquiv X Y f).symm.forall_congr_left
+
+variable (X Y f) in
+/-- `X` equipped with the distance coming from `∀ i, Y i` embeds in `∀ i, Y i`. -/
+noncomputable def embed : PiNatEmbed X Y f → ∀ i, Y i := fun x i ↦ f i x.ofPiNat
+
+lemma embed_injective (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    Injective (embed X Y f) := by
+  simpa [Pairwise, not_imp_comm (a := _ = _), funext_iff, Function.Injective] using separating_f
+
+variable [Encodable ι]
+
+section PseudoEMetricSpace
+variable [∀ i, PseudoEMetricSpace (Y i)]
+
+noncomputable instance : PseudoEMetricSpace (PiNatEmbed X Y f) :=
+  .induced (embed X Y f) PiCountable.pseudoEMetricSpace
+
+lemma edist_def (x y : PiNatEmbed X Y f) :
+    edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (f i x.ofPiNat) (f i y.ofPiNat)) := rfl
+
+lemma isometry_embed : Isometry (embed X Y f) := PseudoEMetricSpace.isometry_induced _
+
+end PseudoEMetricSpace
+
+section PseudoMetricSpace
+variable [∀ i, PseudoMetricSpace (Y i)]
+
+noncomputable instance : PseudoMetricSpace (PiNatEmbed X Y f) :=
+  .induced (embed X Y f) PiCountable.pseudoMetricSpace
+
+lemma dist_def (x y : PiNatEmbed X Y f) :
+    dist x y = ∑' i, min (2⁻¹ ^ encode i) (dist (f i x.ofPiNat) (f i y.ofPiNat)) := rfl
+
+variable [TopologicalSpace X]
+
+lemma continuous_toPiNat (continuous_f : ∀ i, Continuous (f i)) :
+    Continuous (toPiNat : X → PiNatEmbed X Y f) := by
+  rw [continuous_iff_continuous_dist]
+  simp only [dist_def]
+  apply continuous_tsum (by fun_prop) summable_geometric_two_encode <| by simp [abs_of_nonneg]
+
+end PseudoMetricSpace
+
+section EMetricSpace
+variable [∀ i, EMetricSpace (Y i)]
+
+/-- If the functions `f i : X → Y i` separate points of `X`, then `X` can be embedded into
+`∀ i, Y i`. -/
+noncomputable abbrev emetricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    EMetricSpace (PiNatEmbed X Y f) :=
+  .induced (embed X Y f) (embed_injective separating_f) PiCountable.emetricSpace
+
+lemma isUniformEmbedding_embed (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    IsUniformEmbedding (embed X Y f) :=
+  let := emetricSpace separating_f; isometry_embed.isUniformEmbedding
+
+end EMetricSpace
+
+
+section MetricSpace
+variable [∀ i, MetricSpace (Y i)]
+
+/-- If the functions `f i : X → Y i` separate points of `X`, then `X` can be embedded into
+`∀ i, Y i`. -/
+noncomputable abbrev metricSpace (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    MetricSpace (PiNatEmbed X Y f) :=
+  (emetricSpace separating_f).toMetricSpace fun x y ↦ by simp [edist_dist]
+
+section CompactSpace
+variable [TopologicalSpace X] [CompactSpace X]
+
+lemma isHomeomorph_toPiNat (continuous_f : ∀ i, Continuous (f i))
+    (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    IsHomeomorph (toPiNat : X → PiNatEmbed X Y f) := by
+  letI := emetricSpace separating_f
+  rw [isHomeomorph_iff_continuous_bijective]
+  exact ⟨continuous_toPiNat continuous_f, (toPiNatEquiv X Y f).bijective⟩
+
+variable (X Y f) in
+/-- Homeomorphism between `X` and its embedding into `∀ i, Y i` induced by a separating family of
+continuous functions `f i : X → Y i`. -/
+@[simps!]
+noncomputable def toPiNatHomeo (continuous_f : ∀ i, Continuous (f i))
+    (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    X ≃ₜ PiNatEmbed X Y f :=
+  (toPiNatEquiv X Y f).toHomeomorphOfIsInducing
+    (isHomeomorph_toPiNat continuous_f separating_f).isInducing
+
+/-- If `X` is compact, and there exists a sequence of continuous functions `f i : X → Y i` to
+metric spaces `Y i` that separate points on `X`, then `X` is metrizable. -/
+lemma TopologicalSpace.MetrizableSpace.of_countable_separating (f : ∀ i, X → Y i)
+    (continuous_f : ∀ i, Continuous (f i)) (separating_f : Pairwise fun x y ↦ ∃ i, f i x ≠ f i y) :
+    MetrizableSpace X :=
+  letI := Metric.PiNatEmbed.metricSpace separating_f
+  (Metric.PiNatEmbed.toPiNatHomeo X Y f continuous_f separating_f).isEmbedding.metrizableSpace
+
+end CompactSpace
+
+open TopologicalSpace Filter unitInterval
+
+variable [MetricSpace X] [SeparableSpace X]
+
+variable (X) in
+/-- Given a separable metric space `X`, `denseSeq X : ℕ → X` gives a countable
+dense sequence. This measures the distance between `denseSeq X n` and `x`, truncated to the unit
+interval `I` so that the distances remain bounded.
+
+The function `(fun x n ↦ distDenseSeq n x) : X → ℕ → I` is a mapping from `X` to the Hilbert cube.
+-/
+noncomputable abbrev distDenseSeq (n : ℕ) (x : X) : I :=
+  have : Nonempty X := ⟨x⟩
+  projIcc _ _ zero_le_one <| dist x (denseSeq X n)
+
+lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
+  cases isEmpty_or_nonempty X
+  · exact continuous_of_discreteTopology
+  refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
+  convert continuous_const (y := denseSeq X n)
+
+lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
+    ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by
+  let ε : ℝ := min (infDist x (closure Cᶜ)) 1
+  obtain hC | hC := (closure Cᶜ).eq_empty_or_nonempty
+  · simp_all
+  have : Nonempty X := ⟨x⟩
+  obtain ⟨n, hn⟩ := denseRange_iff.mp (denseRange_denseSeq X) x (ε / 2)
+    (by simp_all [ε, ← IsClosed.notMem_iff_infDist_pos, mem_interior_iff_mem_nhds])
+  refine ⟨n, ball 0 (ε / 2), isOpen_ball.mem_nhds ?_, ?_⟩
+  · simp [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, hn]
+  · intro y hy
+    replace hy : dist y (denseSeq X n) < ε / 2 := by
+      simpa [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, not_lt_of_ge, ε, div_le_iff₀] using hy
+    have : dist x y < infDist x (closure Cᶜ) :=
+      ((dist_triangle_right x y (denseSeq X n)).trans_lt (add_lt_add hn hy)).trans_le (by simp [ε])
+    simpa using notMem_of_notMem_closure (mt infDist_le_dist_of_mem this.not_ge)
+
+lemma injective_distDenseSeq (x y : X) (hxy : x ≠ y) :
+    ∃ n, distDenseSeq X n x ≠ distDenseSeq X n y := by
+  obtain ⟨n, hn⟩ := separation ((isOpen_compl_singleton (x := y)).mem_nhds hxy)
+  exact ⟨n, fun e ↦ by simp +contextual [e, ← exists_prop, mem_of_mem_nhds] at hn⟩
+
+variable (A : Type*) [TopologicalSpace A]
+
+lemma continuous_distDenseSeq_inv :
+    Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (distDenseSeq X) → X) := by
+  refine continuous_iff_continuousAt.mpr fun x s hs ↦ ?_
+  obtain ⟨i, t, ht, hts⟩ := separation hs
+  rw [(isUniformEmbedding_embed injective_distDenseSeq).isEmbedding.nhds_eq_comap, nhds_pi]
+  exact ⟨_, Filter.mem_pi_of_mem _ ht, fun x hx ↦ hts hx⟩
+
+theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding F := by
+  let firststep : X ≃ₜ PiNatEmbed X (fun i => I) (distDenseSeq X) := {
+    toFun := toPiNat
+    invFun := ofPiNat
+    left_inv _ := rfl
+    right_inv _ := rfl
+    continuous_toFun := continuous_toPiNat <| fun i ↦ continuous_distDenseSeq i
+    continuous_invFun := continuous_distDenseSeq_inv }
+  let secondstep : PiNatEmbed X (fun i => I) (distDenseSeq X) → ℕ → I := embed _ _ _
+  let isEmbedding_secondstep : IsEmbedding secondstep :=
+      (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding
+  exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
+
+@[deprecated "This version is more general as compact metric spaces are separable"
+(since := "2025-11-27")] alias
+exists_closed_embedding_to_hilbert_cube := Metric.PiNatEmbed.exists_embedding_to_hilbert_cube
+
+end MetricSpace
+end PiNatEmbed
+end Metric

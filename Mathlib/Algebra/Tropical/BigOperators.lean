@@ -3,10 +3,12 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.List.MinMax
-import Mathlib.Algebra.Tropical.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+module
+
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 
@@ -23,7 +25,7 @@ collection of linear functions.
 
 ## Implementation notes
 
-No concrete (semi)ring is used here, only ones with inferrable order/lattice structure, to support
+No concrete (semi)ring is used here, only ones with inferable order/lattice structure, to support
 `Real`, `Rat`, `EReal`, and others (`ERat` is not yet defined).
 
 Minima over `List α` are defined as producing a value in `WithTop α` so proofs about lists do not
@@ -31,14 +33,16 @@ directly transfer to minima over multisets or finsets.
 
 -/
 
+public section
+
 variable {R S : Type*}
 
 open Tropical Finset
 
 theorem List.trop_sum [AddMonoid R] (l : List R) : trop l.sum = List.prod (l.map trop) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [← IH]
 
 theorem Multiset.trop_sum [AddCommMonoid R] (s : Multiset R) :
     trop s.sum = Multiset.prod (s.map trop) :=
@@ -52,9 +56,9 @@ theorem trop_sum [AddCommMonoid R] (s : Finset S) (f : S → R) :
 
 theorem List.untrop_prod [AddMonoid R] (l : List (Tropical R)) :
     untrop l.prod = List.sum (l.map untrop) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [← IH]
 
 theorem Multiset.untrop_prod [AddCommMonoid R] (s : Multiset (Tropical R)) :
     untrop s.prod = Multiset.sum (s.map untrop) :=
@@ -66,18 +70,17 @@ theorem untrop_prod [AddCommMonoid R] (s : Finset S) (f : S → Tropical R) :
   simp only [Multiset.map_map, Function.comp_apply]
   rfl
 
--- Porting note: replaced `coe` with `WithTop.some` in statement
 theorem List.trop_minimum [LinearOrder R] (l : List R) :
     trop l.minimum = List.sum (l.map (trop ∘ WithTop.some)) := by
-  induction' l with hd tl IH
-  · simp
-  · simp [List.minimum_cons, ← IH]
+  induction l with
+  | nil => simp
+  | cons hd tl IH => simp [List.minimum_cons, ← IH]
 
 theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
     trop s.inf = Multiset.sum (s.map trop) := by
-  induction' s using Multiset.induction with s x IH
-  · simp
-  · simp [← IH]
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons s x IH => simp [← IH]
 
 theorem Finset.trop_inf [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → R) :
     trop (s.inf f) = ∑ i ∈ s, trop (f i) := by
@@ -97,16 +100,14 @@ theorem trop_iInf [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Wi
 
 theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical R)) :
     untrop s.sum = Multiset.inf (s.map untrop) := by
-  induction' s using Multiset.induction with s x IH
-  · simp
-  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
-    rfl
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons s x IH => simp only [sum_cons, untrop_add, map_cons, inf_cons, ← IH]
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i ∈ s, f i) = s.inf (untrop ∘ f) := by
   convert Multiset.untrop_sum (s.val.map f)
-  simp only [Multiset.map_map, Function.comp_apply]
-  rfl
+  simp only [Multiset.map_map, Function.comp_apply, inf_def]
 
 theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S)
     (f : S → Tropical (WithTop R)) : untrop (∑ i ∈ s, f i) = sInf (untrop ∘ f '' s) := by
@@ -116,8 +117,7 @@ theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finse
 
 theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Tropical (WithTop R)) :
     untrop (∑ i : S, f i) = ⨅ i : S, untrop (f i) := by
-  rw [iInf,← Set.image_univ,← coe_univ, untrop_sum_eq_sInf_image]
-  rfl
+  rw [iInf, ← Set.image_univ, ← coe_univ, untrop_sum_eq_sInf_image, Function.comp_def]
 
 /-- Note we cannot use `i ∈ s` instead of `i : s` here
 as it is simply not true on conditionally complete lattices! -/

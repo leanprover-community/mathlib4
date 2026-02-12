@@ -3,11 +3,14 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Finsupp.Order
-import Mathlib.GroupTheory.GroupAction.Pi
-import Mathlib.Order.GaloisConnection
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Flooring, ceiling division
@@ -48,10 +51,13 @@ Note in both cases we only allow dividing by positive inputs. We enforce the fol
 * Prove `⌈a / b⌉ = a ⌈/⌉ b` when `a, b : ℕ`
 -/
 
+@[expose] public section
+
 variable {ι α β : Type*}
 
 section OrderedAddCommMonoid
-variable (α β) [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+variable (α β) [AddCommMonoid α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β]
+  [SMulZeroClass α β]
 
 /-- Typeclass for division rounded down. For each `a > 0`, this asserts the existence of a right
 adjoint to the map `b ↦ a • b : β → β`. -/
@@ -77,8 +83,8 @@ class CeilDiv where
   /-- Do not use this. Use `zero_ceilDiv` instead. -/
   protected zero_ceilDiv (a) : ceilDiv 0 a = 0
 
-@[inherit_doc] infixl:70 " ⌊/⌋ "   => FloorDiv.floorDiv
-@[inherit_doc] infixl:70 " ⌈/⌉ "   => CeilDiv.ceilDiv
+@[inherit_doc] infixl:70 " ⌊/⌋ " => FloorDiv.floorDiv
+@[inherit_doc] infixl:70 " ⌈/⌉ " => CeilDiv.ceilDiv
 
 variable {α β}
 
@@ -118,40 +124,40 @@ end CeilDiv
 end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
-variable [LinearOrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
-  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b c : β}
+variable [AddCommMonoid α] [LinearOrder α] [AddCommMonoid β] [PartialOrder β] [SMulZeroClass α β]
+  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
-  obtain ha | ha := le_or_lt a 0
+  obtain ha | ha := le_or_gt a 0
   · simp [ha]
-  · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans $ le_smul_ceilDiv ha) ha
+  · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans <| le_smul_ceilDiv ha) ha
 
 end LinearOrderedAddCommMonoid
 
 section OrderedSemiring
-variable [OrderedSemiring α] [OrderedAddCommMonoid β] [MulActionWithZero α β]
+variable [Semiring α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β] [MulActionWithZero α β]
 
 section FloorDiv
 variable [FloorDiv α β] {a : α}
 
-@[simp] lemma floorDiv_one [Nontrivial α] (b : β) : b ⌊/⌋ (1 : α) = b :=
-  eq_of_forall_le_iff $ fun c ↦ by simp [zero_lt_one' α]
+@[simp] lemma floorDiv_one [IsOrderedRing α] [Nontrivial α] (b : β) : b ⌊/⌋ (1 : α) = b :=
+  eq_of_forall_le_iff <| fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_floorDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
     a • b ⌊/⌋ a = b :=
-  eq_of_forall_le_iff $ by simp [smul_le_smul_iff_of_pos_left, ha]
+  eq_of_forall_le_iff <| by simp [smul_le_smul_iff_of_pos_left, ha]
 
 end FloorDiv
 
 section CeilDiv
 variable [CeilDiv α β] {a : α}
 
-@[simp] lemma ceilDiv_one [Nontrivial α] (b : β) : b ⌈/⌉ (1 : α) = b :=
-  eq_of_forall_ge_iff $ fun c ↦ by simp [zero_lt_one' α]
+@[simp] lemma ceilDiv_one [IsOrderedRing α] [Nontrivial α] (b : β) : b ⌈/⌉ (1 : α) = b :=
+  eq_of_forall_ge_iff <| fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_ceilDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
     a • b ⌈/⌉ a = b :=
-  eq_of_forall_ge_iff $ by simp [smul_le_smul_iff_of_pos_left, ha]
+  eq_of_forall_ge_iff <| by simp [smul_le_smul_iff_of_pos_left, ha]
 
 end CeilDiv
 
@@ -177,14 +183,14 @@ namespace Nat
 instance instFloorDiv : FloorDiv ℕ ℕ where
   floorDiv := HDiv.hDiv
   floorDiv_gc a ha := by simpa [mul_comm] using Nat.galoisConnection_mul_div ha
-  floorDiv_nonpos a ha b := by rw [ha.antisymm $ zero_le _, Nat.div_zero]
+  floorDiv_nonpos a ha b := by rw [ha.antisymm <| zero_le _, Nat.div_zero]
   zero_floorDiv := Nat.zero_div
 
 instance instCeilDiv : CeilDiv ℕ ℕ where
   ceilDiv a b := (a + b - 1) / b
   ceilDiv_gc a ha b c := by
-    simp [div_le_iff_le_mul_add_pred ha, add_assoc, tsub_add_cancel_of_le $ succ_le_iff.2 ha]
-  ceilDiv_nonpos a ha b := by simp_rw [ha.antisymm $ zero_le _, Nat.div_zero]
+    simp [div_le_iff_le_mul_add_pred ha, add_assoc, tsub_add_cancel_of_le <| succ_le_iff.2 ha]
+  ceilDiv_nonpos a ha b := by simp_rw [ha.antisymm <| zero_le _, Nat.div_zero]
   zero_ceilDiv a := by cases a <;> simp [Nat.div_eq_zero_iff]
 
 @[simp] lemma floorDiv_eq_div (a b : ℕ) : a ⌊/⌋ b = a / b := rfl
@@ -193,7 +199,8 @@ lemma ceilDiv_eq_add_pred_div (a b : ℕ) : a ⌈/⌉ b = (a + b - 1) / b := rfl
 end Nat
 
 namespace Pi
-variable {π : ι → Type*} [OrderedAddCommMonoid α] [∀ i, OrderedAddCommMonoid (π i)]
+variable {π : ι → Type*} [AddCommMonoid α] [PartialOrder α]
+  [∀ i, AddCommMonoid (π i)] [∀ i, PartialOrder (π i)]
   [∀ i, SMulZeroClass α (π i)]
 
 section FloorDiv
@@ -205,6 +212,7 @@ instance instFloorDiv : FloorDiv α (∀ i, π i) where
   floorDiv_nonpos a ha f := by ext i; exact floorDiv_of_nonpos ha _
   zero_floorDiv a := by ext i; exact zero_floorDiv a
 
+@[push ←]
 lemma floorDiv_def (f : ∀ i, π i) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
 @[simp] lemma floorDiv_apply (f : ∀ i, π i) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
@@ -226,7 +234,8 @@ end CeilDiv
 end Pi
 
 namespace Finsupp
-variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+variable [AddCommMonoid α] [PartialOrder α]
+  [AddCommMonoid β] [PartialOrder β] [SMulZeroClass α β]
 
 section FloorDiv
 variable [FloorDiv α β] {f : ι →₀ β} {a : α}
@@ -243,7 +252,7 @@ lemma floorDiv_def (f : ι →₀ β) (a : α) : f ⌊/⌋ a = f.mapRange (· �
 @[simp] lemma floorDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
 lemma support_floorDiv_subset : (f ⌊/⌋ a).support ⊆ f.support := by
-  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
+  simp +contextual [Finset.subset_iff, not_imp_not]
 
 end FloorDiv
 
@@ -262,7 +271,7 @@ lemma ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = f.mapRange (· ⌈
 @[simp] lemma ceilDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌈/⌉ a) i = f i ⌈/⌉ a := rfl
 
 lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
-  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
+  simp +contextual [Finset.subset_iff, not_imp_not]
 
 end CeilDiv
 end Finsupp

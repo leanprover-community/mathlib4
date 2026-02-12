@@ -3,18 +3,21 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Group.Semiconj.Units
-import Mathlib.Init.Classical
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
 # Lemmas about semiconjugate elements in a `GroupWithZero`.
 
 -/
 
-assert_not_exists DenselyOrdered
+public section
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+assert_not_exists DenselyOrdered Ring
+
+variable {G₀ : Type*}
 
 namespace SemiconjBy
 

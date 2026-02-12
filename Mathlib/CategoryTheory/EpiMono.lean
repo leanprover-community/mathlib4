@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Scott Morrison
+Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Groupoid
+module
+
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Facts about epimorphisms and monomorphisms.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Groupoid
 The definitions of `Epi` and `Mono` are in `CategoryTheory.Category`,
 since they are used by some lemmas for `Iso`, which is used everywhere.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -32,19 +36,37 @@ instance op_mono_of_epi {A B : C} (f : A ⟶ B) [Epi f] : Mono f.op :=
 instance op_epi_of_mono {A B : C} (f : A ⟶ B) [Mono f] : Epi f.op :=
   ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_mono f).1 (Quiver.Hom.op_inj eq))⟩
 
+@[simp]
+lemma op_mono_iff {X Y : C} (f : X ⟶ Y) :
+    Mono f.op ↔ Epi f :=
+  ⟨fun _ ↦ unop_epi_of_mono f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma op_epi_iff {X Y : C} (f : X ⟶ Y) :
+    Epi f.op ↔ Mono f :=
+  ⟨fun _ ↦ unop_mono_of_epi f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_mono_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Mono f.unop ↔ Epi f :=
+  ⟨fun _ ↦ op_epi_of_mono f.unop, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_epi_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Epi f.unop ↔ Mono f :=
+  ⟨fun _ ↦ op_mono_of_epi f.unop, fun _ ↦ inferInstance⟩
+
 /-- A split monomorphism is a morphism `f : X ⟶ Y` with a given retraction `retraction f : Y ⟶ X`
 such that `f ≫ retraction f = 𝟙 X`.
 
 Every split monomorphism is a monomorphism.
 -/
-/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
-/- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   retraction : Y ⟶ X
   /-- `f` composed with `retraction` is the identity -/
-  id : f ≫ retraction = 𝟙 X := by aesop_cat
+  id : f ≫ retraction = 𝟙 X := by cat_disch
 
 attribute [reassoc (attr := simp)] SplitMono.id
 
@@ -52,6 +74,12 @@ attribute [reassoc (attr := simp)] SplitMono.id
 class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitMono : Nonempty (SplitMono f)
+
+/-- A composition of `SplitMono` is a `SplitMono`. -/
+@[simps]
+def SplitMono.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (smf : SplitMono f) (smg : SplitMono g) :
+    SplitMono (f ≫ g) where
+  retraction := smg.retraction ≫ smf.retraction
 
 /-- A constructor for `IsSplitMono f` taking a `SplitMono f` as an argument -/
 theorem IsSplitMono.mk' {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : IsSplitMono f :=
@@ -63,14 +91,12 @@ such that `section_ f ≫ f = 𝟙 Y`.
 
 Every split epimorphism is an epimorphism.
 -/
-/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
-/- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
 @[ext, aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
-  /--  `section_` composed with `f` is the identity -/
-  id : section_ ≫ f = 𝟙 Y := by aesop_cat
+  /-- `section_` composed with `f` is the identity -/
+  id : section_ ≫ f = 𝟙 Y := by cat_disch
 
 attribute [reassoc (attr := simp)] SplitEpi.id
 
@@ -78,6 +104,12 @@ attribute [reassoc (attr := simp)] SplitEpi.id
 class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitEpi : Nonempty (SplitEpi f)
+
+/-- A composition of `SplitEpi` is a split `SplitEpi`. -/
+@[simps]
+def SplitEpi.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (sef : SplitEpi f) (seg : SplitEpi g) :
+    SplitEpi (f ≫ g) where
+  section_ := seg.section_ ≫ sef.section_
 
 /-- A constructor for `IsSplitEpi f` taking a `SplitEpi f` as an argument -/
 theorem IsSplitEpi.mk' {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : IsSplitEpi f :=
@@ -147,6 +179,12 @@ theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
 /-- Every split epi is an epi. -/
 instance (priority := 100) IsSplitEpi.epi {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : Epi f :=
   hf.exists_splitEpi.some.epi
+
+instance {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} [hf : IsSplitMono f] [hg : IsSplitMono g] :
+    IsSplitMono (f ≫ g) := IsSplitMono.mk' <| hf.exists_splitMono.some.comp hg.exists_splitMono.some
+
+instance {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} [hf : IsSplitEpi f] [hg : IsSplitEpi g] :
+    IsSplitEpi (f ≫ g) := IsSplitEpi.mk' <| hf.exists_splitEpi.some.comp hg.exists_splitEpi.some
 
 /-- Every split mono whose retraction is mono is an iso. -/
 theorem IsIso.of_mono_retraction' {X Y : C} {f : X ⟶ Y} (hf : SplitMono f) [Mono <| hf.retraction] :
@@ -227,5 +265,57 @@ instance {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] (F : C ⥤ D) : IsSplitEpi 
   IsSplitEpi.mk' (hf.exists_splitEpi.some.map F)
 
 end
+
+section
+
+/-- When `f` is an epimorphism, `f ≫ g` is epic iff `g` is. -/
+@[simp]
+lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
+    Epi (f ≫ g) ↔ Epi g :=
+  ⟨fun _ ↦ epi_of_epi f _, fun _ ↦ inferInstance⟩
+
+/-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
+@[simp]
+lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    Epi (f ≫ g) ↔ Epi f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g))
+
+/-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
+@[simp]
+lemma mono_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
+    Mono (f ≫ g) ↔ Mono g := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  simpa using (inferInstance : Mono (inv f ≫ f ≫ g))
+
+/-- When `g` is a monomorphism, `f ≫ g` is monic iff `f` is. -/
+@[simp]
+lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
+    Mono (f ≫ g) ↔ Mono f :=
+  ⟨fun _ ↦ mono_of_mono _ g, fun _ ↦ inferInstance⟩
+
+end
+
+section Opposite
+
+variable {X Y : C} {f : X ⟶ Y}
+
+/-- The opposite of a split mono is a split epi. -/
+def SplitMono.op (h : SplitMono f) : SplitEpi f.op where
+  section_ := h.retraction.op
+  id := Quiver.Hom.unop_inj (by simp)
+
+/-- The opposite of a split epi is a split mono. -/
+def SplitEpi.op (h : SplitEpi f) : SplitMono f.op where
+  retraction := h.section_.op
+  id := Quiver.Hom.unop_inj (by simp)
+
+instance [IsSplitMono f] : IsSplitEpi f.op :=
+  .mk' IsSplitMono.exists_splitMono.some.op
+
+instance [IsSplitEpi f] : IsSplitMono f.op :=
+  .mk' IsSplitEpi.exists_splitEpi.some.op
+
+end Opposite
 
 end CategoryTheory

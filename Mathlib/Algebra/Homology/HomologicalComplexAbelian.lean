@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian
 
@@ -17,21 +19,23 @@ is exact (resp. short exact) iff degreewise it is so.
 
 -/
 
+public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
+variable {C ι : Type*} {c : ComplexShape ι} [Category* C] [Abelian C]
 
-noncomputable instance : NormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
-  NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
+noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
+  ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
     (isColimitOfEval _ _ (fun _ =>
-      Abelian.isColimitMapCoconeOfCokernelCoforkOfπ _ _))⟩
+      Abelian.isColimitMapCoconeOfCokernelCoforkOfπ _ _))⟩⟩
 
-noncomputable instance : NormalMonoCategory (HomologicalComplex C c) := ⟨fun p _ =>
-  NormalMono.mk _ (cokernel.π p) (cokernel.condition _)
+noncomputable instance : IsNormalMonoCategory (HomologicalComplex C c) := ⟨fun p _ =>
+  ⟨NormalMono.mk _ (cokernel.π p) (cokernel.condition _)
     (isLimitOfEval _ _ (fun _ =>
-      Abelian.isLimitMapConeOfKernelForkOfι _ _))⟩
+      Abelian.isLimitMapConeOfKernelForkOfι _ _))⟩⟩
 
 noncomputable instance : Abelian (HomologicalComplex C c) where
 

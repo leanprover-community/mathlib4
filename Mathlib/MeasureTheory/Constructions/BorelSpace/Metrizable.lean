@@ -3,18 +3,20 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.IndicatorConstPointwise
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+public import Mathlib.Topology.Metrizable.Real
+public import Mathlib.Topology.IndicatorConstPointwise
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
 -/
 
-open Filter MeasureTheory TopologicalSpace
+public section
 
-open scoped Classical
-open Topology NNReal ENNReal MeasureTheory
+open Filter MeasureTheory TopologicalSpace Topology NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
 
@@ -40,7 +42,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
     exact ((continuous_infNndist_pt s).tendsto (g x)).comp (lim x)
   have h4s : g ⁻¹' s = (fun x => infNndist (g x) s) ⁻¹' {0} := by
     ext x
-    simp [h1s, ← h1s.mem_iff_infDist_zero h2s, ← NNReal.coe_eq_zero]
+    simp [← h1s.mem_iff_infDist_zero h2s, ← NNReal.coe_eq_zero]
   rw [h4s]
   exact this (measurableSet_singleton 0)
 
@@ -53,6 +55,7 @@ theorem measurable_of_tendsto_metrizable {f : ℕ → α → β} {g : α → β}
 theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι → α → β} {g : α → β}
     (u : Filter ι) [hu : NeBot u] [IsCountablyGenerated u] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) u (𝓝 (g x))) : AEMeasurable g μ := by
+  classical
   rcases u.exists_seq_tendsto with ⟨v, hv⟩
   have h'f : ∀ n, AEMeasurable (f (v n)) μ := fun n => hf (v n)
   set p : α → (ℕ → β) → Prop := fun x f' => Tendsto (fun n => f' n) atTop (𝓝 (g x))
@@ -104,9 +107,10 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
     {f : ι → α → β} {L : Filter ι} [L.IsCountablyGenerated] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l)) :
     ∃ f_lim : α → β, Measurable f_lim ∧ ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
+  classical
   inhabit ι
   rcases eq_or_neBot L with (rfl | hL)
-  · exact ⟨(hf default).mk _, (hf default).measurable_mk, eventually_of_forall fun x => tendsto_bot⟩
+  · exact ⟨(hf default).mk _, (hf default).measurable_mk, Eventually.of_forall fun x => tendsto_bot⟩
   let p : α → (ι → β) → Prop := fun x f' => ∃ l : β, Tendsto (fun n => f' n) L (𝓝 l)
   have hp_mem : ∀ x ∈ aeSeqSet hf p, p x fun n => f n x := fun x hx =>
     aeSeq.fun_prop_of_mem_aeSeqSet hf hx

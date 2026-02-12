@@ -3,10 +3,12 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.CategoryTheory.Action
-import Mathlib.Combinatorics.Quiver.Arborescence
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+module
+
+public import Mathlib.CategoryTheory.Action
+public import Mathlib.Combinatorics.Quiver.Arborescence
+public import Mathlib.Combinatorics.Quiver.ConnectedComponent
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 
 /-!
 # The Nielsen-Schreier theorem
@@ -47,35 +49,33 @@ free group, free groupoid, Nielsen-Schreier
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open scoped Classical
-
 universe v u
 
-/- Porting note: ./././Mathport/Syntax/Translate/Command.lean:229:11:unsupported:
-unusual advanced open style -/
 open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quiver FreeGroup
 
 /-- `IsFreeGroupoid.Generators G` is a type synonym for `G`. We think of this as
 the vertices of the generating quiver of `G` when `G` is free. We can't use `G` directly,
 since `G` already has a quiver instance from being a groupoid. -/
--- Porting note(#5171): @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def IsFreeGroupoid.Generators (G) [Groupoid G] :=
   G
 
-/-- A groupoid `G` is free when we have the following data:
- - a quiver on `IsFreeGroupoid.Generators G` (a type synonym for `G`)
- - a function `of` taking a generating arrow to a morphism in `G`
- - such that a functor from `G` to any group `X` is uniquely determined
-   by assigning labels in `X` to the generating arrows.
+/--
+A groupoid `G` is free when we have the following data:
+- a quiver on `IsFreeGroupoid.Generators G` (a type synonym for `G`)
+- a function `of` taking a generating arrow to a morphism in `G`
+- such that a functor from `G` to any group `X` is uniquely determined
+  by assigning labels in `X` to the generating arrows.
 
-   This definition is nonstandard. Normally one would require that functors `G ⥤ X`
-   to any _groupoid_ `X` are given by graph homomorphisms from `generators`. -/
+This definition is nonstandard. Normally one would require that functors `G ⥤ X`
+to any _groupoid_ `X` are given by graph homomorphisms from `generators`. -/
 class IsFreeGroupoid (G) [Groupoid.{v} G] where
-  quiverGenerators : Quiver.{v + 1} (IsFreeGroupoid.Generators G)
+  quiverGenerators : Quiver.{v} (IsFreeGroupoid.Generators G)
   of : ∀ {a b : IsFreeGroupoid.Generators G}, (a ⟶ b) → ((show G from a) ⟶ b)
   unique_lift :
     ∀ {X : Type v} [Group X] (f : Labelling (IsFreeGroupoid.Generators G) X),
@@ -106,7 +106,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
-  of := fun (e : { e // _}) => ⟨IsFreeGroup.of e, e.property⟩
+  of := fun (e : Subtype _) => ⟨IsFreeGroup.of e, e.property⟩
   unique_lift := by
     intro X _ f
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
@@ -114,7 +114,6 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
     refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
-        -- Porting note: `MonoidHom.ext_iff` has been deprecated.
         exact DFunLike.ext_iff.mp this
       apply IsFreeGroup.ext_hom (fun x ↦ ?_)
       rw [MonoidHom.comp_apply, hF']
@@ -149,19 +148,22 @@ the root. -/
 variable {G : Type u} [Groupoid.{u} G] [IsFreeGroupoid G]
   (T : WideSubquiver (Symmetrify <| Generators G)) [Arborescence T]
 
+set_option backward.privateInPublic true in
 /-- The root of `T`, except its type is `G` instead of the type synonym `T`. -/
 private def root' : G :=
   show T from root T
--- #align is_free_groupoid.spanning_tree.root' IsFreeGroupoid.SpanningTree.root'
 
--- this has to be marked noncomputable, see issue #451.
+-- this has to be marked noncomputable, see issue https://github.com/leanprover-community/mathlib4/pull/451.
 -- It might be nicer to define this in terms of `composePath`
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A path in the tree gives a hom, by composition. -/
--- Porting note: removed noncomputable. This is already declared at the beginning of the section.
 def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
   | _, Path.nil => 𝟙 _
   | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- For every vertex `a`, there is a canonical hom from the root, given by the path in the tree. -/
 def treeHom (a : G) : root' T ⟶ a :=
   homOfPath T default
@@ -170,28 +172,36 @@ def treeHom (a : G) : root' T ⟶ a :=
 theorem treeHom_eq {a : G} (p : Path (root T) a) : treeHom T a = homOfPath T p := by
   rw [treeHom, Unique.default_eq]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem treeHom_root : treeHom T (root' T) = 𝟙 _ :=
   -- this should just be `treeHom_eq T Path.nil`, but Lean treats `homOfPath` with suspicion.
     _root_.trans
     (treeHom_eq T Path.nil) rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Any hom in `G` can be made into a loop, by conjugating with `treeHom`s. -/
 def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
   treeHom T a ≫ p ≫ inv (treeHom T b)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
-  cases' H with H H
+  rcases H with H | H
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
     rfl
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
     simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
-    extends to a functor on the whole groupoid. -/
+extends to a functor on the whole groupoid. -/
 @[simps]
 def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
     G ⥤ CategoryTheory.SingleObj X where
@@ -206,9 +216,12 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
     rw [comp_as_mul, ← f.map_mul]
     simp only [IsIso.inv_hom_id_assoc, loopOfHom, End.mul_def, Category.assoc]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+open scoped Classical in
 /-- Given a free groupoid and an arborescence of its generating quiver, the vertex
-    group at the root is freely generated by loops coming from generating arrows
-    in the complement of the tree. -/
+group at the root is freely generated by loops coming from generating arrows
+in the complement of the tree. -/
 lemma endIsFree : IsFreeGroup (End (root' T)) :=
   IsFreeGroup.ofUniqueLift ((wideSubquiverEquivSetTotal <| wideSubquiverSymmetrify T)ᶜ : Set _)
     (fun e => loopOfHom T (of e.val.hom))
@@ -220,21 +233,24 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          erw [Functor.mapEnd_apply, this, hF']
+          -- Work around the defeq `X = End (F'.obj (IsFreeGroupoid.SpanningTree.root' T))`
+          erw [Functor.mapEnd_apply]
+          rw [this, hF']
           exact dif_neg h
-        intros x y q
+        intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
             one_mul, Functor.map_inv, Functor.map_comp]
         intro a p
-        induction' p with b c p e ih
-        · rw [homOfPath, F'.map_id, id_as_one]
-        rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
-        rcases e with ⟨e | e, eT⟩
-        · rw [hF']
-          exact dif_pos (Or.inl eT)
-        · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
-          exact dif_pos (Or.inr eT)
+        induction p with
+        | nil => rw [homOfPath, F'.map_id, id_as_one]
+        | cons p e ih =>
+          rw [homOfPath, F'.map_comp, comp_as_mul, ih, mul_one]
+          rcases e with ⟨e | e, eT⟩
+          · rw [hF']
+            exact dif_pos (Or.inl eT)
+          · rw [F'.map_inv, inv_as_inv, inv_eq_one, hF']
+            exact dif_pos (Or.inr eT)
       · intro E hE
         ext x
         suffices (functorOfMonoidHom T E).map x = F'.map x by
@@ -250,12 +266,14 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
 
 end SpanningTree
 
+set_option backward.privateInPublic true in
 /-- Another name for the identity function `G → G`, to help type checking. -/
 private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
--- #align is_free_groupoid.symgen IsFreeGroupoid.symgen
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag
 from `a` to `b` in the generating quiver. -/
 theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G} :
@@ -273,6 +291,8 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
   apply (WeaklyConnectedComponent.eq _ _).mpr
   exact ⟨Hom.toPath (Sum.inr (by assumption))⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given a connected free groupoid, its generating quiver is rooted-connected. -/
 instance generators_connected (G) [Groupoid.{u, u} G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
     RootedConnected (symgen r) :=

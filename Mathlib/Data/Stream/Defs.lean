@@ -3,8 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Mathport.Rename
-import Mathlib.Data.Nat.Notation
+module
+
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition of `Stream'` and functions on streams
@@ -13,6 +14,8 @@ A stream `Stream' α` is an infinite sequence of elements of `α`. One can also 
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
+
+@[expose] public section
 
 universe u v w
 variable {α : Type u} {β : Type v} {δ : Type w}
@@ -27,7 +30,7 @@ def cons (a : α) (s : Stream' α) : Stream' α
   | 0 => a
   | n + 1 => s n
 
-scoped infixr:67 " :: " => cons
+@[inherit_doc] scoped infixr:67 " :: " => cons
 
 /-- Get the `n`-th element of a stream. -/
 def get (s : Stream' α) (n : ℕ) : α := s n
@@ -49,7 +52,7 @@ def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 
 /-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
-  ⟨fun a s => Any (fun b => a = b) s⟩
+  ⟨fun s a => Any (fun b => a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
 def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
@@ -65,27 +68,38 @@ def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
 /-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
 def const (a : α) : Stream' α := fun _ => a
 
--- Porting note: used to be implemented using RecOn
 /-- Iterates of a function as a stream. -/
 def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
   | n + 1 => f (iterate f a n)
 
+/-- Given functions `f : α → β` and `g : α → α`, `corec f g` creates a stream by:
+1. Starting with an initial value `a : α`
+2. Applying `g` repeatedly to get a stream of α values
+3. Applying `f` to each value to convert them to β
+-/
 def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f (iterate g a)
 
+/-- Given an initial value `a : α` and functions `f : α → β` and `g : α → α`,
+`corecOn a f g` creates a stream by repeatedly:
+1. Applying `f` to the current value to get the next stream element
+2. Applying `g` to get the next value to process
+This is equivalent to `corec f g a`. -/
 def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 
+/-- Given a function `f : α → β × α`, `corec' f` creates a stream by repeatedly:
+1. Starting with an initial value `a : α`
+2. Applying `f` to get both the next stream element (β) and next state value (α)
+This is a more convenient form when the next element and state are computed together. -/
 def corec' (f : α → β × α) : α → Stream' β :=
   corec (Prod.fst ∘ f) (Prod.snd ∘ f)
-
--- Porting note: this `#align` should be elsewhere but idk where
 
 /-- Use a state monad to generate a stream through corecursion -/
 def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
   corec Prod.fst (cmd.run ∘ Prod.snd) (cmd.run s)
 
--- corec is also known as unfold
+-- corec is also known as unfolds
 abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
   corec g f a
 
@@ -93,11 +107,11 @@ abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
 def interleave (s₁ s₂ : Stream' α) : Stream' α :=
   corecOn (s₁, s₂) (fun ⟨s₁, _⟩ => head s₁) fun ⟨s₁, s₂⟩ => (s₂, tail s₁)
 
-infixl:65 " ⋈ " => interleave
+@[inherit_doc] infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
 def even (s : Stream' α) : Stream' α :=
-  corec (fun s => head s) (fun s => tail (tail s)) s
+  corec head (fun s => tail (tail s)) s
 
 /-- Elements of a stream with odd indices. -/
 def odd (s : Stream' α) : Stream' α :=
@@ -108,7 +122,7 @@ def appendStream' : List α → Stream' α → Stream' α
   | [], s => s
   | List.cons a l, s => a::appendStream' l s
 
-infixl:65 " ++ₛ " => appendStream'
+@[inherit_doc] infixl:65 " ++ₛ " => appendStream'
 
 /-- `take n s` returns a list of the `n` first elements of stream `s` -/
 def take : ℕ → Stream' α → List α
@@ -150,8 +164,7 @@ def pure (a : α) : Stream' α :=
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
 def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (get f n) (get s n)
 
-infixl:75 " ⊛ " => apply
--- Porting note: "input as \o*" was here but doesn't work for the above notation
+@[inherit_doc] infixl:75 " ⊛ " => apply -- input as `\circledast`
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
 def nats : Stream' ℕ := fun n => n

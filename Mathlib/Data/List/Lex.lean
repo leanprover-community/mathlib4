@@ -3,8 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Lexicographic ordering of lists.
@@ -17,12 +20,14 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `Mathlib.Data.Finset.Colex`: Colexicographic order on finite sets.
-* `Mathlib.Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Mathlib.Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Mathlib.Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
-* `Mathlib.Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -35,77 +40,57 @@ variable {α : Type u}
 
 /-! ### lexicographic ordering -/
 
+theorem lex_cons_iff {r : α → α → Prop} [Std.Irrefl r] {a l₁ l₂} :
+    Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
+  ⟨fun h => by obtain - | h | h := h; exacts [(irrefl_of r a h).elim, h], Lex.cons⟩
 
-/-- Given a strict order `<` on `α`, the lexicographic strict order on `List α`, for which
-`[a0, ..., an] < [b0, ..., b_k]` if `a0 < b0` or `a0 = b0` and `[a1, ..., an] < [b1, ..., bk]`.
-The definition is given for any relation `r`, not only strict orders. -/
-inductive Lex (r : α → α → Prop) : List α → List α → Prop
-  | nil {a l} : Lex r [] (a :: l)
-  | cons {a l₁ l₂} (h : Lex r l₁ l₂) : Lex r (a :: l₁) (a :: l₂)
-  | rel {a₁ l₁ a₂ l₂} (h : r a₁ a₂) : Lex r (a₁ :: l₁) (a₂ :: l₂)
+theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
+  match l with
+  | [] => Or.inr rfl
+  | _ :: _ => .inl .nil
+
+@[simp]
+theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
+  ⟨fun | .rel h => h, .rel⟩
 
 namespace Lex
 
-theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
-    Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
-
-@[simp]
-theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
-  nofun
-
-theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
-  match l with
-  | [] => Or.inr rfl
-  | (_ :: _) => Or.inl nil
-
-@[simp]
-theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
-  ⟨fun | rel h => h, List.Lex.rel⟩
-
-instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
+instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [Std.Trichotomous r] :
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
     aux
-    | _, [], c :: l₃, nil => Or.inr nil
-    | _, [], c :: l₃, rel _ => Or.inr nil
-    | _, [], c :: l₃, cons _ => Or.inr nil
-    | _, b :: l₂, c :: l₃, nil => Or.inl nil
-    | a :: l₁, b :: l₂, c :: l₃, rel h => (IsOrderConnected.conn _ b _ h).imp rel rel
+    | _, [], _ :: _, nil => Or.inr nil
+    | _, [], _ :: _, rel _ => Or.inr nil
+    | _, [], _ :: _, cons _ => Or.inr nil
+    | _, _ :: _, _ :: _, nil => Or.inl nil
+    | _ :: _, b :: _, _ :: _, rel h => (IsOrderConnected.conn _ b _ h).imp rel rel
     | a :: l₁, b :: l₂, _ :: l₃, cons h => by
       rcases trichotomous_of r a b with (ab | rfl | ab)
       · exact Or.inl (rel ab)
       · exact (aux _ l₂ _ h).imp cons cons
       · exact Or.inr (rel ab)
 
-instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
-    IsTrichotomous (List α) (Lex r) where
+instance trichotomous (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (Lex r) where
   trichotomous := aux where
     aux
-    | [], [] => Or.inr (Or.inl rfl)
-    | [], b :: l₂ => Or.inl nil
-    | a :: l₁, [] => Or.inr (Or.inr nil)
-    | a :: l₁, b :: l₂ => by
-      rcases trichotomous_of r a b with (ab | rfl | ab)
-      · exact Or.inl (rel ab)
-      · exact (aux l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
-      · exact Or.inr (Or.inr (rel ab))
+    | [], [], _, _ => rfl
+    | [], _ :: _, hab, _ => hab nil |>.elim
+    | _ :: _, [], _, hba => hba nil |>.elim
+    | a :: l₁, b :: l₂, hab, hba => by
+      obtain rfl := Std.Trichotomous.trichotomous a b (mt rel hab) (mt rel hba)
+      rw [aux l₁ l₂ (mt cons hab) (mt cons hba)]
 
-instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
+instance asymm (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (Lex r) where
   asymm := aux where
     aux
-    | _, _, Lex.rel h₁, Lex.rel h₂ => asymm h₁ h₂
-    | _, _, Lex.rel h₁, Lex.cons _ => asymm h₁ h₁
-    | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
+    | _, _, Lex.rel h₁, Lex.rel h₂ => _root_.asymm h₁ h₂
+    | _, _, Lex.rel h₁, Lex.cons _ => _root_.asymm h₁ h₁
+    | _, _, Lex.cons _, Lex.rel h₂ => _root_.asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
-
-instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
-    IsStrictTotalOrder (List α) (Lex r) :=
-  { isStrictWeakOrder_of_isOrderConnected with }
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
   | l₁, [] => isFalse fun h => by cases h
-  | [], b :: l₂ => isTrue Lex.nil
+  | [], _ :: _ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
     refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => ?_, fun h => ?_⟩
@@ -113,8 +98,8 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
       · exact Lex.rel h
       · exact Lex.cons h
     · rcases h with (_ | h | h)
-      · exact Or.inr ⟨rfl, h⟩
       · exact Or.inl h
+      · exact Or.inr ⟨rfl, h⟩
 
 theorem append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
   | _, _, _, nil => nil
@@ -137,15 +122,15 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
-    induction' l₁ with a l₁ IH generalizing l₂ <;> cases' l₂ with b l₂
+    induction l₁ generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
     · exact (not_lt_of_ge H).elim (succ_pos _)
-    · by_cases ab : a = b
+    case cons.cons a l₁ IH =>
+      by_cases ab : a = b
       · subst b
-        apply cons
-        exact IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
-      · exact rel ab ⟩
+        exact .cons <| IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
+      · exact .rel ab ⟩
 
 theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ := by
   classical
@@ -153,39 +138,17 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 
 end Lex
 
---Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
-  ⟨Lex (· < ·)⟩
-
-theorem nil_lt_cons [LT α] (a : α) (l : List α) : [] < a :: l :=
-  Lex.nil
-
 instance [LinearOrder α] : LinearOrder (List α) :=
+  have : ∀ {r} [IsStrictTotalOrder α r], IsStrictTotalOrder (List α) (Lex r) :=
+    { isStrictWeakOrder_of_isOrderConnected with }
   linearOrderOfSTO (Lex (· < ·))
 
 --Note: this overrides an instance in core lean
 instance LE' [LinearOrder α] : LE (List α) :=
   Preorder.toLE
 
-theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < ·) l l' := by
-  constructor <;>
-  intro h
-  · induction h with
-    | nil b bs => exact Lex.nil
-    | @head a as b bs hab => apply Lex.rel; assumption
-    | @tail a as b bs hab hba _ ih =>
-      have heq : a = b := _root_.le_antisymm (le_of_not_lt hba) (le_of_not_lt hab)
-      subst b; apply Lex.cons; assumption
-  · induction h with
-    | @nil a as => apply lt.nil
-    | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
-    | @rel a as b bs h => apply lt.head; assumption
-
-@[simp]
-theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
-  match l with
-  | [] => le_rfl
-  | _ :: _ => le_of_lt <| nil_lt_cons _ _
+theorem lt_iff_lex_lt [LT α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
+  rw [List.lt]
 
 theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
     a' ≤ a :=

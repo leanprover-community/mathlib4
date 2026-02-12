@@ -3,10 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.PolynomialExp
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Infinitely smooth transition function
@@ -21,13 +24,12 @@ cannot have:
   by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open scoped Classical Topology
-
+open scoped Topology
 open Polynomial Real Filter Set Function
-
-open scoped Polynomial
 
 /-- `expNegInvGlue` is the real function given by `x ↦ exp (-1/x)` for `x > 0` and `0`
 for `x ≤ 0`. It is a basic building block to construct smooth partitions of unity. Its main property
@@ -58,11 +60,24 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
 @[simp] theorem zero_iff_nonpos {x : ℝ} : expNegInvGlue x = 0 ↔ x ≤ 0 :=
   ⟨fun h ↦ not_lt.mp fun h' ↦ (pos_of_pos h').ne' h, zero_of_nonpos⟩
 
+protected theorem monotone : Monotone expNegInvGlue := by
+  intro x y hxy
+  rcases le_or_gt x 0 with hx | hx
+  · simp [zero_of_nonpos hx, nonneg]
+  simp [expNegInvGlue, not_le.2 hx, not_le.2 (hx.trans_le hxy),
+    inv_le_inv₀ (hx.trans_le hxy) hx, hxy]
+
+/-- The function `expNegInvGlue` is not analytic at `0`. -/
+theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
+  intro h
+  obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
+  suffices expNegInvGlue (r / 2) = 0 by simpa [hr, not_le_of_gt]
+  exact h.eqOn_zero_of_preconnected_of_mem_closure (z₀ := 0)
+    (Real.ball_eq_Ioo 0 r ▸ isPreconnected_Ioo)
+    (by simp [hr]) (by simp [Set.Iic_def]) (by simp [abs_of_pos, hr])
+
 /-!
 ### Smoothness of `expNegInvGlue`
-
-Porting note: Yury Kudryashov rewrote the proof while porting, generalizing auxiliary lemmas and
-removing some auxiliary definitions.
 
 In this section we prove that the function `f = expNegInvGlue` is infinitely smooth. To do
 this, we show that $g_p(x)=p(x^{-1})f(x)$ is infinitely smooth for any polynomial `p` with real
@@ -78,9 +93,9 @@ theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
   refine tendsto_const_nhds.if ?_
   simp only [not_le]
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
-    p.tendsto_div_exp_atTop.comp tendsto_inv_zero_atTop
+    p.tendsto_div_exp_atTop.comp tendsto_inv_nhdsGT_zero
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
-  simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
+  simp [exp_neg, div_eq_mul_inv]
 
 theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     HasDerivAt (fun x ↦ p.eval x⁻¹ * expNegInvGlue x)
@@ -95,10 +110,10 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     simp [slope_def_field, div_eq_mul_inv, mul_right_comm]
   · have := ((p.hasDerivAt x⁻¹).mul (hasDerivAt_neg _).exp).comp x (hasDerivAt_inv hx.ne')
     convert this.congr_of_eventuallyEq _ using 1
-    · simp [expNegInvGlue, hx.not_le]
+    · simp [expNegInvGlue, hx.not_ge]
       ring
     · filter_upwards [lt_mem_nhds hx] with y hy
-      simp [expNegInvGlue, hy.not_le]
+      simp [expNegInvGlue, hy.not_ge]
 
 theorem differentiable_polynomial_eval_inv_mul (p : ℝ[X]) :
     Differentiable ℝ (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := fun x ↦
@@ -114,12 +129,14 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
   induction m generalizing p with
   | zero => exact contDiff_zero.2 <| continuous_polynomial_eval_inv_mul _
   | succ m ihm =>
-    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, ?_⟩
+    rw [show ((m + 1 : ℕ) : WithTop ℕ∞) = m + 1 from rfl]
+    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, by simp, ?_⟩
     convert ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
 /-- The function `expNegInvGlue` is smooth. -/
-protected theorem contDiff {n} : ContDiff ℝ n expNegInvGlue := by
+@[fun_prop]
+protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n expNegInvGlue := by
   simpa using contDiff_polynomial_eval_inv_mul 1
 
 end expNegInvGlue
@@ -138,7 +155,7 @@ variable {x : ℝ}
 open expNegInvGlue
 
 theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
-  (zero_lt_one.lt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
+  (zero_lt_one.gt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
     fun hx => add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
 
 theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
@@ -180,19 +197,39 @@ theorem lt_one_of_lt_one (h : x < 1) : smoothTransition x < 1 :=
 theorem pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
   div_pos (expNegInvGlue.pos_of_pos h) (pos_denom x)
 
-protected theorem contDiff {n} : ContDiff ℝ n smoothTransition :=
+@[simp] theorem eq_one_iff_one_le : smoothTransition x = 1 ↔ 1 ≤ x := by
+  rcases le_or_gt 1 x with hx | hx
+  · simp [hx, one_of_one_le]
+  · simpa [(lt_one_of_lt_one hx).ne] using hx
+
+@[fun_prop]
+protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n smoothTransition :=
   expNegInvGlue.contDiff.div
     (expNegInvGlue.contDiff.add <| expNegInvGlue.contDiff.comp <| contDiff_const.sub contDiff_id)
     fun x => (pos_denom x).ne'
 
-protected theorem contDiffAt {x n} : ContDiffAt ℝ n smoothTransition x :=
+@[fun_prop]
+protected theorem contDiffAt {x : ℝ} {n : ℕ∞} : ContDiffAt ℝ n smoothTransition x :=
   smoothTransition.contDiff.contDiffAt
 
+@[fun_prop]
 protected theorem continuous : Continuous smoothTransition :=
   (@smoothTransition.contDiff 0).continuous
 
+@[fun_prop]
 protected theorem continuousAt : ContinuousAt smoothTransition x :=
   smoothTransition.continuous.continuousAt
+
+protected theorem monotone : Monotone smoothTransition := by
+  intro x y hxy
+  simp only [smoothTransition]
+  rw [div_le_div_iff₀ (pos_denom x) (pos_denom y)]
+  simp only [mul_add, mul_comm (expNegInvGlue x) (expNegInvGlue y), add_le_add_iff_left]
+  gcongr
+  · exact expNegInvGlue.nonneg _
+  · exact expNegInvGlue.nonneg _
+  · apply expNegInvGlue.monotone hxy
+  · apply expNegInvGlue.monotone (by linarith)
 
 end smoothTransition
 

@@ -3,10 +3,13 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Traversable.Lemmas
-import Lean.Elab.Match
-import Lean.Elab.Deriving.Basic
-import Lean.Elab.PreDefinition.Main
+module
+
+public meta import Lean.Elab.Match
+public meta import Lean.Elab.Deriving.Basic
+public meta import Lean.Elab.PreDefinition.Main
+public import Mathlib.Control.Traversable.Lemmas
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Deriving handler for `Traversable` instances
@@ -15,6 +18,8 @@ This module gives deriving handlers for `Functor`, `LawfulFunctor`, `Traversable
 `LawfulTraversable`. These deriving handlers automatically derive their dependencies, for
 example `deriving LawfulTraversable` all by itself gives all four.
 -/
+
+public meta section
 
 namespace Mathlib.Deriving.Traversable
 
@@ -55,11 +60,11 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
     return e
 
 /-- Get the auxiliary local declaration corresponding to the current declaration. If there are
-multiple declaraions it will throw. -/
+multiple declarations it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
   let some declName ← getDeclName? | throwError "no 'declName?'"
-  let auxDeclMap := (← read).auxDeclToFullName
-  let fvars := auxDeclMap.fold (init := []) fun fvars fvar fullName =>
+  let auxDeclMap := (← getLCtx).auxDeclToFullName
+  let fvars := auxDeclMap.foldl (init := []) fun fvars fvar fullName =>
     if fullName = declName then fvars.concat fvar else fvars
   match fvars with
   | [] => throwError "no auxiliary local declaration corresponding to the current declaration"
@@ -86,7 +91,7 @@ This is convenient to make a definition with equation lemmas. -/
 def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
     (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
-  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (.mkStr (n?.getD type) "match") 1)
+  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxDeclName (.mkStr (n?.getD type) "match"))
   let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
     mkForallFVars iargs (motive.beta iargs)
   let iinfo ← getConstInfoInduct type
@@ -103,7 +108,7 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
                patterns }
   let mres ← Term.mkMatcher { matcherName
                               matchType
-                              discrInfos := mkArray (indices.length + 1) {}
+                              discrInfos := .replicate (indices.length + 1) {}
                               lhss }
   mres.addMatcher
   let rhss ← lhss.mapM fun altLHS => do
@@ -152,6 +157,7 @@ def mkMap (type : Name) (m : MVarId) : TermElabM Unit := do
 
 /-- derive the `map` definition and declare `Functor` using this. -/
 def deriveFunctor (m : MVarId) : TermElabM Unit := do
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
@@ -167,10 +173,11 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
     let t' ← mkForallFVars vars.toArray t
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := levels
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe := d.isUnsafe
               attrs :=
@@ -208,6 +215,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) : TermElabM Unit := do
   let .inductInfo decl ← getConstInfo n |
     throwError m!"failed to derive '{cls}', '{n}' is not an inductive type"
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let clsDecl ← getConstInfo cls
   let ls := decl.levelParams.map Level.param
   -- incrementally build up target expression `(hp : p) → [cls hp] → ... cls (n.{ls} hp ...)`
@@ -217,7 +225,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     let params := params.pop
     let tgt := mkAppN tgt params
     let tgt ← mkInst cls tgt
-    params.zipWithIndex.foldrM (fun (param, i) tgt => do
+    params.zipIdx.foldrM (fun (param, i) tgt => do
       -- add typeclass hypothesis for each inductive parameter
       let tgt ← (do
         guard (i < decl.numParams)
@@ -233,10 +241,11 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     let instN ← m'.withContext do
       let type ← m'.getType >>= instantiateMVars
       mkInstanceNameForTypeExpr type
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := decl.levelParams
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe
               attrs :=
@@ -250,9 +259,9 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
 
 /-- Make the new deriving handler depends on other deriving handlers. -/
 def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
-    (deps : List DerivingHandlerNoArgs := [])
+    (deps : List DerivingHandler := [])
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
-    DerivingHandlerNoArgs := fun a => do
+    DerivingHandler := fun a => do
   let #[n] := a | return false -- mutually inductive types are not supported yet
   let ok ← deps.mapM fun f => f a
   unless ok.and do return false
@@ -260,7 +269,7 @@ def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
   return true
 
 /-- The deriving handler for `Functor`. -/
-def functorDeriveHandler : DerivingHandlerNoArgs :=
+def functorDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``Functor deriveFunctor []
 
 initialize registerDerivingHandler ``Functor functorDeriveHandler
@@ -274,7 +283,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
     if b then
       let hs ← getPropHyps
       s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
-    return { simpTheorems := #[s] }
+    Simp.mkContext (simpTheorems := #[s])
   let .app (.app (.const ``LawfulFunctor _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mcn, mim, mcm] ← m.applyConst ``LawfulFunctor.mk | failure
@@ -283,7 +292,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, x], mim) ← mim.introN 2 | failure
   let (some mim, _) ← dsimpGoal mim (← rules [] [``Functor.map] false) | failure
   let xs ← mim.induction x (mkRecName n)
-  xs.forM fun ⟨mim, _, _⟩ =>
+  xs.forM fun { mvarId := mim, .. } =>
     mim.withContext do
       if let (some (_, mim), _) ←
           simpGoal mim (← rules [(``Functor.map_id, false)] [.mkStr n "map"] true) then
@@ -291,14 +300,14 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, _, _, _, _, x], mcm) ← mcm.introN 6 | failure
   let (some mcm, _) ← dsimpGoal mcm (← rules [] [``Functor.map] false) | failure
   let xs ← mcm.induction x (mkRecName n)
-  xs.forM fun ⟨mcm, _, _⟩ =>
+  xs.forM fun { mvarId := mcm, .. } =>
     mcm.withContext do
       if let (some (_, mcm), _) ←
           simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [.mkStr n "map"] true) then
         mcm.refl
 
 /-- The deriving handler for `LawfulFunctor`. -/
-def lawfulFunctorDeriveHandler : DerivingHandlerNoArgs :=
+def lawfulFunctorDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``LawfulFunctor deriveLawfulFunctor [functorDeriveHandler]
     (fun n arg => mkAppOptM n #[arg, none])
 
@@ -393,6 +402,7 @@ def mkTraverse (type : Name) (m : MVarId) : TermElabM Unit := do
 
 /-- derive the `traverse` definition and declare `Traversable` using this. -/
 def deriveTraversable (m : MVarId) : TermElabM Unit := do
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
@@ -408,13 +418,14 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
     let t' ← mkForallFVars vars.toArray t
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := levels
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe := d.isUnsafe
-              visibility := .protected }
+              isProtected := true }
           declName := n'
           type := t'
           value := e'
@@ -422,7 +433,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
   m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
 /-- The deriving handler for `Traversable`. -/
-def traversableDeriveHandler : DerivingHandlerNoArgs :=
+def traversableDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``Traversable deriveTraversable [functorDeriveHandler]
 
 initialize registerDerivingHandler ``Traversable traversableDeriveHandler
@@ -435,12 +446,12 @@ def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArr
     MetaM (Option (Array FVarId × MVarId) × Simp.Stats) := do
   let some e ← getSimpExtension? `functor_norm | failure
   let s' ← e.getTheorems
-  simpGoal m { s with simpTheorems := s.simpTheorems.push s' } simprocs discharge? simplifyTarget
+  simpGoal m (s.setSimpTheorems (s.simpTheorems.push s')) simprocs discharge? simplifyTarget
     fvarIdsToSimp stats
 /--
 Run the following tactic:
 ```lean
-intros _ .. x
+intro _ .. x
 dsimp only [Traversable.traverse, Functor.map]
 induction x <;> (the simp tactic corresponding to s) <;> (tac)
 ```
@@ -451,8 +462,8 @@ def traversableLawStarter (m : MVarId) (n : Name) (s : MetaM Simp.Context)
       (fun s n => s.addDeclToUnfold n) ({} : SimpTheorems)
   let (fi, m) ← m.intros
   m.withContext do
-    if let (some m, _) ← dsimpGoal m { simpTheorems := #[s'] } then
-      let ma ← m.induction fi.back (mkRecName n)
+    if let (some m, _) ← dsimpGoal m (← Simp.mkContext (simpTheorems := #[s'])) then
+      let ma ← m.induction fi.back! (mkRecName n)
       ma.forM fun is =>
         is.mvarId.withContext do
           if let (some (_, m), _) ← simpFunctorGoal is.mvarId (← s) then
@@ -467,9 +478,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     if b then
       let hs ← getPropHyps
       s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
-    pure <|
-    { config := { failIfUnchanged := false, unfoldPartialApp := true },
-      simpTheorems := #[s] }
+    Simp.mkContext { failIfUnchanged := false, unfoldPartialApp := true } (simpTheorems := #[s])
   let .app (.app (.const ``LawfulTraversable _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mit, mct, mtmi, mn] ← m.applyConst ``LawfulTraversable.mk | failure
@@ -489,7 +498,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     m.refl
 
 /-- The deriving handler for `LawfulTraversable`. -/
-def lawfulTraversableDeriveHandler : DerivingHandlerNoArgs :=
+def lawfulTraversableDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``LawfulTraversable deriveLawfulTraversable
     [traversableDeriveHandler, lawfulFunctorDeriveHandler] (fun n arg => mkAppOptM n #[arg, none])
 

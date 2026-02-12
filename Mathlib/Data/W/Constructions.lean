@@ -3,7 +3,9 @@ Copyright (c) 2015 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
-import Mathlib.Data.W.Basic
+module
+
+public import Mathlib.Data.W.Basic
 
 /-!
 # Examples of W-types
@@ -18,6 +20,8 @@ This file contains `Nat` and `List` as examples of W types.
 * `WType.equivNat`: the construction of the naturals as a W-type is equivalent to `Nat`
 * `WType.equivList`: the construction of lists on a type `γ` as a W-type is equivalent to `List γ`
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -83,7 +87,7 @@ open Sum PUnit
 This is useful when considering the associated polynomial endofunctor.
 -/
 @[simps]
-def NatαEquivPUnitSumPUnit : Natα ≃ Sum PUnit.{u + 1} PUnit where
+def NatαEquivPUnitSumPUnit : Natα ≃ PUnit.{u + 1} ⊕ PUnit where
   toFun c :=
     match c with
     | Natα.zero => inl unit
@@ -150,12 +154,12 @@ theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
     ext x
     cases x
   | WType.mk (Listα.cons x) f => by
-    simp only [ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
+    simp only [toList, ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
     rfl
 
 theorem rightInverse_list : Function.RightInverse (ofList γ) (toList _)
   | List.nil => rfl
-  | List.cons hd tl => by simp only [toList, rightInverse_list tl]
+  | List.cons hd tl => by simp [rightInverse_list tl]
 
 /-- Lists are equivalent to their associated `WType` -/
 def equivList : WType (Listβ γ) ≃ List γ where
@@ -167,7 +171,7 @@ def equivList : WType (Listβ γ) ≃ List γ where
 /-- `WType.Listα` is equivalent to `γ` with an extra point.
 This is useful when considering the associated polynomial endofunctor
 -/
-def ListαEquivPUnitSum : Listα γ ≃ Sum PUnit.{v + 1} γ where
+def ListαEquivPUnitSum : Listα γ ≃ PUnit.{v + 1} ⊕ γ where
   toFun c :=
     match c with
     | Listα.nil => Sum.inl PUnit.unit

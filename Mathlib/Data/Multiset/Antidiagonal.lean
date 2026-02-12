@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Powerset
+module
+
+public import Mathlib.Data.Multiset.Powerset
 
 /-!
 # The antidiagonal on a multiset.
@@ -12,7 +14,9 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
-assert_not_exists Ring
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Ring
 
 universe u
 
@@ -35,8 +39,6 @@ theorem antidiagonal_coe (l : List α) : @antidiagonal α l = revzip (powersetAu
 theorem antidiagonal_coe' (l : List α) : @antidiagonal α l = revzip (powersetAux' l) :=
   Quot.sound revzip_powersetAux_perm_aux'
 
-/- Porting note: `simp` seemed to be applying `antidiagonal_coe'` instead of `antidiagonal_coe`
-in what used to be `simp [antidiagonal_coe]`. -/
 /-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s`
     if and only if `t₁ + t₂ = s`. -/
 @[simp]
@@ -45,10 +47,10 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
   Quotient.inductionOn s fun l ↦ by
     dsimp only [quot_mk_to_coe, antidiagonal_coe]
     refine ⟨fun h => revzip_powersetAux h, fun h ↦ ?_⟩
-    haveI := Classical.decEq α
+    have _ := Classical.decEq α
     simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, mem_coe,
       List.mem_map, mem_powersetAux]
-    cases' x with x₁ x₂
+    obtain ⟨x₁, x₂⟩ := x
     exact ⟨x₁, le_add_right _ _, by rw [add_tsub_cancel_left x₁ x₂]⟩
 
 @[simp]
@@ -79,9 +81,10 @@ theorem antidiagonal_cons (a : α) (s) :
 
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by
-  induction' s using Multiset.induction_on with a s hs
-  · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
-  · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
+  induction s using Multiset.induction_on with
+  | empty => simp only [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
+  | cons a s hs =>
+    simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_apply,
       id, sub_cons, erase_cons_head]
     rw [add_comm]
     congr 1

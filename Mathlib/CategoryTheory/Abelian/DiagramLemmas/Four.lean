@@ -3,8 +3,10 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.CategoryTheory.Abelian.Refinements
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The four and five lemmas
@@ -29,11 +31,11 @@ We show:
 
 ## Implementation details
 
-The diagram of the five lemmas is given by a morphism in the category `ComposableArrows C 4`
+The diagram of the five lemma is given by a morphism in the category `ComposableArrows C 4`
 between two objects which satisfy `ComposableArrows.Exact`. Similarly, the two versions of the
 four lemma are stated in terms of the category `ComposableArrows C 3`.
 
-The five lemmas is deduced from the two versions of the four lemma. Both of these versions
+The five lemma is deduced from the two versions of the four lemma. Both of these versions
 are proved separately. It would be easy to deduce the epi version from the mono version
 using duality, but this would require lengthy API developments for `ComposableArrows` (TODO).
 
@@ -42,6 +44,8 @@ using duality, but this would require lengthy API developments for `ComposableAr
 four lemma, five lemma, diagram lemma, diagram chase
 -/
 
+public section
+
 
 namespace CategoryTheory
 
@@ -49,7 +53,7 @@ open Category Limits Preadditive
 
 namespace Abelian
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 open ComposableArrows
 
@@ -86,8 +90,6 @@ theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
   mono_of_epi_of_mono_of_mono' φ
     (by simpa only [R₁.map'_comp 0 1 2] using hR₁.toIsComplex.zero 0)
     (hR₁.exact 1).exact_toComposableArrows (hR₂.exact 0).exact_toComposableArrows h₀ h₁ h₃
-
-attribute [local instance] epi_comp
 
 theorem epi_of_epi_of_epi_of_mono'
     (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
@@ -128,13 +130,8 @@ end Four
 section Five
 
 variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+include hR₁ hR₂
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
     (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
@@ -228,5 +225,34 @@ theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1
 end Three
 
 end Abelian
+
+namespace ShortComplex
+
+variable {C : Type*} [Category* C] [Abelian C]
+variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
+
+attribute [local simp] ComposableArrows.Precomp.map
+
+theorem mono_of_epi_of_epi_of_mono (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g)
+    (h₀ : Epi φ.τ₁) (h₁ : Mono φ.τ₂) : Mono (φ.τ₃) :=
+  Abelian.mono_of_epi_of_epi_mono' (ShortComplex.mapToComposableArrows φ)
+    (by simp) hR₁' hR₂.exact_toComposableArrows h₀ h₁
+
+theorem epi_of_mono_of_epi_of_mono (hR₁ : R₁.Exact)
+    (hR₂' : Mono R₂.f) (h₀ : Epi φ.τ₂) (h₁ : Mono φ.τ₃) : Epi φ.τ₁ :=
+  Abelian.epi_of_mono_of_epi_of_mono' (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows (by simp) hR₂' h₀ h₁
+
+theorem mono_of_mono_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂' : Mono R₂.f) (h₀ : Mono φ.τ₁)
+    (h₁ : Mono φ.τ₃) : Mono φ.τ₂ :=
+  Abelian.mono_of_mono_of_mono_of_mono (ShortComplex.mapToComposableArrows φ)
+    hR₁.exact_toComposableArrows hR₂' h₀ h₁
+
+theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi R₁.g) (h₀ : Epi φ.τ₁)
+    (h₁ : Epi φ.τ₃) : Epi φ.τ₂ :=
+  Abelian.epi_of_epi_of_epi_of_epi (ShortComplex.mapToComposableArrows φ)
+    hR₂.exact_toComposableArrows hR₁' h₀ h₁
+
+end ShortComplex
 
 end CategoryTheory

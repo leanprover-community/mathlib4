@@ -3,11 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # Tensor product of `R`-algebras and rings
@@ -17,6 +18,8 @@ with structure map defined by `r ↦ r • 1`.
 
 In particular if we take `R` to be `ℤ`, then this collapses into the tensor product of rings.
 -/
+
+@[expose] public section
 
 open TensorProduct Function
 
@@ -125,7 +128,8 @@ variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, Is
 protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul y z) := by
   -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
+        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
     exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext x y z
   dsimp [← mul_def]
@@ -149,16 +153,17 @@ instance instSemiring : Semiring (⨂[R] i, A i) where
 
 instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   __ := hasSMul'
-  toFun := (· • 1)
-  map_one' := by simp
-  map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
-    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
-      mul_smul]
-    congr
-    show (1 : ⨂[R] i, A i) = 1 * 1
-    rw [mul_one]
-  map_zero' := by simp
-  map_add' := by simp [add_smul]
+  algebraMap :=
+  { toFun := (· • 1)
+    map_one' := by simp
+    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1) by
+      rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
+        mul_smul]
+      congr
+      change (1 : ⨂[R] i, A i) = 1 * 1
+      rw [mul_one]
+    map_zero' := by simp
+    map_add' := by simp [add_smul] }
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change mul _ _ = mul _ _
@@ -177,8 +182,8 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
   change r • tprod R 1 = _
   have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
     rw [Algebra.algebraMap_eq_smul_one]; rfl
-  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul,
-    Pi.one_def]
+  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_update_smul, update_eq_self,
+    smul_one_smul, Pi.one_def]
 
 /--
 The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
@@ -186,13 +191,13 @@ The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 @[simps]
 def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
   toFun a := tprod R (MonoidHom.mulSingle _ i a)
-  map_one' := by simp only [_root_.map_one]; rfl
-  map_mul' a a' := by simp
+  map_one' := by simp only [map_one]; rfl
+  map_mul' a a' := by simp [map_mul]
   map_zero' := MultilinearMap.map_update_zero _ _ _
-  map_add' _ _ := MultilinearMap.map_add _ _ _ _ _
+  map_add' _ _ := MultilinearMap.map_update_add _ _ _ _ _
   commutes' r := show tprodCoeff R _ _ = r • tprodCoeff R _ _ by
-    rw [Algebra.algebraMap_eq_smul_one]
-    erw [smul_tprodCoeff]
+    rw [Algebra.algebraMap_eq_smul_one, ← Pi.one_apply, MonoidHom.mulSingle_apply, Pi.mulSingle,
+      smul_tprodCoeff]
     rfl
 
 /--
@@ -208,7 +213,7 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
 @[simp] lemma tprod_noncommProd {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) (hx) :
     tprod R (s.noncommProd x hx) = s.noncommProd (fun k => tprod R (x k))
       (hx.imp fun _ _ => Commute.tprod) :=
-  Finset.noncommProd_map s x _ (tprodMonoidHom R)
+  Finset.map_noncommProd s x _ (tprodMonoidHom R)
 
 /-- To show two algebra morphisms from finite tensor products are equal, it suffices to show that
 they agree on elements of the form $1 ⊗ ⋯ ⊗ a ⊗ 1 ⊗ ⋯$. -/
@@ -255,8 +260,6 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
 
 section
 
-open Function
-
 variable [Fintype ι]
 
 variable (R ι)
@@ -272,9 +275,14 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       toFun
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
+        -- one of these is required, the other is a performance optimization
+        letI : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+          IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
+        letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+          Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
-        ext x y
-        show toFun (tprod R x * tprod R y) = toFun (tprod R x) * toFun (tprod R y)
+        ext
+        change toFun (tprod R _ * tprod R _) = toFun (tprod R _) * toFun (tprod R _)
         simp_rw [tprod_mul_tprod, toFun, lift.tprod, MultilinearMap.mkPiAlgebra_apply,
           Pi.mul_apply, Finset.prod_mul_distrib]))
     (Algebra.ofId _ _)

@@ -3,19 +3,25 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.GroupAction.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Fintype.BigOperators
+
+import Mathlib.Algebra.Module.End
 
 /-!
 # Finite sums over modules over a ring
 -/
 
+public section
+
 variable {ι κ α β R M : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem List.sum_smul {l : List R} {x : M} : l.sum • x = (l.map fun r ↦ r • x).sum :=
   map_list_sum ((smulAddHom R M).flip x) l
@@ -25,9 +31,9 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
 
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
     s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
-  induction' s using Multiset.induction with a s ih
-  · simp
-  · simp [add_smul, ih, ← Multiset.smul_sum]
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simp [add_smul, ih, ← Multiset.smul_sum]
 
 theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
     (∑ i ∈ s, f i) • x = ∑ i ∈ s, f i • x := map_sum ((smulAddHom R M).flip x) f s
@@ -41,19 +47,25 @@ lemma Fintype.sum_smul_sum [Fintype α] [Fintype β] (f : α → R) (g : β → 
 
 end AddCommMonoid
 
-theorem Finset.cast_card [CommSemiring R] (s : Finset α) : (s.card : R) = ∑ a ∈ s, 1 := by
-  rw [Finset.sum_const, Nat.smul_one_eq_cast]
-
 open Finset
+
+theorem Finset.cast_card [NonAssocSemiring R] (s : Finset α) : (#s : R) = ∑ _ ∈ s, 1 := by
+  rw [Finset.sum_const, Nat.smul_one_eq_cast]
 
 namespace Fintype
 variable [DecidableEq ι] [Fintype ι] [AddCommMonoid α]
 
 lemma sum_piFinset_apply (f : κ → α) (s : Finset κ) (i : ι) :
-    ∑ g ∈ piFinset fun _ : ι ↦ s, f (g i) = s.card ^ (card ι - 1) • ∑ b ∈ s, f b := by
+    ∑ g ∈ piFinset fun _ : ι ↦ s, f (g i) = #s ^ (card ι - 1) • ∑ b ∈ s, f b := by
   classical
   rw [Finset.sum_comp]
   simp only [eval_image_piFinset_const, card_filter_piFinset_const s, ite_smul, zero_smul, smul_sum,
-    sum_ite_mem, inter_self]
+    Finset.sum_ite_mem, inter_self]
+
+@[simp]
+lemma sum_single_smul
+    {R : Type*} [Semiring R] [Module R α] (f : ι → α) (r : R) (i₀ : ι) :
+    ∑ i, (Pi.single (M := fun _ ↦ R) i₀ r i) • f i = r • f i₀ := by
+  rw [Finset.sum_eq_single i₀, Pi.single_eq_same] <;> aesop
 
 end Fintype

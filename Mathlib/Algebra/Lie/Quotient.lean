@@ -3,9 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Isomorphisms
+module
+
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -27,15 +30,17 @@ is a statement and proof of the universal property of these quotients.
 lie algebra, quotient
 -/
 
+@[expose] public section
+
 
 universe u v w w₁ w₂
 
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-variable [LieRingModule L M] [LieModule R L M]
-variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
+variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
+variable [LieRingModule L M]
+variable (N N' : LieSubmodule R L M)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
 instance : HasQuotient M (LieSubmodule R L M) :=
@@ -43,7 +48,7 @@ instance : HasQuotient M (LieSubmodule R L M) :=
 
 namespace Quotient
 
-variable {N I}
+variable {N}
 
 instance addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _
@@ -63,13 +68,19 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
 instance inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 
-/-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
-lie_submodule of the lie_module `N`. -/
+/-- Map sending an element of `M` to the corresponding element of `M ⧸ N`, when `N` is a
+Lie submodule of the Lie module `M`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
+@[simp]
+theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
+  Submodule.Quotient.mk_eq_zero N.toSubmodule
+
 theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
   rfl
+
+variable [LieAlgebra R L] [LieModule R L M] (I J : LieIdeal R L)
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there
 is a natural linear map from `L` to the endomorphisms of `M` leaving `N` invariant. -/
@@ -104,7 +115,7 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
     apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
     intro x₁ x₂ y₁ y₂ h₁ h₂
     apply (Submodule.Quotient.eq I.toSubmodule).2
-    rw [Submodule.quotientRel_r_def] at h₁ h₂
+    rw [Submodule.quotientRel_def] at h₁ h₂
     have h : ⁅x₁, x₂⁆ - ⁅y₁, y₂⁆ = ⁅x₁, x₂ - y₂⁆ + ⁅x₁ - y₁, y₂⁆ := by
       simp [-lie_skew, sub_eq_add_neg, add_assoc]
     rw [h]
@@ -164,21 +175,16 @@ def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
     map_lie' := fun {_ _} => rfl }
 
 @[simp]
-theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
+theorem surjective_mk' : Function.Surjective (mk' N) := Quot.mk_surjective
 
 @[simp]
-theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
+theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by
+  simp [LieModuleHom.range_eq_top]
 
 instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
   inferInstanceAs (IsNoetherian R (M ⧸ (N : Submodule R M)))
 
--- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
-  Submodule.Quotient.mk_eq_zero N.toSubmodule
-
--- Porting note: added to replace `mk_eq_zero` as simp lemma.
-@[simp]
-theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 
 @[simp]
@@ -216,9 +222,11 @@ noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
   { (f : L →ₗ[R] L').quotKerEquivRange with
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
-      rintro ⟨x⟩ ⟨y⟩
-      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket]
-      simp only [Submodule.Quotient.quot_mk_eq_mk, LinearMap.quotKerEquivRange_apply_mk, ←
-        LieSubmodule.Quotient.mk_bracket, coe_toLinearMap, map_lie] }
+      intro x y
+      induction x using Submodule.Quotient.induction_on
+      induction y using Submodule.Quotient.induction_on
+      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket f.range]
+      simp only [← LieSubmodule.Quotient.mk_bracket, LinearMap.quotKerEquivRange_apply_mk,
+        coe_toLinearMap, map_lie] }
 
 end LieHom
