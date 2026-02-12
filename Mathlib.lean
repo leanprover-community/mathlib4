@@ -4071,6 +4071,7 @@ public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.Data.Set.Pairwise.List
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Data.Set.Pointwise.Support
+public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.Data.Set.Prod
 public import Mathlib.Data.Set.Restrict
 public import Mathlib.Data.Set.SMulAntidiagonal
