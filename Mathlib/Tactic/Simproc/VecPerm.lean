@@ -102,7 +102,7 @@ simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let outAsList := permList unpermList permAsList
   let some out := vecOfListQ unpermList.length outAsList | return .continue
   let pf ← mkAppM ``FinVec.eq_etaExpand #[e]
-  return Step.continue <| some { expr := out, proof? := pf }
+  return .continue <| some { expr := out, proof? := pf }
 
 end
 
