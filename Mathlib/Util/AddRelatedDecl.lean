@@ -70,18 +70,9 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
   let (newValue, newLevels) ← construct value info.levelParams
   let newValue ← instantiateMVars newValue
   let newType ← instantiateMVars (← inferType newValue)
-  match info with
-  | ConstantInfo.thmInfo info =>
-    addAndCompile <| .thmDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-  | ConstantInfo.defnInfo info =>
-    -- Structure fields are created using `def`, even when they are propositional,
-    -- so we don't rely on this to decide whether we should be constructing a `theorem` or a `def`.
-    addAndCompile <| if ← isProp newType then .thmDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-      else .defnDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-  | _ => throwError "Constant {src} is not a theorem or definition."
+  unless ← isProp newType do throwError "Related declaration is not a proposition: {newType}"
+  addDecl <| ← mkThmOrUnsafeDef
+    { levelParams := newLevels, type := newType, name := tgt, value := newValue }
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
   match docstringPrefix?, ← findDocString? (← getEnv) src with
