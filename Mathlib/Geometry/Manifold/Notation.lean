@@ -687,9 +687,13 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
   if let some { model .. } ← go e baseInfo then
     return model
   else
-    let hint := if (← isTracingEnabledFor `Elab.DiffGeo.MDiff) then m!"" else
-      .hint' "failures to find a model with corners can be debugged with the \
-        command `set_option trace.Elab.DiffGeo.MDiff true`."
+    let tracing := (← isTracingEnabledFor `Elab.DiffGeo.MDiff)
+    let hint : MessageData := if e.hasExprMVar then
+      .hint' "the expected type contains metavariables, \
+        maybe you need to provide an implicit argument"
+      else if tracing then m!"" else
+        .hint' "failures to find a model with corners can be debugged with the \
+          command `set_option trace.Elab.DiffGeo.MDiff true`."
     throwError "Could not find a model with corners for `{e}`.{hint}"
 where
   go (e : Expr) (baseInfo : Option (Expr × Expr)) : TermElabM (Option FindModelResult) := do

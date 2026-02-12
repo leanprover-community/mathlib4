@@ -46,11 +46,10 @@ def proj : TangentBundle 𝓘(𝕜, 𝕜) 𝕜 → 𝕜 := fun x ↦ x.2
 
 open ContDiff
 
--- TODO: the error message could be more helpful, by saying "the goal has metavariables; maybe there is an implicit argument missing"
 /--
 error: Could not find a model with corners for `TangentBundle 𝓘(?_, ?_) ?_`.
 
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
 -/
 #guard_msgs in
 set_option pp.mvars.anonymous false in
