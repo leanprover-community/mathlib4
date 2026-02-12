@@ -248,7 +248,7 @@ lemma HasLeftInverse.splits {f : E →L[R] F} (hf : f.HasLeftInverse) : f.Splits
   -- Idea of proof: let g be a left inverse for f. Then ker g is a closed subspace of F,
   -- and a complement to range f.
   -- Mathlib's definition of closed complement takes a continuous projection to f.range instead
-  -- of a complementary subspace: consider `f.comp g` instead, which is continuous as both maps are.
+  -- of a complementary subspace: consider `f.comp g` instead, which is continuous as both maps are,
   -- and idempotent as a continuous left inverse.
   use (f.comp hf.leftInverse).codRestrict f.range (by intro y; simp)
   rintro ⟨y, x, rfl⟩
