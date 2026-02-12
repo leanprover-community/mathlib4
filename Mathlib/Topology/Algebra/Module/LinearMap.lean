@@ -841,9 +841,7 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
-  __ := ContinuousLinearMap.addCommMonoid
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
-  nsmul := (· • ·)
   zsmul := (· • ·)
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
