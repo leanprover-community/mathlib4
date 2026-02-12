@@ -30,7 +30,7 @@ variable (P) in
 lemma IsUpperSet.isRelUpperSet_sep (hs : IsUpperSet s) : IsRelUpperSet {x ∈ s | P x} P :=
   fun _ h => ⟨h.2, fun _ ht hp => ⟨hs ht h.1, hp⟩⟩
 variable (P) in
-lemma IsLowerSet.isRelLowerSet_sdiff (hs : IsLowerSet s) : IsRelLowerSet {x ∈ s | P x} P :=
+lemma IsLowerSet.isRelLowerSet_sep (hs : IsLowerSet s) : IsRelLowerSet {x ∈ s | P x} P :=
   fun _ h => ⟨h.2, fun _ ht hp => ⟨hs ht h.1, hp⟩⟩
 
 /-- A subset that is a lower set is additionally a _relative_ lower set. -/
