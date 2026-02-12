@@ -103,9 +103,9 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     ⟨W₁ᶜ, by simpa using W₁.ι.isClosedMap.isClosed_range⟩
   refine ⟨Spec (.of R), Spec.map φ ≫ hU.fromSpec,
     ⟨P, ‹_›⟩, inferInstance, ?_, W₁, W₂, ⟨g ⟨P', ‹_›⟩, ?_⟩, ?_, ‹_›, ?_⟩
-  · change hU.fromSpec ⟨P.comap φ.hom, inferInstance⟩ = _
+  · dsimp [Spec.map_apply]
     convert hU.fromSpec_primeIdealOf ⟨f x, hxU⟩
-    · exact (Ideal.over_def _ _).symm
+    · exact PrimeSpectrum.ext (Ideal.over_def _ _).symm
     · simp [h]
   · exact ⟨⟨P', ‹_›⟩, heP', rfl⟩
   · simp [isCompl_iff, disjoint_iff, codisjoint_iff, W₂, SetLike.ext'_iff]
