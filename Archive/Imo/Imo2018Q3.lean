@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.Real.Archimedean
 
+set_option linter.style.longLine false
+
 /-!
 # IMO 2018 Q3
 
@@ -21,7 +23,7 @@ Prove this problem.
 -/
 
 
-
+@[expose] public section
 
 /--
 Pair each element with the list of its successors.
