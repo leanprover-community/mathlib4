@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.List.Monad
 public import Mathlib.Data.Fin.Tuple.Reflection
-public meta import Mathlib.Util.Qq
+public import Mathlib.Util.Qq
 
 /-! # The vecPerm simproc
 
