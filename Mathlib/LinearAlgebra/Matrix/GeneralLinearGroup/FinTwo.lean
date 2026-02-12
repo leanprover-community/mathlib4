@@ -169,7 +169,7 @@ abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
     IsParabolic (g * h * g⁻¹) ↔ IsParabolic h := by
   simp [IsParabolic]
 
-@[simp] lemma isParabolic_conj_iff' [Nontrivial R] (g h : GL (Fin 2) R) :
+@[simp] lemma isParabolic_conj_iff' (g h : GL (Fin 2) R) :
     IsParabolic (g⁻¹ * h * g) ↔ IsParabolic h := by
   simp [IsParabolic]
 
