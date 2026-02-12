@@ -100,7 +100,7 @@ theorem rayleighQuotient_le_norm (x : E) : |T.rayleighQuotient x| ≤ ‖T‖ :=
     norm_inner_le_norm, le_opNorm, mul_assoc, ← sq, mul_div_assoc]
   exact mul_le_of_le_one_right T.opNorm_nonneg (div_self_le_one (‖x‖ ^ 2))
 
--- TODO: Prove `⨆ x, |T.rayleighQuotient x| = ‖T‖`.
+-- TODO: Prove `⨆ x, |T.rayleighQuotient x| = ‖T‖` when `T` is symmetric.
 theorem bddAbove_rayleighQuotient : BddAbove (Set.range fun x ↦ |T.rayleighQuotient x|) :=
   ⟨‖T‖, fun _ ⟨y, h⟩ ↦ h ▸ T.rayleighQuotient_le_norm y⟩
 
