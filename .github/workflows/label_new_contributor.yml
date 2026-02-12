@@ -2,7 +2,7 @@ name: Label New Contributors
 
 # Written with ChatGPT: https://chat.openai.com/share/3777ceb1-d722-4705-bacd-ba3f04b387be
 
-on: 
+on:
   pull_request_target:
     types:
       - opened
@@ -50,7 +50,7 @@ jobs:
               totalIssuesChecked += response.data.length;
 
               // Filter this page for PRs with "[Merged by Bors] -" in the title
-              const pageMatches = response.data.filter(item => 
+              const pageMatches = response.data.filter(item =>
                 item.pull_request && item.title.startsWith('[Merged by Bors] -')
               );
 
@@ -77,6 +77,47 @@ jobs:
                 repo,
                 labels: ['new-contributor']
               });
+
+              // Check if we already posted a welcome comment (idempotency)
+              const WELCOME_MARKER = '<!-- mathlib-welcome-comment -->';
+              let alreadyWelcomed = false;
+              for await (const response of github.paginate.iterator(
+                github.rest.issues.listComments,
+                {
+                  issue_number: context.issue.number,
+                  owner,
+                  repo,
+                  per_page: 100,
+                }
+              )) {
+                if (response.data.some(c => c.body.includes(WELCOME_MARKER))) {
+                  alreadyWelcomed = true;
+                  break;
+                }
+              }
+
+              if (!alreadyWelcomed) {
+                console.log('Posting welcome comment for new contributor...');
+                const body = [
+                  WELCOME_MARKER,
+                  '## Welcome new contributor!',
+                  'Thank you for contributing to Mathlib! If you haven\'t done so already, please review our [contribution guidelines](https://leanprover-community.github.io/contribute/index.html), as well as the [style guide](https://leanprover-community.github.io/contribute/style.html) and [naming conventions](https://leanprover-community.github.io/contribute/naming.html).',
+                  '',
+                  'We use a [review queue](https://leanprover-community.github.io/queueboard/review_dashboard.html) to manage reviews. If your PR does not appear there, it is probably because it is not successfully building (i.e., it doesn\'t have a green checkmark), has the `awaiting-author` tag, or another reason described in the [Lifecycle of a PR](https://leanprover-community.github.io/contribute/index.html#lifecycle-of-a-pr).',
+                  '',
+                  'If you haven\'t already done so, please come to [https://leanprover.zulipchat.com/](https://leanprover.zulipchat.com/), introduce yourself, and mention your new PR.',
+                  '',
+                  'Thank you again for joining our community.',
+                ].join('\n');
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner,
+                  repo,
+                  body,
+                });
+              } else {
+                console.log('Welcome comment already exists, skipping.');
+              }
             }
 
             console.log('Creating check run with a message about the PR count by this author...');
