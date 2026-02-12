@@ -162,7 +162,7 @@ theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
 end IsBigO
 
 open Filter Topology in
-theorem tendsto_cocompact (f : 𝓢(E, F)) [ProperSpace E] :
+theorem tendsto_cocompact [ProperSpace E] (f : 𝓢(E, F)) :
     Tendsto f (cocompact E) (𝓝 0) := by
   apply Asymptotics.IsBigO.trans_tendsto (isBigO_cocompact_rpow f (-1))
   simp_rw [Real.rpow_neg_one]
@@ -1130,27 +1130,12 @@ variable [ProperSpace E]
 
 instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(E, F) E F where
   __ := instContinuousMapClass
-  zero_at_infty := by
-    intro f
-    apply zero_at_infty_of_norm_le
-    intro ε hε
-    use (SchwartzMap.seminorm ℝ 1 0) f / ε
-    intro x hx
-    rw [div_lt_iff₀ hε] at hx
-    have hxpos : 0 < ‖x‖ := by
-      rw [norm_pos_iff]
-      intro hxzero
-      simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
-      exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
-    have := norm_pow_mul_le_seminorm ℝ f 1 x
-    rw [pow_one, ← le_div_iff₀' hxpos] at this
-    apply lt_of_le_of_lt this
-    rwa [div_lt_iff₀' hxpos]
+  zero_at_infty := tendsto_cocompact
 
 /-- Schwartz functions as continuous functions vanishing at infinity. -/
 def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   toFun := f
-  zero_at_infty' := zero_at_infty f
+  zero_at_infty' := tendsto_cocompact f
 
 @[simp] theorem toZeroAtInfty_apply (f : 𝓢(E, F)) (x : E) : f.toZeroAtInfty x = f x :=
   rfl
