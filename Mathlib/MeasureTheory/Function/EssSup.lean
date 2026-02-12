@@ -33,7 +33,7 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 @[expose] public section
 
 
-open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace
+open Filter MeasureTheory OrderDual ProbabilityTheory Set TopologicalSpace
 open scoped ENNReal NNReal
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
@@ -56,7 +56,7 @@ theorem essSup_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essSup f μ = e
   limsup_congr hfg
 
 theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = essInf g μ :=
-  @essSup_congr_ae α βᵒᵈ _ _ _ _ _ hfg
+  liminf_congr hfg
 
 @[simp]
 theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
@@ -173,7 +173,7 @@ theorem essSup_measure_zero {m : MeasurableSpace α} {f : α → β} : essSup f 
 
 @[simp]
 theorem essInf_measure_zero {_ : MeasurableSpace α} {f : α → β} : essInf f (0 : Measure α) = ⊤ :=
-  @essSup_measure_zero α βᵒᵈ _ _ _
+  top_le_iff.mp (le_sSup (by simp))
 
 theorem essSup_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essSup f μ ≤ essSup g μ :=
   limsup_le_limsup hfg
@@ -185,7 +185,7 @@ theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => 
   limsup_le_of_le (by isBoundedDefault) hf
 
 theorem le_essInf_of_ae_le {f : α → β} (c : β) (hf : (fun _ => c) ≤ᵐ[μ] f) : c ≤ essInf f μ :=
-  @essSup_le_of_ae_le α βᵒᵈ _ _ _ _ c hf
+  le_liminf_of_le (by isBoundedDefault) hf
 
 theorem essSup_const_bot : essSup (fun _ : α => (⊥ : β)) μ = (⊥ : β) :=
   limsup_const_bot
@@ -199,8 +199,9 @@ theorem OrderIso.essSup_apply {m : MeasurableSpace α} {γ} [CompleteLattice γ]
   all_goals isBoundedDefault
 
 theorem OrderIso.essInf_apply {_ : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
-    (μ : Measure α) (g : β ≃o γ) : g (essInf f μ) = essInf (fun x => g (f x)) μ :=
-  @OrderIso.essSup_apply α βᵒᵈ _ _ γᵒᵈ _ _ _ g.dual
+    (μ : Measure α) (g : β ≃o γ) : g (essInf f μ) = essInf (fun x => g (f x)) μ := by
+  refine OrderIso.liminf_apply g ?_ ?_ ?_ ?_
+  all_goals isBoundedDefault
 
 theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν ≤ essSup f μ := by
   refine limsup_le_limsup_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) ?_ ?_
