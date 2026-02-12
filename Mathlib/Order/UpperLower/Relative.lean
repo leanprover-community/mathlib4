@@ -27,11 +27,11 @@ section LE
 variable [LE α]
 
 variable (P) in
-lemma IsUpperSet.isRelUpperSet_sdiff (hs : IsUpperSet s) : IsRelUpperSet (s \ {x | ¬ P x}) P :=
-  fun _ h => ⟨of_not_not h.2, fun _ ht hp => ⟨hs ht h.1, not_not_intro hp⟩⟩
+lemma IsUpperSet.isRelUpperSet_sep (hs : IsUpperSet s) : IsRelUpperSet {x ∈ s | P x} P :=
+  fun _ h => ⟨h.2, fun _ ht hp => ⟨hs ht h.1, hp⟩⟩
 variable (P) in
-lemma IsLowerSet.isRelLowerSet_sdiff (hs : IsLowerSet s) : IsRelLowerSet (s \ {x | ¬ P x}) P :=
-  fun _ h => ⟨of_not_not h.2, fun _ ht hp => ⟨hs ht h.1, not_not_intro hp⟩⟩
+lemma IsLowerSet.isRelLowerSet_sdiff (hs : IsLowerSet s) : IsRelLowerSet {x ∈ s | P x} P :=
+  fun _ h => ⟨h.2, fun _ ht hp => ⟨hs ht h.1, hp⟩⟩
 
 /-- A subset that is a lower set is additionally a _relative_ lower set. -/
 lemma IsRelLowerSet.mono_isLowerSet (ht : IsRelLowerSet t P) (hs : IsLowerSet s) (hst : s ⊆ t) :
