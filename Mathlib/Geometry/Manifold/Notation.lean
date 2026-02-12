@@ -215,12 +215,10 @@ def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × 
   match_expr e with
     | ContinuousLinearMap k S _ _ σ E _ _ F _ _ _ _ =>
       trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
+      if !(← withReducible <| isDefEq k S) then
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
       match_expr σ with
-      | RingHom.id _ _  =>
-        if ← withReducible <| isDefEq k S then
-          return some (k, E, F)
-        else
-          throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+      | RingHom.id _ _  => return some (k, E, F)
       | _ => throwError "`{e}` is a space of continuous (semi-)linear maps over `{σ}`, \
         which is not the identity"
     | _ => return none
