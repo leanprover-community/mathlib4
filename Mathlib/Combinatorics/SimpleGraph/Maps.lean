@@ -59,7 +59,7 @@ protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   symm a b := by
     rintro ⟨v, w, h, _⟩
     aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
-  loopless a := by aesop (add norm unfold Relation.Map)
+  loopless := ⟨fun a ↦ by aesop (add norm unfold Relation.Map)⟩
 
 instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
     Decidable ((G.map f).Adj a b) := ‹Decidable (Relation.Map G.Adj f f a b)›
@@ -108,7 +108,7 @@ This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm _ _ h := h.symm
-  loopless _ := G.loopless _
+  loopless := ⟨fun _ ↦ G.loopless.irrefl _⟩
 
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl
