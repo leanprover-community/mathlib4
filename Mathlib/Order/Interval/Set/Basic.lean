@@ -71,8 +71,11 @@ instance decidableMemIoc [Decidable (a < x ∧ x ≤ b)] : Decidable (x ∈ Ioc 
 @[to_dual] theorem self_notMem_Iio : a ∉ Iio a := by simp
 @[to_dual] theorem self_mem_Iic : a ∈ Iic a := by simp
 
-@[to_dual right_notMem_Ioo] theorem left_notMem_Ioo (a b : α) : a ∉ Ioo a b := by simp
-@[to_dual right_notMem_Ico] theorem left_notMem_Ioc (a b : α) : a ∉ Ioc a b := by simp
+@[to_dual (reorder := a b) right_notMem_Ioo]
+theorem left_notMem_Ioo (a b : α) : a ∉ Ioo a b := by simp
+
+@[to_dual (reorder := a b) right_notMem_Ico]
+theorem left_notMem_Ioc (a b : α) : a ∉ Ioc a b := by simp
 
 @[deprecated left_notMem_Ioo (since := "2025-12-26")]
 theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
@@ -656,7 +659,7 @@ theorem Iic_inter_Iic {a b : α} : Iic a ∩ Iic b = Iic (a ⊓ b) := by
   ext x
   simp [Iic]
 
-@[to_dual (attr := simp)]
+@[to_dual (reorder := a b) (attr := simp)]
 theorem Ioc_inter_Iic (a b c : α) : Ioc a b ∩ Iic c = Ioc a (b ⊓ c) := by
   rw [← Ioi_inter_Iic, ← Ioi_inter_Iic, inter_assoc, Iic_inter_Iic]
 
