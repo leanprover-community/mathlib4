@@ -760,7 +760,6 @@ theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ 
 
 end LinearOrder
 
--- TODO: these could be `@[to_dual]` if `himp`/`sdiff` were added to the dictionary.
 theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
     IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
   simp [IsGreatest, mem_upperBounds]
