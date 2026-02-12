@@ -26,13 +26,13 @@ Takes an expression representing a vector `Fin n → α` and returns the corresp
 list `List α`. Fails if the vector is not constucted using `Matrix.vecCons` and `Matrix.vecEmpty`.
 -/
 partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
-    (vec : Q(Fin $n → $α)) : MetaM (List Q($α)) := do
+    (vec : Q(Fin $n → $α)) : MetaM (Option <| List Q($α)) := do
   match n, vec with
   | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
-    return lastOut :: (← listOfVecQ prevVec)
-  | ~q(0), ~q(Matrix.vecEmpty) => return []
-  | _, _ => throwError m!"Invalid inputs: {n} should represent a natural number litteral and {vec}
-a function built using the vector notation."
+    let some prevOut ← listOfVecQ prevVec | return none
+    return some <| lastOut :: prevOut
+  | ~q(0), ~q(Matrix.vecEmpty) => return some []
+  | _, _ => return none
 
 /--
 Takes an expression representing a list of elements of type `α` and outputs the corresponding
@@ -72,12 +72,10 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
         let idxQ := mkNatLitQ idx
         let idxQ : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
         let outIdxQ : Q(Nat) := q(($perm $idxQ : Nat))
-        -- TODO(Paul-Lez): try to evaluate using the compiler? (probably better for performance)
         let outIdxExpr : Q(Nat) ← whnf outIdxQ
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
       return out
-    -- TODO(Paul-Lez): support the `n = 0` case correctly
     catch _ =>
       return none
 
@@ -99,7 +97,7 @@ example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
 simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let ⟨_, ~q(Fin $n → $α), ~q(($v) ∘ ($p : _ → Fin $n'))⟩ ← inferTypeQ' e | return .continue
   let .defEq _ ← isDefEqQ q($n) q($n') | return .continue
-  let unpermList ← listOfVecQ (α := α) (n := n) v
+  let some unpermList ← listOfVecQ (α := α) (n := n) v | return .continue
   let some permAsList ← listOfVecFinQ n unpermList.length p | return .continue
   let outAsList := permList unpermList permAsList
   let some out := vecOfListQ unpermList.length outAsList | return .continue

@@ -23,3 +23,17 @@ example : ![a, b, c, d] ∘ c[2, 3, 0, 1] = ![b, c, d, a] := by
 
 example : ![a, b, c, d] ∘ ![1, 3, 1, 3] = ![b, d, b, d] := by
   simp only [vecPerm]
+
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example (u v w x : Fin 4) : ![a, b, c, d] ∘ ![u, v, w, x] = ![b, d, b, d] := by
+  simp only [vecPerm]
+
+/--
+error: `simp` made no progress
+-/
+#guard_msgs in
+example {n : Nat} (p q r : Fin n → Fin n) : p ∘ q = r := by
+  simp only [vecPerm]
