@@ -157,7 +157,7 @@ open Module in
 /-- The special linear Lie algebra `sl(n, K)` has dimension `n² - 1`. -/
 theorem finrank_sl [Fintype n] [Nonempty n] (K : Type*) [Field K] :
     finrank K (sl n K) = Fintype.card n ^ 2 - 1 := by
-  show finrank K (LinearMap.ker (traceLinearMap n K K)) = _
+  change finrank K (LinearMap.ker (traceLinearMap n K K)) = _
   have := (traceLinearMap n K K).finrank_range_add_finrank_ker
   rw [LinearMap.range_eq_top.mpr fun r => trace_surjective r,
     finrank_top, finrank_self, finrank_matrix, finrank_self, mul_one, ← sq] at this
