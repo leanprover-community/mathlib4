@@ -48,7 +48,7 @@ lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [ofReal_norm_eq_enorm, edist_zero_eq_enorm]
+  simp only [ofReal_norm_eq_enorm, edist_zero_right]
 
 theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
     (hh : AEStronglyMeasurable h μ) :
