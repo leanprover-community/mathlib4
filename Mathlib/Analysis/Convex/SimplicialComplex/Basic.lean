@@ -57,11 +57,12 @@ Note that the textbook meaning of "glue nicely" is given in
 `Geometry.SimplicialComplex.convexHull_inter_convexHull` is enough for all purposes. -/
 @[ext]
 structure SimplicialComplex where
-  /-- the faces of this simplicial complex: currently, given by their spanning vertices -/
+  /-- The faces of this simplicial complex: currently, given by their spanning vertices. -/
   faces : Set (Finset E)
-  /-- the vertices in each face are affine independent: this is an implementation detail -/
+  /-- The vertices in each face are affine independent: this is an implementation detail. -/
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
-  /-- faces are downward closed: a non-empty subset of its spanning vertices spans another face -/
+  /-- Faces are nonempty and downward closed: a non-empty subset of its spanning vertices spans
+  another face. -/
   isRelLowerSet_faces : IsRelLowerSet faces Finset.Nonempty
   inter_subset_convexHull : ∀ {s t}, s ∈ faces → t ∈ faces →
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
