@@ -570,6 +570,7 @@ protected theorem BddAbove.insert [IsDirectedOrder α] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
   bddAbove_insert.2
 
+-- TODO: adding `directed` to the `@[to_dual]` dictionary causes problems elsewhere.
 /-- Adding a point to a set preserves its boundedness below. -/
 @[simp]
 theorem bddBelow_insert [IsCodirectedOrder α] {s : Set α} {a : α} :
@@ -759,6 +760,7 @@ theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ 
 
 end LinearOrder
 
+-- TODO: these could be `@[to_dual]` if `himp`/`sdiff` were added to the dictionary.
 theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
     IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
   simp [IsGreatest, mem_upperBounds]
