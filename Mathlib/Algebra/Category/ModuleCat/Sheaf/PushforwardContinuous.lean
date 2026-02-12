@@ -282,4 +282,48 @@ end
 
 end Adjunction
 
+section Equivalence
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {J : GrothendieckTopology C} {K : GrothendieckTopology D} (eqv : C ≌ D)
+  {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
+  [Functor.IsContinuous.{u} eqv.functor J K] [Functor.IsContinuous.{v} eqv.functor J K]
+  [Functor.IsContinuous.{u} eqv.inverse K J] [Functor.IsContinuous.{v} eqv.inverse K J]
+  (φ : S ⟶ (eqv.functor.sheafPushforwardContinuous RingCat.{u} J K).obj R)
+  (ψ : R ⟶ (eqv.inverse.sheafPushforwardContinuous RingCat.{u} K J).obj S)
+  (H₁ : Functor.whiskerRight (NatTrans.op eqv.counit) R.val =
+    ψ.val ≫ eqv.inverse.op.whiskerLeft φ.val)
+  (H₂ : φ.val ≫ eqv.functor.op.whiskerLeft ψ.val ≫
+    Functor.whiskerRight (NatTrans.op eqv.unit) S.val = 𝟙 S.val)
+
+/-- If `e : C ≌ D`, then the pushforwards along `e.functor` and `e.inverse` forms an equivalence. -/
+noncomputable
+def pushforwardPushforwardEquivalence : SheafOfModules R ≌ SheafOfModules S where
+  functor := pushforward.{v} φ
+  inverse := pushforward.{v} ψ
+  unitIso :=
+    letI := CategoryTheory.Functor.isContinuous_comp.{v} eqv.inverse eqv.functor K J K
+    letI := CategoryTheory.Functor.isContinuous_comp.{u} eqv.inverse eqv.functor K J K
+    (pushforwardId _).symm ≪≫ pushforwardNatIso _ eqv.counitIso ≪≫
+      pushforwardCongr (by ext1; simpa) ≪≫ (pushforwardComp _ _).symm
+  counitIso :=
+    letI := CategoryTheory.Functor.isContinuous_comp.{v} eqv.functor eqv.inverse J K J
+    letI := CategoryTheory.Functor.isContinuous_comp.{u} eqv.functor eqv.inverse J K J
+    pushforwardComp _ _ ≪≫ pushforwardNatIso _ eqv.unitIso ≪≫
+      pushforwardCongr (by ext1; simpa) ≪≫ pushforwardId _
+  functor_unitIso_comp :=
+    (pushforwardPushforwardAdj eqv.toAdjunction φ ψ H₁ H₂).left_triangle_components
+
+-- Not a simp because the type of the LHS is dsimp-able
+lemma pushforwardPushforwardEquivalence_unit_app_val_app (M U x) :
+    ((pushforwardPushforwardEquivalence eqv φ ψ H₁ H₂).unit.app M).val.app U x =
+      M.val.map (eqv.counit.app U.unop).op x := rfl
+
+-- Not a simp because the type of the LHS is dsimp-able
+lemma pushforwardPushforwardEquivalence_counit_app_val_app (M U x) :
+    ((pushforwardPushforwardEquivalence eqv φ ψ H₁ H₂).counit.app M).val.app U x =
+      M.val.map (eqv.unit.app U.unop).op x := rfl
+
+end Equivalence
+
 end SheafOfModules
