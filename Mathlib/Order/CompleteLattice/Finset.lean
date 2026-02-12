@@ -140,6 +140,8 @@ theorem iSup_insert (a : α) (s : Finset α) (t : α → β) :
   rw [insert_eq]
   simp only [iSup_union, Finset.iSup_singleton]
 
+-- TODO: `@[to_dual]` fails on `iSup_finset_image`/`iInf_finset_image`:
+-- proof uses `iSup_coe`/`iInf_coe` which aren't registered duals.
 theorem iSup_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     ⨆ x ∈ s.image f, g x = ⨆ y ∈ s, g (f y) := by rw [← iSup_coe, coe_image, iSup_image, iSup_coe]
 
