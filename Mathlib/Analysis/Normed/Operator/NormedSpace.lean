@@ -121,7 +121,7 @@ theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
 
-/-- If a continuous linear map `f` has continuous inverse, then `‖f x‖ / ‖x‖` is bounded below. -/
+/-- If a continuous linear map `f` is a unit, then `‖f x‖ / ‖x‖` is bounded below. -/
 theorem exists_lower_bound_of_isUnit (f : E →L[𝕜] E) (hf : IsUnit f) :
     ∃ c > 0, ∀ x, c * ‖x‖ ≤ ‖f x‖ := by
   cases subsingleton_or_nontrivial E
