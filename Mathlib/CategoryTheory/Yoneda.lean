@@ -39,7 +39,6 @@ universe w v v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u₁} [Category.{v₁} C]
 
-attribute [local simp←] ofHom_comp in
 /-- The Yoneda embedding, as a functor from `C` into presheaves on `C`. -/
 @[simps, stacks 001O]-- @[simps, stacks 001O]
 def yoneda : C ⥤ Cᵒᵖ ⥤ TypeCat.{v₁} where
