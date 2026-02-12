@@ -1,4 +1,4 @@
-# Reusable workflow invoked by build.yml, bors.yml, and build_fork.yml.
+# Reusable workflow invoked by build.yml, bors.yml, build_fork.yml, and ci_dev.yml.
 
 on:
   workflow_call:
@@ -6,9 +6,17 @@ on:
       concurrency_group:
         type: string
         required: true
+      tools_branch_ref:
+        type: string
+        required: false
+        default: ''
       pr_branch_ref:
         type: string
         required: true
+      run_post_ci:
+        type: boolean
+        required: false
+        default: true
       runs_on:
         type: string
         required: true
@@ -71,16 +79,16 @@ jobs:
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
-      # Checkout the master branch into a subdirectory
-      - name: Checkout master branch
+      # Checkout a trusted branch to build the tooling from
+      - name: Checkout tools branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
           # For PRs and pushes to this repository, we will use `nightly-testing-green` instead,
           # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
-          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master' }}
-          path: master-branch
+          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
+          path: tools-branch
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
@@ -160,10 +168,10 @@ jobs:
           # Set it as an environment variable for subsequent steps
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
-      - name: build master-branch tools
-        shell: bash # We're only building the `master` branch version of the tools, so don't need to run inside landrun.
+      - name: build tools-branch tools
+        shell: bash # We're only building a trusted branch with the tools, so no need to run inside landrun.
         run: |
-          cd master-branch
+          cd tools-branch
           lake build cache check-yaml graph
           ls .lake/build/bin/cache
           ls .lake/build/bin/check-yaml
@@ -171,7 +179,7 @@ jobs:
 
       - name: cleanup .cache/mathlib
         # This needs write access to .cache/mathlib, so can't be run inside landrun.
-        # However it is only using the `master` version of `cache`, so is safe to run outside landrun.
+        # However it is only using the `tools` version of `cache`, so is safe to run outside landrun.
         shell: bash
         run: |
           # Define the cache directory path
@@ -190,8 +198,8 @@ jobs:
           # Check if size exceeds 10GB
           if [ "$DIR_SIZE" -gt "10737418240" ]; then
             echo "Cache size exceeds threshold, running lake exe cache clean"
-            # We use the master-branch version of `cache`.
-            cd master-branch
+            # We use the tools-branch version of `cache`.
+            cd tools-branch
             lake exe cache clean
           fi
 
@@ -281,7 +289,7 @@ jobs:
 
       - name: get cache (1/3 - setup and initial fetch)
         id: get_cache_part1_setup
-        shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        shell: bash # only runs `cache get` from `tools-branch`, so doesn't need to be inside landrun
         run: |
           cd pr-branch
           echo "Removing old Mathlib build directories prior to cache fetch..."
@@ -289,7 +297,7 @@ jobs:
 
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           echo "Attempting to fetch olean for Mathlib/Init.lean from cache..."
-          ../master-branch/.lake/build/bin/cache get Mathlib/Init.lean
+          ../tools-branch/.lake/build/bin/cache get Mathlib/Init.lean
 
       - name: get cache (2/3 - test Mathlib.Init cache)
         id: get_cache_part2_test
@@ -303,16 +311,16 @@ jobs:
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
-        shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        shell: bash # only runs `cache get` from `tools-branch`, so doesn't need to be inside landrun
         run: |
           cd pr-branch
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
             echo "Fetching all remaining cache..."
 
-            ../master-branch/.lake/build/bin/cache get
+            ../tools-branch/.lake/build/bin/cache get
 
             # Run again with --repo, to ensure we actually get the oleans.
-            ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
+            ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} get
           else
             echo "WARNING: 'lake build --no-build -v Mathlib.Init' failed."
             echo "No cache for 'Mathlib.Init' available or it could not be prepared."
@@ -346,7 +354,7 @@ jobs:
           fi
           echo "::endgroup::"
 
-          ../master-branch/scripts/lake-build-with-retry.sh Mathlib
+          ../tools-branch/scripts/lake-build-with-retry.sh Mathlib
           # results of build at pr-branch/.lake/build_summary_Mathlib.json
       - name: end gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
@@ -372,15 +380,15 @@ jobs:
           # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
-          # Use the trusted cache tool from master-branch
+          # Use the trusted cache tool from tools-branch
           # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
-          # ../master-branch/.lake/build/bin/cache commit || true
+          # ../tools-branch/.lake/build/bin/cache commit || true
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
-          # ../master-branch/.lake/build/bin/cache put!
+          # ../tools-branch/.lake/build/bin/cache put!
           # do not try to upload files just downloaded
 
           echo "Uploading cache to Azure..."
-          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -396,15 +404,15 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../master-branch/.lake/build/bin/cache get Archive.lean
-          ../master-branch/.lake/build/bin/cache get Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache get Archive.lean
+          ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
 
       - name: build archive
         id: archive
         continue-on-error: true
         run: |
           cd pr-branch
-          ../master-branch/scripts/lake-build-with-retry.sh Archive
+          ../tools-branch/scripts/lake-build-with-retry.sh Archive
           # results of build at pr-branch/.lake/build_summary_Archive.json
 
       - name: build counterexamples
@@ -412,7 +420,7 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-          ../master-branch/scripts/lake-build-with-retry.sh Counterexamples
+          ../tools-branch/scripts/lake-build-with-retry.sh Counterexamples
           # results of build at pr-branch/.lake/build_summary_Counterexamples.json
 
       - name: Check if building Archive or Counterexamples failed
@@ -436,8 +444,8 @@ jobs:
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Azure..."
-          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
-          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../tools-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -460,7 +468,7 @@ jobs:
         id: test
         run: |
           cd pr-branch
-          ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
+          ../tools-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
         with:
@@ -584,8 +592,8 @@ jobs:
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
-          master-branch/scripts/lean-pr-testing-comments.sh lean
-          master-branch/scripts/lean-pr-testing-comments.sh batteries
+          tools-branch/scripts/lean-pr-testing-comments.sh lean
+          tools-branch/scripts/lean-pr-testing-comments.sh batteries
 
   post_steps:
     name: Post-Build Step
@@ -678,6 +686,7 @@ jobs:
 
   final:
     name: Post-CI job
+    if: ${{ inputs.run_post_ci }}
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:

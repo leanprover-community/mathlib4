@@ -2012,6 +2012,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.Normed.Module.ContinuousInverse
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Module.ENormedSpace
@@ -4070,6 +4071,7 @@ public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.Data.Set.Pairwise.List
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Data.Set.Pointwise.Support
+public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.Data.Set.Prod
 public import Mathlib.Data.Set.Restrict
 public import Mathlib.Data.Set.SMulAntidiagonal
@@ -4884,11 +4886,13 @@ public import Mathlib.LinearAlgebra.TensorPower.Symmetric
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Free
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
@@ -5721,6 +5725,7 @@ public import Mathlib.Order.Notation
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.OrdContinuous
+public import Mathlib.Order.OrderDual
 public import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.PFilter
 public import Mathlib.Order.Part
@@ -6695,7 +6700,10 @@ public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.Clear_
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.CongrExclamation
 public import Mathlib.Tactic.CongrM
