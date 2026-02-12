@@ -318,7 +318,6 @@ theorem cuspFunction_apply_zero (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
   have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
   (CuspFormClass.zero_at_infty f).cuspFunction_apply_zero hh
 
-
 theorem exp_decay_atImInfty (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
   have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
