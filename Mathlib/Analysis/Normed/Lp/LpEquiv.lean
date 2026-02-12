@@ -53,13 +53,6 @@ section Finite
 
 variable [Finite α]
 
-/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
-theorem Memℓp.all (f : ∀ i, E i) : Memℓp f p := by
-  rcases p.trichotomy with (rfl | rfl | _h)
-  · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
-  · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α ↦ ‖f i‖).toFinite)
-  · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
-
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
   toFun f := toLp p ⇑f

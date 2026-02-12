@@ -476,6 +476,10 @@ lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
   refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
   exact (L i).le_of_opNorm_le (hL i) _
 
+lemma norm_postcomp_le [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] [RingHomIsometric σ₂₃]
+    (L : F →SL[σ₂₃] G) : ‖L.postcomp (σ := σ₁₂) E‖ ≤ ‖L‖ :=
+  L.postcomp (σ := σ₁₂) E |>.opNorm_le_bound (by positivity) <| opNorm_comp_le L
+
 end ContinuousLinearMap
 
 namespace LinearMap

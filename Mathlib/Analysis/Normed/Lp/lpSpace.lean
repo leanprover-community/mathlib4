@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
+Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
@@ -181,6 +181,13 @@ theorem bddAbove {f : ∀ i, E i} (hf : Memℓp f ∞) : BddAbove (Set.range fun
 theorem summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
     Summable fun i => ‖f i‖ ^ p.toReal :=
   (memℓp_gen_iff hp).1 hf
+
+/-- When `α` is `Finite`, every `f : ∀ i, E i` satisfies `Memℓp f p`. -/
+theorem all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
+  rcases p.trichotomy with (rfl | rfl | _)
+  · exact memℓp_zero_iff.mpr {i : α | f i ≠ 0}.toFinite
+  · exact memℓp_infty_iff.mpr (Set.range (‖f ·‖)).toFinite.bddAbove
+  · cases nonempty_fintype α; exact memℓp_gen ⟨_, hasSum_fintype _⟩
 
 lemma summable_of_one {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     {x : α → E} (hx : Memℓp x 1) : Summable x :=
