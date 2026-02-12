@@ -37,6 +37,7 @@ Description of Latin Squares
 * Add Evan's Conjeture.
 * Add isomorphism to quasigroups.
 * Add isomorphism to orthogonal arrays of triples.
+* Add decidablity reductions to the LS definitions
 
 ## References
 
@@ -287,10 +288,10 @@ def is_subrect
   ∀ (i : m), ∀ (j : n), A.M i j = B.M (ι i) j
 
 
-def symbols_in
- (A : LatinRectangle k n α) (j : n) :=
-  let D := Finset.image (col A j) Finset.univ
-  D
+-- def symbols_in
+--  (A : LatinRectangle k n α) (j : n) :=
+--   let D := Finset.image (col A j) Finset.univ
+--   D
 
 def symbols_not_in
  (A : LatinRectangle k n α) (j : n) :=
@@ -437,8 +438,8 @@ lemma count_by_group_or_element_indicator
     exact h2
 
 lemma exists_larger_subset
-  {B : Fin n → Finset α}
-  {s : Finset (Fin n)}
+  {B : n → Finset α}
+  {s : Finset n}
   {k : Nat} [nek : NeZero k]
   (h₁ : ∀ j, Finset.card (B j) = k)
   (h₂ : (s.biUnion B).card < (s.card)) :
@@ -486,55 +487,58 @@ lemma latin_rect_hall_property
   (h2 : ∀ j, Finset.card (B j) = Fintype.card n - Fintype.card k)
   (h3 : ∀ x, ∀ (t : Finset n), Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ Fintype.card n - Fintype.card k) :
   ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
-    sorry
-    -- intro s
-    -- set l := s.card with hl
-    -- have h1 : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card - Fintype.card k) := by
-    --   conv =>
-    --     congr
-    --     arg 2
-    --     ext j
-    --     rw [h2]
-    --   simp [hl]
-    -- by_contra hc
-    -- simp at hc
-    -- have _ : NeZero (n-k) := {out := by omega}
-    -- have hcount := exists_larger_subset h2 hc
-    -- obtain ⟨ x, hx ⟩ := hcount
-    -- specialize h3 x s
-    -- omega
+    intro s
+    set l := s.card with hl
+    have h1 : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card n - Fintype.card k) := by
+      conv =>
+        congr
+        arg 2
+        ext 
+        rw [h2]
+      simp [hl]
+    by_contra hc
+    simp only [ge_iff_le, not_le] at hc
+    have _ : NeZero ((Fintype.card n) - (Fintype.card k) ) := {out := by omega}
+    have hcount := exists_larger_subset h2 hc
+    obtain ⟨ x, hx ⟩ := hcount
+    specialize h3 x s
+    omega
 
-lemma col_map_in_symbols
-    {k n : Nat} [NeZero k] [NeZero n]
-    (A : LatinRectangle k n α) :
-    ∀ j, (Finset.image (col_map A j) Finset.univ) ∩ (symbols A.M) 
-     = (Finset.image (col_map A j) Finset.univ) := by 
-     intro j
-     unfold col_map symbols
-     simp [Finset.inter_eq_left, Finset.subset_iff]
 
-lemma col_injective
-    {k n : Nat} [NeZero k] [NeZero n]
-    (A : LatinRectangle k n α)
-    (h : k < n := by omega) :
-    ∀ j, Function.Injective (col_map A j) := by 
-    have h_col := A.distinct_col_entries
-    unfold distinct_col_entries at h_col
-    unfold Function.Injective col_map
-    intro j a1 a2
-    specialize h_col j a1 a2
-    replace h_col := h_col.mt
-    simp at h_col
-    exact h_col
 
-lemma col_card
-    {k n : Nat} [NeZero k] [NeZero n]
-    (A : LatinRectangle k n α)
-    (h : k < n := by omega) :
-    ∀ j, (Finset.image (col_map A j) Finset.univ).card = k := by 
-    intro j
-    have h_inj := col_injective A h j
-    simp [Finset.card_image_of_injective Finset.univ h_inj]
+
+
+-- lemma col_map_in_symbols
+--     {k n : Nat} [NeZero k] [NeZero n]
+--     (A : LatinRectangle k n α) :
+--     ∀ j, (Finset.image (col_map A j) Finset.univ) ∩ (symbols A.M) 
+--      = (Finset.image (col_map A j) Finset.univ) := by 
+--      intro j
+--      unfold col_map symbols
+--      simp [Finset.inter_eq_left, Finset.subset_iff]
+
+-- lemma col_injective
+--     {k n : Nat} [NeZero k] [NeZero n]
+--     (A : LatinRectangle k n α)
+--     (h : k < n := by omega) :
+--     ∀ j, Function.Injective (col_map A j) := by 
+--     have h_col := A.distinct_col_entries
+--     unfold distinct_col_entries at h_col
+--     unfold Function.Injective col_map
+--     intro j a1 a2
+--     specialize h_col j a1 a2
+--     replace h_col := h_col.mt
+--     simp at h_col
+--     exact h_col
+
+-- lemma col_card
+--     {k n : Nat} [NeZero k] [NeZero n]
+--     (A : LatinRectangle k n α)
+--     (h : k < n := by omega) :
+--     ∀ j, (Finset.image (col_map A j) Finset.univ).card = k := by 
+--     intro j
+--     have h_inj := col_injective A h j
+--     simp [Finset.card_image_of_injective Finset.univ h_inj]
     
 
 lemma card_symbols_not_in
@@ -576,7 +580,6 @@ theorem latin_rectangle_extends
   let B := symbols_not_in A
   have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) := 
     card_symbols_not_in A h j
-  -- have Bj_characterized (j : n) (x : α) : x ∈ B j ↔ ¬ (∃ i, A.M i j = x) := by sorry
   
   have exactly_n_minus_k_cols_without_x : ∀ x, 
     (Finset.card {j | x ∈ B j}) = Fintype.card n - Fintype.card k := by 
@@ -589,7 +592,7 @@ theorem latin_rectangle_extends
     obtain ⟨f, hf⟩ := h
     have f_inj : Function.Injective f := by
       -- TODO: This proof should be simplified
-      simp [Function.Injective]
+      unfold Function.Injective
       intro a1 a2 h1
       have h1' := h1.symm
       have h1'' := h1
@@ -600,7 +603,7 @@ theorem latin_rectangle_extends
       have hinj := A.distinct_col_entries
       unfold distinct_col_entries at hinj
       specialize hinj (f a2)
-      simp [Function.Injective, Matrix.col] at hinj
+      simp only [Function.Injective, Matrix.col] at hinj
       exact hinj h1
     set f' : k ↪ n := ⟨f, f_inj⟩ with hf'
     have h_Cs_card : Finset.card Cs = Fintype.card k := by
@@ -624,7 +627,22 @@ theorem latin_rectangle_extends
 
     have gsurj : Function.Surjective g := by 
       have As_is_f_image : As = Finset.image f Finset.univ := by 
-        sorry
+        unfold As
+        ext b
+        simp only [Matrix.col_apply, 
+                   Finset.mem_image, 
+                   Finset.mem_filter, 
+                   Finset.mem_univ, 
+                   true_and]
+        constructor
+        . intro h
+          obtain ⟨ i, hi ⟩ := h
+          rw [hf] at hi
+          use i
+        . intro h
+          obtain ⟨ i, hi ⟩ := h
+          rw [<-hf] at hi
+          use i
       unfold Function.Surjective
       unfold g
       simp
