@@ -561,25 +561,15 @@ theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonem
 
 
 /-- Adding a point to a set preserves its boundedness above. -/
-@[simp]
+@[to_dual (attr := simp) /-- Adding a point to a set preserves its boundedness below. -/]
 theorem bddAbove_insert [IsDirectedOrder α] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
   simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
+@[to_dual]
 protected theorem BddAbove.insert [IsDirectedOrder α] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
   bddAbove_insert.2
-
--- TODO: adding `directed` to the `@[to_dual]` dictionary causes problems elsewhere.
-/-- Adding a point to a set preserves its boundedness below. -/
-@[simp]
-theorem bddBelow_insert [IsCodirectedOrder α] {s : Set α} {a : α} :
-    BddBelow (insert a s) ↔ BddBelow s := by
-  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
-
-protected theorem BddBelow.insert [IsCodirectedOrder α] {s : Set α} (a : α) :
-    BddBelow s → BddBelow (insert a s) :=
-  bddBelow_insert.2
 
 @[to_dual]
 protected theorem IsLUB.insert [SemilatticeSup γ] (a) {b} {s : Set γ} (hs : IsLUB s b) :
