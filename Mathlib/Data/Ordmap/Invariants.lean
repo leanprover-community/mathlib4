@@ -221,7 +221,7 @@ theorem Balanced.dual : ∀ {t : Ordnode α}, Balanced t → Balanced (dual t)
 theorem Balanced.map {β} (f : α → β) : ∀ {t : Ordnode α}, Balanced t → Balanced (Ordnode.map f t)
   | nil, _ => trivial
   | node _ _ _ _, ⟨hb, bl, br⟩ =>
-    ⟨by simp [size_map]; exact hb, Balanced.map f bl, Balanced.map f br⟩
+    ⟨by simp only [size_map]; exact hb, Balanced.map f bl, Balanced.map f br⟩
 
 theorem Balanced.of_map {β} (f : α → β) :
     ∀ {t : Ordnode α}, Balanced (Ordnode.map f t) → Balanced t
@@ -585,11 +585,11 @@ theorem map_balanceL {β} (f : α → β) (l : Ordnode α) (x : α) (r : Ordnode
       simp [map, Ordnode.singleton]
     split_ifs <;> simp [map]
   · simp [map]
-  · simp [map, size_map]
+  · simp only [id_eq, gt_iff_lt, map]
     split_ifs
     · rcases ll with _ | ⟨lls, lll, llx, llr⟩ <;> rcases lr with _ | ⟨lrs, lrl, lrx, lrr⟩ <;>
         simp [map]
-      split_ifs <;> simp [map, size_map]
+      split_ifs <;> simp [map]
     · rfl
 
 theorem map_balanceR {β} (f : α → β) (l : Ordnode α) (x : α) (r : Ordnode α) :
@@ -601,11 +601,11 @@ theorem map_balanceR {β} (f : α → β) (l : Ordnode α) (x : α) (r : Ordnode
       simp [map, Ordnode.singleton]
     split_ifs <;> simp [map]
   · simp [map]
-  · simp [map, size_map]
+  · simp only [id_eq, gt_iff_lt, map]
     split_ifs
     · rcases rr with _ | ⟨rrs, rrl, rrx, rrr⟩ <;> rcases rl with _ | ⟨rls, rll, rlx, rlr⟩ <;>
         simp [map]
-      split_ifs <;> simp [map, size_map]
+      split_ifs <;> simp [map]
     · rfl
 
 theorem map_eraseMin {β} (f : α → β) : ∀ (t : Ordnode α),
