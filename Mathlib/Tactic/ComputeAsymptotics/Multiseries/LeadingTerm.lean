@@ -682,7 +682,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · simp only [const_exps'] at h_pos
     cases h_pos
-  have h_basis' := insertLastLog_WellFormedBasis h_basis
+  have h_basis' := h_basis.push_log_last
   let ms' :
       MultiseriesExpansion
         (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=

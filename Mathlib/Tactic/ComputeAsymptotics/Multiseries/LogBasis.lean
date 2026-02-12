@@ -245,7 +245,7 @@ theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (logBasis.insertLastLog).WellFormed := by
   simp only [List.cons_append, insertLastLog]
   apply extendBasisEnd_WellFormed
-  · exact insertLastLog_WellFormedBasis h_basis
+  · exact h_basis.push_log_last
   · exact h_wf
   · exact MultiseriesExpansion.monomial_Sorted
   · have : WellFormedBasis [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)] := by

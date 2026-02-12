@@ -463,12 +463,12 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis}
     simp only [updateBasis]
     apply Approximates.cons
     · apply updateBasis_Approximates _ h_approx
-      exact BasisExtension.insert_WellFormedBasis_tail h_basis
+      exact BasisExtension.insert_tail_wellFormedBasis h_basis
     · simp only [BasisExtension.getBasis] at h_basis
       apply MultiseriesExpansion.Approximates_coef_Majorized_head h_approx
       apply WellFormedBasis.of_sublist _ h_basis
       simp only [List.cons_sublist_cons]
-      apply BasisExtension.getBasis_Sublist
+      apply BasisExtension.sublist_getBasis
     · apply Approximates.nil
       simp
 
