@@ -79,6 +79,11 @@ of the `a` such that the inequality `a ≤ u x` eventually holds for `f` wheneve
 def bliminf (u : β → α) (f : Filter β) (p : β → Prop) :=
   sSup { a | ∀ᶠ x in f, p x → a ≤ u x }
 
+-- Register definition dual pairs.
+attribute [to_dual existing] limsSup
+attribute [to_dual existing] limsup
+attribute [to_dual existing] blimsup
+
 section
 
 variable {f : Filter β} {u : β → α} {p : β → Prop}
