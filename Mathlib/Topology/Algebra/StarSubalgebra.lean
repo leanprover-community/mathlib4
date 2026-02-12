@@ -90,6 +90,7 @@ theorem topologicalClosure_minimal {s t : StarSubalgebra R A} (h : s ≤ t)
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
 theorem topologicalClosure_mono : Monotone (topologicalClosure : _ → StarSubalgebra R A) :=
   fun _ S₂ h =>
   topologicalClosure_minimal (h.trans <| le_topologicalClosure S₂) (isClosed_topologicalClosure S₂)

@@ -51,6 +51,11 @@ theorem topologicalClosure_minimal {s t : NonUnitalSubalgebra R A}
     (h : s ≤ t) (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubalgebra R A} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  closure_mono h
+
 /-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.
 
