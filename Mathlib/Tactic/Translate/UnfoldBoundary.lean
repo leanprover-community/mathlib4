@@ -123,7 +123,7 @@ def mkAppWithCast (b : UnfoldBoundaries) (f a : Expr) : SimpM Expr :=
     return f.app (← mkCast b a d)
 
 /-- Modify `e` so that it has type `expectedType` if the constants in `b` cannot be unfolded. -/
-def UnfoldBoundaries.cast (b : UnfoldBoundaries) (e expectedType : Expr) (attr : Name) :
+public def UnfoldBoundaries.cast (b : UnfoldBoundaries) (e expectedType : Expr) (attr : Name) :
     MetaM Expr :=
   run b <|
   try
@@ -137,7 +137,7 @@ def UnfoldBoundaries.cast (b : UnfoldBoundaries) (e expectedType : Expr) (attr :
 Note: it may be that `e` contains some constant whose type is not well typed in this setting.
 We don't make an effort to replace such constants.
 It seems that this approximation works well enough. -/
-def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (attr : Name) :
+public def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (attr : Name) :
     MetaM Expr :=
   run b <| Meta.transform e (post := fun e ↦ e.withApp fun f args =>
     try
@@ -147,7 +147,7 @@ def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (attr : 
         well typed\n\n{ex.toMessageData}")
 
 /-- Unfold all of the auxiliary functions that were inserted as unfold boundaries. -/
-def UnfoldBoundaries.unfoldInsertions (e : Expr) (b : UnfoldBoundaries) : CoreM Expr :=
+public def UnfoldBoundaries.unfoldInsertions (e : Expr) (b : UnfoldBoundaries) : CoreM Expr :=
   -- This is the same as `Meta.deltaExpand`, but with an extra beta reduction.
   Core.transform e fun e => do
     if let some e ← delta? e b.insertionFuns.contains then
@@ -181,20 +181,5 @@ public def registerUnfoldBoundaryExt : IO UnfoldBoundaryExt := do
     addEntryFn := UnfoldBoundaries.insert
     addImportedFn as := as.foldl (Array.foldl (·.insert ·)) {}
   }
-
-@[inherit_doc UnfoldBoundaries.cast]
-public def UnfoldBoundaryExt.cast (b : UnfoldBoundaryExt) (e expectedType : Expr) (attr : Name) :
-    MetaM Expr := do
-  (b.getState (← getEnv)).cast e expectedType attr
-
-@[inherit_doc UnfoldBoundaries.insertBoundaries]
-public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr) (attr : Name) :
-    MetaM Expr := do
-  (b.getState (← getEnv)).insertBoundaries e attr
-
-@[inherit_doc UnfoldBoundaries.unfoldInsertions]
-public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt) : CoreM Expr := do
-  (b.getState (← getEnv)).unfoldInsertions e
-
 
 end Mathlib.Tactic.UnfoldBoundary
