@@ -88,49 +88,33 @@ section
 
 variable {f : Filter β} {u : β → α} {p : β → Prop}
 
+@[to_dual]
 theorem limsup_eq : limsup u f = sInf { a | ∀ᶠ n in f, u n ≤ a } :=
   rfl
 
-theorem liminf_eq : liminf u f = sSup { a | ∀ᶠ n in f, a ≤ u n } :=
-  rfl
-
+@[to_dual]
 theorem blimsup_eq : blimsup u f p = sInf { a | ∀ᶠ x in f, p x → u x ≤ a } :=
   rfl
 
-theorem bliminf_eq : bliminf u f p = sSup { a | ∀ᶠ x in f, p x → a ≤ u x } :=
-  rfl
-
-lemma liminf_comp (u : β → α) (v : γ → β) (f : Filter γ) :
-    liminf (u ∘ v) f = liminf u (map v f) := rfl
-
+@[to_dual]
 lemma limsup_comp (u : β → α) (v : γ → β) (f : Filter γ) :
     limsup (u ∘ v) f = limsup u (map v f) := rfl
 
 end
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem blimsup_true (f : Filter β) (u : β → α) : (blimsup u f fun _ => True) = limsup u f := by
   simp [blimsup_eq, limsup_eq]
 
-@[simp]
-theorem bliminf_true (f : Filter β) (u : β → α) : (bliminf u f fun _ => True) = liminf u f := by
-  simp [bliminf_eq, liminf_eq]
-
+@[to_dual]
 lemma blimsup_eq_limsup {f : Filter β} {u : β → α} {p : β → Prop} :
     blimsup u f p = limsup u (f ⊓ 𝓟 {x | p x}) := by
   simp only [blimsup_eq, limsup_eq, eventually_inf_principal, mem_setOf_eq]
 
-lemma bliminf_eq_liminf {f : Filter β} {u : β → α} {p : β → Prop} :
-    bliminf u f p = liminf u (f ⊓ 𝓟 {x | p x}) := by
-  simp only [bliminf_eq, liminf_eq, eventually_inf_principal, mem_setOf_eq]
-
+@[to_dual]
 theorem blimsup_eq_limsup_subtype {f : Filter β} {u : β → α} {p : β → Prop} :
     blimsup u f p = limsup (u ∘ ((↑) : { x | p x } → β)) (comap (↑) f) := by
   rw [blimsup_eq_limsup, limsup, limsup, ← map_map, map_comap_setCoe_val]
-
-theorem bliminf_eq_liminf_subtype {f : Filter β} {u : β → α} {p : β → Prop} :
-    bliminf u f p = liminf (u ∘ ((↑) : { x | p x } → β)) (comap (↑) f) := by
-  rw [bliminf_eq_liminf, liminf, liminf, ← map_map, map_comap_setCoe_val]
 
 theorem limsSup_le_of_le {f : Filter α} {a}
     (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
@@ -254,27 +238,17 @@ lemma limsup_top_eq_ciSup [Nonempty β] (hu : BddAbove (range u)) : limsup u ⊤
 lemma liminf_top_eq_ciInf [Nonempty β] (hu : BddBelow (range u)) : liminf u ⊤ = ⨅ i, u i := by
   rw [liminf, map_top, limsInf_principal_eq_csSup hu (range_nonempty _), sInf_range]
 
+@[to_dual]
 theorem limsup_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a = v a) : limsup u f = limsup v f := by
   rw [limsup_eq]
   congr with b
   exact eventually_congr (h.mono fun x hx => by simp [hx])
 
+@[to_dual]
 theorem blimsup_congr {f : Filter β} {u v : β → α} {p : β → Prop} (h : ∀ᶠ a in f, p a → u a = v a) :
     blimsup u f p = blimsup v f p := by
   simpa only [blimsup_eq_limsup] using limsup_congr <| eventually_inf_principal.2 h
-
-theorem bliminf_congr {f : Filter β} {u v : β → α} {p : β → Prop} (h : ∀ᶠ a in f, p a → u a = v a) :
-    bliminf u f p = bliminf v f p := by
-  simp only [bliminf_eq]
-  congr with b
-  exact eventually_congr (h.mono fun x hx => by
-    constructor <;> intro ha hp <;> [rw [← hx hp]; rw [hx hp]] <;> exact ha hp)
-
-theorem liminf_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
-    (h : ∀ᶠ a in f, u a = v a) : liminf u f = liminf v f := by
-  rw [liminf_eq]; congr with b
-  exact eventually_congr (h.mono fun x hx => by simp [hx])
 
 @[simp]
 theorem limsup_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
@@ -314,12 +288,7 @@ theorem HasBasis.limsup_eq_sInf_univ_of_empty {f : ι → α} {v : Filter ι}
     limsup f v = sInf univ := by
   simp [hv.eq_bot_iff.2 ⟨i, hi, h'i⟩, limsup_eq]
 
-@[simp]
-theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
-    liminf (fun i => f (i + k)) atTop = liminf f atTop := by
-  rw [← Function.comp_def, liminf, liminf, ← map_map, map_add_atTop_eq_nat]
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) :
     limsup (fun i => f (i + k)) atTop = limsup f atTop := by
   rw [← Function.comp_def, limsup, limsup, ← map_map, map_add_atTop_eq_nat]
