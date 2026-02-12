@@ -407,7 +407,7 @@ lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
 variable {𝒢} in
 lemma isCusp_of_mem_strictPeriods {h : ℝ} (hh : 0 < h) (h𝒢 : h ∈ 𝒢.strictPeriods) :
     IsCusp OnePoint.infty 𝒢 := by
-  refine ⟨upperRightHom h, h𝒢, ?_, smul_infty_eq_self_iff.mpr rfl⟩
+  refine ⟨upperRightHom h, 𝒢.mem_strictPeriods_iff.mp h𝒢, ?_, smul_infty_eq_self_iff.mpr rfl⟩
   exact (GeneralLinearGroup.isParabolic_iff_of_upperTriangular rfl).mpr ⟨rfl, hh.ne'⟩
 
 variable {𝒢} in
