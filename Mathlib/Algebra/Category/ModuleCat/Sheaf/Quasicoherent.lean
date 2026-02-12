@@ -277,6 +277,36 @@ noncomputable def quasicoherentDataOfIsFinitePresentation
 
 end
 
+noncomputable section
+
+open CategoryTheory Limits
+
+variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {J : GrothendieckTopology C}
+  {R : Sheaf J RingCat.{u}} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
+
+/-- Given a sheaf of `R`-modules `M` and a `Presentation M`, we may construct the quasi-coherent
+data on the trivial cover. -/
+@[simps]
+def Presentation.quasicoherentData {M : SheafOfModules.{u} R} (P : Presentation M) :
+    QuasicoherentData M where
+  I := C
+  X := id
+  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
+    rw [Sieve.ext_iff]
+    intro _ f
+    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  presentation x := P.map (pushforward (𝟙 (R.over x))) (by rfl)
+
+/-- If a sheaf of `R`-modules `M` has a presentation, then `M` is quasi-coherent. -/
+theorem Presentation.isQuasicoherent {M : SheafOfModules.{u} R} (P : Presentation M) :
+    IsQuasicoherent M where
+  nonempty_quasicoherentData := Nonempty.intro (Presentation.quasicoherentData P)
+
 section bind
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
