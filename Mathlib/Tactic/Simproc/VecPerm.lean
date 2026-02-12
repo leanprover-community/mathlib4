@@ -23,7 +23,7 @@ meta section
 
 /--
 Takes an expression representing a vector `Fin n → α` and returns the corresponding
-list `List α`. Fails if the vector is not constucted using `Matrix.vecCons` and `Matrix.vecEmpty`.
+list `List α`.
 -/
 partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
     (vec : Q(Fin $n → $α)) : MetaM (Option <| List Q($α)) := do
