@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.Alternating.Curry
-public import Mathlib.LinearAlgebra.ExteriorAlgebra.PowersetCard
+public import Mathlib.Order.Hom.PowersetCard
 
 /-!
 # Exterior Algebras
