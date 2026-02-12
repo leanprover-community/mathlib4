@@ -169,7 +169,6 @@ noncomputable def equivPresentedGroup {G : Type*} [Group G] {ι : Type*}
 /-!
 Any two presentations of the same group present isomorphic groups.
 -/
--- maybe better name for this?
 noncomputable def equivPresentedGroupOfSameGroup {G : Type*} [Group G]
     {ι κ : Type*} (P : Presentation G ι) (Q : Presentation G κ) :
     P.presentedGroup ≃* Q.presentedGroup :=
@@ -209,10 +208,7 @@ namespace Tietze
 
 variable {G : Type*} [Group G] {ι : Type*}
 
-/-!
-### Equal normal closures give isomorphic presented groups
--/
-
+/-- Equal normal closures give isomorphic presented groups -/
 noncomputable def equiv_of_normalClosure_eq
     (rels₁ rels₂ : Set (FreeGroup ι))
     (h : Subgroup.normalClosure rels₁ = Subgroup.normalClosure rels₂) :
