@@ -398,8 +398,7 @@ instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
-    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
-    Inhabited (L.FGEquiv M N) :=
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] : Inhabited (L.FGEquiv M N) :=
   ⟨⟨⟨⊥, ⊥, {
       toFun := isEmptyElim
       invFun := isEmptyElim

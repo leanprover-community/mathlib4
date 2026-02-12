@@ -477,7 +477,7 @@ instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
     rw [← sSup_pair, ← sSup_pair, inf_sSup_eq, ← sSup_image, image_pair]
 
-instance Prod.instFrame [Frame α] [Frame β] : Frame (α × β) where
+instance Prod.instFrame [Frame β] : Frame (α × β) where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
 
@@ -561,14 +561,12 @@ end Coframe
 
 section CompleteDistribLattice
 
-variable [CompleteDistribLattice α]
-
 instance OrderDual.instCompleteDistribLattice [CompleteDistribLattice α] :
     CompleteDistribLattice αᵒᵈ where
   __ := instFrame
   __ := instCoframe
 
-instance Prod.instCompleteDistribLattice [CompleteDistribLattice β] :
+instance Prod.instCompleteDistribLattice [CompleteDistribLattice α] [CompleteDistribLattice β] :
     CompleteDistribLattice (α × β) where
   __ := instFrame
   __ := instCoframe
