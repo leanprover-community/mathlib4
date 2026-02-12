@@ -563,25 +563,67 @@ def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat) (e : E
 
 /-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : Reorder) (dont : List Nat) : MetaM ConstantInfo := do
+    (reorder : Reorder) (dont : List Nat)
+    (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   let mut value := decl.value! (allowOpaque := true)
-  if let some b := t.unfoldBoundaries? then
+  if let some b := unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
   trace[translate] "Value before translation:{indentExpr value}"
   value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
-  if let some b := t.unfoldBoundaries? then
+  if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   decl := decl.updateValue value
   let mut type := decl.type
-  if let some b := t.unfoldBoundaries? then
+  if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
   type ← reorderForall reorder <| ← applyReplacementForall t dont <| renameBinderNames t type
-  if let some b := t.unfoldBoundaries? then
+  if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return decl.updateType type
+
+/-- Translate the source declaration and then run `addDecl`. If the kernel throws an error,
+try to emit a better error message.
+
+For efficiency in `to_dual`, we first run `updateDecl` without any `UnfoldBoundaries`,
+and only if that fails do we try to include them.
+The reason is that in the most common case, `to_dual` succeeds without needing to insert
+unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
+def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
+    (reorder : Reorder) (dont : List Nat) : MetaM ConstantInfo :=
+  -- Set `Elab.async` to `false` so that we can catch kernel errors.
+  withOptions (Elab.async.set · false) do
+  let decl ←
+    if let some unfoldBoundaries := t.unfoldBoundaries? then
+      let env ← getEnv
+      -- First attempt to generate the translation without unfold boundaries.
+      let declAttempt ← updateDecl t tgt srcDecl reorder dont none
+      try
+        addDecl declAttempt.toDeclaration!
+        trace[translate] "generating\n{tgt} : {declAttempt.type} :=\
+          {indentExpr <| declAttempt.value! (allowOpaque := true)}"
+        return declAttempt -- early return
+      catch _ =>
+        setEnv env
+        updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState env)
+    else
+      updateDecl t tgt srcDecl reorder dont none
+  trace[translate] "generating\n{tgt} : {decl.type} :=\
+    {indentExpr <| decl.value! (allowOpaque := true)}"
+  try
+    addDecl decl.toDeclaration!
+    return decl
+  catch ex =>
+    try
+      withoutExporting <| check (decl.value! (allowOpaque := true))
+    catch ex =>
+      throwError "@[{t.attrName}] failed to add declaration `{decl.name}`.\n  \
+        The translated value is not type correct.\n  \
+        For help, see the docstring of `to_additive`, section `Troubleshooting`.\n\
+        {ex.toMessageData}"
+    throwError "@[{t.attrName}] failed. Nested error message:\n{ex.toMessageData}"
 
 /--
 Find the argument of `nm` that appears in the first translatable (type-class) argument.
@@ -702,26 +744,10 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
   -- now transform the source declaration
-  let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
-  if src == pre && srcDecl.isThm && trgDecl.type == srcDecl.type then
+  let tgtDecl ← MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate
+  if src == pre && srcDecl.isThm && tgtDecl.type == srcDecl.type then
     Linter.logLintIf linter.translateRedundant ref m!"`{t.attrName}` did not change the type \
       of theorem `{.ofConstName src}`. Please remove the attribute."
-  let value := trgDecl.value! (allowOpaque := true)
-  trace[translate] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
-  try
-    -- set `Elab.async` to `false` in order to be able to catch kernel errors
-    withOptions (Elab.async.set · false) do
-      addDecl trgDecl.toDeclaration!
-  catch ex =>
-    -- Try to emit a better error message if the kernel throws an error.
-    try
-      withoutExporting <| MetaM.run' <| check value
-    catch ex =>
-      throwError "@[{t.attrName}] failed. \
-        The translated value is not type correct. For help, see the docstring \
-        of `to_additive`, section `Troubleshooting`. \
-        Failed to add declaration\n{tgt}:\n{ex.toMessageData}"
-    throwError "@[{t.attrName}] failed. Nested error message:\n{ex.toMessageData}"
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
   do not compile it, and mark is as noncomputable. Otherwise, only log errors in compiling if `src`
   has executable code.
@@ -740,8 +766,8 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     if isMarkedMeta (← getEnv) src then
       -- We need to mark `tgt` as `meta` before running `compileDecl`
       modifyEnv (markMeta · tgt)
-    compileDecl trgDecl.toDeclaration! (logErrors := (IR.findEnvDecl (← getEnv) src).isSome)
-  if let .defnInfo { hints := .abbrev, .. } := trgDecl then
+    compileDecl tgtDecl.toDeclaration! (logErrors := (IR.findEnvDecl (← getEnv) src).isSome)
+  if let .defnInfo { hints := .abbrev, .. } := tgtDecl then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
     if Compiler.getInlineAttribute? (← getEnv) src == some .inline then
@@ -917,7 +943,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
   let mut srcType := srcDecl.type
-  if let some b := t.unfoldBoundaries? then
+  let unfoldBoundaries? ← t.unfoldBoundaries?.mapM (return ·.getState (← getEnv))
+  if let some b := unfoldBoundaries? then
     srcType ← b.insertBoundaries srcType t.attrName
   srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
@@ -942,7 +969,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
       use `{t.attrName}_do_translate` instead"
   srcType ← reorderForall reorder srcType
-  if let some b := t.unfoldBoundaries? then
+  if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
   if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo

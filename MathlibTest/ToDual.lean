@@ -32,8 +32,9 @@ attribute [to_dual existing] Lattice.toSemilatticeInf
 
 -- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not translatable
 /--
-error: @[to_dual] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
-instSemilatticeSupOfForallLeForallMax:
+error: @[to_dual] failed to add declaration `instSemilatticeSupOfForallLeForallMax`.
+  The translated value is not type correct.
+  For help, see the docstring of `to_additive`, section `Troubleshooting`.
 Application type mismatch: The argument
   le_inf
 has type
