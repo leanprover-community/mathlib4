@@ -77,6 +77,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Add
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Basic

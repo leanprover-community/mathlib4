@@ -256,33 +256,25 @@ inductive BasisExtension : Basis → Type
 
 namespace BasisExtension
 
-/-- Basis after applying a basis extension. -/
+/-- The basis after applying a basis extension. -/
 def getBasis {basis : Basis} (ex : BasisExtension basis) : Basis :=
   match ex with
   | nil => []
   | keep basis_hd ex => basis_hd :: ex.getBasis
   | insert f ex => f :: ex.getBasis
 
-theorem getBasis_Sublist {basis : Basis} {ex : BasisExtension basis} :
+theorem sublist_getBasis {basis : Basis} {ex : BasisExtension basis} :
     List.Sublist basis ex.getBasis := by
   induction ex with
   | nil => simp
-  | keep _ ex ih =>
-    simp only [getBasis, List.cons_sublist_cons]
-    apply ih
-  | insert _ ex ih =>
-    simp only [getBasis]
-    apply List.Sublist.cons
-    apply ih
+  | keep _ ex ih => simpa [getBasis] using ih
+  | insert _ ex ih => exact List.Sublist.cons _ ih
 
-theorem insert_WellFormedBasis_tail {basis : Basis} {f : ℝ → ℝ}
+theorem insert_tail_wellFormedBasis {basis : Basis} {f : ℝ → ℝ}
     {ex_tl : BasisExtension basis}
     (h_basis : WellFormedBasis <| BasisExtension.getBasis (.insert f ex_tl)) :
-    WellFormedBasis ex_tl.getBasis := by
-  apply WellFormedBasis.of_sublist _ h_basis
-  simp [getBasis]
-
-end BasisExtension
+    WellFormedBasis ex_tl.getBasis :=
+  h_basis.of_sublist (by simp [getBasis])
 
 -- TODO: refactor this using `WellFormedBasis.push`, and use the current proof to prove it
 theorem insertLastLog_WellFormedBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -336,5 +328,7 @@ theorem insertLastLog_WellFormedBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis
     apply Filter.Tendsto.comp Real.tendsto_log_atTop
     apply h_basis.right
     simp
+
+end BasisExtension
 
 end Tactic.ComputeAsymptotics

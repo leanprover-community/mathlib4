@@ -208,18 +208,24 @@ def findTranslationName? (env : Environment) (t : TranslateData) (n : Name) : Op
 
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
-This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
-def findPrefixTranslation? (env : Environment) (n : Name) (t : TranslateData) :
-    Option TranslationInfo :=
-  findTranslation? env t n <|> do
-    let .str n postFix := n | failure
-    let info ← go n [postFix]
-    guard (env.contains info.translation || isReservedName env info.translation)
+This allows translating automatically generated declarations such as `IsRegular.casesOn`.
+We make sure that the new constant is realized. -/
+def findPrefixTranslation? (n : Name) (t : TranslateData) : CoreM (Option TranslationInfo) := do
+  let env ← getEnv
+  if let some info := findTranslation? env t n then
     return info
+  let .str n postFix := n | return none
+  let some info := go env n [postFix] | return none
+  if env.contains (skipRealize := false) info.translation then
+    return info
+  if isReservedName env info.translation then
+    executeReservedNameAction info.translation
+    return info
+  return none
 where
   /-- Loop through the prefixes of `n` to try to find a translation.
   In such a case, we inherit the `relevantArg` option from the translation. -/
-  go (n : Name) (postFixes : List String) : Option TranslationInfo := Id.run do
+  go (env : Environment) (n : Name) (postFixes : List String) : Option TranslationInfo := Id.run do
   if let some info := findTranslation? env t n then
     return some {
       translation := postFixes.foldl .str info.translation
@@ -230,7 +236,7 @@ where
         translation := postFixes.foldl .str (mkPrivateName env info.translation)
         relevantArg := info.relevantArg }
   let .str n postFix := n | return none
-  return go n (postFix :: postFixes)
+  return go env n (postFix :: postFixes)
 
 /-- Add a translation to the translations map. If the translation attribute is dual,
 also add the reverse translation. -/
@@ -246,7 +252,7 @@ def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
 where
   /-- Insert only one direction of a translation. -/
   insertTranslationAux (src : Name) (t : TranslateData) (info : TranslationInfo) : CoreM Unit := do
-    if let some info' := t.translations.find? (← getEnv) src then
+    if let some info' := findTranslation? (← getEnv) t src then
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
       if info.translation != info'.translation then
@@ -386,12 +392,7 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 partial def applyReplacementFun (t : TranslateData) (e : Expr)
     (dontTranslate : Array FVarId := #[]) : MetaM Expr := do
-  let e' ← visit e |>.run {}
-  -- Make sure any new reserved names in the expr are realized
-  e'.getUsedConstants.forM fun n => do
-    if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
-      executeReservedNameAction n
-  return e'
+  visit e |>.run {}
 where
   /-- The implementation of this function is based on `Meta.transform`.
   We can't use `Meta.transform`, because that would cause the types of free variables to be
@@ -434,11 +435,11 @@ where
                 expression. However, we will still recurse into all the non-numeral arguments."
             let args := args.modify 1 changeNumeral
             return mkAppN f (← args.mapM visit)
-      let some { translation := n₁, reorder, relevantArg } := findPrefixTranslation? env n₀ t |
+      let some { translation := n₁, reorder, relevantArg } ← findPrefixTranslation? n₀ t |
         return mkAppN f (← args.mapM visit)
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
-        if let some fixed := shouldTranslate env t args[relevantArg] dontTranslate then
+        if let some fixed := shouldTranslate (← getEnv) t args[relevantArg] dontTranslate then
           trace[translate_detail]
             "The application of {n₀} contains the fixed type {fixed} so it is not changed."
           return mkAppN f (← args.mapM visit)
