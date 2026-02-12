@@ -415,6 +415,28 @@ lemma ciInf_image {α ι ι' : Type*} [ConditionallyCompleteLattice α] [Nonempt
   rw [← csInf_image (by simpa using hs) hg hf', ← csInf_image hs hf hg', ← Set.image_comp,
     comp_def]
 
+-- Register remaining dual pairs in this section for downstream `@[to_dual]` usage.
+attribute [to_dual existing] isLUB_ciSup_set
+attribute [to_dual existing le_ciInf_set_iff] ciSup_set_le_iff
+attribute [to_dual existing] IsLUB.ciSup_set_eq
+attribute [to_dual existing] ciSup_mono
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing] ciSup_const
+set_option linter.existingAttributeWarning false in
+attribute [to_dual existing] ciSup_unique
+attribute [to_dual existing] ciSup_subsingleton
+attribute [to_dual existing] ciSup_pos
+attribute [to_dual existing] ciSup_neg
+attribute [to_dual existing] ciSup_eq_ite
+attribute [to_dual existing] cbiSup_eq_of_forall
+attribute [to_dual existing] Set.Ici_ciSup
+attribute [to_dual existing] ciSup_Iic
+attribute [to_dual existing] ciSup_subtype
+attribute [to_dual existing] ciSup_subtype'
+attribute [to_dual existing] ciSup_subtype''
+attribute [to_dual existing] csSup_image
+attribute [to_dual existing] ciSup_image
+
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
@@ -533,6 +555,11 @@ variable [WellFoundedLT α]
 
 theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
   csInf_mem (range_nonempty f)
+
+-- Register remaining dual pairs in this section for downstream `@[to_dual]` usage.
+attribute [to_dual existing exists_lt_of_ciInf_lt] exists_lt_of_lt_ciSup
+attribute [to_dual existing ciInf_lt_iff] lt_ciSup_iff
+attribute [to_dual existing] cbiSup_eq_of_not_forall
 
 end ConditionallyCompleteLinearOrder
 

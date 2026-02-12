@@ -428,21 +428,20 @@ variable [ConditionallyCompleteLinearOrder α] {f : ι → α} {s : Set α} {a b
 
 /-- When `b < sSup s`, there is an element `a` in `s` with `b < a`, if `s` is nonempty and the order
 is a linear order. -/
+@[to_dual exists_lt_of_csInf_lt
+  /-- When `sInf s < b`, there is an element `a` in `s` with `a < b`, if `s` is nonempty and the
+  order is a linear order. -/]
 theorem exists_lt_of_lt_csSup (hs : s.Nonempty) (hb : b < sSup s) : ∃ a ∈ s, b < a := by
   contrapose! hb
   exact csSup_le hs hb
-
-/-- When `sInf s < b`, there is an element `a` in `s` with `a < b`, if `s` is nonempty and the order
-is a linear order. -/
-theorem exists_lt_of_csInf_lt (hs : s.Nonempty) (hb : sInf s < b) : ∃ a ∈ s, a < b := by
-  contrapose! hb
-  exact le_csInf hs hb
 
 theorem lt_csSup_iff (hb : BddAbove s) (hs : s.Nonempty) : a < sSup s ↔ ∃ b ∈ s, a < b :=
   lt_isLUB_iff <| isLUB_csSup hs hb
 
 theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b ∈ s, b < a :=
   isGLB_lt_iff <| isGLB_csInf hs hb
+
+attribute [to_dual existing csInf_lt_iff] lt_csSup_iff
 
 set_option linter.existingAttributeWarning false in
 @[simp, to_dual]
@@ -458,24 +457,19 @@ lemma ciSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = sSup ∅ 
 
 attribute [simp] ciInf_of_not_bddBelow
 
+@[to_dual]
 lemma csSup_eq_univ_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = sSup univ := by
   rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (s := univ)]
   contrapose! hs
   exact hs.mono (subset_univ _)
 
+@[to_dual]
 lemma ciSup_eq_univ_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = sSup univ :=
   csSup_eq_univ_of_not_bddAbove hf
 
-lemma csInf_eq_univ_of_not_bddBelow (hs : ¬BddBelow s) : sInf s = sInf univ := by
-  rw [csInf_of_not_bddBelow hs, csInf_of_not_bddBelow (s := univ)]
-  contrapose! hs
-  exact hs.mono (subset_univ _)
-
-lemma ciInf_eq_univ_of_not_bddBelow (hf : ¬BddBelow (range f)) : ⨅ i, f i = sInf univ :=
-  csInf_eq_univ_of_not_bddBelow hf
-
 /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
 `s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
+@[to_dual]
 theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup s = sSup t := by
@@ -507,48 +501,9 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
       exact hyx.trans (le_csSup Bs xs)
   · simp [csSup_of_not_bddAbove, (not_or.1 B).1, (not_or.1 B).2]
 
-/-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
-`s` and `t` have the same infimum. This holds even when the sets may be empty or unbounded. -/
-theorem csInf_eq_csInf_of_forall_exists_le {s t : Set α}
-    (hs : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) (ht : ∀ y ∈ t, ∃ x ∈ s, x ≤ y) :
-    sInf s = sInf t := by
-  rcases eq_empty_or_nonempty s with rfl | s_ne
-  · have : t = ∅ := eq_empty_of_forall_notMem (fun y yt ↦ by simpa using ht y yt)
-    rw [this]
-  rcases eq_empty_or_nonempty t with rfl | t_ne
-  · have : s = ∅ := eq_empty_of_forall_notMem (fun x xs ↦ by simpa using hs x xs)
-    rw [this]
-  by_cases B : BddBelow s ∨ BddBelow t
-  · have Bs : BddBelow s := by
-      rcases B with hB | ⟨b, hb⟩
-      · exact hB
-      · refine ⟨b, fun x hx ↦ ?_⟩
-        rcases hs x hx with ⟨y, hy, hxy⟩
-        exact le_trans (hb hy) hxy
-    have Bt : BddBelow t := by
-      rcases B with ⟨b, hb⟩ | hB
-      · refine ⟨b, fun y hy ↦ ?_⟩
-        rcases ht y hy with ⟨x, hx, hyx⟩
-        exact le_trans (hb hx) hyx
-      · exact hB
-    apply le_antisymm
-    · apply le_csInf t_ne (fun y hy ↦ ?_)
-      rcases ht y hy with ⟨x, xs, hyx⟩
-      exact le_trans (csInf_le Bs xs) hyx
-    · apply le_csInf s_ne (fun x hx ↦ ?_)
-      rcases hs x hx with ⟨y, yt, hxy⟩
-      exact le_trans (csInf_le Bt yt) hxy
-  · simp [csInf_of_not_bddBelow, (not_or.1 B).1, (not_or.1 B).2]
-
+@[to_dual]
 lemma sSup_iUnion_Iic (f : ι → α) : sSup (⋃ (i : ι), Iic (f i)) = ⨆ i, f i := by
   apply csSup_eq_csSup_of_forall_exists_le
-  · rintro x ⟨-, ⟨i, rfl⟩, hi⟩
-    exact ⟨f i, mem_range_self _, hi⟩
-  · rintro x ⟨i, rfl⟩
-    exact ⟨f i, mem_iUnion_of_mem i le_rfl, le_rfl⟩
-
-lemma sInf_iUnion_Ici (f : ι → α) : sInf (⋃ (i : ι), Ici (f i)) = ⨅ i, f i := by
-  apply csInf_eq_csInf_of_forall_exists_le
   · rintro x ⟨-, ⟨i, rfl⟩, hi⟩
     exact ⟨f i, mem_range_self _, hi⟩
   · rintro x ⟨i, rfl⟩
@@ -559,6 +514,8 @@ theorem csInf_eq_bot_of_bot_mem [OrderBot α] {s : Set α} (hs : ⊥ ∈ s) : sI
 
 theorem csSup_eq_top_of_top_mem [OrderTop α] {s : Set α} (hs : ⊤ ∈ s) : sSup s = ⊤ :=
   eq_top_iff.2 <| le_csSup (OrderTop.bddAbove s) hs
+
+attribute [to_dual existing] csSup_eq_top_of_top_mem
 
 open Function
 
