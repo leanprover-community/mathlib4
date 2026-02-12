@@ -126,6 +126,17 @@ theorem truncFinset_map [CommSemiring S] (f : R →+* S) (p : MvPowerSeries σ R
   · simp [coeff_map, MvPolynomial.coeff_map, coeff_truncFinset _ _ hx]
   simp [MvPolynomial.coeff_map, coeff_truncFinset_eq_zero _ _ hx]
 
+theorem coeff_mul_eq_coeff_truncFinset_mul_truncFinset (hs : IsLowerSet (SetLike.coe s))
+    (x : σ →₀ ℕ) (f g : MvPowerSeries σ R) (hx : x ∈ s) : coeff x (f * g) =
+      (truncFinset R s f * truncFinset R s g).coeff x := by
+  classical
+  simp only [MvPowerSeries.coeff_mul, MvPolynomial.coeff_mul]
+  apply Finset.sum_congr rfl
+  rintro ⟨i, j⟩ hij
+  simp only [mem_antidiagonal] at hij
+  rw [coeff_truncFinset _ _ (hs (show i ≤ x by simp [← hij]) hx),
+    coeff_truncFinset _ _ (hs (show j ≤ x by simp [← hij]) hx)]
+
 end TruncFinset
 
 section TruncLT
@@ -201,17 +212,8 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) : trunc' R n (C a) = MvPolynomial.C
 /-- Coefficients of the truncation of a product of two multivariate power series -/
 theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
     (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h : m ≤ n) :
-    coeff m (f * g) = (trunc' R n f * trunc' R n g).coeff m := by
-  classical
-  simp only [MvPowerSeries.coeff_mul, MvPolynomial.coeff_mul]
-  apply Finset.sum_congr rfl
-  rintro ⟨i, j⟩ hij
-  simp only [mem_antidiagonal] at hij
-  rw [← hij] at h
-  simp only
-  apply congr_arg₂
-  · rw [coeff_trunc', if_pos (le_trans le_self_add h)]
-  · rw [coeff_trunc', if_pos (le_trans le_add_self h)]
+    coeff m (f * g) = (trunc' R n f * trunc' R n g).coeff m :=
+  coeff_mul_eq_coeff_truncFinset_mul_truncFinset (Finset.Iic n) (by intro; grind) m f g (by simpa)
 
 theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
     trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) := by
