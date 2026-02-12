@@ -488,9 +488,19 @@ theorem parallelogram_law_with_norm (x y : E) :
   simp only [re.map_add]
 
 include 𝕜 in
+theorem parallelogram_law_with_norm_sq (x y : E) :
+    ‖x + y‖ ^ 2 + ‖x - y‖ ^ 2 = 2 * (‖x‖ ^ 2 + ‖y‖ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_norm 𝕜 x y]
+
+include 𝕜 in
 theorem parallelogram_law_with_nnnorm (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
   Subtype.ext <| parallelogram_law_with_norm 𝕜 x y
+
+include 𝕜 in
+theorem parallelogram_law_with_nnnorm_sq (x y : E) :
+    ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
+  simp_rw [sq, parallelogram_law_with_nnnorm 𝕜 x y]
 
 variable {𝕜}
 
