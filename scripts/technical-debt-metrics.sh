@@ -114,9 +114,9 @@ done
 
 # count simp +instances and dsimp +instances
 # we use grep -v 'dsimp' to avoid counting dsimp lines in the simp total
-simpPlusInstances="$({ git grep -e 'simp.*[+]instances' -- ':^scripts' || true; } |
+simpPlusInstances="$({ git grep -e 'simp \([+-][^ ]* *\)*+instances' -- ':^scripts' || true; } |
   grep -v 'dsimp' | wc -l)"
-dsimpPlusInstances="$({ git grep -c -e 'dsimp.*[+]instances' -- ':^scripts' || true; } |
+dsimpPlusInstances="$({ git grep -c -e 'dsimp \([+-][^ ]* *\)*+instances' -- ':^scripts' || true; } |
   awk -F: 'BEGIN{s=0}{s+=$2} END{print s}')"
 printf '%s|simp +instances\n' "${simpPlusInstances}"
 printf '%s|dsimp +instances\n' "${dsimpPlusInstances}"
