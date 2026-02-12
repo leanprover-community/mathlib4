@@ -100,6 +100,9 @@ lemma eLpNorm_eq_lintegral_rpow_enorm_toReal (hp_ne_zero : p ≠ 0) (hp_ne_top :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top, eLpNorm'_eq_lintegral_enorm]
 
+@[deprecated (since := "2026-02-09")]
+alias eLpNorm_eq_lintegral_rpow_enorm := eLpNorm_eq_lintegral_rpow_enorm_toReal
+
 lemma eLpNorm_nnreal_eq_lintegral {f : α → ε} {p : ℝ≥0} (hp : p ≠ 0) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
   eLpNorm_nnreal_eq_eLpNorm' hp
