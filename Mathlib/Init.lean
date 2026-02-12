@@ -34,8 +34,6 @@ public import Batteries.Util.ProofWanted
 -- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
 -- available globally.
 public import ImportGraph.Tools
--- This import makes the `#loogle` command available globally.
-public import LeanSearchClient
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public import Mathlib.Tactic.Linter.Lint
 -- This import makes the `#min_imports in` command available globally.

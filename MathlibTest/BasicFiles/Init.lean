@@ -46,15 +46,9 @@ Init
 #guard_msgs in
 #import_diff
 
-/-- info: Loogle Usage -/
-#guard_msgs (substring := true) in
-#loogle
-
 proof_wanted please_prove_this : True
 
 -- Guard against the shake tool modifying our imports
-/--
-info: [public import Init, import Mathlib.Init]
--/
+/-- info: [public import Init, import Mathlib.Init] -/
 #guard_msgs in
 run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"
