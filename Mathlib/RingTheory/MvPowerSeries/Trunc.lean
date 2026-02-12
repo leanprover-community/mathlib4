@@ -66,9 +66,9 @@ variable {σ R S : Type*}
 
 section TruncFinset
 
-variable [CommSemiring R] (s : Finset (σ →₀ ℕ))
+variable [CommSemiring R] {s : Finset (σ →₀ ℕ)}
 
-variable (R) in
+variable (R s) in
 /-- Restrict the support of a multivariate power series to a finite set of monomials and
 obtain a multivariate polynomial. -/
 def truncFinset : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R where
@@ -97,9 +97,9 @@ theorem truncFinset_monomial {x : σ →₀ ℕ} (r : R) (h : x ∈ s) :
     truncFinset R s (monomial x r) = MvPolynomial.monomial x r := by
   classical
   ext y; by_cases hy : y ∈ s
-  · rw [coeff_truncFinset _ _ hy, coeff_monomial, MvPolynomial.coeff_monomial]
+  · rw [coeff_truncFinset _ hy, coeff_monomial, MvPolynomial.coeff_monomial]
     simp [eq_comm]
-  rw [coeff_truncFinset_eq_zero _ _ hy, MvPolynomial.coeff_monomial, if_neg (by aesop)]
+  rw [coeff_truncFinset_eq_zero _ hy, MvPolynomial.coeff_monomial, if_neg (by aesop)]
 
 theorem truncFinset_monomial_eq_zero {x : σ →₀ ℕ} (r : R) (h : x ∉ s) :
     truncFinset R s (monomial x r) = 0 := by
@@ -108,26 +108,24 @@ theorem truncFinset_monomial_eq_zero {x : σ →₀ ℕ} (r : R) (h : x ∉ s) :
   aesop
 
 theorem truncFinset_C (h : 0 ∈ s) (r : R) : truncFinset R s (C r) = MvPolynomial.C r :=
-  truncFinset_monomial s r h
+  truncFinset_monomial r h
 
 theorem truncFinset_one (h : 0 ∈ s) : truncFinset R s (1 : MvPowerSeries σ R) = 1 :=
-  truncFinset_C s h 1
+  truncFinset_C h 1
 
-variable {s} in
 theorem truncFinset_truncFinset {t : Finset (σ →₀ ℕ)} (h : s ⊆ t) (p : MvPowerSeries σ R) :
     truncFinset R s (truncFinset R t p) = truncFinset R s p := by
   ext x; by_cases hx : x ∈ s
-  · rw [coeff_truncFinset _ _ hx, coeff_truncFinset _ _ hx, MvPolynomial.coeff_coe,
-      coeff_truncFinset _ _ (h hx)]
-  rw [coeff_truncFinset_eq_zero _ _ hx, coeff_truncFinset_eq_zero _ _ hx]
+  · rw [coeff_truncFinset _ hx, coeff_truncFinset _ hx, MvPolynomial.coeff_coe,
+      coeff_truncFinset _ (h hx)]
+  rw [coeff_truncFinset_eq_zero _ hx, coeff_truncFinset_eq_zero _ hx]
 
 theorem truncFinset_map [CommSemiring S] (f : R →+* S) (p : MvPowerSeries σ R) :
     truncFinset S s (map f p) = MvPolynomial.map f (truncFinset R s p) := by
   ext x; by_cases hx : x ∈ s
-  · simp [coeff_map, MvPolynomial.coeff_map, coeff_truncFinset _ _ hx]
-  simp [MvPolynomial.coeff_map, coeff_truncFinset_eq_zero _ _ hx]
+  · simp [coeff_map, MvPolynomial.coeff_map, coeff_truncFinset _ hx]
+  simp [MvPolynomial.coeff_map, coeff_truncFinset_eq_zero _ hx]
 
-variable {s} in
 theorem coeff_mul_eq_coeff_truncFinset_mul_truncFinset (hs : IsLowerSet (SetLike.coe s))
     {x : σ →₀ ℕ} (f g : MvPowerSeries σ R) (hx : x ∈ s) : coeff x (f * g) =
       (truncFinset R s f * truncFinset R s g).coeff x := by
@@ -136,8 +134,8 @@ theorem coeff_mul_eq_coeff_truncFinset_mul_truncFinset (hs : IsLowerSet (SetLike
   apply Finset.sum_congr rfl
   rintro ⟨i, j⟩ hij
   simp only [mem_antidiagonal] at hij
-  rw [coeff_truncFinset _ _ (hs (show i ≤ x by simp [← hij]) hx),
-    coeff_truncFinset _ _ (hs (show j ≤ x by simp [← hij]) hx)]
+  rw [coeff_truncFinset _ (hs (show i ≤ x by simp [← hij]) hx),
+    coeff_truncFinset _ (hs (show j ≤ x by simp [← hij]) hx)]
 
 theorem truncFinset_truncFinset_pow (hs : IsLowerSet (SetLike.coe s)) {k : ℕ} (hk : 1 ≤ k)
     (p : MvPowerSeries σ R) : truncFinset R s ((truncFinset R s p) ^ k) =
@@ -146,15 +144,14 @@ theorem truncFinset_truncFinset_pow (hs : IsLowerSet (SetLike.coe s)) {k : ℕ} 
   | base => simp [truncFinset_truncFinset]
   | succ n hmn ih =>
     ext x; by_cases hx : x ∈ s
-    · rw [coeff_truncFinset _ _ hx, coeff_truncFinset _ _ hx, pow_succ,
-        coeff_mul_eq_coeff_truncFinset_mul_truncFinset hs _ _ hx, ih,
-        truncFinset_truncFinset (by rfl), pow_succ,
-        coeff_mul_eq_coeff_truncFinset_mul_truncFinset hs _ _ hx]
-    simp [coeff_truncFinset_eq_zero _ _ hx]
+    · rw [coeff_truncFinset _ hx, coeff_truncFinset _ hx, pow_succ,
+        coeff_mul_eq_coeff_truncFinset_mul_truncFinset hs _ _ hx, ih, truncFinset_truncFinset
+        (by rfl), pow_succ, coeff_mul_eq_coeff_truncFinset_mul_truncFinset hs _ _ hx]
+    simp [coeff_truncFinset_eq_zero _ hx]
 
 theorem support_truncFinset_subset (p : MvPowerSeries σ R) : (truncFinset R s p).support ⊆ s := by
   intro; contrapose!
-  simpa using coeff_truncFinset_eq_zero s p
+  simpa using coeff_truncFinset_eq_zero p
 
 end TruncFinset
 
@@ -174,16 +171,16 @@ def trunc : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Fin
 theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc R n φ).coeff m = if m < n then coeff m φ else 0 := by
   classical split
-  · exact coeff_truncFinset (Finset.Iio n) φ (by aesop)
-  exact coeff_truncFinset_eq_zero (Finset.Iio n) φ (by aesop)
+  · exact coeff_truncFinset φ (by aesop)
+  exact coeff_truncFinset_eq_zero φ (by aesop)
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
-  truncFinset_one (Finset.Iio n) (by simpa using pos_of_ne_zero hnn)
+  truncFinset_one (by simpa using pos_of_ne_zero hnn)
 
 @[simp]
 theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C a) = MvPolynomial.C a :=
-  truncFinset_C (Finset.Iio n) (by simpa using pos_of_ne_zero hnn) a
+  truncFinset_C (by simpa using pos_of_ne_zero hnn) a
 
 @[simp]
 theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
@@ -192,7 +189,7 @@ theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
 
 @[simp]
 theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
-    trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := truncFinset_map (Finset.Iio n) f p
+    trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := truncFinset_map f p
 
 end TruncLT
 
@@ -213,8 +210,8 @@ def trunc' : MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Fi
 theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 := by
   classical split
-  · exact coeff_truncFinset (Finset.Iic n) φ (by aesop)
-  exact coeff_truncFinset_eq_zero (Finset.Iic n) φ (by aesop)
+  · exact coeff_truncFinset φ (by aesop)
+  exact coeff_truncFinset_eq_zero φ (by aesop)
 
 theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ R) :
     trunc' R n (trunc' R m φ) = trunc' R n φ :=
@@ -222,11 +219,11 @@ theorem trunc'_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) (φ : MvPowerSeries σ
 
 /-- Truncation of the multivariate power series `1` -/
 @[simp]
-theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 := truncFinset_one (Finset.Iic n) (by simp)
+theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 := truncFinset_one (by simp)
 
 @[simp]
 theorem trunc'_C (n : σ →₀ ℕ) (a : R) : trunc' R n (C a) = MvPolynomial.C a :=
-  truncFinset_C (Finset.Iic n) (by simp) a
+  truncFinset_C (by simp) a
 
 /-- Coefficients of the truncation of a product of two multivariate power series -/
 theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
@@ -236,7 +233,7 @@ theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
 
 theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
     trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) :=
-  truncFinset_truncFinset_pow (Finset.Iic n) (by intro; grind) hk φ
+  truncFinset_truncFinset_pow (by intro; grind) hk φ
 
 @[simp]
 theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
@@ -245,7 +242,7 @@ theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
 
 @[simp]
 theorem trunc'_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
-    trunc' S n (map f p) = MvPolynomial.map f (trunc' R n p) := truncFinset_map (Finset.Iic n) f p
+    trunc' S n (map f p) = MvPolynomial.map f (trunc' R n p) := truncFinset_map f p
 
 section
 
