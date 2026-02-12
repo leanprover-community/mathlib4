@@ -180,7 +180,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         simp only [coe_nnreal_smul_apply, ← mul_assoc, mul_comm _ (ε : ℝ≥0∞)]
         rw [ENNReal.mul_inv_cancel (ENNReal.coe_pos.2 εpos).ne' ENNReal.coe_ne_top, one_mul]
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ (s ∩ o) := by
-        gcongr
+        gcongr _ * ?_
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
         intro x hx
         rw [hs] at hx

@@ -184,8 +184,9 @@ def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp
   </details>
 
 
-@[server_rpc_method_cancellable]
-private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+/-- The rpc method of the `unfold?` widget. -/
+@[server_rpc_method]
+def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |

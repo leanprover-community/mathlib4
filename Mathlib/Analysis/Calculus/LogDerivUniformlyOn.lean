@@ -21,13 +21,12 @@ public section
 
 open Complex
 
-theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s} {f : ι → ℂ → ℂ}
-    (hf : ∀ i, f i x ≠ 0) (hd : ∀ i, DifferentiableOn ℂ (f i) s)
+theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : ℂ} (hx : x ∈ s)
+    {f : ι → ℂ → ℂ} (hf : ∀ i, f i x ≠ 0) (hd : ∀ i, DifferentiableOn ℂ (f i) s)
     (hm : Summable fun i ↦ logDeriv (f i) x) (htend : MultipliableLocallyUniformlyOn f s)
     (hnez : ∏' i, f i x ≠ 0) :
     logDeriv (∏' i, f i ·) x = ∑' i, logDeriv (f i) x := by
   rw [Eq.comm, ← hm.hasSum_iff]
-  refine logDeriv_tendsto hs x htend.hasProdLocallyUniformlyOn (.of_forall <| by fun_prop) hnez
+  refine logDeriv_tendsto hs hx htend.hasProdLocallyUniformlyOn (.of_forall <| by fun_prop) hnez
     |>.congr fun b ↦ ?_
-  rw [logDeriv_prod _ _ _ (fun i _ ↦ hf i)
-    (fun i _ ↦ (hd i x x.2).differentiableAt (hs.mem_nhds x.2))]
+  rw [logDeriv_prod (fun i _ ↦ hf i) (fun i _ ↦ (hd i x hx).differentiableAt (hs.mem_nhds hx))]
