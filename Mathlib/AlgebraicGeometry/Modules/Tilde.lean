@@ -294,6 +294,9 @@ def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
     rw [toOpen_fromTildeΓ_app]
     exact (modulesSpecToSheaf.obj M).val.map_id _
 
+instance : IsIso (tilde.adjunction (R := R)).unit := by
+  dsimp [tilde.adjunction]; infer_instance
+
 /-- The tilde functor is fully faithful. We will later show that the essential image is
 exactly quasi-coherent modules. -/
 noncomputable
