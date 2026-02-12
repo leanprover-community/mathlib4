@@ -112,8 +112,8 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
   have hs0 : s 0 = {0} := by ext; simp [s, funext_iff]
   have hs {a b : ℕ} (ha : a ≤ b) : s a ⊆ s b := by grind
   have (k : ℕ) : #(s (k + 1) \ s k) ≤ 2 * d * (2 * k + 3) ^ (d - 1) := by
-    simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s]
-    simp only [Fintype.card_piFinset, Int.card_Icc, prod_const]
+    simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s, Fintype.card_piFinset,
+      Int.card_Icc, prod_const]
     grind [abs_pow_sub_pow_le (α := ℤ) (2 * k + 3) (2 * k + 1) d]
   let ε := normBound b
   have hε : 0 < ε := normBound_pos b
