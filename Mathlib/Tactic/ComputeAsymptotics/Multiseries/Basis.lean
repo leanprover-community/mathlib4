@@ -161,11 +161,10 @@ end WellFormedBasis
 /-! ### Basis extensions -/
 
 /-- The type of extensions of a given basis, defined as an inductive type.
-Given a `basis : Basis`
-and `ex : BasisExtension basis` of it, one can use `getBasis` to produce a basis `basis'` for which
-`basis <+ basis'`. Moreover, all such bases for which `basis` is a sublist can be
-obtained in this
-manner. In this sense `BasisExtension` is a `Type`-valued analogue of `List.Sublist`. -/
+Given a `basis : Basis` and `ex : BasisExtension basis` of it, one can use `getBasis` to produce a
+basis `basis'` for which `basis <+ basis'`. Moreover, all such bases for which `basis` is a sublist
+can be obtained in this manner. In this sense `BasisExtension` is a `Type`-valued analogue
+of `List.Sublist`. -/
 inductive BasisExtension : Basis → Type
 | nil : BasisExtension []
 | keep (basis_hd : ℝ → ℝ) {basis_tl : Basis} (ex : BasisExtension basis_tl) :
