@@ -74,9 +74,8 @@ theorem comap_coe_nhdsGT_eq_atBot_iff :
     comap ((↑) : s → X) (𝓝[>] b) = atBot ↔
       s ⊆ Ioi b ∧ (s.Nonempty → ∀ a > b, (s ∩ Ioo b a).Nonempty) := by
   refine comap_coe_nhdsLT_eq_atTop_iff (s := OrderDual.ofDual ⁻¹' s) (b := OrderDual.toDual b)
-    |>.trans <| .and .rfl <| forall₃_congr fun hne a ha ↦ ?_
-  rw [← a.toDual_ofDual, Ioo_toDual]
-  rfl
+    |>.trans ?_
+  simp [← preimage_inter, ofDual.surjective]
 
 theorem comap_coe_nhdsLT_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s)
     (hb : IsSuccPrelimit b := by exact .of_dense _) :
