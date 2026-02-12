@@ -1258,15 +1258,12 @@ end Disjoint
 
 namespace Set
 
+@[to_dual]
 lemma nonempty_iInter_Iic_iff [Preorder α] {f : ι → α} :
     (⋂ i, Iic (f i)).Nonempty ↔ BddBelow (range f) := by
   have : (⋂ (i : ι), Iic (f i)) = lowerBounds (range f) := by
     ext c; simp [lowerBounds]
   simp [this, BddBelow]
-
-lemma nonempty_iInter_Ici_iff [Preorder α] {f : ι → α} :
-    (⋂ i, Ici (f i)).Nonempty ↔ BddAbove (range f) :=
-  nonempty_iInter_Iic_iff (α := αᵒᵈ)
 
 variable [CompleteLattice α]
 

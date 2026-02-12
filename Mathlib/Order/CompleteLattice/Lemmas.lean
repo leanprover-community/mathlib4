@@ -63,6 +63,7 @@ theorem sup_eq_iSup (x y : α) : x ⊔ y = ⨆ b : Bool, cond b x y := by
 -/
 
 
+@[to_dual]
 theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = ⨆ i, u (i + n) := by
   apply le_antisymm <;> simp only [iSup_le_iff]
   · refine fun i hi => le_sSup ⟨i - n, ?_⟩
@@ -70,15 +71,15 @@ theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = 
     rw [Nat.sub_add_cancel hi]
   · exact fun i => le_sSup ⟨i + n, iSup_pos (Nat.le_add_left _ _)⟩
 
-theorem iInf_ge_eq_iInf_nat_add (u : ℕ → α) (n : ℕ) : ⨅ i ≥ n, u i = ⨅ i, u (i + n) :=
-  @iSup_ge_eq_iSup_nat_add αᵒᵈ _ _ _
-
+-- TODO: `@[to_dual]` can't handle `Monotone`/`Antitone` (not in name dictionary).
 theorem Monotone.iSup_nat_add {f : ℕ → α} (hf : Monotone f) (k : ℕ) : ⨆ n, f (n + k) = ⨆ n, f n :=
   le_antisymm (iSup_le fun i => le_iSup _ (i + k)) <| iSup_mono fun i => hf <| Nat.le_add_right i k
 
 theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : ⨅ n, f (n + k) = ⨅ n, f n :=
   hf.dual_right.iSup_nat_add k
 
+-- TODO: `@[to_dual]` fails on `iSup_iInf_ge_nat_add`/`iInf_iSup_ge_nat_add`:
+-- proof uses `Monotone`/`Antitone` which aren't in the `to_dual` name dictionary.
 -- Not `@[simp]` since the subterm `?f (i + ?k)` produces an ugly higher-order unification problem.
 -- (Although the `simpNF` linter does not complain.)
 -- See: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
@@ -95,14 +96,12 @@ theorem iInf_iSup_ge_nat_add :
     ∀ (f : ℕ → α) (k : ℕ), ⨅ n, ⨆ i ≥ n, f (i + k) = ⨅ n, ⨆ i ≥ n, f i :=
   @iSup_iInf_ge_nat_add αᵒᵈ _
 
+@[to_dual inf_iInf_nat_succ]
 theorem sup_iSup_nat_succ (u : ℕ → α) : (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ i, u i :=
   calc
     (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ x ∈ {0} ∪ range Nat.succ, u x := by
       { rw [iSup_union, iSup_singleton, iSup_range] }
     _ = ⨆ i, u i := by rw [Nat.zero_union_range_succ, iSup_univ]
-
-theorem inf_iInf_nat_succ (u : ℕ → α) : (u 0 ⊓ ⨅ i, u (i + 1)) = ⨅ i, u i :=
-  @sup_iSup_nat_succ αᵒᵈ _ u
 
 @[to_dual]
 theorem iSup_nat_gt_zero_eq (f : ℕ → α) : ⨆ i > 0, f i = ⨆ i, f (i + 1) := by
