@@ -2148,7 +2148,6 @@ public import Mathlib.Analysis.SpecialFunctions.Arsinh
 public import Mathlib.Analysis.SpecialFunctions.Artanh
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
-public import Mathlib.Analysis.SpecialFunctions.CauchyFunctionalEquation
 public import Mathlib.Analysis.SpecialFunctions.Choose
 public import Mathlib.Analysis.SpecialFunctions.CompareExp
 public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
