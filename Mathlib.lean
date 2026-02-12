@@ -5656,6 +5656,7 @@ public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Order.Hom.Lattice
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.Hom.Order
+public import Mathlib.Order.Hom.PowersetCard
 public import Mathlib.Order.Hom.Set
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.Ideal
