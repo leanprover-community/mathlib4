@@ -17,7 +17,7 @@ The `vecPerm` simproc computes the new entries of a vector after applying a perm
 
 namespace Mathlib.Tactic.FinVec
 
-open Lean Elab Meta Simp Qq
+open Lean Meta Qq
 
 meta section
 
