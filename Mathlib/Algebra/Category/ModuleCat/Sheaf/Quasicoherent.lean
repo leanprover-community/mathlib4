@@ -307,6 +307,7 @@ theorem Presentation.isQuasicoherent {M : SheafOfModules.{u} R} (P : Presentatio
     IsQuasicoherent M where
   nonempty_quasicoherentData := Nonempty.intro (Presentation.quasicoherentData P)
 
+end
 section bind
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
