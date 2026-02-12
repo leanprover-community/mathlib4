@@ -164,7 +164,7 @@ end IsBigO
 open Filter Topology in
 theorem tendsto_cocompact [ProperSpace E] (f : 𝓢(E, F)) :
     Tendsto f (cocompact E) (𝓝 0) := by
-  apply Asymptotics.IsBigO.trans_tendsto (isBigO_cocompact_rpow f (-1))
+  apply (isBigO_cocompact_rpow f (-1)).trans_tendsto
   simp_rw [Real.rpow_neg_one]
   exact tendsto_norm_cocompact_atTop.inv_tendsto_atTop
 
