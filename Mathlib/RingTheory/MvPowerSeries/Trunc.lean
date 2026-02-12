@@ -16,7 +16,7 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 # Formal (multivariate) power series - Truncation
 
 * `MvPowerSeries.truncFinset s p` restricts the support of a multivariate power series `p`
-  to a finite set of monomials and obtain a multivariate polynomial.
+  to a finite set of monomials and obtains a multivariate polynomial.
 
 * `MvPowerSeries.trunc n φ` truncates a formal multivariate power series
   to the multivariate polynomial that has the same coefficients as `φ`,
@@ -64,7 +64,7 @@ open Finsupp
 
 variable {σ R S : Type*}
 
-section truncFinset
+section TruncFinset
 
 variable [CommSemiring R] (s : Finset (σ →₀ ℕ))
 
@@ -126,7 +126,7 @@ theorem truncFinset_map [CommSemiring S] (f : R →+* S) (p : MvPowerSeries σ R
   · simp [coeff_map, MvPolynomial.coeff_map, coeff_truncFinset _ _ hx]
   simp [MvPolynomial.coeff_map, coeff_truncFinset_eq_zero _ _ hx]
 
-end truncFinset
+end TruncFinset
 
 section TruncLT
 
