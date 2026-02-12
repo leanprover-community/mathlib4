@@ -491,10 +491,8 @@ theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b
 
 end
 
+@[to_dual]
 theorem bddBelow_iff_subset_Ici : BddBelow s ↔ ∃ a, s ⊆ Ici a :=
-  Iff.rfl
-
-theorem bddAbove_iff_subset_Iic : BddAbove s ↔ ∃ a, s ⊆ Iic a :=
   Iff.rfl
 
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
@@ -588,35 +586,21 @@ protected theorem IsLUB.insert [SemilatticeSup γ] (a) {b} {s : Set γ} (hs : Is
   rw [insert_eq]
   exact isLUB_singleton.union hs
 
+@[to_dual]
 protected theorem IsGreatest.insert [LinearOrder γ] (a) {b} {s : Set γ} (hs : IsGreatest s b) :
     IsGreatest (insert a s) (max a b) := by
   rw [insert_eq]
   exact isGreatest_singleton.union hs
 
-protected theorem IsLeast.insert [LinearOrder γ] (a) {b} {s : Set γ} (hs : IsLeast s b) :
-    IsLeast (insert a s) (min a b) := by
-  rw [insert_eq]
-  exact isLeast_singleton.union hs
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem upperBounds_insert (a : α) (s : Set α) :
     upperBounds (insert a s) = Ici a ∩ upperBounds s := by
   rw [insert_eq, upperBounds_union, upperBounds_singleton]
 
-@[simp]
-theorem lowerBounds_insert (a : α) (s : Set α) :
-    lowerBounds (insert a s) = Iic a ∩ lowerBounds s := by
-  rw [insert_eq, lowerBounds_union, lowerBounds_singleton]
-
 /-- When there is a global maximum, every set is bounded above. -/
-@[simp]
+@[to_dual (attr := simp) /-- When there is a global minimum, every set is bounded below. -/]
 protected theorem OrderTop.bddAbove [OrderTop α] (s : Set α) : BddAbove s :=
   ⟨⊤, fun a _ => OrderTop.le_top a⟩
-
-/-- When there is a global minimum, every set is bounded below. -/
-@[simp]
-protected theorem OrderBot.bddBelow [OrderBot α] (s : Set α) : BddBelow s :=
-  ⟨⊥, fun a _ => OrderBot.bot_le a⟩
 
 /-- Sets are automatically bounded or cobounded in complete lattices. To use the same statements
 in complete and conditionally complete lattices but let automation fill automatically the
@@ -636,9 +620,7 @@ macro "bddDefault" : tactic =>
 theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
   isLUB_singleton.insert _
 
-theorem isLeast_pair [LinearOrder γ] {a b : γ} : IsLeast {a, b} (min a b) :=
-  isLeast_singleton.insert _
-
+@[to_dual]
 theorem isGreatest_pair [LinearOrder γ] {a b : γ} : IsGreatest {a, b} (max a b) :=
   isGreatest_singleton.insert _
 
@@ -712,19 +694,13 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
 
-@[simp] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+@[to_dual (attr := simp)] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
     upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := by
   ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [upperBounds, Prod.le_def, forall_and])
 
-@[simp] lemma lowerBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
-    lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := by
-  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [lowerBounds, Prod.le_def, forall_and])
-
+@[to_dual]
 lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
     IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
-
-lemma IsGLB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsGLB s a) (hb : IsGLB t b) :
-    IsGLB (s ×ˢ t) (a, b) := by simp_all +contextual [IsGLB, IsGreatest, upperBounds]
 
 end Preorder
 
