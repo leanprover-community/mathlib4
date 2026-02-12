@@ -386,7 +386,8 @@ theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x => f x)
   @sup_attach αᵒᵈ _ _ _ _ _
 
 @[simp]
-theorem inf_erase_top [DecidableEq α] (s : Finset α) : (s.erase ⊤).inf id = s.inf id :=
+theorem inf_erase_top [h : DecidableEq α] (s : Finset α) : (s.erase ⊤).inf id = s.inf id :=
+  letI : DecidableEq αᵒᵈ := h
   @sup_erase_bot αᵒᵈ _ _ _ _
 
 theorem comp_inf_eq_inf_comp [SemilatticeInf γ] [OrderTop γ] {s : Finset β} {f : β → α} (g : α → γ)

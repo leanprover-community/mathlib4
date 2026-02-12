@@ -159,8 +159,9 @@ This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non-instances]
 abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
-     [DecidableEq α] [DecidableLE α] [DecidableLT α]
+     [h : DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirectedOrder α] : LinearOrder α :=
+  letI : DecidableEq αᵒᵈ := h
   letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
   inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
 

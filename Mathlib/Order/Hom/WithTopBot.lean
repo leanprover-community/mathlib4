@@ -143,8 +143,10 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
 /-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
 
 See also `Equiv.optionSubtypeNe`. -/
-def subtypeOrderIso [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))] :
-    WithBot {a : α // a ≠ ⊥} ≃o α := (WithTop.subtypeOrderIso (α := αᵒᵈ)).dual
+def subtypeOrderIso [PartialOrder α] [OrderBot α] [h : DecidablePred (· = (⊥ : α))] :
+    WithBot {a : α // a ≠ ⊥} ≃o α :=
+  letI : DecidablePred (· = (⊤ : αᵒᵈ)) := h
+  (WithTop.subtypeOrderIso (α := αᵒᵈ)).dual
 
 @[simp]
 theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]

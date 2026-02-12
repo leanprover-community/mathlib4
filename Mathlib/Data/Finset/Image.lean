@@ -178,11 +178,11 @@ lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finse
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [Function.comp_def, filter_map, f.injective.eq_iff]
 
-lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
+lemma filter_attach' [hα : DecidableEq α] (s : Finset α) (p : s → Prop) [hp : DecidablePred p] :
     s.attach.filter p =
       (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
         ⟨Subtype.map id <| filter_subset _ _, Subtype.map_injective _ injective_id⟩ :=
-  eq_of_veq <| Multiset.filter_attach' _ _
+  eq_of_veq <| @Multiset.filter_attach' α _ p hα hp
 
 lemma filter_attach (p : α → Prop) [DecidablePred p] (s : Finset α) :
     s.attach.filter (fun a : s ↦ p a) =

@@ -70,7 +70,7 @@ In this section we prove properties like `f (x + n • a) = f x + n • b`.
 
 scoped[AddConstMapClass] attribute [simp] map_add_const
 
-variable {F G H : Type*} [FunLike F G H] {a : G} {b : H}
+variable {F G H : Type*} [hFGH : FunLike F G H] {a : G} {b : H}
 
 protected theorem semiconj [Add G] [Add H] [AddConstMapClass F G H a b] (f : F) :
     Semiconj f (· + a) (· + b) :=
@@ -291,8 +291,10 @@ theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
 
 theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
-    [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
+    [h : AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Antitone f ↔ AntitoneOn f (Icc l (l + a)) :=
+  letI : FunLike F G Hᵒᵈ := hFGH
+  letI : AddConstMapClass F G Hᵒᵈ a b := h
   monotone_iff_Icc (H := Hᵒᵈ) ha l
 
 theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
@@ -303,8 +305,10 @@ theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid 
 
 theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
-    [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
+    [h : AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictAnti f ↔ StrictAntiOn f (Icc l (l + a)) :=
+  letI : FunLike F G Hᵒᵈ := hFGH
+  letI : AddConstMapClass F G Hᵒᵈ a b := h
   strictMono_iff_Icc (H := Hᵒᵈ) ha l
 
 end AddConstMapClass

@@ -330,8 +330,9 @@ theorem lt_max'_of_mem_erase_max' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
     a < s.max' H :=
   lt_of_le_of_ne (le_max' _ _ (mem_of_mem_erase ha)) <| ne_of_mem_of_not_mem ha <| notMem_erase _ _
 
-theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase (s.min' H)) :
+theorem min'_lt_of_mem_erase_min' [h : DecidableEq α] {a : α} (ha : a ∈ s.erase (s.min' H)) :
     s.min' H < a :=
+  letI : DecidableEq αᵒᵈ := h
   @lt_max'_of_mem_erase_max' αᵒᵈ _ s H _ a ha
 
 /-- To rewrite from right to left, use `Monotone.map_finset_max'`. -/
@@ -470,8 +471,9 @@ theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset �
 * for every `s : Finset α` and an element `a` strictly less than all elements of `s`, `p s`
   implies `p (insert a s)`. -/
 @[elab_as_elim]
-theorem induction_on_min [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
+theorem induction_on_min [h : DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
     (step : ∀ a s, (∀ x ∈ s, a < x) → p s → p (insert a s)) : p s :=
+  letI : DecidableEq αᵒᵈ := h
   @induction_on_max αᵒᵈ _ _ _ s h0 step
 
 end MaxMin

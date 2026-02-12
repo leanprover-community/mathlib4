@@ -211,13 +211,21 @@ theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
 variable [iamhc : AddMonoidHomClass F α β]
 
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 :=
-  monotone_toDual_comp_iff.symm.trans <| monotone_iff_map_nonneg (β := βᵒᵈ) (iamhc := iamhc) _
+  letI : FunLike F α βᵒᵈ := i
+  letI : AddMonoidHomClass F α βᵒᵈ := iamhc
+  monotone_iff_map_nonneg (β := βᵒᵈ) f
 
-theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a ≤ 0 :=
-  antitone_comp_ofDual_iff.symm.trans <| antitone_iff_map_nonpos (α := αᵒᵈ) (iamhc := iamhc) _
+theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a ≤ 0 := by
+  apply antitone_comp_ofDual_iff.symm.trans
+  letI : FunLike F αᵒᵈ βᵒᵈ := i
+  letI : AddMonoidHomClass F αᵒᵈ βᵒᵈ := iamhc
+  exact monotone_iff_map_nonneg (α := αᵒᵈ) (β := βᵒᵈ) f
 
-theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a :=
-  monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg (α := αᵒᵈ) (iamhc := iamhc) _
+theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a := by
+  apply monotone_comp_ofDual_iff.symm.trans
+  letI : FunLike F αᵒᵈ β := i
+  letI : AddMonoidHomClass F αᵒᵈ β := iamhc
+  exact monotone_iff_map_nonneg (α := αᵒᵈ) (β := β) f
 
 theorem strictMono_iff_map_pos :
     StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
@@ -227,14 +235,23 @@ theorem strictMono_iff_map_pos :
   · rw [← sub_add_cancel b a, map_add f]
     exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)
 
-theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
-  strictMono_toDual_comp_iff.symm.trans <| strictMono_iff_map_pos (β := βᵒᵈ) (iamhc := iamhc) _
+theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 := by
+  apply strictMono_toDual_comp_iff.symm.trans
+  letI : FunLike F α βᵒᵈ := i
+  letI : AddMonoidHomClass F α βᵒᵈ := iamhc
+  exact strictMono_iff_map_pos (β := βᵒᵈ) (iamhc := iamhc) _
 
-theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
-  strictAnti_comp_ofDual_iff.symm.trans <| strictAnti_iff_map_neg (α := αᵒᵈ) (iamhc := iamhc) _
+theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 := by
+  apply strictAnti_comp_ofDual_iff.symm.trans
+  letI : FunLike F αᵒᵈ β := i
+  letI : AddMonoidHomClass F αᵒᵈ β := iamhc
+  exact strictAnti_iff_map_neg (α := αᵒᵈ) (iamhc := iamhc) _
 
-theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
-  strictMono_comp_ofDual_iff.symm.trans <| strictMono_iff_map_pos (α := αᵒᵈ) (iamhc := iamhc) _
+theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a := by
+  apply strictMono_comp_ofDual_iff.symm.trans
+  letI : FunLike F αᵒᵈ β := i
+  letI : AddMonoidHomClass F αᵒᵈ β := iamhc
+  exact strictMono_iff_map_pos (α := αᵒᵈ) (iamhc := iamhc) _
 
 end OrderedAddCommGroup
 

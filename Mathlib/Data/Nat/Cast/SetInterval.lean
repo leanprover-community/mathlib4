@@ -26,7 +26,7 @@ namespace Nat
 
 @[simp]
 theorem range_cast_int : range ((↑) : ℕ → ℤ) = Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 Int.natCast_nonneg) CanLift.prf
+  Subset.antisymm (range_subset_iff.2 Int.natCast_nonneg) (fun x hx ↦ CanLift.prf x (by exact hx))
 
 theorem image_cast_int_Icc (a b : ℕ) : (↑) '' Icc a b = Icc (a : ℤ) b :=
   (castOrderEmbedding (α := ℤ)).image_Icc (by simp [ordConnected_Ici]) a b

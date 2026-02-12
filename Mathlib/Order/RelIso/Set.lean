@@ -35,10 +35,10 @@ theorem map_inf [SemilatticeInf α] [LinearOrder β] [FunLike F β α]
     a (m ⊓ n) = a m ⊓ a n :=
   (StrictMono.monotone fun _ _ => map_rel a).map_inf m n
 
-theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
-    [RelHomClass F (· > ·) (· > ·)] (a : F) (m n : β) :
+theorem map_sup [SemilatticeSup α] [LinearOrder β] [h : FunLike F β α]
+    [h' : RelHomClass F (· > ·) (· > ·)] (a : F) (m n : β) :
     a (m ⊔ n) = a m ⊔ a n :=
-  map_inf (α := αᵒᵈ) (β := βᵒᵈ) _ _ _
+  (StrictMono.monotone fun _ _ => map_rel a).map_sup m n
 
 theorem directed [FunLike F α β] [RelHomClass F r s] {ι : Sort*} {a : ι → α} {f : F}
     (ha : Directed r a) : Directed s (f ∘ a) :=
