@@ -8,6 +8,19 @@ module
 public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.Data.Finset.Sort
 
+/-!
+# Finite sets of an ordered type
+
+This file defines the isomorphism between ordered embeddings into a linearly ordered type and
+the finite sets of that type.
+
+## Definitions
+
+* `ofFinEmbEquiv` is the equivalence between `Fin n ↪o I` and `Set.powersetCard I n` when `I` is
+  a linearly ordered type.
+
+-/
+
 @[expose] public section
 
 open Finset Function Set
