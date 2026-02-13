@@ -57,38 +57,27 @@ variable [Preorder α] [Preorder β] {l : α → β} {u : β → α}
 variable (gc : GaloisConnection l u)
 include gc
 
+@[to_dual]
 theorem upperBounds_l_image (s : Set α) :
     upperBounds (l '' s) = u ⁻¹' upperBounds s :=
   Set.ext fun b => by simp [upperBounds, gc _ _]
 
-theorem lowerBounds_u_image (s : Set β) :
-    lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
-  gc.dual.upperBounds_l_image s
-
+@[to_dual]
 theorem bddAbove_l_image {s : Set α} : BddAbove (l '' s) ↔ BddAbove s :=
   ⟨fun ⟨x, hx⟩ => ⟨u x, by rwa [gc.upperBounds_l_image] at hx⟩, gc.monotone_l.map_bddAbove⟩
 
-theorem bddBelow_u_image {s : Set β} : BddBelow (u '' s) ↔ BddBelow s :=
-  gc.dual.bddAbove_l_image
-
+@[to_dual]
 theorem isLUB_l_image {s : Set α} {a : α} (h : IsLUB s a) : IsLUB (l '' s) (l a) :=
   ⟨gc.monotone_l.mem_upperBounds_image h.left, fun b hb =>
     gc.l_le <| h.right <| by rwa [gc.upperBounds_l_image] at hb⟩
 
-theorem isGLB_u_image {s : Set β} {b : β} (h : IsGLB s b) : IsGLB (u '' s) (u b) :=
-  gc.dual.isLUB_l_image h
-
+@[to_dual]
 theorem isLeast_l {a : α} : IsLeast { b | a ≤ u b } (l a) :=
   ⟨gc.le_u_l _, fun _ hb => gc.l_le hb⟩
 
-theorem isGreatest_u {b : β} : IsGreatest { a | l a ≤ b } (u b) :=
-  gc.dual.isLeast_l
-
+@[to_dual]
 theorem isGLB_l {a : α} : IsGLB { b | a ≤ u b } (l a) :=
   gc.isLeast_l.isGLB
-
-theorem isLUB_u {b : β} : IsLUB { a | l a ≤ b } (u b) :=
-  gc.isGreatest_u.isLUB
 
 end
 
@@ -96,29 +85,24 @@ section SemilatticeSup
 
 variable [SemilatticeSup α] [SemilatticeSup β] {l : α → β} {u : β → α}
 
+@[to_dual]
 theorem l_sup (gc : GaloisConnection l u) : l (a₁ ⊔ a₂) = l a₁ ⊔ l a₂ :=
   (gc.isLUB_l_image isLUB_pair).unique <| by simp only [image_pair, isLUB_pair]
 
 end SemilatticeSup
 
-section SemilatticeInf
-
-variable [SemilatticeInf α] [SemilatticeInf β] {l : α → β} {u : β → α}
-
-theorem u_inf (gc : GaloisConnection l u) : u (b₁ ⊓ b₂) = u b₁ ⊓ u b₂ := gc.dual.l_sup
-
-end SemilatticeInf
-
 section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β] {l : α → β} {u : β → α}
 
+@[to_dual]
 theorem l_iSup (gc : GaloisConnection l u) {f : ι → α} : l (iSup f) = ⨆ i, l (f i) :=
   Eq.symm <|
     IsLUB.iSup_eq <|
       show IsLUB (range (l ∘ f)) (l (iSup f)) by
         rw [range_comp, ← sSup_range]; exact gc.isLUB_l_image (isLUB_sSup _)
 
+@[to_dual u_iInf₂]
 theorem l_iSup₂ (gc : GaloisConnection l u) {f : ∀ i, κ i → α} :
     l (⨆ (i) (j), f i j) = ⨆ (i) (j), l (f i j) := by
   simp_rw [gc.l_iSup]
@@ -126,17 +110,9 @@ theorem l_iSup₂ (gc : GaloisConnection l u) {f : ∀ i, κ i → α} :
 variable (gc : GaloisConnection l u)
 include gc
 
-theorem u_iInf {f : ι → β} : u (iInf f) = ⨅ i, u (f i) :=
-  gc.dual.l_iSup
-
-theorem u_iInf₂ {f : ∀ i, κ i → β} : u (⨅ (i) (j), f i j) = ⨅ (i) (j), u (f i j) :=
-  gc.dual.l_iSup₂
-
+@[to_dual]
 theorem l_sSup {s : Set α} : l (sSup s) = ⨆ a ∈ s, l a := by
   simp only [sSup_eq_iSup, gc.l_iSup]
-
-theorem u_sInf {s : Set β} : u (sInf s) = ⨅ a ∈ s, u a :=
-  gc.dual.l_sSup
 
 end CompleteLattice
 
