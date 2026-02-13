@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
 /-!

@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.ZariskisMainTheorem
-public import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # Etale local structure of finite maps

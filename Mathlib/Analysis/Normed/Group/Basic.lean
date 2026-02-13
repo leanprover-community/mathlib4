@@ -6,6 +6,9 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # (Semi)normed groups: basic theory
