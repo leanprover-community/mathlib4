@@ -437,7 +437,7 @@ lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀
 
 -- The implicit/explicit parameter structure differs from `BddAbove.range_mono`.
 -- The `to_dual` proof translation strategy doesn't care that the implicitness differs,
--- and `@[to_dual existing]` validates this since `isDefEq` ignores binder info.
+-- and `@[to_dual existing]` doesn't care about the discrepancy since `isDefEq` ignores binder info.
 @[to_dual existing]
 lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀ a, f a ≤ g a)
     (hbdd : BddBelow (range f)) : BddBelow (range g) :=
