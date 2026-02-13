@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
-public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.QuasiFinite.Weakly
 
 /-! # Quasi-finite primes in polynomial algebras -/
