@@ -306,6 +306,12 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   -- Porting note: Original proof did not define `f`
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
 
+lemma degree_eq_sum_deg_support (hp : φ.IsHomogeneous n) {s : σ →₀ ℕ} (hs : s ∈ φ.support) :
+    n = ∑ i ∈ s.support, s i := by
+  rw [IsHomogeneous, IsWeightedHomogeneous] at hp
+  rw [← hp <| mem_support_iff.mp hs, ← Finsupp.degree_apply, Finsupp.degree_eq_weight_one,
+    Pi.one_def]
+
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
