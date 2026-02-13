@@ -30,7 +30,7 @@ noncomputable section
 assert_not_exists tangentBundleCore
 
 open scoped Topology Manifold
-open Set Bundle ChartedSpace
+open Function Set Bundle ChartedSpace
 
 section DerivativesProperties
 
@@ -550,19 +550,34 @@ theorem mdifferentiable_of_subsingleton [Subsingleton E] : MDifferentiable I I' 
   simp only [mdifferentiableAt_iff, continuous_of_discreteTopology.continuousAt, true_and]
   exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
 
+/-- If `f : M → M'` has injective differential at `x` within `s`,
+it is `MDifferentiable` at `x` within `s`. -/
+lemma mdifferentiableWithinAt_of_mfderivWithin_injective
+    (hf : Injective (mfderivWithin I I' f s x)) :
+    MDifferentiableWithinAt I I' f s x := by
+  by_cases h: Subsingleton E
+  · exact (mdifferentiable_of_subsingleton x).mdifferentiableWithinAt
+  · by_contra h'
+    replace hf : LinearMap.ker (mfderivWithin I I' f s x).toLinearMap = ⊥ := by
+      rw [LinearMap.ker_eq_bot]; exact hf
+    have : (⊥ : Submodule 𝕜 (TangentSpace I x)) = ⊤ := by
+      simp [mfderivWithin_zero_of_not_mdifferentiableWithinAt h', ← hf]
+    have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top this
+    simp_all only [Submodule.subsingleton_iff]
+
+/-- If `f : M → M'` has injective differential at `x`, it is `MDifferentiable` at `x`. -/
+lemma mdifferentiableAt_of_mfderiv_injective {f : M → M'} (hf : Injective (mfderiv I I' f x)) :
+    MDifferentiableAt I I' f x := by
+  simp only [← mdifferentiableWithinAt_univ, ← mfderivWithin_univ] at hf ⊢
+  exact mdifferentiableWithinAt_of_mfderivWithin_injective hf
+
 theorem mdifferentiableWithinAt_of_isInvertible_mfderivWithin
-    (hf : (mfderivWithin I I' f s x).IsInvertible) : MDifferentiableWithinAt I I' f s x := by
-  contrapose hf
-  rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
-  contrapose! hf
-  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
-  have : Subsingleton E := hE
-  exact mdifferentiable_of_subsingleton.mdifferentiableAt.mdifferentiableWithinAt
+    (hf : (mfderivWithin I I' f s x).IsInvertible) : MDifferentiableWithinAt I I' f s x :=
+  mdifferentiableWithinAt_of_mfderivWithin_injective hf.injective
 
 theorem mdifferentiableAt_of_isInvertible_mfderiv
-    (hf : (mfderiv I I' f x).IsInvertible) : MDifferentiableAt I I' f x := by
-  simp only [← mdifferentiableWithinAt_univ, ← mfderivWithin_univ] at hf ⊢
-  exact mdifferentiableWithinAt_of_isInvertible_mfderivWithin hf
+    (hf : (mfderiv I I' f x).IsInvertible) : MDifferentiableAt I I' f x :=
+  mdifferentiableAt_of_mfderiv_injective hf.injective
 
 theorem HasMFDerivWithinAt.mono (h : HasMFDerivWithinAt I I' f t x f') (hst : s ⊆ t) :
     HasMFDerivWithinAt I I' f s x f' :=
