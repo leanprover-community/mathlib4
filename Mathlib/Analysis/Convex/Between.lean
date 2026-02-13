@@ -1099,8 +1099,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
 lemma wbtw_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
     Wbtw R x y z ∨ Wbtw R x z y := by
   rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
-  · rw [vsub_eq_zero_iff_eq] at h
-    simp [h]
+  · simp_all
   · rw [vsub_eq_zero_iff_eq] at h
     simp [h]
   by_cases hr : r₂ ≤ r₁
