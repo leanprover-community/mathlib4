@@ -27,7 +27,7 @@ ZULIP_SITE = sys.argv[3]
 #   command), it is 'ready-to-merge' or 'delegated'. On a bors merge-, bors r- or bors d- command,
 #   it is 'remove-label'. (This particular value is not used in this script.)
 #   Note that `bors d-` is *not* a bors command, so only has an effect on mathlib's PR labels.
-# - if CI status changed, it is 'ci-running', 'ci-success', or 'ci-failure'
+# - if CI status changed, it is 'ci-running', 'ci-success', 'ci-failure', or 'ci-cancelled'
 #   (see .github/workflows/zulip_emoji_ci_status.yaml)
 ACTION = sys.argv[4]
 # Name of the label that was applied or removed

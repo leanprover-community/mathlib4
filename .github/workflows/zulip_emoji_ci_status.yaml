@@ -21,16 +21,24 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
         HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        HEAD_REPO_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
+        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
       run: |
         # Try to get PR number from the workflow_run event
         PR_NUMBER=$(echo '${{ toJSON(github.event.workflow_run.pull_requests) }}' | jq -r '.[0].number // empty')
         # For push-triggered CI (non-fork PRs), pull_requests may be empty;
         # fall back to looking up the PR by branch name.
+        # Use owner:branch format to avoid matching the wrong PR when
+        # multiple forks use the same branch name.
         if [ -z "$PR_NUMBER" ]; then
-          PR_NUMBER=$(gh pr list --repo "${{ github.repository }}" --head "$HEAD_BRANCH" --state open --json number --jq '.[0].number // empty')
+          PR_NUMBER=$(gh pr list --repo "${{ github.repository }}" --head "$HEAD_REPO_OWNER:$HEAD_BRANCH" --state open --json number,headRefOid --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number" 2>/dev/null || true)
+        fi
+        # If owner-qualified lookup failed, try without owner (for same-repo branches)
+        if [ -z "$PR_NUMBER" ]; then
+          PR_NUMBER=$(gh pr list --repo "${{ github.repository }}" --head "$HEAD_BRANCH" --state open --json number,headRefOid --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number" 2>/dev/null || true)
         fi
         if [ -z "$PR_NUMBER" ]; then
-          echo "No PR found for branch $HEAD_BRANCH, skipping"
+          echo "No PR found for branch $HEAD_REPO_OWNER:$HEAD_BRANCH at $HEAD_SHA, skipping"
           echo "skip=true" >> "$GITHUB_OUTPUT"
         else
           echo "Found PR #$PR_NUMBER"
@@ -53,8 +61,9 @@ jobs:
               echo "ci_action=ci-success" >> "$GITHUB_OUTPUT"
               ;;
             cancelled)
-              # Don't update emoji for cancelled runs; a new run will follow.
-              echo "ci_action=skip" >> "$GITHUB_OUTPUT"
+              # Clear the running emoji. A new run may or may not follow
+              # (manual cancel, branch deleted, etc.), so don't leave stale 🟡.
+              echo "ci_action=ci-cancelled" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "ci_action=ci-failure" >> "$GITHUB_OUTPUT"
