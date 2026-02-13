@@ -14,7 +14,26 @@ Given a map `f : M → N` between manifolds, we call `x` and *immersed point* of
 the `mfderiv` of `f` at `x` *splits*, i.e. admits a continuous left inverse. (If `M` is
 finite-dimensional, this is equivalent to injectivity of the the `mfderiv`.)
 
-TODO: add detailed module doc-string!
+A future PR will show that `x` is an immersed point of `x` if and only if `f` is an immersion
+at `x`: the composition property of immersed can be used to prove that immersions compose.
+
+
+## Main definitions and results
+
+* `IsImmersedPoint`: `x` is an *immersed point* of `f` iff `mfderiv I J f x` has a continuous left
+  inverse
+* `IsLocalDiffeomorphAt.isImmersedPoint`: if `f` is a local diffeomorphism at `x`, then `x` is an
+  immersed point of `f`
+* `IsImmersedPoint.comp`: if `x` is an immersed point of `f` and `f x` is an immersed point of `g`,
+  then `x` is an immersed point of `g ∘ f`
+* `IsImmersedPoint.of_comp`: if `g ∘ f` has immersed point `x`, then (assuming `f` and `g` are
+  differentiable at `x` resp. `f x`), then `x` also an immersed point of `f`.
+* `IsImmersedPoint.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at `x`
+  and `N` is finite-dimensional, then `x` is an immersed point of `f`.
+
+## TODO
+* `IsImmersedPoint.prodMap`: if `x` is an immersed point of `f` and `y` is an immersed point of `g`,
+  then `(x, y)` is an immersed point of `f × g`.
 
 -/
 
@@ -133,6 +152,9 @@ lemma prodMap {y : N} (hf : IsImmersedPoint I I' f x) {g : N → N'} (hg : IsImm
   · convert hg'.comp (x, y) mdifferentiableAt_snd
   convert hf.prodMap hg
   simp only [Prod.map_apply, Prod.map_fst, Prod.map_snd]
+  -- missing simp lemmas: tangent vectors in a product manifold;
+  -- mfderiv f.prodMap mfderiv g (X,Y) = "(mfderiv f X, mfderiv Y)"
+  -- then deduce the following result -> make a follow-up!
   -- missing simp lemma!
   sorry
 
@@ -151,48 +173,6 @@ lemma prodMap {y : N} (hf : IsImmersedPoint I I' f x) {g : N → N'} (hg : IsImm
 
 -- end
 
--- This section needs redoing/might be fully obsolete anyway!
-section
-
-variable [IsManifold I 1 M] {e : OpenPartialHomeomorph M H} {x : M}
-
-/-- The `mfderiv` of an extended chart is a local diffeomorphism. -/
--- XXX: proven on a prior version of #9273; without any assumptions on the boundary
-def extendMfderivToContinousLinearEquiv
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) E := sorry
-
-@[simp, mfld_simps]
-lemma extendMfderivToContinousLinearEquiv_coe
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    (extendMfderivToContinousLinearEquiv he hx).toContinuousLinearMap =
-      mfderiv I (modelWithCornersSelf 𝕜 E) (e.extend I) x :=
-  sorry -- rfl
-
-def extend_symm_mfderivToContinousLinearEquiv
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) E (TangentSpace I x) := sorry
-
-@[simp, mfld_simps]
-lemma extend_symm_mfderivToContinousLinearEquiv_coe
-    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    (extend_symm_mfderivToContinousLinearEquiv he hx).toContinuousLinearMap =
-      mfderiv (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) := sorry
-
-------------------
-
-lemma extend (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    IsImmersedPoint I (modelWithCornersSelf 𝕜 E) (e.extend I) x :=
-  sorry -- needs redoing; we don't need this lemma directly any more
-  -- proof was: (extendMfderivToContinousLinearEquiv he hx).splits.congr (by simp)
-
-lemma extend_symm (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    IsImmersedPoint (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) :=
-  sorry -- needs redoing; we don't need this lemma directly any more
-  -- proof was: (extend_symm_mfderivToContinousLinearEquiv he hx).splits.congr (by simp)
-
-end
-
 lemma of_mfderiv_isInvertible (hf : (mfderiv I I' f x).IsInvertible) :
     IsImmersedPoint I I' f x := by
   rw [isImmersedPoint_iff]
@@ -203,7 +183,8 @@ lemma _root_.IsLocalDiffeomorphAt.isImmersedPoint
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : n ≠ 0) : IsImmersedPoint I I' f x :=
   of_mfderiv_isInvertible (hf.isInvertible_mfderiv hn)
 
-/-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
+/-- If `x` is an immersed point of `x` and `f x` is an immersed point of `g`, then `x` is an
+immersed point of `g ∘ f`. -/
 lemma comp {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) (hf : IsImmersedPoint I I' f x) :
     IsImmersedPoint I J (g ∘ f) x := by
   rw [isImmersedPoint_iff, mfderiv_comp x hg.mdifferentiableAt hf.mdifferentiableAt]
