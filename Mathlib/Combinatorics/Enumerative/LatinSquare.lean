@@ -562,6 +562,12 @@ lemma row_entry_to_column_entry
       rw [forall_existsUnique_iff] at hrow
       exact hrow
 
+lemma unique_missed_element
+    {k' : Type u} [Fintype k'] [DecidableEq k']
+    (ι : k ↪ k')
+    (h₂ : Fintype.card k' = Fintype.card k + 1) : 
+    ∃! x, x ∉ Finset.image ι Finset.univ := by sorry
+
 -- TODO Rewrite in terms of new definition!
 theorem latin_rectangle_extends
     (A : LatinRectangle k n α)
@@ -732,7 +738,15 @@ theorem latin_rectangle_extends
         have hfyi := (hfy (Function.invFun (⇑ι) a2))
         have h := h.symm
         contradiction
-      . sorry
+      . rename_i if_h1 if_h2
+        -- Here the f drops out and it really is about ι and cards
+        -- If a1 and a2 aren't in the image of ι and 
+        -- card codomain of ι = card domain of ι + 1 then
+        -- both a1 and a2 are the unique element ι misses.
+        have h := unique_missed_element ι h₂
+        simp only [Finset.mem_image] at h
+        intro _
+        exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h (by simpa using if_h1) (by simpa using if_h2)
     m_le_n := by omega
   }
   use A'
