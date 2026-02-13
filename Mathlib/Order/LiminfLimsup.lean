@@ -308,6 +308,20 @@ theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 
+variable {f : Filter ι} {u : ι → α} {a : α}
+
+lemma le_limsup_of_frequently_le (hu : ∃ᶠ i in f, a ≤ u i)
+    (hu_le : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) : a ≤ limsup u f := by
+  refine le_limsup_of_le hu_le fun b hb ↦ ?_
+  obtain ⟨n, han, hnb⟩ := (hu.and_eventually hb).exists
+  exact han.trans hnb
+
+lemma liminf_le_of_frequently_le (hu : ∃ᶠ i in f, u i ≤ a)
+    (hu_le : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) : liminf u f ≤ a := by
+  refine liminf_le_of_le hu_le fun b hb ↦ ?_
+  obtain ⟨n, hna, hbn⟩ := (hu.and_eventually hb).exists
+  exact hbn.trans hna
+
 end ConditionallyCompleteLattice
 
 section CompleteLattice
@@ -392,7 +406,7 @@ theorem HasBasis.limsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : 
   (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image]
 
 lemma limsSup_principal_eq_sSup (s : Set α) : limsSup (𝓟 s) = sSup s := by
-  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_csSup s
+  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_sSup s
 
 lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
   simpa only [limsInf, eventually_principal] using sSup_lowerBounds_eq_sInf s
@@ -813,17 +827,6 @@ theorem exists_lt_of_le_liminf [AddZeroClass α] [AddLeftStrictMono α] {x ε : 
 end ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β}
-
-theorem le_limsup_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, b ≤ u x)
-    (hu : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
-    b ≤ limsup u f := by
-  contrapose! hu_le with h
-  exact eventually_lt_of_limsup_lt h hu
-
-theorem liminf_le_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, u x ≤ b)
-    (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
-    liminf u f ≤ b :=
-  le_limsup_of_frequently_le (β := βᵒᵈ) hu_le hu
 
 theorem frequently_lt_of_lt_limsup {b : β}
     (hu : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)

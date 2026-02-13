@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
@@ -233,13 +232,6 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
 def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
-
-theorem card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
-    card M = card R ^ card ι := by
-  classical
-    calc
-      card M = card (ι → R) := card_congr b.equivFun.toEquiv
-      _ = card R ^ card ι := card_fun
 
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/

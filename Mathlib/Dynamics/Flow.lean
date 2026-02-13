@@ -9,6 +9,7 @@ public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Flows and invariant sets
@@ -283,8 +284,6 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   invFun := ϕ (-t)
   left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
-  continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
 
 theorem image_eq_preimage_symm (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
   (ϕ.toHomeomorph t).toEquiv.image_eq_preimage_symm s

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.Support
 
@@ -267,6 +268,16 @@ theorem Dense.smul (c : G) {s : Set α} (hs : Dense s) : Dense (c • s) := by
 theorem interior_smul (c : G) (s : Set α) : interior (c • s) = c • interior s :=
   ((Homeomorph.smul c).image_interior s).symm
 
+open scoped Pointwise in
+@[to_additive]
+lemma nhds_smul (c : G) (x : α) : 𝓝 (c • x) = c • 𝓝 x :=
+  (Homeomorph.smul c).map_nhds_eq x |>.symm
+
+open scoped Pointwise in
+@[to_additive]
+lemma punctured_nhds_smul (c : G) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
+  (Homeomorph.smul c).map_punctured_nhds_eq x |>.symm
+
 @[to_additive]
 theorem IsOpen.smul_left {s : Set G} {t : Set α} (ht : IsOpen t) : IsOpen (s • t) := by
   rw [← iUnion_smul_set]
@@ -373,6 +384,14 @@ theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpac
     · rw [zero_smul_set hs, zero_smul_set hs.closure]
       exact closure_singleton
   · exact closure_smul₀' hc s
+
+open scoped Pointwise in
+lemma nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝 (c • x) = c • 𝓝 x :=
+  nhds_smul (Units.mk0 c hc) x
+
+open scoped Pointwise in
+lemma punctured_nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
+  punctured_nhds_smul (Units.mk0 c hc) x
 
 /-- `smul` is a closed map in the second argument.
 

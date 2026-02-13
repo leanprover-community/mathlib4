@@ -64,6 +64,8 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
+instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L) L
+
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
 

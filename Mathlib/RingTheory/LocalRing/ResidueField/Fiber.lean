@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
+public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -26,6 +27,19 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 open Algebra TensorProduct nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+
+open IsLocalRing in
+instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
+    IsLocalRing (ResidueField R ⊗[R] S) :=
+  let eSp : ResidueField R ⊗[R] S ≃ₐ[R] S ⧸ (maximalIdeal R).map (algebraMap R S) :=
+    (Algebra.TensorProduct.comm _ _ _).trans
+      ((TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars _)
+  have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
+    rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
+    exact ((((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp inferInstance).trans_lt
+      (inferInstanceAs (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
+  .of_surjective' TensorProduct.includeRight.toRingHom
+    (TensorProduct.mk_surjective _ _ _ residue_surjective)
 
 lemma Ideal.ResidueField.exists_smul_eq_tmul_one
     (x : S ⊗[R] p.ResidueField) : ∃ r ∉ p, ∃ s, r • x = s ⊗ₜ[R] 1 := by
@@ -48,6 +62,9 @@ See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the sp
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
 abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] : Type _ :=
   p.ResidueField ⊗[R] S
+
+instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
+  .trans _ (⊥ : Ideal p.ResidueField) _
 
 lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
