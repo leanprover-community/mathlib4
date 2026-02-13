@@ -1217,14 +1217,7 @@ def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYon
 
 theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
     Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
-  ext
-  simp only [Sieve.uliftFunctorInclusion_app, Sieve.sieveOfUliftSubfunctor_apply]
-  constructor
-  · rintro ⟨⟨f, hf⟩, h⟩
-    simp only [uliftYoneda_obj_obj, yoneda_obj_obj, ULift.up.injEq] at h
-    simpa [← h]
-  · intro hf
-    exact ⟨⟨_, hf⟩, rfl⟩
+  cat_disch
 
 instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
   ⟨⟨{ app := fun _ a => ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
