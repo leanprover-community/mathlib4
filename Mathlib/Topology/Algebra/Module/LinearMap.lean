@@ -350,6 +350,10 @@ theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
   rfl
 
 @[simp, norm_cast]
+theorem coe_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = 1 :=
+  rfl
+
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_id :
     (ContinuousLinearMap.id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
 
@@ -529,11 +533,11 @@ instance instMul : Mul (M₁ →L[R₁] M₁) :=
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_mul' (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
   rfl
 
@@ -547,9 +551,11 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
   one_mul _ := ext fun _ => rfl
   mul_assoc _ _ _ := ext fun _ => rfl
 
+@[simp, norm_cast]
 theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
+@[simp, norm_cast]
 theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
   DFunLike.ext' <| (coe_pow' f n).trans <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
