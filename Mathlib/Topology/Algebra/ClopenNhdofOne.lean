@@ -60,7 +60,8 @@ theorem closedSubgroup_eq_sInf_open (H : ClosedSubgroup G) :
   open scoped Pointwise in
   apply le_antisymm
   · exact le_sInf fun N hN ↦ hN.2
-  · intro g hg; by_contra hg_not
+  · intro g hg
+    by_contra hg_not
     let U : Set G := (g • H)ᶜ
     have UOpen : IsOpen U :=
       ((Homeomorph.mulLeft g).isClosedMap _ H.isClosed').isOpen_compl
