@@ -613,8 +613,6 @@ variable [TopologicalSpace γ] {mγ : MeasurableSpace γ} [BorelSpace γ]
 
 instance (priority := 100) ContinuousSup.measurableSup [Max γ] [ContinuousSup γ] :
     MeasurableSup γ where
-  measurable_const_sup _ := (continuous_const.sup continuous_id).measurable
-  measurable_sup_const _ := (continuous_id.sup continuous_const).measurable
 
 instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopology γ] [Max γ]
     [ContinuousSup γ] : MeasurableSup₂ γ :=
@@ -622,8 +620,6 @@ instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopolo
 
 instance (priority := 100) ContinuousInf.measurableInf [Min γ] [ContinuousInf γ] :
     MeasurableInf γ where
-  measurable_const_inf _ := (continuous_const.inf continuous_id).measurable
-  measurable_inf_const _ := (continuous_id.inf continuous_const).measurable
 
 instance (priority := 100) ContinuousInf.measurableInf₂ [SecondCountableTopology γ] [Min γ]
     [ContinuousInf γ] : MeasurableInf₂ γ :=
@@ -1059,7 +1055,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     rw [← measure_union]
     · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
-    · exact disjoint_singleton_left.mpr notMem_Ioi_self
+    · exact disjoint_singleton_left.mpr self_notMem_Ioi
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by

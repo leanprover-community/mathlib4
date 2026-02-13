@@ -199,6 +199,8 @@ theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ 
   · rw [hl.1, hl.2]
   · rw [hr.1, hr.2, adj_comm]
 
+instance symm_adj (f : ι → V) : Std.Symm fun i j ↦ G.Adj (f i) (f j) where symm _ _ := .symm
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.

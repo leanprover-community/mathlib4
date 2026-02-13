@@ -22,7 +22,7 @@ open Fintype MulAction
 
 variable (p : ℕ) (G : Type*) [Group G]
 
-/-- A p-group is a group in which every element has prime power order -/
+/-- A p-group is a group in which the order of every element is a power of `p`. -/
 def IsPGroup : Prop :=
   ∀ g : G, ∃ k : ℕ, g ^ p ^ k = 1
 

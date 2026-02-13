@@ -117,7 +117,8 @@ lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
     use 𝒰.toPresieveOver, ⟨𝒰, inferInstance, rfl⟩
     rwa [Cover.toPresieveOver_le_arrows_iff]
   · rintro ⟨T, ⟨𝒰, h, rfl⟩, hT⟩
-    use Presieve.ofArrows 𝒰.X 𝒰.f, 𝒰.mem_pretopology
+    rw [mem_grothendieckTopology_iff]
+    use 𝒰
     rwa [Cover.toPresieveOver_le_arrows_iff] at hT
 
 variable {S}

@@ -6,6 +6,7 @@ Authors: Reid Barton, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Filtered categories
@@ -323,6 +324,10 @@ theorem of_isRightAdjoint (R : C ⥤ D) [R.IsRightAdjoint] : IsFiltered D :=
 theorem of_equivalence (h : C ≌ D) : IsFiltered D :=
   of_right_adjoint h.symm.toAdjunction
 
+omit [IsFiltered C] in
+lemma iff_of_equivalence (e : C ≌ D) : IsFiltered C ↔ IsFiltered D :=
+  ⟨fun _ ↦ .of_equivalence e, fun _ ↦ .of_equivalence e.symm⟩
+
 end Nonempty
 
 section OfCocone
@@ -456,6 +461,69 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
   obtain ⟨s, ts, hs⟩ := IsFilteredOrEmpty.cocone_maps (f₂ ≫ k₁t) (g₂ ≫ k₂t)
   simp_rw [Category.assoc] at hs
   exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp only [← Category.assoc, ht], hs⟩
+
+/-- Given a "crown" of morphisms
+```
+  j₁   j₂   j₃  ... jₙ
+ /  \  /\  /  \
+|    \/  \/    |
+|    /\  /\    |
+|   |  \/  |   |
+ \  |  /\  |  /
+  \ | /  \ | /
+   vvv    vvv
+    k₁    k₂
+```
+in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
+making the resulting squares commute.
+-/
+theorem crown
+    {ι : Type*} [Finite ι] (j : ι → C) {k₁ k₂ : C} (f : ∀ i, j i ⟶ k₁) (g : ∀ i, j i ⟶ k₂) :
+    ∃ (s : C) (α : k₁ ⟶ s) (β : k₂ ⟶ s), ∀ i, f i ≫ α = g i ≫ β := by
+  induction ι using Finite.induction_empty_option with
+  | @of_equiv ι₁ ι₂ e IH =>
+    obtain ⟨s, α, β, H⟩ := IH (j ∘ e) (f <| e ·) (g <| e ·)
+    exact ⟨s, α, β, e.forall_congr_right.mp H⟩
+  | h_empty => exact ⟨max k₁ k₂, leftToMax k₁ k₂, rightToMax k₁ k₂, by simp⟩
+  | @h_option ι _ IH =>
+    obtain ⟨s₁, α₁, β₁, H₁⟩ := IH (j ·) (f ·) (g ·)
+    obtain ⟨s₂, α₂, β₂, H₂⟩ := span (f .none) (g .none)
+    obtain ⟨t, α, β, h₁, h₂⟩ := bowtie α₁ α₂ β₁ β₂
+    exact ⟨t, α₁ ≫ α, β₁ ≫ α, Option.rec (by grind) (by grind)⟩
+
+/-- Given a "crown" of morphisms
+```
+  j₁   j₂   j₃
+ /  \  /\  /  \
+|    \/  \/    |
+|    /\  /\    |
+|   |  \/  |   |
+ \  |  /\  |  /
+  \ | /  \ | /
+   vvv    vvv
+    k₁    k₂
+```
+in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
+making the resulting squares commute.
+-/
+theorem crown₃
+    {j₁ j₂ j₃ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁)
+    (g₂ : j₂ ⟶ k₂) (f₃ : j₃ ⟶ k₁) (g₃ : j₃ ⟶ k₂) :
+    ∃ (s : C) (α : k₁ ⟶ s) (β : k₂ ⟶ s),
+      f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β ∧ f₃ ≫ α = g₃ ≫ β := by
+  obtain ⟨s, α, β, H⟩ := crown ![j₁, j₂, j₃] (Fin.cons f₁ (Fin.cons f₂ (Fin.cons f₃ nofun)))
+     (Fin.cons g₁ (Fin.cons g₂ (Fin.cons g₃ nofun)))
+  exact ⟨s, α, β, H 0, H 1, H 2⟩
+
+theorem crown₄
+    {j₁ j₂ j₃ j₄ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁)
+    (g₂ : j₂ ⟶ k₂) (f₃ : j₃ ⟶ k₁) (g₃ : j₃ ⟶ k₂) (f₄ : j₄ ⟶ k₁) (g₄ : j₄ ⟶ k₂) :
+    ∃ (s : C) (α : k₁ ⟶ s) (β : k₂ ⟶ s),
+      f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β ∧ f₃ ≫ α = g₃ ≫ β ∧ f₄ ≫ α = g₄ ≫ β := by
+  obtain ⟨s, α, β, H⟩ := crown ![j₁, j₂, j₃, j₄]
+      (Fin.cons f₁ (Fin.cons f₂ (Fin.cons f₃ (Fin.cons f₄ nofun))))
+     (Fin.cons g₁ (Fin.cons g₂ (Fin.cons g₃ (Fin.cons g₄ nofun))))
+  exact ⟨s, α, β, H 0, H 1, H 2, H 3⟩
 
 /-- Given a "tulip" of morphisms
 ```
@@ -777,6 +845,10 @@ theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofiltered D :=
 theorem of_equivalence (h : C ≌ D) : IsCofiltered D :=
   of_left_adjoint h.toAdjunction
 
+omit [IsCofiltered C] in
+lemma iff_of_equivalence (e : C ≌ D) : IsCofiltered C ↔ IsCofiltered D :=
+  ⟨fun _ ↦ .of_equivalence e, fun _ ↦ .of_equivalence e.symm⟩
+
 end Nonempty
 
 
@@ -870,6 +942,12 @@ lemma isCofiltered_of_isFiltered_op [IsFiltered Cᵒᵖ] : IsCofiltered C :=
 /-- If Cᵒᵖ is cofiltered, then C is filtered. -/
 lemma isFiltered_of_isCofiltered_op [IsCofiltered Cᵒᵖ] : IsFiltered C :=
   IsFiltered.of_equivalence (opOpEquivalence _)
+
+lemma isCofiltered_op_iff_isFiltered : IsCofiltered Cᵒᵖ ↔ IsFiltered C :=
+  ⟨fun _ ↦ isFiltered_of_isCofiltered_op _, fun _ ↦ inferInstance⟩
+
+lemma isFiltered_op_iff_isCofiltered : IsFiltered Cᵒᵖ ↔ IsCofiltered C :=
+  ⟨fun _ ↦ isCofiltered_of_isFiltered_op _, fun _ ↦ inferInstance⟩
 
 end Opposite
 

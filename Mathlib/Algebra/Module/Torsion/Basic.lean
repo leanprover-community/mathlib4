@@ -165,8 +165,7 @@ variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
   `a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
-  LinearMap.ker (DistribSMul.toLinearMap R M a)
+  (DistribSMul.toLinearMap R M a).ker
 
 /-- The submodule containing all elements `x` of `M` such that `a • x = 0` for all `a` in `s`. -/
 @[simps!]
@@ -233,7 +232,7 @@ end Defs
 lemma isSMulRegular_iff_torsionBy_eq_bot {R} (M : Type*)
     [CommRing R] [AddCommGroup M] [Module R M] (r : R) :
     IsSMulRegular M r ↔ Submodule.torsionBy R M r = ⊥ :=
-  Iff.symm (DistribSMul.toLinearMap R M r).ker_eq_bot
+  (DistribSMul.toLinearMap R M r).ker_eq_bot.symm
 
 variable {R M : Type*}
 
