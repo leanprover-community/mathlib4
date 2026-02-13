@@ -786,6 +786,7 @@ lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y 
 
 /-- The isomorphism `tensorμ` which swaps the second and third objects in `(X₁ ⊗ X₂) ⊗ (Y₁ ⊗ Y₂)`,
 viewed as an isomorphism with inverse `tensorδ`. -/
+@[simps]
 def tensorμ_iso (X₁ X₂ Y₁ Y₂ : C) : (X₁ ⊗ X₂) ⊗ Y₁ ⊗ Y₂ ≅ (X₁ ⊗ Y₁) ⊗ X₂ ⊗ Y₂ where
   hom := tensorμ X₁ X₂ Y₁ Y₂
   inv := tensorδ X₁ X₂ Y₁ Y₂
