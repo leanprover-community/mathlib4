@@ -40,7 +40,7 @@ instance : CoeFun (Polygon P n) (fun _ => Fin n → P) where
   coe := Polygon.vertices
 
 /-- A polygon has nondegenerate edges if adjacent vertices are distinct. -/
-def HasNondegenerateEdges [NeZero n] (poly : Polygon P n) : Prop :=
+def HasNondegenerateEdges (poly : Polygon P n) : Prop :=
   ∀ i : Fin n, poly i ≠ poly (finRotate n i)
 
 theorem HasNondegenerateEdges.two_le [NeZero n] {poly : Polygon P n}
@@ -49,9 +49,9 @@ theorem HasNondegenerateEdges.two_le [NeZero n] {poly : Polygon P n}
   push_neg at hlt
   have hn : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr (NeZero.ne n)
   interval_cases n
-  exact h 0 (by simp only [Fin.isValue, finRotate_apply, add_zero])
+  exact h 0 (by simp)
 
-variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P] [NeZero n]
+variable [Ring R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 variable (R) in
 /-- The `i`-th edge as an affine map `R →ᵃ[R] P`. -/
@@ -60,8 +60,7 @@ def edgePath (poly : Polygon P n) (i : Fin n) : R →ᵃ[R] P :=
 
 variable (R) in
 /-- The `i`-th edge as a set of points using an `affineSegment`. -/
-def edgeSet [PartialOrder R]
-    (poly : Polygon P n) (i : Fin n) : Set P :=
+def edgeSet [PartialOrder R] (poly : Polygon P n) (i : Fin n) : Set P :=
   affineSegment R (poly i) (poly (finRotate n i))
 
 variable (R) in
@@ -77,16 +76,19 @@ def boundary [PartialOrder R] (poly : Polygon P n) : Set P :=
 variable (R) in
 /-- A polygon has nondegenerate vertices if any three consecutive vertices
 are affinely independent. -/
-def HasNondegenerateVertices (poly : Polygon P n) : Prop :=
+def HasNondegenerateVertices [NeZero n] (poly : Polygon P n) : Prop :=
   ∀ i : Fin n, AffineIndependent R ![poly i, poly (i + 1), poly (i + 2)]
 
 /-- Polygons with nondegenerate vertices also have nondegenerate edges. -/
-theorem HasNondegenerateVertices.hasNondegenerateEdges [Nontrivial R] {poly : Polygon P n}
+theorem HasNondegenerateVertices.hasNondegenerateEdges [NeZero n] [Nontrivial R]
+    {poly : Polygon P n}
     (h : poly.HasNondegenerateVertices R) : poly.HasNondegenerateEdges := by
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   intro i
+  simp only [finRotate_succ_apply]
   simpa using (h i).injective.ne (by decide : (0 : Fin 3) ≠ 1)
 
-theorem HasNondegenerateVertices.three_le [Nontrivial R] {poly : Polygon P n}
+theorem HasNondegenerateVertices.three_le [NeZero n] [Nontrivial R] {poly : Polygon P n}
     (h : poly.HasNondegenerateVertices R) : 3 ≤ n := by
   unfold HasNondegenerateVertices at h
   specialize h 0
