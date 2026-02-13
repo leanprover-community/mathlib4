@@ -240,53 +240,6 @@ instance (priority := 100) [hf : Smooth f] : LocallyOfFinitePresentation f := by
   rw [HasRingHomProperty.eq_affineLocally @Smooth] at hf
   exact affineLocally_le (fun hf ↦ hf.finitePresentation) f hf
 
-lemma IsAffineOpen.comap_primeIdealOf_appLE {f : X ⟶ Y} {x : X} (U : Y.Opens)
-      (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U) (hx : x ∈ V) :
-    (hV.primeIdealOf ⟨x, hx⟩).comap (f.appLE U V hVU).hom = hU.primeIdealOf ⟨f x, hVU hx⟩ := by
-  change Spec.map (f.appLE U V hVU) (hV.primeIdealOf ⟨x, hx⟩) = (hU.primeIdealOf ⟨f x, hVU hx⟩)
-  simp only [IsAffineOpen.primeIdealOf, ← Scheme.Hom.comp_apply, IsAffineOpen.isoSpec_hom,
-    Scheme.Opens.toSpecΓ_SpecMap_appLE]
-  simp only [Scheme.Hom.comp_apply]
-  congr 1
-  apply Subtype.ext
-  simp
-
-def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
-      (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U)
-      (hx : x ∈ V) :
-    Arrow.mk (f.stalkMap x) ≅ Arrow.mk (CommRingCat.ofHom <|
-      Localization.localRingHom _ _ (f.appLE U V hVU).hom
-        congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm) := by
-  let := Y.presheaf.algebra_section_stalk ⟨f x, hVU hx⟩
-  have := hU.isLocalization_stalk ⟨f x, hVU hx⟩
-  let := X.presheaf.algebra_section_stalk ⟨x, hx⟩
-  have := hV.isLocalization_stalk ⟨x, hx⟩
-  refine Arrow.isoMk' _ _ ?_ ?_ ?_
-  · exact ((IsLocalization.algEquiv (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal.primeCompl
-      (Y.presheaf.stalk (f x))
-      (Localization.AtPrime (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal)).toCommRingCatIso:)
-  · exact ((IsLocalization.algEquiv (hV.primeIdealOf ⟨x, hx⟩).asIdeal.primeCompl
-      (X.presheaf.stalk x)
-      (Localization.AtPrime (hV.primeIdealOf ⟨x, hx⟩).asIdeal)).toCommRingCatIso:)
-  · rw [← Iso.comp_inv_eq]
-    ext1
-    apply IsLocalization.ringHom_ext
-      (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal.primeCompl
-    ext a
-    dsimp [← AlgEquiv.symm_toRingEquiv]
-    simp only [IsLocalization.map_eq, RingHom.id_apply, Localization.localRingHom_to_map,
-      RingHomCompTriple.comp_apply]
-    simp only [algebraMap_toAlgebra, Scheme.Hom.germ_stalkMap_apply, Scheme.Hom.appLE,
-      homOfLE_leOfHom, CommRingCat.hom_comp, coe_comp, Function.comp_apply,
-      X.presheaf.germ_res_apply]
-
-lemma Algebra.FormallySmooth.iff_restrictScalars.{u_4, u_5, u_6}
-    {R : Type u_4} [CommRing R] {A : Type u_5} [CommRing A]
-    [Algebra R A] {B : Type u_6} [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
-    [Algebra.FormallyEtale R A] :
-    Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
-  ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
-
 lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
       (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U)
       (hx : x ∈ V) :
@@ -301,7 +254,7 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
     (Localization.AtPrime (hV.primeIdealOf ⟨x, hx⟩).asIdeal)
   · rw [← formallySmooth_algebraMap]
     exact RingHom.FormallySmooth.respectsIso.arrow_mk_iso_iff
-      (arrowStalkMapIso f U hU V hV hVU hx)
+      (IsAffineOpen.arrowStalkMapIso f U hU V hV hVU hx)
   · exact Algebra.FormallySmooth.iff_restrictScalars.symm
 
 lemma exists_smooth_of_formallySmooth_stalk
@@ -341,6 +294,7 @@ lemma Scheme.Hom.isOpen_smoothLocus [LocallyOfFinitePresentation f] :
   exact ⟨V, fun y hy ↦ (formallySmooth_stalkMap_iff U hU V hV hVU hy).mpr
     (inferInstanceAs (Algebra.IsSmoothAt _ _)), V.2, hxV⟩
 
+/-- The set of points smooth over a base, as a `Scheme.Opens`. -/
 def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Opens :=
   ⟨{ x | (f.stalkMap x).hom.FormallySmooth }, f.isOpen_smoothLocus⟩
 
