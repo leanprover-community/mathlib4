@@ -210,7 +210,7 @@ theorem IsCompactOperator.smul_iff {S : Type*} [Group S] [DistribMulAction S M�
     IsCompactOperator (c • f) ↔ IsCompactOperator f :=
   smul_isUnit_iff (Group.isUnit c)
 
-theorem IsCompactOperator.smul₀_iff {S : Type*} [GroupWithZero S] [DistribMulAction S M₂]
+theorem IsCompactOperator.smul_iff₀ {S : Type*} [GroupWithZero S] [DistribMulAction S M₂]
     [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : S} (hc : c ≠ 0) :
     IsCompactOperator (c • f) ↔ IsCompactOperator f :=
   smul_isUnit_iff hc.isUnit
