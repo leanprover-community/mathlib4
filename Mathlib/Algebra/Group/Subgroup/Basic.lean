@@ -592,6 +592,10 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
 lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
   rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
 
+@[simp]
+theorem normalClosure_singleton_one : normalClosure ({1} : Set G) = ⊥ :=
+  le_antisymm (normalClosure_le_normal (by simp)) bot_le
+
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
 @[to_additive /-- The normal core of an additive subgroup `H` is the largest normal additive

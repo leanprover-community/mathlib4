@@ -114,6 +114,16 @@ protected def A : CoxeterMatrix (Fin n) where
 
 @[deprecated (since := "2026-03-25")] alias Aₙ := CoxeterMatrix.A
 
+theorem Aₙ_adjacent (n : ℕ) (i j : Fin n) (h : (i : ℕ) + 1 = j ∨ (j : ℕ) + 1 = i) :
+    (Aₙ n) i j = 3 := by
+  simp only [Aₙ, Fin.ext_iff, Matrix.of_apply]
+  grind
+
+theorem Aₙ_far (n : ℕ) (i j : Fin n) (h1 : i ≠ j) (h2 : (i : ℕ) + 1 ≠ j)
+    (h3 : (j : ℕ) + 1 ≠ i) : (Aₙ n) i j = 2 := by
+  simp only [Aₙ, Matrix.of_apply]
+  grind
+
 /-- The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
