@@ -50,10 +50,18 @@ open Set OrderDual
 variable {ι α β : Type*}
 
 section LE
-variable [LE α] {f : ι → α} {i j : ι}
+variable [LE α] {P Q : ι → Prop} {f : ι → α} {i j : ι}
 
 @[simp] lemma minimalFor_eq_iff : MinimalFor (· = j) f i ↔ i = j := by simp +contextual [MinimalFor]
 @[simp] lemma maximalFor_eq_iff : MaximalFor (· = j) f i ↔ i = j := by simp +contextual [MaximalFor]
+
+@[gcongr]
+theorem MinimalFor.anti (h : MinimalFor P f i) (hle : Q ≤ P) (hQ : Q i) : MinimalFor Q f i :=
+  ⟨hQ, (h.le_of_le <| hle · ·)⟩
+
+@[gcongr]
+theorem MaximalFor.anti (h : MaximalFor P f i) (hle : Q ≤ P) (hQ : Q i) : MaximalFor Q f i :=
+  ⟨hQ, (h.le_of_le <| hle · ·)⟩
 
 end LE
 

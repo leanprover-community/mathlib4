@@ -76,6 +76,14 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
   __ := inferInstanceAs (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
+instance (α : Type*) [DecidableEq α] : DecidableEq (αᵒᵈ) := ‹DecidableEq α›
+
+instance (α : Type*) [LT α] [DecidableLT α] : DecidableLT (αᵒᵈ) :=
+  inferInstanceAs <| DecidableRel (fun a b : α ↦ b < a)
+
+instance (α : Type*) [LE α] [DecidableLE α] : DecidableLE (αᵒᵈ) :=
+  inferInstanceAs <| DecidableRel (fun a b : α ↦ b ≤ a)
+
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   __ := inferInstanceAs (Ord αᵒᵈ)
@@ -84,9 +92,9 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  toDecidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
-  toDecidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
-  toDecidableEq := (inferInstance : DecidableEq α)
+  toDecidableLE := inferInstance
+  toDecidableLT := inferInstance
+  toDecidableEq := inferInstance
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
