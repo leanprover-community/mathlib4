@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.NoncommProd
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # support of a permutation

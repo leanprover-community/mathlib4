@@ -56,7 +56,7 @@ variable (I) [ChosenPullbacksAlong (curryRightUnitorHom I)]
 /-- The functor mapping an object `X : Over I` to the object of sections of `X` over `I`, defined
 by the following pullback diagram. The functor's mapping of morphisms is induced by `pullbackMap`,
 that is by the universal property of chosen pullbacks.
-`
+
 ```
  sections X -->  I ⟹ X
    |               |
@@ -119,7 +119,7 @@ open Adjunction
 variable (I)
 
 /-- An auxiliary definition which is used to define the adjunction between the star functor
-and the sections functor. See starSectionsAdjunction`. -/
+and the sections functor. See `starSectionsAdjunction`. -/
 @[simps homEquiv]
 def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
   homEquiv A X :=
