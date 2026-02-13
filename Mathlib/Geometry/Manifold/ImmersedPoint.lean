@@ -58,7 +58,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
 variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
--- move to the right place!
+-- TODO: move to the right place!
 /-- If `f : E → F` has injective differential at `x`, it is differentiable at `x`. -/
 lemma differentiableAt_of_fderiv_injective {f : E → F} {x : E} (hf : Injective (fderiv 𝕜 f x)) :
     DifferentiableAt 𝕜 f x := by
@@ -72,7 +72,7 @@ lemma differentiableAt_of_fderiv_injective {f : E → F} {x : E} (hf : Injective
     have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top this
     simp_all only [Submodule.subsingleton_iff]
 
--- move, perhaps to e.g. ContMDiff.Basic
+-- TODO: move to e.g. ContMDiff.Basic
 /-- If `f : M → M'` has injective differential at `x`, it is `MDifferentiable` at `x`. -/
 lemma mdifferentiableAt_of_mfderiv_injective {f : M → M'} (hf : Injective (mfderiv I I' f x)) :
     MDifferentiableAt I I' f x := by
@@ -85,36 +85,6 @@ lemma mdifferentiableAt_of_mfderiv_injective {f : M → M'} (hf : Injective (mfd
       simp [mfderiv_zero_of_not_mdifferentiableAt h', ← hf]
     have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top this
     simp_all only [Submodule.subsingleton_iff]
-
-section aux
-
-/-- The `mfderiv` of `f: M → N` at `x` is injective iff a local coordinate expression
-`ψ ∘ f ∘ φ⁻¹` has injective `fderiv` at `φ x`, where `φ` and `ψ` are extended charts
-around `x` and `f x`, respectively. -/
-lemma foo (f : M → M') {x : M} {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph M' H'}
-    (hφ : φ ∈ IsManifold.maximalAtlas I n M) (hψ : ψ ∈ IsManifold.maximalAtlas I' n M')
-    (hxφ : x ∈ φ.source) (hxψ : f x ∈ ψ.source) :
-    letI floc := ((ψ.extend I') ∘ f ∘ (φ.extend I).symm)
-    Injective (fderiv 𝕜 floc (φ.extend I x)) ↔ Injective (mfderiv I I' f x) := by
-  -- proof sketch: fderiv floc = mfderiv of floc = mfderivs of ψ.extend I', f and φ.extend I |>.symm
-  -- composed. The first and last are invertible, hence do not affect this.
-  -- (see `isInvertible_mfderiv_extChartAt` and `isInvertible_mfderivWithin_extChartAt_symm)`,
-  -- these should be generalised to any extended chart).
-  sorry
-
-open IsManifold in
-lemma foo' [IsManifold I n M] [IsManifold I' n M'] (f : M → M') (x : M) :
-    Injective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) ↔
-    Injective (mfderiv I I' f x) :=
-  foo (n := n) f (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas (f x))
-    (mem_chart_source H x) (mem_chart_source H' (f x))
-
--- TODO: add analogous results for surjectivity, and the rank of the differential in general
-
--- missing auxiliary lemma: coordinate changes are smooth, with invertible differential
--- see `OpenPartialHomeomorph.contDiffOn_extend_coord_change` and friends
-
-end aux
 
 variable (I I' f x) in
 /-- We say a map `f : M → M` splits at `x` if `mfderiv I I' f x` splits,
@@ -141,37 +111,9 @@ lemma continuousAt (hf : IsImmersedPoint I I' f x) : ContinuousAt f x :=
 lemma congr (hf : IsImmersedPoint I I' f x) (hfg : g =ᶠ[𝓝 x] f) : IsImmersedPoint I I' g x := by
   rwa [isImmersedPoint_iff, hfg.mfderiv_eq]
 
-lemma prodMap {y : N} (hf : IsImmersedPoint I I' f x) {g : N → N'} (hg : IsImmersedPoint J J' g y) :
-    IsImmersedPoint (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
-  have hf' := hf.mdifferentiableAt
-  have hg' := hg.mdifferentiableAt
-  unfold IsImmersedPoint at hf hg ⊢
-  rw [mfderiv_prodMk ?_ ?_]
-  rotate_left -- FIXME: why does `exact` not work below?
-  · convert hf'.comp (x, y) mdifferentiableAt_fst
-  · convert hg'.comp (x, y) mdifferentiableAt_snd
-  convert hf.prodMap hg
-  simp only [Prod.map_apply, Prod.map_fst, Prod.map_snd]
-  -- missing simp lemmas: tangent vectors in a product manifold;
-  -- mfderiv f.prodMap mfderiv g (X,Y) = "(mfderiv f X, mfderiv Y)"
-  -- then deduce the following result -> make a follow-up!
-  -- missing simp lemma!
-  sorry
-
--- section
-
--- /-- A choice of closed complement... -/
--- def complement (hf : IsImmersedPoint I I' f x) : Type u := hf.splits.complement
-
--- noncomputable instance (hf : IsImmersedPoint I I' f x) : NormedAddCommGroup hf.complement := by
---   -- have := ContinuousLinearMap.Splits.complement hf
---   --have : NormedAddCommGroup (ContinuousLinearMap.Splits.complement hf) := sorry
---   sorry -- infer_instance
-
--- noncomputable instance (hf : IsImmersedPoint I I' f x) : NormedSpace 𝕜 hf.complement := by
---   sorry
-
--- end
+-- This proof requires further lemmas relating the tangent bundles of `M`, `M'` and `M × M'`.
+proof_wanted prodMap {y : N} (hf : IsImmersedPoint I I' f x) {g : N → N'}
+    (hg : IsImmersedPoint J J' g y) : IsImmersedPoint (I.prod J) (I'.prod J') (Prod.map f g) (x, y)
 
 lemma of_mfderiv_isInvertible (hf : (mfderiv I I' f x).IsInvertible) :
     IsImmersedPoint I I' f x := by
