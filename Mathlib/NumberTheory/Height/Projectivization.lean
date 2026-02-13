@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.NumberTheory.Height.Basic
 
 /-!
-# Heights on points in projective space
+# Heights of points in projective space
 
 We define the multiplicative (`Projectivization.mulHeight`) and the logarithmic
 (`Projectivization.logHeight`) height of a point in a (finite-dimensional) projective space
