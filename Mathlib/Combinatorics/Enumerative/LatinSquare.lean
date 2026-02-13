@@ -566,7 +566,17 @@ lemma unique_missed_element
     {k' : Type u} [Fintype k'] [DecidableEq k']
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) : 
-    ∃! x, x ∉ Finset.image ι Finset.univ := by sorry
+    ∃! x, x ∉ Finset.image ι Finset.univ := by 
+      unfold ExistsUnique
+      simp
+      have g := Function.invFun ι
+      have k := Fintype.exists_ne_map_eq_of_card_lt g (by omega)
+      obtain ⟨ x, y, heq, h_not_inj ⟩ := k
+     
+
+
+      sorry
+
 
 -- TODO Rewrite in terms of new definition!
 theorem latin_rectangle_extends
