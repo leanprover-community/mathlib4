@@ -93,6 +93,9 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersi
   exact isReduced_of_injective (inv <| f.app (f ''ᵁ U)).hom
     (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
 
+instance {X : Scheme} {U : X.Opens} [IsReduced X] : IsReduced U :=
+    isReduced_of_isOpenImmersion U.ι
+
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply +allowSynthFailures isReduced_of_isReduced_stalk
   intro x; dsimp
