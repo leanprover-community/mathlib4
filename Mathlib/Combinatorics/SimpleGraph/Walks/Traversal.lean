@@ -110,6 +110,11 @@ lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
   · simp [← getVert_eq_support_getElem? p h]
   grind [getVert_of_length_le, length_support]
 
+@[simp]
+lemma getVert_support_idxOf [DecidableEq V] (p : G.Walk u v) (h : w ∈ p.support) :
+    p.getVert (p.support.idxOf w) = w := by
+  grind [getVert_eq_support_getElem]
+
 theorem getVert_comp_val_eq_get_support {u v : V} (p : G.Walk u v) :
     p.getVert ∘ Fin.val = p.support.get := by
   grind [getVert_eq_support_getElem, length_support]

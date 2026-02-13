@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
 public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Unique differentiability property in real normed spaces

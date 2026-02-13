@@ -374,39 +374,38 @@ def monitorCurl (args : Array String) (size : Nat)
   return s
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Exit the process with exit code 1 if any files failed to download. -/
+Return the number of files which failed to download. -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Unit := do
+    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
+  if hashMap.isEmpty then IO.println "No files to download"; return 0
   let size := hashMap.size
-  if size > 0 then
-    IO.FS.createDirAll IO.CACHEDIR
-    IO.println s!"Attempting to download {size} file(s) from {repo} cache"
-    let failed ← if parallel then
-      IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
-      let args := #["--request", "GET", "--parallel",
-          -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
-          "--silent",
-          "--retry", "5", -- there seem to be some intermittent failures
-          "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let {success, failed, done, ..} ←
-        monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
-      IO.FS.removeFile IO.CURLCFG
-      if warnOnMissing && success + failed < done then
-        IO.eprintln "Warning: some files were not found in the cache."
-        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
-        IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
-      pure failed
-    else
-      let r ← hashMap.foldM (init := []) fun acc _ hash => do
-        pure <| (← IO.asTask do downloadFile repo hash) :: acc
-      pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
-    if failed > 0 then
-      IO.println s!"{failed} download(s) failed"
-      IO.Process.exit 1
-  else IO.println "No files to download"
+  IO.FS.createDirAll IO.CACHEDIR
+  IO.println s!"Attempting to download {size} file(s) from {repo} cache"
+  let failed ← if parallel then
+    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
+    let args := #["--request", "GET", "--parallel",
+        -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+        "--silent",
+        "--retry", "5", -- there seem to be some intermittent failures
+        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+    let {success, failed, done, ..} ←
+      monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+    IO.FS.removeFile IO.CURLCFG
+    if warnOnMissing && success + failed < done then
+      IO.eprintln "Warning: some files were not found in the cache."
+      IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
+      IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
+      IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
+    pure failed
+  else
+    let r ← hashMap.foldM (init := []) fun acc _ hash => do
+      pure <| (← IO.asTask do downloadFile repo hash) :: acc
+    pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+  if failed > 0 then
+    IO.println s!"{failed} download(s) failed"
+  return failed
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -481,7 +480,8 @@ def getFiles
   getProofWidgets (← read).proofWidgetsBuildDir
 
   if let some repo := repo? then
-    downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+    let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+    if failed > 0 then IO.Process.exit 1
   else
     let repoInfo ← getRemoteRepo (← read).mathlibDepPath
 
@@ -494,8 +494,15 @@ def getFiles
       else
         [MATHLIBREPO, repoInfo.repo]
 
+    let mut failed : Nat := 0
     for h : i in [0:repos.length] do
-      downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1)
+      failed := ← (downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1))
+      if failed > 10 then
+        IO.println s!"Too many downloads failed; stopping the downloading"
+        IO.Process.exit 1
+    if failed > 0 then
+      IO.println s!"Downloading {failed} files failed"
+      IO.Process.exit 1
 
   if decompress then
     IO.unpackCache hashMap forceUnpack
