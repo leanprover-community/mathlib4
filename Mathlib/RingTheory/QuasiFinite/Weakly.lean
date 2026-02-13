@@ -24,7 +24,7 @@ used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
 
 The definition of `Algebra.QuasiFiniteAt R q` as is says that the whole `S_q` is quasi-finite,
 which requires not only `q` to be quasi-finite, but also all primes below it (i.e. all generic
-points that specializes to it) to also be quasi-finite.
+points that specialize to it) to also be quasi-finite.
 This is fine mathematically because the set of quasi-finite primes is open
 (according to Zariski's Main theorem). But this requires the statement of Zariski's main
 to be stated with an a priori weaker notion of quasi-finite.
