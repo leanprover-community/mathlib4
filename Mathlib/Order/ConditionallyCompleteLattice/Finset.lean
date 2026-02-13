@@ -179,12 +179,6 @@ end ListMultiset
 
 end ConditionallyCompleteLinearOrder
 
-namespace Finite
-
-variable [Finite ι] [ConditionallyCompleteLattice α] (f : ι → α)
-
-end Finite
-
 /-!
 ### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 
