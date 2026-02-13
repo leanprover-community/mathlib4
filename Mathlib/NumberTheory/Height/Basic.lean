@@ -119,11 +119,9 @@ lemma mulHeight₁_one : mulHeight₁ (1 : K) = 1 := by
   simp [mulHeight₁_eq]
 
 /-- The mutliplicative height of a field element is always at least `1`. -/
-lemma one_le_mulHeight₁ (x : K) : 1 ≤ mulHeight₁ x := by
-  refine one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod fun _ h ↦ ?_) ?_
-  · obtain ⟨v, -, rfl⟩ := Multiset.mem_map.mp h
-    exact le_max_right ..
-  · exact one_le_finprod fun _ ↦ le_max_right ..
+lemma one_le_mulHeight₁ (x : K) : 1 ≤ mulHeight₁ x :=
+  one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod_map fun _ _ ↦ le_max_right ..) <|
+    one_le_finprod fun _ ↦ le_max_right ..
 
 -- This is needed as a side condition in proofs about logarithmic heights
 lemma mulHeight₁_pos (x : K) : 0 < mulHeight₁ x :=
@@ -309,11 +307,9 @@ lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
   obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx
   have hx' : (x i)⁻¹ • x ≠ 0 := by simp [hi, hx]
   rw [← mulHeight_smul_eq_mulHeight _ <| inv_ne_zero hi, mulHeight_eq hx']
-  refine one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod fun vx h ↦ ?_) ?_
-  · simp only [Pi.smul_apply, smul_eq_mul, AbsoluteValue.map_mul, map_inv₀, Multiset.mem_map] at h
-    obtain ⟨v, -, rfl⟩ := h
-    refine le_ciSup_of_le (Finite.bddAbove_range _) i <| le_of_eq ?_
-    exact (inv_mul_cancel₀ <| v.ne_zero_iff.mpr hi).symm
+  refine one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod_map fun v _ ↦ ?_) ?_
+  · refine le_ciSup_of_le (Finite.bddAbove_range _) i <| le_of_eq ?_
+    simpa using (inv_mul_cancel₀ <| v.ne_zero_iff.mpr hi).symm
   · refine one_le_finprod fun v ↦ le_ciSup_of_le (Finite.bddAbove_range _) i ?_
     simp [inv_mul_cancel₀ <| v.val.ne_zero_iff.mpr hi]
 
@@ -528,9 +524,7 @@ lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α
   simp only [Function.const_apply]
   gcongr
   · exact finprod_nonneg fun _ ↦ by positivity
-  · exact prod_nonneg fun _ h ↦ by
-      obtain ⟨v, -, rfl⟩ := mem_map.mp h
-      positivity
+  · exact prod_map_nonneg fun _ h ↦ by positivity
   · exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
   · refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
     · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
