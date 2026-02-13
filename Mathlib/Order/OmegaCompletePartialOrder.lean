@@ -178,23 +178,25 @@ def inr (c : Chain β) : Chain (α ⊕ β) := c.map ⟨.inr, Sum.inr_mono⟩
 lemma inr_coe (c : Chain β) (n : ℕ) : inr (α := α) c n = .inr (c n) := rfl
 
 /-- Projects left values out of a chain.
-If the chain contains right values, then a default value is returned. -/
-def projl [hA : Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
+If the chain contains right values (chains can contain only left values, or only right values),
+then a default value is returned. -/
+def projl [Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
   toFun n := Sum.elim id (fun _ ↦ default) (c n)
   monotone' := Sum.elim_mono monotone_snd monotone_const c.monotone
 
 @[simp]
-lemma projl_coe [hA : Inhabited α] (c : Chain (α ⊕ β)) (n : ℕ) :
+lemma projl_coe [Inhabited α] (c : Chain (α ⊕ β)) (n : ℕ) :
     projl c n = Sum.elim id (fun _ ↦ default) (c n) :=
   rfl
 
 /-- Projects right values out of a chain.
-If the chain contains left values, then a default value is returned. -/
-def projr [hB : Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
+If the chain contains left values (chains can contain only left values, or only right values),
+then a default value is returned. -/
+def projr [Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
   projl (c.map ⟨Sum.swap, Sum.swap_mono⟩)
 
 @[simp]
-lemma projr_coe [hB : Inhabited β] (c : Chain (α ⊕ β)) (n : ℕ) :
+lemma projr_coe [Inhabited β] (c : Chain (α ⊕ β)) (n : ℕ) :
       projr c n = Sum.elim (fun _ ↦ default) id (c n) := by
   simp [projr]
 
@@ -212,19 +214,26 @@ lemma toSum_inl (c : Chain α) : toSum (inl c : Chain (α ⊕ β)) = .inl c := r
 lemma toSum_inr (c : Chain β) : toSum (inr c : Chain (α ⊕ β)) = .inr c := rfl
 
 @[elab_as_elim]
-lemma sum_cases
-    {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr : ∀ c, p (inr c))
+lemma sum_cases {p : Chain (α ⊕ β) → Prop} (inl : ∀ c, p (inl c)) (inr : ∀ c, p (inr c))
     (c : Chain (α ⊕ β)) : p c := by
-  suffices this : Sum.elim .inl .inr (toSum c) = c by
-    rw [← this]
+  suffices this : c = Sum.elim .inl .inr (toSum c) by
+    rw [this]
     cases c.toSum with
     | inl c => exact inl c
     | inr c => exact inr c
-  refine Chain.ext (funext fun n ↦ ?_)
+  ext n
   have hc := c.monotone (Nat.zero_le n)
   generalize h₀ : c 0 = c0 at ⊢ hc
   generalize hₙ : c n = cn at ⊢ hc
   cases hc <;> simp [toSum, h₀, hₙ]
+
+lemma eq_inl_of_coe_eq_inl [Inhabited α] (c : Chain (α ⊕ β)) {n : ℕ} {x : α}
+    (hn : c n = .inl x) : c = inl (projl c) := by
+  ext; cases c using sum_cases <;> simp_all
+
+lemma eq_inr_of_coe_eq_inr [Inhabited β] (c : Chain (α ⊕ β)) {n : ℕ} {x : β}
+    (hn : c n = .inr x) : c = inr (projr c) := by
+  ext; cases c using sum_cases <;> simp_all
 
 end Chain
 
@@ -303,10 +312,8 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
   · rw [ωSup_le_iff]
     apply h.1
 
-lemma ωSup_congr {c₁ c₂ : Chain α} (hc : ∀ n, c₁ n = c₂ n) : ωSup c₁ = ωSup c₂ := by
-  congr 1
-  ext n
-  apply hc
+lemma ωSup_congr {c₁ c₂ : Chain α} (hc : ∀ n, c₁ n = c₂ n) : ωSup c₁ = ωSup c₂ :=
+  congr_arg _ <| DFunLike.ext _ _ hc
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
@@ -587,8 +594,8 @@ lemma ωScottContinuous_elim
 lemma ωScottContinuous_map
     {f : α → β → γ} (hf : ωScottContinuous (Function.uncurry f))
     {g : α → δ → γ} (hf : ωScottContinuous (Function.uncurry g))
-    {h : α → β ⊕ δ} (hh : ωScottContinuous h)
-    : ωScottContinuous (fun x ↦ Sum.map (f x) (g x) (h x)) := by
+    {h : α → β ⊕ δ} (hh : ωScottContinuous h) :
+    ωScottContinuous (fun x ↦ Sum.map (f x) (g x) (h x)) := by
   unfold Sum.map
   fun_prop
 

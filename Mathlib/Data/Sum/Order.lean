@@ -181,8 +181,8 @@ theorem inr_strictMono : StrictMono (inr : β → α ⊕ β) := fun _ _ => LiftR
 theorem elim_mono {δ : Type*} [Preorder δ]
     {f : α → β → γ} (hf : Monotone (Function.uncurry f))
     {g : α → δ → γ} (hg : Monotone (Function.uncurry g))
-    {h : α → β ⊕ δ} (hh : Monotone h)
-    : Monotone (fun x ↦ (h x).elim (f x) (g x)) := by
+    {h : α → β ⊕ δ} (hh : Monotone h) :
+    Monotone (fun x ↦ (h x).elim (f x) (g x)) := by
   intro x₁ x₂ hx
   dsimp
   have hhx := hh hx
