@@ -33,8 +33,8 @@ structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_invFun : Continuous invFun := by fun_prop
 
 attribute [inherit_doc ContinuousLinearEquiv] ContinuousLinearEquiv.continuous_toFun
 ContinuousLinearEquiv.continuous_invFun
@@ -55,8 +55,8 @@ class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outPa
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [EquivLike F M M₂] : Prop extends SemilinearEquivClass F σ M M₂ where
-  map_continuous : ∀ f : F, Continuous f := by continuity
-  inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by continuity
+  map_continuous : ∀ f : F, Continuous f := by fun_prop
+  inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by fun_prop
 
 attribute [inherit_doc ContinuousSemilinearEquivClass]
 ContinuousSemilinearEquivClass.map_continuous
@@ -1380,6 +1380,7 @@ variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemir
 @[simps!]
 def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
   __ := MulOpposite.opLinearEquiv R
+  continuous_toFun := by dsimp; fun_prop
 
 end MulOpposite
 
