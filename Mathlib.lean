@@ -2624,6 +2624,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
+public import Mathlib.CategoryTheory.Limits.Constructions.WidePullbackOfTerminal
 public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Elements
