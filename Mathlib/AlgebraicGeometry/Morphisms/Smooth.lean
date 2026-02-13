@@ -119,8 +119,8 @@ instance smooth_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChan
 
 instance : MorphismProperty.Respects @Smooth @IsOpenImmersion :=
   HasRingHomProperty.respects_isOpenImmersion
-  (RingHom.Smooth.stableUnderComposition.stableUnderCompositionWithLocalizationAway
-    RingHom.Smooth.holdsForLocalizationAway).1
+    (RingHom.Smooth.stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      RingHom.Smooth.holdsForLocalizationAway).1
 
 @[deprecated (since := "2026-02-09")]
 alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
