@@ -12,6 +12,18 @@ public import Mathlib.Algebra.Group.Pi.Units
 /-!
 # Units of restricted products
 
+This file contains results about the units of a restricted product. The restricted
+product `Πʳ i : ι, [R i, B i]_[𝓕]` of a family of types `R` with respect to a family of
+subsets `B` along a filter `𝓕` is defined in `Mathlib.Topology.Algebra.RestrictedProduct.Basic`.
+Here, we give conditions that characterize when an element of the restricted product is a unit,
+and provide an isomorphism between the units of the restricted product and the restricted product
+of the units.
+
+## Main definitions
+
+* `RestrictedProduct.unitsEquiv`: the (monoid) isomorphism between `(Πʳ i, [R i, B i]_[𝓕])ˣ`
+  and `Πʳ i, [(R i)ˣ, (B i).units]_[𝓕]`.
+
 ## Tags
 
 restricted product, adeles, ideles
