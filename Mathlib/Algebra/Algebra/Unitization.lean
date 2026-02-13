@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
@@ -847,5 +848,13 @@ lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
   simp only [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
 
 alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
+
+lemma isStarProjection_inr_iff {R A : Type*} [Semiring R] [StarRing R] [NonUnitalSemiring A]
+    [StarRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] {p : A} :
+    IsStarProjection (p : Unitization R A) ↔ IsStarProjection p := by
+  simp [isStarProjection_iff]
+
+protected alias ⟨_root_.IsStarProjection.of_inr, _root_.IsStarProjection.inr⟩ :=
+  isStarProjection_inr_iff
 
 end Unitization

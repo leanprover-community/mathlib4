@@ -12,10 +12,18 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 
 # Projections in C⋆-algebras
 
-To show that an element is a star projection in a non-unital C⋆-algebra,
-it is enough to show that it is idempotent and normal,
-because self-adjointedness and normality are equivalent for idempotent
-elements in non-unital C⋆-algebras.
+Here we collect results about projections specific to C⋆-algebras.
+
+## Main results
+
++ `isStarProjection_iff_isIdempotentElem_and_isStarNormal`: star projections are precisely
+  idempotent normal elements.
++ `IsStarProjection.le_tfae`: for star projections `p` and `q`, the following are equivalent:
+  - `p ≤ q`
+  - `q * p = p`
+  - `p * q = p`
+  - `q - p` is a star projection
+  - `q - p` is an idempotent element
 
 -/
 
@@ -47,14 +55,7 @@ end Normal
 
 namespace IsStarProjection
 
-variable {A : Type*} [NonUnitalCStarAlgebra A]
-
-lemma inr_iff {p : A} : IsStarProjection p ↔ IsStarProjection (p : A⁺¹) := by
-  simp [isStarProjection_iff]
-
-protected alias ⟨inr, of_inr⟩ := inr_iff
-
-variable [PartialOrder A] [StarOrderedRing A] {p q : A}
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] {p q : A}
 
 open CFC in
 lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
