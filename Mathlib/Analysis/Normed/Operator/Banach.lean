@@ -442,6 +442,14 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E]
 
+/--
+A continuous linear endomorphism is a unit iff it's a unit viewed simply as a linear map, provided
+the space is complete.
+-/
+theorem isUnit_iff_isUnit_toLinearMap {f : E →L[𝕜] E} :
+    IsUnit f ↔ IsUnit (f : E →ₗ[𝕜] E) :=
+  f.isUnit_iff_bijective.trans (Module.End.isUnit_iff _).symm
+
 /-- Intermediate definition used to show
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
