@@ -173,8 +173,7 @@ lemma killCompl_monomial_mapDomain {s : σ →₀ ℕ} {c : R} :
 
 lemma killCompl_monomial_eq_zero {s : τ →₀ ℕ} {c : R} (hs : ∃ a ∈ s.support, a ∉ Set.range f) :
     (monomial s c).killCompl hf = 0 := by
-  unfold killCompl
-  rw [aeval_monomial, Finsupp.prod]
+  rw [killCompl, aeval_monomial, Finsupp.prod]
   apply mul_eq_zero_of_right
   obtain ⟨a, ha⟩ := hs
   apply Finset.prod_eq_zero ha.1
