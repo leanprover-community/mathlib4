@@ -4956,6 +4956,8 @@ public import Mathlib.Logic.Function.ULift
 public import Mathlib.Logic.Godel.GodelBetaFunction
 public import Mathlib.Logic.Hydra
 public import Mathlib.Logic.IsEmpty
+public import Mathlib.Logic.IsEmpty.Basic
+public import Mathlib.Logic.IsEmpty.Defs
 public import Mathlib.Logic.Lemmas
 public import Mathlib.Logic.Nonempty
 public import Mathlib.Logic.Nontrivial.Basic
