@@ -15,7 +15,7 @@ The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "is
 mathematically for algebras of finite type, but this requires Zariski's main theorem to prove.
 Hence we introduce a weaker notion of being `Algebra.WeaklyQuasiFiniteAt` that we shall state
 Zariski's main theorem in terms of, and deduce from this that `Algebra.WeaklyQuasiFiniteAt` is
-equivalent to `Algebra.QuasiFiniteAt` under all relavent scenarios.
+equivalent to `Algebra.QuasiFiniteAt` under all relevant scenarios.
 
 This class should only be used in stating (and proving) Zariski's main theorem and should not be
 used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
