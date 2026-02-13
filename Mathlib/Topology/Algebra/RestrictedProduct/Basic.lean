@@ -597,8 +597,8 @@ theorem isUnit_of_eventually_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : ∀ i,
 
 theorem eventualy_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit x) :
     (∀ i, IsUnit (x i)) ∧ ∀ᶠ i in 𝓕, ∃ (h : x i ∈ B i), IsUnit (⟨x i, h⟩ : B i) := by
-  simp_rw [isUnit_iff_exists, RestrictedProduct.ext_iff, ← forall_and] at hx
-  simp_rw [isUnit_iff_exists]
+  simp only [isUnit_iff_exists, RestrictedProduct.ext_iff, ← forall_and] at hx
+  simp only [isUnit_iff_exists]
   choose b hb using hx
   exact ⟨Classical.skolem.symm.1 ⟨b, hb⟩, by filter_upwards [x.2, b.2] using
     fun i hx hb ↦ ⟨hx, ⟨b i, hb⟩, by simp_all [← SetLike.coe_eq_coe]⟩⟩
