@@ -814,8 +814,7 @@ theorem toSyn_degree_mul_le {f g : MvPolynomial σ R} :
   map_add m.toSyn _ _ ▸ degree_mul_le
 
 lemma mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors
-    {f : MvPolynomial σ R}
-    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) : f ∈ nonZeroDivisors _ := by
+    {f : MvPolynomial σ R} (hf : m.leadingCoeff f ∈ R⁰) : f ∈ (MvPolynomial σ R)⁰ := by
   rw [← nonZeroDivisorsLeft_eq_nonZeroDivisors, mem_nonZeroDivisorsLeft_iff]
   intro g
   rw [← not_imp_not, ← m.leadingCoeff_eq_zero_iff (f := f * g)]
