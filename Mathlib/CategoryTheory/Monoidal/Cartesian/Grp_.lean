@@ -198,10 +198,7 @@ lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ 
 
 @[reassoc (attr := simp)]
 lemma GrpObj.η_whiskerRight_commutator : η ▷ G ≫ commutator G = toUnit _ ≫ η := by
-  apply yoneda.map_injective
-  ext X f
-  rw [← lift_comp_fst_snd f]
-  simp [toUnit_unique (fst (𝟙_ C) G) (toUnit _), ← Hom.one_def]
+  simp [commutator, comp_mul, comp_inv, one_eq_one]
 
 @[reassoc (attr := simp)]
 lemma GrpObj.whiskerLeft_η_commutator : G ◁ η ≫ commutator G = toUnit _ ≫ η := by
