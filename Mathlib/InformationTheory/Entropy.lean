@@ -252,21 +252,4 @@ lemma entropy_uniformOfFinset
       have h := nat_mul_negMulLog_inv_eq_log s.card hcard
       simpa only [ENNReal.toReal_inv, ENNReal.toReal_natCast] using h
 
-/-! ### Examples -/
-
-/-- Entropy of a deterministic distribution is zero. -/
-example : entropy (PMF.pure ()) = 0 := by simp only [entropy_pure]
-
-/-- Entropy of another deterministic distribution is zero. -/
-example : entropy (PMF.pure true) = 0 := by simp only [entropy_pure]
-
-/-- Entropy of the uniform distribution on `{0,1, ..., n}` is `log n`. -/
-example (n : ℕ) [NeZero n] : entropy (PMF.uniformOfFintype (Fin n)) = Real.log n := by
-  simpa using (entropy_uniformOfFintype (α := Fin n))
-
-/-- Entropy of the uniform distribution on `{0,1}` is `log 2`. -/
-example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ) = Real.log 2 := by
-  simpa using
-    (entropy_uniformOfFinset (α := ℕ) ({0, 1} : Finset ℕ) (by simp))
-
 end InformationTheory
