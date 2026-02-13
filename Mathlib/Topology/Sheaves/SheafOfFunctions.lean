@@ -16,6 +16,7 @@ We show that
 * `Top.Presheaf.toTypes_isSheaf`: in fact, these may be dependent functions into a type family
 
 For
+
 * `Top.sheafToTop`: continuous functions into a topological space form a sheaf
 
 please see `Mathlib/Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework

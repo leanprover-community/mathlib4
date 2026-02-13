@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Positivity
 # Chebyshev polynomials over the reals: some extremal properties
 
 * Chebyshev polynomials have largest leading coefficient,
-following proof in https://math.stackexchange.com/a/978145/1277
+  following proof in https://math.stackexchange.com/a/978145/1277
 * Chebyshev polynomials maximize iterated derivatives at 1 and beyond
 
 ## Main statements

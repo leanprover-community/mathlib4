@@ -27,9 +27,9 @@ The inclusion from `C` into `WithTerminal C` resp. `WithInitial C` is denoted
 
 The relevant constructions needed for the universal properties of these constructions are:
 1. `lift`, which lifts `F : C ⥤ D` to a functor from `WithTerminal C` resp. `WithInitial C` in
-  the case where an object `Z : D` is provided satisfying some additional conditions.
+   the case where an object `Z : D` is provided satisfying some additional conditions.
 2. `inclLift` shows that the composition of `lift` with `incl` is isomorphic to the
-  functor which was lifted.
+   functor which was lifted.
 3. `liftUnique` provides the uniqueness property of `lift`.
 
 In addition to this, we provide `WithTerminal.map` and `WithInitial.map` providing the
