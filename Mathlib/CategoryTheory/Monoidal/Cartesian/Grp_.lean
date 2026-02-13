@@ -194,14 +194,7 @@ def GrpObj.commutator (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
 @[reassoc (attr := simp)]
 lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :
     lift f₁ f₂ ≫ commutator G = f₁ * f₂ * f₁⁻¹ * f₂⁻¹ := by
-  simp_rw [_root_.mul_assoc]
-  simp only [commutator, lift_whiskerLeft, Hom.inv_def, Hom.mul_def, ← Category.assoc]
-  congr 1
-  ext
-  · simp
-  · simp only [comp_lift, lift_fst, lift_snd, ← Category.assoc]
-    congr 1
-    ext <;> simp
+  simp [commutator, Hom.inv_def, Hom.mul_def, ← Category.assoc]
 
 @[reassoc (attr := simp)]
 lemma GrpObj.η_whiskerRight_commutator : η ▷ G ≫ commutator G = toUnit _ ≫ η := by
