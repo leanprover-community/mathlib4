@@ -18,12 +18,15 @@ namespace Set
 variable {α : Type*} {s t u : Set α}
 
 /-- `inclusion` is the "identity" function between two subsets `s` and `t`, where `s ⊆ t` -/
-abbrev inclusion (h : s ⊆ t) : s → t := Subtype.map id h
+abbrev inclusion (h : s ⊆ t) : s → t := fun x ↦ ⟨x, h x.prop⟩
 
 theorem inclusion_self (x : s) : inclusion Subset.rfl x = x :=
   rfl
 
 theorem inclusion_eq_id (h : s ⊆ s) : inclusion h = id :=
+  rfl
+
+theorem inclusion_eq_subtype_map (h : s ⊆ t) : inclusion h = Subtype.map id h :=
   rfl
 
 @[simp]
@@ -57,10 +60,8 @@ theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y �
   (inclusion_injective h).eq_iff
 
 theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
-    (h_surj : Function.Surjective (inclusion h)) : s = t := by
-  refine h.antisymm fun x hx ↦ ?_
-  have := h_surj ⟨x, hx⟩
-  grind [Subtype.map]
+    (h_surj : Function.Surjective (inclusion h)) : s = t :=
+  h.antisymm fun x hx ↦ by grind [h_surj ⟨x, hx⟩]
 
 theorem inclusion_le_inclusion [LE α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x ≤ inclusion h y ↔ x ≤ y := .rfl
