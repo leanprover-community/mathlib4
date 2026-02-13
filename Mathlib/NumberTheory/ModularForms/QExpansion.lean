@@ -351,7 +351,7 @@ lemma cuspFunction_mul {f g : ℍ → ℂ}
   · simpa [H] using cuspFunction_mul_zero hfcts hgcts
   · simp [cuspFunction, Periodic.cuspFunction, H]
 
-protected lemma ModularForm.cuspFunction_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] {a b : ℤ}
+protected lemma ModularForm.cuspFunction_mul [Γ.HasDetPlusMinusOne] {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     cuspFunction h (f.mul g) = cuspFunction h f * cuspFunction h g :=
   cuspFunction_mul (analyticAt_cuspFunction_zero f hh hΓ).continuousAt
@@ -386,7 +386,7 @@ lemma qExpansion_mul {f g : ℍ → ℂ}
   rw [Nat.cast_choose _ (by grind)]
   field_simp [Nat.factorial_ne_zero]
 
-protected lemma ModularForm.qExpansion_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
+protected lemma ModularForm.qExpansion_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f.mul g) = qExpansion h f * qExpansion h g :=
   qExpansion_mul (analyticAt_cuspFunction_zero f hh hΓ) (analyticAt_cuspFunction_zero g hh hΓ)
@@ -450,24 +450,24 @@ lemma qExpansion_one [Γ.HasDetPlusMinusOne] : qExpansion h (1 : ModularForm Γ 
 
 open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
-def qExpansionRingHom (h) [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
+def qExpansionRingHom (h) [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : (⨁ k, ModularForm Γ k) →+* (PowerSeries ℂ) :=
   DirectSum.toSemiring (qExpansionAddHom hh hΓ) qExpansion_one
     (ModularForm.qExpansion_mul hh hΓ)
 
 @[simp]
-lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
+lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) (f : ModularForm Γ k) :
     qExpansionRingHom h hh hΓ (DirectSum.of _ k f) = qExpansion h f :=
   DirectSum.toSemiring_of ..
 
-lemma qExpansion_of_mul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
+lemma qExpansion_of_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (a b : ℤ) (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h ((DirectSum.of _ a f * DirectSum.of _ b g) (a + b)) =
     qExpansion h f * qExpansion h g := by
   simpa [DirectSum.of_mul_of] using ModularForm.qExpansion_mul hh hΓ f g
 
-lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h)
+lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
     qExpansion h ((((DirectSum.of _ k f)) ^ n) (n * k)) = (qExpansion h f) ^ n := by
   have := (qExpansionRingHom h hh hΓ).map_pow (DirectSum.of _ k f) n
