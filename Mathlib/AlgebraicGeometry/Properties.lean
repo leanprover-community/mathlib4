@@ -278,6 +278,11 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmers
   exact (asIso <| f.app (f ''ᵁ U) :
     Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 
+lemma IsIntegral.of_isIso {X Y : Scheme.{u}} [h : IsIntegral X] (f : X ⟶ Y) [IsIso f] :
+    IsIntegral Y := by
+  suffices Nonempty Y from isIntegral_of_isOpenImmersion (inv f)
+  exact Nonempty.map f inferInstance
+
 instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
   convert PrimeSpectrum.irreducibleSpace (R := R)
 

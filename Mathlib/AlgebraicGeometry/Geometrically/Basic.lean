@@ -32,7 +32,7 @@ morphism `Spec K ⟶ Y`, the base change `X ×[Y] Spec K` satisfies `P`.
 ## Notes
 
 This contribution was created as part of the Formalising Algebraic Geometry workshop 2025 in
-Heidelberg
+Heidelberg.
 -/
 
 @[expose] public section
@@ -64,6 +64,16 @@ variable (P : ObjectProperty Scheme.{u})
 instance : (geometrically P).IsStableUnderBaseChange := by
   rw [geometrically_eq_universally]
   infer_instance
+
+instance [P.IsClosedUnderIsomorphisms] : IsZariskiLocalAtTarget (geometrically P) := by
+  rw [geometrically_eq_universally]
+  refine universally_isZariskiLocalAtTarget _ fun {X} Y f ι U hU H _ _ ↦ ?_
+  obtain ⟨y⟩ := (inferInstance : Nonempty Y)
+  obtain ⟨i, hy⟩ := hU.exists_mem y
+  have heq : U i = ⊤ := eq_top_iff.mpr fun z _ ↦ by rwa [Subsingleton.elim z y]
+  let e : ↑(U i) ≅ Y := Y.isoOfEq heq ≪≫ Y.topIso
+  let e' : ↑(f ⁻¹ᵁ U i) ≅ X := X.isoOfEq (by simp [heq]) ≪≫ X.topIso
+  exact P.prop_of_iso e' <| H i (.of_isIso e.inv) (e.hom.homeomorph.subsingleton_congr.mpr ‹_›)
 
 section geometrically
 
