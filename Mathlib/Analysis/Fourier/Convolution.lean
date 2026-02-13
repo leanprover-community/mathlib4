@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Convolution
-public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 
 /-! # The Fourier transform of the convolution
 

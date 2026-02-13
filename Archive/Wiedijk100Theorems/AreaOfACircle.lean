@@ -76,7 +76,7 @@ theorem disc_eq_regionBetween :
 
 /-- The disc is a `MeasurableSet`. -/
 theorem measurableSet_disc : MeasurableSet (disc r) := by
-  apply measurableSet_lt <;> apply Continuous.measurable <;> continuity
+  apply measurableSet_lt <;> fun_prop
 
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
 theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
@@ -99,11 +99,10 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   have hderiv : ∀ x ∈ Ioo (-r : ℝ) r, HasDerivAt F (2 * f x) x := by
     rintro x ⟨hx1, hx2⟩
     convert
-      ((hasDerivAt_const x ((r : ℝ) ^ 2)).fun_mul
-            ((hasDerivAt_arcsin _ _).comp x
-              ((hasDerivAt_const x (r : ℝ)⁻¹).fun_mul (hasDerivAt_id' x)))).fun_add
-        ((hasDerivAt_id' x).fun_mul
-          ((((hasDerivAt_id' x).fun_pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
+      ((hasDerivAt_const x ((r : ℝ) ^ 2)).mul
+          ((hasDerivAt_arcsin _ _).comp x
+            ((hasDerivAt_const x (r : ℝ)⁻¹).mul (hasDerivAt_id' x)))).add
+        ((hasDerivAt_id' x).mul ((((hasDerivAt_id' x).fun_pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
       using 1
     · have h₁ : (r : ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
       have h : sqrt ((r : ℝ) ^ 2 - x ^ 2) ^ 3 =
@@ -125,7 +124,7 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   calc
     ∫ x in -r..r, 2 * f x = F r - F (-r) :=
       integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) (by fun_prop) hderiv
-        (continuous_const.mul hf).continuousOn.intervalIntegrable
+        (ContinuousOn.intervalIntegrable (by fun_prop))
     _ = NNReal.pi * (r : ℝ) ^ 2 := by
       norm_num [F, inv_mul_cancel₀ hlt.ne', ← mul_div_assoc, mul_comm π]
 

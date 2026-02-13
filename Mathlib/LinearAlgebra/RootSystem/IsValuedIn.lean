@@ -5,9 +5,14 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
+
+import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.Span.TensorProduct
+import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # Root pairings taking values in a subring
@@ -32,7 +37,6 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 open Set Function
 open Submodule (span)
 open Module
-
 
 noncomputable section
 
@@ -338,10 +342,10 @@ section Field
 
 variable (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
   [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M] [IsScalarTower K L N]
-  (Q : RootPairing ι L M N) [Q.IsRootSystem] [Q.IsValuedIn K]
+  (Q : RootPairing ι L M N) [Q.IsRootSystem]
 
 @[simp]
-lemma finrank_rootSpanIn :
+lemma finrank_rootSpanIn [Q.IsValuedIn K] :
     finrank K (Q.rootSpan K) = finrank L M := by
   rw [LinearMap.finrank_eq_of_isPerfPair Q.toLinearMap (Q.rootSpan K) (Q.corootSpan K)]
   · simp
@@ -349,9 +353,22 @@ lemma finrank_rootSpanIn :
   · exact Q.toLinearMap_apply_apply_mem_range_algebraMap K
 
 @[simp]
-lemma finrank_corootSpanIn :
+lemma finrank_corootSpanIn [Q.IsValuedIn K] :
     finrank K (Q.corootSpan K) = finrank L N :=
   finrank_rootSpanIn K Q.flip
+
+@[simp]
+lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
+    finrank ℤ (Q.rootSpan ℤ) = finrank L M := by
+  let _i : Module ℚ M := .compHom M (algebraMap ℚ L)
+  let _i : Module ℚ N := .compHom N (algebraMap ℚ L)
+  have _i : IsAddTorsionFree M := .of_isTorsionFree L M
+  rw [← Submodule.finrank_span_eq_finrank_span ℤ ℚ, ← Q.finrank_rootSpanIn ℚ]
+
+@[simp]
+lemma finrank_corootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
+    finrank ℤ (Q.corootSpan ℤ) = finrank L N :=
+  Q.flip.finrank_rootSpanIn_int
 
 end Field
 

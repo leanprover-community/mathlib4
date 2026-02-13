@@ -23,7 +23,7 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 
 noncomputable section
 
-open scoped BigOperators NNReal
+open scoped NNReal
 open Finset Metric
 
 /-!
@@ -364,8 +364,6 @@ def restrictScalarsLI : E [⋀^ι]→L[𝕜] F →ₗᵢ[𝕜'] E [⋀^ι]→L[�
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   norm_map' _ := rfl
-
-variable {𝕜'}
 
 end restrictScalars
 

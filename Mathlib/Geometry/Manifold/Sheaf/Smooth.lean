@@ -293,7 +293,7 @@ open CategoryTheory Limits
 def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
     ((smoothSheafCommRing IM I M R).presheaf.stalk x).carrier ≅
     (smoothSheaf IM I M R).presheaf.stalk x :=
-  preservesColimitIso (forget _) _
+  preservesColimitIso (forget CommRingCat) _
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_hom (x : TopCat.of M) (U) :
     CategoryStruct.comp

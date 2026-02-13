@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Equivalence
 /-!
 # 2-commutative squares of functors
 
-Similarly to `CommSq.lean`, which defines the notion of commutative squares,
+Similarly to `Mathlib/CategoryTheory/CommSq.lean`, which defines the notion of commutative squares,
 this file introduces the notion of 2-commutative squares of functors.
 
 If `T : C₁ ⥤ C₂`, `L : C₁ ⥤ C₃`, `R : C₂ ⥤ C₄`, `B : C₃ ⥤ C₄` are functors,

@@ -515,6 +515,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
 
 end IsNonarchimedean
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun` is a ring seminorm. -/
 def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSeminorm R where
   toFun     := smoothingFun μ

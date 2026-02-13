@@ -46,7 +46,7 @@ variable {Ω E : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCo
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
 process. This is the predictable process. See `martingalePart` for the martingale. -/
 noncomputable def predictablePart {m0 : MeasurableSpace Ω} (f : ℕ → Ω → E) (ℱ : Filtration ℕ m0)
-    (μ : Measure Ω) : ℕ → Ω → E := fun n => ∑ i ∈ Finset.range n, μ[f (i + 1) - f i|ℱ i]
+    (μ : Measure Ω) : ℕ → Ω → E := fun n => ∑ i ∈ Finset.range n, μ[f (i + 1) - f i | ℱ i]
 
 @[simp]
 theorem predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
@@ -57,15 +57,9 @@ theorem stronglyAdapted_predictablePart :
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
 
-@[deprecated (since := "2025-12-19")]
-alias adapted_predictablePart := stronglyAdapted_predictablePart
-
 theorem stronglyAdapted_predictablePart' : StronglyAdapted ℱ fun n => predictablePart f ℱ μ n :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_le hin))
-
-@[deprecated (since := "2025-12-19")]
-alias adapted_predictablePart' := stronglyAdapted_predictablePart'
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
 process. This is the martingale. See `predictablePart` for the predictable process. -/
@@ -77,16 +71,13 @@ theorem martingalePart_add_predictablePart (ℱ : Filtration ℕ m0) (μ : Measu
   sub_add_cancel _ _
 
 theorem martingalePart_eq_sum : martingalePart f ℱ μ = fun n =>
-    f 0 + ∑ i ∈ Finset.range n, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]) := by
+    f 0 + ∑ i ∈ Finset.range n, (f (i + 1) - f i - μ[f (i + 1) - f i | ℱ i]) := by
   unfold martingalePart predictablePart
   ext1 n
   rw [Finset.eq_sum_range_sub f n, ← add_sub, ← Finset.sum_sub_distrib]
 
 theorem stronglyAdapted_martingalePart (hf : StronglyAdapted ℱ f) :
   StronglyAdapted ℱ (martingalePart f ℱ μ) := hf.sub stronglyAdapted_predictablePart'
-
-@[deprecated (since := "2025-12-19")]
-alias adapted_martingalePart := stronglyAdapted_martingalePart
 
 theorem integrable_martingalePart (hf_int : ∀ n, Integrable (f n) μ) (n : ℕ) :
     Integrable (martingalePart f ℱ μ n) μ := by
@@ -97,8 +88,9 @@ theorem martingale_martingalePart (hf : StronglyAdapted ℱ f) (hf_int : ∀ n, 
     [SigmaFiniteFiltration μ ℱ] : Martingale (martingalePart f ℱ μ) ℱ μ := by
   refine ⟨stronglyAdapted_martingalePart hf, fun i j hij => ?_⟩
   -- ⊢ μ[martingalePart f ℱ μ j | ℱ i] =ᵐ[μ] martingalePart f ℱ μ i
-  have h_eq_sum : μ[martingalePart f ℱ μ j|ℱ i] =ᵐ[μ]
-      f 0 + ∑ k ∈ Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) := by
+  have h_eq_sum : μ[martingalePart f ℱ μ j | ℱ i] =ᵐ[μ]
+      f 0 + ∑ k ∈ Finset.range j,
+        (μ[f (k + 1) - f k | ℱ i] - μ[μ[f (k + 1) - f k | ℱ k] | ℱ i]) := by
     rw [martingalePart_eq_sum]
     refine (condExp_add (hf_int 0) (by fun_prop) _).trans ?_
     refine (EventuallyEq.rfl.add (condExp_finset_sum (fun i _ => by fun_prop) _)).trans ?_
@@ -107,14 +99,15 @@ theorem martingale_martingalePart (hf : StronglyAdapted ℱ f) (hf_int : ∀ n, 
       · exact (hf 0).mono (ℱ.mono (zero_le i))
     · exact eventuallyEq_sum fun k _ => condExp_sub (by fun_prop) integrable_condExp _
   refine h_eq_sum.trans ?_
-  have h_ge : ∀ k, i ≤ k → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] 0 := by
+  have h_ge : ∀ k, i ≤ k →
+      μ[f (k + 1) - f k | ℱ i] - μ[μ[f (k + 1) - f k | ℱ k] | ℱ i] =ᵐ[μ] 0 := by
     intro k hk
-    have : μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] μ[f (k + 1) - f k|ℱ i] :=
+    have : μ[μ[f (k + 1) - f k | ℱ k] | ℱ i] =ᵐ[μ] μ[f (k + 1) - f k | ℱ i] :=
       condExp_condExp_of_le (ℱ.mono hk) (ℱ.le k)
     filter_upwards [this] with x hx
     rw [Pi.sub_apply, Pi.zero_apply, hx, sub_self]
-  have h_lt : ∀ k, k < i → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ]
-      f (k + 1) - f k - μ[f (k + 1) - f k|ℱ k] := by
+  have h_lt : ∀ k, k < i → μ[f (k + 1) - f k | ℱ i] - μ[μ[f (k + 1) - f k | ℱ k] | ℱ i] =ᵐ[μ]
+      f (k + 1) - f k - μ[f (k + 1) - f k | ℱ k] := by
     refine fun k hk => EventuallyEq.sub ?_ ?_
     · rw [condExp_of_stronglyMeasurable]
       · exact ((hf (k + 1)).mono (ℱ.mono (Nat.succ_le_of_lt hk))).sub ((hf k).mono (ℱ.mono hk.le))
@@ -125,7 +118,7 @@ theorem martingale_martingalePart (hf : StronglyAdapted ℱ f) (hf_int : ∀ n, 
   rw [martingalePart_eq_sum]
   refine EventuallyEq.add EventuallyEq.rfl ?_
   rw [← Finset.sum_range_add_sum_Ico _ hij, ←
-    add_zero (∑ i ∈ Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
+    add_zero (∑ i ∈ Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i | ℱ i]))]
   refine (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add ?_
   refine (eventuallyEq_sum fun k hk => h_ge k (Finset.mem_Ico.mp hk).1).trans ?_
   simp only [Finset.sum_const_zero]

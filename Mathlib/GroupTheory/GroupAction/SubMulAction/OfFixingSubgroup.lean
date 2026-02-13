@@ -161,8 +161,7 @@ theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x
     x ∈ ofFixingSubgroup M (insert a ((fun x ↦ x.val) '' s)) ↔
       ∃ (hx : x ∈ ofStabilizer M a),
         (⟨x, hx⟩ : ofStabilizer M a) ∈ ofFixingSubgroup (stabilizer M a) s := by
-  simp_rw [mem_ofFixingSubgroup_iff, mem_ofStabilizer_iff]
-  aesop
+  grind [mem_ofFixingSubgroup_iff, mem_ofStabilizer_iff]
 
 /-- The natural group isomorphism between fixing subgroups. -/
 @[to_additive /-- The natural additive group isomorphism between fixing additive subgroups. -/]
@@ -314,9 +313,8 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
       simp only [← SetLike.coe_eq_coe, SubMulAction.val_smul_of_tower]
       exact (mem_fixingSubgroup_union_iff.mp m.prop).2 ⟨x, hx'⟩⟩
   map_one' := by simp
-  map_mul' _ _ := by simp [← Subtype.coe_inj]
+  map_mul' _ _ := by simp
 
-set_option backward.proofsInPublic true in
 variable (M s t) in
 /-- The identity between the iterated `SubMulAction`
   of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
@@ -432,7 +430,6 @@ section Construction
 
 open Function.Embedding Fin.Embedding
 
-set_option backward.proofsInPublic true in
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/]
@@ -449,7 +446,6 @@ noncomputable def ofFixingSubgroup.append
   simp only [trans_apply, Function.Embedding.subtype_apply] at H
   simpa [H] using Subtype.coe_prop (y j)
 
-set_option backward.proofsInPublic true in
 @[to_additive]
 theorem ofFixingSubgroup.append_left {n : ℕ} [Finite s]
     (x : Fin n ↪ ofFixingSubgroup M s) (i : Fin s.ncard) :

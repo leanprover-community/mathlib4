@@ -186,8 +186,8 @@ namespace Module.Basis
 def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped b
   isCompact' := IsCompact.image isCompact_Icc
-      (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
-        (continuous_apply i).smul continuous_const)
+      (continuous_finset_sum Finset.univ
+        fun (i : ι) (_H : i ∈ Finset.univ) ↦ by fun_prop)
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
       dsimp only [_root_.parallelepiped]

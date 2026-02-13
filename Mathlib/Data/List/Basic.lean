@@ -279,7 +279,7 @@ theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
-  simp only [concat_eq_append, reverse_cons, reverse_reverse]
+  grind
 
 theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by

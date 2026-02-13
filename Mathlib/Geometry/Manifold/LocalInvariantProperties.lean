@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ChartedSpace
+public import Mathlib.Geometry.Manifold.HasGroupoid
 
 /-!
 # Local properties invariant under a groupoid

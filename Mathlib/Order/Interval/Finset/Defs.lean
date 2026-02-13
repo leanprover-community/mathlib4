@@ -558,17 +558,10 @@ instance instFintypeIco : Fintype (Ico a b) := .ofFinset (Finset.Ico a b) fun _ 
 instance instFintypeIoc : Fintype (Ioc a b) := .ofFinset (Finset.Ioc a b) fun _ => Finset.mem_Ioc
 instance instFintypeIoo : Fintype (Ioo a b) := .ofFinset (Finset.Ioo a b) fun _ => Finset.mem_Ioo
 
-theorem finite_Icc : (Icc a b).Finite :=
-  (Icc a b).toFinite
-
-theorem finite_Ico : (Ico a b).Finite :=
-  (Ico a b).toFinite
-
-theorem finite_Ioc : (Ioc a b).Finite :=
-  (Ioc a b).toFinite
-
-theorem finite_Ioo : (Ioo a b).Finite :=
-  (Ioo a b).toFinite
+@[simp] lemma finite_Icc : (Icc a b).Finite := (Icc a b).toFinite
+@[simp] lemma finite_Ico : (Ico a b).Finite := (Ico a b).toFinite
+@[simp] lemma finite_Ioc : (Ioc a b).Finite := (Ioc a b).toFinite
+@[simp] lemma finite_Ioo : (Ioo a b).Finite := (Ioo a b).toFinite
 
 end Preorder
 
@@ -580,11 +573,8 @@ instance instFintypeIci : Fintype (Ici a) := .ofFinset (Finset.Ici a) fun _ => F
 
 instance instFintypeIoi : Fintype (Ioi a) := .ofFinset (Finset.Ioi a) fun _ => Finset.mem_Ioi
 
-theorem finite_Ici : (Ici a).Finite :=
-  (Ici a).toFinite
-
-theorem finite_Ioi : (Ioi a).Finite :=
-  (Ioi a).toFinite
+@[simp] lemma finite_Ici : (Ici a).Finite := (Ici a).toFinite
+@[simp] lemma finite_Ioi : (Ioi a).Finite := (Ioi a).toFinite
 
 end OrderTop
 
@@ -596,12 +586,8 @@ instance instFintypeIic : Fintype (Iic b) := .ofFinset (Finset.Iic b) fun _ => F
 
 instance instFintypeIio : Fintype (Iio b) := .ofFinset (Finset.Iio b) fun _ => Finset.mem_Iio
 
-theorem finite_Iic : (Iic b).Finite :=
-  (Iic b).toFinite
-
-theorem finite_Iio : (Iio b).Finite :=
-  (Iio b).toFinite
-
+@[simp] lemma finite_Iic : (Iic b).Finite := (Iic b).toFinite
+@[simp] lemma finite_Iio : (Iio b).Finite := (Iio b).toFinite
 end OrderBot
 
 section Lattice
@@ -610,8 +596,9 @@ variable [Lattice α] [LocallyFiniteOrder α] (a b : α)
 instance fintypeUIcc : Fintype (uIcc a b) :=
   Fintype.ofFinset (Finset.uIcc a b) fun _ => Finset.mem_uIcc
 
-@[simp]
-theorem finite_interval : (uIcc a b).Finite := (uIcc _ _).toFinite
+@[simp] lemma finite_uIcc : (uIcc a b).Finite := (uIcc _ _).toFinite
+
+@[deprecated (since := "2026-02-03")] alias finite_interval := finite_uIcc
 
 end Lattice
 
@@ -1228,7 +1215,7 @@ so when alternative constructions are available they are preferred. -/
 
 variable {y : α}
 
-instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLE α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x ≤ y } where
   finsetIoi a := Finset.Ioc a ⟨y, by rfl⟩
   finsetIci a := Finset.Icc a ⟨y, by rfl⟩
@@ -1239,7 +1226,7 @@ instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α
     simp only [Finset.mem_Ioc, and_iff_left_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderTop { x : α // x < y } where
   finsetIoi a := (Finset.Ioo ↑a y).subtype _
   finsetIci a := (Finset.Ico ↑a y).subtype _
@@ -1250,7 +1237,7 @@ instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α
     simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_left_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLE α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderBot { x : α // y ≤ x } where
   finsetIio a := Finset.Ico ⟨y, by rfl⟩ a
   finsetIic a := Finset.Icc ⟨y, by rfl⟩ a
@@ -1261,7 +1248,7 @@ instance (priority := low) [Preorder α] [DecidableLE α] [LocallyFiniteOrder α
     simp only [Finset.mem_Ico, and_iff_right_iff_imp]
     exact fun _ => b.property
 
-instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α] :
+instance (priority := low) [DecidableLT α] [LocallyFiniteOrder α] :
     LocallyFiniteOrderBot { x : α // y < x } where
   finsetIio a := (Finset.Ioo y ↑a).subtype _
   finsetIic a := (Finset.Ioc y ↑a).subtype _
@@ -1272,16 +1259,16 @@ instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α
     simp only [Finset.mem_subtype, Finset.mem_Ioo, Subtype.coe_lt_coe, and_iff_right_iff_imp]
     exact fun _ => b.property
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
+instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
   simpa only [coe_Iic] using (Finset.Iic y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
+instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
   simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
+instance [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
   simpa only [coe_Ici] using (Finset.Ici y).finite_toSet
 
-instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
+instance [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
   simpa only [coe_Ioi] using (Finset.Ioi y).finite_toSet
 
 namespace Set

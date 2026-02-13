@@ -95,6 +95,7 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
@@ -152,6 +153,7 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
     PadicAlgCl.valuation_p]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0

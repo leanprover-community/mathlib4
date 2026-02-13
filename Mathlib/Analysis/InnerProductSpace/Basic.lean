@@ -166,16 +166,14 @@ theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
   map_sum (innerₛₗ 𝕜 x) _ _
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
-protected theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
-  convert sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
-  simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
+protected theorem Finsupp.sum_inner {ι : Type*} {M : Type*} [Zero M] (l : ι →₀ M)
+    (v : ι → M → E) (x : E) : ⟪l.sum v, x⟫ = l.sum fun (i : ι) (a : M) ↦ ⟪v i a, x⟫ := by
+  simp [sum, sum_inner]
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
-protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
-    ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
-  convert inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
-  simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
+protected theorem Finsupp.inner_sum {ι : Type*} {M : Type*} [Zero M] (l : ι →₀ M)
+    (v : ι → M → E) (x : E) : ⟪x, l.sum v⟫ = l.sum fun (i : ι) (a : M) ↦ ⟪x, v i a⟫ := by
+  simp [sum, inner_sum]
 
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)

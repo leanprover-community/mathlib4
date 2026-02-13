@@ -207,6 +207,14 @@ theorem Submodule.isClosed_or_dense_of_isCoatom (s : Submodule R M) (hs : IsCoat
 
 end closure
 
+section CompleteSpace
+
+instance {R M : Type*} [Semiring R] [AddCommMonoid M] [UniformSpace M] [Module R M]
+    [CompleteSpace M] (K : Submodule R M) [c : IsClosed (K : Set M)] : CompleteSpace K :=
+  IsComplete.completeSpace_coe (c.isComplete)
+
+end CompleteSpace
+
 namespace Submodule
 
 variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
@@ -263,8 +271,7 @@ theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite 
       ext x
       exact f.pi_apply_eq_sum_univ x
     rw [this]
-    refine continuous_finset_sum _ fun i _ => ?_
-    exact (continuous_apply i).smul continuous_const
+    fun_prop
 
 end Pi
 

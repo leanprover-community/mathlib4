@@ -5,7 +5,6 @@ Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
@@ -73,6 +72,8 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+
+@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G) G
 
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
@@ -403,6 +404,8 @@ instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
+@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G) G
+
 @[to_additive]
 instance : SubgroupClass (OpenNormalSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
@@ -436,10 +439,7 @@ instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
   toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
-  { instSemilatticeInfOpenNormalSubgroup,
-    instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) where
 
 end OpenNormalSubgroup
 

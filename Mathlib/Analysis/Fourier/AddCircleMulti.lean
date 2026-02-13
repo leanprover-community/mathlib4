@@ -20,7 +20,7 @@ Fourier series if `f` is continuous and the sequence of its Fourier coefficients
 
 noncomputable section
 
-open scoped BigOperators ComplexConjugate ENNReal
+open scoped ComplexConjugate ENNReal
 
 open Set Algebra Submodule MeasureTheory
 
@@ -184,7 +184,7 @@ end Lp
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `UnitAddTorus d → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `UnitAddTorus d` of `mFourier (-n) t • f t`. -/

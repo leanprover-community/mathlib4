@@ -64,7 +64,7 @@ lemma ncard_inter (hrep : Represents s C) (h : c ∈ C) : (s ∩ c.supp).ncard =
   exact exists_inter_eq_singleton hrep h
 
 lemma ncard_eq (hrep : Represents s C) : s.ncard = C.ncard :=
-  hrep.image_eq ▸ (Set.ncard_image_of_injOn hrep.injOn).symm
+  hrep.image_eq ▸ hrep.injOn.ncard_image.symm
 
 lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
     (c.supp \ s).ncard = c.supp.ncard - 1 := by

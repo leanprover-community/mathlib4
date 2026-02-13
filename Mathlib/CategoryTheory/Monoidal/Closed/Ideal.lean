@@ -124,15 +124,15 @@ finite chosen products. -/
 abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
     CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts
-    ({  cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
-        isLimit := by
-          apply isLimitOfReflects i
-          apply isLimitChangeEmptyCone _ isTerminalTensorUnit
-          letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
-            have := reflective_products i
-            refine Functor.essImage.unit_isIso ⟨terminal D, ⟨PreservesTerminal.iso i |>.trans ?_⟩⟩
-            exact IsLimit.conePointUniqueUpToIso (limit.isLimit _) isTerminalTensorUnit
-          exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) })
+    ({ cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
+       isLimit := by
+         apply isLimitOfReflects i
+         apply isLimitChangeEmptyCone _ isTerminalTensorUnit
+         letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
+           have := reflective_products i
+           refine Functor.essImage.unit_isIso ⟨terminal D, ⟨PreservesTerminal.iso i |>.trans ?_⟩⟩
+           exact IsLimit.conePointUniqueUpToIso (limit.isLimit _) isTerminalTensorUnit
+         exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) })
   fun X Y ↦
     { cone := BinaryFan.mk
         ((reflector i).map (fst (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)

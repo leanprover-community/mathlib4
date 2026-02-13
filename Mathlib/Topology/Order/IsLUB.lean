@@ -218,7 +218,7 @@ theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
     simpa [← Function.comp_def, range_comp] using hf.range_subset_closure_image_dense hS
   · suffices ¬ BddAbove (range f) by simp [ciSup_of_not_bddAbove, this, h]
     contrapose h
-    exact h.mono fun _ ↦ by aesop
+    grind [h.mono]
 
 /-- This is an analogue of `Dense.continuous_inf` for functions taking values in a conditionally
 complete linear order. The assumption of `BddBelow (range f)` is not needed in this theorem. -/

@@ -306,6 +306,32 @@ end CategoryOfElements
 
 namespace Functor
 
+/-- The initial object in `F.Elements` if `F` is representable. -/
+@[simps]
+def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
+    F.Elements :=
+  ⟨.op X, h.homEquiv (𝟙 X)⟩
+
+/-- If `F` is represented by `X`, `X` with its universal element is the initial object of
+`F.Elements.` -/
+def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
+    Limits.IsInitial (initialOfRepresentableBy h) :=
+  .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd |>.op, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
+    simp [← m.2, ← h.homEquiv_unop_comp]
+
+/-- The initial object in `F.Elements` if `F` is corepresentable. -/
+@[simps]
+def Elements.initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
+    F.Elements :=
+  ⟨X, h.homEquiv (𝟙 X)⟩
+
+/-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
+`F.Elements.` -/
+def Elements.isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
+    Limits.IsInitial (initialOfCorepresentableBy h) :=
+  .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
+    simp [← m.2, ← h.homEquiv_comp]
+
 /--
 The initial object in the category of elements for a representable functor. In `isInitial` it is
 shown that this is initial.
@@ -315,13 +341,8 @@ def Elements.initial (A : C) : (yoneda.obj A).Elements :=
 
 /-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
 -/
-def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) where
-  desc s := ⟨s.pt.2.op, Category.comp_id _⟩
-  uniq s m _ := by
-    simp_rw [← m.2]
-    dsimp [Elements.initial]
-    simp
-  fac := by rintro s ⟨⟨⟩⟩
+def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) :=
+  isInitialOfRepresentableBy (.yoneda A)
 
 end Functor
 
