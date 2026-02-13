@@ -428,9 +428,6 @@ theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
   ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
     hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
 
--- `@[to_dual]` generates a version with `{f} (g)` implicitness, but the existing
--- `BddBelow.range_mono` uses `(f) {g}` to match the convention that the explicit argument
--- is the "smaller" function. So we keep the manual proof via duality.
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (range g)) : BddAbove (range f) := by
   obtain ⟨C, hC⟩ := hbdd
@@ -438,6 +435,10 @@ lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀
   rintro - ⟨x, rfl⟩
   exact (h x).trans (hC <| mem_range_self x)
 
+-- The implicit/explicit parameter structure differs from `BddAbove.range_mono`.
+-- The `to_dual` proof translation strategy doesn't care that the implicitness differs,
+-- and `@[to_dual existing]` validates this since `isDefEq` ignores binder info.
+@[to_dual existing]
 lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀ a, f a ≤ g a)
     (hbdd : BddBelow (range f)) : BddBelow (range g) :=
   BddAbove.range_mono (β := βᵒᵈ) f h hbdd
