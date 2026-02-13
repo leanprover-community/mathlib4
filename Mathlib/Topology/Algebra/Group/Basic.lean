@@ -282,6 +282,10 @@ protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
     continuous_invFun := continuous_inv }
 
 @[to_additive (attr := simp)]
+lemma Homeomorph.symm_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
+    (Homeomorph.inv G).symm = Homeomorph.inv G := rfl
+
+@[to_additive (attr := simp)]
 lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
     ⇑(Homeomorph.inv G) = Inv.inv := rfl
 
@@ -724,6 +728,10 @@ theorem exists_nhds_split_inv {s : Set G} (hs : s ∈ 𝓝 (1 : G)) :
 @[to_additive]
 theorem nhds_translation_mul_inv (x : G) : comap (· * x⁻¹) (𝓝 1) = 𝓝 x :=
   ((Homeomorph.mulRight x⁻¹).comap_nhds_eq 1).trans <| show 𝓝 (1 * x⁻¹⁻¹) = 𝓝 x by simp
+
+@[to_additive]
+theorem nhds_translation_inv_mul (x : G) : comap (x⁻¹ * ·) (𝓝 1) = 𝓝 x :=
+  ((Homeomorph.mulLeft x⁻¹).comap_nhds_eq 1).trans <| show 𝓝 (x⁻¹⁻¹ * 1) = 𝓝 x by simp
 
 @[to_additive (attr := simp)]
 theorem map_mul_left_nhds (x y : G) : map (x * ·) (𝓝 y) = 𝓝 (x * y) :=
