@@ -106,7 +106,7 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
     apply (MorphismProperty.arrow_mk_iso_iff
       (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f))
       (Scheme.arrowStalkMapSpecIso f x)).mpr
-    exact RingHom.surjective_localRingHom_of_surjective f.hom h _ _ rfl
+    exact RingHom.surjective_localRingHom_of_surjective f.hom h x.asIdeal
 
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/

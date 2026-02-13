@@ -650,7 +650,7 @@ closure of `R` in `S`.
 @[stacks 00Q9]
 lemma ZariskisMainProperty.of_finiteType.{u, v} {R : Type u} {S : Type v} [CommRing R]
     [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
-    (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p] : ZariskisMainProperty R p :=
+    (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] : ZariskisMainProperty R p :=
   .of_finiteType_of_weaklyQuasiFiniteAt _
 
 lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective

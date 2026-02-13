@@ -86,14 +86,11 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
 
 /-- A surjective ring homomorphism `R →+* S` induces a surjective homomorphism `R_{f⁻¹(P)} →+* S_P`
 for every prime ideal `P` of `S`. -/
-theorem surjective_localRingHom_of_surjective {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (h : Function.Surjective f) (P : Ideal R) (Q : Ideal S) [P.IsPrime] [Q.IsPrime]
-    (e : P = Q.comap f) :
-    Function.Surjective (Localization.localRingHom P Q f e) := by
-  intro x
-  obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
-  obtain ⟨x, rfl⟩ := h x
-  obtain ⟨s, rfl⟩ := h s
-  exact ⟨IsLocalization.mk' (M := P.primeCompl) _ x ⟨s, by simpa [e]⟩, by simp⟩
+theorem surjective_localRingHom_of_surjective {R S : Type u} [CommRing R] [CommRing S]
+    (f : R →+* S) (h : Function.Surjective f) (P : Ideal S) [P.IsPrime] :
+    Function.Surjective (Localization.localRingHom (P.comap f) P f rfl) :=
+  have : IsLocalization (Submonoid.map f (Ideal.comap f P).primeCompl) (Localization.AtPrime P) :=
+    (Submonoid.map_comap_eq_of_surjective h P.primeCompl).symm ▸ Localization.isLocalization
+  surjective_localizationPreserves _ _ _ _ h
 
 end RingHom
