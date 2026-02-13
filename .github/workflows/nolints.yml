@@ -25,11 +25,18 @@ jobs:
         run: |
           env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --trace --update Mathlib
 
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_NOLINTS_PRIVATE_KEY }}
+
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
-          token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
-          author: "leanprover-community-bot <leanprover.community@gmail.com>"
+          token: ${{ steps.app-token.outputs.token }}
           commit-message: "chore(scripts): update nolints.json"
           branch: "nolints"
           base: master

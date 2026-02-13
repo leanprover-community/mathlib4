@@ -204,13 +204,21 @@ jobs:
           deprecation workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           from creating a new PR.
 
+    - name: Generate app token
+      id: app-token
+      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      with:
+        app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+        private-key: ${{ secrets.MATHLIB_NOLINTS_PRIVATE_KEY }}
+
+    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
     - name: Create Pull Request
       id: pr
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
       uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
       with:
-        token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
-        author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
+        token: ${{ steps.app-token.outputs.token }}
         commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         branch: ${{ env.BRANCH_NAME }}
         base: master
