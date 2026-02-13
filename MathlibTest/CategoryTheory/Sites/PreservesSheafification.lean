@@ -7,8 +7,6 @@ universe u
 
 open CategoryTheory GrothendieckTopology
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
-
 section Small
 
 variable {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) (R : Type u) [Ring R]

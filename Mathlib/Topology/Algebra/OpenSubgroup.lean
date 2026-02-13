@@ -440,10 +440,7 @@ instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
   toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
-  { instSemilatticeInfOpenNormalSubgroup,
-    instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup }
+instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) where
 
 end OpenNormalSubgroup
 

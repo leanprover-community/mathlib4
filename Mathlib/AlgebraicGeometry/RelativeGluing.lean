@@ -156,6 +156,10 @@ lemma preimage_toBase_eq_range_ι (i : 𝒰.I₀) :
     rw [← Scheme.Hom.comp_apply, ι_toBase]
     simp
 
+lemma toBase_preimage_eq_opensRange_ι (i : 𝒰.I₀) :
+    d.toBase ⁻¹ᵁ (𝒰.f i).opensRange = (colimit.ι d.functor i).opensRange :=
+  TopologicalSpace.Opens.coe_inj.mp (preimage_toBase_eq_range_ι d i)
+
 lemma isPullback_natTrans_ι_toBase (i : 𝒰.I₀) :
     IsPullback (d.natTrans.app i) (colimit.ι d.functor i) (𝒰.f i) d.toBase := by
   refine ⟨by simp, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩

@@ -350,19 +350,13 @@ lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
 
-@[simp]
+@[simp, gcongr]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
   simp [← coe_subset]
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Ici_subset_Ici⟩ := Ici_subset_Ici
-
-@[simp]
+@[simp, gcongr]
 theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a := by
   simp [← coe_ssubset]
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Ici_ssubset_Ici⟩ := Ici_ssubset_Ici
 
 @[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
@@ -419,19 +413,13 @@ lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Iio_of_not_isMin⟩ := nonempty_Iio
 
-@[simp]
+@[simp, gcongr]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
   simp [← coe_subset]
 
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Iic_subset_Iic⟩ := Iic_subset_Iic
-
-@[simp]
+@[simp, gcongr]
 theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b := by
   simp [← coe_ssubset]
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.Finset.Iic_ssubset_Iic⟩ := Iic_ssubset_Iic
 
 @[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by

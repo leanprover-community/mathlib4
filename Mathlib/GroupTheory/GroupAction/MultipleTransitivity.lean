@@ -113,7 +113,7 @@ end Functoriality
 
 namespace MulAction
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
