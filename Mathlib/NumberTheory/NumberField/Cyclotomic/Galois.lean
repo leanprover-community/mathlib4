@@ -64,7 +64,7 @@ is the natural map.
 theorem galEquivZMod_restrictNormal_apply (h : m ∣ n) (σ : Gal(K/ℚ)) :
     galEquivZMod m F (σ.restrictNormal F) = ZMod.unitsMap h (galEquivZMod n K σ) := by
   have hζ := IsCyclotomicExtension.zeta_spec m ℚ F
-  set ζ := IsCyclotomicExtension.zeta m ℚ F
+  let ζ := IsCyclotomicExtension.zeta m ℚ F
   suffices ζ ^ (galEquivZMod m F (σ.restrictNormal F)).val.val = ζ ^ (galEquivZMod n K σ).val.val by
     rw [(hζ.isOfFinOrder (NeZero.ne _)).pow_inj_mod, ← hζ.eq_orderOf,
       ← ZMod.natCast_eq_natCast_iff', ZMod.natCast_val, ZMod.natCast_val, ZMod.cast_id] at this
