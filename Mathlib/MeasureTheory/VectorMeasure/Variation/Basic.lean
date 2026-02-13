@@ -3,7 +3,9 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 /-!
 ## Properties of variation
@@ -16,6 +18,8 @@ import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
 
