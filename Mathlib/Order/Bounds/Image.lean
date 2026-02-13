@@ -428,6 +428,7 @@ theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
   ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
     hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
 
+/-- If `f a ≤ g a` for all `a` and `range g` is bounded above, then `range f` is bounded above. -/
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (range g)) : BddAbove (range f) := by
   obtain ⟨C, hC⟩ := hbdd
@@ -435,6 +436,7 @@ lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀
   rintro - ⟨x, rfl⟩
   exact (h x).trans (hC <| mem_range_self x)
 
+/-- If `f a ≤ g a` for all `a` and `range f` is bounded below, then `range g` is bounded below. -/
 -- The implicit/explicit parameter structure differs from `BddAbove.range_mono`.
 -- The `to_dual` proof translation strategy doesn't care that the implicitness differs,
 -- and `@[to_dual existing]` doesn't care about the discrepancy since `isDefEq` ignores binder info.
