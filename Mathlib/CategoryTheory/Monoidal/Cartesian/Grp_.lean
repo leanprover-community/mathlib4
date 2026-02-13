@@ -273,15 +273,8 @@ lemma isCommMonObj_iff_commutator_eq_toUnit_η :
     IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
   rw [isCommMonObj_iff_isMulCommutative, ← yoneda.map_injective.eq_iff]
   refine ⟨fun h ↦ ?_, fun heq X ↦ ⟨⟨fun f g ↦ ?_⟩⟩⟩
-  · ext X f
-    dsimp
-    rw [← lift_comp_fst_snd f, GrpObj.lift_commutator_eq_mul_mul_inv_inv]
-    simp [Hom.one_def]
-  · rw [← mul_inv_eq_one, mul_inv_rev g f, ← _root_.mul_assoc]
-    have := congr($(heq).app _ (lift f g))
-    simp only [yoneda_obj_obj, yoneda_map_app, GrpObj.lift_commutator_eq_mul_mul_inv_inv,
-      Functor.map_comp, FunctorToTypes.comp, comp_toUnit] at this
-    rwa [← Hom.one_def] at this
+  · simp [GrpObj.commutator, one_eq_one]
+  · simpa [one_eq_one, mul_inv_eq_iff_eq_mul] using congr(lift f g ≫ $heq)
 
 end
 
