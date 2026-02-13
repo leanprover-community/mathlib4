@@ -36,11 +36,6 @@ variable {n : ℕ} [NeZero n]
 
 local instance : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
 
-@[local simp]
-private lemma finRotate_eq (i : Fin n) : finRotate n i = i + 1 := by
-  obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
-  exact finRotate_succ_apply i
-
 variable (R) in
 /-- A map from `AddCircle n` to the boundary points of the polygon. -/
 noncomputable def boundaryMap (poly : Polygon P n) : AddCircle (n : R) → P :=
@@ -88,7 +83,7 @@ theorem range_boundaryMap : Set.range (poly.boundaryMap R) = poly.boundary R := 
         simp [Int.fract, h, t, Int.cast_natCast]
       simp only [hfloor, hfrac]
     · push_neg at hu1
-      simp only [le_antisymm hu.2 hu1, edgePath, finRotate_eq, AffineMap.lineMap_apply_one]
+      simp only [le_antisymm hu.2 hu1, edgePath, AffineMap.lineMap_apply_one]
       let t : R := ((i + 1 : Fin n) : ℕ)
       have htmem : t ∈ Ico (0 : R) n := by
         simp only [t, Set.mem_Ico]
@@ -139,14 +134,13 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
             exact ⟨_, Ico_subset_Icc_self ⟨Int.fract_nonneg t, Int.fract_lt_one t⟩, rfl⟩⟩
       by_cases hadj : tindex = sindex + 1
       · simp only [hadj, h.adjacent_inter sindex, mem_singleton_iff] at hp_in_both
-        have eone_s : poly.edgePath R sindex 1 = poly (sindex + 1) := by simp [edgePath]
         exact absurd (lineMap_injective R (h.hasNondegenerateEdges sindex)
-          (hp_in_both.trans eone_s.symm)) (ne_of_lt (Int.fract_lt_one s))
+          (hp_in_both.trans (lineMap_apply_one ..).symm)) (ne_of_lt (Int.fract_lt_one s))
       · by_cases hadj' : sindex = tindex + 1
         · have hinter := h.adjacent_inter tindex
           rw [← hadj'] at hinter
           rw [Set.inter_comm, hinter, mem_singleton_iff] at hp_in_both
-          have h1 : poly.edgePath R tindex 1 = poly (tindex + 1) := by simp [edgePath]
+          have h1 : poly.edgePath R tindex 1 = poly (tindex + 1) := lineMap_apply_one ..
           have heq' : poly.edgePath R tindex (Int.fract t) = poly.edgePath R tindex 1 := by
             rw [h1, ← show poly.vertices sindex = poly.vertices (tindex + 1) from by rw [hadj'],
               ← hp_in_both, ← heq]
@@ -199,7 +193,6 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
       split_ifs <;> omega
     constructor
     · intro i heq
-      rw [finRotate_eq] at heq
       absurd (show (i : ℕ) = ((i + 1 : Fin n) : ℕ) from by
         exact_mod_cast inj_eq _ _ (nmem i) (nmem (i + 1))
           (by rw [bnat i, bnat (i + 1), heq]))
@@ -258,8 +251,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
         rcases eq_or_lt_of_le hu.2 with rfl | hu1
         · simp [edgePath]
         · rcases eq_or_lt_of_le hv.1 with hv0 | hv0
-          · rw [← hv0] at hpv
-            simp only [edgePath, finRotate_eq, lineMap_apply_zero] at hpv ⊢
+          · rw [← hv0] at hpv; simp [edgePath] at hpv
             exact hpv.symm
           · rcases eq_or_lt_of_le hv.2 with rfl | hv1
             · have heq := inj_eq _ _
