@@ -33,7 +33,7 @@ variable {α β γ : Type*}
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
 `edist x y ≤ K * edist (f x) (f y)`. This can also be used as a predicate for bounded below
-linear operators, see `antilipschitzWith_iff_exists_mul_le_mul`. -/
+linear operators, see `antilipschitzWith_iff_exists_mul_le_norm`. -/
 def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist x y ≤ K * edist (f x) (f y)
 
