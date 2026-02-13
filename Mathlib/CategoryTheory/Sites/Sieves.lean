@@ -1210,10 +1210,9 @@ def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYon
     Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
   downward_closed := by
-    rintro Y Z _ ⟨t, ht⟩ g
+    intro Y Z _ ⟨t, ht⟩ g
     refine ⟨R.map g.op t, ?_⟩
-    rw [FunctorToTypes.naturality _ _ f, ht]
-    simp
+    simp [FunctorToTypes.naturality _ _ f, ht]
 
 theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
     Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
