@@ -457,7 +457,7 @@ variable [PartialOrder α] {a b c : α}
 theorem Icc_self (a : α) : Icc a a = {a} :=
   Set.ext <| by simp [Icc, le_antisymm_iff, and_comm]
 
-instance instIccUnique : Unique (Set.Icc a a) where
+instance instIccUnique : Unique (Icc a a) where
   default := ⟨a, by simp⟩
   uniq y := Subtype.ext <| by simpa using y.2
 
@@ -704,19 +704,19 @@ section Dense
 variable (α) [Preorder α] [DenselyOrdered α] {x y : α}
 
 @[to_dual] -- TODO: `to_dual` only works with the `mem_Ioo.mpr` in the proof.
-instance : NoMinOrder (Set.Ioo x y) :=
+instance : NoMinOrder (Ioo x y) :=
   ⟨fun ⟨a, ha⟩ => by
     rcases exists_between ha.1 with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, mem_Ioo.mpr ⟨hb₁, hb₂.trans ha.2⟩⟩, hb₂⟩⟩
 
 @[to_dual] -- TODO: `to_dual` only works with the `mem_Ioc.mpr` in the proof.
-instance : NoMinOrder (Set.Ioc x y) :=
+instance : NoMinOrder (Ioc x y) :=
   ⟨fun ⟨a, ha⟩ => by
     rcases exists_between ha.1 with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, mem_Ioc.mpr ⟨hb₁, hb₂.le.trans ha.2⟩⟩, hb₂⟩⟩
 
 @[to_dual]
-instance : NoMinOrder (Set.Ioi x) :=
+instance : NoMinOrder (Ioi x) :=
   ⟨fun ⟨a, ha⟩ => by
     rcases exists_between ha with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, hb₁⟩, hb₂⟩⟩
