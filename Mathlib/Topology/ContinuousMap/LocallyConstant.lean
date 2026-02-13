@@ -51,20 +51,16 @@ def toContinuousMapLinearMap (R : Type*) [Semiring R] [AddCommMonoid Y] [Module 
 def toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y]
     [IsTopologicalSemiring Y] : LocallyConstant X Y →ₐ[R] C(X, Y) where
   toFun := (↑)
-  map_one' := by
-    ext
-    simp
-  map_mul' x y := by
-    ext
-    simp
-  map_zero' := by
-    ext
-    simp
-  map_add' x y := by
-    ext
-    simp
+  __ := toContinuousMapMonoidHom
+  __ := (toContinuousMapLinearMap R).toAddMonoidHom
   commutes' r := by
     ext x
     simp [Algebra.smul_def]
+
+theorem separatesPoints_range_toContinuousMapAlgHom (R : Type*) [CommSemiring R]
+    [TotallySeparatedSpace X] [Semiring Y] [Algebra R Y] [IsTopologicalSemiring Y] [Nontrivial Y] :
+    (toContinuousMapAlgHom R : _ →ₐ[R] C(X, Y)).range.SeparatesPoints := fun x y hxy ↦
+  have ⟨U, hU, hxU, hyU⟩ := exists_isClopen_of_totally_separated hxy
+  ⟨charFn Y hU, by simp_all [charFn]⟩
 
 end LocallyConstant
