@@ -98,36 +98,16 @@ lemma foo' [IsManifold I n M] [IsManifold I' n M'] (f : M → M') (x : M) :
 end aux
 
 variable (I I' f x) in
-/-- We say a map `f : M → M` splits at `x` if the `fderiv` of
-`writtenInExtChartAt I I f x` at `x' := extChartAt I x x` splits. -/
--- This is similar to re-inventing mfderiv, but avoids having to speak about the tangent spaces.
--- Should we relax the definition of `Splits` to not require a norm?
+/-- We say a map `f : M → M` splits at `x` if `mfderiv I I' f x` splits,
+i.e. has a continuous left inverse. -/
 def IsImmersedPoint (f : M → M') (x : M) : Prop :=
   mfderiv I I' f x |>.HasLeftInverse
 
 lemma isImmersedPoint_iff : IsImmersedPoint I I' f x ↔ (mfderiv I I' f x).HasLeftInverse := by rfl
 
-/-- Whether `f` splits at `x` can be tested in any extended charts for the manifold. -/
-lemma isImmersedPoint_iff_extend
-    {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph M' H'}
-    (hφ : φ ∈ IsManifold.maximalAtlas I n M) (hψ : ψ ∈ IsManifold.maximalAtlas I' n M')
-    (hxφ : x ∈ φ.source) (hxψ : f x ∈ ψ.source) :
-    IsImmersedPoint I I' f x ↔
-      (fderiv 𝕜 (ψ.extend I' ∘ f ∘ (φ.extend I).symm) (φ.extend I x)).HasLeftInverse := by
-  sorry
-
 namespace IsImmersedPoint
 
 variable {f g : M → M'} {x : M}
-
--- XXX: will we have use for these lemmas?
--- private lemma fderiv_injective (hf : IsImmersedPoint I I' f x) :
---     Injective (fderiv 𝕜 (writtenInExtChartAt I I' x f) (extChartAt I x x)) :=
---   hf.injective
-
--- lemma differentiableAt_writtenInExtChartAt (hf : IsImmersedPoint I I' f x) :
---     DifferentiableAt 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x) x) :=
---   differentiableAt_of_fderiv_injective hf.fderiv_injective
 
 open IsManifold in
 lemma mfderiv_injective (hf : IsImmersedPoint I I' f x) : Injective (mfderiv I I' f x) :=
@@ -156,20 +136,20 @@ lemma prodMap {y : N} (hf : IsImmersedPoint I I' f x) {g : N → N'} (hg : IsImm
   -- missing simp lemma!
   sorry
 
-section
+-- section
 
-/-- A choice of closed complement... -/
-def complement (hf : IsImmersedPoint I I' f x) : Type u := hf.splits.complement
+-- /-- A choice of closed complement... -/
+-- def complement (hf : IsImmersedPoint I I' f x) : Type u := hf.splits.complement
 
-noncomputable instance (hf : IsImmersedPoint I I' f x) : NormedAddCommGroup hf.complement := by
-  -- have := ContinuousLinearMap.Splits.complement hf
-  --have : NormedAddCommGroup (ContinuousLinearMap.Splits.complement hf) := sorry
-  sorry -- infer_instance
+-- noncomputable instance (hf : IsImmersedPoint I I' f x) : NormedAddCommGroup hf.complement := by
+--   -- have := ContinuousLinearMap.Splits.complement hf
+--   --have : NormedAddCommGroup (ContinuousLinearMap.Splits.complement hf) := sorry
+--   sorry -- infer_instance
 
-noncomputable instance (hf : IsImmersedPoint I I' f x) : NormedSpace 𝕜 hf.complement := by
-  sorry
+-- noncomputable instance (hf : IsImmersedPoint I I' f x) : NormedSpace 𝕜 hf.complement := by
+--   sorry
 
-end
+-- end
 
 -- This section needs redoing/might be fully obsolete anyway!
 section
@@ -213,21 +193,21 @@ lemma extend_symm (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartA
 
 end
 
-lemma of_isInvertible (hf : (mfderiv I I' f x).IsInvertible) : IsImmersedPoint I I' f x := by
+lemma of_mfderiv_isInvertible (hf : (mfderiv I I' f x).IsInvertible) :
+    IsImmersedPoint I I' f x := by
   rw [isImmersedPoint_iff]
   exact ContinuousLinearMap.HasLeftInverse.of_isInvertible hf
 
+/-- If `x` is an immersed point of `f`, then `f` is a local diffeomorphism at `x`. -/
 lemma _root_.IsLocalDiffeomorphAt.isImmersedPoint
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : n ≠ 0) : IsImmersedPoint I I' f x :=
-  of_isInvertible (hf.isInvertible_mfderiv hn)
+  of_mfderiv_isInvertible (hf.isInvertible_mfderiv hn)
 
 /-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
 lemma comp {g : M' → N} (hg : IsImmersedPoint I' J g (f x)) (hf : IsImmersedPoint I I' f x) :
     IsImmersedPoint I J (g ∘ f) x := by
-  have hf' := hf.mdifferentiableAt
-  have hg' := hg.mdifferentiableAt
-  rw [isImmersedPoint_iff] at hf hg ⊢
-  rw [mfderiv_comp x hg' hf']
+  rw [isImmersedPoint_iff, mfderiv_comp x hg.mdifferentiableAt hf.mdifferentiableAt]
+  rw [isImmersedPoint_iff] at hf hg
   exact hg.comp hf
 
 lemma of_comp {g : M' → N} (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I' J g (f x))
@@ -245,12 +225,9 @@ lemma comp_isLocalDiffeomorphAt_left_iff {f₀ : N → M} {y : N} (hxy : f₀ y 
     IsImmersedPoint I I' f x ↔ IsImmersedPoint J I' (f ∘ f₀) y := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn,
     fun h ↦ ?_⟩
-  have hg₀' : IsLocalDiffeomorphAt I J n hf₀.localInverse (f₀ y) :=
-    hf₀.localInverse_isLocalDiffeomorphAt
-  have : hf₀.localInverse x = y := hxy ▸ hf₀.localInverse_left_inv hf₀.localInverse_mem_target
-  have : IsImmersedPoint I I' (f ∘ f₀ ∘ hf₀.localInverse) x :=
-    h.comp_isLocalDiffeomorphAt_left this (hxy ▸ hg₀') hn
-  apply this.congr
+  have := (hxy ▸ hf₀.localInverse_left_inv hf₀.localInverse_mem_target)
+  apply (h.comp_isLocalDiffeomorphAt_left this
+    (hxy ▸ hf₀.localInverse_isLocalDiffeomorphAt) hn).congr
   exact (hxy ▸ hf₀.localInverse_eventuallyEq_right.symm).fun_comp f
 
 lemma comp_isLocalDiffeomorphAt_right (hf : IsImmersedPoint I I' f x)
@@ -259,7 +236,7 @@ lemma comp_isLocalDiffeomorphAt_right (hf : IsImmersedPoint I I' f x)
   (hg.isImmersedPoint hn).comp hf
 
 -- TODO: fix the last sorry, is a small mathematical question
-lemma comp_isLocalDiffeomorphAt_right_iff --[IsManifold I 1 M] [IsManifold J 1 N]
+lemma comp_isLocalDiffeomorphAt_right_iff
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
     IsImmersedPoint I I' f x ↔  IsImmersedPoint I J (g ∘ f) x := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_right hg hn,
@@ -273,11 +250,10 @@ lemma comp_isLocalDiffeomorphAt_right_iff --[IsManifold I 1 M] [IsManifold J 1 N
   -- question: must we have `ContinuousAt f x`? if so, the proof is easy
 
   -- this certainly holds... but is not what we want!
-  have aux : ContinuousAt (hg.localInverse.toPartialEquiv ∘ g ∘ f) x := by
-    apply ContinuousAt.comp ?_ h.continuousAt
-    sorry -- missing prereq, local inverse of a local diffeo is continuous at its point
-
+  have aux : ContinuousAt (hg.localInverse.toPartialEquiv ∘ g ∘ f) x :=
+    ContinuousAt.comp hg.continuousAt_localInverse h.continuousAt
   have hf : ContinuousAt f x := by
+    --apply ContinuousAt.congr_of_eventuallyEq aux
     -- issue: cannot apply ContinuousAt.congr_of_eventuallyEq aux as that'd be cyclic!
     sorry
   exact Filter.eventuallyEq_of_mem (hf this) (by intro; simp)
@@ -290,104 +266,5 @@ lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 
   exact ContinuousLinearMap.HasLeftInverse.of_injective_of_finiteDimensional hf'
 
 end IsImmersedPoint
-
-#exit
--- do we want these?
-variable (I I') in
-/-- If `f : M → M` is differentiable, we say `f` splits iff it splits at every `x`,
-i.e. each `mfderiv 𝕜 I I' f x` splits. -/
-def MSplits (f : M → M') : Prop := ∀ x, IsImmersedPoint I I' f x
-
-lemma msplits_iff : MSplits I I' f ↔ ∀ x, IsImmersedPoint I I' f x := by rfl
-
-namespace MSplits
-
-variable {f g : M → M'}
-
-lemma congr (hf : MSplits I I' f) (hfg : g = f) : MSplits I I' g :=
-  fun x ↦ (hf x).congr hfg.eventuallyEq
-
-lemma prodMap [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J 1 N] [IsManifold J' 1 N']
-    (hf : MSplits I I' f) {g : N → N'} (hg : MSplits J J' g) :
-    MSplits (I.prod J) (I'.prod J') (Prod.map f g) := fun (x, y) ↦ (hf x).prodMap (hg y)
-
-lemma _root_.IsLocalDiffeomorph.splits {f : M → M'}
-    (hf : IsLocalDiffeomorph I I' n f) (hn : n ≠ 0) : MSplits I I' f :=
-  fun x ↦ (hf x).msplitsAt hn
-
-lemma _root_.Diffeomorph.splits (f : Diffeomorph I I' M M' n) (hn : n ≠ 0) : MSplits I I' f :=
-  f.isLocalDiffeomorph.splits hn
-
-/-- If `f` and `g` split, then so does `g ∘ f`. -/
-lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : MSplits I' J g) (hf : MSplits I I' f) : MSplits I J (g ∘ f) :=
-  fun x ↦ (hg (f x)).comp (hf x)
-
-lemma of_comp {g : M' → N} (hg : MSplits I' J g) (hfg : MSplits I J (g ∘ f)) :
-    MSplits I I' f := by
-  rw [msplits_iff] at hg hfg ⊢
-  exact fun x ↦ (hg (f x)).of_comp (hfg x)
-
-lemma of_comp_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : MSplits I' J g) : MSplits I J (g ∘ f) ↔ MSplits I I' f :=
-  ⟨fun hfg ↦ hg.of_comp hfg, fun hf ↦ hg.comp hf⟩
-
-lemma comp_isLocalDiffeomorph_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (hf : MSplits I I' f) {f₀ : N → M} (hf₀ : IsLocalDiffeomorph J I n f₀) (hn : n ≠ 0) :
-    MSplits J I' (f ∘ f₀) :=
-  hf.comp (hf₀.splits hn)
-
--- XXX: is this true if hf₀ is just a local diffeomorphism and *not* surjective?
--- (With surjective, this reduces to its MSplitsAt cousin.)
-lemma comp_diffeomorph_left_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (f₀ : Diffeomorph J I N M n) (hn : n ≠ 0) : MSplits I I' f ↔ MSplits J I' (f ∘ f₀) :=
-  ⟨fun hf ↦ hf.comp_isLocalDiffeomorph_left f₀.isLocalDiffeomorph hn,
-    fun h ↦ (h.comp_isLocalDiffeomorph_left f₀.symm.isLocalDiffeomorph hn).congr (by ext; simp)⟩
-
-lemma comp_isLocalDiffeomorph_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : IsLocalDiffeomorph I' J n g) (hn : n ≠ 0) (hf : MSplits I I' f) :
-    MSplits I J (g ∘ f) :=
-  (hg.splits hn).comp hf
-
-lemma comp_diffeomorph_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSpace E']
-    [IsManifold I 1 M] [IsManifold J 1 N]
-    {g : M' → N} (hg : IsLocalDiffeomorph I' J n g) (hn : n ≠ 0) :
-    MSplits I I' f ↔  MSplits I J (g ∘ f) := by
-  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorph_right hg hn, fun h x ↦ ?_⟩
-  rw [MSplitsAt.comp_isLocalDiffeomorphAt_right_iff (hg (f x)) hn (I := I)]
-  exact h x
-
-variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H : Type*} [TopologicalSpace H] {G : Type*} [TopologicalSpace G]
-  {I : ModelWithCorners 𝕜 E H} {J : ModelWithCorners 𝕜 F G}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  [IsManifold I 1 M] [IsManifold J 1 N]
-  {f : M → N} {x : M} {n : WithTop ℕ∞}
-
-/-- If `mfderiv I J f x` is injective and `M` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
-    (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
-  intro x
-  apply ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace
-  rw [foo' (n := 1) f x]
-  exact hf' x
-
-/-- If `mfderiv I J f x` is injective and `N` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 F]
-    (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
-  intro x
-  apply ContinuousLinearMap.Splits.of_injective_of_finiteDimensional --sorry -- apply foo! (hf' x)
-  rw [foo' (n := 1) f x]
-  exact hf' x
-
--- FUTURE (once mathlib has a notion of Fredholm operators):
--- If `mfderiv I J f x` is injective, `M` and `N` are Banach manifolds and each differential
--- `mfderiv I J f x` is Fredholm, then `f` splits.
-
-end MSplits
-
-open scoped Manifold
 
 end

@@ -176,6 +176,11 @@ lemma contmdiffOn_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     ContMDiffOn J I n hf.localInverse hf.localInverse.source :=
   hf.localInverse.contMDiffOn_toFun
 
+lemma continuousAt_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContinuousAt hf.localInverse (f x) :=
+  hf.contmdiffOn_localInverse.continuousOn.continuousAt <|
+    hf.localInverse_open_source.mem_nhds hf.localInverse_mem_source
+
 lemma localInverse_right_inv (hf : IsLocalDiffeomorphAt I J n f x) {y : N}
     (hy : y ∈ hf.localInverse.source) : f (hf.localInverse y) = y := by
   have : hf.localInverse y ∈ hf.choose.source := by
