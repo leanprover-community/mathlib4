@@ -461,7 +461,7 @@ theorem maximal_isAcyclic_iff_isTree [Nonempty V] {T : SimpleGraph V} :
 
 /-- Every acyclic subgraph can be extended to a spanning forest. -/
 theorem exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic {H : SimpleGraph V} (hH_le : H ≤ G)
-  (hH_isAcyclic : H.IsAcyclic) :
+    (hH_isAcyclic : H.IsAcyclic) :
     ∃ F : SimpleGraph V, H ≤ F ∧ F ≤ G ∧ F.IsAcyclic ∧ F.Reachable = G.Reachable := by
   obtain ⟨F, hF⟩ := G.exists_maximal_isAcyclic_of_le_isAcyclic hH_le hH_isAcyclic
   use F
