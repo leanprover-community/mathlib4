@@ -3,12 +3,17 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Rel
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Rel
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Series of a relation
@@ -18,8 +23,12 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 -/
 
-variable {α : Type*} (r : Rel α α)
-variable {β : Type*} (s : Rel β β)
+@[expose] public section
+
+open scoped SetRel
+
+variable {α : Type*} (r : SetRel α α)
+variable {β : Type*} (s : SetRel β β)
 
 /--
 Let `r` be a relation on `α`, a relation series of `r` of length `n` is a series
@@ -31,7 +40,7 @@ structure RelSeries where
   /-- The underlying function of a relation series -/
   toFun : Fin (length + 1) → α
   /-- Adjacent elements are related -/
-  step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
+  step : ∀ (i : Fin length), toFun (Fin.castSucc i) ~[r] toFun i.succ
 
 namespace RelSeries
 
@@ -57,21 +66,20 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
-set_option backward.dsimp.proofs true in
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
   rcases x with ⟨nx, fx⟩
-  dsimp only at length_eq toFun_eq
-  subst length_eq toFun_eq
-  rfl
+  dsimp only at length_eq
+  subst length_eq
+  simp_all
 
-lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
-    r (x i) (x j) :=
-  (Fin.liftFun_iff_succ r).mpr x.step h
+lemma rel_of_lt [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
+    x i ~[r] x j :=
+  (Fin.liftFun_iff_succ (· ~[r] ·)).mpr x.step h
 
-lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
-    r (x i) (x j) ∨ x i = x j :=
+lemma rel_or_eq_of_le [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
+    x i ~[r] x j ∨ x i = x j :=
   (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
 
 /--
@@ -79,12 +87,12 @@ Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `
 series of `s`
 -/
 @[simps!]
-def ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
+def ofLE (x : RelSeries r) {s : SetRel α α} (h : r ≤ s) : RelSeries s where
   length := x.length
   toFun := x
-  step _ := h _ _ <| x.step _
+  step _ := h <| x.step _
 
-lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
+lemma coe_ofLE (x : RelSeries r) {s : SetRel α α} (h : r ≤ s) :
     (x.ofLE h : _ → _) = x := rfl
 
 /-- Every relation series gives a list -/
@@ -96,28 +104,32 @@ lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
 
 @[simp]
 lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
-  rfl
+  by simp [toList, singleton]
 
-lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
-  rw [List.chain'_iff_get]
-  intros i h
+lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
+  simp_rw [List.isChain_iff_getElem, length_toList, add_lt_add_iff_right]
+  intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
+
+@[deprecated (since := "2025-09-24")] alias toList_chain' := isChain_toList
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
-def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
+def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r] ·)) : RelSeries r where
   length := x.length - 1
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
-  step i := List.chain'_iff_get.mp hx i i.2
+  step i := List.isChain_iff_getElem.mp hx i _
+
+@[deprecated (since := "2025-09-24")] alias fromListChain' := fromListIsChain
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
-protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
-  toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
-  invFun x := fromListChain' _ x.2.1 x.2.2
+protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.IsChain (· ~[r] ·)} where
+  toFun x := ⟨_, x.toList_ne_nil, x.isChain_toList⟩
+  invFun x := fromListIsChain _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
@@ -131,14 +143,14 @@ lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
 
 end RelSeries
 
-namespace Rel
+namespace SetRel
 
 /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
   maximum length. -/
 @[mk_iff]
 class FiniteDimensional : Prop where
   /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
-    maximum length. -/
+  maximum length. -/
   exists_longest_relSeries : ∃ x : RelSeries r, ∀ y : RelSeries r, y.length ≤ x.length
 
 /-- A relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
@@ -146,28 +158,28 @@ class FiniteDimensional : Prop where
 @[mk_iff]
 class InfiniteDimensional : Prop where
   /-- A relation `r` is said to be infinite dimensional iff there exists relation series of
-    arbitrary length. -/
+  arbitrary length. -/
   exists_relSeries_with_length : ∀ n : ℕ, ∃ x : RelSeries r, x.length = n
 
-end Rel
+end SetRel
 
 namespace RelSeries
 
 /-- The longest relational series when a relation is finite dimensional -/
 protected noncomputable def longestOf [r.FiniteDimensional] : RelSeries r :=
-  Rel.FiniteDimensional.exists_longest_relSeries.choose
+  SetRel.FiniteDimensional.exists_longest_relSeries.choose
 
 lemma length_le_length_longestOf [r.FiniteDimensional] (x : RelSeries r) :
     x.length ≤ (RelSeries.longestOf r).length :=
-  Rel.FiniteDimensional.exists_longest_relSeries.choose_spec _
+  SetRel.FiniteDimensional.exists_longest_relSeries.choose_spec _
 
 /-- A relation series with length `n` if the relation is infinite dimensional -/
 protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSeries r :=
-  (Rel.InfiniteDimensional.exists_relSeries_with_length n).choose
+  (SetRel.InfiniteDimensional.exists_relSeries_with_length n).choose
 
 @[simp] lemma length_withLength [r.InfiniteDimensional] (n : ℕ) :
     (RelSeries.withLength r n).length = n :=
-  (Rel.InfiniteDimensional.exists_relSeries_with_length n).choose_spec
+  (SetRel.InfiniteDimensional.exists_relSeries_with_length n).choose_spec
 
 section
 variable {r} {s : RelSeries r} {x : α}
@@ -177,7 +189,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
-  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹_›
+  obtain ⟨p, _⟩ := (r.finiteDimensional_iff).mp ‹_›
   exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
@@ -199,19 +211,19 @@ theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length �
 theorem length_pos_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : 0 < s.length :=
   Nat.pos_iff_ne_zero.mpr <| length_ne_zero_of_nontrivial h
 
-theorem length_ne_zero (irrefl : Irreflexive r) : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
-  refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def], fun rid ↦ irrefl (s 0) ?_⟩,
-    length_ne_zero_of_nontrivial⟩
+theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivial := by
+  refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def],
+    fun rid ↦ r.irrefl (s 0) ?_⟩, length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
-  convert s.step ⟨0, by omega⟩
+  convert s.step ⟨0, by lia⟩
   ext
   simpa [Nat.pos_iff_ne_zero]
 
-theorem length_pos (irrefl : Irreflexive r) : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
-  Nat.pos_iff_ne_zero.trans <| length_ne_zero irrefl
+theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
+  Nat.pos_iff_ne_zero.trans length_ne_zero
 
-lemma length_eq_zero (irrefl : Irreflexive r) : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
-  rw [← not_ne_iff, length_ne_zero irrefl, Set.not_nontrivial_iff]
+lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
+  rw [← not_ne_iff, length_ne_zero, Set.not_nontrivial_iff]
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
@@ -232,42 +244,49 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
 @[simp]
-lemma head_singleton {r : Rel α α} (x : α) : (singleton r x).head = x := by simp [singleton, head]
+lemma head_singleton {r : SetRel α α} (x : α) : (singleton r x).head = x := by
+  simp [singleton, head]
 
 @[simp]
-lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by simp [singleton, last]
+lemma last_singleton {r : SetRel α α} (x : α) : (singleton r x).last = x := by
+  simp [singleton, last]
 
 @[simp]
 lemma head_toList (p : RelSeries r) : p.toList.head p.toList_ne_nil = p.head := by
   simp [toList, apply_zero]
 
 @[simp]
-lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
-    p.toList[(i : ℕ)] = p i := by
+lemma toList_getElem (p : RelSeries r) {i : ℕ} (hi : i < p.toList.length) :
+    p.toList[(i : ℕ)] = p ⟨i, by simpa using hi⟩ := by
   simp only [toList, List.getElem_ofFn]
 
+@[deprecated toList_getElem (since := "2025-11-25")]
+lemma toList_getElem_eq_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
+    p.toList[(i : ℕ)] = p i := p.toList_getElem _
+
+@[deprecated toList_getElem (since := "2025-11-25")]
 lemma toList_getElem_eq_apply_of_lt_length {p : RelSeries r} {i : ℕ} (hi : i < p.length + 1) :
-    p.toList[i]'(by simpa using hi) = p ⟨i, hi⟩ :=
-  p.toList_getElem_eq_apply ⟨i, hi⟩
+    p.toList[i]'(by simpa using hi) = p ⟨i, hi⟩ := p.toList_getElem _
 
-@[simp]
 lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head :=
-  p.toList_getElem_eq_apply_of_lt_length (by simp)
+  p.toList_getElem _
 
 @[simp]
-lemma toList_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' r) :
-    (fromListChain' l l_ne_nil hl).toList = l :=
+lemma toList_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (· ~[r] ·)) :
+    (fromListIsChain l l_ne_nil hl).toList = l :=
   Subtype.ext_iff.mp <| RelSeries.Equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
 
 @[simp]
-lemma head_fromListChain' (l : List α) (l_ne_nil : l ≠ [])
-    (hl : l.Chain' r) :
-    (fromListChain' l l_ne_nil hl).head = l.head l_ne_nil := by
+lemma head_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (· ~[r] ·)) :
+    (fromListIsChain l l_ne_nil hl).head = l.head l_ne_nil := by
   simp [← apply_zero, List.getElem_zero_eq_head]
+
+@[deprecated (since := "2025-09-24")] alias toList_fromListChain' := toList_fromListIsChain
+@[deprecated (since := "2025-09-24")] alias head_fromListChain' := head_fromListIsChain
 
 @[simp]
 lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p.last := by
-  simp [last, ← toList_getElem_eq_apply, List.getLast_eq_getElem]
+  grind [length_toList, last, Fin.last, toList_getElem]
 
 end
 
@@ -278,21 +297,21 @@ If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ b
 such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ b₀ -r→ b₁ -r→ ... -r→ bₘ`.
 -/
-@[simps length]
-def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
+@[simps]
+def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r where
   length := p.length + q.length + 1
-  toFun := Fin.append p q ∘ Fin.cast (by omega)
+  toFun := Fin.append p q ∘ Fin.cast (by lia)
   step i := by
     obtain hi | rfl | hi :=
-      lt_trichotomy i (Fin.castLE (by omega) (Fin.last _ : Fin (p.length + 1)))
+      lt_trichotomy i (Fin.castLE (by lia) (Fin.last _ : Fin (p.length + 1)))
     · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
     · convert connect
       · convert Fin.append_left p q _
       · convert Fin.append_right p q _; rfl
     · set x := _; set y := _
-      change r (Fin.append p q x) (Fin.append p q y)
+      change Fin.append p q x ~[r] Fin.append p q y
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-          i.2.trans <| by omega⟩ := by
+          i.2.trans <| by lia⟩ := by
         ext; dsimp [x, y]; rw [Nat.add_sub_cancel']; exact hi
       have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
           (by exact i.2)⟩ := by
@@ -302,87 +321,69 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
         rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
-      convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by omega⟩
+      convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by lia⟩
       rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
         Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
       exact hi
 
-lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
+lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (p.length + 1)) :
-    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; omega)) = p i := by
+    p.append q connect
+      ((i.castAdd (q.length + 1)).cast (by dsimp; lia) : Fin ((p.append q connect).length + 1))
+        = p i := by
   delta append
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
 
-open Fin.NatCast in -- TODO: can this be removed?
-lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
+lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (q.length + 1)) :
-    p.append q connect (i.natAdd p.length + 1) = q i := by
-  delta append
-  simp only [Fin.coe_natAdd, Function.comp_apply]
-  convert Fin.append_right _ _ _
-  ext
-  simp only [Fin.coe_cast, Fin.coe_natAdd]
-  conv_rhs => rw [add_assoc, add_comm 1, ← add_assoc]
-  change _ % _ = _
-  simp only [Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
-  omega
+    p.append q connect
+      ((i.natAdd (p.length + 1)).cast (by dsimp; lia) : Fin ((p.append q connect).length + 1))
+        = q i :=
+  Fin.append_right _ _ _
 
-@[simp] lemma head_append (p q : RelSeries r) (connect : r p.last q.head) :
+@[simp] lemma head_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).head = p.head :=
   append_apply_left p q connect 0
 
-@[simp] lemma last_append (p q : RelSeries r) (connect : r p.last q.head) :
+@[simp] lemma last_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).last = q.last := by
   delta last
   convert append_apply_right p q connect (Fin.last _)
-  ext
-  change _ = _ % _
-  simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
-    Nat.mod_succ]
+  ext1
+  dsimp
+  lia
 
-lemma append_assoc (p q w : RelSeries r) (hpq : r p.last q.head) (hqw : r q.last w.head) :
+lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.last ~[r] w.head) :
     (p.append q hpq).append w (by simpa) = p.append (q.append w hqw) (by simpa) := by
   ext
   · simp only [append_length, Nat.add_left_inj]
-    omega
+    lia
   · simp [append, Fin.append_assoc]
 
 @[simp]
-lemma toList_append (p q : RelSeries r) (connect : r p.last q.head) :
+lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).toList = p.toList ++ q.toList := by
   apply List.ext_getElem
-  · simp
-    omega
-  · intro i h1 h2
-    have h3' : i < p.length + 1 + (q.length + 1) := by simp_all
-    rw [toList_getElem_eq_apply_of_lt_length (by simp; omega)]
-    · simp only [append, Function.comp_apply, Fin.cast_mk, List.getElem_append]
-      split
-      · have : Fin.mk i h3' = Fin.castAdd _ ⟨i, by simp_all⟩ := rfl
-        rw [this, Fin.append_left, toList_getElem_eq_apply_of_lt_length]
-      · simp_all only [length_toList, append_length]
-        have : Fin.mk i h3' = Fin.natAdd _ ⟨i - p.length - 1, by omega⟩ := by simp_all; omega
-        rw [this, Fin.append_right, toList_getElem_eq_apply_of_lt_length]
-        rfl
-
+  · simp; grind
+  · simp [List.getElem_append, Fin.append, Fin.addCases]
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
 `r`-series can be pushed out to an `s`-series by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
 @[simps length]
-def map (p : RelSeries r) (f : r →r s) : RelSeries s where
+def map (p : RelSeries r) (f : r.Hom s) : RelSeries s where
   length := p.length
   toFun := f.1.comp p
   step := (f.2 <| p.step ·)
 
-@[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
+@[simp] lemma map_apply (p : RelSeries r) (f : r.Hom s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
 
-@[simp] lemma head_map (p : RelSeries r) (f : r →r s) : (p.map f).head = f p.head := rfl
+@[simp] lemma head_map (p : RelSeries r) (f : r.Hom s) : (p.map f).head = f p.head := rfl
 
-@[simp] lemma last_map (p : RelSeries r) (f : r →r s) : (p.map f).last = f p.last := rfl
+@[simp] lemma last_map (p : RelSeries r) (f : r.Hom s) : (p.map f).last = f p.last := rfl
 
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
@@ -392,11 +393,11 @@ is another `r`-series
 -/
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
-    (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
+    (prev_connect : p (Fin.castSucc i) ~[r] a) (connect_next : a ~[r] p i.succ) : RelSeries r where
   length := p.length + 1
   toFun := (Fin.castSucc i.succ).insertNth a p
   step m := by
-    set x := _; set y := _; change r x y
+    set x := _; set y := _; change x ~[r] y
     obtain hm | hm | hm := lt_trichotomy m.1 i.1
     · convert p.step ⟨m, hm.trans i.2⟩
       · change Fin.insertNth _ _ _ _ = _
@@ -421,7 +422,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           Fin.insertNth_apply_same]
     · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
       obtain hm | hm := hm
-      · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by omega) m.2⟩
+      · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by lia) m.2⟩
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above (h := hm)]
           aesop
@@ -438,7 +439,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
           swap
-          · change i.1 + 1 < m.1 + 1; omega
+          · change i.1 + 1 < m.1 + 1; lia
           simp only [Fin.pred_succ, eq_rec_constant]
           congr; ext; exact hm.symm
 
@@ -447,17 +448,17 @@ A relation series `a₀ -r→ a₁ -r→ ... -r→ aₙ` of `r` gives a relation
 by reversing the series `aₙ ←r- aₙ₋₁ ←r- ... ←r- a₁ ←r- a₀`.
 -/
 @[simps length]
-def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
+def reverse (p : RelSeries r) : RelSeries r.inv where
   length := p.length
   toFun := p ∘ Fin.rev
   step i := by
-    rw [Function.comp_apply, Function.comp_apply]
-    have hi : i.1 + 1 ≤ p.length := by omega
-    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by omega) hi⟩
+    rw [Function.comp_apply, Function.comp_apply, SetRel.mem_inv]
+    have hi : i.1 + 1 ≤ p.length := by lia
+    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by lia) hi⟩
     · ext; simp
     · ext
-      simp only [Fin.val_rev, Fin.coe_castSucc, Fin.val_succ]
-      omega
+      simp only [Fin.val_rev, Fin.val_castSucc, Fin.val_succ]
+      lia
 
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
     p.reverse i = p i.rev := rfl
@@ -468,7 +469,7 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
 @[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
   simp [RelSeries.last, RelSeries.head]
 
-@[simp] lemma reverse_reverse {r : Rel α α} (p : RelSeries r) : p.reverse.reverse = p := by
+@[simp] lemma reverse_reverse {r : SetRel α α} (p : RelSeries r) : p.reverse.reverse = p := by
   ext <;> simp
 
 /--
@@ -476,44 +477,42 @@ Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀
 a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 -/
 @[simps! length]
-def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r :=
+def cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) : RelSeries r :=
   (singleton r newHead).append p rel
 
-@[simp] lemma head_cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
+@[simp] lemma head_cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) :
     (p.cons newHead rel).head = newHead := rfl
 
-@[simp] lemma last_cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
+@[simp] lemma last_cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) :
     (p.cons newHead rel).last = p.last := by
   delta cons
   rw [last_append]
 
-lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.length + 1)) :
+lemma cons_cast_succ (s : RelSeries r) (a : α) (h : a ~[r] s.head) (i : Fin (s.length + 1)) :
     (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
-  dsimp [cons]
-  convert append_apply_right (singleton r a) s h i
-  ext
-  change i.1 + 1 = _ % _
-  simpa using (Nat.mod_eq_of_lt (by simp)).symm
+  simp [cons, Fin.append, Fin.addCases, Fin.subNat]
 
 @[simp]
-lemma append_singleton_left (p : RelSeries r) (x : α) (hx : r x p.head) :
+lemma append_singleton_left (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
     (singleton r x).append p hx = p.cons x hx :=
   rfl
 
 @[simp]
-lemma toList_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
+lemma toList_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
     (p.cons x hx).toList = x :: p.toList := by
   rw [cons, toList_append]
   simp
 
-lemma fromListChain'_cons (l : List α) (l_ne_nil : l ≠ [])
-    (hl : l.Chain' r) (x : α) (hx : r x (l.head l_ne_nil)) :
-    fromListChain' (x :: l) (by simp) (hl.cons_of_ne_nil l_ne_nil hx) =
-      (fromListChain' l l_ne_nil hl).cons x (by simpa) := by
+lemma fromListIsChain_cons (l : List α) (l_ne_nil : l ≠ [])
+    (hl : l.IsChain (· ~[r] ·)) (x : α) (hx : x ~[r] l.head l_ne_nil) :
+    fromListIsChain (x :: l) (by simp) (hl.cons_of_ne_nil l_ne_nil hx) =
+      (fromListIsChain l l_ne_nil hl).cons x (by simpa) := by
   apply toList_injective
   simp
 
-lemma append_cons {p q : RelSeries r} {x : α} (hx : r x p.head) (hq : r p.last q.head) :
+@[deprecated (since := "2025-09-24")] alias fromListChain'_cons := fromListIsChain_cons
+
+lemma append_cons {p q : RelSeries r} {x : α} (hx : x ~[r] p.head) (hq : p.last ~[r] q.head) :
     (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by
   simp only [cons]
   rw [append_assoc]
@@ -523,31 +522,31 @@ Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ
 a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
 -/
 @[simps! length]
-def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r :=
+def snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) : RelSeries r :=
   p.append (singleton r newLast) rel
 
-@[simp] lemma head_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+@[simp] lemma head_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     (p.snoc newLast rel).head = p.head := by
   delta snoc; rw [head_append]
 
-@[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+@[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
 
-lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : r s.last a) (i : Fin (s.length + 1)) :
+lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : s.last ~[r] a) (i : Fin (s.length + 1)) :
     (s.snoc a h) (.cast (by simp) (.castSucc i)) = s i :=
   append_apply_left s (singleton r a) h i
 
 -- This lemma is useful because `last_snoc` is about `Fin.last (p.snoc _ _).length`, but we often
 -- see `Fin.last (p.length + 1)` in practice. They are equal by definition, but sometimes simplifier
 -- does not pick up `last_snoc`
-@[simp] lemma last_snoc' (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+@[simp] lemma last_snoc' (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     p.snoc newLast rel (Fin.last (p.length + 1)) = newLast := last_append _ _ _
 
-@[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
+@[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : s.last ~[r] a)
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=
   Fin.append_left _ _ i
 
-lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : r p.last newLast} {x : α} :
+lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : p.last ~[r] newLast} {x : α} :
     x ∈ p.snoc newLast rel ↔ x ∈ p ∨ x = newLast := by
   simp only [snoc, append, singleton_length, Nat.add_zero, Nat.reduceAdd, Fin.cast_refl,
     Function.comp_id, mem_def, Set.mem_range]
@@ -583,20 +582,18 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   change p _ = p _
   congr
   ext
-  simp only [tail_length, Fin.val_succ, Fin.coe_cast, Fin.val_last]
+  simp only [tail_length, Fin.val_succ, Fin.val_cast, Fin.val_last]
   exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
 
 @[simp]
 lemma toList_tail {p : RelSeries r} (hp : p.length ≠ 0) : (p.tail hp).toList = p.toList.tail := by
   refine List.ext_getElem ?_ fun i h1 h2 ↦ ?_
   · simp
-    omega
-  · rw [List.getElem_tail, toList_getElem_eq_apply_of_lt_length (by simp_all),
-      toList_getElem_eq_apply_of_lt_length (by simp_all)]
-    simp_all [Fin.tail]
+    lia
+  · simp [Fin.tail]
 
 @[simp]
-lemma tail_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
+lemma tail_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
     (p.cons x hx).tail (by simp) = p := by
   apply toList_injective
   simp
@@ -604,7 +601,7 @@ lemma tail_cons (p : RelSeries r) (x : α) (hx : r x p.head) :
 lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
     (p.tail hp).cons p.head (p.3 ⟨0, Nat.zero_lt_of_ne_zero hp⟩) = p := by
   apply toList_injective
-  simp [← head_toList, List.head_cons_tail]
+  simp [← head_toList]
 
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
@@ -616,7 +613,7 @@ since `(p.cons x hx).tail _ = p` is not a definitional equality.
 @[elab_as_elim]
 def inductionOn (motive : RelSeries r → Sort*)
     (singleton : (x : α) → motive (RelSeries.singleton r x))
-    (cons : (p : RelSeries r) → (x : α) → (hx : r x p.head) → (hp : motive p) →
+    (cons : (p : RelSeries r) → (x : α) → (hx : x ~[r] p.head) → (hp : motive p) →
       motive (p.cons x hx)) (p : RelSeries r) :
     motive p := by
   let this {n : ℕ} (heq : p.length = n) : motive p := by
@@ -624,8 +621,8 @@ def inductionOn (motive : RelSeries r → Sort*)
     | zero =>
       convert singleton p.head
       ext n
-      exact heq
-      simp [show n = 0 by omega, apply_zero]
+      · exact heq
+      simp [show n = 0 by lia, apply_zero]
     | succ d hd =>
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
       nth_rw 3 [heq] at lq
@@ -635,7 +632,7 @@ def inductionOn (motive : RelSeries r → Sort*)
   exact this rfl
 
 @[simp]
-lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     (p.snoc newLast rel).toList = p.toList ++ [newLast] := by
   simp [snoc]
 
@@ -655,10 +652,10 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 
 /-- In a non-trivial series `p`, the last element of `p.eraseLast` is related to `p.last` -/
 lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
-    r p.eraseLast.last p.last := by
+    p.eraseLast.last ~[r] p.last := by
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
-  convert p.step ⟨p.length - 1, by omega⟩
-  simp only [Fin.succ_mk]; omega
+  convert p.step ⟨p.length - 1, by lia⟩
+  simp only [Fin.succ_mk]; lia
 
 @[simp]
 lemma toList_eraseLast (p : RelSeries r) (hp : p.length ≠ 0) :
@@ -666,8 +663,7 @@ lemma toList_eraseLast (p : RelSeries r) (hp : p.length ≠ 0) :
   apply List.ext_getElem
   · simpa using Nat.succ_pred_eq_of_ne_zero hp
   · intro i hi h2
-    rw [toList_getElem_eq_apply_of_lt_length (hi.trans_eq (by simp))]
-    simp [← toList_getElem_eq_apply_of_lt_length]
+    simp
 
 lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
     p.eraseLast.snoc p.last (p.eraseLast_last_rel_last h) = p := by
@@ -681,7 +677,7 @@ and to show that when `p` holds for `xs` it also holds for `xs` appended with on
 @[elab_as_elim]
 def inductionOn' (motive : RelSeries r → Sort*)
     (singleton : (x : α) → motive (RelSeries.singleton r x))
-    (snoc : (p : RelSeries r) → (x : α) → (hx : r p.last x) → (hp : motive p) →
+    (snoc : (p : RelSeries r) → (x : α) → (hx : p.last ~[r] x) → (hp : motive p) →
       motive (p.snoc x hx)) (p : RelSeries r) :
     motive p := by
   let this {n : ℕ} (heq : p.length = n) : motive p := by
@@ -690,7 +686,7 @@ def inductionOn' (motive : RelSeries r → Sort*)
       convert singleton p.head
       ext n
       · exact heq
-      · simp [show n = 0 by omega, apply_zero]
+      · simp [show n = 0 by lia, apply_zero]
     | succ d hd =>
       have ne0 : p.length ≠ 0 := by simp [heq]
       have len : p.eraseLast.length = d := by simp [heq]
@@ -754,10 +750,10 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
 @[simps! length]
-def take {r : Rel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
+def take {r : SetRel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := i
-  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by omega⟩
-  step := fun ⟨j, h⟩ => p.step ⟨j, by omega⟩
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j, by lia⟩
+  step := fun ⟨j, h⟩ => p.step ⟨j, by lia⟩
 
 @[simp]
 lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
@@ -771,10 +767,10 @@ lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
 @[simps! length]
 def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
-  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by omega⟩
+  toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by lia⟩
   step := fun ⟨j, h⟩ => by
-    convert p.step ⟨j+i.1, by omega⟩
-    simp only [Fin.succ_mk]; omega
+    convert p.step ⟨j+i.1, by lia⟩
+    simp only [Fin.succ_mk]; lia
 
 @[simp]
 lemma head_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).head = p.toFun i := by
@@ -784,19 +780,19 @@ lemma head_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).head = p
 lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p.last := by
   simp only [last, drop, Fin.last]
   congr
-  omega
+  lia
 
 end RelSeries
 
 variable {r} in
-lemma Rel.not_finiteDimensional_iff [Nonempty α] :
+lemma SetRel.not_finiteDimensional_iff [Nonempty α] :
     ¬ r.FiniteDimensional ↔ r.InfiniteDimensional := by
   rw [finiteDimensional_iff, infiniteDimensional_iff]
   push_neg
   constructor
   · intro H n
     induction n with
-    | zero => refine ⟨⟨0, ![Nonempty.some ‹_›], by simp⟩, by simp⟩
+    | zero => refine ⟨⟨0, ![_root_.Nonempty.some ‹_›], by simp⟩, by simp⟩
     | succ n IH =>
       obtain ⟨l, hl⟩ := IH
       obtain ⟨l', hl'⟩ := H l
@@ -806,58 +802,54 @@ lemma Rel.not_finiteDimensional_iff [Nonempty α] :
     exact ⟨l', by simp [hl']⟩
 
 variable {r} in
-lemma Rel.not_infiniteDimensional_iff [Nonempty α] :
+lemma SetRel.not_infiniteDimensional_iff [Nonempty α] :
     ¬ r.InfiniteDimensional ↔ r.FiniteDimensional := by
   rw [← not_finiteDimensional_iff, not_not]
 
-lemma Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
+lemma SetRel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
     r.FiniteDimensional ∨ r.InfiniteDimensional := by
   rw [← not_finiteDimensional_iff]
   exact em r.FiniteDimensional
 
-instance Rel.FiniteDimensional.swap [FiniteDimensional r] : FiniteDimensional (Function.swap r) :=
-  ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf⟩
+instance SetRel.FiniteDimensional.inv [FiniteDimensional r] : FiniteDimensional r.inv :=
+  ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf r⟩
 
 variable {r} in
 @[simp]
-lemma Rel.finiteDimensional_swap_iff :
-    FiniteDimensional (Function.swap r) ↔ FiniteDimensional r :=
-  ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩
+lemma SetRel.finiteDimensional_inv : FiniteDimensional r.inv ↔ FiniteDimensional r :=
+  ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
-instance Rel.InfiniteDimensional.swap [InfiniteDimensional r] :
-    InfiniteDimensional (Function.swap r) :=
+instance SetRel.InfiniteDimensional.inv [InfiniteDimensional r] : InfiniteDimensional r.inv :=
   ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
 
 variable {r} in
 @[simp]
-lemma Rel.infiniteDimensional_swap_iff :
-    InfiniteDimensional (Function.swap r) ↔ InfiniteDimensional r :=
-  ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩
+lemma SetRel.infiniteDimensional_inv : InfiniteDimensional r.inv ↔ InfiniteDimensional r :=
+  ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
-lemma Rel.wellFounded_swap_of_finiteDimensional [Rel.FiniteDimensional r] :
-    WellFounded (Function.swap r) := by
-  rw [WellFounded.wellFounded_iff_no_descending_seq]
+lemma SetRel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
+    r.inv.IsWellFounded := by
+  rw [IsWellFounded, wellFounded_iff_isEmpty_descending_chain]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
   exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
 
-lemma Rel.wellFounded_of_finiteDimensional [Rel.FiniteDimensional r] : WellFounded r :=
-  have : (Rel.FiniteDimensional (Function.swap r)) := Rel.finiteDimensional_swap_iff.mp ‹_›
-  wellFounded_swap_of_finiteDimensional (Function.swap r)
+lemma SetRel.IsWellFounded.of_finiteDimensional [r.FiniteDimensional] : r.IsWellFounded :=
+  .inv_of_finiteDimensional r.inv
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.FiniteDimensional ((· < ·) : γ → γ → Prop)
+  SetRel.FiniteDimensional {(a, b) : γ × γ | a < b}
 
 instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
     FiniteDimensionalOrder γ where
   exists_longest_relSeries := ⟨.singleton _ default, fun x ↦ by
     by_contra! r
-    exact (x.step ⟨0, by omega⟩).ne <| Subsingleton.elim _ _⟩
+    exact (x.step ⟨0, by lia⟩).ne <| Subsingleton.elim _ _⟩
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.InfiniteDimensional ((· < ·) : γ → γ → Prop)
+  SetRel.InfiniteDimensional {(a, b) : γ × γ | a < b}
 
 section LTSeries
 
@@ -865,7 +857,7 @@ variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
-abbrev LTSeries := RelSeries ((· < ·) : Rel α α)
+abbrev LTSeries := RelSeries {(a, b) : α × α | a < b}
 
 namespace LTSeries
 
@@ -885,11 +877,8 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
-@[deprecated (since := "2025-03-01")]
-alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
-
 lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
-  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
+  obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
 variable {α}
@@ -949,10 +938,10 @@ def map (p : LTSeries α) (f : α → β) (hf : StrictMono f) : LTSeries β :=
   LTSeries.mk p.length (f.comp p) (hf.comp p.strictMono)
 
 @[simp] lemma head_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
-  (p.map f hf).head = f p.head := rfl
+    (p.map f hf).head = f p.head := rfl
 
 @[simp] lemma last_map (p : LTSeries α) (f : α → β) (hf : StrictMono f) :
-  (p.map f hf).last = f p.last := rfl
+    (p.map f hf).last = f p.last := rfl
 
 /--
 For two preorders `α, β`, if `f : α → β` is surjective and strictly comonotonic, then a
@@ -962,9 +951,10 @@ preimage of `f⁻¹ {bᵢ}`.
 -/
 @[simps!]
 noncomputable def comap (p : LTSeries β) (f : α → β)
-  (comap : ∀ ⦃x y⦄, f x < f y → x < y)
-  (surjective : Function.Surjective f) :
-  LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
+    (comap : ∀ ⦃x y⦄, f x < f y → x < y)
+    (surjective : Function.Surjective f) :
+    LTSeries α :=
+  mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
 /-- The strict series `0 < … < n` in `ℕ`. -/
@@ -975,7 +965,7 @@ def range (n : ℕ) : LTSeries ℕ where
 
 @[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl
 
-@[simp] lemma range_apply (n : ℕ) (i : Fin (n+1)) : (range n) i = i := rfl
+@[simp] lemma range_apply (n : ℕ) (i : Fin (n + 1)) : (range n) i = i := rfl
 
 @[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
 
@@ -985,7 +975,7 @@ def range (n : ℕ) : LTSeries ℕ where
 in a bidirectionally well-founded order. -/
 theorem exists_relSeries_covBy
     {α} [PartialOrder α] [WellFoundedLT α] [WellFoundedGT α] (s : LTSeries α) :
-    ∃ (t : RelSeries (α := α) (· ⋖ ·)) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
+    ∃ (t : RelSeries {(a, b) : α × α | a ⋖ b}) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
       t ∘ i = s ∧ i 0 = 0 ∧ i (.last _) = .last _ := by
   obtain ⟨n, s, h⟩ := s
   induction n with
@@ -994,7 +984,7 @@ theorem exists_relSeries_covBy
     obtain ⟨t₁, i, ht, hi₁, hi₂⟩ := IH (s ∘ Fin.castSucc) fun _ ↦ h _
     obtain ⟨t₂, h₁, m, h₂, ht₂⟩ :=
       exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le (h (.last _)).le
-    let t₃ : RelSeries (α := α) (· ⋖ ·) := ⟨m, (t₂ ·), fun i ↦ by simpa using ht₂ i⟩
+    let t₃ : RelSeries {(a, b) : α × α | a ⋖ b} := ⟨m, (t₂ ·), fun i ↦ by simpa using ht₂ i⟩
     have H : t₁.last = t₂ 0 := (congr(t₁ $hi₂.symm).trans (congr_fun ht _)).trans h₁.symm
     refine ⟨t₁.smash t₃ H, ⟨Fin.snoc (Fin.castLE (by simp) ∘ i) (.last _), ?_⟩, ?_, ?_, ?_⟩
     · refine Fin.lastCases (Fin.lastCases (fun _ ↦ rfl) fun j eq ↦ ?_) fun j ↦ Fin.lastCases
@@ -1012,7 +1002,7 @@ theorem exists_relSeries_covBy
 
 theorem exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
     {α} [PartialOrder α] [BoundedOrder α] [WellFoundedLT α] [WellFoundedGT α] (s : LTSeries α) :
-    ∃ (t : RelSeries (α := α) (· ⋖ ·)) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
+    ∃ (t : RelSeries {(a, b) : α × α | a ⋖ b}) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
       t ∘ i = s ∧ t.head = ⊥ ∧ t.last = ⊤ := by
   wlog h₁ : s.head = ⊥
   · obtain ⟨t, i, hi, ht⟩ := this (s.cons ⊥ (bot_lt_iff_ne_bot.mpr h₁)) rfl
@@ -1041,8 +1031,8 @@ lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.le
   | base => simp
   | succ j _hij ih =>
     specialize ih (Nat.lt_of_succ_lt hj)
-    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩ := p.step ⟨j, by omega⟩
-    norm_cast at *; omega
+    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩ := p.step ⟨j, by lia⟩
+    norm_cast at *; lia
 
 /--
 In ℤ, two entries in an `LTSeries` differ by at least the difference of their indices.
@@ -1060,8 +1050,8 @@ lemma apply_add_index_le_apply_add_index_int (p : LTSeries ℤ) (i j : Fin (p.le
   | base => simp
   | succ j _hij ih =>
     specialize ih (Nat.lt_of_succ_lt hj)
-    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩:= p.step ⟨j, by omega⟩
-    norm_cast at *; omega
+    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩:= p.step ⟨j, by lia⟩
+    norm_cast at *; lia
 
 /-- In ℕ, the head and tail of an `LTSeries` differ at least by the length of the series -/
 lemma head_add_length_le_nat (p : LTSeries ℕ) : p.head + p.length ≤ p.last :=
@@ -1077,9 +1067,9 @@ variable [Fintype α]
 
 lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
   by_contra! h
-  obtain ⟨i, j, hn, he⟩ := Fintype.exists_ne_map_eq_of_card_lt s (by rw [Fintype.card_fin]; omega)
+  obtain ⟨i, j, hn, he⟩ := Fintype.exists_ne_map_eq_of_card_lt s (by rw [Fintype.card_fin]; lia)
   wlog hl : i < j generalizing i j
-  · exact this j i hn.symm he.symm (by omega)
+  · exact this j i hn.symm he.symm (by lia)
   exact absurd he (s.strictMono hl).ne
 
 instance [DecidableLT α] : Fintype (LTSeries α) where
@@ -1098,18 +1088,18 @@ end LTSeries
 
 lemma not_finiteDimensionalOrder_iff [Preorder α] [Nonempty α] :
     ¬ FiniteDimensionalOrder α ↔ InfiniteDimensionalOrder α :=
-  Rel.not_finiteDimensional_iff
+  SetRel.not_finiteDimensional_iff
 
 lemma not_infiniteDimensionalOrder_iff [Preorder α] [Nonempty α] :
     ¬ InfiniteDimensionalOrder α ↔ FiniteDimensionalOrder α :=
-  Rel.not_infiniteDimensional_iff
+  SetRel.not_infiniteDimensional_iff
 
 variable (α) in
 lemma finiteDimensionalOrder_or_infiniteDimensionalOrder [Preorder α] [Nonempty α] :
     FiniteDimensionalOrder α ∨ InfiniteDimensionalOrder α :=
-  Rel.finiteDimensional_or_infiniteDimensional _
+  SetRel.finiteDimensional_or_infiniteDimensional _
 
-/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
+/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite-dimensional type then so
   is `β`. -/
 lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
     (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :

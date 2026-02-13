@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Algebra.Order.Ring.Rat
+module
+
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Order.Nonneg.Field
+public import Mathlib.Algebra.Order.Ring.Rat
 
 /-!
 # The rational numbers form a linear ordered field
@@ -20,5 +22,7 @@ See note [foundational algebra order theory].
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
+
+public section
 
 deriving instance LinearOrderedCommGroupWithZero for NNRat

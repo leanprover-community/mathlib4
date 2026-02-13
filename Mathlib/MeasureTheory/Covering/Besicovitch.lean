@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Covering.Differentiation
+module
+
+public import Mathlib.MeasureTheory.Covering.Differentiation
 
 /-!
 # Besicovitch covering theorems
@@ -89,6 +91,8 @@ the remaining points, while remaining disjoint from the already chosen balls. Th
 balls is the desired almost everywhere covering.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -109,7 +113,7 @@ construction for the Besicovitch covering theorem. It depends on some parameter 
 This is a family of balls (indexed by `i : Fin N.succ`, with center `c i` and radius `r i`) such
 that the last ball intersects all the other balls (condition `inter`),
 and given any two balls there is an order between them, ensuring that the first ball does not
-contain the center of the other one, and the radius of the second ball can not be larger than
+contain the center of the other one, and the radius of the second ball cannot be larger than
 the radius of the first ball (up to a factor `τ`). This order corresponds to the order of choice
 in the inductive construction: otherwise, the second ball would have been chosen before.
 This is the condition `h`.
@@ -134,7 +138,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `Besicovitch.SatelliteConfig.r`. -/
 @[positivity Besicovitch.SatelliteConfig.r _ _]
-def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Besicovitch.SatelliteConfig.r $β $inst $N $τ $self $i) =>
     assertInstancesCommute
@@ -144,7 +148,7 @@ def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα 
 end Mathlib.Meta.Positivity
 
 /-- A metric space has the Besicovitch covering property if there exist `N` and `τ > 1` such that
-there are no satellite configuration of parameter `τ` with `N+1` points. This is the condition that
+there are no satellite configurations of parameter `τ` with `N+1` points. This is the condition that
 guarantees that the measurable Besicovitch covering theorem holds. It is satisfied by
 finite-dimensional real vector spaces. -/
 class HasBesicovitchCovering (α : Type*) [MetricSpace α] : Prop where
@@ -294,7 +298,7 @@ theorem lastStep_nonempty :
   simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and,
     Subtype.exists] at A
   specialize A x H
-  simp? [hxy] at A says simp only [hxy, mem_ball, dist_self, not_lt] at A
+  replace A : p.r (p.index y) ≤ 0 := by simpa [hxy] using A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
 
 /-- Every point is covered by chosen balls, before `p.lastStep`. -/
@@ -587,7 +591,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     exact ⟨⟨0, bot_lt_iff_ne_bot.2 Npos⟩, Finset.mem_univ _⟩
   replace hi : μ s / (N + 1) < μ (s ∩ v i) := by
     apply lt_of_lt_of_le _ hi
-    apply (ENNReal.mul_lt_mul_left hμs.ne' (by finiteness)).2
+    apply (ENNReal.mul_lt_mul_iff_right hμs.ne' (by finiteness)).2
     rw [ENNReal.inv_lt_inv]
     conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
     exact ENNReal.add_lt_add_left (by finiteness) zero_lt_one
@@ -776,7 +780,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
         calc
           _ ≤ N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by
             rw [u_succ]; exact (hF (u n) (Pu n)).2.2
-          _ ≤ _ := by rw [pow_succ', mul_assoc]; exact mul_le_mul_left' IH _
+          _ ≤ _ := by grw [pow_succ', mul_assoc, IH]
     have C : Tendsto (fun n : ℕ => ((N : ℝ≥0∞) / (N + 1)) ^ n * μ s) atTop (𝓝 (0 * μ s)) := by
       apply ENNReal.Tendsto.mul_const _ (Or.inr (measure_lt_top μ s).ne)
       apply ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
@@ -987,7 +991,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
           let F : S i ≃ ((↑) : s' → α) '' S i := this.bijOn_image.equiv _
           exact (F.tsum_eq fun x => μ (closedBall x (r x))).symm
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by
-          congr 1; ext x; have : (x : α) ∈ s' := x.1.2; simp only [s', r, if_pos this]
+          grind
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
           haveI : Encodable (S i) := (S_count i).toEncodable
           rw [measure_iUnion]

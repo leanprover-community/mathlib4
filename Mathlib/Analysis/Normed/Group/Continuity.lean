@@ -3,26 +3,60 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Sequences
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Sequences
 
 /-!
-# Continuity of the norm on (semi)groups
+# Continuity of the norm on (semi)normed groups
 
 ## Tags
 
 normed group
 -/
 
-variable {𝓕 α ι κ E F G : Type*}
+@[expose] public section
 
-open Filter Function Metric Bornology ENNReal NNReal Uniformity Pointwise Topology
+variable {α ι κ E F G : Type*}
+
+open Filter Function Metric Bornology
+open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G]
+
+open Finset
+
+section ContinuousENorm
+
+variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+
+@[continuity, fun_prop]
+lemma continuous_enorm : Continuous fun a : E ↦ ‖a‖ₑ := ContinuousENorm.continuous_enorm
+
+variable {X : Type*} [TopologicalSpace X] {f : X → E} {s : Set X} {a : X}
+
+@[fun_prop]
+lemma Continuous.enorm : Continuous f → Continuous (‖f ·‖ₑ) :=
+  continuous_enorm.comp
+
+lemma ContinuousAt.enorm {a : X} (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := by fun_prop
+
+@[fun_prop]
+lemma ContinuousWithinAt.enorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (‖f ·‖ₑ) s a :=
+  (ContinuousENorm.continuous_enorm.continuousWithinAt).comp (t := Set.univ) h
+    (fun _ _ ↦ by trivial)
+
+@[fun_prop]
+lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
+  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
+
+end ContinuousENorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -43,11 +77,11 @@ function `a` which tends to `0`, then `f` tends to `1` (neutral element of `Semi
 In this pair of lemmas (`squeeze_one_norm'` and `squeeze_one_norm`), following a convention of
 similar lemmas in `Topology.MetricSpace.Basic` and `Topology.Algebra.Order`, the `'` version is
 phrased using "eventually" and the non-`'` version is phrased absolutely. -/
-@[to_additive "Special case of the sandwich theorem: if the norm of `f` is eventually bounded by a
-real function `a` which tends to `0`, then `f` tends to `0`. In this pair of lemmas
+@[to_additive /-- Special case of the sandwich theorem: if the norm of `f` is eventually bounded by
+a real function `a` which tends to `0`, then `f` tends to `0`. In this pair of lemmas
 (`squeeze_zero_norm'` and `squeeze_zero_norm`), following a convention of similar lemmas in
 `Topology.MetricSpace.Pseudo.Defs` and `Topology.Algebra.Order`, the `'` version is phrased using
-\"eventually\" and the non-`'` version is phrased absolutely."]
+"eventually" and the non-`'` version is phrased absolutely. -/]
 theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ᶠ n in t₀, ‖f n‖ ≤ a n)
     (h' : Tendsto a t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 1) :=
   tendsto_one_iff_norm_tendsto_zero.2 <|
@@ -55,8 +89,8 @@ theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h 
 
 /-- Special case of the sandwich theorem: if the norm of `f` is bounded by a real function `a` which
 tends to `0`, then `f` tends to `1`. -/
-@[to_additive "Special case of the sandwich theorem: if the norm of `f` is bounded by a real
-function `a` which tends to `0`, then `f` tends to `0`."]
+@[to_additive /-- Special case of the sandwich theorem: if the norm of `f` is bounded by a real
+function `a` which tends to `0`, then `f` tends to `0`. -/]
 theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ n, ‖f n‖ ≤ a n) :
     Tendsto a t₀ (𝓝 0) → Tendsto f t₀ (𝓝 1) :=
   squeeze_one_norm' <| Eventually.of_forall h
@@ -75,7 +109,7 @@ theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x�
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
 
 /-- See `tendsto_norm_one` for a version with pointed neighborhoods. -/
-@[to_additive "See `tendsto_norm_zero` for a version with pointed neighborhoods."]
+@[to_additive /-- See `tendsto_norm_zero` for a version with pointed neighborhoods. -/]
 theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := by
   simpa using tendsto_norm_div_self (1 : E)
 
@@ -97,12 +131,14 @@ instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm
 
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
+  enorm_zero := by simp [enorm_eq_nnnorm]
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
-  mul_comm := by simp [mul_comm]
+  __ := NormedGroup.toENormedMonoid
+  __ := ‹NormedCommGroup E›
 
 end Instances
 
@@ -120,14 +156,16 @@ set_option linter.docPrime false in
 theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
   h.map continuous_nnnorm' |>.eq
 
-@[to_additive Inseparable.enorm_eq_enorm]
-theorem Inseparable.enorm_eq_enorm' {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
   h.map continuous_enorm |>.eq
 
+@[deprecated (since := "2025-12-23")]
+alias Inseparable.enorm_eq_enorm' := Inseparable.enorm_eq_enorm
+
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
-  rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).le_iff_eq]
+  rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).ge_iff_eq']
 
 @[to_additive]
 theorem closure_one_eq : closure ({1} : Set E) = { x | ‖x‖ = 0 } :=
@@ -167,9 +205,10 @@ section ContinuousENorm
 
 variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : α → E}
 
-@[to_additive Filter.Tendsto.enorm]
-lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
+lemma Filter.Tendsto.enorm (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
   .comp continuous_enorm.continuousAt h
+
+@[deprecated (since := "2025-12-23")] alias Filter.Tendsto.enorm' := Filter.Tendsto.enorm
 
 end ContinuousENorm
 
@@ -210,8 +249,8 @@ theorem ContinuousOn.nnnorm' {s : Set α} (h : ContinuousOn f s) :
 end
 
 /-- If `‖y‖ → ∞`, then we can assume `y ≠ x` for any fixed `x`. -/
-@[to_additive eventually_ne_of_tendsto_norm_atTop "If `‖y‖→∞`, then we can assume `y≠x` for any
-fixed `x`"]
+@[to_additive eventually_ne_of_tendsto_norm_atTop /-- If `‖y‖→∞`, then we can assume `y≠x` for any
+fixed `x` -/]
 theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
     (h : Tendsto (fun y => ‖f y‖) l atTop) (x : E) : ∀ᶠ y in l, f y ≠ x :=
   (h.eventually_ne_atTop _).mono fun _x => ne_of_apply_ne norm
@@ -310,29 +349,14 @@ section NormedGroup
 variable [NormedGroup E] {a b : E}
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
-@[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
+@[to_additive /-- See `tendsto_norm_zero` for a version with full neighborhoods. -/]
 lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_norm_zero' := tendsto_norm_nhdsNE_zero
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_norm_one' := tendsto_norm_nhdsNE_one
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_norm_nhdsWithin_zero := tendsto_norm_nhdsNE_zero
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_norm_nhdsWithin_one := tendsto_norm_nhdsNE_one
 
 @[to_additive]
 theorem tendsto_norm_div_self_nhdsNE (a : E) : Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
   (tendsto_norm_div_self a).inf <|
     tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_norm_sub_self_punctured_nhds := tendsto_norm_sub_self_nhdsNE
-@[to_additive existing, deprecated (since := "2024-12-22")]
-alias tendsto_norm_div_self_punctured_nhds := tendsto_norm_div_self_nhdsNE
 
 variable (E)
 
@@ -340,10 +364,5 @@ variable (E)
 @[to_additive comap_norm_nhdsGT_zero]
 lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
-
-@[deprecated (since := "2024-12-22")]
-alias comap_norm_nhdsWithin_Ioi_zero := comap_norm_nhdsGT_zero
-@[to_additive existing comap_norm_nhdsWithin_Ioi_zero, deprecated (since := "2024-12-22")]
-alias comap_norm_nhdsWithin_Ioi_zero' := comap_norm_nhdsGT_zero'
 
 end NormedGroup

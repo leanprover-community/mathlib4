@@ -3,9 +3,11 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Int.Log
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Int.Log
 
 /-!
 # Real logarithm base `b`
@@ -21,6 +23,8 @@ We prove some basic properties of this function and its relation to `rpow`.
 
 logarithm, continuity
 -/
+
+@[expose] public section
 
 
 open Set Filter Function
@@ -70,8 +74,8 @@ theorem logb_abs_base (b x : ℝ) : logb |b| x = logb b x := by rw [logb, logb, 
 theorem logb_abs (b x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 
 @[simp]
-theorem logb_neg_base_eq_logb (b x : ℝ) : logb (-b) x = logb b x := by
-  rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
+theorem logb_neg_base_eq_logb (b : ℝ) : logb (-b) = logb b := by
+  ext x; rw [← logb_abs_base b x, ← logb_abs_base (-b) x, abs_neg]
 
 @[simp]
 theorem logb_neg_eq_logb (b x : ℝ) : logb b (-x) = logb b x := by
@@ -125,15 +129,10 @@ section BPosAndNeOne
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
 include b_pos b_ne_one
 
-private theorem log_b_ne_zero : log b ≠ 0 := by
-  have b_ne_zero : b ≠ 0 := by linarith
-  have b_ne_minus_one : b ≠ -1 := by linarith
-  simp [b_ne_one, b_ne_zero, b_ne_minus_one]
-
 @[simp]
 theorem logb_rpow : logb b (b ^ x) = x := by
   rw [logb, div_eq_iff, log_rpow b_pos]
-  exact log_b_ne_zero b_pos b_ne_one
+  exact log_ne_zero_of_pos_of_ne_one b_pos b_ne_one
 
 theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
@@ -141,7 +140,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
     apply rpow_pos_of_pos b_pos
   · simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
-  field_simp [log_b_ne_zero b_pos b_ne_one]
+  field [log_ne_zero_of_pos_of_ne_one b_pos b_ne_one]
 
 @[simp]
 theorem rpow_logb (hx : 0 < x) : b ^ logb b x = x := by
@@ -406,7 +405,7 @@ theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_floor_eq_floor, floor_logb_natCast (by simp),
     Int.log_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by lia))
 
 @[norm_cast]
 theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
@@ -417,11 +416,15 @@ theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_ceil_eq_ceil, ceil_logb_natCast (by simp),
     Int.clog_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by lia))
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
   rw [Real.floor_logb_natCast (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast]
+
+lemma log2_le_logb (n : ℕ) : Nat.log2 n ≤ Real.logb 2 n := by
+  calc (Nat.log2 n : ℝ) = Nat.log 2 n := mod_cast Nat.log2_eq_log_two
+  _ ≤ Real.logb 2 n := natLog_le_logb _ _
 
 @[simp]
 theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨ x = 1 ∨ x = -1 := by
@@ -431,28 +434,16 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 theorem tendsto_logb_nhdsNE_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[≠] 0) atBot :=
   tendsto_log_nhdsNE_zero.atBot_div_const (log_pos hb)
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero := tendsto_logb_nhdsNE_zero
-
 theorem tendsto_logb_nhdsNE_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[≠] 0) atTop :=
   tendsto_log_nhdsNE_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero_of_base_lt_one := tendsto_logb_nhdsNE_zero_of_base_lt_one
-
 lemma tendsto_logb_nhdsGT_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
   tendsto_log_nhdsGT_zero.atBot_div_const (log_pos hb)
-
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero_right := tendsto_logb_nhdsGT_zero
 
 lemma tendsto_logb_nhdsGT_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[>] 0) atTop :=
   tendsto_log_nhdsGT_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
-
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero_right_of_base_lt_one := tendsto_logb_nhdsGT_zero_of_base_lt_one
 
 /--
 The function `|logb b x|` tends to `+∞` as `x` tendsto `+∞`.
@@ -516,7 +507,7 @@ theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) 
   cases eq_or_ne (log b) 0 with
   | inl h => simpa [logb, h] using ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
   | inr h => apply (tendsto_pow_log_div_mul_add_atTop (a * (log b) ^ n) (c * (log b) ^ n) n
-                (by positivity)).congr fun x ↦ by field_simp [logb]; ring
+                (by positivity)).congr fun x ↦ by simp [field, div_pow, logb]
 
 theorem isLittleO_pow_logb_id_atTop {n : ℕ} : (fun x => logb b x ^ n) =o[atTop] id := by
   rw [Asymptotics.isLittleO_iff_tendsto']
@@ -531,6 +522,32 @@ theorem isLittleO_const_logb_atTop {c : ℝ} (hb : b ≠ -1 ∧ b ≠ 0 ∧ b �
   rw [Asymptotics.isLittleO_const_left, or_iff_not_imp_left]
   intro hc
   exact tendsto_abs_logb_atTop hb
+
+theorem isBigO_logb_log : logb b =O[⊤] log := by
+  by_cases! h : b = -1 ∨ b = 0 ∨ b = 1
+  · obtain rfl | rfl | rfl := h
+    all_goals simpa [-Asymptotics.isBigO_top] using Asymptotics.isBigO_zero log ⊤
+  · simpa [logb, div_eq_mul_inv, mul_comm]
+      using (Asymptotics.isBigO_refl log ⊤).const_mul_left (log b)⁻¹
+
+theorem isBigO_log_const_mul_log_atTop (c : ℝ) : (fun x ↦ log (c * x)) =O[atTop] log := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa using isLittleO_const_log_atTop.isBigO
+  · calc (fun x ↦ log (c * x))
+      =ᶠ[atTop] (fun x => log c + log x) := by
+          filter_upwards [eventually_gt_atTop 0] with a ha using log_mul hc ha.ne'
+      _ =O[atTop] log :=
+          isLittleO_const_log_atTop.isBigO.add (Asymptotics.isBigO_refl ..)
+
+theorem isBigO_log_mul_const_log_atTop (c : ℝ) : (fun x ↦ log (x * c)) =O[atTop] log := by
+  simpa [mul_comm] using isBigO_log_const_mul_log_atTop c
+
+theorem isBigO_logb_const_mul_log_atTop (c : ℝ) : (fun x ↦ logb b (c * x)) =O[atTop] log := by
+  simpa [logb, div_eq_mul_inv, mul_comm]
+    using (isBigO_log_const_mul_log_atTop c).const_mul_left (log b)⁻¹
+
+theorem isBigO_logb_mul_const_log_atTop (c : ℝ) : (fun x ↦ logb b (x * c)) =O[atTop] log := by
+  simpa [mul_comm] using isBigO_logb_const_mul_log_atTop c
 
 end Real
 
@@ -596,7 +613,7 @@ then `P` is true for all `x ≥ x₀`. -/
 lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
     (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
     (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
-      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
+      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n + 1) * x₀), P z)) :
     ∀ x ≥ x₀, P x := by
   suffices ∀ n : ℕ, ∀ x ∈ Set.Ico x₀ (r ^ (n + 1) * x₀), P x by
     intro x hx

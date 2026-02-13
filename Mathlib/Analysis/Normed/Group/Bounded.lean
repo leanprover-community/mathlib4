@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Order.Filter.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Order.Filter.Pointwise
 
 /-!
 # Boundedness in normed groups
@@ -16,6 +18,8 @@ This file rephrases metric boundedness in terms of norms.
 
 normed group
 -/
+
+public section
 
 open Filter Metric Bornology
 open scoped Pointwise Topology
@@ -60,7 +64,7 @@ lemma Filter.inv_cobounded : (cobounded E)⁻¹ = cobounded E := by
   simp only [← comap_norm_atTop', ← Filter.comap_inv, comap_comap, Function.comp_def, norm_inv']
 
 /-- In a (semi)normed group, inversion `x ↦ x⁻¹` tends to infinity at infinity. -/
-@[to_additive "In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity."]
+@[to_additive /-- In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity. -/]
 theorem Filter.tendsto_inv_cobounded : Tendsto Inv.inv (cobounded E) (cobounded E) :=
   inv_cobounded.le
 
@@ -104,10 +108,10 @@ lemma HasCompactMulSupport.exists_bound_of_continuous [TopologicalSpace α]
 and a bounded function tends to one. This lemma is formulated for any binary operation
 `op : E → F → G` with an estimate `‖op x y‖ ≤ A * ‖x‖ * ‖y‖` for some constant A instead of
 multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/
-@[to_additive "A helper lemma used to prove that the (scalar or usual) product of a function that
+@[to_additive /-- A helper lemma used to prove that the (scalar or usual) product of a function that
 tends to zero and a bounded function tends to zero. This lemma is formulated for any binary
 operation `op : E → F → G` with an estimate `‖op x y‖ ≤ A * ‖x‖ * ‖y‖` for some constant A instead
-of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`."]
+of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/]
 lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
@@ -130,10 +134,10 @@ lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l 
 and a bounded function tends to one. This lemma is formulated for any binary operation
 `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y‖` instead of multiplication so that it
 can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/
-@[to_additive "A helper lemma used to prove that the (scalar or usual) product of a function that
+@[to_additive /-- A helper lemma used to prove that the (scalar or usual) product of a function that
 tends to zero and a bounded function tends to zero. This lemma is formulated for any binary
 operation `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y‖` instead of multiplication so
-that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`."]
+that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/]
 theorem Filter.Tendsto.op_one_isBoundedUnder_le {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) (op : E → F → G)
     (h_op : ∀ x y, ‖op x y‖ ≤ ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) :=

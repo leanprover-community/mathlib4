@@ -3,7 +3,9 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang, Dagur Asgeirsson, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
 
 # Uniqueness of adjoints
@@ -20,9 +22,11 @@ This file shows that adjoints are unique up to natural isomorphism.
 
 -/
 
-open CategoryTheory
+@[expose] public section
 
-variable {C D : Type*} [Category C] [Category D]
+open CategoryTheory Functor
+
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace CategoryTheory.Adjunction
 

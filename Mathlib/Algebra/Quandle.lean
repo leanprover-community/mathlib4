@@ -3,9 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Tactic.Ring
 
 /-!
 # Racks and Quandles
@@ -81,6 +83,8 @@ Use `open quandles` to use these.
 
 rack, quandle
 -/
+
+@[expose] public section
 
 
 open MulOpposite
@@ -404,7 +408,7 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
   toFun := f
   map_act' := by simp
 
-/-- The dihedral quandle. This is the conjugation quandle of the dihedral group restrict to flips.
+/-- The dihedral quandle. This is the conjugation quandle of the dihedral group restricted to flips.
 
 Used for Fox n-colorings of knots. -/
 def Dihedral (n : ℕ) :=
@@ -676,7 +680,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
           exact F.map_mul
         | inv x ih_x =>
           have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
-          rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
+          rw [hm, map_inv, map_inv, ih_x]
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.
 -/

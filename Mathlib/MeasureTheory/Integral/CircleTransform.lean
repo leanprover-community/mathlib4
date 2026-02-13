@@ -3,8 +3,10 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Complex.Basic
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Circle integral transform
@@ -17,6 +19,8 @@ These results are useful for proving that the uniform limit of a sequence of hol
 is holomorphic.
 
 -/
+
+@[expose] public section
 
 
 open Set MeasureTheory Metric Filter Function
@@ -37,7 +41,7 @@ If `f` is differentiable and `w` is in the interior of the ball, then the integr
 def circleTransform (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • (circleMap z R θ - w)⁻¹ • f (circleMap z R θ)
 
-/-- The derivative of `circleTransform` w.r.t `w`. -/
+/-- The derivative of `circleTransform` w.r.t. `w`. -/
 def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • ((circleMap z R θ - w) ^ 2)⁻¹ • f (circleMap z R θ)
 
@@ -60,7 +64,7 @@ theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
   ring
 
 theorem integral_circleTransform (f : ℂ → E) :
-    (∫ θ : ℝ in (0)..2 * π, circleTransform R z w f θ) =
+    (∫ θ : ℝ in 0..2 * π, circleTransform R z w f θ) =
       (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z := by
   simp_rw [circleTransform, circleIntegral, deriv_circleMap, circleMap]
   simp
@@ -70,7 +74,7 @@ theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w :
     Continuous (circleTransform R z w f) := by
   apply_rules [Continuous.smul, continuous_const]
   · rw [funext <| deriv_circleMap _ _]
-    apply_rules [Continuous.mul, continuous_circleMap 0 R, continuous_const]
+    fun_prop
   · exact continuous_circleMap_inv hw
   · apply ContinuousOn.comp_continuous hf (continuous_circleMap z R)
     exact fun _ => (circleMap_mem_sphere _ hR.le) _
@@ -105,9 +109,6 @@ theorem continuousOn_norm_circleTransformBoundingFunction {R r : ℝ} (hr : r < 
     · simpa only [inv_pow] using continuousOn_prod_circle_transform_function hr
   exact this.norm
 
-@[deprecated (since := "2025-02-17")] alias continuousOn_abs_circleTransformBoundingFunction :=
-  continuousOn_norm_circleTransformBoundingFunction
-
 theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 0 ≤ r) (z : ℂ) :
     ∃ x : closedBall z r ×ˢ [[0, 2 * π]], ∀ y : closedBall z r ×ˢ [[0, 2 * π]],
     ‖circleTransformBoundingFunction R z y‖ ≤ ‖circleTransformBoundingFunction R z x‖ := by
@@ -118,9 +119,6 @@ theorem norm_circleTransformBoundingFunction_le {R r : ℝ} (hr : r < R) (hr' : 
     (nonempty_closedBall.2 hr').prod nonempty_uIcc
   have := IsCompact.exists_isMaxOn comp none (cts.mono <| prod_mono_right (subset_univ _))
   simpa [isMaxOn_iff] using this
-
-@[deprecated (since := "2025-02-17")] alias abs_circleTransformBoundingFunction_le :=
-  norm_circleTransformBoundingFunction_le
 
 /-- The derivative of a `circleTransform` is locally bounded. -/
 theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ → ℂ} (hx : x ∈ ball z R)

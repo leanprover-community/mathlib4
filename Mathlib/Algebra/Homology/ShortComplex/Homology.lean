@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.RightHomology
+public import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
 /-!
 # Homology of short complexes
@@ -31,6 +32,8 @@ such a structure could be used as a basis for the *definition* of homology.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
@@ -54,7 +57,7 @@ structure HomologyData where
   iso : left.H ≅ right.H
   /-- the pentagon relation expressing the compatibility of the left
   and right homology data -/
-  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by aesop_cat
+  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by cat_disch
 
 attribute [reassoc (attr := simp)] HomologyData.comm
 
@@ -201,8 +204,7 @@ class HasHomology : Prop where
   condition : Nonempty S.HomologyData
 
 /-- A chosen `S.HomologyData` for a short complex `S` that has homology -/
-noncomputable def homologyData [HasHomology S] :
-  S.HomologyData := HasHomology.condition.some
+noncomputable def homologyData [HasHomology S] : S.HomologyData := HasHomology.condition.some
 
 variable {S}
 
@@ -621,7 +623,7 @@ lemma HomologyData.leftRightHomologyComparison'_eq (h : S.HomologyData) :
     π_leftRightHomologyComparison'_ι, comm]
 
 instance isIso_leftRightHomologyComparison'_of_homologyData (h : S.HomologyData) :
-  IsIso (leftRightHomologyComparison' h.left h.right) := by
+    IsIso (leftRightHomologyComparison' h.left h.right) := by
     rw [h.leftRightHomologyComparison'_eq]
     infer_instance
 
@@ -691,6 +693,12 @@ lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso
   ext
   dsimp
   rw [← leftRightHomologyComparison'_fac, leftRightHomologyComparison'_eq]
+
+lemma HomologyData.left_homologyIso_eq_right_homologyIso_trans_iso_symm
+    (h : S.HomologyData) [S.HasHomology] :
+    h.left.homologyIso = h.right.homologyIso ≪≫ h.iso.symm := by
+  rw [right_homologyIso_eq_left_homologyIso_trans_iso]
+  cat_disch
 
 lemma hasHomology_of_isIso_leftRightHomologyComparison'
     (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
@@ -911,7 +919,7 @@ lemma homologyπ_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHom
 
 @[reassoc (attr := simp)]
 lemma homologyι_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] :
-    homologyMap φ ≫ S₂.homologyι = S₁.homologyι ≫ S₁.opcyclesMap φ  := by
+    homologyMap φ ≫ S₂.homologyι = S₁.homologyι ≫ S₁.opcyclesMap φ := by
   simp only [← cancel_epi S₁.rightHomologyIso.hom, rightHomologyIso_hom_naturality_assoc φ,
     rightHomologyIso_hom_comp_homologyι, rightHomologyι_naturality]
   simp only [homologyι, assoc, Iso.hom_inv_id_assoc]
@@ -926,15 +934,15 @@ lemma homology_π_ι :
 `cokernel S.f ⟶ S.X₃`. -/
 noncomputable def homologyIsoKernelDesc [HasCokernel S.f]
     [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
-    S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
+    S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
+  S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
 
 /-- The homology of a short complex `S` identifies to the cokernel of the induced morphism
 `S.X₁ ⟶ kernel S.g`. -/
 noncomputable def homologyIsoCokernelLift [HasKernel S.g]
     [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
-    S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
+    S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
+  S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
 
 @[reassoc (attr := simp)]
 lemma LeftHomologyData.homologyπ_comp_homologyIso_hom (h : S.LeftHomologyData) :
@@ -1145,7 +1153,7 @@ lemma asIsoHomologyι_inv_comp_homologyι (hg : S.g = 0) [S.HasHomology] :
 
 @[reassoc (attr := simp)]
 lemma homologyι_comp_asIsoHomologyι_inv (hg : S.g = 0) [S.HasHomology] :
-    S.homologyι ≫ (S.asIsoHomologyι hg).inv  = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
+    S.homologyι ≫ (S.asIsoHomologyι hg).inv = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
 
 lemma mono_homologyMap_of_mono_opcyclesMap'
     [S₁.HasHomology] [S₂.HasHomology] (h : Mono (opcyclesMap φ)) :

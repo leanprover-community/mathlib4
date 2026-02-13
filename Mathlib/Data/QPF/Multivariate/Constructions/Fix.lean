@@ -3,8 +3,10 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.W
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.W
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.
@@ -34,8 +36,10 @@ See [avigad-carneiro-hudon2019] for more details.
 ## Reference
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -84,14 +88,13 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
   apply q.P.w_cases _ y
-  intro a₁ f'₁ f₁
-  intro h
+  intro a₁ f'₁ f₁ h
   -- Porting note: induction on h doesn't work.
   refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
-  · intros a f' f₀ f₁ _h ih; simp only [recF_eq]
-    congr; funext; congr; funext; apply ih
-  · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
-  · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
+  · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
+    congr 4; funext; apply ih
+  · intro a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
+  · intro x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
     (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
@@ -100,11 +103,9 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
   apply q.P.w_cases _ y
-  intro a₁ f'₁ f₁
   apply WEquiv.abs
 
-theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := by
-  apply q.P.w_cases _ x; intro a f' f; exact WEquiv.abs a f' f a f' f rfl
+theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
 
 theorem wEquiv.symm {α : TypeVec n} (x y : q.P.W α) : WEquiv x y → WEquiv y x := by
   intro h; induction h with
@@ -308,8 +309,7 @@ def Fix.drec {β : Fix F α → Type u}
     intro x' ih
     rw [Fix.rec_eq]
     dsimp
-    simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map] at ih
+    simp only [appendFun_id_id, MvFunctor.id_map] at ih
     congr
     conv =>
       rhs

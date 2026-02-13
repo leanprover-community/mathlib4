@@ -3,12 +3,14 @@ Copyright (c) 2025 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
 -/
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Topology.Metrizable.Urysohn
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Modular character of a locally compact group
@@ -29,6 +31,8 @@ TODO: Show that the character is continuous.
 * `modularCharacter`: The homomorphism G →* ℝ≥0 whose toFun is `modularCharacterFun`.
 -/
 
+@[expose] public section
+
 open MeasureTheory
 open scoped NNReal
 
@@ -41,15 +45,15 @@ variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [Loca
 /-- The modular character as a map is `g ↦ μ (· * g⁻¹) / μ`, where `μ` is a left Haar measure.
 
   See also `modularCharacter` that defines the map as a homomorphism. -/
-@[to_additive "The additive modular character as a map is `g ↦ μ (· - g) / μ`, where `μ` is an
-  left additive Haar measure."]
+@[to_additive /-- The additive modular character as a map is `g ↦ μ (· - g) / μ`, where `μ` is an
+  left additive Haar measure. -/]
 noncomputable def modularCharacterFun (g : G) : ℝ≥0 :=
   letI : MeasurableSpace G := borel G
   haveI : BorelSpace G := ⟨rfl⟩
   haarScalarFactor (map (· * g) MeasureTheory.Measure.haar) MeasureTheory.Measure.haar
 
 /-- Independence of modularCharacterFun from the chosen Haar measure. -/
-@[to_additive "Independence of addModularCharacterFun from the chosen Haar measure"]
+@[to_additive /-- Independence of addModularCharacterFun from the chosen Haar measure -/]
 lemma modularCharacterFun_eq_haarScalarFactor [MeasurableSpace G] [BorelSpace G] (μ : Measure G)
     [IsHaarMeasure μ] (g : G) : modularCharacterFun g = haarScalarFactor (map (· * g) μ) μ := by
   let ν := MeasureTheory.Measure.haar (G := G)

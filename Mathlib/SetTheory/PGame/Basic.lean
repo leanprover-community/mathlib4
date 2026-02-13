@@ -3,9 +3,15 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Convert
+module -- shake: keep-all
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Combinatorial pregames
@@ -63,6 +69,8 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1977]
 -/
 
+@[expose] public section
+
 namespace SetTheory
 
 open Function Relation
@@ -117,8 +125,8 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
   rfl
 
 lemma ext {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
-    (hL : ∀ i j, HEq i j → x.moveLeft i = y.moveLeft j)
-    (hR : ∀ i j, HEq i j → x.moveRight i = y.moveRight j) :
+    (hL : ∀ i j, i ≍ j → x.moveLeft i = y.moveLeft j)
+    (hR : ∀ i j, i ≍ j → x.moveRight i = y.moveRight j) :
     x = y := by
   cases x
   cases y
@@ -242,7 +250,7 @@ macro "pgame_wf_tac" : tactic =>
   `(tactic| solve_by_elim (config := { maxDepth := 8 })
     [Prod.Lex.left, Prod.Lex.right, PSigma.Lex.left, PSigma.Lex.right,
     Subsequent.moveLeft, Subsequent.moveRight, Subsequent.mk_left, Subsequent.mk_right,
-    Subsequent.trans] )
+    Subsequent.trans])
 
 -- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
 -- (which are applied by default for WF goals)
@@ -374,8 +382,8 @@ theorem identical_of_isEmpty (x y : PGame)
 def identicalSetoid : Setoid PGame :=
   ⟨Identical, Identical.refl, Identical.symm, Identical.trans⟩
 
-instance : IsRefl PGame (· ≡ ·) := ⟨Identical.refl⟩
-instance : IsSymm PGame (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
+instance : Std.Refl (· ≡ ·) := ⟨Identical.refl⟩
+instance : Std.Symm (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
 instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
 instance : IsEquiv PGame (· ≡ ·) := { }
 

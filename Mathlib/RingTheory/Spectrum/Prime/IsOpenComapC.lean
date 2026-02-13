@@ -3,8 +3,10 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 The morphism `Spec R[x] --> Spec R` induced by the natural inclusion `R --> R[x]` is an open map.
@@ -13,6 +15,8 @@ The main result is the first part of the statement of Lemma 00FB in the Stacks P
 
 https://stacks.math.columbia.edu/tag/00FB
 -/
+
+@[expose] public section
 
 
 open Ideal Polynomial PrimeSpectrum Set
@@ -48,7 +52,7 @@ morphism `C⁺ : Spec R[x] → Spec R`. -/
 theorem imageOfDf_eq_comap_C_compl_zeroLocus :
     imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' (zeroLocus {f})ᶜ := by
   ext x
-  refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.isPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
+  refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rw [mem_compl_iff, mem_zeroLocus, singleton_subset_iff]
     obtain ⟨i, hi⟩ := hx
     exact fun a => hi (mem_map_C_iff.mp a i)

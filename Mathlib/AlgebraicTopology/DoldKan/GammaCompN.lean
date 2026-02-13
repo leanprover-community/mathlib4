@@ -3,10 +3,12 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
-import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
-import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
+public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
+public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+public import Mathlib.Tactic.SuppressCompilation
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 
@@ -18,18 +20,20 @@ and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
   CategoryTheory.Idempotents Opposite SimplicialObject Simplicial
 
 namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
+variable {C : Type*} [Category* C] [Preadditive C] [HasFiniteCoproducts C]
 
 /-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]
@@ -54,7 +58,7 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         · intro h
           replace h := congr_arg SimplexCategory.len h
           change n + 1 = n at h
-          omega
+          lia
         · simpa only [Isδ₀.iff] using hi)
 
 /-- The natural isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for `K : ChainComplex C ℕ`. -/
@@ -74,10 +78,8 @@ def N₁Γ₀ : Γ₀ ⋙ N₁ ≅ toKaroubi (ChainComplex C ℕ) :=
 theorem N₁Γ₀_app (K : ChainComplex C ℕ) :
     N₁Γ₀.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.symm ≪≫
       (toKaroubi _).mapIso (Γ₀NondegComplexIso K) := by
-  ext1
-  dsimp [N₁Γ₀]
-  erw [id_comp, comp_id, comp_id]
-  rfl
+  ext
+  simp [N₁Γ₀, Γ₀'CompNondegComplexFunctor]
 
 theorem N₁Γ₀_hom_app (K : ChainComplex C ℕ) :
     N₁Γ₀.hom.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.inv ≫

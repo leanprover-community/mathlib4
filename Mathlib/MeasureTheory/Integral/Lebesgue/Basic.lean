@@ -3,7 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Function.SimpleFunc
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.Algebra.Order.Pi
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -23,7 +26,9 @@ We introduce the following notation for the lower Lebesgue integral of a functio
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
 -/
 
-assert_not_exists Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
+@[expose] public section
+
+assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
 
 open Set hiding restrict restrict_apply
 
@@ -65,24 +70,19 @@ theorem SimpleFunc.lintegral_eq_lintegral {m : MeasurableSpace α} (f : α →�
   exact le_antisymm (iSup₂_le fun g hg => lintegral_mono hg <| le_rfl)
     (le_iSup₂_of_le f le_rfl le_rfl)
 
-@[gcongr, mono]
+@[mono]
 theorem lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν : μ ≤ ν) ⦃f g : α → ℝ≥0∞⦄
     (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂ν := by
   rw [lintegral, lintegral]
   exact iSup_mono fun φ => iSup_mono' fun hφ => ⟨le_trans hφ hfg, lintegral_mono (le_refl φ) hμν⟩
 
 -- version where `hfg` is an explicit forall, so that `@[gcongr]` can recognize it
-@[gcongr] theorem lintegral_mono_fn' ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) (h2 : μ ≤ ν) :
+@[gcongr] theorem lintegral_mono_fn' (h2 : μ ≤ ν) ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
     ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂ν :=
   lintegral_mono' h2 hfg
 
 theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono' (le_refl μ) hfg
-
--- version where `hfg` is an explicit forall, so that `@[gcongr]` can recognize it
-@[gcongr] theorem lintegral_mono_fn ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
-    ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
-  lintegral_mono hfg
 
 theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)
@@ -123,6 +123,16 @@ theorem setLIntegral_const (s : Set α) (c : ℝ≥0∞) : ∫⁻ _ in s, c ∂�
 
 theorem setLIntegral_one (s) : ∫⁻ _ in s, 1 ∂μ = μ s := by rw [setLIntegral_const, one_mul]
 
+lemma iInf_mul_le_lintegral (f : α → ℝ≥0∞) : (⨅ x, f x) * μ .univ ≤ ∫⁻ x, f x ∂μ := by
+  calc (⨅ x, f x) * μ .univ
+  _ = ∫⁻ y, ⨅ x, f x ∂μ := by simp
+  _ ≤ ∫⁻ x, f x ∂μ := by gcongr; exact iInf_le _ _
+
+lemma lintegral_le_iSup_mul (f : α → ℝ≥0∞) : ∫⁻ x, f x ∂μ ≤ (⨆ x, f x) * μ .univ := by
+  calc ∫⁻ x, f x ∂μ
+  _ ≤ ∫⁻ y, ⨆ x, f x ∂μ := by gcongr; exact le_iSup _ _
+  _ = (⨆ x, f x) * μ .univ := by simp
+
 variable (μ) in
 /-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
 integral. -/
@@ -156,7 +166,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     replace h : ψ.map ((↑) : ℝ≥0 → ℝ≥0∞) =ᵐ[μ] φ := h.mono fun a => ENNReal.coe_toNNReal
     have : ∀ x, ↑(ψ x) ≤ f x := fun x => le_trans ENNReal.coe_toNNReal_le_self (hφ x)
     exact le_iSup₂_of_le (φ.map ENNReal.toNNReal) this (ge_of_eq <| lintegral_congr h)
-  · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_notMem.1 h
+  · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_eq_zero_iff_ae_notMem.1 h
     refine le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb => ?_)
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
@@ -208,7 +218,7 @@ theorem le_iInf₂_lintegral {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i
 theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤ g a) :
     ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ := by
   rcases exists_measurable_superset_of_null h with ⟨t, hts, ht, ht0⟩
-  have : ∀ᵐ x ∂μ, x ∉ t := measure_zero_iff_ae_notMem.1 ht0
+  have : ∀ᵐ x ∂μ, x ∉ t := measure_eq_zero_iff_ae_notMem.1 ht0
   rw [lintegral, lintegral]
   refine iSup₂_le fun s hfs ↦ le_iSup₂_of_le (s.restrict tᶜ) ?_ ?_
   · intro a
@@ -216,10 +226,8 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
       simp only [restrict_apply s ht.compl, mem_compl_iff, h, not_true, not_false_eq_true,
         indicator_of_notMem, zero_le, not_false_eq_true, indicator_of_mem]
     exact le_trans (hfs a) (by_contradiction fun hnfg => h (hts hnfg))
-  · refine le_of_eq (SimpleFunc.lintegral_congr <| this.mono fun a hnt => ?_)
-    by_cases hat : a ∈ t <;> simp only [restrict_apply s ht.compl, mem_compl_iff, hat, not_true,
-      not_false_eq_true, indicator_of_notMem, not_false_eq_true, indicator_of_mem]
-    exact (hnt hat).elim
+  · exact le_of_eq <| SimpleFunc.lintegral_congr <| this.mono fun a hnt => by
+      simp [restrict_apply s ht.compl, hnt]
 
 /-- Lebesgue integral over a set is monotone in function.
 
@@ -251,6 +259,19 @@ theorem setLIntegral_mono' {s : Set α} {f g : α → ℝ≥0∞} (hs : Measurab
 theorem setLIntegral_le_lintegral (s : Set α) (f : α → ℝ≥0∞) :
     ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x, f x ∂μ :=
   lintegral_mono' Measure.restrict_le_self le_rfl
+
+lemma iInf_mul_le_setLIntegral (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    (⨅ x ∈ s, f x) * μ s ≤ ∫⁻ x in s, f x ∂μ := by
+  calc (⨅ x ∈ s, f x) * μ s
+  _ = ∫⁻ y in s, ⨅ x ∈ s, f x ∂μ := by simp
+  _ ≤ ∫⁻ x in s, f x ∂μ := setLIntegral_mono' hs fun x hx ↦ iInf₂_le x hx
+
+lemma setLIntegral_le_iSup_mul (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    ∫⁻ x in s, f x ∂μ ≤ (⨆ x ∈ s, f x) * μ s := by
+  calc ∫⁻ x in s, f x ∂μ
+  _ ≤ ∫⁻ y in s, ⨆ x ∈ s, f x ∂μ :=
+    setLIntegral_mono' hs fun x hx ↦ le_iSup₂ (f := fun x _ ↦ f x) x hx
+  _ = (⨆ x ∈ s, f x) * μ s := by simp
 
 theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ :=
   le_antisymm (lintegral_mono_ae <| h.le) (lintegral_mono_ae <| h.symm.le)
@@ -292,8 +313,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   -- but it has been inlined for the sake of imports
   refine ⟨fun h ↦ ?_, lintegral_eq_zero_of_ae_eq_zero⟩
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
-    by_contra! h'; rw [← zero_lt_iff] at h'
-    refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
+    by_contra! h'
+    refine ((ENNReal.mul_pos εpos.ne' h').trans_le ?_).ne' h
     calc
       _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
       _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
@@ -301,7 +322,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
       _ = _ := setLIntegral_const _ _
   obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
   have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
-    ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
+    ext x
+    rw [mem_iUnion, mem_setOf_eq, ← pos_iff_ne_zero]
     rw [ENNReal.tendsto_atTop_zero] at tu
     constructor <;> intro h'
     · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl
@@ -333,8 +355,6 @@ theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
 theorem setLIntegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} :
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
-
-@[deprecated (since := "2025-04-22")] alias setLintegral_pos_iff := setLIntegral_pos_iff
 
 end
 
@@ -615,8 +635,6 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
   rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
-
-@[deprecated (since := "2025-04-22")] alias setLintegral_compl := setLIntegral_compl
 
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :

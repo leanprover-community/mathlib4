@@ -3,10 +3,12 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
-import Mathlib.GroupTheory.Solvable
-import Mathlib.GroupTheory.Sylow
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.GroupTheory.Commutator.Finite
+module
+
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Sylow
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -74,6 +76,8 @@ are not central series if `G` is not nilpotent is a standard abuse of notation.
 
 -/
 
+@[expose] public section
+
 
 open Subgroup
 
@@ -87,7 +91,7 @@ quotient group `G/H`.)
 -/
 def upperCentralSeriesStep : Subgroup G where
   carrier := { x : G | ∀ y : G, x * y * x⁻¹ * y⁻¹ ∈ H }
-  one_mem' y := by simp [Subgroup.one_mem]
+  one_mem' y := by simp
   mul_mem' {a b} ha hb y := by
     convert Subgroup.mul_mem _ (ha (b * y * b⁻¹)) (hb y) using 1
     group
@@ -120,14 +124,26 @@ variable (G)
 
 /-- An auxiliary type-theoretic definition defining both the upper central series of
 a group, and a proof that it is normal, all in one go. -/
-def upperCentralSeriesAux : ℕ → Σ'H : Subgroup G, Normal H
+def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Normal H
   | 0 => ⟨⊥, inferInstance⟩
   | n + 1 =>
     let un := upperCentralSeriesAux n
     let _un_normal := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 
-/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`. -/
+/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
+
+This is the increasing chain of subgroups of `G` that starts with the trivial subgroup `⊥` of `G`
+and then continues defining `upperCentralSeries G (n + 1)` to be all the elements of `G`
+that, modulo `upperCentralSeries G n`, belong to the center of the quotient
+`G ⧸ upperCentralSeries G n`.
+
+In particular, the identities
+* `upperCentralSeries G 0 = ⊥` (`upperCentralSeries_zero`);
+* `upperCentralSeries G 1 = center G` (`upperCentralSeries_one`);
+
+hold.
+-/
 def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 
@@ -140,8 +156,8 @@ theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 @[simp]
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
-  simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep,
-    Subgroup.mem_center_iff, mem_mk, mem_bot, Set.mem_setOf_eq]
+  simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, mem_bot, mem_mk,
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq, mem_center_iff]
   exact forall_congr' fun y => by rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
 variable {G}
@@ -242,30 +258,25 @@ theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
   obtain ⟨h0, hH⟩ := hasc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp at hx
-  by_cases hm : n ≤ m
+  by_cases! hm : n ≤ m
   · rw [tsub_eq_zero_of_le hm, h0, Subgroup.mem_bot] at hx
     subst hx
     rw [show (1 : G) * g * (1⁻¹ : G) * g⁻¹ = 1 by group]
     exact Subgroup.one_mem _
-  · push_neg at hm
-    apply hH
+  · apply hH
     convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
-
-@[deprecated (since := "2024-12-25")]
-alias is_decending_rev_series_of_is_ascending := is_descending_rev_series_of_is_ascending
 
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
   obtain ⟨h0, hH⟩ := hdesc
   refine ⟨hn, fun x m hx g => ?_⟩
   dsimp only at hx ⊢
-  by_cases hm : n ≤ m
+  by_cases! hm : n ≤ m
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
     exact mem_top _
-  · push_neg at hm
-    convert hH x _ hx g using 1
+  · convert hH x _ hx g using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
 /-- A group `G` is nilpotent iff there exists a descending central series which reaches the
@@ -359,7 +370,7 @@ variable [hG : IsNilpotent G]
 variable (G) in
 open scoped Classical in
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
-the `n`'th term of the upper central series is `G`. -/
+the `n`-th term of the upper central series is `G`. -/
 noncomputable def Group.nilpotencyClass : ℕ := Nat.find (IsNilpotent.nilpotent G)
 
 open scoped Classical in
@@ -379,7 +390,7 @@ theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
 
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which an ascending
-central series reaches `G` in its `n`'th term. -/
+central series reaches `G` in its `n`-th term. -/
 theorem least_ascending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_ascending_central_series G).mp hG) =
     Group.nilpotencyClass G := by
@@ -392,7 +403,7 @@ theorem least_ascending_central_series_length_eq_nilpotencyClass :
 
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which the descending
-central series reaches `⊥` in its `n`'th term. -/
+central series reaches `⊥` in its `n`-th term. -/
 theorem least_descending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_descending_central_series G).mp hG) =
     Group.nilpotencyClass G := by
@@ -489,7 +500,7 @@ theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
   | succ d hd =>
     rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
     refine closure_induction (hx := hx) ?_ (by simp [f.map_one, Subgroup.one_mem _])
-      (fun y z _ _ hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
+      (fun y z _ _ hy hz => by simp [map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
         rw [f.map_inv]; exact Subgroup.inv_mem _ hy)
     rintro a ⟨y, hy, z, ⟨-, rfl⟩⟩
     apply mem_closure.mpr

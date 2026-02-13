@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Pairing
+module
+
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Pairing
 
 /-!
 # Equivalences involving `ℕ`
@@ -12,6 +14,8 @@ import Mathlib.Data.Nat.Pairing
 This file defines some additional constructive equivalences using `Encodable` and the pairing
 function on `ℕ`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -27,8 +31,8 @@ variable {α : Type*}
 def boolProdNatEquivNat : Bool × ℕ ≃ ℕ where
   toFun := uncurry bit
   invFun := boddDiv2
-  left_inv := fun ⟨b, n⟩ => by simp only [bodd_bit, div2_bit, uncurry_apply_pair, boddDiv2_eq]
-  right_inv n := by simp only [bit_decomp, boddDiv2_eq, uncurry_apply_pair]
+  left_inv := fun ⟨b, n⟩ => by simp
+  right_inv n := by simp
 
 /-- An equivalence between `ℕ ⊕ ℕ` and `ℕ`, by mapping `(Sum.inl x)` to `2 * x` and `(Sum.inr x)` to
 `2 * x + 1`.

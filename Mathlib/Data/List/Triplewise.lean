@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Myers, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yaël Dillies
 -/
-import Aesop
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Batteries.Data.List
 
 /-!
 # Triplewise predicates on list.
@@ -15,6 +17,8 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 * `List.Triplewise` says that a predicate applies to all ordered triples of elements of a list.
 
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -27,12 +31,13 @@ inductive Triplewise (p : α → α → α → Prop) : List α → Prop
   | nil : [].Triplewise p
   | cons {a : α} {l : List α} : l.Pairwise (p a) → l.Triplewise p → (a :: l).Triplewise p
 
-attribute [simp] Triplewise.nil
+attribute [simp, grind ←] Triplewise.nil
 
 variable {a b c : α} {l l₁ l₂ : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
 
+@[grind =]
 lemma triplewise_cons : (a :: l).Triplewise p ↔ l.Pairwise (p a) ∧ l.Triplewise p := by
-  rw [triplewise_iff]; aesop
+  grind [triplewise_iff]
 
 variable (a b p)
 
@@ -77,25 +82,13 @@ lemma triplewise_iff_getElem : l.Triplewise p ↔ ∀ i j k (hij : i < j) (hjk :
     simp only [triplewise_cons, length_cons, pairwise_iff_getElem, ih]
     refine ⟨fun ⟨hh, ht⟩ i j k hij hjk hk ↦ ?_,
             fun h ↦ ⟨fun i j hi hj hij ↦ ?_, fun i j k hij hjk hk ↦ ?_⟩⟩
-    · rcases i with - | i <;> rcases j with - | j
-      · simp at hij
-      · rcases k with - | k
-        · omega
-        · simpa using hh j k (by omega) (by omega) (by omega)
-      · simp at hij
-      · rcases k with - | k
-        · omega
-        · simpa using ht i j k (by omega) (by omega) (by omega)
-    · simpa using h 0 (i + 1) (j + 1) (by omega) (by omega) (by omega)
-    · simpa using h (i + 1) (j + 1) (k + 1) (by omega) (by omega) (by omega)
+    · grind
+    · simpa using h 0 (i + 1) (j + 1) (by lia) (by lia) (by lia)
+    · simpa using h (i + 1) (j + 1) (k + 1) (by lia) (by lia) (by lia)
 
 lemma triplewise_append : (l₁ ++ l₂).Triplewise p ↔ l₁.Triplewise p ∧ l₂.Triplewise p ∧
     (∀ a ∈ l₁, l₂.Pairwise (p a)) ∧ ∀ a ∈ l₂, l₁.Pairwise fun x y ↦ p x y a := by
-  induction l₁ with
-  | nil => simp
-  | cons h t ih =>
-    simp [triplewise_cons, ih, pairwise_append]
-    aesop
+  induction l₁ with grind [pairwise_cons]
 
 lemma triplewise_reverse : l.reverse.Triplewise p ↔ l.Triplewise fun a b c ↦ p c b a := by
   induction l with

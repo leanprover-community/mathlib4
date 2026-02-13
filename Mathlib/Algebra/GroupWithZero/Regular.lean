@@ -3,13 +3,16 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Tactic.Push
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # Results about `IsRegular` and `0`
 -/
+
+public section
 
 variable {R}
 
@@ -57,15 +60,15 @@ theorem isRegular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
 theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 := by
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
-  refine xy (la (?_ : 0 * x = 0 * y)) -- Porting note: lean4 seems to need the type signature
-  rw [zero_mul, zero_mul]
+  refine xy (la ?_)
+  simp
 
 /-- A right-regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
 theorem IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 := by
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
-  refine xy (ra (?_ : x * 0 = y * 0))
-  rw [mul_zero, mul_zero]
+  refine xy (ra ?_)
+  simp
 
 /-- A regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
 theorem IsRegular.ne_zero [Nontrivial R] (la : IsRegular a) : a ≠ 0 :=
@@ -96,11 +99,13 @@ section CancelMonoidWithZero
 variable [MulZeroClass R] [IsCancelMulZero R] {a : R}
 
 /-- Non-zero elements of an integral domain are regular. -/
-theorem isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
+theorem IsRegular.of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
   ⟨fun _ _ => mul_left_cancel₀ a0, fun _ _ => mul_right_cancel₀ a0⟩
+
+@[deprecated (since := "2026-01-21")] alias isRegular_of_ne_zero := IsRegular.of_ne_zero
 
 /-- In a non-trivial integral domain, an element is regular iff it is non-zero. -/
 theorem isRegular_iff_ne_zero [Nontrivial R] : IsRegular a ↔ a ≠ 0 :=
-  ⟨IsRegular.ne_zero, isRegular_of_ne_zero⟩
+  ⟨IsRegular.ne_zero, .of_ne_zero⟩
 
 end CancelMonoidWithZero

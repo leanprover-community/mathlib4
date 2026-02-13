@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.Finite
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.Finite
 
 /-!
 # Finiteness results on filter bases
@@ -13,6 +15,8 @@ A filter basis `B : FilterBasis α` on a type `α` is a nonempty collection of s
 such that the intersection of two elements of this collection contains some element of
 the collection.
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -69,9 +73,6 @@ protected theorem HasBasis.iInf' {ι : Type*} {ι' : ι → Type*} {l : ι → F
       refine mem_of_superset ?_ hsub
       exact (biInter_mem hI₁).mpr fun i hi => mem_iInf_of_mem i <| (hl i).mem_of_mem <| hI₂ _ hi⟩
 
-@[deprecated (since := "2025-05-05")]
-alias hasBasis_iInf' := HasBasis.iInf'
-
 protected theorem HasBasis.iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α}
     {p : ∀ i, ι' i → Prop} {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
     (⨅ i, l i).HasBasis
@@ -84,9 +85,6 @@ protected theorem HasBasis.iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Fi
     refine mem_of_superset ?_ hsub
     cases hI.nonempty_fintype
     exact iInter_mem.2 fun i => mem_iInf_of_mem ↑i <| (hl i).mem_of_mem <| hf _
-
-@[deprecated (since := "2025-05-05")]
-alias hasBasis_iInf := HasBasis.iInf
 
 open scoped Function in -- required for scoped `on` notation
 theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}

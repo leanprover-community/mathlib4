@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.CategoryTheory.PathCategory.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.CategoryTheory.PathCategory.Basic
 /-! # Presentation of the simplex category by generators and relations.
 
 We introduce `SimplexCategoryGenRel` as the category presented by generating
@@ -15,6 +17,8 @@ objects and morphisms in this category.
 This category admits a canonical functor `toSimplexCategory` to the usual simplex category.
 The fact that this functor is an equivalence will be recorded in a separate file.
 -/
+
+@[expose] public section
 open CategoryTheory
 
 /-- The objects of the free simplex quiver are the natural numbers. -/
@@ -148,14 +152,14 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
     · simpa using (comp_δ f i hrec)
     · simpa using (comp_σ f i hrec)
 
-/-- An induction principle for reasonning about morphisms in SimplexCategoryGenRel, where we compose
+/-- An induction principle for reasoning about morphisms in SimplexCategoryGenRel, where we compose
 with generators on the right. -/
 lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     (id : ∀ {n : ℕ}, P (𝟙 (mk n)))
     (δ_comp : ∀ {n m : ℕ} (u : mk (m + 1) ⟶ mk n)
       (i : Fin (m + 2)), P u → P (δ i ≫ u))
     (σ_comp : ∀ {n m : ℕ} (u : mk m ⟶ mk n)
-      (i : Fin (m + 1)), P u → P (σ i ≫ u )) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
+      (i : Fin (m + 1)), P u → P (σ i ≫ u)) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f := by
   suffices generators.multiplicativeClosure' ≤ P by
     rw [← MorphismProperty.multiplicativeClosure_eq_multiplicativeClosure',
@@ -174,7 +178,7 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     · simpa using (δ_comp g i hrec)
     · simpa using (σ_comp g i hrec)
 
-/-- An induction principle for reasonning about objects in `SimplexCategoryGenRel`. This should be
+/-- An induction principle for reasoning about objects in `SimplexCategoryGenRel`. This should be
 used instead of identifying an object with `mk` of its `len`. -/
 @[elab_as_elim, cases_eliminator]
 protected def rec {P : SimplexCategoryGenRel → Sort*}
@@ -232,13 +236,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 
 /-- A version of δ_comp_δ with indices in ℕ satisfying relevant inequalities. -/
 lemma δ_comp_δ_nat {n} (i j : ℕ) (hi : i < n + 2) (hj : j < n + 2) (H : i ≤ j) :
-    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by omega⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by omega⟩ :=
-  δ_comp_δ (n := n) (i := ⟨i, by omega⟩) (j := ⟨j, by omega⟩) (by simpa)
+    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by lia⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by lia⟩ :=
+  δ_comp_δ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)
 
 /-- A version of σ_comp_σ with indices in ℕ satisfying relevant inequalities. -/
 lemma σ_comp_σ_nat {n} (i j : ℕ) (hi : i < n + 1) (hj : j < n + 1) (H : i ≤ j) :
-    σ ⟨i, by omega⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by omega⟩ ≫ σ ⟨i, hi⟩ :=
-  σ_comp_σ (n := n) (i := ⟨i, by omega⟩) (j := ⟨j, by omega⟩) (by simpa)
+    σ ⟨i, by lia⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by lia⟩ ≫ σ ⟨i, hi⟩ :=
+  σ_comp_σ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)
 
 end SimplicialIdentities
 

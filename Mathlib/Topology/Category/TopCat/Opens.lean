@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.GaloisConnection
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Topology.Category.TopCat.EpiMono
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.Topology.Category.TopCat.EpiMono
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # The category of open sets in a topological space.
@@ -26,6 +28,8 @@ We don't attempt to set up the full theory here, but do provide the natural isom
 
 Beyond that, there's a collection of simp lemmas for working with these constructions.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory TopologicalSpace Opposite Topology
@@ -141,7 +145,7 @@ def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
-    given by taking preimages under f. -/
+given by taking preimages under f. -/
 def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
   map i := ⟨⟨fun _ h => i.le h⟩⟩
@@ -149,6 +153,10 @@ def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
   rfl
+
+@[simp]
+theorem mem_map {f : X ⟶ Y} {U : Opens Y} {x : X} :
+    x ∈ (map f).obj U ↔ f.hom x ∈ U := .rfl
 
 @[simp]
 theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.hom.continuous⟩ :=
@@ -209,8 +217,8 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
-  ext1; rw [iSup_def, iSup_def, map_obj]
-  dsimp; rw [Set.preimage_iUnion]
+  ext
+  simp
 
 section
 
@@ -284,7 +292,7 @@ end TopologicalSpace.Opens
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
   obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map h := ⟨⟨Set.image_subset _ h.down.down⟩⟩
+  map h := ⟨⟨Set.image_mono h.down.down⟩⟩
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/
@@ -320,7 +328,7 @@ lemma map_functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f)
     (Opens.map f).obj (hf.functorObj U) = U := by
   apply le_antisymm
   · rintro x ⟨_, ⟨s, rfl⟩, _, ⟨rfl : _ = U, rfl⟩, hx : f x ∈ s⟩; exact hx
-  · intros x hx
+  · intro x hx
     obtain ⟨U, hU⟩ := U
     obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
     exact Opens.mem_sSup.mpr ⟨⟨_, ht⟩, rfl, hx⟩
@@ -336,7 +344,7 @@ lemma le_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) {U : Op
   obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
   constructor
   · exact fun i x hx ↦ (hf.mem_functorObj_iff ((Opens.map f).obj ⟨t, ht⟩)).mp (i hx)
-  · intros h x hx
+  · intro h x hx
     refine Opens.mem_sSup.mpr ⟨⟨_, V.2.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
     dsimp
     rwa [Set.union_eq_right]

@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # Differential objects in a category.
@@ -19,6 +21,8 @@ We build the category of differential objects, and some basic constructions
 such as the forgetful functor, zero morphisms and zero objects, and the shift functor
 on differential objects.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Limits
@@ -39,7 +43,7 @@ structure DifferentialObject where
   /-- The differential of a differential object. -/
   d : obj ⟶ obj⟦(1 : S)⟧
   /-- The differential `d` satisfies that `d² = 0`. -/
-  d_squared : d ≫ d⟦(1 : S)⟧' = 0 := by aesop_cat
+  d_squared : d ≫ d⟦(1 : S)⟧' = 0 := by cat_disch
 
 attribute [reassoc (attr := simp)] DifferentialObject.d_squared
 
@@ -52,7 +56,7 @@ namespace DifferentialObject
 structure Hom (X Y : DifferentialObject S C) where
   /-- The morphism between underlying objects of the two differentiable objects. -/
   f : X.obj ⟶ Y.obj
-  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by aesop_cat
+  comm : X.d ≫ f⟦1⟧' = f ≫ Y.d := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -76,7 +80,7 @@ instance categoryOfDifferentialObjects : Category (DifferentialObject S C) where
   comp f g := Hom.comp f g
 
 @[ext]
-theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
+theorem ext {A B : DifferentialObject S C} {f g : A ⟶ B} (w : f.f = g.f := by cat_disch) : f = g :=
   Hom.ext w
 
 @[simp]
@@ -205,20 +209,6 @@ end DifferentialObject
 
 namespace DifferentialObject
 
-section HasForget
-
-variable (S : Type*) [AddMonoidWithOne S]
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasZeroMorphisms C]
-variable [HasShift C S]
-
-instance hasForgetOfDifferentialObjects : HasForget (DifferentialObject S C) where
-  forget := forget S C ⋙ CategoryTheory.forget C
-
-instance : HasForget₂ (DifferentialObject S C) C where
-  forget₂ := forget S C
-
-end HasForget
-
 section ConcreteCategory
 
 variable (S : Type*) [AddMonoidWithOne S]
@@ -245,6 +235,9 @@ instance concreteCategoryOfDifferentialObjects :
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := C)
   comp_apply _ _ := ConcreteCategory.comp_apply (C := C) _ _
+
+instance : HasForget₂ (DifferentialObject S C) C where
+  forget₂ := forget S C
 
 end ConcreteCategory
 
@@ -304,7 +297,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
   · erw [← NatTrans.naturality]
     dsimp
     simp only [shiftFunctorZero_hom_app_shift, Category.assoc]
-  · aesop_cat
+  · cat_disch
 
 end
 

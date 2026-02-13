@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -18,17 +20,19 @@ For both of these definitions, we also have a class stating that the whole space
 satisfies that property: `TotallyDisconnectedSpace`, `TotallySeparatedSpace`.
 -/
 
+@[expose] public section
+
 open Function Set Topology
 
 universe u v
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
+variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [TopologicalSpace α]
   {s t u v : Set α}
 
 section TotallyDisconnected
 
 /-- A set `s` is called totally disconnected if every subset `t ⊆ s` which is preconnected is
-a subsingleton, ie either empty or a singleton. -/
+a subsingleton, i.e. either empty or a singleton. -/
 def IsTotallyDisconnected (s : Set α) : Prop :=
   ∀ t, t ⊆ s → IsPreconnected t → t.Subsingleton
 
@@ -72,8 +76,8 @@ instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnecte
   · exact ht.subsingleton.image _
   · exact ht.subsingleton.image _
 
-instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i)] :
-    TotallyDisconnectedSpace (Σi, π i) := by
+instance [∀ i, TopologicalSpace (X i)] [∀ i, TotallyDisconnectedSpace (X i)] :
+    TotallyDisconnectedSpace (Σ i, X i) := by
   refine ⟨fun s _ hs => ?_⟩
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact subsingleton_empty
@@ -123,19 +127,27 @@ lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
     (i j : α) : f i = f j :=
   (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
 
+/-- The bijection `C(X, Y) ≃ Y` when `Y` is totally disconnected and `X` is connected. -/
+@[simps! symm_apply_apply]
+noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
+    (X Y : Type*) [TopologicalSpace X]
+    [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
+    C(X, Y) ≃ Y where
+  toFun f := f (Classical.arbitrary _)
+  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
+  right_inv _ := rfl
+
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>
   hf' <|
-    h _ (image_subset f hts) (ht.image f <| hf.mono hts) (mem_image_of_mem f x_in)
+    h _ (image_mono hts) (ht.image f <| hf.mono hts) (mem_image_of_mem f x_in)
       (mem_image_of_mem f y_in)
 
 lemma Topology.IsEmbedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : IsEmbedding f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   isTotallyDisconnected_of_image hf.continuous.continuousOn hf.injective h
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isTotallyDisconnected := IsEmbedding.isTotallyDisconnected
 
 lemma Topology.IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : IsEmbedding f) : IsTotallyDisconnected (f '' s) ↔ IsTotallyDisconnected s := by
@@ -145,15 +157,9 @@ lemma Topology.IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f 
   rw [hf.isInducing.isPreconnected_image] at hu
   exact (hs v hvs hu).image _
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isTotallyDisconnected_image := IsEmbedding.isTotallyDisconnected_image
-
 lemma Topology.IsEmbedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β}
     (hf : IsEmbedding f) : IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
   rw [totallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isTotallyDisconnected_range := IsEmbedding.isTotallyDisconnected_range
 
 lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by
@@ -162,6 +168,12 @@ lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
 instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
   totallyDisconnectedSpace_subtype_iff.2 (isTotallyDisconnected_of_totallyDisconnectedSpace _)
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Additive α) :=
+  ‹TotallyDisconnectedSpace α›
+
+instance [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Multiplicative α) :=
+  ‹TotallyDisconnectedSpace α›
 
 end TotallyDisconnected
 
@@ -220,15 +232,6 @@ theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace
 theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] : Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
   totallySeparatedSpace_iff_exists_isClopen.mp ‹_›
-
-/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
-  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-@[deprecated totallySeparatedSpace_iff_exists_isClopen (since := "2025-04-03")]
-theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
-    (hX : Pairwise (∃ (U : Set X), IsClopen U ∧ · ∈ U ∧ · ∉ U)) :
-    IsTotallyDisconnected (Set.univ : Set X) :=
-  (totallySeparatedSpace_iff X).mp (totallySeparatedSpace_iff_exists_isClopen.mpr hX)
-    |>.isTotallyDisconnected
 
 end TotallySeparated
 
@@ -304,17 +307,18 @@ theorem PreconnectedSpace.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTop
 /-- Refinement of `IsPreconnected.constant` only assuming the map factors through a
 discrete subset of the target. -/
 theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
-    {β} [TopologicalSpace β] {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S)
+    {β} [TopologicalSpace β] {T : Set β} (hT : IsDiscrete T) {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
-  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.restrict_mapsTo _)
+  rw [isDiscrete_iff_discreteTopology] at hT
+  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.mapsToRestrict _)
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
 theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
-    {β} [TopologicalSpace β] {T : Set β} [DiscreteTopology T] {f : α → β} (hc : ContinuousOn f S)
+    {β} [TopologicalSpace β] {T : Set β} (hT : IsDiscrete T) {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) (hne : T.Nonempty) : ∃ y ∈ T, EqOn f (const α y) S := by
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
-  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hc hTm hx' hx⟩
+  · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩
