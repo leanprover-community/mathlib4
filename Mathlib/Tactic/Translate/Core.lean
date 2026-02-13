@@ -753,6 +753,8 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   if isProtected (← getEnv) src then
     modifyEnv (addProtected · tgt)
   if defeqAttr.hasTag (← getEnv) src then
+    /- It can be that `src` holds reflexively but `tgt` doesn't, so we need to use `inferDefEqAttr`.
+    For example in `Ici_inter_Iic : Ici a ∩ Iic b = Icc a b := rfl`. -/
     MetaM.run' <| inferDefEqAttr tgt
   if let some matcherInfo ← getMatcherInfo? src then
     Match.addMatcherInfo tgt matcherInfo
