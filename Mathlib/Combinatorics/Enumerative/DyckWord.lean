@@ -514,7 +514,11 @@ lemma toTree_ofTree : ∀ t, (ofTree t).toTree = t
   | Tree.node _ _ _ => by simp [ofTree, toTree, toTree_ofTree]
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
-@[simps] def equivTree : DyckWord ≃ Tree Unit := ⟨toTree, ofTree, ofTree_toTree, toTree_ofTree⟩
+@[simps] def equivTree : DyckWord ≃ Tree Unit where
+  toFun := toTree
+  invFun := ofTree
+  left_inv := ofTree_toTree
+  right_inv := toTree_ofTree
 
 @[simp]
 lemma numNodes_toTree (p : DyckWord) : p.toTree.numNodes = p.semilength := by
