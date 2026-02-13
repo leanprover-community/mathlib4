@@ -20,13 +20,13 @@ In this file we define strong transformations, which require the 2-morphism to b
 ## Main definitions
 
 * `Pseudofunctor.StrongTrans F G`: strong transformations between pseudofunctors `F` and `G`.
-* `Pseudofunctor.mkOfOplax η η'`: Given two pseudofunctors, and a strong transformation `η` between
-  their underlying oplax functors, `mkOfOplax` lifts this to a strong transformation between the
+* `Pseudofunctor.StrongTrans.mkOfOplax η`: given a strong transformation `η` between the
+  underlying oplax functors, `mkOfOplax` lifts this to a strong transformation between the
   pseudofunctors.
 * `Pseudofunctor.StrongTrans.vcomp η θ`: the vertical composition of strong transformations `η`
   and `θ`.
 
-Using this we obtain a (scoped) `CategoryStruct` on pseudofunctors, where the arrows are given by
+Using this, we obtain a (scoped) `CategoryStruct` on pseudofunctors, where the arrows are given by
 strong transformations. To access this instance, run `open scoped Pseudofunctor.StrongTrans`.
 See `Pseudofunctor.StrongTrans.categoryStruct`.
 
