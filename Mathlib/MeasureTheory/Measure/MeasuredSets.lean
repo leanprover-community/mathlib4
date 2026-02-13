@@ -114,7 +114,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
       have fC n : Set.accumulate f n ∈ C := hC.accumulate_mem (fun n ↦ DC (by simp [hf])) n
       have : Tendsto (fun n ↦ μ (Set.accumulate f n)ᶜ) atTop (𝓝 0) := by
         have : ⋃₀ D = ⋃ n, Set.accumulate f n := by simp [hf, iUnion_accumulate]
-        rw [show (⋃₀ D)ᶜ = ⋂ n, (Set.accumulate f n)ᶜ by simp [this]] at hD
+        rw [show (⋃₀ D)ᶜ = ⋂ n, (Set.accumulate f n)ᶜ by simp [this, accumulate]] at hD
         rw [← hD]
         apply tendsto_measure_iInter_atTop (fun i ↦ ?_)
           (fun i j hij ↦ by simpa using monotone_accumulate hij) ⟨0, by simp⟩
