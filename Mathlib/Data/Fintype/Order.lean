@@ -179,6 +179,7 @@ noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBoolean
 
 /-! ### Directed Orders -/
 
+section DirectedOrders
 
 variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
   [Finite β]
@@ -221,3 +222,52 @@ theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : β → α) : BddBelow 
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
+
+end DirectedOrders
+
+/-!
+### Suprema and infima over finite types
+
+We state simplified versions of `le_ciSup_if_le` and `ciSup_mono` when the indexing type
+is finite. This avoids having to explicitly use `Finite.bddAbove_range`.
+
+Similarly for `ciInf`.
+-/
+
+section ciSup
+
+namespace Finite
+
+variable {α ι : Type*} [Finite ι] [ConditionallyCompleteLattice α]
+
+lemma le_ciSup_of_le {a : α} {f : ι → α} (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
+  _root_.le_ciSup_of_le (bddAbove_range f) c h
+
+lemma ciInf_le_of_le {a : α} {f : ι → α} (c : ι) (h : f c ≤ a) : iInf f ≤ a :=
+  _root_.ciInf_le_of_le (bddBelow_range f) c h
+
+lemma ciSup_mono {f g : ι → α} (H : ∀ (x : ι), f x ≤ g x) : iSup f ≤ iSup g :=
+  _root_.ciSup_mono (bddAbove_range g) H
+
+lemma ciInf_mono {f g : ι → α} (H : ∀ (x : ι), f x ≤ g x) : iInf f ≤ iInf g :=
+  _root_.ciInf_mono (bddBelow_range f) H
+
+lemma le_ciSup (f : ι → α) (i : ι) : f i ≤ ⨆ j, f j :=
+  le_ciSup_of_le i le_rfl
+
+lemma ciInf_le (f : ι → α) (i : ι) : ⨅ j, f j ≤ f i :=
+  le_ciSup (α := αᵒᵈ) f i
+
+lemma ciSup_sup [Nonempty ι] {f : ι → α} {a : α} :
+    (⨆ i, f i) ⊔ a = ⨆ i, f i ⊔ a := by
+  refine le_antisymm (sup_le ?_ ?_) <| ciSup_le fun i ↦ sup_le_sup_right (le_ciSup f i) a
+  · exact ciSup_le fun i ↦ le_ciSup_of_le i le_sup_left
+  · exact le_ciSup_of_le (Classical.arbitrary ι) le_sup_right
+
+lemma ciInf_inf [Nonempty ι] {f : ι → α} {a : α} :
+    (⨅ i, f i) ⊓ a = ⨅ i, f i ⊓ a :=
+  ciSup_sup (α := αᵒᵈ) ..
+
+end Finite
+
+end ciSup
