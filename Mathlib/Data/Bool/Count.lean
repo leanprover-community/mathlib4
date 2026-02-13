@@ -51,7 +51,7 @@ theorem IsChain.count_not_cons :
     count (!b) l = count b l + length l % 2
   | _, [], _h => rfl
   | b, x :: l, h => by
-    grind [IsChain.count_not_cons (isChain_cons_of_isChain_cons_cons h)]
+    grind [h.of_cons.count_not_cons]
 
 @[deprecated (since := "2025-09-21")]
 alias Chain.count_not := IsChain.count_not_cons
