@@ -47,7 +47,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_notMem_sq_of_notMem_prime_ne {P : Idea
     rwa [eq_comm, span_singleton_eq_bot, ← mem_bot]
   have hspan0 : span {x} ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp (hxP2 <| · ▸ zero_mem _)
   rw [← associated_iff_eq, associated_iff_normalizedFactors_eq_normalizedFactors hP0 hspan0]
-  refine Multiset.ext.mpr fun Q ↦ ?_
+  refine Multiset.ext' fun Q ↦ ?_
   rw [normalizedFactors_irreducible (Ideal.prime_of_isPrime hP0 hP).irreducible, normalize_eq,
     Multiset.count_singleton]
   symm
