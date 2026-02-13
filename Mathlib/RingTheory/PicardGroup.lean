@@ -857,7 +857,7 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
 This includes unique factorization domains. -/
 @[stacks 0BCH]
 instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
-   Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
+  Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup
 
