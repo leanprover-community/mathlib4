@@ -12,8 +12,10 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Push.Attr
 
-import Aesop
 import Mathlib.Tactic.Attr.Register
+import Aesop.BuiltinRules
+import Aesop.Frontend.Tactic
+import Aesop.Main
 
 /-!
 # Basic definitions about sets
