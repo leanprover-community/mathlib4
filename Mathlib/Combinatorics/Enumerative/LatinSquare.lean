@@ -694,9 +694,34 @@ theorem latin_rectangle_extends
     else (f' ⟨j, by simp⟩ )
   let A' : LatinRectangle k' n α := {
     M := M'
-    exactly_n_symbols := sorry
-    once_per_row := sorry
-    distinct_col_entries := sorry
+    exactly_n_symbols := A.exactly_n_symbols
+    once_per_row := by 
+      have h := A.once_per_row
+      sorry
+    distinct_col_entries := by 
+      unfold distinct_col_entries
+      intro y
+      simp [Function.Injective, Matrix.col, Matrix.transpose,M']
+      intro a1 a2
+      split_ifs
+      rename_i if_h1 if_h2
+      . obtain ⟨a1', ha1' ⟩ := if_h1
+        have h1' := Function.leftInverse_invFun ι.inj'
+        simp at h1'
+        rw [<- ha1',h1']
+        obtain ⟨a2', ha2' ⟩ := if_h2
+        have h2' := Function.leftInverse_invFun ι.inj'
+        simp at h2'
+        rw [<- ha2',h2']
+        have h := A.distinct_col_entries
+        unfold distinct_col_entries at h
+        unfold Function.Injective at h
+        intro hM
+        apply h at hM
+        congr
+      . sorry
+      . sorry
+      . sorry
     m_le_n := by omega
   }
   use A'
