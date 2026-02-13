@@ -857,6 +857,12 @@ lemma card_lt_card_of_left_finite {A B : Set α} (hfin : A.Finite) (hlt : A ⊂ 
   · exact card_lt_card_of_right_finite hfin hlt
   · exact (lt_aleph0_iff_subtype_finite.mpr hfin).trans_le <| Cardinal.aleph0_le_mk_iff.mpr hinf
 
+theorem mk_strictMono [Finite α] : StrictMono (α := Set α) (mk ∘ (↑)) :=
+  fun _ s ↦ card_lt_card_of_right_finite s.toFinite
+
+theorem mk_strictMonoOn : StrictMonoOn (mk ∘ (↑)) {s : Set α | s.Finite} :=
+  fun _ _ _ ↦ card_lt_card_of_right_finite
+
 theorem le_mk_diff_add_mk (S T : Set α) : #S ≤ #(S \ T : Set α) + #T :=
   (mk_le_mk_of_subset <| subset_diff_union _ _).trans <| mk_union_le _ _
 
