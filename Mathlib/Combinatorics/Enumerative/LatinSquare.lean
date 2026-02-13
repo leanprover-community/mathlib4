@@ -725,7 +725,13 @@ theorem latin_rectangle_extends
         simp [B, symbols_not_in] at hfy
         have hfyi := hfy (Function.invFun (⇑ι) a1)
         contradiction
-      . sorry
+      . intro h
+        simp [Set.mem_setOf_eq] at hf
+        have hfy := hf.2 y
+        simp [B, symbols_not_in] at hfy
+        have hfyi := (hfy (Function.invFun (⇑ι) a2))
+        have h := h.symm
+        contradiction
       . sorry
     m_le_n := by omega
   }
