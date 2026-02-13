@@ -530,7 +530,11 @@ theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
   rfl
 
 @[simp]
-theorem coe_mul (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
+theorem coe_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
+  rfl
+
+@[simp]
+theorem coe_mul' (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
   rfl
 
 theorem mul_apply (f g : M₁ →L[R₁] M₁) (x : M₁) : (f * g) x = f (g x) :=
@@ -543,8 +547,11 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
   one_mul _ := ext fun _ => rfl
   mul_assoc _ _ _ := ext fun _ => rfl
 
-theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+
+theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
+  DFunLike.ext' <| (coe_pow' f n).trans <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
