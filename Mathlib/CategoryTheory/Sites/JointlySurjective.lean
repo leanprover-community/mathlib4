@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
@@ -76,6 +76,14 @@ instance : jointlySurjectivePrecoverage.IsStableUnderSup where
   sup_mem_coverings {X} R S hR _ x := by
     obtain ⟨Y, f, hf, hx⟩ := hR x
     use Y, f, .inl hf
+
+instance : Precoverage.Small.{u} jointlySurjectivePrecoverage.{u} where
+  zeroHypercoverSmall {X} E := by
+    choose i y hy using ofArrows_mem_jointlySurjectivePrecoverage_iff.mp E.mem₀
+    refine ⟨X, i, ?_⟩
+    rw [ofArrows_mem_jointlySurjectivePrecoverage_iff]
+    intro x
+    use x, y x, hy x
 
 end Types
 
