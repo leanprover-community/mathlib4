@@ -471,3 +471,16 @@ lemma IsDiscrete.subsingleton_of_isPreirreducible (hs : IsDiscrete s) (hs' : IsP
   exact (hUx.le (by grind)).symm.trans (b := z) (hVy.le (by grind))
 
 end Preirreducible
+
+lemma Function.Surjective.preirreducibleSpace {f : X → Y} (hfc : Continuous f)
+    (hf : Function.Surjective f) [PreirreducibleSpace X] : PreirreducibleSpace Y where
+  isPreirreducible_univ := by
+    rw [← hf.range_eq, ← Set.image_univ]
+    exact (PreirreducibleSpace.isPreirreducible_univ).image _ hfc.continuousOn
+
+lemma Function.Surjective.irreducibleSpace {f : X → Y} (hfc : Continuous f)
+    (hf : Function.Surjective f) [IrreducibleSpace X] : IrreducibleSpace Y where
+  isPreirreducible_univ := by
+    rw [← hf.range_eq, ← Set.image_univ]
+    exact (PreirreducibleSpace.isPreirreducible_univ).image _ hfc.continuousOn
+  toNonempty := Nonempty.map f inferInstance
