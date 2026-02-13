@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Fin
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Logic.Equiv.Fin.Basic
 
@@ -291,6 +290,12 @@ def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPol
   · ext1; simp only [RingHom.comp_apply, sumToIter_C, iterToSum_C_C]
   · rintro ⟨⟩ <;> simp only [sumToIter_Xl, iterToSum_X, sumToIter_Xr, iterToSum_C_X]
 
+@[simp] lemma iterToSum_sumToIter (p) :
+    iterToSum R S₁ S₂ (sumToIter R S₁ S₂ p) = p := (sumRingEquiv _ _ _).symm_apply_apply _
+
+@[simp] lemma sumToIter_iterToSum (p) :
+    sumToIter R S₁ S₂ (iterToSum R S₁ S₂ p) = p := (sumRingEquiv _ _ _).apply_symm_apply _
+
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
@@ -355,12 +360,15 @@ def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolyn
     (Polynomial.aevalTower (MvPolynomial.rename some) (X none))
     (by ext : 2 <;> simp) (by ext i : 2; cases i <;> simp)
 
+@[simp]
 lemma optionEquivLeft_X_some (x : S₁) : optionEquivLeft R S₁ (X (some x)) = Polynomial.C (X x) := by
   simp [optionEquivLeft_apply, aeval_X]
 
+@[simp]
 lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X := by
   simp [optionEquivLeft_apply, aeval_X]
 
+@[simp]
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
   simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
@@ -378,6 +386,14 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
 lemma optionEquivLeft_symm_C_X (x : S₁) :
     (optionEquivLeft R S₁).symm (.C (X x)) = .X (.some x) := by
   simp [optionEquivLeft]
+
+@[simp]
+lemma optionEquivLeft_symm_C_C (x : R) :
+    (optionEquivLeft R S₁).symm (.C (.C x)) = .C x := by simp [optionEquivLeft]
+
+@[simp]
+lemma optionEquivLeft_symm_X :
+    (optionEquivLeft R S₁).symm .X = .X .none := by simp [optionEquivLeft]
 
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/

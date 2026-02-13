@@ -29,7 +29,7 @@ then `F.Elements` is cofiltered.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

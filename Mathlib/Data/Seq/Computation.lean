@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Tactic.Common
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Coinductive formalization of unbounded computations.
@@ -346,8 +347,6 @@ theorem of_think_terminates {s : Computation α} : Terminates (think s) → Term
 
 theorem notMem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradiction
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => notMem_empty a h
 
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
@@ -411,7 +410,6 @@ theorem get_thinkN (n) : get (thinkN s n) = get s :=
 theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
 
 theorem mem_of_promises {a} (p : s ~> a) : a ∈ s := by
-  obtain ⟨h⟩ := h
   obtain ⟨a', h⟩ := h
   rw [p h]
   exact h

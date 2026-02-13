@@ -483,7 +483,7 @@ instance (P : RootPairing ι R M N) : Group (RootPairing.Equiv P P) where
 
 /-- For finite roots systems in characteristic zero, a linear equivalence preserving roots, also
 preserves coroots, and is thus an equivalence of root systems. -/
-def mk' [CharZero R] [NoZeroSMulDivisors R M₂] [Finite ι₂]
+def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
     (P : RootPairing ι R M N) [P.IsRootSystem] (Q : RootPairing ι₂ R M₂ N₂) [Q.IsRootSystem]
     (f : M ≃ₗ[R] M₂) (e : ι ≃ ι₂) (hf : ∀ i, f (P.root i) = Q.root (e i)) :
     P.Equiv Q where
@@ -516,7 +516,7 @@ namespace Equiv
 endomorphisms. -/
 def toEndUnit (P : RootPairing ι R M N) : Aut P ≃* (End P)ˣ where
   toFun f :=
-  { val :=  f.toHom
+  { val := f.toHom
     inv := (Equiv.symm P P f).toHom
     val_inv := by ext <;> simp
     inv_val := by ext <;> simp }

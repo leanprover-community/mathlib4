@@ -19,7 +19,7 @@ unit 2-morphism `F.obj (𝟙 _) → 𝟙 (F.obj _)` is the identity 2-morphism i
 by this equality.
 
 A pseudofunctor is called *strictly unitary* (or a *normal homomorphism*) if it
-satisfies the same condition (i.e its "underlying" lax functor is strictly
+satisfies the same condition (i.e. its "underlying" lax functor is strictly
 unitary).
 
 ## References

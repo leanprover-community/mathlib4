@@ -17,7 +17,7 @@ the monotone map `s.obj : Fin (n + 1) → X` is strictly monotone.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -45,7 +45,8 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 
 @[expose] public section
 
-open Algebra Pointwise
+open Algebra Module
+open scoped Pointwise
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -171,7 +172,7 @@ theorem ramificationIdxIn_eq_ramificationIdx :
 
 include G in
 theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
-    [NoZeroSMulDivisors A B] : p.ramificationIdxIn B ≠ 0 := by
+    [IsDomain A] [IsTorsionFree A B] : p.ramificationIdxIn B ≠ 0 := by
   have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
@@ -187,7 +188,7 @@ theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] :
   exact inertiaDeg_eq_of_isGaloisGroup p h.choose P G
 
 include G in
-theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [NoZeroSMulDivisors A B]
+theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [IsDomain A] [IsTorsionFree A B]
     [Module.Finite A B] [Nontrivial B] :
     inertiaDegIn p B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
@@ -197,7 +198,7 @@ theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [NoZeroSMulDivisors A B
 section tower
 
 variable (C : Type*) [CommRing C] [IsDomain C] [Algebra A C] [Algebra B C] [Module.Finite B C]
-  [NoZeroSMulDivisors B C] [IsScalarTower A B C]
+  [IsDomain B] [IsTorsionFree B C] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
@@ -228,7 +229,7 @@ section fundamental_identity
 
 variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
   (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
-  [NoZeroSMulDivisors A B]
+  [IsTorsionFree A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
 include hpb in
@@ -251,11 +252,11 @@ end fundamental_identity
 section tower
 
 variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B]
-  [Algebra A B] [NoZeroSMulDivisors A B] {p : Ideal A} (P : Ideal B) [p.IsMaximal]
+  [Algebra A B] [IsTorsionFree A B] {p : Ideal A} (P : Ideal B) [p.IsMaximal]
   [P.IsMaximal] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
   [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Algebra B C]
-  [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [NoZeroSMulDivisors A C]
-  [NoZeroSMulDivisors B C] [IsScalarTower A B C]
+  [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [IsTorsionFree A C]
+  [IsTorsionFree B C] [IsScalarTower A B C]
   (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
   (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
 
@@ -322,7 +323,7 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
 /-- The cardinality of the inertia group is equal to the ramification index. -/
 lemma card_inertia_eq_ramificationIdxIn
     [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
-    [NoZeroSMulDivisors R S]
+    [IsTorsionFree R S]
     (p : Ideal R) (hp : p ≠ ⊥)
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
     Nat.card (P.toAddSubgroup.inertia G) = Ideal.ramificationIdxIn p S := by

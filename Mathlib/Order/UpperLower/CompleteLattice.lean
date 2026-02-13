@@ -174,8 +174,6 @@ theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
 theorem notMem_top : a ∉ (⊤ : UpperSet α) :=
   id
 
-@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
-
 @[simp]
 theorem mem_bot : a ∈ (⊥ : UpperSet α) :=
   trivial
@@ -251,6 +249,9 @@ instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
 
+instance : IsConcreteLE (LowerSet α) α :=
+  ⟨.rfl⟩
+
 @[norm_cast] lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
 
 @[norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t := Iff.rfl
@@ -311,8 +312,6 @@ theorem mem_top : a ∈ (⊤ : LowerSet α) :=
 @[simp]
 theorem notMem_bot : a ∉ (⊥ : LowerSet α) :=
   id
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup_iff : a ∈ s ⊔ t ↔ a ∈ s ∨ a ∈ t :=
@@ -490,9 +489,9 @@ end LE
 section LinearOrder
 variable [LinearOrder α]
 
-instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+instance UpperSet.total_le : @Std.Total (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
 
-instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+instance LowerSet.total_le : @Std.Total (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
 
 noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
   classical exact Lattice.toLinearOrder _

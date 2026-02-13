@@ -13,9 +13,9 @@ public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 # Some results on free modules over rings satisfying strong rank condition
 
 This file contains some results on free modules over rings satisfying strong rank condition.
-Most of them are generalized from the same result assuming the base ring being division ring,
+Most of them are generalized from the same result assuming the base ring being a division ring,
 and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
-and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
+and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 
 -/
 

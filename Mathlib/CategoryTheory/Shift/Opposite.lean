@@ -221,7 +221,7 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
   shift_comm _ := by
     ext
-    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
+    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
     simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,

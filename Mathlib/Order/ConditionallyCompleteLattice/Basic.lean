@@ -269,12 +269,8 @@ theorem csInf_upperBounds_range [Nonempty β] {f : β → α} (hf : BddAbove (ra
 theorem notMem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (csInf_le hs hx))
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_csInf := notMem_of_lt_csInf
-
 theorem notMem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove s) : x ∉ s :=
   notMem_of_lt_csInf (α := αᵒᵈ) h hs
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_csSup_lt := notMem_of_csSup_lt
 
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w<b`.
@@ -631,8 +627,6 @@ theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b �
 theorem notMem_of_lt_csInf' {x : α} {s : Set α} (h : x < sInf s) : x ∉ s :=
   notMem_of_lt_csInf h (OrderBot.bddBelow s)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_csInf' := notMem_of_lt_csInf'
-
 @[gcongr mid]
 theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=
   csInf_le_csInf (OrderBot.bddBelow s) h₁ h₂
@@ -865,12 +859,9 @@ variable {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α
 
 theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) (hs₀ : s.Nonempty) (hs₁ : BddAbove s)
-    (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
-  refine eq_of_forall_ge_iff fun c => ?_
-  rw [csSup_le_iff (hs₁.image2 (fun _ => (h₁ _).monotone_l) (fun _ => (h₂ _).monotone_l) ht₁)
-      (hs₀.image2 ht₀),
-    forall_mem_image2, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
-  simp_rw [← (h₂ _).le_iff_le, (h₁ _).le_iff_le, csSup_le_iff hs₁ hs₀]
+    (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) :=
+  isLUB_image2_of_isLUB_isLUB h₁ h₂ (isLUB_csSup hs₀ hs₁) (isLUB_csSup ht₀ ht₁)
+    |>.csSup_eq (hs₀.image2 ht₀)
 
 theorem csSup_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
@@ -888,10 +879,10 @@ theorem csSup_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (swap l b �
   csSup_image2_eq_csSup_csSup (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 
 theorem csInf_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
-    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) :
-    s.Nonempty → BddBelow s → t.Nonempty → BddBelow t → sInf (image2 u s t) = u (sInf s) (sInf t) :=
-  csSup_image2_eq_csSup_csSup (α := αᵒᵈ) (β := βᵒᵈ) (γ := γᵒᵈ) (u₁ := l₁) (u₂ := l₂)
-    (fun _ => (h₁ _).dual) fun _ => (h₂ _).dual
+    (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) (hs₀ : s.Nonempty) (hs₁ : BddBelow s)
+    (ht₀ : t.Nonempty) (ht₁ : BddBelow t) : sInf (image2 u s t) = u (sInf s) (sInf t) :=
+  isGLB_image2_of_isGLB_isGLB h₁ h₂ (isGLB_csInf hs₀ hs₁) (isGLB_csInf ht₀ ht₁)
+    |>.csInf_eq (hs₀.image2 ht₀)
 
 theorem csInf_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :

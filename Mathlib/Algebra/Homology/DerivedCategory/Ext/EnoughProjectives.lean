@@ -23,7 +23,7 @@ So we must be very selective regarding `HasExt` instances.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -102,6 +102,10 @@ lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
     (by lia)).hom.app _), zero_hom, Limits.zero_comp]
   apply from_singleFunctor_obj_eq_zero_of_projective
     (L := (CochainComplex.singleFunctor C (-(n + 1))).obj Y) (n := -(n + 1)) _ (by lia)
+
+lemma subsingleton_of_projective [HasExt.{w} C]
+    (P Y : C) [Projective P] (n : ℕ) : Subsingleton (Ext.{w} P Y (n + 1)) :=
+  subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
 
 end Abelian.Ext
 

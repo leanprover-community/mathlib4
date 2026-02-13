@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Flat modules
@@ -470,7 +471,7 @@ The flatness condition could be removed over domains.
 See `LinearIndepOn.tmul_of_isDomain`. -/
 nonrec lemma LinearIndepOn.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective :)
 
 /-- Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
@@ -490,7 +491,7 @@ The flatness condition could be removed over domains.
 See `LinearIndepOn.tmul_of_isDomain`. -/
 nonrec lemma LinearIndepOn.tmul_of_flat_right [Module.Flat R N] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective :)
 
 variable (p : Submodule R M) (q : Submodule R N)
 

@@ -415,8 +415,8 @@ lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
     Module.Injective R M where
   out X Y _ _ _ _ f hf g :=
-    let eX := ULift.moduleEquiv.{_,_,v'} (R := R) (M := X)
-    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_,_,v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
+    let eX := ULift.moduleEquiv.{_, _, v'} (R := R) (M := X)
+    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_, _, v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
       (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
       (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,

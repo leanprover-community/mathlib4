@@ -7,6 +7,8 @@ module
 
 public meta import Batteries.Lean.HashMap
 public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Batteries.Lean.HashMap
+public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -35,32 +37,6 @@ public meta section
 
 open Batteries
 open Std (format ToFormat TreeSet)
-
-namespace Std.TreeSet
-
-variable {α : Type*} {cmp}
-
-/--
-`O(n₂ * log (n₁ + n₂))`. Merges the maps `t₁` and `t₂`.
-If equal keys exist in both, the key from `t₂` is preferred.
-
-Note: this has been renamed to `union'` as there is now an upstream definition.
-The new definition has a different implementation,
-and switching to using the upstream definition below breaks some tests.
-
-I've made this definition private to avoid confusion.
--/
-private def union' (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp :=
-  t₂.foldl .insert t₁
-
-/--
-`O(n₁ * (log n₁ + log n₂))`. Constructs the set of all elements of `t₁` that are not in `t₂`.
--/
-def sdiff (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp := t₁.filter (!t₂.contains ·)
-
-instance : SDiff (TreeSet α cmp) := ⟨TreeSet.sdiff⟩
-
-end Std.TreeSet
 
 namespace Mathlib.Tactic.Linarith
 
@@ -170,7 +146,7 @@ iff `k' ≥ k`. Thus we can compute the intersection of officially and implicitl
 by taking the set of implicitly eliminated variables with indices ≥ `elimedGE`.
 -/
 def PComp.maybeMinimal (c : PComp) (elimedGE : ℕ) : Bool :=
-  c.history.size ≤ 1 + ((c.implicit.filter (· ≥ elimedGE)).union' c.effective).size
+  c.history.size ≤ 1 + ((c.implicit.filter (· ≥ elimedGE)).union c.effective).size
 
 /--
 The `src : CompSource` field is ignored when comparing `PComp`s. Two `PComp`s proving the same
@@ -204,10 +180,10 @@ this formula would leave them always empty.)
 def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
   let c := c1.c.add c2.c
   let src := c1.src.add c2.src
-  let history := c1.history.union' c2.history
-  let vars := c1.vars.union' c2.vars
-  let effective := (c1.effective.union' c2.effective).insert elimVar
-  let implicit := (vars.sdiff (.ofList c.vars _)).sdiff effective
+  let history := c1.history.union c2.history
+  let vars := c1.vars.union c2.vars
+  let effective := (c1.effective.union c2.effective).insert elimVar
+  let implicit := (vars.diff (.ofList c.vars _)).diff effective
   ⟨c, src, history, effective, implicit, vars⟩
 
 /--
@@ -339,7 +315,9 @@ def elimVarM (a : ℕ) : LinarithM Unit := do
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
     update (vs - 1) (← pos.foldlM (fun s p => do
       Lean.Core.checkSystem decl_name%.toString
-      pure (s.union' (elimWithSet a p neg))) notPresent)
+      -- FIXME: `.foldl .insert` should be equivalent to `.union`, but this breaks the test from
+      -- https://github.com/leanprover-community/mathlib4/issues/8875
+      pure ((elimWithSet a p neg).foldl .insert s)) notPresent)
   else
     pure ()
 

@@ -101,7 +101,7 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
 end TriangleOpEquivalence
 
 /-- An anti-equivalence between the categories of triangles in `C` and in `Cᵒᵖ`.
-A triangle in `Cᵒᵖ` shall be distinguished iff it correspond to a distinguished
+A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished
 triangle in `C` via this equivalence. -/
 @[simps]
 noncomputable def triangleOpEquivalence :

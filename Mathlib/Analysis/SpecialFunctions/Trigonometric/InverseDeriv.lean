@@ -14,7 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 Derivatives of `arcsin` and `arccos`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -79,7 +79,7 @@ theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
   have : sin ∘ arcsin =ᶠ[𝓝[≥] (-1 : ℝ)] id := by
     filter_upwards [Icc_mem_nhdsGE (neg_lt_self zero_lt_one)] with x using sin_arcsin'
   have := h.hasDerivWithinAt.sin.congr_of_eventuallyEq this.symm (by simp)
-  simpa using (uniqueDiffOn_Ici _ _ left_mem_Ici).eq_deriv _ this (hasDerivWithinAt_id _ _)
+  simpa using (uniqueDiffOn_Ici _ _ self_mem_Ici).eq_deriv _ this (hasDerivWithinAt_id _ _)
 
 theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by

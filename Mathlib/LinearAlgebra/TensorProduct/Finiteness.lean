@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 
@@ -38,7 +38,7 @@ tensor product, finitely generated
 
 -/
 
-@[expose] public section
+public section
 
 open scoped TensorProduct
 

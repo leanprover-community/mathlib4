@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Results using cardinal arithmetic
@@ -22,7 +23,7 @@ It has been separated out to not burden `Mathlib/Data/Set/Card.lean` with extra 
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
 
-@[expose] public section
+public section
 
 variable {α ι : Type*}
 

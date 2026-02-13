@@ -5,8 +5,10 @@ Authors: Paul Lezeau, Xavier Roblot, Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.PowerBasis
+
 
 /-!
 # The conductor ideal
@@ -20,7 +22,7 @@ This file defines the conductor ideal of an element `x` of `R`-algebra `S`. This
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
+open Ideal Polynomial DoubleQuot Module UniqueFactorizationMonoid Algebra RingHom
 
 local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
 
@@ -60,7 +62,7 @@ theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
-    [IsScalarTower R S L] [NoZeroSMulDivisors S L] {x : S} {y : L} :
+    [IsScalarTower R S L] [IsDomain S] [IsTorsionFree S L] {x : S} {y : L} :
     y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
       y * (algebraMap S L) z ∈ Algebra.adjoin R {algebraMap S L x} := by
   cases subsingleton_or_nontrivial L
@@ -148,8 +150,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
       rw [Submonoid.mk_smul, smul_eq_mul, mul_one]
     rwa [← this]
   · -- The converse inclusion is trivial
-    have : algebraMap R S = (algebraMap _ S).comp (algebraMap R R<x>) := by ext; rfl
-    rw [this, ← Ideal.map_map]
+    rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
     apply Ideal.le_comap_map
 
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
@@ -194,3 +195,12 @@ theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap 
     (h_alg : Function.Injective (algebraMap R<x> S)) (a : R<x>) :
     quotAdjoinEquivQuotMap hx h_alg (Ideal.Quotient.mk (I.map (algebraMap R R<x>)) a) =
       Ideal.Quotient.mk (I.map (algebraMap R S)) ↑a := rfl
+
+lemma Localization.localRingHom_bijective_of_not_conductor_le
+    {P : Ideal S} [P.IsPrime] (hx : ¬ conductor R x ≤ P) {s : Subalgebra R S}
+    (hs : s = R<x>) (p : Ideal s) [p.IsPrime] [P.LiesOver p] :
+    Function.Bijective (Localization.localRingHom _ _ _ (P.over_def p)) := by
+  obtain ⟨a, ha, haP⟩ := SetLike.not_le_iff_exists.mp hx
+  replace ha (b : _) : a * b ∈ s := by simpa [hs] using ha b
+  exact Localization.localRingHom_bijective_of_saturated_inf_eq_top _
+    (top_le_iff.mp fun y _ ↦ ⟨a, ⟨haP, by simpa using ha 1⟩, ha _⟩) _

@@ -5,8 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Util.WhatsNew
-public meta import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Init
 
 /-!
 # `ToExpr` instances for Mathlib

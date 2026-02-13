@@ -22,7 +22,7 @@ Further results on the structure of ideals in a Dedekind domain are found in
 
 - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
   every nonzero fractional ideal is invertible.
-- `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
+- `isDedekindDomainInv_iff` shows that this does not depend on the choice of field of
   fractions.
 
 ## Main results:
@@ -65,7 +65,7 @@ variable [IsDomain A]
 This is equivalent to `IsDedekindDomain`.
 In particular we provide a `CommGroupWithZero` instance,
 assuming `IsDedekindDomain A`, which implies `IsDedekindDomainInv`. For **integral** domain,
-`IsDedekindDomain`(`Inv`) implies only `Ideal.cancelCommMonoidWithZero`.
+`IsDedekindDomain`(`Inv`) implies only `Ideal.isCancelMulZero`.
 -/
 def IsDedekindDomainInv : Prop :=
   ∀ I ≠ (⊥ : FractionalIdeal A⁰ (FractionRing A)), I * I⁻¹ = 1
@@ -101,7 +101,7 @@ include h
 zero. -/
 noncomputable abbrev commGroupWithZero : CommGroupWithZero (FractionalIdeal A⁰ K) where
   inv_zero := inv_zero' _
-  mul_inv_cancel  := isDedekindDomainInv_iff.mp h
+  mul_inv_cancel := isDedekindDomainInv_iff.mp h
   div_eq_mul_inv I J := by
     obtain rfl | hJ := eq_or_ne J 0
     · simp [inv_zero']
@@ -310,8 +310,7 @@ theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalI
   have x_mul_mem : ∀ b ∈ (I⁻¹ : FractionalIdeal A⁰ K), x * b ∈ (I⁻¹ : FractionalIdeal A⁰ K) := by
     intro b hb
     rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI0)]
-    dsimp only at hx
-    rw [val_eq_coe, mem_coe, mem_inv_iff hJ0] at hx
+    rw [mem_inv_iff hJ0] at hx
     simp only [mul_assoc, mul_comm b] at hx ⊢
     intro y hy
     exact hx _ (mul_mem_mul hy hb)
@@ -341,18 +340,6 @@ noncomputable instance semifield : Semifield (FractionalIdeal A⁰ K) where
     · exact mt ((injective_iff_map_eq_zero (algebraMap A _)).mp (IsFractionRing.injective A _) _) ha
     · exact coeIdeal_ne_zero.mp (right_ne_zero_of_mul hI)
   nnqsmul := _
-
-#adaptation_note /-- 2025-03-29 for https://github.com/leanprover/lean4/issues/7717 had to add `mul_left_cancel_of_ne_zero` field.
-TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
-/-- Fractional ideals have cancellative multiplication in a Dedekind domain.
-
-Although this instance is a direct consequence of the instance
-`FractionalIdeal.semifield`, we define this instance to provide
-a computable alternative.
--/
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
-  __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
-  mul_left_cancel_of_ne_zero h _ _ := mul_left_cancel₀ h
 
 instance : PosMulStrictMono (FractionalIdeal A⁰ K) := PosMulMono.toPosMulStrictMono
 instance : MulPosStrictMono (FractionalIdeal A⁰ K) := MulPosMono.toMulPosStrictMono
@@ -410,9 +397,9 @@ variable [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
 
 open FractionalIdeal Ideal
 
-noncomputable instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
-  { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
-    (map_zero _) (map_one _) (map_mul _) (map_pow _) with }
+noncomputable instance Ideal.isCancelMulZero : IsCancelMulZero (Ideal A) :=
+  Function.Injective.isCancelMulZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
+    (map_zero _) (map_mul _)
 
 instance Ideal.isDomain : IsDomain (Ideal A) where
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Monoidal opposites
@@ -314,6 +315,7 @@ end MonoidalOppositeLemmas
 
 variable (C)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The (identity) equivalence between `C` and its monoidal opposite. -/
 @[simps] def MonoidalOpposite.mopEquiv : C ≌ Cᴹᵒᵖ where
   functor   := mopFunctor C
@@ -427,15 +429,6 @@ instance monoidalUnopUnop : (unopUnop C).Monoidal where
 
 instance : (opOpEquivalence C).functor.Monoidal := monoidalUnopUnop
 instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
-
-@[deprecated (since := "2025-06-08")] alias opOp_ε := monoidalOpOp_ε
-@[deprecated (since := "2025-06-08")] alias opOp_η := monoidalOpOp_η
-@[deprecated (since := "2025-06-08")] alias unopUnop_ε := monoidalUnopUnop_ε
-@[deprecated (since := "2025-06-08")] alias unopUnop_η := monoidalUnopUnop_η
-@[deprecated (since := "2025-06-08")] alias opOp_μ := monoidalOpOp_μ
-@[deprecated (since := "2025-06-08")] alias opOp_δ := monoidalOpOp_δ
-@[deprecated (since := "2025-06-08")] alias unopUnop_μ := monoidalUnopUnop_μ
-@[deprecated (since := "2025-06-08")] alias unopUnop_δ := monoidalUnopUnop_δ
 
 instance : (opOpEquivalence C).IsMonoidal where
   leftAdjoint_ε := by simp [opOpEquivalence]

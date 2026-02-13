@@ -75,7 +75,7 @@ protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ 
 
 protected theorem rfl : μ ≪ μ := fun _s hs => hs
 
-instance instIsRefl {_ : MeasurableSpace α} : IsRefl (Measure α) (· ≪ ·) :=
+instance instRefl {_ : MeasurableSpace α} : @Std.Refl (Measure α) (· ≪ ·) :=
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 
 @[simp]

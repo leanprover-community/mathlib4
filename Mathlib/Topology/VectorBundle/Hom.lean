@@ -47,12 +47,6 @@ variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E�
 variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
   [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
-/-- A reducible type synonym for the bundle of continuous (semi)linear maps. -/
-@[deprecated "Use the plain bundle syntax `fun (b : B) ↦ E₁ b →SL[σ] E₂ b` or
-`fun (b : B) ↦ E₁ b →L[𝕜] E₂ b` instead" (since := "2025-06-12")]
-protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
-    [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x ↦ E₁ x →SL[σ] E₂ x
-
 variable {E₁ E₂}
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))

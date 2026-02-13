@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Calculus.MeanValue
 # Higher differentiability over `ℝ` or `ℂ`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -216,8 +216,8 @@ variable (α) [BooleanAlgebra α]
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps!]
 def OrderIso.compl : α ≃o αᵒᵈ where
-  toFun := OrderDual.toDual ∘ HasCompl.compl
-  invFun := HasCompl.compl ∘ OrderDual.ofDual
+  toFun := OrderDual.toDual ∘ Compl.compl
+  invFun := Compl.compl ∘ OrderDual.ofDual
   left_inv := compl_compl
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le

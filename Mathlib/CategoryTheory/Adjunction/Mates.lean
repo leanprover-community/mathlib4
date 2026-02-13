@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Functor.TwoSquare
 public import Mathlib.CategoryTheory.HomCongr
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Mate of natural transformations
@@ -32,11 +31,11 @@ other side is as well). This demonstrates that adjoints to a given functor are u
 isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
 Another example arises from considering the square representing that a functor `H` preserves
-products, in particular the morphism `HA ⨯ H- ⟶ H(A ⨯ -)`. Then provided `(A ⨯ -)` and `HA ⨯ -`
+products, in particular the morphism `H A ⨯ H- ⟶ H (A ⨯ -)`. Then provided `(A ⨯ -)` and `H A ⨯ -`
 have left adjoints (for instance if the relevant categories are Cartesian closed), the transferred
-natural transformation is the exponential comparison morphism: `H(A ^ -) ⟶ HA ^ H-`.
+natural transformation is the exponential comparison morphism: `H (A ^ -) ⟶ H A ^ H-`.
 Furthermore if `H` has a left adjoint `L`, this morphism is an isomorphism iff its mate
-`L(HA ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
+`L (H A ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see
 https://ncatlab.org/nlab/show/Frobenius+reciprocity#InCategoryTheory.
 This also relates to Grothendieck's yoga of six operations, though this is not spelled out in
 mathlib: https://ncatlab.org/nlab/show/six+operations.
@@ -388,7 +387,7 @@ instance conjugateEquiv_symm_iso (α : R₁ ⟶ R₂) [IsIso α] :
       ⟨conjugateEquiv_symm_comm _ _ (by simp), conjugateEquiv_symm_comm _ _ (by simp)⟩⟩⟩
 
 /-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation
-is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
+is an isomorphism, then `α` is an isomorphism. The converse is given in `conjugateEquiv_iso`.
 -/
 theorem conjugateEquiv_of_iso (α : L₂ ⟶ L₁) [IsIso (conjugateEquiv adj₁ adj₂ α)] :
     IsIso α := by
@@ -449,7 +448,6 @@ theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
     (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).natTrans =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
-  unfold conjugateEquiv mateEquiv Adjunction.comp
   simp
 
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : TwoSquare U₂ R₂ R₁ U₁) :
@@ -472,7 +470,6 @@ theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ α (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerLeft_comp, assoc, mateEquiv_apply, whiskerLeft_twice,
     Iso.hom_inv_id_assoc, whiskerRight_comp, comp_app, Functor.whiskerLeft_app,
@@ -490,7 +487,6 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) β
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerRight_comp, assoc, mateEquiv_apply, whiskerLeft_comp,
     whiskerLeft_twice, comp_app, Functor.whiskerLeft_app, Functor.whiskerRight_app,

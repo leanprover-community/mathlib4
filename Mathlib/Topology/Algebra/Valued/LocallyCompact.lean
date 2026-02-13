@@ -25,7 +25,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 norm, nonarchimedean, rank one, compact, locally compact
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 

@@ -327,7 +327,7 @@ instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
     relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     model_preorder, and_true]
-  exact fun _ _ => le_antisymm
+  infer_instance
 
 section LinearOrder
 
@@ -337,7 +337,7 @@ instance model_linearOrder : M ⊨ L.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_insert_iff, Relations.realize_total, relMap_leSymb,
     Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, model_partialOrder,
     and_true]
-  exact le_total
+  infer_instance
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ L.dlo := by
@@ -353,7 +353,7 @@ variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
 def leOfStructure : LE M where
-  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a,b]
+  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
 instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   letI := L.leOfStructure M
@@ -382,16 +382,16 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
 /-- Any model of a theory of partial orders is a partial order. -/
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
-  le_antisymm := Relations.realize_antisymmetric.1 ((Theory.model_iff _).1 h _
-    (by simp only [partialOrderTheory, Set.mem_insert_iff, true_or]))
+  le_antisymm := (Relations.realize_antisymmetric.mp <|
+    Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
-  le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
-    (by simp only [linearOrderTheory, Set.mem_insert_iff, true_or]))
+  le_total := (Relations.realize_total.1 <| (Theory.model_iff _).1 h _ <|
+    by simp only [linearOrderTheory, Set.mem_insert_iff, true_or]).total
   toDecidableLE := inferInstance
 
 end structure_to_order
@@ -449,7 +449,7 @@ lemma StrongHomClass.toOrderIsoClass
     (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
     OrderIsoClass F M N where
   map_le_map_iff f a b := by
-    have h := StrongHomClass.map_rel f leSymb ![a,b]
+    have h := StrongHomClass.map_rel f leSymb ![a, b]
     simp only [relMap_leSymb, Fin.isValue, Function.comp_apply, Matrix.cons_val_zero,
       Matrix.cons_val_one] at h
     exact h

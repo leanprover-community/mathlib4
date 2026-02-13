@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Subobjects

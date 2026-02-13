@@ -22,7 +22,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, power
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

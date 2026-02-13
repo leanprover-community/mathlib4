@@ -5,7 +5,7 @@ Authors: Anne Baanen, Devon Tuma
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Factors
+public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
 # Scaling the roots of a polynomial

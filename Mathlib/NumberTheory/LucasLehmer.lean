@@ -41,17 +41,13 @@ def mersenne (p : ℕ) : ℕ :=
 theorem strictMono_mersenne : StrictMono mersenne := fun m n h ↦
   (Nat.sub_lt_sub_iff_right <| Nat.one_le_pow _ _ two_pos).2 <| by gcongr; norm_num1
 
-@[simp]
+@[simp, gcongr]
 theorem mersenne_lt_mersenne {p q : ℕ} : mersenne p < mersenne q ↔ p < q :=
   strictMono_mersenne.lt_iff_lt
 
-@[gcongr] protected alias ⟨_, GCongr.mersenne_lt_mersenne⟩ := mersenne_lt_mersenne
-
-@[simp]
+@[simp, gcongr]
 theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q :=
   strictMono_mersenne.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.mersenne_le_mersenne⟩ := mersenne_le_mersenne
 
 @[simp] theorem mersenne_zero : mersenne 0 = 0 := rfl
 
@@ -645,9 +641,9 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
     rw [sModNat, sMod, ← ih]
     have h3 : 2 ≤ 2 ^ p - 1 := by
       zify [h2]
-      calc
-        (2 : Int) ≤ 4 - 1 := by simp
-        _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
+      calc (2 : ℤ)
+        _ ≤ 4 - 1 := by simp
+        _ ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
     zify [h2, h3]
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
       Int.add_emod_right, ← sub_eq_add_neg]

@@ -21,7 +21,7 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
 -/
 
-@[expose] public section
+public section
 
 open Function
 

@@ -17,7 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 composition of functions (the chain rule).
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal

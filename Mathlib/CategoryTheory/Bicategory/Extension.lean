@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Extensions and lifts in bicategories
@@ -117,7 +118,7 @@ theorem whisker_unit (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
 def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g ≫ h) where
   obj t := t.whisker h
   map η := LeftExtension.homMk (η.right ▷ h) <| by
-    simp [- LeftExtension.w, ← LeftExtension.w η]
+    simp [-LeftExtension.w, ← LeftExtension.w η]
 
 /-- Define a morphism between left extensions by cancelling the whiskered identities. -/
 @[simps! right]
@@ -237,7 +238,7 @@ def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) whe
   map η := LeftLift.homMk (h ◁ η.right) <| by
     dsimp only [whisker_lift, whisker_unit]
     rw [← LeftLift.w η]
-    simp [- LeftLift.w]
+    simp [-LeftLift.w]
 
 /-- Define a morphism between left lifts by cancelling the whiskered identities. -/
 @[simps! right]

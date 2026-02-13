@@ -201,8 +201,9 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
     simp_rw [← Set.accumulate_def, ProbabilityMeasure.tendsto_measure_iUnion_accumulate]
   rw [Cov, coeFn_univ, ← NNReal.tendsto_coe] at accumulation
   have exceeds_bound : ∀ᶠ n in atTop, (1 - ε / 2 : ℝ) ≤ μlim (⋃ i ≤ n, U i) :=
-      Tendsto.eventually_const_le (v := 1) (by simp only [sub_lt_self_iff, Nat.ofNat_pos,
-                    div_pos_iff_of_pos_right]; positivity) accumulation
+      Tendsto.eventually_const_le (v := 1)
+        (by simp only [sub_lt_self_iff, Nat.ofNat_pos, div_pos_iff_of_pos_right]; positivity)
+        accumulation
   suffices ∀ᶠ n : ℕ in atTop, False from this.exists.choose_spec
   filter_upwards [exceeds_bound] with n hn
   linarith [hn.trans <| Measurebound n]
@@ -229,9 +230,9 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
   · refine ⟨∅, isCompact_empty, fun μ hμ ↦ ?_⟩
     simp only [mem_setOf_eq] at hμ
     obtain ⟨μ', hμ', rfl⟩ := hμ
-    rw [compl_empty,measure_univ]
+    rw [compl_empty, measure_univ]
     exact le_of_lt hεbound
-  have byclaim (m : ℕ) : ∃ k, ∀ μ ∈ S, 1 - (ε * 2 ^ (- m : ℤ) : ℝ≥0∞) <
+  have byclaim (m : ℕ) : ∃ k, ∀ μ ∈ S, 1 - (ε * 2 ^ (-m : ℤ) : ℝ≥0∞) <
       μ (⋃ i ≤ k, ball (D i) (u m)) := by
     refine exists_measure_iUnion_gt_of_isCompact_closure
       (fun i ↦ ball (D i) (u m)) (fun _ ↦ isOpen_ball) (hcov m) hcomp (ε * 2 ^ (-m : ℤ)) ?_ ?_
@@ -242,7 +243,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
   let bigK := ⋂ m, ⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m))
   have bigcalc (μ : ProbabilityMeasure 𝓧) (hs : μ ∈ S) : μ.toMeasure bigKᶜ ≤ ε := calc
     μ.toMeasure bigKᶜ
-    _ = μ.toMeasure (⋃ m,(⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))ᶜ) := by simp [bigK]
+    _ = μ.toMeasure (⋃ m, (⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))ᶜ) := by simp [bigK]
     _ ≤ ∑' m, μ.toMeasure (⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))ᶜ :=
       measure_iUnion_le _
     _ = ∑' m, (1 - μ.toMeasure (⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))) := by
@@ -279,10 +280,9 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
         gcongr
         exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball <| hδ_inv
   -- Closedness
-  · refine isClosed_iInter fun n ↦ Finite.isClosed_biUnion ?_ (fun _ _ ↦ isClosed_closure)
-    refine Finite.ofFinset (Finset.Iic (km (n + 1))) fun x ↦ ?_
-    simp only [Finset.mem_Iic, Nat.le_eq]
-    rfl
+  · simp_rw [bigK, ← Set.mem_Iic]
+    exact isClosed_iInter fun n =>
+      Finite.isClosed_biUnion (finite_Iic _) (fun _ _ ↦ isClosed_closure)
 
 
 end MeasureTheory

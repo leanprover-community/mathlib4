@@ -8,21 +8,17 @@ module
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Basic definitions about `≤` and `<`
 
 This file proves basic results about orders, provides extensive dot notation, defines useful order
 classes and allows to transfer order instances.
-
-## Type synonyms
-
-* `OrderDual α` : A type synonym reversing the meaning of all inequalities, with notation `αᵒᵈ`.
 
 ### Transferring orders
 
@@ -131,9 +127,7 @@ theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
 lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
   simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
 
-@[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
-
-@[simp, to_dual self]
+@[simp]
 lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
 @[to_dual ge_trans'] alias le_trans' := ge_trans
@@ -151,12 +145,9 @@ lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim
 @[to_dual ne'] alias LT.lt.ne := ne_of_lt
 @[to_dual ge] alias Eq.le := le_of_eq
 
-@[to_dual self] protected lemma LT.lt.false : a < a → False := lt_irrefl a
+protected lemma LT.lt.false : a < a → False := lt_irrefl a
 
 @[to_dual not_gt] protected lemma Eq.not_lt (hab : a = b) : ¬a < b := fun h' ↦ h'.ne hab
-
-@[deprecated (since := "2025-05-11")] alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
-@[deprecated (since := "2025-06-07")] alias LT.lt.not_lt := LT.lt.not_gt
 
 @[to_dual ne_of_not_ge]
 theorem ne_of_not_le (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
@@ -223,10 +214,6 @@ theorem not_lt_iff_eq (h : a ≤ b) : ¬a < b ↔ a = b := h.lt_iff_ne.not_left
 @[to_dual ge_iff_eq']
 theorem ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b := ⟨h.antisymm, Eq.ge⟩
 
-@[deprecated (since := "2025-06-08")] alias gt_iff_ne := lt_iff_ne'
-@[deprecated (since := "2025-06-08")] alias le_iff_eq := ge_iff_eq'
-@[deprecated (since := "2025-06-08")] alias not_gt_iff_eq := not_lt_iff_eq'
-
 end LE.le
 
 -- Unnecessary brackets are here for readability
@@ -246,11 +233,6 @@ theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans o
 @[to_dual lt_iff_le_and_ne']
 theorem lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b :=
   ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
-
-@[deprecated LE.le.not_lt_iff_eq (since := "2025-06-08")]
-lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := hab.not_lt_iff_eq.symm
-
-@[deprecated (since := "2025-06-08")] alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
 @[to_dual eq_iff_ge_not_gt]
@@ -275,26 +257,16 @@ theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := (lt_or_eq_of_le h).sym
 @[to_dual lt_or_eq'] alias LE.le.lt_or_eq := lt_or_eq_of_le
 @[to_dual eq_or_lt'] alias LE.le.eq_or_lt := eq_or_lt_of_le
 
-@[deprecated (since := "2025-06-08")] alias eq_or_gt_of_le := eq_or_lt_of_le'
-@[deprecated (since := "2025-06-08")] alias gt_or_eq_of_le := lt_or_eq_of_le'
-@[deprecated (since := "2025-06-08")] alias LE.le.eq_or_gt := LE.le.eq_or_lt'
-@[deprecated (since := "2025-06-08")] alias LE.le.gt_or_eq := LE.le.lt_or_eq'
-
 @[to_dual eq_of_le_of_not_lt']
 theorem eq_of_le_of_not_lt (h₁ : a ≤ b) (h₂ : ¬a < b) : a = b := h₁.eq_or_lt.resolve_right h₂
 
 @[to_dual eq_of_not_lt'] alias LE.le.eq_of_not_lt := eq_of_le_of_not_lt
-
-@[deprecated (since := "2025-06-08")] alias eq_of_ge_of_not_gt := eq_of_le_of_not_lt'
-@[deprecated (since := "2025-06-08")] alias LE.le.eq_of_not_gt := LE.le.eq_of_not_lt'
 
 @[to_dual ge_iff_gt]
 theorem Ne.le_iff_lt (h : a ≠ b) : a ≤ b ↔ a < b := ⟨fun h' ↦ lt_of_le_of_ne h' h, fun h ↦ h.le⟩
 
 @[to_dual not_ge_or_not_le]
 theorem Ne.not_le_or_not_ge (h : a ≠ b) : ¬a ≤ b ∨ ¬b ≤ a := not_and_or.1 <| le_antisymm_iff.not.1 h
-
-@[deprecated (since := "2025-06-07")] alias Ne.not_le_or_not_le := Ne.not_le_or_not_ge
 
 -- See Note [decidable namespace]
 @[to_dual ne_iff_gt_iff_ge]
@@ -339,10 +311,6 @@ lemma ge_or_lt (h : a ≤ b) (c : α) : a ≤ c ∨ c < b := (le_or_gt a c).imp 
 @[to_dual le_or_ge]
 lemma ge_or_le (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b := (h.gt_or_le c).imp le_of_lt id
 
-@[deprecated (since := "2025-05-11")] alias lt_or_le := gt_or_le
-@[deprecated (since := "2025-05-11")] alias le_or_lt := ge_or_lt
-@[deprecated (since := "2025-05-11")] alias le_or_le := ge_or_le
-
 end LE.le
 
 namespace LT.lt
@@ -350,18 +318,11 @@ namespace LT.lt
 @[to_dual lt_or_gt]
 lemma gt_or_lt (h : a < b) (c : α) : a < c ∨ c < b := (le_or_gt b c).imp h.trans_le id
 
-@[deprecated (since := "2025-06-07")] alias lt_or_lt := gt_or_lt
-
 end LT.lt
-
-@[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
-@[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
 
 @[to_dual gt_or_lt]
 theorem Ne.lt_or_gt (h : a ≠ b) : a < b ∨ b < a :=
   lt_or_gt_of_ne h
-
-@[deprecated (since := "2025-06-07")] alias Ne.lt_or_lt := Ne.lt_or_gt
 
 /-- A version of `ne_iff_lt_or_gt` with LHS and RHS reversed. -/
 @[to_dual lt_or_gt_iff_ne', simp]
@@ -392,9 +353,6 @@ theorem le_of_forall_lt (H : ∀ c, c < a → c < b) : a ≤ b :=
 @[to_dual forall_gt_iff_le]
 theorem forall_lt_iff_le : (∀ ⦃c⦄, c < a → c < b) ↔ a ≤ b :=
   ⟨le_of_forall_lt, fun h _ hca ↦ lt_of_lt_of_le hca h⟩
-
-@[deprecated (since := "2025-06-07")] alias le_of_forall_lt' := le_of_forall_gt
-@[deprecated (since := "2025-06-07")] alias forall_lt_iff_le' := forall_gt_iff_le
 
 @[to_dual le_of_forall_gt_imp_ne]
 theorem le_of_forall_lt_imp_ne (H : ∀ c < a, c ≠ b) : a ≤ b :=
@@ -472,7 +430,7 @@ lemma le_iff_le_iff_lt_iff_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} 
   ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans <| not_lt⟩
 
 /-- A symmetric relation implies two values are equal, when it implies they're less-equal. -/
-lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [IsSymm α r] {f : α → β}
+lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [Std.Symm r] {f : α → β}
     (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab ↦
   le_antisymm (h a b hab) (h b a <| symm hab)
 
@@ -537,114 +495,29 @@ lemma LinearOrder.ext {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; x �
 lemma LinearOrder.ext_lt {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) :
     A = B := LinearOrder.toPartialOrder_injective (PartialOrder.ext_lt H)
 
-/-! ### Order dual -/
-
-/-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
-notation for `OrderDual α`. -/
-def OrderDual (α : Type*) : Type _ :=
-  α
-
-@[inherit_doc]
-notation:max α "ᵒᵈ" => OrderDual α
-
-namespace OrderDual
-
-instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
-  h
-
-instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
-  h
-
-instance (α : Type*) [LE α] : LE αᵒᵈ :=
-  ⟨fun x y : α ↦ y ≤ x⟩
-
-instance (α : Type*) [LT α] : LT αᵒᵈ :=
-  ⟨fun x y : α ↦ y < x⟩
-
-instance instOrd (α : Type*) [Ord α] : Ord αᵒᵈ where
-  compare := fun (a b : α) ↦ compare b a
-
-instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨((· ⊔ ·) : α → α → α)⟩
-
-instance instIsTransLE [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
-  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
-
-instance instIsTransLT [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt where
-  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
-
-instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
-  le_refl := fun _ ↦ le_refl _
-  le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
-  lt_iff_le_not_ge := fun _ _ ↦ lt_iff_le_not_ge
-
-instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
-  __ := inferInstanceAs (Preorder αᵒᵈ)
-  le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
-
-instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
-  __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  __ := inferInstanceAs (Ord αᵒᵈ)
-  le_total := fun a b : α ↦ le_total b a
-  max := fun a b ↦ (min a b : α)
-  min := fun a b ↦ (max a b : α)
-  min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
-  max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  toDecidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
-  toDecidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
-  toDecidableEq := (inferInstance : DecidableEq α)
-  compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
-    rfl
-
-/-- The opposite linear order to a given linear order -/
-def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
-  inferInstanceAs <| LinearOrder (OrderDual α)
-
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
-
-theorem Ord.dual_dual (α : Type*) [H : Ord α] : OrderDual.instOrd αᵒᵈ = H :=
-  rfl
-
-theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
-  rfl
-
-theorem instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
-    OrderDual.instPartialOrder αᵒᵈ = H :=
-  rfl
-
-theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
-    OrderDual.instLinearOrder αᵒᵈ = H :=
-  rfl
-
-end OrderDual
-
-/-! ### `HasCompl` -/
+/-! ### `Compl` -/
 
 
-instance Prop.hasCompl : HasCompl Prop :=
+instance Prop.instCompl : Compl Prop :=
   ⟨Not⟩
 
-instance Pi.hasCompl [∀ i, HasCompl (π i)] : HasCompl (∀ i, π i) :=
+instance Pi.instCompl [∀ i, Compl (π i)] : Compl (∀ i, π i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 
 @[push ←]
-theorem Pi.compl_def [∀ i, HasCompl (π i)] (x : ∀ i, π i) :
+theorem Pi.compl_def [∀ i, Compl (π i)] (x : ∀ i, π i) :
     xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 
 @[simp]
-theorem Pi.compl_apply [∀ i, HasCompl (π i)] (x : ∀ i, π i) (i : ι) :
+theorem Pi.compl_apply [∀ i, Compl (π i)] (x : ∀ i, π i) (i : ι) :
     xᶜ i = (x i)ᶜ :=
   rfl
 
-instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
+instance Std.Irrefl.compl (r : α → α → Prop) [Std.Irrefl r] : Std.Refl rᶜ :=
   ⟨@irrefl α r _⟩
 
-instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
+instance Std.Refl.compl (r : α → α → Prop) [Std.Refl r] : Std.Irrefl rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
 theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]
@@ -938,31 +811,23 @@ abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
 
 namespace Subtype
 
-@[simp, to_dual self]
+@[simp, gcongr, to_dual self]
 theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) ≤ ⟨y, hy⟩ ↔ x ≤ y :=
   Iff.rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
-
-@[simp, to_dual self]
+@[simp, gcongr, to_dual self]
 theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
-
-@[simp, norm_cast, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
-
-@[simp, norm_cast, to_dual self]
+@[simp, norm_cast, gcongr, to_dual self]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
-
-@[gcongr, to_dual self] alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
@@ -970,11 +835,9 @@ instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-@[to_dual decidableLE']
 instance decidableLE [Preorder α] [h : DecidableLE α] {p : α → Prop} :
     DecidableLE (Subtype p) := fun a b ↦ h a b
 
-@[to_dual decidableLT']
 instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
     DecidableLT (Subtype p) := fun a b ↦ h a b
 
@@ -1037,22 +900,19 @@ theorem swap_lt_swap : x.swap < y.swap ↔ x < y :=
 @[to_dual (attr := simp) mk_lt_swap]
 lemma swap_lt_mk : x.swap < (b, a) ↔ x < (a, b) := by rw [← swap_lt_swap]; simp
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ :=
   and_iff_left le_rfl
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_le_mk_iff_right : (a, b₁) ≤ (a, b₂) ↔ b₁ ≤ b₂ :=
   and_iff_right le_rfl
 
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk_left⟩ := mk_le_mk_iff_left
-@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk_right⟩ := mk_le_mk_iff_right
-
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_lt_mk_iff_left : (a₁, b) < (a₂, b) ↔ a₁ < a₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_left mk_le_mk_iff_left
 
-@[to_dual self]
+@[gcongr, to_dual self]
 theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_right mk_le_mk_iff_right
 
@@ -1112,13 +972,6 @@ theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=
   DenselyOrdered.dense _ _
 
-instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
-    DenselyOrdered αᵒᵈ :=
-  ⟨fun _ _ ha ↦ (@exists_between α _ h _ _ ha).imp fun _ ↦ And.symm⟩
-
-@[simp]
-theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
-  ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
 
 /-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton
 typeclass search. -/

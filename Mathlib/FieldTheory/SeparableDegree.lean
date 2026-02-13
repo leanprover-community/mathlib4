@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
+
 /-!
 
 # Separable degree
@@ -169,10 +170,8 @@ theorem finSepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
 
 @[simp]
 theorem finSepDegree_self : finSepDegree F F = 1 := by
-  have : Cardinal.mk (Emb F F) = 1 := le_antisymm
-    (Cardinal.le_one_iff_subsingleton.2 AlgHom.subsingleton)
-    (Cardinal.one_le_iff_ne_zero.2 <| Cardinal.mk_ne_zero _)
-  rw [finSepDegree, Nat.card, this, Cardinal.one_toNat]
+  rw [finSepDegree, Nat.card_eq_one_iff_unique]
+  constructor <;> infer_instance
 
 end Field
 
@@ -371,7 +370,7 @@ theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
-    (SplittingField.splits f).map_roots,
+    (SplittingField.splits f).roots_map,
     Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in
@@ -894,12 +893,15 @@ end Field
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → Splits f := by
-  refine ⟨fun ⟨h⟩ f hf ↦ splits_iff_splits.2 <| or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_,
-      fun h ↦ ?_⟩
-  · have := natSepDegree_le_of_dvd g f hd hn
-    rw [hf, (h hg).natSepDegree_eq_natDegree] at this
-    exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|
-      natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
+  refine ⟨fun ⟨h⟩ f hf ↦ ?_, fun h ↦ ?_⟩
+  · have hf0 : f ≠ 0 := by aesop
+    obtain ⟨u, hu⟩ := UniqueFactorizationMonoid.factors_prod hf0
+    rw [← hu]
+    refine (Splits.multisetProd fun g hg ↦ ?_).mul u.isUnit.splits
+    specialize h (UniqueFactorizationMonoid.irreducible_of_factor g hg)
+    have key := natSepDegree_le_of_dvd g f (UniqueFactorizationMonoid.dvd_of_mem_factors hg) hf0
+    rw [h.natSepDegree_eq_natDegree, hf] at key
+    exact Splits.of_natDegree_le_one key
   obtain ⟨p, _⟩ := ExpChar.exists F
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
     obtain ⟨y, hy⟩ := Splits.exists_eval_eq_zero

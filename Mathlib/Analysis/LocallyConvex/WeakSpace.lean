@@ -19,7 +19,7 @@ Of course, we phrase this in terms of linear maps between locally convex spaces,
 creating two separate topologies on the same space.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*}
 variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]

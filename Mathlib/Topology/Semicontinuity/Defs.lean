@@ -90,6 +90,22 @@ def Semicontinuous (r : α → β → Prop) : Prop :=
 
 variable {r r' : α → β → Prop} {x : α} {s t : Set α}
 
+lemma semicontinuousWithinAt_iff_frequently :
+    SemicontinuousWithinAt r s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, SemicontinuousWithinAt]
+
+lemma semicontinuousOn_iff_frequently :
+    SemicontinuousOn r s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, SemicontinuousWithinAt, SemicontinuousOn]
+
+lemma semicontinuousAt_iff_frequently :
+    SemicontinuousAt r x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, SemicontinuousAt]
+
+lemma semicontinuous_iff_frequently :
+    Semicontinuous r ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, ¬ r x' y) → ¬ r x y := by
+  simp only [← not_eventually, not_imp_not, Semicontinuous, SemicontinuousAt]
+
 theorem SemicontinuousWithinAt.mono (h : SemicontinuousWithinAt r s x) (hst : t ⊆ s) :
     SemicontinuousWithinAt r t x := fun y hy =>
   Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
@@ -469,9 +485,71 @@ end
 
 end Preorder
 
+section LinearOrder
+
+variable [LinearOrder β] {f g : α → β} {x : α} {s : Set α}
+
+lemma lowerSemicontinuousWithinAt_iff_frequently :
+    LowerSemicontinuousWithinAt f s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuousWithinAt_iff_frequently]
+
+alias ⟨LowerSemicontinuousWithinAt.frequently, LowerSemicontinuousWithinAt.of_frequently⟩ :=
+  lowerSemicontinuousWithinAt_iff_frequently
+
+lemma lowerSemicontinuousOn_iff_frequently :
+    LowerSemicontinuousOn f s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuousOn_iff_frequently]
+
+alias ⟨LowerSemicontinuousOn.frequently, LowerSemicontinuousOn.of_frequently⟩ :=
+  lowerSemicontinuousOn_iff_frequently
+
+lemma lowerSemicontinuousAt_iff_frequently :
+    LowerSemicontinuousAt f x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuousAt_iff_frequently]
+
+alias ⟨LowerSemicontinuousAt.frequently, LowerSemicontinuousAt.of_frequently⟩ :=
+  lowerSemicontinuousAt_iff_frequently
+
+lemma lowerSemicontinuous_iff_frequently :
+    LowerSemicontinuous f ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≤ y) → f x ≤ y := by
+  simp [semicontinuous_iff_frequently]
+
+alias ⟨LowerSemicontinuous.frequently, LowerSemicontinuous.of_frequently⟩ :=
+  lowerSemicontinuous_iff_frequently
+
+lemma upperSemicontinuousWithinAt_iff_frequently :
+    UpperSemicontinuousWithinAt f s x ↔ ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuousWithinAt_iff_frequently]
+
+alias ⟨UpperSemicontinuousWithinAt.frequently, UpperSemicontinuousWithinAt.of_frequently⟩ :=
+  upperSemicontinuousWithinAt_iff_frequently
+
+lemma upperSemicontinuousOn_iff_frequently :
+    UpperSemicontinuousOn f s ↔ ∀ x ∈ s, ∀ y, (∃ᶠ x' in 𝓝[s] x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuousOn_iff_frequently]
+
+alias ⟨UpperSemicontinuousOn.frequently, UpperSemicontinuousOn.of_frequently⟩ :=
+  upperSemicontinuousOn_iff_frequently
+
+lemma upperSemicontinuousAt_iff_frequently :
+    UpperSemicontinuousAt f x ↔ ∀ y, (∃ᶠ x' in 𝓝 x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuousAt_iff_frequently]
+
+alias ⟨UpperSemicontinuousAt.frequently, UpperSemicontinuousAt.of_frequently⟩ :=
+  upperSemicontinuousAt_iff_frequently
+
+lemma upperSemicontinuous_iff_frequently :
+    UpperSemicontinuous f ↔ ∀ x y, (∃ᶠ x' in 𝓝 x, f x' ≥ y) → f x ≥ y := by
+  simp [semicontinuous_iff_frequently]
+
+alias ⟨UpperSemicontinuous.frequently, UpperSemicontinuous.of_frequently⟩ :=
+  upperSemicontinuous_iff_frequently
+
+end LinearOrder
+
 section Hemi
 
-/-! ## Lower and Upper Semicontinuity -/
+/-! ## Lower and Upper Hemicontinuity -/
 
 variable [TopologicalSpace β]
 
@@ -561,10 +639,10 @@ lemma upperHemicontinuous_iff {f : α → Set β} :
 end Definitions
 
 /-!
-### Lower semicontinuous functions
+### Lower hemicontinuous functions
 -/
 
-/-! #### Basic dot notation interface for lower semicontinuity -/
+/-! #### Basic dot notation interface for lower hemicontinuity -/
 
 variable {f g : α → Set β} {x : α} {s t : Set α} {y z : Set β}
 
@@ -615,6 +693,41 @@ theorem LowerHemicontinuous.lowerHemicontinuousOn (h : LowerHemicontinuous f) (s
     LowerHemicontinuousOn f s :=
   h.semicontinuousOn s
 
+lemma lowerHemicontinuousWithinAt_iff_frequently :
+    LowerHemicontinuousWithinAt f s x ↔
+      ∀ t, IsClosed t → (∃ᶠ x' in 𝓝[s] x, f x' ⊆ t) → f x ⊆ t := by
+  rw [lowerHemicontinuousWithinAt_iff, compl_surjective.forall]
+  simp only [isOpen_compl_iff]
+  refine forall₂_congr fun t ht ↦ ?_
+  rw [← not_imp_not]
+  simp [not_nonempty_iff_eq_empty, ← disjoint_iff_inter_eq_empty, disjoint_compl_right_iff_subset]
+
+alias ⟨LowerHemicontinuousWithinAt.frequently, LowerHemicontinuousWithinAt.of_frequently⟩ :=
+  lowerHemicontinuousWithinAt_iff_frequently
+
+lemma lowerHemicontinuousOn_iff_frequently :
+    LowerHemicontinuousOn f s ↔
+      ∀ x ∈ s, ∀ t, IsClosed t → (∃ᶠ x' in 𝓝[s] x, f x' ⊆ t) → f x ⊆ t := by
+  simp_rw [lowerHemicontinuousOn_iff, lowerHemicontinuousWithinAt_iff_frequently]
+
+alias ⟨LowerHemicontinuousOn.frequently, LowerHemicontinuousOn.of_frequently⟩ :=
+  lowerHemicontinuousOn_iff_frequently
+
+lemma lowerHemicontinuousAt_iff_frequently :
+    LowerHemicontinuousAt f x ↔ ∀ t, IsClosed t → (∃ᶠ x' in 𝓝 x, f x' ⊆ t) → f x ⊆ t := by
+  rw [← lowerHemicontinuousWithinAt_univ_iff, lowerHemicontinuousWithinAt_iff_frequently]
+  simp
+
+alias ⟨LowerHemicontinuousAt.frequently, LowerHemicontinuousAt.of_frequently⟩ :=
+  lowerHemicontinuousAt_iff_frequently
+
+lemma lowerHemicontinuous_iff_frequently :
+    LowerHemicontinuous f ↔ ∀ x t, IsClosed t → (∃ᶠ x' in 𝓝 x, f x' ⊆ t) → f x ⊆ t := by
+  simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff_frequently]
+
+alias ⟨LowerHemicontinuous.frequently, LowerHemicontinuous.of_frequently⟩ :=
+  lowerHemicontinuous_iff_frequently
+
 /-! #### Constants -/
 
 theorem LowerHemicontinuousWithinAt.const : LowerHemicontinuousWithinAt (fun _x => z) s x :=
@@ -657,12 +770,10 @@ theorem LowerHemicontinuous.comp
 end
 
 /-!
-### Upper semicontinuous functions
+### Upper hemicontinuous functions
 -/
 
-
-/-! #### Basic dot notation interface for upper semicontinuity -/
-
+/-! #### Basic dot notation interface for upper hemicontinuity -/
 
 theorem UpperHemicontinuousWithinAt.mono (h : UpperHemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     UpperHemicontinuousWithinAt f t x :=
@@ -710,6 +821,40 @@ theorem UpperHemicontinuous.upperHemicontinuousWithinAt (h : UpperHemicontinuous
 theorem UpperHemicontinuous.upperHemicontinuousOn (h : UpperHemicontinuous f) (s : Set α) :
     UpperHemicontinuousOn f s :=
   h.semicontinuousOn s
+
+lemma upperHemicontinuousWithinAt_iff_frequently :
+    UpperHemicontinuousWithinAt f s x ↔
+      ∀ t, IsClosed t → (∃ᶠ x' in 𝓝[s] x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  rw [UpperHemicontinuousWithinAt, semicontinuousWithinAt_iff_frequently, compl_surjective.forall]
+  simp [← subset_interior_iff_mem_nhdsSet, not_subset, forall_isClosed_iff, inter_nonempty]
+
+alias ⟨UpperHemicontinuousWithinAt.frequently, UpperHemicontinuousWithinAt.of_frequently⟩ :=
+  upperHemicontinuousWithinAt_iff_frequently
+
+lemma upperHemicontinuousOn_iff_frequently :
+    UpperHemicontinuousOn f s ↔ ∀ x ∈ s, ∀ t, IsClosed t →
+      (∃ᶠ x' in 𝓝[s] x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  simp_rw [upperHemicontinuousOn_iff, upperHemicontinuousWithinAt_iff_frequently]
+
+alias ⟨UpperHemicontinuousOn.frequently, UpperHemicontinuousOn.of_frequently⟩ :=
+  upperHemicontinuousOn_iff_frequently
+
+lemma upperHemicontinuousAt_iff_frequently :
+    UpperHemicontinuousAt f x ↔
+      ∀ t, IsClosed t → (∃ᶠ x' in 𝓝 x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  rw [← upperHemicontinuousWithinAt_univ_iff, upperHemicontinuousWithinAt_iff_frequently]
+  simp
+
+alias ⟨UpperHemicontinuousAt.frequently, UpperHemicontinuousAt.of_frequently⟩ :=
+  upperHemicontinuousAt_iff_frequently
+
+lemma upperHemicontinuous_iff_frequently :
+    UpperHemicontinuous f ↔
+      ∀ x t, IsClosed t → (∃ᶠ x' in 𝓝 x, ((f x') ∩ t).Nonempty) → ((f x) ∩ t).Nonempty := by
+  simp_rw [upperHemicontinuous_iff, upperHemicontinuousAt_iff_frequently]
+
+alias ⟨UpperHemicontinuous.frequently, UpperHemicontinuous.of_frequently⟩ :=
+  upperHemicontinuous_iff_frequently
 
 /-! #### Constants -/
 

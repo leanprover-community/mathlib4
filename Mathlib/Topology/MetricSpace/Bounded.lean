@@ -17,7 +17,7 @@ public import Mathlib.Topology.EMetricSpace.Diam
 
 This file contains one definition, and various results on boundedness in pseudo-metric spaces.
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
-  Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
+  Defined in terms of `ediam`, for better handling of the case when it should be infinite.
 
 * `isBounded_iff_subset_closedBall`: a non-empty set is bounded if and only if
   it is included in some closed ball
@@ -383,16 +383,16 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace α]
 
 /-- The diameter of a set in a metric space. To get controllable behavior even when the diameter
-should be infinite, we express it in terms of the `EMetric.diam` -/
+should be infinite, we express it in terms of the `ediam` -/
 noncomputable def diam (s : Set α) : ℝ :=
-  ENNReal.toReal (EMetric.diam s)
+  ENNReal.toReal (ediam s)
 
 /-- The diameter of a set is always nonnegative -/
 theorem diam_nonneg : 0 ≤ diam s :=
   ENNReal.toReal_nonneg
 
 theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
-  simp only [diam, EMetric.diam_subsingleton hs, ENNReal.toReal_zero]
+  simp [diam, ediam_subsingleton hs]
 
 /-- The empty set has zero diameter -/
 @[simp]
@@ -410,19 +410,19 @@ theorem diam_one [One α] : diam (1 : Set α) = 0 :=
 
 -- Does not work as a simp-lemma, since {x, y} reduces to (insert y {x})
 theorem diam_pair : diam ({x, y} : Set α) = dist x y := by
-  simp only [diam, EMetric.diam_pair, dist_edist]
+  simp only [diam, ediam_pair, dist_edist]
 
 -- Does not work as a simp-lemma, since {x, y, z} reduces to (insert z (insert y {x}))
 theorem diam_triple :
-    Metric.diam ({x, y, z} : Set α) = max (max (dist x y) (dist x z)) (dist y z) := by
-  simp only [Metric.diam, EMetric.diam_triple, dist_edist]
+    diam ({x, y, z} : Set α) = max (max (dist x y) (dist x z)) (dist y z) := by
+  simp only [diam, ediam_triple, dist_edist]
   rw [ENNReal.toReal_max, ENNReal.toReal_max] <;> apply_rules [ne_of_lt, edist_lt_top, max_lt]
 
 /-- If the distance between any two points in a set is bounded by some constant `C`,
 then `ENNReal.ofReal C` bounds the emetric diameter of this set. -/
 theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
-    EMetric.diam s ≤ ENNReal.ofReal C :=
-  EMetric.diam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
+    ediam s ≤ ENNReal.ofReal C :=
+  ediam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
 
 /-- If the distance between any two points in a set is bounded by some non-negative constant,
 this constant bounds the diameter. -/
@@ -440,30 +440,30 @@ theorem diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
   diam_le_of_forall_dist_le h₀ h
 
 /-- The distance between two points in a set is controlled by the diameter of the set. -/
-theorem dist_le_diam_of_mem' (h : EMetric.diam s ≠ ⊤) (hx : x ∈ s) (hy : y ∈ s) :
+theorem dist_le_diam_of_mem' (h : ediam s ≠ ⊤) (hx : x ∈ s) (hy : y ∈ s) :
     dist x y ≤ diam s := by
   rw [diam, dist_edist]
-  exact ENNReal.toReal_mono h <| EMetric.edist_le_diam_of_mem hx hy
+  exact ENNReal.toReal_mono h <| edist_le_ediam_of_mem hx hy
 
 /-- Characterize the boundedness of a set in terms of the finiteness of its emetric.diameter. -/
-theorem isBounded_iff_ediam_ne_top : IsBounded s ↔ EMetric.diam s ≠ ⊤ :=
+theorem isBounded_iff_ediam_ne_top : IsBounded s ↔ ediam s ≠ ⊤ :=
   isBounded_iff.trans <| Iff.intro
     (fun ⟨_C, hC⟩ => ne_top_of_le_ne_top ENNReal.ofReal_ne_top <| ediam_le_of_forall_dist_le hC)
     fun h => ⟨diam s, fun _x hx _y hy => dist_le_diam_of_mem' h hx hy⟩
 
 alias ⟨_root_.Bornology.IsBounded.ediam_ne_top, _⟩ := isBounded_iff_ediam_ne_top
 
-theorem ediam_eq_top_iff_unbounded : EMetric.diam s = ⊤ ↔ ¬IsBounded s :=
+theorem ediam_eq_top_iff_unbounded : ediam s = ⊤ ↔ ¬IsBounded s :=
   isBounded_iff_ediam_ne_top.not_left.symm
 
 theorem ediam_univ_eq_top_iff_noncompact [ProperSpace α] :
-    EMetric.diam (univ : Set α) = ∞ ↔ NoncompactSpace α := by
+    ediam (univ : Set α) = ∞ ↔ NoncompactSpace α := by
   rw [← not_compactSpace_iff, compactSpace_iff_isBounded_univ, isBounded_iff_ediam_ne_top,
     Classical.not_not]
 
 @[simp]
 theorem ediam_univ_of_noncompact [ProperSpace α] [NoncompactSpace α] :
-    EMetric.diam (univ : Set α) = ∞ :=
+    ediam (univ : Set α) = ∞ :=
   ediam_univ_eq_top_iff_noncompact.mpr ‹_›
 
 @[simp]
@@ -474,16 +474,16 @@ theorem diam_univ_of_noncompact [ProperSpace α] [NoncompactSpace α] : diam (un
 theorem dist_le_diam_of_mem (h : IsBounded s) (hx : x ∈ s) (hy : y ∈ s) : dist x y ≤ diam s :=
   dist_le_diam_of_mem' h.ediam_ne_top hx hy
 
-theorem ediam_of_unbounded (h : ¬IsBounded s) : EMetric.diam s = ∞ := ediam_eq_top_iff_unbounded.2 h
+theorem ediam_of_unbounded (h : ¬IsBounded s) : ediam s = ∞ := ediam_eq_top_iff_unbounded.2 h
 
-/-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `EMetric.diam`.
+/-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `ediam`.
 This lemma makes it possible to avoid side conditions in some situations -/
 theorem diam_eq_zero_of_unbounded (h : ¬IsBounded s) : diam s = 0 := by
   rw [diam, ediam_of_unbounded h, ENNReal.toReal_top]
 
 /-- If `s ⊆ t`, then the diameter of `s` is bounded by that of `t`, provided `t` is bounded. -/
 theorem diam_mono {s t : Set α} (h : s ⊆ t) (ht : IsBounded t) : diam s ≤ diam t :=
-  ENNReal.toReal_mono ht.ediam_ne_top <| EMetric.diam_mono h
+  ENNReal.toReal_mono ht.ediam_ne_top <| ediam_mono h
 
 /-- The diameter of a union is controlled by the sum of the diameters, and the distance between
 any two points in each of the sets. This lemma is true without any side condition, since it is
@@ -491,10 +491,10 @@ obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_edist]
-  grw [ENNReal.toReal_le_add' (EMetric.diam_union xs yt), ENNReal.toReal_add_le]
+  grw [ENNReal.toReal_le_add' (ediam_union_le_add_edist xs yt), ENNReal.toReal_add_le]
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
-    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
-  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right
+    exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_left
+  · exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_right
 
 /-- If two sets intersect, the diameter of the union is bounded by the sum of the diameters. -/
 theorem diam_union' {t : Set α} (h : (s ∩ t).Nonempty) : diam (s ∪ t) ≤ diam s + diam t := by

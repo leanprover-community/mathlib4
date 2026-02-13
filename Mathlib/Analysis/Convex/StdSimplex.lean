@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -186,8 +185,8 @@ theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
-      (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
+    IsClosed.inter (isClosed_iInter fun i ↦ isClosed_le continuous_const (continuous_apply i))
+      (isClosed_eq (by fun_prop) continuous_const)
 
 /-- `stdSimplex ℝ ι` is compact. -/
 theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
@@ -224,6 +223,36 @@ lemma stdSimplexHomeomorphUnitInterval_zero :
 @[simp]
 lemma stdSimplexHomeomorphUnitInterval_one :
     stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 1⟩ = 1 := rfl
+
+/-! ### Diameter of a Standard Simplex (sup metric) -/
+
+variable {ι}
+
+/-- The (sup metric) diameter of a standard simplex is less than or equal to 1. -/
+theorem diam_stdSimplex_le : Metric.diam (stdSimplex ℝ ι) ≤ 1 :=
+  Metric.diam_le_of_forall_dist_le zero_le_one fun x hx y hy ↦
+    (dist_pi_le_iff zero_le_one).2 fun i ↦ by
+      have hx := mem_Icc_of_mem_stdSimplex hx i
+      have hy := mem_Icc_of_mem_stdSimplex hy i
+      grind [Real.dist_eq]
+
+/-- The (sup metric) diameter of a standard simplex indexed by a subsingleton is 0. -/
+@[simp]
+theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] : Metric.diam (stdSimplex ℝ ι) = 0 := by
+  cases isEmpty_or_nonempty ι with
+  | inl h => rw [stdSimplex_of_isEmpty_index, Metric.diam_empty]
+  | inr h => rw [stdSimplex_unique, Metric.diam_singleton]
+
+/-- The (sup metric) diameter of a standard simplex indexed by a nontrivial index is 1. -/
+@[simp]
+theorem diam_stdSimplex [Nontrivial ι] : Metric.diam (stdSimplex ℝ ι) = 1 := by
+  refine le_antisymm diam_stdSimplex_le ?_
+  obtain ⟨i, j, hij⟩ := exists_pair_ne ι
+  classical
+  rw [show (1 : ℝ) = dist (Pi.single i 1 : ι → ℝ) (Pi.single j 1) by
+    simp [dist_single_single i j (1 : ℝ) 1 hij, Real.dist_eq]]
+  exact Metric.dist_le_diam_of_mem (bounded_stdSimplex _)
+    (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
 end Topology
 
@@ -342,5 +371,31 @@ lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
   rfl
 
 end
+
+/-! ### Barycenter of a Standard Simplex -/
+
+section Barycenter
+
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Nonempty X]
+
+/-- The barycenter of a standard simplex is the center of mass of
+the set of vertices (equally weighted). -/
+def barycenter : stdSimplex 𝕜 X :=
+  ⟨fun i => (Fintype.card X : 𝕜)⁻¹, by simp [stdSimplex]⟩
+
+/-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
+@[simp]
+theorem barycenter_apply (x : X) :
+    (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
+
+/-- The barycenter equals the (equal weight) center of mass of vertices (`Finset.centerMass`). -/
+theorem barycenter_eq_centerMass [DecidableEq X] :
+    (barycenter : stdSimplex 𝕜 X).val =
+      Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by
+  simp only [Finset.centerMass, Finset.sum_const, Finset.card_univ]
+  ext x
+  simp [barycenter, Pi.smul_apply, Finset.sum_apply, Pi.single_apply]
+
+end Barycenter
 
 end stdSimplex

@@ -86,6 +86,8 @@ theorem HomogeneousIdeal.toIdeal_injective :
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
   HomogeneousSubmodule.setLike 𝒜 𝒜
 
+instance : PartialOrder (HomogeneousIdeal 𝒜) := .ofSetLike (HomogeneousIdeal 𝒜) A
+
 @[ext]
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
   HomogeneousIdeal.toIdeal_injective h
@@ -284,9 +286,6 @@ end Ideal.IsHomogeneous
 variable {𝒜}
 
 namespace HomogeneousIdeal
-
-instance : PartialOrder (HomogeneousIdeal 𝒜) :=
-  SetLike.instPartialOrder
 
 instance : Top (HomogeneousIdeal 𝒜) :=
   ⟨⟨⊤, Ideal.IsHomogeneous.top 𝒜⟩⟩
@@ -576,7 +575,7 @@ def irrelevant : HomogeneousIdeal 𝒜 :=
     · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
-local notation 𝒜"₊" => irrelevant 𝒜
+local notation 𝒜 "₊" => irrelevant 𝒜
 
 @[simp]
 theorem mem_irrelevant_iff (a : A) :

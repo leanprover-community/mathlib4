@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Relation of morphism properties with limits
@@ -170,6 +171,14 @@ theorem IsStableUnderBaseChange.mk' [RespectsIso P]
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
 
+lemma IsStableUnderBaseChange.of_forall_exists_isPullback {P : MorphismProperty C} [P.RespectsIso]
+    (H : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] (_ : P g),
+      ∃ (T : C) (fst : T ⟶ X) (snd : T ⟶ Y), IsPullback fst snd f g ∧ P fst) :
+    P.IsStableUnderBaseChange := by
+  refine .mk' fun X Y S f g _ hg ↦ ?_
+  obtain ⟨T, fst, snd, h, hfst⟩ := H f g hg
+  rwa [← h.isoPullback_inv_fst, P.cancel_left_of_respectsIso]
+
 variable (C)
 
 instance IsStableUnderBaseChange.isomorphisms :
@@ -293,6 +302,14 @@ theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
     let e := sq.flip.isoPushout
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
+
+lemma IsStableUnderCobaseChange.of_forall_exists_isPullback {P : MorphismProperty C} [P.RespectsIso]
+    (H : ∀ {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] (_ : P f),
+      ∃ (T : C) (inl : X ⟶ T) (inr : Y ⟶ T), IsPushout f g inl inr ∧ P inr) :
+    P.IsStableUnderCobaseChange := by
+  refine .mk' fun X Y S f g _ hg ↦ ?_
+  obtain ⟨T, inl, inr, h, hinl⟩ := H f g hg
+  rwa [← h.inr_isoPushout_hom, P.cancel_right_of_respectsIso]
 
 instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
@@ -446,12 +463,6 @@ protected lemma limMap [W.IsStableUnderLimitsOfShape J] {X Y : J ⥤ C}
     W (limMap f) :=
   limitsOfShape_le _ (limitsOfShape_limMap _ hf)
 
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limitsOfShape_le :=
-  limitsOfShape_le
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limMap :=
-  MorphismProperty.limMap
-
 end LimitsOfShape
 
 section ColimitsOfShape
@@ -506,8 +517,8 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     let e₁ := Arrow.leftFunc.mapIso e
     let e₂ := Arrow.rightFunc.mapIso e
     have fac : e₁.hom ≫ g = h₁.desc (Cocone.mk _ (f ≫ c₂.ι)) ≫ e₂.hom := e.hom.w
-    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom}
-    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom}
+    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom }
+    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom }
     have h₁' : IsColimit c₁' := IsColimit.ofIsoColimit h₁ (Cocones.ext e₁)
     have h₂' : IsColimit c₂' := IsColimit.ofIsoColimit h₂ (Cocones.ext e₂)
     obtain hg : h₁'.desc (Cocone.mk _ (f ≫ c₂'.ι)) = g :=
@@ -534,7 +545,7 @@ lemma colimitsOfShape.of_isColimit
       naturality _ _ _ := by
         dsimp
         rw [Category.id_comp, ← Functor.map_comp]
-        rfl} h _ (by simp)
+        rfl } h _ (by simp)
 
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
@@ -563,12 +574,6 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasColimit X] [HasColimit Y] (hf : W.functorCategory _ f) :
     W (colimMap f) :=
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimMap :=
-  MorphismProperty.colimMap
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimitsOfShape_le :=
-  colimitsOfShape_le
 
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
@@ -706,14 +711,6 @@ class IsStableUnderFiniteCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
 
 attribute [instance] IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderProductsOfShape_of_isStableUnderFiniteProducts :=
-  IsStableUnderFiniteProducts.isStableUnderProductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts :=
-  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
 
 /-- The condition that a property of morphisms is stable by coproducts. -/
 @[pp_with_univ]

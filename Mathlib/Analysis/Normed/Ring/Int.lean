@@ -18,7 +18,7 @@ to obtain a term of type `NNReal` (the nonnegative real numbers).
 The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Int
