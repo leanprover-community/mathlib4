@@ -95,14 +95,16 @@ def asSubmodule (σ : Subrepresentation ρ) : Submodule A[G] ρ.asModule where
   __ := σ.toSubmodule
   smul_mem' c v hv := by
     induction c using MonoidAlgebra.induction_linear with
-    | zero => simp [zero_smul]
+    | zero => simpa only [zero_smul] using Submodule.zero_mem σ.toSubmodule
     | add x y hx hy => rw [add_smul]; exact σ.toSubmodule.add_mem' hx hy
     | single g a =>
       rw [Representation.single_smul]
       exact σ.toSubmodule.smul_mem' a (σ.apply_mem_toSubmodule g hv)
 
 @[simp]
-lemma mem_asSubmodule_iff {σ : Subrepresentation ρ} {v : W} : v ∈ asSubmodule σ ↔ v ∈ σ := by rfl
+lemma mem_asSubmodule_iff {σ : Subrepresentation ρ} {v : W} :
+    -- cast necessary so that typeclass inference for `∈` is not confused
+    (show ρ.asModule from v) ∈ asSubmodule σ ↔ v ∈ σ := by rfl
 
 /-- A subrepresentation of `ofModule M` can be thought of as an `A[G]` submodule of `M`.
 -/
@@ -120,7 +122,8 @@ def asSubmodule' (σ : Subrepresentation (Representation.ofModule (k := A) (G :=
 
 @[simp]
 lemma mem_asSubmodule'_iff {σ : Subrepresentation (Representation.ofModule (k := A) (G := G) M)}
-    {m : M} : m ∈ asSubmodule' σ ↔ m ∈ σ := by rfl
+    {m : M} :
+    m ∈ asSubmodule' σ ↔ (show (RestrictScalars A A[G] M) from m) ∈ σ := by rfl
 
 /-- A submodule of an `A[G]`-module `M` can be thought of as a subrepresentation of `ofModule M`.
 -/

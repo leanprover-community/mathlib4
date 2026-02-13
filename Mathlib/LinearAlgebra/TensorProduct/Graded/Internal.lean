@@ -319,6 +319,11 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ext a₂ b₂ : 2
       dsimp
       rw [tmul_coe_mul_coe_tmul]
+      -- why is it not found by typeclass inference?
+      letI : MulActionHomClass (A ⊗[R] B →ₗ[R] C ⊗[R] C) R (A ⊗[R] B) (C ⊗[R] C) :=
+        LinearMapClass.toMulActionHomClass (A ⊗[R] B →ₗ[R] C ⊗[R] C) R (A ⊗[R] B) (C ⊗[R] C)
+      letI : MulActionHomClass (C ⊗[R] C →ₗ[R] C) R (C ⊗[R] C) C :=
+        LinearMapClass.toMulActionHomClass (C ⊗[R] C →ₗ[R] C) R (C ⊗[R] C) C
       rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, map_smul, map_smul, map_smul]
       rw [Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]

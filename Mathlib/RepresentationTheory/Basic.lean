@@ -732,10 +732,10 @@ noncomputable def finsuppLEquivFreeAsModule : (α →₀ k[G]) ≃ₗ[k[G]] (fre
       | zero => simp only [smul_zero]
       | single_add _ _ _ _ _ h =>
         rw [smul_add, h]
-        change _ + asAlgebraHom _ _ _ = asAlgebraHom _ _ _
+        change (show α →₀ k[G] from _ + asAlgebraHom _ _ _) = asAlgebraHom _ _ _
         simp only [map_add, smul_single, smul_eq_mul, MonoidAlgebra.mul_def,
           asAlgebraHom_def, MonoidAlgebra.lift_apply]
-        simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
+        simp [free, MonoidAlgebra, ofMulAction_def, mapDomain, smul_sum, single_sum] }
 
 /-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
 noncomputable def freeAsModuleBasis : Basis α k[G] (free k G α).asModule where

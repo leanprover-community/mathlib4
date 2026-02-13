@@ -151,7 +151,7 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
 include f in
 /--
 A variant of `Module.projective_of_localization_maximal` that accepts `IsLocalizedModule`.
