@@ -46,7 +46,7 @@ open TensorProduct in
 -- TODO: generalize this.
 theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     {x : X} {s : S} (h : f x = s) (hx : f.QuasiFiniteAt x) :
-    ∃ (U : Scheme) (g : U ⟶ S) (u : U), Etale g ∧ g u = s ∧
+    ∃ (U : Scheme) (g : U ⟶ S), Etale g ∧ s ∈ Set.range g ∧
     ∃ (V W : (pullback f g).Opens) (v : V), IsCompl V W ∧ IsFinite (V.ι ≫ pullback.snd f g) ∧
       pullback.fst f g v.1 = x := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
@@ -60,11 +60,9 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
       ⟨congr(($this).1)⟩
     apply hU.isoSpec.inv.homeomorph.injective
     apply Subtype.ext
-    simp only [IsAffineOpen.primeIdealOf, Scheme.Hom.homeomorph_apply, Scheme.hom_inv_apply]
-    simp only [← Scheme.Hom.comp_apply, ← Scheme.Opens.ι_apply,
-      Category.assoc, IsAffineOpen.isoSpec_inv_ι, IsAffineOpen.SpecMap_appLE_fromSpec _ hU hV,
-      IsAffineOpen.isoSpec_hom, IsAffineOpen.toSpecΓ_fromSpec_assoc]
-    rfl
+    simp only [IsAffineOpen.primeIdealOf, Scheme.Hom.homeomorph_apply,
+      ← Scheme.Hom.comp_apply, ← Scheme.Opens.ι_apply, IsAffineOpen.isoSpec_hom]
+    simp
   have : Algebra.QuasiFiniteAt Γ(S, U) (hV.primeIdealOf ⟨x, hxV⟩).asIdeal :=
     hx.quasiFiniteAt hV hU hUV hxV
   obtain ⟨R, _, _, _, P, _, _, e, _, P', _, _, hP', heP', -, _, -⟩ :=
@@ -84,7 +82,7 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
   let g : Spec (.of (R ⊗[Γ(S, U)] Γ(X, V))) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
     e₁.hom ≫ pullback.map _ _ _ _ hV.fromSpec (𝟙 _) hU.fromSpec
       (IsAffineOpen.SpecMap_appLE_fromSpec ..) (by simp)
-  let W₁ := g ''ᵁ (PrimeSpectrum.basicOpen e)
+  let W₁ := g ''ᵁ PrimeSpectrum.basicOpen e
   have : IsFinite (W₁.ι ≫ pullback.snd f _) := by
     let ι : Spec (.of (Localization.Away e)) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
       Spec.map (CommRingCat.ofHom <| algebraMap _ _) ≫ g
@@ -183,7 +181,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
       exact .of_iso' H (.refl _) (asIso <| f.normalizationPullback fT) (.refl _) (.refl _)
         (by cat_disch) (by simp) (by simp [fTn]) (by simp)
     · simp [← cancel_mono U'.ι, fTnU, fTn]
-  refine MorphismProperty.of_isPullback_of_descendsAlong (P := .isomorphisms _)
+  exact MorphismProperty.of_isPullback_of_descendsAlong (P := .isomorphisms _)
     (Q := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation) this
     ⟨⟨‹_›, inferInstance⟩, inferInstance⟩ ‹_›
 
