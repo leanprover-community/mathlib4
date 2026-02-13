@@ -405,6 +405,13 @@ instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
     obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
     exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
 
+/-- A disjoint element can be enlarged to a complementary element. -/
+@[to_dual /-- A codisjoint element can be shrunk to a complementary element. -/]
+theorem _root_.Disjoint.exists_isCompl {a b : α} (hab : Disjoint a b) :
+    ∃ a' : α, a ≤ a' ∧ IsCompl a' b := by
+  obtain ⟨u, hu⟩ := ComplementedLattice.exists_isCompl (a ⊔ b)
+  exact ⟨u ⊔ a, le_sup_right, hab.isCompl_sup_left_of_isCompl_sup_right hu.symm⟩
+
 end ComplementedLattice
 
 end IsModularLattice

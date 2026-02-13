@@ -76,7 +76,7 @@ lemma periodic_exp : Periodic exp (2 * π) := fun z ↦ exp_eq_exp.2 ⟨1, by rw
 @[simp] lemma exp_two_pi : exp (2 * π) = 1 := periodic_exp.eq.trans exp_zero
 
 lemma exp_int_mul_two_pi (n : ℤ) : exp (n * (2 * π)) = 1 :=
-  ext <| by simpa [mul_assoc] using Complex.exp_int_mul_two_pi_mul_I n
+  ext <| by simp
 
 lemma exp_two_pi_mul_int (n : ℤ) : exp (2 * π * n) = 1 := by
   simpa only [mul_comm] using exp_int_mul_two_pi n
@@ -161,8 +161,9 @@ theorem toCircle_nsmul (x : AddCircle T) (n : ℕ) : toCircle (n • x) = toCirc
 theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCircle x ^ n := by
   cases n <;> simp [toCircle_nsmul, toCircle_neg]
 
+@[fun_prop, continuity]
 theorem continuous_toCircle : Continuous (@toCircle T) :=
-  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
+  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h

@@ -58,8 +58,7 @@ theorem dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
 
 theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = closedBall x r := by
   refine Subset.antisymm closure_ball_subset_closedBall fun y hy => ?_
-  have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 :=
-    ((continuous_id.smul continuous_const).add continuous_const).continuousWithinAt
+  have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 := by fun_prop
   convert this.mem_closure _ _
   · rw [one_smul, sub_add_cancel]
   · simp [closure_Ico zero_ne_one, zero_le_one]
@@ -84,10 +83,8 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
   · exact hr
   set f : ℝ → E := fun c : ℝ => c • (y - x) + x
   suffices f ⁻¹' closedBall x (dist y x) ⊆ Icc (-1) 1 by
-    have hfc : Continuous f := (continuous_id.smul continuous_const).add continuous_const
-    have hf1 : (1 : ℝ) ∈ f ⁻¹' interior (closedBall x <| dist y x) := by simpa [f]
     have h1 : (1 : ℝ) ∈ interior (Icc (-1 : ℝ) 1) :=
-      interior_mono this (preimage_interior_subset_interior_preimage hfc hf1)
+      interior_mono this (preimage_interior_subset_interior_preimage (by fun_prop) (by simpa [f]))
     simp at h1
   intro c hc
   rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_iff_left₀ hr]

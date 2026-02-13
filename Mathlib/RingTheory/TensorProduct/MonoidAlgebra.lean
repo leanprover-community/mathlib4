@@ -101,7 +101,7 @@ lemma scalarTensorEquiv_symm_single (m : M) (a : A) :
 
 open scoped AlgebraMonoidAlgebra
 
-variable [Algebra S B] [Algebra A B] [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
+variable [Algebra S B] [Algebra A B] [IsScalarTower R A B] [IsScalarTower R S B]
 
 @[to_additive (dont_translate := R S B)]
 instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
