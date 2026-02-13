@@ -37,7 +37,7 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
 
