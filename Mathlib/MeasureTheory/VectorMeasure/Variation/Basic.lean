@@ -53,7 +53,8 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
           (Finpartition.parts_subset_extendOfLE (Finpartition.ofPairwiseDisjoint P hP₃)
           (Finset.sup_le hP₁))
     _ ≤ μ.variation s := by
-      simp only [variation, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply]
+      simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hs,
+        ennrealPreVariation_apply]
       apply preVariation.sum_le' (fun p => ‖μ p‖ₑ) hs
       intro p hp
       have : p ∈ Q.parts ∨ p = s \ (P.sup id) := by

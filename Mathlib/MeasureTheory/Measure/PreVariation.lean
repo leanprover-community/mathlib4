@@ -74,8 +74,11 @@ lemma sum_le {s : Set X} (hs : MeasurableSet s)
   simpa [preVariationFun, hs, le_iSup_iff] using fun _ a ↦ a P
 
 open Classical in
-noncomputable def _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartition s) (hs : MeasurableSet s)
-    (hP : ∀ p ∈ P.parts, MeasurableSet p) : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
+/-- A `Finpartition` constructor in the subtype of `MeasurableSet` from a `Finpartition` `P` of
+a set `s` with explicit measurability assumptions. -/
+noncomputable def _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartition s)
+    (hs : MeasurableSet s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
+    Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
   letI : Fintype (Subtype (P.parts : Set (Set X))) :=
     Fintype.subtype P.parts (by intro; exact Iff.of_eq rfl)
   { parts := Finset.image
@@ -133,14 +136,10 @@ lemma sum_le' {s : Set X} (hs : MeasurableSet s)
   calc
     ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toMeasurableSet P hs hP).parts, f p := by
       apply Finset.sum_bij (fun p hpP => ⟨p, hP p hpP⟩)
-      · intro t ht
-        simpa [_root_.Finpartition.toMeasurableSet] using ht
-      · intro u hu v hv h
-        simpa [Subtype.mk.injEq] using h
-      · intro p hp
-        simpa [_root_.Finpartition.toMeasurableSet] using hp
-      · intro t ht
-        exact EReal.coe_ennreal_eq_coe_ennreal_iff.mp rfl
+      · intro _ ht; simpa [_root_.Finpartition.toMeasurableSet] using ht
+      · intro _ _ _ _ h; simpa [Subtype.mk.injEq] using h
+      · intro _ hp; simpa [_root_.Finpartition.toMeasurableSet] using hp
+      · intro _ _; exact EReal.coe_ennreal_eq_coe_ennreal_iff.mp rfl
     _ ≤ ⨆ (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ Q.parts, f p :=
       le_iSup (fun (Q : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) => ∑ p ∈ Q.parts, f p)
       (Finpartition.toMeasurableSet P hs hP)
@@ -336,12 +335,11 @@ lemma preVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s 
 @[simp]
 theorem VectorMeasure.ennrealToMeasure_zero {α : Type*} {m : MeasurableSpace α} :
     MeasureTheory.VectorMeasure.ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
-  ext s
-  simpa [VectorMeasure.ennrealToMeasure] using ofMeasurable_zero s
+  ext s; simp [VectorMeasure.ennrealToMeasure]
 
 @[simp]
 lemma preVariation_zero_eq_zero :
     preVariation (0 : Set X → ℝ≥0∞) (isSigmaSubadditiveSetFun_zero) (by simp) = 0 := by
-  simp [preVariation]
+  ext s; simp
 
 end MeasureTheory
