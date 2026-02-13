@@ -695,30 +695,19 @@ include h_mono
 `sSup` and `sInf`. -/
 
 
+@[to_dual csInf_image_le]
 theorem le_csSup_image {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddAbove s) :
     f c ≤ sSup (f '' s) :=
   le_csSup (map_bddAbove h_mono h_bdd) (mem_image_of_mem f hcs)
 
+@[to_dual le_csInf_image]
 theorem csSup_image_le {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ upperBounds s) :
     sSup (f '' s) ≤ f B :=
   csSup_le (Nonempty.image f hs) (h_mono.mem_upperBounds_image hB)
 
--- Porting note: in mathlib3 `f'` is not needed
-theorem csInf_image_le {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddBelow s) :
-    sInf (f '' s) ≤ f c := by
-  let f' : αᵒᵈ → βᵒᵈ := f
-  exact le_csSup_image (α := αᵒᵈ) (β := βᵒᵈ)
-    (show Monotone f' from fun x y hxy => h_mono hxy) hcs h_bdd
-
--- Porting note: in mathlib3 `f'` is not needed
-theorem le_csInf_image {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ lowerBounds s) :
-    f B ≤ sInf (f '' s) := by
-  let f' : αᵒᵈ → βᵒᵈ := f
-  exact csSup_image_le (α := αᵒᵈ) (β := βᵒᵈ)
-    (show Monotone f' from fun x y hxy => h_mono hxy) hs hB
-
 end Monotone
 
+@[to_dual]
 lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
     [Preorder α] [ConditionallyCompleteLattice β] {f : α → β}
     {s t : Set α} (ht : BddBelow (f '' t)) (hf : MonotoneOn f t)
@@ -734,12 +723,6 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
   obtain ⟨x, hxs, hxa⟩ := h a ha
   exact csInf_le_of_le (ht.mono (image_mono hst)) ⟨x, hxs, rfl⟩ (hf (hst hxs) ha hxa)
 
-lemma MonotoneOn.csSup_eq_of_subset_of_forall_exists_le
-    [Preorder α] [ConditionallyCompleteLattice β] {f : α → β}
-    {s t : Set α} (ht : BddAbove (f '' t)) (hf : MonotoneOn f t)
-    (hst : s ⊆ t) (h : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
-    sSup (f '' s) = sSup (f '' t) :=
-  MonotoneOn.csInf_eq_of_subset_of_forall_exists_le (α := αᵒᵈ) (β := βᵒᵈ) ht hf.dual hst h
 
 theorem MonotoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β]
     {f : α → β} {a b : α} (hab : a ≤ b)
