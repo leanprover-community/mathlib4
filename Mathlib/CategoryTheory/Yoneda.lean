@@ -48,11 +48,6 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ TypeCat.{v₁} where
   map f :=
     { app _ := ofHom ⟨fun g ↦ g ≫ f⟩ }
 
--- unif_hint yoneda_obj_obj_eq_homSet (X X' Y Y' : C) where
---   X ≟ X'
---   Y ≟ Y' ⊢
---   (yoneda.obj X).obj (op Y) ≟ homSet Y' X'
-
 unif_hint yoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
@@ -62,16 +57,6 @@ unif_hint yoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
   X ≟ X'
   Y ≟ Y' ⊢
   (yoneda.obj X).obj Y ≟ unop Y' ⟶ X'
-
--- @[simp]
--- lemma yoneda_obj_map_apply (X : C) {X_1 Y : Cᵒᵖ} (f : X_1 ⟶ Y) (g : unop X_1 ⟶ X) :
---     (yoneda.obj X).map f g = f.unop ≫ g :=
---   rfl
-
--- @[simp]
--- lemma yoneda_map_app_apply {X Y : C} (f : X ⟶ Y) (x : Cᵒᵖ) (g : unop x ⟶ X) :
---     ((yoneda.map f).app x) g = g ≫ f := by
---   rfl
 
 /-- Variant of the Yoneda embedding which allows a raise in the universe level
 for the category of types. -/
