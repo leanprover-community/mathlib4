@@ -318,7 +318,7 @@ lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
   have := hV.isLocalization_stalk ⟨x, hxV⟩
   let e := IsLocalization.algEquiv (hV.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
     (X.presheaf.stalk (⟨x, hxV⟩ : V.1)) (Localization.AtPrime (hV.primeIdealOf ⟨x, hxV⟩).asIdeal)
-  rw [Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
+  rw [RingHom.QuasiFiniteAt, Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
   convert (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
   rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE hVU) _ hxV,
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map_assoc, CommRingCat.hom_comp, ← RingHom.comp_assoc,
