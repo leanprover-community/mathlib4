@@ -123,7 +123,9 @@ def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent
     SimplicialComplex 𝕜 E where
   faces := faces \ {∅}
   indep hs := indep _ hs.1
-  isRelLowerSet_faces := by simpa using down_closed.isRelLowerSet_sdiff Finset.Nonempty
+  isRelLowerSet_faces := by
+    have : faces \ {∅} = {f ∈ faces | f.Nonempty} := by grind
+    simpa only [this] using down_closed.isRelLowerSet_sep Finset.Nonempty
   inter_subset_convexHull hs ht := inter_subset_convexHull _ hs.1 _ ht.1
 
 /-- Construct a simplicial complex as a subset of a given simplicial complex. -/
