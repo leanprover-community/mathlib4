@@ -42,6 +42,7 @@ variable {X : Scheme.{u}}
 variable (I : IdealSheafData X)
 
 /-- `Spec (𝒪ₓ(U)/I(U))`, the object to be glued into the closed subscheme. -/
+noncomputable
 def glueDataObj (U : X.affineOpens) : Scheme :=
   Spec <| .of <| Γ(X, U) ⧸ I.ideal U
 
