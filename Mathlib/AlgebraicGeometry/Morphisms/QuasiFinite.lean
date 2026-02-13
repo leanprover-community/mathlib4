@@ -307,7 +307,7 @@ lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
     {x : X} (hx : f.QuasiFiniteAt x) {V : X.Opens} (hV : IsAffineOpen V) {U : Y.Opens}
     (hU : IsAffineOpen U) (hVU : V ≤ f ⁻¹ᵁ U) (hxV : x ∈ V.1) :
     (f.appLE U V hVU).hom.QuasiFiniteAt (hV.primeIdealOf ⟨x, hxV⟩).asIdeal := by
-  letI := (f.appLE U V hVU).hom.toAlgebra
+  algebraize [(f.appLE U V hVU).hom]
   have H : (Y.presheaf.germ U _ (hVU hxV)).hom.QuasiFinite := by
     algebraize [(Y.presheaf.germ U _ (hVU hxV)).hom]
     have := hU.isLocalization_stalk ⟨f x, (hVU hxV)⟩
