@@ -551,6 +551,41 @@ instance isEquivalence_toOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
     (toOver F X).IsEquivalence :=
   CostructuredArrow.isEquivalence_pre _ _ _
 
+namespace costructuredArrowToOverEquivalence
+
+variable (F : D ⥤ T) {X : T} (Y : Over X)
+
+/-- Auxiliary definition for `costructuredArrowToOverEquivalence`. -/
+@[simps]
+def functor : CostructuredArrow (toOver F X) Y ⥤ CostructuredArrow F Y.left where
+  obj Z := CostructuredArrow.mk Z.hom.left
+  map f :=
+    CostructuredArrow.homMk f.left.left (by rw [← CostructuredArrow.w f]; dsimp)
+
+/-- Auxiliary definition for `costructuredArrowToOverEquivalence`. -/
+@[simps]
+def inverse : CostructuredArrow F Y.left ⥤ CostructuredArrow (toOver F X) Y where
+  obj Z :=
+    CostructuredArrow.mk (Y := CostructuredArrow.mk (Z.hom ≫ Y.hom))
+      (Over.homMk Z.hom)
+  map f :=
+    CostructuredArrow.homMk
+      (CostructuredArrow.homMk f.left)
+        (by ext; exact CostructuredArrow.w f)
+
+end costructuredArrowToOverEquivalence
+
+/-- A category of costructured arrows for a functor `toOver F X` identifies
+to a category of costructured arrows for `F`. -/
+def costructuredArrowToOverEquivalence (F : D ⥤ T) {X : T} (Y : Over X) :
+    CostructuredArrow (toOver F X) Y ≌ CostructuredArrow F Y.left where
+  functor := costructuredArrowToOverEquivalence.functor F Y
+  inverse := costructuredArrowToOverEquivalence.inverse F Y
+  unitIso :=
+    NatIso.ofComponents (fun _ ↦
+      CostructuredArrow.isoMk (CostructuredArrow.isoMk (Iso.refl _)))
+  counitIso := Iso.refl _
+
 end CostructuredArrow
 
 /-- The under category has as objects arrows with domain `X` and as morphisms commutative
