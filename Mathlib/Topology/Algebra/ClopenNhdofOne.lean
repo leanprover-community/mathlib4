@@ -51,13 +51,13 @@ theorem exist_openNormalSubgroup_sub_open_nhds_of_one
   rcases IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhds_of_one hW.2 hW.1 with ⟨H, hH⟩
   exact ⟨H, fun _ a ↦ h (hH a)⟩
 
+open scoped Pointwise in
 /--
 Any closed subgroup of a profinite group is the intersection of the open subgroups containing it.
 See https://math.stackexchange.com/questions/5023433/closed-subgroups-of-a-compact-topological-group.
 -/
 theorem closedSubgroup_eq_sInf_open (H : ClosedSubgroup G) :
     H = sInf {N : Subgroup G | IsOpen (N : Set G) ∧ H ≤ N} := by
-  open scoped Pointwise in
   apply le_antisymm
   · exact le_sInf fun N hN ↦ hN.2
   · intro g hg
