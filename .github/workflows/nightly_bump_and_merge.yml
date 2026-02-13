@@ -230,7 +230,7 @@ jobs:
           }
 
           # Find tags that are ancestors of this branch with the right format
-          LATEST_TAG=$(git tag --merged HEAD | grep "nightly-testing-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}" | sort -r | head -n 1)
+          LATEST_TAG=$(git tag --merged HEAD | grep "nightly-testing-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\(-rev[0-9]\+\)\?" | sort -rV | head -n 1)
           echo "Latest tag found for $BRANCH: ${LATEST_TAG:-none}"
 
           # Return to nightly-testing branch
