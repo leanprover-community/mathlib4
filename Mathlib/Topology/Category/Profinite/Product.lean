@@ -120,17 +120,18 @@ instance isIso_indexCone_lift :
           refine IsClosed.preimage (π_app C (· ∈ J)).continuous ?_
           exact T1Space.t1 s
         have H₁ : ∀ (Q₁ Q₂ : Finset ι), Q₁ ≤ Q₂ →
-            π_app C (· ∈ Q₁) ⁻¹' {a.val (op Q₁)} ⊇
-            π_app C (· ∈ Q₂) ⁻¹' {a.val (op Q₂)} := by
+            (↑(π_app C (· ∈ Q₁))) ⁻¹' ({a.val (op Q₁)} : Set _) ⊇
+            π_app C (· ∈ Q₂) ⁻¹' ({a.val (op Q₂)} : Set _) := by
           intro J K h x hx
           simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
           rw [← map_comp_π_app C h, Function.comp_apply,
             hx, ← a.prop (homOfLE h).op]
           rfl
         obtain ⟨x, hx⟩ :
-            Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' {a.val (op J)}) :=
+            Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' ({a.val (op J)} : Set _)) :=
           IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-            (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_isDirected_le H₁)
+            (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' ({a.val (op J)} : Set _))
+            (directed_of_isDirected_le H₁)
             (fun J => (Set.singleton_nonempty _).preimage (surjective_π_app _))
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)

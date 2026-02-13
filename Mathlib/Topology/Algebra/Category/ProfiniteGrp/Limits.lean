@@ -104,7 +104,9 @@ theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   intro a a_in_J
   let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
   rw [← (P.toLimit origin).property M_to_Na]
-  change (P.toFiniteQuotientFunctor.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
+  -- cast needed for membership
+  change (show ↑(P.diagram.obj a).toProfinite.toTop from (P.toFiniteQuotientFunctor.map M_to_Na)
+    (QuotientGroup.mk' M origin)) ∈ _
   rw [horigin]
   exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2
 
@@ -149,8 +151,9 @@ def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).o
     map_one' := rfl
     map_mul' _ _ := rfl
     continuous_toFun := show Continuous ((limitCone <| diagram P).π.app U ∘ toLimit P) by
-      fun_prop
-  }
+      -- tech debt: should be solved by fun_prop
+      apply Continuous.comp (by fun_prop)
+      exact ContinuousMonoidHom.continuous_toFun _ }
 
 /-- The canonical cone over `diagram P` with point `P`. -/
 @[simps]
