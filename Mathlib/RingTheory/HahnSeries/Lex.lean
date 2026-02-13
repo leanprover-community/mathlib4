@@ -356,7 +356,7 @@ end Archimedean
 end OrderedGroup
 
 section OrderedRing
-variable [LinearOrder R] [Ring R] [AddCommMonoid Γ] [LinearOrder Γ]
+variable [LinearOrder R] [Ring R] [AddCommMonoid Γ]
   [IsOrderedCancelAddMonoid Γ]
 
 instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) where

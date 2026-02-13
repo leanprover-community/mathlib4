@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
@@ -93,6 +92,51 @@ lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C 
   refine ⟨fun hX ↦ ?_, P.le_shift g _⟩
   rw [← P.shift_zero G, ← P.shift_shift g (-g) 0 (by simp)]
   exact P.le_shift (-g) _ hX
+
+variable (A) in
+/-- The closure by shifts and isomorphism of a predicate on objects in a category. -/
+def shiftClosure : ObjectProperty C := fun X => ∃ (Y : C) (a : A) (_ : X ≅ Y⟦a⟧), P Y
+
+lemma prop_shiftClosure_iff (X : C) :
+    shiftClosure P A X ↔ ∃ (Y : C) (a : A) (_ : X ≅ Y⟦a⟧), P Y := Iff.rfl
+
+lemma le_shiftClosure : P ≤ P.shiftClosure A := by
+  intro X hX
+  exact ⟨X, 0, (shiftFunctorZero C A).symm.app X, hX⟩
+
+variable {P Q} in
+lemma monotone_shiftClosure (h : P ≤ Q) : P.shiftClosure A ≤ Q.shiftClosure A := by
+  rintro X ⟨Y, a, i, hY⟩
+  refine ⟨Y, a, i, h Y hY⟩
+
+lemma shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] [P.IsStableUnderShift A] :
+    P.shiftClosure A = P := by
+  refine le_antisymm ?_ P.le_shiftClosure
+  rintro X ⟨Y, a, i, hY⟩
+  exact P.prop_of_iso i.symm (P.le_shift a Y hY)
+
+lemma shiftClosure_le_iff [IsClosedUnderIsomorphisms Q] [Q.IsStableUnderShift A] :
+    shiftClosure P A ≤ Q ↔ P ≤ Q :=
+  ⟨(le_shiftClosure P).trans,
+    fun h => (monotone_shiftClosure h).trans (by rw [shiftClosure_eq_self])⟩
+
+instance : (P.shiftClosure A).IsClosedUnderIsomorphisms where
+  of_iso := by
+    rintro X Y i ⟨Z, a, i', hZ⟩
+    exact ⟨Z, a, i.symm.trans i', hZ⟩
+
+instance (a : A) : (P.shiftClosure A).IsStableUnderShiftBy a where
+  le_shift := by
+    rintro X ⟨Y, b, i, hY⟩
+    exact ⟨Y, b + a, ((shiftFunctor C a).mapIso i).trans <|
+      (shiftFunctorAdd C b a).symm.app Y, hY⟩
+
+instance : (P.shiftClosure A).IsStableUnderShift A where
+
+lemma isStableUnderShift_iff_shiftClosure_eq_self [P.IsClosedUnderIsomorphisms] :
+    IsStableUnderShift P A ↔ shiftClosure P A = P :=
+  ⟨fun _ ↦ shiftClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
+
 
 variable [P.IsStableUnderShift A]
 
