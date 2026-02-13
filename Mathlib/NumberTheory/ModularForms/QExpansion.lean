@@ -477,8 +477,6 @@ end ring
 
 section uniqueness
 
-open Metric Topology
-
 private lemma hasSum_cuspFunction_of_hasSum_punctured
     {F : Type*} [FunLike F ℍ ℂ] {k : ℤ} [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (c : ℕ → ℂ) (f : F)
