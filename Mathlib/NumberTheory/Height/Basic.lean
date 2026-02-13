@@ -522,22 +522,20 @@ heights, where `n` is the number of terms. -/
 lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α → K) :
     mulHeight₁ (∑ a ∈ s, x a) ≤ #s ^ (totalWeight K) * ∏ a ∈ s, mulHeight₁ (x a) := by
   simp only [mulHeight₁_eq, totalWeight]
-  calc
-    _ ≤ (archAbsVal.map fun v ↦ (#s : ℝ) * ∏ i ∈ s, max (v (x i)) 1).prod * _ := by
-      refine mul_le_mul_of_nonneg_right ?_ <| finprod_nonneg fun _ ↦ by positivity
-      exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
-    _ ≤ _ * ∏ᶠ (v : ↑nonarchAbsVal), ∏ i ∈ s, max (v.val (x i)) 1 := by
-      refine mul_le_mul_of_nonneg_left ?_ <| prod_nonneg fun _ h ↦ by
+  rw [prod_mul_distrib, ← prod_replicate, ← map_const,
+    ← finprod_prod_comm _ _ fun i _ ↦ mulSupport_max_nonarchAbsVal_finite (x i),
+    ← prod_map_prod, ← mul_assoc, ← prod_map_mul]
+  simp only [Function.const_apply]
+  gcongr
+  · exact finprod_nonneg fun _ ↦ by positivity
+  · exact prod_nonneg fun _ h ↦ by
         obtain ⟨v, -, rfl⟩ := mem_map.mp h
         positivity
-      refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
-      · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
-          s.mulSupport_prod fun i (v : nonarchAbsVal) ↦ max (v.val (x i)) 1
-      · exact fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
-    _ = _ := by
-      rw [finprod_prod_comm _ _ fun i _ ↦ mulSupport_max_nonarchAbsVal_finite (x i),
-        prod_map_mul, prod_map_prod, map_const', prod_replicate, prod_mul_distrib]
-      ring
+  · exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
+  · refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
+    · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
+        s.mulSupport_prod fun i (v : nonarchAbsVal) ↦ max (v.val (x i)) 1
+    · exact fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
 
 open Finset in
 /-- The logarithmic height of a finite sum of field elements is at most
