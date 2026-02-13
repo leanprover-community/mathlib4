@@ -7,13 +7,6 @@ to learn about it as well!
 
 ## Current scripts and their purpose
 
-**Installation scripts**
-- `install_debian.sh`, `install_macos.sh`
-  Installation scripts referenced from the leanprover community install pages.
-  https://leanprover-community.github.io/install/debian.html
-  https://leanprover-community.github.io/install/macos.html
-  If these web pages are deprecated or removed, we should remove these scripts.
-
 **Repository analysis and reporting**
 - `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
