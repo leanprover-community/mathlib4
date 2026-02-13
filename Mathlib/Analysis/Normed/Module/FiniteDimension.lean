@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
@@ -539,6 +540,17 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
     apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
+
+theorem LinearMap.isCompactOperator_one_iff_finiteDimensional {𝕜 E : Type*}
+    [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [LocallyCompactSpace 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] : IsCompactOperator (1 : E →ₗ[𝕜] E) ↔ FiniteDimensional 𝕜 E :=
+  isCompactOperator_id_iff_locallyCompactSpace.trans
+    ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
+
+theorem ContinuousLinearMap.isCompactOperator_one_iff_finiteDimensional {𝕜 E : Type*}
+    [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [LocallyCompactSpace 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] : IsCompactOperator (1 : E →L[𝕜] E) ↔ FiniteDimensional 𝕜 E :=
+  LinearMap.isCompactOperator_one_iff_finiteDimensional
 
 end Riesz
 

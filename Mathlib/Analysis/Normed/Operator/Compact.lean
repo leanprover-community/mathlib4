@@ -5,7 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Compact operators
@@ -72,17 +73,6 @@ theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
     IsCompactOperator (id : E → E) ↔ LocallyCompactSpace E :=
   ⟨fun ⟨_, hK, hK0⟩ ↦ hK.locallyCompactSpace_of_mem_nhds_of_addGroup hK0,
     fun _ ↦ exists_compact_mem_nhds 0⟩
-
-theorem LinearMap.isCompactOperator_one_iff_finiteDimensional {𝕜 E : Type*}
-    [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [LocallyCompactSpace 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] : IsCompactOperator (1 : E →ₗ[𝕜] E) ↔ FiniteDimensional 𝕜 E :=
-  isCompactOperator_id_iff_locallyCompactSpace.trans
-    ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
-
-theorem ContinuousLinearMap.isCompactOperator_one_iff_finiteDimensional {𝕜 E : Type*}
-    [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [LocallyCompactSpace 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] : IsCompactOperator (1 : E →L[𝕜] E) ↔ FiniteDimensional 𝕜 E :=
-  LinearMap.isCompactOperator_one_iff_finiteDimensional
 
 section Characterizations
 
