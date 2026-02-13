@@ -184,7 +184,6 @@ classical ones, as these may cause instance mismatch errors later.
 -/
 
 export Classical (not_not)
-attribute [simp] not_not
 
 variable {a b : Prop}
 
@@ -388,9 +387,6 @@ alias Ne.trans_eq := ne_of_ne_of_eq
 
 theorem eq_equivalence {α : Sort*} : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
-
--- These were migrated to Batteries but the `@[simp]` attributes were (mysteriously?) removed.
-attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
 
 -- @[simp] -- FIXME simp ignores proof rewrites
 theorem congr_refl_left {α β : Sort*} (f : α → β) {a b : α} (h : a = b) :
