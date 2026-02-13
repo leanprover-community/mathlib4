@@ -529,8 +529,8 @@ lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α
   gcongr
   · exact finprod_nonneg fun _ ↦ by positivity
   · exact prod_nonneg fun _ h ↦ by
-        obtain ⟨v, -, rfl⟩ := mem_map.mp h
-        positivity
+      obtain ⟨v, -, rfl⟩ := mem_map.mp h
+      positivity
   · exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
   · refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
     · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
