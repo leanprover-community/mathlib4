@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Artinian
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.RingTheory.RingHom.QuasiFinite
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 /-!
 # Quasi-finite morphisms

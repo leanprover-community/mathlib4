@@ -136,8 +136,8 @@ def mkOfHomFunctors (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : PrelaxFunctor B B where
   toPrelaxFunctorStruct := PrelaxFunctorStruct.id B
 
-instance : Inhabited (PrelaxFunctorStruct B B) :=
-  ⟨PrelaxFunctorStruct.id B⟩
+instance : Inhabited (PrelaxFunctor B B) :=
+  ⟨PrelaxFunctor.id B⟩
 
 variable (F : PrelaxFunctor B C)
 

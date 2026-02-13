@@ -63,6 +63,21 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
 
 end IsOpenCover
 
+lemma Opens.IsBasis.isOpenCover {S : Set (Opens X)} (hS : Opens.IsBasis S) :
+    IsOpenCover (fun U : S ↦ (U : Opens X)) :=
+  top_le_iff.mp (subset_trans hS.2.superset (by simp))
+
+/-- Given an open cover and a basis,
+the set of basis elements contained in any of the covers is still a cover. -/
+lemma Opens.IsBasis.isOpenCover_mem_and_le {S : Set (Opens X)} (hS : Opens.IsBasis S)
+    {U : ι → Opens X} (hU : IsOpenCover U) :
+    IsOpenCover (fun V : { x : Opens X × ι // x.1 ∈ S ∧ x.1 ≤ U x.2 } ↦ V.1.1) := by
+  refine top_le_iff.mp fun x _ ↦ ?_
+  obtain ⟨i, hxi⟩ := hU.exists_mem x
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hS.exists_subset_of_mem_open hxi (U i).2
+  simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.mem_mk, Set.mem_iUnion, SetLike.mem_coe]
+  exact ⟨⟨(V, i), hV, hVU⟩, hxV⟩
+
 end TopologicalSpace
 
 section Irreducible

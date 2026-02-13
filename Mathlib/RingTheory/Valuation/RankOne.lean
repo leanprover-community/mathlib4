@@ -10,7 +10,10 @@ public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
-public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Rank one valuations
