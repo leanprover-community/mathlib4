@@ -67,7 +67,8 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
     if prsr.contains cinfo.type && !declName.isInternal then
       let descr ← unsafe evalConst ParserDescr declName
       let ls := extractSymbols descr #[]
-      if !ls.isEmpty then symbs := symbs.insert (declName, ls.toList)
+      unless ls.isEmpty do
+        symbs := symbs.insert (declName, ls.toList)
   -- From among the parsers in `symbs`, we extract the ones whose `symbols` contain the input `str`
   let mut match_results : NameMap (Array (Name × String)) := {}
   for (nm, ar) in symbs.toList do
