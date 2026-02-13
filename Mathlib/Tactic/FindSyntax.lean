@@ -32,13 +32,17 @@ open Lean Elab Command
 The output array serves as a way of regenerating what the syntax tree of the input parser is.
 -/
 def extractSymbols : ParserDescr → Array String → Array String
-  | .symbol s, acc => acc.push s
-  | .nonReservedSymbol s _, acc => acc.push s
-  | .unicodeSymbol s _ _, acc => acc.push s
-  | .parser _, acc | .const _, acc | .cat _ _, acc => acc
-  | .node _ _ descr, acc | .trailingNode _ _ _ descr, acc | .nodeWithAntiquot _ _ descr, acc
-  | .unary _ descr, acc => extractSymbols descr acc
-  | .binary _ l r, acc => extractSymbols r (extractSymbols l acc)
+  | .symbol s, acc | .nonReservedSymbol s _, acc | .unicodeSymbol s _ _, acc =>
+    acc.push s
+  | .parser _, acc | .const _, acc | .cat _ _, acc =>
+    acc
+  | .node _ _ descr, acc
+  | .trailingNode _ _ _ descr, acc
+  | .nodeWithAntiquot _ _ descr, acc
+  | .unary _ descr, acc =>
+    extractSymbols descr acc
+  | .binary _ l r, acc =>
+    extractSymbols r (extractSymbols l acc)
   | .sepBy p _ psep _, acc | .sepBy1 p _ psep _, acc =>
     extractSymbols psep (extractSymbols p acc)
 
@@ -60,10 +64,10 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
   -- We scan the environment in search of "parsers" whose name is not internal and that
   -- contain some `symbol` information and we store them in `symbs`
   for (declName, cinfo) in (← getEnv).constants do
-    if prsr.contains cinfo.type then
+    if prsr.contains cinfo.type && !declName.isInternal then
       let descr ← unsafe evalConst ParserDescr declName
       let ls := extractSymbols descr #[]
-      if !declName.isInternal && !ls.isEmpty then symbs := symbs.insert (declName, ls.toList)
+      if !ls.isEmpty then symbs := symbs.insert (declName, ls.toList)
   -- From among the parsers in `symbs`, we extract the ones whose `symbols` contain the input `str`
   let mut match_results : NameMap (Array (Name × String)) := {}
   for (nm, ar) in symbs.toList do
