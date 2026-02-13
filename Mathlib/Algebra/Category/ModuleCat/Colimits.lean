@@ -160,15 +160,15 @@ variable (R : Type w) [CommRing R] (M ι : Type u) [AddCommGroup M] [Module R M]
 
 /-- The coproduct cone induced by the concrete coproduct. -/
 noncomputable
-def finSuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
+def finsuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
   Cofan.mk (ModuleCat.of R (ι →₀ M)) fun i ↦
     ModuleCat.ofHom (Finsupp.lsingle i (R := R) (M := ModuleCat.of R M))
 
 /-- The concrete cocoproduct cone is colimiting. -/
 noncomputable
-def finSuppCoconeIsColimit : IsColimit (finSuppCocone R M ι) where
+def finsuppCoconeIsColimit : IsColimit (finsuppCocone R M ι) where
   desc s := ModuleCat.ofHom <| Finsupp.lsum R (N := s.pt) (fun i ↦ (s.ι.app ⟨i⟩).hom)
-  fac := by aesop (add simp finSuppCocone)
+  fac := by aesop (add simp finsuppCocone)
   uniq s f h := by
     ext : 1
     exact Finsupp.lhom_ext' fun i ↦ LinearMap.ext fun x ↦ by simpa using congr($(h ⟨i⟩) (x : M))
