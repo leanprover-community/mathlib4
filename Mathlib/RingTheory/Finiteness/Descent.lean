@@ -131,4 +131,11 @@ lemma FinitePresentation.codescendsAlong_faithfullyFlat :
   rw [faithfullyFlat_algebraMap_iff] at h
   exact .of_finitePresentation_tensorProduct_of_faithfullyFlat S
 
+lemma Finite.codescendsAlong_faithfullyFlat :
+    CodescendsAlong Finite FaithfullyFlat := by
+  refine .mk _ finite_respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  rw [finite_algebraMap] at h' ⊢
+  rw [faithfullyFlat_algebraMap_iff] at h
+  exact .of_finite_tensorProduct_of_faithfullyFlat S
+
 end RingHom
