@@ -128,6 +128,16 @@ lemma eq_of_isomorphisms_descendsAlong [(MorphismProperty.isomorphisms C).Descen
     ext <;> simp [pullback.condition]
   simpa [this] using equalizer.ι_of_eq H
 
+lemma faithful_overPullback_of_isomorphisms_descendAlong
+    [(MorphismProperty.isomorphisms C).DescendsAlong P] [P.IsStableUnderBaseChange]
+    [HasPullbacks C] [HasEqualizers C] {S T : C} {f : T ⟶ S} (hf : P f)
+    [HasPullbacks (Over S)] [HasEqualizers (Over S)]  :
+    (Over.pullback f).Faithful := by
+  refine ⟨fun {X} Y a b hab ↦ ?_⟩
+  ext
+  apply P.eq_of_isomorphisms_descendsAlong (Over.w a) (Over.w b) f hf
+  convert congr($(hab).left) <;> ext <;> simp
+
 end DescendsAlong
 
 /-- `P` codescends along `Q` if whenever `Q` holds for `Z ⟶ X`,
