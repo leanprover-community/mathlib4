@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
 
-# Weally Quasi-finite primes
+# Weakly Quasi-finite primes
 
 The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "isolated in fibers"
 mathematically for algebras of finite type, but this requires Zariski's main theorem to prove.
