@@ -84,8 +84,8 @@ theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ :
 
 @[to_additive (attr := simp)]
 theorem map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
-  map f (mk val inv val_inv inv_val) =
-    mk (f val) (f inv) (by simp [← map_mul, val_inv]) (by simp [← map_mul, inv_val]) := rfl
+    map f (mk val inv val_inv inv_val) =
+      mk (f val) (f inv) (by simp [← map_mul, val_inv]) (by simp [← map_mul, inv_val]) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
