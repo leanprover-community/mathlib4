@@ -271,7 +271,7 @@ section
 is constant. -/
 lemma isCommMonObj_iff_commutator_eq_toUnit_η :
     IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
-  rw [isCommMonObj_iff_isMulCommutative, ← yoneda.map_injective.eq_iff]
+  rw [isCommMonObj_iff_isMulCommutative]
   refine ⟨fun h ↦ ?_, fun heq X ↦ ⟨⟨fun f g ↦ ?_⟩⟩⟩
   · simp [GrpObj.commutator, one_eq_one]
   · simpa [one_eq_one, mul_inv_eq_iff_eq_mul] using congr(lift f g ≫ $heq)
