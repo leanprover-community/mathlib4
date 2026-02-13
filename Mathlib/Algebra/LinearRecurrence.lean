@@ -201,7 +201,8 @@ theorem charPoly_degree_eq_order [Nontrivial R] : (charPoly E).degree = E.order 
   simp_rw [← C_mul_X_pow_eq_monomial]
   exact degree_sum_fin_lt E.coeffs
 
-theorem charPoly_monic [Nontrivial R] : charPoly E |>.Monic := by
+theorem charPoly_monic : charPoly E |>.Monic := by
+  nontriviality R
   rw [Monic, leadingCoeff, natDegree_eq_of_degree_eq_some <| charPoly_degree_eq_order _, charPoly,
     coeff_sub, coeff_monomial_same, finset_sum_coeff, sub_eq_self]
   refine sum_eq_zero fun _ _ ↦ coeff_eq_zero_of_degree_lt ?_
