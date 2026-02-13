@@ -108,6 +108,9 @@ irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
       rw [← map_add (RingQuot.mkAlgHom R (Rel R M))]
       exact RingQuot.mkAlgHom_rel R Rel.add
     map_smul' := fun r x => by
+      -- tech debt
+      letI : MulActionHomClass (FreeAlgebra R M →ₐ[R] RingQuot (Rel R M)) R
+        (FreeAlgebra R M) (RingQuot (Rel R M)) := by infer_instance
       rw [← map_smul (RingQuot.mkAlgHom R (Rel R M))]
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 

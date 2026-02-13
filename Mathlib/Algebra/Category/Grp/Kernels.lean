@@ -30,6 +30,11 @@ def kernelCone : KernelFork f :=
 
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit <| kernelCone f :=
+  -- the two instances below are needed, and typeclass inference can not see through the defeqs
+  letI : SetLike (AddSubgroup ↑G) ↑((parallelPair f 0).obj WalkingParallelPair.zero) :=
+    inferInstanceAs (SetLike (AddSubgroup ↑G) (↑G))
+  letI : AddSubmonoidClass (AddSubgroup ↑G) ↑((parallelPair f 0).obj WalkingParallelPair.zero) :=
+    inferInstanceAs (AddSubmonoidClass (AddSubgroup ↑G) ↑G)
   Fork.IsLimit.mk _
     (fun s => ofHom <| s.ι.hom.codRestrict _ fun c => mem_ker.mpr <|
       ConcreteCategory.congr_hom s.condition c)

@@ -126,6 +126,9 @@ lemma mem_nhds_zero_iff {s : Set (WithIdealFilter F)} :
 
 /-- The topology is linear in the sense that `𝓝 0` has a basis of ideals. -/
 instance instIsLinearTopology : IsLinearTopology (WithIdealFilter F) (WithIdealFilter F) :=
+  letI : SetLike (Ideal A) (WithIdealFilter F) := inferInstanceAs (SetLike (Ideal A) A)
+  letI : AddSubmonoidClass (Ideal A) (WithIdealFilter F) :=
+    inferInstanceAs (AddSubmonoidClass (Ideal A) A)
   IsLinearTopology.mk_of_hasBasis' (R := (WithIdealFilter F))
     (M := (WithIdealFilter F))
     (ι := Ideal A) (S := Ideal A)

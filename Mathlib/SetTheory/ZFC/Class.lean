@@ -369,7 +369,9 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
 @[deprecated (since := "2025-11-05")] alias toSet_equiv := coeEquiv
 
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_notMem_univ : IsOrdinal.{u} ∉ Class.univ.{u} := by
+theorem isOrdinal_notMem_univ :
+    -- need a cast as ` IsOrdinal` is a `Prop` -valued function, not a set.
+    (show Class.{u} from IsOrdinal.{u}) ∉ Class.univ.{u} := by
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
     apply Class.mem_irrefl x

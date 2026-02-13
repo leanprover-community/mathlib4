@@ -57,7 +57,11 @@ def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} 
 
 /-- The `ULift` functor on categories of topological spaces is fully faithful. -/
 def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where
-  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by continuity⟩
+  preimage f := by
+    refine ofHom ⟨ULift.down ∘ f ∘ ULift.up, ?_⟩
+    apply Continuous.comp (by fun_prop)
+    apply Continuous.comp ?_ (by fun_prop)
+    exact ContinuousMap.continuous _
 
 instance : uliftFunctor.{v, u}.Full :=
   uliftFunctorFullyFaithful.full

@@ -289,7 +289,11 @@ section cfcL
 noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
   { cfcHom ha with
     toFun := cfcHom ha
-    map_smul' := map_smul _
+    map_smul' :=
+      -- tech debt
+      letI : MulActionHomClass (C(↑(spectrum R a), R) →⋆ₐ[R] A) R C(↑(spectrum R a), R) A := by
+        infer_instance
+      map_smul _
     cont := (cfcHom_isClosedEmbedding ha).continuous }
 
 end cfcL

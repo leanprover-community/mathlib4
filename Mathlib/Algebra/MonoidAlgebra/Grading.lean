@@ -80,11 +80,14 @@ theorem grade_eq_lsingle_range (m : M) :
   Submodule.ext (mem_grade_iff' R m)
 
 theorem single_mem_gradeBy {R} [CommSemiring R] (f : M → ι) (m : M) (r : R) :
-    Finsupp.single m r ∈ gradeBy R f (f m) := by
+    -- without the show, Lean is confused by the defeq abuse between `R →₀ M` and ` R[M]`
+    (show R[M] from Finsupp.single m r) ∈ gradeBy R f (f m) := by
   intro x hx
   rw [Finset.mem_singleton.mp (Finsupp.support_single_subset hx)]
 
-theorem single_mem_grade {R} [CommSemiring R] (i : M) (r : R) : Finsupp.single i r ∈ grade R i :=
+theorem single_mem_grade {R} [CommSemiring R] (i : M) (r : R) :
+    -- without the show, Lean is confused by the defeq abuse between `R →₀ M` and ` R[M]`
+    (show R[M] from Finsupp.single i r) ∈ grade R i :=
   single_mem_gradeBy _ _ _
 
 end

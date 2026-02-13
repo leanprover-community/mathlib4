@@ -90,14 +90,14 @@ theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Pr
 theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
     (h : ∀ j : α, PresentedGroup.of j ∈ H) (x : PresentedGroup rels) : x ∈ H := by
   obtain ⟨z⟩ := x
-  induction z
-  · exact one_mem H
-  · exact h _
-  · exact (Subgroup.inv_mem_iff H).mpr (by assumption)
-  rename_i h1 h2
-  change QuotientGroup.mk _ ∈ H.carrier
-  rw [QuotientGroup.mk_mul]
-  exact Subgroup.mul_mem _ h1 h2
+  induction z with
+  | C1 => exact one_mem H
+  | of x => exact h x
+  | inv_of x _ => exact (Subgroup.inv_mem_iff H).mpr (by assumption)
+  | mul x y h1 h2 =>
+    change (id (QuotientGroup.mk (x * y)) : PresentedGroup rels) ∈ H.carrier
+    rw [QuotientGroup.mk_mul]
+    exact Subgroup.mul_mem _ h1 h2
 
 section ToGroup
 

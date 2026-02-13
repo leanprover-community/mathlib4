@@ -123,7 +123,8 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
   refine IsLinearTopology.hasBasis_twoSidedIdeal.pi_self.to_hasBasis ?_ ?_
   · intro ⟨D, I⟩ ⟨hD, hI⟩
     refine ⟨⟨I, Finset.sup hD.toFinset id⟩, hI, fun f hf d hd ↦ ?_⟩
-    rw [SetLike.mem_coe, mem_basis_iff] at hf
+    simp only [mem_coe] at hf
+    rw [mem_basis_iff] at hf
     convert hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
   · intro ⟨I, d⟩ hI
     refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩

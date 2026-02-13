@@ -399,7 +399,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     convert h <;> erw [Meq.equiv_apply] <;>
       rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι] <;>
       rfl
-  · rintro (x : ToType (multiequalizer (S.index _)))
+  · intro x
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t
     apply (Meq.equiv (D := D) _ _).injective

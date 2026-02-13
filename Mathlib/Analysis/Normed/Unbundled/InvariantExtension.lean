@@ -62,7 +62,10 @@ def algNormOfAlgEquiv (σ : L ≃ₐ[K] L) :
   add_le' x y := by simp [map_add σ, map_add_le_add]
   neg' x      := by simp [map_neg σ, map_neg_eq_map]
   mul_le' x y := by simp [map_mul σ, map_mul_le_mul]
-  smul' x y   := by simp [map_smul σ, map_smul_eq_mul]
+  smul' x y   := by
+    -- tech debt
+    letI : MulActionHomClass (L ≃ₐ[K] L) K L L := by infer_instance
+    simp [map_smul σ, map_smul_eq_mul]
   eq_zero_of_map_eq_zero' x hx := EmbeddingLike.map_eq_zero_iff.mp (eq_zero_of_map_eq_zero _ hx)
 
 theorem algNormOfAlgEquiv_apply (σ : L ≃ₐ[K] L) (x : L) :

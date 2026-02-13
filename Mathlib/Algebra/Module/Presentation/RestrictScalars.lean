@@ -59,6 +59,9 @@ noncomputable def restrictScalars : Presentation A M :=
         apply Finsupp.induction (motive := fun β ↦ Finsupp.single r (presB.π β) ∈ _)
         · simp
         · intro g a f _ _ hf
+          -- tech debt: why is that needed (and why does `inferInstance` fail)?
+          letI : MulActionHomClass ((presB.G →₀ A) →ₗ[A] B) A (presB.G →₀ A) B :=
+            LinearMapClass.toMulActionHomClass ((presB.G →₀ A) →ₗ[A] B) A (presB.G →₀ A) B
           rw [map_add, Finsupp.single_add]
           refine Submodule.add_mem _ ?_ hf
           rw [← Finsupp.smul_single_one, ← Finsupp.smul_single_one,

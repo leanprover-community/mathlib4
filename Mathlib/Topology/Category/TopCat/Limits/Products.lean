@@ -264,18 +264,20 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       erw [← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
     · rintro ⟨h₁, h₂, h₃⟩
-      have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
+      -- use functional notation for sets instead of `∈` as the types are definitionally equal
+      -- but not reducibly so, so typeclass inference for membership does not see through.
+      have : ∀ x, Set.range c.inl x ∨ Set.range c.inr x := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
         exact fun _ => or_not
       refine ⟨BinaryCofan.IsColimit.mk _ ?_ ?_ ?_ ?_⟩
       · intro T f g
         refine ofHom (ContinuousMap.mk ?_ ?_)
         · exact fun x =>
-            if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁.injective).symm ⟨x, h⟩)
+            if h : Set.range c.inl x then f ((Equiv.ofInjective _ h₁.injective).symm ⟨x, h⟩)
             else g ((Equiv.ofInjective _ h₂.injective).symm ⟨x, (this x).resolve_left h⟩)
         rw [continuous_iff_continuousAt]
         intro x
-        by_cases h : x ∈ Set.range c.inl
+        by_cases h : Set.range c.inl x
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
@@ -287,7 +289,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
-            have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
+            have : ∀ a, a ∉ Set.range c.inl → Set.range c.inr a := by
               rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to Continuous
@@ -314,7 +316,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         rw [dif_neg]
         · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
         · rintro ⟨y, e⟩
-          have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
+          have : c.inl y ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨Set.mem_range_self _, by simp [e]⟩
           rwa [disjoint_iff.mp h₃.1] at this
       · rintro T _ _ m rfl rfl
         ext x

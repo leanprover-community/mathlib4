@@ -747,7 +747,9 @@ variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [Topologi
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : OpenPartialHomeomorph H H} {e' : OpenPartialHomeomorph H' H'}
     (he : e ∈ contDiffGroupoid n I) (he' : e' ∈ contDiffGroupoid n I') :
-    e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
+    -- show necessary to cast to the right space
+    (show OpenPartialHomeomorph (ModelProd H H') (ModelProd H H') from e.prod e') ∈
+      contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
   constructor <;> simp only [PartialEquiv.prod_source, OpenPartialHomeomorph.prod_toPartialEquiv,
@@ -944,7 +946,9 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
 lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
     {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
     {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
-    e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
+    -- show necessary to cast in the right space
+    (show OpenPartialHomeomorph (M × M') (ModelProd H H') from e.prod e') ∈
+      maximalAtlas (I.prod I') n (M × M') := by
   simp only [mem_maximalAtlas_iff]
   rintro e'' ⟨f, hf, f', hf', rfl⟩
   rw [OpenPartialHomeomorph.prod_symm_trans_prod,

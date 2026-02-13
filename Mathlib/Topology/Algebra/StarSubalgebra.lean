@@ -252,9 +252,14 @@ theorem induction_on {x y : A}
     exact mul u (subset_closure hu_mem) v (subset_closure hv_mem) (hu hu_mem) (hv hv_mem)
 
 theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
-    [FunLike F (elemental R a) B] [AlgHomClass F R _ B] [StarHomClass F _ B]
+    [hF : FunLike F (elemental R a) B] [hF' : AlgHomClass F R (elemental R a) B]
+    [hF'' : StarHomClass F (elemental R a) B]
     {φ ψ : F} (hφ : Continuous φ)
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
+  -- tech debt: we were abusing the defeq of ` elemental R a` .
+  letI : FunLike F (↥(adjoin R {a}).topologicalClosure) B := hF
+  letI : AlgHomClass F R (↥(adjoin R {a}).topologicalClosure) B := hF'
+  letI : StarHomClass F (↥(adjoin R {a}).topologicalClosure) B := hF''
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
   refine adjoin_induction_subtype x ?_ ?_ ?_ ?_ ?_
   exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by

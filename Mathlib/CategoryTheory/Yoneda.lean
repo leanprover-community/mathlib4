@@ -868,8 +868,10 @@ lemma uliftYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ T
 
 @[simp]
 lemma uliftYonedaEquiv_uliftYoneda_map {X Y : C} (f : X ⟶ Y) :
-    DFunLike.coe (β := fun _ ↦ ULift.{w} (X ⟶ Y))
-        uliftYonedaEquiv.{w} (uliftYoneda.map f) = ULift.up f := by
+    DFunLike.coe
+      (α := uliftYoneda.{w}.obj X ⟶ uliftYoneda.obj Y)
+      (β := fun _ ↦ (uliftYoneda.obj Y).obj (op X))
+    uliftYonedaEquiv (uliftYoneda.map f) = ULift.up f := by
   simp [uliftYonedaEquiv, uliftYoneda]
 
 /-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
@@ -1095,8 +1097,10 @@ lemma uliftCoyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type max w 
 
 @[simp]
 lemma uliftCoyonedaEquiv_uliftCoyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    DFunLike.coe (β := fun _ ↦ ULift.{w} (Y.unop ⟶ X.unop))
-        uliftCoyonedaEquiv.{w} (uliftCoyoneda.map f) = ULift.up f.unop := by
+    DFunLike.coe
+      (α := (uliftCoyoneda.{w}.obj X ⟶ uliftCoyoneda.obj Y))
+      (β := fun _ ↦ (uliftCoyoneda.obj Y).obj (unop X))
+        uliftCoyonedaEquiv (uliftCoyoneda.map f) = ULift.up f.unop := by
   simp [uliftCoyonedaEquiv, uliftYoneda]
 
 /-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions

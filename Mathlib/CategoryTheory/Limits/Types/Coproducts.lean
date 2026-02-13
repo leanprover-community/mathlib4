@@ -278,26 +278,30 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
           (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.bijective]
       simp
     · rintro ⟨h₁, h₂, h₃⟩
-      have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
-        rw [eq_compl_iff_isCompl.mpr h₃.symm]
-        exact fun _ => or_not
       refine ⟨BinaryCofan.IsColimit.mk _ ?_ ?_ ?_ ?_⟩
       · intro T f g x
+        -- use the functional notation for sets instead of `∈` as the involved types are defeq but
+        -- not reducibly, so typeclass inference for `∈` does not work
+        have : ∀ x, Set.range c.inl x ∨ Set.range c.inr x := by
+          rw [eq_compl_iff_isCompl.mpr h₃.symm]
+          exact fun _ => or_not
         exact
-          if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁).symm ⟨x, h⟩)
+          if h : Set.range c.inl x then f ((Equiv.ofInjective _ h₁).symm ⟨x, h⟩)
           else g ((Equiv.ofInjective _ h₂).symm ⟨x, (this x).resolve_left h⟩)
       · intro T f g
         funext x
-        simp [h₁.eq_iff]
+        have : Set.range c.inl (c.inl x) := Set.mem_range_self _
+        simp [this]
       · intro T f g
         funext x
         dsimp
-        simp only [Set.mem_range, Equiv.ofInjective_symm_apply,
-          dite_eq_right_iff, forall_exists_index]
-        intro y e
-        have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
-        rw [disjoint_iff.mp h₃.1] at this
-        exact this.elim
+        have : ¬ (Set.range c.inl (c.inr x)) := by
+          rintro ⟨y, hy⟩
+          have : c.inl y ∈ Set.range c.inl ⊓ Set.range c.inr :=
+            ⟨Set.mem_range_self _ , by rw [hy]; exact Set.mem_range_self _⟩
+          rw [disjoint_iff.mp h₃.1] at this
+          exact this.elim
+        simp [Equiv.ofInjective_symm_apply, this]
       · rintro T _ _ m rfl rfl
         funext x
         dsimp

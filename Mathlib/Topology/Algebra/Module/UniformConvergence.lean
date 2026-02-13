@@ -116,8 +116,13 @@ equipped with the topology of `𝔖`-convergence, is a TVS.
 If you have a hard time using this lemma, try the one above instead. -/
 theorem UniformOnFun.continuousSMul_submodule_of_image_bounded (H : Submodule 𝕜 (α →ᵤ[𝔖] E))
     (h : ∀ u ∈ H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 (u '' s)) :
-    @ContinuousSMul 𝕜 H _ _ ((UniformOnFun.topologicalSpace α E 𝔖).induced ((↑) : H → α →ᵤ[𝔖] E)) :=
-  UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜 α E H
+    @ContinuousSMul 𝕜 H _ _
+      ((UniformOnFun.topologicalSpace α E 𝔖).induced ((↑) : H → α →ᵤ[𝔖] E)) := by
+  let : FunLike (↥H →ₗ[𝕜] α →ᵤ[𝔖] E) (↥H) (α → E) :=
+    inferInstanceAs (FunLike (↥H →ₗ[𝕜] (α → E)) (↥H) (α → E))
+  let : LinearMapClass (↥H →ₗ[𝕜] α →ᵤ[𝔖] E) 𝕜 (↥H) (α → E) :=
+    inferInstanceAs (LinearMapClass (↥H →ₗ[𝕜] α → E) 𝕜 (↥H) (α → E))
+  exact UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜 α E H
     (LinearMap.id.domRestrict H : H →ₗ[𝕜] α → E) IsInducing.subtypeVal fun ⟨u, hu⟩ => h u hu
 
 end Module

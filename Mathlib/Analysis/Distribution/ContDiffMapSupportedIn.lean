@@ -479,8 +479,12 @@ instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
   exact isUniformAddGroup_iInf fun _ ↦ IsUniformAddGroup.comap _
 
-instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) :=
-  continuousSMul_iInf fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i)
+instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
+  apply continuousSMul_iInf fun i ↦ ?_
+  letI : MulActionHomClass
+    (𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ ContinuousMultilinearMap ℝ (fun (j : Fin i) ↦ E) F) 𝕜
+    𝓓^{n}_{K}(E, F) (E →ᵇ ContinuousMultilinearMap ℝ (fun i ↦ E) F) := by infer_instance
+  exact continuousSMul_induced (structureMapLM 𝕜 n i)
 
 instance locallyConvexSpace : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _

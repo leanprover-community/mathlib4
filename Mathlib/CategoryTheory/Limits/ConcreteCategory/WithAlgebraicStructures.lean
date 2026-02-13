@@ -68,6 +68,8 @@ lemma colimit_no_zero_smul_divisor
     (x : ToType (colimit F)) (hx : r • x = 0) : x = 0 := by
   classical
   obtain ⟨j, x, rfl⟩ := Concrete.colimit_exists_rep F x
+  letI : MulActionHomClass (↑(F.obj j) →ₗ[R] ↑(colimit F)) R ↑(F.obj j) ↑(colimit F) := by
+    infer_instance
   rw [← map_smul (colimit.ι F j).hom] at hx
   obtain ⟨j', i, h⟩ := Concrete.colimit_rep_eq_zero (hx := hx)
   obtain ⟨j'', H⟩ := H

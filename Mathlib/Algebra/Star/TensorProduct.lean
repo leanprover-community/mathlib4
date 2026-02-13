@@ -41,7 +41,9 @@ noncomputable instance : StarAddMonoid (A ⊗[R] B) where
   star_add := map_add _
 
 instance : StarModule R (A ⊗[R] B) where
-  star_smul := map_smulₛₗ _
+  star_smul := by
+    --letI : MulActionSemiHomClass (A ⊗[R] B ≃ₗ⋆[R] A ⊗[R] B) star (A ⊗[R] B) (A ⊗[R] B) := by exact?
+    apply map_smulₛₗ _
 
 theorem _root_.starLinearEquiv_tensor :
     starLinearEquiv R (A := A ⊗[R] B) = congr (starLinearEquiv R) (starLinearEquiv R) := rfl

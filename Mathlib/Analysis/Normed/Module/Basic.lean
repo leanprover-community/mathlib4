@@ -192,7 +192,10 @@ abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [Ad
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
   let _ := SeminormedAddCommGroup.induced E G f
-  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
+  ⟨fun a b ↦ by
+    -- tech debt
+    letI : MulActionHomClass F 𝕜 E G := by infer_instance
+    simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
 
 section NontriviallyNormedSpace
 
@@ -400,6 +403,7 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
     (f : F) :
     @NormedAlgebra 𝕜 R _ (SeminormedRing.induced R S f) :=
   letI := SeminormedRing.induced R S f
+  letI : MulActionHomClass F 𝕜 R S := by infer_instance
   ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
