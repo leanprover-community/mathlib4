@@ -29,16 +29,19 @@ namespace MonotoneOn
 
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} {a : α}
 
+/-- A monotone function on `t` sends upper bounds of `s ⊆ t` in `t` to upper bounds of `f '' s`. -/
 @[to_dual]
 theorem mem_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) (Has : a ∈ upperBounds s)
     (Hat : a ∈ t) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Hst H) Hat (Has H)
 
+/-- A monotone function on `t` sends upper bounds of `t` in `t` to upper bounds of `f '' t`. -/
 @[to_dual]
 theorem mem_upperBounds_image_self (Hf : MonotoneOn f t) :
     a ∈ upperBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
   Hf.mem_upperBounds_image subset_rfl
 
+/-- A monotone function on `t` maps `upperBounds s ∩ t` into `upperBounds (f '' s)`. -/
 @[to_dual]
 theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
     f '' (upperBounds s ∩ t) ⊆ upperBounds (f '' s) := by
@@ -63,16 +66,20 @@ namespace AntitoneOn
 
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} {a : α}
 
+/-- An antitone function on `t` sends lower bounds of `s ⊆ t` in `t` to upper bounds of
+`f '' s`. -/
 @[to_dual]
 theorem mem_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) (Has : a ∈ lowerBounds s)
     (Hat : a ∈ t) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf Hat (Hst H) (Has H)
 
+/-- An antitone function on `t` sends lower bounds of `t` in `t` to upper bounds of `f '' t`. -/
 @[to_dual]
 theorem mem_upperBounds_image_self (Hf : AntitoneOn f t) :
     a ∈ lowerBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
   Hf.mem_upperBounds_image subset_rfl
 
+/-- An antitone function on `t` maps `lowerBounds s ∩ t` into `upperBounds (f '' s)`. -/
 @[to_dual]
 theorem image_lowerBounds_subset_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
     f '' (lowerBounds s ∩ t) ⊆ upperBounds (f '' s) := by
@@ -98,10 +105,12 @@ variable [Preorder α] [Preorder β] {f : α → β} (Hf : Monotone f) {a : α} 
 
 include Hf
 
+/-- A monotone function sends upper bounds to upper bounds. -/
 @[to_dual]
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
+/-- A monotone function maps `upperBounds s` into `upperBounds (f '' s)`. -/
 @[to_dual]
 theorem image_upperBounds_subset_upperBounds_image :
     f '' upperBounds s ⊆ upperBounds (f '' s) := by
@@ -127,10 +136,12 @@ variable [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f) {a : α} 
 
 include hf
 
+/-- An antitone function sends lower bounds to upper bounds. -/
 @[to_dual]
 theorem mem_upperBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => hf (Ha H)
 
+/-- An antitone function maps `lowerBounds s` into `upperBounds (f '' s)`. -/
 @[to_dual]
 theorem image_lowerBounds_subset_upperBounds_image : f '' lowerBounds s ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
@@ -198,11 +209,13 @@ variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a))
 
 include h₀ h₁
 
+/-- If `f` is monotone in both arguments, then the image of upper bounds is an upper bound. -/
 @[to_dual]
 theorem mem_upperBounds_image2 (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
     f a b ∈ upperBounds (image2 f s t) :=
   forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
+/-- If `f` is monotone in both arguments, then `image2 f` maps upper bounds to upper bounds. -/
 @[to_dual]
 theorem image2_upperBounds_upperBounds_subset :
     image2 f (upperBounds s) (upperBounds t) ⊆ upperBounds (image2 f s t) :=
