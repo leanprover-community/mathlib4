@@ -227,12 +227,8 @@ theorem laplacianCLM_eq [RCLike 𝕜] [NormedSpace 𝕜 F] (f : 𝓢(E, F)) :
 
 theorem laplacian_apply (f : 𝓢(E, F)) (x : E) : Δ f x = Δ (f : E → F) x := by
   rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E)]
-  simp only [InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis f
-    (stdOrthonormalBasis ℝ E), sum_apply]
-  congr 1
-  ext i
-  rw [← iteratedLineDerivOp_eq_iteratedFDeriv]
-  rfl
+  simp [InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E),
+    sum_apply, ← iteratedLineDerivOp_eq_iteratedFDeriv, iteratedLineDerivOp_succ_left]
 
 end Laplacian
 
