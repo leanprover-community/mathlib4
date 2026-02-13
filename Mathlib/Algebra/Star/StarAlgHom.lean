@@ -650,7 +650,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
     [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
     [NonUnitalAlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
-  { }
+  { ‹NonUnitalAlgEquivClass F R A B› with }
 
 -- See note [lower instance priority]
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]

@@ -303,7 +303,10 @@ noncomputable def toKer (E : Extension R M L) :
     M ≃ₗ⁅R⁆ E.proj.ker where
   toFun m := ⟨E.incl m, E.incl_apply_mem_ker m⟩
   map_add' _ _ := by simp
-  map_smul' _ _ := by simp
+  map_smul' c x := by
+    -- TODO: the proof doesn't work without the following line, even though it's an instance
+    have : MulActionHomClass (M →ₗ⁅R⁆ E.L) R M E.L := LinearMapClass.toMulActionHomClass ..
+    simp
   map_lie' {x y} := by ext; simp [← LieHom.map_lie]
   invFun := (Equiv.ofInjective E.incl E.incl_injective).symm ∘ E.IsExtension.kerEquivRange
   left_inv _ := by
@@ -431,6 +434,9 @@ noncomputable def oneCochainOfTwoSplitting (E : Extension R M L) {s₁ s₂ : L 
     rw [← map_add, AddMemClass.mk_add_mk, EquivLike.apply_eq_iff_eq, Subtype.mk_eq_mk, map_add,
       map_add, add_sub_add_comm]
   map_smul' _ _ := by
+    -- TODO: the proof doesn't work without the following line, even though it's an instance
+    have : MulActionHomClass (E.proj.ker ≃ₗ⁅R⁆ M) R E.proj.ker M :=
+      LinearMapClass.toMulActionHomClass ..
     rw [RingHom.id_apply, ← map_smul, EquivLike.apply_eq_iff_eq, SetLike.mk_smul_of_tower_mk,
       Subtype.mk_eq_mk, LinearMap.map_smul_of_tower, smul_sub, LinearMap.map_smul_of_tower]
 

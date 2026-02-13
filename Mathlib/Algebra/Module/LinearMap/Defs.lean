@@ -124,10 +124,10 @@ abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
     [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 
-instance (F : Type*) (R M M₂ : outParam Type*)
-    [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
-    [FunLike F M M₂] [h : LinearMapClass F R M M₂] : MulActionHomClass F R M M₂ :=
-  h.toMulActionSemiHomClass
+instance LinearMapClass.toMulActionHomClass (F : Type*) (R M M₂ : outParam Type*)
+    {_ : Semiring R} {_ : AddCommMonoid M} {_ : AddCommMonoid M₂} {_ : Module R M} {_ : Module R M₂}
+    {_ : FunLike F M M₂} [LinearMapClass F R M M₂] : MulActionHomClass F R M M₂ :=
+  ‹LinearMapClass F R M M₂›.toMulActionSemiHomClass
 
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]

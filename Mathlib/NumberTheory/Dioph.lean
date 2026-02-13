@@ -472,7 +472,7 @@ theorem diophFn_compn :
             obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
-    (df : VectorAllP DiophFn f) : Dioph {v | (fun i => f i v) ∈ S} :=
+    (df : VectorAllP DiophFn f) : Dioph {v | (show Vector3 ℕ n from fun i => f i v) ∈ S} :=
   diophFn_compn (reindex_dioph _ inr d) df
 
 theorem diophFn_comp {f : Vector3 ℕ n → ℕ} (df : DiophFn f) (g : Vector3 ((α → ℕ) → ℕ) n)
