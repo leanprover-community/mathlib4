@@ -1,3 +1,4 @@
+module
 import Mathlib
 
 /-! We test that the instances on `LocalizedModule` and `Localization` are reducibly equal. -/
