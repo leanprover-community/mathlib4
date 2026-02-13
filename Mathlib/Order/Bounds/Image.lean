@@ -228,6 +228,7 @@ protected theorem BddAbove.image2 :
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_upperBounds_image2 h₀ h₁ ha hb⟩
 
+/-- If `f` is monotone in both arguments, a greatest element pair maps to a greatest element. -/
 @[to_dual]
 protected theorem IsGreatest.image2 (ha : IsGreatest s a) (hb : IsGreatest t b) :
     IsGreatest (image2 f s t) (f a b) :=
@@ -241,23 +242,31 @@ variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Antitone (f a))
 
 include h₀ h₁
 
+/-- If `f` is monotone in the first argument and antitone in the second, an upper bound and a lower
+bound map to an upper bound of `image2 f s t`. -/
 @[to_dual]
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
   forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
+/-- If `f` is monotone in the first argument and antitone in the second, `image2 f` maps upper
+bounds cross lower bounds into upper bounds. -/
 @[to_dual]
 theorem image2_upperBounds_lowerBounds_subset_upperBounds_image2 :
     image2 f (upperBounds s) (lowerBounds t) ⊆ upperBounds (image2 f s t) :=
   image2_subset_iff.2 fun _ ha _ hb ↦
     mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds h₀ h₁ ha hb
 
+/-- If `f` is monotone in the first argument and antitone in the second, `image2 f s t` is bounded
+above when `s` is bounded above and `t` is bounded below. -/
 @[to_dual]
 theorem BddAbove.bddAbove_image2_of_bddBelow :
     BddAbove s → BddBelow t → BddAbove (Set.image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds h₀ h₁ ha hb⟩
 
+/-- If `f` is monotone in the first argument and antitone in the second, a greatest element paired
+with a least element maps to a greatest element. -/
 @[to_dual]
 theorem IsGreatest.isGreatest_image2_of_isLeast (ha : IsGreatest s a) (hb : IsLeast t b) :
     IsGreatest (Set.image2 f s t) (f a b) :=
@@ -272,22 +281,29 @@ variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Antitone (f a))
 
 include h₀ h₁
 
+/-- If `f` is antitone in both arguments, a pair of lower bounds maps to an upper bound of
+`image2 f s t`. -/
 @[to_dual]
 theorem mem_upperBounds_image2_of_mem_lowerBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
   forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
+/-- If `f` is antitone in both arguments, `image2 f` maps lower bounds cross lower bounds into
+upper bounds. -/
 @[to_dual]
 theorem image2_upperBounds_upperBounds_subset_upperBounds_image2 :
     image2 f (lowerBounds s) (lowerBounds t) ⊆ upperBounds (image2 f s t) :=
   image2_subset_iff.2 fun _ ha _ hb ↦
     mem_upperBounds_image2_of_mem_lowerBounds h₀ h₁ ha hb
 
+/-- If `f` is antitone in both arguments, `image2 f s t` is bounded above when both `s` and `t` are
+bounded below. -/
 @[to_dual]
 theorem BddBelow.image2_bddAbove : BddBelow s → BddBelow t → BddAbove (Set.image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_upperBounds_image2_of_mem_lowerBounds h₀ h₁ ha hb⟩
 
+/-- If `f` is antitone in both arguments, a pair of least elements maps to a greatest element. -/
 @[to_dual]
 theorem IsLeast.isGreatest_image2 (ha : IsLeast s a) (hb : IsLeast t b) :
     IsGreatest (Set.image2 f s t) (f a b) :=
@@ -301,23 +317,31 @@ variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Monotone (f a))
 
 include h₀ h₁
 
+/-- If `f` is antitone in the first argument and monotone in the second, a lower bound and an upper
+bound map to an upper bound of `image2 f s t`. -/
 @[to_dual]
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ upperBounds (image2 f s t) :=
   forall_mem_image2.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
 
+/-- If `f` is antitone in the first argument and monotone in the second, `image2 f` maps lower
+bounds cross upper bounds into upper bounds. -/
 @[to_dual]
 theorem image2_lowerBounds_upperBounds_subset_upperBounds_image2 :
     image2 f (lowerBounds s) (upperBounds t) ⊆ upperBounds (image2 f s t) :=
   image2_subset_iff.2 fun _ ha _ hb ↦
     mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds h₀ h₁ ha hb
 
+/-- If `f` is antitone in the first argument and monotone in the second, `image2 f s t` is bounded
+above when `s` is bounded below and `t` is bounded above. -/
 @[to_dual]
 theorem BddBelow.bddAbove_image2_of_bddAbove :
     BddBelow s → BddAbove t → BddAbove (Set.image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds h₀ h₁ ha hb⟩
 
+/-- If `f` is antitone in the first argument and monotone in the second, a least element paired with
+a greatest element maps to a greatest element. -/
 @[to_dual]
 theorem IsLeast.isGreatest_image2_of_isGreatest (ha : IsLeast s a) (hb : IsGreatest t b) :
     IsGreatest (Set.image2 f s t) (f a b) :=
@@ -331,6 +355,7 @@ end Image2
 section IsCofinalFor
 variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β}
 
+/-- The image of a cofinal subset under a monotone function is cofinal in the image. -/
 @[to_dual]
 lemma IsCofinalFor.image_of_monotone (hst : IsCofinalFor s t) (hf : Monotone f) :
     IsCofinalFor (f '' s) (f '' t) := by
@@ -339,6 +364,7 @@ lemma IsCofinalFor.image_of_monotone (hst : IsCofinalFor s t) (hf : Monotone f) 
   obtain ⟨b, hb, hab⟩ := hst ha
   exact ⟨b, hb, hf hab⟩
 
+/-- The image of a cofinal subset under an antitone function is coinitial in the image. -/
 @[to_dual]
 lemma IsCofinalFor.image_of_antitone (hst : IsCofinalFor s t) (hf : Antitone f) :
     IsCoinitialFor (f '' s) (f '' t) := by
@@ -353,6 +379,7 @@ section Prod
 
 variable {α β : Type*} [Preorder α] [Preorder β]
 
+/-- A set of pairs is bounded above iff both projections are bounded above. -/
 @[to_dual]
 lemma bddAbove_prod {s : Set (α × β)} :
     BddAbove s ↔ BddAbove (Prod.fst '' s) ∧ BddAbove (Prod.snd '' s) :=
@@ -361,11 +388,13 @@ lemma bddAbove_prod {s : Set (α × β)} :
     fun ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ ↦ ⟨⟨x, y⟩, fun _p hp ↦
       ⟨hx <| mem_image_of_mem _ hp, hy <| mem_image_of_mem _ hp⟩⟩⟩
 
+/-- The range of a pair-valued function is bounded above iff both components are. -/
 @[to_dual]
 lemma bddAbove_range_prod {F : ι → α × β} :
     BddAbove (range F) ↔ BddAbove (range <| Prod.fst ∘ F) ∧ BddAbove (range <| Prod.snd ∘ F) := by
   simp only [bddAbove_prod, ← range_comp]
 
+/-- A pair is a least upper bound iff both components are least upper bounds of the projections. -/
 @[to_dual]
 theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
@@ -396,18 +425,21 @@ section Pi
 
 variable {π : α → Type*} [∀ a, Preorder (π a)]
 
+/-- A set of functions is bounded above iff it is bounded above at each coordinate. -/
 @[to_dual]
 lemma bddAbove_pi {s : Set (∀ a, π a)} :
     BddAbove s ↔ ∀ a, BddAbove (Function.eval a '' s) :=
   ⟨fun ⟨f, hf⟩ a ↦ ⟨f a, forall_mem_image.2 fun _ hg ↦ hf hg a⟩,
     fun h ↦ ⟨fun a ↦ (h a).some, fun _ hg a ↦ (h a).some_mem <| mem_image_of_mem _ hg⟩⟩
 
+/-- The range of a function into a pi type is bounded above iff each component is. -/
 @[to_dual]
 lemma bddAbove_range_pi {F : ι → ∀ a, π a} :
     BddAbove (range F) ↔ ∀ a, BddAbove (range fun i ↦ F i a) := by
   simp only [bddAbove_pi, ← range_comp]
   rfl
 
+/-- A function is a least upper bound iff it is componentwise a least upper bound. -/
 @[to_dual]
 theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
@@ -422,6 +454,8 @@ theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
 
 end Pi
 
+/-- If `f` reflects the order, then a greatest lower bound in the image lifts to one in the
+source. -/
 @[to_dual]
 theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
@@ -445,6 +479,7 @@ lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀
     (hbdd : BddBelow (range f)) : BddBelow (range g) :=
   BddAbove.range_mono (β := βᵒᵈ) f h hbdd
 
+/-- The range of `g ∘ f` is bounded above when `range f` is bounded above and `g` is monotone. -/
 @[to_dual]
 lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
     (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
