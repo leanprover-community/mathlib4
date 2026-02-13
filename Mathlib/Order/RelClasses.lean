@@ -481,7 +481,9 @@ alias Eq.trans_subset := subset_of_eq_of_subset
 
 alias HasSubset.subset.trans_eq := subset_of_subset_of_eq
 
-alias Eq.subset' := subset_of_eq --TODO: Fix it and kill `Eq.subset`
+alias Eq.subset := subset_of_eq
+
+@[deprecated (since := "2026-01-24")] alias Eq.subset' := Eq.subset
 
 alias Eq.superset := superset_of_eq
 
@@ -493,11 +495,11 @@ alias HasSubset.Subset.antisymm' := superset_antisymm
 
 theorem subset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun h => ⟨h.subset', h.superset⟩, fun h => h.1.antisymm h.2⟩
+  ⟨fun h => ⟨h.subset, h.superset⟩, fun h => h.1.antisymm h.2⟩
 
 theorem superset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a = b ↔ b ⊆ a ∧ a ⊆ b :=
-  ⟨fun h => ⟨h.superset, h.subset'⟩, fun h => h.1.antisymm' h.2⟩
+  ⟨fun h => ⟨h.superset, h.subset⟩, fun h => h.1.antisymm' h.2⟩
 
 end Subset
 

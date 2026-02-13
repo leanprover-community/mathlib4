@@ -796,7 +796,7 @@ theorem eq_of_subset_of_ncard_le (h : s ⊆ t) (h' : t.ncard ≤ s.ncard)
 
 theorem subset_iff_eq_of_ncard_le (h : t.ncard ≤ s.ncard) (ht : t.Finite := by toFinite_tac) :
     s ⊆ t ↔ s = t :=
-  ⟨fun hst ↦ eq_of_subset_of_ncard_le hst h ht, Eq.subset'⟩
+  ⟨fun hst ↦ eq_of_subset_of_ncard_le hst h ht, Eq.subset⟩
 
 theorem map_eq_of_subset {f : α ↪ α} (h : f '' s ⊆ s) (hs : s.Finite := by toFinite_tac) :
     f '' s = s :=
