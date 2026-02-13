@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Group.Basic
 /-!
 # Norms on `ℝ` and `ℝ≥0`
 
-We equip `ℝ`, `ℝ≥0`, and ``ℝ≥0∞` with their natural norms / enorms.
+We equip `ℝ`, `ℝ≥0`, and `ℝ≥0∞` with their natural norms / enorms.
 
 ## Tags
 
