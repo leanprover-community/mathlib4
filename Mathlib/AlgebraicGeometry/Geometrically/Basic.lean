@@ -25,8 +25,8 @@ morphism `Spec K ⟶ Y`, the base change `X ×[Y] Spec K` satisfies `P`.
 ## Main definitions and results
 
 - `AlgebraicGeometry.geometrically`: The morphism property of geometrically-`P` morphisms
-- `AlgebraicGeometry.iff_forall_fiberToSpecResidueField`: `f : X ⟶ Y` is geometrically-`P`
-  if and only if for every `y : Y`, the fiber `f ⁻¹ {y}` is geometrically-`P`
+- `AlgebraicGeometry.geometrically_iff_forall_fiberToSpecResidueField`: `f : X ⟶ Y` is
+  geometrically-`P` if and only if for every `y : Y`, the fiber `f ⁻¹ {y}` is geometrically-`P`
   over `Spec κ(y)`.
 
 ## Notes
