@@ -75,8 +75,6 @@ lemma CoequifiberedAlgCat.ι_gluingData_toBase {X : Scheme.{u}}
   rw [F.gluingData.ι_toBase]
   simp [relativeGluingData]
 
--- #discr_tree_simp_key CoequifiberedAlgCat.ι_gluingData_toBase
-
 instance {X : Scheme.{u}} (F : X.CoequifiberedAlgCat) (U : X.AffineZariskiSite) :
     IsAffine (F.gluingData.cover.X U) := isAffine_Spec _
 
