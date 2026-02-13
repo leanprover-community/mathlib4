@@ -7,7 +7,8 @@ module
 
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
 /-!
 # Descent of finiteness conditions under faithfully flat maps
@@ -113,3 +114,21 @@ lemma FinitePresentation.of_finitePresentation_tensorProduct_of_faithfullyFlat
   exact FiniteType.baseChangeAux_surj T hf
 
 end Algebra
+
+namespace RingHom
+
+lemma FiniteType.codescendsAlong_faithfullyFlat :
+    CodescendsAlong FiniteType FaithfullyFlat := by
+  refine .mk _ finiteType_respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  rw [finiteType_algebraMap] at h' ⊢
+  rw [faithfullyFlat_algebraMap_iff] at h
+  exact .of_finiteType_tensorProduct_of_faithfullyFlat S
+
+lemma FinitePresentation.codescendsAlong_faithfullyFlat :
+    CodescendsAlong FinitePresentation FaithfullyFlat := by
+  refine .mk _ finitePresentation_respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  rw [finitePresentation_algebraMap] at h' ⊢
+  rw [faithfullyFlat_algebraMap_iff] at h
+  exact .of_finitePresentation_tensorProduct_of_faithfullyFlat S
+
+end RingHom
