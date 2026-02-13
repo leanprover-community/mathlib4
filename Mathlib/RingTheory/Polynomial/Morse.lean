@@ -51,7 +51,7 @@ Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois]. 
 theorem Splits.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia
     [DecidableEq (f.rootSet S)] (hf : (f.map (algebraMap R S)).Splits)
     (p : Ideal S) [p.IsPrime] (hp : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ p)).ncard + 1)
-    (g : G) (hg : g ∈ p.toAddSubgroup.inertia G) :
+    (g : G) (hg : g ∈ p.inertia G) :
     MulAction.toPermHom G (f.rootSet S) g = 1 ∨ (MulAction.toPermHom G (f.rootSet S) g).IsSwap := by
   classical
   by_cases hfp : f.map (algebraMap R (S ⧸ p)) = 0
@@ -84,11 +84,11 @@ Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois]. 
 theorem Splits.surjective_toPermHom_of_iSup_inertia_eq_top
     (hf : (f.map (algebraMap R S)).Splits) [MulAction.IsPretransitive G (f.rootSet S)]
     (h : ∀ m : MaximalSpectrum S, (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1)
-    (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤) :
+    (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.inertia G = ⊤) :
     Function.Surjective (MulAction.toPermHom G (f.rootSet S)) := by
   classical
   apply surjective_of_isSwap_of_isPretransitive'
-      (⋃ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G)
+      (⋃ m : MaximalSpectrum S, m.asIdeal.inertia G)
   · intro σ hσ
     obtain ⟨m, hm⟩ := Set.mem_iUnion.mp hσ
     exact hf.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia m.asIdeal (h m) σ hm
