@@ -517,7 +517,7 @@ lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support
 @[simp]
 theorem comapDomain_embDomain (f : α ↪ β) (l : α →₀ M) :
     comapDomain f (embDomain f l) f.injective.injOn = l := by
-  ext; rw [comapDomain_apply, embDomain_apply_self]
+  ext; simp
 
 /-- Note the `hif` argument is needed for this to work in `rw`. -/
 @[simp]
