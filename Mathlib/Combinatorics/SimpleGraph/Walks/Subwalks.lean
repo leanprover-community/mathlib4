@@ -157,7 +157,7 @@ theorem isSubwalk_toWalk_iff_mem_edges {p : G.Walk u v} (h : G.Adj u' v') :
   refine ⟨fun h ↦ by grind [Dart.edge], fun h ↦ ?_⟩
   have ⟨d, hd, h⟩ := h
   rw [Dart.edge, Sym2.eq, Sym2.rel_iff'] at h
-  refine h.elim (fun h ↦ .inl ?_) (fun h ↦ .inr ?_)
+  refine h.imp (fun h ↦ ?_) (fun h ↦ ?_)
     <;> convert hd using 2
     <;> exact h.symm
 
