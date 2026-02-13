@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 # Polygon Boundary Map
 
 This file defines a map from `AddCircle n` to the boundary points of a polygon, and proves
-basic properties of that map
+basic properties of that map.
 
 ## Main results
 
@@ -35,11 +35,6 @@ variable [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable {n : ℕ} [NeZero n]
 
 local instance : Fact ((0 : R) < (n : R)) := ⟨by exact_mod_cast Nat.pos_of_neZero n⟩
-
-@[local simp]
-private lemma finRotate_eq (i : Fin n) : finRotate n i = i + 1 := by
-  obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
-  exact finRotate_succ_apply i
 
 variable (R) in
 /-- A map from `AddCircle n` to the boundary points of the polygon. -/
@@ -88,7 +83,7 @@ theorem range_boundaryMap : Set.range (poly.boundaryMap R) = poly.boundary R := 
         simp [Int.fract, h, t, Int.cast_natCast]
       simp only [hfloor, hfrac]
     · push_neg at hu1
-      simp only [le_antisymm hu.2 hu1, edgePath, finRotate_eq, AffineMap.lineMap_apply_one]
+      simp only [le_antisymm hu.2 hu1, edgePath, finRotate_apply, AffineMap.lineMap_apply_one]
       let t : R := ((i + 1 : Fin n) : ℕ)
       have htmem : t ∈ Ico (0 : R) n := by
         simp only [t, Set.mem_Ico]
@@ -199,7 +194,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
       split_ifs <;> omega
     constructor
     · intro i heq
-      rw [finRotate_eq] at heq
+      rw [finRotate_apply] at heq
       absurd (show (i : ℕ) = ((i + 1 : Fin n) : ℕ) from by
         exact_mod_cast inj_eq _ _ (nmem i) (nmem (i + 1))
           (by rw [bnat i, bnat (i + 1), heq]))
@@ -259,7 +254,7 @@ theorem isSimple_iff_boundaryMap_injective [IsDomain R] [Module.IsTorsionFree R 
         · simp [edgePath]
         · rcases eq_or_lt_of_le hv.1 with hv0 | hv0
           · rw [← hv0] at hpv
-            simp only [edgePath, finRotate_eq, lineMap_apply_zero] at hpv ⊢
+            simp only [edgePath, finRotate_apply, lineMap_apply_zero] at hpv ⊢
             exact hpv.symm
           · rcases eq_or_lt_of_le hv.2 with rfl | hv1
             · have heq := inj_eq _ _
