@@ -109,8 +109,6 @@ lemma of_surjectiveOnStalks
     WeaklyQuasiFiniteAt R q := by
   subst hq
   exact of_algHom_localization _ _ (Localization.localAlgHom _ _ f rfl) (hf _ _)
-  -- of_algHom_localization p _ (Localization.localAlgHom _ _ f hq)
-  --   (RingHom.surjective_localRingHom_of_surjective _ hf _ _ hq)
 
 /-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
 instance comap_algEquiv (p : Ideal S) [p.IsPrime]
