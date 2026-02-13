@@ -569,8 +569,10 @@ instance adicCompletion.instIsScalarTower' :
 
 end AlgebraInstances
 
+variable {R}
+
 open nonZeroDivisors algebraMap in
-variable {R K} in
+variable {K} in
 lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOneSpectrum R)
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
@@ -588,11 +590,28 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       Int.natCast_natAbs]
     exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) (zero_le _)
 
+theorem adicCompletionIntegers.integers :
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).Integers ↥(adicCompletionIntegers K v) where
+  hom_inj := FaithfulSMul.algebraMap_injective _ _
+  map_le_one := by simp [mem_adicCompletionIntegers]
+  exists_of_le_one := by simp [mem_adicCompletionIntegers]
+
+variable {K v}
+
+theorem adicCompletionIntegers.isUnit_iff_valued_eq_one {a : v.adicCompletionIntegers K} :
+    IsUnit a ↔ Valued.v a.1 = 1 := by
+  simp [Valuation.Integers.isUnit_iff_valuation_eq_one (integers K v)]
+
+theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletion K)ˣ} :
+    a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.1 = 1 :=
+  ⟨fun h ↦ isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).2,
+    fun h ↦ ⟨h.le, by simp [mem_adicCompletionIntegers, inv_le_one_iff₀, h.symm.le]⟩⟩
+
 section AbsoluteValue
 
 open WithZeroMulInt NNReal
 
-variable {R K} {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
+variable (v) {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
 
 /-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/

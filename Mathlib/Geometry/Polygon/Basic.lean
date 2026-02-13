@@ -6,8 +6,8 @@ Authors: A. M. Berns
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Continuity
 
 /-!
 # Polygons
