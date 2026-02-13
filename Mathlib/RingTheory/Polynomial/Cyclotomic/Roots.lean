@@ -208,3 +208,37 @@ theorem cyclotomic.isCoprime_rat {n m : ℕ} (h : n ≠ m) :
 end minpoly
 
 end Polynomial
+
+namespace IsPrimitiveRoot
+
+open Polynomial
+
+variable {K : Type*} [Field K] [CharZero K]
+variable {p : ℕ} {ζ : K}
+
+/-- For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
+coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-th cyclotomic
+polynomial. See Washington, *Introduction to Cyclotomic Fields*, Lemma 2.8.5. -/
+lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
+    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  let P : ℚ[X] := ∑ i, C (α i) * X ^ i.1
+  have hP (i : Fin p) : α i = P.coeff i := by simp [P, ← Fin.ext_iff]
+  have hP' : P.degree ≤ ↑(p - 1) :=
+    (degree_sum_le ..).trans (Finset.sup_le fun _ _ ↦ by grw [degree_C_mul_X_pow_le]; simp; grind)
+  trans aeval ζ P = 0; · simp [P]
+  rw [← minpoly.dvd_iff, ← cyclotomic_eq_minpoly_rat hζ hp.pos]
+  refine ⟨fun ⟨c, hc⟩ ↦ ?_, fun H ↦ ⟨C (α 0), Polynomial.ext fun i ↦ if h : i < p then ?_ else ?_⟩⟩
+  · rw [hc, degree_mul, degree_cyclotomic, Nat.totient_prime hp] at hP'
+    have : c.degree ≤ 0 := (WithBot.add_le_add_iff_left (x := ↑(p - 1)) (by simp)).mp (by simpa)
+    obtain ⟨c, rfl⟩ := natDegree_eq_zero.mp (natDegree_eq_zero_iff_degree_le_zero.mpr this)
+    simp [hP, hc, cyclotomic_prime]
+  · lift i to Fin p using h; simp [cyclotomic_prime, ← hP, H i 0]
+  · simp [cyclotomic_prime, P, h, Fin.forall_iff, @forall_comm _ (_ = _), Finset.sum_eq_zero]
+
+/-- Variant of `sum_eq_zero_iff_forall_eq` with integer coefficients. -/
+lemma sum_eq_zero_iff_forall_eq_int (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℤ) :
+    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
+  simpa using sum_eq_zero_iff_forall_eq hp hζ (Int.cast ∘ α)
+
+end IsPrimitiveRoot

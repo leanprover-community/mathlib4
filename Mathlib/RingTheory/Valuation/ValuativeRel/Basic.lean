@@ -142,7 +142,7 @@ protected alias ⟨_, vle.not_vlt⟩ := not_vlt
 protected alias ⟨_, vlt.not_vle⟩ := not_vle
 
 lemma veq_comm {x y : R} : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
-protected alias ⟨veq.symm, _⟩ := veq_comm
+@[symm] protected alias ⟨veq.symm, _⟩ := veq_comm
 
 instance : @Std.Symm R (· =ᵥ ·) where
   symm _ _ := veq.symm
@@ -188,6 +188,13 @@ theorem zero_vle (x : R) : 0 ≤ᵥ x := by
   simpa using mul_vle_mul_left ((vle_total 0 1).resolve_right not_vle_one_zero) x
 
 @[deprecated (since := "2025-12-20")] alias zero_rel := zero_vle
+
+@[simp]
+theorem not_vlt_zero (x : R) : ¬ x <ᵥ 0 := by
+  simp
+
+theorem vlt.ne_zero (h : x <ᵥ y) : y ≠ 0 := by
+  rintro rfl; exact not_vlt_zero _ h
 
 @[simp]
 lemma zero_vlt_one : (0 : R) <ᵥ 1 :=
@@ -736,7 +743,7 @@ lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
 
 @[simp]
 lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
-  simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
+  simp [(isEquiv v (valuation R)).eq_zero, valuation_posSubmonoid_ne_zero]
 
 @[deprecated (since := "2025-08-06")]
 alias _root_.ValuativeRel.valuation_posSubmonoid_ne_zero_of_compatible := apply_posSubmonoid_ne_zero
@@ -1018,7 +1025,7 @@ lemma isNontrivial_iff_isNontrivial
     · exact ⟨s, by simp, fun h ↦ by simp [h, hr] at hγ'⟩
     · exact ⟨r, by simpa using hγ, hr⟩
   · rintro ⟨r, hr, hr'⟩
-    exact ⟨valuation R r, (isEquiv v (valuation R)).ne_zero.mp hr,
+    exact ⟨valuation R r, (isEquiv v (valuation R)).eq_zero.ne.mp hr,
       by simpa [(isEquiv v (valuation R)).eq_one_iff_eq_one] using hr'⟩
 
 instance {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]

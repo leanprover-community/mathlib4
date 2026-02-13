@@ -561,6 +561,9 @@ theorem basicOpen_mul_le_right (f g : R) : basicOpen (f * g) ≤ basicOpen g := 
 theorem basicOpen_pow (f : R) (n : ℕ) (hn : 0 < n) : basicOpen (f ^ n) = basicOpen f :=
   TopologicalSpace.Opens.ext <| by simpa using zeroLocus_singleton_pow f n hn
 
+lemma le_basicOpen_pow (r : R) (n : ℕ) : basicOpen r ≤ basicOpen (r ^ n) := by
+  cases n <;> simp
+
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : R => (basicOpen r : Set (PrimeSpectrum R))) := by
@@ -1216,6 +1219,8 @@ instance : OrderTop (PrimeSpectrum R) where
   top := closedPoint R
   le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
 
+instance [IsDomain R] : BoundedOrder (PrimeSpectrum R) where
+
 @[simp]
 theorem PrimeSpectrum.asIdeal_top : (⊤ : PrimeSpectrum R).asIdeal = IsLocalRing.maximalIdeal R :=
   rfl
@@ -1260,6 +1265,10 @@ variable (R) in
 lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
   rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal, closedPoint]
   infer_instance
+
+theorem Ring.KrullDimLE.eq_bot_or_eq_top [IsDomain R] [Ring.KrullDimLE 1 R]
+    (x : PrimeSpectrum R) : x = ⊥ ∨ x = ⊤ :=
+  Order.krullDim_le_one_iff_of_boundedOrder.mp Order.KrullDimLE.krullDim_le _
 
 end IsLocalRing
 

@@ -173,10 +173,6 @@ end SetCoe
 theorem Subtype.mem {α : Type*} {s : Set α} (p : s) : (p : α) ∈ s :=
   p.prop
 
-/-- Duplicate of `Eq.subset'`, which currently has elaboration problems. -/
-theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
-  fun h₁ _ h₂ => by rw [← h₁]; exact h₂
-
 namespace Set
 
 variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
@@ -291,7 +287,7 @@ theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
-  grind
+  simp only [subset_def, not_forall, exists_prop]
 
 theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
@@ -963,7 +959,7 @@ theorem powerset_univ : 𝒫 (univ : Set α) = univ :=
 
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
-  grind
+  simp [mem_dite]
 
 @[simp]
 theorem mem_ite_univ_right (p : Prop) [Decidable p] (t : Set α) (x : α) :

@@ -889,13 +889,11 @@ variable [LinearOrder γ] [OrderClosedTopology γ] [Zero γ]
 
 /-- Positive part of an `AEEqFun`. -/
 def posPart (f : α →ₘ[μ] γ) : α →ₘ[μ] γ :=
-  comp (fun x => max x 0) (continuous_id.max continuous_const) f
+  comp (fun x => max x 0) (by fun_prop) f
 
 @[simp]
 theorem posPart_mk (f : α → γ) (hf) :
-    posPart (mk f hf : α →ₘ[μ] γ) =
-      mk (fun x => max (f x) 0)
-        ((continuous_id.max continuous_const).comp_aestronglyMeasurable hf) :=
+    posPart (mk f hf : α →ₘ[μ] γ) = mk (fun x ↦ max (f x) 0) (by fun_prop) :=
   rfl
 
 theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => max (f a) 0 :=

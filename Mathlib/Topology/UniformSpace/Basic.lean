@@ -773,6 +773,23 @@ instance IsSymm_entourageProd {u : SetRel α α} {v : SetRel β β} [u.IsSymm] [
     (entourageProd u v).IsSymm where
   symm _ _ := .imp u.symm v.symm
 
+@[simp]
+theorem inv_entourageProd (u : SetRel α α) (v : SetRel β β) :
+    (entourageProd u v).inv = entourageProd u.inv v.inv :=
+  rfl
+
+@[simp]
+theorem image_entourageProd_prod (u : SetRel α α) (v : SetRel β β) (s : Set α) (t : Set β) :
+    (entourageProd u v).image (s ×ˢ t) = u.image s ×ˢ v.image t := by
+  ext
+  simp only [mem_entourageProd, SetRel.mem_image, Set.mem_prod, Prod.exists]
+  grind
+
+@[simp]
+theorem preimage_entourageProd_prod (u : SetRel α α) (v : SetRel β β) (s : Set α) (t : Set β) :
+    (entourageProd u v).preimage (s ×ˢ t) = u.preimage s ×ˢ v.preimage t :=
+  image_entourageProd_prod u.inv v.inv s t
+
 theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
     {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → SetRel α α} {sb : ιb → SetRel β β}
     (ha : (𝓤 α).HasBasis pa sa) (hb : (𝓤 β).HasBasis pb sb) :

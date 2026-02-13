@@ -201,4 +201,18 @@ theorem prime_of_factor {a : α} (x : α) (hx : x ∈ factors a) : Prime x := by
 theorem irreducible_of_factor {a : α} : ∀ x : α, x ∈ factors a → Irreducible x := fun x h =>
   (prime_of_factor x h).irreducible
 
+open Multiset in
+theorem card_factors_of_irreducible {a : α} (ha : Irreducible a) : (factors a).card = 1 := by
+  have hf : factors a ≠ 0 := by
+    intro hf
+    simpa [hf, Associated.comm, ha.not_isUnit] using factors_prod ha.ne_zero
+  obtain ⟨b, hb⟩ := exists_mem_of_ne_zero hf
+  obtain ⟨f, hf⟩ := exists_cons_of_mem hb
+  rw [hf, card_cons, add_eq_right, card_eq_zero, eq_zero_iff_forall_notMem]
+  intro c hc
+  obtain ⟨f, rfl⟩ := exists_cons_of_mem hc
+  replace hb := (irreducible_of_factor b hb).not_isUnit
+  replace hc := (irreducible_of_factor c (hf ▸ mem_cons_of_mem hc)).not_isUnit
+  simp [← (factors_prod ha.ne_zero).irreducible_iff, hf, irreducible_mul_iff, hb, hc] at ha
+
 end UniqueFactorizationMonoid

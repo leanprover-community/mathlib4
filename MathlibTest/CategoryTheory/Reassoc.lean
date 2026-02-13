@@ -1,4 +1,6 @@
-import Mathlib.Tactic.CategoryTheory.IsoReassoc
+module
+
+public import Mathlib.Tactic.CategoryTheory.IsoReassoc
 
 open CategoryTheory
 namespace Tests.Reassoc
@@ -97,5 +99,15 @@ info: Tests.Reassoc.foo_functor'_assoc.{v₁, v₂, u₁, u₂} {C : Type u₁} 
 -/
 #guard_msgs in
 #check foo_functor'_assoc
+
+-- Test that the attribute works on publically imported declarations:
+attribute [reassoc] Iso.hom_inv_id_assoc
+
+/--
+info: CategoryTheory.Iso.hom_inv_id_assoc_assoc.{v, u} {C : Type u} [Category.{v, u} C] {X Y : C} (self : X ≅ Y) {Z : C}
+  (h : X ⟶ Z) {Z✝ : C} (h✝ : Z ⟶ Z✝) : self.hom ≫ self.inv ≫ h ≫ h✝ = h ≫ h✝
+-/
+#guard_msgs in
+#check Iso.hom_inv_id_assoc_assoc
 
 end Tests.Reassoc

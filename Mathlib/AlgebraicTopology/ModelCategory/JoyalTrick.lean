@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # A trick by Joyal

@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.FastInstance
 public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Theory of univariate polynomials
