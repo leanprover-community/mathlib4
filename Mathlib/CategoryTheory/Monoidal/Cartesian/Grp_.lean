@@ -184,6 +184,26 @@ lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.c
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
+/-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,
+see `CategoryTheory.GrpObj.lift_commutator_eq_mul_mul_inv_inv`.
+This morphism is constant with value `1` if and only if `G` is commutative
+(see `CategoryTheory.isCommMonObj_iff_commutator_eq_toUnit_η`). -/
+def GrpObj.commutator (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
+  fst _ _ * snd _ _ * (fst _ _) ⁻¹ * (snd _ _) ⁻¹
+
+@[reassoc (attr := simp)]
+lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :
+    lift f₁ f₂ ≫ commutator G = f₁ * f₂ * f₁⁻¹ * f₂⁻¹ := by
+  simp [commutator, comp_mul, comp_inv]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.η_whiskerRight_commutator : η ▷ G ≫ commutator G = toUnit _ ≫ η := by
+  simp [commutator, comp_mul, comp_inv, one_eq_one]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.whiskerLeft_η_commutator : G ◁ η ≫ commutator G = toUnit _ ≫ η := by
+  simp [commutator, comp_mul, comp_inv, one_eq_one]
+
 variable [BraidedCategory C]
 
 instance [IsCommMonObj G] : IsMonHom ι[G] where
@@ -244,5 +264,18 @@ end Grp
 abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+
+section
+
+/-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
+is constant. -/
+lemma isCommMonObj_iff_commutator_eq_toUnit_η :
+    IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
+  rw [isCommMonObj_iff_isMulCommutative]
+  refine ⟨fun h ↦ ?_, fun heq X ↦ ⟨⟨fun f g ↦ ?_⟩⟩⟩
+  · simp [GrpObj.commutator, one_eq_one]
+  · simpa [one_eq_one, mul_inv_eq_iff_eq_mul] using congr(lift f g ≫ $heq)
+
+end
 
 end CategoryTheory
