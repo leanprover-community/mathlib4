@@ -350,8 +350,8 @@ instance : IsIso (Scheme.Modules.fromTildeΓ (SheafOfModules.unit.{u} (Spec R).r
 /-- Tilde of direct sums of `R` as an `R`-module is isomorphic to the free sheaf. -/
 noncomputable
 def tildeFinsupp (ι : Type u) : tilde (ModuleCat.of R (ι →₀ R)) ≅ SheafOfModules.free.{u} ι :=
-  letI H : IsColimit <| (tilde.functor R).mapCocone (finsuppCocone R ι R) :=
-    isColimitOfPreserves (tilde.functor R) (finsuppCoconeIsColimit R ι R)
+  letI H : IsColimit <| (tilde.functor R).mapCocone (ModuleCat.finsuppCocone R R ι) :=
+    isColimitOfPreserves (tilde.functor R) (ModuleCat.finsuppCoconeIsColimit R R ι)
   letI iso : (Discrete.functor fun (_ : ι) ↦ ModuleCat.of R R) ⋙ tilde.functor R ≅
          Discrete.functor fun _ ↦ SheafOfModules.unit.{u} _ :=
       Discrete.natIso (fun _ ↦ tildeSelf)
