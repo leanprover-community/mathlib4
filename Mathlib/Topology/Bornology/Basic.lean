@@ -308,18 +308,28 @@ end Bornology
 namespace OrderDual
 variable [Bornology α]
 
-instance instBornology : Bornology αᵒᵈ := ‹Bornology α›
+instance instBornology : Bornology αᵒᵈ where
+  cobounded := Filter.map toDual (Bornology.cobounded α)
+  le_cofinite := by
+    rw [Filter.map_le_iff_le_comap, toDual_injective.comap_cofinite_eq]
+    exact Bornology.le_cofinite α
 
 @[simp] lemma isCobounded_preimage_ofDual {s : Set α} :
-    IsCobounded (ofDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+    Bornology.IsCobounded (ofDual ⁻¹' s) ↔ Bornology.IsCobounded s := by
+  unfold Bornology.IsCobounded Bornology.cobounded instBornology
+  exact Filter.mem_map
 
 @[simp] lemma isCobounded_preimage_toDual {s : Set αᵒᵈ} :
-    IsCobounded (toDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+    Bornology.IsCobounded (toDual ⁻¹' s) ↔ Bornology.IsCobounded s := by
+  unfold Bornology.IsCobounded Bornology.cobounded instBornology
+  exact Filter.mem_map.symm
 
 @[simp] lemma isBounded_preimage_ofDual {s : Set α} :
-    IsBounded (ofDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+    Bornology.IsBounded (ofDual ⁻¹' s) ↔ Bornology.IsBounded s := by
+  simp only [Bornology.IsBounded, ← Set.preimage_compl, isCobounded_preimage_ofDual]
 
 @[simp] lemma isBounded_preimage_toDual {s : Set αᵒᵈ} :
-    IsBounded (toDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+    Bornology.IsBounded (toDual ⁻¹' s) ↔ Bornology.IsBounded s := by
+  simp only [Bornology.IsBounded, ← Set.preimage_compl, isCobounded_preimage_toDual]
 
 end OrderDual

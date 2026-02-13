@@ -808,17 +808,19 @@ section
 
 variable [EDist X]
 
-instance : EDist Xᵒᵈ := ‹EDist X›
+instance : EDist Xᵒᵈ where edist a b := edist (ofDual a) (ofDual b)
 
 @[simp]
-theorem edist_toDual (a b : X) : edist (toDual a) (toDual b) = edist a b :=
-  rfl
+theorem edist_toDual (a b : X) : edist (toDual a) (toDual b) = edist a b := by
+  simp [edist, EDist.edist]
 
 @[simp]
-theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b :=
-  rfl
+theorem edist_ofDual (a b : Xᵒᵈ) : edist (ofDual a) (ofDual b) = edist a b := by
+  simp [edist, EDist.edist]
 
 end
 
-instance [PseudoEMetricSpace X] : PseudoEMetricSpace Xᵒᵈ := ‹PseudoEMetricSpace X›
-instance [EMetricSpace X] : EMetricSpace Xᵒᵈ := ‹EMetricSpace X›
+instance [PseudoEMetricSpace X] : PseudoEMetricSpace Xᵒᵈ :=
+  PseudoEMetricSpace.induced ofDual ‹_›
+instance [EMetricSpace X] : EMetricSpace Xᵒᵈ :=
+  EMetricSpace.induced ofDual OrderDual.ofDual_injective ‹_›

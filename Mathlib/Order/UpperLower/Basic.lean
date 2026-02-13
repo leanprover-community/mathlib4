@@ -86,11 +86,18 @@ theorem isUpperSet_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpper
 
 @[to_dual (attr := simp)]
 theorem isUpperSet_preimage_ofDual_iff : IsUpperSet (ofDual ⁻¹' s) ↔ IsLowerSet s :=
-  Iff.rfl
+  ⟨fun h _ _ hab hb => h (a := toDual _) (b := toDual _) hab hb,
+   fun h _ _ hab ha => h hab ha⟩
 
 @[to_dual (attr := simp)]
-theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} : IsUpperSet (toDual ⁻¹' s) ↔ IsLowerSet s :=
-  Iff.rfl
+theorem isUpperSet_preimage_toDual_iff {s : Set αᵒᵈ} :
+    IsUpperSet (toDual ⁻¹' s) ↔ IsLowerSet s := by
+  constructor
+  · intro h a b hab hb
+    have := h (a := ofDual a) (b := ofDual b) hab (by simpa using hb)
+    simpa using this
+  · intro h a b hab ha
+    exact h (a := toDual a) (b := toDual b) hab ha
 
 @[to_dual] alias ⟨_, IsUpperSet.toDual⟩ := isLowerSet_preimage_ofDual_iff
 @[to_dual] alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
@@ -140,7 +147,7 @@ theorem IsUpperSet.Ioi_subset (h : IsUpperSet s) ⦃a⦄ (ha : a ∈ s) : Ioi a 
   Ioi_subset_Ici_self.trans <| h.Ici_subset ha
 
 theorem IsLowerSet.Iio_subset (h : IsLowerSet s) ⦃a⦄ (ha : a ∈ s) : Iio a ⊆ s :=
-  h.toDual.Ioi_subset ha
+  Iio_subset_Iic_self.trans <| h.Iic_subset ha
 
 theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
   ⟨fun _ ha _ _ => Icc_subset_Ici_self.trans <| h.Ici_subset ha⟩
@@ -166,8 +173,9 @@ theorem OrderEmbedding.image_Ici (e : α ↪o β) (he : IsUpperSet (range e)) (a
     inter_eq_left.2 <| he.Ici_subset (mem_range_self _)]
 
 theorem OrderEmbedding.image_Iic (e : α ↪o β) (he : IsLowerSet (range e)) (a : α) :
-    e '' Iic a = Iic (e a) :=
-  e.dual.image_Ici he a
+    e '' Iic a = Iic (e a) := by
+  rw [← e.preimage_Iic, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| he.Iic_subset (mem_range_self _)]
 
 theorem OrderEmbedding.image_Ioi (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
     e '' Ioi a = Ioi (e a) := by
@@ -175,8 +183,9 @@ theorem OrderEmbedding.image_Ioi (e : α ↪o β) (he : IsUpperSet (range e)) (a
     inter_eq_left.2 <| he.Ioi_subset (mem_range_self _)]
 
 theorem OrderEmbedding.image_Iio (e : α ↪o β) (he : IsLowerSet (range e)) (a : α) :
-    e '' Iio a = Iio (e a) :=
-  e.dual.image_Ioi he a
+    e '' Iio a = Iio (e a) := by
+  rw [← e.preimage_Iio, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| he.Iio_subset (mem_range_self _)]
 
 @[simp]
 theorem Set.monotone_mem : Monotone (· ∈ s) ↔ IsUpperSet s :=
@@ -290,8 +299,12 @@ theorem IsUpperSet.eq_empty_or_Ici [WellFoundedLT α] (h : IsUpperSet s) :
   exact ⟨_, Set.ext fun b ↦ ⟨wellFounded_lt.min_le, (h · <| wellFounded_lt.min_mem _ ⟨a, ha⟩)⟩⟩
 
 theorem IsLowerSet.eq_empty_or_Iic [WellFoundedGT α] (h : IsLowerSet s) :
-    s = ∅ ∨ (∃ a, s = Set.Iic a) :=
-  IsUpperSet.eq_empty_or_Ici (α := αᵒᵈ) h
+    s = ∅ ∨ (∃ a, s = Set.Iic a) := by
+  refine or_iff_not_imp_left.2 fun ha ↦ ?_
+  obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 ha
+  have wf : WellFounded (α := α) (· > ·) := IsWellFounded.wf
+  exact ⟨_, Set.ext fun b ↦ ⟨fun hb ↦ not_lt.1 (wf.not_lt_min _ ⟨a, ha⟩ hb),
+    fun hb ↦ h hb (wf.min_mem _ ⟨a, ha⟩)⟩⟩
 
 theorem IsLowerSet.eq_univ_or_Iio [WellFoundedLT α] (h : IsLowerSet s) :
     s = .univ ∨ (∃ a, s = Set.Iio a) := by
@@ -299,7 +312,8 @@ theorem IsLowerSet.eq_univ_or_Iio [WellFoundedLT α] (h : IsLowerSet s) :
   simpa using h.compl.eq_empty_or_Ici
 
 theorem IsUpperSet.eq_univ_or_Ioi [WellFoundedGT α] (h : IsUpperSet s) :
-    s = .univ ∨ (∃ a, s = Set.Ioi a) :=
-  IsLowerSet.eq_univ_or_Iio (α := αᵒᵈ) h
+    s = .univ ∨ (∃ a, s = Set.Ioi a) := by
+  simp_rw [← @compl_inj_iff _ s]
+  simpa using h.compl.eq_empty_or_Iic
 
 end LinearOrder

@@ -643,7 +643,9 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Ico.2 hab)]
 
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
-  simpa only [Ioo_toDual, Ico_toDual] using Ioo_union_left hab.dual
+  rw [← Ioc_diff_right, diff_union_self,
+    union_eq_self_of_subset_right (singleton_subset_iff.2 <| right_mem_Ioc.2 hab)]
+
 
 theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
   have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
@@ -656,7 +658,8 @@ theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Icc.2 hab)]
 
 theorem Ico_union_right (hab : a ≤ b) : Ico a b ∪ {b} = Icc a b := by
-  simpa only [Ioc_toDual, Icc_toDual] using Ioc_union_left hab.dual
+  rw [← Icc_diff_right, diff_union_self,
+    union_eq_self_of_subset_right (singleton_subset_iff.2 <| right_mem_Icc.2 hab)]
 
 @[simp]
 theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by

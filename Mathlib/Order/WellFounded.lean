@@ -160,8 +160,13 @@ theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     cases (hg.injective hc).not_lt this
 
 theorem Set.range_injOn_strictAnti [WellFoundedGT β] :
-    Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
-  fun _ hf _ hg ↦ Set.range_injOn_strictMono (β := βᵒᵈ) hf.dual hg.dual
+    Set.InjOn Set.range { f : β → γ | StrictAnti f } := by
+  intro f hf g hg hfg
+  have h := Set.range_injOn_strictMono (β := βᵒᵈ) hf.dual_left hg.dual_left
+    (show range (f ∘ OrderDual.ofDual) = range (g ∘ OrderDual.ofDual) by
+      change range (f ∘ (OrderDual.equiv β)) = range (g ∘ (OrderDual.equiv β))
+      simp [(OrderDual.equiv β).surjective.range_comp, hfg])
+  exact funext fun x => congrFun h (OrderDual.toDual x)
 
 theorem StrictMono.range_inj [WellFoundedLT β] {f g : β → γ}
     (hf : StrictMono f) (hg : StrictMono g) : Set.range f = Set.range g ↔ f = g :=
@@ -182,11 +187,14 @@ theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono 
   hf.id_le x
 
 /-- A strictly monotone function `f` on a cowell-order satisfies `f x ≤ x` for all `x`. -/
-theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id :=
-  StrictMono.id_le (β := βᵒᵈ) hf.dual
+theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id := by
+  rw [Pi.le_def]
+  by_contra! H
+  obtain ⟨m, hm, hm'⟩ := wellFounded_gt.has_min _ H
+  exact hm' _ (hf hm) hm
 
 theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) {x} : f x ≤ x :=
-  StrictMono.le_apply (β := βᵒᵈ) hf.dual
+  hf.le_id x
 
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
@@ -195,8 +203,10 @@ theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoun
   exact ((hf.le_apply.trans_lt (hf hb)).trans_le <| ha (Set.mem_range_self _)).false
 
 theorem StrictMono.not_bddBelow_range_of_wellFoundedGT {f : β → β} [WellFoundedGT β] [NoMinOrder β]
-    (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
-  hf.dual.not_bddAbove_range_of_wellFoundedLT
+    (hf : StrictMono f) : ¬ BddBelow (Set.range f) := by
+  rintro ⟨a, ha⟩
+  obtain ⟨b, hb⟩ := exists_lt a
+  exact absurd ((ha (Set.mem_range_self b)).trans hf.apply_le) (not_le.mpr hb)
 
 end LinearOrder
 
@@ -314,10 +324,10 @@ noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
 /-- A nonempty linear order with well-founded `>` has a top element. -/
-noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
-    OrderTop α :=
-  have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
-  inferInstanceAs (OrderTop αᵒᵈᵒᵈ)
+noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [h : WellFoundedGT α] :
+    OrderTop α where
+  top := OrderDual.ofDual (WellFoundedLT.toOrderBot (α := αᵒᵈ)).bot
+  le_top a := (WellFoundedLT.toOrderBot (α := αᵒᵈ)).bot_le (OrderDual.toDual a)
 
 namespace ULift
 
@@ -325,6 +335,6 @@ instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
   wf := InvImage.wf down h.wf
 
 instance [LT α] [WellFoundedGT α] : WellFoundedGT (ULift α) :=
-  inferInstanceAs (WellFoundedLT (ULift αᵒᵈ))
+  ⟨InvImage.wf down wellFounded_gt⟩
 
 end ULift

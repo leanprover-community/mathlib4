@@ -75,8 +75,32 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     intro a
     exact GenerateMeasurable.basic _ isOpen_Iio
 
-theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
-  @borel_eq_generateFrom_Iio αᵒᵈ _ (by infer_instance : SecondCountableTopology α) _ _
+theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) := by
+  refine le_antisymm ?_ (generateFrom_le ?_)
+  · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
+    letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Ioi)
+    have H : ∀ a : α, MeasurableSet (Ioi a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
+    refine generateFrom_le ?_
+    rintro _ ⟨a, rfl | rfl⟩
+    · apply H
+    · rcases em (∃ b, b ⋖ a) with ⟨b, hb⟩ | hcovBy
+      · rw [hb.Iio_eq, ← compl_Ioi]
+        exact (H _).compl
+      · rcases isOpen_biUnion_countable (Iio a) Iio fun _ _ ↦ isOpen_Iio with ⟨t, hat, htc, htU⟩
+        have : Iio a = ⋃ b ∈ t, Iic b := by
+          refine Subset.antisymm ?_ <| iUnion₂_subset fun b hb ↦ Iic_subset_Iio.2 (hat hb)
+          refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Iio_subset_Iic_self
+          -- Need: Iio a ⊆ ⋃ b ∈ Iio a, Iio b (from htU) ⊆ ⋃ b ∈ t, Iio b
+          -- First show Iio a ⊆ ⋃ b ∈ Iio a, Iio b using hcovBy
+          intro x (hx : x < a)
+          obtain ⟨c, hxc, hca⟩ := (not_covBy_iff hx).mp (fun hxa => hcovBy ⟨x, hxa⟩)
+          rw [htU]
+          exact mem_iUnion₂.mpr ⟨c, hca, hxc⟩
+        simp only [this, ← compl_Ioi]
+        exact .biUnion htc <| fun _ _ ↦ (H _).compl
+  · rw [forall_mem_range]
+    intro a
+    exact GenerateMeasurable.basic _ isOpen_Ioi
 
 theorem borel_eq_generateFrom_Iic :
     borel α = MeasurableSpace.generateFrom (range Iic) := by
@@ -91,8 +115,17 @@ theorem borel_eq_generateFrom_Iic :
     rw [← compl_Ioi]
     exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
 
-theorem borel_eq_generateFrom_Ici : borel α = MeasurableSpace.generateFrom (range Ici) :=
-  @borel_eq_generateFrom_Iic αᵒᵈ _ _ _ _
+theorem borel_eq_generateFrom_Ici : borel α = MeasurableSpace.generateFrom (range Ici) := by
+  rw [borel_eq_generateFrom_Iio]
+  refine le_antisymm ?_ ?_
+  · refine MeasurableSpace.generateFrom_le fun t ht => ?_
+    obtain ⟨u, rfl⟩ := ht
+    rw [← compl_Ici]
+    exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
+  · refine MeasurableSpace.generateFrom_le fun t ht => ?_
+    obtain ⟨u, rfl⟩ := ht
+    rw [← compl_Iio]
+    exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
 
 end OrderTopology
 
@@ -401,17 +434,52 @@ theorem borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCoun
     (@dense_univ α _).borel_eq_generateFrom_Ico_mem_aux (fun _ _ => mem_univ _) fun _ _ _ _ =>
       mem_univ _
 
+theorem generateFrom_Ioc_mem_le_borel {α : Type*} [TopologicalSpace α] [LinearOrder α]
+    [OrderClosedTopology α] (s t : Set α) :
+    MeasurableSpace.generateFrom { S | ∃ l ∈ s, ∃ u ∈ t, l < u ∧ Ioc l u = S }
+      ≤ borel α := by
+  apply generateFrom_le
+  borelize α
+  rintro _ ⟨a, -, b, -, -, rfl⟩
+  exact measurableSet_Ioc
+
 theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
-    (hbot : ∀ x, IsTop x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → x ∈ s) :
+    (htop : ∀ x, IsTop x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → x ∈ s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } := by
-  convert hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _
-    using 2
-  · ext s
-    constructor <;> rintro ⟨l, hl, u, hu, hlt, rfl⟩
-    exacts [⟨u, hu, l, hl, hlt, Ico_toDual⟩, ⟨u, hu, l, hl, hlt, Ioc_toDual⟩]
-  · erw [Ioo_toDual]
-    exact he
+  set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S }
+  refine le_antisymm ?_ (generateFrom_Ioc_mem_le_borel _ _)
+  letI : MeasurableSpace α := generateFrom S
+  rw [borel_eq_generateFrom_Ioi]
+  refine generateFrom_le (forall_mem_range.2 fun a => ?_)
+  rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, -, htt⟩
+  by_cases! ha : ∀ b, a < b → (Ioo a b).Nonempty
+  · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : a ≤ l), Ioc l u)
+    · ext y
+      push _ ∈ _
+      constructor
+      · intro hy
+        rcases htd.exists_ge' (fun b hb => htt _ hb (htop b hb)) y with ⟨u, hut, hyu⟩
+        rcases htd.exists_mem_open isOpen_Ioo (ha y hy) with ⟨l, hlt, hal, hly⟩
+        exact ⟨l, hlt, u, hut, hly.trans_le hyu, hal.le, hly, hyu⟩
+      · rintro ⟨l, -, u, -, -, hal, hly, -⟩
+        exact hal.trans_lt hly
+    · refine MeasurableSet.biUnion hc fun a ha => MeasurableSet.biUnion hc fun b hb => ?_
+      refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => ?_
+      exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton _⟩
+  · obtain ⟨b, hab, hIoo_empty⟩ := ha
+    replace ha : a ∈ s := hIoo a b hab hIoo_empty
+    convert_to MeasurableSet (⋃ (u ∈ t) (_ : a < u), Ioc a u)
+    · ext x
+      simp only [mem_Ioi, mem_iUnion, mem_Ioc, exists_prop]
+      constructor
+      · intro hx
+        rcases htd.exists_ge' (fun b hb => htt _ hb (htop b hb)) x with ⟨z, hzt, hzx⟩
+        exact ⟨z, hzt, hx.trans_le hzx, hx, hzx⟩
+      · rintro ⟨u, -, -, hax, -⟩
+        exact hax
+    · refine .biUnion hc fun x hx => MeasurableSet.iUnion fun hlt => ?_
+      exact .basic _ ⟨a, ha, x, hts hx, hlt, mem_singleton _⟩
 
 theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMaxOrder α] {s : Set α}
@@ -462,9 +530,11 @@ theorem ext_of_Ioc_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
     [IsFiniteMeasure μ] (hμν : μ univ = ν univ) (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) :
     μ = ν := by
-  refine @ext_of_Ico_finite αᵒᵈ _ _ _ _ _ ‹_› μ ν _ hμν fun a b hab => ?_
-  erw [Ico_toDual (α := α)]
-  exact h hab
+  refine
+    ext_of_generate_finite _ (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioc α))
+      (isPiSystem_Ioc (id : α → α) id) ?_ hμν
+  rintro - ⟨a, b, hlt, rfl⟩
+  exact h hlt
 
 /-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
@@ -497,8 +567,24 @@ theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMinOrder α]
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ioc a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) : μ = ν := by
-  refine @ext_of_Ico' αᵒᵈ _ _ _ _ _ ‹_› _ μ ν ?_ ?_ <;> intro a b hab <;> erw [Ico_toDual (α := α)]
-  exacts [hμ hab, h hab]
+  rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, _, hst⟩
+  have : (⋃ (l ∈ s) (u ∈ s) (_ : l < u), {Ioc l u} : Set (Set α)).Countable :=
+    hsc.biUnion fun l _ => hsc.biUnion fun u _ => countable_iUnion fun _ => countable_singleton _
+  simp only [← setOf_eq_eq_singleton, ← setOf_exists] at this
+  refine
+    Measure.ext_of_generateFrom_of_cover_subset
+      (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioc α)) (isPiSystem_Ioc id id) ?_ this
+      ?_ ?_ ?_
+  · rintro _ ⟨l, -, u, -, h, rfl⟩
+    exact ⟨l, u, h, rfl⟩
+  · refine sUnion_eq_univ_iff.2 fun x => ?_
+    rcases hsd.exists_ge' hst x with ⟨u, hus, hxu⟩
+    rcases hsd.exists_lt x with ⟨l, hls, hlx⟩
+    exact ⟨_, ⟨l, hls, u, hus, hlx.trans_le hxu, rfl⟩, hlx, hxu⟩
+  · rintro _ ⟨l, -, u, -, hlt, rfl⟩
+    exact hμ hlt
+  · rintro _ ⟨l, u, hlt, rfl⟩
+    exact h hlt
 
 /-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
@@ -535,8 +621,34 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
 intervals. -/
 theorem ext_of_Ici {α : Type*} [TopologicalSpace α] {_ : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
-    [IsFiniteMeasure μ] (h : ∀ a, μ (Ici a) = ν (Ici a)) : μ = ν :=
-  @ext_of_Iic αᵒᵈ _ _ _ _ _ ‹_› _ _ _ h
+    [IsFiniteMeasure μ] (h : ∀ a, μ (Ici a) = ν (Ici a)) : μ = ν := by
+  refine ext_of_Ico_finite μ ν ?_ fun a b hlt => ?_
+  · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, -⟩
+    have hdir : DirectedOn (· ≥ ·) s := by
+      intro a ha b hb
+      rcases le_total a b with hab | hab
+      · exact ⟨a, ha, le_refl a, hab⟩
+      · exact ⟨b, hb, hab, le_refl b⟩
+    have hst : ∀ x : α, ∃ y ∈ s, y ≤ x := hsd.exists_le' hsb
+    -- ⋃ a ∈ s, Ici a = univ (since s has elements ≤ any x)
+    have huniv : ⋃ a ∈ s, Ici a = univ := by
+      apply eq_univ_of_forall
+      intro x
+      obtain ⟨y, hy, hyx⟩ := hst x
+      exact mem_biUnion hy (mem_Ici.mpr hyx)
+    -- Directed for Ici: if a ≤ b, then Ici a ⊇ Ici b, so for the ⊆ direction we want the min
+    have hdir' : DirectedOn (Function.onFun (· ⊆ ·) Ici) s := by
+      intro a ha b hb
+      rcases le_total a b with hab | hab
+      · exact ⟨a, ha, le_refl _, Ici_subset_Ici.2 hab⟩
+      · exact ⟨b, hb, Ici_subset_Ici.2 hab, le_refl _⟩
+    rw [← huniv, measure_biUnion_eq_iSup hsc hdir', measure_biUnion_eq_iSup hsc hdir']
+    exact iSup_congr fun a => iSup_congr fun _ => h a
+  rw [← Ici_diff_Ici, measure_diff (Ici_subset_Ici.2 hlt.le) nullMeasurableSet_Ici,
+    measure_diff (Ici_subset_Ici.2 hlt.le) nullMeasurableSet_Ici, h a, h b]
+  · rw [← h b]
+    finiteness
+  · finiteness
 
 /-- Two measures which are finite on closed intervals are equal if they agree on all
 closed intervals. -/
@@ -741,21 +853,73 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
 /-- If a function is the greatest lower bound of countably many measurable functions,
 then it is measurable. -/
 theorem Measurable.isGLB {ι} [Countable ι] {f : ι → δ → α} {g : δ → α} (hf : ∀ i, Measurable (f i))
-    (hg : ∀ b, IsGLB { a | ∃ i, f i b = a } (g b)) : Measurable g :=
-  Measurable.isLUB (α := αᵒᵈ) hf hg
+    (hg : ∀ b, IsGLB { a | ∃ i, f i b = a } (g b)) : Measurable g := by
+  change ∀ b, IsGLB (range fun i => f i b) (g b) at hg
+  rw [‹BorelSpace α›.measurable_eq, borel_eq_generateFrom_Iio α]
+  apply measurable_generateFrom
+  rintro _ ⟨a, rfl⟩
+  simp_rw [Set.preimage, mem_Iio, isGLB_lt_iff (hg _), exists_range_iff, setOf_exists]
+  exact MeasurableSet.iUnion fun i => hf i (isOpen_gt' _).measurableSet
 
 /-- If a function is the greatest lower bound of countably many measurable functions on a measurable
 set `s`, and coincides with a measurable function outside of `s`, then it is measurable. -/
 theorem Measurable.isGLB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g' : δ → α}
     (hf : ∀ i, Measurable (f i))
     {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsGLB { a | ∃ i, f i b = a } (g b))
-    (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g :=
-  Measurable.isLUB_of_mem (α := αᵒᵈ) hf hs hg hg' g'_meas
+    (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g := by
+  classical
+  rcases isEmpty_or_nonempty ι with hι | ⟨⟨i⟩⟩
+  · rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
+    · convert g'_meas
+      rwa [compl_empty, eqOn_univ] at hg'
+    · have A : ∀ b ∈ s, IsTop (g b) := by simpa using hg
+      have B : ∀ b ∈ s, g b = g x := by
+        intro b hb
+        apply le_antisymm (A x hx (g b)) (A b hb (g x))
+      have : g = s.piecewise (fun _y ↦ g x) g' := by
+        ext b
+        by_cases hb : b ∈ s
+        · simp [hb, B]
+        · simp [hb, hg' hb]
+      rw [this]
+      exact Measurable.piecewise hs measurable_const g'_meas
+  · have : Nonempty ι := ⟨i⟩
+    let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
+    suffices ∀ b, IsGLB { a | ∃ i, f' i b = a } (g b) from
+      Measurable.isGLB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
+    intro b
+    by_cases hb : b ∈ s
+    · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [f', hb]
+      simpa [A] using hg b hb
+    · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [f', hb]
+      simp [A, hg' hb, isGLB_singleton]
 
 theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsGLB { a | ∃ i, f i b = a } (g b)) :
-    AEMeasurable g μ :=
-  AEMeasurable.isLUB (α := αᵒᵈ) hf hg
+    AEMeasurable g μ := by
+  classical
+  nontriviality α
+  haveI hα : Nonempty α := inferInstance
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · simp only [IsEmpty.exists_iff, setOf_false, isGLB_empty_iff] at hg
+    exact aemeasurable_const' (hg.mono fun a ha => hg.mono fun b hb => (hb _).antisymm (ha _))
+  let p : δ → (ι → α) → Prop := fun x f' => IsGLB { a | ∃ i, f' i = a } (g x)
+  let g_seq := (aeSeqSet hf p).piecewise g fun _ => hα.some
+  have hg_seq : ∀ b, IsGLB { a | ∃ i, aeSeq hf p i b = a } (g_seq b) := by
+    intro b
+    simp only [g_seq, aeSeq, Set.piecewise]
+    split_ifs with h
+    · have h_set_eq : { a : α | ∃ i : ι, (hf i).mk (f i) b = a } =
+        { a : α | ∃ i : ι, f i b = a } := by
+        ext x
+        simp_rw [Set.mem_setOf_eq, aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h]
+      rw [h_set_eq]
+      exact aeSeq.fun_prop_of_mem_aeSeqSet hf h
+    · exact IsLeast.isGLB ⟨(@exists_const (hα.some = hα.some) ι _).2 rfl, fun x ⟨i, hi⟩ => hi.le⟩
+  refine ⟨g_seq, Measurable.isGLB (aeSeq.measurable hf p) hg_seq, ?_⟩
+  exact
+    (ite_ae_eq_of_measure_compl_zero g (fun _ => hα.some) (aeSeqSet hf p)
+        (aeSeq.measure_compl_aeSeqSet_eq_zero hf hg)).symm
 
 protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
     (hf : Monotone f) : Measurable f :=
@@ -770,12 +934,14 @@ theorem aemeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopolog
 
 protected theorem Antitone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
     (hf : Antitone f) : Measurable f :=
-  @Monotone.measurable αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ hf
+  suffices h : ∀ x, OrdConnected (f ⁻¹' Iio x) from measurable_of_Iio fun x => (h x).measurableSet
+  fun _ => ordConnected_def.mpr fun _a ha _ _ _c hc => lt_of_le_of_lt (hf hc.1) ha
 
 theorem aemeasurable_restrict_of_antitoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : AntitoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
-  @aemeasurable_restrict_of_monotoneOn αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ _ hs _ hf
+  have : Antitone (f ∘ (↑) : s → α) := fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (hxy : x ≤ y) => hf hx hy hxy
+  aemeasurable_restrict_of_measurable_subtype hs this.measurable
 
 theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
@@ -844,8 +1010,29 @@ lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (h
   exact MeasurableSet.iUnion (fun n ↦ B (u n))
 
 lemma measurableSet_bddBelow_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
-    MeasurableSet {b | BddBelow (range (fun i ↦ f i b))} :=
-  measurableSet_bddAbove_range (α := αᵒᵈ) hf
+    MeasurableSet {b | BddBelow (range (fun i ↦ f i b))} := by
+  rcases isEmpty_or_nonempty α with hα | hα
+  · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ eq_empty_of_isEmpty _
+    simp [this]
+  have A : ∀ (i : ι) (c : α), MeasurableSet {x | c ≤ f i x} := by
+    intro i c
+    exact measurableSet_le measurable_const (hf i)
+  have B : ∀ (c : α), MeasurableSet {x | ∀ i, c ≤ f i x} := by
+    intro c
+    rw [setOf_forall]
+    exact MeasurableSet.iInter (fun i ↦ A i c)
+  obtain ⟨u, hu⟩ : ∃ (u : ℕ → α), Tendsto u atTop atBot := exists_seq_tendsto (atBot : Filter α)
+  have : {b | BddBelow (range (fun i ↦ f i b))} = {x | ∃ n, ∀ i, u n ≤ f i x} := by
+    apply Subset.antisymm
+    · rintro x ⟨c, hc⟩
+      obtain ⟨n, hn⟩ : ∃ n, u n ≤ c := (tendsto_atBot.1 hu c).exists
+      exact ⟨n, fun i ↦ hn.trans (hc (mem_range_self i))⟩
+    · rintro x ⟨n, hn⟩
+      refine ⟨u n, ?_⟩
+      rintro - ⟨i, rfl⟩
+      exact hn i
+  rw [this, setOf_exists]
+  exact MeasurableSet.iUnion (fun n ↦ B (u n))
 
 end LinearOrder
 
@@ -908,13 +1095,27 @@ protected theorem AEMeasurable.iSup {ι} {μ : Measure δ} [Countable ι] {f : �
 
 @[fun_prop]
 protected theorem Measurable.iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun b => ⨅ i, f i b :=
-  .iSup (α := αᵒᵈ) hf
+    Measurable fun b => ⨅ i, f i b := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · -- When ι is empty, ⨅ i, f i b is constant (= sInf (range ...))
+    convert measurable_const (a := sInf (∅ : Set α))
+    simp [iInf, range_eq_empty]
+  have A : MeasurableSet {b | BddBelow (range (fun i ↦ f i b))} :=
+    measurableSet_bddBelow_range hf
+  have : Measurable (fun (_b : δ) ↦ sInf (∅ : Set α)) := measurable_const
+  apply Measurable.isGLB_of_mem hf A _ _ this
+  · intro b hb
+    apply isGLB_ciInf
+    simpa
+  · intro b hb
+    apply csInf_of_not_bddBelow
+    simpa
 
 @[fun_prop]
 protected theorem AEMeasurable.iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
-    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i, f i b) μ :=
-  .iSup (α := αᵒᵈ) hf
+    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i, f i b) μ := by
+  refine ⟨fun b ↦ ⨅ i, (hf i).mk (f i) b, .iInf (fun i ↦ (hf i).measurable_mk), ?_⟩
+  filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 
 protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
@@ -925,8 +1126,10 @@ protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs :
 
 protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun x => sInf ((fun i => f i x) '' s) :=
-  .sSup (α := αᵒᵈ) hs hf
+    Measurable fun x => sInf ((fun i => f i x) '' s) := by
+  simp_rw [image_eq_range]
+  have : Countable s := hs.to_subtype
+  exact .iInf fun i ↦ hf i i.2
 
 theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
@@ -956,12 +1159,31 @@ theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   exact iSup_congr fun i => iSup_congr (hb i)
 
 theorem Measurable.biInf {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨅ i ∈ s, f i b :=
-  .biSup (α := αᵒᵈ) s hs hf
+    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨅ i ∈ s, f i b := by
+  haveI : Encodable s := hs.toEncodable
+  by_cases H : ∀ i, i ∈ s
+  · have : ∀ b, ⨅ i ∈ s, f i b = ⨅ (i : s), f i b :=
+      fun b ↦ cbiInf_eq_of_forall (f := fun i ↦ f i b) H
+    simp only [this]
+    exact .iInf (fun (i : s) ↦ hf i i.2)
+  · have : ∀ b, ⨅ i ∈ s, f i b = (⨅ (i : s), f i b) ⊓ sInf ∅ :=
+      fun b ↦ cbiInf_eq_of_not_forall (f := fun i ↦ f i b) H
+    simp only [this]
+    apply Measurable.inf _ measurable_const
+    exact .iInf (fun (i : s) ↦ hf i i.2)
 
 theorem AEMeasurable.biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i ∈ s, f i b) μ :=
-  .biSup (α := αᵒᵈ) s hs hf
+    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i ∈ s, f i b) μ := by
+  classical
+  let g : ι → δ → α := fun i ↦ if hi : i ∈ s then (hf i hi).mk (f i) else fun _b ↦ sInf ∅
+  have : ∀ i ∈ s, Measurable (g i) := by
+    intro i hi
+    simpa [g, hi] using (hf i hi).measurable_mk
+  refine ⟨fun b ↦ ⨅ (i) (_ : i ∈ s), g i b, .biInf s hs this, ?_⟩
+  have : ∀ i ∈ s, ∀ᵐ b ∂μ, f i b = g i b :=
+    fun i hi ↦ by simpa [g, hi] using (hf i hi).ae_eq_mk
+  filter_upwards [(ae_ball_iff hs).2 this] with b hb
+  exact iInf_congr fun i => iInf_congr (hb i)
 
 /-- `liminf` over a general filter is measurable. See `Measurable.liminf` for the version over `ℕ`.
 -/
@@ -1019,8 +1241,47 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
 -/
 theorem Measurable.limsup' {ι ι'} {f : ι → δ → α} {u : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hu : u.HasCountableBasis p s) (hs : ∀ i, (s i).Countable) :
-    Measurable fun x => limsup (fun i => f i x) u :=
-  .liminf' (α := αᵒᵈ) hf hu hs
+    Measurable fun x => limsup (fun i => f i x) u := by
+  classical
+  have : Countable (Subtype p) := hu.countable
+  rcases isEmpty_or_nonempty (Subtype p) with hp | hp
+  · simp [hu.limsup_eq_sInf_iUnion_iInter]
+  by_cases H : ∃ (j : Subtype p), s j = ∅
+  · simp_rw [hu.limsup_eq_ite, if_pos H, measurable_const]
+  simp_rw [hu.limsup_eq_ite, if_neg H]
+  have : ∀ i, Countable (s i) := fun i ↦ countable_coe_iff.2 (hs i)
+  let m : Subtype p → Set δ := fun j ↦ {x | BddAbove (range (fun (i : s j) ↦ f i x))}
+  have m_meas : ∀ j, MeasurableSet (m j) :=
+    fun j ↦ measurableSet_bddAbove_range (fun (i : s j) ↦ hf i)
+  have mc_meas : MeasurableSet {x | ∀ (j : Subtype p), x ∉ m j} := by
+    rw [setOf_forall]
+    exact MeasurableSet.iInter (fun j ↦ (m_meas j).compl)
+  refine measurable_const.piecewise mc_meas <| .iInf fun j ↦ ?_
+  let reparam : δ → Subtype p → Subtype p := fun x ↦ limsup_reparam (fun i ↦ f i x) s p
+  let F0 : Subtype p → δ → α := fun j x ↦ ⨆ (i : s j), f i x
+  have F0_meas : ∀ j, Measurable (F0 j) := fun j ↦ .iSup (fun (i : s j) ↦ hf i)
+  set F1 : δ → α := fun x ↦ F0 (reparam x j) x with hF1
+  change Measurable F1
+  let g : ℕ → Subtype p := Classical.choose (exists_surjective_nat (Subtype p))
+  have Z : ∀ x, ∃ n, x ∈ m (g n) ∨ ∀ k, x ∉ m k := by
+    intro x
+    by_cases! H : ∃ k, x ∈ m k
+    · rcases H with ⟨k, hk⟩
+      rcases Classical.choose_spec (exists_surjective_nat (Subtype p)) k with ⟨n, rfl⟩
+      exact ⟨n, Or.inl hk⟩
+    · exact ⟨0, Or.inr H⟩
+  have : F1 = fun x ↦ if x ∈ m j then F0 j x else F0 (g (Nat.find (Z x))) x := by
+    ext x
+    have A : reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := rfl
+    split_ifs with hjx
+    · have : reparam x j = j := by rw [A, if_pos hjx]
+      simp only [hF1, this]
+    · have : reparam x j = g (Nat.find (Z x)) := by rw [A, if_neg hjx]
+      simp only [hF1, this]
+  rw [this]
+  apply Measurable.piecewise (m_meas j) (F0_meas j)
+  apply Measurable.find (fun n ↦ F0_meas (g n)) (fun n ↦ ?_)
+  exact (m_meas (g n)).union mc_meas
 
 /-- `liminf` over `ℕ` is measurable. See `Measurable.liminf'` for a version with a general filter.
 -/

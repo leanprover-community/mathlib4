@@ -237,22 +237,60 @@ lemma isSublattice_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {
   ⟨supClosed_pi fun _i hi ↦ (ht _ hi).1, infClosed_pi fun _i hi ↦ (ht _ hi).2⟩
 
 @[simp] lemma supClosed_preimage_toDual {s : Set αᵒᵈ} :
-    SupClosed (toDual ⁻¹' s) ↔ InfClosed s := Iff.rfl
+    SupClosed (toDual ⁻¹' s) ↔ InfClosed s :=
+  ⟨fun h a ha b hb ↦ by
+    have := h (a := ofDual a) (by rwa [Set.mem_preimage, toDual_ofDual])
+      (b := ofDual b) (by rwa [Set.mem_preimage, toDual_ofDual])
+    simpa [Set.mem_preimage] using this,
+   fun h a ha b hb ↦ by
+    change toDual (a ⊔ b) ∈ s
+    simp only [Set.mem_preimage] at ha hb
+    exact h ha hb⟩
 
 @[simp] lemma infClosed_preimage_toDual {s : Set αᵒᵈ} :
-    InfClosed (toDual ⁻¹' s) ↔ SupClosed s := Iff.rfl
+    InfClosed (toDual ⁻¹' s) ↔ SupClosed s :=
+  ⟨fun h a ha b hb ↦ by
+    have := h (a := ofDual a) (by rwa [Set.mem_preimage, toDual_ofDual])
+      (b := ofDual b) (by rwa [Set.mem_preimage, toDual_ofDual])
+    simpa [Set.mem_preimage] using this,
+   fun h a ha b hb ↦ by
+    change toDual (a ⊓ b) ∈ s
+    simp only [Set.mem_preimage] at ha hb
+    exact h ha hb⟩
 
 @[simp] lemma supClosed_preimage_ofDual {s : Set α} :
-    SupClosed (ofDual ⁻¹' s) ↔ InfClosed s := Iff.rfl
+    SupClosed (ofDual ⁻¹' s) ↔ InfClosed s :=
+  ⟨fun h a ha b hb ↦ by
+    have := h (a := toDual a) (by rwa [Set.mem_preimage, ofDual_toDual])
+      (b := toDual b) (by rwa [Set.mem_preimage, ofDual_toDual])
+    simpa [Set.mem_preimage] using this,
+   fun h a ha b hb ↦ by
+    change ofDual (a ⊔ b) ∈ s
+    -- a ⊔ b on αᵒᵈ = toDual (ofDual a ⊓ ofDual b), so ofDual (a ⊔ b) = ofDual a ⊓ ofDual b
+    simp only [Set.mem_preimage] at ha hb
+    exact h ha hb⟩
 
 @[simp] lemma infClosed_preimage_ofDual {s : Set α} :
-    InfClosed (ofDual ⁻¹' s) ↔ SupClosed s := Iff.rfl
+    InfClosed (ofDual ⁻¹' s) ↔ SupClosed s :=
+  ⟨fun h a ha b hb ↦ by
+    have := h (a := toDual a) (by rwa [Set.mem_preimage, ofDual_toDual])
+      (b := toDual b) (by rwa [Set.mem_preimage, ofDual_toDual])
+    simpa [Set.mem_preimage] using this,
+   fun h a ha b hb ↦ by
+    change ofDual (a ⊓ b) ∈ s
+    -- a ⊓ b on αᵒᵈ = toDual (ofDual a ⊔ ofDual b), so ofDual (a ⊓ b) = ofDual a ⊔ ofDual b
+    simp only [Set.mem_preimage] at ha hb
+    exact h ha hb⟩
 
 @[simp] lemma isSublattice_preimage_toDual {s : Set αᵒᵈ} :
-    IsSublattice (toDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
+    IsSublattice (toDual ⁻¹' s) ↔ IsSublattice s :=
+  ⟨fun h ↦ ⟨infClosed_preimage_toDual.mp h.infClosed, supClosed_preimage_toDual.mp h.supClosed⟩,
+   fun h ↦ ⟨supClosed_preimage_toDual.mpr h.infClosed, infClosed_preimage_toDual.mpr h.supClosed⟩⟩
 
 @[simp] lemma isSublattice_preimage_ofDual :
-    IsSublattice (ofDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
+    IsSublattice (ofDual ⁻¹' s) ↔ IsSublattice s :=
+  ⟨fun h ↦ ⟨infClosed_preimage_ofDual.mp h.infClosed, supClosed_preimage_ofDual.mp h.supClosed⟩,
+   fun h ↦ ⟨supClosed_preimage_ofDual.mpr h.infClosed, infClosed_preimage_ofDual.mpr h.supClosed⟩⟩
 
 alias ⟨_, InfClosed.dual⟩ := supClosed_preimage_ofDual
 alias ⟨_, SupClosed.dual⟩ := infClosed_preimage_ofDual
@@ -485,16 +523,44 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
 
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
-  change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
-  congr 2
-  ext
-  exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
+  apply le_antisymm
+  · -- Show: ofDual ⁻¹' latticeClosure s ⊆ latticeClosure (ofDual ⁻¹' s)
+    -- Equivalently: latticeClosure s ⊆ ofDual '' latticeClosure (ofDual ⁻¹' s)
+    -- Use: toDual ⁻¹' latticeClosure (ofDual ⁻¹' s) is a sublattice of α containing s
+    suffices h : latticeClosure s ⊆ toDual ⁻¹' latticeClosure (ofDual ⁻¹' s) by
+      intro x hx
+      have := h hx
+      simp only [Set.mem_preimage] at this ⊢
+      rwa [toDual_ofDual] at this
+    apply latticeClosure_min
+    · intro a ha
+      change toDual a ∈ latticeClosure (ofDual ⁻¹' s)
+      apply subset_latticeClosure
+      change ofDual (toDual a) ∈ s
+      rwa [ofDual_toDual]
+    · exact isSublattice_preimage_toDual.mpr isSublattice_latticeClosure
+  · -- Show: latticeClosure (ofDual ⁻¹' s) ⊆ ofDual ⁻¹' latticeClosure s
+    apply latticeClosure_min
+    · intro x hx
+      change ofDual x ∈ latticeClosure s
+      exact subset_latticeClosure hx
+    · exact isSublattice_preimage_ofDual.mpr isSublattice_latticeClosure
 
 lemma image_latticeClosure' (s : Set α) (f : α → β)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊓ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊔ f b) :
     f '' latticeClosure s = latticeClosure (f '' s) := by
-  simpa only [Set.image_comp, Equiv.image_symm_eq_preimage, ← ofDual_preimage_latticeClosure]
-    using image_latticeClosure s (ofDual.symm ∘ f) map_sup map_inf
+  simp only [subset_antisymm_iff, Set.image_subset_iff]
+  constructor <;> apply latticeClosure_sup_inf_induction
+  · exact fun a ha ↦ subset_latticeClosure <| Set.mem_image_of_mem _ ha
+  · rintro a - b - ha hb
+    simpa [map_sup] using isSublattice_latticeClosure.infClosed ha hb
+  · rintro a - b - ha hb
+    simpa [map_inf] using isSublattice_latticeClosure.supClosed ha hb
+  · exact Set.image_mono subset_latticeClosure
+  · rintro _ - _ - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    exact ⟨a ⊓ b, isSublattice_latticeClosure.infClosed ha hb, map_inf ..⟩
+  · rintro _ - _ - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    exact ⟨a ⊔ b, isSublattice_latticeClosure.supClosed ha hb, map_sup ..⟩
 
 end Lattice
 
@@ -559,7 +625,10 @@ lemma SupClosed.iSup_mem_of_nonempty [Finite ι] [Nonempty ι] (hs : SupClosed s
   exact hs.finsetSup'_mem Finset.univ_nonempty fun _ _ ↦ hf _
 
 lemma InfClosed.iInf_mem_of_nonempty [Finite ι] [Nonempty ι] (hs : InfClosed s)
-    (hf : ∀ i, f i ∈ s) : ⨅ i, f i ∈ s := hs.dual.iSup_mem_of_nonempty hf
+    (hf : ∀ i, f i ∈ s) : ⨅ i, f i ∈ s := by
+  cases nonempty_fintype (PLift ι)
+  rw [← iInf_plift_down, ← Finset.inf'_univ_eq_ciInf]
+  exact hs.finsetInf'_mem Finset.univ_nonempty fun _ _ ↦ hf _
 
 lemma SupClosed.sSup_mem_of_nonempty (hs : SupClosed s) (ht : t.Finite) (ht' : t.Nonempty)
     (hts : t ⊆ s) : sSup t ∈ s := by
@@ -569,7 +638,11 @@ lemma SupClosed.sSup_mem_of_nonempty (hs : SupClosed s) (ht : t.Finite) (ht' : t
   exact hs.iSup_mem_of_nonempty (by simpa)
 
 lemma InfClosed.sInf_mem_of_nonempty (hs : InfClosed s) (ht : t.Finite) (ht' : t.Nonempty)
-    (hts : t ⊆ s) : sInf t ∈ s := hs.dual.sSup_mem_of_nonempty ht ht' hts
+    (hts : t ⊆ s) : sInf t ∈ s := by
+  have := ht.to_subtype
+  have := ht'.to_subtype
+  rw [sInf_eq_iInf']
+  exact hs.iInf_mem_of_nonempty (by simpa)
 
 end ConditionallyCompleteLattice
 
@@ -594,8 +667,9 @@ lemma SupClosed.biSup_mem_of_nonempty {ι : Type*} {t : Set ι} {f : ι → α} 
   exact hs.sSup_mem_of_nonempty (ht.image _) (by simpa) (by simpa)
 
 lemma InfClosed.biInf_mem_of_nonempty {ι : Type*} {t : Set ι} {f : ι → α} (hs : InfClosed s)
-    (ht : t.Finite) (ht' : t.Nonempty) (hf : ∀ i ∈ t, f i ∈ s) : ⨅ i ∈ t, f i ∈ s :=
-  hs.dual.biSup_mem_of_nonempty ht ht' hf
+    (ht : t.Finite) (ht' : t.Nonempty) (hf : ∀ i ∈ t, f i ∈ s) : ⨅ i ∈ t, f i ∈ s := by
+  rw [← sInf_image]
+  exact hs.sInf_mem_of_nonempty (ht.image _) (by simpa) (by simpa)
 
 lemma SupClosed.iSup_mem [Finite ι] (hs : SupClosed s) (hbot : ⊥ ∈ s) (hf : ∀ i, f i ∈ s) :
     ⨆ i, f i ∈ s := by
@@ -604,7 +678,10 @@ lemma SupClosed.iSup_mem [Finite ι] (hs : SupClosed s) (hbot : ⊥ ∈ s) (hf :
   · exact hs.iSup_mem_of_nonempty hf
 
 lemma InfClosed.iInf_mem [Finite ι] (hs : InfClosed s) (htop : ⊤ ∈ s) (hf : ∀ i, f i ∈ s) :
-    ⨅ i, f i ∈ s := hs.dual.iSup_mem htop hf
+    ⨅ i, f i ∈ s := by
+  cases isEmpty_or_nonempty ι
+  · simpa [iInf_of_empty]
+  · exact hs.iInf_mem_of_nonempty hf
 
 lemma SupClosed.sSup_mem (hs : SupClosed s) (ht : t.Finite) (hbot : ⊥ ∈ s) (hts : t ⊆ s) :
     sSup t ∈ s := by
@@ -613,7 +690,10 @@ lemma SupClosed.sSup_mem (hs : SupClosed s) (ht : t.Finite) (hbot : ⊥ ∈ s) (
   exact hs.iSup_mem hbot (by simpa)
 
 lemma InfClosed.sInf_mem (hs : InfClosed s) (ht : t.Finite) (htop : ⊤ ∈ s) (hts : t ⊆ s) :
-    sInf t ∈ s := hs.dual.sSup_mem ht htop hts
+    sInf t ∈ s := by
+  have := ht.to_subtype
+  rw [sInf_eq_iInf']
+  exact hs.iInf_mem htop (by simpa)
 
 lemma SupClosed.biSup_mem {ι : Type*} {t : Set ι} {f : ι → α} (hs : SupClosed s)
     (ht : t.Finite) (hbot : ⊥ ∈ s) (hf : ∀ i ∈ t, f i ∈ s) : ⨆ i ∈ t, f i ∈ s := by
@@ -621,5 +701,6 @@ lemma SupClosed.biSup_mem {ι : Type*} {t : Set ι} {f : ι → α} (hs : SupClo
   exact hs.sSup_mem (ht.image _) hbot (by simpa)
 
 lemma InfClosed.biInf_mem {ι : Type*} {t : Set ι} {f : ι → α} (hs : InfClosed s)
-    (ht : t.Finite) (htop : ⊤ ∈ s) (hf : ∀ i ∈ t, f i ∈ s) : ⨅ i ∈ t, f i ∈ s :=
-  hs.dual.biSup_mem ht htop hf
+    (ht : t.Finite) (htop : ⊤ ∈ s) (hf : ∀ i ∈ t, f i ∈ s) : ⨅ i ∈ t, f i ∈ s := by
+  rw [← sInf_image]
+  exact hs.sInf_mem (ht.image _) htop (by simpa)

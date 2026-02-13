@@ -91,10 +91,28 @@ instance (priority := 100) [OrderTopology α] [Countable α] :
     exact Countable.mono (fun s hs => by grind) ((countable_range f1).union (countable_range f2))
   · simp [OrderTopology.topology_eq_generate_intervals]
 
-instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
-  ⟨by
-    convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
-    apply or_comm⟩
+instance [OrderTopology α] : OrderTopology αᵒᵈ where
+  topology_eq_generate_intervals := by
+    have h := OrderTopology.topology_eq_generate_intervals (α := α)
+    change TopologicalSpace.induced ofDual ts =
+      generateFrom {s | ∃ a, s = Ioi a ∨ s = Iio a}
+    rw [h, induced_generateFrom_eq]
+    congr 1
+    ext s
+    simp only [mem_image, mem_setOf_eq]
+    constructor
+    · rintro ⟨t, ⟨a, ha⟩, rfl⟩
+      rcases ha with rfl | rfl
+      · exact ⟨toDual a, Or.inr rfl⟩
+      · exact ⟨toDual a, Or.inl rfl⟩
+    · intro ⟨a, ha⟩
+      have h1 : Ioi a = ofDual ⁻¹' Iio (ofDual a) :=
+        Set.ext fun _ => OrderDual.ofDual_lt_ofDual.symm
+      have h2 : Iio a = ofDual ⁻¹' Ioi (ofDual a) :=
+        Set.ext fun _ => OrderDual.ofDual_lt_ofDual.symm
+      exact ha.elim
+        (fun h => ⟨_, ⟨ofDual a, Or.inr rfl⟩, (h1 ▸ h).symm⟩)
+        (fun h => ⟨_, ⟨ofDual a, Or.inl rfl⟩, (h2 ▸ h).symm⟩)
 
 protected theorem OrderTopology.continuous_iff [OrderTopology α] [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsOpen (f ⁻¹' Ioi a) ∧ IsOpen (f ⁻¹' Iio a) := by
@@ -342,8 +360,10 @@ theorem nhdsGE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderT
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
 
 theorem nhdsLE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
-    𝓝[≤] a = (⨅ l < a, 𝓟 (Ioi l)) ⊓ 𝓟 (Iic a) :=
-  nhdsGE_eq_iInf_inf_principal (toDual a)
+    𝓝[≤] a = (⨅ l < a, 𝓟 (Ioi l)) ⊓ 𝓟 (Iic a) := by
+  rw [nhdsWithin, nhds_eq_order]
+  refine le_antisymm (inf_le_inf_right _ inf_le_left) (le_inf (le_inf inf_le_left ?_) inf_le_right)
+  exact inf_le_right.trans (le_iInf₂ fun u hu => principal_mono.2 <| Iic_subset_Iio.2 hu)
 
 theorem nhdsGE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
@@ -362,9 +382,12 @@ theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderT
       ha
 
 theorem nhdsLE_basis_of_exists_lt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
-    (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
-  convert nhdsGE_basis_of_exists_gt (α := αᵒᵈ) ha using 2
-  exact Ico_toDual.symm
+    (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a :=
+  (nhdsLE_eq_iInf_principal ha).symm ▸
+    hasBasis_biInf_principal
+      (fun b hb c hc => ⟨max b c, max_lt hb hc, Ioc_subset_Ioc_left (le_max_left _ _),
+        Ioc_subset_Ioc_left (le_max_right _ _)⟩)
+      ha
 
 theorem nhdsGE_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α] (a : α) :
     (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
@@ -386,8 +409,9 @@ theorem nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [Ord
   simpa only [Iic_top, nhdsWithin_univ, Ioc_top] using nhdsLE_basis_of_exists_lt this
 
 theorem nhds_bot_basis [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
-    [Nontrivial α] : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a : α => Iio a :=
-  nhds_top_basis (α := αᵒᵈ)
+    [Nontrivial α] : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a : α => Iio a := by
+  have : ∃ x : α, ⊥ < x := (exists_ne ⊥).imp fun x hx => hx.bot_lt
+  simpa only [Ici_bot, nhdsWithin_univ, Ico_bot] using nhdsGE_basis_of_exists_gt this
 
 theorem nhds_top_basis_Ici [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] [DenselyOrdered α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) Ici :=
@@ -397,7 +421,9 @@ theorem nhds_top_basis_Ici [TopologicalSpace α] [LinearOrder α] [OrderTop α] 
 
 theorem nhds_bot_basis_Iic [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
     [Nontrivial α] [DenselyOrdered α] : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) Iic :=
-  nhds_top_basis_Ici (α := αᵒᵈ)
+  nhds_bot_basis.to_hasBasis
+    (fun _a ha => let ⟨b, hb, hba⟩ := exists_between ha; ⟨b, hb, Iic_subset_Iio.mpr hba⟩)
+    fun a ha => ⟨a, ha, Iio_subset_Iic_self⟩
 
 theorem tendsto_nhds_top_mono [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ᶠ[l] g) : Tendsto g l (𝓝 ⊤) := by
@@ -406,8 +432,10 @@ theorem tendsto_nhds_top_mono [TopologicalSpace β] [Preorder β] [OrderTop β] 
   filter_upwards [hf x hx, hg] with _ using lt_of_lt_of_le
 
 theorem tendsto_nhds_bot_mono [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
-    {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊥)) (hg : g ≤ᶠ[l] f) : Tendsto g l (𝓝 ⊥) :=
-  tendsto_nhds_top_mono (β := βᵒᵈ) hf hg
+    {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊥)) (hg : g ≤ᶠ[l] f) : Tendsto g l (𝓝 ⊥) := by
+  simp only [nhds_bot_order, tendsto_iInf, tendsto_principal] at hf ⊢
+  intro x hx
+  filter_upwards [hf x hx, hg] with _ using fun h1 h2 => lt_of_le_of_lt h2 h1
 
 theorem tendsto_nhds_top_mono' [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ g) : Tendsto g l (𝓝 ⊤) :=
@@ -447,9 +475,11 @@ theorem exists_Ioc_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
     (Ioc_subset_Ioc_left <| le_max_right _ _).trans hl's⟩
 
 theorem exists_Ico_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {u : α} (hu : a < u) :
-    ∃ u' ∈ Ioc a u, Ico a u' ⊆ s := by
-  simpa only [OrderDual.exists, exists_prop, Ico_toDual, Ioc_toDual] using
-    exists_Ioc_subset_of_mem_nhds' (show ofDual ⁻¹' s ∈ 𝓝 (toDual a) from hs) hu.dual
+    ∃ u' ∈ Ioc a u, Ico a u' ⊆ s :=
+  let ⟨u', hu'a, hu's⟩ := (nhdsGE_basis_of_exists_gt ⟨u, hu⟩).mem_iff.mp
+    (nhdsWithin_le_nhds hs)
+  ⟨min u u', ⟨lt_min hu hu'a, min_le_left _ _⟩,
+    (Ico_subset_Ico_right <| min_le_right _ _).trans hu's⟩
 
 theorem exists_Ico_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ u, a < u) :
     ∃ u, a < u ∧ Ico a u ⊆ s :=
@@ -471,8 +501,15 @@ theorem exists_Icc_mem_subset_of_mem_nhdsGE {a : α} {s : Set α} (hs : s ∈ �
 
 theorem exists_Icc_mem_subset_of_mem_nhdsLE {a : α} {s : Set α} (hs : s ∈ 𝓝[≤] a) :
     ∃ b ≤ a, Icc b a ∈ 𝓝[≤] a ∧ Icc b a ⊆ s := by
-  simpa only [Icc_toDual, toDual.surjective.exists] using
-    exists_Icc_mem_subset_of_mem_nhdsGE (α := αᵒᵈ) (a := toDual a) hs
+  rcases (em (IsMin a)).imp_right not_isMin_iff.mp with (ha | ha)
+  · use a
+    simpa [ha.Iic_eq] using hs
+  · rcases (nhdsLE_basis_of_exists_lt ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
+    rcases eq_empty_or_nonempty (Ioo b a) with (H | ⟨c, hcb, hca⟩)
+    · have : Ioc b a = Icc a a := by rw [← Ioo_union_Icc_eq_Ioc hab le_rfl, H, empty_union]
+      exact ⟨a, le_rfl, this ▸ ⟨Ioc_mem_nhdsLE hab, hbs⟩⟩
+    · refine ⟨c, hca.le, Icc_mem_nhdsLE hca, ?_⟩
+      exact ((Icc_subset_Ioc_iff hca.le).mpr ⟨hcb, le_rfl⟩).trans hbs
 
 theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
     ∃ b c, a ∈ Icc b c ∧ Icc b c ∈ 𝓝 a ∧ Icc b c ⊆ s := by
@@ -508,14 +545,15 @@ theorem IsUpperSet.isClosed [WellFoundedLT α] {s : Set α} (h : IsUpperSet s) :
   obtain rfl | ⟨a, rfl⟩ := h.eq_empty_or_Ici
   exacts [isClosed_empty, isClosed_Ici]
 
-theorem IsLowerSet.isClosed [WellFoundedGT α] {s : Set α} (h : IsLowerSet s) : IsClosed s :=
-  h.toDual.isClosed
+theorem IsLowerSet.isClosed [WellFoundedGT α] {s : Set α} (h : IsLowerSet s) : IsClosed s := by
+  obtain rfl | ⟨a, rfl⟩ := h.eq_empty_or_Iic
+  exacts [isClosed_empty, isClosed_Iic]
 
 theorem IsLowerSet.isOpen [WellFoundedLT α] {s : Set α} (h : IsLowerSet s) : IsOpen s := by
   simpa using h.compl.isClosed
 
-theorem IsUpperSet.isOpen [WellFoundedGT α] {s : Set α} (h : IsUpperSet s) : IsOpen s :=
-  h.toDual.isOpen
+theorem IsUpperSet.isOpen [WellFoundedGT α] {s : Set α} (h : IsUpperSet s) : IsOpen s := by
+  simpa using h.compl.isClosed
 
 /-- A set in a nontrivial densely linear ordered type is dense in the sense of topology if and only
 if for any `a < b` there exists `c ∈ s`, `a < c < b`. Each implication requires less typeclass
@@ -640,8 +678,13 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
 second-countable. -/
 theorem countable_setOf_covBy_left [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y ⋖ x } := by
-  convert countable_setOf_covBy_right (α := αᵒᵈ) using 5
-  exact toDual_covBy_toDual_iff.symm
+  have h := countable_setOf_covBy_right (α := αᵒᵈ)
+  have : ofDual '' { x : αᵒᵈ | ∃ y, x ⋖ y } = { x : α | ∃ y, y ⋖ x } := by
+    ext x; simp only [mem_image, mem_setOf_eq, OrderDual.exists]
+    constructor
+    · rintro ⟨a, ⟨b, hab⟩, rfl⟩; exact ⟨b, toDual_covBy_toDual_iff.mp hab⟩
+    · intro ⟨y, hy⟩; exact ⟨x, ⟨y, toDual_covBy_toDual_iff.mpr hy⟩, rfl⟩
+  rw [← this]; exact h.image _
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
@@ -710,42 +753,66 @@ which the image under `f` of `(x, ∞)` is separated below from `f x` is countab
 here a version relative to a set `t`. -/
 theorem countable_image_gt_image_Ioi_within
     [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
-    Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, x < y → f y ≤ z} :=
-  countable_image_lt_image_Ioi_within (α := αᵒᵈ) t f
+    Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, x < y → f y ≤ z} := by
+  have := countable_image_lt_image_Ioi_within (α := αᵒᵈ) t (toDual ∘ f)
+  convert this using 3
+  simp [OrderDual.toDual_lt_toDual, OrderDual.toDual_le_toDual]
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. -/
 theorem countable_image_gt_image_Ioi [LinearOrder β] (f : β → α)
-    [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, x < y → f y ≤ z} :=
-  countable_image_lt_image_Ioi (α := αᵒᵈ) f
+    [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, x < y → f y ≤ z} := by
+  simpa using countable_image_gt_image_Ioi_within univ f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. We give
 here a version relative to a set `t`. -/
 theorem countable_image_lt_image_Iio_within
     [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
-    Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, y < x → z ≤ f y} :=
-  countable_image_lt_image_Ioi_within (β := βᵒᵈ) t f
+    Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, y < x → z ≤ f y} := by
+  have h := countable_image_lt_image_Ioi_within (β := βᵒᵈ) (toDual '' t) (f ∘ ofDual)
+  suffices heq : toDual ⁻¹' {x ∈ toDual '' t | ∃ z, (f ∘ ofDual) x < z ∧ ∀ y ∈ toDual '' t,
+      x < y → z ≤ (f ∘ ofDual) y} = {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, y < x → z ≤ f y} by
+    rw [← heq]; exact h.preimage (fun _ _ h => OrderDual.toDual_inj.mp h)
+  ext x
+  simp only [Set.mem_preimage, mem_sep_iff, Function.comp_apply]
+  constructor
+  · rintro ⟨hxt_mem, z, hfz, hz⟩
+    refine ⟨?_, z, hfz, fun y hyt hyx => ?_⟩
+    · obtain ⟨b, hbt, hbx⟩ := hxt_mem
+      exact (OrderDual.toDual_inj.mp hbx : b = x) ▸ hbt
+    · exact hz (toDual y) ⟨y, hyt, rfl⟩ (OrderDual.toDual_lt_toDual.mpr hyx)
+  · intro ⟨hxt, z, hfz, hz⟩
+    refine ⟨⟨x, hxt, rfl⟩, z, hfz, fun y hyt hyx => ?_⟩
+    obtain ⟨w, hwt, hwy⟩ := hyt
+    have hyw : ofDual y = w := congr_arg OrderDual.ofDual hwy.symm
+    rw [show f (ofDual y) = f w from congr_arg f hyw]
+    have : w < x := by
+      have : toDual x < toDual w := hwy ▸ hyx
+      exact OrderDual.toDual_lt_toDual.mp this
+    exact hz w hwt this
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. -/
 theorem countable_image_lt_image_Iio [LinearOrder β] (f : β → α)
-    [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, y < x → z ≤ f y} :=
-  countable_image_lt_image_Ioi (β := βᵒᵈ) f
+    [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, y < x → z ≤ f y} := by
+  simpa using countable_image_lt_image_Iio_within univ f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. We give
 here a version relative to a set `t`. -/
 theorem countable_image_gt_image_Iio_within
     [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
-    Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, y < x → f y ≤ z} :=
-  countable_image_lt_image_Ioi_within (α := αᵒᵈ) (β := βᵒᵈ) t f
+    Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, y < x → f y ≤ z} := by
+  have := countable_image_lt_image_Iio_within (α := αᵒᵈ) t (toDual ∘ f)
+  convert this using 3
+  simp [OrderDual.toDual_lt_toDual, OrderDual.toDual_le_toDual]
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. -/
 theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α)
-    [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} :=
-  countable_image_lt_image_Ioi (α := αᵒᵈ) (β := βᵒᵈ) f
+    [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} := by
+  simpa using countable_image_gt_image_Iio_within univ f
 
 instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     IsCountablyGenerated (atTop : Filter α) := by
@@ -762,8 +829,27 @@ instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     exact isCountablyGenerated_pure x
 
 instance instIsCountablyGenerated_atBot [SeparableSpace α] :
-    IsCountablyGenerated (atBot : Filter α) :=
-  @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
+    IsCountablyGenerated (atBot : Filter α) := by
+  obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsBot x}
+  · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
+    have hgen : atBot = generate (Iic '' s) := by
+      have atBot_gen : atBot = generate (range (Iic (α := α))) := by
+        simp only [generate_eq_biInf, atBot, iInf_range]
+      rw [atBot_gen]
+      apply le_antisymm
+      · rw [le_generate_iff]
+        rintro - ⟨y, -, rfl⟩
+        exact mem_generate_of_mem ⟨y, rfl⟩
+      · rw [le_generate_iff]
+        rintro - ⟨x, -, -, rfl⟩
+        simp only [eq_empty_iff_forall_notMem, IsBot, mem_setOf_eq, not_forall, not_le] at h
+        obtain ⟨y, ys, hyx⟩ := hs.exists_mem_open isOpen_Iio (h x)
+        exact sets_of_superset _ (mem_generate_of_mem (mem_image_of_mem _ ys))
+          (Iic_subset_Iic.2 hyx.le)
+    rw [hgen]
+    exact ⟨_, s_count.image _, rfl⟩
+  · rw [atBot_eq_pure_of_isBot hx]
+    exact isCountablyGenerated_pure x
 
 end OrderTopology
 
@@ -806,8 +892,8 @@ theorem pi_Iio_mem_nhds (ha : ∀ i, x i < a i) : Iio a ∈ 𝓝 x := mem_of_sup
 theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
   pi_Iio_mem_nhds ha
 
-theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
-  pi_Iio_mem_nhds (X := fun i => (X i)ᵒᵈ) ha
+theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x := mem_of_superset
+  (set_pi_mem_nhds finite_univ fun i _ ↦ Ioi_mem_nhds (ha i)) (pi_univ_Ioi_subset a)
 
 theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
   pi_Ioi_mem_nhds ha
@@ -860,6 +946,14 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
 the function is between conditionally complete linear orders with order topologies, and the domain
 is densely ordered. -/
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
-    ContinuousWithinAt f (Ici x) x := hf.orderDual.continuousWithinAt_Iic
+    ContinuousWithinAt f (Ici x) x := by
+  rw [ContinuousWithinAt, OrderTopology.topology_eq_generate_intervals (α := Y)]
+  simp_rw [TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_nhdsWithin]
+  rintro V ⟨z, rfl | rfl⟩ hxz
+  -- The case `V = Ioi z`.
+  · exact ⟨univ, isOpen_univ, trivial, fun a ha ↦ hxz.trans_le (hf.mono ha.2)⟩
+  -- The case `V = Iio z`.
+  · obtain ⟨_, ⟨a, hxa, rfl⟩, haz⟩ := (isGLB_lt_iff <| hf isGLB_Ioi).mp hxz
+    exact ⟨Iio a, isOpen_Iio, hxa, fun b hab ↦ (hf.mono hab.1.le).trans_lt haz⟩
 
 end ConditionallyCompleteLinearOrder

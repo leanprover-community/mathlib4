@@ -248,8 +248,11 @@ theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab
       add_le_add (smul_le_smul_of_nonneg_left hx ha) (smul_le_smul_of_nonneg_left hy hb)
     _ = r := Convex.combo_self hab _
 
-theorem convex_Ici (r : β) : Convex 𝕜 (Ici r) :=
-  convex_Iic (β := βᵒᵈ) r
+theorem convex_Ici (r : β) : Convex 𝕜 (Ici r) := fun x hx y hy a b ha hb hab =>
+  calc
+    r = a • r + b • r := (Convex.combo_self hab _).symm
+    _ ≤ a • x + b • y :=
+      add_le_add (smul_le_smul_of_nonneg_left hx ha) (smul_le_smul_of_nonneg_left hy hb)
 
 theorem convex_Icc (r s : β) : Convex 𝕜 (Icc r s) :=
   Ici_inter_Iic.subst ((convex_Ici r).inter <| convex_Iic s)
@@ -280,8 +283,16 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
         (smul_lt_smul_of_pos_left hx ha') (smul_le_smul_of_nonneg_left hy.le hb)
     _ = r := Convex.combo_self hab _
 
-theorem convex_Ioi (r : β) : Convex 𝕜 (Ioi r) :=
-  convex_Iio (β := βᵒᵈ) r
+theorem convex_Ioi (r : β) : Convex 𝕜 (Ioi r) := by
+  intro x hx y hy a b ha hb hab
+  obtain rfl | ha' := ha.eq_or_lt
+  · rw [zero_add] at hab
+    rwa [zero_smul, zero_add, hab, one_smul]
+  rw [mem_Ioi] at hx hy
+  calc
+    r = a • r + b • r := (Convex.combo_self hab _).symm
+    _ < a • x + b • y := add_lt_add_of_lt_of_le
+        (smul_lt_smul_of_pos_left hx ha') (smul_le_smul_of_nonneg_left hy.le hb)
 
 theorem convex_Ioo (r s : β) : Convex 𝕜 (Ioo r s) :=
   Ioi_inter_Iio.subst ((convex_Ioi r).inter <| convex_Iio s)
@@ -346,28 +357,46 @@ theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β)
       (max_rec' { x | f x < r } hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
-  MonotoneOn.convex_le (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+    Convex 𝕜 ({ x ∈ s | r ≤ f x }) := fun x hx y hy _ _ ha hb hab =>
+  ⟨hs hx.1 hy.1 ha hb hab,
+    (min_rec' { x | r ≤ f x } hx.2 hy.2).trans
+      (hf (min_rec' s hx.1 hy.1) (hs hx.1 hy.1 ha hb hab)
+        (Convex.min_le_combo x y ha hb hab))⟩
 
 theorem MonotoneOn.convex_gt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+    Convex 𝕜 ({ x ∈ s | r < f x }) := fun x hx y hy _ _ ha hb hab =>
+  ⟨hs hx.1 hy.1 ha hb hab,
+    (min_rec' { x | r < f x } hx.2 hy.2).trans_le
+      (hf (min_rec' s hx.1 hy.1) (hs hx.1 hy.1 ha hb hab)
+        (Convex.min_le_combo x y ha hb hab))⟩
 
 theorem AntitoneOn.convex_le (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | f x ≤ r }) :=
-  MonotoneOn.convex_ge (β := βᵒᵈ) hf hs r
+    Convex 𝕜 ({ x ∈ s | f x ≤ r }) := fun x hx y hy _ _ ha hb hab =>
+  ⟨hs hx.1 hy.1 ha hb hab,
+    (hf (min_rec' s hx.1 hy.1) (hs hx.1 hy.1 ha hb hab)
+        (Convex.min_le_combo x y ha hb hab)).trans
+      (min_rec' { x | f x ≤ r } hx.2 hy.2)⟩
 
 theorem AntitoneOn.convex_lt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | f x < r }) :=
-  MonotoneOn.convex_gt (β := βᵒᵈ) hf hs r
+    Convex 𝕜 ({ x ∈ s | f x < r }) := fun x hx y hy _ _ ha hb hab =>
+  ⟨hs hx.1 hy.1 ha hb hab,
+    (hf (min_rec' s hx.1 hy.1) (hs hx.1 hy.1 ha hb hab)
+          (Convex.min_le_combo x y ha hb hab)).trans_lt
+      (min_rec' { x | f x < r } hx.2 hy.2)⟩
 
 theorem AntitoneOn.convex_ge (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
-  MonotoneOn.convex_le (β := βᵒᵈ) hf hs r
+    Convex 𝕜 ({ x ∈ s | r ≤ f x }) := fun x hx y hy _ _ ha hb hab =>
+  ⟨hs hx.1 hy.1 ha hb hab,
+    (max_rec' { x | r ≤ f x } hx.2 hy.2).trans
+      (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1)
+        (Convex.combo_le_max x y ha hb hab))⟩
 
 theorem AntitoneOn.convex_gt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
-    Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (β := βᵒᵈ) hf hs r
+    Convex 𝕜 ({ x ∈ s | r < f x }) := fun x hx y hy _ _ ha hb hab =>
+  ⟨hs hx.1 hy.1 ha hb hab,
+    (max_rec' { x | r < f x } hx.2 hy.2).trans_le
+      (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1)
+        (Convex.combo_le_max x y ha hb hab))⟩
 
 theorem Monotone.convex_le (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)

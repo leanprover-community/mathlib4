@@ -50,17 +50,13 @@ variable [CompleteLattice α] {f g s : ι → α} {a b : α}
 ### `iSup` and `iInf` under `Type`
 -/
 
+@[to_dual]
 theorem iSup_bool_eq {f : Bool → α} : ⨆ b : Bool, f b = f true ⊔ f false := by
   rw [iSup, Bool.range_eq, sSup_pair, sup_comm]
 
-theorem iInf_bool_eq {f : Bool → α} : ⨅ b : Bool, f b = f true ⊓ f false :=
-  @iSup_bool_eq αᵒᵈ _ _
-
+@[to_dual]
 theorem sup_eq_iSup (x y : α) : x ⊔ y = ⨆ b : Bool, cond b x y := by
   rw [iSup_bool_eq, Bool.cond_true, Bool.cond_false]
-
-theorem inf_eq_iInf (x y : α) : x ⊓ y = ⨅ b : Bool, cond b x y :=
-  @sup_eq_iSup αᵒᵈ _ _ _
 
 /-!
 ### `iSup` and `iInf` under `ℕ`
@@ -74,14 +70,17 @@ theorem iSup_ge_eq_iSup_nat_add (u : ℕ → α) (n : ℕ) : ⨆ i ≥ n, u i = 
     rw [Nat.sub_add_cancel hi]
   · exact fun i => le_sSup ⟨i + n, iSup_pos (Nat.le_add_left _ _)⟩
 
-theorem iInf_ge_eq_iInf_nat_add (u : ℕ → α) (n : ℕ) : ⨅ i ≥ n, u i = ⨅ i, u (i + n) :=
-  @iSup_ge_eq_iSup_nat_add αᵒᵈ _ _ _
+theorem iInf_ge_eq_iInf_nat_add (u : ℕ → α) (n : ℕ) : ⨅ i ≥ n, u i = ⨅ i, u (i + n) := by
+  apply le_antisymm <;> simp only [le_iInf_iff]
+  · exact fun i => iInf_le_of_le (i + n) (iInf_le_of_le (Nat.le_add_left _ _) le_rfl)
+  · exact fun i hi => iInf_le_of_le (i - n) (by rw [Nat.sub_add_cancel hi])
 
 theorem Monotone.iSup_nat_add {f : ℕ → α} (hf : Monotone f) (k : ℕ) : ⨆ n, f (n + k) = ⨆ n, f n :=
   le_antisymm (iSup_le fun i => le_iSup _ (i + k)) <| iSup_mono fun i => hf <| Nat.le_add_right i k
 
-theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : ⨅ n, f (n + k) = ⨅ n, f n :=
-  hf.dual_right.iSup_nat_add k
+theorem Antitone.iInf_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) :
+    ⨅ n, f (n + k) = ⨅ n, f n :=
+  le_antisymm (iInf_mono fun i => hf <| Nat.le_add_right i k) (le_iInf fun i => iInf_le _ (i + k))
 
 -- Not `@[simp]` since the subterm `?f (i + ?k)` produces an ugly higher-order unification problem.
 -- (Although the `simpNF` linter does not complain.)
@@ -95,9 +94,11 @@ theorem iSup_iInf_ge_nat_add (f : ℕ → α) (k : ℕ) :
 -- Not `@[simp]` since the subterm `?f (i + ?k)` produces an ugly higher-order unification problem.
 -- (Although the `simpNF` linter does not complain.)
 -- See: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
-theorem iInf_iSup_ge_nat_add :
-    ∀ (f : ℕ → α) (k : ℕ), ⨅ n, ⨆ i ≥ n, f (i + k) = ⨅ n, ⨆ i ≥ n, f i :=
-  @iSup_iInf_ge_nat_add αᵒᵈ _
+theorem iInf_iSup_ge_nat_add (f : ℕ → α) (k : ℕ) :
+    ⨅ n, ⨆ i ≥ n, f (i + k) = ⨅ n, ⨆ i ≥ n, f i := by
+  have hf : Antitone fun n => ⨆ i ≥ n, f i := fun n m h => biSup_mono fun i => h.trans
+  rw [← Antitone.iInf_nat_add hf k]
+  · simp_rw [iSup_ge_eq_iSup_nat_add, ← Nat.add_assoc]
 
 theorem sup_iSup_nat_succ (u : ℕ → α) : (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ i, u i :=
   calc
@@ -106,14 +107,15 @@ theorem sup_iSup_nat_succ (u : ℕ → α) : (u 0 ⊔ ⨆ i, u (i + 1)) = ⨆ i,
     _ = ⨆ i, u i := by rw [Nat.zero_union_range_succ, iSup_univ]
 
 theorem inf_iInf_nat_succ (u : ℕ → α) : (u 0 ⊓ ⨅ i, u (i + 1)) = ⨅ i, u i :=
-  @sup_iSup_nat_succ αᵒᵈ _ u
+  calc
+    (u 0 ⊓ ⨅ i, u (i + 1)) = ⨅ x ∈ {0} ∪ range Nat.succ, u x := by
+      { rw [iInf_union, iInf_singleton, iInf_range] }
+    _ = ⨅ i, u i := by rw [Nat.zero_union_range_succ, iInf_univ]
 
-theorem iInf_nat_gt_zero_eq (f : ℕ → α) : ⨅ i > 0, f i = ⨅ i, f (i + 1) := by
-  rw [← iInf_range, Nat.range_succ]
+@[to_dual]
+theorem iSup_nat_gt_zero_eq (f : ℕ → α) : ⨆ i > 0, f i = ⨆ i, f (i + 1) := by
+  rw [← iSup_range, Nat.range_succ]
   simp
-
-theorem iSup_nat_gt_zero_eq (f : ℕ → α) : ⨆ i > 0, f i = ⨆ i, f (i + 1) :=
-  @iInf_nat_gt_zero_eq αᵒᵈ _ f
 
 end
 
@@ -125,59 +127,37 @@ section CompleteLattice
 
 variable [CompleteLattice α] {a : α} {s : Set α}
 
-/-- This is a weaker version of `sup_sInf_eq` -/
+@[to_dual iSup_inf_le_inf_sSup /-- This is a weaker version of `sup_sInf_eq` -/]
 theorem sup_sInf_le_iInf_sup : a ⊔ sInf s ≤ ⨅ b ∈ s, a ⊔ b :=
   le_iInf₂ fun _ h => sup_le_sup_left (sInf_le h) _
 
-/-- This is a weaker version of `inf_sSup_eq` -/
-theorem iSup_inf_le_inf_sSup : ⨆ b ∈ s, a ⊓ b ≤ a ⊓ sSup s :=
-  @sup_sInf_le_iInf_sup αᵒᵈ _ _ _
-
-/-- This is a weaker version of `sInf_sup_eq` -/
+@[to_dual iSup_inf_le_sSup_inf /-- This is a weaker version of `sInf_sup_eq` -/]
 theorem sInf_sup_le_iInf_sup : sInf s ⊔ a ≤ ⨅ b ∈ s, b ⊔ a :=
   le_iInf₂ fun _ h => sup_le_sup_right (sInf_le h) _
 
-/-- This is a weaker version of `sSup_inf_eq` -/
-theorem iSup_inf_le_sSup_inf : ⨆ b ∈ s, b ⊓ a ≤ sSup s ⊓ a :=
-  @sInf_sup_le_iInf_sup αᵒᵈ _ _ _
-
+@[to_dual]
 theorem iInf_sup_le_iInf_sup (f : ι → α) (a : α) :
     (⨅ i, f i) ⊔ a ≤ ⨅ i, (f i ⊔ a) :=
   le_iInf fun i ↦ sup_le_sup_right (iInf_le f i) a
 
+@[to_dual iSup_inf_le_inf_iSup]
 theorem sup_iInf_le_iInf_sup (f : ι → α) (a : α) :
     a ⊔ (⨅ i, f i) ≤ ⨅ i, (a ⊔ f i) :=
   le_iInf fun i ↦ sup_le_sup_left (iInf_le f i) a
 
-theorem iSup_inf_le_iSup_inf (f : ι → α) (a : α) :
-    ⨆ i, (f i ⊓ a) ≤ (⨆ i, f i) ⊓ a :=
-  @iInf_sup_le_iInf_sup αᵒᵈ ι _ f a
-
-theorem iSup_inf_le_inf_iSup (f : ι → α) (a : α) :
-    ⨆ i, (a ⊓ f i) ≤ a ⊓ (⨆ i, f i) :=
-  @sup_iInf_le_iInf_sup αᵒᵈ ι _ f a
-
+@[to_dual]
 lemma biInf_sup_le_biInf_sup (f : β → α) (s : Set β) (a : α) :
     (⨅ i ∈ s, f i) ⊔ a ≤ ⨅ i ∈ s, f i ⊔ a :=
   le_iInf₂ fun _ hi ↦ sup_le_sup_right (biInf_le f hi) a
 
+@[to_dual biSup_inf_le_inf_biSup]
 lemma sup_biInf_le_biInf_sup (f : β → α) (s : Set β) (a : α) :
     a ⊔ (⨅ i ∈ s, f i) ≤ ⨅ i ∈ s, a ⊔ f i :=
   le_iInf₂ fun _ hi ↦ sup_le_sup_left (biInf_le f hi) a
 
-lemma biSup_inf_le_biSup_inf (f : β → α) (s : Set β) (a : α) :
-    ⨆ i ∈ s, (f i ⊓ a) ≤ (⨆ i ∈ s, f i) ⊓ a :=
-  @biInf_sup_le_biInf_sup αᵒᵈ β _ f s a
-
-lemma biSup_inf_le_inf_biSup (f : β → α) (s : Set β) (a : α) :
-    ⨆ i ∈ s, (a ⊓ f i) ≤ a ⊓ (⨆ i ∈ s, f i) :=
-  @sup_biInf_le_biInf_sup αᵒᵈ β _ f s a
-
+@[to_dual iInf_sup_iInf_le]
 theorem le_iSup_inf_iSup (f g : ι → α) : ⨆ i, f i ⊓ g i ≤ (⨆ i, f i) ⊓ ⨆ i, g i :=
   le_inf (iSup_mono fun _ => inf_le_left) (iSup_mono fun _ => inf_le_right)
-
-theorem iInf_sup_iInf_le (f g : ι → α) : (⨅ i, f i) ⊔ ⨅ i, g i ≤ ⨅ i, f i ⊔ g i :=
-  @le_iSup_inf_iSup αᵒᵈ ι _ f g
 
 theorem disjoint_sSup_left {a : Set α} {b : α} (d : Disjoint (sSup a) b) {i} (hi : i ∈ a) :
     Disjoint i b :=

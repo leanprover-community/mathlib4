@@ -54,7 +54,7 @@ variable (G)
 /-- Left scalar multiplication as an order isomorphism. -/
 @[simps!]
 def OrderIso.smulRightDual (ha : a < 0) : G ≃o Gᵒᵈ where
-  toEquiv := (Equiv.smulRight ha.ne).trans toDual
+  toEquiv := (Equiv.smulRight ha.ne).trans (OrderDual.equiv G).symm
   map_rel_iff' := (@OrderDual.toDual_le_toDual G).trans <| smul_le_smul_iff_of_neg_left ha
 
 end PosSMulMono

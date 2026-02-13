@@ -49,31 +49,16 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [h : Nontrivial α] : Nontrivial αᵒᵈ := h
-instance [h : Unique α] : Unique αᵒᵈ := h
+instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
+  let ⟨a, b, hab⟩ := h.exists_pair_ne
+  ⟨⟨toDual a, toDual b, by simp [hab]⟩⟩
 
-/-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
-def toDual : α ≃ αᵒᵈ :=
-  Equiv.refl _
+instance [h : Unique α] : Unique αᵒᵈ where
+  default := toDual default
+  uniq a := by cases a; exact congrArg toDual (h.uniq _)
 
-/-- `ofDual` is the identity function from the `OrderDual` of a linear order. -/
-def ofDual : αᵒᵈ ≃ α :=
-  Equiv.refl _
-
-@[simp] theorem toDual_symm_eq : (@toDual α).symm = ofDual := rfl
-@[simp] theorem ofDual_symm_eq : (@ofDual α).symm = toDual := rfl
-@[simp] theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a := rfl
-@[simp] theorem ofDual_toDual (a : α) : ofDual (toDual a) = a := rfl
-
-@[simp] theorem toDual_trans_ofDual : (toDual (α := α)).trans ofDual = Equiv.refl _ := rfl
-@[simp] theorem ofDual_trans_toDual : (ofDual (α := α)).trans toDual = Equiv.refl _ := rfl
-@[simp] theorem toDual_comp_ofDual : (toDual (α := α)) ∘ ofDual = id := rfl
-@[simp] theorem ofDual_comp_toDual : (ofDual (α := α)) ∘ toDual = id := rfl
-
-theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
-theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b := by simp
-
-@[ext] lemma ext {a b : αᵒᵈ} (h : ofDual a = ofDual b) : a = b := h
+@[simp] theorem toDual_comp_ofDual : toDual ∘ ofDual = id (α := αᵒᵈ) := funext toDual_ofDual
+@[simp] theorem ofDual_comp_toDual : ofDual ∘ toDual = id (α := α) := rfl
 
 @[to_dual self, simp]
 theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a := .rfl
@@ -93,18 +78,28 @@ theorem le_toDual [LE α] {a : αᵒᵈ} {b : α} : a ≤ toDual b ↔ b ≤ ofD
 @[to_dual toDual_lt]
 theorem lt_toDual [LT α] {a : αᵒᵈ} {b : α} : a < toDual b ↔ b < ofDual a := .rfl
 
-/-- Recursor for `αᵒᵈ`. -/
-@[elab_as_elim]
-protected def rec {motive : αᵒᵈ → Sort*} (toDual : ∀ a : α, motive (toDual a)) :
-    ∀ a : αᵒᵈ, motive a := toDual
+@[simp] protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
+  ⟨fun h _ => h _, fun h ⟨a⟩ => h a⟩
 
-@[simp] protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) := .rfl
-@[simp] protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) := .rfl
+@[simp] protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
+  ⟨fun ⟨⟨a⟩, h⟩ => ⟨a, h⟩, fun ⟨_, h⟩ => ⟨_, h⟩⟩
 
 @[to_dual self] alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
 @[to_dual self] alias ⟨_, _root_.LT.lt.dual⟩ := toDual_lt_toDual
 @[to_dual self] alias ⟨_, _root_.LE.le.ofDual⟩ := ofDual_le_ofDual
 @[to_dual self] alias ⟨_, _root_.LT.lt.ofDual⟩ := ofDual_lt_ofDual
+
+theorem ofDual_injective : Function.Injective (ofDual : αᵒᵈ → α) :=
+  fun _ _ h => ext h
+
+theorem toDual_injective : Function.Injective (toDual : α → αᵒᵈ) :=
+  fun _ _ h => congrArg ofDual h
+
+theorem ofDual_surjective : Function.Surjective (ofDual : αᵒᵈ → α) :=
+  fun a => ⟨toDual a, rfl⟩
+
+theorem toDual_surjective : Function.Surjective (toDual : α → αᵒᵈ) :=
+  fun a => ⟨ofDual a, toDual_ofDual a⟩
 
 end OrderDual
 

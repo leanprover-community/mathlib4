@@ -327,7 +327,7 @@ theorem ofDual_intermediateFieldEquivSubgroup_apply [Finite G] {F} :
 
 @[simp] theorem intermediateFieldEquivSubgroup_symm_apply [Finite G] {H} :
     (intermediateFieldEquivSubgroup G K L).symm H = FixedPoints.intermediateField H.ofDual := by
-  obtain ⟨H, rfl⟩ := OrderDual.toDual.surjective H
+  obtain ⟨H, rfl⟩ : ∃ H₀, OrderDual.toDual H₀ = H := ⟨OrderDual.ofDual H, OrderDual.toDual_ofDual H⟩
   simp [IntermediateField.ext_iff, intermediateFieldEquivSubgroup,
     (mulEquivAlgEquiv G K L).surjective.forall, -mulEquivAlgEquiv_symm_apply]
 

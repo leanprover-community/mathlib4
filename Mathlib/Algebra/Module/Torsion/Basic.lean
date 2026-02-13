@@ -375,7 +375,7 @@ theorem torsionBySet_torsionBySet_eq_top : torsionBySet R (torsionBySet R M s) s
 variable (R M)
 
 theorem torsion_gc :
-    @GaloisConnection (Submodule R M) (Ideal R)ᵒᵈ _ _ annihilator fun I =>
+    @GaloisConnection (Submodule R M) (Ideal R)ᵒᵈ _ _ (OrderDual.toDual ∘ annihilator) fun I =>
       torsionBySet R M ↑(OrderDual.ofDual I) :=
   fun _ _ =>
   ⟨fun h x hx => (mem_torsionBySet_iff _ _).mpr fun ⟨_, ha⟩ => mem_annihilator.mp (h ha) x hx,
@@ -427,7 +427,7 @@ theorem supIndep_torsionBySet_ideal (hp : (S : Set ι).Pairwise fun i j => p i �
   rw [disjoint_iff, Finset.sup_eq_iSup,
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf fun i hi j hj ij => hp (hT hi) (hT hj) ij]
   have := GaloisConnection.u_inf
-    (b₁ := OrderDual.toDual (p i)) (b₂ := OrderDual.toDual (⨅ i ∈ T, p i)) (torsion_gc R M)
+    (a₁ := OrderDual.toDual (p i)) (a₂ := OrderDual.toDual (⨅ i ∈ T, p i)) (torsion_gc R M)
   dsimp at this ⊢
   rw [← this, Ideal.sup_iInf_eq_top, top_coe, torsionBySet_univ]
   intro j hj; apply hp hi (hT hj); rintro rfl; exact hiT hj

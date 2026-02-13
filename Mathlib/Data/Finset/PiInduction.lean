@@ -107,6 +107,7 @@ theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),
         (∀ y ∈ g i, x < y) → p g → p (update g i (insert x (g i)))) :
     p f :=
-  induction_on_pi_max (α := fun i ↦ (α i)ᵒᵈ) _ h0 step
+  induction_on_pi_of_choice (fun _ x s ↦ ∀ y ∈ s, x < y)
+    (fun _ s hs ↦ ⟨s.min' hs, s.min'_mem hs, fun _ ↦ s.min'_lt_of_mem_erase_min' _⟩) f h0 step
 
 end Finset

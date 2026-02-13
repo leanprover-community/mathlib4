@@ -86,7 +86,14 @@ theorem tendsto_finset_Iic_atTop_atTop [Preorder α] [LocallyFiniteOrderBot α] 
     simp [not_ne_iff.mp <| Filter.neBot_iff.not.mp h]
 
 theorem tendsto_finset_Ici_atBot_atTop [Preorder α] [LocallyFiniteOrderTop α] :
-    Tendsto (Finset.Ici (α := α)) atBot atTop :=
-  tendsto_finset_Iic_atTop_atTop (α := αᵒᵈ)
+    Tendsto (Finset.Ici (α := α)) atBot atTop := by
+  rcases isEmpty_or_nonempty α with _ | _
+  · exact tendsto_of_isEmpty
+  by_cases h : IsCodirectedOrder α
+  · refine tendsto_atBot_atTop.mpr fun s ↦ ?_
+    obtain ⟨a, ha⟩ := (directed_id (α := α) (r := (· ≥ ·))).finset_le s
+    exact ⟨a, fun b hb c hc ↦ by simpa using hb.trans (ha c hc)⟩
+  · obtain h := Filter.atBot_neBot_iff.not.mpr (fun h' ↦ h h'.2)
+    simp [not_ne_iff.mp <| Filter.neBot_iff.not.mp h]
 
 end Filter

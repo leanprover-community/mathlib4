@@ -425,8 +425,11 @@ theorem integrable_iff_integrableAtFilter_atBot [LinearOrder X] [OrderTop X] [Co
     exact h.1.filter_mono cocompact_le_atBot
 
 theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
-    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ :=
-  integrable_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
+    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
+  constructor
+  · exact fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
+  · refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
+    exact h.1.filter_mono cocompact_le_atTop
 
 variable {a : X}
 
@@ -439,8 +442,12 @@ theorem integrableOn_Iic_iff_integrableAtFilter_atBot [LinearOrder X] [CompactIc
   exact h.integrableOn_compact_subset Icc_subset_Iic_self isCompact_Icc
 
 theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X] :
-    IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ :=
-  integrableOn_Iic_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
+    IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ := by
+  refine ⟨fun h ↦ ⟨⟨Ici a, Ici_mem_atTop a, h⟩, h.locallyIntegrableOn⟩, fun ⟨⟨s, hsl, hs⟩, h⟩ ↦ ?_⟩
+  haveI : Nonempty X := Nonempty.intro a
+  obtain ⟨a', ha'⟩ := mem_atTop_sets.mp hsl
+  refine (integrableOn_union.mpr ⟨?_, hs.mono ha' le_rfl⟩).mono Ici_subset_Icc_union_Ici le_rfl
+  exact h.integrableOn_compact_subset Icc_subset_Ici_self isCompact_Icc
 
 theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
     [LinearOrder X] [CompactIccSpace X] [NoMinOrder X] [OrderTopology X] :
@@ -458,8 +465,15 @@ theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
 theorem integrableOn_Ioi_iff_integrableAtFilter_atTop_nhdsWithin
     [LinearOrder X] [CompactIccSpace X] [NoMaxOrder X] [OrderTopology X] :
     IntegrableOn f (Ioi a) μ ↔ IntegrableAtFilter f atTop μ ∧
-    IntegrableAtFilter f (𝓝[>] a) μ ∧ LocallyIntegrableOn f (Ioi a) μ :=
-  integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin (X := Xᵒᵈ)
+    IntegrableAtFilter f (𝓝[>] a) μ ∧ LocallyIntegrableOn f (Ioi a) μ := by
+  constructor
+  · intro h
+    exact ⟨⟨Ioi a, Ioi_mem_atTop a, h⟩, ⟨Ioi a, self_mem_nhdsWithin, h⟩, h.locallyIntegrableOn⟩
+  · intro ⟨htop, ⟨s, hsl, hs⟩, hlocal⟩
+    obtain ⟨s', ⟨hs'_mono, hs'⟩⟩ := mem_nhdsGT_iff_exists_Ioo_subset.mp hsl
+    refine (integrableOn_union.mpr ⟨hs.mono hs' le_rfl, ?_⟩).mono Ioi_subset_Ioo_union_Ici le_rfl
+    exact integrableOn_Ici_iff_integrableAtFilter_atTop.mpr
+      ⟨htop, hlocal.mono_set (Ici_subset_Ioi.mpr hs'_mono)⟩
 
 end MeasureTheory
 
@@ -577,17 +591,30 @@ theorem MonotoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompac
 
 theorem AntitoneOn.memLp_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
-    MemLp f ∞ (μ.restrict s) :=
-  MonotoneOn.memLp_top (E := Eᵒᵈ) hanti ha hb h's
+    MemLp f ∞ (μ.restrict s) := by
+  borelize E
+  have hbelow : BddBelow (f '' s) := ⟨f b, fun x ⟨y, hy, hyx⟩ => hyx ▸ hanti hy hb.1 (hb.2 hy)⟩
+  have habove : BddAbove (f '' s) := ⟨f a, fun x ⟨y, hy, hyx⟩ => hyx ▸ hanti ha.1 hy (ha.2 hy)⟩
+  have : IsBounded (f '' s) := Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
+  rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
+  have A : MemLp (fun _ => C) ⊤ (μ.restrict s) := memLp_top_const _
+  apply MemLp.mono A (aemeasurable_restrict_of_antitoneOn h's hanti).aestronglyMeasurable
+  apply (ae_restrict_iff' h's).mpr
+  apply ae_of_all _ fun y hy ↦ ?_
+  exact (hC _ (mem_image_of_mem f hy)).trans (le_abs_self _)
 
 theorem AntitoneOn.memLp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
     MemLp f p (μ.restrict s) :=
-  MonotoneOn.memLp_of_measure_ne_top (E := Eᵒᵈ) hanti ha hb hs h's
+  (hanti.memLp_top ha hb h's).mono_exponent_of_measure_support_ne_top (s := univ)
+    (by simp) (by simpa using hs) le_top
 
 theorem AntitoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
-    (hanti : AntitoneOn f s) : MemLp f p (μ.restrict s) :=
-  MonotoneOn.memLp_isCompact (E := Eᵒᵈ) hs hanti
+    (hanti : AntitoneOn f s) : MemLp f p (μ.restrict s) := by
+  obtain rfl | h := s.eq_empty_or_nonempty
+  · simp
+  · exact hanti.memLp_of_measure_ne_top (hs.isLeast_sInf h) (hs.isGreatest_sSup h)
+      hs.measure_lt_top.ne hs.measurableSet
 
 theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
@@ -620,8 +647,16 @@ theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone
       ((measure_mono abU).trans_lt h'U).ne measurableSet_Icc
 
 theorem Antitone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hanti : Antitone f) :
-    LocallyIntegrable f μ :=
-  hanti.dual_right.locallyIntegrable
+    LocallyIntegrable f μ := by
+  intro x
+  rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
+  obtain ⟨a, b, xab, hab, abU⟩ : ∃ a b : X, x ∈ Icc a b ∧ Icc a b ∈ 𝓝 x ∧ Icc a b ⊆ U :=
+    exists_Icc_mem_subset_of_mem_nhds hU
+  have ab : a ≤ b := xab.1.trans xab.2
+  refine ⟨Icc a b, hab, ?_⟩
+  exact
+    (hanti.antitoneOn _).integrableOn_of_measure_ne_top (isLeast_Icc ab) (isGreatest_Icc ab)
+      ((measure_mono abU).trans_lt h'U).ne measurableSet_Icc
 
 end Monotone
 

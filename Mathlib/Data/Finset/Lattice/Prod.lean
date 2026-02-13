@@ -67,11 +67,11 @@ variable [SemilatticeInf α] [OrderTop α]
 
 theorem inf_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).inf f = s.inf fun i => t.inf fun i' => f ⟨i, i'⟩ :=
-  @sup_product_left αᵒᵈ _ _ _ _ _ _ _
+  eq_of_forall_le_iff fun a => by simp [@forall_swap _ γ]
 
 theorem inf_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
-    (s ×ˢ t).inf f = t.inf fun i' => s.inf fun i => f ⟨i, i'⟩ :=
-  @sup_product_right αᵒᵈ _ _ _ _ _ _ _
+    (s ×ˢ t).inf f = t.inf fun i' => s.inf fun i => f ⟨i, i'⟩ := by
+  rw [inf_product_left, Finset.inf_comm]
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] [OrderTop α] [OrderTop β]
@@ -79,7 +79,11 @@ variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] [OrderTop
 
 @[simp] lemma inf_prodMap (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : κ → β) :
     inf (s ×ˢ t) (Prod.map f g) = (inf s f, inf t g) :=
-  sup_prodMap (α := αᵒᵈ) (β := βᵒᵈ) hs ht _ _
+  eq_of_forall_le_iff fun i ↦ by
+    obtain ⟨a, ha⟩ := hs
+    obtain ⟨b, hb⟩ := ht
+    simp only [Prod.map, Finset.le_inf_iff, mem_product, and_imp, Prod.forall, Prod.le_def]
+    exact ⟨fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩, by simp_all⟩
 
 end Prod
 
@@ -104,8 +108,8 @@ section OrderTop
 variable [OrderTop α] {f : ι → α} {g : κ → α} {s : Finset ι} {t : Finset κ} {a : α}
 
 theorem inf_sup_inf (s : Finset ι) (t : Finset κ) (f : ι → α) (g : κ → α) :
-    s.inf f ⊔ t.inf g = (s ×ˢ t).inf fun i => f i.1 ⊔ g i.2 :=
-  @sup_inf_sup αᵒᵈ _ _ _ _ _ _ _ _
+    s.inf f ⊔ t.inf g = (s ×ˢ t).inf fun i => f i.1 ⊔ g i.2 := by
+  simp_rw [Finset.inf_sup_distrib_right, Finset.inf_sup_distrib_left, inf_product_left]
 
 end OrderTop
 
@@ -155,11 +159,11 @@ variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
 theorem inf'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).inf' h f = s.inf' h.fst fun i => t.inf' h.snd fun i' => f ⟨i, i'⟩ :=
-  sup'_product_left (α := αᵒᵈ) h f
+  eq_of_forall_le_iff fun a => by simp [@forall_swap _ γ]
 
 theorem inf'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i => f ⟨i, i'⟩ :=
-  sup'_product_right (α := αᵒᵈ) h f
+    (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i => f ⟨i, i'⟩ := by
+  rw [inf'_product_left, Finset.inf'_comm]
 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] {s : Finset ι} {t : Finset κ}
@@ -167,7 +171,11 @@ variable {ι κ α β : Type*} [SemilatticeInf α] [SemilatticeInf β] {s : Fins
 /-- See also `Finset.inf'_prodMap`. -/
 lemma prodMk_inf'_inf' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : κ → β) :
     (inf' s hs f, inf' t ht g) = inf' (s ×ˢ t) (hs.product ht) (Prod.map f g) :=
-  prodMk_sup'_sup' (α := αᵒᵈ) (β := βᵒᵈ) hs ht _ _
+  eq_of_forall_le_iff fun i ↦ by
+    obtain ⟨a, ha⟩ := hs
+    obtain ⟨b, hb⟩ := ht
+    simp only [Prod.map, le_inf'_iff, mem_product, and_imp, Prod.forall, Prod.le_def]
+    exact ⟨by simp_all, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
 
 /-- See also `Finset.prodMk_inf'_inf'`. -/
 -- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
@@ -188,8 +196,8 @@ theorem sup'_inf_sup' (f : ι → α) (g : κ → α) :
   simp_rw [Finset.sup'_inf_distrib_right, Finset.sup'_inf_distrib_left, sup'_product_left]
 
 theorem inf'_sup_inf' (f : ι → α) (g : κ → α) :
-    s.inf' hs f ⊔ t.inf' ht g = (s ×ˢ t).inf' (hs.product ht) fun i => f i.1 ⊔ g i.2 :=
-  @sup'_inf_sup' αᵒᵈ _ _ _ _ _ hs ht _ _
+    s.inf' hs f ⊔ t.inf' ht g = (s ×ˢ t).inf' (hs.product ht) fun i => f i.1 ⊔ g i.2 := by
+  simp_rw [Finset.inf'_sup_distrib_right, Finset.inf'_sup_distrib_left, inf'_product_left]
 
 end DistribLattice
 

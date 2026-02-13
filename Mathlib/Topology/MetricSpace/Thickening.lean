@@ -95,7 +95,7 @@ the thickening radius `δ`. -/
 @[gcongr]
 theorem thickening_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     thickening δ₁ E ⊆ thickening δ₂ E :=
-  preimage_mono (Iio_subset_Iio (ENNReal.ofReal_le_ofReal hle))
+  fun _ hx => lt_of_lt_of_le hx (ENNReal.ofReal_le_ofReal hle)
 
 /-- The (open) thickening `Metric.thickening δ E` with a fixed thickening radius `δ` is
 an increasing function of the subset `E`. -/
@@ -250,7 +250,7 @@ theorem cthickening_max_zero (δ : ℝ) (E : Set α) : cthickening (max 0 δ) E 
 of the thickening radius `δ`. -/
 theorem cthickening_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     cthickening δ₁ E ⊆ cthickening δ₂ E :=
-  preimage_mono (Iic_subset_Iic.mpr (ENNReal.ofReal_le_ofReal hle))
+  fun _ hx => le_trans hx (ENNReal.ofReal_le_ofReal hle)
 
 @[simp]
 theorem cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) {δ : ℝ} (hδ : 0 ≤ δ) :

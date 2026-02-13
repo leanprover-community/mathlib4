@@ -60,7 +60,7 @@ see their statements.
 @[expose] public section
 
 open Set Filter TopologicalSpace
-open OrderDual (toDual)
+open OrderDual (toDual ofDual)
 open scoped Topology
 
 universe u v w
@@ -86,13 +86,16 @@ class OrderClosedTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Pro
   /-- The set `{ (x, y) | x ≤ y }` is a closed set. -/
   isClosed_le' : IsClosed { p : α × α | p.1 ≤ p.2 }
 
-instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := h
-instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := h
-instance [TopologicalSpace α] [h : SeparableSpace α] : SeparableSpace αᵒᵈ := h
+instance [TopologicalSpace α] [FirstCountableTopology α] : FirstCountableTopology αᵒᵈ :=
+  OrderDual.isInducing_ofDual.firstCountableTopology
+instance [TopologicalSpace α] [SecondCountableTopology α] : SecondCountableTopology αᵒᵈ :=
+  OrderDual.isInducing_ofDual.secondCountableTopology
+instance [TopologicalSpace α] [SeparableSpace α] : SeparableSpace αᵒᵈ :=
+  isOpenMap_ofDual.separableSpace_of_isInducing OrderDual.isInducing_ofDual
 
 theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=
-  hs
+  hs.preimage isOpenMap_ofDual
 
 section General
 variable [TopologicalSpace α] [Preorder α] {s : Set α}
@@ -115,7 +118,11 @@ theorem isClosed_Iic : IsClosed (Iic a) :=
   ClosedIicTopology.isClosed_Iic a
 
 instance : ClosedIciTopology αᵒᵈ where
-  isClosed_Ici _ := isClosed_Iic (α := α)
+  isClosed_Ici a := by
+    have : Ici a = ofDual ⁻¹' Iic (ofDual a) := by
+      ext x; simp [Ici, Iic, OrderDual.ofDual_le_ofDual]
+    rw [this]
+    exact (isClosed_Iic (α := α)).preimage continuous_ofDual
 
 @[simp]
 theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
@@ -364,7 +371,11 @@ theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
   ClosedIciTopology.isClosed_Ici a
 
 instance : ClosedIicTopology αᵒᵈ where
-  isClosed_Iic _ := isClosed_Ici (α := α)
+  isClosed_Iic a := by
+    have : Iic a = ofDual ⁻¹' Ici (ofDual a) := by
+      ext x; simp [Iic, Ici, OrderDual.ofDual_le_ofDual]
+    rw [this]
+    exact (isClosed_Ici (α := α)).preimage continuous_ofDual
 
 @[simp]
 theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
@@ -391,12 +402,19 @@ theorem ge_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
 protected alias ⟨_, BddBelow.closure⟩ := bddBelow_closure
 
 @[simp]
-theorem disjoint_nhds_atTop_iff : Disjoint (𝓝 a) atTop ↔ ¬IsTop a :=
-  disjoint_nhds_atBot_iff (α := αᵒᵈ)
+theorem disjoint_nhds_atTop_iff : Disjoint (𝓝 a) atTop ↔ ¬IsTop a := by
+  constructor
+  · intro hd htop
+    rw [htop.atTop_eq, disjoint_principal_right] at hd
+    exact mem_of_mem_nhds hd le_rfl
+  · simp only [IsTop, not_forall]
+    rintro ⟨b, hb⟩
+    refine disjoint_of_disjoint_of_mem disjoint_compl_left ?_ (Ici_mem_atTop b)
+    exact isClosed_Ici.isOpen_compl.mem_nhds hb
 
 theorem IsGLB.range_of_tendsto {F : Filter β} [F.NeBot] (hle : ∀ i, a ≤ f i)
     (hlim : Tendsto f F (𝓝 a)) : IsGLB (range f) a :=
-  IsLUB.range_of_tendsto (α := αᵒᵈ) hle hlim
+  ⟨forall_mem_range.mpr hle, fun _c hc ↦ ge_of_tendsto' hlim fun i ↦ hc <| mem_range_self i⟩
 
 end Preorder
 
@@ -405,7 +423,7 @@ section NoTopOrder
 variable [Preorder α] [NoTopOrder α] [TopologicalSpace α] [ClosedIciTopology α] {a : α}
   {l : Filter β} [NeBot l] {f : β → α}
 
-theorem disjoint_nhds_atTop (a : α) : Disjoint (𝓝 a) atTop := disjoint_nhds_atBot (toDual a)
+theorem disjoint_nhds_atTop (a : α) : Disjoint (𝓝 a) atTop := by simp
 
 @[simp]
 theorem inf_nhds_atTop (a : α) : 𝓝 a ⊓ atTop = ⊥ := (disjoint_nhds_atTop a).eq_bot
@@ -422,20 +440,27 @@ theorem iInf_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
     [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIciTopology α]
     {a : α} {f : ι → α} (hle : ∀ i, a ≤ f i) (hlim : Tendsto f F (𝓝 a)) :
     ⨅ i, f i = a :=
-  iSup_eq_of_forall_le_of_tendsto (α := αᵒᵈ) hle hlim
+  have := F.nonempty_of_neBot
+  (IsGLB.range_of_tendsto hle hlim).ciInf_eq
 
 theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIciTopology α]
     {a : α} {f : ι → α} (hlt : ∀ i, a < f i) (hlim : Tendsto f F (𝓝 a)) :
-    ⋃ i : ι, Ici (f i) = Ioi a :=
-  iUnion_Iic_eq_Iio_of_lt_of_tendsto (α := αᵒᵈ) hlt hlim
+    ⋃ i : ι, Ici (f i) = Ioi a := by
+  have obs : a ∉ range f := by
+    rw [mem_range]
+    rintro ⟨i, rfl⟩
+    exact (hlt i).false
+  rw [← biUnion_range, (IsGLB.range_of_tendsto (le_of_lt <| hlt ·) hlim).biUnion_Ici_eq_Ioi obs]
 
 section LinearOrder
 
 variable [TopologicalSpace α] [LinearOrder α] [ClosedIciTopology α] [TopologicalSpace β]
   {a b c : α} {f : α → β}
 
-theorem isOpen_Iio : IsOpen (Iio a) := isOpen_Ioi (α := αᵒᵈ)
+theorem isOpen_Iio : IsOpen (Iio a) := by
+  rw [← compl_Ici]
+  exact isClosed_Ici.isOpen_compl
 
 @[simp] theorem interior_Iio : interior (Iio a) = Iio a := isOpen_Iio.interior_eq
 
@@ -458,15 +483,19 @@ theorem Filter.Tendsto.eventually_le_const {l : Filter γ} {f : γ → α} {u v 
 
 protected theorem Dense.exists_lt [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, y < x :=
-  hs.orderDual.exists_gt x
+  hs.exists_mem_open isOpen_Iio (exists_lt x)
 
 protected theorem Dense.exists_le [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, y ≤ x :=
-  hs.orderDual.exists_ge x
+  (hs.exists_lt x).imp fun _ h ↦ ⟨h.1, h.2.le⟩
 
 theorem Dense.exists_le' {s : Set α} (hs : Dense s) (hbot : ∀ x, IsBot x → x ∈ s) (x : α) :
-    ∃ y ∈ s, y ≤ x :=
-  hs.orderDual.exists_ge' hbot x
+    ∃ y ∈ s, y ≤ x := by
+  by_cases hx : IsBot x
+  · exact ⟨x, hbot x hx, le_rfl⟩
+  · simp only [IsBot, not_forall, not_le] at hx
+    rcases hs.exists_mem_open isOpen_Iio hx with ⟨y, hys, hy : y < x⟩
+    exact ⟨y, hys, hy.le⟩
 
 /-!
 ### Right neighborhoods on a `ClosedIciTopology`
@@ -489,15 +518,18 @@ theorem Ioo_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioo a c ∈ 𝓝[>] b :=
 
 theorem Ioo_mem_nhdsGT (H : a < b) : Ioo a b ∈ 𝓝[>] a := Ioo_mem_nhdsGT_of_mem ⟨le_rfl, H⟩
 
-protected theorem CovBy.nhdsGT (h : a ⋖ b) : 𝓝[>] a = ⊥ := h.toDual.nhdsLT
+protected theorem CovBy.nhdsGT (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+  empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsGT h.1
 
-protected theorem SuccOrder.nhdsGT [SuccOrder α] : 𝓝[>] a = ⊥ := PredOrder.nhdsLT (α := αᵒᵈ)
+protected theorem SuccOrder.nhdsGT [SuccOrder α] : 𝓝[>] a = ⊥ := by
+  if h : IsMax a then simp [h.Ioi_eq]
+  else exact (Order.covBy_succ_of_not_isMax h).nhdsGT
 
-theorem SuccOrder.nhdsLT_eq_nhdsNE [SuccOrder α] (a : α) : 𝓝[<] a = 𝓝[≠] a :=
-  PredOrder.nhdsGT_eq_nhdsNE (α := αᵒᵈ) a
+theorem SuccOrder.nhdsLT_eq_nhdsNE [SuccOrder α] (a : α) : 𝓝[<] a = 𝓝[≠] a := by
+  rw [← nhdsLT_sup_nhdsGT, SuccOrder.nhdsGT, sup_bot_eq]
 
-theorem SuccOrder.nhdsLE_eq_nhds [SuccOrder α] (a : α) : 𝓝[≤] a = 𝓝 a :=
-  PredOrder.nhdsGE_eq_nhds (α := αᵒᵈ) a
+theorem SuccOrder.nhdsLE_eq_nhds [SuccOrder α] (a : α) : 𝓝[≤] a = 𝓝 a := by
+  rw [← nhdsLE_sup_nhdsGT, SuccOrder.nhdsGT, sup_bot_eq]
 
 theorem Ioc_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsGT_of_mem H) Ioo_subset_Ioc_self
@@ -536,10 +568,11 @@ theorem continuousWithinAt_Ioo_iff_Ioi (h : a < b) :
 ### Point included
 -/
 
-protected theorem CovBy.nhdsGE (H : a ⋖ b) : 𝓝[≥] a = pure a := H.toDual.nhdsLE
+protected theorem CovBy.nhdsGE (H : a ⋖ b) : 𝓝[≥] a = pure a := by
+  rw [← Ioi_insert, nhdsWithin_insert, H.nhdsGT, sup_bot_eq]
 
-protected theorem SuccOrder.nhdsGE [SuccOrder α] : 𝓝[≥] a = pure a :=
-  PredOrder.nhdsLE (α := αᵒᵈ)
+protected theorem SuccOrder.nhdsGE [SuccOrder α] : 𝓝[≥] a = pure a := by
+  rw [← Ioi_insert, nhdsWithin_insert, SuccOrder.nhdsGT, sup_bot_eq]
 
 theorem Ico_mem_nhdsGE (H : a < b) : Ico a b ∈ 𝓝[≥] a :=
   inter_mem_nhdsWithin _ <| Iio_mem_nhds H
@@ -609,8 +642,14 @@ instance : ClosedIicTopology α where
 instance : ClosedIciTopology α where
   isClosed_Ici _ := isClosed_le continuous_const continuous_id
 
-instance : OrderClosedTopology αᵒᵈ :=
-  ⟨(OrderClosedTopology.isClosed_le' (α := α)).preimage continuous_swap⟩
+instance : OrderClosedTopology αᵒᵈ := by
+  constructor
+  have : {p : αᵒᵈ × αᵒᵈ | p.1 ≤ p.2} =
+      (fun p : αᵒᵈ × αᵒᵈ => (ofDual p.2, ofDual p.1)) ⁻¹' {p : α × α | p.1 ≤ p.2} := by
+    ext ⟨a, b⟩; simp [OrderDual.ofDual_le_ofDual]
+  rw [this]
+  exact (OrderClosedTopology.isClosed_le' (α := α)).preimage
+    ((continuous_ofDual.comp continuous_snd).prodMk (continuous_ofDual.comp continuous_fst))
 
 theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
   IsClosed.inter isClosed_Ici isClosed_Iic
@@ -681,12 +720,16 @@ theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} 
   exact isClosed_monotoneOn
 
 /-- The set of antitone functions on a set is closed. -/
-theorem isClosed_antitoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | AntitoneOn f s} :=
-  isClosed_monotoneOn (α := αᵒᵈ) (β := β)
+theorem isClosed_antitoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | AntitoneOn f s} := by
+  simp only [isClosed_iff_clusterPt, clusterPt_principal_iff_frequently]
+  intro g hg a ha b hb hab
+  have hmain (x) : Tendsto (fun f' ↦ f' x) (𝓝 g) (𝓝 (g x)) := continuousAt_apply x _
+  exact le_of_tendsto_of_tendsto_of_frequently (hmain b) (hmain a) (hg.mono fun g h ↦ h ha hb hab)
 
 /-- The set of antitone functions is closed. -/
-theorem isClosed_antitone [Preorder β] : IsClosed {f : β → α | Antitone f} :=
-  isClosed_monotone (α := αᵒᵈ) (β := β)
+theorem isClosed_antitone [Preorder β] : IsClosed {f : β → α | Antitone f} := by
+  simp_rw [← antitoneOn_univ]
+  exact isClosed_antitoneOn
 
 end Preorder
 
@@ -774,7 +817,7 @@ theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=
   frontier_le_subset_eq (@continuous_id α _) continuous_const
 
 theorem frontier_Ici_subset (a : α) : frontier (Ici a) ⊆ {a} :=
-  frontier_Iic_subset (α := αᵒᵈ) _
+  fun _ hx ↦ (frontier_le_subset_eq continuous_const continuous_id hx).symm
 
 theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b < g b } ⊆ { b | f b = g b } := by
@@ -812,8 +855,9 @@ protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
 
 @[continuity, fun_prop]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun b => max (f b) (g b) :=
-  Continuous.min (α := αᵒᵈ) hf hg
+    Continuous fun b => max (f b) (g b) := by
+  simp only [max_def]
+  exact hg.if_le hf hf hg fun _ => Eq.symm
 
 end
 
@@ -851,20 +895,23 @@ theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (
   exact Filter.tendsto_nhds_max_right h
 
 theorem Filter.Tendsto.min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => min a (f i)) l (𝓝 a) :=
-  Filter.Tendsto.max_right (α := αᵒᵈ) h
+    Tendsto (fun i => min a (f i)) l (𝓝 a) := by
+  simpa only [inf_idem] using (tendsto_const_nhds (x := a)).min h
 
 theorem Filter.Tendsto.min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => min (f i) a) l (𝓝 a) :=
-  Filter.Tendsto.max_left (α := αᵒᵈ) h
+    Tendsto (fun i => min (f i) a) l (𝓝 a) := by
+  simp_rw [min_comm _ a]
+  exact h.min_right
 
 theorem Filter.tendsto_nhds_min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
-    Tendsto (fun i => min a (f i)) l (𝓝[<] a) :=
-  Filter.tendsto_nhds_max_right (α := αᵒᵈ) h
+    Tendsto (fun i => min a (f i)) l (𝓝[<] a) := by
+  obtain ⟨h₁ : Tendsto f l (𝓝 a), h₂ : ∀ᶠ i in l, f i ∈ Iio a⟩ := tendsto_nhdsWithin_iff.mp h
+  exact tendsto_nhdsWithin_iff.mpr ⟨h₁.min_right, h₂.mono fun i hi => min_lt_of_right_lt hi⟩
 
 theorem Filter.tendsto_nhds_min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
-    Tendsto (fun i => min (f i) a) l (𝓝[<] a) :=
-  Filter.tendsto_nhds_max_left (α := αᵒᵈ) h
+    Tendsto (fun i => min (f i) a) l (𝓝[<] a) := by
+  simp_rw [min_comm _ a]
+  exact Filter.tendsto_nhds_min_right h
 
 theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x y : α} (h : x < y) :
     ∃ z ∈ s, z ∈ Ioo x y :=
@@ -877,8 +924,10 @@ theorem Dense.Ioi_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x 
   exact mem_iUnion₂.2 ⟨y, ⟨hys, hxy⟩, hyz⟩
 
 theorem Dense.Iio_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
-    Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
-  Dense.Ioi_eq_biUnion (α := αᵒᵈ) hs x
+    Iio x = ⋃ y ∈ s ∩ Iio x, Iio y := by
+  refine Subset.antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun y hy ↦ Iio_subset_Iio (le_of_lt hy.2))
+  rcases hs.exists_between hz with ⟨y, hys, hzy, hyx⟩
+  exact mem_iUnion₂.2 ⟨y, ⟨hys, hyx⟩, hzy⟩
 
 end LinearOrder
 

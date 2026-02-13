@@ -487,30 +487,36 @@ theorem orderHom_eq_id [Subsingleton α] (g : α →o α) : g = OrderHom.id :=
 protected def dual : (α →o β) ≃ (αᵒᵈ →o βᵒᵈ) where
   toFun f := ⟨(OrderDual.toDual : β → βᵒᵈ) ∘ (f : α → β) ∘
     (OrderDual.ofDual : αᵒᵈ → α), f.mono.dual⟩
-  invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, f.mono.dual⟩
+  invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual,
+    fun _ _ h => OrderDual.ofDual_le_ofDual.mpr (f.mono (OrderDual.toDual_le_toDual.mpr h))⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; simp [OrderDual.toDual_ofDual]
 
 @[simp]
-theorem dual_id : (OrderHom.id : α →o α).dual = OrderHom.id :=
-  rfl
+theorem dual_id : (OrderHom.id : α →o α).dual = OrderHom.id := by
+  ext x; simp [OrderDual.toDual_ofDual]
 
 @[simp]
 theorem dual_comp (g : β →o γ) (f : α →o β) :
-    (g.comp f).dual = g.dual.comp f.dual :=
-  rfl
+    (g.comp f).dual = g.dual.comp f.dual := by
+  ext x; rfl
 
 @[simp]
-theorem symm_dual_id : OrderHom.dual.symm OrderHom.id = (OrderHom.id : α →o α) :=
-  rfl
+theorem symm_dual_id : OrderHom.dual.symm OrderHom.id = (OrderHom.id : α →o α) := by
+  ext; rfl
 
 @[simp]
 theorem symm_dual_comp (g : βᵒᵈ →o γᵒᵈ) (f : αᵒᵈ →o βᵒᵈ) :
-    OrderHom.dual.symm (g.comp f) = (OrderHom.dual.symm g).comp (OrderHom.dual.symm f) :=
-  rfl
+    OrderHom.dual.symm (g.comp f) = (OrderHom.dual.symm g).comp (OrderHom.dual.symm f) := by
+  ext; rfl
 
 /-- `OrderHom.dual` as an order isomorphism. -/
 def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
-  toEquiv := OrderHom.dual.trans OrderDual.toDual
-  map_rel_iff' := Iff.rfl
+  toEquiv := OrderHom.dual.trans (OrderDual.equiv _).symm
+  map_rel_iff' {a b} := by
+    simp only [Equiv.trans_apply, OrderDual.equiv]
+    change b.dual ≤ a.dual ↔ a ≤ b
+    simp [OrderHom.le_def, OrderHom.dual]
 
 /-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o ULift β` in a
 higher universe. -/
@@ -539,11 +545,6 @@ theorem uliftRightMap_uliftLeftMap_eq (f : α →o β) : f.uliftRightMap.uliftLe
   rfl
 
 end OrderHom
-
--- See note [lower instance priority]
-instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
-    [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
-  map_rel f := map_rel f
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
 def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
@@ -600,7 +601,10 @@ protected theorem isWellOrder [IsWellOrder β (· < ·)] (f : α ↪o β) : IsWe
 
 /-- An order embedding is also an order embedding between dual orders. -/
 protected def dual : αᵒᵈ ↪o βᵒᵈ :=
-  ⟨f.toEmbedding, f.map_rel_iff⟩
+  ⟨⟨toDual ∘ f ∘ ofDual, fun a b h => by
+    apply OrderDual.ext
+    exact f.injective (OrderDual.toDual_inj.mp h)⟩,
+    f.map_rel_iff⟩
 
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
 @[to_dual /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
@@ -679,8 +683,12 @@ lemma Disjoint.of_orderEmbedding [OrderBot α] [OrderBot β] {a₁ a₂ : α} :
 /-- If the images by an order embedding of two elements are codisjoint,
 then they are themselves codisjoint. -/
 lemma Codisjoint.of_orderEmbedding [OrderTop α] [OrderTop β] {a₁ a₂ : α} :
-    Codisjoint (f a₁) (f a₂) → Codisjoint a₁ a₂ :=
-  Disjoint.of_orderEmbedding (α := αᵒᵈ) (β := βᵒᵈ) f.dual
+    Codisjoint (f a₁) (f a₂) → Codisjoint a₁ a₂ := by
+  intro h x h₁ h₂
+  rw [← f.le_iff_le] at h₁ h₂ ⊢
+  calc
+    f ⊤ ≤ ⊤ := le_top
+    _ ≤ f x := h h₁ h₂
 
 /-- If the images by an order embedding of two elements are complements,
 then they are themselves complements. -/
@@ -909,26 +917,27 @@ theorem prodComm_symm : (prodComm : α × β ≃o β × α).symm = prodComm :=
 variable (α)
 
 /-- The order isomorphism between a type and its double dual. -/
-def dualDual : α ≃o αᵒᵈᵒᵈ :=
-  refl α
+def dualDual : α ≃o αᵒᵈᵒᵈ where
+  toEquiv := (OrderDual.equiv α).symm.trans (OrderDual.equiv αᵒᵈ).symm
+  map_rel_iff' := Iff.rfl
 
 @[simp]
-theorem coe_dualDual : ⇑(dualDual α) = toDual ∘ toDual :=
-  rfl
+theorem coe_dualDual : ⇑(dualDual α) = toDual ∘ toDual := by
+  ext; simp [dualDual, OrderDual.equiv]
 
 @[simp]
-theorem coe_dualDual_symm : ⇑(dualDual α).symm = ofDual ∘ ofDual :=
-  rfl
+theorem coe_dualDual_symm : ⇑(dualDual α).symm = ofDual ∘ ofDual := by
+  ext; simp [dualDual, OrderDual.equiv]
 
 variable {α}
 
 @[simp]
-theorem dualDual_apply (a : α) : dualDual α a = toDual (toDual a) :=
-  rfl
+theorem dualDual_apply (a : α) : dualDual α a = toDual (toDual a) := by
+  simp [dualDual, OrderDual.equiv]
 
 @[simp]
-theorem dualDual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual (ofDual a) :=
-  rfl
+theorem dualDual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual (ofDual a) := by
+  simp [dualDual, OrderDual.equiv]
 
 end LE
 
@@ -1122,16 +1131,20 @@ end StrictMono
 
 /-- An order isomorphism is also an order isomorphism between dual orders. -/
 protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ :=
-  ⟨f.toEquiv, f.le_iff_le⟩
+  ⟨(OrderDual.equiv α).trans (f.toEquiv.trans (OrderDual.equiv β).symm), f.le_iff_le⟩
 
 section
 variable [LE α] [LE β] (f : α ≃o β)
 
-@[simp] lemma OrderIso.dual_apply (x) : f.dual x = .toDual (f x.ofDual) := rfl
+@[simp] lemma OrderIso.dual_apply (x) : f.dual x = .toDual (f x.ofDual) := by
+  simp [OrderIso.dual, OrderDual.equiv]
 
-@[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := rfl
+@[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := by
+  simp [OrderIso.dual, OrderDual.equiv]
 
-@[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := rfl
+@[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := by
+  ext x
+  simp
 
 end
 
@@ -1211,11 +1224,6 @@ end BoundedOrder
 
 end LatticeIsos
 
--- See note [lower instance priority]
-instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
-    [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
-  map_le_map_iff f := map_le_map_iff f
-
 section DenselyOrdered
 
 -- could live in a more upstream file, but hard to find a good place
@@ -1243,12 +1251,11 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
     [EquivLike F X Y] (f : F) (hf : StrictAnti f) :
     DenselyOrdered X ↔ DenselyOrdered Y := by
   rw [← denselyOrdered_orderDual]
-  let e : Xᵒᵈ ≃o Y := ⟨OrderDual.ofDual.trans (f : X ≃ Y), ?_⟩
+  let e : Xᵒᵈ ≃o Y := ⟨(OrderDual.equiv X).trans (f : X ≃ Y), ?_⟩
   · exact denselyOrdered_iff_of_orderIsoClass e
-  · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
-      OrderDual.toDual_le_toDual]
-    intro a b
-    rw [hf.le_iff_ge]
+  · intro ⟨a⟩ ⟨b⟩
+    change f a ≤ f b ↔ b ≤ a
+    exact hf.le_iff_ge
 
 end DenselyOrdered
 

@@ -102,8 +102,19 @@ theorem countable_setOf_isolated_right [SecondCountableTopology α] :
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
 theorem countable_setOf_isolated_left [SecondCountableTopology α] :
-    { x : α | 𝓝[<] x = ⊥ }.Countable :=
-  countable_setOf_isolated_right (α := αᵒᵈ)
+    { x : α | 𝓝[<] x = ⊥ }.Countable := by
+  -- Transfer from the dual using the homeomorphism
+  have h := countable_setOf_isolated_right (α := αᵒᵈ)
+  suffices e : ofDual '' { x : αᵒᵈ | 𝓝[>] x = ⊥ } = { x : α | 𝓝[<] x = ⊥ } by
+    rw [← e]; exact h.image ofDual
+  ext x; simp only [mem_image, mem_setOf_eq]
+  have key : ∀ y : α, nhdsWithin (toDual y) (Ioi (toDual y)) = map toDual (nhdsWithin y (Iio y)) :=
+    fun y => by rw [nhdsWithin, nhds_toDual, ← Filter.map_inf_principal_preimage]; congr 1
+  constructor
+  · rintro ⟨y, hy, rfl⟩
+    rwa [key, map_eq_bot_iff] at hy
+  · intro hx
+    exact ⟨toDual x, by rwa [key, map_eq_bot_iff], rfl⟩
 
 /-- The set of points in a set which are isolated on the right in this set is countable when the
 space is second-countable. -/
@@ -148,8 +159,20 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
 /-- The set of points in a set which are isolated on the left in this set is countable when the
 space is second-countable. -/
 theorem countable_setOf_isolated_left_within [SecondCountableTopology α] {s : Set α} :
-    { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ }.Countable :=
-  countable_setOf_isolated_right_within (α := αᵒᵈ)
+    { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ }.Countable := by
+  have h := countable_setOf_isolated_right_within (α := αᵒᵈ) (s := ofDual ⁻¹' s)
+  suffices e : ofDual '' { x ∈ ofDual ⁻¹' s | 𝓝[ofDual ⁻¹' s ∩ Ioi x] x = ⊥ } =
+      { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ } by
+    rw [← e]; exact h.image ofDual
+  ext x; simp only [mem_image, mem_preimage, mem_setOf_eq]
+  have key : ∀ y : α, nhdsWithin (toDual y) (ofDual ⁻¹' s ∩ Ioi (toDual y)) =
+      map toDual (nhdsWithin y (s ∩ Iio y)) :=
+    fun y => by rw [nhdsWithin, nhds_toDual, ← Filter.map_inf_principal_preimage]; congr 1
+  constructor
+  · rintro ⟨y, ⟨hy1, hy2⟩, rfl⟩
+    exact ⟨hy1, by rwa [key, map_eq_bot_iff] at hy2⟩
+  · rintro ⟨hx1, hx2⟩
+    exact ⟨toDual x, ⟨hx1, by rwa [key, map_eq_bot_iff]⟩, rfl⟩
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
@@ -177,7 +200,19 @@ theorem TFAE_mem_nhdsLT {a b : α} (h : a < b) (s : Set α) :
         s ∈ 𝓝[Ioo a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b)`
         ∃ l ∈ Ico a b, Ioo l b ⊆ s, -- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
         ∃ l ∈ Iio b, Ioo l b ⊆ s] := by -- 4 : `s` includes `(l, b)` for some `l < b`
-  simpa using TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
+  tfae_have 1 ↔ 2 := by
+    rw [nhdsWithin_Ico_eq_nhdsLT h]
+  tfae_have 1 ↔ 3 := by
+    rw [nhdsWithin_Ioo_eq_nhdsLT h]
+  tfae_have 4 → 5 := fun ⟨l, lmem, hl⟩ => ⟨l, lmem.2, hl⟩
+  tfae_have 5 → 1
+  | ⟨l, hlb, hl⟩ => mem_of_superset (Ioo_mem_nhdsLT hlb) hl
+  tfae_have 1 → 4
+  | hm => by
+    rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 hm with ⟨v, va, hv⟩
+    rcases exists_Ioc_subset_of_mem_nhds' va h with ⟨l, al, hl⟩
+    exact ⟨l, al, fun x hx => hv ⟨hl ⟨hx.1, hx.2.le⟩, hx.2⟩⟩
+  tfae_finish
 
 theorem mem_nhdsLT_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
@@ -200,8 +235,13 @@ theorem mem_nhdsLT_iff_exists_Ioo_subset [NoMinOrder α] {a : α} {s : Set α} :
 with `l < a`. -/
 theorem mem_nhdsLT_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered α] {a : α} {s : Set α} :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ico l a ⊆ s := by
-  have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsGT_iff_exists_Ioc_subset
-  simpa using this
+  rw [mem_nhdsLT_iff_exists_Ioo_subset]
+  constructor
+  · rintro ⟨l, al, as⟩
+    rcases exists_between al with ⟨v, hv⟩
+    exact ⟨v, hv.2, fun x hx => as ⟨hv.1.trans_le hx.1, hx.2⟩⟩
+  · rintro ⟨l, al, as⟩
+    exact ⟨l, al, Subset.trans Ioo_subset_Ico_self as⟩
 
 theorem nhdsLT_basis_of_exists_lt {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
   let ⟨_, h⟩ := h
@@ -211,9 +251,11 @@ theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (I
   nhdsLT_basis_of_exists_lt <| exists_lt a
 
 theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-  convert (config := { preTransparency := .default }) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
-    using 4
-  exact ofDual_covBy_ofDual_iff
+  by_cases ha : IsBot a
+  · simp [ha, ha.isMin.Iio_eq]
+  · simp only [ha, false_or]
+    rw [isBot_iff_isMin, not_isMin_iff] at ha
+    simp only [(nhdsLT_basis_of_exists_lt ha).eq_bot_iff, covBy_iff_Ioo_eq]
 
 open List in
 /-- The following statements are equivalent:
@@ -288,7 +330,16 @@ theorem TFAE_mem_nhdsLE {a b : α} (h : a < b) (s : Set α) :
       s ∈ 𝓝[Ioc a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b]`
       ∃ l ∈ Ico a b, Ioc l b ⊆ s, -- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
       ∃ l ∈ Iio b, Ioc l b ⊆ s] := by -- 4 : `s` includes `(l, b]` for some `l < b`
-  simpa using TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
+  tfae_have 1 ↔ 2 := by
+    rw [nhdsWithin_Icc_eq_nhdsLE h]
+  tfae_have 1 ↔ 3 := by
+    rw [nhdsWithin_Ioc_eq_nhdsLE h]
+  tfae_have 1 ↔ 5 := (nhdsLE_basis_of_exists_lt ⟨a, h⟩).mem_iff
+  tfae_have 4 → 5 := fun ⟨l, lmem, hl⟩ => ⟨l, lmem.2, hl⟩
+  tfae_have 5 → 4
+  | ⟨l, hla, hls⟩ => ⟨max l a, ⟨le_max_right _ _, max_lt hla h⟩,
+      (Ioc_subset_Ioc_left (le_max_left _ _)).trans hls⟩
+  tfae_finish
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
@@ -307,19 +358,19 @@ theorem mem_nhdsLE_iff_exists_Ioc_subset [NoMinOrder α] {a : α} {s : Set α} :
   let ⟨_, hl'⟩ := exists_lt a
   mem_nhdsLE_iff_exists_Ioc_subset' hl'
 
+/-- The filter of left neighborhoods has a basis of closed intervals. -/
+theorem nhdsLE_basis_Icc [NoMinOrder α] [DenselyOrdered α] {a : α} :
+    (𝓝[≤] a).HasBasis (· < a) (Icc · a) :=
+  (nhdsLE_basis _).to_hasBasis
+    (fun _l hl ↦ let ⟨v, hlv, hva⟩ := exists_between hl
+      ⟨v, hva, fun _ hx ↦ ⟨hlv.trans_le hx.1, hx.2⟩⟩)
+    fun l hl ↦ ⟨l, hl, Ioc_subset_Icc_self⟩
+
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `[l, a]`
 with `l < a`. -/
 theorem mem_nhdsLE_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered α] {a : α}
     {s : Set α} : s ∈ 𝓝[≤] a ↔ ∃ l, l < a ∧ Icc l a ⊆ s :=
-  calc s ∈ 𝓝[≤] a ↔ ofDual ⁻¹' s ∈ 𝓝[≥] (toDual a) := Iff.rfl
-  _ ↔ ∃ u : α, toDual a < toDual u ∧ Icc (toDual a) (toDual u) ⊆ ofDual ⁻¹' s :=
-    mem_nhdsGE_iff_exists_Icc_subset
-  _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp
-
-/-- The filter of left neighborhoods has a basis of closed intervals. -/
-theorem nhdsLE_basis_Icc [NoMinOrder α] [DenselyOrdered α] {a : α} :
-    (𝓝[≤] a).HasBasis (· < a) (Icc · a) :=
-  ⟨fun _ ↦ mem_nhdsLE_iff_exists_Icc_subset⟩
+  nhdsLE_basis_Icc.mem_iff
 
 end OrderTopology
 
@@ -373,8 +424,11 @@ if `f` tends to `C` and `g` tends to `atBot` then `f * g` tends to `atBot`. -/
 @[to_additive add_atBot /-- In a linearly ordered additive commutative group with the order
 topology, if `f` tends to `C` and `g` tends to `atBot` then `f + g` tends to `atBot`. -/]
 theorem Filter.Tendsto.mul_atBot' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x * g x) l atBot :=
-  Filter.Tendsto.mul_atTop' (α := αᵒᵈ) hf hg
+    Tendsto (fun x => f x * g x) l atBot := by
+  nontriviality α
+  obtain ⟨C', hC'⟩ : ∃ C', C < C' := exists_gt C
+  refine tendsto_atBot_mul_left_of_ge' _ C' ?_ hg
+  exact (hf.eventually (gt_mem_nhds hC')).mono fun x => le_of_lt
 
 /-- In a linearly ordered commutative group with the order topology,
 if `f` tends to `atTop` and `g` tends to `C` then `f * g` tends to `atTop`. -/
@@ -460,12 +514,12 @@ variable [TopologicalSpace α] [LinearOrder α] [ClosedIicTopology α] {S : Set 
 /-- If `S` is order-connected and contains two points `x < y`, then `S` is a left neighbourhood
 of `y`. -/
 lemma mem_nhdsLE (hS : OrdConnected S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[≤] y :=
-  hS.dual.mem_nhdsGE hy hx hxy
+  mem_of_superset (Icc_mem_nhdsLE hxy) <| hS.out hx hy
 
 /-- If `S` is order-connected and contains two points `x < y`, then `S` is a punctured left
 neighbourhood of `y`. -/
 lemma mem_nhdsLT (hS : OrdConnected S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[<] y :=
-  hS.dual.mem_nhdsGT hy hx hxy
+  nhdsWithin_mono _ Iio_subset_Iic_self <| hS.mem_nhdsLE hx hy hxy
 
 end OrdConnected
 

@@ -85,7 +85,7 @@ variable (v : AddValuation R Γ₀)
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
 Note: it's just the function; the valuation is `onQuot hJ`. -/
 def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ :=
-  Valuation.onQuotVal v hJ
+  fun q => (Multiplicative.toAdd (Valuation.onQuotVal v hJ q)).ofDual
 
 /-- The extension of valuation `v` on `R` to valuation on `R / J` if `J ⊆ supp v`. -/
 def onQuot {J : Ideal R} (hJ : J ≤ supp v) : AddValuation (R ⧸ J) Γ₀ :=

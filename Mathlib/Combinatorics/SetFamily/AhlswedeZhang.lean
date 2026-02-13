@@ -300,10 +300,34 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [DecidableLE α]
 
 @[simp] lemma compl_truncatedSup (s : Finset α) (a : α) :
-    (truncatedSup s a)ᶜ = truncatedInf sᶜˢ aᶜ := map_truncatedSup (OrderIso.compl α) _ _
+    (truncatedSup s a)ᶜ = truncatedInf sᶜˢ aᶜ := by
+  classical
+  have hmem : aᶜ ∈ upperClosure (sᶜˢ : Set α) ↔ a ∈ lowerClosure (s : Set α) := by
+    simp only [mem_upperClosure, mem_lowerClosure, Finset.mem_coe, Finset.mem_compls]
+    constructor
+    · rintro ⟨b, hb, hab⟩; exact ⟨bᶜ, hb, le_compl_comm.mp hab⟩
+    · rintro ⟨b, hb, hab⟩; exact ⟨bᶜ, by simpa using hb, compl_le_compl hab⟩
+  by_cases h : a ∈ lowerClosure (s : Set α)
+  · rw [truncatedSup_of_mem h, truncatedInf_of_mem (hmem.mpr h)]
+    have hfilt : {b ∈ sᶜˢ | b ≤ aᶜ} = ({b ∈ s | a ≤ b}).image (·ᶜ) := by
+      ext x; simp only [mem_filter, mem_compls, mem_image]
+      constructor
+      · intro ⟨hx, hxa⟩
+        exact ⟨xᶜ, ⟨hx, le_compl_comm.mp hxa⟩, compl_compl x⟩
+      · rintro ⟨y, ⟨hy, hay⟩, rfl⟩
+        exact ⟨by simpa using hy, compl_le_compl hay⟩
+    simp only [hfilt, inf'_image, Function.comp_def, id]
+    suffices ∀ {t : Finset α} (ht : t.Nonempty), (t.sup' ht id)ᶜ = t.inf' ht (·ᶜ) from this _
+    intro t ht
+    induction ht using Finset.Nonempty.cons_induction with
+    | singleton => simp
+    | cons b _ hb hs ih =>
+      rw [sup'_cons hs, inf'_cons hs, compl_sup, ih]; rfl
+  · rw [truncatedSup_of_notMem h, truncatedInf_of_notMem (hmem.not.mpr h), compl_top]
 
 @[simp] lemma compl_truncatedInf (s : Finset α) (a : α) :
-    (truncatedInf s a)ᶜ = truncatedSup sᶜˢ aᶜ := map_truncatedInf (OrderIso.compl α) _ _
+    (truncatedInf s a)ᶜ = truncatedSup sᶜˢ aᶜ := by
+  rw [← compl_compl (truncatedSup sᶜˢ aᶜ), compl_truncatedSup, compls_compls, compl_compl]
 
 end BooleanAlgebra
 

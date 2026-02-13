@@ -81,7 +81,13 @@ theorem totalDegree_mul_of_isDomain {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
   cases exists_wellOrder σ
-  simp [← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
+  letI lo := WellOrderingRel.isWellOrder.linearOrder (α := σ)
+  letI : LinearOrder σ :=
+    LinearOrder.lift' (OrderDual.toDual (α := σ)) (fun _ _ h => OrderDual.toDual_inj.mp h)
+  haveI : WellFoundedGT σ := by
+    change IsWellFounded σ fun x y ↦ WellOrderingRel x y
+    exact IsWellOrder.toIsWellFounded
+  simp [← degree_degLexDegree, MonomialOrder.degree_mul hf hg]
 
 theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     (h : f ∣ g) (hg : g ≠ 0) :

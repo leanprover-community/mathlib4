@@ -196,7 +196,7 @@ theorem tendsto_atTop_of_eventually_const {ι : Type*} [Preorder ι]
 
 theorem tendsto_atBot_of_eventually_const {ι : Type*} [Preorder ι]
     {u : ι → X} {i₀ : ι} (h : ∀ i ≤ i₀, u i = x) : Tendsto u atBot (𝓝 x) :=
-  tendsto_atTop_of_eventually_const (ι := ιᵒᵈ) h
+  Tendsto.congr' (EventuallyEq.symm ((eventually_le_atBot i₀).mono h)) tendsto_const_nhds
 
 theorem pure_le_nhds : pure ≤ (𝓝 : X → Filter X) := fun _ _ hs => mem_pure.2 <| mem_of_mem_nhds hs
 

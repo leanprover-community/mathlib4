@@ -33,7 +33,7 @@ theorem tendsto_atTop_mul_left_of_le' (C : G) (hf : ∀ᶠ x in l, C ≤ f x) (h
 @[to_additive]
 theorem tendsto_atBot_mul_left_of_ge' (C : G) (hf : ∀ᶠ x in l, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
-  tendsto_atTop_mul_left_of_le' (G := Gᵒᵈ) _ C hf hg
+  .atBot_of_isBoundedUnder_ge_mul (f := f⁻¹) ⟨C⁻¹, by simpa⟩ (by simpa)
 
 @[to_additive]
 theorem tendsto_atTop_mul_left_of_le (C : G) (hf : ∀ x, C ≤ f x) (hg : Tendsto g l atTop) :
@@ -43,7 +43,7 @@ theorem tendsto_atTop_mul_left_of_le (C : G) (hf : ∀ x, C ≤ f x) (hg : Tends
 @[to_additive]
 theorem tendsto_atBot_mul_left_of_ge (C : G) (hf : ∀ x, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
-  tendsto_atTop_mul_left_of_le (G := Gᵒᵈ) _ C hf hg
+  tendsto_atBot_mul_left_of_ge' l C (univ_mem' hf) hg
 
 @[to_additive]
 theorem tendsto_atTop_mul_right_of_le' (C : G) (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, C ≤ g x) :
@@ -53,7 +53,7 @@ theorem tendsto_atTop_mul_right_of_le' (C : G) (hf : Tendsto f l atTop) (hg : �
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge' (C : G) (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
-  tendsto_atTop_mul_right_of_le' (G := Gᵒᵈ) _ C hf hg
+  .atBot_of_mul_isBoundedUnder_ge (g := g⁻¹) ⟨C⁻¹, by simpa⟩ (by simpa)
 
 @[to_additive]
 theorem tendsto_atTop_mul_right_of_le (C : G) (hf : Tendsto f l atTop) (hg : ∀ x, C ≤ g x) :
@@ -63,7 +63,7 @@ theorem tendsto_atTop_mul_right_of_le (C : G) (hf : Tendsto f l atTop) (hg : ∀
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge (C : G) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
-  tendsto_atTop_mul_right_of_le (G := Gᵒᵈ) _ C hf hg
+  tendsto_atBot_mul_right_of_ge' l C hf (univ_mem' hg)
 
 @[to_additive]
 theorem tendsto_atTop_mul_const_left (C : G) (hf : Tendsto f l atTop) :
@@ -73,7 +73,7 @@ theorem tendsto_atTop_mul_const_left (C : G) (hf : Tendsto f l atTop) :
 @[to_additive]
 theorem tendsto_atBot_mul_const_left (C : G) (hf : Tendsto f l atBot) :
     Tendsto (fun x => C * f x) l atBot :=
-  tendsto_atTop_mul_const_left (G := Gᵒᵈ) _ C hf
+  tendsto_atBot_mul_left_of_ge' l C (univ_mem' fun _ => le_refl C) hf
 
 @[to_additive]
 theorem tendsto_atTop_mul_const_right (C : G) (hf : Tendsto f l atTop) :
@@ -83,41 +83,47 @@ theorem tendsto_atTop_mul_const_right (C : G) (hf : Tendsto f l atTop) :
 @[to_additive]
 theorem tendsto_atBot_mul_const_right (C : G) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * C) l atBot :=
-  tendsto_atTop_mul_const_right (G := Gᵒᵈ) _ C hf
+  tendsto_atBot_mul_right_of_ge' l C hf (univ_mem' fun _ => le_refl C)
 
 @[to_additive]
-theorem map_inv_atBot : map (Inv.inv : G → G) atBot = atTop :=
-  (OrderIso.inv G).map_atBot
+theorem tendsto_inv_atTop_atBot : Tendsto (Inv.inv : G → G) atTop atBot := by
+  rw [atBot, tendsto_iInf]
+  exact fun b => tendsto_principal.2 <| mem_of_superset (mem_atTop b⁻¹) fun _a ha => inv_le'.2 ha
+
+@[to_additive]
+theorem tendsto_inv_atBot_atTop : Tendsto (Inv.inv : G → G) atBot atTop := by
+  rw [atTop, tendsto_iInf]
+  exact fun b => tendsto_principal.2 <| mem_of_superset (mem_atBot b⁻¹) fun _a ha => le_inv'.1 ha
 
 @[to_additive]
 theorem map_inv_atTop : map (Inv.inv : G → G) atTop = atBot :=
-  (OrderIso.inv G).map_atTop
+  le_antisymm tendsto_inv_atTop_atBot <|
+    le_map_of_right_inverse (.of_forall fun x => inv_inv x) tendsto_inv_atBot_atTop
 
 @[to_additive]
-theorem comap_inv_atBot : comap (Inv.inv : G → G) atBot = atTop :=
-  (OrderIso.inv G).comap_atTop
+theorem map_inv_atBot : map (Inv.inv : G → G) atBot = atTop :=
+  le_antisymm tendsto_inv_atBot_atTop <|
+    le_map_of_right_inverse (.of_forall fun x => inv_inv x) tendsto_inv_atTop_atBot
 
 @[to_additive]
-theorem comap_inv_atTop : comap (Inv.inv : G → G) atTop = atBot :=
-  (OrderIso.inv G).comap_atBot
+theorem comap_inv_atBot : comap (Inv.inv : G → G) atBot = atTop := by
+  rw [← map_inv_atTop, comap_map inv_injective]
 
 @[to_additive]
-theorem tendsto_inv_atTop_atBot : Tendsto (Inv.inv : G → G) atTop atBot :=
-  (OrderIso.inv G).tendsto_atTop
-
-@[to_additive]
-theorem tendsto_inv_atBot_atTop : Tendsto (Inv.inv : G → G) atBot atTop :=
-  tendsto_inv_atTop_atBot (G := Gᵒᵈ)
+theorem comap_inv_atTop : comap (Inv.inv : G → G) atTop = atBot := by
+  rw [← map_inv_atBot, comap_map inv_injective]
 
 variable {l}
 
 @[to_additive (attr := simp)]
-theorem tendsto_inv_atTop_iff : Tendsto (fun x => (f x)⁻¹) l atTop ↔ Tendsto f l atBot :=
-  (OrderIso.inv G).tendsto_atBot_iff
+theorem tendsto_inv_atTop_iff : Tendsto (fun x => (f x)⁻¹) l atTop ↔ Tendsto f l atBot := by
+  rw [← comap_inv_atBot, tendsto_comap_iff]
+  simp [Function.comp_def]
 
 @[to_additive (attr := simp)]
-theorem tendsto_inv_atBot_iff : Tendsto (fun x => (f x)⁻¹) l atBot ↔ Tendsto f l atTop :=
-  (OrderIso.inv G).tendsto_atTop_iff
+theorem tendsto_inv_atBot_iff : Tendsto (fun x => (f x)⁻¹) l atBot ↔ Tendsto f l atTop := by
+  rw [← comap_inv_atTop, tendsto_comap_iff]
+  simp [Function.comp_def]
 
 @[to_additive (attr := simp)]
 theorem tendsto_comp_inv_atTop_iff {f : G → α} :

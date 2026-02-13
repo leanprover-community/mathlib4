@@ -136,7 +136,8 @@ theorem le_iInf_iSup [CompleteLattice α] {f : ∀ a, κ a → α} :
 
 lemma iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
     ⨆ a, ⨅ b, f a b ≤ ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
-  le_iInf_iSup (α := αᵒᵈ)
+  le_iInf fun g => iSup_le fun a =>
+    le_trans (iInf_le _ (g a)) (le_iSup (fun a => f a (g a)) a)
 
 namespace Order.Frame.MinimalAxioms
 variable (minAx : MinimalAxioms α) {s : Set α} {a b : α}
@@ -461,8 +462,12 @@ theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f 
   exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 
 theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → α}
-    (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
-  @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
+    (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
+  refine (le_iSup_inf_iSup f g).antisymm ?_
+  rw [iSup_inf_iSup]
+  refine iSup_mono' fun i => ?_
+  rcases directed_of (· ≥ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
+  exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 
 theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
   (isGreatest_himp a b).isLUB.sSup_eq.symm
@@ -495,20 +500,22 @@ instance OrderDual.instFrame : Frame αᵒᵈ where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
 
-theorem sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b :=
-  @sSup_inf_eq αᵒᵈ _ _ _
+theorem sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b := by
+  simpa only [sup_comm] using @sup_sInf_eq α _ s b
 
-theorem iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a :=
-  @iSup_inf_eq αᵒᵈ _ _ _ _
+theorem iInf_sup_eq (f : ι → α) (a : α) : (⨅ i, f i) ⊔ a = ⨅ i, f i ⊔ a := by
+  rw [iInf, sInf_sup_eq, iInf_range]
 
-theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i :=
-  @inf_iSup_eq αᵒᵈ _ _ _ _
+theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔ f i := by
+  simpa only [sup_comm] using iInf_sup_eq f a
 
-theorem iInf₂_sup_eq {f : ∀ i, κ i → α} (a : α) : (⨅ (i) (j), f i j) ⊔ a = ⨅ (i) (j), f i j ⊔ a :=
-  @iSup₂_inf_eq αᵒᵈ _ _ _ _ _
+theorem iInf₂_sup_eq {f : ∀ i, κ i → α} (a : α) :
+    (⨅ (i) (j), f i j) ⊔ a = ⨅ (i) (j), f i j ⊔ a := by
+  simp only [iInf_sup_eq]
 
-theorem sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ (i) (j), f i j) = ⨅ (i) (j), a ⊔ f i j :=
-  @inf_iSup₂_eq αᵒᵈ _ _ _ _ _
+theorem sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) :
+    (a ⊔ ⨅ (i) (j), f i j) = ⨅ (i) (j), a ⊔ f i j := by
+  simp only [sup_iInf_eq]
 
 theorem iSup_sdiff_eq {f : ι → α} : (⨆ x, f x) \ a = ⨆ x, f x \ a :=
   eq_of_forall_ge_iff fun _ => by simp
@@ -517,23 +524,32 @@ theorem sdiff_iSup_eq {f : ι → α} : a \ ⨅ x, f x = ⨆ x, a \ f x :=
   eq_of_forall_ge_iff fun _ => by simp [iInf_sup_eq]
 
 theorem iInf_sup_iInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
-    ((⨅ i, f i) ⊔ ⨅ i, g i) = ⨅ i : ι × ι', f i.1 ⊔ g i.2 :=
-  @iSup_inf_iSup αᵒᵈ _ _ _ _ _
+    ((⨅ i, f i) ⊔ ⨅ i, g i) = ⨅ i : ι × ι', f i.1 ⊔ g i.2 := by
+  simp_rw [iInf_sup_eq, sup_iInf_eq, iInf_prod]
 
 theorem biInf_sup_biInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
-    ((⨅ i ∈ s, f i) ⊔ ⨅ j ∈ t, g j) = ⨅ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊔ g p.2 :=
-  @biSup_inf_biSup αᵒᵈ _ _ _ _ _ _ _
+    ((⨅ i ∈ s, f i) ⊔ ⨅ j ∈ t, g j) = ⨅ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊔ g p.2 := by
+  simp only [iInf_subtype', iInf_sup_iInf]
+  exact (Equiv.surjective _).iInf_congr (Equiv.Set.prod s t).symm fun x => rfl
 
-theorem sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 :=
-  @sSup_inf_sSup αᵒᵈ _ _ _
+theorem sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 := by
+  simp only [sInf_eq_iInf, biInf_sup_biInf]
 
 theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → α}
-    (hf : Monotone f) (hg : Monotone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
-  @iSup_inf_of_antitone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
+    (hf : Monotone f) (hg : Monotone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i := by
+  refine le_antisymm ?_ (iInf_sup_iInf_le f g)
+  rw [iInf_sup_iInf]
+  refine iInf_mono' fun i => ?_
+  rcases directed_of (· ≥ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
+  exact ⟨j, sup_le_sup (hf h₁) (hg h₂)⟩
 
 theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → α}
-    (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
-  @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
+    (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i := by
+  refine le_antisymm ?_ (iInf_sup_iInf_le f g)
+  rw [iInf_sup_iInf]
+  refine iInf_mono' fun i => ?_
+  rcases directed_of (· ≤ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
+  exact ⟨j, sup_le_sup (hf h₁) (hg h₂)⟩
 
 theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
   (isLeast_sdiff a b).isGLB.sInf_eq.symm
@@ -584,7 +600,10 @@ instance OrderDual.instCompletelyDistribLattice [CompletelyDistribLattice α] :
     CompletelyDistribLattice αᵒᵈ where
   __ := instFrame
   __ := instCoframe
-  iInf_iSup_eq _ := iSup_iInf_eq (α := α)
+  iInf_iSup_eq f := by
+    apply OrderDual.ext
+    simp only [ofDual_iInf, ofDual_iSup]
+    exact iSup_iInf_eq
 
 instance Prod.instCompletelyDistribLattice [CompletelyDistribLattice α]
     [CompletelyDistribLattice β] : CompletelyDistribLattice (α × β) where
@@ -699,7 +718,10 @@ instance Pi.instCompleteAtomicBooleanAlgebra {ι : Type*} {π : ι → Type*}
 instance OrderDual.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α] :
     CompleteAtomicBooleanAlgebra αᵒᵈ where
   __ := instCompleteBooleanAlgebra
-  __ := instCompletelyDistribLattice
+  iInf_iSup_eq f := by
+    apply OrderDual.ext
+    simp only [ofDual_iInf, ofDual_iSup]
+    exact iSup_iInf_eq
 
 instance Prop.instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Prop where
   __ := Prop.instCompleteLattice

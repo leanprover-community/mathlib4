@@ -510,7 +510,7 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
   let mud : IncidenceAlgebra 𝕜 αᵒᵈ :=
     { toFun := fun a b ↦ mu 𝕜 (ofDual b) (ofDual a)
       eq_zero_of_not_le' := fun a b hab ↦ apply_eq_zero_of_not_le (by exact hab) _ }
-  suffices mu 𝕜 = mud by simp_rw [this, mud, coe_mk, ofDual_toDual]
+  suffices mu 𝕜 = mud by simp_rw [this, mud, coe_mk]
   suffices mud * zeta 𝕜 = 1 by
     rw [← mu_mul_zeta] at this
     apply_fun (· * mu 𝕜) at this
@@ -522,7 +522,8 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
   calc
     ∑ x ∈ Icc a b, (if x ≤ b then mud a x else 0) = ∑ x ∈ Icc a b, mud a x := by
       congr! with x hx; exact if_pos (mem_Icc.1 hx).2
-    _ = ∑ x ∈ Icc (ofDual b) (ofDual a), mu 𝕜 x (ofDual a) := by simp [Icc_orderDual_def, mud]
+    _ = ∑ x ∈ Icc (ofDual b) (ofDual a), mu 𝕜 x (ofDual a) := by
+        simp [Icc_orderDual_def, mud, OrderDual.equiv]
     _ = if ofDual b = ofDual a then 1 else 0 := sum_Icc_mu_left ..
     _ = if a = b then 1 else 0 := by simp [eq_comm]
 
@@ -576,8 +577,16 @@ variable [Ring 𝕜] [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α] [De
 O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :
     f x = ∑ y ∈ Iic x, mu 𝕜 y x * g y := by
-  convert moebius_inversion_top (α := αᵒᵈ) f g h x using 3
-  rw [← mu_toDual]; rfl
+  have h' : ∀ a : αᵒᵈ, (g ∘ ofDual) a = ∑ y ∈ Ici a, (f ∘ ofDual) y := fun a ↦ by
+    simp only [Function.comp_def]
+    rw [h, Ici_orderDual_def, Finset.sum_map]
+    simp [OrderDual.equiv]
+  have key := moebius_inversion_top (α := αᵒᵈ) (f ∘ ofDual) (g ∘ ofDual) h' (toDual x)
+  simp only [Function.comp_def] at key
+  rw [key, Ici_orderDual_def, Finset.sum_map]
+  simp only [OrderDual.equiv, Equiv.toEmbedding_apply]
+  congr 1; ext y
+  simp [mu_toDual]
 
 end InversionBot
 

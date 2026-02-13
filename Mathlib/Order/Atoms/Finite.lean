@@ -122,7 +122,15 @@ theorem exists_covby_infinite_Ici_of_infinite_Ici [IsStronglyAtomic α]
 theorem exists_covby_infinite_Iic_of_infinite_Iic [IsStronglyCoatomic α]
     (ha : (Set.Iic a).Infinite) (hfin : {x | x ⋖ a}.Finite) :
     ∃ b, b ⋖ a ∧ (Set.Iic b).Infinite := by
-  simp_rw [← toDual_covBy_toDual_iff (α := α)] at hfin ⊢
-  exact exists_covby_infinite_Ici_of_infinite_Ici (α := αᵒᵈ) ha hfin
+  have ha' : (Set.Ici (OrderDual.toDual a)).Infinite := by
+    change (OrderDual.ofDual ⁻¹' Set.Iic a).Infinite
+    exact ha.preimage fun _ _ => ⟨OrderDual.toDual _, rfl⟩
+  have hfin' : {x : αᵒᵈ | OrderDual.toDual a ⋖ x}.Finite := by
+    refine (hfin.image OrderDual.toDual).subset fun x hx => ?_
+    simp only [Set.mem_image, Set.mem_setOf_eq] at hx ⊢
+    exact ⟨OrderDual.ofDual x, toDual_covBy_toDual_iff.mp hx, OrderDual.toDual_ofDual x⟩
+  obtain ⟨b, hb, hbinf⟩ := exists_covby_infinite_Ici_of_infinite_Ici (α := αᵒᵈ) ha' hfin'
+  refine ⟨OrderDual.ofDual b, toDual_covBy_toDual_iff.mp hb, ?_⟩
+  exact Set.infinite_of_injOn_mapsTo (fun _ _ _ _ h => OrderDual.ext h) (fun _ hx => hx) hbinf
 
 end IsStronglyAtomic

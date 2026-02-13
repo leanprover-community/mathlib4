@@ -319,18 +319,33 @@ theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonemp
 
 theorem Finite.iSup_biInf_of_antitone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsCodirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
-    (hf : ∀ i ∈ s, Antitone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j :=
-  @Finite.iSup_biInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ hs _ fun i hi => (hf i hi).dual_left
+    (hf : ∀ i ∈ s, Antitone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [iSup_const]
+  | insert _ _ ihs =>
+    rw [forall_mem_insert] at hf
+    simp only [iInf_insert, ← ihs hf.2]
+    exact iSup_inf_of_antitone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
 
 theorem Finite.iInf_biSup_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsCodirectedOrder ι'] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
-    (hf : ∀ i ∈ s, Monotone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j :=
-  hs.iSup_biInf_of_antitone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
+    (hf : ∀ i ∈ s, Monotone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [iInf_const]
+  | insert _ _ ihs =>
+    rw [forall_mem_insert] at hf
+    simp only [iSup_insert, ← ihs hf.2]
+    exact iInf_sup_of_monotone hf.1 fun j₁ j₂ hj => iSup₂_mono fun i hi => hf.2 i hi hj
 
 theorem Finite.iInf_biSup_of_antitone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirectedOrder ι'] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
-    (hf : ∀ i ∈ s, Antitone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j :=
-  hs.iSup_biInf_of_monotone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
+    (hf : ∀ i ∈ s, Antitone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [iInf_const]
+  | insert _ _ ihs =>
+    rw [forall_mem_insert] at hf
+    simp only [iSup_insert, ← ihs hf.2]
+    exact iInf_sup_of_antitone hf.1 fun j₁ j₂ hj => iSup₂_mono fun i hi => hf.2 i hi hj
 
 theorem _root_.iSup_iInf_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
@@ -339,18 +354,18 @@ theorem _root_.iSup_iInf_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder �
 
 theorem _root_.iSup_iInf_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsCodirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
-    ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j :=
-  @iSup_iInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ _ fun i => (hf i).dual_left
+    ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j := by
+  simpa only [iInf_univ] using finite_univ.iSup_biInf_of_antitone fun i _ => hf i
 
 theorem _root_.iInf_iSup_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsCodirectedOrder ι'] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
-    ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
-  iSup_iInf_of_antitone (α := αᵒᵈ) fun i => (hf i).dual_right
+    ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j := by
+  simpa only [iSup_univ] using finite_univ.iInf_biSup_of_monotone fun i _ => hf i
 
 theorem _root_.iInf_iSup_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirectedOrder ι'] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
-    ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
-  iSup_iInf_of_monotone (α := αᵒᵈ) fun i => (hf i).dual_right
+    ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j := by
+  simpa only [iSup_univ] using finite_univ.iInf_biSup_of_antitone fun i _ => hf i
 
 @[deprecated (since := "2026-02-03")] protected alias iSup_iInf_of_monotone := iSup_iInf_of_monotone
 @[deprecated (since := "2026-02-03")] protected alias iSup_iInf_of_antitone := iSup_iInf_of_antitone
@@ -420,12 +435,14 @@ variable [Preorder α] [IsCodirectedOrder α] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below. -/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
-  Finite.bddAbove (α := αᵒᵈ) hs
+  Finite.induction_on _ hs bddBelow_empty fun _ _ h => h.insert _
 
 /-- A finite union of sets which are all bounded below is still bounded below. -/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
-    BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
-  Finite.bddAbove_biUnion (α := αᵒᵈ) H
+    BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) := by
+  induction I, H using Set.Finite.induction_on with
+  | empty => simp only [biUnion_empty, bddBelow_empty, forall_mem_empty]
+  | insert _ _ hs => simp only [biUnion_insert, forall_mem_insert, bddBelow_union, hs]
 
 theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := mt Finite.bddBelow
 

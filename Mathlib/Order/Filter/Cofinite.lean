@@ -236,12 +236,22 @@ theorem Filter.Tendsto.exists_forall_le [Nonempty α] [LinearOrder β] {f : α �
 
 theorem Filter.Tendsto.exists_within_forall_ge [LinearOrder β] {s : Set α} (hs : s.Nonempty)
     {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atBot) :
-    ∃ a₀ ∈ s, ∀ a ∈ s, f a ≤ f a₀ :=
-  @Filter.Tendsto.exists_within_forall_le _ βᵒᵈ _ _ hs _ hf
+    ∃ a₀ ∈ s, ∀ a ∈ s, f a ≤ f a₀ := by
+  by_cases! all_bot : ∃ y ∈ s, ∃ x, x < f y
+  · rcases all_bot with ⟨y, hys, x, hx⟩
+    have : { y | ¬f y ≤ x }.Finite := Filter.eventually_cofinite.mp (tendsto_atBot.1 hf x)
+    simp only [not_le] at this
+    obtain ⟨a₀, ⟨ha₀ : x < f a₀, ha₀s⟩, others_smaller⟩ :=
+      exists_max_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
+    refine ⟨a₀, ha₀s, fun a has => (lt_or_ge x (f a)).elim ?_ (le_trans · ha₀.le)⟩
+    exact fun h => others_smaller a ⟨h, has⟩
+  · obtain ⟨a₀, ha₀s⟩ := hs
+    exact ⟨a₀, ha₀s, fun a ha => all_bot a ha (f a₀)⟩
 
 theorem Filter.Tendsto.exists_forall_ge [Nonempty α] [LinearOrder β] {f : α → β}
     (hf : Tendsto f cofinite atBot) : ∃ a₀, ∀ a, f a ≤ f a₀ :=
-  @Filter.Tendsto.exists_forall_le _ βᵒᵈ _ _ _ hf
+  let ⟨a₀, _, ha₀⟩ := hf.exists_within_forall_ge univ_nonempty
+  ⟨a₀, fun a => ha₀ a (mem_univ _)⟩
 
 theorem Function.Surjective.le_map_cofinite {f : α → β} (hf : Surjective f) :
     cofinite ≤ map f cofinite := fun _ h => .of_preimage h hf

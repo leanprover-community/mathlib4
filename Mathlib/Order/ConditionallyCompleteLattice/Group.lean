@@ -34,6 +34,8 @@ lemma ciInf_mul_ciInf_le_ciInf_mul [MulLeftMono α] [MulRightMono α]
     (⨅ i, f i) * ⨅ i, g i ≤ ⨅ i, f i * g i :=
   le_ciInf fun i ↦ mul_le_mul' (ciInf_le hf i) (ciInf_le hg i)
 
+attribute [to_dual existing ciInf_mul_ciInf_le_ciInf_mul] ciSup_mul_le_ciSup_mul_ciSup
+
 end Mul
 
 section Group
@@ -49,7 +51,7 @@ theorem le_mul_ciInf [MulLeftMono α] {a : α} {g : α} {h : ι → α}
 @[to_additive]
 theorem mul_ciSup_le [MulLeftMono α] {a : α} {g : α} {h : ι → α}
     (H : ∀ j, g * h j ≤ a) : g * iSup h ≤ a :=
-  le_mul_ciInf (α := αᵒᵈ) H
+  le_inv_mul_iff_mul_le.mp <| ciSup_le fun j => le_inv_mul_iff_mul_le.mpr <| H j
 
 @[to_additive]
 theorem le_ciInf_mul [MulRightMono α] {a : α} {g : ι → α}
@@ -59,7 +61,7 @@ theorem le_ciInf_mul [MulRightMono α] {a : α} {g : ι → α}
 @[to_additive]
 theorem ciSup_mul_le [MulRightMono α] {a : α} {g : ι → α}
     {h : α} (H : ∀ i, g i * h ≤ a) : iSup g * h ≤ a :=
-  le_ciInf_mul (α := αᵒᵈ) H
+  le_mul_inv_iff_mul_le.mp <| ciSup_le fun i => le_mul_inv_iff_mul_le.mpr <| H i
 
 @[to_additive]
 theorem le_ciInf_mul_ciInf [MulLeftMono α] [MulRightMono α] {a : α} {g : ι → α} {h : ι' → α}
@@ -70,5 +72,9 @@ theorem le_ciInf_mul_ciInf [MulLeftMono α] [MulRightMono α] {a : α} {g : ι �
 theorem ciSup_mul_ciSup_le [MulLeftMono α] [MulRightMono α] {a : α} {g : ι → α} {h : ι' → α}
     (H : ∀ i j, g i * h j ≤ a) : iSup g * iSup h ≤ a :=
   ciSup_mul_le fun _ => mul_ciSup_le <| H _
+
+attribute [to_dual existing le_mul_ciInf] mul_ciSup_le
+attribute [to_dual existing le_ciInf_mul] ciSup_mul_le
+attribute [to_dual existing le_ciInf_mul_ciInf] ciSup_mul_ciSup_le
 
 end Group

@@ -6,7 +6,9 @@ Authors: Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Group.Synonym
-public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Data.Nat.Cast.Synonym
 
 /-!
 # Ring structure on the order type synonyms
@@ -17,44 +19,76 @@ Transfer algebraic instances from `R` to `Rᵒᵈ` and `Lex R`.
 @[expose] public section
 
 
+open OrderDual
+
 variable {R : Type*}
 
 /-! ### Order dual -/
 
+instance [Distrib R] : Distrib Rᵒᵈ :=
+  ofDual_injective.distrib ofDual (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [h : Distrib R] : Distrib Rᵒᵈ := h
+instance [Mul R] [Add R] [LeftDistribClass R] : LeftDistribClass Rᵒᵈ :=
+  ofDual_injective.leftDistribClass ofDual (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass Rᵒᵈ := h
+instance [Mul R] [Add R] [RightDistribClass R] : RightDistribClass Rᵒᵈ :=
+  ofDual_injective.rightDistribClass ofDual (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass Rᵒᵈ := h
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ :=
+  ofDual_injective.nonUnitalNonAssocSemiring ofDual rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl)
 
-instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ := h
+instance [NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ :=
+  ofDual_injective.nonUnitalSemiring ofDual rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl)
 
-instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := h
+instance [NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ :=
+  ofDual_injective.nonAssocSemiring ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ => rfl)
 
-instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := h
+instance [Semiring R] : Semiring Rᵒᵈ :=
+  ofDual_injective.semiring ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
 
-instance [h : Semiring R] : Semiring Rᵒᵈ := h
+instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ :=
+  ofDual_injective.nonUnitalCommSemiring ofDual rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl)
 
-instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ := h
+instance [CommSemiring R] : CommSemiring Rᵒᵈ :=
+  ofDual_injective.commSemiring ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
 
-instance [h : CommSemiring R] : CommSemiring Rᵒᵈ := h
+instance [Mul R] [HasDistribNeg R] : HasDistribNeg Rᵒᵈ :=
+  ofDual_injective.hasDistribNeg _ (fun _ => rfl) (fun _ _ => rfl)
 
-instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ := h
+instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ :=
+  ofDual_injective.nonUnitalNonAssocRing ofDual rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ := h
+instance [NonUnitalRing R] : NonUnitalRing Rᵒᵈ :=
+  ofDual_injective.nonUnitalRing ofDual rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ := h
+instance [NonAssocRing R] : NonAssocRing Rᵒᵈ :=
+  ofDual_injective.nonAssocRing ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ => rfl)
 
-instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ := h
+instance [Ring R] : Ring Rᵒᵈ :=
+  ofDual_injective.ring ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
-instance [h : Ring R] : Ring Rᵒᵈ := h
+instance [NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ :=
+  ofDual_injective.nonUnitalCommRing ofDual rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := h
+instance [CommRing R] : CommRing Rᵒᵈ :=
+  ofDual_injective.commRing ofDual rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
-instance [h : CommRing R] : CommRing Rᵒᵈ := h
-
-instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ := h
+instance [Ring R] [IsDomain R] : IsDomain Rᵒᵈ where
 
 /-! ### Lexicographical order -/
 

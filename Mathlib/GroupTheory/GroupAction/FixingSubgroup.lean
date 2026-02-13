@@ -43,7 +43,7 @@ TODO :
 
 section Monoid
 
-open MulAction
+open MulAction OrderDual
 
 variable (M : Type*) {α : Type*} [Monoid M] [MulAction M α]
 
@@ -74,19 +74,19 @@ theorem fixingSubmonoid_antitone : Antitone fun s : Set α => fixingSubmonoid M 
 
 @[to_additive fixedPoints_antitone_addSubmonoid]
 theorem fixedPoints_antitone : Antitone fun P : Submonoid M => fixedPoints P α :=
-  (fixingSubmonoid_fixedPoints_gc M α).monotone_u.dual_left
+  monotone_comp_ofDual_iff.mp (fixingSubmonoid_fixedPoints_gc M α).monotone_u
 
 /-- Fixing submonoid of union is intersection -/
 @[to_additive]
 theorem fixingSubmonoid_union {s t : Set α} :
     fixingSubmonoid M (s ∪ t) = fixingSubmonoid M s ⊓ fixingSubmonoid M t :=
-  (fixingSubmonoid_fixedPoints_gc M α).l_sup
+  toDual_inj.mp <| by rw [toDual_inf]; exact (fixingSubmonoid_fixedPoints_gc M α).l_sup
 
 /-- Fixing submonoid of iUnion is intersection -/
 @[to_additive]
 theorem fixingSubmonoid_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubmonoid M (⋃ i, s i) = ⨅ i, fixingSubmonoid M (s i) :=
-  (fixingSubmonoid_fixedPoints_gc M α).l_iSup
+  toDual_inj.mp <| by rw [toDual_iInf]; exact (fixingSubmonoid_fixedPoints_gc M α).l_iSup
 
 /-- Fixed points of sup of submonoids is intersection -/
 @[to_additive]
@@ -97,14 +97,17 @@ theorem fixedPoints_submonoid_sup {P Q : Submonoid M} :
 /-- Fixed points of iSup of submonoids is intersection -/
 @[to_additive]
 theorem fixedPoints_submonoid_iSup {ι : Sort*} {P : ι → Submonoid M} :
-    fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
-  (fixingSubmonoid_fixedPoints_gc M α).u_iInf
+    fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α := by
+  have h := (fixingSubmonoid_fixedPoints_gc M α).u_iInf (f := toDual ∘ P)
+  simp only [Function.comp_def, ofDual_toDual] at h
+  rw [show (⨅ i, toDual (P i)) = toDual (iSup P) from (toDual_iSup P).symm] at h
+  exact h
 
 end Monoid
 
 section Group
 
-open MulAction
+open MulAction OrderDual
 
 variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
 
@@ -138,7 +141,8 @@ theorem fixingSubgroup_fixedPoints_gc :
 
 @[to_additive (attr := simp)]
 lemma fixingSubgroup_empty : fixingSubgroup M (∅ : Set α) = ⊤ :=
-  GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc M α)
+  toDual_inj.mp <| by
+    rw [toDual_top]; exact GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc M α)
 
 @[to_additive]
 theorem fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgroup M) :=
@@ -146,19 +150,19 @@ theorem fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgro
 
 @[to_additive]
 theorem fixedPoints_subgroup_antitone : Antitone fun P : Subgroup M => fixedPoints P α :=
-  (fixingSubgroup_fixedPoints_gc M α).monotone_u.dual_left
+  monotone_comp_ofDual_iff.mp (fixingSubgroup_fixedPoints_gc M α).monotone_u
 
 /-- Fixing subgroup of union is intersection -/
 @[to_additive]
 theorem fixingSubgroup_union {s t : Set α} :
     fixingSubgroup M (s ∪ t) = fixingSubgroup M s ⊓ fixingSubgroup M t :=
-  (fixingSubgroup_fixedPoints_gc M α).l_sup
+  toDual_inj.mp <| by rw [toDual_inf]; exact (fixingSubgroup_fixedPoints_gc M α).l_sup
 
 /-- Fixing subgroup of iUnion is intersection -/
 @[to_additive]
 theorem fixingSubgroup_iUnion {ι : Sort*} {s : ι → Set α} :
     fixingSubgroup M (⋃ i, s i) = ⨅ i, fixingSubgroup M (s i) :=
-  (fixingSubgroup_fixedPoints_gc M α).l_iSup
+  toDual_inj.mp <| by rw [toDual_iInf]; exact (fixingSubgroup_fixedPoints_gc M α).l_iSup
 
 /-- Fixed points of sup of subgroups is intersection -/
 @[to_additive]
@@ -169,8 +173,11 @@ theorem fixedPoints_subgroup_sup {P Q : Subgroup M} :
 /-- Fixed points of iSup of subgroups is intersection -/
 @[to_additive]
 theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
-    fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
-  (fixingSubgroup_fixedPoints_gc M α).u_iInf
+    fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α := by
+  have h := (fixingSubgroup_fixedPoints_gc M α).u_iInf (f := toDual ∘ P)
+  simp only [Function.comp_def, ofDual_toDual] at h
+  rw [show (⨅ i, toDual (P i)) = toDual (iSup P) from (toDual_iSup P).symm] at h
+  exact h
 
 /-- The orbit of the fixing subgroup of `sᶜ` (i.e. the moving subgroup of `s`) is a subset of `s` -/
 @[to_additive]

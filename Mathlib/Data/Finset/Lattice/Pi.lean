@@ -52,7 +52,27 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   · simpa [ne_of_mem_of_not_mem hj hi] using hg _ _
 
 theorem sup_inf {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
-    (s.sup fun i => (t i).inf (f i)) = (s.pi t).inf fun g => s.attach.sup fun i => f _ <| g _ i.2 :=
-  @inf_sup αᵒᵈ _ _ _ _ _ _ _ _
+    (s.sup fun i => (t i).inf (f i)) =
+      (s.pi t).inf fun g => s.attach.sup fun i => f _ <| g _ i.2 := by
+  induction s using Finset.induction with
+  | empty => simp
+  | insert i s hi ih => ?_
+  rw [sup_insert, ih, attach_insert, inf_sup_inf]
+  refine eq_of_forall_le_iff fun c => ?_
+  simp only [Finset.le_inf_iff, mem_product, mem_pi, and_imp, Prod.forall,
+    sup_insert, sup_image]
+  refine
+    ⟨fun h g hg =>
+      h (g i <| mem_insert_self _ _) (fun j hj => g j <| mem_insert_of_mem hj)
+        (hg _ <| mem_insert_self _ _) fun j hj => hg _ <| mem_insert_of_mem hj,
+      fun h a g ha hg => ?_⟩
+  have aux : ∀ j : { x // x ∈ s }, ↑j ≠ i := fun j : s => ne_of_mem_of_not_mem j.2 hi
+  have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
+      else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
+  · simpa only [cast_eq, dif_pos, Function.comp_def, Subtype.coe_mk, dif_neg, aux] using this
+  rw [mem_insert] at hj
+  obtain (rfl | hj) := hj
+  · simpa
+  · simpa [ne_of_mem_of_not_mem hj hi] using hg _ _
 
 end Finset

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.Cast.Synonym
 
 /-!
 # Order properties of cast of integers
@@ -114,15 +115,22 @@ open OrderDual
 
 namespace OrderDual
 
-instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
+instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ where
+  __ := inferInstanceAs (AddMonoidWithOne Rᵒᵈ)
+  __ := inferInstanceAs (AddGroup Rᵒᵈ)
+  __ := inferInstanceAs (IntCast Rᵒᵈ)
+  intCast_ofNat n := congrArg toDual (AddGroupWithOne.intCast_ofNat n)
+  intCast_negSucc n := congrArg toDual (AddGroupWithOne.intCast_negSucc n)
+
+instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ where
+  __ := inferInstanceAs (AddGroupWithOne Rᵒᵈ)
+  __ := inferInstanceAs (AddCommGroup Rᵒᵈ)
 
 end OrderDual
 
-@[simp] lemma toDual_intCast [IntCast R] (n : ℤ) : toDual (n : R) = n := rfl
+@[simp] lemma toDual_intCast [IntCast R] (n : ℤ) : toDual (n : R) = (n : Rᵒᵈ) := rfl
 
-@[simp] lemma ofDual_intCast [IntCast R] (n : ℤ) : (ofDual n : R) = n := rfl
+@[simp] lemma ofDual_intCast [IntCast R] (n : ℤ) : ofDual (n : Rᵒᵈ) = (n : R) := rfl
 
 /-! ### Lexicographic order -/
 

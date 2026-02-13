@@ -235,8 +235,10 @@ theorem map_le_lineMap_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope_left (h : 0 < r * (b - a)) :
-    lineMap (f a) (f b) r ≤ f c ↔ slope f a b ≤ slope f a c :=
-  map_le_lineMap_iff_slope_le_slope_left (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
+    lineMap (f a) (f b) r ≤ f c ↔ slope f a b ≤ slope f a c := by
+  have := map_le_lineMap_iff_slope_le_slope_left (E := Eᵒᵈ)
+    (f := OrderDual.toDual ∘ f) (a := a) (b := b) (r := r) h
+  simpa using this
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c < slope f a b`. -/
@@ -249,7 +251,8 @@ theorem map_lt_lineMap_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_left (h : 0 < r * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f a b < slope f a c :=
-  map_lt_lineMap_iff_slope_lt_slope_left (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
+  lt_iff_lt_of_le_iff_le' (map_le_lineMap_iff_slope_le_slope_left h)
+    (lineMap_le_map_iff_slope_le_slope_left h)
 
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b ≤ slope f c b`. -/
@@ -266,8 +269,10 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a b`. -/
 theorem lineMap_le_map_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
-    lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a b :=
-  map_le_lineMap_iff_slope_le_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
+    lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a b := by
+  have := map_le_lineMap_iff_slope_le_slope_right (E := Eᵒᵈ)
+    (f := OrderDual.toDual ∘ f) (a := a) (b := b) (r := r) h
+  simpa using this
 
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a b < slope f c b`. -/
@@ -280,7 +285,8 @@ theorem map_lt_lineMap_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a b`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a b :=
-  map_lt_lineMap_iff_slope_lt_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
+  lt_iff_lt_of_le_iff_le' (map_le_lineMap_iff_slope_le_slope_right h)
+    (lineMap_le_map_iff_slope_le_slope_right h)
 
 end
 
@@ -294,8 +300,10 @@ theorem map_le_lineMap_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a c`. -/
 theorem lineMap_le_map_iff_slope_le_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :
-    lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a c :=
-  map_le_lineMap_iff_slope_le_slope (E := Eᵒᵈ) hab h₀ h₁
+    lineMap (f a) (f b) r ≤ f c ↔ slope f c b ≤ slope f a c := by
+  have := map_le_lineMap_iff_slope_le_slope (E := Eᵒᵈ)
+    (f := OrderDual.toDual ∘ f) hab h₀ h₁
+  simpa using this
 
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c < slope f c b`. -/
@@ -308,7 +316,8 @@ theorem map_lt_lineMap_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a c`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r < 1) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a c :=
-  map_lt_lineMap_iff_slope_lt_slope (E := Eᵒᵈ) hab h₀ h₁
+  lt_iff_lt_of_le_iff_le' (map_le_lineMap_iff_slope_le_slope hab h₀ h₁)
+    (lineMap_le_map_iff_slope_le_slope hab h₀ h₁)
 
 end LinearOrderedField
 

@@ -367,7 +367,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
-  { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
+  { (OrderDual.equiv _).trans (primeSpectrumEquiv A) with
     map_rel_iff' {a b} :=
       ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
         simp only [OrderDual.toDual_le_toDual]
@@ -553,8 +553,8 @@ theorem nonunits_inj {A B : ValuationSubring K} : A.nonunits = B.nonunits ↔ A 
 
 /-- The map on valuation subrings to their nonunits is a dual order embedding. -/
 def nonunitsOrderEmbedding : ValuationSubring K ↪o (NonUnitalSubring K)ᵒᵈ where
-  toFun A := A.nonunits
-  inj' := nonunits_injective
+  toFun A := OrderDual.toDual A.nonunits
+  inj' := fun _ _ h => nonunits_injective (OrderDual.toDual_inj.mp h)
   map_rel_iff' {_A _B} := nonunits_le_nonunits
 
 variable {A}
@@ -645,8 +645,8 @@ theorem eq_iff_principalUnitGroup {A B : ValuationSubring K} :
 
 /-- The map on valuation subrings to their principal unit groups is an order embedding. -/
 def principalUnitGroupOrderEmbedding : ValuationSubring K ↪o (Subgroup Kˣ)ᵒᵈ where
-  toFun A := A.principalUnitGroup
-  inj' := principalUnitGroup_injective
+  toFun A := OrderDual.toDual A.principalUnitGroup
+  inj' := fun _ _ h => principalUnitGroup_injective (OrderDual.toDual_inj.mp h)
   map_rel_iff' {_A _B} := principalUnitGroup_le_principalUnitGroup
 
 theorem coe_mem_principalUnitGroup_iff {x : A.unitGroup} :

@@ -108,8 +108,22 @@ converging pointwise to a continuous function `f`, then `F n` converges locally 
 lemma tendstoLocallyUniformly_of_forall_tendsto
     (hF_cont : ∀ i, Continuous (F i)) (hF_anti : Antitone F) (hf : Continuous f)
     (h_tendsto : ∀ x, Tendsto (F · x) atTop (𝓝 (f x))) :
-    TendstoLocallyUniformly F f atTop :=
-  Monotone.tendstoLocallyUniformly_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
+    TendstoLocallyUniformly F f atTop := by
+  refine (atTop : Filter ι).eq_or_neBot.elim (fun h ↦ ?eq_bot) (fun _ ↦ ?_)
+  case eq_bot => simp [h, tendstoLocallyUniformly_iff_forall_tendsto]
+  have f_le_F (x : α) (n : ι) : f x ≤ F n x := by
+    refine le_of_tendsto (h_tendsto x) ?_
+    filter_upwards [Ici_mem_atTop n] with m hnm
+    exact hF_anti hnm x
+  simp_rw [Metric.tendstoLocallyUniformly_iff, dist_eq_norm']
+  intro ε ε_pos x
+  simp_rw +singlePass [tendsto_iff_norm_sub_tendsto_zero] at h_tendsto
+  obtain ⟨n, hn⟩ := (h_tendsto x).eventually (eventually_lt_nhds ε_pos) |>.exists
+  refine ⟨{y | ‖F n y - f y‖ < ε}, ⟨isOpen_lt (by fun_prop) continuous_const |>.mem_nhds hn, ?_⟩⟩
+  filter_upwards [eventually_ge_atTop n] with m hnm z hz
+  refine norm_le_norm_of_abs_le_abs ?_ |>.trans_lt hz
+  simp only [abs_of_nonneg (sub_nonneg_of_le (f_le_F _ _)), sub_le_sub_iff_right]
+  exact hF_anti hnm z
 
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 set `s` converging pointwise to a continuous function `f`, then `F n` converges locally uniformly
@@ -117,8 +131,10 @@ to `f`. -/
 lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
     (hF_cont : ∀ i, ContinuousOn (F i) s) (hF_anti : ∀ x ∈ s, Antitone (F · x))
     (hf : ContinuousOn f s) (h_tendsto : ∀ x ∈ s, Tendsto (F · x) atTop (𝓝 (f x))) :
-    TendstoLocallyUniformlyOn F f atTop s :=
-  Monotone.tendstoLocallyUniformlyOn_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
+    TendstoLocallyUniformlyOn F f atTop s := by
+  rw [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe]
+  exact tendstoLocallyUniformly_of_forall_tendsto (hF_cont · |>.restrict)
+    (fun _ _ h x ↦ hF_anti _ x.2 h) hf.restrict (fun x ↦ h_tendsto x x.2)
 
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 compact space converging pointwise to a continuous function `f`, then `F n` converges uniformly
@@ -126,7 +142,8 @@ to `f`. -/
 lemma tendstoUniformly_of_forall_tendsto [CompactSpace α] (hF_cont : ∀ i, Continuous (F i))
     (hF_anti : Antitone F) (hf : Continuous f) (h_tendsto : ∀ x, Tendsto (F · x) atTop (𝓝 (f x))) :
     TendstoUniformly F f atTop :=
-  Monotone.tendstoUniformly_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
+  tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace.mp <|
+    tendstoLocallyUniformly_of_forall_tendsto hF_cont hF_anti hf h_tendsto
 
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 compact set `s` converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
@@ -134,7 +151,8 @@ lemma tendstoUniformlyOn_of_forall_tendsto {s : Set α} (hs : IsCompact s)
     (hF_cont : ∀ i, ContinuousOn (F i) s) (hF_anti : ∀ x ∈ s, Antitone (F · x))
     (hf : ContinuousOn f s) (h_tendsto : ∀ x ∈ s, Tendsto (F · x) atTop (𝓝 (f x))) :
     TendstoUniformlyOn F f atTop s :=
-  Monotone.tendstoUniformlyOn_of_forall_tendsto (G := Gᵒᵈ) hs hF_cont hF_anti hf h_tendsto
+  tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hs |>.mp <|
+    tendstoLocallyUniformlyOn_of_forall_tendsto hF_cont hF_anti hf h_tendsto
 
 end Antitone
 
@@ -159,6 +177,7 @@ compact-open topology. -/
 lemma tendsto_of_antitone_of_pointwise (hF_anti : Antitone F)
     (h_tendsto : ∀ x, Tendsto (F · x) atTop (𝓝 (f x))) :
     Tendsto F atTop (𝓝 f) :=
-  tendsto_of_monotone_of_pointwise (G := Gᵒᵈ) hF_anti h_tendsto
+  tendsto_of_tendstoLocallyUniformly <|
+    hF_anti.tendstoLocallyUniformly_of_forall_tendsto (F · |>.continuous) f.continuous h_tendsto
 
 end ContinuousMap

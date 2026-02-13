@@ -71,8 +71,9 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing I hp
   let f := algebraMap R (Localization.AtPrime q)
   let qs : ℕ →o (Ideal (R ⧸ I))ᵒᵈ :=
-    { toFun n := ((q.map f ^ n).comap f).map (Ideal.Quotient.mk I)
-      monotone' i j e := Ideal.map_mono (Ideal.comap_mono (Ideal.pow_le_pow_right e)) }
+    { toFun n := OrderDual.toDual (((q.map f ^ n).comap f).map (Ideal.Quotient.mk I))
+      monotone' i j e := OrderDual.toDual_le_toDual.mpr
+        (Ideal.map_mono (Ideal.comap_mono (Ideal.pow_le_pow_right e))) }
   obtain ⟨n, hn⟩ := IsArtinian.monotone_stabilizes qs
   refine ⟨n, ?_⟩
   apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (q.map f) _ (IsNoetherian.noetherian _)
@@ -84,9 +85,9 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
   refine Submodule.le_of_le_smul_of_le_jacobson_bot (I := I) (IsNoetherian.noetherian _) ?_ ?_
   · rw [IsLocalRing.jacobson_eq_maximalIdeal]
     exacts [hp.1.2, bot_ne_top]
-  · replace hn := congr(Ideal.comap (Ideal.Quotient.mk I) $(hn _ n.le_succ))
-    simp only [qs, OrderHom.coe_mk, ← RingHom.ker_eq_comap_bot, Ideal.mk_ker,
-      Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective] at hn
+  · replace hn := congr(Ideal.comap (Ideal.Quotient.mk I) (OrderDual.ofDual $(hn _ n.le_succ)))
+    simp only [qs, OrderHom.coe_mk, OrderDual.ofDual_toDual, ← RingHom.ker_eq_comap_bot,
+      Ideal.mk_ker, Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective] at hn
     intro x hx
     obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.mp (hn.le (Ideal.mem_sup_left hx))
     refine Submodule.add_mem_sup hy ?_

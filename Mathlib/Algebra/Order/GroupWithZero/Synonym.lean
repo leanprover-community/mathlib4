@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Order.Group.Synonym
 
 /-!
@@ -27,25 +27,38 @@ variable {α : Type*}
 
 open OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
+instance [MulZeroClass α] : MulZeroClass αᵒᵈ :=
+  ofDual_injective.mulZeroClass ofDual rfl fun _ _ => rfl
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
+instance [MulZeroOneClass α] : MulZeroOneClass αᵒᵈ :=
+  ofDual_injective.mulZeroOneClass ofDual rfl rfl fun _ _ => rfl
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors αᵒᵈ :=
+  ofDual_injective.noZeroDivisors ofDual rfl fun _ _ => rfl
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
+instance [SemigroupWithZero α] : SemigroupWithZero αᵒᵈ :=
+  ofDual_injective.semigroupWithZero ofDual rfl fun _ _ => rfl
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
+instance [MonoidWithZero α] : MonoidWithZero αᵒᵈ :=
+  ofDual_injective.monoidWithZero ofDual rfl rfl (fun _ _ => rfl) fun _ _ => rfl
 
-instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ := h
-instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ := h
-instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero αᵒᵈ := h
+instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ :=
+  ofDual_injective.isLeftCancelMulZero ofDual rfl fun _ _ => rfl
+instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ :=
+  ofDual_injective.isRightCancelMulZero ofDual rfl fun _ _ => rfl
+instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵒᵈ :=
+  ofDual_injective.isCancelMulZero ofDual rfl fun _ _ => rfl
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
+instance [CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ :=
+  ofDual_injective.commMonoidWithZero ofDual rfl rfl (fun _ _ => rfl) fun _ _ => rfl
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
+instance [GroupWithZero α] : GroupWithZero αᵒᵈ :=
+  ofDual_injective.groupWithZero ofDual rfl rfl (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
+instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ :=
+  ofDual_injective.commGroupWithZero ofDual rfl rfl (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-! ### Lexicographic order -/
 

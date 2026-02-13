@@ -159,15 +159,19 @@ theorem isClosed_zeroLocus (s : Set R) : IsClosed (zeroLocus s) := by
 
 theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (PrimeSpectrum R)) :
     zeroLocus (vanishingIdeal t : Set R) = closure t := by
+  have h_gc := (gc R).u_l_u_eq_u (OrderDual.toDual t)
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual] at h_gc
   rcases isClosed_iff_zeroLocus (closure t) |>.mp isClosed_closure with ⟨I, hI⟩
   rw [subset_antisymm_iff, (isClosed_zeroLocus _).closure_subset_iff, hI,
-      subset_zeroLocus_iff_subset_vanishingIdeal, (gc R).u_l_u_eq_u,
+      subset_zeroLocus_iff_subset_vanishingIdeal, h_gc,
       ← subset_zeroLocus_iff_subset_vanishingIdeal, ← hI]
   exact ⟨subset_closure, subset_zeroLocus_vanishingIdeal t⟩
 
 theorem vanishingIdeal_closure (t : Set (PrimeSpectrum R)) :
-    vanishingIdeal (closure t) = vanishingIdeal t :=
-  zeroLocus_vanishingIdeal_eq_closure t ▸ (gc R).u_l_u_eq_u t
+    vanishingIdeal (closure t) = vanishingIdeal t := by
+  have h_gc := (gc R).u_l_u_eq_u (OrderDual.toDual t)
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual] at h_gc
+  rw [← zeroLocus_vanishingIdeal_eq_closure t, h_gc]
 
 theorem closure_singleton (x) : closure ({x} : Set (PrimeSpectrum R)) = zeroLocus x.asIdeal := by
   rw [← zeroLocus_vanishingIdeal_eq_closure, vanishingIdeal_singleton]
@@ -207,7 +211,7 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
 def closedsEmbedding (R : Type*) [CommSemiring R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
   OrderEmbedding.ofMapLEIff (fun s => vanishingIdeal ↑(OrderDual.ofDual s)) fun s _ =>
-    (vanishingIdeal_anti_mono_iff s.2).symm
+    (vanishingIdeal_anti_mono_iff (OrderDual.ofDual s).isClosed').symm
 
 theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField R := by
   refine ⟨?_, fun h => ?_⟩
@@ -891,7 +895,7 @@ irreducible set is a zero locus of some prime ideal.
 -/
 protected def pointsEquivIrreducibleCloseds :
     PrimeSpectrum R ≃o (TopologicalSpace.IrreducibleCloseds (PrimeSpectrum R))ᵒᵈ where
-  __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
+  __ := irreducibleSetEquivPoints.toEquiv.symm.trans (OrderDual.equiv _).symm
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
 
@@ -901,7 +905,7 @@ irreducible set is a zero locus of some prime ideal.
 -/
 protected def zeroLocusEquivIrreducibleCloseds (I : Set R) :
     zeroLocus I ≃o (TopologicalSpace.IrreducibleCloseds (zeroLocus I))ᵒᵈ where
-  __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
+  __ := irreducibleSetEquivPoints.toEquiv.symm.trans (OrderDual.equiv _).symm
   map_rel_iff' {p q} := (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans
     ((subtype_specializes_iff p q).trans (le_iff_specializes p.1 q.1).symm)
 
@@ -1155,9 +1159,13 @@ protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R
   let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
     ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.1, x.1.2, x.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
-  exact OrderIso.setOfMinimalIsoSetOfMaximal
+  let t := fun x : Set (zeroLocus (I : Set R)) ↦ IsClosed x ∧ IsIrreducible x
+  exact (OrderIso.setOfMinimalIsoSetOfMaximal
     (e.trans ((PrimeSpectrum.zeroLocusEquivIrreducibleCloseds (I : Set R)).trans
-    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (zeroLocus (I : Set R))).dual))
+    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (zeroLocus (I : Set R))).dual))).trans
+    ⟨⟨fun x => OrderDual.toDual ⟨OrderDual.ofDual x.1, x.2⟩,
+      fun x => ⟨OrderDual.toDual (OrderDual.ofDual x).1, (OrderDual.ofDual x).2⟩,
+      fun _ => rfl, fun _ => rfl⟩, Iff.rfl⟩
 
 variable (R)
 
@@ -1169,9 +1177,12 @@ protected def _root_.minimalPrimes.equivIrreducibleComponents :
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
-  exact OrderIso.setOfMinimalIsoSetOfMaximal
+  exact (OrderIso.setOfMinimalIsoSetOfMaximal
     (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
-    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
+    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))).trans
+    ⟨⟨fun x => OrderDual.toDual ⟨OrderDual.ofDual x.1, x.2⟩,
+      fun x => ⟨OrderDual.toDual (OrderDual.ofDual x).1, (OrderDual.ofDual x).2⟩,
+      fun _ => rfl, fun _ => rfl⟩, Iff.rfl⟩
 
 lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) = minimalPrimes R := by

@@ -92,19 +92,25 @@ theorem polar_gc :
   ⟨fun h _ hx _ hy => h hy _ hx, fun h _ hx _ hy => h hy _ hx⟩
 
 @[simp]
-theorem polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
-  B.polar_gc.l_iSup
+theorem polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) := by
+  have h := congrArg OrderDual.ofDual (B.polar_gc.l_iSup (f := s))
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual, ofDual_iSup] at h
+  exact h
 
 @[simp]
-theorem polar_union {s t : Set E} : B.polar (s ∪ t) = B.polar s ∩ B.polar t :=
-  B.polar_gc.l_sup
+theorem polar_union {s t : Set E} : B.polar (s ∪ t) = B.polar s ∩ B.polar t := by
+  have h := congrArg OrderDual.ofDual (B.polar_gc.l_sup (a₁ := s) (a₂ := t))
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual, ofDual_sup] at h
+  exact h
 
 theorem polar_antitone : Antitone (B.polar : Set E → Set F) :=
   B.polar_gc.monotone_l
 
 @[simp]
-theorem polar_empty : B.polar ∅ = Set.univ :=
-  B.polar_gc.l_bot
+theorem polar_empty : B.polar ∅ = Set.univ := by
+  have h := congrArg OrderDual.ofDual (B.polar_gc.l_bot)
+  simp only [Function.comp_apply, OrderDual.ofDual_toDual] at h
+  exact h
 
 @[simp]
 theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_antisymm

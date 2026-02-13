@@ -83,7 +83,7 @@ lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
 
 lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
     (atBot : Filter α) = pure x :=
-  @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
+  { bot := x, bot_le := hx : OrderBot α }.atBot_eq
 
 /-- The `tendsto` relation can be checked on ultrafilters. -/
 theorem tendsto_iff_ultrafilter (f : α → β) (l₁ : Filter α) (l₂ : Filter β) :

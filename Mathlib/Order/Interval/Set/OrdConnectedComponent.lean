@@ -36,7 +36,15 @@ theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]]
 
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
-  ext <| (Surjective.forall toDual.surjective).2 fun x => by simp [mem_ordConnectedComponent]
+  ext fun a => by
+    simp only [mem_ordConnectedComponent, mem_preimage]
+    constructor
+    · intro h
+      rw [show a = toDual (ofDual a) from (toDual_ofDual a).symm, uIcc_toDual] at h
+      exact fun y hy => h (mem_preimage.mpr hy)
+    · intro h
+      rw [show a = toDual (ofDual a) from (toDual_ofDual a).symm, uIcc_toDual]
+      exact fun y hy => h (mem_preimage.mp hy)
 
 theorem ordConnectedComponent_subset : ordConnectedComponent s x ⊆ s := fun _ hy =>
   hy right_mem_uIcc
@@ -119,14 +127,11 @@ range of `Set.ordConnectedProj s`. -/
 def ordConnectedSection (s : Set α) : Set α :=
   range <| ordConnectedProj s
 
-theorem dual_ordConnectedSection (s : Set α) :
-    ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
-  simp only [ordConnectedSection]
-  simp +unfoldPartialApp only [ordConnectedProj]
-  ext x
-  simp only [mem_range, Subtype.exists, mem_preimage, OrderDual.exists, dual_ordConnectedComponent,
-    ofDual_toDual]
-  tauto
+-- Note: With OrderDual as a structure, ordConnectedProj uses Classical.choose on different
+-- types (αᵒᵈ vs α), so the section representatives are not directly related by ofDual.
+-- The T5 proof has been rewritten to avoid this theorem.
+-- theorem dual_ordConnectedSection (s : Set α) :
+--     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s
 
 theorem ordConnectedSection_subset : ordConnectedSection s ⊆ s :=
   range_subset_iff.2 fun _ => ordConnectedComponent_subset <| Nonempty.some_mem _
@@ -160,8 +165,23 @@ theorem disjoint_right_ordSeparatingSet : Disjoint t (ordSeparatingSet s t) :=
 
 theorem dual_ordSeparatingSet :
     ordSeparatingSet (ofDual ⁻¹' s) (ofDual ⁻¹' t) = ofDual ⁻¹' ordSeparatingSet s t := by
-  simp only [ordSeparatingSet, mem_preimage, ← toDual.surjective.iUnion_comp, ofDual_toDual,
-    dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_iUnion]
+  ext x
+  simp only [ordSeparatingSet, mem_inter_iff, mem_iUnion, mem_preimage, ← preimage_compl]
+  constructor
+  · rintro ⟨⟨a, ha, hxa⟩, ⟨b, hb, hxb⟩⟩
+    have hxa' : ofDual x ∈ ordConnectedComponent tᶜ (ofDual a) := by
+      rw [show a = toDual (ofDual a) from (toDual_ofDual a).symm,
+        dual_ordConnectedComponent, mem_preimage] at hxa
+      exact hxa
+    have hxb' : ofDual x ∈ ordConnectedComponent sᶜ (ofDual b) := by
+      rw [show b = toDual (ofDual b) from (toDual_ofDual b).symm,
+        dual_ordConnectedComponent, mem_preimage] at hxb
+      exact hxb
+    exact ⟨⟨ofDual a, ha, hxa'⟩, ⟨ofDual b, hb, hxb'⟩⟩
+  · rintro ⟨⟨a, ha, hxa⟩, ⟨b, hb, hxb⟩⟩
+    refine ⟨⟨toDual a, ha, ?_⟩, ⟨toDual b, hb, ?_⟩⟩
+    · rw [dual_ordConnectedComponent, mem_preimage]; exact hxa
+    · rw [dual_ordConnectedComponent, mem_preimage]; exact hxb
 
 /-- An auxiliary neighborhood that will be used in the proof of
 `OrderTopology.CompletelyNormalSpace`. -/

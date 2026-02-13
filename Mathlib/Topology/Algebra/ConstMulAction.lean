@@ -122,11 +122,15 @@ instance MulOpposite.continuousConstSMul : ContinuousConstSMul M αᵐᵒᵖ :=
   ⟨fun c => MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.const_smul c⟩
 
 @[to_additive]
-instance : ContinuousConstSMul M αᵒᵈ := ‹ContinuousConstSMul M α›
+instance : ContinuousConstSMul M αᵒᵈ where
+  continuous_const_smul c :=
+    continuous_induced_rng.mpr <| by
+      simp only [Function.comp_def, ofDual_smul]
+      exact (continuous_const_smul c).comp continuous_induced_dom
 
 @[to_additive]
-instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
-  ‹ContinuousConstSMul M α›
+instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α where
+  continuous_const_smul c := continuous_const_smul (ofDual c)
 
 @[to_additive]
 instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :

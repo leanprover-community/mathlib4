@@ -28,7 +28,8 @@ instance NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : Infinite α :=
 
 /-- A nonempty preorder with no minimal element is infinite. -/
 instance NoMinOrder.infinite [Nonempty α] [NoMinOrder α] : Infinite α :=
-  @NoMaxOrder.infinite αᵒᵈ _ _ _
+  have : Infinite αᵒᵈ := NoMaxOrder.infinite (α := αᵒᵈ)
+  .of_injective OrderDual.ofDual fun _ _ h => OrderDual.ofDual_inj.mp h
 
 namespace Set
 

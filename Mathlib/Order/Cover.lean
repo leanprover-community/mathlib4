@@ -124,12 +124,20 @@ theorem apply_wcovBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E 
   (ordConnected_range (e : α ≃o β)).apply_wcovBy_apply_iff ((e : α ≃o β) : α ↪o β)
 
 @[simp, to_dual self]
-theorem toDual_wcovBy_toDual_iff : toDual b ⩿ toDual a ↔ a ⩿ b :=
-  and_congr_right' <| forall_congr' fun _ => forall_swap
+theorem toDual_wcovBy_toDual_iff : toDual b ⩿ toDual a ↔ a ⩿ b := by
+  constructor
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hac hcb => @h2 (OrderDual.toDual c) hcb hac⟩
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hbc hca => @h2 (OrderDual.ofDual c) hca hbc⟩
 
 @[simp, to_dual self]
-theorem ofDual_wcovBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b ⩿ a :=
-  and_congr_right' <| forall_congr' fun _ => forall_swap
+theorem ofDual_wcovBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b ⩿ a := by
+  constructor
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hbc hca => @h2 (OrderDual.ofDual c) hca hbc⟩
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hac hcb => @h2 (OrderDual.toDual c) hcb hac⟩
 
 @[to_dual self]
 alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
@@ -219,12 +227,20 @@ theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
 @[to_dual self, simp]
-theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
-  and_congr_right' <| forall_congr' fun _ => forall_swap
+theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b := by
+  constructor
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hac hcb => @h2 (OrderDual.toDual c) hcb hac⟩
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hbc hca => @h2 (OrderDual.ofDual c) hca hbc⟩
 
 @[to_dual self, simp]
-theorem ofDual_covBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b ⋖ a :=
-  and_congr_right' <| forall_congr' fun _ => forall_swap
+theorem ofDual_covBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b ⋖ a := by
+  constructor
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hbc hca => @h2 (OrderDual.ofDual c) hca hbc⟩
+  · rintro ⟨h1, h2⟩
+    exact ⟨h1, fun c hac hcb => @h2 (OrderDual.toDual c) hcb hac⟩
 
 @[to_dual self]
 alias ⟨_, CovBy.toDual⟩ := toDual_covBy_toDual_iff

@@ -245,13 +245,15 @@ abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
 lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
 
 -- See note [lower instance priority]
+open OrderDual in
 @[to_dual]
 instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
-  h
+  ⟨InvImage.wf ofDual h.wf⟩
 
+open OrderDual in
 @[to_dual]
 theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
+  ⟨fun h => ⟨InvImage.wf toDual h.wf⟩, fun h => ⟨InvImage.wf ofDual h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
 class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
@@ -699,9 +701,10 @@ theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
 theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
   transitive_of_trans _
 
+open OrderDual in
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
-  @Std.Total.swap α _ h
+  ⟨fun a b => (h.total (ofDual a) (ofDual b)).symm⟩
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩

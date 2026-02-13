@@ -711,27 +711,31 @@ variable [Max α] [Max β] [Max γ]
 /-- Reinterpret a supremum homomorphism as an infimum homomorphism between the dual lattices. -/
 @[simps]
 protected def dual : SupHom α β ≃ InfHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨f, f.map_sup'⟩
-  invFun f := ⟨f, f.map_inf'⟩
+  toFun f := ⟨OrderDual.toDual ∘ f ∘ OrderDual.ofDual,
+    fun a b => congr_arg OrderDual.toDual (f.map_sup' _ _)⟩
+  invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual,
+    fun a b => congr_arg OrderDual.ofDual (f.map_inf' _ _)⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; simp [Function.comp, OrderDual.toDual_ofDual]
 
 @[simp]
-theorem dual_id : SupHom.dual (SupHom.id α) = InfHom.id _ :=
-  rfl
+theorem dual_id : SupHom.dual (SupHom.id α) = InfHom.id _ := by
+  ext x; simp [Function.comp, OrderDual.toDual_ofDual]
 
 @[simp]
 theorem dual_comp (g : SupHom β γ) (f : SupHom α β) :
-    SupHom.dual (g.comp f) = (SupHom.dual g).comp (SupHom.dual f) :=
-  rfl
+    SupHom.dual (g.comp f) = (SupHom.dual g).comp (SupHom.dual f) := by
+  ext; rfl
 
 @[simp]
-theorem symm_dual_id : SupHom.dual.symm (InfHom.id _) = SupHom.id α :=
-  rfl
+theorem symm_dual_id : SupHom.dual.symm (InfHom.id _) = SupHom.id α := by
+  ext x; simp [Function.comp]
 
 @[simp]
 theorem symm_dual_comp (g : InfHom βᵒᵈ γᵒᵈ) (f : InfHom αᵒᵈ βᵒᵈ) :
     SupHom.dual.symm (g.comp f) =
-      (SupHom.dual.symm g).comp (SupHom.dual.symm f) :=
-  rfl
+      (SupHom.dual.symm g).comp (SupHom.dual.symm f) := by
+  ext; rfl
 
 end SupHom
 
@@ -742,27 +746,31 @@ variable [Min α] [Min β] [Min γ]
 /-- Reinterpret an infimum homomorphism as a supremum homomorphism between the dual lattices. -/
 @[simps]
 protected def dual : InfHom α β ≃ SupHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨f, f.map_inf'⟩
-  invFun f := ⟨f, f.map_sup'⟩
+  toFun f := ⟨OrderDual.toDual ∘ f ∘ OrderDual.ofDual,
+    fun a b => congr_arg OrderDual.toDual (f.map_inf' _ _)⟩
+  invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual,
+    fun a b => congr_arg OrderDual.ofDual (f.map_sup' _ _)⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; simp [Function.comp, OrderDual.toDual_ofDual]
 
 @[simp]
-theorem dual_id : InfHom.dual (InfHom.id α) = SupHom.id _ :=
-  rfl
+theorem dual_id : InfHom.dual (InfHom.id α) = SupHom.id _ := by
+  ext x; simp [Function.comp, OrderDual.toDual_ofDual]
 
 @[simp]
 theorem dual_comp (g : InfHom β γ) (f : InfHom α β) :
-    InfHom.dual (g.comp f) = (InfHom.dual g).comp (InfHom.dual f) :=
-  rfl
+    InfHom.dual (g.comp f) = (InfHom.dual g).comp (InfHom.dual f) := by
+  ext; rfl
 
 @[simp]
-theorem symm_dual_id : InfHom.dual.symm (SupHom.id _) = InfHom.id α :=
-  rfl
+theorem symm_dual_id : InfHom.dual.symm (SupHom.id _) = InfHom.id α := by
+  ext x; simp [Function.comp]
 
 @[simp]
 theorem symm_dual_comp (g : SupHom βᵒᵈ γᵒᵈ) (f : SupHom αᵒᵈ βᵒᵈ) :
     InfHom.dual.symm (g.comp f) =
-      (InfHom.dual.symm g).comp (InfHom.dual.symm f) :=
-  rfl
+      (InfHom.dual.symm g).comp (InfHom.dual.symm f) := by
+  ext; rfl
 
 end InfHom
 
@@ -773,25 +781,32 @@ variable [Lattice α] [Lattice β] [Lattice γ]
 /-- Reinterpret a lattice homomorphism as a lattice homomorphism between the dual lattices. -/
 @[simps!]
 protected def dual : LatticeHom α β ≃ LatticeHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨InfHom.dual f.toInfHom, f.map_sup'⟩
-  invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_sup'⟩
+  toFun f := ⟨InfHom.dual f.toInfHom,
+    fun a b => congr_arg OrderDual.toDual
+      (f.map_sup' (OrderDual.ofDual a) (OrderDual.ofDual b))⟩
+  invFun f := ⟨SupHom.dual.symm f.toInfHom,
+    fun a b => congr_arg OrderDual.ofDual
+      (f.map_sup' (OrderDual.toDual a) (OrderDual.toDual b))⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; simp [Function.comp, OrderDual.toDual_ofDual]
 
-@[simp] theorem dual_id : LatticeHom.dual (LatticeHom.id α) = LatticeHom.id _ := rfl
+@[simp] theorem dual_id : LatticeHom.dual (LatticeHom.id α) = LatticeHom.id _ := by
+  ext x; simp
 
 @[simp]
 theorem dual_comp (g : LatticeHom β γ) (f : LatticeHom α β) :
-    LatticeHom.dual (g.comp f) = (LatticeHom.dual g).comp (LatticeHom.dual f) :=
-  rfl
+    LatticeHom.dual (g.comp f) = (LatticeHom.dual g).comp (LatticeHom.dual f) := by
+  ext; rfl
 
 @[simp]
-theorem symm_dual_id : LatticeHom.dual.symm (LatticeHom.id _) = LatticeHom.id α :=
-  rfl
+theorem symm_dual_id : LatticeHom.dual.symm (LatticeHom.id _) = LatticeHom.id α := by
+  ext x; simp
 
 @[simp]
 theorem symm_dual_comp (g : LatticeHom βᵒᵈ γᵒᵈ) (f : LatticeHom αᵒᵈ βᵒᵈ) :
     LatticeHom.dual.symm (g.comp f) =
-      (LatticeHom.dual.symm g).comp (LatticeHom.dual.symm f) :=
-  rfl
+      (LatticeHom.dual.symm g).comp (LatticeHom.dual.symm f) := by
+  ext; rfl
 
 end LatticeHom
 

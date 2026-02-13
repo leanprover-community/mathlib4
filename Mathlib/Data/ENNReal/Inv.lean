@@ -317,12 +317,12 @@ protected theorem one_lt_inv : 1 < a⁻¹ ↔ a < 1 := by rw [lt_inv_iff_lt_inv,
 @[simps! apply]
 def _root_.OrderIso.invENNReal : ℝ≥0∞ ≃o ℝ≥0∞ᵒᵈ where
   map_rel_iff' := ENNReal.inv_le_inv
-  toEquiv := (Equiv.inv ℝ≥0∞).trans OrderDual.toDual
+  toEquiv := (Equiv.inv ℝ≥0∞).trans (OrderDual.equiv ℝ≥0∞).symm
 
 @[simp]
 theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
-    OrderIso.invENNReal.symm a = (OrderDual.ofDual a)⁻¹ :=
-  rfl
+    OrderIso.invENNReal.symm a = (OrderDual.ofDual a)⁻¹ := by
+  cases a; rfl
 
 @[simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
 
@@ -889,8 +889,15 @@ case that assumes `a ≠ ∞` but does not require `Nonempty ι`. -/
 lemma iInf_div [Nonempty ι] (hinfty : a = 0 → ⨅ i, f i = 0 → ∃ i, f i = 0) :
     (⨅ i, f i) / a = ⨅ i, f i / a := iInf_div' hinfty fun _ ↦ ‹Nonempty ι›
 
-lemma inv_iInf (f : ι → ℝ≥0∞) : (⨅ i, f i)⁻¹ = ⨆ i, (f i)⁻¹ := OrderIso.invENNReal.map_iInf _
-lemma inv_iSup (f : ι → ℝ≥0∞) : (⨆ i, f i)⁻¹ = ⨅ i, (f i)⁻¹ := OrderIso.invENNReal.map_iSup _
+lemma inv_iInf (f : ι → ℝ≥0∞) : (⨅ i, f i)⁻¹ = ⨆ i, (f i)⁻¹ := by
+  refine OrderDual.toDual_inj.mp ?_
+  rw [toDual_iSup]
+  exact OrderIso.invENNReal.map_iInf f
+
+lemma inv_iSup (f : ι → ℝ≥0∞) : (⨆ i, f i)⁻¹ = ⨅ i, (f i)⁻¹ := by
+  refine OrderDual.toDual_inj.mp ?_
+  rw [toDual_iInf]
+  exact OrderIso.invENNReal.map_iSup f
 
 lemma inv_sInf (s : Set ℝ≥0∞) : (sInf s)⁻¹ = ⨆ a ∈ s, a⁻¹ := by simp [sInf_eq_iInf, inv_iInf]
 lemma inv_sSup (s : Set ℝ≥0∞) : (sSup s)⁻¹ = ⨅ a ∈ s, a⁻¹ := by simp [sSup_eq_iSup, inv_iSup]

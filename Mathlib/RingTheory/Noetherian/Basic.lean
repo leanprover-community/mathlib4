@@ -302,13 +302,17 @@ instance (priority := 100) isNoetherian_of_subsingleton (R M) [Subsingleton R] [
 
 theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (h : IsNoetherian R M) : IsNoetherian R N :=
-  isNoetherian_mk ⟨OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h.wf⟩
+  isNoetherian_mk ⟨InvImage.wf OrderDual.toDual
+    ((Submodule.MapSubtype.orderEmbedding N).dual.wellFounded
+      (InvImage.wf OrderDual.ofDual h.wf))⟩
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Noetherian, then `M / S` is
 also Noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
-  isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩
+  isNoetherian_mk ⟨InvImage.wf OrderDual.toDual
+    ((Submodule.restrictScalarsEmbedding R S M).dual.wellFounded
+      (InvImage.wf OrderDual.ofDual h.wf))⟩
 
 instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
@@ -332,7 +336,9 @@ theorem IsNoetherianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScala
 
 theorem isNoetherianRing_of_surjective (R) [Semiring R] (S) [Semiring S] (f : R →+* S)
     (hf : Function.Surjective f) [H : IsNoetherianRing R] : IsNoetherianRing S :=
-  isNoetherian_mk ⟨OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H.wf⟩
+  isNoetherian_mk ⟨InvImage.wf OrderDual.toDual
+    ((Ideal.orderEmbeddingOfSurjective f hf).dual.wellFounded
+      (InvImage.wf OrderDual.ofDual H.wf))⟩
 
 instance isNoetherianRing_rangeS {R} [Semiring R] {S} [Semiring S] (f : R →+* S)
     [IsNoetherianRing R] : IsNoetherianRing f.rangeS :=

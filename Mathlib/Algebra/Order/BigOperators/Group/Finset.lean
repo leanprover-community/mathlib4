@@ -141,8 +141,12 @@ theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
 theorem prod_le_prod_of_subset_of_le_one
     {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
     {f : ι → N} {s t : Finset ι} [MulLeftMono N] (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
-    ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i :=
-  prod_le_prod_of_subset_of_one_le' (N := Nᵒᵈ) h hf
+    ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i := by
+  classical calc
+      ∏ i ∈ t, f i = ∏ i ∈ t \ s ∪ s, f i := by rw [sdiff_union_of_subset h]
+      _ = (∏ i ∈ t \ s, f i) * ∏ i ∈ s, f i := prod_union sdiff_disjoint
+      _ ≤ ∏ i ∈ s, f i :=
+        mul_le_of_le_one_left' (prod_le_one' <| by simpa only [mem_sdiff, and_imp])
 
 @[to_additive sum_mono_set_of_nonneg]
 theorem prod_mono_set_of_one_le' [MulLeftMono N] (hf : ∀ x, 1 ≤ f x) :
@@ -181,13 +185,29 @@ lemma one_lt_prod_iff_of_one_le [MulLeftMono N] (hf : ∀ x ∈ s, 1 ≤ f x) :
 
 @[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' [MulLeftMono N] :
-    (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
-  prod_eq_one_iff_of_one_le' (N := Nᵒᵈ)
+    (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
+  classical
+    refine Finset.induction_on s
+      (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.notMem_empty _ h), fun _ ↦ rfl⟩) ?_
+    intro a s ha ih H
+    have hs : ∀ i ∈ s, f i ≤ 1 := fun _ ↦ H _ ∘ mem_insert_of_mem
+    rw [prod_insert ha, forall_mem_insert]
+    have ha1 : f a ≤ 1 := H _ (mem_insert_self _ _)
+    have hb1 : ∏ i ∈ s, f i ≤ 1 := prod_le_one' hs
+    constructor
+    · intro h
+      have hb_eq : ∏ i ∈ s, f i = 1 :=
+        le_antisymm hb1 (h ▸ (mul_le_of_le_one_left' ha1))
+      exact ⟨by rwa [hb_eq, mul_one] at h, (ih hs).mp hb_eq⟩
+    · rintro ⟨ha_eq, h⟩
+      rw [ha_eq, (ih hs).mpr h, mul_one]
 
 @[to_additive]
 lemma prod_lt_one_iff_of_le_one [MulLeftMono N] (hf : ∀ x ∈ s, f x ≤ 1) :
-    ∏ x ∈ s, f x < 1 ↔ ∃ x ∈ s, f x < 1 :=
-  one_lt_prod_iff_of_one_le (N := Nᵒᵈ) hf
+    ∏ x ∈ s, f x < 1 ↔ ∃ x ∈ s, f x < 1 := by
+  have hprod : ∏ x ∈ s, f x ≤ 1 := prod_le_one' hf
+  rw [hprod.lt_iff_ne, Ne, prod_eq_one_iff_of_le_one' hf, not_forall]
+  simp +contextual [← exists_prop, -exists_const_iff, hf _ _ |>.lt_iff_ne]
 
 @[to_additive single_le_sum]
 theorem single_le_prod' [MulLeftMono N] (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) :
@@ -215,8 +235,11 @@ theorem prod_le_pow_card [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) 
   · simp
 
 @[to_additive card_nsmul_le_sum]
-theorem pow_card_le_prod [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, n ≤ f x) :
-    n ^ #s ≤ s.prod f := Finset.prod_le_pow_card (N := Nᵒᵈ) _ _ _ h
+theorem pow_card_le_prod [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N)
+    (h : ∀ x ∈ s, n ≤ f x) :
+    n ^ #s ≤ s.prod f := by
+  have := Multiset.pow_card_le_prod (s := s.val.map f) (a := n) (by simpa using h)
+  rwa [Multiset.card_map] at this
 
 theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
     (h : ∀ a ∈ s, #(f a) ≤ n) : #(s.biUnion f) ≤ #s * n :=
@@ -239,7 +262,12 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' [MulLeftMono N] {t : Finset
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
     {f : ι → N} (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
-  prod_fiberwise_le_prod_of_one_le_prod_fiber' (N := Nᵒᵈ) h
+  calc
+    ∏ x ∈ s, f x =
+        ∏ y ∈ t ∪ s.image g, ∏ x ∈ s with g x = y, f x :=
+      (prod_fiberwise_of_maps_to (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _).symm
+    _ ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
+      prod_le_prod_of_subset_of_le_one subset_union_left fun y _ ↦ h y
 
 @[to_additive]
 lemma prod_image_le_of_one_le [MulLeftMono N]
@@ -265,8 +293,9 @@ theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (
   rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]
 
 theorem sum_apply_le_apply_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a + g b ≤ g (a * b)) :
-    ∑ x ∈ s, g (f x) ≤ g (∏ x ∈ s, f x) :=
-  s.apply_prod_le_sum_apply (β := βᵒᵈ) g h_one h_mul
+    ∑ x ∈ s, g (f x) ≤ g (∏ x ∈ s, f x) := by
+  have := Multiset.sum_map_le_apply_prod (s.val.map f) g h_one h_mul
+  rwa [Multiset.map_map, Function.comp_def, Finset.sum_map_val] at this
 
 end ProdSum
 

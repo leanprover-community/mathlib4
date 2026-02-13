@@ -464,6 +464,16 @@ private lemma diff_singleton_eventually_mem_nhds_left {s : Set 𝕜} {a : 𝕜}
   · exact mem_nhdsWithin.2 ⟨Ioi b, isOpen_Ioi, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
   · exact mem_nhds_iff.2 ⟨Ioo b a, subset_diff_singleton this right_notMem_Ioo, isOpen_Ioo, hx⟩
 
+omit [Field 𝕜] [IsStrictOrderedRing 𝕜] in
+private lemma diff_singleton_eventually_mem_nhds_right {s : Set 𝕜} {a : 𝕜}
+    (h : ∀ x ∈ closure s, Ioo a x ⊆ s) : ∀ᶠ (x : 𝕜) in 𝓝[s ∩ Ioi a] a, s \ {a} ∈ 𝓝 x := by
+  rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs' | ⟨b, hbs, hba⟩
+  · simp [hs']
+  have : Ioo a b ⊆ s := h b (subset_closure hbs)
+  apply eventually_of_mem (U := Ioo a b) ?_ fun x hx ↦ ?_
+  · exact mem_nhdsWithin.2 ⟨Iio b, isOpen_Iio, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₂, h₁⟩⟩
+  · exact mem_nhds_iff.2 ⟨Ioo a b, subset_diff_singleton this (left_notMem_Ioo a b), isOpen_Ioo, hx⟩
+
 theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex 𝕜 s) (a : 𝕜) :
     ∀ᶠ x in 𝓝[s \ {a}] a, s \ {a} ∈ 𝓝 x := by
   rcases eq_or_neBot (𝓝[s \ {a}] a) with h | has
@@ -473,7 +483,6 @@ theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex �
   conv in 𝓝[s \ {a}] a => rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left]
   rw [nhdsWithin_union, eventually_sup]
   exact ⟨diff_singleton_eventually_mem_nhds_left fun x hx ↦ hs.Ioo_subset_of_mem_closure hx has,
-    diff_singleton_eventually_mem_nhds_left (𝕜 := 𝕜ᵒᵈ) fun x hx z hz ↦
-      hs.Ioo_subset_of_mem_closure has hx hz.symm⟩
+    diff_singleton_eventually_mem_nhds_right fun x hx ↦ hs.Ioo_subset_of_mem_closure has hx⟩
 
 end LinearOrderedField

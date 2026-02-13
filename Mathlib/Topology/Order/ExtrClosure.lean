@@ -32,7 +32,7 @@ protected theorem IsMaxOn.closure (h : IsMaxOn f s a) (hc : ContinuousOn f (clos
 
 protected theorem IsMinOn.closure (h : IsMinOn f s a) (hc : ContinuousOn f (closure s)) :
     IsMinOn f (closure s) a :=
-  h.dual.closure hc
+  (h.dual.closure (continuous_toDual.comp_continuousOn hc)).undual
 
 protected theorem IsExtrOn.closure (h : IsExtrOn f s a) (hc : ContinuousOn f (closure s)) :
     IsExtrOn f (closure s) a :=
@@ -51,7 +51,7 @@ protected theorem IsLocalMaxOn.closure (h : IsLocalMaxOn f s a) (hc : Continuous
 
 protected theorem IsLocalMinOn.closure (h : IsLocalMinOn f s a) (hc : ContinuousOn f (closure s)) :
     IsLocalMinOn f (closure s) a :=
-  IsLocalMaxOn.closure h.dual hc
+  (IsLocalMaxOn.closure h.dual (continuous_toDual.comp_continuousOn hc)).undual
 
 protected theorem IsLocalExtrOn.closure (h : IsLocalExtrOn f s a)
     (hc : ContinuousOn f (closure s)) : IsLocalExtrOn f (closure s) a :=

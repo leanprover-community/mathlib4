@@ -74,7 +74,7 @@ instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedM
     MulArchimedean Gᵒᵈ :=
   ⟨fun x y hy =>
     let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (inv_lt_one_iff_one_lt.2 hy)
-    ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
+    ⟨n, by rw [← ofDual_le_ofDual, ofDual_pow]; rwa [ofDual_inv, inv_pow, inv_le_inv_iff] at hn⟩⟩
 
 instance Additive.instArchimedean [CommGroup G] [PartialOrder G] [MulArchimedean G] :
     Archimedean (Additive G) :=

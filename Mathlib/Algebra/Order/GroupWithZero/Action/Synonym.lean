@@ -23,33 +23,49 @@ the `SMul` instances are already defined in `Mathlib/Algebra/Order/Group/Synonym
 
 @[expose] public section
 
+open OrderDual
+
 variable {G₀ M₀ : Type*}
 
 namespace OrderDual
 
-instance instSMulWithZero [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ᵒᵈ M₀ :=
-  ‹SMulWithZero G₀ M₀›
+instance instSMulWithZero [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ᵒᵈ M₀ where
+  smul_zero a := smul_zero (ofDual a)
+  zero_smul := zero_smul G₀
 
 instance instSMulWithZero' [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ M₀ᵒᵈ :=
-  ‹SMulWithZero G₀ M₀›
+  ofDual_injective.smulWithZero ⟨ofDual, rfl⟩ (fun _ _ => rfl)
 
-instance instDistribSMul [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ᵒᵈ M₀ :=
-  ‹DistribSMul G₀ M₀›
+instance instDistribSMul [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ᵒᵈ M₀ where
+  smul_zero a := smul_zero (ofDual a)
+  smul_add a := smul_add (ofDual a)
 
 instance instDistribSMul' [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ M₀ᵒᵈ :=
-  ‹DistribSMul G₀ M₀›
+  ofDual_injective.distribSMul
+    { toFun := ofDual, map_zero' := rfl, map_add' := fun _ _ => rfl } (fun _ _ => rfl)
 
 instance instDistribMulAction [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
-    DistribMulAction G₀ᵒᵈ M₀ := ‹DistribMulAction G₀ M₀›
+    DistribMulAction G₀ᵒᵈ M₀ where
+  one_smul := one_smul G₀
+  mul_smul x y := mul_smul (ofDual x) (ofDual y)
+  smul_zero a := smul_zero (ofDual a)
+  smul_add a := smul_add (ofDual a)
 
 instance instDistribMulAction' [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
-    DistribMulAction G₀ M₀ᵒᵈ := ‹DistribMulAction G₀ M₀›
+    DistribMulAction G₀ M₀ᵒᵈ :=
+  ofDual_injective.distribMulAction
+    { toFun := ofDual, map_zero' := rfl, map_add' := fun _ _ => rfl } (fun _ _ => rfl)
 
 instance instMulActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ᵒᵈ M₀ := ‹MulActionWithZero G₀ M₀›
+    MulActionWithZero G₀ᵒᵈ M₀ where
+  one_smul := one_smul G₀
+  mul_smul x y := mul_smul (ofDual x) (ofDual y)
+  smul_zero a := smul_zero (ofDual a)
+  zero_smul := zero_smul G₀
 
 instance instMulActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ M₀ᵒᵈ := ‹MulActionWithZero G₀ M₀›
+    MulActionWithZero G₀ M₀ᵒᵈ :=
+  ofDual_injective.mulActionWithZero ⟨ofDual, rfl⟩ (fun _ _ => rfl)
 
 end OrderDual
 

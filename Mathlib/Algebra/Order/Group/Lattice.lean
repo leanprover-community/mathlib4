@@ -80,15 +80,19 @@ lemma inf_div [MulRightMono α] (a b c : α) :
 section
 variable [MulLeftMono α] [MulRightMono α]
 
-@[to_additive] lemma inv_sup (a b : α) : (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ := (OrderIso.inv α).map_sup _ _
+@[to_additive] lemma inv_sup (a b : α) : (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ :=
+  congrArg OrderDual.ofDual ((OrderIso.inv α).map_sup _ _)
 
-@[to_additive] lemma inv_inf (a b : α) : (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ := (OrderIso.inv α).map_inf _ _
+@[to_additive] lemma inv_inf (a b : α) : (a ⊓ b)⁻¹ = a⁻¹ ⊔ b⁻¹ :=
+  congrArg OrderDual.ofDual ((OrderIso.inv α).map_inf _ _)
 
 @[to_additive]
-lemma div_sup (a b c : α) : c / (a ⊔ b) = c / a ⊓ c / b := (OrderIso.divLeft c).map_sup _ _
+lemma div_sup (a b c : α) : c / (a ⊔ b) = c / a ⊓ c / b :=
+  congrArg OrderDual.ofDual ((OrderIso.divLeft c).map_sup _ _)
 
 @[to_additive]
-lemma div_inf (a b c : α) : c / (a ⊓ b) = c / a ⊔ c / b := (OrderIso.divLeft c).map_inf _ _
+lemma div_inf (a b c : α) : c / (a ⊓ b) = c / a ⊔ c / b :=
+  congrArg OrderDual.ofDual ((OrderIso.divLeft c).map_inf _ _)
 
 -- In fact 0 ≤ n•a implies 0 ≤ a, see L. Fuchs, "Partially ordered algebraic systems"
 -- Chapter V, 1.E

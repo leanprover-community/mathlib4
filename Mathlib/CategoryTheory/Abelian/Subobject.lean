@@ -34,8 +34,11 @@ since mathlib does not have a notion of quotient objects at the time of writing.
 def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
   · change (cokernelOrderHom X).comp (kernelOrderHom X) = _
-    refine OrderHom.ext _ _ (funext (Subobject.ind _ ?_))
+    refine OrderHom.ext _ _ (funext fun ⟨x⟩ => Subobject.ind (fun y =>
+      ((cokernelOrderHom X).comp (kernelOrderHom X)) (.toDual y) = OrderHom.id (.toDual y))
+      ?_ x)
     intro A f hf
+    apply OrderDual.ext
     dsimp only [OrderHom.comp_coe, Function.comp_apply, kernelOrderHom_coe, Subobject.lift_mk,
       cokernelOrderHom_coe, OrderHom.id_coe, id]
     refine Subobject.mk_eq_mk_of_comm _ _
@@ -65,6 +68,7 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
 instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} C] :
     WellPowered.{w} Cᵒᵖ where
   subobject_small X :=
-    (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
+    (small_congr ((subobjectIsoSubobjectOp (unop X)).toEquiv.trans
+      (OrderDual.equiv _))).1 inferInstance
 
 end CategoryTheory.Abelian

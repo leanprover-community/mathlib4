@@ -131,10 +131,16 @@ function `f : ℝ → ℝ` given by `f x = if x < 0 then x else x + 1` would be 
 `a = 0`. -/
 theorem StrictMonoOn.continuousWithinAt_left_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ico b (f a)) :
-    ContinuousWithinAt f (Iic a) a :=
-  h_mono.dual.continuousWithinAt_right_of_exists_between hs fun b hb =>
-    let ⟨c, hcs, hcb, hca⟩ := hfs b hb
-    ⟨c, hcs, hca, hcb⟩
+    ContinuousWithinAt f (Iic a) a := by
+  have has : a ∈ s := mem_of_mem_nhdsWithin self_mem_Iic hs
+  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
+  · rcases hfs b hb with ⟨c, hcs, hcb, hca⟩
+    have hca' : c < a := (h_mono.lt_iff_lt hcs has).1 hca
+    filter_upwards [hs, Ioc_mem_nhdsLE hca']
+    rintro x hx ⟨hcx, _⟩
+    exact lt_of_le_of_lt hcb ((h_mono.lt_iff_lt hcs hx).2 hcx)
+  · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Iic a)] with _ hxs hxa using
+      lt_of_le_of_lt ((h_mono.le_iff_le hxs has).2 hxa) hb
 
 /-- If `f` is a monotone function on a left neighborhood of `a` and the image of this neighborhood
 under `f` meets every interval `(b, f a)`, `b < f a`, then `f` is continuous at `a` from the left.
@@ -144,20 +150,29 @@ assumption `hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ico b (f a)` we use for stri
 because otherwise the function `floor : ℝ → ℤ` would be a counter-example at `a = 0`. -/
 theorem continuousWithinAt_left_of_monotoneOn_of_exists_between {f : α → β} {s : Set α} {a : α}
     (hf : MonotoneOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : ∀ b < f a, ∃ c ∈ s, f c ∈ Ioo b (f a)) :
-    ContinuousWithinAt f (Iic a) a :=
-  @continuousWithinAt_right_of_monotoneOn_of_exists_between αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s a hf.dual hs
-    fun b hb =>
-    let ⟨c, hcs, hcb, hca⟩ := hfs b hb
-    ⟨c, hcs, hca, hcb⟩
+    ContinuousWithinAt f (Iic a) a := by
+  have has : a ∈ s := mem_of_mem_nhdsWithin self_mem_Iic hs
+  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
+  · rcases hfs b hb with ⟨c, hcs, hcb, hca⟩
+    have : c < a := not_le.1 fun h => not_le.2 hca (hf has hcs h)
+    filter_upwards [hs, Ioc_mem_nhdsLE this]
+    rintro x hx ⟨hcx, hxa⟩
+    exact lt_of_lt_of_le hcb (hf hcs hx hcx.le)
+  · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Iic a)] with _ hxs hxa using
+      lt_of_le_of_lt (hf hxs has hxa) hb
 
 /-- If a function `f` with a densely ordered codomain is monotone on a left neighborhood of `a` and
 the closure of the image of this neighborhood under `f` is a left neighborhood of `f a`, then `f` is
 continuous at `a` from the left -/
 theorem continuousWithinAt_left_of_monotoneOn_of_closure_image_mem_nhdsWithin [DenselyOrdered β]
     {f : α → β} {s : Set α} {a : α} (hf : MonotoneOn f s) (hs : s ∈ 𝓝[≤] a)
-    (hfs : closure (f '' s) ∈ 𝓝[≤] f a) : ContinuousWithinAt f (Iic a) a :=
-  @continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ f s
-    a hf.dual hs hfs
+    (hfs : closure (f '' s) ∈ 𝓝[≤] f a) : ContinuousWithinAt f (Iic a) a := by
+  refine continuousWithinAt_left_of_monotoneOn_of_exists_between hf hs fun b hb => ?_
+  rcases (mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset hb).1 hfs with ⟨b', ⟨hbb', hab'⟩, hb'⟩
+  rcases exists_between hab' with ⟨c', hc'⟩
+  rcases mem_closure_iff.1 (hb' ⟨hc'.1, hc'.2.le⟩) (Ioo b' (f a)) isOpen_Ioo hc' with
+    ⟨_, hc, ⟨c, hcs, rfl⟩⟩
+  exact ⟨c, hcs, hbb'.trans_lt hc.1, hc.2⟩
 
 /-- If a function `f` with a densely ordered codomain is monotone on a left neighborhood of `a` and
 the image of this neighborhood under `f` is a left neighborhood of `f a`, then `f` is continuous at
@@ -174,7 +189,8 @@ then `f` is continuous at `a` from the left. -/
 theorem StrictMonoOn.continuousWithinAt_left_of_closure_image_mem_nhdsWithin [DenselyOrdered β]
     {f : α → β} {s : Set α} {a : α} (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≤] a)
     (hfs : closure (f '' s) ∈ 𝓝[≤] f a) : ContinuousWithinAt f (Iic a) a :=
-  h_mono.dual.continuousWithinAt_right_of_closure_image_mem_nhdsWithin hs hfs
+  continuousWithinAt_left_of_monotoneOn_of_closure_image_mem_nhdsWithin
+    (fun _ hx _ hy => (h_mono.le_iff_le hx hy).2) hs hfs
 
 /-- If a function `f` with a densely ordered codomain is strictly monotone on a left neighborhood of
 `a` and the image of this neighborhood under `f` is a left neighborhood of `f a`, then `f` is
@@ -182,14 +198,17 @@ continuous at `a` from the left. -/
 theorem StrictMonoOn.continuousWithinAt_left_of_image_mem_nhdsWithin [DenselyOrdered β] {f : α → β}
     {s : Set α} {a : α} (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : f '' s ∈ 𝓝[≤] f a) :
     ContinuousWithinAt f (Iic a) a :=
-  h_mono.dual.continuousWithinAt_right_of_image_mem_nhdsWithin hs hfs
+  h_mono.continuousWithinAt_left_of_closure_image_mem_nhdsWithin hs
+    (mem_of_superset hfs subset_closure)
 
 /-- If a function `f` is strictly monotone on a left neighborhood of `a` and the image of this
 neighborhood under `f` includes `Iio (f a)`, then `f` is continuous at `a` from the left. -/
 theorem StrictMonoOn.continuousWithinAt_left_of_surjOn {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≤] a) (hfs : SurjOn f s (Iio (f a))) :
     ContinuousWithinAt f (Iic a) a :=
-  h_mono.dual.continuousWithinAt_right_of_surjOn hs hfs
+  h_mono.continuousWithinAt_left_of_exists_between hs fun _ hb =>
+    let ⟨c, hcs, hcb⟩ := hfs hb
+    ⟨c, hcs, hcb.ge, hcb.symm ▸ hb⟩
 
 /-- If a function `f` is strictly monotone on a neighborhood of `a` and the image of this
 neighborhood under `f` meets every interval `[b, f a)`, `b < f a`, and every interval

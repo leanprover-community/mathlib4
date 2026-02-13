@@ -32,6 +32,7 @@ variable {ι' : Sort*} [CompleteLattice α]
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
 `⨆ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `iSup_eq_iSup_finset'` for a version
 that works for `ι : Sort*`. -/
+@[to_dual]
 theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
   classical
   refine le_antisymm ?_ ?_
@@ -41,22 +42,10 @@ theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, �
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
 `⨆ i ∈ t, s i`. This version works for `ι : Sort*`. See `iSup_eq_iSup_finset` for a version
 that assumes `ι : Type*` but has no `PLift`s. -/
+@[to_dual]
 theorem iSup_eq_iSup_finset' (s : ι' → α) :
     ⨆ i, s i = ⨆ t : Finset (PLift ι'), ⨆ i ∈ t, s (PLift.down i) := by
   rw [← iSup_eq_iSup_finset, ← Equiv.plift.surjective.iSup_comp]; rfl
-
-/-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `iInf_eq_iInf_finset'` for a version
-that works for `ι : Sort*`. -/
-theorem iInf_eq_iInf_finset (s : ι → α) : ⨅ i, s i = ⨅ (t : Finset ι) (i ∈ t), s i :=
-  @iSup_eq_iSup_finset αᵒᵈ _ _ _
-
-/-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version works for `ι : Sort*`. See `iInf_eq_iInf_finset` for a version
-that assumes `ι : Type*` but has no `PLift`s. -/
-theorem iInf_eq_iInf_finset' (s : ι' → α) :
-    ⨅ i, s i = ⨅ t : Finset (PLift ι'), ⨅ i ∈ t, s (PLift.down i) :=
-  @iSup_eq_iSup_finset' αᵒᵈ _ _ _
 
 end Lattice
 
@@ -132,33 +121,24 @@ theorem iInf_coe [InfSet β] (f : α → β) (s : Finset α) : ⨅ x ∈ (↑s :
 
 variable [CompleteLattice β]
 
+@[to_dual]
 theorem iSup_singleton (a : α) (s : α → β) : ⨆ x ∈ ({a} : Finset α), s x = s a := by simp
 
-theorem iInf_singleton (a : α) (s : α → β) : ⨅ x ∈ ({a} : Finset α), s x = s a := by simp
-
+@[to_dual]
 theorem iSup_option_toFinset (o : Option α) (f : α → β) : ⨆ x ∈ o.toFinset, f x = ⨆ x ∈ o, f x := by
   simp
 
-theorem iInf_option_toFinset (o : Option α) (f : α → β) : ⨅ x ∈ o.toFinset, f x = ⨅ x ∈ o, f x :=
-  @iSup_option_toFinset _ βᵒᵈ _ _ _
-
 variable [DecidableEq α]
 
+@[to_dual]
 theorem iSup_union {f : α → β} {s t : Finset α} :
     ⨆ x ∈ s ∪ t, f x = (⨆ x ∈ s, f x) ⊔ ⨆ x ∈ t, f x := by simp [iSup_or, iSup_sup_eq]
 
-theorem iInf_union {f : α → β} {s t : Finset α} :
-    ⨅ x ∈ s ∪ t, f x = (⨅ x ∈ s, f x) ⊓ ⨅ x ∈ t, f x :=
-  @iSup_union α βᵒᵈ _ _ _ _ _
-
+@[to_dual]
 theorem iSup_insert (a : α) (s : Finset α) (t : α → β) :
     ⨆ x ∈ insert a s, t x = t a ⊔ ⨆ x ∈ s, t x := by
   rw [insert_eq]
   simp only [iSup_union, Finset.iSup_singleton]
-
-theorem iInf_insert (a : α) (s : Finset α) (t : α → β) :
-    ⨅ x ∈ insert a s, t x = t a ⊓ ⨅ x ∈ s, t x :=
-  @iSup_insert α βᵒᵈ _ _ _ _ _
 
 theorem iSup_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     ⨆ x ∈ s.image f, g x = ⨆ y ∈ s, g (f y) := by rw [← iSup_coe, coe_image, iSup_image, iSup_coe]
@@ -166,21 +146,15 @@ theorem iSup_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
 theorem iInf_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
     ⨅ x ∈ s.image f, g x = ⨅ y ∈ s, g (f y) := by rw [← iInf_coe, coe_image, iInf_image, iInf_coe]
 
+@[to_dual]
 theorem iSup_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
     ⨆ i ∈ insert x t, Function.update f x s i = s ⊔ ⨆ i ∈ t, f i := by
   simp only [Finset.iSup_insert, update_self]
   rcongr (i hi); apply update_of_ne; rintro rfl; exact hx hi
 
-theorem iInf_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
-    ⨅ i ∈ insert x t, update f x s i = s ⊓ ⨅ i ∈ t, f i :=
-  @iSup_insert_update α βᵒᵈ _ _ _ _ f _ hx
-
+@[to_dual]
 theorem iSup_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → β) :
     ⨆ y ∈ s.biUnion t, f y = ⨆ (x ∈ s) (y ∈ t x), f y := by simp [@iSup_comm _ α, iSup_and]
-
-theorem iInf_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → β) :
-    ⨅ y ∈ s.biUnion t, f y = ⨅ (x ∈ s) (y ∈ t x), f y :=
-  @iSup_biUnion _ βᵒᵈ _ _ _ _ _ _
 
 end Lattice
 

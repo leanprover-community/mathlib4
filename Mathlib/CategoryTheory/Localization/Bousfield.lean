@@ -119,7 +119,7 @@ lemma le_isLocal_iff (P : ObjectProperty C) (W : MorphismProperty C) :
 lemma galoisConnection_isLocal :
     GaloisConnection (OrderDual.toDual ∘ isLocal (C := C))
       (MorphismProperty.isLocal ∘ OrderDual.ofDual) :=
-  le_isLocal_iff
+  fun a b => le_isLocal_iff a (OrderDual.ofDual b)
 
 end
 
@@ -202,7 +202,7 @@ lemma le_isColocal_iff (P : ObjectProperty C) (W : MorphismProperty C) :
 lemma galoisConnection_isColocal :
     GaloisConnection (OrderDual.toDual ∘ isColocal (C := C))
       (MorphismProperty.isColocal ∘ OrderDual.ofDual) :=
-  le_isColocal_iff
+  fun a b => le_isColocal_iff a (OrderDual.ofDual b)
 
 end
 

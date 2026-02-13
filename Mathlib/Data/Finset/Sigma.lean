@@ -101,8 +101,11 @@ theorem sup_sigma [SemilatticeSup β] [OrderBot β] :
       le_sup <| mem_sigma.2 ⟨hi, ha⟩⟩
 
 theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
-    (s.sigma t).inf f = s.inf fun i => (t i).inf fun b => f ⟨i, b⟩ :=
-  @sup_sigma _ _ βᵒᵈ _ _ _ _ _
+    (s.sigma t).inf f = s.inf fun i => (t i).inf fun b => f ⟨i, b⟩ := by
+  simp only [le_antisymm_iff, Finset.le_inf_iff, mem_sigma, and_imp, Sigma.forall]
+  exact
+    ⟨fun i hi a ha => inf_le <| mem_sigma.2 ⟨hi, ha⟩,
+     fun i a hi ha => (inf_le hi).trans <| inf_le (f := fun a => f ⟨i, a⟩) ha⟩
 
 theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ := by
@@ -113,8 +116,8 @@ theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ 
   Eq.symm (biSup_finsetSigma _ _ _)
 
 theorem _root_.biInf_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
-    (f : Sigma α → β) : ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
-  biSup_finsetSigma (β := βᵒᵈ) _ _ _
+    (f : Sigma α → β) : ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ := by
+  simp_rw [← Finset.iInf_coe, Finset.coe_sigma, biInf_sigma]
 
 theorem _root_.biInf_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
     (f : ∀ i, α i → β) : ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=

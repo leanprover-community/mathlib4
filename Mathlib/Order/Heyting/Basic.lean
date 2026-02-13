@@ -760,7 +760,7 @@ instance OrderDual.instCoheytingAlgebra : CoheytingAlgebra αᵒᵈ where
   hnot := toDual ∘ compl ∘ ofDual
   sdiff a b := toDual (ofDual b ⇨ ofDual a)
   sdiff_le_iff a b c := by rw [sup_comm]; exact le_himp_iff
-  top_sdiff := @himp_bot α _
+  top_sdiff := fun a => congrArg toDual (himp_bot (ofDual a))
 
 @[simp]
 theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = (ofDual a)ᶜ :=
@@ -900,7 +900,7 @@ instance OrderDual.instHeytingAlgebra : HeytingAlgebra αᵒᵈ where
   compl := toDual ∘ hnot ∘ ofDual
   himp a b := toDual (ofDual b \ ofDual a)
   le_himp_iff a b c := by rw [inf_comm]; exact sdiff_le_iff
-  himp_bot := @top_sdiff' α _
+  himp_bot := fun a => congrArg toDual (top_sdiff' (ofDual a))
 
 @[simp]
 theorem ofDual_compl (a : αᵒᵈ) : ofDual aᶜ = ￢ofDual a :=

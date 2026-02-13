@@ -84,13 +84,15 @@ theorem zeroLocus_vanishingIdeal_le (V : Set (σ → K)) : V ≤ zeroLocus K (va
 
 theorem zeroLocus_vanishingIdeal_galoisConnection :
     @GaloisConnection (Ideal (MvPolynomial σ k)) (Set (σ → K))ᵒᵈ _ _
-      (zeroLocus K) (vanishingIdeal k) :=
-  GaloisConnection.monotone_intro (fun _ _ ↦ vanishingIdeal_anti_mono)
-    (fun _ _ ↦ zeroLocus_anti_mono) le_vanishingIdeal_zeroLocus zeroLocus_vanishingIdeal_le
+      (OrderDual.toDual ∘ zeroLocus K) (fun t => vanishingIdeal k (OrderDual.ofDual t)) :=
+  fun I t => by
+    simp only [Function.comp_apply]
+    exact ⟨fun h p hp x hx => h hx p hp, fun h x hx p hp => h hp x hx⟩
 
 theorem le_zeroLocus_iff_le_vanishingIdeal {V : Set (σ → K)} {I : Ideal (MvPolynomial σ k)} :
     V ≤ zeroLocus K I ↔ I ≤ vanishingIdeal k V :=
-  zeroLocus_vanishingIdeal_galoisConnection.le_iff_le
+  OrderDual.toDual_le_toDual.symm.trans
+    (zeroLocus_vanishingIdeal_galoisConnection I (OrderDual.toDual V))
 
 theorem zeroLocus_span (S : Set (MvPolynomial σ k)) :
     zeroLocus K (Ideal.span S) = { x | ∀ p ∈ S, aeval x p = 0 } :=

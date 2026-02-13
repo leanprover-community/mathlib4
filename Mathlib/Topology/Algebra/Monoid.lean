@@ -41,7 +41,9 @@ variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
 
 @[to_additive]
 instance : ContinuousMul Mᵒᵈ :=
-  ‹ContinuousMul M›
+  ⟨continuous_toDual.comp <| (ContinuousMul.continuous_mul (M := M)).comp <|
+    Continuous.prodMk (continuous_ofDual.comp continuous_fst)
+      (continuous_ofDual.comp continuous_snd)⟩
 
 @[to_additive]
 instance : ContinuousMul (ULift.{u} M) := ⟨continuous_uliftUp.comp (by fun_prop)⟩

@@ -650,26 +650,28 @@ variable [LE α] [OrderTop α] [LE β] [OrderTop β] [LE γ] [OrderTop γ]
 @[simps]
 protected def dual :
     TopHom α β ≃ BotHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨f, f.map_top'⟩
-  invFun f := ⟨f, f.map_bot'⟩
+  toFun f := ⟨toDual ∘ f ∘ ofDual, by simp⟩
+  invFun f := ⟨ofDual ∘ f ∘ toDual, by simp⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; cases x; rfl
 
 @[simp]
-theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ :=
-  rfl
+theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ := by
+  ext x; cases x; rfl
 
 @[simp]
 theorem dual_comp (g : TopHom β γ) (f : TopHom α β) :
-    TopHom.dual (g.comp f) = g.dual.comp (TopHom.dual f) :=
-  rfl
+    TopHom.dual (g.comp f) = g.dual.comp (TopHom.dual f) := by
+  ext x; cases x; rfl
 
 @[simp]
-theorem symm_dual_id : TopHom.dual.symm (BotHom.id _) = TopHom.id α :=
-  rfl
+theorem symm_dual_id : TopHom.dual.symm (BotHom.id _) = TopHom.id α := by
+  ext; rfl
 
 @[simp]
 theorem symm_dual_comp (g : BotHom βᵒᵈ γᵒᵈ) (f : BotHom αᵒᵈ βᵒᵈ) :
-    TopHom.dual.symm (g.comp f) = (TopHom.dual.symm g).comp (TopHom.dual.symm f) :=
-  rfl
+    TopHom.dual.symm (g.comp f) = (TopHom.dual.symm g).comp (TopHom.dual.symm f) := by
+  ext; rfl
 
 end TopHom
 
@@ -681,26 +683,28 @@ variable [LE α] [OrderBot α] [LE β] [OrderBot β] [LE γ] [OrderBot γ]
 @[simps]
 protected def dual :
     BotHom α β ≃ TopHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨f, f.map_bot'⟩
-  invFun f := ⟨f, f.map_top'⟩
+  toFun f := ⟨toDual ∘ f ∘ ofDual, by simp⟩
+  invFun f := ⟨ofDual ∘ f ∘ toDual, by simp⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; cases x; rfl
 
 @[simp]
-theorem dual_id : BotHom.dual (BotHom.id α) = TopHom.id _ :=
-  rfl
+theorem dual_id : BotHom.dual (BotHom.id α) = TopHom.id _ := by
+  ext x; cases x; rfl
 
 @[simp]
 theorem dual_comp (g : BotHom β γ) (f : BotHom α β) :
-    BotHom.dual (g.comp f) = g.dual.comp (BotHom.dual f) :=
-  rfl
+    BotHom.dual (g.comp f) = g.dual.comp (BotHom.dual f) := by
+  ext x; cases x; rfl
 
 @[simp]
-theorem symm_dual_id : BotHom.dual.symm (TopHom.id _) = BotHom.id α :=
-  rfl
+theorem symm_dual_id : BotHom.dual.symm (TopHom.id _) = BotHom.id α := by
+  ext; rfl
 
 @[simp]
 theorem symm_dual_comp (g : TopHom βᵒᵈ γᵒᵈ) (f : TopHom αᵒᵈ βᵒᵈ) :
-    BotHom.dual.symm (g.comp f) = (BotHom.dual.symm g).comp (BotHom.dual.symm f) :=
-  rfl
+    BotHom.dual.symm (g.comp f) = (BotHom.dual.symm g).comp (BotHom.dual.symm f) := by
+  ext; rfl
 
 end BotHom
 
@@ -715,26 +719,36 @@ protected def dual :
     BoundedOrderHom α β ≃
       BoundedOrderHom αᵒᵈ
         βᵒᵈ where
-  toFun f := ⟨f.toOrderHom.dual, f.map_bot', f.map_top'⟩
-  invFun f := ⟨OrderHom.dual.symm f.toOrderHom, f.map_bot', f.map_top'⟩
+  toFun f := ⟨f.toOrderHom.dual, by
+      simp only [OrderHom.dual, Equiv.coe_fn_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, ofDual_top, toDual_eq_top]; exact f.map_bot', by
+      simp only [OrderHom.dual, Equiv.coe_fn_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, ofDual_bot, toDual_eq_bot]; exact f.map_top'⟩
+  invFun f := ⟨OrderHom.dual.symm f.toOrderHom, by
+      simp only [OrderHom.dual, Equiv.coe_fn_symm_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, toDual_top, ofDual_eq_top]; exact f.map_bot', by
+      simp only [OrderHom.dual, Equiv.coe_fn_symm_mk, OrderHom.toFun_eq_coe, OrderHom.coe_mk,
+        Function.comp_apply, toDual_bot, ofDual_eq_bot]; exact f.map_top'⟩
+  left_inv f := by ext; rfl
+  right_inv f := by ext x; cases x; rfl
 
 @[simp]
-theorem dual_id : (BoundedOrderHom.id α).dual = BoundedOrderHom.id _ :=
-  rfl
+theorem dual_id : (BoundedOrderHom.id α).dual = BoundedOrderHom.id _ := by
+  ext x; cases x; rfl
 
 @[simp]
 theorem dual_comp (g : BoundedOrderHom β γ) (f : BoundedOrderHom α β) :
-    (g.comp f).dual = g.dual.comp f.dual :=
-  rfl
+    (g.comp f).dual = g.dual.comp f.dual := by
+  ext x; cases x; rfl
 
 @[simp]
-theorem symm_dual_id : BoundedOrderHom.dual.symm (BoundedOrderHom.id _) = BoundedOrderHom.id α :=
-  rfl
+theorem symm_dual_id : BoundedOrderHom.dual.symm (BoundedOrderHom.id _) = BoundedOrderHom.id α := by
+  ext; rfl
 
 @[simp]
 theorem symm_dual_comp (g : BoundedOrderHom βᵒᵈ γᵒᵈ) (f : BoundedOrderHom αᵒᵈ βᵒᵈ) :
     BoundedOrderHom.dual.symm (g.comp f) =
-      (BoundedOrderHom.dual.symm g).comp (BoundedOrderHom.dual.symm f) :=
-  rfl
+      (BoundedOrderHom.dual.symm g).comp (BoundedOrderHom.dual.symm f) := by
+  ext; rfl
 
 end BoundedOrderHom

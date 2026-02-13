@@ -40,7 +40,8 @@ variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopolog
 theorem nhdsSet_Ici : 𝓝ˢ (Ici a) = 𝓝 a ⊔ 𝓟 (Ioi a) := by
   rw [← Ioi_insert, nhdsSet_insert, nhdsSet_Ioi]
 
-theorem nhdsSet_Iic : 𝓝ˢ (Iic a) = 𝓝 a ⊔ 𝓟 (Iio a) := nhdsSet_Ici (α := αᵒᵈ)
+theorem nhdsSet_Iic : 𝓝ˢ (Iic a) = 𝓝 a ⊔ 𝓟 (Iio a) := by
+  rw [← Iio_insert, nhdsSet_insert, nhdsSet_Iio]
 
 theorem nhdsSet_Ico (h : a < b) : 𝓝ˢ (Ico a b) = 𝓝 a ⊔ 𝓟 (Ioo a b) := by
   rw [← Ioo_insert_left h, nhdsSet_insert, nhdsSet_Ioo]
@@ -70,13 +71,13 @@ theorem Ici_mem_nhdsSet_Ici (h : a < b) : Ici a ∈ 𝓝ˢ (Ici b) :=
 ### Lemmas about `Iix _ ∈ 𝓝ˢ (Set.Iic _)`
 -/
 
-theorem Iio_mem_nhdsSet_Iic_iff : Iio b ∈ 𝓝ˢ (Iic a) ↔ a < b :=
-  Ioi_mem_nhdsSet_Ici_iff (α := αᵒᵈ)
+theorem Iio_mem_nhdsSet_Iic_iff : Iio b ∈ 𝓝ˢ (Iic a) ↔ a < b := by
+  rw [isOpen_Iio.mem_nhdsSet, Iic_subset_Iio]
 
 alias ⟨_, Iio_mem_nhdsSet_Iic⟩ := Iio_mem_nhdsSet_Iic_iff
 
 theorem Iic_mem_nhdsSet_Iic (h : a < b) : Iic b ∈ 𝓝ˢ (Iic a) :=
-  Ici_mem_nhdsSet_Ici (α := αᵒᵈ) h
+  mem_of_superset (Iio_mem_nhdsSet_Iic h) Iio_subset_Iic_self
 
 /-!
 ### Lemmas about `Ixx _ ?_ ∈ 𝓝ˢ (Set.Icc _ _)`
@@ -190,14 +191,23 @@ theorem Iic_mem_nhdsSet_Iic_iff {a b : α} [NeBot (𝓝[>] b)] : Iic a ∈ 𝓝�
   (hasBasis_nhdsSet_Iic_Iic b).mem_iff.trans
     ⟨fun ⟨_c, hbc, hca⟩ ↦ hbc.trans_le (Iic_subset_Iic.1 hca), fun h ↦ ⟨_, h, Subset.rfl⟩⟩
 
-theorem hasBasis_nhdsSet_Ici_Ioi (a : α) [Nonempty (Iio a)] :
-    HasBasis (𝓝ˢ (Ici a)) (· < a) Ioi :=
-  have : Nonempty (Ioi (toDual a)) := ‹_›; hasBasis_nhdsSet_Iic_Iio (toDual a)
+theorem hasBasis_nhdsSet_Ici_Ioi (a : α) [h : Nonempty (Iio a)] :
+    HasBasis (𝓝ˢ (Ici a)) (· < a) Ioi := by
+  refine ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨b, hab, hb⟩ ↦ mem_of_superset (Ioi_mem_nhdsSet_Ici hab) hb⟩⟩
+  rw [nhdsSet_Ici, mem_sup, mem_principal] at hs
+  rcases exists_Ioc_subset_of_mem_nhds hs.1 (Set.nonempty_coe_sort.1 h) with ⟨b, hab, hbs⟩
+  exact ⟨b, hab, Ioi_subset_Ioc_union_Ioi.trans (union_subset hbs hs.2)⟩
 
 theorem hasBasis_nhdsSet_Ici_Ici (a : α) [NeBot (𝓝[<] a)] :
-    HasBasis (𝓝ˢ (Ici a)) (· < a) Ici :=
-  have : NeBot (𝓝[>] (toDual a)) := ‹_›; hasBasis_nhdsSet_Iic_Iic (toDual a)
+    HasBasis (𝓝ˢ (Ici a)) (· < a) Ici := by
+  have : Nonempty (Iio a) :=
+    (Filter.nonempty_of_mem (self_mem_nhdsWithin : Iio a ∈ 𝓝[<] a)).to_subtype
+  refine (hasBasis_nhdsSet_Ici_Ioi _).to_hasBasis
+    (fun c hc ↦ ?_) (fun _ h ↦ ⟨_, h, Ioi_subset_Ici_self⟩)
+  obtain ⟨i, hci, hia⟩ := Filter.nonempty_of_mem (Ioo_mem_nhdsLT hc)
+  exact ⟨i, hia, (Ici_subset_Ioi.2 hci)⟩
 
 @[simp]
 theorem Ici_mem_nhdsSet_Ici_iff {a b : α} [NeBot (𝓝[<] b)] : Ici a ∈ 𝓝ˢ (Ici b) ↔ a < b :=
-  have : NeBot (𝓝[>] (toDual b)) := ‹_›; Iic_mem_nhdsSet_Iic_iff (a := toDual a) (b := toDual b)
+  (hasBasis_nhdsSet_Ici_Ici b).mem_iff.trans
+    ⟨fun ⟨_c, hcb, hca⟩ ↦ (Ici_subset_Ici.1 hca).trans_lt hcb, fun h ↦ ⟨_, h, Subset.rfl⟩⟩

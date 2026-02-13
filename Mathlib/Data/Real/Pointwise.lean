@@ -79,7 +79,10 @@ theorem Real.sInf_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : sInf (a • s) =
   · rw [zero_smul_set hs, zero_smul]
     exact csInf_singleton 0
   by_cases h : BddAbove s
-  · exact ((OrderIso.smulRightDual ℝ ha').map_csSup' hs h).symm
+  · have hna : (0 : α) < -a := neg_pos.mpr ha'
+    have heq : a • s = -((-a) • s) := by
+      simp only [← image_smul, ← image_neg_eq_neg, image_image, neg_smul, neg_neg]
+    rw [heq, Real.sInf_neg, Real.sSup_smul_of_nonneg hna.le, neg_smul, neg_neg]
   · rw [Real.sInf_of_not_bddBelow (mt (bddBelow_smul_iff_of_neg ha').1 h),
         Real.sSup_of_not_bddAbove h, smul_zero]
 
@@ -93,7 +96,10 @@ theorem Real.sSup_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : sSup (a • s) =
   · rw [zero_smul_set hs, zero_smul]
     exact csSup_singleton 0
   by_cases h : BddBelow s
-  · exact ((OrderIso.smulRightDual ℝ ha').map_csInf' hs h).symm
+  · have hna : (0 : α) < -a := neg_pos.mpr ha'
+    have heq : a • s = -((-a) • s) := by
+      simp only [← image_smul, ← image_neg_eq_neg, image_image, neg_smul, neg_neg]
+    rw [heq, Real.sSup_neg, Real.sInf_smul_of_nonneg hna.le, neg_smul, neg_neg]
   · rw [Real.sSup_of_not_bddAbove (mt (bddAbove_smul_iff_of_neg ha').1 h),
         Real.sInf_of_not_bddBelow h, smul_zero]
 

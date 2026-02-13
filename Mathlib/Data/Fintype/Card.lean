@@ -182,7 +182,7 @@ theorem Fintype.card_plift (α : Type*) [Fintype α] : Fintype.card (PLift α) =
 
 @[simp]
 theorem Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ = Fintype.card α :=
-  rfl
+  Fintype.card_congr (OrderDual.equiv α)
 
 @[simp]
 theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=

@@ -172,7 +172,7 @@ def dualEquiv : DistLat ≌ DistLat where
   functor := dual
   inverse := dual
   unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl
+  counitIso := NatIso.ofComponents (fun X => Iso.mk <| (OrderIso.dualDual X).symm) fun _ => rfl
 
 end DistLat
 

@@ -28,7 +28,8 @@ variable [DenselyOrdered α] {a b : α}
 
 @[to_additive]
 theorem le_of_forall_lt_one_mul_le (h : ∀ ε < 1, a * ε ≤ b) : a ≤ b :=
-  le_of_forall_one_lt_le_mul (α := αᵒᵈ) h
+  le_of_forall_one_lt_le_mul (α := αᵒᵈ) fun ε hε =>
+    h (OrderDual.ofDual ε) hε
 
 @[to_additive]
 theorem le_of_forall_one_lt_div_le (h : ∀ ε : α, 1 < ε → a / ε ≤ b) : a ≤ b :=
@@ -37,7 +38,8 @@ theorem le_of_forall_one_lt_div_le (h : ∀ ε : α, 1 < ε → a / ε ≤ b) : 
 
 @[to_additive]
 theorem le_iff_forall_lt_one_mul_le : a ≤ b ↔ ∀ ε < 1, a * ε ≤ b :=
-  le_iff_forall_one_lt_le_mul (α := αᵒᵈ)
+  ⟨fun h _ hε => (mul_le_of_le_of_le_one h hε.le).trans (le_refl _),
+   le_of_forall_lt_one_mul_le⟩
 
 end DenselyOrdered
 

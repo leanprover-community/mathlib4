@@ -39,8 +39,11 @@ theorem closure_Ioi (a : α) [NoMaxOrder α] : closure (Ioi a) = Ici a :=
 
 /-- The closure of the interval `(-∞, a)` is the closed interval `(-∞, a]`, unless `a` is a bottom
 element. -/
-theorem closure_Iio' (h : (Iio a).Nonempty) : closure (Iio a) = Iic a :=
-  closure_Ioi' (α := αᵒᵈ) h
+theorem closure_Iio' (h : (Iio a).Nonempty) : closure (Iio a) = Iic a := by
+  apply Subset.antisymm
+  · exact closure_minimal Iio_subset_Iic_self isClosed_Iic
+  · rw [← diff_subset_closure_iff, Iic_diff_Iio_same, singleton_subset_iff]
+    exact isLUB_Iio.mem_closure h
 
 /-- The closure of the interval `(-∞, a)` is the interval `(-∞, a]`. -/
 @[simp]
@@ -92,8 +95,8 @@ theorem interior_Ici [NoMinOrder α] {a : α} : interior (Ici a) = Ioi a :=
   interior_Ici' nonempty_Iio
 
 @[simp]
-theorem interior_Iic' {a : α} (ha : (Ioi a).Nonempty) : interior (Iic a) = Iio a :=
-  interior_Ici' (α := αᵒᵈ) ha
+theorem interior_Iic' {a : α} (ha : (Ioi a).Nonempty) : interior (Iic a) = Iio a := by
+  rw [← compl_Ioi, interior_compl, closure_Ioi' ha, compl_Ici]
 
 theorem interior_Iic [NoMaxOrder α] {a : α} : interior (Iic a) = Iio a :=
   interior_Iic' nonempty_Ioi
@@ -140,8 +143,13 @@ theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (
         closure_mono (interior_maximal Ioo_subset_Ioc_self isOpen_Ioo)
 
 theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
-  simpa only [Ioc_toDual] using
-    Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
+  rcases eq_or_ne a b with (rfl | h)
+  · simp
+  · calc
+      Ico a b ⊆ Icc a b := Ico_subset_Icc_self
+      _ = closure (Ioo a b) := (closure_Ioo h).symm
+      _ ⊆ closure (interior (Ico a b)) :=
+        closure_mono (interior_maximal Ioo_subset_Ico_self isOpen_Ioo)
 
 @[simp]
 theorem frontier_Ici' {a : α} (ha : (Iio a).Nonempty) : frontier (Ici a) = {a} := by

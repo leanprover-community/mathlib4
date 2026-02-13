@@ -74,9 +74,11 @@ lemma IsAntichain.interior_eq_empty [∀ x : α, (𝓝[<] x).NeBot] {s : Set α}
   exact hs hys (interior_subset hx) hyx.ne hyx.le
 
 lemma IsAntichain.interior_eq_empty' [∀ x : α, (𝓝[>] x).NeBot] {s : Set α}
-    (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ :=
-  have : ∀ x : αᵒᵈ, NeBot (𝓝[<] x) := ‹_›
-  hs.to_dual.interior_eq_empty
+    (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := by
+  refine eq_empty_of_forall_notMem fun x hx ↦ ?_
+  have : ∀ᶠ y in 𝓝 x, y ∈ s := mem_interior_iff_mem_nhds.1 hx
+  rcases this.exists_gt with ⟨y, hyx, hys⟩
+  exact hs (interior_subset hx) hys hyx.ne hyx.le
 
 end Preorder
 
@@ -89,16 +91,16 @@ theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
   simp only [← Ici_diff_left, continuousWithinAt_diff_self]
 
 theorem continuousWithinAt_Iio_iff_Iic {a : α} {f : α → β} :
-    ContinuousWithinAt f (Iio a) a ↔ ContinuousWithinAt f (Iic a) a :=
-  continuousWithinAt_Ioi_iff_Ici (α := αᵒᵈ)
+    ContinuousWithinAt f (Iio a) a ↔ ContinuousWithinAt f (Iic a) a := by
+  simp only [← Iic_diff_right, continuousWithinAt_diff_self]
 
 theorem continuousWithinAt_inter_Ioi_iff_Ici {a : α} {f : α → β} {s : Set α} :
     ContinuousWithinAt f (s ∩ Ioi a) a ↔ ContinuousWithinAt f (s ∩ Ici a) a := by
   simp [← Ici_diff_left, ← inter_diff_assoc, continuousWithinAt_diff_self]
 
 theorem continuousWithinAt_inter_Iio_iff_Iic {a : α} {f : α → β} {s : Set α} :
-    ContinuousWithinAt f (s ∩ Iio a) a ↔ ContinuousWithinAt f (s ∩ Iic a) a :=
-  continuousWithinAt_inter_Ioi_iff_Ici (α := αᵒᵈ)
+    ContinuousWithinAt f (s ∩ Iio a) a ↔ ContinuousWithinAt f (s ∩ Iic a) a := by
+  simp [← Iic_diff_right, ← inter_diff_assoc, continuousWithinAt_diff_self]
 
 end PartialOrder
 

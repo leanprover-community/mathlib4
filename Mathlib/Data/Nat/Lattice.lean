@@ -193,11 +193,12 @@ theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = u 0 ⊔ 
   rw [← sup_iSup_nat_succ]
   simp
 
-theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = (⨅ k < n, u k) ⊓ u n :=
-  @iSup_lt_succ αᵒᵈ _ _ _
+theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = (⨅ k < n, u k) ⊓ u n := by
+  simp_rw [Nat.lt_add_one_iff, biInf_le_eq_inf]
 
-theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = u 0 ⊓ ⨅ k < n, u (k + 1) :=
-  @iSup_lt_succ' αᵒᵈ _ _ _
+theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = u 0 ⊓ ⨅ k < n, u (k + 1) := by
+  rw [← inf_iInf_nat_succ]
+  simp
 
 theorem iSup_le_succ (u : ℕ → α) (n : ℕ) : ⨆ k ≤ n + 1, u k = (⨆ k ≤ n, u k) ⊔ u (n + 1) := by
   simp_rw [← Nat.lt_succ_iff, iSup_lt_succ]
@@ -205,11 +206,11 @@ theorem iSup_le_succ (u : ℕ → α) (n : ℕ) : ⨆ k ≤ n + 1, u k = (⨆ k 
 theorem iSup_le_succ' (u : ℕ → α) (n : ℕ) : ⨆ k ≤ n + 1, u k = u 0 ⊔ ⨆ k ≤ n, u (k + 1) := by
   simp_rw [← Nat.lt_succ_iff, iSup_lt_succ']
 
-theorem iInf_le_succ (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = (⨅ k ≤ n, u k) ⊓ u (n + 1) :=
-  @iSup_le_succ αᵒᵈ _ _ _
+theorem iInf_le_succ (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = (⨅ k ≤ n, u k) ⊓ u (n + 1) := by
+  simp_rw [← Nat.lt_succ_iff, iInf_lt_succ]
 
-theorem iInf_le_succ' (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = u 0 ⊓ ⨅ k ≤ n, u (k + 1) :=
-  @iSup_le_succ' αᵒᵈ _ _ _
+theorem iInf_le_succ' (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = u 0 ⊓ ⨅ k ≤ n, u (k + 1) := by
+  simp_rw [← Nat.lt_succ_iff, iInf_lt_succ']
 
 end
 

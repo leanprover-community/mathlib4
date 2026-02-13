@@ -19,6 +19,8 @@ public section
 
 variable {ι α β : Type*}
 
+open OrderDual
+
 namespace Finset
 section IsTrans
 variable [LE α] [IsTrans α LE.le] {s : Finset α} {a : α}
@@ -36,7 +38,7 @@ lemma exists_maximalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
     · exact ⟨j, mem_cons_of_mem hj.1, by simpa [hji] using hj.2⟩
 
 lemma exists_minimalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
-    ∃ i, MinimalFor (· ∈ s) f i := exists_maximalFor (α := αᵒᵈ) f s hs
+    ∃ i, MinimalFor (· ∈ s) f i := exists_maximalFor (toDual ∘ f) s hs
 
 lemma exists_maximal (hs : s.Nonempty) : ∃ i, Maximal (· ∈ s) i := s.exists_maximalFor id hs
 lemma exists_minimal (hs : s.Nonempty) : ∃ i, Minimal (· ∈ s) i := s.exists_minimalFor id hs
@@ -52,8 +54,12 @@ lemma exists_le_maximal (s : Finset α) (ha : a ∈ s) : ∃ b, a ≤ b ∧ Maxi
     simpa [Maximal, and_assoc] using {x ∈ s | a ≤ x}.exists_maximal ⟨a, mem_filter.2 ⟨ha, le_rfl⟩⟩
   exact ⟨b, hab, hb, fun c hc hbc ↦ hbmin hc (hab.trans hbc) hbc⟩
 
-lemma exists_le_minimal (s : Finset α) (ha : a ∈ s) : ∃ b ≤ a, Minimal (· ∈ s) b :=
-  exists_le_maximal (α := αᵒᵈ) s ha
+lemma exists_le_minimal (s : Finset α) (ha : a ∈ s) : ∃ b ≤ a, Minimal (· ∈ s) b := by
+  classical
+  obtain ⟨b, hb, hba, hbmin⟩ : ∃ b ∈ s, b ≤ a ∧ _ := by
+    simpa [Minimal, and_assoc] using
+      {x ∈ s | x ≤ a}.exists_minimal ⟨a, mem_filter.2 ⟨ha, le_rfl⟩⟩
+  exact ⟨b, hba, hb, fun c hc hcb ↦ hbmin hc (hcb.trans hba) hcb⟩
 
 end Preorder
 end Finset
@@ -67,7 +73,7 @@ lemma Finite.exists_maximalFor (f : ι → α) (s : Set ι) (h : s.Finite) (hs :
   lift s to Finset ι using h; exact s.exists_maximalFor f hs
 
 lemma Finite.exists_minimalFor (f : ι → α) (s : Set ι) (h : s.Finite) (hs : s.Nonempty) :
-    ∃ i, MinimalFor (· ∈ s) f i := Finite.exists_maximalFor (α := αᵒᵈ) f s h hs
+    ∃ i, MinimalFor (· ∈ s) f i := Finite.exists_maximalFor (toDual ∘ f) s h hs
 
 lemma Finite.exists_maximal (h : s.Finite) (hs : s.Nonempty) : ∃ i, Maximal (· ∈ s) i :=
   h.exists_maximalFor id _ hs
@@ -85,7 +91,9 @@ lemma Finite.exists_maximalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finit
 /-- A version of `Finite.exists_minimalFor` with the (weaker) hypothesis that the image of `s`
 is finite rather than `s` itself. -/
 lemma Finite.exists_minimalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finite) (hs : s.Nonempty) :
-    ∃ i, MinimalFor (· ∈ s) f i := h.exists_maximalFor' (α := αᵒᵈ) f s hs
+    ∃ i, MinimalFor (· ∈ s) f i := by
+  have : ((toDual ∘ f) '' s).Finite := (Set.image_comp ..).symm ▸ h.image toDual
+  exact this.exists_maximalFor' (toDual ∘ f) s hs
 
 end IsTrans
 
@@ -107,8 +115,12 @@ lemma infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite 
   exact infinite_of_injective_forall_mem
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
 
-lemma infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
-  infinite_of_forall_exists_gt (α := αᵒᵈ) h
+lemma infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite := by
+  inhabit α
+  let f (n : ℕ) : α := Nat.recOn n (h default).choose fun _ a ↦ (h a).choose
+  have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
+  exact infinite_of_injective_forall_mem
+    (strictAnti_nat_of_succ_lt fun n => (h _).choose_spec.2).injective hf
 
 end Preorder
 

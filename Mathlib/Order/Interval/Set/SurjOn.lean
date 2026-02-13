@@ -46,7 +46,14 @@ theorem surjOn_Ico_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
 
 theorem surjOn_Ioc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ioc a b) (Ioc (f a) (f b)) := by
-  simpa using surjOn_Ico_of_monotone_surjective h_mono.dual h_surj (toDual b) (toDual a)
+  obtain hab | hab := lt_or_ge a b
+  · intro p hp
+    rcases eq_right_or_mem_Ioo_of_mem_Ioc hp with (rfl | hp')
+    · exact mem_image_of_mem f (right_mem_Ioc.mpr hab)
+    · exact image_mono Ioo_subset_Ioc_self <|
+        surjOn_Ioo_of_monotone_surjective h_mono h_surj a b hp'
+  · rw [Ioc_eq_empty (h_mono hab).not_gt]
+    exact surjOn_empty f _
 
 -- to see that the hypothesis `a ≤ b` is necessary, consider a constant function
 theorem surjOn_Icc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
@@ -65,8 +72,10 @@ theorem surjOn_Ioi_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
   exact fun x hx => (h_mono hx).not_gt
 
 theorem surjOn_Iio_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
-    (a : α) : SurjOn f (Iio a) (Iio (f a)) :=
-  @surjOn_Ioi_of_monotone_surjective _ _ _ _ _ h_mono.dual h_surj a
+    (a : α) : SurjOn f (Iio a) (Iio (f a)) := by
+  rw [← compl_Ici, ← compl_compl (Iio (f a))]
+  refine MapsTo.surjOn_compl ?_ h_surj
+  exact fun x hx => (h_mono hx).not_gt
 
 theorem surjOn_Ici_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a : α) : SurjOn f (Ici a) (Ici (f a)) := by
@@ -76,5 +85,8 @@ theorem surjOn_Ici_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
       (@image_singleton _ _ f a ▸ surjOn_image _ _)
 
 theorem surjOn_Iic_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
-    (a : α) : SurjOn f (Iic a) (Iic (f a)) :=
-  @surjOn_Ici_of_monotone_surjective _ _ _ _ _ h_mono.dual h_surj a
+    (a : α) : SurjOn f (Iic a) (Iic (f a)) := by
+  rw [← Iio_union_right, ← Iio_union_right]
+  exact
+    (surjOn_Iio_of_monotone_surjective h_mono h_surj a).union_union
+      (@image_singleton _ _ f a ▸ surjOn_image _ _)

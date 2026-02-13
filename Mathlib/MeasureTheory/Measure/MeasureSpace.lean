@@ -493,8 +493,13 @@ theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirectedOrder ι]
 
 theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsCodirectedOrder ι]
     [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s) :
-    μ (⋃ i, s i) = ⨆ i, μ (s i) :=
-  hs.dual_left.measure_iUnion
+    μ (⋃ i, s i) = ⨆ i, μ (s i) := by
+  cases isEmpty_or_nonempty ι with
+  | inl _ => simp
+  | inr _ =>
+    rcases exists_seq_antitone_tendsto_atTop_atBot ι with ⟨x, hxm, hx⟩
+    rw [← hs.iUnion_comp_tendsto_atBot hx, ← Antitone.iSup_comp_tendsto_atBot _ hx]
+    exacts [(hs.comp hxm).directed_le.measure_iUnion, fun _ _ h ↦ measure_mono (hs h)]
 
 /-- Continuity from below: the measure of the union of a sequence of
 (not necessarily measurable) sets is the supremum of the measures of the partial unions. -/
@@ -559,8 +564,21 @@ is equal to the infimum of the measures. -/
 theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s)
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
-    μ (⋂ i, s i) = ⨅ i, μ (s i) :=
-  hs.dual_left.measure_iInter hsm hfin
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  refine le_antisymm (le_iInf fun i ↦ measure_mono <| iInter_subset _ _) ?_
+  have := hfin.nonempty
+  rcases exists_seq_monotone_tendsto_atTop_atTop ι with ⟨x, hxm, hx⟩
+  calc
+    ⨅ i, μ (s i) ≤ ⨅ n, μ (s (x n)) := le_iInf_comp (μ ∘ s) x
+    _ = μ (⋂ n, s (x n)) := by
+      refine .symm <| (hs.comp_monotone hxm).directed_ge.measure_iInter (fun n ↦ hsm _) ?_
+      rcases hfin with ⟨k, hk⟩
+      rcases (hx.eventually_ge_atTop k).exists with ⟨n, hn⟩
+      exact ⟨n, ne_top_of_le_ne_top hk <| measure_mono <| hs hn⟩
+    _ ≤ μ (⋂ i, s i) := by
+      refine measure_mono <| iInter_mono' fun i ↦ ?_
+      rcases (hx.eventually_ge_atTop i).exists with ⟨n, hn⟩
+      exact ⟨n, hs hn⟩
 
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/
@@ -586,8 +604,11 @@ theorem tendsto_measure_iUnion_atTop [Preorder ι] [IsCountablyGenerated (atTop 
   exact tendsto_atTop_iSup fun n m hnm => measure_mono <| hm hnm
 
 theorem tendsto_measure_iUnion_atBot [Preorder ι] [IsCountablyGenerated (atBot : Filter ι)]
-    {s : ι → Set α} (hm : Antitone s) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋃ n, s n))) :=
-  tendsto_measure_iUnion_atTop (ι := ιᵒᵈ) hm.dual_left
+    {s : ι → Set α} (hm : Antitone s) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋃ n, s n))) := by
+  refine .of_neBot_imp fun h ↦ ?_
+  have := (atBot_neBot_iff.1 h).2
+  rw [hm.measure_iUnion]
+  exact tendsto_atBot_iSup fun n m hnm => measure_mono <| hm hnm
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
@@ -615,8 +636,11 @@ theorem tendsto_measure_iInter_atTop [Preorder ι]
 sets is the limit of the measures. -/
 theorem tendsto_measure_iInter_atBot [Preorder ι] [IsCountablyGenerated (atBot : Filter ι)]
     {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ) (hm : Monotone s)
-    (hf : ∃ i, μ (s i) ≠ ∞) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋂ n, s n))) :=
-  tendsto_measure_iInter_atTop (ι := ιᵒᵈ) hs hm.dual_left hf
+    (hf : ∃ i, μ (s i) ≠ ∞) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋂ n, s n))) := by
+  refine .of_neBot_imp fun h ↦ ?_
+  have := (atBot_neBot_iff.1 h).2
+  rw [hm.measure_iInter hs hf]
+  exact tendsto_atBot_iInf fun n m hnm => measure_mono <| hm hnm
 
 /-- Continuity from above: the measure of the intersection of a sequence of measurable
 sets such that one has finite measure is the limit of the measures of the partial intersections. -/
@@ -1420,16 +1444,17 @@ theorem tendsto_measure_Iic_atTop [Preorder α] [(atTop : Filter α).IsCountably
   exact tendsto_measure_iUnion_atTop monotone_Iic
 
 theorem tendsto_measure_Ici_atBot [Preorder α] [(atBot : Filter α).IsCountablyGenerated]
-    (μ : Measure α) : Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) :=
-  tendsto_measure_Iic_atTop (α := αᵒᵈ) μ
+    (μ : Measure α) : Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) := by
+  rw [← iUnion_Ici]
+  exact tendsto_measure_iUnion_atBot antitone_Ici
 
 variable [PartialOrder α] {a b : α}
 
 theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a =ᵐ[μ] Iic a := by
   rw [← Iic_diff_right, diff_ae_eq_self, measure_mono_null Set.inter_subset_right ha]
 
-theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐ[μ] Ici a :=
-  Iio_ae_eq_Iic' (α := αᵒᵈ) ha
+theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐ[μ] Ici a := by
+  rw [← Ici_diff_left, diff_ae_eq_self, measure_mono_null Set.inter_subset_right ha]
 
 theorem Ioo_ae_eq_Ioc' (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Ioc a b :=
   (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)

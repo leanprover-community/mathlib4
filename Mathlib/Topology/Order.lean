@@ -142,7 +142,8 @@ variable {α : Type u} {β : Type v}
 /-- The ordering on topologies on the type `α`. `t ≤ s` if every set open in `s` is also open in `t`
 (`t` is finer than `s`). -/
 instance : PartialOrder (TopologicalSpace α) :=
-  { PartialOrder.lift (fun t => OrderDual.toDual IsOpen[t]) (fun _ _ => TopologicalSpace.ext) with
+  { PartialOrder.lift (fun t => OrderDual.toDual IsOpen[t])
+      (fun _ _ h => TopologicalSpace.ext (OrderDual.toDual_inj.mp h)) with
     le := fun s t => ∀ U, IsOpen[t] U → IsOpen[s] U }
 
 protected theorem le_def {α} {t s : TopologicalSpace α} : t ≤ s ↔ IsOpen[s] ≤ IsOpen[t] :=
@@ -179,8 +180,9 @@ def gciGenerateFrom (α : Type*) :
       (generateFrom ∘ OrderDual.ofDual) where
   gc := gc_generateFrom α
   u_l_le _ s hs := TopologicalSpace.GenerateOpen.basic s hs
-  choice g hg := TopologicalSpace.mkOfClosure g
-    (Subset.antisymm hg <| le_generateFrom_iff_subset_isOpen.1 <| le_rfl)
+  choice g hg := TopologicalSpace.mkOfClosure g.ofDual
+    (Subset.antisymm (OrderDual.le_toDual.mp hg) <|
+      le_generateFrom_iff_subset_isOpen.1 <| le_rfl)
   choice_eq _ _ := mkOfClosure_sets
 
 /-- Topologies on `α` form a complete lattice, with `⊥` the discrete topology
@@ -203,10 +205,10 @@ theorem leftInverse_generateFrom :
   (gciGenerateFrom α).u_l_leftInverse
 
 theorem generateFrom_surjective : Surjective (generateFrom : Set (Set α) → TopologicalSpace α) :=
-  (gciGenerateFrom α).u_surjective
+  fun t => let ⟨s, hs⟩ := (gciGenerateFrom α).u_surjective t; ⟨s.ofDual, hs⟩
 
 theorem setOf_isOpen_injective : Injective fun t : TopologicalSpace α => { s | IsOpen[t] s } :=
-  (gciGenerateFrom α).l_injective
+  fun _ _ h => (gciGenerateFrom α).l_injective (OrderDual.toDual_inj.mpr h)
 
 end Lattice
 
@@ -668,10 +670,10 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
     @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
   (gc_nhds a).u_sInf
 
--- Porting note: type error without `b₁ := t₁`
+-- Porting note: type error without `a₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
-  (gc_nhds a).u_inf (b₁ := t₁)
+  (gc_nhds a).u_inf (a₁ := t₁)
 
 theorem nhds_top {a : α} : @nhds α ⊤ a = ⊤ :=
   (gc_nhds a).u_top
@@ -956,41 +958,48 @@ theorem setOf_isOpen_sup (t₁ t₂ : TopologicalSpace α) :
   rfl
 
 theorem generateFrom_iUnion {f : ι → Set (Set α)} :
-    generateFrom (⋃ i, f i) = ⨅ i, generateFrom (f i) :=
-  (gc_generateFrom α).u_iInf
+    generateFrom (⋃ i, f i) = ⨅ i, generateFrom (f i) := by
+  have := (gc_generateFrom α).u_iInf (f := OrderDual.toDual ∘ f)
+  simpa using this
 
 theorem setOf_isOpen_iSup {t : ι → TopologicalSpace α} :
-    { s | IsOpen[⨆ i, t i] s } = ⋂ i, { s | IsOpen[t i] s } :=
-  (gc_generateFrom α).l_iSup
+    { s | IsOpen[⨆ i, t i] s } = ⋂ i, { s | IsOpen[t i] s } := by
+  have := congrArg OrderDual.ofDual ((gc_generateFrom α).l_iSup (f := t))
+  simp only [ofDual_iSup] at this
+  exact this
 
 theorem generateFrom_sUnion {S : Set (Set (Set α))} :
-    generateFrom (⋃₀ S) = ⨅ s ∈ S, generateFrom s :=
-  (gc_generateFrom α).u_sInf
+    generateFrom (⋃₀ S) = ⨅ s ∈ S, generateFrom s := by
+  simp_rw [sUnion_eq_biUnion, generateFrom_iUnion]
 
 theorem setOf_isOpen_sSup {T : Set (TopologicalSpace α)} :
-    { s | IsOpen[sSup T] s } = ⋂ t ∈ T, { s | IsOpen[t] s } :=
-  (gc_generateFrom α).l_sSup
+    { s | IsOpen[sSup T] s } = ⋂ t ∈ T, { s | IsOpen[t] s } := by
+  simp_rw [sSup_eq_iSup, setOf_isOpen_iSup]
 
 theorem generateFrom_union_isOpen (a b : TopologicalSpace α) :
     generateFrom ({ s | IsOpen[a] s } ∪ { s | IsOpen[b] s }) = a ⊓ b :=
   (gciGenerateFrom α).u_inf_l _ _
 
 theorem generateFrom_iUnion_isOpen (f : ι → TopologicalSpace α) :
-    generateFrom (⋃ i, { s | IsOpen[f i] s }) = ⨅ i, f i :=
-  (gciGenerateFrom α).u_iInf_l _
+    generateFrom (⋃ i, { s | IsOpen[f i] s }) = ⨅ i, f i := by
+  have := (gciGenerateFrom α).u_iInf_l f
+  simpa using this
 
 theorem generateFrom_inter (a b : TopologicalSpace α) :
     generateFrom ({ s | IsOpen[a] s } ∩ { s | IsOpen[b] s }) = a ⊔ b :=
   (gciGenerateFrom α).u_sup_l _ _
 
 theorem generateFrom_iInter (f : ι → TopologicalSpace α) :
-    generateFrom (⋂ i, { s | IsOpen[f i] s }) = ⨆ i, f i :=
-  (gciGenerateFrom α).u_iSup_l _
+    generateFrom (⋂ i, { s | IsOpen[f i] s }) = ⨆ i, f i := by
+  have := (gciGenerateFrom α).u_iSup_l f
+  simpa using this
 
 theorem generateFrom_iInter_of_generateFrom_eq_self (f : ι → Set (Set α))
     (hf : ∀ i, { s | IsOpen[generateFrom (f i)] s } = f i) :
-    generateFrom (⋂ i, f i) = ⨆ i, generateFrom (f i) :=
-  (gciGenerateFrom α).u_iSup_of_lu_eq_self f hf
+    generateFrom (⋂ i, f i) = ⨆ i, generateFrom (f i) := by
+  have := (gciGenerateFrom α).u_iSup_of_lu_eq_self (OrderDual.toDual ∘ f)
+    (fun i => OrderDual.toDual_inj.mpr (hf i))
+  simpa using this
 
 variable {t : ι → TopologicalSpace α}
 

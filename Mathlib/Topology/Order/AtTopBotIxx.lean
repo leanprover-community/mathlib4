@@ -73,9 +73,38 @@ theorem comap_coe_nhdsLT_eq_atTop_iff :
 theorem comap_coe_nhdsGT_eq_atBot_iff :
     comap ((↑) : s → X) (𝓝[>] b) = atBot ↔
       s ⊆ Ioi b ∧ (s.Nonempty → ∀ a > b, (s ∩ Ioo b a).Nonempty) := by
-  refine comap_coe_nhdsLT_eq_atTop_iff (s := OrderDual.ofDual ⁻¹' s) (b := OrderDual.toDual b)
-    |>.trans ?_
-  simp [← preimage_inter, ofDual.surjective]
+  rcases s.eq_empty_or_nonempty with rfl | hsne
+  · simp [eq_iff_true_of_subsingleton]
+  have := hsne.to_subtype
+  simp only [hsne, true_imp_iff]
+  by_cases hsub : s ⊆ Ioi b
+  · simp only [hsub, true_and]
+    constructor
+    · intro h a ha
+      have := preimage_mem_comap (m := ((↑) : s → X)) (Ioo_mem_nhdsGT ha)
+      rw [h] at this
+      rcases Filter.nonempty_of_mem this with ⟨⟨c, hcs⟩, hc⟩
+      exact ⟨c, hcs, hc⟩
+    · intro h
+      refine (nhdsGT_basis_of_exists_gt (hsne.mono hsub)).comap _ |>.ext atBot_basis ?_ ?_
+      · intro a hab
+        rcases h a hab with ⟨c, hcs, hc⟩
+        exact ⟨⟨c, hcs⟩, trivial, fun ⟨x, hxs⟩ hxc =>
+          ⟨hsub hxs, lt_of_le_of_lt (by simpa using hxc) hc.2⟩⟩
+      · rintro ⟨a, has⟩ -
+        exact ⟨a, hsub has, fun ⟨x, _⟩ hx => (mem_Ioo.mp hx).2.le⟩
+  · suffices ¬Tendsto (↑) (atBot : Filter s) (𝓝[>] b) by
+      contrapose this
+      simp_all [tendsto_iff_comap]
+    intro h
+    rcases not_subset_iff_exists_mem_notMem.mp hsub with ⟨a, has, ha⟩
+    rcases h.eventually eventually_mem_nhdsWithin |>.and (eventually_le_atBot ⟨a, has⟩) |>.exists
+      with ⟨⟨c, hcs⟩, hcb, hac⟩
+    apply lt_irrefl a
+    calc
+      a ≤ b := by simpa using ha
+      _ < c := by simpa using hcb
+      _ ≤ a := by simpa using hac
 
 theorem comap_coe_nhdsLT_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s)
     (hb : IsSuccPrelimit b := by exact .of_dense _) :
@@ -90,8 +119,12 @@ theorem comap_coe_nhdsLT_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : s.Nonempty → 
 theorem comap_coe_nhdsGT_of_Ioo_subset (hsa : s ⊆ Ioi a) (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s)
     (ha : IsPredPrelimit a := by exact .of_dense _) :
     comap ((↑) : s → X) (𝓝[>] a) = atBot := by
-  refine comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from hsa) ?_ ha.dual
-  simpa only [OrderDual.exists, Ioo_toDual]
+  rw [comap_coe_nhdsGT_eq_atBot_iff]
+  refine ⟨hsa, fun hsne b hb ↦ ?_⟩
+  rcases hs hsne with ⟨c, hca, hcs⟩
+  rcases ha.lt_iff_exists_lt.mp (lt_min hb hca) with ⟨x, hax, hxbc⟩
+  rw [lt_min_iff] at hxbc
+  exact ⟨x, hcs ⟨hax, hxbc.2⟩, hax, hxbc.1⟩
 
 theorem map_coe_atTop_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s)
     (hb : IsSuccPrelimit b := by exact .of_dense _) :
@@ -106,9 +139,12 @@ theorem map_coe_atTop_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a 
 theorem map_coe_atBot_of_Ioo_subset (hsa : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s)
     (ha : IsPredPrelimit a := by exact .of_dense _) :
     map ((↑) : s → X) atBot = 𝓝[>] a := by
-  refine map_coe_atTop_of_Ioo_subset (s := ofDual ⁻¹' s) (b := toDual a) hsa ?_ ha.dual
-  intro b' hb'
-  simpa [OrderDual.exists] using hs (ofDual b') hb'
+  rcases eq_empty_or_nonempty (Ioi a) with (ha' | ⟨b, hb⟩)
+  · have : IsEmpty s := ⟨fun x => ha'.subset (hsa x.2)⟩
+    rw [filter_eq_bot_of_isEmpty atBot, Filter.map_bot, ha', nhdsWithin_empty]
+  · rw [← comap_coe_nhdsGT_of_Ioo_subset hsa (fun _ => hs b hb) ha, map_comap_of_mem]
+    rw [Subtype.range_val]
+    exact (mem_nhdsGT_iff_exists_Ioo_subset' hb).2 (hs b hb)
 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
 the right endpoint in the ambient order. -/
@@ -134,7 +170,7 @@ theorem comap_coe_Ioi_nhdsGT (a : X) (ha : IsPredPrelimit a := by exact .of_dens
 @[simp]
 theorem comap_coe_Iio_nhdsLT (a : X) (ha : IsSuccPrelimit a := by exact .of_dense _) :
     comap ((↑) : Iio a → X) (𝓝[<] a) = atTop :=
-  comap_coe_Ioi_nhdsGT (toDual a) ha.dual
+  comap_coe_nhdsLT_of_Ioo_subset Subset.rfl (fun ⟨x, hx⟩ => ⟨x, hx, Ioo_subset_Iio_self⟩) ha
 
 @[simp]
 theorem map_coe_Ioo_atTop (h : a < b) (hb : IsSuccPrelimit b := by exact .of_dense _) :
@@ -154,7 +190,7 @@ theorem map_coe_Ioi_atBot (a : X) (ha : IsPredPrelimit a := by exact .of_dense _
 @[simp]
 theorem map_coe_Iio_atTop (a : X) (ha : IsSuccPrelimit a := by exact .of_dense _) :
     map ((↑) : Iio a → X) atTop = 𝓝[<] a :=
-  map_coe_Ioi_atBot (toDual a) ha.dual
+  map_coe_atTop_of_Ioo_subset Subset.rfl (fun b hb => ⟨b, hb, Ioo_subset_Iio_self⟩) ha
 
 variable {α : Type*} {l : Filter α} {f : X → α}
 

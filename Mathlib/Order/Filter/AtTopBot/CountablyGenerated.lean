@@ -50,10 +50,24 @@ instance instIsCountablyGeneratedAtBotProd [Preorder α] [IsCountablyGenerated (
   infer_instance
 
 instance _root_.OrderDual.instIsCountablyGeneratedAtTop [Preorder α]
-    [IsCountablyGenerated (atBot : Filter α)] : IsCountablyGenerated (atTop : Filter αᵒᵈ) := ‹_›
+    [IsCountablyGenerated (atBot : Filter α)] : IsCountablyGenerated (atTop : Filter αᵒᵈ) := by
+  have : (atTop : Filter αᵒᵈ) = comap OrderDual.ofDual atBot := by
+    simp only [atTop, atBot, comap_iInf, comap_principal]
+    rw [← (OrderDual.equiv α).surjective.iInf_comp
+      (fun (i : α) => 𝓟 (OrderDual.ofDual ⁻¹' Iic i))]
+    simp only [OrderDual.equiv, Equiv.coe_fn_mk, Ici, Iic, Set.preimage, Set.mem_setOf_eq]
+    rfl
+  rw [this]; infer_instance
 
 instance _root_.OrderDual.instIsCountablyGeneratedAtBot [Preorder α]
-    [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := ‹_›
+    [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := by
+  have : (atBot : Filter αᵒᵈ) = comap OrderDual.ofDual atTop := by
+    simp only [atTop, atBot, comap_iInf, comap_principal]
+    rw [← (OrderDual.equiv α).surjective.iInf_comp
+      (fun (i : α) => 𝓟 (OrderDual.ofDual ⁻¹' Ici i))]
+    simp only [OrderDual.equiv, Equiv.coe_fn_mk, Ici, Iic, Set.preimage, Set.mem_setOf_eq]
+    rfl
+  rw [this]; infer_instance
 
 lemma atTop_countable_basis [Preorder α] [IsDirectedOrder α] [Nonempty α] [Countable α] :
     HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
@@ -88,8 +102,18 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [None
 
 theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [Preorder α] [Nonempty α]
     [IsCodirectedOrder α] [(atBot : Filter α).IsCountablyGenerated] :
-    ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
-  exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ
+    ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot := by
+  obtain ⟨ys, h⟩ := exists_seq_tendsto (atBot : Filter α)
+  choose c hleft hright using fun a b : α => directed_of (· ≥ ·) a b
+  set xs : ℕ → α := fun n => (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
+  have hsucc (n : ℕ) : xs (n + 1) = c (xs n) (ys n) := by simp [xs, List.range_succ]
+  refine ⟨xs, ?_, ?_⟩
+  · refine antitone_nat_of_succ_le fun n ↦ ?_
+    rw [hsucc]
+    apply hleft
+  · refine (tendsto_add_atTop_iff_nat 1).1 <| tendsto_atBot_mono (fun n ↦ ?_) h
+    rw [hsucc]
+    apply hright
 
 /-- An abstract version of continuity of sequentially continuous functions on metric spaces:
 if a filter `k` is countably generated then `Tendsto f k l` iff for every sequence `u`

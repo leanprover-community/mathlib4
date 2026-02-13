@@ -254,57 +254,171 @@ def gfpApprox (a : Ordinal.{u}) : α :=
 termination_by a
 decreasing_by exact h
 
--- By unsealing these recursive definitions we can relate them
--- by definitional equality
-unseal gfpApprox lfpApprox
+theorem gfpApprox_antitone : Antitone (gfpApprox f x) := by
+  intro a b h
+  rw [gfpApprox, gfpApprox]
+  gcongr sInf (?_ ∪ {x})
+  simp only [exists_prop, Set.setOf_subset_setOf, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  intro a' h'
+  use a'
+  exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
-theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
-  lfpApprox_monotone f.dual x
-
-theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
-  le_lfpApprox f.dual x
+theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x := by
+  rw [gfpApprox]
+  apply sInf_le
+  simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
-    gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
-  lfpApprox_add_one f.dual x h a
+    gfpApprox f x (a + 1) = f (gfpApprox f x a) := by
+  apply le_antisymm
+  · conv => left; rw [gfpApprox]
+    apply sInf_le
+    simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop]
+    rw [Set.mem_union]
+    apply Or.inl
+    simp only [Set.mem_setOf_eq]
+    use a
+  · conv => right; rw [gfpApprox]
+    apply le_sInf
+    simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop, Set.union_singleton,
+      Set.mem_insert_iff, Set.mem_setOf_eq, forall_eq_or_imp, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂]
+    apply And.intro
+    · exact le_trans (f.monotone (gfpApprox_le f x)) h
+    · intro a' h
+      apply f.2; apply gfpApprox_antitone; exact h
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
-  intro f g h
-  have : g.dual ≤ f.dual := h
-  exact lfpApprox_mono_left this
+  intro f g h x a
+  induction a using Ordinal.induction with
+  | h i ih =>
+    rw [gfpApprox, gfpApprox]
+    apply le_sInf
+    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sInf_insert,
+      forall_eq_or_imp, inf_le_left, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂, true_and]
+    intro i' h_lt
+    apply inf_le_of_right_le
+    apply sInf_le_of_le
+    · use i'
+    · apply le_trans _ (h _)
+      simp only [OrderHom.toFun_eq_coe]
+      exact f.monotone (ih i' h_lt)
 
-theorem gfpApprox_mono_mid : Monotone (gfpApprox f) :=
-  fun _ _ h => lfpApprox_mono_mid f.dual h
+theorem gfpApprox_mono_mid : Monotone (gfpApprox f) := by
+  intro x₁ x₂ h a
+  induction a using Ordinal.induction with
+  | h i ih =>
+    rw [gfpApprox, gfpApprox]
+    apply le_sInf
+    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sInf_insert,
+      forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    constructor
+    · exact inf_le_of_left_le h
+    · intro i' h_i'
+      apply inf_le_of_right_le
+      apply sInf_le_of_le
+      · use i'
+      · exact f.monotone (ih i' h_i')
 
 /-- The approximations of the greatest fixed point stabilize at a fixed point of `f` -/
 theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : f x ≤ x) (h_ab : a ≤ b)
-    (h : gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a :=
-  lfpApprox_eq_of_mem_fixedPoints f.dual x h_init h_ab h
+    (h : gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a := by
+  rw [mem_fixedPoints_iff] at h
+  induction b using Ordinal.induction with | h b IH =>
+  apply le_antisymm
+  · exact gfpApprox_antitone f x h_ab
+  · conv => right; rw [gfpApprox]
+    apply le_sInf
+    simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq,
+      forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    apply And.intro (gfpApprox_le f x)
+    intro a' ha'b
+    by_cases! haa : a' < a
+    · rw [← gfpApprox_add_one f x h_init]
+      apply gfpApprox_antitone
+      simp only [Ordinal.add_one_eq_succ, succ_le_iff]
+      exact haa
+    · rw [IH a' ha'b haa, h]
 
 /-- There are distinct indices smaller than the successor of the domain's cardinality
 yielding the same value -/
 theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
-    a ≠ b ∧ gfpApprox f x a = gfpApprox f x b :=
-  exists_lfpApprox_eq_lfpApprox f.dual x
+    a ≠ b ∧ gfpApprox f x a = gfpApprox f x b := by
+  have h_ninj := not_injective_limitation_set <| gfpApprox f x
+  rw [Set.injOn_iff_injective, Function.not_injective_iff] at h_ninj
+  let ⟨a, b, h_fab, h_nab⟩ := h_ninj
+  use a.val; apply And.intro a.prop
+  use b.val; apply And.intro b.prop
+  apply And.intro
+  · intro h_eq; rw [Subtype.coe_inj] at h_eq; exact h_nab h_eq
+  · exact h_fab
+
+/-- If the sequence of ordinal-indexed approximations takes a value twice,
+then it actually stabilised at that value. -/
+private lemma gfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
+    (h_init : f x ≤ x) (h_ab : a < b) (h_ac : a ≤ c)
+    (h_fab : gfpApprox f x a = gfpApprox f x b) :
+    gfpApprox f x c ∈ fixedPoints f := by
+  have gfpApprox_mem_fixedPoint :
+      gfpApprox f x a ∈ fixedPoints f := by
+    rw [mem_fixedPoints_iff, ← gfpApprox_add_one f x h_init]
+    exact Antitone.eq_of_ge_of_le (gfpApprox_antitone f x)
+      h_fab (SuccOrder.le_succ a) (SuccOrder.succ_le_of_lt h_ab)
+  rw [gfpApprox_eq_of_mem_fixedPoints f x h_init]
+  · exact gfpApprox_mem_fixedPoint
+  · exact h_ac
+  · exact gfpApprox_mem_fixedPoint
 
 /-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
 lemma gfpApprox_ord_mem_fixedPoint (h_init : f x ≤ x) :
-    gfpApprox f x (ord <| succ #α) ∈ fixedPoints f :=
-  lfpApprox_ord_mem_fixedPoint f.dual x h_init
+    gfpApprox f x (ord <| succ #α) ∈ fixedPoints f := by
+  let ⟨a, h_a, b, h_b, h_nab, h_fab⟩ := exists_gfpApprox_eq_gfpApprox f x
+  cases le_total a b with
+  | inl h_ab =>
+    exact gfpApprox_mem_fixedPoints_of_eq f x h_init
+      (h_nab.lt_of_le h_ab) (le_of_lt h_a) h_fab
+  | inr h_ba =>
+    exact gfpApprox_mem_fixedPoints_of_eq f x h_init
+      (h_nab.symm.lt_of_le h_ba) (le_of_lt h_b) (h_fab.symm)
 
 /-- Every value of the approximation is greater or equal than every fixed point of `f`
 less or equal than the initial value -/
 lemma le_gfpApprox_of_mem_fixedPoints {a : α}
-    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i :=
-  lfpApprox_le_of_mem_fixedPoints f.dual x h_a h_le_init i
+    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i := by
+  induction i using Ordinal.induction with
+  | h i IH =>
+    rw [gfpApprox]
+    apply le_sInf
+    simp only [exists_prop]
+    intro y h_y
+    simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_singleton_iff] at h_y
+    cases h_y with
+    | inl h_y =>
+      let ⟨j, h_j_lt, h_j⟩ := h_y
+      rw [← h_j, ← h_a]
+      exact f.monotone' (IH j h_j_lt)
+    | inr h_y =>
+      rw [h_y]
+      exact h_le_init
 
 /-- The approximation sequence converges at the successor of the domain's cardinality
 to the greatest fixed point if starting from `⊥` -/
-theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = f.gfp :=
-  lfpApprox_ord_eq_lfp f.dual
+theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = f.gfp := by
+  apply le_antisymm
+  · have h_fix : ∃ y : fixedPoints f, gfpApprox f ⊤ (ord <| succ #α) = y := by
+      simpa only [Subtype.exists, mem_fixedPoints, exists_prop, exists_eq_right'] using
+        gfpApprox_ord_mem_fixedPoint f ⊤ le_top
+    let ⟨x, h_x⟩ := h_fix; rw [h_x]
+    exact gfp_le_fixed f x.prop
+  · have h_gfp : ∃ y : fixedPoints f, f.gfp = y := by use ⊤; exact rfl
+    let ⟨y, h_y⟩ := h_gfp; rw [h_y]
+    exact le_gfpApprox_of_mem_fixedPoints f ⊤ y.2 le_top (ord <| succ #α)
 
 /-- Some approximation of the least fixed point starting from `⊤` is the greatest fixed point. -/
-theorem gfp_mem_range_gfpApprox : f.gfp ∈ Set.range (gfpApprox f ⊤) :=
-  lfp_mem_range_lfpApprox f.dual
+theorem gfp_mem_range_gfpApprox : f.gfp ∈ Set.range (gfpApprox f ⊤) := by
+  use ord <| succ #α
+  exact gfpApprox_ord_eq_gfp f
 
 end OrdinalApprox

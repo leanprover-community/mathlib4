@@ -50,7 +50,7 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 
 @[to_dual]
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
-  ⟨(sInf : Set α → α)⟩
+  ⟨fun s => toDual (sInf (toDual ⁻¹' s))⟩
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -122,8 +122,10 @@ end
 
 @[to_dual]
 instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒᵈ where
-  le_sSup := @CompleteSemilatticeInf.sInf_le α _
-  sSup_le := @CompleteSemilatticeInf.le_sInf α _
+  le_sSup s a ha := CompleteSemilatticeInf.sInf_le (toDual ⁻¹' s) (ofDual a)
+    (show ofDual a ∈ toDual ⁻¹' s by rwa [Set.mem_preimage, toDual_ofDual])
+  sSup_le s a h := CompleteSemilatticeInf.le_sInf (toDual ⁻¹' s) (ofDual a)
+    (fun b hb => h (toDual b) hb)
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
@@ -262,10 +264,14 @@ namespace OrderDual
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice αᵒᵈ where
   __ := instBoundedOrder α
-  le_sSup := @CompleteLattice.sInf_le α _
-  sSup_le := @CompleteLattice.le_sInf α _
-  sInf_le := @CompleteLattice.le_sSup α _
-  le_sInf := @CompleteLattice.sSup_le α _
+  le_sSup s a ha := CompleteLattice.sInf_le (toDual ⁻¹' s) (ofDual a)
+    (show ofDual a ∈ toDual ⁻¹' s by rwa [Set.mem_preimage, toDual_ofDual])
+  sSup_le s a h := CompleteLattice.le_sInf (toDual ⁻¹' s) (ofDual a)
+    (fun b hb => h (toDual b) hb)
+  sInf_le s a ha := CompleteLattice.le_sSup (toDual ⁻¹' s) (ofDual a)
+    (show ofDual a ∈ toDual ⁻¹' s by rwa [Set.mem_preimage, toDual_ofDual])
+  le_sInf s a h := CompleteLattice.sSup_le (toDual ⁻¹' s) (ofDual a)
+    (fun b hb => h (toDual b) hb)
 
 instance instCompleteLinearOrder [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ where
   __ := instCompleteLattice
@@ -289,12 +295,15 @@ theorem ofDual_sSup [InfSet α] (s : Set αᵒᵈ) : ofDual (sSup s) = sInf (toD
   rfl
 
 @[to_dual (attr := simp)]
-theorem toDual_iSup [SupSet α] (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
-  rfl
+theorem toDual_iSup [SupSet α] (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) := by
+  simp only [iSup, iInf, toDual_sSup]
+  congr 1; ext ⟨a⟩; simp [Set.mem_preimage, Set.mem_range]
 
 @[to_dual (attr := simp)]
-theorem ofDual_iSup [InfSet α] (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) :=
-  rfl
+theorem ofDual_iSup [InfSet α] (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) := by
+  simp only [iSup, iInf, ofDual_sSup]
+  congr 1; ext a; simp only [Set.mem_preimage, Set.mem_range]
+  exact ⟨fun ⟨i, h⟩ => ⟨i, congrArg ofDual h⟩, fun ⟨i, h⟩ => ⟨i, ofDual_inj.mp h⟩⟩
 
 end OrderDual
 
@@ -305,6 +314,7 @@ variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
 
+@[to_dual existing lt_sSup_iff]
 theorem sInf_lt_iff : sInf s < b ↔ ∃ a ∈ s, a < b :=
   isGLB_lt_iff <| isGLB_sInf s
 
@@ -316,19 +326,19 @@ theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
         (h.trans_le <| le_sSup ha).false⟩
 
 theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
-  @sSup_eq_top αᵒᵈ _ _
+  ⟨fun h _ hb => sInf_lt_iff.1 <| h ▸ hb, fun h =>
+    bot_unique <|
+      le_of_not_gt fun h' =>
+        let ⟨_, ha, h⟩ := h _ h'
+        (h.trans_le <| sInf_le ha).false⟩
 
+@[to_dual iInf_lt_iff]
 theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
   lt_sSup_iff.trans exists_range_iff
 
-theorem iInf_lt_iff {f : ι → α} : iInf f < a ↔ ∃ i, f i < a :=
-  sInf_lt_iff.trans exists_range_iff
-
+@[to_dual]
 theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
   simp [lt_iSup_iff]
-
-theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃ i ∈ s, f i < a := by
-  simp [iInf_lt_iff]
 
 end CompleteLinearOrder
 

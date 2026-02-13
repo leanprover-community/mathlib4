@@ -144,12 +144,13 @@ end
 -/
 @[simps]
 def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
-  toFun n := LinearMap.range (f ^ n)
+  toFun n := OrderDual.toDual (LinearMap.range (f ^ n))
   monotone' := monotone_nat_of_le_succ fun | n, _, ⟨x, rfl⟩ => ⟨f x, rfl⟩
 
 lemma iterateRange_succ {f : M →ₗ[R] M} {n : ℕ} :
-    iterateRange f (n + 1) = (iterateRange f n).map f := by
-  simp only [iterateRange_coe, range_eq_map, ← map_comp, Module.End.iterate_succ']
+    iterateRange f (n + 1) = OrderDual.toDual ((OrderDual.ofDual (iterateRange f n)).map f) := by
+  simp only [iterateRange, OrderHom.coe_mk, OrderDual.ofDual_toDual, range_eq_map, ← map_comp,
+    Module.End.iterate_succ']
 
 /-- Restrict the codomain of a linear map `f` to `f.range`.
 

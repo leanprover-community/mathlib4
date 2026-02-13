@@ -117,27 +117,28 @@ def IsMaxOn :=
 def IsExtrOn : Prop :=
   IsExtrFilter f (𝓟 s) a
 
+attribute [to_dual existing] IsMinFilter
+attribute [to_dual existing] IsMinOn
+
 variable {f s a l} {t : Set α} {l' : Filter α}
 
 theorem IsExtrOn.elim {p : Prop} : IsExtrOn f s a → (IsMinOn f s a → p) → (IsMaxOn f s a → p) → p :=
   Or.elim
 
+@[to_dual]
 theorem isMinOn_iff : IsMinOn f s a ↔ ∀ x ∈ s, f a ≤ f x :=
   Iff.rfl
 
-theorem isMaxOn_iff : IsMaxOn f s a ↔ ∀ x ∈ s, f x ≤ f a :=
-  Iff.rfl
-
+@[to_dual]
 theorem isMinOn_univ_iff : IsMinOn f univ a ↔ ∀ x, f a ≤ f x :=
   univ_subset_iff.trans eq_univ_iff_forall
 
-theorem isMaxOn_univ_iff : IsMaxOn f univ a ↔ ∀ x, f x ≤ f a :=
-  univ_subset_iff.trans eq_univ_iff_forall
-
+@[to_dual]
 theorem IsMinOn.bddBelow (h : IsMinOn f s a) :
     BddBelow (f '' s) :=
   ⟨f a, by simpa [mem_lowerBounds] using h⟩
 
+@[to_dual]
 theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
     IsGLB {f x | x ∈ s} (f a) := by
   rw [isGLB_iff_le_iff]
@@ -145,18 +146,8 @@ theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
   simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   exact ⟨fun hba x hx ↦ le_trans hba (hfsa hx), fun hb ↦ hb a ha⟩
 
-theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :
-    IsLUB {f x | x ∈ s} (f a) :=
-  IsMinOn.isGLB (α := αᵒᵈ) (β := βᵒᵈ) ha hfsa
-
-theorem IsMaxOn.bddAbove (h : IsMaxOn f s a) :
-    BddAbove (f '' s) :=
-  ⟨f a, by simpa [mem_upperBounds] using h⟩
-
+@[to_dual]
 theorem IsMinFilter.tendsto_principal_Ici (h : IsMinFilter f l a) : Tendsto f l (𝓟 <| Ici (f a)) :=
-  tendsto_principal.2 h
-
-theorem IsMaxFilter.tendsto_principal_Iic (h : IsMaxFilter f l a) : Tendsto f l (𝓟 <| Iic (f a)) :=
   tendsto_principal.2 h
 
 /-! ### Conversion to `IsExtr*` -/
@@ -177,20 +168,16 @@ theorem IsMaxOn.isExtr (h : IsMaxOn f s a) : IsExtrOn f s a :=
 /-! ### Constant function -/
 
 
+@[to_dual]
 theorem isMinFilter_const {b : β} : IsMinFilter (fun _ => b) l a :=
-  univ_mem' fun _ => le_rfl
-
-theorem isMaxFilter_const {b : β} : IsMaxFilter (fun _ => b) l a :=
   univ_mem' fun _ => le_rfl
 
 theorem isExtrFilter_const {b : β} : IsExtrFilter (fun _ => b) l a :=
   isMinFilter_const.isExtr
 
+@[to_dual]
 theorem isMinOn_const {b : β} : IsMinOn (fun _ => b) s a :=
   isMinFilter_const
-
-theorem isMaxOn_const {b : β} : IsMaxOn (fun _ => b) s a :=
-  isMaxFilter_const
 
 theorem isExtrOn_const {b : β} : IsExtrOn (fun _ => b) s a :=
   isExtrFilter_const
@@ -239,37 +226,29 @@ alias ⟨IsExtrOn.undual, IsExtrOn.dual⟩ := isExtrOn_dual_iff
 /-! ### Operations on the filter/set -/
 
 
+@[to_dual]
 theorem IsMinFilter.filter_mono (h : IsMinFilter f l a) (hl : l' ≤ l) : IsMinFilter f l' a :=
-  hl h
-
-theorem IsMaxFilter.filter_mono (h : IsMaxFilter f l a) (hl : l' ≤ l) : IsMaxFilter f l' a :=
   hl h
 
 theorem IsExtrFilter.filter_mono (h : IsExtrFilter f l a) (hl : l' ≤ l) : IsExtrFilter f l' a :=
   h.elim (fun h => (h.filter_mono hl).isExtr) fun h => (h.filter_mono hl).isExtr
 
+@[to_dual IsMaxFilter.filter_inf]
 theorem IsMinFilter.filter_inf (h : IsMinFilter f l a) (l') : IsMinFilter f (l ⊓ l') a :=
-  h.filter_mono inf_le_left
-
-theorem IsMaxFilter.filter_inf (h : IsMaxFilter f l a) (l') : IsMaxFilter f (l ⊓ l') a :=
   h.filter_mono inf_le_left
 
 theorem IsExtrFilter.filter_inf (h : IsExtrFilter f l a) (l') : IsExtrFilter f (l ⊓ l') a :=
   h.filter_mono inf_le_left
 
+@[to_dual]
 theorem IsMinOn.on_subset (hf : IsMinOn f t a) (h : s ⊆ t) : IsMinOn f s a :=
-  hf.filter_mono <| principal_mono.2 h
-
-theorem IsMaxOn.on_subset (hf : IsMaxOn f t a) (h : s ⊆ t) : IsMaxOn f s a :=
   hf.filter_mono <| principal_mono.2 h
 
 theorem IsExtrOn.on_subset (hf : IsExtrOn f t a) (h : s ⊆ t) : IsExtrOn f s a :=
   hf.filter_mono <| principal_mono.2 h
 
+@[to_dual]
 theorem IsMinOn.inter (hf : IsMinOn f s a) (t) : IsMinOn f (s ∩ t) a :=
-  hf.on_subset inter_subset_left
-
-theorem IsMaxOn.inter (hf : IsMaxOn f s a) (t) : IsMaxOn f (s ∩ t) a :=
   hf.on_subset inter_subset_left
 
 theorem IsExtrOn.inter (hf : IsExtrOn f s a) (t) : IsExtrOn f (s ∩ t) a :=
@@ -278,12 +257,9 @@ theorem IsExtrOn.inter (hf : IsExtrOn f s a) (t) : IsExtrOn f (s ∩ t) a :=
 /-! ### Composition with (anti)monotone functions -/
 
 
+@[to_dual]
 theorem IsMinFilter.comp_mono (hf : IsMinFilter f l a) {g : β → γ} (hg : Monotone g) :
     IsMinFilter (g ∘ f) l a :=
-  mem_of_superset hf fun _x hx => hg hx
-
-theorem IsMaxFilter.comp_mono (hf : IsMaxFilter f l a) {g : β → γ} (hg : Monotone g) :
-    IsMaxFilter (g ∘ f) l a :=
   mem_of_superset hf fun _x hx => hg hx
 
 theorem IsExtrFilter.comp_mono (hf : IsExtrFilter f l a) {g : β → γ} (hg : Monotone g) :
@@ -302,13 +278,10 @@ theorem IsExtrFilter.comp_antitone (hf : IsExtrFilter f l a) {g : β → γ} (hg
     IsExtrFilter (g ∘ f) l a :=
   hf.dual.comp_mono fun _ _ h => hg h
 
+@[to_dual]
 theorem IsMinOn.comp_mono (hf : IsMinOn f s a) {g : β → γ} (hg : Monotone g) :
     IsMinOn (g ∘ f) s a :=
   IsMinFilter.comp_mono hf hg
-
-theorem IsMaxOn.comp_mono (hf : IsMaxOn f s a) {g : β → γ} (hg : Monotone g) :
-    IsMaxOn (g ∘ f) s a :=
-  IsMaxFilter.comp_mono hf hg
 
 theorem IsExtrOn.comp_mono (hf : IsExtrOn f s a) {g : β → γ} (hg : Monotone g) :
     IsExtrOn (g ∘ f) s a :=
@@ -350,37 +323,28 @@ theorem IsMaxOn.bicomp_mono [Preorder δ] {op : β → γ → δ}
 /-! ### Composition with `Tendsto` -/
 
 
+@[to_dual]
 theorem IsMinFilter.comp_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsMinFilter f l (g b))
     (hg : Tendsto g l' l) : IsMinFilter (f ∘ g) l' b :=
-  hg hf
-
-theorem IsMaxFilter.comp_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsMaxFilter f l (g b))
-    (hg : Tendsto g l' l) : IsMaxFilter (f ∘ g) l' b :=
   hg hf
 
 theorem IsExtrFilter.comp_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsExtrFilter f l (g b))
     (hg : Tendsto g l' l) : IsExtrFilter (f ∘ g) l' b :=
   hf.elim (fun hf => (hf.comp_tendsto hg).isExtr) fun hf => (hf.comp_tendsto hg).isExtr
 
+@[to_dual]
 theorem IsMinOn.on_preimage (g : δ → α) {b : δ} (hf : IsMinOn f s (g b)) :
     IsMinOn (f ∘ g) (g ⁻¹' s) b :=
-  hf.comp_tendsto (tendsto_principal_principal.mpr <| Subset.refl _)
-
-theorem IsMaxOn.on_preimage (g : δ → α) {b : δ} (hf : IsMaxOn f s (g b)) :
-    IsMaxOn (f ∘ g) (g ⁻¹' s) b :=
   hf.comp_tendsto (tendsto_principal_principal.mpr <| Subset.refl _)
 
 theorem IsExtrOn.on_preimage (g : δ → α) {b : δ} (hf : IsExtrOn f s (g b)) :
     IsExtrOn (f ∘ g) (g ⁻¹' s) b :=
   hf.elim (fun hf => (hf.on_preimage g).isExtr) fun hf => (hf.on_preimage g).isExtr
 
+@[to_dual]
 theorem IsMinOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMinOn f s a) (hg : MapsTo g t s)
     (ha : g b = a) : IsMinOn (f ∘ g) t b := fun y hy => by
   simpa only [ha, (· ∘ ·)] using hf (hg hy)
-
-theorem IsMaxOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMaxOn f s a) (hg : MapsTo g t s)
-    (ha : g b = a) : IsMaxOn (f ∘ g) t b :=
-  hf.dual.comp_mapsTo hg ha
 
 theorem IsExtrOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsExtrOn f s a)
     (hg : MapsTo g t s) (ha : g b = a) : IsExtrOn (f ∘ g) t b :=
@@ -570,8 +534,10 @@ theorem Filter.EventuallyEq.isMaxFilter_iff {α β : Type*} [Preorder β] {f g :
 
 theorem Filter.EventuallyLE.isMinFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : f ≤ᶠ[l] g) (hfga : f a = g a) (h : IsMinFilter f l a) :
-    IsMinFilter g l a :=
-  @Filter.EventuallyLE.isMaxFilter _ βᵒᵈ _ _ _ _ _ hle hfga h
+    IsMinFilter g l a := by
+  refine hle.mp (h.mono fun x hf hfg => ?_)
+  rw [← hfga]
+  exact le_trans hf hfg
 
 theorem IsMinFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsMinFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMinFilter g l a :=
@@ -599,12 +565,10 @@ section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] {f : β → α} {s : Set β} {x₀ : β}
 
+@[to_dual]
 theorem IsMaxOn.iSup_eq (hx₀ : x₀ ∈ s) (h : IsMaxOn f s x₀) : ⨆ x : s, f x = f x₀ :=
   haveI : Nonempty s := ⟨⟨x₀, hx₀⟩⟩
   ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun x => h x.2) fun _w hw => ⟨⟨x₀, hx₀⟩, hw⟩
-
-theorem IsMinOn.iInf_eq (hx₀ : x₀ ∈ s) (h : IsMinOn f s x₀) : ⨅ x : s, f x = f x₀ :=
-  @IsMaxOn.iSup_eq αᵒᵈ β _ _ _ _ hx₀ h
 
 end ConditionallyCompleteLinearOrder
 
@@ -630,11 +594,41 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] {D : α → β} {s : Finset α}
 
-theorem inf_eq_of_isMinOn {a : α} (hmem : a ∈ s) (hmax : IsMinOn D s a) : s.inf D = D a :=
-  sup_eq_of_isMaxOn (α := αᵒᵈ) (β := βᵒᵈ) hmem hmax.dual
+theorem inf_eq_of_isMinOn {a : α} (hmem : a ∈ s) (hmin : IsMinOn D s a) : s.inf D = D a :=
+  (Finset.inf_le hmem).antisymm (Finset.le_inf hmin)
 
 theorem inf_eq_of_min [Nonempty α] {b : β} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ s)
-    (hmin : ∀ a ∈ s, b ≤ D a) : s.inf D = b :=
-  sup_eq_of_max (α := αᵒᵈ) (β := βᵒᵈ) hb hmem hmin
+    (hmin : ∀ a ∈ s, b ≤ D a) : s.inf D = b := by
+  obtain ⟨a, rfl⟩ := hb
+  rw [← Function.apply_invFun_apply (f := D)]
+  apply inf_eq_of_isMinOn hmem; intro
+  rw [Function.apply_invFun_apply (f := D)]; apply hmin
 
 end SemilatticeInf
+
+/-! ### @[to_dual] registrations -/
+
+-- Register remaining IsMin*/IsMax* dual pairs for downstream `@[to_dual]` usage.
+attribute [to_dual existing] IsMinFilter.isExtr
+attribute [to_dual existing] IsMinOn.isExtr
+attribute [to_dual existing] IsMinFilter.add
+attribute [to_dual existing] IsMinOn.add
+-- comp_antitone swaps Min↔Max in the conclusion, so both sides need to exist:
+attribute [to_dual existing] IsMinFilter.comp_antitone
+attribute [to_dual existing] IsMinOn.comp_antitone
+-- bicomp_mono blocked by Relator-style argument translation
+-- neg/sub swap Min↔Max in the conclusion:
+attribute [to_dual existing] IsMinFilter.neg
+attribute [to_dual existing] IsMinFilter.sub
+attribute [to_dual existing] IsMinOn.neg
+attribute [to_dual existing] IsMinOn.sub
+-- Lattice pairs (Min↔Max AND sup↔inf cross):
+attribute [to_dual existing] IsMinFilter.sup
+attribute [to_dual existing] IsMinFilter.inf
+attribute [to_dual existing] IsMinOn.sup
+attribute [to_dual existing] IsMinOn.inf
+attribute [to_dual existing] IsMinFilter.min
+attribute [to_dual existing] IsMinFilter.max
+attribute [to_dual existing] IsMinOn.min
+attribute [to_dual existing] IsMinOn.max
+-- EventuallyLE pairs blocked by EventuallyLE argument direction swap

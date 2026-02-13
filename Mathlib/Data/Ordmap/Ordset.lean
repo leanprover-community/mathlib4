@@ -97,22 +97,40 @@ theorem Valid'.node {s l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Va
     Valid' o₁ (@node α s l x r) o₂ :=
   ⟨⟨hl.1, hr.1⟩, ⟨hs, hl.2, hr.2⟩, ⟨H, hl.3, hr.3⟩⟩
 
-theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @Valid' αᵒᵈ _ o₂ (dual t) o₁
+open OrderDual in
+theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ →
+    @Valid' αᵒᵈ _ (WithTop.toDual o₂) (map OrderDual.toDual (dual t)) (WithBot.toDual o₁)
   | .nil, _, _, h => valid'_nil h.1.dual
   | .node _ l _ r, _, _, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
     let ⟨ol', sl', bl'⟩ := Valid'.dual ⟨ol, sl, bl⟩
     let ⟨or', sr', br'⟩ := Valid'.dual ⟨Or, sr, br⟩
-    ⟨⟨or', ol'⟩, ⟨by simp [size_dual, add_comm], sr', sl'⟩,
-      ⟨by rw [size_dual, size_dual]; exact b.symm, br', bl'⟩⟩
+    ⟨⟨or', ol'⟩, ⟨by simp [size_map, size_dual, add_comm], sr', sl'⟩,
+      ⟨by rw [size_map, size_map, size_dual, size_dual]; exact b.symm, br', bl'⟩⟩
 
-theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} : Valid' o₁ t o₂ ↔ @Valid' αᵒᵈ _ o₂ (.dual t) o₁ :=
-  ⟨Valid'.dual, fun h => by
-    have := Valid'.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
+open OrderDual in
+theorem Valid'.of_dual {t : Ordnode α} {o₁ o₂}
+    (h : @Valid' αᵒᵈ _ (WithTop.toDual o₂)
+      (map OrderDual.toDual (Ordnode.dual t)) (WithBot.toDual o₁)) :
+    Valid' o₁ t o₂ :=
+  ⟨Bounded.of_dual h.1,
+   Sized.dual_iff.1 (Sized.of_map OrderDual.toDual h.2),
+   Balanced.dual_iff.1 (Balanced.of_map OrderDual.toDual h.3)⟩
 
-theorem Valid.dual {t : Ordnode α} : Valid t → @Valid αᵒᵈ _ (.dual t) :=
-  Valid'.dual
+open OrderDual in
+theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} :
+    Valid' o₁ t o₂ ↔
+      @Valid' αᵒᵈ _ (WithTop.toDual o₂)
+        (map OrderDual.toDual (Ordnode.dual t)) (WithBot.toDual o₁) :=
+  ⟨Valid'.dual, Valid'.of_dual⟩
 
-theorem Valid.dual_iff {t : Ordnode α} : Valid t ↔ @Valid αᵒᵈ _ (.dual t) :=
+open OrderDual in
+theorem Valid.dual {t : Ordnode α} (h : Valid t) :
+    @Valid αᵒᵈ _ (map OrderDual.toDual (Ordnode.dual t)) :=
+  Valid'.dual h
+
+open OrderDual in
+theorem Valid.dual_iff {t : Ordnode α} :
+    Valid t ↔ @Valid αᵒᵈ _ (map OrderDual.toDual (Ordnode.dual t)) :=
   Valid'.dual_iff
 
 theorem Valid'.left {s l x r o₁ o₂} (H : Valid' o₁ (@Ordnode.node α s l x r) o₂) : Valid' o₁ l x :=
@@ -291,11 +309,11 @@ theorem Valid'.rotateR {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     (H1 : ¬size l + size r ≤ 1) (H2 : delta * size r < size l)
     (H3 : 2 * size l ≤ 9 * size r + 5 ∨ size l ≤ 3) : Valid' o₁ (@rotateR α l x r) o₂ := by
   refine Valid'.dual_iff.2 ?_
-  rw [dual_rotateR]
+  rw [dual_rotateR, map_rotateL]
   refine hr.dual.rotateL hl.dual ?_ ?_ ?_
-  · rwa [size_dual, size_dual, add_comm]
-  · rwa [size_dual, size_dual]
-  · rwa [size_dual, size_dual]
+  · rwa [size_map, size_dual, size_map, size_dual, add_comm]
+  · rwa [size_map, size_dual, size_map, size_dual]
+  · rwa [size_map, size_dual, size_map, size_dual]
 
 theorem Valid'.balance'_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H₁ : 2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3)
@@ -358,16 +376,20 @@ theorem Valid'.balanceL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : 
 theorem Valid'.balanceR_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H₁ : size r = 0 → size l ≤ 1) (H₂ : 1 ≤ size r → 1 ≤ size l → size l ≤ delta * size r)
     (H₃ : 2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3) : Valid' o₁ (@balanceR α l x r) o₂ := by
-  rw [Valid'.dual_iff, dual_balanceR]
+  rw [Valid'.dual_iff, dual_balanceR, map_balanceL]
   have := hr.dual.balanceL_aux hl.dual
-  rw [size_dual, size_dual] at this
+  rw [size_map, size_dual, size_map, size_dual] at this
   exact this H₁ H₂ H₃
 
 theorem Valid'.balanceR {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H : (∃ l', Raised (size l) l' ∧ BalancedSz l' (size r)) ∨
         ∃ r', Raised r' (size r) ∧ BalancedSz (size l) r') :
     Valid' o₁ (@balanceR α l x r) o₂ := by
-  rw [Valid'.dual_iff, dual_balanceR]; exact hr.dual.balanceL hl.dual (balance_sz_dual H)
+  rw [Valid'.dual_iff, dual_balanceR, map_balanceL]
+  refine hr.dual.balanceL hl.dual ?_
+  have := balance_sz_dual H
+  simp only [size_dual, size_map] at this ⊢
+  exact this
 
 theorem Valid'.eraseMax_aux {s l x r o₁ o₂} (H : Valid' o₁ (.node s l x r) o₂) :
     Valid' o₁ (@eraseMax α (.node' l x r)) ↑(findMax' x r) ∧
@@ -385,16 +407,23 @@ theorem Valid'.eraseMax_aux {s l x r o₁ o₂} (H : Valid' o₁ (.node s l x r)
 theorem Valid'.eraseMin_aux {s l} {x : α} {r o₁ o₂} (H : Valid' o₁ (.node s l x r) o₂) :
     Valid' ↑(findMin' l x) (@eraseMin α (.node' l x r)) o₂ ∧
       size (.node' l x r) = size (eraseMin (.node' l x r)) + 1 := by
-  have := H.dual.eraseMax_aux
-  rwa [← dual_node', size_dual, ← dual_eraseMin, size_dual, ← Valid'.dual_iff, findMax'_dual]
-    at this
+  have := H.2.eq_node'; rw [this] at H; clear this
+  induction l generalizing x r o₂ with
+  | nil => exact ⟨H.right, by simp [eraseMin]⟩
+  | node ls ll lx lr IHll _ =>
+    have := H.2.2.1.eq_node'; rw [this] at H ⊢
+    rcases IHll H.left with ⟨h, e⟩
+    refine ⟨Valid'.balanceR h H.right (Or.inl ⟨_, Or.inr e, H.3.1⟩), ?_⟩
+    rw [eraseMin, size_balanceR h.3 H.3.2.2 h.2 H.2.2.2 (Or.inl ⟨_, Or.inr e, H.3.1⟩)]
+    rw [size_node, e]
+    omega
 
 theorem eraseMin.valid : ∀ {t}, @Valid α _ t → Valid (eraseMin t)
   | nil, _ => valid_nil
   | node _ l x r, h => by rw [h.2.eq_node']; exact h.eraseMin_aux.1.valid
 
 theorem eraseMax.valid {t} (h : @Valid α _ t) : Valid (eraseMax t) := by
-  rw [Valid.dual_iff, dual_eraseMax]; exact eraseMin.valid h.dual
+  rw [Valid.dual_iff, dual_eraseMax, map_eraseMin]; exact eraseMin.valid h.dual
 
 theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) (bal : BalancedSz (size l) (size r)) :
@@ -453,6 +482,29 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
     · rw [e, add_right_comm]; rintro ⟨⟩
   intro _ _; rw [e]; unfold delta at hr₂ ⊢; lia
 
+theorem Valid'.merge_aux₂ {o₁ o₂ ls ll lx lr rs rl rx rr t}
+    (hl : Valid' o₁ (@Ordnode.node α ls ll lx lr) o₂) (hr : Valid' o₁ (.node rs rl rx rr) o₂)
+    (h : delta * rs < ls) (v : Valid' (↑lx) t o₂) (e : size t = size lr + rs) :
+    Valid' o₁ (.balanceR ll lx t) o₂ ∧ size (.balanceR ll lx t) = ls + rs := by
+  rw [hr.2.1] at e
+  rw [hl.2.1, hr.2.1, delta] at h
+  rcases hl.3.1 with (H | ⟨hl₁, hl₂⟩); · lia
+  have H₁ : size t = 0 → size ll ≤ 1 := by rw [e]; rintro ⟨⟩
+  have H₂ : 1 ≤ size t → 1 ≤ size ll → size ll ≤ delta * size t := by
+    intro _ _; rw [e]; unfold delta at hl₁ hl₂ ⊢; lia
+  have H₃ : 2 * @size α t ≤ 9 * size ll + 5 ∨ size t ≤ 3 := by
+    rw [e]; unfold delta at hl₂
+    have h' : 3 * (size rl + size rr + 1) < size lr + size ll + 1 := by omega
+    have := @Valid'.merge_lemma (size rl + size rr + 1) (size lr) (size ll) h' hl₂
+    left; omega
+  refine ⟨Valid'.balanceR_aux hl.left v H₁ H₂ H₃, ?_⟩
+  rw [← size_dual (@Ordnode.balanceR α ll lx t), dual_balanceR,
+      balanceL_eq_balance v.2.dual hl.2.2.1.dual
+        (by simp only [size_dual]; exact H₁) (by simp only [size_dual]; exact H₂),
+      balance_eq_balance' v.3.dual hl.3.2.1.dual v.2.dual hl.2.2.1.dual,
+      size_balance' v.2.dual hl.2.2.1.dual, size_dual, size_dual, e, hl.2.1, hr.2.1]
+  abel
+
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) :
     Valid' o₁ (@merge α l r) o₂ ∧ size (merge l r) = size l + size r := by
@@ -467,10 +519,7 @@ theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' 
       (sep.imp fun x h => h.1)
     exact Valid'.merge_aux₁ hl hr h v e
   · obtain ⟨v, e⟩ := IHlr hl.right (hr.of_gt hl.1.2.to_nil sep.2.1) sep.2.2
-    have := Valid'.merge_aux₁ hr.dual hl.dual h_1 v.dual
-    rw [size_dual, add_comm, size_dual, ← dual_balanceR, ← Valid'.dual_iff, size_dual,
-      add_comm rs] at this
-    exact this e
+    exact Valid'.merge_aux₂ hl hr h_1 v e
   · refine Valid'.glue_aux hl hr sep (Or.inr ⟨not_lt.1 h_1, not_lt.1 h⟩)
 
 theorem Valid.merge {l r} (hl : Valid l) (hr : Valid r)

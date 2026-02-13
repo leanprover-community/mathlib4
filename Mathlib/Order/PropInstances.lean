@@ -74,8 +74,15 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     apply h i (hf i) (hg i)
 
 theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
-    Codisjoint f g ↔ ∀ i, Codisjoint (f i) (g i) :=
-  @disjoint_iff _ (fun i => (α' i)ᵒᵈ) _ _ _ _
+    Codisjoint f g ↔ ∀ i, Codisjoint (f i) (g i) := by
+  classical
+  constructor
+  · intro h i x hf hg
+    have key := h (le_update_iff.mpr ⟨hf, fun _ _ => le_top⟩)
+      (le_update_iff.mpr ⟨hg, fun _ _ => le_top⟩)
+    simpa [Function.update_self] using key i
+  · intro h x hf hg i
+    exact h i (hf i) (hg i)
 
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by

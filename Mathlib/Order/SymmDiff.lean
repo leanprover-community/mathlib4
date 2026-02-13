@@ -222,8 +222,8 @@ theorem bihimp_top : a ⇔ ⊤ = a := by rw [bihimp, himp_top, top_himp, inf_top
 theorem top_bihimp : ⊤ ⇔ a = a := by rw [bihimp_comm, bihimp_top]
 
 @[simp]
-theorem bihimp_eq_top {a b : α} : a ⇔ b = ⊤ ↔ a = b :=
-  @symmDiff_eq_bot αᵒᵈ _ _ _
+theorem bihimp_eq_top {a b : α} : a ⇔ b = ⊤ ↔ a = b := by
+  simp_rw [bihimp, inf_eq_top_iff, himp_eq_top_iff, le_antisymm_iff, and_comm]
 
 theorem bihimp_of_le {a b : α} (h : a ≤ b) : a ⇔ b = b ⇨ a := by
   rw [bihimp, himp_eq_top_iff.2 h, inf_top_eq]
@@ -255,31 +255,35 @@ theorem sup_himp_bihimp : a ⊔ b ⇨ a ⇔ b = a ⇔ b := by
   simp [bihimp]
 
 @[simp]
-theorem bihimp_himp_eq_inf : a ⇔ (a ⇨ b) = a ⊓ b :=
-  @symmDiff_sdiff_eq_sup αᵒᵈ _ _ _
+theorem bihimp_himp_eq_inf : a ⇔ (a ⇨ b) = a ⊓ b := by
+  rw [bihimp, himp_idem, himp_inf_self, inf_himp]
 
 @[simp]
-theorem himp_bihimp_eq_inf : (b ⇨ a) ⇔ b = a ⊓ b :=
-  @sdiff_symmDiff_eq_sup αᵒᵈ _ _ _
+theorem himp_bihimp_eq_inf : (b ⇨ a) ⇔ b = a ⊓ b := by
+  rw [bihimp_comm, bihimp, himp_idem, himp_inf_self, inf_himp, inf_comm]
 
 @[simp]
-theorem bihimp_inf_sup : a ⇔ b ⊓ (a ⊔ b) = a ⊓ b :=
-  @symmDiff_sup_inf αᵒᵈ _ _ _
+theorem bihimp_inf_sup : a ⇔ b ⊓ (a ⊔ b) = a ⊓ b := by
+  rw [bihimp_eq_sup_himp_inf, himp_inf_self, inf_eq_left.2 inf_le_sup]
 
 @[simp]
-theorem sup_inf_bihimp : (a ⊔ b) ⊓ a ⇔ b = a ⊓ b :=
-  @inf_sup_symmDiff αᵒᵈ _ _ _
+theorem sup_inf_bihimp : (a ⊔ b) ⊓ a ⇔ b = a ⊓ b := by
+  rw [inf_comm, bihimp_inf_sup]
 
 @[simp]
-theorem bihimp_bihimp_sup : a ⇔ b ⇔ (a ⊔ b) = a ⊓ b :=
-  @symmDiff_symmDiff_inf αᵒᵈ _ _ _
+theorem bihimp_bihimp_sup : a ⇔ b ⇔ (a ⊔ b) = a ⊓ b := by
+  rw [bihimp_eq_sup_himp_inf a b, himp_bihimp_eq_inf, inf_eq_left.2 inf_le_sup]
 
 @[simp]
-theorem sup_bihimp_bihimp : (a ⊔ b) ⇔ (a ⇔ b) = a ⊓ b :=
-  @inf_symmDiff_symmDiff αᵒᵈ _ _ _
+theorem sup_bihimp_bihimp : (a ⊔ b) ⇔ (a ⇔ b) = a ⊓ b := by
+  rw [bihimp_comm, bihimp_bihimp_sup]
 
-theorem bihimp_triangle : a ⇔ b ⊓ b ⇔ c ≤ a ⇔ c :=
-  @symmDiff_triangle αᵒᵈ _ _ _ _
+theorem bihimp_triangle : a ⇔ b ⊓ b ⇔ c ≤ a ⇔ c := by
+  have h := symmDiff_triangle (toDual a) (toDual b) (toDual c)
+  rw [show symmDiff (toDual a) (toDual c) = toDual (a ⇔ c) from rfl,
+      show symmDiff (toDual a) (toDual b) ⊔ symmDiff (toDual b) (toDual c) =
+        toDual (a ⇔ b ⊓ b ⇔ c) from rfl, toDual_le_toDual] at h
+  exact h
 
 end GeneralizedHeytingAlgebra
 
@@ -317,12 +321,12 @@ theorem bihimp_bot : a ⇔ ⊥ = aᶜ := by simp [bihimp]
 theorem bot_bihimp : ⊥ ⇔ a = aᶜ := by simp [bihimp]
 
 @[simp]
-theorem compl_bihimp_self : aᶜ ⇔ a = ⊥ :=
-  @hnot_symmDiff_self αᵒᵈ _ _
+theorem compl_bihimp_self : aᶜ ⇔ a = ⊥ := by
+  rw [bihimp, himp_compl, inf_himp, compl_inf_eq_bot]
 
 @[simp]
-theorem bihimp_hnot_self : a ⇔ aᶜ = ⊥ :=
-  @symmDiff_hnot_self αᵒᵈ _ _
+theorem bihimp_hnot_self : a ⇔ aᶜ = ⊥ := by
+  rw [bihimp_comm, compl_bihimp_self]
 
 theorem IsCompl.bihimp_eq_bot {a b : α} (h : IsCompl a b) : a ⇔ b = ⊥ := by
   rw [h.eq_compl, compl_bihimp_self]
@@ -484,42 +488,60 @@ the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 
 @[simp]
-theorem inf_himp_bihimp : a ⇔ b ⇨ a ⊓ b = a ⊔ b :=
-  @sup_sdiff_symmDiff αᵒᵈ _ _ _
+theorem inf_himp_bihimp : a ⇔ b ⇨ a ⊓ b = a ⊔ b := by
+  have h := sup_sdiff_symmDiff (toDual a) (toDual b)
+  change toDual (a ⇔ b ⇨ a ⊓ b) = toDual (a ⊔ b) at h
+  exact toDual_inj.mp h
 
-theorem codisjoint_bihimp_sup : Codisjoint (a ⇔ b) (a ⊔ b) :=
-  @disjoint_symmDiff_inf αᵒᵈ _ _ _
-
-@[simp]
-theorem himp_bihimp_left : a ⇨ a ⇔ b = a ⇨ b :=
-  @symmDiff_sdiff_left αᵒᵈ _ _ _
-
-@[simp]
-theorem himp_bihimp_right : b ⇨ a ⇔ b = b ⇨ a :=
-  @symmDiff_sdiff_right αᵒᵈ _ _ _
+theorem codisjoint_bihimp_sup : Codisjoint (a ⇔ b) (a ⊔ b) := by
+  have h := disjoint_symmDiff_inf (toDual a) (toDual b)
+  rw [show symmDiff (toDual a) (toDual b) = toDual (a ⇔ b) from rfl,
+      show toDual a ⊓ toDual b = toDual (a ⊔ b) from rfl] at h
+  exact disjoint_toDual_iff.mp h
 
 @[simp]
-theorem bihimp_himp_left : a ⇔ b ⇨ a = a ⊔ b :=
-  @sdiff_symmDiff_left αᵒᵈ _ _ _
+theorem himp_bihimp_left : a ⇨ a ⇔ b = a ⇨ b := by
+  rw [bihimp, himp_inf_distrib, himp_idem, himp_himp, himp_eq_top_iff.2 inf_le_left, top_inf_eq]
 
 @[simp]
-theorem bihimp_himp_right : a ⇔ b ⇨ b = a ⊔ b :=
-  @sdiff_symmDiff_right αᵒᵈ _ _ _
+theorem himp_bihimp_right : b ⇨ a ⇔ b = b ⇨ a := by
+  rw [bihimp_comm, bihimp, himp_inf_distrib, himp_idem, himp_himp,
+      himp_eq_top_iff.2 inf_le_left, top_inf_eq]
 
 @[simp]
-theorem bihimp_eq_inf : a ⇔ b = a ⊓ b ↔ Codisjoint a b :=
-  @symmDiff_eq_sup αᵒᵈ _ _ _
+theorem bihimp_himp_left : a ⇔ b ⇨ a = a ⊔ b := by
+  have h := sdiff_symmDiff_left (toDual a) (toDual b)
+  change toDual (a ⇔ b ⇨ a) = toDual (a ⊔ b) at h
+  exact toDual_inj.mp h
 
 @[simp]
-theorem bihimp_le_iff_left : a ⇔ b ≤ a ↔ Codisjoint a b :=
-  @le_symmDiff_iff_left αᵒᵈ _ _ _
+theorem bihimp_himp_right : a ⇔ b ⇨ b = a ⊔ b := by
+  have h := sdiff_symmDiff_right (toDual a) (toDual b)
+  change toDual (a ⇔ b ⇨ b) = toDual (a ⊔ b) at h
+  exact toDual_inj.mp h
 
 @[simp]
-theorem bihimp_le_iff_right : a ⇔ b ≤ b ↔ Codisjoint a b :=
-  @le_symmDiff_iff_right αᵒᵈ _ _ _
+theorem bihimp_eq_inf : a ⇔ b = a ⊓ b ↔ Codisjoint a b := by
+  have h := symmDiff_eq_sup (toDual a) (toDual b)
+  change toDual (a ⇔ b) = toDual (a ⊓ b) ↔ Disjoint (toDual a) (toDual b) at h
+  rwa [toDual_inj, disjoint_toDual_iff] at h
 
-theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) :=
-  @symmDiff_assoc αᵒᵈ _ _ _ _
+@[simp]
+theorem bihimp_le_iff_left : a ⇔ b ≤ a ↔ Codisjoint a b := by
+  have h := le_symmDiff_iff_left (toDual a) (toDual b)
+  change toDual a ≤ toDual (a ⇔ b) ↔ Disjoint (toDual a) (toDual b) at h
+  rwa [toDual_le_toDual, disjoint_toDual_iff] at h
+
+@[simp]
+theorem bihimp_le_iff_right : a ⇔ b ≤ b ↔ Codisjoint a b := by
+  have h := le_symmDiff_iff_right (toDual a) (toDual b)
+  change toDual b ≤ toDual (a ⇔ b) ↔ Disjoint (toDual a) (toDual b) at h
+  rwa [toDual_le_toDual, disjoint_toDual_iff] at h
+
+theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) := by
+  have h := symmDiff_assoc (toDual a) (toDual b) (toDual c)
+  change toDual (a ⇔ b ⇔ c) = toDual (a ⇔ (b ⇔ c)) at h
+  exact toDual_inj.mp h
 
 instance bihimp_isAssociative : Std.Associative (α := α) (· ⇔ ·) :=
   ⟨bihimp_assoc⟩
@@ -547,16 +569,16 @@ theorem bihimp_right_involutive (a : α) : Involutive (a ⇔ ·) :=
   bihimp_bihimp_cancel_left _
 
 theorem bihimp_left_injective (a : α) : Injective (· ⇔ a) :=
-  @symmDiff_left_injective αᵒᵈ _ _
+  (bihimp_left_involutive a).injective
 
 theorem bihimp_right_injective (a : α) : Injective (a ⇔ ·) :=
-  @symmDiff_right_injective αᵒᵈ _ _
+  (bihimp_right_involutive a).injective
 
 theorem bihimp_left_surjective (a : α) : Surjective (· ⇔ a) :=
-  @symmDiff_left_surjective αᵒᵈ _ _
+  (bihimp_left_involutive a).surjective
 
 theorem bihimp_right_surjective (a : α) : Surjective (a ⇔ ·) :=
-  @symmDiff_right_surjective αᵒᵈ _ _
+  (bihimp_right_involutive a).surjective
 
 variable {a b c}
 
@@ -569,12 +591,16 @@ theorem bihimp_right_inj : a ⇔ b = a ⇔ c ↔ b = c :=
   (bihimp_right_injective _).eq_iff
 
 @[simp]
-theorem bihimp_eq_left : a ⇔ b = a ↔ b = ⊤ :=
-  @symmDiff_eq_left αᵒᵈ _ _ _
+theorem bihimp_eq_left : a ⇔ b = a ↔ b = ⊤ := by
+  have h := symmDiff_eq_left (α := αᵒᵈ) (a := toDual a) (b := toDual b)
+  change toDual (a ⇔ b) = toDual a ↔ toDual b = toDual ⊤ at h
+  rwa [toDual_inj, toDual_inj] at h
 
 @[simp]
-theorem bihimp_eq_right : a ⇔ b = b ↔ a = ⊤ :=
-  @symmDiff_eq_right αᵒᵈ _ _ _
+theorem bihimp_eq_right : a ⇔ b = b ↔ a = ⊤ := by
+  have h := symmDiff_eq_right (α := αᵒᵈ) (a := toDual a) (b := toDual b)
+  change toDual (a ⇔ b) = toDual b ↔ toDual a = toDual ⊤ at h
+  rwa [toDual_inj, toDual_inj] at h
 
 protected theorem Codisjoint.bihimp_left (ha : Codisjoint a c) (hb : Codisjoint b c) :
     Codisjoint (a ⇔ b) c :=
@@ -593,8 +619,10 @@ theorem bihimp_eq : a ⇔ b = (a ⊔ bᶜ) ⊓ (b ⊔ aᶜ) := by simp only [(·
 theorem symmDiff_eq' : a ∆ b = (a ⊔ b) ⊓ (aᶜ ⊔ bᶜ) := by
   rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq, compl_inf]
 
-theorem bihimp_eq' : a ⇔ b = a ⊓ b ⊔ aᶜ ⊓ bᶜ :=
-  @symmDiff_eq' αᵒᵈ _ _ _
+theorem bihimp_eq' : a ⇔ b = a ⊓ b ⊔ aᶜ ⊓ bᶜ := by
+  have h := symmDiff_eq' (α := αᵒᵈ) (toDual a) (toDual b)
+  change toDual (a ⇔ b) = toDual (a ⊓ b ⊔ aᶜ ⊓ bᶜ) at h
+  exact toDual_inj.mp h
 
 theorem symmDiff_top : a ∆ ⊤ = aᶜ :=
   symmDiff_top' _
@@ -607,16 +635,20 @@ theorem compl_symmDiff : (a ∆ b)ᶜ = a ⇔ b := by
   simp_rw [symmDiff, compl_sup_distrib, compl_sdiff, bihimp, inf_comm]
 
 @[simp]
-theorem compl_bihimp : (a ⇔ b)ᶜ = a ∆ b :=
-  @compl_symmDiff αᵒᵈ _ _ _
+theorem compl_bihimp : (a ⇔ b)ᶜ = a ∆ b := by
+  have h := compl_symmDiff (α := αᵒᵈ) (toDual a) (toDual b)
+  change toDual ((a ⇔ b)ᶜ) = toDual (a ∆ b) at h
+  exact toDual_inj.mp h
 
 @[simp]
 theorem compl_symmDiff_compl : aᶜ ∆ bᶜ = a ∆ b :=
   (sup_comm _ _).trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
 
 @[simp]
-theorem compl_bihimp_compl : aᶜ ⇔ bᶜ = a ⇔ b :=
-  @compl_symmDiff_compl αᵒᵈ _ _ _
+theorem compl_bihimp_compl : aᶜ ⇔ bᶜ = a ⇔ b := by
+  have h := compl_symmDiff_compl (α := αᵒᵈ) (toDual a) (toDual b)
+  change toDual (aᶜ ⇔ bᶜ) = toDual (a ⇔ b) at h
+  exact toDual_inj.mp h
 
 @[simp]
 theorem symmDiff_eq_top : a ∆ b = ⊤ ↔ IsCompl a b := by

@@ -172,11 +172,13 @@ instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellF
     WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_gt) (fun i => (hα i).wf) hι.wf⟩
 
-instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
+instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellFoundedLT ι]
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
-    [∀ i, WellFoundedLT (α i)] :
+    [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Colex (Π₀ i, α i)) :=
-  Lex.wellFoundedLT (ι := ιᵒᵈ)
+  ⟨by
+    have : @Std.Trichotomous ι (· > ·) := Std.Trichotomous.swap (· < ·)
+    exact Lex.wellFounded' (fun _ a => (zero_le a).not_gt) (fun i => (hα i).wf) hι.wf⟩
 
 end DFinsupp
 
@@ -198,8 +200,10 @@ instance Pi.Lex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
   ⟨Pi.Lex.wellFounded (· < ·) fun i => (hwf i).1⟩
 
 instance Pi.Colex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
-    [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (∀ i, α i)) :=
-  Pi.Lex.wellFoundedLT (ι := ιᵒᵈ)
+    [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (∀ i, α i)) :=
+  ⟨by
+    have := IsStrictTotalOrder.swap (· < · : ι → ι → Prop)
+    exact Pi.Lex.wellFounded (· > ·) fun i => (hwf i).1⟩
 
 instance Function.Lex.wellFoundedLT {α} [LinearOrder ι] [Finite ι] [LT α] [WellFoundedLT α] :
     WellFoundedLT (Lex (ι → α)) :=
@@ -216,7 +220,9 @@ instance DFinsupp.Lex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ 
 
 instance DFinsupp.Colex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ i, Zero (α i)]
     [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (Π₀ i, α i)) :=
-  DFinsupp.Lex.wellFoundedLT_of_finite (ι := ιᵒᵈ)
+  ⟨by
+    have := IsStrictTotalOrder.swap (· < · : ι → ι → Prop)
+    exact DFinsupp.Lex.wellFounded_of_finite (· > ·) fun i => (hwf i).1⟩
 
 protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (α i)]
     [∀ i, WellFoundedLT (α i)] (hbot : ∀ ⦃i⦄ ⦃a : α i⦄, ¬a < 0) : WellFoundedLT (Π₀ i, α i) :=

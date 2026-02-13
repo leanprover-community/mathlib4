@@ -74,10 +74,42 @@ protected theorem IsOpen.lowerClosure : IsOpen s → IsOpen (lowerClosure s : Se
   HasUpperLowerClosure.isOpen_lowerClosure _
 
 instance : HasUpperLowerClosure αᵒᵈ where
-  isUpperSet_closure := @IsLowerSet.closure α _ _ _
-  isLowerSet_closure := @IsUpperSet.closure α _ _ _
-  isOpen_upperClosure := @IsOpen.lowerClosure α _ _ _
-  isOpen_lowerClosure := @IsOpen.upperClosure α _ _ _
+  isUpperSet_closure s hs := by
+    rw [← isLowerSet_preimage_toDual_iff]
+    rw [← isLowerSet_preimage_toDual_iff] at hs
+    rw [isOpenMap_toDual.preimage_closure_eq_closure_preimage continuous_toDual]
+    exact hs.closure
+  isLowerSet_closure s hs := by
+    rw [← isUpperSet_preimage_toDual_iff]
+    rw [← isUpperSet_preimage_toDual_iff] at hs
+    rw [isOpenMap_toDual.preimage_closure_eq_closure_preimage continuous_toDual]
+    exact hs.closure
+  isOpen_upperClosure s hs := by
+    have : (upperClosure s : Set αᵒᵈ) =
+        OrderDual.ofDual ⁻¹' (lowerClosure (OrderDual.ofDual '' s) : Set α) := by
+      ext x
+      simp only [Set.mem_preimage, SetLike.mem_coe, mem_upperClosure, mem_lowerClosure,
+        Set.mem_image]
+      constructor
+      · rintro ⟨a, ha, hax⟩
+        exact ⟨OrderDual.ofDual a, ⟨a, ha, rfl⟩, hax⟩
+      · rintro ⟨_, ⟨a, ha, rfl⟩, hax⟩
+        exact ⟨a, ha, hax⟩
+    rw [this]
+    exact (IsOpen.lowerClosure (isOpenMap_ofDual _ hs)).preimage continuous_ofDual
+  isOpen_lowerClosure s hs := by
+    have : (lowerClosure s : Set αᵒᵈ) =
+        OrderDual.ofDual ⁻¹' (upperClosure (OrderDual.ofDual '' s) : Set α) := by
+      ext x
+      simp only [Set.mem_preimage, SetLike.mem_coe, mem_lowerClosure, mem_upperClosure,
+        Set.mem_image]
+      constructor
+      · rintro ⟨a, ha, hxa⟩
+        exact ⟨OrderDual.ofDual a, ⟨a, ha, rfl⟩, hxa⟩
+      · rintro ⟨_, ⟨a, ha, rfl⟩, hxa⟩
+        exact ⟨a, ha, hxa⟩
+    rw [this]
+    exact (IsOpen.upperClosure (isOpenMap_ofDual _ hs)).preimage continuous_ofDual
 
 /-
 Note: `s.OrdConnected` does not imply `(closure s).OrdConnected`, as we can see by taking
@@ -97,8 +129,9 @@ protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior 
   rw [← isLowerSet_compl, ← closure_compl]
   exact h.compl.closure
 
-protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
-  h.toDual.interior
+protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) := by
+  rw [← isUpperSet_compl, ← closure_compl]
+  exact h.compl.closure
 
 protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
   rw [← h.upperClosure_inter_lowerClosure, interior_inter]

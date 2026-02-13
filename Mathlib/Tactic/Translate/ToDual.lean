@@ -165,6 +165,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("pred", ["Succ"]),
   ("disjoint", ["Codisjoint"]),
   ("codisjoint", ["Disjoint"]),
+  ("atom", ["Coatom"]),
+  ("coatom", ["Atom"]),
+  ("lfp", ["Gfp"]),
+  ("gfp", ["Lfp"]),
   ("ioi", ["Iio"]),
   ("iio", ["Ioi"]),
   ("ici", ["Iic"]),
@@ -173,6 +177,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("ico", ["Ioc"]),
   ("u", ["L"]),
   ("l", ["U"]),
+  ("limsup", ["Liminf"]),
+  ("liminf", ["Limsup"]),
+  ("blimsup", ["Bliminf"]),
+  ("bliminf", ["Blimsup"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/

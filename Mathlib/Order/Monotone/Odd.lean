@@ -36,8 +36,11 @@ theorem strictMono_of_odd_strictMonoOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x
 /-- An odd function on a linear ordered additive commutative group is strictly antitone on the whole
 group provided that it is strictly antitone on `Set.Ici 0`. -/
 theorem strictAnti_of_odd_strictAntiOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
-    (h₂ : StrictAntiOn f (Ici 0)) : StrictAnti f :=
-  strictMono_of_odd_strictMonoOn_nonneg (H := Hᵒᵈ) h₁ h₂
+    (h₂ : StrictAntiOn f (Ici 0)) : StrictAnti f := by
+  have h : StrictMono (fun x => -f x) :=
+    strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp [h₁])
+      (fun a ha b hb hab => neg_lt_neg (h₂ ha hb hab))
+  exact fun a b hab => neg_lt_neg_iff.mp (h hab)
 
 /-- An odd function on a linear ordered additive commutative group is monotone on the whole group
 provided that it is monotone on `Set.Ici 0`. -/
@@ -50,5 +53,8 @@ theorem monotone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x)
 /-- An odd function on a linear ordered additive commutative group is antitone on the whole group
 provided that it is monotone on `Set.Ici 0`. -/
 theorem antitone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
-    (h₂ : AntitoneOn f (Ici 0)) : Antitone f :=
-  monotone_of_odd_of_monotoneOn_nonneg (H := Hᵒᵈ) h₁ h₂
+    (h₂ : AntitoneOn f (Ici 0)) : Antitone f := by
+  have h : Monotone (fun x => -f x) :=
+    monotone_of_odd_of_monotoneOn_nonneg (fun x => by simp [h₁])
+      (fun a ha b hb hab => neg_le_neg (h₂ ha hb hab))
+  exact fun a b hab => neg_le_neg_iff.mp (h hab)

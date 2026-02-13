@@ -238,7 +238,7 @@ section
 
 variable [Dist X]
 
-instance : Dist Xᵒᵈ := ‹Dist X›
+instance : Dist Xᵒᵈ where dist a b := dist (ofDual a) (ofDual b)
 
 @[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
 
@@ -246,4 +246,5 @@ instance : Dist Xᵒᵈ := ‹Dist X›
 
 end
 
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›
+instance [MetricSpace X] : MetricSpace Xᵒᵈ where
+  eq_of_dist_eq_zero h := OrderDual.ofDual_injective (eq_of_dist_eq_zero h)
