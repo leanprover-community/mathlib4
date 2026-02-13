@@ -104,13 +104,6 @@ lemma hom_ext {X Y : BialgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBia
     Hom.toBialgHom (𝟙 M) = BialgHom.id _ _ :=
   rfl
 
-instance hasForget : HasForget.{v} (BialgCat.{v} R) where
-  forget :=
-    { obj := fun M => M
-      map := fun f => f.toBialgHom }
-  forget_faithful :=
-    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
-
 instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=
     { obj := fun X => AlgCat.of R X
