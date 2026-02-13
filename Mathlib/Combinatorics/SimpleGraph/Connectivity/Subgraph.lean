@@ -314,8 +314,8 @@ theorem toSubgraph_le_iff {w : G.Walk u v} (hnil : ¬w.Nil) {G' : G.Subgraph} :
     w.toSubgraph ≤ G' ↔ w.edgeSet ⊆ G'.edgeSet := by
   refine ⟨fun hw e he ↦ Subgraph.edgeSet_mono hw <| w.mem_edges_toSubgraph.mpr he, fun hw ↦ ?_⟩
   refine ⟨fun v' hv' ↦ ?_, fun u' v' hadj ↦ hw <| w.mem_edges_toSubgraph.mp (hadj : s(_, _) ∈ _)⟩
-  have hsupp := w.mem_verts_toSubgraph.mp hv'
-  have ⟨e, he, hv'e⟩ := mem_support_iff_exists_mem_edges_of_not_nil hnil |>.mp hsupp
+  rw [mem_verts_toSubgraph, mem_support_iff_exists_mem_edges_of_not_nil hnil] at hv'
+  have ⟨e, he, hv'e⟩ := hv'
   exact G'.mem_verts_of_mem_edge (hw he) hv'e
 
 lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
