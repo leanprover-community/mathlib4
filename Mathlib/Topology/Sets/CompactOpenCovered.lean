@@ -48,11 +48,7 @@ lemma empty : IsCompactOpenCovered f ∅ :=
 lemma iff_of_unique [Unique ι] :
     IsCompactOpenCovered f U ↔ ∃ (V : Opens (X default)), IsCompact V.1 ∧ f default '' V.1 = U := by
   refine ⟨fun ⟨s, hs, V, hc, hcov⟩ ↦ ?_, fun ⟨V, hc, h⟩ ↦ ?_⟩
-  · by_cases h : s = ∅
-    · aesop
-    · obtain rfl : s = {default} := by
-        rw [← Set.univ_unique, Subsingleton.eq_univ_of_nonempty (Set.nonempty_iff_ne_empty.mpr h)]
-      aesop
+  · cases s.eq_empty_or_singleton_of_unique <;> aesop
   · refine ⟨{default}, Set.finite_singleton _, fun i h ↦ h ▸ V, fun i ↦ ?_, by simpa⟩
     rintro rfl
     simpa
@@ -117,8 +113,7 @@ lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U
     · simp [Opens.forall]
       aesop
     · simpa using ⟨⟨Us x hx, hUo _ _⟩, ⟨x, by simpa⟩, hUx _ _⟩
-  · simp [Opens.forall]
-    grind
+  · grind
 
 lemma image {i : ι} (V : Opens (X i)) (hV : IsCompact (X := X i) V) :
     IsCompactOpenCovered f (f i '' V) := by

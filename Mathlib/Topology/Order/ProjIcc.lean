@@ -30,8 +30,7 @@ protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Fil
 variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[continuity, fun_prop]
-theorem continuous_projIcc : Continuous (projIcc a b h) :=
-  (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
+theorem continuous_projIcc : Continuous (projIcc a b h) := Continuous.subtype_mk (by fun_prop) _
 
 theorem isQuotientMap_projIcc : IsQuotientMap (projIcc a b h) :=
   isQuotientMap_iff.2 ⟨projIcc_surjective h, fun s =>

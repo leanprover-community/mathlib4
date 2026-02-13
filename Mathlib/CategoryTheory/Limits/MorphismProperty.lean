@@ -159,7 +159,7 @@ variable (X : T)
 
 noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
     CreatesLimitsOfShape (Discrete PEmpty.{1}) (Over.forget P ⊤ X) := by
-  apply (config := { allowSynthFailures := true }) forgetCreatesLimitsOfShapeOfClosed
+  apply +allowSynthFailures forgetCreatesLimitsOfShapeOfClosed
   · exact inferInstanceAs (HasLimitsOfShape _ (Over X))
   · apply Over.closedUnderLimitsOfShape_discrete_empty _
 
@@ -187,7 +187,7 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
     CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) := by
-  apply (config := { allowSynthFailures := true }) forgetCreatesLimitsOfShapeOfClosed
+  apply +allowSynthFailures forgetCreatesLimitsOfShapeOfClosed
   · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
   · apply Over.closedUnderLimitsOfShape_pullback
 
@@ -195,8 +195,7 @@ noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
 `P.Over ⊤ X` has pullbacks -/
 instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition]
     [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) := by
-  apply (config := { allowSynthFailures := true })
-    hasLimitsOfShape_of_closedUnderLimitsOfShape
+  apply +allowSynthFailures hasLimitsOfShape_of_closedUnderLimitsOfShape
   · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
   · apply Over.closedUnderLimitsOfShape_pullback
 
