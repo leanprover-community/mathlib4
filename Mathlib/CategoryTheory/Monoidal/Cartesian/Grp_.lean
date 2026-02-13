@@ -214,7 +214,7 @@ lemma GrpObj.η_whiskerRight_commutator : η ▷ G ≫ commutator G = toUnit _ �
   simp [toUnit_unique (fst (𝟙_ C) G) (toUnit _), ← Hom.one_def]
 
 @[reassoc (attr := simp)]
-lemma GrpObj.η_lhd_commutator : G ◁ η ≫ commutator G = toUnit _ ≫ η := by
+lemma GrpObj.whiskerLeft_η_commutator : G ◁ η ≫ commutator G = toUnit _ ≫ η := by
   apply yoneda.map_injective
   ext X f
   rw [← lift_comp_fst_snd f]
