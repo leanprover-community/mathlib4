@@ -324,6 +324,10 @@ theorem of_isRightAdjoint (R : C ⥤ D) [R.IsRightAdjoint] : IsFiltered D :=
 theorem of_equivalence (h : C ≌ D) : IsFiltered D :=
   of_right_adjoint h.symm.toAdjunction
 
+omit [IsFiltered C] in
+lemma iff_of_equivalence (e : C ≌ D) : IsFiltered C ↔ IsFiltered D :=
+  ⟨fun _ ↦ .of_equivalence e, fun _ ↦ .of_equivalence e.symm⟩
+
 end Nonempty
 
 section OfCocone
@@ -841,6 +845,10 @@ theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofiltered D :=
 theorem of_equivalence (h : C ≌ D) : IsCofiltered D :=
   of_left_adjoint h.toAdjunction
 
+omit [IsCofiltered C] in
+lemma iff_of_equivalence (e : C ≌ D) : IsCofiltered C ↔ IsCofiltered D :=
+  ⟨fun _ ↦ .of_equivalence e, fun _ ↦ .of_equivalence e.symm⟩
+
 end Nonempty
 
 
@@ -934,6 +942,12 @@ lemma isCofiltered_of_isFiltered_op [IsFiltered Cᵒᵖ] : IsCofiltered C :=
 /-- If Cᵒᵖ is cofiltered, then C is filtered. -/
 lemma isFiltered_of_isCofiltered_op [IsCofiltered Cᵒᵖ] : IsFiltered C :=
   IsFiltered.of_equivalence (opOpEquivalence _)
+
+lemma isCofiltered_op_iff_isFiltered : IsCofiltered Cᵒᵖ ↔ IsFiltered C :=
+  ⟨fun _ ↦ isFiltered_of_isCofiltered_op _, fun _ ↦ inferInstance⟩
+
+lemma isFiltered_op_iff_isCofiltered : IsFiltered Cᵒᵖ ↔ IsCofiltered C :=
+  ⟨fun _ ↦ isCofiltered_of_isFiltered_op _, fun _ ↦ inferInstance⟩
 
 end Opposite
 
