@@ -448,17 +448,11 @@ theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat
 
 theorem Perm.maximum_eq {l l' : List α} (h : l ~ l') :
     l.maximum = l'.maximum := by
-  by_cases he : l' = []
-  · simp_all
-  have hm : ∃ m : α, l'.maximum = m := Option.ne_none_iff_exists'.mp <| maximum_ne_bot_of_ne_nil he
-  obtain ⟨m, hm⟩ := hm
-  rw [hm, maximum_eq_coe_iff]
-  rw [maximum_eq_coe_iff] at hm
-  exact ⟨(mem_iff h).mpr hm.1, fun _ ha ↦ hm.2 _ <| (mem_iff h).mp ha⟩
+  induction h with grind [maximum_cons]
 
 theorem Perm.minimum_eq {l l' : List α} (h : l ~ l') :
-    l.minimum = l'.minimum :=
-  @Perm.maximum_eq αᵒᵈ _ _ _ h
+    l.minimum = l'.minimum := by
+  induction h with grind [minimum_cons]
 
 #adaptation_note
 /-- 2025-08-14: We should stop using `max?_eq_some_iff_legacy` below, by connecting up Mathlib's
