@@ -747,6 +747,13 @@ lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
   rintro ⟨i, ⟨h⟩⟩
   exact ⟨i, h, hX.hom_ext _ _⟩
 
+lemma ofObjects_mono {I : Type*} {X : I → C} {I' : Type*} {X' : I' → C} {Y : C}
+    (h : Set.range X ⊆ Set.range X') :
+    Sieve.ofObjects X Y ≤ Sieve.ofObjects X' Y := by
+  rintro Z f ⟨i, ⟨g⟩⟩
+  obtain ⟨i', h⟩ := h ⟨i, rfl⟩
+  exact ⟨i', ⟨h ▸ g⟩⟩
+
 /-- Given a morphism `h : Y ⟶ X`, send a sieve S on X to a sieve on Y
 as the inverse image of S with `_ ≫ h`. That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
 @[simps]
@@ -793,6 +800,12 @@ lemma pullback_ofObjects_eq_top
   simp only [top_apply, iff_true]
   rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
+
+@[simp]
+lemma pullback_ofObjects {I : Type*} (X : I → C) {Y Z : C} (f : Z ⟶ Y) :
+    (ofObjects X Y).pullback f = ofObjects X Z := by
+  ext
+  simp [Sieve.ofObjects]
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
 factors through some `g : Z ⟶ Y` which is in `R`.
@@ -1091,6 +1104,12 @@ lemma mem_functorPushforward_iff_of_full_of_faithful [F.Full] [F.Faithful]
   rw [Sieve.mem_functorPushforward_iff_of_full]
   refine ⟨fun ⟨g, hcomp, hg⟩ ↦ ?_, fun hf ↦ ⟨f, rfl, hf⟩⟩
   rwa [← F.map_injective hcomp]
+
+lemma functorPushforward_ofObjects_le
+    {I : Type*} (X : I → C) (Y : C) :
+    (ofObjects X Y).functorPushforward F ≤ ofObjects (F.obj ∘ X) (F.obj Y) := by
+  rintro Z f ⟨W, g₁, g₂, ⟨i, ⟨g₃⟩⟩, hf⟩
+  exact ⟨i, ⟨g₂ ≫ F.map g₃⟩⟩
 
 end Functor
 

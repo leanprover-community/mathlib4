@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.Probability.Notation
+public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
@@ -194,7 +195,7 @@ theorem condLExp_bot' (P : Measure[mΩ₀] Ω) [NeZero P] (X : Ω → ℝ≥0∞
   · have hσ : ¬SigmaFinite (P.trim bot_le) := by rwa [sigmaFinite_trim_bot_iff]
     rw [not_isFiniteMeasure_iff] at hP
     rw [condLExp_of_not_sigmaFinite bot_le hσ]
-    simpa [hP] using (by rfl)
+    simp [hP, Pi.zero_def]
   obtain ⟨c, h_eq⟩ := eq_const_of_measurable_bot (measurable_condLExp ⊥ P X)
   ext _
   rw [← lintegral_condLExp bot_le]
@@ -214,9 +215,9 @@ theorem condLExp_bot (P : Measure[mΩ₀] Ω) [IsProbabilityMeasure P] (X : Ω �
 theorem condLExp_mono (hXY : X ≤ᵐ[P] Y) :
     P⁻[X|mΩ] ≤ᵐ[P] P⁻[Y|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
-  swap; · simp_rw [condLExp_of_not_le hm]; rfl
+  swap; · simp_rw [condLExp_of_not_le hm, Filter.EventuallyLE.rfl]
   by_cases hσ : SigmaFinite (P.trim hm)
-  swap; · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; rfl
+  swap; · simp_rw [condLExp_of_not_sigmaFinite hm hσ, Filter.EventuallyLE.rfl]
   apply ae_le_of_ae_le_trim
   apply ae_le_of_forall_setLIntegral_le_of_sigmaFinite (μ := P.trim hm) (by fun_prop)
   intro s hs _

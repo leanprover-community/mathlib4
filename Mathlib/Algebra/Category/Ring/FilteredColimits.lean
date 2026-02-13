@@ -295,6 +295,14 @@ instance forget₂SemiRing_preservesFilteredColimits :
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ RingCat SemiRingCat.{u})) }
 
+instance : Limits.PreservesFilteredColimits (forget₂ RingCat AddCommGrpCat.{u}) where
+  preserves_filtered_colimits _ :=
+    { preservesColimit := fun {F} =>
+        Limits.preservesColimit_of_preserves_colimit_cocone
+          (RingCat.FilteredColimits.colimitCoconeIsColimit.{u, u} F)
+          (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
+            (F ⋙ forget₂ RingCat AddCommGrpCat.{u})) }
+
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget RingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ RingCat SemiRingCat) (forget SemiRingCat.{u})
 
