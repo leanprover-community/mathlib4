@@ -171,14 +171,13 @@ theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Ca
     (_ : NeBot (Filter.comap m f)) : Cauchy (Filter.comap m f) :=
   hf.comap hm
 
-lemma Cauchy.map_of_le {α β : Type*} [UniformSpace α] [UniformSpace β]
-    {l : Filter α} {f : α → β} (hl : Cauchy l) {s : Set α}
-    (hf : UniformContinuousOn f s) (hls : l ≤ 𝓟 s) :
-    Cauchy (map f l) := by
-  suffices Cauchy (comap (Subtype.val : s → α) l) by
+lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f) {s : Set α}
+    (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
+    Cauchy (map m f) := by
+  suffices Cauchy (comap (Subtype.val : s → α) f) by
     simpa [Set.restrict_def, ← Function.comp_def, ← map_map,
-      subtype_coe_map_comap, inf_eq_left.mpr hls] using this.map hf.restrict
-  exact hl.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hl.1) hls)
+      subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
+  exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
 defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
