@@ -2,7 +2,7 @@
 Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Timo Kraenzle, Judith Ludwig, Bryan Wang, Christian Merten,
-  Yannis Monbru, Alireza Shavali, Cheni Yang
+  Yannis Monbru, Alireza Shavali, Chenyi Yang
 -/
 module
 
