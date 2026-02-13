@@ -333,7 +333,8 @@ def monitorCurl (args : Array String) (size : Nat)
       match Lean.Json.parse line.copy with
       | .ok result =>
         match result.getObjValAs? Nat "http_code" with
-        | .ok 200 =>
+        | .ok 200
+        | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
               IO.FS.rename fn (fn.dropEnd 5).copy
