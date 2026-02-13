@@ -6,10 +6,8 @@ Authors: Timo Kraenzle, Judith Ludwig, Bryan Wang, Christian Merten,
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Fiber
-public import Mathlib.CategoryTheory.ObjectProperty.InheritedFromHom
-public import Mathlib.CategoryTheory.MorphismProperty.Descent
 
 /-!
 # Geometrically-`P` schemes over a field
