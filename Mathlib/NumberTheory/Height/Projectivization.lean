@@ -71,7 +71,7 @@ lemma mulHeight_pos (x : Projectivization K (ι → K)) : 0 < mulHeight x :=
 lemma mulHeight_ne_zero (x : Projectivization K (ι → K)) : mulHeight x ≠ 0 :=
   (mulHeight_pos x).ne'
 
-lemma zero_le_logHeight (x : Projectivization K (ι → K)) : 0 ≤ logHeight x := by
+lemma logHeight_nonneg (x : Projectivization K (ι → K)) : 0 ≤ logHeight x := by
   rw [logHeight_eq_log_mulHeight]
   exact log_nonneg <| x.one_le_mulHeight
 
@@ -96,7 +96,7 @@ meta def evalProjLogHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $ιF $a) =>
     assertInstancesCommute
-    pure (.nonnegative q(zero_le_logHeight $a))
+    pure (.nonnegative q(logHeight_nonneg $a))
   | _, _, _ => throwError "not Projectivization.logHeight"
 
 end Mathlib.Meta.Positivity
