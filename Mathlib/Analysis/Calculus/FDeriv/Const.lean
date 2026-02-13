@@ -325,18 +325,33 @@ theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ 
 
 end Const
 
+/-- If `f : E → F` has injective differential within `s` at `x`,
+it is differentiable within `s` at `x`. -/
+lemma differentiableWithinAt_of_fderivWithin_injective (hf : Injective (fderivWithin 𝕜 f s x)) :
+    DifferentiableWithinAt 𝕜 f s x := by
+  by_cases h: Subsingleton E
+  · exact (differentiable_of_subsingleton x).differentiableWithinAt
+  · by_contra h'
+    replace hf : LinearMap.ker (fderivWithin 𝕜 f s x).toLinearMap = ⊥ := by
+      rw [LinearMap.ker_eq_bot]; exact hf
+    have : (⊥ : Submodule 𝕜 E) = ⊤ := by
+      simp [fderivWithin_zero_of_not_differentiableWithinAt h', ← hf]
+    have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top this
+    simp_all only [Submodule.subsingleton_iff]
+
+/-- If `f : E → F` has injective differential at `x`, it is differentiable at `x`. -/
+lemma differentiableAt_of_fderiv_injective (hf : Injective (fderiv 𝕜 f x)) :
+    DifferentiableAt 𝕜 f x := by
+  simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
+  exact differentiableWithinAt_of_fderivWithin_injective hf
+
 theorem differentiableWithinAt_of_isInvertible_fderivWithin
-    (hf : (fderivWithin 𝕜 f s x).IsInvertible) : DifferentiableWithinAt 𝕜 f s x := by
-  contrapose hf
-  rw [fderivWithin_zero_of_not_differentiableWithinAt hf]
-  contrapose! hf
-  rcases ContinuousLinearMap.isInvertible_zero_iff.1 hf with ⟨hE, hF⟩
-  exact (hasFDerivAt_of_subsingleton _ _).differentiableAt.differentiableWithinAt
+    (hf : (fderivWithin 𝕜 f s x).IsInvertible) : DifferentiableWithinAt 𝕜 f s x :=
+  differentiableWithinAt_of_fderivWithin_injective hf.injective
 
 theorem differentiableAt_of_isInvertible_fderiv
-    (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x := by
-  simp only [← differentiableWithinAt_univ, ← fderivWithin_univ] at hf ⊢
-  exact differentiableWithinAt_of_isInvertible_fderivWithin hf
+    (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x :=
+  differentiableAt_of_fderiv_injective hf.injective
 
 /-! ### Support of derivatives -/
 
