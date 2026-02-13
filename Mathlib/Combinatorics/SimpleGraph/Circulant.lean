@@ -90,8 +90,7 @@ theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by
   simp [cycleGraph_one_eq_bot]
 
 theorem cycleGraph_adj {n : ℕ} {u v : Fin (n + 2)} :
-    (cycleGraph (n + 2)).Adj u v ↔ u - v = 1 ∨ v - u = 1 := by
-  simp [cycleGraph]
+    (cycleGraph (n + 2)).Adj u v ↔ u - v = 1 ∨ v - u = 1 := Iff.rfl
 
 theorem cycleGraph_adj' {n : ℕ} {u v : Fin n} :
     (cycleGraph n).Adj u v ↔ (u - v).val = 1 ∨ (v - u).val = 1 := by
