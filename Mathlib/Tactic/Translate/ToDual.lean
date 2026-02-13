@@ -14,8 +14,6 @@ The `@[to_dual]` attribute is used to translate declarations to their dual equiv
 See the docstrings of `to_dual` and `to_additive` for more information.
 
 Known limitations:
-- Reordering arguments of arguments is not yet supported.
-  This usually comes up in constructors of structures. e.g. `Pow.mk` or `OrderTop.mk`
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
