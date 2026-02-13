@@ -109,6 +109,14 @@ lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)
 lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
 lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg
 
+lemma single_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N] [PartialOrder N]
+    [IsOrderedAddMonoid N] (f : α →₀ M) {g : M → N} (hg : g 0 = 0) (h : ∀ m, 0 ≤ g m) (a : α) :
+    g (f a) ≤ f.sum fun _ m ↦ g m := by
+  rcases eq_or_ne (f a) 0 with H | H
+  · rw [H, hg]
+    exact sum_nonneg' fun _ ↦ h _
+  · exact Finset.single_le_sum (fun a _ ↦ h (f a)) <| mem_support_iff.mpr H
+
 end OrderedAddCommMonoid
 
 instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
