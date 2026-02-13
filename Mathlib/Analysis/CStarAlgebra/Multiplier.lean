@@ -404,16 +404,16 @@ theorem star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (sta
 
 instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStar with
-    star_involutive := fun x => by ext <;> simp
-    star_add := fun x y => by ext <;> simp }
+    star_involutive _ := by ext <;> simp
+    star_add _ _ := by ext <;> simp }
 
 instance instStarRing : StarRing 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid with
-    star_mul := fun a b => by ext <;> simp }
+    star_mul _ _ := by ext <;> simp }
 
 instance instStarModule : StarModule 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid (𝕜 := 𝕜) (A := A) with
-    star_smul := fun k a => by ext <;> exact star_smul _ _ }
+    star_smul _ _ := by ext <;> exact star_smul _ _ }
 
 end Star
 
