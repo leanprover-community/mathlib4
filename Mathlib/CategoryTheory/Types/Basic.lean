@@ -50,6 +50,9 @@ structure TypeCat where
 
 namespace TypeCat
 
+instance : CoeSort TypeCat.{u} (Type u) where
+  coe X := X.carrier
+
 attribute [coe] carrier
 
 set_option backward.privateInPublic true in
@@ -88,16 +91,24 @@ instance {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe_injective' _ := by aesop
 
 @[simp]
-lemma Fun.as_apply {X Y : Type*} (f : X → Y) (x : X) : (⟨f⟩ : Fun X Y) x = f x := rfl
+lemma Fun.as_apply {X Y : Type*} (f : X → Y) (x : X) : (⟨f⟩ : Fun X Y) x = f x :=
+  rfl
+
+-- @[simp]
+-- lemma Fun.as_apply' {X Y : Type*} (f : X → Y) (x : X) : (⟨fun x ↦ f x⟩ : Fun X Y) x = f x :=
+--   rfl
+
+-- @[simp]
+-- lemma Fun.comp_apply {X Y Z : Type*} (f : X → Y) (g : Y → Z) (x : X) :
+--     (⟨g⟩ : Fun Y Z) ((⟨f⟩ : Fun X Y) x) = g (f x) :=
+--   rfl
+
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory TypeCat.{u} (fun X Y ↦ Fun X.carrier Y.carrier) where
   hom := Hom.hom'
   ofHom := Hom.mk
-
-instance : CoeSort TypeCat.{u} (Type u) where
-  coe X := ToType X
 
 lemma coe_of (X : Type u) : (of X : Type u) = X :=
   rfl
@@ -134,15 +145,17 @@ example (X : Type u) : CategoryTheory.ToType (of X) = X := by with_reducible rfl
 example (X : TypeCat.{u}) : CategoryTheory.ToType X = X.carrier := by with_reducible rfl
 
 -- @[simp]
--- lemma ofHom_comp {X Y Z : Type u} (f : X → Y) (g : Y → Z) : ofHom ⟨g ∘ f⟩ = ofHom ⟨f⟩ ≫ ofHom ⟨g⟩ :=
+-- lemma ofHom_apply {X Y : Type u} (f : Fun X Y) (x : X) :
+--     ConcreteCategory.ofHom (C := TypeCat) f x = f x :=
 --   rfl
 
--- @[simp]
--- lemma ofHom_id (X : Type u) : ofHom ⟨(id (α := X))⟩ = 𝟙 (TypeCat.of X) := rfl
+@[simp]
+lemma ofHom_eq {X Y : TypeCat.{u}} (f : X ⟶ Y) : ofHom ⟨f⟩ = f :=
+  rfl
 
 @[simp]
-lemma ofHom_apply {X Y : Type u} (f : Fun X Y) (x : X) :
-    ConcreteCategory.ofHom (C := TypeCat) f x = f x :=
+lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
+    ConcreteCategory.ofHom (C := TypeCat) ⟨f⟩ x = f x :=
   rfl
 
 /-- `TypeCat.Hom.hom` bundled as an `Equiv`. -/
@@ -161,14 +174,14 @@ theorem types_id (X : TypeCat.{u}) : (𝟙 X : _ → _) = id :=
 theorem types_comp {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : _ → _) = g ∘ f :=
   rfl
 
-@[simp]
-theorem types_id_apply (X : TypeCat.{u}) (x : X) : 𝟙 X x = x :=
-  rfl
+-- @[simp]
+-- theorem types_id_apply (X : TypeCat.{u}) (x : X) : 𝟙 X x = x :=
+--   rfl
 
-@[simp]
-theorem types_comp_apply {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g) x = g (f x) :=
-  rfl
+-- @[simp]
+-- theorem types_comp_apply {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+--     (f ≫ g) x = g (f x) :=
+--   rfl
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply
@@ -270,12 +283,12 @@ def uliftTrivial (V : TypeCat.{u}) : of (ULift.{u} V) ≅ of V where
 /-- The functor embedding `Type u` into `Type (max u v)`.
 Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
-@[pp_with_univ, simps]
+@[pp_with_univ, simps obj map]
 def uliftFunctor : TypeCat.{u} ⥤ TypeCat.{max u v} where
   obj X := of (ULift.{v} X)
   map {X} {_} f := ofHom ⟨fun x : ULift.{v} X => ULift.up (f x.down)⟩
 
-@[deprecated (since := "2026-02-09")] alias uliftFunctor_obj := uliftFunctor_obj_carrier
+-- @[deprecated (since := "2026-02-09")] alias uliftFunctor_obj := uliftFunctor_obj_carrier
 
 /-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
 def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
