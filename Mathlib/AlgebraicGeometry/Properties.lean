@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
@@ -308,5 +309,10 @@ noncomputable
 instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
   le_top a := genericPoint_specializes a
+
+lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
+    IsField Γ(X, ⊤) := by
+  rw [← PrimeSpectrum.t1Space_iff_isField]
+  apply X.isoSpec.hom.homeomorph.t1Space
 
 end AlgebraicGeometry
