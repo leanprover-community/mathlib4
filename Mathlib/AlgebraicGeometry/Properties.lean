@@ -133,7 +133,7 @@ theorem IsReduced.of_openCover (𝒰 : X.OpenCover) [∀ i, IsReduced (𝒰.X i)
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
 2. For an open immersion `f : X ⟶ Y`, if `P` holds for the entire space of `X`, then `P` holds for
-  the image of `f`.
+   the image of `f`.
 3. `P` holds for the entire space of an affine scheme.
 -/
 @[elab_as_elim]

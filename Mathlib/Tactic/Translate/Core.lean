@@ -439,6 +439,7 @@ It translates each identifier (inductive type, defined function etc) in an expre
 * The identifier occurs in an application with `relevantArg` argument `arg`; and
 * `shouldTranslate arg` is false.
 
+
 It will also reorder arguments of certain functions, using the stored `reorder`.
 -/
 partial def applyReplacementFun (t : TranslateData) (e : Expr) : ReplacementM Expr :=

@@ -20,7 +20,7 @@ The function defined here is a meta reimplementation of the formalized coherence
 in the following files:
 - Mathlib.CategoryTheory.Monoidal.Free.Coherence
 - Mathlib.CategoryTheory.Bicategory.Coherence
-See these files for a mathematical explanation of the proof of the coherence theorem.
+  See these files for a mathematical explanation of the proof of the coherence theorem.
 
 The actual tactics that users will use are given in
 - `Mathlib/Tactic/CategoryTheory/Monoidal/PureCoherence.lean`

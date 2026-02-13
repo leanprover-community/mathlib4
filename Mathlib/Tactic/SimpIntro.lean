@@ -65,12 +65,12 @@ and the goal.
 * `simp_intro x y z ..` introduces variables named `x y z` and then keeps introducing `_` binders
 * `simp_intro (config := cfg) (discharger := tac) x y .. only [h₁, h₂]`:
   `simp_intro` takes the same options as `simp` (see `simp`)
-```
-example : x + 0 = y → x = z := by
+  ```
+  example : x + 0 = y → x = z := by
   simp_intro h
   -- h: x = y ⊢ y = z
   sorry
-```
+  ```
 -/
 elab "simp_intro" cfg:optConfig disch:(discharger)?
     ids:(ppSpace colGt binderIdent)* more:" .."? only:(&" only")? args:(simpArgs)? : tactic => do

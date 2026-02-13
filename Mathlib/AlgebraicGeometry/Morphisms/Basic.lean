@@ -397,9 +397,9 @@ instance respectsIso_of
 /-- We say that `P : AffineTargetMorphismProperty` is a local property if
 1. `P` respects isomorphisms.
 2. If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ Y.basicOpen r` for any
-  global section `r`.
+   global section `r`.
 3. If `P` holds for `f ∣_ Y.basicOpen r` for all `r` in a spanning set of the global sections,
-  then `P` holds for `f`.
+   then `P` holds for `f`.
 -/
 class IsLocal (P : AffineTargetMorphismProperty) : Prop where
   /-- `P` as a morphism property respects isomorphisms -/

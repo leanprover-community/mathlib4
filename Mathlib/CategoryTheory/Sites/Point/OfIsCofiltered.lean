@@ -19,8 +19,8 @@ Let `J` be a Grothendieck topology on a category `C`. We provide a constructor
   any morphism `f : p.obj U ⟶ X`, there exists a morphism `g : Y ⟶ X` in `R`,
   a morphism `q : V ⟶ U` in `N` and a morphism `a : p.obj V ⟶ Y` such
   that `a ≫ g = p.map q ≫ f`.
-We show that the fiber of a presheaf for the constructed point identifies
-to a colimit indexed by the category `N`.
+  We show that the fiber of a presheaf for the constructed point identifies
+  to a colimit indexed by the category `N`.
 
 -/
 

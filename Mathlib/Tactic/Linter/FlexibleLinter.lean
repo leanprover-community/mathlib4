@@ -32,14 +32,14 @@ directed graph, where
 * two hypotheses/goals are connected by an arrow if there is a tactic that modifies the source
   of the arrow into the target (this does not apply well to all tactics, but it does apply to
   a large number of them).
-With this in mind, a tactic like `rw [lemma]` takes a *very specific* input and return a
-*very predictable* output.
-Such a tactic is "rigid". Any tactic is rigid, unless it is in `flexible` or `stoppers`.
-Conversely, a tactic like `simp` acts on a wide variety of inputs and returns an output that
-is possibly unpredictable: if later modifications adds a `simp`-lemma or some internals of
-`simp` changes, the output of `simp` may change as well.
-Such a tactic is `flexible`. Other examples are `split`, `abel`, `norm_cast`,...
-Let's go back to the graph picture above.
+  With this in mind, a tactic like `rw [lemma]` takes a *very specific* input and return a
+  *very predictable* output.
+  Such a tactic is "rigid". Any tactic is rigid, unless it is in `flexible` or `stoppers`.
+  Conversely, a tactic like `simp` acts on a wide variety of inputs and returns an output that
+  is possibly unpredictable: if later modifications adds a `simp`-lemma or some internals of
+  `simp` changes, the output of `simp` may change as well.
+  Such a tactic is `flexible`. Other examples are `split`, `abel`, `norm_cast`,...
+  Let's go back to the graph picture above.
 * ✅️ [`rigid` --> `flexible`]
   A sequence `rw [lemma]; simp` is unlikely to break, since `rw [lemma]` produces the same output
   unless some *really major* change happens!
