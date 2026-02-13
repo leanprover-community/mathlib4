@@ -576,6 +576,15 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
     (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
 
+theorem isHomeomorph_of_isUnit {T : M₁ →L[R₁] M₁} (hT : IsUnit T) : IsHomeomorph T := by
+  obtain ⟨u, rfl⟩ := hT
+  let f : M₁ ≃ₜ M₁ :=
+  { toFun := u.1
+    invFun := u⁻¹.1
+    left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
+    right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply] }
+  exact f.isHomeomorph
+
 section ApplyAction
 
 variable [ContinuousAdd M₁]
