@@ -365,7 +365,7 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
 /--
 The exponent of a submonoid `H ≤ G` divides the exponent of `G`.
 -/
-@[to_additive /-- The exponent of a additive submonoid `H ≤ G` divides the exponent of `G`. -/]
+@[to_additive /-- The exponent of an additive submonoid `H ≤ G` divides the exponent of `G`. -/]
 theorem exponent_submonoid_dvd (H : Submonoid G) :
     Monoid.exponent H ∣ Monoid.exponent G :=
   Monoid.exponent_dvd_of_monoidHom H.subtype H.subtype_injective
