@@ -235,28 +235,13 @@ lemma comp_isLocalDiffeomorphAt_right (hf : IsImmersedPoint I I' f x)
     IsImmersedPoint I J (g ∘ f) x :=
   (hg.isImmersedPoint hn).comp hf
 
--- TODO: fix the last sorry, is a small mathematical question
-lemma comp_isLocalDiffeomorphAt_right_iff
+lemma comp_isLocalDiffeomorphAt_right_iff (hf : ContinuousAt f x)
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : n ≠ 0) :
     IsImmersedPoint I I' f x ↔  IsImmersedPoint I J (g ∘ f) x := by
-  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_right hg hn,
-    fun h ↦ ?_⟩
-  have hg' : IsLocalDiffeomorphAt J I' n hg.localInverse (g (f x)) :=
-    hg.localInverse_isLocalDiffeomorphAt
-  apply (h.comp_isLocalDiffeomorphAt_right hg' hn).congr
+  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_right hg hn, fun h ↦ ?_⟩
+  apply (h.comp_isLocalDiffeomorphAt_right hg.localInverse_isLocalDiffeomorphAt hn).congr
   symm
-  have := hg.localInverse_eventuallyEq_left
-
-  -- question: must we have `ContinuousAt f x`? if so, the proof is easy
-
-  -- this certainly holds... but is not what we want!
-  have aux : ContinuousAt (hg.localInverse.toPartialEquiv ∘ g ∘ f) x :=
-    ContinuousAt.comp hg.continuousAt_localInverse h.continuousAt
-  have hf : ContinuousAt f x := by
-    --apply ContinuousAt.congr_of_eventuallyEq aux
-    -- issue: cannot apply ContinuousAt.congr_of_eventuallyEq aux as that'd be cyclic!
-    sorry
-  exact Filter.eventuallyEq_of_mem (hf this) (by intro; simp)
+  exact Filter.eventuallyEq_of_mem (hf hg.localInverse_eventuallyEq_left) (by intro; simp)
 
 /-- If `mfderiv I J f x` is injective and `N` is finite-dimensional,
 `x` is an immersed point of `f`. -/
