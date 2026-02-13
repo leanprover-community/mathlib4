@@ -1,7 +1,27 @@
+/-
+Copyright (c) 2026 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 module
 
 public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.RingHom.Surjective
+
+/-!
+
+# Weally Quasi-finite primes
+
+The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "isolated in fibers"
+mathematically, but this requires Zariski's main theorem to prove.
+Hence we introduce a weaker notion of being `Algebra.WeaklyQuasiFiniteAt` that we shall state
+Zariski's main theorem in terms of, and deduce from this that `Algebra.WeaklyQuasiFiniteAt` is
+equivalent to `Algebra.QuasiFiniteAt` under all relavent scenarios.
+
+This class should only be used in stating (and proving) Zariski's main theorem and should not be
+used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
+
+-/
 
 @[expose] public section
 
@@ -10,25 +30,12 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (p : Ideal R) (q : Ideal S) [q.IsPrime]
 
 variable (R) in
+/-- (Implementation) An a priori weaker notion of being quasi-finite at a prime,
+which turns out to be equivalent to `Algebra.QuasiFiniteAt` due to Zariski's main theorem.
+This class should not be used outside of this context,
+and `Algebra.QuasiFiniteAt` should be used instead. -/
 abbrev Algebra.WeaklyQuasiFiniteAt :=
   Algebra.QuasiFiniteAt R (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S))))
-
-lemma Algebra.QuasiFinite.iff_of_algEquiv (e : S ≃ₐ[R] T) :
-    Algebra.QuasiFinite R S ↔ Algebra.QuasiFinite R T :=
-  ⟨fun _ ↦ .of_surjective_algHom e.toAlgHom e.surjective,
-    fun _ ↦ .of_surjective_algHom e.symm.toAlgHom e.symm.surjective⟩
-
-/-- A surjective ring homomorphism `R →+* S` induces a surjective homomorphism `R_{f⁻¹(P)} →+* S_P`
-for every prime ideal `P` of `S`. -/
-theorem surjective_localRingHom_of_surjective {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (h : Function.Surjective f) (P : Ideal R) (Q : Ideal S) [P.IsPrime] [Q.IsPrime]
-    (e : _) :
-    Function.Surjective (Localization.localRingHom P Q f e) := by
-  intro x
-  obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
-  obtain ⟨x, rfl⟩ := h x
-  obtain ⟨s, rfl⟩ := h s
-  exact ⟨IsLocalization.mk' (M := P.primeCompl) _ x ⟨s, by simpa [e]⟩, by simp⟩
 
 lemma Algebra.weaklyQuasiFiniteAt_iff :
     Algebra.WeaklyQuasiFiniteAt R q ↔
@@ -41,7 +48,7 @@ lemma Algebra.weaklyQuasiFiniteAt_iff :
   let φ₁ : Localization.AtPrime q →ₐ[R] Localization.AtPrime q' :=
     Localization.localAlgHom _ _ (Ideal.Quotient.mkₐ _ _) hq'
   have hφ₁ : Function.Surjective φ₁ :=
-    surjective_localRingHom_of_surjective _ Ideal.Quotient.mk_surjective _ _ hq'
+    RingHom.surjective_localRingHom_of_surjective _ Ideal.Quotient.mk_surjective _ _ hq'
   refine Algebra.QuasiFinite.iff_of_algEquiv ((Ideal.quotientEquivAlg _ _ (.refl) ?_).trans
     (Ideal.quotientKerAlgEquivOfSurjective hφ₁)).symm
   ext x
@@ -58,18 +65,7 @@ instance (priority := low) [Algebra.QuasiFiniteAt R q] :
   rw [Algebra.weaklyQuasiFiniteAt_iff]
   exact .of_surjective_algHom (Ideal.Quotient.mkₐ _ _) Ideal.Quotient.mk_surjective
 
-/-- A surjective ring homomorphism `R →+* S` induces a surjective homomorphism `R_{f⁻¹(P)} →+* S_P`
-for every prime ideal `P` of `S`. -/
-theorem surjective_localRingHom_of_surjective {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (h : Function.Surjective f) (P : Ideal R) (Q : Ideal S) [P.IsPrime] [Q.IsPrime]
-    (e : _) :
-    Function.Surjective (Localization.localRingHom P Q f e) := by
-  intro x
-  obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
-  obtain ⟨x, rfl⟩ := h x
-  obtain ⟨s, rfl⟩ := h s
-  exact ⟨IsLocalization.mk' (M := P.primeCompl) _ x ⟨s, by simpa [e]⟩, by simp⟩
-
+/-- Use `Algebra.QuasiFinite.of_surjective_algHom` instead for `Algebra.QuasiFiniteAt R p`. -/
 lemma of_algHom_localization (p : Ideal S) [p.IsPrime]
     [Algebra.WeaklyQuasiFiniteAt R p]
     (q : Ideal T) [q.IsPrime]
@@ -95,20 +91,23 @@ lemma of_algHom_localization (p : Ideal S) [p.IsPrime]
     (p.under R).map (algebraMap R (Localization.AtPrime p))) (Ideal.quotientMapₐ _ f H)
     (Ideal.quotientMap_surjective (H := H) hf)
 
+/-- Use `Algebra.QuasiFiniteAt.of_surjectiveOnStalks` instead for `Algebra.QuasiFiniteAt R p`. -/
 lemma of_algHom_surjective (p : Ideal S) [p.IsPrime]
     [Algebra.WeaklyQuasiFiniteAt R p]
     (q : Ideal T) [q.IsPrime] (f : S →ₐ[R] T) (hf : Function.Surjective f)
     (hq : p = Ideal.comap f q) :
     WeaklyQuasiFiniteAt R q :=
   of_algHom_localization p _ (Localization.localAlgHom _ _ f hq)
-    (surjective_localRingHom_of_surjective _ hf _ _ hq)
+    (RingHom.surjective_localRingHom_of_surjective _ hf _ _ hq)
 
+/-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
 instance comap_algEquiv (p : Ideal S) [p.IsPrime]
     [Algebra.WeaklyQuasiFiniteAt R p]
     (f : T ≃ₐ[R] S) : WeaklyQuasiFiniteAt R (p.comap f.toRingHom) :=
   .of_algHom_surjective p _ f.symm.toAlgHom f.symm.surjective (by ext; simp)
 
-instance (priority := low) finite_residueField
+/-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
+lemma finite_residueField
     [p.IsPrime] [q.LiesOver p] [Algebra.WeaklyQuasiFiniteAt R q] :
     Module.Finite p.ResidueField q.ResidueField := by
   have : (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S)))).LiesOver q :=
@@ -119,7 +118,8 @@ instance (priority := low) finite_residueField
     (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S)))).ResidueField).toLinearMap
     (RingHom.injective _)
 
-instance (priority := low) {K : Type*} [Field K] [Algebra K S]
+/-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
+lemma finite_locoalization {K : Type*} [Field K] [Algebra K S]
     [Algebra.WeaklyQuasiFiniteAt K q] :
     Module.Finite K (Localization.AtPrime q) := by
   have H : Algebra.WeaklyQuasiFiniteAt K q := ‹_›
@@ -128,6 +128,7 @@ instance (priority := low) {K : Type*} [Field K] [Algebra K S]
     (AlgEquiv.quotientBot K _).toAlgHom (AlgEquiv.quotientBot K _).surjective
   exact .of_quasiFinite
 
+/-- Use `Algebra.QuasiFiniteAt.eq_of_le_of_under_eq` instead for `Algebra.QuasiFiniteAt R p`. -/
 lemma eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
     (h₁ : P ≤ Q) (h₂ : P.under R = Q.under R) [WeaklyQuasiFiniteAt R Q] :
     P = Q := by
@@ -149,6 +150,7 @@ lemma eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
   simpa [Ideal.map_comap_le, ← h₂] using this
 
 open _root_.TensorProduct in
+/-- Use `Algebra.QuasiFiniteAt.baseChange` instead for `Algebra.QuasiFiniteAt R p`. -/
 lemma baseChange (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
     {A : Type*} [CommRing A] [Algebra R A] (q : Ideal (A ⊗[R] S)) [q.IsPrime]
     (hq : p = q.comap Algebra.TensorProduct.includeRight.toRingHom) :
@@ -188,12 +190,13 @@ lemma baseChange (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
     (Ideal.quotientKerAlgEquivOfSurjective hφ₁)
   refine .of_surjectiveOnStalks (q.map φ.toRingHom) e.symm.toAlgHom
     e.symm.toRingEquiv.surjectiveOnStalks _ ?_
-  erw [Ideal.comap_symm] -- Ideal.map shouldn't take homclass
+  erw [Ideal.comap_symm] -- This should be fixed once `Ideal.map` does not take homclasses.
   rw [← Ideal.map_coe e.toRingEquiv, Ideal.map_map]
   rfl
 
 open _root_.TensorProduct in
 variable (R S) in
+/-- Use `Algebra.QuasiFinite.of_restrictScalars` instead for `Algebra.QuasiFiniteAt R p`. -/
 lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
     (q : Ideal T) [q.IsPrime] [WeaklyQuasiFiniteAt R q] :
     WeaklyQuasiFiniteAt S q := by
@@ -210,45 +213,5 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
   rw [Ideal.comap_comap, Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective]
   refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm
   simp [← RingHom.ker_eq_comap_bot, Ideal.map_comap_le]
-
-lemma of_quasiFiniteAt_residueField [p.IsPrime] [q.LiesOver p]
-    (Q : Ideal (p.Fiber S)) [Q.IsPrime]
-    (hQ : Q.comap Algebra.TensorProduct.includeRight.toRingHom = q)
-    [Algebra.QuasiFiniteAt p.ResidueField Q] :
-    Algebra.WeaklyQuasiFiniteAt R q := by
-  rw [Algebra.weaklyQuasiFiniteAt_iff]
-  let Sq := Localization.AtPrime q
-  let φ₁ : p.ResidueField →ₐ[R] Sq ⧸ p.map (algebraMap R Sq) :=
-    Ideal.quotientMapₐ _ (IsScalarTower.toAlgHom _ _ _) (by
-    rw [← IsLocalization.AtPrime.map_eq_maximalIdeal p, Ideal.map_le_iff_le_comap,
-      ← Ideal.comap_coe (F := AlgHom _ _ _), Ideal.comap_comap]
-    simpa [← IsScalarTower.algebraMap_eq] using Ideal.le_comap_map)
-  let φ₂ : p.Fiber S →ₐ[R] Sq ⧸ p.map (algebraMap R Sq) :=
-    Algebra.TensorProduct.lift φ₁ (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
-  let φ₃ : Localization.AtPrime Q →ₐ[R] Sq ⧸ p.map (algebraMap R Sq) :=
-    IsLocalization.liftAlgHom (M := Q.primeCompl) (f := φ₂) <| by
-      rintro ⟨y, hy⟩
-      obtain ⟨r, hrp, s, H⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ y
-      suffices IsUnit (φ₂ (1 ⊗ₜ s)) by
-        rw [← H, map_smul, Algebra.smul_def, IsUnit.mul_iff] at this
-        exact this.2
-      suffices s ∉ q by
-        have := (IsLocalization.map_units (M := q.primeCompl) Sq ⟨_, this⟩).map
-          (algebraMap _ (Sq ⧸ p.map (algebraMap R Sq)))
-        simpa [φ₂, ← IsScalarTower.algebraMap_apply] using this
-      suffices algebraMap _ _ r * y ∉ Q by simpa [← hQ, ← H, Algebra.smul_def]
-      refine Q.primeCompl.mul_mem ?_ hy
-      simpa only [Ideal.mem_primeCompl_iff, ← Ideal.mem_comap, ← Q.over_def p]
-  have : Function.Surjective φ₃ := by
-    intro x
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq q.primeCompl x
-    refine ⟨IsLocalization.mk' (M := Q.primeCompl) _ (1 ⊗ₜ x) ⟨1 ⊗ₜ s, ?_⟩, ?_⟩
-    · simpa [← hQ] using hs
-    · simp [φ₃, IsLocalization.lift_mk'_spec, φ₂, IsScalarTower.algebraMap_apply S Sq (Sq ⧸ _),
-        -Ideal.Quotient.mk_algebraMap, ← map_mul]
-  have inst : QuasiFiniteAt R Q := .trans _ p.ResidueField _
-  obtain rfl := q.over_def p
-  exact .of_surjective_algHom φ₃ this
 
 end Algebra.WeaklyQuasiFiniteAt

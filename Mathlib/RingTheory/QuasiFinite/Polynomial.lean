@@ -18,8 +18,8 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 namespace Polynomial
 
-/-- `R[X]` is not quasi-finite over `R` at any prime. -/
-lemma not_quasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
+attribute [local instance] Algebra.WeaklyQuasiFiniteAt.finite_locoalization in
+lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFiniteAt R P := by
   intro H
   wlog hR : IsField R
   · let p := P.under R
@@ -35,7 +35,11 @@ lemma not_quasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQuasiFin
     (IsLocalization.injective _ P.primeCompl_le_nonZeroDivisors)
   exact transcendental_X R (Algebra.IsIntegral.isIntegral X).isAlgebraic
 
-lemma map_under_lt_comap_of_quasiFiniteAt
+/-- `R[X]` is not quasi-finite over `R` at any prime. -/
+lemma not_quasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P :=
+  fun _ ↦ not_weaklyQuasiFiniteAt P inferInstance
+
+lemma map_under_lt_comap_of_weaklyQuasiFiniteAt
     (f : R[X] →ₐ[R] S) (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
     (P.under R).map C < P.comap (f : R[X] →+* S) := by
   algebraize [f.toRingHom]
@@ -52,12 +56,12 @@ lemma map_under_lt_comap_of_quasiFiniteAt
   exact RatFunc.transcendental_X (K := (P.under R).ResidueField)
     (Algebra.IsIntegral.isIntegral _).isAlgebraic
 
-/--
-If `P` is a prime of `R[X]/I` that is quasi finite over `R`,
-then `I` is not contained in `(P ∩ R)[X]`.
+lemma map_under_lt_comap_of_quasiFiniteAt
+    (f : R[X] →ₐ[R] S) (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] :
+    (P.under R).map C < P.comap (f : R[X] →+* S) :=
+  map_under_lt_comap_of_weaklyQuasiFiniteAt f P
 
-For usability, we replace `I` by the kernel of a surjective map `R[X] →ₐ[R] S`. -/
-lemma not_ker_le_map_C_of_surjective_of_quasiFiniteAt
+lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
     (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
     ¬ RingHom.ker f ≤ (P.under R).map C := by
@@ -75,6 +79,17 @@ lemma not_ker_le_map_C_of_surjective_of_quasiFiniteAt
       ⟨p, inferInstance⟩).symm.surjective ⟨⟨P, ‹_›⟩, PrimeSpectrum.ext (P.over_def p).symm⟩
   have inst : Algebra.WeaklyQuasiFiniteAt p.ResidueField Q.asIdeal :=
     .baseChange P Q.asIdeal congr($(hQ.symm).1.1)
-  exact Polynomial.not_quasiFiniteAt (Q.asIdeal.comap g'.toRingHom) inferInstance
+  exact Polynomial.not_weaklyQuasiFiniteAt (Q.asIdeal.comap g'.toRingHom) inferInstance
+
+/--
+If `P` is a prime of `R[X]/I` that is quasi finite over `R`,
+then `I` is not contained in `(P ∩ R)[X]`.
+
+For usability, we replace `I` by the kernel of a surjective map `R[X] →ₐ[R] S`. -/
+lemma not_ker_le_map_C_of_surjective_of_quasiFiniteAt
+    (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
+    (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] :
+    ¬ RingHom.ker f ≤ (P.under R).map C :=
+  not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt f hf P
 
 end Polynomial
