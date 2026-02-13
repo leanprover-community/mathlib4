@@ -800,7 +800,7 @@ lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
 lemma monic_one' : m.Monic (1 : MvPolynomial σ R) := monic_one
 
 @[simp, nontriviality]
-lemma monic_of_subsingleton [Subsingleton (MvPolynomial σ R)] (p : MvPolynomial σ R) :
+lemma monic_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) :
     m.Monic p := by
   simp [Subsingleton.eq_one (α := MvPolynomial σ R)]
 
