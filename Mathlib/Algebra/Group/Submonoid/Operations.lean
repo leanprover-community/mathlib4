@@ -1047,11 +1047,11 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 -- this name is primed so that the version to `f.range` instead of `f.mrange` can be unprimed.
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.mrange`.
-This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
+This is a bidirectional version of `MonoidHom.mrangeRestrict`. -/
 @[to_additive (attr := simps +simpRhs)
   /-- An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M` defines an
   additive equivalence between `M` and `f.mrange`. This is a bidirectional version of
-  `AddMonoidHom.mrange_restrict`. -/]
+  `AddMonoidHom.mrangeRestrict`. -/]
 def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     M ≃* MonoidHom.mrange f :=
   { f.mrangeRestrict with
