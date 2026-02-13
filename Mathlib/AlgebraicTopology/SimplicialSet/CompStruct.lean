@@ -127,6 +127,17 @@ lemma exists_of_simplex (s : X _⦋1⦌) :
     ∃ (x₀ x₁ : X _⦋0⦌) (e : Edge x₀ x₁), e.edge = s :=
   ⟨_, _, mk' s, rfl⟩
 
+/-- Transports an edge between `x₀` and `x₁` along equalities `xᵢ = yᵢ`.
+  I.e. constructs an edge between the `yᵢ` from an edge between the `xᵢ`. -/
+def ofEq {y₀ y₁ : X _⦋0⦌}
+    (e : Edge x₀ x₁)
+    (h₀ : x₀ = y₀)
+    (h₁ : x₁ = y₁) :
+    Edge y₀ y₁ where
+  edge    := e.edge
+  src_eq  := e.src_eq.trans h₀
+  tgt_eq  := e.tgt_eq.trans h₁
+
 /-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
@@ -221,7 +232,87 @@ def map (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
 lemma map_simplex (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
     (h.map f).simplex = f.app _ h.simplex := rfl
 
+/-- Transports a CompStruct between edges `e₀₁`, `e₁₂` and `e₀₂` along equalities on
+  1-simplices `eᵢⱼ.edge = fᵢⱼ.edge`.
+  I.e. constructs a `CompStruct` between the `fᵢⱼ` from a `CompStruct` between the `eᵢⱼ`. -/
+def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {f₀₁ : Edge y₀ y₁}
+    {e₁₂ : Edge x₁ x₂} {f₁₂ : Edge y₁ y₂}
+    {e₀₂ : Edge x₀ x₂} {f₀₂ : Edge y₀ y₂}
+    (c : CompStruct e₀₁ e₁₂ e₀₂)
+    (h₀₁ : e₀₁.edge = f₀₁.edge)
+    (h₁₂ : e₁₂.edge = f₁₂.edge)
+    (h₀₂ : e₀₂.edge = f₀₂.edge) :
+    CompStruct f₀₁ f₁₂ f₀₂ where
+  simplex := c.simplex
+  d₂ := c.d₂.trans h₀₁
+  d₀ := c.d₀.trans h₁₂
+  d₁ := c.d₁.trans h₀₂
+
 end CompStruct
+
+/-- For `hom` an edge, `IsIso hom` encodes that there is a backward edge `inv`, and
+  there are 2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
+  This means that `hom` becomes an isomorphism in the homotopy category. -/
+structure IsIso (hom : Edge x₀ x₁) where
+  /-- The backwards edge -/
+  inv : Edge x₁ x₀
+  /-- The simplex witnessing that `hom` and `inv` compose to the identity -/
+  homInvId  : Edge.CompStruct hom inv (Edge.id x₀)
+  /-- The simplex witnessing that `inv` and `hom` compose to the identity -/
+  invHomId  : Edge.CompStruct inv hom (Edge.id x₁)
+
+namespace IsIso
+
+lemma id_comp_id_aux {l m n : ℕ}
+    {f : ⦋n⦌ ⟶ ⦋m⦌}
+    {g : ⦋m⦌ ⟶ ⦋l⦌}
+    {h : ⦋n⦌ ⟶ ⦋l⦌}
+    (x : X _⦋l⦌)
+    (e : f ≫ g = h) :
+    X.map f.op (X.map g.op x) = X.map h.op x := by
+  rw [← e, op_comp, X.map_comp]
+  rfl
+
+/-- The identity edge on a point, composed with itself, gives the identity. -/
+def idCompId (x : X _⦋0⦌) : Edge.CompStruct (Edge.id x) (Edge.id x) (Edge.id x) :=
+  .mk
+    (X.map (Opposite.op (SimplexCategory.Hom.mk ⟨fun _ ↦ 0, monotone_const⟩)) x)
+    (by apply id_comp_id_aux; decide)
+    (by apply id_comp_id_aux; decide)
+    (by apply id_comp_id_aux; decide)
+
+/-- The identity edge is an isomorphism. -/
+def isIsoId (x : X _⦋0⦌) : IsIso (Edge.id x) where
+  inv := Edge.id x
+  homInvId := idCompId x
+  invHomId := idCompId x
+
+/-- The inverse of an isomorphism is an isomorphism. -/
+def isIsoInv {hom : Edge x₀ x₁} (I : IsIso hom) : IsIso I.inv where
+  inv := hom
+  homInvId := I.invHomId
+  invHomId := I.homInvId
+
+/-- The image of an isomorphism under an SSet morphism is an isomorphism. -/
+def map {hom : Edge x₀ x₁} (I : IsIso hom) (f : X ⟶ Y) : IsIso (Edge.map hom f) where
+  inv := Edge.map I.inv f
+  homInvId := (I.homInvId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
+  invHomId := (I.invHomId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
+
+/-- Transports a proof of isomorphism for `hom` along an equality of 1-simplices `hom = hom'`.
+  I.e. shows that `hom'` is an isomorphism from an isomorphism proof of `hom`. -/
+def ofEq {y₀ y₁ : X _⦋0⦌} {hom : Edge x₀ x₁} {hom' : Edge y₀ y₁}
+    (I : IsIso hom)
+    (hhom : hom.edge = hom'.edge) :
+    IsIso hom' where
+  inv := I.inv.ofEq
+    (by rw [← hom.tgt_eq, hhom, hom'.tgt_eq])
+    (by rw [← hom.src_eq, hhom, hom'.src_eq])
+  homInvId := I.homInvId.ofEq hhom rfl (by rw [← hom.src_eq, hhom, hom'.src_eq])
+  invHomId := I.invHomId.ofEq rfl hhom (by rw [← hom.tgt_eq, hhom, hom'.tgt_eq])
+
+end IsIso
 
 end Edge
 

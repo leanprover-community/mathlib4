@@ -291,6 +291,20 @@ lemma yonedaEquiv_symm_app_id {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
     (yonedaEquiv.symm x).app _ (yonedaEquiv (𝟙 _)) = x := by
   simp
 
+/-- `yonedaEquiv` is natural. -/
+lemma yonedaEquiv_naturality
+  {X : SSet} {m n : SimplexCategory} (f : m ⟶ n) (g : stdSimplex.obj n ⟶ X)
+  : X.map f.op (yonedaEquiv g) = yonedaEquiv (stdSimplex.map f ≫ g)
+  := uliftYonedaEquiv_naturality _ _
+
+/-- `yonedaEquiv.symm` is natural -/
+lemma yonedaEquiv_symm_naturality
+  {X : SSet} {m n : SimplexCategory} (f : m ⟶ n) (g : X.obj (Opposite.op n))
+  : stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g)
+  := by
+    rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply]
+    rw [← yonedaEquiv_naturality]
+    rw [yonedaEquiv.apply_symm_apply]
 
 namespace Subcomplex
 
