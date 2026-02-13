@@ -809,7 +809,7 @@ lemma degree_le_degree_of_support_subset {p q : MvPolynomial σ R} (h : p.suppor
   simp_rw [degree, m.toSyn.apply_symm_apply]
   exact Finset.sup_mono h
 
-theorem degree_mul_le' {f g : MvPolynomial σ R} :
+theorem toSyn_degree_mul_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f * g)) ≤ m.toSyn (m.degree f) + m.toSyn (m.degree g) :=
   map_add m.toSyn _ _ ▸ degree_mul_le
 
