@@ -324,9 +324,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   obtain ⟨k, hk₁, hk₂⟩ := this
   have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
     apply Set.diff_subset_diff_right
-    intro x; simp only [Set.mem_iUnion]
-    rintro ⟨n, _, hn₂⟩
-    exact ⟨n, hn₂⟩
+    exact Set.iUnion₂_subset_iUnion _ _
   refine
     findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩

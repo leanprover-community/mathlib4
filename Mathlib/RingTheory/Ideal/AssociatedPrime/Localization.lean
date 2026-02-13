@@ -53,14 +53,8 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
       IsLocalizedModule.mk'_smul_mk', mul_one, IsLocalizedModule.mk'_eq_zero']
     refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩
     · use 1
-      simp only [← mem_colon_singleton, one_smul, ← mem_bot R, ← hx, Ideal.mem_comap]
-      have : (algebraMap R R') r =
-        IsLocalization.mk' R' r s * IsLocalization.mk' R' s.1 (1 : S) := by
-        rw [← IsLocalization.mk'_one (M := S) R', ← sub_eq_zero, ← IsLocalization.mk'_mul,
-          ← IsLocalization.mk'_sub]
-        simp
-      rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ h
+      simp only [← mem_colon_singleton, one_smul, ← mem_bot R, ← hx]
+      exact IsLocalization.mk'_mem_iff.mp h
     · have : t • r • x = (t.1 * r) • x := smul_smul t.1 r x
       rw [this, ← mem_bot R, ← mem_colon_singleton, ← hx, Ideal.mem_comap,
         ← IsLocalization.mk'_one (M := S) R'] at ht
