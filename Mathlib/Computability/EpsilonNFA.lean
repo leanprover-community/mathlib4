@@ -260,6 +260,171 @@ theorem mem_accepts_iff_exists_path {x : List α} :
     have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.mem_evalFrom_iff_exists_path.mpr ⟨_, h⟩⟩
     exact ⟨s₂, hs₂, this⟩
 
+section concat
+
+variable {σ₁ σ₂ : Type v}
+variable {M₁ : εNFA α σ₁} {M₂ : εNFA α σ₂}
+variable [DecidablePred (· ∈ M₁.accept)]
+
+/-- εNFA which accepts the concatenation of the languages of `M₁` and `M₂`. -/
+def concat (M₁ : εNFA α σ₁) (M₂ : εNFA α σ₂) [DecidablePred (· ∈ M₁.accept)] :
+    εNFA α (σ₁ ⊕ σ₂) where
+  step q oa := match q, oa with
+    | Sum.inl q₁, some _ => (M₁.step q₁ oa).image Sum.inl
+    | Sum.inl q₁, none   =>
+      (M₁.step q₁ none).image Sum.inl ∪
+      (if q₁ ∈ M₁.accept then (M₂.start.image Sum.inr) else ∅)
+    | Sum.inr q₂, _      => (M₂.step q₂ oa).image Sum.inr
+  start := M₁.start.image Sum.inl
+  accept := M₂.accept.image Sum.inr
+
+@[simp]
+theorem concat_step_inl_none {q : σ₁} :
+    (concat M₁ M₂).step (Sum.inl q) none =
+    (M₁.step q none).image Sum.inl ∪
+    (if q ∈ M₁.accept then M₂.start.image Sum.inr else ∅) :=
+  rfl
+
+@[simp]
+theorem concat_step_inl_some {q : σ₁} :
+    (concat M₁ M₂).step (Sum.inl q) (some a) =
+    (M₁.step q (some a)).image Sum.inl :=
+  rfl
+
+@[simp]
+theorem concat_step_inr_none {q : σ₂} :
+    (concat M₁ M₂).step (Sum.inr q) none =
+    (M₂.step q none).image Sum.inr :=
+  rfl
+
+@[simp]
+theorem concat_step_inr_some {q : σ₂} :
+    (concat M₁ M₂).step (Sum.inr q) (some a) =
+    (M₂.step q (some a)).image Sum.inr :=
+  rfl
+
+lemma IsPath.concat_lift_inl {s t : σ₁} {x : List (Option α)}
+    (h : M₁.IsPath s t x) : (concat M₁ M₂).IsPath (Sum.inl s) (Sum.inl t) x := by
+  induction h with
+  | nil _ => exact (isPath_nil (concat M₁ M₂)).mpr rfl
+  | cons t' s' u oa x' h_step h_path ih =>
+    apply IsPath.cons (Sum.inl t') (Sum.inl s') (Sum.inl u)
+    · cases oa <;> simpa
+    · exact ih
+
+lemma IsPath.concat_lift_inr {s t : σ₂} {x : List (Option α)}
+    (h : M₂.IsPath s t x) : (concat M₁ M₂).IsPath (Sum.inr s) (Sum.inr t) x := by
+  induction h with
+  | nil _ => exact (isPath_nil (concat M₁ M₂)).mpr rfl
+  | cons t' s' u _ _ h_step _ ih =>
+    apply IsPath.cons (Sum.inr t') (Sum.inr s') (Sum.inr u)
+    · simpa [concat]
+    · exact ih
+
+lemma IsPath.concat_proj_inr {s t : σ₂} {x : List (Option α)}
+    (h : (concat M₁ M₂).IsPath (Sum.inr s) (Sum.inr t) x) : M₂.IsPath s t x := by
+  generalize hs' : Sum.inr s = s' at h
+  generalize ht' : Sum.inr t = t' at h
+  induction h generalizing s with
+  | nil u =>
+    simp
+    subst hs'
+    cases ht'
+    rfl
+  | cons _ s'' t'' _ _ h_step _ ih =>
+    subst hs' ht'
+    simp only [concat, mem_image] at h_step
+    rcases h_step with ⟨q, hq, rfl⟩
+    apply IsPath.cons q s t
+    · exact hq
+    · simp [ih]
+
+lemma IsPath.concat_split_inl_inr {s : σ₁} {t : σ₂} {x : List (Option α)}
+    (h : (concat M₁ M₂).IsPath (Sum.inl s) (Sum.inr t) x) :
+    ∃ u v s_acc s_start,
+      x = u ++ [none] ++ v ∧
+      M₁.IsPath s s_acc u ∧
+      s_acc ∈ M₁.accept ∧
+      s_start ∈ M₂.start ∧
+      M₂.IsPath s_start t v := by
+  generalize hs' : Sum.inl s = s' at h
+  generalize ht' : Sum.inr t = t' at h
+  induction h generalizing s with
+  | nil u =>
+    cases ht'
+    cases hs'
+  | cons _ _ _ oa x' h_step h_path ih =>
+    subst hs' ht'
+    cases oa with
+    | some a =>
+      simp only [concat_step_inl_some, mem_image] at h_step
+      rcases h_step with ⟨q, hq, rfl⟩
+      have ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩ := ih rfl rfl
+      use some a :: u, v, s_acc, s_start
+      and_intros
+      · simp [hx']
+      · exact cons q s s_acc (some a) u hq h_path_rest
+      · exact h_acc
+      · exact h_bridge
+      · exact h_path_M₂
+    | none =>
+      simp only [concat_step_inl_none, mem_union, mem_image, mem_ite_empty_right] at h_step
+      rcases h_step with ⟨q, hq, rfl⟩ | ⟨hs, q, hq, rfl⟩
+      · have ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩ := ih rfl rfl
+        use none :: u, v, s_acc, s_start
+        and_intros
+        · simp [hx']
+        · exact cons q s s_acc none u hq h_path_rest
+        · exact h_acc
+        · exact h_bridge
+        · exact h_path_M₂
+      · use [], x', s, q
+        and_intros
+        · simp
+        · exact (isPath_nil M₁).mpr rfl
+        · exact hs
+        · exact hq
+        · exact concat_proj_inr h_path
+
+theorem accepts_concat : (concat M₁ M₂).accepts = M₁.accepts * M₂.accepts := by
+  ext x
+  simp only [Language.mem_mul]
+  constructor
+  · intro h
+    have ⟨q₁, q₂, x', hq₁, hq₂, hx', hM⟩ := (mem_accepts_iff_exists_path (concat M₁ M₂)).mp h
+    simp only [concat, mem_image] at hq₁ hq₂
+    rcases hq₁ with ⟨s, hs, rfl⟩
+    rcases hq₂ with ⟨t, ht, rfl⟩
+    have ⟨u', v', s_acc, s_start, hx, h_path_M₁, h_acc_M₁, h_start_M₂, h_path_M₂⟩ :=
+      IsPath.concat_split_inl_inr hM
+    apply Language.mem_mul.mpr
+    refine ⟨u'.reduceOption, ?_, v'.reduceOption, ?_, ?_⟩
+    · apply (mem_accepts_iff_exists_path M₁).mpr
+      use s, s_acc, u'
+    · apply (mem_accepts_iff_exists_path M₂).mpr
+      use s_start, t, v'
+    · subst hx' hx
+      simp [List.reduceOption_append, List.reduceOption_cons_of_none]
+  · intro ⟨u, hu, v, hv, hx⟩
+    have ⟨uq₁, uq₂, u', huq₁, huq₂, hu', hM₁⟩ := (mem_accepts_iff_exists_path M₁).mp hu
+    have ⟨vq₁, vq₂, v', hvq₁, hvq₂, hv', hM₂⟩ := (mem_accepts_iff_exists_path M₂).mp hv
+    apply (mem_accepts_iff_exists_path (concat M₁ M₂)).mpr
+    use Sum.inl uq₁, Sum.inr vq₂, u' ++ [none] ++ v'
+    and_intros
+    · simpa [concat]
+    · simpa [concat]
+    · simp [List.reduceOption_append, hx, hu', hv']
+    · simp only [isPath_append]
+      use Sum.inr vq₁
+      constructor
+      · use Sum.inl uq₂
+        constructor
+        · exact IsPath.concat_lift_inl hM₁
+        · simp [huq₂, hvq₁]
+      · exact IsPath.concat_lift_inr hM₂
+
+end concat
+
 /-! ### Conversions between `εNFA` and `NFA` -/
 
 
