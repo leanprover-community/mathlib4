@@ -712,8 +712,22 @@ theorem latin_rectangle_extends
     M := M'
     exactly_n_symbols := A.exactly_n_symbols
     once_per_row := by 
-      have h := A.once_per_row
-      sorry
+      unfold once_per_row
+      simp only [Matrix.row, M']
+      intro y
+      split_ifs 
+      . rename_i if_h1
+        rw [Finset.mem_image] at if_h1
+        obtain ⟨a1', ha1' ⟩ := if_h1
+        simp only [Finset.mem_univ, true_and] at ha1'
+        rw [<- ha1']
+        have h1' := Function.leftInverse_invFun ι.inj'
+        simp only [Function.Embedding.toFun_eq_coe] at h1'
+        rw [h1']
+        have h := A.once_per_row
+        simp only [once_per_row,Matrix.row] at h
+        apply h
+      . sorry
     distinct_col_entries := by 
       unfold distinct_col_entries
       intro y
