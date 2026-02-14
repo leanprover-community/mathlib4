@@ -9,13 +9,13 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
 
-# Weally Quasi-finite primes
+# Weakly Quasi-finite primes
 
 The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "isolated in fibers"
 mathematically for algebras of finite type, but this requires Zariski's main theorem to prove.
 Hence we introduce a weaker notion of being `Algebra.WeaklyQuasiFiniteAt` that we shall state
 Zariski's main theorem in terms of, and deduce from this that `Algebra.WeaklyQuasiFiniteAt` is
-equivalent to `Algebra.QuasiFiniteAt` under all relavent scenarios.
+equivalent to `Algebra.QuasiFiniteAt` under all relevant scenarios.
 
 This class should only be used in stating (and proving) Zariski's main theorem and should not be
 used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
@@ -24,7 +24,7 @@ used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
 
 The definition of `Algebra.QuasiFiniteAt R q` as is says that the whole `S_q` is quasi-finite,
 which requires not only `q` to be quasi-finite, but also all primes below it (i.e. all generic
-points that specializes to it) to also be quasi-finite.
+points that specialize to it) to also be quasi-finite.
 This is fine mathematically because the set of quasi-finite primes is open
 (according to Zariski's Main theorem). But this requires the statement of Zariski's main
 to be stated with an a priori weaker notion of quasi-finite.
@@ -109,8 +109,6 @@ lemma of_surjectiveOnStalks
     WeaklyQuasiFiniteAt R q := by
   subst hq
   exact of_algHom_localization _ _ (Localization.localAlgHom _ _ f rfl) (hf _ _)
-  -- of_algHom_localization p _ (Localization.localAlgHom _ _ f hq)
-  --   (RingHom.surjective_localRingHom_of_surjective _ hf _ _ hq)
 
 /-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
 instance comap_algEquiv (p : Ideal S) [p.IsPrime]

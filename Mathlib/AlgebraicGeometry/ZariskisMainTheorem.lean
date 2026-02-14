@@ -46,7 +46,11 @@ open TensorProduct in
 -- TODO: generalize this.
 theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     {x : X} {s : S} (h : f x = s) (hx : f.QuasiFiniteAt x) :
+<<<<<<< HEAD
     ∃ (U : Scheme) (g : U ⟶ S) (u : U), Etale g ∧ g u = s ∧
+=======
+    ∃ (U : Scheme) (g : U ⟶ S), Etale g ∧ s ∈ Set.range g ∧
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
     ∃ (V W : (pullback f g).Opens) (v : V), IsCompl V W ∧ IsFinite (V.ι ≫ pullback.snd f g) ∧
       pullback.fst f g v.1 = x := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
@@ -60,11 +64,17 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
       ⟨congr(($this).1)⟩
     apply hU.isoSpec.inv.homeomorph.injective
     apply Subtype.ext
+<<<<<<< HEAD
     simp only [IsAffineOpen.primeIdealOf, Scheme.Hom.homeomorph_apply, Scheme.hom_inv_apply]
     simp only [← Scheme.Hom.comp_apply, ← Scheme.Opens.ι_apply,
       Category.assoc, IsAffineOpen.isoSpec_inv_ι, IsAffineOpen.SpecMap_appLE_fromSpec _ hU hV,
       IsAffineOpen.isoSpec_hom, IsAffineOpen.toSpecΓ_fromSpec_assoc]
     rfl
+=======
+    simp only [IsAffineOpen.primeIdealOf, Scheme.Hom.homeomorph_apply,
+      ← Scheme.Hom.comp_apply, ← Scheme.Opens.ι_apply, IsAffineOpen.isoSpec_hom]
+    simp
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
   have : Algebra.QuasiFiniteAt Γ(S, U) (hV.primeIdealOf ⟨x, hxV⟩).asIdeal :=
     hx.quasiFiniteAt hV hU hUV hxV
   obtain ⟨R, _, _, _, P, _, _, e, _, P', _, _, hP', heP', -, _, -⟩ :=
@@ -84,7 +94,11 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
   let g : Spec (.of (R ⊗[Γ(S, U)] Γ(X, V))) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
     e₁.hom ≫ pullback.map _ _ _ _ hV.fromSpec (𝟙 _) hU.fromSpec
       (IsAffineOpen.SpecMap_appLE_fromSpec ..) (by simp)
+<<<<<<< HEAD
   let W₁ := g ''ᵁ (PrimeSpectrum.basicOpen e)
+=======
+  let W₁ := g ''ᵁ PrimeSpectrum.basicOpen e
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
   have : IsFinite (W₁.ι ≫ pullback.snd f _) := by
     let ι : Spec (.of (Localization.Away e)) ⟶ pullback f (Spec.map φ ≫ hU.fromSpec) :=
       Spec.map (CommRingCat.ofHom <| algebraMap _ _) ≫ g
@@ -101,8 +115,13 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
   have : IsFinite W₁.ι := .of_comp _ (pullback.snd f _)
   let W₂ : (pullback f (Spec.map φ ≫ hU.fromSpec)).Opens :=
     ⟨W₁ᶜ, by simpa using W₁.ι.isClosedMap.isClosed_range⟩
+<<<<<<< HEAD
   refine ⟨Spec (.of R), Spec.map φ ≫ hU.fromSpec,
     ⟨P, ‹_›⟩, inferInstance, ?_, W₁, W₂, ⟨g ⟨P', ‹_›⟩, ?_⟩, ?_, ‹_›, ?_⟩
+=======
+  refine ⟨Spec (.of R), Spec.map φ ≫ hU.fromSpec, inferInstance,
+    ⟨⟨P, ‹_›⟩, ?_⟩, W₁, W₂, ⟨g ⟨P', ‹_›⟩, ?_⟩, ?_, ‹_›, ?_⟩
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
   · dsimp [Spec.map_apply]
     convert hU.fromSpec_primeIdealOf ⟨f x, hxU⟩
     · exact PrimeSpectrum.ext (Ideal.over_def _ _).symm
@@ -119,7 +138,11 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f]
     (x : X) (hx : f.QuasiFiniteAt x) :
     ∃ V, f.toNormalization x ∈ V ∧ IsIso (f.toNormalization ∣_ V) := by
+<<<<<<< HEAD
   obtain ⟨T, fT, u, _, hu, V, W, v, hVW, _, hv₂⟩ := exists_etale_isCompl_of_quasiFiniteAt _ rfl hx
+=======
+  obtain ⟨T, fT, _, ⟨u, hu⟩, V, W, v, hVW, _, hv₂⟩ := exists_etale_isCompl_of_quasiFiniteAt _ rfl hx
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
   obtain ⟨U, hU, _⟩ : ∃ U, (pullback.snd f fT).toNormalization v.1 ∈ U ∧
       IsIso ((pullback.snd f fT).toNormalization ∣_ U) := by
     have hVW' : (W : Set ↑(pullback f fT)) = (↑V)ᶜ :=
@@ -183,7 +206,11 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
       exact .of_iso' H (.refl _) (asIso <| f.normalizationPullback fT) (.refl _) (.refl _)
         (by cat_disch) (by simp) (by simp [fTn]) (by simp)
     · simp [← cancel_mono U'.ι, fTnU, fTn]
+<<<<<<< HEAD
   refine MorphismProperty.of_isPullback_of_descendsAlong (P := .isomorphisms _)
+=======
+  exact MorphismProperty.of_isPullback_of_descendsAlong (P := .isomorphisms _)
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
     (Q := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation) this
     ⟨⟨‹_›, inferInstance⟩, inferInstance⟩ ‹_›
 
@@ -286,6 +313,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
   rw [← RingHom.algebraMap_toAlgebra (X.presheaf.germ _ _ _).hom, @RingHom.quasiFinite_algebraMap]
   exact .of_isLocalization (hr.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
 
+<<<<<<< HEAD
 lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
     IsOpen { x | f.QuasiFiniteAt x } := by
   wlog H : IsAffineHom f
@@ -306,16 +334,30 @@ lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
     · refine ⟨⟨x, hxV⟩, show (f.resLE _ _ _).QuasiFiniteAt _ from ?_, rfl⟩
       rwa [← quasiFiniteAt_comp_iff (g := U.ι), resLE_comp_ι,
         quasiFiniteAt_comp_iff_of_isOpenImmersion]
+=======
+lemma Scheme.Hom.isOpen_quasiFiniteAt
+    [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
+    IsOpen { x | f.QuasiFiniteAt x } := by
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
   obtain ⟨U, hU, e⟩ := Scheme.Hom.exists_isIso_morphismRestrict_toNormalization f
   exact e ▸ (f.toNormalization ⁻¹ᵁ U).2
 
 /-- The set of quasi-finite points of a morphism `f : X ⟶ Y` as an `X.Opens`. -/
+<<<<<<< HEAD
 def Scheme.Hom.quasiFiniteLocus [LocallyOfFiniteType f] : X.Opens :=
+=======
+def Scheme.Hom.quasiFiniteLocus
+    [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] : X.Opens :=
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
   ⟨{ x | f.QuasiFiniteAt x }, f.isOpen_quasiFiniteAt⟩
 
 variable {f} in
 @[simp]
+<<<<<<< HEAD
 lemma Scheme.Hom.mem_quasiFiniteLocus [LocallyOfFiniteType f]
+=======
+lemma Scheme.Hom.mem_quasiFiniteLocus [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f]
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
     {x : X} : x ∈ f.quasiFiniteLocus ↔ f.QuasiFiniteAt x := .rfl
 
 instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
@@ -325,6 +367,7 @@ instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     (SetLike.coe_injective e.symm)).hom ≫ f.toNormalization ∣_ U ≫ U.ι)) using 1
   simp
 
+<<<<<<< HEAD
 lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f] [LocallyOfFiniteType f] :
     f.quasiFiniteLocus = ⊤ :=
   top_le_iff.mp fun x _ ↦ f.quasiFiniteAt x
@@ -349,6 +392,12 @@ instance [LocallyOfFiniteType f] :
   rw [← Scheme.Hom.quasiFiniteLocus_eq_top_iff, Scheme.Hom.quasiFiniteLocus_comp,
     Scheme.Opens.ι_preimage_self]
 
+=======
+lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f]
+    [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] : f.quasiFiniteLocus = ⊤ :=
+  top_le_iff.mp fun x _ ↦ f.quasiFiniteAt x
+
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
 instance [LocallyQuasiFinite f] [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     IsOpenImmersion f.toNormalization := by
   convert inferInstanceAs (IsOpenImmersion (X.topIso.inv ≫ (X.isoOfEq
@@ -391,6 +440,7 @@ lemma IsClosedImmersion.eq_proper_inf_monomorphisms :
   ext
   exact IsClosedImmersion.iff_isProper_and_mono ..
 
+<<<<<<< HEAD
 @[stacks 02UP]
 lemma exists_isFinite_morphismRestrict_of_finite_preimage_singleton
     [IsProper f] (y : Y) (hx : (f ⁻¹' {y}).Finite) :
@@ -432,4 +482,6 @@ lemma foobar {X Y S : Scheme} (f : X ⟶ Y) (g : Y ⟶ S) (s : S)
   simpa [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base] using hx
 
 
+=======
+>>>>>>> af53ecf45066330c4d31b1412781dca329c6f682
 end AlgebraicGeometry

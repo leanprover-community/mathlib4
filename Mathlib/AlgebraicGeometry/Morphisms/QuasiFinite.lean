@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
@@ -326,26 +327,24 @@ variable {f} in
 lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
     {x : X} (hx : f.QuasiFiniteAt x) {V : X.Opens} (hV : IsAffineOpen V) {U : Y.Opens}
     (hU : IsAffineOpen U) (hVU : V ≤ f ⁻¹ᵁ U) (hxV : x ∈ V.1) :
-    letI := (f.appLE U V hVU).hom.toAlgebra
-    Algebra.QuasiFiniteAt Γ(Y, U) (hV.primeIdealOf ⟨x, hxV⟩).asIdeal := by
-  letI := (f.appLE U V hVU).hom.toAlgebra
+    (f.appLE U V hVU).hom.QuasiFiniteAt (hV.primeIdealOf ⟨x, hxV⟩).asIdeal := by
+  algebraize [(f.appLE U V hVU).hom]
   have H : (Y.presheaf.germ U _ (hVU hxV)).hom.QuasiFinite := by
-    let := (Y.presheaf.germ U _ (hVU hxV)).hom.toAlgebra
+    algebraize [(Y.presheaf.germ U _ (hVU hxV)).hom]
     have := hU.isLocalization_stalk ⟨f x, (hVU hxV)⟩
     rw [← (Y.presheaf.germ U _ (hVU hxV)).hom.algebraMap_toAlgebra,
       RingHom.quasiFinite_algebraMap]
     exact .of_isLocalization (hU.primeIdealOf ⟨_, hVU hxV⟩).asIdeal.primeCompl
-  let := (X.presheaf.germ V x hxV).hom.toAlgebra
+  algebraize [(X.presheaf.germ V x hxV).hom]
   have := hV.isLocalization_stalk ⟨x, hxV⟩
   let e := IsLocalization.algEquiv (hV.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
     (X.presheaf.stalk (⟨x, hxV⟩ : V.1)) (Localization.AtPrime (hV.primeIdealOf ⟨x, hxV⟩).asIdeal)
-  rw [Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
+  rw [RingHom.QuasiFiniteAt, Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
   convert (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
   rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE hVU) _ hxV,
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map_assoc, CommRingCat.hom_comp, ← RingHom.comp_assoc,
-    IsScalarTower.algebraMap_eq Γ(Y, U) Γ(X, V)]
-  congr 1
-  exact e.toAlgHom.comp_algebraMap.symm
+    IsScalarTower.algebraMap_eq Γ(Y, U) Γ(X, V), e.toAlgHom.comp_algebraMap.symm]
+  rfl
 
 lemma Scheme.Hom.quasiFiniteAt [LocallyQuasiFinite f] (x : X) :
     f.QuasiFiniteAt x := by

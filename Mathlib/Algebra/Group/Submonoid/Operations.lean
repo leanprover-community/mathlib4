@@ -718,8 +718,24 @@ theorem restrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidCla
   rfl
 
 @[to_additive (attr := simp)]
+theorem restrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [SetLike S M]
+    [SubmonoidClass S M] {s : S} :
+    f.restrict s = 1 ↔ ∀ x ∈ s, f x = 1 := by
+  simp [MonoidHom.ext_iff]
+
+@[to_additive (attr := simp)]
 theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
   simp [SetLike.ext_iff]
+
+/--
+A version of `MonoidHom.restrict` as an homomorphism.
+-/
+@[to_additive (attr := simps apply) /-- A version of `AddMonoidHom.restrict` as an homomorphism. -/]
+def restrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
+    [CommMonoid A] : (M →* A) →* (M' →* A) where
+  toFun f := f.restrict M'
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
 
 /-- Restriction of a monoid hom to a submonoid of the codomain. -/
 @[to_additive (attr := simps apply)
