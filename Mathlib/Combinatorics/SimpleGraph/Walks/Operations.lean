@@ -573,7 +573,7 @@ lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
-lemma take_take {u v} (p : G.Walk u v) (n m : ℕ) :
+lemma take_take (p : G.Walk u v) (n m : ℕ) :
     (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by
   apply ext_support
   simp [take_support_eq_support_take_succ, List.take_take, Nat.min_left_comm]
