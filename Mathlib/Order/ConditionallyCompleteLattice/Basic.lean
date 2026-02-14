@@ -244,7 +244,10 @@ theorem notMem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w<b`.
 See `sSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
-@[to_dual csInf_eq_of_forall_ge_of_forall_gt_exists_lt]
+@[to_dual csInf_eq_of_forall_ge_of_forall_gt_exists_lt
+  /-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
+  is smaller than all elements of `s`, and that this is not the case of any `w>b`.
+  See `sInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/]
 theorem csSup_eq_of_forall_le_of_forall_lt_exists_gt (hs : s.Nonempty) (H : ∀ a ∈ s, a ≤ b)
     (H' : ∀ w, w < b → ∃ a ∈ s, w < a) : sSup s = b :=
   (eq_of_le_of_not_lt (csSup_le hs H)) fun hb =>
@@ -256,7 +259,12 @@ This is essentially an iff, except that the assumptions for the two implications
 slightly different (one needs boundedness above for one direction, nonemptiness and linear
 order for the other one), so we formulate separately the two implications, contrary to
 the `CompleteLattice` case. -/
-@[to_dual csInf_lt_of_lt]
+@[to_dual csInf_lt_of_lt
+  /-- `sInf s < b` when there is an element `a` in `s` with `a < b`, when `s` is bounded below.
+  This is essentially an iff, except that the assumptions for the two implications are
+  slightly different (one needs boundedness below for one direction, nonemptiness and linear
+  order for the other one), so we formulate separately the two implications, contrary to
+  the `CompleteLattice` case. -/]
 theorem lt_csSup_of_lt (hs : BddAbove s) (ha : a ∈ s) (h : b < a) : b < sSup s :=
   lt_of_lt_of_le h (le_csSup hs ha)
 
@@ -425,7 +433,8 @@ lemma ciSup_eq_univ_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = s
 
 /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
 `s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
-@[to_dual]
+@[to_dual /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
+`s` and `t` have the same infimum. This holds even when the sets may be empty or unbounded. -/]
 theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup s = sSup t := by

@@ -229,7 +229,10 @@ theorem cbiInf_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
-@[to_dual ciInf_eq_of_forall_ge_of_forall_gt_exists_lt]
+@[to_dual ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
+  /-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
+  is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
+  See `iInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/]
 theorem ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, f i ≤ b)
     (h₂ : ∀ w, w < b → ∃ i, w < f i) : ⨆ i : ι, f i = b :=
   csSup_eq_of_forall_le_of_forall_lt_exists_gt (range_nonempty f) (forall_mem_range.mpr h₁)
