@@ -238,10 +238,11 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
-/-- **Lawvere's fixed-point theorem**: if `f : α → α → β)` is surjective,
-then every function `g : β → β` has a fixed point. This is the diagonal
-argument underlying `cantor_surjective` and `cantor_injective`. -/
-theorem lawvere_fixed_point {α β : Type*} (f : α → α → β)
+/-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
+This is an instance of Lawvere's fixed-point theorem applied to the category of types
+and functions. It is the diagonal argument underlying `cantor_surjective` and
+`cantor_injective`. -/
+theorem exists_fixed_point_of_surjective {α β : Type*} (f : α → α → β)
     (hf : Surjective f) (g : β → β) : ∃ x, g x = x :=
   let ⟨a, ha⟩ := hf fun a => g (f a a)
   ⟨f a a, (congr_fun ha a).symm⟩
