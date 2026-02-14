@@ -91,7 +91,7 @@ commutative domain) and with enough `n`th roots of unity, where `n` is the expon
 of `G`, then any homomorphism `H →* Mˣ` can be extended to an homomorphism `G →* Mˣ`.
 -/
 theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* Mˣ)]
-    [Finite (H →* Mˣ)] : Function.Surjective (MonoidHom.restrictHom H Mˣ) := by
+    [Finite (H →* Mˣ)] : Function.Surjective (MonoidHom.domRestrictHom H Mˣ) := by
   have : Fintype H := Fintype.ofFinite H
   have : HasEnoughRootsOfUnity M (Monoid.exponent H) :=
     hM.of_dvd M <| Monoid.exponent_submonoid_dvd H.toSubmonoid
