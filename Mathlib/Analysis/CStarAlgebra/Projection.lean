@@ -71,7 +71,7 @@ lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
       refine le_antisymm ?_ <| by
         simpa [hp.isIdempotentElem.eq] using conjugate_le_conjugate_of_nonneg h hp.nonneg
       have := by simpa [hp.inr.isIdempotentElem.eq, ← Unitization.inr_mul]
-        using conjugate_le_conjugate_of_nonneg hq.inr.le_one hp.inr.nonneg
+        using conjugate_le_conjugate_of_nonneg hq.inr.le_one (hp.inr (R := ℂ)).nonneg
       rwa [← Unitization.inr_le_iff (p * q * p) p ?_ hp.isSelfAdjoint]
       exact hp.isSelfAdjoint.conjugate_nonneg hq.nonneg |>.isSelfAdjoint
     rw [← norm_eq_zero, hp.isSelfAdjoint.norm_mul_mul_self_of_nonneg _ (by simpa),
