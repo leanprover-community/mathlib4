@@ -739,6 +739,10 @@ theorem latin_rectangle_extends
         simp only [once_per_row,Matrix.row] at h
         apply h
       . simp at hf
+        have h2 := A.exactly_n_symbols.symm
+        have h3pre : Fintype.card ↥(Finset.univ : Finset n) = Fintype.card α := by simp[h2]
+        have h3 : (Function.Injective f') ∧ (Fintype.card Finset.univ = Fintype.card α):= ⟨hf.1, h3pre⟩
+        rw [<-Fintype.bijective_iff_injective_and_card] at h3
         simp [Function.Bijective]
         constructor
         . simp [Function.Injective]
@@ -747,10 +751,12 @@ theorem latin_rectangle_extends
           simp at h
           exact h
         . simp [Function.Surjective]
-          -- intro b
+          intro b
+          simp only [B, symbols_not_in] at hf
+          unfold Function.Bijective Function.Surjective at h3
+          replace h3 := h3.2
+          specialize h3 b
           -- simp [B,symbols_not_in] at hB
-
-          
           sorry
     distinct_col_entries := by 
       unfold distinct_col_entries
