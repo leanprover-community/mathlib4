@@ -215,6 +215,16 @@ theorem IsIrreducible.image (H : IsIrreducible s) (f : X → Y) (hf : Continuous
     IsIrreducible (f '' s) :=
   ⟨H.nonempty.image _, H.isPreirreducible.image f hf⟩
 
+lemma IrreducibleSpace.of_surjective [IrreducibleSpace X] (f : X → Y)
+    (hf : Function.Surjective f) (hf' : Continuous f) : IrreducibleSpace Y := by
+  simpa [irreducibleSpace_def, Set.range_eq_univ.mpr hf] using
+    (IrreducibleSpace.isIrreducible_univ X).image _ hf'.continuousOn
+
+lemma Homeomorph.irreducibleSpace_iff
+    (e : X ≃ₜ Y) : IrreducibleSpace X ↔ IrreducibleSpace Y :=
+  ⟨fun _ ↦ .of_surjective e e.surjective e.continuous,
+    fun _ ↦ .of_surjective _ e.symm.surjective e.symm.continuous⟩
+
 theorem Subtype.preirreducibleSpace (h : IsPreirreducible s) : PreirreducibleSpace s where
   isPreirreducible_univ := by
     rintro _ _ ⟨u, hu, rfl⟩ ⟨v, hv, rfl⟩ ⟨⟨x, hxs⟩, -, hxu⟩ ⟨⟨y, hys⟩, -, hyv⟩
