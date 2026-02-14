@@ -158,7 +158,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
       rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
       · rw [ENNReal.toReal_ofReal_eq_iff.2
-          (by exact sub_nonneg.2 (Real.exp_le_one_iff.2 <| by nlinarith))]
+          (sub_nonneg.2 (Real.exp_le_one_iff.2 <| by nlinarith))]
         norm_num; ring
       · simp only [intervalIntegrable_iff, uIoc_of_le h]
         exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
