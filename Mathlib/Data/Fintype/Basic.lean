@@ -107,8 +107,7 @@ theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
   simp
 
-@[instance]
-def Unique.fintype {α : Type*} [Unique α] : Fintype α :=
+instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
