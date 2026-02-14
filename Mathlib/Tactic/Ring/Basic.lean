@@ -484,8 +484,8 @@ partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     failure
 
 /-- The comarisons on the basetype used to compare normalized ring expressions. -/
-partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type u)}
-    : Common.RingCompare (α := α) RatCoeff where
+partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type u)} :
+    Common.RingCompare (α := α) RatCoeff where
   eq zx zy := zx.value == zy.value
   compare zx zy := compare zx.value zy.value
 
