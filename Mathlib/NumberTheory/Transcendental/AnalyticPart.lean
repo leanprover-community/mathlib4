@@ -5,7 +5,6 @@ Authors: Michail Karatarakis
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Normed.Module.Connected
 
