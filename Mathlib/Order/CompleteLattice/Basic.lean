@@ -1365,20 +1365,16 @@ congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| 
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
-protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
-    [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
+protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [LT α]
+    [SupSet α] [InfSet α] [Top α] [Bot α] [CompleteLattice β]
+    (f : α → β) (hf : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α where
-  -- we cannot use BoundedOrder.lift here as the `LE` instance doesn't exist yet
-  __ := hf.lattice f map_sup map_inf
-  isLUB_sSup_of_exists_isLUB _ _ :=
-    ⟨fun a h ↦ (le_iSup₂ a h).trans (map_sSup _).ge, fun _ h ↦ (map_sSup _).trans_le <| iSup₂_le h⟩
-  isGLB_sInf_of_exists_isGLB _ _ :=
-    ⟨fun a h ↦ (map_sInf _).trans_le <| iInf₂_le a h, fun _ h ↦ (le_iInf₂ h).trans (map_sInf _).ge⟩
-  exists_isLUB s := ⟨sSup s,
-    fun a h ↦ (le_iSup₂ a h).trans (map_sSup _).ge, fun _ h ↦ (map_sSup _).trans_le <| iSup₂_le h⟩
-  exists_isGLB s := ⟨sInf s,
-    fun a h ↦ (map_sInf _).trans_le <| iInf₂_le a h, fun _ h ↦ (le_iInf₂ h).trans (map_sInf _).ge⟩
-  le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot_le _ := map_bot.le.trans bot_le
+  __ := hf.lattice f le lt map_sup map_inf
+  __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
+  isLUB_sSup_of_exists_isLUB _ _ := .of_image le (by rw [map_sSup]; exact isLUB_biSup)
+  isGLB_sInf_of_exists_isGLB _ _ := .of_image le (by rw [map_sInf]; exact isGLB_biInf)
+  exists_isLUB s := ⟨sSup s, .of_image le (by rw [map_sSup]; exact isLUB_biSup)⟩
+  exists_isGLB s := ⟨sInf s, .of_image le (by rw [map_sInf]; exact isGLB_biInf)⟩

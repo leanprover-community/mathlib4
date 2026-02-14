@@ -71,7 +71,7 @@ class CompleteSemilatticeSup (α : Type*) extends PartialOrder α, SupSet α whe
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
-@[to_dual existing]
+@[to_dual]
 class CompleteSemilatticeInf (α : Type*) extends PartialOrder α, InfSet α where
   protected isGLB_sInf_of_exists_isGLB s : (∃ a, IsGLB s a) → IsGLB s (sInf s)
   /-- Every set has a greatest lower bound. -/
@@ -272,36 +272,20 @@ section
 
 section OrderDual
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem toDual_sSup [SupSet α] (s : Set α) : toDual (sSup s) = sInf (ofDual ⁻¹' s) :=
   rfl
 
-@[simp]
-theorem toDual_sInf [InfSet α] (s : Set α) : toDual (sInf s) = sSup (ofDual ⁻¹' s) :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem ofDual_sSup [InfSet α] (s : Set αᵒᵈ) : ofDual (sSup s) = sInf (toDual ⁻¹' s) :=
   rfl
 
-@[simp]
-theorem ofDual_sInf [SupSet α] (s : Set αᵒᵈ) : ofDual (sInf s) = sSup (toDual ⁻¹' s) :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem toDual_iSup [SupSet α] (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
   rfl
 
-@[simp]
-theorem toDual_iInf [InfSet α] (f : ι → α) : toDual (⨅ i, f i) = ⨆ i, toDual (f i) :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem ofDual_iSup [InfSet α] (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) :=
-  rfl
-
-@[simp]
-theorem ofDual_iInf [SupSet α] (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = ⨆ i, ofDual (f i) :=
   rfl
 
 end OrderDual

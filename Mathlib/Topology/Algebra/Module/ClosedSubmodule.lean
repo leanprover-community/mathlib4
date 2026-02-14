@@ -138,7 +138,7 @@ lemma coe_iInf (f : ι → ClosedSubmodule R M) : ↑(⨅ i, f i) = ⨅ i, (f i 
   simp [← SetLike.mem_coe]
 
 instance instSemilatticeInf : SemilatticeInf (ClosedSubmodule R M) :=
-  toSubmodule_injective.semilatticeInf _ fun _ _ ↦ rfl
+  toSubmodule_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma toSubmodule_inf (s t : ClosedSubmodule R M) :

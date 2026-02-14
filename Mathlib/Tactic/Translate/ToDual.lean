@@ -165,12 +165,18 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("pred", ["Succ"]),
   ("disjoint", ["Codisjoint"]),
   ("codisjoint", ["Disjoint"]),
+  ("atom", ["Coatom"]),
+  ("coatom", ["Atom"]),
+  ("lfp", ["Gfp"]),
+  ("gfp", ["Lfp"]),
   ("ioi", ["Iio"]),
   ("iio", ["Ioi"]),
   ("ici", ["Iic"]),
   ("iic", ["Ici"]),
   ("ioc", ["Ico"]),
   ("ico", ["Ioc"]),
+  ("u", ["L"]),
+  ("l", ["U"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -208,14 +214,17 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("monad", ["Comonad"]),
   ("comonad", ["Monad"]),
   ("monadic", ["Comonadic"]),
-  ("comonadic", ["Monadic"])]
+  ("comonadic", ["Monadic"]),
+]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
 def abbreviationDict : Std.HashMap String String := .ofList [
   ("wellFoundedLT", "WellFoundedGT"),
   ("wellFoundedGT", "WellFoundedLT"),
   ("succColimit", "SuccLimit"),
-  ("predColimit", "PredLimit")
+  ("predColimit", "PredLimit"),
+  ("codirectedOrder", "DirectedOrder"),
+  ("directedOrder", "CodirectedOrder"),
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/

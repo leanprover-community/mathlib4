@@ -264,7 +264,7 @@ instance : Max (NonemptyInterval α) :=
   ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
 instance : SemilatticeSup (NonemptyInterval α) :=
-  toDualProd_injective.semilatticeSup _ fun _ _ => rfl
+  toDualProd_injective.semilatticeSup _ .rfl .rfl fun _ _ => rfl
 
 @[simp]
 theorem fst_sup (s t : NonemptyInterval α) : (s ⊔ t).fst = s.fst ⊓ t.fst :=
@@ -665,9 +665,8 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
           · rw [not_and_or, not_not] at h
             rcases h with h | h
             · exact ha h
-            · cases h fun t hb c hc =>
-                (WithBot.coe_le_coe.1 <| ha hb).1.trans <|
-                  s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha hc).2⟩
+            · cases h fun t hb c hc => (WithBot.coe_le_coe.1 <| ha hb).1.trans <|
+                s.fst_le_snd.trans (WithBot.coe_le_coe.1 <| ha hc).2⟩
   exact
     { Interval.lattice, Interval.boundedOrder with
       sSup := sSup
