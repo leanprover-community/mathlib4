@@ -392,13 +392,11 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
 
 open Subgroup in
 @[to_additive]
-theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [H.Characteristic]
+theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [hH : H.Characteristic]
     {K : Subgroup (G ⧸ H)} (hK : K.Characteristic) :
-    Characteristic (K.comap (mk' H)) := by
-  refine characteristic_iff_map_le.2 fun ϕ x ⟨y, hy, _⟩ => ?_
-  have := characteristic_iff_map_eq.1 hK (congr H H ϕ (characteristic_iff_map_eq.1 inferInstance ϕ))
-  have := mem_map_of_mem (congr H H ϕ (characteristic_iff_map_eq.1 inferInstance ϕ)).toMonoidHom hy
-  simp_all
+    Characteristic (K.comap (mk' H)) :=
+  characteristic_iff_comap_eq.mpr fun φ ↦ congr_arg (comap (mk' H))
+    (characteristic_iff_comap_eq.mp hK (congr H H φ (characteristic_iff_map_eq.mp hH φ)))
   
 /--
 The `MulEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
