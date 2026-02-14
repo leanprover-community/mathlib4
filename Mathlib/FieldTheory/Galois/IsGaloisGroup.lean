@@ -229,6 +229,15 @@ theorem map_mulEquivAlgEquiv_fixingSubgroup
   obtain ⟨g, rfl⟩ := (mulEquivAlgEquiv G K L).surjective g
   simp [mem_fixingSubgroup_iff]
 
+variable {G H K L} in
+theorem congr [hG : IsGaloisGroup G K L] (e : H ≃* G) (he : ∀ (h : H) (x : L), (e h) • x = h • x) :
+    IsGaloisGroup H K L where
+  faithful := ⟨fun h ↦ e.injective <| hG.faithful.eq_of_smul_eq_smul <| by simpa only [he]⟩
+  commutes := ⟨fun x a b ↦ by simpa [he] using hG.commutes.smul_comm (e x) a b⟩
+  isInvariant := ⟨fun b h ↦
+    have he' : ∀ (g : G) (x : L), e.symm g • x = g • x := fun g x ↦ by simp [← he]
+    hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
+
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
 instance subgroup [hGKL : IsGaloisGroup G K L] :
@@ -244,11 +253,7 @@ theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
 
 variable {G K L} in
 theorem of_mulEquiv_algEquiv [IsGalois K L] (e : G ≃* Gal(L/K)) (he : ∀ g x, e g x = g • x) :
-    IsGaloisGroup G K L where
-  faithful := ⟨fun {g₁ g₂} h ↦ e.injective <| AlgEquiv.ext <| by simpa [he]⟩
-  commutes := ⟨by simp [← he]⟩
-  isInvariant := ⟨fun y hy ↦ (InfiniteGalois.mem_bot_iff_fixed y).mpr <|
-    e.surjective.forall.mpr <| by simpa [he]⟩
+    IsGaloisGroup G K L := .congr e he
 
 instance fixedPoints [Finite G] [FaithfulSMul G L] :
     IsGaloisGroup G (FixedPoints.subfield G L) L :=
