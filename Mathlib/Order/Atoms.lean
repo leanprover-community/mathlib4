@@ -693,7 +693,7 @@ theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α
 lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
-  refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
+  refine ⟨fun h => ⟨le_sSup h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
   obtain ⟨b, hbS, hba⟩ := (IsAtom.le_sSup hatom).mp hale
   obtain rfl | rfl := (hS b hbS).le_iff.mp hba
   · simpa using hatom.1
