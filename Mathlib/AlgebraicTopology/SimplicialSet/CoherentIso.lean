@@ -1,11 +1,32 @@
 /-
-Copyright (c) 2024 Johns Hopkins Category Theory Seminar. All rights reserved.
+Copyright (c) 2024 Johns Hopkins Category Theory Seminar, Arnoud van der Leer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johns Hopkins Category Theory Seminar
+Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
+
+/-!
+# The Coherent Isomorphism
+
+In this file, we define two related types.
+
+We first define the free walking or free-living isomorphism `WalkingIso`: the category with
+two objects `zero` and `one`, and morphisms `zero ⟶ one` and `one ⟶ zero`.
+We show that the type of functor from `WalkingIso` into any category is equivalent to the type of
+isomorphisms in that category.
+
+Then we define the simplicial set `coherentIso` as the nerve of `WalkingIso`.
+Since the morphism types in `WalkingIso` are given by `unit`, the `n`-simplices of `coherentIso` are
+equivalent to `Fin 2`-vectors of length `n + 1`. This shows that the `n`-simplices of `coherentIso`
+have decidable equality.
+Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `zero` to `one`) is an isomorphism,
+and `isIsoOfEqMapHom` concludes from this that for any simplicial set `X`,
+any morphism `g : coherentIso ⟶ X` and any `f : X _⦋1⦌`,
+if `g` sends `hom` to `f`, then `f` is an isomorphism.
+
+-/
 
 universe u v
 
@@ -26,8 +47,7 @@ open WalkingIso
 
 namespace WalkingIso
 
-/-- The free isomorphism is the codiscrete category on two objects. Can we make this a special
-case of the other definition? -/
+/-- The free isomorphism is the codiscrete category on two objects. -/
 instance : Category (WalkingIso) where
   Hom _ _ := Unit
   id _ := ⟨⟩
@@ -86,7 +106,7 @@ namespace SSet
 open Simplicial Edge
 
 /-- The simplicial set that encodes a single isomorphism.
-  Its n-simplices are sequences of arrows in WalkingIso. -/
+  Its n-simplices are formal compositions of arrows in WalkingIso. -/
 def coherentIso : SSet := nerve WalkingIso
 
 namespace coherentIso

@@ -1,16 +1,16 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou, Arnoud van der Leer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Arnoud van der Leer
 -/
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 
 /-!
-# Edges and "triangles" in simplicial sets
+# Edges, "triangles" and isos in simplicial sets
 
-Given a simplicial set `X`, we introduce two types:
+Given a simplicial set `X`, we introduce three types:
 * Given `0`-simplices `x₀` and `x₁`, we define `Edge x₀ x₁`
   which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
 * Given `0`-simplices `x₀`, `x₁`, `x₂`, edges `e₀₁ : Edge x₀ x₁`, `e₁₂ : Edge x₁ x₂`,
@@ -21,6 +21,10 @@ Given a simplicial set `X`, we introduce two types:
 (This API parallels similar definitions for `2`-truncated simplicial sets.
 The definitions in this file are definitionally equal to their `2`-truncated
 counterparts.)
+
+Given `0`-simplices `x₀` and `x₁`, and an edge `hom : Edge x₀ x₁`, `IsIso hom` records the data of
+an edge `inv : Edge x₁ x₀` and simplices `homInvId : CompStruct hom inv (id x₀)` and
+`invHomId : CompStruct inv hom (id x₁)`, witnessing that `inv` is an inverse to `hom`.
 
 -/
 
@@ -258,9 +262,9 @@ structure IsIso (hom : Edge x₀ x₁) where
   /-- The backwards edge -/
   inv : Edge x₁ x₀
   /-- The simplex witnessing that `hom` and `inv` compose to the identity -/
-  homInvId  : Edge.CompStruct hom inv (Edge.id x₀)
+  homInvId  : CompStruct hom inv (id x₀)
   /-- The simplex witnessing that `inv` and `hom` compose to the identity -/
-  invHomId  : Edge.CompStruct inv hom (Edge.id x₁)
+  invHomId  : CompStruct inv hom (id x₁)
 
 namespace IsIso
 
@@ -275,7 +279,7 @@ lemma id_comp_id_aux {l m n : ℕ}
   rfl
 
 /-- The identity edge on a point, composed with itself, gives the identity. -/
-def idCompId (x : X _⦋0⦌) : Edge.CompStruct (Edge.id x) (Edge.id x) (Edge.id x) :=
+def idCompId (x : X _⦋0⦌) : CompStruct (id x) (id x) (id x) :=
   .mk
     (X.map (Opposite.op (SimplexCategory.Hom.mk ⟨fun _ ↦ 0, monotone_const⟩)) x)
     (by apply id_comp_id_aux; decide)
@@ -283,8 +287,8 @@ def idCompId (x : X _⦋0⦌) : Edge.CompStruct (Edge.id x) (Edge.id x) (Edge.id
     (by apply id_comp_id_aux; decide)
 
 /-- The identity edge is an isomorphism. -/
-def isIsoId (x : X _⦋0⦌) : IsIso (Edge.id x) where
-  inv := Edge.id x
+def isIsoId (x : X _⦋0⦌) : IsIso (id x) where
+  inv := id x
   homInvId := idCompId x
   invHomId := idCompId x
 
@@ -295,8 +299,8 @@ def isIsoInv {hom : Edge x₀ x₁} (I : IsIso hom) : IsIso I.inv where
   invHomId := I.homInvId
 
 /-- The image of an isomorphism under an SSet morphism is an isomorphism. -/
-def map {hom : Edge x₀ x₁} (I : IsIso hom) (f : X ⟶ Y) : IsIso (Edge.map hom f) where
-  inv := Edge.map I.inv f
+def map {hom : Edge x₀ x₁} (I : IsIso hom) (f : X ⟶ Y) : IsIso (hom.map f) where
+  inv := I.inv.map f
   homInvId := (I.homInvId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
   invHomId := (I.invHomId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
 
