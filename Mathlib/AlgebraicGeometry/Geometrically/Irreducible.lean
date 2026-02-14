@@ -78,6 +78,15 @@ lemma Scheme.Hom.isIrreducible_preimage
   rw [← f.range_fiberι, ← Set.image_univ]
   exact (IrreducibleSpace.isIrreducible_univ _).image _ (f.fiberι _).continuous.continuousOn
 
+/-- If `f : X ⟶ S` is geometrically irreducible and open,
+then `f` induces an equivalence between the irreducible components of `X` and `S`. -/
+@[simps!]
+def Scheme.Hom.irreducibleComponentsEquiv [GeometricallyIrreducible f] (hf : IsOpenMap f) :
+    irreducibleComponents X ≃ irreducibleComponents S :=
+  (irreducibleComponentsEquivOfIsPreirreducibleFiber f f.continuous hf
+    (fun _ ↦ (f.isIrreducible_preimage hf isIrreducible_singleton).isPreirreducible)
+    f.surjective).symm.toEquiv
+
 lemma GeometricallyIrreducible.irreducibleSpace
     [GeometricallyIrreducible f] [IrreducibleSpace S] (hf : IsOpenMap f) : IrreducibleSpace X := by
   simpa [irreducibleSpace_def] using
