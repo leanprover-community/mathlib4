@@ -491,7 +491,7 @@ def elabCHoleExpand : Term.TermElab := fun stx expectedType? => do
 section Trans
 
 /-!
-The lemmas `rel_imp_rel` is too general to be tagged with `@[gcongr]`,
+The lemma `rel_imp_rel` is too general to be tagged with `@[gcongr]`,
 so instead we use `relImpRelLemma` to look it up.
 -/
 
