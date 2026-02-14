@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Aesop
+public import Aesop.Frontend
 public meta import Batteries.Util.LibraryNote
 public import Mathlib.Tactic.Basic
 public import Aesop.Frontend.Basic
