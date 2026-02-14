@@ -5,15 +5,15 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+-- public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+-- public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
-public import Mathlib.CategoryTheory.Category.Basic
-public import Mathlib.CategoryTheory.ComposableArrows.Basic
-public import Mathlib.CategoryTheory.Functor.Basic
-public import Mathlib.Combinatorics.Quiver.Basic
-public import Mathlib.Logic.Equiv.Defs
+-- public import Mathlib.CategoryTheory.Category.Basic
+-- public import Mathlib.CategoryTheory.ComposableArrows.Basic
+-- public import Mathlib.CategoryTheory.Functor.Basic
+-- public import Mathlib.Combinatorics.Quiver.Basic
+-- public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # The Coherent Isomorphism
@@ -21,7 +21,7 @@ public import Mathlib.Logic.Equiv.Defs
 In this file, we define two related types.
 
 We first define the free walking or free-living isomorphism `WalkingIso`: the category with
-two objects `zero` and `one`, and morphisms `zero ⟶ one` and `one ⟶ zero`.
+two objects `false` and `true`, and morphisms `false ⟶ true` and `true ⟶ false`.
 We show that the type of functor from `WalkingIso` into any category is equivalent to the type of
 isomorphisms in that category.
 
@@ -29,7 +29,7 @@ Then we define the simplicial set `coherentIso` as the nerve of `WalkingIso`.
 Since the morphism types in `WalkingIso` are given by `unit`, the `n`-simplices of `coherentIso` are
 equivalent to `Fin 2`-vectors of length `n + 1`. This shows that the `n`-simplices of `coherentIso`
 have decidable equality.
-Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `zero` to `one`) is an isomorphism,
+Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `false` to `true`) is an isomorphism,
 and `isIsoOfEqMapHom` concludes from this that for any simplicial set `X`,
 any morphism `g : coherentIso ⟶ X` and any `f : X _⦋1⦌`,
 if `g` sends `hom` to `f`, then `f` is an isomorphism.
@@ -44,16 +44,8 @@ open CategoryTheory
 
 namespace CategoryTheory
 
-/-- This is the free-living isomorphism as a category with objects called `zero` and `one`. -/
-def WalkingIso : Type u := ULift (Fin 2)
-
-@[match_pattern]
-def WalkingIso.zero : WalkingIso := ULift.up (0 : Fin 2)
-
-@[match_pattern]
-def WalkingIso.one : WalkingIso := ULift.up (1 : Fin 2)
-
-open WalkingIso
+/-- This is the free-living isomorphism as a category with objects `false` and `true`. -/
+def WalkingIso : Type u := ULift Bool
 
 namespace WalkingIso
 
@@ -68,36 +60,37 @@ section
 variable {C : Type u} [Category.{v} C]
 
 /-- Functors out of `WalkingIso` define isomorphisms in the target category. -/
-def toIso (F : WalkingIso ⥤ C) : (F.obj zero) ≅ (F.obj one) where
+def toIso (F : WalkingIso ⥤ C) : F.obj (ULift.up false) ≅ F.obj (ULift.up true) where
   hom := F.map PUnit.unit
   inv := F.map PUnit.unit
   hom_inv_id := by rw [← F.map_comp, ← F.map_id]; rfl
   inv_hom_id := by rw [← F.map_comp, ← F.map_id]; rfl
 
-/-- From an isomorphism in a category, one can build a functor out of `WalkingIso` to
+/-- From an isomorphism in a category, true can build a functor out of `WalkingIso` to
   that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso ⥤ C where
   obj := fun
-    | zero => X
-    | one => Y
+    | (ULift.up false) => X
+    | (ULift.up true) => Y
   map := @fun
-    | zero, zero, _ => 𝟙 _
-    | zero, one,  _ => e.hom
-    | one, zero, _ => e.inv
-    | one, one,  _ => 𝟙 _
+    | ULift.up false, ULift.up false, _ => 𝟙 _
+    | ULift.up false, ULift.up true,  _ => e.hom
+    | ULift.up true, ULift.up false, _ => e.inv
+    | ULift.up true, ULift.up true,  _ => 𝟙 _
   map_comp := by simp [WalkingIso, Quiver.Hom]
 
 /-- An equivalence between the type of `WalkingIso`s in `C` and the type of isomorphisms in `C`. -/
 def equiv : (WalkingIso ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
-  toFun F := ⟨F.obj zero, F.obj one, toIso F⟩
+  toFun F := ⟨F.obj (ULift.up false), F.obj (ULift.up true), toIso F⟩
   invFun p := fromIso p.2.2
   right_inv := fun ⟨X, Y, e⟩ ↦ rfl
   left_inv F := by
     apply Functor.hext
     · simp [WalkingIso]
       constructor <;> rfl
-    · simp only [WalkingIso, ULift.forall, Fin.forall_fin_two, Fin.isValue, heq_eq_eq]
-      simp only [fromIso, toIso]
+    · simp only [WalkingIso, ULift.forall, Bool.forall_bool, heq_eq_eq]
+      unfold fromIso toIso
+      dsimp
       constructor <;> constructor <;>
       ( intro ⟨⟩
         try rfl
@@ -105,7 +98,9 @@ def equiv : (WalkingIso ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
 
 end
 
-def coev (i : WalkingIso) : Fin 1 ⥤ WalkingIso := ComposableArrows.mk₀ i
+/-- There are functors from the one-object category into `WalkingIso`,
+  sending the object to either `true` or `false`. -/
+def coev (i : Bool) : Fin 1 ⥤ WalkingIso := ComposableArrows.mk₀ (ULift.up i)
 
 end WalkingIso
 
@@ -123,7 +118,7 @@ namespace coherentIso
 
 /-- Since the morphisms in WalkingIso do not carry information, an n-simplex of coherentIso
   is equivalent to an (n + 1)-vector of the objects of WalkingIso. -/
-def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → Fin 2) where
+def equivFun {n : ℕ} : coherentIso _⦋n⦌ ≃ (Fin (n + 1) → Bool) where
   toFun f := ULift.down ∘ f.obj
   invFun f := .mk (ULift.up ∘ f) (fun _ ↦ ⟨⟩) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
   left_inv _ := rfl
@@ -136,11 +131,11 @@ instance (n : ℕ) : DecidableEq (coherentIso _⦋n⦌) :=
 
 /-- The source vertex of `coherentIso`. -/
 def x₀ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ WalkingIso.zero
+  ComposableArrows.mk₀ (ULift.up false)
 
 /-- The target vertex of `coherentIso`. -/
 def x₁ : coherentIso _⦋0⦌ :=
-  ComposableArrows.mk₀ WalkingIso.one
+  ComposableArrows.mk₀ (ULift.up false)
 
 /-- The forwards edge of `coherentIso`. -/
 def hom : Edge x₀ x₁ where
