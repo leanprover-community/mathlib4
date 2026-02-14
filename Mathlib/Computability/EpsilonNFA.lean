@@ -744,6 +744,39 @@ theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
 
 end NFA
 
+namespace Language
+
+theorem IsRegular.mul {L₁ L₂ : Language α}
+    (h₁ : IsRegular L₁) (h₂ : IsRegular L₂) :
+    IsRegular (L₁ * L₂) := by
+  classical
+  have ⟨σ₁, _, M₁, hM₁⟩ := h₁
+  have ⟨σ₂, _, M₂, hM₂⟩ := h₂
+  let N₁ := M₁.toNFA.toεNFA
+  let N₂ := M₂.toNFA.toεNFA
+  let N := εNFA.concat N₁ N₂
+  apply isRegular_iff.mpr
+  use Set (σ₁ ⊕ σ₂), inferInstance, N.toNFA.toDFA
+  subst hM₁ hM₂
+  rw [NFA.toDFA_correct, εNFA.toNFA_correct]
+  rw [← DFA.toNFA_correct, ← NFA.toεNFA_correct]
+  rw [← DFA.toNFA_correct, ← NFA.toεNFA_correct]
+  exact εNFA.accepts_concat
+
+theorem IsRegular.kstar {L : Language α} (h : IsRegular L) : IsRegular (L∗) := by
+  classical
+  have ⟨σ, _, M, hM⟩ := h
+  let N₁ := M.toNFA.toεNFA
+  let N := εNFA.kstar N₁
+  apply isRegular_iff.mpr
+  use Set (Option σ), inferInstance, N.toNFA.toDFA
+  subst hM
+  rw [NFA.toDFA_correct, εNFA.toNFA_correct]
+  rw [← DFA.toNFA_correct, ← NFA.toεNFA_correct]
+  exact εNFA.accepts_kstar
+
+end Language
+
 /-! ### Regex-like operations -/
 
 
