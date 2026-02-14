@@ -51,9 +51,8 @@ noncomputable instance [IrreducibleSpace X] (U : X.Opens) [Nonempty U] :
 noncomputable instance [IsIntegral X] : Field X.functionField :=
   haveI : Subsingleton ↑(irreducibleComponents ↥X) :=
     irreducibleComponents_eq_singleton (X := X) ▸ inferInstance
-  haveI : IsField X.functionField := isField_stalk_of_closure_mem_irreducibleComponents X _
-    (by simp [irreducibleComponents_eq_singleton])
-  this.toField
+  (isField_stalk_of_closure_mem_irreducibleComponents X _
+    (by simp [irreducibleComponents_eq_singleton])).toField
 
 theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : x ∈ U) :
     Function.Injective (X.presheaf.germ U x hx) := by
