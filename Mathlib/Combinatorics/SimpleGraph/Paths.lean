@@ -248,6 +248,26 @@ theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
 
+lemma take_isPath_of_take {u v n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : n ≤ k) :
+    (p.take n).IsPath := by
+  rw [Walk.isPath_def] at h ⊢
+  exact (isSubwalk_iff_support_isInfix.mp (p.take_isSubwalk_take hle)).nodup h
+
+lemma drop_isPath_of_drop {u v n k} {p : G.Walk u v} (h : (p.drop k).IsPath) (hle : k ≤ n) :
+    (p.drop n).IsPath := by
+  rw [Walk.isPath_def] at h ⊢
+  exact (isSubwalk_iff_support_isInfix.mp (p.drop_isSubwalk_drop hle)).nodup h
+
+lemma IsPath.take_isPath {u v} {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.take n).IsPath := by
+  cases le_or_gt n p.length with
+  | inl hp => exact take_isPath_of_take (by simpa [take_of_length_le rfl.le]) hp
+  | inr hp => simpa [take_of_length_le hp.le]
+
+lemma IsPath.drop_isPath {u v} {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.drop n).IsPath :=
+  drop_isPath_of_drop (by rwa [Walk.drop_zero, isPath_copy]) n.zero_le
+
 lemma IsPath.mem_support_iff_exists_append {p : G.Walk u v} (hp : p.IsPath) :
     w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), q.IsPath ∧ r.IsPath ∧ p = q.append r := by
   refine ⟨fun hw ↦ ?_, fun ⟨q, r, hq, hr, hqr⟩ ↦ p.mem_support_iff_exists_append.mpr ⟨q, r, hqr⟩⟩
@@ -336,6 +356,19 @@ theorem IsCycle.isPath_dropLast {u} {p : G.Walk u u} (h : p.IsCycle) :
     p.dropLast.IsPath := by
   rw [← isPath_reverse_iff, p.dropLast_reverse_eq_reverse_tail, isPath_copy]
   exact (isCycle_reverse.mpr h).isPath_tail
+
+theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) :
+    (p.drop n).IsPath := by
+  replace h : (p.drop 1).IsPath := h.isPath_tail
+  rw [← Nat.add_sub_of_le hn, drop_add_eq]
+  simp [h.drop_isPath (n - 1)]
+
+theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
+    (p.take n).IsPath := by
+  replace h : (p.take (p.length - 1)).IsPath := h.isPath_dropLast
+  suffices ((p.take (p.length - 1)).take n).IsPath by
+    rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
+  exact h.take_isPath n
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
