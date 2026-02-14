@@ -5,12 +5,9 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.Data.Matrix.Block
+public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Associator
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!

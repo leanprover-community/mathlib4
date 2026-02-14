@@ -114,6 +114,10 @@ theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   rw [Algebra.adjoin_eq_span, hs, span_invSubmonoid]
   trivial
 
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    (M : Submonoid S) [Monoid.FG M] : Algebra.FiniteType R (Localization M) :=
+  .trans ‹_› (IsLocalization.finiteType_of_monoid_fg M _)
+
 end InvSubmonoid
 
 end IsLocalization

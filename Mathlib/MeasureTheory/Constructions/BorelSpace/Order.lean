@@ -103,44 +103,49 @@ variable {mδ : MeasurableSpace δ}
 
 section Preorder
 
-variable [Preorder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
+variable [Preorder α] {a b x : α} {μ : Measure α}
 
 @[simp, measurability]
-theorem measurableSet_Ici : MeasurableSet (Ici a) :=
+theorem measurableSet_Ici [ClosedIciTopology α] : MeasurableSet (Ici a) :=
   isClosed_Ici.measurableSet
 
-theorem nullMeasurableSet_Ici : NullMeasurableSet (Ici a) μ :=
+theorem nullMeasurableSet_Ici [ClosedIciTopology α] : NullMeasurableSet (Ici a) μ :=
   measurableSet_Ici.nullMeasurableSet
 
 @[simp, measurability]
-theorem measurableSet_Iic : MeasurableSet (Iic a) :=
+theorem measurableSet_Iic [ClosedIicTopology α] : MeasurableSet (Iic a) :=
   isClosed_Iic.measurableSet
 
-theorem nullMeasurableSet_Iic : NullMeasurableSet (Iic a) μ :=
+theorem nullMeasurableSet_Iic [ClosedIicTopology α] : NullMeasurableSet (Iic a) μ :=
   measurableSet_Iic.nullMeasurableSet
 
 @[simp, measurability]
-theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
+theorem measurableSet_Icc [OrderClosedTopology α] : MeasurableSet (Icc a b) :=
   isClosed_Icc.measurableSet
 
-theorem nullMeasurableSet_Icc : NullMeasurableSet (Icc a b) μ :=
+theorem nullMeasurableSet_Icc [OrderClosedTopology α] : NullMeasurableSet (Icc a b) μ :=
   measurableSet_Icc.nullMeasurableSet
 
-instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Ici_isMeasurablyGenerated [ClosedIciTopology α] :
+    (𝓝[Ici b] a).IsMeasurablyGenerated :=
   measurableSet_Ici.nhdsWithin_isMeasurablyGenerated _
 
-instance nhdsWithin_Iic_isMeasurablyGenerated : (𝓝[Iic b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Iic_isMeasurablyGenerated [ClosedIicTopology α] :
+    (𝓝[Iic b] a).IsMeasurablyGenerated :=
   measurableSet_Iic.nhdsWithin_isMeasurablyGenerated _
 
-instance nhdsWithin_Icc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[Icc a b] x) := by
+instance nhdsWithin_Icc_isMeasurablyGenerated [OrderClosedTopology α] :
+    IsMeasurablyGenerated (𝓝[Icc a b] x) := by
   rw [← Ici_inter_Iic, nhdsWithin_inter]
   infer_instance
 
-instance atTop_isMeasurablyGenerated : (Filter.atTop : Filter α).IsMeasurablyGenerated :=
+instance atTop_isMeasurablyGenerated [ClosedIciTopology α] :
+    (Filter.atTop : Filter α).IsMeasurablyGenerated :=
   @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun a =>
     (measurableSet_Ici : MeasurableSet (Ici a)).principal_isMeasurablyGenerated
 
-instance atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGenerated :=
+instance atBot_isMeasurablyGenerated [ClosedIicTopology α] :
+    (Filter.atBot : Filter α).IsMeasurablyGenerated :=
   @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun a =>
     (measurableSet_Iic : MeasurableSet (Iic a)).principal_isMeasurablyGenerated
 
@@ -176,84 +181,94 @@ end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
+variable [LinearOrder α] {a b x : α} {μ : Measure α}
 
 -- we open this scope only here to avoid issues with list being treated as intervals above
 open Interval
 
 @[simp, measurability]
-theorem measurableSet_Iio : MeasurableSet (Iio a) :=
+theorem measurableSet_Iio [ClosedIciTopology α] : MeasurableSet (Iio a) :=
   isOpen_Iio.measurableSet
 
-theorem nullMeasurableSet_Iio : NullMeasurableSet (Iio a) μ :=
+theorem nullMeasurableSet_Iio [ClosedIciTopology α] : NullMeasurableSet (Iio a) μ :=
   measurableSet_Iio.nullMeasurableSet
 
 @[simp, measurability]
-theorem measurableSet_Ioi : MeasurableSet (Ioi a) :=
+theorem measurableSet_Ioi [ClosedIicTopology α] : MeasurableSet (Ioi a) :=
   isOpen_Ioi.measurableSet
 
-theorem nullMeasurableSet_Ioi : NullMeasurableSet (Ioi a) μ :=
+theorem nullMeasurableSet_Ioi [ClosedIicTopology α] : NullMeasurableSet (Ioi a) μ :=
   measurableSet_Ioi.nullMeasurableSet
 
 @[simp, measurability]
-theorem measurableSet_Ioo : MeasurableSet (Ioo a b) :=
+theorem measurableSet_Ioo [OrderClosedTopology α] : MeasurableSet (Ioo a b) :=
   isOpen_Ioo.measurableSet
 
-theorem nullMeasurableSet_Ioo : NullMeasurableSet (Ioo a b) μ :=
+theorem nullMeasurableSet_Ioo [OrderClosedTopology α] : NullMeasurableSet (Ioo a b) μ :=
   measurableSet_Ioo.nullMeasurableSet
 
 @[simp, measurability]
-theorem measurableSet_Ioc : MeasurableSet (Ioc a b) :=
+theorem measurableSet_Ioc [ClosedIicTopology α] : MeasurableSet (Ioc a b) :=
   measurableSet_Ioi.inter measurableSet_Iic
 
-theorem nullMeasurableSet_Ioc : NullMeasurableSet (Ioc a b) μ :=
+theorem nullMeasurableSet_Ioc [ClosedIicTopology α] : NullMeasurableSet (Ioc a b) μ :=
   measurableSet_Ioc.nullMeasurableSet
 
 @[simp, measurability]
-theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
+theorem measurableSet_Ico [ClosedIciTopology α] : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
 
-theorem nullMeasurableSet_Ico : NullMeasurableSet (Ico a b) μ :=
+theorem nullMeasurableSet_Ico [ClosedIciTopology α] : NullMeasurableSet (Ico a b) μ :=
   measurableSet_Ico.nullMeasurableSet
 
-instance nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Ioi_isMeasurablyGenerated [ClosedIicTopology α] :
+    (𝓝[Ioi b] a).IsMeasurablyGenerated :=
   measurableSet_Ioi.nhdsWithin_isMeasurablyGenerated _
 
-instance nhdsWithin_Iio_isMeasurablyGenerated : (𝓝[Iio b] a).IsMeasurablyGenerated :=
+instance nhdsWithin_Iio_isMeasurablyGenerated [ClosedIciTopology α] :
+    (𝓝[Iio b] a).IsMeasurablyGenerated :=
   measurableSet_Iio.nhdsWithin_isMeasurablyGenerated _
 
-instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
+instance nhdsWithin_uIcc_isMeasurablyGenerated [OrderClosedTopology α] :
+    IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
   nhdsWithin_Icc_isMeasurablyGenerated
 
-theorem measurableSet_lt' [SecondCountableTopology α] : MeasurableSet { p : α × α | p.1 < p.2 } :=
+theorem measurableSet_lt' [SecondCountableTopology α] [OrderClosedTopology α] :
+    MeasurableSet { p : α × α | p.1 < p.2 } :=
   (isOpen_lt continuous_fst continuous_snd).measurableSet
 
 @[fun_prop]
-theorem measurable_lt [SecondCountableTopology α] : Measurable fun p : α × α => p.1 < p.2 :=
+theorem measurable_lt [SecondCountableTopology α] [OrderClosedTopology α] :
+    Measurable fun p : α × α => p.1 < p.2 :=
   measurableSet_setOf.mp measurableSet_lt'
 
-theorem measurableSet_lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
-    (hg : Measurable g) : MeasurableSet { a | f a < g a } :=
+theorem measurableSet_lt [SecondCountableTopology α] [OrderClosedTopology α]
+    {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+    MeasurableSet { a | f a < g a } :=
   hf.prodMk hg measurableSet_lt'
 
-theorem Measurable.lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
-    (hg : Measurable g) : Measurable fun a => f a < g a := by
+theorem Measurable.lt [SecondCountableTopology α] [OrderClosedTopology α] {f g : δ → α}
+    (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a => f a < g a := by
   fun_prop
 
-theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g : δ → α}
-    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : NullMeasurableSet { a | f a < g a } μ :=
+theorem nullMeasurableSet_lt [SecondCountableTopology α] [OrderClosedTopology α] {μ : Measure δ}
+    {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    NullMeasurableSet { a | f a < g a } μ :=
   (hf.prodMk hg).nullMeasurable measurableSet_lt'
 
-theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
+theorem nullMeasurableSet_lt' [SecondCountableTopology α] [OrderClosedTopology α]
+    {μ : Measure (α × α)} :
     NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
   measurableSet_lt'.nullMeasurableSet
 
-theorem nullMeasurableSet_le [SecondCountableTopology α] {μ : Measure δ}
+theorem nullMeasurableSet_le [SecondCountableTopology α] [OrderClosedTopology α] {μ : Measure δ}
     {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { a | f a ≤ g a } μ :=
   (hf.prodMk hg).nullMeasurable measurableSet_le'
 
-theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
+theorem Set.OrdConnected.measurableSet [OrderClosedTopology α] (h : OrdConnected s) :
+    MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
   have huopen : IsOpen u := isOpen_biUnion fun _ _ => isOpen_biUnion fun _ _ => isOpen_Ioo
   have humeas : MeasurableSet u := huopen.measurableSet
@@ -263,7 +278,8 @@ theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s :=
   rw [← union_diff_cancel this]
   exact humeas.union hfinite.measurableSet
 
-theorem IsPreconnected.measurableSet (h : IsPreconnected s) : MeasurableSet s :=
+theorem IsPreconnected.measurableSet [OrderClosedTopology α] (h : IsPreconnected s) :
+    MeasurableSet s :=
   h.ordConnected.measurableSet
 
 theorem generateFrom_Icc_mem_le_borel {α : Type*} [TopologicalSpace α] [LinearOrder α]
@@ -411,6 +427,17 @@ theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCoun
     (@dense_univ α _).borel_eq_generateFrom_Ioc_mem_aux (fun _ _ => mem_univ _) fun _ _ _ _ =>
       mem_univ _
 
+theorem borel_eq_generateFrom_Ioc_le (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
+    [LinearOrder α] [OrderTopology α] :
+    borel α = .generateFrom { S : Set α | ∃ l u, l ≤ u ∧ Ioc l u = S } := by
+  apply le_antisymm
+  · rw [borel_eq_generateFrom_Ioc]
+    apply generateFrom_mono (by grind)
+  · apply generateFrom_le
+    rintro - ⟨u, v, -, rfl⟩
+    borelize α
+    exact measurableSet_Ioc
+
 namespace MeasureTheory.Measure
 
 /-- Two finite measures on a Borel space are equal if they agree on all closed-open intervals.  If
@@ -547,14 +574,14 @@ theorem ext_of_Icc {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
 end MeasureTheory.Measure
 
 @[measurability]
-theorem measurableSet_uIcc : MeasurableSet (uIcc a b) :=
+theorem measurableSet_uIcc [OrderClosedTopology α] : MeasurableSet (uIcc a b) :=
   measurableSet_Icc
 
 @[measurability]
-theorem measurableSet_uIoc : MeasurableSet (uIoc a b) :=
+theorem measurableSet_uIoc [ClosedIicTopology α] : MeasurableSet (uIoc a b) :=
   measurableSet_Ioc
 
-variable [SecondCountableTopology α]
+variable [SecondCountableTopology α] [OrderClosedTopology α]
 
 @[fun_prop]
 theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
@@ -586,8 +613,6 @@ variable [TopologicalSpace γ] {mγ : MeasurableSpace γ} [BorelSpace γ]
 
 instance (priority := 100) ContinuousSup.measurableSup [Max γ] [ContinuousSup γ] :
     MeasurableSup γ where
-  measurable_const_sup _ := (continuous_const.sup continuous_id).measurable
-  measurable_sup_const _ := (continuous_id.sup continuous_const).measurable
 
 instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopology γ] [Max γ]
     [ContinuousSup γ] : MeasurableSup₂ γ :=
@@ -595,8 +620,6 @@ instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopolo
 
 instance (priority := 100) ContinuousInf.measurableInf [Min γ] [ContinuousInf γ] :
     MeasurableInf γ where
-  measurable_const_inf _ := (continuous_const.inf continuous_id).measurable
-  measurable_inf_const _ := (continuous_id.inf continuous_const).measurable
 
 instance (priority := 100) ContinuousInf.measurableInf₂ [SecondCountableTopology γ] [Min γ]
     [ContinuousInf γ] : MeasurableInf₂ γ :=
@@ -1032,7 +1055,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     rw [← measure_union]
     · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
-    · exact disjoint_singleton_left.mpr notMem_Ioi_self
+    · exact disjoint_singleton_left.mpr self_notMem_Ioi
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by
