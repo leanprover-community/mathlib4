@@ -222,8 +222,16 @@ theorem re_ofReal_mul (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
   simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
 
 @[rclike_simps]
+theorem re_mul_ofReal (z : K) (r : ℝ) : re (z * ↑r) = re z * r := by
+  rw [mul_comm, re_ofReal_mul, mul_comm]
+
+@[rclike_simps]
 theorem im_ofReal_mul (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
   simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
+
+@[rclike_simps]
+theorem im_mul_ofReal (z : K) (r : ℝ) : im (z * ↑r) = im z * r := by
+  rw [mul_comm, im_ofReal_mul, mul_comm]
 
 @[rclike_simps]
 theorem smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by

@@ -6,6 +6,7 @@ Authors: Vasilii Nesterov
 module
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Well-formed bases
