@@ -5,15 +5,8 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 module
 
--- public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
--- public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
--- public import Mathlib.CategoryTheory.Category.Basic
--- public import Mathlib.CategoryTheory.ComposableArrows.Basic
--- public import Mathlib.CategoryTheory.Functor.Basic
--- public import Mathlib.Combinatorics.Quiver.Basic
--- public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # The Coherent Isomorphism
@@ -29,10 +22,10 @@ Then we define the simplicial set `coherentIso` as the nerve of `WalkingIso`.
 Since the morphism types in `WalkingIso` are given by `unit`, the `n`-simplices of `coherentIso` are
 equivalent to `Fin 2`-vectors of length `n + 1`. This shows that the `n`-simplices of `coherentIso`
 have decidable equality.
-Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `false` to `true`) is an isomorphism,
+Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `false` to `true`) has an inverse,
 and `isIsoOfEqMapHom` concludes from this that for any simplicial set `X`,
 any morphism `g : coherentIso ⟶ X` and any `f : X _⦋1⦌`,
-if `g` sends `hom` to `f`, then `f` is an isomorphism.
+if `g` sends `hom` to `f`, then `f` has an inverse.
 
 -/
 
@@ -163,22 +156,23 @@ def invHomId : Edge.CompStruct inv hom (Edge.id x₁) where
   d₀ := ComposableArrows.ext₁ rfl rfl rfl
   d₁ := ComposableArrows.ext₁ rfl rfl rfl
 
-/-- The forwards edge of `coherentIso` is an isomorphism. -/
-def isIsoHom : Edge.IsIso coherentIso.hom where
+/-- The forwards edge of `coherentIso` has an inverse. -/
+def isIsoHom : Edge.InvStruct coherentIso.hom where
   inv := inv
   homInvId := homInvId
   invHomId := invHomId
 
-/-- The image of `hom` under an SSet morphism is an isomorphism. -/
-def isIsoMapHom {X : SSet} (g : coherentIso ⟶ X) : IsIso (coherentIso.hom.map g) := isIsoHom.map g
+/-- The image of `hom` under an SSet has an inverse. -/
+def isIsoMapHom {X : SSet} (g : coherentIso ⟶ X) : InvStruct (coherentIso.hom.map g)
+  := isIsoHom.map g
 
 /-- If an edge is equal to the image of `hom` under an SSet morphism,
-  this edge is an isomorphism. -/
+  this edge has an inverse. -/
 def isIsoOfEqMapHom {X : SSet} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
     {g : coherentIso ⟶ X}
     (hfg : f.edge = g.app _ hom.edge) :
-  f.IsIso :=
+  f.InvStruct :=
   (isIsoMapHom g).ofEq hfg.symm
 
 end coherentIso

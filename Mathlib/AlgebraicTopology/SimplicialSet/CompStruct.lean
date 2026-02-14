@@ -22,8 +22,8 @@ Given a simplicial set `X`, we introduce three types:
 The definitions in this file are definitionally equal to their `2`-truncated
 counterparts.)
 
-Given `0`-simplices `x₀` and `x₁`, and an edge `hom : Edge x₀ x₁`, `IsIso hom` records the data of
-an edge `inv : Edge x₁ x₀` and simplices `homInvId : CompStruct hom inv (id x₀)` and
+Given `0`-simplices `x₀` and `x₁`, and an edge `hom : Edge x₀ x₁`, `InvStruct hom` records the data
+of an edge `inv : Edge x₁ x₀` and simplices `homInvId : CompStruct hom inv (id x₀)` and
 `invHomId : CompStruct inv hom (id x₁)`, witnessing that `inv` is an inverse to `hom`.
 
 -/
@@ -255,10 +255,10 @@ def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
 
 end CompStruct
 
-/-- For `hom` an edge, `IsIso hom` encodes that there is a backward edge `inv`, and
+/-- For `hom` an edge, `InvStruct hom` encodes that there is a backward edge `inv`, and
   there are 2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
   This means that `hom` becomes an isomorphism in the homotopy category. -/
-structure IsIso (hom : Edge x₀ x₁) where
+structure InvStruct (hom : Edge x₀ x₁) where
   /-- The backwards edge -/
   inv : Edge x₁ x₀
   /-- The simplex witnessing that `hom` and `inv` compose to the identity -/
@@ -266,7 +266,7 @@ structure IsIso (hom : Edge x₀ x₁) where
   /-- The simplex witnessing that `inv` and `hom` compose to the identity -/
   invHomId  : CompStruct inv hom (id x₁)
 
-namespace IsIso
+namespace InvStruct
 
 lemma id_comp_id_aux {l m n : ℕ}
     {f : ⦋n⦌ ⟶ ⦋m⦌}
@@ -286,37 +286,37 @@ def idCompId (x : X _⦋0⦌) : CompStruct (id x) (id x) (id x) :=
     (by apply id_comp_id_aux; decide)
     (by apply id_comp_id_aux; decide)
 
-/-- The identity edge is an isomorphism. -/
-def isIsoId (x : X _⦋0⦌) : IsIso (id x) where
+/-- The identity edge has an inverse. -/
+def invStructId (x : X _⦋0⦌) : InvStruct (id x) where
   inv := id x
   homInvId := idCompId x
   invHomId := idCompId x
 
-/-- The inverse of an isomorphism is an isomorphism. -/
-def isIsoInv {hom : Edge x₀ x₁} (I : IsIso hom) : IsIso I.inv where
+/-- The inverse has an inverse. -/
+def invStructInv {hom : Edge x₀ x₁} (I : InvStruct hom) : InvStruct I.inv where
   inv := hom
   homInvId := I.invHomId
   invHomId := I.homInvId
 
-/-- The image of an isomorphism under an SSet morphism is an isomorphism. -/
-def map {hom : Edge x₀ x₁} (I : IsIso hom) (f : X ⟶ Y) : IsIso (hom.map f) where
+/-- Maps an inverse along an SSet morphism. -/
+def map {hom : Edge x₀ x₁} (I : InvStruct hom) (f : X ⟶ Y) : InvStruct (hom.map f) where
   inv := I.inv.map f
   homInvId := (I.homInvId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
   invHomId := (I.invHomId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
 
-/-- Transports a proof of isomorphism for `hom` along an equality of 1-simplices `hom = hom'`.
-  I.e. shows that `hom'` is an isomorphism from an isomorphism proof of `hom`. -/
+/-- Transports an inverse for `hom` along an equality of 1-simplices `hom = hom'`.
+  I.e. constructs an inverse for `hom'` from an inverse for `hom`. -/
 def ofEq {y₀ y₁ : X _⦋0⦌} {hom : Edge x₀ x₁} {hom' : Edge y₀ y₁}
-    (I : IsIso hom)
+    (I : InvStruct hom)
     (hhom : hom.edge = hom'.edge) :
-    IsIso hom' where
+    InvStruct hom' where
   inv := I.inv.ofEq
     (by rw [← hom.tgt_eq, hhom, hom'.tgt_eq])
     (by rw [← hom.src_eq, hhom, hom'.src_eq])
   homInvId := I.homInvId.ofEq hhom rfl (by rw [← hom.src_eq, hhom, hom'.src_eq])
   invHomId := I.invHomId.ofEq rfl hhom (by rw [← hom.tgt_eq, hhom, hom'.tgt_eq])
 
-end IsIso
+end InvStruct
 
 end Edge
 
