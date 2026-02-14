@@ -206,10 +206,7 @@ noncomputable def eval [GroupWithZero M] (l : NF M) : M :=
   simp [mul_comm]
 
 theorem cons_ne_zero [GroupWithZero M] (r : ℤ) {x : M} (hx : x ≠ 0) {l : NF M} (hl : l.eval ≠ 0) :
-    ((r, x) ::ᵣ l).eval ≠ 0 := by
-  unfold eval cons
-  apply mul_ne_zero ?_ hl
-  simp [zpow'_eq_zero_iff, hx]
+    ((r, x) ::ᵣ l).eval ≠ 0 := mul_ne_zero (by simp [zpow'_eq_zero_iff, hx]) hl
 
 theorem cons_pos [GroupWithZero M] [PartialOrder M] [PosMulStrictMono M] [PosMulReflectLT M]
     [ZeroLEOneClass M] (r : ℤ) {x : M} (hx : 0 < x) {l : NF M} (hl : 0 < l.eval) :
