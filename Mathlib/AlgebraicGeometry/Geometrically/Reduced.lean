@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.AlgebraicGeometry.Artinian
 public import Mathlib.AlgebraicGeometry.Geometrically.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 
@@ -72,7 +72,7 @@ lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
     [IsReduced Y] [Finite (irreducibleComponents Y)] : IsReduced X := by
   let pt (Z : irreducibleComponents Y) := Y.presheaf.stalk Z.property.1.genericPoint
   have hpt (Z : _) : IsField (pt Z) :=
-    isField_stalk_of_closure_mem_irreducibleComponents _ (by
+    isField_stalk_of_closure_mem_irreducibleComponents _ _ (by
       rw [Z.property.1.closure_genericPoint (isClosed_of_mem_irreducibleComponents _ Z.property)]
       exact Z.property)
   let (Z : _) := (hpt Z).toField
@@ -125,4 +125,3 @@ instance [GeometricallyReduced g] [Flat g] [IsReduced X] [IsLocallyNoetherian X]
   GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian (pullback.fst _ _)
 
 end AlgebraicGeometry
-#min_imports
