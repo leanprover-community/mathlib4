@@ -226,6 +226,16 @@ lemma toReal_klDiv_smul_right (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν
   have hc' : (c : ℝ) ≠ 0 := by simpa
   field_simp
 
+lemma toReal_klDiv_smul_both (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
+    (klDiv (c • μ) (c • ν)).toReal = c * (klDiv μ ν).toReal := by
+  by_cases hc : c = 0
+  · simp [hc]
+  rw [toReal_klDiv_smul_right_eq_smul_left, smul_smul, inv_mul_cancel₀ hc, one_smul]
+  · exact hμν.smul_left c
+  · refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr (llr_smul_nnreal_left hμν c (by simpa))]
+    fun_prop
+
 end Real
 
 lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c : ℝ≥0} (hc : c ≠ 0) :
@@ -273,6 +283,35 @@ lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c
   simp only [NNReal.zero_le_coe, ENNReal.ofReal_mul, ENNReal.ofReal_coe_nnreal]
   rw [ENNReal.ofReal_toReal]
   exact klDiv_ne_top (hμν.smul_left _) h_int_left
+
+lemma klDiv_smul_both [IsFiniteMeasure μ] [IsFiniteMeasure ν] (c : ℝ≥0) :
+    klDiv (c • μ) (c • ν) = c * klDiv μ ν := by
+  by_cases hc : c = 0
+  · simp [hc]
+  have hc' : (c : ℝ≥0∞) ≠ 0 := by simpa
+  have hμ_smul (μ : Measure α) : μ = c⁻¹ • (c • μ) := by
+    rw [smul_smul, inv_mul_cancel₀ hc, one_smul]
+  by_cases hμν : μ ≪ ν
+  swap
+  · rw [klDiv_of_not_ac hμν, klDiv_of_not_ac, ENNReal.mul_top hc']
+    refine fun h_contra ↦ hμν ?_
+    rw [hμ_smul μ, hμ_smul ν]
+    exact h_contra.smul _
+  by_cases h_int : Integrable (llr μ ν) μ
+  swap
+  · rw [klDiv_of_not_integrable h_int, klDiv_of_not_integrable, ENNReal.mul_top hc']
+    refine fun h_contra ↦ h_int ?_
+    rw [hμ_smul μ, hμ_smul ν]
+    refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr (llr_smul_nnreal_both (hμν.smul c) c⁻¹ (by simpa))]
+    fun_prop
+  rw [← ENNReal.ofReal_toReal (klDiv_ne_top (hμν.smul c) _),
+    ← ENNReal.ofReal_toReal (klDiv_ne_top hμν h_int)]
+  swap
+  · refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr (llr_smul_nnreal_both hμν c hc)]
+    fun_prop
+  simp [toReal_klDiv_smul_both hμν h_int]
 
 section Inequalities
 
