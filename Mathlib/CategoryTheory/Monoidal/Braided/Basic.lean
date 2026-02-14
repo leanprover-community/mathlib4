@@ -356,17 +356,17 @@ theorem braiding_inv_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).inv = (λ_ X).
   rw [braiding_tensorUnit_right]
   monoidal
 
-@[reassoc, simp]
+@[reassoc]
 lemma braiding_unit_unit_eq_id : (β_ (𝟙_ C) (𝟙_ C)).hom = 𝟙 _ := by
   simp only [braiding_tensorUnit_right]
   monoidal
 
-@[reassoc, simp]
+@[reassoc]
 lemma braiding_inv_unit_unit_eq_id : (β_ (𝟙_ C) (𝟙_ C)).inv = 𝟙 _ := by
   simp only [braiding_inv_tensorUnit_right]
   monoidal
 
-@[reassoc, simp]
+@[reassoc]
 lemma braiding_unit_unit_hom_eq_inv : (β_ (𝟙_ C) (𝟙_ C)).hom = (β_ (𝟙_ C) (𝟙_ C)).inv := by
   rw [braiding_unit_unit_eq_id, braiding_inv_unit_unit_eq_id]
 
@@ -786,6 +786,7 @@ lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y 
 
 /-- The isomorphism `tensorμ` which swaps the second and third objects in `(X₁ ⊗ X₂) ⊗ (Y₁ ⊗ Y₂)`,
 viewed as an isomorphism with inverse `tensorδ`. -/
+@[simps]
 def tensorμ_iso (X₁ X₂ Y₁ Y₂ : C) : (X₁ ⊗ X₂) ⊗ Y₁ ⊗ Y₂ ≅ (X₁ ⊗ Y₁) ⊗ X₂ ⊗ Y₂ where
   hom := tensorμ X₁ X₂ Y₁ Y₂
   inv := tensorδ X₁ X₂ Y₁ Y₂
