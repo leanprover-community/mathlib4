@@ -185,7 +185,7 @@ theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ
     Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
   ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
 theorem Projective.of_ringEquiv {R S} [Semiring R] [Semiring S] {M N}
     [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N]
     (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
