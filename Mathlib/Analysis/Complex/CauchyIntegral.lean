@@ -705,54 +705,35 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 open AnalyticAt
 
-lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
+lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-  (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n) (hn : n ≠ 0)
-   [CharZero 𝕜] :
-    analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
-  have ⟨g, hg, hgneq0, hexp⟩ := analyticOrderAt_eq_natCast hf |>.mp horder
-  refine analyticOrderAt_eq_natCast hf.deriv |>.mpr ⟨fun z ↦ n • g z + (z - z₀) • deriv g z, ?_⟩
-  refine ⟨fun_add (by
-    have := fun_const_smul (c := (n : 𝕜)) (f := g) (x := z₀) hg
-    norm_cast at this
-    ) (by fun_prop), by
-      simp only [sub_self, zero_smul, add_zero]
-      have Hnx {x : E} (hn : (n : 𝕜) ≠ 0) (hx : x ≠ 0) : n • x ≠ 0 := by
-        intro h
-        apply hx
-        have : x = (1 / (n : 𝕜)) • ((n : 𝕜) • x) := by rw [← smul_assoc]; aesop
-        norm_cast at this
-        rw [this, h]
-        simp
-      apply Hnx
-      · intros H
-        have := ringChar.dvd H
-        simp only [ringChar.eq_zero, zero_dvd_iff] at this
-        grind
-      · exact hgneq0
-    , ?_⟩
-  apply eventually_iff_exists_mem.mpr
-  have ⟨Ug, hU, hUf⟩ := eventually_iff_exists_mem.mp hexp
-  have ⟨Ur, hgz, hgN⟩ := exists_mem_nhds_analyticOnNhd hg
-  refine ⟨interior (Ug ∩ Ur), by simp_all, fun z Hz ↦ ?_⟩
-  trans deriv (fun z ↦ (z - z₀) ^ n • g z) z
-  · rw [EventuallyEq.deriv_eq <| eventually_iff_exists_mem.mpr ?_]
-    exact ⟨_, isOpen_interior.mem_nhds Hz, (hUf · <| interior_subset · |>.left)⟩
-  have := interior_subset Hz |>.right
-  rw [ smul_add, deriv_fun_smul (by simp_all) (differentiableAt <| by aesop)]
-  simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
-    deriv_fun_pow, deriv_fun_sub, deriv_id'', deriv_const', ← mul_smul, ← pow_succ]
-  have : n - 1 + 1 = n := by lia
-  rw [this]
-  have : (1 : 𝕜) - 0 = 1 := by aesop
-  rw [this]
-  rw [add_comm, mul_one]
-  simp_all only [ne_eq, interior_inter, mem_inter_iff, sub_zero, add_left_inj]
-  obtain ⟨left, right⟩ := Hz
-  have : n • g z = (n : 𝕜) • g z := by norm_cast
-  rw [this]
-  rw [← mul_smul]
-  rw [mul_comm]
+  (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
+    analyticOrderAt (deriv f) z₀ = (n : ℕ) := by
+  have ⟨g, hg, hg₀, hfg⟩ := (analyticOrderAt_eq_natCast hf).1 horder
+  refine (analyticOrderAt_eq_natCast hf.deriv).2 ?_
+  refine ⟨fun z ↦ (n + 1 : 𝕜) • g z + (z - z₀) • deriv g z, ?_, ?_, ?_⟩
+  · simpa using (fun_const_smul (c := (n + 1 : 𝕜)) (f := g) (x := z₀) hg).add
+      ((analyticAt_id.sub analyticAt_const).smul hg.deriv)
+  · have hn1 : (n + 1 : 𝕜) ≠ 0 := mod_cast (Nat.succ_ne_zero n)
+    simpa [sub_self] using (smul_ne_zero hn1 hg₀)
+  · obtain ⟨Ug, hUg, hUf⟩ := eventually_iff_exists_mem.mp hfg
+    obtain ⟨Ur, hUr, hgUr⟩ := exists_mem_nhds_analyticOnNhd hg
+    refine eventually_iff_exists_mem.2 ?_
+    have hU : interior (Ug ∩ Ur) ∈ 𝓝 z₀ :=
+      isOpen_interior.mem_nhds ((mem_interior_iff_mem_nhds).2 (inter_mem hUg hUr))
+    refine ⟨interior (Ug ∩ Ur), hU, fun z hz => ?_⟩
+    trans deriv (fun z : 𝕜 ↦ (z - z₀) ^ (n + 1) • g z) z
+    · rw [EventuallyEq.deriv_eq <| eventually_iff_exists_mem.2 ?_]
+      refine ⟨interior (Ug ∩ Ur), isOpen_interior.mem_nhds hz, fun y hy =>
+        hUf y (interior_subset hy).1⟩
+    · rw [deriv_fun_smul (by simp) ((hgUr z (interior_subset hz).2).differentiableAt)]
+      simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+        deriv_fun_pow, Nat.cast_add, Nat.cast_one, add_tsub_cancel_right, deriv_fun_sub, deriv_id'',
+        deriv_const', sub_zero, mul_one, smul_add]
+      have hmul : (n + 1 : 𝕜) * (z - z₀) ^ n = (z - z₀) ^ n * (n + 1 : 𝕜) := by simp [mul_comm]
+      rw [hmul, mul_smul, pow_succ, mul_smul, ← smul_add]
+      simp only [smul_add]
+      grind only
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
@@ -763,8 +744,13 @@ lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNor
   | succ n' hk =>
     intro Hn Hpos Hk
     rw [Function.iterate_succ']
-    apply analyticOrderAt_deriv_of_pos (iterated_deriv hf _) (hk _ Hn Hpos <| by lia) (by lia)
-
+    have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
+      refine (hk n Hn Hpos (by lia)).trans ?_
+      have : (n - n'.succ) + 1 = n - n' := by grind
+      rw [← this]
+      simp
+    simpa using
+      (analyticOrderAt_deriv_of_pos (hf := iterated_deriv hf n') (n := n - n'.succ) horder)
 
 end analyticity
 
