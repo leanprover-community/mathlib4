@@ -255,6 +255,13 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
 
+/-- The coercion from open sets to sets as a `FrameHom`. -/
+@[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
+  toFun := (·)
+  map_inf' _ _ := rfl
+  map_top' := rfl
+  map_sSup' _ := by simp
+
 theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
   U.isOpen.isOpenEmbedding_subtypeVal
 

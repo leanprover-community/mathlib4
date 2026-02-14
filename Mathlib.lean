@@ -1373,6 +1373,7 @@ public import Mathlib.AlgebraicGeometry.SpreadingOut
 public import Mathlib.AlgebraicGeometry.Stalk
 public import Mathlib.AlgebraicGeometry.StructureSheaf
 public import Mathlib.AlgebraicGeometry.ValuativeCriterion
+public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.CechNerve
 public import Mathlib.AlgebraicTopology.DoldKan.Compatibility

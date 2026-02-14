@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.RingTheory.RingHom.QuasiFinite
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
@@ -289,5 +290,49 @@ lemma locallyQuasiFinite_iff_finite_preimage_singleton
     {f : X ⟶ Y} [LocallyOfFiniteType f] [QuasiCompact f] :
     LocallyQuasiFinite f ↔ ∀ x, (f ⁻¹' {x}).Finite :=
   ⟨fun _ ↦ f.finite_preimage_singleton, .of_finite_preimage_singleton f⟩
+
+lemma LocallyQuasiFinite.of_injective {f : X ⟶ Y} [LocallyOfFiniteType f]
+    (hf : Function.Injective f) : LocallyQuasiFinite f :=
+  .of_finite_preimage_singleton _ fun _ ↦ (Set.subsingleton_singleton.preimage hf).finite
+
+instance (priority := low) {f : X ⟶ Y} [LocallyOfFiniteType f]
+    [UniversallyInjective f] : LocallyQuasiFinite f := .of_injective f.injective
+
+/-- A morphism `f : X ⟶ Y` is quasi-finite at `x : X`
+if the stalk map `𝒪_{X, x} ⟶ 𝒪_{Y, f x}` is quasi-finite. -/
+def Scheme.Hom.QuasiFiniteAt (x : X) : Prop := (f.stalkMap x).hom.QuasiFinite
+
+variable {f} in
+lemma Scheme.Hom.QuasiFiniteAt.quasiFiniteAt
+    {x : X} (hx : f.QuasiFiniteAt x) {V : X.Opens} (hV : IsAffineOpen V) {U : Y.Opens}
+    (hU : IsAffineOpen U) (hVU : V ≤ f ⁻¹ᵁ U) (hxV : x ∈ V.1) :
+    (f.appLE U V hVU).hom.QuasiFiniteAt (hV.primeIdealOf ⟨x, hxV⟩).asIdeal := by
+  algebraize [(f.appLE U V hVU).hom]
+  have H : (Y.presheaf.germ U _ (hVU hxV)).hom.QuasiFinite := by
+    algebraize [(Y.presheaf.germ U _ (hVU hxV)).hom]
+    have := hU.isLocalization_stalk ⟨f x, (hVU hxV)⟩
+    rw [← (Y.presheaf.germ U _ (hVU hxV)).hom.algebraMap_toAlgebra,
+      RingHom.quasiFinite_algebraMap]
+    exact .of_isLocalization (hU.primeIdealOf ⟨_, hVU hxV⟩).asIdeal.primeCompl
+  algebraize [(X.presheaf.germ V x hxV).hom]
+  have := hV.isLocalization_stalk ⟨x, hxV⟩
+  let e := IsLocalization.algEquiv (hV.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
+    (X.presheaf.stalk (⟨x, hxV⟩ : V.1)) (Localization.AtPrime (hV.primeIdealOf ⟨x, hxV⟩).asIdeal)
+  rw [RingHom.QuasiFiniteAt, Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
+  convert (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
+  rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE hVU) _ hxV,
+    Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map_assoc, CommRingCat.hom_comp, ← RingHom.comp_assoc,
+    IsScalarTower.algebraMap_eq Γ(Y, U) Γ(X, V), e.toAlgHom.comp_algebraMap.symm]
+  rfl
+
+lemma Scheme.Hom.quasiFiniteAt [LocallyQuasiFinite f] (x : X) :
+    f.QuasiFiniteAt x := by
+  refine HasRingHomProperty.stalkMap ?_ ‹_› x
+  introv hf
+  algebraize [f]
+  refine .of_comp (g := algebraMap R _) ?_
+  convert RingHom.quasiFinite_algebraMap.mpr (inferInstanceAs
+    (Algebra.QuasiFinite R (Localization.AtPrime J)))
+  ext; simp; rfl
 
 end AlgebraicGeometry
