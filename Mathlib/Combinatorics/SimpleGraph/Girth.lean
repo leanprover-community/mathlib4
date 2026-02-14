@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Rida Hamadani
 -/
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 public import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -13,11 +14,6 @@ public import Mathlib.Data.ENat.Lattice
 
 This file defines the girth and the extended girth of a simple graph as the length of its smallest
 cycle, they give `0` or `∞` respectively if the graph is acyclic.
-
-## TODO
-
-- Prove that `G.egirth ≤ 2 * G.ediam + 1` and `G.girth ≤ 2 * G.diam + 1` when the diameter is
-  non-zero.
 
 -/
 
@@ -64,6 +60,35 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
   simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
+
+theorem egirth_le_two_mul_girth_add_one [Nonempty α] [Finite α] (h : ¬ G.IsAcyclic) (hc : G.Connected) :
+    G.egirth ≤ 2 * G.ediam + 1 := by
+  by_contra hf
+  suffices ∃ x₀, ∃ c : G.Walk x₀ x₀, c.IsCycle ∧ c.length ≤ 2 * G.ediam + 1 by
+    obtain ⟨_, _, hw, h⟩ := this
+    exact (not_le.mpr (lt_of_le_of_lt h (not_le.mp hf)) <| egirth_le_length hw).elim
+  obtain ⟨x₀, w, hw₁, hw₂⟩ := exists_egirth_eq_length.mpr h
+  have hl : G.diam + 1 < w.length := by
+    rw [← ENat.coe_lt_coe, diam]
+    calc
+      _ ≤ G.ediam + 1 := by simp [G.ediam.coe_toNat_le_self]
+      _ ≤ 2 * G.ediam + 1 := by
+        rw [two_mul, add_assoc]
+        exact CanonicallyOrderedAdd.le_add_self _ _
+      _ < _ := lt_of_lt_of_le (not_le.mp hf) (egirth_le_length hw₁)
+  have hp₁ : (w.take (G.diam + 1)).IsPath := ((Walk.isCycle_copy w rfl).mp hw₁).isPath_take hl
+  obtain ⟨q, hq₁, hq₂⟩ := hc.exists_path_of_dist x₀ (w.getVert (G.diam + 1))
+  have h₁ : q.length ≤ G.diam := hq₂ ▸ (dist_le_diam <| connected_iff_ediam_ne_top.mp hc)
+  have h₂ : w.take (G.diam + 1) ≠ q := by
+    intro he
+    apply congrArg Walk.length at he
+    exact (lt_self_iff_false _).mp <| lt_of_le_of_lt h₁ (he ▸ (by simp [Nat.lt_of_succ_lt hl]))
+  obtain ⟨z, hz, c, hc₁, hc₂⟩ := cycle_from_two_paths hp₁ hq₁ h₂
+  use z, c, hc₁
+  rw [← ENat.coe_toNat (connected_iff_ediam_ne_top.mp hc), ← diam]
+  norm_cast
+  rw [Walk.take_length] at hc₂
+  omega
 
 end egirth
 
