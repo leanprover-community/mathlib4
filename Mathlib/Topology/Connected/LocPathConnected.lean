@@ -119,12 +119,22 @@ theorem connectedComponentSetoid_eq_pathSetoid : connectedComponentSetoid X = pa
 
 /-- In a locally path-connected space, connected components and path-connected components align -/
 def connectedComponentsEquivZerothHomotopy : ConnectedComponents X ≃ ZerothHomotopy X where
-  toFun := Quotient.lift Quotient.mk''
-    (Quotient.sound <| connectedComponent_eq_iff_joined · · |>.mp ·)
-  invFun := Quotient.lift Quotient.mk''
-    (Quotient.sound <| connectedComponent_eq_iff_joined · · |>.mpr ·)
+  toFun := Quotient.map id (connectedComponent_eq_iff_joined · · |>.mp ·)
+  invFun := ZerothHomotopy.toConnectedComponents
   left_inv := Quot.ind <| congrFun rfl
   right_inv := Quot.ind <| congrFun rfl
+
+@[simp]
+lemma connectedComponentsEquivZerothHomotopy_apply (x : X) :
+    connectedComponentsEquivZerothHomotopy ⟦x⟧ = ⟦x⟧ := rfl
+
+@[simp]
+lemma coe_connectedComponentsEquivZerothHomotopy_symm :
+    ⇑connectedComponentsEquivZerothHomotopy.symm = ZerothHomotopy.toConnectedComponents (X := X) :=
+  rfl
+
+lemma connectedComponentsEquivZerothHomotopy_symm_apply (x : X) :
+    connectedComponentsEquivZerothHomotopy.symm ⟦x⟧ = ⟦x⟧ := by simp
 
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
