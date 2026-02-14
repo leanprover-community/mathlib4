@@ -10,7 +10,6 @@ public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Tactic.DepRewrite
 
 /-!
 # The symmetric square
