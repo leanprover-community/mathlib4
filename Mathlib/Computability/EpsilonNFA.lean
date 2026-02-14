@@ -6,6 +6,7 @@ Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 module
 
 public import Mathlib.Computability.NFA
+public import Mathlib.Computability.RegularExpressions
 public import Mathlib.Data.List.ReduceOption
 
 /-!
@@ -746,6 +747,7 @@ end NFA
 
 namespace Language
 
+/-- Regular languages are closed under concatenation. -/
 theorem IsRegular.mul {L₁ L₂ : Language α}
     (h₁ : IsRegular L₁) (h₂ : IsRegular L₂) :
     IsRegular (L₁ * L₂) := by
@@ -763,6 +765,7 @@ theorem IsRegular.mul {L₁ L₂ : Language α}
   rw [← DFA.toNFA_correct, ← NFA.toεNFA_correct]
   exact εNFA.accepts_concat
 
+/-- Regular languages are closed under Kleene star. -/
 theorem IsRegular.kstar {L : Language α} (h : IsRegular L) : IsRegular (L∗) := by
   classical
   have ⟨σ, _, M, hM⟩ := h
@@ -816,3 +819,17 @@ theorem accept_one : (1 : εNFA α σ).accept = univ :=
   rfl
 
 end εNFA
+
+namespace RegularExpressions
+
+/-- The language matched by a regular expression is a regular language. -/
+theorem IsRegular.matches (P : RegularExpression α) : Language.IsRegular (P.matches') := by
+  induction P with
+  | zero             => simp [Language.IsRegular.zero]
+  | epsilon          => simp [Language.IsRegular.one]
+  | char             => simp [Language.IsRegular.singleton]
+  | plus _ _ ih₁ ih₂ => simp only [RegularExpression.matches', Language.IsRegular.add ih₁ ih₂]
+  | comp _ _ ih₁ ih₂ => simp [Language.IsRegular.mul ih₁ ih₂]
+  | star _ ih        => simp [Language.IsRegular.kstar ih]
+
+end RegularExpressions
