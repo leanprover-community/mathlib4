@@ -407,10 +407,6 @@ lemma exists_isFinite_morphismRestrict_of_finite_preimage_singleton
       Scheme.Hom.quasiFiniteAt_comp_iff] at this
     simpa
 
-instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
-  have : UniversallyClosed (f.toImage ≫ f.imageι) := by simpa
-  .of_comp_of_isSeparated _ f.imageι
-
 @[stacks 0AH8]
 lemma exists_finite_imageι_comp_morphismRestrict_of_finite_image_preimage
     {X Y S : Scheme} (f : X ⟶ Y) (g : Y ⟶ S) (s : S)
@@ -429,6 +425,5 @@ lemma exists_finite_imageι_comp_morphismRestrict_of_finite_image_preimage
   obtain ⟨x, rfl⟩ := f.toImage.surjective x
   refine ⟨x, ?_, by simp [← Scheme.Hom.comp_apply]⟩
   simpa [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base] using hx
-
 
 end AlgebraicGeometry
