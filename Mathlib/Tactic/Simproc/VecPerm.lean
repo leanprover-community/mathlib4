@@ -35,13 +35,6 @@ partial def Matrix.matchVecConsPrefixQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
     | throwError m!"Expected {vec} to have type {q(Fin $m → $α)}"
   return (l, ⟨m, vecQ⟩)
 
-  -- match n, vec with
-  -- | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
-  --   let some prevOut ← Matrix.matchVecConsPrefixQ prevVec | return none
-  --   return some <| lastOut :: prevOut
-  -- | ~q(0), ~q(Matrix.vecEmpty) => return some []
-  -- | _, _ => return none
-
 /--
 Takes an expression representing a list of elements of type `α` and outputs the corresponding
 vector `Fin n → α`.
