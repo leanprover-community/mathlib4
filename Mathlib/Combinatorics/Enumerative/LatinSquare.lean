@@ -567,15 +567,27 @@ lemma unique_missed_element
     (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) : 
     ∃! x, x ∉ Finset.image ι Finset.univ := by 
-      unfold ExistsUnique
-      simp
-      have g := Function.invFun ι
-      have k := Fintype.exists_ne_map_eq_of_card_lt g (by omega)
-      obtain ⟨ x, y, heq, h_not_inj ⟩ := k
-     
-
-
-      sorry
+      have h3pre : (Finset.image ι Finset.univ) ⊆ Finset.univ := by simp 
+      have h3 := Finset.card_sdiff_of_subset h3pre
+      simp only [Finset.card_univ] at h3
+      rw[h₂] at h3
+      have h4 := Finset.card_image_of_injective Finset.univ ι.inj'
+      simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h4
+      rw[h4] at h3
+      simp only [add_tsub_cancel_left] at h3
+      rw[Finset.card_eq_one] at h3
+      rw[Finset.singleton_iff_unique_mem] at h3
+      obtain ⟨x, hx1, hx2⟩ := h3
+      use x
+      dsimp
+      rw[Finset.mem_sdiff] at hx1
+      refine ⟨hx1.2, ?_⟩
+      intro y hy
+      specialize hx2 y
+      dsimp at hx2
+      rw[Finset.mem_sdiff] at hx2
+      simp only [Finset.mem_univ, true_and] at hx2
+      exact hx2 hy
 
 -- TODO Rewrite in terms of new definition!
 theorem latin_rectangle_extends
