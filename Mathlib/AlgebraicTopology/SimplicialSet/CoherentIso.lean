@@ -5,8 +5,15 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 module
 
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
-import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.Combinatorics.Quiver.Basic
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # The Coherent Isomorphism
