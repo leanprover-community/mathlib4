@@ -246,6 +246,8 @@ theorem MultiseriesExpansion.Approximates_coef_Majorized_head {basis_hd : ℝ �
         exact h_basis.left.left.left
       · exact h_exp
 
+/-! ### Basis extensions -/
+
 /-- The type of extensions of a given basis, defined as an inductive type.
 Given a `basis : Basis` and `ex : BasisExtension basis` of it, one can use `getBasis` to produce a
 basis `basis'` for which `basis <+ basis'`. Moreover, all such bases for which `basis` is a sublist
