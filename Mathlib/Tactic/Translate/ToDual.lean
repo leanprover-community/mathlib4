@@ -102,10 +102,11 @@ instead of automatically generating it.
 
 Use the `(attr := ...)` syntax to apply attributes to both the original and the dual version.
 Note: attributes like `@[simp]` are NOT automatically copied; you must use `(attr := simp)`.
-When combining `(attr := ...)` with a docstring, the `(attr := ...)` must come first:
+When combining options, the order is: `(attr := ...)`, then the target name, then the docstring:
 ```
 @[to_dual (attr := simp)] lemma upperBounds_empty ...
-@[to_dual (attr := simp) /-- Dual doc. -/] lemma upperBounds_empty ...
+@[to_dual (attr := simp) lowerBounds_empty] lemma upperBounds_empty ...
+@[to_dual (attr := simp) lowerBounds_empty /-- Dual doc. -/] lemma upperBounds_empty ...
 ```
 
 The `reassoc` attribute in category theory interacts with `to_dual` in a unique way, because it
