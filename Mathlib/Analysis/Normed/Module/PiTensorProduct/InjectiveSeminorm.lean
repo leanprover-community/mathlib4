@@ -59,7 +59,7 @@ space.
 
 * `PiTensorProduct.norm_eval_le_injectiveSeminorm`: The main property of the injective seminorm
   on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from
-`E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
+  `E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
