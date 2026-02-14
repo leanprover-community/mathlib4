@@ -95,7 +95,7 @@ namespace MonomialOrder
 
 open MvPolynomial
 
-open scoped MonomialOrder
+open scoped MonomialOrder nonZeroDivisors
 
 variable {σ : Type*} {m : MonomialOrder σ}
 
