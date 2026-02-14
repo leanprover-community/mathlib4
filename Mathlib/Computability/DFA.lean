@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Computability.Language
 public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
@@ -459,5 +460,32 @@ theorem IsRegular.inf {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
   ⟨σ1 × σ2, inferInstance, M1.inter M2, by simp [hM1, hM2]⟩
+
+variable {α : Type u}
+
+/-- The empty language is regular. -/
+theorem IsRegular.zero : IsRegular (0 : Language α) := by
+  apply isRegular_iff.mpr
+  use Unit, inferInstance, ⟨fun _ _ => (), (), {}⟩
+  rfl
+
+/-- The language of only the empty string is regular. -/
+theorem IsRegular.one : IsRegular (1 : Language α) := by
+  apply isRegular_iff.mpr
+  use Option Unit, inferInstance, DFA.epsilon
+  exact DFA.accepts_epsilon
+
+/-- The language of all strings over an alpabet is regular. -/
+theorem IsRegular.top : IsRegular (⊤ : Language α) := by
+  rw [← compl_bot, bot_eq_zero]
+  apply IsRegular.compl
+  exact IsRegular.zero
+
+/-- The language of only a single symbol is regular. -/
+theorem IsRegular.singleton {a : α} : IsRegular { [a] } := by
+  classical
+  apply isRegular_iff.mpr
+  use Option Bool, inferInstance, DFA.char a
+  exact DFA.accepts_char
 
 end Language
