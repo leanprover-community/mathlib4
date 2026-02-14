@@ -274,7 +274,7 @@ jobs:
           core.setOutput('toolchain_content', content);
           core.setOutput('branch_name', branchName);
 
-          const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/);
+          const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)/);
           if (!match) {
             core.setFailed('Toolchain pattern did not match');
             return null;
@@ -292,7 +292,7 @@ jobs:
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ⚠️ Warning: The lean-toolchain file in bump branch `${{ steps.bump_version.outputs.branch_name }}` does not match the expected pattern 'leanprover/lean4:nightly-YYYY-MM-DD'.
+          ⚠️ Warning: The lean-toolchain file in bump branch `${{ steps.bump_version.outputs.branch_name }}` does not match the expected pattern 'leanprover/lean4:nightly-YYYY-MM-DD(-revK)'.
 
           **Branch:** `${{ steps.bump_version.outputs.branch_name }}`
           **File URL:** https://github.com/${{ github.repository }}/blob/${{ steps.bump_version.outputs.branch_sha }}/lean-toolchain
@@ -418,7 +418,7 @@ jobs:
             if last_bot_message:
                 last_content = last_bot_message['content']
                 # Extract nightly date and bump branch from last bot message
-                date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2})', last_content)
+                date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2}(?:-rev\d+)?)', last_content)
                 branch_match = re.search(r'PR that to (bump/v[\d.]+)', last_content)
                 if date_match and branch_match:
                     last_date = date_match.group(1)
