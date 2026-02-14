@@ -5,6 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
+public import Mathlib.Data.Seq.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 
