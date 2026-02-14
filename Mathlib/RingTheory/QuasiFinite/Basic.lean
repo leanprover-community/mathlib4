@@ -191,6 +191,12 @@ lemma of_surjective_algHom [QuasiFinite R S] (f : S →ₐ[R] T) (hf : Function.
 instance (I : Ideal S) [QuasiFinite R S] : QuasiFinite R (S ⧸ I) :=
   of_surjective_algHom (Ideal.Quotient.mkₐ _ _) Ideal.Quotient.mk_surjective
 
+omit [Algebra S T] in
+lemma iff_of_algEquiv (e : S ≃ₐ[R] T) :
+    Algebra.QuasiFinite R S ↔ Algebra.QuasiFinite R T :=
+  ⟨fun _ ↦ .of_surjective_algHom e.toAlgHom e.surjective,
+    fun _ ↦ .of_surjective_algHom e.symm.toAlgHom e.symm.surjective⟩
+
 lemma of_isLocalization (M : Submonoid S) [IsLocalization M T] [QuasiFinite R S] :
     QuasiFinite R T :=
   letI : QuasiFinite S T := by
