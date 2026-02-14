@@ -323,7 +323,7 @@ lemma IsEllDivSequence.smul (h : IsEllDivSequence W) (x : R) : IsEllDivSequence 
   ⟨h.left.smul x, h.right.smul x⟩
 
 lemma isEllipticNet_id : IsEllipticNet id :=
-  fun _ _ _ _ => by simp_rw [IsEllipticNet.rel, id_eq]; ring1
+  fun _ _ _ _ ↦ by simp_rw [IsEllipticNet.rel, id_eq]; ring1
 
 lemma isEllSequence_id : IsEllSequence id :=
   isEllipticNet_id.isEllSequence
