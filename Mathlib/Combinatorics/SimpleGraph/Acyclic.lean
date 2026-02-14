@@ -135,10 +135,17 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
   isConnected := c.connected_toSimpleGraph
   IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
+theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
+  have := @Fintype.ofFinite V <| ENat.card_lt_top.mp <| h.trans_lt <| WithTop.coe_lt_top _
+  intro v p hp
+  have := hp.three_le_length
+  rw [ENat.card_eq_coe_fintype_card] at h
+  have := hp.support_nodup.length_le_card.trans <| Nat.cast_le.mp h
+  rw [List.length_tail, p.length_support] at this
+  lia
+
 lemma IsAcyclic.of_subsingleton [Subsingleton V] {G : SimpleGraph V} : G.IsAcyclic :=
-  fun v p hp ↦ hp.ne_nil <| match p with
-    | nil => rfl
-    | cons hadj _ => (G.irrefl <| Subsingleton.elim v _ ▸ hadj).elim
+  .of_card_le_two <| ENat.card_le_one.trans one_le_two
 
 lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
   @IsAcyclic.of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
