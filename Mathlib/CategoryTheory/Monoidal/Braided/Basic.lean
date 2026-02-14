@@ -356,17 +356,14 @@ theorem braiding_inv_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).inv = (λ_ X).
   rw [braiding_tensorUnit_right]
   monoidal
 
-@[reassoc]
 lemma braiding_unit_unit_eq_id : (β_ (𝟙_ C) (𝟙_ C)).hom = 𝟙 _ := by
   simp only [braiding_tensorUnit_right]
   monoidal
 
-@[reassoc]
 lemma braiding_inv_unit_unit_eq_id : (β_ (𝟙_ C) (𝟙_ C)).inv = 𝟙 _ := by
   simp only [braiding_inv_tensorUnit_right]
   monoidal
 
-@[reassoc]
 lemma braiding_unit_unit_hom_eq_inv : (β_ (𝟙_ C) (𝟙_ C)).hom = (β_ (𝟙_ C) (𝟙_ C)).inv := by
   rw [braiding_unit_unit_eq_id, braiding_inv_unit_unit_eq_id]
 
