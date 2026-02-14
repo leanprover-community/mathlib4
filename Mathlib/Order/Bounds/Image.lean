@@ -549,15 +549,17 @@ theorem isGLB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
 
 end Pi
 
-theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+theorem IsGLB.of_image [LE α] [LE β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsGLB (f '' s) (f x)) : IsGLB s x :=
   ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy⟩
+    -- was `hf.1 <| hx.2 <| Monotone.mem_lowerBounds_image (fun _ _ => hf.2) hy`
+    -- but `Monotone` requires `Preorder`
+    hf.1 <| hx.2 <| forall_mem_image.2 fun _ hz ↦ hf.mpr (hy hz)⟩
 
-theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+theorem IsLUB.of_image [LE α] [LE β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsLUB (f '' s) (f x)) : IsLUB s x :=
   ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
-    hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
+    hf.1 <| hx.2 <| forall_mem_image.2 fun _ hz ↦ hf.mpr (hy hz)⟩
 
 lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
     (hbdd : BddAbove (range g)) : BddAbove (range f) := by
