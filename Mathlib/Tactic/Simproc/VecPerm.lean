@@ -5,10 +5,8 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Mathlib.Data.List.Monad
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.Util.Qq
-public import Mathlib.Data.Fin.VecNotation
 
 
 /-! # The vecPerm simproc
@@ -79,7 +77,7 @@ def Simp.withExtraTheorems {α} (x : SimpM α) : SimpM α := do
 
 /-- Helper function to produce a term of type `Fin m` given by `n` (and a proof that `n < m` via
 `decide`.)
-Note: this could be inlined below, but this seems to produce a strange Qq bug. ß-/
+Note: this could be inlined below, but this seems to produce a strange Qq bug. -/
 def mkFin (n m : Q(Nat)) : MetaM Q(Fin $m) := do
   return q(⟨$n, $(← mkDecideProofQ q($n < $m))⟩)
 
