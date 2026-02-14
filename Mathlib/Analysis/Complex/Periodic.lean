@@ -265,10 +265,10 @@ lemma cuspFunction_neg {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction
     cuspFunction h (-f) = -cuspFunction h f := by
   simpa using cuspFunction_smul hfcts (-1)
 
-lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (Periodic.cuspFunction h f) 0)
-    (hgcts : ContinuousAt (Periodic.cuspFunction h g) 0) :
-    Periodic.cuspFunction h (f + g) = Periodic.cuspFunction h f + Periodic.cuspFunction h g := by
-  simp only [Periodic.cuspFunction]
+lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
+  simp only [cuspFunction]
   ext y
   obtain hy | rfl := ne_or_eq y 0
   · simp [hy]
