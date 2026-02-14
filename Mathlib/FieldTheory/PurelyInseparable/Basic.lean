@@ -161,7 +161,7 @@ theorem IsPurelyInseparable.surjective_algebraMap_of_isSeparable
 
 /-- If `E / F` is both purely inseparable and separable, then `algebraMap F E` is bijective. -/
 theorem IsPurelyInseparable.bijective_algebraMap_of_isSeparable
-    [Nontrivial E] [NoZeroSMulDivisors F E]
+    [Nontrivial E] [IsDomain F] [IsTorsionFree F E]
     [IsPurelyInseparable F E] [Algebra.IsSeparable F E] : Function.Bijective (algebraMap F E) :=
   ⟨FaithfulSMul.algebraMap_injective F E, surjective_algebraMap_of_isSeparable F E⟩
 

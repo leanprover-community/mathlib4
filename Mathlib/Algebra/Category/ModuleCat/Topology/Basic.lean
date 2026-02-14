@@ -75,6 +75,7 @@ instance : Category (TopModuleCat R) where
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
@@ -159,7 +160,7 @@ instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
   __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
 
-instance [CommRing S] : Linear S (TopModuleCat S) where
+instance : Linear S (TopModuleCat S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)
   comp_smul _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.smul_comp _ _ _)
 

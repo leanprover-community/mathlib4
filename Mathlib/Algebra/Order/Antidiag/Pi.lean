@@ -228,7 +228,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
   simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
-  aesop
+  grind
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map

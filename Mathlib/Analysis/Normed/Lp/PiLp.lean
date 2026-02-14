@@ -150,7 +150,7 @@ lemmas for each of three cases `p = 0`, `p = ∞` and `0 < p.to_real`.
 -/
 
 
-section Edist
+section EDist
 
 variable [∀ i, EDist (β i)]
 
@@ -180,9 +180,9 @@ theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
 
 theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
 
-end Edist
+end EDist
 
-section EdistProp
+section EDistProp
 
 variable {β}
 variable [∀ i, PseudoEMetricSpace (β i)]
@@ -203,7 +203,7 @@ protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   · simp only [edist_eq_iSup, edist_comm]
   · simp only [edist_eq_sum h, edist_comm]
 
-end EdistProp
+end EDistProp
 
 section Dist
 

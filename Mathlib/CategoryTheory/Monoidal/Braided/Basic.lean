@@ -249,16 +249,11 @@ def BraidedCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [Monoid
       ← comp_whiskerRight_assoc, w, comp_whiskerRight_assoc, reassoc_of% w,
       braiding_naturality_left_assoc, Functor.LaxMonoidal.associativity_inv, hexagon_reverse_assoc]
 
-@[deprecated (since := "2025-07-12")] alias braidedCategoryOfFaithful := BraidedCategory.ofFaithful
-
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
 noncomputable def BraidedCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
   .ofFaithful F fun X Y ↦ F.preimageIso ((μIso F _ _).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ μIso F _ _)
-
-@[deprecated (since := "2025-07-12")]
-alias braidedCategoryOfFullyFaithful := BraidedCategory.ofFullyFaithful
 
 section
 
@@ -456,7 +451,7 @@ lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom.hom = 
     α = β :=
   InducedCategory.hom_ext (LaxMonoidalFunctor.hom_ext h)
 
-/-- Constructor for morphisms in the category `LaxBraiededFunctor C D`. -/
+/-- Constructor for morphisms in the category `LaxBraidedFunctor C D`. -/
 @[simps]
 def homMk {F G : LaxBraidedFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
     F ⟶ G := ⟨f, inferInstance⟩

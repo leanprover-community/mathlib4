@@ -6,8 +6,8 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
-public meta import Mathlib.CategoryTheory.Category.Cat
 public meta import Mathlib.Util.AddRelatedDecl
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # The `to_app` attribute
@@ -32,9 +32,8 @@ There is also a term elaborator `to_app_of% t` for use within proofs.
 public meta section
 
 open Lean Meta Elab Tactic
-open Mathlib.Tactic
-
-namespace CategoryTheory
+open CategoryTheory
+namespace Mathlib.Tactic.CategoryTheory.ToApp
 
 /-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
@@ -142,7 +141,7 @@ initialize registerBuiltinAttribute {
   | `(attr| to_app $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl src "" "_app" ref optAttr fun value levels => do
+    addRelatedDecl src (src.appendAfter "_app") ref optAttr fun value levels => do
       let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ← toAppExpr (← toNatTransExpr (← toCatExpr value))
@@ -161,4 +160,4 @@ it suitably using basic lemmas about `NatTrans.app`.
 elab "to_app_of% " t:term : term => do
   toAppExpr (← elabTerm t none)
 
-end CategoryTheory
+end Mathlib.Tactic.CategoryTheory.ToApp

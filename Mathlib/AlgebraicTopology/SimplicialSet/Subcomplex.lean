@@ -33,7 +33,7 @@ open CategoryTheory Simplicial Limits
 namespace SSet
 
 -- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
--- by importing `Mathlib.CategoryTheory.Adhesive`, but we give a
+-- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
 instance : Balanced SSet.{u} where
   isIso_of_mono_of_epi f _ _ := by

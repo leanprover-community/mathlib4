@@ -215,7 +215,7 @@ end OrderedCancelCommMonoid
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero α] [NoZeroDivisors α] {s : Set α} {a : α}
+variable [CommMonoidWithZero α] [IsCancelMulZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 
 lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h

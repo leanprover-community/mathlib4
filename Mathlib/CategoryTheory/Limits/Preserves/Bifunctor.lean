@@ -209,7 +209,7 @@ instance of_preservesColimits_in_each_variable
   nonempty_isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ :=
     let Q₀ : DiagramOfCocones (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G) :=
       { obj j₁ := G.obj (K₁.obj j₁) |>.mapCocone c₂
-        map f := { hom := G.map (K₁.map f) |>.app c₂.pt }}
+        map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsColimit (Q₀.obj j₁) := fun j ↦ isColimitOfPreserves _ hc₂
     let E₀ : Q₀.coconePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
     let E₁ : (Cocones.precompose E₀.hom).obj (coconeOfCoconeUncurry P <| G.mapCocone₂ c₁ c₂) ≅
@@ -336,7 +336,7 @@ instance of_preservesLimits_in_each_variable
   nonempty_isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ :=
     let Q₀ : DiagramOfCones (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G) :=
       { obj j₁ := G.obj (K₁.obj j₁) |>.mapCone c₂
-        map f := { hom := G.map (K₁.map f) |>.app c₂.pt }}
+        map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsLimit (Q₀.obj j₁) := fun _ => isLimitOfPreserves _ hc₂
     let E₀ : Q₀.conePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
     let E₁ : (Cones.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅

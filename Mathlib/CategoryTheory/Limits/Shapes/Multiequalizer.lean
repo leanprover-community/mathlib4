@@ -337,11 +337,11 @@ def multicospan : WalkingMulticospan J ⥤ C where
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst` for limiting fans. -/
 def fstPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
-  Fan.IsLimit.desc hd fun i ↦ c.proj _ ≫ I.fst i
+  Fan.IsLimit.lift hd fun i ↦ c.proj _ ≫ I.fst i
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.snd` for limiting fans. -/
 def sndPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
-  Fan.IsLimit.desc hd fun i ↦ c.proj _ ≫ I.snd i
+  Fan.IsLimit.lift hd fun i ↦ c.proj _ ≫ I.snd i
 
 @[reassoc (attr := simp)]
 lemma fstPiMapOfIsLimit_proj (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) (i) :
@@ -615,8 +615,8 @@ variable {c : Fan I.left} (hc : IsLimit c) {d : Fan I.right} (hd : IsLimit d)
 
 @[reassoc (attr := simp)]
 theorem pi_condition :
-    Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd =
-      Fan.IsLimit.desc hc K.ι ≫ I.sndPiMapOfIsLimit c hd := by
+    Fan.IsLimit.lift hc K.ι ≫ I.fstPiMapOfIsLimit c hd =
+      Fan.IsLimit.lift hc K.ι ≫ I.sndPiMapOfIsLimit c hd := by
   apply Fan.IsLimit.hom_ext hd
   simp
 
@@ -624,17 +624,17 @@ theorem pi_condition :
 @[simps! pt]
 def toPiFork (K : Multifork I) :
     Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) :=
-  .ofι (Fan.IsLimit.desc hc K.ι) (by simp)
+  .ofι (Fan.IsLimit.lift hc K.ι) (by simp)
 
 @[simp]
 theorem toPiFork_π_app_zero :
-    (K.toPiFork hc hd).ι = Fan.IsLimit.desc hc K.ι :=
+    (K.toPiFork hc hd).ι = Fan.IsLimit.lift hc K.ι :=
   rfl
 
 @[simp]
 theorem toPiFork_π_app_one :
     (K.toPiFork hc hd).π.app WalkingParallelPair.one =
-      Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
+      Fan.IsLimit.lift hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
   rfl
 
 variable {hd} in
@@ -688,10 +688,6 @@ def toPiForkFunctor :
         · apply Fan.IsLimit.hom_ext hc
           simp
         · apply Fan.IsLimit.hom_ext hd
-          intro j
-          simp only [Multifork.toPiFork_π_app_one, Multifork.pi_condition,
-            Category.assoc]
-          dsimp [MulticospanIndex.sndPiMapOfIsLimit, Fan.proj, Fan.IsLimit.desc]
           simp }
 
 /-- `Multifork.ofPiFork` as a functor. -/

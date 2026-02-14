@@ -39,7 +39,7 @@ theorem FormallySmooth.iff_injective_lTensor_residueField.{u}
     Algebra.FormallySmooth R S ↔
       Function.Injective (P.cotangentComplex.lTensor (ResidueField S)) := by
   have : Module.Finite P.Ring P.Cotangent :=
-    have : Module.Finite P.Ring P.ker := ⟨(Submodule.fg_top _).mpr h'⟩
+    have : Module.Finite P.Ring P.ker := .of_fg h'
     .of_surjective _ Extension.Cotangent.mk_surjective
   have : Module.Finite S P.Cotangent := Module.Finite.of_restrictScalars_finite P.Ring _ _
   rw [← IsLocalRing.split_injective_iff_lTensor_residueField_injective,

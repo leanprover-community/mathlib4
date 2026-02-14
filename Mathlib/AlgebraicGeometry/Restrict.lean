@@ -67,6 +67,12 @@ lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
 
 lemma toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
 
+lemma forall_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∀ x, P x) ↔ ∀ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.forall
+
+lemma exists_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∃ x, P x) ↔ ∃ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.exists
+
 @[simp]
 lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
     U.toScheme.presheaf.map i = X.presheaf.map (U.ι.opensFunctor.map i.unop).op := rfl
@@ -766,6 +772,25 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
   simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.Opens.topIso_hom,
     eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
   rw [Scheme.Hom.appTop, ← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
+
+lemma Scheme.Hom.isPullback_resLE
+    {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
+    (H : IsPullback g iY iX f)
+    {US : S.Opens} {UT : T.Opens}
+    {UX : X.Opens} (hUST : UT ≤ f ⁻¹ᵁ US) (hUSX : UX ≤ iX ⁻¹ᵁ US)
+    {UY : Y.Opens} (hUY : UY = g ⁻¹ᵁ UX ⊓ iY ⁻¹ᵁ UT) :
+    IsPullback (g.resLE UX UY (by simp [*])) (iY.resLE UT UY (by simp [*]))
+      (iX.resLE US UX hUSX) (f.resLE US UT hUST) := by
+  refine .paste_horiz (v₁₂ := iY.resLE _ _
+    ((g.preimage_mono hUSX).trans_eq congr(($H.w) ⁻¹ᵁ US):)) ?_ ?_
+  · refine (IsOpenImmersion.isPullback _ _ _ _ (by simp) ?_).flip
+    simp only [Scheme.opensRange_homOfLE, ← Scheme.Hom.comp_preimage, Scheme.Hom.resLE_comp_ι]
+    rw [Scheme.Hom.comp_preimage, ← (g ⁻¹ᵁ UX).ι.image_injective.eq_iff]
+    simp only [Scheme.Hom.image_preimage_eq_opensRange_inf, Scheme.Opens.opensRange_ι]
+    simp [hUY]
+  · refine .of_bot ?_ ?_ (isPullback_morphismRestrict f US)
+    · simpa using (isPullback_morphismRestrict g UX).paste_vert H
+    · simp [← cancel_mono US.ι, H.w]
 
 end MorphismRestrict
 

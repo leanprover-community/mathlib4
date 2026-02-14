@@ -213,7 +213,7 @@ section finsupport
 variable {s : Set M} (ρ : SmoothPartitionOfUnity ι I M s) (x₀ : M)
 
 /-- The support of a smooth partition of unity at a point `x₀` as a `Finset`.
-This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i x₀ ≠ 0`. -/
 def finsupport : Finset ι := ρ.toPartitionOfUnity.finsupport x₀
 
 @[simp]
@@ -690,22 +690,26 @@ alias exists_smooth_forall_mem_convex_of_local_const :=
 /-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
 finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
 all `i`. Then there exists a positive smooth function `δ : M → ℝ≥0` such that for any `i` and
-`x ∈ K i`, we have `EMetric.closedBall x (δ x) ⊆ U i`. -/
-theorem Emetric.exists_contMDiffMap_forall_closedBall_subset
+`x ∈ K i`, we have `Metric.closedEBall x (δ x) ⊆ U i`. -/
+theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
     {M : Type*} [EMetricSpace M] [ChartedSpace H M]
     [IsManifold I ∞ M] [SigmaCompactSpace M] {K : ι → Set M} {U : ι → Set M}
     (hK : ∀ i, IsClosed (K i)) (hU : ∀ i, IsOpen (U i)) (hKU : ∀ i, K i ⊆ U i)
     (hfin : LocallyFinite K) :
     ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
-      (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, EMetric.closedBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
+      (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedEBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
   simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_swap ι M]
     using exists_contMDiffMap_forall_mem_convex_of_local_const I
-      EMetric.exists_forall_closedBall_subset_aux₂
-      (EMetric.exists_forall_closedBall_subset_aux₁ hK hU hKU hfin)
+      Metric.exists_forall_closedEBall_subset_aux₂
+      (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
+
+@[deprecated (since := "2026-01-24")]
+alias Emetric.exists_contMDiffMap_forall_closedBall_subset :=
+  Metric.exists_contMDiffMap_forall_closedEBall_subset
 
 @[deprecated (since := "2025-12-17")]
 alias Emetric.exists_smooth_forall_closedBall_subset :=
-  Emetric.exists_contMDiffMap_forall_closedBall_subset
+  Metric.exists_contMDiffMap_forall_closedEBall_subset
 
 /-- Let `M` be a smooth σ-compact manifold with a metric. Let `K : ι → Set M` be a locally finite
 family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for all
@@ -718,9 +722,9 @@ theorem Metric.exists_contMDiffMap_forall_closedBall_subset
     (hfin : LocallyFinite K) :
     ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
       (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedBall x (δ x) ⊆ U i := by
-  rcases Emetric.exists_contMDiffMap_forall_closedBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
+  rcases Metric.exists_contMDiffMap_forall_closedEBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
   refine ⟨δ, hδ0, fun i x hx => ?_⟩
-  rw [← Metric.emetric_closedBall (hδ0 _).le]
+  rw [← Metric.closedEBall_ofReal (hδ0 _).le]
   exact hδ i x hx
 
 @[deprecated (since := "2025-12-17")]

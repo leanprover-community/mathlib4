@@ -150,7 +150,7 @@ def closedUnit (X : ∀ i, C i) : 𝟭 (∀ i, C i) ⟶ tensorLeft X ⋙ ihom X 
 def closedCounit (X : ∀ i, C i) : ihom X ⋙ tensorLeft X ⟶ 𝟭 (∀ i, C i) where
   app Y := fun i ↦ (ihom.ev (X i)).app (Y i)
 
-/-- equipps the product of a family of closed monoidal categories with
+/-- Equips the product of a family of closed monoidal categories with
 a pointwise closed monoidal structure. -/
 @[simps]
 instance monoidalClosed : MonoidalClosed (∀ i, C i) where

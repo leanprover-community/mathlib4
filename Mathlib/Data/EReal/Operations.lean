@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
+public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers

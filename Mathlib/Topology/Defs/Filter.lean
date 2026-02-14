@@ -9,6 +9,7 @@ public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Definitions about filters in topological spaces
@@ -171,8 +172,6 @@ def nhdsSetWithin (s t : Set X) : Filter X := 𝓝ˢ s ⊓ 𝓟 t
 /-- The *neighborhoods kernel* of a set is the intersection of all its neighborhoods. In an
 Alexandrov-discrete space, this is the smallest neighborhood of the set. -/
 def nhdsKer (s : Set X) : Set X := (𝓝ˢ s).ker
-
-@[deprecated (since := "2025-07-09")] alias exterior := nhdsKer
 
 /-- A function between topological spaces is continuous at a point `x₀`
 if `f x` tends to `f x₀` when `x` tends to `x₀`. -/

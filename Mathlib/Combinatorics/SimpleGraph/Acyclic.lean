@@ -356,11 +356,6 @@ lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
   simp [this, p.adj_of_mem_edges]
 
-/-- Every connected graph has a spanning tree. -/
-lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
-  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_le_minimal h
-  exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
-
 /--
 Adding an edge to an acyclic graph preserves acyclicity if the endpoints are not reachable.
 -/
@@ -426,14 +421,11 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (h
     refine sup_le_iff.mpr ⟨by grind, ?_⟩
     rw [← F'.fromEdgeSet_edgeSet]
     grind [fromEdgeSet_mono]
-  have e_ndiag : ¬ e.IsDiag := by
-    suffices e ∈ Sym2.diagSetᶜ by simpa using this
-    exact F'.edgeSet_subset_setOf_not_isDiag he.1
   have F_sdiff_eq : (F ⊔ fromEdgeSet {e}) \ fromEdgeSet {e} = F := by
     simpa using he.2
   have h_bridge : (F ⊔ fromEdgeSet {e}).IsBridge e := by
     apply isAcyclic_iff_forall_edge_isBridge.mp this
-    simpa using Or.inr e_ndiag
+    simp [F'.not_isDiag_of_mem_edgeSet he.1]
   simp only [IsBridge, F_sdiff_eq] at h_bridge
   cases e
   case h u v =>
@@ -464,6 +456,35 @@ theorem maximal_isAcyclic_iff_isTree [Nonempty V] {T : SimpleGraph V} :
     Maximal IsAcyclic T ↔ T.IsTree := by
   simp [← connected_top.maximal_le_isAcyclic_iff_isTree le_top]
 
+/-- Every acyclic subgraph can be extended to a spanning forest. -/
+theorem exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic {H : SimpleGraph V} (hH_le : H ≤ G)
+    (hH_isAcyclic : H.IsAcyclic) :
+    ∃ F : SimpleGraph V, H ≤ F ∧ F ≤ G ∧ F.IsAcyclic ∧ F.Reachable = G.Reachable := by
+  obtain ⟨F, hF⟩ := G.exists_maximal_isAcyclic_of_le_isAcyclic hH_le hH_isAcyclic
+  use F
+  grind [maximal_isAcyclic_iff_reachable_eq, Maximal]
+
+/-- Every graph has a spanning forest. -/
+theorem exists_isAcyclic_reachable_eq_le :
+    ∃ F ≤ G, F.IsAcyclic ∧ F.Reachable = G.Reachable := by
+  obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
+  use F
+  grind
+
+/-- Every acyclic subgraph of a connected graph can be extended to a spanning tree. -/
+lemma Connected.exists_isTree_le_of_le_of_isAcyclic {H : SimpleGraph V} (h : G.Connected)
+    (hH_le : H ≤ G) (hH_isAcyclic : H.IsAcyclic) :
+    ∃ F : SimpleGraph V, H ≤ F ∧ F ≤ G ∧ F.IsTree := by
+  obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic hH_le hH_isAcyclic
+  use F
+  grind [IsTree, Connected, preconnected_iff_reachable_eq_top]
+
+/-- Every connected graph has a spanning tree. -/
+lemma Connected.exists_isTree_le (h : G.Connected) : ∃ T ≤ G, IsTree T := by
+  obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
+  use F
+  grind [IsTree, Connected, preconnected_iff_reachable_eq_top]
+
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card V ≤ Nat.card G.edgeSet + 1 := by
@@ -479,13 +500,14 @@ lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   classical
-  refine ⟨fun h ↦ ⟨h.isConnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  refine ⟨fun h ↦ ⟨h.isConnected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
+    fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra fun hbr ↦
     (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
-  exact Finset.card_lt_card <| by simpa [deleteEdges]
+  exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]

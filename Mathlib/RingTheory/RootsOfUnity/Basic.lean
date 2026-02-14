@@ -62,6 +62,13 @@ def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
 theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
   Iff.rfl
 
+theorem rootsOfUnity_eq_ker : rootsOfUnity k M = (powMonoidHom k).ker := by
+  rfl
+
+theorem ker_zpowGroupHom_eq_rootsOfUnity {k : ℤ} :
+    (zpowGroupHom k).ker = rootsOfUnity k.natAbs M := by
+  ext; simp
+
 /-- A variant of `mem_rootsOfUnity` using `ζ : Mˣ`. -/
 theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ k = 1 := by
   rw [mem_rootsOfUnity]; norm_cast

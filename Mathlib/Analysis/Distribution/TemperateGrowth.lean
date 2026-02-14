@@ -115,6 +115,16 @@ lemma HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
 
+@[fun_prop]
+lemma _root_.HasCompactSupport.hasTemperateGrowth {f : E → F} (h₁ : HasCompactSupport f)
+    (h₂ : ContDiff ℝ ∞ f) : f.HasTemperateGrowth := by
+  refine ⟨h₂, fun n ↦ ?_⟩
+  set g := fun x ↦ ‖iteratedFDeriv ℝ n f x‖
+  have hg : Continuous g := (h₂.continuous_iteratedFDeriv <| mod_cast le_top).norm
+  obtain ⟨x₀, hx₀⟩ := hg.exists_forall_ge_of_hasCompactSupport ((h₁.iteratedFDeriv _).norm)
+  refine ⟨0, g x₀, fun x ↦ ?_⟩
+  simpa using hx₀ x
+
 /-- Composition of two temperate growth functions is of temperate growth.
 
 Version where the outer function `g` is only of temperate growth on the image of inner function
@@ -284,6 +294,11 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simp [this]
   · exact (f.le_opNorm x).trans (by simp [mul_add])
+
+@[fun_prop]
+lemma _root_.ContinuousLinearEquiv.hasTemperateGrowth (f : E ≃L[ℝ] F) :
+    Function.HasTemperateGrowth f :=
+  f.toContinuousLinearMap.hasTemperateGrowth
 
 @[fun_prop]
 theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=

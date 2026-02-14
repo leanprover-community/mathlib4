@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 # Long exact sequence for the kernel and cokernel of a composition
 
 If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms in an
-abelian category, we construct a long exact sequence :
+abelian category, we construct a long exact sequence:
 `0 ⟶ ker f ⟶ ker (f ≫ g) ⟶ ker g ⟶ coker f ⟶ coker (f ≫ g) ⟶ coker g ⟶ 0`.
 
 This is obtained by applying the snake lemma to the following morphism of

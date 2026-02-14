@@ -188,6 +188,60 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 
 end UniformConvergence
 
+section LocalUniformConvergence
+
+variable {ι X : Type*} [TopologicalSpace X] {F G : ι → X → α} {f g : X → α} {s : Set X}
+  {l : Filter ι}
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformlyOn.mul
+    (hf : TendstoLocallyUniformlyOn F f l s) (hg : TendstoLocallyUniformlyOn G g l s) :
+    TendstoLocallyUniformlyOn (F * G) (f * g) l s :=
+  uniformContinuous_mul.comp_tendstoLocallyUniformlyOn (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_mul
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformlyOn.div
+    (hf : TendstoLocallyUniformlyOn F f l s) (hg : TendstoLocallyUniformlyOn G g l s) :
+    TendstoLocallyUniformlyOn (F / G) (f / g) l s :=
+  uniformContinuous_div.comp_tendstoLocallyUniformlyOn (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformlyOn.inv (hf : TendstoLocallyUniformlyOn F f l s) :
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s :=
+  uniformContinuous_inv.comp_tendstoLocallyUniformlyOn hf
+
+attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_inv
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformly.mul
+    (hf : TendstoLocallyUniformly F f l) (hg : TendstoLocallyUniformly G g l) :
+    TendstoLocallyUniformly (F * G) (f * g) l :=
+  uniformContinuous_mul.comp_tendstoLocallyUniformly (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformly.fun_mul
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformly.div
+    (hf : TendstoLocallyUniformly F f l) (hg : TendstoLocallyUniformly G g l) :
+    TendstoLocallyUniformly (F / G) (f / g) l :=
+  uniformContinuous_div.comp_tendstoLocallyUniformly (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformly.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformly.inv (hf : TendstoLocallyUniformly F f l) :
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
+  uniformContinuous_inv.comp_tendstoLocallyUniformly hf
+
+attribute [to_additive existing] TendstoLocallyUniformly.fun_inv
+
+end LocalUniformConvergence
+
+
 @[to_additive]
 instance (priority := 100) IsUniformGroup.of_compactSpace [UniformSpace β] [Group β]
     [ContinuousDiv β] [CompactSpace β] :

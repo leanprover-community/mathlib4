@@ -53,7 +53,7 @@ pointwise subtraction
 
 assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
-library_note2 «pointwise nat action» /--
+library_note «pointwise nat action» /--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
 nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
@@ -92,7 +92,7 @@ open Pointwise
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem mem_one : a ∈ (1 : Set α) ↔ a = 1 :=
   Iff.rfl
 
@@ -161,7 +161,7 @@ variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl
 
@@ -294,7 +294,7 @@ scoped[Pointwise] attribute [instance] Set.mul Set.add
 theorem image2_mul : image2 (· * ·) s t = s * t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_mul : a ∈ s * t ↔ ∃ x ∈ s, ∃ y ∈ t, x * y = a :=
   Iff.rfl
 
@@ -436,7 +436,7 @@ scoped[Pointwise] attribute [instance] Set.div Set.sub
 theorem image2_div : image2 (· / ·) s t = s / t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_div : a ∈ s / t ↔ ∃ x ∈ s, ∃ y ∈ t, x / y = a :=
   Iff.rfl
 
@@ -984,6 +984,13 @@ lemma image_pow_of_ne_zero [MulHomClass F α β] :
 lemma image_pow [MonoidHomClass F α β] (f : F) (s : Set α) : ∀ n, f '' (s ^ n) = (f '' s) ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
+
+@[to_additive]
+lemma preimage_pow_subset [MonoidHomClass F α β] (f : F) (s : Set β) :
+    ∀ n, (f ⁻¹' s) ^ n ⊆ f ⁻¹' (s ^ n)
+  | 0 => by simp [Set.subset_def]
+  | n + 1 => by simpa [pow_succ] using Subset.trans (mul_subset_mul_right
+    (preimage_pow_subset f s n)) (preimage_mul_preimage_subset f)
 
 end Monoid
 

@@ -28,7 +28,7 @@ variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Catego
   {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M] [HasShift E M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
-this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`. -/
+this is the type of morphisms `X ⟶ (Y⟦m⟧)` for `m : M`. -/
 abbrev ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ Y⟦m⟧
 
 namespace ShiftedHom
@@ -113,6 +113,14 @@ variable [Preadditive C]
 variable (X Y) in
 @[simp]
 lemma mk₀_zero (m₀ : M) (hm₀ : m₀ = 0) : mk₀ m₀ hm₀ (0 : X ⟶ Y) = 0 := by simp [mk₀]
+
+@[simp]
+lemma mk₀_add (m₀ : M) (hm₀ : m₀ = 0) (f g : X ⟶ Y) :
+    mk₀ m₀ hm₀ (f + g) = mk₀ m₀ hm₀ f + mk₀ m₀ hm₀ g := by simp [mk₀]
+
+@[simp]
+lemma mk₀_neg (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
+    mk₀ m₀ hm₀ (-f) = -mk₀ m₀ hm₀ f := by simp [mk₀]
 
 @[simp]
 lemma comp_add [∀ (a : M), (shiftFunctor C a).Additive]

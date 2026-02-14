@@ -6,11 +6,11 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
-public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Akra-Bazzi theorem: the sum transform

@@ -5,7 +5,6 @@ Authors: Claus Clausen, Patrick Massot
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.CDF
 public import Mathlib.Probability.Distributions.Gamma
 

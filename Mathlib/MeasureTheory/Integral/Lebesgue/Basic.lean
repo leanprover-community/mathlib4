@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.Algebra.Order.Pi
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -82,11 +83,6 @@ theorem lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν
 
 theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono' (le_refl μ) hfg
-
-@[deprecated lintegral_mono (since := "2025-07-10")]
-theorem lintegral_mono_fn ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
-    ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
-  lintegral_mono hfg
 
 theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)

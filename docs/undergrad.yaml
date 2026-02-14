@@ -608,7 +608,7 @@ Distribution calculus:
     stability by multiplication by a slowly growing smooth function: 'SchwartzMap.bilinLeftCLM'
     Gaussian functions: ''
     Fourier transforms on $\mathcal{S}(\R^d)$: 'SchwartzMap.fourierTransformCLM'
-    convolution of two functions of $\mathcal{S}(\R^d)$: ''
+    convolution of two functions of $\mathcal{S}(\R^d)$: 'SchwartzMap.convolution'
   Tempered distributions:
     definition: 'TemperedDistribution'
     derivation of tempered distributions: 'TemperedDistribution.instLineDeriv'
