@@ -757,7 +757,7 @@ theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGrou
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff_nat
 
-@[deprecated Asymptotics.IsEquivalent.summable_iff_nat (since := "2026-02-07")]
+@[deprecated (since := "2026-02-07")]
 alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 
 namespace Module.Basis
