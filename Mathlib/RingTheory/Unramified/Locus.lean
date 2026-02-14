@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Etale.Kaehler
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Support
 
 import Mathlib.RingTheory.Localization.InvSubmonoid
@@ -61,6 +61,28 @@ variable (R) in
 lemma IsUnramifiedAt.of_restrictScalars (P : Ideal B) [P.IsPrime]
     [IsUnramifiedAt R P] : IsUnramifiedAt A P :=
   FormallyUnramified.of_restrictScalars R _ _
+
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] [IsUnramifiedAt R q] :
+    FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q) :=
+  .of_restrictScalars R _ _
+
+open _root_.TensorProduct in
+/-- If `A` is an `R`-algebra unramified at `Q`, `P` is the prime of `R` lying under `Q`,
+then `κ(P) ⊗ A` is unramified at `Q'` (the prime corresponding to `Q`) over `κ(P)`. -/
+theorem IsUnramifiedAt.residueField
+    (P : Ideal R) [P.IsPrime] (Q : Ideal A) [Q.IsPrime]
+    [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q]
+    (Q' : Ideal (P.Fiber A)) [Q'.IsPrime]
+    (hQ' : Q = Q'.comap Algebra.TensorProduct.includeRight.toRingHom) :
+    IsUnramifiedAt P.ResidueField Q' := by
+  let f₀ : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q' :=
+    Localization.localAlgHom Q Q' _ hQ'
+  have hf₀ : Function.Surjective f₀ := by
+    subst hQ'; exact P.surjectiveOnStalks_residueField.baseChange' _ _
+  let f : P.Fiber (Localization.AtPrime Q) →ₐ[P.ResidueField] Localization.AtPrime Q' :=
+    Algebra.TensorProduct.lift (Algebra.ofId _ _) f₀ fun _ _ ↦ .all _ _
+  have hf : Function.Surjective f := hf₀.forall.mpr fun x ↦ ⟨1 ⊗ₜ x, by simp [f]⟩
+  exact .of_surjective _ hf
 
 end
 

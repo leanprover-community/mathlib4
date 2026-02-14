@@ -304,7 +304,7 @@ section Pi
 
 open Filter Fintype Pointwise Topology Bornology
 
-private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Fintype ι]
+private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Finite ι]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
