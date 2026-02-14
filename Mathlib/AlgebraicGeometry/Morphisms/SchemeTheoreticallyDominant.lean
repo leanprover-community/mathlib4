@@ -71,17 +71,23 @@ lemma isSchemeTheoreticallyDominant_iff_isDominant (f : X ⟶ Y) [QuasiCompact f
   ⟨fun _ ↦ inferInstance, fun _ ↦ .of_isDominant _⟩
 
 lemma Scheme.Hom.app_injective (f : X ⟶ Y) [IsSchemeTheoreticallyDominant f] [QuasiCompact f]
-    (U : Y.Opens) (hU : IsAffineOpen U) :
+    (U : Y.Opens) :
     Function.Injective (f.app U) := by
-  rw [RingHom.injective_iff_ker_eq_bot, ← f.ker_apply ⟨U, hU⟩, f.ker_eq_bot]
-  simp
+  wlog hU : IsAffineOpen U generalizing U; swap
+  · rw [RingHom.injective_iff_ker_eq_bot, ← f.ker_apply ⟨U, hU⟩, f.ker_eq_bot]
+    simp
+  rw [injective_iff_map_eq_zero]
+  intro s hs
+  refine Y.IsSheaf.section_ext fun x hx ↦ ?_
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ U⟩ :=
+    Y.isBasis_affineOpens.exists_subset_of_mem_open hx U.isOpen
+  refine ⟨V, hVU, hxV, this V hV ?_⟩
+  rw [← ConcreteCategory.comp_apply, f.naturality]
+  simp [hs]
 
 lemma IsSchemeTheoreticallyDominant.isReduced (f : X ⟶ Y) [IsSchemeTheoreticallyDominant f]
-    [QuasiCompact f] [IsReduced X] : IsReduced Y := by
-  refine @IsReduced.of_openCover _ (Y.openCoverOfIsOpenCover _ Y.isBasis_affineOpens.isOpenCover)
-    fun U ↦ ?_
-  suffices _root_.IsReduced Γ(Y, U.1) from isReduced_of_isOpenImmersion U.2.isoSpec.hom
-  exact isReduced_of_injective _ (f.app_injective U.1 U.2)
+    [QuasiCompact f] [IsReduced X] : IsReduced Y :=
+  ⟨fun _ ↦ isReduced_of_injective _ (f.app_injective _)⟩
 
 instance IsSchemeTheoreticallyDominant.pullbackSnd (f : X ⟶ S) (g : Y ⟶ S)
     [IsSchemeTheoreticallyDominant f] [QuasiCompact f] [Flat g] :
@@ -99,7 +105,7 @@ instance IsSchemeTheoreticallyDominant.pullbackSnd (f : X ⟶ S) (g : Y ⟶ S)
         hVU]) hU hV (f.isCompact_preimage hU.isCompact)
   rw [@ConcreteCategory.mono_iff_injective_of_preservesPullback] at this
   refine CommRingCat.inr_injective_of_flat (f.appLE U (f ⁻¹ᵁ U) le_rfl) (g.appLE U V hVU)
-    (by simpa [Scheme.Hom.appLE] using f.app_injective U hU) (g.flat_appLE hU hV hVU) ?_
+    (by simpa [Scheme.Hom.appLE] using f.app_injective U) (g.flat_appLE hU hV hVU) ?_
   apply this
   simpa [← CommRingCat.comp_apply, ← Scheme.Hom.app_eq_appLE] using hx
 
