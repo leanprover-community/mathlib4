@@ -32,7 +32,9 @@ variable {ι' : Sort*} [CompleteLattice α]
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
 `⨆ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `iSup_eq_iSup_finset'` for a version
 that works for `ι : Sort*`. -/
-@[to_dual]
+@[to_dual /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
+`⨅ i ∈ t, s i`. This version assumes `ι` is a `Type*`. See `iInf_eq_iInf_finset'` for a version
+that works for `ι : Sort*`. -/]
 theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
   classical
   refine le_antisymm ?_ ?_
@@ -42,7 +44,9 @@ theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, �
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
 `⨆ i ∈ t, s i`. This version works for `ι : Sort*`. See `iSup_eq_iSup_finset` for a version
 that assumes `ι : Type*` but has no `PLift`s. -/
-@[to_dual]
+@[to_dual /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
+`⨅ i ∈ t, s i`. This version works for `ι : Sort*`. See `iInf_eq_iInf_finset` for a version
+that assumes `ι : Type*` but has no `PLift`s. -/]
 theorem iSup_eq_iSup_finset' (s : ι' → α) :
     ⨆ i, s i = ⨆ t : Finset (PLift ι'), ⨆ i ∈ t, s (PLift.down i) := by
   rw [← iSup_eq_iSup_finset, ← Equiv.plift.surjective.iSup_comp]; rfl
