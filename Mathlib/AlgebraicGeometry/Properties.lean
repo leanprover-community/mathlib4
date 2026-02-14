@@ -196,6 +196,38 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
   rintro rfl
   simp
 
+/-- If `X` is reduced and has finitely many irreducible components, then the stalks at the generic
+points of the irreducible components are fields. -/
+lemma isField_stalk_of_closure_mem_irreducibleComponents
+    (x : X) (hx : closure {x} ∈ irreducibleComponents X)
+    [IsReduced X] [Finite (irreducibleComponents X)] :
+    IsField (X.presheaf.stalk x) := by
+  refine ⟨Nontrivial.exists_pair_ne, mul_comm, fun {a} ha ↦ ?_⟩
+  obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
+  let V : Set X := (⋃₀ (irreducibleComponents X \ {closure {x}}))ᶜ
+  have hV : IsOpen V := by
+    simp only [V, Set.sUnion_eq_biUnion, isOpen_compl_iff]
+    exact (Set.Finite.diff ‹Finite _›).isClosed_biUnion
+      fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+  have hxV : x ∈ V := by
+    suffices ∀ Z ∈ irreducibleComponents X, x ∈ Z → Z = closure {x} by simpa [V, not_imp_not]
+    intro Z hZ hxZ
+    suffices closure {x} ⊆ Z from (hx.2 hZ.1 this).antisymm this
+    rwa [(isClosed_of_mem_irreducibleComponents _ hZ).closure_subset_iff, Set.singleton_subset_iff]
+  have hVx : V ⊆ closure {x} := by
+    intro a ha
+    have : irreducibleComponent a = closure {x} :=
+      not_not.mp fun H ↦ ha (Set.mem_sUnion_of_mem mem_irreducibleComponent
+          ⟨irreducibleComponent_mem_irreducibleComponents _, H⟩)
+    exact this.le mem_irreducibleComponent
+  rw [← TopCat.Presheaf.germ_res_apply (U := ⟨V, hV⟩ ⊓ U) _ inf_le_right.hom _ ⟨hxV, hxU⟩] at ha ⊢
+  rw [← isUnit_iff_exists_inv, ← Scheme.mem_basicOpen]
+  have := (basicOpen_eq_bot_iff _).not.mpr (ne_of_apply_ne _ (ha.trans_eq (by simp)))
+  simp only [← SetLike.coe_injective.eq_iff, TopologicalSpace.Opens.coe_bot, ← ne_eq,
+    ← Set.nonempty_iff_ne_empty] at this
+  obtain ⟨y, hy⟩ := this
+  exact (specializes_iff_mem_closure.mpr (hVx (X.basicOpen_le _ hy).1)).mem_open
+    (X.basicOpen _).isOpen hy
 /-- A scheme `X` is integral if its is nonempty,
 and `𝒪ₓ(U)` is an integral domain for each `U ≠ ∅`. -/
 class IsIntegral : Prop where
