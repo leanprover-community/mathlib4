@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.List.Monad
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.Util.Qq
+public import Mathlib.Data.Fin.VecNotation
+
 
 /-! # The vecPerm simproc
 
@@ -25,14 +27,22 @@ meta section
 Takes an expression representing a vector `Fin n → α` and returns the corresponding
 list `List α`.
 -/
-partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
-    (vec : Q(Fin $n → $α)) : MetaM (Option <| List Q($α)) := do
-  match n, vec with
-  | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
-    let some prevOut ← listOfVecQ prevVec | return none
-    return some <| lastOut :: prevOut
-  | ~q(0), ~q(Matrix.vecEmpty) => return some []
-  | _, _ => return none
+partial def Matrix.matchVecConsPrefixQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
+    (vec : Q(Fin $n → $α)) : MetaM (List Q($α) × (m : Q(Nat)) × Q(Fin $m → $α)) := do
+  let (l, m, vec) ← Matrix.matchVecConsPrefix n vec
+  let l ← l.mapM fun a ↦ do
+    let some aQ ← checkTypeQ a q($α) | throwError m!"Expected {a} to have type {α}"
+    return aQ
+  let some vecQ ← checkTypeQ vec q(Fin $m → $α)
+    | throwError m!"Expected {vec} to have type {q(Fin $m → $α)}"
+  return (l, ⟨m, vecQ⟩)
+
+  -- match n, vec with
+  -- | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
+  --   let some prevOut ← Matrix.matchVecConsPrefixQ prevVec | return none
+  --   return some <| lastOut :: prevOut
+  -- | ~q(0), ~q(Matrix.vecEmpty) => return some []
+  -- | _, _ => return none
 
 /--
 Takes an expression representing a list of elements of type `α` and outputs the corresponding
@@ -52,7 +62,7 @@ the list whose `i`th entry is `l[perm[i]]`.
 In the case where `perm ~ [0, ..., l.length-1]`, this is just computing the permutation of `l`
 represented by `perm`.
 -/
-private def permList {α : Type*} [Inhabited α] (vec : List α) (perm : List Nat) : List α :=
+private def permList {α : Type*} (vec : List α) (perm : List Nat) : List α :=
   perm.foldr (init := []) fun head current ↦
     match vec[head]? with
     | some entry => entry :: current
@@ -67,6 +77,12 @@ def Simp.withExtraTheorems {α} (x : SimpM α) : SimpM α := do
   let newSimpTheorems := extraSimpTheorems.foldr (fun thm simpThms ↦ simpThms.addSimpTheorem thm) {}
   Simp.withSimpTheorems #[← getSimpTheorems, newSimpTheorems] x
 
+/-- Helper function to produce a term of type `Fin m` given by `n` (and a proof that `n < m` via
+`decide`.)
+Note: this could be inlined below, but this seems to produce a strange Qq bug. ß-/
+def mkFin (n m : Q(Nat)) : MetaM Q(Fin $m) := do
+  return q(⟨$n, $(← mkDecideProofQ q($n < $m))⟩)
+
 /-- Given an expression representing a vector `perm : Fin n → Fin n`, computes the corresponding
 list of term of type `Fin n`. This is meant to be used when `perm` corresponds to a permutation
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
@@ -77,8 +93,8 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
       let _ ← synthInstanceQ q(NeZero $n)
       for idx in *...vn do
         let idxQ := mkNatLitQ idx
-        let idxQNew : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
-        let outIdxQ : Q(Nat) := q(($perm $idxQNew))
+        let idxQNew ← mkFin idxQ n
+        let outIdxQ := q(($perm $idxQNew : Nat))
         let outIdxExpr := (← Simp.withExtraTheorems <| Lean.Meta.Simp.simp outIdxQ).expr
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
@@ -104,10 +120,11 @@ example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
 simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let ⟨_, ~q(Fin $n → $α), ~q(($v) ∘ ($p : _ → Fin $n'))⟩ ← inferTypeQ' e | return .continue
   let .defEq _ ← isDefEqQ q($n) q($n') | return .continue
-  let some unpermList ← listOfVecQ (α := α) (n := n) v | return .continue
+  let (unpermList, ⟨m, _⟩) ← Matrix.matchVecConsPrefixQ (α := α) (n := n) v
+  unless ← isDefEq m q(0) do return .continue
   let some permAsList ← listOfVecFinQ n unpermList.length p | return .continue
   let outAsList := permList unpermList permAsList
-  let some out := vecOfListQ unpermList.length outAsList | return .continue
+  let out := PiFin.mkLiteralQ (n := outAsList.length) (outAsList[·]!)
   let pf ← mkAppM ``FinVec.eq_etaExpand #[e]
   return .continue <| some { expr := out, proof? := pf }
 
