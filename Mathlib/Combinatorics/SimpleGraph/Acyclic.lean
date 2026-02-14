@@ -509,7 +509,7 @@ lemma isTree_iff_connected_and_card [Finite V] :
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
 
-/-- Every acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges -/
+/-- An acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges -/
 lemma IsAcyclic.card_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :
     Nat.card G.edgeSet + Nat.card G.ConnectedComponent = Nat.card V := by
   have := Fintype.ofFinite G.ConnectedComponent
