@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
-Auxiliary lemmata covering the analytic part of the proof of the Gelfond–Schneider theorem.
+Auxiliary lemma for the analytic part of the proof of the Gelfond–Schneider theorem.
 Move to appropriate files in Analysis/Complex or Analysis/Analytic and change docstring accordingly.
 -/
 
