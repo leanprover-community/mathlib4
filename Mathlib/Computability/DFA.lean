@@ -366,6 +366,47 @@ theorem accepts_epsilon : epsilon.accepts = (1 : Language α) := by
 
 end epsilon
 
+section singleton
+
+/-- DFA which accepts the singleton language of `a`. -/
+def char (a : α) [DecidableEq α] : DFA α (Option Bool) where
+  step (ob : Option Bool) (x : α) := match ob with
+    | some true  => none
+    | some false => if x = a then some true else none
+    | none       => none
+  start := some false
+  accept := { some true }
+
+@[simp]
+theorem char_step_start (a : α) [DecidableEq α] (x : α) :
+    (char a).step (some false) x = if x = a then some true else none := rfl
+
+@[simp]
+theorem char_step_accept (a : α) [DecidableEq α] (x : α) :
+    (char a).step (some true) x = none := rfl
+
+@[simp]
+theorem char_step_dead (a : α) [DecidableEq α] (x : α) :
+    (char a).step none x = none := rfl
+
+theorem accepts_char {a : α} [DecidableEq α] : (char a).accepts = { [a] } := by
+  ext x
+  simp only [DFA.accepts, DFA.acceptsFrom, DFA.evalFrom]
+  rw [Set.mem_setOf_eq, Set.mem_singleton_iff]
+  cases x with
+  | nil => simp [char]
+  | cons b x' =>
+    cases x' with
+    | nil => simp [char]
+    | cons c x'' =>
+      have h_dead : ∀ w, List.foldl (char a).step none w = none := by
+        intro w
+        induction w <;> simp [*]
+      dsimp [char] at *
+      aesop
+
+end singleton
+
 end DFA
 
 namespace Language
