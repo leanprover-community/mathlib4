@@ -39,7 +39,7 @@ binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 Bertrand, prime, binomial coefficients
 -/
 
-@[expose] public section
+public section
 
 
 section Real

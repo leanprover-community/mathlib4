@@ -67,9 +67,6 @@ structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α
   Do not use this directly. Use `map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
--- TODO: remove this configuration and use the default configuration.
-initialize_simps_projections LatticeHom (+toSupHom, -toFun)
-
 section
 
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
@@ -292,8 +289,11 @@ instance : Max (SupHom α β) :=
       rw [Pi.sup_apply, map_sup, map_sup]
       exact sup_sup_sup_comm _ _ _ _⟩⟩
 
+instance : PartialOrder (SupHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeSup (SupHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [Bot β] : Bot (SupHom α β) :=
   ⟨SupHom.const α ⊥⟩
@@ -311,7 +311,7 @@ instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_sup (f g : SupHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
+theorem coe_sup (f g : SupHom α β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
 @[simp]
@@ -334,11 +334,8 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
-@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
+@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
     mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.SupHom.mk_le_mk⟩ := mk_le_mk
 
 /-- `Subtype.val` as a `SupHom`. -/
 def subtypeVal {P : β → Prop}
@@ -474,8 +471,11 @@ instance : Min (InfHom α β) :=
       rw [Pi.inf_apply, map_inf, map_inf]
       exact inf_inf_inf_comm _ _ _ _⟩⟩
 
+instance : PartialOrder (InfHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (InfHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance [Bot β] : Bot (InfHom α β) :=
   ⟨InfHom.const α ⊥⟩
@@ -493,7 +493,7 @@ instance [BoundedOrder β] : BoundedOrder (InfHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_inf (f g : InfHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
+theorem coe_inf (f g : InfHom α β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 
 @[simp]
@@ -516,11 +516,8 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : InfHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : InfHom α β) a = ⊤ :=
   rfl
 
-@[simp] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
+@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
     mk toFun₁ map_inf₁ ≤ mk toFun₂ map_inf₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-@[gcongr]
-alias ⟨_, _root_.GCongr.InfHom.mk_le_mk⟩ := mk_le_mk
 
 /-- `Subtype.val` as an `InfHom`. -/
 def subtypeVal {P : β → Prop}
@@ -780,7 +777,7 @@ namespace LatticeHom
 variable [Lattice α] [Lattice β] [Lattice γ]
 
 /-- Reinterpret a lattice homomorphism as a lattice homomorphism between the dual lattices. -/
-@[simps]
+@[simps!]
 protected def dual : LatticeHom α β ≃ LatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_sup'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_sup'⟩

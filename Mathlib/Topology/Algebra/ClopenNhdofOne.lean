@@ -20,7 +20,7 @@ there exists an open normal subgroup contained within it.
 This file is split out from the file `OpenSubgroup` because it needs more imports.
 -/
 
-@[expose] public section
+public section
 
 namespace IsTopologicalGroup
 

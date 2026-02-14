@@ -440,7 +440,7 @@ lemma IsLimit.lift_π {s : WidePullbackCone f} (hs : IsLimit s)
     IsLimit.lift hs b a w ≫ s.π i = a i :=
   hs.fac _ _
 
-/-- To show two wide pullback cones are isomorphic, it suffices to given a compatible isomorphism
+/-- To show two wide pullback cones are isomorphic, it suffices to give a compatible isomorphism
 of their cone points. -/
 def ext {ι : Type*}
     {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {s t : WidePullbackCone f}

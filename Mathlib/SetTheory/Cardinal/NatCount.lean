@@ -14,7 +14,7 @@ public import Mathlib.Data.Set.Card
 This file provides lemmas about the relation of `Nat.count` with cardinality functions.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

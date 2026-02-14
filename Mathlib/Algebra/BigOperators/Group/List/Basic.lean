@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Order.RelClasses
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Perm.Basic
@@ -16,6 +15,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Order.Basic
 
 /-!
 # Sums and products from lists
@@ -25,7 +25,7 @@ of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their a
 counterparts.
 -/
 
-@[expose] public section
+public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}

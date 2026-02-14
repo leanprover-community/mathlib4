@@ -112,6 +112,10 @@ theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
   ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.dExt h1 h2⟩
 
+theorem ExtensionOf.toLinearPMap_injective :
+    Function.Injective (α := ExtensionOf i f) ExtensionOf.toLinearPMap :=
+  fun _ _ _ ↦ by ext <;> congr!
+
 end Ext
 
 instance : Min (ExtensionOf i f) where
@@ -125,14 +129,12 @@ instance : Min (ExtensionOf i f) where
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
       is_extension := fun _ => X1.is_extension _ }
 
+instance : PartialOrder (ExtensionOf i f) :=
+  PartialOrder.lift _ ExtensionOf.toLinearPMap_injective
+
 instance : SemilatticeInf (ExtensionOf i f) :=
-  Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
-    (fun X Y h ↦
-      ExtensionOf.ext (by rw [h]) <| by
-        rw [h]
-        intros
-        rfl)
-    fun X Y ↦ LinearPMap.ext rfl fun x y h => by congr
+  ExtensionOf.toLinearPMap_injective.semilatticeInf _
+    .rfl .rfl fun X Y ↦ LinearPMap.ext rfl fun x y h ↦ by congr
 
 variable {i f}
 
@@ -415,8 +417,8 @@ lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
     Module.Injective R M where
   out X Y _ _ _ _ f hf g :=
-    let eX := ULift.moduleEquiv.{_,_,v'} (R := R) (M := X)
-    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_,_,v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
+    let eX := ULift.moduleEquiv.{_, _, v'} (R := R) (M := X)
+    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_, _, v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
       (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
       (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,

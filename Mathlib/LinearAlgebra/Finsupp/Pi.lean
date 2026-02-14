@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`
@@ -68,7 +69,6 @@ variable [AddCommMonoid P] [Module R P]
 /-- Forget that a function is finitely supported.
 
 This is the linear version of `Finsupp.toFun`. -/
-@[simps]
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   toFun := (⇑)
   map_add' x y := by
@@ -77,6 +77,12 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   map_smul' x y := by
     ext
     simp
+
+@[simp] theorem lcoeFun_apply (f : α →₀ M) : lcoeFun (R := R) f = ⇑f := rfl
+
+@[simp] theorem lcoeFun_comp_lsingle [DecidableEq α] (x : α) :
+    lcoeFun ∘ₗ lsingle x = .single R (fun _ ↦ M) x := by
+  ext; simp [single_eq_pi_single]
 
 end Finsupp
 
@@ -209,7 +215,7 @@ theorem range_mapRange_linearMap (f : M →ₗ[R] N) (hf : LinearMap.ker f = ⊥
     refine ⟨⟨x.support, y, fun i => ?_⟩, by ext; simp_all⟩
     constructor
     <;> contrapose!
-    <;> simp_all (config := {contextual := true}) [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
+    <;> simp_all +contextual [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
 
 end Finsupp
 

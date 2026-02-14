@@ -13,7 +13,7 @@ public import Mathlib.Data.Fintype.Card
 # Results about pointwise operations on sets and big operators.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Set

@@ -29,7 +29,6 @@ open Function
 namespace Nat
 
 open Finset Nat ZMod
-open scoped BigOperators
 
 /-- Fermat numbers: the `n`-th Fermat number is defined as `2^(2^n) + 1`. -/
 def fermatNumber (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1

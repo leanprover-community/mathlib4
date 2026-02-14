@@ -122,7 +122,7 @@ variable (C)
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
   map {X Y} f :=
-    { hom := (fromSkeletonToSkeletonIso X).hom ≫ f ≫ (fromSkeletonToSkeletonIso Y).inv  }
+    { hom := (fromSkeletonToSkeletonIso X).hom ≫ f ≫ (fromSkeletonToSkeletonIso Y).inv }
   map_id _ := by aesop
   map_comp _ _ := InducedCategory.hom_ext (by simp)
 

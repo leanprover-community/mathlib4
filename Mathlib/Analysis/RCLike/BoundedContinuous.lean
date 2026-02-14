@@ -12,7 +12,7 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-! # Results on bounded continuous functions with `RCLike` values -/
 
-@[expose] public section
+public section
 
 open Filter Real RCLike BoundedContinuousFunction
 

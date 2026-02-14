@@ -18,7 +18,7 @@ of unity, where `n` is the exponent of `G`. The main results in this file are
 * `CommGroup.monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity`: `G` is isomorphic to `G →* Mˣ`.
 -/
 
-@[expose] public section
+public section
 
 namespace CommGroup
 
@@ -51,7 +51,7 @@ lemma exists_apply_ne_one_aux
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
   simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
 
-variable [HasEnoughRootsOfUnity M (Monoid.exponent G)]
+variable [hM : HasEnoughRootsOfUnity M (Monoid.exponent G)]
 
 /-- If `G` is a finite commutative group of exponent `n` and `M` is a commutative monoid
 with enough `n`th roots of unity, then for each `a ≠ 1` in `G`, there exists a
@@ -79,5 +79,29 @@ theorem monoidHom_mulEquiv_of_hasEnoughRootsOfUnity : Nonempty ((G →* Mˣ) ≃
     exact HasEnoughRootsOfUnity.of_dvd M hdvd
   let E i := (IsCyclic.monoidHom_equiv_self (Multiplicative (ZMod (n i))) M).some
   exact ⟨e.monoidHomCongrLeft.trans <| e'.trans <| .trans (.piCongrRight E) e.symm⟩
+
+theorem card_monoidHom_of_hasEnoughRootsOfUnity :
+    Nat.card (G →* Mˣ) = Nat.card G :=
+  Nat.card_congr (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some.toEquiv
+
+/--
+Let `G` be a finite commutative group and let `H` be a subgroup. If `M` is a commutative monoid
+such that `G →* Mˣ` and `H →* Mˣ` are both finite (this is the case for example if `M` is a
+commutative domain) and with enough `n`th roots of unity, where `n` is the exponent
+of `G`, then any homomorphism `H →* Mˣ` can be extended to an homomorphism `G →* Mˣ`.
+-/
+theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* Mˣ)]
+    [Finite (H →* Mˣ)] : Function.Surjective (MonoidHom.restrictHom H Mˣ) := by
+  have : Fintype H := Fintype.ofFinite H
+  have : HasEnoughRootsOfUnity M (Monoid.exponent H) :=
+    hM.of_dvd M <| Monoid.exponent_submonoid_dvd H.toSubmonoid
+  have : HasEnoughRootsOfUnity M (Monoid.exponent (G ⧸ H)) :=
+    hM.of_dvd M <| Group.exponent_quotient_dvd H
+  refine MonoidHom.surjective_of_card_ker_le_div _ (le_of_eq ?_)
+  rw [card_monoidHom_of_hasEnoughRootsOfUnity, card_monoidHom_of_hasEnoughRootsOfUnity,
+    H.card_eq_card_quotient_mul_card_subgroup,
+    mul_div_cancel_right₀ _ (Fintype.card_eq_nat_card ▸ Fintype.card_ne_zero),
+    ← card_monoidHom_of_hasEnoughRootsOfUnity (G ⧸ H) M,
+    Nat.card_congr (restrictHomKerEquiv Mˣ H).toEquiv]
 
 end CommGroup

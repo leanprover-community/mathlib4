@@ -24,7 +24,7 @@ trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The 
 differentiable when `f` is (and giving a formula for its derivative).
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜]

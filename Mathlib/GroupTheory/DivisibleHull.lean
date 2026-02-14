@@ -220,7 +220,7 @@ instance : Module ℚ (DivisibleHull M) where
     simp_rw [qsmul_mk, mk_add_mk, mk_eq_mk]
     use 1
     suffices ((a + b).num * a.den * b.den * (s * s)) • m =
-        ((a.num * b.den + b.num * a.den) * (a + b).den * (s * s)) • m  by
+        ((a.num * b.den + b.num * a.den) * (a + b).den * (s * s)) • m by
       convert this using 1
       all_goals
       simp [← natCast_zsmul, smul_smul, ← add_smul]

@@ -298,18 +298,12 @@ protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :
 theorem toLinearEquiv_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
 
-@[deprecated (since := "2025-06-08")] alias symm_toLinearEquiv := toLinearEquiv_symm
-
 @[simp]
 theorem coe_symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toLinearEquiv.symm = e.symm :=
   rfl
 
 @[simp]
 theorem toHomeomorph_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
-  rfl
-
-@[deprecated "use instead `toHomeomorph_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
   rfl
 
 @[simp]
@@ -350,14 +344,10 @@ def prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁
     continuous_toFun := e.continuous_toFun.prodMap e'.continuous_toFun
     continuous_invFun := e.continuous_invFun.prodMap e'.continuous_invFun }
 
-@[deprecated (since := "2025-06-06")] alias prod := prodCongr
-
 @[simp, norm_cast]
 theorem prodCongr_apply [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) (x) : e.prodCongr e' x = (e x.1, e' x.2) :=
   rfl
-
-@[deprecated (since := "2025-06-06")] alias prod_apply := prodCongr_apply
 
 @[simp, norm_cast]
 theorem coe_prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
@@ -365,13 +355,9 @@ theorem coe_prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (
     (e.prodCongr e' : M₁ × M₃ →L[R₁] M₂ × M₄) = (e : M₁ →L[R₁] M₂).prodMap (e' : M₃ →L[R₁] M₄) :=
   rfl
 
-@[deprecated (since := "2025-06-06")] alias coe_prod := coe_prodCongr
-
 theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) : (e.prodCongr e').symm = e.symm.prodCongr e'.symm :=
   rfl
-
-@[deprecated (since := "2025-06-06")] alias prod_symm := prodCongr_symm
 
 variable (R₁ M₁ M₂)
 
@@ -663,6 +649,11 @@ theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂)
 theorem eq_comp_toContinuousLinearMap_symm (e₁₂ : M₁ ≃SL[σ₁₂] M₂) [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
     (f : M₂ →SL[σ₂₃] M₃) (g : M₁ →SL[σ₁₃] M₃) :
     f = g.comp e₁₂.symm.toContinuousLinearMap ↔ f.comp e₁₂.toContinuousLinearMap = g := by
+  aesop
+
+theorem eq_toContinuousLinearMap_symm_comp {e₁₂ : M₁ ≃SL[σ₁₂] M₂} [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂]
+    (f : M₃ →SL[σ₃₁] M₁) (g : M₃ →SL[σ₃₂] M₂) :
+    f = e₁₂.symm.toContinuousLinearMap.comp g ↔ e₁₂.toContinuousLinearMap.comp f = g := by
   aesop
 
 variable (M₁)
@@ -1214,7 +1205,17 @@ theorem self_comp_inverse (hf : f.IsInvertible) : f ∘L f.inverse = .id _ _ := 
   simp
 
 @[simp]
+theorem self_apply_inverse (hf : f.IsInvertible) (y : M₂) : f (f.inverse y) = y := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
 theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘L f = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem inverse_apply_self (hf : f.IsInvertible) (y : M) : f.inverse (f y) = y := by
   rcases hf with ⟨e, rfl⟩
   simp
 
@@ -1382,4 +1383,37 @@ def opContinuousLinearEquiv : M ≃L[R] Mᵐᵒᵖ where
 
 end MulOpposite
 
+namespace ContinuousLinearEquiv
+variable {S R V W G : Type*} [Semiring R] [Semiring S]
+  [AddCommMonoid V] [Module R V] [TopologicalSpace V] [Module S V] [ContinuousConstSMul S V]
+  [AddCommMonoid W] [Module R W] [TopologicalSpace W] [Module S W] [ContinuousConstSMul S W]
+  [AddCommMonoid G] [Module R G] [TopologicalSpace G] [Module S G] [ContinuousConstSMul S G]
+  [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
+
+/-- Left scalar multiplication of a unit and a continuous linear equivalence,
+as a continuous linear equivalence. -/
+instance : SMul Sˣ (V ≃L[R] W) where smul α e :=
+  { __ := α • e.toLinearEquiv
+    continuous_toFun := α.isUnit.continuous_const_smul_iff.mpr e.continuous
+    continuous_invFun := α⁻¹.isUnit.continuous_const_smul_iff.mpr e.symm.continuous }
+
+@[simp] theorem smul_apply (α : Sˣ) (e : V ≃L[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+
+theorem symm_smul_apply (e : V ≃L[R] W) (α : Sˣ) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl
+
+@[simp] theorem symm_smul [SMulCommClass R S V]
+    (e : V ≃L[R] W) (α : Sˣ) : (α • e).symm = α⁻¹ • e.symm := rfl
+
+@[simp] theorem toLinearEquiv_smul (e : V ≃L[R] W) (α : Sˣ) :
+    (α • e).toLinearEquiv = α • e.toLinearEquiv := rfl
+
+theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V)
+    (f : V ≃L[R] W) : (α • e).trans f = α • (e.trans f) := by
+  ext; simp [LinearMapClass.map_smul_of_tower f]
+
+theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
+end ContinuousLinearEquiv
 end

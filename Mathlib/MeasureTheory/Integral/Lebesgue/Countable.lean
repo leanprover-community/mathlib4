@@ -18,7 +18,7 @@ The lemmas in this file require at least one of the following of the Lebesgue in
 * The measure is finite, s-finite or sigma-finite
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

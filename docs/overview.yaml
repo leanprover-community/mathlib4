@@ -263,7 +263,7 @@ Topology:
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
     Baire theorem: 'dense_iInter_of_isOpen'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
-    Hausdorff distance: 'EMetric.hausdorffEdist'
+    Hausdorff distance: 'Metric.hausdorffEDist'
     Gromov-Hausdorff space: 'GromovHausdorff.GHSpace'
 
 Analysis:

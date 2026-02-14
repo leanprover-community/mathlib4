@@ -31,7 +31,7 @@ namespace.
 L'Hôpital's rule, L'Hopital's rule
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Set

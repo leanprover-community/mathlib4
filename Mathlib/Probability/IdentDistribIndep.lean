@@ -23,7 +23,7 @@ import Mathlib.Probability.Independence.InfinitePi
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

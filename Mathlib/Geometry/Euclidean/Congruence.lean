@@ -32,7 +32,7 @@ then reduces to ASA.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Congruent
 

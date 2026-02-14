@@ -309,7 +309,7 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
   exact hf.symm
 
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
-private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
+private theorem fixed_of_fixed1 [Module.IsTorsionFree (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
@@ -391,6 +391,19 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
   rw [IsFractionRing.stabilizerHom, MonoidHom.coe_comp] at key
   exact key.of_comp_left (IsFractionRing.fieldEquivOfAlgEquivHom_injective (A ⧸ P) (B ⧸ Q)
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
+
+/--
+The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the residue fields
+extension `B ⧸ Q` over `A ⧸ P`.
+-/
+noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
+    MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
+      Gal((B ⧸ Q)/(A ⧸ P)) :=
+  QuotientGroup.liftEquiv (N := (Q.inertia G).subgroupOf (MulAction.stabilizer G Q))
+    (stabilizerHom_surjective G P Q) (ker_stabilizerHom Q P G).symm
+
+theorem Ideal.Quotient.stabilizerQuotientInertiaEquiv_mk (g : MulAction.stabilizer G Q) :
+    stabilizerQuotientInertiaEquiv G P Q g = stabilizerHom Q P G g := rfl
 
 end surjectivity
 

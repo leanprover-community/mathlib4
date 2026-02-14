@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Nakayama
 
+
 /-!
 
 We gather results about the quotients of local rings.
@@ -64,8 +65,6 @@ variable [Module.Free R S] {ι : Type*}
 theorem finrank_quotient_map :
     finrank (R ⧸ p) (S ⧸ pS) = finrank R S := by
   classical
-  have : Module.Finite R (S ⧸ pS) := Module.Finite.of_surjective
-    (IsScalarTower.toAlgHom R S (S ⧸ pS)).toLinearMap (Ideal.Quotient.mk_surjective (I := pS))
   have : Module.Finite (R ⧸ p) (S ⧸ pS) := Module.Finite.of_restrictScalars_finite R _ _
   apply le_antisymm
   · let b := Module.Free.chooseBasis R S

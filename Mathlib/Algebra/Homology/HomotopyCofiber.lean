@@ -256,7 +256,7 @@ noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     · simp only [comp_f, homotopyCofiber_d, zero_f, add_zero,
         inlX_d φ i j _ hij hj, dNext_eq _ hj, dif_pos hj,
         add_neg_cancel_left, inr_f]
-    · rw [dNext_eq_zero _ _  hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
+    · rw [dNext_eq_zero _ _ hj, zero_add, zero_f, add_zero, homotopyCofiber_d,
         inlX_d' _ _ _ _ hj, comp_f, inr_f]
 
 variable (hc : ∀ j, ∃ i, c.Rel i j)

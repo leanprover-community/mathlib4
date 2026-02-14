@@ -50,7 +50,7 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
 entropy, Shannon, binary, nit, nepit
 -/
 
-@[expose] public section
+public section
 
 namespace Real
 variable {q : ℕ} {p : ℝ}

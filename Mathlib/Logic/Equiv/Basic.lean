@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
+public import Mathlib.Data.Int.Notation
 
 /-!
 # Equivalence between types
@@ -96,12 +97,7 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
 theorem Perm.subtypeCongr.trans :
     (ep.subtypeCongr en).trans (ep'.subtypeCongr en')
     = Perm.subtypeCongr (ep.trans ep') (en.trans en') := by
-  ext x
-  by_cases h : p x
-  · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [h, this]
-  · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [h, this]
+  grind [eq_def, coe_trans]
 
 end subtypeCongr
 

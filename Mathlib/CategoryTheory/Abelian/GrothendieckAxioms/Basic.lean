@@ -38,7 +38,7 @@ For `AB4` and `AB5`, we only require left exactness as right exactness is automa
 A comparison with Grothendieck's original formulation of the properties can be found in the
 comments of the linked Stacks page.
 Exactness as the preservation of short exact sequences is introduced in
-`CategoryTheory.Abelian.Exact`.
+`Mathlib/CategoryTheory/Abelian/Exact.lean`.
 
 We do not require `Abelian` in the definition of `AB4` and `AB5` because these classes represent
 individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, and similarly for
@@ -177,7 +177,7 @@ namespace Adjunction
 variable {C} {D : Type u''} [Category.{v''} D] {F : C ⥤ D} {G : D ⥤ C}
 
 /-- Let `adj : F ⊣ G` be an adjunction, with `G : D ⥤ C` reflective.
-Assume that `D` has finite limits and `F` commutes to them.
+Assume that `D` has finite limits and `F` commutes with them.
 If `C` has exact colimits of shape `J`, then `D` also has exact colimits of shape `J`. -/
 lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
     (J : Type u') [Category.{v'} J] [HasColimitsOfShape J C] [HasColimitsOfShape J D]
@@ -194,13 +194,13 @@ lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
     exact preservesLimit_of_natIso _ e⟩⟩
 
 /-- Let `adj : F ⊣ G` be an adjunction, with `F : C ⥤ D` coreflective.
-Assume that `C` has finite colimits and `G` commutes to them.
+Assume that `C` has finite colimits and `G` commutes with them.
 If `D` has exact limits of shape `J`, then `C` also has exact limits of shape `J`. -/
 lemma hasExactLimitsOfShape (adj : F ⊣ G) [F.Full] [F.Faithful]
     (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] [HasLimitsOfShape J D]
     [HasExactLimitsOfShape J D] [HasFiniteColimits C] [PreservesFiniteColimits G] :
     HasExactLimitsOfShape J C where
-  preservesFiniteColimits:= ⟨fun K _ _ ↦ ⟨fun {H} ↦ by
+  preservesFiniteColimits := ⟨fun K _ _ ↦ ⟨fun {H} ↦ by
     have : PreservesLimitsOfSize.{v', u'} G := adj.rightAdjoint_preservesLimits
     have : PreservesColimitsOfSize.{0, 0} F := adj.leftAdjoint_preservesColimits
     let e : (whiskeringRight J _ _).obj F ⋙ lim ⋙ G ≅ lim :=
@@ -531,23 +531,21 @@ noncomputable instance hasExactLimitsOfShape_discrete_finite {J : Type*} [Finite
   preservesFiniteColimits := preservesFiniteColimits_of_natIso HasBiproductsOfShape.colimIsoLim
 
 /--
-Checking AB of shape `Discrete ℕ` is enough for countable AB4, provided that the category has
-finite biproducts and finite limits.
+Checking exact colimits of shape `Discrete ℕ` is enough for countable AB4, provided that the
+category has finite biproducts and finite limits.
 -/
 lemma CountableAB4.of_hasExactColimitsOfShape_nat [HasFiniteLimits C] [HasCountableCoproducts C]
     [HasExactColimitsOfShape (Discrete ℕ) C] : CountableAB4 C := by
-  apply (config := { allowSynthFailures := true })
-      CountableAB4.of_hasExactColimitsOfShape_nat_and_finite
+  apply +allowSynthFailures CountableAB4.of_hasExactColimitsOfShape_nat_and_finite
   exact fun _ ↦ inferInstance
 
 /--
-Checking AB* of shape `Discrete ℕ` is enough for countable AB4*, provided that the category has
-finite biproducts and finite colimits.
+Checking exact limits of shape `Discrete ℕ` is enough for countable AB4*, provided that the
+category has finite biproducts and finite colimits.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat [HasFiniteColimits C]
     [HasCountableProducts C] [HasExactLimitsOfShape (Discrete ℕ) C] : CountableAB4Star C := by
-  apply (config := { allowSynthFailures := true })
-      CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite
+  apply +allowSynthFailures CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite
   exact fun _ ↦ inferInstance
 
 end
@@ -558,24 +556,24 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproduct
   preservesBinaryBiproducts_of_preservesBinaryProducts
 
 /--
-If `colim` of shape `J` into an abelian category `C` preserves monomorphisms, then `C` has AB of
-shape `J`.
+If `colim` of shape `J` into an abelian category `C` preserves monomorphisms, then `C` has exact
+colimits of shape `J`.
 -/
 lemma hasExactColimitsOfShape_of_preservesMono [HasColimitsOfShape J C]
     [PreservesMonomorphisms (colim (J := J) (C := C))] : HasExactColimitsOfShape J C where
   preservesFiniteLimits := by
-    apply (config := { allowSynthFailures := true }) preservesFiniteLimits_of_preservesHomology
+    apply +allowSynthFailures preservesFiniteLimits_of_preservesHomology
     · exact preservesHomology_of_preservesMonos_and_cokernels _
     · exact additive_of_preservesBinaryBiproducts _
 
 /--
-If `lim` of shape `J` into an abelian category `C` preserves epimorphisms, then `C` has AB* of
-shape `J`.
+If `lim` of shape `J` into an abelian category `C` preserves epimorphisms, then `C` has exact
+limits of shape `J`.
 -/
 lemma hasExactLimitsOfShape_of_preservesEpi [HasLimitsOfShape J C]
     [PreservesEpimorphisms (lim (J := J) (C := C))] : HasExactLimitsOfShape J C where
   preservesFiniteColimits := by
-    apply (config := { allowSynthFailures := true }) preservesFiniteColimits_of_preservesHomology
+    apply +allowSynthFailures preservesFiniteColimits_of_preservesHomology
     · exact preservesHomology_of_preservesEpis_and_kernels _
     · exact additive_of_preservesBinaryBiproducts _
 

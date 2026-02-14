@@ -131,13 +131,13 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
     (hg : Continuous g) (h'g : HasCompactSupport g) (g_nonneg : 0 ≤ g) {x₀ : G} (g_pos : g x₀ ≠ 0) :
     ∫ x, f x ∂μ = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ := by
   -- The group has to be locally compact, otherwise all integrals vanish and the result is trivial.
-  rcases h'f.eq_zero_or_locallyCompactSpace_of_group hf with Hf|Hf
+  rcases h'f.eq_zero_or_locallyCompactSpace_of_group hf with Hf | Hf
   · simp [Hf]
   let D : G → ℝ := fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂ν
   have D_cont : Continuous D := continuous_integral_apply_inv_mul hg h'g
   have D_pos : ∀ x, 0 < D x := by
     intro x
-    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := hg.comp (continuous_inv.mul continuous_const)
+    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := by fun_prop
     apply (integral_pos_iff_support_of_nonneg _ _).2
     · apply C.isOpen_support.measure_pos ν
       exact ⟨x * x₀⁻¹, by simpa using g_pos⟩
@@ -225,7 +225,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   -- The group has to be locally compact, otherwise all integrals vanish and the result is trivial.
   by_cases H : LocallyCompactSpace G; swap
   · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
-    rcases f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont with hf|hf
+    rcases f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont with hf | hf
     · simp [hf]
     · exact (H hf).elim
   -- Fix some nonzero continuous function with compact support `g`.
@@ -235,7 +235,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
     g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one
   -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
   -- with respect to `μ'` and `μ`.
-  let c : ℝ := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
+  let c : ℝ := (∫ x, g x ∂μ)⁻¹ * (∫ x, g x ∂μ')
   have c_nonneg : 0 ≤ c :=
     mul_nonneg (inv_nonneg.2 (integral_nonneg g_nonneg)) (integral_nonneg g_nonneg)
   refine ⟨⟨c, c_nonneg⟩, fun f f_cont f_comp ↦ ?_⟩
@@ -289,7 +289,7 @@ theorem integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) :
     ∫ x, f x ∂μ' = ∫ x, f x ∂(haarScalarFactor μ' μ • μ) := by
   classical
-  rcases h'f.eq_zero_or_locallyCompactSpace_of_group hf with Hf|Hf
+  rcases h'f.eq_zero_or_locallyCompactSpace_of_group hf with Hf | Hf
   · simp [Hf]
   · simp only [haarScalarFactor, Hf, not_true_eq_false, ite_false]
     exact (exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ).choose_spec
@@ -466,7 +466,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
       (𝓝 (∫ x, Set.indicator ({1} : Set ℝ) (fun _ ↦ 1) (f x) ∂ν)) := by
     intro ν hν
     apply tendsto_integral_of_dominated_convergence
-        (bound := (tsupport f).indicator (fun (_ : G) ↦ (1 : ℝ)) )
+        (bound := (tsupport f).indicator (fun (_ : G) ↦ (1 : ℝ)))
     · exact fun n ↦ (vf_cont n).aestronglyMeasurable
     · apply IntegrableOn.integrable_indicator _ (isClosed_tsupport f).measurableSet
       simpa using IsCompact.measure_lt_top h'f

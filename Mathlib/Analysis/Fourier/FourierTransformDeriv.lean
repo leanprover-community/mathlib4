@@ -233,7 +233,8 @@ theorem hasFDerivAt_fourierIntegral
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
     ae_of_all _ (fun v w' _ ↦ hasFDerivAt_fourierChar_smul L f v w')
-  exact hasFDerivAt_integral_of_dominated_of_fderiv_le one_pos h1 (h0 w) h3 h4 h5 h6
+  exact hasFDerivAt_integral_of_dominated_of_fderiv_le (Metric.ball_mem_nhds _ one_pos) h1 (h0 w)
+    h3 h4 h5 h6
 
 lemma fderiv_fourierIntegral
     [MeasurableSpace V] [BorelSpace V] [SecondCountableTopology V] {μ : Measure V}
@@ -286,13 +287,13 @@ This is designed so that the Fourier transform of `v ↦ fourierPowSMulRight L f
 `n`-th derivative of the Fourier transform of `f`.
 -/
 def fourierPowSMulRight (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
-  (- (2 * π * I))^n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
+  (- (2 * π * I)) ^ n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
   (fun _ ↦ L v))
 
 /- Increase the priority to make sure that this lemma is used instead of
 `FormalMultilinearSeries.apply_eq_prod_smul_coeff` even in dimension 1. -/
 @[simp 1100] lemma fourierPowSMulRight_apply {f : V → E} {v : V} {n : ℕ} {m : Fin n → W} :
-    fourierPowSMulRight L f v n m = (- (2 * π * I))^n • (∏ i, L v (m i)) • f v := by
+    fourierPowSMulRight L f v n m = (- (2 * π * I)) ^ n • (∏ i, L v (m i)) • f v := by
   simp [fourierPowSMulRight]
 
 open ContinuousMultilinearMap
@@ -300,7 +301,7 @@ open ContinuousMultilinearMap
 /-- Decomposing `fourierPowSMulRight L f v n` as a composition of continuous bilinear and
 multilinear maps, to deduce easily its continuity and differentiability properties. -/
 lemma fourierPowSMulRight_eq_comp {f : V → E} {v : V} {n : ℕ} :
-    fourierPowSMulRight L f v n = (- (2 * π * I))^n • smulRightL ℝ (fun (_ : Fin n) ↦ W) E
+    fourierPowSMulRight L f v n = (- (2 * π * I)) ^ n • smulRightL ℝ (fun (_ : Fin n) ↦ W) E
       (compContinuousLinearMapLRight
         (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ) (fun _ ↦ L v)) (f v) := rfl
 
@@ -417,7 +418,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
       _ ≤ (n + 1) ^ i := by gcongr; lia
       _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
     · exact hv _ (by lia) _ (by lia)
-  _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
+  _ = (2 * n + 2) ^ k * (‖L‖ ^ n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
       Nat.cast_pow, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one, ← mul_pow, mul_add]
 

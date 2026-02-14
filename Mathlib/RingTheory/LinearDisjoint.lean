@@ -782,13 +782,13 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   intro x y hxy
   obtain ⟨M', hM, hf, h⟩ :=
     TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
-  obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
+  obtain ⟨s, hs⟩ : M'.FG := .of_finite
   have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
   let A' := Algebra.adjoin R (s : Set S)
   have hf' : Submodule.FG (toSubmodule A') := fg_adjoin_of_finite s.finite_toSet fun x hx ↦
     (isIntegral_algHom_iff A.val Subtype.val_injective).2
       (Algebra.IsIntegral.isIntegral (R := R) (A := A) ⟨x, hs' hx⟩)
-  replace hf' : Module.Finite R A' := Module.Finite.iff_fg.2 hf'
+  replace hf' : Module.Finite R A' := .of_fg hf'
   have hA : toSubmodule A' ≤ toSubmodule A := Algebra.adjoin_le_iff.2 hs'
   replace h : {x, y} ⊆ (LinearMap.range (LinearMap.rTensor (toSubmodule B)
       (Submodule.inclusion hA)) : Set _) := fun _ hx ↦ by

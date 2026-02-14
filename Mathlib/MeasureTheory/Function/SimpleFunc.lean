@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
@@ -619,15 +618,15 @@ instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalar
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
 
 instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) where
-  smul_comm _ _ _ := ext fun _ ↦  smul_comm ..
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
-  algebraMap :={
+  algebraMap := {
     toFun r := const α <| algebraMap K β r
     map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
     map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
     map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
-    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add ..}
+    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add .. }
   commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
 
@@ -666,18 +665,16 @@ variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs
 
 instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 
-@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
-@[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
+@[simp, norm_cast, gcongr] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast, gcongr] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
 
 @[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
 
-@[simp] lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
-@[simp] lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
+@[simp, gcongr]
+lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
 
-@[gcongr] protected alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
-@[gcongr] protected alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
-@[gcongr] protected alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
-@[gcongr] protected alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
+@[simp, gcongr]
+lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
 
 open scoped Classical in
 @[gcongr]
@@ -1064,8 +1061,7 @@ theorem lintegral_restrict_iUnion_of_directed {ι : Type*} [Countable ι]
   simp only [lintegral, Measure.restrict_iUnion_apply_eq_iSup hd (measurableSet_preimage ..),
     ENNReal.mul_iSup]
   refine finsetSum_iSup fun i j ↦ (hd i j).imp fun k ⟨hik, hjk⟩ ↦ fun a ↦ ?_
-  -- TODO https://github.com/leanprover-community/mathlib4/pull/14739 make `gcongr` close this goal
-  constructor <;> · gcongr; refine Measure.restrict_mono ?_ le_rfl _; assumption
+  constructor <;> gcongr
 
 theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ univ := by
   rw [lintegral]
@@ -1097,7 +1093,6 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
 theorem lintegral_mono_measure {f : α →ₛ ℝ≥0∞} (h : μ ≤ ν) : f.lintegral μ ≤ f.lintegral ν := by
   simp only [lintegral]
   gcongr
-  apply h
 
 /-- `SimpleFunc.lintegral` is monotone both in function and in measure. -/
 @[mono, gcongr]

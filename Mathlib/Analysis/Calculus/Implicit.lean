@@ -161,6 +161,9 @@ complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a
 def implicitFunction : F → G → E :=
   Function.curry <| φ.toOpenPartialHomeomorph.symm
 
+lemma implicitFunction_apply {x : F} {y : G} :
+    φ.implicitFunction x y = φ.toOpenPartialHomeomorph.symm (x, y) := rfl
+
 @[simp]
 theorem toOpenPartialHomeomorph_coe : ⇑φ.toOpenPartialHomeomorph = φ.prodFun :=
   rfl
@@ -271,6 +274,11 @@ theorem map_implicitFunction_nhdsWithin_preimage (φ : ImplicitFunctionData 𝕜
     rw [← hx_eq, ← prodFun_apply, ← toOpenPartialHomeomorph_coe,
       φ.toOpenPartialHomeomorph.leftInvOn hxs]
   · exact φ.toOpenPartialHomeomorph.mapsTo φ.pt_mem_toOpenPartialHomeomorph_source
+
+theorem eventuallyEq_implicitFunction {ψ : F → G → E}
+    (h : ∀ᶠ x in 𝓝 φ.pt, ψ (φ.leftFun x) (φ.rightFun x) = x) :
+    Function.uncurry ψ =ᶠ[𝓝 (φ.prodFun φ.pt)] Function.uncurry φ.implicitFunction :=
+  HasStrictFDerivAt.localInverse_unique _ h
 
 end ImplicitFunctionData
 

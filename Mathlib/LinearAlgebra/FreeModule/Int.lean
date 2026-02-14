@@ -17,7 +17,7 @@ index.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]

@@ -14,7 +14,7 @@ public import Mathlib.Topology.MetricSpace.Lipschitz
 This file develops Lipschitz continuous functions further with some results that depend on algebra.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module.Basis Ideal
 
@@ -52,8 +52,7 @@ theorem continuousAt_of_locally_lipschitz {f : α → β} {x : α} {r : ℝ} (hr
   refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (Eventually.of_forall fun _ => dist_nonneg)
     (mem_of_superset (ball_mem_nhds _ hr) h) ?_)
   -- Then show that `K * dist y x` tends to zero as `y → x`
-  refine (continuous_const.mul (continuous_id.dist continuous_const)).tendsto' _ _ ?_
-  simp
+  exact Continuous.tendsto' (by fun_prop) x 0 (by simp)
 
 /-- If `f` is locally Lipschitz on a compact set `s`, it is Lipschitz on `s`. -/
 lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : Set α}

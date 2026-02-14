@@ -389,10 +389,6 @@ end UniformContinuity
 
 end ContinuousMap
 
-section CompLeft
-
-end CompLeft
-
 namespace ContinuousMap
 
 section LocalNormalConvergence

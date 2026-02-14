@@ -42,9 +42,9 @@ convergence theorems.
 
 ## Main results
 
-* `MeasureTheory.Adapted.isStoppingTime_upperCrossingTime`: `upperCrossingTime` is a
+* `MeasureTheory.StronglyAdapted.isStoppingTime_upperCrossingTime`: `upperCrossingTime` is a
   stopping time whenever the process it is associated to is adapted.
-* `MeasureTheory.Adapted.isStoppingTime_lowerCrossingTime`: `lowerCrossingTime` is a
+* `MeasureTheory.StronglyAdapted.isStoppingTime_lowerCrossingTime`: `lowerCrossingTime` is a
   stopping time whenever the process it is associated to is adapted.
 * `MeasureTheory.Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part`: Doob's
   upcrossing estimate.
@@ -95,8 +95,8 @@ $$
 This is `MeasureTheory.integral_mul_upcrossingsBefore_le_integral` in our formalization.
 
 To prove this, we use the fact that given a non-negative, bounded, predictable process $(C_n)$
-(i.e. $(C_{n + 1})$ is adapted), $(C \bullet f)_n := \sum_{k \le n} C_{k + 1}(f_{k + 1} - f_k)$ is
-a submartingale if $(f_n)$ is.
+(i.e. $(C_{n + 1})$ is strongly adapted),
+$(C \bullet f)_n := \sum_{k \le n} C_{k + 1}(f_{k + 1} - f_k)$ is a submartingale if $(f_n)$ is.
 
 Define $C_n := \sum_{k \le n} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)$. It is easy to see that
 $(1 - C_n)$ is non-negative, bounded and predictable, and hence, given a submartingale $(f_n)$,
@@ -312,29 +312,29 @@ theorem upperCrossingTime_eq_of_bound_le (hab : a < b) (hn : N ≤ n) :
 
 variable {ℱ : Filtration ℕ m0}
 
-theorem Adapted.isStoppingTime_crossing (hf : Adapted ℱ f) :
+theorem StronglyAdapted.isStoppingTime_crossing (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N n ω : ℕ)) ∧
       IsStoppingTime ℱ (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) := by
   induction n with
   | zero =>
     refine ⟨isStoppingTime_const _ 0, ?_⟩
     simp only [lowerCrossingTime_zero, Nat.bot_eq_zero]
-    exact hittingBtwn_isStoppingTime hf measurableSet_Iic
+    exact hf.adapted.isStoppingTime_hittingBtwn measurableSet_Iic
   | succ k ih =>
     have : IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) := by
       intro n
       simp_rw [upperCrossingTime_succ_eq]
-      refine isStoppingTime_hittingBtwn_isStoppingTime ih.2 ?_ measurableSet_Ici hf _
+      refine hf.adapted.isStoppingTime_hittingBtwn_isStoppingTime ih.2 ?_ measurableSet_Ici _
       simp [lowerCrossingTime_le]
     refine ⟨this, fun n ↦ ?_⟩
-    refine isStoppingTime_hittingBtwn_isStoppingTime this ?_ measurableSet_Iic hf _
+    refine hf.adapted.isStoppingTime_hittingBtwn_isStoppingTime this ?_ measurableSet_Iic _
     simp [upperCrossingTime_le]
 
-theorem Adapted.isStoppingTime_upperCrossingTime (hf : Adapted ℱ f) :
+theorem StronglyAdapted.isStoppingTime_upperCrossingTime (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N n ω : ℕ)) :=
   hf.isStoppingTime_crossing.1
 
-theorem Adapted.isStoppingTime_lowerCrossingTime (hf : Adapted ℱ f) :
+theorem StronglyAdapted.isStoppingTime_lowerCrossingTime (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) :=
   hf.isStoppingTime_crossing.2
 
@@ -367,8 +367,8 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
     refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 
-theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
-    Adapted ℱ (upcrossingStrat a b f N) := by
+theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
+    StronglyAdapted ℱ (upcrossingStrat a b f N) := by
   intro n
   change StronglyMeasurable[ℱ n] fun ω =>
     ∑ k ∈ Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
@@ -384,13 +384,14 @@ theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
 theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)) ℱ μ :=
-  hf.sum_mul_sub hf.adapted.upcrossingStrat_adapted (fun _ _ => upcrossingStrat_le_one) fun _ _ =>
+  hf.sum_mul_sub hf.stronglyAdapted.upcrossingStrat (fun _ _ => upcrossingStrat_le_one) fun _ _ =>
     upcrossingStrat_nonneg
 
 theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)) ℱ μ := by
-  refine hf.sum_mul_sub (fun n => (adapted_const ℱ 1 n).sub (hf.adapted.upcrossingStrat_adapted n))
+  refine hf.sum_mul_sub
+    (fun n => (stronglyAdapted_const ℱ 1 n).sub (hf.stronglyAdapted.upcrossingStrat n))
     (?_ : ∀ n ω, (1 - upcrossingStrat a b f N n) ω ≤ 1) ?_
   · exact fun n ω => sub_le_self _ upcrossingStrat_nonneg
   · intro n ω
@@ -744,7 +745,7 @@ theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     smul_eq_mul, mul_one, smul_eq_mul, mul_zero, Nat.card_Ico, Nat.add_succ_sub_one,
     add_zero, add_zero]
 
-theorem Adapted.measurable_upcrossingsBefore (hf : Adapted ℱ f) (hab : a < b) :
+theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossingsBefore a b f N) := by
   have : upcrossingsBefore a b f N = fun ω =>
       ∑ i ∈ Finset.Ico 1 (N + 1), {n | upperCrossingTime a b f N n ω < N}.indicator 1 i := by
@@ -756,7 +757,8 @@ theorem Adapted.measurable_upcrossingsBefore (hf : Adapted ℱ f) (hab : a < b) 
   simpa only [ENat.some_eq_coe, Nat.cast_lt] using
     hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N
 
-theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted ℱ f) (hab : a < b) :
+theorem StronglyAdapted.integrable_upcrossingsBefore [IsFiniteMeasure μ]
+    (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Integrable (fun ω => (upcrossingsBefore a b f N ω : ℝ)) μ :=
   haveI : ∀ᵐ ω ∂μ, ‖(upcrossingsBefore a b f N ω : ℝ)‖ ≤ N := by
     filter_upwards with ω
@@ -771,7 +773,7 @@ noncomputable def upcrossings [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ
     (ω : Ω) : ℝ≥0∞ :=
   ⨆ N, (upcrossingsBefore a b f N ω : ℝ≥0∞)
 
-theorem Adapted.measurable_upcrossings (hf : Adapted ℱ f) (hab : a < b) :
+theorem StronglyAdapted.measurable_upcrossings (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossings a b f) :=
   .iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
 
@@ -813,9 +815,9 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
         exact (ENNReal.ofReal_le_ofReal
           (hf.mul_integral_upcrossingsBefore_le_integral_pos_part a b N)).trans
             (le_iSup (α := ℝ≥0∞) _ N)
-      · simp only [NNReal.coe_natCast, hf.adapted.integrable_upcrossingsBefore hab]
+      · simp only [NNReal.coe_natCast, hf.stronglyAdapted.integrable_upcrossingsBefore hab]
     · exact fun n => measurable_from_top.comp_aemeasurable
-        (hf.adapted.measurable_upcrossingsBefore hab).aemeasurable
+        (hf.stronglyAdapted.measurable_upcrossingsBefore hab).aemeasurable
     · filter_upwards with ω N M hNM
       rw [Nat.cast_le]
       exact upcrossingsBefore_mono hab hNM ω

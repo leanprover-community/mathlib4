@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Adjoints commute with shifts
@@ -508,8 +509,8 @@ instance [E.CommShift A] : NatTrans.CommShift E.unitIso.hom A :=
 instance [E.CommShift A] : NatTrans.CommShift E.counitIso.hom A :=
   inferInstanceAs (NatTrans.CommShift E.toAdjunction.counit A)
 
-instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
-instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
+instance : E.symm.inverse.CommShift A := inferInstanceAs (E.functor.CommShift A)
+instance : E.symm.functor.CommShift A := inferInstanceAs (E.inverse.CommShift A)
 
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
@@ -554,7 +555,7 @@ variable {F : Type*} [Category* F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
     [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A]
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose forward functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose forward functors are compatible with shifts,
 so is `(E.trans E').functor`.
 -/
 instance : (E.trans E').functor.CommShift A := by
@@ -562,7 +563,7 @@ instance : (E.trans E').functor.CommShift A := by
   infer_instance
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose inverse functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose inverse functors are compatible with shifts,
 so is `(E.trans E').inverse`.
 -/
 instance : (E.trans E').inverse.CommShift A := by

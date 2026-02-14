@@ -133,7 +133,8 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t / 2 * |X ω|))
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
-    (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
+    (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (Metric.ball_mem_nhds _ (half_pos ht))
+    ?_ ?_ ?_ ?_ ?_ ?_).2
   · exact .of_forall fun z ↦ by fun_prop
   · exact integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz n
   · fun_prop
@@ -320,7 +321,7 @@ theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
     (h : complexMGF X μ = complexMGF Y μ') :
     μ.map X = μ'.map Y := by
-  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : innerₗ ℝ  x ≠ 0 :=
+  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : innerₗ ℝ x ≠ 0 :=
     DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
   apply MeasureTheory.ext_of_integral_char_eq continuous_probChar probChar_ne_one inner_ne_zero
     continuous_inner (fun w ↦ ?_)
