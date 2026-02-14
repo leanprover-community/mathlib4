@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Small.Set
 public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Finally small categories
@@ -137,6 +138,13 @@ theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K]
 instance [Limits.HasInitial J] : InitiallySmall.{w} J :=
   have := Functor.initial_const_initial (C := PUnit.{w + 1}) (D := J)
   .mk' ((Functor.const PUnit.{w + 1}).obj (⊥_ J))
+
+instance [LocallySmall.{w} J] [InitiallySmall.{w} J] (X : J) :
+    InitiallySmall.{w} (Over X) := by
+  have : InitiallySmall.{w} (CostructuredArrow (fromInitialModel.{w} J) X) :=
+    initiallySmall_of_essentiallySmall _
+  exact initiallySmall_of_initial_of_initiallySmall
+    (CostructuredArrow.toOver (fromInitialModel.{w} J) X)
 
 end InitiallySmall
 

@@ -5,8 +5,12 @@ Authors: Xavier Généreux, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 

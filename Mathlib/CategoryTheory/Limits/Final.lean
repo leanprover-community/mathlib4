@@ -1196,4 +1196,12 @@ noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (
 
 end Restriction
 
+instance {C₀ C : Type*} [Category* C₀] [Category* C]
+    (F : C₀ ⥤ C) (X : C) [F.Initial] :
+    (CostructuredArrow.toOver F X).Initial where
+  out Y := by
+    rw [isConnected_iff_of_equivalence
+      (CostructuredArrow.costructuredArrowToOverEquivalence F Y)]
+    infer_instance
+
 end CategoryTheory
