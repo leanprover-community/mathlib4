@@ -3,9 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
+public import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
 
 /-!
 # Right Homology of short complexes
@@ -27,13 +28,15 @@ In `Homology.lean`, when `S` has two compatible left and right homology data
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
@@ -581,7 +584,7 @@ lemma opcyclesIsoRightHomology_inv_hom_id (hg : S.g = 0) :
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoRightHomology_hom_inv_id (hg : S.g = 0) :
-    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι  = 𝟙 _ :=
+    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι = 𝟙 _ :=
   (S.opcyclesIsoRightHomology hg).hom_inv_id
 
 end
@@ -904,7 +907,7 @@ noncomputable def pOpcyclesNatTrans :
 noncomputable def fromOpcyclesNatTrans :
     opcyclesFunctor C ⟶ π₃ where
   app S := S.fromOpcycles
-  naturality := fun _ _  φ => fromOpcycles_naturality φ
+  naturality := fun _ _ φ => fromOpcycles_naturality φ
 
 end
 
@@ -1249,6 +1252,26 @@ noncomputable def opcyclesIsCokernel :
 noncomputable def opcyclesIsoCokernel [HasCokernel S.f] : S.opcycles ≅ cokernel S.f where
   hom := S.descOpcycles (cokernel.π S.f) (by simp)
   inv := cokernel.desc S.f S.pOpcycles (by simp)
+
+section
+
+variable {cc : CokernelCofork S.f} (hcc : IsColimit cc)
+
+/-- The isomorphism from the point of a colimit cokernel cofork of `S.f` to `S.opcycles`. -/
+noncomputable def isoOpcyclesOfIsColimit :
+    cc.pt ≅ S.opcycles :=
+  IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel
+
+@[reassoc (attr := simp)]
+lemma π_isoOpcyclesOfIsColimit_hom : cc.π ≫ (S.isoOpcyclesOfIsColimit hcc).hom = S.pOpcycles :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom _ _ WalkingParallelPair.one
+
+@[reassoc (attr := simp)]
+lemma pOpcycles_π_isoOpcyclesOfIsColimit_inv :
+    S.pOpcycles ≫ (S.isoOpcyclesOfIsColimit hcc).inv = cc.π :=
+  IsColimit.comp_coconePointUniqueUpToIso_inv _ S.opcyclesIsCokernel WalkingParallelPair.one
+
+end
 
 /-- The morphism `S.rightHomology ⟶ A` obtained from a morphism `k : S.X₂ ⟶ A`
 such that `S.f ≫ k = 0.` -/

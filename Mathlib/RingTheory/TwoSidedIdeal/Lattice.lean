@@ -3,12 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
 # The complete lattice structure on two-sided ideals
 -/
+
+@[expose] public section
 
 namespace TwoSidedIdeal
 
@@ -16,7 +19,7 @@ variable (R : Type*) [NonUnitalNonAssocRing R]
 
 instance : SemilatticeSup (TwoSidedIdeal R) where
   sup I J := { ringCon := I.ringCon ⊔ J.ringCon }
-  le_sup_left I J :=  by rw [ringCon_le_iff]; exact le_sup_left
+  le_sup_left I J := by rw [ringCon_le_iff]; exact le_sup_left
   le_sup_right I J := by rw [ringCon_le_iff]; exact le_sup_right
   sup_le I J K h1 h2 := by rw [ringCon_le_iff] at h1 h2 ⊢; exact sup_le h1 h2
 

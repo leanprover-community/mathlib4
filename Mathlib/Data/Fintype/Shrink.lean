@@ -3,12 +3,16 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Fintype instance for `Shrink`
 -/
+
+@[expose] public section
 
 universe u v
 variable {α : Type u} [Fintype α]

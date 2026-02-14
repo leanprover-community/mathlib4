@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston
+Authors: Riccardo Brasca, Amelia Livingston
 -/
-import Mathlib.FieldTheory.Fixed
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
 # Hilbert's Theorem 90
@@ -15,9 +17,8 @@ it both in terms of $H^1$ and in terms of cocycles being coboundaries.
 
 Hilbert's original statement was that if $L/K$ is Galois, and $Gal(L/K)$ is cyclic, generated
 by an element `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L` such
-that $x = y/σ(y).$ This can be deduced from the fact that the function $Gal(L/K) → L^\times$
-sending $σ^i \mapsto xσ(x)σ^2(x)...σ^{i-1}(x)$ is a 1-cocycle. Alternatively, we can derive it by
-analyzing the cohomology of finite cyclic groups in general.
+that $x = y/σ(y).$ Using the fact that `H¹(G, A) ≅ Ker(N_A)/(ρ(g) - 1)(A)` for any finite cyclic
+group `G` with generator `g`, we deduce the original statement from Noether's generalization.
 
 Noether's generalization also holds for infinite Galois extensions.
 
@@ -27,7 +28,10 @@ Noether's generalization also holds for infinite Galois extensions.
   of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
   condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
 * `groupCohomology.H1ofAutOnUnitsUnique`: Noether's generalization of Hilbert's Theorem 90:
-$H^1(Aut_K(L), L^\times)$ is trivial.
+  $H^1(Aut_K(L), L^\times)$ is trivial.
+* `groupCohomology.exists_div_of_norm_eq_one`: Hilbert's Theorem 90: given a finite cyclic Galois
+  extension `L/K`, an element `x : L` such that `N_{L/K}(x) = 1`, and a generator `g` of
+  `Gal(L/K)`, there exists `y : Lˣ` such that `y/g y = x`.
 
 ## Implementation notes
 
@@ -39,12 +43,13 @@ statement is clearer.
 
 ## TODO
 
-* The original Hilbert's Theorem 90, deduced from the cohomology of general finite cyclic groups.
 * Develop Galois cohomology to extend Noether's result to infinite Galois extensions.
 * "Additive Hilbert 90": let `L/K` be a finite Galois extension. Then $H^n(Gal(L/K), L)$ is trivial
   for all $1 ≤ n.$
 
 -/
+
+@[expose] public section
 
 
 namespace groupCohomology
@@ -94,10 +99,6 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
   exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
     (Group.mulLeft_bijective g) _ _ (fun i => rfl))
 
-@[deprecated (since := "2025-06-26")]
-alias isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units :=
-  isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
-
 end
 variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
@@ -110,5 +111,88 @@ noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnit
     rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.1
       (isMulCocycle₁_of_mem_cocycles₁ _ x.2) with ⟨β, hβ⟩
     use β
+
+variable {K L} [IsGalois K L]
+
+open Additive Rep
+
+/-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
+`(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
+theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
+    (toMul <| toAdditive ((Rep.ofAlgebraAutOnUnits K L).norm.hom
+      (toAdditive.symm <| ofMul x))).1 = algebraMap K L (Algebra.norm K (x : L)) := by
+  simp [Algebra.norm_eq_prod_automorphisms, Representation.norm]
+
+variable [IsCyclic (L ≃ₐ[K] L)] {g : Gal(L/K)}
+
+attribute [local instance] IsCyclic.commGroup in
+/-- Hilbert's Theorem 90: given a finite cyclic Galois extension `L/K`, an element `x : L` such
+that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
+such that `y/g y = x`. -/
+theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
+    (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, y / g y = x := by
+  classical
+  suffices H : ∀ x, Algebra.norm K x = 1 → ∃ y : Lˣ, g y / y = x by
+    have hxinv : Algebra.norm K x⁻¹ = 1 := by simp [Algebra.norm_inv, hx]
+    obtain ⟨y, hy⟩ := H _ hxinv
+    use y
+    rw [IsUnit.div_eq_iff y.isUnit] at hy
+    rw [hy]
+    field_simp
+  intro x hx
+  let xu : Lˣ := (Algebra.norm_ne_zero_iff.1 <| hx ▸ zero_ne_one.symm).isUnit.unit
+  have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
+  rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
+  have := FiniteCyclicGroup.groupCohomologyπOdd_eq_zero_iff (ofAlgebraAutOnUnits K L) g hg
+    1 (by simp) ⟨toAdditive.symm <| ofMul xu, by simp_all⟩
+  rcases this.1 (Subsingleton.elim (α := groupCohomology.H1 (Rep.ofAlgebraAutOnUnits K L)) _ _)
+    with ⟨y, hy⟩
+  use toMul <| toAdditive y
+  simpa [xu, sub_eq_add_neg, div_eq_mul_inv, -toAdditive_apply] using
+    Units.ext_iff.1 congr(toMul <| toAdditive $hy)
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] [Algebra A L] [Algebra A K]
+variable [Algebra B L] [IsScalarTower A B L] [IsScalarTower A K L] [IsFractionRing A K] [IsDomain A]
+variable [IsIntegralClosure B A L]
+
+open scoped nonZeroDivisors
+
+/-- The integral version of the classical formulation of Hilbert's theorem 90: in the `ABKL`
+setting, suppose that `L/K` is a finite Galois extension such that the Galois group is cyclic
+generated by `g` and let `η : B` be an element of norm `1` (when viewed as an element of `L`).
+Then there exists `ε : B` such that `ε ≠ 0` and `η * g ε = ε`. -/
+lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {η : B}
+    (hη : Algebra.norm K (algebraMap B L η) = 1) :
+    ∃ ε : B, ε ≠ 0 ∧ η * galRestrict A K L B g ε = ε := by
+  have : Module.IsTorsionFree A L := by
+    rw [Module.isTorsionFree_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A K L]
+    exact (algebraMap K L).injective.comp (IsFractionRing.injective A K)
+  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
+    IsIntegralClosure.isLocalization A K L B
+  let η' : Lˣ := Units.mk0 (algebraMap B L η) (fun h ↦ by simp [h] at hη)
+  obtain ⟨ε, hε⟩ := exists_div_of_norm_eq_one hg hη
+  obtain ⟨a, b, h⟩ := IsLocalization.exists_mk'_eq (Algebra.algebraMapSubmonoid B A⁰) ε.1
+  obtain ⟨t, ht, ht'⟩ := b.prop
+  have : t • IsLocalization.mk' L a b = algebraMap _ _ a := by
+    rw [Algebra.smul_def, IsScalarTower.algebraMap_apply A B L, ht', IsLocalization.mk'_spec']
+  refine ⟨a, ?_, ?_⟩
+  · rintro rfl
+    simp only [IsLocalization.mk'_zero, _root_.map_zero, div_zero, ← h] at hε
+    rw [← hε, Algebra.norm_zero] at hη
+    exact zero_ne_one hη
+  · replace hε := hε.symm
+    rw [← h, eq_div_iff_mul_eq] at hε
+    · replace hε := congr_arg (t • ·) hε
+      simp only at hε
+      rw [Algebra.smul_def, mul_left_comm, ← Algebra.smul_def t, ← g.toAlgHom_apply,
+        ← AlgHom.map_smul_of_tower, this] at hε
+      apply IsIntegralClosure.algebraMap_injective B A L
+      rw [map_mul, ← hε]
+      congr 1
+      exact algebraMap_galRestrictHom_apply A K L B g a
+    · intro e
+      rw [(map_eq_zero _).mp e, zero_div] at hε
+      rw [hε, Algebra.norm_zero] at hη
+      exact zero_ne_one hη
 
 end groupCohomology

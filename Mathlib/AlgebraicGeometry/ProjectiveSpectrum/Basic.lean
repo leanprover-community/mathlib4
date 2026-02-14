@@ -3,16 +3,18 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Gluing
+module
+
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Gluing
 
 /-!
 
 # Basic properties of the scheme `Proj A`
 
-The scheme `Proj 𝒜` for a graded algebra `𝒜` is constructed in
-`AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean`.
+The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
+`Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean`.
 In this file we provide basic properties of the scheme.
 
 ## Main results
@@ -31,16 +33,18 @@ In this file we provide basic properties of the scheme.
 
 -/
 
+@[expose] public section
+
 namespace AlgebraicGeometry.Proj
 
 open HomogeneousLocalization CategoryTheory
 
 universe u
 
-variable {R : Type*} {A : Type u}
-variable [CommRing R] [CommRing A] [Algebra R A]
-variable (𝒜 : ℕ → Submodule R A)
-variable [GradedAlgebra 𝒜]
+variable {σ : Type*} {A : Type u}
+variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable (𝒜 : ℕ → σ)
+variable [GradedRing 𝒜]
 
 section basicOpen
 
@@ -69,7 +73,7 @@ theorem basicOpen_mono (hfg : f ∣ g) : basicOpen 𝒜 g ≤ basicOpen 𝒜 f :
   (hfg.choose_spec ▸ basicOpen_mul 𝒜 f _).trans_le inf_le_left
 
 theorem basicOpen_eq_iSup_proj (f : A) :
-    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f) :=
+    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedRing.proj 𝒜 i f) :=
   ProjectiveSpectrum.basicOpen_eq_union_of_projection ..
 
 theorem isBasis_basicOpen :
@@ -300,7 +304,7 @@ lemma awayι_preimage_basicOpen :
     awayι 𝒜 f f_deg hm ⁻¹ᵁ basicOpen 𝒜 g =
       PrimeSpectrum.basicOpen (Away.isLocalizationElem f_deg g_deg) := by
   ext1
-  trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl))).base
+  trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl)))
   · rw [← pullbackAwayιIso_inv_fst 𝒜 f_deg hm g_deg hm' rfl]
     simp only [TopologicalSpace.Opens.map_coe, Scheme.Hom.comp_base,
       TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
@@ -459,6 +463,7 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
   apply le_antisymm
   · intro x hx
     obtain ⟨i, x, rfl⟩ := (openCoverOfMapIrrelevantEqTop 𝒜 f hf).exists_eq x
+    rw [← SetLike.mem_coe] at hx -- TODO : mem version of TopologicalSpace.Opens.map_coe
     simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage, SetLike.mem_coe,
       ← Scheme.Hom.comp_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms] at hx
     simp only [openCoverOfMapIrrelevantEqTop, Scheme.openCoverOfIsOpenCover_X,
@@ -471,7 +476,8 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
       ← Set.mem_preimage, ← TopologicalSpace.Opens.map_coe, ← Function.Injective.mem_set_image
       (Spec.map (CommRingCat.ofHom (algebraMap Γ(X, ⊤) _))).isOpenEmbedding.injective,
       ← Scheme.Hom.comp_apply, basicOpenIsoSpecAway, IsOpenImmersion.isoOfRangeEq_hom_fac] at hx
-    rw [← Scheme.toSpecΓ_preimage_basicOpen, TopologicalSpace.Opens.map_coe, Set.mem_preimage]
+    rw [← SetLike.mem_coe, ← Scheme.toSpecΓ_preimage_basicOpen, TopologicalSpace.Opens.map_coe,
+        Set.mem_preimage]
     refine Set.mem_of_subset_of_mem (Set.image_subset_iff.mpr ?_) hx
     change PrimeSpectrum.basicOpen _ ≤ PrimeSpectrum.basicOpen _
     simp only [CommRingCat.ofHom_comp, CommRingCat.hom_comp, CommRingCat.hom_ofHom,
@@ -483,8 +489,9 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
     let I : (openCoverOfMapIrrelevantEqTop 𝒜 f hf).I₀ := ⟨n, r, hn, hr⟩
     obtain ⟨x, rfl⟩ : x ∈ ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).f I).opensRange := by
       simpa [openCoverOfMapIrrelevantEqTop] using hx
-    simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage, SetLike.mem_coe,
-      ← Scheme.Hom.comp_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms]
+    rw [← SetLike.mem_coe] -- TODO : mem version of TopologicalSpace.Opens.map_coe
+    simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage,
+      ← Scheme.Hom.comp_apply, fromOfGlobalSections]
     simp
 
 lemma fromOfGlobalSections_morphismRestrict {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜 n) :

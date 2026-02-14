@@ -3,11 +3,15 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Single
+module
+
+public import Mathlib.Algebra.Homology.Single
 
 /-!
 # Augmentation and truncation of `ℕ`-indexed (co)chain complexes.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -58,7 +62,7 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | _ + 2, 0, _ => rfl
     | 0, _, _ => rfl
     | i + 1, j + 1, h => by
-      simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
+      simp only; exact C.shape i j (Nat.succ_ne_succ_iff.1 h)
   d_comp_d'
     | _, _, 0, rfl, rfl => w
     | _, _, k + 1, rfl, rfl => C.d_comp_d _ _ _
@@ -119,17 +123,17 @@ theorem chainComplex_d_succ_succ_zero (C : ChainComplex V ℕ) (i : ℕ) : C.d (
 def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-        | 0 | 1 | n+2 =>
+        | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         match i with
-          | 0 | 1 | n+2 =>
+          | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   hom_inv_id := by
@@ -196,6 +200,8 @@ def toTruncate [HasZeroObject V] [HasZeroMorphisms V] (C : CochainComplex V ℕ)
 
 variable [HasZeroMorphisms V]
 
+-- TODO: fix non-terminal simp (acting on six goals, with different simp sets)
+set_option linter.flexible false in
 /-- We can "augment" a cochain complex by inserting an arbitrary object in degree zero
 (shifting everything else up), along with a suitable differential.
 -/
@@ -281,11 +287,11 @@ theorem cochainComplex_d_succ_succ_zero (C : CochainComplex V ℕ) (i : ℕ) : C
 def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;> aesop }
   inv :=
-    { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
+    { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> rcases i with - | i <;> aesop }
 

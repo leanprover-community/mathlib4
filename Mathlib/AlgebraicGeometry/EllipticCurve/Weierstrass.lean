@@ -3,11 +3,12 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.CubicDiscriminant
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.CubicDiscriminant
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Weierstrass equations of elliptic curves
@@ -61,6 +62,8 @@ which are not globally defined by a cubic equation valid over the entire base.
 
 elliptic curve, weierstrass equation, j invariant
 -/
+
+@[expose] public section
 
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
@@ -398,7 +401,7 @@ lemma j_eq_zero (h : W.c₄ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff', h, zero_pow three_ne_zero]
 
 lemma j_eq_zero_iff [IsReduced R] : W.j = 0 ↔ W.c₄ = 0 := by
-  rw [j_eq_zero_iff', IsReduced.pow_eq_zero_iff three_ne_zero]
+  rw [j_eq_zero_iff', pow_eq_zero_iff three_ne_zero]
 
 section CharTwo
 
@@ -415,7 +418,7 @@ lemma j_eq_zero_of_char_two (h : W.a₁ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff_of_char_two', h, zero_pow (Nat.succ_ne_zero _)]
 
 lemma j_eq_zero_iff_of_char_two [IsReduced R] : W.j = 0 ↔ W.a₁ = 0 := by
-  rw [j_eq_zero_iff_of_char_two', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+  rw [j_eq_zero_iff_of_char_two', pow_eq_zero_iff (Nat.succ_ne_zero _)]
 
 end CharTwo
 
@@ -434,7 +437,7 @@ lemma j_eq_zero_of_char_three (h : W.b₂ = 0) : W.j = 0 := by
   rw [j_eq_zero_iff_of_char_three', h, zero_pow (Nat.succ_ne_zero _)]
 
 lemma j_eq_zero_iff_of_char_three [IsReduced R] : W.j = 0 ↔ W.b₂ = 0 := by
-  rw [j_eq_zero_iff_of_char_three', IsReduced.pow_eq_zero_iff (Nat.succ_ne_zero _)]
+  rw [j_eq_zero_iff_of_char_three', pow_eq_zero_iff (Nat.succ_ne_zero _)]
 
 end CharThree
 

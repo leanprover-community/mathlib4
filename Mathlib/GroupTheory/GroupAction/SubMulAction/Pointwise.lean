@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise monoid structures on SubMulAction
@@ -15,6 +17,8 @@ inherit the same pointwise multiplications as sets.
 To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -83,7 +87,7 @@ instance : MulOneClass (SubMulAction R M) where
     rintro ⟨r, y, hy, rfl⟩
     exact smul_mem _ _ hy
 
-@[deprecated (since := "04-06-2025")] alias mulOneClass := instMulOneClass
+@[deprecated (since := "2025-06-04")] alias mulOneClass := instMulOneClass
 
 end MulOneClass
 
@@ -94,7 +98,7 @@ variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 instance : Semigroup (SubMulAction R M) where
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
 
-@[deprecated (since := "04-06-2025")] alias semiGroup := instSemigroup
+@[deprecated (since := "2025-06-04")] alias semiGroup := instSemigroup
 
 end Semigroup
 

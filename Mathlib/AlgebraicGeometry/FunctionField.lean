@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Properties
+module
+
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Function field of integral schemes
@@ -16,6 +18,8 @@ This is a field when the scheme is integral.
 * `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
   function field. This map is injective.
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 

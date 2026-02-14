@@ -3,10 +3,14 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Perfect
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Perfect
 
 /-! # Vector spaces over nontrivially normed fields are perfect spaces -/
+
+@[expose] public section
 
 open Filter Set
 open scoped Topology

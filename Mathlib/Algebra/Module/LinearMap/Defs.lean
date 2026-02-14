@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Module.RingHom
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Module.RingHom
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # (Semi)linear maps
@@ -49,6 +51,8 @@ To ensure that composition works smoothly for semilinear maps, we use the typecl
 
 linear map
 -/
+
+@[expose] public section
 
 
 assert_not_exists TrivialStar DomMulAct Pi.module WCovBy.image Field
@@ -335,7 +339,7 @@ protected theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S)
     c • f x = f (σ' c • x) := by simp
 
 @[simp]
-theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
+protected theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
   _root_.map_eq_zero_iff f h
 
 variable (M M₂)
@@ -394,15 +398,18 @@ theorem isLinearMap_of_compatibleSMul [Module S M] [Module S M₂] [CompatibleSM
   map_add := map_add f
   map_smul := map_smul_of_tower f
 
-/-- convert a linear map to an additive map -/
-def toAddMonoidHom : M →+ M₃ where
+/-- Convert a linear map to an additive monoid hom. -/
+-- See note [implicit instance arguments]
+def toAddMonoidHom {modM₁ : Module R M₁} {modM₂ : Module S M₂} {σ : R →+* S} (f : M₁ →ₛₗ[σ] M₂) :
+    M₁ →+ M₂ where
   toFun := f
   map_zero' := f.map_zero
   map_add' := f.map_add
 
+omit [Module R M₂] in
 @[simp]
-theorem toAddMonoidHom_coe : ⇑f.toAddMonoidHom = f :=
-  rfl
+lemma toAddMonoidHom_coe {modM₁ : Module R M₁} {modM₂ : Module S M₂} {σ : R →+* S}
+    (f : M₁ →ₛₗ[σ] M₂) : ⇑f.toAddMonoidHom = f := rfl
 
 section RestrictScalars
 
@@ -728,8 +735,8 @@ variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
 variable {σ₁₂ : R →+* R₂}
-variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
-variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
+variable [DistribSMul S M₂] [SMulCommClass R₂ S M₂]
+variable [DistribSMul T M₂] [SMulCommClass R₂ T M₂]
 
 instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun a f ↦
@@ -752,7 +759,7 @@ instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M�
 instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
 
-instance [DistribMulAction Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
+instance [DistribSMul Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
     IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where
   op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
@@ -989,5 +996,74 @@ def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
   map_smul' := restrictScalars_smul
 
 end RestrictScalarsAsLinearMap
+
+section mulLeftRight
+variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+
+section left
+variable (R) [SMulCommClass R A A]
+
+/-- The multiplication on the left in an algebra is a linear map.
+
+Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
+
+When `A` is unital and associative, this is the same as `DistribSMul.toLinearMap R A a` -/
+def mulLeft (a : A) : A →ₗ[R] A where
+  __ := AddMonoidHom.mulLeft a
+  map_smul' _ := mul_smul_comm _ _
+
+@[simp]
+theorem mulLeft_apply (a b : A) : mulLeft R a b = a * b := rfl
+
+@[simp]
+theorem toAddMonoidHom_mulLeft (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a := rfl
+
+@[deprecated (since := "2025-12-30")] alias mulLeft_toAddMonoidHom := toAddMonoidHom_mulLeft
+
+variable (A) in
+@[simp]
+theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext zero_mul
+
+end left
+
+section right
+variable (R) [IsScalarTower R A A]
+
+/-- The multiplication on the right in an algebra is a linear map.
+
+Note that this only assumes `IsScalarTower R A A`, so that it also works for `R := A`.
+
+When `A` is unital and associative, this is the same as
+`DistribSMul.toLinearMap R A (MulOpposite.op b)`. -/
+def mulRight (b : A) : A →ₗ[R] A where
+  __ := AddMonoidHom.mulRight b
+  map_smul' _ _ := smul_mul_assoc _ _ _
+
+@[simp]
+theorem mulRight_apply (a b : A) : mulRight R a b = b * a := rfl
+
+@[simp]
+theorem toAddMonoidHom_mulRight (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a := rfl
+
+@[deprecated (since := "2025-12-30")] alias mulRight_toAddMonoidHom := toAddMonoidHom_mulRight
+
+variable (A) in
+@[simp]
+theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext mul_zero
+
+end right
+
+variable [SMulCommClass R A A] [IsScalarTower R A A]
+
+variable (R) in
+/-- Simultaneous multiplication on the left and right is a linear map. -/
+def mulLeftRight (ab : A × A) : A →ₗ[R] A :=
+  (mulRight R ab.snd).comp (mulLeft R ab.fst)
+
+@[simp]
+theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
+  rfl
+
+end mulLeftRight
 
 end LinearMap

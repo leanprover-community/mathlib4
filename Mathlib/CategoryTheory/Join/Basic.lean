@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Joins of categories
@@ -32,6 +34,8 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 * [Kerodon: section 1.4.3.2](https://kerodon.net/tag/0160)
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
@@ -218,7 +222,7 @@ def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd 
     homInduction
       (left := fun _ _ f ↦ F.map f)
       (right := fun _ _ g ↦ G.map g)
-      (edge := fun c d ↦ α.app (c,d))
+      (edge := fun c d ↦ α.app (c, d))
       f
   map_id x := by
     cases x
@@ -302,15 +306,23 @@ variable {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
       whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
       by cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_left (c : C) : (mkNatTrans αₗ αᵣ h).app (left c) = αₗ.app c := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_right (d : D) : (mkNatTrans αₗ αᵣ h).app (right d) = αᵣ.app d := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma whiskerLeft_inclLeft_mkNatTrans : whiskerLeft (inclLeft C D) (mkNatTrans αₗ αᵣ h) = αₗ := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma whiskerLeft_inclRight_mkNatTrans :
     whiskerLeft (inclRight C D) (mkNatTrans αₗ αᵣ h) = αᵣ := rfl

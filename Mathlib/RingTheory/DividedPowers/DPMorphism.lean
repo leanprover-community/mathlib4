@@ -3,7 +3,9 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DividedPowers.Basic
+module
+
+public import Mathlib.RingTheory.DividedPowers.Basic
 
 /-! # Divided power morphisms
 
@@ -48,6 +50,8 @@ modules*][Roby-1963]
 
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
+
+@[expose] public section
 
 open Ideal Set SetLike
 
@@ -128,6 +132,7 @@ def mk' {f : A →+* B} (hf : IsDPMorphism hI hJ f) : DPMorphism hI hJ :=
 
 variable (hI hJ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a ring homomorphism `A → B` and ideals `I ⊆ A` and `J ⊆ B` such that `I.map f ≤ J`,
   this is the `A`-ideal on which `f (hI.dpow n x) = hJ.dpow n (f x)`.
   See [N. Roby, *Les algèbres à puissances dividées* (Proposition 2)][Roby-1965]. -/
@@ -152,6 +157,7 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
     rw [smul_eq_mul, hI.dpow_mul hx.1, map_mul, map_mul, map_pow,
       hJ.dpow_mul (hf (mem_map_of_mem f hx.1)), hx.2 n]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The `DPMorphism` induced by a ring morphism, given that divided powers are compatible on a
   generating set.
   See [N. Roby, *Les algèbres à puissances dividées* (Proposition 3)][Roby-1965]. -/
@@ -166,6 +172,7 @@ def fromGens {f : A →+* B} {S : Set A} (hS : I = span S) (hf : I.map f ≤ J)
     rw [← span_le, ← hS] at hS'
     exact ((hS' hx).2 n).symm
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The identity map as a `DPMorphism`. -/
 def id : DPMorphism hI hI where
   toRingHom     := RingHom.id A

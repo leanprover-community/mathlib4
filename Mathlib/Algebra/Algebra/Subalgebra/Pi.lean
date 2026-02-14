@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Products of subalgebras
@@ -16,6 +18,8 @@ In this file we define the product of subalgebras as a subalgebra of the product
 
 * `Subalgebra.pi`: the product of subalgebras.
 -/
+
+@[expose] public section
 
 open Algebra
 

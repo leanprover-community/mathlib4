@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Adjunctions between functors
@@ -23,8 +25,8 @@ We provide various useful constructors:
 * `adjunctionOfEquivLeft` / `adjunctionOfEquivRight` witness that these constructions
   give adjunctions.
 
-There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which asserts the
-existence of a adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
+There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which assert the
+existence of an adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
 adjoint can be obtained as `F.rightAdjoint`.
 
 `Adjunction.comp` composes adjunctions.
@@ -37,8 +39,11 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 * Adjoint lifting theorems are in the directory `Lifting`.
 * The file `AdjointFunctorTheorems` proves the adjoint functor theorems.
+* The file `Additive` develops adjunctions between additive functors.
 * The file `Comma` shows that for a functor `G : D ⥤ C` the data of an initial object in each
   `StructuredArrow` category on `G` is equivalent to a left adjoint to `G`, as well as the dual.
+* The file `CompositionIso` derives compatibilities for compositions of left adjoints from the
+  corresponding data on right adjoints.
 * The file `Evaluation` shows that products and coproducts are adjoint to evaluation of functors.
 * The file `FullyFaithful` characterizes when adjoints are full or faithful in terms of the unit
   and counit.
@@ -55,11 +60,14 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
   `R₁ R₂ : D ⥤ C`, it provides equivalences `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)` and `(L₂ ≅ L₁) ≃ (R₁ ≅ R₂)`.
 * The file `Opposites` contains constructions to relate adjunctions of functors to adjunctions of
   their opposites.
+* The file `Parametrized` defines adjunctions with a parameter.
+* The file `PartialAdjoint` studies the domain of definition of partial adjoints (left/right).
 * The file `Reflective` defines reflective functors, i.e. fully faithful right adjoints. Note that
   many facts about reflective functors are proved in the earlier file `FullyFaithful`.
 * The file `Restrict` defines the restriction of an adjunction along fully faithful functors.
 * The file `Triple` proves that in an adjoint triple, the left adjoint is fully faithful if and
   only if the right adjoint is.
+* The file `Quadruple` bundles adjoint quadruples and compares induced natural transformations.
 * The file `Unique` proves uniqueness of adjoints.
 * The file `Whiskering` proves that functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
   `F ⊣ G`, induce adjunctions between the functor categories `C ⥤ D` and `C ⥤ E`,
@@ -67,10 +75,12 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 ## Other files related to adjunctions
 
-* The file `CategoryTheory.Monad.Adjunction` develops the basic relationship between adjunctions
-  and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an isomorphism
-  `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
+* The file `Mathlib/CategoryTheory/Monad/Adjunction.lean` develops the basic relationship between
+  adjunctions and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an
+  isomorphism `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -78,7 +88,7 @@ namespace CategoryTheory
 open Category Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
@@ -360,7 +370,7 @@ This structure won't typically be used anywhere else.
 structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction between `F` and `G` -/
   unit : 𝟭 C ⟶ F.comp G
-  /-- The counit of an adjunction between `F` and `G`s -/
+  /-- The counit of an adjunction between `F` and `G` -/
   counit : G.comp F ⟶ 𝟭 D
   /-- Equality of the composition of the unit, associator, and counit with the identity
   `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
@@ -446,6 +456,7 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G where
     simpa [-CoreUnitCounit.right_triangle] using this Y
 
 /-- The adjunction between the identity functor on a category and itself. -/
+@[simps]
 def id : 𝟭 C ⊣ 𝟭 C where
   unit := 𝟙 _
   counit := 𝟙 _
@@ -498,6 +509,16 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
 
+/-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
+This states that `Adjunction.homEquiv` is natural in both arguments. -/
+@[simps!]
+def compUliftCoyonedaIso (adj : F ⊣ G) :
+    F.op ⋙ uliftCoyoneda.{max w v₁} ≅
+      uliftCoyoneda.{max w v₂} ⋙ (whiskeringLeft _ _ _).obj G :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+    (fun Y ↦ (Equiv.ulift.trans
+      ((adj.homEquiv X.unop Y).trans Equiv.ulift.symm)).toIso))
+
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
@@ -509,8 +530,8 @@ def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
     unit := adj₁.unit ≫ whiskerRight (F.rightUnitor.inv ≫ whiskerLeft F adj₂.unit ≫
-      (associator _ _ _ ).inv) G ≫ (associator _ _ _).hom
-    counit := (associator _ _ _ ).inv ≫ whiskerRight ((associator _ _ _ ).hom ≫
+      (associator _ _ _).inv) G ≫ (associator _ _ _).hom
+    counit := (associator _ _ _).inv ≫ whiskerRight ((associator _ _ _).hom ≫
       whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
 @[simp, reassoc]
@@ -557,7 +578,7 @@ def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.ma
 variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
 /-- Show that the functor given by `leftAdjointOfEquiv` is indeed left adjoint to `G`. Dual
-to `adjunctionOfRightEquiv`. -/
+to `adjunctionOfEquivRight`. -/
 @[simps!]
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
@@ -582,7 +603,7 @@ private theorem he'' (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y 
 
 /-- Construct a right adjoint functor to `F`, given the functor's value on objects `G_obj` and
 a bijection `e` between `F.obj X ⟶ Y` and `X ⟶ G_obj Y` satisfying a naturality law
-`he : ∀ X Y Y' g h, e X' Y (F.map f ≫ g) = f ≫ e X Y g`.
+`he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g`.
 Dual to `leftAdjointOfEquiv`. -/
 @[simps!]
 def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) : D ⥤ C where
@@ -596,7 +617,7 @@ def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X
     simp
 
 /-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
-to `adjunctionOfEquivRight`. -/
+to `adjunctionOfEquivLeft`. -/
 @[simps!]
 def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) :
     F ⊣ (rightAdjointOfEquiv e he) :=
@@ -640,7 +661,7 @@ namespace Equivalence
 variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
-simply use `e.symm.toAdjunction`. -/
+simply use `e.symm.toAdjunction`.) -/
 @[simps]
 def toAdjunction : e.functor ⊣ e.inverse where
   unit := e.unit
@@ -660,7 +681,7 @@ lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
 
 lemma refl_toAdjunction : (refl (C := C)).toAdjunction = Adjunction.id := rfl
 
-lemma trans_toAdjunction {E : Type*} [Category E] (e' : D ≌ E) :
+lemma trans_toAdjunction {E : Type*} [Category* E] (e' : D ≌ E) :
     (e.trans e').toAdjunction = e.toAdjunction.comp e'.toAdjunction := rfl
 
 end Equivalence

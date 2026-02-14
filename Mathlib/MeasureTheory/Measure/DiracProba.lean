@@ -3,8 +3,10 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.Separation.CompletelyRegular
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+module
+
+public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
 # Dirac deltas as probability measures and embedding of a space into probability measures on it
@@ -20,6 +22,8 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 ## Tags
 probability measure, Dirac delta, embedding
 -/
+
+@[expose] public section
 
 open Topology Metric Filter Set ENNReal NNReal BoundedContinuousFunction
 
@@ -81,10 +85,8 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
     (h : ¬ Tendsto id L (𝓝 x)) :
     ¬ Tendsto diracProba L (𝓝 (diracProba x)) := by
   obtain ⟨U, U_nhds, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
-    by_contra! con
-    apply h
-    intro U U_nhds
-    simpa only [not_frequently, not_not] using con U U_nhds
+    contrapose! h
+    exact h
   have Uint_nhds : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhds
   obtain ⟨f, fx_eq_one, f_vanishes_outside⟩ :=
     CompletelyRegularSpace.exists_BCNN isOpen_interior.isClosed_compl

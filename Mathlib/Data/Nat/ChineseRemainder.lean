@@ -3,9 +3,12 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.GCD.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Chinese Remainder Theorem
@@ -21,6 +24,8 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 
 Chinese Remainder Theorem, Gödel, beta function
 -/
+
+@[expose] public section
 
 open scoped Function -- required for scoped `on` notation
 namespace Nat
@@ -52,11 +57,9 @@ lemma modEq_list_map_prod_iff {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairw
       exact (List.pairwise_cons.mp co).1 j hj
     simp [← modEq_and_modEq_iff_modEq_mul this, ih (List.Pairwise.of_cons co)]
 
-@[deprecated (since := "2025-05-24")]
-alias modEq_list_prod_iff' := modEq_list_map_prod_iff
-
 variable (a s : ι → ℕ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The natural number less than `(l.map s).prod` congruent to
 `a i` mod `s i` for all  `i ∈ l`. -/
 def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →

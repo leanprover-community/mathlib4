@@ -3,13 +3,15 @@ Copyright (c) 2025 Madison Crim, Aaron Liu, Justus Springer, Junyan Xu. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Madison Crim, Aaron Liu, Justus Springer, Junyan Xu
 -/
-import Mathlib.Algebra.Module.PID
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+module
+
+public import Mathlib.Algebra.Module.PID
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
 /-!
 # The normal basis theorem
@@ -25,7 +27,7 @@ variable (K L : Type*) [Field K] [Field L] [Algebra K L]
 
 open Polynomial FiniteField Module Submodule LinearMap in
 -- [ConradLinearChar] Theorem 3.7.
-private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
+theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
     ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   have := Finite.of_injective _ (algebraMap K L).injective
   have := Fintype.ofFinite K
@@ -55,7 +57,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
 variable [FiniteDimensional K L]
 
 -- [ConradLinearChar] Theorem 3.6.
-private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
+theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
     ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   classical
   /- Choose a basis `e` of `L` over `K` and form the matrix `M` with entries
@@ -101,7 +103,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
   simp_rw [M, Pi.zero_apply, map_zero, ← ha]
   simp [Algebra.smul_def, Matrix.mulVec_eq_sum, mul_comm]
 
-theorem exists_linearIndependent_algEquiv_apply :
+public theorem exists_linearIndependent_algEquiv_apply :
     ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   obtain h | h := finite_or_infinite K
   · have := Module.finite_of_finite K (M := L)
@@ -114,14 +116,14 @@ variable [IsGalois K L]
 
 /-- Given a finite Galois extension `L/K`, `normalBasis K L` is a basis of `L` over `K`
 that is an orbit under the Galois group action. -/
-noncomputable def normalBasis : Module.Basis Gal(L/K) K L :=
+public noncomputable def normalBasis : Module.Basis Gal(L/K) K L :=
   basisOfLinearIndependentOfCardEqFinrank
     (exists_linearIndependent_algEquiv_apply K L).choose_spec
     (Fintype.card_eq_nat_card.trans <| card_aut_eq_finrank K L)
 
 variable {K L}
 
-theorem normalBasis_apply (e : Gal(L/K)) : normalBasis K L e = e (normalBasis K L 1) := by
+public theorem normalBasis_apply (e : Gal(L/K)) : normalBasis K L e = e (normalBasis K L 1) := by
   rw [normalBasis, coe_basisOfLinearIndependentOfCardEqFinrank, AlgEquiv.one_apply]
 
 end IsGalois

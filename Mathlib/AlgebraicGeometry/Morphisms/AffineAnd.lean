@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
 /-!
 # Affine morphisms with additional ring hom property
@@ -21,6 +23,8 @@ Typical examples of this are affine morphisms (where `Q` is trivial), finite mor
 (where `Q` is module finite) or closed immersions (where `Q` is being surjective).
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -271,6 +275,37 @@ lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{
   rw [HasAffineProperty.eq_targetAffineLocally (P := P),
     HasAffineProperty.eq_targetAffineLocally (P := P')]
   exact targetAffineLocally_affineAnd_le hQQ'
+
+lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
+    (hP : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
+    (hQ : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S) (g : R →+* T),
+      Q f → Q g → Q (f.prod g))
+    {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) (hf : P f) (hg : P g) :
+    P (Limits.coprod.desc f g) := by
+  have := HasAffineProperty.affineAnd_le_isAffineHom P hP f hf
+  have := HasAffineProperty.affineAnd_le_isAffineHom P hP g hg
+  rw [HasAffineProperty.eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi] at hf hg ⊢
+  refine fun W hW ↦ ⟨hW.preimage _, ?_⟩
+  let e : Γ(U ⨿ V, Limits.coprod.desc f g ⁻¹ᵁ W) ≅ Γ(U, f ⁻¹ᵁ W) ⨯ Γ(V, g ⁻¹ᵁ W) :=
+    Scheme.coprodPresheafObjIso _ ≪≫ Limits.prod.mapIso
+      (U.presheaf.mapIso (eqToIso (by simp [← Scheme.Hom.comp_preimage])).op)
+      (V.presheaf.mapIso (eqToIso (by simp [← Scheme.Hom.comp_preimage])).op)
+  rw [← hQi.cancel_right_isIso _ e.hom,
+    ← CommRingCat.hom_comp, ← hQi.cancel_right_isIso _
+    ((Limits.limit.isLimit _).conePointUniqueUpToIso (CommRingCat.prodFanIsLimit _ _)).hom,
+    ← CommRingCat.hom_comp]
+  have {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S × T) :
+      Q (.comp (.fst _ _) f) → Q (.comp (.snd _ _) f) → Q f :=
+    hQ (.comp (.fst _ _) f) (.comp (.snd _ _) f)
+  refine this _ ?_ ?_
+  · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.fst = f.app W := by
+      simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
+    convert (hf W hW).2
+    exact congr(($this).1)
+  · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.snd = g.app W := by
+      simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
+    convert (hg W hW).2
+    exact congr(($this).1)
 
 end
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.GroupTheory.EckmannHilton
-import Mathlib.Tactic.CategoryTheory.Reassoc
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.GroupTheory.EckmannHilton
+public import Mathlib.Tactic.CategoryTheory.Reassoc
 /-!
 # Constructing a semiadditive structure from binary biproducts
 
@@ -13,6 +15,8 @@ We show that any category with zero morphisms and binary biproducts is enriched 
 of commutative monoids.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

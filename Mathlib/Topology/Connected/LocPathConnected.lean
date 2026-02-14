@@ -3,8 +3,10 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Ben Eltschig
 -/
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.AlexandrovDiscrete
+module
+
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.AlexandrovDiscrete
 
 /-!
 # Locally path-connected spaces
@@ -37,6 +39,8 @@ In the definition of `LocPathConnectedSpace X` we require neighbourhoods in the 
 path-connected, but not necessarily open; that they can also be required to be open is shown as
 a theorem in `isOpen_isPathConnected_basis`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -84,7 +88,7 @@ protected theorem IsClosed.pathComponent (x : X) : IsClosed (pathComponent x) :=
   intro y hxy
   rcases (path_connected_basis y).ex_mem with ⟨V, hVy, hVc⟩
   filter_upwards [hVy] with z hz hxz
-  exact hxy <|  hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
+  exact hxy <| hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
 
 /-- In a locally path connected space, each path component is a clopen set. -/
 protected theorem IsClopen.pathComponent (x : X) : IsClopen (pathComponent x) :=
@@ -95,9 +99,11 @@ lemma pathComponentIn_mem_nhds (hF : F ∈ 𝓝 x) : pathComponentIn F x ∈ �
   exact mem_nhds_iff.mpr ⟨pathComponentIn u x, pathComponentIn_mono huF,
     hu.pathComponentIn x, mem_pathComponentIn_self hxu⟩
 
-theorem pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ ConnectedSpace X := by
-  refine ⟨fun _ ↦ inferInstance, fun h ↦ ⟨inferInstance, fun x y ↦ ?_⟩⟩
-  rw [← mem_pathComponent_iff, (IsClopen.pathComponent _).eq_univ] <;> simp
+theorem PathConnectedSpace.of_locPathConnectedSpace [ConnectedSpace X] : PathConnectedSpace X :=
+  ⟨inferInstance, by simp [← mem_pathComponent_iff, IsClopen.pathComponent _ |>.eq_univ]⟩
+
+theorem pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ ConnectedSpace X :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ .of_locPathConnectedSpace⟩
 
 theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connectedComponent x :=
   (pathComponent_subset_component x).antisymm <|

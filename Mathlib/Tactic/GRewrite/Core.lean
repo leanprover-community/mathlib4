@@ -3,7 +3,10 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Mathlib.Tactic.GCongr.Core
+module
+
+public import Lean
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 
@@ -24,16 +27,18 @@ With the current implementation, we can instead use `nth_grw`.
 
 -/
 
+public meta section
+
 open Lean Meta
 
 namespace Mathlib.Tactic
 
 /-- Given a proof of `a ~ b`, close a goal of the form `a ~' b` or `b ~' a`
 for some possibly different relation `~'`. -/
-def GRewrite.dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Unit := do
-  try
-    goal.gcongrForward #[hrel]
-  catch _ =>
+def GRewrite.dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Bool := do
+  if ← goal.gcongrForward #[hrel] then
+    return true
+  else
     throwTacticEx `grewrite goal m!"could not discharge {← goal.getType} using {← inferType hrel}"
 
 /-- The result returned by `Lean.MVarId.grewrite`. -/
@@ -78,6 +83,9 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         pure none
     let (newMVars, binderInfos, hrelType) ←
       withReducible <| forallMetaTelescopeReducing hrelType maxMVars?
+    /- We don't reduce `hrelType` because if it is `a > b`, turning it into `b < a` would
+    reverse the direction of the rewrite. However, we do need to clear metadata annotations. -/
+    let hrelType := hrelType.cleanupAnnotations
 
     -- If we can use the normal `rewrite` tactic, we default to using that.
     if (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) && config.useRewrite then
@@ -115,13 +123,14 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         Possible solutions: use grewrite's 'occs' configuration option to limit which occurrences \
         are rewritten, or specify what the rewritten expression should be and use 'gcongr'."
     let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
-    -- construct the implication proof using `gcongr`
-    let hole ← mkFreshExprMVar default
-    let template := eAbst.instantiate1 hole
+    -- Construct the implication proof using `gcongr`.
+    -- Although `e` and `e'` are defEq, they may not be defEq in the `reducible` transparency.
+    -- So, it is important to use `e'` in the `gcongr` goal.
+    let e' := eAbst.instantiate1 (GCongr.mkHoleAnnotation lhs)
     let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
-    let imp := if forwardImp then mkImp e eNew else mkImp eNew e
+    let imp := if forwardImp then mkImp e' eNew else mkImp eNew e'
     let gcongrGoal ← mkFreshExprMVar imp
-    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr template [] (grewriteHole := hole.mvarId!)
+    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp []
       (mainGoalDischarger := GRewrite.dischargeMain hrel)
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos

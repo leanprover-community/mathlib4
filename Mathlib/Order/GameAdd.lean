@@ -3,8 +3,10 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Logic.Relation
 
 /-!
 # Game addition relation
@@ -26,6 +28,8 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 - `WellFounded.sym2_gameAdd`: formalizes induction on unordered pairs, where exactly one entry
 decreases at a time.
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop} {a : α} {b : β}
 

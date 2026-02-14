@@ -3,10 +3,12 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Topology.Algebra.Monoid.FunOnFinite
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The standard simplex
@@ -19,6 +21,8 @@ When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
 
 -/
+
+@[expose] public section
 
 open Set Convex Bornology
 
@@ -106,7 +110,7 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
   invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.2.2, x.2.1⟩, by simp⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| by
+  left_inv f := Subtype.ext <| funext <| Fin.forall_fin_two.2 <| by
     simp [← (show f.1 0 + f.1 1 = 1 by simpa using f.2.2)]
 
 @[simp]
@@ -135,7 +139,7 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
     exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
       fun i _ => mem_range_self i
 
-/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : `i`. -/
+/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
 theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
   convert convexHull_basis_eq_stdSimplex R ι
@@ -181,8 +185,8 @@ theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
-      (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
+    IsClosed.inter (isClosed_iInter fun i ↦ isClosed_le continuous_const (continuous_apply i))
+      (isClosed_eq (by fun_prop) continuous_const)
 
 /-- `stdSimplex ℝ ι` is compact. -/
 theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
@@ -190,6 +194,16 @@ theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
 
 instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
   isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
+
+/-- `stdSimplex ℝ ι` is path connected. -/
+theorem isPathConnected_stdSimplex [Nonempty ι] :
+    IsPathConnected (stdSimplex ℝ ι) :=
+  (convex_stdSimplex ℝ ι).isPathConnected (by
+    classical
+    exact ⟨_, single_mem_stdSimplex ℝ (Classical.arbitrary ι)⟩)
+
+instance [Nonempty ι] : PathConnectedSpace (stdSimplex ℝ ι) :=
+  isPathConnected_iff_pathConnectedSpace.1 (isPathConnected_stdSimplex _)
 
 /-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
 is homeomorphic to the unit interval. -/
@@ -209,6 +223,36 @@ lemma stdSimplexHomeomorphUnitInterval_zero :
 @[simp]
 lemma stdSimplexHomeomorphUnitInterval_one :
     stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 1⟩ = 1 := rfl
+
+/-! ### Diameter of a Standard Simplex (sup metric) -/
+
+variable {ι}
+
+/-- The (sup metric) diameter of a standard simplex is less than or equal to 1. -/
+theorem diam_stdSimplex_le : Metric.diam (stdSimplex ℝ ι) ≤ 1 :=
+  Metric.diam_le_of_forall_dist_le zero_le_one fun x hx y hy ↦
+    (dist_pi_le_iff zero_le_one).2 fun i ↦ by
+      have hx := mem_Icc_of_mem_stdSimplex hx i
+      have hy := mem_Icc_of_mem_stdSimplex hy i
+      grind [Real.dist_eq]
+
+/-- The (sup metric) diameter of a standard simplex indexed by a subsingleton is 0. -/
+@[simp]
+theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] : Metric.diam (stdSimplex ℝ ι) = 0 := by
+  cases isEmpty_or_nonempty ι with
+  | inl h => rw [stdSimplex_of_isEmpty_index, Metric.diam_empty]
+  | inr h => rw [stdSimplex_unique, Metric.diam_singleton]
+
+/-- The (sup metric) diameter of a standard simplex indexed by a nontrivial index is 1. -/
+@[simp]
+theorem diam_stdSimplex [Nontrivial ι] : Metric.diam (stdSimplex ℝ ι) = 1 := by
+  refine le_antisymm diam_stdSimplex_le ?_
+  obtain ⟨i, j, hij⟩ := exists_pair_ne ι
+  classical
+  rw [show (1 : ℝ) = dist (Pi.single i 1 : ι → ℝ) (Pi.single j 1) by
+    simp [dist_single_single i j (1 : ℝ) 1 hij, Real.dist_eq]]
+  exact Metric.dist_le_diam_of_mem (bounded_stdSimplex _)
+    (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
 end Topology
 
@@ -231,6 +275,10 @@ lemma zero_le (s : stdSimplex S X) (x : X) : 0 ≤ s x := s.2.1 x
 
 @[simp]
 lemma sum_eq_one (s : stdSimplex S X) : ∑ x, s x = 1 := s.2.2
+
+lemma add_eq_one (s : stdSimplex S (Fin 2)) :
+    s 0 + s 1 = 1 := by
+  simpa only [Fin.sum_univ_two] using sum_eq_one s
 
 section
 
@@ -286,6 +334,68 @@ lemma continuous_map [TopologicalSpace S] [IsTopologicalSemiring S] (f : X → Y
     Continuous (map (S := S) f) :=
   Continuous.subtype_mk ((FunOnFinite.continuous_linearMap S S f).comp continuous_induced_dom) _
 
+lemma vertex_injective [Nontrivial S] [DecidableEq X] :
+    Function.Injective (vertex (S := S) (X := X)) := by
+  intro x y h
+  replace h := DFunLike.congr_fun h x
+  by_contra!
+  simp [Pi.single_eq_of_ne this] at h
+
+instance [Nonempty X] : Nonempty (stdSimplex S X) := by
+  classical
+  exact ⟨vertex (Classical.arbitrary _)⟩
+
+instance [Nontrivial S] [Nontrivial X] : Nontrivial (stdSimplex S X) where
+  exists_pair_ne := by
+    classical
+    obtain ⟨x, y, hxy⟩ := exists_pair_ne X
+    exact ⟨vertex x, vertex y, fun h ↦ hxy (vertex_injective h)⟩
+
+instance [Subsingleton X] : Subsingleton (stdSimplex S X) where
+  allEq s t := by
+    ext i
+    have (u : stdSimplex S X) : u i = 1 := by
+      rw [← sum_eq_one u, Finset.sum_eq_single i _ (by simp)]
+      intro j _ hj
+      exact (hj (Subsingleton.elim j i)).elim
+    simp [this]
+
+instance [Unique X] : Unique (stdSimplex S X) where
+  default := ⟨1, by simp, by simp⟩
+  uniq := by subsingleton
+
+@[simp]
+lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
+    s x = 1 := by
+  obtain rfl : s = default := by subsingleton
+  rfl
+
 end
+
+/-! ### Barycenter of a Standard Simplex -/
+
+section Barycenter
+
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Nonempty X]
+
+/-- The barycenter of a standard simplex is the center of mass of
+the set of vertices (equally weighted). -/
+def barycenter : stdSimplex 𝕜 X :=
+  ⟨fun i => (Fintype.card X : 𝕜)⁻¹, by simp [stdSimplex]⟩
+
+/-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
+@[simp]
+theorem barycenter_apply (x : X) :
+    (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
+
+/-- The barycenter equals the (equal weight) center of mass of vertices (`Finset.centerMass`). -/
+theorem barycenter_eq_centerMass [DecidableEq X] :
+    (barycenter : stdSimplex 𝕜 X).val =
+      Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by
+  simp only [Finset.centerMass, Finset.sum_const, Finset.card_univ]
+  ext x
+  simp [barycenter, Pi.smul_apply, Finset.sum_apply, Pi.single_apply]
+
+end Barycenter
 
 end stdSimplex

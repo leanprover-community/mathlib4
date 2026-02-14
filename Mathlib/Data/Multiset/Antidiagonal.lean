@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Powerset
+module
+
+public import Mathlib.Data.Multiset.Powerset
 
 /-!
 # The antidiagonal on a multiset.
@@ -12,7 +14,9 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
-assert_not_exists OrderedCommMonoid Ring
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Ring
 
 universe u
 

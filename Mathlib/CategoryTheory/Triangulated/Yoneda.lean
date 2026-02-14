@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
 # The Yoneda functors are homological
@@ -18,11 +20,13 @@ functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrpCat` for `A : Cᵒᵖ` and
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-variable {C : Type*} [Category C] [Preadditive C] [HasShift C ℤ]
+variable {C : Type*} [Category* C] [Preadditive C] [HasShift C ℤ]
 
 namespace CategoryTheory
 
@@ -62,7 +66,7 @@ noncomputable instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).ShiftSequence
 lemma preadditiveCoyoneda_homologySequenceδ_apply
     (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {A : Cᵒᵖ} (x : A.unop ⟶ T.obj₃⟦n₀⟧) :
     (preadditiveCoyoneda.obj A).homologySequenceδ T n₀ n₁ h x =
-      x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by cutsat)).inv.app _ := by
+      x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by lia)).inv.app _ := by
   apply Category.assoc
 
 section
@@ -84,7 +88,7 @@ noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ whe
 lemma preadditiveYoneda_shiftMap_apply (B : C) {X Y : Cᵒᵖ} (n : ℤ) (f : X ⟶ Y⟦n⟧)
     (a a' : ℤ) (h : n + a = a') (z : X.unop ⟶ B⟦a⟧) :
     (preadditiveYoneda.obj B).shiftMap f a a' h z =
-      ((ShiftedHom.opEquiv _).symm f).comp z (show a + n = a' by cutsat) := by
+      ((ShiftedHom.opEquiv _).symm f).comp z (show a + n = a' by lia) := by
   symm
   apply ShiftedHom.opEquiv_symm_apply_comp
 

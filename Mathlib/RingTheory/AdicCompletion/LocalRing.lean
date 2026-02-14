@@ -3,9 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 # Basic Properties of Complete Local Ring
@@ -14,6 +15,8 @@ In this file we prove that a ring that is adic complete with respect to a maxima
 ia a local ring (complete local ring).
 
 -/
+
+public section
 
 variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
 
@@ -70,9 +73,6 @@ lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     apply isUnit_iff_exists_inv'.mpr
     use inv
     exact sub_eq_zero.mp <| IsHausdorff.haus IsAdicComplete.toIsHausdorff (inv * r - 1) eq
-
-@[deprecated (since := "2025-05-24")]
-alias isUnit_iff_nmem_of_isAdicComplete_maximal := isUnit_iff_notMem_of_isAdicComplete_maximal
 
 theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing R where
   exists_pair_ne := ⟨0, 1, ne_of_mem_of_not_mem m.zero_mem

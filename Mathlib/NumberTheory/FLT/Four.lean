@@ -3,16 +3,20 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
-import Mathlib.Data.Nat.Factors
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.PythagoreanTriples
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.PythagoreanTriples
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Fermat's Last Theorem for the case n = 4
 There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -185,7 +189,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have h4 : 0 < m := by
     apply lt_of_le_of_ne ht6
     rintro rfl
-    omega
+    lia
   obtain ⟨r, s, _, htt2, htt3, htt4, htt5, htt6⟩ := htt.coprime_classification' h3 ha2 h4
   -- Now use the fact that (b / 2) ^ 2 = m * r * s, and m, r and s are pairwise coprime to obtain
   -- i, j and k such that m = i ^ 2, r = j ^ 2 and s = k ^ 2.

@@ -3,12 +3,15 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.BigOperators.RingEquiv
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.GroupTheory.DedekindFinite
 
 /-!
 # Matrices
@@ -28,6 +31,8 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
+@[expose] public section
+
 assert_not_exists TrivialStar
 
 universe u u' v w
@@ -45,6 +50,8 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fin
 
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
     Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
+
+instance (priority := low) [Semiring α] [Finite α] : IsStablyFiniteRing α := ⟨inferInstance⟩
 
 section
 variable (R)
@@ -149,12 +156,6 @@ theorem diag_sum {ι} [AddCommMonoid α] (s : Finset ι) (f : ι → Matrix n n 
 end Diag
 
 open Matrix
-
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Mul α]
-
-end AddCommMonoid
 
 section NonAssocSemiring
 
@@ -604,6 +605,10 @@ theorem mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →+* _) :=
   rfl
 
+protected lemma _root_.Matrix.map_pow {α β : Type*} [Semiring α] [Semiring β]
+    (M : Matrix m m α) (f : α →+* β) (a : ℕ) : (M ^ a).map f = (M.map f) ^ a :=
+  f.mapMatrix.map_pow M a
+
 end RingHom
 
 namespace RingEquiv
@@ -638,7 +643,7 @@ open MulOpposite in
 For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
 -/
 @[simps apply symm_apply]
-def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
+def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
   left_inv _ := by aesop
@@ -647,6 +652,19 @@ def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   map_add' _ _ := by aesop
 
 end RingEquiv
+
+instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
+  isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
+    ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)
+
+open MulOpposite in
+theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
+    IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
+  mp _ :=
+  ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
+               fun _ _ ↦ by ext; simp [mul_apply]
+  .of_injective f (map_injective (op_injective.comp op_injective))⟩
+  mpr _ := inferInstance
 
 namespace AlgHom
 
@@ -790,6 +808,42 @@ open Matrix
 
 namespace Matrix
 
+section Pi
+
+variable {ι : Type*} {β : ι → Type*}
+
+/-- Matrices over a Pi type are in canonical bijection with tuples of matrices. -/
+@[simps] def piEquiv : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i) where
+  toFun f i := f.map (· i)
+  invFun f := .of fun j k i ↦ f i j k
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- `piEquiv` as an `AddEquiv`. -/
+@[simps!] def piAddEquiv [∀ i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
+  __ := piEquiv
+  map_add' _ _ := rfl
+
+/-- `piEquiv` as a `LinearEquiv`. -/
+@[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+    Matrix m n (Π i, β i) ≃ₗ[R] Π i, Matrix m n (β i) where
+  __ := piAddEquiv
+  map_smul' _ _ := rfl
+
+/-- `piEquiv` as a `RingEquiv`. -/
+@[simps!] def piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
+    Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i) where
+  __ := piAddEquiv
+  map_mul' _ _ := by ext; simp [Matrix.mul_apply]
+
+/-- `piEquiv` as an `AlgEquiv`. -/
+@[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
+    [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+  __ := piRingEquiv
+  commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+
+end Pi
+
 section Transpose
 
 open Matrix
@@ -873,8 +927,6 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
     toFun := fun M => MulOpposite.op Mᵀ
     commutes' := fun r => by
       simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
-
-variable {R m α}
 
 end Transpose
 

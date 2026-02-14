@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Ideal.GoingDown
+module
+
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Ideal.GoingDown
 
 /-!
 # Flat ring homomorphisms
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Ideal.GoingDown
 In this file we define flat ring homomorphisms and show their meta properties.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -27,9 +31,6 @@ def RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+
 lemma RingHom.flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
     (algebraMap R S).Flat ↔ Module.Flat R S := by
   rw [RingHom.Flat, toAlgebra_algebraMap]
-
-@[deprecated (since := "2025-06-03")]
-alias flat_algebraMap_iff := RingHom.flat_algebraMap_iff
 
 namespace RingHom.Flat
 

@@ -3,9 +3,13 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Data.Matrix.Mul
-import Mathlib.GroupTheory.Perm.Sign
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.GroupTheory.Perm.Sign
+
+import Mathlib.Algebra.Module.End
 
 /-!
 # Nonsingular inverses over semirings
@@ -13,6 +17,8 @@ import Mathlib.GroupTheory.Perm.Sign
 This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
 
 -/
+
+@[expose] public section
 
 open Equiv Equiv.Perm Finset
 
@@ -200,9 +206,8 @@ theorem detp_smul_adjp (hAB : A * B = 1) :
   rwa [add_add_add_comm, ← add_smul, add_add_add_comm, ← add_smul, ← h0, add_smul, one_smul,
     add_comm A, add_assoc, ((isAddUnit_detp_mul_detp hAB).smul_right _).add_right_inj] at h
 
-theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
-  suffices h : ∀ A B : Matrix n n R, A * B = 1 → B * A = 1 from ⟨h A B, h B A⟩
-  intro A B hAB
+instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFiniteRing R := by
+  refine ⟨fun n ↦ ⟨fun {A B} hAB ↦ ?_⟩⟩
   have h0 := detp_mul A B
   rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
   replace h := congr(B * $(detp_smul_adjp hAB))
@@ -218,35 +223,36 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
     ((isAddUnit_detp_smul_mul_adjp hAB).add
       ((isAddUnit_detp_mul_detp hAB).smul_right _)).add_left_inj] at h
 
+@[deprecated (since := "2025-11-29")] protected alias mul_eq_one_comm := mul_eq_one_comm
+
 variable (A B)
 
 /-- We can construct an instance of invertible A if A has a left inverse. -/
-def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
-  ⟨B, h, mul_eq_one_comm.mp h⟩
+@[deprecated invertibleOfLeftInverse (since := "2025-12-06")]
+protected def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
+  invertibleOfLeftInverse _ _ h
 
 /-- We can construct an instance of invertible A if A has a right inverse. -/
-def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
-  ⟨B, mul_eq_one_comm.mp h, h⟩
+@[deprecated invertibleOfRightInverse (since := "2025-12-06")]
+protected def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
+  invertibleOfRightInverse _ _ h
 
 variable {A B}
 
+@[deprecated IsUnit.of_mul_eq_one_right (since := "2025-12-06")]
 theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
-  ⟨⟨A, B, mul_eq_one_comm.mp h, h⟩, rfl⟩
+  .of_mul_eq_one_right _ h
 
+@[deprecated isUnit_iff_exists_inv' (since := "2025-12-06")]
 theorem exists_left_inverse_iff_isUnit : (∃ B, B * A = 1) ↔ IsUnit A :=
-  ⟨fun ⟨_, h⟩ ↦ isUnit_of_left_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, invOf_mul_self' A⟩⟩
+  isUnit_iff_exists_inv'.symm
 
+@[deprecated IsUnit.of_mul_eq_one (since := "2025-12-06")]
 theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
-  ⟨⟨A, B, h, mul_eq_one_comm.mp h⟩, rfl⟩
+  .of_mul_eq_one _ h
 
+@[deprecated isUnit_iff_exists_inv (since := "2025-12-06")]
 theorem exists_right_inverse_iff_isUnit : (∃ B, A * B = 1) ↔ IsUnit A :=
-  ⟨fun ⟨_, h⟩ ↦ isUnit_of_right_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, mul_invOf_self' A⟩⟩
-
-/-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
-theorem mul_eq_one_comm_of_equiv {A : Matrix m n R} {B : Matrix n m R} (e : m ≃ n) :
-    A * B = 1 ↔ B * A = 1 := by
-  refine (reindex e e).injective.eq_iff.symm.trans ?_
-  rw [reindex_apply, reindex_apply, submatrix_one_equiv, ← submatrix_mul_equiv _ _ _ (.refl _),
-    mul_eq_one_comm, submatrix_mul_equiv, coe_refl, submatrix_id_id]
+  isUnit_iff_exists_inv.symm
 
 end Matrix

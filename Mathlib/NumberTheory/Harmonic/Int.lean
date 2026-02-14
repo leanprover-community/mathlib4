@@ -3,9 +3,11 @@ Copyright (c) 2023 Koundinya Vajjha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Koundinya Vajjha, Thomas Browning
 -/
-import Mathlib.NumberTheory.Harmonic.Defs
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.NumberTheory.Harmonic.Defs
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.Tactic.Positivity
 
 /-!
 
@@ -16,6 +18,8 @@ Reference:
 https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 
 -/
+
+public section
 
 lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n := by
   unfold harmonic

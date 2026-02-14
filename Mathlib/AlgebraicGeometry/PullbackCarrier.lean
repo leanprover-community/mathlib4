@@ -3,8 +3,10 @@ Copyright (c) 2024 Qi Ge, Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Qi Ge, Christian Merten, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.LinearAlgebra
-import Mathlib.AlgebraicGeometry.ResidueField
+module
+
+public import Mathlib.Algebra.Category.Ring.LinearAlgebra
+public import Mathlib.AlgebraicGeometry.ResidueField
 
 /-!
 # Underlying topological space of fibre product of schemes
@@ -23,6 +25,8 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
 We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits TopologicalSpace IsLocalRing TensorProduct
 
@@ -389,6 +393,27 @@ lemma pullbackComparison_forget_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g
 
 @[deprecated (since := "2025-10-06")]
 alias Pullback.forget_comparison_surjective := pullbackComparison_forget_surjective
+
+lemma exists_preimage_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y}
+    {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (x : X) (y : Y)
+    (hxy : f.base x = g.base y) :
+    ∃ (p : P), fst.base p = x ∧ snd.base p = y := by
+  let e := h.isoPullback
+  obtain ⟨z, hzl, hzr⟩ := AlgebraicGeometry.Scheme.Pullback.exists_preimage_pullback x y hxy
+  use h.isoPullback.inv.base z
+  simp [← Scheme.Hom.comp_apply, hzl, hzr]
+
+lemma image_preimage_eq_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y}
+    {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (s : Set X) :
+    snd.base '' (fst.base ⁻¹' s) = g.base ⁻¹' (f.base '' s) := by
+  refine subset_antisymm ?_ (fun x hx ↦ ?_)
+  · rw [Set.image_subset_iff, ← Set.preimage_comp, ← TopCat.coe_comp, ← Hom.comp_base, ← h.1.1]
+    rw [Hom.comp_base, TopCat.coe_comp, ← Set.image_subset_iff, Set.image_comp]
+    exact Set.image_mono (Set.image_preimage_subset _ _)
+  · obtain ⟨y, hy, heq⟩ := hx
+    obtain ⟨o, hl, hr⟩ := exists_preimage_of_isPullback h y x heq
+    use o
+    simpa [hl, hr]
 
 end Scheme
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
 # Adjunctions between additive functors.
@@ -17,6 +19,8 @@ preadditive categories:
   functors (analogous to `Adjunction.compYonedaIso`), in `Adjunction.compPreadditiveYonedaIso`.
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂ v₁ v₂
 
@@ -72,7 +76,7 @@ lemma homAddEquiv_sub (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
 
 @[simp]
 lemma homAddEquiv_neg (X : C) (Y : D) (f : F.obj X ⟶ Y) :
-    adj.homEquiv X Y (- f) = - adj.homEquiv X Y f := map_neg (adj.homAddEquiv X Y) _
+    adj.homEquiv X Y (-f) = - adj.homEquiv X Y f := map_neg (adj.homAddEquiv X Y) _
 
 @[simp]
 lemma homAddEquiv_symm_zero (X : C) (Y : D) :
@@ -90,7 +94,7 @@ lemma homAddEquiv_symm_sub (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
 
 @[simp]
 lemma homAddEquiv_symm_neg (X : C) (Y : D) (f : X ⟶ G.obj Y) :
-    (adj.homEquiv X Y).symm (- f) = - (adj.homEquiv X Y).symm f :=
+    (adj.homEquiv X Y).symm (-f) = - (adj.homEquiv X Y).symm f :=
   map_neg (adj.homAddEquiv X Y).symm _
 
 open Opposite in

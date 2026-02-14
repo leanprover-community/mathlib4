@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 /-!
 
@@ -11,15 +13,23 @@ import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 -/
 
+universe u
+
+@[expose] public section
+
 open CategoryTheory MorphismProperty
 
 namespace AlgebraicGeometry
 
+lemma isIso_iff_isOpenImmersion_and_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    IsIso f ↔ IsOpenImmersion f ∧ Surjective f := by
+  rw [surjective_iff, ← TopCat.epi_iff_surjective, isIso_iff_isOpenImmersion_and_epi_base]
+
 lemma isomorphisms_eq_isOpenImmersion_inf_surjective :
     isomorphisms Scheme = (@IsOpenImmersion ⊓ @Surjective : MorphismProperty Scheme) := by
   ext
-  exact (isIso_iff_isOpenImmersion_and_epi_base _).trans
-    (and_congr Iff.rfl ((TopCat.epi_iff_surjective _).trans (surjective_iff _).symm))
+  rw [isomorphisms.iff, isIso_iff_isOpenImmersion_and_surjective]
+  rfl
 
 lemma isomorphisms_eq_stalkwise :
     isomorphisms Scheme = (isomorphisms TopCat).inverseImage Scheme.forgetToTop ⊓
@@ -32,8 +42,7 @@ lemma isomorphisms_eq_stalkwise :
     (H.1.1.toHomeomorphOfSurjective H.2)).hom), fun (_ : IsIso f.base) ↦
     let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
-instance : IsZariskiLocalAtTarget (isomorphisms Scheme) :=
-  isomorphisms_eq_isOpenImmersion_inf_surjective ▸ inferInstance
+example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance
 
 instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
   convert HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY
@@ -43,5 +52,13 @@ instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X �
 
 instance : IsZariskiLocalAtTarget (monomorphisms Scheme) :=
   diagonal_isomorphisms (C := Scheme).symm ▸ inferInstance
+
+lemma isIso_SpecMap_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
+    IsIso (Spec.map f) ↔ Function.Bijective f.hom := by
+  rw [← ConcreteCategory.isIso_iff_bijective]
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  rw [← isomorphisms.iff, (isomorphisms _).arrow_mk_iso_iff (arrowIsoΓSpecOfIsAffine f),
+    isomorphisms.iff]
+  infer_instance
 
 end AlgebraicGeometry

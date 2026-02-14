@@ -3,14 +3,16 @@ Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.GCDMonoid.Multiset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Closure
-import Mathlib.GroupTheory.Perm.Cycle.Factors
-import Mathlib.Tactic.NormNum.GCD
+module
+
+public import Mathlib.Algebra.GCDMonoid.Multiset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Closure
+public import Mathlib.GroupTheory.Perm.Cycle.Factors
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Cycle Types
@@ -31,6 +33,8 @@ In this file we define the cycle type of a permutation.
 - `exists_prime_orderOf_dvd_card`: For every prime `p` dividing the order of a finite group `G`
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
 -/
+
+@[expose] public section
 
 open scoped Finset
 
@@ -149,6 +153,9 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = #σ.support := by
   | base_cycles σ hσ => rw [hσ.cycleType, Multiset.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType_mul, sum_add, hσ, hτ, hd.card_support_mul]
 
+theorem sum_cycleType_le (σ : Perm α) : σ.cycleType.sum ≤ Fintype.card α :=
+  σ.sum_cycleType ▸ Finset.card_le_univ σ.support
+
 theorem card_fixedPoints (σ : Equiv.Perm α) :
     Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
   rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
@@ -215,6 +222,10 @@ theorem pow_prime_eq_one_iff {σ : Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] 
   exact fun c ↦ ⟨fun hc h ↦ Or.resolve_left (hp.elim.eq_one_or_self_of_dvd c (hc h))
        (Nat.ne_of_lt' (one_lt_of_mem_cycleType h)),
      fun hc h ↦ by rw [hc h]⟩
+
+theorem cycleType_of_pow_prime_eq_one {σ : Perm α} {p : ℕ} [Fact (Nat.Prime p)] (hσ : σ ^ p = 1) :
+    σ.cycleType = Multiset.replicate σ.cycleType.card p :=
+  Multiset.eq_replicate.mpr ⟨rfl, pow_prime_eq_one_iff.mp hσ⟩
 
 theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : #σ.support < 2 * orderOf σ) : σ.IsCycle := by
@@ -328,6 +339,23 @@ theorem cycleType_of_card_le_mem_cycleType_add_two {n : ℕ} {g : Perm α}
     rw [hd.cycleType_mul, hc.cycleType, g'1, cycleType_one, add_zero]
   contrapose! hn2 with g'1
   grw [← (c * g').support.card_le_univ, hd.card_support_mul, two_le_card_support_of_ne_one g'1]
+
+theorem sign_of_cycleType_eq_replicate {σ : Perm α} {n : ℕ} (hn : 0 < n)
+    (hσ : σ.cycleType = Multiset.replicate σ.cycleType.card n) :
+    sign σ = if Odd n then 1 else
+      (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / n) := by
+  rw [sign_of_cycleType', hσ, Multiset.map_replicate, Multiset.prod_replicate]
+  obtain h | h := Nat.even_or_odd n
+  · rw [if_neg (Nat.not_odd_iff_even.mpr h), h.neg_one_pow, σ.card_fixedPoints,
+      Nat.sub_sub_self σ.sum_cycleType_le,
+      show σ.cycleType.sum = σ.cycleType.card * n by rw [hσ]; simp,
+        Nat.mul_div_cancel _ hn]
+  · rw [if_pos h, h.neg_one_pow, neg_neg, one_pow]
+
+theorem sign_of_pow_two_eq_one {σ : Perm α} (hσ : σ ^ 2 = 1) :
+    sign σ = (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / 2) := by
+  rw [sign_of_cycleType_eq_replicate zero_lt_two (cycleType_of_pow_prime_eq_one hσ),
+    if_neg (Nat.not_odd_iff.mpr rfl)]
 
 end CycleType
 
@@ -577,8 +605,10 @@ theorem isSwap_iff_cycleType {σ : Perm α} : σ.IsSwap ↔ σ.cycleType = {2} :
   · intro h
     simp [← card_support_eq_two, ← sum_cycleType, h]
 
+omit [Fintype α] in variable [Finite α] in
 theorem IsSwap.orderOf {σ : Equiv.Perm α} (h : σ.IsSwap) :
     orderOf σ = 2 := by
+  have := Fintype.ofFinite α
   rw [← lcm_cycleType, isSwap_iff_cycleType.mp h, Multiset.lcm_singleton, normalize_eq]
 
 end IsSwap
@@ -612,7 +642,7 @@ theorem _root_.card_support_eq_three_iff : #σ.support = 3 ↔ σ.IsThreeCycle :
     rw [IsThreeCycle, ← cons_erase hn, h1, h, ← cons_zero]
   obtain ⟨m, hm⟩ := exists_mem_of_ne_zero h1
   rw [← sum_cycleType, ← cons_erase hn, ← cons_erase hm, Multiset.sum_cons, Multiset.sum_cons] at h
-  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by omega
+  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by lia
   cases this (two_le_of_mem_cycleType (mem_of_mem_erase hm)) (two_le_of_mem_cycleType hn) h
 
 theorem isCycle (h : IsThreeCycle σ) : IsCycle σ := by
@@ -652,16 +682,71 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
     simp [ab, ac, bc]
   apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => ?_
   · simp [ab, ac]
-  · simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+  · simp only [mem_support, coe_mul]
+    grind
+
+theorem IsThreeCycle.support_eq_iff_mem_support
+    {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    g.support = {a, g a, g (g a)} ↔ a ∈ g.support := by
+  constructor
+  · intro hg; simp [hg]
+  · intro ha
+    symm
+    apply Finset.eq_of_subset_of_card_le
+    · apply Finset.insert_subset ha
+      apply Finset.insert_subset
+      · rwa [Perm.apply_mem_support]
+      simpa only [Finset.singleton_subset_iff, Perm.apply_mem_support]
+    · rw [hg3.card_support]
+      simp only [mem_support, ne_eq] at ha
+      rw [Finset.card_insert_eq_ite, if_neg]
+      · rw [Finset.card_insert_eq_ite, if_neg]
+        · simp
+        · simpa using Ne.symm ha
+      · simp only [Finset.mem_insert, Finset.mem_singleton]
+        contrapose ha
+        rcases ha with ha | ha
+        · exact ha.symm
+        · suffices (g ^ 3) a = a by simpa [pow_succ, ← ha] using this
+          simp [← hg3.orderOf]
+
+theorem IsThreeCycle.nodup_iff_mem_support {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    [a, g a, g (g a)].Nodup ↔ a ∈ g.support := by
+  constructor
+  · intro ha
     rw [mem_support]
-    simp only [Perm.coe_mul, Function.comp_apply, Ne]
-    obtain rfl | rfl | rfl := hx
-    · rw [swap_apply_left, swap_apply_of_ne_of_ne ac.symm bc.symm]
-      exact ac.symm
-    · rw [swap_apply_of_ne_of_ne ab.symm bc, swap_apply_right]
-      exact ab
-    · rw [swap_apply_right, swap_apply_left]
-      exact bc
+    grind
+  rw [← support_eq_iff_mem_support hg3]
+  intro ha
+  suffices g.support.card = 3 by grind
+  exact hg3.card_support
+
+theorem IsThreeCycle.eq_swap_mul_swap_iff_mem_support
+    {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    g = (swap a (g a)) * (swap (g a) (g (g a))) ↔ a ∈ g.support := by
+  constructor
+  · intro hg
+    rw [mem_support]
+    intro hx
+    apply hg3.isCycle.ne_one
+    simpa [hx] using hg
+  intro ha
+  have ha' := hg3.support_eq_iff_mem_support.mpr ha
+  have ha'' := hg3.nodup_iff_mem_support.mpr ha
+  ext x
+  simp only [coe_mul, Function.comp_apply]
+  by_cases h : x ∈ g.support
+  · simp only [ha', Finset.mem_insert, Finset.mem_singleton] at h
+    rcases h with rfl | (rfl | rfl)
+    · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+      simp
+    · rw [swap_apply_left, swap_apply_of_ne_of_ne (by grind) (by grind)]
+    · simp only [swap_apply_right]
+      suffices (g ^ 3) a = a by simpa
+      simp [← hg3.orderOf]
+  · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+    rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+    simpa [notMem_support] using h
 
 open Subgroup
 
@@ -685,6 +770,20 @@ theorem IsSwap.mul_mem_closure_three_cycles {σ τ : Perm α} (hσ : IsSwap σ) 
   exact
     mul_mem (swap_mul_swap_same_mem_closure_three_cycles ab ac)
       (swap_mul_swap_same_mem_closure_three_cycles (Ne.symm ac) cd)
+
+end
+
+section
+
+variable [DecidableEq α]
+
+theorem cycleType_swap_mul_swap_of_nodup {x y z t : α} (h : [x, y, z, t].Nodup) :
+    (swap x y * swap z t).cycleType = {2, 2} := by
+  rw [(disjoint_swap_swap h).cycleType_mul]
+  rw [isSwap_iff_cycleType.mp ?_, isSwap_iff_cycleType.mp ?_]
+  · simp
+  · rw [swap_isSwap_iff]; grind
+  · rw [swap_isSwap_iff]; grind
 
 end
 

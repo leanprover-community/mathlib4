@@ -3,9 +3,11 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Hom.ContinuousEval
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Hom.ContinuousEval
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The compact-open topology
@@ -31,6 +33,8 @@ topological spaces.
 
 compact-open, curry, function space
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace Topology
@@ -59,6 +63,15 @@ theorem isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
 lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : MapsTo f K U) :
     ∀ᶠ g : C(X, Y) in 𝓝 f, MapsTo g K U :=
   (isOpen_setOf_mapsTo hK hU).mem_nhds h
+
+lemma isOpen_setOf_range_subset [CompactSpace X] (hU : IsOpen U) :
+    IsOpen {f : C(X, Y) | range f ⊆ U} := by
+  simp_rw [← mapsTo_univ_iff_range_subset]
+  exact isOpen_setOf_mapsTo isCompact_univ hU
+
+lemma eventually_range_subset [CompactSpace X] {f : C(X, Y)} (hU : IsOpen U) (h : range f ⊆ U) :
+    ∀ᶠ g : C(X, Y) in 𝓝 f, range g ⊆ U :=
+  (isOpen_setOf_range_subset hU).mem_nhds h
 
 lemma nhds_compactOpen (f : C(X, Y)) :
     𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
@@ -387,7 +400,7 @@ theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
 theorem continuous_coev : Continuous (coev X Y) :=
   ((continuous_prodMk_const (X := Y) (Y := X) (Z := X)).comp
-    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))):)
+    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))) :)
 
 end Coev
 
@@ -405,7 +418,7 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
   rfl
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
-α × β → γ` is continuous. -/
+`α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
   (curry ⟨_, h⟩).2

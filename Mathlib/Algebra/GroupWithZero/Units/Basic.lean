@@ -3,12 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Int.Basic
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Nat.Basic  -- shake: keep (non-recorded `nontrivial` dependency?)
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -16,6 +20,8 @@ import Mathlib.Tactic.Spread
 We also define `Ring.inverse`, a globally defined function on any ring
 (in fact any `MonoidWithZero`), which inverts units and sends non-units to zero.
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative Ring
 
@@ -127,15 +133,10 @@ theorem inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
 
-variable {M₀}
-
 end Ring
 
 theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
-
-@[deprecated (since := "2025-04-22")] alias IsUnit.ring_inverse := IsUnit.ringInverse
-@[deprecated (since := "2025-04-22")] protected alias Ring.IsUnit.ringInverse := IsUnit.ringInverse
 
 @[simp]
 theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
@@ -146,8 +147,6 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
-
-@[deprecated (since := "2025-04-22")] alias isUnit_ring_inverse := isUnit_ringInverse
 
 namespace Units
 
@@ -242,6 +241,11 @@ theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
 
 @[simp] lemma div_self (h : a ≠ 0) : a / a = 1 := h.isUnit.div_self
 
+@[simp]
+lemma div_self_eq_one₀ : a / a = 1 ↔ a ≠ 0 where
+  mp := by contrapose!; simp +contextual
+  mpr := div_self
+
 lemma eq_mul_inv_iff_mul_eq₀ (hc : c ≠ 0) : a = b * c⁻¹ ↔ a * c = b :=
   hc.isUnit.eq_mul_inv_iff_mul_eq
 
@@ -332,7 +336,7 @@ lemma pow_sub₀ (a : G₀) (ha : a ≠ 0) (h : n ≤ m) : a ^ (m - n) = a ^ m *
 
 lemma pow_sub_of_lt (a : G₀) (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
-  · rw [zero_pow (Nat.ne_of_gt <| Nat.sub_pos_of_lt h), zero_pow (by cutsat), zero_mul]
+  · rw [zero_pow (Nat.ne_of_gt <| Nat.sub_pos_of_lt h), zero_pow (by lia), zero_mul]
   · exact pow_sub₀ _ ha <| Nat.le_of_lt h
 
 lemma inv_pow_sub₀ (ha : a ≠ 0) (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
@@ -382,12 +386,6 @@ section CommGroupWithZero
 
 -- comm
 variable [CommGroupWithZero G₀] {a b c d : G₀}
-
--- see Note [lower instance priority]
-instance (priority := 10) CommGroupWithZero.toCancelCommMonoidWithZero :
-    CancelCommMonoidWithZero G₀ :=
-  { GroupWithZero.toCancelMonoidWithZero,
-    CommGroupWithZero.toCommMonoidWithZero with }
 
 -- See note [lower instance priority]
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :

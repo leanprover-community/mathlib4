@@ -3,16 +3,20 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Semiquot
-import Mathlib.Data.Nat.Size
-import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Rat.Init
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
+module
+
+public import Mathlib.Data.Semiquot
+public import Mathlib.Data.Nat.Size
+public import Mathlib.Data.PNat.Defs
+public import Mathlib.Data.Rat.Init
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Implementation of floating-point numbers (experimental).
 -/
+
+@[expose] public section
 
 -- TODO add docs and remove `@[nolint docBlame]`
 
@@ -85,9 +89,9 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      cutsat
+      lia
     le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
-    by (simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
+    by (simp [sub_eq_add_neg, Int.natCast_nonneg])⟩
 
 @[nolint docBlame]
 def Float.zero (s : Bool) : Float :=

@@ -3,9 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.Jacobian
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.MeasureTheory.Function.Jacobian
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Polar coordinates
@@ -18,14 +21,16 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 -/
 
+@[expose] public section
+
 noncomputable section Real
 
 open Real Set MeasureTheory
 
 open scoped ENNReal Real Topology
 
-/-- The polar coordinates open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to
-`(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
+/-- The polar coordinates are an open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)`
+to `(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
 def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   toFun q := (√(q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
@@ -66,9 +71,6 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     rintro ⟨x, y⟩ _
     have A : √(x ^ 2 + y ^ 2) = ‖x + y * Complex.I‖ := by
       rw [Complex.norm_def, Complex.normSq_add_mul_I]
-    have Z := Complex.norm_mul_cos_add_sin_mul_I (x + y * Complex.I)
-    simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
-      mul_assoc] at Z
     simp [A]
   open_target := isOpen_Ioi.prod isOpen_Ioo
   open_source :=
@@ -156,7 +158,7 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
   calc
     _ = ∫⁻ p in polarCoord.symm '' polarCoord.target, f p := by
       rw [← setLIntegral_univ, setLIntegral_congr polarCoord_source_ae_eq_univ.symm,
-        polarCoord.symm_image_target_eq_source ]
+        polarCoord.symm_image_target_eq_source]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal |p.1| • f (polarCoord.symm p) := by
       rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume _
         (fun p _ ↦ (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt)]
@@ -237,12 +239,17 @@ theorem abs_fst_of_mem_pi_polarCoord_target {p : ι → ℝ × ℝ}
     |(p i).1| = (p i).1 :=
   abs_of_pos ((Set.mem_univ_pi.mp hp) i).1
 
-variable [Fintype ι]
-
-theorem hasFDerivAt_pi_polarCoord_symm (p : ι → ℝ × ℝ) :
+theorem hasFDerivAt_pi_polarCoord_symm [Finite ι] (p : ι → ℝ × ℝ) :
     HasFDerivAt (fun x i ↦ polarCoord.symm (x i)) (fderivPiPolarCoordSymm p) p := by
+  have := Fintype.ofFinite ι
   rw [fderivPiPolarCoordSymm, hasFDerivAt_pi]
   exact fun i ↦ HasFDerivAt.comp _ (hasFDerivAt_polarCoord_symm _) (hasFDerivAt_apply i _)
+
+theorem measurableSet_pi_polarCoord_target [Finite ι] :
+    MeasurableSet (Set.univ.pi fun _ : ι ↦ polarCoord.target) :=
+  MeasurableSet.univ_pi fun _ ↦ polarCoord.open_target.measurableSet
+
+variable [Fintype ι]
 
 theorem det_fderivPiPolarCoordSymm (p : ι → ℝ × ℝ) :
     (fderivPiPolarCoordSymm p).det = ∏ i, (p i).1 := by
@@ -253,10 +260,6 @@ theorem pi_polarCoord_symm_target_ae_eq_univ :
         =ᵐ[volume] Set.univ := by
   rw [Set.piMap_image_univ_pi, polarCoord.symm_image_target_eq_source, volume_pi, ← Set.pi_univ]
   exact ae_eq_set_pi fun _ _ ↦ polarCoord_source_ae_eq_univ
-
-theorem measurableSet_pi_polarCoord_target :
-    MeasurableSet (Set.univ.pi fun _ : ι ↦ polarCoord.target) :=
-  MeasurableSet.univ_pi fun _ ↦ polarCoord.open_target.measurableSet
 
 theorem integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : (ι → ℝ × ℝ) → E) :

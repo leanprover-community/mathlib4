@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Colimits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-! # Colimits in categories of presheaves of modules
 
@@ -12,6 +14,8 @@ In this file, it is shown that under suitable assumptions,
 colimits exist in the category `PresheafOfModules R`.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u u'
 
@@ -151,5 +155,19 @@ noncomputable instance toPresheaf_preservesFiniteColimits :
     PreservesFiniteColimits (toPresheaf R) where
 
 end Finite
+
+section HasColimitsOfSize
+
+variable [HasColimitsOfSize.{v₂, u₂} AddCommGrpCat.{v}]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{v₂, u₂} (PresheafOfModules.{v} R) where
+
+noncomputable instance evaluation_preservesColimitsOfSize (X : Cᵒᵖ) :
+    PreservesColimitsOfSize.{v₂, u₂} (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+
+noncomputable instance toPresheaf_preservesColimitsOfSize :
+    PreservesColimitsOfSize.{v₂, u₂} (toPresheaf.{v} R) where
+
+end HasColimitsOfSize
 
 end PresheafOfModules

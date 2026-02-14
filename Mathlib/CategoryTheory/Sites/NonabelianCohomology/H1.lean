@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
 
 /-! The cohomology of a sheaf of groups in degree 1
 
@@ -39,6 +41,8 @@ case, it would be a particular case of Čech cohomology (TODO).
 * [J. Frenkel, *Cohomologie non abélienne et espaces fibrés*][frenkel1957]
 
 -/
+
+@[expose] public section
 
 universe w' w v u
 
@@ -101,7 +105,7 @@ lemma mul_ev (γ₁ γ₂ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b
     (γ₁ * γ₂).ev i j a b = γ₁.ev i j a b * γ₂.ev i j a b := rfl
 
 instance : Inv (OneCochain G U) where
-  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b) ⁻¹}
+  inv γ := { ev := fun i j _ a b ↦ (γ.ev i j a b)⁻¹ }
 
 @[simp]
 lemma inv_ev (γ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
@@ -200,7 +204,7 @@ instance : One (H1 G U) where
 
 lemma OneCocycle.class_eq_iff (γ₁ γ₂ : OneCocycle G U) :
     γ₁.class = γ₂.class ↔ γ₁.IsCohomologous γ₂ :=
-  (equivalence_isCohomologous _ _ ).quot_mk_eq_iff _ _
+  (equivalence_isCohomologous _ _).quot_mk_eq_iff _ _
 
 lemma OneCocycle.IsCohomologous.class_eq {γ₁ γ₂ : OneCocycle G U} (h : γ₁.IsCohomologous γ₂) :
     γ₁.class = γ₂.class :=

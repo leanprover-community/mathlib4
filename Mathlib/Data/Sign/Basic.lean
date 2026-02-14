@@ -3,11 +3,13 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Sign.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Sign.Defs
 
 /-!
 # Sign function
@@ -15,6 +17,8 @@ import Mathlib.Data.Sign.Defs
 This file defines the sign function for types with zero and a decidable less-than relation, and
 proves some basic theorems about it.
 -/
+
+@[expose] public section
 
 universe u
 variable {α : Type u}
@@ -116,6 +120,7 @@ is required; consider ℂ with the order `z ≤ w` iff they have the same imagin
 `z - w ≤ 0` in the reals; then `1 + I` and `1 - I` are incomparable to zero, and thus we have:
 `0 * 0 = SignType.sign (1 + I) * SignType.sign (1 - I) ≠ SignType.sign 2 = 1`.
 (`Complex.orderedCommRing`) -/
+@[simps -fullyApplied]
 def signHom : α →*₀ SignType where
   toFun := sign
   map_zero' := sign_zero

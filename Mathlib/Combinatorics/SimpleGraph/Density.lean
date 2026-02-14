@@ -3,14 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
 
 /-!
 # Edge density
@@ -25,6 +27,8 @@ Between two finsets of vertices,
 * `SimpleGraph.interedges`: Finset of edges of a graph.
 * `SimpleGraph.edgeDensity`: Edge density of a graph.
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -69,7 +73,7 @@ variable (r)
 theorem card_interedges_add_card_interedges_compl (s : Finset α) (t : Finset β) :
     #(interedges r s t) + #(interedges (fun x y ↦ ¬r x y) s t) = #s * #t := by
   classical
-  rw [← card_product, interedges, interedges, ← card_union_of_disjoint, filter_union_filter_neg_eq]
+  rw [← card_product, interedges, interedges, ← card_union_of_disjoint, filter_union_filter_not_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 
 theorem interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Finset β) :
@@ -333,7 +337,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     refine filter_congr fun x hx ↦ ?_
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
-  rw [this, ← card_union_of_disjoint, filter_union_filter_neg_eq]
+  rw [this, ← card_union_of_disjoint, filter_union_filter_not_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h : Disjoint s t) :

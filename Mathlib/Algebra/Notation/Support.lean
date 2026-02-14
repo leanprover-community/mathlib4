@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Data.Set.Image
 
 /-!
 # Support of a function
@@ -13,6 +15,8 @@ import Mathlib.Data.Set.Image
 In this file we define `Function.support f = {x | f x ≠ 0}` and prove its basic properties.
 We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid CompleteLattice
 
@@ -32,11 +36,6 @@ lemma mulSupport_eq_preimage (f : ι → M) : mulSupport f = f ⁻¹' {1}ᶜ := 
 
 @[to_additive]
 lemma notMem_mulSupport : x ∉ mulSupport f ↔ f x = 1 := not_not
-
-@[deprecated (since := "2025-05-24")] alias nmem_support := notMem_support
-
-@[to_additive existing, deprecated (since := "2025-05-24")]
-alias nmem_mulSupport := notMem_mulSupport
 
 @[to_additive]
 lemma compl_mulSupport : (mulSupport f)ᶜ = {x | f x = 1} := ext fun _ ↦ notMem_mulSupport
@@ -113,6 +112,10 @@ lemma mulSupport_nonempty_iff : (mulSupport f).Nonempty ↔ f ≠ 1 := by
   rw [nonempty_iff_ne_empty, Ne, mulSupport_eq_empty_iff]
 
 @[to_additive]
+theorem _root_.Subsingleton.mulSupport_eq [Subsingleton M] (f : ι → M) : mulSupport f = ∅ :=
+  mulSupport_eq_empty_iff.mpr <| Subsingleton.elim f 1
+
+@[to_additive]
 lemma range_subset_insert_image_mulSupport (f : ι → M) :
     range f ⊆ insert 1 (f '' mulSupport f) := by
   simpa only [range_subset_iff, mem_insert_iff, or_iff_not_imp_left] using
@@ -137,6 +140,11 @@ lemma mulSupport_fun_one : mulSupport (fun _ ↦ 1 : ι → M) = ∅ := mulSuppo
 @[to_additive]
 lemma mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun _ : ι ↦ c) = Set.univ := by
   ext x; simp [hc]
+
+/-- The multiplicative support of a function that is everywhere non-one is the whole space. -/
+@[to_additive /-- The support of a function that is everywhere nonzero is the whole space. -/]
+lemma mulSupport_eq_univ (hf : ∀ x, f x ≠ 1) : mulSupport f = Set.univ :=
+  Set.eq_univ_of_forall hf
 
 @[to_additive]
 lemma mulSupport_binop_subset (op : M → N → P) (op1 : op 1 1 = 1) (f : ι → M) (g : ι → N) :
@@ -226,6 +234,12 @@ lemma mulSupport_mulSingle_of_ne (h : a ≠ 1) : mulSupport (mulSingle i a) = {i
 @[to_additive]
 lemma mulSupport_mulSingle [DecidableEq M] :
     mulSupport (mulSingle i a) = if a = 1 then ∅ else {i} := by split_ifs with h <;> simp [h]
+
+@[to_additive]
+lemma subsingleton_mulSupport_mulSingle : (mulSupport (mulSingle i a)).Subsingleton := by
+  classical
+  rw [mulSupport_mulSingle]
+  split_ifs with h <;> simp
 
 @[to_additive]
 lemma mulSupport_mulSingle_disjoint (ha : a ≠ 1) (hb : b ≠ 1) :

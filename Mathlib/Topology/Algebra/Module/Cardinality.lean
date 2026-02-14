@@ -3,12 +3,13 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Module.Card
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.MetricSpace.Perfect
+module
+
+public import Mathlib.Algebra.Module.Card
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.SetTheory.Cardinal.Continuum
+public import Mathlib.SetTheory.Cardinal.CountableCover
+public import Mathlib.Topology.MetricSpace.Perfect
 
 /-!
 # Cardinality of open subsets of vector spaces
@@ -21,6 +22,8 @@ field has dense complement, in `Set.Countable.dense_compl`. This follows from th
 argument and the fact that a complete nontrivially normed field has cardinality at least
 continuum, proved in `continuum_le_cardinal_of_nontriviallyNormedField`.
 -/
+
+public section
 universe u v
 
 open Filter Pointwise Set Function Cardinal
@@ -35,10 +38,10 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
   apply Perfect.exists_nat_bool_injection _ univ_nonempty
   refine ⟨isClosed_univ, preperfect_iff_nhds.2 (fun x _ U hU ↦ ?_)⟩
   rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, c_pos, hc⟩
-  have A : Tendsto (fun n ↦ x + c^n) atTop (𝓝 (x + 0)) :=
+  have A : Tendsto (fun n ↦ x + c ^ n) atTop (𝓝 (x + 0)) :=
     tendsto_const_nhds.add (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc)
   rw [add_zero] at A
-  have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
+  have B : ∀ᶠ n in atTop, x + c ^ n ∈ U := tendsto_def.1 A U hU
   rcases B.exists with ⟨n, hn⟩
   refine ⟨x + c^n, by simpa using hn, ?_⟩
   simp only [add_ne_left]
@@ -65,16 +68,16 @@ lemma cardinal_eq_of_mem_nhds_zero
   where `c` is any element of `𝕜` with norm `> 1`. All these sets are in bijection and have
   therefore the same cardinality. The conclusion follows. -/
   obtain ⟨c, hc⟩ : ∃ x : 𝕜, 1 < ‖x‖ := NormedField.exists_lt_norm 𝕜 1
-  have cn_ne : ∀ n, c^n ≠ 0 := by
+  have cn_ne : ∀ n, c ^ n ≠ 0 := by
     intro n
     apply pow_ne_zero
     rintro rfl
     simp only [norm_zero] at hc
     exact lt_irrefl _ (hc.trans zero_lt_one)
-  have A : ∀ (x : E), ∀ᶠ n in (atTop : Filter ℕ), x ∈ c^n • s := by
+  have A : ∀ (x : E), ∀ᶠ n in (atTop : Filter ℕ), x ∈ c ^ n • s := by
     intro x
-    have : Tendsto (fun n ↦ (c^n) ⁻¹ • x) atTop (𝓝 ((0 : 𝕜) • x)) := by
-      have : Tendsto (fun n ↦ (c^n)⁻¹) atTop (𝓝 0) := by
+    have : Tendsto (fun n ↦ (c ^ n)⁻¹ • x) atTop (𝓝 ((0 : 𝕜) • x)) := by
+      have : Tendsto (fun n ↦ (c ^ n)⁻¹) atTop (𝓝 0) := by
         simp_rw [← inv_pow]
         apply tendsto_pow_atTop_nhds_zero_of_norm_lt_one
         rw [norm_inv]
@@ -83,10 +86,10 @@ lemma cardinal_eq_of_mem_nhds_zero
     rw [zero_smul] at this
     filter_upwards [this hs] with n (hn : (c ^ n)⁻¹ • x ∈ s)
     exact (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).2 hn
-  have B : ∀ n, #(c^n • s :) = #s := by
+  have B : ∀ n, #(c ^ n • s :) = #s := by
     intro n
-    have : (c^n • s :) ≃ s :=
-    { toFun := fun x ↦ ⟨(c^n)⁻¹ • x.1, (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.2⟩
+    have : (c ^ n • s :) ≃ s :=
+    { toFun := fun x ↦ ⟨(c ^ n)⁻¹ • x.1, (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.2⟩
       invFun := fun x ↦ ⟨(c^n) • x.1, smul_mem_smul_set x.2⟩
       left_inv := fun x ↦ by simp [smul_smul, mul_inv_cancel₀ (cn_ne n)]
       right_inv := fun x ↦ by simp [smul_smul, inv_mul_cancel₀ (cn_ne n)] }

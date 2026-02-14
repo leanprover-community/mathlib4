@@ -3,9 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types.ColimitType
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 
 /-!
 # Colimits in the category of types
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Types.ColimitType
 We show that the category of types has all colimits, by providing the usual concrete models.
 
 -/
+
+@[expose] public section
 
 universe u' v u w
 
@@ -98,15 +102,9 @@ theorem hasColimit_iff_small_colimitType (F : J ⥤ Type u) :
       ((isColimit_iff_coconeTypesIsColimit _).1 ⟨colimit.isColimit F⟩).bijective.1,
     fun _ ↦ ⟨_, colimitCoconeIsColimit F⟩⟩
 
-@[deprecated (since := "2025-06-22")] alias hasColimit_iff_small_quot :=
-  hasColimit_iff_small_colimitType
-
 theorem small_colimitType_of_hasColimit (F : J ⥤ Type u) [HasColimit F] :
     Small.{u} F.ColimitType :=
   (hasColimit_iff_small_colimitType F).mp inferInstance
-
-@[deprecated (since := "2025-06-22")] alias small_quot_of_hasColimit :=
-  small_colimitType_of_hasColimit
 
 instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
   (hasColimit_iff_small_colimitType F).mpr inferInstance
@@ -231,21 +229,5 @@ theorem jointly_surjective' (x : colimit F) :
 theorem nonempty_of_nonempty_colimit {F : J ⥤ Type u} [HasColimit F] :
     Nonempty (colimit F) → Nonempty J :=
   Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivColimitType F).toFun
-
-@[deprecated (since := "2025-06-22")] alias Quot.Rel := Functor.ColimitTypeRel
-@[deprecated (since := "2025-06-22")] alias Quot := Functor.ColimitType
-@[deprecated (since := "2025-06-22")] alias Quot.ι := Functor.ιColimitType
-@[deprecated (since := "2025-06-22")] alias Quot.jointly_surjective :=
-  Functor.ιColimitType_jointly_surjective
-@[deprecated (since := "2025-06-22")] alias Quot.desc := Functor.descColimitType
-@[deprecated (since := "2025-06-22")] alias Quot.ι_desc := Functor.descColimitType_comp_ι
-@[deprecated (since := "2025-06-22")] alias Quot.map_ι := Functor.ιColimitType_map
-@[deprecated (since := "2025-06-22")] alias isColimit_iff_bijective_desc :=
-  isColimit_iff_coconeTypesIsColimit
-@[deprecated (since := "2025-06-22")] alias colimitEquivQuot := colimitEquivColimitType
-@[deprecated (since := "2025-06-22")] alias colimitEquivQuot_symm_apply :=
-  colimitEquivColimitType_symm_apply
-@[deprecated (since := "2025-06-22")] alias colimitEquivQuot_apply :=
-  colimitEquivColimitType_apply
 
 end CategoryTheory.Limits.Types

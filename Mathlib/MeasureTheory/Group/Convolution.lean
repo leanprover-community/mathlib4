@@ -3,8 +3,10 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.MeasureTheory.Group.Defs
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # The multiplicative and additive convolution of measures
@@ -18,6 +20,8 @@ In this file we define and prove properties about the convolutions of two measur
 * `MeasureTheory.Measure.conv`: The additive convolution of two measures: the map of `+`
   under the product measure.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 
@@ -138,7 +142,7 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
   have h : (μ ∗ₘ ν) Set.univ < ⊤ := by
     unfold mconv
     exact IsFiniteMeasure.measure_univ_lt_top
-  exact {measure_univ_lt_top := h}
+  exact { measure_univ_lt_top := h }
 
 /-- Convolution is associative. -/
 @[to_additive /-- Convolution is associative. -/]

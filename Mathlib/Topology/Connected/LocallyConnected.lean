@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Locally connected topological spaces
@@ -14,6 +16,8 @@ of connected *open* sets. Local connectivity is equivalent to each point having 
 of connected (not necessarily open) sets --- but in a non-trivial way, so we choose this definition
 and prove the equivalence later in `locallyConnectedSpace_iff_connected_basis`.
 -/
+
+@[expose] public section
 
 open Set Topology
 
@@ -120,6 +124,19 @@ theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι →
     (hbasis x).to_hasBasis
       (fun i hi => ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs =>
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
+
+theorem TopologicalSpace.IsTopologicalBasis.isOpen_isPreconnected [LocallyConnectedSpace α] :
+    TopologicalSpace.IsTopologicalBasis {s : Set α | IsOpen s ∧ IsPreconnected s} :=
+  .of_hasBasis_nhds fun x =>
+    (LocallyConnectedSpace.open_connected_basis x).congr
+      (by grind [IsConnected, Set.Nonempty])
+      (fun _ _ => rfl)
+
+theorem locallyConnectedSpace_iff_isTopologicalBasis_isOpen_isPreconnected :
+    LocallyConnectedSpace α ↔
+      TopologicalSpace.IsTopologicalBasis {s : Set α | IsOpen s ∧ IsPreconnected s} where
+  mp _ := .isOpen_isPreconnected
+  mpr h := ⟨fun _ => h.nhds_hasBasis.congr (by grind [IsConnected, Set.Nonempty]) (fun _ _ => rfl)⟩
 
 lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
     {f : β → α} (h : IsOpenEmbedding f) : LocallyConnectedSpace β := by

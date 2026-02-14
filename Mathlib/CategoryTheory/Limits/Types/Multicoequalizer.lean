@@ -3,11 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Types.Set
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Types.Set
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 
 /-!
 # Multicoequalizers in the category of types
@@ -23,6 +26,8 @@ that given `X : Type u`, a `MulticoequalizerDiagram` in `Set X` gives
 a multicoequalizer in the category of types.
 
 -/
+
+@[expose] public section
 
 universe w w' u
 
@@ -82,14 +87,40 @@ noncomputable def isColimitOfMulticoequalizerDiagram
   · dsimp at i₁ i₂ h₁ h₂
     obtain rfl : x₁ = x₂ := by simpa using h
     have eq₁ := e.ιColimitType_map (WalkingMultispan.Hom.fst (J := .prod ι) ⟨i₁, i₂⟩)
-      ⟨x₁, by dsimp; rw [c.min_eq]; exact ⟨h₁, h₂⟩⟩
+      ⟨x₁, by dsimp; rw [c.eq_inf]; exact ⟨h₁, h₂⟩⟩
     have eq₂ := e.ιColimitType_map (WalkingMultispan.Hom.snd (J := .prod ι) ⟨i₁, i₂⟩)
-      ⟨x₁, by dsimp; rw [c.min_eq]; exact ⟨h₁, h₂⟩⟩
+      ⟨x₁, by dsimp; rw [c.eq_inf]; exact ⟨h₁, h₂⟩⟩
     dsimp [e] at eq₁ eq₂
     rw [eq₁, eq₂]
   · simp only [MulticoequalizerDiagram.multicofork_pt, ← c.iSup_eq,
       Set.iSup_eq_iUnion, Set.mem_iUnion] at hx
     obtain ⟨i, hi⟩ := hx
     exact ⟨i, ⟨x, hi⟩, rfl⟩
+
+/-- Let `X : Type u`, `A : Set X`, `U : ι → Set X` and `V : ι → ι → Set X` such
+that `MulticoequalizerDiagram A U V` holds, then in the category of types,
+`A` is the multicoequalizer of the `U i`s along the `V i j`s. In this version,
+we assume `ι` has a linear order, which allows to consider only the `V i j`
+for which `i < j`. -/
+noncomputable def isColimitOfMulticoequalizerDiagram' [LinearOrder ι]
+    (c : MulticoequalizerDiagram A U V) :
+    IsColimit (c.multicofork.toLinearOrder.map Set.functorToTypes) :=
+  Multicofork.isColimitToLinearOrder _ (isColimitOfMulticoequalizerDiagram c)
+    { iso i j := Set.functorToTypes.mapIso (eqToIso (by
+        dsimp
+        rw [c.eq_inf, c.eq_inf, inf_comm]))
+      iso_hom_fst _ _ := rfl
+      iso_hom_snd _ _ := rfl
+      fst_eq_snd _ := rfl }
+
+/-- A bicartesian square in the lattice `Set X` gives a pushout diagram in the
+category of types. -/
+lemma isPushout_of_bicartSq {S₁ S₂ S₃ S₄ : Set X} (h : Lattice.BicartSq S₁ S₂ S₃ S₄) :
+    IsPushout (Set.functorToTypes.map (homOfLE h.le₁₂))
+      (Set.functorToTypes.map (homOfLE h.le₁₃))
+      (Set.functorToTypes.map (homOfLE h.le₂₄))
+      (Set.functorToTypes.map (homOfLE h.le₃₄)) :=
+  Multicofork.IsColimit.isPushout _ (by ext (_ | _) <;> tauto) (by tauto)
+    (isColimitOfMulticoequalizerDiagram' h.multicoequalizerDiagram)
 
 end CategoryTheory.Limits.Types

@@ -3,8 +3,10 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Algebra.Module.NatInt
+module
+
+public import Mathlib.Algebra.Group.Hom.End
+public import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Module structure and endomorphisms
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Module.NatInt
 In this file, we define `Module.toAddMonoidEnd`, which is `(•)` as a monoid homomorphism.
 We use this to prove some results on scalar multiplication by integers.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 

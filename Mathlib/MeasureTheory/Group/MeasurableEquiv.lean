@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Arithmetic
+module
+
+public import Mathlib.MeasureTheory.Group.Arithmetic
 
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences
@@ -33,6 +35,8 @@ We also deduce that the corresponding maps are measurable embeddings.
 
 measurable, equivalence, group action
 -/
+
+@[expose] public section
 
 open scoped Pointwise NNReal
 
@@ -112,8 +116,6 @@ measurable automorphism of `G`. -/
       on the right is a measurable automorphism of `G`. -/]
 def mulRight (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.mulRight g
-  measurable_toFun := measurable_mul_const g
-  measurable_invFun := measurable_mul_const g⁻¹
 
 @[to_additive]
 theorem _root_.measurableEmbedding_mulRight (g : G) : MeasurableEmbedding fun x => x * g :=
@@ -155,8 +157,6 @@ theorem toEquiv_mulLeft₀ {g : G₀} (hg : g ≠ 0) : (mulLeft₀ g hg).toEquiv
 nonzero element `g : G₀` is a measurable automorphism of `G₀`. -/
 def mulRight₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ where
   toEquiv := Equiv.mulRight₀ g hg
-  measurable_toFun := measurable_mul_const g
-  measurable_invFun := measurable_mul_const g⁻¹
 
 theorem _root_.measurableEmbedding_mulRight₀ {g : G₀} (hg : g ≠ 0) :
     MeasurableEmbedding fun x => x * g :=
@@ -182,8 +182,6 @@ end Mul
     /-- Negation as a measurable automorphism of an additive group. -/]
 def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G
-  measurable_toFun := measurable_inv
-  measurable_invFun := measurable_inv
 
 @[to_additive (attr := simp)]
 theorem symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :

@@ -3,7 +3,9 @@ Copyright (c) 2021 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
 
 /-!
 # Graph partitions
@@ -41,6 +43,8 @@ graph colorings and back is the identity.
   `n`-colorability are equivalent.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

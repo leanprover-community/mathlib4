@@ -3,12 +3,13 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.GroupTheory.Abelianization.Finite
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.SpecificGroups.Dihedral
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Qify
 
 /-!
 # Commuting Probability
@@ -20,6 +21,8 @@ This file introduces the commuting probability of finite groups.
 ## TODO
 * Neumann's theorem.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -134,13 +137,6 @@ lemma commProb_odd {n : ℕ} (hn : Odd n) :
   congr
   norm_num
 
-private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
-  Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
-
-private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
-  | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by cutsat
-
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
   if _ : n = 0 then [0]
@@ -191,20 +187,14 @@ theorem commProb_reciprocal (n : ℕ) :
   by_cases h1 : n = 1
   · rw [h1, reciprocalFactors_one, commProb_nil, Nat.cast_one, div_one]
   rcases Nat.even_or_odd n with h2 | h2
-  · have := div_two_lt h0
-    rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
+  · rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
     simp [field, h2.two_dvd]
     norm_num
-  · have := div_four_lt h0 h1
-    rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
-    have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
-    have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> decide
-    rw [commProb_odd (hn.mul h2), div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
-    · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-      have h1 := (Nat.div_add_mod n 4).symm
-      zify at h0 h1 ⊢
-      linear_combination (h0 + h1 * (n % 4)) * n
+  · rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
+    have hn : Odd (n % 4) := by grind
+    rw [commProb_odd (hn.mul h2), div_mul_div_comm, div_eq_div_iff] <;> norm_cast
+    · grind [Nat.div_add_mod n 4]
     · positivity [hn.pos.ne']
 
 end DihedralGroup

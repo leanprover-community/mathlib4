@@ -3,9 +3,11 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.ModelTheory.Syntax
-import Mathlib.Data.List.ProdSigma
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics
@@ -45,6 +47,8 @@ For the Flypitch project:
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
+
+@[expose] public section
 
 
 universe u v w u' v'
@@ -122,6 +126,14 @@ theorem realize_subst {t : L.Term α} {tf : α → L.Term β} {v : β → M} :
   induction t with
   | var => rfl
   | func _ _ ih => simp [ih]
+
+theorem realize_substFunc [L'.Structure M] {c : {n : ℕ} → L.Functions n → L'.Term (Fin n)}
+    (hc : ∀ {n : ℕ} (g) (y : Fin n → M), g.term.realize y = (c g).realize y)
+    (v : β → M) (x : L.Term β) :
+    (x.substFunc c).realize v = x.realize v := by
+  induction x with
+  | var => simp
+  | func f ts ih => simp [← ih, ← hc]
 
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
@@ -392,10 +404,10 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
     refine forall_congr' fun x => iff_eq_eq.mpr (congr rfl (funext (Fin.lastCases ?_ fun i => ?_)))
     · simp only [Function.comp_apply, val_last, snoc_last]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_last _ _)
-      split_ifs <;> dsimp; cutsat
+      split_ifs <;> dsimp; lia
     · simp only [Function.comp_apply, Fin.snoc_castSucc]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_castSucc _ _ _)
-      simp only [coe_castSucc, coe_cast]
+      simp only [val_castSucc, val_cast]
       split_ifs <;> simp
 
 theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + 1) → M}
@@ -434,7 +446,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val, restrictFreeVar]
+    simp only [Realize, freeVarFinset.eq_3, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp
@@ -736,7 +748,7 @@ variable (M N)
 theorem realize_iff_of_model_completeTheory [N ⊨ L.completeTheory M] (φ : L.Sentence) :
     N ⊨ φ ↔ M ⊨ φ := by
   refine ⟨fun h => ?_, (L.completeTheory M).realize_sentence_of_mem⟩
-  contrapose! h
+  contrapose h
   rw [← Sentence.realize_not] at *
   exact (L.completeTheory M).realize_sentence_of_mem (mem_completeTheory.2 h)
 
@@ -955,9 +967,9 @@ theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMa
 
 @[simp]
 theorem realize_antisymmetric :
-    M ⊨ r.antisymmetric ↔ AntiSymmetric fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ Iff.rfl)
+    M ⊨ r.antisymmetric ↔ Std.Antisymm fun x y : M => RelMap r ![x, y] := by
+  refine .trans ?_ ⟨Std.Antisymm.mk, (·.antisymm)⟩
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
 theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => RelMap r ![x, y] :=
@@ -966,9 +978,9 @@ theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => Re
       forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ realize_rel₂)
 
 @[simp]
-theorem realize_total : M ⊨ r.total ↔ Total fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ => realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
+theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
+  refine .trans ?_ ⟨Std.Total.mk, (·.total)⟩
+  exact forall₂_congr fun _ _ ↦ realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
 
 end Relations
 

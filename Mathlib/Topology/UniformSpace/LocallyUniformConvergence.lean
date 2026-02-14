@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-!
 # Locally uniform convergence
@@ -32,6 +34,8 @@ We also define variants for locally uniform convergence on a subset, called
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -143,6 +147,12 @@ theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsComp
     tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace, ←
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe] at h
 
+/-!
+### Composition
+-/
+
+section Comp
+
 theorem TendstoLocallyUniformlyOn.comp [TopologicalSpace γ] {t : Set γ}
     (h : TendstoLocallyUniformlyOn F f p s) (g : γ → α) (hg : MapsTo g t s)
     (cg : ContinuousOn g t) : TendstoLocallyUniformlyOn (fun n => F n ∘ g) (f ∘ g) p t := by
@@ -158,6 +168,60 @@ theorem TendstoLocallyUniformly.comp [TopologicalSpace γ] (h : TendstoLocallyUn
   rw [← continuousOn_univ] at cg
   exact h.comp _ (mapsTo_univ _ _) cg
 
+variable [UniformSpace γ] {g : β → γ}
+
+theorem UniformContinuousOn.comp_tendstoLocallyUniformlyOn {t : Set β}
+    (hg : UniformContinuousOn g t) (hf : TendstoLocallyUniformlyOn F f p s)
+    (hfs : MapsTo f s t) (hFs : ∀ᶠ n in p, MapsTo (F n) s t) :
+    TendstoLocallyUniformlyOn (g ∘ F ·) (g ∘ f) p s := by
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
+  refine fun x hx ↦ Tendsto.comp hg (tendsto_inf.mpr ⟨hf x hx, tendsto_principal.mpr ?_⟩)
+  filter_upwards [hFs.prod_mk eventually_mem_nhdsWithin] with y hy using ⟨hfs hy.2, hy.1 hy.2⟩
+
+theorem UniformContinuousOn.comp_tendstoLocallyUniformly {t : Set β}
+    (hg : UniformContinuousOn g t) (hf : TendstoLocallyUniformly F f p)
+    (hfs : ∀ x, f x ∈ t) (hFs : ∀ᶠ n in p, ∀ x, F n x ∈ t) :
+    TendstoLocallyUniformly (g ∘ F ·) (g ∘ f) p := by
+  rw [← tendstoLocallyUniformlyOn_univ] at *
+  apply hg.comp_tendstoLocallyUniformlyOn hf <;> simpa [MapsTo]
+
+theorem UniformContinuous.comp_tendstoLocallyUniformlyOn (hg : UniformContinuous g)
+    (hf : TendstoLocallyUniformlyOn F f p s) :
+    TendstoLocallyUniformlyOn (g ∘ F ·) (g ∘ f) p s :=
+  hg.uniformContinuousOn.comp_tendstoLocallyUniformlyOn hf (mapsTo_univ _ _) <| .of_forall fun _ ↦
+    mapsTo_univ _ _
+
+theorem UniformContinuous.comp_tendstoLocallyUniformly (hg : UniformContinuous g)
+    (hf : TendstoLocallyUniformly F f p) :
+    TendstoLocallyUniformly (g ∘ F ·) (g ∘ f) p :=
+  (hg.uniformContinuousOn (s := univ)).comp_tendstoLocallyUniformly hf (by simp) (by simp)
+
+end Comp
+
+theorem TendstoLocallyUniformlyOn.prodMk [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformlyOn F f p s) (hG : TendstoLocallyUniformlyOn G g p s) :
+    TendstoLocallyUniformlyOn (fun n x ↦ (F n x, G n x)) (fun x ↦ (f x, g x)) p s := by
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
+  intro x hx
+  rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff]
+  exact (hF x hx).prodMk (hG x hx)
+
+theorem TendstoLocallyUniformlyOn.piProd [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformlyOn F f p s) (hG : TendstoLocallyUniformlyOn G g p s) :
+    TendstoLocallyUniformlyOn (fun n ↦ Pi.prod (F n) (G n)) (Pi.prod f g) p s :=
+  hF.prodMk hG
+
+theorem TendstoLocallyUniformly.prodMk [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformly F f p) (hG : TendstoLocallyUniformly G g p) :
+    TendstoLocallyUniformly (fun n x ↦ (F n x, G n x)) (fun x ↦ (f x, g x)) p := by
+  rw [← tendstoLocallyUniformlyOn_univ] at *
+  exact hF.prodMk hG
+
+theorem TendstoLocallyUniformly.piProd [UniformSpace γ] {G : ι → α → γ} {g : α → γ}
+    (hF : TendstoLocallyUniformly F f p) (hG : TendstoLocallyUniformly G g p) :
+    TendstoLocallyUniformly (fun n ↦ Pi.prod (F n) (G n)) (Pi.prod f g) p :=
+  hF.prodMk hG
+
 /-- If every `x ∈ s` has a neighbourhood within `s` on which `F i` tends uniformly to `f`, then
 `F i` tends locally uniformly on `s` to `f`.
 
@@ -172,9 +236,6 @@ lemma tendstoLocallyUniformlyOn_of_forall_exists_nhds
   rw [tendstoUniformlyOn_iff_tendsto] at htr
   exact htr.mono_left <| prod_mono_right _ <| le_principal_iff.mpr ht
 
-@[deprecated (since := "2025-05-22")] alias tendstoLocallyUniformlyOn_of_forall_exists_nhd :=
-  tendstoLocallyUniformlyOn_of_forall_exists_nhds
-
 /-- If every `x` has a neighbourhood on which `F i` tends uniformly to `f`, then `F i` tends
 locally uniformly to `f`. (Special case of `tendstoLocallyUniformlyOn_of_forall_exists_nhds`
 where `s = univ`.) -/
@@ -183,9 +244,6 @@ lemma tendstoLocallyUniformly_of_forall_exists_nhds
     TendstoLocallyUniformly F f p :=
   tendstoLocallyUniformlyOn_univ.mp
     <| tendstoLocallyUniformlyOn_of_forall_exists_nhds (by simpa using h)
-
-@[deprecated (since := "2025-05-22")] alias tendstoLocallyUniformly_of_forall_exists_nhd :=
-  tendstoLocallyUniformly_of_forall_exists_nhds
 
 theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
     (p : Filter ι) (hs : IsOpen s) :
@@ -240,16 +298,53 @@ theorem TendstoLocallyUniformlyOn.unique [p.NeBot] [T2Space β] {g : α → β}
     (hf : TendstoLocallyUniformlyOn F f p s) (hg : TendstoLocallyUniformlyOn F g p s) :
     s.EqOn f g := fun _a ha => tendsto_nhds_unique (hf.tendsto_at ha) (hg.tendsto_at ha)
 
+theorem TendstoLocallyUniformlyOn.congr_inseparable {G : ι → α → β}
+    (hf : TendstoLocallyUniformlyOn F f p s)
+    (hg : ∀ᶠ n in p, ∀ x ∈ s, Inseparable (F n x) (G n x)) : TendstoLocallyUniformlyOn G f p s := by
+  have hg : ∀ᶠ x in p ×ˢ 𝓟 s, Inseparable (F x.1 x.2) (G x.1 x.2) := by
+    simpa using eventually_prod_principal_iff.2 hg
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
+  refine forall₂_imp (fun x hx hf => ?_) hf
+  rw [uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
+  exact fun i hi => (hf i hi).mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono
+    fun x hg hf => ((Inseparable.rfl.prod hg).mem_open_iff hi.2).1 hf)
+
 theorem TendstoLocallyUniformlyOn.congr {G : ι → α → β} (hf : TendstoLocallyUniformlyOn F f p s)
-    (hg : ∀ n, s.EqOn (F n) (G n)) : TendstoLocallyUniformlyOn G f p s := by
-  rintro u hu x hx
-  obtain ⟨t, ht, h⟩ := hf u hu x hx
-  refine ⟨s ∩ t, inter_mem self_mem_nhdsWithin ht, ?_⟩
-  filter_upwards [h] with i hi y hy using hg i hy.1 ▸ hi y hy.2
+    (hg : ∀ n, s.EqOn (F n) (G n)) : TendstoLocallyUniformlyOn G f p s :=
+  hf.congr_inseparable (.of_forall fun n _ hx => .of_eq (hg n hx))
+
+theorem TendstoLocallyUniformlyOn.congr_inseparable_right {g : α → β}
+    (hf : TendstoLocallyUniformlyOn F f p s)
+    (hg : ∀ x ∈ s, Inseparable (f x) (g x)) : TendstoLocallyUniformlyOn F g p s := by
+  have hg : ∀ᶠ x in p ×ˢ 𝓟 s, Inseparable (f x.2) (g x.2) := by
+    rw [eventually_prod_principal_iff]
+    exact .of_forall fun _ => hg
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
+  refine forall₂_imp (fun x hx hf => ?_) hf
+  rw [uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
+  exact fun i hi => (hf i hi).mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono
+    fun x hg hf => ((hg.prod .rfl).mem_open_iff hi.2).1 hf)
 
 theorem TendstoLocallyUniformlyOn.congr_right {g : α → β} (hf : TendstoLocallyUniformlyOn F f p s)
-    (hg : s.EqOn f g) : TendstoLocallyUniformlyOn F g p s := by
-  rintro u hu x hx
-  obtain ⟨t, ht, h⟩ := hf u hu x hx
-  refine ⟨s ∩ t, inter_mem self_mem_nhdsWithin ht, ?_⟩
-  filter_upwards [h] with i hi y hy using hg hy.1 ▸ hi y hy.2
+    (hg : s.EqOn f g) : TendstoLocallyUniformlyOn F g p s :=
+  hf.congr_inseparable_right fun _ hx => .of_eq (hg hx)
+
+theorem TendstoLocallyUniformly.congr_inseparable {G : ι → α → β}
+    (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ᶠ n in p, ∀ x, Inseparable (F n x) (G n x)) : TendstoLocallyUniformly G f p :=
+  tendstoLocallyUniformlyOn_univ.1
+    (hf.tendstoLocallyUniformlyOn.congr_inseparable (by simpa using hg))
+
+theorem TendstoLocallyUniformly.congr {G : ι → α → β} (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ n x, F n x = G n x) : TendstoLocallyUniformly G f p :=
+  hf.congr_inseparable (.of_forall fun n x => .of_eq (hg n x))
+
+theorem TendstoLocallyUniformly.congr_inseparable_right {g : α → β}
+    (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ x, Inseparable (f x) (g x)) : TendstoLocallyUniformly F g p :=
+  tendstoLocallyUniformlyOn_univ.1
+    (hf.tendstoLocallyUniformlyOn.congr_inseparable_right (by simpa using hg))
+
+theorem TendstoLocallyUniformly.congr_right {g : α → β} (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ x, f x = g x) : TendstoLocallyUniformly F g p :=
+  hf.congr_inseparable_right fun x => .of_eq (hg x)

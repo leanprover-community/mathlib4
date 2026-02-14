@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.Open
-import Mathlib.AlgebraicGeometry.Over
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Open
+public import Mathlib.AlgebraicGeometry.Over
 
 /-!
 # Restriction of Schemes and Morphisms
@@ -17,6 +19,8 @@ import Mathlib.AlgebraicGeometry.Over
 - `AlgebraicGeometry.morphismRestrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -62,6 +66,12 @@ instance (U : X.Opens) : U.ι.IsOver X where
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
 
 lemma toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
+
+lemma forall_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∀ x, P x) ↔ ∀ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.forall
+
+lemma exists_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∃ x, P x) ↔ ∃ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.exists
 
 @[simp]
 lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
@@ -480,7 +490,7 @@ lemma basicOpenIsoSpecAway_inv_homOfLE {R : CommRingCat.{u}} (f g x : R) (hx : x
   simp only [← Spec.map_comp, ← CommRingCat.ofHom_comp]
   congr
   ext x
-  exact (IsLocalization.Away.awayToAwayRight_eq f g x).symm
+  exact (IsLocalization.Away.awayToAwayRight_eq f g x (S := Localization.Away f)).symm
 
 section MorphismRestrict
 
@@ -685,6 +695,7 @@ variable (f : X ⟶ Y) {U U' : Y.Opens} {V V' : X.Opens} (e : V ≤ f ⁻¹ᵁ U
 lemma resLE_eq_morphismRestrict : f.resLE U (f ⁻¹ᵁ U) le_rfl = f ∣_ U := by
   simp [resLE]
 
+@[simp]
 lemma resLE_id (i : V ≤ V') : resLE (𝟙 X) V' V i = X.homOfLE i := by
   simp only [resLE, morphismRestrict_id]
   rfl
@@ -761,6 +772,25 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
   simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.Opens.topIso_hom,
     eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
   rw [Scheme.Hom.appTop, ← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
+
+lemma Scheme.Hom.isPullback_resLE
+    {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
+    (H : IsPullback g iY iX f)
+    {US : S.Opens} {UT : T.Opens}
+    {UX : X.Opens} (hUST : UT ≤ f ⁻¹ᵁ US) (hUSX : UX ≤ iX ⁻¹ᵁ US)
+    {UY : Y.Opens} (hUY : UY = g ⁻¹ᵁ UX ⊓ iY ⁻¹ᵁ UT) :
+    IsPullback (g.resLE UX UY (by simp [*])) (iY.resLE UT UY (by simp [*]))
+      (iX.resLE US UX hUSX) (f.resLE US UT hUST) := by
+  refine .paste_horiz (v₁₂ := iY.resLE _ _
+    ((g.preimage_mono hUSX).trans_eq congr(($H.w) ⁻¹ᵁ US):)) ?_ ?_
+  · refine (IsOpenImmersion.isPullback _ _ _ _ (by simp) ?_).flip
+    simp only [Scheme.opensRange_homOfLE, ← Scheme.Hom.comp_preimage, Scheme.Hom.resLE_comp_ι]
+    rw [Scheme.Hom.comp_preimage, ← (g ⁻¹ᵁ UX).ι.image_injective.eq_iff]
+    simp only [Scheme.Hom.image_preimage_eq_opensRange_inf, Scheme.Opens.opensRange_ι]
+    simp [hUY]
+  · refine .of_bot ?_ ?_ (isPullback_morphismRestrict f US)
+    · simpa using (isPullback_morphismRestrict g UX).paste_vert H
+    · simp [← cancel_mono US.ι, H.w]
 
 end MorphismRestrict
 

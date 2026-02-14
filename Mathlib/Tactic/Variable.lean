@@ -3,8 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Linter.UnusedVariables
 
 /-!
 # The `variable?` command
@@ -19,6 +22,8 @@ An inherent limitation with this command is that variables are recorded in the s
 from typeclass synthesis errors, and these might fail to round trip.
 -/
 
+public meta section
+
 namespace Mathlib.Command.Variable
 open Lean Elab Command Parser.Term Meta
 
@@ -26,13 +31,11 @@ initialize registerTraceClass `variable?
 
 register_option variable?.maxSteps : Nat :=
   { defValue := 15
-    group := "variable?"
     descr :=
       "The maximum number of instance arguments `variable?` will try to insert before giving up" }
 
 register_option variable?.checkRedundant : Bool :=
   { defValue := true
-    group := "variable?"
     descr := "Warn if instance arguments can be inferred from preceding ones" }
 
 /-- Get the type out of a bracketed binder. -/
@@ -305,7 +308,7 @@ where
 
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
-def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
+def ignorevariable? : Linter.IgnoreFunction := fun _ stack _ =>
   stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
   || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
 

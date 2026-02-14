@@ -37,7 +37,18 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `ProofWidgets,
   `Archive,
   `Counterexamples,
-  `MathlibTest ].contains mod.getRoot
+  `MathlibTest,
+  -- Allow PRs to upload oleans for Reap for testing.
+  `Requests,
+  `OpenAIClient,
+  `Reap,
+  -- Allow PRs to upload oleans for Canonical for testing.
+  `Canonical,
+  -- Allow PRs to upload oleans for LeanHammer for testing.
+  `Duper,
+  `Auto,
+  `PremiseSelection,
+  `Hammer].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
@@ -70,7 +81,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.16-pre3"
+  "0.1.16"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -90,7 +101,7 @@ def getLeanTar : IO String := do
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
 changed since the last time this counter was touched. -/
-def rootHashGeneration : UInt64 := 3
+def rootHashGeneration : UInt64 := 4
 
 /--
 `CacheM` stores the following information:
@@ -131,7 +142,7 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
 def _root_.Lean.SearchPath.relativize (sp : SearchPath) : IO SearchPath := do
   let pwd ← IO.FS.realPath "."
   let pwd' := pwd.toString ++ System.FilePath.pathSeparator.toString
-  return sp.map fun x => ⟨if x = pwd then "." else x.toString.stripPrefix pwd'⟩
+  return sp.map fun x => ⟨if x = pwd then "." else x.toString.dropPrefix pwd' |>.copy⟩
 
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← (← getSrcSearchPath).relativize
@@ -197,8 +208,8 @@ def validateCurl : IO Bool := do
       let _ := @leOfOrd
       if version >= (7, 81) then return true
       -- TODO: support more platforms if the need arises
-      let arch ← (·.trim) <$> runCmd "uname" #["-m"] false
-      let kernel ← (·.trim) <$> runCmd "uname" #["-s"] false
+      let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
+      let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
       if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
         IO.println s!"curl is too old; downloading more recent version"
         IO.FS.createDirAll IO.CACHEDIR
@@ -238,7 +249,7 @@ def validateLeanTar : IO Unit := do
   let target ← if win then
     pure "x86_64-pc-windows-msvc"
   else
-    let mut arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+    let mut arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
     if arch = "arm64" then arch := "aarch64"
     unless arch ∈ ["x86_64", "aarch64"] do
       throw <| IO.userError s!"unsupported architecture {arch}"
@@ -448,10 +459,10 @@ Return tuples of the form ("module name", "path to .lean file").
 
 The input string `arg` takes one of the following forms:
 
-1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
-2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder (TODO)
-3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
-4. `Mathlib/Algebra/Fields/`: the folder exists (TODO)
+1. `Mathlib.Algebra.Field.Basic`: there exists such a Lean file
+2. `Mathlib.Algebra.Field`: no Lean file exists but a folder (TODO)
+3. `Mathlib/Algebra/Field/Basic.lean`: the file exists (note potentially `\` on Windows)
+4. `Mathlib/Algebra/Field/`: the folder exists (TODO)
 
 Not supported yet:
 
@@ -461,6 +472,9 @@ Note: An argument like `Archive` is treated as module, not a path.
 -/
 def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     IO <| Except String <| Array (Name × FilePath) := do
+  if argₛ.startsWith "-" then
+    -- provided option after command
+    return .error s!"Invalid argument: option must come before command {argₛ}"
   -- TODO: This could be just `FilePath.normalize` if the TODO there was addressed
   let arg : FilePath := System.mkFilePath <|
     (argₛ : FilePath).normalize.components.filter (· != "")
@@ -480,6 +494,9 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
   else
     -- provided a module
     let mod := argₛ.toName
+    if mod.isAnonymous then
+      -- provided a module name which is not a valid Lean identifier
+      return .error s!"Invalid argument: expected path or module name, not {argₛ}"
     let sourceFile ← Lean.findLean sp mod
     if ← sourceFile.pathExists then
       -- (1.) provided valid module
