@@ -212,7 +212,6 @@ lemma coeff_killCompl {s} :
 lemma support_killCompl {p : MvPolynomial τ R} :
     (p.killCompl hf).support =
       p.support.preimage (Finsupp.mapDomain f) (Finsupp.mapDomain_injective hf).injOn := by
-  classical
   ext x
   simp [coeff_killCompl]
 
