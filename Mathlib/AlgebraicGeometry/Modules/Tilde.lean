@@ -333,7 +333,8 @@ variable {M N : ModuleCat R} (f g : M ⟶ N)
 
 end
 
-lemma isIso_fromTildeΓ {M : (Spec R).Modules} : IsIso M.fromTildeΓ ↔ (tilde.functor R).essImage M :=
+lemma isIso_fromTildeΓ_iff {M : (Spec R).Modules} :
+    IsIso M.fromTildeΓ ↔ (tilde.functor R).essImage M :=
   tilde.adjunction.isIso_counit_app_iff_mem_essImage
 
 section IsQuasicoherent
@@ -345,7 +346,7 @@ noncomputable
 def tildeSelf : tilde (ModuleCat.of R R) ≅ SheafOfModules.unit.{u} _ := .refl _
 
 instance : IsIso (Scheme.Modules.fromTildeΓ (SheafOfModules.unit.{u} (Spec R).ringCatSheaf)) :=
-  isIso_fromTildeΓ.mpr ⟨_, ⟨tildeSelf⟩⟩
+  isIso_fromTildeΓ_iff.mpr ⟨_, ⟨tildeSelf⟩⟩
 
 /-- Tilde of direct sums of `R` as an `R`-module is isomorphic to the free sheaf. -/
 noncomputable
@@ -360,7 +361,7 @@ def tildeFinsupp (ι : Type u) : tilde (ModuleCat.of R (ι →₀ R)) ≅ SheafO
 
 instance (ι : Type u) :
     IsIso (Scheme.Modules.fromTildeΓ (R := R) (SheafOfModules.free.{u} ι)) :=
-  isIso_fromTildeΓ.mpr ⟨_, ⟨tildeFinsupp _⟩⟩
+  isIso_fromTildeΓ_iff.mpr ⟨_, ⟨tildeFinsupp _⟩⟩
 
 /-- Given a presentation of a module `M`, we may construct an associated presentation of `M^~`. -/
 noncomputable
