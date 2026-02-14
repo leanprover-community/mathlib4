@@ -749,7 +749,7 @@ theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff
 
-@[deprecated Asymptotics.IsEquivalent.summable_iff (since := "2026-02-07")]
+@[deprecated (since := "2026-02-07")]
 alias IsEquivalent.summable_iff := Asymptotics.IsEquivalent.summable_iff
 
 theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
