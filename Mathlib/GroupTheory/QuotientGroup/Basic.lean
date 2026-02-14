@@ -397,7 +397,7 @@ theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [hH : 
     Characteristic (K.comap (mk' H)) :=
   characteristic_iff_comap_eq.mpr fun φ ↦ congr_arg (comap (mk' H))
     (characteristic_iff_comap_eq.mp hK (congr H H φ (characteristic_iff_map_eq.mp hH φ)))
-  
+
 /--
 The `MulEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
 of type `G →* A` and the group of homomorphisms `G ⧸ H →* A`.
