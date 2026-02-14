@@ -302,8 +302,8 @@ lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) 
 
 theorem limsup_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤ c) (h₂ : c ≠ ⊤) :
     limsup (fun x => c * u x) f = c * limsup u f := by
-  by_cases! h₃ : c ≤ 0
-  · simp_rw [eq_of_ge_of_le h₁ h₃, zero_mul]; aesop
+  obtain rfl | h₃ := h₁.eq_or_lt
+  · simp
   simp_rw [EReal.mul_comm (x := c)]
   apply eq_of_le_of_ge
   · rw [limsup_le_iff]
