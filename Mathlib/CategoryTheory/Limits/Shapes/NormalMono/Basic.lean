@@ -235,7 +235,7 @@ open Opposite
 variable [HasZeroMorphisms C]
 
 /-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
-def NormalEpi.ofArrowIso [HasZeroMorphisms C] {X Y : C} {f : X ⟶ Y}
+def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
     (hf : NormalEpi f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
     NormalEpi f' where
   W := hf.W

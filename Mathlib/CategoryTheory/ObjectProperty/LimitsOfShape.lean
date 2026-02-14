@@ -208,6 +208,11 @@ lemma prop_limit (F : J ⥤ C) [HasLimit F] (hF : ∀ (j : J), P (F.obj j)) :
 
 end
 
+lemma prop_pi {J : Type*} [P.IsClosedUnderLimitsOfShape (Discrete J)] (X : J → C)
+    [HasProduct X] (hF : ∀ (j : J), P (X j)) :
+    P (∏ᶜ X) :=
+  P.prop_of_isLimit (productIsProduct X) (fun _ ↦ hF _)
+
 variable {J} in
 lemma limitsOfShape_le_of_initial (G : J ⥤ J') [G.Initial] :
     P.limitsOfShape J' ≤ P.limitsOfShape J :=

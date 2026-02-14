@@ -758,7 +758,7 @@ theorem ncard_image_iff (hs : s.Finite := by toFinite_tac) :
   ⟨fun h ↦ injOn_of_ncard_image_eq h hs, InjOn.ncard_image⟩
 
 theorem ncard_image_of_injective (s : Set α) (H : f.Injective) : (f '' s).ncard = s.ncard :=
-  InjOn.ncard_image fun _ _ _ _ h ↦ H h
+  H.injOn.ncard_image
 
 theorem ncard_preimage_of_injective_subset_range {s : Set β} (H : f.Injective)
     (hs : s ⊆ Set.range f) :
@@ -796,7 +796,7 @@ theorem eq_of_subset_of_ncard_le (h : s ⊆ t) (h' : t.ncard ≤ s.ncard)
 
 theorem subset_iff_eq_of_ncard_le (h : t.ncard ≤ s.ncard) (ht : t.Finite := by toFinite_tac) :
     s ⊆ t ↔ s = t :=
-  ⟨fun hst ↦ eq_of_subset_of_ncard_le hst h ht, Eq.subset'⟩
+  ⟨fun hst ↦ eq_of_subset_of_ncard_le hst h ht, Eq.subset⟩
 
 theorem map_eq_of_subset {f : α ↪ α} (h : f '' s ⊆ s) (hs : s.Finite := by toFinite_tac) :
     f '' s = s :=
@@ -924,7 +924,7 @@ theorem ncard_coe {α : Type*} (s : Set α) :
     Set.ncard (Set.univ : Set (Set.Elem s)) = s.ncard := by simp
 
 @[simp] lemma ncard_graphOn (s : Set α) (f : α → β) : (s.graphOn f).ncard = s.ncard := by
-  rw [← InjOn.ncard_image fst_injOn_graph, image_fst_graphOn]
+  rw [← fst_injOn_graph.ncard_image, image_fst_graphOn]
 
 section Lattice
 
