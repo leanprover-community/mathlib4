@@ -11,6 +11,17 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
 /-!
 # Scheme-theoretically dominant morphisms
+
+In this file, we define scheme-theoretically dominant morphisms as morphisms with trivial kernel.
+## Main results
+- `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
+  The class of scheme-theoretically dominant morphisms.
+- `AlgebraicGeometry.isSchemeTheoreticallyDominant_iff_isDominant`:
+  If the target is reduced and the map is quasi-compact, then scheme-theoretically dominant
+  is equivalent to dominant.
+- `AlgebraicGeometry.IsSchemeTheoreticallyDominant.of_isPullback`:
+  quasicompact + scheme-theoretically dominant is stable under flat base change.
+
 -/
 
 @[expose] public section
@@ -21,8 +32,7 @@ namespace AlgebraicGeometry
 
 variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
 
-/-- We say that morphism `f : X ⟶ Y` is geometrically irreducible if for all `Spec K ⟶ Y` with `K`
-a field, `X ×[Y] Spec K` is irrreducible. -/
+/-- A morphism is scheme-theoretically dominant if its kernel is trivial. -/
 @[mk_iff]
 class IsSchemeTheoreticallyDominant (f : X ⟶ Y) : Prop where
   ker_eq_bot (f) : f.ker = ⊥
