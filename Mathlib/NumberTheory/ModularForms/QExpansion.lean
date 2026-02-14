@@ -481,7 +481,7 @@ private lemma hasSum_cuspFunction_of_hasSum_punctured
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (c : ℕ → ℂ) (f : F)
     (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) {q : ℂ} (hq : ‖q‖ < 1)
     (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
-  grind [eq_cuspFunction f ⟨_, Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1⟩, 
+  grind [eq_cuspFunction f ⟨_, Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1⟩,
     Periodic.qParam_right_inv]
 
 private lemma hasFPowerSeriesOnBall_update (c : ℕ → ℂ) (hh : 0 < h)
@@ -509,7 +509,7 @@ private lemma hasFPowerSeriesOnBall_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
     HasFPowerSeriesOnBall (cuspFunction h f) (.ofScalars ℂ c) 0 1 := by
   -- previous lemma gives result after updating at 0
-  have H1 : HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 := 
+  have H1 : HasFPowerSeriesOnBall (update (cuspFunction h f) 0 (c 0)) (.ofScalars ℂ c) 0 1 :=
     hasFPowerSeriesOnBall_update c hh hΓ hf
   -- now just need to check values at 0 match
   -- use continuity of both functions & we know it everywhere else
@@ -520,7 +520,7 @@ private lemma hasFPowerSeriesOnBall_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
       by filter_upwards [self_mem_nhdsWithin] with a ha using update_of_ne ha ..
     simpa [update_self] using this.eq_of_nhds
   rwa [update_eq_self_iff.mpr H2] at H1
-  
+
 lemma qExpansion_coeff_unique (c : ℕ → ℂ) (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k]
     (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
