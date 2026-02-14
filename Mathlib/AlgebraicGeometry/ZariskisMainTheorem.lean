@@ -412,7 +412,8 @@ instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
   .of_comp_of_isSeparated _ f.imageι
 
 @[stacks 0AH8]
-lemma foobar {X Y S : Scheme} (f : X ⟶ Y) (g : Y ⟶ S) (s : S)
+lemma exists_finite_imageι_comp_morphismRestrict_of_finite_image_preimage
+    {X Y S : Scheme} (f : X ⟶ Y) (g : Y ⟶ S) (s : S)
     (H : (f '' ((f ≫ g) ⁻¹' {s})).Finite)
     [IsProper (f ≫ g)] [IsSeparated g] [LocallyOfFiniteType g] :
     ∃ U : S.Opens, s ∈ U ∧ IsFinite ((f.imageι ≫ g) ∣_ U) := by
