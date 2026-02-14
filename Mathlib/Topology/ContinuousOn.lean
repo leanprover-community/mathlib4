@@ -449,6 +449,11 @@ theorem ContinuousWithinAt.comp {g : β → γ} {t : Set β}
     ContinuousWithinAt (g ∘ f) s x :=
   hg.tendsto.comp (hf.tendsto_nhdsWithin h)
 
+theorem ContinuousWithinAt.comp' {g : β → γ} {t : Set β}
+    (hg : ContinuousWithinAt g t (f x)) (hf : ContinuousWithinAt f s x) (h : MapsTo f s t) :
+    ContinuousWithinAt (fun x => g (f x)) s x :=
+  hg.comp hf h
+
 theorem ContinuousWithinAt.comp_of_eq {g : β → γ} {t : Set β} {y : β}
     (hg : ContinuousWithinAt g t y) (hf : ContinuousWithinAt f s x) (h : MapsTo f s t)
     (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
