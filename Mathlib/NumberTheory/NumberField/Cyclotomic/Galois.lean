@@ -34,7 +34,7 @@ include hK in
 The isomorphism between `Gal(ℚ(ζₙ)/ℚ)` and `(ℤ/nℤ)ˣ` that sends `σ` to the class `a` such that
 `σ (ζₙ) = ζₙ ^ a`.
 -/
-noncomputable def galEquivZMod : Gal(K/ℚ) ≃* (ZMod n)ˣ :=
+noncomputable abbrev galEquivZMod : Gal(K/ℚ) ≃* (ZMod n)ˣ :=
   IsCyclotomicExtension.autEquivPow K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos n)
 
 theorem galEquivZMod_apply_of_pow_eq (σ : Gal(K/ℚ)) {x : K} (hx : x ^ n = 1) :
