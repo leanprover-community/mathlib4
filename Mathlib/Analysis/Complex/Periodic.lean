@@ -251,11 +251,11 @@ theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
 
 end HoloAtInfC
 
-section aritmetic
+section arithmetic
 
 lemma cuspFunction_smul {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
     cuspFunction h (a • f) = a • cuspFunction h f := by
-  simp only [cuspFunction, Periodic.cuspFunction] at *
+  simp only [cuspFunction] at *
   ext y
   obtain rfl | hy := eq_or_ne y 0
   · simpa using (Tendsto.const_mul _ (by simpa using hfcts)).limUnder_eq
@@ -272,17 +272,15 @@ lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (Periodic.c
   ext y
   obtain hy | rfl := ne_or_eq y 0
   · simp [hy]
-  · simp only [Pi.add_apply, update_self]
-    rw [Filter.Tendsto.limUnder_eq]
-    exact (tendsto_nhds_limUnder ⟨_, Periodic.tendsto_nhds_zero hfcts⟩).add
-      (tendsto_nhds_limUnder ⟨_, Periodic.tendsto_nhds_zero hgcts⟩)
+  ·  simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+      (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
 
 lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
     (hgcts : ContinuousAt (cuspFunction h g) 0) :
     cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g := by
-  simp_rw [sub_eq_add_neg, ← (cuspFunction_neg hgcts)]
-  apply cuspFunction_add hfcts (by simp [cuspFunction_neg hgcts, hgcts])
+  simpa [sub_eq_add_neg, ← cuspFunction_neg hgcts]
+    using cuspFunction_add hfcts (by simp [cuspFunction_neg, hgcts])
 
-end aritmetic
+end arithmetic
 
 end Function.Periodic
