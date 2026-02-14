@@ -706,9 +706,9 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 open AnalyticAt
 
 lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-  (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
-    analyticOrderAt (deriv f) z₀ = (n : ℕ) := by
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+    (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
+    analyticOrderAt (deriv f) z₀ = n := by
   have ⟨g, hg, hg₀, hfg⟩ := (analyticOrderAt_eq_natCast hf).1 horder
   refine (analyticOrderAt_eq_natCast hf.deriv).2 ?_
   refine ⟨fun z ↦ (n + 1 : 𝕜) • g z + (z - z₀) • deriv g z, ?_, ?_, ?_⟩
@@ -736,16 +736,16 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
       grind only
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-  (hf : AnalyticAt 𝕜 f z₀) (k n : ℕ) [CharZero 𝕜] :
-  n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+    (hf : AnalyticAt 𝕜 f z₀) {k n : ℕ} [CharZero 𝕜] :
+    n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with
   | zero => exact fun Hn Hpos Hk ↦ Hn.symm
   | succ n' hk =>
     intro Hn Hpos Hk
     rw [Function.iterate_succ']
     have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
-      refine (hk n Hn Hpos (by lia)).trans ?_
+      refine (hk Hn Hpos (by lia)).trans ?_
       have : (n - n'.succ) + 1 = n - n' := by grind
       rw [← this]
       simp
