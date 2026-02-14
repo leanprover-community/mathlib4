@@ -573,11 +573,6 @@ lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
-lemma take_take {u v} (p : G.Walk u v) (n m : ℕ) :
-    (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by
-  apply ext_support
-  simp [take_support_eq_support_take_succ, List.take_take, Nat.min_left_comm]
-
 lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
   induction n generalizing p u with
@@ -722,6 +717,31 @@ lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
   rw [← cons_support_tail p hp, List.tail_cons]
 
 @[deprecated (since := "2025-08-26")] alias support_tail := support_tail_of_not_nil
+
+lemma dropLast_reverse_eq_reverse_tail {u v} (p : G.Walk u v) :
+    p.dropLast.reverse = p.reverse.tail.copy p.snd_reverse rfl := by
+  apply ext_support
+  rw [support_reverse, support_copy]
+  induction p with
+  | nil => rfl
+  | cons ha p ih =>
+    by_cases h : p.length = 0
+    · have := (nil_iff_length_eq.mpr h).eq
+      subst this
+      rw [length_eq_zero_iff.mp h]
+      simp
+    rw [dropLast] at ih
+    simp only [dropLast, length_cons, Nat.add_one_sub_one, take_cons_eq ha _ _ (by simpa),
+      cons_copy, support_copy, support_cons, List.reverse_cons, ih]
+    nth_rw 2 [tail]
+    simp only [drop_support_eq_support_drop_min, p.reverse_cons ha, ← concat_eq_append,
+      length_concat, length_reverse, Nat.le_add_left, inf_of_le_left, support_concat,
+      support_reverse, List.concat_eq_append, List.drop_one, ne_eq, List.reverse_eq_nil_iff,
+      support_ne_nil, not_false_eq_true, List.tail_append_of_ne_nil, List.tail_reverse,
+      List.append_cancel_right_eq]
+    rw [← ih, List.reverse_inj, take_support_eq_support_take_succ, Nat.sub_add_cancel
+      (Nat.one_le_iff_ne_zero.mpr h), ← Nat.add_sub_cancel p.length 1, ← length_support,
+      List.dropLast_eq_take]
 
 @[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
