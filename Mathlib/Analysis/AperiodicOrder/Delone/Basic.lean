@@ -128,24 +128,28 @@ lemma exists_dist_le_coveringRadius (D : DeloneSet X) (x : X) :
   obtain ⟨y, hy, hdist⟩ := D.isCover_coveringRadius (x := x) (by trivial)
   exact ⟨y, hy, by simpa [edist_dist] using hdist⟩
 
-lemma eq_of_mem_ball (D : DeloneSet X) {x y z : X} (hx : x ∈ D) (hy : y ∈ D)
-    (hxz : x ∈ ball z (D.packingRadius / 2)) (hyz : y ∈ ball z (D.packingRadius / 2)) :
+lemma eq_of_mem_ball (D : DeloneSet X) {r : ℝ≥0} (hr : r ≤ D.packingRadius / 2)
+    {x y z : X} (hx : x ∈ D) (hy : y ∈ D) (hxz : x ∈ ball z r) (hyz : y ∈ ball z r) :
     x = y := by
   by_contra hne
-  have htri := (dist_triangle x z y).trans_lt
-    (add_lt_add (mem_ball.mp hxz) (by rwa [dist_comm, ← mem_ball]))
-  rw [add_halves] at htri
-  exact (D.packingRadius_lt_dist_of_mem_ne hx hy hne).not_gt htri
+  have h_dist : dist x y < 2 * r := by
+    calc dist x y ≤ dist x z + dist z y := dist_triangle x z y
+      _ < r + r := add_lt_add (mem_ball.mp hxz) (mem_ball'.mp hyz)
+      _ = 2 * r := by ring
+  have h_lt_packing : dist x y < D.packingRadius := by
+    have h_radius_real : r ≤ D.packingRadius / (2 : ℝ) := hr
+    linarith
+  exact (D.packingRadius_lt_dist_of_mem_ne hx hy hne).not_gt h_lt_packing
 
 /-- There exists a radius `r > 0` such that any ball of radius `r`
 centered at a point of `D` contains at most one point of `D`. -/
 lemma subset_ball_singleton (D : DeloneSet X) :
     ∃ r > 0, ∀ {x y z}, x ∈ D → y ∈ D → x ∈ ball z r → y ∈ ball z r → x = y :=
-  ⟨D.packingRadius / 2, half_pos D.packingRadius_pos, fun hx hy => D.eq_of_mem_ball hx hy⟩
+  ⟨D.packingRadius / 2, half_pos D.packingRadius_pos, fun hx hy => D.eq_of_mem_ball le_rfl hx hy⟩
 
 /-- Bilipschitz maps send Delone sets to Delone sets. -/
 @[simps]
-noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 < (K₁ : ℝ)) (hK₂ : 0 < (K₂ : ℝ))
+noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 < K₁) (hK₂ : 0 < K₂)
     (hf₁ : AntilipschitzWith K₁ f) (hf₂ : LipschitzWith K₂ f) (D : DeloneSet X) : DeloneSet Y where
   carrier := f '' D.carrier
   packingRadius := D.packingRadius / K₁
@@ -155,19 +159,9 @@ noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 
   coveringRadius_pos := mul_pos hK₂ D.coveringRadius_pos
   isCover_coveringRadius := D.isCover_coveringRadius.image_lipschitz_of_surjective hf₂ f.surjective
 
-/-- The image of a Delone set under an isometry. This is a specialization of
-`DeloneSet.mapBilipschitz` where the packing and covering radii are preserved because the
-Lipschitz constants are both 1. -/
-@[simps!]
-noncomputable def mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :=
-  (D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
-    f.isometry.antilipschitz f.isometry.lipschitz).copy (f '' D.carrier)
-    D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
-
 @[simp] lemma mapBilipschitz_refl (D : DeloneSet X) (hK1 hK2 hA hL) :
     D.mapBilipschitz (.refl X) 1 1 hK1 hK2 hA hL = D := by
-  ext <;> simp only [mapBilipschitz, Equiv.refl_apply, Set.image_id',
-    div_one, one_mul]
+  ext <;> simp only [mapBilipschitz, Equiv.refl_apply, Set.image_id', div_one, one_mul]
 
 lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
     (f : X ≃ Y) (g : Y ≃ Z) (K₁f K₂f K₁g K₂g : ℝ≥0)
@@ -186,12 +180,34 @@ lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
   · simp only [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
   · simp only [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
 
-@[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D := by
-  ext <;> simp only [mapIsometry, DeloneSet.copy]
-  exact exists_eq_right
+/-- The image of a Delone set under an isometry. This is a specialization of
+`DeloneSet.mapBilipschitz` where the packing and covering radii are preserved because the
+Lipschitz constants are both 1. -/
+@[simps!]
+noncomputable def mapIsometry (f : X ≃ᵢ Y) : DeloneSet X ≃ DeloneSet Y where
+  toFun D := (D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
+      f.isometry.antilipschitz f.isometry.lipschitz).copy (f '' D.carrier)
+      D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
+  invFun D := (D.mapBilipschitz f.symm.toEquiv 1 1 zero_lt_one zero_lt_one
+      f.symm.isometry.antilipschitz f.symm.isometry.lipschitz).copy (f.symm '' D.carrier)
+      D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
+  left_inv D := by
+    ext x <;> try rfl
+    constructor
+    · rintro ⟨y, ⟨z, hz, rfl⟩, rfl⟩; simpa
+    · intro hx; exact ⟨f x, ⟨x, hx, rfl⟩, by simp⟩
+  right_inv D := by
+    ext x <;> try rfl
+    constructor
+    · rintro ⟨y, ⟨z, hz, rfl⟩, rfl⟩; simpa
+    · intro hx; exact ⟨f.symm x, ⟨x, hx, rfl⟩, by simp⟩
 
-lemma mapIsometry_trans {Z : Type*} [MetricSpace Z]
-    (D : DeloneSet X) (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
+@[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D := by
+  ext <;> simp [mapIsometry, IsometryEquiv.refl, DeloneSet.copy]
+
+lemma mapIsometry_symm (f : X ≃ᵢ Y) : (mapIsometry f).symm = mapIsometry f.symm := rfl
+
+lemma mapIsometry_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X) (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
     D.mapIsometry (f.trans g) = (D.mapIsometry f).mapIsometry g := by
   ext <;> simp [mapIsometry, DeloneSet.copy]
 
