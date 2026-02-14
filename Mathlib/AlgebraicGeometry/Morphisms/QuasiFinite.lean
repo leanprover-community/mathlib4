@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Artinian
-public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
