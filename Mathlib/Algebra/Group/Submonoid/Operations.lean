@@ -7,7 +7,6 @@ Amelia Livingston, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Submonoid.Basic
@@ -720,10 +719,29 @@ theorem domRestrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [Submonoid
 @[deprecated (since := "2026-02-10")] alias restrict_apply := domRestrict_apply
 
 @[to_additive (attr := simp)]
+theorem domRestrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [SetLike S M]
+    [SubmonoidClass S M] {s : S} :
+    f.domRestrict s = 1 ↔ ∀ x ∈ s, f x = 1 := by
+  simp [MonoidHom.ext_iff]
+
+@[deprecated (since := "2026-02-10")] alias restrict_eq_one_iff := domRestrict_eq_one_iff
+
+@[to_additive (attr := simp)]
 theorem domRestrict_mrange (f : M →* N) : mrange (f.domRestrict S) = S.map f := by
   simp [SetLike.ext_iff]
 
 @[deprecated (since := "2026-02-10")] alias restrict_mrange := domRestrict_mrange
+
+/-- A version of `MonoidHom.domRestrict` as an homomorphism. -/
+@[to_additive (attr := simps apply)
+  /-- A version of `AddMonoidHom.domRestrict` as an homomorphism. -/]
+def domRestrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
+    [CommMonoid A] : (M →* A) →* (M' →* A) where
+  toFun f := f.domRestrict M'
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+
+@[deprecated (since := "2026-02-10")] alias restrictHom := domRestrictHom
 
 /-- Restriction of a `MonoidHom` to a `Submonoid` of the codomain. -/
 @[to_additive (attr := simps apply)
@@ -1062,11 +1080,11 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 -- this name is primed so that the version to `f.range` instead of `f.mrange` can be unprimed.
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.mrange`.
-This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
+This is a bidirectional version of `MonoidHom.mrangeRestrict`. -/
 @[to_additive (attr := simps +simpRhs)
   /-- An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M` defines an
   additive equivalence between `M` and `f.mrange`. This is a bidirectional version of
-  `AddMonoidHom.mrange_restrict`. -/]
+  `AddMonoidHom.mrangeRestrict`. -/]
 def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     M ≃* MonoidHom.mrange f :=
   { f.mrangeRestrict with

@@ -168,6 +168,14 @@ def UnifEigenvalues (f : End R M) (k : ℕ∞) : Type _ :=
 @[coe]
 def UnifEigenvalues.val (f : Module.End R M) (k : ℕ∞) : UnifEigenvalues f k → R := Subtype.val
 
+@[simp]
+lemma UnifEigenvalues.val_mk {f : End R M} {μ : R} {k : ℕ∞} (h : f.HasUnifEigenvalue μ k) :
+    UnifEigenvalues.val f k ⟨μ, h⟩ = μ := rfl
+
+@[simp]
+lemma UnifEigenvalues.mk_val {f : End R M} {k : ℕ∞} (μ : UnifEigenvalues f k) :
+    ⟨μ.val, μ.property⟩ = μ := rfl
+
 instance UnifEigenvalues.instCoeOut {f : Module.End R M} (k : ℕ∞) :
     CoeOut (UnifEigenvalues f k) R where
   coe := UnifEigenvalues.val f k
@@ -422,6 +430,13 @@ abbrev Eigenvalues (f : End R M) : Type _ :=
 
 @[coe]
 abbrev Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := UnifEigenvalues.val f 1
+
+@[simp]
+lemma Eigenvalues.val_mk {f : End R M} {μ : R} (h : f.HasEigenvalue μ) :
+    Eigenvalues.val f ⟨μ, h⟩ = μ := rfl
+
+@[simp]
+lemma Eigenvalues.mk_val {f : End R M} (μ : Eigenvalues f) : ⟨μ.val, μ.property⟩ = μ := rfl
 
 theorem hasEigenvalue_of_hasEigenvector {f : End R M} {μ : R} {x : M} (h : HasEigenvector f μ x) :
     HasEigenvalue f μ :=
