@@ -221,14 +221,13 @@ theorem coe_aevalAeval_eq_evalEval (x y : A) : ⇑(aevalAeval x y) = evalEval x 
 @[simp]
 lemma aevalAeval_C (x y : A) (p : R[X]) : (C p).aevalAeval x y = aeval x p := by simp
 
-@[simp]
 lemma aevalAeval_X (x y : A) : (C X : R[X][Y]).aevalAeval x y = x := by rw [aevalAeval_C, aeval_X]
 
 @[simp]
 lemma aevalAeval_Y (x y : A) : (Y : R[X][Y]).aevalAeval x y = y := by simp
 
 variable (R A) in
-/-- The bijection `(R[X][Y] →ₐ[R] A) ≃ A × A induced by `Polynomial.aevalAeval`. -/
+/-- The bijection `(R[X][Y] →ₐ[R] A) ≃ A × A` induced by `Polynomial.aevalAeval`. -/
 @[simps]
 noncomputable def Bivariate.algHomEquiv : (R[X][Y] →ₐ[R] A) ≃ A × A where
   toFun f := ⟨f <| C X, f Y⟩
