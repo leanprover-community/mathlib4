@@ -267,10 +267,9 @@ theorem pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedCo
 /-- Every connected component is a union of path connected components -/
 theorem biUnion_connectedComponent_pathComponent_eq (x : X) :
     (⋃ y ∈ connectedComponent x, pathComponent y) = connectedComponent x := by
-  ext z
-  refine ⟨fun h ↦ ?_, fun hz ↦ mem_iUnion₂.mpr ⟨z, hz, mem_pathComponent_self z⟩⟩
-  have ⟨y, hy, hz⟩ := mem_iUnion₂.mp h
-  exact connectedComponent_eq hy ▸ pathComponent_subset_component _ hz
+  simp only [Set.ext_iff, mem_iUnion₂]
+  exact fun z ↦ ⟨fun ⟨y, hy, hz⟩ ↦ connectedComponent_eq hy ▸ pathComponent_subset_component _ hz,
+    (⟨z, ·, mem_pathComponent_self z⟩)⟩
 
 /-- There are at least as many path connected components as there are connected components -/
 theorem exists_zerothHomotopy_to_connectedComponents_surjective :
