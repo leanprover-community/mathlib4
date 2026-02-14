@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
@@ -510,6 +511,17 @@ lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
     (hx : ∀ r : R, r • x ∈ Submodule.span R s → r = 0) : LinearIndepOn R id (insert x s) :=
   hs.insert' <| by simpa
 
+/-- If `v : ι → M` is a family of vectors and there exists a family of linear forms
+`f : ι → Dual R M` such that `f i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
+`v` is linearly independent. -/
+theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι → Dual R M)
+    (h1 : Pairwise fun i j ↦ f i (v j) = 0)
+    (h2 : ∀ i, (f i) (v i) = 1) :
+    LinearIndependent R v := by
+  refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
+  have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
+  simpa [s.sum_eq_single i aux (by aesop), h2 i] using congr_arg (f i) hrel
+
 end Module
 
 /-!
@@ -602,7 +614,7 @@ theorem LinearIndepOn.mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : Lin
 /-- A shortcut to a convenient form for the negation in `LinearIndepOn.mem_span_iff`. -/
 theorem LinearIndepOn.notMem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
     f a ∉ Submodule.span K (f '' s) ↔ LinearIndepOn K f (insert a s) ∧ a ∉ s := by
-  rw [h.mem_span_iff, _root_.not_imp]
+  rw [h.mem_span_iff, Classical.not_imp]
 
 theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∈ Submodule.span K s ↔ (LinearIndepOn K id (insert a s) → a ∈ s) := by
@@ -610,7 +622,7 @@ theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K i
 
 theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
     a ∉ Submodule.span K s ↔ LinearIndepOn K id (insert a s) ∧ a ∉ s := by
-  rw [h.mem_span_iff_id, _root_.not_imp]
+  rw [h.mem_span_iff_id, Classical.not_imp]
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} := by

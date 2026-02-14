@@ -142,7 +142,6 @@ noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
-  inv_comp := fun f => Classical.choose_spec (all_is_iso f).out |>.right
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where

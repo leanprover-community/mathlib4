@@ -147,6 +147,11 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
   tfae_finish
 
+lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
+    PreservesFiniteLimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f) :=
+  (Functor.preservesFiniteLimits_tfae F).out 3 0
+
 /--
 If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact),
@@ -238,6 +243,11 @@ lemma exact_tfae : List.TFAE
   tfae_have 4 → 2
   | ⟨h1, h2⟩, _, h => h.map F
   tfae_finish
+
+lemma preservesFiniteColimits_iff_forall_exact_map_and_epi :
+    PreservesFiniteColimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g) :=
+  (Functor.preservesFiniteColimits_tfae F).out 3 0
 
 end
 

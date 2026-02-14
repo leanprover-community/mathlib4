@@ -236,6 +236,8 @@ instance : SetLike (SubDPIdeal hI) A where
     rw [SetLike.coe_set_eq] at h
     cases p; cases q; congr
 
+instance : PartialOrder (SubDPIdeal hI) := .ofSetLike (SubDPIdeal hI) A
+
 /-- The coercion from `SubDPIdeal` to `Ideal`. -/
 @[coe]
 def toIdeal (J : hI.SubDPIdeal) : Ideal A := J.carrier
@@ -345,9 +347,8 @@ theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((t
 
 instance : CompleteLattice (SubDPIdeal hI) := by
   refine Function.Injective.completeLattice (fun J : SubDPIdeal hI ↦ (J : Set.Iic I))
-    (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h) (fun J J' ↦ by rfl)
-    (fun J J' ↦ by rfl)
-    (fun S ↦ ?_) (fun S ↦ ?_) rfl rfl
+    (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h)
+    .rfl .rfl (fun J J' ↦ by rfl) (fun J J' ↦ by rfl) (fun S ↦ ?_) (fun S ↦ ?_) rfl rfl
   · conv_rhs => rw [iSup]
     rw [Subtype.ext_iff, Set.Iic.coe_sSup]
     dsimp only

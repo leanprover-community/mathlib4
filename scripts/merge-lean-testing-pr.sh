@@ -41,11 +41,12 @@ git add lakefile.lean lake-manifest.json
 # Attempt to commit. This will fail if there are conflicts.
 if git commit -m "merge $BRANCH_NAME"; then
     echo "Merge successful."
-    git push
-    echo "Pushed to github."
+    # Note: This script does NOT push. The caller is responsible for pushing.
+    # This allows the nightly_bump_and_merge.yml workflow to batch multiple
+    # merges into a single push, avoiding spurious CI failures.
     exit 0
 else
-    echo "Merge failed. Please resolve conflicts manually and push to github."
+    echo "Merge failed. Please resolve conflicts manually."
     git status
     exit 1
 fi

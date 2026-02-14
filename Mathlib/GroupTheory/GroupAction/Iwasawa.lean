@@ -39,7 +39,7 @@ Additivize. The issue is that it requires to additivize `commutator`
 
 namespace MulAction
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable (M : Type*) [Group M] (α : Type*) [MulAction M α]
 

@@ -206,7 +206,7 @@ instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
   rw [range_toContinuousMap, setOf_and]
   apply isClosed_setOf_lipschitzWith L |>.preimage continuous_coeFun |>.inter
   simp_rw [mem_closedBall_iff_norm]
-  exact isClosed_le (by fun_prop) continuous_const
+  exact isClosed_le (by fun_prop) (by fun_prop)
 
 /-- Extend the domain of `α` from `Icc tmin tmax` to `ℝ` such that `α t = α tmin` for all `t ≤ tmin`
 and `α t = α tmax` for all `t ≥ tmax`. -/

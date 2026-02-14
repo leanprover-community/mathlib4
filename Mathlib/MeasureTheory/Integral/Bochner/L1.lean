@@ -353,8 +353,7 @@ lemma integral_mono_measure {ν} {f : α →ₛ F} (hf : 0 ≤ᵐ[ν] f) (hμν 
     · simp [← hx]
     simp only [measureReal_def]
     gcongr
-    · exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
-    · exact hμν _
+    exact integrable_iff.mp hfν (f x) hx.ne' |>.ne
   · suffices ν (f ⁻¹' {f x}) = 0 by
       have A : μ (f ⁻¹' {f x}) = 0 := by simpa using (hμν _ |>.trans_eq this)
       simp [measureReal_def, A, this]

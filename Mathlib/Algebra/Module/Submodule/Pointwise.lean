@@ -500,7 +500,7 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
     p x (by rwa [← Submodule.singleton_set_smul])
   refine Submodule.set_smul_inductionOn (motive := p') _ (N.singleton_set_smul a ▸ hx)
       (fun r n hr hn ↦ ?_) smul₁ add zero
-  · simp only [Set.mem_singleton_iff] at hr
+  · push _ ∈ _ at hr
     subst hr
     exact smul₀ n hn
 
