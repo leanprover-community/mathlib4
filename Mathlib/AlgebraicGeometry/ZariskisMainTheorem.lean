@@ -99,8 +99,8 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
   have : IsFinite W₁.ι := .of_comp _ (pullback.snd f _)
   let W₂ : (pullback f (Spec.map φ ≫ hU.fromSpec)).Opens :=
     ⟨W₁ᶜ, by simpa using W₁.ι.isClosedMap.isClosed_range⟩
-  refine ⟨Spec (.of R), Spec.map φ ≫ hU.fromSpec,
-    ⟨P, ‹_›⟩, inferInstance, ?_, W₁, W₂, ⟨g ⟨P', ‹_›⟩, ?_⟩, ?_, ‹_›, ?_⟩
+  refine ⟨Spec (.of R), Spec.map φ ≫ hU.fromSpec, inferInstance,
+    ⟨⟨P, ‹_›⟩, ?_⟩, W₁, W₂, ⟨g ⟨P', ‹_›⟩, ?_⟩, ?_, ‹_›, ?_⟩
   · dsimp [Spec.map_apply]
     convert hU.fromSpec_primeIdealOf ⟨f x, hxU⟩
     · exact PrimeSpectrum.ext (Ideal.over_def _ _).symm
@@ -117,7 +117,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f]
     (x : X) (hx : f.QuasiFiniteAt x) :
     ∃ V, f.toNormalization x ∈ V ∧ IsIso (f.toNormalization ∣_ V) := by
-  obtain ⟨T, fT, u, _, hu, V, W, v, hVW, _, hv₂⟩ := exists_etale_isCompl_of_quasiFiniteAt _ rfl hx
+  obtain ⟨T, fT, _, ⟨u, hu⟩, V, W, v, hVW, _, hv₂⟩ := exists_etale_isCompl_of_quasiFiniteAt _ rfl hx
   obtain ⟨U, hU, _⟩ : ∃ U, (pullback.snd f fT).toNormalization v.1 ∈ U ∧
       IsIso ((pullback.snd f fT).toNormalization ∣_ U) := by
     have hVW' : (W : Set ↑(pullback f fT)) = (↑V)ᶜ :=
