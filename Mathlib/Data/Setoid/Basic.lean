@@ -487,14 +487,6 @@ noncomputable def range_toSet_equiv : Set.range (toSet (r := r)) ≃ Quot r :=
 noncomputable def range_equivClassOf_equiv : Set.range (equivClassOf (r := r)) ≃ Quot r :=
   range_toSet_eq_range_equivClassOf ▸ range_toSet_equiv
 
-/-- The dependent sum of the sets of all elements in a quotient is equivalent to the original type.
--/
-def equivSigmaToSet : (Σ q : Quot r, q.toSet) ≃ α where
-  toFun := fun ⟨_, x, _⟩ ↦ x
-  invFun x := ⟨mk _ x, _, rfl⟩
-  left_inv := fun ⟨_, _, h⟩ ↦ Sigma.subtype_ext h rfl
-  right_inv _ := rfl
-
 end Quot
 
 namespace Quotient
@@ -514,14 +506,6 @@ noncomputable def range_toSet_equiv : Set.range (toSet (s := s)) ≃ Quotient s 
 /-- The range of `Quotient.equivClassOf` is equivalent to the quotient type. -/
 noncomputable def range_equivClassOf_equiv : Set.range (equivClassOf (s := s)) ≃ Quotient s :=
   range_toSet_eq_range_equivClassOf ▸ range_toSet_equiv
-
-/-- The dependent sum of the sets of all elements in a quotient is equivalent to the original type.
--/
-def equivSigmaToSet : (Σ q : Quotient s, q.toSet) ≃ α where
-  toFun := fun ⟨_, x, _⟩ ↦ x
-  invFun x := ⟨Quotient.mk _ x, _, rfl⟩
-  left_inv := fun ⟨_, _, h⟩ ↦ Sigma.subtype_ext h rfl
-  right_inv _ := rfl
 
 end Quotient
 
