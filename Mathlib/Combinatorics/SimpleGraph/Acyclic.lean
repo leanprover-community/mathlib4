@@ -356,11 +356,6 @@ lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
   simp [this, p.adj_of_mem_edges]
 
-/-- Every connected graph has a spanning tree. -/
-lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
-  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_le_minimal h
-  exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
-
 /--
 Adding an edge to an acyclic graph preserves acyclicity if the endpoints are not reachable.
 -/
@@ -460,6 +455,35 @@ theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Co
 theorem maximal_isAcyclic_iff_isTree [Nonempty V] {T : SimpleGraph V} :
     Maximal IsAcyclic T ↔ T.IsTree := by
   simp [← connected_top.maximal_le_isAcyclic_iff_isTree le_top]
+
+/-- Every acyclic subgraph can be extended to a spanning forest. -/
+theorem exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic {H : SimpleGraph V} (hH_le : H ≤ G)
+    (hH_isAcyclic : H.IsAcyclic) :
+    ∃ F : SimpleGraph V, H ≤ F ∧ F ≤ G ∧ F.IsAcyclic ∧ F.Reachable = G.Reachable := by
+  obtain ⟨F, hF⟩ := G.exists_maximal_isAcyclic_of_le_isAcyclic hH_le hH_isAcyclic
+  use F
+  grind [maximal_isAcyclic_iff_reachable_eq, Maximal]
+
+/-- Every graph has a spanning forest. -/
+theorem exists_isAcyclic_reachable_eq_le :
+    ∃ F ≤ G, F.IsAcyclic ∧ F.Reachable = G.Reachable := by
+  obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
+  use F
+  grind
+
+/-- Every acyclic subgraph of a connected graph can be extended to a spanning tree. -/
+lemma Connected.exists_isTree_le_of_le_of_isAcyclic {H : SimpleGraph V} (h : G.Connected)
+    (hH_le : H ≤ G) (hH_isAcyclic : H.IsAcyclic) :
+    ∃ F : SimpleGraph V, H ≤ F ∧ F ≤ G ∧ F.IsTree := by
+  obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic hH_le hH_isAcyclic
+  use F
+  grind [IsTree, Connected, preconnected_iff_reachable_eq_top]
+
+/-- Every connected graph has a spanning tree. -/
+lemma Connected.exists_isTree_le (h : G.Connected) : ∃ T ≤ G, IsTree T := by
+  obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
+  use F
+  grind [IsTree, Connected, preconnected_iff_reachable_eq_top]
 
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
