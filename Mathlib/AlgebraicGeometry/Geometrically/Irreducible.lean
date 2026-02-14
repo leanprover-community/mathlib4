@@ -63,9 +63,6 @@ instance (s : S) [GeometricallyIrreducible f] :
 instance (s : S) [GeometricallyIrreducible f] : IrreducibleSpace (f.fiber s) :=
   GeometricallyIrreducible.geometrically_irreducibleSpace _ _ _ (.of_hasPullback _ _)
 
-instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IrreducibleSpace ·) :=
-  ⟨fun e ↦ e.hom.homeomorph.irreducibleSpace_iff.mp⟩
-
 instance (priority := low) [GeometricallyIrreducible f] : Surjective f :=
   ⟨fun x ↦ ⟨_, (f.range_fiberι x).le ⟨Nonempty.some inferInstance, rfl⟩⟩⟩
 
