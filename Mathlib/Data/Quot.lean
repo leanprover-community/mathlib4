@@ -769,13 +769,5 @@ end Quotient
 
 @[simp]
 lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
-    Quot.mk r x = Quot.mk r y ↔ r x y := by
-  constructor
-  · rw [Quot.eq]
-    intro hxy
-    induction hxy with
-    | rel _ _ H => exact H
-    | refl _ => exact h.refl _
-    | symm _ _ _ H => exact h.symm H
-    | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
-  · exact Quot.sound
+    Quot.mk r x = Quot.mk r y ↔ r x y :=
+  Quotient.eq (r := ⟨r, h⟩)
