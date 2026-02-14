@@ -44,11 +44,7 @@ instance : ContinuousMul Mᵒᵈ :=
   ‹ContinuousMul M›
 
 @[to_additive]
-instance : ContinuousMul (ULift.{u} M) := by
-  constructor
-  apply continuous_uliftUp.comp
-  exact continuous_mul.comp₂ (continuous_uliftDown.comp continuous_fst)
-    (continuous_uliftDown.comp continuous_snd)
+instance : ContinuousMul (ULift.{u} M) := ⟨continuous_uliftUp.comp (by fun_prop)⟩
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
@@ -57,8 +53,7 @@ instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
 @[to_additive]
 instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
   ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
-      continuous_mul.comp <|
-        continuous_swap.comp <| Continuous.prodMap MulOpposite.continuous_unop continuous_id⟩
+    by fun_prop⟩
 
 @[to_additive]
 theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Mul α]
@@ -70,12 +65,10 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
   fun_prop
 
 @[to_additive (attr := continuity)]
-theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
-  continuous_const.mul continuous_id
+theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b := by fun_prop
 
 @[to_additive (attr := continuity)]
-theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
-  continuous_id.mul continuous_const
+theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a := by fun_prop
 
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
@@ -107,6 +100,13 @@ theorem nhds_mul_nhds_one {M} [MulOneClass M] [TopologicalSpace M] [ContinuousMu
     𝓝 a * 𝓝 1 = 𝓝 a :=
   ((le_nhds_mul _ _).trans_eq <| congr_arg _ (mul_one a)).antisymm <|
     le_mul_of_one_le_right' <| pure_le_nhds 1
+
+/-- This lemma exists to ensure that we can still do the simplification `pure_le_nhds_iff`
+after simplifying with `pure_one`. -/
+@[to_additive (attr := simp) /-- This lemma exists to ensure that we can still do the simplification
+`pure_le_nhds_iff` after simplifying with `pure_zero`. -/]
+theorem one_le_nhds_iff [T1Space X] [One X] {b : X} : 1 ≤ 𝓝 b ↔ 1 = b :=
+  pure_le_nhds_iff
 
 section tendsto_nhds
 
@@ -340,7 +340,7 @@ theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [M
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
+  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom S M) ⟨rfl⟩
 
 @[to_additive]
 instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]
@@ -752,7 +752,7 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
     [IsScalarTower R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
     simp +singlePass only [← smul_one_mul q (_ : A)]
-    exact continuous_const.mul continuous_id
+    fun_prop
 
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
@@ -766,7 +766,7 @@ instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type*} [Mono
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
     simp +singlePass only [← mul_smul_one q (_ : A)]
-    exact continuous_id.mul continuous_const
+    fun_prop
 
 end ContinuousMul
 

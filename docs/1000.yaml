@@ -67,7 +67,7 @@ Q164262:
 
 Q172298:
   title: Lasker–Noether theorem
-  decl: Ideal.isPrimary_decomposition_pairwise_ne_radical
+  decl: Submodule.isPrimary_decomposition_pairwise_ne_radical
 
 Q174955:
   title: Mihăilescu's theorem
@@ -163,7 +163,11 @@ Q193286:
 
 Q193878:
   title: Chinese remainder theorem
-  decl: Ideal.quotientInfRingEquivPiQuotient
+  decls:
+    - Ideal.quotientInfRingEquivPiQuotient
+    - ZMod.chineseRemainder
+  authors: Kenny Lau, Chris Hughes
+  date: 2019, 2021
 
 Q193882:
   title: Menelaus's theorem
@@ -184,11 +188,7 @@ Q195133:
 Q200787:
   title: Gödel's incompleteness theorem
   authors: Shogo Saito
-  # TODO: how to display this data nicely? want two URLs, right?
-  # results:
-  #   - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
-  #   - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
-  url: https://formalizedformallogic.github.io/Book/
+  url: https://formalizedformallogic.github.io/Catalogue/
 
 Q203565:
   title: Solutions of a general cubic equation
@@ -198,6 +198,9 @@ Q203565:
 
 Q204884:
   title: Löb's theorem
+  url: https://github.com/FormalizedFormalLogic/Foundation/blob/3c1ddf8af9d2ac715114fe83da0cb2f1c762e02b/Foundation/FirstOrder/Incompleteness/L%C3%B6b.lean#L16
+  authors: Shogo Saito, Mashu Noguchi
+  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/L___b___s-Theorem/#l___b-theorem"
 
 Q205966:
   title: Critical line theorem
@@ -222,6 +225,9 @@ Q211981:
 
 Q213603:
   title: Ceva's theorem
+  decl: Affine.Triangle.prod_dist_div_dist_eq_one_of_mem_line_of_mem_line
+  authors: Joseph Myers
+  date: 2026-01-09
 
 Q220680:
   title: Banach fixed-point theorem
@@ -552,7 +558,10 @@ Q570779:
   decl: Multiset.prod_X_add_C_eq_sum_esymm
 
 Q574902:
-  title: Tarski's indefinability theorem
+  title: Tarski's undefinability theorem
+  url: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Tarski.lean#L18
+  authors: Shogo Saito, Mashu Noguchi
+  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/Tarski___s-Undefinability-Theorem/#tarski-undefinability"
 
 Q576478:
   title: Liouville's theorem (complex analysis)
@@ -1058,6 +1067,9 @@ Q925854:
 
 Q927051:
   title: Riemann mapping theorem
+  authors: Vincent Beffara
+  url: https://github.com/vbeffara/RMT4
+  date: 2024
 
 Q928813:
   title: Menger's theorem
@@ -1296,8 +1308,8 @@ Q1077741:
 
 Q1082910:
   title: Euler's partition theorem
-  authors: Bhavik Mehta and Aaron Anderson
-  decl: Theorems100.partition_theorem
+  authors: Bhavik Mehta, Aaron Anderson, and Weiyi Wang
+  decl: Nat.Partition.card_odds_eq_card_distincts
 
 Q1095330:
   title: Apéry's theorem
@@ -1647,6 +1659,7 @@ Q1434805:
 
 Q1443036:
   title: Parseval's theorem
+  decl: tsum_sq_fourierCoeff
 
 Q1452678:
   title: Penrose–Hawking singularity theorems
@@ -1994,6 +2007,8 @@ Q2226624:
 
 Q2226625:
   title: Commandino's theorem
+  decl: Affine.Simplex.point_vsub_centroid_eq_smul_vsub
+  authors: Chu Zheng
 
 Q2226640:
   title: Cramér’s decomposition theorem
@@ -2075,6 +2090,9 @@ Q2266397:
 
 Q2267175:
   title: Tangent-secant theorem
+  decl: EuclideanGeometry.Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant
+  authors: Li Jiale
+  date: 2025
 
 Q2269888:
   title: Cohn's irreducibility criterion
@@ -2134,7 +2152,7 @@ Q2379132:
     - Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain
     - Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime
     - Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap
-    - Algebra.HasGoingDown.of_specComap_localRingHom_surjective
+    - Algebra.HasGoingDown.of_comap_localRingHom_surjective
   date: 2025
 
 Q2394548:
@@ -2289,6 +2307,9 @@ Q3180727:
 
 Q3229335:
   title: Borel–Carathéodory theorem
+  decl: Complex.borelCaratheodory
+  authors: Maksym Radziwill
+  date: 2025
 
 Q3229352:
   title: Vitali covering theorem
@@ -2473,9 +2494,13 @@ Q3527215:
 
 Q3527217:
   title: M. Riesz extension theorem
+  decl: riesz_extension
 
 Q3527219:
   title: Weierstrass preparation theorem
+  decl: PowerSeries.exists_isWeierstrassFactorization
+  authors: Jz Pan
+  date: 2025
 
 Q3527223:
   title: Crystallographic restriction theorem
@@ -3084,6 +3109,8 @@ Q5385326:
 
 Q5421989:
   title: Exterior angle theorem
+  authors: Wang Ying
+  decl: EuclideanGeometry.exterior_angle_eq_angle_add_angle
 
 Q5436274:
   title: Farrell–Markushevich theorem
@@ -3181,6 +3208,9 @@ Q5552370:
 
 Q5566491:
   title: Glaisher's theorem
+  decl: Nat.Partition.card_restricted_eq_card_countRestricted
+  authors: Weiyi Wang
+  date: 2025
 
 Q5567394:
   title: Gleason's theorem
@@ -3586,6 +3616,11 @@ Q7245073:
 
 Q7249519:
   title: Prokhorov's theorem
+  decls:
+    - isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
+    - isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le
+    - isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le
+    - isCompact_closure_of_isTightMeasureSet
 
 Q7255475:
   title: Pseudorandom generator theorem
@@ -4041,6 +4076,7 @@ Q17098075:
 
 Q17098298:
   title: Jacobson density theorem
+  decl: jacobson_density
 
 Q17098379:
   title: Kaplansky's theorem on quadratic forms

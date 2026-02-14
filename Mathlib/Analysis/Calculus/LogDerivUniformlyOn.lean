@@ -17,7 +17,7 @@ individual functions.
 
 -/
 
-@[expose] public section
+public section
 
 open Complex
 

@@ -128,7 +128,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   field_simp
   ring_nf
   norm_cast
-  cutsat
+  lia
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :
@@ -234,14 +234,12 @@ theorem tendsto_stirlingSeq_sqrt_pi : Tendsto stirlingSeq atTop (𝓝 (√π)) :
 /-- **Stirling's Formula**, formulated in terms of `Asymptotics.IsEquivalent`. -/
 lemma factorial_isEquivalent_stirling :
     (fun n ↦ n ! : ℕ → ℝ) ~[atTop] fun n ↦ Real.sqrt (2 * n * π) * (n / exp 1) ^ n := by
-  refine Asymptotics.isEquivalent_of_tendsto_one ?_ ?_
-  · filter_upwards [eventually_ne_atTop 0] with n hn h
-    exact absurd h (by positivity)
-  · have : sqrt π ≠ 0 := by positivity
-    nth_rewrite 2 [← div_self this]
-    convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
-    ext n
-    simp [field, stirlingSeq, mul_right_comm]
+  apply Asymptotics.isEquivalent_of_tendsto_one
+  have : sqrt π ≠ 0 := by positivity
+  nth_rewrite 2 [← div_self this]
+  convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
+  ext n
+  simp [field, stirlingSeq, mul_right_comm]
 
 /-! ### Global bounds -/
 

@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 In this file, we define strong epimorphisms. A strong epimorphism is an epimorphism `f`
 which has the (unique) left lifting property with respect to monomorphisms. Similarly,
-a strong monomorphisms in a monomorphism which has the (unique) right lifting property
+a strong monomorphism is a monomorphism which has the (unique) right lifting property
 with respect to epimorphisms.
 
 ## Main results
@@ -50,7 +50,7 @@ with respect to monomorphisms. -/
 class StrongEpi (f : P ⟶ Q) : Prop where
   /-- The epimorphism condition on `f` -/
   epi : Epi f
-  /-- The left lifting property with respect to all monomorphism -/
+  /-- The left lifting property with respect to all monomorphisms -/
   llp : ∀ ⦃X Y : C⦄ (z : X ⟶ Y) [Mono z], HasLiftingProperty f z
 
 

@@ -246,7 +246,7 @@ end
 namespace monoidalOfHasFiniteProducts
 
 variable {C}
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
   [HasTerminal C] [HasBinaryProducts C]
   [HasTerminal D] [HasBinaryProducts D]
 

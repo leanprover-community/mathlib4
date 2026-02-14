@@ -11,7 +11,6 @@ public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.EMetricSpace.Paracompact
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.Analysis.Fourier.L1Space
 
@@ -45,7 +44,7 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -206,7 +205,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
     simp_rw [← integral_sub ((Real.fourierIntegral_convergent_iff w).2 hfi)
       ((Real.fourierIntegral_convergent_iff w).2 (hg_cont.integrable_of_hasCompactSupport hg_supp)),
       ← smul_sub, ← Pi.sub_apply]
-    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ bilinFormOfRealInner (f - g) w
+    exact VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 _ (innerₗ V) (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine ((le_of_eq ?_).trans (norm_add_le _ _)).trans_lt this

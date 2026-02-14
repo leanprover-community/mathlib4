@@ -116,8 +116,8 @@ alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList
 @[deprecated (since := "2025-09-24")]
 alias primeFactorsList_chain' := isChain_primeFactorsList
 
-theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
-  (isChain_primeFactorsList _).pairwise
+theorem primeFactorsList_sorted (n : ℕ) : List.SortedLE (primeFactorsList n) :=
+  (isChain_primeFactorsList _).sortedLE
 
 /-- `primeFactorsList` can be constructed inductively by extracting `minFac`, for sufficiently
 large `n`. -/
@@ -223,7 +223,8 @@ theorem primeFactorsList_sublist_right {n k : ℕ} (h : k ≠ 0) :
     n.primeFactorsList <+ (n * k).primeFactorsList := by
   rcases n with - | hn
   · simp [zero_mul]
-  apply sublist_of_subperm_of_sorted _ (primeFactorsList_sorted _) (primeFactorsList_sorted _)
+  apply sublist_of_subperm_of_pairwise _
+    (primeFactorsList_sorted _).pairwise (primeFactorsList_sorted _).pairwise
   simp only [(perm_primeFactorsList_mul (Nat.succ_ne_zero _) h).subperm_left]
   exact (sublist_append_left _ _).subperm
 

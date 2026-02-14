@@ -30,7 +30,7 @@ namespace CategoryTheory.Functor.IsDenseSubsite
 
 open CategoryTheory Opposite
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (G : C ⥤ D)
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
@@ -99,11 +99,10 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
       simp [← Functor.map_comp, ← op_comp, hiUV]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
-  apply (config := { allowSynthFailures := true })
-    ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
+  apply +allowSynthFailures ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨U⟩
-  apply (config := { allowSynthFailures := true }) ReflectsIsomorphisms.reflects yoneda
+  apply +allowSynthFailures ReflectsIsomorphisms.reflects yoneda
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
   simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val_obj, yoneda_obj_obj,

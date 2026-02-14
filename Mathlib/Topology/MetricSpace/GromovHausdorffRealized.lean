@@ -59,12 +59,15 @@ section Definitions
 variable (X : Type u) (Y : Type v) [MetricSpace X] [MetricSpace Y]
 
 
+set_option backward.privateInPublic true in
 private abbrev ProdSpaceFun : Type _ :=
   (X ⊕ Y) × (X ⊕ Y) → ℝ
 
+set_option backward.privateInPublic true in
 private abbrev Cb : Type _ :=
   BoundedContinuousFunction ((X ⊕ Y) × (X ⊕ Y)) ℝ
 
+set_option backward.privateInPublic true in
 private def maxVar : ℝ≥0 :=
   2 * ⟨diam (univ : Set X), diam_nonneg⟩ + 1 + 2 * ⟨diam (univ : Set Y), diam_nonneg⟩
 
@@ -73,6 +76,8 @@ private theorem one_le_maxVar : 1 ≤ maxVar X Y :=
     (1 : Real) = 2 * 0 + 1 + 2 * 0 := by simp
     _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> positivity
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The set of functions on `X ⊕ Y` that are candidates distances to realize the
 minimum of the Hausdorff distances between `X` and `Y` in a coupling. -/
 def candidates : Set (ProdSpaceFun X Y) :=
@@ -83,6 +88,7 @@ def candidates : Set (ProdSpaceFun X Y) :=
       ∀ x, f (x, x) = 0) ∧
       ∀ x y, f (x, y) ≤ maxVar X Y }
 
+set_option backward.privateInPublic true in
 /-- Version of the set of candidates in bounded_continuous_functions, to apply Arzela-Ascoli. -/
 private def candidatesB : Set (Cb X Y) :=
   { f : Cb X Y | (f : _ → ℝ) ∈ candidates X Y }
@@ -112,29 +118,42 @@ private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Non
     _ = 1 * diam (univ : Set X) + 1 + 1 * diam (univ : Set Y) := by simp
     _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> norm_num
 
+set_option backward.privateInPublic true in
 private theorem candidates_symm (fA : f ∈ candidates X Y) : f (x, y) = f (y, x) :=
   fA.1.1.1.2 x y
 
+set_option backward.privateInPublic true in
 private theorem candidates_triangle (fA : f ∈ candidates X Y) : f (x, z) ≤ f (x, y) + f (y, z) :=
   fA.1.1.2 x y z
 
+set_option backward.privateInPublic true in
 private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
   grind [candidates_symm, candidates_triangle]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
   fA.1.1.1.1.1 x y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem candidates_dist_inr (fA : f ∈ candidates X Y) (x y : Y) :
     f (inr x, inr y) = dist x y :=
   fA.1.1.1.1.2 x y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem candidates_le_maxVar (fA : f ∈ candidates X Y) : f (x, y) ≤ maxVar X Y :=
   fA.2 x y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- candidates are bounded by `maxVar X Y` -/
 private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
     ∀ {x y : X ⊕ Y}, f (x, y) ≤ maxVar X Y * dist x y
@@ -165,6 +184,8 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
       _ = 1 * dist (α := X ⊕ Y) (inr x) (inr y) := by ring
       _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Technical lemma to prove that candidates are Lipschitz -/
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
@@ -183,6 +204,7 @@ private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
       ring
     _ = 2 * maxVar X Y * dist (x, y) (z, t) := rfl
 
+set_option backward.privateInPublic true in
 /-- Candidates are Lipschitz -/
 private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :
     LipschitzWith (2 * maxVar X Y) f := by
@@ -224,12 +246,16 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
       | apply I1 _ _ | apply I2 _ _ | apply I3 _ _ | apply I4 _ _ _ | apply I5 _ | apply I6 _ _
       | intro x
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- We will then choose the candidate minimizing the Hausdorff distance. Except that we are not
 in a metric space setting, so we need to define our custom version of Hausdorff distance,
 called `HD`, and prove its basic properties. -/
 def HD (f : Cb X Y) :=
   max (⨆ x, ⨅ y, f (inl x, inr y)) (⨆ y, ⨅ x, f (inl x, inr y))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /- We will show that `HD` is continuous on `BoundedContinuousFunction`s, to deduce that its
 minimum on the compact set `candidatesB` is attained. Since it is defined in terms of
 infimum and supremum on `ℝ`, which is only conditionally complete, we will need all the time
@@ -248,6 +274,8 @@ private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
     ⨅ y, f (inl x, inr y) + C ≤ f (inl x, inr default) + C := ciInf_le (HD_below_aux1 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
@@ -349,16 +377,21 @@ private theorem isCompact_candidatesB : IsCompact (candidatesB X Y) := by
     · rintro x y ⟨f, hf⟩
       exact (candidates_lipschitz hf).dist_le_mul _ _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- candidates give rise to elements of `BoundedContinuousFunction`s -/
 def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
   BoundedContinuousFunction.mkOfCompact ⟨f, (candidates_lipschitz fA).continuous⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
     candidatesBOfCandidates f fA ∈ candidatesB X Y :=
   fA
 
 variable [Nonempty X] [Nonempty Y]
 
+set_option backward.privateInPublic true in
 /-- The distance on `X ⊕ Y` is a candidate -/
 private theorem dist_mem_candidates :
     (fun p : (X ⊕ Y) × (X ⊕ Y) => dist p.1 p.2) ∈ candidates X Y := by
@@ -366,11 +399,15 @@ private theorem dist_mem_candidates :
     forall_const, and_true]
   exact ⟨fun x y => rfl, fun x y => rfl⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The distance on `X ⊕ Y` as a candidate -/
 def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
     [MetricSpace Y] [CompactSpace Y] [Nonempty Y] : Cb X Y :=
   candidatesBOfCandidates _ dist_mem_candidates
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem candidatesBDist_mem_candidatesB :
     candidatesBDist X Y ∈ candidatesB X Y :=
   candidatesBOfCandidates_mem _ _
@@ -415,9 +452,11 @@ optimal coupling. -/
 private theorem exists_minimizer : ∃ f ∈ candidatesB X Y, ∀ g ∈ candidatesB X Y, HD f ≤ HD g :=
   isCompact_candidatesB.exists_isMinOn candidatesB_nonempty HD_continuous.continuousOn
 
+set_option backward.privateInPublic true in
 private def optimalGHDist : Cb X Y :=
   Classical.choose (exists_minimizer X Y)
 
+set_option backward.privateInPublic true in
 private theorem optimalGHDist_mem_candidatesB : optimalGHDist X Y ∈ candidatesB X Y := by
   cases Classical.choose_spec (exists_minimizer X Y)
   assumption
@@ -427,6 +466,8 @@ private theorem HD_optimalGHDist_le (g : Cb X Y) (hg : g ∈ candidatesB X Y) :
   let ⟨_, Z2⟩ := Classical.choose_spec (exists_minimizer X Y)
   Z2 g hg
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- With the optimal candidate, construct a premetric space structure on `X ⊕ Y`, on which the
 predistance is given by the candidate. Then, we will identify points at `0` predistance
 to obtain a genuine metric space. -/
@@ -468,6 +509,8 @@ instance compactSpace_optimalGHCoupling : CompactSpace (OptimalGHCoupling X Y) :
   exact isCompact_range (continuous_sum_dom.2
     ⟨(isometry_optimalGHInjl X Y).continuous, (isometry_optimalGHInjr X Y).continuous⟩)⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- For any candidate `f`, `HD(f)` is larger than or equal to the Hausdorff distance in the
 optimal coupling. This follows from the fact that `HD` of the optimal candidate is exactly
 the Hausdorff distance in the optimal coupling, although we only prove here the inequality

@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject Preadditive
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace ShortComplex
 
@@ -401,6 +401,16 @@ lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
   refine (MorphismProperty.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by cat_disch)
 
+variable {S} in
+lemma Exact.mono_cokernelDesc [S.HasHomology] [HasCokernel S.f] (hS : S.Exact) :
+    Mono (Limits.cokernel.desc S.f S.g S.zero) :=
+  S.exact_iff_mono_cokernel_desc.1 hS
+
+variable {S} in
+lemma Exact.epi_kernelLift [S.HasHomology] [HasKernel S.g] (hS : S.Exact) :
+    Epi (Limits.kernel.lift S.g S.f S.zero) :=
+  S.exact_iff_epi_kernel_lift.1 hS
+
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
   simp only [exact_iff_isZero_homology]
@@ -566,11 +576,7 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     (fun x hx => by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
     (fun x _ b hb => by simp only [← hb, s.s_g_assoc])
   let g' := hp.desc (CokernelCofork.ofπ S.g S.zero)
-  have hg' : g' = 𝟙 _ := by
-    apply Cofork.IsColimit.hom_ext hp
-    dsimp
-    erw [Cofork.IsColimit.π_desc hp]
-    simp only [Cofork.π_ofπ, comp_id]
+  have hg' : g' = 𝟙 _ := by simp [g']
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
   have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
       (by rw [hg']; dsimp; infer_instance) (isZero_zero _)
@@ -822,6 +828,36 @@ end Preadditive
 section Abelian
 
 variable [Abelian C]
+
+section
+
+variable {X Y : C} (f : X ⟶ Y)
+
+/-- The exact short complex `kernel f ⟶ X ⟶ Y` for any morphism `f : X ⟶ Y`. -/
+@[simps]
+noncomputable def kernelSequence : ShortComplex C :=
+  ShortComplex.mk _ _ (kernel.condition f)
+
+/-- The exact short complex `X ⟶ Y ⟶ cokernel f` for any morphism `f : X ⟶ Y`. -/
+@[simps]
+noncomputable def cokernelSequence : ShortComplex C :=
+  ShortComplex.mk _ _ (cokernel.condition f)
+
+instance : Mono (kernelSequence f).f := by
+  dsimp
+  infer_instance
+
+instance : Epi (cokernelSequence f).g := by
+  dsimp
+  infer_instance
+
+lemma kernelSequence_exact : (kernelSequence f).Exact :=
+  exact_of_f_is_kernel _ (kernelIsKernel f)
+
+lemma cokernelSequence_exact : (cokernelSequence f).Exact :=
+  exact_of_g_is_cokernel _ (cokernelIsCokernel f)
+
+end
 
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
 and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`

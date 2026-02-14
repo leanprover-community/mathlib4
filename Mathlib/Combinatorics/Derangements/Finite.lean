@@ -60,7 +60,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   simp only [card_derangements_invariant h2,
     card_congr
       (@derangementsRecursionEquiv (Fin (n + 1))
-        _),-- push the cardinality through the Σ and ⊕ so that we can use `card_n`
+        _), -- push the cardinality through the Σ and ⊕ so that we can use `card_n`
     card_sigma,
     card_sum, card_derangements_invariant (h1 _), Finset.sum_const, nsmul_eq_mul, Finset.card_fin,
     mul_add, Nat.cast_id]
@@ -100,7 +100,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   · rfl
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
-  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
+  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> lia
 
 theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by

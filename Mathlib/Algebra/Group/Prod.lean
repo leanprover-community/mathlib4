@@ -138,15 +138,11 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_left_cancel _ _ := by simp }
+  { mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_right_cancel _ _ := by simp }
+  { mul_right_cancel _ _ := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -562,7 +558,8 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.uniqueProd`. -/
-@[to_additive uniqueProd /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) uniqueProd /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.uniqueProd`. -/]
 def uniqueProd [Unique N] : N × M ≃* M :=
@@ -571,7 +568,8 @@ def uniqueProd [Unique N] : N × M ≃* M :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.prodUnique`. -/
-@[to_additive prodUnique /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) prodUnique /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.prodUnique`. -/]
 def prodUnique [Unique N] : M × N ≃* M :=

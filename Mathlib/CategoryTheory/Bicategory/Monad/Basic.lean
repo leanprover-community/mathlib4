@@ -45,9 +45,9 @@ abbrev Comonad.counit {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ 𝟙 a := ComonO
 abbrev Comonad.comul {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ t ≫ t := ComonObj.comul
 
 @[inherit_doc] scoped notation "ε" => Comonad.counit
-@[inherit_doc] scoped notation "ε["x"]" => Comonad.counit (t := x)
+@[inherit_doc] scoped notation "ε[" x "]" => Comonad.counit (t := x)
 @[inherit_doc] scoped notation "Δ" => Comonad.comul
-@[inherit_doc] scoped notation "Δ["x"]" => Comonad.comul (t := x)
+@[inherit_doc] scoped notation "Δ[" x "]" => Comonad.comul (t := x)
 
 namespace Comonad
 
@@ -133,7 +133,7 @@ def obj (m : ComonadBicat B) :=
   m.toOplax.obj ⟨⟨PUnit.unit⟩⟩
 
 /-- The morphism in `B` associated with the comonad. -/
-def hom (m : ComonadBicat B) : m.obj  ⟶ m.obj :=
+def hom (m : ComonadBicat B) : m.obj ⟶ m.obj :=
   m.toOplax.map (𝟙 (⟨⟨PUnit.unit⟩⟩ : LocallyDiscrete (Discrete PUnit)))
 
 instance (m : ComonadBicat B) : Comonad m.hom :=

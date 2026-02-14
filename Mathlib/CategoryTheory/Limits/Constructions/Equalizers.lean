@@ -61,8 +61,7 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
         convert (eq_whisker pullback.condition Limits.prod.snd :
           (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.one) = _) using 1 <;> simp))
 
--- TODO: find a good way to fix the non-terminal simp at J0
-set_option linter.flexible false in
+set_option linter.flexible false in -- non-terminal `simp at J0`; TODO fix nicely!
 /-- Show the equalizing cone is a limit -/
 def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCone F) where
   lift c := pullback.lift (c.π.app _) (c.π.app _)
@@ -89,7 +88,7 @@ theorem hasEqualizers_of_hasPullbacks_and_binary_products [HasBinaryProducts C] 
 
 attribute [local instance] hasPullback_of_preservesPullback
 
-/-- A functor that preserves pullbacks and binary products also presrves equalizers. -/
+/-- A functor that preserves pullbacks and binary products also preserves equalizers. -/
 lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
     [HasBinaryProducts C] [HasPullbacks C]
     [PreservesLimitsOfShape (Discrete WalkingPair) G] [PreservesLimitsOfShape WalkingCospan G] :
@@ -182,7 +181,7 @@ theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproduct
 
 attribute [local instance] hasPushout_of_preservesPushout
 
-/-- A functor that preserves pushouts and binary coproducts also presrves coequalizers. -/
+/-- A functor that preserves pushouts and binary coproducts also preserves coequalizers. -/
 lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinaryCoproducts C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete WalkingPair) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesColimitsOfShape WalkingParallelPair G :=

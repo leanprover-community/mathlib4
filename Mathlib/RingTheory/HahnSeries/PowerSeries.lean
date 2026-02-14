@@ -12,22 +12,22 @@ public import Mathlib.Data.Finsupp.PWO
 
 /-!
 # Comparison between Hahn series and power series
-If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
+If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  When `R` is a semiring and `Γ = ℕ`, then
+`Γ`, we can add further structure on `R⟦Γ⟧`.  When `R` is a semiring and `Γ = ℕ`, then
 we get the more familiar semiring of formal power series with coefficients in `R`.
 
 ## Main Definitions
-* `toPowerSeries` the isomorphism from `HahnSeries ℕ R` to `PowerSeries R`.
-* `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `HahnSeries ℕ R`.
+* `toPowerSeries` the isomorphism from `R⟦ℕ⟧` to `PowerSeries R`.
+* `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `R⟦ℕ⟧`.
 
 ## Instances
-* For `Finite σ`, the instance `NoZeroDivisors (HahnSeries (σ →₀ ℕ) R)`,
+* For `Finite σ`, the instance `NoZeroDivisors R⟦σ →₀ ℕ⟧`,
   deduced from the case of `MvPowerSeries`
-  The case of `HahnSeries ℕ R` is taken care of by `instNoZeroDivisors`.
+  The case of `R⟦ℕ⟧` is taken care of by `instNoZeroDivisors`.
 
 ## TODO
-* Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
+* Build an API for the variable `X` (defined to be `single 1 1 : R⟦Γ⟧`) in analogy to
   `X : R[X]` and `X : PowerSeries R`
 
 ## References
@@ -49,9 +49,9 @@ section Semiring
 
 variable [Semiring R]
 
-/-- The ring `HahnSeries ℕ R` is isomorphic to `PowerSeries R`. -/
+/-- The ring `R⟦ℕ⟧` is isomorphic to `PowerSeries R`. -/
 @[simps]
-def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
+def toPowerSeries : R⟦ℕ⟧ ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
   invFun f := ⟨fun n => PowerSeries.coeff n f, .of_linearOrder _⟩
   left_inv f := by
@@ -75,7 +75,7 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     rintro h
     rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
-theorem coeff_toPowerSeries {f : HahnSeries ℕ R} {n : ℕ} :
+theorem coeff_toPowerSeries {f : R⟦ℕ⟧} {n : ℕ} :
     PowerSeries.coeff n (toPowerSeries f) = f.coeff n :=
   PowerSeries.coeff_mk _ _
 
@@ -86,12 +86,12 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
-def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
+def ofPowerSeries : PowerSeries R →+* R⟦Γ⟧ :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
     (RingEquiv.toRingHom toPowerSeries.symm)
 
-variable {Γ} {R}
+variable {Γ R}
 
 theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
   embDomain_injective.comp toPowerSeries.symm.injective
@@ -141,14 +141,14 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
   simp
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
-/-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
+/-- The ring `R⟦σ →₀ ℕ⟧` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
-After importing `Mathlib/Algebra/Order/Pi.lean` the ring `HahnSeries (σ → ℕ) R` could be constructed
+After importing `Mathlib/Algebra/Order/Pi.lean` the ring `R⟦σ → ℕ⟧` could be constructed
 instead.
 -/
 @[simps]
-def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
+def toMvPowerSeries {σ : Type*} [Finite σ] : R⟦σ →₀ ℕ⟧ ≃+* MvPowerSeries σ R where
   toFun f := f.coeff
   invFun f := ⟨(f : (σ →₀ ℕ) → R), Set.isPWO_of_wellQuasiOrderedLE _⟩
   left_inv f := by
@@ -177,11 +177,11 @@ variable {σ : Type*} [Finite σ]
 
 -- TODO : generalize to all (?) rings of Hahn Series
 /-- If R has no zero divisors and `σ` is finite,
-then `HahnSeries (σ →₀ ℕ) R` has no zero divisors -/
-instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
-  toMvPowerSeries.toMulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R)
+then `R⟦σ →₀ ℕ⟧` has no zero divisors -/
+instance [NoZeroDivisors R] : NoZeroDivisors (R⟦σ →₀ ℕ⟧) :=
+  toMvPowerSeries.toMulEquiv.noZeroDivisors (A := R⟦σ →₀ ℕ⟧) (MvPowerSeries σ R)
 
-theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
+theorem coeff_toMvPowerSeries {f : R⟦σ →₀ ℕ⟧} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff n (toMvPowerSeries f) = f.coeff n :=
   rfl
 
@@ -195,9 +195,9 @@ section Algebra
 
 variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
-/-- The `R`-algebra `HahnSeries ℕ A` is isomorphic to `PowerSeries A`. -/
+/-- The `R`-algebra `A⟦ℕ⟧` is isomorphic to `PowerSeries A`. -/
 @[simps!]
-def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
+def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
     commutes' := fun r => by
       ext n
@@ -208,29 +208,29 @@ variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 /-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/
 @[simps!]
-def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=
+def ofPowerSeriesAlg : PowerSeries A →ₐ[R] A⟦Γ⟧ :=
   (HahnSeries.embDomainAlgHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
     (AlgEquiv.toAlgHom (toPowerSeriesAlg R).symm)
 
 instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
-    Algebra S (HahnSeries Γ R) :=
+    Algebra S R⟦Γ⟧ :=
   RingHom.toAlgebra <| (ofPowerSeries Γ R).comp (algebraMap S (PowerSeries R))
 
 variable {R}
 variable {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)]
 
 theorem algebraMap_apply' (x : S) :
-    algebraMap S (HahnSeries Γ R) x = ofPowerSeries Γ R (algebraMap S (PowerSeries R) x) :=
+    algebraMap S R⟦Γ⟧ x = ofPowerSeries Γ R (algebraMap S (PowerSeries R) x) :=
   rfl
 
 @[simp]
 theorem _root_.Polynomial.algebraMap_hahnSeries_apply (f : R[X]) :
-    algebraMap R[X] (HahnSeries Γ R) f = ofPowerSeries Γ R f :=
+    algebraMap R[X] R⟦Γ⟧ f = ofPowerSeries Γ R f :=
   rfl
 
 theorem _root_.Polynomial.algebraMap_hahnSeries_injective :
-    Function.Injective (algebraMap R[X] (HahnSeries Γ R)) :=
+    Function.Injective (algebraMap R[X] R⟦Γ⟧) :=
   ofPowerSeries_injective.comp (Polynomial.coe_injective R)
 
 end Algebra

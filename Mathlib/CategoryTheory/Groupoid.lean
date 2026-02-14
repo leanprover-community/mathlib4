@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Symmetric
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
@@ -105,10 +104,20 @@ def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
 variable (C)
 
 /-- The functor from a groupoid `C` to its opposite sending every morphism to its inverse. -/
-@[simps]
-noncomputable def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
+@[simps, deprecated "Use Groupoid.invEquivalence.functor" (since := "2025-12-31")]
+def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
   obj := Opposite.op
   map {_ _} f := (inv f).op
+
+/-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
+@[simps]
+def Groupoid.invEquivalence : C ≌ Cᵒᵖ where
+  functor.obj := Opposite.op
+  functor.map {_ _} f := (inv f).op
+  inverse.obj := Opposite.unop
+  inverse.map {x y} f := inv f.unop
+  unitIso := NatIso.ofComponents (fun _ ↦ .refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ .refl _)
 
 end
 
@@ -133,7 +142,6 @@ noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
-  inv_comp := fun f => Classical.choose_spec (all_is_iso f).out|>.right
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where
@@ -141,7 +149,7 @@ def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupo
 
 end
 
-lemma isGroupoid_of_reflects_iso {C D : Type*} [Category C] [Category D]
+lemma isGroupoid_of_reflects_iso {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) [F.ReflectsIsomorphisms] [IsGroupoid D] :
     IsGroupoid C where
   all_isIso _ := isIso_of_reflects_iso _ F
@@ -192,7 +200,7 @@ instance isGroupoidProd {α : Type u} {β : Type u₂} [Category.{v} α] [Catego
 end
 
 open MorphismProperty in
-lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category C] :
+lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category* C] :
     IsGroupoid C ↔ isomorphisms C = ⊤ := by
   constructor
   · rw [eq_top_iff]

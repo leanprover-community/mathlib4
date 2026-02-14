@@ -39,7 +39,7 @@ open CategoryTheory Limits Functor FintypeCat
 
 namespace Condensed
 
-variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
+variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
 
 /--
 A condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant sheaf.
@@ -114,7 +114,7 @@ variable (R : Type (u + 1)) [Ring R]
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
-    M.IsDiscrete ↔ ((Condensed.forget R).obj M).IsDiscrete  :=
+    M.IsDiscrete ↔ ((Condensed.forget R).obj M).IsDiscrete :=
   Sheaf.isConstant_iff_forget (coherentTopology CompHaus)
     (forget (ModuleCat R)) M CompHaus.isTerminalPUnit
 
@@ -148,14 +148,14 @@ theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
       CompHaus.isTerminalPUnit _).symm
   tfae_have 7 → 1 := by
     intro h
-    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)]
+    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6 :)]
     intro S
     letI : PreservesFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
       preservesFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 7 := by
     intro h S
-    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)] at h
+    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6 :)] at h
     letI : ReflectsFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
       reflectsFilteredColimitsOfSize_shrink.{u, u + 1, u, u + 1} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
@@ -165,7 +165,7 @@ end CondensedMod
 
 namespace LightCondensed
 
-variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
+variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
 
 /--
 A light condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant
@@ -228,7 +228,7 @@ variable (R : Type u) [Ring R]
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
-    M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete  :=
+    M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete :=
   Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
     (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
 
@@ -254,14 +254,14 @@ theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
     Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit (adjunction R) _
   tfae_have 6 → 1 := by
     intro h
-    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5:)]
+    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5 :)]
     intro S
     letI : PreservesFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
       preservesFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
   tfae_have 1 → 6 := by
     intro h S
-    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5:)] at h
+    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5 :)] at h
     letI : ReflectsFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
       reflectsFilteredColimitsOfSize_shrink.{0, u, 0, u} _
     exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩

@@ -26,7 +26,7 @@ We show several results related to the (path)-connectedness of subsets of real v
 Statements with connectedness instead of path-connectedness are also given.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal
@@ -140,13 +140,13 @@ theorem ball_contractible {x : E} {r : ℝ} (hr : 0 < r) :
   Convex.contractibleSpace (convex_ball _ _) (by simpa)
 
 theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
-    ContractibleSpace (EMetric.ball x r) := by
+    ContractibleSpace (Metric.eball x r) := by
   cases r with
   | top =>
     rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
     exact RealTopologicalVectorSpace.contractibleSpace
   | coe r =>
-    rw [emetric_ball_nnreal]
+    rw [Metric.eball_coe]
     apply ball_contractible
     simpa using hr
 
@@ -156,7 +156,7 @@ theorem isPathConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
   exact @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
 
 theorem isPathConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsPathConnected (EMetric.ball x r) := by
+    IsPathConnected (Metric.eball x r) := by
   rw [isPathConnected_iff_pathConnectedSpace]
   exact @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
 
@@ -165,7 +165,7 @@ theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
   (isPathConnected_ball hr).isConnected
 
 theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsConnected (EMetric.ball x r) :=
+    IsConnected (Metric.eball x r) :=
   (isPathConnected_eball hr).isConnected
 
 end Metric
@@ -211,7 +211,7 @@ theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0
 /-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
 theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
-  rcases le_or_gt 0 r with hr|hr
+  rcases le_or_gt 0 r with hr | hr
   · exact (isConnected_sphere h x hr).isPreconnected
   · simpa [hr] using isPreconnected_empty
 

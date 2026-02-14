@@ -26,7 +26,7 @@ We can then, first observe that the slash action just changes our `a` to `(a ᵥ
 we then use our bounds for Eisenstein series in these vertical strips to get the result.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

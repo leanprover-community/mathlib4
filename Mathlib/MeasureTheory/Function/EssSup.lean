@@ -73,14 +73,19 @@ theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c
   have := NeZero.mk hμ; essInf_const' _
 
 section SMul
-variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+variable {R : Type*} [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [Module.IsTorsionFree R ℝ≥0∞] {c : R}
 
 @[simp]
 lemma essSup_smul_measure (hc : c ≠ 0) (f : α → β) : essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup, Measure.ae_smul_measure_eq hc]
 
 end SMul
+
+@[simp]
+lemma essSup_ennreal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → β) :
+    essSup f (c • μ) = essSup f μ := by
+  simp_rw [essSup, Measure.ae_ennreal_smul_measure_eq hc]
 
 variable [Nonempty α]
 

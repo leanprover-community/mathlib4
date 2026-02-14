@@ -30,7 +30,7 @@ special case of *the* localization at a prime ideal is useful in working with De
 
 @[expose] public section
 
-open nonZeroDivisors IsLocalization Algebra IsFractionRing IsScalarTower
+open nonZeroDivisors IsLocalization Algebra Module IsFractionRing IsScalarTower
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -48,7 +48,7 @@ theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : 
     {S : Submonoid A} (hS : S ≤ A⁰) : algebraMapSubmonoid B S ≤ B⁰ :=
   map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective A B) hS
 
-variable (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ] [NoZeroSMulDivisors R S]
+variable (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ] [IsTorsionFree R S]
     [Algebra.IsSeparable (FractionRing R) (FractionRing S)] {M : Submonoid R} [IsLocalization M Rₘ]
     [Algebra Rₘ Sₘ] [Algebra S Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ]
     [IsScalarTower R S Sₘ] [IsLocalization (algebraMapSubmonoid S M) Sₘ]
@@ -90,15 +90,15 @@ local notation3 "Sₚ" => Localization P'
 
 variable [FaithfulSMul R S]
 
-instance : NoZeroSMulDivisors S Sₚ := by
-  rw [NoZeroSMulDivisors.iff_algebraMap_injective,
+instance : IsTorsionFree S Sₚ := by
+  rw [isTorsionFree_iff_algebraMap_injective,
     injective_iff_isRegular (algebraMapSubmonoid S P.primeCompl)]
   exact fun ⟨x, hx⟩ ↦ isRegular_iff_ne_zero'.mpr <|
     ne_of_mem_of_not_mem hx <| by simp [Algebra.algebraMapSubmonoid]
 
-instance : NoZeroSMulDivisors R Sₚ := by
+instance : IsTorsionFree R Sₚ := by
   have := IsLocalization.AtPrime.faithfulSMul Rₚ R P
-  exact NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
+  exact IsTorsionFree.trans_faithfulSMul R Rₚ _
 
 /--
 This is not an instance because it creates a diamond with `OreLocalization.instAlgebra`.
@@ -188,16 +188,15 @@ instance : IsScalarTower R Sₚ Tₚ :=
 
 instance [Module.Finite S T] : Module.Finite Sₚ Tₚ := Module.Finite.of_isLocalization S T P'
 
-instance [NoZeroSMulDivisors S T] : NoZeroSMulDivisors Sₚ Tₚ :=
-  NoZeroSMulDivisors_of_isLocalization S T Sₚ Tₚ <|
-    algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ <|
-      Ideal.primeCompl_le_nonZeroDivisors P
+instance [IsTorsionFree S T] : IsTorsionFree Sₚ Tₚ :=
+  .of_isLocalization S T <| algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ <|
+    Ideal.primeCompl_le_nonZeroDivisors P
 
 instance [Algebra.IsIntegral R S] : Algebra.IsIntegral Rₚ Sₚ :=
   Algebra.isIntegral_def.mpr <| (algebraMap_eq_map_map_submonoid P.primeCompl S Rₚ Sₚ ▸
     isIntegral_localization : (algebraMap Rₚ Sₚ).IsIntegral)
 
-variable [NoZeroSMulDivisors R T]
+variable [IsTorsionFree R T]
 
 instance : IsScalarTower Rₚ Sₚ Tₚ := by
   refine ⟨fun a b c ↦ a.ind fun ⟨a₁, a₂⟩ ↦ ?_⟩
@@ -207,7 +206,7 @@ instance : IsScalarTower Rₚ Sₚ Tₚ := by
     Localization.mk_eq_mk', IsLocalization.mk'_mul_cancel_left, algebraMap_smul, algebraMap_smul,
     _root_.smul_assoc]
 
-instance [NoZeroSMulDivisors S T] [Algebra.IsSeparable L F] :
+instance [IsTorsionFree S T] [Algebra.IsSeparable L F] :
     Algebra.IsSeparable (FractionRing Sₚ) (FractionRing Tₚ) := by
   refine FractionRing.isSeparable_of_isLocalization T Sₚ Tₚ (M := P') ?_
   apply algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul

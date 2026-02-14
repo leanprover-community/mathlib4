@@ -43,14 +43,14 @@ section LiftRel
 variable (r : α → α → Prop) (s : β → β → Prop)
 
 @[refl]
-theorem LiftRel.refl [IsRefl α r] [IsRefl β s] : ∀ x, LiftRel r s x x
+theorem LiftRel.refl [Std.Refl r] [Std.Refl s] : ∀ x, LiftRel r s x x
   | inl a => LiftRel.inl (_root_.refl a)
   | inr a => LiftRel.inr (_root_.refl a)
 
-instance [IsRefl α r] [IsRefl β s] : IsRefl (α ⊕ β) (LiftRel r s) :=
+instance [Std.Refl r] [Std.Refl s] : Std.Refl (LiftRel r s) :=
   ⟨LiftRel.refl _ _⟩
 
-instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α ⊕ β) (LiftRel r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (LiftRel r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
@@ -62,7 +62,7 @@ theorem LiftRel.trans [IsTrans α r] [IsTrans β s] :
 instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (LiftRel r s) :=
   ⟨fun _ _ _ => LiftRel.trans _ _⟩
 
-instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (α ⊕ β) (LiftRel r s) :=
+instance [Std.Antisymm r] [Std.Antisymm s] : Std.Antisymm (LiftRel r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
 end LiftRel
@@ -71,12 +71,12 @@ section Lex
 
 variable (r : α → α → Prop) (s : β → β → Prop)
 
-instance [IsRefl α r] [IsRefl β s] : IsRefl (α ⊕ β) (Lex r s) :=
+instance [Std.Refl r] [Std.Refl s] : Std.Refl (Lex r s) :=
   ⟨by
     rintro (a | a)
     exacts [Lex.inl (refl _), Lex.inr (refl _)]⟩
 
-instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α ⊕ β) (Lex r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Lex r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
 
 instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (Lex r s) :=
@@ -84,10 +84,10 @@ instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (Lex r s) :=
     rintro _ _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hbc⟩ | ⟨hbc⟩)
     exacts [.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
 
-instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (α ⊕ β) (Lex r s) :=
+instance [Std.Antisymm r] [Std.Antisymm s] : Std.Antisymm (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
-instance [IsTotal α r] [IsTotal β s] : IsTotal (α ⊕ β) (Lex r s) :=
+instance [Std.Total r] [Std.Total s] : Std.Total (Lex r s) :=
   ⟨fun a b =>
     match a, b with
     | inl a, inl b => (total_of r a b).imp Lex.inl Lex.inl
@@ -683,8 +683,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   { Equiv.sumComm α β with
     map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
-      · simp only [ge_iff_le]
-        change
+      · change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual]
@@ -715,6 +714,22 @@ theorem sumLexDualAntidistrib_symm_inl :
 @[simp]
 theorem sumLexDualAntidistrib_symm_inr :
     (sumLexDualAntidistrib α β).symm (inr (toDual a)) = toDual (inl a) :=
+  rfl
+
+/-- `Equiv.sumEmpty` as an `OrderIso` with the lexicographic sum. -/
+def sumLexEmpty [IsEmpty β] : Lex (α ⊕ β) ≃o α :=
+  RelIso.sumLexEmpty ..
+
+/-- `Equiv.emptySum` as an `OrderIso` with the lexicographic sum. -/
+def emptySumLex [IsEmpty β] : Lex (β ⊕ α) ≃o α :=
+  RelIso.emptySumLex ..
+
+@[simp]
+lemma sumLexEmpty_apply_inl [IsEmpty β] (x : α) : sumLexEmpty (β := β) (toLex <| .inl x) = x :=
+  rfl
+
+@[simp]
+lemma emptySumLex_apply_inr [IsEmpty β] (x : α) : emptySumLex (β := β) (toLex <| .inr x) = x :=
   rfl
 
 end OrderIso

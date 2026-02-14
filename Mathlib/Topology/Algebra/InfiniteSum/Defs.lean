@@ -287,9 +287,7 @@ theorem hasProd_prod_support_of_ne_finset_one (hf : ∀ b ∈ L.support, b ∉ s
     (L.filter.biInter_mem (Set.toFinite _)).mpr (fun b hb ↦ hb.2)
   filter_upwards [h1, L.eventually_le_support] with t ht ht'
   simp only [Set.mem_iInter] at ht
-  apply Finset.prod_congr_of_eq_on_inter <;>
-  · simp only [Set.mem_toFinset]
-    grind
+  apply Finset.prod_congr_of_eq_on_inter <;> grind
 
 /-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b ∈ s, f b`. -/
 @[to_additive /-- If a function `f` vanishes outside of a finite set `s`, then it `HasSum`

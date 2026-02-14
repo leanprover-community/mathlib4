@@ -189,7 +189,7 @@ This is used later to obtain a contradiction. -/
 private lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
   have := riemannZeta_neg_two_mul_nat_add_one 0
   rw [Nat.cast_zero, zero_add, mul_one] at this
-  rw [F, ofReal_neg, ofReal_ofNat, Function.update_of_ne (mod_cast (by cutsat : (-2 : ℤ) ≠ 1)),
+  rw [F, ofReal_neg, ofReal_ofNat, Function.update_of_ne (mod_cast (by lia : (-2 : ℤ) ≠ 1)),
     this, zero_mul]
 
 end BadChar
@@ -201,7 +201,7 @@ private theorem LFunction_apply_one_ne_zero_of_quadratic {χ : DirichletCharacte
     χ.LFunction 1 ≠ 0 := by
   intro hL
   -- construct a "bad character" and put together a contradiction.
-  let B : BadChar N := {χ := χ, χ_sq := hχ, hχ := hL, χ_ne := χ_ne}
+  let B : BadChar N := { χ := χ, χ_sq := hχ, hχ := hL, χ_ne := χ_ne }
   refine B.F_neg_two.not_gt ?_
   refine ArithmeticFunction.LSeries_positive_of_differentiable_of_eqOn (zetaMul_nonneg hχ)
     (χ.isMultiplicative_zetaMul.map_one ▸ zero_lt_one) B.F_differentiable ?_
@@ -249,16 +249,16 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
       exact .inr <| Real.one_lt_rpow (mod_cast one_lt_two.trans_le hn) <| zero_lt_one.trans hx
     have hz : ‖χ n * (n : ℂ) ^ (-(I * y))‖ = 1 := by
       rw [norm_mul, ← hn'.unit_spec, DirichletCharacter.unit_norm_eq_one χ hn'.unit,
-        ← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos (mod_cast by cutsat)]
+        ← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos (mod_cast by lia)]
       simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
     convert re_log_comb_nonneg' ha₀ ha₁ hz using 6
     · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
-      rw [neg_add, cpow_add _ _ <| mod_cast by cutsat, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
+      rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, mul_left_comm]
-    · rw [neg_add, cpow_add _ _ <| mod_cast by cutsat, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
+    · rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, show -(2 * I * y) = (2 : ℕ) * -(I * y) by ring, cpow_nat_mul, mul_pow,
         mul_left_comm]
   · simp only [MulChar.map_nonunit _ hn', zero_mul, sub_zero, log_one, neg_zero, zero_re, mul_zero,
@@ -360,7 +360,7 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
     h.symm.imp_left <| mul_ne_zero two_ne_zero
   have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by
     rcases eq_or_ne x 0 with rfl | h
-    · rw [ofReal_zero, zero_pow (by cutsat), mul_zero, mul_one]
+    · rw [ofReal_zero, zero_pow (by lia), mul_zero, mul_one]
     · rw [one_div, inv_pow, pow_succ _ 3, ← mul_assoc,
         inv_mul_cancel₀ <| pow_ne_zero 3 (ofReal_ne_zero.mpr h), one_mul, mul_one]
   -- put together the various `IsBigO` statements and `norm_LFunction_product_ge_one`

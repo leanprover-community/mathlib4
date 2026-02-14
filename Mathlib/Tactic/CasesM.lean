@@ -107,7 +107,7 @@ casesm* _ ∨ _, _ ∧ _
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   elabCasesM pats recursive.isSome true
 
-@[inherit_doc casesM]
+@[tactic_alt casesM]
 elab (name := casesm!) "casesm!" recursive:"*"? ppSpace pats:term,+ : tactic => do
   elabCasesM pats recursive.isSome false
 
@@ -132,7 +132,7 @@ cases_type* Or And
 elab (name := casesType) "cases_type" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome true
 
-@[inherit_doc casesType]
+@[tactic_alt casesType]
 elab (name := casesType!) "cases_type!" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
 

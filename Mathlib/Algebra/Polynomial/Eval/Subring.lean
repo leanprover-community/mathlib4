@@ -19,7 +19,7 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

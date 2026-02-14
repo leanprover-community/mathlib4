@@ -48,6 +48,7 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
@@ -55,11 +56,15 @@ structure Hom (X Y : Lat.{u}) where
   /-- The underlying `LatticeHom`. -/
   hom' : LatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Lat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨LatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Lat (LatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

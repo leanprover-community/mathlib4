@@ -75,7 +75,7 @@ def mkSol (init : Fin E.order → R) : ℕ → R
     if h : n < E.order then init ⟨n, h⟩
     else
       ∑ k : Fin E.order,
-        have _ : n - E.order + k < n := by omega
+        have _ : n - E.order + k < n := by lia
         E.coeffs k * mkSol init (n - E.order + k)
 
 /-- `E.mkSol` indeed gives solutions to `E`. -/

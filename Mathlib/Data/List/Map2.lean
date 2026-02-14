@@ -22,7 +22,7 @@ Lists together. In particular, we include lemmas about:
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists GroupWithZero
 assert_not_exists Lattice

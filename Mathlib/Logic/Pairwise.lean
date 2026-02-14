@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Relations holding pairwise
@@ -72,7 +73,7 @@ theorem pairwise_fin_succ_iff {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop}
       (Fin.cases nofun fun j _ => hj j)
       (fun i => Fin.cases (fun _ => hi i) fun _j hij => h (ne_of_apply_ne _ hij))
 
-theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [IsSymm _ R] :
+theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [Std.Symm R] :
     Pairwise R ↔ (∀ j, R 0 (Fin.succ j)) ∧ Pairwise fun i j => R (Fin.succ i) (Fin.succ j) := by
   simp only [pairwise_fin_succ_iff, comm (b := 0) (r := R), and_self_left]
 

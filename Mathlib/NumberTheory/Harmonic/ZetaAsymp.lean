@@ -263,7 +263,7 @@ lemma continuousOn_term (n : ℕ) :
     · exact this.le
     · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by cutsat : 0 < (n + 1)) zero_lt_one
+    exact_mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
     refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
@@ -311,7 +311,7 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
   · apply tendsto_const_nhds.sub
     rw [← one_mul (term_tsum 1)]
     apply (tendsto_id.mono_left nhdsWithin_le_nhds).mul
-    have := continuousOn_term_tsum.continuousWithinAt left_mem_Ici
+    have := continuousOn_term_tsum.continuousWithinAt self_mem_Ici
     exact Tendsto.mono_left this (nhdsWithin_mono _ Ioi_subset_Ici_self)
 
 /-- The function `ζ s - 1 / (s - 1)` tends to `γ` as `s → 1`. -/

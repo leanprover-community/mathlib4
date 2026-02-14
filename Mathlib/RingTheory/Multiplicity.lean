@@ -415,7 +415,7 @@ theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a �
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
-              | b+2 => by cutsat
+              | b+2 => by lia
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
       fun h => by cases h <;> simp [*]⟩
 
@@ -598,7 +598,7 @@ end Ring
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero α]
+variable [CommMonoidWithZero α] [IsCancelMulZero α]
 
 theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b

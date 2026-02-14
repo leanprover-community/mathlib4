@@ -423,7 +423,7 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
   induction i with
-  | fz      => rfl
+  | fz => rfl
   | fs _ ih =>
     rw [TypeVec.const]
     exact ih

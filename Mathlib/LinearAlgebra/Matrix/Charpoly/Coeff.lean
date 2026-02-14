@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.RingTheory.Polynomial.Nilpotent
+public import Mathlib.Data.Matrix.DMatrix
 
 /-!
 # Characteristic polynomials
@@ -108,7 +109,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  cutsat
+  lia
 
 @[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
@@ -130,7 +131,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  cutsat
+  lia
 
 /-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
@@ -209,7 +210,7 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
 
 lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
     M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
-  have : Nonempty n := by rw [← Fintype.card_pos_iff]; omega
+  have : Nonempty n := by rw [← Fintype.card_pos_iff]; lia
   ext i
   by_cases hi : i ∈ Finset.range 3
   · fin_cases hi
@@ -219,7 +220,7 @@ lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
         M.charpoly_monic.leadingCoeff
   · rw [Finset.mem_range, not_lt, Nat.succ_le_iff] at hi
     suffices M.charpoly.coeff i = 0 by
-      simpa [show i ≠ 2 by cutsat, show 1 ≠ i by cutsat, show i ≠ 0 by cutsat, coeff_X, coeff_C]
+      simpa [show i ≠ 2 by lia, show 1 ≠ i by lia, show i ≠ 0 by lia, coeff_X, coeff_C]
     apply coeff_eq_zero_of_natDegree_lt
     simpa [charpoly_natDegree_eq_dim, hn] using hi
 

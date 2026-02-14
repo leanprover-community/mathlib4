@@ -28,7 +28,7 @@ We show that the following properties of continuous maps are local at the source
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Set TopologicalSpace Topology
 
@@ -175,6 +175,12 @@ theorem isClosedEmbedding_iff_restrictPreimage (h : Continuous f) :
   · exact hU.isEmbedding_iff_restrictPreimage h
   · simp_rw [range_restrictPreimage]
     exact hU.isClosed_iff_coe_preimage
+
+theorem isHomeomorph_iff_restrictPreimage (h : Continuous f) :
+    IsHomeomorph f ↔ ∀ i, IsHomeomorph ((U i).1.restrictPreimage f) := by
+  simp_rw [isHomeomorph_iff_isEmbedding_surjective, forall_and,
+    ← isEmbedding_iff_restrictPreimage hU h,
+    surjective_iff_surjective_of_iUnion_eq_univ hU.iSup_set_eq_univ, Opens.carrier_eq_coe]
 
 omit [TopologicalSpace α] in
 theorem denseRange_iff_restrictPreimage :

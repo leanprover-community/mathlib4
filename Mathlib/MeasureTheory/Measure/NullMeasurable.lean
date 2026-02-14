@@ -377,7 +377,10 @@ section NullMeasurable
 variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
 
 /-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
-measurable set. -/
+measurable set.
+
+A similar notion is `AEMeasurable`. That notion is equivalent to `NullMeasurable` if
+the σ-algebra on the codomain is countably generated, but stronger in general. -/
 def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∀ ⦃s : Set β⦄, MeasurableSet s → NullMeasurableSet (f ⁻¹' s) μ
 

@@ -14,7 +14,7 @@ public import Mathlib.Topology.Metrizable.Real
 This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter ENNReal

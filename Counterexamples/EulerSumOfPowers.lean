@@ -46,7 +46,7 @@ theorem fermatLastTheoremWith_of_sumOfPowersConjectureWith (R : Type*) [Semiring
     ∀ n ≥ 3, SumOfPowersConjectureWith R n → FermatLastTheoremWith R n := by
   intro n hn conj a b c ha hb hc hsum
   have : n ≤ 2 := conj [a, b] c (by simp) (by simp [ha.symm, hb.symm]) hc (by simpa)
-  cutsat
+  lia
 
 /-- Euler's sum of powers conjecture over the naturals implies FLT. -/
 theorem fermatLastTheorem_of_sumOfPowersConjecture : SumOfPowersConjecture → FermatLastTheorem :=
@@ -58,7 +58,7 @@ theorem sumOfPowersConjectureWith_three_iff_fermatLastTheoremWith_three (R : Typ
   refine ⟨fermatLastTheoremWith_of_sumOfPowersConjectureWith R 3 (by rfl), ?_⟩
   intro FLT a b ha ha₀ hb₀ hsum
   contrapose! hsum
-  have ⟨x, y, hxy⟩ := a.length_eq_two.mp <| by cutsat
+  have ⟨x, y, hxy⟩ := a.length_eq_two.mp <| by lia
   simp [hxy, FLT x y b (by grind) (by grind) hb₀]
 
 /-- Euler's sum of powers conjecture over the naturals is true for `n ≤ 3`. -/
@@ -67,7 +67,7 @@ theorem sumOfPowersConjectureFor_le_three : ∀ n ≤ 3, SumOfPowersConjectureFo
   by_cases h3 : n = 3
   · exact h3 ▸ (sumOfPowersConjectureWith_three_iff_fermatLastTheoremWith_three _).mpr
       fermatLastTheoremThree
-  cutsat
+  lia
 
 /-- Given a ring homomorphism from `R` to `S` with no nontrivial zeros,
 the conjecture over `S` implies the conjecture over `R`. -/
@@ -96,7 +96,7 @@ theorem sumOfPowersConjectureFor_five_false : ¬SumOfPowersConjectureFor 5 := by
   let a := [27, 84, 110, 133]
   let b := 144
   have : 5 ≤ 4 := conj a b (by simp [a]) (by simp [a]) (by simp) (by decide)
-  cutsat
+  lia
 
 /--
 The first counterexample for `n = 4` was found by Noam D. Elkies in October 1988:
@@ -112,7 +112,7 @@ theorem sumOfPowersConjectureFor_four_false : ¬SumOfPowersConjectureFor 4 := by
   let a := [95_800, 217_519, 414_560]
   let b := 422_481
   have : 4 ≤ 3 := conj a b (by simp [a]) (by simp [a]) (by simp) (by decide)
-  cutsat
+  lia
 
 /--
 For all `(k, m, n)` we define the Diophantine equation `∑ x_i ^ k = ∑ y_i ^ k`
@@ -130,7 +130,7 @@ theorem existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith (R : Type*) 
   intro conj ⟨x, y, hx, hy, hx₀, hy₀, hdisj, hsum⟩
   simp only [List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero,
     List.eq_cons_of_length_one hy] at hsum
-  exact hx ▸ conj x (y.get ⟨0, _⟩) (by cutsat) hx₀ (by grind) hsum
+  exact hx ▸ conj x (y.get ⟨0, _⟩) (by lia) hx₀ (by grind) hsum
 
 /--
 After the first counterexample was found, Leon J. Lander, Thomas R. Parkin, and John Selfridge
@@ -149,6 +149,6 @@ theorem LanderParkinSelfridgeConjecture_of_sumOfPowersConjectureWith (R : Type*)
     SumOfPowersConjectureWith R k → LanderParkinSelfridgeConjecture R k m 1 := by
   intro conj hsum
   have := existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith R k m hm conj hsum
-  cutsat
+  lia
 
 end Counterexample

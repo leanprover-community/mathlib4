@@ -37,8 +37,8 @@ namespace CategoryTheory
 
 open Limits Opposite Category Functor Sheaf Adjunction
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-variable (D : Type*) [Category D]
+variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
+variable (D : Type*) [Category* D]
 
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
@@ -126,7 +126,7 @@ lemma isConstant_iff_isIso_counit_app' {L : D ⥤ Sheaf J D} {T : C} (hT : IsTer
 end Sheaf
 
 section Equivalence
-variable {C' : Type*} [Category C'] (K : GrothendieckTopology C') [HasWeakSheafify K D]
+variable {C' : Type*} [Category* C'] (K : GrothendieckTopology C') [HasWeakSheafify K D]
 variable (G : C ⥤ C') [∀ (X : (C')ᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) D]
   [G.IsDenseSubsite J K] {T : C} (hT : IsTerminal T) (hT' : IsTerminal (G.obj T))
 
@@ -172,7 +172,7 @@ end Equivalence
 
 section Forget
 
-variable {B : Type*} [Category B] (U : D ⥤ B) [HasWeakSheafify J B]
+variable {B : Type*} [Category* B] (U : D ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J D)
 
 /--

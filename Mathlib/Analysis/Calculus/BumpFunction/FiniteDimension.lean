@@ -18,7 +18,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 Let `E` be a finite-dimensional real normed vector space. We show that any open set `s` in `E` is
 exactly the support of a smooth function taking values in `[0, 1]`,
-in `IsOpen.exists_smooth_support_eq`.
+in `IsOpen.exists_contDiff_support_eq`.
 
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
@@ -42,9 +42,9 @@ variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 /-- If a set `s` is a neighborhood of `x`, then there exists a smooth function `f` taking
 values in `[0, 1]`, supported in `s` and with `f x = 1`. -/
-theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
+theorem exists_contDiff_tsupport_subset {s : Set E} {x : E} {n : ℕ∞} (hs : s ∈ 𝓝 x) :
     ∃ f : E → ℝ,
-      tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ∞ f ∧ range f ⊆ Icc 0 1 ∧ f x = 1 := by
+      tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ n f ∧ range f ⊆ Icc 0 1 ∧ f x = 1 := by
   obtain ⟨d : ℝ, d_pos : 0 < d, hd : Euclidean.closedBall x d ⊆ s⟩ :=
     Euclidean.nhds_basis_closedBall.mem_iff.1 hs
   let c : ContDiffBump (toEuclidean x) :=
@@ -74,10 +74,13 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
     apply mem_closedBall_self
     exact (half_pos d_pos).le
 
+@[deprecated (since := "2025-12-17")]
+alias exists_smooth_tsupport_subset := exists_contDiff_tsupport_subset
+
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`. -/
-theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
-    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ∞ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
+theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen s) :
+    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ n f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   /- For any given point `x` in `s`, one can construct a smooth function with support in `s` and
     nonzero at `x`. By second-countability, it follows that we may cover `s` with the supports of
     countably many such functions, say `g i`.
@@ -94,7 +97,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     have : ⋃ f : ι, (f : E → ℝ).support = s := by
       refine Subset.antisymm (iUnion_subset fun f => f.2.1) ?_
       intro x hx
-      rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
+      rcases exists_contDiff_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
       have : x ∈ support (g : E → ℝ) := by
         simp only [g, hf.2.2.2.2, mem_support, Ne, one_ne_zero, not_false_iff]
@@ -142,7 +145,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       apply Finset.le_max'
       apply Finset.mem_image_of_mem
       simp only [Finset.mem_range]
-      omega
+      lia
     refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
@@ -171,8 +174,9 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n) := s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
       exact ne_of_gt ((S x).tsum_pos (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
-  · refine
-      contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
+  · apply ContDiff.of_le _ (show (n : WithTop ℕ∞) ≤ ∞ from mod_cast le_top)
+    refine
+      contDiff_tsum_of_eventually (fun k => (g_smooth k).const_smul (r k))
         (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
     intro i _
     simp only [Nat.cofinite_eq_atTop, Filter.eventually_atTop]
@@ -185,6 +189,9 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     intro n
     apply (le_abs_self _).trans
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) y
+
+@[deprecated (since := "2025-12-17")]
+alias IsOpen.exists_smooth_support_eq := IsOpen.exists_contDiff_support_eq
 
 end
 
@@ -209,12 +216,12 @@ theorem u_exists :
   have A : IsOpen (ball (0 : E) 1) := isOpen_ball
   obtain ⟨f, f_support, f_smooth, f_range⟩ :
       ∃ f : E → ℝ, f.support = ball (0 : E) 1 ∧ ContDiff ℝ ∞ f ∧ Set.range f ⊆ Set.Icc 0 1 :=
-    A.exists_smooth_support_eq
+    A.exists_contDiff_support_eq
   have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x => f_range (mem_range_self x)
   refine ⟨fun x => (f x + f (-x)) / 2, ?_, ?_, ?_, ?_⟩
   · exact (f_smooth.add (f_smooth.comp contDiff_neg)).div_const _
   · intro x
-    simp only [mem_Icc]
+    push _ ∈ _
     constructor
     · linarith [(B x).1, (B (-x)).1]
     · linarith [(B x).2, (B (-x)).2]
@@ -365,8 +372,6 @@ theorem y_eq_zero_of_notMem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ba
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
   simp only [lsmul_apply, smul_eq_mul, Bx, mul_zero, integral_const]
 
-@[deprecated (since := "2025-05-23")] alias y_eq_zero_of_not_mem_ball := y_eq_zero_of_notMem_ball
-
 theorem y_nonneg (D : ℝ) (x : E) : 0 ≤ y D x :=
   integral_nonneg (w_mul_φ_nonneg D x)
 
@@ -377,7 +382,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
         fun _ => zero_le_one
     refine ((w_compact_support E Dpos).convolutionExists_left _ ?_
       (locallyIntegrable_const (1 : ℝ)) x).integrable
-    exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
+    exact continuous_const.mul ((u_continuous E).comp (by fun_prop))
   have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
     simp only [convolution, mul_one, lsmul_apply, smul_eq_mul, w_integral E Dpos]
   exact A.trans (le_of_eq B)
@@ -390,7 +395,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
     have B : LocallyIntegrable (φ : E → ℝ) μ :=
       (locallyIntegrable_const _).indicator measurableSet_closedBall
     have C : Continuous (w D : E → ℝ) :=
-      continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
+      continuous_const.mul ((u_continuous E).comp (by fun_prop))
     exact (F_comp.convolutionExists_left (lsmul ℝ ℝ : ℝ →L[ℝ] ℝ →L[ℝ] ℝ) C B x).integrable
   · set z := (D / (1 + D)) • x with hz
     have B : 0 < 1 + D := by linarith
@@ -454,8 +459,6 @@ theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     ⟨fun _ hx => (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx =>
       y_eq_zero_of_notMem_ball Dpos hx⟩
 
-variable {E}
-
 end HelperDefinitions
 
 instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -466,7 +469,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
   exact
     { toFun := fun R x => if 1 < R then y ((R - 1) / (R + 1)) (((R + 1) / 2)⁻¹ • x) else 0
       mem_Icc := fun R x => by
-        simp only [mem_Icc]
+        push _ ∈ _
         split_ifs with h
         · refine ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
         · simp only [le_refl, zero_le_one, and_self]

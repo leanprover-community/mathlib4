@@ -12,7 +12,7 @@ public import Lean.LocalContext
 # Additional methods about `LocalContext`
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.LocalContext
 

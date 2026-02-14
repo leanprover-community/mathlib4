@@ -55,7 +55,7 @@ structure Homotopy (f g : E.Hom F) where
 attribute [reassoc (attr := simp)] Homotopy.wl Homotopy.wr
 
 /-- Homotopic refinements induce the same map on multiequalizers. -/
-lemma Homotopy.mapMultiforkOfIsLimit_eq {A : Type*} [Category A]
+lemma Homotopy.mapMultiforkOfIsLimit_eq {A : Type*} [Category* A]
     {E F : PreOneHypercover.{w} S} {f g : E.Hom F} (H : Homotopy f g)
     (P : Cᵒᵖ ⥤ A) {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c)
     (d : Multifork (F.multicospanIndex P)) :

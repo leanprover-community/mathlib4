@@ -38,7 +38,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 
 4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
   see the description of `logSpace` below) the fundamental system of units given by
-  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
+  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ)`, that is the vector
   `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
   subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
   get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
@@ -59,7 +59,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 7. Finally, we need to prove that the frontier of `normLeOne K` has zero-volume (we will prove
   in passing that `normLeOne K` is bounded.) For that we prove that
   `volume (interior (normLeOne K)) = volume (closure (normLeOne K))`, see
-  `volume_interior_eq_volume_closure`. Since we now that the volume of `interior (normLeOne K)` is
+  `volume_interior_eq_volume_closure`. Since we know that the volume of `interior (normLeOne K)` is
   finite since it is bounded by the volume of `normLeOne K`, the result follows, see
   `volume_frontier_normLeOne`. We proceed in several steps.
 

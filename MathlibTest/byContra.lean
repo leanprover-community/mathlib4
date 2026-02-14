@@ -53,6 +53,12 @@ this : a ≤ b
 example (a b : ℕ) : a < b := by
   by_contra! : a ≤ b
 
+example (P Q : Prop) (h' : False) : P ∧ Q := by
+  fail_if_success by_contra! +fdsewfjdsk h
+  by_contra! +distrib h
+  guard_hyp h : ¬P ∨ ¬Q
+  exact h'
+
 section order
 
 variable {α} [LinearOrder α] [One α] [Mul α]

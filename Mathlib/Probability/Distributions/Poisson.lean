@@ -46,7 +46,7 @@ lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 
     ext n
     rw [mul_div_assoc, exp_neg, ← mul_assoc, ← div_eq_mul_inv, div_self (exp_ne_zero r), one_mul]
   rw [this, exp_eq_exp_ℝ]
-  exact NormedSpace.expSeries_div_hasSum_exp ℝ r
+  exact NormedSpace.expSeries_div_hasSum_exp r
 
 /-- The Poisson pmf is positive for all natural numbers -/
 lemma poissonPMFReal_pos {r : ℝ≥0} {n : ℕ} (hr : 0 < r) : 0 < poissonPMFReal r n := by
@@ -66,10 +66,10 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
 /-- The Poisson pmf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
 

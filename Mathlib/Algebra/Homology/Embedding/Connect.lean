@@ -95,9 +95,9 @@ def d : ∀ (n m : ℤ), X K L n ⟶ X K L m
 
 lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
   match n, m with
-  | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; cutsat)
+  | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; lia)
   | .negSucc n, .negSucc m => by
-    simpa only [d_negSucc] using K.shape n m (by simp at hnm ⊢; cutsat)
+    simpa only [d_negSucc] using K.shape n m (by simp at hnm ⊢; lia)
   | .negSucc 0, .ofNat 0 => by simp at hnm
   | .ofNat _, .negSucc m => rfl
   | .negSucc n, .ofNat m => by
@@ -115,16 +115,16 @@ lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
   · rw [h.shape m p hmp, comp_zero]
   obtain n | (_ | _ | n) := n
   · obtain rfl : m = .ofNat (n + 1) := by simp [← hnm]
-    obtain rfl : p = .ofNat (n + 2) := by simp [← hmp]; cutsat
+    obtain rfl : p = .ofNat (n + 2) := by simp [← hmp]; lia
     simp only [Int.ofNat_eq_natCast, X_ofNat, d_ofNat, HomologicalComplex.d_comp_d]
-  · obtain rfl : m = 0 := by cutsat
-    obtain rfl : p = 1 := by cutsat
+  · obtain rfl : m = 0 := by lia
+    obtain rfl : p = 1 := by lia
     simp
-  · obtain rfl : m = -1 := by cutsat
-    obtain rfl : p = 0 := by cutsat
+  · obtain rfl : m = -1 := by lia
+    obtain rfl : p = 0 := by lia
     simp
-  · obtain rfl : m = .negSucc (n + 1) := by cutsat
-    obtain rfl : p = .negSucc n := by cutsat
+  · obtain rfl : m = .negSucc (n + 1) := by lia
+    obtain rfl : p = .negSucc n := by lia
     simp
 
 /-- Given `h : ConnectData K L` where `K : ChainComplex C ℕ` and `L : CochainComplex C ℕ`,
@@ -157,11 +157,11 @@ def restrictionLEIso :
     h.cochainComplex.restriction (ComplexShape.embeddingUpIntLE (-1)) ≅ K :=
   Hom.isoOfComponents
     (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntLE (-1))
-        (i := n) (i' := .negSucc n) (by dsimp; cutsat)) (by
+        (i := n) (i' := .negSucc n) (by dsimp; lia)) (by
     rintro _ n rfl
     dsimp only
     rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntLE (-1))) _
-      (i' := Int.negSucc (n + 1)) (j' := Int.negSucc n) (by dsimp; cutsat) (by dsimp; cutsat),
+      (i' := Int.negSucc (n + 1)) (j' := Int.negSucc n) (by dsimp; lia) (by dsimp; lia),
       cochainComplex_d, d_negSucc]
     simp)
 
@@ -173,8 +173,8 @@ noncomputable def homologyIsoPos (n : ℕ) [NeZero n] (m : ℤ) (hm : m = n)
   have := hasHomology_of_iso h.restrictionGEIso.symm n
   (h.cochainComplex.restrictionHomologyIso
     (ComplexShape.embeddingUpIntGE 0) (n - 1) n (n + 1) (by cases n <;> simp) (by simp)
-      (i' := m - 1) (j' := m) (k' := m + 1) (by have := NeZero.ne n; cases n <;> simp <;> cutsat)
-      (by simp; cutsat) (by simp; cutsat) (by simp) (by simp)).symm ≪≫
+      (i' := m - 1) (j' := m) (k' := m + 1) (by have := NeZero.ne n; cases n <;> simp <;> lia)
+      (by simp; lia) (by simp; lia) (by simp) (by simp)).symm ≪≫
     HomologicalComplex.homologyMapIso h.restrictionGEIso n
 
 /-- Given `h : ConnectData K L` and `n : ℕ` non-zero, the homology
@@ -185,8 +185,8 @@ noncomputable def homologyIsoNeg (n : ℕ) [NeZero n] (m : ℤ) (hm : m = -(n + 
   have := hasHomology_of_iso h.restrictionLEIso.symm n
   (h.cochainComplex.restrictionHomologyIso
     (ComplexShape.embeddingUpIntLE (-1)) (n + 1) n (n - 1) (by simp) (by cases n <;> simp)
-      (i' := m - 1) (j' := m) (k' := m + 1) (by simp; cutsat) (by simp; cutsat)
-      (by have := NeZero.ne n; cases n <;> simp <;> cutsat) (by simp) (by simp)).symm ≪≫
+      (i' := m - 1) (j' := m) (k' := m + 1) (by simp; lia) (by simp; lia)
+      (by have := NeZero.ne n; cases n <;> simp <;> lia) (by simp) (by simp)).symm ≪≫
     HomologicalComplex.homologyMapIso h.restrictionLEIso n
 
 variable

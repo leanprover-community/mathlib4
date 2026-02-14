@@ -17,7 +17,7 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 variable {n : ℕ}
@@ -30,9 +30,6 @@ theorem not_prime_mul {a b : ℕ} (a1 : a ≠ 1) (b1 : b ≠ 1) : ¬Prime (a * b
 
 theorem not_prime_of_mul_eq {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂ : b ≠ 1) : ¬Prime n :=
   h ▸ not_prime_mul h₁ h₂
-
-@[deprecated (since := "2025-05-24")]
-alias not_prime_mul' := not_prime_of_mul_eq
 
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
   refine ⟨?_, by rintro rfl; rfl⟩
@@ -132,7 +129,7 @@ lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Cop
   rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]
   push_neg
   exact fun p hp hn hm ↦
-    ((le_of_dvd (by cutsat) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
+    ((le_of_dvd (by lia) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
 
 /-- If `0 < m < minFac n`, then `n` and `m` have gcd equal to `1`. -/
 lemma gcd_eq_one_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : n.gcd m = 1 :=

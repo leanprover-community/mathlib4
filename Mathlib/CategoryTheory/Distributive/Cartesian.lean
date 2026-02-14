@@ -54,7 +54,7 @@ open Category Limits MonoidalCategory Distributive CartesianMonoidalCategory
 
 variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C] [HasBinaryCoproducts C]
 
-/-- A category `C` with finite products is Cartesian distributive if is monoidal distributive
+/-- A category `C` with finite products is Cartesian distributive if it is monoidal distributive
 with respect to the Cartesian monoidal structure. -/
 abbrev IsCartesianDistributive :=
   IsMonoidalDistrib C

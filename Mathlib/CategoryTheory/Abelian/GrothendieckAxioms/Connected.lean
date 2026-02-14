@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 public import Mathlib.CategoryTheory.Limits.Connected
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
 /-!
@@ -98,7 +97,7 @@ theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]
   rw [← cancel_mono (pushoutObjIso _ _ _).hom]
   simpa using hf j
 
-/-- Detecting vanishing of a morphism factoring though a connected limit by pushing out along the
+/-- Detecting vanishing of a morphism factoring through a connected limit by pushing out along the
 projections of the limit. -/
 theorem IsLimit.pushout_zero_ext [HasZeroMorphisms C] [HasPushouts C] [HasLimitsOfShape J C]
     [HasExactLimitsOfShape J C] {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) {X Y : C}

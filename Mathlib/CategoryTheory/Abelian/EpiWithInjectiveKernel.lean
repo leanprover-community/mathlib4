@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject Preadditive
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace Abelian
 

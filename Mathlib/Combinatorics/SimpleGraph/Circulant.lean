@@ -136,6 +136,7 @@ theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
+set_option backward.privateInPublic true in
 private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
     ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
   | ⟨0, h⟩ => Walk.nil
@@ -144,6 +145,8 @@ private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
     Walk.cons hadj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Eulerian trail of `cycleGraph (n + 3)` -/
 def cycleGraph_EulerianCircuit (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
   have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 
@@ -159,7 +160,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       apply_fun Ideal.map (f.appTop).hom at hS
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
-      have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'
+      have : ∀ i : S, IsAffineOpen (f ⁻¹ᵁ Y.basicOpen i.1) := hS'
       simpa [Scheme.preimage_basicOpen] using this
   eq_targetAffineLocally' := by
     ext X Y f
@@ -199,6 +200,25 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
   isAffine_of_isAffineHom (pullback.fst f g)
 
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
+    IsAffineHom (coprod.desc f g) := by
+  refine ⟨fun W hW ↦ ?_⟩
+  have : IsAffine (f ⁻¹ᵁ W).toScheme := hW.preimage f
+  have : IsAffine (g ⁻¹ᵁ W).toScheme := hW.preimage g
+  let i : (f ⁻¹ᵁ W).toScheme ⨿ (g ⁻¹ᵁ W).toScheme ⟶ U ⨿ V := coprod.map (f ⁻¹ᵁ W).ι (g ⁻¹ᵁ W).ι
+  convert isAffineOpen_opensRange i
+  apply le_antisymm
+  · intro x hx
+    obtain ⟨(x | x), rfl⟩ := (coprodMk U V).surjective x
+    · replace hx : f x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inl ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+    · replace hx : g x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inr ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+  · rintro _ ⟨x, rfl⟩
+    obtain ⟨(⟨x, hx⟩ | ⟨x, hx⟩), rfl⟩ := (coprodMk _ _).surjective x
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
+
 /-- If the underlying map of a morphism is inducing and has closed range, then it is affine. -/
 @[stacks 04DE]
 lemma isAffineHom_of_isInducing
@@ -227,5 +247,20 @@ lemma isAffineHom_of_isInducing
     refine ⟨U, hyU, hU, ?_⟩
     convert isAffineOpen_bot _
     exact Opens.ext hU'
+
+lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g : Y ⟶ Z}
+    {U : X.Opens} (hU : IsAffineOpen U) {V : Y.Opens} (hV : IsCompact (V : Set Y))
+    {W : Z.Opens} (hW : IsAffineOpen W) (hUW : U ≤ f ⁻¹ᵁ W) (hVW : V ≤ g ⁻¹ᵁ W) :
+    IsCompact (pullback.fst f g ⁻¹ᵁ U ⊓ pullback.snd f g ⁻¹ᵁ V : Set ↑(pullback f g)) := by
+  have : IsAffine U.toScheme := hU
+  have : IsAffine W.toScheme := hW
+  have : CompactSpace V := isCompact_iff_compactSpace.mp hV
+  let f' : U.toScheme ⟶ W := f.resLE _ _ hUW
+  let q : Scheme.Opens.toScheme V ⟶ W :=
+    IsOpenImmersion.lift W.ι (Scheme.Opens.ι _ ≫ g) <| by simpa [Set.range_comp]
+  let p : pullback f' q ⟶ pullback f g :=
+    pullback.map _ _ _ _ U.ι (Scheme.Opens.ι _) W.ι (by simp [f']) (by simp [q])
+  convert isCompact_range p.continuous
+  simp [p, Scheme.Pullback.range_map]
 
 end AlgebraicGeometry

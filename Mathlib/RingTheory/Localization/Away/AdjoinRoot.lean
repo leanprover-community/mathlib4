@@ -39,3 +39,16 @@ theorem IsLocalization.Away.finitePresentation (r : R) {S} [CommRing S] [Algebra
     [IsLocalization.Away r S] : Algebra.FinitePresentation R S :=
   (AdjoinRoot.finitePresentation _).equiv <|
     (Localization.awayEquivAdjoin r).symm.trans <| IsLocalization.algEquiv (Submonoid.powers r) _ _
+
+lemma Algebra.FinitePresentation.of_isLocalizationAway
+    {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Algebra R S] [Algebra R S']
+    [Algebra S S'] [IsScalarTower R S S'] (f : S) [IsLocalization.Away f S']
+    [Algebra.FinitePresentation R S] :
+    Algebra.FinitePresentation R S' :=
+  have : Algebra.FinitePresentation S S' :=
+    IsLocalization.Away.finitePresentation f
+  .trans R S S'
+
+instance {S : Type*} [CommRing S] [Algebra R S] [Algebra.FinitePresentation R S] (f : S) :
+    Algebra.FinitePresentation R (Localization.Away f) :=
+  .of_isLocalizationAway f

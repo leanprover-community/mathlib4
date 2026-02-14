@@ -13,7 +13,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 # `Finset.sup` in a group with zero
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 variable {ι M₀ G₀ : Type*}

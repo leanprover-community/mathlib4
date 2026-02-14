@@ -104,7 +104,7 @@ lemma inducedFunctor_comp : ι S = (inducedFunctor p S) ⋙ fiberInclusion :=
 
 instance : Functor.IsEquivalence (inducedFunctor p S) := equiv S
 
-instance : Functor.Faithful (ι (p:=p) S) :=
+instance : Functor.Faithful (ι (p := p) S) :=
   Functor.Faithful.of_iso (inducedFunctor.natIso p S).symm
 
 end

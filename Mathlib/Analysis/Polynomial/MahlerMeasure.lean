@@ -6,9 +6,9 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.JensenFormula
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
 /-!
 # Mahler measure of complex polynomials
@@ -224,7 +224,7 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
   rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
   apply_fun exp at this
   rw [exp_add, exp_log <| mahlerMeasure_pos_of_ne_zero hp,
-    exp_log <|norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
+    exp_log <| norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
   simp [this, exp_multiset_sum, posLog_eq_log_max_one, exp_log]
 
 /-!
@@ -309,20 +309,19 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       · exact le_max_left 1 ‖a‖
       · exact hx.1
   --final calc block:
-  calc
-  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
-     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
-    gcongr with x hx
-    rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
-    simp_rw [norm_pow]
-    exact this x hx
-  _  = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
-    rw [← Finset.sum_mul]
-    congr
-    norm_cast
-    simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
-      card_powersetCard, S, ← Nat.choose_symm hn]
-    congr
-    exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
+  calc ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
+    _ ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+      gcongr with x hx
+      rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
+      simp_rw [norm_pow]
+      exact this x hx
+    _ = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
+      rw [← Finset.sum_mul]
+      congr
+      norm_cast
+      simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
+        card_powersetCard, S, ← Nat.choose_symm hn]
+      congr
+      exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
 
 end Polynomial

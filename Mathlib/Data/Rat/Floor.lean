@@ -10,7 +10,7 @@ public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Ring
 meta import Mathlib.Algebra.Order.Floor.Defs
-meta import Mathlib.Algebra.Order.Round
+public meta import Mathlib.Algebra.Order.Round
 
 /-!
 # Floor Function for Rational Numbers
@@ -111,6 +111,10 @@ theorem round_cast (x : ℚ) : round (x : α) = round x := by
 @[simp, norm_cast]
 theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
   simp only [fract, cast_sub, cast_intCast, floor_cast]
+
+@[simp]
+theorem den_intFract (x : ℚ) : (fract x).den = x.den :=
+  Rat.sub_intCast_den _ _
 
 section NormNum
 
@@ -311,7 +315,7 @@ theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrdered
   norm_cast
 
 /-- local copy tagged `meta` for evaluation of `round` below -/
-meta local instance : FloorRing ℚ :=
+private meta local instance : FloorRing ℚ :=
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor_iff.symm
 
 /-- `norm_num` extension for `round` -/

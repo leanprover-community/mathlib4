@@ -442,11 +442,10 @@ theorem derivedLength_zero (I : LieIdeal R L) [IsSolvable I] :
     derivedLengthOfIdeal R L I = 0 ↔ I = ⊥ := by
   let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }
   change sInf s = 0 ↔ _
-  have hne : s ≠ ∅ := by
-    obtain ⟨k, hk⟩ := IsSolvable.solvable R I
-    refine Set.Nonempty.ne_empty ⟨k, ?_⟩
-    rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
-  simp [s, hne]
+  have hne : s.Nonempty :=
+    have ⟨k, hk⟩ := IsSolvable.solvable R I
+    ⟨k, by rwa [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk⟩
+  simp [s, hne.ne_empty]
 
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by

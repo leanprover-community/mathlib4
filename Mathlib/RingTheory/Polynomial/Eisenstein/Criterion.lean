@@ -53,7 +53,7 @@ There are two obstructions, though :
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
@@ -80,7 +80,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     simp only [leadingCoeff_mul, map_mul, ne_eq, mul_eq_zero, not_or] at hf_lC
     exact hf_lC.1
   have map_dvd_pow_q :
-      g.map  (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
+      g.map (algebraMap R K) ∣ q.map (algebraMap R K) ^ p := by
     rw [← IsUnit.dvd_mul_left _, ← hfmodP]
     · exact Polynomial.map_dvd _ hg_div
     · simp_all
@@ -156,7 +156,7 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
         apply mul_mem_mul
         · rw [mem_ker, ← coeff_map, hr, coeff_zero]
         · rw [mem_ker, ← coeff_map, hs, coeff_zero]
-      simp [- Polynomial.map_mul, coeff_mul, h]
+      simp [-Polynomial.map_mul, coeff_mul, h]
     -- It remains to prove the equality `f %ₘ q = (r * s) %ₘ q`, which is straightforward
     rw [h_eq, hg, hh]
     simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]

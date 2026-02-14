@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
@@ -116,7 +115,7 @@ theorem exists_range_iff {f : α →ₛ β} {p : β → Prop} : (∃ y ∈ f.ran
 theorem preimage_eq_empty_iff (f : α →ₛ β) (b : β) : f ⁻¹' {b} = ∅ ↔ b ∉ f.range :=
   preimage_singleton_eq_empty.trans <| not_congr mem_range.symm
 
-theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirected β (· ≤ ·)] (f : α →ₛ β) :
+theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirectedOrder β] (f : α →ₛ β) :
     ∃ C, ∀ x, f x ≤ C :=
   f.range.exists_le.imp fun _ => forall_mem_range.1
 
@@ -166,11 +165,11 @@ theorem measurableSet_preimage (f : α →ₛ β) (s) : MeasurableSet (f ⁻¹' 
   measurableSet_cut (fun _ b => b ∈ s) f fun b => MeasurableSet.const (b ∈ s)
 
 /-- A simple function is measurable -/
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem measurable [MeasurableSpace β] (f : α →ₛ β) : Measurable f := fun s _ =>
   measurableSet_preimage f s
 
-@[measurability]
+@[fun_prop]
 protected theorem aemeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
     AEMeasurable f μ :=
   f.measurable.aemeasurable
@@ -619,15 +618,15 @@ instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalar
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
 
 instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) where
-  smul_comm _ _ _ := ext fun _ ↦  smul_comm ..
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
-  algebraMap :={
+  algebraMap := {
     toFun r := const α <| algebraMap K β r
     map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
     map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
     map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
-    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add ..}
+    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add .. }
   commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
 

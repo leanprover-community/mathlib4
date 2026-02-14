@@ -242,7 +242,7 @@ namespace Option
 
 /-- `Option α` is a `Subsingleton` if and only if `α` is empty. -/
 theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
-  ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
+  ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion rfl (heq_of_eq (@Subsingleton.elim _ h x none))⟩,
    fun h ↦ ⟨fun x y ↦
      Option.casesOn x (Option.casesOn y rfl fun x ↦ h.elim x) fun x ↦ h.elim x⟩⟩
 

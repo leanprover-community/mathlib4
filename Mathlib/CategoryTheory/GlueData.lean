@@ -298,11 +298,8 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
-  haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   erw [ι_preservesColimitIso_hom_assoc]
-  rw [HasColimit.isoOfNatIso_ι_hom]
-  erw [Category.id_comp]
-  rfl
+  simp [GlueData.ι]
 
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).inv = F.map (D.ι i) := by
@@ -390,11 +387,11 @@ instance (D : GlueData' C) (i : D.J) :
 instance (D : GlueData' C) (i j k : D.J) :
     HasPullback (D.f' i j) (D.f' i k) := by
   if hij : i = j then
-    apply (config := { allowSynthFailures := true }) hasPullback_of_left_iso
+    apply +allowSynthFailures hasPullback_of_left_iso
     simp only [GlueData'.f', dif_pos hij]
     infer_instance
   else if hik : i = k then
-    apply (config := { allowSynthFailures := true }) hasPullback_of_right_iso
+    apply +allowSynthFailures hasPullback_of_right_iso
     simp only [GlueData'.f', dif_pos hik]
     infer_instance
   else
@@ -416,7 +413,7 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else if hjk : j = k then
     have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
-      apply (config := { allowSynthFailures := true }) pullback_snd_iso_of_left_iso
+      apply +allowSynthFailures pullback_snd_iso_of_left_iso
       simp only [hjk, GlueData'.f', ↓reduceDIte]
       infer_instance
     pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫

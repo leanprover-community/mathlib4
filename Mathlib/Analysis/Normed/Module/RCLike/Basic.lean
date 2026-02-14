@@ -28,7 +28,7 @@ None.
 This file exists mainly to avoid importing `RCLike` in the main normed space theory files.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric

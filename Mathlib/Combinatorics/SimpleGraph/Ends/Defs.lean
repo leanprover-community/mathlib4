@@ -54,6 +54,8 @@ instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective' _ _ := ComponentCompl.supp_inj.mp
 
+instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
+
 @[simp]
 theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :
     v ∈ C ↔ ∃ vK : v ∉ K, G.componentComplMk vK = C :=
@@ -113,8 +115,6 @@ protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
 
 theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem := notMem_of_mem
 
 protected theorem pairwise_disjoint :
     Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by

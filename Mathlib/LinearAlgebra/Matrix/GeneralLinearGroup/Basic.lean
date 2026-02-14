@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 # Basic lemmas about the general linear group $GL(n, R)$
 
 This file lists various basic lemmas about the general linear group $GL(n, R)$. For the definitions,
-see `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
+see `Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 -/
 
 @[expose] public section

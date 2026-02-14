@@ -39,26 +39,28 @@ open Finset Polynomial Function
 section CancelMonoidWithZero
 
 -- There doesn't seem to be a better home for these right now
-variable {M : Type*} [CancelMonoidWithZero M] [Finite M]
+variable {M : Type*} [MonoidWithZero M] [Finite M]
 
-theorem mul_right_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => a * b :=
+theorem mul_right_bijective_of_finite₀ [IsLeftCancelMulZero M] {a : M} (ha : a ≠ 0) :
+    Bijective fun b => a * b :=
   Finite.injective_iff_bijective.1 <| mul_right_injective₀ ha
 
-theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => b * a :=
+theorem mul_left_bijective_of_finite₀ [IsRightCancelMulZero M] {a : M} (ha : a ≠ 0) :
+    Bijective fun b => b * a :=
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancel_monoid_with_zero is a group_with_zero. -/
-def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [DecidableEq M] [Fintype M]
-    [Nontrivial M] : GroupWithZero M :=
+def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMulZero M]
+    [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
-    ‹CancelMonoidWithZero M› with
+    ‹MonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
       simp only [dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp }
 
-theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
+theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R]
     [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
   refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
@@ -68,7 +70,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
     (dvd_mul_of_dvd_right (gcd_dvd_right _ _) _)
 
 nonrec
-theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
+theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R]
     [GCDMonoid R] [Subsingleton Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
@@ -87,13 +89,11 @@ variable {R : Type*} {G : Type*}
 
 section Ring
 
-variable [Ring R] [IsDomain R] [Fintype R]
-
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
-  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
+  __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl

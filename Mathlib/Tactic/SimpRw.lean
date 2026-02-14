@@ -23,12 +23,12 @@ open Parser.Tactic (optConfig rwRuleSeq location getConfigItems)
 
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
   passes the rw rules on to `x`. -/
-def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
+def withSimpRWRulesSeq (rwRulesSeqStx : Syntax)
     (x : (symm : Bool) → (term : Syntax) → TacticM Unit) : TacticM Unit := do
   let lbrak := rwRulesSeqStx[0]
   let rules := rwRulesSeqStx[1].getArgs
   -- show initial state up to (incl.) `[`
-  withTacticInfoContext (mkNullNode #[token, lbrak]) (pure ())
+  withTacticInfoContext lbrak (pure ())
   let numRules := (rules.size + 1) / 2
   for i in [:numRules] do
     let rule := rules[i * 2]!
@@ -66,7 +66,7 @@ example {a : ℕ}
 -/
 elab s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
   evalTactic (← `(tactic| simp%$s $[$(getConfigItems cfg)]* (failIfUnchanged := false) only $(g)?))
-  withSimpRWRulesSeq s rws fun symm term => do
+  withSimpRWRulesSeq rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
