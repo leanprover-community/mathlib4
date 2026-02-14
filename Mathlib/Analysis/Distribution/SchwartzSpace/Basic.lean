@@ -1263,9 +1263,16 @@ theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p
   rw [norm_toLp, MeasureTheory.MemLp.eLpNorm_eq_integral_rpow_norm hp₁ hp₂ (f.memLp p μ),
     ENNReal.toReal_ofReal (by positivity)]
 
-#check ae_of_forall_measure_lt_top_ae_restrict
+theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
+  rw [norm_toLp]
+  rw [← ENNReal.ofReal_le_ofReal_iff (by positivity)]
+  rw [ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
+  apply eLpNormEssSup_le_of_ae_bound
+  filter_upwards with x
+  exact norm_le_seminorm ℝ f x
 
-theorem norm_toLp_top {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+/-theorem norm_toLp_top {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp ⊤ μ‖ = SchwartzMap.seminorm ℝ 0 0 f := by
   rw [norm_toLp]
   rw [← ENNReal.ofReal_eq_ofReal_iff (by positivity) (by positivity)]
@@ -1278,16 +1285,16 @@ theorem norm_toLp_top {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGr
   · simp only [eLpNorm_exponent_top] --[eLpNormEssSup_eq_essSup_enorm]
     refine ENNReal.ofReal_le_of_le_toReal ?_
     refine seminorm_le_bound ℝ 0 0 f ?_ ?_
-    · sorry
+    · positivity
     intro x
     simp only [pow_zero, norm_iteratedFDeriv_zero, one_mul]
     refine (ENNReal.ofReal_le_iff_le_toReal ?_).mp ?_
-    · sorry
+    · apply (memLp_top f μ).eLpNorm_ne_top
     rw [ofReal_norm_eq_enorm]
     have := enorm_ae_le_eLpNormEssSup f (μ := μ)
 
     --apply?
-    sorry -- eLpNormEssSup_le_of_ae_bound
+    sorry -- eLpNormEssSup_le_of_ae_bound-/
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
     [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=
