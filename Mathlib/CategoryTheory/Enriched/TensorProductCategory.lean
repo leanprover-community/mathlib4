@@ -102,12 +102,19 @@ structure EnrichedBifunctor where
   map_left : (c c' : C) → (d : D) → (c ⟶[V] c') ⟶ EnrichedCategory.Hom (obj c d) (obj c' d)
   /-- The `V`-functoriality morphism in the `D` variable. -/
   map_right : (c : C) → (d d' : D) → (d ⟶[V] d') ⟶ EnrichedCategory.Hom (obj c d) (obj c d')
+  /-- Presevation of identities in the left variable `C`. -/
   id_left : (c : C) → (d : D) → eId V c ≫ map_left c c d = eId V _
+  /-- Presevation of identities in the right variable `D`. -/
   id_right : (c : C) → (d : D) → eId V d ≫ map_right c d d = eId V _
+  /-- Preservation of composition in the left variable `C`. -/
   comp_left : (c c' c'' : C) → (d : D) → eComp V c c' c'' ≫ map_left c c'' d =
     ((map_left c c' d) ⊗ₘ (map_left c' c'' d)) ≫ eComp V _ _ _
+  /-- Preservation of composition in the right variable `D`. -/
   comp_right : (c : C) → (d d' d'' : D) → eComp V d d' d'' ≫ map_right c d d'' =
     ((map_right c d d') ⊗ₘ (map_right c d' d'')) ≫ eComp V _ _ _
+  /-- The naturality condition for an enriched bifunctor. In the case of ordinary categories,
+  this corresponds to the fact that for all  `f : c ⟶ c'` in `C` and `g : d ⟶ d'` in `D`, we have
+  `F(f, 𝟙 d) ≫ F(𝟙 c', g) = F(𝟙 c, g) ≫ F(f, 𝟙 d')`. -/
   left_right_naturality : (c c' : C) → (d d' : D) → ((map_left c c' d) ⊗ₘ (map_right c' d d')) ≫
     eComp V _ _ _ = ((map_left c c' d') ⊗ₘ (map_right c d d')) ≫ (β_ _ _).inv ≫ eComp V _ _ _
 
