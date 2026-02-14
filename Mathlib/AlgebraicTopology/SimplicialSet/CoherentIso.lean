@@ -3,6 +3,7 @@ Copyright (c) 2024 Johns Hopkins Category Theory Seminar, Arnoud van der Leer. A
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
+module
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
@@ -27,6 +28,8 @@ any morphism `g : coherentIso ⟶ X` and any `f : X _⦋1⦌`,
 if `g` sends `hom` to `f`, then `f` is an isomorphism.
 
 -/
+
+@[expose] public section
 
 universe u v
 
