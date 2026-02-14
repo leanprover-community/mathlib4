@@ -433,8 +433,9 @@ lemma ciSup_eq_univ_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = s
 
 /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
 `s` and `t` have the same supremum. This holds even when the sets may be empty or unbounded. -/
-@[to_dual /-- When every element of a set `s` is bounded by an element of a set `t`, and conversely, then
-`s` and `t` have the same infimum. This holds even when the sets may be empty or unbounded. -/]
+@[to_dual /-- When every element of a set `s` is bounded by an element of a set `t`, and
+conversely, then `s` and `t` have the same infimum. This holds even when the sets may be empty or
+unbounded. -/]
 theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     (hs : ∀ x ∈ s, ∃ y ∈ t, x ≤ y) (ht : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
     sSup s = sSup t := by
