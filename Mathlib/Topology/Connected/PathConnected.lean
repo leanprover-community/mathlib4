@@ -274,7 +274,7 @@ theorem biUnion_connectedComponent_pathComponent_eq (x : X) :
 /-- The canonical map which sends a path component of `X` (as a term of `ZerothHomotopy X`) to the
 connected component containing it (as a term of `ConnectedComponents X`). -/
 def ZerothHomotopy.toConnectedComponents : ZerothHomotopy X → ConnectedComponents X :=
-  Quotient.map id fun _ _ h ↦ connectedComponent_eq <| pathComponent_subset_component _ h
+  Quotient.map id fun x _ h ↦ connectedComponent_eq <| pathComponent_subset_component x h
 
 @[simp]
 theorem ZerothHomotopy.toConnectedComponents_apply (x : X) : toConnectedComponents ⟦x⟧ = ⟦x⟧ :=
@@ -282,8 +282,8 @@ theorem ZerothHomotopy.toConnectedComponents_apply (x : X) : toConnectedComponen
 
 /-- There are at least as many path connected components as there are connected components -/
 theorem ZerothHomotopy.toConnectedComponents_surjective :
-    (toConnectedComponents (X := X)).Surjective :=
-  Quotient.lift_surjective _ _ Quotient.mk_surjective
+    toConnectedComponents (X := X) |>.Surjective :=
+  Quotient.map_surjective _ surjective_id
 
 /-- The path component of `x` in `F` is the set of points that can be joined to `x` in `F`. -/
 def pathComponentIn (F : Set X) (x : X) :=

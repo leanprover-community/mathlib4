@@ -126,7 +126,8 @@ def connectedComponentsEquivZerothHomotopy : ConnectedComponents X ≃ ZerothHom
 
 @[simp]
 lemma connectedComponentsEquivZerothHomotopy_apply (x : X) :
-    connectedComponentsEquivZerothHomotopy ⟦x⟧ = ⟦x⟧ := rfl
+    connectedComponentsEquivZerothHomotopy ⟦x⟧ = ⟦x⟧ :=
+  rfl
 
 @[simp]
 lemma coe_connectedComponentsEquivZerothHomotopy_symm :
@@ -134,7 +135,8 @@ lemma coe_connectedComponentsEquivZerothHomotopy_symm :
   rfl
 
 lemma connectedComponentsEquivZerothHomotopy_symm_apply (x : X) :
-    connectedComponentsEquivZerothHomotopy.symm ⟦x⟧ = ⟦x⟧ := by simp
+    connectedComponentsEquivZerothHomotopy.symm ⟦x⟧ = ⟦x⟧ :=
+  rfl
 
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
