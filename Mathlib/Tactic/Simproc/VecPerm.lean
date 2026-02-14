@@ -58,20 +58,28 @@ private def permList {α : Type*} [Inhabited α] (vec : List α) (perm : List Na
     | some entry => entry :: current
     | none => current
 
+def extraTheorems : Array Name := #[``Equiv.swap_apply_def]
+
+/-- A helper function to run `simp` with extra results listed in `extraTheorems`. -/
+def Simp.withExtraTheorems {α} (x : SimpM α) : SimpM α := do
+  let extraSimpTheorems ← extraTheorems.foldrM
+    (fun thm thmArr ↦ do return thmArr.append (← mkSimpTheoremFromConst thm)) #[]
+  let newSimpTheorems := extraSimpTheorems.foldr (fun thm simpThms ↦ simpThms.addSimpTheorem thm) {}
+  Simp.withSimpTheorems #[← getSimpTheorems, newSimpTheorems] x
+
 /-- Given an expression representing a vector `perm : Fin n → Fin n`, computes the corresponding
 list of term of type `Fin n`. This is meant to be used when `perm` corresponds to a permutation
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
 def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
-    MetaM (Option <| List Nat) :=
-  withDefault do
+    SimpM (Option <| List Nat) := do
     try
       let mut out : List Nat := []
       let _ ← synthInstanceQ q(NeZero $n)
       for idx in *...vn do
         let idxQ := mkNatLitQ idx
-        let idxQ : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
-        let outIdxQ : Q(Nat) := q(($perm $idxQ : Nat))
-        let outIdxExpr ← whnf outIdxQ
+        let idxQNew : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
+        let outIdxQ : Q(Nat) := q(($perm $idxQNew))
+        let outIdxExpr := (← Simp.withExtraTheorems <| Lean.Meta.Simp.simp outIdxQ).expr
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
       return out
