@@ -156,6 +156,61 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
   grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
+/-- The union of two acyclic graphs that share at most one vertex is acyclic -/
+theorem isAcyclic_coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (h₂ : G₂.coe.IsAcyclic)
+    (h : (G₁.verts ∩ G₂.verts).Subsingleton) : (G₁ ⊔ G₂).coe.IsAcyclic := by
+  refine fun v p hp ↦ ?_
+  -- If the walk is entirely contained within one of the subgraphs
+  by_cases! hp' : (∀ u ∈ p.support, u.val ∈ G₁.verts) ∨ (∀ u ∈ p.support, u.val ∈ G₂.verts)
+  · -- WLOG it's contained in the first one
+    wlog hp'₁ : ∀ u ∈ p.support, u.val ∈ G₁.verts
+    · have hp'₂ := hp'.resolve_left hp'₁
+      let p' := p.map <| Subgraph.inclusion <| sup_comm .. |>.le
+      have hp' : ∀ u ∈ p'.support, u.val ∈ G₂.verts := fun u hu ↦ by
+        obtain ⟨u', hu', rfl⟩ := p.support.mem_map.mp <| p.support_map _ ▸ hu
+        exact hp'₂ _ hu'
+      exact this h₂ h₁ (Set.inter_comm .. ▸ h) ⟨v, sup_comm G₁ G₂ ▸ v.prop⟩ p'
+        (hp.map <| Subgraph.inclusion.injective _) (.inl hp') hp'
+    -- Then it must be induced from a walk in the first graph
+    let p' := p.map (G₁ ⊔ G₂).hom
+    have hp' : p'.IsCycle := hp.map Subgraph.hom_injective
+    let p'' := p'.mapToSubgraph.map <| Subgraph.inclusion <|
+      toSubgraph_le_iff hp'.not_nil (G' := G₁) |>.mpr fun e he ↦ by
+        have he : e ∈ p'.edges := he
+        obtain ⟨⟨u, v⟩, he', rfl⟩ := p.edges.mem_map.mp <| p.edges_map _ ▸ he
+        refine G₁.edgeSet_sup ▸ Subgraph.edgeSet_coe ▸ p.edges_subset_edgeSet he' |>.elim id ?_
+        refine fun he₂ ↦ (he₂.ne <| h ?_ ?_).elim
+        · exact ⟨hp'₁ u <| p.fst_mem_support_of_mem_edges he', he₂.fst_mem⟩
+        · exact ⟨hp'₁ v <| p.snd_mem_support_of_mem_edges he', he₂.snd_mem⟩
+    -- And that walk is also a cycle, but the first graph is acyclic, contradiction
+    exact h₁ p'' <| IsCycle.map (fun _ _ ↦ (SetCoe.ext <| Subtype.mk.injEq .. ▸ ·)) <|
+      map_isCycle_iff_of_injective p'.toSubgraph.hom_injective |>.mp <|
+      map_mapToSubgraph_hom _ ▸ hp'
+  -- Otherwise, there are two vertices in the walk, each not contained in one of the graphs
+  have ⟨⟨v₂, hpv₂, hnv₂⟩, ⟨v₁, hpv₁, hnv₁⟩⟩ := hp'
+  have hv₂ := v₂.prop.resolve_left hnv₂
+  classical
+  let p' := p.rotate hpv₁
+  have hp'v₂ := p.mem_support_rotate_iff hpv₁ |>.mpr hpv₂
+  let pt := p'.takeUntil _ hp'v₂
+  let pd := p'.dropUntil _ hp'v₂
+  have ⟨d₁, hd₁, hd₁₁, hd₁₂⟩ := pt.exists_boundary_dart { v | _ ∉ G₂.verts } hnv₁ (· hv₂)
+  have ⟨d₂, hd₂, hd₂₁, hd₂₂⟩ := pd.exists_boundary_dart { v | _ ∈ G₂.verts } hv₂ hnv₁
+  have hd₁₂' : d₁.snd.val ∈ G₁.verts ∩ G₂.verts :=
+    ⟨d₁.edge_mem.resolve_right (hd₁₁ ·.fst_mem) |>.snd_mem, Set.not_notMem.mp hd₁₂⟩
+  have hd₂₁' : d₂.fst.val ∈ G₁.verts ∩ G₂.verts :=
+    ⟨d₂.edge_mem.resolve_right (hd₂₂ ·.snd_mem) |>.fst_mem, hd₂₁⟩
+  have hd₁₂'' := p'.dart_snd_mem_support_of_mem_darts <| p'.darts_takeUntil_subset hp'v₂ hd₁
+  have ⟨_, hpd⟩ := count_support_append_eq_one hd₁ hd₂ (SetCoe.ext <| h hd₁₂' hd₂₁') <|
+    p'.take_spec hp'v₂ ▸ (hp.rotate hpv₁).count_support_of_mem hd₁₂'' (hd₁₂ <| · ▸ hnv₁)
+  exact hnv₂ <| (hpd ▸ rfl : v₂ = d₂.fst) ▸ hd₂₁'.left
+
+/-- The union of two trees that share exactly one vertex is a tree -/
+theorem isTree_coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsTree) (h₂ : G₂.coe.IsTree) {v : V}
+    (h : G₁.verts ∩ G₂.verts = {v}) : (G₁ ⊔ G₂).coe.IsTree :=
+  ⟨Subgraph.connected_sup ⟨h₁.isConnected.preconnected⟩ ⟨h₂.isConnected.preconnected⟩
+    <| by simp [h], isAcyclic_coe_sup h₁.IsAcyclic h₂.IsAcyclic <| by simp [h]⟩
+
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
