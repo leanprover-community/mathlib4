@@ -650,7 +650,7 @@ lemma Pi.ι_π_of_ne {b c : β} (h : b ≠ c) : Pi.ι f b ≫ Pi.π f c = 0 := b
 @[reassoc]
 lemma Pi.ι_π (b c : β) :
     Pi.ι f b ≫ Pi.π f c = if h : b = c then eqToHom (congrArg f h) else 0 := by
-  grind
+  grind [CategoryTheory.eqToHom_refl]
 
 instance (b : β) : Mono (Pi.ι f b) where
   right_cancellation _ _ e := by simpa using congrArg (· ≫ Pi.π f b) e
@@ -676,7 +676,7 @@ lemma Sigma.ι_π_of_ne {b c : β} (h : b ≠ c) : Sigma.ι f b ≫ Sigma.π f c
 @[reassoc]
 theorem Sigma.ι_π (b c : β) :
     Sigma.ι f b ≫ Sigma.π f c = if h : b = c then eqToHom (congrArg f h) else 0 := by
-  grind
+  grind [CategoryTheory.eqToHom_refl]
 
 instance (b : β) : Epi (Sigma.π f b) where
   left_cancellation _ _ e := by simpa using congrArg (Sigma.ι f b ≫ ·) e
