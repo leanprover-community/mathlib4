@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Analysis.SpecialFunctions.Bernstein

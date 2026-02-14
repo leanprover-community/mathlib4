@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Analysis.NormedSpace.Normalize
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.BigOperators.Expect

@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.CategoryTheory.Monoidal.Limits
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Monoidal.Limits.Basic

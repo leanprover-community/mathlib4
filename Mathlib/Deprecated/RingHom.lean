@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Deprecated.RingHom
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Tactic.Common

@@ -3,6 +3,11 @@ Copyright (c) 2022 Joshua Clune. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
+
+/-!
+# TODO: Mathlib.Tactic.Inhabit
+-/
+
 module
 
 public meta import Lean.Elab.Tactic.ElabTerm

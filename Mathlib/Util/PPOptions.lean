@@ -3,6 +3,11 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+
+/-!
+# TODO: Mathlib.Util.PPOptions
+-/
+
 module
 
 public import Mathlib.Init

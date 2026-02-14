@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Data.Complex.Trigonometric
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Analysis.Complex.Trigonometric

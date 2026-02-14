@@ -3,6 +3,11 @@ Copyright (c) 2025 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Krause
 -/
+
+/-!
+# TODO: Mathlib.GroupTheory.FreeGroup.Orbit
+-/
+
 module
 
 public import Mathlib.GroupTheory.FreeGroup.Reduce

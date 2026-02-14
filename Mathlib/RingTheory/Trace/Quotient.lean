@@ -3,6 +3,11 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
+
+/-!
+# TODO: Mathlib.RingTheory.Trace.Quotient
+-/
+
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Dvr

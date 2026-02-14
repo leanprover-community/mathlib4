@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Algebra

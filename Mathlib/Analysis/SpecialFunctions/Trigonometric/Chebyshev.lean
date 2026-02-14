@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic

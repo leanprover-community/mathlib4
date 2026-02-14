@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Combinatorics.Enumerative.Partition
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic

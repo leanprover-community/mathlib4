@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Topology.Compactness.Exterior
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Data.Finset.Attr

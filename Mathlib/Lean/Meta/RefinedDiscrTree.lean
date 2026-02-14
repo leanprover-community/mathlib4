@@ -3,6 +3,11 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
+
+/-!
+# TODO: Mathlib.Lean.Meta.RefinedDiscrTree
+-/
+
 module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup

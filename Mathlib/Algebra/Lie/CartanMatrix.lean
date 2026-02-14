@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Algebra.Lie.CartanMatrix
+-/
+
 module -- shake: keep-all
 
 import Mathlib.Data.Finset.Attr

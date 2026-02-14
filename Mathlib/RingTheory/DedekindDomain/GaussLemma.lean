@@ -3,6 +3,11 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+
+/-!
+# TODO: Mathlib.RingTheory.DedekindDomain.GaussLemma
+-/
+
 module
 
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation

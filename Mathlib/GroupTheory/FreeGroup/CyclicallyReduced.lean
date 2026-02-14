@@ -3,6 +3,11 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
+
+/-!
+# TODO: Mathlib.GroupTheory.FreeGroup.CyclicallyReduced
+-/
+
 module
 
 public import Mathlib.Data.List.Induction

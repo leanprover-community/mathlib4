@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.CategoryTheory.Adhesive
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Adhesive.Basic

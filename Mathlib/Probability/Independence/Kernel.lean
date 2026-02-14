@@ -3,6 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+
+/-!
+# TODO: Mathlib.Probability.Independence.Kernel
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun

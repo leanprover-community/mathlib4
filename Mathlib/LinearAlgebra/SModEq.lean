@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.LinearAlgebra.SModEq
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.LinearAlgebra.SModEq.Basic

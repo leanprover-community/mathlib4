@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Deprecated.Order
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Tactic.Linter.DeprecatedModule

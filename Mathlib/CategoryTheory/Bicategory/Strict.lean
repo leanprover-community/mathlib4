@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.CategoryTheory.Bicategory.Strict
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic

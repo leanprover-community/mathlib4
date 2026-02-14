@@ -1,3 +1,7 @@
+/-!
+# TODO: Mathlib.Analysis.NormedSpace.Pointwise
+-/
+
 module -- shake: keep-all
 
 public import Mathlib.Analysis.Normed.Group.Basic
