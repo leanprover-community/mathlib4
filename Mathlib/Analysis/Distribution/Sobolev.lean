@@ -350,6 +350,53 @@ theorem memSobolev_zero_two_iff_fourierTransform {f : 𝓢'(E, F)} :
     MemSobolev 0 2 f ↔ ∃ (f' : Lp F 2 (volume : Measure E)), 𝓕 f = f' := by
   simp [memSobolev_two_iff_fourier]
 
+/-- The Fourier transform of a Sobolev function of order `s` with `s > d / 2` can be represented by
+a `L1` function.
+
+This is the main calculation of the Sobolev embedding theorem. -/
+theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {f : 𝓢'(E, F)}
+    (hf : MemSobolev s 2 f) :
+    ∃ (v : Lp F 1 (volume : Measure E)), 𝓕 f  = (v : 𝓢'(E, F)) := by
+  obtain ⟨u, hu⟩ :=  memSobolev_two_iff_fourier.mp hf
+  have : MemLp (fun (x : E) ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) 2 := by
+    constructor
+    · have : (fun (x : E) ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)).HasTemperateGrowth := by
+        fun_prop
+      exact this.1.continuous.aestronglyMeasurable
+    · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)]
+      suffices h : ∫⁻ (a : E), ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ from by
+        norm_cast
+        simp_rw [ofReal_norm] at h
+        simp_rw [← enorm_pow]
+        convert h using 4
+        rw [← Real.rpow_mul_natCast (by positivity)]
+        simp
+      apply ((integrable_rpow_neg_one_add_norm_sq hs).congr _).lintegral_lt_top
+      filter_upwards with x
+      rw [Real.norm_eq_abs, abs_eq_self.mpr (by positivity)]
+      congr
+      ring
+  have : MemLp (fun (x : E) ↦ Complex.ofReal ((1 + ‖x‖ ^ 2) ^ (-s / 2) : ℝ)) 2 := this.ofReal
+  use this.toLp • u
+  rw [MeasureTheory.Lp.toTemperedDistribution_smul_eq]
+  · rw [← hu, smulLeftCLM_smulLeftCLM_apply (by fun_prop) (by fun_prop)]
+    convert (smulLeftCLM_const 1 (𝓕 f)).symm using 1
+    · simp
+    · congr
+      ext x
+      rw [Pi.mul_apply]
+      norm_cast
+      rw [← Real.rpow_add (by positivity)]
+      ring_nf
+      simp
+  · fun_prop
+
+-- Todo:
+-- FT of L1 is ZeroAtInfty (by extension from Schwartz)
+-- Locally integrable & polynomially bounded functions define tempered distributions
+-- ZeroAtInfty satisfies above conditions
+-- The various FTs commute
+
 open scoped BoundedContinuousFunction
 
 theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁ : g.HasTemperateGrowth)

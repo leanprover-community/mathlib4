@@ -153,6 +153,7 @@ variable [CompleteSpace F]
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
 /-- Define a tempered distribution from a L^p function. -/
+@[coe]
 def toTemperedDistribution {p : ℝ≥0∞}
     [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(E, F) :=
   haveI := ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
