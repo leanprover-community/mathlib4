@@ -120,4 +120,8 @@ lemma QuasiFinite.of_isIntegral_of_finiteType
   obtain ⟨s, hs⟩ := Algebra.IsStandardOpenImmersion.exists_away S T
   exact Algebra.QuasiFinite.of_isIntegral_of_finiteType s
 
+/-- The predicate for a ring hom being quasi-finite at a prime. -/
+abbrev QuasiFiniteAt {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) (p : Ideal S)
+    [p.IsPrime] : Prop := letI := f.toAlgebra; Algebra.QuasiFiniteAt R p
+
 end RingHom

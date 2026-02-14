@@ -5,7 +5,12 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.RepresentationTheory.Irreducible
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.RepresentationTheory.Subrepresentation
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Semisimple representations
