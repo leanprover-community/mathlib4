@@ -341,6 +341,31 @@ theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by
 
 end inter
 
+section epsilon
+
+/-- DFA which accepts the language of only the empty string. -/
+@[simps]
+def epsilon : DFA α (Option Unit) where
+  step := fun _ _ => none
+  start := some ()
+  accept := { some () }
+
+@[simp]
+theorem accepts_epsilon : epsilon.accepts = (1 : Language α) := by
+  ext x
+  simp only [accepts, acceptsFrom, evalFrom]
+  rw [Set.mem_setOf_eq]
+  cases x with
+  | nil => simp
+  | cons a x' =>
+    have h_dead : ∀ w : List α, List.foldl (fun _ _ => none) (none : Option Unit) w = none := by
+      intro w
+      induction w <;> simp [*]
+    dsimp [epsilon]
+    simp_all only [Set.mem_singleton_iff, reduceCtorEq, Language.mem_one]
+
+end epsilon
+
 end DFA
 
 namespace Language
