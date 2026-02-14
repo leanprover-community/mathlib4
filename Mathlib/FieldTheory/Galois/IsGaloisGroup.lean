@@ -55,6 +55,16 @@ class IsGaloisGroup where
   commutes : SMulCommClass G A B
   isInvariant : Algebra.IsInvariant A B G
 
+variable {G A B} in
+theorem IsGaloisGroup.congr [hG : IsGaloisGroup G A B] {H : Type*} [Group H] [MulSemiringAction H B]
+    (e : H ≃* G) (he : ∀ (h : H) (x : B), (e h) • x = h • x) :
+    IsGaloisGroup H A B where
+  faithful := ⟨fun h ↦ e.injective <| hG.faithful.eq_of_smul_eq_smul <| by simpa only [he]⟩
+  commutes := ⟨fun x a b ↦ by simpa [he] using hG.commutes.smul_comm (e x) a b⟩
+  isInvariant := ⟨fun b h ↦
+    have he' : ∀ (g : G) (x : B), e.symm g • x = g • x := fun g x ↦ by simp [← he]
+    hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
+
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
 end CommRing
@@ -228,15 +238,6 @@ theorem map_mulEquivAlgEquiv_fixingSubgroup
   ext g
   obtain ⟨g, rfl⟩ := (mulEquivAlgEquiv G K L).surjective g
   simp [mem_fixingSubgroup_iff]
-
-variable {G H K L} in
-theorem congr [hG : IsGaloisGroup G K L] (e : H ≃* G) (he : ∀ (h : H) (x : L), (e h) • x = h • x) :
-    IsGaloisGroup H K L where
-  faithful := ⟨fun h ↦ e.injective <| hG.faithful.eq_of_smul_eq_smul <| by simpa only [he]⟩
-  commutes := ⟨fun x a b ↦ by simpa [he] using hG.commutes.smul_comm (e x) a b⟩
-  isInvariant := ⟨fun b h ↦
-    have he' : ∀ (g : G) (x : L), e.symm g • x = g • x := fun g x ↦ by simp [← he]
-    hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
