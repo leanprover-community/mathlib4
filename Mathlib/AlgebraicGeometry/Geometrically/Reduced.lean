@@ -5,7 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib
+public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.AlgebraicGeometry.Geometrically.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 
 /-!
@@ -124,3 +125,4 @@ instance [GeometricallyReduced g] [Flat g] [IsReduced X] [IsLocallyNoetherian X]
   GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian (pullback.fst _ _)
 
 end AlgebraicGeometry
+#min_imports
