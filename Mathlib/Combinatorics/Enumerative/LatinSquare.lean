@@ -577,7 +577,6 @@ lemma unique_missed_element
 
       sorry
 
-
 -- TODO Rewrite in terms of new definition!
 theorem latin_rectangle_extends
     (A : LatinRectangle k n α)
@@ -727,7 +726,20 @@ theorem latin_rectangle_extends
         have h := A.once_per_row
         simp only [once_per_row,Matrix.row] at h
         apply h
-      . sorry
+      . simp at hf
+        simp [Function.Bijective]
+        constructor
+        . simp [Function.Injective]
+          intro a1 a2 h
+          apply hf.1 at h
+          simp at h
+          exact h
+        . simp [Function.Surjective]
+          -- intro b
+          -- simp [B,symbols_not_in] at hB
+
+          
+          sorry
     distinct_col_entries := by 
       unfold distinct_col_entries
       intro y
