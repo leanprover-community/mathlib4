@@ -692,7 +692,7 @@ variable (G) in
 @[simps!]
 def edgeSetEquivSigmaConnectedComponent :
     G.edgeSet ≃ Σ (c : G.ConnectedComponent), c.toSimpleGraph.edgeSet :=
-  .sigmaQuotFromRel G.symm <| .ofLE <| fun _ _ ↦ Adj.reachable
+  .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
 
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
 homomorphism from `G` to `H`. -/
