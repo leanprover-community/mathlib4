@@ -220,7 +220,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   · rwa [MvPolynomial.mem_support_iff, hcoeff, ← Finsupp.mem_support_iff]
   · simp [ι]
   · rw [hsupp, Finset.coe_map, ι.injective.injOn.pairwiseDisjoint_image]
-    suffices (c.support : Set n).PairwiseDisjoint fun x ↦ {Sum.inr x, Sum.inl x} by
+    suffices (c.support : Set n).PairwiseDisjoint fun x ↦ {Sum.inl x, Sum.inr x} by
       simpa [ι, Function.comp_def, Finsupp.support_add_eq, Finsupp.support_single_ne_zero]
     simp [Set.PairwiseDisjoint, Set.Pairwise, ne_comm]
   · intro r hr
