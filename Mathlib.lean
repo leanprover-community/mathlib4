@@ -5902,6 +5902,7 @@ public import Mathlib.Probability.Kernel.Posterior
 public import Mathlib.Probability.Kernel.Proper
 public import Mathlib.Probability.Kernel.RadonNikodym
 public import Mathlib.Probability.Kernel.SetIntegral
+public import Mathlib.Probability.Kernel.Sub
 public import Mathlib.Probability.Kernel.WithDensity
 public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Martingale.BorelCantelli
