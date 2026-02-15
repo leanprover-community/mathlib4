@@ -12,6 +12,7 @@ public import Mathlib.Data.Finite.Prod
 public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Localizations of commutative rings
@@ -114,6 +115,12 @@ variable {R : Type*} [CommSemiring R] {M N : Submonoid R} {S : Type*} [CommSemir
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 namespace IsLocalization
+
+theorem of_semifield {K} [Semifield K] [Algebra R K] [FaithfulSMul R K] (h : 0 ∉ M)
+    (surj : ∀ z : K, ∃ x, ∃ y ∈ M, z = algebraMap R K x / algebraMap R K y) :
+    IsLocalization M K :=
+  ⟨Submonoid.IsLocalizationMap.of_groupWithZero
+    h (map_zero _) (FaithfulSMul.algebraMap_injective R K) surj⟩
 
 section IsLocalization
 

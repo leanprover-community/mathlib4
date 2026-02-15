@@ -75,23 +75,6 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
   ext x; simp [mul_comm x]
 
-@[simp] lemma coe_nonZeroDivisorsLeft_eq [NoZeroDivisors M₀] [Nontrivial M₀] :
-    nonZeroDivisorsLeft M₀ = {x : M₀ | x ≠ 0} := by
-  ext x
-  simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, Set.mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by simp_all⟩
-  contrapose! h
-  exact ⟨1, Or.inl h, one_ne_zero⟩
-
-@[simp] lemma coe_nonZeroDivisorsRight_eq [NoZeroDivisors M₀] [Nontrivial M₀] :
-    nonZeroDivisorsRight M₀ = {x : M₀ | x ≠ 0} := by
-  ext x
-  simp only [SetLike.mem_coe, mem_nonZeroDivisorsRight_iff, mul_eq_zero, forall_eq_or_imp, true_and,
-    Set.mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by contradiction⟩
-  contrapose! h
-  exact ⟨1, h, one_ne_zero⟩
-
 end
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `M₀`. -/
@@ -187,6 +170,16 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
 
+@[simp] lemma coe_nonZeroDivisorsLeft_eq [NoZeroDivisors M₀] :
+    nonZeroDivisorsLeft M₀ = {x : M₀ | x ≠ 0} :=
+  le_antisymm (fun x hx eq ↦ zero_notMem_nonZeroDivisorsLeft (eq ▸ hx))
+    (noZeroDivisors_iff_right_eq_zero_of_mul.mp ‹_›)
+
+@[simp] lemma coe_nonZeroDivisorsRight_eq [NoZeroDivisors M₀] :
+    nonZeroDivisorsRight M₀ = {x : M₀ | x ≠ 0} :=
+  le_antisymm (fun x hx eq ↦ zero_notMem_nonZeroDivisorsRight (eq ▸ hx))
+    (noZeroDivisors_iff_left_eq_zero_of_mul.mp ‹_›)
+
 instance [IsLeftCancelMulZero M₀] : LeftCancelMonoid M₀⁰ where
   mul_left_cancel z _ _ h := Subtype.ext <|
     mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero z) (by
@@ -232,6 +225,18 @@ lemma IsRightRegular.mem_nonZeroDivisorsRight (h : IsRightRegular r) :
 
 lemma IsRegular.mem_nonZeroDivisors (h : IsRegular r) : r ∈ M₀⁰ :=
   ⟨h.1.mem_nonZeroDivisorsLeft, h.2.mem_nonZeroDivisorsRight⟩
+
+variable (M₀)
+
+lemma leftRegulars_le_nonZeroDivisors : .leftRegulars M₀ ≤ nonZeroDivisorsLeft M₀ :=
+  fun _ h ↦ h.mem_nonZeroDivisorsLeft
+
+lemma rightRegulars_le_nonZeroDivisors : .rightRegulars M₀ ≤ nonZeroDivisorsRight M₀ :=
+  fun _ h ↦ h.mem_nonZeroDivisorsRight
+
+lemma regulars_le_nonZeroDivisors : .regulars M₀ ≤ M₀⁰ := fun _ h ↦ h.mem_nonZeroDivisors
+
+variable {M₀}
 
 lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsLeft :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroDivisorsLeft M₀ :=

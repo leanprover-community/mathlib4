@@ -21,12 +21,29 @@ public import Mathlib.Algebra.Group.Hom.Defs
 assert_not_imported Mathlib.Algebra.NeZero
 
 variable {α M N P : Type*}
-
 -- monoids
-variable {G : Type*} {H : Type*}
 
+variable {G : Type*} {H : Type*}
 -- groups
+
 variable {F : Type*}
+
+section Mul
+
+variable [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N] {f : F} (hf : Function.Injective f)
+variable {m : M}
+include hf
+
+@[to_additive] theorem IsLeftRegular.of_injective (hm : IsLeftRegular (f m)) : IsLeftRegular m :=
+  fun _ _ eq ↦ hf <| hm <| by simp_rw [← map_mul, eq]
+
+@[to_additive] theorem IsRightRegular.of_injective (hm : IsRightRegular (f m)) : IsRightRegular m :=
+  fun _ _ eq ↦ hf <| hm <| by simp_rw [← map_mul, eq]
+
+@[to_additive] theorem IsRegular.of_injective (hm : IsRegular (f m)) : IsRegular m :=
+  isRegular_iff.mpr ⟨hm.1.of_injective hf, hm.2.of_injective hf⟩
+
+end Mul
 
 section CommMonoid
 variable [CommMonoid α]

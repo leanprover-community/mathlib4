@@ -86,6 +86,15 @@ lemma isRightRegular_iff_mem_nonZeroDivisorsRight : IsRightRegular r ↔ r ∈ n
 
 lemma isRegular_iff_mem_nonZeroDivisors : IsRegular r ↔ r ∈ R⁰ := isRegular_iff_eq_zero_of_mul
 
+lemma leftRegulars_eq_nonZeroDivisorsLeft : .leftRegulars R = nonZeroDivisorsLeft R :=
+  Submonoid.ext fun _ ↦ isLeftRegular_iff_mem_nonZeroDivisorsLeft
+
+lemma rightRegulars_eq_nonZeroDivisorsRight : .rightRegulars R = nonZeroDivisorsRight R :=
+  Submonoid.ext fun _ ↦ isRightRegular_iff_mem_nonZeroDivisorsRight
+
+lemma regulars_eq_nonZeroDivisors : .regulars R = R⁰ :=
+  Submonoid.ext fun _ ↦ isRegular_iff_mem_nonZeroDivisors
+
 lemma le_nonZeroDivisorsLeft_iff_isLeftRegular {S : Submonoid R} :
     S ≤ nonZeroDivisorsLeft R ↔ ∀ s : S, IsLeftRegular (s : R) := by
   simp_rw [SetLike.le_def, isLeftRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall]
