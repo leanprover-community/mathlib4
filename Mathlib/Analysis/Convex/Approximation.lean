@@ -223,8 +223,8 @@ variable [AddCommGroup E] [Module ℝ E] [IsTopologicalAddGroup E] [ContinuousSM
 /-- The real version of `sSup_affine_eq`. -/
 theorem real_sSup_affine_eq (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
-    sSup {f | f ≤ s.restrict φ ∧ ∃ (l : E →L[ℝ] ℝ) (c : ℝ),
-    f = s.restrict l + const s c} = s.restrict φ :=
+    sSup {f | f ≤ s.restrict φ ∧ ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.restrict l + const s c} =
+      s.restrict φ :=
   sSup_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `sSup_of_countable_affine_eq`. -/
