@@ -4543,6 +4543,7 @@ public import Mathlib.GroupTheory.Torsion
 public import Mathlib.GroupTheory.Transfer
 public import Mathlib.InformationTheory.Hamming
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
+public import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
@@ -5872,6 +5873,7 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.ParallelComp
 public import Mathlib.Probability.Kernel.Composition.Prod
+public import Mathlib.Probability.Kernel.Composition.RadonNikodym
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.Condexp
 public import Mathlib.Probability.Kernel.Defs

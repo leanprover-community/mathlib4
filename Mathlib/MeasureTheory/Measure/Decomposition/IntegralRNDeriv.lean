@@ -8,6 +8,11 @@ module
 public import Mathlib.Analysis.Convex.Continuous
 public import Mathlib.Analysis.Convex.Integral
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+
+import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+import Mathlib.Probability.Kernel.Composition.RadonNikodym
 
 /-!
 # Integrals of functions of Radon-Nikodym derivatives
@@ -23,7 +28,7 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public section
 
 
-open Set
+open Set ProbabilityTheory
 
 namespace MeasureTheory
 
@@ -105,5 +110,107 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     · simp only [div_eq_inv_mul, Measure.smul_apply, smul_eq_mul, ENNReal.toReal_mul,
       ENNReal.toReal_inv, μ', measureReal_def]
   · simp [ENNReal.toReal_pos_iff, hν, measureReal_def]
+
+variable (ν) in
+lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
+    (h : ∀ᵐ a ∂μ, p a) :
+    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
+  rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
+  constructor
+  · rw [← ν.haveLebesgueDecomposition_add μ]
+    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := μ.rnDeriv_eq_zero_ae_singularPart ν
+    filter_upwards [this] with x hx h_absurd using absurd hx h_absurd
+  · have h_ac : μ.withDensity (ν.rnDeriv μ) ≪ μ := withDensity_absolutelyContinuous _ _
+    rw [← ν.haveLebesgueDecomposition_add μ]
+    suffices ∀ᵐx ∂μ, μ.rnDeriv ν x ≠ 0 → p x from h_ac this
+    filter_upwards [h] with _ h _ using h
+
+lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
+    (h : ∀ᵐ a ∂μ, p a) :
+    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
+  suffices ∀ᵐ a ∂ν, (ν.withDensity (μ.rnDeriv ν)).rnDeriv ν a ≠ 0 → p a by
+    have h := ν.rnDeriv_withDensity (μ.measurable_rnDeriv ν)
+    filter_upwards [this, h] with x hx1 hx2
+    rwa [hx2] at hx1
+  refine ae_rnDeriv_ne_zero_imp_of_ae_aux ν ?_
+  exact (Measure.absolutelyContinuous_of_le (μ.withDensity_rnDeriv_le ν)) h
+
+section Integrable
+
+variable {β : Type*} {mβ : MeasurableSpace β} {κ η : Kernel α β} {f g : ℝ → ℝ}
+
+lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    [IsMarkovKernel κ] [IsMarkovKernel η]
+    (hf : StronglyMeasurable f)
+    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
+    (h_int : Integrable (fun p ↦ f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
+    (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
+    (fun a ↦ f (μ.rnDeriv ν a).toReal)
+      ≤ᵐ[ν] fun a ↦ ∫ b, f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b)).toReal ∂(η a) := by
+  have h_compProd : (fun p ↦ μ.rnDeriv ν p.1 * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
+      (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := (rnDeriv_compProd hκη ν).symm
+  have h_lt_top := Measure.ae_ae_of_ae_compProd <| (μ ⊗ₘ κ).rnDeriv_lt_top (ν ⊗ₘ η)
+  have h_integrable := Measure.integrable_toReal_rnDeriv (μ := μ ⊗ₘ κ) (ν := ν ⊗ₘ η)
+  rw [Measure.integrable_compProd_iff] at h_integrable h_int
+  rotate_left
+  · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
+  · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
+  have h_ae1 : ∀ᵐ a ∂ν, μ.rnDeriv ν a * ∫⁻ b,
+      (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) = (μ.rnDeriv ν) a := by
+    suffices ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) = 1 by
+      filter_upwards [this] with a ha
+      by_cases h0 : μ.rnDeriv ν a = 0
+      · simp [h0]
+      · rw [ha h0, mul_one]
+    refine ae_rnDeriv_ne_zero_imp_of_ae ?_
+    refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) measurable_const ?_
+    intro s hs hsμ
+    simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter, one_mul]
+    calc ∫⁻ a in s, ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ
+    _ = ∫⁻ a in s, ∫⁻ b in univ, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ := by simp
+    _ = μ s := by
+      rw [← Measure.setLIntegral_compProd (by fun_prop) hs .univ, Measure.setLIntegral_rnDeriv hκη,
+        Measure.compProd_apply_prod hs .univ]
+      simp
+  have h_ae2 : ∀ᵐ a ∂ν, ∀ᵐ b ∂(η a), μ.rnDeriv ν a * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) =
+      (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b) := by
+    rwa [Filter.EventuallyEq, Measure.ae_compProd_iff] at h_compProd
+    simp only [measurableSet_setOf]
+    fun_prop
+  filter_upwards [h_ae1, h_ae2, h_lt_top, h_integrable.1, h_int.1]
+    with a h_eq_one h_mul_eq h_lt_top h_int' h_int
+  calc f (μ.rnDeriv ν a).toReal
+    = f (μ.rnDeriv ν a * ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a)).toReal := by simp [h_eq_one]
+  _ = f (∫⁻ b, (μ.rnDeriv ν a) * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a)).toReal := by
+    rw [lintegral_const_mul _ (by fun_prop)]
+  _ = f (∫⁻ b, (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b) ∂(η a)).toReal := by
+    congr 2
+    refine lintegral_congr_ae ?_
+    filter_upwards [h_mul_eq] with b hb using hb
+  _ = f (∫ b, ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b)).toReal ∂(η a)) := by
+    rw [integral_toReal (by fun_prop) h_lt_top]
+  _ ≤ ∫ b, f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b)).toReal ∂(η a) := by
+    rw [← average_eq_integral, ← average_eq_integral]
+    exact ConvexOn.map_average_le hf_cvx hf_cont isClosed_Ici (by simp) h_int' h_int
+
+lemma _root_.ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ] [IsMarkovKernel η]
+    (hf : StronglyMeasurable f)
+    (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont : ContinuousOn f (Ici 0))
+    (hf_int : Integrable (fun p ↦ f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
+    (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
+    Integrable (fun a ↦ f (μ.rnDeriv ν a).toReal) ν := by
+  obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
+    hf_cvx.exists_affine_le (convex_Ici 0)
+  refine integrable_of_le_of_le (f := fun a ↦ f (μ.rnDeriv ν a).toReal)
+    (g₁ := fun x ↦ c * (μ.rnDeriv ν x).toReal + c')
+    (g₂ := fun x ↦ ∫ b, f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (x, b)).toReal ∂(η x))
+    ?_ ?_ ?_ (by fun_prop) ?_
+  · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
+  · exact ae_of_all _ fun x ↦ h _ ENNReal.toReal_nonneg
+  · exact hf_cvx.apply_rnDeriv_ae_le_integral hf hf_cont hf_int hκη
+  · exact hf_int.integral_compProd
+
+end Integrable
 
 end MeasureTheory
