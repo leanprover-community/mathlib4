@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Linarith.NNRealPreprocessor
 
 set_option linter.unusedVariables false
