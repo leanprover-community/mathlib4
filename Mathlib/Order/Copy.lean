@@ -178,10 +178,8 @@ def CompleteLattice.copy (c : CompleteLattice α)
   bot := bot
   sSup := sSup
   sInf := sInf
-  le_sSup := by intro _ _ h; simp [eq_le, eq_sSup, le_sSup _ _ h]
-  sSup_le := by intro _ _ h; simpa [eq_le, eq_sSup] using h
-  sInf_le := by intro _ _ h; simp [eq_le, eq_sInf, sInf_le _ _ h]
-  le_sInf := by intro _ _ h; simpa [eq_le, eq_sInf] using h
+  isLUB_sSup _ := by simp only [eq_le, eq_sSup, isLUB_sSup]
+  isGLB_sInf _ := by simp only [eq_le, eq_sInf, isGLB_sInf]
   le_top := by intros; simp [eq_le, eq_top]
   bot_le := by intros; simp [eq_le, eq_bot]
 
@@ -250,7 +248,5 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     le eq_le sup eq_sup inf eq_inf
   sSup := sSup
   sInf := sInf
-  le_csSup := by intro _ _ hb h; subst_vars; exact le_csSup _ _ hb h
-  csSup_le := by intro _ _ hb h; subst_vars; exact csSup_le _ _ hb h
-  csInf_le := by intro _ _ hb h; subst_vars; exact csInf_le _ _ hb h
-  le_csInf := by intro _ _ hb h; subst_vars; exact le_csInf _ _ hb h
+  isLUB_csSup := by simpa only [eq_le, eq_sSup] using c.isLUB_csSup
+  isGLB_csInf := by simpa only [eq_le, eq_sInf] using c.isGLB_csInf
