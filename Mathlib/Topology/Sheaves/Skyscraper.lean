@@ -390,6 +390,10 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
+noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
+    Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
+  skyscraperPresheafStalkAdjunction p₀
+
 end
 
 end

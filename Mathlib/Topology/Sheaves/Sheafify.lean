@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # Sheafification of `Type`-valued presheaves
@@ -34,7 +35,7 @@ following <https://stacks.math.columbia.edu/tag/007X>.
 assert_not_exists CommRingCat
 
 
-universe v
+universe u v
 
 noncomputable section
 
@@ -123,4 +124,49 @@ def sheafifyStalkIso (x : X) : F.sheafify.presheaf.stalk x ≅ F.stalk x :=
   (Equiv.ofBijective _ ⟨stalkToFiber_injective _ _, stalkToFiber_surjective _ _⟩).toIso
 
 -- PROJECT functoriality, and that sheafification is the left adjoint of the forgetful functor.
+end TopCat.Presheaf
+
+namespace CategoryTheory.Adjunction
+
+variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂]
+    [Category* C₃] {L : C₁ ⥤ C₂} {R : C₂ ⥤ C₁} {T : C₁ ⥤ C₃} {S : C₃ ⥤ C₂} {X : C₁} {Y : C₃}
+    (adj1 : L ⊣ R) (adj2 : T ⊣ S ⋙ R) (h : R.FullyFaithful) (x : (T.obj (R.obj (L.obj X)) ⟶ Y))
+
+theorem map_unit_of_isLeftAdjoint_comp : (adj2.homEquiv X Y).symm (adj1.homEquiv X (S.obj Y)
+    (h.homEquiv.symm (adj2.homEquiv (R.obj (L.obj X)) Y x))) = T.map (adj1.unit.app X) ≫ x := by
+  convert ( CategoryTheory.Adjunction.homEquiv_unit _ _ _ )
+  any_goals assumption
+  any_goals exact CategoryTheory.Adjunction.id
+  simp [CategoryTheory.Adjunction.homEquiv]
+  have := adj2.counit_naturality x
+  aesop
+
+include adj2 h in
+theorem isIso_map_unit_of_isLeftAdjoint_comp :
+    IsIso (T.map (adj1.unit.app X)) := by
+  apply isIso_of_coyoneda_map_bijective
+  intro Y
+  let φ := Equiv.trans (adj2.homEquiv (R.obj (L.obj X)) Y) <| Equiv.trans h.homEquiv.symm <|
+    Equiv.trans (adj1.homEquiv X (S.obj Y)) (adj2.homEquiv X Y).symm
+  have : φ.toFun = fun x => T.map (adj1.unit.app X) ≫ x := by
+    ext
+    apply Adjunction.map_unit_of_isLeftAdjoint_comp
+  rw[← this]
+  exact φ.bijective
+
+end CategoryTheory.Adjunction
+
+namespace TopCat.Presheaf
+
+variable (p₀ : X) (C : Type u) [Category.{v} C] [Limits.HasColimits C]
+  [Limits.HasTerminal C] (𝓕 : Presheaf C X) [HasWeakSheafify (Opens.grothendieckTopology X) C]
+
+/-- Given a presheaf `𝓕`, the induced map on stalks of `CategoryTheory.toSheafify`, `𝓕ₓ ⟶ 𝓕⁺ₓ`,
+is an isomorphism -/
+theorem stalkFunctor_map_unit_toSheafify_isIso : IsIso ((Presheaf.stalkFunctor C p₀).map
+    (CategoryTheory.toSheafify (Opens.grothendieckTopology X) 𝓕)) := by
+  classical
+  exact Adjunction.isIso_map_unit_of_isLeftAdjoint_comp (sheafificationAdjunction _ C)
+    (skyscraperSheafForgetAdjunction p₀) (fullyFaithfulSheafToPresheaf _ C)
+
 end TopCat.Presheaf
