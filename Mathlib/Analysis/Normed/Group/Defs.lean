@@ -6,10 +6,10 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Seminorm
-public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Topology.Algebra.Support
-public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Order.Real
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Topology.MetricSpace.Defs
 
 /-!
 # (Semi)normed groups: definitions
