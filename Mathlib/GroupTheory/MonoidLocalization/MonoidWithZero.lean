@@ -147,10 +147,6 @@ theorem noZeroDivisors (f : LocalizationMap S N) [NoZeroDivisors M] : NoZeroDivi
 
 end LocalizationMap
 
-namespace LocalizationWithZeroMap
-
-end LocalizationWithZeroMap
-
 end Submonoid
 
 end CommMonoidWithZero
