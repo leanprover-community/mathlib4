@@ -160,7 +160,7 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
 theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (h₂ : G₂.coe.IsAcyclic)
     (h : (G₁.verts ∩ G₂.verts).Subsingleton) : (G₁ ⊔ G₂).coe.IsAcyclic := by
   refine fun v p hp ↦ ?_
-  -- If the walk is entirely contained within one of the subgraphs
+  -- If the cycle is entirely contained within one of the subgraphs
   by_cases! hp' : (∀ u ∈ p.support, u.val ∈ G₁.verts) ∨ (∀ u ∈ p.support, u.val ∈ G₂.verts)
   · -- WLOG it's contained in the first one
     wlog hp'₁ : ∀ u ∈ p.support, u.val ∈ G₁.verts
@@ -186,23 +186,30 @@ theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (
     exact h₁ p'' <| IsCycle.map (fun _ _ ↦ (SetCoe.ext <| Subtype.mk.injEq .. ▸ ·)) <|
       map_isCycle_iff_of_injective p'.toSubgraph.hom_injective |>.mp <|
       map_mapToSubgraph_hom _ ▸ hp'
-  -- Otherwise, there are two vertices in the walk, each not contained in one of the graphs
+  -- Otherwise, there are two vertices in the cycle, each not contained in one of the graphs
   have ⟨⟨v₂, hpv₂, hnv₂⟩, ⟨v₁, hpv₁, hnv₁⟩⟩ := hp'
   have hv₂ := v₂.prop.resolve_left hnv₂
   classical
+  -- Consider the walk `pt` from `v₁` to `v₂` and the walk `pd` from `v₂` back to `v₁`
   let p' := p.rotate hpv₁
   have hp'v₂ := p.mem_support_rotate_iff hpv₁ |>.mpr hpv₂
   let pt := p'.takeUntil _ hp'v₂
   let pd := p'.dropUntil _ hp'v₂
+  -- Each must have a dart that crosses to the other subgraph
   have ⟨d₁, hd₁, hd₁₁, hd₁₂⟩ := pt.exists_boundary_dart { v | _ ∉ G₂.verts } hnv₁ (· hv₂)
   have ⟨d₂, hd₂, hd₂₁, hd₂₂⟩ := pd.exists_boundary_dart { v | _ ∈ G₂.verts } hv₂ hnv₁
+  -- `d₁.snd` and `d₂.fst` are common to both subgraphs so must be equal
   have hd₁₂' : d₁.snd.val ∈ G₁.verts ∩ G₂.verts :=
     ⟨d₁.edge_mem.resolve_right (hd₁₁ ·.fst_mem) |>.snd_mem, Set.not_notMem.mp hd₁₂⟩
   have hd₂₁' : d₂.fst.val ∈ G₁.verts ∩ G₂.verts :=
     ⟨d₂.edge_mem.resolve_right (hd₂₂ ·.snd_mem) |>.fst_mem, hd₂₁⟩
   have hd₁₂'' := p'.dart_snd_mem_support_of_mem_darts <| p'.darts_takeUntil_subset hp'v₂ hd₁
+  -- Since `d₁.snd` and `d₂.fst` are on a cycle, that vertex can only appear once,
+  -- so `d₁`/`d₂` must be the last/first dart of `pt`/`pd` respectively
   have ⟨_, hpd⟩ := count_support_append_eq_one hd₁ hd₂ (SetCoe.ext <| h hd₁₂' hd₂₁') <|
     p'.take_spec hp'v₂ ▸ (hp.rotate hpv₁).count_support_of_mem hd₁₂'' (hd₁₂ <| · ▸ hnv₁)
+  -- But that means that `d₁`/`d₂` are to/from `v₂` respectively,
+  -- so `v₂` is in both subgraphs and in particular it is in `G₁`, contradiction
   exact hnv₂ <| (hpd ▸ rfl : v₂ = d₂.fst) ▸ hd₂₁'.left
 
 /-- The union of two trees that share exactly one vertex is a tree -/
