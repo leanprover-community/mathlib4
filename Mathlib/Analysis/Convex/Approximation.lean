@@ -33,22 +33,6 @@ of continuous affine linear functions. We follow the proof in [Bou87].
 
 open Function Set RCLike ContinuousLinearMap
 
-@[simp]
-theorem ContinuousLinearMap.coprod_comp_inl_inr {R M M₁ M₂ : Type*}
-    [Semiring R] [TopologicalSpace M] [TopologicalSpace M₁] [TopologicalSpace M₂] [AddCommMonoid M]
-    [Module R M] [ContinuousAdd M] [AddCommMonoid M₁] [Module R M₁] [ContinuousAdd M₁]
-    [AddCommMonoid M₂] [Module R M₂] [ContinuousAdd M₂] (f : M × M₁ →L[R] M₂) :
-    (f ∘L .inl R M M₁).coprod (f ∘L .inr R M M₁) = f := by
-  rw [← ContinuousLinearMap.comp_coprod, ContinuousLinearMap.coprod_inl_inr, comp_id]
-
-theorem pos_of_right_mul_lt_le {R} {a b c : R} [Semiring R] [LinearOrder R] [ExistsAddOfLE R]
-    [PosMulMono R] [AddRightMono R] [AddRightReflectLE R]
-    (h : a * b < a * c) (hbc : b ≤ c) :
-    0 < a := by
-  by_cases! ha : 0 < a
-  · exact ha
-  · grind [mul_le_mul_of_nonpos_left hbc ha]
-
 namespace ConvexOn
 
 variable {𝕜 E F : Type*} {s : Set E} {φ : E → ℝ} [RCLike 𝕜]
@@ -77,11 +61,14 @@ section RCLike
 variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]
   [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E]
 
-/-- This is an auxiliary lemma used in the proof of ConvexOn.sSup_affine_eq. -/
-lemma exists_affine {x : s} {a} (hax : a < φ x) (hsc : IsClosed s)
+/-- Let `φ : E → ℝ` be a convex and lower-semicontinuous function on a closed convex subset `s`. For
+any point `x ∈ s` and `a < φ x`, there exists a function `f ≤ φ` on `s` that is the restriction to
+`s` of a continuous affine linear function in `E` and `f x = a`. This is an auxiliary lemma
+used in the proof of `ConvexOn.sSup_affine_eq.` -/
+lemma exists_affine {x : E} {a} (hx : x ∈ s) (hax : a < φ x) (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
-    ∃ f : {f | f ≤ s.restrict φ ∧
-    ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.restrict (re ∘ l) + const s c}, f.1 x = a := by
+    ∃ f, s.restrict f ≤ s.restrict φ ∧
+    ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.restrict (re ∘ l) + const s c ∧ f x = a := by
   let A := { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 }
   obtain ⟨L, ⟨b, hLb⟩⟩ := geometric_hahn_banach_point_closed (𝕜 := 𝕜) hφcv.convex_re_epigraph
     (hφc.isClosed_re_epigraph hsc) (by simp [A, hax] : (x.1, ofReal a) ∉ A)
@@ -103,7 +90,7 @@ lemma exists_affine {x : s} {a} (hax : a < φ x) (hsc : IsClosed s)
 
 /-- A function `φ : E → ℝ` that is convex and lower-semicontinuous on a closed convex subset `s` is
 the supremum of a family of functions that are the restrictions to `s` of continuous affine linear
-functions. -/
+functions in `E`. -/
 theorem sSup_affine_eq (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     sSup {f | f ≤ s.restrict φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ),
