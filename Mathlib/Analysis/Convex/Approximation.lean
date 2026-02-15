@@ -178,8 +178,8 @@ theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn �
 /-- The countable version of `univ_sSup_affine_eq`. -/
 theorem univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
     (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
-    ∃ 𝓕' : Set (E → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = φ ∧ ∀ f ∈ 𝓕',
-    ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = (re ∘ l) + const E c := by
+    ∃ 𝓕' : Set (E → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = φ ∧
+      ∀ f ∈ 𝓕', ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = (re ∘ l) + const E c := by
   let 𝓕 := {f | f ≤ φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = (re ∘ l) + const E c}
   have hl : IsLUB 𝓕 φ := by
     refine (hφcv.univ_sSup_affine_eq (𝕜 := 𝕜) hφc) ▸ isLUB_csSup ?_ ?_
