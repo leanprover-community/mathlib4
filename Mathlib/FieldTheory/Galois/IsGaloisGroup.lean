@@ -57,7 +57,7 @@ class IsGaloisGroup where
 
 variable {G A B} in
 theorem IsGaloisGroup.congr [hG : IsGaloisGroup G A B] {H : Type*} [Group H] [MulSemiringAction H B]
-    (e : H ≃* G) (he : ∀ (h : H) (x : B), (e h) • x = h • x) :
+    (e : H ≃* G) (he : ∀ h (x : B), (e h) • x = h • x) :
     IsGaloisGroup H A B where
   faithful := ⟨fun h ↦ e.injective <| hG.faithful.eq_of_smul_eq_smul <| by simpa only [he]⟩
   commutes := ⟨fun x a b ↦ by simpa [he] using hG.commutes.smul_comm (e x) a b⟩
