@@ -92,8 +92,8 @@ the supremum of a family of functions that are the restrictions to `s` of contin
 functions in `E`. -/
 theorem sSup_affine_eq (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
-    sSup {f | f ≤ s.restrict φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ),
-    f = s.restrict (re ∘ l) + const s c} = s.restrict φ := by
+    sSup {f | f ≤ s.restrict φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.restrict (re ∘ l) + const s c} =
+      s.restrict φ := by
   let A := { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 }
   ext x
   rw [sSup_apply]
