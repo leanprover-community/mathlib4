@@ -1112,12 +1112,6 @@ lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l 
 
 end Semiring
 
-section CommSemiring
-
-variable [CommSemiring α]
-
-end CommSemiring
-
 section NonAssocRing
 
 variable [NonAssocRing α]
