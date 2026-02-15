@@ -1297,6 +1297,7 @@ public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 public import Mathlib.AlgebraicGeometry.Geometrically.Basic
+public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
 public import Mathlib.AlgebraicGeometry.Geometrically.Reduced
 public import Mathlib.AlgebraicGeometry.Gluing
 public import Mathlib.AlgebraicGeometry.GluingOneHypercover
@@ -1375,6 +1376,7 @@ public import Mathlib.AlgebraicGeometry.SpreadingOut
 public import Mathlib.AlgebraicGeometry.Stalk
 public import Mathlib.AlgebraicGeometry.StructureSheaf
 public import Mathlib.AlgebraicGeometry.ValuativeCriterion
+public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.CechNerve
 public import Mathlib.AlgebraicTopology.DoldKan.Compatibility
@@ -4689,6 +4691,7 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
@@ -5439,6 +5442,7 @@ public import Mathlib.NumberTheory.NumberField.ClassNumber
 public import Mathlib.NumberTheory.NumberField.Completion
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Galois
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
