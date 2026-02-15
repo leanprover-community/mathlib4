@@ -111,9 +111,9 @@ instance (priority := low) [Etale f] : Smooth f :=
   SmoothOfRelativeDimension.smooth 0 f
 
 open RingHom in
-instance (priority := 900) [Etale f] : FormallyUnramified f where
-  formallyUnramified_appLE {_} hU {_} hV e :=
-    (f.etale_appLE hU hV e).formallyUnramified
+instance (priority := 900) [Etale f] : FormallyEtale f where
+  formallyEtale_appLE {_} hU {_} hV e :=
+    (f.etale_appLE hU hV e).formallyEtale
 
 instance : MorphismProperty.HasOfPostcompProperty
     @Etale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
