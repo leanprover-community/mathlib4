@@ -556,5 +556,3 @@ end mul_add
   ext
   simp [AddSubmonoid.mem_closure_singleton]
 
-@[deprecated (since := "2025-08-14")]
-alias Nat.addSubmonoid_closure_one := Nat.addSubmonoidClosure_one
