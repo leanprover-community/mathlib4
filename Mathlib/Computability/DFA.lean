@@ -359,17 +359,17 @@ theorem accepts_epsilon : epsilon.accepts = (1 : Language α) := by
   cases x with
   | nil => simp
   | cons a x' =>
-    have h_dead : ∀ w : List α, List.foldl (fun _ _ => none) (none : Option Unit) w = none := by
+    have h_dead : ∀ w : List α, List.foldl epsilon.step (none : Option Unit) w = none := by
       intro w
-      induction w <;> simp [*]
-    dsimp [epsilon]
-    simp_all only [Set.mem_singleton_iff, reduceCtorEq, Language.mem_one]
+      induction w <;> simp_all
+    simp_all
 
 end epsilon
 
 section singleton
 
 /-- DFA which accepts the singleton language of `a`. -/
+@[simps]
 def char (a : α) [DecidableEq α] : DFA α (Option Bool) where
   step (ob : Option Bool) (x : α) := match ob with
     | some true  => none
@@ -379,31 +379,19 @@ def char (a : α) [DecidableEq α] : DFA α (Option Bool) where
   accept := { some true }
 
 @[simp]
-theorem char_step_start (a : α) [DecidableEq α] (x : α) :
-    (char a).step (some false) x = if x = a then some true else none := rfl
-
-@[simp]
-theorem char_step_accept (a : α) [DecidableEq α] (x : α) :
-    (char a).step (some true) x = none := rfl
-
-@[simp]
-theorem char_step_dead (a : α) [DecidableEq α] (x : α) :
-    (char a).step none x = none := rfl
-
 theorem accepts_char {a : α} [DecidableEq α] : (char a).accepts = { [a] } := by
   ext x
-  simp only [DFA.accepts, DFA.acceptsFrom, DFA.evalFrom]
+  simp only [accepts, acceptsFrom, evalFrom]
   rw [Set.mem_setOf_eq, Set.mem_singleton_iff]
   cases x with
-  | nil => simp [char]
+  | nil => simp
   | cons b x' =>
     cases x' with
-    | nil => simp [char]
+    | nil => simp
     | cons c x'' =>
       have h_dead : ∀ w, List.foldl (char a).step none w = none := by
         intro w
-        induction w <;> simp [*]
-      dsimp [char] at *
+        induction w <;> simp_all
       aesop
 
 end singleton
@@ -461,31 +449,23 @@ theorem IsRegular.inf {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 
   have ⟨σ2, _, M2, hM2⟩ := h2
   ⟨σ1 × σ2, inferInstance, M1.inter M2, by simp [hM1, hM2]⟩
 
-variable {α : Type u}
-
 /-- The empty language is regular. -/
-theorem IsRegular.zero : IsRegular (0 : Language α) := by
-  apply isRegular_iff.mpr
-  use Unit, inferInstance, ⟨fun _ _ => (), (), {}⟩
-  rfl
+theorem IsRegular.zero {T : Type u} : IsRegular (0 : Language T) :=
+  ⟨Unit, inferInstance, ⟨fun _ _ => (), (), {}⟩, rfl⟩
 
 /-- The language of only the empty string is regular. -/
-theorem IsRegular.one : IsRegular (1 : Language α) := by
-  apply isRegular_iff.mpr
-  use Option Unit, inferInstance, DFA.epsilon
-  exact DFA.accepts_epsilon
+theorem IsRegular.one {T : Type u} : IsRegular (1 : Language T) :=
+  ⟨Option Unit, inferInstance, DFA.epsilon, DFA.accepts_epsilon⟩
 
 /-- The language of all strings over an alpabet is regular. -/
-theorem IsRegular.top : IsRegular (⊤ : Language α) := by
+theorem IsRegular.top {T : Type u} : IsRegular (⊤ : Language T) := by
   rw [← compl_bot, bot_eq_zero]
   apply IsRegular.compl
   exact IsRegular.zero
 
 /-- The language of only a single symbol is regular. -/
-theorem IsRegular.singleton {a : α} : IsRegular { [a] } := by
+theorem IsRegular.singleton {T : Type u} {a : T} : IsRegular { [a] } := by
   classical
-  apply isRegular_iff.mpr
-  use Option Bool, inferInstance, DFA.char a
-  exact DFA.accepts_char
+  exact ⟨Option Bool, inferInstance, DFA.char a, DFA.accepts_char⟩
 
 end Language
