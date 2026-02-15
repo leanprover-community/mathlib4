@@ -431,7 +431,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
         println s!"::notice::did not add labels '{newLabels}', since {t_labels_already_present} \
                   were already present"
     | .curl prNr token =>
-      -- TODO: implement a verion which looks at existing labels
+      -- TODO: take existing labels on the PR into account
       println args
       let _ ← IO.Process.run {
         cmd := "curl",
