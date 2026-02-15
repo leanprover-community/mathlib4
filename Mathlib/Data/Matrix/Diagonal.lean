@@ -3,9 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Matrix.Defs
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices
@@ -14,12 +18,14 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 
 ## Main definitions
 
- * `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
- * `Matrix.diag M`: the diagonal of a square matrix
- * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
+* `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
+* `Matrix.diag M`: the diagonal of a square matrix
+* `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra Star
+@[expose] public section
+
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -74,6 +80,9 @@ theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := b
   simp [diagonal]
 
 @[simp]
+theorem diagonal_zero' [Zero α] : (diagonal 0 : Matrix n n α) = 0 := diagonal_zero
+
+@[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
   ext i j
   by_cases h : i = j
@@ -107,6 +116,12 @@ theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
   by_cases h : i = j <;>
   simp [h]
 
+theorem diagonal_mem_matrix_iff [Zero α] {S : Set α} (hS : 0 ∈ S) {d : n → α} :
+    Matrix.diagonal d ∈ S.matrix ↔ ∀ i, d i ∈ S := by
+  simp only [Set.mem_matrix, diagonal, of_apply]
+  conv_lhs => intro _ _; rw [ite_mem]
+  simp [hS]
+
 instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
   natCast m := diagonal fun _ => m
 
@@ -138,25 +153,47 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   simp only [diagonal_apply, map_apply]
   split_ifs <;> simp [h]
 
-protected theorem map_natCast [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_natCast [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-protected theorem map_intCast [AddGroupWithOne α] [AddGroupWithOne β]
+theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Nat.cast_ite, Nat.cast_zero, ← diagonal_natCast, diagonal_apply]
+
+theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
+    (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
+  natCast_apply
+
+protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
+
+theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Int.cast_ite, Int.cast_zero, ← diagonal_intCast, diagonal_apply]
 
 theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
     diagonal d = of fun _ _ => d default := by
   ext i j
   rw [Subsingleton.elim i default, Subsingleton.elim j default, diagonal_apply_eq _ _, of_apply]
+
+@[simp]
+theorem col_diagonal [Zero α] (d : n → α) (i) : (diagonal d).col i = Pi.single i (d i) := by
+  ext
+  simp +contextual [diagonal, Pi.single_apply]
+
+@[simp]
+theorem row_diagonal [Zero α] (d : n → α) (j) : (diagonal d).row j = Pi.single j (d j) := by
+  ext
+  simp +contextual [diagonal, eq_comm, Pi.single_apply]
 
 section One
 
@@ -167,6 +204,10 @@ instance one : One (Matrix n n α) :=
 
 @[simp]
 theorem diagonal_one : (diagonal fun _ => 1 : Matrix n n α) = 1 :=
+  rfl
+
+@[simp]
+theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
   rfl
 
 theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
@@ -184,14 +225,13 @@ theorem one_apply_ne' {i j} : j ≠ i → (1 : Matrix n n α) i j = 0 :=
   diagonal_apply_ne' _
 
 @[simp]
-theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
+protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
     (1 : Matrix n n α).map f = (1 : Matrix n n β) := by
   ext
   simp only [one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
--- Porting note: added implicit argument `(f := fun_ => α)`, why is that needed?
-theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
+theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 
 end One
@@ -225,12 +265,9 @@ end Diagonal
 section Diag
 
 /-- The diagonal of a square matrix. -/
--- @[simp] -- Porting note: simpNF does not like this.
 def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 
--- Porting note: new, because of removed `simp` above.
--- TODO: set as an equation lemma for `diag`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
   rfl
@@ -279,8 +316,6 @@ open Matrix
 namespace Matrix
 
 section Transpose
-
-open Matrix
 
 @[simp]
 theorem transpose_eq_diagonal [DecidableEq n] [Zero α] {M : Matrix n n α} {v : n → α} :
@@ -337,8 +372,7 @@ theorem submatrix_diagonal [Zero α] [DecidableEq m] [DecidableEq l] (d : m → 
   ext fun i j => by
     rw [submatrix_apply]
     by_cases h : i = j
-    · rw [h, diagonal_apply_eq, diagonal_apply_eq]
-      simp only [Function.comp_apply] -- Porting note: (simp) added this
+    · rw [h, diagonal_apply_eq, diagonal_apply_eq, Function.comp_apply]
     · rw [diagonal_apply_ne _ h, diagonal_apply_ne _ (he.ne h)]
 
 theorem submatrix_one [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l → m)

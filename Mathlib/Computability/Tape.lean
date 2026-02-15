@@ -3,11 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Data.List.GetD
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Basic
 
 /-!
 # Turing machine tapes
@@ -24,6 +27,8 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -86,15 +91,7 @@ theorem BlankRel.symm {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} : BlankRel l₁ 
 @[trans]
 theorem BlankRel.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
     BlankRel l₁ l₂ → BlankRel l₂ l₃ → BlankRel l₁ l₃ := by
-  rintro (h₁ | h₁) (h₂ | h₂)
-  · exact Or.inl (h₁.trans h₂)
-  · rcases le_total l₁.length l₃.length with h | h
-    · exact Or.inl (h₁.above_of_le h₂ h)
-    · exact Or.inr (h₂.above_of_le h₁ h)
-  · rcases le_total l₁.length l₃.length with h | h
-    · exact Or.inl (h₁.below_of_le h₂ h)
-    · exact Or.inr (h₂.below_of_le h₁ h)
-  · exact Or.inr (h₂.trans h₁)
+  grind [eq_def, BlankExtends.below_of_le, BlankExtends.above_of_le, BlankExtends.trans]
 
 /-- Given two `BlankRel` lists, there exists (constructively) a common join. -/
 def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
@@ -167,7 +164,7 @@ def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
   rintro a _ ⟨i, rfl⟩
   refine Quotient.sound' (Or.inl ?_)
   cases a
-  · cases' i with i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
+  · rcases i with - | i <;> [exact ⟨0, rfl⟩; exact ⟨i, rfl⟩]
   exact ⟨i, rfl⟩
 
 @[simp]
@@ -214,10 +211,10 @@ theorem ListBlank.exists_cons {Γ} [Inhabited Γ] (l : ListBlank Γ) :
 def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   apply l.liftOn (fun l ↦ List.getI l n)
   rintro l _ ⟨i, rfl⟩
-  cases' lt_or_le n _ with h h
+  rcases lt_or_ge n _ with h | h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
-  rcases le_or_lt _ n with h₂ | h₂
+  rcases le_or_gt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
   rw [List.getI_eq_getElem _ h₂, List.getElem_append_right h, List.getElem_replicate]
 
@@ -249,8 +246,8 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   refine List.ext_getElem ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
-  cases' lt_or_le i l₁.length with h' h'
-  · simp [h', List.getElem_append _ h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
+  rcases lt_or_ge i l₁.length with h' | h'
+  · simp [h', List.getElem_append h₂, ← List.getI_eq_getElem _ h, ← List.getI_eq_getElem _ h', H]
   · rw [List.getElem_append_right h', List.getElem_replicate,
       ← List.getI_eq_default _ h', H, List.getI_eq_getElem _ h]
 
@@ -262,10 +259,12 @@ def ListBlank.modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) : ℕ → ListBlank 
 
 theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : ListBlank Γ) :
     (L.modifyNth f n).nth i = if i = n then f (L.nth i) else L.nth i := by
-  induction' n with n IH generalizing i L
-  · cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
+  induction n generalizing i L with
+  | zero =>
+    cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
       ListBlank.nth_succ, if_false, ListBlank.tail_cons, reduceCtorEq]
-  · cases i
+  | succ n IH =>
+    cases i
     · rw [if_neg (Nat.succ_ne_zero _).symm]
       simp only [ListBlank.nth_zero, ListBlank.head_cons, ListBlank.modifyNth]
     · simp only [IH, ListBlank.modifyNth, ListBlank.nth_succ, ListBlank.tail_cons, Nat.succ.injEq]
@@ -283,7 +282,6 @@ instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : Inhabited (PointedMap Γ Γ')
 instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : CoeFun (PointedMap Γ Γ') fun _ ↦ Γ → Γ' :=
   ⟨PointedMap.f⟩
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem PointedMap.mk_val {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : Γ → Γ') (pt) :
     (PointedMap.mk f pt : Γ → Γ') = f :=
   rfl
@@ -332,9 +330,7 @@ theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedM
 @[simp]
 theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) (n : ℕ) : (l.map f).nth n = f (l.nth n) := by
-  refine l.inductionOn fun l ↦ ?_
-  -- Porting note: Added `suffices` to get `simp` to work.
-  suffices ((mk l).map f).nth n = f ((mk l).nth n) by exact this
+  refine l.induction_on fun l ↦ ?_
   simp only [ListBlank.map_mk, ListBlank.nth_mk, ← List.getD_default_eq_getI]
   rw [← List.getD_map _ _ f]
   simp
@@ -351,7 +347,7 @@ theorem proj_map_nth {ι : Type*} {Γ : ι → Type*} [∀ i, Inhabited (Γ i)] 
 theorem ListBlank.map_modifyNth {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (F : PointedMap Γ Γ')
     (f : Γ → Γ) (f' : Γ' → Γ') (H : ∀ x, F (f x) = f' (F x)) (n) (L : ListBlank Γ) :
     (L.modifyNth f n).map F = (L.map F).modifyNth f' n := by
-  induction' n with n IH generalizing L <;>
+  induction n generalizing L <;>
     simp only [*, ListBlank.head_map, ListBlank.modifyNth, ListBlank.map_cons, ListBlank.tail_map]
 
 /-- Append a list on the left side of a `ListBlank`. -/
@@ -368,24 +364,21 @@ theorem ListBlank.append_mk {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) :
 
 theorem ListBlank.append_assoc {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) (l₃ : ListBlank Γ) :
     ListBlank.append (l₁ ++ l₂) l₃ = ListBlank.append l₁ (ListBlank.append l₂ l₃) := by
-  refine l₃.inductionOn fun l ↦ ?_
-  -- Porting note: Added `suffices` to get `simp` to work.
-  suffices append (l₁ ++ l₂) (mk l) = append l₁ (append l₂ (mk l)) by exact this
+  refine l₃.induction_on fun l ↦ ?_
   simp only [ListBlank.append_mk, List.append_assoc]
 
 /-- The `flatMap` function on lists is well defined on `ListBlank`s provided that the default
 element is sent to a sequence of default elements. -/
 def ListBlank.flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f : Γ → List Γ')
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
-  apply l.liftOn (fun l ↦ ListBlank.mk (List.flatMap l f))
-  rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
+  apply l.liftOn (fun l ↦ ListBlank.mk (l.flatMap f))
+  rintro l _ ⟨i, rfl⟩; obtain ⟨n, e⟩ := hf; refine Quotient.sound' (Or.inl ⟨i * n, ?_⟩)
   rw [List.flatMap_append, mul_comm]; congr
-  induction' i with i IH
-  · rfl
-  simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ,
-    List.flatMap_cons]
-
-@[deprecated (since := "2024-10-16")] alias ListBlank.bind := ListBlank.flatMap
+  induction i with
+  | zero => rfl
+  | succ i IH =>
+    simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ,
+      List.flatMap_cons]
 
 @[simp]
 theorem ListBlank.flatMap_mk
@@ -393,17 +386,11 @@ theorem ListBlank.flatMap_mk
     (ListBlank.mk l).flatMap f hf = ListBlank.mk (l.flatMap f) :=
   rfl
 
-@[deprecated (since := "2024-10-16")] alias ListBlank.bind_mk := ListBlank.flatMap_mk
-
 @[simp]
 theorem ListBlank.cons_flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l : ListBlank Γ)
     (f : Γ → List Γ') (hf) : (l.cons a).flatMap f hf = (l.flatMap f hf).append (f a) := by
-  refine l.inductionOn fun l ↦ ?_
-  -- Porting note: Added `suffices` to get `simp` to work.
-  suffices ((mk l).cons a).flatMap f hf = ((mk l).flatMap f hf).append (f a) by exact this
+  refine l.induction_on fun l ↦ ?_
   simp only [ListBlank.append_mk, ListBlank.flatMap_mk, ListBlank.cons_mk, List.flatMap_cons]
-
-@[deprecated (since := "2024-10-16")] alias ListBlank.cons_bind := ListBlank.cons_flatMap
 
 end ListBlank
 
@@ -448,12 +435,12 @@ def Tape.move {Γ} [Inhabited Γ] : Dir → Tape Γ → Tape Γ
 @[simp]
 theorem Tape.move_left_right {Γ} [Inhabited Γ] (T : Tape Γ) :
     (T.move Dir.left).move Dir.right = T := by
-  cases T; simp [Tape.move]
+  simp [Tape.move]
 
 @[simp]
 theorem Tape.move_right_left {Γ} [Inhabited Γ] (T : Tape Γ) :
     (T.move Dir.right).move Dir.left = T := by
-  cases T; simp [Tape.move]
+  simp [Tape.move]
 
 /-- Construct a tape from a left side and an inclusive right side. -/
 def Tape.mk' {Γ} [Inhabited Γ] (L R : ListBlank Γ) : Tape Γ :=
@@ -477,9 +464,7 @@ theorem Tape.mk'_right₀ {Γ} [Inhabited Γ] (L R : ListBlank Γ) : (Tape.mk' L
 
 @[simp]
 theorem Tape.mk'_left_right₀ {Γ} [Inhabited Γ] (T : Tape Γ) : Tape.mk' T.left T.right₀ = T := by
-  cases T
-  simp only [Tape.right₀, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons, eq_self_iff_true,
-    and_self_iff]
+  simp only [Tape.right₀, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons]
 
 theorem Tape.exists_mk' {Γ} [Inhabited Γ] (T : Tape Γ) : ∃ L R, T = Tape.mk' L R :=
   ⟨_, _, (Tape.mk'_left_right₀ _).symm⟩
@@ -487,14 +472,13 @@ theorem Tape.exists_mk' {Γ} [Inhabited Γ] (T : Tape Γ) : ∃ L R, T = Tape.mk
 @[simp]
 theorem Tape.move_left_mk' {Γ} [Inhabited Γ] (L R : ListBlank Γ) :
     (Tape.mk' L R).move Dir.left = Tape.mk' L.tail (R.cons L.head) := by
-  simp only [Tape.move, Tape.mk', ListBlank.head_cons, eq_self_iff_true, ListBlank.cons_head_tail,
-    and_self_iff, ListBlank.tail_cons]
+  simp only [Tape.move, Tape.mk', ListBlank.head_cons, ListBlank.cons_head_tail,
+    ListBlank.tail_cons]
 
 @[simp]
 theorem Tape.move_right_mk' {Γ} [Inhabited Γ] (L R : ListBlank Γ) :
     (Tape.mk' L R).move Dir.right = Tape.mk' (L.cons R.head) R.tail := by
-  simp only [Tape.move, Tape.mk', ListBlank.head_cons, eq_self_iff_true, ListBlank.cons_head_tail,
-    and_self_iff, ListBlank.tail_cons]
+  simp only [Tape.move, Tape.mk']
 
 /-- Construct a tape from a left side and an inclusive right side. -/
 def Tape.mk₂ {Γ} [Inhabited Γ] (L R : List Γ) : Tape Γ :=
@@ -517,7 +501,7 @@ theorem Tape.nth_zero {Γ} [Inhabited Γ] (T : Tape Γ) : T.nth 0 = T.1 :=
   rfl
 
 theorem Tape.right₀_nth {Γ} [Inhabited Γ] (T : Tape Γ) (n : ℕ) : T.right₀.nth n = T.nth n := by
-  cases n <;> simp only [Tape.nth, Tape.right₀, Int.ofNat_zero, ListBlank.nth_zero,
+  cases n <;> simp only [Tape.nth, Tape.right₀, ListBlank.nth_zero,
     ListBlank.nth_succ, ListBlank.head_cons, ListBlank.tail_cons]
 
 @[simp]
@@ -547,7 +531,7 @@ theorem Tape.move_right_n_head {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℕ) :
     ((Tape.move Dir.right)^[i] T).head = T.nth i := by
   induction i generalizing T
   · rfl
-  · simp only [*, Tape.move_right_nth, Int.ofNat_succ, iterate_succ, Function.comp_apply]
+  · simp only [*, Tape.move_right_nth, Int.natCast_succ, iterate_succ, Function.comp_apply]
 
 /-- Replace the current value of the head on the tape. -/
 def Tape.write {Γ} [Inhabited Γ] (b : Γ) (T : Tape Γ) : Tape Γ :=
@@ -565,10 +549,12 @@ theorem Tape.write_nth {Γ} [Inhabited Γ] (b : Γ) :
   | _, -(_ + 1 : ℕ) => rfl
 
 @[simp]
-theorem Tape.write_mk' {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
-    (Tape.mk' L (R.cons a)).write b = Tape.mk' L (R.cons b) := by
-  simp only [Tape.write, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons, eq_self_iff_true,
-    and_self_iff]
+theorem Tape.write_mk {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
+    (mk a L R).write b = mk b L R := rfl
+
+@[simp]
+theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
+    (mk' L R).write b = mk' L (R.tail.cons b) := by simp [mk']
 
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
@@ -584,27 +570,21 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
     ∀ T : Tape Γ, (T.write b).map f = (T.map f).write (f b) := by
   rintro ⟨⟩; rfl
 
--- Porting note: `simpNF` complains about LHS does not simplify when using the simp lemma on
---               itself, but it does indeed.
-@[simp, nolint simpNF]
+@[simp]
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right)^[n] (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right)^[n] (Tape.mk' L (R.modifyNth f n)) := by
-  induction' n with n IH generalizing L R
-  · simp only [ListBlank.nth_zero, ListBlank.modifyNth, iterate_zero_apply]
-    rw [← Tape.write_mk', ListBlank.cons_head_tail]
-  simp only [ListBlank.head_cons, ListBlank.nth_succ, ListBlank.modifyNth, Tape.move_right_mk',
-    ListBlank.tail_cons, iterate_succ_apply, IH]
+  induction n generalizing L R <;> simp [*]
 
 theorem Tape.map_move {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) (d) :
     (T.move d).map f = (T.map f).move d := by
   cases T
-  cases d <;> simp only [Tape.move, Tape.map, ListBlank.head_map, eq_self_iff_true,
-    ListBlank.map_cons, and_self_iff, ListBlank.tail_map]
+  cases d <;> simp only [Tape.move, Tape.map, ListBlank.head_map,
+    ListBlank.map_cons, ListBlank.tail_map]
 
 theorem Tape.map_mk' {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (L R : ListBlank Γ) :
     (Tape.mk' L R).map f = Tape.mk' (L.map f) (R.map f) := by
-  simp only [Tape.mk', Tape.map, ListBlank.head_map, eq_self_iff_true, and_self_iff,
+  simp only [Tape.mk', Tape.map, ListBlank.head_map,
     ListBlank.tail_map]
 
 theorem Tape.map_mk₂ {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (L R : List Γ) :

@@ -3,8 +3,10 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Order.MinMax
 
 /-!
 # Unbundled and weaker forms of canonically ordered monoids
@@ -14,6 +16,8 @@ namely that there is some `c` such that `b = a + c` if `a ≤ b`. This is partic
 generalising statements from groups/rings/fields that don't mention negation or subtraction to
 monoids/semirings/semifields.
 -/
+
+@[expose] public section
 
 universe u
 variable {α : Type u}
@@ -69,7 +73,7 @@ variable [LinearOrder α] [DenselyOrdered α] [Monoid α] [ExistsMulOfLE α]
 
 @[to_additive]
 theorem le_of_forall_one_lt_le_mul (h : ∀ ε : α, 1 < ε → a ≤ b * ε) : a ≤ b :=
-  le_of_forall_le_of_dense fun x hxb => by
+  le_of_forall_gt_imp_ge_of_dense fun x hxb => by
     obtain ⟨ε, rfl⟩ := exists_mul_of_le hxb.le
     exact h _ (one_lt_of_lt_mul_right hxb)
 

@@ -3,12 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Order.MonotoneConvergence
-import Mathlib.Topology.MetricSpace.Pseudo.Real
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -51,6 +54,8 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 rectangular box
 -/
 
+@[expose] public section
+
 open Set Function Metric Filter
 
 noncomputable section
@@ -92,7 +97,6 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
 instance : Membership (ι → ℝ) (Box ι) :=
   ⟨fun I x ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
--- Porting note: added
 /-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
 where `lower` and `upper` are this box' corners. -/
 @[coe]
@@ -237,7 +241,6 @@ instance : SemilatticeSup (Box ι) :=
 In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)` by sending `⊥` to `∅`.
 -/
 
--- Porting note: added
 /-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
@@ -253,15 +256,15 @@ theorem coe_coe : ((I : WithBot (Box ι)) : Set (ι → ℝ)) = I := rfl
 
 theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ)).Nonempty
   | ⊥ => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp
   | (I : Box ι) => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp [I.nonempty_coe]
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
-  induction I <;> simp [WithBot.coe_eq_coe]
+  induction I <;> simp
 
 @[simp, norm_cast]
 theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := by
@@ -287,8 +290,8 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
-  cases' I with lI uI hI; rw [mk']; split_ifs with h
-  · simp [WithBot.coe_eq_coe]
+  obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
+  · simp
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl
     exact h hI
@@ -350,7 +353,7 @@ theorem not_disjoint_coe_iff_nonempty_inter :
 
 /-- Face of a box in `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`: the box in `ℝⁿ = Fin n → ℝ` with corners at
 `I.lower ∘ Fin.succAbove i` and `I.upper ∘ Fin.succAbove i`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def face {n} (I : Box (Fin (n + 1))) (i : Fin (n + 1)) : Box (Fin n) :=
   ⟨I.lower ∘ Fin.succAbove i, I.upper ∘ Fin.succAbove i, fun _ ↦ I.lower_lt_upper _⟩
 
@@ -449,7 +452,7 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
     by_contra hr
     have := div_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 <| J.lower_le_upper i) (not_lt.1 hr)
     rw [← h] at this
-    exact this.not_lt (sub_pos.2 <| I.lower_lt_upper i)
+    exact this.not_gt (sub_pos.2 <| I.lower_lt_upper i)
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
   simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 
@@ -460,8 +463,7 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
         nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
       (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
     _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
-      apply mul_le_mul_right'
-      apply Finset.le_sup (Finset.mem_univ i)
+      grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
 
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by

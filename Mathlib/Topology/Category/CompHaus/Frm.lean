@@ -3,12 +3,15 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+module
 
-import Mathlib.Order.Category.Frm
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Sets.Opens
+public import Mathlib.Order.Category.Frm
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Sets.Opens
 
 /-! The forgetful functor from `TopCatᵒᵖ` to `Frm`. -/
+
+@[expose] public section
 
 universe u
 
@@ -18,9 +21,10 @@ open TopologicalSpace Opposite CategoryTheory
 @[simps]
 def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
   obj X := Frm.of (Opens (unop X : TopCat))
-  map f := Opens.comap <| Quiver.Hom.unop f
-  map_id _ := Opens.comap_id
+  map f := Frm.ofHom <| Opens.comap <| (Quiver.Hom.unop f).hom
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=
-  ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
+  ⟨fun {X _ _ _} h =>  Quiver.Hom.unop_inj <| ConcreteCategory.ext <|
+    Opens.comap_injective (β := (unop X).toTop) <| FrameHom.ext <|
+      CategoryTheory.congr_fun h⟩

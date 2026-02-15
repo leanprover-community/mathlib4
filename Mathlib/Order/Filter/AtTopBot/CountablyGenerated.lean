@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.AtTopBot
-import Mathlib.Order.Filter.CountablyGenerated
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Finite
+public import Mathlib.Order.Filter.AtTopBot.Prod
+public import Mathlib.Order.Filter.CountablyGenerated
 
 /-!
 # Convergence to infinity and countably generated filters
@@ -17,6 +20,8 @@ In this file we prove that
 - `Filter.tendsto_iff_seq_tendsto`: convergence along a countably generated filter
   is equivalent to convergence along all sequences that converge to this filter.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -50,11 +55,11 @@ instance _root_.OrderDual.instIsCountablyGeneratedAtTop [Preorder α]
 instance _root_.OrderDual.instIsCountablyGeneratedAtBot [Preorder α]
     [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := ‹_›
 
-lemma atTop_countable_basis [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] [Countable α] :
+lemma atTop_countable_basis [Preorder α] [IsDirectedOrder α] [Nonempty α] [Countable α] :
     HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
   { atTop_basis with countable := to_countable _ }
 
-lemma atBot_countable_basis [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] [Countable α] :
+lemma atBot_countable_basis [Preorder α] [IsCodirectedOrder α] [Nonempty α] [Countable α] :
     HasCountableBasis (atBot : Filter α) (fun _ => True) Iic :=
   { atBot_basis with countable := to_countable _ }
 
@@ -67,7 +72,7 @@ theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
   exact ⟨x, h.tendsto hx⟩
 
 theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [Nonempty α]
-    [IsDirected α (· ≤ ·)] [(atTop : Filter α).IsCountablyGenerated] :
+    [IsDirectedOrder α] [(atTop : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
   obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
   choose c hleft hright using exists_ge_ge (α := α)
@@ -82,7 +87,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [None
     apply hright
 
 theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [Preorder α] [Nonempty α]
-    [IsDirected α (· ≥ ·)] [(atBot : Filter α).IsCountablyGenerated] :
+    [IsCodirectedOrder α] [(atBot : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
   exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ
 
@@ -97,8 +102,8 @@ theorem tendsto_iff_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} 
   rcases (k ⊓ 𝓟 (f ⁻¹' sᶜ)).exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_inf, tendsto_principal] at hx
   refine ⟨x, hx.1, fun h => ?_⟩
-  rcases (hx.2.and (h hs)).exists with ⟨N, hnmem, hmem⟩
-  exact hnmem hmem
+  rcases (hx.2.and (h hs)).exists with ⟨N, hnotMem, hmem⟩
+  exact hnotMem hmem
 
 theorem tendsto_of_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} [k.IsCountablyGenerated] :
     (∀ x : ℕ → α, Tendsto x atTop k → Tendsto (f ∘ x) atTop l) → Tendsto f k l :=
@@ -137,7 +142,7 @@ theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {
     Tendsto x l f := by
   contrapose! hxy
   obtain ⟨s, hs, hfreq⟩ : ∃ s ∈ f, ∃ᶠ n in l, x n ∉ s := by
-    rwa [not_tendsto_iff_exists_frequently_nmem] at hxy
+    rwa [not_tendsto_iff_exists_frequently_notMem] at hxy
   obtain ⟨y, hy_tendsto, hy_freq⟩ := exists_seq_forall_of_frequently hfreq
   refine ⟨y, hy_tendsto, fun ms hms_tendsto ↦ ?_⟩
   rcases (hms_tendsto.eventually_mem hs).exists with ⟨n, hn⟩

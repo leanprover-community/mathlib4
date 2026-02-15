@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+module
+
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Gluing data
@@ -17,6 +19,8 @@ provide the API to realize it as a multispan diagram, and also state lemmas abou
 interaction with a functor that preserves certain pullbacks.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -43,18 +47,23 @@ such that
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure GlueData where
+  /-- The index type `J` of a gluing datum -/
   J : Type v
+  /-- For each `i : J`, an object `U i` -/
   U : J → C
+  /-- For each `i j : J`, an object `V i j` -/
   V : J × J → C
+  /-- For each `i j : J`, a monomorphism `f i j : V i j ⟶ U i` -/
   f : ∀ i j, V (i, j) ⟶ U i
   f_mono : ∀ i j, Mono (f i j) := by infer_instance
   f_hasPullback : ∀ i j k, HasPullback (f i j) (f i k) := by infer_instance
   f_id : ∀ i, IsIso (f i i) := by infer_instance
+  /-- For each `i j : J`, a transition map `t i j : V i j ⟶ V j i` -/
   t : ∀ i j, V (i, j) ⟶ V (j, i)
   t_id : ∀ i, t i i = 𝟙 _
+  /-- The morphism via which `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through
+  `V j k ×[U j] V j i ⟶ V j i` -/
   t' : ∀ i j k, pullback (f i j) (f i k) ⟶ pullback (f j k) (f j i)
   t_fac : ∀ i j k, t' i j k ≫ pullback.snd _ _ = pullback.fst _ _ ≫ t i j
   cocycle : ∀ i j k, t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _
@@ -124,31 +133,11 @@ def sigmaOpens [HasCoproduct D.U] : C :=
   ∐ D.U
 
 /-- (Implementation) The diagram to take colimit of. -/
-def diagram : MultispanIndex C where
-  L := D.J × D.J
-  R := D.J
-  fstFrom := _root_.Prod.fst
-  sndFrom := _root_.Prod.snd
+def diagram : MultispanIndex (.prod D.J) C where
   left := D.V
   right := D.U
   fst := fun ⟨i, j⟩ => D.f i j
   snd := fun ⟨i, j⟩ => D.t i j ≫ D.f j i
-
-@[simp]
-theorem diagram_l : D.diagram.L = (D.J × D.J) :=
-  rfl
-
-@[simp]
-theorem diagram_r : D.diagram.R = D.J :=
-  rfl
-
-@[simp]
-theorem diagram_fstFrom (i j : D.J) : D.diagram.fstFrom ⟨i, j⟩ = i :=
-  rfl
-
-@[simp]
-theorem diagram_sndFrom (i j : D.J) : D.diagram.sndFrom ⟨i, j⟩ = j :=
-  rfl
 
 @[simp]
 theorem diagram_fst (i j : D.J) : D.diagram.fst ⟨i, j⟩ = D.f i j :=
@@ -213,7 +202,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
   rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
-    simp [← Multicoequalizer.ι_sigmaπ]
+    simp
     rfl ⟩
 
 variable (F : C ⥤ C')
@@ -235,7 +224,7 @@ def mapGlueData : GlueData C' where
   f_id _ := inferInstance
   t i j := F.map (D.t i j)
   t_id i := by
-    simp [D.t_id i]
+    simp
   t' i j k :=
     (PreservesPullback.iso F (D.f i j) (D.f i k)).inv ≫
       F.map (D.t' i j k) ≫ (PreservesPullback.iso F (D.f j k) (D.f j i)).hom
@@ -254,15 +243,7 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
       | WalkingMultispan.left _ => Iso.refl _
       | WalkingMultispan.right _ => Iso.refl _)
     (by
-      rintro (⟨_, _⟩ | _) _ (_ | _ | _)
-      · erw [Category.comp_id, Category.id_comp, Functor.map_id]
-        rfl
-      · erw [Category.comp_id, Category.id_comp]
-        rfl
-      · erw [Category.comp_id, Category.id_comp, Functor.map_comp]
-        rfl
-      · erw [Category.comp_id, Category.id_comp, Functor.map_id]
-        rfl)
+      rintro (⟨_, _⟩ | _) _ (_ | _ | _) <;> simp)
 
 @[simp]
 theorem diagramIso_app_left (i : D.J × D.J) :
@@ -306,7 +287,7 @@ attribute [local instance] hasColimit_multispan_comp
 variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
 theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
-  hasColimitOfIso (D.diagramIso F).symm
+  hasColimit_of_iso (D.diagramIso F).symm
 
 attribute [local instance] hasColimit_mapGlueData_diagram
 
@@ -317,11 +298,8 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
-  haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   erw [ι_preservesColimitIso_hom_assoc]
-  rw [HasColimit.isoOfNatIso_ι_hom]
-  erw [Category.id_comp]
-  rfl
+  simp [GlueData.ι]
 
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).inv = F.map (D.ι i) := by
@@ -409,15 +387,15 @@ instance (D : GlueData' C) (i : D.J) :
 instance (D : GlueData' C) (i j k : D.J) :
     HasPullback (D.f' i j) (D.f' i k) := by
   if hij : i = j then
-    apply (config := { allowSynthFailures := true}) hasPullback_of_left_iso
+    apply +allowSynthFailures hasPullback_of_left_iso
     simp only [GlueData'.f', dif_pos hij]
     infer_instance
   else if hik : i = k then
-    apply (config := { allowSynthFailures := true}) hasPullback_of_right_iso
+    apply +allowSynthFailures hasPullback_of_right_iso
     simp only [GlueData'.f', dif_pos hik]
     infer_instance
   else
-    have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : HEq (eqToHom e ≫ f) f := by subst e; simp
+    have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : eqToHom e ≫ f ≍ f := by subst e; simp
     convert D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
 
 open scoped Classical in
@@ -435,7 +413,7 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else if hjk : j = k then
     have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
-      apply (config := { allowSynthFailures := true}) pullback_snd_iso_of_left_iso
+      apply +allowSynthFailures pullback_snd_iso_of_left_iso
       simp only [hjk, GlueData'.f', ↓reduceDIte]
       infer_instance
     pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
@@ -465,10 +443,11 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
   t' := D.t''
   t_fac i j k := by
     delta GlueData'.t''
-    split_ifs
+    obtain rfl | _ := eq_or_ne i j
+    · simp
+    obtain rfl | _ := eq_or_ne i k
     · simp [*]
-    · cases ‹i ≠ j› (‹i = k›.trans ‹j = k›.symm)
-    · simp [‹j ≠ k›.symm, *]
+    obtain rfl | _ := eq_or_ne j k
     · simp [*]
     · simp [*, reassoc_of% D.t_fac]
   cocycle i j k := by
@@ -485,7 +464,7 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
       ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
     else if hjk : j = k then
       subst hjk
-      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
+      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq]
     else
       ext <;> simp [hij, Ne.symm hij, hik, Ne.symm hik, hjk, Ne.symm hjk,
         pullback.map_comp_assoc]

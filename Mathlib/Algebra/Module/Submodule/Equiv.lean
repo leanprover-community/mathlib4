@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Submodule.Range
+module
+
+public import Mathlib.Algebra.Module.Submodule.Range
 
 /-! ### Linear equivalences involving submodules -/
+
+@[expose] public section
 
 open Function
 
@@ -33,7 +37,7 @@ variable (p q : Submodule R M)
 
 /-- Linear equivalence between two equal submodules. -/
 def ofEq (h : p = q) : p ≃ₗ[R] q :=
-  { Equiv.Set.ofEq (congr_arg _ h) with
+  { Equiv.setCongr (congr_arg _ h) with
     map_smul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -57,12 +61,14 @@ def ofSubmodules (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M
   (e.submoduleMap p).trans (LinearEquiv.ofEq _ _ h)
 
 @[simp]
-theorem ofSubmodules_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q) (x : p) :
+theorem ofSubmodules_apply {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) (x : p) :
     ↑(e.ofSubmodules p q h x) = e x :=
   rfl
 
 @[simp]
-theorem ofSubmodules_symm_apply {p : Submodule R M} {q : Submodule R₂ M₂} (h : p.map ↑e = q)
+theorem ofSubmodules_symm_apply {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q)
     (x : q) : ↑((e.ofSubmodules p q h).symm x) = e.symm x :=
   rfl
 
@@ -72,7 +78,7 @@ submodule to that submodule.
 This is `LinearEquiv.ofSubmodule` but with `comap` on the left instead of `map` on the right. -/
 def ofSubmodule' [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂) (U : Submodule R₂ M₂) :
     U.comap (f : M →ₛₗ[σ₁₂] M₂) ≃ₛₗ[σ₁₂] U :=
-  (f.symm.ofSubmodules _ _ f.symm.map_eq_comap).symm
+  (f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.symm)).symm
 
 theorem ofSubmodule'_toLinearMap [Module R M] [Module R₂ M₂] (f : M ≃ₛₗ[σ₁₂] M₂)
     (U : Submodule R₂ M₂) :
@@ -95,9 +101,7 @@ variable (p)
 /-- The top submodule of `M` is linearly equivalent to `M`. -/
 def ofTop (h : p = ⊤) : p ≃ₗ[R] M :=
   { p.subtype with
-    invFun := fun x => ⟨x, h.symm ▸ trivial⟩
-    left_inv := fun _ => rfl
-    right_inv := fun _ => rfl }
+    invFun := fun x => ⟨x, h.symm ▸ trivial⟩ }
 
 @[simp]
 theorem ofTop_apply {h} (x : p) : ofTop p h x = x :=
@@ -114,17 +118,11 @@ theorem ofTop_symm_apply {h} (x : M) : (ofTop p h).symm x = ⟨x, h.symm ▸ tri
 protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
   LinearMap.range_eq_top.2 e.toEquiv.surjective
 
-@[simp]
-protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] {F : Type*}
-    [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂] (e : F) : LinearMap.range e = ⊤ :=
-  LinearMap.range_eq_top.2 (EquivLike.surjective e)
-
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
   refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 
--- Porting note: `RingHomSurjective σ₁₂` is an unused argument.
 @[simp]
 theorem range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
     LinearMap.range (h.comp (e : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = LinearMap.range h :=
@@ -198,7 +196,7 @@ theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHom
 @[simp]
 theorem apply_ofBijective_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h}
     (x : M₂) : f ((ofBijective f h).symm x) = x := by
-  rw [← ofBijective_apply f ((ofBijective f h).symm x), apply_symm_apply]
+  rw [← ofBijective_apply f (hf := h) ((ofBijective f h).symm x), apply_symm_apply]
 
 end
 
@@ -218,9 +216,7 @@ def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map 
   { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by
       rintro ⟨x, hx⟩
-      refine ⟨⟨x, ?_⟩, ?_⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
-    left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
-    right_inv := fun ⟨x, ⟨_, h⟩, _, rfl⟩ => by ext; rfl }
+      refine ⟨⟨x, ?_⟩, ?_⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption }
 
 @[simp]
 theorem equivSubtypeMap_apply {p : Submodule R M} {q : Submodule R p} (x : q) :
@@ -229,9 +225,7 @@ theorem equivSubtypeMap_apply {p : Submodule R M} {q : Submodule R p} (x : q) :
 
 @[simp]
 theorem equivSubtypeMap_symm_apply {p : Submodule R M} {q : Submodule R p} (x : q.map p.subtype) :
-    ((p.equivSubtypeMap q).symm x : M) = x := by
-  cases x
-  rfl
+    ((p.equivSubtypeMap q).symm x : M) = x := rfl
 
 /-- A linear injection `M ↪ N` restricts to an equivalence `f⁻¹ p ≃ p` for any submodule `p`
 contained in its range. -/

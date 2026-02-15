@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Dini's Theorem
 
@@ -18,7 +20,7 @@ This theorem is true in a different generality as well: when `G` is a linearly o
 group with the order topology. This weakens the norm assumption, in exchange for strengthening to
 a linear order. This separate generality is not included in this file, but that generality was
 included in initial drafts of the original
-[PR #19068](https://github.com/leanprover-community/mathlib4/pull/19068) and can be recovered if
+https://github.com/leanprover-community/mathlib4/pull/19068 and can be recovered if
 necessary.
 
 The key idea of the proof is to use a particular basis of `𝓝 0` which consists of open sets that
@@ -30,9 +32,12 @@ is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity cr
 corresponds to `HasSolidNorm`.
 -/
 
+public section
+
 open Filter Topology
 
-variable {ι α G : Type*} [Preorder ι] [TopologicalSpace α] [NormedLatticeAddCommGroup G]
+variable {ι α G : Type*} [Preorder ι] [TopologicalSpace α]
+  [NormedAddCommGroup G] [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G]
 
 section Unbundled
 
@@ -42,7 +47,7 @@ variable {F : ι → α → G} {f : α → G}
 
 namespace Monotone
 
-/-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions
+/-- **Dini's theorem**: if `F n` is a monotone increasing collection of continuous functions
 converging pointwise to a continuous function `f`, then `F n` converges locally uniformly to `f`. -/
 lemma tendstoLocallyUniformly_of_forall_tendsto
     (hF_cont : ∀ i, Continuous (F i)) (hF_mono : Monotone F) (hf : Continuous f)
@@ -64,7 +69,7 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
   simp only [abs_of_nonpos (sub_nonpos_of_le (F_le_f _ _)), neg_sub, sub_le_sub_iff_left]
   exact hF_mono hnm z
 
-/-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
+/-- **Dini's theorem**: if `F n` is a monotone increasing collection of continuous functions on a
 set `s` converging pointwise to a continuous function `f`, then `F n` converges locally uniformly
 to `f`. -/
 lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
@@ -75,7 +80,7 @@ lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
   exact tendstoLocallyUniformly_of_forall_tendsto (hF_cont · |>.restrict)
     (fun _ _ h x ↦ hF_mono _ x.2 h) hf.restrict (fun x ↦ h_tendsto x x.2)
 
-/-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
+/-- **Dini's theorem**: if `F n` is a monotone increasing collection of continuous functions on a
 compact space converging pointwise to a continuous function `f`, then `F n` converges uniformly to
 `f`. -/
 lemma tendstoUniformly_of_forall_tendsto [CompactSpace α] (hF_cont : ∀ i, Continuous (F i))
@@ -84,7 +89,7 @@ lemma tendstoUniformly_of_forall_tendsto [CompactSpace α] (hF_cont : ∀ i, Con
   tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace.mp <|
     tendstoLocallyUniformly_of_forall_tendsto hF_cont hF_mono hf h_tendsto
 
-/-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
+/-- **Dini's theorem**: if `F n` is a monotone increasing collection of continuous functions on a
 compact set `s` converging pointwise to a continuous function `f`, then `F n` converges uniformly
 to `f`. -/
 lemma tendstoUniformlyOn_of_forall_tendsto {s : Set α} (hs : IsCompact s)
@@ -98,7 +103,7 @@ end Monotone
 
 namespace Antitone
 
-/-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions on a
+/-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 converging pointwise to a continuous function `f`, then `F n` converges locally uniformly to `f`. -/
 lemma tendstoLocallyUniformly_of_forall_tendsto
     (hF_cont : ∀ i, Continuous (F i)) (hF_anti : Antitone F) (hf : Continuous f)
@@ -106,7 +111,7 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
     TendstoLocallyUniformly F f atTop :=
   Monotone.tendstoLocallyUniformly_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
 
-/-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions on a
+/-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 set `s` converging pointwise to a continuous function `f`, then `F n` converges locally uniformly
 to `f`. -/
 lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
@@ -115,7 +120,7 @@ lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
     TendstoLocallyUniformlyOn F f atTop s :=
   Monotone.tendstoLocallyUniformlyOn_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
 
-/-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions on a
+/-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 compact space converging pointwise to a continuous function `f`, then `F n` converges uniformly
 to `f`. -/
 lemma tendstoUniformly_of_forall_tendsto [CompactSpace α] (hF_cont : ∀ i, Continuous (F i))
@@ -123,7 +128,7 @@ lemma tendstoUniformly_of_forall_tendsto [CompactSpace α] (hF_cont : ∀ i, Con
     TendstoUniformly F f atTop :=
   Monotone.tendstoUniformly_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
 
-/-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions on a
+/-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 compact set `s` converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
 lemma tendstoUniformlyOn_of_forall_tendsto {s : Set α} (hs : IsCompact s)
     (hF_cont : ∀ i, ContinuousOn (F i) s) (hF_anti : ∀ x ∈ s, Antitone (F · x))
@@ -139,7 +144,7 @@ namespace ContinuousMap
 
 variable {F : ι → C(α, G)} {f : C(α, G)}
 
-/-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions
+/-- **Dini's theorem**: if `F n` is a monotone increasing collection of continuous functions
 converging pointwise to a continuous function `f`, then `F n` converges to `f` in the
 compact-open topology. -/
 lemma tendsto_of_monotone_of_pointwise (hF_mono : Monotone F)
@@ -148,7 +153,7 @@ lemma tendsto_of_monotone_of_pointwise (hF_mono : Monotone F)
   tendsto_of_tendstoLocallyUniformly <|
     hF_mono.tendstoLocallyUniformly_of_forall_tendsto (F · |>.continuous) f.continuous h_tendsto
 
-/-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions
+/-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions
 converging pointwise to a continuous function `f`, then `F n` converges to `f` in the
 compact-open topology. -/
 lemma tendsto_of_antitone_of_pointwise (hF_anti : Antitone F)

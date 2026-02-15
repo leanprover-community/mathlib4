@@ -3,11 +3,14 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Zify
+module
+
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Data.Int.Cast.Lemmas
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `qify` tactic
@@ -25,6 +28,8 @@ example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   sorry
 ```
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Qify
 
@@ -69,9 +74,6 @@ macro_rules
 @[qify_simps] lemma intCast_lt (a b : ℤ) : a < b ↔ (a : ℚ) < (b : ℚ) := Int.cast_lt.symm
 @[qify_simps] lemma intCast_ne (a b : ℤ) : a ≠ b ↔ (a : ℚ) ≠ (b : ℚ) := by
   simp only [ne_eq, Int.cast_inj]
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_ne := intCast_ne
 
 end Qify
 

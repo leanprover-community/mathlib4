@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.Data.Real.EReal
+module
+
+public import Mathlib.Data.EReal.Basic
+public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
 # Convergence of L-series
@@ -17,6 +19,8 @@ real part `x` and provide some results about it.
 
 L-series, abscissa of convergence
 -/
+
+@[expose] public section
 
 open Complex
 
@@ -41,47 +45,42 @@ open LSeries
 
 lemma LSeriesSummable_of_abscissaOfAbsConv_lt_re {f : ℕ → ℂ} {s : ℂ}
     (hs : abscissaOfAbsConv f < s.re) : LSeriesSummable f s := by
-  simp only [abscissaOfAbsConv, sInf_lt_iff, Set.mem_image, Set.mem_setOf_eq,
-    exists_exists_and_eq_and, EReal.coe_lt_coe_iff] at hs
-  obtain ⟨y, hy, hys⟩ := hs
+  obtain ⟨y, hy, hys⟩ : ∃ a : ℝ, LSeriesSummable f a ∧ a < s.re := by
+    simpa [abscissaOfAbsConv, sInf_lt_iff] using hs
   exact hy.of_re_le_re <| ofReal_re y ▸ hys.le
 
 lemma LSeriesSummable_lt_re_of_abscissaOfAbsConv_lt_re {f : ℕ → ℂ} {s : ℂ}
     (hs : abscissaOfAbsConv f < s.re) :
     ∃ x : ℝ, x < s.re ∧ LSeriesSummable f x := by
   obtain ⟨x, hx₁, hx₂⟩ := EReal.exists_between_coe_real hs
-  exact ⟨x, EReal.coe_lt_coe_iff.mp hx₂, LSeriesSummable_of_abscissaOfAbsConv_lt_re hx₁⟩
+  exact ⟨x, by simpa using hx₂, LSeriesSummable_of_abscissaOfAbsConv_lt_re hx₁⟩
 
 lemma LSeriesSummable.abscissaOfAbsConv_le {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummable f s) :
-    abscissaOfAbsConv f ≤ s.re := by
-  refine sInf_le <| Membership.mem.out ?_
-  simp only [Set.mem_setOf_eq, Set.mem_image, EReal.coe_eq_coe_iff, exists_eq_right]
-  exact h.of_re_le_re <| by simp only [ofReal_re, le_refl]
+    abscissaOfAbsConv f ≤ s.re :=
+  sInf_le <| by simpa using h.of_re_le_re (by simp)
 
 lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable {f : ℕ → ℂ} {x : ℝ}
     (h : ∀ y : ℝ, x < y → LSeriesSummable f y) :
     abscissaOfAbsConv f ≤ x := by
-  refine sInf_le_iff.mpr fun y hy ↦ ?_
-  simp only [mem_lowerBounds, Set.mem_image, Set.mem_setOf_eq, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂] at hy
-  have H (a : EReal) : x < a → y ≤ a := by
-    induction' a with a₀
-    · simp only [not_lt_bot, le_bot_iff, IsEmpty.forall_iff]
-    · exact_mod_cast fun ha ↦ hy a₀ (h a₀ ha)
-    · simp only [EReal.coe_lt_top, le_top, forall_true_left]
-  exact Set.Ioi_subset_Ici_iff.mp H
+  refine sInf_le_iff.mpr fun y hy ↦ le_of_forall_gt_imp_ge_of_dense fun a ↦ ?_
+  replace hy : ∀ (a : ℝ), LSeriesSummable f a → y ≤ a := by simpa [mem_lowerBounds] using hy
+  cases a with
+  | coe a₀ => exact_mod_cast fun ha ↦ hy a₀ (h a₀ ha)
+  | bot => simp
+  | top => simp
 
 lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' {f : ℕ → ℂ} {x : EReal}
     (h : ∀ y : ℝ, x < y → LSeriesSummable f y) :
     abscissaOfAbsConv f ≤ x := by
-  induction' x with y
-  · refine le_of_eq <| sInf_eq_bot.mpr fun y hy ↦ ?_
-    induction' y with z
-    · simp only [gt_iff_lt, lt_self_iff_false] at hy
-    · exact ⟨z - 1,  ⟨z-1, h (z - 1) <| EReal.bot_lt_coe _, rfl⟩, by norm_cast; exact sub_one_lt z⟩
-    · exact ⟨0, ⟨0, h 0 <| EReal.bot_lt_coe 0, rfl⟩, EReal.zero_lt_top⟩
-  · exact abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable <| by exact_mod_cast h
-  · exact le_top
+  cases x with
+  | coe => exact abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable <| mod_cast h
+  | top => exact le_top
+  | bot =>
+    refine le_of_eq <| sInf_eq_bot.mpr fun y hy ↦ ?_
+    cases y with
+    | bot => simp at hy
+    | coe y => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe _, rfl⟩, mod_cast sub_one_lt y⟩
+    | top => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe 0, rfl⟩, EReal.zero_lt_top⟩
 
 /-- If `‖f n‖` is bounded by a constant times `n^x`, then the abscissa of absolute convergence
 of `f` is bounded by `x + 1`. -/
@@ -108,35 +107,27 @@ lemma LSeries.abscissaOfAbsConv_le_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ}
 /-- If `f` is bounded, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
 lemma LSeries.abscissaOfAbsConv_le_of_le_const {f : ℕ → ℂ} (h : ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C) :
     abscissaOfAbsConv f ≤ 1 := by
-  convert abscissaOfAbsConv_le_of_le_const_mul_rpow (x := 0) ?_
-  · simp only [EReal.coe_zero, zero_add]
-  · simpa only [norm_eq_abs, Real.rpow_zero, mul_one] using h
+  simpa using abscissaOfAbsConv_le_of_le_const_mul_rpow (x := 0) (by simpa using h)
 
 open Filter in
 /-- If `f` is `O(1)`, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
-lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O[atTop] (1 : ℕ → ℝ)) :
+lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O[atTop] fun _ ↦ (1 : ℝ)) :
     abscissaOfAbsConv f ≤ 1 := by
-  convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
-  · simp only [EReal.coe_zero, zero_add]
-  · simpa only [Real.rpow_zero] using h
+  simpa using abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) (by simpa using h)
 
 /-- If `f` is real-valued and `x` is strictly greater than the abscissa of absolute convergence
 of `f`, then the real series `∑' n, f n / n ^ x` converges. -/
 lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
     (h : abscissaOfAbsConv (f ·) < x) :
     Summable fun n : ℕ ↦ f n / (n : ℝ) ^ x := by
-  have h' : abscissaOfAbsConv (f ·) < (x : ℂ).re := by simpa only [ofReal_re] using h
-  have := LSeriesSummable_of_abscissaOfAbsConv_lt_re h'
-  rw [LSeriesSummable, show term _ _ = fun n ↦ _ from rfl] at this
-  conv at this =>
-    enter [1, n]
-    rw [term_def, ← ofReal_natCast, ← ofReal_cpow n.cast_nonneg, ← ofReal_div, ← ofReal_zero,
-      ← apply_ite]
-  rw [summable_ofReal] at this
+  have aux : term (f ·) x = fun n ↦ ↑(if n = 0 then 0 else f n / (n : ℝ) ^ x) := by
+    ext n
+    simp [term_def, apply_ite ((↑) : ℝ → ℂ), ofReal_cpow n.cast_nonneg]
+  have := LSeriesSummable_of_abscissaOfAbsConv_lt_re (ofReal_re x ▸ h)
+  simp only [LSeriesSummable, aux, summable_ofReal] at this
   refine this.congr_cofinite ?_
-  filter_upwards [Set.Finite.compl_mem_cofinite <| Set.finite_singleton 0] with n hn
-  simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hn
-  exact if_neg hn
+  filter_upwards [(Set.finite_singleton 0).compl_mem_cofinite] with n hn
+    using if_neg (by simpa using hn)
 
 /-- If `F` is a binary operation on `ℕ → ℂ` with the property that the `LSeries` of `F f g`
 converges whenever the `LSeries` of `f` and `g` do, then the abscissa of absolute convergence
@@ -146,7 +137,7 @@ lemma LSeries.abscissaOfAbsConv_binop_le {F : (ℕ → ℂ) → (ℕ → ℂ) �
     (hF : ∀ {f g s}, LSeriesSummable f s → LSeriesSummable g s → LSeriesSummable (F f g) s)
     (f g : ℕ → ℂ) :
     abscissaOfAbsConv (F f g) ≤ max (abscissaOfAbsConv f) (abscissaOfAbsConv g) := by
-  refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun x hx ↦  hF ?_ ?_
+  refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun x hx ↦ hF ?_ ?_
   · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (ofReal_re x).symm ▸ (le_max_left ..).trans_lt hx
   · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|

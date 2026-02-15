@@ -37,7 +37,7 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
   -- Show that `2 * (‖f x‖ * ‖g y‖) ≤ 2 * k`.
   have hk₂ : ∀ x, 2 * (‖f x‖ * ‖g y‖) ≤ 2 * k := fun x ↦
     calc
-      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
+      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]
       _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := norm_add_le _ _
       _ ≤ k + k := add_le_add (hk₁ _) (hk₁ _)
@@ -59,7 +59,7 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
     have h₂ : ∀ x, ‖f x‖ ≤ k' := by
       intro x
       rw [le_div_iff₀]
-      · apply (mul_le_mul_left zero_lt_two).mp (hk₂ x)
+      · apply (mul_le_mul_iff_right₀ zero_lt_two).mp (hk₂ x)
       · exact zero_lt_one.trans hneg
     apply csSup_le h₁
     rintro y' ⟨yy, rfl⟩
@@ -91,10 +91,10 @@ theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - 
     suffices ∀ x, ‖f x‖ ≤ k / ‖g y‖ from ciSup_le this
     intro x
     suffices 2 * (‖f x‖ * ‖g y‖) ≤ 2 * k by
-      rwa [le_div_iff₀ hgy, ← mul_le_mul_left (zero_lt_two : (0 : ℝ) < 2)]
+      rwa [le_div_iff₀ hgy, ← mul_le_mul_iff_right₀ (zero_lt_two : (0 : ℝ) < 2)]
     calc
-      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [abs_mul, mul_assoc]
+      2 * (‖f x‖ * ‖g y‖) = ‖2 * f x * g y‖ := by simp [mul_assoc]
       _ = ‖f (x + y) + f (x - y)‖ := by rw [hf1]
-      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := abs_add _ _
+      _ ≤ ‖f (x + y)‖ + ‖f (x - y)‖ := abs_add_le _ _
       _ ≤ 2 * k := by linarith [h (x + y), h (x - y)]
   linarith

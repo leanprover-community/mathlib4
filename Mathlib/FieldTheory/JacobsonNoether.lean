@@ -3,12 +3,14 @@ Copyright (c) 2024 F. Nuccio, H. Zheng, W. He, S. Wu, Y. Yuan, W. Jiao. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
-import Mathlib.Algebra.Central.Defs
-import Mathlib.Algebra.CharP.LinearMaps
-import Mathlib.Algebra.CharP.Subring
-import Mathlib.Algebra.GroupWithZero.Conj
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.FieldTheory.PurelyInseparable
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.CharP.LinearMaps
+public import Mathlib.Algebra.CharP.Subring
+public import Mathlib.Algebra.GroupWithZero.Conj
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 # The Jacobson-Noether theorem
@@ -28,7 +30,7 @@ the noncommutative division algebra `D` with center `k`.
   being a field `L`), if the center of `D` over `L` is `L`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
 
-## Notations
+## Notation
 
 - `D` is a noncommutative division algebra
 - `k` is the center of `D`
@@ -45,6 +47,8 @@ separate variables constrained by certain relations.
 ## Reference
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
+
+public section
 
 namespace JacobsonNoether
 
@@ -73,23 +77,24 @@ lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : 
 lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, 1 ≤ n ∧ a ^ (p ^ n) ∈ k := by
   obtain ⟨n, hn⟩ := exists_pow_mem_center_of_inseparable p a hinsep
-  by_cases nzero : n = 0
-  · rw [nzero, pow_zero, pow_one] at hn
-    exact (ha hn).elim
-  · exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
+  have nzero : n ≠ 0 := by
+    rintro rfl
+    rw [pow_zero, pow_one] at hn
+    exact ha hn
+  exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
 
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `m`
   greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
   every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
-    {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
-  ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
+    {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) :
+    ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_of_inseparable' p ha hinsep
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
   have inter : (ad k D a)^[p ^ m] = 0 := by
     ext x
-    rw [ad_eq_lmul_left_sub_lmul_right, ← pow_apply, Pi.sub_apply,
+    rw [ad_eq_lmul_left_sub_lmul_right, ← Module.End.pow_apply, Pi.sub_apply,
       sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a), sub_apply,
       pow_mulLeft, mulLeft_apply, pow_mulRight, mulRight_apply, Pi.zero_apply,
       Subring.mem_center_iff.1 hm.2 x]
@@ -111,25 +116,25 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
   obtain ⟨a, ha⟩ := not_forall.mp <| mt (Subring.eq_top_iff' k).mpr H
   have ha₀ : a ≠ 0 := fun nh ↦ nh ▸ ha <| Subring.zero_mem k
   -- We construct another element `b` that does not commute with `a`.
-  obtain ⟨b, hb1⟩ : ∃ b : D , ad k D a b ≠ 0 := by
+  obtain ⟨b, hb1⟩ : ∃ b : D, ad k D a b ≠ 0 := by
     rw [Subring.mem_center_iff, not_forall] at ha
     use ha.choose
-    show a * ha.choose - ha.choose * a ≠ 0
+    change a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(a * x - x * a) ^ n b ≠ 0`.
   obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n + 1] b = 0 := by
     obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
     have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n + 1] b = 0 := ⟨p ^ m,
-      ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (Nat.le_add_right _ _)]; rfl⟩⟩
+      ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (Nat.le_add_right _ _), Pi.zero_apply]⟩⟩
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
-    by_cases h_pos : 0 < t
-    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by omega)) h_pos
-      omega
-    · suffices h_find: Nat.find h_exist = 1 by
+    by_cases! h_pos : 0 < t
+    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
+      lia
+    · suffices h_find : Nat.find h_exist = 1 by
         rwa [h_find]
-      rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
+      rw [Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
       linarith [(Nat.find_spec h_exist).1]
   -- We define `c` to be the value that we proved above to be non-zero.
   set c := (ad k D a)^[n] b with hc_def
@@ -139,11 +144,11 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     apply eq_of_sub_eq_zero
     rw [← mulLeft_apply (R := k), ← mulRight_apply (R := k)]
     suffices ad k D a c = 0 from by
-      rw [← this]; rfl
+      rw [← this]; simp [LieRing.of_associative_ring_bracket]
     rw [← Function.iterate_succ_apply' (ad k D a) n b, hb.2]
   -- We now make some computation to obtain the final equation.
   set d := c⁻¹ * a * (ad k D a)^[n - 1] b with hd_def
-  have hc': c⁻¹ * a = a * c⁻¹ := by
+  have hc' : c⁻¹ * a = a * c⁻¹ := by
     apply_fun (c⁻¹ * · * c⁻¹) at hc
     rw [mul_assoc, mul_assoc, mul_inv_cancel₀ hb.1, mul_one, ← mul_assoc,
       inv_mul_cancel₀ hb.1, one_mul] at hc
@@ -158,13 +163,13 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     rw [hd_def, ← eq1, mul_sub, mul_assoc _ _ a, sub_right_inj, hc',
       ← mul_assoc, ← mul_assoc, ← mul_assoc]
   -- This then yields a contradiction.
-  apply_fun (a⁻¹ * · ) at deq
+  apply_fun (a⁻¹ * ·) at deq
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
   obtain ⟨r, hr⟩ := exists_pow_mem_center_of_inseparable p d insep
   apply_fun (· ^ (p ^ r)) at deq
-  rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
+  rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _), one_pow,
     GroupWithZero.conj_pow₀ ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
-    self_eq_add_left] at deq
+    right_eq_add] at deq
   exact one_ne_zero deq
 
 open Subring Algebra in
@@ -174,7 +179,7 @@ open Subring Algebra in
   that is separable over `L`. -/
 theorem exists_separable_and_not_isCentral' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
-  (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
+    (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have hcenter : Subalgebra.center L D = ⊥ := le_bot_iff.mp IsCentral.out
   have ntrivial : Subring.center D ≠ ⊤ :=

@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Results about the grading structure of the tensor algebra
@@ -13,7 +15,7 @@ The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor alg
 ℕ-graded algebra.
 -/
 
-suppress_compilation
+@[expose] public section
 
 namespace TensorAlgebra
 
@@ -47,16 +49,13 @@ instance gradedAlgebra :
         AlgHom.id_apply]
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by
-    cases' x with x hx
+    obtain ⟨x, hx⟩ := x
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-    -- Porting note: use new `induction using` support that failed in Lean 3
     induction hx using Submodule.pow_induction_on_left' with
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_add` to avoid a timeout
-      -- (the extra typeclass search seems to have pushed this already slow proof over the edge)
-      rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rw [map_add, ihx, ihy, ← map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm

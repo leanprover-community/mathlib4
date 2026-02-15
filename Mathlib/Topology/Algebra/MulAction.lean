@@ -3,10 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Topology.Algebra.ConstMulAction
+module
+
+public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -23,17 +27,13 @@ the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for 
   multiplication by `M` is continuous. This allows `Homeomorph.smul` to be used with on monoids
   with `G = Mˣ`.
 
--- Porting note: These have all moved
-* `Homeomorph.smul_of_ne_zero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
-  is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
-* `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
-  is a homeomorphism of `X`.
-
 ## Main results
 
 Besides homeomorphisms mentioned above, in this file we provide lemmas like `Continuous.smul`
 or `Filter.Tendsto.smul` that provide dot-syntax access to `ContinuousSMul`.
 -/
+
+@[expose] public section
 
 open Topology Pointwise
 
@@ -80,11 +80,11 @@ lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid 
 
 @[to_additive]
 instance : ContinuousSMul (ULift M) X :=
-  ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
+  ⟨(continuous_smul (M := M)).comp₂ (continuous_uliftDown.comp continuous_fst) continuous_snd⟩
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
-  continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
+  continuous_const_smul _ := continuous_smul.comp (continuous_const.prodMk continuous_id)
 
 theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
     [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
@@ -99,7 +99,7 @@ theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*}
 theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
     (hf : Tendsto f l (𝓝 c)) (hg : Tendsto g l (𝓝 a)) :
     Tendsto (fun x => f x • g x) l (𝓝 <| c • a) :=
-  (continuous_smul.tendsto _).comp (hf.prod_mk_nhds hg)
+  (continuous_smul.tendsto _).comp (hf.prodMk_nhds hg)
 
 @[to_additive]
 theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Tendsto f l (𝓝 c))
@@ -108,7 +108,7 @@ theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : T
 
 variable {f : Y → M} {g : Y → X} {b : Y} {s : Set Y}
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : ContinuousWithinAt g s b) :
     ContinuousWithinAt (fun x => f x • g x) s b :=
   Filter.Tendsto.smul hf hg
@@ -124,11 +124,11 @@ theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
-  continuous_smul.comp (hf.prod_mk hg)
+  continuous_smul.comp (hf.prodMk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
-@[to_additive "If an additive action is central, then its right action is continuous when its left
-action is."]
+@[to_additive /-- If an additive action is central, then its right action is continuous when its
+left action is. -/]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
@@ -170,21 +170,19 @@ Then the action of `N` on `X` is continuous as well.
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MulActionHom`.
 However, this version also works for semilinear maps and `f = Units.val`. -/
 @[to_additive
-  "Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
+  /-- Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
 Suppose that `g : Y → X` is an additive action homomorphism in the following sense:
 there exists a continuous function `f : N → M` such that `g (c +ᵥ x) = f c +ᵥ g x`.
 Then the action of `N` on `X` is continuous as well.
 
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
-However, this version also works for `f = AddUnits.val`."]
+However, this version also works for `f = AddUnits.val`. -/]
 lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
     (hg : IsInducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
     ContinuousSMul N Y where
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
-
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousSMul := IsInducing.continuousSMul
 
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
@@ -233,10 +231,33 @@ lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabili
 
 end Group
 
+section GroupWithZero
+
+variable {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
+  [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X]
+
+theorem Set.univ_smul_nhds_zero {s : Set X} (hs : s ∈ 𝓝 0) : (univ : Set G₀) • s = Set.univ := by
+  refine Set.eq_univ_of_forall fun x ↦ ?_
+  have : Tendsto (· • x) (𝓝 (0 : G₀)) (𝓝 0) :=
+    zero_smul G₀ x ▸ tendsto_id.smul tendsto_const_nhds
+  rcases Filter.nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs)
+    with ⟨c, hc₀, hc⟩
+  simp only [mem_compl_iff, mem_singleton_iff] at hc₀
+  simp only [mem_smul, mem_univ, true_and]
+  exact ⟨c⁻¹, c • x, hc, inv_smul_smul₀ hc₀ _⟩
+
+@[simp]
+theorem Filter.top_smul_nhds_zero : (⊤ : Filter G₀) • 𝓝 (0 : X) = ⊤ := by
+  rw [(hasBasis_top.smul (basis_sets _)).eq_top_iff]
+  rintro ⟨_, s⟩ ⟨-, hs⟩
+  exact Set.univ_smul_nhds_zero hs
+
+end GroupWithZero
+
 @[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
-  ⟨(continuous_fst.smul (continuous_fst.comp continuous_snd)).prod_mk
+  ⟨(continuous_fst.smul (continuous_fst.comp continuous_snd)).prodMk
       (continuous_fst.smul (continuous_snd.comp continuous_snd))⟩
 
 @[to_additive]
@@ -244,7 +265,7 @@ instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ 
     [∀ i, ContinuousSMul M (γ i)] : ContinuousSMul M (∀ i, γ i) :=
   ⟨continuous_pi fun i =>
       (continuous_fst.smul continuous_snd).comp <|
-        continuous_fst.prod_mk ((continuous_apply i).comp continuous_snd)⟩
+        continuous_fst.prodMk ((continuous_apply i).comp continuous_snd)⟩
 
 end Main
 
@@ -255,15 +276,14 @@ variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
-  -- Porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
-  -- unification instead.
-  @ContinuousSMul.mk M X _ _ (_) <| by
+  let _ := sInf ts
+  { continuous_smul := by
       -- Porting note: needs `( :)`
-      rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
+      rw [← (sInf_singleton (a := ‹TopologicalSpace M›) :)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht
-            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
+            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht)) }
 
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.PUnitInstances.Algebra
+import Mathlib.Algebra.Ring.PUnit
 
 /-! # `CharP R 0` and `CharZero R` need not coincide for semirings
 
@@ -30,6 +30,6 @@ theorem withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
   ⟨fun x => by cases x <;> simp⟩
 
 theorem withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =>
-  h.ne (by simp : 1 + 1 ≠ 0 + 1) (by set_option simprocs false in simp)
+  h.ne (by simp : 1 + 1 ≠ 0 + 1) (by simp [-Nat.reduceAdd])
 
 end Counterexample

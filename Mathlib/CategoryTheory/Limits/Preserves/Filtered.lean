@@ -3,15 +3,24 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.
 Typically forgetful functors from algebraic categories preserve filtered colimits
-(although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
+(although not general colimits). See e.g. `Mathlib/Algebra/Category/MonCat/FilteredColimits.lean`.
+
+Note also that using the results in the file `Mathlib/CategoryTheory/Presentable/Directed.lean`,
+in order to show that a functor preserves filtered colimits, it would be
+sufficient to check that it preserves colimits indexed by nonempty directed
+types.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -20,13 +29,12 @@ open CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
 
-universe w' w₂' w w₂ v u₁ u₂ u₃
+universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-variable {C : Type u₁} [Category.{v} C]
-variable {D : Type u₂} [Category.{v} D]
-variable {E : Type u₃} [Category.{v} E]
-variable {J : Type v} [SmallCategory J] {K : J ⥤ C}
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E]
 
 section FilteredColimits
 
@@ -46,7 +54,7 @@ A functor is said to preserve filtered colimits, if it preserves all colimits of
 live.
 -/
 abbrev PreservesFilteredColimits (F : C ⥤ D) : Prop :=
-  PreservesFilteredColimitsOfSize.{v, v} F
+  PreservesFilteredColimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] PreservesFilteredColimitsOfSize.preserves_filtered_colimits
 
@@ -64,7 +72,7 @@ lemma preservesFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [PreservesFilteredColimitsOfSize.{w', w₂'} F] :
       PreservesFilteredColimitsOfSize.{w, w₂} F where
   preserves_filtered_colimits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsFiltered.of_equivalence e.symm
     exact preservesColimitsOfShape_of_equiv e F
 
@@ -102,7 +110,7 @@ A functor is said to reflect filtered colimits, if it reflects all colimits of s
 live.
 -/
 abbrev ReflectsFilteredColimits (F : C ⥤ D) : Prop :=
-  ReflectsFilteredColimitsOfSize.{v, v} F
+  ReflectsFilteredColimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] ReflectsFilteredColimitsOfSize.reflects_filtered_colimits
 
@@ -120,7 +128,7 @@ lemma reflectsFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [ReflectsFilteredColimitsOfSize.{w', w₂'} F] :
       ReflectsFilteredColimitsOfSize.{w, w₂} F where
   reflects_filtered_colimits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsFiltered.of_equivalence e.symm
     exact reflectsColimitsOfShape_of_equiv e F
 
@@ -162,7 +170,7 @@ A functor is said to preserve cofiltered limits, if it preserves all limits of s
 source live.
 -/
 abbrev PreservesCofilteredLimits (F : C ⥤ D) : Prop :=
-  PreservesCofilteredLimitsOfSize.{v, v} F
+  PreservesCofilteredLimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] PreservesCofilteredLimitsOfSize.preserves_cofiltered_limits
 
@@ -180,7 +188,7 @@ lemma preservesCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [PreservesCofilteredLimitsOfSize.{w', w₂'} F] :
       PreservesCofilteredLimitsOfSize.{w, w₂} F where
   preserves_cofiltered_limits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsCofiltered.of_equivalence e.symm
     exact preservesLimitsOfShape_of_equiv e F
 
@@ -218,7 +226,7 @@ A functor is said to reflect cofiltered limits, if it reflects all limits of sha
 source live.
 -/
 abbrev ReflectsCofilteredLimits (F : C ⥤ D) : Prop :=
-  ReflectsCofilteredLimitsOfSize.{v, v} F
+  ReflectsCofilteredLimitsOfSize.{v₂, v₂} F
 
 attribute [instance 100] ReflectsCofilteredLimitsOfSize.reflects_cofiltered_limits
 
@@ -236,7 +244,7 @@ lemma reflectsCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [ReflectsCofilteredLimitsOfSize.{w', w₂'} F] :
       ReflectsCofilteredLimitsOfSize.{w, w₂} F where
   reflects_cofiltered_limits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsCofiltered.of_equivalence e.symm
     exact reflectsLimitsOfShape_of_equiv e F
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Algebra.Nonarchimedean.Completion
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups
@@ -23,19 +25,21 @@ sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 -/
 
+public section
+
 open Filter Topology
 
 namespace NonarchimedeanGroup
 
 variable {α G : Type*}
-variable [CommGroup G] [UniformSpace G] [UniformGroup G] [NonarchimedeanGroup G]
+variable [CommGroup G] [UniformSpace G] [IsUniformGroup G] [NonarchimedeanGroup G]
 
 /-- Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
 tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
 product of `f` on that subset. These partial products form a Cauchy filter. -/
-@[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a function
-that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider the
-partial sum of `f` on that subset. These partial sums form a Cauchy filter."]
+@[to_additive /-- Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a
+function that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider
+the partial sum of `f` on that subset. These partial sums form a Cauchy filter. -/]
 theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f cofinite (𝓝 1)) :
     CauchySeq (fun s ↦ ∏ i ∈ s, f i) := by
   /- Let `U` be a neighborhood of `1`. It suffices to show that there exists `s : Finset α` such
@@ -55,20 +59,47 @@ theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f co
   intro i hi
   simpa using Finset.disjoint_left.mp ht hi
 
+/-- Let `G` be a nonarchimedean abelian group, and let `f : ℕ → G` be a function
+such that the quotients `f (n + 1) / f n` tend to one. Then the function is a Cauchy sequence. -/
+@[to_additive /-- Let `G` be a nonarchimedean additive abelian group, and let `f : ℕ → G` be a
+function such that the differences `f (n + 1) - f n` tend to zero.
+Then the function is a Cauchy sequence. -/]
+lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
+    (hf : Tendsto (fun n ↦ f (n + 1) / f n) atTop (𝓝 1)) :
+    CauchySeq f := by
+  suffices Tendsto (fun p : ℕ × ℕ ↦ f p.2 / f p.1) atTop (𝓝 1) by simpa [CauchySeq,
+      cauchy_map_iff, prod_atTop_atTop_eq, uniformity_eq_comap_nhds_one G, atTop_neBot]
+  rw [tendsto_atTop']
+  intro s hs
+  obtain ⟨t, ht⟩ := is_nonarchimedean s hs
+  obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ b, N ≤ b → f (b + 1) / f b ∈ t := by
+    simpa using tendsto_def.mp hf t t.mem_nhds_one
+  refine ⟨(N, N), ?_⟩
+  rintro ⟨M, M'⟩ ⟨(hMN : N ≤ M), (hMN' : N ≤ M')⟩
+  apply ht
+  wlog h : M ≤ M' generalizing M M'
+  · simpa [inv_div] using t.inv_mem <| this _ _ hMN' hMN (le_of_not_ge h)
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+  clear h hMN'
+  induction k with
+  | zero => simp
+  | succ k ih => simpa using t.mul_mem (hN _ (by lia : N ≤ M + k)) ih
+
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
 function that tends to one on the filter of cofinite sets. Then `f` is unconditionally
 multipliable. -/
-@[to_additive "Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G` be a
-function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally summable."]
+@[to_additive /-- Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G`
+be a function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally
+summable. -/]
 theorem multipliable_of_tendsto_cofinite_one [CompleteSpace G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 1)) : Multipliable f :=
   CompleteSpace.complete (cauchySeq_prod_of_tendsto_cofinite_one hf)
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group. Then a function `f : α → G`
 is unconditionally multipliable if and only if it tends to one on the filter of cofinite sets. -/
-@[to_additive "Let `G` be a complete nonarchimedean additive abelian group. Then a function
+@[to_additive /-- Let `G` be a complete nonarchimedean additive abelian group. Then a function
 `f : α → G` is unconditionally summable if and only if it tends to zero on the filter of cofinite
-sets."]
+sets. -/]
 theorem multipliable_iff_tendsto_cofinite_one [CompleteSpace G] (f : α → G) :
     Multipliable f ↔ Tendsto f cofinite (𝓝 1) :=
   ⟨Multipliable.tendsto_cofinite_one, multipliable_of_tendsto_cofinite_one⟩
@@ -78,7 +109,7 @@ end NonarchimedeanGroup
 section NonarchimedeanRing
 
 variable {α β R : Type*}
-variable [Ring R] [UniformSpace R] [UniformAddGroup R] [NonarchimedeanRing R]
+variable [Ring R] [UniformSpace R] [IsUniformAddGroup R] [NonarchimedeanRing R]
 
 /- Let `R` be a complete nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable,
 then so is `fun i : α × β ↦ f i.1 * g i.2`. We will prove later that the assumption that `R`

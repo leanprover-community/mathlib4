@@ -3,14 +3,18 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # The concrete products in the category of modules are products in the categorical sense.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -22,7 +26,7 @@ universe u v w
 namespace ModuleCat
 
 variable {R : Type u} [Ring R]
-variable {ι : Type v} (Z : ι → ModuleCatMax.{v, w} R)
+variable {ι : Type v} (Z : ι → ModuleCat.{max v w} R)
 
 section product
 
@@ -68,11 +72,11 @@ open DirectSum
 
 variable [DecidableEq ι]
 
-/-- The coproduct cone induced by the concrete product. -/
+/-- The coproduct cone induced by the concrete coproduct. -/
 def coproductCocone : Cofan Z :=
   Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
-/-- The concrete coproduct cone is limiting. -/
+/-- The concrete coproduct cone is colimiting. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
   desc s := ofHom <| DirectSum.toModule R ι _ fun i ↦ (s.ι.app ⟨i⟩).hom
   fac := by
@@ -86,7 +90,7 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     ext : 1
     refine DirectSum.linearMap_ext _ fun i ↦ ?_
     ext x
-    simpa only [LinearMap.coe_comp, Function.comp_apply, toModule_lof] using
+    simpa only [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
       congr($(h ⟨i⟩) x)
 
 variable [HasCoproduct Z]

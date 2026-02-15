@@ -3,10 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Group.EvenFunction
-import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.NumberTheory.DirichletCharacter.GaussSum
+module
+
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.NumberTheory.DirichletCharacter.GaussSum
 
 /-!
 # Fourier theory on `ZMod N`
@@ -24,6 +26,8 @@ Basic definitions and properties of the discrete Fourier transform for functions
   primitive Dirichlet character `χ` is a Gauss sum times `χ⁻¹`.
 -/
 
+@[expose] public section
+
 open MeasureTheory Finset AddChar ZMod
 
 namespace ZMod
@@ -39,6 +43,7 @@ prove a minimal set of lemmas about it, and then define the `LinearEquiv` using 
 **Do not add more lemmas about `auxDFT`**: it should be invisible to end-users.
 -/
 
+set_option backward.privateInPublic true in
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure). This definition is
 private because it is superseded by the bundled `LinearEquiv` version.
@@ -74,9 +79,11 @@ end private_defs
 
 section defs
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure), bundled as a linear
-equivalence.
+equivalence. Denoted as `𝓕` within the `ZMod` namespace.
 -/
 noncomputable def dft : (ZMod N → E) ≃ₗ[ℂ] (ZMod N → E) where
   toFun := auxDFT
@@ -130,8 +137,7 @@ lemma dft_eq_fourier {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [Com
     (Φ : ZMod N → E) (k : ZMod N) :
     𝓕 Φ k = Fourier.fourierIntegral toCircle Measure.count Φ k := by
   simp only [dft_apply, stdAddChar_apply, Fourier.fourierIntegral_def, Circle.smul_def,
-    integral_countable' <| .of_finite .., Measure.count_singleton, ENNReal.one_toReal, one_smul,
-    tsum_fintype]
+    integral_countable' <| .of_finite .., count_real_singleton, one_smul, tsum_fintype]
 
 end defs
 

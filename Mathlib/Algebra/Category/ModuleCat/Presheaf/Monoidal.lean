@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Jack McKoen, Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 /-!
 # The monoidal category structure on presheaves of modules
@@ -21,11 +23,13 @@ This contribution was created as part of the AIM workshop
 
 -/
 
+@[expose] public section
+
 open CategoryTheory MonoidalCategory Category
 
 universe v u v₁ u₁
 
-variable {C : Type*} [Category C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
+variable {C : Type*} [Category* C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 
 instance (X : Cᵒᵖ) : CommRing ((R ⋙ forget₂ _ RingCat).obj X) :=
   inferInstanceAs (CommRing (R.obj X))
@@ -53,7 +57,8 @@ noncomputable def tensorObj : PresheafOfModules (R ⋙ forget₂ _ _) where
   map_id X := ModuleCat.MonoidalCategory.tensor_ext (by
     intro m₁ m₂
     dsimp [tensorObjMap]
-    simp)
+    simp
+    rfl) -- `ModuleCat.restrictScalarsId'App_inv_apply` doesn't get picked up due to type mismatch
   map_comp f g := ModuleCat.MonoidalCategory.tensor_ext (by
     intro m₁ m₂
     dsimp [tensorObjMap]
@@ -65,16 +70,20 @@ variable {M₁ M₂ M₃ M₄}
 lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     DFunLike.coe (α := (M₁.obj X ⊗ M₂.obj X :))
       (β := fun _ ↦ (ModuleCat.restrictScalars (R.map f).hom).obj (M₁.obj Y ⊗ M₂.obj Y))
-      ((tensorObj M₁ M₂).map f).hom (m₁ ⊗ₜ[R.obj X] m₂) = M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
+      (ModuleCat.Hom.hom (R := ↑(R.obj X)) ((tensorObj M₁ M₂).map f)) (m₁ ⊗ₜ[R.obj X] m₂) =
+    M₁.map f m₁ ⊗ₜ[R.obj Y] M₂.map f m₂ := rfl
 
 /-- The tensor product of two morphisms of presheaves of modules. -/
 @[simps]
 noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) : tensorObj M₁ M₃ ⟶ tensorObj M₂ M₄ where
-  app X := f.app X ⊗ g.app X
+  app X := f.app X ⊗ₘ g.app X
   naturality {X Y} φ := ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
     dsimp
-    rw [tensorObj_map_tmul, ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul,
-      naturality_apply, naturality_apply])
+    rw [tensorObj_map_tmul]
+    -- Need `erw` because of the type mismatch in `map` and the tensor product.
+    erw [ModuleCat.MonoidalCategory.tensorHom_tmul, tensorObj_map_tmul]
+    rw [naturality_apply, naturality_apply]
+    simp)
 
 end Monoidal
 
@@ -104,8 +113,8 @@ noncomputable instance monoidalCategoryStruct :
 noncomputable instance monoidalCategory :
     MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
   tensorHom_def _ _ := by ext1; apply tensorHom_def
-  tensor_id _ _ := by ext1; apply tensor_id
-  tensor_comp _ _ _ _ := by ext1; apply tensor_comp
+  id_tensorHom_id _ _ := by ext1; apply id_tensorHom_id
+  tensorHom_comp_tensorHom _ _ _ _ := by ext1; apply tensorHom_comp_tensorHom
   whiskerLeft_id M₁ M₂ := by
     ext1 X
     apply MonoidalCategory.whiskerLeft_id (C := ModuleCat (R.obj X))

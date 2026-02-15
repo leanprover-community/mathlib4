@@ -3,8 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Uniform
+module
+
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Subgroup
+public import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Normed groups homomorphisms
@@ -23,6 +26,8 @@ Some easy other constructions are related to subgroups of normed groups.
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when needed.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -84,7 +89,6 @@ instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
--- Porting note: moved this declaration up so we could get a `FunLike` instance sooner.
 instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
@@ -110,7 +114,6 @@ variable (f g)
 theorem toFun_eq_coe : f.toFun = f :=
   rfl
 
--- Porting note: removed `simp` because `simpNF` complains the LHS doesn't simplify.
 theorem coe_mk (f) (h₁) (h₂) (h₃) : ⇑(⟨f, h₁, h₂, h₃⟩ : NormedAddGroupHom V₁ V₂) = f :=
   rfl
 
@@ -230,6 +233,9 @@ protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformC
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
 
+instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+  map_continuous := fun f => f.continuous
+
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
 
@@ -289,16 +295,6 @@ instance add : Add (NormedAddGroupHom V₁ V₂) :=
 theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   mkNormedAddGroupHom_norm_le _ (add_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
 
--- Porting note: this library note doesn't seem to apply anymore
-/-
-library_note "addition on function coercions"/--
-Terms containing `@has_add.add (has_coe_to_fun.F ...) pi.has_add`
-seem to cause leanchecker to [crash due to an out-of-memory
-condition](https://github.com/leanprover-community/lean/issues/543).
-As a workaround, we add a type annotation: `(f + g : V₁ → V₂)`
--/
--/
-
 @[simp]
 theorem coe_add (f g : NormedAddGroupHom V₁ V₂) : ⇑(f + g) = f + g :=
   rfl
@@ -337,8 +333,7 @@ theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAdd
         norm_le_zero_iff.1
           (calc
             _ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-            _ = _ := by rw [hn, zero_mul]
-            ))
+            _ = _ := by rw [hn, zero_mul]))
     fun hf => by rw [hf, opNorm_zero]
 
 @[simp]
@@ -363,23 +358,24 @@ def id : NormedAddGroupHom V V :=
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the norm of every
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the
-space is non-trivial.) It means that one can not do better than an inequality in general. -/
+space is non-trivial.) It means that one cannot do better than an inequality in general. -/
 theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
+/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
+theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
   le_antisymm (norm_id_le V) <| by
-    let ⟨x, hx⟩ := h
+    let ⟨x, hx⟩ := exists_norm_ne_zero V
     have := (id V).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
 
-/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
-theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
-  refine norm_id_of_nontrivial_seminorm V ?_
-  obtain ⟨x, hx⟩ := exists_ne (0 : V)
-  exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
+/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
+(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
+@[deprecated norm_id (since := "2025-09-03")]
+theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
+  have : NontrivialTopology V := .of_exists_norm_ne_zero h
+  norm_id V
 
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl
@@ -411,7 +407,7 @@ instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
-        simp only [AddMonoidHom.sub_apply, AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
+        simp only [AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
         exact (f + -g).bound' }⟩
 
 @[simp]
@@ -429,8 +425,8 @@ theorem sub_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
 section SMul
 
 variable {R R' : Type*} [MonoidWithZero R] [DistribMulAction R V₂] [PseudoMetricSpace R]
-  [BoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
-  [BoundedSMul R' V₂]
+  [IsBoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
+  [IsBoundedSMul R' V₂]
 
 instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
   smul r f :=
@@ -513,7 +509,7 @@ instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
     fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := opNorm
@@ -522,7 +518,7 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
       add_le' := opNorm_add_le }
 
 /-- Normed group homomorphisms themselves form a normed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
     NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormedAddCommGroup
@@ -551,10 +547,10 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 
 
 instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
-    [PseudoMetricSpace R] [BoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
+    [PseudoMetricSpace R] [IsBoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
-instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSMul R V₂] :
+instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [IsBoundedSMul R V₂] :
     Module R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.module _ coeAddHom coe_injective coe_smul
 
@@ -573,7 +569,7 @@ protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁
 
 theorem norm_comp_le (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     ‖g.comp f‖ ≤ ‖g‖ * ‖f‖ :=
-  mkNormedAddGroupHom_norm_le _ (mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
+  mkNormedAddGroupHom_norm_le _ (by positivity) _
 
 theorem norm_comp_le_of_le {g : NormedAddGroupHom V₂ V₃} {C₁ C₂ : ℝ} (hg : ‖g‖ ≤ C₂)
     (hf : ‖f‖ ≤ C₁) : ‖g.comp f‖ ≤ C₂ * C₁ :=
@@ -596,7 +592,7 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
     (by
       intros
       ext
-      simp only [comp_apply, Pi.add_apply, Function.comp_apply, AddMonoidHom.add_apply,
+      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
         AddMonoidHom.mk'_apply, coe_add])
 
 @[simp]
@@ -649,10 +645,10 @@ def ker : AddSubgroup V₁ :=
   f.toAddMonoidHom.ker
 
 theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
-  erw [f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
+  rw [ker, f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
 
 /-- Given a normed group hom `f : V₁ → V₂` satisfying `g.comp f = 0` for some `g : V₂ → V₃`,
-    the corestriction of `f` to the kernel of `g`. -/
+the corestriction of `f` to the kernel of `g`. -/
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
   toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
@@ -697,7 +693,8 @@ theorem mem_range_self (v : V₁) : f v ∈ f.range :=
   ⟨v, rfl⟩
 
 theorem comp_range : (g.comp f).range = AddSubgroup.map g.toAddMonoidHom f.range := by
-  erw [AddMonoidHom.map_range]
+  unfold range
+  rw [AddMonoidHom.map_range]
   rfl
 
 theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
@@ -790,7 +787,7 @@ def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
         rw [NormedAddGroupHom.sub_apply, sub_eq_zero, ← comp_apply, h, comp_apply]⟩
   map_add' v₁ v₂ := by
     ext
-    simp only [map_add, AddSubgroup.coe_add, Subtype.coe_mk]
+    simp only [map_add, AddSubgroup.coe_add]
   bound' := by
     obtain ⟨C, _C_pos, hC⟩ := φ.bound
     exact ⟨C, hC⟩
@@ -809,9 +806,6 @@ def liftEquiv :
   toFun φ := lift φ φ.prop
   invFun ψ := ⟨(ι f g).comp ψ, by rw [← comp_assoc, ← comp_assoc, comp_ι_eq]⟩
   left_inv φ := by simp
-  right_inv ψ := by
-    ext
-    rfl
 
 /-- Given `φ : NormedAddGroupHom V₁ V₂` and `ψ : NormedAddGroupHom W₁ W₂` such that
 `ψ.comp f₁ = f₂.comp φ` and `ψ.comp g₁ = g₂.comp φ`, the induced morphism

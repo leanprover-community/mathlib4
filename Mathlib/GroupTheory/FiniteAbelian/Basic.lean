@@ -3,9 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.PID
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Data.ZMod.Quotient
+module
+
+public import Mathlib.Algebra.Module.PID
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Structure of finite(ly generated) abelian groups
@@ -13,10 +15,13 @@ import Mathlib.Data.ZMod.Quotient
 * `AddCommGroup.equiv_free_prod_directSum_zmod` : Any finitely generated abelian group is the
   product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some prime powers
   `p i ^ e i`.
+* `CommGroup.equiv_free_prod_prod_multiplicative_zmod` is a version for multiplicative groups.
 * `AddCommGroup.equiv_directSum_zmod_of_finite` : Any finite abelian group is a direct sum of
   some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`.
 * `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
 -/
+
+@[expose] public section
 
 open scoped DirectSum
 
@@ -66,19 +71,21 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
   invFun := DirectSum.toAddMonoid fun i ↦
     if h : n i = 0 then 0 else DirectSum.of (fun j : {i // n i ≠ 0} ↦ ZMod (p j ^ n j)) ⟨i, h⟩
   left_inv x := by
-    induction' x using DirectSum.induction_on with i x x y hx hy
-    · simp
-    · rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
+    induction x using DirectSum.induction_on with
+    | zero => simp
+    | of i x =>
+      rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
         dif_neg i.prop]
-    · rw [map_add, map_add, hx, hy]
+    | add x y hx hy => rw [map_add, map_add, hx, hy]
   right_inv x := by
-    induction' x using DirectSum.induction_on with i x x y hx hy
-    · rw [map_zero, map_zero]
-    · rw [DirectSum.toAddMonoid_of]
+    induction x using DirectSum.induction_on with
+    | zero => rw [map_zero, map_zero]
+    | of i x =>
+      rw [DirectSum.toAddMonoid_of]
       split_ifs with h
       · simp [(ZMod.subsingleton_iff.2 <| by rw [h, pow_zero]).elim x 0]
       · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
-    · rw [map_add, map_add, hx, hy]
+    | add x y hx hy => rw [map_add, map_add, hx, hy]
   map_add' := map_add (directSumNeZeroMulHom p n)
 
 universe u
@@ -130,9 +137,9 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
       Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) := by
   cases nonempty_fintype G
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
-  cases' n with n
+  rcases n with - | n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
-      { uniq := by simp only [eq_iff_true_of_subsingleton]; trivial }
+      { uniq := by subsingleton }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
@@ -169,6 +176,19 @@ theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Fini
        (∀ (i : ι), 1 < n i) ∧ Nonempty (G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) := by
   obtain ⟨ι, inst, n, h₁, h₂⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' (Additive G)
   exact ⟨ι, inst, n, h₁, ⟨MulEquiv.toAdditive.symm <| h₂.some.trans <|
-    (DirectSum.addEquivProd _).trans <| MulEquiv.toAdditive'' <| MulEquiv.piMultiplicative _⟩⟩
+    (DirectSum.addEquivProd _).trans (MulEquiv.piMultiplicative _).toAdditiveRight⟩⟩
+
+/-- The **Structure theorem of finitely generated abelian groups** in a multiplicative version :
+    Any finitely generated abelian group is the product of a power of `ℤ`
+    and a direct product of some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
+theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG : Group.FG G] :
+    ∃ (ι j : Type) (_ : Fintype ι) (_ : Fintype j) (p : ι → ℕ)
+    (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
+      Nonempty <| G ≃* (j → Multiplicative ℤ) × ((i : ι) → Multiplicative (ZMod (p i ^ e i))) := by
+  obtain ⟨n, ι, inst, x, p, e, equiv⟩ := AddCommGroup.equiv_free_prod_directSum_zmod (Additive G)
+  exact ⟨ι, Fin n, inst, inferInstance, x, p, e, ⟨MulEquiv.toAdditive.symm <| equiv.some.trans <|
+    ((Finsupp.addEquivFunOnFinite.trans <| ((AddEquiv.piAdditive _).trans <|
+        (AddEquiv.additiveMultiplicative ℤ).arrowCongr (Equiv.refl _)).symm).prodCongr
+          (DirectSum.addEquivProd _ )).trans <| (AddEquiv.prodAdditive _ _).symm⟩⟩
 
 end CommGroup

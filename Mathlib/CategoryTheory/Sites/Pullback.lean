@@ -3,10 +3,12 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Functor.Flat
-import Mathlib.CategoryTheory.Sites.Continuous
-import Mathlib.CategoryTheory.Sites.LeftExact
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Functor.Flat
+public import Mathlib.CategoryTheory.Sites.Continuous
+public import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
 # Pullback of sheaves
@@ -19,12 +21,14 @@ import Mathlib.CategoryTheory.Sites.LeftExact
   this is the pullback functor defined as a chosen left adjoint.
 
 * `CategoryTheory.Functor.sheafAdjunctionContinuous`: the adjunction
-`G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K` when the functor
-`G` is continuous. In case `G` is representably flat, the pullback functor
-on sheaves commutes with finite limits: this is a morphism of sites in the
-sense of SGA 4 IV 4.9.
+  `G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K` when the functor
+  `G` is continuous. In case `G` is representably flat, the pullback functor
+  on sheaves commutes with finite limits: this is a morphism of sites in the
+  sense of SGA 4 IV 4.9.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -105,7 +109,8 @@ variable {C : Type v₁} [SmallCategory C] {D : Type v₁} [SmallCategory D] (G 
   (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
 -- The favourable assumptions under which we have sheafification
-variable [HasForget.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
+variable {FA : A → A → Type*} {CA : A → Type v₁} [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)]
+variable [ConcreteCategory.{v₁} A FA] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
   [PreservesFilteredColimits (forget A)] [(forget A).ReflectsIsomorphisms]
   [Functor.IsContinuous.{v₁} G J K]
 

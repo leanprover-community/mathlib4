@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 
 /-!
 # Rotations by oriented angles.
@@ -16,6 +18,8 @@ This file defines rotations by oriented angles in real inner product spaces.
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -47,7 +51,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
         inner_add_right, inner_smul_right]
-      linear_combination inner (𝕜 := ℝ) x y * θ.cos_sq_add_sin_sq)
+      linear_combination ⟪x, y⟫ * θ.cos_sq_add_sin_sq)
 
 @[simp]
 theorem rotationAux_apply (θ : Real.Angle) (x : V) :
@@ -111,8 +115,6 @@ theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearM
 theorem linearEquiv_det_rotation (θ : Real.Angle) :
     LinearEquiv.det (o.rotation θ).toLinearEquiv = 1 :=
   Units.ext <| by
-    -- Porting note: Lean can't see through `LinearEquiv.coe_det` and needed the rewrite
-    -- in mathlib3 this was just `units.ext <| o.det_rotation θ`
     simpa only [LinearEquiv.coe_det, Units.val_one] using o.det_rotation θ
 
 /-- The inverse of `rotation` is rotation by the negation of the angle. -/
@@ -142,8 +144,8 @@ theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
 @[simp]
 theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
-  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, LinearIsometryEquiv.map_add,
-    LinearIsometryEquiv.trans_apply, map_smul, rightAngleRotation_rightAngleRotation]
+  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, map_add,
+    map_smul, rightAngleRotation_rightAngleRotation]
   module
 
 /-- Rotating twice is equivalent to rotating by the sum of the angles. -/
@@ -152,14 +154,11 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
     (o.rotation θ₁).trans (o.rotation θ₂) = o.rotation (θ₂ + θ₁) :=
   LinearIsometryEquiv.ext fun _ => by rw [← rotation_rotation, LinearIsometryEquiv.trans_apply]
 
-/-- Rotating the first of two vectors by `θ` scales their Kahler form by `cos θ - sin θ * I`. -/
+/-- Rotating the first of two vectors by `θ` scales their Kähler form by `cos θ - sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.toCircle : ℂ) * o.kahler x y := by
-  -- Porting note: this needed the `Complex.conj_ofReal` instead of `RCLike.conj_ofReal`;
-  -- I believe this is because the respective coercions are no longer defeq, and
-  -- `Real.Angle.coe_toCircle` uses the `Complex` version.
-  simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
+  simp only [o.rotation_apply, map_add, map_mul, map_smulₛₗ, RingHom.id_apply,
     LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
     Real.Angle.coe_toCircle, Complex.conj_ofReal, conj_I]
   ring
@@ -178,17 +177,17 @@ theorem neg_rotation_neg_pi_div_two (x : V) :
 theorem neg_rotation_pi_div_two (x : V) : -o.rotation (π / 2 : ℝ) x = o.rotation (-π / 2 : ℝ) x :=
   (neg_eq_iff_eq_neg.mp <| o.neg_rotation_neg_pi_div_two _).symm
 
-/-- Rotating the first of two vectors by `θ` scales their Kahler form by `cos (-θ) + sin (-θ) * I`.
+/-- Rotating the first of two vectors by `θ` scales their Kähler form by `cos (-θ) + sin (-θ) * I`.
 -/
 theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = (-θ).toCircle * o.kahler x y := by
   simp only [Real.Angle.toCircle_neg, Circle.coe_inv_eq_conj, kahler_rotation_left]
 
-/-- Rotating the second of two vectors by `θ` scales their Kahler form by `cos θ + sin θ * I`. -/
+/-- Rotating the second of two vectors by `θ` scales their Kähler form by `cos θ + sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
     o.kahler x (o.rotation θ y) = θ.toCircle * o.kahler x y := by
-  simp only [o.rotation_apply, map_add, LinearMap.map_smulₛₗ, RingHom.id_apply, real_smul,
+  simp only [o.rotation_apply, map_add, map_smulₛₗ, RingHom.id_apply, real_smul,
     kahler_rightAngleRotation_right, Real.Angle.coe_toCircle]
   ring
 
@@ -213,12 +212,10 @@ theorem oangle_rotation_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real
   · exact o.kahler_ne_zero hx hy
 
 /-- The rotation of a vector by `θ` has an angle of `-θ` from that vector. -/
-@[simp]
 theorem oangle_rotation_self_left {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle (o.rotation θ x) x = -θ := by simp [hx]
 
 /-- A vector has an angle of `θ` from the rotation of that vector by `θ`. -/
-@[simp]
 theorem oangle_rotation_self_right {x : V} (hx : x ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ x) = θ := by simp [hx]
 
@@ -285,7 +282,7 @@ theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : 
   have hp := div_pos (norm_pos_iff.2 hy) (norm_pos_iff.2 hx)
   constructor
   · rintro rfl
-    rw [← LinearIsometryEquiv.map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
+    rw [← map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
       rotation_oangle_eq_iff_norm_eq, norm_smul, Real.norm_of_nonneg hp.le,
       div_mul_cancel₀ _ (norm_ne_zero_iff.2 hx)]
   · intro hye
@@ -424,30 +421,18 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
 the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
-  rw [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rcases h with (rfl | rfl | h | h)
-    · exact Or.inl rfl
-    · exact Or.inr ⟨0, zero_smul _ _⟩
-    · obtain ⟨r, _, rfl⟩ :=
-        (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero (o.left_ne_zero_of_oangle_eq_pi_div_two h)
-          (o.right_ne_zero_of_oangle_eq_pi_div_two h) _).1 h
-      exact Or.inr ⟨r, rfl⟩
-    · obtain ⟨r, _, rfl⟩ :=
-        (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero
-          (o.left_ne_zero_of_oangle_eq_neg_pi_div_two h)
-          (o.right_ne_zero_of_oangle_eq_neg_pi_div_two h) _).1 h
-      refine Or.inr ⟨-r, ?_⟩
-      rw [neg_smul, ← smul_neg, o.neg_rotation_pi_div_two]
-  · rcases h with (rfl | ⟨r, rfl⟩)
-    · exact Or.inl rfl
-    · by_cases hx : x = 0; · exact Or.inl hx
-      rcases lt_trichotomy r 0 with (hr | rfl | hr)
-      · refine Or.inr (Or.inr (Or.inr ?_))
-        rw [o.oangle_smul_right_of_neg _ _ hr, o.neg_rotation_pi_div_two,
-          o.oangle_rotation_self_right hx]
-      · exact Or.inr (Or.inl (zero_smul _ _))
-      · refine Or.inr (Or.inr (Or.inl ?_))
-        rw [o.oangle_smul_right_of_pos _ _ hr, o.oangle_rotation_self_right hx]
+  by_cases! +distrib H : x = 0 ∨ y = 0
+  · rcases H with (rfl | rfl) <;> simp
+  simp only [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero, H, ← neg_smul, false_or,
+    o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero H.1 H.2, ← o.neg_rotation_pi_div_two, smul_neg]
+  constructor
+  · grind
+  · rintro ⟨r, rfl⟩
+    rcases lt_trichotomy 0 r with (hr0 | rfl | hr0)
+    · grind
+    · simp_all
+    · right
+      use -r
+      simp_all
 
 end Orientation

@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Additional lemmas about sum types
@@ -12,12 +14,21 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 Most of the former contents of this file have been moved to Batteries.
 -/
 
+@[expose] public section
+
 
 universe u v w x
 
 variable {α : Type u} {α' : Type w} {β : Type v} {β' : Type x} {γ δ : Type*}
 
+lemma not_isLeft_and_isRight {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by simp
+
 namespace Sum
+
+@[simp]
+theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
+    Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
+  grind
 
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
 attribute [simp] Sum.forall Sum.exists
@@ -46,16 +57,16 @@ theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = 
   cases x <;> simp
 
 theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
-    x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
+    x.getLeft h₁ = x.getLeft?.get h₂ := by grind
 
 theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
-    x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
+    x.getRight h₁ = x.getRight?.get h₂ := by grind
 
 @[simp] theorem isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
-  rw [isLeft_iff, Option.isSome_iff_exists]; simp
+  grind
 
 @[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
-  rw [isRight_iff, Option.isSome_iff_exists]; simp
+  grind
 
 end get
 
@@ -79,7 +90,7 @@ theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α �
 @[simp]
 theorem update_inl_apply_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i j : α}
     {x : γ} : update f (inl i) x (inl j) = update (f ∘ inl) i x j := by
-  rw [← update_inl_comp_inl, Function.comp_apply]
+  grind
 
 @[simp]
 theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {x : γ} :
@@ -110,6 +121,46 @@ theorem update_inr_apply_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α 
   rw [← update_inr_comp_inr, Function.comp_apply]
 
 @[simp]
+theorem update_inl_apply_inl' {γ : α ⊕ β → Type*} [DecidableEq α] [DecidableEq (α ⊕ β)]
+    {f : (i : α ⊕ β) → γ i} {i : α} {x : γ (.inl i)} (j : α) :
+    update f (.inl i) x (Sum.inl j) = update (fun j ↦ f (.inl j)) i x j :=
+  Function.update_apply_of_injective f Sum.inl_injective i x j
+
+@[simp]
+theorem update_inr_apply_inr' {γ : α ⊕ β → Type*} [DecidableEq β] [DecidableEq (α ⊕ β)]
+    {f : (i : α ⊕ β) → γ i} {i : β} {x : γ (.inr i)} (j : β) :
+    update f (.inr i) x (Sum.inr j) = update (fun j ↦ f (.inr j)) i x j :=
+  Function.update_apply_of_injective f Sum.inr_injective i x j
+
+@[simp]
+lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
+    (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (a : α) (x : γ (.inl a)) :
+    Sum.rec (update f a x) g = update (Sum.rec f g) (.inl a) x :=
+  Function.rec_update Sum.inl_injective (Sum.rec · g) (fun _ _ => rfl) (fun
+    | _, _, .inl _, h => (h _ rfl).elim
+    | _, _, .inr _, _ => rfl) _ _ _
+
+@[simp]
+lemma rec_update_right {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
+    (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (b : β) (x : γ (.inr b)) :
+    Sum.rec f (update g b x) = update (Sum.rec f g) (.inr b) x :=
+  Function.rec_update Sum.inr_injective (Sum.rec f) (fun _ _ => rfl) (fun
+    | _, _, .inr _, h => (h _ rfl).elim
+    | _, _, .inl _, _ => rfl) _ _ _
+
+@[simp]
+lemma elim_update_left {γ : Sort*} [DecidableEq α] [DecidableEq β]
+    (f : α → γ) (g : β → γ) (a : α) (x : γ) :
+    Sum.elim (update f a x) g = update (Sum.elim f g) (.inl a) x :=
+  rec_update_left _ _ _ _
+
+@[simp]
+lemma elim_update_right {γ : Sort*} [DecidableEq α] [DecidableEq β]
+    (f : α → γ) (g : β → γ) (b : β) (x : γ) :
+    Sum.elim f (update g b x) = update (Sum.elim f g) (.inr b) x :=
+  rec_update_right _ _ _ _
+
+@[simp]
 theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
   swap_swap
 
@@ -134,18 +185,14 @@ theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
 
 theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
-  rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, or_false, reduceCtorEq] at h₁
-  exact h₁
+  grind
 
 theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := exists_of_isLeft_left h₁ ((isLeft_congr h₁).mpr h₂)
 
 theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
-  rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, false_or, reduceCtorEq] at h₁
-  exact h₁
+  grind
 
 theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
@@ -153,29 +200,25 @@ theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
 
 end LiftRel
 
-section Lex
-
-end Lex
-
 end Sum
 
 open Sum
 
 namespace Function
 
-theorem Injective.sum_elim {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
+theorem Injective.sumElim {γ : Sort*} {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
     (hfg : ∀ a b, f a ≠ g b) : Injective (Sum.elim f g)
   | inl _, inl _, h => congr_arg inl <| hf h
   | inl _, inr _, h => (hfg _ _ h).elim
   | inr _, inl _, h => (hfg _ _ h.symm).elim
   | inr _, inr _, h => congr_arg inr <| hg h
 
-theorem Injective.sum_map {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
+theorem Injective.sumMap {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
     Injective (Sum.map f g)
   | inl _, inl _, h => congr_arg inl <| hf <| inl.inj h
   | inr _, inr _, h => congr_arg inr <| hg <| inr.inj h
 
-theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
+theorem Surjective.sumMap {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
     Surjective (Sum.map f g)
   | inl y =>
     let ⟨x, hx⟩ := hf y
@@ -184,9 +227,9 @@ theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f)
     let ⟨x, hx⟩ := hg y
     ⟨inr x, congr_arg inr hx⟩
 
-theorem Bijective.sum_map {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :
+theorem Bijective.sumMap {f : α → β} {g : α' → β'} (hf : Bijective f) (hg : Bijective g) :
     Bijective (Sum.map f g) :=
-  ⟨hf.injective.sum_map hg.injective, hf.surjective.sum_map hg.surjective⟩
+  ⟨hf.injective.sumMap hg.injective, hf.surjective.sumMap hg.surjective⟩
 
 end Function
 
@@ -195,17 +238,21 @@ namespace Sum
 open Function
 
 @[simp]
+theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
+    Injective (Sum.elim f g) ↔ Injective f ∧ Injective g ∧ ∀ a b, f a ≠ g b where
+  mp h := ⟨h.comp inl_injective, h.comp inr_injective, fun _ _ => h.ne inl_ne_inr⟩
+  mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
+
+@[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :
-    Injective (Sum.map f g) ↔ Injective f ∧ Injective g :=
-  ⟨fun h =>
-    ⟨fun a₁ a₂ ha => inl_injective <| @h (inl a₁) (inl a₂) (congr_arg inl ha :), fun b₁ b₂ hb =>
-      inr_injective <| @h (inr b₁) (inr b₂) (congr_arg inr hb :)⟩,
-    fun h => h.1.sum_map h.2⟩
+    Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
+  mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
+  mpr | ⟨hf, hg⟩ => hf.sumMap hg
 
 @[simp]
 theorem map_surjective {f : α → γ} {g : β → δ} :
-    Surjective (Sum.map f g) ↔ Surjective f ∧ Surjective g :=
-  ⟨ fun h => ⟨
+    Surjective (Sum.map f g) ↔ Surjective f ∧ Surjective g where
+  mp h := ⟨
       (fun c => by
         obtain ⟨a | b, h⟩ := h (inl c)
         · exact ⟨a, inl_injective h⟩
@@ -213,33 +260,13 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
       (fun d => by
         obtain ⟨a | b, h⟩ := h (inr d)
         · cases h
-        · exact ⟨b, inr_injective h⟩)⟩,
-    fun h => h.1.sum_map h.2⟩
+        · exact ⟨b, inr_injective h⟩)⟩
+  mpr | ⟨hf, hg⟩ => hf.sumMap hg
 
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
     Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
   (map_injective.and map_surjective).trans <| and_and_and_comm
-
-theorem elim_update_left [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : α) (c : γ) :
-    Sum.elim (Function.update f i c) g = Function.update (Sum.elim f g) (inl i) c := by
-  ext x
-  rcases x with x | x
-  · by_cases h : x = i
-    · subst h
-      simp
-    · simp [h]
-  · simp
-
-theorem elim_update_right [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : β) (c : γ) :
-    Sum.elim f (Function.update g i c) = Function.update (Sum.elim f g) (inr i) c := by
-  ext x
-  rcases x with x | x
-  · simp
-  · by_cases h : x = i
-    · subst h
-      simp
-    · simp [h]
 
 end Sum
 
@@ -267,3 +294,17 @@ def in₂ (c : γ) : α ⊕ (β ⊕ γ) :=
   inr <| inr c
 
 end Sum3
+
+/-!
+### PSum
+-/
+
+namespace PSum
+
+variable {α β : Sort*}
+
+theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ inl.inj
+
+theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ inr.inj
+
+end PSum

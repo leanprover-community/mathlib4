@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
-import Mathlib.MeasureTheory.Measure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-! # From equality of integrals to equality of functions
 
@@ -26,6 +28,8 @@ The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 
 -/
 
+public section
+
 
 open Filter
 
@@ -44,21 +48,20 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
   · intro h b hb
     exact measure_mono_null (fun y hy => (lt_of_le_of_lt hy hb : _)) h
   intro hc
-  by_cases h : ∀ b, c ≤ b
+  by_cases! h : ∀ b, c ≤ b
   · have : {a : α | f a < c} = ∅ := by
-      apply Set.eq_empty_iff_forall_not_mem.2 fun x hx => ?_
+      apply Set.eq_empty_iff_forall_notMem.2 fun x hx => ?_
       exact (lt_irrefl _ (lt_of_lt_of_le hx (h (f x)))).elim
     simp [this]
-  by_cases H : ¬IsLUB (Set.Iio c) c
+  by_cases! H : ¬IsLUB (Set.Iio c) c
   · have : c ∈ upperBounds (Set.Iio c) := fun y hy => le_of_lt hy
     obtain ⟨b, b_up, bc⟩ : ∃ b : β, b ∈ upperBounds (Set.Iio c) ∧ b < c := by
       simpa [IsLUB, IsLeast, this, lowerBounds] using H
     exact measure_mono_null (fun x hx => b_up hx) (hc b bc)
-  push_neg at H h
   obtain ⟨u, _, u_lt, u_lim, -⟩ :
     ∃ u : ℕ → β,
       StrictMono u ∧ (∀ n : ℕ, u n < c) ∧ Tendsto u atTop (𝓝 c) ∧ ∀ n : ℕ, u n ∈ Set.Iio c :=
-    H.exists_seq_strictMono_tendsto_of_not_mem (lt_irrefl c) h
+    H.exists_seq_strictMono_tendsto_of_notMem (lt_irrefl c) h
   have h_Union : {x | f x < c} = ⋃ n : ℕ, {x | f x ≤ u n} := by
     ext1 x
     simp_rw [Set.mem_iUnion, Set.mem_setOf_eq]
@@ -125,18 +128,10 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     _ ≤ ∑' n, μ (s n) := measure_iUnion_le _
     _ = 0 := by simp only [μs, tsum_zero]
 
-@[deprecated (since := "2024-06-29")]
-alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ :=
-  ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀
-
 theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → (∫⁻ x in s, f x ∂μ) ≤ ∫⁻ x in s, g x ∂μ) : f ≤ᵐ[μ] g :=
   ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hf.aemeasurable h
-
-@[deprecated (since := "2024-06-29")]
-alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite :=
-  ae_le_of_forall_setLIntegral_le_of_sigmaFinite
 
 theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
@@ -147,18 +142,10 @@ theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hg fun s hs h's => ge_of_eq (h s hs h's)
   filter_upwards [A, B] with x using le_antisymm
 
-@[deprecated (since := "2024-06-29")]
-alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ :=
-  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀
-
 theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g :=
   ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf.aemeasurable hg.aemeasurable h
-
-@[deprecated (since := "2024-06-29")]
-alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite :=
-  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
 
 theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (hgi : ∫⁻ x, g x ∂μ ≠ ∞)
@@ -180,16 +167,64 @@ theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (
     rw [EventuallyEq, ae_restrict_iff' hg'.measurableSet.compl] at h2
     filter_upwards [h1, h2] with x h1 h2 hx
     rw [h1 (Set.inter_subset_left hx), h2 (Set.inter_subset_right hx)]
-  have := hf'.sigmaFinite_restrict
-  have := hg'.sigmaFinite_restrict
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf.restrict hg.restrict
     fun u hu huμ ↦ ?_
   rw [Measure.restrict_restrict hu]
   rw [Measure.restrict_apply hu] at huμ
   exact hfg (hu.inter (hf'.measurableSet.union hg'.measurableSet)) huμ
 
-@[deprecated (since := "2024-06-29")]
-alias AEMeasurable.ae_eq_of_forall_set_lintegral_eq := AEMeasurable.ae_eq_of_forall_setLIntegral_eq
+section PiSystem
+
+variable {s : Set (Set α)} {f g : α → ℝ≥0∞}
+
+theorem lintegral_eq_lintegral_of_isPiSystem
+    (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s)
+    (basic : ∀ t ∈ s, ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ)
+    (h_univ : ∫⁻ x, f x ∂μ = ∫⁻ x, g x ∂μ) (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) :
+    ∀ t (_ : MeasurableSet t), ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ := by
+  refine MeasurableSpace.induction_on_inter h_eq h_inter ?_ basic ?_ ?_
+  · simp
+  · intro t ht h_eq
+    rw [setLIntegral_compl ht, setLIntegral_compl ht, h_eq, h_univ]
+    · refine ne_of_lt ?_
+      calc ∫⁻ x in t, g x ∂μ
+      _ ≤ ∫⁻ x, g x ∂μ := setLIntegral_le_lintegral t _
+      _ < ∞ := by rw [← h_univ]; exact hf_int.lt_top
+    · refine ne_of_lt ?_
+      calc ∫⁻ x in t, f x ∂μ
+      _ ≤ ∫⁻ x, f x ∂μ := setLIntegral_le_lintegral t _
+      _ < ∞ := hf_int.lt_top
+  · intro t htd htm h
+    simp_rw [lintegral_iUnion htm htd, h]
+
+lemma lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
+    (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s) (h_univ : Set.univ ∈ s)
+    (basic : ∀ t ∈ s, ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ)
+    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) {t : Set α} (ht : MeasurableSet t) :
+    ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ := by
+  refine lintegral_eq_lintegral_of_isPiSystem h_eq h_inter basic ?_ hf_int t ht
+  rw [← setLIntegral_univ, ← setLIntegral_univ g]
+  exact basic _ h_univ
+
+/-- If two a.e.-measurable functions `α × β → ℝ≥0∞` with finite integrals have the same integral
+on every rectangle, then they are almost everywhere equal. -/
+lemma ae_eq_of_setLIntegral_prod_eq {β : Type*} {mβ : MeasurableSpace β}
+    {μ : Measure (α × β)} {f g : α × β → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) (hf_int : ∫⁻ x, f x ∂μ ≠ ∞)
+    (h : ∀ ⦃s : Set α⦄ (_ : MeasurableSet s) ⦃t : Set β⦄ (_ : MeasurableSet t),
+      ∫⁻ x in s ×ˢ t, f x ∂μ = ∫⁻ x in s ×ˢ t, g x ∂μ) :
+    f =ᵐ[μ] g := by
+  have hg_int : ∫⁻ x, g x ∂μ ≠ ∞ := by
+    rwa [← setLIntegral_univ, ← Set.univ_prod_univ, ← h .univ .univ, Set.univ_prod_univ,
+      setLIntegral_univ]
+  refine AEMeasurable.ae_eq_of_forall_setLIntegral_eq hf hg hf_int hg_int fun s hs _ ↦ ?_
+  refine lintegral_eq_lintegral_of_isPiSystem_of_univ_mem generateFrom_prod.symm isPiSystem_prod
+    ?_ ?_ hf_int hs
+  · exact ⟨Set.univ, .univ, Set.univ, .univ, Set.univ_prod_univ⟩
+  · rintro _ ⟨s, hs, t, ht, rfl⟩
+    exact h hs ht
+
+end PiSystem
 
 section WithDensity
 

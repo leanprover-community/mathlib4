@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Set.Sups
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Set.Sups
 
 /-!
 # Set family operations
@@ -23,7 +25,7 @@ This file defines a few binary operations on `Finset α` for use in set family c
 
 ## Notation
 
-We define the following notation in locale `FinsetFamily`:
+We define the following notation in scope `FinsetFamily`:
 * `s ⊻ t` for `Finset.sups`
 * `s ⊼ t` for `Finset.infs`
 * `s ○ t` for `Finset.disjSups s t`
@@ -34,6 +36,8 @@ We define the following notation in locale `FinsetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
+
+@[expose] public section
 
 open Function
 
@@ -159,7 +163,7 @@ lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset
 
 @[simp] lemma univ_sups_univ [Fintype α] : (univ : Finset α) ⊻ univ = univ := by simp
 
-lemma filter_sups_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_sups_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by
   simp only [← coe_inj, coe_filter, coe_sups, ← mem_coe, Set.sep_sups_le]
 
@@ -169,7 +173,6 @@ lemma biUnion_image_sup_left : s.biUnion (fun a ↦ t.image (a ⊔ ·)) = s ⊻ 
 
 lemma biUnion_image_sup_right : t.biUnion (fun b ↦ s.image (· ⊔ b)) = s ⊻ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 
@@ -304,7 +307,7 @@ lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset
 
 @[simp] lemma univ_infs_univ [Fintype α] : (univ : Finset α) ⊼ univ = univ := by simp
 
-lemma filter_infs_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_infs_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by
   simp only [← coe_inj, coe_filter, coe_infs, ← mem_coe, Set.sep_infs_le]
 
@@ -314,7 +317,6 @@ lemma biUnion_image_inf_left : s.biUnion (fun a ↦ t.image (a ⊓ ·)) = s ⊼ 
 
 lemma biUnion_image_inf_right : t.biUnion (fun b ↦ s.image (· ⊓ b)) = s ⊼ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 
@@ -360,7 +362,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
-  simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
+  simp only [mem_sups, mem_powerset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
   · rwa [← union_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
@@ -368,7 +370,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
   ext u
-  simp only [mem_infs, mem_powerset, le_eq_subset, inf_eq_inter]
+  simp only [mem_infs, mem_powerset, inf_eq_inter]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
   · rwa [← inter_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
@@ -397,8 +399,6 @@ def disjSups : Finset α := {ab ∈ s ×ˢ t | Disjoint ab.1 ab.2}.image fun ab 
 
 @[inherit_doc]
 scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
-
-open FinsetFamily
 
 variable {s t u} {a b c : α}
 
@@ -469,20 +469,11 @@ theorem disjSups_inter_subset_right : s ○ (t₁ ∩ t₂) ⊆ s ○ t₁ ∩ s
 variable (s t)
 
 theorem disjSups_comm : s ○ t = t ○ s := by
-  ext
-  rw [mem_disjSups, mem_disjSups]
-  -- Porting note: `exists₂_comm` no longer works with `∃ _ ∈ _, ∃ _ ∈ _, _`
-  constructor <;>
-  · rintro ⟨a, ha, b, hb, hd, hs⟩
-    rw [disjoint_comm] at hd
-    rw [sup_comm] at hs
-    exact ⟨b, hb, a, ha, hd, hs⟩
+  aesop (add simp disjoint_comm, simp sup_comm)
 
 instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
 
 end DisjSups
-
-open FinsetFamily
 
 section DistribLattice
 
@@ -518,8 +509,6 @@ def diffs : Finset α → Finset α → Finset α := image₂ (· \ ·)
 scoped[FinsetFamily] infixl:74 " \\\\ " => Finset.diffs
   -- This notation is meant to have higher precedence than `\` and `⊓`, but still within the
   -- realm of other binary notation
-
-open FinsetFamily
 
 variable {s t} {a b c : α}
 
@@ -600,8 +589,6 @@ def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
 
 @[inherit_doc]
 scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
-
-open FinsetFamily
 
 variable {s t} {a : α}
 

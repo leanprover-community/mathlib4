@@ -3,8 +3,10 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Andrew Yang
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
-import Mathlib.CategoryTheory.Sites.Pullback
+module
+
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
+public import Mathlib.CategoryTheory.Sites.Pullback
 
 /-!
 # functors between categories of sheaves
@@ -22,6 +24,8 @@ topological spaces X and Y.
   The adjunction between pullback and pushforward for sheaves on topological spaces.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -75,8 +79,9 @@ variable {C}
 @[simp] lemma pushforward_map (f : X ⟶ Y) {F F' : X.Sheaf C} (α : F ⟶ F') :
     ((pushforward C f).map α).1 = (Presheaf.pushforward C f).map α.1 := rfl
 
-variable (A : Type*) [Category.{w} A] [HasForget.{w} A] [HasColimits A] [HasLimits A]
-variable [PreservesLimits (CategoryTheory.forget A)]
+variable (A : Type*) [Category.{w} A] {FA : A → A → Type*} {CA : A → Type w}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
+variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
 variable [PreservesFilteredColimits (CategoryTheory.forget A)]
 variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 
@@ -99,7 +104,7 @@ def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
   (Opens.map f).sheafAdjunctionContinuous _ _ _
 
-instance : (pullback A f).IsLeftAdjoint  := (pullbackPushforwardAdjunction A f).isLeftAdjoint
+instance : (pullback A f).IsLeftAdjoint := (pullbackPushforwardAdjunction A f).isLeftAdjoint
 instance : (pushforward A f).IsRightAdjoint := (pullbackPushforwardAdjunction A f).isRightAdjoint
 
 end Sheaf

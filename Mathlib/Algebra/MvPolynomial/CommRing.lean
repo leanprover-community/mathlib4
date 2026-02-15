@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # Multivariate polynomials over a ring
@@ -32,6 +34,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -57,17 +61,17 @@ variable (σ a a')
 
 @[simp]
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
-  RingHom.map_sub _ _ _
+  map_sub _ _ _
 
 @[simp]
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
-  RingHom.map_neg _ _
+  map_neg _ _
 
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
   Finsupp.neg_apply _ _
 
-@[simp]
+@[simp, grind =]
 theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
   Finsupp.sub_apply _ _ _
 
@@ -87,9 +91,9 @@ section Degrees
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
-theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
-    (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
-  simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
+theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
+    (p - q).degrees ≤ p.degrees ∪ q.degrees := by
+  simpa [degrees_def] using AddMonoidAlgebra.supDegree_sub_le
 
 end Degrees
 
@@ -143,8 +147,8 @@ theorem eval_neg (f : σ → R) : eval f (-p) = -eval f p :=
 theorem hom_C (f : MvPolynomial σ ℤ →+* S) (n : ℤ) : f (C n) = (n : S) :=
   eq_intCast (f.comp C) n
 
-/-- A ring homomorphism f : Z[X_1, X_2, ...] → R
-is determined by the evaluations f(X_1), f(X_2), ... -/
+/-- A ring homomorphism `f : Z[X_1, X_2, ...] → R`
+is determined by the evaluations `f(X_1)`, `f(X_2)`, ... -/
 @[simp]
 theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
     eval₂ c (f ∘ X) x = f x := by
@@ -160,7 +164,7 @@ theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+
       exact (f.map_mul _ _).symm)
 
 /-- Ring homomorphisms out of integer polynomials on a type `σ` are the same as
-functions out of the type `σ`, -/
+functions out of the type `σ`. -/
 def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   toFun f := f ∘ X
   invFun f := eval₂Hom (Int.castRingHom S) f
@@ -175,15 +179,8 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by
-  classical
   rw [degreeOf_lt_iff h]
-  intro m hm
-  by_contra! hc
-  have h := support_sub σ f g hm
-  simp only [mem_support_iff, Ne, coeff_sub, sub_eq_zero] at hm
-  cases' Finset.mem_union.1 h with cf cg
-  · exact hm (hf m cf hc)
-  · exact hm (hg m cg hc)
+  grind [degreeOf_lt_iff]
 
 end DegreeOf
 

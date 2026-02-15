@@ -1,5 +1,5 @@
 import Mathlib.Util.Notation3
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -42,7 +42,7 @@ def testTagAppFns (n : Name) : TermElabM Unit := do
   let e ← elabTermAndSynthesize stx none
   let f ← Meta.ppExprWithInfos e
   -- Find tags for the constant `n`
-  let tags : Array Nat := f.infos.fold (init := #[]) fun tags tag info =>
+  let tags : Array Nat := f.infos.foldl (init := #[]) fun tags tag info =>
     match info with
     | .ofTermInfo info | .ofDelabTermInfo info =>
       if info.expr.isConstOf n then
@@ -53,7 +53,7 @@ def testTagAppFns (n : Name) : TermElabM Unit := do
   let fmts := tags.map (findWithTag · f.fmt)
   unless fmts.all (!·.isEmpty) do throwError "missing tag"
   let fmts := fmts.toList.flatten
-  logInfo m!"{repr <| fmts.map (·.pretty.trim)}"
+  logInfo m!"{repr <| fmts.map (·.pretty.trimAscii.copy)}"
 
 section
 /-- info: [] -/
@@ -84,14 +84,16 @@ notation3 "∀ᶠᶠ " (...) " in " f ": "
 #guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
 
 notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
-/-- info: ∃' (x : ℕ) (_ : x < 3), x < 3 : Prop -/
-#guard_msgs in #check ∃' x < 3, x < 3
+/-- info: ∃' (a : ℕ) (_ : a < 3), a < 3 : Prop -/
+#guard_msgs in #check ∃' a < 3, a < 3
+/-- info: ∃' (x : ℕ) (_ : x < 3), True : Prop -/
+#guard_msgs in #check ∃' _ < 3, True
+/-- info: ∃' (x : ℕ) (_ : x < 1) (x_1 : ℕ) (_ : x_1 < 2), x = 0 : Prop -/
+#guard_msgs in #check ∃' (x < 1) (_ < 2), x = 0
 
 def func (x : α) : α := x
 notation3 "func! " (...) ", " r:(scoped p => func p) => r
--- Make sure it handles additional arguments. Should not consume `(· * 2)`.
--- Note: right now this causes the notation to not pretty print at all.
-/-- info: func (fun x ↦ x) fun x ↦ x * 2 : ℕ → ℕ -/
+/-- info: (func! (x : ℕ → ℕ), x) fun x ↦ x * 2 : ℕ → ℕ -/
 #guard_msgs in #check (func! (x : Nat → Nat), x) (· * 2)
 
 structure MyUnit where
@@ -165,20 +167,16 @@ end
 def idStr : String → String := id
 
 /--
-error: application type mismatch
-  idStr Nat.zero
-argument
+error: Application type mismatch: The argument
   Nat.zero
 has type
-  ℕ : Type
+  ℕ
 but is expected to have type
-  String : Type
+  String
+in the application
+  idStr Nat.zero
 ---
-warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
-pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
-refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
-the notation expansion to make it matchable; pretty printing relies on deriving an expression
-matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
 -/
 #guard_msgs in
 notation3 "error" => idStr Nat.zero
@@ -201,7 +199,7 @@ local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
 example : Fin 5 := #1
 
 /--
-error: tactic 'decide' proved that the proposition
+error: Tactic `decide` proved that the proposition
   6 < 5
 is false
 -/
@@ -213,7 +211,7 @@ section test_scoped
 
 scoped[MyNotation] notation3 "π" => (3 : Nat)
 
-/-- error: unknown identifier 'π' -/
+/-- error: Unknown identifier `π` -/
 #guard_msgs in #check π
 
 open scoped MyNotation
@@ -228,16 +226,15 @@ Verifying that delaborator does not match the exact `Inhabited` instance.
 Instead, it matches that it's an application of `Inhabited.default` whose first argument is `Nat`.
 -/
 /--
-info: [notation3] syntax declaration has name Test.termδNat
-[notation3] Generating matcher for pattern default
+trace: [notation3] syntax declaration has name Test.termδNat
+---
+trace: [notation3] Generating matcher for pattern default
 [notation3] Matcher creation succeeded; assembling delaborator
 [notation3] matcher:
-      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default))
-(matchExpr✝ (Expr.isConstOf✝ · `Nat)))
+      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default)) (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
-[notation3] Defined delaborator Test.termδNat.delab
-[notation3] Adding `delab` attribute for keys [app.Inhabited.default]
+[notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
 -/
 #guard_msgs in
 set_option trace.notation3 true in
@@ -247,5 +244,21 @@ notation3 "δNat" => (default : Nat)
 #guard_msgs in #check (default : Nat)
 /-- info: δNat : ℕ -/
 #guard_msgs in #check @default Nat (Inhabited.mk 5)
+
+
+notation3 "(" "ignorez " "SVP" ")" => Sort _
+notation3 "Objet " "mathématique " "supérieur" => Type _
+notation3 "Énoncé" => Prop
+notation3 "Objet " "mathématique" => Type
+/-- info: 1 = 1 : Énoncé -/
+#guard_msgs in #check 1 = 1
+/-- info: Énoncé : Objet mathématique -/
+#guard_msgs in #check Prop
+/-- info: Nat : Objet mathématique -/
+#guard_msgs in #check Nat
+/-- info: Objet mathématique : Objet mathématique supérieur -/
+#guard_msgs in #check Type
+/-- info: PSum.{u, v} (α : (ignorez SVP)) (β : (ignorez SVP)) : (ignorez SVP) -/
+#guard_msgs in #check PSum
 
 end Test

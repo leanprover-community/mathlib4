@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits
@@ -18,6 +20,8 @@ This is in a separate file to avoid having to import the development of the abel
 `ModuleCat` in the main file about the preadditive Yoneda embedding.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -35,10 +39,10 @@ instance preservesLimits_preadditiveYonedaObj (X : C) : PreservesLimits (preaddi
     (inferInstance : PreservesLimits (yoneda.obj X))
   preservesLimits_of_reflects_of_preserves _ (forget _)
 
-instance preservesLimits_preadditiveCoyonedaObj (X : Cᵒᵖ) :
+instance preservesLimits_preadditiveCoyonedaObj (X : C) :
     PreservesLimits (preadditiveCoyonedaObj X) :=
   have : PreservesLimits (preadditiveCoyonedaObj X ⋙ forget _) :=
-    (inferInstance : PreservesLimits (coyoneda.obj X))
+    (inferInstance : PreservesLimits (coyoneda.obj (op X)))
   preservesLimits_of_reflects_of_preserves _ (forget _)
 
 instance preservesLimits_preadditiveYoneda_obj (X : C) :
@@ -47,6 +51,6 @@ instance preservesLimits_preadditiveYoneda_obj (X : C) :
 
 instance preservesLimits_preadditiveCoyoneda_obj (X : Cᵒᵖ) :
     PreservesLimits (preadditiveCoyoneda.obj X) :=
-  show PreservesLimits (preadditiveCoyonedaObj X ⋙ forget₂ _ _) from inferInstance
+  show PreservesLimits (preadditiveCoyonedaObj (unop X) ⋙ forget₂ _ _) from inferInstance
 
 end CategoryTheory

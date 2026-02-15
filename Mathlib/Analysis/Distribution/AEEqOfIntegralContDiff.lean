@@ -3,14 +3,15 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.PartitionOfUnity
-import Mathlib.Geometry.Manifold.Metrizable
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+module
+
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 # Functions which vanish as distributions vanish as functions
 
-In a finite dimensional normed real vector space endowed with a Borel measure, consider a locally
+In a finite-dimensional normed real vector space endowed with a Borel measure, consider a locally
 integrable function whose integral against all compactly supported smooth functions vanishes. Then
 the function is almost everywhere zero.
 This is proved in `ae_eq_zero_of_integral_contDiff_smul_eq_zero`.
@@ -19,8 +20,10 @@ A version for two functions having the same integral when multiplied by smooth c
 functions is also given in `ae_eq_of_integral_contDiff_smul_eq`.
 
 These are deduced from the same results on finite-dimensional real manifolds, given respectively
-as `ae_eq_zero_of_integral_smooth_smul_eq_zero` and `ae_eq_of_integral_smooth_smul_eq`.
+as `ae_eq_zero_of_integral_contMDiff_smul_eq_zero` and `ae_eq_of_integral_contMDiff_smul_eq`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Metric Function Set TopologicalSpace
 
@@ -38,7 +41,7 @@ variable {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
 
 /-- If a locally integrable function `f` on a finite-dimensional real manifold has zero integral
 when multiplied by any smooth compactly supported function, then `f` vanishes almost everywhere. -/
-theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
+theorem ae_eq_zero_of_integral_contMDiff_smul_eq_zero [SigmaCompactSpace M]
     (hf : LocallyIntegrable f μ)
     (h : ∀ g : M → ℝ, ContMDiff I 𝓘(ℝ) ∞ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 := by
@@ -47,7 +50,6 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
   have := ChartedSpace.locallyCompactSpace H M
   have := I.secondCountableTopology
   have := ChartedSpace.secondCountable_of_sigmaCompact H M
-  have := Manifold.metrizableSpace I M
   let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
   apply ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)
@@ -63,7 +65,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
   have : ∀ n, ∃ (g : M → ℝ), support g = v n ∧ ContMDiff I 𝓘(ℝ) ∞ g ∧ Set.range g ⊆ Set.Icc 0 1
           ∧ ∀ x ∈ s, g x = 1 := by
     intro n
-    rcases exists_msmooth_support_eq_eq_one_iff I isOpen_thickening hs.isClosed
+    rcases exists_contMDiff_support_eq_eq_one_iff I isOpen_thickening hs.isClosed
       (self_subset_thickening (u_pos n).1 s) with ⟨g, g_smooth, g_range, g_supp, hg⟩
     exact ⟨g, g_supp, g_smooth, g_range, fun x hx ↦ (hg x).1 hx⟩
   choose g g_supp g_diff g_range hg using this
@@ -86,14 +88,14 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
           rw [Real.norm_of_nonneg this.1]
           exact this.2
         exact mul_le_of_le_one_left (norm_nonneg _) this
-      · have : g n x = 0 := by rw [← nmem_support, g_supp]; contrapose! hxK; exact vK n hxK
+      · have : g n x = 0 := by rw [← notMem_support, g_supp]; contrapose! hxK; exact vK n hxK
         simp [this]
     have D : ∀ᵐ x ∂μ, Tendsto (fun n => g n x • f x) atTop (𝓝 (s.indicator f x)) := by
       filter_upwards with x
       by_cases hxs : x ∈ s
       · have : ∀ n, g n x = 1 := fun n ↦ hg n x hxs
         simp [this, indicator_of_mem hxs f]
-      · simp_rw [indicator_of_not_mem hxs f]
+      · simp_rw [indicator_of_notMem hxs f]
         apply tendsto_const_nhds.congr'
         suffices H : ∀ᶠ n in atTop, g n x = 0 by
           filter_upwards [H] with n hn using by simp [hn]
@@ -101,7 +103,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
           rw [← hs.isClosed.closure_eq, closure_eq_iInter_thickening s] at hxs
           simpa using hxs
         filter_upwards [(tendsto_order.1 u_lim).2 _ εpos] with n hn
-        rw [← nmem_support, g_supp]
+        rw [← notMem_support, g_supp]
         contrapose! hε
         exact thickening_mono hn.le s hε
     exact tendsto_integral_of_dominated_convergence bound A B C D
@@ -112,13 +114,16 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
     simpa [g_supp] using vK n
   simpa [this] using L
 
+@[deprecated (since := "2025-12-17")]
+alias ae_eq_zero_of_integral_smooth_smul_eq_zero := ae_eq_zero_of_integral_contMDiff_smul_eq_zero
+
 -- An instance with keys containing `Opens`
 instance (U : Opens M) : BorelSpace U := inferInstanceAs (BorelSpace (U : Set M))
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
   manifold has zero integral when multiplied by any smooth function compactly supported
   in `U`, then `f` vanishes almost everywhere in `U`. -/
-nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (hU : IsOpen U)
+theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' {U : Set M} (hU : IsOpen U)
     (hSig : IsSigmaCompact U) (hf : LocallyIntegrableOn f U μ)
     (h : ∀ g : M → ℝ,
       ContMDiff I 𝓘(ℝ) ∞ g → HasCompactSupport g → tsupport g ⊆ U → ∫ x, g x • f x ∂μ = 0) :
@@ -128,7 +133,7 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   let U : Opens M := ⟨U, hU⟩
   change ∀ᵐ (x : U) ∂_, _
   haveI : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
-  refine ae_eq_zero_of_integral_smooth_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
+  refine ae_eq_zero_of_integral_contMDiff_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
   · exact (locallyIntegrable_comap meas_U).mpr hf
   specialize h (Subtype.val.extend g 0) (g_smth.extend_zero g_supp)
     (g_supp.extend_zero continuous_subtype_val) ((g_supp.tsupport_extend_zero_subset
@@ -141,9 +146,13 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   · apply zero_smul
   · rintro ⟨x, rfl⟩; exact x.2
 
+@[deprecated (since := "2025-12-17")]
+alias IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' :=
+  IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero'
+
 variable [SigmaCompactSpace M]
 
-theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
+theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero {U : Set M} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)
     (h : ∀ g : M → ℝ,
       ContMDiff I 𝓘(ℝ) ∞ g → HasCompactSupport g → tsupport g ⊆ U → ∫ x, g x • f x ∂μ = 0) :
@@ -153,17 +162,21 @@ theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOp
   haveI := hU.locallyCompactSpace
   haveI := I.secondCountableTopology
   haveI := ChartedSpace.secondCountable_of_sigmaCompact H M
-  hU.ae_eq_zero_of_integral_smooth_smul_eq_zero' _
+  hU.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' _
     (isSigmaCompact_iff_sigmaCompactSpace.mpr inferInstance) hf h
+
+@[deprecated (since := "2025-12-17")]
+alias IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero :=
+  IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero
 
 /-- If two locally integrable functions on a finite-dimensional real manifold have the same integral
 when multiplied by any smooth compactly supported function, then they coincide almost everywhere. -/
-theorem ae_eq_of_integral_smooth_smul_eq
+theorem ae_eq_of_integral_contMDiff_smul_eq
     (hf : LocallyIntegrable f μ) (hf' : LocallyIntegrable f' μ) (h : ∀ (g : M → ℝ),
       ContMDiff I 𝓘(ℝ) ∞ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
     ∀ᵐ x ∂μ, f x = f' x := by
   have : ∀ᵐ x ∂μ, (f - f') x = 0 := by
-    apply ae_eq_zero_of_integral_smooth_smul_eq_zero I (hf.sub hf')
+    apply ae_eq_zero_of_integral_contMDiff_smul_eq_zero I (hf.sub hf')
     intro g g_diff g_supp
     simp only [Pi.sub_apply, smul_sub]
     rw [integral_sub, sub_eq_zero]
@@ -172,6 +185,9 @@ theorem ae_eq_of_integral_smooth_smul_eq
     · exact hf'.integrable_smul_left_of_hasCompactSupport g_diff.continuous g_supp
   filter_upwards [this] with x hx
   simpa [sub_eq_zero] using hx
+
+@[deprecated (since := "2025-12-17")]
+alias ae_eq_of_integral_smooth_smul_eq := ae_eq_of_integral_contMDiff_smul_eq
 
 end Manifold
 
@@ -184,7 +200,7 @@ when multiplied by any smooth compactly supported function, then `f` vanishes al
 theorem ae_eq_zero_of_integral_contDiff_smul_eq_zero (hf : LocallyIntegrable f μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ∞ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 :=
-  ae_eq_zero_of_integral_smooth_smul_eq_zero 𝓘(ℝ, E) hf
+  ae_eq_zero_of_integral_contMDiff_smul_eq_zero 𝓘(ℝ, E) hf
     (fun g g_diff g_supp ↦ h g g_diff.contDiff g_supp)
 
 /-- If two locally integrable functions on a finite-dimensional real vector space have the same
@@ -194,18 +210,18 @@ theorem ae_eq_of_integral_contDiff_smul_eq
     (hf : LocallyIntegrable f μ) (hf' : LocallyIntegrable f' μ) (h : ∀ (g : E → ℝ),
       ContDiff ℝ ∞ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
     ∀ᵐ x ∂μ, f x = f' x :=
-  ae_eq_of_integral_smooth_smul_eq 𝓘(ℝ, E) hf hf'
+  ae_eq_of_integral_contMDiff_smul_eq 𝓘(ℝ, E) hf hf'
     (fun g g_diff g_supp ↦ h g g_diff.contDiff g_supp)
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
-  manifold has zero integral when multiplied by any smooth function compactly supported
-  in an open set `U`, then `f` vanishes almost everywhere in `U`. -/
+  vector space has zero integral when multiplied by any smooth function compactly supported
+  in `U`, then `f` vanishes almost everywhere in `U`. -/
 theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ∞ g → HasCompactSupport g → tsupport g ⊆ U →
         ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ U → f x = 0 :=
-  hU.ae_eq_zero_of_integral_smooth_smul_eq_zero 𝓘(ℝ, E) hf
+  hU.ae_eq_zero_of_integral_contMDiff_smul_eq_zero 𝓘(ℝ, E) hf
     (fun g g_diff g_supp ↦ h g g_diff.contDiff g_supp)
 
 end VectorSpace

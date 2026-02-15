@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # The category of commutative rings has all colimits.
@@ -14,6 +16,8 @@ This file uses a "pre-automated" approach, just as for
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -39,7 +43,6 @@ on a collection of types indexed by the objects of `J`.
 inductive Prequotient
   -- There's always `of`
   | of : ∀ (j : J) (_ : F.obj j), Prequotient
-
   -- Then one generator for each operation
   | zero : Prequotient
   | one : Prequotient
@@ -125,7 +128,6 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
--- Porting note: failed to derive `Inhabited` instance
 instance InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
@@ -160,25 +162,19 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 
 @[simp]
 theorem quot_neg (x : Prequotient F) :
-    -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
-    -- annotation unless we use `by exact` to change the elaboration order.
-    (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
+    Quot.mk Setoid.r (neg x) = -(show ColimitType F from Quot.mk Setoid.r x) :=
   rfl
 
--- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
-    (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
-      (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (add x y) =
+      (show ColimitType F from Quot.mk _ x) + (show ColimitType F from Quot.mk _ y) :=
   rfl
 
--- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :
-    (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
-      (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (mul x y) =
+      (show ColimitType F from Quot.mk _ x) * (show ColimitType F from Quot.mk _ y) :=
   rfl
 
 /-- The bundled ring giving the colimit of a diagram. -/
@@ -426,7 +422,6 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
--- Porting note: failed to derive `Inhabited` instance
 instance InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
@@ -462,25 +457,23 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 
 @[simp]
 theorem quot_neg (x : Prequotient F) :
-    -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
-    -- annotation unless we use `by exact` to change the elaboration order.
-    (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
+    Quot.mk Setoid.r (neg x) = -(show ColimitType F from Quot.mk Setoid.r x) :=
   rfl
 
 -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
-    (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
-      (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (add x y) =
+      (show ColimitType F from Quot.mk _ x) + (show ColimitType F from Quot.mk _ y) :=
   rfl
 
 -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :
-    (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
-      (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (mul x y) =
+      (show ColimitType F from Quot.mk _ x) * (show ColimitType F from Quot.mk _ y) :=
   rfl
 
 /-- The bundled commutative ring giving the colimit of a diagram. -/

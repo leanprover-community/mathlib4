@@ -3,7 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.Homotopy
+module
+
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Homology.ShortComplex.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Quasi-isomorphisms
@@ -11,6 +15,8 @@ import Mathlib.Algebra.Homology.Homotopy
 A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits
@@ -50,6 +56,13 @@ lemma quasiIsoAt_iff' (f : K ⟶ L) (i j k : ι) (hi : c.prev j = i) (hk : c.nex
   rw [quasiIsoAt_iff]
   exact ShortComplex.quasiIso_iff_of_arrow_mk_iso _ _
     (Arrow.isoOfNatIso (natIsoSc' C c i j k hi hk) (Arrow.mk f))
+
+lemma quasiIsoAt_of_retract {f : K ⟶ L} {f' : K' ⟶ L'}
+    (h : RetractArrow f f') (i : ι) [K.HasHomology i] [L.HasHomology i]
+    [K'.HasHomology i] [L'.HasHomology i] [hf' : QuasiIsoAt f' i] :
+    QuasiIsoAt f i := by
+  rw [quasiIsoAt_iff] at hf' ⊢
+  exact ShortComplex.quasiIso_of_retract (h.map (shortComplexFunctor C c i))
 
 lemma quasiIsoAt_iff_isIso_homologyMap (f : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :
@@ -223,11 +236,17 @@ lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   simpa only [← quasiIso_iff_of_arrow_mk_iso φ φ' e]
 
+lemma quasiIso_of_retractArrow {f : K ⟶ L} {f' : K' ⟶ L'}
+    (h : RetractArrow f f') [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+    [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] [QuasiIso f'] :
+    QuasiIso f where
+  quasiIsoAt i := quasiIsoAt_of_retract h i
+
 namespace HomologicalComplex
 
 section PreservesHomology
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂] [Preadditive C₁] [Preadditive C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂] [Preadditive C₁] [Preadditive C₂]
   {K L : HomologicalComplex C₁ c} (φ : K ⟶ L) (F : C₁ ⥤ C₂) [F.Additive]
   [F.PreservesHomology]
 
@@ -274,35 +293,70 @@ variable (C c)
 def quasiIso [CategoryWithHomology C] :
     MorphismProperty (HomologicalComplex C c) := fun _ _ f => QuasiIso f
 
-variable {C c}
+variable {C c} [CategoryWithHomology C]
 
 @[simp]
-lemma mem_quasiIso_iff [CategoryWithHomology C] (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
+lemma mem_quasiIso_iff (f : K ⟶ L) : quasiIso C c f ↔ QuasiIso f := by rfl
+
+instance : (quasiIso C c).IsMultiplicative where
+  id_mem _ := by
+    rw [mem_quasiIso_iff]
+    infer_instance
+  comp_mem _ _ hf hg := by
+    rw [mem_quasiIso_iff] at hf hg ⊢
+    infer_instance
+
+instance : (quasiIso C c).HasTwoOutOfThreeProperty where
+  of_postcomp f g hg hfg := by
+    rw [mem_quasiIso_iff] at hg hfg ⊢
+    rwa [← quasiIso_iff_comp_right f g]
+  of_precomp f g hf hfg := by
+    rw [mem_quasiIso_iff] at hf hfg ⊢
+    rwa [← quasiIso_iff_comp_left f g]
+
+instance : (quasiIso C c).IsStableUnderRetracts where
+  of_retract h hg := by
+    rw [mem_quasiIso_iff] at hg ⊢
+    exact quasiIso_of_retractArrow h
+
+instance : (quasiIso C c).RespectsIso :=
+  MorphismProperty.respectsIso_of_isStableUnderComposition
+    (fun _ _ _ (_ : IsIso _) ↦ by rw [mem_quasiIso_iff]; infer_instance)
 
 end HomologicalComplex
 
 end
 
-section
+namespace HomotopyEquiv
 
 variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
   {c : ComplexShape ι} {K L : HomologicalComplex C c}
-  (e : HomotopyEquiv K L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+  (e : HomotopyEquiv K L)
 
-instance : QuasiIso e.hom where
-  quasiIsoAt n := by
-    classical
-    rw [quasiIsoAt_iff_isIso_homologyMap]
-    exact (e.toHomologyIso n).isIso_hom
+instance quasiIsoAt_hom (n : ι) [K.HasHomology n] [L.HasHomology n] :
+    QuasiIsoAt e.hom n := by
+  classical
+  rw [quasiIsoAt_iff, ShortComplex.quasiIso_iff]
+  exact (e.toHomologyIso n).isIso_hom
 
-instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
+instance quasiIsoAt_inv (n : ι) [K.HasHomology n] [L.HasHomology n] :
+    QuasiIsoAt e.inv n :=
+  e.symm.quasiIsoAt_hom n
 
-variable (C c)
+instance quasiIso_hom [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
+    QuasiIso e.hom :=
+  ⟨fun _ => inferInstance⟩
 
-lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
+instance quasiIso_inv [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
+    QuasiIso e.inv :=
+  ⟨fun _ => inferInstance⟩
+
+end HomotopyEquiv
+
+lemma homotopyEquivalences_le_quasiIso
+    {ι : Type*} (C : Type u) [Category.{v} C] [Preadditive C]
+    (c : ComplexShape ι) [CategoryWithHomology C] :
     homotopyEquivalences C c ≤ quasiIso C c := by
   rintro K L _ ⟨e, rfl⟩
   simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance
-
-end

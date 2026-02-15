@@ -3,15 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Compactness.Compact
+module
+
+public import Mathlib.Topology.Compactness.Compact
 /-!
 # Locally compact spaces
 
-We define the following classes of topological spaces:
-* `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
-* `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
-  neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
+This file contains basic results about locally compact spaces.
 -/
+
+@[expose] public section
 
 open Set Filter Topology TopologicalSpace
 
@@ -40,9 +41,6 @@ protected theorem Topology.IsClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLo
   exists_compact_mem_nhds x :=
     let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
     ⟨f ⁻¹' K, hf.isCompact_preimage hK, hf.continuous.continuousAt hKx⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.weaklyLocallyCompactSpace := IsClosedEmbedding.weaklyLocallyCompactSpace
 
 protected theorem IsClosed.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) : WeaklyLocallyCompactSpace s :=
@@ -90,7 +88,7 @@ instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
   have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
- .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
+  .of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
 
 section Pi
 
@@ -176,6 +174,15 @@ theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCom
   let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU
   ⟨L, hL, subset_interior_iff_mem_nhdsSet.2 hKL, hLU⟩
 
+/-- In a (possibly non-Hausdorff) locally compact space, for every compact set `K`,
+`𝓝ˢ K` has a basis consisting of compact sets. -/
+theorem IsCompact.nhdsSet_basis_isCompact [LocallyCompactSpace X] {K : Set X} (hK : IsCompact K) :
+    (𝓝ˢ K).HasBasis (fun L ↦ L ∈ 𝓝ˢ K ∧ IsCompact L) id := by
+  rw [hasBasis_self, (hasBasis_nhdsSet _).forall_iff (by grind)]
+  intro U ⟨hU, h_KU⟩
+  obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between hK hU h_KU
+  exact ⟨L, by rwa [← subset_interior_iff_mem_nhdsSet], hL, hLU⟩
+
 theorem IsOpenQuotientMap.locallyCompactSpace [LocallyCompactSpace X] {f : X → Y}
     (hf : IsOpenQuotientMap f) : LocallyCompactSpace Y where
   local_compact_nhds := by
@@ -198,22 +205,13 @@ theorem Topology.IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X �
   rw [hf.isCompact_preimage_iff]
   exacts [hs.inter_right hZ, hUZ ▸ by gcongr]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.locallyCompactSpace := IsInducing.locallyCompactSpace
-
 protected theorem Topology.IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isClosed_range.isLocallyClosed
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.locallyCompactSpace := IsClosedEmbedding.locallyCompactSpace
-
 protected theorem Topology.IsOpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsOpenEmbedding f) : LocallyCompactSpace X :=
   hf.isInducing.locallyCompactSpace hf.isOpen_range.isLocallyClosed
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locallyCompactSpace := IsOpenEmbedding.locallyCompactSpace
 
 protected theorem IsLocallyClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     (hs : IsLocallyClosed s) : LocallyCompactSpace s :=

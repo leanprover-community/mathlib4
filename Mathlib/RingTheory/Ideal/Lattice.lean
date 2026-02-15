@@ -3,9 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # The lattice of ideals in a ring
@@ -16,6 +19,8 @@ Some basic results on lattice operations on ideals: `⊥`, `⊤`, `⊔`, `⊓`.
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -31,6 +36,14 @@ section Semiring
 namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
+
+instance (priority := low) : IsTwoSided (⊥ : Ideal α) :=
+  ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩
+
+instance (priority := low) : IsTwoSided (⊤ : Ideal α) := ⟨fun _ _ ↦ trivial⟩
+
+instance (priority := low) {ι} (I : ι → Ideal α) [∀ i, (I i).IsTwoSided] : (⨅ i, I i).IsTwoSided :=
+  ⟨fun _ h ↦ (Submodule.mem_iInf _).mpr (mul_mem_right _ _ <| (Submodule.mem_iInf _).mp h ·)⟩
 
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
@@ -53,7 +66,6 @@ section Lattice
 
 variable {R : Type u} [Semiring R]
 
--- Porting note: is this the right approach? or is there a better way to prove? (next 4 decls)
 theorem mem_sup_left {S T : Ideal R} : ∀ {x : R}, x ∈ S → x ∈ S ⊔ T :=
   @le_sup_left _ _ S T
 
@@ -70,15 +82,12 @@ theorem mem_sSup_of_mem {S : Set (Ideal R)} {s : Ideal R} (hs : s ∈ S) :
 theorem mem_sInf {s : Set (Ideal R)} {x : R} : x ∈ sInf s ↔ ∀ ⦃I⦄, I ∈ s → x ∈ I :=
   ⟨fun hx I his => hx I ⟨I, iInf_pos his⟩, fun H _I ⟨_J, hij⟩ => hij ▸ fun _S ⟨hj, hS⟩ => hS ▸ H hj⟩
 
-@[simp 1001] -- Porting note: increased priority to appease `simpNF`
 theorem mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
   Iff.rfl
 
-@[simp 1001] -- Porting note: increased priority to appease `simpNF`
 theorem mem_iInf {ι : Sort*} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
   Submodule.mem_iInf _
 
-@[simp 1001] -- Porting note: increased priority to appease `simpNF`
 theorem mem_bot {x : R} : x ∈ (⊥ : Ideal R) ↔ x = 0 :=
   Submodule.mem_bot _
 

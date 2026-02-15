@@ -3,11 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Algebra.Lie.IdealOperations
-import Mathlib.Order.Hom.Basic
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.BaseChange
+public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Solvable Lie algebras
@@ -32,6 +34,8 @@ prove that it is solvable when the Lie algebra is Noetherian.
 
 lie algebra, derived series, derived length, solvable, radical
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -82,10 +86,11 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
 @[gcongr, mono]
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
-  revert l; induction' k with k ih <;> intro l h₂
-  · rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
-  · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
-    cases' h with h h
+  induction k generalizing l with
+  | zero => rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
+  | succ k ih =>
+    have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
+    rcases h with h | h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
       exact LieSubmodule.mono_lie (ih (le_refl k)) (ih (le_refl k))
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
@@ -129,8 +134,7 @@ open TensorProduct in
       (derivedSeriesOfIdeal R L k I).baseChange A := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, ← LieSubmodule.baseChange_top,
-    LieSubmodule.lie_baseChange]
+  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, LieSubmodule.lie_baseChange]
 
 open TensorProduct in
 @[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
@@ -226,8 +230,8 @@ private theorem coe_derivedSeries_eq_int_aux (R₁ R₂ L : Type*) [CommRing R�
 
 theorem coe_derivedSeries_eq_int (k : ℕ) :
     (derivedSeries R L k : Set L) = (derivedSeries ℤ L k : Set L) := by
-  show ((derivedSeries R L k).toSubmodule : Set L) = ((derivedSeries ℤ L k).toSubmodule : Set L)
-  rw [derivedSeries_def, derivedSeries_def]
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule, derivedSeries_def,
+    derivedSeries_def]
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -235,12 +239,10 @@ theorem coe_derivedSeries_eq_int (k : ℕ) :
     rw [LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.lieIdeal_oper_eq_linear_span']
     rw [Set.ext_iff] at ih
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule] at ih
-    simp only [Subtype.exists, exists_prop, ih]
+    simp only [ih]
     apply le_antisymm
     · exact coe_derivedSeries_eq_int_aux _ _ L k ih
-    · simp only [← ih]
-      apply coe_derivedSeries_eq_int_aux _ _ L k
-      simp [ih]
+    · simp
 
 end LieIdeal
 
@@ -432,7 +434,7 @@ instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
   dsimp only [derivedAbelianOfIdeal]
-  cases' h : derivedLengthOfIdeal R L I with k
+  rcases h : derivedLengthOfIdeal R L I with - | k
   · dsimp; infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 
@@ -440,22 +442,19 @@ theorem derivedLength_zero (I : LieIdeal R L) [IsSolvable I] :
     derivedLengthOfIdeal R L I = 0 ↔ I = ⊥ := by
   let s := { k | derivedSeriesOfIdeal R L k I = ⊥ }
   change sInf s = 0 ↔ _
-  have hne : s ≠ ∅ := by
-    obtain ⟨k, hk⟩ := IsSolvable.solvable R I
-    refine Set.Nonempty.ne_empty ⟨k, ?_⟩
-    rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
-  simp [s, hne]
+  have hne : s.Nonempty :=
+    have ⟨k, hk⟩ := IsSolvable.solvable R I
+    ⟨k, by rwa [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk⟩
+  simp [s, hne.ne_empty]
 
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable I] :
     derivedAbelianOfIdeal I = ⊥ ↔ I = ⊥ := by
   dsimp only [derivedAbelianOfIdeal]
-  split -- Porting note: Original tactic was `cases' h : derivedAbelianOfIdeal R L I with k`
-  · rename_i h
-    rw [derivedLength_zero] at h
-    rw [h]
+  split
+  · simp_all only [derivedLength_zero]
   · rename_i k h
     obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
-    have h₃ : I ≠ ⊥ := by intro contra; apply h₂; rw [contra]; apply derivedSeries_of_bot_eq_bot
+    have h₃ : I ≠ ⊥ := by rintro rfl; apply h₂; apply derivedSeries_of_bot_eq_bot
     simp only [h₂, h₃]
 
 end LieAlgebra

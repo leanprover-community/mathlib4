@@ -3,11 +3,13 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Unit
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Unit
 
 /-!
 # Limits and colimits in comma categories
@@ -20,10 +22,12 @@ category, and show that the appropriate forgetful functors create limits.
 The duals of all the above are also given.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -153,6 +157,20 @@ instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [HasColimitsOfSize.{w, 
     [PreservesColimitsOfSize.{w, w'} L] : HasColimitsOfSize.{w, w'} (Comma L R) :=
   ⟨fun _ _ => inferInstance⟩
 
+instance preservesColimitsOfShape_fst [HasColimitsOfShape J A] [HasColimitsOfShape J B]
+    [PreservesColimitsOfShape J L] : PreservesColimitsOfShape J (Comma.fst L R) where
+  preservesColimit :=
+    preservesColimit_of_preserves_colimit_cocone
+      (coconeOfPreservesIsColimit _ (colimit.isColimit _) (colimit.isColimit _))
+      (colimit.isColimit _)
+
+instance preservesColimitsOfShape_snd [HasColimitsOfShape J A] [HasColimitsOfShape J B]
+    [PreservesColimitsOfShape J L] : PreservesColimitsOfShape J (Comma.snd L R) where
+  preservesColimit :=
+    preservesColimit_of_preserves_colimit_cocone
+      (coconeOfPreservesIsColimit _ (colimit.isColimit _) (colimit.isColimit _))
+      (colimit.isColimit _)
+
 end Comma
 
 namespace Arrow
@@ -178,6 +196,14 @@ instance hasColimitsOfShape [HasColimitsOfShape J T] : HasColimitsOfShape J (Arr
 
 instance hasColimits [HasColimits T] : HasColimits (Arrow T) :=
   ⟨fun _ _ => inferInstance⟩
+
+instance preservesColimitsOfShape_leftFunc [HasColimitsOfShape J T] :
+    PreservesColimitsOfShape J (Arrow.leftFunc : _ ⥤ T) := by
+  apply Comma.preservesColimitsOfShape_fst
+
+instance preservesColimitsOfShape_rightFunc [HasColimitsOfShape J T] :
+    PreservesColimitsOfShape J (Arrow.rightFunc : _ ⥤ T) := by
+  apply Comma.preservesColimitsOfShape_snd
 
 end Arrow
 

@@ -3,37 +3,33 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-! Shifted morphisms
 
 Given a category `C` endowed with a shift by an additive monoid `M` and two
 objects `X` and `Y` in `C`, we consider the types `ShiftedHom X Y m`
-defined as `X ⟶ (Y⟦m⟧)` for all `m : M`, and the composition on these
+defined as `X ⟶ Y⟦m⟧` for all `m : M`, and the composition on these
 shifted hom.
 
-## TODO
-
-* redefine Ext-groups in abelian categories using `ShiftedHom` in the derived category.
-* study the `R`-module structures on `ShiftedHom` when `C` is `R`-linear
-
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
   {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M] [HasShift E M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
-this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`. -/
-def ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ (Y⟦m⟧)
-
-instance [Preadditive C] (X Y : C) (n : M) : AddCommGroup (ShiftedHom X Y n) := by
-  dsimp only [ShiftedHom]
-  infer_instance
+this is the type of morphisms `X ⟶ (Y⟦m⟧)` for `m : M`. -/
+abbrev ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ Y⟦m⟧
 
 namespace ShiftedHom
 
@@ -92,7 +88,7 @@ lemma comp_mk₀_id {a : M} (f : ShiftedHom X Y a) (m₀ : M) (hm₀ : m₀ = 0)
     f.comp (mk₀ m₀ hm₀ (𝟙 Y)) (by rw [hm₀, zero_add]) = f := by
   simp [comp_mk₀]
 
-@[simp 1100]
+@[simp]
 lemma mk₀_comp_mk₀ (f : X ⟶ Y) (g : Y ⟶ Z) {a b c : M} (h : b + a = c)
     (ha : a = 0) (hb : b = 0) :
     (mk₀ a ha f).comp (mk₀ b hb g) h = mk₀ c (by rw [← h, ha, hb, add_zero]) (f ≫ g) := by
@@ -163,8 +159,14 @@ def map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] :
   F.map f ≫ (F.commShiftIso a).hom.app Y
 
 @[simp]
+lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.CommShift M] :
+    (ShiftedHom.mk₀ m₀ hm₀ f).map F = .mk₀ _ hm₀ (F.map f) := by
+  subst hm₀
+  simp [map, mk₀, shiftFunctorZero', F.commShiftIso_zero M, ← Functor.map_comp_assoc]
+
+@[simp]
 lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
-  simp [map, Functor.commShiftIso, Functor.CommShift.iso]
+  simp [map]
 
 lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
@@ -177,7 +179,54 @@ lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
   simp only [Functor.map_comp, assoc]
   erw [← NatTrans.naturality_assoc]
   simp only [Functor.comp_map, F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
-    ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id, assoc]
+    ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id]
+
+section Preadditive
+
+variable [Preadditive C] [Preadditive D]
+
+@[simp]
+lemma map_add {a : M} (α₁ α₂ : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] [F.Additive] :
+    (α₁ + α₂).map F = α₁.map F + α₂.map F := by
+  simp [ShiftedHom.map, F.map_add]
+
+@[simp]
+lemma map_zero {a : M} (F : C ⥤ D) [F.CommShift M] [F.Additive] :
+    (0 : ShiftedHom X Y a).map F = 0 := by
+  simp [ShiftedHom.map]
+
+end Preadditive
+
+section Linear
+
+variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]
+
+@[simp]
+lemma comp_smul
+    [∀ (a : M), Functor.Linear R (shiftFunctor C a)]
+    (r : R) {a b c : M} (α : ShiftedHom X Y a) (β : ShiftedHom Y Z b) (h : b + a = c) :
+    α.comp (r • β) h = r • α.comp β h := by
+  rw [comp, Functor.map_smul, comp, Linear.smul_comp, Linear.comp_smul]
+
+@[simp]
+lemma smul_comp
+    (r : R) {a b c : M} (α : ShiftedHom X Y a) (β : ShiftedHom Y Z b) (h : b + a = c) :
+    (r • α).comp β h = r • α.comp β h := by
+  rw [comp, comp, Linear.smul_comp]
+
+@[simp]
+lemma mk₀_smul (m₀ : M) (hm₀ : m₀ = 0) (r : R) {f : X ⟶ Y} :
+    mk₀ m₀ hm₀ (r • f) = r • mk₀ m₀ hm₀ f := by
+  simp [mk₀]
+
+variable [Preadditive D] [Linear R D]
+
+@[simp]
+lemma map_smul (r : R) {a : M} (α : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] [F.Linear R] :
+    (r • α).map F = r • (α.map F) := by
+  simp [ShiftedHom.map, F.map_smul]
+
+end Linear
 
 end ShiftedHom
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # Preservation of zero objects and zero morphisms
@@ -21,6 +23,8 @@ We provide the following results:
 * functors which preserve initial or terminal objects preserve zero morphisms.
 
 -/
+
+@[expose] public section
 
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
@@ -115,6 +119,10 @@ instance (F : C ⥤ D ⥤ E) [∀ X, (F.obj X).PreservesZeroMorphisms] :
 instance (F : C ⥤ D ⥤ E) [F.PreservesZeroMorphisms] (Y : D) :
     (F.flip.obj Y).PreservesZeroMorphisms where
 
+omit [HasZeroMorphisms C] in
+@[simp] lemma whiskerRight_zero {F G : C ⥤ D} (H : D ⥤ E) [H.PreservesZeroMorphisms] :
+    whiskerRight (0 : F ⟶ G) H = 0 := by cat_disch
+
 end ZeroMorphisms
 
 section ZeroObject
@@ -174,7 +182,7 @@ end ZeroObject
 section
 
 variable [HasZeroObject D] [HasZeroMorphisms D]
-  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
+  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category* J]
 
 include hG
 

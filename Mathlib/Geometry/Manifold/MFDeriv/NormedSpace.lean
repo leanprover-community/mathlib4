@@ -3,17 +3,21 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
 
-The API in this file is mostly copied from `Mathlib.Geometry.Manifold.ContMDiff.NormedSpace`,
+The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/NormedSpace.lean`,
 providing the same statements for higher smoothness. In this file, we do the same for
 differentiability.
 
 -/
+
+public section
 
 open Set ChartedSpace IsManifold
 open scoped Topology Manifold
@@ -81,32 +85,20 @@ end Module
 
 /-! ### Linear maps between normed spaces are differentiable -/
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
 theorem MDifferentiableWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
-  Differentiable.comp_mdifferentiableWithinAt (g := (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableWithinAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
 nonrec theorem MDifferentiableAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {x : M}
     (hf : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f x) :
     MDifferentiableAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
-  Differentiable.comp_mdifferentiableAt (g := (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
 
 theorem MDifferentiableOn.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M}
@@ -121,34 +113,20 @@ theorem MDifferentiable.clm_precomp
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
   (hf x).clm_precomp
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
 theorem MDifferentiableWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
-  Differentiable.comp_mdifferentiableWithinAt (F' := (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-    (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableWithinAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6024
-we needed to add the named arguments `𝕜 := 𝕜` and `F := ((F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))`
-to `ContinuousLinearMap.differentiable`.
--/
 theorem MDifferentiableAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M}
     (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f x) :
     MDifferentiableAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
       (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
-  Differentiable.comp_mdifferentiableAt (F' := (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-    (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)
-    (ContinuousLinearMap.differentiable (𝕜 := 𝕜) (F := ((F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₃))
+  Differentiable.comp_mdifferentiableAt
+    (ContinuousLinearMap.differentiable
       (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
 
 nonrec theorem MDifferentiableOn.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M}
@@ -171,7 +149,7 @@ theorem MDifferentiableWithinAt.clm_comp
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2)
     (f := fun x => (g x, f x)) (differentiable_fst.clm_comp differentiable_snd)
-    (hg.prod_mk_space hf)
+    (hg.prodMk_space hf)
 
 theorem MDifferentiableAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {x : M}
     (hg : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) g x)
@@ -198,7 +176,7 @@ theorem MDifferentiableWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : 
   DifferentiableWithinAt.comp_mdifferentiableWithinAt (t := univ)
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
     (by apply (Differentiable.differentiableAt _).differentiableWithinAt
-        exact differentiable_fst.clm_apply differentiable_snd) (hg.prod_mk_space hf)
+        exact differentiable_fst.clm_apply differentiable_snd) (hg.prodMk_space hf)
     (by simp_rw [mapsTo_univ])
 
 /-- Applying a linear map to a vector is differentiable. Version in vector spaces. For a
@@ -209,7 +187,7 @@ theorem MDifferentiableAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → 
   DifferentiableWithinAt.comp_mdifferentiableWithinAt (t := univ)
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
     (by apply (Differentiable.differentiableAt _).differentiableWithinAt
-        exact differentiable_fst.clm_apply differentiable_snd) (hg.prod_mk_space hf)
+        exact differentiable_fst.clm_apply differentiable_snd) (hg.prodMk_space hf)
     (by simp_rw [mapsTo_univ])
 
 theorem MDifferentiableOn.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M}
@@ -260,7 +238,7 @@ theorem MDifferentiableWithinAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f 
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2)
     (f := fun x => (g x, f x)) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
-    (hg.prod_mk_space hf)
+    (hg.prodMk_space hf)
 
 nonrec theorem MDifferentiableAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {x : M}
     (hg : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) g x)
@@ -269,7 +247,7 @@ nonrec theorem MDifferentiableAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2)
     (f := fun x => (g x, f x)) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
-    (hg.prod_mk_space hf)
+    (hg.prodMk_space hf)
 
 theorem MDifferentiableOn.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {s : Set M}
     (hg : MDifferentiableOn I 𝓘(𝕜, F₁ →L[𝕜] F₃) g s)
@@ -289,12 +267,12 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
-  ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp_mdifferentiableWithinAt x
-    (hf.prod_mk hg)
+  ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
+    (hf.prodMk hg)
 
 theorem MDifferentiableAt.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
     (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
-  ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp x (hf.prod_mk hg)
+  ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)
 
 theorem MDifferentiableOn.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableOn I 𝓘(𝕜) f s)
     (hg : MDifferentiableOn I 𝓘(𝕜, V) g s) : MDifferentiableOn I 𝓘(𝕜, V) (fun p => f p • g p) s :=
