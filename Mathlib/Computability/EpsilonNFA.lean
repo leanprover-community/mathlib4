@@ -363,6 +363,7 @@ lemma IsPath.concat_split_inl_inr {s : σ₁} {t : σ₂} {x : List (Option α)}
         · exact hq
         · exact concat_proj_inr h_path
 
+@[simp]
 theorem accepts_concat : (concat M₁ M₂).accepts = M₁.accepts * M₂.accepts := by
   ext x
   simp only [Language.mem_mul]
@@ -589,6 +590,7 @@ lemma IsPath.kstar_exists_decomp {s t : σ} {x : List (Option α)}
         · simp [hu_acc, hy]
         · exact hL' y hy
 
+@[simp]
 theorem accepts_kstar : (kstar M).accepts = (M.accepts)∗ := by
   ext x
   constructor
@@ -718,29 +720,15 @@ theorem IsRegular.mul {L₁ L₂ : Language α} (h₁ : IsRegular L₁) (h₂ : 
   classical
   have ⟨σ₁, _, M₁, hM₁⟩ := h₁
   have ⟨σ₂, _, M₂, hM₂⟩ := h₂
-  let N₁ := M₁.toNFA.toεNFA
-  let N₂ := M₂.toNFA.toεNFA
-  let N := εNFA.concat N₁ N₂
-  apply isRegular_iff.mpr
-  use Set (σ₁ ⊕ σ₂), inferInstance, N.toNFA.toDFA
-  subst hM₁ hM₂
-  rw [NFA.toDFA_correct, εNFA.toNFA_correct]
-  rw [← DFA.toNFA_correct, ← NFA.toεNFA_correct]
-  rw [← DFA.toNFA_correct, ← NFA.toεNFA_correct]
-  exact εNFA.accepts_concat
+  let M := εNFA.concat M₁.toNFA.toεNFA M₂.toNFA.toεNFA
+  exact ⟨Set (σ₁ ⊕ σ₂), inferInstance, M.toNFA.toDFA, by aesop⟩
 
 /-- Regular languages are closed under Kleene star. -/
 theorem IsRegular.kstar {L : Language α} (h : IsRegular L) : IsRegular L∗ := by
   classical
   have ⟨σ, _, M, hM⟩ := h
-  let N₁ := M.toNFA.toεNFA
-  let N := εNFA.kstar N₁
-  apply isRegular_iff.mpr
-  use Set (Option σ), inferInstance, N.toNFA.toDFA
-  subst hM
-  rw [NFA.toDFA_correct, εNFA.toNFA_correct]
-  rw [← DFA.toNFA_correct, ← NFA.toεNFA_correct]
-  exact εNFA.accepts_kstar
+  let M := εNFA.kstar M.toNFA.toεNFA
+  exact ⟨Set (Option σ), inferInstance, M.toNFA.toDFA, by aesop⟩
 
 end Language
 
