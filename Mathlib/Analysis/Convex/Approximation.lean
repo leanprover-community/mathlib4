@@ -249,8 +249,8 @@ theorem real_univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : Convex
 /-- The real version of `univ_sSup_of_countable_affine_eq`. -/
 theorem real_univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
     (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
-    ∃ 𝓕' : Set (E → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = φ ∧ ∀ f ∈ 𝓕',
-    ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = l + const E c :=
+    ∃ 𝓕' : Set (E → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = φ ∧
+      ∀ f ∈ 𝓕', ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = l + const E c :=
   univ_sSup_of_countable_affine_eq (𝕜 := ℝ) hφc hφcv
 
 /-- The real version of `univ_sSup_of_nat_affine_eq`. -/
