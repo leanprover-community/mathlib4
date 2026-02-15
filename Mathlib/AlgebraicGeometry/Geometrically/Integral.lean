@@ -40,13 +40,6 @@ a field, `X ×[Y] Spec K` is integral. -/
 class GeometricallyIntegral (f : X ⟶ Y) : Prop where
   geometrically_isIntegral : geometrically IsIntegral f
 
---move
-lemma geometrically_inf (P Q : ObjectProperty Scheme) :
-    geometrically (P ⊓ Q) = geometrically P ⊓ geometrically Q := by
-  simp only [geometrically_eq_universally, ← universally_inf]
-  congr with X Y f
-  exact ⟨fun H ↦ ⟨(H · · |>.1), (H · · |>.2)⟩, fun H a b ↦ ⟨H.1 a b, H.2 a b⟩⟩
-
 lemma GeometricallyIntegral.eq_geometrically :
     @GeometricallyIntegral = geometrically IsIntegral := by
   ext; exact geometricallyIntegral_iff _
