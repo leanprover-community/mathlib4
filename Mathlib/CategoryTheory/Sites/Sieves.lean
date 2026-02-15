@@ -26,7 +26,7 @@ sieve, pullback
 @[expose] public section
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -1169,6 +1169,57 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+
+/-- A variant of `Sieve.functor` with universe lifting. -/
+abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type max w v₁ :=
+  S.functor ⋙ CategoryTheory.uliftFunctor
+
+/-- A variant of `Sieve.natTransOfLe` with universe lifting. -/
+@[simps]
+def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
+    Sieve.uliftFunctor.{w} S ⟶ Sieve.uliftFunctor.{w} T where
+  app _ f := ⟨f.down.1, h _ f.down.2⟩
+
+/-- A variant of `Sieve.functorInclusion` with universe lifting. -/
+@[simps! app]
+def uliftFunctorInclusion (S : Sieve X) :
+    S.uliftFunctor ⟶ uliftYoneda.obj.{w} X :=
+  Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
+
+/-- A variant of `Sieve.toFunctor` with universe lifting. -/
+@[simps]
+def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
+    uliftYoneda.obj.{w} Y ⟶ Sieve.uliftFunctor.{w} S where
+  app Z g := ⟨g.down ≫ f, S.downward_closed hf g.down⟩
+
+theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
+    uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
+  rfl
+
+/-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
+instance uliftFunctorInclusion_is_mono (S : Sieve X) :
+    Mono (Sieve.uliftFunctorInclusion.{w} S) :=
+  ⟨fun _ _ h => by
+    ext Y y
+    refine ULift.ext _ _ (Subtype.ext_iff.2 ?_)
+    simpa using congr_fun (NatTrans.congr_app h Y) y⟩
+
+/-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
+@[simps]
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.obj.{w} X) :
+    Sieve X where
+  arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
+  downward_closed := by
+    intro Y Z _ ⟨t, ht⟩ g
+    refine ⟨R.map g.op t, ?_⟩
+    simp [FunctorToTypes.naturality _ _ f, ht]
+
+theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
+    Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
+  cat_disch
+
+instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
+  ⟨⟨{ app := fun _ a => ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
     {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}

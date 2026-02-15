@@ -50,9 +50,19 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
 
 /-- Variant of the Yoneda embedding which allows a raise in the universe level
 for the category of types. -/
-@[pp_with_univ, simps!]
+@[pp_with_univ, simps! obj_obj obj_map map_app]
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
+
+@[deprecated uliftYoneda_obj_map (since := "2026-02-13")]
+lemma uliftYoneda_obj_map_down (X : C) {Y Z : Cᵒᵖ} (f : Y ⟶ Z) (a : (uliftYoneda.{w}.obj X).obj Y) :
+    ((uliftYoneda.{w}.obj X).map f a).down = f.unop ≫ a.down :=
+  rfl
+
+@[deprecated uliftYoneda_map_app (since := "2026-02-13")]
+lemma uliftYoneda_map_app_down {X Y : C} (f : X ⟶ Y) (Z : Cᵒᵖ) (a : (uliftYoneda.{w}.obj X).obj Z) :
+    ((uliftYoneda.{w}.map f).app Z a).down = a.down ≫ f :=
+  rfl
 
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftYoneda.{w} (C := C) ≅ yoneda`. -/
