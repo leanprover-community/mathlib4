@@ -223,40 +223,40 @@ variable [AddCommGroup E] [Module ℝ E] [IsTopologicalAddGroup E] [ContinuousSM
 theorem real_sSup_affine_eq (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     sSup {f | f ≤ s.restrict φ ∧ ∃ (l : E →L[ℝ] ℝ) (c : ℝ),
-    f = s.restrict l + const s c} = s.restrict φ := by
-  convert sSup_affine_eq (𝕜 := ℝ) hsc hφc hφcv
+    f = s.restrict l + const s c} = s.restrict φ :=
+  sSup_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `sSup_of_countable_affine_eq`. -/
 theorem real_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     ∃ 𝓕' : Set (s → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = s.restrict φ ∧ ∀ f ∈ 𝓕',
-    ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.restrict l + const s c := by
-  convert sSup_of_countable_affine_eq (𝕜 := ℝ) hsc hφc hφcv
+    ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.restrict l + const s c :=
+  sSup_of_countable_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `sSup_of_nat_affine_eq`. -/
 theorem real_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     ∃ (l : ℕ → E →L[ℝ] ℝ) (c : ℕ → ℝ),
-    ⨆ i, s.restrict (l i) + const s (c i) = s.restrict φ := by
-  convert sSup_of_nat_affine_eq (𝕜 := ℝ) hsc hφc hφcv
+    ⨆ i, s.restrict (l i) + const s (c i) = s.restrict φ :=
+  sSup_of_nat_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `univ_sSup_affine_eq`. -/
 theorem real_univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
-    sSup {f | f ≤ φ ∧ ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = l + const E c} = φ := by
-  convert univ_sSup_affine_eq (𝕜 := ℝ) hφc hφcv
+    sSup {f | f ≤ φ ∧ ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = l + const E c} = φ :=
+  univ_sSup_affine_eq (𝕜 := ℝ) hφc hφcv
 
 /-- The real version of `univ_sSup_of_countable_affine_eq`. -/
 theorem real_univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
     (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
     ∃ 𝓕' : Set (E → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = φ ∧ ∀ f ∈ 𝓕',
-    ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = l + const E c := by
-  convert univ_sSup_of_countable_affine_eq (𝕜 := ℝ) hφc hφcv
+    ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = l + const E c :=
+  univ_sSup_of_countable_affine_eq (𝕜 := ℝ) hφc hφcv
 
 /-- The real version of `univ_sSup_of_nat_affine_eq`. -/
 theorem real_univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
     (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
-    ∃ (l : ℕ → E →L[ℝ] ℝ) (c : ℕ → ℝ), ⨆ i, (l i) + const E (c i) = φ := by
-  convert univ_sSup_of_nat_affine_eq (𝕜 := ℝ) hφc hφcv
+    ∃ (l : ℕ → E →L[ℝ] ℝ) (c : ℕ → ℝ), ⨆ i, (l i) + const E (c i) = φ :=
+  univ_sSup_of_nat_affine_eq (𝕜 := ℝ) hφc hφcv
 
 end Real
 
