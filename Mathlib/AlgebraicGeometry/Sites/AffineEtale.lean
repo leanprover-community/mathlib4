@@ -320,8 +320,8 @@ instance : S.smallEtaleTopology.WEqualsLocallyBijective A :=
 
 variable (S A)
 
-/-- The category of sheafs on the small affine étale site is equivalent to the category of
-sheafs on the small étale site. -/
+/-- The category of sheaves on the small affine étale site is equivalent to the category of
+sheaves on the small étale site. -/
 @[simps! inverse]
 noncomputable def AffineEtale.sheafEquiv :
     Sheaf (AffineEtale.topology S) A ≌ Sheaf S.smallEtaleTopology A :=
