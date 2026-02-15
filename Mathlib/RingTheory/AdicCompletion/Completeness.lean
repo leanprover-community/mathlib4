@@ -121,12 +121,12 @@ theorem restrictScalars_ofPowSmul_range_eq_eval_ker {n : ℕ} :
   use liftOfValZero I hx; simp
 
 lemma map_lsum_smul_comp_finsuppSum {ι : Type*} (f : ι → R) :
-    map I (lsum R fun i ↦ f i • .id) ∘ₗ (finsupp_sum I M ι) =
+    map I (lsum R fun i ↦ f i • .id) ∘ₗ (finsuppSum I M ι) =
       (lsum (AdicCompletion I R)) fun i ↦ ((of I R) (f i) • .id :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I M) := by
   ext
-  -- simp [finsupp_sum]
-  simp only [finsupp_sum, LinearMap.coe_comp, coe_lsum, Function.comp_apply, lsingle_apply,
+  -- simp [finsuppSum]
+  simp only [finsuppSum, LinearMap.coe_comp, coe_lsum, Function.comp_apply, lsingle_apply,
     _root_.map_zero, sum_single_index, map_mk, mk_apply_coe, AdicCauchySequence.map_apply_coe,
     LinearMap.smul_apply, LinearMap.id_coe, id_eq, map_smul, mkQ_apply, lsum_comp_lsingle,
     smul_eval, smul_eq_mul, of_apply, Ideal.Quotient.mk_eq_mk]
@@ -147,8 +147,8 @@ theorem pow_smul_top_eq_eval_ker {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
     image_smul_top_eq_range_lsum]
   simp only [SetLike.coe_sort_coe, ← map_lsum_smul_comp_finsuppSum]
   rw [LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top_of_surjective _ <|
-    Function.RightInverse.surjective (g := finsupp_sumInv ..) (fun _ ↦ by
-      rw [← LinearMap.comp_apply, finsupp_sum_comp_sumInv, LinearMap.id_apply]))]
+    Function.RightInverse.surjective (g := finsuppSumInv ..) (fun _ ↦ by
+      rw [← LinearMap.comp_apply, finsuppSum_comp_sumInv, LinearMap.id_apply]))]
   rintro _ ⟨x, rfl⟩
   have : Function.Surjective ((lsum R fun i : s ↦ i.val • (LinearMap.id : M →ₗ[R] M)).codRestrict
     (I ^ n • ⊤) (fun _ ↦ by simp [← hs, span_smul_eq, smul_top_eq_range_lsum])) := by
