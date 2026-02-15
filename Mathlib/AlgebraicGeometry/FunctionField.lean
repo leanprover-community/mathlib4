@@ -49,8 +49,6 @@ noncomputable instance [IrreducibleSpace X] (U : X.Opens) [Nonempty U] :
   (X.germToFunctionField U).hom.toAlgebra
 
 noncomputable instance [IsIntegral X] : Field X.functionField :=
-  haveI : Subsingleton ↑(irreducibleComponents ↥X) :=
-    irreducibleComponents_eq_singleton (X := X) ▸ inferInstance
   (isField_stalk_of_closure_mem_irreducibleComponents X _
     (by simp [irreducibleComponents_eq_singleton])).toField
 

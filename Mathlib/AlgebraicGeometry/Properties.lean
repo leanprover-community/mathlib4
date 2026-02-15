@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
@@ -22,7 +23,6 @@ We provide some basic properties of schemes
 -/
 
 @[expose] public section
-
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -202,35 +202,23 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
 /-- If `X` is reduced and has finitely many irreducible components, then the stalks at the generic
 points of the irreducible components are fields. -/
 lemma isField_stalk_of_closure_mem_irreducibleComponents
-    (x : X) (hx : closure {x} ∈ irreducibleComponents X)
-    [IsReduced X] [Finite (irreducibleComponents X)] :
+    (x : X) (hx : closure {x} ∈ irreducibleComponents X) [IsReduced X] :
     IsField (X.presheaf.stalk x) := by
-  refine ⟨Nontrivial.exists_pair_ne, mul_comm, fun {a} ha ↦ ?_⟩
-  obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
-  let V : Set X := (⋃₀ (irreducibleComponents X \ {closure {x}}))ᶜ
-  have hV : IsOpen V := by
-    simp only [V, Set.sUnion_eq_biUnion, isOpen_compl_iff]
-    exact (Set.Finite.diff ‹Finite _›).isClosed_biUnion
-      fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
-  have hxV : x ∈ V := by
-    suffices ∀ Z ∈ irreducibleComponents X, x ∈ Z → Z = closure {x} by simpa [V, not_imp_not]
-    intro Z hZ hxZ
-    suffices closure {x} ⊆ Z from (hx.2 hZ.1 this).antisymm this
-    rwa [(isClosed_of_mem_irreducibleComponents _ hZ).closure_subset_iff, Set.singleton_subset_iff]
-  have hVx : V ⊆ closure {x} := by
-    intro a ha
-    have : irreducibleComponent a = closure {x} :=
-      not_not.mp fun H ↦ ha (Set.mem_sUnion_of_mem mem_irreducibleComponent
-          ⟨irreducibleComponent_mem_irreducibleComponents _, H⟩)
-    exact this.le mem_irreducibleComponent
-  rw [← TopCat.Presheaf.germ_res_apply (U := ⟨V, hV⟩ ⊓ U) _ inf_le_right.hom _ ⟨hxV, hxU⟩] at ha ⊢
-  rw [← isUnit_iff_exists_inv, ← Scheme.mem_basicOpen]
-  have := (basicOpen_eq_bot_iff _).not.mpr (ne_of_apply_ne _ (ha.trans_eq (by simp)))
-  simp only [← SetLike.coe_injective.eq_iff, TopologicalSpace.Opens.coe_bot, ← ne_eq,
-    ← Set.nonempty_iff_ne_empty] at this
-  obtain ⟨y, hy⟩ := this
-  exact (specializes_iff_mem_closure.mpr (hVx (X.basicOpen_le _ hy).1)).mem_open
-    (X.basicOpen _).isOpen hy
+  wlog hX : ∃ R, X = Spec R
+  · obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
+    have inst : IsReduced (X.affineCover.X i) := isReduced_of_isOpenImmersion (X.affineCover.f i)
+    refine (asIso <| (X.affineCover.f i).stalkMap x).commRingCatIsoToRingEquiv.isField
+      (this _ x ?_ ⟨_, rfl⟩)
+    rw [(X.affineCover.f i).isOpenEmbedding.closure_eq_preimage_closure_image, Set.image_singleton]
+    exact preimage_mem_irreducibleComponents hx (X.affineCover.f i).isOpenEmbedding
+      ⟨X.affineCover.f i x, subset_closure rfl, _, rfl⟩
+  obtain ⟨R, rfl⟩ := hX
+  replace hx : x.asIdeal ∈ minimalPrimes R := by
+    rwa [← PrimeSpectrum.vanishingIdeal_singleton, PrimeSpectrum.vanishingIdeal_mem_minimalPrimes]
+  rw [← PrimeSpectrum.subsingleton_iff_isField_of_isReduced]
+  exact IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes _ hx
+    ((Spec.structureSheaf R).presheaf.stalk x)
+
 /-- A scheme `X` is integral if its is nonempty,
 and `𝒪ₓ(U)` is an integral domain for each `U ≠ ∅`. -/
 class IsIntegral : Prop where
