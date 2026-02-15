@@ -206,7 +206,7 @@ theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (
   have hd₁₂'' := p'.dart_snd_mem_support_of_mem_darts <| p'.darts_takeUntil_subset hp'v₂ hd₁
   -- Since `d₁.snd` and `d₂.fst` are on a cycle, that vertex can only appear once,
   -- so `d₁`/`d₂` must be the last/first dart of `pt`/`pd` respectively
-  have ⟨_, hpd⟩ := count_support_append_eq_one hd₁ hd₂ (SetCoe.ext <| h hd₁₂' hd₂₁') <|
+  have hpd := firstDart_eq_of_count_support_append_eq_one hd₁ hd₂ (SetCoe.ext <| h hd₁₂' hd₂₁') <|
     p'.take_spec hp'v₂ ▸ (hp.rotate hpv₁).count_support_of_mem hd₁₂'' (hd₁₂ <| · ▸ hnv₁)
   -- But that means that `d₁`/`d₂` are to/from `v₂` respectively,
   -- so `v₂` is in both subgraphs and in particular it is in `G₁`, contradiction

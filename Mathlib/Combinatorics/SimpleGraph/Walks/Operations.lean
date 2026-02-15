@@ -764,31 +764,35 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
 if the first dart ends where the second dart begins and there's only one appearance of that vertex
 in the concatenation of the two walks, then those darts must be adjacent to the `v` vertex that
 connects the two walks. -/
-theorem count_support_append_eq_one [DecidableEq V] {G : SimpleGraph V} {u v w : V}
+theorem lastDart_eq_of_count_support_append_eq_one [DecidableEq V] {G : SimpleGraph V} {u v w : V}
     {p₁ : G.Walk u v} {p₂ : G.Walk v w} {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ p₁.darts) (hd₂ : d₂ ∈ p₂.darts)
     (hd : d₁.snd = d₂.fst) (hc : (p₁.append p₂).support.count d₁.snd = 1) :
-    p₁.lastDart (by cases p₁ <;> simp_all) = d₁ ∧ p₂.firstDart (by cases p₂ <;> simp_all) = d₂ := by
-  constructor
-  · rw [lastDart_eq_getLast_darts]
-    have := List.mem_append.mp <| p₁.darts.dropLast_concat_getLast (List.ne_nil_of_mem hd₁) ▸ hd₁
-    refine (List.mem_singleton.mp <| this.resolve_left fun hd₁' ↦ ?_).symm
-    rw [p₁.support_append_eq_support_dropLast_append p₂, List.count_append] at hc
-    have := List.one_le_count_iff.mpr <| dart_fst_mem_support_of_mem_darts _ hd₂
-    apply p₁.support.dropLast.not_mem_of_count_eq_zero (a := d₁.snd) <| by lia
-    rw [← cons_map_snd_darts,
-      List.dropLast_cons_of_ne_nil <| List.map_eq_nil_iff.not.mpr <| List.ne_nil_of_mem hd₁,
-      List.mem_cons, ← List.map_dropLast]
-    exact .inr <| List.mem_map_of_mem hd₁'
-  · rw [firstDart_eq_head_darts]
-    have := List.mem_cons.mp <| p₂.darts.cons_head_tail (List.ne_nil_of_mem hd₂) ▸ hd₂
-    refine (this.resolve_right fun hd₂' ↦ ?_).symm
-    rw [p₁.support_append p₂, List.count_append] at hc
-    have := List.one_le_count_iff.mpr <| dart_snd_mem_support_of_mem_darts _ hd₁
-    apply p₂.support.tail.not_mem_of_count_eq_zero (a := d₂.fst) <| by lia
-    rw [← map_fst_darts_append,
-      List.tail_append_of_ne_nil <| List.map_eq_nil_iff.not.mpr <| List.ne_nil_of_mem hd₂,
-      List.mem_append, ← List.map_tail]
-    exact .inl <| List.mem_map_of_mem hd₂'
+    p₁.lastDart (by cases p₁ <;> simp_all) = d₁ := by
+  rw [lastDart_eq_getLast_darts]
+  have := List.mem_append.mp <| p₁.darts.dropLast_concat_getLast (List.ne_nil_of_mem hd₁) ▸ hd₁
+  refine (List.mem_singleton.mp <| this.resolve_left fun hd₁' ↦ ?_).symm
+  rw [p₁.support_append_eq_support_dropLast_append p₂, List.count_append] at hc
+  have := List.one_le_count_iff.mpr <| dart_fst_mem_support_of_mem_darts _ hd₂
+  apply p₁.support.dropLast.not_mem_of_count_eq_zero (a := d₁.snd) <| by lia
+  rw [← cons_map_snd_darts,
+    List.dropLast_cons_of_ne_nil <| List.map_eq_nil_iff.not.mpr <| List.ne_nil_of_mem hd₁,
+    List.mem_cons, ← List.map_dropLast]
+  exact .inr <| List.mem_map_of_mem hd₁'
+
+theorem firstDart_eq_of_count_support_append_eq_one [DecidableEq V] {G : SimpleGraph V} {u v w : V}
+    {p₁ : G.Walk u v} {p₂ : G.Walk v w} {d₁ d₂ : G.Dart} (hd₁ : d₁ ∈ p₁.darts) (hd₂ : d₂ ∈ p₂.darts)
+    (hd : d₁.snd = d₂.fst) (hc : (p₁.append p₂).support.count d₁.snd = 1) :
+    p₂.firstDart (by cases p₂ <;> simp_all) = d₂ := by
+  rw [firstDart_eq_head_darts]
+  have := List.mem_cons.mp <| p₂.darts.cons_head_tail (List.ne_nil_of_mem hd₂) ▸ hd₂
+  refine (this.resolve_right fun hd₂' ↦ ?_).symm
+  rw [p₁.support_append p₂, List.count_append] at hc
+  have := List.one_le_count_iff.mpr <| dart_snd_mem_support_of_mem_darts _ hd₁
+  apply p₂.support.tail.not_mem_of_count_eq_zero (a := d₂.fst) <| by lia
+  rw [← map_fst_darts_append,
+    List.tail_append_of_ne_nil <| List.map_eq_nil_iff.not.mpr <| List.ne_nil_of_mem hd₂,
+    List.mem_append, ← List.map_tail]
+  exact .inl <| List.mem_map_of_mem hd₂'
 
 end Walk
 
