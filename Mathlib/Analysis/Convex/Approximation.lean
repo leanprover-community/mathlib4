@@ -5,11 +5,11 @@ Authors: Yongxi Lin
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.Data.Real.StarOrdered
-public import Mathlib.Topology.Semicontinuity.Lindelof
+
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Topology.Semicontinuity.Lindelof
 
 /-!
 # Approximation to convex functions
@@ -65,7 +65,7 @@ variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [IsScalarTower ℝ 𝕜
 any point `x ∈ s` and `a < φ x`, there exists a continuous affine linear function `f` in `E` such
 that `f ≤ φ` on `s` and `f x = a`. This is an auxiliary lemma used in the proof of
 `ConvexOn.sSup_affine_eq.` -/
-lemma exists_affine {x : E} {a : ℝ} (hx : x ∈ s) (hax : a < φ x) (hsc : IsClosed s)
+lemma exists_affine_le_of_lt {x : E} {a : ℝ} (hx : x ∈ s) (hax : a < φ x) (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), s.restrict (re ∘ l) + const s c ≤ s.restrict φ ∧
     re (l x) + c = a := by
@@ -98,11 +98,12 @@ theorem sSup_affine_eq (hsc : IsClosed s)
   ext x
   rw [sSup_apply]
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ (fun r ⟨f, hf⟩ => ?_) (fun r hr => ?_)
-  · obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x from by grind) hsc hφc hφcv
+  · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x from by grind)
+      hsc hφc hφcv
     exact ⟨φ x - 1, hlc.2 ▸ ⟨⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩⟩
   · exact hf ▸ f.2.1 x
   · obtain ⟨z, hz⟩ := exists_between hr
-    obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) x.2 hz.2 hsc hφc hφcv
+    obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) x.2 hz.2 hsc hφc hφcv
     exact ⟨z, hlc.2 ▸ ⟨⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩, hz.1⟩
 
 /-- The countable version of `sSup_affine_eq`. -/
@@ -115,7 +116,7 @@ theorem sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClose
       ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.restrict (re ∘ l) + const s c}
     have hl : IsLUB 𝓕 (s.restrict φ) := by
       refine (hφcv.sSup_affine_eq (𝕜 := 𝕜) hsc hφc) ▸ isLUB_csSup ?_ ?_
-      · obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) hs.some_mem
+      · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) hs.some_mem
           (by grind : φ hs.some - 1 < φ (⟨hs.some, hs.some_mem⟩ : s)) hsc hφc hφcv
         exact ⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩
       · exact (bddAbove_def.2 ⟨φ ∘ Subtype.val, fun y hy => hy.1⟩)
@@ -182,7 +183,7 @@ theorem univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
   let 𝓕 := {f | f ≤ φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = (re ∘ l) + const E c}
   have hl : IsLUB 𝓕 φ := by
     refine (hφcv.univ_sSup_affine_eq (𝕜 := 𝕜) hφc) ▸ isLUB_csSup ?_ ?_
-    · obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) (@mem_univ E 0)
+    · obtain ⟨l, c, hlc⟩ := exists_affine_le_of_lt (𝕜 := 𝕜) (@mem_univ E 0)
         (by grind : φ 0 - 1 < φ (⟨0, @mem_univ E 0⟩ : univ)) isClosed_univ
         (lowerSemicontinuousOn_univ_iff.2 hφc) hφcv
       exact ⟨(re ∘ l) + const E c, fun x => hlc.1 ⟨x, mem_univ x⟩, ⟨l, c, rfl⟩⟩
