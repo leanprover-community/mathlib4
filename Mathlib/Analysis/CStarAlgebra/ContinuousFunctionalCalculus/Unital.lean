@@ -714,7 +714,7 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
   star_comm_self := by
     rw [Commute, SemiconjBy]
     by_cases h : ContinuousOn f (spectrum R a)
-    · rw [← cfc_star, ← fun_cfc_mul .., ← cfc_mul ..]
+    · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
       congr! 2
       exact mul_comm _ _
     · simp [cfc_apply_of_not_continuousOn a h]
@@ -799,7 +799,7 @@ lemma cfc_map_div (f g : R → R) (a : A) (hg' : ∀ x ∈ spectrum R a, g x ≠
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     cfc (fun x ↦ f x / g x) a = cfc f a * Ring.inverse (cfc g a) := by
   simp only [div_eq_mul_inv]
-  rw [fun_cfc_mul .., cfc_inv g a hg']
+  rw [cfc_mul .., cfc_inv g a hg']
 
 section ContinuousOnInvSpectrum
 -- TODO: this section should probably be moved to another file altogether
