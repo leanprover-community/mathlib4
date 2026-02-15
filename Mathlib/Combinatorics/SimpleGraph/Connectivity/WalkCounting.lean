@@ -97,15 +97,9 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
   | succ n ih =>
     simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
-      Finset.mem_univ, Set.iUnion_true]
-    ext p
-    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,
-      Set.mem_iUnion, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
+      Finset.mem_univ, Set.iUnion_true, Finset.coe_map, Set.iUnion_coe_set]
     congr!
-    rename_i w _ q
-    have := Set.ext_iff.mp (ih w v) q
-    simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
-    rw [← this]
+    grind
 
 variable {G} in
 theorem mem_finsetWalkLength_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
