@@ -62,19 +62,19 @@ variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [IsScalarTower ℝ 𝕜
   [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E]
 
 /-- Let `φ : E → ℝ` be a convex and lower-semicontinuous function on a closed convex subset `s`. For
-any point `x ∈ s` and `a < φ x`, there exists a function `f ≤ φ` on `s` that is the restriction to
-`s` of a continuous affine linear function in `E` and `f x = a`. This is an auxiliary lemma
-used in the proof of `ConvexOn.sSup_affine_eq.` -/
-lemma exists_affine {x : E} {a} (hx : x ∈ s) (hax : a < φ x) (hsc : IsClosed s)
+any point `x ∈ s` and `a < φ x`, there exists a continuous affine linear function `f` in `E` such
+that `f ≤ φ` on `s` and `f x = a`. This is an auxiliary lemma used in the proof of
+`ConvexOn.sSup_affine_eq.` -/
+lemma exists_affine {x : E} {a : ℝ} (hx : x ∈ s) (hax : a < φ x) (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
-    ∃ f, s.restrict f ≤ s.restrict φ ∧
-    ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.restrict (re ∘ l) + const s c ∧ f x = a := by
+    ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), s.restrict (re ∘ l) + const s c ≤ s.restrict φ ∧
+    re (l x) + c = a := by
   let A := { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 }
   obtain ⟨L, ⟨b, hLb⟩⟩ := geometric_hahn_banach_point_closed (𝕜 := 𝕜) hφcv.convex_re_epigraph
-    (hφc.isClosed_re_epigraph hsc) (by simp [A, hax] : (x.1, ofReal a) ∉ A)
+    (hφc.isClosed_re_epigraph hsc) (by simp [A, hax] : (x, ofReal a) ∉ A)
   let u := L.comp (.inl 𝕜 E 𝕜)
   let c := (re (L (0, 1)))⁻¹
-  refine ⟨⟨s.restrict (re ∘ (- c • u)) + const s (c * re (u x) + a), fun z => ?_, ?_⟩, ?_⟩
+  refine ⟨- c • u, c * re (u x) + a, fun z => ?_, ?_⟩
   · have hv (v : 𝕜) : v * L (0, 1) = L (0, v) := by rw [← smul_eq_mul, ← map_smul]; simp
     have hine {w : E} (h : w ∈ s) : re (L (x, 0)) + re (L (0, 1)) * a
       < re (L (w, 0)) + re (L (0, 1)) * φ w := by
@@ -82,10 +82,9 @@ lemma exists_affine {x : E} {a} (hx : x ∈ s) (hax : a < φ x) (hsc : IsClosed 
       rw [← coprod_comp_inl_inr L] at hw
       simpa [-coprod_comp_inl_inr, ← hv (ofReal a), ← hv (ofReal (φ w)), mul_comm a,
         mul_comm (φ w)] using hw
-    have hc : 0 < c := inv_pos.2 (pos_of_right_mul_lt_le (lt_of_add_lt_add_left (hine x.2)) hax.le)
+    have hc : 0 < c := inv_pos.2 (pos_of_right_mul_lt_le (lt_of_add_lt_add_left (hine hx)) hax.le)
     simpa [smul_re, u, c, mul_add, ← mul_assoc, inv_mul_cancel₀ (ne_of_gt (inv_pos.1 hc))]
       using mul_le_mul_of_nonneg_left (hine z.2).le hc.le
-  · exact ⟨- c • u, c * re (u x) + a, rfl⟩
   · simp [u, c, smul_re]
 
 /-- A function `φ : E → ℝ` that is convex and lower-semicontinuous on a closed convex subset `s` is
@@ -99,12 +98,12 @@ theorem sSup_affine_eq (hsc : IsClosed s)
   ext x
   rw [sSup_apply]
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ (fun r ⟨f, hf⟩ => ?_) (fun r hr => ?_)
-  · obtain ⟨f, hf⟩ := exists_affine (𝕜 := 𝕜) (show φ x - 1 < φ x from by grind) hsc hφc hφcv
-    exact ⟨φ x - 1, hf ▸ mem_range_self _⟩
+  · obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) x.2 (show φ x - 1 < φ x from by grind) hsc hφc hφcv
+    exact ⟨φ x - 1, hlc.2 ▸ ⟨⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩⟩
   · exact hf ▸ f.2.1 x
   · obtain ⟨z, hz⟩ := exists_between hr
-    obtain ⟨f, hf⟩ := exists_affine (𝕜 := 𝕜) hz.2 hsc hφc hφcv
-    exact ⟨z, hf ▸ mem_range_self _, hz.1⟩
+    obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) x.2 hz.2 hsc hφc hφcv
+    exact ⟨z, hlc.2 ▸ ⟨⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩, rfl⟩, hz.1⟩
 
 /-- The countable version of `sSup_affine_eq`. -/
 theorem sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
@@ -116,9 +115,9 @@ theorem sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClose
       ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = s.restrict (re ∘ l) + const s c}
     have hl : IsLUB 𝓕 (s.restrict φ) := by
       refine (hφcv.sSup_affine_eq (𝕜 := 𝕜) hsc hφc) ▸ isLUB_csSup ?_ ?_
-      · obtain ⟨f, hf⟩ := exists_affine (𝕜 := 𝕜)
+      · obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) hs.some_mem
           (by grind : φ hs.some - 1 < φ (⟨hs.some, hs.some_mem⟩ : s)) hsc hφc hφcv
-        exact ⟨f, f.2⟩
+        exact ⟨s.restrict (re ∘ l) + const s c, hlc.1, l, c, rfl⟩
       · exact (bddAbove_def.2 ⟨φ ∘ Subtype.val, fun y hy => hy.1⟩)
     have hr (f) (hf : f ∈ 𝓕) : LowerSemicontinuous f := by
       obtain ⟨l, c, hlc⟩ := hf.2
@@ -184,15 +183,16 @@ theorem univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
   let 𝓕 := {f | f ≤ φ ∧ ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f = (re ∘ l) + const E c}
   have hl : IsLUB 𝓕 φ := by
     refine (hφcv.univ_sSup_affine_eq (𝕜 := 𝕜) hφc) ▸ isLUB_csSup ?_ ?_
-    · obtain ⟨⟨f, ⟨he, ⟨l, c, hlc⟩⟩⟩, hf⟩ := exists_affine (𝕜 := 𝕜) (by grind : φ 0 - 1 <
-        φ (⟨0, @mem_univ E 0⟩ : univ)) isClosed_univ (lowerSemicontinuousOn_univ_iff.2 hφc) hφcv
+    · obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) (@mem_univ E 0)
+        (by grind : φ 0 - 1 < φ (⟨0, @mem_univ E 0⟩ : univ)) isClosed_univ
+        (lowerSemicontinuousOn_univ_iff.2 hφc) hφcv
       refine ⟨fun x => f ⟨x, mem_univ x⟩, fun x => he ⟨x, mem_univ x⟩, ⟨l, c, ?_⟩⟩
       ext x
       simpa using congrFun hlc ⟨x, mem_univ x⟩
     · exact (bddAbove_def.2 ⟨φ, fun y hy => hy.1⟩)
   have hr (f) (hf : f ∈ 𝓕) : LowerSemicontinuous f := by
     obtain ⟨l, c, hlc⟩ := hf.2
-    exact Continuous.lowerSemicontinuous (hlc ▸ Continuous.add (by fun_prop) (by fun_prop))
+    exact Continuous.lowerSemicontinuous (hlc ▸ by fun_prop)
   obtain ⟨𝓕', h𝓕'⟩ := exists_countable_lowerSemicontinuous_isLUB hr hl
   refine ⟨𝓕', h𝓕'.2.1, h𝓕'.2.2.csSup_eq ?_, fun f hf => (h𝓕'.1 hf).2⟩
   by_contra!
