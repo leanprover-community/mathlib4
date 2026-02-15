@@ -230,8 +230,8 @@ theorem real_sSup_affine_eq (hsc : IsClosed s)
 /-- The real version of `sSup_of_countable_affine_eq`. -/
 theorem real_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
-    ∃ 𝓕' : Set (s → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = s.restrict φ ∧ ∀ f ∈ 𝓕',
-    ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.restrict l + const s c :=
+    ∃ 𝓕' : Set (s → ℝ), 𝓕'.Countable ∧ sSup 𝓕' = s.restrict φ ∧
+      ∀ f ∈ 𝓕', ∃ (l : E →L[ℝ] ℝ) (c : ℝ), f = s.restrict l + const s c :=
   sSup_of_countable_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `sSup_of_nat_affine_eq`. -/
