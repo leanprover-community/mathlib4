@@ -284,20 +284,36 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
   rw [← RingHom.algebraMap_toAlgebra (X.presheaf.germ _ _ _).hom, @RingHom.quasiFinite_algebraMap]
   exact .of_isLocalization (hr.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
 
-lemma Scheme.Hom.isOpen_quasiFiniteAt
-    [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
+lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
     IsOpen { x | f.QuasiFiniteAt x } := by
+  wlog H : IsAffineHom f
+  · rw [isOpen_iff_forall_mem_open]
+    intro x hx
+    obtain ⟨_, ⟨U : Y.Opens, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
+      (Set.mem_univ (f x)) isOpen_univ
+    obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
+      hxU (f ⁻¹ᵁ U).2
+    have inst : IsAffineHom (f.resLE U V hVU) :=
+      have : IsAffine _ := hU
+      have : IsAffine _ := hV
+      isAffineHom_of_isAffine _
+    refine ⟨_, ?_, V.2.isOpenEmbedding_subtypeVal.isOpenMap _ (this (f.resLE U V hVU) inst), ?_⟩
+    · rintro _ ⟨x : V, hx : (f.resLE U V hVU).QuasiFiniteAt _, rfl⟩
+      rwa [← quasiFiniteAt_comp_iff (g := U.ι), resLE_comp_ι,
+        quasiFiniteAt_comp_iff_of_isOpenImmersion] at hx
+    · refine ⟨⟨x, hxV⟩, show (f.resLE _ _ _).QuasiFiniteAt _ from ?_, rfl⟩
+      rwa [← quasiFiniteAt_comp_iff (g := U.ι), resLE_comp_ι,
+        quasiFiniteAt_comp_iff_of_isOpenImmersion]
   obtain ⟨U, hU, e⟩ := Scheme.Hom.exists_isIso_morphismRestrict_toNormalization f
   exact e ▸ (f.toNormalization ⁻¹ᵁ U).2
 
 /-- The set of quasi-finite points of a morphism `f : X ⟶ Y` as an `X.Opens`. -/
-def Scheme.Hom.quasiFiniteLocus
-    [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] : X.Opens :=
+def Scheme.Hom.quasiFiniteLocus [LocallyOfFiniteType f] : X.Opens :=
   ⟨{ x | f.QuasiFiniteAt x }, f.isOpen_quasiFiniteAt⟩
 
 variable {f} in
 @[simp]
-lemma Scheme.Hom.mem_quasiFiniteLocus [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f]
+lemma Scheme.Hom.mem_quasiFiniteLocus [LocallyOfFiniteType f]
     {x : X} : x ∈ f.quasiFiniteLocus ↔ f.QuasiFiniteAt x := .rfl
 
 instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
@@ -307,9 +323,29 @@ instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     (SetLike.coe_injective e.symm)).hom ≫ f.toNormalization ∣_ U ≫ U.ι)) using 1
   simp
 
-lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f]
-    [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] : f.quasiFiniteLocus = ⊤ :=
+lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f] [LocallyOfFiniteType f] :
+    f.quasiFiniteLocus = ⊤ :=
   top_le_iff.mp fun x _ ↦ f.quasiFiniteAt x
+
+lemma Scheme.Hom.quasiFiniteLocus_comp {Z : Scheme} [IsOpenImmersion f]
+    (g : Y ⟶ Z) [LocallyOfFiniteType g] :
+    (f ≫ g).quasiFiniteLocus = f ⁻¹ᵁ g.quasiFiniteLocus := by
+  ext
+  simp [quasiFiniteAt_comp_iff_of_isOpenImmersion]
+
+lemma Scheme.Hom.quasiFiniteLocus_eq_top_iff [LocallyOfFiniteType f] :
+    f.quasiFiniteLocus = ⊤ ↔ LocallyQuasiFinite f := by
+  refine ⟨fun H ↦ locallyQuasiFinite_iff_isDiscrete_preimage_singleton.mpr fun x ↦ ?_,
+    fun _ ↦ f.quasiFiniteLocus_eq_top⟩
+  rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_isOpen_singleton]
+  rintro ⟨a, rfl⟩
+  rw [← (f.fiberHomeo _).symm.isOpen_image, Set.image_singleton]
+  exact (H.ge (Set.mem_univ a)).isClopen_singleton_asFiber.isOpen
+
+instance [LocallyOfFiniteType f] :
+    LocallyQuasiFinite (f.quasiFiniteLocus.ι ≫ f) := by
+  rw [← Scheme.Hom.quasiFiniteLocus_eq_top_iff, Scheme.Hom.quasiFiniteLocus_comp,
+    Scheme.Opens.ι_preimage_self]
 
 instance [LocallyQuasiFinite f] [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     IsOpenImmersion f.toNormalization := by
@@ -352,5 +388,42 @@ lemma IsClosedImmersion.eq_proper_inf_monomorphisms :
     @IsClosedImmersion = ↑@IsProper ⊓ MorphismProperty.monomorphisms Scheme := by
   ext
   exact IsClosedImmersion.iff_isProper_and_mono ..
+
+@[stacks 02UP]
+lemma exists_isFinite_morphismRestrict_of_finite_preimage_singleton
+    [IsProper f] (y : Y) (hx : (f ⁻¹' {y}).Finite) :
+    ∃ V : Y.Opens, y ∈ V ∧ IsFinite (f ∣_ V) := by
+  let V : Y.Opens := ⟨_, (f.isClosedMap _ f.quasiFiniteLocus.isOpen.isClosed_compl).isOpen_compl⟩
+  refine ⟨V, ?_, ?_⟩
+  · suffices ∀ x, f x = y → f.QuasiFiniteAt x by simpa [V, not_imp_not]
+    rintro x rfl
+    have : Finite (f.fiber (f x)) := (f.fiberHomeo (f x)).finite_iff.mpr ‹_›
+    exact Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber.mpr (isOpen_discrete _)
+  · suffices LocallyQuasiFinite (f ∣_ V) from .of_isProper_of_locallyQuasiFinite _
+    rw [← Scheme.Hom.quasiFiniteLocus_eq_top_iff]
+    ext x
+    have : f.QuasiFiniteAt ((f ⁻¹ᵁ V).ι x) := by by_contra H; exact x.2 ⟨_, H, by simp⟩
+    rw [← Scheme.Hom.quasiFiniteAt_comp_iff_of_isOpenImmersion, ← morphismRestrict_ι,
+      Scheme.Hom.quasiFiniteAt_comp_iff] at this
+    simpa
+
+@[stacks 0AH8]
+lemma exists_finite_imageι_comp_morphismRestrict_of_finite_image_preimage
+    {X Y S : Scheme} (f : X ⟶ Y) (g : Y ⟶ S) (s : S)
+    (H : (f '' ((f ≫ g) ⁻¹' {s})).Finite)
+    [IsProper (f ≫ g)] [IsSeparated g] [LocallyOfFiniteType g] :
+    ∃ U : S.Opens, s ∈ U ∧ IsFinite ((f.imageι ≫ g) ∣_ U) := by
+  have : IsProper f := .of_comp f g
+  have : IsProper (f.imageι ≫ g) := by
+    suffices UniversallyClosed (f.imageι ≫ g) from ⟨⟩
+    have : UniversallyClosed (f.toImage ≫ f.imageι ≫ g) := by
+      rw [Scheme.Hom.toImage_imageι_assoc]; infer_instance
+    refine .of_comp_surjective f.toImage _
+  refine exists_isFinite_morphismRestrict_of_finite_preimage_singleton _ _ ?_
+  refine .of_finite_image (f := f.imageι) (H.subset ?_) f.imageι.isClosedEmbedding.injective.injOn
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨x, rfl⟩ := f.toImage.surjective x
+  refine ⟨x, ?_, by simp [← Scheme.Hom.comp_apply]⟩
+  simpa [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base] using hx
 
 end AlgebraicGeometry

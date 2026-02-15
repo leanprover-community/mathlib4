@@ -110,6 +110,10 @@ instance : MorphismProperty.HasOfPostcompProperty @IsProper @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
     fun _ _ _ _ ↦ inferInstanceAs (IsProper _)
 
+instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
+  have : UniversallyClosed (f.toImage ≫ f.imageι) := by simpa
+  .of_comp_of_isSeparated _ f.imageι
+
 @[stacks 01W6 "(2)"]
 lemma IsProper.of_comp [IsProper (f ≫ g)] [IsSeparated g] : IsProper f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
