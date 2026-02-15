@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Card
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Topology.MetricSpace.Perfect
 
 /-!

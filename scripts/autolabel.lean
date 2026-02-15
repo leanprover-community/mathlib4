@@ -252,6 +252,9 @@ def mathlibLabelData : (l : Label) → LabelData l
     dirs := #[
       ".github",
       "scripts",
+      "scripts" / "nolints.json",
+      "scripts" / "nolints-style.txt",
+      "scripts" / "nolints_prime_decls.txt",
     ],
     exclusions := #[
       "scripts" / "lint-style.lean",

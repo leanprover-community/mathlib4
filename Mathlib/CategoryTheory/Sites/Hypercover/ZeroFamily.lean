@@ -125,4 +125,16 @@ lemma Precoverage.IsStableUnderComposition.of_preZeroHypercoverFamily
     · rw [← (F i).presieve₀_mem_precoverage_iff]
       exact hg i
 
+lemma Precoverage.IsStableUnderSup.of_preZeroHypercoverFamily
+    {P : PreZeroHypercoverFamily C}
+    (h : ∀ ⦃X : C⦄ ⦃E F : PreZeroHypercover.{max u v} X⦄,
+      P E → P F → P (E.sum F)) :
+    P.precoverage.IsStableUnderSup where
+  sup_mem_coverings {X} R S hR hS := by
+    obtain ⟨E, rfl⟩ := R.exists_eq_preZeroHypercover
+    obtain ⟨F, rfl⟩ := S.exists_eq_preZeroHypercover
+    rw [← PreZeroHypercover.presieve₀_sum]
+    rw [PreZeroHypercover.presieve₀_mem_precoverage_iff] at hR hS ⊢
+    exact h hR hS
+
 end CategoryTheory

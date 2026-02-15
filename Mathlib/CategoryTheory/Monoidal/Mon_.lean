@@ -11,6 +11,8 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # The category of monoids in a monoidal category.
 
@@ -752,7 +754,7 @@ def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.ma
   NatIso.ofComponents fun X ↦ Mon.mkIso (e.app _)
 
 attribute [local simp] ε_tensorHom_comp_μ_assoc in
-instance [F.LaxMonoidal] : IsMonHom (ε F) where
+instance : IsMonHom (ε F) where
 
 end LaxMonoidal
 

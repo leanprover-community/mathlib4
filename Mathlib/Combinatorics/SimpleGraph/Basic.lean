@@ -199,6 +199,8 @@ theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ 
   · rw [hl.1, hl.2]
   · rw [hr.1, hr.2, adj_comm]
 
+instance symm_adj (f : ι → V) : Std.Symm fun i j ↦ G.Adj (f i) (f j) where symm _ _ := .symm
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
@@ -206,6 +208,7 @@ Note that this should be spelled `≤`. -/
 def IsSubgraph (x y : SimpleGraph V) : Prop :=
   ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 
+/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (SimpleGraph V) :=
   ⟨IsSubgraph⟩
 
@@ -298,11 +301,12 @@ theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
   rw [iInf, sInf_adj_of_nonempty (Set.range_nonempty _), Set.forall_mem_range]
 
-/-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
+instance : PartialOrder (SimpleGraph V) where
+  __ := PartialOrder.lift _ adj_injective
+  le G H := ∀ ⦃a b⦄, G.Adj a b → H.Adj a b
+
 instance distribLattice : DistribLattice (SimpleGraph V) :=
-  { show DistribLattice (SimpleGraph V) from
-      adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
-    le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+  adj_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) where
   top.Adj := Ne
@@ -508,8 +512,11 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
   Sym2.diagSet_compl_eq_fromRel_ne.symm
 
 @[simp]
-theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ Sym2.diagSetᶜ :=
-  Sym2.irreflexive_iff_fromRel_subset_diagSet_compl G.symm |>.mp G.loopless
+theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
+  simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
+
+@[deprecated (since := "2025-12-10")]
+alias edgeSet_subset_setOf_not_isDiag := edgeSet_subset_compl_diagSet
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -542,7 +549,7 @@ allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
 @[simp]
 theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
     G.edgeSet \ (s \ Sym2.diagSet) = G.edgeSet \ s := by
-  grind [Sym2.mem_diagSet_iff_isDiag, not_isDiag_of_mem_edgeSet]
+  grind [Sym2.mem_diagSet, not_isDiag_of_mem_edgeSet]
 
 /-- Two vertices are adjacent iff there is an edge between them. The
 condition `v ≠ w` ensures they are different endpoints of the edge,
@@ -666,7 +673,7 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
   conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
   rw [← disjoint_edgeSet, edgeSet_fromEdgeSet]
-  grind [edgeSet_subset_setOf_not_isDiag]
+  grind [edgeSet_subset_compl_diagSet]
 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
