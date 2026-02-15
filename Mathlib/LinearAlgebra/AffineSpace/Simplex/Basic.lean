@@ -447,6 +447,7 @@ lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : Affine
     ← (s.restrict S hS).setInterior_map I S.subtype_injective]
   rfl
 
+section PartialOrder
 variable [PartialOrder k]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
@@ -610,6 +611,55 @@ lemma closedInterior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace 
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).closedInterior = S.subtype ⁻¹' s.closedInterior :=
   s.setInterior_restrict _ hS
+
+theorem closedInterior_face_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n)
+    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) :
+    (s.face h).closedInterior ⊆ s.closedInterior := by
+  intro p hp
+  have hp' : p ∈ affineSpan k (Set.range s.points) :=
+    Set.mem_of_mem_of_subset
+      (Set.mem_of_mem_of_subset hp (s.face h).closedInterior_subset_affineSpan)
+      (affineSpan_mono k (by simp))
+  obtain ⟨w, hw1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp'
+  rw [affineCombination_mem_closedInterior_face_iff_mem_Icc _ _ hw1] at hp
+  rw [affineCombination_mem_closedInterior_iff hw1]
+  intro i
+  by_cases hi : i ∈ fs
+  · exact hp.1 i hi
+  · simp [hp.2 i hi]
+
+end PartialOrder
+
+section LinearOrder
+variable [LinearOrder k]
+
+/-- The closed interior is the union of the open interior and the surface. -/
+theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass k]
+    {n : ℕ} [NeZero n] (s : Simplex k P n) :
+    s.closedInterior = s.interior ∪ ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
+  apply Set.Subset.antisymm
+  · intro p hp
+    obtain hp' := Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
+    obtain ⟨w, hw1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp'
+    rw [Set.mem_union, or_iff_not_imp_left]
+    intro h
+    rw [affineCombination_mem_closedInterior_iff hw1] at hp
+    simp_rw [affineCombination_mem_interior_iff hw1, Set.mem_Ioo] at h
+    push_neg +distrib at h
+    obtain ⟨j, hj⟩ : ∃ j : Fin (n + 1), w j = 0 := by
+      obtain ⟨i, hi | hi⟩ := h
+      · exact ⟨i, le_antisymm hi (hp i).1⟩
+      · have hi1 : w i = 1 := le_antisymm (hp i).2 hi
+        rw [← hi1, ← Finset.sum_erase_add _ _ (show i ∈ Finset.univ by simp), add_eq_right,
+          Finset.sum_eq_zero_iff_of_nonneg (fun j _ ↦ (hp j).1)] at hw1
+        exact ⟨i + 1, hw1 _ (by simp)⟩
+    refine Set.mem_iUnion.mpr ⟨j, ?_⟩
+    rw [faceOpposite, affineCombination_mem_closedInterior_face_iff_mem_Icc _ _ hw1]
+    exact ⟨fun k _ ↦ hp k, by simpa using hj⟩
+  · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
+    apply closedInterior_face_subset_closedInterior
+
+end LinearOrder
 
 end Simplex
 
