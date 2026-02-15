@@ -41,8 +41,6 @@ theorem isChain_singleton (a : α) : IsChain R [a] := .singleton _
 @[deprecated (since := "2025-09-24")] alias chain'_nil := isChain_nil
 @[deprecated (since := "2025-09-24")] alias chain'_singleton := isChain_singleton
 @[deprecated (since := "2025-09-24")] alias chain'_cons_cons := isChain_cons_cons
-@[deprecated (since := "2025-08-12")] alias chain'_cons := isChain_cons_cons
-
 @[deprecated (since := "2025-09-24"), nolint defLemma] alias Chain'.cons_cons := IsChain.cons_cons
 @[deprecated (since := "2025-09-24"), nolint defLemma] alias Chain'.cons := IsChain.cons_cons
 

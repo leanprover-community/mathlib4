@@ -851,9 +851,6 @@ def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type (max w v₁)} :
     simp [uliftYoneda, ← FunctorToTypes.naturality]
   right_inv x := by simp
 
-@[deprecated (since := "2025-08-04")] alias yonedaCompUliftFunctorEquiv :=
-  uliftYonedaEquiv
-
 attribute [simp] uliftYonedaEquiv_symm_apply_app
 
 lemma uliftYonedaEquiv_naturality {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type max w v₁}
@@ -1077,9 +1074,6 @@ def uliftCoyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ Type (max w v₁)} :
     ext Y ⟨y⟩
     simp [uliftYoneda, ← FunctorToTypes.naturality]
   right_inv x := by simp
-
-@[deprecated (since := "2025-08-04")] alias coyonedaCompUliftFunctorEquiv :=
-  uliftCoyonedaEquiv
 
 attribute [simp] uliftCoyonedaEquiv_symm_apply_app
 

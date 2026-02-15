@@ -79,8 +79,6 @@ lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
 
-@[deprecated (since := "2025-08-15")] alias injective_diracProba_of_T0 := injective_diracProba
-
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :
     ¬ Tendsto diracProba L (𝓝 (diracProba x)) := by
