@@ -28,6 +28,9 @@ Define the interior and boundary of a manifold.
 - `ModelWithCorners.Boundaryless.boundary_eq_empty` and `of_boundary_eq_empty`:
 `M` is boundaryless if and only if its boundary is empty
 
+- `isInteriorPoint_iff_of_mem_atlas`: a point is an interior point iff any given chart around it
+  sends it to the interior of the model; that is, the notion of interior is independent of choices
+  of charts
 - `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open and
   and the boundary is closed. This is currently only proven for C¹ manifolds.
 
@@ -206,12 +209,11 @@ section ChartIndependence
 
 /-- If a function `f : E → H` is differentiable at `x`, sends a neighbourhood `u` of `x` to a
 closed convex set `s` with nonempty interior and has surjective differential at `x`, it must send
-`x` to the interior of `s`.
-TODO: find home (`#find_home` says this file) -/
-lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv {E H : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H] [NormedSpace ℝ H] {f : E → H}
-    {x : E} (hf : DifferentiableAt ℝ f x) {u : Set E} (hu : u ∈ 𝓝 x) {s : Set H} (hs : Convex ℝ s)
-    (hs' : IsClosed s) (hs'' : (interior s).Nonempty) (hfus : Set.MapsTo f u s)
+`x` to the interior of `s`. -/
+lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
+    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H] [NormedSpace ℝ H]
+    {f : E → H} {x : E} (hf : DifferentiableAt ℝ f x) {u : Set E} (hu : u ∈ 𝓝 x) {s : Set H}
+    (hs : Convex ℝ s) (hs' : IsClosed s) (hs'' : (interior s).Nonempty) (hfus : Set.MapsTo f u s)
     (hfx : Function.Surjective (fderiv ℝ f x)) : f x ∈ interior s := by
   contrapose hfx
   have ⟨F, hF⟩ := geometric_hahn_banach_open_point hs.interior isOpen_interior hfx
@@ -253,9 +255,9 @@ lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (
   /- Since transition maps are diffeomorphisms, it suffices to show that if `e'` were to send `x`
   to the boundary of `range I`, the differential of the transition map `φ` from `e` to `e'` at `x`
   could not be surjective. -/
-  let φ := (e.extend I).symm.trans (e'.extend I)
-  have hφ : ContDiffOn 𝕜 n φ φ.source := e'.contDiffOn_extend_coord_change
-    (IsManifold.subset_maximalAtlas he') (IsManifold.subset_maximalAtlas he)
+  let φ := I.extCoordChange e e'
+  have hφ : ContDiffOn 𝕜 n φ φ.source := contDiffOn_extCoordChange
+    (IsManifold.subset_maximalAtlas he) (IsManifold.subset_maximalAtlas he')
   suffices h : Function.Surjective (fderivWithin 𝕜 φ φ.source (e.extend I x)) →
       e'.extend I x ∈ interior (range I) by
     refine e'.mem_interior_extend_target (by simp [hex']) <| h ?_
@@ -269,8 +271,8 @@ lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (
   let _ := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   have hφx : φ.source ∈ 𝓝 (e.extend I x) := by
-    simp_rw [φ, PartialEquiv.trans_source, PartialEquiv.symm_source, Filter.inter_mem_iff,
-      mem_interior_iff_mem_nhds.1 hx, true_and, e'.extend_source]
+    simp_rw [φ, extCoordChange, PartialEquiv.trans_source, PartialEquiv.symm_source,
+      Filter.inter_mem_iff, mem_interior_iff_mem_nhds.1 hx, true_and, e'.extend_source]
     exact e.extend_preimage_mem_nhds hex <| e'.open_source.mem_nhds hex'
   rw [← ContinuousLinearMap.coe_restrictScalars' (R := ℝ),
     (hφ.differentiableOn hn _ (by simp [φ, hex, hex'])).restrictScalars_fderivWithin (𝕜 := ℝ)
