@@ -67,7 +67,7 @@ lemma Filter.tendsto_of_div_tendsto_one {α E : Type*} [CommGroup E] [Topologica
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
 
-@[to_fun (attr := to_additive (attr := fun_prop, continuity))]
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
 theorem Continuous.mul (hf : Continuous f) (hg : Continuous g) :
     Continuous (f * g) :=
   continuous_mul.comp₂ hf hg
