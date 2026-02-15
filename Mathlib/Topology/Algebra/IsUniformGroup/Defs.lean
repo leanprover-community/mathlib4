@@ -661,6 +661,7 @@ attribute [local instance] IsTopologicalGroup.leftUniformSpace
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one_left :
     𝓤 G = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 (1 : G)) :=
+  rfl
 
 end IsTopologicalGroup
 
