@@ -331,6 +331,11 @@ lemma comp_coprod (f : M →L[R] N) (g₁ : M₁ →L[R] M) (g₂ : M₂ →L[R]
 lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .id R (M × N) :=
   coe_injective <| LinearMap.coprod_inl_inr
 
+@[simp]
+lemma coprod_comp_inl_inr [ContinuousAdd M₁] [ContinuousAdd M₂] (f : M × M₁ →L[R] M₂) :
+    (f ∘L .inl R M M₁).coprod (f ∘L .inr R M M₁) = f := by
+  rw [← ContinuousLinearMap.comp_coprod, coprod_inl_inr, comp_id]
+
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
