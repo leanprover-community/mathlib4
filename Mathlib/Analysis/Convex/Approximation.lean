@@ -133,7 +133,7 @@ theorem sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClose
 theorem sSup_of_nat_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     ∃ (l : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
-    ⨆ i, s.restrict (re ∘ (l i)) + const s (c i) = s.restrict φ := by
+      ⨆ i, s.restrict (re ∘ (l i)) + const s (c i) = s.restrict φ := by
   obtain ⟨𝓕', h𝓕'⟩ := hφcv.sSup_of_countable_affine_eq (𝕜 := 𝕜) hsc hφc
   by_cases! he : 𝓕'.Nonempty
   · obtain ⟨f, hf⟩ := h𝓕'.1.exists_eq_range he
