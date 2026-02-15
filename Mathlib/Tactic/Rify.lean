@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.Zify
+public import Mathlib.Tactic.Qify
 
 /-!
 # `rify` tactic
