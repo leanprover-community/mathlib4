@@ -157,7 +157,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 namespace EqualCharZero
 
 /-- `ℚ`-algebra implies equal characteristic. -/
-private lemma of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
+lemma of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
   constructor
   intro a b h_ab
@@ -175,7 +175,7 @@ section ConstructionAlgebraRat
 
 variable {R}
 
-private lemma PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
+lemma PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by
   -- `n : R` is a unit iff `(n)` is not a proper ideal in `R`.
   rw [← Ideal.span_singleton_eq_top]
@@ -189,15 +189,15 @@ private lemma PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → Char
   exact Ideal.subset_span (Set.mem_singleton _)
 
 @[coe]
-private noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=
+noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=
   fun n => (PNat.isUnit_natCast n).unit
 
-private noncomputable instance coePNatUnits
+noncomputable instance coePNatUnits
     [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : Coe ℕ+ Rˣ :=
   ⟨EqualCharZero.pnatCast⟩
 
 @[simp]
-private lemma pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] :
+lemma pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] :
     ((1 : ℕ+) : Rˣ) = 1 := by
   apply Units.ext
   rw [Units.val_one]
@@ -206,13 +206,13 @@ private lemma pnatCast_one [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
   rw [PNat.one_coe, Nat.cast_one]
 
 @[simp]
-private lemma pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] (n : ℕ+) :
+lemma pnatCast_eq_natCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] (n : ℕ+) :
     ((n : Rˣ) : R) = ↑n := by
   change ((PNat.isUnit_natCast (R := R) n).unit : R) = ↑n
   simp only [IsUnit.unit_spec]
 
 /-- Equal characteristic implies `ℚ`-algebra. -/
-private noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
+noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
     Algebra ℚ R :=
   haveI : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) := ⟨h⟩
   RingHom.toAlgebra
@@ -241,7 +241,7 @@ private noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZer
 end ConstructionAlgebraRat
 
 /-- Not mixed characteristic implies equal characteristic. -/
-private lemma of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
+lemma of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
     ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI_ne_top
   suffices CharP (R ⧸ I) 0 from CharP.charP_to_charZero _
@@ -254,7 +254,7 @@ private lemma of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero 
       exact absurd h_mixed (h p.succ p.succ_pos)
 
 /-- Equal characteristic implies not mixed characteristic. -/
-private lemma to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
+lemma to_not_mixedCharZero (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) :
     ∀ p > 0, ¬MixedCharZero R p := by
   intro p p_pos
   by_contra hp_mixedChar
