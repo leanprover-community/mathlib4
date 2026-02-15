@@ -199,8 +199,8 @@ theorem powSmulQuotInclusion_injective {a b c : ℕ} (h : c = b + a) (N : Submod
 
 theorem factorPow_powSmulQuotInclusion_comm {a b c d e : ℕ} (h : c = b + a) (h' : e = d + c) :
     (factorPow I M (show c ≤ e by lia)) ∘ₗ
-      (powSmulQuotInclusion I M (show e = (b + d) + a by lia) ⊤)
-    = (powSmulQuotInclusion I M h ⊤) ∘ₗ
+      (powSmulQuotInclusion I M (show e = (b + d) + a by lia) ⊤) =
+    (powSmulQuotInclusion I M h ⊤) ∘ₗ
       (factorPow I ↥(I ^ a • ⊤ : Submodule R M) (b.le_add_right d)) := by ext; rfl
 
 theorem powSmulQuotInclusion_range {a b c : ℕ} (h : c = b + a) :
