@@ -18,7 +18,7 @@ versions, using a `liminf` and a `limsup` respectively. Most properties are deve
 
 - `linearGrowthInf`, `linearGrowthSup`: respectively, `liminf` and `limsup` of `(u n) / n`.
 - `linearGrowthInfTopHom`, `linearGrowthSupBotHom`: the functions `linearGrowthInf`,
-`linearGrowthSup` as homomorphisms preserving finitary `Inf`/`Sup` respectively.
+  `linearGrowthSup` as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## TODO
 
