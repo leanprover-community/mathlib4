@@ -226,7 +226,7 @@ theorem KaehlerDifferential.span_range_derivation :
   suffices ∃ hx,
       fromIdeal R S ⟨x, hx⟩ ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) from
     this.snd
-  -- TODO: this proof looks like we're reinventinv `Submodule.span_le`.
+  -- TODO: this proof looks like we're reinventing `Submodule.span_le`.
   -- I'm not sure what's the RHS here though.
   refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
   · rintro _ ⟨x, rfl⟩
