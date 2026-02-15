@@ -41,14 +41,13 @@ theorem ContinuousLinearMap.coprod_comp_inl_inr {R M M₁ M₂ : Type*}
     (f ∘L .inl R M M₁).coprod (f ∘L .inr R M M₁) = f := by
   rw [← ContinuousLinearMap.comp_coprod, ContinuousLinearMap.coprod_inl_inr, comp_id]
 
-theorem pos_of_mul_lt_lt {R : Type*} [Semiring R] [LinearOrder R] {a b c : R} [ExistsAddOfLE R]
-    [PosMulStrictMono R] [AddRightStrictMono R] [AddRightReflectLT R]
-    (h : a * b < a * c) (hbc : b < c) :
+theorem pos_of_right_mul_lt_le {R} {a b c : R} [Semiring R] [LinearOrder R] [ExistsAddOfLE R]
+    [PosMulMono R] [AddRightMono R] [AddRightReflectLE R]
+    (h : a * b < a * c) (hbc : b ≤ c) :
     0 < a := by
-  rcases lt_trichotomy 0 a with (ha | ha | ha)
+  by_cases! ha : 0 < a
   · exact ha
-  · subst ha; simp_all
-  · grind [mul_lt_mul_of_neg_left hbc ha]
+  · grind [mul_le_mul_of_nonpos_left hbc ha]
 
 namespace ConvexOn
 
@@ -96,7 +95,7 @@ lemma exists_affine {x : s} {a} (hax : a < φ x) (hsc : IsClosed s)
       rw [← coprod_comp_inl_inr L] at hw
       simpa [-coprod_comp_inl_inr, ← hv (ofReal a), ← hv (ofReal (φ w)), mul_comm a,
         mul_comm (φ w)] using hw
-    have hc : 0 < c := inv_pos.2 (pos_of_mul_lt_lt (lt_of_add_lt_add_left (hine x.2)) hax)
+    have hc : 0 < c := inv_pos.2 (pos_of_right_mul_lt_le (lt_of_add_lt_add_left (hine x.2)) hax.le)
     simpa [smul_re, u, c, mul_add, ← mul_assoc, inv_mul_cancel₀ (ne_of_gt (inv_pos.1 hc))]
       using mul_le_mul_of_nonneg_left (hine z.2).le hc.le
   · exact ⟨- c • u, c * re (u x) + a, rfl⟩
