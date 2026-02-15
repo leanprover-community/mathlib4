@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # Adding complements to a generalized Boolean algebra
@@ -28,6 +30,8 @@ If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algeb
 show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
 -/
 
+@[expose] public section
+
 open Function
 
 variable {α : Type*}
@@ -47,11 +51,11 @@ instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
 algebra. -/
 @[match_pattern] def lift : α → Booleanisation α := Sum.inl
 
-/-- The inclusion `a ↦ aᶜ from a generalized Boolean algebra to its generated Boolean algebra. -/
+/-- The inclusion `a ↦ aᶜ` from a generalized Boolean algebra to its generated Boolean algebra. -/
 @[match_pattern] def comp : α → Booleanisation α := Sum.inr
 
 /-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
-instance instCompl : HasCompl (Booleanisation α) where
+instance instCompl : Compl (Booleanisation α) where
   compl
     | lift a => comp a
     | comp a => lift a

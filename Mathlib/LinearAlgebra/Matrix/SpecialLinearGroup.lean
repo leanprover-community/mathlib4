@@ -3,10 +3,12 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Transvection
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Special Linear group $SL(n, R)$
@@ -47,6 +49,8 @@ of a regular `↑` coercion.
 
 matrix group, group, matrix inverse
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -294,6 +298,19 @@ noncomputable def center_equiv_rootsOfUnity :
   (fun _ ↦
     (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
       center_equiv_rootsOfUnity' (Classical.arbitrary n))
+
+theorem eq_scalar_center_equiv_rootsOfUnity
+    (A : center (SpecialLinearGroup n R)) :
+    A = scalar n ((Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity A : Rˣ) : R) := by
+  unfold center_equiv_rootsOfUnity Or.by_cases
+  split_ifs with h
+  · subsingleton
+  dsimp only
+  generalize_proofs _ eq
+  generalize max (Fintype.card n) 1 = c at eq
+  subst eq
+  rw [center_equiv_rootsOfUnity'_apply, rootsOfUnity.val_mkOfPowEq_coe,
+    scalar_eq_coe_self_center]
 
 end center
 

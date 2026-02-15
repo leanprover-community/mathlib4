@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 
 /-!
 # The diagonal object of a morphism.
@@ -16,6 +17,8 @@ of a morphism `f : X ⟶ Y`.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -23,7 +26,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {X Y Z : C}
+variable {C : Type*} [Category* C] {X Y Z : C}
 
 namespace pullback
 
@@ -458,5 +461,24 @@ theorem pullback_lift_map_isPullback {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y �
       (pullback.fst _ _) (pullback.fst _ _) :=
   IsPullback.of_iso_pullback ⟨by rw [lift_fst, lift_fst]⟩
     (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).symm (by simp) (by simp)
+
+lemma isPullback_map_snd_snd {X Y Z S : C} (f : X ⟶ S) (g : Y ⟶ S) (h : Z ⟶ S) :
+    IsPullback (pullback.map _ _ _ _ (pullback.snd f g) (pullback.snd f h) f
+        pullback.condition pullback.condition)
+      (pullback.fst (pullback.fst f g) (pullback.fst f h))
+      (pullback.fst g h) (pullback.snd f g) := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+  · intro c
+    refine pullback.lift c.snd
+        (pullback.lift (c.snd ≫ pullback.fst _ _) (c.fst ≫ pullback.snd _ _) ?_) ?_
+    · simp [pullback.condition, ← c.condition_assoc]
+    · simp
+  · intro c
+    apply pullback.hom_ext <;> simp [c.condition]
+  · intro c
+    apply pullback.hom_ext <;> simp
+  · intro c m hfst hsnd
+    refine pullback.hom_ext (by simpa) ?_
+    apply pullback.hom_ext <;> simp [← hsnd, pullback.condition, ← hfst]
 
 end CategoryTheory.Limits

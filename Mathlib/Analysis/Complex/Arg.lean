@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
 # Rays in the complex numbers
@@ -16,16 +18,20 @@ the usual way this is considered.
 
 * `Complex.sameRay_iff` : Two complex numbers are on the same ray iff one of them is zero, or they
   have the same argument.
-* `Complex.abs_add_eq/Complex.abs_sub_eq`: If two non zero complex numbers have the same argument,
+* `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
 
 -/
+
+public section
 
 
 variable {x y : ℂ}
 
 namespace Complex
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by

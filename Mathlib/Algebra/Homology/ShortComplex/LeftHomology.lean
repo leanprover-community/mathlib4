@@ -3,9 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Left Homology of short complexes
@@ -29,13 +30,15 @@ and `S.homology`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] (S : ShortComplex C)
   {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and
@@ -967,6 +970,25 @@ noncomputable def cyclesIsKernel : IsLimit (KernelFork.ofι S.iCycles S.iCycles_
 noncomputable def cyclesIsoKernel [HasKernel S.g] : S.cycles ≅ kernel S.g where
   hom := kernel.lift S.g S.iCycles (by simp)
   inv := S.liftCycles (kernel.ι S.g) (by simp)
+
+section
+
+variable {kf : KernelFork S.g} (hkf : IsLimit kf)
+
+/-- The isomorphism from the point of a limit kernel fork of `S.g` to `S.cycles`. -/
+noncomputable def isoCyclesOfIsLimit :
+    kf.pt ≅ S.cycles :=
+  IsLimit.conePointUniqueUpToIso hkf S.cyclesIsKernel
+
+@[reassoc (attr := simp)]
+lemma isoCyclesOfIsLimit_inv_ι : (S.isoCyclesOfIsLimit hkf).inv ≫ kf.ι = S.iCycles :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingParallelPair.zero
+
+@[reassoc (attr := simp)]
+lemma isoCyclesOfIsLimit_hom_iCycles : (S.isoCyclesOfIsLimit hkf).hom ≫ S.iCycles = kf.ι :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
+
+end
 
 /-- The morphism `A ⟶ S.leftHomology` obtained from a morphism `k : A ⟶ S.X₂`
 such that `k ≫ S.g = 0.` -/

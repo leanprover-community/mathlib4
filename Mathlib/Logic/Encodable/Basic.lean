@@ -3,13 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.PNat.Equiv
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Order.Directed
-import Mathlib.Order.RelIso.Basic
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.PNat.Equiv
+public import Mathlib.Logic.Equiv.Nat
+public import Mathlib.Order.Directed
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
@@ -35,7 +37,12 @@ The point of asking for an explicit partial inverse `decode : ℕ → Option α`
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
+
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
 
 open Option List Nat Function
 
@@ -70,9 +77,14 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
+theorem surjective_decode_getD (α : Type*) [Encodable α] (d : α) :
+    Surjective fun n => (Encodable.decode n).getD d := fun x =>
+  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]; rfl⟩
+
+@[deprecated surjective_decode_getD (since := "2026-01-05")]
 theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
-    Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
-  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
+    Surjective fun n => ((Encodable.decode n).getD default : α) :=
+  surjective_decode_getD α default
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
 best way to infer decidability. -/
@@ -205,7 +217,7 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
       (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
   left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp
     conv =>
       rhs
@@ -468,19 +480,26 @@ section FindA
 
 variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
+set_option backward.privateInPublic true in
 private def good : Option α → Prop
   | some a => p a
   | none => False
 
+set_option backward.privateInPublic true in
 private def decidable_good : DecidablePred (good p) :=
   fun n => by
     cases n <;> unfold good <;> dsimp <;> infer_instance
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 attribute [local instance] decidable_good
 
 open Encodable
 
 variable {p}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
@@ -515,11 +534,11 @@ There is a total ordering on the elements of an encodable type, induced by the m
 def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 
-instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isAntisymm
+instance {α} [Encodable α] : Std.Antisymm (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).antisymm
 
-instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTotal
+instance {α} [Encodable α] : Std.Total (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).total
 
 end Encodable
 

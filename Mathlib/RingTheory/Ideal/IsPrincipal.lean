@@ -3,7 +3,9 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Principal Ideals
@@ -23,6 +25,8 @@ This file deals with the set of principal ideals of a `CommRing R`.
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
   `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R]
 
@@ -67,7 +71,7 @@ noncomputable def associatesEquivIsPrincipal :
   toFun := _root_.Quotient.lift (fun x ↦ ⟨span {x}, x, rfl⟩)
     (fun _ _ _ ↦ by simpa [span_singleton_eq_span_singleton])
   invFun I := .mk I.2.generator
-  left_inv := Quotient.ind fun _ ↦ by simpa using
+  left_inv := Quotient.ind fun _ ↦ by simpa [Quotient.eq] using
     Ideal.span_singleton_eq_span_singleton.mp (@Ideal.span_singleton_generator _ _ _ ⟨_, rfl⟩)
   right_inv I := by simp only [_root_.Quotient.lift_mk, span_singleton_generator, Subtype.coe_eta]
 
@@ -149,8 +153,8 @@ noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
     Associates R⁰ ≃* (isPrincipalNonZeroDivisorsSubmonoid R) where
   __ := associatesNonZeroDivisorsEquivIsPrincipal R
   map_mul' _ _ := by
-    rw [Subtype.ext_iff, Subtype.ext_iff]
-    erw [associatesNonZeroDivisorsEquivIsPrincipal_mul]
+    rw [Subtype.ext_iff, Subtype.ext_iff, Equiv.toFun_as_coe,
+      associatesNonZeroDivisorsEquivIsPrincipal_mul]
     rfl
 
 /-- A nonzero principal ideal in an integral domain `R` is isomorphic to `R` as a module.
@@ -158,10 +162,7 @@ The isomorphism we choose here sends `1` to the generator chosen by `Ideal.gener
 noncomputable def isoBaseOfIsPrincipal {I : Ideal R}
     [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) : R ≃ₗ[R] I :=
   letI x := IsPrincipal.generator I
-  have hx : x ≠ 0 := by
-    intro hx'
-    rw [← IsPrincipal.eq_bot_iff_generator_eq_zero] at hx'
-    exact hI hx'
+  have hx : x ≠ 0 := by rwa [Ne, ← IsPrincipal.eq_bot_iff_generator_eq_zero]
   (LinearEquiv.toSpanNonzeroSingleton R R x hx).trans
     (LinearEquiv.ofEq (Submodule.span R {x}) I (IsPrincipal.span_singleton_generator I))
 

@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Zero objects
@@ -16,6 +18,8 @@ see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -36,7 +40,7 @@ namespace Limits
 /-- An object `X` in a category is a *zero object* if for every object `Y`
 there is a unique morphism `to : X → Y` and a unique morphism `from : Y → X`.
 
-This is a characteristic predicate for `has_zero_object`. -/
+This is a characteristic predicate for `HasZeroObject`. -/
 structure IsZero (X : C) : Prop where
   /-- there are unique morphisms to the object -/
   unique_to : ∀ Y, Nonempty (Unique (X ⟶ Y))
@@ -210,6 +214,14 @@ theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZ
   have hG : IsZero G := Functor.isZero _ fun _ => isZero_zero _
   let e : F ≅ G := hF.iso hG
   exact (isZero_zero _).of_iso (e.app X)
+
+lemma IsZero.of_full_of_faithful_of_isZero
+    (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) (hX : IsZero (F.obj X)) :
+    IsZero X := by
+  have h : F.FullyFaithful := .ofFullyFaithful _
+  have (Y : C) := (hX.unique_to (F.obj Y)).some
+  have (Y : C) := (hX.unique_from (F.obj Y)).some
+  exact ⟨fun Y ↦ ⟨h.homEquiv.unique⟩, fun Y ↦ ⟨h.homEquiv.unique⟩⟩
 
 namespace HasZeroObject
 

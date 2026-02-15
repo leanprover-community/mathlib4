@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Tactic.TypeStar
 /-!
 # Nonempty types
 
@@ -15,6 +17,8 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 * `Classical.arbitrary`: Extracts a witness of nonemptiness using choice. Takes `Nonempty α` as an
   instance.
 -/
+
+@[expose] public section
 
 section
 variable {α β : Sort*}

@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Adjoining Elements to Fields
@@ -16,6 +18,8 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
+
+@[expose] public section
 
 open Module Polynomial
 
@@ -71,6 +75,12 @@ instance : CompleteLattice (IntermediateField F E) where
     { toSubalgebra := ⊥
       inv_mem' := by rintro x ⟨r, rfl⟩; exact ⟨r⁻¹, map_inv₀ _ _⟩ }
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
+
+instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :=
+  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra)
+
+instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
+  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra)
 
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
 
@@ -239,6 +249,11 @@ variable {K : Type*} [Field K] [Algebra K E] [Algebra K F] [IsScalarTower K F E]
 theorem restrictScalars_top : (⊤ : IntermediateField F E).restrictScalars K = ⊤ :=
   rfl
 
+@[simp]
+theorem restrictScalars_eq_top_iff {L : IntermediateField F E} :
+    L.restrictScalars K = ⊤ ↔ L = ⊤ := by
+  simp [SetLike.ext_iff]
+
 variable (K)
 variable (L L' : IntermediateField F E)
 
@@ -309,7 +324,14 @@ theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F
 instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
 
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {S : Set E} {s : E} (hs : s ∈ S) : s ∈ adjoin F S := subset_adjoin F S hs
+
+theorem notMem_of_notMem_adjoin {S : Set E} {s : E} (hs : s ∉ adjoin F S) : s ∉ S := fun h =>
+  hs <| mem_adjoin_of_mem F h
 
 instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 
@@ -338,9 +360,7 @@ theorem adjoin_univ (F E : Type*) [Field F] [Field E] [Algebra F E] :
 /-- If `K` is a field with `F ⊆ K` and `S ⊆ K` then `adjoin F S ≤ K`. -/
 theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆ K) (HS : S ⊆ K) :
     (adjoin F S).toSubfield ≤ K := by
-  apply Subfield.closure_le.mpr
-  rw [Set.union_subset_iff]
-  exact ⟨HF, HS⟩
+  simpa using ⟨HF, HS⟩
 
 theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : Set E} :
     (adjoin F S : Set E) ⊆ adjoin F' S' ↔
@@ -400,6 +420,14 @@ theorem lift_bot (K : IntermediateField F E) :
 theorem lift_top (K : IntermediateField F E) :
     lift (F := K) ⊤ = K := by rw [lift, ← AlgHom.fieldRange_eq_map, fieldRange_val]
 
+theorem lift_sup (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊔ L') = lift L ⊔ lift L' := by
+  simp [lift, map_sup]
+
+theorem lift_inf (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊓ L') = lift L ⊓ lift L' := by
+  simp [lift, map_inf]
+
 @[simp]
 theorem adjoin_self (K : IntermediateField F E) :
     adjoin F K = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
@@ -441,11 +469,7 @@ theorem restrictScalars_adjoin_of_algEquiv
     (adjoin L S).restrictScalars F = (adjoin L' S).restrictScalars F := by
   apply_fun toSubfield using (fun K K' h ↦ by
     ext x; change x ∈ K.toSubfield ↔ x ∈ K'.toSubfield; rw [h])
-  change Subfield.closure _ = Subfield.closure _
-  congr
-  ext x
-  exact ⟨fun ⟨y, h⟩ ↦ ⟨i y, by rw [← h, hi]; rfl⟩,
-    fun ⟨y, h⟩ ↦ ⟨i.symm y, by rw [← h, hi, Function.comp_apply, AlgEquiv.apply_symm_apply]⟩⟩
+  simp [hi]
 
 @[elab_as_elim]
 theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
@@ -484,7 +508,7 @@ end
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/
-private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
+private meta def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
     (xs : TSyntaxArray `term) : m Term := run 0 where
   run (i : Nat) : m Term := do
     if h : i + 1 = xs.size then
@@ -500,7 +524,7 @@ scoped macro:max K:term "⟮" xs:term,* "⟯" : term => do ``(adjoin $K $(← mk
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 @[app_delab IntermediateField.adjoin]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   let e ← getExpr
   guard <| e.isAppOfArity ``adjoin 6
   let F ← withNaryArg 0 delab
@@ -551,6 +575,24 @@ theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ �
 theorem biSup_adjoin_simple : ⨆ x ∈ S, F⟮x⟯ = adjoin F S := by
   rw [← iSup_subtype'', ← gc.l_iSup, iSup_subtype'']; congr; exact S.biUnion_of_singleton
 
+variable {A B C : Type*} [Field A] [Field B] [Field C] [Algebra A B] [Algebra B C] [Algebra A C]
+  [IsScalarTower A B C] (b : B)
+
+/-- Ring homomorphism between `A⟮b⟯` and `A⟮↑b⟯`. -/
+def RingHom.adjoinAlgebraMap : A⟮b⟯ →+* A⟮((algebraMap B C) b)⟯ :=
+  RingHom.codRestrict (((Algebra.ofId B C).restrictScalars A).comp (IntermediateField.val A⟮b⟯)) _
+   (fun x ↦ by
+    rw [show (algebraMap B C) b = (Algebra.ofId B C).restrictScalars A b by rfl,
+      ← Set.image_singleton, ← IntermediateField.adjoin_map A {b}]
+    use x
+    simp)
+
+instance : Algebra A⟮b⟯ A⟮(algebraMap B C) b⟯ :=
+  RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
+
+instance : IsScalarTower A⟮b⟯ A⟮(algebraMap B C) b⟯ C :=
+  IsScalarTower.of_algebraMap_eq' (by rfl)
+
 end AdjoinSimple
 
 end AdjoinDef
@@ -589,7 +631,11 @@ section Induction
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 /-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
-`IntermediateField.adjoin F t = S`. -/
+`IntermediateField.adjoin F t = S`.
+
+We use the class `Algebra.EssFiniteType F E` instead of `(⊤ : IntermediateField F E).FG` to say that
+`E` is finitely generated as an `F` extension.
+See `IntermediateField.fg_top_iff`. -/
 @[stacks 09FZ "second part"]
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S

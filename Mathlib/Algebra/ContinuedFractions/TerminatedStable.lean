@@ -3,7 +3,9 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Translations
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Translations
 
 /-!
 # Stabilisation of gcf Computations Under Termination
@@ -12,6 +14,8 @@ import Mathlib.Algebra.ContinuedFractions.Translations
 
 We show that the continuants and convergents of a gcf stabilise once the gcf terminates.
 -/
+
+public section
 
 
 namespace GenContFract

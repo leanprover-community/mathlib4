@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
-import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+module
+
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
-# Quasi Measure Preserving Functions
+# Quasi-Measure-Preserving Functions
 
 A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`.
@@ -20,6 +22,8 @@ absolutely continuous with respect to `μb`).
   respect to `μa` and `μb`.
 
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*}
 
@@ -116,7 +120,7 @@ theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h
     f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
   EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
 
-/-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
+/-- The preimage of a null measurable set under a (quasi-)measure-preserving map is a null
 measurable set. -/
 theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullMeasurableSet s μb)
     (hf : QuasiMeasurePreserving f μa μb) : NullMeasurableSet (f ⁻¹' s) μa :=
@@ -134,9 +138,9 @@ theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePr
 theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreserving e μ μ)
     (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐ[μ] s) :
     (⇑(e ^ k)) '' s =ᵐ[μ] s := by
-  rw [Equiv.image_eq_preimage]
+  rw [Equiv.image_eq_preimage_symm]
   obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
-  · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐ[μ] s := by rwa [Equiv.image_eq_preimage] at hs
+  · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐ[μ] s := by rwa [Equiv.image_eq_preimage_symm] at hs
     replace he' : (⇑e⁻¹)^[k] ⁻¹' s =ᵐ[μ] s := he'.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
   · rw [zpow_neg, zpow_natCast]

@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.Precoverage
+module
+
+public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.Precoverage
 
 /-!
 # Grothendieck pretopologies
@@ -28,6 +30,8 @@ coverage, pretopology, site
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * [Stacks, *00VG*](https://stacks.math.columbia.edu/tag/00VG)
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -217,6 +221,10 @@ instance orderBot : OrderBot (Pretopology C) where
 /-- The trivial pretopology induces the trivial Grothendieck topology. -/
 theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot
+
+@[gcongr]
+lemma toGrothendieck_mono {J K : Pretopology C} (h : J ≤ K) : J.toGrothendieck ≤ K.toGrothendieck :=
+  fun _ _ ⟨R, hR, hle⟩ ↦ ⟨R, h _ hR, hle⟩
 
 instance : InfSet (Pretopology C) where
   sInf T := {

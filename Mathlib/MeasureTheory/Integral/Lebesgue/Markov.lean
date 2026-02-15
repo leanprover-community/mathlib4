@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Markov's inequality
@@ -16,6 +18,8 @@ the measure-theoretic form:
 ```
 This file proves a few variants of the inequality and other lemmas that depend on it.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -87,9 +91,6 @@ theorem setLIntegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} {s
   lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
     mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 
-@[deprecated (since := "2025-04-22")]
-alias setLintegral_eq_top_of_measure_eq_top_ne_zero := setLIntegral_eq_top_of_measure_eq_top_ne_zero
-
 theorem measure_eq_top_of_lintegral_ne_top {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) : μ {x | f x = ∞} = 0 :=
   of_not_not fun h => hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
@@ -98,9 +99,6 @@ theorem measure_eq_top_of_setLIntegral_ne_top {f : α → ℝ≥0∞} {s : Set �
     (hf : AEMeasurable f (μ.restrict s)) (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     μ ({x ∈ s | f x = ∞}) = 0 :=
   of_not_not fun h => hμf <| setLIntegral_eq_top_of_measure_eq_top_ne_zero hf h
-
-@[deprecated (since := "2025-04-22")]
-alias measure_eq_top_of_setLintegral_ne_top := measure_eq_top_of_setLIntegral_ne_top
 
 /-- **Markov's inequality**, also known as **Chebyshev's first inequality**. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
@@ -122,13 +120,12 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
   suffices Tendsto (fun n : ℕ => f x + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (f x)) from
     ge_of_tendsto' this fun i => (hlt i).le
   simpa only [inv_top, add_zero] using
-    tendsto_const_nhds.add (ENNReal.tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
+    tendsto_const_nhds.add (tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
 
 theorem lintegral_strict_mono_of_ae_le_of_frequently_ae_lt {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h_le : f ≤ᵐ[μ] g) (h : ∃ᵐ x ∂μ, f x ≠ g x) :
     ∫⁻ x, f x ∂μ < ∫⁻ x, g x ∂μ := by
   contrapose! h
-  simp only [not_frequently, Ne, Classical.not_not]
   exact ae_eq_of_ae_le_of_lintegral_le h_le hfi hg h
 
 theorem lintegral_strict_mono_of_ae_le_of_ae_lt_on {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)

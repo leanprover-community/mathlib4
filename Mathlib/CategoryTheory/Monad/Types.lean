@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Monad.Kleisli
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.KleisliCat
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Monad.Kleisli
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Control.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.Control.Basic
 This allows us to use these monads in category theory.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

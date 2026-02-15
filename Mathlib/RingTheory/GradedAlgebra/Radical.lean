@@ -3,7 +3,9 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
 
@@ -33,6 +35,8 @@ fails for a non-cancellative set see `Counterexamples/HomogeneousPrimeNotPrime.l
 homogeneous, radical
 -/
 
+@[expose] public section
+
 
 open GradedRing DirectSum SetLike Finset
 
@@ -48,8 +52,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra! rid
-    obtain ⟨rid₁, rid₂⟩ := rid
+    by_contra! ⟨rid₁, rid₂⟩
     classical
       /-
         The idea of the proof is the following :
@@ -101,13 +104,10 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
-          rcases lt_trichotomy max₁ i with (h | rfl | h)
-          · exact Or.inl h
-          · refine False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
-          · apply Or.inr
-            have := add_lt_add_right h j
-            rw [H₄] at this
-            exact lt_of_add_lt_add_left this
+          convert le_or_lt_of_add_le_add H₄.ge using 1
+          rw [Ne.le_iff_lt]
+          rintro rfl
+          cases H₁ ⟨rfl, add_left_cancel H₄⟩
         rcases max_lt with max_lt | max_lt
         · -- in this case `max₁ < i`, then `xᵢ ∈ I`; for otherwise `i ∈ set₁` then `i ≤ max₁`.
           have notMem : i ∉ set₁ := fun h =>

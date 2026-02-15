@@ -3,10 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Trivial Square-Zero Extension
@@ -50,6 +53,8 @@ Many of the later results in this file are only stated for the commutative `R'` 
   which the product of any two elements in the range is zero.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -855,7 +860,6 @@ variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
 instance algebra' : Algebra S (tsze R M) where
   algebraMap := (TrivSqZeroExt.inlHom R M).comp (algebraMap S R)
-  smul := (· • ·)
   commutes' := fun s x =>
     ext (Algebra.commutes _ _) <|
       show algebraMap S R s •> x.snd + (0 : M) <• x.fst
@@ -890,6 +894,18 @@ def fstHom : tsze R M →ₐ[S] R where
   map_zero' := fst_zero (M := M)
   map_add' := fst_add
   commutes' _r := fst_inl M _
+
+/-- `R'` as an algebra over `TrivSqZeroExt R' M`. Not an instance since it creates a different
+`Algebra (TrivSqZeroExt R' M) (TrivSqZeroExt R' M)` instance from `TrivSqZeroExt.algebra'`. -/
+abbrev algebraBase : Algebra (tsze R' M) R' where
+  algebraMap := (fstHom R' R' M).toRingHom
+  smul x r := x.fst * r
+  commutes' _ _ := mul_comm ..
+  smul_def' _ _ := rfl
+
+attribute [local instance] algebraBase in
+instance : IsScalarTower R' (tsze R' M) R' where
+  smul_assoc _ _ _ := mul_assoc ..
 
 /-- The canonical `S`-algebra inclusion `R → TrivSqZeroExt R M`. -/
 @[simps]
@@ -944,7 +960,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, hg]
-        rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
+        rw [← map_mul, map_add, add_comm (g _), add_assoc, hfg, hgf])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)

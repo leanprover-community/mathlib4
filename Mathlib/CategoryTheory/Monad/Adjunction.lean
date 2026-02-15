@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Adjunctions and (co)monads
@@ -23,6 +25,8 @@ is an equivalence of categories. (Similarly for `ComonadicLeftAdjoint`.)
 Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflective functors are
 `ComonadicLeftAdjoint`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -87,7 +91,7 @@ unit is an isomorphism.
 -/
 def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
   hom := adj.unit
-  inv :=  i.hom ≫ (adj.toMonad.transport i).μ
+  inv := i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
     rw [← assoc]
     ext X

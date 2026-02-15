@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Equivalences on embeddings
@@ -11,6 +13,8 @@ import Mathlib.Logic.Embedding.Set
 This file shows some advanced equivalences on embeddings, useful for constructing larger
 embeddings from smaller ones.
 -/
+
+@[expose] public section
 
 
 open Function.Embedding

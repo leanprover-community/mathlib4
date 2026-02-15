@@ -3,12 +3,14 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Data.Subtype
-import Mathlib.Tactic.Conv
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.Conv
 
 /-!
 # Idempotents
@@ -25,6 +27,8 @@ including:
 
 projection, idempotent
 -/
+
+@[expose] public section
 
 assert_not_exists GroupWithZero
 

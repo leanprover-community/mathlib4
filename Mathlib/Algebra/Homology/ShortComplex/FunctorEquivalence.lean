@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-!
 # Short complexes in functor categories
@@ -14,11 +16,13 @@ that `C` has zero morphisms), then there is an equivalence of categories
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits Functor
 
-variable (J C : Type*) [Category J] [Category C] [HasZeroMorphisms C]
+variable (J C : Type*) [Category* J] [Category* C] [HasZeroMorphisms C]
 
 namespace ShortComplex
 

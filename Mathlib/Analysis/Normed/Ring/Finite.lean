@@ -3,10 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 
 /-!
@@ -17,6 +19,8 @@ A finite order element in a normed ring has norm 1.
 The values of additive characters on finite cancellative monoids have norm 1.
 
 -/
+
+public section
 
 variable {α β : Type*}
 

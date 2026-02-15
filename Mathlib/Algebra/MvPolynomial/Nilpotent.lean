@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.Polynomial.Nilpotent
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 # Nilpotents and units in multivariate polynomial rings
@@ -17,28 +19,29 @@ We prove that
   and its other coefficients are nilpotent.
 -/
 
+@[expose] public section
+
 namespace MvPolynomial
 
 variable {σ R : Type*} [CommRing R] {P : MvPolynomial σ R}
 
 -- Subsumed by `isNilpotent_iff` below.
-private theorem isNilpotent_iff_of_fintype [Fintype σ] :
+private theorem isNilpotent_iff_of_fintype [Finite σ] :
     IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by
   classical
-  refine Fintype.induction_empty_option ?_ ?_ ?_ σ P
+  -- Note: including `Fintype.ofFinite σ` in the entire context interferes with the `rw` below.
+  refine have := Fintype.ofFinite σ; Fintype.induction_empty_option ?_ ?_ ?_ σ P
   · intro α β _ e h₁ P
     rw [← IsNilpotent.map_iff (rename_injective _ e.symm.injective), h₁,
       (Finsupp.equivCongrLeft e).forall_congr_left]
     simp [Finsupp.equivMapDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective]
-  · intro P
-    simp [Unique.forall_iff, ← IsNilpotent.map_iff (isEmptyRingEquiv R PEmpty).injective,
+  · simp [Unique.forall_iff, ← IsNilpotent.map_iff (isEmptyRingEquiv R PEmpty).injective,
       -isEmptyRingEquiv_apply, isEmptyRingEquiv_eq_coeff_zero]
-    rfl
   · intro α _ H P
     obtain ⟨P, rfl⟩ := (optionEquivLeft _ _).symm.surjective P
     simp [IsNilpotent.map_iff (optionEquivLeft _ _).symm.injective,
       Polynomial.isNilpotent_iff, H, Finsupp.optionEquiv.forall_congr_left,
-      ← optionEquivLeft_coeff_coeff, Finsupp.coe_update]
+      ← optionEquivLeft_coeff_some_coeff_none, Finsupp.coe_update]
 
 theorem isNilpotent_iff : IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by
   obtain ⟨n, f, hf, P, rfl⟩ := P.exists_fin_rename
@@ -61,7 +64,7 @@ theorem isUnit_iff : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpoten
     have H := (Polynomial.coeff_isUnit_isNilpotent_of_isUnit (H.map e.symm)).2 (n i) hi
     simp only [ne_eq, isNilpotent_iff] at H
     convert ← H (n.equivMapDomain (Equiv.optionSubtypeNe i).symm).some
-    refine (optionEquivLeft_coeff_coeff _ _ _ _).trans ?_
+    refine (optionEquivLeft_coeff_some_coeff_none _ _ _ _).trans ?_
     simp [Finsupp.equivMapDomain_eq_mapDomain,
       coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective]
   · have : IsNilpotent (P - C (P.coeff 0)) := by

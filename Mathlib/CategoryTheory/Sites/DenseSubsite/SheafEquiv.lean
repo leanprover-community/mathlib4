@@ -3,8 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 /-!
 # The equivalence of categories of sheaves of a dense subsite
@@ -21,13 +22,15 @@ import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 -/
 
+@[expose] public section
+
 universe w v u w'
 
 namespace CategoryTheory.Functor.IsDenseSubsite
 
 open CategoryTheory Opposite
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (G : C ⥤ D)
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
@@ -49,8 +52,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     simp only [comp_obj, yoneda_map_app, Category.assoc, comp_map,
       ← NatTrans.naturality, op_obj, op_map, Quiver.Hom.unop_op, ← map_comp_assoc,
       ← op_comp, ← e'] at this ⊢
-    erw [← NatTrans.naturality] at this
-    exact this
+    simpa [← NatTrans.naturality] using this
   · intro f
     have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : G.imageSieve g f) : Exists _ := hf
     choose l hl using this
@@ -97,11 +99,10 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
       simp [← Functor.map_comp, ← op_comp, hiUV]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
-  apply (config := { allowSynthFailures := true })
-    ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
+  apply +allowSynthFailures ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨U⟩
-  apply (config := { allowSynthFailures := true }) ReflectsIsomorphisms.reflects yoneda
+  apply +allowSynthFailures ReflectsIsomorphisms.reflects yoneda
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
   simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val_obj, yoneda_obj_obj,

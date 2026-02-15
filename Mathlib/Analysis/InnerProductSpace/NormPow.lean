@@ -3,8 +3,10 @@ Copyright (c) 2024 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Properties about the powers of the norm
@@ -16,6 +18,8 @@ an inner product space and for a real number `p > 1`.
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
 
 -/
+
+public section
 
 section ContDiffNormPow
 
@@ -111,7 +115,7 @@ theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E �
     rw [tendsto_zero_iff_norm_tendsto_zero]
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds) ?_
       (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow _ hp |>.le)
-    suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0  by
+    suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0 by
       simpa [ContinuousAt, sub_ne_zero_of_ne hp.ne'] using this
     fun_prop (discharger := simp [hp.le])
   · simp_rw [funext fun x ↦ fderiv_norm_rpow (E := E) (x := x) hp]
@@ -123,6 +127,6 @@ theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp :
 
 theorem Differentiable.norm_rpow {f : F → E} (hf : Differentiable ℝ f) {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x ↦ ‖f x‖ ^ p) :=
-  contDiff_norm_rpow hp |>.differentiable le_rfl |>.comp hf
+  contDiff_norm_rpow hp |>.differentiable one_ne_zero |>.comp hf
 
 end ContDiffNormPow

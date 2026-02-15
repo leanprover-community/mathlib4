@@ -3,13 +3,15 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Representable
-import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.AlgebraicGeometry.GluingOneHypercover
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Representable
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.AlgebraicGeometry.OpenImmersion
+public import Mathlib.AlgebraicGeometry.GluingOneHypercover
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Representability of schemes is a local property
@@ -32,11 +34,11 @@ locally representable.
 
 -/
 
+@[expose] public section
+
 namespace AlgebraicGeometry
 
 open CategoryTheory Category Limits Opposite
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 universe u
 
@@ -143,7 +145,7 @@ instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
   equalizerSieve_mem := by
     rintro ⟨U⟩ (α β : U ⟶ _) h
     replace h : (yonedaGluedToSheaf hf).val.app _ α = (yonedaGluedToSheaf hf).val.app _ β := h
-    have mem := grothendieckTopology_cover (glueData hf).openCover
+    have mem := (glueData hf).openCover.mem_grothendieckTopology
     refine GrothendieckTopology.superset_covering _ ?_
       (zariskiTopology.intersection_covering (zariskiTopology.pullback_stable α mem)
         (zariskiTopology.pullback_stable β mem))

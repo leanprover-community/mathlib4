@@ -3,8 +3,12 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Batteries.Lean.HashMap
-import Mathlib.Tactic.Linarith.Datatypes
+module
+
+public meta import Batteries.Lean.HashMap
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Batteries.Lean.HashMap
+public import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -29,30 +33,10 @@ We recursively eliminate all variables from the system. If we derive an empty cl
 we conclude that the original system was unsatisfiable.
 -/
 
+public meta section
+
 open Batteries
 open Std (format ToFormat TreeSet)
-
-namespace Std.TreeSet
-
-variable {α : Type*} {cmp}
-
-/--
-`O(n₂ * log (n₁ + n₂))`. Merges the maps `t₁` and `t₂`.
-If equal keys exist in both, the key from `t₂` is preferred.
--/
-def union (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp :=
-  t₂.foldl .insert t₁
-
-instance : Union (TreeSet α cmp) := ⟨TreeSet.union⟩
-
-/--
-`O(n₁ * (log n₁ + log n₂))`. Constructs the set of all elements of `t₁` that are not in `t₂`.
--/
-def sdiff (t₁ t₂ : TreeSet α cmp) : TreeSet α cmp := t₁.filter (!t₂.contains ·)
-
-instance : SDiff (TreeSet α cmp) := ⟨TreeSet.sdiff⟩
-
-end Std.TreeSet
 
 namespace Mathlib.Tactic.Linarith
 
@@ -134,7 +118,7 @@ structure PComp : Type where
   effective : TreeSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
-  do not appear in `c` itself, and are not in `effective. -/
+  do not appear in `c` itself, and are not in `effective`. -/
   implicit : TreeSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/
@@ -189,7 +173,7 @@ additional fields of `PComp`.
   `vars` but not `c.vars` or `effective`.
 (Note that the description of the implicitly eliminated variables of `c1 + c2` in the algorithm
 described in Section 6 of https://doi.org/10.1016/B978-0-444-88771-9.50019-2 seems to be wrong:
-that says it should be `(c1.implicit.union c2.implicit).sdiff explicit`.
+that says it should be `(c1.implicit.union' c2.implicit).sdiff explicit`.
 Since the implicitly eliminated sets start off empty for the assumption,
 this formula would leave them always empty.)
 -/
@@ -199,7 +183,7 @@ def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
   let history := c1.history.union c2.history
   let vars := c1.vars.union c2.vars
   let effective := (c1.effective.union c2.effective).insert elimVar
-  let implicit := (vars.sdiff (.ofList c.vars _)).sdiff effective
+  let implicit := (vars.diff (.ofList c.vars _)).diff effective
   ⟨c, src, history, effective, implicit, vars⟩
 
 /--
@@ -331,7 +315,9 @@ def elimVarM (a : ℕ) : LinarithM Unit := do
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
     update (vs - 1) (← pos.foldlM (fun s p => do
       Lean.Core.checkSystem decl_name%.toString
-      pure (s.union (elimWithSet a p neg))) notPresent)
+      -- FIXME: `.foldl .insert` should be equivalent to `.union`, but this breaks the test from
+      -- https://github.com/leanprover-community/mathlib4/issues/8875
+      pure ((elimWithSet a p neg).foldl .insert s)) notPresent)
   else
     pure ()
 

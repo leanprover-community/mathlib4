@@ -3,16 +3,21 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Group.Pointwise.Bounds
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Interval.Set.Disjoint
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Interval.Set.Disjoint
+
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -45,12 +50,9 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
         (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
 
+@[deprecated _root_.exists_floor (since := "2026-01-29")]
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
-  Int.exists_greatest_of_bdd
-    (let ⟨n, hn⟩ := exists_int_gt x
-    ⟨n, fun _ h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
-    (let ⟨n, hn⟩ := exists_int_lt x
-    ⟨n, le_of_lt hn⟩)
+  ⟨⌊x⌋, Int.floor_le x, fun _ ↦ Int.le_floor.mpr⟩
 
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
@@ -205,6 +207,18 @@ theorem sInf_of_not_bddBelow (hs : ¬BddBelow s) : sInf s = 0 :=
 
 theorem iInf_of_not_bddBelow (hf : ¬BddBelow (Set.range f)) : ⨅ i, f i = 0 :=
   sInf_of_not_bddBelow hf
+
+@[simp]
+theorem sSup_neg (s : Set ℝ) : sSup (-s) = -sInf s := by
+  obtain rfl | hn := s.eq_empty_or_nonempty; · simp
+  by_cases hb : BddBelow s
+  · rw [csSup_neg hn hb]
+  · rw [csInf_of_not_bddBelow hb, Real.sInf_empty, csSup_of_not_bddAbove (bddAbove_neg.not.2 hb),
+      Real.sSup_empty, neg_zero]
+
+@[simp]
+theorem sInf_neg (s : Set ℝ) : sInf (-s) = -sSup s := by
+  rw [← neg_eq_iff_eq_neg, ← Real.sSup_neg, neg_neg]
 
 /-- As `sSup s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
 are at most some nonnegative number `a` to show that `sSup s ≤ a`.
@@ -377,7 +391,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    cutsat
+    lia
   use 2 * k ^ 2
   calc
     ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _

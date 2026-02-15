@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-import Mathlib.CategoryTheory.Sites.Canonical
+module
+
+public import Mathlib.AlgebraicGeometry.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.Canonical
 /-!
 # The big Zariski site of schemes
 
@@ -26,6 +28,8 @@ TODO:
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory
@@ -42,13 +46,15 @@ def zariskiPretopology : Pretopology Scheme.{u} :=
 abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
   grothendieckTopology IsOpenImmersion
 
-lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck := rfl
+lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck :=
+  Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck.symm
 
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X
-  rw [Presieve.isSheaf_pretopology]
-  rintro Y S ⟨𝓤,rfl⟩ x hx
+  rw [Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange]
+  rintro Y S hS x hx
+  obtain ⟨(𝓤 : OpenCover Y), rfl⟩ := exists_cover_of_mem_pretopology hS
   let e : Y ⟶ X := 𝓤.glueMorphisms (fun j => x (𝓤.f _) (.mk _)) <| by
     intro i j
     apply hx
