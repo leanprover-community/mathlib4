@@ -85,17 +85,17 @@ lemma tensorEquiv_symm_single (m : M) (a : A) (b : B) :
 
 variable (R A) in
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/
-@[to_additive (dont_translate := R A) (relevant_arg := M)
+@[to_additive (dont_translate := R A)
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/]
 noncomputable def scalarTensorEquiv : A ⊗[R] R[M] ≃ₐ[A] A[M] :=
   (tensorEquiv ..).trans <| mapRangeAlgEquiv A M <| Algebra.TensorProduct.rid R A A
 
-@[to_additive (dont_translate := R A) (relevant_arg := M) (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_tmul (a : A) (p : R[M]) :
     scalarTensorEquiv R A (a ⊗ₜ p) = a • mapRangeAlgHom M (Algebra.ofId ..) p := by
   ext; simp [scalarTensorEquiv]; simp [Algebra.smul_def, Algebra.commutes]
 
-@[to_additive (dont_translate := R A) (relevant_arg := M) (attr := simp)]
+@[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_symm_single (m : M) (a : A) :
     (scalarTensorEquiv R A).symm (single m a) = a ⊗ₜ single m 1 := by simp [scalarTensorEquiv]
 
