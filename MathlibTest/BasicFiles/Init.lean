@@ -4,12 +4,12 @@ import Mathlib.Init
 
 /-! Checks that some utilities are available already when importing `Mathlib.Init`. -/
 
-/-- error: no tactic declarations start with exact -/
-#guard_msgs in
+/-- info: syntax "exact"... [Lean.Parser.Tactic.exact] -/
+#guard_msgs (substring := true) in
 #help tactic exact
 
-/-- error: no command declarations start with #help -/
-#guard_msgs in
+/-- info: syntax "#help"... [Batteries.Tactic.«command#help_Term+____»] -/
+#guard_msgs (substring := true) in
 #help command "#help"
 
 /-- info: [grind]: The `[grind]` attribute -/
