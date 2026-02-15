@@ -327,14 +327,14 @@ lemma isSubmajorizedBy_iff_isSupermajorizedBy [IsStrictOrderedRing R] {x : m →
     intro k
     have hx := incSum_add_decSum (k := k) (x := x)
     have hy := incSum_add_decSum (k := k) (x := y)
-    by_cases hcard : decSum (card m - k) x ≤ decSum (card n - k) y <;> grind
+    by_cases hcard : decSum (card m - k) x ≤ decSum (card n - k) y <;> grind only
   · intro h₁
     rw [isSubmajorizedBy_def]
     rw [isSupermajorizedBy_def] at h₁
     intro k
     have hx := decSum_add_incSum (k := k) (x := x)
     have hy := decSum_add_incSum (k := k) (x := y)
-    grind
+    grind only
 
 lemma IsMajorizedBy.isSupermajorizedBy [IsStrictOrderedRing R] {x : m → R} {y : n → R}
     (hxy : x ≼ y) (hcard : card m = card n) : x ≼ˢ y :=

@@ -62,29 +62,29 @@ open Fintype Function Finset
 
 /-- The sum of the `k` smallest elements of `x`. -/
 def incSum (k : ℕ) (x : n → R) : R :=
-    if h : k ≤ card n then
-      min' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) <| by simp [h]
-    else ∑ i, x i
+  if h : k ≤ card n then
+    min' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) <| by simp [h]
+  else ∑ i, x i
 
 /-- The sum of the `k` largest elements of `x`. -/
 def decSum (k : ℕ) (x : n → R) : R :=
-    if h : k ≤ card n then
-      max' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) <| by simp [h]
-    else ∑ i, x i
+  if h : k ≤ card n then
+    max' ((powersetCard k (univ : Finset n)).image fun s => ∑ i ∈ s, x i) <| by simp [h]
+  else ∑ i, x i
 
 /-- An arbitrary set that achieves the value of `incSum k x`. -/
 noncomputable def incSumSet (k : ℕ) (x : n → R) :=
-    if hk : k ≤ card n then
-      Classical.choose (exists_min'_image (powersetCard k (univ : Finset n))
-        (fun s => ∑ i ∈ s, x i) (by grind))
-    else ∅
+  if hk : k ≤ card n then
+    Classical.choose (exists_min'_image (powersetCard k (univ : Finset n))
+      (fun s => ∑ i ∈ s, x i) (by grind))
+  else ∅
 
 /-- An arbitrary set that achieves the value of `decSum k x`. -/
 noncomputable def decSumSet (k : ℕ) (x : n → R) :=
-    if hk : k ≤ card n then
-      Classical.choose (exists_max'_image (powersetCard k (univ : Finset n))
-        (fun s => ∑ i ∈ s, x i) (by grind))
-    else ∅
+  if hk : k ≤ card n then
+    Classical.choose (exists_max'_image (powersetCard k (univ : Finset n))
+      (fun s => ∑ i ∈ s, x i) (by grind))
+  else ∅
 
 end Fintype
 
