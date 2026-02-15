@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
-public import Mathlib.Topology.Sheaves.Limits
 
 /-!
 # Sheaves of abelian groups.
@@ -35,17 +34,6 @@ variable {X : TopCat.{u}} {U V : Opens X}
 instance : HasExt.{u} (Sheaf AddCommGrpCat.{u} X) :=
   hasExt_of_enoughInjectives (Sheaf AddCommGrpCat X)
 
-theorem Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact
-    {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)} {s : S.X₂.obj (op U)}
-    (h : S.g.app (op U) s = 0) (hS : S.Exact) :
-    ∃ (t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
-  dsimp [Presheaf] at S
-  let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (op U)
-  apply (ShortComplex.ab_exact_iff (S.map F)).mp
-  · have := ((Functor.exact_tfae F).out 1 3).mpr
-    exact this ⟨inferInstance, inferInstance⟩ S hS
-  exact h
-
 namespace Sheaf.AddCommGrpCat
 
 /-- Given an open subset U of X, Γ U is the functor that sends a sheaf 𝓕 to 𝓕(U) and sends a
@@ -60,12 +48,5 @@ lemma restrict_sum {F : Sheaf AddCommGrpCat X} (h : V ≤ U) (s t : F.val.obj (o
     (s + t) |_ V = s |_V + t |_V := by
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
-
-lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂.val.obj (op U))
-    (h : S.g.val.app (op U) s = 0) (hS1 : S.Exact) (hS2 : Mono S.f) :
-    ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
-  have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
-    (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
-  exact Presheaf.ab_exists_app_eq_of_app_eq_zero_of_exact h (this S ⟨hS1, hS2⟩).left
 
 end TopCat.Sheaf.AddCommGrpCat
