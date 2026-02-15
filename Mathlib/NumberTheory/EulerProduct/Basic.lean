@@ -44,7 +44,7 @@ for `s : Finset ℕ`.
 Euler product, multiplicative function
 -/
 
-@[expose] public section
+public section
 
 /-- If `f` is multiplicative and summable, then its values at natural numbers `> 1`
 have norm strictly less than `1`. -/

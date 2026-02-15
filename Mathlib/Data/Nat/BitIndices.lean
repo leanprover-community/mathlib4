@@ -9,8 +9,8 @@ public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Algebra.Order.BigOperators.Group.List
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.List.Sort
-public import Mathlib.Data.Nat.Bitwise
 
 /-!
 # Bit Indices
@@ -122,7 +122,5 @@ theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2 ^ a ≤ n := 
 
 theorem notMem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
   fun h ↦ (n.lt_two_pow_self).not_ge <| two_pow_le_of_mem_bitIndices h
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bitIndices_self := notMem_bitIndices_self
 
 end Nat

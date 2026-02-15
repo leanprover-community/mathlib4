@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Disjoint
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Lemmas about insertion, singleton, and pairs
@@ -66,10 +67,7 @@ theorem mem_of_mem_insert_of_ne : b ∈ insert a s → b ≠ a → b ∈ s :=
 theorem eq_of_mem_insert_of_notMem : b ∈ insert a s → b ∉ s → b = a :=
   Or.resolve_right
 
-@[deprecated (since := "2025-05-23")]
-alias eq_of_not_mem_of_mem_insert := eq_of_mem_insert_of_notMem
-
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ x ∈ s :=
   Iff.rfl
 
@@ -77,8 +75,6 @@ theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ 
 theorem insert_eq_of_mem {a : α} {s : Set α} (h : a ∈ s) : insert a s = s := by grind
 
 theorem ne_insert_of_notMem {s : Set α} (t : Set α) {a : α} : a ∉ s → s ≠ insert a t := by grind
-
-@[deprecated (since := "2025-05-23")] alias ne_insert_of_not_mem := ne_insert_of_notMem
 
 @[simp]
 theorem insert_eq_self : insert a s = s ↔ a ∈ s := by grind
@@ -96,17 +92,10 @@ theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := by gri
 
 theorem subset_insert_iff_of_notMem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by grind
 
-@[deprecated (since := "2025-05-23")]
-alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
-
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := by grind
 
 theorem _root_.HasSubset.Subset.ssubset_of_mem_notMem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
     s ⊂ t := by grind
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.HasSubset.Subset.ssubset_of_mem_not_mem :=
-  _root_.HasSubset.Subset.ssubset_of_mem_notMem
 
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s := by grind
 
@@ -165,14 +154,12 @@ instance : LawfulSingleton α (Set α) :=
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
   (insert_empty_eq a).symm
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 
 theorem notMem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
   Iff.rfl
-
-@[deprecated (since := "2025-05-23")] alias not_mem_singleton_iff := notMem_singleton_iff
 
 @[simp]
 theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
@@ -222,9 +209,8 @@ theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
 theorem singleton_subset_iff {a : α} {s : Set α} : {a} ⊆ s ↔ a ∈ s :=
   forall_eq
 
+@[gcongr]
 theorem singleton_subset_singleton : ({a} : Set α) ⊆ {b} ↔ a = b := by simp
-
-@[gcongr] protected alias ⟨_, GCongr.singleton_subset_singleton⟩ := singleton_subset_singleton
 
 theorem set_compr_eq_eq_singleton {a : α} : { b | b = a } = {a} :=
   rfl
@@ -261,8 +247,6 @@ theorem inter_singleton_eq_empty : s ∩ {a} = ∅ ↔ a ∉ s := by
 
 theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
   nonempty_iff_ne_empty.symm
-
-@[deprecated (since := "2025-05-24")] alias nmem_singleton_empty := notMem_singleton_empty
 
 instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
   ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.ext h⟩
@@ -358,11 +342,7 @@ theorem insert_inter_of_mem (h : a ∈ t) : insert a s ∩ t = insert a (s ∩ t
 
 theorem inter_insert_of_notMem (h : a ∉ s) : s ∩ insert a t = s ∩ t := by grind
 
-@[deprecated (since := "2025-05-23")] alias inter_insert_of_not_mem := inter_insert_of_notMem
-
 theorem insert_inter_of_notMem (h : a ∉ t) : insert a s ∩ t = s ∩ t := by grind
-
-@[deprecated (since := "2025-05-23")] alias insert_inter_of_not_mem := insert_inter_of_notMem
 
 /-! ### Lemmas about pairs -/
 

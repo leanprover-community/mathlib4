@@ -3,8 +3,8 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
-module
+module -- shake: keep-all
 
-public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Tactic.Common
 
 deprecated_module (since := "2025-12-15")

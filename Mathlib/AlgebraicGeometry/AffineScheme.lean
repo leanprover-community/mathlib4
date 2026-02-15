@@ -232,9 +232,8 @@ instance hasLimits : HasLimits AffineScheme.{u} := by
 noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
 
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
-  apply (config := { allowSynthFailures := true })
-    @preservesLimits_of_natIso _ _ _ _ _ _
-      (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
+  apply +allowSynthFailures @preservesLimits_of_natIso _ _ _ _ _ _
+    (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
@@ -362,6 +361,12 @@ lemma Scheme.Opens.toSpecΓ_naturality {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens
   simp only [toSpecΓ, topIso, Functor.op_obj, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv,
     eqToHom_op, Hom.app_eq_appLE, Category.assoc, ← Spec.map_comp, Hom.appLE_map,
     toSpecΓ_naturality_assoc, TopologicalSpace.Opens.map_top, morphismRestrict_appLE, Hom.map_appLE]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.toSpecΓ_SpecMap_appLE
+    {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (hUV) :
+    V.toSpecΓ ≫ Spec.map (f.appLE U V hUV) = f.resLE U V hUV ≫ U.toSpecΓ := by
+  simp [Hom.appLE, Hom.resLE]
 
 namespace IsAffineOpen
 
@@ -617,7 +622,7 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
 
 noncomputable
 instance {R : CommRingCat} {U} : Algebra R Γ(Spec R, U) :=
-  ((Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op).hom.toAlgebra
+  inferInstanceAs (Algebra R ((Spec.structureSheaf R).presheaf.obj _))
 
 @[simp]
 lemma algebraMap_Spec_obj {R : CommRingCat} {U} : algebraMap R Γ(Spec R, U) =
@@ -648,13 +653,13 @@ theorem isLocalization_basicOpen :
     (IsLocalization.isLocalization_iff_of_ringEquiv (Submonoid.powers f)
       (asIso <| basicOpenSectionsToAffine hU f).commRingCatIsoToRingEquiv).mpr
   convert StructureSheaf.IsLocalization.to_basicOpen _ f using 1
-  -- Porting note: more hand holding is required here, the next 3 lines were not necessary
+  apply Algebra.algebra_ext
+  intro _
   congr 1
   dsimp [CommRingCat.ofHom, RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp,
     basicOpenSectionsToAffine]
   rw [hU.fromSpec.naturality_assoc, hU.fromSpec_app_self]
-  simp only [Category.assoc, ← Functor.map_comp, ← op_comp]
-  exact CommRingCat.hom_ext_iff.mp (StructureSheaf.toOpen_res _ _ _ _)
+  rfl
 
 instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
     [IsAffine X] (r : Γ(X, ⊤)) :
@@ -756,6 +761,17 @@ theorem primeIdealOf_eq_map_closedPoint (x : U) :
     hU.primeIdealOf x = Spec.map (X.presheaf.germ _ x x.2) (closedPoint _) :=
   hU.isoSpec_hom_apply _
 
+lemma comap_primeIdealOf_appLE {f : X ⟶ Y} {x : X} (U : Y.Opens)
+      (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U) (hx : x ∈ V) :
+    (hV.primeIdealOf ⟨x, hx⟩).comap (f.appLE U V hVU).hom = hU.primeIdealOf ⟨f x, hVU hx⟩ := by
+  change Spec.map (f.appLE U V hVU) (hV.primeIdealOf ⟨x, hx⟩) = (hU.primeIdealOf ⟨f x, hVU hx⟩)
+  simp only [IsAffineOpen.primeIdealOf, ← Scheme.Hom.comp_apply, IsAffineOpen.isoSpec_hom,
+    Scheme.Opens.toSpecΓ_SpecMap_appLE]
+  simp only [Scheme.Hom.comp_apply]
+  congr 1
+  apply Subtype.ext
+  simp
+
 /-- If a point `x : U` is a closed point, then its corresponding prime ideal is maximal. -/
 theorem primeIdealOf_isMaximal_of_isClosed (x : U) (hx : IsClosed {(x : X)}) :
     (hU.primeIdealOf x).asIdeal.IsMaximal := by
@@ -830,6 +846,37 @@ lemma ideal_ext_iff {I J : Ideal Γ(X, U)} :
     I = J ↔ ∀ (x : X) (h : x ∈ U),
       I.map (X.presheaf.germ U x h).hom = J.map (X.presheaf.germ U x h).hom := by
   simp_rw [le_antisymm_iff, hU.ideal_le_iff, forall_and]
+
+/-- Given affine opens `x ∈ V ⊆ f⁻¹(U)`, the stalk map of `f` at `x` is isomorphic to
+`Localization.localRingHom` of `f.appLE U V`. -/
+def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
+      (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U)
+      (hx : x ∈ V) :
+    Arrow.mk (f.stalkMap x) ≅ Arrow.mk (CommRingCat.ofHom <|
+      Localization.localRingHom _ _ (f.appLE U V hVU).hom
+        congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm) := by
+  let := Y.presheaf.algebra_section_stalk ⟨f x, hVU hx⟩
+  have := hU.isLocalization_stalk ⟨f x, hVU hx⟩
+  let := X.presheaf.algebra_section_stalk ⟨x, hx⟩
+  have := hV.isLocalization_stalk ⟨x, hx⟩
+  refine Arrow.isoMk' _ _ ?_ ?_ ?_
+  · exact ((IsLocalization.algEquiv (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal.primeCompl
+      (Y.presheaf.stalk (f x))
+      (Localization.AtPrime (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal)).toCommRingCatIso:)
+  · exact ((IsLocalization.algEquiv (hV.primeIdealOf ⟨x, hx⟩).asIdeal.primeCompl
+      (X.presheaf.stalk x)
+      (Localization.AtPrime (hV.primeIdealOf ⟨x, hx⟩).asIdeal)).toCommRingCatIso:)
+  · rw [← Iso.comp_inv_eq]
+    ext1
+    apply IsLocalization.ringHom_ext
+      (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal.primeCompl
+    ext a
+    dsimp [← AlgEquiv.symm_toRingEquiv]
+    simp only [IsLocalization.map_eq, RingHom.id_apply, Localization.localRingHom_to_map,
+      RingHomCompTriple.comp_apply]
+    simp only [RingHom.algebraMap_toAlgebra, Scheme.Hom.germ_stalkMap_apply, Scheme.Hom.appLE,
+      homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply,
+      X.presheaf.germ_res_apply]
 
 /-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
 @[simps]
@@ -995,8 +1042,24 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
     exact hf₂ x
   rw [← V.prop.self_le_iSup_basicOpen_iff]
   intro x hx
-  rw [iSup_range', SetLike.mem_coe, Opens.mem_iSup]
+  rw [iSup_range', Opens.mem_iSup]
   exact ⟨_, hf₁ ⟨x, hx⟩⟩
+
+/-- If `φ` is a monomorphism in `CommRingCat`, it is not in general true that `Spec φ` is epi.
+(`ℤ ⊆ ℤ[1/2]` but `Spec ℤ[1/2] ⟶ Spec ℤ` is not epi, since epi open immersions are isomorphisms)
+But if the range of `f g : Spec R ⟶ X` are contained in an common affine open `U`, one can still
+cancel `Spec.map φ ≫ f = Spec.map φ ≫ g` to get `f = g`. -/
+lemma eq_of_SpecMap_comp_eq_of_isAffineOpen {R S : CommRingCat} {X : Scheme}
+    (φ : R ⟶ S) (hφ : Function.Injective φ)
+    {f g : Spec R ⟶ X} (U : X.Opens) (hU : IsAffineOpen U) (hUf : f ⁻¹ᵁ U = ⊤) (hUg : g ⁻¹ᵁ U = ⊤)
+    (H : Spec.map φ ≫ f = Spec.map φ ≫ g) : f = g := by
+  have : Mono φ := ConcreteCategory.mono_of_injective _ hφ
+  rw [← IsOpenImmersion.lift_fac U.ι f (by simpa [Set.range_subset_iff] using fun x hx ↦ hUf.ge hx),
+    ← IsOpenImmersion.lift_fac U.ι g (by simpa [Set.range_subset_iff] using fun x hx ↦ hUg.ge hx)]
+  congr 1
+  rw [← cancel_mono hU.isoSpec.hom, ← Spec.homEquiv.injective.eq_iff,
+    ← cancel_mono φ, ← Spec.map_injective.eq_iff]
+  simp [← cancel_mono U.ι, H]
 
 section ZeroLocus
 
@@ -1194,19 +1257,39 @@ lemma specTargetImageFactorization_comp :
     specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f) = f :=
   f.liftQuotient_comp _ _
 
-open RingHom
-
 end Factorization
 
 section Stalks
 
+variable {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) (x : PrimeSpectrum R)
+
+variable (R) (x : PrimeSpectrum R) in
+/-- The stalk of `Spec R` at `x` is isomorphic to `Rₚ`,
+where `p` is the prime corresponding to `x`. -/
+noncomputable
+def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ .of (Localization.AtPrime x.asIdeal) :=
+  (StructureSheaf.stalkIso ..).toCommRingCatIso.symm
+
+@[reassoc (attr := simp)]
+lemma Spec.algebraMap_stalkIso_inv :
+    CommRingCat.ofHom (algebraMap R _) ≫ (stalkIso R x).inv =
+      (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial := by
+  ext s : 2
+  exact (IsLocalization.algEquiv _ ((structureSheaf R).presheaf.stalk _) _).symm.commutes s
+
+@[reassoc (attr := simp)]
+lemma Spec.germ_stalkMapIso_hom :
+    (Spec R).presheaf.germ ⊤ _ trivial ≫ (stalkIso R x).hom =
+      (Scheme.ΓSpecIso R).hom ≫ CommRingCat.ofHom (algebraMap R _) := by
+  simp [← Iso.inv_comp_eq, ← Spec.algebraMap_stalkIso_inv_assoc]
+
 /-- Variant of `AlgebraicGeometry.localRingHom_comp_stalkIso` for `Spec.map`. -/
 @[elementwise]
 lemma Scheme.localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
-    (StructureSheaf.stalkIso R (PrimeSpectrum.comap f.hom p)).hom ≫
+    (Spec.stalkIso R (p.comap f.hom)).hom ≫
       (CommRingCat.ofHom <| Localization.localRingHom
         (PrimeSpectrum.comap f.hom p).asIdeal p.asIdeal f.hom rfl) ≫
-      (StructureSheaf.stalkIso S p).inv = (Spec.map f).stalkMap p :=
+      (Spec.stalkIso S p).inv = (Spec.map f).stalkMap p :=
   AlgebraicGeometry.localRingHom_comp_stalkIso f p
 
 /-- Given a morphism of rings `f : R ⟶ S`, the stalk map of `Spec S ⟶ Spec R` at
@@ -1214,8 +1297,8 @@ a prime of `S` is isomorphic to the localized ring homomorphism. -/
 def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     Arrow.mk ((Spec.map f).stalkMap p) ≅ Arrow.mk (CommRingCat.ofHom <| Localization.localRingHom
       (p.comap f.hom).asIdeal p.asIdeal f.hom rfl) := Arrow.isoMk
-  (StructureSheaf.stalkIso R (PrimeSpectrum.comap f.hom p))
-  (StructureSheaf.stalkIso S p) <| by
+  (Spec.stalkIso R (p.comap f.hom))
+  (Spec.stalkIso S p) <| by
     rw [← Scheme.localRingHom_comp_stalkIso]
     simp
 

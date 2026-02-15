@@ -5,6 +5,8 @@ Authors: Yury Kudryashov, Moritz Doll
 -/
 module
 
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -970,43 +972,41 @@ section inverse
 
 /-- The inverse of a `LinearPMap`. -/
 noncomputable def inverse (f : E →ₗ.[R] F) : F →ₗ.[R] E :=
-  (f.graph.map (LinearEquiv.prodComm R E F)).toLinearPMap
+  (f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E))).toLinearPMap
 
 variable {f : E →ₗ.[R] F}
 
 theorem inverse_domain : (inverse f).domain = LinearMap.range f.toFun := by
   rw [inverse, Submodule.toLinearPMap_domain, ← graph_map_snd_eq_range,
     ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
-  rfl
 
-variable (hf : LinearMap.ker f.toFun = ⊥)
+variable (hf : f.toFun.ker = ⊥)
 include hf
 
 /-- The graph of the inverse generates a `LinearPMap`. -/
 theorem mem_inverse_graph_snd_eq_zero (x : F × E)
-    (hv : x ∈ (graph f).map (LinearEquiv.prodComm R E F))
+    (hv : x ∈ (graph f).map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)))
     (hv' : x.fst = 0) : x.snd = 0 := by
-  simp only [Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
-    LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk] at hv
-  rcases hv with ⟨a, b, ⟨ha, h1⟩, ⟨h2, h3⟩⟩
-  simp only at hv' ⊢
-  rw [hv'] at h1
+  rcases x with ⟨x, y⟩
+  subst hv'
+  simp only [Submodule.map_equiv_eq_comap_symm, Submodule.mem_comap, LinearEquiv.symm_prodComm,
+    LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, mem_graph_iff, Prod.swap] at hv
+  rcases hv with ⟨z, rfl, hz⟩
   rw [LinearMap.ker_eq_bot'] at hf
-  specialize hf ⟨a, ha⟩ h1
-  simp only [Submodule.mk_eq_zero] at hf
-  exact hf
+  simp [hf z hz]
 
-theorem inverse_graph : (inverse f).graph = f.graph.map (LinearEquiv.prodComm R E F) := by
+theorem inverse_graph :
+    (inverse f).graph = f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)) := by
   rw [inverse, Submodule.toLinearPMap_graph_eq _ (mem_inverse_graph_snd_eq_zero hf)]
 
 theorem inverse_range : LinearMap.range (inverse f).toFun = f.domain := by
   rw [inverse, Submodule.toLinearPMap_range _ (mem_inverse_graph_snd_eq_zero hf),
     ← graph_map_fst_eq_domain, ← LinearEquiv.snd_comp_prodComm, Submodule.map_comp]
-  rfl
 
 theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse f).graph := by
   simp only [inverse_graph hf, Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left,
-    exists_eq_left, LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk, Prod.mk.injEq]
+    exists_eq_left, LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk,
+    Prod.mk.injEq]
   exact ⟨(x : E), f x, ⟨x.2, Eq.refl _⟩, Eq.refl _, Eq.refl _⟩
 
 theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y) :

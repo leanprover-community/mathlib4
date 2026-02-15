@@ -17,7 +17,7 @@ is an interval in the domain.
 Note that similar statements about images require the range to be order-connected.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 # Behavior of the Lebesgue integral under maps
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

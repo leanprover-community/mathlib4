@@ -19,7 +19,7 @@ complicated to state. This is because meromorphic functions can be modified at w
 subsets and still remain meromorphic.
 -/
 
-@[expose] public section
+public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]

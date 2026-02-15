@@ -42,7 +42,7 @@ def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _)
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [- Functor.comp_obj]
+    simp [-Functor.comp_obj]
   right_inv := by
     change lift (𝟙 X) (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) ≫
       α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
@@ -51,7 +51,7 @@ def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _)
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [- Functor.comp_obj]
+    simp [-Functor.comp_obj]
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.ofRepresentableBy := GrpObj.ofRepresentableBy
 
@@ -99,7 +99,7 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ f
   NatIso.ofComponents (fun Y ↦ MulEquiv.toGrpIso
     { toEquiv := α.homEquiv
       map_mul' :=
-  ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul})
+  ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul })
       fun φ ↦ GrpCat.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
 
 /-- The yoneda embedding of `Grp_C` into presheaves of groups. -/
@@ -184,6 +184,26 @@ lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.c
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
+/-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,
+see `CategoryTheory.GrpObj.lift_commutator_eq_mul_mul_inv_inv`.
+This morphism is constant with value `1` if and only if `G` is commutative
+(see `CategoryTheory.isCommMonObj_iff_commutator_eq_toUnit_η`). -/
+def GrpObj.commutator (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
+  fst _ _ * snd _ _ * (fst _ _) ⁻¹ * (snd _ _) ⁻¹
+
+@[reassoc (attr := simp)]
+lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :
+    lift f₁ f₂ ≫ commutator G = f₁ * f₂ * f₁⁻¹ * f₂⁻¹ := by
+  simp [commutator, comp_mul, comp_inv]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.η_whiskerRight_commutator : η ▷ G ≫ commutator G = toUnit _ ≫ η := by
+  simp [commutator, comp_mul, comp_inv, one_eq_one]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.whiskerLeft_η_commutator : G ◁ η ≫ commutator G = toUnit _ ≫ η := by
+  simp [commutator, comp_mul, comp_inv, one_eq_one]
+
 variable [BraidedCategory C]
 
 instance [IsCommMonObj G] : IsMonHom ι[G] where
@@ -244,5 +264,18 @@ end Grp
 abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+
+section
+
+/-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
+is constant. -/
+lemma isCommMonObj_iff_commutator_eq_toUnit_η :
+    IsCommMonObj G ↔ GrpObj.commutator G = toUnit _ ≫ η := by
+  rw [isCommMonObj_iff_isMulCommutative]
+  refine ⟨fun h ↦ ?_, fun heq X ↦ ⟨⟨fun f g ↦ ?_⟩⟩⟩
+  · simp [GrpObj.commutator, one_eq_one]
+  · simpa [one_eq_one, mul_inv_eq_iff_eq_mul] using congr(lift f g ≫ $heq)
+
+end
 
 end CategoryTheory

@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Init
-public meta import Aesop
+public import Aesop
 
 /-!
 # arith_mult Rule Set

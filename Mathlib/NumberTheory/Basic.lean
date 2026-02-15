@@ -22,7 +22,7 @@ all natural numbers `p` and `k` if `p` divides `a-b` in `R`, then `p ^ (k + 1)` 
 `a ^ (p ^ k) - b ^ (p ^ k)`.
 -/
 
-@[expose] public section
+public section
 
 
 section

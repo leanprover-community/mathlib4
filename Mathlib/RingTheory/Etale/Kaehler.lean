@@ -65,6 +65,13 @@ instance KaehlerDifferential.isLocalizedModule_map (M : Submonoid S) [IsLocaliza
   have := Algebra.FormallyEtale.of_isLocalization (Rₘ := T) M
   (isLocalizedModule_iff_isBaseChange M T _).mpr (isBaseChange_of_formallyEtale R S T)
 
+lemma KaehlerDifferential.span_range_map_derivation_of_isLocalization
+    (M : Submonoid S) [IsLocalization M T] :
+    Submodule.span T (Set.range <| map R R S T ∘ D R S) = ⊤ := by
+  convert span_eq_top_of_isLocalizedModule T M (map R R S T) (v := Set.range <| D R S)
+    (span_range_derivation R S)
+  rw [← Set.range_comp, Function.comp_def]
+
 namespace Algebra.Extension
 
 open KaehlerDifferential

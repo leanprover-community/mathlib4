@@ -145,7 +145,7 @@ section Specialized
 variable (F : C ⥤ FintypeCat.{u₂})
 
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
-This is a colimit cocone (see `PreGaloisCategory.isColimìt`) -/
+This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
   pt := F ⋙ FintypeCat.incl
   ι := {

@@ -43,7 +43,10 @@ variable {W X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 @[mk_iff]
 class IsSeparated : Prop where
   /-- A morphism is separated if the diagonal map is a closed immersion. -/
-  diagonal_isClosedImmersion : IsClosedImmersion (pullback.diagonal f) := by infer_instance
+  isClosedImmersion_diagonal : IsClosedImmersion (pullback.diagonal f) := by infer_instance
+
+@[deprecated (since := "2026-01-20")]
+alias IsSeparated.diagonal_isClosedImmersion := IsSeparated.isClosedImmersion_diagonal
 
 namespace IsSeparated
 
@@ -146,7 +149,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   rw [← top_le_iff]
   rintro x -
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
-    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.mem_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : pullback.fst f f x = pullback.snd f f x :=
     hf (by rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition])
@@ -238,7 +241,7 @@ instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion
   exact .of_comp _ I.subschemeι
 
 lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
-  have := IsSeparated.diagonal_isClosedImmersion (f := f ≫ g)
+  have : IsClosedImmersion (pullback.diagonal (f ≫ g)) := inferInstance
   rw [pullback.diagonal_comp] at this
   exact ⟨@IsClosedImmersion.of_comp _ _ _ _ _ this inferInstance⟩
 
@@ -285,11 +288,11 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
   let ι' : U' ⟶ X' := Over.homMk ι
   have : IsSeparated Y'.hom := ‹_›
   have : IsDominant (equalizer.ι f' g').left := by
-    apply (config := { allowSynthFailures := true }) IsDominant.of_comp (equalizer.lift ι' ?_).left
+    apply +allowSynthFailures IsDominant.of_comp (equalizer.lift ι' ?_).left
     · rwa [← Over.comp_left, equalizer.lift_ι]
     · ext1; exact hU
   have : Surjective (equalizer.ι f' g').left :=
-    surjective_of_isDominant_of_isClosed_range _ IsClosedImmersion.base_closed.2
+    surjective_of_isDominant_of_isClosed_range _ (Scheme.Hom.isClosedEmbedding _).isClosed_range
   have := isIso_of_isClosedImmersion_of_surjective (Y := X) (equalizer.ι f' g').left
   rw [← cancel_epi (equalizer.ι f' g').left]
   exact congr($(equalizer.condition f' g').left)
@@ -329,7 +332,7 @@ instance (priority := low) {X : Scheme.{u}} [X.IsSeparated] : QuasiSeparatedSpac
   quasiSeparatedSpace_of_quasiSeparated (terminal.from X)
 
 instance (priority := 900) [X.IsSeparated] : IsSeparated f := by
-  apply (config := { allowSynthFailures := true }) @IsSeparated.of_comp (g := terminal.from Y)
+  apply +allowSynthFailures @IsSeparated.of_comp (g := terminal.from Y)
   rw [terminal.comp_from]
   infer_instance
 

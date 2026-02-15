@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Ring.NegOnePow
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

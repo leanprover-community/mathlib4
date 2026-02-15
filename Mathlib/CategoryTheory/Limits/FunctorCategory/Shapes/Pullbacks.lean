@@ -26,7 +26,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 section Pullback
 
 /-- Given functors `F G H` and natural transformations `f : F ⟶ H` and `g : g : G ⟶ H`, together
-with a collection of limiting pullback cones for each cospan `F X ⟶ H X, G X ⟶ H X`, we can stich
+with a collection of limiting pullback cones for each cospan `F X ⟶ H X, G X ⟶ H X`, we can stitch
 them together to give a pullback cone for the cospan formed by `f` and `g`.
 `combinePullbackConesIsLimit` shows that this pullback cone is limiting. -/
 @[simps!]

@@ -186,7 +186,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     · simp only [Cat.Hom.comp_toFunctor, comp_obj, categoryStruct_comp_base, Quiver.Hom.comp_toLoc,
         categoryStruct_comp_fiber, eqToHom_refl, map_comp, ← Cat.Hom.comp_map, assoc,
         NatTrans.naturality_assoc]
-      simp [naturality_comp_inv_app, ← Functor.map_comp, ←reassoc_of% Cat.Hom₂.comp_app]
+      simp [naturality_comp_inv_app, ← Functor.map_comp, ← reassoc_of% Cat.Hom₂.comp_app]
 
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by

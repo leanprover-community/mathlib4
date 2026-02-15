@@ -5,7 +5,7 @@ Authors: Arthur Paulino, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.Have
+public import Mathlib.Tactic.Have
 
 /-!
 # Extending `replace`
