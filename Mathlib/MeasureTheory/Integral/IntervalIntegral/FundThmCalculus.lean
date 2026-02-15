@@ -1188,7 +1188,7 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `(a, b)` and
 its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`. -/
 theorem integral_deriv_eq_sub_uIoo
-    (hcont : ContinuousOn f (uIcc a b)) (hderiv : ∀ x ∈ uIoo a b, DifferentiableAt ℝ f x)
+    (hcont : ContinuousOn f [[a, b]]) (hderiv : ∀ x ∈ uIoo a b, DifferentiableAt ℝ f x)
     (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a := by
   rcases le_total a b with hab | hab
   · simp only [uIcc_of_le, hab, uIoo_of_le] at hcont hderiv
