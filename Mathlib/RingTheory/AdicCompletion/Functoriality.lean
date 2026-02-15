@@ -449,7 +449,7 @@ theorem map_surjective_of_mkQ_comp_surjective {f : M →ₗ[R] N}
   exact ⟨fun n ↦ (x n).val, fun n ↦ ⟨(Classical.choose_spec (exists_smodEq_pow_smul_top_and_mkQ_eq
       h (y' := eval I _ (n + 1) y) (by simp) (x n).2)).1, (x n).property⟩⟩
 
-section finsupp_sum
+section finsuppSum
 
 open Finsupp
 
@@ -458,51 +458,51 @@ variable {σ : Type*}
 variable (σ M I) in
 /-- The canonical map from the finitely supported functions of adic completions to
 the adic completion of finitely supported functions. This is an isomorphism if `σ` is finite. -/
-def finsupp_sum : (σ →₀ (AdicCompletion I M)) →ₗ[AdicCompletion I R] AdicCompletion I (σ →₀ M) :=
+def finsuppSum : (σ →₀ (AdicCompletion I M)) →ₗ[AdicCompletion I R] AdicCompletion I (σ →₀ M) :=
   lsum (AdicCompletion I R) (fun i ↦ map I (lsingle i))
 
 @[simp]
-theorem finsupp_sum_single_of (i : σ) (m : M) : finsupp_sum I M σ (single i (of I M m)) =
+theorem finsuppSum_single_of (i : σ) (m : M) : finsuppSum I M σ (single i (of I M m)) =
     of I (σ →₀ M) (single i m) := by
-  ext; simp [finsupp_sum]
+  ext; simp [finsuppSum]
 
-theorem map_finsuppLEquivDirectSum_comp_finsupp_sum [DecidableEq σ] :
-    map I (finsuppLEquivDirectSum R M σ) ∘ₗ finsupp_sum I M σ = sum I (fun _ : σ ↦ M) ∘ₗ
+theorem map_finsuppLEquivDirectSum_comp_finsuppSum [DecidableEq σ] :
+    map I (finsuppLEquivDirectSum R M σ) ∘ₗ finsuppSum I M σ = sum I (fun _ : σ ↦ M) ∘ₗ
       (finsuppLEquivDirectSum (AdicCompletion I R) (AdicCompletion I M) σ) := by
-  ext; simp [finsupp_sum]
+  ext; simp [finsuppSum]
 
 variable [Fintype σ]
 
 variable (σ M I) in
-/-- If `σ` is finite, `AdicCompletion.finsupp_sumInv` is
-an inverse for `AdicCompletion.finsupp_sum`. -/
-def finsupp_sumInv : AdicCompletion I (σ →₀ M) →ₗ[AdicCompletion I R] (σ →₀ (AdicCompletion I M)) :=
+/-- If `σ` is finite, `AdicCompletion.finsuppSumInv` is
+an inverse for `AdicCompletion.finsuppSum`. -/
+def finsuppSumInv : AdicCompletion I (σ →₀ M) →ₗ[AdicCompletion I R] (σ →₀ (AdicCompletion I M)) :=
   (linearEquivFunOnFinite (AdicCompletion I R) (AdicCompletion I M) σ).symm ∘ₗ
     .pi (fun i ↦ map I (lapply i))
 
-theorem finsupp_sumInv_comp_sum : finsupp_sumInv I M σ ∘ₗ finsupp_sum I M σ = .id := by
+theorem finsuppSumInv_comp_sum : finsuppSumInv I M σ ∘ₗ finsuppSum I M σ = .id := by
   classical
   ext
-  -- simp [finsupp_sum, finsupp_sumInv, single_apply]
-  simp only [finsupp_sumInv, finsupp_sum, coe_comp, LinearEquiv.coe_coe, coe_lsum,
+  -- simp [finsuppSum, finsuppSumInv, single_apply]
+  simp only [finsuppSumInv, finsuppSum, coe_comp, LinearEquiv.coe_coe, coe_lsum,
     Function.comp_apply, lsingle_apply, _root_.map_zero, sum_single_index, map_mk,
     linearEquivFunOnFinite_symm_apply, pi_apply, mk_apply_coe,
     AdicCauchySequence.map_apply_coe, lapply_apply, Finsupp.single_apply, mkQ_apply,
     id_comp]
   split <;> simp
 
-theorem finsupp_sum_comp_sumInv : finsupp_sum I M σ ∘ₗ finsupp_sumInv I M σ = .id := by
+theorem finsuppSum_comp_sumInv : finsuppSum I M σ ∘ₗ finsuppSumInv I M σ = .id := by
   refine LinearMap.ext fun _ ↦ ?_
-  simp [finsupp_sum, finsupp_sumInv, sum_fintype, map_comp_apply]
+  simp [finsuppSum, finsuppSumInv, sum_fintype, map_comp_apply]
   simp [← lmap_apply, ← LinearMap.sum_apply, ← map_sum, sum_coordinateProj]
   simp [lmap]
 
 @[simp]
-theorem finsupp_sumInv_single_of (i : σ) (m : M) :
-    finsupp_sumInv I M σ (of I (σ →₀ M) (single i m)) = single i (of I M m) := by
-  simp [← finsupp_sum_single_of, ← comp_apply, finsupp_sumInv_comp_sum]
+theorem finsuppSumInv_single_of (i : σ) (m : M) :
+    finsuppSumInv I M σ (of I (σ →₀ M) (single i m)) = single i (of I M m) := by
+  simp [← finsuppSum_single_of, ← comp_apply, finsuppSumInv_comp_sum]
 
-end finsupp_sum
+end finsuppSum
 
 end AdicCompletion
 
