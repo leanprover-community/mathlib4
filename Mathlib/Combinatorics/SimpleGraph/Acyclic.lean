@@ -157,7 +157,7 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
 /-- The union of two acyclic graphs that share at most one vertex is acyclic -/
-theorem isAcyclic_coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (h₂ : G₂.coe.IsAcyclic)
+theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (h₂ : G₂.coe.IsAcyclic)
     (h : (G₁.verts ∩ G₂.verts).Subsingleton) : (G₁ ⊔ G₂).coe.IsAcyclic := by
   refine fun v p hp ↦ ?_
   -- If the walk is entirely contained within one of the subgraphs
@@ -206,10 +206,10 @@ theorem isAcyclic_coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (
   exact hnv₂ <| (hpd ▸ rfl : v₂ = d₂.fst) ▸ hd₂₁'.left
 
 /-- The union of two trees that share exactly one vertex is a tree -/
-theorem isTree_coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsTree) (h₂ : G₂.coe.IsTree) {v : V}
+theorem IsTree.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsTree) (h₂ : G₂.coe.IsTree) {v : V}
     (h : G₁.verts ∩ G₂.verts = {v}) : (G₁ ⊔ G₂).coe.IsTree :=
   ⟨Subgraph.connected_sup ⟨h₁.isConnected.preconnected⟩ ⟨h₂.isConnected.preconnected⟩
-    <| by simp [h], isAcyclic_coe_sup h₁.IsAcyclic h₂.IsAcyclic <| by simp [h]⟩
+    <| by simp [h], .coe_sup h₁.IsAcyclic h₂.IsAcyclic <| by simp [h]⟩
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
