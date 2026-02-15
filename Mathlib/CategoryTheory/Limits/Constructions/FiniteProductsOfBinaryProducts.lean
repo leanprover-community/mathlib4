@@ -3,10 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # Constructing finite products from binary products and terminal.
@@ -19,6 +20,8 @@ If a functor preserves binary products and the terminal object then it preserves
 Provide the dual results.
 Show the analogous results for functors which reflect or create (co)limits.
 -/
+
+@[expose] public section
 
 
 universe v v' u u'
@@ -145,22 +148,14 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
       simp only [id_comp, ← F.map_comp]
       rfl
 
-/-- If `F` preserves the terminal object and binary products, then it preserves limits of shape
-`Discrete (Fin n)`.
--/
-lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
-    PreservesLimitsOfShape (Discrete (Fin n)) F where
-  preservesLimit {K} := by
+/-- If `F` preserves the terminal object and binary products then it preserves finite products. -/
+lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
+    PreservesFiniteProducts F where
+  preserves n := by
+    refine ⟨fun {K} ↦ ?_⟩
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
     haveI := preservesFinOfPreservesBinaryAndTerminal F n fun n => K.obj ⟨n⟩
     apply preservesLimit_of_iso_diagram F that
-
-/-- If `F` preserves the terminal object and binary products then it preserves finite products. -/
-lemma preservesFiniteProducts_of_preserves_binary_and_terminal (J : Type*) [Finite J] :
-    PreservesLimitsOfShape (Discrete J) F :=
-  let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
-  have := preservesShape_fin_of_preserves_binary_and_terminal F n
-  preservesLimitsOfShape_of_equiv (Discrete.equivalence e).symm _
 
 end Preserves
 
@@ -170,7 +165,6 @@ and a binary cofan on `c₁.X` and `f 0`, we can build a cofan for all `n+1`.
 In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.
 -/
-
 @[simps!]
 def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n => f i.succ)
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=

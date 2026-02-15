@@ -3,9 +3,11 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form
@@ -29,6 +31,8 @@ results for the Lie algebra of square matrices.
 
 lie algebra, skew-adjoint, bilinear form
 -/
+
+@[expose] public section
 
 
 universe u v w w₁
@@ -63,8 +67,7 @@ def skewAdjointLieSubalgebraEquiv :
     skewAdjointLieSubalgebra (B.compl₁₂ (e : N →ₗ[R] M) e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
   apply LieEquiv.ofSubalgebras _ _ e.lieConj
   ext f
-  simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
-    LinearEquiv.coe_coe]
+  simp only [Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule]
   exact (LinearMap.isPairSelfAdjoint_equiv (B := -B) (F := B) e f).symm
 
 @[simp]
@@ -119,8 +122,7 @@ def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) 
     ext A
     suffices P.lieConj h A ∈ skewAdjointMatricesSubmodule J ↔
         A ∈ skewAdjointMatricesSubmodule (Pᵀ * J * P) by
-      simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
-        LinearEquiv.coe_coe]
+      simp only [Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule]
       exact this
     simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv _ _ P (isUnit_of_invertible P)]
 
@@ -137,7 +139,7 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
   LieEquiv.ofSubalgebras _ _ e.toLieEquiv <| by
     ext A
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
-      simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
+      simpa [-LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
     simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]
 

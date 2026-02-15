@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Nat.Factors
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Unique factorization of natural numbers
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 * `Nat.instUniqueFactorizationMonoid`: the natural numbers have unique factorization
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -29,7 +33,7 @@ instance instWfDvdMonoid : WfDvdMonoid ℕ where
       revert h
       simp [DvdNotUnit]
     cases b
-    · simpa [succ_ne_zero] using ENat.coe_lt_top (a + 1)
+    · simp
     obtain ⟨h1, h2⟩ := dvd_and_not_dvd_iff.2 h
     simp only [succ_ne_zero, cast_lt, if_false]
     refine lt_of_le_of_ne (Nat.le_of_dvd (Nat.succ_pos _) h1) fun con => h2 ?_

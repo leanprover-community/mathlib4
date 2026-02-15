@@ -3,14 +3,18 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.BigOperators.Group.List.Defs
+module
+
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Batteries.Data.List
 
 /-!
 # Big operators on a list in ordered rings
 
 This file contains the results concerning the interaction of list big operators with ordered rings.
 -/
+
+public section
 
 variable {R : Type*}
 

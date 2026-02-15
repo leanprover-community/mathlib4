@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Jack McKoen
 -/
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+module
+
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Limits and colimits in the category of (co)algebras
@@ -23,10 +25,12 @@ and `T` preserves.
 This is generalised to the case of a comonadic functor `D ⥤ C`.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 open CategoryTheory.Limits
 
@@ -62,8 +66,7 @@ def conePoint : Algebra T where
     t.hom_ext fun j => by
       rw [Category.assoc, t.fac, newCone_π_app, ← T.η.naturality_assoc, Functor.id_map,
         (D.obj j).unit]
-      dsimp; simp
-  -- See library note [dsimp, simp]
+      simp
   assoc :=
     t.hom_ext fun j => by
       rw [Category.assoc, Category.assoc, t.fac (newCone D c), newCone_π_app, ←
@@ -79,9 +82,7 @@ def liftedCone : Cone D where
     { app := fun j => { f := c.π.app j }
       naturality := fun X Y f => by
         ext1
-        dsimp
-        erw [c.w f]
-        simp }
+        simpa using (c.w f).symm }
 
 /-- (Impl) Prove that the lifted cone is limiting. -/
 @[simps]
@@ -178,8 +179,7 @@ noncomputable def coconePoint : Algebra T where
     rw [show c.ι.app j ≫ T.η.app c.pt ≫ _ = T.η.app (D.obj j).A ≫ _ ≫ _ from
         T.η.naturality_assoc _ _,
       commuting, Algebra.unit_assoc (D.obj j)]
-    dsimp; simp
-  -- See library note [dsimp, simp]
+    simp
   assoc := by
     refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => ?_
     rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
@@ -237,8 +237,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
                   h := commuting _ _ _ }
               naturality := fun A B f => by
                 ext1
-                dsimp
-                erw [comp_id, c.w] } }
+                simpa using (c.w f) } }
       validLift := Cocones.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 
@@ -387,7 +386,7 @@ variable (D : J ⥤ Coalgebra T) (c : Cocone (D ⋙ T.forget)) (t : IsColimit c)
 
 /-- (Impl) The natural transformation used to define the new cocone -/
 @[simps]
-def γ : D ⋙ T.forget ⟶ D ⋙ T.forget ⋙ ↑T  where app j := (D.obj j).a
+def γ : D ⋙ T.forget ⟶ D ⋙ T.forget ⋙ ↑T where app j := (D.obj j).a
 
 /-- (Impl) This new cocone is used to construct the coalgebra structure -/
 @[simps! ι_app]
@@ -418,9 +417,7 @@ def liftedCocone : Cocone D where
     { app := fun j => { f := c.ι.app j }
       naturality := fun X Y f => by
         ext1
-        dsimp
-        erw [c.w f]
-        simp }
+        simpa using (c.w f) }
 
 /-- (Impl) Prove that the lifted cocone is colimiting. -/
 @[simps]
@@ -512,7 +509,7 @@ noncomputable def conePoint : Coalgebra T where
       ← show _ = _ ≫ T.map (T.map _) from T.δ.naturality _, assoc, ← Functor.map_comp, commuting,
       Functor.map_comp, ← assoc, commuting]
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
-    rw [(D.obj j).coassoc,  ← assoc, ← assoc, commuting]
+    rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
@@ -565,8 +562,7 @@ noncomputable instance forgetCreatesLimit (D : J ⥤ Coalgebra T)
                   h := commuting _ _ _ }
               naturality := fun A B f => by
                 ext1
-                dsimp
-                erw [id_comp, c.w] } }
+                simpa using (c.w f).symm } }
       validLift := Cones.ext (Iso.refl _)
       makesLimit := liftedConeIsLimit _ _ }
 
@@ -669,7 +665,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
       let t : IsLimit c := isLimitOfPreserves (comonadicRightAdjoint R) (limit.isLimit _)
       apply HasLimit.mk ⟨_, (IsLimit.postcomposeHomEquiv _ _).symm t⟩
       apply
-        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) :) )).symm
+        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) :))).symm
 
 /-- If `C` has limits then any coreflective subcategory has limits. -/
 theorem hasLimits_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfSize.{v, u} C] :

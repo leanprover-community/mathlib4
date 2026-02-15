@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Group.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Actions by `Submonoid`s
@@ -15,6 +17,8 @@ the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s �
 These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
 `s • m` as an alias for `↑s * m`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -27,8 +31,16 @@ section SetLike
 variable {S' : Type*} [SetLike S' M'] (s : S')
 
 @[to_additive]
-instance (priority := low) [SMul M' α]  : SMul s α where
+instance (priority := low) [SMul M' α] : SMul s α where
   smul m a := (m : M') • a
+
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsLeftCancelSMul M' α] : IsLeftCancelSMul s α where
+  left_cancel' x _ _ := IsLeftCancelSMul.left_cancel x.1 _ _
+
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsCancelSMul M' α] : IsCancelSMul s α where
+  right_cancel' _ _ _ eq := Subtype.ext <| IsCancelSMul.right_cancel _ _ _ eq
 
 section MulOneClass
 
@@ -42,6 +54,7 @@ instance (priority := low) [SMul M' β] [SMul α β] [SMulCommClass M' α β] : 
 instance (priority := low) [SMul α β] [SMul M' β] [SMulCommClass α M' β] : SMulCommClass α s β :=
   ⟨fun a s => smul_comm a (s : M')⟩
 
+@[to_additive]
 instance (priority := low) [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] :
     IsScalarTower s α β :=
   ⟨fun a => smul_assoc (a : M')⟩
@@ -76,6 +89,7 @@ instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
   inferInstance
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
+@[to_additive]
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=
@@ -96,7 +110,7 @@ variable [Monoid M']
 
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
-      "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
+      /-- The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. -/]
 instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
   inferInstance
 

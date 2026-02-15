@@ -3,14 +3,16 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Topology.Algebra.SeparationQuotient.Hom
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 
 /-!
 # Lifts of maps to separation quotients of seminormed groups
 
 For any `SeminormedAddCommGroup M`, a `NormedAddCommGroup` instance has been defined in
-`Mathlib.Analysis.Normed.Group.Uniform`.
+`Mathlib/Analysis/Normed/Group/Uniform.lean`.
 
 ## Main definitions
 
@@ -20,18 +22,20 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 * `normedMk` : the normed group hom from `M` to `SeparationQuotient M`.
 
-* `liftNormedAddGroupHom` :
-Any bounded group hom `f : M → N` such that `∀ x, ‖x‖ = 0 → f x = 0` descends to a bounded group hom
-`SeparationQuotient M → N`. Here, `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)`
-and `liftNormedAddGroupHom f hf : NormedAddGroupHom (SeparationQuotient M) N` such that
-`liftNormedAddGroupHom f hf (mk x) = f x`.
+* `liftNormedAddGroupHom` : any bounded group hom `f : M → N` such that `∀ x, ‖x‖ = 0 → f x = 0`
+  descends to a bounded group hom `SeparationQuotient M → N`.
+  Here, `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)`
+  and `liftNormedAddGroupHom f hf : NormedAddGroupHom (SeparationQuotient M) N` such that
+  `liftNormedAddGroupHom f hf (mk x) = f x`.
 
 ## Main results
 
-* `norm_normedMk_eq_one : the operator norm of the projection is `1` if the subspace is not `⊤`.
+* `norm_normedMk_eq_one` : the operator norm of the projection is `1` if the subspace is not `⊤`.
 
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
+
+@[expose] public section
 
 section
 
@@ -88,7 +92,6 @@ noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup
     intro x hx
     rw [← norm_mk, norm_eq_zero] at hx
     simp [hx]⟩
-  left_inv _ := rfl
   right_inv _ := by
     ext x
     obtain ⟨x, rfl⟩ := surjective_mk x
@@ -115,12 +118,12 @@ theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
 
 /-- The operator norm of the projection is `1` if there is an element whose norm is different from
 `0`. -/
-theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
+theorem norm_normedMk_eq_one [NontrivialTopology M] :
     ‖normedMk (M := M)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simpa only [normedMk_apply, one_mul] using fun _ ↦ le_rfl
   · intro N _ hle
-    obtain ⟨x, _⟩ := h
+    obtain ⟨x, _⟩ := exists_norm_ne_zero M
     exact one_le_of_le_mul_right₀ (by positivity) (hle x)
 
 /-- The projection is `0` if and only if all the elements have norm `0`. -/

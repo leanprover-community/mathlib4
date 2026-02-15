@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Idempotents
-import Mathlib.RingTheory.Smooth.Basic
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.RingTheory.Smooth.Basic
 
 /-!
 
@@ -17,11 +19,11 @@ import Mathlib.RingTheory.Smooth.Basic
 
 -/
 
-universe u v
+@[expose] public section
 
 namespace Algebra.FormallySmooth
 
-variable {R : Type (max u v)} {I : Type u} (A : I → Type (max u v))
+variable {R : Type*} {I : Type*} (A : I → Type*)
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 
 theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
@@ -30,7 +32,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
   fapply FormallySmooth.of_split (Pi.evalAlgHom R A i)
   · apply AlgHom.ofLinearMap
       ((Ideal.Quotient.mkₐ R _).toLinearMap.comp (LinearMap.single _ _ i))
-    · show Ideal.Quotient.mk _ (Pi.single i 1) = 1
+    · change Ideal.Quotient.mk _ (Pi.single i 1) = 1
       rw [← (Ideal.Quotient.mk _).map_one, ← sub_eq_zero, ← map_sub,
         Ideal.Quotient.eq_zero_iff_mem]
       have : Pi.single i 1 - 1 ∈ RingHom.ker (Pi.evalAlgHom R A i).toRingHom := by
@@ -38,10 +40,10 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
       convert neg_mem (Ideal.pow_mem_pow this 2) using 1
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
-      show Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
+      change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
       simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
   · ext x
-    show (Pi.single i x) i = x
+    change (Pi.single i x) i = x
     simp
 
 theorem pi_iff [Finite I] :
@@ -50,9 +52,7 @@ theorem pi_iff [Finite I] :
   cases nonempty_fintype I
   constructor
   · exact fun _ ↦ of_pi A
-  · intro H
-    constructor
-    intros B _ _ J hJ g
+  · refine fun H ↦ .of_comp_surjective fun B _ _ J hJ g ↦ ?_
     have hJ' (x) (hx : x ∈ RingHom.ker (Ideal.Quotient.mk J)) : IsNilpotent x := by
       refine ⟨2, show x ^ 2 ∈ (⊥ : Ideal B) from ?_⟩
       rw [← hJ]
@@ -68,7 +68,7 @@ theorem pi_iff [Finite I] :
     let ι : ∀ i, (B ⧸ J →ₐ[R] (B ⧸ _) ⧸ J' i) := fun i ↦ Ideal.quotientMapₐ _
       (IsScalarTower.toAlgHom R B _) Ideal.le_comap_map
     have hι : ∀ i x, ι i x = 0 → (e i) * x = 0 := by
-      intros i x hix
+      intro i x hix
       have : x ∈ (Ideal.span {1 - e i}).map (Ideal.Quotient.mk J) := by
         rw [← Ideal.ker_quotientMap_mk]; exact hix
       rw [Ideal.map_span, Set.image_singleton, Ideal.mem_span_singleton] at this
@@ -82,8 +82,8 @@ theorem pi_iff [Finite I] :
         · suffices Ideal.Quotient.mk (Ideal.span {1 - e i}) (e i) = 1 by simp [ι, ← he', this]
           rw [← (Ideal.Quotient.mk _).map_one, eq_comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
             Ideal.mem_span_singleton]
-        · intros x y; simp [Pi.single_mul]
-      obtain ⟨a, ha⟩ := FormallySmooth.comp_surjective (I := J' i)
+        · intro x y; simp [Pi.single_mul]
+      obtain ⟨a, ha⟩ := FormallySmooth.comp_surjective _ _ (I := J' i)
         (by rw [← Ideal.map_pow, hJ, Ideal.map_bot]) g'
       exact ⟨a, AlgHom.congr_fun ha⟩
     choose a ha using this

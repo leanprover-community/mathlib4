@@ -3,18 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.ConditionallyCompleteOrder
-import Mathlib.Topology.Instances.Discrete
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.ConditionallyCompleteOrder
+public import Mathlib.Topology.Instances.Discrete
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topology on the integers
 
 The structure of a metric space on `ℤ` is introduced in this file, induced from `ℝ`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -44,9 +49,6 @@ theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℤ → ℝ) :
 theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_coe_real := isClosedEmbedding_coe_real
-
 instance : MetricSpace ℤ := Int.isUniformEmbedding_coe_real.comapMetricSpace _
 
 theorem preimage_ball (x : ℤ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
@@ -64,11 +66,13 @@ instance : ProperSpace ℤ :=
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩
 
+instance : IsOrderBornology ℤ :=
+  .of_isCompactIcc 0 (by simp [Int.closedBall_eq_Icc]) (by simp [Int.closedBall_eq_Icc])
+
 @[simp]
 theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
   simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
-
 
 @[simp]
 theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by

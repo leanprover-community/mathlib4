@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.LeftExact
-import Mathlib.CategoryTheory.Sites.PreservesSheafification
-import Mathlib.CategoryTheory.Sites.Subsheaf
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.LeftExact
+public import Mathlib.CategoryTheory.Sites.PreservesSheafification
+public import Mathlib.CategoryTheory.Sites.Subsheaf
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Locally injective morphisms of (pre)sheaves
@@ -21,6 +23,8 @@ the equality `x = y` must hold locally, i.e. after restriction
 by the maps of a covering sieve.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -88,17 +92,15 @@ instance [IsIso φ] : IsLocallyInjective J φ :=
     change IsIso ((forget D).map (φ.app X))
     infer_instance))
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
-    IsLocallyInjective J (whiskerRight φ (forget D)) where
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isLocallyInjective_forget_iff :
-    IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
   · intro
-    exact ⟨fun x y h => equalizerSieve_mem J (whiskerRight φ (forget D)) x y h⟩
+    exact ⟨fun x y h => equalizerSieve_mem J (Functor.whiskerRight φ (forget D)) x y h⟩
   · intro
     infer_instance
 
@@ -167,8 +169,7 @@ lemma isLocallyInjective_iff_injective_of_separated
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
+instance (F : Cᵒᵖ ⥤ Type w) (G : Subfunctor F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
     intro ⟨x, _⟩ ⟨y, _⟩ h
@@ -177,8 +178,6 @@ instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
 section
 
 open GrothendieckTopology.Plus
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallyInjective J (J.toPlus P) where
@@ -231,7 +230,6 @@ lemma mono_of_injective
 
 variable [J.HasSheafCompose (forget D)]
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective φ] :
     IsLocallyInjective ((sheafCompose J (forget D)).map φ) :=
   Presheaf.isLocallyInjective_forget J φ.1
@@ -239,7 +237,7 @@ instance isLocallyInjective_forget [IsLocallyInjective φ] :
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
-    apply Presieve.isSeparated_of_isSheaf
+    apply Presieve.IsSheaf.isSeparated
     rw [← isSheaf_iff_isSheaf_of_type]
     exact ((sheafCompose J (forget D)).obj F₁).2)
 
@@ -248,7 +246,6 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   rw [← isLocallyInjective_iff_injective]
   infer_instance
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallyInjective (Sheaf.imageι f) := by
   dsimp [Sheaf.imageι]

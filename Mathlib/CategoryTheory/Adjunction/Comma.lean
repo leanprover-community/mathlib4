@@ -3,10 +3,12 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.PUnit
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Properties of comma categories relating to adjunctions
@@ -20,6 +22,8 @@ provided a left adjoint.
 
 The duals are also shown.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -48,7 +52,7 @@ def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
   left_inv g := by
     let B' : StructuredArrow A G := StructuredArrow.mk ((⊥_ StructuredArrow A G).hom ≫ G.map g)
     let g' : ⊥_ StructuredArrow A G ⟶ B' := StructuredArrow.homMk g rfl
-    have : initial.to _ = g' := by aesop_cat
+    have : initial.to _ = g' := by cat_disch
     change CommaMorphism.right (initial.to B') = _
     rw [this]
     rfl
@@ -89,19 +93,19 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left) where
   toFun g := CommaMorphism.left (terminal.from (CostructuredArrow.mk g))
   invFun g := G.map g ≫ (⊤_ CostructuredArrow G A).hom
-  left_inv := by aesop_cat
+  left_inv := by cat_disch
   right_inv g := by
     let B' : CostructuredArrow G A :=
       CostructuredArrow.mk (G.map g ≫ (⊤_ CostructuredArrow G A).hom)
     let g' : B' ⟶ ⊤_ CostructuredArrow G A := CostructuredArrow.homMk g rfl
-    have : terminal.from _ = g' := by aesop_cat
+    have : terminal.from _ = g' := by cat_disch
     change CommaMorphism.left (terminal.from B') = _
     rw [this]
     rfl
 
 /--
 If each costructured arrow category on `G` has a terminal object, construct a right adjoint to `G`.
-It is shown that it is a right adjoint in `adjunctionOfStructuredArrowInitials`.
+It is shown that it is a right adjoint in `adjunctionOfCostructuredArrowTerminals`.
 -/
 def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
   Adjunction.rightAdjointOfEquiv (rightAdjointOfCostructuredArrowTerminalsAux G)

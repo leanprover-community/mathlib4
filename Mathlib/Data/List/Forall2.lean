@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Double universal quantification on a list
@@ -12,6 +14,8 @@ This file provides an API for `List.Forall₂` (definition in `Data.List.Defs`).
 `Forall₂ R l₁ l₂` means that `l₁` and `l₂` have the same length, and whenever `a` is the nth element
 of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 -/
+
+@[expose] public section
 
 
 open Nat Function
@@ -42,7 +46,7 @@ theorem forall₂_same : ∀ {l : List α}, Forall₂ Rₐ l l ↔ ∀ x ∈ l, 
   | [] => by simp
   | a :: l => by simp [@forall₂_same l]
 
-theorem forall₂_refl [IsRefl α Rₐ] (l : List α) : Forall₂ Rₐ l l :=
+theorem forall₂_refl [Std.Refl Rₐ] (l : List α) : Forall₂ Rₐ l l :=
   forall₂_same.2 fun _ _ => refl _
 
 @[simp]
@@ -90,8 +94,8 @@ theorem forall₂_and_left {p : α → Prop} :
     simp only [forall₂_nil_left_iff, forall_prop_of_false not_mem_nil, imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
-      @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
-    simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
+      exists_and_left]
+    simp only [and_comm, and_assoc, ← exists_and_right]
 
 @[simp]
 theorem forall₂_map_left_iff {f : γ → α} :
@@ -169,7 +173,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
           (IH h₁ fun h => h₂ <| by
-            simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
+            simp only [zip, zipWith, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
 
 theorem forall₂_take : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (take n l₁) (take n l₂)
@@ -226,13 +230,9 @@ theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
   | [], [], Forall₂.nil => Forall₂.nil
   | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_flatten h₂)
 
-@[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
-
 theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P)
     (Function.swap List.flatMap) (Function.swap List.flatMap) :=
   fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
-
-@[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap
 
 theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
   | _, _, _, _, _, h, _, _, Forall₂.nil => h
@@ -295,7 +295,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
       obtain - | ⟨hr, hl⟩ := hl1
       exact SublistForall₂.cons hr (ih hl)
 
-instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
+instance SublistForall₂.is_refl [Std.Refl Rₐ] : Std.Refl (SublistForall₂ Rₐ) :=
   ⟨fun l => sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
 
 instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (SublistForall₂ Rₐ) :=
@@ -317,11 +317,11 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
         · exact SublistForall₂.cons_right (ih _ _ atb tbc)
       · exact SublistForall₂.cons_right (ih _ _ h1 btc)⟩
 
-theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [IsRefl α Rₐ] :
+theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [Std.Refl Rₐ] :
     SublistForall₂ Rₐ l₁ l₂ :=
   sublistForall₂_iff.2 ⟨l₁, forall₂_refl l₁, h⟩
 
-theorem tail_sublistForall₂_self [IsRefl α Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
+theorem tail_sublistForall₂_self [Std.Refl Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
   l.tail_sublist.sublistForall₂
 
 @[simp]

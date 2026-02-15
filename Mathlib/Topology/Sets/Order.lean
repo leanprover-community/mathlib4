@@ -3,13 +3,17 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Clopen upper sets
 
 In this file we define the type of clopen upper sets.
 -/
+
+@[expose] public section
 
 
 open Set TopologicalSpace
@@ -31,6 +35,8 @@ instance : SetLike (ClopenUpperSet α) α where
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
+
+instance : PartialOrder (ClopenUpperSet α) := .ofSetLike (ClopenUpperSet α) α
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s

@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Union
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Data.Finset.Union
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Pigeonhole principles in finite types
@@ -22,6 +24,8 @@ We provide the following versions of the pigeonholes principle.
 Some more pigeonhole-like statements can be found in `Data.Fintype.CardEmbedding`.
 -/
 
+public section
+
 assert_not_exists MonoidWithZero MulAction
 
 open Function
@@ -30,7 +34,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Fintype
 
@@ -71,6 +75,7 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
     ∃ x y : α, x ≠ y ∧ f x = f y := by
   simpa [Injective, and_comm] using not_injective_infinite_finite f
 
+attribute [local instance] Fintype.ofFinite in
 /-- The strong pigeonhole principle for infinitely many pigeons in
 finitely many pigeonholes.  If there are infinitely many pigeons in
 finitely many pigeonholes, then there is a pigeonhole with infinitely
@@ -83,7 +88,6 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
   classical
     by_contra! hf
     cases nonempty_fintype β
-    haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
       { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }

@@ -3,8 +3,10 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Interactions between (dependent) functions and multilinear maps
@@ -19,6 +21,8 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
   - `MultilinearMap.piFamily f` is a `MultilinearMap` operating on functions `x`.
   - `MultilinearMap.piFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 -/
+
+@[expose] public section
 
 universe uι uκ uS uR uM uN
 variable {ι : Type uι} {κ : ι → Type uκ}
@@ -43,9 +47,9 @@ theorem pi_ext [Finite ι] [∀ i, Finite (κ i)] [∀ i, DecidableEq (κ i)]
       f.compLinearMap (fun i => LinearMap.single R _ (p i)) =
       g.compLinearMap (fun i => LinearMap.single R _ (p i))) : f = g := by
   ext x
-  show f (fun i ↦ x i) = g (fun i ↦ x i)
+  change f (fun i ↦ x i) = g (fun i ↦ x i)
   obtain ⟨i⟩ := nonempty_fintype ι
-  have (i) := (nonempty_fintype (κ i)).some
+  have (i : _) := (nonempty_fintype (κ i)).some
   have := Classical.decEq ι
   rw [funext (fun i ↦ Eq.symm (Finset.univ_sum_single (x i)))]
   simp_rw [MultilinearMap.map_sum_finset]

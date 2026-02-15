@@ -3,9 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.LocallyClosed
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Properties of maps that are local at the target or at the source.
@@ -25,6 +28,8 @@ We show that the following properties of continuous maps are local at the source
 
 -/
 
+public section
+
 open Filter Set TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
@@ -37,50 +42,27 @@ theorem Set.restrictPreimage_isInducing (s : Set β) (h : IsInducing f) :
   intro a
   rw [← h, ← IsInducing.subtypeVal.nhds_eq_comap]
 
-@[deprecated (since := "2024-10-28")]
-alias Set.restrictPreimage_inducing := Set.restrictPreimage_isInducing
-
 alias Topology.IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
-
-@[deprecated (since := "2024-10-28")] alias Inducing.restrictPreimage := IsInducing.restrictPreimage
 
 theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
     IsEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s, h.2.restrictPreimage s⟩
 
-@[deprecated (since := "2024-10-26")]
-alias Set.restrictPreimage_embedding := Set.restrictPreimage_isEmbedding
-
 alias Topology.IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.restrictPreimage := IsEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f) :
     IsOpenEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s,
     (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.isOpen_range⟩
 
-@[deprecated (since := "2024-10-18")]
-alias Set.restrictPreimage_openEmbedding := Set.restrictPreimage_isOpenEmbedding
-
 alias Topology.IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
-
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.restrictPreimage := IsOpenEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isClosedEmbedding (s : Set β) (h : IsClosedEmbedding f) :
     IsClosedEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s,
     (s.range_restrictPreimage f).symm ▸ IsInducing.subtypeVal.isClosed_preimage _ h.isClosed_range⟩
 
-@[deprecated (since := "2024-10-20")]
-alias Set.restrictPreimage_closedEmbedding := Set.restrictPreimage_isClosedEmbedding
-
 alias Topology.IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.restrictPreimage := IsClosedEmbedding.restrictPreimage
 
 theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
     IsClosedMap (s.restrictPreimage f) := by
@@ -104,6 +86,13 @@ lemma GeneralizingMap.restrictPreimage (H : GeneralizingMap f) (s : Set β) :
   obtain ⟨a, ha, hy⟩ := H (h.map <| continuous_subtype_val (p := s))
   use ⟨a, by simp [hy]⟩
   simp [hy, subtype_specializes_iff, ha]
+
+lemma IsProperMap.restrictPreimage (H : IsProperMap f) (s : Set β) :
+    IsProperMap (s.restrictPreimage f) := by
+  rw [isProperMap_iff_isClosedMap_and_compact_fibers]
+  refine ⟨H.continuous.restrictPreimage, H.isClosedMap.restrictPreimage _, fun y ↦ ?_⟩
+  rw [IsEmbedding.subtypeVal.isCompact_iff, image_val_preimage_restrictPreimage, image_singleton]
+  exact H.isCompact_preimage isCompact_singleton
 
 namespace TopologicalSpace.IsOpenCover
 
@@ -130,7 +119,7 @@ theorem isClosed_iff_coe_preimage {s : Set β} :
 
 theorem isLocallyClosed_iff_coe_preimage {s : Set β} :
     IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
-  have (i) : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s :=
+  have (i : _) : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s :=
     (U i).isOpen.isOpenEmbedding_subtypeVal.coborder_preimage _
   simp [isLocallyClosed_iff_isOpen_coborder, hU.isOpen_iff_coe_preimage, this]
 
@@ -146,7 +135,7 @@ theorem isOpenMap_iff_restrictPreimage :
 
 theorem isClosedMap_iff_restrictPreimage :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
-  refine ⟨fun h i => h.restrictPreimage _,  fun H s hs ↦ ?_⟩
+  refine ⟨fun h i => h.restrictPreimage _, fun H s hs ↦ ?_⟩
   rw [hU.isClosed_iff_coe_preimage]
   intro i
   convert H i _ ⟨⟨_, hs.1, eq_compl_comm.mpr rfl⟩⟩
@@ -186,6 +175,12 @@ theorem isClosedEmbedding_iff_restrictPreimage (h : Continuous f) :
   · exact hU.isEmbedding_iff_restrictPreimage h
   · simp_rw [range_restrictPreimage]
     exact hU.isClosed_iff_coe_preimage
+
+theorem isHomeomorph_iff_restrictPreimage (h : Continuous f) :
+    IsHomeomorph f ↔ ∀ i, IsHomeomorph ((U i).1.restrictPreimage f) := by
+  simp_rw [isHomeomorph_iff_isEmbedding_surjective, forall_and,
+    ← isEmbedding_iff_restrictPreimage hU h,
+    surjective_iff_surjective_of_iUnion_eq_univ hU.iSup_set_eq_univ, Opens.carrier_eq_coe]
 
 omit [TopologicalSpace α] in
 theorem denseRange_iff_restrictPreimage :
@@ -239,76 +234,7 @@ end LocalAtSource
 
 end TopologicalSpace.IsOpenCover
 
-variable (hU : iSup U = ⊤)
-include hU
 
-@[deprecated IsOpenCover.isOpen_iff_inter (since := "2025-02-10")]
-theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) :=
-  (IsOpenCover.mk hU).isOpen_iff_inter
-
-@[deprecated IsOpenCover.isOpen_iff_coe_preimage (since := "2025-02-10")]
-theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
-    IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) :=
-  (IsOpenCover.mk hU).isOpen_iff_coe_preimage
-
-@[deprecated IsOpenCover.isClosed_iff_coe_preimage (since := "2025-02-10")]
-theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
-    IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) :=
-  (IsOpenCover.mk  hU).isClosed_iff_coe_preimage
-
-@[deprecated IsOpenCover.isLocallyClosed_iff_coe_preimage (since := "2025-02-10")]
-theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
-    IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) :=
-  (IsOpenCover.mk hU).isLocallyClosed_iff_coe_preimage
-
-@[deprecated IsOpenCover.isOpenMap_iff_restrictPreimage (since := "2025-02-10")]
-theorem isOpenMap_iff_isOpenMap_of_iSup_eq_top :
-    IsOpenMap f ↔ ∀ i, IsOpenMap ((U i).1.restrictPreimage f) :=
-  (IsOpenCover.mk hU).isOpenMap_iff_restrictPreimage
-
-@[deprecated IsOpenCover.isClosedMap_iff_restrictPreimage (since := "2025-02-10")]
-theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
-    IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) :=
-  (IsOpenCover.mk hU).isClosedMap_iff_restrictPreimage
-
-@[deprecated IsOpenCover.isInducing_iff_restrictPreimage (since := "2025-02-10")]
-theorem inducing_iff_inducing_of_iSup_eq_top (h : Continuous f) :
-    IsInducing f ↔ ∀ i, IsInducing ((U i).1.restrictPreimage f) :=
-  (IsOpenCover.mk hU).isInducing_iff_restrictPreimage h
-
-@[deprecated IsOpenCover.isEmbedding_iff_restrictPreimage (since := "2025-02-10")]
-theorem isEmbedding_iff_of_iSup_eq_top (h : Continuous f) :
-    IsEmbedding f ↔ ∀ i, IsEmbedding ((U i).1.restrictPreimage f) :=
-  (IsOpenCover.mk hU).isEmbedding_iff_restrictPreimage h
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_iff_embedding_of_iSup_eq_top := isEmbedding_iff_of_iSup_eq_top
-
-@[deprecated IsOpenCover.isOpenEmbedding_iff_restrictPreimage (since := "2025-02-10")]
-theorem isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top (h : Continuous f) :
-    IsOpenEmbedding f ↔ ∀ i, IsOpenEmbedding ((U i).1.restrictPreimage f) :=
-  (IsOpenCover.mk hU).isOpenEmbedding_iff_restrictPreimage h
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_iff_openEmbedding_of_iSup_eq_top :=
-  isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top
-
-@[deprecated IsOpenCover.isClosedEmbedding_iff_restrictPreimage (since := "2025-02-10")]
-theorem isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top (h : Continuous f) :
-    IsClosedEmbedding f ↔ ∀ i, IsClosedEmbedding ((U i).1.restrictPreimage f) :=
-  (IsOpenCover.mk hU).isClosedEmbedding_iff_restrictPreimage h
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_iff_closedEmbedding_of_iSup_eq_top :=
- isClosedEmbedding_iff_isClosedEmbedding_of_iSup_eq_top
-
-omit [TopologicalSpace α] in
-@[deprecated IsOpenCover.denseRange_iff_restrictPreimage (since := "2025-02-10")]
-theorem denseRange_iff_denseRange_of_iSup_eq_top :
-    DenseRange f ↔ ∀ i, DenseRange ((U i).1.restrictPreimage f) :=
-  (IsOpenCover.mk hU).denseRange_iff_restrictPreimage
-
-omit hU in
 /--
 Given a continuous map `f : X → Y` between topological spaces.
 Suppose we have an open cover `U i` of the range of `f`, and a family of continuous maps `V i → X`
@@ -342,7 +268,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     IsEmbedding.subtypeVal.comp ((IsEmbedding.of_comp (hiV i) h (hV' _)).restrictPreimage _)
   have hf' : Set.range f' = f ⁻¹' U i := by
     simpa [f', Set.range_comp, Set.range_restrictPreimage] using hV i
-  let e := (Homeomorph.ofIsEmbedding _ this).trans (Homeomorph.setCongr hf')
+  let e := this.toHomeomorph.trans (Homeomorph.setCongr hf')
   refine IsEmbedding.of_comp (by fun_prop) continuous_subtype_val ?_
   convert ((hV' i).comp IsEmbedding.subtypeVal).comp e.symm.isEmbedding
   ext x

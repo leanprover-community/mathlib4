@@ -3,11 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.LinearMap
-import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Algebra.Module.Submodule.LinearMap
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-! # Submodules of normed groups -/
+
+@[expose] public section
 
 variable {𝕜 E : Type*}
 

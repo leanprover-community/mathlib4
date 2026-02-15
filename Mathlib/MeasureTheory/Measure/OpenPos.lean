@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Measures positive on nonempty opens
@@ -16,6 +18,8 @@ measures that have positive density with respect to a Haar measure. We also prov
 about these measures.
 
 -/
+
+@[expose] public section
 
 
 open Topology ENNReal MeasureTheory
@@ -111,7 +115,7 @@ equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
     (hf : ContinuousOn f U) (hg : ContinuousOn g U) : EqOn f g U := by
   replace h := ae_imp_of_ae_restrict h
-  simp only [EventuallyEq, ae_iff, Classical.not_imp] at h
+  simp only [ae_iff, Classical.not_imp] at h
   have : IsOpen (U ∩ { a | f a ≠ g a }) := by
     refine isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) ?_
     rcases ha with ⟨ha : a ∈ U, ha' : (f a, g a) ∈ (diagonal Y)ᶜ⟩
@@ -145,6 +149,14 @@ theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
   refine ⟨fun U hUo hUne => ?_⟩
   rw [Measure.map_apply hf.measurable hUo.measurableSet]
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
+
+protected theorem IsOpenPosMeasure.comap [BorelSpace X]
+    {Z : Type*} [TopologicalSpace Z] {mZ : MeasurableSpace Z} [BorelSpace Z]
+    (μ : Measure Z) [IsOpenPosMeasure μ] {f : X → Z} (hf : IsOpenEmbedding f) :
+    (μ.comap f).IsOpenPosMeasure where
+  open_pos U hU Une := by
+    rw [hf.measurableEmbedding.comap_apply]
+    exact IsOpenPosMeasure.open_pos _ (hf.isOpen_iff_image_isOpen.mp hU) (Une.image f)
 
 end Basic
 
@@ -213,18 +225,24 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
 
 end Metric
 
-namespace EMetric
+namespace Metric
 
 variable {X : Type*} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
-theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
-  isOpen_ball.measure_pos μ ⟨x, mem_ball_self hr.bot_lt⟩
+theorem measure_eball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (eball x r) :=
+  isOpen_eball.measure_pos μ ⟨x, mem_eball_self hr.bot_lt⟩
 
-theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedBall x r) :=
-  (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
+theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedEBall x r) :=
+  (measure_eball_pos μ x hr).trans_le (measure_mono eball_subset_closedEBall)
 
-end EMetric
+end Metric
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.measure_ball_pos := Metric.measure_eball_pos
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
 
 section MeasureZero
 /-! ## Meagre sets and measure zero
@@ -245,7 +263,8 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] {s : Set X}
   {μ : Measure X} [IsOpenPosMeasure μ]
 
 /-- A *closed* measure zero subset is nowhere dense. (Closedness is required: for instance, the
-rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense). -/
+rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense).)
+-/
 lemma IsNowhereDense.of_isClosed_null (h₁s : IsClosed s) (h₂s : μ s = 0) :
     IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (interior_eq_empty_of_null h₂s)
 

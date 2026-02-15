@@ -3,9 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Minimal
+public import Mathlib.Order.Zorn
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.DiscreteSubset
+
 /-!
 # Irreducibility in topological spaces
 
@@ -28,6 +33,8 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 
 -/
 
+@[expose] public section
+
 open Set Topology
 
 variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
@@ -40,6 +47,7 @@ def IsPreirreducible (s : Set X) : Prop :=
 
 /-- An irreducible set `s` is one that is nonempty and
 where there is no non-trivial pair of disjoint opens on `s`. -/
+@[stacks 004V "(1) as predicate on subsets of a space"]
 def IsIrreducible (s : Set X) : Prop :=
   s.Nonempty ∧ IsPreirreducible s
 
@@ -66,6 +74,7 @@ theorem isPreirreducible_iff_closure : IsPreirreducible (closure s) ↔ IsPreirr
     iterate 3 rw [closure_inter_open_nonempty_iff]
     exacts [hu.inter hv, hv, hu]
 
+@[stacks 004W "(1)"]
 theorem isIrreducible_iff_closure : IsIrreducible (closure s) ↔ IsIrreducible s :=
   and_congr closure_nonempty_iff isPreirreducible_iff_closure
 
@@ -93,9 +102,11 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
   ⟨m, hm.prop, hsm, fun _u hu hmu => (hm.eq_of_subset hu hmu).symm⟩
 
 /-- The set of irreducible components of a topological space. -/
+@[stacks 004V "(2)"]
 def irreducibleComponents (X : Type*) [TopologicalSpace X] : Set (Set X) :=
   {s | Maximal IsIrreducible s}
 
+@[stacks 004W "(2)"]
 theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents X) :
     IsClosed s := by
   rw [← closure_eq_iff_isClosed, eq_comm]
@@ -112,7 +123,15 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
     have : closure x ≤ s := H.2 ⟨isClosed_closure, h.closure⟩ (e.trans subset_closure)
     exact le_trans subset_closure this
 
+@[stacks 004W "(3)"]
+lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs : IsIrreducible s) :
+    ∃ u ∈ irreducibleComponents X, s ⊆ u := by
+  obtain ⟨u, hu⟩ := exists_preirreducible s hs.isPreirreducible
+  use u, ⟨⟨hs.left.mono hu.right.left,hu.left⟩,fun _ h hl => (hu.right.right _ h.right hl).le⟩
+  exact hu.right.left
+
 /-- A maximal irreducible set that contains a given point. -/
+@[stacks 004W "(4)"]
 def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 
@@ -122,6 +141,7 @@ theorem irreducibleComponent_property (x : X) :
         ∀ u, IsPreirreducible u → irreducibleComponent x ⊆ u → u = irreducibleComponent x :=
   Classical.choose_spec (exists_preirreducible {x} isPreirreducible_singleton)
 
+@[stacks 004W "(4)"]
 theorem mem_irreducibleComponent {x : X} : x ∈ irreducibleComponent x :=
   singleton_subset_iff.1 (irreducibleComponent_property x).2.1
 
@@ -146,6 +166,7 @@ class PreirreducibleSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- An irreducible space is one that is nonempty
 and where there is no non-trivial pair of disjoint opens. -/
+@[stacks 004V "(1) as predicate on a space"]
 class IrreducibleSpace (X : Type*) [TopologicalSpace X] : Prop extends PreirreducibleSpace X where
   toNonempty : Nonempty X
 
@@ -189,6 +210,7 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
     show x ∈ _ ∩ s
     simp [*]
 
+@[stacks 0379]
 theorem IsIrreducible.image (H : IsIrreducible s) (f : X → Y) (hf : ContinuousOn f s) :
     IsIrreducible (f '' s) :=
   ⟨H.nonempty.image _, H.isPreirreducible.image f hf⟩
@@ -203,6 +225,25 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
   isPreirreducible_univ :=
     (Subtype.preirreducibleSpace h.isPreirreducible).isPreirreducible_univ
   toNonempty := h.nonempty.to_subtype
+
+lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s := by
+  rw [← Subtype.range_coe (s := s), ← Set.image_univ]
+  refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
+  exact continuous_subtype_val.continuousOn
+
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
+  exact ⟨.of_subtype, .of_subtype⟩
+
+theorem isPreirreducible_iff_preirreducibleSpace :
+    IsPreirreducible s ↔ PreirreducibleSpace s :=
+  ⟨Subtype.preirreducibleSpace, fun _ ↦ .of_subtype⟩
+
+theorem isIrreducible_iff_irreducibleSpace :
+    IsIrreducible s ↔ IrreducibleSpace s :=
+  ⟨Subtype.irreducibleSpace, fun _ ↦ .of_subtype⟩
+
+instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
+  ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
 
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
@@ -230,7 +271,7 @@ theorem isIrreducible_iff_sInter :
   refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => simpa using h.nonempty
-    | @insert u U _ IH =>
+    | insert u U _ IH =>
       rw [Finset.coe_insert, sInter_insert]
       rw [Finset.forall_mem_insert] at hu hU
       exact h.2 _ _ hu.1 (U.finite_toSet.isOpen_sInter hu.2) hU.1 (IH hu.2 hU.2)
@@ -248,8 +289,6 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   simp only [isOpen_compl_iff, ← compl_union, inter_compl_nonempty_iff]
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
-@[deprecated (since := "2024-11-19")] alias
-isPreirreducible_iff_closed_union_closed := isPreirreducible_iff_isClosed_union_isClosed
 
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
@@ -265,9 +304,6 @@ theorem isIrreducible_iff_sUnion_isClosed :
   simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
 
-@[deprecated (since := "2024-11-19")] alias
-isIrreducible_iff_sUnion_closed := isIrreducible_iff_sUnion_isClosed
-
 /-- A nonempty open subset of a preirreducible subspace is dense in the subspace. -/
 theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : IsPreirreducible S)
     (hU : IsOpen U) (h : (S ∩ U).Nonempty) : S ⊆ closure (S ∩ U) := by
@@ -275,6 +311,36 @@ theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : I
   obtain ⟨x, h₁, h₂, h₃⟩ :=
     hS _ (closure (S ∩ U))ᶜ hU isClosed_closure.isOpen_compl h (inter_compl_nonempty_iff.mpr h')
   exact h₃ (subset_closure ⟨h₁, h₂⟩)
+
+theorem sUnion_irreducibleComponents : ⋃₀ irreducibleComponents X = Set.univ :=
+  Set.eq_univ_of_forall fun x ↦ Set.mem_sUnion_of_mem mem_irreducibleComponent
+    (irreducibleComponent_mem_irreducibleComponents x)
+
+theorem mem_of_subset_sUnion_irreducibleComponents (Z : Set X) (hZ : Z ∈ irreducibleComponents X)
+    (S : Set (Set X)) (hS : S.Finite) (hSα : S ⊆ irreducibleComponents X) (hZS : Z ⊆ ⋃₀ S) :
+    Z ∈ S := by
+  obtain ⟨W, hWS, hZW⟩ := isIrreducible_iff_sUnion_isClosed.mp hZ.1 hS.toFinset
+    (fun W hW ↦ isClosed_of_mem_irreducibleComponents W (hSα (hS.mem_toFinset.mp hW)))
+    (hS.coe_toFinset.symm ▸ hZS)
+  rw [hS.mem_toFinset] at hWS
+  rwa [Set.Subset.antisymm hZW (hZ.2 (hSα hWS).1 hZW)]
+
+theorem closure_sUnion_irreducibleComponents_diff_singleton
+    (hX : (irreducibleComponents X).Finite) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) :
+    closure (⋃₀ (irreducibleComponents X \ {Z}))ᶜ = Z := by
+  have h : (⋃₀ (irreducibleComponents X \ {Z}))ᶜ ⊆ Z := by
+    rw [Set.compl_subset_iff_union, ← Set.sUnion_singleton Z, ← Set.sUnion_union,
+      Set.sUnion_singleton, Set.diff_union_of_subset, sUnion_irreducibleComponents]
+    rwa [Set.singleton_subset_iff]
+  apply Set.Subset.antisymm
+  · rwa [(isClosed_of_mem_irreducibleComponents Z hZ).closure_subset_iff]
+  · rw [← Set.inter_eq_right.mpr h]
+    apply subset_closure_inter_of_isPreirreducible_of_isOpen hZ.1.2
+    · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
+      exact hX.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+    · rw [Set.inter_compl_nonempty_iff]
+      exact mt (mem_of_subset_sUnion_irreducibleComponents Z hZ _ hX.diff Set.diff_subset)
+        (Set.notMem_diff_of_mem (Set.mem_singleton Z))
 
 /-- If `∅ ≠ U ⊆ S ⊆ t` such that `U` is open and `t` is preirreducible, then `S` is irreducible. -/
 theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible t)
@@ -302,13 +368,106 @@ theorem IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU :
 theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (interior t) :=
   ht.open_subset isOpen_interior interior_subset
 
-theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
-    (hf : IsOpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
-  rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
-    ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
-      ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
-  cases hf.injective h₄
-  exact ⟨y, h₁, h₂, h₃⟩
+section
+
+open Set.Notation
+
+@[stacks 004Z]
+lemma IsPreirreducible.preimage_of_dense_isPreirreducible_fiber
+    {V : Set Y} (hV : IsPreirreducible V) (f : X → Y) (hf' : IsOpenMap f)
+    (hf'' : V ⊆ closure (V ∩ { x | IsPreirreducible (f ⁻¹' {x}) })) :
+    IsPreirreducible (f ⁻¹' V) := by
+  rintro U₁ U₂ hU₁ hU₂ ⟨x, hxV, hxU₁⟩ ⟨y, hyV, hyU₂⟩
+  obtain ⟨z, hzV, hz₁, hz₂⟩ :=
+    hV _ _ (hf' _ hU₁) (hf' _ hU₂) ⟨f x, hxV, x, hxU₁, rfl⟩ ⟨f y, hyV, y, hyU₂, rfl⟩
+  obtain ⟨z, ⟨⟨z₁, hz₁, e₁⟩, ⟨z₂, hz₂, e₂⟩⟩, hzV, hz⟩ :=
+    mem_closure_iff.mp (hf'' hzV) _ ((hf' _ hU₁).inter (hf' _ hU₂)) ⟨hz₁, hz₂⟩
+  obtain ⟨z₃, hz₃, hz₃'⟩ := hz _ _ hU₁ hU₂ ⟨z₁, e₁, hz₁⟩ ⟨z₂, e₂, hz₂⟩
+  refine ⟨z₃, show f z₃ ∈ _ from (show f z₃ = z from hz₃) ▸ hzV, hz₃'⟩
+
+lemma IsPreirreducible.preimage_of_isPreirreducible_fiber
+    {V : Set Y} (hV : IsPreirreducible V)
+    (f : X → Y) (hf' : IsOpenMap f) (hf'' : ∀ x, IsPreirreducible (f ⁻¹' {x})) :
+    IsPreirreducible (f ⁻¹' V) := by
+  refine hV.preimage_of_dense_isPreirreducible_fiber f hf' ?_
+  simp [hf'', subset_closure]
+
+lemma IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X} (hf : IsOpenEmbedding f) :
+    IsPreirreducible (f ⁻¹' t) :=
+  ht.preimage_of_isPreirreducible_fiber f hf.isOpenMap
+    fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible
+
+lemma IsIrreducible.preimage_of_isPreirreducible_fiber (ht : IsIrreducible t)
+    (f : Y → X) (hf₂ : IsOpenMap f) (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x}))
+    (h : (t ∩ Set.range f).Nonempty) :
+    IsIrreducible (f ⁻¹' t) := by
+  refine ⟨?_, IsPreirreducible.preimage_of_isPreirreducible_fiber ht.2 f hf₂ hf₃⟩
+  obtain ⟨-, hx, x, rfl⟩ := h
+  exact ⟨x, hx⟩
+
+lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
+    (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) : IsIrreducible (f ⁻¹' t) := by
+  refine ht.preimage_of_isPreirreducible_fiber f hf.isOpenMap
+    (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
+
+lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
+    (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
+    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹'{x})) (h : (t ∩ range f).Nonempty) :
+    f ⁻¹' t ∈ irreducibleComponents Y := by
+  refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf₂ hf₃ h, fun u hu htu ↦ image_subset_iff.mp
+    (subset_closure.trans (ht.2 (hu.image f hf₁.continuousOn).closure ?_))⟩
+  suffices t ≤ closure (f '' (f ⁻¹' t)) from this.trans (closure_mono (image_mono htu))
+  rw [image_preimage_eq_inter_range]
+  exact subset_closure_inter_of_isPreirreducible_of_isOpen ht.1.2 hf₂.isOpen_range h
+
+lemma preimage_mem_irreducibleComponents (ht : t ∈ irreducibleComponents X) {f : Y → X}
+    (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) :
+    f ⁻¹' t ∈ irreducibleComponents Y := by
+  refine preimage_mem_irreducibleComponents_of_isPreirreducible_fiber ht hf.continuous hf.isOpenMap
+    (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
+
+variable (f : X → Y) (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
+variable (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (hf₄ : Function.Surjective f)
+
+include hf₁ hf₂ hf₃ hf₄
+
+lemma image_mem_irreducibleComponents_of_isPreirreducible_fiber
+    {V : Set X} (hV : V ∈ irreducibleComponents X) :
+    f '' V ∈ irreducibleComponents Y :=
+  ⟨hV.1.image _ hf₁.continuousOn, fun Z hZ hWZ ↦ by
+    have := hV.2 ⟨(by obtain ⟨x, hx⟩ := hV.1.1; exact ⟨x, hWZ ⟨x, hx, rfl⟩⟩),
+      hZ.2.preimage_of_isPreirreducible_fiber f hf₂ hf₃⟩ (Set.image_subset_iff.mp hWZ)
+    rw [← Set.image_preimage_eq Z hf₄]
+    exact Set.image_mono this⟩
+
+/-- If `f : X → Y` is continuous, open, and has irreducible fibers, then it induces an
+bijection between irreducible components -/
+@[stacks 037A]
+def irreducibleComponentsEquivOfIsPreirreducibleFiber :
+    irreducibleComponents Y ≃o irreducibleComponents X where
+  invFun W := ⟨f '' W.1,
+    image_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
+  toFun W := ⟨f ⁻¹' W.1,
+    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber W.2 hf₁ hf₂ hf₃
+      (by simp [hf₄.range_eq, W.2.1.1])⟩
+  right_inv W := Subtype.ext <| by
+    refine (Set.subset_preimage_image _ _).antisymm' (W.2.2 ?_ (Set.subset_preimage_image _ _))
+    refine ⟨?_, (W.2.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩
+    obtain ⟨x, hx⟩ := W.2.1.1
+    exact ⟨_, x, hx, rfl⟩
+  left_inv _ := Subtype.ext <| Set.image_preimage_eq _ hf₄
+  map_rel_iff' {W Z} := by
+    refine ⟨fun H ↦ ?_, Set.preimage_mono⟩
+    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using Set.image_mono (f := f) H
+
+end
+
+lemma IsDiscrete.subsingleton_of_isPreirreducible (hs : IsDiscrete s) (hs' : IsPreirreducible s) :
+    s.Subsingleton := by
+  intro x hxs y hys
+  obtain ⟨U, hU, hUx⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs x hxs
+  obtain ⟨V, hV, hVy⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs y hys
+  obtain ⟨z, hz⟩ := hs' _ _ hU hV ⟨x, by grind⟩ ⟨y, by grind⟩
+  exact (hUx.le (by grind)).symm.trans (b := z) (hVy.le (by grind))
 
 end Preirreducible

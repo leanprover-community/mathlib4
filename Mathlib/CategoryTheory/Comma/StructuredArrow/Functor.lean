@@ -3,8 +3,10 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Grothendieck
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Structured Arrow Categories as strict functor to Cat
@@ -14,6 +16,8 @@ functorial in `S`, inducing a functor `Dᵒᵖ ⥤ Cat`. This file constructs sa
 that, in the dual case, we can precompose it with another functor `L : E ⥤ D` to obtain a category
 equivalent to `Comma L T`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -28,9 +32,13 @@ functorial way, inducing a functor `Dᵒᵖ ⥤ Cat`. -/
 @[simps]
 def functor (T : C ⥤ D) : Dᵒᵖ ⥤ Cat where
   obj d := .of <| StructuredArrow d.unop T
-  map f := map f.unop
-  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
-  map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map f := (map f.unop).toCatHom
+  map_id d := by
+    ext
+    exact Functor.ext (fun ⟨_, _, _⟩ => by simp)
+  map_comp f g := by
+    ext
+    exact Functor.ext (fun _ => by simp)
 
 end StructuredArrow
 
@@ -41,9 +49,13 @@ in a functorial way, inducing a functor `D ⥤ Cat`. -/
 @[simps]
 def functor (T : C ⥤ D) : D ⥤ Cat where
   obj d := .of <| CostructuredArrow T d
-  map f := CostructuredArrow.map f
-  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
-  map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map f := (CostructuredArrow.map f).toCatHom
+  map_id d := by
+    ext
+    exact Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map_comp f g := by
+    ext
+    exact Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
 
 variable {E : Type u₃} [Category.{v₃} E]
 variable (L : C ⥤ D) (R : E ⥤ D)
@@ -99,7 +111,8 @@ composed with fibers of `grothendieckProj L` are isomorphic to the projection `p
 @[simps!]
 def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
     CostructuredArrow.map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ≅ proj L X :=
-  isoWhiskerLeft (CostructuredArrow.map f) (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) Y)
+  Functor.isoWhiskerLeft (CostructuredArrow.map f)
+    (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) Y)
 
 /-- The functor `CostructuredArrow.pre` induces a natural transformation
 `CostructuredArrow.functor (S ⋙ T) ⟶ CostructuredArrow.functor T` for `S : C ⥤ D` and
@@ -107,7 +120,7 @@ def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
 @[simps]
 def preFunctor {D : Type u₁} [Category.{v₁} D] (S : C ⥤ D) (T : D ⥤ E) :
     functor (S ⋙ T) ⟶ functor T where
-  app e := pre S T e
+  app e := (pre S T e).toCatHom
 
 end CostructuredArrow
 

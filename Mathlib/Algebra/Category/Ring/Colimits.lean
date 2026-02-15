@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # The category of commutative rings has all colimits.
@@ -14,6 +16,8 @@ This file uses a "pre-automated" approach, just as for
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -39,7 +43,6 @@ on a collection of types indexed by the objects of `J`.
 inductive Prequotient
   -- There's always `of`
   | of : ∀ (j : J) (_ : F.obj j), Prequotient
-
   -- Then one generator for each operation
   | zero : Prequotient
   | one : Prequotient

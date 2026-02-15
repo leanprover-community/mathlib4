@@ -3,13 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Witt polynomials
@@ -56,6 +58,8 @@ In this file we use the following notation
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+@[expose] public section
+
 
 open MvPolynomial
 
@@ -99,8 +103,6 @@ scoped[Witt] notation "W" => wittPolynomial p _
 
 open Witt
 
-open MvPolynomial
-
 /-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
 over the target ring. -/
@@ -112,7 +114,7 @@ variable {R} {S : Type*} [CommRing S]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
   rw [wittPolynomial, map_sum, wittPolynomial]
   refine sum_congr rfl fun i _ => ?_
-  rw [map_monomial, RingHom.map_pow, map_natCast]
+  rw [map_monomial, map_pow, map_natCast]
 
 variable (R)
 
@@ -192,7 +194,7 @@ The polynomials `xInTermsOfW` give the coordinate transformation in the backward
 that corresponds to the ordinary `X n`. -/
 noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
   | n => (X n - ∑ i : Fin n,
-          C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟ p : R) ^ n)
+          C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟p : R) ^ n)
 
 theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
     (X n - ∑ i ∈ range n, C ((p : R) ^ i) *
@@ -203,17 +205,11 @@ theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
     constantCoeff (xInTermsOfW p R n) = 0 := by
   induction n using Nat.strongRecOn with | ind n IH => ?_
-  rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
-    constantCoeff_X, zero_sub, mul_neg, neg_eq_zero]
-  -- Porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
-  -- is created is not what we expect, and the sum is not replaced by zero...
-  -- is it a bug in `rw` tactic?
-  refine Eq.trans (?_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
-  congr 1
-  rw [sum_eq_zero]
+  rw [xInTermsOfW_eq, mul_comm, map_mul, map_sub, map_sum, constantCoeff_C,
+    constantCoeff_X, zero_sub, mul_neg, neg_eq_zero, sum_eq_zero, mul_zero]
   intro m H
   rw [mem_range] at H
-  simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
+  simp only [map_mul, map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
   exact pow_ne_zero _ hp.1.ne_zero
 
@@ -229,9 +225,9 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
   induction n using Nat.strongRecOn with | ind n ih => ?_
   rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
-    vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
+    vars_sub_of_disjoint, vars_X, range_add_one, insert_eq]
   on_goal 1 =>
-    simp only [true_and, true_or, eq_self_iff_true, mem_union, mem_singleton]
+    simp only [true_and, true_or, mem_union, mem_singleton]
     intro i
     rw [mem_union, mem_union]
     apply Or.imp id
@@ -249,8 +245,8 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
   · rw [mem_range]
-    omega
-  · omega
+    lia
+  · lia
 
 theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2
@@ -267,10 +263,10 @@ theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
 theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
     bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum]
-  simp only [Nat.cast_pow, map_pow, C_pow, map_mul, algHom_C, algebraMap_eq]
+  simp only [map_pow, map_mul, algHom_C, algebraMap_eq]
   rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
     xInTermsOfW_aux]
-  simp only [Nat.cast_pow, C_pow, bind₁_X_right, sub_add_cancel]
+  simp only [C_pow, bind₁_X_right, sub_add_cancel]
 
 @[simp]
 theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :

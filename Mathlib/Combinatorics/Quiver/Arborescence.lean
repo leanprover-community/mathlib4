@@ -3,9 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Combinatorics.Quiver.Subquiver
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Subquiver
+public import Mathlib.Order.WellFounded
 
 /-!
 # Arborescences
@@ -26,6 +28,8 @@ subtree is an arborescence. This proves the directed analogue of 'every connecte
 spanning tree'. This proof avoids the use of Zorn's lemma.
 -/
 
+@[expose] public section
+
 
 open Opposite
 
@@ -34,7 +38,7 @@ universe v u
 namespace Quiver
 
 /-- A quiver is an arborescence when there is a unique path from the default vertex
-    to every other vertex. -/
+to every other vertex. -/
 class Arborescence (V : Type u) [Quiver.{v} V] : Type max u v where
   /-- The root of the arborescence. -/
   root : V
@@ -55,13 +59,13 @@ instance {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V
   - show that every vertex other than `r` has an arrow to it. -/
 noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V → ℕ)
     (height_lt : ∀ ⦃a b⦄, (a ⟶ b) → height a < height b)
-    (unique_arrow : ∀ ⦃a b c : V⦄ (e : a ⟶ c) (f : b ⟶ c), a = b ∧ HEq e f)
+    (unique_arrow : ∀ ⦃a b c : V⦄ (e : a ⟶ c) (f : b ⟶ c), a = b ∧ e ≍ f)
     (root_or_arrow : ∀ b, b = r ∨ ∃ a, Nonempty (a ⟶ b)) :
     Arborescence V where
   root := r
   uniquePath b :=
     ⟨Classical.inhabited_of_nonempty (by
-      rcases show ∃ n, height b < n from ⟨_, Nat.lt.base _⟩ with ⟨n, hn⟩
+      rcases show ∃ n, height b < n from ⟨_, Nat.lt_add_one _⟩ with ⟨n, hn⟩
       induction n generalizing b with
       | zero => exact False.elim (Nat.not_lt_zero _ hn)
       | succ n ih =>
@@ -97,7 +101,7 @@ attribute [instance] RootedConnected.nonempty_path
 
 section GeodesicSubtree
 
-variable {V : Type u} [Quiver.{v + 1} V] (r : V) [RootedConnected r]
+variable {V : Type u} [Quiver.{v} V] (r : V) [RootedConnected r]
 
 /-- A path from `r` of minimal length. -/
 noncomputable def shortestPath (b : V) : Path r b :=

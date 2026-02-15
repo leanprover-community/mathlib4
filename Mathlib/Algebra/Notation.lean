@@ -3,19 +3,23 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Notations for operations involving order and algebraic structure
 
-## Notations
+## Notation
 
 * `a⁺ᵐ = a ⊔ 1`: *Positive component* of an element `a` of a multiplicative lattice ordered group
 * `a⁻ᵐ = a⁻¹ ⊔ 1`: *Negative component* of an element `a` of a multiplicative lattice ordered group
 * `a⁺ = a ⊔ 0`: *Positive component* of an element `a` of a lattice ordered group
 * `a⁻ = (-a) ⊔ 0`: *Negative component* of an element `a` of a lattice ordered group
 -/
+
+@[expose] public section
 
 /-- A notation class for the *positive part* function: `a⁺`. -/
 class PosPart (α : Type*) where
@@ -44,7 +48,7 @@ export LeOnePart (leOnePart)
 export PosPart (posPart)
 export NegPart (negPart)
 
-@[inherit_doc] postfix:max "⁺ᵐ " => OneLePart.oneLePart
+@[inherit_doc] postfix:max "⁺ᵐ" => OneLePart.oneLePart
 @[inherit_doc] postfix:max "⁻ᵐ" => LeOnePart.leOnePart
 @[inherit_doc] postfix:max "⁺" => PosPart.posPart
 @[inherit_doc] postfix:max "⁻" => NegPart.negPart

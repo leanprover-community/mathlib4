@@ -3,9 +3,16 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Logic.Small.Defs
-import Mathlib.Order.GameAdd
-import Mathlib.SetTheory.PGame.Basic
+module -- shake: keep-all
+
+public import Mathlib.Logic.Small.Defs
+public import Mathlib.Order.GameAdd
+public import Mathlib.SetTheory.PGame.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Order properties of pregames
@@ -27,6 +34,8 @@ The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no m
 Later, games will be defined as the quotient by the `≈` relation; that is to say, the
 `Antisymmetrization` of `SetTheory.PGame`.
 -/
+
+@[expose] public section
 
 namespace SetTheory.PGame
 
@@ -144,6 +153,7 @@ private theorem le_trans_aux {x y z : PGame}
   le_of_forall_lf (fun i => PGame.not_le.1 fun h => (h₁ hyz h).not_gf <| hxy.moveLeft_lf i)
     fun j => PGame.not_le.1 fun h => (h₂ h hxy).not_gf <| hyz.lf_moveRight j
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : Preorder PGame :=
   { PGame.le with
     le_refl := fun x => by
@@ -156,9 +166,9 @@ instance : Preorder PGame :=
           (x ≤ y → y ≤ z → x ≤ z) ∧ (y ≤ z → z ≤ x → y ≤ x) ∧ (z ≤ x → x ≤ y → z ≤ y) from
         fun x y z => this.1
       intro x y z
-      induction' x with xl xr xL xR IHxl IHxr generalizing y z
-      induction' y with yl yr yL yR IHyl IHyr generalizing z
-      induction' z with zl zr zL zR IHzl IHzr
+      induction x generalizing y z with | _ xl xr xL xR IHxl IHxr
+      induction y generalizing   z with | _ yl yr yL yR IHyl IHyr
+      induction z                  with | _ zl zr zL zR IHzl IHzr
       exact
         ⟨le_trans_aux (fun {i} => (IHxl i).2.1) fun {j} => (IHzr j).2.2,
           le_trans_aux (fun {i} => (IHyl i).2.2) fun {j} => (IHxr j).1,
@@ -186,7 +196,7 @@ alias _root_.LT.lt.lf := lf_of_lt
 theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
   le_rfl.not_gf
 
-instance : IsIrrefl _ (· ⧏ ·) :=
+instance : Std.Irrefl (· ⧏ ·) :=
   ⟨lf_irrefl⟩
 
 protected theorem not_lt {x y : PGame} : ¬ x < y ↔ y ⧏ x ∨ y ≤ x := not_lt_iff_not_le_or_ge
@@ -317,25 +327,25 @@ theorem le_zero_of_isEmpty_leftMoves (x : PGame) [IsEmpty x.LeftMoves] : x ≤ 0
 left. -/
 noncomputable def rightResponse {x : PGame} (h : x ≤ 0) (i : x.LeftMoves) :
     (x.moveLeft i).RightMoves :=
-  Classical.choose <| (le_zero.1 h) i
+  Classical.choose <| le_zero.1 h i
 
 /-- Show that the response for right provided by `rightResponse` preserves the right-player-wins
 condition. -/
 theorem rightResponse_spec {x : PGame} (h : x ≤ 0) (i : x.LeftMoves) :
     (x.moveLeft i).moveRight (rightResponse h i) ≤ 0 :=
-  Classical.choose_spec <| (le_zero.1 h) i
+  Classical.choose_spec <| le_zero.1 h i
 
 /-- Given a game won by the left player when they play second, provide a response to any move by
 right. -/
 noncomputable def leftResponse {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
     (x.moveRight j).LeftMoves :=
-  Classical.choose <| (zero_le.1 h) j
+  Classical.choose <| zero_le.1 h j
 
 /-- Show that the response for left provided by `leftResponse` preserves the left-player-wins
 condition. -/
 theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
     0 ≤ (x.moveRight j).moveLeft (leftResponse h j) :=
-  Classical.choose_spec <| (zero_le.1 h) j
+  Classical.choose_spec <| zero_le.1 h j
 
 /-- A small family of pre-games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
@@ -370,15 +380,10 @@ If `x ≈ 0`, then the second player can always win `x`. -/
 def Equiv (x y : PGame) : Prop :=
   x ≤ y ∧ y ≤ x
 
--- Porting note: deleted the scoped notation due to notation overloading with the setoid
--- instance and this causes the PGame.equiv docstring to not show up on hover.
-
 instance : IsEquiv _ PGame.Equiv where
   refl _ := ⟨le_rfl, le_rfl⟩
   trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm _ _ := And.symm
-
--- Porting note: moved the setoid instance from Basic.lean to here
 
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
@@ -510,12 +515,11 @@ theorem lt_or_equiv_of_le {x y : PGame} (h : x ≤ y) : x < y ∨ (x ≈ y) :=
   and_or_left.mp ⟨h, (em <| y ≤ x).symm.imp_left PGame.not_le.1⟩
 
 theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := by
-  by_cases h : x ⧏ y
-  · exact Or.inl h
-  · right
-    rcases lt_or_equiv_of_le (PGame.not_lf.1 h) with h' | h'
-    · exact Or.inr h'.lf
-    · exact Or.inl (Equiv.symm h')
+  rw [or_iff_not_imp_left]
+  intro h
+  rcases lt_or_equiv_of_le (PGame.not_lf.1 h) with h' | h'
+  · exact Or.inr h'.lf
+  · exact Or.inl (Equiv.symm h')
 
 theorem equiv_congr_left {y₁ y₂ : PGame} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
   ⟨fun h _ => ⟨fun h' => Equiv.trans h' h, fun h' => Equiv.trans h' (Equiv.symm h)⟩,
@@ -559,7 +563,7 @@ scoped infixl:50 " ‖ " => PGame.Fuzzy
 theorem Fuzzy.swap {x y : PGame} : x ‖ y → y ‖ x :=
   And.symm
 
-instance : IsSymm _ (· ‖ ·) :=
+instance : Std.Symm (· ‖ ·) :=
   ⟨fun _ _ => Fuzzy.swap⟩
 
 theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
@@ -567,7 +571,7 @@ theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
 
 theorem fuzzy_irrefl (x : PGame) : ¬x ‖ x := fun h => lf_irrefl x h.1
 
-instance : IsIrrefl _ (· ‖ ·) :=
+instance : Std.Irrefl (· ‖ ·) :=
   ⟨fuzzy_irrefl⟩
 
 theorem lf_iff_lt_or_fuzzy {x y : PGame} : x ⧏ y ↔ x < y ∨ x ‖ y := by
@@ -693,8 +697,8 @@ lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
     use i
 
 /-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
- a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
- "gift" of a new option, but actually the value of the game did not change. -/
+a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
+"gift" of a new option, but actually the value of the game did not change. -/
 lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈ x := by
   rw [equiv_def]
   constructor
@@ -717,8 +721,8 @@ lemma insertLeft_equiv_of_lf {x x' : PGame} (h : x' ⧏ x) : insertLeft x x' ≈
   · apply le_insertLeft
 
 /-- Adding a gift horse right option does not change the value of `x`. A gift horse right option is
- a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
- "gift" of a new option, but actually the value of the game did not change. -/
+a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
+"gift" of a new option, but actually the value of the game did not change. -/
 lemma insertRight_equiv_of_lf {x x' : PGame} (h : x ⧏ x') : insertRight x x' ≈ x := by
   rw [equiv_def]
   constructor

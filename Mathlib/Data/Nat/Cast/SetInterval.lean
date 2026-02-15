@@ -3,11 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Nat
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Nat
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`
@@ -16,13 +18,15 @@ In this file we prove that the image of each `Set.Ixx` interval under `Nat.cast 
 is the corresponding interval in `ℤ`.
 -/
 
+public section
+
 open Set
 
 namespace Nat
 
 @[simp]
 theorem range_cast_int : range ((↑) : ℕ → ℤ) = Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 Int.ofNat_nonneg) CanLift.prf
+  Subset.antisymm (range_subset_iff.2 Int.natCast_nonneg) CanLift.prf
 
 theorem image_cast_int_Icc (a b : ℕ) : (↑) '' Icc a b = Icc (a : ℤ) b :=
   (castOrderEmbedding (α := ℤ)).image_Icc (by simp [ordConnected_Ici]) a b

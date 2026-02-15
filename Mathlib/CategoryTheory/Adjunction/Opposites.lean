@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposite adjunctions
@@ -17,12 +19,14 @@ opposites.
 adjunction, opposite, uniqueness
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
@@ -37,11 +41,6 @@ def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.u
   left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
   right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
-@[deprecated (since := "2025-01-01")] alias adjointOfOpAdjointOp := unop
-@[deprecated (since := "2025-01-01")] alias adjointUnopOfAdjointOp := unop
-@[deprecated (since := "2025-01-01")] alias unopAdjointOfOpAdjoint := unop
-@[deprecated (since := "2025-01-01")] alias unopAdjointUnopOfAdjoint := unop
-
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps]
 def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
@@ -49,11 +48,6 @@ def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
   counit := NatTrans.op h.unit
   left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
   right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
-
-@[deprecated (since := "2025-01-01")] alias opAdjointOpOfAdjoint := op
-@[deprecated (since := "2025-01-01")] alias adjointOpOfAdjointUnop := op
-@[deprecated (since := "2025-01-01")] alias opAdjointOfUnopAdjoint := op
-@[deprecated (since := "2025-01-01")] alias adjointOfUnopAdjointUnop := op
 
 /-- If `F` is adjoint to `G.leftOp` then `G` is adjoint to `F.leftOp`. -/
 @[simps]
@@ -89,25 +83,45 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
     NatIso.ofComponents fun Y =>
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 
-/-- Given two adjunctions, if the right adjoints are naturally isomorphic, then so are the left
-adjoints.
-
-Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adjunction.Unique`.
-The reason this definition still exists is that apparently `CategoryTheory.extendAlongYonedaYoneda`
-uses its definitional properties (TODO: figure out a way to avoid this).
--/
+/-- Deprecated: prefer `(Adjunction.conjugateIsoEquiv adj1 adj2).symm`. -/
+@[deprecated "Use `(Adjunction.conjugateIsoEquiv adj1 adj2).symm` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
 def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
   NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
     (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
 
-/-- Given two adjunctions, if the left adjoints are naturally isomorphic, then so are the right
-adjoints.
-
-Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adjunction.Unique`.
--/
+set_option linter.deprecated false in
+/-- Deprecated: prefer `Adjunction.conjugateIsoEquiv adj1 adj2`. -/
+@[deprecated "Use `Adjunction.conjugateIsoEquiv adj1 adj2` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+instance IsLeftAdjoint.op {F : C ⥤ D} [F.IsLeftAdjoint] : F.op.IsRightAdjoint :=
+  ⟨F.rightAdjoint.op, ⟨.op <| .ofIsLeftAdjoint _⟩⟩
+
+instance IsRightAdjoint.op {F : C ⥤ D} [F.IsRightAdjoint] : F.op.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.op, ⟨.op <| .ofIsRightAdjoint _⟩⟩
+
+instance IsLeftAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsLeftAdjoint] : F.leftOp.IsRightAdjoint :=
+  ⟨F.rightAdjoint.rightOp, ⟨.leftOp <| .ofIsLeftAdjoint _⟩⟩
+
+-- TODO: Do we need to introduce `Adjunction.leftUnop`?
+instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).IsLeftAdjoint
+
+-- TODO: Do we need to introduce `Adjunction.rightUnop`?
+instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).IsRightAdjoint
+
+instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.leftOp, ⟨.rightOp <| .ofIsRightAdjoint _⟩⟩
+
+end Functor
+end CategoryTheory

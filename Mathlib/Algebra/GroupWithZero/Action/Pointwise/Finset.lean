@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
 /-!
 # Pointwise operations of finsets in a group with zero
@@ -15,8 +17,9 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 This file proves properties of pointwise operations of finsets in a group with zero.
 -/
 
--- TODO
--- assert_not_exists Ring
+@[expose] public section
+
+assert_not_exists Ring
 
 open scoped Pointwise
 
@@ -26,21 +29,22 @@ variable {α β : Type*} [DecidableEq β]
 /-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
 then the same is true for `(0 : Finset β)`. -/
 protected def smulZeroClass [Zero β] [SMulZeroClass α β] : SMulZeroClass α (Finset β) :=
-  coe_injective.smulZeroClass ⟨toSet, coe_zero⟩ coe_smul_finset
+  coe_injective.smulZeroClass ⟨_, coe_zero⟩ coe_smul_finset
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Finset β → Finset β`. -/
-protected def distribSMul [AddZeroClass β] [DistribSMul α β] : DistribSMul α (Finset β) :=
+protected noncomputable def distribSMul [AddZeroClass β] [DistribSMul α β] :
+    DistribSMul α (Finset β) :=
   coe_injective.distribSMul coeAddMonoidHom coe_smul_finset
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Finset β`. -/
-protected def distribMulAction [Monoid α] [AddMonoid β] [DistribMulAction α β] :
+protected noncomputable def distribMulAction [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Finset β) :=
   coe_injective.distribMulAction coeAddMonoidHom coe_smul_finset
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
-protected def mulDistribMulAction [Monoid α] [Monoid β] [MulDistribMulAction α β] :
+protected noncomputable def mulDistribMulAction [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Finset β) :=
   coe_injective.mulDistribMulAction coeMonoidHom coe_smul_finset
 
@@ -48,16 +52,7 @@ scoped[Pointwise] attribute [instance] Finset.smulZeroClass Finset.distribSMul
   Finset.distribMulAction Finset.mulDistribMulAction
 
 instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
-  Function.Injective.noZeroDivisors toSet coe_injective coe_zero coe_mul
-
-instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
-    NoZeroSMulDivisors (Finset α) (Finset β) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {s t} := by
-    exact_mod_cast eq_zero_or_eq_zero_of_smul_eq_zero (c := s.toSet) (x := t.toSet)
-
-instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
-    NoZeroSMulDivisors α (Finset β) :=
-  Function.Injective.noZeroSMulDivisors toSet coe_injective coe_zero coe_smul_finset
+  Function.Injective.noZeroDivisors _ coe_injective coe_zero coe_mul
 
 section SMulZeroClass
 variable [Zero β] [SMulZeroClass α β] {s : Finset α} {t : Finset β} {a : α}
@@ -69,11 +64,6 @@ lemma Nonempty.smul_zero (hs : s.Nonempty) : s • (0 : Finset β) = 0 :=
 
 lemma zero_mem_smul_finset (h : (0 : β) ∈ t) : (0 : β) ∈ a • t :=
   mem_smul_finset.2 ⟨0, h, smul_zero _⟩
-
-variable [Zero α] [NoZeroSMulDivisors α β]
-
-lemma zero_mem_smul_finset_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff ha, mem_coe]
 
 end SMulZeroClass
 
@@ -96,12 +86,6 @@ lemma Nonempty.zero_smul (ht : t.Nonempty) : (0 : Finset α) • t = 0 :=
 
 lemma zero_smul_finset_subset (s : Finset β) : (0 : α) • s ⊆ 0 :=
   image_subset_iff.2 fun x _ ↦ mem_zero.2 <| zero_smul α x
-
-variable [NoZeroSMulDivisors α β]
-
-lemma zero_mem_smul_iff :
-    (0 : β) ∈ s • t ↔ (0 : α) ∈ s ∧ t.Nonempty ∨ (0 : β) ∈ t ∧ s.Nonempty := by
-  rw [← mem_coe, coe_smul, Set.zero_mem_smul_iff]; rfl
 
 end SMulWithZero
 

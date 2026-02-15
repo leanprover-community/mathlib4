@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields
@@ -41,6 +43,8 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 reals, conditionally complete, ordered field, uniqueness
 -/
 
+@[expose] public section
+
 variable {F α β γ : Type*}
 
 noncomputable section
@@ -51,28 +55,19 @@ open scoped Pointwise
 
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
--- @[protect_proj] -- Porting note: does not exist anymore
 class ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α where
-  -- extends `IsStrictOrderedRing α` produces
-  -- (kernel) declaration has free variables
-  -- 'ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing'
-  [toIsStrictOrderedRing : IsStrictOrderedRing α]
-
-attribute [instance] ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing
+    Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
-  archimedean_iff_nat_lt.2
-    (by
-      by_contra! h
-      obtain ⟨x, h⟩ := h
-      have := csSup_le (range_nonempty Nat.cast)
-        (forall_mem_range.2 fun m =>
-          le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
-      linarith)
+  archimedean_iff_nat_lt.2 <| by
+    by_contra! ⟨x, h⟩
+    have := csSup_le (range_nonempty Nat.cast)
+      (forall_mem_range.2 fun m =>
+        le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
+    linarith
 
 namespace LinearOrderedField
 
@@ -98,7 +93,7 @@ another linear ordered field. -/
 def cutMap (a : α) : Set β :=
   (Rat.cast : ℚ → β) '' {t | ↑t < a}
 
-theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_subset _ fun _ => h.trans_lt'
+theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_mono fun _ => h.trans_lt'
 
 variable {β}
 
@@ -109,12 +104,7 @@ theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α)
   Rat.cast_injective.mem_set_image
 
 theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ → α) := by
-  ext
-  constructor
-  · rintro ⟨q, h, rfl⟩
-    exact ⟨h, q, rfl⟩
-  · rintro ⟨h, q, rfl⟩
-    exact ⟨q, h, rfl⟩
+  grind [mem_cutMap_iff]
 
 end DivisionRing
 
@@ -162,7 +152,7 @@ section InducedMap
 variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
 
-/-- The induced order preserving function from a linear ordered field to a conditionally complete
+/-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
 input. -/
 def inducedMap (x : α) : β :=
@@ -243,7 +233,7 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
 /-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : β)
     (hba : b < inducedMap α β a * inducedMap α β a) : ∃ c ∈ cutMap β (a * a), b < c := by
-  obtain hb | hb := lt_or_le b 0
+  obtain hb | hb := lt_or_ge b 0
   · refine ⟨0, ?_, hb⟩
     rw [← Rat.cast_zero, coe_mem_cutMap_iff, Rat.cast_zero]
     exact mul_self_pos.2 ha.ne'
@@ -271,8 +261,8 @@ def inducedOrderRingHom : α →+*o β :=
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
-          · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-        · simp only [mul_zero, AddMonoidHom.map_zero]
+          · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
+        · simp only [mul_zero, map_zero]
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound

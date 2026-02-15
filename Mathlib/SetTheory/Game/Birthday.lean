@@ -3,9 +3,16 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.SetTheory.Game.Ordinal
-import Mathlib.SetTheory.Ordinal.NaturalOps
+module -- shake: keep-all
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.SetTheory.Game.Ordinal
+public import Mathlib.SetTheory.Ordinal.NaturalOps
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Birthday` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Birthdays of games
@@ -19,15 +26,17 @@ The birthday of a pre-game can be understood as representing the depth of its ga
 other hand, the birthday of a game more closely matches Conway's original description. The lemma
 `SetTheory.Game.birthday_eq_pGameBirthday` links both definitions together.
 
-# Main declarations
+## Main declarations
 
 - `SetTheory.PGame.birthday`: The birthday of a pre-game.
 - `SetTheory.Game.birthday`: The birthday of a game.
 
-# Todo
+## Todo
 
 - Characterize the birthdays of other basic arithmetical operations.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -111,7 +120,7 @@ theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
 
 @[simp]
 theorem birthday_ordinalToPGame (o : Ordinal) : o.toPGame.birthday = o := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [toPGame, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
   conv_rhs => rw [← lsub_typein o]
@@ -187,8 +196,8 @@ theorem birthday_quot_le_pGameBirthday (x : PGame) : birthday ⟦x⟧ ≤ x.birt
 
 @[simp]
 theorem birthday_zero : birthday 0 = 0 := by
-  rw [← Ordinal.le_zero, ← PGame.birthday_zero]
-  exact birthday_quot_le_pGameBirthday  _
+  rw [← nonpos_iff_eq_zero, ← PGame.birthday_zero]
+  exact birthday_quot_le_pGameBirthday _
 
 @[simp]
 theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
@@ -229,7 +238,7 @@ theorem birthday_one : birthday 1 = 1 := by
 theorem birthday_star : birthday ⟦PGame.star⟧ = 1 := by
   apply le_antisymm
   · rw [← PGame.birthday_star]
-    exact birthday_quot_le_pGameBirthday  _
+    exact birthday_quot_le_pGameBirthday _
   · rw [Ordinal.one_le_iff_ne_zero, ne_eq, birthday_eq_zero, Game.zero_def,
       ← PGame.equiv_iff_game_eq]
     exact PGame.star_fuzzy_zero.not_equiv
@@ -260,7 +269,7 @@ theorem birthday_add_le (x y : Game) : (x + y).birthday ≤ x.birthday ♯ y.bir
   let ⟨a, ha₁, ha₂⟩ := birthday_eq_pGameBirthday x
   let ⟨b, hb₁, hb₂⟩ := birthday_eq_pGameBirthday y
   rw [← ha₂, ← hb₂, ← ha₁, ← hb₁, ← PGame.birthday_add]
-  exact birthday_quot_le_pGameBirthday  _
+  exact birthday_quot_le_pGameBirthday _
 
 theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.birthday := by
   apply (birthday_add_le x _).trans_eq
@@ -274,8 +283,8 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
   induction o using Ordinal.induction with | h o IH =>
   let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}
   let H : Small.{u} S := @small_biUnion _ _ _ _ _ IH
-  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_limit o
-  · simp_rw [Ordinal.not_lt_zero]
+  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
+  · simp_rw [not_lt_zero]
     exact small_empty
   · simp_rw [Order.lt_succ_iff, le_iff_lt_or_eq]
     convert small_union.{u} {x | birthday x < a} {x | birthday x = a}
@@ -301,7 +310,7 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
         exact (birthday_quot_le_pGameBirthday _).trans_lt (PGame.birthday_moveRight_lt i)
   · convert H
     change birthday _ < o ↔ ∃ a, _
-    simpa using lt_limit ho
+    simpa using ho.lt_iff_exists_lt
 
 end Game
 

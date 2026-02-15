@@ -3,9 +3,11 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.BooleanAlgebra
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.Order.BooleanAlgebra.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Boolean algebra structure on idempotents in a commutative (semi)ring
@@ -17,10 +19,12 @@ is not available, it is still true that pairs of elements `(a, b)` satisfying `a
 is uniquely determined by either `a` or `b`).
 -/
 
+@[expose] public section
+
 variable {R : Type*}
 
 instance [CommMonoid R] [AddCommMonoid R] :
-    HasCompl {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
+    Compl {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   compl a := ⟨(a.1.2, a.1.1), (mul_comm ..).trans a.2.1, (add_comm ..).trans a.2.2⟩
 
 lemma eq_of_mul_eq_add_eq_one [NonAssocSemiring R] (a : R) {b c : R}
@@ -142,7 +146,6 @@ def OrderIso.isIdempotentElemMulZeroAddOne :
     {a : R // IsIdempotentElem a} ≃o {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   toFun a := ⟨(a, 1 - a), by simp_rw [mul_sub, mul_one, a.2.eq, sub_self], by rw [add_sub_cancel]⟩
   invFun a := ⟨a.1.1, (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1⟩
-  left_inv _ := rfl
   right_inv a := Subtype.ext <| Prod.ext rfl <| sub_eq_of_eq_add <| a.2.2.symm.trans (add_comm ..)
   map_rel_iff' := Iff.rfl
 

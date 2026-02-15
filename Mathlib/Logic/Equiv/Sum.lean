@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Logic.Equiv.Prod
-import Mathlib.Tactic.Coe
+module
+
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Tactic.Coe
 
 /-!
 # Equivalence between sum types
@@ -22,13 +24,16 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
     satisfy the distributive law up to a canonical equivalence;
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 universe u v w z
 
@@ -51,11 +56,11 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
   right_inv s := by cases s <;> rfl
 
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕ β ≃ α' ⊕ β'`. This is `Sum.map` as an equivalence. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
-@[simp]
+@[simp, grind =]
 theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
     (Equiv.sumCongr e f).trans (Equiv.sumCongr g h) = Equiv.sumCongr (e.trans g) (f.trans h) := by
   ext i
@@ -109,8 +114,7 @@ abbrev sumCongr {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (
 
 @[simp]
 theorem sumCongr_apply {α β} (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : α ⊕ β) :
-    sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x :=
-  Equiv.sumCongr_apply ea eb x
+    sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x := rfl
 
 theorem sumCongr_trans {α β} (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
@@ -127,7 +131,7 @@ end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
-  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
+  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit), Sum.elim (fun _ => false) fun _ => true,
     fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
@@ -200,7 +204,6 @@ def sumEmpty (α β) [IsEmpty β] : α ⊕ β ≃ α where
     rcases s with (_ | x)
     · rfl
     · exact isEmptyElim x
-  right_inv _ := rfl
 
 @[simp]
 theorem sumEmpty_apply_inl {α β} [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = a :=
@@ -254,7 +257,7 @@ the sum of the two subtypes `{a // p a}` and its complement `{a // ¬ p a}`
 is naturally equivalent to `α`.
 
 See `subtypeOrEquiv` for sum types over subtypes `{x // p x}` and `{x // q x}`
-that are not necessarily `IsCompl p q`. -/
+that are not necessarily `IsCompl p q`. See also `Equiv.Set.sumCompl` for a version on sets. -/
 def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     { a // p a } ⊕ { a // ¬p a } ≃ α where
   toFun := Sum.elim Subtype.val Subtype.val
@@ -268,24 +271,39 @@ def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     split_ifs <;> rfl
 
 @[simp]
-theorem sumCompl_apply_inl {α} (p : α → Prop) [DecidablePred p] (x : { a // p a }) :
+theorem sumCompl_apply_inl {α} {p : α → Prop} [DecidablePred p] (x : { a // p a }) :
     sumCompl p (Sum.inl x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_inr {α} (p : α → Prop) [DecidablePred p] (x : { a // ¬p a }) :
+theorem sumCompl_apply_inr {α} {p : α → Prop} [DecidablePred p] (x : { a // ¬p a }) :
     sumCompl p (Sum.inr x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_symm_of_pos {α} (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
+theorem sumCompl_symm_apply_of_pos {α} {p : α → Prop} [DecidablePred p] {a : α} (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
   dif_pos h
 
 @[simp]
-theorem sumCompl_apply_symm_of_neg {α} (p : α → Prop) [DecidablePred p] (a : α) (h : ¬p a) :
+theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a : α} (h : ¬p a) :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
+
+@[deprecated (since := "2025-10-28")]
+alias sumCompl_apply_symm_of_pos := sumCompl_symm_apply_of_pos
+@[deprecated (since := "2025-10-28")]
+alias sumCompl_apply_symm_of_neg := sumCompl_symm_apply_of_neg
+
+@[simp]
+theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] (x : {x // p x}) :
+    (sumCompl p).symm x = Sum.inl x :=
+  sumCompl_symm_apply_of_pos x.2
+
+@[simp]
+theorem sumCompl_symm_apply_neg {α} {p : α → Prop} [DecidablePred p] (x : {x // ¬ p x}) :
+    (sumCompl p).symm x = Sum.inr x :=
+  sumCompl_symm_apply_of_neg x.2
 
 end sumCompl
 
@@ -329,14 +347,14 @@ def sigmaSumDistrib {ι} (α β : ι → Type*) :
     Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
     rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
 
-/-- A type indexed by  disjoint sums of types is equivalent to the sum of the sums. Compare with
+/-- A type indexed by disjoint sums of types is equivalent to the sum of the sums. Compare with
 `Equiv.sigmaSumDistrib` which has the sums as the output type. -/
 @[simps]
 def sumSigmaDistrib {α β} (t : α ⊕ β → Type*) :
     (Σ i, t i) ≃ (Σ i, t (.inl i)) ⊕ (Σ i, t (.inr i)) :=
   ⟨(match · with
-   | .mk (.inl x) y => .inl ⟨x, y⟩
-   | .mk (.inr x) y => .inr ⟨x, y⟩),
+    | .mk (.inl x) y => .inl ⟨x, y⟩
+    | .mk (.inr x) y => .inr ⟨x, y⟩),
   Sum.elim (fun a ↦ ⟨.inl a.1, a.2⟩) (fun b ↦ ⟨.inr b.1, b.2⟩),
   by rintro ⟨x|x,y⟩ <;> simp,
   by rintro (⟨x,y⟩|⟨x,y⟩) <;> simp⟩

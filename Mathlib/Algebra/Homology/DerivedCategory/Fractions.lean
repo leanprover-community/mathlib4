@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 
 /-! # Calculus of fractions in the derived category
 
@@ -19,9 +21,11 @@ on the auxiliary object appearing in the fraction.
 
 -/
 
+@[expose] public section
+
 universe w v u
 
-open CategoryTheory Category
+open CategoryTheory Category Limits
 
 namespace DerivedCategory
 
@@ -77,11 +81,7 @@ lemma right_fac_of_isStrictlyLE {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.
       CochainComplex.truncLEMap g n ≫ Y.ιTruncLE n, ?_⟩
   · rw [Q.map_comp]
     infer_instance
-  · have eq := Q.congr_map (CochainComplex.ιTruncLE_naturality s n)
-    have eq' := Q.congr_map (CochainComplex.ιTruncLE_naturality g n)
-    simp only [Functor.map_comp] at eq eq'
-    simp only [Functor.map_comp, ← cancel_epi (Q.map (CochainComplex.truncLEMap s n) ≫
-      Q.map (CochainComplex.ιTruncLE X n)), IsIso.hom_inv_id_assoc, assoc, reassoc_of% eq, eq']
+  · simp
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category with `Y` strictly `≥ n`
 can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and `s : Y ⟶ Y'`
@@ -113,7 +113,7 @@ a quasi-isomorphism with `X'` strictly `≥ a` and `≤ b`, and `g : X' ⟶ Y`. 
 lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ) [X.IsStrictlyGE a] [X.IsStrictlyLE b]
     [Y.IsStrictlyGE a] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (X' : CochainComplex C ℤ) ( _ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
+    ∃ (X' : CochainComplex C ℤ) (_ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
     (s : X' ⟶ X) (_ : IsIso (Q.map s)) (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
   obtain ⟨X', hX', s, hs, g, fac⟩ := right_fac_of_isStrictlyLE f b
   have : IsIso (Q.map (CochainComplex.truncGEMap s a)) := by
@@ -139,8 +139,8 @@ can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and
 lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ)
     [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
-    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
+    ∃ (Y' : CochainComplex C ℤ) (_ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
+    (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)), f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE f a
   have : IsIso (Q.map (CochainComplex.truncLEMap s b)) := by
     rw [isIso_Q_map_iff_quasiIso] at hs
@@ -157,5 +157,18 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
       Functor.map_comp, IsIso.inv_hom_id_assoc,
       ← Functor.map_comp, CochainComplex.ιTruncLE_naturality g b,
       Functor.map_comp, IsIso.inv_hom_id_assoc]
+
+lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C ℤ)
+    (a b : ℤ) (h : a < b) [X.IsStrictlyLE a] [Y.IsStrictlyGE b] :
+    Subsingleton (Q.obj X ⟶ Q.obj Y) := by
+  suffices ∀ (f : Q.obj X ⟶ Q.obj Y), f = 0 from ⟨by simp [this]⟩
+  intro f
+  obtain ⟨X', _, s, _, g, rfl⟩ := right_fac_of_isStrictlyLE f a
+  have : g = 0 := by
+    ext i
+    by_cases hi : a < i
+    · apply (X'.isZero_of_isStrictlyLE a i hi).eq_of_src
+    · apply (Y.isZero_of_isStrictlyGE b i (by lia)).eq_of_tgt
+  rw [this, Q.map_zero, comp_zero]
 
 end DerivedCategory

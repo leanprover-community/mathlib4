@@ -3,10 +3,13 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # The integers are a ring
@@ -15,6 +18,8 @@ This file contains the commutative ring instance on `ℤ`.
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 
@@ -30,8 +35,8 @@ instance instCommRing : CommRing ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
+  npow_zero _ := by simp
+  npow_succ _ _ := by simp [Int.pow_succ]
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl
@@ -39,8 +44,11 @@ instance instCommRing : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
-  mul_left_cancel_of_ne_zero {_a _b _c} ha := (mul_eq_mul_left_iff ha).1
+instance : IsCancelMulZero ℤ where
+  mul_left_cancel_of_ne_zero ha _ _ := (mul_eq_mul_left_iff ha).1
+  mul_right_cancel_of_ne_zero ha _ _ := (mul_eq_mul_right_iff ha).1
+
+instance instIsDomain : IsDomain ℤ where
 
 instance instCharZero : CharZero ℤ where cast_injective _ _ := ofNat.inj
 
@@ -73,9 +81,13 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
+set_option linter.style.whitespace false -- manual alignment is not recognised
+
 instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
+
+set_option linter.style.whitespace true
 
 end Int

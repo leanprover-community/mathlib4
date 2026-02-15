@@ -3,15 +3,19 @@ Copyright (c) 2023 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Data.Multiset.Pi
+module
+
+public import Mathlib.Data.Multiset.Pi
 
 /-!
-# The cartesian product of lists
+# The Cartesian product of lists
 
 ## Main definitions
 
 * `List.pi`: Cartesian product of lists indexed by a list.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -71,7 +75,7 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Type*}
 
 /-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
 def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i)
-  |     [],  _ => [List.Pi.nil α]
+  | [], _ => [List.Pi.nil α]
   | i :: l, fs => (fs i).flatMap (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
 
 @[simp] lemma pi_nil (t : ∀ i, List (α i)) :
@@ -84,19 +88,17 @@ def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i
 
 lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :
     (l : Multiset ι).pi (fs ·) = (↑(pi l fs) : Multiset (∀ i ∈ l, α i)) := by
-  induction' l with i l ih
-  · change Multiset.pi 0 _ = _
-    simp only [Multiset.coe_singleton, Multiset.pi_zero, pi_nil, Multiset.singleton_inj]
+  induction l with
+  | nil =>
+    simp only [Multiset.coe_nil, Multiset.pi_zero, pi_nil, Multiset.coe_singleton,
+      Multiset.singleton_inj]
     ext i hi
     simp at hi
-  · change Multiset.pi (i ::ₘ ↑l) _ = _
-    simp [ih, Multiset.coe_bind, - Multiset.cons_coe]
+  | cons i l ih =>
+    simp [ih, Multiset.coe_bind, ← Multiset.cons_coe]
 
-lemma mem_pi {l : List ι} (fs : ∀ i, List (α i)) :
-    ∀ f : ∀ i ∈ l, α i, (f ∈ pi l fs) ↔ (∀ i (hi : i ∈ l), f i hi ∈ fs i) := by
-  intros f
-  convert @Multiset.mem_pi ι _ α ↑l (fs ·) f using 1
-  rw [Multiset.pi_coe]
-  rfl
+lemma mem_pi {l : List ι} (fs : ∀ i, List (α i)) (f : ∀ i ∈ l, α i) :
+    (f ∈ pi l fs) ↔ (∀ i (hi : i ∈ l), f i hi ∈ fs i) := by
+  simpa [Multiset.pi_coe] using Multiset.mem_pi ↑l (fs ·) f
 
 end List

@@ -3,12 +3,15 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Nat.Choose.Central
+
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Field
 
 /-!
 # Catalan numbers
@@ -41,6 +44,8 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
   Fuss-Catalan, etc.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -91,17 +96,13 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
   rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ← (Nat.add_sub_assoc h 1),
     add_comm]]
   rw [h₁, h₂, h₃, h₄]
-  field_simp
-  ring
+  field
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
-  have : (n : ℚ) + 1 ≠ 0 := by norm_cast
-  have : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast
-  have h : (n : ℚ) + 2 ≠ 0 := by norm_cast
-  simp only [gosperCatalan, Nat.sub_zero, Nat.centralBinom_zero, Nat.sub_self]
-  field_simp
-  ring
+  simp only [gosperCatalan, tsub_self, Nat.centralBinom_zero, Nat.cast_one, Nat.cast_add,
+    Nat.cast_zero, tsub_zero]
+  field
 
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
@@ -115,7 +116,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by omega
+      have m_le_d : x.val ≤ d := by lia
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
@@ -150,8 +151,8 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
     (antidiagonal n).attach.biUnion fun ijh =>
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
   decreasing_by
-    · simp_wf; have := fst_le ijh.2; omega
-    · simp_wf; have := snd_le ijh.2; omega
+    · simp_wf; have := fst_le ijh.2; lia
+    · simp_wf; have := snd_le ijh.2; lia
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
