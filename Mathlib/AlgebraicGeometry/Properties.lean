@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
@@ -22,7 +23,6 @@ We provide some basic properties of schemes
 -/
 
 @[expose] public section
-
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -198,6 +198,26 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
   refine ⟨eq_zero_of_basicOpen_eq_bot s, ?_⟩
   rintro rfl
   simp
+
+/-- If `X` is reduced and has finitely many irreducible components, then the stalks at the generic
+points of the irreducible components are fields. -/
+lemma isField_stalk_of_closure_mem_irreducibleComponents
+    (x : X) (hx : closure {x} ∈ irreducibleComponents X) [IsReduced X] :
+    IsField (X.presheaf.stalk x) := by
+  wlog hX : ∃ R, X = Spec R
+  · obtain ⟨i, x, rfl⟩ := X.affineCover.exists_eq x
+    have inst : IsReduced (X.affineCover.X i) := isReduced_of_isOpenImmersion (X.affineCover.f i)
+    refine (asIso <| (X.affineCover.f i).stalkMap x).commRingCatIsoToRingEquiv.isField
+      (this _ x ?_ ⟨_, rfl⟩)
+    rw [(X.affineCover.f i).isOpenEmbedding.closure_eq_preimage_closure_image, Set.image_singleton]
+    exact preimage_mem_irreducibleComponents hx (X.affineCover.f i).isOpenEmbedding
+      ⟨X.affineCover.f i x, subset_closure rfl, _, rfl⟩
+  obtain ⟨R, rfl⟩ := hX
+  replace hx : x.asIdeal ∈ minimalPrimes R := by
+    rwa [← PrimeSpectrum.vanishingIdeal_singleton, PrimeSpectrum.vanishingIdeal_mem_minimalPrimes]
+  rw [← PrimeSpectrum.subsingleton_iff_isField_of_isReduced]
+  exact IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes _ hx
+    ((Spec.structureSheaf R).presheaf.stalk x)
 
 /-- A scheme `X` is integral if its is nonempty,
 and `𝒪ₓ(U)` is an integral domain for each `U ≠ ∅`. -/
