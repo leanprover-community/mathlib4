@@ -82,6 +82,11 @@ theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (ha
     rwa [mem_iff, ← ENat.coe_inj, ← this.encard_eq_coe_toFinset_card]⟩,
       by simpa using has, by simpa using has'⟩
 
+theorem exists_mem_notMem_iff_ne (s t : Set.powersetCard α n) : s ≠ t ↔ ∃ a ∈ s, a ∉ t := by
+  contrapose!
+  rw [eq_iff_subset]
+  rfl
+
 section map
 
 variable (n) {β : Type*}
@@ -176,6 +181,10 @@ variable (α n)
 theorem coe_finset [Fintype α] :
     powersetCard α n = Finset.powersetCard n (Finset.univ : Finset α) := by
   ext; simp
+
+instance [Fintype α] : Fintype (powersetCard α n) := by
+  rw [coe_finset]
+  infer_instance
 
 instance [Finite α] : Finite (powersetCard α n) := by
   have : Fintype α := Fintype.ofFinite α
