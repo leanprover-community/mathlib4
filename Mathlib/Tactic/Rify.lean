@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Tactic.Zify
 
 /-!
 # `rify` tactic
@@ -42,8 +41,6 @@ open Lean
 open Lean.Meta
 open Lean.Parser.Tactic
 open Lean.Elab.Tactic
-
-open NNReal
 
 /--
 The `rify` tactic is used to shift propositions from `ℕ`, `ℤ` or `ℚ` to `ℝ`.
@@ -98,12 +95,16 @@ def rifyProof (proof : Expr) (prop : Expr) : MetaM (Expr × Expr) := do
 @[rify_simps] lemma ratCast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
 @[rify_simps] lemma ratCast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
 
+/- The following lemmas are included in `Mathlib.Data.NNReal.Basic` (so that it
+doesn't need to be imported when using this tactic for only `ℕ, ℤ`, or `ℚ`)
+
+`@[rify_simps] lemma toReal_eq (a b : ℝ≥0) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp`
+`@[rify_simps] lemma toReal_le (a b : ℝ≥0) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp`
+`@[rify_simps] lemma toReal_lt (a b : ℝ≥0) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp`
+`@[rify_simps] lemma toReal_ne (a b : ℝ≥0) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp`
+-/
+
 @[rify_simps] lemma ofNat_rat_real (a : ℕ) [a.AtLeastTwo] :
     ((ofNat(a) : ℚ) : ℝ) = (ofNat(a) : ℝ) := rfl
-
-@[rify_simps] lemma toReal_eq (a b : ℝ≥0) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
-@[rify_simps] lemma toReal_le (a b : ℝ≥0) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
-@[rify_simps] lemma toReal_lt (a b : ℝ≥0) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
-@[rify_simps] lemma toReal_ne (a b : ℝ≥0) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
 
 end Mathlib.Tactic.Rify
