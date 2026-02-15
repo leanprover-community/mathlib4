@@ -238,7 +238,7 @@ theorem real_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : Is
 theorem real_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
     ∃ (l : ℕ → E →L[ℝ] ℝ) (c : ℕ → ℝ),
-    ⨆ i, s.restrict (l i) + const s (c i) = s.restrict φ :=
+      ⨆ i, s.restrict (l i) + const s (c i) = s.restrict φ :=
   sSup_of_nat_affine_eq (𝕜 := ℝ) hsc hφc hφcv
 
 /-- The real version of `univ_sSup_affine_eq`. -/
