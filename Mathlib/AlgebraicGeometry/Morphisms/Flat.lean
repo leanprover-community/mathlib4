@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
@@ -97,6 +98,13 @@ lemma iff_flat_stalkMap : Flat f ↔ ∀ x, (f.stalkMap x).hom.Flat :=
 instance {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
     [∀ i, Flat (f i)] : Flat (Sigma.desc f) :=
   IsZariskiLocalAtSource.sigmaDesc (fun _ ↦ inferInstance)
+
+instance (priority := low) [Subsingleton Y] [IsIntegral Y] : Flat f := by
+  refine (MorphismProperty.cancel_right_of_respectsIso @Flat _ Y.isoSpec.hom).mp ?_
+  refine (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦ ?_
+  rw [← Spec.map_preimage (X.affineCover.f i ≫ f ≫ Y.isoSpec.hom),
+    HasRingHomProperty.Spec_iff (P := @Flat)]
+  exact .of_isField (isField_of_isIntegral_of_subsingleton _) _
 
 /-- A surjective, quasi-compact, flat morphism is a quotient map. -/
 @[stacks 02JY]
