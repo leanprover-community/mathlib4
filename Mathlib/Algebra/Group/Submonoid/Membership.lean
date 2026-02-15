@@ -555,4 +555,3 @@ end mul_add
 @[simp] theorem Nat.addSubmonoidClosure_one : AddSubmonoid.closure ({1} : Set ℕ) = ⊤ := by
   ext
   simp [AddSubmonoid.mem_closure_singleton]
-

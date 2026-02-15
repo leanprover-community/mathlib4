@@ -280,4 +280,3 @@ lemma IsMIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
       exact hγ.periodic_of_eq hv heq.symm
     · rw [abs_of_nonneg hab]
       exact hγ.periodic_of_eq hv heq
-

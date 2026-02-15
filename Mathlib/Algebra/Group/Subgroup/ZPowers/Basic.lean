@@ -151,4 +151,3 @@ theorem Int.zmultiples_natAbs (a : ℤ) :
 @[simp] lemma Int.addSubgroupClosure_one : AddSubgroup.closure ({1} : Set ℤ) = ⊤ := by
   ext
   simp [AddSubgroup.mem_closure_singleton]
-
