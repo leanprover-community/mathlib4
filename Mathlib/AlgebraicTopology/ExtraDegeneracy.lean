@@ -29,15 +29,15 @@ simplicial objects in any category.
 
 - the structure `ExtraDegeneracy X` for any `X : SimplicialObject.Augmented C`
 - `ExtraDegeneracy.map`: extra degeneracies are preserved by the application of any
-functor `C ⥤ D`
+  functor `C ⥤ D`
 - `SSet.Augmented.StandardSimplex.extraDegeneracy`: the standard `n`-simplex has
-an extra degeneracy
+  an extra degeneracy
 - `Arrow.AugmentedCechNerve.extraDegeneracy`: the Čech nerve of a split
-epimorphism has an extra degeneracy
+  epimorphism has an extra degeneracy
 - `ExtraDegeneracy.homotopyEquiv`: in the case the category `C` is preadditive,
-if we have an extra degeneracy on `X : SimplicialObject.Augmented C`, then
-the augmentation on the alternating face map complex of `X` is a homotopy
-equivalence.
+  if we have an extra degeneracy on `X : SimplicialObject.Augmented C`, then
+  the augmentation on the alternating face map complex of `X` is a homotopy
+  equivalence.
 
 ## References
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
