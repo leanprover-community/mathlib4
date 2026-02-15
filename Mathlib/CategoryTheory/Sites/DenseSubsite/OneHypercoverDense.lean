@@ -161,6 +161,39 @@ end
 
 variable [IsDenseSubsite J₀ J F]
 
+variable {F J₀ J} in
+/-- Constructor for `IsOneHypercoverDense.{w} F J₀ J` for a dense subsite
+when the functor `F : C₀ ⥤ C` is fully faithful, `C` has pullbacks, and
+any object in `C` admits a `w`-small covering family consisting of objects in `C₀`. -/
+lemma IsOneHypercoverDense.of_hasPullbacks [HasPullbacks C] [F.Full] [F.Faithful]
+    (hF : ∀ (S : C), ∃ (ι : Type w) (U : ι → C₀) (f : ∀ i, F.obj (U i) ⟶ S),
+      Sieve.ofArrows _ f ∈ J S) :
+    IsOneHypercoverDense.{w} F J₀ J where
+  nonempty_oneHypercoverDenseData S := by
+    choose ι U f hf using hF
+    exact ⟨{
+      I₀ := ι S
+      X := U S
+      f := f S
+      I₁ i j := ι (pullback (f _ i) (f _ j))
+      Y i j := U (pullback (f _ i) (f _ j))
+      p₁ i j k := F.preimage (f _ k ≫ pullback.fst _ _)
+      p₂ i j k := F.preimage (f _ k ≫ pullback.snd _ _)
+      w i j k := by simp [pullback.condition]
+      mem₀ := hf S
+      mem₁₀ i j W₀ p₁ p₂ hp := by
+        have := IsDenseSubsite.isCoverDense J₀ J F
+        rw [← functorPushforward_mem_iff J₀ J F]
+        refine J.superset_covering ?_
+          (IsCoverDense.functorPullback_pushforward_covering
+            ⟨_, J.pullback_stable (pullback.lift _ _ hp) (hf (pullback (f _ i) (f _ j)))⟩)
+        rintro T _ ⟨Z, q, r, ⟨_, s, _, ⟨k⟩, fac⟩, rfl⟩
+        have fac₁ := fac =≫ pullback.fst _ _
+        have fac₂ := fac =≫ pullback.snd _ _
+        simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd] at fac₁ fac₂
+        exact ⟨Z, q, r, ⟨k, F.preimage s, F.map_injective (by simp [fac₁]),
+          F.map_injective (by simp [fac₂])⟩, rfl⟩ }⟩
+
 namespace OneHypercoverDenseData
 
 variable {F J₀ J}
