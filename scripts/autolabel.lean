@@ -90,23 +90,18 @@ inductive Label where
   | «t-set-theory»
   | «t-topology»
   | «CI»
-  | «IMO»
   | «dependency-bump»
+  | «IMO»
   deriving BEq, Hashable, Repr
 
-/--
-Array of all topic labels which are used in Mathlib.
-
-Note: Since Lean does not know reflection, this needs to be updated manually!
--/
+/-- Array of all topic labels which are used in Mathlib -/
 def mathlibLabels : Array Label := #[
   .«t-algebra», .«t-algebraic-geometry», .«t-algebraic-topology», .«t-analysis»,
   .«t-category-theory», .«t-combinatorics», .«t-computability», .«t-condensed»,
   .«t-convex-geometry», .«t-data», .«t-differential-geometry», .«t-dynamics»,
   .«t-euclidean-geometry», .«t-geometric-group-theory», .«t-group-theory», .«t-linter»,
   .«t-logic», .«t-measure-probability», .«t-meta», .«t-number-theory», .«t-order»,
-  .«t-ring-theory», .«t-set-theory», .«t-topology», .«CI», .«IMO»,
-  .«dependency-bump»
+  .«t-ring-theory», .«t-set-theory», .«t-topology», .«CI», .«dependency-bump», .«IMO»
 ]
 
 def Label.toString : Label → String
@@ -141,6 +136,24 @@ def Label.toString : Label → String
 instance : ToString Label where
   toString := Label.toString
 
+-- test to ensure all labels are listed in `mathlibLabels`
+open Lean in
+run_cmd
+  let some (.inductInfo labels) := (← getEnv).find? ``Label | unreachable!
+  let labelNames := labels.ctors.filterMap (·.components.getLast?) |>.toArray
+  let some (.defnInfo dinfo) := (← getEnv).find? ``mathlibLabels | unreachable!
+  let allConstants := dinfo.value.getUsedConstants
+  let constants := allConstants.filterMap fun n =>
+    if n.components.dropLast.getLast? == some `Label then n.components.getLast? else none
+  if labelNames != constants then
+    let mut out : List String := []
+    for (a, b) in labelNames.zip constants do
+      if a != b then
+        out := s!"expexcted {a} got {b}" :: out
+    logWarning m!"The available Labels is out of sync with the labels listed in \
+    { .ofConstName ``mathlibLabels }.\n\
+    Please keep them sorted and in sync!\n{"\n".intercalate out.reverse}"
+
 /--
 A `LabelData` consists of the
 * The `dirs` field is the array of all "root paths" such that a modification in a file contained
@@ -167,9 +180,7 @@ structure LabelData (label : Label) where
   dependencies : Array Label := #[]
   deriving BEq, Hashable
 
-/--
-Mathlib labels and their corresponding folders.
--/
+/-- Mathlib labels and their corresponding folders -/
 def mathlibLabelData : (l : Label) → LabelData l
   | .«t-algebra» => {
     dirs := #[
