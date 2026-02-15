@@ -189,7 +189,6 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
   apply riemann_lebesgue f
   exact memLp_one_iff_integrable.mpr hfi
 
-  sorry
   /-refine Metric.tendsto_nhds.mpr fun ε hε => ?_
   obtain ⟨g, hg_supp, hfg, hg_cont, -⟩ :=
     hfi.exists_hasCompactSupport_integral_sub_le (div_pos hε two_pos)
@@ -210,8 +209,6 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
   rw [add_halves] at this
   refine ((le_of_eq ?_).trans (norm_add_le _ _)).trans_lt this
   simp only [sub_zero, sub_add_cancel]-/
-
-#exit
 
 /-- The Riemann-Lebesgue lemma for functions on `ℝ`. -/
 theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
@@ -253,6 +250,7 @@ section NoInnerProduct
 
 variable (f) [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2Space V]
   [MeasurableSpace V] [BorelSpace V] [Module ℝ V] [ContinuousSMul ℝ V] [FiniteDimensional ℝ V]
+  [CompleteSpace E]
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional real vector space, formulated via
 dual space. -/
