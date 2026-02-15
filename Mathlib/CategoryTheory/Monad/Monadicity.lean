@@ -230,8 +230,8 @@ monadicity theorem, the converse is given in `monadicOfCreatesGSplitCoequalizers
 -/
 def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
-  apply (config := { allowSynthFailures := true }) monadicCreatesColimitOfPreservesColimit
-    -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
+  apply +allowSynthFailures monadicCreatesColimitOfPreservesColimit
+    -- Porting note: oddly +allowSynthFailures had no effect here and below
   all_goals
     apply @preservesColimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
