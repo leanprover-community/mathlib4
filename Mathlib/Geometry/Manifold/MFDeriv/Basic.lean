@@ -558,12 +558,8 @@ lemma mdifferentiableWithinAt_of_mfderivWithin_injective
   by_cases h: Subsingleton E
   · exact (mdifferentiable_of_subsingleton x).mdifferentiableWithinAt
   · by_contra h'
-    replace hf : LinearMap.ker (mfderivWithin I I' f s x).toLinearMap = ⊥ := by
-      rw [LinearMap.ker_eq_bot]; exact hf
-    have : (⊥ : Submodule 𝕜 (TangentSpace I x)) = ⊤ := by
-      simp [mfderivWithin_zero_of_not_mdifferentiableWithinAt h', ← hf]
-    have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top this
-    simp_all only [Submodule.subsingleton_iff]
+    rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt h'] at hf
+    exact h { allEq a b := hf rfl }
 
 /-- If `f : M → M'` has injective differential at `x`, it is `MDifferentiable` at `x`. -/
 lemma mdifferentiableAt_of_mfderiv_injective {f : M → M'} (hf : Injective (mfderiv I I' f x)) :

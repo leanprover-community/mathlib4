@@ -332,12 +332,8 @@ lemma differentiableWithinAt_of_fderivWithin_injective (hf : Injective (fderivWi
   by_cases h: Subsingleton E
   · exact (differentiable_of_subsingleton x).differentiableWithinAt
   · by_contra h'
-    replace hf : LinearMap.ker (fderivWithin 𝕜 f s x).toLinearMap = ⊥ := by
-      rw [LinearMap.ker_eq_bot]; exact hf
-    have : (⊥ : Submodule 𝕜 E) = ⊤ := by
-      simp [fderivWithin_zero_of_not_differentiableWithinAt h', ← hf]
-    have : Subsingleton (Submodule 𝕜 E) := subsingleton_of_bot_eq_top this
-    simp_all only [Submodule.subsingleton_iff]
+    rw [fderivWithin_zero_of_not_differentiableWithinAt h'] at hf
+    exact h { allEq a b := hf rfl }
 
 /-- If `f : E → F` has injective differential at `x`, it is differentiable at `x`. -/
 lemma differentiableAt_of_fderiv_injective (hf : Injective (fderiv 𝕜 f x)) :
