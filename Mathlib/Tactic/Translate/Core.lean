@@ -255,11 +255,12 @@ where
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
       if info.translation != info'.translation then
-        Linter.logLintIf linter.translateOverwrite ref m!"`{src}` was already translated to \
-          `{info'.translation}` instead of `{info.translation}`.\n\
+        Linter.logLintIf linter.translateOverwrite ref m!"`{.ofConstName src}` was already \
+          translated to `{info'.translation}` instead of `{info.translation}`.\n\
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
-    trace[translate] "Added translation {src} ↦ {tgt}\
+    trace[translate] "Added translation \
+      {.ofConstName src} ↦ {.ofConstName <| privateToUserName tgt} \
       {if info.reorder.isEmpty then "" else s!" reorder := ({info.reorder})"} \
       (relevant_arg := {info.relevantArg})"
 
@@ -684,7 +685,7 @@ These auxiliary declarations may be private or not, independent of whether `pre`
 -/
 def findAuxDecls (decl : ConstantInfo) (pre : Name) : CoreM (Array Name) := do
   let env ← withoutExporting getEnv
-  return (Expr.app decl.type (decl.value! (allowOpaque := true))).foldConsts #[] fun n l ↦
+  return (decl.type.app (decl.value! (allowOpaque := true))).foldConsts #[] fun n l ↦
     if (env.find? n).any (·.hasValue (allowOpaque := true)) &&
       ((match n with | .str _ s => "_proof_".isPrefixOf s | _ => false) ||
       (privateToUserName n).getPrefix == privateToUserName pre || n.hasMacroScopes) then
@@ -702,25 +703,28 @@ declaration. -/
 partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src : Name)
     (dontTranslate : List Nat) (reorder : Reorder := []) : CoreM Unit := do
   let env ← getEnv
-  trace[translate_detail] "visiting {src}"
+  trace[translate_detail] "visiting {.ofConstName src}"
   -- if we have already translated this declaration, we do nothing.
   if (findTranslation? env t src).isSome && src != pre then
       return
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
   if src != pre && !src.isInternalDetail then
-    throwError "The declaration {pre} depends on the declaration {src} which is in the namespace \
+    throwError "The declaration {pre} depends on the declaration {.ofConstName src} which is \
+      in the namespace \
       {pre}, but does not have the `@[{t.attrName}]` attribute. This is not supported.\n\
-      Workaround: move {src} to a different namespace."
+      Workaround: move {.ofConstName src} to a different namespace."
   -- we find, or guess, the translated name of `src`
   let tgt ← findTargetName env t src pre tgt_pre
   -- we skip if we already transformed this declaration before.
   if env.setExporting false |>.contains tgt then
     if tgt == src then
       -- Note: this can happen for equation lemmas of declarations without a translation.
-      trace[translate_detail] "Auxiliary declaration {src} will be translated to itself."
+      trace[translate_detail] "Auxiliary declaration {.ofConstName src} will be translated to \
+        itself."
     else
-      trace[translate_detail] "Already visited {tgt} as translation of {src}."
+      trace[translate_detail] "Already visited {.ofConstName tgt} as translation of \
+        {.ofConstName src}."
     return
   let srcDecl ← withoutExporting do getConstInfo src
   -- we first unfold all auxlemmas, since they are not always able to be translated on their own
@@ -742,6 +746,8 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
       let namesPre := (← getConstInfo pre).type.getForallBinderNames
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
+  trace[translate] "translating\n\
+    {.ofConstName src} : {srcDecl.type} :=\n  {srcDecl.value!}"
   -- now transform the source declaration
   let tgtDecl ← MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate
   if src == pre && srcDecl.isThm && tgtDecl.type == srcDecl.type then
@@ -758,7 +764,8 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   produce executable code but fails to do so (e.g. outside of `noncomputable section`). However,
   the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
   errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
-  (which is inaccessible here), so we cannot test for `noncomputable section` directly. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
+  (which is inaccessible here), so we cannot test for `noncomputable section` directly.
+  See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
   if isNoncomputable (← getEnv) src then
     modifyEnv (addNoncomputable · tgt)
   else
@@ -790,7 +797,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
-    trace[translate_detail] "Making {tgt} an instance with priority {prio}."
+    trace[translate_detail] "Making {.ofConstName tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
 /-- Warn the user when the declaration has an attribute. -/
@@ -798,9 +805,11 @@ def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (← getEnv) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
-      m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. \
+      m!"The source declaration {.ofConstName src} was given attribute {attrName} before \
+         calling @[{thisAttr}]. \
          The preferred method is to use `@[{thisAttr} (attr := {attrName})]` to apply the \
-         attribute to both {src} and the target declaration {tgt}." ++
+         attribute to both {.ofConstName src} and the target declaration \
+         {.ofConstName tgt}." ++
       if thisAttr == `to_additive then
         m!"\nSpecial case: If this declaration was generated by @[to_additive] \
           itself, you can use @[to_additive (attr := to_additive, {attrName})] on the original \
@@ -827,7 +836,8 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
     unless lemmas.size == nLemmas do
-      throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
+      throwError "{names[0]!} and {nm} do not generate the same number of {desc}:\n\
+        {auxLemmas[0]!}\nvs.\n{lemmas}"
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
       insertTranslation t srcLemma tgtLemma reorder relevantArg ref
@@ -848,7 +858,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     if cfg.tgt == .anonymous then
       if let some tgt := findTranslationName? (← getEnv) t src then
         return tgt
-  let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
+  let .str pre s := src | throwError "{t.attrName}: can't transport {.ofConstName src}"
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
   let tgt_auto := GuessName.guessName t.guessNameData s
   let depth := cfg.tgt.getNumParts
@@ -856,14 +866,15 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
-    throwError "{t.attrName}: the generated translated name equals the original name '{src}'.\n\
+    throwError "{t.attrName}: the generated translated name equals the original name \
+    '{.ofConstName src}'.\n\
     If this is intentional, use the `@[{t.attrName} self]` syntax.\n\
     Otherwise, check that your declaration name is correct \
     (if your declaration is an instance, try naming it)\n\
     or provide a translated name using the `@[{t.attrName} my_add_name]` syntax."
   if cfg.tgt == pre2.str tgt_auto && !cfg.allowAutoName then
     Linter.logLintIf linter.translateGenerateName cfg.ref m!"\
-      `{t.attrName}` correctly autogenerated target name for {src}.\n\
+      `{t.attrName}` correctly autogenerated target name for {.ofConstName src}.\n\
       You may remove the explicit argument {cfg.tgt}."
   if cfg.tgt != .anonymous then
     trace[translate_detail] "The automatically generated name would be {pre.str tgt_auto}"
@@ -940,7 +951,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   let tgtDecl ← getConstInfo tgt
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
-      universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
+      universe levels, but '{.ofConstName tgt}' has {tgtDecl.levelParams.length} \
+      universe levels"
   let mut srcType := srcDecl.type
   let unfoldBoundaries? ← t.unfoldBoundaries?.mapM (return ·.getState (← getEnv))
   if let some b := unfoldBoundaries? then
@@ -956,7 +968,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
           let range : Array Nat := (0...=max).toArray
           if range.permute! reorder == range.permute! reorder' then
             Linter.logLintIf linter.translateReorder cfg.ref m!"\
-              `{t.attrName}` correctly autogenerated the `(reorder := ...)` argument for {src}.\n\
+              `{t.attrName}` correctly autogenerated the `(reorder := ...)` argument for \
+              {.ofConstName src}.\n\
               You may remove the `(reorder := ...)` argument."
       pure reorder
     else
@@ -965,7 +978,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
       Please remove the attribute, or provide an explicit `(reorder := ...)` argument.\n\
-      If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
+      If you need to give a hint to `{t.attrName}` to translate expressions involving \
+      `{.ofConstName src}`,\n\
       use `{t.attrName}_do_translate` instead"
   srcType ← reorderForall reorder srcType
   if let some b := unfoldBoundaries? then
@@ -979,8 +993,8 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   unless ← withReducible <| isDefEq srcType tgtType do
-    throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
-      type{indentExpr tgtType}"
+    throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\n\
+      but '{.ofConstName tgt}' has type{indentExpr tgtType}"
   return reorder
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
@@ -990,7 +1004,8 @@ def proceedFieldsAux (t : TranslateData) (src tgt : Name) (reorder : Reorder) (r
   let srcFields := f src
   let tgtFields := f tgt
   if srcFields.size != tgtFields.size then
-    throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
+    throwError "Failed to map fields of {.ofConstName src}, {.ofConstName tgt} with \
+      {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
   for srcField in srcFields, tgtField in tgtFields do
     insertTranslation t srcField tgtField reorder relevantArg ref
@@ -1146,10 +1161,11 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
       -- Note: we're not bothering to print the correct attribute arguments.
       Linter.logLintIf linter.existingAttributeWarning cfg.ref m!"\
-        The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
+        The source declaration {.ofConstName src} was given the simp-attribute(s) \
+        {appliedAttrs} before \
         calling @[{t.attrName}].\nThe preferred method is to use something like \
         `@[{t.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
-        {src} and the target declaration {tgt}."
+        {.ofConstName src} and the target declaration {.ofConstName tgt}."
     warnAttr cfg.ref Lean.Meta.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) t.attrName `ext src tgt
     warnAttr cfg.ref Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
@@ -1239,7 +1255,9 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
         m!"The translated declaration already exists. Please specify this explicitly using \
            `@[{t.attrName} existing]`."
       else
-        "The translated declaration doesn't exist. Please remove the option `existing`."
+        -- not using `.ofConstName` since `tgt` doesn't exist
+        "The translated declaration `{privateToUserName tgt}` doesn't exist. \
+        Please remove the option `existing`."
   let reorder ←
     if alreadyExists then
       MetaM.run' <| checkExistingType t src tgt cfg
