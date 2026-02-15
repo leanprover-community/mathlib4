@@ -67,8 +67,8 @@ that `f ≤ φ` on `s` and `f x = a`. This is an auxiliary lemma used in the pro
 `ConvexOn.sSup_affine_eq.` -/
 lemma exists_affine_le_of_lt {x : E} {a : ℝ} (hx : x ∈ s) (hax : a < φ x) (hsc : IsClosed s)
     (hφc : LowerSemicontinuousOn φ s) (hφcv : ConvexOn ℝ s φ) :
-    ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), s.restrict (re ∘ l) + const s c ≤ s.restrict φ ∧
-    re (l x) + c = a := by
+    ∃ (l : E →L[𝕜] 𝕜) (c : ℝ),
+      s.restrict (re ∘ l) + const s c ≤ s.restrict φ ∧ re (l x) + c = a := by
   let A := { p : E × 𝕜 | p.1 ∈ s ∧ φ p.1 ≤ re p.2 }
   obtain ⟨L, ⟨b, hLb⟩⟩ := geometric_hahn_banach_point_closed (𝕜 := 𝕜) hφcv.convex_re_epigraph
     (hφc.isClosed_re_epigraph hsc) (by simp [A, hax] : (x, ofReal a) ∉ A)
