@@ -433,14 +433,4 @@ end
 
 end ObjectProperty
 
-namespace Triangulated
-
-namespace Subcategory
-
-open ObjectProperty
-
-end Subcategory
-
-end Triangulated
-
 end CategoryTheory
