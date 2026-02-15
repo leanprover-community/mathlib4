@@ -168,8 +168,7 @@ theorem univ_sSup_affine_eq (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn �
     · ext x; simpa using congrFun hlc x
     · ext; simp
     · simpa using hb ▸ h ⟨x, trivial⟩
-    · subst hlc
-      simpa using hb.symm
+    · subst hlc; simpa using hb.symm
   _ = sSup 𝓕 ∘ (Equiv.Set.univ E).symm := by ext x; rw [sSup_image', sSup_eq_iSup']; simp
   _ = φ ∘ Subtype.val ∘ (Equiv.Set.univ E).symm :=
     congrArg (fun g => g ∘ (Equiv.Set.univ E).symm) this
@@ -186,9 +185,7 @@ theorem univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
     · obtain ⟨l, c, hlc⟩ := exists_affine (𝕜 := 𝕜) (@mem_univ E 0)
         (by grind : φ 0 - 1 < φ (⟨0, @mem_univ E 0⟩ : univ)) isClosed_univ
         (lowerSemicontinuousOn_univ_iff.2 hφc) hφcv
-      refine ⟨fun x => f ⟨x, mem_univ x⟩, fun x => he ⟨x, mem_univ x⟩, ⟨l, c, ?_⟩⟩
-      ext x
-      simpa using congrFun hlc ⟨x, mem_univ x⟩
+      exact ⟨(re ∘ l) + const E c, fun x => hlc.1 ⟨x, mem_univ x⟩, ⟨l, c, rfl⟩⟩
     · exact (bddAbove_def.2 ⟨φ, fun y hy => hy.1⟩)
   have hr (f) (hf : f ∈ 𝓕) : LowerSemicontinuous f := by
     obtain ⟨l, c, hlc⟩ := hf.2
@@ -213,8 +210,7 @@ theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
     _ = _ := by rw [← sSup_range, ← hf, h𝓕'.2.1]
   · refine ⟨fun _ => 0, fun _ => 0, ?_⟩
     ext x
-    have := congrFun h𝓕'.2.1 x
-    simp_all
+    simp_all [← congrFun h𝓕'.2.1 x]
 
 end RCLike
 
