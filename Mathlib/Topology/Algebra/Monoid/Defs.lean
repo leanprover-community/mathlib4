@@ -72,17 +72,17 @@ theorem Continuous.mul (hf : Continuous f) (hg : Continuous g) :
     Continuous (f * g) :=
   continuous_mul.comp₂ hf hg
 
-@[to_fun (attr := to_additive (attr := fun_prop, continuity))]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousWithinAt.mul (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (f * g) s x :=
   Filter.Tendsto.mul hf hg
 
-@[to_fun (attr := to_additive (attr := fun_prop, continuity))]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousAt.mul (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (f * g) x :=
   Filter.Tendsto.mul hf hg
 
-@[to_fun (attr := to_additive (attr := fun_prop, continuity))]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.mul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (f * g) s := fun x hx ↦
   (hf x hx).mul (hg x hx)
