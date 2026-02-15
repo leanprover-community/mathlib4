@@ -151,7 +151,8 @@ For function types (e.g., `OrderEmbedding`), use `to_dual_insert_cast_fun` with
 both a forward and backward casting function:
 ```lean
 to_dual_insert_cast_fun OrderEmbedding :=
-  fun e ↦ OrderEmbedding.ofMapLEIff ... , fun e ↦ OrderEmbedding.ofMapLEIff ...
+  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
+  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
 ```
 
 **When to use**: If `@[to_dual]` on a theorem fails because it tries to unfold
