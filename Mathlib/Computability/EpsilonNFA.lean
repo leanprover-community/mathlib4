@@ -421,7 +421,6 @@ def kstar (M : εNFA α σ) [DecidablePred (· ∈ M.accept)] : εNFA α (Option
   start := { none }
   accept := { none } ∪ M.accept.image some
 
-@[simp]
 lemma kstar_step_some (q : σ) (a : Option α) :
     (kstar M).step (some q) a =
     (M.step q a).image some ∪
