@@ -121,40 +121,43 @@ open TensorProduct Module
 then their minimal and maximal tensor products are equal. -/
 theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCone ℝ E)
     (C₂ : ProperCone ℝ F) (h₁_simp : C₁.IsSimplicial)
-    (h₁_gen : (C₁ : ConvexCone ℝ E).IsGenerating) :
+    (h₁_gen : Submodule.span ℝ (C₁ : Set E) = ⊤) :
     minTensorProduct C₁ C₂.toPointedCone = maxTensorProduct C₁ C₂.toPointedCone := by
   classical
-  -- Extract basis from `C₁.IsSimplicial` + `C₁.IsGenerating`
-  let b := h₁_simp.toBasis h₁_gen
+  haveI : Fintype h₁_simp.choose := h₁_simp.choose_spec.1.fintype
+  -- Extract basis from `C₁.IsSimplicial` + generating
+  let b := Module.Basis.mk h₁_simp.choose_spec.2.1 <| by
+    simpa [← Submodule.span_span_of_tower {c : ℝ // 0 ≤ c} ℝ h₁_simp.choose,
+      h₁_simp.choose_spec.2.2] using h₁_gen.ge
   -- Dual basis elements are in C₁*
   have h_coord_dual : ∀ i, b.coord i ∈ dual (dualPairing ℝ E).flip C₁ := fun i => by
     apply basis_coord_mem_dual
-    rw [show Set.range b = ↑h₁_simp.generators by ext; simp [b], h₁_simp.span_generators]
+    rw [show Set.range b = h₁_simp.choose by ext; simp [b], h₁_simp.choose_spec.2.2]
   -- Reduce to proving z ∈ max → z ∈ min
   apply le_antisymm (minTensorProduct_le_maxTensorProduct C₁ C₂.toPointedCone)
   intro z hz
   -- Express z using basis: z = ∑ b_i ⊗ y_i
   let y := equivFinsuppOfBasisLeft b z
   rw [← (equivFinsuppOfBasisLeft b).symm_apply_apply z,
-    TensorProduct.equivFinsuppOfBasisLeft_symm_apply, Finsupp.sum_fintype _ _ (by simp)]
+      TensorProduct.equivFinsuppOfBasisLeft_symm_apply, Finsupp.sum_fintype _ _ (by simp)]
   -- Show z ∈ min by showing b_i ∈ C₁ and y_i ∈ C₂
   exact Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct
-    (h₁_simp.toBasis_apply h₁_gen i ▸ h₁_simp.generator_mem i)
+    (by simp only [b, Basis.coe_mk]; exact (h₁_simp.choose_spec.2.2 ▸ subset_span) i.prop)
     (by simp only [TensorProduct.equivFinsuppOfBasisLeft_apply]
         rw [← ProperCone.dual_dual_flip (dualPairing ℝ F) C₂]
         intro ψ hψ
         simp only [dualPairing_apply, mem_maxTensorProduct] at hz ⊢
         convert hz (b.coord i) (h_coord_dual i) ψ hψ
-        have h : TensorProduct.dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] ψ) =
+        have h_dual : TensorProduct.dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] ψ) =
             ψ ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
           ext; simp [TensorProduct.dualDistrib_apply, mul_comm]
-        simp [h])
+        simp only [h_dual, LinearMap.comp_apply, LinearEquiv.coe_coe])
 
 /-- If C₁ is a proper cone and C₂ is a simplicial and generating cone,
 then their minimal and maximal tensor products are equal. -/
 theorem minTensorProduct_eq_max_of_simplicial_generating_right (C₁ : ProperCone ℝ F)
     (C₂ : PointedCone ℝ E) (h₂_simp : C₂.IsSimplicial)
-    (h₂_gen : (C₂ : ConvexCone ℝ E).IsGenerating) :
+    (h₂_gen : Submodule.span ℝ (C₂ : Set E) = ⊤) :
     minTensorProduct C₁.toPointedCone C₂ = maxTensorProduct C₁.toPointedCone C₂ := by
   rw [← minTensorProduct_comm, ← maxTensorProduct_comm,
     minTensorProduct_eq_max_of_simplicial_generating_left C₂ C₁ h₂_simp h₂_gen]
