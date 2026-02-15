@@ -53,8 +53,7 @@ theorem IsChain.count_not_cons :
   | b, x :: l, h => by
     obtain rfl : b = !x := Bool.eq_not_iff.2 (rel_of_isChain_cons_cons h)
     rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm,
-      IsChain.count_not_cons (isChain_cons_of_isChain_cons_cons h), length, add_assoc,
-      Nat.mod_two_add_succ_mod_two]
+      IsChain.count_not_cons h.of_cons, length, add_assoc, Nat.mod_two_add_succ_mod_two]
 
 @[deprecated (since := "2025-09-21")]
 alias Chain.count_not := IsChain.count_not_cons

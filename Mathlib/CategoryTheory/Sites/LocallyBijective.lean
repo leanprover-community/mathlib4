@@ -38,7 +38,6 @@ section
 
 variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
 private lemma isLocallyBijective_iff_isIso' :
@@ -157,7 +156,6 @@ instance {D : Type w} [Category.{w'} D] {FD : D → D → Type*} {CD : D → Typ
     J.WEqualsLocallyBijective D := by
   apply WEqualsLocallyBijective.mk'
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : J.WEqualsLocallyBijective (Type (max u v)) :=
   inferInstance
 

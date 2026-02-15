@@ -128,8 +128,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CStarRing.norm_one]
     · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
-  refine
-    ⟨fun x => g x • c, g.continuous.smul continuous_const, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
+  refine ⟨fun x ↦ g x • c, by fun_prop, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)
 
@@ -325,12 +324,12 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fa
     (hp : p ≠ ∞) [μ.WeaklyRegular] :
     Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := by
   intro f
-  refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
+  refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedEBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg, g_mem⟩ :
       ∃ g : α →ᵇ E, eLpNorm ((f : α → E) - (g : α → E)) p μ ≤ ε ∧ MemLp g p μ :=
     (Lp.memLp f).exists_boundedContinuous_eLpNorm_sub_le hp hε.ne'
   refine ⟨g_mem.toLp _, ⟨g, rfl⟩, ?_⟩
-  rwa [EMetric.mem_closedBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.edist_toLp_toLp]
+  rwa [Metric.mem_closedEBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.edist_toLp_toLp]
 
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
 theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]

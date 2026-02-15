@@ -9,10 +9,12 @@ public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Arcosh
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.NumberTheory.Niven
 
 /-!
 # Chebyshev polynomials over the reals: roots and extrema
@@ -22,10 +24,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
 * Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
-
-## TODO
-
-Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
+* Irrationality of zeroes of T other than zero: `irrational_of_isRoot_T_real`
 -/
 
 public section
@@ -301,5 +300,22 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
   · rintro ⟨k, hk, hx⟩
     rw [hx]
     exact isExtrOn_T_real hn hk
+
+theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
+    Irrational x := by
+  rw [← mem_roots (T_ne_zero ℝ n), roots_T_real] at hroot
+  obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
+  have hn : n ≠ 0 := by grind
+  suffices Irrational (cos ((Rat.divInt (2 * k + 1) (2 * n)) * π)) by
+    rw [← hk₂]; convert this using 2; push_cast; field_simp
+  apply irrational_cos_rat_mul_pi
+  contrapose! hnz
+  have : (Rat.divInt (2 * k + 1) (2 * n)).den = 2 * (n / n.gcd (2 * k + 1)) := calc
+    _ = 2 * n / (2 * n).gcd (2 * k + 1) := by rw [Rat.den_divInt]; norm_cast; simp [hn]
+    _ = _ := by rw [Nat.Coprime.gcd_mul_left_cancel n (by simp),
+      Nat.mul_div_assoc _ (Nat.gcd_dvd_left ..)]
+  have hn : 2 * k + 1 = n := Nat.eq_of_dvd_of_lt_two_mul (by simp) (Nat.gcd_eq_left_iff_dvd.mp <|
+    Nat.eq_of_dvd_of_div_eq_one (Nat.gcd_dvd_left ..) (by grind [Rat.den_pos])) (by grind)
+  rw_mod_cast [← hk₂, hn]; convert cos_pi_div_two using 2; push_cast; field_simp
 
 end Polynomial.Chebyshev

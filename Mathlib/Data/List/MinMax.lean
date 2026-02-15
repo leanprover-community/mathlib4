@@ -446,6 +446,14 @@ theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat
     l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
+theorem Perm.maximum_eq {l l' : List α} (h : l ~ l') :
+    l.maximum = l'.maximum := by
+  induction h with grind [maximum_cons]
+
+theorem Perm.minimum_eq {l l' : List α} (h : l ~ l') :
+    l.minimum = l'.minimum := by
+  induction h with grind [minimum_cons]
+
 #adaptation_note
 /-- 2025-08-14: We should stop using `max?_eq_some_iff_legacy` below, by connecting up Mathlib's
 order typeclasses with the new classes in Lean. -/

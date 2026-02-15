@@ -137,7 +137,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
   have D_cont : Continuous D := continuous_integral_apply_inv_mul hg h'g
   have D_pos : ∀ x, 0 < D x := by
     intro x
-    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := hg.comp (continuous_inv.mul continuous_const)
+    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := by fun_prop
     apply (integral_pos_iff_support_of_nonneg _ _).2
     · apply C.isOpen_support.measure_pos ν
       exact ⟨x * x₀⁻¹, by simpa using g_pos⟩
@@ -339,8 +339,8 @@ lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
   obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   apply NNReal.coe_injective
   calc
-    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) :=
-      by rw [haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hg]
+    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) := by
+      rw [haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hg]
     _ = c * ((∫ x, g x ∂μ') / (c • ∫ x, g x ∂μ)) := by simp
     _ = (∫ x, g x ∂μ') / (∫ x, g x ∂μ) := by
       rw [NNReal.smul_def, smul_eq_mul, ← mul_div_assoc]

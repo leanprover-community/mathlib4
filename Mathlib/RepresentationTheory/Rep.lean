@@ -481,7 +481,7 @@ open ModuleCat.MonoidalCategory
 @[simps! hom_hom inv_hom]
 def finsuppTensorLeft :
     A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
-  Action.mkIso (TensorProduct.finsuppLeft k A B α).toModuleIso
+  Action.mkIso (TensorProduct.finsuppLeft k _ A B α).toModuleIso
     fun _ => ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => by
       ext
       simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul,
@@ -492,7 +492,7 @@ def finsuppTensorLeft :
 @[simps! hom_hom inv_hom]
 def finsuppTensorRight :
     A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
-  Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
+  Action.mkIso (TensorProduct.finsuppRight k _ A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
       TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
       ext
       simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,

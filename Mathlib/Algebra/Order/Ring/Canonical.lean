@@ -89,7 +89,7 @@ section Sub
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)]
 
 namespace AddLECancellable
 
@@ -123,7 +123,7 @@ end NonUnitalNonAssocSemiring
 section NonAssocSemiring
 
 variable [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)]
 
 lemma mul_tsub_one [AddLeftReflectLE R] (a b : R) :
     a * (b - 1) = a * b - a := by rw [mul_tsub, mul_one]
@@ -135,7 +135,7 @@ end NonAssocSemiring
 section CommSemiring
 
 variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)] [AddLeftReflectLE R]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)] [AddLeftReflectLE R]
 
 /-- The `tsub` version of `mul_self_sub_mul_self`. Notably, this holds for `Nat` and `NNReal`. -/
 theorem mul_self_tsub_mul_self (a b : R) :
