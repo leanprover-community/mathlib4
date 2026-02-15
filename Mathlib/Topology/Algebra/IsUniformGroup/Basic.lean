@@ -339,8 +339,8 @@ def opUniformEquivRight
 
 /-- The equivalence between a topological group `G` and `Gᵐᵒᵖ` as a uniform equivalence when `G`
 is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/
-@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵐᵒᵖ` as a uniform
-equivalence when `G` is equipped with the left uniformity and `Gᵐᵒᵖ` with the right uniformity. -/]
+@[to_additive /-- The equivalence between an additive topological group `G` and `Gᵃᵒᵖ` as a uniform
+equivalence when `G` is equipped with the left uniformity and `Gᵃᵒᵖ` with the right uniformity. -/]
 def opUniformEquivLeft
     (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     @UniformEquiv G Gᵐᵒᵖ (IsTopologicalGroup.leftUniformSpace G)
