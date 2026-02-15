@@ -230,11 +230,6 @@ def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
 
 end MulEquiv
 
-namespace MonoidHom
-variable {M N₁ N₂ : Type*} [Monoid M] [CommMonoid N₁] [CommMonoid N₂]
-
-end MonoidHom
-
 namespace Equiv
 
 section InvolutiveInv
