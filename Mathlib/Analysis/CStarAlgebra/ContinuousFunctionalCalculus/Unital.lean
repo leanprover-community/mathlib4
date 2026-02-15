@@ -463,10 +463,9 @@ lemma cfc_const_zero : cfc (fun _ : R ↦ 0) a = 0 :=
 
 variable {R}
 
-@[to_fun]
 lemma cfc_mul (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
-    cfc (f * g) a = cfc f a * cfc g a := by
+    cfc (fun x ↦ f x * g x) a = cfc f a * cfc g a := by
   by_cases ha : p a
   · rw [cfc_apply f a, cfc_apply g a, ← map_mul, cfc_apply _ a]
     congr
