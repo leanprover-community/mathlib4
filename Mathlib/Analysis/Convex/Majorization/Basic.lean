@@ -37,7 +37,7 @@ and likewise for the increasing sum. This is what we take as the definition here
 
 ## References
 
-* Rajendra Bhatia, ``Matrix Analysis'', Chapter 2.
+* [Rajendra Bhatia, *Matrix Analysis*, Chapter 2][bhatia1997]
 -/
 
 @[expose] public section
