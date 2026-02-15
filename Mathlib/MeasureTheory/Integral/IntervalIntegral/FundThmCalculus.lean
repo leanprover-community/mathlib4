@@ -1194,10 +1194,8 @@ theorem integral_deriv_eq_sub_uIoo
   · simp only [uIcc_of_le, hab, uIoo_of_le] at hcont hderiv
     rw [integral_eq_sub_of_hasDerivAt_of_le hab hcont (fun x hx => (hderiv x hx).hasDerivAt) hint]
   · simp only [uIcc_of_ge, hab, uIoo_of_ge] at hcont hderiv
-    rw [integral_symm,
-      integral_eq_sub_of_hasDerivAt_of_le hab hcont
-        (fun x hx => (hderiv x hx).hasDerivAt) hint.symm,
-      neg_sub]
+    rw [integral_symm, integral_eq_sub_of_hasDerivAt_of_le hab hcont
+        (fun x hx => (hderiv x hx).hasDerivAt) hint.symm, neg_sub]
 
 /-- A variant of `intervalIntegral.integral_deriv_eq_sub`, the Fundamental theorem
 of calculus, involving integrating over the unit interval. -/
