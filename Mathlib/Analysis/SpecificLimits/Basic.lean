@@ -93,8 +93,7 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionSemiring 𝕜] [To
     rw [this]
     refine tendsto_const_nhds.div (tendsto_const_nhds.add ?_) (by simp)
     simp_rw [div_eq_mul_inv]
-    refine tendsto_const_nhds.mul ?_
-    exact tendsto_inv_atTop_nhds_zero_nat
+    exact tendsto_const_nhds.mul tendsto_inv_atTop_nhds_zero_nat
 
 theorem tendsto_add_mul_div_add_mul_atTop_nhds {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
     [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] [IsTopologicalSemiring 𝕜] [ContinuousInv₀ 𝕜]
