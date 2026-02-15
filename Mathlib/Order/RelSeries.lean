@@ -103,8 +103,7 @@ lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
   List.length_ofFn
 
 @[simp]
-lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
-  by simp [toList, singleton]
+lemma toList_singleton (x : α) : (singleton r x).toList = [x] := by simp [toList, singleton]
 
 lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
   simp_rw [List.isChain_iff_getElem, length_toList, add_lt_add_iff_right]

@@ -208,8 +208,7 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
     (K.truncGE e).Acyclic ↔ K.IsSupportedOutside e := by
   constructor
   · intro hK
-    exact ⟨fun i =>
-      by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
+    exact ⟨fun i ↦ by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
   · intro hK i'
     by_cases hi' : ∃ i, e.f i = i'
     · obtain ⟨i, rfl⟩ := hi'

@@ -391,8 +391,7 @@ is an isomorphism, then `α` is an isomorphism. The converse is given in `conjug
 -/
 theorem conjugateEquiv_of_iso (α : L₂ ⟶ L₁) [IsIso (conjugateEquiv adj₁ adj₂ α)] :
     IsIso α := by
-  suffices IsIso ((conjugateEquiv adj₁ adj₂).symm (conjugateEquiv adj₁ adj₂ α))
-    by simpa using this
+  suffices IsIso ((conjugateEquiv adj₁ adj₂).symm (conjugateEquiv adj₁ adj₂ α)) by simpa using this
   infer_instance
 
 /--

@@ -241,8 +241,8 @@ namespace Hom
 
 @[simp] lemma hom_hom_inv (f : G ⟶ H) : f⁻¹.hom.hom = f.hom.hom⁻¹ := rfl
 @[simp] lemma hom_hom_div (f g : G ⟶ H) : (f / g).hom.hom = f.hom.hom / g.hom.hom := rfl
-@[simp] lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n :=
-  by cases n <;> simp
+@[simp] lemma hom_hom_zpow (f : G ⟶ H) (n : ℤ) : (f ^ n).hom.hom = f.hom.hom ^ n := by
+  cases n <;> simp
 
 @[deprecated (since := "2025-12-18")] alias hom_inv := hom_hom_inv
 @[deprecated (since := "2025-12-18")] alias hom_div := hom_hom_div
