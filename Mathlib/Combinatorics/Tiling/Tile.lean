@@ -139,7 +139,7 @@ variable (ps) in
 /-- A `PlacedTile ps` is an image of a tile in the protoset `p` under an element of the group `G`.
 This is represented using a quotient so that images under group elements differing only by a
 symmetry of the tile are equal. -/
-@[ext] structure PlacedTile where
+@[ext, grind ext] structure PlacedTile where
   /-- The index of the tile in the protoset. -/
   index : ιₚ
   /-- The group elements under which this tile is an image. -/
@@ -165,13 +165,7 @@ lemma ext_iff_of_exists {pt₁ pt₂ : PlacedTile ps} :
     simp only [and_self, true_and]
     refine ⟨pt₁.groupElts.out, ?_⟩
     rw [Quotient.out_eq]
-  · rcases pt₁ with ⟨i₁, g₁⟩
-    rcases pt₂ with ⟨i₂, g₂⟩
-    dsimp only at h
-    subst h
-    ext
-    · rfl
-    · exact heq_of_eq (hg₁.symm.trans hg₂)
+  · grind
 
 /-- An alternative extensionality principle for `PlacedTile` that avoids `HEq`, using equality of
 quotient preimages. -/
