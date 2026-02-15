@@ -224,7 +224,7 @@ variable [CommMagma G] {a : G}
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 @[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+instance CommMagma.to_isCommutative : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
 
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by

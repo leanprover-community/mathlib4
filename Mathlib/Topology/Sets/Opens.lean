@@ -72,6 +72,8 @@ instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
+instance : PartialOrder (Opens α) := .ofSetLike (Opens α) α
+
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
 
@@ -252,6 +254,13 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
     (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le
 
 instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
+
+/-- The coercion from open sets to sets as a `FrameHom`. -/
+@[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
+  toFun := (·)
+  map_inf' _ _ := rfl
+  map_top' := rfl
+  map_sSup' _ := by simp
 
 theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
   U.isOpen.isOpenEmbedding_subtypeVal
@@ -441,6 +450,8 @@ instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective' := SetLike.coe_injective.comp toOpens_injective
 
+instance : PartialOrder (OpenNhdsOf x) := .ofSetLike (OpenNhdsOf x) α
+
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩
 
@@ -462,7 +473,7 @@ instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
 instance : DistribLattice (OpenNhdsOf x) :=
-  toOpens_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  toOpens_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 theorem basis_nhds : (𝓝 x).HasBasis (fun _ : OpenNhdsOf x => True) (↑) :=
   (nhds_basis_opens x).to_hasBasis (fun U hU => ⟨⟨⟨U, hU.2⟩, hU.1⟩, trivial, Subset.rfl⟩) fun U _ =>

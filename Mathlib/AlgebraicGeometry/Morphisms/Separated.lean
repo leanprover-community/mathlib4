@@ -149,7 +149,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   rw [← top_le_iff]
   rintro x -
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
-    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.mem_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : pullback.fst f f x = pullback.snd f f x :=
     hf (by rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition])

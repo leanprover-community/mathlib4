@@ -68,7 +68,7 @@ theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a �
   simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
-theorem logDeriv_prod {ι : Type*} (s : Finset ι) (f : ι → 𝕜 → 𝕜') (x : 𝕜) (hf : ∀ i ∈ s, f i x ≠ 0)
+theorem logDeriv_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'} {x : 𝕜} (hf : ∀ i ∈ s, f i x ≠ 0)
     (hd : ∀ i ∈ s, DifferentiableAt 𝕜 (f i) x) :
     logDeriv (∏ i ∈ s, f i ·) x = ∑ i ∈ s, logDeriv (f i) x := by
   induction s using Finset.cons_induction with

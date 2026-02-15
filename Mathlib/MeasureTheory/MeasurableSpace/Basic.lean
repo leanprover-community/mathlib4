@@ -293,10 +293,8 @@ protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf
 
 @[fun_prop]
 protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : MeasurableSet s)
-    (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) := by
-  intro t ht
-  rw [piecewise_preimage]
-  exact hs.ite (hf ht) (hg ht)
+    (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) :=
+  fun t ht => by simpa [piecewise_preimage] using hs.ite (hf ht) (hg ht)
 
 /-- This is slightly different from `Measurable.piecewise`. It can be used to show
 `Measurable (ite (x=0) 0 1)` by

@@ -31,7 +31,7 @@ topology.
 The main definitions concern the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E`.
 
 * `StrongDual.toWeakDual` and `WeakDual.toStrongDual`: Linear equivalences from `StrongDual 𝕜 E` to
-`WeakDual 𝕜 E` and in the converse direction.
+  `WeakDual 𝕜 E` and in the converse direction.
 * `NormedSpace.Dual.continuousLinearMapToWeakDual`: A continuous linear mapping from
   `StrongDual 𝕜 E` to `WeakDual 𝕜 E` (same as `StrongDual.toWeakDual` but different bundled data).
 

@@ -127,8 +127,6 @@ theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit 
 theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (testBit n k)) :=
   testBit_bitwise rfl
 
-attribute [simp] testBit_xor
-
 end
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption

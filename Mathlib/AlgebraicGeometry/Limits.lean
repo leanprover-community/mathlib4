@@ -11,8 +11,9 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 public import Mathlib.Tactic.SuppressCompilation
-public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects -- shake: keep
+-- This import adds an instance which, despite failing to trigger,
+-- is necessary for some typeclass syntheses in this file to succeed.
 
 /-!
 # (Co)Limits of Schemes
@@ -424,7 +425,7 @@ lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
   apply le_antisymm
   · rintro x ⟨y, hxy⟩
     obtain ⟨(x | x), rfl⟩ := (coprodMk _ _).surjective x
-    · simp
+    · rw [← SetLike.mem_coe]; simp -- TODO : add `Scheme.Hom.mem_opensRange`
     · simp only [coprodMk_inr, ← Scheme.Hom.comp_apply, coprod.inr_map] at hxy
       cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).1 ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
   · rintro _ ⟨x, rfl⟩
