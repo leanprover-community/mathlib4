@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.Subsheaf
 public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 public import Mathlib.CategoryTheory.Sites.LocallyInjective
+public import Mathlib.CategoryTheory.ShrinkYoneda
 /-!
 
 # Locally surjective morphisms
@@ -31,7 +32,7 @@ public import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 universe v u w v' u' w'
 
-open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.Functor
+open Opposite CategoryTheory CategoryTheory.GrothendieckTopology CategoryTheory.Functor Limits
 
 namespace CategoryTheory
 
@@ -51,6 +52,13 @@ def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (o
     rintro V W i ⟨t, ht⟩ j
     refine ⟨F.map j.op t, ?_⟩
     rw [op_comp, G.map_comp, ConcreteCategory.comp_apply, ← ht, NatTrans.naturality_apply f]
+
+lemma pullback_imageSieve
+    {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (op U)))
+    {V : C} (g : V ⟶ U) :
+    (imageSieve f s).pullback g = imageSieve f (G.map g.op s) := by
+  ext W g
+  simp [imageSieve]
 
 theorem imageSieve_eq_sieveOfSection {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C}
     (s : ToType (G.obj (op U))) :
@@ -394,5 +402,43 @@ lemma isAmalgamation_map_localPreimage :
   fun _ f hf => (Presheaf.app_localPreimage φ r' f hf).symm
 
 end Presieve.FamilyOfElements
+
+namespace GrothendieckTopology
+
+variable [LocallySmall.{w} C]
+
+lemma ofArrows_mem_iff_isLocallySurjective
+    {S : C} {ι : Type*} [Small.{w} ι] {X : ι → C}
+    (f : ∀ i, X i ⟶ S) :
+    Sieve.ofArrows _ f ∈ J S ↔
+      Presheaf.IsLocallySurjective J (Sigma.desc (fun i ↦ shrinkYoneda.{w}.map (f i))) := by
+  refine ⟨fun hf ↦ ⟨fun {U u} ↦ ?_⟩, fun _ ↦ ?_⟩
+  · obtain ⟨u : U ⟶ S, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective u
+    refine J.superset_covering (fun V g ↦ ?_) (J.pullback_stable u hf)
+    rintro ⟨_, v, _, ⟨i⟩, fac⟩
+    refine ⟨(Sigma.ι (fun i ↦ shrinkYoneda.{w}.obj (X i)) i).app _
+      (shrinkYonedaObjObjEquiv.symm v),
+      (congr_fun (NatTrans.congr_app
+      (Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i) _) _).trans ?_⟩
+    rw [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm, fac,
+      shrinkYonedaObjObjEquiv_symm_comp]
+    rfl
+  · refine J.superset_covering ?_
+      (Presheaf.imageSieve_mem J (Sigma.desc (fun i ↦ shrinkYoneda.{w}.map (f i)))
+        (shrinkYonedaObjObjEquiv.symm (𝟙 S)))
+    rintro Z g ⟨a, ha⟩
+    obtain ⟨⟨i⟩, a, rfl⟩ := Types.jointly_surjective_of_isColimit
+      (isColimitOfPreserves ((evaluation _ _).obj (op Z))
+      (coproductIsCoproduct (fun i ↦ shrinkYoneda.{w}.obj (X i)))) a
+    obtain ⟨a, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective a
+    refine ⟨_, a, _, ⟨i⟩, shrinkYonedaObjObjEquiv.symm.injective ?_⟩
+    convert ha
+    · rw [← shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
+      exact congr_fun (NatTrans.congr_app
+        (Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i) (op Z)).symm
+        (shrinkYonedaObjObjEquiv.symm a)
+    · simpa using (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op (𝟙 _)).symm
+
+end GrothendieckTopology
 
 end CategoryTheory

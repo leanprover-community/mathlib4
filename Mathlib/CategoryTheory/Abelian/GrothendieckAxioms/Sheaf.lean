@@ -69,11 +69,12 @@ instance ab5ofSize [HasFiniteLimits A] [HasSheafify J A]
     AB5OfSize.{v₂, u₂} (Sheaf J A) where
   ofShape K _ _ := by infer_instance
 
-instance {C : Type v} [SmallCategory.{v} C] (J : GrothendieckTopology C)
+lemma isGrothendieckAbelian_of_small
+    {C : Type v} [SmallCategory.{v} C] (J : GrothendieckTopology C)
     (A : Type u₁) [Category.{v} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
     [HasSheafify J A] : IsGrothendieckAbelian.{v} (Sheaf J A) where
 
-attribute [local instance] hasSheafifyEssentiallySmallSite in
+attribute [local instance] hasSheafifyEssentiallySmallSite isGrothendieckAbelian_of_small in
 lemma isGrothendieckAbelian_of_essentiallySmall
     {C : Type u₂} [Category.{v} C] [EssentiallySmall.{v} C]
     (J : GrothendieckTopology C)

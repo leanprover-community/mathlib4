@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 
 /-!
 # Essential image of a functor
@@ -194,5 +194,14 @@ lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
     exact ⟨⟨X, hX⟩, ⟨e⟩⟩
 
 end Functor
+
+lemma ObjectProperty.map_top (F : C ⥤ D) :
+    (⊤ : ObjectProperty C).map F = F.essImage := by
+  ext Y
+  refine ⟨?_, ?_⟩
+  · rintro ⟨X, _, ⟨e⟩⟩
+    exact ⟨X, ⟨e⟩⟩
+  · rintro ⟨X, ⟨e⟩⟩
+    exact ⟨X, by simp, ⟨e⟩⟩
 
 end CategoryTheory

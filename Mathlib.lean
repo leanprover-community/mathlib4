@@ -1363,8 +1363,10 @@ public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.AlgebraicGeometry.ResidueField
 public import Mathlib.AlgebraicGeometry.Restrict
 public import Mathlib.AlgebraicGeometry.Scheme
+public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.Etale
+public import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
@@ -3153,6 +3155,7 @@ public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Point.Category
+public import Mathlib.CategoryTheory.Sites.Point.Conservative
 public import Mathlib.CategoryTheory.Sites.Point.Over
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
@@ -3242,6 +3245,7 @@ public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.Yoneda
 public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.CategoryTheory.Types.Epimorphisms
 public import Mathlib.CategoryTheory.Types.Monomorphisms
 public import Mathlib.CategoryTheory.Types.Set
 public import Mathlib.CategoryTheory.UnivLE
@@ -7555,6 +7559,7 @@ public import Mathlib.Topology.Sheaves.LocallySurjective
 public import Mathlib.Topology.Sheaves.MayerVietoris
 public import Mathlib.Topology.Sheaves.Over
 public import Mathlib.Topology.Sheaves.PUnit
+public import Mathlib.Topology.Sheaves.Points
 public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.PresheafOfFunctions
 public import Mathlib.Topology.Sheaves.Sheaf

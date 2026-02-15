@@ -56,6 +56,92 @@ open Limits Opposite
 
 variable {C : Type u} [Category.{v} C]
 
+-- to be moved
+namespace Functor.Elements
+
+variable [LocallySmall.{w} C] (F : C ⥤ Type w)
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
+this is the colimit cocone which identifies `F.obj X` to the colimit of
+`(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
+@[simps]
+noncomputable def coconeπOpCompShrinkYoneda (X : C) :
+    Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X) where
+  pt := F.obj X
+  ι.app u t := F.map (shrinkYonedaObjObjEquiv t) u.unop.snd
+  ι.naturality u₁ u₂ g := by
+    ext f
+    obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+    dsimp at f ⊢
+    rw [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm]
+    simp
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
+`F.obj X` identifies to the colimit of
+`(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
+noncomputable def isColimitCoconeπOpCompShrinkYoneda (X : C) :
+    IsColimit (coconeπOpCompShrinkYoneda F X) := by
+  refine Nonempty.some ((Types.isColimit_iff_coconeTypesIsColimit _).2
+    ⟨?_, fun x ↦ ?_⟩)
+  · let G := (CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X
+    let c := G.coconeTypesEquiv.symm (coconeπOpCompShrinkYoneda F X)
+    have (u : G.ColimitType) (x : F.obj X) (h : G.descColimitType c u = x) :
+        G.ιColimitType (op (elementsMk _ _ x))
+          (shrinkYonedaObjObjEquiv.symm (𝟙 X)) = u := by
+      obtain ⟨⟨u⟩, v, rfl⟩ := Functor.ιColimitType_jointly_surjective _ u
+      obtain ⟨v, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective v
+      dsimp [c] at v h
+      simp only [Equiv.apply_symm_apply] at h
+      rw [← G.ιColimitType_map (show u ⟶ F.elementsMk _ x from ⟨v, h⟩).op]
+      dsimp [G]
+      rw [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm]
+      simp
+    intro u₁ u₂ hu
+    generalize hx₁ : G.descColimitType c u₁ = x
+    have hx₂ : G.descColimitType c u₂ = x := by rw [← hx₁]; exact hu.symm
+    rw [← this _ _ hx₁, ← this _ _ hx₂]
+  · exact ⟨Functor.ιColimitType _ (op (elementsMk _ _ x))
+      (shrinkYonedaObjObjEquiv.symm (𝟙 X)), by simp⟩
+
+@[reassoc (attr := simp)]
+lemma shrinkYoneda_map_app_coconeπOpCompShrinkYoneda_ι_app
+    {X₁ X₂ : C} (f : X₁ ⟶ X₂) (u : F.Elements) :
+    (shrinkYoneda.{w}.map f).app (op u.fst) ≫
+      (coconeπOpCompShrinkYoneda F X₂).ι.app (op u) =
+      (coconeπOpCompShrinkYoneda F X₁).ι.app (op u) ≫ F.map f := by
+  ext g
+  obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
+  dsimp
+  simp only [Equiv.apply_symm_apply]
+  rw [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
+  simp
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the composition
+`shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
+noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
+    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] :
+    shrinkYoneda.{w} ⋙
+      (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim ≅ F :=
+  NatIso.ofComponents (fun X ↦
+    IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+      (isColimitCoconeπOpCompShrinkYoneda F X)) (fun {X₁ X₂} f ↦ colimit.hom_ext (by
+        intro u
+        simp [shrinkYoneda_map_app_coconeπOpCompShrinkYoneda_ι_app F f u.unop]))
+
+lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
+    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] (u : F.Elements) :
+      (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app _ u.snd =
+      (colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u)
+        (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by
+  have :
+      (coconeπOpCompShrinkYoneda F u.fst).ι.app (op u) ≫
+        (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app u.fst =
+      colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u) :=
+    IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
+  simpa using congr_fun this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+
+end Functor.Elements
+
 namespace GrothendieckTopology
 
 variable (J : GrothendieckTopology C)
@@ -128,6 +214,30 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
+
+/-- The isomorphism `shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber`. -/
+noncomputable def shrinkYonedaCompPresheafFiberIso [LocallySmall.{w} C] :
+    shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber :=
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso _
+
+lemma shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber
+    [LocallySmall.{w} C] {X : C} (x : Φ.fiber.obj X) :
+    Φ.shrinkYonedaCompPresheafFiberIso.inv.app X x =
+      Φ.toPresheafFiber X x (shrinkYoneda.{w}.obj X)
+        (shrinkYonedaObjObjEquiv.symm (𝟙 X)) :=
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
+    _ (Functor.elementsMk (Φ.fiber) _ x)
+
+lemma presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app
+    [LocallySmall.{w} C] {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) :
+      Φ.presheafFiber.map (shrinkYoneda.{w}.map f)
+        (Φ.shrinkYonedaCompPresheafFiberIso.inv.app X x) =
+      Φ.toPresheafFiber X x (shrinkYoneda.{w}.obj Y)
+        (shrinkYonedaObjObjEquiv.symm f) := by
+  rw [shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber]
+  refine (Φ.toPresheafFiber_naturality_apply (shrinkYoneda.{w}.map f) _ x
+    (shrinkYonedaObjObjEquiv.symm (𝟙 X))).trans (congr_arg _ ?_)
+  simpa using shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w} (𝟙 _) f
 
 section
 
@@ -281,6 +391,11 @@ instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIso
             dsimp
             rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
             dsimp))⟩
+
+instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
+    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
+    PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
+  PreservesColimitsOfSize.preservesFiniteColimits _
 
 variable (F : A ⥤ B) [LocallySmall.{w} C] [PreservesFilteredColimitsOfSize.{w, w} F]
 

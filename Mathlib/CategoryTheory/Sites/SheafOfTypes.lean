@@ -76,6 +76,7 @@ check the sheaf condition at presieves in the pretopology.
 def IsSheaf (P : Cᵒᵖ ⥤ Type w) : Prop :=
   ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSheafFor P (S : Presieve X)
 
+variable {J} in
 theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Presieve X)
     (hr : generate R ∈ J X) : IsSheafFor P R :=
   (isSheafFor_iff_generate R).2 <| hp _ hr

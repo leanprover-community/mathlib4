@@ -141,8 +141,14 @@ protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale �
 
 variable (X : Scheme.{u})
 
+instance (Y : X.Etale) : Etale Y.hom := Y.prop
+
 instance : Category X.Etale :=
   inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
+
+instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
+  have : Etale (f.left ≫ Y.hom) := by rw [CategoryTheory.Over.w]; infer_instance
+  exact Etale.of_comp f.left Y.hom
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
@@ -157,9 +163,35 @@ instance : (Etale.forget X).Full :=
 instance : (Etale.forget X).Faithful :=
   inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
 
-instance : HasPullbacks X.Etale := by
-  unfold Scheme.Etale
-  infer_instance
+variable {X} in
+abbrev Etale.mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] : X.Etale :=
+  MorphismProperty.Over.mk _ f inferInstance
+
+variable {X} in
+@[simp]
+lemma Etale.forget_mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] :
+    (Etale.forget X).obj (.mk f) = Over.mk f := rfl
+
+@[simp]
+lemma Etale.forget_obj_left (Y : X.Etale) :
+    ((Etale.forget X).obj Y).left = Y.left := rfl
+
+@[simp]
+lemma Etale.forget_obj_hom (Y : X.Etale) :
+    ((Etale.forget X).obj Y).hom = Y.hom := rfl
+
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def Etale.rec {motive : X.Etale → Sort*}
+    (mk : ∀ (Y : Scheme.{u}) (f : Y ⟶ X) (_ : Etale f), motive (Etale.mk f))
+    (T : X.Etale) :
+    motive T :=
+  mk _ _ T.prop
+
+instance : HasFiniteLimits X.Etale :=
+  inferInstanceAs (HasFiniteLimits (MorphismProperty.Over _ ⊤ X))
+
+instance : PreservesFiniteLimits (Etale.forget X) :=
+  inferInstanceAs (PreservesFiniteLimits (MorphismProperty.Over.forget _ ⊤ X))
 
 end Scheme
 

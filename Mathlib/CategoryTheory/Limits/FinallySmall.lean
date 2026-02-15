@@ -202,6 +202,17 @@ theorem initiallySmall_of_small_weakly_initial_set [IsCofilteredOrEmpty J] (s : 
   obtain ⟨j, hj₁, hj₂⟩ := hs i
   exact ⟨⟨j, hj₁⟩, hj₂⟩
 
+variable {J} in
+theorem initiallySmall_of_essentiallySmall_weakly_initial_objectProperty
+    [IsCofilteredOrEmpty J] (P : ObjectProperty J) [ObjectProperty.EssentiallySmall.{v} P]
+    (hP : ∀ i, ∃ j, P j ∧ Nonempty (j ⟶ i)) : InitiallySmall.{v} J := by
+  obtain ⟨Q, H, hQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le'.{v} P
+  have : Small.{v} (show Set _ from Q) := by assumption
+  refine initiallySmall_of_small_weakly_initial_set Q (fun i ↦ ?_)
+  obtain ⟨j, hj, ⟨f⟩⟩ := hP i
+  obtain ⟨k, hk, ⟨e⟩⟩ := hQ _ hj
+  exact ⟨k, hk, ⟨e.inv ≫ f⟩⟩
+
 theorem initiallySmall_iff_exists_small_weakly_initial_set [IsCofilteredOrEmpty J] :
     InitiallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
   refine ⟨fun _ => InitiallySmall.exists_small_weakly_initial_set _, fun h => ?_⟩

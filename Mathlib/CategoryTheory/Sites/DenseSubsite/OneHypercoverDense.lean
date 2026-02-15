@@ -13,7 +13,15 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 Let `F : C₀ ⥤ C` be a functor equipped with Grothendieck topologies `J₀` and `J`.
 Assume that `F` is a dense subsite. We introduce a typeclass
 `IsOneHypercoverDense.{w} F J₀ J` which roughly says that objects in `C`
-admit a `1`-hypercover consisting of objects in `C₀`.
+admits a `1`-hypercover consisting of objects in `C₀`.
+
+Under the assumption that the coefficient category `A` has limits of size `w`, we
+show that the restriction functor
+`sheafPushforwardContinuous F A J₀ J : Sheaf J A ⥤ Sheaf J₀ A` is an equivalence
+of categories (see `Functor.isEquivalence_of_isOneHypercoverDense`), which allows
+to transport `HasWeakSheafify` and `HasSheafify` assumptions for the site `(C₀, J₀)`
+to the site `(C, J)`, see `Functor.hasWeakSheafify_of_isOneHypercoverDense`
+and `Functor.hasSheafify_of_isOneHypercoverDense`.
 
 -/
 
@@ -160,6 +168,40 @@ lemma isDenseSubsite_of_isOneHypercoverDense [F.IsLocallyFull J] [F.IsLocallyFai
 end
 
 variable [IsDenseSubsite J₀ J F]
+
+variable {F J₀ J} in
+/-- Constructor for `IsOneHypercoverDense.{w} F J₀ J` for a dense subsite
+when the functor `F : C₀ ⥤ C` is fully faithful, `C` has pullbacks, and
+any object in `C` admits a `w`-small covering family consisting of objects in `C₀`. -/
+lemma IsOneHypercoverDense.of_hasPullbacks [HasPullbacks C] [F.Full] [F.Faithful]
+    (hF : ∀ (S : C), ∃ (ι : Type w) (U : ι → C₀) (f : ∀ i, F.obj (U i) ⟶ S),
+      Sieve.ofArrows _ f ∈ J S) :
+    IsOneHypercoverDense.{w} F J₀ J where
+  nonempty_oneHypercoverDenseData S := by
+    choose ι U f hf using hF
+    exact ⟨{
+      I₀ := ι S
+      X := U S
+      f := f S
+      I₁ i j := ι (pullback (f _ i) (f _ j))
+      Y i j := U (pullback (f _ i) (f _ j))
+      p₁ i j k := F.preimage (f _ k ≫ pullback.fst _ _)
+      p₂ i j k := F.preimage (f _ k ≫ pullback.snd _ _)
+      w i j k := by simp [pullback.condition]
+      mem₀ := hf S
+      mem₁₀ i j W₀ p₁ p₂ hp := by
+        have := IsDenseSubsite.isCoverDense J₀ J F
+        rw [← functorPushforward_mem_iff J₀ J F]
+        refine J.superset_covering ?_
+          (IsCoverDense.functorPullback_pushforward_covering
+            ⟨_, J.pullback_stable (pullback.lift _ _ hp) (hf (pullback (f _ i) (f _ j)))⟩)
+        rintro T _ ⟨Z, q, r, ⟨_, s, _, ⟨k⟩, fac⟩, rfl⟩
+        have fac₁ := fac =≫ pullback.fst _ _
+        have fac₂ := fac =≫ pullback.snd _ _
+        simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd] at fac₁ fac₂
+        exact ⟨Z, q, r, ⟨k, F.preimage s, F.map_injective (by simp [fac₁]),
+          F.map_injective (by simp [fac₂])⟩, rfl⟩
+    }⟩
 
 namespace OneHypercoverDenseData
 
@@ -392,8 +434,8 @@ variable (G₀ : Sheaf J₀ A)
 /-- Given a dense subsite `F : C₀ ⥤ C` and a family
 `data : ∀ X, OneHypercoverDenseData F J₀ J X` and a sheaf `G₀` on `J₀`,
 this is the value on an object `X : C` of the "extension" of `G₀`
-as a sheaf on `J` (see `OneHypercoverDenseData.essSurj.presheaf` for the
-construction of this extension as a presheaf): it is defined as
+as a sheaf on `J` (see `OneHypercoverDenseData.essSurj.presheaf` and
+`OneHypercoverDenseData.essSurj.isSheaf`): it is defined as
 a multiequalizer using `data X`. -/
 noncomputable def presheafObj (X : C) : A :=
   multiequalizer ((data X).multicospanIndex G₀.val)
@@ -582,7 +624,8 @@ lemma presheafMap_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 /-- Let `F : C₀ ⥤ C` be a dense subsite and `data : ∀ X, F.OneHypercoverDenseData J₀ J X`
 be a family. Let `G₀` be a sheaf on `C₀`. This is a presheaf on `C` which
-extends `G₀`, and we shall also show that it is a sheaf (TODO). -/
+extends `G₀` (see `OneHypercoverDenseData.essSurj.compPresheafIso`) and it is a sheaf
+(see `OneHypercoverDenseData.essSurj.isSheaf`). -/
 @[simps]
 noncomputable def presheaf : Cᵒᵖ ⥤ A where
   obj X := presheafObj data G₀ X.unop
@@ -590,11 +633,287 @@ noncomputable def presheaf : Cᵒᵖ ⥤ A where
   map_id X := presheafMap_id data G₀ X.unop
   map_comp f g := presheafMap_comp data G₀ g.unop f.unop
 
+namespace presheafObjObjIso
+
+variable (X₀ : C₀)
+
+/-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheafObjObjIso`. -/
+noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
+  G₀.2.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨W₀, a, ha⟩ ↦
+    presheafObjπ data G₀ _ (Sieve.ofArrows.i ha) ≫
+      IsDenseSubsite.mapPreimage J F G₀ (Sieve.ofArrows.h ha)) (by
+        rintro ⟨W₀, a, ha⟩ ⟨T₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
+        have ha' := Sieve.ofArrows.fac ha
+        have hb' := Sieve.ofArrows.fac hb
+        dsimp at ha hb ha' hb' p₁ p₂ fac ⊢
+        rw [assoc, assoc, IsDenseSubsite.mapPreimage_comp_map,
+          IsDenseSubsite.mapPreimage_comp_map,
+          ← restriction_eq_of_fac data G₀ (F.map (p₁ ≫ a))
+            (F.map p₁ ≫ Sieve.ofArrows.h ha) (by rw [assoc, ha', map_comp]),
+          restriction_eq_of_fac data G₀ (F.map (p₁ ≫ a))
+            (F.map p₂ ≫ Sieve.ofArrows.h hb) (by rw [assoc, hb', fac, map_comp])])
+
+variable {X₀}
+
+@[reassoc]
+lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
+    (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
+    (fac : p ≫ (data (F.obj X₀)).f i = F.map a) :
+    hom data G₀ X₀ ≫ G₀.val.map a.op =
+      presheafObjπ data G₀ _ i ≫ IsDenseSubsite.mapPreimage J F G₀ p := by
+  have ha : Sieve.functorPullback F (data (F.obj X₀)).toPreOneHypercover.sieve₀ a :=
+    ⟨_, p, _, ⟨i⟩, fac⟩
+  exact (G₀.2.amalgamate_map _ _ _ ⟨W₀, a, ha⟩).trans
+    (presheafObj_mapPreimage_condition _ _ _ _ _ _ _
+      ((Sieve.ofArrows.fac ha).trans fac.symm))
+
+@[reassoc]
+lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (F.obj X₀)).I₀}
+    (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
+    (fac : p ≫ (data (F.obj X₀)).f i = a) :
+    hom data G₀ X₀ ≫ IsDenseSubsite.mapPreimage J F G₀ a =
+      presheafObjπ data G₀ _ i ≫ IsDenseSubsite.mapPreimage J F G₀ p := by
+  refine Presheaf.IsSheaf.hom_ext G₀.cond
+      ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F a⟩ _ _ ?_
+  rintro ⟨T₀, b, ⟨c, hc⟩⟩
+  dsimp
+  simp only [assoc, IsDenseSubsite.mapPreimage_comp_map, ← hc,
+    IsDenseSubsite.mapPreimage_map]
+  exact hom_map data G₀ c _ (by simp only [assoc, fac, hc])
+
+variable (X₀)
+
+/-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheafObjObjIso`. -/
+noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
+  Multiequalizer.lift _ _
+    (fun i ↦ IsDenseSubsite.mapPreimage J F G₀ ((data (F.obj X₀)).f i)) (by
+      rintro ⟨⟨i, i'⟩, j⟩
+      dsimp
+      rw [IsDenseSubsite.mapPreimage_comp_map, IsDenseSubsite.mapPreimage_comp_map,
+        (data (F.obj X₀)).w j])
+
+@[reassoc (attr := simp)]
+lemma inv_π (i : (data (F.obj X₀)).I₀) :
+    inv data G₀ X₀ ≫ presheafObjπ data G₀ (F.obj X₀) i =
+      IsDenseSubsite.mapPreimage J F G₀ ((data (F.obj X₀)).f i) :=
+  Multiequalizer.lift_ι _ _ _ _ _
+
+@[reassoc (attr := simp)]
+lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
+    inv data G₀ X₀ ≫ restriction data G₀ f =
+      IsDenseSubsite.mapPreimage J F G₀ f := by
+  refine Presheaf.IsSheaf.hom_ext G₀.cond
+    ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F f⟩ _ _ ?_
+  rintro ⟨W₀, a, b, fac₁⟩
+  refine Presheaf.IsSheaf.hom_ext G₀.cond
+    ⟨_, J₀.pullback_stable b (cover_lift F J₀ _ (data (F.obj X₀)).mem₀)⟩ _ _ ?_
+  rintro ⟨T₀, c, _, d, _, ⟨i⟩, fac₂⟩
+  dsimp at i d fac₂ ⊢
+  simp only [assoc, ← Functor.map_comp, ← op_comp]
+  rw [restriction_map data G₀ f (c ≫ a) d
+    (by rw [fac₂, map_comp, map_comp_assoc, fac₁]), inv_π_assoc,
+    ← IsDenseSubsite.mapPreimage_comp, fac₂,
+    IsDenseSubsite.mapPreimage_comp_map J F G₀, map_comp,
+      map_comp_assoc, fac₁]
+
+end presheafObjObjIso
+
+/-- The presheaf `presheaf data G₀` extends `G₀`. -/
+noncomputable def presheafObjObjIso (X₀ : C₀) :
+    (presheaf data G₀).obj (op (F.obj X₀)) ≅ G₀.val.obj (op X₀) where
+  hom := presheafObjObjIso.hom data G₀ X₀
+  inv := presheafObjObjIso.inv data G₀ X₀
+  hom_inv_id := presheafObj_hom_ext (fun i ↦ by
+    rw [assoc, presheafObjObjIso.inv_π, id_comp,
+      presheafObjObjIso.hom_mapPreimage data G₀ _ (𝟙 _) (fac := by simp),
+      IsDenseSubsite.mapPreimage_id, comp_id])
+  inv_hom_id := by
+    refine Presheaf.IsSheaf.hom_ext G₀.cond
+      ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ _ _ ?_
+    rintro ⟨Y₀, a, X, b, c, ⟨i⟩, fac⟩
+    dsimp at i b fac ⊢
+    rw [assoc, presheafObjObjIso.hom_map data G₀ _ b fac,
+      presheafObjObjIso.inv_π_assoc, id_comp,
+      ← IsDenseSubsite.mapPreimage_comp, fac,
+      IsDenseSubsite.mapPreimage_map]
+
+@[reassoc (attr := simp)]
+lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
+    presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =
+      presheafObjπ data G₀ X i := by
+  rw [← cancel_mono (presheafObjObjIso data G₀ ((data X).X i)).inv, assoc, Iso.hom_inv_id,
+    comp_id]
+  apply presheafObj_hom_ext
+  intro j
+  rw [assoc, presheafMap_π]
+  dsimp [presheafObjObjIso]
+  rw [presheafObjObjIso.inv_π data G₀]
+  apply restriction_eq_of_fac
+  simp
+
+@[reassoc]
+lemma presheafObjObjIso_inv_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
+    G₀.val.map f.op ≫ (presheafObjObjIso data G₀ X₀).inv =
+      (presheafObjObjIso data G₀ Y₀).inv ≫ presheafMap data G₀ (F.map f) := by
+  apply presheafObj_hom_ext
+  intro j
+  simp [presheafObjObjIso, IsDenseSubsite.mapPreimage_comp]
+
+@[reassoc]
+lemma presheafObjObjIso_hom_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
+    presheafMap data G₀ (F.map f) ≫ (presheafObjObjIso data G₀ X₀).hom =
+      (presheafObjObjIso data G₀ Y₀).hom ≫ G₀.val.map f.op := by
+  rw [← cancel_mono (presheafObjObjIso data G₀ X₀).inv, assoc, assoc,
+    Iso.hom_inv_id, comp_id, presheafObjObjIso_inv_naturality,
+    Iso.hom_inv_id_assoc]
+
+/-- The presheaf `presheaf data G₀` extends `G₀`. -/
+noncomputable def compPresheafIso : F.op ⋙ presheaf data G₀ ≅ G₀.val :=
+  NatIso.ofComponents (fun X₀ ↦ presheafObjObjIso data G₀ X₀.unop)
+    (fun f ↦ presheafObjObjIso_hom_naturality data G₀ f.unop)
+
+lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := by
+  rw [isSheaf_iff data]
+  constructor
+  · exact (Presheaf.isSheaf_of_iso_iff (compPresheafIso data G₀)).2 G₀.cond
+  · intro X
+    refine ⟨(IsLimit.postcomposeHomEquiv
+      (WalkingMulticospan.functorExt (fun _ ↦ presheafObjObjIso _ _ _)
+          (fun _ ↦ presheafObjObjIso _ _ _) (fun j ↦ ?_) (fun j ↦ ?_)) _).1
+      (IsLimit.ofIsoLimit (presheafObjIsLimit data G₀ X)
+        (Multifork.ext (Iso.refl _) (fun i ↦ ?_)))⟩
+    · apply presheafObjObjIso_hom_naturality
+    · apply presheafObjObjIso_hom_naturality
+    · simp [Multifork.ι, PreOneHypercover.multifork]
+
+/-- Let `F : C₀ ⥤ C` be a dense subsite and `data : ∀ X, F.OneHypercoverDenseData J₀ J X`
+be a family of structures. Let `G₀` be a sheaf on `C₀`. This is a shead on `C` which
+extends `G₀` (see `OneHypercoverDenseData.essSurj.isSheafIso`). -/
+noncomputable def sheaf : Sheaf J A := ⟨presheaf data G₀, isSheaf data G₀⟩
+
+/-- The sheaf `sheaf data G₀` extends `G₀`. -/
+noncomputable def sheafIso : (sheafPushforwardContinuous F A J₀ J).obj (sheaf data G₀) ≅ G₀ :=
+  (fullyFaithfulSheafToPresheaf J₀ A).preimageIso (compPresheafIso data G₀)
+
 end essSurj
+
+variable (A)
+
+include data in
+lemma essSurj : EssSurj (sheafPushforwardContinuous F A J₀ J) where
+  mem_essImage G₀ := ⟨_, ⟨essSurj.sheafIso data G₀⟩⟩
+
+include data in
+lemma isEquivalence : IsEquivalence (sheafPushforwardContinuous F A J₀ J) where
+  essSurj := essSurj A data
 
 end
 
 end OneHypercoverDenseData
+
+variable (A) [HasLimitsOfSize.{w, w} A] [IsOneHypercoverDense.{w} F J₀ J]
+
+lemma isEquivalence_of_isOneHypercoverDense :
+    IsEquivalence (sheafPushforwardContinuous F A J₀ J) :=
+  OneHypercoverDenseData.isEquivalence.{w} A (oneHypercoverDenseData F J₀ J)
+
+section
+
+variable [HasWeakSheafify J₀ A]
+
+/-- Assuming that a functor `F : C₀ ⥤ C` is `1`-hypercover dense (relatively to a universe `w`),
+that the coefficient category `A` has limits of size `w`, and that `HasSheafify J₀ A` holds,
+this is a sheafification functor `(Cᵒᵖ ⥤ A) ⥤ Sheaf J A`. -/
+noncomputable def sheafifyOfIsOneHypercoverDense :
+    (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  (whiskeringLeft _ _ _).obj F.op ⋙ presheafToSheaf J₀ A ⋙
+    inv (F.sheafPushforwardContinuous A J₀ J)
+
+variable {A}
+
+/-- Auxiliary definition for `sheafifyAdjunctionOfIsOneHypercoverDense`. -/
+noncomputable def sheafifyHomEquivOfIsOneHypercoverDense {P : Cᵒᵖ ⥤ A} {Q : Sheaf J A} :
+    ((sheafifyOfIsOneHypercoverDense.{w} F J₀ J A).obj P ⟶ Q) ≃ (P ⟶ Q.val) :=
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have := IsDenseSubsite.isLocallyFull J₀ J F
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  ((F.sheafPushforwardContinuous A J₀ J).asEquivalence.symm.toAdjunction.homEquiv _ _).trans
+    (((sheafificationAdjunction J₀ A).homEquiv _ _).trans IsCoverDense.restrictHomEquivHom)
+
+@[reassoc]
+lemma sheafifyHomEquivOfIsOneHypercoverDense_naturality_left
+    {P₁ P₂ : Cᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) {Q : Sheaf J A}
+    (g : (F.sheafifyOfIsOneHypercoverDense J₀ J A).obj P₂ ⟶ Q) :
+      sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J
+        ((F.sheafifyOfIsOneHypercoverDense J₀ J A).map f ≫ g) =
+        f ≫ sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J g := by
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have := IsDenseSubsite.isLocallyFull J₀ J F
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  let adj₁ := (F.sheafPushforwardContinuous A J₀ J).asEquivalence.symm.toAdjunction
+  let adj₂ := sheafificationAdjunction J₀ A
+  change IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _
+    ((F.sheafifyOfIsOneHypercoverDense J₀ J A).map f ≫ g))) =
+      f ≫ IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ g))
+  rw [← IsCoverDense.restrictHomEquivHom_naturality_left]
+  congr 2
+  trans adj₂.homEquiv _ _ ((presheafToSheaf J₀ A).map (F.op.whiskerLeft f) ≫
+    (adj₁.homEquiv _ _) g)
+  · congr 1
+    apply adj₁.homEquiv_naturality_left
+  · apply adj₂.homEquiv_naturality_left
+
+@[reassoc]
+lemma sheafifyHomEquivOfIsOneHypercoverDense_naturality_right
+    {P : Cᵒᵖ ⥤ A} {Q₁ Q₂ : Sheaf J A}
+    (f : (F.sheafifyOfIsOneHypercoverDense J₀ J A).obj P ⟶ Q₁) (g : Q₁ ⟶ Q₂) :
+      sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J (f ≫ g) =
+        sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J f ≫ g.val := by
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have := IsDenseSubsite.isLocallyFull J₀ J F
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  let adj₁ := (F.sheafPushforwardContinuous A J₀ J).asEquivalence.symm.toAdjunction
+  let adj₂ := sheafificationAdjunction J₀ A
+  change IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ (f ≫ g))) =
+    IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ f)) ≫ g.val
+  rw [adj₁.homEquiv_naturality_right, adj₂.homEquiv_naturality_right]
+  apply IsCoverDense.restrictHomEquivHom_naturality_right
+
+variable (A)
+
+/-- Assuming that a functor `F : C₀ ⥤ C` is `1`-hypercover dense (relatively to a universe `w`),
+that the coefficient category `A` has limits of size `w`, and that `HasSheafify J₀ A` holds,
+this adjunction shows the existence of a left adjoint to `sheafToPresheaf J A`. -/
+noncomputable def sheafifyAdjunctionOfIsOneHypercoverDense :
+    sheafifyOfIsOneHypercoverDense.{w} F J₀ J A ⊣ sheafToPresheaf J A :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun P Q ↦ sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J
+      homEquiv_naturality_left_symm := fun {P₁ P₂ Q} f g ↦
+        (F.sheafifyHomEquivOfIsOneHypercoverDense J₀ J).injective (by
+          simp only [sheafToPresheaf_obj, Equiv.apply_symm_apply,
+            sheafifyHomEquivOfIsOneHypercoverDense_naturality_left _ _ _ f])
+      homEquiv_naturality_right :=
+        sheafifyHomEquivOfIsOneHypercoverDense_naturality_right F J₀ J }
+
+include F J₀ in
+lemma hasWeakSheafify_of_isOneHypercoverDense :
+    HasWeakSheafify J A := ⟨_, ⟨sheafifyAdjunctionOfIsOneHypercoverDense.{w} F J₀ J A⟩⟩
+
+end
+
+include F in
+lemma hasSheafify_of_isOneHypercoverDense [HasSheafify J₀ A] :
+    HasSheafify J A := by
+  have := hasFiniteLimits_of_hasLimitsOfSize A
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have : PreservesFiniteLimits ((whiskeringLeft _ _ A).obj F.op) := ⟨fun _ _ _ ↦ inferInstance⟩
+  have : PreservesFiniteLimits (presheafToSheaf J₀ A ⋙
+    (F.sheafPushforwardContinuous A J₀ J).inv) := by
+    apply comp_preservesFiniteLimits
+  have : PreservesFiniteLimits (F.sheafifyOfIsOneHypercoverDense J₀ J A) := by
+    apply comp_preservesFiniteLimits
+  exact HasSheafify.mk' _ _ (sheafifyAdjunctionOfIsOneHypercoverDense.{w} F J₀ J A)
 
 end Functor
 

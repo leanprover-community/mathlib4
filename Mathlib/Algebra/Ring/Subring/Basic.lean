@@ -73,6 +73,14 @@ variable [Ring S] [Ring T]
 namespace Subring
 variable {s t : Subring R}
 
+/-- The equivalence of rings between two equals subrings. -/
+@[simps!]
+def equivOfEq (h : s = t) :
+    s ≃+* t where
+  toEquiv := (Equiv.refl _).subtypeEquiv (by simp [h])
+  map_mul' := by simp
+  map_add' := by simp
+
 @[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id

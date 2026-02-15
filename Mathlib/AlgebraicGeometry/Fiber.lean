@@ -46,6 +46,11 @@ def Scheme.Hom.fiberToSpecResidueField (f : X ⟶ Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
+@[reassoc]
+lemma Scheme.Hom.fiber_fac (f : X ⟶ Y) (y : Y) :
+    f.fiberι y ≫ f = f.fiberToSpecResidueField y ≫ Y.fromSpecResidueField y :=
+  pullback.condition
+
 /-- The fiber of `f` at `y` is naturally a `κ(y)`-scheme. -/
 @[reducible] def Scheme.Hom.fiberOverSpecResidueField
     (f : X ⟶ Y) (y : Y) : (f.fiber y).Over (Spec (Y.residueField y)) where
