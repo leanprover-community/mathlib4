@@ -659,3 +659,104 @@ private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallo
 end unicodeLinter
 
 end textBased
+
+-- Tests for the badVariable linter.
+
+-- HACK. inserting temporary sections to make the linter work.
+-- TODO fix the linter and remove these again!
+
+-- These are all fine.
+section
+variable {a : Type*}
+
+section
+variable {n : ℕ} (m : ℕ := 42) (k : ℕ := by exact 0)
+
+section
+variable {p q} {r s : Prop}
+
+section
+variable ⦃x y : Int⦄  ⦃x y⦄
+
+section
+variable (a : Type*) (b : Prop) [DecidableEq a]
+
+section
+variable [DecidableEq a] [Inhabited b] {f : a → b}
+
+-- `a` is changed, but no new variable is declared (only typeclass instances are added):
+-- this is fine, right?
+-- That means typeclasses and instance implicits are fine for this purpose?
+-- (I can certainly write a linter ignoring these for now, and see if it yields useful results)
+section
+variable (a) -- dummy line
+section
+variable {a} [DecidableEq b]
+
+-- These should error.
+section
+variable (a) -- dummy line
+section
+/--
+warning: bad variable declaration: ⏎
+the binder type of the variable 'a' is changed, while the new variables 'b', 'c' are declared
+please split these into separate 'variable' commands
+note: this linter can be disabled with `set_option linter.badVariable false`
+-/
+#guard_msgs in
+variable {a} (b c : Type)
+section
+/--
+warning: bad variable declaration: ⏎
+the binder types of the variables 'a', 'b' are changed, while the new variable 'c' is declared
+please split these into separate 'variable' commands
+note: this linter can be disabled with `set_option linter.badVariable false`
+-/
+#guard_msgs in
+variable (a) {b} {c : Type}
+
+-- If a variable was previously strictly implicitly bound, we still catch this.
+section
+variable ⦃x y : Int⦄  ⦃x y⦄
+section
+/--
+warning: bad variable declaration: ⏎
+the binder type of the variable 'x' is changed, while the new variable 'c' is declared
+please split these into separate 'variable' commands
+note: this linter can be disabled with `set_option linter.badVariable false`
+-/
+#guard_msgs in
+variable (x) (c : Type)
+
+-- (Binder annotations of local instances cannot be changed.)
+-- section
+-- variable [i : DecidableEq ℕ]
+-- section
+-- error message here
+-- variable (i) (j : Type)
+
+-- I guess this is also bad, changing b and adding a --- i.e., the binder order doesn't matter?!
+section
+variable {b : Type*}
+-- XXX: this line errors about a "redundant binder update"... which also seems fishy
+section
+-- variable {a : Type} (b)
+
+-- TODO: add a test case for a false positive with the current logic...
+-- where variable a was declared previously, but b is declared in the current section
+-- so the current linter iteration complains. then fix it, and re-test on mathlib
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
