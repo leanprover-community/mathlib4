@@ -774,7 +774,7 @@ end εNFA
 namespace RegularExpressions
 
 /-- The language matched by a regular expression is a regular language. -/
-theorem IsRegular.matches (P : RegularExpression α) : Language.IsRegular (P.matches') := by
+theorem IsRegular.matches' (P : RegularExpression α) : Language.IsRegular (P.matches') := by
   induction P with
   | zero             => simp [Language.IsRegular.zero]
   | epsilon          => simp [Language.IsRegular.one]
