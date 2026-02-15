@@ -3,11 +3,16 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Data.Nat.GCD.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Semiconj
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Basic
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -27,27 +32,29 @@ import Mathlib.Data.Nat.GCD.Basic
 Bézout's lemma, Bezout's lemma
 -/
 
+@[expose] public section
+
 /-! ### Extended Euclidean algorithm -/
 
 
 namespace Nat
 
 /-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
-def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
-  | 0, _, _, r', s', t' => (r', s', t')
-  | succ k, s, t, r', s', t' =>
+def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ :=
+  Nat.strongRec' fun n ih s t r' s' t' ↦ match n with
+  | 0 => (r', s', t')
+  | succ k =>
     let q := r' / succ k
-    xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
-termination_by k => k
-decreasing_by exact mod_lt _ <| (succ_pos _).gt
+    ih (r' % succ k) (mod_lt _ <| (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
+theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
 theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
-  simp [xgcdAux]
+  rw [xgcdAux, Nat.strongRec'_spec]
+  rfl
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
   satisfying `gcd x y = x * a + y * b`. -/
@@ -63,28 +70,20 @@ def gcdB (x y : ℕ) : ℤ :=
   (xgcd x y).2
 
 @[simp]
-theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := by
-  unfold gcdA
-  rw [xgcd, xgcd_zero_left]
+theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := rfl
 
 @[simp]
-theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
-  unfold gcdB
-  rw [xgcd, xgcd_zero_left]
+theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := rfl
 
 @[simp]
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
-  unfold gcdA xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rw [xgcdAux]
-  simp
+  rfl
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
-  unfold gcdB xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rw [xgcdAux]
-  simp
+  rfl
 
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
@@ -96,7 +95,7 @@ theorem xgcdAux_val (x y) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
   rw [xgcd, ← xgcdAux_fst x y 1 0 0 1]
 
 theorem xgcd_val (x y) : xgcd x y = (gcdA x y, gcdB x y) := by
-  unfold gcdA gcdB; cases xgcd x y; rfl
+  unfold gcdA gcdB; constructor
 
 section
 
@@ -105,7 +104,7 @@ variable (x y : ℕ)
 private def P : ℕ × ℤ × ℤ → Prop
   | (r, s, t) => (r : ℤ) = x * s + y * t
 
-theorem xgcdAux_P {r r'} :
+private theorem xgcdAux_P {r r'} :
     ∀ {s t s' t'}, P x y (r, s, t) → P x y (r', s', t') → P x y (xgcdAux r s t r' s' t') := by
   induction r, r' using gcd.induction with
   | H0 => simp
@@ -125,20 +124,32 @@ theorem gcd_eq_gcd_ab : (gcd x y : ℤ) = x * gcdA x y + y * gcdB x y := by
 
 end
 
-theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k = gcd n k := by
-  have hk' := Int.ofNat_ne_zero.2 (ne_of_gt (lt_of_le_of_lt (zero_le (gcd n k)) hk))
-  have key := congr_arg (fun (m : ℤ) => (m % k).toNat) (gcd_eq_gcd_ab n k)
-  simp only at key
+theorem exists_mul_mod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m < k, n * m % k = gcd n k := by
+  have hk' := Int.ofNat_ne_zero.2 (Nat.zero_lt_of_lt hk).ne'
+  have key := congr(($(gcd_eq_gcd_ab n k) % k).toNat)
   rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
-  refine ⟨(n.gcdA k % k).toNat, Eq.trans (Int.ofNat.inj ?_) key.symm⟩
-  rw [Int.ofNat_eq_coe, Int.natCast_mod, Int.ofNat_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
-    Int.ofNat_eq_coe, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod,
-    ← Int.mul_emod]
+  refine ⟨(n.gcdA k % k).toNat, ?_, (Int.ofNat_inj.1 ?_).trans key.symm⟩
+  · rw [Int.toNat_lt (Int.emod_nonneg _ hk')]
+    exact Int.emod_lt _ hk'
+  rw [Int.natCast_mod, Int.natCast_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
+    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
-theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
-    ∃ m, n * m % k = 1 :=
-  Exists.recOn (exists_mul_emod_eq_gcd (lt_of_le_of_lt (le_of_eq hkn) hk)) fun m hm ↦
-    ⟨m, hm.trans hkn⟩
+@[deprecated (since := "2025-11-01")] alias exists_mul_emod_eq_gcd := exists_mul_mod_eq_gcd
+
+theorem exists_mul_mod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
+    ∃ m < k, n * m % k = 1 := by
+  simpa [hkn, hk] using exists_mul_mod_eq_gcd (k := k) (n := n)
+
+@[deprecated (since := "2025-11-01")] alias exists_mul_emod_eq_one_of_coprime :=
+  exists_mul_mod_eq_one_of_coprime
+
+theorem exists_mul_mod_eq_of_coprime {k n : ℕ} (r : ℕ) (hkn : Coprime n k) (hk : k ≠ 0) :
+    ∃ m < k, n * m % k = r % k := by
+  obtain rfl | hk : k = 1 ∨ 1 < k := by lia
+  · simp [mod_one]
+  obtain ⟨m, -, hm⟩ := exists_mul_mod_eq_one_of_coprime hkn hk
+  use (m * r) % k, mod_lt _ (by lia)
+  rw [mul_mod, mod_mod, ← mul_mod, ← mul_assoc, mul_mod, hm, one_mul, mod_mod]
 
 end Nat
 
@@ -148,10 +159,6 @@ end Nat
 namespace Int
 
 theorem gcd_def (i j : ℤ) : gcd i j = Nat.gcd i.natAbs j.natAbs := rfl
-
-@[simp, norm_cast] protected lemma gcd_natCast_natCast (m n : ℕ) : gcd ↑m ↑n = m.gcd n := rfl
-
-@[deprecated (since := "2024-05-25")] alias coe_nat_gcd := Int.gcd_natCast_natCast
 
 /-- The extended GCD `a` value in the equation `gcd x y = x * a + y * b`. -/
 def gcdA : ℤ → ℤ → ℤ
@@ -178,76 +185,8 @@ theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB
 theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
   rfl
 
-protected theorem coe_nat_lcm (m n : ℕ) : Int.lcm ↑m ↑n = Nat.lcm m n :=
-  rfl
-
-theorem dvd_gcd {i j k : ℤ} (h1 : k ∣ i) (h2 : k ∣ j) : k ∣ gcd i j :=
-  natAbs_dvd.1 <|
-    natCast_dvd_natCast.2 <| Nat.dvd_gcd (natAbs_dvd_natAbs.2 h1) (natAbs_dvd_natAbs.2 h2)
-
-theorem gcd_mul_lcm (i j : ℤ) : gcd i j * lcm i j = natAbs (i * j) := by
-  rw [Int.gcd, Int.lcm, Nat.gcd_mul_lcm, natAbs_mul]
-
-theorem gcd_comm (i j : ℤ) : gcd i j = gcd j i :=
-  Nat.gcd_comm _ _
-
-theorem gcd_assoc (i j k : ℤ) : gcd (gcd i j) k = gcd i (gcd j k) :=
-  Nat.gcd_assoc _ _ _
-
-@[simp]
-theorem gcd_self (i : ℤ) : gcd i i = natAbs i := by simp [gcd]
-
-@[simp]
-theorem gcd_zero_left (i : ℤ) : gcd 0 i = natAbs i := by simp [gcd]
-
-@[simp]
-theorem gcd_zero_right (i : ℤ) : gcd i 0 = natAbs i := by simp [gcd]
-
-theorem gcd_mul_left (i j k : ℤ) : gcd (i * j) (i * k) = natAbs i * gcd j k := by
-  rw [Int.gcd, Int.gcd, natAbs_mul, natAbs_mul]
-  apply Nat.gcd_mul_left
-
-theorem gcd_mul_right (i j k : ℤ) : gcd (i * j) (k * j) = gcd i k * natAbs j := by
-  rw [Int.gcd, Int.gcd, natAbs_mul, natAbs_mul]
-  apply Nat.gcd_mul_right
-
-theorem gcd_pos_of_ne_zero_left {i : ℤ} (j : ℤ) (hi : i ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_left _ <| natAbs_pos.2 hi
-
-theorem gcd_pos_of_ne_zero_right (i : ℤ) {j : ℤ} (hj : j ≠ 0) : 0 < gcd i j :=
-  Nat.gcd_pos_of_pos_right _ <| natAbs_pos.2 hj
-
-theorem gcd_eq_zero_iff {i j : ℤ} : gcd i j = 0 ↔ i = 0 ∧ j = 0 := by
-  rw [gcd, Nat.gcd_eq_zero_iff, natAbs_eq_zero, natAbs_eq_zero]
-
-theorem gcd_pos_iff {i j : ℤ} : 0 < gcd i j ↔ i ≠ 0 ∨ j ≠ 0 :=
-  Nat.pos_iff_ne_zero.trans <| gcd_eq_zero_iff.not.trans not_and_or
-
-theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) :
-    gcd (i / k) (j / k) = gcd i j / natAbs k := by
-  rw [gcd, natAbs_ediv i k H1, natAbs_ediv j k H2]
-  exact Nat.gcd_div (natAbs_dvd_natAbs.mpr H1) (natAbs_dvd_natAbs.mpr H2)
-
-theorem gcd_div_gcd_div_gcd {i j : ℤ} (H : 0 < gcd i j) : gcd (i / gcd i j) (j / gcd i j) = 1 := by
-  rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat, Nat.div_self H]
-
-theorem gcd_dvd_gcd_of_dvd_left {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd i j ∣ gcd k j :=
-  Int.natCast_dvd_natCast.1 <| dvd_gcd (gcd_dvd_left.trans H) gcd_dvd_right
-
-theorem gcd_dvd_gcd_of_dvd_right {i k : ℤ} (j : ℤ) (H : i ∣ k) : gcd j i ∣ gcd j k :=
-  Int.natCast_dvd_natCast.1 <| dvd_gcd gcd_dvd_left (gcd_dvd_right.trans H)
-
-theorem gcd_dvd_gcd_mul_left (i j k : ℤ) : gcd i j ∣ gcd (k * i) j :=
-  gcd_dvd_gcd_of_dvd_left _ (dvd_mul_left _ _)
-
-theorem gcd_dvd_gcd_mul_right (i j k : ℤ) : gcd i j ∣ gcd (i * k) j :=
-  gcd_dvd_gcd_of_dvd_left _ (dvd_mul_right _ _)
-
-theorem gcd_dvd_gcd_mul_left_right (i j k : ℤ) : gcd i j ∣ gcd i (k * j) :=
-  gcd_dvd_gcd_of_dvd_right _ (dvd_mul_left _ _)
-
-theorem gcd_dvd_gcd_mul_right_right (i j k : ℤ) : gcd i j ∣ gcd i (j * k) :=
-  gcd_dvd_gcd_of_dvd_right _ (dvd_mul_right _ _)
+alias gcd_div := gcd_ediv
+alias gcd_div_gcd_div_gcd := gcd_ediv_gcd_ediv_gcd
 
 /-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
 theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
@@ -259,43 +198,34 @@ theorem gcd_eq_one_of_gcd_mul_right_eq_one_right {a : ℤ} {m n : ℕ} (h : a.gc
     a.gcd n = 1 :=
   Nat.dvd_one.mp <| h ▸ gcd_dvd_gcd_mul_left_right a n m
 
-theorem gcd_eq_left {i j : ℤ} (H : i ∣ j) : gcd i j = natAbs i :=
-  Nat.dvd_antisymm (Nat.gcd_dvd_left _ _) (Nat.dvd_gcd dvd_rfl (natAbs_dvd_natAbs.mpr H))
-
-theorem gcd_eq_right {i j : ℤ} (H : j ∣ i) : gcd i j = natAbs j := by rw [gcd_comm, gcd_eq_left H]
-
 theorem ne_zero_of_gcd {x y : ℤ} (hc : gcd x y ≠ 0) : x ≠ 0 ∨ y ≠ 0 := by
   contrapose! hc
   rw [hc.left, hc.right, gcd_zero_right, natAbs_zero]
 
 theorem exists_gcd_one {m n : ℤ} (H : 0 < gcd m n) :
     ∃ m' n' : ℤ, gcd m' n' = 1 ∧ m = m' * gcd m n ∧ n = n' * gcd m n :=
-  ⟨_, _, gcd_div_gcd_div_gcd H, (Int.ediv_mul_cancel gcd_dvd_left).symm,
-    (Int.ediv_mul_cancel gcd_dvd_right).symm⟩
+  ⟨_, _, gcd_div_gcd_div_gcd H, (Int.ediv_mul_cancel (gcd_dvd_left ..)).symm,
+    (Int.ediv_mul_cancel (gcd_dvd_right ..)).symm⟩
 
 theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
     ∃ (g : ℕ) (m' n' : ℤ), 0 < g ∧ gcd m' n' = 1 ∧ m = m' * g ∧ n = n' * g :=
   let ⟨m', n', h⟩ := exists_gcd_one H
   ⟨_, m', n', H, h⟩
 
-theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : k ≠ 0) : m ^ k ∣ n ^ k ↔ m ∣ n := by
-  refine ⟨fun h => ?_, fun h => pow_dvd_pow_of_dvd h _⟩
-  rwa [← natAbs_dvd_natAbs, ← Nat.pow_dvd_pow_iff k0, ← Int.natAbs_pow, ← Int.natAbs_pow,
-    natAbs_dvd_natAbs]
-
 theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑n = a * x + b * y := by
   constructor
   · intro h
-    rw [← Nat.mul_div_cancel' h, Int.ofNat_mul, gcd_eq_gcd_ab, Int.add_mul, mul_assoc, mul_assoc]
+    rw [← Nat.mul_div_cancel' h, Int.natCast_mul, gcd_eq_gcd_ab, Int.add_mul, mul_assoc, mul_assoc]
     exact ⟨_, _, rfl⟩
   · rintro ⟨x, y, h⟩
     rw [← Int.natCast_dvd_natCast, h]
-    exact Int.dvd_add (dvd_mul_of_dvd_left gcd_dvd_left _) (dvd_mul_of_dvd_left gcd_dvd_right y)
+    exact Int.dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left ..))
+      (dvd_mul_of_dvd_left (gcd_dvd_right ..))
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
     (hd : ∀ e : ℤ, e ∣ a → e ∣ b → e ∣ d) : d = gcd a b :=
-  dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_gcd hda hdb)
-    (hd _ gcd_dvd_left gcd_dvd_right)
+  dvd_antisymm hd_pos (natCast_nonneg (gcd a b)) (dvd_coe_gcd hda hdb)
+    (hd _ (gcd_dvd_left ..) (gcd_dvd_right ..))
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
 Compare with `IsCoprime.dvd_of_dvd_mul_left` and
@@ -303,10 +233,10 @@ Compare with `IsCoprime.dvd_of_dvd_mul_left` and
 theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab : gcd a c = 1) :
     a ∣ b := by
   have := gcd_eq_gcd_ab a c
-  simp only [hab, Int.ofNat_zero, Int.ofNat_succ, zero_add] at this
+  simp only [hab, Int.ofNat_zero, Int.natCast_succ, zero_add] at this
   have : b * a * gcdA a c + b * c * gcdB a c = b := by simp [mul_assoc, ← Int.mul_add, ← this]
   rw [← this]
-  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b) _) (dvd_mul_of_dvd_left habc _)
+  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b)) (dvd_mul_of_dvd_left habc)
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a b = 1` then `a ∣ c`.
 Compare with `IsCoprime.dvd_of_dvd_mul_right` and
@@ -322,61 +252,43 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
+  · simpa [and_true, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
   · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 
-/-! ### lcm -/
-
-
-theorem lcm_comm (i j : ℤ) : lcm i j = lcm j i := by
-  rw [Int.lcm, Int.lcm]
-  exact Nat.lcm_comm _ _
-
-theorem lcm_assoc (i j k : ℤ) : lcm (lcm i j) k = lcm i (lcm j k) := by
-  rw [Int.lcm, Int.lcm, Int.lcm, Int.lcm, natAbs_ofNat, natAbs_ofNat]
-  apply Nat.lcm_assoc
-
-@[simp]
-theorem lcm_zero_left (i : ℤ) : lcm 0 i = 0 := by
-  rw [Int.lcm]
-  apply Nat.lcm_zero_left
-
-@[simp]
-theorem lcm_zero_right (i : ℤ) : lcm i 0 = 0 := by
-  rw [Int.lcm]
-  apply Nat.lcm_zero_right
-
-@[simp]
-theorem lcm_one_left (i : ℤ) : lcm 1 i = natAbs i := by
-  rw [Int.lcm]
-  apply Nat.lcm_one_left
-
-@[simp]
-theorem lcm_one_right (i : ℤ) : lcm i 1 = natAbs i := by
-  rw [Int.lcm]
-  apply Nat.lcm_one_right
-
-theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k := by
-  rw [Int.lcm]
-  intro hi hj
-  exact natCast_dvd.mpr (Nat.lcm_dvd (natAbs_dvd_natAbs.mpr hi) (natAbs_dvd_natAbs.mpr hj))
-
-theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by
-  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_left]
-
-theorem lcm_mul_right {m n k : ℤ} : (m * n).lcm (k * n) = m.lcm k * natAbs n := by
-  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_right]
-
 end Int
 
-@[to_additive gcd_nsmul_eq_zero]
-theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
-    x ^ m.gcd n = 1 := by
-  rcases m with (rfl | m); · simp [hn]
-  obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
-  rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
-  rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
+section Monoid
+variable {M : Type*} [Monoid M] {a : M} {m n : ℕ}
+
+@[to_additive (attr := simp) gcd_nsmul_eq_zero]
+lemma pow_gcd_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 where
+  mp hmn := by
+    constructor
+    · rw [← Nat.mul_div_cancel' (m.gcd_dvd_left n), pow_mul, hmn, one_pow]
+    · rw [← Nat.mul_div_cancel' (m.gcd_dvd_right n), pow_mul, hmn, one_pow]
+  mpr
+  | ⟨hm, hn⟩ => by
+    obtain _ | m := m
+    · simpa
+    obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
+    rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
+    rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
+
+@[to_additive]
+lemma pow_eq_one_iff_of_coprime (hmn : m.Coprime n) : a ^ m = 1 ∧ a ^ n = 1 ↔ a = 1 := by
+  simp [← pow_gcd_eq_one, hmn]
+
+end Monoid
+
+section Group
+variable {M : Type*} [Group M] {a : M} {m n : ℤ}
+
+@[to_additive (attr := simp) intGCD_nsmul_eq_zero]
+lemma pow_intGCD_eq_one : a ^ m.gcd n = 1 ↔ a ^ m = 1 ∧ a ^ n = 1 := by
+  obtain m | m := m <;> obtain n | n := n <;> simp
+
+end Group
 
 variable {α : Type*}
 
@@ -386,10 +298,10 @@ variable [GroupWithZero α] {a b : α} {m n : ℕ}
 protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
     a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
   refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
-  by_cases m = 0; · aesop
-  by_cases n = 0; · aesop
-  by_cases hb : b = 0; · exact ⟨0, by aesop⟩
-  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; aesop⟩
+  by_cases m = 0; · simp_all
+  by_cases n = 0; · simp_all
+  by_cases hb : b = 0; · exact ⟨0, by simp_all⟩
+  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; simp_all⟩
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
   · refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_natCast, ← hmn, Nat.gcd_eq_gcd_ab]

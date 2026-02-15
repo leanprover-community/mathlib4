@@ -3,12 +3,13 @@ Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Kleene Algebras
@@ -30,7 +31,7 @@ Kleene star.
 
 ## Notation
 
-`a∗` is notation for `kstar a` in locale `Computability`.
+`a∗` is notation for `kstar a` in scope `Computability`.
 
 ## References
 
@@ -48,6 +49,8 @@ Instances for `AddOpposite`, `MulOpposite`, `ULift`, `Subsemiring`, `Subring`, `
 
 kleene algebra, idempotent semiring
 -/
+
+@[expose] public section
 
 
 open Function
@@ -105,18 +108,14 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
     le := fun a b ↦ a + b = b
     le_refl := h
     le_trans := fun a b c hab hbc ↦ by
-      simp only
       rw [← hbc, ← add_assoc, hab]
     le_antisymm := fun a b hab hba ↦ by rwa [← hba, add_comm]
     sup := (· + ·)
     le_sup_left := fun a b ↦ by
-      simp only
       rw [← add_assoc, h]
     le_sup_right := fun a b ↦ by
-      simp only
       rw [add_comm, add_assoc, h]
     sup_le := fun a b c hab hbc ↦ by
-      simp only
       rwa [add_assoc, hbc]
     bot := 0
     bot_le := zero_add }
@@ -128,11 +127,18 @@ variable [IdemSemiring α] {a b c : α}
 theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
   IdemSemiring.add_eq_sup _ _
 
--- Porting note: This simp theorem often leads to timeout when `α` has rich structure.
---               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
 theorem add_idem (a : α) : a + a = a := by simp
+
+lemma natCast_eq_one {n : ℕ} (nezero : n ≠ 0) : (n : α) = 1 := by
+  rw [← Nat.one_le_iff_ne_zero] at nezero
+  induction n, nezero using Nat.le_induction with
+  | base => exact Nat.cast_one
+  | succ x _ hx => rw [Nat.cast_add, hx, Nat.cast_one, add_idem 1]
+
+lemma ofNat_eq_one {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : α) = 1 :=
+  natCast_eq_one <| Nat.ne_zero_of_lt Nat.AtLeastTwo.prop
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
@@ -153,23 +159,25 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
-    CanonicallyOrderedAddCommMonoid α :=
-  { ‹IdemSemiring α› with
-    add_le_add_left := fun a b hbc c ↦ by
+instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
+    IsOrderedAddMonoid α :=
+  { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
-      exact sup_le_sup_left hbc _
-    exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
-    le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
+      grw [hbc] }
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_mul_le :
-    CovariantClass α α (· * ·) (· ≤ ·) :=
+instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
+    CanonicallyOrderedAdd α where
+  exists_add_of_le h := ⟨_, h.add_eq_right.symm⟩
+  le_add_self a b := add_eq_left_iff_le.1 <| by rw [add_assoc, add_idem]
+  le_self_add a b := add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
+
+-- See note [lower instance priority]
+instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← mul_add, hbc.add_eq_left]⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCovariantClass_swap_mul_le :
-    CovariantClass α α (swap (· * ·)) (· ≤ ·) :=
+instance (priority := 100) IdemSemiring.toMulRightMono : MulRightMono α :=
   ⟨fun a b c hbc ↦ add_eq_left_iff_le.1 <| by rw [← add_mul, hbc.add_eq_left]⟩
 
 end IdemSemiring
@@ -194,11 +202,9 @@ theorem mul_kstar_le_self : b * a ≤ b → b * a∗ ≤ b :=
 theorem kstar_mul_le_self : a * b ≤ b → a∗ * b ≤ b :=
   KleeneAlgebra.kstar_mul_le_self _ _
 
-theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c :=
-  (mul_le_mul_right' hb _).trans <| mul_kstar_le_self ha
+theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c := by grw [hb, mul_kstar_le_self ha]
 
-theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c :=
-  (mul_le_mul_left' hb _).trans <| kstar_mul_le_self ha
+theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c := by grw [hb, kstar_mul_le_self ha]
 
 theorem kstar_le_of_mul_le_left (hb : 1 ≤ b) : b * a ≤ b → a∗ ≤ b := by
   simpa using mul_kstar_le hb
@@ -242,9 +248,7 @@ theorem kstar_idem (a : α) : a∗∗ = a∗ :=
 @[simp]
 theorem pow_le_kstar : ∀ {n : ℕ}, a ^ n ≤ a∗
   | 0 => (pow_zero _).trans_le one_le_kstar
-  | n + 1 => by
-    rw [pow_succ']
-    exact (mul_le_mul_left' pow_le_kstar _).trans mul_kstar_le_kstar
+  | n + 1 => by grw [pow_succ', pow_le_kstar, mul_kstar_le_kstar]
 
 end KleeneAlgebra
 
@@ -301,6 +305,7 @@ instance : KleeneAlgebra (∀ i, π i) :=
     mul_kstar_le_self := fun _ _ h _ ↦ mul_kstar_le_self <| h _
     kstar_mul_le_self := fun _ _ h _ ↦ kstar_mul_le_self <| h _ }
 
+@[push ←]
 theorem kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
   rfl
 
@@ -315,21 +320,20 @@ namespace Function.Injective
 -- See note [reducible non-instances]
 /-- Pullback an `IdemSemiring` instance along an injective function. -/
 protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemSemiring β :=
   { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
     ‹Bot β› with
-    add_eq_sup := fun a b ↦ hf <| by erw [sup, add, add_eq_sup]
-    bot := ⊥
+    add_eq_sup := fun a b ↦ hf <| by rw [sup, add, add_eq_sup]
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
 protected abbrev idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
@@ -340,7 +344,7 @@ protected abbrev idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add 
 -- See note [reducible non-instances]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
 protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [Sup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [SMul ℕ β] [NatCast β] [Max β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
@@ -348,25 +352,25 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [M
   { hf.idemSemiring f zero one add mul nsmul npow natCast sup bot,
     ‹KStar β› with
     one_le_kstar := fun a ↦ one.trans_le <| by
-      erw [kstar]
+      rw [kstar]
       exact one_le_kstar
     mul_kstar_le_kstar := fun a ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
+      rw [mul, kstar]
       exact mul_kstar_le_kstar
     kstar_mul_le_kstar := fun a ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
+      rw [mul, kstar]
       exact kstar_mul_le_kstar
     mul_kstar_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
-      erw [mul] at h
+      rw [mul, kstar]
+      rw [mul] at h
       exact mul_kstar_le_self h
     kstar_mul_le_self := fun a b (h : f _ ≤ _) ↦ by
       change f _ ≤ _
-      erw [mul, kstar]
-      erw [mul] at h
+      rw [mul, kstar]
+      rw [mul] at h
       exact kstar_mul_le_self h }
 
 end Function.Injective

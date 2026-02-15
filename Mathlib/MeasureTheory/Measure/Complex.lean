@@ -3,17 +3,17 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.VectorMeasure
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Complex measure
 
-This file proves some elementary results about complex measures. In particular, we prove that
+This file defines a complex measure to be a vector measure with codomain `ℂ`.
+Then we prove some elementary results about complex measures. In particular, we prove that
 a complex measure is always in the form `s + it` where `s` and `t` are signed measures.
-
-The complex measure is defined to be vector measure over `ℂ`, this definition can be found
-in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
-`MeasureTheory.ComplexMeasure`.
 
 ## Main definitions
 
@@ -22,7 +22,7 @@ in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
 * `MeasureTheory.ComplexMeasure.im`: obtains a signed measure `s` from a complex measure `c`
   such that `s i = (c i).im` for all measurable sets `i`.
 * `MeasureTheory.SignedMeasure.toComplexMeasure`: given two signed measures `s` and `t`,
-  `s.to_complex_measure t` provides a complex measure of the form `s + it`.
+  `s.toComplexMeasure t` provides a complex measure of the form `s + it`.
 * `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
@@ -31,16 +31,22 @@ in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
 Complex measure
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open scoped Classical MeasureTheory ENNReal NNReal
+open scoped MeasureTheory ENNReal NNReal
 
-variable {α β : Type*} {m : MeasurableSpace α}
+variable {α : Type*} {m : MeasurableSpace α}
 
 namespace MeasureTheory
 
 open VectorMeasure
+
+/-- A `ComplexMeasure` is a `ℂ`-vector measure. -/
+abbrev ComplexMeasure (α : Type*) [MeasurableSpace α] :=
+  VectorMeasure α ℂ
 
 namespace ComplexMeasure
 
@@ -54,14 +60,14 @@ def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
 def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
   mapRangeₗ Complex.imCLM Complex.continuous_im
 
-/-- Given `s` and `t` signed measures, `s + it` is a complex measure-/
+/-- Given `s` and `t` signed measures, `s + it` is a complex measure -/
 @[simps!]
 def _root_.MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α) :
     ComplexMeasure α where
   measureOf' i := ⟨s i, t i⟩
-  empty' := by dsimp only; rw [s.empty, t.empty]; rfl
-  not_measurable' i hi := by dsimp only; rw [s.not_measurable hi, t.not_measurable hi]; rfl
-  m_iUnion' f hf hfdisj := (Complex.hasSum_iff _ _).2 ⟨s.m_iUnion hf hfdisj, t.m_iUnion hf hfdisj⟩
+  empty' := by rw [s.empty, t.empty]; rfl
+  not_measurable' i hi := by rw [s.not_measurable hi, t.not_measurable hi]; rfl
+  m_iUnion' _ hf hfdisj := (Complex.hasSum_iff _ _).2 ⟨s.m_iUnion hf hfdisj, t.m_iUnion hf hfdisj⟩
 
 theorem _root_.MeasureTheory.SignedMeasure.toComplexMeasure_apply
     {s t : SignedMeasure α} {i : Set α} : s.toComplexMeasure t i = ⟨s i, t i⟩ := rfl
@@ -81,7 +87,7 @@ def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure
   toFun c := ⟨ComplexMeasure.re c, ComplexMeasure.im c⟩
   invFun := fun ⟨s, t⟩ => s.toComplexMeasure t
   left_inv c := c.toComplexMeasure_to_signedMeasure
-  right_inv := fun ⟨s, t⟩ => Prod.mk.inj_iff.2 ⟨s.re_toComplexMeasure t, s.im_toComplexMeasure t⟩
+  right_inv := fun ⟨s, t⟩ => Prod.ext (s.re_toComplexMeasure t) (s.im_toComplexMeasure t)
 
 section
 

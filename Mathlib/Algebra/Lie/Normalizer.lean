@@ -3,9 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.IdealOperations
-import Mathlib.Algebra.Lie.Quotient
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Algebra.Lie.Quotient
 
 /-!
 # The normalizer of Lie submodules and subalgebras.
@@ -31,6 +33,8 @@ consider the normalizer. This turns out to be a Lie subalgebra.
 
 lie algebra, normalizer
 -/
+
+@[expose] public section
 
 
 variable {R L M M' : Type*}
@@ -139,15 +143,15 @@ theorem coe_normalizer_eq_normalizer :
 
 variable {H}
 
-theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy : y ∈ (R ∙ x) ⊔ ↑H)
-    (hz : z ∈ (R ∙ x) ⊔ ↑H) : ⁅y, z⁆ ∈ (R ∙ x) ⊔ ↑H := by
+theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy : y ∈ R ∙ x ⊔ ↑H)
+    (hz : z ∈ R ∙ x ⊔ ↑H) : ⁅y, z⁆ ∈ R ∙ x ⊔ ↑H := by
   rw [Submodule.mem_sup] at hy hz
   obtain ⟨u₁, hu₁, v, hv : v ∈ H, rfl⟩ := hy
   obtain ⟨u₂, hu₂, w, hw : w ∈ H, rfl⟩ := hz
   obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hu₁
   obtain ⟨s, rfl⟩ := Submodule.mem_span_singleton.mp hu₂
   apply Submodule.mem_sup_right
-  simp only [LieSubalgebra.mem_coe_submodule, smul_lie, add_lie, zero_add, lie_add, smul_zero,
+  simp only [LieSubalgebra.mem_toSubmodule, smul_lie, add_lie, zero_add, lie_add, smul_zero,
     lie_smul, lie_self]
   refine H.add_mem (H.smul_mem s ?_) (H.add_mem (H.smul_mem t ?_) (H.lie_mem hv hw))
   exacts [(H.mem_normalizer_iff' x).mp hx v hv, (H.mem_normalizer_iff x).mp hx w hw]
@@ -172,7 +176,7 @@ theorem normalizer_eq_self_iff :
   refine ⟨fun h => ?_, fun h => le_antisymm ?_ H.le_normalizer⟩
   · rintro ⟨x⟩ hx
     suffices x ∈ H by rwa [Submodule.Quotient.quot_mk_eq_mk, Submodule.Quotient.mk_eq_zero,
-      coe_toLieSubmodule, mem_coe_submodule]
+      coe_toLieSubmodule, mem_toSubmodule]
     rw [← h, H.mem_normalizer_iff']
     intro y hy
     replace hx : ⁅_, LieSubmodule.Quotient.mk' _ x⁆ = 0 := hx ⟨y, hy⟩

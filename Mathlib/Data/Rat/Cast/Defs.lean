@@ -3,12 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Rat.Lemmas
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Order.Nat
 
 /-!
 # Casts for Rational Numbers
@@ -18,14 +21,14 @@ import Mathlib.Data.Rat.Lemmas
 We define the canonical injection from ℚ into an arbitrary division ring and prove various
 casting lemmas showing the well-behavedness of this injection.
 
-## Notations
-
-- `/.` is infix notation for `Rat.divInt`.
-
 ## Tags
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
+
+@[expose] public section
+
+assert_not_exists MulAction IsOrderedMonoid
 
 variable {F ι α β : Type*}
 
@@ -34,9 +37,8 @@ variable [DivisionSemiring α] {q r : ℚ≥0}
 
 @[simp, norm_cast] lemma cast_natCast (n : ℕ) : ((n : ℚ≥0) : α) = n := by simp [cast_def]
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n : ℚ≥0) = (OfNat.ofNat n : α) := cast_natCast _
+    (ofNat(n) : ℚ≥0) = (ofNat(n) : α) := cast_natCast _
 
 @[simp, norm_cast] lemma cast_zero : ((0 : ℚ≥0) : α) = 0 := (cast_natCast _).trans Nat.cast_zero
 @[simp, norm_cast] lemma cast_one : ((1 : ℚ≥0) : α) = 1 := (cast_natCast _).trans Nat.cast_one
@@ -59,8 +61,7 @@ lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
   have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
-  have hd' : d ≠ 0 := by rintro rfl; exact hd Nat.cast_zero
-  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' hd'] at e
+  simp_rw [Rat.mk_eq_divInt, mk_divInt, divNat_inj hb' h] at e
   rw [cast_def]
   dsimp
   rw [Commute.div_eq_div_iff _ hd hb]
@@ -116,12 +117,9 @@ theorem cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
 theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_natCast, cast_intCast, Int.cast_natCast]
 
-@[deprecated (since := "2024-03-21")] alias cast_coe_int := cast_intCast
-@[deprecated (since := "2024-03-21")] alias cast_coe_nat := cast_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℚ)) : α) = (OfNat.ofNat n : α) := by
+    ((ofNat(n) : ℚ) : α) = (ofNat(n) : α) := by
   simp [cast_def]
 
 @[simp, norm_cast]
@@ -145,21 +143,21 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
     refine mt ?_ b0
-    simp (config := { contextual := true })
-  cases' e : a /. b with n d h c
+    simp +contextual
+  rcases e : a /. b with ⟨n, d, h, c⟩
   have d0 : (d : α) ≠ 0 := by
     intro d0
     have dd := den_dvd a b
-    cases' show (d : ℤ) ∣ b by rwa [e] at dd with k ke
+    rcases show (d : ℤ) ∣ b by rwa [e] at dd with ⟨k, ke⟩
     have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction
-  rw [mk'_eq_divInt] at e
+  rw [mk_eq_divInt] at e
   have := congr_arg ((↑) : ℤ → α)
-    ((divInt_eq_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
+    ((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this
   rw [eq_comm, cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq,
-    ← mul_assoc, this, mul_assoc, mul_inv_cancel b0, mul_one]
+    ← mul_assoc, this, mul_assoc, mul_inv_cancel₀ b0, mul_one]
 
 @[norm_cast]
 lemma cast_mkRat_of_ne_zero (a : ℤ) {b : ℕ} (hb : (b : α) ≠ 0) : (mkRat a b : α) = a / b := by
@@ -191,7 +189,7 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[norm_cast]
 lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : ↑(q⁻¹) = (q⁻¹ : α) := by
-  rw [inv_def', cast_divInt_of_ne_zero _ hq, cast_def, inv_div, Int.cast_natCast]
+  rw [inv_def, cast_divInt_of_ne_zero _ hq, cast_def, inv_div, Int.cast_natCast]
 
 @[norm_cast] lemma cast_div_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.num : α) ≠ 0) :
     ↑(p / q) = (p / q : α) := by
@@ -222,19 +220,47 @@ theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (
 @[simp] lemma eq_ratCast [DivisionRing α] [FunLike F ℚ α] [RingHomClass F ℚ α] (f : F) (q : ℚ) :
     f q = q := by rw [← map_ratCast f, Rat.cast_id]
 
-namespace MonoidWithZeroHom
+namespace MonoidWithZeroHomClass
 
-variable {M₀ : Type*} [MonoidWithZero M₀] [FunLike F ℚ M₀] [MonoidWithZeroHomClass F ℚ M₀]
-variable {f g : F}
+variable {M₀ : Type*} [MonoidWithZero M₀]
 
-/-- If `f` and `g` agree on the integers then they are equal `φ`. -/
+section NNRat
+variable [FunLike F ℚ≥0 M₀] [MonoidWithZeroHomClass F ℚ≥0 M₀] {f g : F}
+
+/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the naturals then they are equal. -/
+lemma ext_nnrat' (h : ∀ n : ℕ, f n = g n) : f = g :=
+  (DFunLike.ext f g) fun r => by
+    rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, eq_on_inv₀ f g]
+    apply h
+
+/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the naturals then they are equal.
+
+See note [partially-applied ext lemmas] for why `comp` is used here. -/
+@[ext]
+lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀}
+    (h : f.comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0) = g.comp (Nat.castRingHom ℚ≥0)) : f = g :=
+  ext_nnrat' <| DFunLike.congr_fun h
+
+/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the positive naturals then they are
+equal. -/
+lemma ext_nnrat_on_pnat (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
+  ext_nnrat' <| DFunLike.congr_fun <| ext_nat''
+    ((f : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0))
+    ((g : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0)) (by simpa)
+
+end NNRat
+
+section Rat
+variable [FunLike F ℚ M₀] [MonoidWithZeroHomClass F ℚ M₀] {f g : F}
+
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
   (DFunLike.ext f g) fun r => by
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_natCast,
       eq_on_inv₀ f g]
     apply h
 
-/-- If `f` and `g` agree on the integers then they are equal `φ`.
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal.
 
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
@@ -242,7 +268,8 @@ theorem ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=
   ext_rat' <| DFunLike.congr_fun h
 
-/-- Positive integer values of a morphism `φ` and its value on `-1` completely determine `φ`. -/
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the positive naturals and `-1` then
+they are equal. -/
 theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
     (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_rat' <|
@@ -252,41 +279,19 @@ theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
           (g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)
         from ext_int' (by simpa) (by simpa)
 
-end MonoidWithZeroHom
+end Rat
+end MonoidWithZeroHomClass
 
 /-- Any two ring homomorphisms from `ℚ` to a semiring are equal. If the codomain is a division ring,
 then this lemma follows from `eq_ratCast`. -/
 theorem RingHom.ext_rat {R : Type*} [Semiring R] [FunLike F ℚ R] [RingHomClass F ℚ R] (f g : F) :
     f = g :=
-  MonoidWithZeroHom.ext_rat' <|
+  MonoidWithZeroHomClass.ext_rat' <|
     RingHom.congr_fun <|
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
 
+instance NNRat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ≥0 →+* R) where
+  allEq f g := MonoidWithZeroHomClass.ext_nnrat' <| by simp
+
 instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
-
-/-! ### Scalar multiplication -/
-
-namespace NNRat
-variable [DivisionSemiring α]
-
-instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 α where
-  smul_zero a := by rw [smul_def, mul_zero]
-  smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-
-instance instIsScalarTowerRight : IsScalarTower ℚ≥0 α α where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
-
-end NNRat
-
-namespace Rat
-variable [DivisionRing α]
-
-instance (priority := 100) instDistribSMul : DistribSMul ℚ α where
-  smul_zero a := by rw [smul_def, mul_zero]
-  smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-
-instance instIsScalarTowerRight : IsScalarTower ℚ α α where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
-
-end Rat

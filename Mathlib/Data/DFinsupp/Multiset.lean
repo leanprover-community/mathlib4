@@ -3,7 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Order
+module
+
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Data.DFinsupp.Order
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -12,9 +15,11 @@ This defines `DFinsupp.toMultiset` the equivalence between `Π₀ a : α, ℕ` a
 with `Multiset.toDFinsupp` the reverse equivalence.
 -/
 
+@[expose] public section
+
 open Function
 
-variable {α : Type*} {β : α → Type*}
+variable {α : Type*}
 
 namespace DFinsupp
 
@@ -22,7 +27,7 @@ namespace DFinsupp
 instance addZeroClass' {β} [AddZeroClass β] : AddZeroClass (Π₀ _ : α, β) :=
   @DFinsupp.addZeroClass α (fun _ ↦ β) _
 
-variable [DecidableEq α] {s t : Multiset α}
+variable [DecidableEq α]
 
 /-- A DFinsupp version of `Finsupp.toMultiset`. -/
 def toMultiset : (Π₀ _ : α, ℕ) →+ Multiset α :=
@@ -43,7 +48,7 @@ variable [DecidableEq α] {s t : Multiset α}
 def toDFinsupp : Multiset α →+ Π₀ _ : α, ℕ where
   toFun s :=
     { toFun := fun n ↦ s.count n
-      support' := Trunc.mk ⟨s, fun i ↦ (em (i ∈ s)).imp_right Multiset.count_eq_zero_of_not_mem⟩ }
+      support' := Trunc.mk ⟨s, fun i ↦ (em (i ∈ s)).imp_right Multiset.count_eq_zero_of_notMem⟩ }
   map_zero' := rfl
   map_add' _ _ := DFinsupp.ext fun _ ↦ Multiset.count_add _ _ _
 
@@ -60,7 +65,7 @@ theorem toDFinsupp_replicate (a : α) (n : ℕ) :
     toDFinsupp (Multiset.replicate n a) = DFinsupp.single a n := by
   ext i
   dsimp [toDFinsupp]
-  simp [count_replicate, eq_comm]
+  simp [count_replicate]
 
 @[simp]
 theorem toDFinsupp_singleton (a : α) : toDFinsupp {a} = DFinsupp.single a 1 := by
@@ -92,11 +97,11 @@ theorem toDFinsupp_lt_toDFinsupp : toDFinsupp s < toDFinsupp t ↔ s < t :=
 
 @[simp]
 theorem toDFinsupp_inter (s t : Multiset α) : toDFinsupp (s ∩ t) = toDFinsupp s ⊓ toDFinsupp t := by
-  ext i; simp [inf_eq_min]
+  ext i; simp
 
 @[simp]
 theorem toDFinsupp_union (s t : Multiset α) : toDFinsupp (s ∪ t) = toDFinsupp s ⊔ toDFinsupp t := by
-  ext i; simp [sup_eq_max]
+  ext i; simp
 
 end Multiset
 
@@ -132,7 +137,7 @@ theorem toMultiset_inf : toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 @[simp]
-theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f∪ toMultiset g :=
+theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 end DFinsupp

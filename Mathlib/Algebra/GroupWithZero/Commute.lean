@@ -3,23 +3,25 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Tactic.Nontriviality
+module
+
+public import Mathlib.Algebra.GroupWithZero.Semiconj
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.
 
 -/
 
-assert_not_exists DenselyOrdered
+public section
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+assert_not_exists DenselyOrdered Ring
+
+variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 
 namespace Ring
-
-open scoped Classical
 
 theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
     inverse (a * b) = inverse b * inverse a := by
@@ -40,9 +42,13 @@ lemma inverse_pow (r : M₀) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r
     rw [pow_succ', pow_succ, Ring.mul_inverse_rev' ((Commute.refl r).pow_left n),
       Ring.inverse_pow r n]
 
+lemma inverse_pow_mul_eq_iff_eq_mul {a : M₀} (b c : M₀) (ha : IsUnit a) {k : ℕ} :
+    Ring.inverse a ^ k * b = c ↔ b = a ^ k * c := by
+  rw [Ring.inverse_pow, Ring.inverse_mul_eq_iff_eq_mul _ _ _ (IsUnit.pow _ ha)]
+
 end Ring
 
-theorem Commute.ring_inverse_ring_inverse {a b : M₀} (h : Commute a b) :
+theorem Commute.ringInverse_ringInverse {a b : M₀} (h : Commute a b) :
     Commute (Ring.inverse a) (Ring.inverse b) :=
   (Ring.mul_inverse_rev' h.symm).symm.trans <| (congr_arg _ h.symm.eq).trans <|
     Ring.mul_inverse_rev' h
@@ -85,7 +91,7 @@ theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := 
 end Commute
 
 section GroupWithZero
-variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
+variable [GroupWithZero G₀]
 
 theorem pow_inv_comm₀ (a : G₀) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left₀.pow_pow m n

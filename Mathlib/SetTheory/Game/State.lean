@@ -1,9 +1,16 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.SetTheory.Game.Short
+module -- shake: keep-all
+
+public import Mathlib.SetTheory.Game.Short
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.ConcreteGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Games described via "the state of the board".
@@ -21,6 +28,8 @@ relying on general well-foundedness seems to be poisonous to computation?
 See `SetTheory/Game/Domineering` for an example using this construction.
 -/
 
+@[expose] public section
+
 universe u
 
 namespace SetTheory
@@ -34,8 +43,11 @@ the states reachable by a move by Left or Right. `SetTheory.PGame.State.turnBoun
 gives an upper bound on the number of possible turns remaining from this state.
 -/
 class State (S : Type u) where
+  /-- Upper bound on the number of possible turns remaining from this state -/
   turnBound : S → ℕ
+  /-- States reachable by a Left move -/
   l : S → Finset S
+  /-- States reachable by a Right move -/
   r : S → Finset S
   left_bound : ∀ {s t : S}, t ∈ l s → turnBound t < turnBound s
   right_bound : ∀ {s t : S}, t ∈ r s → turnBound t < turnBound s
@@ -53,8 +65,7 @@ theorem turnBound_ne_zero_of_left_move {s t : S} (m : t ∈ l s) : turnBound s �
 theorem turnBound_ne_zero_of_right_move {s t : S} (m : t ∈ r s) : turnBound s ≠ 0 := by
   intro h
   have t := right_bound m
-  rw [h] at t
-  exact Nat.not_succ_le_zero _ t
+  lia
 
 theorem turnBound_of_left {s t : S} (m : t ∈ l s) (n : ℕ) (h : turnBound s ≤ n + 1) :
     turnBound t ≤ n :=
@@ -206,7 +217,7 @@ instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short 
       have j := (rightMovesOfStateAux _ _).toFun j
       exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp h)
-  | n + 1, s, h =>
+  | n + 1, _, h =>
     Short.mk'
       (fun i =>
         shortOfRelabelling (relabellingMoveLeftAux (n + 1) h i).symm (shortOfStateAux n _))

@@ -3,12 +3,13 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.CategoryTheory.Groupoid.VertexGroup
-import Mathlib.CategoryTheory.Groupoid.Basic
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.GaloisConnection
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.CategoryTheory.Groupoid.VertexGroup
+public import Mathlib.CategoryTheory.Groupoid.Basic
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Subgroupoid
@@ -33,13 +34,13 @@ Given a type `C` with associated `groupoid C` instance.
 * `CategoryTheory.Subgroupoid.comap` is the "preimage" map of subgroupoids along a functor.
 * `CategoryTheory.Subgroupoid.map` is the "image" map of subgroupoids along a functor _injective on
   objects_.
-* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the `vertex group` at a given
+* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the *vertex group* at a given
   vertex `v`, assuming `v` is contained in the `CategoryTheory.Subgroupoid` (meaning, by definition,
   that the arrow `𝟙 v` is contained in the subgroupoid).
 
 ## Implementation details
 
-The structure of this file is copied from/inspired by `Mathlib/GroupTheory/Subgroup/Basic.lean`
+The structure of this file is copied from/inspired by `Mathlib/Algebra/Group/Subgroup/Basic.lean`
 and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
 
 ## TODO
@@ -54,6 +55,8 @@ and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
 category theory, groupoid, subgroupoid
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
@@ -63,11 +66,12 @@ universe u v
 
 variable {C : Type u} [Groupoid C]
 
-/-- A sugroupoid of `C` consists of a choice of arrows for each pair of vertices, closed
+/-- A subgroupoid of `C` consists of a choice of arrows for each pair of vertices, closed
 under composition and inverses.
 -/
 @[ext]
 structure Subgroupoid (C : Type u) [Groupoid C] where
+  /-- The arrow choice for each pair of vertices -/
   arrows : ∀ c d : C, Set (c ⟶ d)
   protected inv : ∀ {c d} {p : c ⟶ d}, p ∈ arrows c d → Groupoid.inv p ∈ arrows d c
   protected mul : ∀ {c d e} {p}, p ∈ arrows c d → ∀ {q}, q ∈ arrows d e → p ≫ q ∈ arrows c e
@@ -127,7 +131,7 @@ def asWideQuiver : Quiver C :=
   ⟨fun c d => Subtype <| S.arrows c d⟩
 
 /-- The coercion of a subgroupoid as a groupoid -/
-@[simps comp_coe, simps (config := .lemmasOnly) inv_coe]
+@[simps comp_coe, simps -isSimp inv_coe]
 instance coe : Groupoid S.objs where
   Hom a b := S.arrows a.val b.val
   id a := ⟨𝟙 a.val, id_mem_of_nonempty_isotropy S a.val a.prop⟩
@@ -139,7 +143,7 @@ theorem coe_inv_coe' {c d : S.objs} (p : c ⟶ d) :
     (CategoryTheory.inv p).val = CategoryTheory.inv p.val := by
   simp only [← inv_eq_inv, coe_inv_coe]
 
-/-- The embedding of the coerced subgroupoid to its parent-/
+/-- The embedding of the coerced subgroupoid to its parent -/
 def hom : S.objs ⥤ C where
   obj c := c.val
   map f := f.val
@@ -151,7 +155,7 @@ theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
   simp only [Subtype.mk_eq_mk]; exact hcd
 
 theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).map f := by
-  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq hfg
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.ext hfg
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/
 def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
@@ -167,6 +171,8 @@ def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
 instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe := toSet
   coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
+
+instance : PartialOrder (Subgroupoid C) := .ofSetLike (Subgroupoid C) (Σ c d : C, c ⟶ d)
 
 theorem mem_iff (S : Subgroupoid C) (F : Σ c d, c ⟶ d) : F ∈ S ↔ F.2.2 ∈ S.arrows F.1 F.2.1 :=
   Iff.rfl
@@ -194,7 +200,7 @@ instance : Bot (Subgroupoid C) :=
 instance : Inhabited (Subgroupoid C) :=
   ⟨⊤⟩
 
-instance : Inf (Subgroupoid C) :=
+instance : Min (Subgroupoid C) :=
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
       inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩
@@ -221,13 +227,13 @@ instance : CompleteLattice (Subgroupoid C) :=
       refine fun s => ⟨fun S Ss F => ?_, fun T Tl F fT => ?_⟩ <;> simp only [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
     bot := ⊥
-    bot_le := fun S => empty_subset _
+    bot_le := fun _ => empty_subset _
     top := ⊤
-    le_top := fun S => subset_univ _
+    le_top := fun _ => subset_univ _
     inf := (· ⊓ ·)
-    le_inf := fun R S T RS RT _ pR => ⟨RS pR, RT pR⟩
-    inf_le_left := fun R S _ => And.left
-    inf_le_right := fun R S _ => And.right }
+    le_inf := fun _ _ _ RS RT _ pR => ⟨RS pR, RT pR⟩
+    inf_le_left := fun _ _ _ => And.left
+    inf_le_right := fun _ _ _ => And.right }
 
 theorem le_objs {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⊆ T.objs := fun s ⟨γ, hγ⟩ =>
   ⟨γ, @h ⟨s, s, γ⟩ hγ⟩
@@ -272,14 +278,14 @@ theorem mem_discrete_iff {c d : C} (f : c ⟶ d) :
     f ∈ discrete.arrows c d ↔ ∃ h : c = d, f = eqToHom h :=
   ⟨by rintro ⟨⟩; exact ⟨rfl, rfl⟩, by rintro ⟨rfl, rfl⟩; constructor⟩
 
-/-- A subgroupoid is wide if its carrier set is all of `C`-/
+/-- A subgroupoid is wide if its carrier set is all of `C`. -/
 structure IsWide : Prop where
   wide : ∀ c, 𝟙 c ∈ S.arrows c c
 
 theorem isWide_iff_objs_eq_univ : S.IsWide ↔ S.objs = Set.univ := by
   constructor
   · rintro h
-    ext x; constructor <;> simp only [top_eq_univ, mem_univ, imp_true_iff, forall_true_left]
+    ext x; constructor <;> simp only [mem_univ, imp_true_iff, forall_true_left]
     apply mem_objs_of_src S (h.wide x)
   · rintro h
     refine ⟨fun c => ?_⟩
@@ -292,8 +298,8 @@ theorem IsWide.id_mem {S : Subgroupoid C} (Sw : S.IsWide) (c : C) : 𝟙 c ∈ S
 theorem IsWide.eqToHom_mem {S : Subgroupoid C} (Sw : S.IsWide) {c d : C} (h : c = d) :
     eqToHom h ∈ S.arrows c d := by cases h; simp only [eqToHom_refl]; apply Sw.id_mem c
 
-/-- A subgroupoid is normal if it is wide and satisfies the expected stability under conjugacy. -/
-structure IsNormal extends IsWide S : Prop where
+/-- A subgroupoid is normal if it is wide and satisfies the expected stability under conjugacy. -/
+structure IsNormal : Prop extends IsWide S where
   conj : ∀ {c d} (p : c ⟶ d) {γ : c ⟶ c}, γ ∈ S.arrows c c → Groupoid.inv p ≫ γ ≫ p ∈ S.arrows d d
 
 theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
@@ -332,7 +338,7 @@ section GeneratedSubgroupoid
 -- TODO: proof that generated is just "words in X" and generatedNormal is similarly
 variable (X : ∀ c d : C, Set (c ⟶ d))
 
-/-- The subgropoid generated by the set of arrows `X` -/
+/-- The subgroupoid generated by the set of arrows `X` -/
 def generated : Subgroupoid C :=
   sInf {S : Subgroupoid C | ∀ c d, X c d ⊆ S.arrows c d}
 
@@ -341,7 +347,7 @@ theorem subset_generated (c d : C) : X c d ⊆ (generated X).arrows c d := by
   simp only [subset_iInter₂_iff]
   exact fun S hS f fS => hS _ _ fS
 
-/-- The normal sugroupoid generated by the set of arrows `X` -/
+/-- The normal subgroupoid generated by the set of arrows `X` -/
 def generatedNormal : Subgroupoid C :=
   sInf {S : Subgroupoid C | (∀ c d, X c d ⊆ S.arrows c d) ∧ S.IsNormal}
 
@@ -371,7 +377,7 @@ variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
- -/
+-/
 def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
   inv hp := by rw [mem_setOf, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp
@@ -493,7 +499,7 @@ theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
 theorem obj_surjective_of_im_eq_top (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) :
     Function.Surjective φ.obj := by
   rintro d
-  rw [← mem_im_objs_iff, hφ']
+  rw [← mem_im_objs_iff _ hφ, hφ']
   apply mem_top_objs
 
 theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) (Sn : S.IsNormal) :
@@ -540,8 +546,7 @@ theorem isTotallyDisconnected_iff :
     S.IsTotallyDisconnected ↔ ∀ c d, (S.arrows c d).Nonempty → c = d := by
   constructor
   · rintro h c d ⟨f, fS⟩
-    have := h ⟨c, mem_objs_of_src S fS⟩ ⟨d, mem_objs_of_tgt S fS⟩ ⟨f, fS⟩
-    exact congr_arg Subtype.val this
+    exact congr_arg Subtype.val <| h ⟨c, mem_objs_of_src S fS⟩ ⟨d, mem_objs_of_tgt S fS⟩ ⟨f, fS⟩
   · rintro h ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, fS⟩
     simp only [Subtype.mk_eq_mk]
     exact h c d ⟨f, fS⟩
@@ -605,9 +610,8 @@ theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   simp only [mem_full_iff]
   exact fun ⟨hc, hd⟩ => ⟨h hc, h hd⟩
 
--- Porting note: using `.1` instead of `↑`
 theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} :
-    f = g ↔ (f.1 : c.val ⟶ d.val) = g.1 :=
+    f = g ↔ f.1 = g.1 :=
   Subtype.ext_iff
 
 end Full

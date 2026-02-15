@@ -3,12 +3,18 @@ Copyright (c) 2018 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
-import Lean
-import Mathlib.Tactic.Core
+module
+
+public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Meta.Tactic.SplitIf
+public meta import Lean.Elab.Tactic.Simp
+public import Mathlib.Tactic.Core
 
 /-!
 Tactic to split if-then-else expressions.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -25,19 +31,19 @@ private inductive SplitPosition
 private def getSplitCandidates (loc : Location) : TacticM (List (SplitPosition × Expr)) :=
 match loc with
 | Location.wildcard => do
-   let candidates ← (← getLCtx).getFVarIds.mapM
-     (fun fvarId ↦ do
-       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
-       return (SplitPosition.hyp fvarId, typ))
-   pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
+  let candidates ← (← getLCtx).getFVarIds.mapM
+    (fun fvarId ↦ do
+      let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+      return (SplitPosition.hyp fvarId, typ))
+  pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
 | Location.targets hyps tgt => do
-   let candidates ← (← hyps.mapM getFVarId).mapM
-     (fun fvarId ↦ do
-       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
-       return (SplitPosition.hyp fvarId, typ))
-   if tgt
-   then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
-   else return candidates.toList
+  let candidates ← (← hyps.mapM getFVarId).mapM
+    (fun fvarId ↦ do
+      let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+      return (SplitPosition.hyp fvarId, typ))
+  if tgt
+  then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
+  else return candidates.toList
 
 /-- Return the condition and decidable instance of an `if` expression to case split. -/
 private partial def findIfToSplit? (e : Expr) : Option (Expr × Expr) :=
@@ -73,8 +79,8 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
-  let _ ← simpLocation ctx {} discharge? loc
+  let ctx := ctx.setFailIfUnchanged false
+  let _ ← simpLocation ctx (← ({} : Simp.SimprocsArray).add `reduceCtorEq false) discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
@@ -154,3 +160,5 @@ elab_rules : tactic
     splitIfsCore loc names []
     for name in ← names.get do
       logWarningAt name m!"unused name: {name}"
+
+end Mathlib.Tactic

@@ -1,11 +1,14 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Finsupp.Defs
+module
+
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # The pointwise product on `Finsupp`.
@@ -15,6 +18,8 @@ see the type synonyms `AddMonoidAlgebra`
 (which is in turn used to define `Polynomial` and `MvPolynomial`)
 and `MonoidAlgebra`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -50,15 +55,17 @@ theorem mul_apply {g₁ g₂ : α →₀ β} {a : α} : (g₁ * g₂) a = g₁ a
 theorem single_mul (a : α) (b₁ b₂ : β) : single a (b₁ * b₂) = single a b₁ * single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
 
+lemma support_mul_subset_left {g₁ g₂ : α →₀ β} :
+    (g₁ * g₂).support ⊆ g₁.support := fun x hx => by
+  aesop
+
+lemma support_mul_subset_right {g₁ g₂ : α →₀ β} :
+    (g₁ * g₂).support ⊆ g₂.support := fun x hx => by
+  aesop
+
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
-    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
-  intro a h
-  simp only [mul_apply, mem_support_iff] at h
-  simp only [mem_support_iff, mem_inter, Ne]
-  rw [← not_or]
-  intro w
-  apply h
-  cases' w with w w <;> (rw [w]; simp)
+    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support :=
+  subset_inter support_mul_subset_left support_mul_subset_right
 
 instance : MulZeroClass (α →₀ β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
@@ -89,10 +96,12 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
--- TODO can this be generalized in the direction of `Pi.smul'`
--- (i.e. dependent functions and finsupps)
--- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
-instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
+-- TODO(Paul-Lez): add a `DFinsupp` version of this.
+-- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
+-- def rather than an instance.
+/-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
+-- see Note [reducible non-instances]
+abbrev pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
   smul f g :=
     Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
       apply Set.Finite.subset g.finite_support
@@ -101,6 +110,8 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
       intro x hx h
       apply hx
       rw [h, smul_zero])
+
+instance pointwiseScalarSemiring [Semiring β] : SMul (α → β) (α →₀ β) := pointwiseScalar
 
 @[simp]
 theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=

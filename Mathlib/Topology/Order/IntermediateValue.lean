@@ -1,12 +1,15 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
+Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Order.Interval.Set.Image
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.Order.Monotone
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem
@@ -29,7 +32,7 @@ on intervals.
 
 * `IsClosed.Icc_subset_of_forall_mem_nhdsWithin` : “Continuous induction” principle;
   if `s ∩ [a, b]` is closed, `a ∈ s`, and for each `x ∈ [a, b) ∩ s` some of its right neighborhoods
-  is included `s`, then `[a, b] ⊆ s`.
+  is included in `s`, then `[a, b] ⊆ s`.
 * `IsClosed.Icc_subset_of_forall_exists_gt`, `IsClosed.mem_of_ge_of_forall_exists_gt` : two
   other versions of the “continuous induction” principle.
 * `ContinuousOn.StrictMonoOn_of_InjOn_Ioo` :
@@ -41,11 +44,13 @@ on intervals.
 intermediate value theorem, connected space, connected set
 -/
 
+@[expose] public section
+
 
 open Filter OrderDual TopologicalSpace Function Set
 open scoped Topology Filter Interval
 
-universe u v w
+universe u v
 
 /-!
 ### Intermediate value theorem on a (pre)connected space
@@ -122,21 +127,20 @@ theorem IsPreconnected.intermediate_value {s : Set X} (hs : IsPreconnected s) {a
 theorem IsPreconnected.intermediate_value_Ico {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s) {v : α}
     (ht : Tendsto f l (𝓝 v)) : Ico (f a) v ⊆ f '' s := fun _ h =>
-  hs.intermediate_value₂_eventually₁ ha hl hf continuousOn_const h.1
-    (eventually_ge_of_tendsto_gt h.2 ht)
+  hs.intermediate_value₂_eventually₁ ha hl hf continuousOn_const h.1 (ht.eventually_const_le h.2)
 
 theorem IsPreconnected.intermediate_value_Ioc {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s) {v : α}
     (ht : Tendsto f l (𝓝 v)) : Ioc v (f a) ⊆ f '' s := fun _ h =>
   (hs.intermediate_value₂_eventually₁ ha hl continuousOn_const hf h.2
-    (eventually_le_of_tendsto_lt h.1 ht)).imp fun _ h => h.imp_right Eq.symm
+    (ht.eventually_le_const h.1)).imp fun _ h => h.imp_right Eq.symm
 
 theorem IsPreconnected.intermediate_value_Ioo {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v₁ v₂ : α} (ht₁ : Tendsto f l₁ (𝓝 v₁)) (ht₂ : Tendsto f l₂ (𝓝 v₂)) :
     Ioo v₁ v₂ ⊆ f '' s := fun _ h =>
   hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const
-    (eventually_le_of_tendsto_lt h.1 ht₁) (eventually_ge_of_tendsto_gt h.2 ht₂)
+    (ht₁.eventually_le_const h.1) (ht₂.eventually_const_le h.2)
 
 theorem IsPreconnected.intermediate_value_Ici {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
@@ -153,19 +157,19 @@ theorem IsPreconnected.intermediate_value_Ioi {s : Set X} (hs : IsPreconnected s
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v : α} (ht₁ : Tendsto f l₁ (𝓝 v)) (ht₂ : Tendsto f l₂ atTop) : Ioi v ⊆ f '' s := fun y h =>
   hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const
-    (eventually_le_of_tendsto_lt h ht₁) (tendsto_atTop.1 ht₂ y)
+    (ht₁.eventually_le_const h) (ht₂.eventually_ge_atTop y)
 
 theorem IsPreconnected.intermediate_value_Iio {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v : α} (ht₁ : Tendsto f l₁ atBot) (ht₂ : Tendsto f l₂ (𝓝 v)) : Iio v ⊆ f '' s := fun y h =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (tendsto_atBot.1 ht₁ y)
-    (eventually_ge_of_tendsto_gt h ht₂)
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (ht₁.eventually_le_atBot y)
+    (ht₂.eventually_const_le h)
 
 theorem IsPreconnected.intermediate_value_Iii {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     (ht₁ : Tendsto f l₁ atBot) (ht₂ : Tendsto f l₂ atTop) : univ ⊆ f '' s := fun y _ =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (tendsto_atBot.1 ht₁ y)
-    (tendsto_atTop.1 ht₂ y)
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (ht₁.eventually_le_atBot y)
+    (ht₂.eventually_ge_atTop y)
 
 /-- **Intermediate Value Theorem** for continuous functions on connected spaces. -/
 theorem intermediate_value_univ [PreconnectedSpace X] (a b : X) {f : X → α} (hf : Continuous f) :
@@ -185,7 +189,7 @@ In this section we prove the following results:
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
-  is one of the intervals `Set.Icc`, `set.`Ico`, `set.Ioc`, `set.Ioo`, ``Set.Ici`, `Set.Iic`,
+  is one of the intervals `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`, `Set.Ici`, `Set.Iic`,
   `Set.Ioi`, `Set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
   of positive numbers cannot be represented as `Set.Ioi _`.
 
@@ -205,7 +209,7 @@ theorem IsConnected.Icc_subset {s : Set α} (hs : IsConnected s) {a b : α} (ha 
     (hb : b ∈ s) : Icc a b ⊆ s :=
   hs.2.Icc_subset ha hb
 
-/-- If preconnected set in a linear order space is unbounded below and above, then it is the whole
+/-- If a preconnected set in a linear order space is unbounded below and above, then it is the whole
 space. -/
 theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : ¬BddAbove s) : s = univ := by
@@ -216,9 +220,7 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} {β : Type v} {γ : Type w} [ConditionallyCompleteLinearOrder α]
-  [TopologicalSpace α] [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
-  [OrderTopology β] [Nonempty γ]
+variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
@@ -261,14 +263,13 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     simp only [insert_subset_iff, mem_insert_iff, mem_singleton_iff, true_or, or_true,
       singleton_subset_iff, and_self]
   · refine Or.inr <| Or.inr <| Or.inr <| Or.inr ?_
-    cases'
-      mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
-      hs hs
+    rcases mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx ↦
+      csInf_le hb hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 6 apply Or.inr
-    cases' mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx => le_csSup ha hx
-      with hs hs
+    rcases mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx ↦
+      le_csSup ha hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 8 apply Or.inr
@@ -307,11 +308,11 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   let c := sSup (s ∩ Icc a b)
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
   have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
-  cases' eq_or_lt_of_le c_le with hc hc
+  rcases eq_or_lt_of_le c_le with hc | hc
   · exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
-  exact not_lt_of_le (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
+  exact not_lt_of_ge (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `a ≤ x < y ≤ b`, `x ∈ s`, the set `s ∩ (x, y]`
@@ -320,29 +321,83 @@ theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : Is
     (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, ∀ y ∈ Ioi x, (s ∩ Ioc x y).Nonempty) : Icc a b ⊆ s := by
   intro y hy
   have : IsClosed (s ∩ Icc a y) := by
-    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y by
-      rw [this]
-      exact IsClosed.inter hs isClosed_Icc
-    rw [inter_assoc]
-    congr
-    exact (inter_eq_self_of_subset_right <| Icc_subset_Icc_right hy.2).symm
-  exact
-    IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx =>
-      hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y from this ▸ hs.inter isClosed_Icc
+    grind [inter_assoc, inter_eq_self_of_subset_right, Icc_subset_Icc_right]
+  exact IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx ↦
+    hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and the set `s ∩ (a, b]` has no minimal point, then `a ∈ s`. -/
+theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ioc a b, (s ∩ Ico a x).Nonempty) : a ∈ s := by
+  suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
+  have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
+  rw [preimage_inter, ← Icc_toDual] at this
+  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  rw [Ico_toDual, ← preimage_inter, ← Equiv.image_symm_eq_preimage, mem_image] at hx
+  aesop
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and for any `a ≤ y < x ≤ b`, `x ∈ s`, the set `s ∩ [y, x)`
+is not empty, then `[a, b] ⊆ s`. -/
+theorem IsClosed.Icc_subset_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hgt : ∀ x ∈ s ∩ Ioc a b, ∀ y ∈ Iio x, (s ∩ Ico y x).Nonempty) : Icc a b ⊆ s := by
+  intro y hy
+  have : IsClosed (s ∩ Icc y b) := by
+    suffices s ∩ Icc y b = s ∩ Icc a b ∩ Icc y b from this ▸ hs.inter isClosed_Icc
+    grind [Icc_subset_Icc_left, inter_eq_self_of_subset_right, inter_assoc]
+  exact IsClosed.mem_of_ge_of_forall_exists_lt this hb hy.2 fun x hx ↦
+    hgt x ⟨hx.1, Ioc_subset_Ioc_left hy.1 hx.2⟩ y hx.2.1
 
 variable [DenselyOrdered α] {a b : α}
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `a`, and for any `x ∈ [a, b)` such that `[a, x]` is included in `s`,
+the set `s` includes some open neighborhood of `x` within `(x, +∞)`, then `[a, b] ⊆ s`. -/
+lemma IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset {a b : α} {s : Set α}
+    (hs : IsClosed (s ∩ Icc a b)) (ha : a ∈ s)
+    (h : ∀ t ∈ Ico a b, Icc a t ⊆ s → s ∈ 𝓝[>] t) :
+    Icc a b ⊆ s := by
+  rcases lt_or_ge b a with hab | hab
+  · simp_all
+  set A := {t ∈ Icc a b | Icc a t ⊆ s}
+  have a_mem : a ∈ A := ⟨left_mem_Icc.mpr hab, by simp [ha]⟩
+  have bdd_A : BddAbove A := ⟨b, fun t ht ↦ ht.1.2⟩
+  set t₁ := sSup A
+  have t₁_mem : t₁ ∈ Icc a b := ⟨le_csSup bdd_A a_mem, csSup_le ⟨a, a_mem⟩ (fun t ht ↦ ht.1.2)⟩
+  obtain ⟨⟨t₁a, t₁b⟩, ht₁⟩ : t₁ ∈ A := by
+    refine ⟨t₁_mem, fun t ht ↦ ?_⟩
+    rcases ht.2.eq_or_lt with rfl | h
+    · have : closure A ⊆ s ∩ Icc a b := by
+        apply (closure_subset_iff hs).2 (fun t ht ↦ ⟨?_, ht.1⟩)
+        have : t ∈ Icc a t := ⟨ht.1.1, le_rfl⟩
+        exact ht.2 this
+      apply this.trans inter_subset_left
+      exact csSup_mem_closure ⟨a, a_mem⟩ bdd_A
+    · obtain ⟨c, cA, tc⟩ : ∃ c ∈ A, t < c := (lt_csSup_iff bdd_A ⟨a, a_mem⟩).1 h
+      apply cA.2
+      exact ⟨ht.1, tc.le⟩
+  suffices t₁ = b by simpa [this] using ht₁
+  apply eq_of_le_of_not_lt t₁b fun t₁b' ↦ ?_
+  obtain ⟨m, t₁m, H⟩ : ∃ m > t₁, Ioo t₁ m ⊆ s :=
+    (mem_nhdsGT_iff_exists_Ioo_subset' t₁b').mp (h t₁ ⟨t₁a, t₁b'⟩ (fun s hs ↦ ht₁ hs))
+  obtain ⟨t, hat, ht⟩ : ∃ t, t₁ < t ∧ t < min m b := exists_between (lt_min t₁m t₁b')
+  have : t ∈ A := by
+    refine ⟨⟨by order, ht.le.trans (min_le_right _ _)⟩, fun t' ht' ↦ ?_⟩
+    rcases le_or_gt t' t₁ with h't' | h't'
+    · exact ht₁ ⟨ht'.1, h't'⟩
+    · exact H ⟨h't', ht'.2.trans_lt <| ht.trans_le <| min_le_left ..⟩
+  have : t ≤ t₁ := le_csSup bdd_A this
+  order
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `x ∈ s ∩ [a, b)` the set `s` includes some open
 neighborhood of `x` within `(x, +∞)`, then `[a, b] ⊆ s`. -/
 theorem IsClosed.Icc_subset_of_forall_mem_nhdsWithin {a b : α} {s : Set α}
     (hs : IsClosed (s ∩ Icc a b)) (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, s ∈ 𝓝[>] x) :
-    Icc a b ⊆ s := by
-  apply hs.Icc_subset_of_forall_exists_gt ha
-  rintro x ⟨hxs, hxab⟩ y hyxb
-  have : s ∩ Ioc x y ∈ 𝓝[>] x :=
-    inter_mem (hgt x ⟨hxs, hxab⟩) (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hyxb⟩)
-  exact (nhdsWithin_Ioi_self_neBot' ⟨b, hxab.2⟩).nonempty_of_mem this
+    Icc a b ⊆ s :=
+  hs.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset ha
+    (fun _t ht h't ↦ hgt _ ⟨h't ⟨ht.1, le_rfl⟩, ht⟩)
 
 theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : IsClosed s)
     (ht : IsClosed t) (hab : Icc a b ⊆ s ∪ t) (hx : x ∈ Icc a b ∩ s) (hy : y ∈ Icc a b ∩ t) :
@@ -355,7 +410,7 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
   rintro z ⟨zs, hz⟩
   have zt : z ∈ tᶜ := fun zt => hst ⟨z, xyab <| Ico_subset_Icc_self hz, zs, zt⟩
   have : tᶜ ∩ Ioc z y ∈ 𝓝[>] z := by
-    rw [← nhdsWithin_Ioc_eq_nhdsWithin_Ioi hz.2]
+    rw [← nhdsWithin_Ioc_eq_nhdsGT hz.2]
     exact mem_nhdsWithin.2 ⟨tᶜ, ht.isOpen_compl, zt, Subset.rfl⟩
   apply mem_of_superset this
   have : Ioc z y ⊆ s ∪ t := fun w hw => hab (xyab ⟨le_trans hz.1 (le_of_lt hw.1), hw.2⟩)
@@ -398,8 +453,14 @@ theorem isPreconnected_Ioi : IsPreconnected (Ioi a) :=
 theorem isPreconnected_Ioo : IsPreconnected (Ioo a b) :=
   ordConnected_Ioo.isPreconnected
 
+theorem isPreconnected_uIoo : IsPreconnected (uIoo a b) :=
+  isPreconnected_Ioo
+
 theorem isPreconnected_Ioc : IsPreconnected (Ioc a b) :=
   ordConnected_Ioc.isPreconnected
+
+theorem isPreconnected_uIoc : IsPreconnected (uIoc a b) :=
+  isPreconnected_Ioc
 
 theorem isPreconnected_Ico : IsPreconnected (Ico a b) :=
   ordConnected_Ico.isPreconnected
@@ -422,8 +483,14 @@ theorem isConnected_Icc (h : a ≤ b) : IsConnected (Icc a b) :=
 theorem isConnected_Ioo (h : a < b) : IsConnected (Ioo a b) :=
   ⟨nonempty_Ioo.2 h, isPreconnected_Ioo⟩
 
+theorem isConnected_uIoo (h : a ≠ b) : IsConnected (uIoo a b) :=
+  ⟨nonempty_uIoo.2 h, isPreconnected_uIoo⟩
+
 theorem isConnected_Ioc (h : a < b) : IsConnected (Ioc a b) :=
   ⟨nonempty_Ioc.2 h, isPreconnected_Ioc⟩
+
+theorem isConnected_uIoc (h : a ≠ b) : IsConnected (uIoc a b) :=
+  ⟨nonempty_uIoc.2 h, isPreconnected_uIoc⟩
 
 theorem isConnected_Ico (h : a < b) : IsConnected (Ico a b) :=
   ⟨nonempty_Ico.2 h, isPreconnected_Ico⟩
@@ -443,12 +510,12 @@ theorem setOf_isPreconnected_eq_of_ordered :
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true_iff,
+    mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
 
-/-- This lemmas characterizes when a subset `s` of a densely ordered conditionally complete linear
+/-- This lemma characterizes when a subset `s` of a densely ordered conditionally complete linear
 order is totally disconnected with respect to the order topology: between any two distinct points
 of `s` must lie a point not in `s`. -/
 lemma isTotallyDisconnected_iff_lt {s : Set α} :
@@ -512,35 +579,35 @@ theorem exists_mem_Icc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : Cont
 
 theorem intermediate_value_Ico {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ico (f a) (f b) ⊆ f '' Ico a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_le (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_ge (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ico _ _ _ _ _ _ _ isPreconnected_Ico _ _ ⟨refl a, hlt⟩
       (right_nhdsWithin_Ico_neBot hlt) inf_le_right _ (hf.mono Ico_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ico_subset_Icc_self)
 
 theorem intermediate_value_Ico' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ioc (f b) (f a) ⊆ f '' Ico a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_le (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_ge (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioc _ _ _ _ _ _ _ isPreconnected_Ico _ _ ⟨refl a, hlt⟩
       (right_nhdsWithin_Ico_neBot hlt) inf_le_right _ (hf.mono Ico_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ico_subset_Icc_self)
 
 theorem intermediate_value_Ioc {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ioc (f a) (f b) ⊆ f '' Ioc a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_le_of_lt (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_le_of_gt (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioc _ _ _ _ _ _ _ isPreconnected_Ioc _ _ ⟨hlt, refl b⟩
       (left_nhdsWithin_Ioc_neBot hlt) inf_le_right _ (hf.mono Ioc_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioc_subset_Icc_self)
 
 theorem intermediate_value_Ioc' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ico (f b) (f a) ⊆ f '' Ioc a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_le_of_lt (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_le_of_gt (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ico _ _ _ _ _ _ _ isPreconnected_Ioc _ _ ⟨hlt, refl b⟩
       (left_nhdsWithin_Ioc_neBot hlt) inf_le_right _ (hf.mono Ioc_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioc_subset_Icc_self)
 
 theorem intermediate_value_Ioo {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ioo (f a) (f b) ⊆ f '' Ioo a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_lt (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_gt (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioo _ _ _ _ _ _ _ isPreconnected_Ioo _ _
       (left_nhdsWithin_Ioo_neBot hlt) (right_nhdsWithin_Ioo_neBot hlt) inf_le_right inf_le_right _
       (hf.mono Ioo_subset_Icc_self) _ _
@@ -549,7 +616,7 @@ theorem intermediate_value_Ioo {a b : α} (hab : a ≤ b) {f : α → δ} (hf : 
 
 theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ioo (f b) (f a) ⊆ f '' Ioo a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_lt (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_gt (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioo _ _ _ _ _ _ _ isPreconnected_Ioo _ _
       (right_nhdsWithin_Ioo_neBot hlt) (left_nhdsWithin_Ioo_neBot hlt) inf_le_right inf_le_right _
       (hf.mono Ioo_subset_Icc_self) _ _
@@ -557,35 +624,35 @@ theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioo_subset_Icc_self)
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
-`b` are two points of this set, then `f` sends `s` to a superset of `Icc (f x) (f y)`. -/
+`b` are two points of this set, then `f` sends `s` to a superset of `Icc (f a) (f b)`. -/
 theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (Icc (f a) (f b)) :=
   hs.isPreconnected.intermediate_value ha hb hf
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
-`b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
+`b` are two points of this set, then `f` sends `s` to a superset of `[f a, f b]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     SurjOn f s (uIcc (f a) (f b)) := by
   rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 
-/-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
-`at_bot` is surjective. -/
+/-- A continuous function which tends to `Filter.atTop` along `Filter.atTop` and to `Filter.atBot`
+along `Filter.atBot` is surjective. -/
 theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atTop atTop)
     (h_bot : Tendsto f atBot atBot) : Function.Surjective f := fun p =>
   mem_range_of_exists_le_of_exists_ge hf (h_bot.eventually (eventually_le_atBot p)).exists
     (h_top.eventually (eventually_ge_atTop p)).exists
 
-/-- A continuous function which tendsto `Filter.atBot` along `Filter.atTop` and to `Filter.atTop`
-along `atBot` is surjective. -/
+/-- A continuous function which tends to `Filter.atBot` along `Filter.atTop` and to `Filter.atTop`
+along `Filter.atBot` is surjective. -/
 theorem Continuous.surjective' {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atBot atTop)
     (h_bot : Tendsto f atTop atBot) : Function.Surjective f :=
   Continuous.surjective (α := αᵒᵈ) hf h_top h_bot
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
-tends to `at_bot : Filter β` along `at_bot : Filter ↥s` and tends to `Filter.atTop : Filter β` along
-`Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
-conclusion as `Function.surjOn f s Set.univ`. -/
+tends to `Filter.atBot : Filter β` along `Filter.atBot : Filter ↥s` and tends to
+`Filter.atTop : Filter β` along `Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is
+surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atBot)
     (htop : Tendsto (fun x : s => f x) atTop atTop) : SurjOn f s univ :=
@@ -606,19 +673,18 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
   intro a b hab
   by_contra! h
   have H : f b < f a := lt_of_le_of_ne h <| hf_i.ne hab.ne'
-  by_cases ha : f a ≤ f ⊥
+  by_cases! ha : f a ≤ f ⊥
   · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
     have : u = ⊥ := hf_i hu.2
-    aesop
-  · by_cases hb : f ⊥ < f b
+    simp_all
+  · by_cases! hb : f ⊥ < f b
     · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
       rw [hf_i hu.2] at hu
       exact (hab.trans hu.1.2).false
-    · push_neg at ha hb
-      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
+    · replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
       obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
       have : u = ⊥ := hf_i hu.2
-      aesop
+      simp_all
 
 theorem Continuous.strictAnti_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}
     (hf_c : Continuous f) (hf : f ⊤ ≤ f ⊥) (hf_i : Injective f) : StrictAnti f :=
@@ -641,9 +707,8 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   let t := max b y
   have hsa : s ≤ a := min_le_left a x
   have hbt : b ≤ t := le_max_left b y
-  have hst : s ≤ t := hsa.trans $ hbt.trans' hab.le
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
-    letI := Icc.completeLinearOrder hst
+    have : Fact (s ≤ t) := ⟨hsa.trans <| hbt.trans' hab.le⟩
     have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)
       hf_c.continuousOn.restrict hf_i.injOn.injective
     exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr
@@ -666,7 +731,7 @@ theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}
     (hab : a ≤ b) (hfab : f a ≤ f b)
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
     StrictMonoOn f (Icc a b) := by
-  letI := Icc.completeLinearOrder hab
+  have : Fact (a ≤ b) := ⟨hab⟩
   refine StrictMono.of_restrict ?_
   set g : Icc a b → δ := Set.restrict (Icc a b) f
   have hgab : g ⊥ ≤ g ⊤ := by aesop
@@ -696,19 +761,11 @@ theorem Continuous.strictMono_of_inj {f : α → δ}
     (hf_c.continuousOn.strictMonoOn_of_injOn_Icc' hcd.le hf_i.injOn).imp
       (hf_c.strictMonoOn_of_inj_rigidity hf_i hcd)
       (hf_c.strictMonoOn_of_inj_rigidity (δ := δᵒᵈ) hf_i hcd)
-  by_cases hn : Nonempty α
-  · let a : α := Classical.choice ‹_›
-    by_cases h : ∃ b : α, a ≠ b
-    · choose b hb using h
-      by_cases hab : a < b
-      · exact H hab
-      · push_neg at hab
-        have : b < a := by exact Ne.lt_of_le (id (Ne.symm hb)) hab
-        exact H this
-    · push_neg at h
-      haveI : Subsingleton α := ⟨fun c d => Trans.trans (h c).symm (h d)⟩
-      exact Or.inl <| Subsingleton.strictMono f
-  · aesop
+  cases subsingleton_or_nontrivial α with
+  | inl h => exact Or.inl <| Subsingleton.strictMono f
+  | inr h =>
+    obtain ⟨a, b, hab⟩ := exists_pair_lt α
+    exact H hab
 
 /-- Every continuous injective `f : (a, b) → δ` is strictly monotone
 or antitone (increasing or decreasing). -/

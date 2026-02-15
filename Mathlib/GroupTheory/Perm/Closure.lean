@@ -3,8 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
+module
 
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
 # Closure results for permutation groups
@@ -19,6 +20,8 @@ import Mathlib.GroupTheory.Perm.Cycle.Basic
     a prime cycle and a transposition
 
 -/
+
+public section
 
 open Equiv Function Finset
 
@@ -40,24 +43,26 @@ theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
 
 variable [DecidableEq α] [Fintype α]
 
-theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.support = ⊤) (x : α) :
+theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.support = univ) (x : α) :
     closure ({σ, swap x (σ x)} : Set (Perm α)) = ⊤ := by
   let H := closure ({σ, swap x (σ x)} : Set (Perm α))
   have h3 : σ ∈ H := subset_closure (Set.mem_insert σ _)
   have h4 : swap x (σ x) ∈ H := subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
   have step1 : ∀ n : ℕ, swap ((σ ^ n) x) ((σ ^ (n + 1) : Perm α) x) ∈ H := by
     intro n
-    induction' n with n ih
-    · exact subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
-    · convert H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
-      simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ']
-      rfl
+    induction n with
+    | zero => exact subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
+    | succ n ih =>
+      convert H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
+      simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ', coe_mul, comp_apply]
   have step2 : ∀ n : ℕ, swap x ((σ ^ n) x) ∈ H := by
     intro n
-    induction' n with n ih
-    · simp only [Nat.zero_eq, pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
+    induction n with
+    | zero =>
+      simp only [pow_zero, coe_one, id_eq, swap_self]
       convert H.one_mem
-    · by_cases h5 : x = (σ ^ n) x
+    | succ n ih =>
+      by_cases h5 : x = (σ ^ n) x
       · rw [pow_succ', mul_apply, ← h5]
         exact h4
       by_cases h6 : x = (σ ^ (n + 1) : Perm α) x
@@ -67,11 +72,11 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
       exact H.mul_mem (H.mul_mem (step1 n) ih) (step1 n)
   have step3 : ∀ y : α, swap x y ∈ H := by
     intro y
-    have hx : x ∈ (⊤ : Finset α) := Finset.mem_univ x
+    have hx : x ∈ univ := Finset.mem_univ x
     rw [← h2, mem_support] at hx
-    have hy : y ∈ (⊤ : Finset α) := Finset.mem_univ y
+    have hy : y ∈ univ := Finset.mem_univ y
     rw [← h2, mem_support] at hy
-    cases' IsCycle.exists_pow_eq h1 hx hy with n hn
+    obtain ⟨n, hn⟩ := IsCycle.exists_pow_eq h1 hx hy
     rw [← hn]
     exact step2 n
   have step4 : ∀ y z : α, swap y z ∈ H := by
@@ -93,8 +98,8 @@ theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n 
     (h1 : IsCycle σ) (h2 : σ.support = Finset.univ) (x : α) :
     closure ({σ, swap x ((σ ^ n) x)} : Set (Perm α)) = ⊤ := by
   rw [← Finset.card_univ, ← h2, ← h1.orderOf] at h0
-  cases' exists_pow_eq_self_of_coprime h0 with m hm
-  have h2' : (σ ^ n).support = ⊤ := Eq.trans (support_pow_coprime h0) h2
+  obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h0
+  have h2' : (σ ^ n).support = univ := Eq.trans (support_pow_coprime h0) h2
   have h1' : IsCycle ((σ ^ n) ^ (m : ℤ)) := by rwa [← hm] at h1
   replace h1' : IsCycle (σ ^ n) :=
     h1'.of_pow (le_trans (support_pow_le σ n) (ge_of_eq (congr_arg support hm)))
@@ -112,7 +117,7 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
   rw [h5, ← hi]
   refine closure_cycle_coprime_swap
     (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 ?_)) h1 h2 x
-  cases' h with m hm
+  obtain ⟨m, hm⟩ := h
   rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
     one_apply] at hi
 

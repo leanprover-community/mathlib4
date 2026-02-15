@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.Module.StrongTopology
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Compact operators
@@ -47,6 +49,8 @@ coercing from continuous linear maps to linear maps often needs type ascriptions
 Compact operator
 -/
 
+@[expose] public section
+
 
 open Function Set Filter Bornology Metric Pointwise Topology
 
@@ -68,7 +72,7 @@ section Characterizations
 
 section
 
-variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R₁ →+* R₂} {M₁ M₂ : Type*}
+variable {R₁ : Type*} [Semiring R₁] {M₁ M₂ : Type*}
   [TopologicalSpace M₁] [AddCommMonoid M₁] [TopologicalSpace M₂]
 
 theorem isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ → M₂) :
@@ -99,7 +103,7 @@ theorem IsCompactOperator.image_subset_compact_of_isVonNBounded {f : M₁ →ₛ
   let ⟨c, hc⟩ := NormedField.exists_lt_norm 𝕜₁ r
   let this := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   ⟨σ₁₂ c • K, hK.image <| continuous_id.const_smul (σ₁₂ c), by
-    rw [image_subset_iff, preimage_smul_setₛₗ _ _ _ f this.isUnit]; exact hrS c hc.le⟩
+    rw [image_subset_iff, this.isUnit.preimage_smul_setₛₗ σ₁₂]; exact hrS c hc.le⟩
 
 theorem IsCompactOperator.isCompact_closure_image_of_isVonNBounded [T2Space M₂] {f : M₁ →ₛₗ[σ₁₂] M₂}
     (hf : IsCompactOperator f) {S : Set M₁} (hS : IsVonNBounded 𝕜₁ S) :
@@ -112,7 +116,7 @@ end Bounded
 section NormedSpace
 
 variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [SeminormedRing 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂}
-  {M₁ M₂ M₃ : Type*} [SeminormedAddCommGroup M₁] [TopologicalSpace M₂] [AddCommMonoid M₂]
+  {M₁ M₂ : Type*} [SeminormedAddCommGroup M₁] [TopologicalSpace M₂] [AddCommMonoid M₂]
   [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂]
 
 theorem IsCompactOperator.image_subset_compact_of_bounded [ContinuousConstSMul 𝕜₂ M₂]
@@ -178,10 +182,10 @@ end Characterizations
 
 section Operations
 
-variable {R₁ R₂ R₃ R₄ : Type*} [Semiring R₁] [Semiring R₂] [CommSemiring R₃] [CommSemiring R₄]
-  {σ₁₂ : R₁ →+* R₂} {σ₁₄ : R₁ →+* R₄} {σ₃₄ : R₃ →+* R₄} {M₁ M₂ M₃ M₄ : Type*} [TopologicalSpace M₁]
-  [AddCommMonoid M₁] [TopologicalSpace M₂] [AddCommMonoid M₂] [TopologicalSpace M₃]
-  [AddCommGroup M₃] [TopologicalSpace M₄] [AddCommGroup M₄]
+variable {R₁ R₄ : Type*} [Semiring R₁] [CommSemiring R₄]
+  {σ₁₄ : R₁ →+* R₄} {M₁ M₂ M₄ : Type*} [TopologicalSpace M₁]
+  [AddCommMonoid M₁] [TopologicalSpace M₂] [AddCommMonoid M₂]
+  [TopologicalSpace M₄] [AddCommGroup M₄]
 
 theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
     [ContinuousConstSMul S M₂] {f : M₁ → M₂} (hf : IsCompactOperator f) (c : S) :
@@ -202,7 +206,7 @@ theorem IsCompactOperator.neg [ContinuousNeg M₄] {f : M₁ → M₄} (hf : IsC
   let ⟨K, hK, hKf⟩ := hf
   ⟨-K, hK.neg, mem_of_superset hKf fun x (hx : f x ∈ K) => Set.neg_mem_neg.mpr hx⟩
 
-theorem IsCompactOperator.sub [TopologicalAddGroup M₄] {f g : M₁ → M₄} (hf : IsCompactOperator f)
+theorem IsCompactOperator.sub [IsTopologicalAddGroup M₄] {f g : M₁ → M₄} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f - g) := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
@@ -210,7 +214,7 @@ variable (σ₁₄ M₁ M₄)
 
 /-- The submodule of compact continuous linear maps. -/
 def compactOperator [Module R₁ M₁] [Module R₄ M₄] [ContinuousConstSMul R₄ M₄]
-    [TopologicalAddGroup M₄] : Submodule R₄ (M₁ →SL[σ₁₄] M₄) where
+    [IsTopologicalAddGroup M₄] : Submodule R₄ (M₁ →SL[σ₁₄] M₄) where
   carrier := { f | IsCompactOperator f }
   add_mem' hf hg := hf.add hg
   zero_mem' := isCompactOperator_zero
@@ -247,24 +251,24 @@ end Comp
 
 section CodRestrict
 
-variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R₁ →+* R₂} {M₁ M₂ : Type*}
-  [TopologicalSpace M₁] [TopologicalSpace M₂] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R₁ M₁]
+variable {R₂ : Type*} [Semiring R₂] {M₁ M₂ : Type*}
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [AddCommMonoid M₁] [AddCommMonoid M₂]
   [Module R₂ M₂]
 
 theorem IsCompactOperator.codRestrict {f : M₁ → M₂} (hf : IsCompactOperator f) {V : Submodule R₂ M₂}
     (hV : ∀ x, f x ∈ V) (h_closed : IsClosed (V : Set M₂)) :
     IsCompactOperator (Set.codRestrict f V hV) :=
   let ⟨_, hK, hKf⟩ := hf
-  ⟨_, (closedEmbedding_subtype_val h_closed).isCompact_preimage hK, hKf⟩
+  ⟨_, h_closed.isClosedEmbedding_subtypeVal.isCompact_preimage hK, hKf⟩
 
 end CodRestrict
 
 section Restrict
 
-variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃] {σ₁₂ : R₁ →+* R₂}
-  {σ₂₃ : R₂ →+* R₃} {M₁ M₂ M₃ : Type*} [TopologicalSpace M₁] [UniformSpace M₂]
-  [TopologicalSpace M₃] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R₁ M₁]
-  [Module R₂ M₂] [Module R₃ M₃]
+variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ₁₂ : R₁ →+* R₂}
+  {M₁ M₂ : Type*} [TopologicalSpace M₁] [UniformSpace M₂]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R₁ M₁]
+  [Module R₂ M₂]
 
 /-- If a compact operator preserves a closed submodule, its restriction to that submodule is
 compact.
@@ -298,14 +302,14 @@ section Continuous
 
 variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
   {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂] {M₁ M₂ : Type*} [TopologicalSpace M₁] [AddCommGroup M₁]
-  [TopologicalSpace M₂] [AddCommGroup M₂] [Module 𝕜₁ M₁] [Module 𝕜₂ M₂] [TopologicalAddGroup M₁]
-  [ContinuousConstSMul 𝕜₁ M₁] [TopologicalAddGroup M₂] [ContinuousSMul 𝕜₂ M₂]
+  [TopologicalSpace M₂] [AddCommGroup M₂] [Module 𝕜₁ M₁] [Module 𝕜₂ M₂] [IsTopologicalAddGroup M₁]
+  [ContinuousConstSMul 𝕜₁ M₁] [IsTopologicalAddGroup M₂] [ContinuousSMul 𝕜₂ M₂]
 
 @[continuity]
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
-  letI : UniformSpace M₂ := TopologicalAddGroup.toUniformSpace _
-  haveI : UniformAddGroup M₂ := comm_topologicalAddGroup_is_uniform
+  letI : UniformSpace M₂ := IsTopologicalAddGroup.rightUniformSpace _
+  haveI : IsUniformAddGroup M₂ := isUniformAddGroup_of_addCommGroup
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.
   refine continuous_of_continuousAt_zero f fun U hU => ?_
@@ -324,13 +328,13 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   suffices (σ₁₂ <| c⁻¹) • K ⊆ U by
     refine mem_of_superset ?_ this
     have : IsUnit c⁻¹ := hcnz.isUnit.inv
-    rwa [mem_map, preimage_smul_setₛₗ _ _ _ f this, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
+    rwa [mem_map, this.preimage_smul_setₛₗ σ₁₂, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
   -- Since `σ₁₂ c⁻¹` = `(σ₁₂ c)⁻¹`, we have to prove that `K ⊆ σ₁₂ c • U`.
-  rw [map_inv₀, ← subset_set_smul_iff₀ ((map_ne_zero σ₁₂).mpr hcnz)]
+  rw [map_inv₀, ← subset_smul_set_iff₀ ((map_ne_zero σ₁₂).mpr hcnz)]
   -- But `σ₁₂` is isometric, so `‖σ₁₂ c‖ = ‖c‖ > r`, which concludes the argument since
   -- `∀ a : 𝕜₂, r ≤ ‖a‖ → K ⊆ a • U`.
   refine hrU (σ₁₂ c) ?_
-  rw [RingHomIsometric.is_iso]
+  rw [RingHomIsometric.norm_map]
   exact hc.le
 
 /-- Upgrade a compact `LinearMap` to a `ContinuousLinearMap`. -/
@@ -360,7 +364,7 @@ end Continuous
 closed. -/
 theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
     [NormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [SeminormedAddCommGroup M₁]
-    [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [UniformAddGroup M₂]
+    [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     IsClosed { f : M₁ →SL[σ₁₂] M₂ | IsCompactOperator f } := by
   refine isClosed_of_closure_subset ?_
@@ -369,7 +373,7 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
   suffices TotallyBounded (u '' Metric.closedBall 0 1) by
     change IsCompactOperator (u : M₁ →ₛₗ[σ₁₂] M₂)
     rw [isCompactOperator_iff_isCompact_closure_image_closedBall (u : M₁ →ₛₗ[σ₁₂] M₂) zero_lt_one]
-    exact isCompact_of_totallyBounded_isClosed this.closure isClosed_closure
+    exact this.closure.isCompact_of_isClosed isClosed_closure
   rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero]
   intro U hU
   rcases exists_nhds_zero_half hU with ⟨V, hV, hVU⟩
@@ -396,14 +400,14 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
 
 theorem compactOperator_topologicalClosure {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
     [NormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [SeminormedAddCommGroup M₁]
-    [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [UniformAddGroup M₂]
+    [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] :
     (compactOperator σ₁₂ M₁ M₂).topologicalClosure = compactOperator σ₁₂ M₁ M₂ :=
   SetLike.ext' isClosed_setOf_isCompactOperator.closure_eq
 
 theorem isCompactOperator_of_tendsto {ι 𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁]
     [NormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} {M₁ M₂ : Type*} [SeminormedAddCommGroup M₁]
-    [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [UniformAddGroup M₂]
+    [AddCommGroup M₂] [NormedSpace 𝕜₁ M₁] [Module 𝕜₂ M₂] [UniformSpace M₂] [IsUniformAddGroup M₂]
     [ContinuousConstSMul 𝕜₂ M₂] [T2Space M₂] [CompleteSpace M₂] {l : Filter ι} [l.NeBot]
     {F : ι → M₁ →SL[σ₁₂] M₂} {f : M₁ →SL[σ₁₂] M₂} (hf : Tendsto F l (𝓝 f))
     (hF : ∀ᶠ i in l, IsCompactOperator (F i)) : IsCompactOperator f :=

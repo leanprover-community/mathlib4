@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # Triangulated Categories
@@ -13,6 +15,9 @@ pretriangulated categories which satisfy the octahedron axiom.
 
 -/
 
+@[expose] public section
+
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -22,31 +27,30 @@ open Limits Category Preadditive Pretriangulated
 
 open ZeroObject
 
-variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [Pretriangulated C]
 
 namespace Triangulated
 
 variable {C}
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2188
-set_option genInjectivity false in
-/-- An octahedron is a type of datum whose existence is asserted by
-the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
+/-- An octahedron is a type of datum whose existence is asserted by the octahedron axiom (TR 4). -/
+@[stacks 05QK]
 structure Octahedron
   {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
   {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
   {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
   {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) where
+  /-- `m₁` is the morphism `a` of (TR 4) as presented in Stacks. -/
   m₁ : Z₁₂ ⟶ Z₁₃
+  /-- `m₃` is the morphism `b` of (TR 4) as presented in Stacks. -/
   m₃ : Z₁₃ ⟶ Z₂₃
   comm₁ : v₁₂ ≫ m₁ = u₂₃ ≫ v₁₃
   comm₂ : m₁ ≫ w₁₃ = w₁₂
   comm₃ : v₁₃ ≫ m₃ = v₂₃
   comm₄ : w₁₃ ≫ u₁₂⟦1⟧' = m₃ ≫ w₂₃
   mem : Triangle.mk m₁ m₃ (w₂₃ ≫ v₁₂⟦1⟧') ∈ distTriang C
-gen_injective_theorems% Octahedron
 
 instance (X : C) :
     Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)
@@ -143,7 +147,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
       iso₂₃.inv_hom_id_triangle_hom₃, eq₂₃]
     dsimp
     rw [comp_id]
-  · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc,assoc, eq₂₃',
+  · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc, assoc, eq₂₃',
       iso₂₃.inv_hom_id_triangle_hom₃_assoc, ← rel₂₃, ← Functor.map_comp, comm₁₂,
       Functor.map_comp, reassoc_of% eq₁₃']
   · refine isomorphic_distinguished _ H.mem _ ?_
@@ -159,7 +163,8 @@ end Triangulated
 open Triangulated
 
 /-- A triangulated category is a pretriangulated category which satisfies
-the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
+the octahedron axiom (TR 4). -/
+@[stacks 05QK]
 class IsTriangulated : Prop where
   /-- the octahedron axiom (TR 4) -/
   octahedron_axiom :

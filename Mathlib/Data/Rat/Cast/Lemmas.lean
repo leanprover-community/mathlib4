@@ -3,37 +3,46 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Algebra.Field.Basic
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Field
+public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Some exiled lemmas about casting
 
-These lemmas have been removed from `Mathlib.Data.Rat.Cast.Defs`
-to avoiding needing to import `Mathlib.Algebra.Field.Basic` there.
+These lemmas have been removed from `Mathlib/Data/Rat/Cast/Defs.lean`
+to avoiding needing to import `Mathlib/Algebra/Field/Basic.lean` there.
 
 In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
 -/
 
+public section
+
 namespace Rat
 
 variable {α : Type*} [DivisionRing α]
 
--- Porting note: rewrote proof
+-- Note that this is more general than `(Rat.castHom α).map_pow`.
+@[simp, norm_cast]
+lemma cast_pow (p : ℚ) (n : ℕ) : ↑(p ^ n) = (p ^ n : α) := by
+  rw [cast_def, cast_def, den_pow, num_pow, Nat.cast_pow, Int.cast_pow, div_eq_mul_inv, ← inv_pow,
+    ← (Int.cast_commute _ _).mul_pow, ← div_eq_mul_inv]
+
 @[simp]
 theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
-  cases' n with n
+  rcases n with - | n
   · simp
   rw [cast_def, inv_natCast_num, inv_natCast_den, if_neg n.succ_ne_zero,
-    Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
+    Int.sign_eq_one_of_pos (Int.ofNat_succ_pos n), Int.cast_one, one_div]
 
--- Porting note: proof got a lot easier - is this still the intended statement?
 @[simp]
 theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
-  cases' n with n n
-  · simp [ofInt_eq_cast, cast_inv_nat]
-  · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
+  rcases n with n | n
+  · simp [cast_inv_nat]
+  · simp only [Int.cast_negSucc, cast_neg, inv_neg, cast_inv_nat]
 
 @[simp, norm_cast]
 theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
@@ -41,7 +50,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
   rw [Rat.cast_def, NNRat.cast_def, NNRat.cast_def]
   have hn := @num_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
   on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
-  case hdp => simpa only [Nat.cast_pos] using q.den_pos
+  case hdp => simpa only [Int.natCast_pos] using q.den_pos
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
 
@@ -69,8 +78,15 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     congr
     rw [cast_inv_of_ne_zero hq]
 
+@[simp]
+theorem cast_mk {K} [DivisionRing K] (q : ℚ) (h : 0 ≤ q) :
+    (NNRat.cast ⟨q, h⟩ : K) = (q : K) := by
+  simp only [NNRat.cast_def, NNRat.num_mk, Nat.cast_natAbs, NNRat.den_mk, Rat.cast_def]
+  rw [abs_of_nonneg (by simpa)]
+
 open OfScientific in
-theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
+theorem Nonneg.coe_ofScientific {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    (m : ℕ) (s : Bool) (e : ℕ) :
     (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
 
 end NNRat

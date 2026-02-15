@@ -3,11 +3,15 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Module.Defs
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Preadditive categories
@@ -42,6 +46,8 @@ is simplified to `f ≫ g`.
 additive, preadditive, Hom group, Ab-category, Ab-enriched
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -52,24 +58,24 @@ namespace CategoryTheory
 variable (C : Type u) [Category.{v} C]
 
 /-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
-    linear in both variables. -/
+linear in both variables. -/
+@[stacks 00ZY]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
-    aesop_cat
+    cat_disch
   comp_add : ∀ (P Q R : C) (f : P ⟶ Q) (g g' : Q ⟶ R), f ≫ (g + g') = f ≫ g + f ≫ g' := by
-    aesop_cat
+    cat_disch
 
 attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
 
 attribute [instance] Preadditive.homGroup
 
--- Porting note: simp can prove reassoc version
+-- simp can already prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
 
 attribute [reassoc] Preadditive.comp_add
 
--- (the linter doesn't like `simp` on this lemma)
 attribute [simp] Preadditive.comp_add
 
 end CategoryTheory
@@ -93,16 +99,24 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := InducedCategory.homEquiv.addCommGroup
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
+
+variable {F} in
+/-- The additive equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a preadditive category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homAddEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃+ (F X ⟶ F Y) where
+  toEquiv := InducedCategory.homEquiv
+  map_add' := by aesop_cat
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
-  homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory :=
+  inferInstanceAs (Preadditive (InducedCategory _ ObjectProperty.FullSubcategory.obj))
 
 instance (X : C) : AddCommGroup (End X) := by
   dsimp [End]
@@ -123,22 +137,22 @@ def compHom : (P ⟶ Q) →+ (Q ⟶ R) →+ (P ⟶ R) :=
   AddMonoidHom.mk' (fun f => leftComp _ f) fun f₁ f₂ =>
     AddMonoidHom.ext fun g => (rightComp _ g).map_add f₁ f₂
 
--- Porting note: simp can prove the reassoc version
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem sub_comp : (f - f') ≫ g = f ≫ g - f' ≫ g :=
   map_sub (rightComp P g) f f'
 
--- The redundant simp lemma linter says that simp can prove the reassoc version of this lemma.
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem comp_sub : f ≫ (g - g') = f ≫ g - f ≫ g' :=
   map_sub (leftComp R f) g g'
 
--- Porting note: simp can prove the reassoc version
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem neg_comp : (-f) ≫ g = -f ≫ g :=
   map_neg (rightComp P g) f
 
--- The redundant simp lemma linter says that simp can prove the reassoc version of this lemma.
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem comp_neg : f ≫ (-g) = -f ≫ g :=
   map_neg (leftComp R f) g
@@ -168,6 +182,12 @@ theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g
     (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
 
+@[reassoc]
+theorem sum_comp' {P Q R S : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : J → (Q ⟶ R))
+    (h : R ⟶ S) : (∑ j ∈ s, f j ≫ g j) ≫ h = ∑ j ∈ s, f j ≫ g j ≫ h := by
+  simp only [← Category.assoc]
+  apply sum_comp
+
 instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩
 
@@ -179,9 +199,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 
-/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
-the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
-to make use of them -/
+/-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
     zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
@@ -189,12 +207,10 @@ instance {X : C} : Semiring (End X) :=
     left_distrib := fun f g h => Preadditive.add_comp X X X g h f
     right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
 
-/-- Porting note: It looks like Ring's parent classes changed in
-Lean 4 so the previous instance needed modification. Was following my nose here. -/
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with
-    add_left_neg := add_left_neg }
+    neg_add_cancel := neg_add_cancel }
 
 instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
   smul_add _ _ _ := add_comp _ _ _ _ _ _
@@ -220,9 +236,17 @@ lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : Is
   obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
   rw [← ha, h.eq_of_tgt a 0, Limits.zero_comp])
 
+lemma mono_iff_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c) :
+    Mono f ↔ IsZero c.pt :=
+  ⟨fun _ ↦ KernelFork.IsLimit.isZero_of_mono hc, mono_of_isZero_kernel' c hc⟩
+
 lemma mono_of_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] (h : IsZero (kernel f)) :
     Mono f :=
   mono_of_isZero_kernel' _ (kernelIsKernel _) h
+
+lemma mono_iff_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] :
+    Mono f ↔ IsZero (kernel f) :=
+  mono_iff_isZero_kernel' _ (limit.isLimit _)
 
 theorem epi_of_cancel_zero {P Q : C} (f : P ⟶ Q) (h : ∀ {R : C} (g : Q ⟶ R), f ≫ g = 0 → g = 0) :
     Epi f :=
@@ -242,9 +266,17 @@ lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc
   obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
   rw [← ha, h.eq_of_src a 0, Limits.comp_zero])
 
+lemma epi_iff_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c) :
+    Epi f ↔ IsZero c.pt :=
+  ⟨fun _ ↦ CokernelCofork.IsColimit.isZero_of_epi hc, epi_of_isZero_cokernel' c hc⟩
+
 lemma epi_of_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (h : IsZero (cokernel f)) :
     Epi f :=
   epi_of_isZero_cokernel' _ (cokernelIsCokernel _) h
+
+lemma epi_iff_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] :
+    Epi f ↔ IsZero (cokernel f) :=
+  epi_iff_isZero_cokernel' _ (colimit.isColimit _)
 
 namespace IsIso
 
@@ -306,7 +338,7 @@ theorem kernelForkOfFork_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) :
 def isLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsLimit c) :
     IsLimit (forkOfKernelFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; cat_disch⟩
 
 @[simp]
 theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s : Fork f g) :
@@ -316,7 +348,7 @@ theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s
 /-- An equalizer of `f` and `g` is a kernel of `f - g`. -/
 def isLimitKernelForkOfFork {c : Fork f g} (i : IsLimit c) : IsLimit (kernelForkOfFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; cat_disch⟩
 
 variable (f g)
 
@@ -362,7 +394,7 @@ def isColimitCoforkOfCokernelCofork {c : CokernelCofork (f - g)} (i : IsColimit 
     IsColimit (coforkOfCokernelCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨i.desc (cokernelCoforkOfCofork s), i.fac _ _, fun h => by
-      apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
+      apply Cofork.IsColimit.hom_ext i; cat_disch⟩
 
 @[simp]
 theorem isColimitCoforkOfCokernelCofork_desc {c : CokernelCofork (f - g)} (i : IsColimit c)
@@ -375,7 +407,7 @@ def isColimitCokernelCoforkOfCofork {c : Cofork f g} (i : IsColimit c) :
     IsColimit (cokernelCoforkOfCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨i.desc (coforkOfCokernelCofork s), i.fac _ _, fun h => by
-      apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
+      apply Cofork.IsColimit.hom_ext i; cat_disch⟩
 
 variable (f g)
 
@@ -406,7 +438,7 @@ end Equalizers
 
 section
 
-variable {C : Type*} [Category C] [Preadditive C] {X Y : C}
+variable {C : Type*} [Category* C] [Preadditive C] {X Y : C}
 
 instance : SMul (Units ℤ) (X ≅ Y) where
   smul a e :=

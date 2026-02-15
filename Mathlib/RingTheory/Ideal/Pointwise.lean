@@ -3,14 +3,17 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Ring.Action.End
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Pointwise instances on `Ideal`s
 
 This file provides the action `Ideal.pointwiseMulAction` which morally matches the action of
 `mulActionSet` (though here an extra `Ideal.span` is inserted).
 
-This actions is available in the `Pointwise` locale.
+This action is available in the `Pointwise` locale.
 
 ## Implementation notes
 
@@ -18,6 +21,8 @@ This file is similar (but not identical) to `Mathlib/Algebra/Ring/Subsemiring/Po
 Where possible, try to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 open Set
@@ -28,25 +33,33 @@ namespace Ideal
 
 section Monoid
 
-variable [Monoid M] [CommRing R] [MulSemiringAction M R]
+variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 
 /-- The action on an ideal corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulSemiringAction : MulSemiringAction M (Ideal R) where
+protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
   smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
   one_smul I :=
     congr_arg (I.map ·) (RingHom.ext <| one_smul M) |>.trans I.map_id
-  mul_smul a₁ a₂ I :=
+  mul_smul _ _ I :=
     congr_arg (I.map ·) (RingHom.ext <| mul_smul _ _) |>.trans (I.map_map _ _).symm
-  smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
-  smul_mul a I J := Ideal.map_mul (MulSemiringAction.toRingHom _ _ a) I J
-  smul_add a I J := Ideal.map_sup _ I J
-  smul_zero a := Ideal.map_bot
+  smul_zero _ := Ideal.map_bot
+  smul_add _ I J := Ideal.map_sup _ I J
 
-scoped[Pointwise] attribute [instance] Ideal.pointwiseMulSemiringAction
+scoped[Pointwise] attribute [instance] Ideal.pointwiseDistribMulAction
 
 open Pointwise
+
+/-- The action on an ideal corresponding to applying the action to every element.
+
+This is available as an instance in the `Pointwise` locale. -/
+protected def pointwiseMulSemiringAction {R : Type*} [CommRing R] [MulSemiringAction M R] :
+    MulSemiringAction M (Ideal R) where
+  smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
+  smul_mul a I J := Ideal.map_mul (MulSemiringAction.toRingHom _ _ a) I J
+
+scoped[Pointwise] attribute [instance] Ideal.pointwiseMulSemiringAction
 
 theorem pointwise_smul_def {a : M} (S : Ideal R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
@@ -76,12 +89,25 @@ instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralSca
     IsCentralScalar M (Ideal R) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
 
+@[simp]
+theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
+    (ha : Function.Surjective fun r : R => a • r) :
+    (a • S).toAddSubmonoid = a • S.toAddSubmonoid := by
+  ext
+  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
+
+@[simp]
+theorem pointwise_smul_toAddSubgroup {R : Type*} [Ring R] [MulSemiringAction M R]
+    (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r) :
+    (a • S).toAddSubgroup = a • S.toAddSubgroup := by
+  ext
+  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
+
 end Monoid
 
 section Group
 
-variable [Group M] [CommRing R] [MulSemiringAction M R]
-
+variable [Group M] [Semiring R] [MulSemiringAction M R]
 
 open Pointwise
 
@@ -100,20 +126,6 @@ theorem mem_pointwise_smul_iff_inv_smul_mem {a : M} {S : Ideal R} {x : R} :
   ⟨fun h => by simpa using smul_mem_pointwise_smul a⁻¹ _ _ h,
     fun h => by simpa using smul_mem_pointwise_smul a _ _ h⟩
 
-@[simp]
-theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
-    (ha : Function.Surjective fun r : R => a • r) :
-    (a • S).toAddSubmonoid = a • S.toAddSubmonoid := by
-  ext
-  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
-
-@[simp]
-theorem pointwise_smul_toAddSubGroup (a : M) (S : Ideal R)
-    (ha : Function.Surjective fun r : R => a • r)  :
-    (a • S).toAddSubgroup = a • S.toAddSubgroup := by
-  ext
-  exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
-
 theorem mem_inv_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : x ∈ a⁻¹ • S ↔ a • x ∈ S := by
   rw [mem_pointwise_smul_iff_inv_smul_mem, inv_inv]
 
@@ -126,6 +138,20 @@ theorem pointwise_smul_subset_iff {a : M} {S T : Ideal R} : a • S ≤ T ↔ S 
 
 theorem subset_pointwise_smul_iff {a : M} {S T : Ideal R} : S ≤ a • T ↔ a⁻¹ • S ≤ T := by
   rw [← pointwise_smul_le_pointwise_smul_iff (a := a⁻¹), inv_smul_smul]
+
+instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime := by
+  rw [I.pointwise_smul_eq_comap]
+  apply H.comap
+
+@[simp]
+theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
+  ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
+
+theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
+    P.toAddSubgroup.inertia M ≤ MulAction.stabilizer M P := by
+  refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
+  rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
+    ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
 
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 

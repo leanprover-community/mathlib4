@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # The quotient of QPF is itself a QPF
@@ -12,6 +14,8 @@ The quotients are here defined using a surjective function and
 its right inverse. They are very similar to the `abs` and `repr`
 functions found in the definition of `MvQPF`
 -/
+
+@[expose] public section
 
 
 universe u
@@ -39,8 +43,8 @@ def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
   P := q.P
   abs p := FG_abs (abs p)
   repr x := repr (FG_repr x)
-  abs_repr x := by dsimp; rw [abs_repr, FG_abs_repr]
-  abs_map f p := by dsimp; rw [abs_map, FG_abs_map]
+  abs_repr x := by rw [abs_repr, FG_abs_repr]
+  abs_map f p := by rw [abs_map, FG_abs_map]
 
 end repr
 

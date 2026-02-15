@@ -3,9 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Logic.Nonempty
-import Batteries.Data.Sum.Lemmas
+module
+
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Nonempty
+public import Mathlib.Tactic.Simps.Basic
+public import Batteries.Logic
 
 /-!
 # Two-pointings
@@ -22,6 +25,8 @@ bipointed types. Two-pointed types form a full subcategory of those.
 * [nLab, *Coalgebra of the real interval*]
   (https://ncatlab.org/nlab/show/coalgebra+of+the+real+interval)
 -/
+
+@[expose] public section
 
 open Function
 
@@ -55,6 +60,7 @@ theorem swap_snd : p.swap.snd = p.fst := rfl
 @[simp]
 theorem swap_swap : p.swap.swap = p := rfl
 
+include p in
 theorem to_nontrivial : Nontrivial α :=
   ⟨⟨p.fst, p.snd, p.fst_ne_snd⟩⟩
 

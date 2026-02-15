@@ -3,9 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
 
 /-!
 # Derivations
@@ -19,11 +20,11 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 - `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
-See `RingTheory.Derivation.Lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
+See `Mathlib/RingTheory/Derivation/Lie.lean` for
+- `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
 
-and `RingTheory.Derivation.ToSquareZero` for
-- `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
+and `Mathlib/RingTheory/Derivation/ToSquareZero.lean` for
+- `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 ## Future project
@@ -31,6 +32,8 @@ and `RingTheory.Derivation.ToSquareZero` for
 - Generalize derivations into bimodules.
 
 -/
+
+@[expose] public section
 
 open Algebra
 
@@ -125,8 +128,7 @@ theorem map_one_eq_zero : D 1 = 0 :=
 
 @[simp]
 theorem map_algebraMap : D (algebraMap R A r) = 0 := by
-  rw [← mul_one r, RingHom.map_mul, RingHom.map_one, ← smul_def, map_smul, map_one_eq_zero,
-    smul_zero]
+  rw [← mul_one r, map_mul, map_one, ← smul_def, map_smul, map_one_eq_zero, smul_zero]
 
 @[simp]
 theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
@@ -134,13 +136,14 @@ theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
 
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
-  induction' n with n ihn
-  · rw [pow_zero, map_one_eq_zero, zero_smul]
-  · rcases (zero_le n).eq_or_lt with (rfl | hpos)
-    · erw [pow_one, one_smul, pow_zero, one_smul]
+  induction n with
+  | zero => rw [pow_zero, map_one_eq_zero, zero_smul]
+  | succ n ihn =>
+    rcases (zero_le n).eq_or_lt with (rfl | hpos)
+    · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
-        Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
+        Nat.add_succ_sub_one, add_zero, one_nsmul]
 
 open Polynomial in
 @[simp]
@@ -151,9 +154,10 @@ theorem map_aeval (P : R[X]) (x : A) :
   · simp [add_smul, *]
   · simp [mul_smul, ← Nat.cast_smul_eq_nsmul A]
 
-theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun x hx =>
-  Algebra.adjoin_induction hx h (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
-    (fun x y hx hy => by simp only [map_add, *]) fun x y hx hy => by simp only [leibniz, *]
+theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun _ hx =>
+  Algebra.adjoin_induction (hx := hx) h
+    (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
+    (fun x y _ _ hx hy => by simp only [map_add, *]) fun x y _ _ hx hy => by simp only [leibniz, *]
 
 /-- If adjoin of a set is the whole algebra, then any two derivations equal on this set are equal
 on the whole algebra. -/
@@ -225,11 +229,14 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
 instance : AddCommMonoid (Derivation R A M) :=
   coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
-/-- `coe_fn` as an `AddMonoidHom`. -/
+/-- `coeFn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
-  toFun := (↑)
+  toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+lemma coeFnAddMonoidHom_apply (D : Derivation R A M) : coeFnAddMonoidHom D = D := rfl
 
 instance : DistribMulAction S (Derivation R A M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
@@ -259,15 +266,15 @@ variable (f : M →ₗ[A] N) (e : M ≃ₗ[A] N)
 
 /-- We can push forward derivations using linear maps, i.e., the composition of a derivation with a
 linear map is a derivation. Furthermore, this operation is linear on the spaces of derivations. -/
-def _root_.LinearMap.compDer : Derivation R A M →ₗ[R] Derivation R A N where
+def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
   toFun D :=
     { toLinearMap := (f : M →ₗ[R] N).comp (D : A →ₗ[R] M)
       map_one_eq_zero' := by simp only [LinearMap.comp_apply, coeFn_coe, map_one_eq_zero, map_zero]
       leibniz' := fun a b => by
-        simp only [coeFn_coe, LinearMap.comp_apply, LinearMap.map_add, leibniz,
+        simp only [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
-  map_smul' r D := by dsimp; ext; exact LinearMap.map_smul (f : M →ₗ[R] N) _ _
+  map_smul' r D := by ext; dsimp; simp only [_root_.map_smul]
 
 @[simp]
 theorem coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
@@ -279,13 +286,13 @@ theorem coe_comp : (f.compDer D : A → N) = (f : M →ₗ[R] N).comp (D : A →
 
 /-- The composition of a derivation with a linear map as a bilinear map -/
 @[simps]
-def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A N where
+def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[A] Derivation R A N where
   toFun f := f.compDer
   map_add' f₁ f₂ := by ext; rfl
   map_smul' r D := by ext; rfl
 
 /-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
-def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
+def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[A] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer
     left_inv := fun D => by ext a; exact e.symm_apply_apply (D a)
@@ -313,6 +320,17 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   leibniz' a b := by simp
   toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
 
+variable (R A B M) in
+/-- For a tower `R → A → B → M`, the precomposition defined in `compAlgebraMap`
+is a `B`-linear map. -/
+@[simps!]
+def compAlgebraMapL [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
+    [IsScalarTower R B M] :
+    Derivation R B M →ₗ[B] Derivation R A M where
+  toFun d := d.compAlgebraMap A
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 section RestrictScalars
 
 variable {S : Type*} [CommSemiring S]
@@ -335,6 +353,66 @@ end RestrictScalars
 
 end
 
+section Lift
+
+variable {R : Type*} {A : Type*} {M : Type*}
+variable [CommSemiring R] [CommRing A] [CommRing M]
+variable [Algebra R A] [Algebra R M]
+variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
+
+/--
+Lift a derivation via an algebra homomorphism `f` with a right inverse such that
+`f(x) = 0 → f(d(x)) = 0`. This gives the derivation `f ∘ d ∘ f⁻¹`.
+This is needed for an argument in [Rosenlicht, M. Integration in finite terms][Rosenlicht_1972].
+-/
+def liftOfRightInverse {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
+    ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where
+  toFun x := f (d (f_inv x))
+  map_add' x y := by
+    suffices f (d (f_inv (x + y) - (f_inv x + f_inv y))) = 0 by simpa [sub_eq_zero]
+    apply hd
+    simp [hf _]
+  map_smul' x y := by
+    suffices f (d (f_inv (x • y) - x • f_inv y)) = 0 by simpa [sub_eq_zero]
+    apply hd
+    simp [hf _]
+  map_one_eq_zero' := by
+    suffices f (d (f_inv 1 - 1)) = 0 by simpa [sub_eq_zero]
+    apply hd
+    simp [hf _]
+  leibniz' x y := by
+    suffices f (d (f_inv (x * y) - f_inv x * f_inv y)) = 0 by simpa [sub_eq_zero, hf _]
+    apply hd
+    simp [hf _]
+
+@[simp]
+lemma liftOfRightInverse_apply {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
+    {d : Derivation R A A} (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
+    Derivation.liftOfRightInverse hf hd (f x) = f (d x) := by
+  suffices f (d (f_inv (f x) - x)) = 0 by simpa [sub_eq_zero]
+  apply hd
+  simp [hf _]
+
+lemma liftOfRightInverse_eq {f : F} {f_inv₁ f_inv₂ : M → A} (hf₁ : Function.RightInverse f_inv₁ f)
+    (hf₂ : Function.RightInverse f_inv₂ f) :
+    liftOfRightInverse hf₁ = liftOfRightInverse hf₂ := by
+  ext _ _ x
+  obtain ⟨x, rfl⟩ := hf₁.surjective x
+  simp
+
+/--
+A noncomputable version of `liftOfRightInverse` for surjective homomorphisms.
+-/
+noncomputable abbrev liftOfSurjective {f : F} (hf : Function.Surjective f)
+    ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M :=
+  d.liftOfRightInverse (Function.rightInverse_surjInv hf) hd
+
+lemma liftOfSurjective_apply {f : F} (hf : Function.Surjective f)
+    {d : Derivation R A A} (hd : ∀ x, f x = 0 → f (d x) = 0) (x : A) :
+    Derivation.liftOfSurjective hf hd (f x) = f (d x) := by simp
+
+end Lift
+
 section Cancel
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A] {M : Type*}
@@ -344,7 +422,8 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A]
 rule. -/
 def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : Derivation R A M where
   toLinearMap := D
-  map_one_eq_zero' := add_right_eq_self.1 <| by simpa only [one_smul, one_mul] using (h 1 1).symm
+  map_one_eq_zero' := (add_eq_left (a := D 1)).1 <| by
+    simpa only [one_smul, one_mul] using (h 1 1).symm
   leibniz' := h
 
 @[simp]
@@ -377,9 +456,6 @@ protected theorem map_sub : D (a - b) = D a - D b :=
 theorem map_intCast (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 
-@[deprecated (since := "2024-04-05")] alias map_coe_nat := map_natCast
-@[deprecated (since := "2024-04-05")] alias map_coe_int := map_intCast
-
 theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
   refine eq_neg_of_add_eq_zero_left ?_
@@ -388,7 +464,7 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]
     _ = 0 := by rw [h, map_one_eq_zero, smul_zero]
 
-theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
+theorem leibniz_invOf [Invertible a] : D (⅟a) = -⅟a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 
 section Field
@@ -398,7 +474,7 @@ variable {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
 theorem leibniz_inv (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
-  · exact D.leibniz_of_mul_eq_one (inv_mul_cancel ha)
+  · exact D.leibniz_of_mul_eq_one (inv_mul_cancel₀ ha)
 
 theorem leibniz_div (a b : K) : D (a / b) = b⁻¹ ^ 2 • (b • D a - a • D b) := by
   simp only [div_eq_mul_inv, leibniz, leibniz_inv, inv_pow, neg_smul, smul_neg, smul_smul, add_comm,
@@ -421,16 +497,16 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     simp only [zpow_natCast, leibniz_pow, natCast_zsmul]
     rw [← zpow_natCast]
     congr
-    omega
+    lia
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
-      ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_nsmul K, smul_smul, smul_smul,
+      ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_zsmul K, smul_smul, smul_smul,
       smul_smul]
     trans (-n.natAbs * (a ^ ((n.natAbs - 1 : ℕ) : ℤ) / (a ^ ((n.natAbs * 2 : ℕ) : ℤ)))) • D a
     · ring_nf
     rw [← zpow_sub₀ ha]
     congr 3
     · norm_cast
-    omega
+    lia
 
 end Field
 
@@ -472,6 +548,5 @@ instance : AddCommGroup (Derivation R A M) :=
 end
 
 end
-
 
 end Derivation

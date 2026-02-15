@@ -3,7 +3,9 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -20,10 +22,12 @@ Given a natural transformation `η : F ⟶ G`, we obtain a natural transformatio
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits Functor
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -46,8 +50,8 @@ variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
   map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
+  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
+  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -55,11 +59,24 @@ instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
 instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Full from inferInstance
 
+variable {F} in
+/-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F ⋙ sheafToPresheaf J B` is fully
+faithful. -/
+def fullyFaithfulSheafComposeCompSheafToPresheaf (hF : F.FullyFaithful) :
+    (sheafCompose J F ⋙ sheafToPresheaf J B).FullyFaithful :=
+  (fullyFaithfulSheafToPresheaf J A).comp (hF.whiskeringRight Cᵒᵖ)
+
 instance [F.Faithful] : (sheafCompose J F).Faithful :=
   Functor.Faithful.of_comp (sheafCompose J F) (sheafToPresheaf _ _)
 
 instance [F.Full] [F.Faithful] : (sheafCompose J F).Full :=
   Functor.Full.of_comp_faithful (sheafCompose J F) (sheafToPresheaf _ _)
+
+variable {F} in
+/-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F` is fully faithful. -/
+def fullyFaithfulSheafCompose (hF : F.FullyFaithful) :
+    (sheafCompose J F).FullyFaithful :=
+  (fullyFaithfulSheafComposeCompSheafToPresheaf J hF).ofCompFaithful
 
 instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms where
   reflects {G₁ G₂} f _ := by
@@ -75,7 +92,7 @@ If `η : F ⟶ G` is a natural transformation then we obtain a morphism of funct
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
 -/
 def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
-  app := fun X => .mk <| whiskerLeft _ η
+  app := fun _ => .mk <| whiskerLeft _ η
 
 @[simp]
 lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
@@ -97,11 +114,11 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
   NatIso.ofComponents
     (fun t =>
       match t with
-      | WalkingMulticospan.left a => Iso.refl _
-      | WalkingMulticospan.right b => Iso.refl _)
+      | WalkingMulticospan.left _ => Iso.refl _
+      | WalkingMulticospan.right _ => Iso.refl _)
     (by
       rintro (a | b) (a | b) (f | f | f)
-      all_goals aesop_cat)
+      all_goals cat_disch)
 
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)
@@ -117,7 +134,7 @@ end GrothendieckTopology.Cover
 Composing a sheaf with a functor preserving the limit of `(S.index P).multicospan` yields a functor
 between sheaf categories.
 -/
-instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
+instance (priority := high) hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
     [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F] :
     J.HasSheafCompose F where
   isSheaf P hP := by
@@ -129,10 +146,10 @@ instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
     exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
 
 /--
-Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
+Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
 functor between sheaf categories.
 
-Note: the size of the limit that `F` is required to preserve in
+Note: the size of the limit that `F` is required to preserve in
 `hasSheafCompose_of_preservesMulticospan` is in general larger than this.
 -/
 instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :
@@ -141,13 +158,15 @@ instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, 
 
 variable {J}
 
-lemma Sheaf.isSeparated [ConcreteCategory A] [J.HasSheafCompose (forget A)]
+lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
     (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
   rintro X S hS x y h
-  exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
-    ((sheafCompose J (forget A)).obj F).2) S hS).ext (fun _ _ hf => h _ _ hf)
+  exact (((isSheaf_iff_isSheaf_of_type _ _).1
+    ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
 
-lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} [ConcreteCategory A]
+lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
     [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
     Presheaf.IsSeparated J F :=
   Sheaf.isSeparated ⟨F, hF⟩

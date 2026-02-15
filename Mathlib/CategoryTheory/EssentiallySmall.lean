@@ -1,12 +1,16 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Logic.UnivLE
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Logic.UnivLE
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Essentially small categories.
@@ -21,8 +25,10 @@ The main theorem here is that a category is `w`-essentially small iff
 the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
 
+@[expose] public section
 
-universe w v v' u u'
+
+universe w w' v v' u u'
 
 open CategoryTheory
 
@@ -44,7 +50,6 @@ theorem EssentiallySmall.mk' {C : Type u} [Category.{v} C] {S : Type w} [SmallCa
 
 /-- An arbitrarily chosen small model for an essentially small category.
 -/
--- Porting note(#5171) removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def SmallModel (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] : Type w :=
   Classical.choose (@EssentiallySmall.equiv_smallCategory C _ _)
@@ -60,6 +65,9 @@ noncomputable def equivSmallModel (C : Type u) [Category.{v} C] [EssentiallySmal
     C ≌ SmallModel C :=
   Nonempty.some
     (Classical.choose_spec (Classical.choose_spec (@EssentiallySmall.equiv_smallCategory C _ _)))
+
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] : EssentiallySmall.{w} Cᵒᵖ :=
+  EssentiallySmall.mk' (equivSmallModel C).op
 
 theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : EssentiallySmall.{w} C ↔ EssentiallySmall.{w} D := by
@@ -88,6 +96,9 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
 instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small.{w, v} (X ⟶ Y) :=
   LocallySmall.hom_small X Y
 
+instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] : LocallySmall.{w} Cᵒᵖ where
+  hom_small X Y := small_of_injective (opEquiv X Y).injective
+
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (F : C ⥤ D) [F.Faithful] [LocallySmall.{w} D] : LocallySmall.{w} C where
   hom_small {_ _} := small_of_injective F.map_injective
@@ -95,6 +106,10 @@ theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Ca
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D :=
   ⟨fun _ => locallySmall_of_faithful e.inverse, fun _ => locallySmall_of_faithful e.functor⟩
+
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] [LocallySmall.{w'} C] :
+    LocallySmall.{w'} (SmallModel.{w} C) :=
+  (locallySmall_congr (equivSmallModel.{w} C)).1 inferInstance
 
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] :
     LocallySmall.{v} C where
@@ -112,7 +127,6 @@ instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Catego
 /-- We define a type alias `ShrinkHoms C` for `C`. When we have `LocallySmall.{w} C`,
 we'll put a `Category.{w}` instance on `ShrinkHoms C`.
 -/
--- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def ShrinkHoms (C : Type u) :=
   C
@@ -164,22 +178,38 @@ noncomputable def inverse : ShrinkHoms C ⥤ C where
 
 /-- The categorical equivalence between `C` and `ShrinkHoms C`, when `C` is locally small.
 -/
-@[simps!]
-noncomputable def equivalence : C ≌ ShrinkHoms C :=
-  Equivalence.mk (functor C) (inverse C)
-    (NatIso.ofComponents fun X => Iso.refl X)
-    (NatIso.ofComponents fun X => Iso.refl X)
+@[simps]
+noncomputable def equivalence : C ≌ ShrinkHoms C where
+  functor := functor C
+  inverse := inverse C
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+instance : (functor C).IsEquivalence := (equivalence C).isEquivalence_functor
+instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
+
+instance {T : Type u} [Unique T] : Unique (ShrinkHoms.{u} T) where
+  default := ShrinkHoms.toShrinkHoms (default : T)
+  uniq _ := congr_arg ShrinkHoms.fromShrinkHoms (Unique.uniq _ _)
+
+instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{u} T) where
+  subsingleton _ _ := { allEq _ _ := Shrink.ext (Subsingleton.elim _ _) }
+  eq_of_hom f := IsDiscrete.eq_of_hom (C := T) ((equivShrink _).symm f)
 
 end ShrinkHoms
 
 namespace Shrink
 
 noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
-  InducedCategory.category (equivShrink C).symm
+  inferInstanceAs (Category (InducedCategory _ (equivShrink C).symm))
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
-  (inducedFunctor (equivShrink C).symm).asEquivalence.symm
+  (Equivalence.induced _).symm
+
+instance [Small.{w'} C] [LocallySmall.{w} C] :
+    LocallySmall.{w} (Shrink.{w'} C) :=
+  locallySmall_of_faithful.{w} (equivalence.{w'} C).inverse
 
 end Shrink
 
@@ -199,26 +229,37 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
     · infer_instance
   · rintro ⟨⟨S, ⟨e⟩⟩, L⟩
     let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
-    letI : Category S := InducedCategory.category (e'.trans e).symm
-    refine ⟨⟨S, this, ⟨?_⟩⟩⟩
-    refine (ShrinkHoms.equivalence C).trans <|
-      (skeletonEquivalence (ShrinkHoms C)).symm.trans
-        ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
+    exact ⟨⟨InducedCategory _ (e'.trans e).symm, inferInstance,
+      ⟨(ShrinkHoms.equivalence C).trans
+      ((skeletonEquivalence (ShrinkHoms C)).symm.trans
+      (inducedFunctor _).asEquivalence.symm)⟩⟩⟩
 
-theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
+instance essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
+example (C : Type w) [SmallCategory C] : EssentiallySmall.{w} C := inferInstance
+
+instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
+  essentiallySmall_iff C |>.1 h |>.1
+
+variable {C} in
+theorem essentiallySmall_of_fully_faithful {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+    [F.Full] [F.Faithful] [EssentiallySmall.{w} D] : EssentiallySmall.{w} C :=
+  (essentiallySmall_iff C).2 ⟨small_of_injective F.mapSkeleton_injective,
+    locallySmall_of_faithful F⟩
+
 section FullSubcategory
 
-instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : C → Prop) :
-    LocallySmall.{w} (FullSubcategory P) :=
-  locallySmall_of_faithful <| fullSubcategoryInclusion P
+instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : ObjectProperty C) :
+    LocallySmall.{w} P.FullSubcategory :=
+  locallySmall_of_faithful <| P.ι
 
 instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [LocallySmall.{w} C] :
-    EssentiallySmall.{w} (FullSubcategory (· ∈ s)) :=
-  suffices Small.{w} (FullSubcategory (· ∈ s)) from essentiallySmall_of_small_of_locallySmall _
-  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by aesop_cat)
+    EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
+  suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
+    essentiallySmall_of_small_of_locallySmall _
+  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by cat_disch)
 
 end FullSubcategory
 
@@ -235,5 +276,31 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 
 instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
+
+instance [Small.{w} C] [LocallySmall.{w} C] :
+    Small.{w} (Arrow C) := by
+  let φ (f : Arrow C) : Σ (s t : C), s ⟶ t := ⟨_, _, f.hom⟩
+  refine small_of_injective (f := φ) ?_
+  rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
+  obtain rfl : s = s' := congr_arg Sigma.fst h
+  simp only [Functor.id_obj, Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
+  obtain rfl : t = t' := h.1
+  obtain rfl : f = f' := by simpa using h
+  rfl
+
+instance [Small.{w} C] [LocallySmall.{w} C]
+    {D : Type u'} [Category.{v'} D] [Small.{w} D] [LocallySmall.{w} D] :
+    Small.{w} (C ⥤ D) := by
+  refine small_of_injective (f := fun F (f : Arrow C) ↦ Arrow.mk (F.map f.hom))
+    (fun F G h ↦ Functor.ext (fun X ↦ ?_) (fun X Y f ↦ ?_))
+  · exact congr_arg Comma.left (congr_fun h (Arrow.mk (𝟙 X)))
+  · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr_fun h (Arrow.mk f)
+    rw [Arrow.mk_eq_mk_iff] at this
+    tauto
+
+instance {A : Type u'} [Category.{v'} A] [LocallySmall.{w} A] (C : Type w) [SmallCategory C] :
+    LocallySmall.{w} (C ⥤ A) where
+  hom_small P Q :=
+    small_of_injective (f := NatTrans.app) (fun f g h ↦ by aesop)
 
 end CategoryTheory

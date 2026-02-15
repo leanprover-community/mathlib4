@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Localization of product categories
@@ -25,9 +27,13 @@ case follows by transporting this result through equivalences of categories.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
+
+open Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {D₁ : Type u₃} {D₂ : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D₁] [Category.{v₄} D₂]
@@ -128,7 +134,7 @@ variable [W₁.ContainsIdentities] [W₂.ContainsIdentities]
 
 /-- If `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` are localization functors
 for `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂` respectively,
-and if both `W₁` and `W₂` contain identites, then the product
+and if both `W₁` and `W₂` contain identities, then the product
 functor `L₁.prod L₂ : C₁ × C₂ ⥤ D₁ × D₂` is a localization functor for `W₁.prod W₂`. -/
 instance prod [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] :
     (L₁.prod L₂).IsLocalization (W₁.prod W₂) := by

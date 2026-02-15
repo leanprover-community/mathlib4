@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
 /-!
 # The homology sequence
@@ -15,6 +16,10 @@ the long exact homology sequences associated to distinguished triangles in the
 derived category.
 
 -/
+
+@[expose] public section
+
+assert_not_exists TwoSidedIdeal
 
 universe w v u
 
@@ -40,12 +45,24 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
     HomotopyCategory.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh C (ComplexShape.up ℤ) n
 
+variable {C} in
+lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
+    IsIso (Qh.map f) ↔ HomotopyCategory.quasiIso C _ f := by
+  constructor
+  · intro hf
+    rw [HomotopyCategory.mem_quasiIso_iff]
+    intro n
+    rw [← NatIso.isIso_map_iff (homologyFunctorFactorsh C n) f]
+    dsimp
+    infer_instance
+  · exact Localization.inverts Qh (HomotopyCategory.quasiIso _ _) _
+
 instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh
     (homologyFunctor C n) _ (homologyFunctorFactorsh C n)
 
 /-- The functors `homologyFunctor C n : DerivedCategory C ⥤ C` for all `n : ℤ` are part
-of a "shift sequence", i.e. they satisfy compatiblities with shifts. -/
+of a "shift sequence", i.e. they satisfy compatibilities with shifts. -/
 noncomputable instance : (homologyFunctor C 0).ShiftSequence ℤ :=
   Functor.ShiftSequence.induced (homologyFunctorFactorsh C 0) ℤ
     (homologyFunctor C) (homologyFunctorFactorsh C)
@@ -54,13 +71,15 @@ variable {C}
 
 namespace HomologySequence
 
-variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _)
-  (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
-
 /-- The connecting homomorphism on the homology sequence attached to a distinguished
 triangle in the derived category. -/
-noncomputable def δ : (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
+noncomputable def δ (T : Triangle (DerivedCategory C))
+    (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
   (homologyFunctor C 0).shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
+
+variable (T : Triangle (DerivedCategory C)) (hT : T ∈ distTriang _) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+include hT
 
 @[reassoc (attr := simp)]
 lemma comp_δ : (homologyFunctor C n₀).map T.mor₂ ≫ δ T n₀ n₁ h = 0 :=

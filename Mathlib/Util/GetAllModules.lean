@@ -3,8 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
+module
 
-import Lean.Util.Path
+public import Mathlib.Init
+public meta import Lean.Util.Path
 
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.
@@ -14,6 +16,8 @@ TODO:
 should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
 
 -/
+
+public meta section
 
 open Lean System.FilePath
 
@@ -34,7 +38,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
     if git then
       let mlDir := ml.push pathSeparator   -- for example, `Mathlib/`
       let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
-      return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").map (⟨·⟩)).toArray
+      return (((allLean.dropEndWhile (· == '\n')).copy.splitOn "\n").map (⟨·⟩)).toArray
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
@@ -45,7 +49,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
   )
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
-i.e. names of the form `Mathlib.Algebra.Algebra.Basic`.
+i.e. names of the form `Mathlib/Algebra/Algebra/Basic.lean`.
 In addition, these names are sorted in a platform-independent order. -/
 def getAllModulesSorted (git : Bool) (ml : String) : IO (Array String) := do
   let files ← getAllFiles git ml

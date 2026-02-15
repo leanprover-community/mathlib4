@@ -3,7 +3,9 @@ Copyright (c) 2021 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
 
 /-!
 # Graph partitions
@@ -42,6 +44,9 @@ graph colorings and back is the identity.
 
 -/
 
+@[expose] public section
+
+assert_not_exists Field
 
 universe u v
 
@@ -121,9 +126,11 @@ def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition where
     rintro s ⟨c, rfl⟩
     apply C.color_classes_independent
 
+namespace Partition
 /-- The partition where every vertex is in its own part. -/
 @[simps]
 instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
+end Partition
 
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor

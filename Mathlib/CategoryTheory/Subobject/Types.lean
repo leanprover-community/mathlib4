@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.CategoryTheory.Types
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `Type u` is well-powered
@@ -20,6 +22,8 @@ with the "hand-rolled" definition of subobjects.
 This may be possible using Lawvere theories,
 but it remains to be seen whether this just pushes lumps around in the carpet.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -43,16 +47,16 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
         homOfLE
           (by
             rintro a ⟨x, rfl⟩
-            exact ⟨t.1 x, congr_fun t.w x⟩) }
+            exact ⟨t.hom.1 x, congr_fun t.hom.w x⟩) }
   inverse :=
-    { obj := fun s => MonoOver.mk' (Subtype.val : s → α)
+    { obj := fun s => MonoOver.mk (Subtype.val : s → α)
       map := fun {s t} b => MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
     NatIso.ofComponents fun f =>
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
-  counitIso := NatIso.ofComponents fun s => eqToIso Subtype.range_val
+  counitIso := NatIso.ofComponents fun _ => eqToIso Subtype.range_val
 
-instance : WellPowered (Type u) :=
+instance : WellPowered.{u} (Type u) :=
   wellPowered_of_essentiallySmall_monoOver fun α =>
     EssentiallySmall.mk' (Types.monoOverEquivalenceSet α)
 

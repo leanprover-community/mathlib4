@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+module
+
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-!
 # Lemmas on fractions
@@ -30,9 +32,11 @@ Many definitions have been made reducible so as to ease rewrites when this API i
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [L.IsLocalization W]
 
 namespace MorphismProperty
@@ -87,7 +91,7 @@ variable {W}
 for a morphism property `W`. The fact it is an equivalence relation is not
 formalized, but it would follow easily from `LeftFraction₂.map_eq_iff`. -/
 def LeftFraction₂Rel {X Y : C} (z₁ z₂ : W.LeftFraction₂ X Y) : Prop :=
-  ∃ (Z : C)  (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
+  ∃ (Z : C) (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
     (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂) (_ : z₁.f' ≫ t₁ = z₂.f' ≫ t₂), W (z₁.s ≫ t₁)
 
 namespace LeftFraction₂

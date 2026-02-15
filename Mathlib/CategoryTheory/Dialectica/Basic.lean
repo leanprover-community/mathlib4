@@ -3,8 +3,10 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Dialectica category
@@ -35,6 +37,8 @@ in Set Theory, state in imperative programming, and others, see [Dialectica Cate
 [Dialectica Categories]: https://github.com/vcvpaiva/DialecticaCategories
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -92,20 +96,18 @@ instance : Category (Dial C) where
     F := π₂
     le := by simp
   }
-  comp {X Y Z} (F G : Dial.Hom ..) := {
+  comp {_ _ _} (F G : Dial.Hom ..) := {
     f := F.f ≫ G.f
     F := π(π₁, prod.map F.f (𝟙 _) ≫ G.F) ≫ F.F
     le := comp_le_lemma F G
   }
-  id_comp f := by simp; rfl
-  comp_id f := by simp; rfl
   assoc f g h := by
     simp only [Category.assoc, Hom.mk.injEq, true_and]
     rw [← Category.assoc, ← Category.assoc]; congr 1
     ext <;> simp
 
 @[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
-   Hom.ext x y hf hF
+  Hom.ext hf hF
 
 /--
 An isomorphism in `Dial C` can be induced by isomorphisms on the source and target,

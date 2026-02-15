@@ -3,8 +3,13 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.NumberTheory.Divisors
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Order.Nat
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers
@@ -12,6 +17,8 @@ import Mathlib.NumberTheory.Divisors
 This file deals with prime powers: numbers which are positive integer powers of a single prime.
 -/
 
+@[expose] public section
+assert_not_exists Nat.divisors
 
 variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
@@ -27,13 +34,13 @@ theorem isPrimePow_def : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ 0 <
 natural `k` such that `n` can be written as `p^(k+1)`. -/
 theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime p ∧ p ^ (k + 1) = n :=
   (isPrimePow_def _).trans
-    ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨p, k - 1, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨p, k, hp, hn⟩ =>
+    ⟨fun ⟨p, k, hp, hk, hn⟩ => ⟨p, k - 1, hp, by rwa [Nat.sub_add_cancel hk]⟩, fun ⟨_, _, hp, hn⟩ =>
       ⟨_, _, hp, Nat.succ_pos', hn⟩⟩
 
 theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
   simp only [isPrimePow_def, not_exists, not_and', and_imp]
   intro x n _hn hx
-  rw [pow_eq_zero hx]
+  rw [eq_zero_of_pow_eq_zero hx]
   simp
 
 theorem IsPrimePow.not_unit {n : R} (h : IsPrimePow n) : ¬IsUnit n :=
@@ -71,27 +78,44 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   rw [isPrimePow_nat_iff]
   refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
   rintro ⟨p, k, hp, hk, rfl⟩
-  refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
-  conv => { lhs; rw [← (pow_one p)] }
+  refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt).le, hp, hk, rfl⟩
+  conv => {lhs; rw [← (pow_one p)]}
   exact Nat.pow_le_pow_right hp.one_lt.le hk
 
+theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :
+    IsPrimePow n
+      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ ∃ p : ℕ, p ≤ n ∧ n = p ^ k ∧ p.Prime := by
+  rw [isPrimePow_nat_iff]
+  constructor
+  · rintro ⟨p, k, hp', hk', rfl⟩
+    refine ⟨k, ?_, hk', ⟨p, Nat.le_pow hk', rfl, hp'⟩⟩
+    · calc
+        k = Nat.log 2 (2 ^ k) := by simp
+        _ ≤ Nat.log 2 (p ^ k) := Nat.log_mono Nat.one_lt_two Nat.AtLeastTwo.prop
+                                   (Nat.pow_le_pow_left (Nat.Prime.two_le hp') k)
+  · rintro ⟨k, hk, hk', ⟨p, hp, rfl, hp'⟩⟩
+    exact ⟨p, k, hp', hk', rfl⟩
+
+theorem isPrimePow_nat_iff_bounded_log_minFac (n : ℕ) :
+    IsPrimePow n
+      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ n = n.minFac ^ k := by
+  rw [isPrimePow_nat_iff_bounded_log]
+  obtain rfl | h := eq_or_ne n 1
+  · simp
+  constructor
+  · rintro ⟨k, hkle, hk_pos, p, hle, heq, hprime⟩
+    refine ⟨k, hkle, hk_pos, ?_⟩
+    rw [heq, hprime.pow_minFac hk_pos.ne']
+  · rintro ⟨k, hkle, hk_pos, heq⟩
+    refine ⟨k, hkle, hk_pos, n.minFac, Nat.minFac_le ?_, heq, ?_⟩
+    · grind [Nat.minFac_prime_iff, nonpos_iff_eq_zero, Nat.log_zero_right, lt_self_iff_false]
+    · grind [Nat.minFac_prime_iff]
+
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
-  decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)
+  decidable_of_iff' _ (isPrimePow_nat_iff_bounded_log_minFac n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
-  rw [isPrimePow_nat_iff] at hn ⊢
-  rcases hn with ⟨p, k, hp, _hk, rfl⟩
-  obtain ⟨i, hik, rfl⟩ := (Nat.dvd_prime_pow hp).1 hm
-  refine ⟨p, i, hp, ?_, rfl⟩
-  apply Nat.pos_of_ne_zero
-  rintro rfl
-  simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁
-
-theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
-    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
-  simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
-  rintro n han _ha hn hbn _hb -
-  exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
+  grind [isPrimePow_nat_iff, Nat.dvd_prime_pow, Nat.pow_eq_one]
 
 theorem IsPrimePow.two_le : ∀ {n : ℕ}, IsPrimePow n → 2 ≤ n
   | 0, h => (not_isPrimePow_zero h).elim

@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Shift.ShiftSequence
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.Algebra.Homology.ExactSequence
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
+public import Mathlib.Algebra.Homology.ExactSequence
 
 /-! # Homological functors
 
@@ -32,39 +34,52 @@ The exactness of this long exact sequence is given by three lemmas
 If `F` is a homological functor, we define the strictly full triangulated subcategory
 `F.homologicalKernel`: it consists of objects `X : C` such that for all `n : ℤ`,
 `(F.shift n).obj X` (or `F.obj (X⟦n⟧)`) is zero. We show that a morphism `f` in `C`
-belongs to `F.homologicalKernel.W` (i.e. the cone of `f` is in this kernel) iff
+belongs to `F.homologicalKernel.trW` (i.e. the cone of `f` is in this kernel) iff
 `(F.shift n).map f` is an isomorphism for all `n : ℤ`.
 
 Note: depending on the sources, homological functors are sometimes
 called cohomological functors, while certain authors use "cohomological functors"
 for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
-## TODO
-
-* The long exact sequence in homology attached to an homological functor.
-
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C D A : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-  [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive] [Pretriangulated C]
-  [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
+variable {C D A : Type*} [Category* C] [HasShift C ℤ]
+  [Category* D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive] [Pretriangulated D]
-  [Category A] [Abelian A]
+  [Category* A]
 
 namespace Functor
 
 variable (F : C ⥤ A)
 
-/-- A functor from a pretriangulated category to an abelian category is an homological functor
+/-- The kernel of a homological functor `F : C ⥤ A` is the strictly full
+triangulated subcategory consisting of objects `X` such that
+for all `n : ℤ`, `F.obj (X⟦n⟧)` is zero. -/
+def homologicalKernel : ObjectProperty C :=
+  fun X ↦ ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧))
+
+lemma mem_homologicalKernel_iff [F.ShiftSequence ℤ] (X : C) :
+    F.homologicalKernel X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
+  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X),
+    homologicalKernel, comp_obj]
+
+section Pretriangulated
+
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
+  [Pretriangulated C] [Abelian A]
+
+/-- A functor from a pretriangulated category to an abelian category is a homological functor
 if it sends distinguished triangles to exact sequences. -/
-class IsHomological extends F.PreservesZeroMorphisms : Prop where
+class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).map F).Exact
 
@@ -86,41 +101,36 @@ lemma IsHomological.mk' [F.PreservesZeroMorphisms]
     exact (ShortComplex.exact_iff_of_iso
       (F.mapShortComplex.mapIso ((shortComplexOfDistTriangleIsoOfIso e hT)))).2 h'
 
-variable [F.IsHomological]
-
 lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ ≅ F₂) :
     F₂.IsHomological :=
   have := preservesZeroMorphisms_of_iso e
   ⟨fun T hT => ShortComplex.exact_of_iso (ShortComplex.mapNatIso _ e)
     (F₁.map_distinguished_exact T hT)⟩
 
-/-- The kernel of a homological functor `F : C ⥤ A` is the strictly full
-triangulated subcategory consisting of objects `X` such that
-for all `n : ℤ`, `F.obj (X⟦n⟧)` is zero. -/
-def homologicalKernel [F.IsHomological] :
-    Triangulated.Subcategory C := Triangulated.Subcategory.mk'
-  (fun X => ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧)))
-  (fun n => by
-    rw [IsZero.iff_id_eq_zero, ← F.map_id, ← Functor.map_id,
-      id_zero, Functor.map_zero, Functor.map_zero])
-  (fun X a hX b => IsZero.of_iso (hX (a + b)) (F.mapIso ((shiftFunctorAdd C a b).app X).symm))
-  (fun T hT h₁ h₃ n => (F.map_distinguished_exact _
-    (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
-      (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _))
+section
 
-instance [F.IsHomological] : ClosedUnderIsomorphisms F.homologicalKernel.P := by
-  dsimp only [homologicalKernel]
-  infer_instance
+variable [F.IsHomological]
 
-lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ] (X : C) :
-    F.homologicalKernel.P X ↔ ∀ (n : ℤ), IsZero ((F.shift n).obj X) := by
-  simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
-  rfl
+instance : F.homologicalKernel.IsClosedUnderIsomorphisms where
+  of_iso e hX n := (hX n).of_iso ((shiftFunctor C n ⋙ F).mapIso e.symm)
+
+instance : F.homologicalKernel.IsTriangulated where
+  exists_zero := ⟨0, isZero_zero C,
+    fun n ↦ (shiftFunctor C n ⋙ F).map_isZero (isZero_zero C)⟩
+  toIsStableUnderShift := ⟨fun a ↦ ⟨fun X hX b ↦
+    (hX (a + b)).of_iso (F.mapIso ((shiftFunctorAdd C a b).app X).symm)⟩⟩
+  toIsTriangulatedClosed₂ :=
+    ObjectProperty.IsTriangulatedClosed₂.mk' (fun T hT h₁ h₃ n ↦
+      (F.map_distinguished_exact _
+        (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
+          ((h₁ n).eq_of_src _ _) ((h₃ n).eq_of_tgt _ _))
+
+end
 
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
-    ⟨fun {X} => preservesLimitOfIsoDiagram F (diagramIsoPair X).symm⟩
+    ⟨fun {X} => preservesLimit_of_iso_diagram F (diagramIsoPair X).symm⟩
   intro X₁ X₂
   have : HasBinaryBiproduct (F.obj X₁) (F.obj X₂) := HasBinaryBiproducts.has_binary_biproduct _ _
   have : Mono (F.biprodComparison X₁ X₂) := by
@@ -135,8 +145,8 @@ noncomputable instance (priority := 100) [F.IsHomological] :
     simp only [assoc, biprodComparison_fst, zero_comp, ← F.map_comp, biprod.inl_fst,
       F.map_id, comp_id] at hf
     rw [hf, zero_comp]
-  have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproductOfMonoBiprodComparison _
-  apply Limits.preservesBinaryProductOfPreservesBinaryBiproduct
+  have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproduct_of_mono_biprodComparison _
+  apply Limits.preservesBinaryProduct_of_preservesBinaryBiproduct
 
 instance (priority := 100) [F.IsHomological] : F.Additive :=
   F.additive_of_preserves_binary_products
@@ -153,28 +163,35 @@ lemma isHomological_of_localization (L : C ⥤ D)
   obtain ⟨T₀, e, hT₀⟩ := hT
   exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
 
+end Pretriangulated
+
 section
 
-variable [F.IsHomological] [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
-  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
-
-/-- The connecting homomorphism in the long exact sequence attached to an homological
+/-- The connecting homomorphism in the long exact sequence attached to a homological
 functor and a distinguished triangle. -/
-noncomputable def homologySequenceδ :
+noncomputable def homologySequenceδ
+    [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁ :=
   F.shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
 variable {T T'}
 
 @[reassoc]
-lemma homologySequenceδ_naturality :
+lemma homologySequenceδ_naturality
+    [F.ShiftSequence ℤ] (T T' : Triangle C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h =
       F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
   dsimp only [homologySequenceδ]
   rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
 
 variable (T)
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
+  [Pretriangulated C] [Abelian A] [F.IsHomological]
+variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
+  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
+section
+include hT
 @[reassoc]
 lemma comp_homologySequenceδ :
     (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
@@ -188,7 +205,7 @@ lemma homologySequenceδ_comp :
   rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
 
 @[reassoc]
-lemma homologySequence_comp  :
+lemma homologySequence_comp :
     (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
   rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero]
 
@@ -199,22 +216,24 @@ lemma homologySequence_exact₂ :
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
-    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) (by simp) (by simp)
+    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
+    (by simp) (by simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
-    ((F.shiftIso 1 n₀ n₁ (by linarith)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
+    ((F.shiftIso 1 n₀ n₁ (by lia)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
-  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
+  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by lia)).app _))
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
-    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_self 1) n₀ n₁ (by omega)]
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁
+      (by lia)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
@@ -231,11 +250,12 @@ lemma homologySequence_epi_shift_map_mor₂_iff :
 lemma homologySequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
+end
 
-lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
-    F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
+lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
+    F.homologicalKernel.trW f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
-  apply (F.homologicalKernel.mem_W_iff_of_distinguished _ hT).trans
+  apply (F.homologicalKernel.trW_iff_of_distinguished _ hT).trans
   have h₁ := fun n => (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
   have h₂ := fun n => F.homologySequence_mono_shift_map_mor₁_iff _ hT n _ rfl
   have h₃ := fun n => F.homologySequence_epi_shift_map_mor₁_iff _ hT n
@@ -250,6 +270,9 @@ lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
   · intros
     constructor <;> infer_instance
 
+@[deprecated (since := "2025-07-21")]
+alias mem_homologicalKernel_W_iff := mem_homologicalKernel_trW_iff
+
 open ComposableArrows
 
 /-- The exact sequence with six terms starting from `(F.shift n₀).obj T.obj₁` until
@@ -258,6 +281,7 @@ open ComposableArrows
   mk₅ ((F.shift n₀).map T.mor₁) ((F.shift n₀).map T.mor₂)
     (F.homologySequenceδ T n₀ n₁ h) ((F.shift n₁).map T.mor₁) ((F.shift n₁).map T.mor₂)
 
+include hT in
 lemma homologySequenceComposableArrows₅_exact :
     (F.homologySequenceComposableArrows₅ T n₀ n₁ h).Exact :=
   exact_of_δ₀ (F.homologySequence_exact₂ T hT n₀).exact_toComposableArrows

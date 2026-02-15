@@ -1,14 +1,18 @@
 /-
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
-Floris van Doorn, E.W.Ayers, Arthur Paulino
+Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
+Floris van Doorn, Edward Ayers, Arthur Paulino, Thomas R. Murrills
 -/
-import Lean.Meta.Tactic.Rewrite
-import Batteries.Lean.Expr
-import Batteries.Data.Rat.Basic
-import Batteries.Data.List.Basic
-import Batteries.Logic
+module
+
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Lean.Meta.AppBuilder
+public import Lean.Meta.Match.MatcherInfo
+public import Lean.Meta.Transform
+public import Lean.Structure
 
 /-!
 # Additional operations on Expr and related types
@@ -17,6 +21,8 @@ This file defines basic operations on the types expr, name, declaration, level, 
 
 This file is mostly for non-tactics.
 -/
+
+public section
 
 namespace Lean
 
@@ -39,16 +45,16 @@ namespace Name
 
 /-- Find the largest prefix `n` of a `Name` such that `f n != none`, then replace this prefix
 with the value of `f n`. -/
-def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
+@[specialize] def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   if let some n' := f n then return n'
   match n with
   | anonymous => anonymous
   | str n' s => mkStr (mapPrefix f n') s
   | num n' i => mkNum (mapPrefix f n') i
 
-/-- Build a name from components. For example ``from_components [`foo, `bar]`` becomes
-  ``` `foo.bar```.
-  It is the inverse of `Name.components` on list of names that have single components. -/
+/-- Build a name from components.
+For example, ``from_components [`foo, `bar]`` becomes ``` `foo.bar```.
+It is the inverse of `Name.components` on list of names that have single components. -/
 def fromComponents : List Name → Name := go .anonymous where
   /-- Auxiliary for `Name.fromComponents` -/
   go : Name → List Name → Name
@@ -67,18 +73,16 @@ def lastComponentAsString : Name → String
   | .num _ n => toString n
   | .anonymous => ""
 
-@[deprecated (since := "2024-05-14")] alias getString := lastComponentAsString
-
-/-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
-  `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
-  Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
+/-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`,
+i.e. `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
+Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
-  Note that this includes the case where `nm` has multiple more namespaces.
-  If `pre` is not a prefix of `nm`, it returns `none`. -/
+Note that this includes the case where `nm` has multiple more namespaces.
+If `pre` is not a prefix of `nm`, it returns `none`. -/
 def isPrefixOf? (pre nm : Name) : Option Name :=
   if pre == nm then
     some anonymous
@@ -104,12 +108,12 @@ end Name
 
 namespace ConstantInfo
 
-/-- Checks whether this `ConstantInfo` is a definition, -/
+/-- Checks whether this `ConstantInfo` is a definition. -/
 def isDef : ConstantInfo → Bool
   | defnInfo _ => true
   | _          => false
 
-/-- Checks whether this `ConstantInfo` is a theorem, -/
+/-- Checks whether this `ConstantInfo` is a theorem. -/
 def isThm : ConstantInfo → Bool
   | thmInfo _ => true
   | _          => false
@@ -185,7 +189,7 @@ and this array has the same length as the one returned by `Lean.Expr.getAppArgs`
 def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
   let nargs := e.getAppNumArgs
-  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
+  getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 
 /-- Erase proofs in an expression by replacing them with `sorry`s.
 
@@ -200,47 +204,9 @@ def eraseProofs (e : Expr) : MetaM Expr :=
   Meta.transform (skipConstInApp := true) e
     (pre := fun e => do
       if (← Meta.isProof e) then
-        return .continue (← mkSyntheticSorry (← inferType e))
+        return .continue (← mkSorry (← inferType e) true)
       else
         return .continue)
-
-/--
-Check if an expression is a "rational in normal form",
-i.e. either an integer number in normal form,
-or `n / d` where `n` is an integer in normal form, `d` is a natural number in normal form,
-`d ≠ 1`, and `n` and `d` are coprime (in particular, we check that `(mkRat n d).den = d`).
-If so returns the rational number.
--/
-def rat? (e : Expr) : Option Rat := do
-  if e.isAppOfArity ``Div.div 4 then
-    let d ← e.appArg!.nat?
-    guard (d ≠ 1)
-    let n ← e.appFn!.appArg!.int?
-    let q := mkRat n d
-    guard (q.den = d)
-    pure q
-  else
-    e.int?
-
-/--
-Test if an expression represents an explicit number written in normal form:
-* A "natural number in normal form" is an expression `OfNat.ofNat n`, even if it is not of type `ℕ`,
-  as long as `n` is a literal.
-* An "integer in normal form" is an expression which is either a natural number in number form,
-  or `-n`, where `n` is a natural number in normal form.
-* A "rational in normal form" is an expressions which is either an integer in normal form,
-  or `n / d` where `n` is an integer in normal form, `d` is a natural number in normal form,
-  `d ≠ 1`, and `n` and `d` are coprime (in particular, we check that `(mkRat n d).den = d`).
--/
-def isExplicitNumber : Expr → Bool
-  | .lit _ => true
-  | .mdata _ e => isExplicitNumber e
-  | e => e.rat?.isSome
-
-/-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
-def fvarId? : Expr → Option FVarId
-  | .fvar n => n
-  | _ => none
 
 /-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
 def type? : Expr → Option Level
@@ -248,8 +214,8 @@ def type? : Expr → Option Level
   | _ => none
 
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
-  `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
-  it does a syntactic check that the expression does not depend on `yₙ`. -/
+`(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
+it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
 where
@@ -259,6 +225,62 @@ where
     | .lam _ _ b _, n + 1  => aux depth b n
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
+
+/--
+Returns `true` if `type` is an application of a constant `decl` for which `p decl` is true, or a
+forall with return type of the same form (i.e. of the form `∀ (x₀ : X₀) (x₁ : X₁) ⋯, decl ..` where
+`p decl`).
+
+Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
+-/
+@[inline] partial def isAppOrForallOfConstP (p : Name → Bool) (type : Expr) : Bool :=
+  match type.cleanupAnnotations.getAppFn' with
+  | .const n _ => p n
+  | .forallE _ _ body _ => isAppOrForallOfConstP p body
+  | _ => false
+
+/--
+Returns `true` if `type` is an application of a constant `declName`, or a
+forall with return type of the same form (i.e. of the form `∀ (x₀ : X₀) (x₁ : X₁) ⋯, declName ..`).
+
+Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
+-/
+@[inline] partial def isAppOrForallOfConst (declName : Name) (type : Expr) : Bool :=
+  isAppOrForallOfConstP (· == declName) type
+
+/--
+Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
+`(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
+- the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
+-  `p Aᵢ` is `true`
+- The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that
+  `xᵢ : Aᵢ` is "unused".)
+
+Note that the argument to `p` may have loose bvars. This is a performance optimization.
+
+This function runs `cleanupAnnotations` on each expression before examining it.
+
+We see through `let`s, and do not increment the index when doing so. This behavior is compatible
+with `forallBoundedTelescope`.
+-/
+partial def getUnusedForallInstanceBinderIdxsWhere (p : Expr → Bool) (e : Expr) :
+    Array Nat :=
+  go e 0 #[]
+where
+  /-- Inspects `body`, and if it is a `.forallE` of an instance with type `type` such that `p type`
+  is `true` and the remainder of the type does not depend on it, pushes the `current` index onto
+  the accumulated array. -/
+  go (body : Expr) (current : Nat) (acc : Array Nat) : Array Nat :=
+    match body.cleanupAnnotations with
+    | .forallE _ type body bi => go body (current+1) <|
+      if bi.isInstImplicit && p type && !(body.hasLooseBVar 0) then
+        acc.push current
+      else
+        acc
+    /- See through `letE`, and just as in the interpretation of a bound provided to
+    `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
+    | .letE _ _ _ body _ => go body current acc
+    | _ => acc
 
 /-- Counts the immediate depth of a nested `let` expression. -/
 def letDepth : Expr → Nat
@@ -283,19 +305,20 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 (doing typeclass search for the `OfNat` and `Neg` instances required). -/
 def ofInt (α : Expr) : Int → MetaM Expr
   | Int.ofNat n => Expr.ofNat α n
-  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+  | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n + 1)]
 
 section recognizers
 
 /--
-  Return `some n` if `e` is one of the following
-  - A nat literal (numeral)
-  - `Nat.zero`
-  - `Nat.succ x` where `isNumeral x`
-  - `OfNat.ofNat _ x _` where `isNumeral x` -/
+Return `some n` if `e` is one of the following
+- a nat literal (numeral)
+- `Nat.zero`
+- `Nat.succ x` where `isNumeral x`
+- `OfNat.ofNat _ x _` where `isNumeral x` -/
 partial def numeral? (e : Expr) : Option Nat :=
   if let some n := e.rawNatLit? then n
   else
+    let e := e.consumeMData -- `OfNat` numerals may have `no_index` around them from `ofNat()`
     let f := e.getAppFn
     if !f.isConst then none
     else
@@ -321,6 +344,13 @@ If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the 
 otherwise, it returns `none`. -/
 @[inline] def le? (p : Expr) : Option (Expr × Expr × Expr) := do
   let (type, _, lhs, rhs) ← p.app4? ``LE.le
+  return (type, lhs, rhs)
+
+/-- `Lean.Expr.lt? e` takes `e : Expr` as input.
+If `e` represents `a < b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def lt? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LT.lt
   return (type, lhs, rhs)
 
 /-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
@@ -385,6 +415,7 @@ def renameBVar (e : Expr) (old new : Name) : Expr :=
     lam (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
   | forallE n ty bd bi =>
     forallE (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
+  | mdata d e' => mdata d (e'.renameBVar old new)
   | e => e
 
 open Lean.Meta in
@@ -395,15 +426,10 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
   | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
   | _ => pure none
 
-open Lean.Elab.Term
-/-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
-def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
-  -- the only TermElabM thing we do in `addLocalVarInfo` is check inPattern,
-  -- which we assume is always false for this function
-  discard <| TermElabM.run do
-    match tk with
-    | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
-    | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
+/-- Map binder names in a nested forall `(a₁ : α₁) → ... → (aₙ : αₙ) → _` -/
+def mapForallBinderNames : Expr → (Name → Name) → Expr
+  | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
+  | e, _ => e
 
 /-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
 the projection expression `e.fieldName` -/
@@ -453,33 +479,14 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
     return none
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
+@[specialize]
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
 
-/--
-Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewrite (e eq : Expr) : MetaM Expr := do
-  let ⟨_, eq', []⟩ ← (← mkFreshExprMVar none).mvarId!.rewrite e eq
-    | throwError "Expr.rewrite may not produce subgoals."
-  return eq'
-
-/--
-Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewriteType (e eq : Expr) : MetaM Expr := do
-  mkEqMP (← (← inferType e).rewrite eq) e
-
 /-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
-    return a `forall x, Not (p x)` and a proof for it.
+return a `forall x, Not (p x)` and a proof for it.
 
-    This function handles nested existentials. -/
+This function handles nested existentials. -/
 partial def forallNot_of_notExists (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
   let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
   go lvl A p hNotEx
@@ -509,7 +516,7 @@ where
 end Expr
 
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
-  except that this returns the (last component of the) projection names instead of the parent names.
+except that this returns the (last component of the) projection names instead of the parent names.
 -/
 def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
   getStructureFields env structName |>.filter fun fieldName =>

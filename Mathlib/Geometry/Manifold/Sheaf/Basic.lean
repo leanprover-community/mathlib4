@@ -3,8 +3,10 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.LocalInvariantProperties
-import Mathlib.Topology.Sheaves.LocalPredicate
+module
+
+public import Mathlib.Geometry.Manifold.LocalInvariantProperties
+public import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-! # Generic construction of a sheaf from a `LocalInvariantProp` on a manifold
 
@@ -27,6 +29,8 @@ invariant" property is preserved under restriction and gluing.
 * `StructureGroupoid.LocalInvariantProp.sheaf`: the sheaf-of-types of functions `f : M → M'`
   which satisfy the lifted property `LiftProp P`.
 -/
+
+@[expose] public section
 
 
 open scoped Manifold Topology
@@ -55,15 +59,15 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
   res := by
     intro U V i f h x
     have hUV : U ≤ V := CategoryTheory.leOfHom i
-    show ChartedSpace.LiftPropAt P (f ∘ Set.inclusion hUV) x
+    change ChartedSpace.LiftPropAt P (f ∘ Opens.inclusion hUV) x
     rw [← hG.liftPropAt_iff_comp_inclusion hUV]
     apply h
   locality := by
     intro V f h x
-    obtain ⟨U, hxU, i, hU : ChartedSpace.LiftProp P (f ∘ i)⟩ := h x
+    obtain ⟨U, hxU, i, hU : ChartedSpace.LiftProp P (f ∘ _)⟩ := h x
     let x' : U := ⟨x, hxU⟩
     have hUV : U ≤ V := CategoryTheory.leOfHom i
-    have : ChartedSpace.LiftPropAt P f (inclusion hUV x') := by
+    have : ChartedSpace.LiftPropAt P f (Opens.inclusion hUV x') := by
       rw [hG.liftPropAt_iff_comp_inclusion hUV]
       exact hU x'
     convert this

@@ -3,10 +3,13 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
-import Lean.Linter.Util
-import Batteries.Lean.HashSet
+public meta import Lean.Elab.Command
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
 
 /-!
 # `#`-command linter
@@ -21,6 +24,8 @@ Most of them are noisy and get picked up anyway by CI, but even the quiet ones a
 outlive their in-development status.
 -/
 
+meta section
+
 namespace Mathlib.Linter
 
 /--
@@ -28,17 +33,14 @@ The linter emits a warning on any command beginning with `#` that itself emits n
 For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a message.
 There is a list of silent `#`-command that are allowed.
 -/
-register_option linter.hashCommand : Bool := {
-  defValue := true
+public register_option linter.hashCommand : Bool := {
+  defValue := false
   descr := "enable the `#`-command linter"
 }
 
 namespace HashCommandLinter
 
-open Lean Elab
-
-/-- Gets the value of the `linter.hashCommand` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o
+open Lean Elab Linter
 
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
@@ -56,7 +58,7 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : HashSet String := { "#adaptation_note" }
+private abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
@@ -67,15 +69,12 @@ This means that CI will eventually fail on `#`-commands, but does not stop it fr
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
-  let mod := (← getMainModule).components
-  if getLinterHash (← getOptions) &&
-    ((← get).messages.toList.isEmpty || warningAsError.get (← getOptions)) &&
-    -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
-    (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))
-    then
+  if getLinterValue linter.hashCommand (← getLinterOptions) &&
+    ((← get).messages.reportedPlusUnreported.isEmpty || warningAsError.get (← getOptions))
+  then
     if let some sa := stx.getHead? then
       let a := sa.getAtomVal
-      if (a.get ⟨0⟩ == '#' && ! allowed_commands.contains a) then
+      if (a.front == '#' && ! allowed_commands.contains a) then
         let msg := m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
         if warningAsError.get (← getOptions) then
           logInfoAt sa (msg ++ " [linter.hashCommand]")

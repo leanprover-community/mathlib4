@@ -3,9 +3,13 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.Perm.ViaEmbedding
-import Mathlib.GroupTheory.Subgroup.Simple
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Solvable Groups
@@ -21,6 +25,7 @@ the derived series of a group.
 * `IsSolvable G` : the group `G` is solvable
 -/
 
+@[expose] public section
 
 open Subgroup
 
@@ -45,16 +50,22 @@ theorem derivedSeries_succ (n : ℕ) :
     derivedSeries G (n + 1) = ⁅derivedSeries G n, derivedSeries G n⁆ :=
   rfl
 
--- Porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
-  induction' n with n ih
-  · exact (⊤ : Subgroup G).normal_of_characteristic
-  · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
+  induction n with
+  | zero => exact (⊤ : Subgroup G).normal_of_characteristic
+  | succ n ih => exact Subgroup.commutator_normal (derivedSeries G n) (derivedSeries G n)
 
--- Porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
+
+theorem derivedSeries_antitone : Antitone (derivedSeries G) :=
+  antitone_nat_of_succ_le fun n => (derivedSeries G n).commutator_le_self
+
+instance derivedSeries_characteristic (n : ℕ) : (derivedSeries G n).Characteristic := by
+  induction n with
+  | zero => exact Subgroup.topCharacteristic
+  | succ n _ => exact Subgroup.commutator_characteristic _ _
 
 end derivedSeries
 
@@ -62,21 +73,18 @@ section CommutatorMap
 
 section DerivedSeriesMap
 
-variable (f)
-
+variable (f) in
 theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
     (derivedSeries G n).map f ≤ derivedSeries G' n := by
-  induction' n with n ih
-  · exact le_top
-  · simp only [derivedSeries_succ, map_commutator, commutator_mono, ih]
-
-variable {f}
+  induction n with
+  | zero => exact le_top
+  | succ n ih => simp only [derivedSeries_succ, map_commutator, commutator_mono, ih]
 
 theorem derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
     derivedSeries G' n ≤ (derivedSeries G n).map f := by
-  induction' n with n ih
-  · exact (map_top_of_surjective f hf).ge
-  · exact commutator_le_map_commutator ih ih
+  induction n with
+  | zero => exact (map_top_of_surjective f hf).ge
+  | succ n ih => exact commutator_le_map_commutator ih ih
 
 theorem map_derivedSeries_eq (hf : Function.Surjective f) (n : ℕ) :
     (derivedSeries G n).map f = derivedSeries G' n :=
@@ -121,10 +129,11 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
   obtain ⟨m, hm⟩ := id hG'
   refine ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ ?_)⟩⟩
   clear hm
-  induction' m with m hm
-  · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
+  induction m with
+  | zero =>
+    exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
       (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
-  · exact commutator_le_map_commutator hm hm
+  | succ m hm => exact commutator_le_map_commutator hm hm
 
 theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
@@ -134,7 +143,7 @@ instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolva
   solvable_of_solvable_injective H.subtype_injective
 
 theorem solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsSolvable G' :=
-  solvable_of_ker_le_range f (1 : G' →* G) ((f.range_top_of_surjective hf).symm ▸ le_top)
+  solvable_of_ker_le_range f (1 : G' →* G) (f.range_eq_top_of_surjective hf ▸ le_top)
 
 instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G] :
     IsSolvable (G ⧸ H) :=
@@ -145,6 +154,42 @@ instance solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
   solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩
 
+variable (G) in
+theorem IsSolvable.commutator_lt_top_of_nontrivial [hG : IsSolvable G] [Nontrivial G] :
+    commutator G < ⊤ := by
+  rw [lt_top_iff_ne_top]
+  obtain ⟨n, hn⟩ := hG
+  contrapose! hn
+  refine ne_of_eq_of_ne ?_ top_ne_bot
+  induction n with
+  | zero => exact derivedSeries_zero G
+  | succ n h => rwa [derivedSeries_succ, h]
+
+theorem IsSolvable.commutator_lt_of_ne_bot [IsSolvable G] {H : Subgroup G} (hH : H ≠ ⊥) :
+    ⁅H, H⁆ < H := by
+  rw [← nontrivial_iff_ne_bot] at hH
+  rw [← H.range_subtype, MonoidHom.range_eq_map, ← map_commutator, map_subtype_lt_map_subtype]
+  exact commutator_lt_top_of_nontrivial H
+
+theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
+    IsSolvable G ↔ ∀ H : Subgroup G, H ≠ ⊥ → ⁅H, H⁆ < H := by
+  refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
+  suffices h : IsSolvable (⊤ : Subgroup G) from
+    solvable_of_surjective (MonoidHom.range_eq_top.mp (range_subtype ⊤))
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
+  rcases eq_or_ne H ⊥ with rfl | h'
+  · infer_instance
+  · obtain ⟨n, hn⟩ := hH ⁅H, H⁆ (h H h')
+    use n + 1
+    rw [← (map_injective (subtype_injective _)).eq_iff, Subgroup.map_bot] at hn ⊢
+    rw [← hn]
+    clear hn
+    induction n with
+    | zero =>
+      rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
+        ← MonoidHom.range_eq_map, ← MonoidHom.range_eq_map, range_subtype, range_subtype]
+    | succ n ih => rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
+
 end Solvable
 
 section IsSimpleGroup
@@ -152,12 +197,13 @@ section IsSimpleGroup
 variable [IsSimpleGroup G]
 
 theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = commutator G := by
-  induction' n with n ih
-  · exact derivedSeries_one G
-  rw [_root_.derivedSeries_succ, ih, _root_.commutator]
-  cases' (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h h
-  · rw [h, commutator_bot_left]
-  · rwa [h]
+  induction n with
+  | zero => exact derivedSeries_one G
+  | succ n ih =>
+    rw [_root_.derivedSeries_succ, ih, _root_.commutator]
+    rcases (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h | h
+    · rw [h, commutator_bot_left]
+    · rwa [h]
 
 theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ IsSolvable G :=
   ⟨isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
@@ -179,17 +225,18 @@ theorem not_solvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬IsSolvable G :=
   mt (isSolvable_def _).mp
     (not_exists_of_forall_not fun n h =>
-      h1 (Subgroup.mem_bot.mp ((congr_arg (Membership.mem g) h).mp (h2 n))))
+      h1 (Subgroup.mem_bot.mp ((congr_arg (g ∈ ·) h).mp (h2 n))))
 
 theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
   let x : Equiv.Perm (Fin 5) := ⟨![1, 2, 0, 3, 4], ![2, 0, 1, 3, 4], by decide, by decide⟩
   let y : Equiv.Perm (Fin 5) := ⟨![3, 4, 2, 0, 1], ![3, 4, 2, 0, 1], by decide, by decide⟩
   let z : Equiv.Perm (Fin 5) := ⟨![0, 3, 2, 1, 4], ![0, 3, 2, 1, 4], by decide, by decide⟩
-  have key : x = z * ⁅x, y * x * y⁻¹⁆ * z⁻¹ := by unfold_let; decide
+  have key : x = z * ⁅x, y * x * y⁻¹⁆ * z⁻¹ := by unfold x y z; decide
   refine not_solvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => ?_
-  induction' n with n ih
-  · exact mem_top x
-  · rw [key, (derivedSeries_normal _ _).mem_comm_iff, inv_mul_cancel_left]
+  induction n with
+  | zero => exact mem_top x
+  | succ n ih =>
+    rw [key, (derivedSeries_normal _ _).mem_comm_iff, inv_mul_cancel_left]
     exact commutator_mem_commutator ih ((derivedSeries_normal _ _).conj_mem _ ih _)
 
 theorem Equiv.Perm.not_solvable (X : Type*) (hX : 5 ≤ Cardinal.mk X) :

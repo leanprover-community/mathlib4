@@ -3,12 +3,14 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Defs
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Lift
-import Mathlib.Init.Data.Int.Order
+module
+
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Coe
+public import Mathlib.Tactic.Lift
 
 /-!
 # The positive natural numbers
@@ -17,28 +19,12 @@ This file contains the definitions, and basic results.
 Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more imports.
 -/
 
+@[expose] public section
 
-/-- `ℕ+` is the type of positive natural numbers. It is defined as a subtype,
-  and the VM representation of `ℕ+` is the same as `ℕ` because the proof
-  is not stored. -/
-def PNat := { n : ℕ // 0 < n }
-  deriving DecidableEq, LinearOrder
-
-@[inherit_doc]
-notation "ℕ+" => PNat
+deriving instance LinearOrder for PNat
 
 instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
-
-/-- The underlying natural number -/
-@[coe]
-def PNat.val : ℕ+ → ℕ := Subtype.val
-
-instance coePNatNat : Coe ℕ+ ℕ :=
-  ⟨PNat.val⟩
-
-instance : Repr ℕ+ :=
-  ⟨fun n n' => reprPrec n.1 n'⟩
 
 instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
   ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
@@ -81,7 +67,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 
 @[simp]
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
-  Subtype.eq <| succ_pred_eq_of_pos n.2
+  Subtype.ext <| succ_pred_eq_of_pos n.2
 
 /-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
@@ -105,17 +91,13 @@ namespace PNat
 open Nat
 
 /-- We now define a long list of structures on ℕ+ induced by
- similar structures on ℕ. Most of these behave in a completely
- obvious way, but there are a few things to be said about
- subtraction, division and powers.
+similar structures on ℕ. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
 -/
--- Porting note: no `simp`  because simp can prove it
-theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
-  Iff.rfl
+theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := by simp
 
--- Porting note: no `simp`  because simp can prove it
-theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
-  Iff.rfl
+theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := by simp
 
 @[simp, norm_cast]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
@@ -130,9 +112,9 @@ theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
   n.2
 
 theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
-  Subtype.eq
+  Subtype.ext
 
-theorem coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
+theorem coe_injective : Function.Injective PNat.val :=
   Subtype.coe_injective
 
 @[simp]
@@ -155,7 +137,7 @@ theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
 
 @[simp]
 theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_le n.one_le
+  not_lt_of_ge n.one_le
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩

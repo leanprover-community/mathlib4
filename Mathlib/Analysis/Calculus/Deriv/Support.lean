@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Support of the derivative of a function
@@ -16,6 +18,8 @@ compact support.
 
 derivative, support
 -/
+
+public section
 
 
 universe u v
@@ -35,8 +39,8 @@ theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   intro x
   rw [← not_imp_not]
   intro h2x
-  rw [not_mem_tsupport_iff_eventuallyEq] at h2x
-  exact nmem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
+  rw [notMem_tsupport_iff_eventuallyEq] at h2x
+  exact notMem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
 
 protected theorem HasCompactSupport.deriv (hf : HasCompactSupport f) :
     HasCompactSupport (deriv f) :=

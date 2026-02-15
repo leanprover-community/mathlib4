@@ -3,11 +3,15 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Complex.Module
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.Trace.Defs
+module
+
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.Trace.Defs
 
 /-! # Lemmas about `Algebra.trace` and `Algebra.norm` on `ℂ` -/
+
+public section
 
 
 open Complex
@@ -17,12 +21,12 @@ theorem Algebra.leftMulMatrix_complex (z : ℂ) :
   ext i j
   rw [Algebra.leftMulMatrix_eq_repr_mul, Complex.coe_basisOneI_repr, Complex.coe_basisOneI, mul_re,
     mul_im, Matrix.of_apply]
-  fin_cases j
-  · simp only [Fin.mk_zero, Matrix.cons_val_zero, one_re, mul_one, one_im, mul_zero, sub_zero,
-      zero_add]
+  fin_cases j <;> dsimp only [Fin.zero_eta, Fin.mk_one, Matrix.cons_val]
+  · simp only [one_re, mul_one, one_im, mul_zero,
+      sub_zero, zero_add]
     fin_cases i <;> rfl
-  · simp only [Fin.mk_one, Matrix.cons_val_one, Matrix.head_cons, I_re, mul_zero, I_im, mul_one,
-      zero_sub, add_zero]
+  · simp only [I_re, mul_zero, I_im,
+      mul_one, zero_sub, add_zero]
     fin_cases i <;> rfl
 
 theorem Algebra.trace_complex_apply (z : ℂ) : Algebra.trace ℝ ℂ z = 2 * z.re := by

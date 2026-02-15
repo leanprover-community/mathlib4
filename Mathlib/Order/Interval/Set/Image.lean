@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger, Yaël Dillies
+Authors: Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Directed
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Directed
 
 /-!
 # Monotone functions on intervals
@@ -13,6 +15,8 @@ import Mathlib.Order.Directed
 This file shows many variants of the fact that a monotone function `f` sends an interval with
 endpoints `a` and `b` to the interval with endpoints `f a` and `f b`.
 -/
+
+public section
 
 variable {α β : Type*} {f : α → β}
 
@@ -243,13 +247,13 @@ private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} 
     (h : ∀ {x}, r c x → p a x) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
-    ext; simp (config := { contextual := true }) [@and_comm (r _ _), h]
+    ext; simp +contextual [@and_comm (r _ _), h]
 
 private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
     (h : ∀ {x}, r x c → q x b) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
-    ext; simp (config := { contextual := true}) [h]
+    ext; simp +contextual [h]
 
 variable [Preorder α] {p : α → Prop}
 
@@ -431,18 +435,18 @@ lemma directedOn_le_Iic (b : α) : DirectedOn (· ≤ ·) (Iic b) :=
   fun _x hx _y hy ↦ ⟨b, le_rfl, hx, hy⟩
 
 lemma directedOn_le_Icc (a b : α) : DirectedOn (· ≤ ·) (Icc a b) :=
-  fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 $ hx.1.trans hx.2, hx.2, hy.2⟩
+  fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 <| hx.1.trans hx.2, hx.2, hy.2⟩
 
 lemma directedOn_le_Ioc (a b : α) : DirectedOn (· ≤ ·) (Ioc a b) :=
-  fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 $ hx.1.trans_le hx.2, hx.2, hy.2⟩
+  fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 <| hx.1.trans_le hx.2, hx.2, hy.2⟩
 
 lemma directedOn_ge_Ici (a : α) : DirectedOn (· ≥ ·) (Ici a) :=
   fun _x hx _y hy ↦ ⟨a, le_rfl, hx, hy⟩
 
 lemma directedOn_ge_Icc (a b : α) : DirectedOn (· ≥ ·) (Icc a b) :=
-  fun _x hx _y hy ↦ ⟨a, left_mem_Icc.2 $ hx.1.trans hx.2, hx.1, hy.1⟩
+  fun _x hx _y hy ↦ ⟨a, left_mem_Icc.2 <| hx.1.trans hx.2, hx.1, hy.1⟩
 
 lemma directedOn_ge_Ico (a b : α) : DirectedOn (· ≥ ·) (Ico a b) :=
-  fun _x hx _y hy ↦ ⟨a, left_mem_Ico.2 $ hx.1.trans_lt hx.2, hx.1, hy.1⟩
+  fun _x hx _y hy ↦ ⟨a, left_mem_Ico.2 <| hx.1.trans_lt hx.2, hx.1, hy.1⟩
 
 end Preorder

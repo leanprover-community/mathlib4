@@ -3,131 +3,139 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Basic
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # The derivative of bounded linear maps
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 bounded linear maps.
 -/
 
+public section
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
+open Asymptotics
 
-open scoped Classical
-open Topology NNReal Filter Asymptotics ENNReal
+namespace ContinuousLinearMap
 
-noncomputable section
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+variable (f : E →L[𝕜] F)
+variable {x : E}
+variable {s : Set E}
+variable {L : Filter E}
 
-section
+/-!
+### Bundled continuous linear maps
 
+There are currently two variants of these in mathlib, the bundled version
+(named `ContinuousLinearMap`, and denoted `E →L[𝕜] F`, works for topological vector spaces),
+and the unbundled version (with a predicate `IsBoundedLinearMap`, requires normed spaces).
+This section deals with the first form, see below for the unbundled version
+-/
+
+@[fun_prop]
+protected theorem hasStrictFDerivAt : HasStrictFDerivAt f f x :=
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
+    simp only [f.map_sub, sub_self, Pi.zero_apply]
+
+protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f x L :=
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
+    simp only [f.map_sub, sub_self, Pi.zero_apply]
+
+@[fun_prop]
+protected theorem hasFDerivWithinAt : HasFDerivWithinAt f f s x :=
+  f.hasFDerivAtFilter
+
+@[fun_prop]
+protected theorem hasFDerivAt : HasFDerivAt f f x :=
+  f.hasFDerivAtFilter
+
+@[simp, fun_prop]
+protected theorem differentiableAt : DifferentiableAt 𝕜 f x :=
+  f.hasFDerivAt.differentiableAt
+
+@[fun_prop]
+protected theorem differentiableWithinAt : DifferentiableWithinAt 𝕜 f s x :=
+  f.differentiableAt.differentiableWithinAt
+
+@[simp, fun_prop]
+protected theorem differentiable : Differentiable 𝕜 f := fun _ =>
+  f.differentiableAt
+
+@[fun_prop]
+protected theorem differentiableOn : DifferentiableOn 𝕜 f s :=
+  f.differentiable.differentiableOn
+
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
+
+@[simp]
+protected theorem fderiv : fderiv 𝕜 f x = f :=
+  f.hasFDerivAt.fderiv
+
+protected theorem fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 f s x = f := by
+  rw [DifferentiableAt.fderivWithin f.differentiableAt hxs]
+  exact f.fderiv
+
+end ContinuousLinearMap
+
+/-! ### Unbundled continuous linear maps -/
+
+namespace IsBoundedLinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable (e : E →L[𝕜] F)
+variable {f : E → F}
 variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {s : Set E}
+variable {L : Filter E}
 
-section ContinuousLinearMap
-
-/-!
-### Continuous linear maps
-
-There are currently two variants of these in mathlib, the bundled version
-(named `ContinuousLinearMap`, and denoted `E →L[𝕜] F`), and the unbundled version (with a
-predicate `IsBoundedLinearMap`). We give statements for both versions. -/
-
-
-@[fun_prop]
-protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
-  (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
-
-protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
-
-@[fun_prop]
-protected theorem ContinuousLinearMap.hasFDerivWithinAt : HasFDerivWithinAt e e s x :=
-  e.hasFDerivAtFilter
-
-@[fun_prop]
-protected theorem ContinuousLinearMap.hasFDerivAt : HasFDerivAt e e x :=
-  e.hasFDerivAtFilter
-
-@[simp, fun_prop]
-protected theorem ContinuousLinearMap.differentiableAt : DifferentiableAt 𝕜 e x :=
-  e.hasFDerivAt.differentiableAt
-
-@[fun_prop]
-protected theorem ContinuousLinearMap.differentiableWithinAt : DifferentiableWithinAt 𝕜 e s x :=
-  e.differentiableAt.differentiableWithinAt
-
-@[simp]
-protected theorem ContinuousLinearMap.fderiv : fderiv 𝕜 e x = e :=
-  e.hasFDerivAt.fderiv
-
-protected theorem ContinuousLinearMap.fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 e s x = e := by
-  rw [DifferentiableAt.fderivWithin e.differentiableAt hxs]
-  exact e.fderiv
-
-@[simp, fun_prop]
-protected theorem ContinuousLinearMap.differentiable : Differentiable 𝕜 e := fun _ =>
-  e.differentiableAt
-
-@[fun_prop]
-protected theorem ContinuousLinearMap.differentiableOn : DifferentiableOn 𝕜 e s :=
-  e.differentiable.differentiableOn
-
-theorem IsBoundedLinearMap.hasFDerivAtFilter (h : IsBoundedLinearMap 𝕜 f) :
+theorem hasFDerivAtFilter (h : IsBoundedLinearMap 𝕜 f) :
     HasFDerivAtFilter f h.toContinuousLinearMap x L :=
   h.toContinuousLinearMap.hasFDerivAtFilter
 
 @[fun_prop]
-theorem IsBoundedLinearMap.hasFDerivWithinAt (h : IsBoundedLinearMap 𝕜 f) :
+theorem hasFDerivWithinAt (h : IsBoundedLinearMap 𝕜 f) :
     HasFDerivWithinAt f h.toContinuousLinearMap s x :=
   h.hasFDerivAtFilter
 
 @[fun_prop]
-theorem IsBoundedLinearMap.hasFDerivAt (h : IsBoundedLinearMap 𝕜 f) :
+theorem hasFDerivAt (h : IsBoundedLinearMap 𝕜 f) :
     HasFDerivAt f h.toContinuousLinearMap x :=
   h.hasFDerivAtFilter
 
 @[fun_prop]
-theorem IsBoundedLinearMap.differentiableAt (h : IsBoundedLinearMap 𝕜 f) : DifferentiableAt 𝕜 f x :=
+theorem differentiableAt (h : IsBoundedLinearMap 𝕜 f) : DifferentiableAt 𝕜 f x :=
   h.hasFDerivAt.differentiableAt
 
 @[fun_prop]
-theorem IsBoundedLinearMap.differentiableWithinAt (h : IsBoundedLinearMap 𝕜 f) :
+theorem differentiableWithinAt (h : IsBoundedLinearMap 𝕜 f) :
     DifferentiableWithinAt 𝕜 f s x :=
   h.differentiableAt.differentiableWithinAt
 
-theorem IsBoundedLinearMap.fderiv (h : IsBoundedLinearMap 𝕜 f) :
+protected theorem fderiv (h : IsBoundedLinearMap 𝕜 f) :
     fderiv 𝕜 f x = h.toContinuousLinearMap :=
   HasFDerivAt.fderiv h.hasFDerivAt
 
-theorem IsBoundedLinearMap.fderivWithin (h : IsBoundedLinearMap 𝕜 f)
+protected theorem fderivWithin (h : IsBoundedLinearMap 𝕜 f)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = h.toContinuousLinearMap := by
   rw [DifferentiableAt.fderivWithin h.differentiableAt hxs]
   exact h.fderiv
 
 @[fun_prop]
-theorem IsBoundedLinearMap.differentiable (h : IsBoundedLinearMap 𝕜 f) : Differentiable 𝕜 f :=
+theorem differentiable (h : IsBoundedLinearMap 𝕜 f) : Differentiable 𝕜 f :=
   fun _ => h.differentiableAt
 
 @[fun_prop]
-theorem IsBoundedLinearMap.differentiableOn (h : IsBoundedLinearMap 𝕜 f) : DifferentiableOn 𝕜 f s :=
+theorem differentiableOn (h : IsBoundedLinearMap 𝕜 f) : DifferentiableOn 𝕜 f s :=
   h.differentiable.differentiableOn
 
-end ContinuousLinearMap
-
-end
+end IsBoundedLinearMap
