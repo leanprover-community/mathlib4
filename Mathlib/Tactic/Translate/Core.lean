@@ -991,11 +991,10 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (relevant_arg := $n)) =>
         if relevantArg?.isSome then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
+        if let `($_:hole) := n then
+          relevantArg? := some .noArg
         else
-          if let `($_:hole) := n then
-            relevantArg? := some .noArg
-          else
-            relevantArg? := some <| .arg (← elabArgStx ⟨n.raw⟩ argNames xs (.ofConstName declName))
+          relevantArg? := some <| .arg (← elabArgStx ⟨n.raw⟩ argNames xs (.ofConstName declName))
       | `(bracketedOption| (dont_translate := $[$types]*)) =>
         dontTranslate := dontTranslate ++
           (← types.toList.mapM (elabArgStx · argNames xs (.ofConstName declName)))
@@ -1157,9 +1156,14 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
            `@[{t.attrName} existing]`."
       else
         "The translated declaration doesn't exist. Please remove the option `existing`."
+  let reorder ←
+    if alreadyExists then
+      MetaM.run' <| checkExistingType t src tgt cfg
+    else
+      pure (cfg.reorder?.getD [])
+  let relevantArg ← cfg.relevantArg?.getDM <| findRelevantArg t src
+  insertTranslation t src tgt reorder relevantArg cfg.ref
   if alreadyExists then
-    let (reorder, relevantArg) ← MetaM.run' <| checkExistingType t src tgt cfg
-    insertTranslation t src tgt reorder relevantArg cfg.ref
     -- since `tgt` already exists, we just need to
     -- add translations `src.x ↦ tgt.x'` for any subfields.
     trace[translate_detail] "declaration {tgt} already exists."
