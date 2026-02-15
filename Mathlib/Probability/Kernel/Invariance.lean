@@ -32,10 +32,7 @@ variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
 
-/-! ### Push-forward of measures along a kernel -/
-
 /-! ### Invariant measures of kernels -/
-
 
 /-- A measure `μ` is invariant with respect to the kernel `κ` if the push-forward measure of `μ`
 along `κ` equals `μ`. -/
