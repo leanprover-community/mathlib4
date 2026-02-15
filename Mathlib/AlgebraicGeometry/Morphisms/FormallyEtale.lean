@@ -14,16 +14,14 @@ public import Mathlib.RingTheory.RingHom.Etale
 A morphism of schemes `f : X ⟶ Y` is formally etale if for each affine `U ⊆ Y` and
 `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally etale.
 
-We show that these properties are local, and are stable under compositions and base change.
-
+We show that this property are local, and are stable under compositions and base change.
 -/
 
 @[expose] public section
 
-
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory Limits
 
 universe v u
 
@@ -34,7 +32,7 @@ namespace AlgebraicGeometry
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is formally etale if for each affine `U ⊆ Y` and
-`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally etale. -/
+`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally etale. -/
 @[mk_iff]
 class FormallyEtale (f : X ⟶ Y) : Prop where
   formallyEtale_appLE (f) :
@@ -58,9 +56,8 @@ instance (priority := 900) [IsOpenImmersion f] : FormallyEtale f :=
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [FormallyEtale (f ≫ g)] [FormallyUnramified g] : FormallyEtale f :=
-  HasRingHomProperty.of_comp' (fun {R S T _ _ _} f g H H' ↦ by
-    algebraize [f, g, g.comp f]
-    exact Algebra.FormallyEtale.of_restrictScalars (R := R)) ‹_› ‹FormallyUnramified g›
+  HasRingHomProperty.of_comp' (fun {R S T _ _ _} f g H H' ↦
+    by exact RingHom.FormallyEtale.of_comp H' H) ‹_› ‹FormallyUnramified g›
 
 instance : MorphismProperty.IsMultiplicative @FormallyEtale where
   id_mem _ := inferInstance
