@@ -250,6 +250,10 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
   · exact asIso (Spec.map (Spec.residueFieldIso _ x).inv)
   · simp [Hom.fiberToSpecResidueField]
 
+@[deprecated (since := "2026-02-15")]
+alias LocallyQuasiFinite.of_isFinite_fiberToSpecResidueField :=
+  LocallyQuasiFinite.of_fiberToSpecResidueField
+
 lemma locallyQuasiFinite_iff_isFinite_fiber {f : X ⟶ Y} [QuasiCompact f] :
     LocallyQuasiFinite f ↔ ∀ x, IsFinite (f.fiberToSpecResidueField x) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ .of_fiberToSpecResidueField f fun _ ↦ inferInstance⟩
@@ -356,8 +360,7 @@ lemma Scheme.Hom.quasiFiniteAt [LocallyQuasiFinite f] (x : X) :
   ext; simp; rfl
 
 lemma Scheme.Hom.quasiFiniteAt_comp_iff_of_isOpenImmersion
-    {Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} {x : X}
-      [IsOpenImmersion f] :
+    {Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} {x : X} [IsOpenImmersion f] :
     (f ≫ g).QuasiFiniteAt x ↔ g.QuasiFiniteAt (f x) := by
   simp only [QuasiFiniteAt, stalkMap_comp, CommRingCat.hom_comp,
     RingHom.QuasiFinite.respectsIso.cancel_right_isIso]
